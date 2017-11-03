@@ -196,6 +196,8 @@ For consistency with other `Platform` class methods, `Platform.recordingsDir` ma
 
 The `~callback` function is now available for all `Event` types instead of just "on" events ([#2376](https://github.com/supercollider/supercollider/pull/2376)).
 
+Event types now include a `parentEvent`, which provides default values. ([#3021](https://github.com/supercollider/supercollider/pull/3021)).
+
 New aliases for done actions, e.g. `Done.freeSelf == 2`, are introduced for better readability ([#2616](https://github.com/supercollider/supercollider/pull/2616)). See the `Done` helpfile for details.
 
 A new class, `Recorder`, allows recording independently of the `Server` object ([#2422](https://github.com/supercollider/supercollider/pull/2422)).
