@@ -434,7 +434,7 @@ Server {
 				"%: scsynth maxLogins % match with my options.\n"
 				.postf(this, newMaxLogins);
 			};
-			numClients = options.maxLogins = newMaxLogins;
+			options.maxLogins = numClients = newMaxLogins;
 		} {
 			"%: no maxLogins info from scsynth.\n"
 			.postf(this, newMaxLogins);
