@@ -36,24 +36,26 @@ ServerStatusWatcher {
 		this.sendNotifyRequest(flag);
 	}
 
+	// flag true requests notification, false turns it off
 	sendNotifyRequest { |flag = true|
 		var doneOSCFunc, failOSCFunc;
 		var desiredClientID;
 
 		if(serverRunning.not) { ^this };
 
-		// flag true requests notification, false turns it off
-		notified = flag;
-
 		// set up oscfuncs for possible server responses, \done or \failed
-		doneOSCFunc = OSCFunc({|msg|
+		doneOSCFunc = OSCFunc({ |msg|
 			var newClientID = msg[2], newMaxLogins = msg[3];
 			failOSCFunc.free;
 
-			if(flag) {
+			if (newClientID.isNil) {
+				// notify off got done response:
+				notified = false;
+			} {
+				// notify on:
 				// on registering scsynth sends back a free clientID and its maxLogins,
 				// which usually adjust the server object's settings:
-				this.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
+				server.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
 			};
 
 		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
@@ -61,7 +63,7 @@ ServerStatusWatcher {
 		failOSCFunc = OSCFunc({|msg|
 
 			doneOSCFunc.free;
-			this.prHandleNotifyFailString(msg[2], msg);
+			server.prHandleNotifyFailString(msg[2], msg);
 
 		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
@@ -73,55 +75,6 @@ ServerStatusWatcher {
 			"Requested notification messages from server '%'\n".postf(server.name)
 		} {
 			"Switched off notification messages from server '%'\n".postf(server.name);
-		};
-	}
-
-	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
-		if (newMaxLogins.notNil) {
-			if (newMaxLogins != server.options.maxLogins) {
-				"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
-				.postf(server, newMaxLogins);
-				server.options.maxLogins = newMaxLogins;
-			} {
-				"%: scsynth maxLogins % match with my options.\n".postf(server, newMaxLogins);
-			};
-		} {
-			"%: no maxLogins info from scsynth.\n".postf(server, newMaxLogins);
-		};
-
-		if (newClientID == server.clientID) {
-			"%: keeping clientID % as confirmed from scsynth.\n"
-			.postf(server, newClientID);
-		} {
-			if (server.userSpecifiedClientID.not) {
-				"%: setting clientID to %, as obtained from scsynth.\n"
-				.postf(server, newClientID);
-			} {
-				("% - userSpecifiedClientID % is not free!\n"
-					" Switching to free clientID obtained from scsynth: %.\n"
-					"If that is problematic, please set clientID by hand before booting.")
-				.format(server, server.clientID, newClientID).warn;
-			};
-		};
-		server.clientID = newClientID;
-	}
-
-	prHandleNotifyFailString {|failString, msg|
-
-		// post info on some known error cases
-		case
-		{ failString.asString.contains("already registered") } {
-			"% - already registered with clientID %.\n".postf(server, msg[3])
-		} { failString.asString.contains("not registered") } {
-			// unregister when already not registered:
-			"% - not registered.\n".postf(server)
-		} { failString.asString.contains("too many users") } {
-			"% - could not register, too many users.\n".postf(server)
-		} {
-			// throw error if unknown failure
-			Error(
-				"Failed to register with server '%' for notifications: %\n"
-				"To recover, please reboot the server.".format(server.name, msg)).throw;
 		};
 	}
 
