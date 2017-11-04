@@ -182,13 +182,22 @@ void HelpBrowser::closeDocument()
 
 void HelpBrowser::gotoHelpFor( const QString & symbol )
 {
-    QString code = QStringLiteral("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
+    QString escaped{symbol};
+    escaped.replace('\"', "\\\"");
+
+    QString code = QStringLiteral("HelpBrowser.openHelpFor(\"%1\")").arg(escaped);
     sendRequest(code);
 }
 
 void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & methodName )
 {
-    QString code = QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
+    QString escapedClass{className};
+    QString escapedMethod{methodName};
+    escapedClass.replace('\"', "\\\"");
+    escapedMethod.replace('\"', "\\\"");
+
+    QString code = QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )")
+        .arg(escapedClass, escapedMethod);
     sendRequest(code);
 }
 
@@ -211,6 +220,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
         }
     }
 
+    urlString.replace("\"", "\\\"");
     sendRequest( QStringLiteral("HelpBrowser.goTo(\"%1\")").arg( urlString ) );
 }
 
