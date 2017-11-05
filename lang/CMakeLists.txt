@@ -320,11 +320,16 @@ endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
+include(../external_libraries/link/AbletonLinkConfig.cmake)
+target_link_libraries(libsclang Ableton::Link)
+
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
 target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
+
+
 
 if(LTO)
   target_compile_definitions(libsclang PUBLIC -flto -flto-report)
