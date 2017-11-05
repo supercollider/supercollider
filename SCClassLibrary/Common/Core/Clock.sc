@@ -352,6 +352,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		_TempoClock_SetTempoAtTime
 		^this.primitiveFailed
 	}
+
 	// meter should only be changed in the TempoClock's thread.
 	setMeterAtBeat { arg newBeatsPerBar, beats;
 		// bar must be integer valued when meter changes or confusion results later.
