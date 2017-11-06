@@ -19,7 +19,7 @@ Volume {
 			this.sendSynthDef
 		};
 
-		ServerBoot.add(initFunc)
+		ServerBoot.add(initFunc, server)
 	}
 
 	sendSynthDef {
