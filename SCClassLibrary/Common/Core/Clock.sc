@@ -329,6 +329,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
+	//Ableton Link
+	link { arg enable = true;
+		enable.if({this.prLinkEnable}, {this.prLinkDisable});
+	}
+
 	// PRIVATE
 	prStart { arg tempo, beats, seconds;
 		_TempoClock_New
@@ -350,6 +355,16 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		_TempoClock_SetTempoAtTime
 		^this.primitiveFailed
 	}
+
+	prLinkEnable {
+		_TempoClock_LinkEnable
+		^this.primitiveFailed
+	}
+	prLinkDisable {
+		_TempoClock_LinkDisable
+		^this.primitiveFailed
+	}
+
 	// meter should only be changed in the TempoClock's thread.
 	setMeterAtBeat { arg newBeatsPerBar, beats;
 		// bar must be integer valued when meter changes or confusion results later.

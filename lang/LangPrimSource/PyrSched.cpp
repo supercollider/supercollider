@@ -53,6 +53,8 @@
 #include <boost/sync/semaphore.hpp>
 #include <boost/sync/support/std_chrono.hpp>
 
+#include <ableton/Link.hpp>
+
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
 void runAwakeMessage(VMGlobals *g);
@@ -675,7 +677,7 @@ class TempoClock
 public:
 	TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 				double inTempo, double inBaseBeats, double inBaseSeconds);
-	~TempoClock() {}
+	~TempoClock() { if(mLink) delete mLink;}
 	void StopReq();
 	void Stop();
 	void StopAndDelete()
@@ -701,6 +703,8 @@ public:
 		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
 	void Dump();
 
+    void LinkEnable(bool enable);
+
 //protected:
 	VMGlobals* g;
 	PyrObject* mTempoClockObj;
@@ -715,6 +719,8 @@ public:
 	SC_Thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
+
+    ableton::Link *mLink;
 
 	static TempoClock *sAll;
 
@@ -740,7 +746,8 @@ void TempoClock_stopAll(void)
 TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 							double inTempo, double inBaseBeats, double inBaseSeconds)
 	: g(inVMGlobals), mTempoClockObj(inTempoClockObj), mTempo(inTempo), mBeatDur(1./inTempo),
-	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll)
+	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll),
+    mLink(nullptr)
 {
 	if (sAll) sAll->mPrev = this;
 	sAll = this;
@@ -971,6 +978,18 @@ void TempoClock::Dump()
 	post("mBaseSeconds %g\n", mBaseSeconds);
 	post("mBaseBeats %g\n", mBaseBeats);
 }
+
+
+void TempoClock::LinkEnable(bool enable)
+{
+    if(!enable && mLink) {
+        delete mLink;
+    } else if(enable && mLink == nullptr) {
+        mLink = new ableton::Link(mTempo*60);
+        mLink->enable(true);
+    }
+}
+
 
 int prTempoClock_New(struct VMGlobals *g, int numArgsPushed);
 int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
@@ -1327,6 +1346,29 @@ int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prTempoClock_LinkEnable(struct VMGlobals *g, int numArgsPushed);
+int prTempoClock_LinkEnable(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a = g->sp;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+
+    clock->LinkEnable(true);
+
+    return errNone;
+}
+
+int prTempoClock_LinkDisable(struct VMGlobals *g, int numArgsPushed);
+int prTempoClock_LinkDisable(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a = g->sp;
+	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+
+    clock->LinkEnable(false);
+
+    return errNone;
+}
+
+
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1409,6 +1451,9 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);
 	definePrimitive(base, index++, "_TempoClock_BeatsToSecs", prTempoClock_BeatsToSecs, 2, 0);
 	definePrimitive(base, index++, "_TempoClock_SecsToBeats", prTempoClock_SecsToBeats, 2, 0);
+
+	definePrimitive(base, index++, "_TempoClock_LinkEnable", prTempoClock_LinkEnable, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_LinkDisable", prTempoClock_LinkDisable, 1, 0);
 
 	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
 	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);
