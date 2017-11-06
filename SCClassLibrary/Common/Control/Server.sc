@@ -379,7 +379,7 @@ Server {
 	initTree {
 		this.sendDefaultGroups;
 		tree.value(this);
-		ServerTree.run(this);
+		Routine { ServerTree.run(this) }.play(AppClock);
 	}
 
 	/* id allocators */
