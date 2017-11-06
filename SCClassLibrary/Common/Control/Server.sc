@@ -384,7 +384,7 @@ Server {
 
 	/* id allocators */
 
-	clientIDLocked { ^this.serverRunning and: { this.notified } }
+	isFullyBooted { ^this.serverRunning and: { this.notified } }
 
 	// clientID can be set while server is off,
 	// and is called from prHandleClientLoginInfoFromServer once after booting,
@@ -392,8 +392,8 @@ Server {
 	clientID_ { |val|
 		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
 
-		if (this.clientIDLocked) {
-			"%: setting clientID is locked while server is running."
+		if (this.isFullyBooted) {
+			"%: setting clientID is locked after server is fully booted."
 			.postf(thisMethod);
 			^this
 		};
@@ -722,7 +722,7 @@ Server {
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
-		if(this.serverRunning.not) { this.boot(onFailure: true) };
+		if(this.isFullyBooted.not) { this.boot(onFailure: true) };
 		this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
