@@ -1459,6 +1459,20 @@ int prTempoClock_LinkDisable(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int prTempoClock_NumPeers(struct VMGlobals *g, int numArgsPushed);
+int prTempoClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a = g->sp;
+    TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+
+    if(clock->mLink)
+        SetInt(a, clock->mLink->numPeers());
+    else
+        SetNil(a);
+
+    return errNone;
+}
+
 
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
@@ -1545,6 +1559,7 @@ void initSchedPrimitives()
 
 	definePrimitive(base, index++, "_TempoClock_LinkEnable", prTempoClock_LinkEnable, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_LinkDisable", prTempoClock_LinkDisable, 1, 0);
+	definePrimitive(base, index++, "_TempoClock_NumPeers", prTempoClock_NumPeers, 1, 0);
 
 	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
 	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);
