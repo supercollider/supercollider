@@ -707,14 +707,7 @@ public:
 	double ElapsedBeats();
 	void Clear();
 	//void Flush();
-	double GetTempo() const {
-        if(!mLink)
-            return mTempo;
-        else{
-            auto timeline = mLink->captureAppTimeline();
-            return timeline.tempo()/60;
-        }
-    }
+	double GetTempo() const { return mTempo;}
 	double GetBeatDur() const { return mBeatDur; }
 	double BeatsToSecs(double beats) const{ 
         if(!mLink)
@@ -848,50 +841,52 @@ void TempoClock::Stop()
 
 void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds, double beatsPerBar)
 {
-	mBaseSeconds = inSeconds;
-	mBaseBeats = inBeats;
-	mTempo = inTempo;
-	mBeatDur = 1. / mTempo;
-
-    if(mLink){
+    if(!mLink){
+        mBaseSeconds = inSeconds;
+        mBaseBeats = inBeats;
+    } else {
         auto timeline = mLink->captureAppTimeline();
         auto linkTime = hrToLinkTime(inSeconds);
         timeline.setTempo(inTempo*60, linkTime);
         timeline.requestBeatAtTime(inBeats,linkTime, beatsPerBar);
         mLink->commitAppTimeline(timeline);
     }
+
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
 	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
 {
-	mBaseSeconds = BeatsToSecs(inBeats);
-	mBaseBeats = inBeats;
-	mTempo = inTempo;
-	mBeatDur = 1. / mTempo;
-
-    if(mLink) {
+    if(!mLink) {
+        mBaseSeconds = BeatsToSecs(inBeats);
+        mBaseBeats = inBeats;
+    } else {
         auto timeline = mLink->captureAppTimeline();
-        timeline.setTempo(inTempo*60, hrToLinkTime(mBaseSeconds));
+        auto time = timeline.timeAtBeat(inBeats,4);
+        timeline.setTempo(inTempo*60, time);
         mLink->commitAppTimeline(timeline);
     }
 
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
 	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
 {
-    mBaseBeats = SecsToBeats(inSeconds);
-    mBaseSeconds = inSeconds;
-    mTempo = inTempo;
-    mBeatDur = 1. / mTempo;
-
-    if(mLink) {
+    if(!mLink) {
+        mBaseBeats = SecsToBeats(inSeconds);
+        mBaseSeconds = inSeconds;
+    } else {
         auto timeline = mLink->captureAppTimeline();
         timeline.setTempo(inTempo*60, hrToLinkTime(inSeconds));
         mLink->commitAppTimeline(timeline);
     }
 
+    mTempo = inTempo;
+    mBeatDur = 1. / mTempo;
 	mCondition.notify_one();
 }
 
@@ -1046,8 +1041,6 @@ void TempoClock::LinkEnable(double seconds, double beatsPerBar)
             double secs = elapsedTime();
             double tempo = bpm/60;
 
-            mBaseBeats = SecsToBeats(secs);
-            mBaseSeconds = secs;
             mTempo = tempo;
             mBeatDur = 1. / mTempo;
             mCondition.notify_one();
@@ -1063,8 +1056,14 @@ void TempoClock::LinkEnable(double seconds, double beatsPerBar)
 
 void TempoClock::LinkDisable(){
     if(mLink){
+        auto timeline = mLink->captureAppTimeline();
+        double tempo = timeline.tempo()/60;
+        double secs = elapsedTime();
+        double beat = timeline.beatAtTime(hrToLinkTime(secs),4);
         delete mLink;
         mLink = nullptr;
+
+        SetAll(tempo,beat,secs,4);
     }
 }
 
