@@ -334,6 +334,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		enable.if({this.prLinkEnable}, {this.prLinkDisable});
 	}
 
+	numPeers {
+		_TempoClock_NumPeers
+		^this.primitiveFailed
+	}
+
 	// PRIVATE
 	prStart { arg tempo, beats, seconds;
 		_TempoClock_New
