@@ -703,7 +703,7 @@ public:
 	void Add(double inBeats, PyrSlot* inTask);
 	void SetTempoAtBeat(double inTempo, double inBeats);
 	void SetTempoAtTime(double inTempo, double inSeconds);
-	void SetAll(double inTempo, double inBeats, double inSeconds);
+	void SetAll(double inTempo, double inBeats, double inSeconds, double beatsPerBar);
 	double ElapsedBeats();
 	void Clear();
 	//void Flush();
@@ -846,12 +846,20 @@ void TempoClock::Stop()
 	//printf("<-TempoClock::Stop\n");
 }
 
-void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds)
+void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds, double beatsPerBar)
 {
 	mBaseSeconds = inSeconds;
 	mBaseBeats = inBeats;
 	mTempo = inTempo;
 	mBeatDur = 1. / mTempo;
+
+    if(mLink){
+        auto timeline = mLink->captureAppTimeline();
+        auto linkTime = hrToLinkTime(inSeconds);
+        timeline.setTempo(inTempo*60, linkTime);
+        timeline.requestBeatAtTime(inBeats,linkTime, beatsPerBar);
+        mLink->commitAppTimeline(timeline);
+    }
 	mCondition.notify_one();
 }
 
@@ -1208,7 +1216,7 @@ int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	double beats, seconds;
+	double beats, seconds, beatsPerBar;
 	int err;
 
 	err = slotDoubleVal(b, &beats);
@@ -1217,7 +1225,10 @@ int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errWrongType;
 
-	clock->SetAll(clock->mTempo, beats, seconds);
+    err = slotDoubleVal(&slotRawObject(a)->slots[2], &beatsPerBar);
+    if(err) return errFailed;
+
+	clock->SetAll(clock->mTempo, beats, seconds, beatsPerBar);
 
 	return errNone;
 }
@@ -1330,7 +1341,7 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	double tempo, beat, secs;
+	double tempo, beat, secs, beatsPerBar;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
 
@@ -1340,7 +1351,10 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(d, &secs);
 	if (err) return errFailed;
 
-	clock->SetAll(tempo, beat, secs);
+    err = slotDoubleVal(&slotRawObject(a)->slots[2], &beatsPerBar);
+    if(err) return errFailed;
+
+	clock->SetAll(tempo, beat, secs, beatsPerBar);
 
 	return errNone;
 }
