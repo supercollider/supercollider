@@ -1057,6 +1057,7 @@ void TempoClock::LinkEnable(double seconds, double beatsPerBar)
         auto timeline = mLink->captureAppTimeline();
         timeline.requestBeatAtTime(beat, hrToLinkTime(seconds), beatsPerBar);
         mLink->commitAppTimeline(timeline);
+        mCondition.notify_one();
     }
 }
 
