@@ -252,10 +252,22 @@ inline double DurToFloat(DurationType dur)
 	return secs.count() + 1.0e-9 * nanosecs.count();
 }
 
+
+std::chrono::microseconds linkTimeOfInitialization;
+inline std::chrono::microseconds hrToLinkTime(double secs){
+    auto time = std::chrono::duration<double>(secs);
+    return std::chrono::duration_cast<std::chrono::microseconds>(time) + linkTimeOfInitialization;
+}
+inline double linkToHrTime(std::chrono::microseconds micros){
+    return DurToFloat(micros - linkTimeOfInitialization);
+}
+
+
 SCLANG_DLLEXPORT_C void schedInit()
 {
 	using namespace std::chrono;
 	hrTimeOfInitialization     = high_resolution_clock::now();
+    linkTimeOfInitialization   = ableton::link::platform::Clock().micros();
 
 	syncOSCOffsetWithTimeOfDay();
 	gResyncThread = std::thread(resyncThread);
@@ -695,15 +707,36 @@ public:
 	double ElapsedBeats();
 	void Clear();
 	//void Flush();
-	double GetTempo() const { return mTempo; }
+	double GetTempo() const {
+        if(!mLink)
+            return mTempo;
+        else{
+            auto timeline = mLink->captureAppTimeline();
+            return timeline.tempo()/60;
+        }
+    }
 	double GetBeatDur() const { return mBeatDur; }
-	double BeatsToSecs(double beats) const
-		{ return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
-	double SecsToBeats(double secs) const
-		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
+	double BeatsToSecs(double beats) const{ 
+        if(!mLink)
+            return (beats - mBaseBeats) * mBeatDur + mBaseSeconds;
+        else{
+            auto timeline = mLink->captureAppTimeline();
+            return linkToHrTime(timeline.timeAtBeat(beats, 4));
+        }
+    }
+	double SecsToBeats(double secs) const{ 
+        if(!mLink)
+            return (secs - mBaseSeconds) * mTempo + mBaseBeats;
+        else{
+            auto timeline = mLink->captureAppTimeline();
+            double beats = timeline.beatAtTime(hrToLinkTime(secs), 4);
+            return beats;
+        }
+    }
 	void Dump();
 
-    void LinkEnable(bool enable);
+    void LinkEnable(double seconds, double beatsPerBar);
+    void LinkDisable();
 
 //protected:
 	VMGlobals* g;
@@ -828,15 +861,29 @@ void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
 	mBaseBeats = inBeats;
 	mTempo = inTempo;
 	mBeatDur = 1. / mTempo;
+
+    if(mLink) {
+        auto timeline = mLink->captureAppTimeline();
+        timeline.setTempo(inTempo*60, hrToLinkTime(mBaseSeconds));
+        mLink->commitAppTimeline(timeline);
+    }
+
 	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
 {
-	mBaseBeats = SecsToBeats(inSeconds);
-	mBaseSeconds = inSeconds;
-	mTempo = inTempo;
-	mBeatDur = 1. / mTempo;
+    mBaseBeats = SecsToBeats(inSeconds);
+    mBaseSeconds = inSeconds;
+    mTempo = inTempo;
+    mBeatDur = 1. / mTempo;
+
+    if(mLink) {
+        auto timeline = mLink->captureAppTimeline();
+        timeline.setTempo(inTempo*60, hrToLinkTime(inSeconds));
+        mLink->commitAppTimeline(timeline);
+    }
+
 	mCondition.notify_one();
 }
 
@@ -979,14 +1026,36 @@ void TempoClock::Dump()
 	post("mBaseBeats %g\n", mBaseBeats);
 }
 
-
-void TempoClock::LinkEnable(bool enable)
+void TempoClock::LinkEnable(double seconds, double beatsPerBar)
 {
-    if(!enable && mLink) {
-        delete mLink;
-    } else if(enable && mLink == nullptr) {
+    if(mLink == nullptr) {
+        //save clock beat
+        double beat = SecsToBeats(seconds);
+
         mLink = new ableton::Link(mTempo*60);
         mLink->enable(true);
+        mLink->setTempoCallback([this](double bpm){
+            double secs = elapsedTime();
+            double tempo = bpm/60;
+
+            mBaseBeats = SecsToBeats(secs);
+            mBaseSeconds = secs;
+            mTempo = tempo;
+            mBeatDur = 1. / mTempo;
+            mCondition.notify_one();
+        });
+
+
+        auto timeline = mLink->captureAppTimeline();
+        timeline.requestBeatAtTime(beat, hrToLinkTime(seconds), beatsPerBar);
+        mLink->commitAppTimeline(timeline);
+    }
+}
+
+void TempoClock::LinkDisable(){
+    if(mLink){
+        delete mLink;
+        mLink = nullptr;
     }
 }
 
@@ -1352,7 +1421,15 @@ int prTempoClock_LinkEnable(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 
-    clock->LinkEnable(true);
+    double seconds;
+	int err = slotDoubleVal(&g->thread->seconds, &seconds);
+    if(err) return errFailed;
+
+    double beatsPerBar;
+    err = slotDoubleVal(&slotRawObject(a)->slots[2], &beatsPerBar);
+    if(err) return errFailed;
+
+    clock->LinkEnable(seconds, beatsPerBar);
 
     return errNone;
 }
@@ -1363,7 +1440,7 @@ int prTempoClock_LinkDisable(struct VMGlobals *g, int numArgsPushed)
     PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 
-    clock->LinkEnable(false);
+    clock->LinkDisable();
 
     return errNone;
 }
