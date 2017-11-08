@@ -5,6 +5,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	classvar <>saveFolder = "~/Desktop/", <logFolder, <logFile, <logPath, <>keepsLog = true;
 	classvar <>current, <>maxShortLength=65;
+	classvar <>ignoreErrors = true;
 
 	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
 
@@ -143,8 +144,8 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 					lastTimePlayed = time;
 					waittime.wait;
 					if (e.verbose) { code.postln };
-					// keep playing even when errors occur:
-					History.eval(code, false);
+					// use global ignoreErrors flag to set mode here:
+					History.eval(code);
 				};
 			};
 			0.5.wait;
@@ -347,7 +348,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^this.eval(codeString);
 	}
 
-	*eval { |codeString, ignoreError = true|
+	*eval { |codeString, ignoreError=(ignoreErrors)|
 		if (ignoreError.not) {
 			^codeString.compile.value
 		};

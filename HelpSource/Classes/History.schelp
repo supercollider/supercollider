@@ -164,16 +164,23 @@ method::removeLast
 remove last line from history
 
 subsection:: Repeating history
+Repeating history can have different uses:
+A. Reconstruction, e.g. redoing a history of coding steps as closely as possible,
+or replaying a full performance as closely as possible; here, all errors are important and should be handled individually.
+B. Experimental live performance, e.g. replaying snippets from a recorded networked live-coding show in nonlinear orders; here, errors will occur more often because the current state will not always fit with what a particular line would require. Thus, one will likely prefer the robustness to just keep going.
+
+method:: ignoreErrors
+global flag whether evaluating code lines via History will ignore errors or stop and throw them.
 
 method::eval
-evaluate codeString, and ignore errors by default.
-This is because when repeating lines from history in a performance, the current state may not be exactly what the code to be evaluated expects. In that case, keep going and hope that the next lines will work again.
+evaluate codeString, and optionally, use ignoreError to override global ignoreErrors flag.
 
 code::
-History.eval("2 + 1").postln; 123; // eval is correct
-History.eval("2 + qwe"); 123 // compile error, but keeps going -> posts 123
+History.ignoreErrors = true;
+History.eval("2 + 1").postln; // correct code, so is just evaluated
+History.eval("2 + qwe"); 123; // compile error, but keeps going and posts 123
 History.eval("1.blonk"); 123; // runtime error, keeps going -> posts 123
-History.eval("1.blonk", false); 123; // throws error and stops
+History.eval("1.blonk", false); 123; // throws error and stops, code after it never happens.
 ::
 
 method::evaluateLineAt
