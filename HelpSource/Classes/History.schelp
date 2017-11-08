@@ -53,7 +53,7 @@ CmdPeriod.run; // or hit the Stop key command, Cmd-., or ctrl-.
 4 + 5;
 History.end;
 
-// play it back and see how
+// Replays history, including a CmdPeriod, and keeps replaying history.
 History.play;
 
 
@@ -164,6 +164,18 @@ method::removeLast
 remove last line from history
 
 subsection:: Repeating history
+
+method::eval
+evaluate codeString, and ignore errors by default.
+This is because when repeating lines from history in a performance, the current state may not be exactly what the code to be evaluated expects. In that case, keep going and hope that the next lines will work again.
+
+code::
+History.eval("2 + 1").postln; 123; // eval is correct
+History.eval("2 + qwe"); 123 // compile error, but keeps going -> posts 123
+History.eval("1.blonk"); 123; // runtime error, keeps going -> posts 123
+History.eval("1.blonk", false); 123; // throws error and stops
+::
+
 method::evaluateLineAt
 evaluate the line at index in History.current.lines
 

@@ -143,7 +143,8 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 					lastTimePlayed = time;
 					waittime.wait;
 					if (e.verbose) { code.postln };
-					code.compile.value;	// so it does not change cmdLine.
+					// keep playing even when errors occur:
+					History.eval(code, false);
 				};
 			};
 			0.5.wait;
@@ -343,15 +344,20 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		codeString = line[2];
 		if (codeString.isNil) { ^this };
 
-		try {
-			result = codeString.interpret;
-			"// History code evaluated line: ".postln;
-			codeString.postcs;
-			"// result: ".postln;
-			result.postln;
+		^this.eval(codeString);
+	}
+
+	*eval { |codeString, ignoreError = true|
+		if (ignoreError.not) {
+			^codeString.compile.value
+		};
+
+		^try {
+			codeString.compile.value;
 		} {
-			"// History code evaluation FAILED for line: ".postln;
+			"History.eval failed for line: ".postln;
 			codeString.postcs;
+			nil
 		}
 	}
 
