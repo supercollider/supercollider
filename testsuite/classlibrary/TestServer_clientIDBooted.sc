@@ -39,14 +39,28 @@ TestServer_clientID_booted : UnitTest {
 		ServerTree.add( func, s );
 		this.bootServer(s);
 
-		1.wait;
-
 		synth2 = Synth("default", [\freq, 330]);
 		this.assert(synth1.nodeID != synth2.nodeID,
 			"first nodeID after booting should not repeat nodeID created in ServerTree.");
 
 		0.5.wait;
 		ServerTree.remove( func, s );
+		s.quit;
+		s.remove;
+	}
+
+	test_clientIDLockedWhileRunning {
+		var options = ServerOptions.new.maxLogins_(4);
+		var s = Server(\testserv4, NetAddr("localhost", 57111), options, clientID: 1);
+		var lockedID;
+
+		this.bootServer(s);
+		lockedID = s.clientID;
+
+		s.clientID = 3;
+		this.assert(s.clientID == lockedID,
+			"clientID should be locked while server is running.");
+
 		s.quit;
 		s.remove;
 	}
