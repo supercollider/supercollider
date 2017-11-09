@@ -526,18 +526,21 @@ Server {
 		// turn notified off to allow setting clientID
 		statusWatcher.notified = false;
 
-		if (newMaxLogins.notNil) {
-			if (newMaxLogins != options.maxLogins) {
-				"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
-				.postf(this, newMaxLogins);
+		// only set maxLogins if not internal server
+		if (inProcess.not) {
+			if (newMaxLogins.notNil) {
+				if (newMaxLogins != options.maxLogins) {
+					"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+					.postf(this, newMaxLogins);
+				} {
+					"%: scsynth maxLogins % match with my options.\n"
+					.postf(this, newMaxLogins);
+				};
+				options.maxLogins = numClients = newMaxLogins;
 			} {
-				"%: scsynth maxLogins % match with my options.\n"
+				"%: no maxLogins info from scsynth.\n"
 				.postf(this, newMaxLogins);
 			};
-			options.maxLogins = numClients = newMaxLogins;
-		} {
-			"%: no maxLogins info from scsynth.\n"
-			.postf(this, newMaxLogins);
 		};
 
 		if (newClientID == clientID) {
@@ -925,6 +928,7 @@ Server {
 			"booting internal".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
+			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
