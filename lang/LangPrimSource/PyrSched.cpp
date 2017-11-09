@@ -714,7 +714,7 @@ public:
             return (beats - mBaseBeats) * mBeatDur + mBaseSeconds;
         else{
             auto timeline = mLink->captureAppTimeline();
-            return linkToHrTime(timeline.timeAtBeat(beats, 4));
+            return linkToHrTime(timeline.timeAtBeat(beats, mQuantum));
         }
     }
 	double SecsToBeats(double secs) const{ 
@@ -722,7 +722,7 @@ public:
             return (secs - mBaseSeconds) * mTempo + mBaseBeats;
         else{
             auto timeline = mLink->captureAppTimeline();
-            double beats = timeline.beatAtTime(hrToLinkTime(secs), 4);
+            double beats = timeline.beatAtTime(hrToLinkTime(secs), mQuantum);
             return beats;
         }
     }
@@ -747,6 +747,7 @@ public:
 	TempoClock *mPrev, *mNext;
 
     ableton::Link *mLink;
+    double mQuantum;
 
 	static TempoClock *sAll;
 
@@ -850,6 +851,7 @@ void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds, double
         timeline.setTempo(inTempo*60, linkTime);
         timeline.requestBeatAtTime(inBeats,linkTime, beatsPerBar);
         mLink->commitAppTimeline(timeline);
+        mQuantum=beatsPerBar;
     }
 
 	mTempo = inTempo;
@@ -864,7 +866,7 @@ void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
         mBaseBeats = inBeats;
     } else {
         auto timeline = mLink->captureAppTimeline();
-        auto time = timeline.timeAtBeat(inBeats,4);
+        auto time = timeline.timeAtBeat(inBeats,mQuantum);
         timeline.setTempo(inTempo*60, time);
         mLink->commitAppTimeline(timeline);
     }
@@ -1050,6 +1052,7 @@ void TempoClock::LinkEnable(double seconds, double beatsPerBar)
         auto timeline = mLink->captureAppTimeline();
         timeline.requestBeatAtTime(beat, hrToLinkTime(seconds), beatsPerBar);
         mLink->commitAppTimeline(timeline);
+        mQuantum = beatsPerBar;
         mCondition.notify_one();
     }
 }
@@ -1059,11 +1062,11 @@ void TempoClock::LinkDisable(){
         auto timeline = mLink->captureAppTimeline();
         double tempo = timeline.tempo()/60;
         double secs = elapsedTime();
-        double beat = timeline.beatAtTime(hrToLinkTime(secs),4);
+        double beat = timeline.beatAtTime(hrToLinkTime(secs),mQuantum);
         delete mLink;
         mLink = nullptr;
 
-        SetAll(tempo,beat,secs,4);
+        SetAll(tempo,beat,secs,mQuantum);
     }
 }
 
