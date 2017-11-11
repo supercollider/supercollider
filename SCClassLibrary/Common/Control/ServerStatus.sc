@@ -67,9 +67,7 @@ ServerStatusWatcher {
 
 		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
-		// send the notify request - on or off, userSpecifiedClientID or not
-		desiredClientID = if(server.userSpecifiedClientID, { server.clientID }, {-1});
-		server.sendMsg("/notify", flag.binaryValue, desiredClientID);
+		server.sendMsg("/notify", flag.binaryValue, server.clientID);
 
 		if(flag){
 			"Requested notification messages from server '%'\n".postf(server.name)

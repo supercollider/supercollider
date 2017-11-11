@@ -265,7 +265,7 @@ Server {
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
-	var <name, <addr, <clientID, <userSpecifiedClientID = false;
+	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 	var maxNumClients; // maxLogins as sent from booted scsynth
 
@@ -328,16 +328,6 @@ Server {
 
 		// make statusWatcher before clientID, so .serverRunning works
 		statusWatcher = ServerStatusWatcher(server: this);
-
-		if(argClientID.notNil) {
-			userSpecifiedClientID = true;
-			if (argClientID >= this.maxNumClients) {
-				warn("% : user-specified clientID % is greater than maxLogins!"
-					"\nPlease adjust clientID or options.maxLogins."
-					.format(name, argClientID));
-				^nil
-			};
-		};
 
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
@@ -547,15 +537,8 @@ Server {
 			"%: keeping clientID % as confirmed from scsynth.\n"
 			.postf(this, newClientID);
 		} {
-			if (userSpecifiedClientID.not) {
-				"%: setting clientID to %, as obtained from scsynth.\n"
-				.postf(this, newClientID);
-			} {
-				("% - userSpecifiedClientID % is not free!\n"
-					" Switching to free clientID obtained from scsynth: %.\n"
-					"If that is problematic, please set clientID by hand before booting.")
-				.format(this, clientID, newClientID).warn;
-			};
+			"%: setting clientID to %, as obtained from scsynth.\n"
+			.postf(this, newClientID);
 		};
 		this.clientID = newClientID;
 		statusWatcher.notified = true; // and lock again

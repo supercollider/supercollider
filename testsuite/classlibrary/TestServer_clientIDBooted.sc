@@ -15,7 +15,7 @@ TestServer_clientID_booted : UnitTest {
 		this.bootServer(s);
 		s.sync;
 		1.wait;
-		this.assert(s.clientID == 0, "Non-user-defined clientID should be reset by the server.");
+		this.assert(s.clientID == 3, "clientID should be settable before booting.");
 		s.quit;
 		s.remove;
 
@@ -26,7 +26,7 @@ TestServer_clientID_booted : UnitTest {
 		this.bootServer(s);
 		s.sync;
 		1.wait;
-		this.assert(s.clientID == 3, "User-defined clientID should be left as is by the server.");
+		this.assert(s.clientID == 3, "clientID should remain as is when booting a server.");
 		s.quit;
 		s.remove;
 	}
