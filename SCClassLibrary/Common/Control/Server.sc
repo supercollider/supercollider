@@ -267,7 +267,7 @@ Server {
 
 	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
-	var numClients; // maxLogins as sent from booted scsynth
+	var maxNumClients; // maxLogins as sent from booted scsynth
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
 
@@ -331,7 +331,7 @@ Server {
 
 		if(argClientID.notNil) {
 			userSpecifiedClientID = true;
-			if (argClientID >= this.numClients) {
+			if (argClientID >= this.maxNumClients) {
 				warn("% : user-specified clientID % is greater than maxLogins!"
 					"\nPlease adjust clientID or options.maxLogins."
 					.format(name, argClientID));
@@ -353,7 +353,7 @@ Server {
 
 	}
 
-	numClients { ^numClients ?? { options.maxLogins } }
+	maxNumClients { ^maxNumClients ?? { options.maxLogins } }
 
 	remove {
 		all.remove(this);
@@ -402,10 +402,10 @@ Server {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
 		};
-		if (val < 0 or: { val >= this.numClients }) {
+		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.numClients range of 0 - %".format(this.numClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients),
 				clientID
 			).warn;
 			^this
@@ -433,7 +433,7 @@ Server {
 		nodeAllocator = nodeAllocClass.new(
 			clientID,
 			options.initialNodeID,
-			this.numClients
+			this.maxNumClients
 		);
 		// defaultGroup and defaultGroups depend on allocator,
 		// so always make them here:
@@ -447,8 +447,8 @@ Server {
 
 		var audioBusIOOffset = options.firstPrivateBus;
 
-		numControlPerClient = options.numControlBusChannels div: this.numClients;
-		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.numClients;
+		numControlPerClient = options.numControlBusChannels div: this.maxNumClients;
+		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.maxNumClients;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
 		controlBusClientOffset = numControlPerClient * clientID;
@@ -469,7 +469,7 @@ Server {
 	}
 
 	newBufferAllocators {
-		var numBuffersPerClient = options.numBuffers div: this.numClients;
+		var numBuffersPerClient = options.numBuffers div: this.maxNumClients;
 		var numReservedBuffers = options.reservedNumBuffers;
 		var bufferClientOffset = numBuffersPerClient * clientID;
 
@@ -536,7 +536,7 @@ Server {
 					"%: scsynth maxLogins % match with my options.\n"
 					.postf(this, newMaxLogins);
 				};
-				options.maxLogins = numClients = newMaxLogins;
+				options.maxLogins = maxNumClients = newMaxLogins;
 			} {
 				"%: no maxLogins info from scsynth.\n"
 				.postf(this, newMaxLogins);
@@ -798,7 +798,7 @@ Server {
 
 	// defaultGroups for all clients on this server:
 
-	allClientIDs { ^(0..this.numClients-1) }
+	allClientIDs { ^(0..this.maxNumClients-1) }
 
 	// keep defaultGroups for all clients on this server:
 	makeDefaultGroups {
@@ -1011,7 +1011,7 @@ Server {
 
 		pid = nil;
 		sendQuit = nil;
-		numClients = nil;
+		maxNumClients = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
