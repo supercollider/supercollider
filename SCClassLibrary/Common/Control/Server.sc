@@ -321,7 +321,7 @@ Server {
 
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
-		options = argOptions ? ServerOptions.new;
+		options = argOptions ?? { ServerOptions.new };
 
 		// set name to get readable posts from clientID set
 		name = argName.asSymbol;
@@ -353,7 +353,7 @@ Server {
 
 	}
 
-	numClients { ^numClients ? options.maxLogins }
+	numClients { ^numClients ?? { options.maxLogins } }
 
 	remove {
 		all.remove(this);
