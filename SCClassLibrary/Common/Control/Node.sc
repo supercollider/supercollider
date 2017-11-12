@@ -23,7 +23,9 @@ Node {
 		^super.newCopyArgs(nodeID ?? { server.nextNodeID }, server)
 	}
 
-	*actionNumberFor { |addAction = (\addToHead)| ^addActions[addAction] }
+	*actionNumberFor { arg addAction = (\addToHead);
+		^addActions[addAction]
+	}
 
 	free { arg sendFlag = true;
 		if(sendFlag, {
