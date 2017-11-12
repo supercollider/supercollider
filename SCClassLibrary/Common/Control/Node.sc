@@ -153,8 +153,8 @@ Node {
 				<< "next:\t" << next << Char.nl;
 			if(isGroup == 1) {
 				Post
-				<< "head:\t" << head << Char.nl
-				<< "tail:\t" << tail << Char.nl << Char.nl;
+					<< "head:\t" << head << Char.nl
+					<< "tail:\t" << tail << Char.nl << Char.nl;
 			};
 		}, '/n_info', server.addr).oneShot;
 		server.sendMsg(46, nodeID) //"/n_query"
