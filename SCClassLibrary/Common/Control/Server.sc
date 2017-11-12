@@ -740,14 +740,14 @@ Server {
 	defaultGroupID { ^defaultGroup.nodeID }
 
 	sendDefaultGroups {
-		defaultGroups.do { |defGrp|
-			this.sendMsg("/g_new", defGrp.nodeID, 0, 0);
+		defaultGroups.do { |group|
+			this.sendMsg("/g_new", group.nodeID, 0, 0);
 		};
 	}
 
 	sendDefaultGroupsForClientIDs { |clientIDs|
-		defaultGroups[clientIDs].do { |defGrp|
-			this.sendMsg("/g_new", defGrp.nodeID, 0, 0);
+		defaultGroups[clientIDs].do { |group|
+			this.sendMsg("/g_new", group.nodeID, 0, 0);
 		}
 	}
 
