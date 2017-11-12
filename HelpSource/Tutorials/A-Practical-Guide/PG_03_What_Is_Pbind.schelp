@@ -226,7 +226,7 @@ note::
 In 3.9, it is no longer supported to use the Rest class in patterns. All rests need to have a value, e.g. code::Rest(0)::. Rest objects now support math operators. That is, you can now write code::Pseq([1, 2, Rest(0)], inf) * 2:: emphasis::and:: code::[1, 2, Rest(0)] * 2::. (Prior to 3.9, the former usage was supported, but only in Pbind, and the latter usage was not supported at all.)
 ::
 
-The older convention for rests is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported in 3.5, but not recommended.)
+The older convention for rests is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported, but not recommended because it is limited to pitch-related keys only.)
 
 If it's the code::\freq:: key that determines whether the event as a rest or not, why does it work to use it with code::\note::? As noted, keys like code::\degree::, code::\note::, and code::\midinote:: are automatically converted into frequency. The math operations that perform the conversion preserve Symbols intact -- e.g., code::\rest + 1 == \rest:: . So the code::\rest:: value is passed all the way through the chain of conversions so that code::\freq:: in the event ends up receiving code::\rest::.
 
