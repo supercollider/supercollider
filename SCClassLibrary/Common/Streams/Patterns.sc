@@ -451,7 +451,7 @@ Pbrown : Pattern {
 		cur = rrand(loVal, hiVal);
 		if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
 
-		length.value(inval).do {
+		length.asStream.value(inval).do {
 			loVal = loStr.next(inval);
 			hiVal = hiStr.next(inval);
 			stepVal = stepStr.next(inval);
