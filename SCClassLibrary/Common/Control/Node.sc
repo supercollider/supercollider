@@ -261,7 +261,7 @@ AbstractGroup : Node {
 	newMsg { arg target, addAction = \addToHead;
 		var addActionID;
 		// if target is nil set to default group of server specified when basicNew was called
-		target = (target ? server.defaultGroup).asTarget;
+		target = target.asTarget;
 		addActionID = addActions[addAction];
 		group = if(addActionID < 2) { target } { target.group };
 		^[this.class.creationCmd, nodeID, addActionID, target.nodeID]
@@ -436,13 +436,13 @@ Synth : Node {
 	}
 
 	*newPaused { arg defName, args, target, addAction=\addToHead;
-		var synth, server, addActionID, inTarget;
+		var synth, server, addActionID;
 		target = target.asTarget;
-		server = inTarget.server;
+		server = target.server;
 		addActionID = addActions[addAction];
 		synth = this.basicNew(defName, server);
-		synth.group = if(addActionID < 2) { inTarget } { target.group };
-		server.sendBundle(nil, [9, defName, synth.nodeID, addActionID, inTarget.nodeID] ++
+		synth.group = if(addActionID < 2) { target } { target.group };
+		server.sendBundle(nil, [9, defName, synth.nodeID, addActionID, target.nodeID] ++
 			args.asOSCArgArray, [12, synth.nodeID, 0]); // "s_new" + "/n_run"
 		^synth
 	}
@@ -469,12 +469,10 @@ Synth : Node {
 	}
 
 	newMsg { arg target, args, addAction = \addToHead;
-		var addActionID, inTarget;
-		addActionID = addActions[addAction];
-		// if target is nil set to default group of server specified when basicNew was called
+		var addActionID = addActions[addAction];
 		target = target.asTarget;
-		group = if(addActionID < 2) { inTarget } { target.group };
-		^[9, defName, nodeID, addActionID, inTarget.nodeID] ++ args.asOSCArgArray //"/s_new"
+		group = if(addActionID < 2) { target } { target.group };
+		^[9, defName, nodeID, addActionID, target.nodeID] ++ args.asOSCArgArray //"/s_new"
 	}
 
 	*after { arg aNode, defName, args;
