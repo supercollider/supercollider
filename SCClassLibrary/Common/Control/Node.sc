@@ -399,7 +399,9 @@ AbstractGroup : Node {
 		})
 	}
 
-	*creationCmd { ^this.subclassMustImplementThisMethod }
+	*creationCmd {
+		^this.subclassResponsibility(thisMethod)
+	}
 
 }
 
