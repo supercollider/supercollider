@@ -146,14 +146,16 @@ Node {
 			var cmd, argnodeID, parent, prev, next, isGroup, head, tail;
 			# cmd, argnodeID, parent, prev, next, isGroup, head, tail = msg;
 			// assuming its me ... if(nodeID == argnodeID)
-			Post << if(isGroup == 1, "Group:" , "Synth:") << nodeID << Char.nl
-			<< "parent  : " << parent << Char.nl
-			<< "prev : " << prev << Char.nl
-			<< "next :" << next << Char.nl;
-			if(isGroup==1, {
-				Post << "head :" << head << Char.nl
-				<< "tail :" << tail << Char.nl << Char.nl;
-			});
+			Post
+				<< if(isGroup == 1, "Group:\t" , "Synth:\t") << nodeID << Char.nl
+				<< "parent:\t" << parent << Char.nl
+				<< "prev:\t" << prev << Char.nl
+				<< "next:\t" << next << Char.nl;
+			if(isGroup == 1) {
+				Post
+				<< "head:\t" << head << Char.nl
+				<< "tail:\t" << tail << Char.nl << Char.nl;
+			};
 		}, '/n_info', server.addr).oneShot;
 		server.sendMsg(46, nodeID) //"/n_query"
 	}
