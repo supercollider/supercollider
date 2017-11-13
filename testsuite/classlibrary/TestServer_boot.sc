@@ -56,7 +56,7 @@ TestServer_boot : UnitTest {
 		while {
 			done.not and: { failed.not }
 		} {
-			if(s.isFullyBooted) {
+			if(s.serverRunning) {
 				count = count + 1;
 				nodeID = s.nextNodeID;
 				if(nodeID <= prevNodeID) {

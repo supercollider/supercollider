@@ -44,8 +44,10 @@ TestServer_clientID_booted : UnitTest {
 			"first nodeID after booting should not repeat nodeID created in ServerTree.");
 
 		0.5.wait;
-		ServerTree.remove( func, s );
+		synth1.free;
+		synth2.free;
 		s.quit;
+		ServerTree.remove( func, s );
 		s.remove;
 	}
 
