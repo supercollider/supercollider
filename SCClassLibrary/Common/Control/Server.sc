@@ -520,24 +520,24 @@ Server {
 		if (inProcess.not) {
 			if (newMaxLogins.notNil) {
 				if (newMaxLogins != options.maxLogins) {
-					"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+					"%: server process has maxLogins % - adjusting my options accordingly.\n"
 					.postf(this, newMaxLogins);
 				} {
-					"%: scsynth maxLogins % match with my options.\n"
+					"%: server process's maxLogins (%) matches with my options.\n"
 					.postf(this, newMaxLogins);
 				};
 				options.maxLogins = maxNumClients = newMaxLogins;
 			} {
-				"%: no maxLogins info from scsynth.\n"
+				"%: no maxLogins info from server process.\n"
 				.postf(this, newMaxLogins);
 			};
 		};
 
 		if (newClientID == clientID) {
-			"%: keeping clientID % as confirmed from scsynth.\n"
+			"%: keeping clientID (%) as confirmed by server process.\n"
 			.postf(this, newClientID);
 		} {
-			"%: setting clientID to %, as obtained from scsynth.\n"
+			"%: setting clientID to %, as obtained from server process.\n"
 			.postf(this, newClientID);
 		};
 		this.clientID = newClientID;
