@@ -5,7 +5,7 @@ ServerStatusWatcher {
 	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
-	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
+	var <hasBooted = false, <>serverBooting = false, <unresponsive = false;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
@@ -39,9 +39,8 @@ ServerStatusWatcher {
 	// flag true requests notification, false turns it off
 	sendNotifyRequest { |flag = true|
 		var doneOSCFunc, failOSCFunc;
-		var desiredClientID;
 
-		if(serverRunning.not) { ^this };
+		if(hasBooted.not) { ^this };
 
 		// set up oscfuncs for possible server responses, \done or \failed
 		doneOSCFunc = OSCFunc({ |msg|
@@ -82,7 +81,7 @@ ServerStatusWatcher {
 
 		^Routine {
 			while {
-				server.isFullyBooted.not
+				server.serverRunning.not
 				/*
 				// this is not yet implemented.
 				or: { serverBooting and: mBootNotifyFirst.not }
@@ -94,7 +93,7 @@ ServerStatusWatcher {
 				0.2.wait;
 			};
 
-			if(server.isFullyBooted.not, {
+			if(server.serverRunning.not, {
 				if(onFailure.notNil) {
 					postError = (onFailure.value(server) == false);
 				};
@@ -201,14 +200,18 @@ ServerStatusWatcher {
 		}
 	}
 
+	serverRunning { ^hasBooted and: notified }
+
 	serverRunning_ { | running |
 
-		if(running != serverRunning) {
-			serverRunning = running;
+		if(running != server.serverRunning) {
+			hasBooted = running;
 			this.unresponsive = false;
 
-			if (server.serverRunning) {
-				ServerBoot.run(server);
+			if (running) {
+				server.doWhenBooted {
+					ServerBoot.run(server);
+				};
 			} {
 				ServerQuit.run(server);
 
