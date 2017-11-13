@@ -37,7 +37,7 @@ TestServer_clientID : UnitTest {
 	test_userSpecifiedClientID {
 		var options = ServerOptions.new;
 		var s = Server(\testserv, NetAddr("localhost", 57111), options, 1);
-		this.assert(s == nil, "Making a server with invalid clientID should be blocked.");
+		this.assert(s.clientID.isNil, "Making a server with invalid clientID should return a server with clientID nil.");
 		options.maxLogins_(8);
 		s = Server(\testserv, NetAddr("localhost", 57111), options, 7);
 		this.assert(s.clientID == 7, "Making a server with valid nonzero clientID should work.");
