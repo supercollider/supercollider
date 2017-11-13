@@ -406,9 +406,6 @@ Server {
 		};
 		clientID = val;
 		this.newAllocators;
-		if (statusWatcher.notNil and: { this.serverRunning }) {
-			this.initTree;
-		};
 	}
 
 	newAllocators {
@@ -904,7 +901,9 @@ Server {
 	}
 
 	bootInit { | recover = false |
-		if(recover) { this.newNodeAllocators } { this.newAllocators };
+		// if(recover) { this.newNodeAllocators } {
+		// 	"% calls newAllocators\n".postf(thisMethod);
+		// this.newAllocators };
 		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 		if(sendQuit.isNil) {
 			sendQuit = this.inProcess or: { this.isLocal };
