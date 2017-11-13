@@ -103,7 +103,10 @@ ServerStatusWatcher {
 				};
 				serverBooting = false;
 				server.changed(\serverRunning);
-			}, onComplete);
+			}, {
+				server.sync;
+				onComplete.value;
+			});
 
 		}.play(AppClock)
 	}
