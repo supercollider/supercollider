@@ -32,7 +32,7 @@ TestServer_clientID_booted : UnitTest {
 	}
 
 	test_nodeIDAlloc_ServerTree {
-		var s = Server(\testserv3, NetAddr("localhost", 57111));
+		var s = Server(\testserv3, NetAddr("localhost", 57113));
 		var synth1, synth2;
 		var func = { synth1 = Synth("default"); };
 
@@ -53,7 +53,7 @@ TestServer_clientID_booted : UnitTest {
 
 	test_clientIDLockedWhileRunning {
 		var options = ServerOptions.new.maxLogins_(4);
-		var s = Server(\testserv4, NetAddr("localhost", 57111), options, clientID: 1);
+		var s = Server(\testserv4, NetAddr("localhost", 57114), options, clientID: 1);
 		var lockedID;
 
 		this.bootServer(s);
