@@ -48,4 +48,30 @@ TestServer_boot : UnitTest {
 		of.free;
 	}
 
+	test_allocWhileBooting {
+		var s = Server(\test), done = false, count = 0;
+		var prevNodeID = -1, nodeID = 0, failed = false;
+
+		s.boot;
+		while {
+			done.not and: { failed.not }
+		} {
+			if(s.isFullyBooted) {
+				count = count + 1;
+				nodeID = s.nextNodeID;
+				if(nodeID <= prevNodeID) {
+					failed = true;
+					"failed: prevNodeID % and nodeID = % "
+					.format(prevNodeID, nodeID).warn;
+				};
+
+				prevNodeID = nodeID;
+				done = count > 1000;
+			};
+			0.001.wait;
+		};
+		this.assert(failed.not,
+			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
+		);
+	}
 }
