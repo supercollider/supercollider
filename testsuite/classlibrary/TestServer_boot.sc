@@ -74,4 +74,59 @@ TestServer_boot : UnitTest {
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
 	}
+
+	test_fourWaysToPlaySound {
+		var options = ServerOptions.new;
+		var s = Server(\testserv1, NetAddr("localhost", 57111), options);
+		var amps, flags;
+		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
+		var cond = Condition();
+
+		s.options.numOutputBusChannels = 8;
+
+		s.waitForBoot({
+			var amps = List[];
+			// should work without wait eventually
+			// 1.wait;
+
+			// 4 ways to make sounds on the first 8 chans
+			Pbind(\legato, 1.1, \server, s).play;
+			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
+			Synth(\default, [\out, 4], s);
+			Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
+			// get 8 sound levels
+			{
+				SendReply.kr(
+					Impulse.kr(10), '/the8Amps',
+					Amplitude.kr(InFeedback.ar(0, 8), 0.001, 1),
+				)
+			}.play(s);
+
+			2.wait;
+
+			s.quit;
+			cond.unhang;
+		});
+
+		cond.hang;
+
+		flags = amps.clump(2).collect(_.every(_ > 0.01)).postln;
+		this.assert(flags[0],
+			"Server: Pbind should play right after booting."
+		);
+		this.assert(flags[1],
+			"Server: Function.play should play right after booting."
+		);
+		this.assert(flags[2],
+			"Server: Synth(\default) should play right after booting."
+		);
+		this.assert(flags[3],
+			"Server: Ndef should play right after booting."
+		);
+
+		Ndef.dictFor(s).clear;
+		s.quit;
+		s.remove;
+		o.free;
+	}
 }
