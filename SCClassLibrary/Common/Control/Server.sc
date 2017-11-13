@@ -367,9 +367,13 @@ Server {
 	}
 
 	initTree {
-		this.sendDefaultGroups;
-		tree.value(this);
-		Routine { ServerTree.run(this) }.play(AppClock);
+		forkIfNeeded {
+			this.sendDefaultGroups;
+			tree.value(this);
+			this.sync;
+			ServerTree.run(this);
+			this.sync;
+		};
 	}
 
 	/* id allocators */
@@ -542,6 +546,12 @@ Server {
 		};
 		this.clientID = newClientID;
 		statusWatcher.notified = true; // and lock again
+
+		forkIfNeeded {
+			this.initTree;
+			this.sync;
+			statusWatcher.notified = true; // and lock again
+		};
 	}
 
 	prHandleNotifyFailString {|failString, msg|
