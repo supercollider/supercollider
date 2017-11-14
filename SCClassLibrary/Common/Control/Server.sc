@@ -280,6 +280,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
+	var <tempBootItems;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -328,6 +329,7 @@ Server {
 
 		// make statusWatcher before clientID, so .serverRunning works
 		statusWatcher = ServerStatusWatcher(server: this);
+		tempBootItems = List[];
 
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
@@ -335,6 +337,7 @@ Server {
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
 		recorder.notifyServer = true;
+
 
 		this.name = argName;
 		all.add(this);
@@ -367,13 +370,32 @@ Server {
 	}
 
 	initTree {
-		forkIfNeeded {
+		forkIfNeeded({
 			this.sendDefaultGroups;
 			tree.value(this);
 			this.sync;
 			ServerTree.run(this);
 			this.sync;
-		};
+		}, AppClock);
+	}
+
+	removeBootItem { |item|
+		var index = tempBootItems.indexOfEqual(item);
+		index !? { tempBootItems.removeAt(index) }
+	}
+
+	addBootItem { |item|
+		this.removeBootItem;
+		tempBootItems.add(item);
+	}
+
+	prRunBootTask {
+		Task {
+			ServerBoot.run(this);
+			this.initTree;
+			tempBootItems.do(_.value);
+			tempBootItems.clear;
+		}.play(AppClock);
 	}
 
 	/* id allocators */
@@ -540,11 +562,8 @@ Server {
 		this.clientID = newClientID;
 		statusWatcher.notified = true; // and lock again
 
-		forkIfNeeded {
-			this.initTree;
-			this.sync;
-			statusWatcher.notified = true; // and lock again
-		};
+		// and finalize setup:
+		this.prRunBootTask;
 	}
 
 	prHandleNotifyFailString {|failString, msg|
@@ -716,7 +735,8 @@ Server {
 	}
 
 	doWhenBooted { |onComplete, limit=100, onFailure|
-		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
+		this.addBootItem(onComplete);
+		// statusWatcher.doWhenBooted(onComplete, limit, onFailure)
 	}
 
 	ifRunning { |func, failFunc|
@@ -878,29 +898,34 @@ Server {
 		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
 		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
+		if(remoteControlled) {
+			"%: You will have to manually boot remote server.\n".postf(this);
+			^this
+		};
 
 		statusWatcher.serverBooting = true;
 
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
+			"calling bootInit from statusWatcher.doWhenBooted".postln;
 			this.bootInit(recover);
 		}, onFailure: onFailure ? false);
 
-		if(remoteControlled) {
-			"You will have to manually boot remote server.".postln;
-		} {
-			this.prPingApp({
-				this.quit;
-				this.boot;
-			}, {
-				this.bootServerApp({
-					if(startAliveThread) { statusWatcher.startAliveThread }
-				})
-			}, 0.25);
-		}
+
+		this.prPingApp({
+			"prPingApp: quit and reboot?".postln;
+			this.quit;
+			this.boot;
+		}, {
+			"*** boot: calling bootServerApp".postln;
+			this.bootServerApp({
+				if(startAliveThread) { statusWatcher.startAliveThread }
+			})
+		}, 0.25);
 	}
 
 	bootInit { | recover = false |
+		thisMethod.postln;
 		// if(recover) { this.newNodeAllocators } {
 		// 	"% calls newAllocators\n".postf(thisMethod);
 		// this.newAllocators };
