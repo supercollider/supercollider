@@ -79,26 +79,26 @@ ServerStatusWatcher {
 	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
 		if (newMaxLogins.notNil) {
 			if (newMaxLogins != server.options.maxLogins) {
-				"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+				"%: server process has maxLogins % - adjusting my options accordingly.\n"
 				.postf(server, newMaxLogins);
 				server.options.maxLogins = newMaxLogins;
 			} {
-				"%: scsynth maxLogins % match with my options.\n".postf(server, newMaxLogins);
+				"%: server process's maxLogins (%) matches my options.\n".postf(server, newMaxLogins);
 			};
 		} {
-			"%: no maxLogins info from scsynth.\n".postf(server, newMaxLogins);
+			"%: no maxLogins info from server process.\n".postf(server, newMaxLogins);
 		};
 
 		if (newClientID == server.clientID) {
-			"%: keeping clientID % as confirmed from scsynth.\n"
+			"%: keeping clientID (%) as confirmed by server process.\n"
 			.postf(server, newClientID);
 		} {
 			if (server.userSpecifiedClientID.not) {
-				"%: setting clientID to %, as obtained from scsynth.\n"
+				"%: setting clientID to % as obtained from server process.\n"
 				.postf(server, newClientID);
 			} {
 				("% - userSpecifiedClientID % is not free!\n"
-					" Switching to free clientID obtained from scsynth: %.\n"
+					"Switching to free clientID obtained from server process: %.\n"
 					"If that is problematic, please set clientID by hand before booting.")
 				.format(server, server.clientID, newClientID).warn;
 			};
