@@ -264,6 +264,7 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
+	classvar <>postingBootInfo = true;
 
 	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -351,6 +352,8 @@ Server {
 	remove {
 		all.remove(this);
 		named.removeAt(this.name);
+		ServerTree.objects.removeAt(this);
+		ServerBoot.objects.removeAt(this);
 	}
 
 	addr_ { |netAddr|
@@ -370,6 +373,7 @@ Server {
 	}
 
 	initTree {
+		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
 		forkIfNeeded({
 			this.sendDefaultGroups;
 			tree.value(this);
@@ -385,16 +389,27 @@ Server {
 	}
 
 	addBootItem { |item|
-		this.removeBootItem;
-		tempBootItems.add(item);
+		if (Server.postingBootInfo) {
+			"% .% (%).".postf(this, thisMethod.name, item.cs);
+		};
+
+		this.removeBootItem(item);
+		tempBootItems.add(item)
 	}
 
 	prRunBootTask {
+		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
 		Task {
+			if (Server.postingBootInfo) { "%.%\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
+			this.sync;
+			if (Server.postingBootInfo) { "%.%\n".postf(this, "initTree") };
 			this.initTree;
+			this.sync;
+			if (Server.postingBootInfo) { "%.%\n".postf(this, "tempBootItems.do") };
 			tempBootItems.do(_.value);
 			tempBootItems.clear;
+			this.sync;
 		}.play(AppClock);
 	}
 
@@ -403,7 +418,7 @@ Server {
 	// clientID is settable while server is off, and locked while server is running
 	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.\n";
 		if (this.serverRunning) {
 			"%: setting clientID is locked after server is fully booted."
 			.postf(thisMethod);
@@ -431,6 +446,8 @@ Server {
 	}
 
 	newAllocators {
+		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
+
 		this.newNodeAllocators;
 		this.newBusAllocators;
 		this.newBufferAllocators;
@@ -532,6 +549,11 @@ Server {
 
 	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
 
+		if (Server.postingBootInfo) {
+			"% % - newClientID: % newMaxLogins: %.\n"
+			.postf(this, thisMethod.name, newClientID, newMaxLogins);
+		};
+
 		// turn notified off to allow setting clientID
 		statusWatcher.notified = false;
 
@@ -567,6 +589,8 @@ Server {
 	}
 
 	prHandleNotifyFailString {|failString, msg|
+
+		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
 
 		// post info on some known error cases
 		case
@@ -730,13 +754,26 @@ Server {
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
+		if (Server.postingBootInfo) {
+			"% .% onComplete: %\n".postf(this, thisMethod.name, onComplete);
+		};
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
 		this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	doWhenBooted { |onComplete, limit=100, onFailure|
-		this.addBootItem(onComplete);
-		// statusWatcher.doWhenBooted(onComplete, limit, onFailure)
+		// what to do with onFailure functions?
+		// put in onFailureFuncs list and evaluate after a timeout?
+		if (Server.postingBootInfo) {
+			"% .% - onComplete: %\n"
+			.postf(this, thisMethod.name, onComplete.cs);
+		};
+		if (this.serverRunning) {
+			if (Server.postingBootInfo) { "running onComplete directly.".postln };
+			onComplete.value
+		} {
+			this.addBootItem(onComplete);
+		}
 	}
 
 	ifRunning { |func, failFunc|
@@ -760,6 +797,8 @@ Server {
 
 
 	bootSync { |condition|
+		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
+
 		condition ?? { condition = Condition.new };
 		condition.test = false;
 		this.waitForBoot {
@@ -891,6 +930,11 @@ Server {
 
 	boot { | startAliveThread = true, recover = false, onFailure |
 
+		if(remoteControlled) {
+			"%: You will have to manually boot remote server.\n".postf(this);
+			^this
+		};
+
 		if(statusWatcher.unresponsive) {
 			"server '%' unresponsive, rebooting ...".format(this.name).postln;
 			this.quit(watchShutDown: false)
@@ -898,27 +942,19 @@ Server {
 		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
 		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
-		if(remoteControlled) {
-			"%: You will have to manually boot remote server.\n".postf(this);
-			^this
-		};
-
 		statusWatcher.serverBooting = true;
 
-		statusWatcher.doWhenBooted({
-			statusWatcher.serverBooting = false;
-			"calling bootInit from statusWatcher.doWhenBooted".postln;
-			this.bootInit(recover);
-		}, onFailure: onFailure ? false);
-
-
 		this.prPingApp({
-			"prPingApp: quit and reboot?".postln;
+			if (Server.postingBootInfo) {
+				"%.boot - prPingApp - quit and boot again.\n".postf(this);
+			};
 			this.quit;
 			this.boot;
 		}, {
-			"*** boot: calling bootServerApp".postln;
 			this.bootServerApp({
+				if (Server.postingBootInfo) {
+					"%.boot - after bootServerApp...\n".postf(this);
+				};
 				if(startAliveThread) { statusWatcher.startAliveThread }
 			})
 		}, 0.25);

@@ -514,7 +514,10 @@ SynthDescLib {
 			// since this is done automatically, w/o user action,
 			// it should not try to do things that will cause warnings
 			// (or errors, if one of the servers is not local)
-			this.send(server, false)
+			if (Server.postingBootInfo) {
+				"ServerBoot doing SynthDescLib.send to %\n".postf(server);
+			};
+			SynthDescLib.send(server, false)
 		}
 	}
 

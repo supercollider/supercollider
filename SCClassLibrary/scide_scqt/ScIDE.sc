@@ -33,6 +33,10 @@ ScIDE {
 	}
 
 	*defaultServer_ {|server|
+		if (Server.postingBootInfo) {
+			"% .% %\n".postf(this, thisMethod.name, server)
+		};
+
 		serverController.remove;
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |

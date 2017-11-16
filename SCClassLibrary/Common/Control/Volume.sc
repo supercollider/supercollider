@@ -15,10 +15,15 @@ Volume {
 		if(server.serverRunning) { this.sendSynthDef };
 
 		initFunc = {
+			if (Server.postingBootInfo) {
+				"%.volume.initFunc runs.\n".postf(server);
+			};
 			ampSynth = nil;
 			this.sendSynthDef
 		};
-
+		if (Server.postingBootInfo) {
+			"% - ServerBoot.adds volume initFunc.\n".postf(server);
+		};
 		ServerBoot.add(initFunc, server)
 	}
 

@@ -167,6 +167,9 @@ ServerStatusWatcher {
 	}
 
 	startAliveThread { | delay = 0.0 |
+		if (Server.postingBootInfo) {
+			"%.% with delay %.\n".postf(server, thisMethod.name, delay);
+		};
 		this.addStatusWatcher;
 		^aliveThread ?? {
 			aliveThread = Routine {
@@ -174,6 +177,9 @@ ServerStatusWatcher {
 				delay.wait;
 				loop {
 					alive = false;
+					if (Server.postingBootInfo) {
+						"% . sendStatusMsg...\n".postf(server);
+					};
 					server.sendStatusMsg;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
