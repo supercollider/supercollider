@@ -837,6 +837,7 @@ Server {
 	peakCPU { ^statusWatcher.peakCPU }
 	sampleRate { ^statusWatcher.sampleRate }
 	actualSampleRate { ^statusWatcher.actualSampleRate }
+	hasBooted { ^statusWatcher.hasBooted }
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
