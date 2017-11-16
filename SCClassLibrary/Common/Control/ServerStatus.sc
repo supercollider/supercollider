@@ -28,6 +28,7 @@ ServerStatusWatcher {
 		notified = false;
 		serverBooting = false;
 		this.serverRunning = false;
+		server.changed(\serverRunning);
 		bootNotifyFirst = true;
 	}
 
@@ -203,9 +204,8 @@ ServerStatusWatcher {
 	serverRunning { ^hasBooted and: notified }
 
 	serverRunning_ { | running |
-
+		hasBooted = running;
 		if(running != server.serverRunning) {
-			hasBooted = running;
 			this.unresponsive = false;
 
 			if (running) {
