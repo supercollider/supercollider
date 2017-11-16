@@ -532,6 +532,10 @@ SynthDescLib {
 	}
 
 	*send { |server, tryToLoadReconstructedDefs = true|
+		if (server.hasBooted.not) {
+			"server % not booted, % cannot send SynthDefs.\n".format(server, this).warn;
+			^this
+		};
 		global.send(server, tryToLoadReconstructedDefs);
 	}
 
