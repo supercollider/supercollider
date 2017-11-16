@@ -755,6 +755,7 @@ Server {
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
 		if (Server.postingBootInfo) {
+			"*** waitForBoot calls doWhenBooted: ".postln;
 			"% .% onComplete: %\n".postf(this, thisMethod.name, onComplete);
 		};
 		this.doWhenBooted(onComplete, limit, onFailure);

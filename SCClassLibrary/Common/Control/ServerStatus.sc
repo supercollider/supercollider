@@ -216,9 +216,7 @@ ServerStatusWatcher {
 			this.unresponsive = false;
 
 			if (running) {
-				server.doWhenBooted {
-					ServerBoot.run(server);
-				};
+				// serverBoot happens in prRunBootTask now
 			} {
 				ServerQuit.run(server);
 

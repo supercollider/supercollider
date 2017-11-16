@@ -76,7 +76,7 @@ TestServer_boot : UnitTest {
 	}
 
 	test_fourWaysToPlaySound {
-		var s = Server(\testserv1, NetAddr("localhost", 57111));
+		var s = Server(\test4w, NetAddr("localhost", 57111));
 		var amps, flags;
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var cond = Condition();
@@ -89,10 +89,13 @@ TestServer_boot : UnitTest {
 			// 1.wait;
 
 			// 4 ways to make sounds on the first 8 chans
-			Pbind(\legato, 2, \amp, 0.2, \dur, 0.25, \server, s).play;
+			Pbind(\legato, 2, \amp, 0.3, \dur, 0.25, \server, s).play;
 			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
 			Synth(\default, [\out, 4, \amp, 0.2], s);
-			Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
+			Ndef(\testX -> s.name, { PinkNoise.ar(0.2) ! 2 }).play(6);
+
+			s.sync;
+
 			// get 8 sound levels
 			{
 				SendReply.kr(
@@ -103,7 +106,6 @@ TestServer_boot : UnitTest {
 
 			2.wait;
 
-			s.quit;
 			cond.unhang;
 		});
 
@@ -123,6 +125,8 @@ TestServer_boot : UnitTest {
 		this.assert(flags[3],
 			"Server: Ndef should play right after booting."
 		);
+
+		1.wait;
 
 		Ndef.dictFor(s).clear;
 		s.quit;
