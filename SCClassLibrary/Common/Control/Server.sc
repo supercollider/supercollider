@@ -400,13 +400,13 @@ Server {
 	prRunBootTask {
 		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
 		Task {
-			if (Server.postingBootInfo) { "%.%\n".postf(this, "ServerBoot.run") };
+			if (Server.postingBootInfo) { "prRun: %.%\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
 			this.sync;
-			if (Server.postingBootInfo) { "%.%\n".postf(this, "initTree") };
+			if (Server.postingBootInfo) { "prRun: %.%\n".postf(this, "initTree") };
 			this.initTree;
 			this.sync;
-			if (Server.postingBootInfo) { "%.%\n".postf(this, "tempBootItems.do") };
+			if (Server.postingBootInfo) { "prRun: %.%\n".postf(this, "tempBootItems.do") };
 			tempBootItems.do(_.value);
 			tempBootItems.clear;
 			this.sync;

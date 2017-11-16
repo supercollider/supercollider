@@ -140,7 +140,7 @@ AbstractServerAction : AbstractSystemAction {
 
 	*run { arg server;
 		var selector = this.functionSelector;
-		// selector.postln;
+		if (Server.postingBootInfo) { "%: ServerTree.run\n".postf(server) };
 		this.performFunction(server, { arg obj; obj.perform(selector, server) });
 	}
 
