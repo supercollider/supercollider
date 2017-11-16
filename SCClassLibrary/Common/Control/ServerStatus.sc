@@ -210,6 +210,7 @@ ServerStatusWatcher {
 
 	serverRunning_ { | running |
 
+		hasBooted = running;
 		if(running != server.serverRunning) {
 			hasBooted = running;
 			this.unresponsive = false;

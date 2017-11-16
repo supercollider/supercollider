@@ -264,7 +264,7 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
-	classvar <>postingBootInfo = true;
+	classvar <>postingBootInfo = false;
 
 	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>bootAndQuitDisabled = false;
@@ -390,7 +390,7 @@ Server {
 
 	addBootItem { |item|
 		if (Server.postingBootInfo) {
-			"% .% (%).".postf(this, thisMethod.name, item.cs);
+			"% .% (%).\n".postf(this, thisMethod.name, item.cs);
 		};
 
 		this.removeBootItem(item);
@@ -400,13 +400,13 @@ Server {
 	prRunBootTask {
 		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
 		Task {
-			if (Server.postingBootInfo) { "prRun: %.%\n".postf(this, "ServerBoot.run") };
+			if (Server.postingBootInfo) { "prRun: % - %\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
 			this.sync;
-			if (Server.postingBootInfo) { "prRun: %.%\n".postf(this, "initTree") };
+			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "initTree") };
 			this.initTree;
 			this.sync;
-			if (Server.postingBootInfo) { "prRun: %.%\n".postf(this, "tempBootItems.do") };
+			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempBootItems.do") };
 			tempBootItems.do(_.value);
 			tempBootItems.clear;
 			this.sync;
@@ -757,8 +757,8 @@ Server {
 		if (Server.postingBootInfo) {
 			"% .% onComplete: %\n".postf(this, thisMethod.name, onComplete);
 		};
-		if(this.serverRunning.not) { this.boot(onFailure: true) };
 		this.doWhenBooted(onComplete, limit, onFailure);
+		if(this.serverRunning.not) { this.boot(onFailure: true) };
 	}
 
 	doWhenBooted { |onComplete, limit=100, onFailure|
