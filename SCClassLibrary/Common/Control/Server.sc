@@ -267,7 +267,7 @@ Server {
 	classvar <>postingBootInfo = true;
 
 	var <name, <addr, <clientID;
-	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
+	var <isLocal, <inProcess, <>sendQuit, <>bootAndQuitDisabled = false;
 	var maxNumClients; // maxLogins as sent from booted scsynth
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
@@ -317,6 +317,7 @@ Server {
 	*remote { |name, addr, options, clientID|
 		var result;
 		result = this.new(name, addr, options, clientID);
+		result.bootAndQuitDisabled = true;
 		result.startAliveThread;
 		^result;
 	}
@@ -360,7 +361,6 @@ Server {
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal.not;
 	}
 
 	name_ { |argName|
@@ -930,8 +930,8 @@ Server {
 
 	boot { | startAliveThread = true, recover = false, onFailure |
 
-		if(remoteControlled) {
-			"%: You will have to manually boot remote server.\n".postf(this);
+		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
+			"%: You will have to manually boot this server.\n".postf(this);
 			^this
 		};
 
@@ -1037,6 +1037,11 @@ Server {
 
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
+
+		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
+			"%: You will have to manually quit this server.\n".postf(this);
+			^this
+		};
 
 		addr.sendMsg("/quit");
 
