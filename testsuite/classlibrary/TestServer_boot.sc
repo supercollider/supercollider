@@ -73,6 +73,7 @@ TestServer_boot : UnitTest {
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
+		s.quit.remove;
 	}
 
 	test_fourWaysToPlaySound {
@@ -161,7 +162,7 @@ TestServer_boot : UnitTest {
 		cond.hang;
 
 		// wait for slow late tasks, just in case
-		2.wait;
+		1.wait;
 
 		this.assert(a.size == expectedList.size, "each func in boot sequence should happen exactly once.");
 		this.assert(expectedList == a.copy.sort, "all funcs in boot sequence should happen in the correct order.");

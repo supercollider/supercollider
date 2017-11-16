@@ -353,8 +353,8 @@ Server {
 	remove {
 		all.remove(this);
 		named.removeAt(this.name);
-		ServerTree.objects.removeAt(this);
-		ServerBoot.objects.removeAt(this);
+		ServerTree.objects !? { ServerTree.objects.removeAt(this) };
+		ServerBoot.objects !? { ServerBoot.objects.removeAt(this) };
 	}
 
 	addr_ { |netAddr|
@@ -402,13 +402,16 @@ Server {
 		Task {
 			if (Server.postingBootInfo) { "prRun: % - %\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
+			0.2.wait;
 			this.sync;
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "initTree") };
 			this.initTree;
+			0.2.wait;
 			this.sync;
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempBootItems.do") };
 			tempBootItems.do(_.value);
 			tempBootItems.clear;
+			0.2.wait;
 			this.sync;
 		}.play(AppClock);
 	}
