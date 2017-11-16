@@ -231,7 +231,6 @@ ServerStatusWatcher {
 					notified = false;
 				};
 			};
-			{ server.changed(\serverRunning) }.defer;
 		}
 
 	}
