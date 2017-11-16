@@ -156,15 +156,11 @@ TestServer_boot : UnitTest {
 		cond = Condition.new;
 		cond.hang;
 
-		0.1.wait;
+		// wait for slow late tasks, just in case
+		2.wait;
 
-		// "*** expected: ".postln;
-		// expectedList.postcs;
-		// "*** result:".postln;
-		// a.postcs;
-
-		UnitTest.new.assert(a.size == expectedList.size, "each func in boot sequence should happen exactly once.");
-		UnitTest().assert(expectedList == a.copy.sort, "all funcs in boot sequence should happen in the correct order.");
+		this.assert(a.size == expectedList.size, "each func in boot sequence should happen exactly once.");
+		this.assert(expectedList == a.copy.sort, "all funcs in boot sequence should happen in the correct order.");
 
 		// cleanup
 		ServerBoot.remove(b1, s);

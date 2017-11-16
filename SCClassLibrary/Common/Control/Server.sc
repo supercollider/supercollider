@@ -1064,6 +1064,9 @@ Server {
 			"'/quit' sent\n".postln;
 		};
 
+		statusWatcher.serverRunning_(false);
+		this.changed(\serverRunning);
+
 		pid = nil;
 		sendQuit = nil;
 		maxNumClients = nil;
