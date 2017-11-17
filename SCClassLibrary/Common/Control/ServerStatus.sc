@@ -76,38 +76,8 @@ ServerStatusWatcher {
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
-		var mBootNotifyFirst = bootNotifyFirst, postError = true;
-		bootNotifyFirst = false;
-
-		^Routine {
-			while {
-				server.serverRunning.not
-				/*
-				// this is not yet implemented.
-				or: { serverBooting and: mBootNotifyFirst.not }
-				and: { (limit = limit - 1) > 0 }
-				and: { server.applicationRunning.not }
-				*/
-
-			} {
-				0.2.wait;
-			};
-
-			if(server.serverRunning.not, {
-				if(onFailure.notNil) {
-					postError = (onFailure.value(server) == false);
-				};
-				if(postError) {
-					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error;
-				};
-				serverBooting = false;
-				server.changed(\serverRunning);
-			}, {
-				server.sync;
-				onComplete.value;
-			});
-
-		}.play(AppClock)
+		this.deprecated(thisMethod, Server.findMethod(\doWhenBooted));
+		server.doWhenBooted(onComplete, limit = 100, onFailure);
 	}
 
 
@@ -215,9 +185,8 @@ ServerStatusWatcher {
 			hasBooted = running;
 			this.unresponsive = false;
 
-			if (running) {
 				// serverBoot happens in prRunBootTask now
-			} {
+			if (running.not) {
 				ServerQuit.run(server);
 
 				server.disconnectSharedMemory;
