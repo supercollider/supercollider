@@ -16,6 +16,19 @@ Condition {
 		value.yield;
 	}
 
+	hangWithTimeout { arg value = \hang, timeout, timeoutFunction;
+		var func;
+		func = {
+			this.test = true;
+			this.signal;
+			timeoutFunction.value(this);
+			func = nil;
+		};
+		thisThread.clock.sched(timeout, { func.value; nil });
+		this.hang(value);
+		func = nil;
+	}
+
 	signal {
 		var tempWaitingThreads, time;
 		if (test.value, {
