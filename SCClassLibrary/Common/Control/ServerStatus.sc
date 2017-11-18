@@ -1,10 +1,13 @@
 ServerStatusWatcher {
 
+	classvar bootStatuses = #[\off, \booting, \doingSetup, \running, \quitting];
+
 	var server;
 
 	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
+	var <bootStatus = \off;
 	var <hasBooted = false, <>serverBooting = false, <unresponsive = false;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
@@ -16,6 +19,22 @@ ServerStatusWatcher {
 	*new { |server|
 		^super.newCopyArgs(server)
 	}
+
+	bootStatus_ { |newStatus|
+		if (bootStatuses.includes(newStatus)) {
+			bootStatus = newStatus;
+			"%: bootStatus is now %.\n".postf(server, newStatus.cs);
+		} {
+			warn(
+				"%:% - % is not a valid status."
+				.format(this, thisMethod.name, newStatus)
+			);
+		}
+	}
+	running { ^bootStatus == \running }
+	doingSetup { ^bootStatus == \doingSetup }
+	booting { ^bootStatus == \running }
+	quitting { ^bootStatus == \quitting }
 
 	quit { |onComplete, onFailure, watchShutDown = true|
 		if(watchShutDown) {
@@ -132,11 +151,14 @@ ServerStatusWatcher {
 		}
 	}
 
-	stopStatusWatcher {
+	stop {
 		statusWatcher !? { statusWatcher.disable }
 	}
 
-	startAliveThread { | delay = 0.0 |
+	stopStatusWatcher { this.stop }
+	startAliveThread { this.start }
+
+	start { | delay = 0.0 |
 		if (Server.postingBootInfo) {
 			"%.% with delay %.\n".postf(server, thisMethod.name, delay);
 		};
@@ -183,10 +205,13 @@ ServerStatusWatcher {
 		hasBooted = running;
 		if(running != server.serverRunning) {
 			hasBooted = running;
+
 			this.unresponsive = false;
 
 				// serverBoot happens in prRunBootTask now
-			if (running.not) {
+			if (running) {
+				server.bootStatus_(\doingSetup)
+			} {
 				ServerQuit.run(server);
 
 				server.disconnectSharedMemory;

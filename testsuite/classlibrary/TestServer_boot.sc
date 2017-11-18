@@ -92,7 +92,7 @@ TestServer_boot : UnitTest {
 			// 4 ways to make sounds on the first 8 chans
 			Pbind(\legato, 2, \amp, 0.3, \dur, 0.25, \server, s).play;
 			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
-			Synth(\default, [\out, 4, \amp, 0.2], s);
+			Synth(\default, [\out, 4, \amp, 0.3], s);
 			Ndef(\testX -> s.name, { PinkNoise.ar(0.2) ! 2 }).play(6);
 
 			s.sync;

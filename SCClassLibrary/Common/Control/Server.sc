@@ -372,6 +372,9 @@ Server {
 		}
 	}
 
+	bootStatus { ^statusWatcher.bootStatus }
+	bootStatus_ { |newStatus| statusWatcher.bootStatus_(newStatus) }
+
 	initTree {
 		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
 		forkIfNeeded({
@@ -398,8 +401,11 @@ Server {
 	}
 
 	prRunBootTask {
+		this.bootStatus_(\doingSetup);
+
 		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
 		Task {
+			this.bootInit;
 			if (Server.postingBootInfo) { "prRun: % - %\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
 			0.2.wait;
@@ -413,6 +419,7 @@ Server {
 			tempBootItems.clear;
 			0.2.wait;
 			this.sync;
+			this.bootStatus_(\running);
 		}.play(AppClock);
 	}
 
@@ -933,6 +940,8 @@ Server {
 		all.do { |server| server.statusWatcher.resumeThread }
 	}
 
+	// TODO: re-enable  recover and onFailure;
+	// also add timeout arg here?
 	boot { | startAliveThread = true, recover = false, onFailure |
 
 		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
@@ -940,28 +949,41 @@ Server {
 			^this
 		};
 
-		if(statusWatcher.unresponsive) {
+		// prepare for reboot if unresponsive.
+		if(this.unresponsive) {
 			"server '%' unresponsive, rebooting ...".format(this.name).postln;
 			this.quit(watchShutDown: false)
 		};
-		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
-		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
+		if(this.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
+		if(this.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
+
+		this.bootStatus = \booting;
 		statusWatcher.serverBooting = true;
 
+		// if there is a server at my address, reboot.
 		this.prPingApp({
 			if (Server.postingBootInfo) {
-				"%.boot - prPingApp - quit and boot again.\n".postf(this);
+				"%.boot - pinging server process to see if already there.\n".postf(this);
 			};
-			this.quit;
-			this.boot;
+			if (recover) {
+				if (Server.postingBootInfo) {
+					"%.boot found running server - recovering it.\n".postf(this);
+					// not sure this should be here or elsewhere...
+					// this.bootInit(recover);
+					if(startAliveThread) { statusWatcher.start };
+				};
+			} {
+				"%.boot - server process rebooting.\n".postf(this);
+				this.reboot;
+			}
 		}, {
 			this.bootServerApp({
 				if (Server.postingBootInfo) {
 					"%.boot - after bootServerApp...\n".postf(this);
 				};
-				if(startAliveThread) { statusWatcher.startAliveThread }
-			})
+				if(startAliveThread) { statusWatcher.start }
+			}, )
 		}, 0.25);
 	}
 
@@ -970,6 +992,7 @@ Server {
 		// if(recover) { this.newNodeAllocators } {
 		// 	"% calls newAllocators\n".postf(thisMethod);
 		// this.newAllocators };
+		if (Server.postingBootInfo) { "% runs %\n".postf(this, thisMethod.name) };
 		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 		if(sendQuit.isNil) {
 			sendQuit = this.inProcess or: { this.isLocal };
@@ -992,7 +1015,11 @@ Server {
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
-		if(isLocal.not) { "can't reboot a remote server".postln; ^this };
+		if(bootAndQuitDisabled or: { isLocal.not }) {
+			"can't reboot a remote server".postln;
+			^this
+		};
+
 		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
@@ -1048,6 +1075,8 @@ Server {
 			^this
 		};
 
+		this.bootStatus_(\quitting);
+
 		addr.sendMsg("/quit");
 
 		if(watchShutDown and: { this.unresponsive }) {
@@ -1079,6 +1108,7 @@ Server {
 		volume.freeSynth;
 		RootNode(this).freeAll;
 		this.newAllocators;
+		this.bootStatus_(\off);
 	}
 
 	*quitAll { |watchShutDown = true|
