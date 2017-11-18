@@ -162,6 +162,7 @@ TempoClock : Clock {
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
 	var <baseBarBeat=0.0, <baseBar=0.0;
 	var <>permanent=false;
+	var <>linkTempoChanged;
 
 /*
 You should only change the tempo 'now'. You can't set the tempo at some beat in the future or past, even though you might think so from the methods.
@@ -369,6 +370,12 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		_TempoClock_LinkDisable
 		^this.primitiveFailed
 	}
+
+	//throw tempo changed callback
+	prLinkTempoChanged { arg tempo, beats, secs, clock;
+		linkTempoChanged.value(tempo, beats, secs, clock);
+	}
+
 
 	// meter should only be changed in the TempoClock's thread.
 	setMeterAtBeat { arg newBeatsPerBar, beats;

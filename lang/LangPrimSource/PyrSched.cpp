@@ -845,6 +845,9 @@ void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds, double
     if(!mLink){
         mBaseSeconds = inSeconds;
         mBaseBeats = inBeats;
+        mTempo = inTempo;
+        mBeatDur = 1. / mTempo;
+        mCondition.notify_one();
     } else {
         auto timeline = mLink->captureAppTimeline();
         auto linkTime = hrToLinkTime(inSeconds);
@@ -854,9 +857,6 @@ void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds, double
         mQuantum=beatsPerBar;
     }
 
-	mTempo = inTempo;
-	mBeatDur = 1. / mTempo;
-	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
@@ -864,16 +864,15 @@ void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
     if(!mLink) {
         mBaseSeconds = BeatsToSecs(inBeats);
         mBaseBeats = inBeats;
+        mTempo = inTempo;
+        mBeatDur = 1. / mTempo;
+        mCondition.notify_one();
     } else {
         auto timeline = mLink->captureAppTimeline();
         auto time = timeline.timeAtBeat(inBeats,mQuantum);
         timeline.setTempo(inTempo*60, time);
         mLink->commitAppTimeline(timeline);
     }
-
-	mTempo = inTempo;
-	mBeatDur = 1. / mTempo;
-	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
@@ -881,15 +880,14 @@ void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
     if(!mLink) {
         mBaseBeats = SecsToBeats(inSeconds);
         mBaseSeconds = inSeconds;
+        mTempo = inTempo;
+        mBeatDur = 1. / mTempo;
+        mCondition.notify_one();
     } else {
         auto timeline = mLink->captureAppTimeline();
         timeline.setTempo(inTempo*60, hrToLinkTime(inSeconds));
         mLink->commitAppTimeline(timeline);
     }
-
-    mTempo = inTempo;
-    mBeatDur = 1. / mTempo;
-	mCondition.notify_one();
 }
 
 double TempoClock::ElapsedBeats()
@@ -1031,6 +1029,7 @@ void TempoClock::Dump()
 	post("mBaseBeats %g\n", mBaseBeats);
 }
 
+PyrSymbol* s_LinkTempoChanged;
 void TempoClock::LinkEnable(double seconds, double beatsPerBar)
 {
     if(mLink == nullptr) {
@@ -1043,9 +1042,23 @@ void TempoClock::LinkEnable(double seconds, double beatsPerBar)
             double secs = elapsedTime();
             double tempo = bpm/60;
 
+            mBaseBeats = SecsToBeats(secs);
+            mBaseSeconds = secs;
             mTempo = tempo;
             mBeatDur = 1. / mTempo;
             mCondition.notify_one();
+
+            //call sclang callback
+            gLangMutex.lock();
+            g->canCallOS = false;
+            ++g->sp; SetObject(g->sp, mTempoClockObj);
+            ++g->sp; SetFloat(g->sp, mTempo);
+            ++g->sp; SetFloat(g->sp, mBaseBeats);
+            ++g->sp; SetFloat(g->sp, mBaseSeconds);
+            ++g->sp; SetObject(g->sp, mTempoClockObj);
+            runInterpreter(g, s_LinkTempoChanged, 5);
+            g->canCallOS = false;
+            gLangMutex.unlock();
         });
 
 
@@ -1540,6 +1553,8 @@ int prmonotonicClockTime(struct VMGlobals *g, int numArgsPushed)
 void initSchedPrimitives()
 {
 	int base, index=0;
+
+    s_LinkTempoChanged = getsym("prLinkTempoChanged");
 
 	base = nextPrimitiveIndex();
 
