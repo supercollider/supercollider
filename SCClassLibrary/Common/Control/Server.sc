@@ -774,7 +774,7 @@ Server {
 		};
 		if (this.serverRunning) {
 			if (Server.postingBootInfo) { "running onComplete directly.".postln };
-			onComplete.value
+			forkIfNeeded { onComplete.value }
 		} {
 			this.addBootItem(onComplete);
 		}
@@ -982,7 +982,7 @@ Server {
 			"booting internal".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
-			onComplete.value;
+			forkIfNeeded { onComplete.value };
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
