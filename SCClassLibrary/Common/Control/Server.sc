@@ -380,9 +380,7 @@ Server {
 		forkIfNeeded({
 			this.sendDefaultGroups;
 			tree.value(this);
-			this.sync;
 			ServerTree.run(this);
-			this.sync;
 		}, AppClock);
 	}
 
@@ -408,18 +406,16 @@ Server {
 			this.bootInit;
 			if (Server.postingBootInfo) { "prRun: % - %\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
-			0.2.wait;
 			this.sync;
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "initTree") };
 			this.initTree;
-			0.2.wait;
 			this.sync;
+			this.bootStatus_(\running); // or maybe 'running'
+			// also set server.statusWatcher.serverRunning_(true) here;
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempBootItems.do") };
-			tempBootItems.do(_.value);
-			tempBootItems.clear;
-			0.2.wait;
-			this.sync;
-			this.bootStatus_(\running);
+			while { tempBootItems.notNil } {
+				tempBootItems.removeAt(0).value;
+			};
 		}.play(AppClock);
 	}
 

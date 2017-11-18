@@ -156,7 +156,7 @@ ServerStatusWatcher {
 	}
 
 	stopStatusWatcher { this.stop }
-	startAliveThread { this.start }
+	startAliveThread { |delay=0.0| this.start(delay) }
 
 	start { | delay = 0.0 |
 		if (Server.postingBootInfo) {
