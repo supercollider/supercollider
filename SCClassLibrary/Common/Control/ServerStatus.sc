@@ -95,9 +95,46 @@ ServerStatusWatcher {
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
-		this.deprecated(thisMethod, Server.findMethod(\doWhenBooted));
-		server.doWhenBooted(onComplete, limit = 100, onFailure);
-	}
+		var mBootNotifyFirst = bootNotifyFirst, postError = true;
+		bootNotifyFirst = false;
+
+		if (limit != 100 or: { onFailure.notNil }) {
+			"% % : limit and onFailure arguments are not supported anymore.\n"
+			"Please put onFailure actions in server.boot or server.waitForBoot!\n"
+			.postf(this, thisMethod.name);
+			"- limit: % - onFailure: %\n".postf(limit, onFailure);
+		};
+
+		^Routine {
+			while {
+				this.isReady.not
+				/*
+				// this is not yet implemented.
+				or: { serverBooting and: mBootNotifyFirst.not }
+				and: { (limit = limit - 1) > 0 }
+				and: { server.applicationRunning.not }
+				*/
+
+			} {
+				0.2.wait;
+			};
+
+			if(server.serverRunning.not, {
+				if(onFailure.notNil) {
+					postError = (onFailure.value(server) == false);
+				};
+				if(postError) {
+					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error;
+				};
+				serverBooting = false;
+				server.changed(\serverRunning);
+			}, {
+				server.sync;
+				onComplete.value;
+			});
+
+		}.play(AppClock)
+ 	}
 
 
 	watchQuit { |onComplete, onFailure|

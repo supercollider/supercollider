@@ -281,7 +281,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-	var <tempBootItems;
+	var <tempSetupItems;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -331,7 +331,7 @@ Server {
 
 		// make statusWatcher before clientID, so .serverRunning works
 		statusWatcher = ServerStatusWatcher(server: this);
-		tempBootItems = List[];
+		tempSetupItems = List[];
 
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
@@ -384,18 +384,23 @@ Server {
 		}, AppClock);
 	}
 
-	removeBootItem { |item|
-		var index = tempBootItems.indexOfEqual(item);
-		index !? { tempBootItems.removeAt(index) }
+	removeSetupItem { |item|
+		var index = tempSetupItems.indexOfEqual(item);
+		index !? { tempSetupItems.removeAt(index) }
 	}
 
-	addBootItem { |item|
+	addSetupItem { |item, doIfBooted = false|
 		if (Server.postingBootInfo) {
 			"% .% (%).\n".postf(this, thisMethod.name, item.cs);
 		};
 
-		this.removeBootItem(item);
-		tempBootItems.add(item)
+		this.removeSetupItem(item);
+		tempSetupItems.add(item);
+		if (doIfBooted) {
+			if (this.serverRunning) {
+				forkIfNeeded { item.value(this) }
+			}
+		}
 	}
 
 	prRunBootTask {
@@ -414,11 +419,15 @@ Server {
 			statusWatcher.serverRunning_(true);
 			this.changed(\serverRunning);
 
-			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempBootItems.do") };
-			while { tempBootItems.notEmpty } {
-				tempBootItems.removeAt(0).value;
+			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempSetupItems.do") };
+			while { tempSetupItems.notEmpty } {
+				tempSetupItems.removeAt(0).value;
 			};
 		}.play(AppClock);
+	}
+
+	doWhenBooted { |onComplete, limit = 100, onFailure|
+		^statusWatcher.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	/* id allocators */
@@ -770,7 +779,7 @@ Server {
 		if(this.serverRunning.not) { this.boot(onFailure: true) };
 	}
 
-	doWhenBooted { |onComplete, limit=100, onFailure|
+	doSetupItems { |onComplete, limit=100, onFailure|
 		// what to do with onFailure functions?
 		// put in onFailureFuncs list and evaluate after a timeout?
 		if (Server.postingBootInfo) {
@@ -781,7 +790,7 @@ Server {
 			if (Server.postingBootInfo) { "running onComplete directly.".postln };
 			forkIfNeeded { onComplete.value }
 		} {
-			this.addBootItem(onComplete);
+			this.addSetupItem(onComplete);
 		}
 	}
 
