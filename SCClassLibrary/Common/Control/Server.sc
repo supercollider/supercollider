@@ -372,8 +372,8 @@ Server {
 		}
 	}
 
-	bootStatus { ^statusWatcher.bootStatus }
-	bootStatus_ { |newStatus| statusWatcher.bootStatus_(newStatus) }
+	state { ^statusWatcher.state }
+	state_ { |newStatus| statusWatcher.state_(newStatus) }
 
 	initTree {
 		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
@@ -399,7 +399,7 @@ Server {
 	}
 
 	prRunBootTask {
-		this.bootStatus_(\doingSetup);
+		this.state_(\isSettingUp);
 
 		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
 		Task {
@@ -410,9 +410,9 @@ Server {
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "initTree") };
 			this.initTree;
 			this.sync;
-			this.bootStatus_(\running);
+			this.state_(\isReady);
 			statusWatcher.serverRunning_(true);
-			this.changed;
+			this.changed(\serverRunning);
 
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempBootItems.do") };
 			while { tempBootItems.notEmpty } {
@@ -956,7 +956,7 @@ Server {
 		if(this.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
 		if(this.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
-		this.bootStatus = \booting;
+		this.state = \isBooting;
 		statusWatcher.serverBooting = true;
 
 		// if there is a server at my address, reboot.
@@ -1074,7 +1074,7 @@ Server {
 			^this
 		};
 
-		this.bootStatus_(\quitting);
+		this.state_(\isQuitting);
 
 		addr.sendMsg("/quit");
 
@@ -1107,7 +1107,7 @@ Server {
 		volume.freeSynth;
 		RootNode(this).freeAll;
 		this.newAllocators;
-		this.bootStatus_(\off);
+		this.state_(\isOff);
 	}
 
 	*quitAll { |watchShutDown = true|

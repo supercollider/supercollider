@@ -1,13 +1,13 @@
 ServerStatusWatcher {
 
-	classvar bootStatuses = #[\off, \booting, \doingSetup, \running, \quitting];
+	classvar states = #[\isOff, \isBooting, \isSettingUp, \isReady, \isQuitting];
 
 	var server;
 
 	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
-	var <bootStatus = \off;
+	var <state = \isOff;
 	var <hasBooted = false, <>serverBooting = false, <unresponsive = false;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
@@ -20,21 +20,21 @@ ServerStatusWatcher {
 		^super.newCopyArgs(server)
 	}
 
-	bootStatus_ { |newStatus|
-		if (bootStatuses.includes(newStatus)) {
-			bootStatus = newStatus;
-			"%: bootStatus is now %.\n".postf(server, newStatus.cs);
+	state_ { |newState|
+		if (states.includes(newState)) {
+			state = newState;
+			"%: boot state is now %.\n".postf(server, newState.cs);
 		} {
 			warn(
-				"%:% - % is not a valid status."
-				.format(this, thisMethod.name, newStatus)
+				"%:% - % is not a valid boot state."
+				.format(this, thisMethod.name, newState)
 			);
 		}
 	}
-	running { ^bootStatus == \running }
-	doingSetup { ^bootStatus == \doingSetup }
-	booting { ^bootStatus == \running }
-	quitting { ^bootStatus == \quitting }
+	isBooting { ^state == \isBooting }
+	isReady { ^state == \isReady }
+	isSettingUp { ^state == \isSettingUp }
+	isQitting { ^state == \isQuitting }
 
 	quit { |onComplete, onFailure, watchShutDown = true|
 		if(watchShutDown) {
@@ -210,7 +210,7 @@ ServerStatusWatcher {
 
 				// serverBoot happens in prRunBootTask now
 			if (running) {
-				server.bootStatus_(\doingSetup)
+				server.state_(\isSettingUp)
 			} {
 				ServerQuit.run(server);
 
