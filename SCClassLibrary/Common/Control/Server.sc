@@ -410,10 +410,12 @@ Server {
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "initTree") };
 			this.initTree;
 			this.sync;
-			this.bootStatus_(\running); // or maybe 'running'
-			// also set server.statusWatcher.serverRunning_(true) here;
+			this.bootStatus_(\running);
+			statusWatcher.serverRunning_(true);
+			this.changed;
+
 			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempBootItems.do") };
-			while { tempBootItems.notNil } {
+			while { tempBootItems.notEmpty } {
 				tempBootItems.removeAt(0).value;
 			};
 		}.play(AppClock);
@@ -970,6 +972,7 @@ Server {
 					if(startAliveThread) { statusWatcher.start };
 				};
 			} {
+				statusWatcher.serverBooting = false;
 				"%.boot - server process rebooting.\n".postf(this);
 				this.reboot;
 			}
