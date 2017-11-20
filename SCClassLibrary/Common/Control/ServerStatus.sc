@@ -61,6 +61,10 @@ ServerStatusWatcher {
 
 		if(hasBooted.not) { ^this };
 
+		// if (Server.postingBootInfo) {
+			"% s %".postf(server, \sendNotify, flag);
+		// };
+
 		// set up oscfuncs for possible server responses, \done or \failed
 		doneOSCFunc = OSCFunc({ |msg|
 			var newClientID = msg[2], newMaxLogins = msg[3];
@@ -98,28 +102,19 @@ ServerStatusWatcher {
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
-		if (limit != 100 or: { onFailure.notNil }) {
-			"% % : limit and onFailure arguments are not supported anymore.\n"
-			"Please put onFailure actions in server.boot or server.waitForBoot!\n"
-			.postf(this, thisMethod.name);
-			"- limit: % - onFailure: %\n".postf(limit, onFailure);
+		if (server.isReady) {
+			^forkIfNeeded({ onComplete.value(server) })
 		};
 
 		^Routine {
 			while {
 				this.isReady.not
-				/*
-				// this is not yet implemented.
-				or: { serverBooting and: mBootNotifyFirst.not }
 				and: { (limit = limit - 1) > 0 }
-				and: { server.applicationRunning.not }
-				*/
-
 			} {
 				0.2.wait;
 			};
 
-			if(server.serverRunning.not, {
+			if(this.isReady.not, {
 				if(onFailure.notNil) {
 					postError = (onFailure.value(server) == false);
 				};
@@ -260,6 +255,7 @@ ServerStatusWatcher {
 				if(server.isLocal.not) {
 					notified = false;
 				};
+				this.state_(\isOff);
 			};
 		}
 

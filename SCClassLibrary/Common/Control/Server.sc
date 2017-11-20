@@ -766,32 +766,22 @@ Server {
 	}
 
 	waitForBoot { |onComplete, limit = 100, onFailure|
+		if (Server.postingBootInfo) {
+			"*** waitForBoot calls doWhenBooted: ".postln;
+			"% .% onComplete: %\n".postf(this, thisMethod.name, onComplete);
+		};
+
+		if(this.serverRunning) {
+			^forkIfNeeded({ onComplete.value(this) }, AppClock)
+		};
+
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
-		if (Server.postingBootInfo) {
-			"*** waitForBoot calls doWhenBooted: ".postln;
-			"% .% onComplete: %\n".postf(this, thisMethod.name, onComplete);
-		};
-		this.doWhenBooted(onComplete, limit, onFailure);
-		if(this.serverRunning.not) { this.boot(onFailure: true) };
-	}
-
-	doSetupItems { |onComplete, limit=100, onFailure|
-		// what to do with onFailure functions?
-		// put in onFailureFuncs list and evaluate after a timeout?
-		if (Server.postingBootInfo) {
-			"% .% - onComplete: %\n"
-			.postf(this, thisMethod.name, onComplete.cs);
-		};
-		if (this.serverRunning) {
-			if (Server.postingBootInfo) { "running onComplete directly.".postln };
-			forkIfNeeded { onComplete.value }
-		} {
-			this.addSetupItem(onComplete);
-		}
+		this.boot(onFailure: true);
+		^this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	ifRunning { |func, failFunc|
