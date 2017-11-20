@@ -376,7 +376,13 @@ Server {
 		};
 	}
 
-	/* id allocators */
+	/* clientID */
+
+	userSpecifiedClientID {
+		this.deprecated(thisMethod);
+		"Server:clientID can now be set while a server is off, and is locked while the server is running. Thus, userSpecifiedClientID is no longer needed internally, and meaningless. Returns false just in case user code calls this.".postln;
+		^false
+	}
 
 	// clientID is settable while server is off, and locked while server is running
 	// called from prHandleClientLoginInfoFromServer once after booting.
@@ -407,6 +413,8 @@ Server {
 		clientID = val;
 		this.newAllocators;
 	}
+
+	/* clientID-based id allocators */
 
 	newAllocators {
 		this.newNodeAllocators;
