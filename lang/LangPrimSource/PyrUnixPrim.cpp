@@ -305,8 +305,8 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 #include <time.h>
 
-// Set only Date members related to the tm struct: YMD, HMS and
-// weekday (not rawSeconds)
+// Set only Date instance variables related to the tm struct: YMD, HMS
+// and weekday (not rawSeconds)
 static void fillSlotsFromTimeStruct(PyrSlot * result, struct tm* tm)
 {
 	PyrSlot *slots = slotRawObject(result)->slots;
@@ -320,7 +320,7 @@ static void fillSlotsFromTimeStruct(PyrSlot * result, struct tm* tm)
 	SetInt(slots+6, tm->tm_wday);
 }
 
-// Set all Date members (including rawSeconds)
+// Set all Date instance variables (including rawSeconds)
 static void fillAllSlotsFromTime(PyrSlot * result, struct tm* tm, std::chrono::system_clock::time_point const & now)
 {
 	fillSlotsFromTimeStruct(result, tm);
@@ -387,8 +387,8 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
 
 // Given a Date structure, calculate and fill in any missing
 // or invalid properties, ignoring/overwriting the contents of
-// rawSeconds.  If some of the (MD, HMS) members are nil, give
-// them default values.  If year is nil, throw an error.
+// rawSeconds.  If some of the (MD, HMS) instance variables are
+// nil, give them default values.  If year is nil, throw an error.
 int prDateResolve(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;

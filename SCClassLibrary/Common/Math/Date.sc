@@ -8,22 +8,7 @@ Date {
 	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds;
 		var instance = super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
 			rawSeconds);
-		case
-		{ [year, month, day, hour, minute, second, dayOfWeek, rawSeconds].every(_.isNil) } {
-			// All properties are nil: return current (local) time
-			instance.localtime;
-		}
-		{ rawSeconds.notNil } {
-			// rawSeconds was specified: use it to calculate all other properties
-			instance.prResolveFromRawSeconds;
-		}
-		{
-			// In all other cases, resolve dayOfWeek and rawSeconds from the other
-			// properties (YMD, HMS).  If no year is provided, will throw an error.
-			instance.resolve;
-		};
-
-		^instance;
+		^instance.prInitialize;
 	}
 	*fromString { arg string, format;
 		^this.new.prFromString(string, format)
@@ -88,6 +73,23 @@ Date {
 	prFromString { arg string, format;
 		_Date_FromString
 		^this.primitiveFailed
+	}
+	prInitialize {
+		case
+		{ rawSeconds.notNil } {
+			// 1. rawSeconds was specified: use it to calculate all other variables
+			this.prResolveFromRawSeconds
+		}
+		{ [\year, \month, \day, \hour, \minute, \second].collect{ |v| this.instVarAt(v) }.every(_.isNil) } {
+			// 2. All (YMD, HMS) variables are nil: return current (local) time
+			this.localtime
+		}
+		{
+			// 3. In all other cases, resolve dayOfWeek and rawSeconds from the other
+			// variables (YMD, HMS).  If no year is provided, will throw an error.
+			this.resolve
+		};
+		^this;
 	}
 	prResolveFromRawSeconds {
 		_Date_ResolveFromRawSeconds
