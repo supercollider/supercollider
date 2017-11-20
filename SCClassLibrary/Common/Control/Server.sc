@@ -308,7 +308,47 @@ Server {
 	}
 
 	*new { |name, addr, options, clientID|
+		var existing = this.checkExisting(name, addr, options, clientID);
+		if (existing.notNil) {
+			// posting can be dropped when the new behavior is established.
+			"returning existing Server(%).\n".postf(name.cs);
+			^existing
+		};
 		^super.new.init(name, addr, options, clientID)
+	}
+
+	*checkExisting { |name, addr, options, clientID|
+		var found = Server.all.detect { |sv| sv.name == name };
+		var addrStr = "", optionsStr = "", clientIDStr = "";
+		var diffStr;
+
+		if (found.isNil) { ^nil };
+
+		if (addr.notNil and: { addr != found.addr }) {
+			addrStr = "addr of existing: % - new: %\n".format(found.addr.cs, addr.cs);
+		};
+		if (clientID.notNil and: { clientID != found.clientID }) {
+			clientIDStr = "addr of existing: % - new: %\n"
+			.format(found.clientID, clientID);
+		};
+		// options are trickier to compare and stringify ...
+		if (options.notNil) {
+			optionsStr = "options may also be different...\n"
+		};
+
+		diffStr = addrStr ++ clientIDStr ++ optionsStr;
+
+		if (diffStr.size > 0) {
+			("Server(%) already exists with different parameters:\n"
+				++ diffStr
+				++ "Please use a different name, or change the existing server's settings!"
+			).format(name.cs).warn;
+		} {
+			// posting can be dropped when the new behavior is established.
+			"Server(%) already exists - ".postf(name.cs);
+		};
+
+		^found
 	}
 
 	*remote { |name, addr, options, clientID|
