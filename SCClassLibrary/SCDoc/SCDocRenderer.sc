@@ -233,7 +233,7 @@ SCDocHTMLRenderer {
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
-		<< "var scdoc_title = '" << doc.title << "';\n"
+		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
