@@ -264,9 +264,11 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
+	classvar <>postingBootInfo = false;
 
-	var <name, <addr, <clientID, <userSpecifiedClientID = false;
-	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
+	var <name, <addr, <clientID;
+	var <isLocal, <inProcess, <>sendQuit, <>bootAndQuitDisabled = false;
+	var maxNumClients; // maxLogins as sent from booted scsynth
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
 
@@ -279,6 +281,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
+	var <tempSetupItems;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -308,41 +311,41 @@ Server {
 	}
 
 	*new { |name, addr, options, clientID|
+		var existing = Server.all.detect { |sv| sv.name == name };
+		if (existing.notNil) {
+			"Server(%) already exists, returning existing.\n"
+			.format(name).warn;
+			^existing
+		};
 		^super.new.init(name, addr, options, clientID)
 	}
 
 	*remote { |name, addr, options, clientID|
 		var result;
 		result = this.new(name, addr, options, clientID);
+		result.bootAndQuitDisabled = true;
 		result.startAliveThread;
 		^result;
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
-		options = argOptions ? ServerOptions.new;
+		options = argOptions ?? { ServerOptions.new };
 
 		// set name to get readable posts from clientID set
 		name = argName.asSymbol;
 
-		if(argClientID.notNil) {
-			userSpecifiedClientID = true;
-			if (argClientID >= options.maxLogins) {
-				warn("% : user-specified clientID % is greater than maxLogins!"
-					"\nPlease adjust clientID or options.maxLogins."
-					.format(name, argClientID));
-				^nil
-			};
-		};
+		// make statusWatcher before clientID, so .serverRunning works
+		statusWatcher = ServerStatusWatcher(server: this);
+		tempSetupItems = List[];
 
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
 
-
-		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
 		recorder.notifyServer = true;
+
 
 		this.name = argName;
 		all.add(this);
@@ -351,18 +354,19 @@ Server {
 
 	}
 
+	maxNumClients { ^maxNumClients ?? { options.maxLogins } }
+
 	remove {
 		all.remove(this);
 		named.removeAt(this.name);
+		ServerTree.objects !? { ServerTree.objects.removeAt(this) };
+		ServerBoot.objects !? { ServerBoot.objects.removeAt(this) };
 	}
-
-	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal.not;
 	}
 
 	name_ { |argName|
@@ -374,27 +378,85 @@ Server {
 		}
 	}
 
+	state { ^statusWatcher.state }
+	state_ { |newStatus| statusWatcher.state_(newStatus) }
+
 	initTree {
-		this.newNodeAllocators;
-		this.sendDefaultGroups;
-		tree.value(this);
-		ServerTree.run(this);
+		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
+		forkIfNeeded({
+			this.sendDefaultGroups;
+			tree.value(this);
+			ServerTree.run(this);
+		}, AppClock);
+	}
+
+	removeSetupItem { |item|
+		var index = tempSetupItems.indexOfEqual(item);
+		index !? { tempSetupItems.removeAt(index) }
+	}
+
+	addSetupItem { |item, doIfBooted = false|
+		if (Server.postingBootInfo) {
+			"% .% (%).\n".postf(this, thisMethod.name, item.cs);
+		};
+
+		this.removeSetupItem(item);
+		tempSetupItems.add(item);
+		if (doIfBooted) {
+			if (this.serverRunning) {
+				forkIfNeeded { item.value(this) }
+			}
+		}
+	}
+
+	prRunBootTask {
+		this.state_(\isSettingUp);
+		statusWatcher.serverBooting = false;
+
+		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
+		forkIfNeeded( {
+			this.bootInit;
+			if (Server.postingBootInfo) { "prRun: % - %\n".postf(this, "ServerBoot.run") };
+			ServerBoot.run(this);
+			this.sync;
+			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "initTree") };
+			this.initTree;
+			this.sync;
+			this.state_(\isReady);
+			statusWatcher.serverRunning_(true);
+			this.changed(\serverRunning);
+
+			if (Server.postingBootInfo) { "prRun: % .%\n".postf(this, "tempSetupItems.do") };
+			while { tempSetupItems.notEmpty } {
+				tempSetupItems.removeAt(0).value;
+			};
+		}, AppClock);
+	}
+
+	doWhenBooted { |onComplete, limit = 100, onFailure|
+		^statusWatcher.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	/* id allocators */
 
-	// private, called from server notify response with next free clientID
+	// clientID is settable while server is off, and locked while server is running
+	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.\n";
+		if (this.serverRunning) {
+			"%: setting clientID is locked after server is fully booted."
+			.postf(thisMethod);
+			^this
+		};
 
 		if(val.isInteger.not) {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
 		};
-		if (val < 0 or: { val >= this.numClients }) {
+		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.numClients range of 0 - %".format(this.numClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients),
 				clientID
 			).warn;
 			^this
@@ -405,12 +467,11 @@ Server {
 		};
 		clientID = val;
 		this.newAllocators;
-		if (statusWatcher.notNil and: { this.serverRunning }) {
-			this.initTree;
-		};
 	}
 
 	newAllocators {
+		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
+
 		this.newNodeAllocators;
 		this.newBusAllocators;
 		this.newBufferAllocators;
@@ -422,7 +483,7 @@ Server {
 		nodeAllocator = nodeAllocClass.new(
 			clientID,
 			options.initialNodeID,
-			options.maxLogins
+			this.maxNumClients
 		);
 		// defaultGroup and defaultGroups depend on allocator,
 		// so always make them here:
@@ -436,8 +497,8 @@ Server {
 
 		var audioBusIOOffset = options.firstPrivateBus;
 
-		numControlPerClient = options.numControlBusChannels div: this.numClients;
-		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.numClients;
+		numControlPerClient = options.numControlBusChannels div: this.maxNumClients;
+		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.maxNumClients;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
 		controlBusClientOffset = numControlPerClient * clientID;
@@ -457,9 +518,8 @@ Server {
 		);
 	}
 
-
 	newBufferAllocators {
-		var numBuffersPerClient = options.numBuffers div: this.numClients;
+		var numBuffersPerClient = options.numBuffers div: this.maxNumClients;
 		var numReservedBuffers = options.reservedNumBuffers;
 		var bufferClientOffset = numBuffersPerClient * clientID;
 
@@ -511,6 +571,68 @@ Server {
 		^nodeAllocator.freePerm(id)
 	}
 
+	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
+
+		if (Server.postingBootInfo) {
+			"% % - newClientID: % newMaxLogins: %.\n"
+			.postf(this, thisMethod.name, newClientID, newMaxLogins);
+		};
+
+		// turn notified off to allow setting clientID
+		statusWatcher.notified = false;
+
+		// only set maxLogins if not internal server
+		if (inProcess.not) {
+			if (newMaxLogins.notNil) {
+				if (newMaxLogins != options.maxLogins) {
+					"%: server process has maxLogins % - adjusting my options accordingly.\n"
+					.postf(this, newMaxLogins);
+				} {
+					"%: server process's maxLogins (%) matches with my options.\n"
+					.postf(this, newMaxLogins);
+				};
+				options.maxLogins = maxNumClients = newMaxLogins;
+			} {
+				"%: no maxLogins info from server process.\n"
+				.postf(this, newMaxLogins);
+			};
+		};
+
+		if (newClientID == clientID) {
+			"%: keeping clientID (%) as confirmed by server process.\n"
+			.postf(this, newClientID);
+		} {
+			"%: setting clientID to %, as obtained from server process.\n"
+			.postf(this, newClientID);
+		};
+		this.clientID = newClientID;
+		statusWatcher.notified = true; // and lock again
+
+	}
+
+	prHandleNotifyFailString {|failString, msg|
+
+		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
+
+		// post info on some known error cases
+		case
+		{ failString.asString.contains("already registered") } {
+			"% - already registered with clientID %.\n".postf(this, msg[3]);
+			statusWatcher.notified = true;
+		} { failString.asString.contains("not registered") } {
+			// unregister when already not registered:
+			"% - not registered.\n".postf(this);
+			statusWatcher.notified = false;
+		} { failString.asString.contains("too many users") } {
+			"% - could not register, too many users.\n".postf(this);
+			statusWatcher.notified = false;
+		} {
+			// throw error if unknown failure
+			Error(
+				"Failed to register with server '%' for notifications: %\n"
+				"To recover, please reboot the server.".format(this, msg)).throw;
+		};
+	}
 
 	/* network messages */
 
@@ -649,17 +771,22 @@ Server {
 	}
 
 	waitForBoot { |onComplete, limit = 100, onFailure|
+		if (Server.postingBootInfo) {
+			"*** waitForBoot calls doWhenBooted: ".postln;
+			"% .% onComplete: %\n".postf(this, thisMethod.name, onComplete);
+		};
+
+		if(this.serverRunning) {
+			^forkIfNeeded({ onComplete.value(this) }, AppClock)
+		};
+
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
-		if(this.serverRunning.not) { this.boot(onFailure: true) };
-		this.doWhenBooted(onComplete, limit, onFailure);
-	}
-
-	doWhenBooted { |onComplete, limit=100, onFailure|
-		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
+		this.boot(onFailure: true);
+		^this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	ifRunning { |func, failFunc|
@@ -683,6 +810,8 @@ Server {
 
 
 	bootSync { |condition|
+		if (Server.postingBootInfo) { "% .%\n".postf(this, thisMethod.name) };
+
 		condition ?? { condition = Condition.new };
 		condition.test = false;
 		this.waitForBoot {
@@ -727,7 +856,7 @@ Server {
 
 	// defaultGroups for all clients on this server:
 
-	allClientIDs { ^(0..options.maxLogins-1) }
+	allClientIDs { ^(0..this.maxNumClients-1) }
 
 	// keep defaultGroups for all clients on this server:
 	makeDefaultGroups {
@@ -780,9 +909,16 @@ Server {
 	peakCPU { ^statusWatcher.peakCPU }
 	sampleRate { ^statusWatcher.sampleRate }
 	actualSampleRate { ^statusWatcher.actualSampleRate }
+	hasBooted { ^statusWatcher.hasBooted }
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
+	isOff { ^statusWatcher.isOff }
+	isBooting { ^statusWatcher.isBooting }
+	isSettingUp { ^statusWatcher.isSettingUp }
+	isReady { ^statusWatcher.isReady }
+	isQuitting { ^statusWatcher.isQitting }
+
 	startAliveThread { | delay=0.0 | statusWatcher.startAliveThread(delay) }
 	stopAliveThread { statusWatcher.stopAliveThread }
 	aliveThreadIsRunning { ^statusWatcher.aliveThread.isPlaying }
@@ -812,39 +948,179 @@ Server {
 		all.do { |server| server.statusWatcher.resumeThread }
 	}
 
-	boot { | startAliveThread = true, recover = false, onFailure |
+	// TODO: re-enable  recover and onFailure;
+	// also add timeout arg here?
+	bootOld { | startAliveThread = true, recover = false, onFailure |
+		// temp to keep boot working after changes for bootAlt
+		var appBooted, timeout = 5;
 
-		if(statusWatcher.unresponsive) {
+		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
+			"%: You will have to manually boot this server.\n".postf(this);
+			^this
+		};
+
+		// prepare for reboot if unresponsive.
+		if(this.unresponsive) {
 			"server '%' unresponsive, rebooting ...".format(this.name).postln;
 			this.quit(watchShutDown: false)
 		};
-		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
-		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
+		if(this.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
+		if(this.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
+		this.state = \isBooting;
 		statusWatcher.serverBooting = true;
 
-		statusWatcher.doWhenBooted({
-			statusWatcher.serverBooting = false;
-			this.bootInit(recover);
-		}, onFailure: onFailure ? false);
+		// if there is a server at my address, reboot.
+		this.prPingApp({
+			if (Server.postingBootInfo) {
+				"%.boot - pinging server process to see if already there.\n".postf(this);
+			};
+			if (recover) {
+				if (Server.postingBootInfo) {
+					"%.boot found running server - recovering it.\n".postf(this);
+					// not sure this should be here or elsewhere...
+					// this.bootInit(recover);
+					if(startAliveThread) { statusWatcher.start };
+					appBooted = true
+				};
+			} {
+				statusWatcher.serverBooting = false;
+				"%.boot - server process rebooting.\n".postf(this);
+				fork { 0.01.wait; this.reboot };
+			}
+		}, {
+			this.bootServerApp({
+				if (Server.postingBootInfo) {
+					"%.boot - after bootServerApp...\n".postf(this);
+				};
+				if(startAliveThread) { statusWatcher.start };
+			})
+		}, 0.25);
 
-		if(remoteControlled) {
-			"You will have to manually boot remote server.".postln;
-		} {
-			this.prPingApp({
-				this.quit;
-				this.boot;
-			}, {
-				this.bootServerApp({
-					if(startAliveThread) { statusWatcher.startAliveThread }
-				})
-			}, 0.25);
+		// quick inlining of initial bootsteps
+		fork {
+			var test, tests = { [this.applicationRunning, this.hasBooted, this.notified] };
+			while {
+				test = tests.().every(_ == true);
+				test.not and: { timeout > 0 }
+			} {
+				timeout = timeout - 0.1;
+				0.1.wait;
+			};
+			if (test) {
+				this.prRunBootTask;
+			} {
+				"% boot failed after timeout!".format(this).warn;
+			}
 		}
 	}
 
+	boot { | startAliveThread = true, recover = false, onFailure, onComplete, timeout = 5 |
+		// measure time for all boot steps:
+		var t0 = thisThread.seconds, now = { thisThread.seconds - t0 };
+		var pt = { |str=""| "t %: %".format(now.().round(0.01), str).postln; };
+		var ptIf = { |str=""| if (Server.postingBootInfo) { pt.(str) } };
+
+		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
+			"%: You cannot boot a remote or bootAndQuitDisabled server.\n".postf(this);
+			^this
+		};
+
+		// prepare for reboot if unresponsive - is this ok?
+		if(recover.not and: { this.unresponsive }) {
+			pt.("server '%' unresponsive, rebooting ...".format(this.name));
+			this.quit(watchShutDown: false)
+		};
+
+		if(this.isReady) {
+			onComplete.value(this);
+			"server '%' already running".format(this.name).postln;
+			^this
+		};
+		if(this.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
+		this.state = \isBooting;
+		statusWatcher.serverBooting = true;
+
+		ptIf.("starting boot routine:");
+		Routine {
+			// if there is a server at my address, re-adopt or reboot it
+			var cond = Condition.new, cond2 = Condition.new;
+			var programRunning = false, notified = false;
+
+			if (Server.postingBootInfo) {
+				"\n *** first boot Rask begins: ".postln;
+				"%.boot - pinging server process first ... \n".postf(this);
+			};
+
+			// this is the rare exception, so post when it happens
+			this.prPingApp({
+				if (recover) {
+					pt.("% boot found running server, recovering it.\n".format(this));
+					programRunning = true;
+					cond.unhang;
+				} {
+					pt.("% boot - found running server, rebooting it.\n".format(this));
+					this.reboot;
+					thisThread.stop
+				};
+			}, {
+
+				ptIf.("try appBoot (pingApp found no running server, as expected)");
+
+				// bootServerApp is the default case
+				this.bootServerApp({
+					ptIf.("%.boot - after bootServerApp...\n".format(this));
+					0.1.wait; // wait needed for failed pid to go away first
+					if (this.applicationRunning) {
+						programRunning = true;
+						ptIf.("unhang because app has booted");
+						cond.unhang;
+					}
+				})
+			}, 0.25);
+
+			// pt.value("cond.hang for app boot...");
+			cond.hang(timeout);
+			// pt.value("cond unhung after app boot...");
+
+			if (programRunning) {
+				//	app has booted OK, so continue
+				if(startAliveThread) { statusWatcher.start };
+				fork {
+					0.01.wait;
+					while { this.hasBooted.not or: { this.notified.not } } {
+						0.1.wait
+					};
+					ptIf.("booted and notified, so unhang!");
+					cond2.unhang;
+				};
+			};
+
+			pt.("cond2.hang for notification and clientID:");
+			cond2.hang((timeout - now.().postln).max(0.6));
+			// pt.("cond2 unhung after notified");
+
+			// and finalize setup:
+			if (this.hasBooted and: this.notified) {
+				ptIf.("booted and notified  ...");
+				if (Server.postingBootInfo) { "% boot - finalize setup\n".postf(this) };
+				this.prRunBootTask;
+				pt.("<- total boot time after prRunBootTask finished.");
+				onComplete.value(this);
+			} {
+				pt.("*** % boot - failed or timed out - do onFailure.".format(this));
+				onFailure.value(this);
+			}
+
+		}.play(AppClock)
+	}
+
 	bootInit { | recover = false |
-		if(recover) { this.newNodeAllocators } { this.newAllocators };
+		// if(recover) { this.newNodeAllocators } {
+		// 	"% calls newAllocators\n".postf(thisMethod);
+		// this.newAllocators };
+		if (Server.postingBootInfo) { "% runs %\n".postf(this, thisMethod.name) };
 		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 		if(sendQuit.isNil) {
 			sendQuit = this.inProcess or: { this.isLocal };
@@ -857,6 +1133,7 @@ Server {
 			"booting internal".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
+			forkIfNeeded { onComplete.value };
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
@@ -866,7 +1143,11 @@ Server {
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
-		if(isLocal.not) { "can't reboot a remote server".postln; ^this };
+		if(bootAndQuitDisabled or: { isLocal.not }) {
+			"can't reboot a remote server".postln;
+			^this
+		};
+
 		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
@@ -917,6 +1198,13 @@ Server {
 	quit { |onComplete, onFailure, watchShutDown = true|
 		var func;
 
+		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
+			"%: You will have to manually quit this server.\n".postf(this);
+			^this
+		};
+
+		this.state_(\isQuitting);
+
 		addr.sendMsg("/quit");
 
 		if(watchShutDown and: { this.unresponsive }) {
@@ -937,13 +1225,18 @@ Server {
 			"'/quit' sent\n".postln;
 		};
 
+		statusWatcher.serverRunning_(false);
+		this.changed(\serverRunning);
+
 		pid = nil;
 		sendQuit = nil;
+		maxNumClients = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
 		RootNode(this).freeAll;
 		this.newAllocators;
+		this.state_(\isOff);
 	}
 
 	*quitAll { |watchShutDown = true|

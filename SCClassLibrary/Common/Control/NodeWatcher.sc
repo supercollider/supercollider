@@ -105,7 +105,7 @@ NodeWatcher : BasicNodeWatcher {
 	*doOnServerBoot {|aServer|
 		var serverName = aServer.name;
 		var serverNodeWatchers = all.removeAt(serverName);
-
+		if (Server.postingBootInfo) { "% running %.".postf(aServer, thisMethod.name) };
 		if (serverNodeWatchers.notNil) {
 			serverNodeWatchers.clear
 		}

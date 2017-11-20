@@ -1,11 +1,14 @@
 ServerStatusWatcher {
 
+	classvar states = #[\isOff, \isBooting, \isSettingUp, \isReady, \isQuitting];
+
 	var server;
 
 	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
-	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
+	var <state = \isOff;
+	var <hasBooted = false, <>serverBooting = false, <unresponsive = false;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
@@ -16,6 +19,22 @@ ServerStatusWatcher {
 	*new { |server|
 		^super.newCopyArgs(server)
 	}
+
+	state_ { |newState|
+		if (states.includes(newState)) {
+			state = newState;
+			"%: boot state is now %.\n".postf(server, newState.cs);
+		} {
+			warn(
+				"%:% - % is not a valid boot state."
+				.format(this, thisMethod.name, newState)
+			);
+		}
+	}
+	isBooting { ^state == \isBooting }
+	isReady { ^state == \isReady }
+	isSettingUp { ^state == \isSettingUp }
+	isQitting { ^state == \isQuitting }
 
 	quit { |onComplete, onFailure, watchShutDown = true|
 		if(watchShutDown) {
@@ -36,24 +55,29 @@ ServerStatusWatcher {
 		this.sendNotifyRequest(flag);
 	}
 
+	// flag true requests notification, false turns it off
 	sendNotifyRequest { |flag = true|
 		var doneOSCFunc, failOSCFunc;
-		var desiredClientID;
 
-		if(serverRunning.not) { ^this };
+		if(hasBooted.not) { ^this };
 
-		// flag true requests notification, false turns it off
-		notified = flag;
+		// if (Server.postingBootInfo) {
+			"% s %".postf(server, \sendNotify, flag);
+		// };
 
 		// set up oscfuncs for possible server responses, \done or \failed
-		doneOSCFunc = OSCFunc({|msg|
+		doneOSCFunc = OSCFunc({ |msg|
 			var newClientID = msg[2], newMaxLogins = msg[3];
 			failOSCFunc.free;
 
-			if(flag) {
+			if (newClientID.isNil) {
+				// notify off got done response:
+				notified = false;
+			} {
+				// notify on:
 				// on registering scsynth sends back a free clientID and its maxLogins,
 				// which usually adjust the server object's settings:
-				this.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
+				server.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
 			};
 
 		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
@@ -61,13 +85,11 @@ ServerStatusWatcher {
 		failOSCFunc = OSCFunc({|msg|
 
 			doneOSCFunc.free;
-			this.prHandleNotifyFailString(msg[2], msg);
+			server.prHandleNotifyFailString(msg[2], msg);
 
 		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
-		// send the notify request - on or off, userSpecifiedClientID or not
-		desiredClientID = if(server.userSpecifiedClientID, { server.clientID }, {-1});
-		server.sendMsg("/notify", flag.binaryValue, desiredClientID);
+		server.sendMsg("/notify", flag.binaryValue, server.clientID);
 
 		if(flag){
 			"Requested notification messages from server '%'\n".postf(server.name)
@@ -76,73 +98,23 @@ ServerStatusWatcher {
 		};
 	}
 
-	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
-		if (newMaxLogins.notNil) {
-			if (newMaxLogins != server.options.maxLogins) {
-				"%: server process has maxLogins % - adjusting my options accordingly.\n"
-				.postf(server, newMaxLogins);
-				server.options.maxLogins = newMaxLogins;
-			} {
-				"%: server process's maxLogins (%) matches my options.\n".postf(server, newMaxLogins);
-			};
-		} {
-			"%: no maxLogins info from server process.\n".postf(server, newMaxLogins);
-		};
-
-		if (newClientID == server.clientID) {
-			"%: keeping clientID (%) as confirmed by server process.\n"
-			.postf(server, newClientID);
-		} {
-			if (server.userSpecifiedClientID.not) {
-				"%: setting clientID to % as obtained from server process.\n"
-				.postf(server, newClientID);
-			} {
-				("% - userSpecifiedClientID % is not free!\n"
-					"Switching to free clientID obtained from server process: %.\n"
-					"If that is problematic, please set clientID by hand before booting.")
-				.format(server, server.clientID, newClientID).warn;
-			};
-		};
-		server.clientID = newClientID;
-	}
-
-	prHandleNotifyFailString {|failString, msg|
-
-		// post info on some known error cases
-		case
-		{ failString.asString.contains("already registered") } {
-			"% - already registered with clientID %.\n".postf(server, msg[3])
-		} { failString.asString.contains("not registered") } {
-			// unregister when already not registered:
-			"% - not registered.\n".postf(server)
-		} { failString.asString.contains("too many users") } {
-			"% - could not register, too many users.\n".postf(server)
-		} {
-			// throw error if unknown failure
-			Error(
-				"Failed to register with server '%' for notifications: %\n"
-				"To recover, please reboot the server.".format(server.name, msg)).throw;
-		};
-	}
-
 	doWhenBooted { |onComplete, limit = 100, onFailure|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
+		if (server.isReady) {
+			^forkIfNeeded({ onComplete.value(server) })
+		};
+
 		^Routine {
 			while {
-				serverRunning.not
-				/*
-				// this is not yet implemented.
-				or: { serverBooting and: mBootNotifyFirst.not }
+				this.isReady.not
 				and: { (limit = limit - 1) > 0 }
-				and: { server.applicationRunning.not }
-				*/
-
 			} {
 				0.2.wait;
 			};
-			if(serverRunning.not, {
+
+			if(this.isReady.not, {
 				if(onFailure.notNil) {
 					postError = (onFailure.value(server) == false);
 				};
@@ -151,10 +123,13 @@ ServerStatusWatcher {
 				};
 				serverBooting = false;
 				server.changed(\serverRunning);
-			}, onComplete);
+			}, {
+				server.sync;
+				onComplete.value;
+			});
 
 		}.play(AppClock)
-	}
+ 	}
 
 
 	watchQuit { |onComplete, onFailure|
@@ -208,11 +183,17 @@ ServerStatusWatcher {
 		}
 	}
 
-	stopStatusWatcher {
+	stop {
 		statusWatcher !? { statusWatcher.disable }
 	}
 
-	startAliveThread { | delay = 0.0 |
+	stopStatusWatcher { this.stop }
+	startAliveThread { |delay=0.0| this.start(delay) }
+
+	start { | delay = 0.0 |
+		if (Server.postingBootInfo) {
+			"%.% with delay %.\n".postf(server, thisMethod.name, delay);
+		};
 		this.addStatusWatcher;
 		^aliveThread ?? {
 			aliveThread = Routine {
@@ -220,6 +201,9 @@ ServerStatusWatcher {
 				delay.wait;
 				loop {
 					alive = false;
+					if (Server.postingBootInfo) {
+						"% . sendStatusMsg...\n".postf(server);
+					};
 					server.sendStatusMsg;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
@@ -246,14 +230,19 @@ ServerStatusWatcher {
 		}
 	}
 
+	serverRunning { ^hasBooted and: notified }
+
 	serverRunning_ { | running |
 
-		if(running != serverRunning) {
-			serverRunning = running;
+		hasBooted = running;
+		if(running != server.serverRunning) {
+			hasBooted = running;
+
 			this.unresponsive = false;
 
-			if (server.serverRunning) {
-				ServerBoot.run(server);
+				// serverBoot happens in prRunBootTask now
+			if (running) {
+				server.state_(\isSettingUp)
 			} {
 				ServerQuit.run(server);
 
@@ -266,8 +255,8 @@ ServerStatusWatcher {
 				if(server.isLocal.not) {
 					notified = false;
 				};
+				this.state_(\isOff);
 			};
-			{ server.changed(\serverRunning) }.defer;
 		}
 
 	}

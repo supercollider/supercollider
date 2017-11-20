@@ -140,7 +140,7 @@ AbstractServerAction : AbstractSystemAction {
 
 	*run { arg server;
 		var selector = this.functionSelector;
-		// selector.postln;
+		if (Server.postingBootInfo) { "%: ServerTree.run\n".postf(server) };
 		this.performFunction(server, { arg obj; obj.perform(selector, server) });
 	}
 
@@ -151,6 +151,9 @@ AbstractServerAction : AbstractSystemAction {
 	*add { arg object, server;
 		var list;
 		if (server.isNil)  { server = \all };
+		if (Server.postingBootInfo) {
+			"ServerBoot adds to server %: \n    %\n".postf(server, object.cs);
+		};
 		if (this.objects.isNil) { this.init };
 		list = this.objects.at(server);
 		if (list.isNil) { list = List.new; this.objects.put(server, list) };
