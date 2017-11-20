@@ -910,7 +910,7 @@ Server {
 	isBooting { ^statusWatcher.isBooting }
 	isSettingUp { ^statusWatcher.isSettingUp }
 	isReady { ^statusWatcher.isReady }
-	isQitting { ^statusWatcher.isQitting }
+	isQuitting { ^statusWatcher.isQitting }
 
 	startAliveThread { | delay=0.0 | statusWatcher.startAliveThread(delay) }
 	stopAliveThread { statusWatcher.stopAliveThread }
