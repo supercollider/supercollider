@@ -311,6 +311,12 @@ Server {
 	}
 
 	*new { |name, addr, options, clientID|
+		var existing = Server.all.detect { |sv| sv.name == name };
+		if (existing.notNil) {
+			"Server(%) already exists, returning existing.\n"
+			.format(name).warn;
+			^existing
+		};
 		^super.new.init(name, addr, options, clientID)
 	}
 
@@ -943,7 +949,7 @@ Server {
 
 	// TODO: re-enable  recover and onFailure;
 	// also add timeout arg here?
-	boot { | startAliveThread = true, recover = false, onFailure |
+	bootOld { | startAliveThread = true, recover = false, onFailure |
 		// temp to keep boot working after changes for bootAlt
 		var appBooted, timeout = 5;
 
@@ -1009,7 +1015,7 @@ Server {
 		}
 	}
 
-	bootAlt { | startAliveThread = true, recover = false, onFailure, onComplete, timeout = 5 |
+	boot { | startAliveThread = true, recover = false, onFailure, onComplete, timeout = 5 |
 		// measure time for all boot steps:
 		var t0 = thisThread.seconds, now = { thisThread.seconds - t0 };
 		var pt = { |str=""| "t %: %".format(now.().round(0.01), str).postln; };
