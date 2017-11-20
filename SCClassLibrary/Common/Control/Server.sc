@@ -944,6 +944,8 @@ Server {
 	// TODO: re-enable  recover and onFailure;
 	// also add timeout arg here?
 	boot { | startAliveThread = true, recover = false, onFailure |
+		// temp to keep boot working after changes for bootAlt
+		var appBooted, timeout = 5;
 
 		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
 			"%: You will have to manually boot this server.\n".postf(this);
@@ -973,20 +975,38 @@ Server {
 					// not sure this should be here or elsewhere...
 					// this.bootInit(recover);
 					if(startAliveThread) { statusWatcher.start };
+					appBooted = true
 				};
 			} {
 				statusWatcher.serverBooting = false;
 				"%.boot - server process rebooting.\n".postf(this);
-				this.reboot;
+				fork { 0.01.wait; this.reboot };
 			}
 		}, {
 			this.bootServerApp({
 				if (Server.postingBootInfo) {
 					"%.boot - after bootServerApp...\n".postf(this);
 				};
-				if(startAliveThread) { statusWatcher.start }
-			}, )
+				if(startAliveThread) { statusWatcher.start };
+			})
 		}, 0.25);
+
+		// quick inlining of initial bootsteps
+		fork {
+			var test, tests = { [this.applicationRunning, this.hasBooted, this.notified] };
+			while {
+				test = tests.().every(_ == true);
+				test.not and: { timeout > 0 }
+			} {
+				timeout = timeout - 0.1;
+				0.1.wait;
+			};
+			if (test) {
+				this.prRunBootTask;
+			} {
+				"% boot failed after timeout!".format(this).warn;
+			}
+		}
 	}
 
 	bootAlt { | startAliveThread = true, recover = false, onFailure, onComplete, timeout = 5 |
@@ -1006,7 +1026,11 @@ Server {
 			this.quit(watchShutDown: false)
 		};
 
-		if(this.isReady) { "server '%' already running".format(this.name).postln; ^this };
+		if(this.isReady) {
+			onComplete.value(this);
+			"server '%' already running".format(this.name).postln;
+			^this
+		};
 		if(this.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 		this.state = \isBooting;
 		statusWatcher.serverBooting = true;
@@ -1076,7 +1100,7 @@ Server {
 				if (Server.postingBootInfo) { "% boot - finalize setup\n".postf(this) };
 				this.prRunBootTask;
 				pt.("<- total boot time after prRunBootTask finished.");
-
+				onComplete.value(this);
 			} {
 				pt.("*** % boot - failed or timed out - do onFailure.".format(this));
 				onFailure.value(this);
