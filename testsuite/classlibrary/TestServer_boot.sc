@@ -93,7 +93,7 @@ TestServer_boot : UnitTest {
 			"*** test_fourWaysToPlaySound - waitForBoot action runs!".postln;
 
 			// 4 ways to make sounds on the first 8 chans
-			Pbind(\legato, 2, \amp, 0.3, \dur, 0.25, \server, s).play(quant: 0);
+			Pbind(\legato, 2, \amp, 0.3, \dur, Pn(0.25, 4), \server, s).play(quant: 0);
 			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
 			Synth(\def2, [\out, 4, \amp, 0.3], s);
 			NodeProxy.audio(s).source_({ PinkNoise.ar(0.2) ! 2 }).play(6);
