@@ -411,6 +411,7 @@ Server {
 
 	prRunBootTask {
 		this.state_(\isSettingUp);
+		statusWatcher.serverBooting = false;
 
 		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
 		forkIfNeeded( {
