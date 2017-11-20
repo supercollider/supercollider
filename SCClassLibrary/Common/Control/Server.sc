@@ -407,7 +407,7 @@ Server {
 		this.state_(\isSettingUp);
 
 		if (Server.postingBootInfo) { "%.%\n".postf(this, thisMethod.name) };
-		Task {
+		forkIfNeeded( {
 			this.bootInit;
 			if (Server.postingBootInfo) { "prRun: % - %\n".postf(this, "ServerBoot.run") };
 			ServerBoot.run(this);
@@ -423,7 +423,7 @@ Server {
 			while { tempSetupItems.notEmpty } {
 				tempSetupItems.removeAt(0).value;
 			};
-		}.play(AppClock);
+		}, AppClock);
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
@@ -601,8 +601,6 @@ Server {
 		this.clientID = newClientID;
 		statusWatcher.notified = true; // and lock again
 
-		// and finalize setup:
-		this.prRunBootTask;
 	}
 
 	prHandleNotifyFailString {|failString, msg|
@@ -908,6 +906,12 @@ Server {
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
+	isOff { ^statusWatcher.isOff }
+	isBooting { ^statusWatcher.isBooting }
+	isSettingUp { ^statusWatcher.isSettingUp }
+	isReady { ^statusWatcher.isReady }
+	isQitting { ^statusWatcher.isQitting }
+
 	startAliveThread { | delay=0.0 | statusWatcher.startAliveThread(delay) }
 	stopAliveThread { statusWatcher.stopAliveThread }
 	aliveThreadIsRunning { ^statusWatcher.aliveThread.isPlaying }
@@ -985,8 +989,103 @@ Server {
 		}, 0.25);
 	}
 
+	bootAlt { | startAliveThread = true, recover = false, onFailure, onComplete, timeout = 5 |
+		// measure time for all boot steps:
+		var t0 = thisThread.seconds, now = { thisThread.seconds - t0 };
+		var pt = { |str=""| "t %: %".format(now.().round(0.01), str).postln; };
+		var ptIf = { |str=""| if (Server.postingBootInfo) { pt.(str) } };
+
+		if(bootAndQuitDisabled or: { addr.isLocal.not }) {
+			"%: You cannot boot a remote or bootAndQuitDisabled server.\n".postf(this);
+			^this
+		};
+
+		// prepare for reboot if unresponsive - is this ok?
+		if(recover.not and: { this.unresponsive }) {
+			pt.("server '%' unresponsive, rebooting ...".format(this.name));
+			this.quit(watchShutDown: false)
+		};
+
+		if(this.isReady) { "server '%' already running".format(this.name).postln; ^this };
+		if(this.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
+		this.state = \isBooting;
+		statusWatcher.serverBooting = true;
+
+		ptIf.("starting boot routine:");
+		Routine {
+			// if there is a server at my address, re-adopt or reboot it
+			var cond = Condition.new, cond2 = Condition.new;
+			var programRunning = false, notified = false;
+
+			if (Server.postingBootInfo) {
+				"\n *** first boot Rask begins: ".postln;
+				"%.boot - pinging server process first ... \n".postf(this);
+			};
+
+			// this is the rare exception, so post when it happens
+			this.prPingApp({
+				if (recover) {
+					pt.("% boot found running server, recovering it.\n".format(this));
+					programRunning = true;
+					cond.unhang;
+				} {
+					pt.("% boot - found running server, rebooting it.\n".format(this));
+					this.reboot;
+					thisThread.stop
+				};
+			}, {
+
+				ptIf.("try appBoot (pingApp found no running server, as expected)");
+
+				// bootServerApp is the default case
+				this.bootServerApp({
+					ptIf.("%.boot - after bootServerApp...\n".format(this));
+					0.1.wait; // wait needed for failed pid to go away first
+					if (this.applicationRunning) {
+						programRunning = true;
+						ptIf.("unhang because app has booted");
+						cond.unhang;
+					}
+				})
+			}, 0.25);
+
+			// pt.value("cond.hang for app boot...");
+			cond.hang(timeout);
+			// pt.value("cond unhung after app boot...");
+
+			if (programRunning) {
+				//	app has booted OK, so continue
+				if(startAliveThread) { statusWatcher.start };
+				fork {
+					0.01.wait;
+					while { this.hasBooted.not or: { this.notified.not } } {
+						0.1.wait
+					};
+					ptIf.("booted and notified, so unhang!");
+					cond2.unhang;
+				};
+			};
+
+			pt.("cond2.hang for notification and clientID:");
+			cond2.hang((timeout - now.().postln).max(0.6));
+			// pt.("cond2 unhung after notified");
+
+			// and finalize setup:
+			if (this.hasBooted and: this.notified) {
+				ptIf.("booted and notified  ...");
+				if (Server.postingBootInfo) { "% boot - finalize setup\n".postf(this) };
+				this.prRunBootTask;
+				pt.("<- total boot time after prRunBootTask finished.");
+
+			} {
+				pt.("*** % boot - failed or timed out - do onFailure.".format(this));
+				onFailure.value(this);
+			}
+
+		}.play(AppClock)
+	}
+
 	bootInit { | recover = false |
-		thisMethod.postln;
 		// if(recover) { this.newNodeAllocators } {
 		// 	"% calls newAllocators\n".postf(thisMethod);
 		// this.newAllocators };
