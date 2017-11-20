@@ -51,16 +51,19 @@ TestServer_boot : UnitTest {
 	test_allocWhileBooting {
 		var s = Server(\test), done = false, count = 0;
 		var prevNodeID = -1, nodeID = 0, failed = false;
-		// 5000 * 0.001 = 5 sec to boot and reach serverRunning
-		var timeoutCount = 5000;
+		var timer = fork {
+			5.wait;
+			failed = true;
+			"% - server boot timed out.".format(thisMethod).warn;
+		};
 
 		s.boot;
+
 		while {
-			timeoutCount = timeoutCount - 1;
-			(timeoutCount > 0)
-			and: { done.not and: { failed.not } }
+			count < 1000 and: { failed.not }
 		} {
 			if(s.serverRunning) {
+				".".post;
 				count = count + 1;
 				nodeID = s.nextNodeID;
 				if(nodeID <= prevNodeID) {
@@ -68,17 +71,14 @@ TestServer_boot : UnitTest {
 					"failed: prevNodeID % and nodeID = % "
 					.format(prevNodeID, nodeID).warn;
 				};
-
 				prevNodeID = nodeID;
-				done = count > 1000;
 			};
 			0.001.wait;
 		};
-		if (timeoutCount <= 0) {
-			"% - server timed out and did not reach serverRunning = true."
-			.warn;
-			failed = true
-		};
+		"end of while loop, timer stops...".postln;
+
+		timer.stop;
+
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
@@ -95,8 +95,6 @@ TestServer_boot : UnitTest {
 
 		s.waitForBoot({
 			var amps = List[];
-			// should work without wait eventually
-			// 1.wait;
 
 			// 4 ways to make sounds on the first 8 chans
 			Pbind(\legato, 1.1, \server, s).play;
@@ -134,7 +132,6 @@ TestServer_boot : UnitTest {
 		);
 
 		Ndef.dictFor(s).clear;
-		s.quit;
 		s.remove;
 		o.free;
 	}
