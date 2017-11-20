@@ -51,10 +51,14 @@ TestServer_boot : UnitTest {
 	test_allocWhileBooting {
 		var s = Server(\test), done = false, count = 0;
 		var prevNodeID = -1, nodeID = 0, failed = false;
+		// 5000 * 0.001 = 5 sec to boot and reach serverRunning
+		var timeoutCount = 5000;
 
 		s.boot;
 		while {
-			done.not and: { failed.not }
+			timeoutCount = timeoutCount - 1;
+			(timeoutCount > 0)
+			and: { done.not and: { failed.not } }
 		} {
 			if(s.serverRunning) {
 				count = count + 1;
@@ -69,6 +73,11 @@ TestServer_boot : UnitTest {
 				done = count > 1000;
 			};
 			0.001.wait;
+		};
+		if (timeoutCount <= 0) {
+			"% - server timed out and did not reach serverRunning = true."
+			.warn;
+			failed = true
 		};
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
