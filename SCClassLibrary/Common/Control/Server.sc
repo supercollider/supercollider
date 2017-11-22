@@ -549,6 +549,7 @@ Server {
 		statusWatcher.notified = true; // and lock again
 
 		forkIfNeeded {
+			this.changed(\serverRunning);
 			this.initTree;
 			this.sync;
 			statusWatcher.notified = true; // and lock again
