@@ -573,7 +573,7 @@ SynthDef {
 	send { arg server, completionMsg;
 		var servers = (server ?? { Server.allRunningServers }).asArray;
 		servers.do { |each|
-			if(each.serverRunning.not) {
+			if(each.hasBooted.not) {
 				"Server % not running, could not send SynthDef.".format(server.name).warn
 			};
 			if(metadata.trueAt(\shouldNotSend)) {

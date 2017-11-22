@@ -204,15 +204,14 @@ ServerStatusWatcher {
 	serverRunning { ^hasBooted and: notified }
 
 	serverRunning_ { | running |
-		hasBooted = running;
 		if(running != server.serverRunning) {
 			this.unresponsive = false;
 
-			if (running) {
-				server.doWhenBooted {
-					ServerBoot.run(server);
-				};
+			if (running and: { hasBooted != running }) {
+				hasBooted = running;
+				ServerBoot.run(server);
 			} {
+				hasBooted = running;
 				ServerQuit.run(server);
 
 				server.disconnectSharedMemory;

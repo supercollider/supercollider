@@ -23,27 +23,30 @@ Volume {
 	}
 
 	sendSynthDef {
-		server.doWhenBooted({
-			numOutputChannels = this.numChannels;
-			defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
-			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
-				XOut.ar(bus,
-					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-					In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
-				);
-			}).send(server);
+		if (server.hasBooted) {
+			fork {
+				numOutputChannels = this.numChannels;
+				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
+				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
+					XOut.ar(bus,
+						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+						In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
+					);
+				}).send(server);
 
-			server.sync;
+				server.sync;
 
-			updateFunc = {
-				ampSynth = nil;
-				if(persist) { this.updateSynth }
-			};
+				updateFunc = {
+					thisMethod.postln;
+					ampSynth = nil;
+					if(persist) { this.updateSynth }
+				};
 
-			ServerTree.add(updateFunc);
+				ServerTree.add(updateFunc, server);
 
-			this.updateSynth
-		})
+				this.updateSynth;
+			}
+		};
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
