@@ -8,7 +8,7 @@ TestServer_clientID_booted : UnitTest {
 	// with running server
 	test_clientIDResetByServer {
 		var options = ServerOptions.new;
-		var s = Server(\testserv1, NetAddr("localhost", 57111), options);
+		var s = Server(\test_clientIDResetByServer, NetAddr("localhost", 57111), options);
 
 		s.options.maxLogins = 4;
 		s.clientID = 3;
@@ -21,7 +21,7 @@ TestServer_clientID_booted : UnitTest {
 
 		1.wait;
 
-		s = Server(\testserv2, NetAddr("localhost", 57112), options, 3);
+		s = Server(\test_clientIDResetByServer2, NetAddr("localhost", 57112), options, 3);
 
 		this.bootServer(s);
 		s.sync;
@@ -32,7 +32,7 @@ TestServer_clientID_booted : UnitTest {
 	}
 
 	test_nodeIDAlloc_ServerTree {
-		var s = Server(\testserv3, NetAddr("localhost", 57113));
+		var s = Server(\test_clientIDResetByServer3, NetAddr("localhost", 57113));
 		var synth1, synth2;
 		var func = { synth1 = Synth("default"); };
 
@@ -53,7 +53,11 @@ TestServer_clientID_booted : UnitTest {
 
 	test_clientIDLockedWhileRunning {
 		var options = ServerOptions.new.maxLogins_(4);
-		var s = Server(\testserv4, NetAddr("localhost", 57114), options, clientID: 1);
+		var s = Server(
+			\test_clientIDLockedWhileRunning,
+			NetAddr("localhost", 57114),
+			options,
+			clientID: 1);
 		var lockedID;
 
 		this.bootServer(s);

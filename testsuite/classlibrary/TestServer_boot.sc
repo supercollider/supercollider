@@ -2,7 +2,7 @@ TestServer_boot : UnitTest {
 
 	test_Volume {
 		fork {
-			var s = Server(\test_Volume);
+			var s = Server(\test_Volume, NetAddr("localhost", 57111));
 			var queryReply;
 			var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
 
@@ -18,14 +18,15 @@ TestServer_boot : UnitTest {
 
 			this.assert(queryReply == correctReply,
 				"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
-			0.2.wait;
+			0.1.wait;
+
 			s.quit.remove;
 		}
 	}
 
 	test_waitForBoot {
 		var options = ServerOptions.new;
-		var s = Server(\testserv1, NetAddr("localhost", 57111), options);
+		var s = Server(\test_waitForBoot, NetAddr("localhost", 57112), options);
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
 		var cond = Condition();
@@ -44,14 +45,13 @@ TestServer_boot : UnitTest {
 			"waitForBoot should allow starting a synth."
 		);
 
-		s.quit;
-		s.remove;
 		of.free;
+		s.quit.remove;
 	}
 
 	test_bootSync {
 		var options = ServerOptions.new;
-		var s = Server(\testserv1, NetAddr("localhost", 57111), options);
+		var s = Server(\test_bootSync, NetAddr("localhost", 57113), options);
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
 		var synth;
@@ -66,13 +66,12 @@ TestServer_boot : UnitTest {
 			"bootSync should allow starting a synth right after continuing."
 		);
 
-		s.quit;
-		s.remove;
 		of.free;
+		s.quit.remove;
 	}
 
 	test_allocWhileBooting {
-		var s = Server(\test), done = false, count = 0;
+		var s = Server(\test_allocWhileBooting), done = false, count = 0;
 		var prevNodeID = -1, nodeID = 0, failed = false;
 		var timer = fork {
 			5.wait;
@@ -105,11 +104,12 @@ TestServer_boot : UnitTest {
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
+		s.quit.remove;
 	}
 
 	test_fourWaysToPlaySound {
 		var options = ServerOptions.new;
-		var s = Server(\testserv1, NetAddr("localhost", 57111), options);
+		var s = Server(\test_fourWaysToPlaySound, NetAddr("localhost", 57114), options);
 		var amps, flags;
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var cond = Condition();

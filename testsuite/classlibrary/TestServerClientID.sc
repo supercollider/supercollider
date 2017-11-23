@@ -19,7 +19,7 @@ the tests should also include irregular numbers for maxLogins, e.g. 1, 2, 3, 5, 
 TestServer_clientID : UnitTest {
 	// these while server is off
 	test_clientIDChecks {
-		var s = Server(\testID);
+		var s = Server(\test_clientIDChecks);
 		this.assert(s.clientID == 0, "s.clientID should be 0 by default.");
 		// test checks for bad input
 		s.clientID = -1.sqrt;
@@ -36,17 +36,17 @@ TestServer_clientID : UnitTest {
 
 	test_userSpecifiedClientID {
 		var options = ServerOptions.new;
-		var s = Server(\testUServ1, NetAddr("localhost", 57111), options, 1);
+		var s = Server(\test_userSpecifiedClientID, nil, options, 1);
 		this.assert(s.clientID.isNil, "Making a server with invalid clientID should return a server with clientID nil.");
 		options.maxLogins_(8);
 		s.remove;
-		s = Server(\testUServ2, NetAddr("localhost", 57111), options, 7);
+		s = Server(\test_userSpecifiedClientID, nil, options, 7);
 		this.assert(s.clientID == 7, "Making a server with valid nonzero clientID should work.");
 		s.remove;
 	}
 
 	test_allocatorRanges {
-		var s = Server(\testAlloc);
+		var s = Server(\test_allocatorRanges);
 		var prevClass = Server.nodeAllocClass;
 
 		Server.nodeAllocClass = NodeIDAllocator;
