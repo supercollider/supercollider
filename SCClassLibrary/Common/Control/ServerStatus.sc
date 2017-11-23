@@ -209,7 +209,10 @@ ServerStatusWatcher {
 
 			if (running and: { hasBooted != running }) {
 				hasBooted = running;
-				ServerBoot.run(server);
+				forkIfNeeded {
+					ServerBoot.run(server);
+					server.sync;
+				};
 			} {
 				hasBooted = running;
 				ServerQuit.run(server);
