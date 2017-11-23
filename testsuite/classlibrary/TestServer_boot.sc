@@ -1,5 +1,28 @@
 TestServer_boot : UnitTest {
 
+	test_Volume {
+		fork {
+			var s = Server(\test_Volume);
+			var queryReply;
+			var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
+
+			// set volume so its synthdef, synth and set get sent right after boot
+			s.volume.volume = -1;
+			s.bootSync;
+
+			OSCFunc({ |msg|
+				queryReply = msg;
+			},'/g_queryTree.reply', s.addr).oneShot;
+			s.sendMsg("/g_queryTree", 0);
+			s.sync;
+
+			this.assert(queryReply == correctReply,
+				"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
+			0.2.wait;
+			s.quit.remove;
+		}
+	}
+
 	test_waitForBoot {
 		var options = ServerOptions.new;
 		var s = Server(\testserv1, NetAddr("localhost", 57111), options);
