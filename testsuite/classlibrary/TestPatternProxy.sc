@@ -188,9 +188,15 @@ TestPatternProxy : UnitTest {
 		var x, a;
 		var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
 		var assert = { |a, b, which|
-			//a = a.collect(removeCleanup);
-			//b = b.collect(removeCleanup);
-			this.assert(a == b, "testing '%' failed.".format(which), false)
+			// Give events in the "expected" output default parents so that they compare
+			// equal with Pevent-generated events.
+			b = b.collect { |x,i|
+				if(x.class == Event) {
+					x.parent = Event.parentEvents.default;
+				};
+				x
+			};
+			this.assertEquals(a, b, "testing '%' failed.".format(which), false)
 		};
 
 
