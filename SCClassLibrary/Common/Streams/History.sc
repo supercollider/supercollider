@@ -159,7 +159,10 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	play { |start=0, end, verbose=true|	// line numbers;
 		// starting from past 0 may not work.
 		if (lines.isEmpty) {
-			"History.current is empty, cannot play.".postln;
+			"% - % is empty, so there is nothing to play.".postf(
+				thisMethod,
+				if (this == History.current) { "History.current" } { "this history" }
+			);
 			^this
 		};
 		start = start.clip(0, lines.lastIndex);
@@ -335,9 +338,9 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^str.clumps(indices.differentiate)
 	}
 
-	*evaluateLineAt { |index| current.evaluateLineAt(index) }
+	*evalLineAt { |index| current.evalLineAt(index) }
 
-	evaluateLineAt { |index|
+	evalLineAt { |index|
 		var line, codeString, result;
 		if (index.isNil) { ^this };
 		line = lines[index];

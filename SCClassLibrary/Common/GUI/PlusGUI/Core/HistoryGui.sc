@@ -300,13 +300,6 @@ HistoryGui : JITGui {
 		if (filtering) { object.hasMovedOn = true; };
 	}
 
-	postInlined { |index|
-		thisMethod.deprecated(
-			HistoryGui.methods.detect { |m| m.name == \showLineAt }
-		);
-		this.showLineAt(index);
-	}
-
 	showLineAt { |index|
 		var line;
 		if (object.lines.isNil) { ^this };
