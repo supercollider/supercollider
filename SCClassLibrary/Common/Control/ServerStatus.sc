@@ -25,10 +25,16 @@ ServerStatusWatcher {
 			onComplete.value;
 		};
 		this.stopAliveThread;
+		hasBooted = false;
+		alive = false;
 		notified = false;
 		serverBooting = false;
+		unresponsive = false;
+
 		this.serverRunning = false;
-		server.changed(\serverRunning);
+		// server.changed(\serverRunning) should be deferred in dependants!
+		//  just in case some don't, defer here to avoid gui updates breaking.
+		defer { server.changed(\serverRunning) };
 		bootNotifyFirst = true;
 	}
 

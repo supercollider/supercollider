@@ -36,8 +36,10 @@ ScIDE {
 		serverController.remove;
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
+			defer {
 			this.send(\defaultServerRunningChanged, [
-				server.hasBooted, server.addr.hostname, server.addr.port, server.unresponsive]);
+				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
+			}
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;

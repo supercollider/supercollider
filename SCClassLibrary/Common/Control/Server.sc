@@ -548,12 +548,12 @@ Server {
 		this.clientID = newClientID;
 		statusWatcher.notified = true; // and lock again
 
-		forkIfNeeded {
+		forkIfNeeded({
 			this.changed(\serverRunning);
 			this.initTree;
 			this.sync;
 			statusWatcher.notified = true; // and lock again
-		};
+		}, AppClock);
 	}
 
 	prHandleNotifyFailString {|failString, msg|
