@@ -353,6 +353,8 @@ inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer)
 }
 
 // ver 2
+/** \note Relevant supernova code: `sc_synthdef::prepare(void)`
+ */
 GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion)
 {
 	int32 name[kSCNodeDefNameLen];

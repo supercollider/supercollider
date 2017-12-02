@@ -36,6 +36,9 @@ struct ParamSpec
 
 typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
 
+/** \note Relevant scsynth code: `GraphDef_Read(World *, char*&, GraphDef*, int32)`
+ *  \note Relevant supernova code: `sc_synthdef::prepare(void)`
+ */
 struct GraphDef
 {
 	NodeDef mNodeDef;
