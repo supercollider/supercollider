@@ -91,7 +91,7 @@ Volume {
 	}
 
 	freeSynth {
-		ServerTree.remove(updateFunc);
+		ServerTree.remove(updateFunc, server);
 		updateFunc = nil;
 		ampSynth.release;
 		ampSynth = nil
