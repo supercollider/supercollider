@@ -37,7 +37,6 @@ Volume {
 				server.sync;
 
 				updateFunc = {
-					thisMethod.postln;
 					ampSynth = nil;
 					if(persist) { this.updateSynth }
 				};
