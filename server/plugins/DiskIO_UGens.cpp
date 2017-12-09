@@ -27,6 +27,7 @@
 #include <sndfile.h>
 
 #include <atomic>
+#include <functional>
 #include <new>
 #include <SC_Lock.h>
 
