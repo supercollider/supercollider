@@ -1,27 +1,25 @@
 TestServer_boot : UnitTest {
 
-	test_Volume {
-		fork {
-			var s = Server(\test_Volume, NetAddr("localhost", 57111));
-			var queryReply;
-			var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
+	test_volume {
+		var s = Server(\test_Volume, NetAddr("localhost", 57111));
+		var queryReply;
+		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
 
-			// set volume so its synthdef, synth and set get sent right after boot
-			s.volume.volume = -1;
-			s.bootSync;
+		// set volume so its synthdef, synth and set get sent right after boot
+		s.volume.volume = -1;
+		s.bootSync;
 
-			OSCFunc({ |msg|
-				queryReply = msg;
-			},'/g_queryTree.reply', s.addr).oneShot;
-			s.sendMsg("/g_queryTree", 0);
-			s.sync;
+		OSCFunc({ |msg|
+			queryReply = msg;
+		},'/g_queryTree.reply', s.addr).oneShot;
+		s.sendMsg("/g_queryTree", 0);
+		s.sync;
 
-			this.assert(queryReply == correctReply,
-				"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
-			0.1.wait;
+		this.assert(queryReply == correctReply,
+			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
+		0.1.wait;
 
-			s.quit.remove;
-		}
+		s.quit.remove;
 	}
 
 	test_waitForBoot {
