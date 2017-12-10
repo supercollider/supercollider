@@ -29,28 +29,28 @@ TestServer_clientID : UnitTest {
 	}
 
 	test_default {
-		this.assert(server.clientID == 0, "s.clientID should be 0 by default.");
+		this.assertEquals(server.clientID, 0, "s.clientID should be 0 by default.");
 	}
 
 	test_badInputTypes {
 		server.clientID = -1.sqrt;
-		this.assert(server.clientID == 0, "s.clientID should block NaN.");
+		this.assertEquals(server.clientID, 0, "s.clientID should block NaN.");
 		server.clientID = -123;
-		this.assert(server.clientID == 0, "s.clientID should block negative numbers.");
+		this.assertEquals(server.clientID, 0, "s.clientID should block negative numbers.");
 		server.clientID = 0.57;
-		this.assert(server.clientID == 0, "s.clientID should block floating point numbers.");
+		this.assertEquals(server.clientID, 0, "s.clientID should block floating point numbers.");
 	}
 
 	test_tooHigh {
 		server.options.maxLogins = 32;
 		server.clientID = server.options.maxLogins;
-		this.assert(server.clientID == 0, "s.clientID should block number >= maxLogins.");
+		this.assertEquals(server.clientID, 0, "s.clientID should block number >= maxLogins.");
 	}
 
 	test_validRange {
 		server.options.maxLogins = 32;
 		server.clientID = server.options.maxLogins - 1;
-		this.assert(server.clientID == 31, "s.clientID should be settable if valid.");
+		this.assertEquals(server.clientID, 31, "s.clientID should be settable if valid.");
 	}
 
 	test_userSpecifiedClientID_invalid {
@@ -63,7 +63,7 @@ TestServer_clientID : UnitTest {
 	test_userSpecifiedClientID_valid {
 		var options = ServerOptions().maxLogins_(8);
 		var s = Server(thisMethod.name, nil, options, 7);
-		this.assert(s.clientID == 7, "Making a server with valid nonzero clientID should work.");
+		this.assertEquals(s.clientID, 7, "Making a server with valid nonzero clientID should work.");
 		s.remove;
 	}
 
@@ -75,21 +75,21 @@ TestServer_clientID : UnitTest {
 		server.options.maxLogins = 1;
 		server.newAllocators;
 
-		this.assert(
-			server.nodeAllocator.numIDs == (2 ** 26),
+		this.assertEquals(
+			server.nodeAllocator.numIDs, 2 ** 26,
 			"for a single client, nodeAllocator should have its normal range."
 		);
-		this.assert(
-			server.audioBusAllocator.size == (server.options.numAudioBusChannels - server.options.firstPrivateBus),
+		this.assertEquals(
+			server.audioBusAllocator.size, server.options.numAudioBusChannels - server.options.firstPrivateBus,
 			"for a single client, audioBusAllocator should have full range minus hardware channels."
 		);
 
-		this.assert(
-			server.controlBusAllocator.size == server.options.numControlBusChannels,
+		this.assertEquals(
+			server.controlBusAllocator.size, server.options.numControlBusChannels,
 			"for a single client, controlBusAllocator should have full range."
 		);
-		this.assert(
-			server.bufferAllocator.size == server.options.numBuffers,
+		this.assertEquals(
+			server.bufferAllocator.size, server.options.numBuffers,
 			"for a single client, bufferAllocator should have full range."
 		);
 
@@ -105,22 +105,22 @@ TestServer_clientID : UnitTest {
 		server.options.maxLogins = 16;
 		server.newAllocators;
 
-		this.assert(
-			server.nodeAllocator.numIDs == (2 ** 26),
+		this.assertEquals(
+			server.nodeAllocator.numIDs, 2 ** 26,
 			"for 16 clients, nodeAllocator should have its normal range."
 		);
-		this.assert(
-			server.audioBusAllocator.size ==
-			(server.options.numAudioBusChannels - server.options.firstPrivateBus div: 16),
-			"for 16 clients, controlBusAllocator should divide private bus range evenly."
+		this.assertEquals(
+			server.audioBusAllocator.size,
+			(server.options.numAudioBusChannels - server.options.firstPrivateBus) div: 16,
+			"for 16 clients, controlBusAllocator should divide non-hardware channels evenly."
 		);
 
-		this.assert(
-			server.controlBusAllocator.size == (server.options.numControlBusChannels div: 16),
+		this.assertEquals(
+			server.controlBusAllocator.size, server.options.numControlBusChannels div: 16,
 			"for 16 clients, controlBusAllocator should divide private bus range evenly."
 		);
-		this.assert(
-			server.bufferAllocator.size == (server.options.numBuffers div: 16),
+		this.assertEquals(
+			server.bufferAllocator.size, server.options.numBuffers div: 16,
 			"for 16 clients, bufferAllocator should divide range evenly."
 		);
 
