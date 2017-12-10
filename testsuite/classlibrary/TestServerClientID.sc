@@ -17,80 +17,113 @@ the tests should also include irregular numbers for maxLogins, e.g. 1, 2, 3, 5, 
 */
 
 TestServer_clientID : UnitTest {
-	// these while server is off
-	test_clientIDChecks {
-		var s = Server(\test_clientIDChecks);
-		this.assert(s.clientID == 0, "s.clientID should be 0 by default.");
-		// test checks for bad input
-		s.clientID = -1.sqrt;
-		this.assert(s.clientID == 0, "s.clientID should block non-Integers.");
-		s.clientID = -123;
-		this.assert(s.clientID == 0, "s.clientID should block negative numbers.");
-		s.options.maxLogins = 32;
-		s.clientID = s.options.maxLogins;
-		this.assert(s.clientID == 0, "s.clientID should block number >= maxLogins.");
-		s.clientID = s.options.maxLogins - 1;
-		this.assert(s.clientID == 31, "s.clientID should be settable if valid.");
-		s.remove;
+
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
 	}
 
-	test_userSpecifiedClientID {
+	tearDown {
+		server.remove;
+	}
+
+	test_default {
+		this.assert(server.clientID == 0, "s.clientID should be 0 by default.");
+	}
+
+	test_badInputTypes {
+		server.clientID = -1.sqrt;
+		this.assert(server.clientID == 0, "s.clientID should block NaN.");
+		server.clientID = -123;
+		this.assert(server.clientID == 0, "s.clientID should block negative numbers.");
+		server.clientID = 0.57;
+		this.assert(server.clientID == 0, "s.clientID should block floating point numbers.");
+	}
+
+	test_tooHigh {
+		server.options.maxLogins = 32;
+		server.clientID = server.options.maxLogins;
+		this.assert(server.clientID == 0, "s.clientID should block number >= maxLogins.");
+	}
+
+	test_validRange {
+		server.options.maxLogins = 32;
+		server.clientID = server.options.maxLogins - 1;
+		this.assert(server.clientID == 31, "s.clientID should be settable if valid.");
+	}
+
+	test_userSpecifiedClientID_invalid {
 		var options = ServerOptions.new;
-		var s = Server(\test_userSpecifiedClientID, nil, options, 1);
+		var s = Server(thisMethod.name, nil, options, 1);
 		this.assert(s.clientID.isNil, "Making a server with invalid clientID should return a server with clientID nil.");
-		options.maxLogins_(8);
-		s.remove;
-		s = Server(\test_userSpecifiedClientID, nil, options, 7);
+		s.remove
+	}
+
+	test_userSpecifiedClientID_valid {
+		var options = ServerOptions().maxLogins_(8);
+		var s = Server(thisMethod.name, nil, options, 7);
 		this.assert(s.clientID == 7, "Making a server with valid nonzero clientID should work.");
 		s.remove;
 	}
 
-	test_allocatorRanges {
-		var s = Server(\test_allocatorRanges);
+	test_allocatorRanges_singleClient {
+		// remember the pre-test allocator
 		var prevClass = Server.nodeAllocClass;
 
 		Server.nodeAllocClass = NodeIDAllocator;
-		s.options.maxLogins = 1;
-		s.newAllocators;
+		server.options.maxLogins = 1;
+		server.newAllocators;
 
 		this.assert(
-			s.nodeAllocator.numIDs == (2 ** 26),
-			"nodeAllocator should have its normal range."
+			server.nodeAllocator.numIDs == (2 ** 26),
+			"for a single client, nodeAllocator should have its normal range."
 		);
 		this.assert(
-			s.audioBusAllocator.size == (s.options.numAudioBusChannels - s.options.firstPrivateBus),
+			server.audioBusAllocator.size == (server.options.numAudioBusChannels - server.options.firstPrivateBus),
 			"for a single client, audioBusAllocator should have full range minus hardware channels."
 		);
 
 		this.assert(
-			s.controlBusAllocator.size == s.options.numControlBusChannels,
+			server.controlBusAllocator.size == server.options.numControlBusChannels,
 			"for a single client, controlBusAllocator should have full range."
 		);
 		this.assert(
-			s.bufferAllocator.size == s.options.numBuffers,
+			server.bufferAllocator.size == server.options.numBuffers,
 			"for a single client, bufferAllocator should have full range."
 		);
 
-		s.options.maxLogins = 16;
-		s.newAllocators;
+		// reset pre-test allocator
+		Server.nodeAllocClass = prevClass;
+	}
+
+	test_allocatorRanges_multiClient {
+		// remember the pre-test allocator
+		var prevClass = Server.nodeAllocClass;
+
+		Server.nodeAllocClass = NodeIDAllocator;
+		server.options.maxLogins = 16;
+		server.newAllocators;
 
 		this.assert(
-			s.audioBusAllocator.size ==
-			(s.options.numAudioBusChannels - s.options.firstPrivateBus div: 16),
+			server.nodeAllocator.numIDs == (2 ** 26),
+			"for 16 clients, nodeAllocator should have its normal range."
+		);
+		this.assert(
+			server.audioBusAllocator.size ==
+			(server.options.numAudioBusChannels - server.options.firstPrivateBus div: 16),
 			"for 16 clients, controlBusAllocator should divide private bus range evenly."
 		);
 
 		this.assert(
-			s.controlBusAllocator.size == (s.options.numControlBusChannels div: 16),
+			server.controlBusAllocator.size == (server.options.numControlBusChannels div: 16),
 			"for 16 clients, controlBusAllocator should divide private bus range evenly."
 		);
 		this.assert(
-			s.bufferAllocator.size == (s.options.numBuffers div: 16),
+			server.bufferAllocator.size == (server.options.numBuffers div: 16),
 			"for 16 clients, bufferAllocator should divide range evenly."
 		);
 
 		Server.nodeAllocClass = prevClass;
-		s.remove;
-
 	}
 }
