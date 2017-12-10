@@ -17,7 +17,6 @@ TestServer_boot : UnitTest {
 
 		this.assert(queryReply == correctReply,
 			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
-		0.1.wait;
 
 		s.quit.remove;
 	}
