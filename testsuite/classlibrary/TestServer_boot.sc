@@ -98,37 +98,52 @@ TestServer_boot : UnitTest {
 		s.quit;
 	}
 
-	test_fourWaysToPlaySound {
+	// Check that with s.waitForBoot, the four most common ways of creating sound processes will work.
+	test_waitForBoot_fourWaysToPlaySound {
 		var amps; // holds measured amplitudes of the 8 channels
 		var flags; // whether or not the amplitudes in each pair of channels was nonzero
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var pbindPlayer;
+		var cond = Condition(); // signalled at end of collecting results
 
 		s.options.numOutputBusChannels = 8;
 
-		this.bootServer(s);
+		s.waitForBoot {
+			// 4 ways to make sounds on the first 8 chans
+			pbindPlayer = Pbind(\legato, 1.1, \server, s).play;
+			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
+			Synth(\default, [\out, 4], s);
+			Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
 
-		// 4 ways to make sounds on the first 8 chans
-		pbindPlayer = Pbind(\legato, 1.1, \server, s).play;
-		{ Saw.ar([220, 330], 0.1) }.play(s, 2);
-		Synth(\default, [\out, 4], s);
-		Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
+			// get 8 sound levels
+			{
+				SendReply.kr(
+					Impulse.kr(10), '/the8Amps',
+					Amplitude.kr(InFeedback.ar(0, 8), 0.001, 1),
+				)
+			}.play(s);
 
-		// get 8 sound levels
-		{
-			SendReply.kr(
-				Impulse.kr(10), '/the8Amps',
-				Amplitude.kr(InFeedback.ar(0, 8), 0.001, 1),
-			)
-		}.play(s);
+			s.sync;
+			1.wait;
 
-		s.sync;
-		2.wait;
+			// clean up
+			pbindPlayer.stop;
+			Ndef.dictFor(s).clear;
+			cond.test_(true).unhang;
+		};
+
+		// wait for 5 seconds or for unhang
+		cond.hang(5);
 
 		// clean up
-		pbindPlayer.stop;
-		Ndef.dictFor(s).clear;
 		s.quit;
+		o.free;
+
+		// exit early if server booting failed
+		if(cond.test.not) {
+			this.assert(false, "Server failed to boot after 5 seconds.");
+			^nil
+		};
 
 		// check whether each pair of channels was nonzero
 		flags = amps.clump(2).collect(_.every(_ != 0));
@@ -144,7 +159,5 @@ TestServer_boot : UnitTest {
 		this.assert(flags[3],
 			"Server: Ndef should play right after booting."
 		);
-
-		o.free;
 	}
 }
