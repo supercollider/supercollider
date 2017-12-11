@@ -98,35 +98,34 @@ TestServer_boot : UnitTest {
 	}
 
 	test_fourWaysToPlaySound {
-		var amps, flags;
+		var amps = [];
+		var flags;
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var cond = Condition();
+		var pbindPlayer;
 
 		s.options.numOutputBusChannels = 8;
 
-		s.waitForBoot({
-			var amps = List[];
+		this.bootServer(s);
 
-			// 4 ways to make sounds on the first 8 chans
-			Pbind(\legato, 1.1, \server, s).play;
-			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
-			Synth(\default, [\out, 4], s);
-			Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
-			// get 8 sound levels
-			{
-				SendReply.kr(
-					Impulse.kr(10), '/the8Amps',
-					Amplitude.kr(InFeedback.ar(0, 8), 0.001, 1),
-				)
-			}.play(s);
+		// 4 ways to make sounds on the first 8 chans
+		pbindPlayer = Pbind(\legato, 1.1, \server, s).play;
+		{ Saw.ar([220, 330], 0.1) }.play(s, 2);
+		Synth(\default, [\out, 4], s);
+		Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
+		// get 8 sound levels
+		{
+			SendReply.kr(
+				Impulse.kr(10), '/the8Amps',
+				Amplitude.kr(InFeedback.ar(0, 8), 0.001, 1),
+			)
+		}.play(s);
 
-			2.wait;
+		s.sync;
+		2.wait;
 
-			s.quit;
-			cond.unhang;
-		});
-
-		cond.hang;
+		pbindPlayer.stop;
+		s.quit;
 
 		flags = amps.clump(2).collect(_.every(_ > 0.01)).postln;
 		this.assert(flags[0],
