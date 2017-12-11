@@ -52,14 +52,34 @@ TestServer_boot : UnitTest {
 		s.quit;
 	}
 
+	// Check that we can never create duplicate nodeIDs once server.serverRunning
+	// is true, even if the server has not been fully synced yet.
 	test_allocWhileBooting {
 		var prevNodeID = -1;
 		var nodeID = 0;
 		var failed = false;
 
-		this.bootServer(s);
+		s.boot;
 
-		1000.do {
+		// wait until serverRunning is true, for up to 5 seconds
+		block { |break|
+			5000.do {
+				if(s.serverRunning) {
+					break.value
+				} {
+					0.001.wait;
+				}
+			}
+		};
+
+		// exit early if server boot fails
+		if(s.serverRunning.not) {
+			this.assert(false, "Server did not boot after 5 seconds.");
+			s.quit;
+			^nil
+		};
+
+		100.do {
 			".".post;
 			nodeID = s.nextNodeID;
 			if(nodeID <= prevNodeID) {
