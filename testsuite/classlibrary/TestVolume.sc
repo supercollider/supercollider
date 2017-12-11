@@ -9,6 +9,10 @@ TestVolume : UnitTest {
 		s.volume.volume = -1;
 		s.bootSync;
 
+		// FIXME: wait for Volume synth to be requested after boot. Since there is no programmatic way
+		// to check when this request has been sent, we have to do this the uncomfortable way.
+		0.2.wait;
+
 		OSCFunc({ |msg|
 			queryReply = msg;
 		},'/g_queryTree.reply', s.addr).oneShot;
