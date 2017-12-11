@@ -546,7 +546,6 @@ Server {
 			.postf(this, newClientID);
 		};
 		this.clientID = newClientID;
-		statusWatcher.notified = true; // and lock again
 
 		forkIfNeeded({
 			this.changed(\serverRunning);
