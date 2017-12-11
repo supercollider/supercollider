@@ -1080,6 +1080,10 @@ Server {
 		}
 	}
 
+	*allBootedServers {
+		^this.all.select(_.hasBooted)
+	}
+
 	*allRunningServers {
 		^this.all.select(_.serverRunning)
 	}
