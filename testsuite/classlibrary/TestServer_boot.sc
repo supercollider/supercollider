@@ -125,6 +125,7 @@ TestServer_boot : UnitTest {
 		2.wait;
 
 		pbindPlayer.stop;
+		Ndef.dictFor(s).clear;
 		s.quit;
 
 		flags = amps.clump(2).collect(_.every(_ > 0.01)).postln;
@@ -141,7 +142,6 @@ TestServer_boot : UnitTest {
 			"Server: Ndef should play right after booting."
 		);
 
-		Ndef.dictFor(s).clear;
 		o.free;
 	}
 }
