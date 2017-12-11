@@ -91,6 +91,8 @@ TestServer_boot : UnitTest {
 			prevNodeID = nodeID;
 		};
 
+		"Done."postln;
+
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
