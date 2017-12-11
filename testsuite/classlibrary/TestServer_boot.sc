@@ -128,7 +128,7 @@ TestServer_boot : UnitTest {
 		Ndef.dictFor(s).clear;
 		s.quit;
 
-		flags = amps.clump(2).collect(_.every(_ > 0.01)).postln;
+		flags = amps.clump(2).collect(_.every(_ != 0)).postln;
 		this.assert(flags[0],
 			"Server: Pbind should play right after booting."
 		);
