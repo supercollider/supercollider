@@ -7,7 +7,6 @@ TestServer_boot : UnitTest {
 	}
 
 	tearDown {
-		0.5.wait;
 		s.remove;
 	}
 
