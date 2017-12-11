@@ -98,10 +98,9 @@ TestServer_boot : UnitTest {
 	}
 
 	test_fourWaysToPlaySound {
-		var amps = [];
-		var flags;
+		var amps; // holds measured amplitudes of the 8 channels
+		var flags; // whether or not the amplitudes in each pair of channels was nonzero
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
-		var cond = Condition();
 		var pbindPlayer;
 
 		s.options.numOutputBusChannels = 8;
@@ -113,6 +112,7 @@ TestServer_boot : UnitTest {
 		{ Saw.ar([220, 330], 0.1) }.play(s, 2);
 		Synth(\default, [\out, 4], s);
 		Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
+
 		// get 8 sound levels
 		{
 			SendReply.kr(
@@ -124,11 +124,13 @@ TestServer_boot : UnitTest {
 		s.sync;
 		2.wait;
 
+		// clean up
 		pbindPlayer.stop;
 		Ndef.dictFor(s).clear;
 		s.quit;
 
-		flags = amps.clump(2).collect(_.every(_ != 0)).postln;
+		// check whether each pair of channels was nonzero
+		flags = amps.clump(2).collect(_.every(_ != 0));
 		this.assert(flags[0],
 			"Server: Pbind should play right after booting."
 		);
