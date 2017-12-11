@@ -1,5 +1,30 @@
 TestVolume : UnitTest {
 
+	test_booting {
+		var s = Server.default;
+		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
+		var queryReply;
+
+		// set volume so its synthdef, synth and set get sent right after boot
+		s.volume.volume = -1;
+		s.bootSync;
+
+		// FIXME: wait for Volume synth to be requested after boot. Since there is no programmatic way
+		// to check when this request has been sent, we have to do this the uncomfortable way.
+		0.2.wait;
+
+		OSCFunc({ |msg|
+			queryReply = msg;
+		},'/g_queryTree.reply', s.addr).oneShot;
+		s.sendMsg("/g_queryTree", 0);
+		s.sync;
+
+		this.assertEquals(queryReply, correctReply,
+			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
+
+		s.quit;
+	}
+
 	test_setVolume {
 
 		var s, ampSynthVolume;

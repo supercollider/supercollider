@@ -1,32 +1,16 @@
 TestServer_boot : UnitTest {
 
-	test_Volume {
-		fork {
-			var s = Server(\test_Volume, NetAddr("localhost", 57111));
-			var queryReply;
-			var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
+	var s; // mock server for testing
 
-			// set volume so its synthdef, synth and set get sent right after boot
-			s.volume.volume = -1;
-			s.bootSync;
+	setUp {
+		s = Server(this.class.name, nil, ServerOptions());
+	}
 
-			OSCFunc({ |msg|
-				queryReply = msg;
-			},'/g_queryTree.reply', s.addr).oneShot;
-			s.sendMsg("/g_queryTree", 0);
-			s.sync;
-
-			this.assert(queryReply == correctReply,
-				"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
-			0.1.wait;
-
-			s.quit.remove;
-		}
+	tearDown {
+		s.remove;
 	}
 
 	test_waitForBoot {
-		var options = ServerOptions.new;
-		var s = Server(\test_waitForBoot, NetAddr("localhost", 57112), options);
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
 		var cond = Condition();
@@ -46,12 +30,10 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quit.remove;
+		s.quit;
 	}
 
 	test_bootSync {
-		var options = ServerOptions.new;
-		var s = Server(\test_bootSync, NetAddr("localhost", 57113), options);
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
 		var synth;
@@ -67,63 +49,72 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quit.remove;
+		s.quit;
 	}
 
+	// Check that we can never create duplicate nodeIDs once server.serverRunning
+	// is true, even if the server has not been fully synced yet.
 	test_allocWhileBooting {
-		var s = Server(\test_allocWhileBooting), done = false, count = 0;
-		var prevNodeID = -1, nodeID = 0, failed = false;
-		var timer = fork {
-			5.wait;
-			failed = true;
-			"% - server boot timed out.".format(thisMethod).warn;
-		};
+		var prevNodeID = -1;
+		var nodeID = 0;
+		var failed = false;
 
 		s.boot;
 
-		while {
-			count < 1000 and: { failed.not }
-		} {
-			if(s.serverRunning) {
-				".".post;
-				count = count + 1;
-				nodeID = s.nextNodeID;
-				if(nodeID <= prevNodeID) {
-					failed = true;
-					"failed: prevNodeID % and nodeID = % "
-					.format(prevNodeID, nodeID).warn;
-				};
-				prevNodeID = nodeID;
-			};
-			0.001.wait;
+		// wait until serverRunning is true, for up to 5 seconds
+		block { |break|
+			5000.do {
+				if(s.serverRunning) {
+					break.value
+				} {
+					0.001.wait;
+				}
+			}
 		};
-		"end of while loop, timer stops...".postln;
 
-		timer.stop;
+		// exit early if server boot fails
+		if(s.serverRunning.not) {
+			this.assert(false, "Server did not boot after 5 seconds.");
+			s.quit;
+			^nil
+		};
+
+		100.do {
+			".".post;
+			nodeID = s.nextNodeID;
+			if(nodeID <= prevNodeID) {
+				failed = true;
+				"failed: prevNodeID % and nodeID = %"
+				.format(prevNodeID, nodeID).warn;
+			};
+			prevNodeID = nodeID;
+		};
+
+		"Done.".postln;
 
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
-		s.quit.remove;
+		s.quit;
 	}
 
-	test_fourWaysToPlaySound {
-		var options = ServerOptions.new;
-		var s = Server(\test_fourWaysToPlaySound, NetAddr("localhost", 57114), options);
-		var amps, flags;
+	// Check that with s.waitForBoot, the four most common ways of creating sound processes will work.
+	test_waitForBoot_fourWaysToPlaySound {
+		var amps; // holds measured amplitudes of the 8 channels
+		var flags; // whether or not the amplitudes in each pair of channels was nonzero
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
-		var cond = Condition();
+		var pbindPlayer;
+		var cond = Condition(); // signalled at end of collecting results
 
 		s.options.numOutputBusChannels = 8;
 
-		s.waitForBoot({
-			var amps = List[];
-
+		s.waitForBoot {
 			// 4 ways to make sounds on the first 8 chans
-			Pbind(\legato, 1.1, \server, s).play;
+			pbindPlayer = Pbind(\legato, 1.1, \server, s).play;
 			{ Saw.ar([220, 330], 0.1) }.play(s, 2);
 			Synth(\default, [\out, 4], s);
 			Ndef(\testX -> s.name, { PinkNoise.ar(0.1) ! 2 }).play(6);
+
 			// get 8 sound levels
 			{
 				SendReply.kr(
@@ -132,15 +123,30 @@ TestServer_boot : UnitTest {
 				)
 			}.play(s);
 
-			2.wait;
+			s.sync;
+			1.wait;
 
-			s.quit;
-			cond.unhang;
-		});
+			// clean up
+			pbindPlayer.stop;
+			Ndef.dictFor(s).clear;
+			cond.test_(true).unhang;
+		};
 
-		cond.hang;
+		// wait for 5 seconds or for unhang
+		cond.hang(5);
 
-		flags = amps.clump(2).collect(_.every(_ > 0.01)).postln;
+		// clean up
+		s.quit;
+		o.free;
+
+		// exit early if server booting failed
+		if(cond.test.not) {
+			this.assert(false, "Server failed to boot after 5 seconds.");
+			^nil
+		};
+
+		// check whether each pair of channels was nonzero
+		flags = amps.clump(2).collect(_.every(_ != 0));
 		this.assert(flags[0],
 			"Server: Pbind should play right after booting."
 		);
@@ -153,9 +159,5 @@ TestServer_boot : UnitTest {
 		this.assert(flags[3],
 			"Server: Ndef should play right after booting."
 		);
-
-		Ndef.dictFor(s).clear;
-		s.remove;
-		o.free;
 	}
 }
