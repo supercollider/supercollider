@@ -137,7 +137,7 @@ Switches the server program to scsynth. This is the default server.
 
 InstanceMethods::
 
-private:: doSend
+private:: doSend, prHandleClientLoginInfoFromServer, prHandleNotifyFailString, prPingApp
 
 method:: sendMsg
 send an OSC-message to the server.
