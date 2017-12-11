@@ -1,7 +1,17 @@
 TestServer_boot : UnitTest {
 
+	var s; // mock server for testing
+
+	setUp {
+		s = Server(this.class.name, nil, ServerOptions());
+	}
+
+	tearDown {
+		0.5.wait;
+		s.remove;
+	}
+
 	test_volume {
-		var s = Server(\test_Volume, NetAddr("localhost", 57111));
 		var queryReply;
 		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
 
@@ -18,12 +28,10 @@ TestServer_boot : UnitTest {
 		this.assert(queryReply == correctReply,
 			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
 
-		s.quit.remove;
+		s.quit;
 	}
 
 	test_waitForBoot {
-		var options = ServerOptions.new;
-		var s = Server(\test_waitForBoot, NetAddr("localhost", 57112), options);
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
 		var cond = Condition();
@@ -43,12 +51,10 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quit.remove;
+		s.quit;
 	}
 
 	test_bootSync {
-		var options = ServerOptions.new;
-		var s = Server(\test_bootSync, NetAddr("localhost", 57113), options);
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
 		var synth;
@@ -64,11 +70,11 @@ TestServer_boot : UnitTest {
 		);
 
 		of.free;
-		s.quit.remove;
+		s.quit;
 	}
 
 	test_allocWhileBooting {
-		var s = Server(\test_allocWhileBooting), done = false, count = 0;
+		var done = false, count = 0;
 		var prevNodeID = -1, nodeID = 0, failed = false;
 		var timer = fork {
 			5.wait;
@@ -101,12 +107,10 @@ TestServer_boot : UnitTest {
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
 		);
-		s.quit.remove;
+		s.quit;
 	}
 
 	test_fourWaysToPlaySound {
-		var options = ServerOptions.new;
-		var s = Server(\test_fourWaysToPlaySound, NetAddr("localhost", 57114), options);
 		var amps, flags;
 		var o = OSCFunc({ |msg| amps = msg.drop(3) }, '/the8Amps');
 		var cond = Condition();
@@ -152,7 +156,6 @@ TestServer_boot : UnitTest {
 		);
 
 		Ndef.dictFor(s).clear;
-		s.remove;
 		o.free;
 	}
 }
