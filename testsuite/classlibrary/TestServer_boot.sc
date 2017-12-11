@@ -74,35 +74,22 @@ TestServer_boot : UnitTest {
 	}
 
 	test_allocWhileBooting {
-		var done = false, count = 0;
-		var prevNodeID = -1, nodeID = 0, failed = false;
-		var timer = fork {
-			5.wait;
-			failed = true;
-			"% - server boot timed out.".format(thisMethod).warn;
-		};
+		var prevNodeID = -1;
+		var nodeID = 0;
+		var failed = false;
 
-		s.boot;
+		this.bootServer(s);
 
-		while {
-			count < 1000 and: { failed.not }
-		} {
-			if(s.serverRunning) {
-				".".post;
-				count = count + 1;
-				nodeID = s.nextNodeID;
-				if(nodeID <= prevNodeID) {
-					failed = true;
-					"failed: prevNodeID % and nodeID = % "
-					.format(prevNodeID, nodeID).warn;
-				};
-				prevNodeID = nodeID;
+		1000.do {
+			".".post;
+			nodeID = s.nextNodeID;
+			if(nodeID <= prevNodeID) {
+				failed = true;
+				"failed: prevNodeID % and nodeID = %"
+				.format(prevNodeID, nodeID).warn;
 			};
-			0.001.wait;
+			prevNodeID = nodeID;
 		};
-		"end of while loop, timer stops...".postln;
-
-		timer.stop;
 
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."
