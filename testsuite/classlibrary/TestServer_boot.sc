@@ -25,7 +25,7 @@ TestServer_boot : UnitTest {
 		s.sendMsg("/g_queryTree", 0);
 		s.sync;
 
-		this.assert(queryReply == correctReply,
+		this.assertEquals(queryReply, correctReply,
 			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
 
 		s.quit;
