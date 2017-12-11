@@ -910,6 +910,10 @@ Server {
 		}
 	}
 
+
+	// FIXME: recover should happen later, after we have a valid clientID!
+	// would then need check whether maxLogins and clientID have changed or not,
+	// and recover would only be possible if no changes.
 	bootInit { | recover = false |
 		// if(recover) { this.newNodeAllocators } {
 		// 	"% calls newAllocators\n".postf(thisMethod);
