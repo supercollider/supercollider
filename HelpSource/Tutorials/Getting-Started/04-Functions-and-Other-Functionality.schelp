@@ -102,7 +102,7 @@ You can mix regular and keyword style if you like, but the regular args must com
 
 code::
 f = { arg a, b, c, d; (a + b) * c - d };
-f.value(2, c:3, b:4, d: 1); // 2 + 4 * 3 - 1
+f.value(2, c:3, b:4, d: 1); // (2 + 4) * 3 - 1
 ::
 
 (Note that SC has no operator precedence, i.e. math operations are done in order, and division and multiplication are not done first. To force an order use parentheses. e.g. 4 + (2* 8) )
