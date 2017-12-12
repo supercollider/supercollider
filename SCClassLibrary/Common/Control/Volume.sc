@@ -28,7 +28,7 @@ Volume {
 			defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
 			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
 				XOut.ar(bus,
-					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+					EnvGen.kr(Env.asr(attackTime: volumeLag, releaseTime: volumeLag, curve:\sine), gate, doneAction:2),
 					In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
 				);
 			}).send(server);
