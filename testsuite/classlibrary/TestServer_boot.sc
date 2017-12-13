@@ -184,7 +184,6 @@ TestServer_boot : UnitTest {
 		var cond = Condition(); // signalled at end of collecting results
 
 		s.options.numOutputBusChannels = 8;
-
 		s.waitForBoot {
 			// 4 ways to make sounds on the first 8 chans
 			pbindPlayer = Pbind(\legato, 1.1, \server, s).play;
@@ -206,21 +205,14 @@ TestServer_boot : UnitTest {
 			// clean up
 			pbindPlayer.stop;
 			Ndef.dictFor(s).clear;
-			cond.test_(true).unhang;
+			cond.unhang;
 		};
 
-		// wait for 5 seconds or for unhang
-		cond.hang(5);
+		cond.hang;
 
 		// clean up
 		s.quit;
 		o.free;
-
-		// exit early if server booting failed
-		if(cond.test.not) {
-			this.assert(false, "Server failed to boot after 5 seconds.");
-			^nil
-		};
 
 		// check whether each pair of channels was nonzero
 		flags = amps.clump(2).collect(_.every(_ != 0));
