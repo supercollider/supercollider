@@ -369,6 +369,9 @@ code::true:: if the server is running on the same machine as sclang, code::false
 method:: remoteControlled
 code::true:: if the server is not being controlled by the machine on which it is running, code::false:: otherwise. This value is the same as code::isLocal:: unless explicitly set.
 
+method:: userSpecifiedClientID
+Deprecated in 3.9. Returns code::false::. Server:clientID can now be set while a server is off, and is locked while the server is running. Thus, userSpecifiedClientID is no longer needed internally, and meaningless.
+
 subsection:: Message Bundling
 
 Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also link::Guides/Bundled-Messages::
