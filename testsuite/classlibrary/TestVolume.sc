@@ -16,7 +16,7 @@ TestVolume : UnitTest {
 		OSCFunc({ |msg|
 			queryReply = msg;
 		},'/g_queryTree.reply', s.addr).oneShot;
-		s.sendMsg("/g_queryTree", 0);
+		s.sendMsg("/g_queryTree", 0, 0);
 		s.sync;
 
 		this.assertEquals(queryReply, correctReply,
