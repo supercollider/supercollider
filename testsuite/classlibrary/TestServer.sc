@@ -1,17 +1,15 @@
 TestServer : UnitTest {
 
-	var big;
+	var big, server;
 
 	// helper method, not a test
 	sync { |size|
-		var f, s, condition, bundleSize;
+		var f, condition, bundleSize;
 		f = big.copyRange(0, (size ? big.size)-1);
 		bundleSize = f.bundleSize;
 
-		s = Server.default;
-		this.bootServer;
 		condition = Condition.new;
-		s.sync(condition, f, s.latency);
+		server.sync(condition, f, server.latency);
 		// we never make it to here
 
 		// 60 seconds
@@ -36,8 +34,14 @@ TestServer : UnitTest {
 		this.sync;
 	}
 
+	tearDown {
+		server.quit;
+	}
 
 	setUp {
+
+		server = Server.default;
+		this.bootServer;
 
 		// mmmmmmm.   fixtures.
 		// bundleSize 28000
