@@ -26,12 +26,13 @@ definitionlist::
 subsection:: /notify
 Register to receive notifications from server
 table::
-## strong::int:: || one to receive notifications, zero to stop receiving them.
+## strong::int:: || 1 to receive notifications, 0 to stop receiving them.
+## strong::int:: || client ID (optional)
 ::
-If argument is one, server will remember your return address and send you notifications. if argument is zero, server will stop sending you notifications.
+If the first argument is 1, server will remember your return address and send you notifications; if 0, server will stop sending notifications.
 
 definitionlist::
-## Asynchronous. || Replies to sender with strong::/done /notify clientID:: when complete. If this client has registered for notifications before, this may be the same ID. Otherwise it will be a new one. Clients can use this ID in multi-client situations to avoid conflicts in node IDs, bus indices, buffer numbers, etc.
+## Asynchronous. || Replies to sender with strong::/done /notify clientID [maxLogins]:: when complete. If this client has registered for notifications before, this may be the same ID. Otherwise it will be a new one. Clients can use this ID in multi-client situations to avoid conflicts when allocating resources such as node IDs, bus indices, and buffer numbers. strong::maxLogins:: is only returned when the client ID argument is supplied in this command. strong::maxLogins:: is not supported by supernova.
 ::
 
 subsection:: /status
