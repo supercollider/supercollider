@@ -96,3 +96,10 @@ SharedIn : AbstractIn {
 		}
 	}
 }
+
++ Server {
+	userSpecifiedClientID {
+		this.deprecated(thisMethod);
+		^false
+	}
+}
