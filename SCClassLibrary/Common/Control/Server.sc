@@ -790,13 +790,9 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	// defaultGroups for all clients on this server:
-
-	allClientIDs { ^(0..this.maxNumClients-1) }
-
 	// keep defaultGroups for all clients on this server:
 	makeDefaultGroups {
-		defaultGroups = this.allClientIDs.collect { |clientID|
+		defaultGroups = this.maxNumClients.collect { |clientID|
 			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
 		};
 		defaultGroup = defaultGroups[clientID];
