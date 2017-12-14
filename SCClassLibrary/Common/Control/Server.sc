@@ -547,12 +547,7 @@ Server {
 		};
 		this.clientID = newClientID;
 
-		forkIfNeeded({
-			this.changed(\serverRunning);
-			this.initTree;
-			this.sync;
-			statusWatcher.notified = true; // and lock again
-		}, AppClock);
+		statusWatcher.notified = true; // and lock again
 	}
 
 	prHandleNotifyFailString {|failString, msg|
