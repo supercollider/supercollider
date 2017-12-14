@@ -12,11 +12,18 @@ Volume {
 	}
 
 	init {
-		if(server.serverRunning) { this.sendSynthDef };
+		// execute immediately if we're already past server tree functions
+		if(server.serverRunning) {
+			this.sendSynthDef;
+			this.updateSynth;
+		};
 
 		initFunc = {
 			ampSynth = nil;
-			this.sendSynthDef
+			this.sendSynthDef;
+
+			// only create synth now if it won't be created by ServerTree
+			if (persist.not) { this.updateSynth };
 		};
 
 		ServerBoot.add(initFunc, server)
@@ -42,8 +49,6 @@ Volume {
 				};
 
 				ServerTree.add(updateFunc, server);
-
-				this.updateSynth;
 			}
 		};
 	}
@@ -60,7 +65,7 @@ Volume {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
 		var active = amp != 1.0;
 		if(active) {
-			if(server.serverRunning) {
+			if(server.hasBooted) {
 				if(ampSynth.isNil) {
 					ampSynth = Synth.after(server.defaultGroup, defName,
 						[\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
