@@ -54,18 +54,31 @@ ServerStatusWatcher {
 			var newClientID = msg[2], newMaxLogins = msg[3];
 			failOSCFunc.free;
 
-			// after notified is set to true, serverBooting will be set to false at the first opportunity
-			notified = newClientID.notNil;
-			if (notified) {
+			if(newClientID.notNil) {
 				// notify on:
 				// on registering scsynth sends back a free clientID and maxLogins
 				// this method doesn't fork/wait so we're still in the clear
+
+				// turn notified off (if it was on) to allow setting clientID
+				notified = false;
 				server.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
 
 				if(serverBooting) {
-					this.prFinalizeBoot;
-					{ server.changed(\serverRunning) }.defer;
-				};
+					// this needs to be forked so that ServerBoot and ServerTree will definitely run before
+					// notified is true.
+					forkIfNeeded {
+						this.prFinalizeBoot;
+
+						// serverRunning will now return true, and serverBooting will be marked as false
+						notified = true;
+						server.changed(\serverRunning)
+					};
+				} {
+					notified = true;
+				}
+
+			} {
+				notified = false;
 			};
 
 		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
@@ -262,11 +275,9 @@ ServerStatusWatcher {
 
 	// final actions needed to finish booting
 	prFinalizeBoot {
-		forkIfNeeded {
-			ServerBoot.run(server);
-			server.sync;
-			server.initTree;
-		};
+		ServerBoot.run(server);
+		server.sync;
+		server.initTree;
 	}
 
 }

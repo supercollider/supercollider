@@ -518,9 +518,6 @@ Server {
 
 	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
 
-		// turn notified off to allow setting clientID
-		statusWatcher.notified = false;
-
 		// only set maxLogins if not internal server
 		if (inProcess.not) {
 			if (newMaxLogins.notNil) {
@@ -546,8 +543,6 @@ Server {
 			.postf(this, newClientID);
 		};
 		this.clientID = newClientID;
-
-		statusWatcher.notified = true; // and lock again
 	}
 
 	prHandleNotifyFailString {|failString, msg|
