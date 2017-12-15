@@ -27,6 +27,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <functional>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
