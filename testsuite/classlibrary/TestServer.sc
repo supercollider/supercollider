@@ -13,28 +13,28 @@ TestServer : UnitTest {
 
 		// 60 seconds
 		this.wait({condition.test}, "waiting for server to finish sync", 60);
-		this.assert(true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize);
+		this.assert(true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
 	}
 
 	test_sync5 {
-		this.sync(5);
+		this.sync(5)
 	}
 	test_sync10 {
-		this.sync(10);
+		this.sync(10)
 	}
 	test_sync30 {
-		this.sync(30);
+		this.sync(30)
 	}
 	// hangs on 50
 	test_sync50 {
-		this.sync(50);
+		this.sync(50)
 	}
 	test_syncAll {
-		this.sync;
+		this.sync
 	}
 
 	tearDown {
-		server.quit;
+		server.quit
 	}
 
 	setUp {
@@ -45,7 +45,7 @@ TestServer : UnitTest {
 		// mmmmmmm.   fixtures.
 		// bundleSize 28000
 		// 76 messages
-		//big.size.debug("big size");
+		// big.size.debug("big size");
 
 		big = [
 			[
