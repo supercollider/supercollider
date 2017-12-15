@@ -10,7 +10,6 @@ TestServer : UnitTest {
 
 		condition = Condition.new;
 		server.sync(condition, f, server.latency);
-		// we never make it to here
 
 		// 60 seconds
 		this.wait({condition.test}, "waiting for server to finish sync", 60);
