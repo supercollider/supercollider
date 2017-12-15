@@ -258,7 +258,7 @@ ServerStatusWatcher {
 
 						// serverRunning will now return true, and serverBooting will be marked as false
 						notified = true;
-						server.changed(\serverRunning)
+						{ server.changed(\serverRunning) }.defer;
 					};
 				} {
 					notified = true;
