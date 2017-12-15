@@ -41,7 +41,7 @@ TestServer : UnitTest {
 	setUp {
 
 		server = Server.default;
-		this.bootServer;
+		this.bootServer(server);
 
 		// mmmmmmm.   fixtures.
 		// bundleSize 28000
