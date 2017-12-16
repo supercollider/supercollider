@@ -10,6 +10,14 @@ TestServer_boot : UnitTest {
 		s.remove;
 	}
 
+	cycleNotify { |server|
+		// XXX: no efficient way to wait
+		server.notify_(false);
+		while { server.notified } { 0.1.wait };
+		server.notify_(true);
+		while { server.notified.not } { 0.1.wait };
+	}
+
 	test_waitForBoot {
 		var vals = List[];
 		var of = OSCFunc({ |msg| vals.add(msg[3]) }, \tr, s.addr);
@@ -50,6 +58,75 @@ TestServer_boot : UnitTest {
 
 		of.free;
 		s.quit;
+	}
+
+	// test that setting notify=false, then notify=true doesn't cause ServerBoot to be run
+	test_notifyAndServerBootActions {
+		var count = 0;
+		var func = { count = count + 1 };
+
+		ServerBoot.add(func, s);
+		this.bootServer(s);
+		this.cycleNotify(s);
+
+		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
+		1.wait;
+
+		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerBoot actions to run.");
+
+		s.quit;
+		ServerBoot.remove(func, s);
+	}
+
+	// test that setting notify=false, then notify=true doesn't cause ServerTree to be run
+	test_notifyAndServerTreeActions {
+		var count = 0;
+		var func = { count = count + 1 };
+
+		ServerTree.add(func, s);
+		this.bootServer(s);
+		this.cycleNotify(s);
+
+		// No efficient way to ensure that ServerTree has run at this point, if it was going to.
+		1.wait;
+
+		this.assertEquals(count, 1, "Toggling Server.notify should not cause ServerTree actions to run.");
+
+		s.quit;
+		ServerTree.remove(func, s);
+	}
+
+	// Check that ServerBoot runs when the server is able to accept commands.
+	// Will not fail deterministically, but should not fail if implementation is correct.
+	test_ServerBootActionTiming {
+		var defName = thisMethod.name;
+		var of, timer;
+		var cond = Condition();
+
+		var func = {
+			SynthDef(defName, {
+				Line.kr(0, 1, 2, doneAction: 2)
+			}).add;
+		};
+
+		ServerBoot.add(func, s);
+		s.waitForBoot {
+			var synth = Synth(defName);
+			of = OSCFunc({
+				cond.test_(true).signal;  // go immediately
+			}, '/n_go', s.addr, argTemplate: [synth.nodeID]);
+		};
+
+		// timout of 5 seconds;
+		timer = fork { 5.wait; cond.unhang };
+		cond.hang;
+
+		timer.stop;
+		s.quit;
+		ServerBoot.remove(func, s);
+		of.free;
+
+		this.assert(cond.test, "ServerBoot should run when the server is able to accept commands.");
 	}
 
 	// Check that we can never create duplicate nodeIDs once server.serverRunning
@@ -107,7 +184,6 @@ TestServer_boot : UnitTest {
 		var cond = Condition(); // signalled at end of collecting results
 
 		s.options.numOutputBusChannels = 8;
-
 		s.waitForBoot {
 			// 4 ways to make sounds on the first 8 chans
 			pbindPlayer = Pbind(\legato, 1.1, \server, s).play;
@@ -129,21 +205,14 @@ TestServer_boot : UnitTest {
 			// clean up
 			pbindPlayer.stop;
 			Ndef.dictFor(s).clear;
-			cond.test_(true).unhang;
+			cond.unhang;
 		};
 
-		// wait for 5 seconds or for unhang
-		cond.hang(5);
+		cond.hang;
 
 		// clean up
 		s.quit;
 		o.free;
-
-		// exit early if server booting failed
-		if(cond.test.not) {
-			this.assert(false, "Server failed to boot after 5 seconds.");
-			^nil
-		};
 
 		// check whether each pair of channels was nonzero
 		flags = amps.clump(2).collect(_.every(_ != 0));

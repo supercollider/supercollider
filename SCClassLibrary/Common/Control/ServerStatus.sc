@@ -45,41 +45,7 @@ ServerStatusWatcher {
 
 	// flag true requests notification, false turns it off
 	sendNotifyRequest { |flag = true|
-		var doneOSCFunc, failOSCFunc;
-
-		if(hasBooted.not) { ^this };
-
-		// set up oscfuncs for possible server responses, \done or \failed
-		doneOSCFunc = OSCFunc({ |msg|
-			var newClientID = msg[2], newMaxLogins = msg[3];
-			failOSCFunc.free;
-
-			if (newClientID.isNil) {
-				// notify off got done response:
-				notified = false;
-			} {
-				// notify on:
-				// on registering scsynth sends back a free clientID and its maxLogins,
-				// which usually adjust the server object's settings:
-				server.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
-			};
-
-		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
-
-		failOSCFunc = OSCFunc({|msg|
-
-			doneOSCFunc.free;
-			server.prHandleNotifyFailString(msg[2], msg);
-
-		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
-
-		server.sendMsg("/notify", flag.binaryValue, server.clientID);
-
-		if(flag){
-			"Requested notification messages from server '%'\n".postf(server.name)
-		} {
-			"Switched off notification messages from server '%'\n".postf(server.name);
-		};
+		this.prSendNotifyRequest(flag, false);
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
@@ -155,7 +121,7 @@ ServerStatusWatcher {
 			statusWatcher =
 			OSCFunc({ arg msg;
 				var cmd, one;
-				if(notify and: { notified.not }) { this.sendNotifyRequest };
+				if(notify and: { notified.not }) { this.prSendNotifyRequest(true,true) };
 				alive = true;
 				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 				avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
@@ -215,10 +181,6 @@ ServerStatusWatcher {
 
 			if (running and: { hasBooted != running }) {
 				hasBooted = running;
-				forkIfNeeded {
-					ServerBoot.run(server);
-					server.sync;
-				};
 			} {
 				hasBooted = running;
 				ServerQuit.run(server);
@@ -258,6 +220,70 @@ ServerStatusWatcher {
 			unresponsive = val;
 			{ server.changed(\serverRunning) }.defer;
 		}
+	}
+
+	// final actions needed to finish booting
+	prFinalizeBoot {
+		ServerBoot.run(server);
+		server.sync;
+		server.initTree;
+	}
+
+	prSendNotifyRequest { |flag = true, addingStatusWatcher|
+		var doneOSCFunc, failOSCFunc;
+
+		if(hasBooted.not) { ^this };
+
+		// set up oscfuncs for possible server responses, \done or \failed
+		doneOSCFunc = OSCFunc({ |msg|
+			var newClientID = msg[2], newMaxLogins = msg[3];
+			failOSCFunc.free;
+
+			if(newClientID.notNil) {
+				// notify on:
+				// on registering scsynth sends back a free clientID and maxLogins
+				// this method doesn't fork/wait so we're still in the clear
+
+				// turn notified off (if it was on) to allow setting clientID
+				notified = false;
+				server.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
+
+				// XXX: this is a workaround because using `serverBooting` is not reliable
+				// when server is rebooted quickly.
+				if(addingStatusWatcher) {
+					// this needs to be forked so that ServerBoot and ServerTree will definitely run before
+					// notified is true.
+					forkIfNeeded {
+						this.prFinalizeBoot;
+
+						// serverRunning will now return true, and serverBooting will be marked as false
+						notified = true;
+						{ server.changed(\serverRunning) }.defer;
+					};
+				} {
+					notified = true;
+				}
+
+			} {
+				notified = false;
+			};
+
+		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
+
+		failOSCFunc = OSCFunc({|msg|
+
+			doneOSCFunc.free;
+			server.prHandleNotifyFailString(msg[2], msg);
+
+		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
+
+		server.sendMsg("/notify", flag.binaryValue, server.clientID);
+
+		if(flag){
+			"Requested notification messages from server '%'\n".postf(server.name)
+		} {
+			"Switched off notification messages from server '%'\n".postf(server.name);
+		};
 	}
 
 }
