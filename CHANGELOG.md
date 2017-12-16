@@ -3,9 +3,10 @@
 ## [3.8.1](https://github.com/supercollider/supercollider/tree/Version-3.8.1) (2017-12-15)
 [Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.8.0...Version-3.8.1)
 
-3.8.1 is a release with only one minor change that fixes a broken build system. For most users, there is no need to upgrade.
+3.8.1 has only one minor change to allow building with GCC 7. There is no need to upgrade from 3.8.0
+unless you plan to build with GCC 7 yourself.
 
-Some include headers have been fixed to allow building on GCC7 ([#3334](https://github.com/supercollider/supercollider/pull/3334))
+Correct headers have been #included to allow building with GCC 7 ([#3334](https://github.com/supercollider/supercollider/pull/3334))
 
 ## [3.8.0](https://github.com/supercollider/supercollider/tree/Version-3.8.0) (2016-09-23)
 [Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.7.2...Version-3.8.0)
