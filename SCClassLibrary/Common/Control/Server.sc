@@ -367,13 +367,13 @@ Server {
 	}
 
 	initTree {
-		forkIfNeeded {
+		fork({
 			this.sendDefaultGroups;
 			tree.value(this);
 			this.sync;
 			ServerTree.run(this);
 			this.sync;
-		};
+		}, AppClock);
 	}
 
 	/* clientID */
