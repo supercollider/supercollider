@@ -232,11 +232,13 @@ Stethoscope {
 	}
 
 	run {
-		synth.play(maxBufSize, bus, cycle);
-		if( view.notNil && synth.bufferIndex.notNil) {
-			scopeView.bufnum = synth.bufferIndex;
-			scopeView.start;
-		};
+		defer {
+			synth.play(maxBufSize, bus, cycle);
+			if( view.notNil && synth.bufferIndex.notNil) {
+				scopeView.bufnum = synth.bufferIndex;
+				scopeView.start;
+			}
+		}
 	}
 
 	stop {
