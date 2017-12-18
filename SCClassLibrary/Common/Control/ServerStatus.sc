@@ -253,13 +253,13 @@ ServerStatusWatcher {
 				if(addingStatusWatcher) {
 					// this needs to be forked so that ServerBoot and ServerTree will definitely run before
 					// notified is true.
-					forkIfNeeded {
+					fork({
 						this.prFinalizeBoot;
 
 						// serverRunning will now return true, and serverBooting will be marked as false
 						notified = true;
-						{ server.changed(\serverRunning) }.defer;
-					};
+						server.changed(\serverRunning);
+					}, AppClock);
 				} {
 					notified = true;
 				}
