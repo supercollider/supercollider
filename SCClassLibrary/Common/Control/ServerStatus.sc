@@ -227,11 +227,6 @@ ServerStatusWatcher {
 		ServerBoot.run(server);
 		server.sync;
 		server.initTree;
-		defer {
-			if (server.scopeWindow.notNil) {
-				server.scopeWindow.run;
-			};
-		}
 	}
 
 	prSendNotifyRequest { |flag = true, addingStatusWatcher|

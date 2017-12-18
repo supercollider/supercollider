@@ -19,8 +19,8 @@ ScopeView : View {
 		};
 	}
 
-	start { defer { this.invokeMethod(\start) }; }
-	stop { defer { this.invokeMethod(\stop) }; }
+	start { this.invokeMethod(\start); }
+	stop { this.invokeMethod(\stop); }
 
 	style { ^this.getProperty(\style) }
 
