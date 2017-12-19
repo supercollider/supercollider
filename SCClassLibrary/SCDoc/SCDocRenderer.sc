@@ -196,7 +196,7 @@ SCDocHTMLRenderer {
 		^res;
 	}
 
-	*renderHeader {|stream, doc|
+	*renderHeader {|stream, doc, body|
 		var x, cats, m, z;
 		var thisIsTheMainHelpFile;
 		var folder = doc.path.dirname;
@@ -243,7 +243,16 @@ SCDocHTMLRenderer {
 		<< "</head>\n";
 
 		stream
-		<< "<body onload='fixTOC();prettyPrint()'>\n"
+		<< "<body onload='fixTOC();prettyPrint()'>\n";
+
+		stream
+		<< "<div id='toc'>\n"
+		<< "<div id='toctitle'>Table of contents</div>\n"
+		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
+		this.renderTOC(stream, body);
+		stream << "</div>";
+
+		stream
 		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
 		<< "<div class='header'>\n";
@@ -969,10 +978,7 @@ SCDocHTMLRenderer {
 			currentImplClass = nil;
 		};
 
-		this.renderHeader(stream, doc);
-		stream << "<div id='toc'>\n";
-		this.renderTOC(stream, body);
-		stream << "</div>";
+		this.renderHeader(stream, doc, body);
 		this.renderChildren(stream, body);
 		this.renderFootNotes(stream);
 		this.renderFooter(stream, doc);
