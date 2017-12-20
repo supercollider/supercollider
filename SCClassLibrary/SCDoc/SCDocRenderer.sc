@@ -201,6 +201,7 @@ SCDocHTMLRenderer {
 		var thisIsTheMainHelpFile;
 		var folder = doc.path.dirname;
 		var undocumented = false;
+		var displayedTitle;
 		if(folder==".",{folder=""});
 
 		// FIXME: use SCDoc.helpTargetDir relative to baseDir
@@ -245,9 +246,16 @@ SCDocHTMLRenderer {
 		stream
 		<< "<body onload='fixTOC();prettyPrint()'>\n";
 
+
+		displayedTitle = if(
+			thisIsTheMainHelpFile,
+			{ "SuperCollider " ++ Main.version },
+			{ doc.title }
+		);
+
 		stream
 		<< "<div id='toc'>\n"
-		<< "<div id='toctitle'>Table of contents</div>\n"
+		<< "<div id='toctitle'>" << displayedTitle << ": table of contents</div>\n"
 		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
 		this.renderTOC(stream, body);
 		stream << "</div>";
@@ -256,7 +264,6 @@ SCDocHTMLRenderer {
 		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
 		<< "<div class='header'>\n";
-
 
 		if(thisIsTheMainHelpFile.not) {
 			stream
@@ -294,12 +301,9 @@ SCDocHTMLRenderer {
 			stream << "</div>";
 		};
 
-		stream << "<h1>";
+		stream << "<h1>" << displayedTitle;
 		if(thisIsTheMainHelpFile) {
-			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
-		} {
-			stream << doc.title;
 		};
 		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
 			stream << "<span id='superclasses'>"
