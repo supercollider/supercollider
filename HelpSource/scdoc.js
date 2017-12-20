@@ -523,12 +523,12 @@ function fixTOC() {
 
 function show_toc() {
     toc.style.display = "block";
-    document.querySelector(".contents").style.marginLeft = "21em";
+    document.querySelector(".contents").style.marginLeft = "20em";
 }
 
 function hide_toc() {
     toc.style.display = "none";
-    document.querySelector(".contents").style.marginLeft = "1em";
+    document.querySelector(".contents").style.marginLeft = "0";
 }
 
 var toc_popped_out = false;

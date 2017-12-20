@@ -1,24 +1,24 @@
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    overflow-y: hidden;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
     color: black;
     background: white;
-/*    max-width: 60em;*/
-/*    margin-left: 20em;*/
-    padding: 0;
-    margin: 0;
-}
-
-html {
-    height: 100%;
-    margin: 0 0 1px;
 }
 
 div.contents {
-    margin: 0 1em;
-    padding-left: 0.3em;
-    padding-right: 0.3em;
-    padding-bottom: 0.5em;
+    position: relative;
+    height: 100%;
+    overflow: auto;
+    margin: 0;
+    padding: 0em 1em;
 }
 
 table {
@@ -475,11 +475,9 @@ td p {
 }
 
 #toc {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 20em;
+    float: left;
 
+    width: 20em;
     height: 100%;
     overflow: auto;
 
