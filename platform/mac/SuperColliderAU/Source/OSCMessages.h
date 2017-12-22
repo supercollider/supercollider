@@ -20,6 +20,7 @@
 #define _OSCMessages_
 #include "scsynthsend.h"
 #include <CoreFoundation/CFString.h>
+#include <stdlib.h>
 
 static int kDefaultNodeId = 1000;
 

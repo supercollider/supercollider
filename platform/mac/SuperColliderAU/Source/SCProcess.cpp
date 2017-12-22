@@ -23,7 +23,8 @@ void* scThreadFunc(void* arg);
 void* scThreadFunc(void* arg)
 {
     World* world  = (World*)arg;
-    World_WaitForQuit(world);
+    World_WaitForQuit(world, true);
+    //World_Cleanup(world, true);
     return 0;
 }
 
@@ -32,6 +33,7 @@ void null_reply_func(struct ReplyAddress* /*addr*/, char* /*msg*/, int /*size*/)
 SCProcess::SCProcess()
 {
     portNum = 0;
+    running = false;
 }
 
 int SCProcess::findNextFreeUdpPort(int startNum){
@@ -66,25 +68,27 @@ int SCProcess::findNextFreeUdpPort(int startNum){
 
 void SCProcess::startUp(WorldOptions options, CFStringRef pluginsPath,  CFStringRef synthdefsPath,  int preferredPort){
 
-    pthread_t scThread;
+
     char stringBuffer[PATH_MAX] ;
-	OSCMessages messages;
+	  OSCMessages messages;
+    std::string bindTo("0.0.0.0");
 
     CFStringGetCString(pluginsPath, stringBuffer, sizeof(stringBuffer), kCFStringEncodingUTF8);
     setenv("SC_PLUGIN_PATH", stringBuffer, 1);
     CFStringGetCString(synthdefsPath, stringBuffer, sizeof(stringBuffer), kCFStringEncodingUTF8);
     setenv("SC_SYNTHDEF_PATH", stringBuffer, 1);
     this->portNum = findNextFreeUdpPort(preferredPort);
+
     world = World_New(&options);
     //world->mDumpOSC=2;
+
     if (world) {
-        if (this->portNum >= 0) World_OpenUDP(world, this->portNum);
-        pthread_create (&scThread, NULL, scThreadFunc, (void*)world);
+        if (this->portNum >= 0) World_OpenUDP(world,  bindTo.c_str(), this->portNum);
+        //pthread_create (&scThread, NULL, scThreadFunc, (void*)world);
+    } else{
+       World_Cleanup(world, true);
     }
-    if (world->mRunning){
-        small_scpacket packet = messages.initTreeMessage();
-        World_SendPacket(world, 16, (char*)packet.buf, null_reply_func);
-    }
+    running = true;
 }
 
 
@@ -123,15 +127,19 @@ void SCProcess::sendNote(int64 oscTime, int note, int velocity){
 void SCProcess::run(const AudioBufferList* in, AudioBufferList* out,  UInt32 inFramesToProcess, AudioTimeStamp inTimeStamp, Float64 sampleRate, int64 oscTime){
     if (world->mRunning){
     	SC_AUAudioDriver* driver = (SC_AUAudioDriver*)this->world->hw->mAudioDriver;
-		//AUCallback(driver,(AudioBufferList*)in, out, &inTimeStamp, inFramesToProcess, sampleRate, oscTime );
-        driver->Callback(in, out, &inTimeStamp, inFramesToProcess, sampleRate, oscTime );
+		  //AUCallback(driver,(AudioBufferList*)in, out, &inTimeStamp, inFramesToProcess, sampleRate, oscTime );
+      driver->Callback(in, out, &inTimeStamp, inFramesToProcess, sampleRate, oscTime );
     }
 }
 
 void SCProcess::quit(){
     OSCMessages messages;
-    if (world && world->mRunning){
+    if (running){
          small_scpacket packet = messages.quitMessage();
-         World_SendPacket(world, 8,(char*)packet.buf, null_reply_func);
+         //World_SendPacket(world, 8,(char*)packet.buf, null_reply_func);
+         //world->hw->mTerminating = true;
+         //world->hw->mQuitProgram->post();
+         World_Cleanup(world, true);
     }
+    running = false;
 }

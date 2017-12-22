@@ -20,11 +20,12 @@
 
 
 
-COMPONENT_ENTRY(SuperColliderAU)
+AUDIOCOMPONENT_ENTRY(AUBaseFactory, SuperColliderAU)
 
 SuperColliderAU::SuperColliderAU(AudioUnit component)
         : AUMIDIEffectBase(component)
 {
+    scprintf("SuperColliderAU: SuperColliderAU\n");
     CreateElements();
     resources = new Resources();
     messages = new OSCMessages();
@@ -34,24 +35,24 @@ SuperColliderAU::SuperColliderAU(AudioUnit component)
     this->lastBeatSent = 0;
     this->lastTickSent = -1;
     this->ticksPerBeat = 0;
-	this->doNoteOn = false;
+	  this->doNoteOn = false;
 }
 
 
 SuperColliderAU::~SuperColliderAU () {
+    scprintf("SuperColliderAU: ~SuperColliderAU\n");
     if(superCollider){
-        //superCollider->quit();
+        superCollider->quit();
         delete superCollider;
     }
-	if(messages)delete messages;
-	if(resources) delete resources;
-    if (state) delete state;
+	  if(messages!=nullptr)delete messages;
+	  if(resources!=nullptr) delete resources;
+    if (state!=nullptr) delete state;
 }
 
 
 ComponentResult	SuperColliderAU::Reset(AudioUnitScope inScope, AudioUnitElement inElement){
     printf("SuperColliderAU:reset \n");
-    fflush(stdout);
 	return noErr;
 }
 
@@ -60,6 +61,7 @@ ComponentResult	SuperColliderAU::GetParameterValueStrings(	AudioUnitScope			inSc
 															AudioUnitParameterID	inParameterID,
 															CFArrayRef *			outStrings)
 {
+    scprintf("SuperColliderAU: GetParameterValueStrings\n");
     return kAudioUnitErr_InvalidProperty;
 }
 
@@ -69,6 +71,8 @@ ComponentResult	SuperColliderAU::GetParameterInfo(	AudioUnitScope			inScope,
 													AudioUnitParameterID	inParameterID,
 													AudioUnitParameterInfo	&outParameterInfo )
 {
+    scprintf("SuperColliderAU: GetParameterInfo\n");
+
     ComponentResult result = noErr;
 
 	if (inScope != kAudioUnitScope_Global)
@@ -91,7 +95,8 @@ ComponentResult	SuperColliderAU::GetParameterInfo(	AudioUnitScope			inScope,
 			outParameterInfo.minValue = specs->getValue(inParameterID-1, kMinValueSpecKey);
 			outParameterInfo.maxValue = specs->getValue(inParameterID-1, kMaxValueSpecKey);
 			outParameterInfo.defaultValue = specs->getValue(inParameterID-1, kDefaultValueSpecKey);
-			outParameterInfo.unit = specs->getValue(inParameterID-1, kUnitSpecKey);
+			//outParameterInfo.unit = specs->getValue(inParameterID-1, kUnitSpecKey);
+      outParameterInfo.unit = kAudioUnitParameterUnit_Generic; // TODO
 			outParameterInfo.flags = 	kAudioUnitParameterFlag_IsWritable | kAudioUnitParameterFlag_IsReadable | specs->getDisplayFlag(inParameterID-1);
         }
         else  result = kAudioUnitErr_InvalidParameter;
@@ -110,6 +115,7 @@ ComponentResult		SuperColliderAU::GetPropertyInfo (AudioUnitPropertyID	inID,
         UInt32 &		outDataSize,
         Boolean &		outWritable)
 {
+    scprintf("SuperColliderAU: GetPropertyInfo\n");
     return AUMIDIEffectBase::GetPropertyInfo (inID, inScope, inElement, outDataSize, outWritable);
 }
 
@@ -121,6 +127,7 @@ ComponentResult		SuperColliderAU::GetProperty(	AudioUnitPropertyID inID,
         AudioUnitElement 	inElement,
         void *			outData )
 {
+    scprintf("SuperColliderAU: GetProperty\n");
     return AUMIDIEffectBase::GetProperty (inID, inScope, inElement, outData);
 }
 
@@ -128,20 +135,20 @@ ComponentResult		SuperColliderAU::GetProperty(	AudioUnitPropertyID inID,
 
 ComponentResult SuperColliderAU::Initialize()
 {
-
+    scprintf("SuperColliderAU: Initialize\n");
     WorldOptions options = kDefaultWorldOptions;
-    options.mPreferredSampleRate=GetSampleRate();
-    options.mBufLength=kDefaultBlockSize;
+    options.mPreferredSampleRate = GetSampleRate();
+    options.mBufLength = kDefaultBlockSize;
     options.mPreferredHardwareBufferFrameSize = GetMaxFramesPerSlice();
-	options.mMaxWireBufs=kDefaultNumWireBufs;
-    options.mRealTimeMemorySize=kDefaultRtMemorySize;
+	  options.mMaxWireBufs = kDefaultNumWireBufs;
+    options.mRealTimeMemorySize = kDefaultRtMemorySize;
 
     CFStringRef pluginsPath = resources->getResourcePath(resources->SC_PLUGIN_PATH);
     CFStringRef synthdefsPath = resources->getResourcePath(resources->SC_SYNTHDEF_PATH);
     CFDictionaryRef plugSpec = (CFDictionaryRef)resources->getPropertyList(resources->PLUGIN_SPEC_FILE);
     CFDictionaryRef serverConfig = (CFDictionaryRef)resources->getPropertyList(resources->SERVER_CONFIG_FILE);
 
-	int udpPortNum = 9989;
+	  int udpPortNum = 9989;
 
     if (CFDictionaryContainsKey(serverConfig, kPortNumberKey)){
         CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kPortNumberKey), kCFNumberIntType,(void *)&udpPortNum);
@@ -153,58 +160,59 @@ ComponentResult SuperColliderAU::Initialize()
 
     if (CFDictionaryContainsKey(serverConfig, kBeatDivKey)){
         CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kBeatDivKey), kCFNumberIntType,(void *)&ticksPerBeat);
-		this->beatsPerTick = 1.0 / ticksPerBeat;
+		      this->beatsPerTick = 1.0 / ticksPerBeat;
     }
 
     if (CFDictionaryContainsKey(serverConfig, kDoNoteOnKey)){
         //CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey),kCFNumberIntType,(void *)&doNoteOn);
-		this->doNoteOn = CFBooleanGetValue( (CFBooleanRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey));
+		    this->doNoteOn = CFBooleanGetValue( (CFBooleanRef) CFDictionaryGetValue(serverConfig, kDoNoteOnKey));
     }
 
-	if (CFDictionaryContainsKey(serverConfig, kNumWireBufsKey)){
-		CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kNumWireBufsKey), kCFNumberIntType,(void *)&options.mMaxWireBufs);
-	}
-	if (CFDictionaryContainsKey(serverConfig, kRtMemorySizeKey)){
-		CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kRtMemorySizeKey),kCFNumberIntType,(void *)&options.mRealTimeMemorySize);
-	}
+	  if (CFDictionaryContainsKey(serverConfig, kNumWireBufsKey)){
+		    CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kNumWireBufsKey), kCFNumberIntType,(void *)&options.mMaxWireBufs);
+	   }
+	  if (CFDictionaryContainsKey(serverConfig, kRtMemorySizeKey)){
+		    CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kRtMemorySizeKey),kCFNumberIntType,(void *)&options.mRealTimeMemorySize);
+	   }
 
-
-	syncOSCOffsetWithTimeOfDay();
-
-    superCollider->startUp(options, pluginsPath, synthdefsPath, udpPortNum);
-
-    if (plugSpec) {
+     if(superCollider->running){
+         superCollider->quit();
+     }
+	   syncOSCOffsetWithTimeOfDay();
+     superCollider->startUp(options, pluginsPath, synthdefsPath, udpPortNum);
+     if (plugSpec) {
         this->haveSpecs = true;
-        specs=new ControlSpecs(plugSpec);
-        superCollider->synthName=specs->synthName;
+        specs = new ControlSpecs(plugSpec);
+        superCollider->synthName = specs->synthName;
         superCollider->makeSynth();
         Globals()->UseIndexedParameters(specs->numberOfParameters+1);
         state = new float[specs->numberOfParameters];
         initState();
-    }
-    else {
+      }
+      else {
         this->haveSpecs = false;
         Globals()->UseIndexedParameters(1);
-    }
+      }
 
-    SetParameter(0, superCollider->portNum);
-    scprintf("*******************************************************\n");
-    scprintf("SuperColliderAU Initialized \n");
-	scprintf("SuperColliderAU provided under the GNU GPL license. http://www.gnu.org/licenses/gpl-2.0.txt \n");
-	scprintf("SuperColliderAU source code: http://supercollider.sf.net \n");
-    scprintf("SuperColliderAU mPreferredHardwareBufferFrameSize: %d \n",options.mPreferredHardwareBufferFrameSize );
-    scprintf("SuperColliderAU mBufLength: %d \n",options.mBufLength );
-    scprintf("SuperColliderAU  port: %d \n", superCollider->portNum );
-	scprintf("SuperColliderAU  mMaxWireBufs: %d \n", options.mMaxWireBufs );
-    scprintf("SuperColliderAU  mRealTimeMemorySize: %d \n", options.mRealTimeMemorySize );
-	scprintf("*******************************************************\n");
-    fflush(stdout);
-    return noErr;
+      SetParameter(0, superCollider->portNum);
+      scprintf("*******************************************************\n");
+      scprintf("SuperColliderAU Initialized \n");
+	    scprintf("SuperColliderAU provided under the GNU GPL license. http://www.gnu.org/licenses/gpl-2.0.txt \n");
+	    scprintf("SuperColliderAU source code: http://supercollider.sf.net \n");
+      scprintf("SuperColliderAU mPreferredHardwareBufferFrameSize: %d \n",options.mPreferredHardwareBufferFrameSize );
+      scprintf("SuperColliderAU mBufLength: %d \n",options.mBufLength );
+      scprintf("SuperColliderAU  port: %d \n", superCollider->portNum );
+	    scprintf("SuperColliderAU  mMaxWireBufs: %d \n", options.mMaxWireBufs );
+      scprintf("SuperColliderAU  mRealTimeMemorySize: %d \n", options.mRealTimeMemorySize );
+	    scprintf("*******************************************************\n");
+      fflush(stdout);
+      return noErr;
 }
 
 
 void SuperColliderAU::initState()
 {
+    scprintf("SuperColliderAU: initState\n");
     for (int i = 0;i< specs->numberOfParameters;i++)
     {
         state[i] =  specs->getValue(i, kDefaultValueSpecKey);
@@ -215,6 +223,7 @@ void SuperColliderAU::initState()
 
 void SuperColliderAU::sendChangedParameters()
 {
+    scprintf("SuperColliderAU: sendChangedParameters\n");
     for (int i = 0;i< specs->numberOfParameters;i++)
     {
         float parameterValue =  GetParameter(i+1);
@@ -232,7 +241,7 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
                                                 const AudioTimeStamp &		inTimeStamp,
                                                 UInt32						nFrames)
 {
-
+  scprintf("SuperColliderAU: Render\n");
 	ComponentResult result = noErr;
 	AUOutputElement *theOutput = GetOutput(0);	// throws if error
 	AUInputElement *theInput = GetInput(0);
@@ -331,6 +340,7 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
 
 
 void SuperColliderAU::resetBeats(){
+    scprintf("SuperColliderAU: resetBeats\n");
 		this->previousBeat = 0;
 		this->lastBeatSent = 0;
 		this->lastTickSent = -1;
@@ -339,7 +349,7 @@ void SuperColliderAU::resetBeats(){
 
 
 double SuperColliderAU::nextTickFrames(Float64 beat, Float64 tempo, UInt32 nFrames){
-
+      scprintf("SuperColliderAU: nextTickFrames\n");
 			double beatsPerCallback;
 
 			if (beat<previousBeat){//looping
@@ -382,6 +392,8 @@ double SuperColliderAU::nextTickFrames(Float64 beat, Float64 tempo, UInt32 nFram
 // from scsynth
 void SuperColliderAU::syncOSCOffsetWithTimeOfDay()
 {
+
+  scprintf("SuperColliderAU: syncOSCOffsetWithTimeOfDay\n");
 	// generate a value gOSCoffset such that
 	// (gOSCOffset + systemTimeInOSCunits)
 	// is equal to gettimeofday time in OSCunits.
@@ -416,6 +428,7 @@ void SuperColliderAU::syncOSCOffsetWithTimeOfDay()
 }
 
 int64 SuperColliderAU::getOscTime( const AudioTimeStamp & inTimeStamp){
+  scprintf("SuperColliderAU: getOscTime\n");
 	int64 targetTimeOSC;
 
 	if (inTimeStamp.mFlags & kAudioTimeStampHostTimeValid){
@@ -439,8 +452,8 @@ int64 SuperColliderAU::getOscTime( const AudioTimeStamp & inTimeStamp){
 
 // EXPERIMENTAL
 
-
 OSStatus SuperColliderAU::HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) {
+  scprintf("SuperColliderAU: HandleNoteOn\n");
 	if(this->doNoteOn){
 		note event;
 		event.number = inNoteNumber;
@@ -453,6 +466,7 @@ OSStatus SuperColliderAU::HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt
 
 
 OSStatus SuperColliderAU::HandleNoteOff(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) {
+  scprintf("SuperColliderAU: HandleNoteOff\n");
 	if(this->doNoteOn){
 		note event;
 		event.number = inNoteNumber;
