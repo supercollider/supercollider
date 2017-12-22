@@ -383,8 +383,7 @@ Server {
 	clientID_ { |val|
 		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
 		if (this.serverRunning) {
-			"%: setting clientID is locked after server is fully booted."
-			.postf(thisMethod);
+			failstr.format(name, val.cs, "server is running", clientID).warn;
 			^this
 		};
 
