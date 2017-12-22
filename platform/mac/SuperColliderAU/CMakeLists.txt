@@ -15,12 +15,20 @@ message("Building SuperColliderAU")
 option(SSE "Compile with support for SSE instructions." ON)
 option(SSE2 "Compile with support for SSE2 instructions." ON)
 
-#TODO
-# build from general SC dir
-#set(SC_DIR ${CMAKE_SOURCE_DIR}) # comment for compiling from scau dir
-
 #build from SCAU dir
 set(SC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
+
+if (NOT CMAKE_BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+endif()
+
+set(PLUGINS_DIR ${SC_DIR}/build/server/plugins/${CMAKE_BUILD_TYPE}/)
+
+if (NOT EXISTS ${PLUGINS_DIR})
+	message(SEND_ERROR "Pluigns directory not found: ${PLUGINS_DIR}")
+endif()
+
+file(GLOB PLUGINS ${SC_DIR}/build/server/plugins/${CMAKE_BUILD_TYPE}/*.scx)
 
 include (${SC_DIR}/cmake_modules/FinalFile.cmake)
 include (${SC_DIR}/cmake_modules/FindPthreads.cmake)
@@ -102,10 +110,6 @@ include_directories(
 	${SC_DIR}/server/scsynth/
 	)
 
-#TODO
-#file(GLOB PLUGINS ${SC_DIR}/build/server/plugins/*.scx)
-#add_subdirectory(${SC_DIR}/server/plugins ${CMAKE_BINARY_DIR}/plugins)
-
 add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_AUDIOUNITS" ${AUDIOUNITS_DEFINITIONS})
 add_definitions("-DSC_DARWIN")
 add_definitions("-D__ASSERT_MACROS_DEFINE_VERSIONS_WITHOUT_UNDERSCORES=0")
@@ -175,6 +179,7 @@ set(scau_sources
 	${CMAKE_CURRENT_SOURCE_DIR}/Resources/SuperColliderAU.rsrc
 	${boost_system_sources}
 	${boost_filesystem_sources}
+	${PLUGINS}
 	)
 
 if(APPLE)
@@ -225,9 +230,9 @@ set_source_files_properties(
 	${CMAKE_CURRENT_SOURCE_DIR}/Resources/SuperColliderAU.rsrc
 	PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
-#set_source_files_properties(
-#	${PLUGINS}
-#	PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/plugins")
+set_source_files_properties(
+	${PLUGINS}
+	PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/plugins")
 
 set_source_files_properties(
 	${CMAKE_CURRENT_SOURCE_DIR}/Resources/synthdefs/.
@@ -250,7 +255,3 @@ else()
 endif()
 
 target_link_libraries(${scau_bundle} ${PTHREADS_LIBRARY})
-
-#TODO
-#file(GLOB PLUGINS ${SC_DIR}/build/server/plugins/*.scx)
-#file(COPY ${PLUGINS} ${CMAKE_CURRENT_SOURCE_DIR}/${scau_bundle}.component/Resources/plugins)
