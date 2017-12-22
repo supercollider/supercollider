@@ -76,6 +76,7 @@ ServerStatusWatcher {
 				serverBooting = false;
 				server.changed(\serverRunning);
 			}, {
+				// make sure the server process finishes all pending tasks from Server.tree before running onComplete
 				server.sync;
 				onComplete.value;
 			});
