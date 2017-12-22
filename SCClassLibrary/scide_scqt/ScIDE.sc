@@ -36,9 +36,10 @@ ScIDE {
 		serverController.remove;
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
+			// Needs to be deferred so Server GUI can update if running.
 			defer {
-			this.send(\defaultServerRunningChanged, [
-				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
+				this.send(\defaultServerRunningChanged, [
+					server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 			}
 		})
 		.put(\default, { | server, what, newServer |
