@@ -217,7 +217,7 @@ AbstractOut : UGen {
 				});
 			});
 		}, {
-			if(inputs.size <= 1, {
+			if(inputs.size <= this.class.numFixedArgs, {
 				^"missing input at index 1"
 			})
 		});
