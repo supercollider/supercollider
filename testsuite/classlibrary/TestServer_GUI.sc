@@ -3,18 +3,22 @@
 // Tests for GUI behavior during ServerBoot, ServerTree, ServerQuit
 TestServer_GUI : UnitTest {
 
-	var window, button;
+	var window, button, server;
 
 	setUp {
 		window = Window.new;
 		button = Button(window);
 		button.states_([["a"], ["b"]]);
 		button.value_(0);
+
+		server = Server(this.class.name);
 	}
 
 	tearDown {
+		server.remove;
+
 		window.close;
-		window = button = nil;
+		window = button = server = nil;
 	}
 
 	// Since we have no programmatic way to tell when ServerBoot/ServerTree have finished,
@@ -24,7 +28,6 @@ TestServer_GUI : UnitTest {
 	// In other words, tests that ServerBoot functions run on an AppClock.
 	test_serverBoot {
 		var updateFunc;
-		var server = Server.default;
 		var cond = Condition();
 
 		updateFunc = { button.value_(1); cond.test_(true).signal };
@@ -44,7 +47,6 @@ TestServer_GUI : UnitTest {
 	// Simulates behavior of FreqScope, etc.
 	test_serverTreeDuringBoot {
 		var updateFunc;
-		var server = Server.default;
 		var cond = Condition();
 
 		updateFunc = { button.value_(1); cond.test_(true).signal };
@@ -64,7 +66,6 @@ TestServer_GUI : UnitTest {
 	// Simulates behavior of FreqScope, etc.
 	test_serverTreeDuringCmdPeriod {
 		var updateFunc;
-		var server = Server.default;
 		var cond = Condition();
 
 		this.bootServer(server);
@@ -86,13 +87,12 @@ TestServer_GUI : UnitTest {
 	// Test that a GUI function executed by ServerQuit completes.
 	test_serverQuit {
 		var updateFunc;
-		var server = Server.default;
 		var cond = Condition();
 
 		updateFunc = { button.value_(1); cond.test_(true).signal };
 		ServerQuit.add(updateFunc, server);
 
-		this.bootServer(server);
+		server.bootSync;
 		server.quit;
 
 		fork { 3.wait; cond.test_(true).signal };
