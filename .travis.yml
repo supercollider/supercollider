@@ -7,6 +7,7 @@ os:
 
 sudo: required
 dist: trusty
+group: deprecated-2017Q4
 osx_image: xcode7.3
 
 cache:
@@ -54,7 +55,7 @@ script:
  - ifmac cmake --build . --config Release --target install
 # test
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
- - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
+#  - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
 # package
  - ifmac mkdir -p $HOME/artifacts
  - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
