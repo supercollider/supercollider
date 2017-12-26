@@ -82,18 +82,15 @@ TestUnitTest.new.run;
 ::
 
 
-
-
-
 METHOD:: runTestMethod
 Run a single test method of this class
-
-ARGUMENT:: method
-the method to run
 
 code::
 TestUnitTest.new.runTestMethod(TestUnitTest.findMethod(\test_assert));
 ::
+
+ARGUMENT:: method
+the method to run
 
 returns:: (describe returnvalue here)
 
