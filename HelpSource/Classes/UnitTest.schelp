@@ -100,10 +100,6 @@ returns:: (describe returnvalue here)
 PRIVATE:: assert, assertArrayFloatEquals, asynchAssert, tearDown, setUp, assertEquals, failed, passed, assertFloatEquals, s, ifAsserts, findTestMethods, wait, bootServer
 
 
-SECTION:: Writing tests by subclassing UnitTest
-
-Make sure to implement the methods code::setUp:: and code::tearDown::. They will be called before and after the test.
-
 METHOD:: assert
 
 Asserts that an expression must be true.
@@ -266,7 +262,17 @@ code::
 this.failed(message: "this failed");
 ::
 
-SUBSECTION:: UnitTest (sub)class  example.
+EXAMPLES::
+
+Write tests by subclassing UnitTest, and defining methods whose names
+begins code::test_::.  Each test method will be called from a fresh
+instance of the subclass.
+
+If you implement the methods code::setUp:: and code::tearDown:: in
+your test class, they will be called before and after every test.
+This can help to eliminate repetitive code, and makes it easier to
+maintain your tests by ensuring that they all run under the same set
+of conditions.
 
 code::
 TestYourClass : UnitTest {
@@ -278,9 +284,7 @@ TestYourClass : UnitTest {
 	}
 
 	test_yourMethod {
-
-		// every method named test_
-		// will be run
+		// every method whose name begins with "test_" will be run
 
 		this.assert( 6 == 6, "6 should equal 6");
 
