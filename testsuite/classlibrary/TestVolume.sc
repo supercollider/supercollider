@@ -1,7 +1,7 @@
 TestVolume : UnitTest {
 
 	test_booting {
-		var s = Server.default;
+		var s = Server(thisMethod.name);
 		var correctReply = [ '/g_queryTree.reply', 0, 0, 2, 1, 0, 1000, -1, 'volumeAmpControl2' ];
 		var queryReply;
 		var nodeIDidx = 6;
@@ -26,15 +26,15 @@ TestVolume : UnitTest {
 			"Server boot should send volume synthdef and create synth immediately when set to nonzero volume.");
 
 		s.volume.reset;
-		s.quit;
+		s.quit.remove;
 	}
 
 	test_setVolume {
 
 		var s, ampSynthVolume;
-		s = Server.default;
+		s = Server(thisMethod.name);
 
-		this.bootServer;
+		this.bootServer(s);
 		s.sync;
 
 		this.assert(s.volume.volume == 0, "initial volume is 0 db");
@@ -47,24 +47,22 @@ TestVolume : UnitTest {
 		this.assertFloatEquals(ampSynthVolume, s.volume.volume.dbamp, "volume level correctly set", 0.0001);
 
 		s.volume.reset;
-		s.quit;
+		s.quit.remove;
 	}
 
 	test_numOutputs {
 
 		var s, default_numChannels;
-		s = Server.default;
-		default_numChannels = s.options.numOutputBusChannels;
+		s = Server(thisMethod.name);
 
 		s.options.numOutputBusChannels = 8;
 
-		this.bootServer;
+		this.bootServer(s);
 		s.sync;
 
 		this.assert(s.outputBus.numChannels == s.volume.numOutputChannels, "volume synth has correct number of channels");
 
-		s.quit;
-		s.options.numOutputBusChannels = default_numChannels;
+		s.quit.remove;
 	}
 
 }

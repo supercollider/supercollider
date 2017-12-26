@@ -26,13 +26,15 @@ TestServer_ServerGUI : UnitTest {
 			buttonNames[volumeButtonIdx] = "volume";
 		};
 
-		server = Server.default;
+		server = Server(this.class.name);
 		server.makeGui;
 		window = server.window;
 		buttons = this.getButtons(window);
 	}
 
 	tearDown {
+		server.stopAliveThread; // XXX: needed to avoid alive threads started by server.makeGui
+		server.remove;
 		window.close;
 		0.5.wait; // XXX: wait for window to execute its onClose
 		window = buttons = server = nil;
@@ -62,14 +64,14 @@ TestServer_ServerGUI : UnitTest {
 
 	// test the GUI state without any action taken
 	test_noBoot {
-		var expValues = [0, 0, 1, 0, 0];
+		var expValues = [0, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, false, true];
 		this.assertButtonStates(expValues, expEnabled, "Before booting");
 	}
 
 	// GUI state after booting
 	test_boot {
-		var expValues = [1, 0, 1, 0, 0];
+		var expValues = [1, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, true, true];
 		this.bootServer(server);
 		this.assertButtonStates(expValues, expEnabled, "After booting");
@@ -78,7 +80,7 @@ TestServer_ServerGUI : UnitTest {
 
 	// GUI state after booting and muting the server
 	test_mute {
-		var expValues = [1, 0, 1, 0, 1];
+		var expValues = [1, 0, 0, 0, 1];
 		var expEnabled = [true, true, true, true, true];
 		this.bootServer(server);
 		server.volume.mute;
@@ -89,7 +91,7 @@ TestServer_ServerGUI : UnitTest {
 
 	// GUI state after booting, muting, then unmuting the server
 	test_unmute {
-		var expValues = [1, 0, 1, 0, 0];
+		var expValues = [1, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, true, true];
 		this.bootServer(server);
 		server.volume.mute;
@@ -100,41 +102,38 @@ TestServer_ServerGUI : UnitTest {
 
 	// GUI state after booting then quitting
 	test_quit {
-		var expValues = [0, 0, 1, 0, 0];
+		var expValues = [0, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, false, true];
 		this.bootServer(server);
 		server.quit;
 		this.assertButtonStates(expValues, expEnabled, "After quitting");
 	}
 
+	// GUI state after setting default
+	test_default {
+		var expValues = [0, 0, 1, 0, 0];
+		var expEnabled = [true, true, true, false, true];
+		var oldDefault;
+
+		oldDefault = Server.default;
+		Server.default = server;
+
+		this.assertButtonStates(expValues, expEnabled, "After defaulting this server");
+
+		Server.default = oldDefault;
+	}
+
 	// GUI state after setting not default
 	test_undefault {
 		var expValues = [0, 0, 0, 0, 0];
 		var expEnabled = [true, true, true, false, true];
-		var oldDefault, testServer;
+		var oldDefault;
 
 		oldDefault = Server.default;
-		Server.default = testServer = Server(thisMethod.name);
+		Server.default = server;
+		Server.default = oldDefault;
 
 		this.assertButtonStates(expValues, expEnabled, "After un-defaulting this server");
-
-		testServer.remove;
-		Server.default = oldDefault;
-	}
-
-	// GUI state after setting not default, then setting default again
-	test_redefault {
-		var expValues = [0, 0, 1, 0, 0];
-		var expEnabled = [true, true, true, false, true];
-		var oldDefault, testServer;
-
-		oldDefault = Server.default;
-		Server.default = testServer = Server(thisMethod.name);
-
-		testServer.remove;
-		Server.default = oldDefault;
-
-		this.assertButtonStates(expValues, expEnabled, "After re-defaulting this server");
 	}
 
 }
