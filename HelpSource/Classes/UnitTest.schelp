@@ -199,24 +199,34 @@ argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
 
 
-method:: assertArrayFloatEquals
+METHOD:: assertArrayFloatEquals
 Make sure that the two arrays of floats code::a:: and code::b:: equal within a given range (code::within::).
-
-argument:: a
-an code::Array:: of floats
-
-argument:: b
-an code::Array:: of floats
-
-argument:: message
-posted if report is true.
-
-argument:: onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
 
 code::
 UnitTest.new.assertArrayFloatEquals([2, 3], [2, 3] + 0.00001, "Same Floats", 0.000001);
 ::
+
+argument:: a
+the experimentally produced value, which is an code::Array:: of floats
+
+argument:: b
+the code::Array:: of float values expected
+
+argument:: message
+A message describing the purpose of the assertion, e.g.
+code::"Arrays foo and bar should be equal."::.
+Posted if code::report:: is true.
+
+argument:: within
+The range within which each item of code::a:: must be of the
+corresponding item in code::b:: in order for the test to pass.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
 
 METHOD:: ifAsserts
 Make a further assertion only if it passed, or only if it failed.
