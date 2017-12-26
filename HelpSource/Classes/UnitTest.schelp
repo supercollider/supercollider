@@ -169,27 +169,35 @@ If not code::nil::, a failure stops the tests and evaluates this function.
 
 METHOD:: assertFloatEquals
 
-Make sure that the two floats code::a:: and code::b:: equal within a given range (code::within::).
-
-
-argument:: a
-a float
-
-argument:: b
-a float
-
-argument:: message
-posted if report is true.
-
-argument:: onFailure
-If not code::nil::, a failure stops the tests and evaluates this function.
-
-
+Asserts that an expression code::a:: returning a float is within a
+given range (code::within::) of being equal to code::b::.
 
 code::
 UnitTest.new.assertFloatEquals(2, 2.00001, "Two does equal two.", 0.00001);
 UnitTest.new.assertFloatEquals(2, 2.001, "Two does equal two.", 0.0001);
 ::
+
+argument:: a
+the experimentally produced float value
+
+argument:: b
+the expected float value
+
+argument:: message
+A message describing the purpose of the assertion, e.g.
+code::"Adding two numbers should return their sum."::.
+Posted if code::report:: is true.
+
+argument:: within
+The range within which code::a:: must be of code::b:: in
+order for the test to pass.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
 
 method:: assertArrayFloatEquals
 Make sure that the two arrays of floats code::a:: and code::b:: equal within a given range (code::within::).
