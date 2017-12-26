@@ -102,18 +102,6 @@ PRIVATE:: assert, assertArrayFloatEquals, asynchAssert, tearDown, setUp, assertE
 
 SECTION:: Writing tests by subclassing UnitTest
 
-code::
-YourClass.test
-::
-Runs the test class for code::YourClass::, which is assumed to be named code::TestYourClass::.
-
-If no test class if found it politely declines.
-
-note::
-UnitTests for the Common library classes are kept in the CommonTests quark. 	This enables you to easily install and uninstall these tests.
-::
-
-
 Make sure to implement the methods code::setUp:: and code::tearDown::. They will be called before and after the test.
 
 METHOD:: assert
