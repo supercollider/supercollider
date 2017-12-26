@@ -27,15 +27,16 @@ UnitTest.gui
 ::
 
 METHOD:: runTest
-Run a single test for methodName.
-
-ARGUMENT:: methodName
-Should have the format code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::
+Run a single test method.
 
 code::
 UnitTest.reset;
 UnitTest.runTest("TestUnitTest:test_assert");
 ::
+
+ARGUMENT:: methodName
+A link::Classes/String:: referring to the class and test method
+within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
 
 
 METHOD:: runAll
