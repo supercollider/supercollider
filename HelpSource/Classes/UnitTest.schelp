@@ -80,22 +80,6 @@ report on pass/fail
 
 INSTANCEMETHODS::
 
-METHOD:: run
-All method names that start with test_ are invoked.
-
-ARGUMENT:: reset
-(describe argument here)
-
-ARGUMENT:: report
-(describe argument here)
-
-returns:: (describe returnvalue here)
-
-code::
-TestUnitTest.new.run;
-::
-
-
 METHOD:: runTestMethod
 Run a single test method of this class
 
