@@ -61,23 +61,6 @@ UnitTest.runAll;
 ::
 
 
-METHOD:: runTestClassForClass
-runs testclass for a class
-
-ARGUMENT:: class
-the class
-
-ARGUMENT:: reset
-reset UnitTest environment
-
-ARGUMENT:: report
-report on pass/fail
-
-
-
-
-
-
 INSTANCEMETHODS::
 
 METHOD:: runTestMethod
