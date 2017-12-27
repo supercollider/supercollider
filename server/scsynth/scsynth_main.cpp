@@ -49,6 +49,8 @@ inline int setlinebuf(FILE *stream)
 void Usage();
 void Usage()
 {
+	WorldOptions defaultOptions;
+
 	scprintf(
 		"supercollider_synth  options:\n"
 		"   -v print the supercollider version and exit\n"
@@ -98,22 +100,22 @@ void Usage()
 		"          if specified, prevents file-accessing OSC commands from\n"
 		"          accessing files outside <restricted-path>.\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
-		kDefaultWorldOptions.mNumControlBusChannels,
-		kDefaultWorldOptions.mNumAudioBusChannels,
-		kDefaultWorldOptions.mNumInputBusChannels,
-		kDefaultWorldOptions.mNumOutputBusChannels,
-		kDefaultWorldOptions.mBufLength,
-		kDefaultWorldOptions.mPreferredHardwareBufferFrameSize,
-		kDefaultWorldOptions.mPreferredSampleRate,
-		kDefaultWorldOptions.mNumBuffers,
-		kDefaultWorldOptions.mMaxNodes,
-		kDefaultWorldOptions.mMaxGraphDefs,
-		kDefaultWorldOptions.mRealTimeMemorySize,
-		kDefaultWorldOptions.mMaxWireBufs,
-		kDefaultWorldOptions.mNumRGens,
-		kDefaultWorldOptions.mRendezvous,
-		kDefaultWorldOptions.mLoadGraphDefs,
-		kDefaultWorldOptions.mMaxLogins
+		defaultOptions.mNumControlBusChannels,
+		defaultOptions.mNumAudioBusChannels,
+		defaultOptions.mNumInputBusChannels,
+		defaultOptions.mNumOutputBusChannels,
+		defaultOptions.mBufLength,
+		defaultOptions.mPreferredHardwareBufferFrameSize,
+		defaultOptions.mPreferredSampleRate,
+		defaultOptions.mNumBuffers,
+		defaultOptions.mMaxNodes,
+		defaultOptions.mMaxGraphDefs,
+		defaultOptions.mRealTimeMemorySize,
+		defaultOptions.mMaxWireBufs,
+		defaultOptions.mNumRGens,
+		defaultOptions.mRendezvous,
+		defaultOptions.mLoadGraphDefs,
+		defaultOptions.mMaxLogins
 	);
 	exit(1);
 }

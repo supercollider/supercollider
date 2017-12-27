@@ -87,8 +87,6 @@ struct WorldOptions
 	int mSharedMemoryID = 0;
 };
 
-const struct WorldOptions kDefaultWorldOptions;
-
 struct SndBuf;
 
 SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
