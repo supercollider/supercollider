@@ -1,21 +1,21 @@
 /*
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 
@@ -29,8 +29,10 @@
 
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
-const struct WorldOptions
+struct WorldOptions
 {
+	WorldOptions() { }
+
 	const char* mPassword = nullptr;
 	uint32 mNumBuffers = 1024;
 	uint32 mMaxLogins = 64;
@@ -45,7 +47,7 @@ const struct WorldOptions
 	uint32 mRealTimeMemorySize = 8192; // in kilobytes
 
 	int mNumSharedControls = 0;
-	float *mSharedControls = 0;
+	float *mSharedControls = nullptr;
 
 	bool mRealTime = true;
 	bool mMemoryLocking = false;
@@ -57,12 +59,11 @@ const struct WorldOptions
 	const char *mNonRealTimeOutputSampleFormat = nullptr;
 
 #if defined(_WIN32)
-#	define DEFAULT_PREFERRED_SAMPLE_RATE 44100
+	uint32 mPreferredSampleRate = 44100;
 #else
-#	define DEFAULT_PREFERRED_SAMPLE_RATE 0
+	uint32 mPreferredSampleRate = 0;
 #endif
 
-	uint32 mPreferredSampleRate = DEFAULT_PREFERRED_SAMPLE_RATE;
 	uint32 mNumRGens = 64;
 
 	uint32 mPreferredHardwareBufferFrameSize = 0;
@@ -84,7 +85,9 @@ const struct WorldOptions
 	const char *mRestrictedPath = nullptr;
 
 	int mSharedMemoryID = 0;
-} kDefaultWorldOptions;
+};
+
+const struct WorldOptions kDefaultWorldOptions;
 
 struct SndBuf;
 
