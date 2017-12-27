@@ -129,6 +129,21 @@ TestServer_boot : UnitTest {
 		this.assert(cond.test, "ServerBoot should run when the server is able to accept commands.");
 	}
 
+	// Check that ServerQuit does not run when the server boots.
+	test_ServerQuitActionTiming {
+		var cond = Condition();
+		var func = { cond.test_(true).signal };
+
+		ServerQuit.add(func, s);
+		s.waitForBoot { cond.unhang };
+		cond.wait;
+
+		ServerQuit.remove(func, s);
+		s.quit;
+
+		this.assert(cond.test.not, "ServerQuit should not run when the server boots.");
+	}
+
 	// Check that we can never create duplicate nodeIDs once server.serverRunning
 	// is true, even if the server has not been fully synced yet.
 	test_allocWhileBooting {
