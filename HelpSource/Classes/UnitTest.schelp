@@ -95,7 +95,7 @@ the method to run
 
 returns:: (describe returnvalue here)
 
-PRIVATE:: assert, assertArrayFloatEquals, asynchAssert, tearDown, setUp, assertEquals, failed, passed, assertFloatEquals, s, ifAsserts, findTestMethods, wait, bootServer
+PRIVATE:: s, run, findTestMethods, setUp, tearDown
 
 
 METHOD:: assert
