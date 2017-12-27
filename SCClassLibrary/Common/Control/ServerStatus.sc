@@ -25,13 +25,13 @@ ServerStatusWatcher {
 			onComplete.value;
 		};
 		this.stopAliveThread;
+		this.serverRunning = false;
 		hasBooted = false;
 		alive = false;
 		notified = false;
 		serverBooting = false;
 		unresponsive = false;
 
-		this.serverRunning = false;
 		// server.changed(\serverRunning) should be deferred in dependants!
 		//  just in case some don't, defer here to avoid gui updates breaking.
 		defer { server.changed(\serverRunning) };
@@ -180,9 +180,9 @@ ServerStatusWatcher {
 		if(running != server.serverRunning) {
 			this.unresponsive = false;
 
-			if (running and: { hasBooted != running }) {
-				hasBooted = running;
-			} {
+			hasBooted = running;
+
+			if (running.not) {
 				hasBooted = running;
 				ServerQuit.run(server);
 
