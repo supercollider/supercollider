@@ -29,74 +29,62 @@
 
 typedef int (*PrintFunc)(const char *format, va_list ap);
 
-struct WorldOptions
+const struct WorldOptions
 {
-	const char* mPassword;
-	uint32 mNumBuffers;
-	uint32 mMaxLogins;
-	uint32 mMaxNodes;
-	uint32 mMaxGraphDefs;
-	uint32 mMaxWireBufs;
-	uint32 mNumAudioBusChannels;
-	uint32 mNumInputBusChannels;
-	uint32 mNumOutputBusChannels;
-	uint32 mNumControlBusChannels;
-	uint32 mBufLength;
-	uint32 mRealTimeMemorySize;
+	const char* mPassword = nullptr;
+	uint32 mNumBuffers = 1024;
+	uint32 mMaxLogins = 64;
+	uint32 mMaxNodes = 1024;
+	uint32 mMaxGraphDefs = 1024;
+	uint32 mMaxWireBufs = 64;
+	uint32 mNumAudioBusChannels = 1024;
+	uint32 mNumInputBusChannels = 8;
+	uint32 mNumOutputBusChannels = 8;
+	uint32 mNumControlBusChannels = 16384;
+	uint32 mBufLength = 64;
+	uint32 mRealTimeMemorySize = 8192; // in kilobytes
 
-	int mNumSharedControls;
-	float *mSharedControls;
+	int mNumSharedControls = 0;
+	float *mSharedControls = 0;
 
-	bool mRealTime;
-	bool mMemoryLocking;
+	bool mRealTime = true;
+	bool mMemoryLocking = false;
 
-	const char *mNonRealTimeCmdFilename;
-	const char *mNonRealTimeInputFilename;
-	const char *mNonRealTimeOutputFilename;
-	const char *mNonRealTimeOutputHeaderFormat;
-	const char *mNonRealTimeOutputSampleFormat;
+	const char *mNonRealTimeCmdFilename = nullptr;
+	const char *mNonRealTimeInputFilename = nullptr;
+	const char *mNonRealTimeOutputFilename = nullptr;
+	const char *mNonRealTimeOutputHeaderFormat = nullptr;
+	const char *mNonRealTimeOutputSampleFormat = nullptr;
 
-	uint32 mPreferredSampleRate;
-	uint32 mNumRGens;
-
-	uint32 mPreferredHardwareBufferFrameSize;
-
-	uint32 mLoadGraphDefs;
-
-	const char *mInputStreamsEnabled;
-	const char *mOutputStreamsEnabled;
-	const char *mInDeviceName;
-
-	int mVerbosity;
-
-	bool mRendezvous;
-
-	const char *mUGensPluginPath;
-
-	const char *mOutDeviceName;
-
-	const char *mRestrictedPath;
-
-	int mSharedMemoryID;
-};
-
-const struct WorldOptions kDefaultWorldOptions =
-{
-	0,1024,64,1024,1024,64,1024,8,8,16384,64,8192, 0,0, 1, 0, 0,0,0,0,0
 #if defined(_WIN32)
-	,44100
+#	define DEFAULT_PREFERRED_SAMPLE_RATE 44100
 #else
-	,0
+#	define DEFAULT_PREFERRED_SAMPLE_RATE 0
 #endif
-	,64, 0, 1
-	,0, 0, 0
-	,0
-	,1
-	,0
-	,0
-	,0
-	,0
-};
+
+	uint32 mPreferredSampleRate = DEFAULT_PREFERRED_SAMPLE_RATE;
+	uint32 mNumRGens = 64;
+
+	uint32 mPreferredHardwareBufferFrameSize = 0;
+
+	uint32 mLoadGraphDefs = 1;
+
+	const char *mInputStreamsEnabled = nullptr;
+	const char *mOutputStreamsEnabled = nullptr;
+	const char *mInDeviceName = nullptr;
+
+	int mVerbosity = 0;
+
+	bool mRendezvous = true;
+
+	const char *mUGensPluginPath = nullptr;
+
+	const char *mOutDeviceName = nullptr;
+
+	const char *mRestrictedPath = nullptr;
+
+	int mSharedMemoryID = 0;
+} kDefaultWorldOptions;
 
 struct SndBuf;
 

@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
 	int tcpPortNum = -1;
 	std::string bindTo("0.0.0.0");
 
-	WorldOptions options = kDefaultWorldOptions;
+	WorldOptions options;
 
 	for (int i=1; i<argc;) {
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
