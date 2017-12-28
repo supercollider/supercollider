@@ -153,12 +153,12 @@ Quarks {
 		});
 	}
 	*installed {
-		^LanguageConfig.includePaths
+		^LanguageConfig.includePathsAbsolute
 			.collect(Quark.fromLocalPath(_))
 	}
 	*installedPaths {
 		^installedPaths ?? {
-			installedPaths = LanguageConfig.includePaths.collect({ |apath|
+			installedPaths = LanguageConfig.includePathsAbsolute.collect({ |apath|
 				apath.withoutTrailingSlash
 			});
 		}
@@ -214,11 +214,17 @@ Quarks {
 		^true
 	}
 
+	*getLinkPath { |path|
+		^if(LanguageConfig.projectOpen && path.beginsWith(LanguageConfig.currentDirectory))
+		{path[(LanguageConfig.currentDirectory.size+1)..]}{path};
+	}
+
 	*link { |path|
 		path = path.withoutTrailingSlash;
-		if(LanguageConfig.includePaths.includesEqual(path).not, {
-			path.debug("Adding path");
-			LanguageConfig.addIncludePath(path);
+		if(LanguageConfig.includePathsAbsolute.includesEqual(path).not, {
+			var linkPath = Quarks.getLinkPath(path);
+			linkPath.debug("Adding path");
+			LanguageConfig.addIncludePath(linkPath);
 			LanguageConfig.store(LanguageConfig.currentPath);
 			installedPaths = installedPaths.add(path.withoutTrailingSlash);
 			^true
@@ -227,9 +233,10 @@ Quarks {
 	}
 	*unlink { |path|
 		path = path.withoutTrailingSlash;
-		if(LanguageConfig.includePaths.includesEqual(path), {
-			path.debug("Removing path");
-			LanguageConfig.removeIncludePath(path);
+		if(LanguageConfig.includePathsAbsolute.includesEqual(path), {
+			var linkPath = Quarks.getLinkPath(path);
+			linkPath.debug("Removing path");
+			LanguageConfig.removeIncludePath(linkPath);
 			LanguageConfig.store(LanguageConfig.currentPath);
 			installedPaths.remove(path.withoutTrailingSlash);
 			^true
@@ -238,7 +245,9 @@ Quarks {
 	}
 
 	*initClass {
-		folder = Platform.userAppSupportDir +/+ "downloaded-quarks";
+		folder = if(LanguageConfig.projectOpen){
+			LanguageConfig.currentDirectory
+		}{ Platform.userAppSupportDir } +/+ "downloaded-quarks";
 		additionalFolders = additionalFolders ? [];
 		if(File.exists(folder).not, {
 			folder.mkdir();
@@ -306,7 +315,7 @@ Quarks {
 		additionalFolders.do({ |folder|
 			(folder +/+ "*").pathMatch.do(f);
 		});
-		LanguageConfig.includePaths.do(f);
+		LanguageConfig.includePathsAbsolute.do(f);
 		^all.atAll(all.order)
 	}
 	*fetchDirectory { |force=true|

@@ -27,6 +27,8 @@
 #include <vector>
 #include <string>
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <yaml-cpp/yaml.h>                 // YAML
 
 class SC_LanguageConfig;
 extern SC_LanguageConfig* gLanguageConfig;
@@ -37,7 +39,9 @@ public:
 	typedef boost::filesystem::path Path;
 	typedef std::vector<Path>	DirVector;
 
-	SC_LanguageConfig(bool standalone);
+	SC_LanguageConfig(){}
+
+	void addDefaultPaths();
 
 	const DirVector& includedDirectories() const { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() const { return mExcludedDirectories; }
@@ -53,17 +57,29 @@ public:
 	bool removeExcludedDirectory(const Path&);
 
 	bool forEachIncludedDirectory(bool (*)(const Path&)) const;
+	const bool doRelativeProject(std::function<const bool(const Path&)>, const Path&);
 
-	static bool readLibraryConfigYAML (const Path&, bool standalone);
+	bool getExcludeDefaultPaths() const;
+	void setExcludeDefaultPaths(bool value);
+
+	bool getProject() const;
+	void setProject(bool value);
+	void static processPathList(const char* nodeName, YAML::Node &doc, void (*func)(const Path&));
+	void static processBool(const char* nodeName, YAML::Node &doc, void (*func)(bool));
+
+	static bool readLibraryConfigYAML (const Path&);
 	static bool writeLibraryConfigYAML(const Path&);
 	static void freeLibraryConfig     ();
-	static bool defaultLibraryConfig  (bool standalone);
-	static bool readLibraryConfig     (bool standalone);
+	static bool defaultLibraryConfig  ();
+	static bool readLibraryConfig     ();
 
 	static const bool getPostInlineWarnings() { return gPostInlineWarnings; }
 	static const void setPostInlineWarnings(bool b) { gPostInlineWarnings = b; }
 	static const Path& getConfigPath() { return gConfigFile; }
-	static const void setConfigPath(const Path& p) { gConfigFile = p; }
+	static const void setConfigPath(const Path& p) {
+		gConfigFile = p;
+	}
+	static const Path getConfigFileDirectory() { return boost::filesystem::absolute(gConfigFile).parent_path(); }
 
 private:
 	static const bool findPath(const DirVector&, const Path&);
@@ -73,6 +89,8 @@ private:
 	DirVector mIncludedDirectories;
 	DirVector mExcludedDirectories;
 	DirVector mDefaultClassLibraryDirectories;
+	bool mExcludeDefaultPaths = false;
+	bool mProject = false;
 	static Path gConfigFile;
 	static bool gPostInlineWarnings;
 };

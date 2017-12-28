@@ -164,6 +164,18 @@ double sc_strtof(const char *str, int n, int base)
 	return z;
 }
 
+void compareAndReplacePathPrefix(bfs::path &p, const bfs::path &prefix, const bfs::path &replace) {
+	bfs::path copy = p;
+	bfs::path::iterator i = copy.begin();
+	if (*i == prefix) {
+		p.clear();
+		p /= replace;
+		i++;
+		for(; i !=  copy.end(); i++)
+			p /= *i;
+	}
+}
+
 bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos, int lineOffset);
 bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos, int lineOffset)
 {
@@ -1851,8 +1863,29 @@ static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
  * \returns `true` if processing was successful, `false` if it failed.
  *   See above for what constitutes success and failure conditions.
  */
-static bool passOne_ProcessDir(const bfs::path& dir)
+static bool passOne_ProcessDir(const bfs::path& cdir)
 {
+	bfs::path dir = cdir;
+	bfs::path resourceDirectory("%ResourceDirectory%");
+	bfs::path systemExtensionDirectory("%SystemExtensionDirectory%");
+	bfs::path userExtensionDirectory("%UserExtensionDirectory%");
+	compareAndReplacePathPrefix(dir, resourceDirectory, SC_Filesystem::instance().getDirectory(DirName::Resource));
+	compareAndReplacePathPrefix(dir, systemExtensionDirectory,SC_Filesystem::instance().getDirectory(DirName::SystemExtension));
+	compareAndReplacePathPrefix(dir, userExtensionDirectory, SC_Filesystem::instance().getDirectory(DirName::UserExtension));
+
+	bool isProjectDir = false;
+
+	//If project mode is enabled and the path is relative, convert it to absolute
+	//by prepending the config file directory.
+	if( gLanguageConfig->getProject() ) {
+		if( !dir.is_absolute() ){
+			isProjectDir = true;
+			bfs::path temp(dir);
+			dir = SC_LanguageConfig::getConfigFileDirectory();
+			dir /= temp;
+		}
+	}
+
 	// Prefer non-throwing versions of filesystem functions, since they are actually not unexpected
 	// and because it's faster to use error codes.
 	boost::system::error_code ec;
@@ -1887,8 +1920,9 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// If we should skip the directory, just return success now.
 		return true;
 	} else {
-		// Let the user know we are in fact compiling this directory.
-		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(dir).c_str());
+		std::string msg = std::string("compiling dir");
+		if(isProjectDir){ msg += " from project"; }
+		post("%s: %s\n", msg.c_str(), SC_Codecvt::path_to_utf8_str(dir).c_str());
 	}
 
 	// Record that we have touched this directory already.
@@ -2074,7 +2108,7 @@ void shutdownLibrary()
 	SC_LanguageConfig::freeLibraryConfig();
 }
 
-SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
+SCLANG_DLLEXPORT_C bool compileLibrary()
 {
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
@@ -2083,7 +2117,7 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 	gNumCompiledFiles = 0;
 	compiledOK = false;
 
-	SC_LanguageConfig::readLibraryConfig(standalone);
+	SC_LanguageConfig::readLibraryConfig();
 
 	compileStartTime = elapsedTime();
 

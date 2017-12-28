@@ -3591,6 +3591,25 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numAr
 	return errNone;
 }
 
+static int prLanguageConfig_getCurrentConfigDirectory(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	//return nil if no lang file was used.
+	if(gLanguageConfig->getConfigPath().empty()) {
+		SetNil(a);
+	} else {
+		const std::string& config_path_parent = SC_Codecvt::path_to_utf8_str(SC_LanguageConfig::getConfigFileDirectory());
+		PyrString* config_path_parent_pyrs = newPyrString(g->gc, config_path_parent.c_str(), 0, false);
+		if(config_path_parent_pyrs->size == 0) {
+			SetNil(a);
+		} else {
+			SetObject(a, config_path_parent_pyrs);
+		}
+	}
+
+	return errNone;
+}
+
 static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *fileString = g->sp;
@@ -3634,6 +3653,19 @@ static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numA
 	return errNone;
 }
 
+static int prLanguageConfig_getExcludeDefaultPaths(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetBool(result, gLanguageConfig->getExcludeDefaultPaths());
+	return errNone;
+}
+
+static int prLanguageConfig_getProjectOpen(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetBool(result, gLanguageConfig->getProject());
+	return errNone;
+}
 
 static int prVersionMajor(struct VMGlobals * g, int numArgsPushed)
 {
@@ -4209,6 +4241,7 @@ void initPrimitives()
 
 	definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getCurrentConfigPath", prLanguageConfig_getCurrentConfigPath, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getCurrentConfigDirectory", prLanguageConfig_getCurrentConfigDirectory, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getIncludePaths", prLanguageConfig_getIncludePaths, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getExcludePaths", prLanguageConfig_getExcludePaths, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_addIncludePath", prLanguageConfig_addIncludePath, 2, 0);
@@ -4218,6 +4251,8 @@ void initPrimitives()
 	definePrimitive(base, index++, "_LanguageConfig_writeConfigFile", prLanguageConfig_writeConfigFile, 2, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getPostInlineWarnings", prLanguageConfig_getPostInlineWarnings, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_setPostInlineWarnings", prLanguageConfig_setPostInlineWarnings, 2, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getExcludeDefaultPaths", prLanguageConfig_getExcludeDefaultPaths, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getProjectOpen", prLanguageConfig_getProjectOpen, 1, 0);
 
 	definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
 	definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);

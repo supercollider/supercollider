@@ -120,9 +120,17 @@ Platform {
 		}
 	}
 
-	loadStartupFiles { this.startupFiles.do{|afile|
-		afile = afile.standardizePath;
-		if(File.exists(afile), {afile.load})
+	loadStartupFiles {
+		var file;
+		if (LanguageConfig.defaultPathsExcluded.not && LanguageConfig.projectOpen.not) {
+			this.startupFiles.do{|afile|
+				afile = afile.standardizePath;
+				if(File.exists(afile), {afile.load})
+			}
+		};
+		if (LanguageConfig.projectOpen) {
+			file = LanguageConfig.currentDirectory ++ "/startup.scd";
+			if(File.exists(file), {file.load})
 		}
 	}
 
