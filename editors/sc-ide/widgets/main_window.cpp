@@ -22,6 +22,7 @@
 
 #include "cmd_line.hpp"
 #include "doc_list.hpp"
+#include "file_tree.hpp"
 #include "documents_dialog.hpp"
 #include "find_replace_tool.hpp"
 #include "goto_line_tool.hpp"
@@ -68,6 +69,11 @@
 #include <QMimeData>
 #include <QMetaMethod>
 
+#include <fstream>
+#include <functional>
+
+#include "yaml-cpp/yaml.h"
+
 namespace ScIDE {
 
 static QWidget * findFirstResponder
@@ -103,6 +109,8 @@ MainWindow::MainWindow(Main * main) :
 {
     Q_ASSERT(!mInstance);
     mInstance = this;
+
+    verifyProjectStatusMatchesConfigFile();
 
     setAcceptDrops(true);
 
@@ -151,6 +159,10 @@ MainWindow::MainWindow(Main * main) :
     mPostDocklet = new PostDocklet(this);
     mPostDocklet->setObjectName("post-dock");
     addDockWidget(Qt::RightDockWidgetArea, mPostDocklet->dockWidget());
+
+    mFileTreeDocklet = new FileTreeDocklet(this);
+    mFileTreeDocklet->setObjectName("file-tree-dock");
+    addDockWidget(Qt::LeftDockWidgetArea, mFileTreeDocklet->dockWidget());
 
     // Layout
     QVBoxLayout *center_box = new QVBoxLayout;
@@ -217,6 +229,9 @@ MainWindow::MainWindow(Main * main) :
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
+    //project
+    connect(mFileTreeDocklet->tree(), SIGNAL(clicked(QString)), mMain->documentManager(), SLOT(open(QString)));
+
     createActions();
     createMenus();
 
@@ -240,6 +255,10 @@ MainWindow::MainWindow(Main * main) :
     QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
+
+    applyRecentProjectsSettings(mMain->settings());
+    updateRecentProjectsMenu();
+    updateProjectObjects();
 
     applyCursorBlinkingSettings(main->settings());
 
@@ -336,6 +355,23 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()),
             Main::instance()->documentManager(), SLOT(clearRecents()));
     settings->addAction( action, "ide-clear-recent-documents", ideCategory);
+
+    mActions[ProjectNew] = action = new QAction(tr("New Project"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(newProject()));
+
+    mActions[ProjectOpen] = action = new QAction(tr("Open Project"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(openProjectDialog()));
+
+    mActions[ClearRecentProjects] = action = new QAction(tr("Clear", "Clear recent projects"), this);
+    action->setStatusTip(tr("Clear list of recent projects"));
+    connect(action, SIGNAL(triggered()), this, SLOT(clearRecentProjects()));
+    settings->addAction( action, "ide-clear-recent-documents", ideCategory);
+
+    mActions[ProjectSaveAs] = action = new QAction(tr("Save Project As"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(saveProjectAs()));
+
+    mActions[ProjectClose] = action = new QAction(tr("Close Project"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(closeProject()));
 
     // Sessions
     mActions[NewSession] = action = new QAction(
@@ -509,6 +545,12 @@ void MainWindow::createActions()
     settings->addAction( mHelpBrowserDocklet->toggleViewAction(),
                          "ide-docklet-help", ideCategory );
 
+    mActions[ToggleProjectDockelt] = action = mFileTreeDocklet->toggleViewAction();
+    action->setIcon( QIcon::fromTheme("folder") );
+    action->setStatusTip(tr("Show/hide File tree docklet"));
+    settings->addAction( mFileTreeDocklet->toggleViewAction(),
+                         "ide-docklet-filetree", ideCategory );
+
     // In Mac OS, all menu item shortcuts need a modifier, so add the action with
     // the "Escape" default shortcut to the main window widget.
     // FIXME: This is not perfect, as any other action customized to "Escape" will
@@ -538,6 +580,7 @@ void MainWindow::createMenus()
     QMenuBar *menuBar;
     QMenu *menu;
     QMenu *submenu;
+    QAction *action;
 
     // On Mac, create a parent-less menu bar to be shared by all windows:
 #ifdef Q_OS_MAC
@@ -558,6 +601,16 @@ void MainWindow::createMenus()
     menu->addAction( mActions[DocSaveAs] );
     menu->addAction( mActions[DocSaveAsExtension] );
     menu->addAction( mActions[DocSaveAll] );
+    menu->addSeparator();
+    menu->addAction( mActions[ProjectNew] );
+    menu->addAction( mActions[ProjectOpen] );
+    mRecentProjectsMenu = menu->addMenu(tr("Open Recent Project", "Open a recent project"));
+    connect(mRecentProjectsMenu, SIGNAL(triggered(QAction*)),
+            this, SLOT(onOpenRecentProject(QAction*)));
+    menu->addAction( mActions[ProjectSaveAs] );
+    mActions[ProjectSaveAs]->setEnabled(getProjectOpen());
+    menu->addAction( mActions[ProjectClose] );
+    mActions[ProjectClose]->setEnabled(getProjectOpen());
     menu->addSeparator();
     menu->addAction( mActions[DocReload] );
     menu->addSeparator();
@@ -612,6 +665,7 @@ void MainWindow::createMenus()
     submenu->addAction( mPostDocklet->toggleViewAction() );
     submenu->addAction( mDocumentsDocklet->toggleViewAction() );
     submenu->addAction( mHelpBrowserDocklet->toggleViewAction() );
+    submenu->addAction( mFileTreeDocklet->toggleViewAction() );
     menu->addMenu(submenu);
     menu->addSeparator();
     submenu = menu->addMenu(tr("&Tool Panels"));
@@ -706,8 +760,7 @@ static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
     data.insert( docklet->objectName(), docklet->saveDetachedState().toBase64() );
 }
 
-template <class T>
-void MainWindow::saveWindowState(T * settings)
+void MainWindow::saveWindowState(SettingsInterface * settings)
 {
     QVariantMap detachedData;
     saveDetachedState( mPostDocklet, detachedData );
@@ -735,8 +788,7 @@ static void restoreDetachedState( Docklet *docklet,  const QVariantMap & data )
     docklet->restoreDetachedState( QByteArray::fromBase64( base64data ) );
 }
 
-template <class T>
-void MainWindow::restoreWindowState( T * settings )
+void MainWindow::restoreWindowState( SettingsInterface * settings )
 {
     qDebug("------------ restore window state ------------");
 
@@ -823,9 +875,22 @@ void MainWindow::switchSession( Session *session )
     if (session)
         restoreWindowState(session);
 
+    verifyProjectStatusMatchesConfigFile();
     updateWindowTitle();
+    updateProjectObjects();
 
     mEditors->switchSession(session);
+
+    if ( mMain->settings()->value("IDE/useLanguageConfigFromSession").toBool() && mMain->scProcess()->running() ) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, tr("Session changed"),
+                                    tr("The SuperCollider language configuration is possibly different in this session "
+                                    "Do you want to reboot the interpreter ?"),
+                                    QMessageBox::Yes | QMessageBox::No );
+        if (reply == QMessageBox::Yes)
+            mMain->scProcess()->restartLanguage();
+    }
+
 }
 
 void MainWindow::saveSession( Session *session )
@@ -901,19 +966,22 @@ void MainWindow::onDocDialogFinished()
     mDocDialog = 0;
 }
 
-void MainWindow::updateRecentDocsMenu()
+void MainWindow::updateGenericRecentMenu(const QStringList &recent, QMenu* menu, ActionRole action)
 {
-    mRecentDocsMenu->clear();
-
-    const QStringList &recent = mMain->documentManager()->recents();
+    menu->clear();
 
     foreach( const QString & path, recent )
-        mRecentDocsMenu->addAction(path);
+        menu->addAction(path);
 
     if (!recent.isEmpty()) {
-        mRecentDocsMenu->addSeparator();
-        mRecentDocsMenu->addAction(mActions[ClearRecentDocs]);
+        menu->addSeparator();
+        menu->addAction(mActions[action]);
     }
+}
+
+void MainWindow::updateRecentDocsMenu()
+{
+    updateGenericRecentMenu(mMain->documentManager()->recents(), mRecentDocsMenu, ClearRecentDocs);
 }
 
 void MainWindow::onOpenRecentDocument( QAction *action )
@@ -1103,7 +1171,7 @@ bool MainWindow::save( Document *doc, bool forceChoose, bool saveInExtensionFold
         }
 
         if (!save_path.isEmpty()) {
-            if( !saveInExtensionFolder )
+            if ( !saveInExtensionFolder )
                 mInstance->mLastDocumentSavePath = save_path;
             return documentManager->saveAs(doc, save_path);
         } else {
@@ -1325,10 +1393,23 @@ void MainWindow::updateWindowTitle()
     Document *doc = editor ? editor->document() : 0;
 
     QString title;
+    QString configFile = mMain->settingsForLanguageConfig()->getConfigFile();
 
-    if (session) {
-        title.append(session->name());
-        if (doc) title.append(": ");
+    if (getProjectOpen()) {
+        QFileInfo configInfo = QFileInfo(configFile);
+        title.append("Project: ");
+        title.append(configInfo.baseName());
+        if (session) {
+            title.append(" - Session: ");
+            title.append(session->name());
+            if (doc) title.append(" - ");
+        } else if (doc) title.append(" - ");
+    } else {
+        if (session) {
+            title.append("Session: ");
+            title.append(session->name());
+            if (doc) title.append(" - ");
+        }
     }
 
     if (doc) {
@@ -1418,7 +1499,7 @@ void MainWindow::lookupReferences()
     Main::findReferences(QString(), QApplication::activeWindow());
 }
 
-void MainWindow::showStatusMessage( QString const & string )
+void MainWindow::showStatusMessage( const QString & string )
 {
     mStatusBar->showMessage(string, 3000);
 }
@@ -1426,10 +1507,24 @@ void MainWindow::showStatusMessage( QString const & string )
 void MainWindow::applySettings( Settings::Manager * settings )
 {
     applyCursorBlinkingSettings( settings );
+    applyRecentProjectsSettings( settings );
+    updateWindowTitle();
+    updateProjectObjects();
 
     mPostDocklet->mPostWindow->applySettings(settings);
     mHelpBrowserDocklet->browser()->applySettings(settings);
     mCmdLine->applySettings(settings);
+}
+
+void MainWindow::applyRecentProjectsSettings( Settings::Manager * settings )
+{
+    QVariantList list = settings->value("IDE/recentProjects").value<QVariantList>();
+    mRecentProjects.clear();
+    foreach (const QVariant & var, list) {
+        QString filePath = var.toString();
+        if (QFile::exists(filePath))
+            mRecentProjects << filePath;
+    }
 }
 
 void MainWindow::applyCursorBlinkingSettings( Settings::Manager * settings )
@@ -1442,6 +1537,12 @@ void MainWindow::applyCursorBlinkingSettings( Settings::Manager * settings )
 void MainWindow::storeSettings( Settings::Manager * settings )
 {
     mPostDocklet->mPostWindow->storeSettings(settings);
+
+    QVariantList list;
+    foreach (const QString & path, mRecentProjects)
+        list << QVariant(path);
+
+    settings->setValue("IDE/recentProjects", QVariant::fromValue<QVariantList>(list));
 }
 
 void MainWindow::updateSessionsMenu()
@@ -1488,7 +1589,6 @@ void MainWindow::toggleInterpreterActions(bool enabled)
     mEditors->action(MultiEditor::EvaluateLine)->setEnabled(enabled);
     mEditors->action(MultiEditor::EvaluateRegion)->setEnabled(enabled);
 }
-
 
 void MainWindow::showCmdLine()
 {
@@ -1560,11 +1660,20 @@ void MainWindow::hideToolBox()
 
 void MainWindow::showSettings()
 {
-    Settings::Dialog dialog(mMain->settings());
+    QString previousConfigFile = mMain->getConfigFile();
+    Settings::Dialog dialog(mMain->settings(), mMain->sessionManager()->currentSession(), projectOpenFromSession, projectOpenFromSettings);
     dialog.resize(700,400);
     int result = dialog.exec();
     if( result == QDialog::Accepted )
+    {
         mMain->applySettings();
+        QString currentConfigFile = mMain->getConfigFile();
+        if(mMain->scProcess()->running() && previousConfigFile != currentConfigFile) {
+            QMessageBox::information(this, tr("Sclang configuration file changed"),
+                                     tr("The current SuperCollider language configuration has changed. "
+                                        "Reboot the interpreter to apply the changes."));
+        }
+    }
 }
 
 
@@ -1740,6 +1849,341 @@ void ClockStatusBox::timerEvent(QTimerEvent *e)
 void ClockStatusBox::updateTime()
 {
     setText(QTime::currentTime().toString());
+}
+
+//////////////////////////// PROJECTS ////////////////////////////
+
+void MainWindow::projectWriteDialog( std::function<void (const QString &)> action )
+{
+    QFileDialog dialog(mInstance);
+    dialog.setAcceptMode( QFileDialog::AcceptSave );
+    dialog.setFileMode( QFileDialog::AnyFile );
+
+    QStringList filters = QStringList()
+                          << tr("SuperCollider Projects(*.scproj)")
+                          << tr("All Files (*)");
+
+    dialog.setNameFilters(filters);
+
+#ifdef Q_OS_MAC
+    QWidget *last_active_window = QApplication::activeWindow();
+#endif
+
+    int result = dialog.exec();
+
+    // FIXME: workaround for Qt bug 25295
+    // See SC issue #678
+#ifdef Q_OS_MAC
+    if (last_active_window)
+        last_active_window->activateWindow();
+#endif
+
+    QString save_path;
+
+    if (result == QDialog::Accepted) {
+        save_path = dialog.selectedFiles()[0];
+
+        if (save_path.indexOf('.') == -1) {
+            save_path.append(".scproj");
+            QFileInfo save_path_info = QFileInfo(save_path);
+            if (save_path_info.exists())
+            {
+                QString msg = tr("Extenstion \".scproj\" was automatically added to the "
+                                   "selected file name, but the file \"%1\" already exists.\n\n"
+                                   "Do you wish to overwrite it?")
+                                .arg(save_path_info.fileName());
+                QMessageBox::StandardButton result =
+                        QMessageBox::warning(mInstance,
+                                             tr("Overwrite File?"),
+                                             msg,
+                                             QMessageBox::Yes | QMessageBox::No);
+                if (result != QMessageBox::Yes)
+                    save_path.clear();
+            }
+        }
+
+        if (!save_path.isEmpty()) {
+            action(save_path);
+        }
+    }
+}
+
+void MainWindow::newProject()
+{
+    projectWriteDialog([this](const QString &save_path){
+        using namespace YAML; using std::ofstream;
+        Emitter out;
+        out.SetIndent(4);
+        out.SetMapFormat(Block);
+        out.SetSeqFormat(Block);
+        out.SetBoolFormat(TrueFalseBool);
+
+        out << BeginMap;
+
+        out << Key << "includePaths";
+        out << Value << BeginSeq;
+        out << EndSeq;
+
+        out << Key << "excludePaths";
+        out << Value << BeginSeq;
+        out << EndSeq;
+
+        out << Key << "postInlineWarnings";
+        out << Value << true;
+
+        out << Key << "excludeDefaultPaths";
+        out << Value << false;
+
+        out << Key << "project";
+        out << Value << true;
+
+        out << EndMap;
+        ofstream fout(save_path.toStdString().c_str());
+        fout << out.c_str();
+
+        saveProjectPathToSettings(save_path);
+        updateWindowTitle();
+        updateProjectObjects();
+        addToRecentProjects(save_path);
+    });
+}
+
+void MainWindow::saveProjectPathToSettings( QString path ) {
+    SettingsInterface *settings = mMain->settingsForLanguageConfig();
+    bool previousWasProject = getProjectOpen();
+    settings->beginGroup("IDE/interpreter");
+    if ( !previousWasProject )
+    {
+        settings->setValue("previousConfigFile", settings->value("configFile").toString());
+    }
+    settings->setValue("configFile", path);
+    settings->endGroup();
+    setProjectOpen(true);
+}
+
+void MainWindow::onOpenRecentProject( QAction *action )
+{
+    openProject(action->text());
+}
+
+void MainWindow::openProject( const QString &path )
+{
+    bool isProject = false;
+
+    QFileInfo configFileInfo(path);
+    const bool configFileExists = configFileInfo.exists();
+
+    if (!configFileExists)
+        return;
+
+    using namespace YAML;
+    try {
+        std::ifstream fin(path.toStdString().c_str());
+        Node doc = YAML::Load( fin );
+        if (doc) {
+            const Node & project = doc[ "project" ];
+            if (project) {
+                try {
+                    isProject = project.as<bool>();
+                } catch(...) {
+                    qDebug() << "Warning: Cannot parse config file entry \"project\"";
+                }
+            }
+        }
+    } catch (std::exception & e) {
+    }
+
+    if (isProject) {
+        saveProjectPathToSettings(path);
+        updateWindowTitle();
+        updateProjectObjects();
+        addToRecentProjects(path);
+        if (mMain->scProcess()->running()) {
+            QMessageBox::information(this, tr("Sclang configuration file changed"),
+                                     tr("The current SuperCollider language configuration has changed. "
+                                        "Reboot the interpreter to apply the changes."));
+        }
+    } else {
+        QMessageBox::information(this, tr("SC Project"),tr("Not a project file."));
+    }
+}
+
+void MainWindow::openProjectDialog()
+{
+    QFileDialog dialog(this, Qt::Dialog);
+    dialog.setModal(true);
+    dialog.setWindowModality(Qt::ApplicationModal);
+
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+
+    QString path = documentOpenPath();
+    QFileInfo path_info(path);
+    if (path_info.isDir())
+        dialog.setDirectory(path);
+    else
+        dialog.setDirectory(path_info.dir());
+
+    QStringList filters;
+    filters
+        << tr("SuperCollider Projects(*.scproj)")
+        << tr("All Files (*)");
+    dialog.setNameFilters(filters);
+
+#ifdef Q_OS_MAC
+    QWidget *last_active_window = QApplication::activeWindow();
+#endif
+
+    if (dialog.exec())
+    {
+        QStringList filenames = dialog.selectedFiles();
+        if ( !filenames.isEmpty() )
+        {
+            openProject(filenames.first());
+        }
+    }
+
+    // FIXME: workaround for Qt bug 25295
+    // See SC issue #678
+#ifdef Q_OS_MAC
+    if (last_active_window)
+        last_active_window->activateWindow();
+#endif
+}
+
+void MainWindow::saveProjectAs()
+{
+    QString currentConfigFile = mMain->getConfigFile();
+    if ( QFile::exists(currentConfigFile) )
+        projectWriteDialog([this, currentConfigFile](QString save_path){
+            if ( QFile(currentConfigFile).copy(save_path) ) {
+                mMain->settingsForLanguageConfig()->setConfigFile(save_path);
+                updateWindowTitle();
+                updateProjectObjects();
+                addToRecentProjects(save_path);
+            } else {
+                QMessageBox::information(this, tr("SC project - save as"),
+                                         tr("Failed to save project file with new name."));
+            }
+        });
+    else
+        QMessageBox::information(this, tr("SC project - save as"),
+                                 tr("Current project file doesn't exist on disk."));
+}
+
+void MainWindow::closeProject()
+{
+    SettingsInterface *settings = mMain->settingsForLanguageConfig();
+    settings->beginGroup("IDE/interpreter");
+    QString previousConfigFile = settings->value("previousConfigFile").toString();
+    if (previousConfigFile.isEmpty()) {
+        previousConfigFile = QString("sclang_conf.yaml");
+    }
+    settings->setValue("configFile", previousConfigFile);
+    settings->endGroup();
+    setProjectOpen(false);
+    updateWindowTitle();
+    updateProjectObjects();
+}
+
+void MainWindow::addToRecentProjects( const QString &path )
+{
+    int i = mRecentProjects.indexOf(path);
+    if (i != -1)
+        mRecentProjects.move( i, 0 );
+    else {
+        mRecentProjects.prepend(path);
+        if (mRecentProjects.count() > mMaxRecentProjects)
+            mRecentProjects.removeLast();
+    }
+    updateRecentProjectsMenu();
+}
+
+void MainWindow::clearRecentProjects()
+{
+    mRecentProjects.clear();
+    updateRecentProjectsMenu();
+}
+
+void MainWindow::updateRecentProjectsMenu()
+{
+    updateGenericRecentMenu(mRecentProjects, mRecentProjectsMenu, ClearRecentProjects);
+}
+
+void MainWindow::updateProjectObjects()
+{
+    QString configFile = mMain->getConfigFile();
+    bool projectOpen = getProjectOpen();
+    if (projectOpen) {
+        QFileInfo fi(configFile);
+        mFileTreeDocklet->setRoot(fi.dir().absolutePath(), tr("Project: ").append(fi.baseName()));
+    } else {
+        QString root = mMain->settings()->value("IDE/fileTreeRoot").toString();
+        if (root.isEmpty())
+            root = QDir::home().absolutePath();
+        mFileTreeDocklet->setRoot(root, "File Tree");
+    }
+    mActions[ProjectClose]->setEnabled(projectOpen);
+    mActions[ProjectSaveAs]->setEnabled(projectOpen);
+}
+
+//NOTE: checks that yaml config file is still really a project. It could have
+// been edited manually meanwhile. Checks both the config file in the settings
+// and in the session.
+void MainWindow::verifyProjectStatusMatchesConfigFile()
+{
+    auto check = [this](bool &var, QString const &configFile) {
+        QFileInfo configFileInfo(configFile);
+        const bool configFileExists = configFileInfo.exists();
+
+        if (!configFileExists)
+            return;
+
+        using namespace YAML;
+        try {
+            std::ifstream fin(configFile.toStdString());
+            Node doc = YAML::Load( fin );
+            if ( doc ) {
+                const Node & node = doc["project"];
+                if (node) {
+                    try {
+                        var = node.as<bool>();
+                    } catch(...) {
+                        qDebug() << "Warning: Cannot parse config file entry \"project\"";
+                        var = false;
+                    }
+                } else {
+                    var = false;
+                }
+
+            }
+            //NOTE: when the ide was closed the config file was project
+            //now it's not a project anymore.
+            SettingsInterface *s = mMain->settingsForLanguageConfig();
+            if (s->value("IDE/interpreter/isProject").toBool() && var == false) {
+                s->setConfigFile(s->value("IDE/interpreter/previousConfigFile").toString());
+            }
+        } catch (std::exception &) {
+        }
+    };
+    Session *session = mMain->sessionManager()->currentSession();
+    if (session != nullptr)
+        check(projectOpenFromSession, session->getConfigFile());
+    check(projectOpenFromSettings, mMain->settings()->getConfigFile());
+}
+
+bool MainWindow::getProjectOpen() {
+    return mMain->useLanguageConfigFromSession() ? projectOpenFromSession : projectOpenFromSettings;
+}
+
+void MainWindow::setProjectOpen( bool enabled ) {
+    if (mMain->useLanguageConfigFromSession())
+        projectOpenFromSession = enabled;
+     else
+        projectOpenFromSettings = enabled;
+    //NOTE: this is only used at ide startup.
+    //If project file is no longer a project, the config file is
+    //switched back to the last non-project config file
+    mMain->settingsForLanguageConfig()->setValue("IDE/interpreter/isProject", enabled);
 }
 
 } // namespace ScIDE

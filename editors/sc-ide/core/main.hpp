@@ -100,6 +100,11 @@ public:
     static void openCommandLine(const QString &string);
     static void findReferences(const QString &string, QWidget * parent);
 
+    static bool useLanguageConfigFromSession();
+    static SettingsInterface *settingsForLanguageConfig();
+    static QString getConfigFile();
+
+
 public Q_SLOTS:
     void storeSettings() {
         Q_EMIT(storeSettingsRequest(mSettings));

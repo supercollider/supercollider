@@ -64,6 +64,7 @@ set ( ide_moc_hdr
     core/session_manager.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
+    widgets/file_tree.hpp
     widgets/documents_dialog.hpp
     widgets/editor_box.hpp
     widgets/find_replace_tool.hpp
@@ -89,6 +90,7 @@ set ( ide_moc_hdr
     widgets/settings/dialog.hpp
     widgets/settings/general_page.hpp
     widgets/settings/sclang_page.hpp
+    widgets/settings/sclang_project_page.hpp
     widgets/settings/editor_page.hpp
     widgets/settings/shortcuts_page.hpp
     widgets/util/path_chooser_widget.hpp
@@ -120,6 +122,7 @@ set ( ide_src
     core/util/scdoc_log.cpp
     widgets/cmd_line.cpp
     widgets/doc_list.cpp
+    widgets/file_tree.cpp
     widgets/documents_dialog.cpp
     widgets/editor_box.cpp
     widgets/find_replace_tool.cpp
@@ -141,6 +144,7 @@ set ( ide_src
     widgets/settings/dialog.cpp
     widgets/settings/general_page.cpp
     widgets/settings/sclang_page.cpp
+    widgets/settings/sclang_project_page.cpp
     widgets/settings/editor_page.cpp
     widgets/settings/shortcuts_page.cpp
     widgets/util/gui_utilities.cpp
@@ -171,6 +175,7 @@ set( ide_forms
     forms/settings_dialog.ui
     forms/settings_general.ui
     forms/settings_sclang.ui
+    forms/settings_sclang_project.ui
     forms/settings_editor.ui
     forms/settings_shortcuts.ui
 )

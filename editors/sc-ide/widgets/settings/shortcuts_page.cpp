@@ -20,6 +20,7 @@
 
 #include "shortcuts_page.hpp"
 #include "ui_settings_shortcuts.h"
+#include "../../core/session_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/main.hpp"
 
@@ -64,7 +65,7 @@ ShortcutsPage::~ShortcutsPage()
     delete ui;
 }
 
-void ShortcutsPage::load( Manager *s )
+void ShortcutsPage::load( Manager *s, Session *session )
 {
     ui->actionTree->clear();
 
@@ -80,7 +81,7 @@ void ShortcutsPage::load( Manager *s )
     ui->actionTree->header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
-void ShortcutsPage::store( Manager *s )
+void ShortcutsPage::store( Manager *s, Session *session, bool useLanguageConfigFromSession)
 {
     s->beginGroup("IDE/shortcuts");
 

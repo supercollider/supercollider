@@ -28,6 +28,8 @@
 #include <QStatusBar>
 
 #include "util/status_box.hpp"
+#include "../core/settings_interface.hpp"
+#include <functional>
 
 namespace ScIDE {
 
@@ -38,6 +40,7 @@ class TextFindReplacePanel;
 class GoToLineTool;
 class PostDocklet;
 class DocumentsDocklet;
+class FileTreeDocklet;
 class HelpBrowserDocklet;
 class CmdLine;
 class Document;
@@ -70,6 +73,11 @@ public:
         DocCloseAll,
         DocReload,
         ClearRecentDocs,
+        ProjectNew,
+        ProjectOpen,
+        ProjectSaveAs,
+        ProjectClose,
+        ClearRecentProjects,
 
         // Sessions
         NewSession,
@@ -88,6 +96,7 @@ public:
         CloseToolBox,
         ShowFullScreen,
         FocusPostWindow,
+        ToggleProjectDockelt,
 
         // Settings
         ShowSettings,
@@ -148,6 +157,11 @@ public Q_SLOTS:
     void closeDocument();
     void closeAllDocuments();
 
+    void newProject();
+    void openProjectDialog();
+    void closeProject();
+    void saveProjectAs();
+
     void showCmdLine();
     void showCmdLine( const QString & );
     void showFindTool();
@@ -161,14 +175,14 @@ signals:
     void evaluateCode( const QString &, bool silent = true );
 
 public Q_SLOTS:
-    void showStatusMessage( QString const & string );
+    void showStatusMessage( const QString & );
 
 private Q_SLOTS:
     void openStartupFile();
     void openUserSupportDirectory();
 
-    void switchSession( Session *session );
-    void saveSession( Session *session );
+    void switchSession( Session * );
+    void saveSession( Session * );
     void onInterpreterStateChanged( QProcess::ProcessState );
     void onQuit();
     void onCurrentDocumentChanged( Document * );
@@ -176,6 +190,8 @@ private Q_SLOTS:
     void onDocDialogFinished();
     void updateRecentDocsMenu();
     void onOpenRecentDocument( QAction * );
+    void onOpenRecentProject( QAction * );
+    void clearRecentProjects();
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();
@@ -196,7 +212,7 @@ private Q_SLOTS:
     void cmdLineForCursor();
 
 protected:
-    virtual void closeEvent(QCloseEvent *event);
+    virtual void closeEvent( QCloseEvent * );
     virtual void dragEnterEvent( QDragEnterEvent * );
     virtual void dropEvent( QDropEvent * );
     virtual bool eventFilter( QObject *, QEvent * );
@@ -204,14 +220,25 @@ protected:
 private:
     void createActions();
     void createMenus();
-    template <class T> void saveWindowState(T * settings);
-    template <class T> void restoreWindowState(T * settings);
+    void updateGenericRecentMenu(const QStringList &recent, QMenu* menu, ActionRole action);
+    void saveWindowState( SettingsInterface * );
+    void restoreWindowState( SettingsInterface * );
     void updateSessionsMenu();
-    void updateClockWidget( bool isFullScreen );
     void openSession( QString const & sessionName );
-    bool checkFileExtension( const QString & fpath );
-    void toggleInterpreterActions( bool enabled);
+    void updateClockWidget( bool isFullScreen );
     void applyCursorBlinkingSettings( Settings::Manager * );
+    bool checkFileExtension( QString const & fpath );
+    void toggleInterpreterActions( bool enabled );
+    void openProject( QString const &path );
+    void projectWriteDialog( std::function<void (QString const &)> );
+    void applyRecentProjectsSettings( Settings::Manager * );
+    void addToRecentProjects( const QString & );
+    void updateRecentProjectsMenu();
+    void updateProjectObjects();
+    void verifyProjectStatusMatchesConfigFile();
+    void saveProjectPathToSettings( QString path );
+    void setProjectOpen( bool enabled );
+    bool getProjectOpen();
     QString documentOpenPath() const;
     QString documentSavePath( Document * ) const;
 
@@ -239,11 +266,20 @@ private:
     PostDocklet * mPostDocklet;
     DocumentsDocklet *mDocumentsDocklet;
     HelpBrowserDocklet *mHelpBrowserDocklet;
+    FileTreeDocklet *mFileTreeDocklet;
 
     QSignalMapper mCodeEvalMapper;
     DocumentsDialog * mDocDialog;
 
     QString mLastDocumentSavePath;
+
+    QMenu * mRecentProjectsMenu;
+    QStringList mRecentProjects;
+    static const int mMaxRecentProjects = 10;
+
+    //project
+    bool projectOpenFromSettings = false;
+    bool projectOpenFromSession = false;
 
     static MainWindow *mInstance;
 };

@@ -82,6 +82,7 @@ public:
     void updateSelectionMirrorForDocument ( class Document * doc, int start, int range);
 
 public slots:
+    bool running();
     void toggleRunning();
     void startLanguage (void);
     void stopLanguage (void);

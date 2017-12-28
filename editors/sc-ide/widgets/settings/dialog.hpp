@@ -27,9 +27,14 @@ namespace Ui {
     class ConfigDialog;
 }
 
-namespace ScIDE { namespace Settings {
+namespace ScIDE {
+
+struct Session;
+
+namespace Settings {
 
 class Manager;
+class GeneralPage;
 
 class Dialog : public QDialog
 {
@@ -37,7 +42,7 @@ class Dialog : public QDialog
 
 public:
 
-    Dialog( Manager *settings, QWidget * parent = 0 );
+    Dialog(Manager *settings, ScIDE::Session *session, bool projectOpenFromSession = false, bool projectOpenFromSettings = false, QWidget * parent = 0);
     ~Dialog();
 
 public Q_SLOTS:
@@ -48,11 +53,19 @@ public Q_SLOTS:
     void apply();
 
 Q_SIGNALS:
-    void storeRequest( Manager * );
-    void loadRequest( Manager * );
+    void storeRequest( Manager *, Session *, bool );
+    void loadRequest( Manager *, Session * );
+
+private slots:
+    void switchSclangPage(bool);
 
 private:
     Manager *mManager;
+    ScIDE::Session *mSession;
+    QWidget *sclangPage;
+    GeneralPage *generalPage;
+    bool projectOpenFromSession = false;
+    bool projectOpenFromSettings = false;
     Ui::ConfigDialog *ui;
 };
 

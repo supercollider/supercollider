@@ -29,11 +29,13 @@
 #include <QAction>
 #include <QTextCharFormat>
 
+#include "../settings_interface.hpp"
+
 namespace ScIDE { namespace Settings {
 
 class Theme;
 
-class Manager : public QObject
+class Manager : public QObject, public SettingsInterface
 {
     Q_OBJECT
 

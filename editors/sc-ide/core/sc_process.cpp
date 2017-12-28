@@ -115,6 +115,11 @@ void ScProcess::updateToggleRunningAction()
     mActions[ToggleRunning]->setShortcut( targetAction->shortcut() );
 }
 
+bool ScProcess::running()
+{
+    return state() == QProcess::Running;
+}
+
 void ScProcess::toggleRunning()
 {
     switch(state()) {
@@ -134,13 +139,10 @@ void ScProcess::startLanguage (void)
     }
 
     Settings::Manager *settings = Main::settings();
-    settings->beginGroup("IDE/interpreter");
 
-    QString workingDirectory = settings->value("runtimeDir").toString();
-    QString configFile = settings->value("configFile").toString();
-    bool standalone = settings->value("standalone").toBool();
+    QString workingDirectory = settings->value("IDE/interpreter/runtimeDir").toString();
 
-    settings->endGroup();
+    QString configFile = Main::instance()->getConfigFile();
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
@@ -153,8 +155,6 @@ void ScProcess::startLanguage (void)
     if(!configFile.isEmpty())
         sclangArguments << "-l" << configFile;
     sclangArguments << "-i" << "scqt";
-    if(standalone)
-        sclangArguments << "-a";
 
     if(!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);

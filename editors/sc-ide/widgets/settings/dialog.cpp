@@ -22,8 +22,10 @@
 #include "ui_settings_dialog.h"
 #include "general_page.hpp"
 #include "sclang_page.hpp"
+#include "sclang_project_page.hpp"
 #include "editor_page.hpp"
 #include "shortcuts_page.hpp"
+#include "../../core/session_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/main.hpp"
 
@@ -38,42 +40,47 @@
 
 namespace ScIDE { namespace Settings {
 
-Dialog::Dialog( Manager *settings, QWidget * parent ):
+Dialog::Dialog(Manager *settings, Session* session, bool projectOpenFromSession, bool projectOpenFromSettings, QWidget * parent):
     QDialog(parent),
     mManager(settings),
+    mSession(session),
+    projectOpenFromSession(projectOpenFromSession),
+    projectOpenFromSettings(projectOpenFromSettings),
     ui( new Ui::ConfigDialog )
 {
     ui->setupUi(this);
 
     QWidget *w;
 
-    w = new GeneralPage;
-    ui->configPageStack->addWidget(w);
+    generalPage = new GeneralPage;
+    ui->configPageStack->addWidget(generalPage);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("preferences-system"), tr("General")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, SIGNAL(storeRequest(Manager*, Session*, bool)), generalPage, SLOT(store(Manager*, Session*, bool)));
+    connect(this, SIGNAL(loadRequest(Manager*, Session*)), generalPage, SLOT(load(Manager*, Session*)));
+    connect(generalPage, SIGNAL(useLanguageConfigFromSessionChanged(bool)), this, SLOT(switchSclangPage(bool)));
 
-    w = new SclangPage;
-    ui->configPageStack->addWidget(w);
+    bool projectOpen = Main::instance()->useLanguageConfigFromSession() ? projectOpenFromSession : projectOpenFromSettings;
+    sclangPage = projectOpen ? (QWidget *) new SclangProjectPage : (QWidget *) new SclangPage;
+    ui->configPageStack->addWidget(sclangPage);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("applications-system"), tr("Interpreter")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, SIGNAL(storeRequest(Manager*, Session*, bool)), sclangPage, SLOT(store(Manager*, Session*, bool)));
+    connect(this, SIGNAL(loadRequest(Manager*, Session*)), sclangPage, SLOT(load(Manager*, Session*)));
 
     w = new EditorPage;
     ui->configPageStack->addWidget(w);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("accessories-text-editor"), tr("Editor")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, SIGNAL(storeRequest(Manager*, Session*, bool)), w, SLOT(store(Manager*, Session*, bool)));
+    connect(this, SIGNAL(loadRequest(Manager*, Session*)), w, SLOT(load(Manager*, Session*)));
 
     w = new ShortcutsPage;
     ui->configPageStack->addWidget(w);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("input-keyboard"), tr("Shortcuts")));
-    connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
-    connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
+    connect(this, SIGNAL(storeRequest(Manager*, Session*, bool)), w, SLOT(store(Manager*, Session*, bool)));
+    connect(this, SIGNAL(loadRequest(Manager*, Session*)), w, SLOT(load(Manager*, Session*)));
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -93,7 +100,7 @@ Dialog::~Dialog()
 
 void Dialog::accept()
 {
-    Q_EMIT( storeRequest(mManager) );
+    Q_EMIT( storeRequest(mManager, mSession, generalPage->useLanguageConfigFromSessionChecked()) );
 
     QDialog::accept();
 }
@@ -105,13 +112,35 @@ void Dialog::reject()
 
 void Dialog::apply()
 {
-    Q_EMIT( storeRequest(mManager) );
+    Q_EMIT( storeRequest(mManager, mSession, generalPage->useLanguageConfigFromSessionChecked()) );
     Main::instance()->applySettings();
 }
 
 void Dialog::reset()
 {
-    Q_EMIT( loadRequest(mManager) );
+    Q_EMIT( loadRequest(mManager, mSession) );
+}
+
+void Dialog::switchSclangPage(bool useLanguageConfigFromSession)
+{
+    ui->configPageStack->removeWidget(sclangPage);
+    delete sclangPage;
+
+    bool projectOpen = (useLanguageConfigFromSession && mSession != nullptr)? projectOpenFromSession : projectOpenFromSettings;
+    if (projectOpen)
+    {
+        SclangProjectPage* temp = new SclangProjectPage;
+        temp->loadLocal(mManager, mSession, useLanguageConfigFromSession);
+        sclangPage = temp;
+    } else {
+        SclangPage* temp = new SclangPage;
+        temp->loadLocal(mManager, mSession, useLanguageConfigFromSession);
+        sclangPage = temp;
+    }
+    ui->configPageStack->insertWidget(1, sclangPage);
+    connect(this, SIGNAL(storeRequest(Manager*, Session*, bool)), sclangPage, SLOT(store(Manager*, Session*, bool)));
+    connect(this, SIGNAL(loadRequest(Manager*, Session*)), sclangPage, SLOT(load(Manager*, Session*)));
+
 }
 
 }} // namespace ScIDE::Settings

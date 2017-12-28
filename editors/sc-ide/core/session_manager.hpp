@@ -26,11 +26,13 @@
 #include <QStringList>
 #include <QSettings>
 
+#include "settings_interface.hpp"
+
 namespace ScIDE {
 
 class DocumentManager;
 
-struct Session : public QSettings
+struct Session : public QSettings, public SettingsInterface
 {
     Session( const QString & file, const QString & name, Format format, QObject * parent = 0 ):
         QSettings(file, format, parent),
@@ -39,6 +41,11 @@ struct Session : public QSettings
 
     const QString & name() const { return mName; }
 
+    void beginGroup ( const QString & prefix ) override { QSettings::beginGroup(prefix); }
+    void endGroup () override { QSettings::endGroup(); }
+
+    QVariant value ( const QString & key ) const override { return QSettings::value(key); }
+    void setValue ( const QString & key, const QVariant & value ) override { QSettings::setValue(key, value); }
 private:
     QString mName;
 };

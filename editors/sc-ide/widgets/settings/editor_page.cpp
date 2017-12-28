@@ -21,6 +21,7 @@
 #include "editor_page.hpp"
 #include "ui_settings_editor.h"
 #include "../code_editor/highlighter.hpp"
+#include "../../core/session_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/settings/theme.hpp"
 #include "../../core/main.hpp"
@@ -80,7 +81,7 @@ EditorPage::~EditorPage()
     qDeleteAll(mThemes);
 }
 
-void EditorPage::load( Manager *s )
+void EditorPage::load(Manager *s, Session *session)
 {
     s->beginGroup("IDE/editor");
 
@@ -242,7 +243,7 @@ void EditorPage::populateThemeList(const QString & sel)
              this, SLOT(updateTheme(QString)) );
 }
 
-void EditorPage::store( Manager *s )
+void EditorPage::store( Manager *s,  Session *session, bool useLanguageConfigFromSession)
 {
     s->beginGroup("IDE/editor");
 

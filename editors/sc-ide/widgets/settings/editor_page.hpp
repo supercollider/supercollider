@@ -34,7 +34,11 @@ namespace Ui {
     class EditorConfigPage;
 }
 
-namespace ScIDE { namespace Settings {
+namespace ScIDE {
+
+struct Session;
+
+namespace Settings {
 
 class Manager;
 
@@ -47,8 +51,8 @@ public:
     ~EditorPage();
 
 public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
+    void load( Manager *, Session *);
+    void store( Manager *, Session *, bool);
 
 private Q_SLOTS:
     void onCurrentTabChanged(int);

@@ -27,7 +27,11 @@ namespace Ui {
     class GeneralConfigPage;
 }
 
-namespace ScIDE { namespace Settings {
+namespace ScIDE {
+
+struct Session;
+
+namespace Settings {
 
 class Manager;
 
@@ -38,13 +42,18 @@ class GeneralPage : public QWidget
 public:
     GeneralPage(QWidget *parent = 0);
     ~GeneralPage();
+    bool useLanguageConfigFromSessionChecked();
 
 public slots:
-    void load( Manager * );
-    void store( Manager * );
+    void load( Manager *, Session *);
+    void store( Manager *, Session *, bool);
+
+Q_SIGNALS:
+    void useLanguageConfigFromSessionChanged(bool);
 
 private slots:
     void onStartSessionNameChanged( const QString & text );
+    void emitUseLanguageConfigFromSessionChanged(bool);
 
 private:
     Ui::GeneralConfigPage *ui;

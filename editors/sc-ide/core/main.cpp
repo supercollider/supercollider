@@ -30,9 +30,6 @@
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/parser.h>
-
 #include <QAction>
 #include <QApplication>
 #include <QBuffer>
@@ -327,3 +324,18 @@ void Main::findReferences(const QString &string, QWidget * parent)
     dialog.exec();
 }
 
+bool Main::useLanguageConfigFromSession() {
+    return settings()->value("IDE/useLanguageConfigFromSession").toBool() && (sessionManager()->currentSession() != nullptr);
+}
+
+SettingsInterface *Main::settingsForLanguageConfig(){
+    if( useLanguageConfigFromSession() )
+        return sessionManager()->currentSession();
+    else
+        return settings();
+}
+
+QString Main::getConfigFile()
+{
+    return settingsForLanguageConfig()->getConfigFile();
+}

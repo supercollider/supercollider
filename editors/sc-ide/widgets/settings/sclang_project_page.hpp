@@ -18,14 +18,16 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_SETTINGS_SCLANG_PAGE_HPP_INCLUDED
-#define SCIDE_WIDGETS_SETTINGS_SCLANG_PAGE_HPP_INCLUDED
+#ifndef SCIDE_WIDGETS_SETTINGS_SCLANG_PROJECT_PAGE_HPP_INCLUDED
+#define SCIDE_WIDGETS_SETTINGS_SCLANG_PROJECT_PAGE_HPP_INCLUDED
 
-#include "sclang_page_generic.hpp"
+#include <QDir>
+#include <functional>
+
 #include <yaml-cpp/yaml.h>
 
 #include "sclang_page_generic.hpp"
-#include "ui_settings_sclang.h"
+#include "ui_settings_sclang_project.h"
 
 namespace ScIDE {
 
@@ -35,17 +37,17 @@ namespace Settings {
 
 class Manager;
 
-class SclangPage : public SclangPageGeneric<Ui::SclangConfigPage>
+class SclangProjectPage : public SclangPageGeneric<Ui::SclangProjectConfigPage>
 {
     Q_OBJECT
 
 public:
-    SclangPage(QWidget *parent = 0);
-    void loadLocal(Manager *, Session *, bool);
+    SclangProjectPage(QWidget *parent = 0);
+    void loadLocal( Manager *, Session *, bool);
 
 public Q_SLOTS:
-    void load(Manager *, Session *);
-    void store(Manager *, Session *, bool);
+    void load( Manager *, Session *);
+    void store( Manager *, Session *, bool);
 
 private Q_SLOTS:
     void addIncludePath();
@@ -53,14 +55,13 @@ private Q_SLOTS:
     void addExcludePath();
     void removeExcludePath();
     void markSclangConfigDirty() { sclangConfigDirty = true; }
-    void changeSelectedLanguageConfig(const QString & configPath);
-    void dialogCreateNewConfigFile();
-    void dialogDeleteCurrentConfigFile();
 
 private:
-    void writeAddExtraFields(YAML::Emitter &) override {}
-    QStringList availableLanguageConfigFiles();
+    void writeAddExtraFields(YAML::Emitter &) override;
+    void doRelativeProject(std::function<void(QString)> func, QString path);
 
+    std::string selectedLanguageConfigFileDir;
+    QDir qSelectedLanguageConfigFileDir;
 };
 
 }} // namespace ScIDE::Settings

@@ -26,6 +26,7 @@
 #include <QMouseEvent>
 #include <QToolButton>
 #include <QWidget>
+#include <QLabel>
 
 namespace ScIDE {
 
@@ -51,10 +52,13 @@ public:
     void addAction (QAction *action);
     void addWidget (QWidget *widget, int stretch = 0 );
     QMenu *optionsMenu () { return mOptionsMenu; }
+    void setTitle(const QString& title) { titleLabel->setText(title); }
 
 protected:
     virtual void paintEvent( QPaintEvent *event );
     QMenu *mOptionsMenu;
+private:
+    QLabel *titleLabel;
 };
 
 class Docklet : public QObject

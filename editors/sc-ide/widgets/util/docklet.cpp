@@ -60,6 +60,7 @@ void DocketToolButton::mousePressEvent(QMouseEvent *event)
 
 
 DockletToolBar::DockletToolBar(const QString &title)
+    :titleLabel(new QLabel(title))
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -73,7 +74,6 @@ DockletToolBar::DockletToolBar(const QString &title)
     optionsBtn->setToolButtonStyle( Qt::ToolButtonIconOnly );
     optionsBtn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    QLabel *titleLabel = new QLabel(title);
     titleLabel->setMargin(5);
     titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 
