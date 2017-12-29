@@ -1,12 +1,13 @@
 # Change Log
 
-## [3.8.1](https://github.com/supercollider/supercollider/tree/Version-3.8.1) (2017-12-15)
+## [3.8.1](https://github.com/supercollider/supercollider/tree/Version-3.8.1) (2017-12-28)
 [Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.8.0...Version-3.8.1)
 
-3.8.1 has only one minor change to allow building with GCC 7. There is no need to upgrade from 3.8.0
-unless you plan to build with GCC 7 yourself.
+This tiny release backports only two important bug fixes from the upcoming 3.9 release.
 
-Correct headers have been #included to allow building with GCC 7 ([#3334](https://github.com/supercollider/supercollider/pull/3334))
+Correct headers have been #included to allow building with GCC 7 ([#3334](https://github.com/supercollider/supercollider/pull/3334)).
+
+Incorrect input checking for `LocalOut` has been fixed ([#3348](https://github.com/supercollider/supercollider/pull/3348)).
 
 ## [3.8.0](https://github.com/supercollider/supercollider/tree/Version-3.8.0) (2016-09-23)
 [Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.7.2...Version-3.8.0)
