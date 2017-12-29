@@ -255,11 +255,11 @@ inline double DurToFloat(DurationType dur)
 
 std::chrono::microseconds linkTimeOfInitialization;
 inline std::chrono::microseconds hrToLinkTime(double secs){
-    auto time = std::chrono::duration<double>(secs);
-    return std::chrono::duration_cast<std::chrono::microseconds>(time) + linkTimeOfInitialization;
+	auto time = std::chrono::duration<double>(secs);
+	return std::chrono::duration_cast<std::chrono::microseconds>(time) + linkTimeOfInitialization;
 }
 inline double linkToHrTime(std::chrono::microseconds micros){
-    return DurToFloat(micros - linkTimeOfInitialization);
+	return DurToFloat(micros - linkTimeOfInitialization);
 }
 
 
@@ -267,7 +267,7 @@ SCLANG_DLLEXPORT_C void schedInit()
 {
 	using namespace std::chrono;
 	hrTimeOfInitialization     = high_resolution_clock::now();
-    linkTimeOfInitialization   = ableton::link::platform::Clock().micros();
+	linkTimeOfInitialization   = ableton::link::platform::Clock().micros();
 
 	syncOSCOffsetWithTimeOfDay();
 	gResyncThread = std::thread(resyncThread);
@@ -1032,7 +1032,7 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	if(err) mQuantum=4.;
 
 	mLink.enable(true);
-	mLink.setTempoCallback([this](double bpm){
+	mLink.setTempoCallback([this](double bpm) {
 		double secs = elapsedTime();
 		double tempo = bpm / 60.;
 
