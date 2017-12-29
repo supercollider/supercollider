@@ -253,7 +253,7 @@ inline double DurToFloat(DurationType dur)
 }
 
 
-std::chrono::microseconds linkTimeOfInitialization;
+static std::chrono::microseconds linkTimeOfInitialization;
 inline std::chrono::microseconds hrToLinkTime(double secs){
 	auto time = std::chrono::duration<double>(secs);
 	return std::chrono::duration_cast<std::chrono::microseconds>(time) + linkTimeOfInitialization;
