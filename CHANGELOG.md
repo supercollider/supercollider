@@ -1,9 +1,9 @@
 # Change Log
 
-3.9.0-beta1 (2017-10-25)
-========================
+3.9.0-rc1 (2017-12-26)
+======================
 
-We are proud to announce the arrival of SuperCollider 3.9.0-beta1! Apologies
+We are proud to announce the arrival of SuperCollider 3.9.0-rc1! Apologies
 for being so far behind schedule; we hope the improvements you'll find here
 will more than make up for it. In 3.9.0, determined contributors have fixed
 some of SuperCollider's major cross-platform compatibility demons, addressed
@@ -228,6 +228,11 @@ Added two new methods to `SimpleNumber`: `snap` and `softRound` ([#3160](https:/
 
 `ReadableNodeIDAllocator` offers a new optional replacement for `PowerOfTwoAllocator` that assigns node IDs in a way more readable to humans when working with multiclient setups ([#3179](https://github.com/supercollider/supercollider/pull/3179)).
 
+A new "booted" stage has been added to Server objects that have been booted but
+may not be running yet, accessible via `Server:hasBooted` and
+`Server.allBootedServers`
+([#3275](https://github.com/supercollider/supercollider/pull/3275)).
+
 Class library: Changed
 -------
 
@@ -257,6 +262,9 @@ The argument to `Pattern:fin` has a default of 1 for consistency with `Object:fi
 
 Conversion methods among collection types has been improved and documented ([#2871](https://github.com/supercollider/supercollider/pull/2871)).
 
+`clientID` is now protected from being changed while the server is running
+([#3275](https://github.com/supercollider/supercollider/pull/3275)).
+
 Class library: Deprecated
 ----------
 
@@ -279,6 +287,9 @@ The WiiMote classes (`WiiMote`, `WiiMoteIRObject`, `WiiCalibrationInfo`, `WiiMot
 The `Server.set` class variable is deprecated. Use `Server.all` instead ([#2422](https://github.com/supercollider/supercollider/pull/2422)).
 
 `SimpleNumber:quantize` is deprecated. Use `SimpleNumber:snap` instead ([#3160](https://github.com/supercollider/supercollider/pull/3160)).
+
+`Server:userSpecifiedClientID` is deprecated. Use `Server:clientID` instead
+([#3275](https://github.com/supercollider/supercollider/pull/3275)).
 
 Class library: Removed
 -------
@@ -342,6 +353,17 @@ Fixed `SimpleNumber:asTimeString` producing nonsensical results with the "precis
 
 `Server:clientID` can now be changed, allowing multiple clients connect to the same server ([#3178](https://github.com/supercollider/supercollider/pull/3178)).
 
+History and HistoryGui have been cleaned up
+([#3267](https://github.com/supercollider/supercollider/pull/3267)).
+
+Fixed duplicate node IDs involving `Server.initTree`
+([#3265](https://github.com/supercollider/supercollider/pull/3265)).
+
+Fixed supernova crashing when too many controls are used
+([#3196](https://github.com/supercollider/supercollider/issues/3196)).
+
+`Volume` now respects lag time when it is instantiated or destroyed
+([#3332](https://github.com/supercollider/supercollider/pull/3332)).
 
 IDE & SCDoc: Added
 -----
@@ -357,7 +379,7 @@ Server actions, which were previously in the "Language" menu, have been moved ou
 
 Changed "occurrences" to "matches" in the status bar in the Find and Replace features ([#2702](https://github.com/supercollider/supercollider/pull/2702)).
 
-Many minor improvements were made to the look and feel of the documentation ([#2944](https://github.com/supercollider/supercollider/pull/2944), [#2945](https://github.com/supercollider/supercollider/pull/2945), [#2947](https://github.com/supercollider/supercollider/pull/2947), [#2948](https://github.com/supercollider/supercollider/pull/2948), [#2967](https://github.com/supercollider/supercollider/pull/2967), [#3006](https://github.com/supercollider/supercollider/pull/3006), [#3022](https://github.com/supercollider/supercollider/pull/3022), [#3025](https://github.com/supercollider/supercollider/pull/3025), [#3034](https://github.com/supercollider/supercollider/pull/3034), [#3175](https://github.com/supercollider/supercollider/pull/3175)).
+Many minor improvements were made to the look and feel of the documentation ([#2944](https://github.com/supercollider/supercollider/pull/2944), [#2945](https://github.com/supercollider/supercollider/pull/2945), [#2947](https://github.com/supercollider/supercollider/pull/2947), [#2948](https://github.com/supercollider/supercollider/pull/2948), [#2967](https://github.com/supercollider/supercollider/pull/2967), [#3006](https://github.com/supercollider/supercollider/pull/3006), [#3022](https://github.com/supercollider/supercollider/pull/3022), [#3025](https://github.com/supercollider/supercollider/pull/3025), [#3034](https://github.com/supercollider/supercollider/pull/3034), [#3175](https://github.com/supercollider/supercollider/pull/3175), [#3346](https://github.com/supercollider/supercollider/pull/3346)).
 
 IDE & SCDoc: Fixed
 -----
