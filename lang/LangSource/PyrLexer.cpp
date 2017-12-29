@@ -1672,11 +1672,11 @@ void traverseFullDepTree2()
 		} else {
 			double elapsed;
 			buildBigMethodMatrix();
+#ifndef NDEBUG
 			SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-			post("\tNumber of Symbols %d\n", symbolTable->NumItems());
-			post("\tByte Code Size %d\n", totalByteCodes);
-			//elapsed = TickCount() - compileStartTime;
-			//elapsed = 0;
+			post("\tSymbol table has %d items.\n", symbolTable->NumItems());
+			post("\tCompiled %d byte code elements.\n", totalByteCodes);
+#endif
 			elapsed = elapsedTime() - compileStartTime;
 			post("\tcompiled %d files in %.2f seconds\n",
 				 gNumCompiledFiles, elapsed );
