@@ -683,13 +683,12 @@ new clock:
 		reschedules.
 */
 
-
 class TempoClock
 {
 public:
 	TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 				double inTempo, double inBaseBeats, double inBaseSeconds);
-	~TempoClock() { if(mLink) delete mLink;}
+	virtual ~TempoClock() {}
 	void StopReq();
 	void Stop();
 	void StopAndDelete()
@@ -703,33 +702,18 @@ public:
 	void Add(double inBeats, PyrSlot* inTask);
 	void SetTempoAtBeat(double inTempo, double inBeats);
 	void SetTempoAtTime(double inTempo, double inSeconds);
-	void SetAll(double inTempo, double inBeats, double inSeconds, double beatsPerBar);
+	void SetAll(double inTempo, double inBeats, double inSeconds);
 	double ElapsedBeats();
 	void Clear();
 	//void Flush();
-	double GetTempo() const { return mTempo;}
+	double GetTempo() const { return mTempo; }
 	double GetBeatDur() const { return mBeatDur; }
-	double BeatsToSecs(double beats) const{ 
-        if(!mLink)
-            return (beats - mBaseBeats) * mBeatDur + mBaseSeconds;
-        else{
-            auto timeline = mLink->captureAppTimeline();
-            return linkToHrTime(timeline.timeAtBeat(beats, mQuantum));
-        }
-    }
-	double SecsToBeats(double secs) const{ 
-        if(!mLink)
-            return (secs - mBaseSeconds) * mTempo + mBaseBeats;
-        else{
-            auto timeline = mLink->captureAppTimeline();
-            double beats = timeline.beatAtTime(hrToLinkTime(secs), mQuantum);
-            return beats;
-        }
-    }
+	virtual double BeatsToSecs(double beats) const
+		{ return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
+	virtual double SecsToBeats(double secs) const
+		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
 	void Dump();
 
-    void LinkEnable(double seconds, double beatsPerBar);
-    void LinkDisable();
 
 //protected:
 	VMGlobals* g;
@@ -745,9 +729,6 @@ public:
 	SC_Thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
-
-    ableton::Link *mLink;
-    double mQuantum;
 
 	static TempoClock *sAll;
 
@@ -773,8 +754,7 @@ void TempoClock_stopAll(void)
 TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 							double inTempo, double inBaseBeats, double inBaseSeconds)
 	: g(inVMGlobals), mTempoClockObj(inTempoClockObj), mTempo(inTempo), mBeatDur(1./inTempo),
-	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll),
-    mLink(nullptr)
+	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll)
 {
 	if (sAll) sAll->mPrev = this;
 	sAll = this;
@@ -840,54 +820,31 @@ void TempoClock::Stop()
 	//printf("<-TempoClock::Stop\n");
 }
 
-void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds, double beatsPerBar)
+void TempoClock::SetAll(double inTempo, double inBeats, double inSeconds)
 {
-    if(!mLink){
-        mBaseSeconds = inSeconds;
-        mBaseBeats = inBeats;
-        mTempo = inTempo;
-        mBeatDur = 1. / mTempo;
-        mCondition.notify_one();
-    } else {
-        auto timeline = mLink->captureAppTimeline();
-        auto linkTime = hrToLinkTime(inSeconds);
-        timeline.setTempo(inTempo*60, linkTime);
-        timeline.requestBeatAtTime(inBeats,linkTime, beatsPerBar);
-        mLink->commitAppTimeline(timeline);
-        mQuantum=beatsPerBar;
-    }
-
+	mBaseSeconds = inSeconds;
+	mBaseBeats = inBeats;
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
+	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtBeat(double inTempo, double inBeats)
 {
-    if(!mLink) {
-        mBaseSeconds = BeatsToSecs(inBeats);
-        mBaseBeats = inBeats;
-        mTempo = inTempo;
-        mBeatDur = 1. / mTempo;
-        mCondition.notify_one();
-    } else {
-        auto timeline = mLink->captureAppTimeline();
-        auto time = timeline.timeAtBeat(inBeats,mQuantum);
-        timeline.setTempo(inTempo*60, time);
-        mLink->commitAppTimeline(timeline);
-    }
+	mBaseSeconds = BeatsToSecs(inBeats);
+	mBaseBeats = inBeats;
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
+	mCondition.notify_one();
 }
 
 void TempoClock::SetTempoAtTime(double inTempo, double inSeconds)
 {
-    if(!mLink) {
-        mBaseBeats = SecsToBeats(inSeconds);
-        mBaseSeconds = inSeconds;
-        mTempo = inTempo;
-        mBeatDur = 1. / mTempo;
-        mCondition.notify_one();
-    } else {
-        auto timeline = mLink->captureAppTimeline();
-        timeline.setTempo(inTempo*60, hrToLinkTime(inSeconds));
-        mLink->commitAppTimeline(timeline);
-    }
+	mBaseBeats = SecsToBeats(inSeconds);
+	mBaseSeconds = inSeconds;
+	mTempo = inTempo;
+	mBeatDur = 1. / mTempo;
+	mCondition.notify_one();
 }
 
 double TempoClock::ElapsedBeats()
@@ -1029,63 +986,123 @@ void TempoClock::Dump()
 	post("mBaseBeats %g\n", mBaseBeats);
 }
 
+
+
 PyrSymbol* s_LinkTempoChanged;
-void TempoClock::LinkEnable(double seconds, double beatsPerBar)
+class LinkClock : public TempoClock
 {
-    if(mLink == nullptr) {
-        //save clock beat
-        double beat = SecsToBeats(seconds);
+public:
+	LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
+				double inTempo, double inBaseBeats, double inBaseSeconds);
 
-        mLink = new ableton::Link(mTempo*60);
-        mLink->enable(true);
-        mLink->setTempoCallback([this](double bpm){
-            double secs = elapsedTime();
-            double tempo = bpm/60;
+	~LinkClock() {}
 
-            mBaseBeats = SecsToBeats(secs);
-            mBaseSeconds = secs;
-            mTempo = tempo;
-            mBeatDur = 1. / mTempo;
-            mCondition.notify_one();
+	void SetTempoAtBeat(double inTempo, double inBeats);
+	void SetTempoAtTime(double inTempo, double inSeconds);
+	void SetAll(double inTempo, double inBeats, double inSeconds);
+	double BeatsToSecs(double beats) const
+	{
+		auto timeline = mLink.captureAppTimeline();
+		double secs = linkToHrTime(timeline.timeAtBeat(beats, mQuantum));
+		return secs;
+	}
+	double SecsToBeats(double secs) const
+	{
+		auto timeline = mLink.captureAppTimeline();
+		double beats = timeline.beatAtTime(hrToLinkTime(secs), mQuantum);
+		return beats;
+	}
 
-            //call sclang callback
-            gLangMutex.lock();
-            g->canCallOS = false;
-            ++g->sp; SetObject(g->sp, mTempoClockObj);
-            ++g->sp; SetFloat(g->sp, mTempo);
-            ++g->sp; SetFloat(g->sp, mBaseBeats);
-            ++g->sp; SetFloat(g->sp, mBaseSeconds);
-            ++g->sp; SetObject(g->sp, mTempoClockObj);
-            runInterpreter(g, s_LinkTempoChanged, 5);
-            g->canCallOS = false;
-            gLangMutex.unlock();
-        });
+	std::size_t NumPeers() const { return mLink.numPeers(); }
 
 
-        auto timeline = mLink->captureAppTimeline();
-        timeline.requestBeatAtTime(beat, hrToLinkTime(seconds), beatsPerBar);
-        mLink->commitAppTimeline(timeline);
-        mQuantum = beatsPerBar;
-        mCondition.notify_one();
-    }
+protected:
+	ableton::Link mLink;
+	double mQuantum;
+};
+
+
+LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
+							double inTempo, double inBaseBeats, double inBaseSeconds)
+	: TempoClock(inVMGlobals, inTempoClockObj, inTempo, inBaseBeats, inBaseSeconds),
+	mLink(inTempo * 60.)
+{
+	//quantum
+	int err = slotDoubleVal(&inTempoClockObj->slots[2], &mQuantum);
+	if(err) mQuantum=4.;
+
+	mLink.enable(true);
+	mLink.setTempoCallback([this](double bpm){
+		double secs = elapsedTime();
+		double tempo = bpm / 60.;
+
+		auto timeline = mLink.captureAppTimeline();
+		double beats = timeline.beatAtTime(hrToLinkTime(secs), mQuantum);
+		mLink.commitAppTimeline(timeline);
+
+		mTempo = tempo;
+		mBeatDur = 1. / tempo;
+		mCondition.notify_one();
+
+		//call sclang callback
+		gLangMutex.lock();
+		g->canCallOS = false;
+		++g->sp;
+		SetObject(g->sp, mTempoClockObj);
+		++g->sp;
+		SetFloat(g->sp, mTempo);
+		++g->sp;
+		SetFloat(g->sp, beats);
+		++g->sp;
+		SetFloat(g->sp, secs);
+		++g->sp;
+		SetObject(g->sp, mTempoClockObj);
+		runInterpreter(g, s_LinkTempoChanged, 5);
+		g->canCallOS = false;
+		gLangMutex.unlock();
+	});
+
+	auto timeline = mLink.captureAppTimeline();
+	auto linkTime = hrToLinkTime(inBaseSeconds);
+	timeline.requestBeatAtTime(inBaseBeats, linkTime, mQuantum);
+	mLink.commitAppTimeline(timeline);
 }
 
-void TempoClock::LinkDisable(){
-    if(mLink){
-        auto timeline = mLink->captureAppTimeline();
-        double tempo = timeline.tempo()/60;
-        double secs = elapsedTime();
-        double beat = timeline.beatAtTime(hrToLinkTime(secs),mQuantum);
-        delete mLink;
-        mLink = nullptr;
 
-        SetAll(tempo,beat,secs,mQuantum);
-    }
+void LinkClock::SetAll(double inTempo, double inBeats, double inSeconds)
+{
+
+	auto timeline = mLink.captureAppTimeline();
+	auto linkTime = hrToLinkTime(inSeconds);
+	timeline.setTempo(inTempo * 60., linkTime);
+	timeline.requestBeatAtTime(inBeats,linkTime, mQuantum);
+
+	mTempo = inTempo;
+	mBeatDur = 1. / inTempo;
+
+	mLink.commitAppTimeline(timeline);
+}
+
+void LinkClock::SetTempoAtBeat(double inTempo, double inBeats)
+{
+	auto timeline = mLink.captureAppTimeline();
+	auto time = timeline.timeAtBeat(inBeats, mQuantum);
+	timeline.setTempo(inTempo*60., time);
+	mLink.commitAppTimeline(timeline);
+}
+
+void LinkClock::SetTempoAtTime(double inTempo, double inSeconds)
+{
+	auto timeline = mLink.captureAppTimeline();
+	timeline.setTempo(inTempo*60., hrToLinkTime(inSeconds));
+	mLink.commitAppTimeline(timeline);
 }
 
 
-int prTempoClock_New(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
+template <typename Clock>
+int prClock_New(struct VMGlobals *g, int numArgsPushed);
+template <typename Clock>
+int prClock_New(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
@@ -1112,7 +1129,7 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 		if (err) return err;
 	}
 
-	TempoClock* clock = new TempoClock(g, slotRawObject(a), tempo, beats, seconds);
+	Clock* clock = new Clock(g, slotRawObject(a), tempo, beats, seconds);
 	SetPtr(slotRawObject(a)->slots+1, clock);
 	return errNone;
 }
@@ -1221,18 +1238,19 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
+template <typename Clock>
+int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 
-	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
 
-	double beats, seconds, beatsPerBar;
+	double beats, seconds;
 	int err;
 
 	err = slotDoubleVal(b, &beats);
@@ -1241,10 +1259,7 @@ int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errWrongType;
 
-    err = slotDoubleVal(&slotRawObject(a)->slots[2], &beatsPerBar);
-    if(err) return errFailed;
-
-	clock->SetAll(clock->mTempo, beats, seconds, beatsPerBar);
+	clock->SetAll(clock->mTempo, beats, seconds);
 
 	return errNone;
 }
@@ -1308,14 +1323,16 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
+template <typename Clock>
+int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed);
+template <typename Clock>
+int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
-	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1343,21 +1360,23 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
+template <typename Clock>
+int prClock_SetAll(struct VMGlobals *g, int numArgsPushed);
+template <typename Clock>
+int prClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
 	PyrSlot *c = g->sp - 1;
 	PyrSlot *d = g->sp;
 
-	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
 
-	double tempo, beat, secs, beatsPerBar;
+	double tempo, beat, secs;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
 
@@ -1367,22 +1386,21 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(d, &secs);
 	if (err) return errFailed;
 
-    err = slotDoubleVal(&slotRawObject(a)->slots[2], &beatsPerBar);
-    if(err) return errFailed;
-
-	clock->SetAll(tempo, beat, secs, beatsPerBar);
+	clock->SetAll(tempo, beat, secs);
 
 	return errNone;
 }
 
-int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
+template <typename Clock>
+int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed);
+template <typename Clock>
+int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
 
-	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
@@ -1445,49 +1463,20 @@ int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prTempoClock_LinkEnable(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_LinkEnable(struct VMGlobals *g, int numArgsPushed)
+
+
+int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed);
+int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
 {
-    PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	PyrSlot *a = g->sp;
+	LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 
-    double seconds;
-	int err = slotDoubleVal(&g->thread->seconds, &seconds);
-    if(err) return errFailed;
+	SetInt(a, clock->NumPeers());
 
-    double beatsPerBar;
-    err = slotDoubleVal(&slotRawObject(a)->slots[2], &beatsPerBar);
-    if(err) return errFailed;
-
-    clock->LinkEnable(seconds, beatsPerBar);
-
-    return errNone;
+	return errNone;
 }
 
-int prTempoClock_LinkDisable(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_LinkDisable(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp;
-	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 
-    clock->LinkDisable();
-
-    return errNone;
-}
-
-int prTempoClock_NumPeers(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp;
-    TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
-
-    if(clock->mLink)
-        SetInt(a, clock->mLink->numPeers());
-    else
-        SetNil(a);
-
-    return errNone;
-}
 
 
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
@@ -1554,11 +1543,11 @@ void initSchedPrimitives()
 {
 	int base, index=0;
 
-    s_LinkTempoChanged = getsym("prLinkTempoChanged");
+	s_LinkTempoChanged = getsym("prTempoChanged");
 
 	base = nextPrimitiveIndex();
 
-	definePrimitive(base, index++, "_TempoClock_New", prTempoClock_New, 4, 0);
+	definePrimitive(base, index++, "_TempoClock_New", prClock_New<TempoClock>, 4, 0);
 	definePrimitive(base, index++, "_TempoClock_Free", prTempoClock_Free, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_Clear", prTempoClock_Clear, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_Dump", prTempoClock_Dump, 1, 0);
@@ -1568,16 +1557,19 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_TempoClock_BeatDur", prTempoClock_BeatDur, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_ElapsedBeats", prTempoClock_ElapsedBeats, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_Beats", prTempoClock_Beats, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_SetBeats", prTempoClock_SetBeats, 2, 0);
-	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prTempoClock_SetTempoAtBeat, 3, 0);
-	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prTempoClock_SetTempoAtTime, 3, 0);
-	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);
+	definePrimitive(base, index++, "_TempoClock_SetBeats", prClock_SetBeats<TempoClock>, 2, 0);
+	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prClock_SetTempoAtBeat<TempoClock>, 3, 0);
+	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prClock_SetTempoAtTime<TempoClock>, 3, 0);
+	definePrimitive(base, index++, "_TempoClock_SetAll", prClock_SetAll<TempoClock>, 4, 0);
 	definePrimitive(base, index++, "_TempoClock_BeatsToSecs", prTempoClock_BeatsToSecs, 2, 0);
 	definePrimitive(base, index++, "_TempoClock_SecsToBeats", prTempoClock_SecsToBeats, 2, 0);
 
-	definePrimitive(base, index++, "_TempoClock_LinkEnable", prTempoClock_LinkEnable, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_LinkDisable", prTempoClock_LinkDisable, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_NumPeers", prTempoClock_NumPeers, 1, 0);
+	definePrimitive(base, index++, "_LinkClock_New", prClock_New<LinkClock>, 4, 0);
+	definePrimitive(base, index++, "_LinkClock_SetBeats", prClock_SetBeats<LinkClock>, 2, 0);
+	definePrimitive(base, index++, "_LinkClock_SetTempoAtBeat", prClock_SetTempoAtBeat<LinkClock>, 3, 0);
+	definePrimitive(base, index++, "_LinkClock_SetTempoAtTime", prClock_SetTempoAtTime<LinkClock>, 3, 0);
+	definePrimitive(base, index++, "_LinkClock_SetAll", prClock_SetAll<LinkClock>, 4, 0);
+	definePrimitive(base, index++, "_LinkClock_NumPeers", prLinkClock_NumPeers, 1, 0);
 
 	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
 	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);

@@ -162,7 +162,6 @@ TempoClock : Clock {
 	var <beatsPerBar=4.0, barsPerBeat=0.25;
 	var <baseBarBeat=0.0, <baseBar=0.0;
 	var <>permanent=false;
-	var <>linkTempoChanged;
 
 /*
 You should only change the tempo 'now'. You can't set the tempo at some beat in the future or past, even though you might think so from the methods.
@@ -330,16 +329,6 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
-	//Ableton Link
-	link { arg enable = true;
-		enable.if({this.prLinkEnable}, {this.prLinkDisable});
-	}
-
-	numPeers {
-		_TempoClock_NumPeers
-		^this.primitiveFailed
-	}
-
 	// PRIVATE
 	prStart { arg tempo, beats, seconds;
 		_TempoClock_New
@@ -361,22 +350,6 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		_TempoClock_SetTempoAtTime
 		^this.primitiveFailed
 	}
-
-	prLinkEnable {
-		_TempoClock_LinkEnable
-		^this.primitiveFailed
-	}
-	prLinkDisable {
-		_TempoClock_LinkDisable
-		^this.primitiveFailed
-	}
-
-	//throw tempo changed callback
-	prLinkTempoChanged { arg tempo, beats, secs, clock;
-		linkTempoChanged.value(tempo, beats, secs, clock);
-	}
-
-
 	// meter should only be changed in the TempoClock's thread.
 	setMeterAtBeat { arg newBeatsPerBar, beats;
 		// bar must be integer valued when meter changes or confusion results later.
@@ -421,4 +394,45 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	*beatInBar { ^TempoClock.default.beatInBar  }
 
 	archiveAsCompileString { ^true }
+}
+
+
+
+
+LinkClock : TempoClock {
+
+	var <>tempoChanged;
+
+	numPeers {
+		_LinkClock_NumPeers
+		^this.primitiveFailed
+	}
+
+
+	//override primitives
+	beats_ { arg beats;
+		_LinkClock_SetBeats
+		^this.primitiveFailed
+	}
+
+	// PRIVATE
+	prStart { arg tempo, beats, seconds;
+		_LinkClock_New
+		^this.primitiveFailed
+	}
+
+	setTempoAtBeat { arg newTempo, beats;
+		_LinkClock_SetTempoAtBeat
+		^this.primitiveFailed
+	}
+	setTempoAtSec { arg newTempo, secs;
+		_LinkClock_SetTempoAtTime
+		^this.primitiveFailed
+	}
+
+	//throw tempo changed callback
+	prTempoChanged { arg tempo, beats, secs, clock;
+		tempoChanged.value(tempo, beats, secs, clock);
+	}
+
 }
