@@ -1081,6 +1081,7 @@ void LinkClock::SetAll(double inTempo, double inBeats, double inSeconds)
 	mBeatDur = 1. / inTempo;
 
 	mLink.commitAppTimeline(timeline);
+	mCondition.notify_one();
 }
 
 void LinkClock::SetTempoAtBeat(double inTempo, double inBeats)
