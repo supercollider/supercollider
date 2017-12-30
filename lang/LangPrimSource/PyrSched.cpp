@@ -1013,6 +1013,7 @@ public:
 		return beats;
 	}
 
+	void SetQuantum(double quantum);
 	std::size_t NumPeers() const { return mLink.numPeers(); }
 
 
@@ -1097,6 +1098,12 @@ void LinkClock::SetTempoAtTime(double inTempo, double inSeconds)
 	auto timeline = mLink.captureAppTimeline();
 	timeline.setTempo(inTempo*60., hrToLinkTime(inSeconds));
 	mLink.commitAppTimeline(timeline);
+}
+
+void LinkClock::SetQuantum(double quantum)
+{
+	mQuantum = quantum;
+	mCondition.notify_one();
 }
 
 
@@ -1478,6 +1485,23 @@ int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
 }
 
 
+int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed);
+int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+
+	double quantum;
+	int err = slotDoubleVal(b, &quantum);
+	if(err) return errFailed;
+
+	clock->SetQuantum(quantum);
+
+	return errNone;
+}
+
+
 
 
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
@@ -1571,6 +1595,7 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_LinkClock_SetTempoAtTime", prClock_SetTempoAtTime<LinkClock>, 3, 0);
 	definePrimitive(base, index++, "_LinkClock_SetAll", prClock_SetAll<LinkClock>, 4, 0);
 	definePrimitive(base, index++, "_LinkClock_NumPeers", prLinkClock_NumPeers, 1, 0);
+	definePrimitive(base, index++, "_LinkClock_SetQuantum", prLinkClock_SetQuantum, 2, 0);
 
 	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
 	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);
