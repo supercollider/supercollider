@@ -417,7 +417,7 @@ LinkClock : TempoClock {
 		//stop TempoClock and save its queue
 		clock.stop;
 		oldQueue = clock.queue.copy;
-		beatsPerBar = clock.beatsPerBar;
+		this.setMeterAtBeat(clock.beatsPerBar, 0);
 
 		forBy(1, oldQueue.size-1, 3) {|i|
 			var task=oldQueue[i+1];
@@ -456,6 +456,18 @@ LinkClock : TempoClock {
 	}
 	setTempoAtSec { arg newTempo, secs;
 		_LinkClock_SetTempoAtTime
+		^this.primitiveFailed
+	}
+
+	setMeterAtBeat { arg newBeatsPerBar, beats;
+		beatsPerBar = newBeatsPerBar;
+		barsPerBeat = beatsPerBar.reciprocal;
+		this.prSetQuantum(beatsPerBar);
+		this.changed(\meter);
+	}
+
+	prSetQuantum { arg quantum;
+		_LinkClock_SetQuantum;
 		^this.primitiveFailed
 	}
 
