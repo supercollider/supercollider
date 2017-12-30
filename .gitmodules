@@ -17,3 +17,6 @@
 [submodule "external_libraries/yaml-cpp"]
 	path = external_libraries/yaml-cpp
 	url = https://github.com/supercollider/yaml-cpp.git
+[submodule "platform/mac/SuperColliderAU/CoreAudioUtilityClasses"]
+	path = platform/mac/SuperColliderAU/CoreAudioUtilityClasses
+	url = https://github.com/g-roma/CoreAudioUtilityClasses
