@@ -263,148 +263,57 @@ Enjoy SuperCollider!
 Building SuperCollider for Windows
 ==================================
 
-Build Basics
-------------
+SuperCollider uses [CMake][cmake] as its build system. The main toolchain
+supported by the development team is Visual Studio - Microsoft's IDE for C++ -
+which also includes Visual C++, the official Microsoft C++ compiler. Use other
+build environments and toolchains (such as MinGW, gcc, and Cygwin) at your own
+risk.
 
-If you can't be bothered and have to get building immediately,
-then the quickest path through this material is:
+Components
+----------
 
-1. Pick a build tool: VS 2013, native MinGW, or MSYS2
-2. Download libraries as listed in "Required software"
-3. If you're not using MSYS2, follow the instructions in
-    "Arranging the components"
-4. Jump to the section on your build tool under "Configuring and executing a
-    build"
+### Required components
 
-Otherwise, read on.
-
-SuperCollider uses the cross platform build system [CMake][cmake], which works
-well for many OS and toolchain combinations. While CMake is command-line
-oriented, it can also be controlled from a GUI (`cmake-gui`) and is very well
-integrated into Qt Creator.
-
-There are three main ways you can build SuperCollider on Windows:
-- Visual Studio 2013
-- Native MinGW
-- MSYS2 + MinGW
-
-Of these, MSYS2 will be the most familiar for Unix developers.
-
-Some approaches are limited in certain respects:
-- Visual Studio cannot build libreadline or supernova (a multithreading version
-   of scsynth)
-- Native MinGW can only build a 32-bit executable
-- Visual Studio and native MinGW are limited to Qt 5.5.1
-
-The Windows port of SC is in a stage of transition. Native MinGW is the oldest
-method; Visual Studio 2013 is newer; and MSYS2 support was only made available
-while developing SuperCollider 3.9. Keeping these options open will make it
-easier for those who already do Windows development to get started with
-SuperCollider, without having to be limited by toolchain or IDE.
-
-Quick Steps
------------
-
-### Required software
-
-To build with Visual Studio or native MinGW, you will have to download and
-install these packages manually. When you are given the option, make sure to
-choose the 32-bit or 64-bit version of each library as appropriate. For MSYS2,
-see the instructions below.
+You will need to install these packages manually if you do not already have
+them. When you are given the option, make sure to choose the 32-bit or 64-bit
+version of each library as appropriate.
 
 - **[Git][Git]** for Windows
-- **[CMake][cmake]**: 3.5.2 with native minGW; otherwise, latest version
-- The SuperCollider source code
-- Build tools: one of
-    - MinGW as bundled with **[Qt 5.5.1][Qt55]** (distribution 'mingw492')
-    - **[MSYS2+MinGW][MSYS2]**
-    - **[Visual Studio 12 2013][VS2013]**: note that you will need to join Visual
-        Studio Team Services (for free) in order to download this older version
-- Required Libraries
-    - **[Qt][Qt]** >= 5.5.1. The current version, 5.8, works with MSYS2. For
-        Visual Studio and native MinGW, you must use 5.5.1 as the WebKit
-        component of Qt, which SuperCollider's IDE requires, was dropped in 5.6.
+- **[CMake][cmake]**
+- **[Visual Studio 12 2013][VS2013]**: note that you will need to join Visual
+  Studio Team Services (for free) in order to download this older version
+- **[Qt][Qt]** 5.5.1. Use the package `msvc2013_64` for a 64-bit build,
+  `msvc2013` for 32-bit.
+- **[libsndfile][libsndfile]** >= 1.0.25
+- The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
-        If you're not using MSYS2, use the official archived download, and
-        choose from the following packages:
-            - msvc2013_64, for a 64-bit Visual Studio build
-            - msvc2013, for a 32-bit Visual Studio build
-            - mingw492 (32-bit), for a MinGW build
+These libraries are not strictly required, but highly recommended:
 
-    - **[libsndfile][libsndfile]** >= 1.0.25
-    - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
-- Recommended Libraries
-    - **[fftw][fftw]** >= 3.3.4. See the instructions below on arranging the
-        libraries if you are making a Visual Studio or native MinGW build.
-    - **[Asio SDK][asiosdk]** >= 2.3, for Asio support in PortAudio
-- Optional Libraries
-    - **[readline][readline]** = 5.0.1. More recent versions found in MinGW
-        distributions do *not* currently work in *native* MinGW builds. In MSYS
-        builds more recent (and 64-bit) versions cann be used, see however the
-        restrictions mentioned in the introductory note of "Using SC on the
-        command line". Readline cannot be used at all in Visual Studio builds.
-    - **DirectX SDK** [v.9][dx9sdk] for VS build. (Direct Sound support in Portaudio)
-    - **[NSIS][nsis]**, if you want to create a binary SC installer (add the
-        binary `makensis` to PATH)
-- Convenience
-    - a Unix line-ending friendly text editor like **[Atom][atomeditor]** or
-        **[Notepad++][notepad++]**. There are SuperCollider packages available
-        for Atom; we recommend using that.
-    - **[7-zip][7-zip]** to extract .tar and .gz format archives
+- **[fftw][fftw]** >= 3.3.4
+- **[Asio SDK][asiosdk]** >= 2.3, for Asio support in PortAudio
 
-#### Getting packages with MSYS2
+### Optional components
 
-If this is your first time using MSYS2, here are some things to know.
-People who grew up with Windows hate MSYS2, people with a Unix background
-think it is God sent. Make your choice. As a build system it is as close
-as it can get to an Arch Linux clone running within Windows.
+- **[readline][readline]** for command-line support. However, this is currently
+  non-functional.
+- **DirectX SDK** [v.9][dx9sdk] for Direct Sound support in Portaudio
+- **[NSIS][nsis]** to create an installation execuatable. Make sure to add
+  `makensis` to your `PATH`!
 
-MSYS2 offers very up-to-date 32- and 64-bit versions of every package, and
-provides a full set of libraries built with the same toolchain, so compatibility
-considerations are a thing of the past. If you haven't downloaded it yet,
-[do that now][MSYS2] and consider reading over the wiki before continuing:
+### Other development tools
 
-    https://github.com/msys2/msys2/wiki
+- a Unix line-ending friendly text editor like **[Atom][atomeditor]** or
+  **[Notepad++][notepad++]**. There are SuperCollider packages available
+  for Atom.
+- **[7-zip][7-zip]** to extract .tar and .gz format archives
 
-The prefix `mingw-w64-` distinguishes a package as being used outside the
-enviroment of MSYS2—in other words, things you'll use to build SuperCollider!
-`x86_64` bit identifies a package as being 64-bit, and `i686` means 32-bit.
+Preparing to build
+------------------
 
-MSYS2 uses a clone of the Arch Linux package manager, `pacman`. After opening
-the MinGW64 shell installed with MSYS2, run the following command repeatedly
-until MSYS2 is fully updated:
+### Obtaining the source code
 
-    pacman -Syuu
-
-Get some basic packages:
-
-    pacman -S base-devel git mingw-w64-x86_64-toolchain
-
-Some other, completely optional tools (not used for building SuperCollider):
-
-    pacman -S subversion p7zip perl ruby python2 nano vim emacs
-
-Now get the remaining packages needed for SuperCollider. If you want to be
-able to do both 32-bit and 64-bit builds, use `{x86_64,i686}` in place of
-`x86_64`:
-
-    pacman -S mingw-w64-x86_64-{qt5,clang,cmake,portaudio,libsndfile,fftw}
-
-A free IDE with good Qt and Cmake integration is:
-
-    - `mingw_w64-x86_64-qt-creator` for Qt Creator.
-
-If you plan to build supernova, you will also need:
-
-    - `mingw-w64-x86_64-dlfcn`
-
-If you are not sure what a package is called you can search:
-
-    pacman -Ss libsndfile
-
-#### Getting the SuperCollider source code
-
-`cd` to wherever you'd like to build SuperCollider, then:
+`cd` to wherever you'd like to build SuperCollider, then checkout the repository
+with:
 
     git clone --recursive https://github.com/supercollider/supercollider.git
 
@@ -413,28 +322,18 @@ switching to different stages of submodules might be required. In this case use:
 
     git submodule update
 
-`git submodule sync` is useful if the address of a submodule has changed; Git
-will usually tell if a resynchronization/update is required.
+Note that a slightly patched version of PortAudio source is provided as
+submodule. PortAudio can support up to five different backends: MME, DSound,
+WDM-KS, ASIO and WASAPI. For ASIO support, you will need to install the ASIO
+SDK; for DSound, install the DirectX SDK (see the preceding section).
 
-*Fine print*: the PortAudio library is not available as binary download. A
-slightly patched version of its source is provided as submodule. Portaudio can
-support up to five different backends: MME, DSound, WDM-KS, ASIO and WASAPI.
+### Arranging the components
 
-- For ASIO support the (gratis) ASIO-SDK from Steinberg has to be added to the
-  source tree in any build environment.
-- For DSound support the *Visual Studio* build requires to install the DirectX
-  SDK Version 9. (MinGW (and implicitly MSYS2) provide the required libraries)
-
-The MSYS2 SC-build uses the binary portaudio package provided by MSYS2. By
-default this only comes with MME and DSound support. If you want additional
-backends (ASIO and/or WDM-KS strongly recommended) you need to rebuild the
-portaudio package within the MSYS2 environment (very easy).
-
-
-### Arranging the components (non-MSYS2 builds only)
-
-*Note:* creating the folder structure *exactly as given here* will save you
-from likely frustration when CMake cannot find dependencies.
+*Note:* If you are only building 64-bit SuperCollider, you will likely not even
+have to bother with this step, as CMake will find the libraries where they are
+installed by default. However, creating the folder structure *exactly as given
+here* could save you from headaches if CMake cannot find them for whatever
+reason.
 
 Create a new folder next to where you cloned SuperCollider. If you're making a
 32-bit build, call it `x86`; use `x64` for 64-bit. Move the installed files of
@@ -453,20 +352,25 @@ the following folder structure *exactly*:
             lib
         fftw
 
-If you are making a Visual Studio build, you must create library files by
-`cd`ing to the fftw directory and executing the following command:
+### Creating VS libs for FFTW
 
-    lib /def:libfftw3f-3.def
-
-Note: the SC build only uses the single precision version of the fftw library
-(fftw3f).
-
-For 64-bit, add `/machine:x64`:
+FFTW does not provide build files for Visual Studio. In the **Developer Command
+Prompt for VS2013** (note that this this is not `cmd.exe`), `cd` to the
+directory where FFTW is installed and, for a **64-bit** build:
 
     lib /machine:x64 /def:libfftw3f-3.def
 
+For a **32-bit** build:
+
+    lib /def:libfftw3f-3.def
+
+The SC build only uses the single precision version of the fftw library
+(fftw3f).
+
 *Note*: if you compile FFTW yourself, all files must end up in the root fftw
 directory.
+
+### ASIO support
 
 In order to get support for ASIO drivers, follow this directory structure:
 
@@ -479,112 +383,31 @@ In order to get support for ASIO drivers, follow this directory structure:
                 ...
             ...
 
-For DSound support in Visual Studio, you have to download the DirectX SDK
-[version 9][dx9sdk] and install it.
+Configuration and Building
+--------------------------
 
-*Fine print*: If you install the DirectX SDK and try to build using MinGW, the
-PortAudio build will likely break. Try to avoid the DXSDK detection in that
-case; for example, by editing CMakeLists.txt in the PortAudio root folder.
-DSound support will nevertheless be built when using MinGW libraries. If
-you want to avoid adding in DS-support, set `PA_USE_DS` in the same file to
-`OFF`.
+*Note:* This section assumes familiarity with the command line. The section below titled
+"Avoiding the command line" may be helpful if that doesn't describe you.
 
-### Configuring and executing the build
+*Note:* You should always use forward slashes for paths passed to CMake.
 
-The sections below assume that you are comfortable with the command line. If
-not, see the walkthrough below, "Avoiding the command line".
+### Basic build
 
-Once everything has been arranged properly, `cmake` must be told:
+**Confirm the location of your Qt install before executing these commands.** You
+may need to modify them if you installed Qt somewhere else. The following
+commands should be executed starting from the root directory of the
+SuperCollider repository.
 
-    - which "generator" to use
-    - the location of the compiler
-    - the location of Qt
-    - the location of SuperCollider's source code
-
-If you're all set, jump to the section below specific to your build tool.
-
-*Note:* You should always use forward slashes for path statements when using
-CMake commands. When creating/modifying environment variables, or interacting
-otherwise directly with Windows command line functionality (`cd`, `rmdir`, ...),
-you should use the proper Windows syntax with backslashes as directory
-delimiters.
-
-*Note:* The SC source given as the last parameter of the `cmake` command. The
-pointer to the source directory is the only element of the cmake command that
-has to be repeated each time cmake is run to configure the build. The other
-options are stored in "CMakeCache.txt" in the build folder for subsequent runs.
-
-#### MinGW (non-MSYS2)
-
-The following steps build SuperCollider in a subdirectory of the SC source
-directory called 'build'. You may want to check the path where you installed
-Qt—if it's not `C:\Qt\`, then change these commands accordingly. You should
-`cd` into the SuperCollider source folder to begin.
-
-    SET PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32
-    mkdir build
-    cd build
-    cmake -G "MinGW Makefiles" ..
-    cmake --build .
-
-This is the bare-bones, dead-simple way to build SuperCollider with MinGW!
-
-A line-by-line explanation:
-
-    SET PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32
-
-Tell `cmake` where to look for the Qt files and MinGW.
-
-    mkdir build
-    cd build
-
-Create the build directory and move into it.
-
-    cmake -G "MinGW Makefiles" ..
-
-Configure the makefiles to prepare for building.
-
-    cmake --build .
-
-Mind the dot after `build`. It refers to the folder where the cmake build
-configuration files are located.
-
-Build SuperCollider.
-
-#### Visual Studio 2013
-
-You may want to check the path where you installed Qt—if it's not `C:\Qt\`, then
-change these commands accordingly. You should `cd` into the SuperCollider source
-folder to begin.
-
-    SET PATH=C:\Qt\5.5\msvc2013_64\bin;C:\Qt\Tools\msvc2013_64\bin;%PATH%
+    SET PATH=C:\Qt\5.5\msvc2013_64\bin;%PATH%
     SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013_64
     mkdir build
     cd build
     cmake -G "Visual Studio 12 2013 Win64" ..
+    cmake --build . --config Release
 
-For the final step, you can either build within the Visual Studio IDE:
+For the final step, you can also build from within Visual Studio:
 
     start SuperCollider.sln
-
-Or build using `cmake` as usual:
-
-    cmake --build .
-
-The preceding MinGW section contains an explanation of this command sequence.
-
-#### MSYS2
-
-    mkdir build
-    cd build
-    cmake -G "MSYS Makefiles" ..
-    cmake --build . -- -j4
-
-The preceding MinGW section contains an explanation of this command sequence.
-`-- -j4` passes the argument -j4 (use 4 processor threads) to the makefile.
-Adjust the number to your processor ;)
 
 ### Additional build settings
 
@@ -592,32 +415,36 @@ Listed here are common additional configurations you may want to use. For a
 more complete list, use `cmake --help` and/or see the section "More `cmake`:
 building supernova, qt-less, verbosity and more" below.
 
-#### `cmake` configuration options
+#### Build type
 
-There are a number of additional options you can use in the penultimate build
-step:
+The `CMAKE_BUILD_TYPE` controls optimization level and whether or not debugging
+code (asserts, info messages, and other similar code) is included in the
+executable. The configuration is specified either in Visual Studio before
+building or in the build command given to CMake:
 
-    cmake -G "Toolchain Name" [-D OPTION_NAME] ..
+    cmake --build . --config <config>
 
-When using native MinGW or MSYS2 you can specify the build configuration with
-`CMAKE_BUILD_TYPE`. The default is `RelWithDebInfo` ("Release build, with debug
-info"), but there are other possibilities:
+The four options are:
 
-    cmake -D CMAKE_BUILD_TYPE=Debug ..
-    cmake -D CMAKE_BUILD_TYPE=Release ..
-    cmake -D CMAKE_BUILD_TYPE=RelMinSize ..
+- `Debug`: no optimization, debugging code enabled
+- `Release`: full optimization, no debugging code
+- `RelWithDebInfo`: "release with debug info." Full optimization, debugging code
+  enabled.
+- `RelMinSize`: "release, minimal size." Like `Release`, but optimized for
+  minimal executable size.
 
-When using Visual Studio the build configuration can only be specified in the
-build step. Default here is `Debug`:
+The `Debug` configuration is used to develop the C++ codebase. For developing
+the SuperCollider core libraries, `Release` should be fine. Using a `Debug`
+build in production is strongly discouraged, as it will be many times slower
+than `Release`.
 
-    cmake --build . --config Release
-
+#### SuperNova
 
 If you want to build supernova, add `-D SUPERNOVA=ON`
 
     cmake -D SUPERNOVA=ON ..
 
-#### Build options
+#### Other targets (install, installer)
 
 If you used the basic instructions above, you will end up with three target
 folders (four if supernova is built). You can run these executables to develop
@@ -642,18 +469,17 @@ If you want to run SuperCollider independently of the build environment:
 
     cmake --build . --target install
 
-This "builds the target install", which means that the SC files proper are
-combined with all required external libraries to create a *portable* application
-folder.
+This will create a self-contained, portable application which bundles all the
+required libraries.
 
 If you want to create a binary installer, first build the target install, then
-make sure `makensis`, the command-line tool for NSIS, is in your PATH:
+make sure `makensis`, the command-line tool for NSIS, is in your PATH. Finally,
 
     cmake --build . --target installer
 
 The SuperCollider installer executable will be built in the directory path:
 
-    ...\build\Install\SuperCollider.exe
+    <...>\build\Install\SuperCollider.exe
 
 The exact name will vary depending on what architecture and build configuration
 you specified.
@@ -669,69 +495,24 @@ always loose the local customizations and additions stored in the
 userAppSupportDirectory. The new Quarks system provides means to make porting
 of extension/Quark groups easier.
 
-#### Portaudio
+#### PortAudio
 
-Portaudio is provided as submodule of SC and is built automatically as part
-of the SC-build. In order to add ASIO- and/or DSound support, the respective
-SDKs have to be added to the build.
-
-ASIO: download the SDK from [Steinberg][asiosdk], extract the zip and place
-the folder in a sibling folder of the portaudio folder in external_libraries.
-The folder name should not contain dots, start with `as`, and be the immediate
-parent of the library folders (asio, common, ...). You should end up with a
-folder tree like this:
-
-    sc-source
-        external_libraries
-            portaudio_sc_org
-            asiosdk
-                asio
-                common
-                driver
-                host
-
-DSound/DirectX: The VS-build requires DirectX. It should be installed as usual.
-[version 9 (June 2010)][dx9sdk].
-
-You can study the file `CMakeLists.txt` in the portaudio folder
-(external_libraries\portaudio_sc_org) to learn about the options that the build
-provides. With default settings, all APIs that *work out of the box* are enabled
-and only the library for static linking is built. In the VS-build all APIs are
-enabled, in the MinGW build WASAPI had to be omitted, and some features of full
-duplex mode in DSound had to be disabled. If you would like to tweak the PA-
-build you can single it out from the SC build like so:
+You can study the file `external_libraries\portaudio_sc_org\CMakeLists.txt` to
+learn about the options that the build provides. With default settings, all APIs
+that *work out of the box* are enabled and only the library for static linking
+is built. In the VS-build all APIs are enabled. For MinGW, WASAPI is ommitted
+and some features of DSound's full duplex mode are unavailable.  If you would
+like to tweak the PortAudio build you can single it out from the SC build with:
 
     cmake --build . --target portaudio
 
-MSYS2 provides a portaudio package, but it only comes with MME and DSound support
-out of the box. If you want ASIO or WDM-KS, you need to build portaudio within
-the MSYS2 framework. At the time of this writing the WASAPI backend could not be
-built in MinGW-based environments. Use VS, if you need WASAPI.
+*Note:* MSYS2 provides a portaudio package, but it only comes with MME and
+DSound support out of the box. If you want ASIO or WDM-KS, you need to build
+PortAudio within MSYS2. Users have experienced issues using WASAPI backend to
+build in MinGW-based environments. Use Visual Studio if you need WASAPI.
 
-#### HIDAPI with native MinGW builds
-
-Currently, HIDAPI is disabled by default for native MinGW builds using MinGW/GCC
-versions below 5.3. It can be enabled by manually altering the source code:
-
-In `/external-libraries/hidapi/hidapi_parser/hidapi_parser.c`, change the
-header includes as follows:
-
-    // #include <hidsdi.h>
-    #include "../windows/hidsdi.h"
-
-In `SC-source/external-libraries/hidapi/windows/hid.c`:
-
-    // #include <hidsdi.h>
-    #include "./hidsdi.h"
-
-Rerun the cmake configuration step and add the argument:
-
-    -D SC_HIDAPI=ON
-
-SuperCollider will now build with HIDAPI.
-
-Troubleshooting build problems
-------------------------------
+Common build problems
+---------------------
 
 These are likely the most common causes of build problems:
 
