@@ -24,24 +24,25 @@ Table of contents
   - Configuration- and support files
   - Extensions and Quarks
 - **Building SuperCollider for Windows**
-  - Build Basics
-  - Quick Steps
-    - Required software
-      - Getting packages with MSYS2
-      - Getting the SuperCollider source code
-    - Arranging the components (non-MSYS2 builds only)
-    - Configuring and executing a build
-      - MinGW (non-MSYS2)
-      - Visual Studio 2013
-      - MSYS2
+  - Components
+    - Required components
+    - Optional components
+    - Other development tools
+  - Preparing to build
+    - Obtaining the source code
+    - Arranging the components
+    - Creating VS libs for FFTW
+    - ASIO support
+  - Configuration and building
+    - Basic build
     - Additional build settings
-      - `cmake` configuration options
-      - Build options
-      - Portaudio
-      - HIDAPI with native MinGW builds
-  - Diagnosing build problems
-      - Dirty build states
-      - Wrong libraries found
+      - Build type
+      - SuperNova
+      - Other targets (install, installer)
+      - PortAudio
+  - Common build problems
+    - Dirty build states
+    - Wrong libraries found
   - Walkthroughs
     - The trial-error approach: building sc3-plugins and aggregating
       build settings to pass to `cmake`
