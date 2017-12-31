@@ -25,21 +25,13 @@ Table of contents
   - Extensions and Quarks
 - **Building SuperCollider for Windows**
   - Components
-    - Required components
-    - Optional components
-    - Other development tools
   - Preparing to build
-    - Obtaining the source code
-    - Arranging the components
-    - Creating VS libs for FFTW
-    - ASIO support
   - Configuration and building
-    - Basic build
-    - Additional build settings
-      - Build type
-      - SuperNova
-      - Other targets (install, installer)
-      - PortAudio
+  - Additional build settings
+    - Build type
+    - SuperNova
+    - Other targets (install, installer)
+    - PortAudio
   - Common build problems
     - Dirty build states
     - Wrong libraries found
@@ -270,14 +262,14 @@ which also includes Visual C++, the official Microsoft C++ compiler. Use other
 build environments and toolchains (such as MinGW, gcc, and Cygwin) at your own
 risk.
 
-Components
-----------
-
-### Required components
+Required and Optional Components
+--------------------------------
 
 You will need to install these packages manually if you do not already have
 them. When you are given the option, make sure to choose the 32-bit or 64-bit
 version of each library as appropriate.
+
+Required components:
 
 - **[Git][Git]** for Windows
 - **[CMake][cmake]**
@@ -288,12 +280,12 @@ version of each library as appropriate.
 - **[libsndfile][libsndfile]** >= 1.0.25
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
-These libraries are not strictly required, but highly recommended:
+Optional, but highly recommended:
 
 - **[fftw][fftw]** >= 3.3.4
 - **[Asio SDK][asiosdk]** >= 2.3, for Asio support in PortAudio
 
-### Optional components
+Optional components:
 
 - **[readline][readline]** for command-line support. However, this is currently
   non-functional.
@@ -301,7 +293,7 @@ These libraries are not strictly required, but highly recommended:
 - **[NSIS][nsis]** to create an installation execuatable. Make sure to add
   `makensis` to your `PATH`!
 
-### Other development tools
+Other development tools:
 
 - a Unix line-ending friendly text editor like **[Atom][atomeditor]** or
   **[Notepad++][notepad++]**. There are SuperCollider packages available
@@ -311,10 +303,7 @@ These libraries are not strictly required, but highly recommended:
 Preparing to build
 ------------------
 
-### Obtaining the source code
-
-`cd` to wherever you'd like to build SuperCollider, then checkout the repository
-with:
+First obtain the source code by checking out the repository:
 
     git clone --recursive https://github.com/supercollider/supercollider.git
 
@@ -330,11 +319,8 @@ SDK; for DSound, install the DirectX SDK (see the preceding section).
 
 ### Arranging the components
 
-*Note:* If you are only building 64-bit SuperCollider, you will likely not even
-have to bother with this step, as CMake will find the libraries where they are
-installed by default. However, creating the folder structure *exactly as given
-here* could save you from headaches if CMake cannot find them for whatever
-reason.
+*Note:* creating the folder structure *exactly as given here* could save you
+from headaches if CMake cannot find them for whatever reason.
 
 Create a new folder next to where you cloned SuperCollider. If you're making a
 32-bit build, call it `x86`; use `x64` for 64-bit. Move the installed files of
@@ -353,7 +339,16 @@ the following folder structure *exactly*:
             lib
         fftw
 
-### Creating VS libs for FFTW
+In order to get support for ASIO drivers, follow this directory structure:
+
+    supercollider
+        external_libraries
+            portaudio_sc_org
+            asiosdk
+                asio
+                common
+                ...
+            ...
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
 Prompt for VS2013** (note that this this is not `cmd.exe`), `cd` to the
@@ -371,19 +366,6 @@ The SC build only uses the single precision version of the fftw library
 *Note*: if you compile FFTW yourself, all files must end up in the root fftw
 directory.
 
-### ASIO support
-
-In order to get support for ASIO drivers, follow this directory structure:
-
-    supercollider
-        external_libraries
-            portaudio_sc_org
-            asiosdk
-                asio
-                common
-                ...
-            ...
-
 Configuration and Building
 --------------------------
 
@@ -391,8 +373,6 @@ Configuration and Building
 "Avoiding the command line" may be helpful if that doesn't describe you.
 
 *Note:* You should always use forward slashes for paths passed to CMake.
-
-### Basic build
 
 **Confirm the location of your Qt install before executing these commands.** You
 may need to modify them if you installed Qt somewhere else. The following
@@ -410,13 +390,14 @@ For the final step, you can also build from within Visual Studio:
 
     start SuperCollider.sln
 
-### Additional build settings
+Additional build settings
+-------------------------
 
 Listed here are common additional configurations you may want to use. For a
 more complete list, use `cmake --help` and/or see the section "More `cmake`:
 building supernova, qt-less, verbosity and more" below.
 
-#### Build type
+### Build type
 
 The `CMAKE_BUILD_TYPE` controls optimization level and whether or not debugging
 code (asserts, info messages, and other similar code) is included in the
@@ -439,13 +420,13 @@ the SuperCollider core libraries, `Release` should be fine. Using a `Debug`
 build in production is strongly discouraged, as it will be many times slower
 than `Release`.
 
-#### SuperNova
+### SuperNova
 
 If you want to build supernova, add `-D SUPERNOVA=ON`
 
     cmake -D SUPERNOVA=ON ..
 
-#### Other targets (install, installer)
+### Other targets (install, installer)
 
 If you used the basic instructions above, you will end up with three target
 folders (four if supernova is built). You can run these executables to develop
@@ -496,7 +477,7 @@ always loose the local customizations and additions stored in the
 userAppSupportDirectory. The new Quarks system provides means to make porting
 of extension/Quark groups easier.
 
-#### PortAudio
+### PortAudio
 
 You can study the file `external_libraries\portaudio_sc_org\CMakeLists.txt` to
 learn about the options that the build provides. With default settings, all APIs
