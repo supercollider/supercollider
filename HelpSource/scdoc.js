@@ -513,7 +513,7 @@ function fixTOC() {
         }, false);
         toc.insertBefore(close_link,toc.firstChild);
         resize_handler();
-        if(storage.tocOpen == "yes") {
+        if (storage.tocOpen === "yes") {
             show_toc();
         }
     }
@@ -531,7 +531,7 @@ function hide_toc() {
 }
 
 function toggle_toc() {
-    if (storage.tocOpen == "yes") {
+    if (storage.tocOpen === "yes") {
         hide_toc();
         storage.tocOpen = "no";
     } else {
