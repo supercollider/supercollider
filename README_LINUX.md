@@ -1,5 +1,5 @@
-Supercollider 3 for linux
-=========================
+Welcome to SuperCollider for Linux!
+===================================
 
 Intro
 -----
