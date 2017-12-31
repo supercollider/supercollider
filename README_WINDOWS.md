@@ -1,8 +1,6 @@
 Welcome to Supercollider 3.8 for Windows!
 =========================================
 
-**IMPORTANT NOTE**:
-
 This Readme has two sections: "Installing SuperCollider", and "Building
 SuperCollider for Windows". The first section provides basic information to get
 going, and also introduces some common SuperCollider terminology. The second section
