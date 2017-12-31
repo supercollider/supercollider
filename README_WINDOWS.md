@@ -198,12 +198,12 @@ Configuration- and support files
 An important folder containing application related user data (for example
 extensions, quarks, Help files, plugins, configuration files, synthdefs) is
 located in the Windows 'local application data' folder. In SC-speak this folder
-is called the userAppSupportDir. This location is a bit tricky to find when not
-using SC-IDE because its grandparent `AppData` is hidden by default. You
-can see it in the environment variable LOCALAPPDATA. Type this on a command
-line:
+is called the `userAppSupportDir`. This location is a bit tricky to find when
+not using SC-IDE because its grandparent `AppData` is hidden by default. You
+can see it in the environment variable LOCALAPPDATA. In a command prompt,
+execute:
 
-    $> echo %LOCALAPPDATA%
+    echo %LOCALAPPDATA%
 
 You will likely see (the grandpa referred to earlier):
 
@@ -213,10 +213,10 @@ The userAppSupportDir is in the subfolder `Local\SuperCollider`:
 
     C:\Users\<USERNAME>\AppData\Local\SuperCollider
 
-This folder is user writable and *not* deleted by uninstall. Therefore your
-settings, quarks, plugins etc persist through SC-updates. This is usually good,
+This folder is user writable and *not* deleted by uninstalling. Therefore your
+settings, quarks, and plugins persist through updates. This is usually good,
 but if you have binary "plugins" and update a minor version, e.g. 3.6 to 3.7,
-the plugins will not work any more, and cause errors during SC start-up. There
+the plugins may not work any more, and cause errors during SC start-up. There
 are more files in the `userAppSupportDir` that can cause trouble after updates,
 so you want to be aware of the possibility. In the IDE it is very easy to access
 the folder. There is a menu entry -> `Open user support directory`). You can
