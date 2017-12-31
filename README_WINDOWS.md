@@ -61,7 +61,7 @@ This is the Windows version of James McCartney's SuperCollider synthesis engine
 (`scsynth`) and programming language (`sclang`), distributed together with a
 dedicated IDE (`scide`).
 
-SuperCollider's central website is on Github:
+SuperCollider's homepage is:
 
     http://supercollider.github.io/
 
@@ -81,7 +81,7 @@ from Sourceforge:
 
     http://sourceforge.net/projects/supercollider/files/?source=navbar
 
-There is an online version of SuperCollider Help, the site SCDOC:
+There is an online version of SuperCollider Help:
 
     http://doc.sccode.org/Help.html
 
@@ -164,11 +164,8 @@ Help Browser'.
 Using SuperCollider in command line mode
 ----------------------------------------
 
-*Note*: this is currently broken (Nov 2016, SC3.8). If you are using the 32-bit
-version, you can get output in emergency situations: either keep your finger on
-the key for about half a second or type each keystroke twice for it to
-register. You can also send text files to sclang by passing the filename as
-argument to `sclang`.
+**This is currently unsupported, but will be fixed in a future release. Stay
+tuned for updates!**
 
 1. Open a Windows command line window (the cmd.exe program).
 
