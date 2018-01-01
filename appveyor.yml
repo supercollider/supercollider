@@ -15,10 +15,6 @@ environment:
     QT_DIR: "C:/Qt/5.5/msvc2013_64"
     CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
     CMAKE_CONFIGURATION: Release
-    LIB_EXE: "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib"
-    LIBSNDFILE: "libsndfile-1.0.28-w64"
-    FFTW: "fftw-3.3.5-dll64"
-    LIB_CMD: "lib /machine:x64 /def:libfftw3-3.def"
     ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
     ASIO_ZIP: asiosdk2.3.zip
 
@@ -38,7 +34,7 @@ install:
 - ps: New-Item -ItemType directory -Name libsndfile | Out-Null
 - ps: cd libsndfile
 - ps: echo $env:LIBSNDFILE
-- git clone https://github.com/brianlheim/libsndfile-windows-libs libsndfile
+- git clone https://github.com/brianlheim/libsndfile-windows-x64 libsndfile
 - ps: New-Item -ItemType directory -Path "C:/Program Files/Mega-Nerd" | Out-Null
 - ps: Move-Item libsndfile "C:/Program Files/Mega-Nerd/libsndfile"
 - ps: cd ..
@@ -50,7 +46,6 @@ install:
 - ps: cd fftw
 - ps: Invoke-WebRequest ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- ps: Get-ChildItem .
 - cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:x64 /def:libfftw3f-3.def"
 - ps: cd ..
 - ps: Get-ChildItem .
