@@ -10,10 +10,10 @@ shallow_clone: true
 image: Visual Studio 2013
 
 environment:
-    QT_DIR: C:\Qt\5.5\msvc2013_64
+    QT_DIR: "C:/Qt/5.5/msvc2013_64"
     CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
     CONFIGURATION: Release
-    LIB_EXE: "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\lib"
+    LIB_EXE: "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib"
     LIBSNDFILE: "libsndfile-1.0.28-w64"
     FFTW: "fftw-3.3.5-dll64"
     LIB_CMD: "lib /machine:x64 /def:libfftw3-3.def"
