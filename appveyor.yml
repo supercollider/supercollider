@@ -1,0 +1,80 @@
+# Appveyor config file for SuperCollider
+# Author: Brian Heim
+# Created on 2017-12-31
+# See http://www.appveyor.com/docs/appveyor-yml
+
+version: '{build}' # incremented with each build
+shallow_clone: true
+
+# https://www.appveyor.com/docs/build-environment/#build-worker-images
+image: Visual Studio 2013
+
+environment:
+    QT_DIR: C:\Qt\5.5\msvc2013_64
+    CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
+    CONFIGURATION: Release
+    LIB_EXE: "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\lib"
+    LIBSNDFILE: "libsndfile-1.0.28-w64"
+    FFTW: "fftw-3.3.5-dll64"
+    LIB_CMD: "lib /machine:x64 /def:libfftw3-3.def"
+    ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
+    ASIO_ZIP: asiosdk2.3.zip
+
+install:
+- ps: echo "Install phase start"
+- ps: Get-ChildItem .
+
+- ps: echo "Get submodules"
+- git submodule update --init
+
+- ps: echo "Install 3rd-party tools"
+- ps: New-Item -ItemType directory -Name lib | Out-Null
+- ps: cd lib
+- ps: Get-ChildItem .
+
+- ps: echo "Install libsndfile"
+- ps: New-Item -ItemType directory -Name libsndfile | Out-Null
+- ps: cd libsndfile
+- appveyor DownloadFile http://www.mega-nerd.com/libsndfile/files/$LIBSNDFILE-setup.exe
+- $LIBSNDFILE-setup.exe /s
+- ps: Get-ChildItem "C:\ProgramFiles\Mega-Nerd\libsndfile"
+- ps: cd ..
+- ps: echo "Done installing libsndfile"
+
+- ps: echo "Install fftw"
+- ps: New-Item -ItemType directory -Name fftw | Out-Null
+- ps: cd fftw
+- appveyor DownloadFile ftp://ftp.fftw.org/pub/fftw/$FFTW.zip
+- ps: 7z x "$FFTW.zip" -y
+- ps: Get-ChildItem .
+- ps: cd $FFTW
+- ps: Get-ChildItem .
+- ps: $LIB_CMD
+- ps: cd ..
+- ps: Move-Item $FFTW "C:\ProgramFiles\fftw"
+- ps: cd ..
+- ps: echo "Done installing fftw"
+
+- ps: echo "Install asio_sdk"
+- ps: New-Item -ItemType directory -Name asio_sdk | Out-Null
+- ps: cd asio_sdk
+- appveyor DownloadFile $ASIO_URL
+- ps: 7z x $ASIO_ZIP -y
+- ps: Get-ChildItem .
+- ps: Move-Item ASIOSDK2.3 "$APPVEYOR_BUILD_FOLDER\external_libraries\asiosdk"
+- ps: cd ..
+- ps: echo "Done installing asio_sdk"
+
+- ps: cd ..
+- ps: echo "Done installing 3rd-party tools"
+
+- ps: echo "Install phase end"
+
+before_build:
+- set PATH=%QT_DIR%\bin;%PATH%
+- mkdir build
+- cd build
+
+build_script:
+- cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
+- cmake --build . --target install --config %CONFIGURATION%
