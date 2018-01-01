@@ -14,7 +14,7 @@ image: Visual Studio 2013
 environment:
     QT_DIR: "C:/Qt/5.5/msvc2013_64"
     CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
-    CONFIGURATION: Release
+    CMAKE_CONFIGURATION: Release
     LIB_EXE: "C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib"
     LIBSNDFILE: "libsndfile-1.0.28-w64"
     FFTW: "fftw-3.3.5-dll64"
@@ -24,47 +24,47 @@ environment:
 
 install:
 - ps: echo "Install phase start"
-- ps: Get-ChildItem .
 
 - ps: echo "Get submodules"
 - git submodule update --init
 
+# Install libsndfile, FFTW, and ASIO SDK. Note that DirectX SDK, Windows SDK are already installed.
 - ps: echo "Install 3rd-party tools"
-- ps: New-Item -ItemType directory -Name lib | Out-Null
-- ps: cd lib
-- ps: Get-ChildItem .
+- ps: New-Item -ItemType directory -Name 3rdparty | Out-Null
+- ps: cd 3rdparty
 
+# libsndfile using hosted repository. Couldn't find a way to get the installer to work silently.
 - ps: echo "Install libsndfile"
 - ps: New-Item -ItemType directory -Name libsndfile | Out-Null
 - ps: cd libsndfile
-- ps: echo $LIBSNDFILE
-- appveyor DownloadFile http://www.mega-nerd.com/libsndfile/files/%LIBSNDFILE%-setup.exe
-- $LIBSNDFILE-setup.exe /s
-- ps: Get-ChildItem "C:\ProgramFiles\Mega-Nerd\libsndfile"
+- ps: echo $env:LIBSNDFILE
+- git clone https://github.com/brianlheim/libsndfile-windows-libs libsndfile
+- ps: New-Item -ItemType directory -Path "C:/Program Files/Mega-Nerd" | Out-Null
+- ps: Move-Item libsndfile "C:/Program Files/Mega-Nerd/libsndfile"
 - ps: cd ..
 - ps: echo "Done installing libsndfile"
 
+# FFTW3, including lib prep
 - ps: echo "Install fftw"
 - ps: New-Item -ItemType directory -Name fftw | Out-Null
 - ps: cd fftw
-- appveyor DownloadFile ftp://ftp.fftw.org/pub/fftw/$FFTW.zip
-- ps: 7z x "$FFTW.zip" -y
+- ps: Invoke-WebRequest ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip -OutFile fftw.zip
+- ps: 7z x fftw.zip -y
 - ps: Get-ChildItem .
-- ps: cd $FFTW
+- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:x64 /def:libfftw3f-3.def"
+- ps: cd ..
 - ps: Get-ChildItem .
-- ps: $LIB_CMD
-- ps: cd ..
-- ps: Move-Item $FFTW "C:\ProgramFiles\fftw"
-- ps: cd ..
+- ps: Move-Item fftw "C:\Program Files\fftw"
 - ps: echo "Done installing fftw"
 
+# ASIO SDK
 - ps: echo "Install asio_sdk"
 - ps: New-Item -ItemType directory -Name asio_sdk | Out-Null
 - ps: cd asio_sdk
-- appveyor DownloadFile $ASIO_URL
-- ps: 7z x $ASIO_ZIP -y
+- appveyor DownloadFile %ASIO_URL%
+- ps: 7z x $env:ASIO_ZIP -y
 - ps: Get-ChildItem .
-- ps: Move-Item ASIOSDK2.3 "$APPVEYOR_BUILD_FOLDER\external_libraries\asiosdk"
+- ps: Move-Item ASIOSDK2.3 "$env:APPVEYOR_BUILD_FOLDER\external_libraries\asiosdk"
 - ps: cd ..
 - ps: echo "Done installing asio_sdk"
 
@@ -80,4 +80,4 @@ before_build:
 
 build_script:
 - cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
-- cmake --build . --target install --config %CONFIGURATION%
+- cmake --build . --target install --config %CMAKE_CONFIGURATION%
