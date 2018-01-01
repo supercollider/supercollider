@@ -4,7 +4,7 @@
 # See http://www.appveyor.com/docs/appveyor-yml
 
 version: '{build}' # incremented with each build
-shallow_clone: true
+clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
 image: Visual Studio 2013
