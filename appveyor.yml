@@ -37,7 +37,8 @@ install:
 - ps: echo "Install libsndfile"
 - ps: New-Item -ItemType directory -Name libsndfile | Out-Null
 - ps: cd libsndfile
-- appveyor DownloadFile http://www.mega-nerd.com/libsndfile/files/$LIBSNDFILE-setup.exe
+- ps: echo $LIBSNDFILE
+- appveyor DownloadFile http://www.mega-nerd.com/libsndfile/files/%LIBSNDFILE%-setup.exe
 - $LIBSNDFILE-setup.exe /s
 - ps: Get-ChildItem "C:\ProgramFiles\Mega-Nerd\libsndfile"
 - ps: cd ..
