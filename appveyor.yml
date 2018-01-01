@@ -4,6 +4,8 @@
 # See http://www.appveyor.com/docs/appveyor-yml
 
 version: '{build}' # incremented with each build
+
+# shallow_clone doesn't clone, repository is not git so can't get submodules
 clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
