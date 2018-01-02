@@ -45,7 +45,7 @@ install:
 - ps: New-Item -ItemType directory -Name libsndfile | Out-Null
 - ps: cd libsndfile
 - ps: echo $env:LIBSNDFILE
-- git clone https://github.com/brianlheim/libsndfile-windows-x64 libsndfile
+- cmd: git clone https://github.com/brianlheim/libsndfile-windows-%ARCH% libsndfile
 - ps: $env:MEGANERD_DIR = "C:/$env:PROGFILES/Mega-Nerd"
 - ps: New-Item -ItemType directory -Path "$env:MEGANERD_DIR" | Out-Null
 - ps: Move-Item libsndfile "$env:MEGANERD_DIR/libsndfile"
