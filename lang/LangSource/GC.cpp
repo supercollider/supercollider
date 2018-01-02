@@ -268,6 +268,7 @@ PyrGC::PyrGC(VMGlobals *g, AllocPool *inPool, PyrClass *mainProcessClass, long p
 	mPartialScanObj = NULL;
 	mPartialScanSlot = 0;
 	mUncollectedAllocations = 0;
+	mUnreachableObjects = 0;
 
 	mGrey.classptr = NULL;
 	mGrey.obj_sizeclass = 0;

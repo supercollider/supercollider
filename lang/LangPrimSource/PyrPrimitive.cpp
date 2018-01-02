@@ -49,6 +49,7 @@
 #include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
 #include <map>
+#include "NewPyrObjectPtr.h"
 
 #ifdef _WIN32
 # include <direct.h>

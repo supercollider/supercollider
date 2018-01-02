@@ -31,6 +31,9 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "VMGlobals.h"
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
+#include "PyrSlot.h"
+#include "PyrSymbol.h"
+#include "PyrKernel.h"
 
 void DumpSimpleBackTrace(VMGlobals *g);
 
@@ -176,6 +179,9 @@ public:
 
 	bool IsPartialScanObject(PyrObject* inObject) const { return inObject == mPartialScanObj; }
 	int32 GetPartialScanIndex() const { return mPartialScanSlot; }
+	
+	void decrementUnreachableCount() { mUnreachableObjects--; }
+	void incrementUnreachableCount() { mUnreachableObjects++; }
 
 private:
 	inline PyrObject * Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);
@@ -212,7 +218,7 @@ private:
 	int32 mNumToScan;
 	int32 mNumGrey;
 
-	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned, mUncollectedAllocations;
+	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned, mUncollectedAllocations, mUnreachableObjects;
 
 	unsigned char mBlackColor, mGreyColor, mWhiteColor, mFreeColor;
 	bool mCanSweep;
@@ -324,13 +330,22 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj)
 
 inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection)
 {
-	if (inRunCollection && mNumToScan >= kScanThreshold)
-		Collect();
-	else {
-		if (inRunCollection)
-			mUncollectedAllocations = 0;
+	if (inRunCollection) {
+		if(mUnreachableObjects!= 0) {
+			PyrMethod *meth = mVMGlobals->primitiveMethod;
+			char *lastPrimitiveClass, *lastPrimitiveMethod;
+			lastPrimitiveClass = slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name;
+			lastPrimitiveMethod = slotRawSymbol(&meth->name)->name;
+			// At this point SC lang is unstable, so just post some info and terminate.
+			printf("ERROR: Attempted to allocate with collection while objects remain unreachable. This was probably in a primitive called from %s:%s. Terminating...\n", lastPrimitiveClass, lastPrimitiveMethod);
+			std::terminate();
+		}
+		if(mNumToScan >= kScanThreshold)
+			Collect();
 		else
-			++mUncollectedAllocations;
+			mUncollectedAllocations = 0;
+	} else {
+		++mUncollectedAllocations;
 	}
 
 	GCSet *gcs = mSets + sizeclass;
