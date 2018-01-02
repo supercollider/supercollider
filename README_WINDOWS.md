@@ -288,7 +288,7 @@ Optional components:
 - **[readline][readline]** for command-line support. However, this is currently
   non-functional.
 - **DirectX SDK** [v.9][dx9sdk] for Direct Sound support in Portaudio
-- **[NSIS][nsis]** to create an installation execuatable. Make sure to add
+- **[NSIS][nsis]** to create an installation executable. Make sure to add
   `makensis` to your `PATH`!
 
 Other development tools:
@@ -358,8 +358,7 @@ For a **32-bit** build:
 
     lib /def:libfftw3f-3.def
 
-The SC build only uses the single precision version of the fftw library
-(fftw3f).
+The SC build only uses the single precision FFTW library (fftw3f).
 
 *Note*: if you compile FFTW yourself, all files must end up in the root fftw
 directory.
@@ -404,7 +403,7 @@ building or in the build command given to CMake:
 
     cmake --build . --config <config>
 
-The four options are:
+The four options for \<config\> are:
 
 - `Debug`: no optimization, debugging code enabled
 - `Release`: full optimization, no debugging code
@@ -488,8 +487,8 @@ like to tweak the PortAudio build you can single it out from the SC build with:
 
 *Note:* MSYS2 provides a portaudio package, but it only comes with MME and
 DSound support out of the box. If you want ASIO or WDM-KS, you need to build
-PortAudio within MSYS2. Users have experienced issues using WASAPI backend to
-build in MinGW-based environments. Use Visual Studio if you need WASAPI.
+PortAudio within MSYS2. Users have experienced issues using the WASAPI backend
+to build in MinGW-based environments. Use Visual Studio if you need WASAPI.
 
 Common build problems
 ---------------------
