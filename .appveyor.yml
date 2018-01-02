@@ -32,53 +32,44 @@ install:
 
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
-- ps: echo "Get submodules"
-- git submodule update --init
+- cmd: echo "Get submodules"
+- cmd: git submodule update --init
 
 # Install libsndfile, FFTW, and ASIO SDK. Note that DirectX SDK, Windows SDK are already installed.
-- ps: echo "Install 3rd-party tools"
-- ps: New-Item -ItemType directory -Name 3rdparty | Out-Null
-- ps: cd 3rdparty
+- cmd: echo "Install 3rd-party tools"
+- cmd: mkdir 3rdparty && cd 3rdparty
 
 # libsndfile using hosted repository. Couldn't find a way to get the installer to work silently.
-- ps: echo "Install libsndfile"
-- ps: New-Item -ItemType directory -Name libsndfile | Out-Null
-- ps: cd libsndfile
-- ps: echo $env:LIBSNDFILE
+- cmd: echo "Install libsndfile"
+- cmd: mkdir libsndfile && cd libsndfile
 - cmd: git clone https://github.com/brianlheim/libsndfile-windows-%ARCH% libsndfile
-- ps: $env:MEGANERD_DIR = "C:/$env:PROGFILES/Mega-Nerd"
-- ps: New-Item -ItemType directory -Path "$env:MEGANERD_DIR" | Out-Null
-- ps: Move-Item libsndfile "$env:MEGANERD_DIR/libsndfile"
-- ps: cd ..
-- ps: echo "Done installing libsndfile"
+- cmd: set MEGANERD_DIR="C:/%PROGFILES%/Mega-Nerd"
+- cmd: mkdir "%MEGANERD_DIR%"
+- cmd: move libsndfile "%MEGANERD_DIR%/libsndfile"
+- cmd: cd .. && echo "Done installing libsndfile"
 
 # FFTW3, including lib prep
-- ps: echo "Install fftw"
-- ps: New-Item -ItemType directory -Name fftw | Out-Null
-- ps: cd fftw
+- cmd: echo "Install fftw"
+- cmd: mkdir fftw && cd fftw
+# can't use appveyor DownloadFile because it's FTP
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
 - cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
-- ps: cd ..
-- ps: Get-ChildItem .
-- ps: Move-Item fftw "C:/$env:PROGFILES/fftw"
-- ps: echo "Done installing fftw"
+- cmd: cd ..
+- cmd: move fftw "C:/%PROGFILES%/fftw"
+- cmd: echo "Done installing fftw"
 
 # ASIO SDK
-- ps: echo "Install asio_sdk"
-- ps: New-Item -ItemType directory -Name asio_sdk | Out-Null
-- ps: cd asio_sdk
+- cmd: echo "Install asio_sdk"
+- cmd: mkdir asio_sdk && cd asio_sdk
 - appveyor DownloadFile %ASIO_URL%
 - ps: 7z x $env:ASIO_ZIP -y
-- ps: Get-ChildItem .
-- ps: Move-Item ASIOSDK2.3 "$env:APPVEYOR_BUILD_FOLDER\external_libraries\asiosdk"
-- ps: cd ..
-- ps: echo "Done installing asio_sdk"
+- cmd: move ASIOSDK2.3 "%APPVEYOR_BUILD_FOLDER%\external_libraries\asiosdk"
+- cmd: cd .. && echo "Done installing asio_sdk"
 
-- ps: cd ..
-- ps: echo "Done installing 3rd-party tools"
+- cmd: cd .. && echo "Done installing 3rd-party tools"
 
-- ps: echo "Install phase end"
+- cmd: echo "Install phase end"
 
 before_build:
 - set PATH=%QT_DIR%\bin;%PATH%
