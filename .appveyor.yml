@@ -33,7 +33,7 @@ install:
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 - cmd: echo "Get submodules"
-- cmd: git submodule update --init
+- cmd: git submodule update --init --recursive
 
 # Install libsndfile, FFTW, and ASIO SDK. Note that DirectX SDK, Windows SDK are already installed.
 - cmd: echo "Install 3rd-party tools"
