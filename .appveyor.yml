@@ -43,7 +43,7 @@ install:
 - cmd: echo "Install libsndfile"
 - cmd: mkdir libsndfile && cd libsndfile
 - cmd: git clone https://github.com/brianlheim/libsndfile-windows-%ARCH% libsndfile
-- cmd: set MEGANERD_DIR="C:/%PROGFILES%/Mega-Nerd"
+- cmd: set MEGANERD_DIR=C:/%PROGFILES%/Mega-Nerd
 - cmd: mkdir "%MEGANERD_DIR%"
 - cmd: move libsndfile "%MEGANERD_DIR%/libsndfile"
 - cmd: cd .. && echo "Done installing libsndfile"
