@@ -58,7 +58,7 @@ install:
 - ps: cd fftw
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:$env:ARCH /def:libfftw3f-3.def"
+- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
 - ps: cd ..
 - ps: Get-ChildItem .
 - ps: Move-Item fftw "C:/$env:PROGFILES/fftw"
