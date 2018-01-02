@@ -12,14 +12,25 @@ clone_depth: 10
 image: Visual Studio 2013
 
 environment:
-    QT_DIR: "C:/Qt/5.5/msvc2013_64"
-    CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
     CMAKE_CONFIGURATION: Release
     ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
     ASIO_ZIP: asiosdk2.3.zip
 
+    matrix:
+        - QT_DIR: "C:/Qt/5.5/msvc2013"
+          CMAKE_GENERATOR: "Visual Studio 12 2013"
+          FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
+          ARCH: "x86"
+
+        - QT_DIR: "C:/Qt/5.5/msvc2013_64"
+          CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
+          FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
+          ARCH: "x64"
+
 install:
 - ps: echo "Install phase start"
+
+- ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 - ps: echo "Get submodules"
 - git submodule update --init
@@ -35,8 +46,9 @@ install:
 - ps: cd libsndfile
 - ps: echo $env:LIBSNDFILE
 - git clone https://github.com/brianlheim/libsndfile-windows-x64 libsndfile
-- ps: New-Item -ItemType directory -Path "C:/Program Files/Mega-Nerd" | Out-Null
-- ps: Move-Item libsndfile "C:/Program Files/Mega-Nerd/libsndfile"
+- ps: $env:MEGANERD_DIR = "C:/$env:PROGFILES/Mega-Nerd"
+- ps: New-Item -ItemType directory -Path "$env:MEGANERD_DIR" | Out-Null
+- ps: Move-Item libsndfile "$env:MEGANERD_DIR/libsndfile"
 - ps: cd ..
 - ps: echo "Done installing libsndfile"
 
@@ -44,12 +56,12 @@ install:
 - ps: echo "Install fftw"
 - ps: New-Item -ItemType directory -Name fftw | Out-Null
 - ps: cd fftw
-- ps: Invoke-WebRequest ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip -OutFile fftw.zip
+- ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:x64 /def:libfftw3f-3.def"
+- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:$env:ARCH /def:libfftw3f-3.def"
 - ps: cd ..
 - ps: Get-ChildItem .
-- ps: Move-Item fftw "C:\Program Files\fftw"
+- ps: Move-Item fftw "C:/$env:PROGFILES/fftw"
 - ps: echo "Done installing fftw"
 
 # ASIO SDK
