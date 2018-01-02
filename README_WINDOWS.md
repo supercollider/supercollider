@@ -383,6 +383,15 @@ SuperCollider repository.
     cmake -G "Visual Studio 12 2013 Win64" ..
     cmake --build . --config Release
 
+For a 32-bit build, you will use a different generator and Qt directory:
+
+    SET PATH=C:\Qt\5.5\msvc2013\bin;%PATH%
+    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013
+    mkdir build
+    cd build
+    cmake -G "Visual Studio 12 2013" ..
+    cmake --build . --config Release
+
 For the final step, you can also build from within Visual Studio:
 
     start SuperCollider.sln
