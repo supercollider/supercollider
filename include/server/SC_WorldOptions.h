@@ -1,21 +1,21 @@
 /*
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 
@@ -31,71 +31,60 @@ typedef int (*PrintFunc)(const char *format, va_list ap);
 
 struct WorldOptions
 {
-	const char* mPassword;
-	uint32 mNumBuffers;
-	uint32 mMaxLogins;
-	uint32 mMaxNodes;
-	uint32 mMaxGraphDefs;
-	uint32 mMaxWireBufs;
-	uint32 mNumAudioBusChannels;
-	uint32 mNumInputBusChannels;
-	uint32 mNumOutputBusChannels;
-	uint32 mNumControlBusChannels;
-	uint32 mBufLength;
-	uint32 mRealTimeMemorySize;
+	WorldOptions() { }
 
-	int mNumSharedControls;
-	float *mSharedControls;
+	const char* mPassword = nullptr;
+	uint32 mNumBuffers = 1024;
+	uint32 mMaxLogins = 64;
+	uint32 mMaxNodes = 1024;
+	uint32 mMaxGraphDefs = 1024;
+	uint32 mMaxWireBufs = 64;
+	uint32 mNumAudioBusChannels = 1024;
+	uint32 mNumInputBusChannels = 8;
+	uint32 mNumOutputBusChannels = 8;
+	uint32 mNumControlBusChannels = 16384;
+	uint32 mBufLength = 64;
+	uint32 mRealTimeMemorySize = 8192; // in kilobytes
 
-	bool mRealTime;
-	bool mMemoryLocking;
+	int mNumSharedControls = 0;
+	float *mSharedControls = nullptr;
 
-	const char *mNonRealTimeCmdFilename;
-	const char *mNonRealTimeInputFilename;
-	const char *mNonRealTimeOutputFilename;
-	const char *mNonRealTimeOutputHeaderFormat;
-	const char *mNonRealTimeOutputSampleFormat;
+	bool mRealTime = true;
+	bool mMemoryLocking = false;
 
-	uint32 mPreferredSampleRate;
-	uint32 mNumRGens;
+	const char *mNonRealTimeCmdFilename = nullptr;
+	const char *mNonRealTimeInputFilename = nullptr;
+	const char *mNonRealTimeOutputFilename = nullptr;
+	const char *mNonRealTimeOutputHeaderFormat = nullptr;
+	const char *mNonRealTimeOutputSampleFormat = nullptr;
 
-	uint32 mPreferredHardwareBufferFrameSize;
-
-	uint32 mLoadGraphDefs;
-
-	const char *mInputStreamsEnabled;
-	const char *mOutputStreamsEnabled;
-	const char *mInDeviceName;
-
-	int mVerbosity;
-
-	bool mRendezvous;
-
-	const char *mUGensPluginPath;
-
-	const char *mOutDeviceName;
-
-	const char *mRestrictedPath;
-
-	int mSharedMemoryID;
-};
-
-const struct WorldOptions kDefaultWorldOptions =
-{
-	0,1024,64,1024,1024,64,1024,8,8,16384,64,8192, 0,0, 1, 0, 0,0,0,0,0
 #if defined(_WIN32)
-	,44100
+	uint32 mPreferredSampleRate = 44100;
 #else
-	,0
+	uint32 mPreferredSampleRate = 0;
 #endif
-	,64, 0, 1
-	,0, 0, 0
-	,0
-	,1
-	,0
-	,0
-	,0
-	,0
+
+	uint32 mNumRGens = 64;
+
+	uint32 mPreferredHardwareBufferFrameSize = 0;
+
+	uint32 mLoadGraphDefs = 1;
+
+	const char *mInputStreamsEnabled = nullptr;
+	const char *mOutputStreamsEnabled = nullptr;
+	const char *mInDeviceName = nullptr;
+
+	int mVerbosity = 0;
+
+	bool mRendezvous = true;
+
+	const char *mUGensPluginPath = nullptr;
+
+	const char *mOutDeviceName = nullptr;
+
+	const char *mRestrictedPath = nullptr;
+
+	int mSharedMemoryID = 0;
 };
 
 struct SndBuf;
