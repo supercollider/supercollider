@@ -646,7 +646,6 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, *b;
 	int size;
 	PyrClass *classobj;
-	PyrObject *newobj;
 
 	a = g->sp - 1;
 	b = g->sp;
@@ -667,8 +666,9 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		size = 0;
 	}
-	newobj = instantiateObject(g->gc, classobj, size, false, true);
-	SetObject(a, newobj);
+
+	NewPyrObjectPtr ptr(g->gc, instantiateObject(g->gc, classobj, size, false, true));
+	SetNewObjectOnStack(a, &ptr);
 	return errNone;
 }
 
