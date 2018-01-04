@@ -125,7 +125,7 @@ void Style::drawComplexControl
 
             if (qobject_cast<QTabBar*>(toolBtn->parent())) {
                 if (!highlight) {
-                    QColor fill = option->palette.color(QPalette::Mid);
+                    QColor fill = option->palette.color(QPalette::AlternateBase);  // was ::Mid
                     painter->setBrush(fill);
                     painter->setPen(Qt::NoPen);
                     painter->drawRect(r.adjusted(0,0,0,-1));
@@ -289,7 +289,7 @@ void Style::drawPrimitive
         painter->setPen(Qt::NoPen);
 
         if (tabBar) {
-            painter->setBrush( option->palette.color(QPalette::Mid) );
+            painter->setBrush( option->palette.color(QPalette::AlternateBase) );
             painter->drawRect( tabBar->rect() );
         }
 
