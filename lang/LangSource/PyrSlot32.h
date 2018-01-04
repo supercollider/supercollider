@@ -31,6 +31,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include "SC_Endian.h"
 #include "SC_Types.h"
 #include "PyrErrors.h"
+#include "NewPyrObjectPtr.h"
 
 #include <cassert>
 #include <cstddef>
@@ -101,6 +102,9 @@ typedef union pyrslot {
 	} s;
 } PyrSlot;
 
+inline PyrObject* slotRawObject(PyrSlot *slot);
+
+
 /*
 	these are some defines to make accessing the structure less verbose.
 	obviously it polutes the namespace of identifiers beginning with 'u'.
@@ -147,6 +151,14 @@ inline int GetTag(const PyrSlot* slot) { return slot->utag; }
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val)    {  (slot)->utag = tagInt;  (slot)->ui = (val); }
 inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val) {  (slot)->utag = tagObj;   (slot)->uo = (PyrObject*)(val); }
+inline void SetNewObjectOnStack(PyrSlot* slot, NewPyrObjectPtr* val)      { slot->tag = tagObj;  slot->u.o = (struct PyrObject*)(val->release()); }
+inline void SetNewObjectInObject(PyrSlot* slot, NewPyrObjectPtr* val)
+{
+	PyrObjectHdr *obj = val->get();
+	slot->tag = tagObj;
+	slot->u.o = (struct PyrObject*)(obj);
+	val->releaseAndWriteNew(slotRawObject(slot));
+}
 inline void SetSymbol(PyrSlot* slot, PyrSymbol *val) {  (slot)->utag = tagSym;   (slot)->us = (val); }
 inline void SetChar(PyrSlot* slot, char val)   {  (slot)->utag = tagChar;  (slot)->uc = (val); }
 inline void SetPtr(PyrSlot* slot, void* val)    {  (slot)->utag = tagPtr;  (slot)->uptr = (void*)(val); }
