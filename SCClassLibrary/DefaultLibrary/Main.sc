@@ -174,6 +174,8 @@ Main : Process {
 	exitFullScreen { platform.exitFullScreen }
 
 	*overwriteMsg { _MainOverwriteMsg ^this.primitiveFailed }
+	
+	*allocateWhileUnreachable{ _AllocateWhileUnreachable ^this.primitiveFailed}
 }
 
 

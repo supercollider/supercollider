@@ -672,6 +672,14 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prAllocateWhileUnreachable(struct VMGlobals *g, int numArgsPushed);
+int prAllocateWhileUnreachable(struct VMGlobals *g, int numArgsPushed)
+{
+	NewPyrObjectPtr ptr(g->gc, newPyrStringN(g->gc, 8, 0, true));
+	//NewPyrObjectPtr ptr2(g->gc, newPyrStringN(g->gc, 8, 0, true)); // comment this out to see the Unused object error
+	return errNone;
+}
+
 
 bool isClosed(PyrBlock* fundef);
 bool isClosed(PyrBlock* fundef)
@@ -4103,6 +4111,7 @@ void initPrimitives()
 	definePrimitive(base, index++, "_BasicNew", basicNew, 2, 0);
 	definePrimitive(base, index++, "_BasicNewClear", basicNewClear, 2, 0);
 	definePrimitive(base, index++, "_BasicNewCopyArgsToInstVars", basicNewCopyArgsToInstanceVars, 1, 1);
+	definePrimitive(base, index++, "_AllocateWhileUnreachable", prAllocateWhileUnreachable, 1, 0);
 	//definePrimitive(base, index++, "_BasicNewCopyArgsByName", basicNewCopyArgsByName, 1, 1);
 
 	definePrimitiveWithKeys(base, index, "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
