@@ -361,7 +361,7 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *timeSlot = g->sp - 1;
 	PyrSlot *formatSlot = g->sp;
 
-	constexpr auto len = 1024;
+	const auto len = 1024;
 	char timeString[len];
 	if (slotStrVal(timeSlot, timeString, len)) return errWrongType;
 	char formatString[len];
