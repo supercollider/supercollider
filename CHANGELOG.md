@@ -1,9 +1,9 @@
 # Change Log
 
-3.9.0-rc1 (2017-12-26)
+3.9.0-rc2 (2018-01-04)
 ======================
 
-We are proud to announce the arrival of SuperCollider 3.9.0-rc1! Apologies
+We are proud to announce the arrival of SuperCollider 3.9.0-rc2! Apologies
 for being so far behind schedule; we hope the improvements you'll find here
 will more than make up for it. In 3.9.0, determined contributors have fixed
 some of SuperCollider's major cross-platform compatibility demons, addressed
