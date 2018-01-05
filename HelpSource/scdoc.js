@@ -513,6 +513,9 @@ function fixTOC() {
         }, false);
         toc.insertBefore(close_link,toc.firstChild);
         resize_handler();
+        if (storage.tocOpen === "yes") {
+            show_toc();
+        }
     }
     window.onresize = resize_handler;
 }
@@ -527,14 +530,13 @@ function hide_toc() {
     document.querySelector(".contents").style.marginLeft = "0";
 }
 
-var toc_popped_out = false;
 function toggle_toc() {
-    if (toc_popped_out) {
+    if (storage.tocOpen === "yes") {
         hide_toc();
-        toc_popped_out = false;
+        storage.tocOpen = "no";
     } else {
         show_toc();
-        toc_popped_out = true;
+        storage.tocOpen = "yes";
     }
     resize_handler();
 }
