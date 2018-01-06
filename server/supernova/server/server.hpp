@@ -291,6 +291,7 @@ inline bool log_printf(const char *fmt, ...)
 {
     va_list vargs;
     va_start(vargs, fmt);
+    va_end(vargs);
     return instance->log_printf(fmt, vargs);
 }
 
