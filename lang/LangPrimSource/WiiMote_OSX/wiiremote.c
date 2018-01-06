@@ -841,7 +841,7 @@ Boolean wiiremote_connect(WiiRemoteRef wiiremote)
 
 Boolean wiiremote_disconnect(WiiRemoteRef wiiremote)
 {
-	short	i;
+	short	i = 0;
 
 	if (wiiremote->cchan)
 	{
