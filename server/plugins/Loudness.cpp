@@ -182,10 +182,13 @@ void Loudness_dofft(Loudness *unit, uint32 ibufnum)
 					break;
 				}
 
-				if(j==10)
+				if ( j == 10 ) {
 					prop=1.0;
+					break; // avoid j becoming 11 to avoid out-of-bounds access in db calculation
+				}
 			}
-
+			
+			
 			db= (1.f-prop)*phons[j-1]+ prop*phons[j];
 			//printf("prop %f db %f j %d\n",prop,db,j);
 		}
