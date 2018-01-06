@@ -1287,7 +1287,7 @@ int scprintf(const char *fmt, ...)
 {
 	va_list vargs;
 	va_start(vargs, fmt);
-
+	va_end(vargs);
 	if (gPrint) return (*gPrint)(fmt, vargs);
 	else return vprintf(fmt, vargs);
 }
