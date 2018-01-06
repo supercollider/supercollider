@@ -835,7 +835,14 @@ inline uint32 BufColorAllocator::alloc(uint32 count)
 		outIndex = nextIndex++;
 	}
 	if (outIndex >= refsMaxSize) {
-		refs = (int16*)realloc(refs, refsMaxSize*2*sizeof(int16));
+		int16 * tmprefs = (int16*)realloc(refs, refsMaxSize*2*sizeof(int16));
+		if ( tmprefs == NULL ) {
+			free(refs);
+			refs = NULL;
+			throw std::runtime_error("buffer coloring error: reallocation failed.");
+		} else {
+			refs = tmprefs;
+		}
 		memset(refs + refsMaxSize, 0, refsMaxSize*sizeof(int16));
 		refsMaxSize *= 2;
 	}
@@ -848,7 +855,14 @@ inline bool BufColorAllocator::release(int inIndex)
 	if (refs[inIndex] == 0) return false;
 	if (--refs[inIndex] == 0) {
 		if (stackPtr >= stackMaxSize) {
-			stack = (int16*)realloc(stack, stackMaxSize*2*sizeof(int16));
+			int16* tmpstack = (int16*)realloc(stack, stackMaxSize*2*sizeof(int16));
+			if ( tmpstack == NULL ) {
+				free(stack);
+				stack = NULL;
+				throw std::runtime_error("buffer coloring error: reallocation during release failed.");
+			} else {
+				stack = tmpstack;
+			}
 			memset(stack + stackMaxSize, 0, stackMaxSize*sizeof(int16));
 			stackMaxSize *= 2;
 		}

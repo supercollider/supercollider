@@ -67,8 +67,15 @@ void				AUBufferList::Allocate(const CAStreamBasicDescription &format, UInt32 nF
 
 	// careful -- the I/O thread could be running!
 	if (nStreams > mAllocatedStreams) {
-		mPtrs = (AudioBufferList *)realloc(mPtrs, offsetof(AudioBufferList, mBuffers) + nStreams * sizeof(AudioBuffer));
-		mAllocatedStreams = nStreams;
+		AudioBufferList * tempPtrs = (AudioBufferList *)realloc(mPtrs, offsetof(AudioBufferList, mBuffers) + nStreams * sizeof(AudioBuffer));
+		if ( tempPtrs == NULL ) {
+			free(mPtrs);
+			mPtrs = NULL;
+			mAllocatedStreams = 0;
+		} else {
+			mPtrs = tempPtrs;
+			mAllocatedStreams = nStreams;
+		}
 	}
 	UInt32 bytesPerStream = (nFrames * format.mBytesPerFrame + 0xF) & ~0xF;
 	UInt32 nBytes = nStreams * bytesPerStream;
@@ -77,10 +84,17 @@ void				AUBufferList::Allocate(const CAStreamBasicDescription &format, UInt32 nF
 			mExternalMemory = false;
 			mMemory = NULL;
 		}
-		mMemory = (Byte *)realloc(mMemory, nBytes);
-		mAllocatedBytes = nBytes;
+		Byte * tmpMemory = (Byte *)realloc(mMemory, nBytes);
+		if ( tmpMemory == NULL ) {
+			free(mMemory);
+			mMemory = NULL;
+			mAllocatedBytes = 0;
+		} else {
+			mMemory = mMemory
+			mAllocatedBytes = nBytes;
+		}
 	}
-	mAllocatedFrames = nFrames;
+	mAllocatedFrames = (mAllocatedStreams && mAllocatedBytes) ? nFrames : 0;
 	mPtrState = kPtrsInvalid;
 }
 
