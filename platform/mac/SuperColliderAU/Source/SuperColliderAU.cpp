@@ -135,6 +135,7 @@ ComponentResult		SuperColliderAU::GetProperty(	AudioUnitPropertyID inID,
 
 ComponentResult SuperColliderAU::Initialize()
 {
+
     scprintf("SuperColliderAU: Initialize\n");
     WorldOptions options = kDefaultWorldOptions;
     options.mPreferredSampleRate = GetSampleRate();

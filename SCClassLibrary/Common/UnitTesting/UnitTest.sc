@@ -25,7 +25,6 @@ UnitTest {
 	// called after each test
 	tearDown {}
 
-	// use YourClass.test of TestYourClass.run
 	*run { | reset = true, report = true|
 		this.new.run(reset, report);
 	}
@@ -264,7 +263,7 @@ UnitTest {
 	// PRIVATE IMPLEMENTATION
 	// these are mostly private
 	// don't use this directly,
-	// use Class.test or TestClass.run
+	// use TestClass.run
 
 	*runTestClassForClass { | class, reset = true, report = true |
 		var testClass;
@@ -302,7 +301,7 @@ UnitTest {
 		}
 	}
 
-	// private - use YourClass.test or TestYourClass.run
+	// private - use TestYourClass.run
 
 	run { | reset = true, report = true|
 		var function;

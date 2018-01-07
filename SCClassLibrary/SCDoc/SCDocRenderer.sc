@@ -196,11 +196,12 @@ SCDocHTMLRenderer {
 		^res;
 	}
 
-	*renderHeader {|stream, doc|
+	*renderHeader {|stream, doc, body|
 		var x, cats, m, z;
 		var thisIsTheMainHelpFile;
 		var folder = doc.path.dirname;
 		var undocumented = false;
+		var displayedTitle;
 		if(folder==".",{folder=""});
 
 		// FIXME: use SCDoc.helpTargetDir relative to baseDir
@@ -243,11 +244,26 @@ SCDocHTMLRenderer {
 		<< "</head>\n";
 
 		stream
-		<< "<body onload='fixTOC();prettyPrint()'>\n"
+		<< "<body onload='fixTOC();prettyPrint()'>\n";
+
+
+		displayedTitle = if(
+			thisIsTheMainHelpFile,
+			{ "SuperCollider " ++ Main.version },
+			{ doc.title }
+		);
+
+		stream
+		<< "<div id='toc'>\n"
+		<< "<div id='toctitle'>" << displayedTitle << ": table of contents</div>\n"
+		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
+		this.renderTOC(stream, body);
+		stream << "</div>";
+
+		stream
 		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
 		<< "<div class='header'>\n";
-
 
 		if(thisIsTheMainHelpFile.not) {
 			stream
@@ -285,12 +301,9 @@ SCDocHTMLRenderer {
 			stream << "</div>";
 		};
 
-		stream << "<h1>";
+		stream << "<h1>" << displayedTitle;
 		if(thisIsTheMainHelpFile) {
-			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
-		} {
-			stream << doc.title;
 		};
 		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
 			stream << "<span id='superclasses'>"
@@ -969,10 +982,7 @@ SCDocHTMLRenderer {
 			currentImplClass = nil;
 		};
 
-		this.renderHeader(stream, doc);
-		stream << "<div id='toc'>\n";
-		this.renderTOC(stream, body);
-		stream << "</div>";
+		this.renderHeader(stream, doc, body);
 		this.renderChildren(stream, body);
 		this.renderFootNotes(stream);
 		this.renderFooter(stream, doc);
