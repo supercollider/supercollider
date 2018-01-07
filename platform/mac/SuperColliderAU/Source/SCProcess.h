@@ -39,18 +39,18 @@ public:
 	SCProcess();
     CFStringRef synthName;
     int portNum;
-	void startUp(WorldOptions options, CFStringRef pluginsPath,  CFStringRef synthdefsPath, int preferredPort);
-	void makeSynth();
-	void sendParamChangeMessage(CFStringRef name, float value);
-	void sendNote(int64 oscTime, int note, int velocity);
+	  void startUp(WorldOptions options, CFStringRef pluginsPath,  CFStringRef synthdefsPath, int preferredPort);
+	  void makeSynth();
+	  void sendParamChangeMessage(CFStringRef name, float value);
+	  void sendNote(int64 oscTime, int note, int velocity);
     void sendTick(int64 oscTime, int bus);
     void quit();
     void run(const AudioBufferList* in, AudioBufferList* out, UInt32 inFramesToProcess,  AudioTimeStamp inTimeStamp, Float64 sampleRate,int64 oscTime);
-
+		bool running;
 private:
     World* world;
+		pthread_t scThread;
     int findNextFreeUdpPort(int startNum);
-
 };
 
 #endif

@@ -20,6 +20,7 @@
 #ifndef _Resources_
 #define _Resources_
 #include "SC_World.h"
+#include "SC_WorldOptions.h"
 #include <CoreFoundation/CFString.h>
 
 #include <mach-o/dyld.h>
