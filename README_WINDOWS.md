@@ -3,13 +3,13 @@ Welcome to SuperCollider for Windows!
 
 This Readme has two sections: "Installing SuperCollider", and "Building
 SuperCollider for Windows". The first section provides basic information to get
-going, and also introduces some common SuperCollider terminology. The second section
-is subdivided into two sections, "Quick Steps" and "Walkthroughs". Quick Steps
-contains the essentials for a successful build, the "Walkthroughs" are more
-tutorial-like and written for less experienced developers. They are not required
-reading to build the Windows version of SC. Furthermore the individual chapters
-in "Walkthroughs" are not expected to be read consecutively; they might appear
-quite repetitive if done so.
+going, and also introduces some common SuperCollider terminology. The second
+section is subdivided into two sections: direct build instructions, and
+"Walkthroughs". The first part contains the essentials for a successful build,
+while the walkthroughs are more tutorial-like and written for less experienced
+developers. They are not required reading to build the Windows version of SC.
+Furthermore, the individual chapters in "Walkthroughs" are not expected to be
+read consecutively; they might appear quite repetitive if done so.
 
 Table of contents
 -----------------
