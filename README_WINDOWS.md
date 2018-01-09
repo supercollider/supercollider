@@ -531,8 +531,8 @@ for libraries that do not depend on MinGW runtimes or make sure all components
 in the build can use the same runtimes.
 - Architecture mismatches. This does not only concern target system architecture
 (32- or 64-bit) but also the toolchain used to compile SC and Qt. They have to
-match as closely as possible. SC built with VS requires the msvc2013_64
-package; the MinGW 4.8.2 build requires mingw492_32.
+match as closely as possible. SC built with VS requires the msvc2013_64 or
+msvc2013 package.
 - Dirty states in your build folder (usually resulting from changes in the build
 configuration). See below for how to fix this.
 - cmake finds and uses different libraries on your system than the ones intended
