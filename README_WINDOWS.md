@@ -1283,36 +1283,15 @@ The following libraries and tools were used to build the Windows installers
 Known problems
 ==============
 
-- READLINE/Command line-mode does not work properly.
-  You have to wait a short while with the key pressed to get it to register - if
-  you wait for too long, the key will repeat. It's kind of possible to get used
-  to it for a short while. Second problem: sclang will crash if you use ctrl-d.
-  Another problem shared with the IDE: You need to stop the server process
-  manually to avoid scsynth-zombies. Readline is initialized in
-  lang/LangSource/SC_TerminalClient.cpp (readlineInit()). This problem can only
-  be studied in the MinGW build for now, as the VS build (even 32-bit) cannot
-  link to the readline lib yet (and you can only use v. 5.0.1 which isn't
-  available as 64-bit binary).
+- READLINE/Command line-mode is not available.
+
+- Supernova is not available.
 
 - using shell commands from SC only works in a quite limited way (and always did).
   .unixCmd expects a unix shell, only for essential requirements workarounds
   are in place on Windows.
 
-- serial port communication does not work on Windows
-
-- your username should not contain spaces or non-ASCII characters
-
-A build issue that does not seem to create a problem:
-
-- during the MinGW build, when statically linking portaudio, we currently get
-  several dozen non-fatal errors (this is not due to the portaudio version,
-  it has been observed with several pa-builds. Similar errors are reported in
-  unrelated contexts and have to do with boost). These errors seem to have no
-  consequence:
-
-      CMakeFiles\SuperCollider.dir\objects.a(find_replace_tool.cpp.obj):-1: error: duplicate section `.data$_ZGVZN5ScIDE4Main8instanceEvE9singleton[__ZGVZN5ScIDE4Main8instanceEvE9singleton]' has different size
-      ...
-
+- Serial port communication is not available.
 
 Outro
 =====
