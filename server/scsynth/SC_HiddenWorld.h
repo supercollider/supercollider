@@ -31,6 +31,8 @@
 #include "SC_Reply.h"
 #include "MsgFifo.h"
 #include <map>
+#include <deque>
+#include <set>
 
 #include "boost/sync/semaphore.hpp"
 
@@ -90,15 +92,17 @@ typedef MsgFifoNoFree<DeleteGraphDefMsg, 512> DeleteGraphDefsFifo;
 typedef HashTable<struct GraphDef, Malloc> GrafDefTable;
 
 typedef std::map<struct ReplyAddress, uint32> ClientIDDict;
+typedef std::deque<int> ClientIDs;
+typedef std::set<ReplyAddress> Clients;
 
 struct HiddenWorld
 {
 	class AllocPool *mAllocPool;
 	IntHashTable<struct Node, AllocPool> *mNodeLib;
 	GrafDefTable *mGraphDefLib;
-	uint32 mNumUsers, mMaxUsers;
-	ReplyAddress *mUsers;
-	uint32 *mClientIDs, mClientIDTop;
+	uint32 mMaxUsers;
+	Clients *mUsers;
+	ClientIDs *mAvailableClientIDs;
 	ClientIDDict *mClientIDdict;
 
 	class SC_AudioDriver *mAudioDriver;

@@ -252,7 +252,7 @@ Quarks {
 		}, {
 			regex = (
 				isPath: "\\\\|/",
-				isAbsolutePath: "^[A-Za-z]:\\\\",
+				isAbsolutePath: "^[A-Za-z]:(?:\\\\|/)",
 				isURL: "://"
 			);
 		});

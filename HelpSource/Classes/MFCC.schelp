@@ -38,8 +38,8 @@ x = {
 	//in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
 
 	in = SoundIn.ar(0);
-	fft = FFT(LocalBuf(1, 1024), in);  // for sampling rates 44100 and 48000
-	//fft = FFT(LocalBuf(1, 2048), in);  // for sampling rates 88200 and 96000
+	fft = FFT(LocalBuf(1024), in);  // for sampling rates 44100 and 48000
+	//fft = FFT(LocalBuf(2048), in);  // for sampling rates 88200 and 96000
 
 	array = MFCC.kr(fft);
 

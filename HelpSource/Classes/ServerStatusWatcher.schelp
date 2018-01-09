@@ -1,0 +1,24 @@
+TITLE:: ServerStatusWatcher
+summary:: Observes and updates Server status
+categories:: Server
+related:: Classes/Server
+
+DESCRIPTION::
+An object that observes a link::Classes/Server:: object by managing status requests and updates.
+ServerStatusWatcher is a client-side server implementation detail, and users are not expected to
+need to use it directly. A Server's status watcher can be accessed via
+link::Classes/Server#-statusWatcher::.
+
+CLASSMETHODS::
+
+METHOD:: new
+Creates a new ServerStatusWatcher.
+
+ARGUMENT:: server
+An instance of Server.
+
+returns:: The constructed ServerStatusWatcher.
+
+
+INSTANCEMETHODS::
+private:: prSendNotifyRequest, prFinalizeBoot
