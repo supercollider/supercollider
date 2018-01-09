@@ -42,7 +42,7 @@ Table of contents
     - Using Qt Creator
     - More `cmake`: building supernova, qt-less, verbosity and more
     - Recalling environment- and build settings on the command line
-- Description of SC 3.8 release build
+- Description of SC 3.9 release build
 - Known problems
 - Outro
 
@@ -1264,44 +1264,21 @@ Another way of storing CMake command line arguments is creating a "toolchain"
 file. This is the CMake suggested method. Please look up the CMake documentation
 if you require an advanced configuration, and are interested in this approach.
 
-Description of the SC 3.8 release build
+Description of the SC 3.9 release build
 ---------------------------------------
 
-All dependencies not contained in the SC source (external_libraries) were
-downloaded from the original providers (see links at the end). For both VS and
-QT the free community editions were used.
+The following libraries and tools were used to build the Windows installers
+"Windows-x86-VS" and "Windows-x64-VS":
 
-SCWin64 3.8 was built with Visual Studio 12/2013
-
-- Qt5.5.1 (flavour msvc2013_64)
-- libsndfile 1.0.27
+- Visual Studio 12.0 2013, compiler version 18.00.40629
+- Qt5.5.1
+  - for Windows-x86-VS: distribution `msvc2013`
+  - for Windows-x64-VS: distribution `msvc2013_64`
+- libsndfile 1.0.28, compiled by Brian Heim for FLAC support
 - FFTW 3.3.5
-
-SCWin32 3.8 was built using Qt Creator, combining MinGW 4.8.2 and Qt 5.5.1
-mingw492_32 into a kit. The MinGW distribution provided by Qt was used.
-
-- linsndfile 1.0.27
-- FFTW 3.3.5
-- Readline 5.0.1 (as provided by gnuwin32)
-
-For both builds all other external libraries (including portaudio) were compiled
-as part of the SC build, using the sources embedded in the SC source tree (in
-the folder external libraries) and the settings defined there.
-
-The portaudio build was extended for ASIO support by adding the ASIO-SDK:
-
 - ASIO SDK 2.3
-
-For DSound support different DirectX versions had to be used in the VS and MinGW
-build. For VS:
-
 - DirectX v9 (June 2010)
-
-The MinGW build uses the libraries coming with MinGW.
-
-The tools used were Git for Windows v2.10.2.windows.1, cmake v3.52, and NSIS v3.0b1
-to create the binary installer.
-
+- NSIS 3.02.1
 
 Known problems
 ==============
