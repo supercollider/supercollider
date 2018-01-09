@@ -30,6 +30,7 @@ Table of contents
     - SuperNova
     - Other targets (install, installer)
     - PortAudio
+    - FLAC support
   - Common build problems
     - Dirty build states
     - Wrong libraries found
@@ -275,7 +276,9 @@ Required components:
   Studio Team Services (for free) in order to download this older version
 - **[Qt][Qt]** 5.5.1. Use the package `msvc2013_64` for a 64-bit build,
   `msvc2013` for 32-bit.
-- **[libsndfile][libsndfile]** >= 1.0.25
+- **[libsndfile][libsndfile]** >= 1.0.25. The binary distribution for Windows
+  does not have FLAC support. For building with FLAC support, see "FLAC
+  Support".
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
 Optional, but highly recommended:
@@ -498,6 +501,18 @@ like to tweak the PortAudio build you can single it out from the SC build with:
 DSound support out of the box. If you want ASIO or WDM-KS, you need to build
 PortAudio within MSYS2. Users have experienced issues using the WASAPI backend
 to build in MinGW-based environments. Use Visual Studio if you need WASAPI.
+
+### FLAC support
+
+The binaries distrubted by the libsndfile website do not come with FLAC support,
+which means that your SuperCollider build won't have it, either.  Unfortunately,
+there does not seem to be an easy way to get such a binary.  Instructions for
+building libsndfile with FLAC support can be found in the [libsndfile
+readme][libsndfile readme], but it's probably easiest to drop in the
+FLAC-enabled DLL that comes with our Windows releases.
+
+If you are interested in building it yourself, please check out ["Building
+libsndfile with FLAC support"][libsndfileFLAC] on the project wiki.
 
 Common build problems
 ---------------------
@@ -1356,3 +1371,5 @@ software publicly and freely available.
 [VS2013]: https://www.visualstudio.com/vs/older-downloads/ (you need to create a free developer account to download Visual Studio 2013, community edition)
 [Windows 8 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk (Windows 8.1 SDK including debugger used by Qt Creator)
 [Windows 10 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk  (Windows 10 SDK including debugger used by Qt Creator)
+[libsndfileFLAC]: https://github.com/supercollider/supercollider/wiki/Building-libsndfile-with-FLAC-support-(Windows,-VS-2017) (Building libsndfile with FLAC support)
+[libsndfile readme]: https://github.com/erikd/libsndfile/blob/master/README.md (libsndfile readme)
