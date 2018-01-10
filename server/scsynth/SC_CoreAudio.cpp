@@ -540,7 +540,7 @@ std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID&
 	OSStatus							err;
 	UInt32								size;
 	UInt32								count;
-	std::unique_ptr<AudioValueRange>	validSampleRateRanges;
+	std::unique_ptr<AudioValueRange[]>	validSampleRateRanges;
 
 	AudioObjectPropertyAddress addr = {
 		kAudioDevicePropertyAvailableNominalSampleRates,
