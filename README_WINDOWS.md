@@ -43,7 +43,7 @@ Table of contents
     - More `cmake`: building supernova, qt-less, verbosity and more
     - Recalling environment- and build settings on the command line
 - Description of SC 3.9 release build
-- Known problems
+- Known issues
 - Outro
 
 Introduction
@@ -1280,8 +1280,8 @@ The following libraries and tools were used to build the Windows installers
 - DirectX v9 (June 2010)
 - NSIS 3.02.1
 
-Known problems
-==============
+Known issues
+============
 
 - READLINE/Command line-mode is not available.
 
