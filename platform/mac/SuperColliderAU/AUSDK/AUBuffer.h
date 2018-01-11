@@ -216,23 +216,10 @@ public:
 			return;	// already allocated
 
 		mBufferSizeBytes = reqSize;
-		void * tmpObject = realloc(mMemObject, reqSize);
-		if ( tmpObject == NULL ) {
-			free(mMemObject);
-			mMemObject = NULL;
-			return;
-		} else
-			mMemObject = tmpObject;
+		mMemObject = realloc(mMemObject, reqSize);
 		UInt32 misalign = (uintptr_t)mMemObject & kAlignMask;
 		if (misalign) {
-			void *tmpObject = realloc(mMemObject, reqSize + kAlignMask);
-			if ( tmpObject == NULL ) {
-				free(mMemObject);
-				mMemObject = NULL;
-				mAlignedBuffer = NULL;
-				return;
-			} else
-				mMemObject = tmpObject;
+			mMemObject = realloc(mMemObject, reqSize + kAlignMask);
 			mAlignedBuffer = (T *)((char *)mMemObject + kAlignInterval - misalign);
 		} else
 			mAlignedBuffer = (T *)mMemObject;
