@@ -1187,7 +1187,7 @@ ComponentResult 	AUBase::ProcessForScheduledParams(	ParameterEventList		&inParam
 				}
 			}
 
-			++iter;
+			iter++;
 		}
 
 		int framesThisTime = currentEndFrame - currentStartFrame;
@@ -1195,7 +1195,7 @@ ComponentResult 	AUBase::ProcessForScheduledParams(	ParameterEventList		&inParam
 		// next, setup the parameter maps to be current for the ramp parameters active during
 		// this time segment...
 
-		for(ParameterEventList::iterator iter2 = inParamList.begin(); iter2 != inParamList.end(); ++iter2 )
+		for(ParameterEventList::iterator iter2 = inParamList.begin(); iter2 != inParamList.end(); iter2++ )
 		{
 			AudioUnitParameterEvent &event = *iter2;
 
