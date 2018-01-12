@@ -53,6 +53,8 @@ private:
     void fillUser(const QString & theme, const Manager *settings);
     void fillDefault();
     void fillDark();
+    void fillSolarizedLight();
+    void fillSolarizedDark();
 
     bool mLocked;
     QMap<QString, QTextCharFormat *> mFormats;
