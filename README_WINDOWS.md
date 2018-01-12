@@ -256,9 +256,9 @@ Building SuperCollider for Windows
 
 SuperCollider uses [CMake][cmake] as its build system. The main toolchain
 supported by the development team is Visual Studio - Microsoft's IDE for C++ -
-which also includes Visual C++, the official Microsoft C++ compiler. Use other
-build environments and toolchains (such as MinGW, gcc, and Cygwin) at your own
-risk.
+which also includes Visual C++, the official Microsoft C++ compiler. Use of
+other build environments and toolchains (such as MinGW, gcc, and Cygwin) is not
+currently supported.
 
 Required and Optional Components
 --------------------------------
@@ -276,8 +276,8 @@ Required components:
 - **[Qt][Qt]** 5.5.1. Use the package `msvc2013_64` for a 64-bit build,
   `msvc2013` for 32-bit.
 - **[libsndfile][libsndfile]** >= 1.0.25. The binary distribution for Windows
-  does not have FLAC support. For building with FLAC support, see "FLAC
-  Support".
+  does not have FLAC support. For building with FLAC support, see the "FLAC
+  Support" section below.
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
 Optional, but highly recommended:
