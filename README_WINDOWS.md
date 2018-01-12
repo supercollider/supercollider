@@ -22,7 +22,7 @@ Table of contents
   - Configuration- and support files
   - Extensions and Quarks
 - **Building SuperCollider for Windows**
-  - Components
+  - Required and Optional Components
   - Preparing to build
   - Configuration and building
   - Additional build settings
