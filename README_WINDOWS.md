@@ -156,8 +156,7 @@ Help Browser'.
 Using SuperCollider in command line mode
 ----------------------------------------
 
-**This is currently unsupported, but will be fixed in a future release. Stay
-tuned for updates!**
+**This is currently unsupported.**
 
 1. Open a Windows command line window (the cmd.exe program).
 
