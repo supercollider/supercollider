@@ -1,5 +1,5 @@
-SuperCollider 3.8 for macOS (OS X)
-==================================
+Welcome to SuperCollider for macOS!
+===================================
 
 These are installation and build instructions for the macOS version of James McCartney's SuperCollider synthesis engine (scsynth) and programming language (sclang).
 
