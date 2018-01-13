@@ -1,6 +1,6 @@
 # Change Log
 
-3.9.0 (2018-01-12)
+3.9.0 (2018-01-13)
 ======================
 
 We are proud to announce the arrival of SuperCollider 3.9.0! Apologies
