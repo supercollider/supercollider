@@ -238,3 +238,11 @@ endif()
 if(${JACK_USE_METADATA_API})
     target_compile_definitions(libsupernova PUBLIC "-DSC_JACK_USE_METADATA_API")
 endif()
+
+
+
+if(${LIB_SUFFIX})
+    add_definitions(-DLIB_SUFFIX="${LIB_SUFFIX}")
+else()
+    add_definitions(-DLIB_SUFFIX="")
+endif()

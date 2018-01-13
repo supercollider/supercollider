@@ -624,6 +624,8 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 
 void Duty_Ctor(Duty *unit)
 {
+	// DEMANDINPUT_A is not needed here, because we are at init time.
+	
 	if (INRATE(duty_reset) == calc_FullRate) {
 
 			SETCALC(Duty_next_da);
@@ -639,7 +641,7 @@ void Duty_Ctor(Duty *unit)
 		}
 	}
 
-	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE - 1;
+	unit->m_count = DEMANDINPUT(duty_dur) * SAMPLERATE;
 	unit->m_prevout = DEMANDINPUT(duty_level);
 	OUT0(0) = unit->m_prevout;
 
@@ -1336,6 +1338,7 @@ void TDuty_next_dd(TDuty *unit, int inNumSamples)
 
 void TDuty_Ctor(TDuty *unit)
 {
+	// DEMANDINPUT_A is not needed here, because we are at init time.
 	if (INRATE(1) == calc_FullRate) {
 
 			SETCALC(TDuty_next_da);
@@ -1344,7 +1347,7 @@ void TDuty_Ctor(TDuty *unit)
 	} else {
 		if(INRATE(1) == calc_DemandRate) {
 			SETCALC(TDuty_next_dd);
-			unit->m_prevreset = DEMANDINPUT(1) * SAMPLERATE;
+			unit->m_prevreset = DEMANDINPUT(duty_reset) * SAMPLERATE;
 		} else {
 			SETCALC(TDuty_next_dk);
 			unit->m_prevreset = 0.f;

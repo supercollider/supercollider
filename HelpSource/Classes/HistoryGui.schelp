@@ -13,42 +13,165 @@ DEFINITIONLIST::
 
 ## button all/filt || turns filtering on/off.
 ## popup all/... || selects which name key to search for (useful if networked)
-## textview || allows for typing in a search string.
-## button top/keep || sets mode whether listview stays on top line, or keeps sticking to the selected line.
+## TextView || allows for typing in a search string.
+## button top/keep || sets mode whether ListView stays on top line, or keeps sticking to the selected line.
 
-## listview || shows either all code::lineShorts::, or the filtered code::lineShorts::; selecting them in listview makes them come appear in post-doc window.
+## ListView || shows either all code::lineShorts::, or the filtered code::lineShorts::; selecting them in ListView makes them come appear in post-doc window.
 ::
 
+first example:
+code::
+(
+// create a short history
+h = History([
+	[0, \me, "1+2"],
+	[1, \me, "3+5"], [1.234, \you, "q = q ? ();"],
+	[3, \her, "\"Herstory\".speak"]
+]);
+// make a gui for it
+g = h.makeWin(0@20);
+// find or make a text window for code line display
+// (called 'doc' because that was a Document in pre-Qt times)
+g.findDoc;
+// post line at index 2 in h.lines in doc window
+g.postDoc(2);
+)
+::
+
+ClassMethods::
+
+method::docHeight
+get and set the height of the text window opened by HistoryGui
+method::docTitle
+get and set the title of the text window opened by HistoryGui
+
+method::new
+create a new HistoryGui
+argument:: object
+the history
+argument:: numItems
+the number of lines in the TextView above
+argument:: parent
+a parent window or view in which to place new HistoryGui
+argument:: bounds
+bounds for new HistoryGui, constrained by its minSize.
+argument:: makeSkip
+flag whether to create a skipjack for the HistoryGui.
+argument:: options
+options to set for the HistoryGui (inherited from JITGui).
+
+
+InstanceMethods::
+
+private:: accepts, checkUpdate, getState, makeViews, setDefaults, postInlined
+private:: updateBinVal, updateFunc, updateLines, updateVal, alignDoc
+subsection:: views
+method::textV
+top: the TextView for the selected line
+method::startBut, filtBut, keyPop, filTextV, topBut
+the line of buttons, popup and TextView
+method::listV
+the ListView for the history lines
+method::resetViews
+reset all views
+
+method::showLineAt
+show the line at that index in History.lines in the TextView.
+
+subsection:: 'doc'-related
+method::doc
+the external text window made by HistoryGui to show codelines on.
+This is still called doc because it used to be a Document in pre-Qt times.
+
+method::findDoc
+find an open a re-usable text window, or make a new one
+
+method:: docFlag
+get or set the symbol for the doc strategy to use:
+code::\sameDoc:: tries to re-use a single text window,
+code::\newDoc:: always makes a new one (and keep track of old docs)
+
+method::oldDocs
+list of previous text windows (docs) opened
+
+method::postDoc
+find the codeline at index in History, and post it on the textwindow
+
+method::setDocStr
+set the string of the current textwindow
+
+method::rip
+create a new textwindow with currently selected line
+
+
+subsection:: filtering
+method::filtering
+flag whether filtering is on
+method::filterOn, filterOff
+convenience on/off methods
+
+method::filters
+keys and string fragments to filter for.
+e.g. [ 'all', "+" ] gets lines from all sources that contain the string "+".
+method::filterLines
+apply filtering to history lines
+
+method::filteredIndices
+the indices of the current filtered lines
+
+method::filteredShorts
+the current filtered short lines for gui display
+
+method:.setKeyFilter
+set the key(s) to filter for, and perform filtering
+
+method::setStrFilter
+set the string to filter for, and perform filtering
+
+method::stickMode
+stickMode 0 means top, i.e. select top when new lines come in;
+stickMode 1 means keep, i.e. keep current line selected after new lines come in.
 
 EXAMPLES::
 
 code::
 (
-h = History.new.lines_([
+// create a short history
+h = History([
 	[0, \me, "1+2"],
 	[1, \me, "3+5"], [1.234, \you, "q = q ? ();"],
 	[3, \her, "\"Herstory\".speak"]
 ]);
-g = h.makeWin;
+// make a gui for it
+g = h.makeWin(0@20);
+// find or make a text window for code line display
+// (called 'doc' because that was a Document in pre-Qt times)
 g.findDoc;
+// post line at index 2 in h.lines in doc window
 g.postDoc(2);
 )
 
 h.document;
-// how filtering works:
+
+// show how filtering works:
+
+g.filtering; // is filter on?
+g.filterOff; // shorthand for off
+g.filterOn;  // and on
+
+// filtering looks for lines by author key(s)
+// and strings in the code lines:
 g.filters.postcs;
-g.filterOff;
-g.filterOn;
-g.filtering;
+
 g.setKeyFilter(\all);
 g.setKeyFilter(\me);
 g.setStrFilter("");
 g.setStrFilter("3");
 
-// internal state cached in gui:
+g.filters.postcs;
+
+// internal state cached in the HistoryGui:
 g.filteredIndices;
 g.filteredShorts;
 
-// to do: execute line on special key in listview;
-// window following?
 ::
