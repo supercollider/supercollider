@@ -1,9 +1,9 @@
 # Change Log
 
-3.9.0-rc2 (2018-01-04)
+3.9.0 (2018-01-12)
 ======================
 
-We are proud to announce the arrival of SuperCollider 3.9.0-rc2! Apologies
+We are proud to announce the arrival of SuperCollider 3.9.0! Apologies
 for being so far behind schedule; we hope the improvements you'll find here
 will more than make up for it. In 3.9.0, determined contributors have fixed
 some of SuperCollider's major cross-platform compatibility demons, addressed
@@ -18,6 +18,27 @@ miguel-negrao, muellmusik, patrickdupuis, porres, privong, redFrik, samaaron,
 scztt, simdax, smoge, smrg-lm, snappizz, telephon, thormagnusson,
 tiagomoraismorgado88, timsutton, vivid-synth, vividsnow, yurivict, and many
 more in the SC community who helped in ways other than participation on GitHub.
+
+Known Issues
+------------
+
+The IDE server status display turns yellow after a few seconds when opening `s.makeGui`.  This does not cause any usability issues ([#3310](https://github.com/supercollider/supercollider/issues/3310)).
+
+Only the first pages of the HTML files produced by SCDoc are printed in web browsers ([#3395](https://github.com/supercollider/supercollider/issues/3395)).
+
+The help browser does not remember the last position open in a document when navigating through history, and just jumps to the top of the file ([#3396](https://github.com/supercollider/supercollider/issues/3396)).
+
+Supernova loads plugins from "Extensions/plugins" rather than "Extensions" ([#3391](https://github.com/supercollider/supercollider/issues/3391)).
+
+`LevelIndicator.style()` is broken, which leads to confusing warning messages ([#3398](https://github.com/supercollider/supercollider/pull/3398)).
+
+`File.copy` crashes the interpreter if the destination file exists ([#3401](https://github.com/supercollider/supercollider/issues/3401)).
+
+On Windows, SerialPort is not available ([#1008](https://github.com/supercollider/supercollider/issues/1008)).
+
+On Windows, Supernova is not available.
+
+On Windows, the command-line sclang interpreter is not available.
 
 General: Added
 -----

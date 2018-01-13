@@ -3,7 +3,7 @@ summary:: A summary of news in SC 3.9
 categories:: News
 related::Guides/News-3_8, Guides/News-3_7
 
-We are proud to announce the arrival of SuperCollider 3.9.0-beta1! Apologies
+We are proud to announce the arrival of SuperCollider 3.9.0! Apologies
 for being so far behind schedule; we hope the improvements you'll find here
 will more than make up for it. In 3.9.0, determined contributors have fixed
 some of SuperCollider's major cross-platform compatibility demons, addressed
@@ -18,6 +18,26 @@ miguel-negrao, muellmusik, patrickdupuis, porres, privong, redFrik, samaaron,
 scztt, simdax, smoge, smrg-lm, snappizz, telephon, thormagnusson,
 tiagomoraismorgado88, timsutton, vivid-synth, vividsnow, yurivict, and many
 more in the SC community who helped in ways other than participation on GitHub.
+
+section:: Known Issues
+
+The IDE server status display turns yellow after a few seconds when opening code:: s.makeGui ::.  This does not cause any usability issues.
+
+Only the first pages of the HTML files produced by SCDoc are printed in web browsers.
+
+The help browser does not remember the last position open in a document when navigating through history, and just jumps to the top of the file.
+
+Supernova loads plugins from "Extensions/plugins" rather than "Extensions".
+
+code:: LevelIndicator.style() :: is broken, which leads to confusing warning messages.
+
+code:: File.copy :: crashes the interpreter if the destination file exists.
+
+On Windows, SerialPort is not available.
+
+On Windows, Supernova is not available.
+
+On Windows, the command-line sclang interpreter is not available.
 
 section:: General: Added
 
@@ -75,7 +95,7 @@ UnaryOpUGen now supports the bitwise not operator code:: bitNot ::. It used to s
 
 section:: UGens: Changed
 
-strong:: Breaking change: :: The application binary interface (ABI) for server plugins has changed. This has an important impact: **plugin binaries compiled for SuperCollider 3.8 will not work with SuperCollider 3.9** and vice versa. Please recompile your plugins.
+strong:: Breaking change: :: The application binary interface (ABI) for server plugins has changed. This has an important impact: strong:: plugin binaries compiled for SuperCollider 3.8 will not work with SuperCollider 3.9 :: and vice versa. Please recompile your plugins.
 
 strong:: Breaking change: :: code:: FOS.ar :: with control-rate coefficient inputs incorrectly initialized its coefficients at 0 and ramped to the correct values over the first control period. This has been fixed. To restore old behavior, multiply each coefficient by code:: Line.ar(0, 1, ControlDur.ir) ::.
 
@@ -85,29 +105,7 @@ code:: Donce ::, a demand-rate UGen with no identifiable purpose, is deprecated.
 
 section:: UGens: Fixed
 
-A number of UGens were discovered to have serious initialization bugs  where the UGen would output an initial sample of garbage memory. This can create audio explosions if the buggy UGen's output is fed into certain filter UGens like LPF or Delay1. These bugs have been fixed, affecting:
-
-list::
-## BeatTrack
-## BeatTrack2
-## CoinGate
-## Convolution
-## Convolution2
-## Convolution2L
-## Convolution3
-## DetectSilence
-## DiskIn
-## DiskOut
-## IFFT
-## KeyTrack
-## LFGauss
-## PartConv
-## PV_JensenAndersen
-## PV_HainsworthFoote
-## RunningSum
-## StereoConvolution2L
-## Unpack1FFT
-::
+A number of UGens were discovered to have serious initialization bugs where the UGen would output an initial sample of garbage memory. This can create audio explosions if the buggy UGen's output is fed into certain filter UGens like LPF or Delay1. These bugs have been fixed, affecting BeatTrack, BeatTrack2, CoinGate, Convolution, Convolution2, Convolution2L, Convolution3, DetectSilence, DiskIn, DiskOut, IFFT, KeyTrack, LFGauss, PartConv, PV_JensenAndersen, PV_HainsworthFoote, RunningSum, StereoConvolution2L, and Unpack1FFT.
 
 Fixed a bug with code:: TGrains :: ignoring the code:: amp :: parameter.
 
@@ -146,7 +144,7 @@ Fixed help files failing to open on Windows if the user's name contains a non-AS
 
 Fixed non-ASCII characters breaking the Visual Studio debugger.
 
-Fixed a crash in code:: Object:perform :: when the selector is an Array whose first element is not a Symbol, e.g. `0.perform.
+Fixed a crash in code:: Object:perform :: when the selector is an Array whose first element is not a Symbol, e.g. code:: 0.perform([0]) ::.
 
 code:: thisProcess.nowExecutingPath :: is no longer corrupted by code:: Routine:stop ::.
 
@@ -183,6 +181,8 @@ code:: SequenceableCollection :: has two new instance methods: code:: flatten2 :
 
 The code:: ~callback :: function is now available for all code:: Event :: types instead of just "on" events.
 
+Event types now include a code:: parentEvent ::, which provides default values..
+
 New aliases for done actions, e.g. code:: Done.freeSelf == 2 ::, are introduced for better readability. See the code:: Done :: helpfile for details.
 
 A new class, code:: Recorder ::, allows recording independently of the code:: Server :: object.
@@ -213,6 +213,10 @@ Added two new methods to code:: SimpleNumber ::: code:: snap :: and code:: softR
 
 code:: ReadableNodeIDAllocator :: offers a new optional replacement for code:: PowerOfTwoAllocator :: that assigns node IDs in a way more readable to humans when working with multiclient setups.
 
+A new "booted" stage has been added to Server objects that have been booted but
+may not be running yet, accessible via code:: Server:hasBooted :: and
+code:: Server.allBootedServers ::.
+
 section:: Class library: Changed
 
 strong:: Breaking change: :: Rests in the patterns system have been restructured. Instead of using the code:: isRest :: event property, events are considered rests if one of their properties is a code:: Rest :: object. You must use instances of code:: Rest :: rather than the rest class itself -- use of code:: Rest :: instead of code:: Rest() :: is now deprecated.
@@ -241,6 +245,8 @@ code:: Buffer:write :: takes floating point arguments, truncating them to intege
 
 Conversion methods among collection types has been improved and documented.
 
+code:: clientID :: is now protected from being changed while the server is running.
+
 section:: Class library: Deprecated
 
 code:: OSCresponder ::, code:: OSCresponderNode ::, and code:: OSCpathResponder :: now emit deprecation messages, and will be removed after at least a year. Use code:: OSCFunc :: or code:: OSCdef :: instead.
@@ -262,6 +268,8 @@ code:: Server:recordNode :: is deprecated. Use code:: Recorder:recordNode :: ins
 The code:: Server.set :: class variable is deprecated. Use code:: Server.all :: instead.
 
 code:: SimpleNumber:quantize :: is deprecated. Use code:: SimpleNumber:snap :: instead.
+
+code:: Server:userSpecifiedClientID :: is deprecated. Use code:: Server:clientID :: instead.
 
 section:: Class library: Removed
 
@@ -323,6 +331,13 @@ Fixed code:: SimpleNumber:asTimeString :: producing nonsensical results with the
 
 code:: Server:clientID :: can now be changed, allowing multiple clients connect to the same server.
 
+History and HistoryGui have been cleaned up.
+
+Fixed duplicate node IDs involving code:: Server.initTree ::.
+
+Fixed supernova crashing when too many controls are used.
+
+code:: Volume :: now respects lag time when it is instantiated or destroyed.
 
 section:: IDE & SCDoc: Added
 
@@ -340,7 +355,7 @@ Many minor improvements were made to the look and feel of the documentation.
 
 section:: IDE & SCDoc: Fixed
 
-Fixed SCDoc refusing to index any further documents if one document has a malformed code:: copymethod\:\: :: command.
+Fixed SCDoc refusing to index any further documents if one document has a malformed code:: copymethod :: command.
 
 Some Linux systems had unreadable font colors in the autocomplete tooltips. This has been (finally) fixed.
 
@@ -348,11 +363,10 @@ Fixed a bug where code:: Document:selectedString_ :: had no effect.
 
 New tabs are now inserted to the right of the current tab instead of all the way at the end.
 
-The help browser now has keyboard shortcuts for navigating back and forward. These shortcuts are OS-dependent and given to us by.
+The help browser now has keyboard shortcuts for navigating back and forward. These shortcuts are OS-dependent and given to us by Qt.
 
 Fixed the "Find in page..." feature in the help viewer skipping every other occurrence.
 
 Fixed HTML checkboxes appearing in the upper left of the help viewer.
 
 Fixed the right-click menu for the tabs appearing in the wrong place in macOS.
-
