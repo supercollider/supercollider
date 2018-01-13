@@ -123,26 +123,29 @@ UnitTest {
 	///////////////////////////////////////////////////////////////////////
 	// call these in your test_ methods to check conditions and pass or fail
 
-	assert { | boolean, message, report = true, onFailure |
+	assert { | boolean, message, report = true, onFailure, details |
 		if(boolean.not) {
-			this.failed(currentMethod, message, report);
+			this.failed(currentMethod, message, report, details);
 			if(onFailure.notNil) {
 				{ onFailure.value }.defer;
 				Error("UnitTest halted with onFailure handler.").throw;
 			};
 		} {
-			this.passed(currentMethod, message, report)
+			this.passed(currentMethod, message, report, details)
 		};
 		^boolean
 	}
 
 	assertEquals { |a, b, message = "", report = true, onFailure |
-		this.assert( a == b, message + "\nIs:\n\t" + a + "\nShould be:\n\t" + b + "\n", report, onFailure)
+		var details = "Is:\n\t" + a + "\nShould be:\n\t" + b;
+		this.assert(a == b, message, report, onFailure, details);
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-		this.assert( (a - b).abs <= within,
-			message + "\nIs:\n\t" + a + "\nShould equal (within range" + within ++ "):\n\t" + b + "\n", report, onFailure);
+		var details =
+			"Is:\n\t" + a +
+			"\nShould equal (within range" + within ++ "):\n\t" + b;
+		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
 	assertArrayFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
@@ -240,8 +243,9 @@ UnitTest {
 	}
 
 	// call failure directly
-	failed { | method, message, report = true |
-		var r = UnitTestResult(this, method, message);
+	failed { | method, message, report = true, details |
+		var r;
+		r = UnitTestResult(this, method, message, details);
 		failures = failures.add(r);
 		if(report){
 			Post << Char.nl << "FAIL: ";
@@ -251,12 +255,13 @@ UnitTest {
 	}
 
 	// call pass directly
-	passed { | method, message, report = true |
-		var r = UnitTestResult(this, method, message);
+	passed { | method, message, report = true, details |
+		var r;
+		r = UnitTestResult(this, method, message, details);
 		passes = passes.add(r);
-		if(report and: reportPasses) {
+		if(report and: { reportPasses != false }) {
 			Post << "PASS: ";
-			r.report;
+			r.report(reportPasses == \brief);
 		};
 	}
 
@@ -293,8 +298,7 @@ UnitTest {
 		if(failures.size > 0) {
 			"There were failures:".inform;
 			failures.do { arg results;
-
-				results.report
+				results.report(true);
 			};
 		} {
 			"There were no failures".inform;
@@ -391,17 +395,20 @@ UnitTest {
 
 UnitTestResult {
 
-	var <testClass, <testMethod, <message;
+	var <testClass, <testMethod, <message, <details;
 
-	*new { |testClass, testMethod, message = ""|
-		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message)
+	*new { |testClass, testMethod, message = "", details|
+		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message, details)
 	}
 
-	report {
+	report { |brief=false|
 		var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
 		Post << testClass.asString << ": " << name;
 		if (message.size > 0) {
 			Post << " - " << message;
+		};
+		if (brief.not && details.notNil) {
+			Post << Char.nl << details;
 		};
 		Post << Char.nl;
 	}
