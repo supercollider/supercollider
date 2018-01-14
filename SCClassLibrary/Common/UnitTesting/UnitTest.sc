@@ -399,7 +399,11 @@ UnitTestResult {
 
 	report {
 		var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
-		Post << testClass.asString << ":" << name << " - " << message << Char.nl;
+		Post << testClass.asString << ": " << name;
+		if (message.size > 0) {
+			Post << " - " << message;
+		};
+		Post << Char.nl;
 	}
 }
 
