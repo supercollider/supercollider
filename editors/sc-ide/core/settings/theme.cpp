@@ -176,6 +176,62 @@ void Theme::fillDark()
     addToTheme(mFormats, "postwindowsuccess",  QColor("#b0d206"));
     addToTheme(mFormats, "postwindowemphasis", QColor("#e4e4e4"), Qt::transparent, true);
 }
+    
+void Theme::fillSolarizedLight()
+{
+    addToTheme(mFormats, "text",               QColor("#657b83"), QColor("#fdf6e3"));
+    addToTheme(mFormats, "currentLine",        Qt::transparent, QColor("#eee8d5"));
+    addToTheme(mFormats, "searchResult",       QColor("#93a1a1"), QColor("#073642"));
+    addToTheme(mFormats, "matchingBrackets",   QColor("#002b36"), QColor("#eee8d5"), true);
+    addToTheme(mFormats, "mismatchedBrackets", QColor("#eee8d5"), QColor("#586e75"));
+    addToTheme(mFormats, "evaluatedCode",      QColor("#586e75"), QColor("#eee8d5"));
+    addToTheme(mFormats, "whitespace",         Qt::transparent);
+    addToTheme(mFormats, "keyword",            QColor("#dc322f"), Qt::transparent, true);
+    addToTheme(mFormats, "built-in",           QColor("#b58900"));
+    addToTheme(mFormats, "env-var",            QColor("#d33682"));
+    addToTheme(mFormats, "class",              QColor("#268bd2"));
+    addToTheme(mFormats, "number",             QColor("#6c71c4"));
+    addToTheme(mFormats, "symbol",             QColor("#b58900"));
+    addToTheme(mFormats, "string",             QColor("#93a1a1"));
+    addToTheme(mFormats, "char",               QColor("#cb4b16"));
+    addToTheme(mFormats, "comment",            QColor("#586e75"), Qt::transparent, false, true);
+    addToTheme(mFormats, "primitive",          QColor("#2aa198"));
+    addToTheme(mFormats, "lineNumbers",        QColor("#839496"), QColor("#eee8d5"));
+    addToTheme(mFormats, "selection",          QColor("#fdf6e3"), QColor("#657b83"));
+    addToTheme(mFormats, "postwindowtext",     QColor("#657b83"));
+    addToTheme(mFormats, "postwindowerror",    QColor("#dc322f"));
+    addToTheme(mFormats, "postwindowwarning",  QColor("#cb4b16"));
+    addToTheme(mFormats, "postwindowsuccess",  QColor("#859900"));
+    addToTheme(mFormats, "postwindowemphasis", QColor("#b58900"), Qt::transparent, true);
+}
+
+void Theme::fillSolarizedDark()
+{
+    addToTheme(mFormats, "text",               QColor("#839496"), QColor("#002b36"));
+    addToTheme(mFormats, "currentLine",        Qt::transparent, QColor("#073642"));
+    addToTheme(mFormats, "searchResult",       QColor("#586e75"), QColor("#eee8d5"));
+    addToTheme(mFormats, "matchingBrackets",   QColor("#fdf6e3"), QColor("#073642"), true);
+    addToTheme(mFormats, "mismatchedBrackets", QColor("#073642"), QColor("#93a1a1"));
+    addToTheme(mFormats, "evaluatedCode",      QColor("#93a1a1"), QColor("#073642"));
+    addToTheme(mFormats, "whitespace",         Qt::transparent);
+    addToTheme(mFormats, "keyword",            QColor("#dc322f"), Qt::transparent, true);
+    addToTheme(mFormats, "built-in",           QColor("#b58900"));
+    addToTheme(mFormats, "env-var",            QColor("#d33682"));
+    addToTheme(mFormats, "class",              QColor("#268bd2"));
+    addToTheme(mFormats, "number",             QColor("#6c71c4"));
+    addToTheme(mFormats, "symbol",             QColor("#b58900"));
+    addToTheme(mFormats, "string",             QColor("#586e75"));
+    addToTheme(mFormats, "char",               QColor("#cb4b16"));
+    addToTheme(mFormats, "comment",            QColor("#93a1a1"), Qt::transparent, false, true);
+    addToTheme(mFormats, "primitive",          QColor("#2aa198"));
+    addToTheme(mFormats, "lineNumbers",        QColor("#657b83"), QColor("#073642"));
+    addToTheme(mFormats, "selection",          QColor("#002b36"), QColor("#839496"));
+    addToTheme(mFormats, "postwindowtext",     QColor("#839496"));
+    addToTheme(mFormats, "postwindowerror",    QColor("#dc322f"));
+    addToTheme(mFormats, "postwindowwarning",  QColor("#cb4b16"));
+    addToTheme(mFormats, "postwindowsuccess",  QColor("#859900"));
+    addToTheme(mFormats, "postwindowemphasis", QColor("#b58900"), Qt::transparent, true);
+}
 
 void Theme::fillUser(const QString & name, const Manager *settings)
 {
@@ -214,6 +270,12 @@ Theme::Theme(const QString & _name, Manager * settings)
     } else if (mName == "dark") {
         fillDark();
         mLocked = true;
+    } else if (mName == "solarizedLight") {
+        fillSolarizedLight();
+        mLocked = true;
+    } else if (mName == "solarizedDark") {
+        fillSolarizedDark();
+        mLocked = true;
     } else {
         fillUser(mName, settings);
         mLocked = false;
@@ -231,6 +293,10 @@ Theme::Theme(const QString & _name, const QString & _source, Manager * settings)
         fillDefault();
     } else if (_source == "dark") {
         fillDark();
+    } else if (_source == "solarizedLight") {
+        fillSolarizedLight();
+    } else if (_source == "solarizedDark") {
+        fillSolarizedDark();
     } else {
         fillUser(_source, settings);
     }
@@ -283,6 +349,8 @@ QList<QString> Theme::availableThemes()
 
     themes.append("default");
     themes.append("dark");
+    themes.append("solarizedLight");
+    themes.append("solarizedDark");
 
     mSettings->beginGroup("IDE/editor/themes");
     themes.append(mSettings->childGroups());
