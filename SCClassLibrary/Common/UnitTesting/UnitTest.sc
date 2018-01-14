@@ -244,7 +244,7 @@ UnitTest {
 		var r = UnitTestResult(this, method, message);
 		failures = failures.add(r);
 		if(report){
-			Post << Char.nl << "FAIL:";
+			Post << Char.nl << "FAIL: ";
 			r.report;
 			Post << Char.nl;
 		};
@@ -255,7 +255,7 @@ UnitTest {
 		var r = UnitTestResult(this, method, message);
 		passes = passes.add(r);
 		if(report and: reportPasses) {
-			Post << "PASS:";
+			Post << "PASS: ";
 			r.report;
 		};
 	}
