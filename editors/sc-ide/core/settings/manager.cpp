@@ -74,7 +74,11 @@ void Manager::initDefaults()
 
     setDefault("blinkDuration", 600);
 
-    setDefault("font/family", "monospace");
+    // Issue #2389 - register a substitute so that macOS default won't be Helvetica.
+    // But, don't add substitutes for monospace, because this is a global registry.
+    setDefault("font/family", "scide_monospace");
+    QFont::insertSubstitutions("scide_monospace", { "monospace", "Monaco" });
+
     setDefault("font/antialias", true);
 
     setDefault("theme", "default");
