@@ -50,7 +50,6 @@ public:
 
 public:
     ScCodeEditor( Document *, QWidget *parent = 0 );
-    void setIndentWidth( int );
     QTextCursor currentRegion();
     void blinkCode( const QTextCursor & c );
     bool spaceIndent() { return mSpaceIndent; }
@@ -116,7 +115,6 @@ private:
     bool insertMatchingTokens(const QString & token);
     bool removeMatchingTokens();
 
-    int mIndentWidth;
     bool mSpaceIndent;
     bool mStepForwardEvaluation;
     int mBlinkDuration;
