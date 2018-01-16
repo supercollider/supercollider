@@ -44,6 +44,7 @@ void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
 		OSC_Packet packet; \
 		packet.mData = mMsgData; \
 		packet.mSize = mMsgSize; \
+		packet.mIsBundle = false; \
 		packet.mReplyAddr = mReplyAddress; \
 		PacketStatus status = PerformCompletionMsg(mWorld, packet); \
 		if (status == PacketScheduled) { \
