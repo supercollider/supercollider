@@ -9,7 +9,7 @@ version: '{build}' # incremented with each build
 clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
-image: Visual Studio 2013
+image: Visual Studio 2017
 
 environment:
     CMAKE_CONFIGURATION: Release
@@ -17,13 +17,15 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.5/msvc2013"
-          CMAKE_GENERATOR: "Visual Studio 12 2013"
+        # Note: 2017 is binary compatible with 2015
+        # https://forum.qt.io/topic/80583/prebuild-qt-32-bit-versions-for-visual-studio-2017/5
+        - QT_DIR: "C:/Qt/5.9/msvc2015"
+          CMAKE_GENERATOR: "Visual Studio 12 2017"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
 
-        - QT_DIR: "C:/Qt/5.5/msvc2013_64"
-          CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
+        - QT_DIR: "C:/Qt/5.9/msvc2017_64"
+          CMAKE_GENERATOR: "Visual Studio 12 2017 Win64"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
           ARCH: "x64"
 
@@ -54,7 +56,13 @@ install:
 # can't use appveyor DownloadFile because it's FTP
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
+- cmd: echo %VCINSTALLDIR%
+- cmd: dir "\"C:/Program Files (x86)/Microsoft Visual Studio\""
+- cmd: dir "\"C:/Program Files (x86)/Microsoft Visual Studio/2017\""
+- cmd: dir %VCINSTALLDIR%
+- cmd: dir "\"C:/Program Files (x86)/Microsoft Visual Studio/2017/VC\""
+- cmd: dir "\"C:/Program Files (x86)/Microsoft Visual Studio/2017/VC/lib\""
+- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio/2017/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
 - cmd: cd ..
 - cmd: move fftw "C:/%PROGFILES%/fftw"
 - cmd: echo "Done installing fftw"
