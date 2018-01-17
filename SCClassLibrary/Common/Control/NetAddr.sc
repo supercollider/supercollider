@@ -160,7 +160,7 @@ NetAddr {
 				if(err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_Connect'}) {
 					if(attempts > 0) {
 						0.2.wait;
-						func.value(onComplete, attempts)
+						func.value(attempts)
 					} {
 						"Couldn't connect to TCP address %:%\n".format(hostname, port).warn;
 						onFailure.value(this)

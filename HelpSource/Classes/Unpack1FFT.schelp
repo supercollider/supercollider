@@ -1,16 +1,16 @@
 class:: Unpack1FFT
 summary:: Unpack a single value (magnitude or phase) from an FFT chain
-categories:: UGens>FFT
-related:: Classes/PackFFT, Classes/UnpackFFT
+categories:: UGens>FFT, UGens>Demand
+related:: Classes/PackFFT, Classes/UnpackFFT, Guides/FFT-Overview
 
 
 Unpack1FFT(chain, bufsize, binindex, whichmeasure=0)
 
 description::
-Takes an FFT chain and extracts a single scalar value as a demand-rate stream. To call it you need a "demander" which fires whenever the FFT chain fires - this is normally achieved using link::Classes/PackFFT:: but can also be done using link::Classes/Demand::.
+Takes an FFT chain and extracts a single scalar value as a demand-rate stream. To call it, a "demander" is needed, which fires whenever the FFT chain fires - this is normally achieved using link::Classes/PackFFT:: but can also be done using link::Classes/Demand::.
 
 Note::
-The main purpose of this UGen is as a component in pvcollect, pvcalc, and pvcalc2 processes. You're welcome to use it on its own - the example below shows basic usage. But most people won't typically need to use it directly.
+This UGen is commonly not used directly. Its main purpose is as a component in link::Classes/PV_ChainUGen#-pvcollect::, link::Classes/PV_ChainUGen#-pvcalc::, and link::Classes/PV_ChainUGen#-pvcalc2:: processes. You're welcome to use it on its own - the example below shows how.
 ::
 
 classmethods::
@@ -27,30 +27,26 @@ the integer index of the bin you want to query
 argument:: whichmeasure
 0 for magnitude and 1 for phase. None of these arguments can be modulated.
 
-examples::
+discussion::
 code::
-(
-s.waitForBoot({
-	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-})
-)
 
-// Let's extract the DC component - i.e. the magnitude at index zero.
+// Let's extract the DC component - i.e. the magnitude at binindex zero.
 (
-x = {
+{
+	var sig, chain, stream, windowStarts, demand;
 	var fftsize = 1024;
-	var sig, chain, unp;
-	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
+
+	sig = SinOsc.ar(LFDNoise3.kr(LFNoise0.kr(1) * 40 + 60) * 700 + 800);
+
 	chain = FFT(LocalBuf(fftsize), sig);
+	stream = Unpack1FFT(chain, bufsize: fftsize, binindex: 0, whichmeasure: 0);
 
-	unp = Unpack1FFT(chain, b.numFrames, 0, 0);
+	// each time an FFT window starts, the unpacker returns a new value
+	windowStarts = chain > -1;
+	demand = Demand.kr(windowStarts, 0, stream);
+	demand.poll(windowStarts);
 
-	// Demand some data from the unpacker
-	Demand.kr(chain>=0, 0, unp).poll(chain>=0, "unpacked value");
-
-	(sig*0.1).dup;
-}.play(s);
+	sig * 0.05
+}.play
 )
-x.free;
 ::
-

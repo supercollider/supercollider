@@ -46,7 +46,7 @@ SynthDef(\tutorial_Reverb2, { arg outBus = 0, inBus;
 
 // now synths in the groups. The default addAction is \addToHead
 (
-x = Synth(\tutorial_Reverb2, [\inBus, b], ~effects);
+x = Synth(\tutorial_Reverb2, [\inBus, ~bus], ~effects);
 y = Synth(\tutorial_DecaySin2, [\effectBus, ~bus, \outBus, 0], ~sources);
 z = Synth(\tutorial_DecaySin2, [\effectBus, ~bus, \outBus, 0, \freq, 660], ~sources);
 )

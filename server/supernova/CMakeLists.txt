@@ -96,10 +96,14 @@ if(NOVA_SIMD)
     target_include_directories(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries)
 endif()
 
-find_library(DL NAMES dl)
-if(DL)
+if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD|DragonFly|OpenBSD|NetBSD")
     target_compile_definitions(libsupernova PUBLIC DLOPEN)
-    target_link_libraries(libsupernova ${DL})
+else()
+  find_library(DL NAMES dl)
+  if(DL)
+      target_compile_definitions(libsupernova PUBLIC DLOPEN)
+      target_link_libraries(libsupernova ${DL})
+  endif()
 endif()
 
 if(APPLE OR MSYS)
@@ -233,4 +237,12 @@ endif()
 
 if(${JACK_USE_METADATA_API})
     target_compile_definitions(libsupernova PUBLIC "-DSC_JACK_USE_METADATA_API")
+endif()
+
+
+
+if(${LIB_SUFFIX})
+    add_definitions(-DLIB_SUFFIX="${LIB_SUFFIX}")
+else()
+    add_definitions(-DLIB_SUFFIX="")
 endif()

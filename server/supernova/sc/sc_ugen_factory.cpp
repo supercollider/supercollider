@@ -31,6 +31,7 @@
 
 #include "SC_World.h"
 #include "SC_Wire.h"
+#include "ErrorMessage.hpp"
 
 namespace nova {
 
@@ -236,6 +237,24 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
     }
 }
 
+static bool check_api_version( int (*api_version)(), std::string const& filename )
+{
+    using namespace std;
+    using namespace scsynth;
+
+    if (api_version) {
+        int plugin_version = (*api_version)();
+        if (plugin_version == sc_api_version)
+            return true;
+        else
+            cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, plugin_version) << endl;
+    } else {
+        cout << ErrorMessage::apiVersionNotFound(filename) << endl;
+    }
+
+    return false;
+}
+
 #ifdef DLOPEN
 void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
@@ -248,12 +267,8 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     typedef int (*info_function)();
 
     info_function api_version = reinterpret_cast<info_function>(dlsym(handle, "api_version"));
-    int plugin_api_version = 1; // default
-    if (api_version)
-        plugin_api_version = (*api_version)();
 
-    if (plugin_api_version != sc_api_version) {
-        cout << "API Version Mismatch: " << path << endl;
+    if (!check_api_version(api_version, path.string())) {
         dlclose(handle);
         return;
     }
@@ -314,8 +329,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     typedef int (*info_function)();
     info_function api_version = reinterpret_cast<info_function>(GetProcAddress( hinstance, "api_version" ));
 
-    if ((*api_version)() != sc_api_version) {
-        std::cout << "API Version Mismatch: " << filename << std::endl;
+    if (!check_api_version(api_version, filename)) {
         FreeLibrary(hinstance);
         return;
     }

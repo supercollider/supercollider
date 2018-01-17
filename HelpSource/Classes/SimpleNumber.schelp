@@ -67,8 +67,70 @@ Greatest common divisor
 
 method:: round
 Round to multiple of aNumber
+
 method:: roundUp
-round up to a multiply of aNumber
+Round up to a multiple of aNumber. For roundDown use Link::Classes/SimpleNumber#-trunc#trunc::.
+
+method:: trunc
+Truncate to multiple of aNumber (e.g. it rounds numbers down to a multiple of aNumber).
+
+method:: softRound
+Rounds the value to a multiple of strong::resolution::. By using strong::margin:: and strong::strength:: you can control which values will be rounded, and by how much.
+
+Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer. In particular it allows a certain sloppiness close to the strong::resolution:: value.
+
+Note: this method expects values >= 0.
+
+argument::resolution
+Round this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+argument::margin
+Values that are within ±strong::margin:: from a multiple of strong::resolution:: will be left as they are.
+
+E.g. if you chose a resolution value of 0.5 and a margin of 0.01, then the values 0.501 and 0.499 would be left as they are, but the value 0.502 would become 0.5.
+
+This should be a value between 0 and strong::resolution::.
+argument::strength
+Determines the degree to which this number will be changed.
+
+If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
+
+E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
+discussion::
+code::
+((0..10) / 5).collect { |num| [num, num.softRound(1, 0, 1)] };
+((0..10) / 5).collect { |num| [num, num.softRound(1, 0.3, 1)] };
+((0..10) / 5).collect { |num| [num, num.softRound(1, 0, 0.5)] };
+::
+
+method:: snap
+Rounds the values strong::margin:: distance from resolution to a multiple of resolution. By using strong::margin:: and strong::strength:: you can control when values will be rounded, and by how much.
+
+Conceptually this is the equivalent of 'snap' in a graphics program. Values within a certain distance (strong::margin::) from a grid line are snapped to it. All other values are unchanged.
+
+Note: this method expects values >= 0.
+
+argument::resolution
+Snap this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+
+argument::margin
+Only values that are greater ±strong::margin:: from a multiple of strong::resolution:: value will be changed. Values that are less than strong::margin:: will be unchanged.
+
+E.g. if you chose a resolution value of 0.5 and a margin of 0.01, then the values 0.501 and 0.499 would be snapped to 0.5, but the value 0.502 would be unchanged.
+
+This should be a value between 0 and strong::resolution::.
+
+argument::strength
+Determines the degree to which this number will be changed.
+
+If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
+
+E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
+discussion::
+code::
+((0..10) / 5).collect { |num| [num, num.snap(1, 0, 1)] };
+((0..10) / 5).collect { |num| [num, num.snap(1, 0.3, 1)] };
+((0..10) / 5).collect { |num| [num, num.snap(1, 0, 0.5)] };
+::
 
 method:: thresh
 
@@ -79,9 +141,6 @@ method:: max
 Maximum
 
 method:: wrap2
-
-method:: trunc
-Truncate to multiple of aNumber
 
 method:: atan2
 Arctangent of (this/aNumber)
@@ -307,20 +366,27 @@ method:: asAudioRateInput
 Converts this into an audiorate input.
 
 method:: asTimeString
-Compile a time string.
+Produces a time string in the format code::ddd:hh:mm:ss.sss::, interpreting the receiver as time in
+seconds. See link::String#-asSecs:: for the inverse function.
 argument:: precision
-how accurate
+accuracy of the millisecond format; the string will always be formatted with 3 decimal places for
+milliseconds. Minimum value: 0.001.
 argument::maxDays
-the maximum number of days
+maximum number of days
 argument::dropDaysIfPossible
-a link::Classes/Boolean::
-returns:: a string corresponding to the hours:minutes:seconds based on the receiver as number of seconds
+a link::Classes/Boolean::. If set to code::true::, and the number of days in the formatted string
+would be 0, that section is instead ommitted and the string is formatted as code::hh:mm:ss.sss::.
 discussion::
 code::
 (
 var start;
 start = Main.elapsedTime;
-{ loop({(Main.elapsedTime - start).asTimeString.postln; 0.05.wait}) }.fork;
+{
+	loop {
+		(Main.elapsedTime - start).asTimeString.postln;
+		0.05.wait
+	}
+}.fork;
 )
 ::
 
@@ -566,10 +632,8 @@ code::
 
 ::
 
-
-
 method:: quantize
-round the receiver to the quantum.
+Deprecated. Round the receiver to the quantum. If you're looking for MIDI quantization type features use CODE::SimpleNumber#-softRound::
 argument::quantum
 amount.
 argument::tolerance

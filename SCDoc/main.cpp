@@ -12,6 +12,7 @@ void error(const char *fmt, ...)
     va_start(vargs, fmt);
     vfprintf(stderr, fmt, vargs);
     fflush(stderr);
+    va_end(vargs);
 }
 
 void post(const char *fmt, ...)
@@ -20,6 +21,7 @@ void post(const char *fmt, ...)
     va_start(vargs, fmt);
     vfprintf(stderr, fmt, vargs);
     fflush(stderr);
+    va_end(vargs);
 }
 
 int main(int argc, char **argv)

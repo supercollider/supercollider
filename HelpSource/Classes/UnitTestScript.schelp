@@ -1,0 +1,56 @@
+TITLE:: UnitTestScript
+summary:: run test scripts
+categories:: Testing
+related:: Classes/UnitTest, Classes/UnitTestResult
+
+DESCRIPTION::
+In order to make sure a method works correctly, a test can be implemented that assures the correct behavior.
+
+It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run.
+
+Test scripts are simply plain text files ending with TELETYPE::_unittest.scd::, which are interpreted.
+Scripts may be located next to a class in the classpath or one folder below.
+If they return a function, the code::UnitTestScript:: is passed in, allowing to call methods like assert etc. (see link::Classes/UnitTest::)
+
+code::UnitTestScript:: mimics some of the behavior of link::Classes/Method::, to be compatible with link::Classes/UnitTest::.
+
+
+
+
+
+
+CLASSMETHODS::
+PRIVATE:: initClass, findTestScripts, new, findTestMethods, allScripts, runTest
+
+INSTANCEMETHODS::
+
+PRIVATE:: name, path, init, runScript
+
+EXAMPLES::
+
+An example script
+
+NOTE::
+This should be in a file TELETYPE::myUnitTest_unittest.scd::
+::
+
+code::
+{ |test|
+	"Kant test".postln;
+	"5 + 7 = ".post;
+	(5 + 7).postln;
+	test.assertEquals(5 + 7, 12, "five plus seven should always be twelve");
+}
+::
+
+To run only the test scripts:
+
+code::
+UnitTestScript.run;
+::
+
+The scripts are to be found under the class UnitTestScript in the GUI:
+
+code::
+UnitTest.gui
+::

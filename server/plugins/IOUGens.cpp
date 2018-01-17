@@ -65,7 +65,7 @@ struct OffsetOut : public IOUnit
 	bool m_empty;
 };
 
-struct AudioControl : public Unit
+struct AudioControl : public IOUnit
 {
 	float *prevVal; // this will have to be a pointer later!
 };
@@ -189,6 +189,12 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 	uint32 numChannels = unit->mNumOutputs;
 	float *prevVal = unit->prevVal;
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+	World *world = unit->mWorld;
+	int32 bufCounter = world->mBufCounter;
+	
+	int32 *touched = world->mAudioBusTouched;
+	int32 *channelOffsets = unit->mParent->mAudioBusOffsets;
+
 	for(uint32 i = 0; i < numChannels; ++i, mapin++){
 		float *out = OUT(i);
 		int *mapRatep;
@@ -212,7 +218,29 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 				}
 				unit->prevVal[i] = curVal;
 			} break;
-			case 2 : Copy(inNumSamples, out, *mapin);
+				// case 2 - AudioControl is in effect
+			case 2 : {
+				/*
+					the graph / unit stores which controls (based on special index) are mapped
+					to which audio buses this is needed to access the touched values for when
+					an audio bus has been written to last. bufCounter is the current value for the
+					control period (basically, the number of control periods that have elapsed
+					since the server started). We check the touched value for the mapped audio
+					bus to see if it has been written to in the current control period or the
+					previous control period (to enable an InFeedback type of mapping)...
+				*/
+				int thisChannelOffset = channelOffsets[unit->mSpecialIndex + i];
+				//  ... are we good to write? Copy! or ...
+				if((thisChannelOffset >= 0) &&
+					((touched[thisChannelOffset] == bufCounter) ||
+					 (touched[thisChannelOffset] == bufCounter - 1)
+					 )){
+						Copy(inNumSamples, out, *mapin);
+					} else {
+						//  ... old data, so zero it out.
+						Fill(inNumSamples, out, 0.f);
+					}
+				}
 			break;
 		}
 	}
@@ -230,6 +258,10 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 	curVal = prevVal[0];
 	mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
 	mapRate = mapRatep[0];
+	World *world = unit->mWorld;
+	int32 *touched = world->mAudioBusTouched;
+	int32 bufCounter = world->mBufCounter;
+	int32 *channelOffsets = unit->mParent->mAudioBusOffsets;
 
 	switch (mapRate) {
 		case 0 : {
@@ -243,11 +275,23 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 			for(int i = 0; i < inNumSamples; i++){
 				out[i] = curVal;
 				curVal += valSlope;
-				}
+			}
 			unit->prevVal[0] = curVal;
 		} break;
-		case 2 :
-		    Copy(inNumSamples, out, *mapin);
+			/*
+			 see case 2 comments above in definition for AudioControl_next_k
+			 */
+		case 2 : {
+			int thisChannelOffset = channelOffsets[unit->mSpecialIndex];
+			if((thisChannelOffset >= 0) &&
+				((touched[thisChannelOffset] == bufCounter) ||
+				(touched[thisChannelOffset] == bufCounter - 1)
+				)){
+					Copy(inNumSamples, out, *mapin);
+				} else {
+					Fill(inNumSamples, out, 0.f);
+				}
+		}
 		break;
 	}
 

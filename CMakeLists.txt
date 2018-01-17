@@ -37,6 +37,32 @@ CONFIGURE_FILE(
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
+# workaround for using ccache with Xcode generator
+# thanks to Craig Scott: https://crascit.com/2016/04/09/using-ccache-with-cmake/
+get_property(RULE_LAUNCH_COMPILE GLOBAL PROPERTY RULE_LAUNCH_COMPILE)
+if(RULE_LAUNCH_COMPILE AND CMAKE_GENERATOR STREQUAL "Xcode")
+
+    # find ccache
+    find_program(CCACHE_PROGRAM ccache)
+
+    message(STATUS "Xcode and ccache detected: using ccache to speed up build process")
+
+    # Set up wrapper scripts
+    set(SC_LAUNCH_C_SCRIPT   "${CMAKE_BINARY_DIR}/launch-c")
+    set(SC_LAUNCH_CXX_SCRIPT "${CMAKE_BINARY_DIR}/launch-cxx")
+
+    configure_file("cmake_modules/launch-c.in"   launch-c)
+    configure_file("cmake_modules/launch-cxx.in" launch-cxx)
+    execute_process(COMMAND chmod a+rx "${SC_LAUNCH_C_SCRIPT}" "${SC_LAUNCH_CXX_SCRIPT}")
+
+    # Set Xcode project attributes to route compilation and linking
+    # through our scripts
+    set(CMAKE_XCODE_ATTRIBUTE_CC         "${SC_LAUNCH_C_SCRIPT}")
+    set(CMAKE_XCODE_ATTRIBUTE_CXX        "${SC_LAUNCH_CXX_SCRIPT}")
+    set(CMAKE_XCODE_ATTRIBUTE_LD         "${SC_LAUNCH_C_SCRIPT}")
+    set(CMAKE_XCODE_ATTRIBUTE_LDPLUSPLUS "${SC_LAUNCH_CXX_SCRIPT}")
+endif()
+
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
@@ -173,7 +199,7 @@ endif (SC_QT)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
+if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
 else()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
