@@ -363,6 +363,7 @@ void realtime_engine_functor::log_printf_(const char * fmt, ...)
     va_list vargs;
     va_start(vargs, fmt);
     instance->log_printf(fmt, vargs);
+    va_end(vargs);
 }
 
 

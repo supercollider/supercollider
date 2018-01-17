@@ -277,6 +277,7 @@ struct scratchpad_printer
         va_list vargs;
         va_start(vargs, fmt);
         printf(fmt, vargs);
+        va_end(vargs);
     }
 
     const char * data(void) const

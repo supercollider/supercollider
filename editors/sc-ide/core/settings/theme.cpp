@@ -303,7 +303,7 @@ void Theme::save()
     while (i != mFormats.end()) {
         QTextCharFormat fm = *i.value();
         mSettings->setValue(i.key(), QVariant::fromValue<QTextCharFormat>(fm));
-        i++;
+        ++i;
     }
     mSettings->endGroup();
 }

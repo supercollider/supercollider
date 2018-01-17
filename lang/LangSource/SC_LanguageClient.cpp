@@ -393,6 +393,7 @@ void post(const char *fmt, ...)
     va_list ap;
     va_start(ap, fmt);
 	vpost(fmt, ap);
+    va_end(ap);
 }
 
 void postfl(const char *fmt, ...)
@@ -406,6 +407,7 @@ void postfl(const char *fmt, ...)
 		if (client) client->postFlush(buf, sc_min(n, sizeof(buf) - 1));
 		SC_LanguageClient::unlockInstance();
 	}
+    va_end(ap);
 }
 
 void postText(const char *str, long len)
@@ -433,6 +435,7 @@ void error(const char *fmt, ...)
 		if (client) client->postError(buf, sc_min(n, sizeof(buf) - 1));
 		SC_LanguageClient::unlockInstance();
 	}
+    va_end(ap);
 }
 
 void flushPostBuf(void)
