@@ -87,7 +87,7 @@ build_script:
 
 # after_build instead of before_deploy so artifacts are collected at the right time
 after_build:
-- ps: $env:ARCHIVE_NAME="SC-Windows-$env:ARCH$-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $env:ARCHIVE_NAME="SC-Windows-$env:ARCH-$env:APPVEYOR_REPO_COMMIT.zip"
 - ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/$env:ARCHIVE_NAME"
 - ps: $env:FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$env:S3_URL'"" /></head></html>"
 - ps: $env:BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
