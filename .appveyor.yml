@@ -100,14 +100,15 @@ after_build:
 - ps: Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider . -Recurse
 - ps: 7z a $env:ARCHIVE_NAME -tzip SuperCollider
 - ps: rmdir -Recurse -Force SuperCollider
-- ps: echo $env:APPVEYOR_REPO_TAG_NAME
 - ps: >-
     If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
         # required for github releases
-        git fetch --tags
+        git fetch --tags https://github.com/supercollider/supercollider
         $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
         echo $env:FWD_HTML > $env:TAG_ESC.html
         cd ../build
+        which nsis
+        $env:PATH="C:\Program Files (x86)\NSIS;$env:PATH"
         cmake --build . --target installer --config Release
         ls .
         ls Install
