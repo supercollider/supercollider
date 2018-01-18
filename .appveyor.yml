@@ -87,25 +87,25 @@ build_script:
 after_build:
 # required for github releases
 - git fetch --tags
-- ps: $S3_BUILDS_LOCATION="builds/supercollider/supercollider/win"
-- ps: $S3_URL="https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$env:APPVEYOR_REPO_COMMIT.zip"
-- ps: $FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$S3_URL'"" /></head></html>"
-- ps: $BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
+- ps: $env:S3_BUILDS_LOCATION="builds/supercollider/supercollider/win"
+- ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/SC-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $env:FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$env:S3_URL'"" /></head></html>"
+- ps: $env:BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
 - ps: cd $env:APPVEYOR_BUILD_FOLDER
 - ps: mkdir artifacts/branch
-- ps: echo $FWD_HTML > artifacts/$BRANCH_ESC-latest.html
+- ps: echo $env:FWD_HTML > artifacts/$env:BRANCH_ESC-latest.html
 - ps: ls artifacts
 - ps: 7z a artifacts/SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 build/Install/SuperCollider
 - ps: echo $env:APPVEYOR_REPO_TAG_NAME
 - ps: >-
     If ($env:APPVEYOR_REPO_TAG_NAME -ne "") {
-        $TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
+        $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
         mkdir artifacts/tag
-        echo $FWD_HTML > artifacts/$TAG_ESC.html
+        echo $env:FWD_HTML > artifacts/$env:TAG_ESC.html
     }
 
 after_deploy:
-- cmd: echo S3 Build Location = %S3_URL%
+- ps: echo S3 Build Location = $env:S3_URL
 
 artifacts:
     - path: artifacts
