@@ -98,7 +98,7 @@ before_deploy:
     }
 
 after_deploy:
-- echo "S3 Build Location: %S3_URL%"
+- cmd: echo S3 Build Location: %S3_URL%
 
 artifacts:
     - path: %USERPROFILE%/artifacts
