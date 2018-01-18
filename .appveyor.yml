@@ -87,21 +87,22 @@ before_deploy:
 - ps: $S3_URL="https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$env:APPVEYOR_REPO_COMMIT.zip"
 - ps: $FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$S3_URL'"" /></head></html>"
 - ps: $BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
-- ps: mkdir $env:USERPROFILE/artifacts/branch
-- ps: echo $FWD_HTML > $env:USERPROFILE/artifacts/$BRANCH_ESC-latest.html
-- ps: 7z a $env:USERPROFILE/artifacts/SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider
+- ps: cd $env:APPVEYOR_BUILD_FOLDER
+- ps: mkdir artifacts/branch
+- ps: echo $FWD_HTML > artifacts/$BRANCH_ESC-latest.html
+- ps: 7z a artifacts/SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 build/Install/SuperCollider
 - ps: >-
     If ($env:APPVEYOR_REPO_TAG_NAME -ne "") {
         $TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
-        mkdir $env:USERPROFILE/artifacts/tag
-        echo $FWD_HTML > $env:USERPROFILE/artifacts/$TAG_ESC.html
+        mkdir artifacts/tag
+        echo $FWD_HTML > artifacts/$TAG_ESC.html
     }
 
 after_deploy:
 - cmd: echo S3 Build Location = %S3_URL%
 
 artifacts:
-    - path: %USERPROFILE%/artifacts
+    - path: artifacts
       name: art_folder
 
 deploy:
