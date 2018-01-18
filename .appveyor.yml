@@ -24,11 +24,13 @@ environment:
           CMAKE_GENERATOR: "Visual Studio 12 2013"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
 
         - QT_DIR: "C:/Qt/5.5/msvc2013_64"
           CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
           ARCH: "x64"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
 
 install:
 - ps: echo "Install phase start"
@@ -85,27 +87,31 @@ build_script:
 
 # after_build instead of before_deploy so artifacts are collected at the right time
 after_build:
-# required for github releases
-- git fetch --tags
-- ps: $env:S3_BUILDS_LOCATION="builds/supercollider/supercollider/win"
 - ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/SC-$env:APPVEYOR_REPO_COMMIT.zip"
 - ps: $env:FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$env:S3_URL'"" /></head></html>"
 - ps: $env:BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
 - ps: cd $env:APPVEYOR_BUILD_FOLDER
-- ps: mkdir artifacts/branch
-- ps: echo $env:FWD_HTML > artifacts/$env:BRANCH_ESC-latest.html
-- ps: ls artifacts
-- ps: 7z a artifacts/SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 build/Install/SuperCollider
+
+- echo "Making artifacts"
+- ps: mkdir artifacts
+- ps: cd artifacts
+- ps: echo $env:FWD_HTML > $env:BRANCH_ESC-latest.html
+- ps: Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider . -Recurse
+- ps: 7z a SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 SuperCollider
+- ps: rmdir -Recurse -Force SuperCollider
 - ps: echo $env:APPVEYOR_REPO_TAG_NAME
 - ps: >-
-    If ($env:APPVEYOR_REPO_TAG_NAME -ne "") {
+    # PS way to test if an env var is defined
+    If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
+        # required for github releases
+        git fetch --tags
         $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
-        mkdir artifacts/tag
-        echo $env:FWD_HTML > artifacts/$env:TAG_ESC.html
+        echo $env:FWD_HTML > $env:TAG_ESC.html
     }
+- ps: cd ..
 
 after_deploy:
-- ps: echo S3 Build Location = $env:S3_URL
+- ps: echo "S3 Build Location = $env:S3_URL"
 
 artifacts:
     - path: artifacts
