@@ -87,7 +87,8 @@ build_script:
 
 # after_build instead of before_deploy so artifacts are collected at the right time
 after_build:
-- ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/SC-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $env:ARCHIVE_NAME="SC-Windows-$env:ARCH$-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/$env:ARCHIVE_NAME"
 - ps: $env:FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$env:S3_URL'"" /></head></html>"
 - ps: $env:BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
 - ps: cd $env:APPVEYOR_BUILD_FOLDER
@@ -97,7 +98,7 @@ after_build:
 - ps: cd artifacts
 - ps: echo $env:FWD_HTML > $env:BRANCH_ESC-latest.html
 - ps: Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider . -Recurse
-- ps: 7z a SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 SuperCollider
+- ps: 7z a $env:ARCHIVE_NAME -tzip SuperCollider
 - ps: rmdir -Recurse -Force SuperCollider
 - ps: echo $env:APPVEYOR_REPO_TAG_NAME
 - ps: >-
@@ -108,6 +109,8 @@ after_build:
         echo $env:FWD_HTML > $env:TAG_ESC.html
         cd ../build
         cmake --build . --target installer --config Release
+        ls .
+        ls Install
     }
 - ps: cd ..
 
@@ -117,7 +120,7 @@ after_deploy:
 artifacts:
     - path: artifacts
       name: art_folder
-    - path: build/Install/*.exe
+    - path: build\Install\*.exe
       name: installer
       type: File
 
