@@ -108,10 +108,10 @@ artifacts:
 deploy:
 # s3 upload - every commit
 - provider: S3
-  access_key_id: %AWS_KEY%
-  secret_access_key: %AWS_SECRET%
+  access_key_id: $(AWS_KEY)
+  secret_access_key: $(AWS_SECRET)
   bucket: supercollider
-  folder: %S3_BUILDS_LOCATION%
+  folder: $(S3_BUILDS_LOCATION)
   artifact: art_folder
   unzip: true
   set_public: true
