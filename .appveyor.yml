@@ -103,15 +103,14 @@ after_build:
 - ps: >-
     If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
         # required for github releases
-        git fetch --tags https://github.com/supercollider/supercollider
+        # -q because otherwise PS reads output from stderr and thinks there's a problem
+        git fetch --tags -q
         $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
         echo $env:FWD_HTML > $env:TAG_ESC.html
         cd ../build
-        which nsis
+        # to get NSIS in path for installer generation
         $env:PATH="C:\Program Files (x86)\NSIS;$env:PATH"
         cmake --build . --target installer --config Release
-        ls .
-        ls Install
     }
 - ps: cd ..
 
