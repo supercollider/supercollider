@@ -11,6 +11,9 @@ clone_depth: 10
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
 image: Visual Studio 2013
 
+# disable automatic tests
+test: off
+
 environment:
     CMAKE_CONFIGURATION: Release
     ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
@@ -80,7 +83,8 @@ build_script:
 - cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
-before_deploy:
+# after_build instead of before_deploy so artifacts are collected at the right time
+after_build:
 # required for github releases
 - git fetch --tags
 - ps: $S3_BUILDS_LOCATION="builds/supercollider/supercollider/win"
@@ -115,8 +119,6 @@ deploy:
   artifact: art_folder
   unzip: true
   set_public: true
-  on:
-    all_branches: true
 
 notifications:
     - provider: Webhook
