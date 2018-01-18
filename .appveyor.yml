@@ -101,7 +101,6 @@ after_build:
 - ps: rmdir -Recurse -Force SuperCollider
 - ps: echo $env:APPVEYOR_REPO_TAG_NAME
 - ps: >-
-    # PS way to test if an env var is defined
     If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
         # required for github releases
         git fetch --tags
