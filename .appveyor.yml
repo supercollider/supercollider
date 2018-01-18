@@ -80,6 +80,43 @@ build_script:
 - cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
+before_deploy:
+# required for github releases
+- git fetch --tags
+- ps: $S3_BUILDS_LOCATION="builds/supercollider/supercollider/win"
+- ps: $S3_URL="https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$S3_URL'"" /></head></html>"
+- ps: $BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
+- ps: mkdir $env:USERPROFILE/artifacts/branch
+- ps: echo $FWD_HTML > $env:USERPROFILE/artifacts/$BRANCH_ESC-latest.html
+- ps: 7z a $env:USERPROFILE/artifacts/SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider
+- ps: >-
+    If ($env:APPVEYOR_REPO_TAG_NAME -ne "") {
+        $TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
+        mkdir $env:USERPROFILE/artifacts/tag
+        echo $FWD_HTML > $env:USERPROFILE/artifacts/$TAG_ESC.html
+    }
+
+after_deploy:
+- echo "S3 Build Location: %S3_URL%"
+
+artifacts:
+    - path: %USERPROFILE%/artifacts
+      name: art_folder
+
+deploy:
+# s3 upload - every commit
+- provider: S3
+  access_key_id: %AWS_KEY%
+  secret_access_key: %AWS_SECRET%
+  bucket: supercollider
+  folder: %S3_BUILDS_LOCATION%
+  artifact: art_folder
+  unzip: true
+  set_public: true
+  on:
+    all_branches: true
+
 notifications:
     - provider: Webhook
       url: https://webhooks.gitter.im/e/0f811b8a74efd99f4a4e
