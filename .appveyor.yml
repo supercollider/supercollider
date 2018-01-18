@@ -106,7 +106,7 @@ after_build:
         git fetch --tags
         $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
         echo $env:FWD_HTML > $env:TAG_ESC.html
-        cd build
+        cd ../build
         cmake --build . --target installer --config Release
     }
 - ps: cd ..
