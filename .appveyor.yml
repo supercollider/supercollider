@@ -106,6 +106,8 @@ after_build:
         git fetch --tags
         $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
         echo $env:FWD_HTML > $env:TAG_ESC.html
+        cd build
+        cmake --build . --target installer --config Release
     }
 - ps: cd ..
 
@@ -115,18 +117,33 @@ after_deploy:
 artifacts:
     - path: artifacts
       name: art_folder
+    - path: build/Install/*.exe
+      name: installer
+      type: File
 
 deploy:
 # s3 upload - every commit
 - provider: S3
-  access_key_id: $(AWS_KEY)
-  secret_access_key: $(AWS_SECRET)
+  access_key_id:
+    secure: DkLynQIGT6YN1PM45y9iIPTd2pdM4worHlbS5mXNtFI=
+  secret_access_key:
+    secure: qD/tbccsTj6FefmdbotjKPtSlvseXhIXsy84DDhuojOxPKz/e5unqeip6onNCI4X
   bucket: supercollider
   region: us-west-2
   folder: $(S3_BUILDS_LOCATION)
   artifact: art_folder
   unzip: true
   set_public: true
+
+# github releases - only tags
+- provider: GitHub
+  description: appveyor_$(APPVEYOR_REPO_TAG_NAME)
+  artifact: installer
+  auth_token:
+    secure: rxXJNY+6n25Th9R4+7qI+AcnTj0wCAMSnBGH2+5s7DlVLrAGsSY6+EEDbeHWGGeI
+  prerelease: true
+  on:
+    appveyor_repo_tag: true
 
 notifications:
     - provider: Webhook
