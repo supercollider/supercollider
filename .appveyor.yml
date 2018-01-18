@@ -94,7 +94,9 @@ after_build:
 - ps: cd $env:APPVEYOR_BUILD_FOLDER
 - ps: mkdir artifacts/branch
 - ps: echo $FWD_HTML > artifacts/$BRANCH_ESC-latest.html
+- ps: ls artifacts
 - ps: 7z a artifacts/SC-$env:APPVEYOR_REPO_COMMIT.zip -tzip -mx=9 build/Install/SuperCollider
+- ps: echo $env:APPVEYOR_REPO_TAG_NAME
 - ps: >-
     If ($env:APPVEYOR_REPO_TAG_NAME -ne "") {
         $TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
@@ -115,6 +117,7 @@ deploy:
   access_key_id: $(AWS_KEY)
   secret_access_key: $(AWS_SECRET)
   bucket: supercollider
+  region: us-west-2
   folder: $(S3_BUILDS_LOCATION)
   artifact: art_folder
   unzip: true
