@@ -143,5 +143,6 @@ Git {
 				gitIsInstalled = false;
 			});
 		})
+		^gitIsInstalled;
 	}
 }
