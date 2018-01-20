@@ -3,6 +3,8 @@
 BasicOpUGen : UGen {
 	var <operator;
 
+	isPureUGen { ^true }
+
 //	writeName { arg file;
 //		var name, opname;
 //		name = this.class.name.asString;

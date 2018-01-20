@@ -499,14 +499,17 @@ UGen : AbstractFunction {
 		^outStack.add(this);
 	}
 
-	optimizeGraph {}
+	optimizeGraph { ^this.performDeadCodeElimination }
 
 	dumpName {
 		^synthIndex.asString ++ "_" ++ this.class.name.asString
 	}
 
+	// UGens are assumed to be non-pure unless they contradict this
+	isPureUGen { ^false }
+
 	performDeadCodeElimination {
-		if (descendants.size == 0) {
+		if (this.isPureUGen and: { descendants.size == 0 }) {
 			this.inputs.do {|a|
 				if (a.isKindOf(UGen)) {
 					a.descendants.remove(this);

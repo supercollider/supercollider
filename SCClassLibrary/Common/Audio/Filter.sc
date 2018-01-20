@@ -1,4 +1,5 @@
 Filter : PureUGen {
+	isPureUGen { ^true }
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
