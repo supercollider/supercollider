@@ -505,6 +505,12 @@ UGen : AbstractFunction {
 		^synthIndex.asString ++ "_" ++ this.class.name.asString
 	}
 
+	// a pure ugen is one which has no side effect
+	// side effect = bus or buffer writing, doneAction, sending OSC or posting
+	// pure ugens may be considered for dead code elimination
+	// non-pure ugens must stay in place because you might need the side effect
+	// read access to buffers/busses are allowed
+
 	// UGens are assumed to be non-pure unless they contradict this
 	isPureUGen { ^false }
 
@@ -520,15 +526,6 @@ UGen : AbstractFunction {
 			^true;
 		};
 		^false
-	}
-}
-
-// ugen which has no side effect and can therefore be considered for a dead code elimination
-// read access to buffers/busses are allowed
-
-PureUGen : UGen {
-	optimizeGraph {
-		super.performDeadCodeElimination
 	}
 }
 
@@ -562,12 +559,6 @@ MultiOutUGen : UGen {
 		channels.do({ arg output; output.synthIndex_(index); });
 	}
 
-}
-
-PureMultiOutUGen : MultiOutUGen {
-	optimizeGraph {
-		super.performDeadCodeElimination
-	}
 }
 
 OutputProxy : UGen {

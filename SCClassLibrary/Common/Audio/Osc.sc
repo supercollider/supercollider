@@ -8,7 +8,7 @@
 		add - add to signal or scalar
 */
 
-Osc : PureUGen {
+Osc : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -20,7 +20,7 @@ Osc : PureUGen {
 	}
 }
 
-SinOsc : PureUGen {
+SinOsc : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -32,7 +32,7 @@ SinOsc : PureUGen {
 	}
 }
 
-SinOscFB : PureUGen {
+SinOscFB : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq=440.0, feedback=0.0, mul=1.0, add=0.0;
@@ -44,7 +44,7 @@ SinOscFB : PureUGen {
 	}
 }
 
-OscN : PureUGen {
+OscN : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -57,7 +57,7 @@ OscN : PureUGen {
 }
 
 
-VOsc : PureUGen {
+VOsc : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
@@ -69,7 +69,7 @@ VOsc : PureUGen {
 	}
 }
 
-VOsc3 : PureUGen {
+VOsc3 : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
@@ -81,7 +81,7 @@ VOsc3 : PureUGen {
 	}
 }
 
-COsc : PureUGen {
+COsc : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;
@@ -93,7 +93,7 @@ COsc : PureUGen {
 	}
 }
 
-Formant : PureUGen {
+Formant : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg fundfreq = 440.0, formfreq = 1760.0, bwfreq = 880.0, mul = 1.0, add = 0.0;
@@ -101,7 +101,7 @@ Formant : PureUGen {
 	}
 }
 
-LFSaw : PureUGen {
+LFSaw : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
@@ -141,7 +141,7 @@ LFGauss : UGen {
 
 }
 
-LFPulse : PureUGen {
+LFPulse : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
@@ -154,7 +154,7 @@ LFPulse : PureUGen {
 	signalRange { ^\unipolar }
 }
 
-VarSaw : PureUGen {
+VarSaw : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
@@ -166,7 +166,7 @@ VarSaw : PureUGen {
 	}
 }
 
-Impulse : PureUGen {
+Impulse : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
@@ -180,7 +180,7 @@ Impulse : PureUGen {
 }
 
 
-SyncSaw : PureUGen {
+SyncSaw : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg syncFreq = 440.0, sawFreq = 440.0, mul = 1.0, add = 0.0;
@@ -205,7 +205,7 @@ SyncSaw : PureUGen {
 //	signalRange { ^\unipolar }
 //}
 
-Index : PureUGen {
+Index : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
@@ -232,7 +232,7 @@ Shaper : Index {
 IndexL : Index {
 }
 
-DegreeToKey : PureUGen {
+DegreeToKey : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg bufnum, in = 0.0, octave = 12.0, mul = 1.0, add = 0.0;
@@ -244,7 +244,7 @@ DegreeToKey : PureUGen {
 	}
 }
 
-Select : PureUGen {
+Select : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg which, array;
@@ -313,7 +313,7 @@ SelectXFocus {
 	}
 }
 
-Vibrato : PureUGen {
+Vibrato : UGen {
 	isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,

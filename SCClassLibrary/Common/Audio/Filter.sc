@@ -1,4 +1,4 @@
-Filter : PureUGen {
+Filter : UGen {
 	isPureUGen { ^true }
 	checkInputs { ^this.checkSameRateAsFirstInput }
 }
