@@ -48,21 +48,9 @@ public:
 		incrementGC();
 	}
 	
-	NewPyrObjectPtr(NewPyrObjectPtr&other) : mPyrObj(other.mPyrObj), mMadeReachable(other.mMadeReachable), mGC(other.mGC) // copy constructor, do we need? might be problematic
-	{
-		
-	}
+	NewPyrObjectPtr(NewPyrObjectPtr&other) = delete; // no copy constructor
 	
-	NewPyrObjectPtr& operator=(NewPyrObjectPtr &other) // assignment operator, why doesn't this work?
-	{
-		if (this == &other) return *this;
-		mPyrObj = other.mPyrObj;
-		mMadeReachable = other.mMadeReachable;
-		mGC = other.mGC;
-		other.mMadeReachable = true; // there can be only one...
-		other.mPyrObj = 0;
-		return *this;
-	}
+	NewPyrObjectPtr& operator=(NewPyrObjectPtr &other) = delete; // no assignment operator
 	
 	operator bool() const // test for nullptr/if object has been set
 	{
