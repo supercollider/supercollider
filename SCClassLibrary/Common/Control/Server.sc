@@ -993,9 +993,9 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".postln;
+			"quit done".postln;
 		} {
-			"'/quit' sent\n".postln;
+			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
 		pid = nil;
