@@ -131,9 +131,6 @@ static void string_popen_thread_func(struct sc_process *process)
 	res = sc_pclose(stream, pid);
 	res = WEXITSTATUS(res);
 
-	if(process->postOutput)
-		postfl("RESULT = %d\n", res);
-
 	delete process;
 
 	gLangMutex.lock();
