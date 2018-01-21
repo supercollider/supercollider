@@ -903,7 +903,7 @@ Server {
 		this.connectSharedMemory;
 	}
 
-	onServerProcessExit { |exitCode|
+	prOnServerProcessExit { |exitCode|
 		"Server '%' exited with exit code %."
 			.format(this.name, exitCode)
 			.postln;
@@ -919,7 +919,7 @@ Server {
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
-				this.onServerProcessExit(exitCode);
+				this.prOnServerProcessExit(exitCode);
 			});
 			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
