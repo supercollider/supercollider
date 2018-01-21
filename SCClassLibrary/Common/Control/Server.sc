@@ -912,7 +912,7 @@ Server {
 
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".postln;
+			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 			onComplete.value;
@@ -921,7 +921,7 @@ Server {
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
 				this.prOnServerProcessExit(exitCode);
 			});
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
+			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
 	}
@@ -993,7 +993,7 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done".postln;
+			"Internal server has quit.".postln;
 		} {
 			"'/quit' message sent to server '%'.".format(name).postln;
 		};
