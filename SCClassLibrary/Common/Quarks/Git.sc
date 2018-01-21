@@ -1,4 +1,3 @@
-
 Git {
 	var <>localPath, >url, tag, sha, remoteLatest, tags;
 	classvar gitIsInstalled;
@@ -130,18 +129,19 @@ Git {
 	}
 	*checkForGit {
 		var gitFind;
-		if(gitIsInstalled.isNil, {
-			if(thisProcess.platform.name !== 'windows', {
+		if(gitIsInstalled.isNil) {
+			if(thisProcess.platform.name !== 'windows') {
 				gitFind = "which git";
-			}, {
+			} {
 				gitFind = "where git";
-			});
+			};
 			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;
 				gitIsInstalled = false;
 			});
-		})
+		};
+		^gitIsInstalled
 	}
 }
