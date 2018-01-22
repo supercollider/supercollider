@@ -49,7 +49,7 @@ class SclangPageGeneric : public QWidget
 
 public:
 
-    SclangPageGeneric(QWidget *parent = 0) :
+    explicit SclangPageGeneric(QWidget *parent = 0) :
         QWidget(parent),
         ui( new ui_type )
     {

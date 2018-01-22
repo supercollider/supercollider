@@ -38,7 +38,7 @@
 
 namespace ScIDE { namespace Settings {
 
-SclangProjectPage::SclangProjectPage(QWidget *parent) : SclangPageGeneric<Ui::SclangProjectConfigPage>::SclangPageGeneric(parent)
+SclangProjectPage::SclangProjectPage(QWidget *parent) : SclangPageGeneric(parent)
 {
     connect(ui->sclang_add_include, SIGNAL(clicked()), this, SLOT(addIncludePath()));
     connect(ui->sclang_add_exclude, SIGNAL(clicked()), this, SLOT(addExcludePath()));
@@ -57,7 +57,9 @@ void SclangProjectPage::loadLocal( Manager *s, Session *session, bool useLanguag
 {
     SclangPageGeneric::loadLocal(s);
 
-    selectedLanguageConfigFile = ((useLanguageConfigFromSession && session != nullptr) ? (SettingsInterface *) session : (SettingsInterface *) s)->getConfigFile();
+    selectedLanguageConfigFile = ((useLanguageConfigFromSession && session != nullptr) ?
+                                      static_cast<SettingsInterface *>(session)
+                                    : static_cast<SettingsInterface *>(s))->getConfigFile();
     QString tempLanguageConfigFileDir = QFileInfo(selectedLanguageConfigFile).canonicalPath();
     qSelectedLanguageConfigFileDir = QDir(tempLanguageConfigFileDir);
     selectedLanguageConfigFileDir = tempLanguageConfigFileDir.toStdString();

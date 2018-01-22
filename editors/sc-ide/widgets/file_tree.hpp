@@ -34,7 +34,7 @@ class FileTreeWidget : public QTreeView
     Q_OBJECT
 
 public:
-    FileTreeWidget(QWidget * parent = 0);
+    explicit FileTreeWidget(QWidget * parent = 0);
     void setRoot(const QString& path);
 
 public Q_SLOTS:
@@ -54,7 +54,7 @@ class FileTreeDocklet : public Docklet
 {
     Q_OBJECT
 public:
-    FileTreeDocklet(QWidget* parent = 0);
+    explicit FileTreeDocklet(QWidget* parent = 0);
     FileTreeWidget *tree() { return mFileTree; }
     void setRoot(const QString &dir, const QString &title);
 

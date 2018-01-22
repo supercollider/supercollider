@@ -40,7 +40,7 @@ class SclangPage : public SclangPageGeneric<Ui::SclangConfigPage>
     Q_OBJECT
 
 public:
-    SclangPage(QWidget *parent = 0);
+    explicit SclangPage(QWidget *parent = 0);
     void loadLocal(Manager *, Session *, bool);
 
 public Q_SLOTS:

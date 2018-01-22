@@ -580,7 +580,6 @@ void MainWindow::createMenus()
     QMenuBar *menuBar;
     QMenu *menu;
     QMenu *submenu;
-    QAction *action;
 
     // On Mac, create a parent-less menu bar to be shared by all windows:
 #ifdef Q_OS_MAC

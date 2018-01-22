@@ -42,7 +42,7 @@ class SclangProjectPage : public SclangPageGeneric<Ui::SclangProjectConfigPage>
     Q_OBJECT
 
 public:
-    SclangProjectPage(QWidget *parent = 0);
+    explicit SclangProjectPage(QWidget *parent = 0);
     void loadLocal( Manager *, Session *, bool);
 
 public Q_SLOTS:

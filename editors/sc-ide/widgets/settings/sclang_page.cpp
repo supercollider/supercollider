@@ -37,7 +37,7 @@
 
 namespace ScIDE { namespace Settings {
 
-SclangPage::SclangPage(QWidget *parent) : SclangPageGeneric::SclangPageGeneric(parent)
+SclangPage::SclangPage(QWidget *parent) : SclangPageGeneric(parent)
 {
     ui->sclang_add_configfile->setIcon( QIcon::fromTheme("list-add") );
     ui->sclang_remove_configfile->setIcon( QIcon::fromTheme("list-remove") );
@@ -62,7 +62,7 @@ void SclangPage::loadLocal(Manager *s, Session *session, bool useLanguageConfigF
     SclangPageGeneric::loadLocal(s);
 
     QStringList availConfigFiles = availableLanguageConfigFiles();
-    QString configSelectedLanguageConfigFile = ((useLanguageConfigFromSession && session != nullptr) ? (SettingsInterface *) session : (SettingsInterface *) s)->getConfigFile();
+    QString configSelectedLanguageConfigFile = ((useLanguageConfigFromSession && session != nullptr) ? static_cast<SettingsInterface *>(session) : static_cast<SettingsInterface *>(s))->getConfigFile();
 
     ui->activeConfigFileComboBox->clear();
     ui->activeConfigFileComboBox->addItems(availConfigFiles);
@@ -104,7 +104,7 @@ void SclangPage::store( Manager *s, Session *session, bool useLanguageConfigFrom
 
     //NOTE: need to know in which settings to save, information which is not yet
     // saved in the settings, so value passed directly via useLanguageConfigFromSession.
-    ((useLanguageConfigFromSession && session != nullptr) ? (SettingsInterface *) session : (SettingsInterface *) s)->setConfigFile(ui->activeConfigFileComboBox->currentText());
+    ((useLanguageConfigFromSession && session != nullptr) ? static_cast<SettingsInterface *>(session) : static_cast<SettingsInterface *>(s))->setConfigFile(ui->activeConfigFileComboBox->currentText());
 
     writeLanguageConfig();
 }
