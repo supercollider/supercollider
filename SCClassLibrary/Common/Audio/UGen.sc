@@ -512,10 +512,11 @@ UGen : AbstractFunction {
 	// read access to buffers/busses are allowed
 
 	// UGens are assumed to be non-pure unless they contradict this
-	isPureUGen { ^false }
+	*isPureUGen { ^false }
+	isPureUGen { ^this.class.isPureUGen }
 
 	performDeadCodeElimination {
-		if (this.isPureUGen and: { descendants.size == 0 }) {
+		if (this.class.isPureUGen and: { descendants.size == 0 }) {
 			this.inputs.do {|a|
 				if (a.isKindOf(UGen)) {
 					a.descendants.remove(this);

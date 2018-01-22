@@ -3,7 +3,7 @@
 BasicOpUGen : UGen {
 	var <operator;
 
-	isPureUGen { ^true }
+	*isPureUGen { ^true }
 
 //	writeName { arg file;
 //		var name, opname;

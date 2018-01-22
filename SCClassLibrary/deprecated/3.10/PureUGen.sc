@@ -1,7 +1,7 @@
 // Something unusual: Deprecating an abstract class
 // The fix is not to replace a method call, but to:
 // 1. MyClass : UGen instead of MyClass : PureUGen
-// 2. Add 'isPureUGen { ^true }' to the class definition.
+// 2. Add '*isPureUGen { ^true }' to the class definition.
 // BOTH are needed.
 
 PureUGen : UGen {
@@ -10,7 +10,7 @@ PureUGen : UGen {
 		while { superclass.superclass != PureUGen } {
 			superclass = superclass.superclass;
 		};
-		"The abstract class PureUGen is deprecated. The UGen class '%'% needs to be updated to inherit from UGen, and implement isPureUGen { ^true }. Please contact the UGen author."
+		"The abstract class PureUGen is deprecated. The UGen class '%'% needs to be updated to inherit from UGen, and implement *isPureUGen { ^true }. Please contact the UGen author."
 		.format(
 			this.name,
 			if(superclass !== this) {
@@ -26,7 +26,7 @@ PureUGen : UGen {
 		while { superclass.superclass != PureUGen } {
 			superclass = superclass.superclass;
 		};
-		"The abstract class PureUGen is deprecated. The UGen class '%'% needs to be updated to inherit from UGen, and implement isPureUGen { ^true }. Please contact the UGen author."
+		"The abstract class PureUGen is deprecated. The UGen class '%'% needs to be updated to inherit from UGen, and implement *isPureUGen { ^true }. Please contact the UGen author."
 		.format(
 			this.name,
 			if(superclass !== this) {
@@ -61,7 +61,7 @@ PureMultiOutUGen : MultiOutUGen {
 		while { superclass.superclass != PureMultiOutUGen } {
 			superclass = superclass.superclass;
 		};
-		"The abstract class PureMultiOutUGen is deprecated. The UGen class '%'% needs to be updated to inherit from MultiOutUGen, and implement isPureUGen { ^true }. Please contact the UGen author."
+		"The abstract class PureMultiOutUGen is deprecated. The UGen class '%'% needs to be updated to inherit from MultiOutUGen, and implement *isPureUGen { ^true }. Please contact the UGen author."
 		.format(
 			this.name,
 			if(superclass !== this) {
@@ -77,7 +77,7 @@ PureMultiOutUGen : MultiOutUGen {
 		while { superclass.superclass != PureUGen } {
 			superclass = superclass.superclass;
 		};
-		"The abstract class PureMultiOutUGen is deprecated. The UGen class '%'% needs to be updated to inherit from MultiOutUGen, and implement isPureUGen { ^true }. Please contact the UGen author."
+		"The abstract class PureMultiOutUGen is deprecated. The UGen class '%'% needs to be updated to inherit from MultiOutUGen, and implement *isPureUGen { ^true }. Please contact the UGen author."
 		.format(
 			this.name,
 			if(superclass !== this) {

@@ -17,7 +17,7 @@ XLine : UGen {
 }
 
 LinExp : UGen {
-	isPureUGen { ^true }
+	*isPureUGen { ^true }
 	checkInputs { ^this.checkSameRateAsFirstInput }
 	*ar { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
 		^this.multiNew('audio', in, srclo, srchi, dstlo, dsthi)
@@ -43,7 +43,7 @@ LinLin {
 }
 
 AmpComp : UGen {
-	isPureUGen { ^true }
+	*isPureUGen { ^true }
 	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('scalar', freq, root, exp)
 	}
@@ -69,14 +69,14 @@ AmpCompA : AmpComp {
 }
 
 K2A : UGen { // control rate to audio rate converter
-	isPureUGen { ^true }
+	*isPureUGen { ^true }
 	*ar { arg in = 0.0;
 		^this.multiNew('audio', in)
 	}
 }
 
 A2K : UGen { // audio rate to control rate converter. only needed in specific cases
-	isPureUGen { ^true }
+	*isPureUGen { ^true }
 	*kr { arg in = 0.0;
 		^this.multiNew('control', in)
 	}
@@ -98,7 +98,7 @@ T2A : K2A { // control rate to audio rate trigger converter.
 }
 
 DC : MultiOutUGen {
-	isPureUGen { ^true }
+	*isPureUGen { ^true }
 	*ar { arg in=0.0;
 		^this.multiNew('audio', in)
 	}
