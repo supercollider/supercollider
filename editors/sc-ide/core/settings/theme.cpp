@@ -289,9 +289,8 @@ Theme::Theme(const QString & _name, const QString & _source, Manager * settings)
         fillDefault();
     } else if (_source == "dark") {
         fillDark();
-    } else if (mName == "dracula") {
+    } else if (_source == "dracula") {
         fillDracula();
-        mLocked = true;
     } else {
         fillUser(_source, settings);
     }
