@@ -17,4 +17,9 @@ execute_process( COMMAND ${NSIS_PROGRAM}
     /DBUNDLE_NAME=${SC_WIN_BUNDLE_NAME}
     /DSC_SIZE=${SC_WIN_INSTALL_SIZE}
     ${NSIS_SCRIPT}
+    RESULT_VARIABLE NSIS_RESULT
 )
+
+if(NSIS_RESULT)
+    message(FATAL_ERROR "ERROR: makensis failed, exiting with: ${NSIS_RESULT}")
+endif()
