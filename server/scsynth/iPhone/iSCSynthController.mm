@@ -36,7 +36,6 @@ int vpost(const char *fmt, va_list ap)
 {
 	if (!theController && (self=[super init]))
 	{
-		options = kDefaultWorldOptions;
 		options.mBufLength = 1024;
 		timer = 0;
 		world = 0;
