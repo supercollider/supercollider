@@ -985,7 +985,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 
 	if (!gInternalSynthServer.mWorld) {
 		SetPrintFunc(&vpost);
-		WorldOptions options = kDefaultWorldOptions;
+		WorldOptions options;
 
 		PyrObject *optionsObj = slotRawObject(a);
 		PyrSlot *optionsSlots = optionsObj->slots;

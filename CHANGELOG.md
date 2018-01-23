@@ -609,11 +609,11 @@ Fixed the right-click menu for the tabs appearing in the wrong place in macOS ([
 - Add "(NRT)" to the NRT help file title (searchability)
   [#2281](https://github.com/supercollider/supercollider/pull/2281) by [vivid-synth](https://github.com/vivid-synth)
 - Update Ndef.schelp
-  [#2273](https://github.com/supercollider/supercollider/pull/2273) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+  [#2273](https://github.com/supercollider/supercollider/pull/2273) by [tiagmoraismorgado](https://github.com/tmm2018)
 - Update MouseX.schelp
-  [#2272](https://github.com/supercollider/supercollider/pull/2272) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+  [#2272](https://github.com/supercollider/supercollider/pull/2272) by [tiagmoraismorgado](https://github.com/tmm2018)
 - Update MouseButton.schelp
-  [#2271](https://github.com/supercollider/supercollider/pull/2271) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+  [#2271](https://github.com/supercollider/supercollider/pull/2271) by [tiagmoraismorgado](https://github.com/tmm2018)
 - help: Remove some outdated GUI info
   [#2248](https://github.com/supercollider/supercollider/pull/2248) by [snappizz](https://github.com/snappizz)
 - Add supernova to the list of components
@@ -635,7 +635,7 @@ Fixed the right-click menu for the tabs appearing in the wrong place in macOS ([
 - Fix a typo in SynthDef.schelp
   [#2186](https://github.com/supercollider/supercollider/pull/2186) by [kisielk](https://github.com/kisielk)
 - fixing Henon help
-  [#2150](https://github.com/supercollider/supercollider/pull/2150) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+  [#2150](https://github.com/supercollider/supercollider/pull/2150) by [tiagmoraismorgado](https://github.com/tmm2018)
 - document DelTapWr/DelTapRd/MultiTap delay time caveats
   [#2132](https://github.com/supercollider/supercollider/pull/2132) by [snappizz](https://github.com/snappizz)
 - help: document range better for LFGauss UGen

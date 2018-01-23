@@ -128,9 +128,9 @@ deploy:
 # s3 upload - every commit
 - provider: S3
   access_key_id:
-    secure: DkLynQIGT6YN1PM45y9iIPTd2pdM4worHlbS5mXNtFI=
+    secure: Imi70fjxyMWt9kwV9RfVT7qV8OaxA40iGlR1hO12SK4=
   secret_access_key:
-    secure: qD/tbccsTj6FefmdbotjKPtSlvseXhIXsy84DDhuojOxPKz/e5unqeip6onNCI4X
+    secure: 3K2MRfkIb7BJk4kCCakxcGAjkc1LCYZHpD32I52mYd//2WHE63xVJl/qd3Q1IBhI
   bucket: supercollider
   region: us-west-2
   folder: $(S3_BUILDS_LOCATION)
@@ -147,10 +147,3 @@ deploy:
   prerelease: true
   on:
     appveyor_repo_tag: true
-
-notifications:
-    - provider: Webhook
-      url: https://webhooks.gitter.im/e/0f811b8a74efd99f4a4e
-      on_build_status_changed: true
-      on_build_failure: true
-      on_build_success: false
