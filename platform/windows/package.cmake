@@ -1,8 +1,12 @@
 file(TO_NATIVE_PATH ${SC_INSTALL_PREFIX} NATIVE_INSTALL_PREFIX)
 
 find_program(NSIS_PROGRAM makensis)
-message(STATUS NSIS_PROGRAM: ${NSIS_PROGRAM})
-execute_process( COMMAND makensis
+
+if(NOT NSIS_PROGRAM)
+    message(FATAL_ERROR "ERROR: makensis program was not found, cannot run packaging script.")
+endif()
+
+execute_process( COMMAND ${NSIS_PROGRAM}
     /DSC_VERSION=${SC_VERSION}
     /DSC_INSTALL_ROOT="${NATIVE_INSTALL_PREFIX}"
     # FIXME: Does not support spaces in path:
