@@ -129,7 +129,7 @@ public:
         const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
         if (psi){
             fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
-            fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency); 
+            fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency);
         }
     }
 
@@ -143,11 +143,6 @@ public:
 
         PaStreamParameters in_parameters, out_parameters;
         PaTime suggestedLatencyIn, suggestedLatencyOut;
-        
-#ifdef __APPLE__
-        suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultHighInputLatency;
-        suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultHighOutputLatency;
-#else
 
         if (h_blocksize == 0){
             if (inchans)
@@ -163,7 +158,6 @@ public:
             }else
                 suggestedLatencyIn = suggestedLatencyOut = (double)h_blocksize / (double)samplerate;
         }
-#endif
 
         if (inchans) {
             const PaDeviceInfo* device_info = Pa_GetDeviceInfo(input_device_index);
