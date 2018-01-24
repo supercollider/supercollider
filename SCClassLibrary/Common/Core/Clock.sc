@@ -421,10 +421,6 @@ LinkClock : TempoClock {
 
 		forBy(1, oldQueue.size-1, 3) {|i|
 			var task=oldQueue[i+1];
-			//change clock for Routines embeded inside PauseStream
-			if(task.isKindOf(PauseStream)){
-				task.stream.clock = this;
-			};
 			//reschedule task with this clock
 			this.schedAbs(oldQueue[i], task);
 		};
