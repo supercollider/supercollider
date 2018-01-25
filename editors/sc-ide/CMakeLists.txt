@@ -8,7 +8,6 @@ find_package(Qt5Core)
 find_package(Qt5Concurrent)
 find_package(Qt5LinguistTools)
 # find_package(Qt5OpenGL)
-find_package(Qt5Positioning)
 find_package(Qt5PrintSupport)
 find_package(Qt5Qml)
 find_package(Qt5Quick)
@@ -18,7 +17,7 @@ find_package(Qt5Widgets)
 
 set(QT_IDE_LIBRARIES
     # Qt5::OpenGL
-    Qt5::Core Qt5::Concurrent Qt5::WebKitWidgets Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
+    Qt5::Core Qt5::Concurrent Qt5::WebKitWidgets Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Sql)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
