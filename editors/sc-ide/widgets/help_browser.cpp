@@ -180,15 +180,26 @@ void HelpBrowser::closeDocument()
     MainWindow::instance()->helpBrowserDocklet()->close();
 }
 
+/// Escapes double quotes; used for strings sent to interpreter.
+static inline QString escapeDoubleQuotes( const QString & s )
+{
+    return QString{s}.replace('\"', "\\\"");
+}
+
 void HelpBrowser::gotoHelpFor( const QString & symbol )
 {
-    QString code = QStringLiteral("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
+    QString escaped = escapeDoubleQuotes(symbol);
+    QString code = QStringLiteral("HelpBrowser.openHelpFor(\"%1\")").arg(escaped);
     sendRequest(code);
 }
 
 void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & methodName )
 {
-    QString code = QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
+    QString escapedClass = escapeDoubleQuotes(className);
+    QString escapedMethod = escapeDoubleQuotes(methodName);
+
+    QString code = QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )")
+        .arg(escapedClass, escapedMethod);
     sendRequest(code);
 }
 
@@ -199,7 +210,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
     static const QStringList nonHelpFileExtensions = QStringList() << ".sc" << ".scd" << ".schelp" << ".txt" << ".rtf";
     static const QString fileScheme("file");
 
-    QString urlString = url.toString();
+    QString urlString = escapeDoubleQuotes(url.toString());
 
     foreach ( const QString & extension, nonHelpFileExtensions ) {
         if (urlString.endsWith( extension )) {

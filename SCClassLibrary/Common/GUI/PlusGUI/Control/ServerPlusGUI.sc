@@ -492,14 +492,14 @@
 		}, '/g_queryTree.reply', addr).fix;
 
 		updateFunc = {
-			fork {
+			updater = fork {
 				loop {
 					this.sendMsg("/g_queryTree", 0, 0);
 					interval.wait;
 				}
 			}
 		};
-		updater = updateFunc.value;
+		updateFunc.value;
 		CmdPeriod.add(updateFunc);
 		SystemClock.sched(3, {
 			if(done.not, {

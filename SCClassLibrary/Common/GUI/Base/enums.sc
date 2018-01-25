@@ -142,5 +142,7 @@ QLevelIndicatorStyle {
 	<continuous = 0,
 	<led = 1;
 
-	*new { arg style; style.isInteger.if(style, { this.perform(style) }) }
+	*new { arg style;
+		^ this.perform( style.isInteger.if({ #[\continuous, \led][style] }, style) );
+	}
 }

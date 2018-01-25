@@ -1,9 +1,11 @@
 [Desktop Entry]
 Name=SuperCollider IDE
 GenericName=SuperCollider IDE
+Comment=IDE for the SuperCollider audio synthesis language 
 Exec=scide %F
 Icon=sc_ide
 Type=Application
 Terminal=false
-Categories=AudioVideo;Audio;AudioVideoEditing;
+Categories=AudioVideo;Audio;Development;IDE;
 MimeType=text/x-sc;
+StartupWMClass=scide
