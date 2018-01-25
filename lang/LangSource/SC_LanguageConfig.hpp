@@ -50,6 +50,8 @@ public:
 
 	const DirVector& includedDirectories() const { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() const { return mExcludedDirectories; }
+	const DirVector& defaultClassLibraryDirectories() const
+	{ return mDefaultClassLibraryDirectories; }
 
 	void postExcludedDirectories(void) const;
 
