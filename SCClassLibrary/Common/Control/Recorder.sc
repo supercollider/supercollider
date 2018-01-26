@@ -172,12 +172,7 @@ Recorder {
 			"created recordings directory: '%'\n".postf(dir)
 		};
 
-		// temporary kludge to fix Date's brokenness on windows
-		timestamp = if(thisProcess.platform.name == \windows) {
-			Main.elapsedTime.round(0.01)
-		} {
-			Date.localtime.stamp
-		};
+		timestamp = Date.localtime.stamp;
 
 		^dir +/+ filePrefix ++ timestamp ++ "." ++ server.recHeaderFormat;
 	}

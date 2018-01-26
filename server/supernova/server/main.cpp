@@ -245,8 +245,7 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
 #ifdef __linux__
         const path home = resolve_home();
         std::vector<path> folders = { "/usr/local/lib/SuperCollider/plugins",
-                                      "/usr/lib/SuperCollider/plugins",
-                                      "/usr/lib64/SuperCollider/plugins",
+                                      "/usr/lib" LIB_SUFFIX "/SuperCollider/plugins",
                                       home / "/.local/share/SuperCollider/Extensions",
                                       home / "share/SuperCollider/plugins" };
 
@@ -254,8 +253,8 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
             factory->load_plugin_folder(folder);
 #else
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / "plugins");
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) / "plugins");
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) );
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) );
 #endif
     }
 

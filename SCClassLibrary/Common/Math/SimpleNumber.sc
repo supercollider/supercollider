@@ -150,16 +150,26 @@ SimpleNumber : Number {
 	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
 	previousPowerOf { arg base; ^pow(base, ceil(log(this) / log(base)) - 1) }
 
-	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
-		var round = round(this, quantum);
+	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+		var round = round(this, resolution);
 		var diff = round - this;
-		if (abs(diff) < tolerance) {
+		if(abs(diff) < margin) {
 			^this + (strength * diff)
-		}{
+		} {
 			^this
 		}
 	}
 
+
+	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+		var round = round(this, resolution);
+		var diff = round - this;
+		if(abs(diff) > margin) {
+			^this + (strength * diff)
+		} {
+			^this
+		}
+	}
 
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to linear mapping
@@ -472,7 +482,7 @@ SimpleNumber : Number {
 	asQuant { ^Quant(this) }
 
 	// a clock format inspired by ISO 8601 time interval display (truncated representation)
-	// receiver is a time in seconds, returns string "ddd:hh:mm:ss:ttt" where t is milliseconds
+	// receiver is a time in seconds, returns string "ddd:hh:mm:ss.sss"
 	// see String:asSecs for complement
 
 	asTimeString { arg precision = 0.001, maxDays = 365, dropDaysIfPossible = true;
@@ -486,8 +496,13 @@ SimpleNumber : Number {
 		};
 		hours = (decimal.div(3600) % 24).asString.padLeft(2, "0").add($:);
 		minutes = (decimal.div(60) % 60).asString.padLeft(2, "0").add($:);
-		seconds = (decimal % 60).asString.padLeft(2, "0").add($:);
-		mseconds = (this.frac / precision).round(precision).asInteger.asString.padLeft(3, "0");
+		seconds = (decimal % 60).asString.padLeft(2, "0").add($.);
+
+		// min value of precision is 0.001; this ensures that we stick to 3 decimal places in the
+		// formatted string.
+		precision = max(precision, 0.001);
+		mseconds = this.frac.round(precision) * 1000;
+		mseconds = mseconds.round.asString.padLeft(3, "0");
 		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
 

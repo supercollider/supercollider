@@ -129,7 +129,7 @@ ComponentResult		SuperColliderAU::GetProperty(	AudioUnitPropertyID inID,
 ComponentResult SuperColliderAU::Initialize()
 {
 
-    WorldOptions options = kDefaultWorldOptions;
+    WorldOptions options;
     options.mPreferredSampleRate=GetSampleRate();
     options.mBufLength=kDefaultBlockSize;
     options.mPreferredHardwareBufferFrameSize = GetMaxFramesPerSlice();

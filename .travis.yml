@@ -77,9 +77,9 @@ deploy:
      condition: $TRAVIS_OS_NAME = osx && ! -z $GITHUB_KEY
      tags: true
      all_branches: true
-after-deploy:
- - "echo S3 Build Location: $S3_URL"
 
+after_deploy:
+ - "echo S3 Build Location: $S3_URL"
 
 notifications:
   on_success: change
