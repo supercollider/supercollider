@@ -2,7 +2,7 @@
 // local/connect_pair.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,32 +33,32 @@ namespace asio {
 namespace local {
 
 /// Create a pair of connected sockets.
-template <typename Protocol, typename SocketService1, typename SocketService2>
+template <typename Protocol BOOST_ASIO_SVC_TPARAM BOOST_ASIO_SVC_TPARAM1>
 void connect_pair(
-    basic_socket<Protocol, SocketService1>& socket1,
-    basic_socket<Protocol, SocketService2>& socket2);
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG>& socket1,
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG1>& socket2);
 
 /// Create a pair of connected sockets.
-template <typename Protocol, typename SocketService1, typename SocketService2>
-boost::system::error_code connect_pair(
-    basic_socket<Protocol, SocketService1>& socket1,
-    basic_socket<Protocol, SocketService2>& socket2,
+template <typename Protocol BOOST_ASIO_SVC_TPARAM BOOST_ASIO_SVC_TPARAM1>
+BOOST_ASIO_SYNC_OP_VOID connect_pair(
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG>& socket1,
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG1>& socket2,
     boost::system::error_code& ec);
 
-template <typename Protocol, typename SocketService1, typename SocketService2>
+template <typename Protocol BOOST_ASIO_SVC_TPARAM BOOST_ASIO_SVC_TPARAM1>
 inline void connect_pair(
-    basic_socket<Protocol, SocketService1>& socket1,
-    basic_socket<Protocol, SocketService2>& socket2)
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG>& socket1,
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG1>& socket2)
 {
   boost::system::error_code ec;
   connect_pair(socket1, socket2, ec);
   boost::asio::detail::throw_error(ec, "connect_pair");
 }
 
-template <typename Protocol, typename SocketService1, typename SocketService2>
-inline boost::system::error_code connect_pair(
-    basic_socket<Protocol, SocketService1>& socket1,
-    basic_socket<Protocol, SocketService2>& socket2,
+template <typename Protocol BOOST_ASIO_SVC_TPARAM BOOST_ASIO_SVC_TPARAM1>
+inline BOOST_ASIO_SYNC_OP_VOID connect_pair(
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG>& socket1,
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG1>& socket2,
     boost::system::error_code& ec)
 {
   // Check that this function is only being used with a UNIX domain socket.
@@ -71,27 +71,29 @@ inline boost::system::error_code connect_pair(
   if (boost::asio::detail::socket_ops::socketpair(protocol.family(),
         protocol.type(), protocol.protocol(), sv, ec)
       == boost::asio::detail::socket_error_retval)
-    return ec;
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
 
-  if (socket1.assign(protocol, sv[0], ec))
+  socket1.assign(protocol, sv[0], ec);
+  if (ec)
   {
     boost::system::error_code temp_ec;
     boost::asio::detail::socket_ops::state_type state[2] = { 0, 0 };
     boost::asio::detail::socket_ops::close(sv[0], state[0], true, temp_ec);
     boost::asio::detail::socket_ops::close(sv[1], state[1], true, temp_ec);
-    return ec;
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
-  if (socket2.assign(protocol, sv[1], ec))
+  socket2.assign(protocol, sv[1], ec);
+  if (ec)
   {
     boost::system::error_code temp_ec;
     socket1.close(temp_ec);
     boost::asio::detail::socket_ops::state_type state = 0;
     boost::asio::detail::socket_ops::close(sv[1], state, true, temp_ec);
-    return ec;
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
-  return ec;
+  BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
 }
 
 } // namespace local

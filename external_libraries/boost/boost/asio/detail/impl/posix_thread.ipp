@@ -2,7 +2,7 @@
 // detail/impl/posix_thread.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -42,6 +42,16 @@ void posix_thread::join()
     ::pthread_join(thread_, 0);
     joined_ = true;
   }
+}
+
+std::size_t posix_thread::hardware_concurrency()
+{
+#if defined(_SC_NPROCESSORS_ONLN)
+  long result = sysconf(_SC_NPROCESSORS_ONLN);
+  if (result > 0)
+    return result;
+#endif // defined(_SC_NPROCESSORS_ONLN)
+  return 0;
 }
 
 void posix_thread::start_thread(func_base* arg)

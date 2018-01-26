@@ -9,7 +9,7 @@
  * $Date$
  */
 
-
+#include <ctime>
 #include <boost/cstdint.hpp>
 #include <boost/date_time/time_defs.hpp>
 #include <boost/date_time/int_adapter.hpp>
@@ -68,7 +68,7 @@ namespace date_time {
            typename frac_sec_type::int_type resolution_adjust,
 #endif
            unsigned short frac_digits,
-           typename var_type = boost::int32_t >
+           typename var_type = std::time_t >
   class time_resolution_traits {
   public:
     typedef typename frac_sec_type::int_type fractional_seconds_type;
@@ -120,14 +120,14 @@ namespace date_time {
         minutes = absolute_value(minutes);
         seconds = absolute_value(seconds);
         fs = absolute_value(fs);
-        return (((((fractional_seconds_type(hours)*3600)
-                   + (fractional_seconds_type(minutes)*60)
-                   + seconds)*res_adjust()) + fs) * -1);
+        return static_cast<tick_type>(((((fractional_seconds_type(hours)*3600)
+                                       + (fractional_seconds_type(minutes)*60)
+                                       + seconds)*res_adjust()) + fs) * -1);
       }
 
-      return (((fractional_seconds_type(hours)*3600)
-               + (fractional_seconds_type(minutes)*60)
-               + seconds)*res_adjust()) + fs;
+      return static_cast<tick_type>((((fractional_seconds_type(hours)*3600)
+                                    + (fractional_seconds_type(minutes)*60)
+                                    + seconds)*res_adjust()) + fs);
     }
 
   };

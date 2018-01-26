@@ -72,6 +72,12 @@ template <class T> struct remove_pointer<T*const volatile>{ typedef T type; };
 
 #endif
 
+#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
+
+   template <class T> using remove_pointer_t = typename remove_pointer<T>::type;
+
+#endif
+
 } // namespace boost
 
 #endif // BOOST_TT_REMOVE_POINTER_HPP_INCLUDED

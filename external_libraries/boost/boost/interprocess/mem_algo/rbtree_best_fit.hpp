@@ -109,7 +109,7 @@ class rbtree_best_fit
    {
       //!This block's memory size (including block_ctrl
       //!header) in Alignment units
-      size_type m_prev_size :  sizeof(size_type)*CHAR_BIT;
+      size_type m_prev_size;
       size_type m_size      :  sizeof(size_type)*CHAR_BIT - 2;
       size_type m_prev_allocated :  1;
       size_type m_allocated :  1;

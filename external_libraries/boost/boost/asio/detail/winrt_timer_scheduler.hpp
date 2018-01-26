@@ -2,7 +2,7 @@
 // detail/winrt_timer_scheduler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -28,7 +28,7 @@
 #include <boost/asio/detail/timer_queue_base.hpp>
 #include <boost/asio/detail/timer_queue_set.hpp>
 #include <boost/asio/detail/wait_op.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 
 #if defined(BOOST_ASIO_HAS_IOCP)
 # include <boost/asio/detail/thread.hpp>
@@ -45,17 +45,17 @@ class winrt_timer_scheduler
 {
 public:
   // Constructor.
-  BOOST_ASIO_DECL winrt_timer_scheduler(boost::asio::io_service& io_service);
+  BOOST_ASIO_DECL winrt_timer_scheduler(boost::asio::io_context& io_context);
 
   // Destructor.
   BOOST_ASIO_DECL ~winrt_timer_scheduler();
 
   // Destroy all user-defined handler objects owned by the service.
-  BOOST_ASIO_DECL void shutdown_service();
+  BOOST_ASIO_DECL void shutdown();
 
   // Recreate internal descriptors following a fork.
-  BOOST_ASIO_DECL void fork_service(
-      boost::asio::io_service::fork_event fork_ev);
+  BOOST_ASIO_DECL void notify_fork(
+      boost::asio::io_context::fork_event fork_ev);
 
   // Initialise the task. No effect as this class uses its own thread.
   BOOST_ASIO_DECL void init_task();
@@ -82,6 +82,12 @@ public:
       typename timer_queue<Time_Traits>::per_timer_data& timer,
       std::size_t max_cancelled = (std::numeric_limits<std::size_t>::max)());
 
+  // Move the timer operations associated with the given timer.
+  template <typename Time_Traits>
+  void move_timer(timer_queue<Time_Traits>& queue,
+      typename timer_queue<Time_Traits>::per_timer_data& to,
+      typename timer_queue<Time_Traits>::per_timer_data& from);
+
 private:
   // Run the select loop in the thread.
   BOOST_ASIO_DECL void run_thread();
@@ -95,8 +101,8 @@ private:
   // Helper function to remove a timer queue.
   BOOST_ASIO_DECL void do_remove_timer_queue(timer_queue_base& queue);
 
-  // The io_service implementation used to post completions.
-  io_service_impl& io_service_;
+  // The io_context implementation used to post completions.
+  io_context_impl& io_context_;
 
   // Mutex used to protect internal variables.
   boost::asio::detail::mutex mutex_;

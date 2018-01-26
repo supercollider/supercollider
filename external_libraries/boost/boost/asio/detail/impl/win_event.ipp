@@ -2,7 +2,7 @@
 // detail/win_event.ipp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -33,7 +33,8 @@ win_event::win_event()
   : state_(0)
 {
 #if defined(BOOST_ASIO_WINDOWS_APP)
-  events_[0] = ::CreateEventExW(0, 0, CREATE_EVENT_MANUAL_RESET, 0);
+  events_[0] = ::CreateEventExW(0, 0,
+      CREATE_EVENT_MANUAL_RESET, EVENT_ALL_ACCESS);
 #else // defined(BOOST_ASIO_WINDOWS_APP)
   events_[0] = ::CreateEventW(0, true, false, 0);
 #endif // defined(BOOST_ASIO_WINDOWS_APP)
@@ -46,7 +47,7 @@ win_event::win_event()
   }
 
 #if defined(BOOST_ASIO_WINDOWS_APP)
-  events_[1] = ::CreateEventExW(0, 0, 0, 0);
+  events_[1] = ::CreateEventExW(0, 0, 0, EVENT_ALL_ACCESS);
 #else // defined(BOOST_ASIO_WINDOWS_APP)
   events_[1] = ::CreateEventW(0, false, false, 0);
 #endif // defined(BOOST_ASIO_WINDOWS_APP)

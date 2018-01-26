@@ -68,6 +68,12 @@ namespace tt_detail {
 // ************************************************************************** //
 
 void
+print_log_value<bool>::operator()( std::ostream& ostr, bool t )
+{
+     ostr << std::boolalpha << t;
+}
+
+void
 print_log_value<char>::operator()( std::ostream& ostr, char t )
 {
     if( (std::isprint)( static_cast<unsigned char>(t) ) )
@@ -112,6 +118,14 @@ print_log_value<wchar_t const*>::operator()( std::ostream& ostr, wchar_t const* 
 {
     ostr << ( t ? t : L"null string" );
 }
+
+#if !defined(BOOST_NO_CXX11_NULLPTR)
+void
+print_log_value<std::nullptr_t>::operator()( std::ostream& ostr, std::nullptr_t )
+{
+    ostr << "nullptr";
+}
+#endif
 
 //____________________________________________________________________________//
 
@@ -296,8 +310,19 @@ report_assertion( assertion_result const&   ar,
 {
     using namespace unit_test;
 
-    BOOST_TEST_I_ASSRT( framework::current_test_case_id() != INV_TEST_UNIT_ID,
-                        std::runtime_error( "Can't use testing tools outside of test case implementation." ) );
+    if( !framework::test_in_progress() ) {
+        // in case no test is in progress, we do not throw anything:
+        // raising an exception here may result in raising an exception in a destructor of a global fixture
+        // which will abort the process
+        // We flag this as aborted instead
+
+        //BOOST_TEST_I_ASSRT( framework::current_test_case_id() != INV_TEST_UNIT_ID,
+        //                    std::runtime_error( "Can't use testing tools outside of test case implementation." ) );
+
+        framework::test_aborted();
+        return false;
+    }
+
 
     if( !!ar )
         tl = PASS;
@@ -355,10 +380,9 @@ report_assertion( assertion_result const&   ar,
 
     case REQUIRE:
         framework::assertion_result( AR_FAILED );
-
-        framework::test_unit_aborted( framework::current_test_case() );
-
+        framework::test_unit_aborted( framework::current_test_unit() );
         BOOST_TEST_I_THROW( execution_aborted() );
+        return false;
     }
 
     return true;
@@ -479,7 +503,7 @@ struct output_test_stream::Impl
 
     char            get_char()
     {
-        char res;
+        char res = 0;
         do {
             m_pattern.get( res );
         } while( m_text_or_binary && res == '\r' && !m_pattern.fail() && !m_pattern.eof() );
@@ -605,6 +629,7 @@ output_test_stream::match_pattern( bool flush_stream )
             int offset = 0;
             std::vector<char> last_elements;
             for ( std::string::size_type i = 0; static_cast<int>(i + offset) < static_cast<int>(stream_string_repr.length()); ++i ) {
+
                 char c = m_pimpl->get_char();
 
                 if( last_elements.size() <= n_chars_presuffix ) {
@@ -684,7 +709,7 @@ output_test_stream::match_pattern( bool flush_stream )
                                 if( last_elements_ordered[pattern_start_index + k] == sub_str_suffix[stream_start_index + k] )
                                     nb_char_in_common ++;
                                 else
-                                    break; // we take fully macthing substring only
+                                    break; // we take fully matching substring only
                             }
 
                             if( nb_char_in_common > max_nb_char_in_common ) {
@@ -695,19 +720,31 @@ output_test_stream::match_pattern( bool flush_stream )
                         }
                     }
 
-                    // indicates with more precision the location of the mismatchs in ascii arts ...
+                    // indicates with more precision the location of the mismatchs in "ascii arts" ...
                     result.message() << " ...\n... ";
                     for( std::string::size_type j = 0; j < sub_str_prefix.size(); j++) {
                         result.message() << ' ';
                     }
 
-                    for( std::size_t k = 0; k < (std::max)(best_pattern_start_index, best_stream_start_index); k++ ) { // 1 is for the current char c
+                    result.message() << '~'; // places the first tilde at the current char that mismatches
+
+                    for( std::size_t k = 1; k < (std::max)(best_pattern_start_index, best_stream_start_index); k++ ) { // 1 is for the current char c
                         std::string s1(pretty_print_log(std::string(1, last_elements_ordered[(std::min)(k, best_pattern_start_index)])));
                         std::string s2(pretty_print_log(std::string(1, sub_str_suffix[(std::min)(k, best_stream_start_index)])));
                         for( int h = (std::max)(s1.size(), s2.size()); h > 0; h--)
-                          result.message() << "~";
+                            result.message() << "~";
                     }
+
+                    if( m_pimpl->m_pattern.eof() ) {
+                        result.message() << "    (reference string shorter than current stream)";
+                    }
+
                     result.message() << "\n";
+
+                    // no need to continue if the EOF is reached
+                    if( m_pimpl->m_pattern.eof() ) {
+                        break;
+                    }
 
                     // first char is a replicat of c, so we do not copy it.
                     for(std::string::size_type counter = 0; counter < last_elements_ordered.size() - 1 ; counter++)

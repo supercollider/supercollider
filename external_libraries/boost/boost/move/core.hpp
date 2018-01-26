@@ -64,15 +64,7 @@
    #endif
 
    //Move emulation rv breaks standard aliasing rules so add workarounds for some compilers
-   #if defined(__GNUC__) && (__GNUC__ >= 4) && \
-      (\
-         defined(BOOST_GCC) ||   \
-         (defined(BOOST_INTEL) && (BOOST_INTEL_CXX_VERSION >= 1300)) \
-      )
-      #define BOOST_MOVE_ATTRIBUTE_MAY_ALIAS __attribute__((__may_alias__))
-   #else
-      #define BOOST_MOVE_ATTRIBUTE_MAY_ALIAS
-   #endif
+   #define BOOST_MOVE_ATTRIBUTE_MAY_ALIAS BOOST_MAY_ALIAS
 
    namespace boost {
 

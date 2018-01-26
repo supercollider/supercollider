@@ -30,10 +30,10 @@
 #include <boost/container/detail/allocator_version_traits.hpp>
 #include <boost/container/detail/construct_in_place.hpp>
 #include <boost/container/detail/destroyers.hpp>
-#include <boost/container/detail/iterator_to_raw_pointer.hpp>
+#include <boost/move/detail/iterator_to_raw_pointer.hpp>
 #include <boost/container/detail/mpl.hpp>
 #include <boost/container/detail/placement_new.hpp>
-#include <boost/container/detail/to_raw_pointer.hpp>
+#include <boost/move/detail/to_raw_pointer.hpp>
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/container/detail/version_type.hpp>
 // intrusive
@@ -106,22 +106,22 @@ struct node_alloc_holder
       : members_(a)
    {}
 
+   //Constructors for associative containers
+   node_alloc_holder(const value_compare &c, const ValAlloc &a)
+      : members_(a, c)
+   {}
+
    explicit node_alloc_holder(const node_alloc_holder &x)
       : members_(NodeAllocTraits::select_on_container_copy_construction(x.node_alloc()))
+   {}
+
+   node_alloc_holder(const node_alloc_holder &x, const value_compare &c)
+      : members_(NodeAllocTraits::select_on_container_copy_construction(x.node_alloc()), c)
    {}
 
    explicit node_alloc_holder(BOOST_RV_REF(node_alloc_holder) x)
       : members_(boost::move(x.node_alloc()))
    {  this->icont().swap(x.icont());  }
-
-   //Constructors for associative containers
-   explicit node_alloc_holder(const value_compare &c, const ValAlloc &a)
-      : members_(a, c)
-   {}
-
-   explicit node_alloc_holder(const value_compare &c, const node_alloc_holder &x)
-      : members_(NodeAllocTraits::select_on_container_copy_construction(x.node_alloc()), c)
-   {}
 
    explicit node_alloc_holder(const value_compare &c)
       : members_(c)
@@ -171,7 +171,7 @@ struct node_alloc_holder
       node_deallocator.release();
       //This does not throw
       typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
+      ::new(static_cast<hook_type*>(boost::movelib::to_raw_pointer(p)), boost_container_new_t()) hook_type;
       return (p);
    }
 
@@ -189,7 +189,7 @@ struct node_alloc_holder
           BOOST_MOVE_I##N BOOST_MOVE_FWD##N);\
       node_deallocator.release();\
       typedef typename Node::hook_type hook_type;\
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;\
+      ::new(static_cast<hook_type*>(boost::movelib::to_raw_pointer(p)), boost_container_new_t()) hook_type;\
       return (p);\
    }\
    //
@@ -207,7 +207,7 @@ struct node_alloc_holder
       node_deallocator.release();
       //This does not throw
       typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
+      ::new(static_cast<hook_type*>(boost::movelib::to_raw_pointer(p)), boost_container_new_t()) hook_type;
       return (p);
    }
 
@@ -230,13 +230,13 @@ struct node_alloc_holder
       node_deallocator.release();
       //This does not throw
       typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
+      ::new(static_cast<hook_type*>(boost::movelib::to_raw_pointer(p)), boost_container_new_t()) hook_type;
       return (p);
    }
 
    void destroy_node(const NodePtr &nodep)
    {
-      allocator_traits<NodeAlloc>::destroy(this->node_alloc(), container_detail::to_raw_pointer(nodep));
+      allocator_traits<NodeAlloc>::destroy(this->node_alloc(), boost::movelib::to_raw_pointer(nodep));
       this->deallocate_one(nodep);
    }
 
@@ -266,7 +266,7 @@ struct node_alloc_holder
             Deallocator node_deallocator(NodePtr(), nalloc);
             container_detail::scoped_destructor<NodeAlloc> sdestructor(nalloc, 0);
             while(n--){
-               p = container_detail::iterator_to_raw_pointer(itbeg);
+               p = boost::movelib::iterator_to_raw_pointer(itbeg);
                node_deallocator.set(p);
                ++itbeg;
                //This can throw

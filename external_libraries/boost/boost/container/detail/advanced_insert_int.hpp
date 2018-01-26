@@ -31,7 +31,7 @@
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/container/detail/iterator.hpp>
 #include <boost/container/detail/iterators.hpp>
-#include <boost/container/detail/iterator_to_raw_pointer.hpp>
+#include <boost/move/detail/iterator_to_raw_pointer.hpp>
 #if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 #include <boost/move/detail/fwd_macros.hpp>
 #endif
@@ -107,8 +107,8 @@ struct insert_n_copies_proxy
 
    void copy_n_and_update(Allocator &, Iterator p, size_type n) const
    {
-	   for (; 0 < n; --n, ++p){
-		   *p = v_;
+      for (; 0 < n; --n, ++p){
+         *p = v_;
       }
    }
 
@@ -157,13 +157,13 @@ struct insert_copy_proxy
    void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
-      alloc_traits::construct( a, iterator_to_raw_pointer(p), v_);
+      alloc_traits::construct( a, boost::movelib::iterator_to_raw_pointer(p), v_);
    }
 
    void copy_n_and_update(Allocator &, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
-      *p =v_;
+      *p = v_;
    }
 
    const value_type &v_;
@@ -184,7 +184,7 @@ struct insert_move_proxy
    void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n) const
    {
       BOOST_ASSERT(n == 1);  (void)n;
-      alloc_traits::construct( a, iterator_to_raw_pointer(p), ::boost::move(v_) );
+      alloc_traits::construct( a, boost::movelib::iterator_to_raw_pointer(p), ::boost::move(v_) );
    }
 
    void copy_n_and_update(Allocator &, Iterator p, size_type n) const
@@ -240,7 +240,7 @@ struct insert_nonmovable_emplace_proxy
    void priv_uninitialized_copy_some_and_update(Allocator &a, const index_tuple<IdxPack...>&, Iterator p, size_type n)
    {
       BOOST_ASSERT(n == 1); (void)n;
-      alloc_traits::construct( a, iterator_to_raw_pointer(p), ::boost::forward<Args>(get<IdxPack>(this->args_))... );
+      alloc_traits::construct( a, boost::movelib::iterator_to_raw_pointer(p), ::boost::forward<Args>(get<IdxPack>(this->args_))... );
    }
 
    protected:
@@ -354,7 +354,7 @@ struct insert_nonmovable_emplace_proxy##N\
    void uninitialized_copy_n_and_update(Allocator &a, Iterator p, size_type n)\
    {\
       BOOST_ASSERT(n == 1); (void)n;\
-      alloc_traits::construct(a, iterator_to_raw_pointer(p) BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);\
+      alloc_traits::construct(a, boost::movelib::iterator_to_raw_pointer(p) BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);\
    }\
    \
    void copy_n_and_update(Allocator &, Iterator, size_type)\

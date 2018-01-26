@@ -37,8 +37,8 @@ namespace op {
 #define DEFINE_CSTRING_COMPARISON( oper, name, rev )                \
 template<typename Lhs,typename Rhs>                                 \
 struct name<Lhs,Rhs,typename boost::enable_if_c<                    \
-    (   unit_test::is_cstring<Lhs>::value                           \
-     && unit_test::is_cstring<Rhs>::value)                          \
+    (   unit_test::is_cstring_comparable<Lhs>::value                \
+     && unit_test::is_cstring_comparable<Rhs>::value)               \
     >::type >                                                       \
 {                                                                   \
     typedef typename unit_test::deduce_cstring<Lhs>::type lhs_char_type; \
@@ -46,13 +46,14 @@ struct name<Lhs,Rhs,typename boost::enable_if_c<                    \
 public:                                                             \
     typedef assertion_result result_type;                           \
                                                                     \
-    typedef name<lhs_char_type, rhs_char_type> elem_op;             \
+    typedef name<                                                   \
+        typename lhs_char_type::value_type,                         \
+        typename rhs_char_type::value_type> elem_op;                \
                                                                     \
     static bool                                                     \
     eval( Lhs const& lhs, Rhs const& rhs)                           \
     {                                                               \
-        return unit_test::basic_cstring<lhs_char_type>(lhs) oper    \
-               unit_test::basic_cstring<rhs_char_type>(rhs);        \
+        return lhs_char_type(lhs) oper rhs_char_type(rhs);          \
     }                                                               \
                                                                     \
     template<typename PrevExprType>                                 \

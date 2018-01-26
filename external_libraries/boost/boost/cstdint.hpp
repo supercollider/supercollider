@@ -367,14 +367,11 @@ namespace boost
 #include <stddef.h>
 #endif
 
-// PGI seems to not support intptr_t/uintptr_t properly. BOOST_HAS_STDINT_H is not defined for this compiler by Boost.Config.
-#if !defined(__PGIC__)
-
 #if (defined(BOOST_WINDOWS) && !defined(_WIN32_WCE)) \
     || (defined(_XOPEN_UNIX) && (_XOPEN_UNIX+0 > 0) && !defined(__UCLIBC__)) \
-    || defined(__CYGWIN__) \
+    || defined(__CYGWIN__) || defined(__VXWORKS__) \
     || defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) \
-    || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || defined(sun)
+    || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__) || (defined(sun) && !defined(BOOST_HAS_STDINT_H)) || defined(INTPTR_MAX)
 
 namespace boost {
     using ::intptr_t;
@@ -392,8 +389,6 @@ namespace boost {
 #define BOOST_HAS_INTPTR_T
 
 #endif
-
-#endif // !defined(__PGIC__)
 
 #endif // BOOST_CSTDINT_HPP
 
@@ -422,6 +417,20 @@ INT#_C macros if they're not already defined (John Maddock).
 #if defined(__GNUC__) && (__GNUC__ >= 4)
 #pragma GCC system_header
 #endif
+//
+// Undef the macros as a precaution, since we may get here if <stdint.h> has failed
+// to define them all, see https://svn.boost.org/trac/boost/ticket/12786
+//
+#undef INT8_C
+#undef INT16_C
+#undef INT32_C
+#undef INT64_C
+#undef INTMAX_C
+#undef UINT8_C
+#undef UINT16_C
+#undef UINT32_C
+#undef UINT64_C
+#undef UINTMAX_C
 
 #include <limits.h>
 # define BOOST__STDC_CONSTANT_MACROS_DEFINED

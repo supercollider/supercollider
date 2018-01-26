@@ -80,7 +80,7 @@ T log1p_imp(T const & x, const Policy& pol, const mpl::int_<0>&)
 
    static const char* function = "boost::math::log1p<%1%>(%1%)";
 
-   if(x < -1)
+   if((x < -1) || (boost::math::isnan)(x))
       return policies::raise_domain_error<T>(
          function, "log1p(x) requires x > -1, but got x = %1%.", x, pol);
    if(x == -1)

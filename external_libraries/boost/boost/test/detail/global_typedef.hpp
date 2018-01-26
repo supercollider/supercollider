@@ -71,6 +71,21 @@ test_id_2_unit_type( test_unit_id id )
     return (id & 0xFFFF0000) != 0 ? TUT_CASE : TUT_SUITE;
 }
 
+//! Helper class for restoring the current test unit ID in a RAII manner
+struct test_unit_id_restore {
+    test_unit_id_restore(test_unit_id& to_restore_, test_unit_id new_value)
+    : to_restore(to_restore_)
+    , bkup(to_restore_) {
+        to_restore = new_value;
+    }
+    ~test_unit_id_restore() {
+        to_restore = bkup;
+    }
+private:
+    test_unit_id& to_restore;
+    test_unit_id bkup;
+};
+
 //____________________________________________________________________________//
 
 } // namespace ut_detail
