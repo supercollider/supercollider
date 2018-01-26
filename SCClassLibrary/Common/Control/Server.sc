@@ -903,16 +903,25 @@ Server {
 		this.connectSharedMemory;
 	}
 
+	prOnServerProcessExit { |exitCode|
+		"Server '%' exited with exit code %."
+			.format(this.name, exitCode)
+			.postln;
+		statusWatcher.quit(watchShutDown: false);
+	}
+
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".postln;
+			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
-			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
+			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+				this.prOnServerProcessExit(exitCode);
+			});
+			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
 	}
@@ -984,9 +993,9 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".postln;
+			"Internal server has quit.".postln;
 		} {
-			"'/quit' sent\n".postln;
+			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
 		pid = nil;
