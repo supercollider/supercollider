@@ -54,6 +54,8 @@ private:
     void fillDefault();
     void fillDark();
     void fillDracula();
+    void fillSolarizedLight();
+    void fillSolarizedDark();
 
     bool mLocked;
     QMap<QString, QTextCharFormat *> mFormats;

@@ -232,6 +232,90 @@ void Theme::fillDracula()
 }
 /* END MIT LICENSED CODE */
 
+/*
+The MIT license (MIT)
+
+Copyright (c) 2011 Ethan Schoonover
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+https://github.com/altercation/solarized
+*/
+
+void Theme::fillSolarizedLight()
+{
+    addToTheme(mFormats, "text",               QColor("#657b83"), QColor("#fdf6e3"));
+    addToTheme(mFormats, "currentLine",        Qt::transparent, QColor("#eee8d5"));
+    addToTheme(mFormats, "searchResult",       QColor("#93a1a1"), QColor("#073642"));
+    addToTheme(mFormats, "matchingBrackets",   QColor("#002b36"), QColor("#eee8d5"), true);
+    addToTheme(mFormats, "mismatchedBrackets", QColor("#eee8d5"), QColor("#586e75"));
+    addToTheme(mFormats, "evaluatedCode",      QColor("#586e75"), QColor("#eee8d5"));
+    addToTheme(mFormats, "whitespace",         Qt::transparent);
+    addToTheme(mFormats, "keyword",            QColor("#dc322f"), Qt::transparent, true);
+    addToTheme(mFormats, "built-in",           QColor("#b58900"));
+    addToTheme(mFormats, "env-var",            QColor("#d33682"));
+    addToTheme(mFormats, "class",              QColor("#268bd2"));
+    addToTheme(mFormats, "number",             QColor("#6c71c4"));
+    addToTheme(mFormats, "symbol",             QColor("#b58900"));
+    addToTheme(mFormats, "string",             QColor("#93a1a1"));
+    addToTheme(mFormats, "char",               QColor("#cb4b16"));
+    addToTheme(mFormats, "comment",            QColor("#586e75"), Qt::transparent, false, true);
+    addToTheme(mFormats, "primitive",          QColor("#2aa198"));
+    addToTheme(mFormats, "lineNumbers",        QColor("#839496"), QColor("#eee8d5"));
+    addToTheme(mFormats, "selection",          QColor("#fdf6e3"), QColor("#657b83"));
+    addToTheme(mFormats, "postwindowtext",     QColor("#657b83"));
+    addToTheme(mFormats, "postwindowerror",    QColor("#dc322f"));
+    addToTheme(mFormats, "postwindowwarning",  QColor("#cb4b16"));
+    addToTheme(mFormats, "postwindowsuccess",  QColor("#859900"));
+    addToTheme(mFormats, "postwindowemphasis", QColor("#b58900"), Qt::transparent, true);
+}
+
+void Theme::fillSolarizedDark()
+{
+    addToTheme(mFormats, "text",               QColor("#839496"), QColor("#002b36"));
+    addToTheme(mFormats, "currentLine",        Qt::transparent, QColor("#073642"));
+    addToTheme(mFormats, "searchResult",       QColor("#586e75"), QColor("#eee8d5"));
+    addToTheme(mFormats, "matchingBrackets",   QColor("#fdf6e3"), QColor("#073642"), true);
+    addToTheme(mFormats, "mismatchedBrackets", QColor("#073642"), QColor("#93a1a1"));
+    addToTheme(mFormats, "evaluatedCode",      QColor("#93a1a1"), QColor("#073642"));
+    addToTheme(mFormats, "whitespace",         Qt::transparent);
+    addToTheme(mFormats, "keyword",            QColor("#dc322f"), Qt::transparent, true);
+    addToTheme(mFormats, "built-in",           QColor("#b58900"));
+    addToTheme(mFormats, "env-var",            QColor("#d33682"));
+    addToTheme(mFormats, "class",              QColor("#268bd2"));
+    addToTheme(mFormats, "number",             QColor("#6c71c4"));
+    addToTheme(mFormats, "symbol",             QColor("#b58900"));
+    addToTheme(mFormats, "string",             QColor("#586e75"));
+    addToTheme(mFormats, "char",               QColor("#cb4b16"));
+    addToTheme(mFormats, "comment",            QColor("#93a1a1"), Qt::transparent, false, true);
+    addToTheme(mFormats, "primitive",          QColor("#2aa198"));
+    addToTheme(mFormats, "lineNumbers",        QColor("#657b83"), QColor("#073642"));
+    addToTheme(mFormats, "selection",          QColor("#002b36"), QColor("#839496"));
+    addToTheme(mFormats, "postwindowtext",     QColor("#839496"));
+    addToTheme(mFormats, "postwindowerror",    QColor("#dc322f"));
+    addToTheme(mFormats, "postwindowwarning",  QColor("#cb4b16"));
+    addToTheme(mFormats, "postwindowsuccess",  QColor("#859900"));
+    addToTheme(mFormats, "postwindowemphasis", QColor("#b58900"), Qt::transparent, true);
+}
+
+/* END MIT LICENSED COSE */
+
 void Theme::fillUser(const QString & name, const Manager *settings)
 {
     QString group = QStringLiteral("IDE/editor/themes/%1/").arg(name);
@@ -272,6 +356,12 @@ Theme::Theme(const QString & _name, Manager * settings)
     } else if (mName == "dracula") {
         fillDracula();
         mLocked = true;
+    } else if (mName == "solarizedLight") {
+        fillSolarizedLight();
+        mLocked = true;
+    } else if (mName == "solarizedDark") {
+        fillSolarizedDark();
+        mLocked = true;
     } else {
         fillUser(mName, settings);
         mLocked = false;
@@ -291,6 +381,10 @@ Theme::Theme(const QString & _name, const QString & _source, Manager * settings)
         fillDark();
     } else if (_source == "dracula") {
         fillDracula();
+    } else if (_source == "solarizedLight") {
+        fillSolarizedLight();
+    } else if (_source == "solarizedDark") {
+        fillSolarizedDark();
     } else {
         fillUser(_source, settings);
     }
@@ -344,6 +438,8 @@ QList<QString> Theme::availableThemes()
     themes.append("default");
     themes.append("dark");
     themes.append("dracula");
+    themes.append("solarizedLight");
+    themes.append("solarizedDark");
 
     mSettings->beginGroup("IDE/editor/themes");
     themes.append(mSettings->childGroups());
