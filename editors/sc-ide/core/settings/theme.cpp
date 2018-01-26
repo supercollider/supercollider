@@ -355,6 +355,7 @@ Theme::Theme(const QString & _name, Manager * settings)
         mLocked = true;
     } else if (mName == "dracula") {
         fillDracula();
+        mLocked = true;
     } else if (mName == "solarizedLight") {
         fillSolarizedLight();
         mLocked = true;
