@@ -33,7 +33,7 @@ For speed we keep this global, although this makes the code non-thread-safe.
 #include <cassert>
 
 #include "SC_fftlib.h"
-#include "../server/supernova/utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 
 #ifdef NOVA_SIMD
 #include "simd_binary_arithmetic.hpp"
