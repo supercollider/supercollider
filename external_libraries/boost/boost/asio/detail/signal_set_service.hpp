@@ -2,7 +2,7 @@
 // detail/signal_set_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,9 +20,9 @@
 #include <cstddef>
 #include <signal.h>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
-#include <boost/asio/detail/addressof.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/detail/handler_alloc_helpers.hpp>
+#include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/op_queue.hpp>
 #include <boost/asio/detail/signal_handler.hpp>
 #include <boost/asio/detail/signal_op.hpp>
@@ -48,7 +48,8 @@ extern BOOST_ASIO_DECL struct signal_state* get_signal_state();
 
 extern "C" BOOST_ASIO_DECL void boost_asio_signal_handler(int signal_number);
 
-class signal_set_service
+class signal_set_service :
+  public service_base<signal_set_service>
 {
 public:
   // Type used for tracking an individual signal registration.
@@ -109,17 +110,17 @@ public:
   };
 
   // Constructor.
-  BOOST_ASIO_DECL signal_set_service(boost::asio::io_service& io_service);
+  BOOST_ASIO_DECL signal_set_service(boost::asio::io_context& io_context);
 
   // Destructor.
   BOOST_ASIO_DECL ~signal_set_service();
 
   // Destroy all user-defined handler objects owned by the service.
-  BOOST_ASIO_DECL void shutdown_service();
+  BOOST_ASIO_DECL void shutdown();
 
   // Perform fork-related housekeeping.
-  BOOST_ASIO_DECL void fork_service(
-      boost::asio::io_service::fork_event fork_ev);
+  BOOST_ASIO_DECL void notify_fork(
+      boost::asio::io_context::fork_event fork_ev);
 
   // Construct a new signal_set implementation.
   BOOST_ASIO_DECL void construct(implementation_type& impl);
@@ -150,11 +151,11 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef signal_handler<Handler> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
-      boost_asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(handler);
 
-    BOOST_ASIO_HANDLER_CREATION((p.p, "signal_set", &impl, "async_wait"));
+    BOOST_ASIO_HANDLER_CREATION((io_context_.context(),
+          *p.p, "signal_set", &impl, 0, "async_wait"));
 
     start_wait_op(impl, p.p);
     p.v = p.p = 0;
@@ -179,8 +180,8 @@ private:
   // Helper function to start a wait operation.
   BOOST_ASIO_DECL void start_wait_op(implementation_type& impl, signal_op* op);
 
-  // The io_service instance used for dispatching handlers.
-  io_service_impl& io_service_;
+  // The io_context instance used for dispatching handlers.
+  io_context_impl& io_context_;
 
 #if !defined(BOOST_ASIO_WINDOWS) \
   && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \

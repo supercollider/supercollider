@@ -2,7 +2,7 @@
 // ip/address_v4.hpp
 // ~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,7 +18,9 @@
 #include <boost/asio/detail/config.hpp>
 #include <string>
 #include <boost/asio/detail/array.hpp>
+#include <boost/asio/detail/cstdint.hpp>
 #include <boost/asio/detail/socket_types.hpp>
+#include <boost/asio/detail/string_view.hpp>
 #include <boost/asio/detail/winsock_init.hpp>
 #include <boost/system/error_code.hpp>
 
@@ -44,6 +46,9 @@ namespace ip {
 class address_v4
 {
 public:
+  /// The type used to represent an address as an unsigned integer.
+  typedef uint_least32_t uint_type;
+
   /// The type used to represent an address as an array of bytes.
   /**
    * @note This type is defined in terms of the C++0x template @c std::array
@@ -64,8 +69,8 @@ public:
   /// Construct an address from raw bytes.
   BOOST_ASIO_DECL explicit address_v4(const bytes_type& bytes);
 
-  /// Construct an address from a unsigned long in host byte order.
-  BOOST_ASIO_DECL explicit address_v4(unsigned long addr);
+  /// Construct an address from an unsigned integer in host byte order.
+  BOOST_ASIO_DECL explicit address_v4(uint_type addr);
 
   /// Copy constructor.
   address_v4(const address_v4& other)
@@ -100,28 +105,40 @@ public:
   /// Get the address in bytes, in network byte order.
   BOOST_ASIO_DECL bytes_type to_bytes() const;
 
+  /// Get the address as an unsigned integer in host byte order
+  BOOST_ASIO_DECL uint_type to_uint() const;
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
   /// Get the address as an unsigned long in host byte order
   BOOST_ASIO_DECL unsigned long to_ulong() const;
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Get the address as a string in dotted decimal format.
   BOOST_ASIO_DECL std::string to_string() const;
 
-  /// Get the address as a string in dotted decimal format.
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use other overload.) Get the address as a string in dotted
+  /// decimal format.
   BOOST_ASIO_DECL std::string to_string(boost::system::error_code& ec) const;
 
-  /// Create an address from an IP address string in dotted decimal form.
-  BOOST_ASIO_DECL static address_v4 from_string(const char* str);
+  /// (Deprecated: Use make_address_v4().) Create an address from an IP address
+  /// string in dotted decimal form.
+  static address_v4 from_string(const char* str);
 
-  /// Create an address from an IP address string in dotted decimal form.
-  BOOST_ASIO_DECL static address_v4 from_string(
+  /// (Deprecated: Use make_address_v4().) Create an address from an IP address
+  /// string in dotted decimal form.
+  static address_v4 from_string(
       const char* str, boost::system::error_code& ec);
 
-  /// Create an address from an IP address string in dotted decimal form.
-  BOOST_ASIO_DECL static address_v4 from_string(const std::string& str);
+  /// (Deprecated: Use make_address_v4().) Create an address from an IP address
+  /// string in dotted decimal form.
+  static address_v4 from_string(const std::string& str);
 
-  /// Create an address from an IP address string in dotted decimal form.
-  BOOST_ASIO_DECL static address_v4 from_string(
+  /// (Deprecated: Use make_address_v4().) Create an address from an IP address
+  /// string in dotted decimal form.
+  static address_v4 from_string(
       const std::string& str, boost::system::error_code& ec);
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Determine whether the address is a loopback address.
   BOOST_ASIO_DECL bool is_loopback() const;
@@ -129,14 +146,19 @@ public:
   /// Determine whether the address is unspecified.
   BOOST_ASIO_DECL bool is_unspecified() const;
 
-  /// Determine whether the address is a class A address.
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use network_v4 class.) Determine whether the address is a
+  /// class A address.
   BOOST_ASIO_DECL bool is_class_a() const;
 
-  /// Determine whether the address is a class B address.
+  /// (Deprecated: Use network_v4 class.) Determine whether the address is a
+  /// class B address.
   BOOST_ASIO_DECL bool is_class_b() const;
 
-  /// Determine whether the address is a class C address.
+  /// (Deprecated: Use network_v4 class.) Determine whether the address is a
+  /// class C address.
   BOOST_ASIO_DECL bool is_class_c() const;
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Determine whether the address is a multicast address.
   BOOST_ASIO_DECL bool is_multicast() const;
@@ -156,25 +178,25 @@ public:
   /// Compare addresses for ordering.
   friend bool operator<(const address_v4& a1, const address_v4& a2)
   {
-    return a1.to_ulong() < a2.to_ulong();
+    return a1.to_uint() < a2.to_uint();
   }
 
   /// Compare addresses for ordering.
   friend bool operator>(const address_v4& a1, const address_v4& a2)
   {
-    return a1.to_ulong() > a2.to_ulong();
+    return a1.to_uint() > a2.to_uint();
   }
 
   /// Compare addresses for ordering.
   friend bool operator<=(const address_v4& a1, const address_v4& a2)
   {
-    return a1.to_ulong() <= a2.to_ulong();
+    return a1.to_uint() <= a2.to_uint();
   }
 
   /// Compare addresses for ordering.
   friend bool operator>=(const address_v4& a1, const address_v4& a2)
   {
-    return a1.to_ulong() >= a2.to_ulong();
+    return a1.to_uint() >= a2.to_uint();
   }
 
   /// Obtain an address object that represents any address.
@@ -195,19 +217,85 @@ public:
     return address_v4(0xFFFFFFFF);
   }
 
-  /// Obtain an address object that represents the broadcast address that
-  /// corresponds to the specified address and netmask.
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use network_v4 class.) Obtain an address object that
+  /// represents the broadcast address that corresponds to the specified
+  /// address and netmask.
   BOOST_ASIO_DECL static address_v4 broadcast(
       const address_v4& addr, const address_v4& mask);
 
-  /// Obtain the netmask that corresponds to the address, based on its address
-  /// class.
+  /// (Deprecated: Use network_v4 class.) Obtain the netmask that corresponds
+  /// to the address, based on its address class.
   BOOST_ASIO_DECL static address_v4 netmask(const address_v4& addr);
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 private:
   // The underlying IPv4 address.
   boost::asio::detail::in4_addr_type addr_;
 };
+
+/// Create an IPv4 address from raw bytes in network order.
+/**
+ * @relates address_v4
+ */
+inline address_v4 make_address_v4(const address_v4::bytes_type& bytes)
+{
+  return address_v4(bytes);
+}
+
+/// Create an IPv4 address from an unsigned integer in host byte order.
+/**
+ * @relates address_v4
+ */
+inline address_v4 make_address_v4(address_v4::uint_type addr)
+{
+  return address_v4(addr);
+}
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+/**
+ * @relates address_v4
+ */
+BOOST_ASIO_DECL address_v4 make_address_v4(const char* str);
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+/**
+ * @relates address_v4
+ */
+BOOST_ASIO_DECL address_v4 make_address_v4(
+    const char* str, boost::system::error_code& ec);
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+/**
+ * @relates address_v4
+ */
+BOOST_ASIO_DECL address_v4 make_address_v4(const std::string& str);
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+/**
+ * @relates address_v4
+ */
+BOOST_ASIO_DECL address_v4 make_address_v4(
+    const std::string& str, boost::system::error_code& ec);
+
+#if defined(BOOST_ASIO_HAS_STD_STRING_VIEW) \
+  || defined(GENERATING_DOCUMENTATION)
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+/**
+ * @relates address_v4
+ */
+BOOST_ASIO_DECL address_v4 make_address_v4(string_view str);
+
+/// Create an IPv4 address from an IP address string in dotted decimal form.
+/**
+ * @relates address_v4
+ */
+BOOST_ASIO_DECL address_v4 make_address_v4(
+    string_view str, boost::system::error_code& ec);
+
+#endif // defined(BOOST_ASIO_HAS_STD_STRING_VIEW)
+       //  || defined(GENERATING_DOCUMENTATION)
 
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
 

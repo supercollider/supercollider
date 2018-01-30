@@ -5,12 +5,6 @@
 
 #ifndef UUID_618474C2DE1511DEB74A388C56D89593
 #define UUID_618474C2DE1511DEB74A388C56D89593
-#if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
-#pragma GCC system_header
-#endif
-#if defined(_MSC_VER) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
-#pragma warning(push,1)
-#endif
 
 #include <boost/config.hpp>
 #ifdef BOOST_NO_EXCEPTIONS
@@ -19,8 +13,8 @@
 #include <boost/exception/exception.hpp>
 #include <boost/exception/info.hpp>
 #include <boost/exception/diagnostic_information.hpp>
-#include <boost/exception/detail/type_info.hpp>
 #include <boost/exception/detail/clone_current_exception.hpp>
+#include <boost/exception/detail/type_info.hpp>
 #ifndef BOOST_NO_RTTI
 #include <boost/core/demangle.hpp>
 #endif
@@ -29,6 +23,13 @@
 #include <new>
 #include <ios>
 #include <stdlib.h>
+
+#if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
+#pragma GCC system_header
+#endif
+#if defined(_MSC_VER) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
+#pragma warning(push,1)
+#endif
 
 namespace
 boost
@@ -394,7 +395,7 @@ boost
                         {
                         return exception_detail::current_exception_std_exception(e);
                         }
-#ifndef BOOST_NO_TYPEID
+        #ifndef BOOST_NO_TYPEID
                     catch(
                     std::bad_cast & e )
                         {
@@ -405,7 +406,7 @@ boost
                         {
                         return exception_detail::current_exception_std_exception(e);
                         }
-#endif
+        #endif
                     catch(
                     std::bad_exception & e )
                         {

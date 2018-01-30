@@ -493,7 +493,7 @@ class tree
    typedef boost::container::reverse_iterator
       <const_iterator>                                const_reverse_iterator;
    typedef node_handle
-      < Node, value_type, allocator_type, void>       node_type;
+      < NodeAlloc, void>                              node_type;
    typedef insert_return_type_base
       <iterator, node_type>                           insert_return_type;
 
@@ -509,7 +509,11 @@ class tree
       : AllocHolder()
    {}
 
-   BOOST_CONTAINER_FORCEINLINE explicit tree(const key_compare& comp, const allocator_type& a = allocator_type())
+   BOOST_CONTAINER_FORCEINLINE explicit tree(const key_compare& comp)
+      : AllocHolder(ValComp(comp))
+   {}
+
+   BOOST_CONTAINER_FORCEINLINE explicit tree(const key_compare& comp, const allocator_type& a)
       : AllocHolder(ValComp(comp), a)
    {}
 
@@ -518,85 +522,110 @@ class tree
    {}
 
    template <class InputIterator>
-   tree(bool unique_insertion, InputIterator first, InputIterator last, const key_compare& comp,
-          const allocator_type& a
-      #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
-      , typename container_detail::enable_if_or
-         < void
-         , container_detail::is_same<alloc_version, version_1>
-         , container_detail::is_input_iterator<InputIterator>
-         >::type * = 0
-      #endif
-         )
+   tree(bool unique_insertion, InputIterator first, InputIterator last)
+      : AllocHolder(value_compare(key_compare()))
+   {
+      this->tree_construct(unique_insertion, first, last);
+      //AllocHolder clears in case of exception
+   }
+
+   template <class InputIterator>
+   tree(bool unique_insertion, InputIterator first, InputIterator last, const key_compare& comp)
+      : AllocHolder(value_compare(comp))
+   {
+      this->tree_construct(unique_insertion, first, last);
+      //AllocHolder clears in case of exception
+   }
+
+   template <class InputIterator>
+   tree(bool unique_insertion, InputIterator first, InputIterator last, const key_compare& comp, const allocator_type& a)
       : AllocHolder(value_compare(comp), a)
+   {
+      this->tree_construct(unique_insertion, first, last);
+      //AllocHolder clears in case of exception
+   }
+
+   //construct with ordered range
+   template <class InputIterator>
+   tree( ordered_range_t, InputIterator first, InputIterator last)
+      : AllocHolder(value_compare(key_compare()))
+   {
+      this->tree_construct(ordered_range_t(), first, last);
+   }
+
+   template <class InputIterator>
+   tree( ordered_range_t, InputIterator first, InputIterator last, const key_compare& comp)
+      : AllocHolder(value_compare(comp))
+   {
+      this->tree_construct(ordered_range_t(), first, last);
+   }
+
+   template <class InputIterator>
+   tree( ordered_range_t, InputIterator first, InputIterator last
+         , const key_compare& comp, const allocator_type& a)
+      : AllocHolder(value_compare(comp), a)
+   {
+      this->tree_construct(ordered_range_t(), first, last);
+   }
+
+   private:
+
+   template <class InputIterator>
+   void tree_construct(bool unique_insertion, InputIterator first, InputIterator last)
    {
       //Use cend() as hint to achieve linear time for
       //ordered ranges as required by the standard
       //for the constructor
-      const const_iterator end_it(this->cend());
       if(unique_insertion){
-         for ( ; first != last; ++first){
-            this->insert_unique_convertible(end_it, *first);
-         }
-      }
-      else{
-         for ( ; first != last; ++first){
-            this->insert_equal_convertible(end_it, *first);
-         }
-      }
-   }
-
-   template <class InputIterator>
-   tree(bool unique_insertion, InputIterator first, InputIterator last, const key_compare& comp,
-          const allocator_type& a
-      #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
-      , typename container_detail::disable_if_or
-         < void
-         , container_detail::is_same<alloc_version, version_1>
-         , container_detail::is_input_iterator<InputIterator>
-         >::type * = 0
-      #endif
-         )
-      : AllocHolder(value_compare(comp), a)
-   {
-      if(unique_insertion){
-         //Use cend() as hint to achieve linear time for
-         //ordered ranges as required by the standard
-         //for the constructor
          const const_iterator end_it(this->cend());
          for ( ; first != last; ++first){
             this->insert_unique_convertible(end_it, *first);
          }
       }
       else{
-         //Optimized allocation and construction
-         this->allocate_many_and_construct
-            ( first, boost::container::iterator_distance(first, last)
-            , insert_equal_end_hint_functor<Node, Icont>(this->icont()));
+         this->tree_construct_non_unique(first, last);
       }
    }
 
    template <class InputIterator>
-   tree( ordered_range_t, InputIterator first, InputIterator last
-         , const key_compare& comp = key_compare(), const allocator_type& a = allocator_type()
-         #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
+   void tree_construct_non_unique(InputIterator first, InputIterator last
+      #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
       , typename container_detail::enable_if_or
          < void
          , container_detail::is_same<alloc_version, version_1>
          , container_detail::is_input_iterator<InputIterator>
          >::type * = 0
-         #endif
+      #endif
          )
-      : AllocHolder(value_compare(comp), a)
    {
+      //Use cend() as hint to achieve linear time for
+      //ordered ranges as required by the standard
+      //for the constructor
+      const const_iterator end_it(this->cend());
       for ( ; first != last; ++first){
-         this->push_back_impl(*first);
+         this->insert_equal_convertible(end_it, *first);
       }
    }
 
    template <class InputIterator>
-   tree( ordered_range_t, InputIterator first, InputIterator last
-         , const key_compare& comp = key_compare(), const allocator_type& a = allocator_type()
+   void tree_construct_non_unique(InputIterator first, InputIterator last
+      #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
+      , typename container_detail::disable_if_or
+         < void
+         , container_detail::is_same<alloc_version, version_1>
+         , container_detail::is_input_iterator<InputIterator>
+         >::type * = 0
+      #endif
+         )
+   {
+      //Optimized allocation and construction
+      this->allocate_many_and_construct
+         ( first, boost::container::iterator_distance(first, last)
+         , insert_equal_end_hint_functor<Node, Icont>(this->icont()));
+   }
+
+   template <class InputIterator>
+   void tree_construct( ordered_range_t, InputIterator first, InputIterator last
          #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
       , typename container_detail::disable_if_or
          < void
@@ -605,16 +634,34 @@ class tree
          >::type * = 0
          #endif
          )
-      : AllocHolder(value_compare(comp), a)
    {
       //Optimized allocation and construction
       this->allocate_many_and_construct
          ( first, boost::container::iterator_distance(first, last)
          , container_detail::push_back_functor<Node, Icont>(this->icont()));
+      //AllocHolder clears in case of exception
    }
 
+   template <class InputIterator>
+   void tree_construct( ordered_range_t, InputIterator first, InputIterator last
+         #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
+      , typename container_detail::enable_if_or
+         < void
+         , container_detail::is_same<alloc_version, version_1>
+         , container_detail::is_input_iterator<InputIterator>
+         >::type * = 0
+         #endif
+         )
+   {
+      for ( ; first != last; ++first){
+         this->push_back_impl(*first);
+      }
+   }
+
+   public:
+
    BOOST_CONTAINER_FORCEINLINE tree(const tree& x)
-      :  AllocHolder(x.value_comp(), x)
+      :  AllocHolder(x, x.value_comp())
    {
       this->icont().clone_from
          (x.icont(), typename AllocHolder::cloner(*this), Destroyer(this->node_alloc()));
@@ -630,6 +677,7 @@ class tree
    {
       this->icont().clone_from
          (x.icont(), typename AllocHolder::cloner(*this), Destroyer(this->node_alloc()));
+      //AllocHolder clears in case of exception
    }
 
    tree(BOOST_RV_REF(tree) x, const allocator_type &a)
@@ -642,6 +690,7 @@ class tree
          this->icont().clone_from
             (boost::move(x.icont()), typename AllocHolder::move_cloner(*this), Destroyer(this->node_alloc()));
       }
+      //AllocHolder clears in case of exception
    }
 
    BOOST_CONTAINER_FORCEINLINE ~tree()
@@ -1142,7 +1191,7 @@ class tree
             this->insert_unique_check(hint, KeyOfValue()(nh.value()), data);
          if(ret.second){
             irt.inserted = true;
-            irt.position = iterator(this->icont().insert_unique_commit(*nh.get_node_pointer(), data));
+            irt.position = iterator(this->icont().insert_unique_commit(*nh.get(), data));
             nh.release();
          }
          else{

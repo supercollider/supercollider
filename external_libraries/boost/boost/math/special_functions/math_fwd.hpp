@@ -23,6 +23,7 @@
 #pragma once
 #endif
 
+#include <vector>
 #include <boost/math/special_functions/detail/round_fwd.hpp>
 #include <boost/math/tools/promotion.hpp> // for argument promotion.
 #include <boost/math/policies/policy.hpp>
@@ -181,10 +182,24 @@ namespace boost
    template <class T>
    typename tools::promote_args<T>::type
          legendre_p(int l, T x);
+   template <class T>
+   typename tools::promote_args<T>::type
+          legendre_p_prime(int l, T x);
+
+
+   template <class T, class Policy>
+   inline std::vector<T> legendre_p_zeros(int l, const Policy& pol);
+
+   template <class T>
+   inline std::vector<T> legendre_p_zeros(int l);
+
 #if !BOOST_WORKAROUND(BOOST_MSVC, <= 1310)
    template <class T, class Policy>
    typename boost::enable_if_c<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
          legendre_p(int l, T x, const Policy& pol);
+   template <class T, class Policy>
+   inline typename boost::enable_if_c<policies::is_policy<Policy>::value, typename tools::promote_args<T>::type>::type
+      legendre_p_prime(int l, T x, const Policy& pol);
 #endif
    template <class T>
    typename tools::promote_args<T>::type
@@ -247,6 +262,30 @@ namespace boost
    template <class T1, class T2, class T3>
    typename tools::promote_args<T1, T2, T3>::type
       hermite_next(unsigned n, T1 x, T2 Hn, T3 Hnm1);
+
+   template<class T1, class T2, class T3>
+   typename tools::promote_args<T1, T2, T3>::type chebyshev_next(T1 const & x, T2 const & Tn, T3 const & Tn_1);
+
+   template <class Real, class Policy>
+   typename tools::promote_args<Real>::type
+      chebyshev_t(unsigned n, Real const & x, const Policy&);
+   template<class Real>
+   typename tools::promote_args<Real>::type chebyshev_t(unsigned n, Real const & x);
+   
+   template <class Real, class Policy>
+   typename tools::promote_args<Real>::type
+      chebyshev_u(unsigned n, Real const & x, const Policy&);
+   template<class Real>
+   typename tools::promote_args<Real>::type chebyshev_u(unsigned n, Real const & x);
+
+   template <class Real, class Policy>
+   typename tools::promote_args<Real>::type
+      chebyshev_t_prime(unsigned n, Real const & x, const Policy&);
+   template<class Real>
+   typename tools::promote_args<Real>::type chebyshev_t_prime(unsigned n, Real const & x);
+
+   template<class Real, class T2>
+   Real chebyshev_clenshaw_recurrence(const Real* const c, size_t length, const T2& x);
 
    template <class T1, class T2>
    std::complex<typename tools::promote_args<T1, T2>::type>
@@ -626,6 +665,17 @@ namespace boost
                bessel_maybe_int_tag
             >::type
          >::type optimisation_tag;
+         typedef typename mpl::if_<
+            mpl::or_<
+               mpl::less_equal<precision_type, mpl::int_<0> >,
+               mpl::greater<precision_type, mpl::int_<113> > >,
+            bessel_no_int_tag,
+            typename mpl::if_<
+               is_integral<T1>,
+               bessel_int_tag,
+               bessel_maybe_int_tag
+            >::type
+         >::type optimisation_tag128;
       };
    } // detail
 
@@ -1136,6 +1186,10 @@ namespace boost
 \
    template <class T>\
    inline typename boost::math::tools::promote_args<T>::type \
+   legendre_p_prime(int l, T x){ return ::boost::math::legendre_p(l, x, Policy()); }\
+\
+   template <class T>\
+   inline typename boost::math::tools::promote_args<T>::type \
    legendre_q(unsigned l, T x){ return ::boost::math::legendre_q(l, x, Policy()); }\
 \
    using ::boost::math::legendre_next;\
@@ -1159,6 +1213,19 @@ namespace boost
    hermite(unsigned n, T x){ return ::boost::math::hermite(n, x, Policy()); }\
 \
    using boost::math::hermite_next;\
+\
+   using boost::math::chebyshev_next;\
+\
+  template<class Real>\
+  Real chebyshev_t(unsigned n, Real const & x){ return ::boost::math::chebyshev_t(n, x, Policy()); }\
+\
+  template<class Real>\
+  Real chebyshev_u(unsigned n, Real const & x){ return ::boost::math::chebyshev_u(n, x, Policy()); }\
+\
+  template<class Real>\
+  Real chebyshev_t_prime(unsigned n, Real const & x){ return ::boost::math::chebyshev_t_prime(n, x, Policy()); }\
+\
+  using ::boost::math::chebyshev_clenshaw_recurrence;\
 \
    template <class T1, class T2>\
    inline std::complex<typename boost::math::tools::promote_args<T1, T2>::type> \
@@ -1582,5 +1649,3 @@ template <class OutputIterator, class T>\
 
 
 #endif // BOOST_MATH_SPECIAL_MATH_FWD_HPP
-
-

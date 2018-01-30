@@ -36,31 +36,34 @@ namespace runtime_config {
 // ************************************************************************** //
 
 // UTF parameters
-BOOST_TEST_DECL extern std::string AUTO_START_DBG;
-BOOST_TEST_DECL extern std::string BREAK_EXEC_PATH;
-BOOST_TEST_DECL extern std::string BUILD_INFO;
-BOOST_TEST_DECL extern std::string CATCH_SYS_ERRORS;
-BOOST_TEST_DECL extern std::string COLOR_OUTPUT;
-BOOST_TEST_DECL extern std::string DETECT_FP_EXCEPT;
-BOOST_TEST_DECL extern std::string DETECT_MEM_LEAKS;
-BOOST_TEST_DECL extern std::string LIST_CONTENT;
-BOOST_TEST_DECL extern std::string LIST_LABELS;
-BOOST_TEST_DECL extern std::string COMBINED_LOGGER;
-BOOST_TEST_DECL extern std::string LOG_FORMAT;
-BOOST_TEST_DECL extern std::string LOG_LEVEL;
-BOOST_TEST_DECL extern std::string LOG_SINK;
-BOOST_TEST_DECL extern std::string OUTPUT_FORMAT;
-BOOST_TEST_DECL extern std::string RANDOM_SEED;
-BOOST_TEST_DECL extern std::string REPORT_FORMAT;
-BOOST_TEST_DECL extern std::string REPORT_LEVEL;
-BOOST_TEST_DECL extern std::string REPORT_MEM_LEAKS;
-BOOST_TEST_DECL extern std::string REPORT_SINK;
-BOOST_TEST_DECL extern std::string RESULT_CODE;
-BOOST_TEST_DECL extern std::string RUN_FILTERS;
-BOOST_TEST_DECL extern std::string SAVE_TEST_PATTERN;
-BOOST_TEST_DECL extern std::string SHOW_PROGRESS;
-BOOST_TEST_DECL extern std::string USE_ALT_STACK;
-BOOST_TEST_DECL extern std::string WAIT_FOR_DEBUGGER;
+BOOST_TEST_DECL extern std::string btrt_auto_start_dbg;
+BOOST_TEST_DECL extern std::string btrt_break_exec_path;
+BOOST_TEST_DECL extern std::string btrt_build_info;
+BOOST_TEST_DECL extern std::string btrt_catch_sys_errors;
+BOOST_TEST_DECL extern std::string btrt_color_output;
+BOOST_TEST_DECL extern std::string btrt_detect_fp_except;
+BOOST_TEST_DECL extern std::string btrt_detect_mem_leaks;
+BOOST_TEST_DECL extern std::string btrt_list_content;
+BOOST_TEST_DECL extern std::string btrt_list_labels;
+BOOST_TEST_DECL extern std::string btrt_log_format;
+BOOST_TEST_DECL extern std::string btrt_log_level;
+BOOST_TEST_DECL extern std::string btrt_log_sink;
+BOOST_TEST_DECL extern std::string btrt_combined_logger;
+BOOST_TEST_DECL extern std::string btrt_output_format;
+BOOST_TEST_DECL extern std::string btrt_random_seed;
+BOOST_TEST_DECL extern std::string btrt_report_format;
+BOOST_TEST_DECL extern std::string btrt_report_level;
+BOOST_TEST_DECL extern std::string btrt_report_mem_leaks;
+BOOST_TEST_DECL extern std::string btrt_report_sink;
+BOOST_TEST_DECL extern std::string btrt_result_code;
+BOOST_TEST_DECL extern std::string btrt_run_filters;
+BOOST_TEST_DECL extern std::string btrt_save_test_pattern;
+BOOST_TEST_DECL extern std::string btrt_show_progress;
+BOOST_TEST_DECL extern std::string btrt_use_alt_stack;
+BOOST_TEST_DECL extern std::string btrt_wait_for_debugger;
+BOOST_TEST_DECL extern std::string btrt_help;
+BOOST_TEST_DECL extern std::string btrt_usage;
+BOOST_TEST_DECL extern std::string btrt_version;
 
 BOOST_TEST_DECL void init( int& argc, char** argv );
 

@@ -2,7 +2,7 @@
 // impl/read.hpp
 // ~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,8 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <algorithm>
+#include <boost/asio/associated_allocator.hpp>
+#include <boost/asio/associated_executor.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/completion_condition.hpp>
 #include <boost/asio/detail/array_fwd.hpp>
@@ -35,30 +37,46 @@
 namespace boost {
 namespace asio {
 
+namespace detail
+{
+  template <typename SyncReadStream, typename MutableBufferSequence,
+      typename MutableBufferIterator, typename CompletionCondition>
+  std::size_t read_buffer_sequence(SyncReadStream& s,
+      const MutableBufferSequence& buffers, const MutableBufferIterator&,
+      CompletionCondition completion_condition, boost::system::error_code& ec)
+  {
+    ec = boost::system::error_code();
+    boost::asio::detail::consuming_buffers<mutable_buffer,
+        MutableBufferSequence, MutableBufferIterator> tmp(buffers);
+    while (!tmp.empty())
+    {
+      if (std::size_t max_size = detail::adapt_completion_condition_result(
+            completion_condition(ec, tmp.total_consumed())))
+        tmp.consume(s.read_some(tmp.prepare(max_size), ec));
+      else
+        break;
+    }
+    return tmp.total_consumed();;
+  }
+} // namespace detail
+
 template <typename SyncReadStream, typename MutableBufferSequence,
     typename CompletionCondition>
 std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
-    CompletionCondition completion_condition, boost::system::error_code& ec)
+    CompletionCondition completion_condition, boost::system::error_code& ec,
+    typename enable_if<
+      is_mutable_buffer_sequence<MutableBufferSequence>::value
+    >::type*)
 {
-  ec = boost::system::error_code();
-  boost::asio::detail::consuming_buffers<
-    mutable_buffer, MutableBufferSequence> tmp(buffers);
-  std::size_t total_transferred = 0;
-  tmp.prepare(detail::adapt_completion_condition_result(
-        completion_condition(ec, total_transferred)));
-  while (tmp.begin() != tmp.end())
-  {
-    std::size_t bytes_transferred = s.read_some(tmp, ec);
-    tmp.consume(bytes_transferred);
-    total_transferred += bytes_transferred;
-    tmp.prepare(detail::adapt_completion_condition_result(
-          completion_condition(ec, total_transferred)));
-  }
-  return total_transferred;
+  return detail::read_buffer_sequence(s, buffers,
+      boost::asio::buffer_sequence_begin(buffers), completion_condition, ec);
 }
 
 template <typename SyncReadStream, typename MutableBufferSequence>
-inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers)
+inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
+    typename enable_if<
+      is_mutable_buffer_sequence<MutableBufferSequence>::value
+    >::type*)
 {
   boost::system::error_code ec;
   std::size_t bytes_transferred = read(s, buffers, transfer_all(), ec);
@@ -68,7 +86,10 @@ inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers)
 
 template <typename SyncReadStream, typename MutableBufferSequence>
 inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
-    boost::system::error_code& ec)
+    boost::system::error_code& ec,
+    typename enable_if<
+      is_mutable_buffer_sequence<MutableBufferSequence>::value
+    >::type*)
 {
   return read(s, buffers, transfer_all(), ec);
 }
@@ -76,7 +97,10 @@ inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
 template <typename SyncReadStream, typename MutableBufferSequence,
     typename CompletionCondition>
 inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
-    CompletionCondition completion_condition)
+    CompletionCondition completion_condition,
+    typename enable_if<
+      is_mutable_buffer_sequence<MutableBufferSequence>::value
+    >::type*)
 {
   boost::system::error_code ec;
   std::size_t bytes_transferred = read(s, buffers, completion_condition, ec);
@@ -84,19 +108,25 @@ inline std::size_t read(SyncReadStream& s, const MutableBufferSequence& buffers,
   return bytes_transferred;
 }
 
-#if !defined(BOOST_ASIO_NO_IOSTREAM)
-
-template <typename SyncReadStream, typename Allocator,
+template <typename SyncReadStream, typename DynamicBuffer,
     typename CompletionCondition>
 std::size_t read(SyncReadStream& s,
-    boost::asio::basic_streambuf<Allocator>& b,
-    CompletionCondition completion_condition, boost::system::error_code& ec)
+    BOOST_ASIO_MOVE_ARG(DynamicBuffer) buffers,
+    CompletionCondition completion_condition, boost::system::error_code& ec,
+    typename enable_if<
+      is_dynamic_buffer<DynamicBuffer>::value
+    >::type*)
 {
+  typename decay<DynamicBuffer>::type b(
+      BOOST_ASIO_MOVE_CAST(DynamicBuffer)(buffers));
+
   ec = boost::system::error_code();
   std::size_t total_transferred = 0;
   std::size_t max_size = detail::adapt_completion_condition_result(
         completion_condition(ec, total_transferred));
-  std::size_t bytes_available = read_size_helper(b, max_size);
+  std::size_t bytes_available = std::min<std::size_t>(
+        std::max<std::size_t>(512, b.capacity() - b.size()),
+        std::min<std::size_t>(max_size, b.max_size() - b.size()));
   while (bytes_available > 0)
   {
     std::size_t bytes_transferred = s.read_some(b.prepare(bytes_available), ec);
@@ -104,19 +134,73 @@ std::size_t read(SyncReadStream& s,
     total_transferred += bytes_transferred;
     max_size = detail::adapt_completion_condition_result(
           completion_condition(ec, total_transferred));
-    bytes_available = read_size_helper(b, max_size);
+    bytes_available = std::min<std::size_t>(
+          std::max<std::size_t>(512, b.capacity() - b.size()),
+          std::min<std::size_t>(max_size, b.max_size() - b.size()));
   }
   return total_transferred;
+}
+
+template <typename SyncReadStream, typename DynamicBuffer>
+inline std::size_t read(SyncReadStream& s,
+    BOOST_ASIO_MOVE_ARG(DynamicBuffer) buffers,
+    typename enable_if<
+      is_dynamic_buffer<DynamicBuffer>::value
+    >::type*)
+{
+  boost::system::error_code ec;
+  std::size_t bytes_transferred = read(s,
+      BOOST_ASIO_MOVE_CAST(DynamicBuffer)(buffers), transfer_all(), ec);
+  boost::asio::detail::throw_error(ec, "read");
+  return bytes_transferred;
+}
+
+template <typename SyncReadStream, typename DynamicBuffer>
+inline std::size_t read(SyncReadStream& s,
+    BOOST_ASIO_MOVE_ARG(DynamicBuffer) buffers,
+    boost::system::error_code& ec,
+    typename enable_if<
+      is_dynamic_buffer<DynamicBuffer>::value
+    >::type*)
+{
+  return read(s, BOOST_ASIO_MOVE_CAST(DynamicBuffer)(buffers),
+      transfer_all(), ec);
+}
+
+template <typename SyncReadStream, typename DynamicBuffer,
+    typename CompletionCondition>
+inline std::size_t read(SyncReadStream& s,
+    BOOST_ASIO_MOVE_ARG(DynamicBuffer) buffers,
+    CompletionCondition completion_condition,
+    typename enable_if<
+      is_dynamic_buffer<DynamicBuffer>::value
+    >::type*)
+{
+  boost::system::error_code ec;
+  std::size_t bytes_transferred = read(s,
+      BOOST_ASIO_MOVE_CAST(DynamicBuffer)(buffers),
+      completion_condition, ec);
+  boost::asio::detail::throw_error(ec, "read");
+  return bytes_transferred;
+}
+
+#if !defined(BOOST_ASIO_NO_EXTENSIONS)
+#if !defined(BOOST_ASIO_NO_IOSTREAM)
+
+template <typename SyncReadStream, typename Allocator,
+    typename CompletionCondition>
+inline std::size_t read(SyncReadStream& s,
+    boost::asio::basic_streambuf<Allocator>& b,
+    CompletionCondition completion_condition, boost::system::error_code& ec)
+{
+  return read(s, basic_streambuf_ref<Allocator>(b), completion_condition, ec);
 }
 
 template <typename SyncReadStream, typename Allocator>
 inline std::size_t read(SyncReadStream& s,
     boost::asio::basic_streambuf<Allocator>& b)
 {
-  boost::system::error_code ec;
-  std::size_t bytes_transferred = read(s, b, transfer_all(), ec);
-  boost::asio::detail::throw_error(ec, "read");
-  return bytes_transferred;
+  return read(s, basic_streambuf_ref<Allocator>(b));
 }
 
 template <typename SyncReadStream, typename Allocator>
@@ -124,7 +208,7 @@ inline std::size_t read(SyncReadStream& s,
     boost::asio::basic_streambuf<Allocator>& b,
     boost::system::error_code& ec)
 {
-  return read(s, b, transfer_all(), ec);
+  return read(s, basic_streambuf_ref<Allocator>(b), ec);
 }
 
 template <typename SyncReadStream, typename Allocator,
@@ -133,18 +217,17 @@ inline std::size_t read(SyncReadStream& s,
     boost::asio::basic_streambuf<Allocator>& b,
     CompletionCondition completion_condition)
 {
-  boost::system::error_code ec;
-  std::size_t bytes_transferred = read(s, b, completion_condition, ec);
-  boost::asio::detail::throw_error(ec, "read");
-  return bytes_transferred;
+  return read(s, basic_streambuf_ref<Allocator>(b), completion_condition);
 }
 
 #endif // !defined(BOOST_ASIO_NO_IOSTREAM)
+#endif // !defined(BOOST_ASIO_NO_EXTENSIONS)
 
 namespace detail
 {
   template <typename AsyncReadStream, typename MutableBufferSequence,
-      typename CompletionCondition, typename ReadHandler>
+      typename MutableBufferIterator, typename CompletionCondition,
+      typename ReadHandler>
   class read_op
     : detail::base_from_completion_cond<CompletionCondition>
   {
@@ -156,7 +239,6 @@ namespace detail
         stream_(stream),
         buffers_(buffers),
         start_(0),
-        total_transferred_(0),
         handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(handler))
     {
     }
@@ -167,7 +249,6 @@ namespace detail
         stream_(other.stream_),
         buffers_(other.buffers_),
         start_(other.start_),
-        total_transferred_(other.total_transferred_),
         handler_(other.handler_)
     {
     }
@@ -177,7 +258,6 @@ namespace detail
         stream_(other.stream_),
         buffers_(other.buffers_),
         start_(other.start_),
-        total_transferred_(other.total_transferred_),
         handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(other.handler_))
     {
     }
@@ -186,285 +266,39 @@ namespace detail
     void operator()(const boost::system::error_code& ec,
         std::size_t bytes_transferred, int start = 0)
     {
+      std::size_t max_size;
       switch (start_ = start)
       {
         case 1:
-        buffers_.prepare(this->check_for_completion(ec, total_transferred_));
-        for (;;)
+        max_size = this->check_for_completion(ec, buffers_.total_consumed());
+        do
         {
-          stream_.async_read_some(buffers_,
+          stream_.async_read_some(buffers_.prepare(max_size),
               BOOST_ASIO_MOVE_CAST(read_op)(*this));
           return; default:
-          total_transferred_ += bytes_transferred;
           buffers_.consume(bytes_transferred);
-          buffers_.prepare(this->check_for_completion(ec, total_transferred_));
-          if ((!ec && bytes_transferred == 0)
-              || buffers_.begin() == buffers_.end())
+          if ((!ec && bytes_transferred == 0) || buffers_.empty())
             break;
-        }
+          max_size = this->check_for_completion(ec, buffers_.total_consumed());
+        } while (max_size > 0);
 
-        handler_(ec, static_cast<const std::size_t&>(total_transferred_));
+        handler_(ec, buffers_.total_consumed());
       }
     }
 
   //private:
     AsyncReadStream& stream_;
-    boost::asio::detail::consuming_buffers<
-      mutable_buffer, MutableBufferSequence> buffers_;
+    boost::asio::detail::consuming_buffers<mutable_buffer,
+        MutableBufferSequence, MutableBufferIterator> buffers_;
     int start_;
-    std::size_t total_transferred_;
     ReadHandler handler_;
   };
-
-  template <typename AsyncReadStream,
-      typename CompletionCondition, typename ReadHandler>
-  class read_op<AsyncReadStream, boost::asio::mutable_buffers_1,
-      CompletionCondition, ReadHandler>
-    : detail::base_from_completion_cond<CompletionCondition>
-  {
-  public:
-    read_op(AsyncReadStream& stream,
-        const boost::asio::mutable_buffers_1& buffers,
-        CompletionCondition completion_condition, ReadHandler& handler)
-      : detail::base_from_completion_cond<
-          CompletionCondition>(completion_condition),
-        stream_(stream),
-        buffer_(buffers),
-        start_(0),
-        total_transferred_(0),
-        handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(handler))
-    {
-    }
-
-#if defined(BOOST_ASIO_HAS_MOVE)
-    read_op(const read_op& other)
-      : detail::base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffer_(other.buffer_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(other.handler_)
-    {
-    }
-
-    read_op(read_op&& other)
-      : detail::base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffer_(other.buffer_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(other.handler_))
-    {
-    }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
-
-    void operator()(const boost::system::error_code& ec,
-        std::size_t bytes_transferred, int start = 0)
-    {
-      std::size_t n = 0;
-      switch (start_ = start)
-      {
-        case 1:
-        n = this->check_for_completion(ec, total_transferred_);
-        for (;;)
-        {
-          stream_.async_read_some(
-              boost::asio::buffer(buffer_ + total_transferred_, n),
-              BOOST_ASIO_MOVE_CAST(read_op)(*this));
-          return; default:
-          total_transferred_ += bytes_transferred;
-          if ((!ec && bytes_transferred == 0)
-              || (n = this->check_for_completion(ec, total_transferred_)) == 0
-              || total_transferred_ == boost::asio::buffer_size(buffer_))
-            break;
-        }
-
-        handler_(ec, static_cast<const std::size_t&>(total_transferred_));
-      }
-    }
-
-  //private:
-    AsyncReadStream& stream_;
-    boost::asio::mutable_buffer buffer_;
-    int start_;
-    std::size_t total_transferred_;
-    ReadHandler handler_;
-  };
-
-  template <typename AsyncReadStream, typename Elem,
-      typename CompletionCondition, typename ReadHandler>
-  class read_op<AsyncReadStream, boost::array<Elem, 2>,
-      CompletionCondition, ReadHandler>
-    : detail::base_from_completion_cond<CompletionCondition>
-  {
-  public:
-    read_op(AsyncReadStream& stream, const boost::array<Elem, 2>& buffers,
-        CompletionCondition completion_condition, ReadHandler& handler)
-      : detail::base_from_completion_cond<
-          CompletionCondition>(completion_condition),
-        stream_(stream),
-        buffers_(buffers),
-        start_(0),
-        total_transferred_(0),
-        handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(handler))
-    {
-    }
-
-#if defined(BOOST_ASIO_HAS_MOVE)
-    read_op(const read_op& other)
-      : detail::base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(other.handler_)
-    {
-    }
-
-    read_op(read_op&& other)
-      : detail::base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(other.handler_))
-    {
-    }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
-
-    void operator()(const boost::system::error_code& ec,
-        std::size_t bytes_transferred, int start = 0)
-    {
-      typename boost::asio::detail::dependent_type<Elem,
-          boost::array<boost::asio::mutable_buffer, 2> >::type bufs = {{
-        boost::asio::mutable_buffer(buffers_[0]),
-        boost::asio::mutable_buffer(buffers_[1]) }};
-      std::size_t buffer_size0 = boost::asio::buffer_size(bufs[0]);
-      std::size_t buffer_size1 = boost::asio::buffer_size(bufs[1]);
-      std::size_t n = 0;
-      switch (start_ = start)
-      {
-        case 1:
-        n = this->check_for_completion(ec, total_transferred_);
-        for (;;)
-        {
-          bufs[0] = boost::asio::buffer(bufs[0] + total_transferred_, n);
-          bufs[1] = boost::asio::buffer(
-              bufs[1] + (total_transferred_ < buffer_size0
-                ? 0 : total_transferred_ - buffer_size0),
-              n - boost::asio::buffer_size(bufs[0]));
-          stream_.async_read_some(bufs, BOOST_ASIO_MOVE_CAST(read_op)(*this));
-          return; default:
-          total_transferred_ += bytes_transferred;
-          if ((!ec && bytes_transferred == 0)
-              || (n = this->check_for_completion(ec, total_transferred_)) == 0
-              || total_transferred_ == buffer_size0 + buffer_size1)
-            break;
-        }
-
-        handler_(ec, static_cast<const std::size_t&>(total_transferred_));
-      }
-    }
-
-  //private:
-    AsyncReadStream& stream_;
-    boost::array<Elem, 2> buffers_;
-    int start_;
-    std::size_t total_transferred_;
-    ReadHandler handler_;
-  };
-
-#if defined(BOOST_ASIO_HAS_STD_ARRAY)
-
-  template <typename AsyncReadStream, typename Elem,
-      typename CompletionCondition, typename ReadHandler>
-  class read_op<AsyncReadStream, std::array<Elem, 2>,
-      CompletionCondition, ReadHandler>
-    : detail::base_from_completion_cond<CompletionCondition>
-  {
-  public:
-    read_op(AsyncReadStream& stream, const std::array<Elem, 2>& buffers,
-        CompletionCondition completion_condition, ReadHandler& handler)
-      : detail::base_from_completion_cond<
-          CompletionCondition>(completion_condition),
-        stream_(stream),
-        buffers_(buffers),
-        start_(0),
-        total_transferred_(0),
-        handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(handler))
-    {
-    }
-
-#if defined(BOOST_ASIO_HAS_MOVE)
-    read_op(const read_op& other)
-      : detail::base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(other.handler_)
-    {
-    }
-
-    read_op(read_op&& other)
-      : detail::base_from_completion_cond<CompletionCondition>(other),
-        stream_(other.stream_),
-        buffers_(other.buffers_),
-        start_(other.start_),
-        total_transferred_(other.total_transferred_),
-        handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(other.handler_))
-    {
-    }
-#endif // defined(BOOST_ASIO_HAS_MOVE)
-
-    void operator()(const boost::system::error_code& ec,
-        std::size_t bytes_transferred, int start = 0)
-    {
-      typename boost::asio::detail::dependent_type<Elem,
-          std::array<boost::asio::mutable_buffer, 2> >::type bufs = {{
-        boost::asio::mutable_buffer(buffers_[0]),
-        boost::asio::mutable_buffer(buffers_[1]) }};
-      std::size_t buffer_size0 = boost::asio::buffer_size(bufs[0]);
-      std::size_t buffer_size1 = boost::asio::buffer_size(bufs[1]);
-      std::size_t n = 0;
-      switch (start_ = start)
-      {
-        case 1:
-        n = this->check_for_completion(ec, total_transferred_);
-        for (;;)
-        {
-          bufs[0] = boost::asio::buffer(bufs[0] + total_transferred_, n);
-          bufs[1] = boost::asio::buffer(
-              bufs[1] + (total_transferred_ < buffer_size0
-                ? 0 : total_transferred_ - buffer_size0),
-              n - boost::asio::buffer_size(bufs[0]));
-          stream_.async_read_some(bufs, BOOST_ASIO_MOVE_CAST(read_op)(*this));
-          return; default:
-          total_transferred_ += bytes_transferred;
-          if ((!ec && bytes_transferred == 0)
-              || (n = this->check_for_completion(ec, total_transferred_)) == 0
-              || total_transferred_ == buffer_size0 + buffer_size1)
-            break;
-        }
-
-        handler_(ec, static_cast<const std::size_t&>(total_transferred_));
-      }
-    }
-
-  //private:
-    AsyncReadStream& stream_;
-    std::array<Elem, 2> buffers_;
-    int start_;
-    std::size_t total_transferred_;
-    ReadHandler handler_;
-  };
-
-#endif // defined(BOOST_ASIO_HAS_STD_ARRAY)
 
   template <typename AsyncReadStream, typename MutableBufferSequence,
-      typename CompletionCondition, typename ReadHandler>
+      typename MutableBufferIterator, typename CompletionCondition,
+      typename ReadHandler>
   inline void* asio_handler_allocate(std::size_t size,
-      read_op<AsyncReadStream, MutableBufferSequence,
+      read_op<AsyncReadStream, MutableBufferSequence, MutableBufferIterator,
         CompletionCondition, ReadHandler>* this_handler)
   {
     return boost_asio_handler_alloc_helpers::allocate(
@@ -472,9 +306,10 @@ namespace detail
   }
 
   template <typename AsyncReadStream, typename MutableBufferSequence,
-      typename CompletionCondition, typename ReadHandler>
+      typename MutableBufferIterator, typename CompletionCondition,
+      typename ReadHandler>
   inline void asio_handler_deallocate(void* pointer, std::size_t size,
-      read_op<AsyncReadStream, MutableBufferSequence,
+      read_op<AsyncReadStream, MutableBufferSequence, MutableBufferIterator,
         CompletionCondition, ReadHandler>* this_handler)
   {
     boost_asio_handler_alloc_helpers::deallocate(
@@ -482,9 +317,10 @@ namespace detail
   }
 
   template <typename AsyncReadStream, typename MutableBufferSequence,
-      typename CompletionCondition, typename ReadHandler>
+      typename MutableBufferIterator, typename CompletionCondition,
+      typename ReadHandler>
   inline bool asio_handler_is_continuation(
-      read_op<AsyncReadStream, MutableBufferSequence,
+      read_op<AsyncReadStream, MutableBufferSequence, MutableBufferIterator,
         CompletionCondition, ReadHandler>* this_handler)
   {
     return this_handler->start_ == 0 ? true
@@ -493,10 +329,10 @@ namespace detail
   }
 
   template <typename Function, typename AsyncReadStream,
-      typename MutableBufferSequence, typename CompletionCondition,
-      typename ReadHandler>
+      typename MutableBufferSequence, typename MutableBufferIterator,
+      typename CompletionCondition, typename ReadHandler>
   inline void asio_handler_invoke(Function& function,
-      read_op<AsyncReadStream, MutableBufferSequence,
+      read_op<AsyncReadStream, MutableBufferSequence, MutableBufferIterator,
         CompletionCondition, ReadHandler>* this_handler)
   {
     boost_asio_handler_invoke_helpers::invoke(
@@ -504,16 +340,71 @@ namespace detail
   }
 
   template <typename Function, typename AsyncReadStream,
-      typename MutableBufferSequence, typename CompletionCondition,
-      typename ReadHandler>
+      typename MutableBufferSequence, typename MutableBufferIterator,
+      typename CompletionCondition, typename ReadHandler>
   inline void asio_handler_invoke(const Function& function,
-      read_op<AsyncReadStream, MutableBufferSequence,
+      read_op<AsyncReadStream, MutableBufferSequence, MutableBufferIterator,
         CompletionCondition, ReadHandler>* this_handler)
   {
     boost_asio_handler_invoke_helpers::invoke(
         function, this_handler->handler_);
   }
+
+  template <typename AsyncReadStream, typename MutableBufferSequence,
+      typename MutableBufferIterator, typename CompletionCondition,
+      typename ReadHandler>
+  inline void start_read_buffer_sequence_op(AsyncReadStream& stream,
+      const MutableBufferSequence& buffers, const MutableBufferIterator&,
+      CompletionCondition completion_condition, ReadHandler& handler)
+  {
+    detail::read_op<AsyncReadStream, MutableBufferSequence,
+      MutableBufferIterator, CompletionCondition, ReadHandler>(
+        stream, buffers, completion_condition, handler)(
+          boost::system::error_code(), 0, 1);
+  }
 } // namespace detail
+
+#if !defined(GENERATING_DOCUMENTATION)
+
+template <typename AsyncReadStream, typename MutableBufferSequence,
+    typename MutableBufferIterator, typename CompletionCondition,
+    typename ReadHandler, typename Allocator>
+struct associated_allocator<
+    detail::read_op<AsyncReadStream, MutableBufferSequence,
+      MutableBufferIterator, CompletionCondition, ReadHandler>,
+    Allocator>
+{
+  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
+
+  static type get(
+      const detail::read_op<AsyncReadStream, MutableBufferSequence,
+        MutableBufferIterator, CompletionCondition, ReadHandler>& h,
+      const Allocator& a = Allocator()) BOOST_ASIO_NOEXCEPT
+  {
+    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename AsyncReadStream, typename MutableBufferSequence,
+    typename MutableBufferIterator, typename CompletionCondition,
+    typename ReadHandler, typename Executor>
+struct associated_executor<
+    detail::read_op<AsyncReadStream, MutableBufferSequence,
+      MutableBufferIterator, CompletionCondition, ReadHandler>,
+    Executor>
+{
+  typedef typename associated_executor<ReadHandler, Executor>::type type;
+
+  static type get(
+      const detail::read_op<AsyncReadStream, MutableBufferSequence,
+        MutableBufferIterator, CompletionCondition, ReadHandler>& h,
+      const Executor& ex = Executor()) BOOST_ASIO_NOEXCEPT
+  {
+    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+  }
+};
+
+#endif // !defined(GENERATING_DOCUMENTATION)
 
 template <typename AsyncReadStream, typename MutableBufferSequence,
     typename CompletionCondition, typename ReadHandler>
@@ -521,21 +412,21 @@ inline BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
     void (boost::system::error_code, std::size_t))
 async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
     CompletionCondition completion_condition,
-    BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
+    BOOST_ASIO_MOVE_ARG(ReadHandler) handler,
+    typename enable_if<
+      is_mutable_buffer_sequence<MutableBufferSequence>::value
+    >::type*)
 {
   // If you get an error on the following line it means that your handler does
   // not meet the documented type requirements for a ReadHandler.
   BOOST_ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-  detail::async_result_init<
-    ReadHandler, void (boost::system::error_code, std::size_t)> init(
-      BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+  async_completion<ReadHandler,
+    void (boost::system::error_code, std::size_t)> init(handler);
 
-  detail::read_op<AsyncReadStream, MutableBufferSequence,
-    CompletionCondition, BOOST_ASIO_HANDLER_TYPE(
-      ReadHandler, void (boost::system::error_code, std::size_t))>(
-        s, buffers, completion_condition, init.handler)(
-          boost::system::error_code(), 0, 1);
+  detail::start_read_buffer_sequence_op(s, buffers,
+      boost::asio::buffer_sequence_begin(buffers), completion_condition,
+      init.completion_handler);
 
   return init.result.get();
 }
@@ -545,42 +436,41 @@ template <typename AsyncReadStream, typename MutableBufferSequence,
 inline BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
     void (boost::system::error_code, std::size_t))
 async_read(AsyncReadStream& s, const MutableBufferSequence& buffers,
-    BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
+    BOOST_ASIO_MOVE_ARG(ReadHandler) handler,
+    typename enable_if<
+      is_mutable_buffer_sequence<MutableBufferSequence>::value
+    >::type*)
 {
   // If you get an error on the following line it means that your handler does
   // not meet the documented type requirements for a ReadHandler.
   BOOST_ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-  detail::async_result_init<
-    ReadHandler, void (boost::system::error_code, std::size_t)> init(
-      BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+  async_completion<ReadHandler,
+    void (boost::system::error_code, std::size_t)> init(handler);
 
-  detail::read_op<AsyncReadStream, MutableBufferSequence,
-    detail::transfer_all_t, BOOST_ASIO_HANDLER_TYPE(
-      ReadHandler, void (boost::system::error_code, std::size_t))>(
-        s, buffers, transfer_all(), init.handler)(
-          boost::system::error_code(), 0, 1);
+  detail::start_read_buffer_sequence_op(s, buffers,
+      boost::asio::buffer_sequence_begin(buffers), transfer_all(),
+      init.completion_handler);
 
   return init.result.get();
 }
 
-#if !defined(BOOST_ASIO_NO_IOSTREAM)
-
 namespace detail
 {
-  template <typename AsyncReadStream, typename Allocator,
+  template <typename AsyncReadStream, typename DynamicBuffer,
       typename CompletionCondition, typename ReadHandler>
-  class read_streambuf_op
+  class read_dynbuf_op
     : detail::base_from_completion_cond<CompletionCondition>
   {
   public:
-    read_streambuf_op(AsyncReadStream& stream,
-        basic_streambuf<Allocator>& streambuf,
+    template <typename BufferSequence>
+    read_dynbuf_op(AsyncReadStream& stream,
+        BOOST_ASIO_MOVE_ARG(BufferSequence) buffers,
         CompletionCondition completion_condition, ReadHandler& handler)
       : detail::base_from_completion_cond<
           CompletionCondition>(completion_condition),
         stream_(stream),
-        streambuf_(streambuf),
+        buffers_(BOOST_ASIO_MOVE_CAST(BufferSequence)(buffers)),
         start_(0),
         total_transferred_(0),
         handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(handler))
@@ -588,20 +478,20 @@ namespace detail
     }
 
 #if defined(BOOST_ASIO_HAS_MOVE)
-    read_streambuf_op(const read_streambuf_op& other)
+    read_dynbuf_op(const read_dynbuf_op& other)
       : detail::base_from_completion_cond<CompletionCondition>(other),
         stream_(other.stream_),
-        streambuf_(other.streambuf_),
+        buffers_(other.buffers_),
         start_(other.start_),
         total_transferred_(other.total_transferred_),
         handler_(other.handler_)
     {
     }
 
-    read_streambuf_op(read_streambuf_op&& other)
+    read_dynbuf_op(read_dynbuf_op&& other)
       : detail::base_from_completion_cond<CompletionCondition>(other),
         stream_(other.stream_),
-        streambuf_(other.streambuf_),
+        buffers_(BOOST_ASIO_MOVE_CAST(DynamicBuffer)(other.buffers_)),
         start_(other.start_),
         total_transferred_(other.total_transferred_),
         handler_(BOOST_ASIO_MOVE_CAST(ReadHandler)(other.handler_))
@@ -617,16 +507,24 @@ namespace detail
       {
         case 1:
         max_size = this->check_for_completion(ec, total_transferred_);
-        bytes_available = read_size_helper(streambuf_, max_size);
+        bytes_available = std::min<std::size_t>(
+              std::max<std::size_t>(512,
+                buffers_.capacity() - buffers_.size()),
+              std::min<std::size_t>(max_size,
+                buffers_.max_size() - buffers_.size()));
         for (;;)
         {
-          stream_.async_read_some(streambuf_.prepare(bytes_available),
-              BOOST_ASIO_MOVE_CAST(read_streambuf_op)(*this));
+          stream_.async_read_some(buffers_.prepare(bytes_available),
+              BOOST_ASIO_MOVE_CAST(read_dynbuf_op)(*this));
           return; default:
           total_transferred_ += bytes_transferred;
-          streambuf_.commit(bytes_transferred);
+          buffers_.commit(bytes_transferred);
           max_size = this->check_for_completion(ec, total_transferred_);
-          bytes_available = read_size_helper(streambuf_, max_size);
+          bytes_available = std::min<std::size_t>(
+                std::max<std::size_t>(512,
+                  buffers_.capacity() - buffers_.size()),
+                std::min<std::size_t>(max_size,
+                  buffers_.max_size() - buffers_.size()));
           if ((!ec && bytes_transferred == 0) || bytes_available == 0)
             break;
         }
@@ -637,36 +535,36 @@ namespace detail
 
   //private:
     AsyncReadStream& stream_;
-    boost::asio::basic_streambuf<Allocator>& streambuf_;
+    DynamicBuffer buffers_;
     int start_;
     std::size_t total_transferred_;
     ReadHandler handler_;
   };
 
-  template <typename AsyncReadStream, typename Allocator,
+  template <typename AsyncReadStream, typename DynamicBuffer,
       typename CompletionCondition, typename ReadHandler>
   inline void* asio_handler_allocate(std::size_t size,
-      read_streambuf_op<AsyncReadStream, Allocator,
+      read_dynbuf_op<AsyncReadStream, DynamicBuffer,
         CompletionCondition, ReadHandler>* this_handler)
   {
     return boost_asio_handler_alloc_helpers::allocate(
         size, this_handler->handler_);
   }
 
-  template <typename AsyncReadStream, typename Allocator,
+  template <typename AsyncReadStream, typename DynamicBuffer,
       typename CompletionCondition, typename ReadHandler>
   inline void asio_handler_deallocate(void* pointer, std::size_t size,
-      read_streambuf_op<AsyncReadStream, Allocator,
+      read_dynbuf_op<AsyncReadStream, DynamicBuffer,
         CompletionCondition, ReadHandler>* this_handler)
   {
     boost_asio_handler_alloc_helpers::deallocate(
         pointer, size, this_handler->handler_);
   }
 
-  template <typename AsyncReadStream, typename Allocator,
+  template <typename AsyncReadStream, typename DynamicBuffer,
       typename CompletionCondition, typename ReadHandler>
   inline bool asio_handler_is_continuation(
-      read_streambuf_op<AsyncReadStream, Allocator,
+      read_dynbuf_op<AsyncReadStream, DynamicBuffer,
         CompletionCondition, ReadHandler>* this_handler)
   {
     return this_handler->start_ == 0 ? true
@@ -675,9 +573,10 @@ namespace detail
   }
 
   template <typename Function, typename AsyncReadStream,
-      typename Allocator, typename CompletionCondition, typename ReadHandler>
+      typename DynamicBuffer, typename CompletionCondition,
+      typename ReadHandler>
   inline void asio_handler_invoke(Function& function,
-      read_streambuf_op<AsyncReadStream, Allocator,
+      read_dynbuf_op<AsyncReadStream, DynamicBuffer,
         CompletionCondition, ReadHandler>* this_handler)
   {
     boost_asio_handler_invoke_helpers::invoke(
@@ -685,9 +584,10 @@ namespace detail
   }
 
   template <typename Function, typename AsyncReadStream,
-      typename Allocator, typename CompletionCondition, typename ReadHandler>
+      typename DynamicBuffer, typename CompletionCondition,
+      typename ReadHandler>
   inline void asio_handler_invoke(const Function& function,
-      read_streambuf_op<AsyncReadStream, Allocator,
+      read_dynbuf_op<AsyncReadStream, DynamicBuffer,
         CompletionCondition, ReadHandler>* this_handler)
   {
     boost_asio_handler_invoke_helpers::invoke(
@@ -695,57 +595,119 @@ namespace detail
   }
 } // namespace detail
 
-template <typename AsyncReadStream, typename Allocator,
+#if !defined(GENERATING_DOCUMENTATION)
+
+template <typename AsyncReadStream, typename DynamicBuffer,
+    typename CompletionCondition, typename ReadHandler, typename Allocator>
+struct associated_allocator<
+    detail::read_dynbuf_op<AsyncReadStream,
+      DynamicBuffer, CompletionCondition, ReadHandler>,
+    Allocator>
+{
+  typedef typename associated_allocator<ReadHandler, Allocator>::type type;
+
+  static type get(
+      const detail::read_dynbuf_op<AsyncReadStream,
+        DynamicBuffer, CompletionCondition, ReadHandler>& h,
+      const Allocator& a = Allocator()) BOOST_ASIO_NOEXCEPT
+  {
+    return associated_allocator<ReadHandler, Allocator>::get(h.handler_, a);
+  }
+};
+
+template <typename AsyncReadStream, typename DynamicBuffer,
+    typename CompletionCondition, typename ReadHandler, typename Executor>
+struct associated_executor<
+    detail::read_dynbuf_op<AsyncReadStream,
+      DynamicBuffer, CompletionCondition, ReadHandler>,
+    Executor>
+{
+  typedef typename associated_executor<ReadHandler, Executor>::type type;
+
+  static type get(
+      const detail::read_dynbuf_op<AsyncReadStream,
+        DynamicBuffer, CompletionCondition, ReadHandler>& h,
+      const Executor& ex = Executor()) BOOST_ASIO_NOEXCEPT
+  {
+    return associated_executor<ReadHandler, Executor>::get(h.handler_, ex);
+  }
+};
+
+#endif // !defined(GENERATING_DOCUMENTATION)
+
+template <typename AsyncReadStream,
+    typename DynamicBuffer, typename ReadHandler>
+inline BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
+    void (boost::system::error_code, std::size_t))
+async_read(AsyncReadStream& s,
+    BOOST_ASIO_MOVE_ARG(DynamicBuffer) buffers,
+    BOOST_ASIO_MOVE_ARG(ReadHandler) handler,
+    typename enable_if<
+      is_dynamic_buffer<DynamicBuffer>::value
+    >::type*)
+{
+  return async_read(s,
+      BOOST_ASIO_MOVE_CAST(DynamicBuffer)(buffers),
+      transfer_all(), BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+}
+
+template <typename AsyncReadStream, typename DynamicBuffer,
     typename CompletionCondition, typename ReadHandler>
 inline BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
     void (boost::system::error_code, std::size_t))
 async_read(AsyncReadStream& s,
-    boost::asio::basic_streambuf<Allocator>& b,
+    BOOST_ASIO_MOVE_ARG(DynamicBuffer) buffers,
     CompletionCondition completion_condition,
-    BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
+    BOOST_ASIO_MOVE_ARG(ReadHandler) handler,
+    typename enable_if<
+      is_dynamic_buffer<DynamicBuffer>::value
+    >::type*)
 {
   // If you get an error on the following line it means that your handler does
   // not meet the documented type requirements for a ReadHandler.
   BOOST_ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
-  detail::async_result_init<
-    ReadHandler, void (boost::system::error_code, std::size_t)> init(
-      BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+  async_completion<ReadHandler,
+    void (boost::system::error_code, std::size_t)> init(handler);
 
-  detail::read_streambuf_op<AsyncReadStream, Allocator,
-    CompletionCondition, BOOST_ASIO_HANDLER_TYPE(
-      ReadHandler, void (boost::system::error_code, std::size_t))>(
-        s, b, completion_condition, init.handler)(
-          boost::system::error_code(), 0, 1);
+  detail::read_dynbuf_op<AsyncReadStream,
+    typename decay<DynamicBuffer>::type,
+      CompletionCondition, BOOST_ASIO_HANDLER_TYPE(
+        ReadHandler, void (boost::system::error_code, std::size_t))>(
+          s, BOOST_ASIO_MOVE_CAST(DynamicBuffer)(buffers),
+            completion_condition, init.completion_handler)(
+              boost::system::error_code(), 0, 1);
 
   return init.result.get();
 }
+
+#if !defined(BOOST_ASIO_NO_EXTENSIONS)
+#if !defined(BOOST_ASIO_NO_IOSTREAM)
 
 template <typename AsyncReadStream, typename Allocator, typename ReadHandler>
 inline BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
     void (boost::system::error_code, std::size_t))
-async_read(AsyncReadStream& s,
-    boost::asio::basic_streambuf<Allocator>& b,
+async_read(AsyncReadStream& s, basic_streambuf<Allocator>& b,
     BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
 {
-  // If you get an error on the following line it means that your handler does
-  // not meet the documented type requirements for a ReadHandler.
-  BOOST_ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
-
-  detail::async_result_init<
-    ReadHandler, void (boost::system::error_code, std::size_t)> init(
+  return async_read(s, basic_streambuf_ref<Allocator>(b),
       BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+}
 
-  detail::read_streambuf_op<AsyncReadStream, Allocator,
-    detail::transfer_all_t, BOOST_ASIO_HANDLER_TYPE(
-      ReadHandler, void (boost::system::error_code, std::size_t))>(
-        s, b, transfer_all(), init.handler)(
-          boost::system::error_code(), 0, 1);
-
-  return init.result.get();
+template <typename AsyncReadStream, typename Allocator,
+    typename CompletionCondition, typename ReadHandler>
+inline BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
+    void (boost::system::error_code, std::size_t))
+async_read(AsyncReadStream& s, basic_streambuf<Allocator>& b,
+    CompletionCondition completion_condition,
+    BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
+{
+  return async_read(s, basic_streambuf_ref<Allocator>(b),
+      completion_condition, BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
 }
 
 #endif // !defined(BOOST_ASIO_NO_IOSTREAM)
+#endif // !defined(BOOST_ASIO_NO_EXTENSIONS)
 
 } // namespace asio
 } // namespace boost

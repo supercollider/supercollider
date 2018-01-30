@@ -123,7 +123,7 @@ public:
 
     virtual void        exception_caught( execution_exception const& ex );
 
-    virtual int         priority() { return 1; }
+    virtual int         priority() { return 2; }
 
     // log configuration methods
     //! Sets the stream for all loggers

@@ -76,7 +76,7 @@ namespace boost
             void release(unsigned count_to_release)
             {
                 notified=true;
-                detail::win32::ReleaseSemaphore(semaphore,count_to_release,0);
+                detail::winapi::ReleaseSemaphore(semaphore,count_to_release,0);
             }
 
             void release_waiters()
@@ -96,7 +96,7 @@ namespace boost
 
             bool woken()
             {
-                unsigned long const woken_result=detail::win32::WaitForSingleObjectEx(wake_sem,0,0);
+                unsigned long const woken_result=detail::winapi::WaitForSingleObjectEx(wake_sem,0,0);
                 BOOST_ASSERT((woken_result==detail::win32::timeout) || (woken_result==0));
                 return woken_result==0;
             }
@@ -135,39 +135,45 @@ namespace boost
             void wake_waiters(long count_to_wake)
             {
                 detail::interlocked_write_release(&total_count,total_count-count_to_wake);
-                detail::win32::ReleaseSemaphore(wake_sem,count_to_wake,0);
+                detail::winapi::ReleaseSemaphore(wake_sem,count_to_wake,0);
             }
 
             template<typename lock_type>
             struct relocker
             {
                 BOOST_THREAD_NO_COPYABLE(relocker)
-                lock_type& lock;
-                bool unlocked;
+                lock_type& _lock;
+                bool _unlocked;
 
                 relocker(lock_type& lock_):
-                    lock(lock_),unlocked(false)
+                    _lock(lock_), _unlocked(false)
                 {}
                 void unlock()
                 {
-                    lock.unlock();
-                    unlocked=true;
+                  if ( ! _unlocked )
+                  {
+                    _lock.unlock();
+                    _unlocked=true;
+                  }
                 }
-                ~relocker()
+                void lock()
                 {
-                    if(unlocked)
-                    {
-                        lock.lock();
-                    }
-
+                  if ( _unlocked )
+                  {
+                    _lock.lock();
+                    _unlocked=false;
+                  }
+                }
+                ~relocker() BOOST_NOEXCEPT_IF(false)
+                {
+                  lock();
                 }
             };
 
 
             entry_ptr get_wait_entry()
             {
-                boost::lock_guard<boost::mutex> internal_lock(internal_mutex);
-
+                boost::lock_guard<boost::mutex> lk(internal_mutex);
                 if(!wake_sem)
                 {
                     wake_sem=detail::win32::create_anonymous_semaphore(0,LONG_MAX);
@@ -190,18 +196,32 @@ namespace boost
 
             struct entry_manager
             {
-                entry_ptr const entry;
+                entry_ptr entry;
                 boost::mutex& internal_mutex;
 
+
                 BOOST_THREAD_NO_COPYABLE(entry_manager)
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
+                entry_manager(entry_ptr&& entry_, boost::mutex& mutex_):
+                    entry(static_cast< entry_ptr&& >(entry_)), internal_mutex(mutex_)
+                {}
+#else
                 entry_manager(entry_ptr const& entry_, boost::mutex& mutex_):
                     entry(entry_), internal_mutex(mutex_)
                 {}
+#endif
 
-                ~entry_manager()
+                void remove_waiter_and_reset()
                 {
+                  if (entry) {
                     boost::lock_guard<boost::mutex> internal_lock(internal_mutex);
                     entry->remove_waiter();
+                    entry.reset();
+                  }
+                }
+                ~entry_manager() BOOST_NOEXCEPT_IF(false)
+                {
+                  remove_waiter_and_reset();
                 }
 
                 list_entry* operator->()
@@ -215,23 +235,24 @@ namespace boost
             template<typename lock_type>
             bool do_wait(lock_type& lock,timeout abs_time)
             {
-                relocker<lock_type> locker(lock);
+              relocker<lock_type> locker(lock);
+              entry_manager entry(get_wait_entry(), internal_mutex);
+              locker.unlock();
 
-                entry_manager entry(get_wait_entry(), internal_mutex);
+              bool woken=false;
+              while(!woken)
+              {
+                  if(!entry->wait(abs_time))
+                  {
+                      return false;
+                  }
 
-                locker.unlock();
-
-                bool woken=false;
-                while(!woken)
-                {
-                    if(!entry->wait(abs_time))
-                    {
-                        return false;
-                    }
-
-                    woken=entry->woken();
-                }
-                return woken;
+                  woken=entry->woken();
+              }
+              // do it here to avoid throwing on the destructor
+              entry.remove_waiter_and_reset();
+              locker.lock();
+              return woken;
             }
 
             template<typename lock_type,typename predicate_type>

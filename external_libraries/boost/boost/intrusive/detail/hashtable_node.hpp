@@ -246,7 +246,7 @@ class hashtable_iterator
    void increment()
    {
       const bucket_traits &rbuck_traits = this->priv_bucket_traits();
-      bucket_type* const buckets = boost::intrusive::detail::to_raw_pointer(rbuck_traits.bucket_begin());
+      bucket_type* const buckets = boost::movelib::to_raw_pointer(rbuck_traits.bucket_begin());
       const size_type buckets_len = rbuck_traits.bucket_count();
 
       ++slist_it_;

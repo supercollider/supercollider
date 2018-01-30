@@ -2,7 +2,7 @@
 // detail/impl/buffer_sequence_adapter.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -40,16 +40,16 @@ class winrt_buffer_impl :
 public:
   explicit winrt_buffer_impl(const boost::asio::const_buffer& b)
   {
-    bytes_ = const_cast<byte*>(boost::asio::buffer_cast<const byte*>(b));
-    length_ = boost::asio::buffer_size(b);
-    capacity_ = boost::asio::buffer_size(b);
+    bytes_ = const_cast<byte*>(static_cast<const byte*>(b.data()));
+    length_ = b.size();
+    capacity_ = b.size();
   }
 
   explicit winrt_buffer_impl(const boost::asio::mutable_buffer& b)
   {
-    bytes_ = const_cast<byte*>(boost::asio::buffer_cast<const byte*>(b));
+    bytes_ = static_cast<byte*>(b.data());
     length_ = 0;
-    capacity_ = boost::asio::buffer_size(b);
+    capacity_ = b.size();
   }
 
   ~winrt_buffer_impl()

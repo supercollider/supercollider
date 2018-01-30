@@ -168,8 +168,10 @@ unit_test_log_t::test_start( counter_t test_cases_amount )
 
       current_logger_data.m_log_formatter->log_start( current_logger_data.stream(), test_cases_amount );
 
-      if( runtime_config::get<bool>( runtime_config::BUILD_INFO ) )
+      if( runtime_config::get<bool>( runtime_config::btrt_build_info ) )
           current_logger_data.m_log_formatter->log_build_info( current_logger_data.stream() );
+
+      //current_logger_data.stream().flush();
 
       current_logger_data.m_entry_in_progress = false;
     }
@@ -442,8 +444,11 @@ unit_test_log_t&
 unit_test_log_t::operator<<( lazy_ostream const& value )
 {
     BOOST_TEST_FOREACH( unit_test_log_data_helper_impl&, current_logger_data, s_log_impl().m_log_formatter_data ) {
-        if( current_logger_data.m_enabled && s_log_impl().m_entry_data.m_level >= current_logger_data.get_log_level() && !value.empty() && log_entry_start(current_logger_data.m_format) )
-            current_logger_data.m_log_formatter->log_entry_value( current_logger_data.stream(), value );
+        if( current_logger_data.m_enabled && s_log_impl().m_entry_data.m_level >= current_logger_data.get_log_level() && !value.empty() ) {
+            if( log_entry_start(current_logger_data.m_format) ) {
+                current_logger_data.m_log_formatter->log_entry_value( current_logger_data.stream(), value );
+            }
+        }
     }
     return *this;
 }
@@ -469,14 +474,14 @@ unit_test_log_t::log_entry_context( log_level l )
     {
         BOOST_TEST_FOREACH( unit_test_log_data_helper_impl&, current_logger_data, s_log_impl().m_log_formatter_data ) {
             if( current_logger_data.m_enabled ) {
-                current_logger_data.m_log_formatter->log_entry_context( current_logger_data.stream(), frame );
+                current_logger_data.m_log_formatter->log_entry_context( current_logger_data.stream(), l, frame );
             }
         }
     }
 
     BOOST_TEST_FOREACH( unit_test_log_data_helper_impl&, current_logger_data, s_log_impl().m_log_formatter_data ) {
         if( current_logger_data.m_enabled ) {
-            current_logger_data.m_log_formatter->entry_context_finish( current_logger_data.stream() );
+            current_logger_data.m_log_formatter->entry_context_finish( current_logger_data.stream(), l );
         }
     }
 }

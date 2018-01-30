@@ -450,7 +450,8 @@ namespace boost{
     char_separator()
       : m_use_ispunct(true),
         m_use_isspace(true),
-        m_empty_tokens(drop_empty_tokens) { }
+        m_empty_tokens(drop_empty_tokens),
+        m_output_done(false) { }
 
     void reset() { }
 

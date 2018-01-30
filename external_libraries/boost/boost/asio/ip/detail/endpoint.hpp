@@ -2,7 +2,7 @@
 // ip/detail/endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -114,7 +114,7 @@ public:
 
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
   // Convert to a string.
-  BOOST_ASIO_DECL std::string to_string(boost::system::error_code& ec) const;
+  BOOST_ASIO_DECL std::string to_string() const;
 #endif // !defined(BOOST_ASIO_NO_IOSTREAM)
 
 private:

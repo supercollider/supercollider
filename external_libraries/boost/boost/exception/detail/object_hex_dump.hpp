@@ -5,12 +5,6 @@
 
 #ifndef UUID_6F463AC838DF11DDA3E6909F56D89593
 #define UUID_6F463AC838DF11DDA3E6909F56D89593
-#if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
-#pragma GCC system_header
-#endif
-#if defined(_MSC_VER) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
-#pragma warning(push,1)
-#endif
 
 #include <boost/exception/detail/type_info.hpp>
 #include <iomanip>
@@ -18,6 +12,13 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
+
+#if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
+#pragma GCC system_header
+#endif
+#if defined(_MSC_VER) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
+#pragma warning(push,1)
+#endif
 
 namespace
 boost
