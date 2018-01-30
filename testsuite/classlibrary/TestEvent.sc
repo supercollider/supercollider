@@ -176,12 +176,12 @@ TestEvent : UnitTest {
 
 
 	assertEqualServerMessage {  |type, shouldBe, parameters|
+		var message;
 		var event = (
 			type: type,
 			server: this,
 			instrument: \default,
 		).putAll(parameters ? ());
-		var message;
 		event.play;
 		0.01.wait;
 		message = prevMsg[0];
@@ -190,8 +190,7 @@ TestEvent : UnitTest {
 			shouldBe,
 			"event type % should generate an OSC message that begins like this.".format(type)
 		);
-		prevMsg = nil;
-		prevLatency = nil;
+		this.cleanUpMessages;
 	}
 
 	test_server_messages_type_note {
@@ -236,17 +235,27 @@ TestEvent : UnitTest {
 		this.assert(finishTest, "Event evaluates finish action");
 		this.assert(prevLatency == 0,
 			"latency specified in the event should override server latency");
+		this.cleanUpMessages;
+	}
+
+	cleanUpMessages {
 		prevMsg = nil;
 		prevLatency = nil;
 	}
 
-	sendMsg { |... args| prevMsg = prevMsg.add(args) }
-	sendBundle { |latency, args| prevMsg = prevMsg.add(args); prevLatency = latency; }
+	sendMsg { |... args|
+		prevMsg = prevMsg.add(args)
+	}
+	sendBundle { |latency, args|
+		prevMsg = prevMsg.add(args);
+		prevLatency = latency;
+	}
 
 	nextNodeID { ^-1 }
-	latency { ^0.2 }
-	defaultGroupID { ^1 }
-	defaultGroup { ^Group.basicNew(nil, 1) }
+
+	latency { ^Server.default.latency }
+	defaultGroupID { ^Server.default.defaultGroupID }
+	defaultGroup { ^Server.default.defaultGroup }
 
 
 
