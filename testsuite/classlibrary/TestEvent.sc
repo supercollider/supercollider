@@ -102,7 +102,99 @@ TestEvent : UnitTest {
 
 	}
 
-	test_server_messages {
+	test_server_message_head_type_grain {
+		this.assertEqualServerMessage(\grain, [ 9, \default, -1, 0,  this.defaultGroupID])
+	}
+
+	test_server_message_head_type_on {
+		this.assertEqualServerMessage(\on, [ 9, \default, -1, 0,  this.defaultGroupID])
+	}
+
+	test_server_message_head_type_off {
+		this.assertEqualServerMessage(\off, [ 15, 77, \gate, 0 ], (id:77))
+	}
+
+	test_server_message_head_type_set {
+		this.assertEqualServerMessage(\set, [ 15, 77 ], (id:77))
+	}
+
+
+	test_server_message_head_type_kill {
+		this.assertEqualServerMessage(\kill, [ \n_free, 77 ], (id:77))
+	}
+
+
+	test_server_message_head_type_group {
+		this.assertEqualServerMessage(\group, [ 21, -1, 0,  this.defaultGroupID])
+	}
+
+	test_server_message_head_type_parGroup {
+		this.assertEqualServerMessage(\parGroup, [  63, -1, 0, this.defaultGroupID])
+	}
+
+	test_server_message_head_type_bus {
+		this.assertEqualServerMessage(\bus, [ \c_setn, 0, 0 ])
+	}
+
+	test_server_message_head_type_fadeBus {
+		this.assertEqualServerMessage(\fadeBus, [ 9, "system_setbus_control_0", -1, 1, this.defaultGroupID])
+	}
+
+	test_server_message_head_type_gen {
+		this.assertEqualServerMessage(\gen, [ \b_gen, 0, \sine1, 7, 1 ])
+	}
+
+	test_server_message_head_type_load {
+		this.assertEqualServerMessage(\load, [ \b_allocRead, 0, "hello/path", 0, 0], (filename: "hello/path"))
+	}
+
+	test_server_message_head_type_read {
+		this.assertEqualServerMessage(\read, [  \b_read, 0, "hello/path", 0, 0], (filename: "hello/path"))
+	}
+
+	test_server_message_head_type_alloc {
+		this.assertEqualServerMessage(\alloc, [ \b_alloc, 0, 0, 1 ])
+	}
+
+	test_server_message_head_type_free {
+		this.assertEqualServerMessage(\free, [ \b_free, 0 ])
+	}
+
+	test_server_message_head_type_monoOff {
+		this.assertEqualServerMessage(\monoOff, [  15, 77, \gate, 0 ], (id: 77))
+	}
+
+	test_server_message_head_type_monoSet {
+		this.assertEqualServerMessage(\monoSet, [ 15, 77, "freq", 123 ],  (id: 77, msgFunc: { |freq| ["freq", freq] }, freq: 123))
+	}
+
+	// arguable: maybe the group should be teh default group per default.
+	test_server_message_head_type_monoNote {
+		this.assertEqualServerMessage(\monoNote, [ 9, \default, -1, 0, this.defaultGroupID], (group: this.defaultGroupID))
+	}
+
+
+
+	assertEqualServerMessage {  |type, shouldBe, parameters|
+		var event = (
+			type: type,
+			server: this,
+			instrument: \default,
+		).putAll(parameters ? ());
+		var message;
+		event.play;
+		0.01.wait;
+		message = prevMsg[0];
+		this.assertEquals(
+			message.keep(shouldBe.size),
+			shouldBe,
+			"event type % should generate an OSC message that begins like this.".format(type)
+		);
+		prevMsg = nil;
+		prevLatency = nil;
+	}
+
+	test_server_messages_type_note {
 		// type note
 		var event = (
 			type: \note,
@@ -155,6 +247,11 @@ TestEvent : UnitTest {
 	latency { ^0.2 }
 	defaultGroupID { ^1 }
 	defaultGroup { ^Group.basicNew(nil, 1) }
+
+
+
+
+
 
 }
 
