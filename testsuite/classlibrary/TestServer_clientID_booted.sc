@@ -72,7 +72,7 @@ TestServer_clientID_booted : UnitTest {
 	}
 
 	test_recoverRemoteReLogin {
-		var options, homeServer, remote;
+		var options, homeServer, remote, dt = 0.1, timeout = 5;
 
 		options = ServerOptions.new;
 		options.maxLogins = 4;
@@ -98,7 +98,16 @@ TestServer_clientID_booted : UnitTest {
 		remote = Server.remote(\remTest, homeServer.addr, homeServer.options);
 		// Server.default = remote; // to test IDE server display
 
-		while { remote.serverRunning.not } { 0.1.wait };
+		while {
+			remote.serverRunning.not and: { timeout > 0 }
+		} {
+			timeout = timeout - dt;
+			dt.wait;
+		};
+
+		this.assert(remote.serverRunning,
+			"after recovering, remote client is known to be fully running."
+		);
 
 		this.assert(remote.clientID == 3,
 			"after recovering, remote client gets same clientID from server process."
