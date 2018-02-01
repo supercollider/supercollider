@@ -544,7 +544,8 @@ Server {
 		case
 		{ failString.asString.contains("already registered") } {
 			"% - already registered with clientID %.\n".postf(this, msg[3]);
-			statusWatcher.notified = true;
+			statusWatcher.prRecoverRemoteLogin(msg[3]);
+
 		} { failString.asString.contains("not registered") } {
 			// unregister when already not registered:
 			"% - not registered.\n".postf(this);

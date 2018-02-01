@@ -225,9 +225,24 @@ ServerStatusWatcher {
 
 	// final actions needed to finish booting
 	prFinalizeBoot {
-		ServerBoot.run(server);
-		server.sync;
-		server.initTree;
+		// this needs to be forked so that ServerBoot and ServerTree will definitely run before
+		// notified is true.
+		fork({
+			ServerBoot.run(server);
+			server.sync;
+			server.initTree;
+
+			this.notified = true;
+			server.changed(\serverRunning);
+		}, AppClock)
+	}
+
+	prRecoverRemoteLogin { |clientID|
+		"% - recovering by adapting clientID %.\n".postf(server, clientID);
+		// make sure we can set the clientID
+		notified = false;
+		server.clientID_(clientID);
+		this.prFinalizeBoot;
 	}
 
 	prSendNotifyRequest { |flag = true, addingStatusWatcher|
@@ -252,15 +267,7 @@ ServerStatusWatcher {
 				// XXX: this is a workaround because using `serverBooting` is not reliable
 				// when server is rebooted quickly.
 				if(addingStatusWatcher) {
-					// this needs to be forked so that ServerBoot and ServerTree will definitely run before
-					// notified is true.
-					fork({
-						this.prFinalizeBoot;
-
-						// serverRunning will now return true, and serverBooting will be marked as false
-						notified = true;
-						server.changed(\serverRunning);
-					}, AppClock);
+					this.prFinalizeBoot;
 				} {
 					notified = true;
 				}

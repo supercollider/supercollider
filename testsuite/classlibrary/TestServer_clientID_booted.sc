@@ -70,4 +70,39 @@ TestServer_clientID_booted : UnitTest {
 		s.quit;
 		s.remove;
 	}
+
+	test_recoverRemoteReLogin {
+		var options, homeServer, remote;
+
+		options = ServerOptions.new;
+		options.maxLogins = 4;
+		options.sampleRate = 48000;
+
+		homeServer = Server(\pseudoHome, options: options);
+
+		homeServer.clientID = 3;
+		this.bootServer(homeServer);
+
+		this.assert(homeServer.clientID == 3,
+			"homeServer gets requested clientID back from server process."
+		);
+
+		// make s play dead now, but leave the process running
+		homeServer.statusWatcher.stopStatusWatcher.stopAliveThread.serverRunning_(false);
+		// homeServer.serverRunning.postln; // client thinks it is dead
+
+		// now login again from different server object, but same client address
+		// -> this client netaddr is already registered, and should say so!
+		// -> so the response should go thru prHandleNotifyFailString
+
+		remote = Server.remote(\remTest, homeServer.addr, homeServer.options);
+		// Server.default = remote; // to test IDE server display
+
+		while { remote.serverRunning.not } { 0.1.wait };
+
+		this.assert(remote.clientID == 3,
+			"after recovering, remote client gets same clientID from server process."
+		);
+
+	}
 }
