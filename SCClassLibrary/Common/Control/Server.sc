@@ -394,7 +394,7 @@ Server {
 		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
 				clientID
 			).warn;
 			^this
