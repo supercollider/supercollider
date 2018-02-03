@@ -103,74 +103,74 @@ TestEvent : UnitTest {
 	}
 
 	test_server_message_head_type_grain {
-		this.assertEqualServerMessage(\grain, [ 9, \default, -1, 0,  this.defaultGroupID])
+		this.assertEqualServerMessage(\grain, [9, \default, -1, 0,  this.defaultGroupID])
 	}
 
 	test_server_message_head_type_on {
-		this.assertEqualServerMessage(\on, [ 9, \default, -1, 0,  this.defaultGroupID])
+		this.assertEqualServerMessage(\on, [9, \default, -1, 0,  this.defaultGroupID])
 	}
 
 	test_server_message_head_type_off {
-		this.assertEqualServerMessage(\off, [ 15, 77, \gate, 0 ], (id:77))
+		this.assertEqualServerMessage(\off, [15, 77, \gate, 0], (id:77))
 	}
 
 	test_server_message_head_type_set {
-		this.assertEqualServerMessage(\set, [ 15, 77 ], (id:77))
+		this.assertEqualServerMessage(\set, [15, 77], (id:77))
 	}
 
 
 	test_server_message_head_type_kill {
-		this.assertEqualServerMessage(\kill, [ \n_free, 77 ], (id:77))
+		this.assertEqualServerMessage(\kill, [\n_free, 77], (id:77))
 	}
 
 
 	test_server_message_head_type_group {
-		this.assertEqualServerMessage(\group, [ 21, -1, 0,  this.defaultGroupID])
+		this.assertEqualServerMessage(\group, [21, -1, 0,  this.defaultGroupID])
 	}
 
 	test_server_message_head_type_parGroup {
-		this.assertEqualServerMessage(\parGroup, [  63, -1, 0, this.defaultGroupID])
+		this.assertEqualServerMessage(\parGroup, [ 63, -1, 0, this.defaultGroupID])
 	}
 
 	test_server_message_head_type_bus {
-		this.assertEqualServerMessage(\bus, [ \c_setn, 0, 0 ])
+		this.assertEqualServerMessage(\bus, [\c_setn, 0, 0])
 	}
 
 	test_server_message_head_type_fadeBus {
-		this.assertEqualServerMessage(\fadeBus, [ 9, "system_setbus_control_0", -1, 1, this.defaultGroupID])
+		this.assertEqualServerMessage(\fadeBus, [9, "system_setbus_control_0", -1, 1, this.defaultGroupID])
 	}
 
 	test_server_message_head_type_gen {
-		this.assertEqualServerMessage(\gen, [ \b_gen, 0, \sine1, 7, 1 ])
+		this.assertEqualServerMessage(\gen, [\b_gen, 0, \sine1, 7, 1])
 	}
 
 	test_server_message_head_type_load {
-		this.assertEqualServerMessage(\load, [ \b_allocRead, 0, "hello/path", 0, 0], (filename: "hello/path"))
+		this.assertEqualServerMessage(\load, [\b_allocRead, 0, "hello/path", 0, 0], (filename: "hello/path"))
 	}
 
 	test_server_message_head_type_read {
-		this.assertEqualServerMessage(\read, [  \b_read, 0, "hello/path", 0, 0], (filename: "hello/path"))
+		this.assertEqualServerMessage(\read, [ \b_read, 0, "hello/path", 0, 0], (filename: "hello/path"))
 	}
 
 	test_server_message_head_type_alloc {
-		this.assertEqualServerMessage(\alloc, [ \b_alloc, 0, 0, 1 ])
+		this.assertEqualServerMessage(\alloc, [\b_alloc, 0, 0, 1])
 	}
 
 	test_server_message_head_type_free {
-		this.assertEqualServerMessage(\free, [ \b_free, 0 ])
+		this.assertEqualServerMessage(\free, [\b_free, 0])
 	}
 
 	test_server_message_head_type_monoOff {
-		this.assertEqualServerMessage(\monoOff, [  15, 77, \gate, 0 ], (id: 77))
+		this.assertEqualServerMessage(\monoOff, [ 15, 77, \gate, 0], (id: 77))
 	}
 
 	test_server_message_head_type_monoSet {
-		this.assertEqualServerMessage(\monoSet, [ 15, 77, "freq", 123 ],  (id: 77, msgFunc: { |freq| ["freq", freq] }, freq: 123))
+		this.assertEqualServerMessage(\monoSet, [15, 77, "freq", 123],  (id: 77, msgFunc: { |freq| ["freq", freq] }, freq: 123))
 	}
 
 	// arguable: maybe the group should be teh default group per default.
 	test_server_message_head_type_monoNote {
-		this.assertEqualServerMessage(\monoNote, [ 9, \default, -1, 0, this.defaultGroupID], (group: this.defaultGroupID))
+		this.assertEqualServerMessage(\monoNote, [9, \default, -1, 0, this.defaultGroupID], (group: this.defaultGroupID))
 	}
 
 
@@ -258,9 +258,4 @@ TestEvent : UnitTest {
 	defaultGroup { ^Server.default.defaultGroup }
 
 
-
-
-
-
 }
-
