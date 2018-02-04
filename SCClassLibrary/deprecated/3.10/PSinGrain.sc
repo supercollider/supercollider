@@ -11,6 +11,7 @@
 
 PSinGrain : UGen {
 	*ar { arg freq = 440.0, dur = 0.2, amp = 1.0;
+		this.deprecated(thisMethod, SinOsc.class.findMethod(\ar));
 		^this.multiNew('audio', freq, dur, amp)
 	}
 }

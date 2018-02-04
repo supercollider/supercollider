@@ -7,6 +7,7 @@ Description::
 
 Very fast sine grain with a parabolic envelope.
 
+note:: This UGen is deprecated and will be removed in a future version of SC. ::
 
 classmethods::
 private:: categories
