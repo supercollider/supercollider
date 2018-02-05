@@ -381,7 +381,7 @@ Server {
 	// clientID is settable while server is off, and locked while server is running
 	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to % - %. clientID is still %.";
 		if (this.serverRunning) {
 			failstr.format(name, val.cs, "server is running", clientID).warn;
 			^this
@@ -394,7 +394,7 @@ Server {
 		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
 				clientID
 			).warn;
 			^this
