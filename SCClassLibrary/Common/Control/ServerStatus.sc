@@ -249,15 +249,15 @@ ServerStatusWatcher {
 			// make sure we can set the clientID, and set it
 			notified = false;
 			server.clientID_(clientIDFromProcess);
-			"// This seems to be a login after a crash, or from a new server object,\n"
-			"// so you may want to release currently running synths by hand:\n".postln;
+			"*** This seems to be a login after a crash, or from a new server object,\n"
+			"*** so you may want to release currently running synths by hand:".postln;
 			"%.defaultGroup.release;\n".postf(server.cs);
-			"// and you may want to redo server boot finalization by hand:\n".postln;
-			"%.statusWatcher.prFinalizeBoot;\n".postf(server.cs);
+			"*** and you may want to redo server boot finalization by hand:".postln;
+			"%.statusWatcher.prFinalizeBoot;\n\n".postf(server.cs);
 		} {
 			// same clientID, so leave all server resources in the state they were in!
-			"// This seems to be a login after a loss of network contact - \n"
-			"// - reconnected with the same clientID as before, so probably all is well.\n".postln;
+			"This seems to be a login after a loss of network contact - \n"
+			"- reconnected with the same clientID as before, so probably all is well.\n".postln;
 		};
 
 		// ensure that statuswatcher is in the correct state immediately.
