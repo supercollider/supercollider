@@ -10,9 +10,4 @@ cmake --build $TRAVIS_BUILD_DIR/BUILD --config Release --target install | tee $B
 CMAKE_EXIT=$?
 set +o pipefail
 
-if [[ $CMAKE_EXIT != 0 ]]; then
-    echo "Error while building. Printing raw log."
-    cat $BUILD_LOG
-fi
-
 exit $CMAKE_EXIT
