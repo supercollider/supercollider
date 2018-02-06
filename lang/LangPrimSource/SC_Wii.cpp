@@ -701,7 +701,7 @@ void SC_WII::connected()
 
 bool SC_WII::wii_disconnect()
 {
-	bool	result;
+	bool	result = false;
 	m_searching = 0;
 	/// TODO: remove from wii_manager
 

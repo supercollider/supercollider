@@ -1,0 +1,149 @@
+# Appveyor config file for SuperCollider
+# Author: Brian Heim
+# Created on 2017-12-31
+# See http://www.appveyor.com/docs/appveyor-yml
+
+version: '{build}' # incremented with each build
+
+# shallow_clone doesn't clone, repository is not git so can't get submodules
+clone_depth: 10
+
+# https://www.appveyor.com/docs/build-environment/#build-worker-images
+image: Visual Studio 2013
+
+# disable automatic tests
+test: off
+
+environment:
+    CMAKE_CONFIGURATION: Release
+    ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
+    ASIO_ZIP: asiosdk2.3.zip
+
+    matrix:
+        - QT_DIR: "C:/Qt/5.5/msvc2013"
+          CMAKE_GENERATOR: "Visual Studio 12 2013"
+          FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
+          ARCH: "x86"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
+
+        - QT_DIR: "C:/Qt/5.5/msvc2013_64"
+          CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
+          FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
+          ARCH: "x64"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
+
+install:
+- ps: echo "Install phase start"
+
+- ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
+
+- cmd: echo "Get submodules"
+- cmd: git submodule update --init --recursive
+
+# Install libsndfile, FFTW, and ASIO SDK. Note that DirectX SDK, Windows SDK are already installed.
+- cmd: echo "Install 3rd-party tools"
+- cmd: mkdir 3rdparty && cd 3rdparty
+
+# libsndfile using hosted repository. Couldn't find a way to get the installer to work silently.
+- cmd: echo "Install libsndfile"
+- cmd: mkdir libsndfile && cd libsndfile
+- cmd: git clone https://github.com/brianlheim/libsndfile-windows-%ARCH% libsndfile
+- cmd: set MEGANERD_DIR=C:/%PROGFILES%/Mega-Nerd
+- cmd: mkdir "%MEGANERD_DIR%"
+- cmd: move libsndfile "%MEGANERD_DIR%/libsndfile"
+- cmd: cd .. && echo "Done installing libsndfile"
+
+# FFTW3, including lib prep
+- cmd: echo "Install fftw"
+- cmd: mkdir fftw && cd fftw
+# can't use appveyor DownloadFile because it's FTP
+- ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
+- ps: 7z x fftw.zip -y
+- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
+- cmd: cd ..
+- cmd: move fftw "C:/%PROGFILES%/fftw"
+- cmd: echo "Done installing fftw"
+
+# ASIO SDK
+- cmd: echo "Install asio_sdk"
+- cmd: mkdir asio_sdk && cd asio_sdk
+- appveyor DownloadFile %ASIO_URL%
+- ps: 7z x $env:ASIO_ZIP -y
+- cmd: move ASIOSDK2.3 "%APPVEYOR_BUILD_FOLDER%\external_libraries\asiosdk"
+- cmd: cd .. && echo "Done installing asio_sdk"
+
+- cmd: cd .. && echo "Done installing 3rd-party tools"
+
+- cmd: echo "Install phase end"
+
+before_build:
+- set PATH=%QT_DIR%\bin;%PATH%
+- mkdir build
+- cd build
+
+build_script:
+- cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
+- cmake --build . --target install --config %CMAKE_CONFIGURATION%
+
+# after_build instead of before_deploy so artifacts are collected at the right time
+after_build:
+- ps: $env:ARCHIVE_NAME="SC-Windows-$env:ARCH-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/$env:ARCHIVE_NAME"
+- ps: $env:FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$env:S3_URL'"" /></head></html>"
+- ps: $env:BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
+- ps: cd $env:APPVEYOR_BUILD_FOLDER
+
+- echo "Making artifacts"
+- ps: mkdir artifacts
+- ps: cd artifacts
+- ps: echo $env:FWD_HTML > $env:BRANCH_ESC-latest.html
+- ps: Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider . -Recurse
+- ps: 7z a $env:ARCHIVE_NAME -tzip SuperCollider
+- ps: rmdir -Recurse -Force SuperCollider
+- ps: >-
+    If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
+        # required for github releases
+        # -q because otherwise PS reads output from stderr and thinks there's a problem
+        git fetch --tags -q
+        $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
+        echo $env:FWD_HTML > $env:TAG_ESC.html
+        cd ../build
+        # to get NSIS in path for installer generation
+        $env:PATH="C:\Program Files (x86)\NSIS;$env:PATH"
+        cmake --build . --target installer --config Release
+    }
+- ps: cd ..
+
+after_deploy:
+- ps: echo "S3 Build Location = $env:S3_URL"
+
+artifacts:
+    - path: artifacts
+      name: art_folder
+    - path: build\Install\*.exe
+      name: installer
+      type: File
+
+deploy:
+# s3 upload - every commit
+- provider: S3
+  access_key_id:
+    secure: Imi70fjxyMWt9kwV9RfVT7qV8OaxA40iGlR1hO12SK4=
+  secret_access_key:
+    secure: 3K2MRfkIb7BJk4kCCakxcGAjkc1LCYZHpD32I52mYd//2WHE63xVJl/qd3Q1IBhI
+  bucket: supercollider
+  region: us-west-2
+  folder: $(S3_BUILDS_LOCATION)
+  artifact: art_folder
+  unzip: true
+  set_public: true
+
+# github releases - only tags
+- provider: GitHub
+  description: appveyor_$(APPVEYOR_REPO_TAG_NAME)
+  artifact: installer
+  auth_token:
+    secure: rxXJNY+6n25Th9R4+7qI+AcnTj0wCAMSnBGH2+5s7DlVLrAGsSY6+EEDbeHWGGeI
+  prerelease: true
+  on:
+    appveyor_repo_tag: true

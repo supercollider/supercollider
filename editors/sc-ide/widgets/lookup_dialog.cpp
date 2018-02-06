@@ -511,10 +511,10 @@ void ReferencesDialog::performQuery()
 
     if (queryString.isEmpty()) {
         setModel(NULL);
-        return;
+    } else {
+        queryString.replace('\"', "\\\"");
+        mRequest->sendRequest(queryString);
     }
-
-    mRequest->sendRequest(queryString);
 }
 
 void ReferencesDialog::requestCancelled()

@@ -62,6 +62,10 @@ GitHub releases now:
 
     https://github.com/supercollider/supercollider/releases
 
+You can also download a bleeding-edge build of the latest development branch!
+Builds are available for [32-bit][bleeding edge 32 bit] and
+[64-bit][bleeding edge 64 bit] Windows.
+
 This page also provides snapshots of the source version used for the release.
 Note though, that this automated Github service misses out on the submodules.
 For actual development work you should always use SuperCollider's Github repo:
@@ -1303,6 +1307,8 @@ software publicly and freely available.
 [asio4all]: http://www.asio4all.com/ (ASIO4ALL, generic ASIO driver)
 [asiosdk]: http://www.steinberg.net/en/company/developers.html (ASIO SDK v2.3)
 [atomeditor]: https://atom.io/ (free unixy text editor with SuperCollider package)
+[bleeding edge 32 bit]: http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/win32/develop-latest.html
+[bleeding edge 64 bit]: http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/win64/develop-latest.html
 [cmake]: http://www.cmake.org/download/
 [conemu]: https://conemu.github.io/ (free console emulator)
 [dependency walker]: http://www.dependencywalker.com/ (inspect missing library errors)

@@ -1,0 +1,50 @@
+# This file configures Guard and the guard-sclang plugin to allow
+# UnitTest classes to be run automatically whenever they or the classes
+# which they test change.
+#
+# To use, ensure that you have Ruby installed, and run
+#
+#   bundle install
+#
+# to install the required Ruby gems.  Then run
+#
+#   bundle exec guard
+#
+# and Guard will automatically watch your code for changes and automatically
+# run tests as appropriate.
+#
+# See http://guardgem.org/ for more details.
+
+here = File.dirname(__FILE__)
+Dir.chdir File.join(here, '..', '..')
+
+directories %w(SCClassLibrary testsuite/classlibrary) \
+  .select{|d| Dir.exists?(d) ? d : UI.warning("Directory #{d} does not exist")}
+
+guard :sclang do
+  # Run any tests which are added or changed under testsuite/classlibrary/.
+  # Note that this directory must be included in the list of paths which
+  # the interpreter configuration in sclang_conf.yaml uses to determine
+  # which classes to compile when the interpreter boots.
+  #
+  # See http://doc.sccode.org/Classes/LanguageConfig.html for more info.
+  watch(%r{testsuite/classlibrary/(.+/)?Test.+\.sc})
+
+  # For any class Foo added or changed under SCClassLibrary/, run the
+  # corresponding test class TestFoo.
+  watch(%r{SCClassLibrary/(\w.+/)?(\w[^/]+)\.sc}) do |m|
+    classname = m[2]
+    case classname
+    when "Blah"
+      testclassnames = [
+        "TestBlah1",
+        "TestBlah2",
+      ]
+    else
+      testclassnames = "Test#{classname}"
+    end
+
+    puts "#{classname} changed; running #{testclassnames}"
+    testclassnames
+  end
+end
