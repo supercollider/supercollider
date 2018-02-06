@@ -53,9 +53,23 @@ within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
 
 
 METHOD:: runAll
-runs all subclasses of UnitTest
+runs all subclasses of UnitTest by default.
+The optional testItems argument is a list of unittest classnames or Strings with <TestClassName>:<testclassmethod>.
+The postTimes argument sets whether to post individual run times for each test.
 
 code::
+// test only a specific subset of all unittests,
+// e.g. the tests for the area one is working on
+UnitTest.runAll(
+	[
+		TestBuffer,
+		"TestArray:test_array_nonmutating"
+	],
+	// post individual times for each test item,
+	// e.g. to see which ones could use speedups
+	true
+);
+// run all UnitTest subclasses:
 UnitTest.reset;
 UnitTest.runAll;
 ::
