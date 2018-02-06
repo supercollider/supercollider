@@ -31,7 +31,7 @@ WindowsPlatform : Platform {
 		"del %%.*meta%".format(34.asAscii, path, 34.asAscii).systemCmd;
 	}
 
-	kill { |pid|
+	killProcessByID { |pid|
 		("taskkill /F /pid " ++ pid).unixCmd;
 	}
 

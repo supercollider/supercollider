@@ -172,7 +172,7 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
-	kill { |cmdLineArgs|
+	killProcessByID { |cmdLineArgs|
 		^this.subclassResponsibility(\kill)
 	}
 
@@ -200,7 +200,7 @@ UnixPlatform : Platform {
 		^arch.asSymbol;
 	}
 
-	kill { |pid|
+	killProcessByID { |pid|
 		("kill -9 " ++ pid).unixCmd;
 	}
 
