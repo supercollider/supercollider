@@ -88,12 +88,12 @@ TestServer_clientID_booted : UnitTest {
 		// simulate losing network contact by turning off watcher,
 		// but actually leave the server process running
 		server.statusWatcher
-			.stopStatusWatcher
-			.stopAliveThread
-			.notified_(false)
-			.serverRunning_(false);
+		.stopStatusWatcher
+		.stopAliveThread
+		.notified_(false)
+		.serverRunning_(false);
 
-//		1.wait;
+		//		1.wait;
 
 		// now login again from the same server object
 		// should get "This seems to be a login after loss of network ... all is well" post.
@@ -130,8 +130,8 @@ TestServer_clientID_booted : UnitTest {
 	// test that logins to a (pseudo-) remote server process work as intended
 	// first login initializes fully,
 	// second login from same address gets the same clientID, and sets running state.
-	test_remoteLogins {
-		var options, serverPid, remote1, remote2, cond, timer;
+	test_remoteLogin {
+		var options, serverPid, remote1, cond, timer;
 
 		options = ServerOptions.new;
 		options.maxLogins = 4;
@@ -158,6 +158,35 @@ TestServer_clientID_booted : UnitTest {
 		this.assert(remote1.clientID == 3,
 			"after first login, remote client should have its requested clientID."
 		);
+
+		remote1.remove;
+		// temp macOS only for now
+		unixCmd("kill -9" + serverPid);
+		// crossplatform when addKillMethod PR is in
+		// thisProcess.platform.kill(serverPid);
+	}
+
+	test_repeatedRemoteLogin {
+
+		var options, serverPid, remote1, remote2, cond, timer;
+
+		options = ServerOptions.new;
+		options.maxLogins = 4;
+
+		// simulate a remote server process by starting a server process independently of SC
+		serverPid = unixCmd(Server.program + options.asOptionsString);
+
+		// login with standard Server.remote method to test for
+		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
+		cond = Condition.new;
+		timer = fork { 3.wait; cond.unhang };
+
+		remote1.doWhenBooted {
+			"% - server first login timed out.\n".postf(thisMethod);
+			timer.stop;
+			cond.unhang;
+		};
+		cond.hang;
 
 		// now login again from a different server object,
 		// but from the same client address (in the test, local, in reality, it would be remote).
@@ -190,6 +219,9 @@ TestServer_clientID_booted : UnitTest {
 		// cleanup
 		remote1.remove;
 		remote2.remove;
+		// temp macOS only for now
 		unixCmd("kill -9" + serverPid);
+		// crossplatform when addKillMethod PR is in
+		// thisProcess.platform.kill(serverPid);
 	}
 }
