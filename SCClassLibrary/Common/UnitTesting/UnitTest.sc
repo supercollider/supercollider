@@ -30,13 +30,37 @@ UnitTest {
 	}
 
 	// run all UnitTest subclasses
-	*runAll {
+	*runAll { |testItems, postTimes = false|
 		^this.forkIfNeeded {
+			var startTime = Main.elapsedTime;
 			this.reset;
-			this.allSubclasses.do ({ |testClass|
-				testClass.run(false,false);
+			testItems = testItems ?? { this.allSubclasses };
+			testItems.do ({ |testItem|
+				var myStartTime = Main.elapsedTime;
+				var myTestTime;
+				if (testItem.isKindOf(Class)) {
+					// assume this is a UnitTest:
+					if (testItem.superclasses.includes(UnitTest)) {
+						testItem.run(false,false);
+					} {
+						"%: testItem % is not a unit test subclass."
+							.format(testItem.cs).warn;
+					}
+				} {
+					if (testItem.isKindOf(String)) {
+						try { UnitTest.runTest(testItem) } {
+							"%: testItem % is not a unit test method string."
+							.format(testItem.cs).warn;
+						}
+					}
+				};
+				myTestTime = Main.elapsedTime - myStartTime;
+				if (postTimes) {
+					"*** % took % seconds to run.\n".postf(testItem, myTestTime);
+				};
 				0.1.wait;
 			});
+			"*** % took % seconds to run.\n".postf(thisMethod, Main.elapsedTime - startTime);
 			this.report;
 		}
 	}
