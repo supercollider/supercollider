@@ -139,8 +139,6 @@ TestServer_clientID_booted : UnitTest {
 		// simulate a remote server process by starting a server process independently of SC
 		serverPid = unixCmd(Server.program + options.asOptionsString);
 
-		1.wait;
-
 		// login with standard Server.remote method to test for
 		remote1 = Server.remote(\remoteLogin1, options: options, clientID: 3);
 		cond = Condition.new;
