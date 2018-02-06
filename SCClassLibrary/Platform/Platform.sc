@@ -172,6 +172,10 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
+	kill { |cmdLineArgs|
+		^this.subclassResponsibility(\kill)
+	}
+
 	killAll { |cmdLineArgs|
 		^this.subclassResponsibility(\killAll)
 	}
@@ -194,6 +198,10 @@ UnixPlatform : Platform {
 		arch = pipe.getLine;
 		pipe.close;
 		^arch.asSymbol;
+	}
+
+	kill { |pid|
+		("kill -9 " ++ pid).unixCmd;
 	}
 
 	killAll { |cmdLineArgs|

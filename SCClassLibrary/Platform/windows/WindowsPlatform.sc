@@ -31,6 +31,10 @@ WindowsPlatform : Platform {
 		"del %%.*meta%".format(34.asAscii, path, 34.asAscii).systemCmd;
 	}
 
+	kill { |pid|
+		("taskkill /F /pid " ++ pid).unixCmd;
+	}
+
 	killAll { |cmdLineArgs|
 		("taskkill /F /IM " ++ cmdLineArgs).unixCmd;
 	}
