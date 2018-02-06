@@ -173,7 +173,7 @@ Platform {
 	writeClientCSS {}
 
 	killProcessByID { |cmdLineArgs|
-		^this.subclassResponsibility(\kill)
+		^this.subclassResponsibility(\killProcessByID)
 	}
 
 	killAll { |cmdLineArgs|
