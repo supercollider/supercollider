@@ -1,7 +1,7 @@
 FileDialog : QObject {
 	*qtClass { ^'QcFileDialog' }
 
-	*new { arg okFunc, cancelFunc, fileMode, acceptMode, stripResult = false;
+	*new { arg okFunc, cancelFunc, fileMode, acceptMode, stripResult = false, path;
 		/**
 		fileMode:
 			QFileDialog::AnyFile		0	The name of a file, whether it exists or not.
@@ -17,7 +17,7 @@ FileDialog : QObject {
 			false: okFunc(paths)
 		**/
 
-		var me = super.new( [fileMode, acceptMode] );
+		var me = super.new( [fileMode, acceptMode, path] );
 
 		if( okFunc.notNil ) {
 			me.connectFunction( 'accepted(QVariantList)', {
