@@ -12,6 +12,8 @@ At the moment selecting a directory is only possible with FileDialog.
 
 CLASSMETHODS::
 
+PRIVATE:: qtClass
+
 METHOD:: new
 Open a modal dialog
 
@@ -56,11 +58,11 @@ list::
 ## false: okFunc(paths)
 ::
 
+ARGUMENT:: path
+A string. The dialog will initially display the contents of this path. The default is the current
+user's home directory.
+
 returns:: a FileDialog
-
-METHOD:: qtClass
-private
-
 
 EXAMPLES::
 
