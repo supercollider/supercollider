@@ -40,13 +40,13 @@ FileDialog : QObject {
 
 Dialog {
 
-	*openPanel { arg okFunc, cancelFunc, multipleSelection=false;
+	*openPanel { arg okFunc, cancelFunc, multipleSelection = false, path;
 		var fileMode;
 		if( multipleSelection ) { fileMode = 3 } { fileMode = 1 };
-		^FileDialog.new( okFunc, cancelFunc, fileMode, 0, stripResult:multipleSelection.not );
+		^FileDialog.new( okFunc, cancelFunc, fileMode, 0, multipleSelection.not, path );
 	}
 
-	*savePanel { arg okFunc, cancelFunc;
-		^FileDialog.new( okFunc, cancelFunc, 0, 1, stripResult:true );
+	*savePanel { arg okFunc, cancelFunc, path;
+		^FileDialog.new( okFunc, cancelFunc, 0, 1, true, path );
 	}
 }
