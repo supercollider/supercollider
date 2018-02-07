@@ -67,9 +67,32 @@ returns:: a FileDialog
 EXAMPLES::
 
 code::
+// By default, the selected paths are passed to okFunc as an array.
+FileDialog({ |paths|
+	postln("Selected path:" + paths[0]);
+	}, {
+	postln("Dialog was cancelled. Try again.");
+	});
+
+// You can change this by passing `stripResult: true`
 FileDialog({ |path|
+	postln("Selected path:" + path);
+	}, {
+	postln("Dialog was cancelled. Try again.");
+	}, stripResult: true);
 
-}, {
+// Passing `fileMode: 3` makes it possible to select multiple files.
+FileDialog({ |paths|
+	postln("Selected paths:);
+	paths.do(_.postln);
+	}, fileMode: 3);
 
-});
+// Passing `fileMode: 0` allows selecting any kind of file.
+// You can start the dialog in a directory other than home by passing `path: "/some/path/"`
+FileDialog({ |path|
+	postln("Selected file:" + path);
+	postln("File type is:" + File.type(path)); },
+	fileMode: 0,
+	stripResult: true,
+	path: Platform.userAppSupportDir);
 ::
