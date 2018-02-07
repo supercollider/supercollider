@@ -1,7 +1,7 @@
 FileDialog : QObject {
 	*qtClass { ^'QcFileDialog' }
 
-	*new { arg okFunc, cancelFunc, fileMode, acceptMode, stripResult = false, path;
+	*new { arg okFunc, cancelFunc, fileMode = 1, acceptMode = 0, stripResult = false, path;
 		/**
 		fileMode:
 			QFileDialog::AnyFile		0	The name of a file, whether it exists or not.
