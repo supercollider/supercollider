@@ -1,10 +1,12 @@
 CLASS:: Dialog
 summary:: Shows various system dialogs
 categories:: GUI>Accessories
+related:: Classes/FileDialog, Classes/File
 
 DESCRIPTION::
 This class allows to show various system dialogs. link::#*openPanel:: will show a dialog for selecting a file to open, and link::#*savePanel:: will show a dialog for selecting or creating a file to save to.
 
+The methods here are convenience functions built on top of link::Classes/FileDialog::.
 
 CLASSMETHODS::
 PRIVATE:: key
