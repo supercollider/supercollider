@@ -56,6 +56,10 @@ list::
 ## false: okFunc(paths)
 ::
 
+ARGUMENT:: directory
+
+A path to the directory that is open by default in the dialog. If nil, defaults to the home directory.
+
 returns:: a FileDialog
 
 METHOD:: qtClass

@@ -1,7 +1,7 @@
 FileDialog : QObject {
 	*qtClass { ^'QcFileDialog' }
 
-	*new { arg okFunc, cancelFunc, fileMode, acceptMode, stripResult = false;
+	*new { arg okFunc, cancelFunc, fileMode, acceptMode, stripResult = false, directory = nil;
 		/**
 		fileMode:
 			QFileDialog::AnyFile		0	The name of a file, whether it exists or not.
@@ -17,7 +17,10 @@ FileDialog : QObject {
 			false: okFunc(paths)
 		**/
 
-		var me = super.new( [fileMode, acceptMode] );
+		var me;
+
+		directory = directory ?? { Platform.userHomeDir };
+		me = super.new( [fileMode, acceptMode, directory] );
 
 		if( okFunc.notNil ) {
 			me.connectFunction( 'accepted(QVariantList)', {
@@ -40,13 +43,13 @@ FileDialog : QObject {
 
 Dialog {
 
-	*openPanel { arg okFunc, cancelFunc, multipleSelection=false;
+	*openPanel { arg okFunc, cancelFunc, multipleSelection=false, directory;
 		var fileMode;
 		if( multipleSelection ) { fileMode = 3 } { fileMode = 1 };
-		^FileDialog.new( okFunc, cancelFunc, fileMode, 0, stripResult:multipleSelection.not );
+		^FileDialog.new( okFunc, cancelFunc, fileMode, 0, stripResult:multipleSelection.not, directory: directory );
 	}
 
-	*savePanel { arg okFunc, cancelFunc;
-		^FileDialog.new( okFunc, cancelFunc, 0, 1, stripResult:true );
+	*savePanel { arg okFunc, cancelFunc, directory;
+		^FileDialog.new( okFunc, cancelFunc, 0, 1, stripResult:true, directory: directory );
 	}
 }

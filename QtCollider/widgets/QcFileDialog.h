@@ -34,7 +34,8 @@ class QcFileDialog : public QObject
 public:
 
   Q_INVOKABLE QcFileDialog( int fileMode = QFileDialog::ExistingFile,
-                            int acceptMode = QFileDialog::AcceptOpen );
+                            int acceptMode = QFileDialog::AcceptOpen,
+                            const QString& directory = "" );
 
   ~QcFileDialog() {
     if (dialog) { dialog->deleteLater(); };

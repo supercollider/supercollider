@@ -24,10 +24,10 @@
 
 QC_DECLARE_QOBJECT_FACTORY(QcFileDialog);
 
-QcFileDialog::QcFileDialog( int fileMode, int acceptMode ) {
+QcFileDialog::QcFileDialog( int fileMode, int acceptMode, const QString& directory ) {
   dialog = new QFileDialog();
 
-  dialog->setDirectory( QDir::home() );
+  dialog->setDirectory( directory );
 
   switch(fileMode) {
     case QFileDialog::AnyFile:
