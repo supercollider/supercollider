@@ -1365,6 +1365,7 @@ void PSinGrain_next(PSinGrain *unit, int inNumSamples)
 			}
 		}
 	} while (remain>0);
+	unit->mCounter = counter;
 	unit->m_level = level;
 	unit->m_slope = slope;
 	unit->m_y1 = y1;
