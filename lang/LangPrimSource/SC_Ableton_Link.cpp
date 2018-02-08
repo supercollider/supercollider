@@ -7,6 +7,8 @@
 #include "SCBase.h"
 #include "SC_Clock.h"
 
+#ifdef SC_ABLETON_LINK
+
 #include <ableton/Link.hpp>
 
 PyrSymbol* s_LinkTempoChanged;
@@ -186,3 +188,8 @@ void initLinkPrimitives()
 	definePrimitive(base, index++, "_LinkClock_SetQuantum", prLinkClock_SetQuantum, 2, 0);
 }
 
+#else
+void initLinkPrimitives()
+{
+}
+#endif

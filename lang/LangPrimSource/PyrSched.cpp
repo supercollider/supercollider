@@ -237,7 +237,9 @@ SCLANG_DLLEXPORT_C void schedInit()
 {
 	using namespace std::chrono;
 	hrTimeOfInitialization     = high_resolution_clock::now();
+#ifdef SC_ABLETON_LINK
 	initLink();
+#endif
 
 	syncOSCOffsetWithTimeOfDay();
 	gResyncThread = std::thread(resyncThread);

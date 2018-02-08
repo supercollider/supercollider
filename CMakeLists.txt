@@ -242,6 +242,8 @@ else()
     option(SC_HIDAPI "Build with HID support" ON)
 endif()
 
+option(SC_ABLETON, "Build with Ableton Link support" ON)
+
 #############################################
 # some default libraries
 
