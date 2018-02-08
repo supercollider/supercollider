@@ -223,6 +223,14 @@ if (NOT WIN32)
 		PROPERTY OUTPUT_NAME sclang)
 endif()
 
+if (SC_ABLETON)
+	message(STATUS "Compiling with Ableton Link support")
+	include(../external_libraries/link/AbletonLinkConfig.cmake)
+	target_link_libraries(libsclang Ableton::Link)
+
+	add_definitions(-DSC_ABLETON_LINK)
+endif()
+
 ## external libraries
 if(READLINE_FOUND)
 	message(STATUS "Compiling with Readline support")
@@ -274,9 +282,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
-
-include(../external_libraries/link/AbletonLinkConfig.cmake)
-target_link_libraries(libsclang Ableton::Link)
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
