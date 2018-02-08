@@ -9,6 +9,7 @@ Creating an issue is the simplest form of contributing to a project. But there a
 - Updating or correcting documentation
 - Feature requests
 - Bug reports
+- Translation files for the IDE
 
 If you'd like to learn more about contributing in general, the [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing) has a lot of useful information.
 
@@ -122,6 +123,8 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 More information can be found on the [git workflow wiki page](https://github.com/supercollider/supercollider/wiki/git-workflow-and-guidelines).
 
 You can also refer to Github's guide to [forking a repository](https://help.github.com/articles/fork-a-repo/) and [syncing a fork](https://help.github.com/articles/syncing-a-fork/).
+
+Instructions on adding translation files for the IDE can be found in [DEVELOPING.md](https://github.com/supercollider/supercollider/wiki/[WIP]-Developer-info-%28DEVELOPING.md%29#adding-ide-translations)
 
 ## Above and beyond
 
