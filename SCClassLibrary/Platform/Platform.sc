@@ -172,7 +172,7 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
-	killProcessByID { |cmdLineArgs|
+	killProcessByID { |pid|
 		^this.subclassResponsibility(\killProcessByID)
 	}
 
