@@ -17,7 +17,7 @@ FileDialog : QObject {
 			false: okFunc(paths)
 		**/
 
-		var me = super.new( [fileMode, acceptMode, path] );
+		var me = super.new([fileMode, acceptMode, path]);
 
 		if( okFunc.notNil ) {
 			me.connectFunction( 'accepted(QVariantList)', {
