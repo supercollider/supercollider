@@ -144,6 +144,25 @@ files to be loaded on startup
 method:: loadStartupFiles
 (re)load startup files
 
+subsection:: Crossplatform system commands
+
+method:: killAll
+kill all processes as defined by cmdLineArgs.
+Typically, this is a process name or a list of names.
+code::
+// kill all possibly running servers (scsynth or supernova)
+thisProcess.platform.killAll("scsynth supernova");
+::
+
+method:: killProcessByID
+kill all processes as identified by pid argument.
+code::
+// start server program from cmdLine for testing
+~pid = unixCmd(Server.program + s.options.asOptionsString);
+// kill just that server program by its pid:
+thisProcess.platform.killProcessByID(~pid);
+::
+
 subsection:: Features
 
 Features are abstract symbols that can be declared by extension authors and be checked during runtime in user code. Apart from explicitly declared features, class and primitive names are implicitly declared.
