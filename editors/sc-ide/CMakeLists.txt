@@ -354,7 +354,7 @@ if(APPLE)
     install(DIRECTORY "${QT_PLUGINS_DIR}/"
             DESTINATION ${plugin_dest_dir}
             COMPONENT Runtime
-            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport)/[^_]*\\.dylib")
+            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport|styles)/[^_]*\\.dylib")
 
     set(QtWebEngineCoreDir
         "${CMAKE_PREFIX_PATH}/lib/QtWebEngineCore.framework/Versions/5" CACHE PATH "Path to the QtWebEngineProcess")
