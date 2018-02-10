@@ -124,7 +124,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     void resetZoom();
-    void evaluateSelection(bool region);
+    void evaluateSelection(bool region = false );
     void findText( const QString & text, bool backwards = false );
     bool openDocumentation();
     void openDefinition();
