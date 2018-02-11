@@ -27,8 +27,8 @@
 Resources::Resources(){
 	SC_PLUGIN_PATH = "/plugins";
 	SC_SYNTHDEF_PATH = "/synthdefs";
-    PLUGIN_SPEC_FILE = "/pluginSpec.plist";
-    SERVER_CONFIG_FILE = "/serverConfig.plist";
+  PLUGIN_SPEC_FILE = "/pluginSpec.plist";
+  SERVER_CONFIG_FILE = "/serverConfig.plist";
 }
 
 CFStringRef Resources::getResourcesPathFromDyldImage(){
@@ -49,15 +49,23 @@ CFStringRef Resources::getResourcesPathFromDyldImage(){
 
 	CFURLRef executableURL = CFURLCreateFromFileSystemRepresentation (kCFAllocatorDefault, (const unsigned char*)image_name, strlen (image_name), false);
 	CFURLRef bundleContentsMacOSURL = CFURLCreateCopyDeletingLastPathComponent (kCFAllocatorDefault, executableURL);
-	CFRelease (executableURL);
-    CFURLRef bundleContentsURL = CFURLCreateCopyDeletingLastPathComponent (kCFAllocatorDefault, bundleContentsMacOSURL);
-    CFRelease (bundleContentsMacOSURL);
-    CFURLRef bundleURL = CFURLCreateCopyDeletingLastPathComponent (kCFAllocatorDefault, bundleContentsURL);
-    CFRelease (bundleContentsURL);
-    CFBundleRef bundle = CFBundleCreate (kCFAllocatorDefault, bundleURL);
-    CFURLRef bundleResourcesURL = CFBundleCopyResourcesDirectoryURL(bundle);
+  CFURLRef bundleContentsURL = CFURLCreateCopyDeletingLastPathComponent (kCFAllocatorDefault, bundleContentsMacOSURL);
+  CFURLRef bundleURL = CFURLCreateCopyDeletingLastPathComponent (kCFAllocatorDefault, bundleContentsURL);
+
+  CFBundleRef bundle = CFBundleCreate (kCFAllocatorDefault, bundleURL);
+  CFURLRef bundleResourcesURL = CFBundleCopyResourcesDirectoryURL(bundle);
 	CFURLGetFileSystemRepresentation(bundleResourcesURL, TRUE, (UInt8*)buffer,PATH_MAX);
 	CFStringRef path = CFStringCreateWithCString(NULL,buffer, kCFStringEncodingUTF8);
+
+	CFRelease (executableURL);
+	CFRelease (bundleContentsMacOSURL);
+	CFRelease (bundleContentsURL);
+	CFRelease (bundleURL);
+
+  CFRelease (bundle);
+	CFRelease (bundleResourcesURL);
+
+
 	return path;
 }
 
@@ -79,9 +87,13 @@ CFStringRef Resources::getResourcesPathFromBundleId() { //@@TODO
 
 
 CFStringRef Resources::getResourcePath(const char* resource){
+	  CFStringRef base = getResourcesPathFromDyldImage();
     CFMutableStringRef path = CFStringCreateMutable(NULL,0);
-    CFStringAppend(path,getResourcesPathFromDyldImage());
-    CFStringAppend(path,  CFStringCreateWithCString(NULL,resource, kCFStringEncodingUTF8));
+    CFStringAppend(path, base);
+		CFStringRef resourcePath = CFStringCreateWithCString(NULL,resource, kCFStringEncodingUTF8);
+    CFStringAppend(path, resourcePath);
+		CFRelease(base);
+		CFRelease(resourcePath);
     return path;
 }
 
@@ -107,11 +119,14 @@ CFPropertyListRef Resources::getPropertyList(const char* filename)
                 CFStringGetCString(error, cerror, sizeof(cerror), kCFStringEncodingUTF8);
                 scprintf("getPropertyList error: %s\n", cerror);
             }
-            CFRelease(xmlCFDataRef);
+
         }
         else{
             scprintf("Couldn't read Plist File %s\n", filePathBuf);
         }
+				if(xmlCFDataRef)CFRelease(xmlCFDataRef);
     }
+		CFRelease(filePath);
+		CFRelease(fileURL);
     return myCFPropertyListRef;
 }
