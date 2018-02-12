@@ -15,7 +15,7 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>SCAU</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CSResourcesFileMapped</key>
@@ -30,13 +30,13 @@
 				<key>manufacturer</key>
 				<string>SCAU</string>
 				<key>name</key>
-				<string>SuperColliderAU</string>
+				<string>SCAU : SuperColliderAU</string>
 				<key>subtype</key>
-				<string>PLUG</string>
+				<string>SCAU</string>
 				<key>type</key>
-				<string>aufx</string>
+				<string>aumf</string>
 				<key>version</key>
-				<integer>04</integer>
+				<integer>005</integer>
 			</dict>
 		</array>
 	</dict>
