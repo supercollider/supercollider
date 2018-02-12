@@ -65,7 +65,7 @@ class SuperColliderAU : public AUMIDIEffectBase
 {
 public:
     Boolean haveSpecs;
-	SuperColliderAU(AudioUnit component);
+	  SuperColliderAU(AudioUnit component);
     virtual ~SuperColliderAU ();
 
 
@@ -113,7 +113,7 @@ public:
 
 private:
 
-    World* world;
+  World* world;
 	SCProcess* superCollider;
 	Resources* resources;
 	OSCMessages* messages;
