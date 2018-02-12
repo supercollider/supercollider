@@ -18,22 +18,11 @@
 
 #include "SCProcess.h"
 
-void* scThreadFunc(void* arg);
-
-void* scThreadFunc(void* arg)
-{
-    World* world  = (World*)arg;
-    World_WaitForQuit(world, true);
-    //World_Cleanup(world, true);
-    return 0;
-}
-
 void null_reply_func(struct ReplyAddress* /*addr*/, char* /*msg*/, int /*size*/);
 
-SCProcess::SCProcess()
+SCProcess::SCProcess() : world(nullptr)
 {
     portNum = 0;
-    running = false;
 }
 
 int SCProcess::findNextFreeUdpPort(int startNum){
@@ -68,7 +57,6 @@ int SCProcess::findNextFreeUdpPort(int startNum){
 
 void SCProcess::startUp(WorldOptions options, CFStringRef pluginsPath,  CFStringRef synthdefsPath,  int preferredPort){
 
-
     char stringBuffer[PATH_MAX] ;
 	  OSCMessages messages;
     std::string bindTo("0.0.0.0");
@@ -79,16 +67,15 @@ void SCProcess::startUp(WorldOptions options, CFStringRef pluginsPath,  CFString
     setenv("SC_SYNTHDEF_PATH", stringBuffer, 1);
     this->portNum = findNextFreeUdpPort(preferredPort);
 
+    World_Cleanup(world, true);
     world = World_New(&options);
     //world->mDumpOSC=2;
 
     if (world) {
         if (this->portNum >= 0) World_OpenUDP(world,  bindTo.c_str(), this->portNum);
-        //pthread_create (&scThread, NULL, scThreadFunc, (void*)world);
-    } else{
-       World_Cleanup(world, true);
-    }
-    running = true;
+        //small_scpacket packet = messages.initTreeMessage();
+        //World_SendPacket(world, 16, (char*)packet.buf, null_reply_func);
+      }
 }
 
 
@@ -105,7 +92,7 @@ void SCProcess::sendParamChangeMessage(CFStringRef name, float value){
     OSCMessages messages;
     if(synthName){
         small_scpacket packet;
-        size_t messageSize =messages.parameterMessage(&packet, name,value);
+        size_t messageSize = messages.parameterMessage(&packet, name,value);
         World_SendPacket(world, messageSize, (char*)packet.buf, null_reply_func);
     }
 }
@@ -133,13 +120,5 @@ void SCProcess::run(const AudioBufferList* in, AudioBufferList* out,  UInt32 inF
 }
 
 void SCProcess::quit(){
-    OSCMessages messages;
-    if (running){
-         small_scpacket packet = messages.quitMessage();
-         //World_SendPacket(world, 8,(char*)packet.buf, null_reply_func);
-         //world->hw->mTerminating = true;
-         //world->hw->mQuitProgram->post();
-         World_Cleanup(world, true);
-    }
-    running = false;
+    World_Cleanup(world, true);
 }

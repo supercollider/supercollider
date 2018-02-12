@@ -46,7 +46,7 @@ public:
     void sendTick(int64 oscTime, int bus);
     void quit();
     void run(const AudioBufferList* in, AudioBufferList* out, UInt32 inFramesToProcess,  AudioTimeStamp inTimeStamp, Float64 sampleRate,int64 oscTime);
-		bool running;
+		
 private:
     World* world;
 		pthread_t scThread;
