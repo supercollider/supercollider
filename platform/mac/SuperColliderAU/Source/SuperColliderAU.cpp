@@ -25,7 +25,7 @@ AUDIOCOMPONENT_ENTRY(AUBaseFactory, SuperColliderAU)
 SuperColliderAU::SuperColliderAU(AudioUnit component)
         : AUMIDIEffectBase(component)
 {
-    scprintf("SuperColliderAU: SuperColliderAU\n");
+    //scprintf("SuperColliderAU: SuperColliderAU\n");
     CreateElements();
     resources = new Resources();
     messages = new OSCMessages();
@@ -40,20 +40,20 @@ SuperColliderAU::SuperColliderAU(AudioUnit component)
 
 
 SuperColliderAU::~SuperColliderAU () {
-    scprintf("SuperColliderAU: ~SuperColliderAU\n");
+    //scprintf("SuperColliderAU: ~SuperColliderAU\n");
     if(superCollider){
         superCollider->quit();
         delete superCollider;
     }
 	  if(messages!=nullptr)delete messages;
 	  if(resources!=nullptr) delete resources;
-    if (state!=nullptr) delete state;
+    if (this->haveSpecs) delete state;
 }
 
 
 ComponentResult	SuperColliderAU::Reset(AudioUnitScope inScope, AudioUnitElement inElement){
-    printf("SuperColliderAU:reset \n");
-	return noErr;
+    //printf("SuperColliderAU:reset\n");
+	  return noErr;
 }
 
 
@@ -61,7 +61,7 @@ ComponentResult	SuperColliderAU::GetParameterValueStrings(	AudioUnitScope			inSc
 															AudioUnitParameterID	inParameterID,
 															CFArrayRef *			outStrings)
 {
-    scprintf("SuperColliderAU: GetParameterValueStrings\n");
+    //scprintf("SuperColliderAU: GetParameterValueStrings\n");
     return kAudioUnitErr_InvalidProperty;
 }
 
@@ -71,12 +71,11 @@ ComponentResult	SuperColliderAU::GetParameterInfo(	AudioUnitScope			inScope,
 													AudioUnitParameterID	inParameterID,
 													AudioUnitParameterInfo	&outParameterInfo )
 {
-    scprintf("SuperColliderAU: GetParameterInfo\n");
+    //scprintf("SuperColliderAU: GetParameterInfo\n");
 
     ComponentResult result = noErr;
 
-	if (inScope != kAudioUnitScope_Global)
-		return kAudioUnitErr_InvalidScope;
+	  if (inScope != kAudioUnitScope_Global) return kAudioUnitErr_InvalidScope;
 
     if (inParameterID==0)
     {
@@ -91,13 +90,14 @@ ComponentResult	SuperColliderAU::GetParameterInfo(	AudioUnitScope			inScope,
     else if (inScope == kAudioUnitScope_Global && this->haveSpecs)
     {
         if ( inParameterID < specs->numberOfParameters+1 ){
-			AUBase::FillInParameterName (outParameterInfo, specs->getName(inParameterID-1, kParamNameSpecKey) , false);
-			outParameterInfo.minValue = specs->getValue(inParameterID-1, kMinValueSpecKey);
-			outParameterInfo.maxValue = specs->getValue(inParameterID-1, kMaxValueSpecKey);
-			outParameterInfo.defaultValue = specs->getValue(inParameterID-1, kDefaultValueSpecKey);
-			//outParameterInfo.unit = specs->getValue(inParameterID-1, kUnitSpecKey);
-      outParameterInfo.unit = kAudioUnitParameterUnit_Generic; // TODO
-			outParameterInfo.flags = 	kAudioUnitParameterFlag_IsWritable | kAudioUnitParameterFlag_IsReadable | specs->getDisplayFlag(inParameterID-1);
+             //scprintf("SuperColliderAU: GetParameterInfo %d %d \n", inParameterID, specs->numberOfParameters+1);
+			       AUBase::FillInParameterName (outParameterInfo, specs->getName(inParameterID-1, kParamNameSpecKey) , false);
+			       outParameterInfo.minValue = specs->getValue(inParameterID-1, kMinValueSpecKey);
+			       outParameterInfo.maxValue = specs->getValue(inParameterID-1, kMaxValueSpecKey);
+			       outParameterInfo.defaultValue = specs->getValue(inParameterID-1, kDefaultValueSpecKey);
+			       //outParameterInfo.unit = specs->getValue(inParameterID-1, kUnitSpecKey);
+             outParameterInfo.unit = kAudioUnitParameterUnit_Generic; // TODO
+			       outParameterInfo.flags = 	kAudioUnitParameterFlag_IsWritable | kAudioUnitParameterFlag_IsReadable | specs->getDisplayFlag(inParameterID-1);
         }
         else  result = kAudioUnitErr_InvalidParameter;
     }
@@ -115,7 +115,7 @@ ComponentResult		SuperColliderAU::GetPropertyInfo (AudioUnitPropertyID	inID,
         UInt32 &		outDataSize,
         Boolean &		outWritable)
 {
-    scprintf("SuperColliderAU: GetPropertyInfo\n");
+    //scprintf("SuperColliderAU: GetPropertyInfo\n");
     return AUMIDIEffectBase::GetPropertyInfo (inID, inScope, inElement, outDataSize, outWritable);
 }
 
@@ -127,7 +127,7 @@ ComponentResult		SuperColliderAU::GetProperty(	AudioUnitPropertyID inID,
         AudioUnitElement 	inElement,
         void *			outData )
 {
-    scprintf("SuperColliderAU: GetProperty\n");
+    //scprintf("SuperColliderAU: GetProperty\n");
     return AUMIDIEffectBase::GetProperty (inID, inScope, inElement, outData);
 }
 
@@ -135,13 +135,14 @@ ComponentResult		SuperColliderAU::GetProperty(	AudioUnitPropertyID inID,
 
 ComponentResult SuperColliderAU::Initialize()
 {
-    scprintf("SuperColliderAU: Initialize\n");
+    //scprintf("SuperColliderAU: Initialize\n");
     WorldOptions options = kDefaultWorldOptions;
     options.mPreferredSampleRate = GetSampleRate();
     options.mBufLength = kDefaultBlockSize;
     options.mPreferredHardwareBufferFrameSize = GetMaxFramesPerSlice();
 	  options.mMaxWireBufs = kDefaultNumWireBufs;
     options.mRealTimeMemorySize = kDefaultRtMemorySize;
+    options.mNumBuffers = 8192;
 
     CFStringRef pluginsPath = resources->getResourcePath(resources->SC_PLUGIN_PATH);
     CFStringRef synthdefsPath = resources->getResourcePath(resources->SC_SYNTHDEF_PATH);
@@ -160,7 +161,7 @@ ComponentResult SuperColliderAU::Initialize()
 
     if (CFDictionaryContainsKey(serverConfig, kBeatDivKey)){
         CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kBeatDivKey), kCFNumberIntType,(void *)&ticksPerBeat);
-		      this->beatsPerTick = 1.0 / ticksPerBeat;
+		     this->beatsPerTick = 1.0 / ticksPerBeat;
     }
 
     if (CFDictionaryContainsKey(serverConfig, kDoNoteOnKey)){
@@ -175,9 +176,6 @@ ComponentResult SuperColliderAU::Initialize()
 		    CFNumberGetValue( (CFNumberRef) CFDictionaryGetValue(serverConfig, kRtMemorySizeKey),kCFNumberIntType,(void *)&options.mRealTimeMemorySize);
 	   }
 
-     if(superCollider->running){
-         superCollider->quit();
-     }
 	   syncOSCOffsetWithTimeOfDay();
      superCollider->startUp(options, pluginsPath, synthdefsPath, udpPortNum);
      if (plugSpec) {
@@ -195,6 +193,7 @@ ComponentResult SuperColliderAU::Initialize()
       }
 
       SetParameter(0, superCollider->portNum);
+
       scprintf("*******************************************************\n");
       scprintf("SuperColliderAU Initialized \n");
 	    scprintf("SuperColliderAU provided under the GNU GPL license. http://www.gnu.org/licenses/gpl-2.0.txt \n");
@@ -206,13 +205,20 @@ ComponentResult SuperColliderAU::Initialize()
       scprintf("SuperColliderAU  mRealTimeMemorySize: %d \n", options.mRealTimeMemorySize );
 	    scprintf("*******************************************************\n");
       fflush(stdout);
+
+
+      if(pluginsPath) CFRelease(pluginsPath);
+      if(synthdefsPath) CFRelease(synthdefsPath);
+        //if(plugSpec) CFRelease(plugSpec);
+      if(serverConfig) CFRelease(serverConfig);
+
       return noErr;
 }
 
 
 void SuperColliderAU::initState()
 {
-    scprintf("SuperColliderAU: initState\n");
+    //scprintf("SuperColliderAU: initState\n");
     for (int i = 0;i< specs->numberOfParameters;i++)
     {
         state[i] =  specs->getValue(i, kDefaultValueSpecKey);
@@ -223,7 +229,7 @@ void SuperColliderAU::initState()
 
 void SuperColliderAU::sendChangedParameters()
 {
-    scprintf("SuperColliderAU: sendChangedParameters\n");
+    //scprintf("SuperColliderAU: sendChangedParameters\n");
     for (int i = 0;i< specs->numberOfParameters;i++)
     {
         float parameterValue =  GetParameter(i+1);
@@ -241,7 +247,7 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
                                                 const AudioTimeStamp &		inTimeStamp,
                                                 UInt32						nFrames)
 {
-  scprintf("SuperColliderAU: Render\n");
+  //scprintf("SuperColliderAU: Render\n");
 	ComponentResult result = noErr;
 	AUOutputElement *theOutput = GetOutput(0);	// throws if error
 	AUInputElement *theInput = GetInput(0);
@@ -252,7 +258,6 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
 	{
 
 		theInput->CopyBufferContentsTo (theOutput->GetBufferList());
-
 		if(ProcessesInPlace()) theOutput->SetBufferList(theInput->GetBufferList());
 		if (ShouldBypassEffect())
 		{
@@ -263,19 +268,18 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
 		}
 		else
 		{
+      if (IsInitialized())
+      {
+        const AudioBufferList & inBuffer = theInput->GetBufferList();
+        AudioBufferList & outBuffer  = theOutput->GetBufferList();
 
-            if (IsInitialized())
-            {
-                const AudioBufferList & inBuffer = theInput->GetBufferList();
-                AudioBufferList & outBuffer  = theOutput->GetBufferList();
-
-                UInt32 inNumBuffers = inBuffer.mNumberBuffers;
-                UInt32 outNumBuffers = outBuffer.mNumberBuffers;
-                if ( (inNumBuffers < 1) || (outNumBuffers < 1) ){
-                    result = kAudioUnitErr_FormatNotSupported;
-                } else {
+        UInt32 inNumBuffers = inBuffer.mNumberBuffers;
+        UInt32 outNumBuffers = outBuffer.mNumberBuffers;
+        if ( (inNumBuffers < 1) || (outNumBuffers < 1) ){
+          result = kAudioUnitErr_FormatNotSupported;
+        } else {
 					int64 oscTime = getOscTime( inTimeStamp);
-					const double kSecondsToOSC  = 4294967296.;
+				  const double kSecondsToOSC  = 4294967296.;
 
 					Boolean playing = false;
 					Boolean changed = false;
@@ -317,16 +321,16 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
 								}
 						}
 					}
-                    if (haveSpecs) sendChangedParameters();
+          if (haveSpecs) sendChangedParameters();
 					uint i=0;
 					for (i=0;i<noteEvents.size();i++){
 						double eventSecs = (noteEvents[i].sampleTime-inTimeStamp.mSampleTime) / sampleRate ;
 						superCollider->sendNote(oscTime,noteEvents[i].number,noteEvents[i].velocity);
 					}
 					noteEvents.clear();
-                    superCollider->run(&inBuffer, &outBuffer, nFrames, inTimeStamp, sampleRate,oscTime);
-                }
-            }
+          superCollider->run(&inBuffer, &outBuffer, nFrames, inTimeStamp, sampleRate,oscTime);
+       }
+      }
 		}
 
 		if ( (ioActionFlags & kAudioUnitRenderAction_OutputIsSilence) && !ProcessesInPlace() )
@@ -340,7 +344,7 @@ ComponentResult SuperColliderAU::Render(    AudioUnitRenderActionFlags &ioAction
 
 
 void SuperColliderAU::resetBeats(){
-    scprintf("SuperColliderAU: resetBeats\n");
+    //scprintf("SuperColliderAU: resetBeats\n");
 		this->previousBeat = 0;
 		this->lastBeatSent = 0;
 		this->lastTickSent = -1;
@@ -349,7 +353,7 @@ void SuperColliderAU::resetBeats(){
 
 
 double SuperColliderAU::nextTickFrames(Float64 beat, Float64 tempo, UInt32 nFrames){
-      scprintf("SuperColliderAU: nextTickFrames\n");
+      //scprintf("SuperColliderAU: nextTickFrames\n");
 			double beatsPerCallback;
 
 			if (beat<previousBeat){//looping
@@ -393,7 +397,7 @@ double SuperColliderAU::nextTickFrames(Float64 beat, Float64 tempo, UInt32 nFram
 void SuperColliderAU::syncOSCOffsetWithTimeOfDay()
 {
 
-  scprintf("SuperColliderAU: syncOSCOffsetWithTimeOfDay\n");
+  //scprintf("SuperColliderAU: syncOSCOffsetWithTimeOfDay\n");
 	// generate a value gOSCoffset such that
 	// (gOSCOffset + systemTimeInOSCunits)
 	// is equal to gettimeofday time in OSCunits.
@@ -428,7 +432,7 @@ void SuperColliderAU::syncOSCOffsetWithTimeOfDay()
 }
 
 int64 SuperColliderAU::getOscTime( const AudioTimeStamp & inTimeStamp){
-  scprintf("SuperColliderAU: getOscTime\n");
+  //scprintf("SuperColliderAU: getOscTime\n");
 	int64 targetTimeOSC;
 
 	if (inTimeStamp.mFlags & kAudioTimeStampHostTimeValid){
@@ -453,7 +457,7 @@ int64 SuperColliderAU::getOscTime( const AudioTimeStamp & inTimeStamp){
 // EXPERIMENTAL
 
 OSStatus SuperColliderAU::HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) {
-  scprintf("SuperColliderAU: HandleNoteOn\n");
+  //scprintf("SuperColliderAU: HandleNoteOn\n");
 	if(this->doNoteOn){
 		note event;
 		event.number = inNoteNumber;
@@ -466,7 +470,7 @@ OSStatus SuperColliderAU::HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt
 
 
 OSStatus SuperColliderAU::HandleNoteOff(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame) {
-  scprintf("SuperColliderAU: HandleNoteOff\n");
+  //scprintf("SuperColliderAU: HandleNoteOff\n");
 	if(this->doNoteOn){
 		note event;
 		event.number = inNoteNumber;
