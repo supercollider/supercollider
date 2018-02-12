@@ -2,7 +2,7 @@
 // detail/io_control.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -25,56 +25,6 @@ namespace boost {
 namespace asio {
 namespace detail {
 namespace io_control {
-
-// IO control command for non-blocking I/O.
-class non_blocking_io
-{
-public:
-  // Default constructor.
-  non_blocking_io()
-    : value_(0)
-  {
-  }
-
-  // Construct with a specific command value.
-  non_blocking_io(bool value)
-    : value_(value ? 1 : 0)
-  {
-  }
-
-  // Get the name of the IO control command.
-  int name() const
-  {
-    return static_cast<int>(BOOST_ASIO_OS_DEF(FIONBIO));
-  }
-
-  // Set the value of the I/O control command.
-  void set(bool value)
-  {
-    value_ = value ? 1 : 0;
-  }
-
-  // Get the current value of the I/O control command.
-  bool get() const
-  {
-    return value_ != 0;
-  }
-
-  // Get the address of the command data.
-  detail::ioctl_arg_type* data()
-  {
-    return &value_;
-  }
-
-  // Get the address of the command data.
-  const detail::ioctl_arg_type* data() const
-  {
-    return &value_;
-  }
-
-private:
-  detail::ioctl_arg_type value_;
-};
 
 // I/O control command for getting number of bytes available.
 class bytes_readable

@@ -17,6 +17,13 @@ template<class T> struct type_identity
     typedef T type;
 };
 
+#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
+
+template <class T> using type_identity_t = typename type_identity<T>::type;
+
+#endif
+
+
 } // namespace boost
 
 #endif // #ifndef BOOST_TYPE_TRAITS_TYPE_IDENTITY_HPP_INCLUDED

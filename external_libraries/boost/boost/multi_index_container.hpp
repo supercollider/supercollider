@@ -1,6 +1,6 @@
 /* Multiply indexed container.
  *
- * Copyright 2003-2014 Joaquin M Lopez Munoz.
+ * Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -810,7 +810,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   template<typename Modifier>
   bool modify_(Modifier& mod,node_type* x)
   {
-    mod(const_cast<value_type&>(x->value()));
+    BOOST_TRY{
+      mod(const_cast<value_type&>(x->value()));
+    }
+    BOOST_CATCH(...){
+      this->erase_(x);
+      BOOST_RETHROW;
+    }
+    BOOST_CATCH_END
 
     BOOST_TRY{
       if(!super::modify_(x)){
@@ -831,7 +838,14 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
   template<typename Modifier,typename Rollback>
   bool modify_(Modifier& mod,Rollback& back_,node_type* x)
   {
-    mod(const_cast<value_type&>(x->value()));
+    BOOST_TRY{
+      mod(const_cast<value_type&>(x->value()));
+    }
+    BOOST_CATCH(...){
+      this->erase_(x);
+      BOOST_RETHROW;
+    }
+    BOOST_CATCH_END
 
     bool b;
     BOOST_TRY{
@@ -840,6 +854,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_CATCH(...){
       BOOST_TRY{
         back_(const_cast<value_type&>(x->value()));
+        if(!super::check_rollback_(x))this->erase_(x);
         BOOST_RETHROW;
       }
       BOOST_CATCH(...){
@@ -853,6 +868,7 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     BOOST_TRY{
       if(!b){
         back_(const_cast<value_type&>(x->value()));
+        if(!super::check_rollback_(x))this->erase_(x);
         return false;
       }
       else return true;

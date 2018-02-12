@@ -2,7 +2,7 @@
 // detail/posix_event.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -106,6 +106,39 @@ public:
       ::pthread_cond_wait(&cond_, &lock.mutex().mutex_); // Ignore EINVAL.
       state_ -= 2;
     }
+  }
+
+  // Timed wait for the event to become signalled.
+  template <typename Lock>
+  bool wait_for_usec(Lock& lock, long usec)
+  {
+    BOOST_ASIO_ASSERT(lock.locked());
+    if ((state_ & 1) == 0)
+    {
+      state_ += 2;
+      timespec ts;
+#if (defined(__MACH__) && defined(__APPLE__)) \
+      || (defined(__ANDROID__) && (__ANDROID_API__ < 21))
+      ts.tv_sec = usec / 1000000;
+      ts.tv_nsec = (usec % 1000000) * 1000;
+      ::pthread_cond_timedwait_relative_np(
+          &cond_, &lock.mutex().mutex_, &ts); // Ignore EINVAL.
+#else // (defined(__MACH__) && defined(__APPLE__))
+      // || (defined(__ANDROID__) && (__ANDROID_API__ < 21))
+      if (::clock_gettime(CLOCK_MONOTONIC, &ts) == 0)
+      {
+        ts.tv_sec += usec / 1000000;
+        ts.tv_nsec = (usec % 1000000) * 1000;
+        ts.tv_sec += ts.tv_nsec / 1000000000;
+        ts.tv_nsec = ts.tv_nsec % 1000000000;
+        ::pthread_cond_timedwait(&cond_,
+            &lock.mutex().mutex_, &ts); // Ignore EINVAL.
+      }
+#endif // (defined(__MACH__) && defined(__APPLE__))
+       // || (defined(__ANDROID__) && (__ANDROID_API__ < 21))
+      state_ -= 2;
+    }
+    return (state_ & 1) != 0;
   }
 
 private:

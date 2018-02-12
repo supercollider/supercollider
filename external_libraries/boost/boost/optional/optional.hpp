@@ -1,5 +1,5 @@
 // Copyright (C) 2003, 2008 Fernando Luis Cacciola Carballal.
-// Copyright (C) 2014 - 2016 Andrzej Krzemienski.
+// Copyright (C) 2014 - 2017 Andrzej Krzemienski.
 //
 // Use, modification, and distribution is subject to the Boost Software
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -20,6 +20,10 @@
 #include <new>
 #include <iosfwd>
 
+#ifdef BOOST_OPTIONAL_DETAIL_USE_STD_TYPE_TRAITS
+#  include <type_traits>
+#endif
+
 #include <boost/assert.hpp>
 #include <boost/core/addressof.hpp>
 #include <boost/core/enable_if.hpp>
@@ -37,12 +41,15 @@
 #include <boost/type_traits/remove_reference.hpp>
 #include <boost/type_traits/decay.hpp>
 #include <boost/type_traits/is_base_of.hpp>
+#include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/is_constructible.hpp>
 #include <boost/type_traits/is_lvalue_reference.hpp>
 #include <boost/type_traits/is_nothrow_move_assignable.hpp>
 #include <boost/type_traits/is_nothrow_move_constructible.hpp>
 #include <boost/type_traits/is_rvalue_reference.hpp>
 #include <boost/type_traits/is_same.hpp>
+#include <boost/type_traits/is_volatile.hpp>
+#include <boost/type_traits/is_scalar.hpp>
 #include <boost/move/utility.hpp>
 #include <boost/none.hpp>
 #include <boost/utility/compare_pointees.hpp>
@@ -67,7 +74,7 @@ struct in_place_init_t
 };            
 const in_place_init_t in_place_init ((in_place_init_t::init_tag()));
 
-// a tag for conditional in-place initialization of contained value	
+// a tag for conditional in-place initialization of contained value
 struct in_place_init_if_t
 {
   struct init_tag{};
@@ -152,6 +159,18 @@ class optional_base : public optional_tag
         construct(val);
     }
 
+#ifndef  BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+    // Creates an optional<T> initialized with 'move(val)' IFF cond is true, otherwise creates an uninitialzed optional<T>.
+    // Can throw if T::T(T &&) does
+    optional_base ( bool cond, rval_reference_type val )
+      :
+      m_initialized(false)
+    {
+      if ( cond )
+        construct(boost::move(val));
+    }
+#endif
+
     // Creates a deep copy of another optional<T>
     // Can throw if T::T(T const&) does
     optional_base ( optional_base const& rhs )
@@ -166,6 +185,7 @@ class optional_base : public optional_tag
     // Creates a deep move of another optional<T>
     // Can throw if T::T(T&&) does
     optional_base ( optional_base&& rhs )
+    BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value)
       :
       m_initialized(false)
     {
@@ -198,6 +218,20 @@ class optional_base : public optional_tag
 
 #endif
 
+    optional_base& operator= ( optional_base const& rhs )
+    {
+      this->assign(rhs);
+      return *this;
+    }
+
+#ifndef BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+    optional_base& operator= ( optional_base && rhs )
+    BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value && ::boost::is_nothrow_move_assignable<T>::value)
+    {
+      this->assign(static_cast<optional_base&&>(rhs));
+      return *this;
+    }
+#endif
 
     // No-throw (assuming T::~T() doesn't)
     ~optional_base() { destroy() ; }
@@ -723,6 +757,10 @@ class optional_base : public optional_tag
     storage_type m_storage ;
 } ;
 
+
+
+#include <boost/optional/detail/optional_trivially_copyable_base.hpp>
+
 // definition of metafunciton is_optional_val_init_candidate
 template <typename U>
 struct is_optional_related
@@ -764,13 +802,34 @@ struct is_optional_val_init_candidate
   : boost::conditional< !is_optional_related<U>::value && is_convertible_to_T_or_factory<T, U>::value
                       , boost::true_type, boost::false_type>::type
 {};
-    
+
 } // namespace optional_detail
 
+namespace optional_config {
+
+template <typename T>
+struct optional_uses_direct_storage_for
+  : boost::conditional<(boost::is_scalar<T>::value && !boost::is_const<T>::value && !boost::is_volatile<T>::value)
+                      , boost::true_type, boost::false_type>::type
+{};
+
+} // namespace optional_config
+
+
+#ifndef BOOST_OPTIONAL_DETAIL_NO_DIRECT_STORAGE_SPEC
+#  define BOOST_OPTIONAL_BASE_TYPE(T) boost::conditional< optional_config::optional_uses_direct_storage_for<T>::value, \
+                                      optional_detail::tc_optional_base<T>, \
+                                      optional_detail::optional_base<T> \
+                                      >::type
+#else
+#  define BOOST_OPTIONAL_BASE_TYPE(T) optional_detail::optional_base<T>
+#endif
+
 template<class T>
-class optional : public optional_detail::optional_base<T>
+class optional
+  : public BOOST_OPTIONAL_BASE_TYPE(T)
 {
-    typedef optional_detail::optional_base<T> base ;
+    typedef typename BOOST_OPTIONAL_BASE_TYPE(T) base ;
 
   public :
 
@@ -810,6 +869,13 @@ class optional : public optional_detail::optional_base<T>
     // Can throw if T::T(T const&) does
     optional ( bool cond, argument_type val ) : base(cond,val) {}
 
+#ifndef  BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+    /// Creates an optional<T> initialized with 'val' IFF cond is true, otherwise creates an uninitialized optional.
+    // Can throw if T::T(T &&) does
+    optional ( bool cond, rval_reference_type val ) : base( cond, boost::forward<T>(val) ) 
+      {}
+#endif
+
     // NOTE: MSVC needs templated versions first
 
     // Creates a deep copy of another convertible optional<U>
@@ -823,7 +889,7 @@ class optional : public optional_detail::optional_base<T>
                       )
       :
       base()
-    {
+    {      
       if ( rhs.is_initialized() )
         this->construct(rhs.get());
     }
@@ -874,15 +940,24 @@ class optional : public optional_detail::optional_base<T>
 
     // Creates a deep copy of another optional<T>
     // Can throw if T::T(T const&) does
+#ifndef BOOST_OPTIONAL_DETAIL_NO_DEFAULTED_MOVE_FUNCTIONS
+    optional ( optional const& ) = default;
+#else
     optional ( optional const& rhs ) : base( static_cast<base const&>(rhs) ) {}
+#endif
 
 #ifndef  BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
-	// Creates a deep move of another optional<T>
-	// Can throw if T::T(T&&) does
-	optional ( optional && rhs ) 
-	  BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value)
-	  : base( boost::move(rhs) ) 
-	{}
+    // Creates a deep move of another optional<T>
+    // Can throw if T::T(T&&) does
+
+#ifndef BOOST_OPTIONAL_DETAIL_NO_DEFAULTED_MOVE_FUNCTIONS
+    optional ( optional && rhs ) = default;
+#else
+    optional ( optional && rhs )
+      BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value)
+      : base( boost::move(rhs) )
+    {}
+#endif
 
 #endif
 
@@ -891,7 +966,7 @@ class optional : public optional_detail::optional_base<T>
     ~optional() {}
 #endif
 
-	
+
 #if !defined(BOOST_OPTIONAL_NO_INPLACE_FACTORY_SUPPORT) && !defined(BOOST_OPTIONAL_WEAK_OVERLOAD_RESOLUTION)
     // Assigns from an expression. See corresponding constructor.
     // Basic Guarantee: If the resolved T ctor throws, this is left UNINITIALIZED
@@ -940,21 +1015,30 @@ class optional : public optional_detail::optional_base<T>
     // Assigns from another optional<T> (deep-copies the rhs value)
     // Basic Guarantee: If T::T( T const& ) throws, this is left UNINITIALIZED
     //  (NOTE: On BCB, this operator is not actually called and left is left UNMODIFIED in case of a throw)
+#ifndef BOOST_OPTIONAL_DETAIL_NO_DEFAULTED_MOVE_FUNCTIONS
+    optional& operator= ( optional const& rhs ) = default;
+#else
     optional& operator= ( optional const& rhs )
       {
         this->assign( static_cast<base const&>(rhs) ) ;
         return *this ;
       }
+#endif
 
 #ifndef  BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
     // Assigns from another optional<T> (deep-moves the rhs value)
+#ifndef BOOST_OPTIONAL_DETAIL_NO_DEFAULTED_MOVE_FUNCTIONS
+    optional& operator= ( optional && ) = default;
+#else
     optional& operator= ( optional && rhs ) 
-	  BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value && ::boost::is_nothrow_move_assignable<T>::value)
+      BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value && ::boost::is_nothrow_move_assignable<T>::value)
       {
         this->assign( static_cast<base &&>(rhs) ) ;
         return *this ;
       }
-#endif
+#endif      
+      
+#endif // BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
 
 #ifndef BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX
 
@@ -1093,7 +1177,7 @@ class optional : public optional_detail::optional_base<T>
 #endif
 
     void swap( optional & arg )
-	  BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value && ::boost::is_nothrow_move_assignable<T>::value)
+      BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value && ::boost::is_nothrow_move_assignable<T>::value)
       {
         // allow for Koenig lookup
         boost::swap(*this, arg);
@@ -1276,6 +1360,25 @@ class optional<T&&>
 
 namespace boost {
 
+#ifndef BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
+
+template<class T>
+inline
+optional<BOOST_DEDUCED_TYPENAME boost::decay<T>::type> make_optional ( T && v  )
+{
+  return optional<BOOST_DEDUCED_TYPENAME boost::decay<T>::type>(boost::forward<T>(v));
+}
+
+// Returns optional<T>(cond,v)
+template<class T>
+inline
+optional<BOOST_DEDUCED_TYPENAME boost::decay<T>::type> make_optional ( bool cond, T && v )
+{
+  return optional<BOOST_DEDUCED_TYPENAME boost::decay<T>::type>(cond,boost::forward<T>(v));
+}
+
+#else
+
 // Returns optional<T>(v)
 template<class T>
 inline
@@ -1291,6 +1394,8 @@ optional<T> make_optional ( bool cond, T const& v )
 {
   return optional<T>(cond,v);
 }
+
+#endif // BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES
 
 // Returns a reference to the value if this is initialized, otherwise, the behaviour is UNDEFINED.
 // No-throw

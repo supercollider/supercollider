@@ -28,7 +28,7 @@
 #include "nova-tt/dummy_mutex.hpp"
 #include "nova-tt/spin_lock.hpp"
 
-#include "utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 
 namespace nova   {
 namespace detail {

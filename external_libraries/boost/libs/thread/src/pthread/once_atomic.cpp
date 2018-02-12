@@ -40,7 +40,7 @@ namespace boost
         pthread::pthread_mutex_scoped_lock lk(&once_mutex);
         if (f.load(memory_order_acquire) != initialized)
         {
-          while (true)
+          for (;;)
           {
             atomic_int_type expected = uninitialized;
             if (f.compare_exchange_strong(expected, in_progress, memory_order_acq_rel, memory_order_acquire))

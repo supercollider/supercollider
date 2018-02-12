@@ -54,7 +54,7 @@ namespace boost
 namespace movelib
 {
 
-    template< class T, class D > class unique_ptr;
+template< class T, class D > class unique_ptr;
 
 } // namespace movelib
 
@@ -118,7 +118,14 @@ private:
 
 public:
 
-    shared_count(): pi_(0) // nothrow
+    BOOST_CONSTEXPR shared_count(): pi_(0) // nothrow
+#if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)
+        , id_(shared_count_id)
+#endif
+    {
+    }
+
+    BOOST_CONSTEXPR explicit shared_count( sp_counted_base * pi ): pi_( pi ) // nothrow
 #if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)
         , id_(shared_count_id)
 #endif
@@ -249,18 +256,8 @@ public:
 
         try
         {
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-            impl_type * pi = std::allocator_traits<A2>::allocate( a2, 1 );
-            pi_ = pi;
-            std::allocator_traits<A2>::construct( a2, pi, p, d, a );
-
-#else
-
-            pi_ = a2.allocate( 1, static_cast< impl_type* >( 0 ) );
+            pi_ = a2.allocate( 1 );
             ::new( static_cast< void* >( pi_ ) ) impl_type( p, d, a );
-
-#endif
         }
         catch(...)
         {
@@ -276,28 +273,11 @@ public:
 
 #else
 
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-        impl_type * pi = std::allocator_traits<A2>::allocate( a2, 1 );
-        pi_ = pi;
-
-#else
-
-        pi_ = a2.allocate( 1, static_cast< impl_type* >( 0 ) );
-
-#endif
+        pi_ = a2.allocate( 1 );
 
         if( pi_ != 0 )
         {
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-            std::allocator_traits<A2>::construct( a2, pi, p, d, a );
-
-#else
-
             ::new( static_cast< void* >( pi_ ) ) impl_type( p, d, a );
-
-#endif
         }
         else
         {
@@ -333,18 +313,8 @@ public:
 
         try
         {
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-            impl_type * pi = std::allocator_traits<A2>::allocate( a2, 1 );
-            pi_ = pi;
-            std::allocator_traits<A2>::construct( a2, pi, p, a );
-
-#else
-
-            pi_ = a2.allocate( 1, static_cast< impl_type* >( 0 ) );
+            pi_ = a2.allocate( 1 );
             ::new( static_cast< void* >( pi_ ) ) impl_type( p, a );
-
-#endif
         }
         catch(...)
         {
@@ -360,28 +330,11 @@ public:
 
 #else
 
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-        impl_type * pi = std::allocator_traits<A2>::allocate( a2, 1 );
-        pi_ = pi;
-
-#else
-
-        pi_ = a2.allocate( 1, static_cast< impl_type* >( 0 ) );
-
-#endif
+        pi_ = a2.allocate( 1 );
 
         if( pi_ != 0 )
         {
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-            std::allocator_traits<A2>::construct( a2, pi, p, a );
-
-#else
-
             ::new( static_cast< void* >( pi_ ) ) impl_type( p, a );
-
-#endif
         }
         else
         {
@@ -550,6 +503,11 @@ public:
         return pi_? pi_->get_deleter( ti ): 0;
     }
 
+    void * get_local_deleter( sp_typeinfo const & ti ) const
+    {
+        return pi_? pi_->get_local_deleter( ti ): 0;
+    }
+
     void * get_untyped_deleter() const
     {
         return pi_? pi_->get_untyped_deleter(): 0;
@@ -571,7 +529,7 @@ private:
 
 public:
 
-    weak_count(): pi_(0) // nothrow
+    BOOST_CONSTEXPR weak_count(): pi_(0) // nothrow
 #if defined(BOOST_SP_ENABLE_DEBUG_HOOKS)
         , id_(weak_count_id)
 #endif

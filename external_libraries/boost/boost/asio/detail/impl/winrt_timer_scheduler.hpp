@@ -2,7 +2,7 @@
 // detail/impl/winrt_timer_scheduler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -47,12 +47,12 @@ void winrt_timer_scheduler::schedule_timer(timer_queue<Time_Traits>& queue,
 
   if (shutdown_)
   {
-    io_service_.post_immediate_completion(op, false);
+    io_context_.post_immediate_completion(op, false);
     return;
   }
 
   bool earliest = queue.enqueue_timer(time, timer, op);
-  io_service_.work_started();
+  io_context_.work_started();
   if (earliest)
     event_.signal(lock);
 }
@@ -66,8 +66,21 @@ std::size_t winrt_timer_scheduler::cancel_timer(timer_queue<Time_Traits>& queue,
   op_queue<operation> ops;
   std::size_t n = queue.cancel_timer(timer, ops, max_cancelled);
   lock.unlock();
-  io_service_.post_deferred_completions(ops);
+  io_context_.post_deferred_completions(ops);
   return n;
+}
+
+template <typename Time_Traits>
+void winrt_timer_scheduler::move_timer(timer_queue<Time_Traits>& queue,
+    typename timer_queue<Time_Traits>::per_timer_data& to,
+    typename timer_queue<Time_Traits>::per_timer_data& from)
+{
+  boost::asio::detail::mutex::scoped_lock lock(mutex_);
+  op_queue<operation> ops;
+  queue.cancel_timer(to, ops);
+  queue.move_timer(to, from);
+  lock.unlock();
+  scheduler_.post_deferred_completions(ops);
 }
 
 } // namespace detail

@@ -2,7 +2,7 @@
 // local/detail/impl/endpoint.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Derived from a public domain implementation written by Daniel Casimiro.
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -109,7 +109,8 @@ void endpoint::init(const char* path_name, std::size_t path_length)
   using namespace std; // For memcpy.
   data_.local = boost::asio::detail::sockaddr_un_type();
   data_.local.sun_family = AF_UNIX;
-  memcpy(data_.local.sun_path, path_name, path_length);
+  if (path_length > 0)
+    memcpy(data_.local.sun_path, path_name, path_length);
   path_length_ = path_length;
 
   // NUL-terminate normal path names. Names that start with a NUL are in the

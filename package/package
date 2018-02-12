@@ -71,7 +71,8 @@ SuperCollider-Source/platform/mac
 SuperCollider-Source/platform/iphone
 SuperCollider-Source/platform/windows
 SuperCollider-Source/lang/LangPrimSource/HID_Utilities
-SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX' >> LinuxExclusions.txt
+SuperCollider-Source/lang/LangPrimSource/WiiMote_OSX
+SuperCollider-Source/testsuite/sclang/lpc' >> LinuxExclusions.txt
 
     tar cfj "$filename" SuperCollider-Source
     tar cfjX "$filenamelinux" LinuxExclusions.txt SuperCollider-Source

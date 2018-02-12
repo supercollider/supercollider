@@ -2,7 +2,7 @@
 // deadline_timer_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,15 +17,16 @@
 
 #include <boost/asio/detail/config.hpp>
 
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+
 #if defined(BOOST_ASIO_HAS_BOOST_DATE_TIME) \
   || defined(GENERATING_DOCUMENTATION)
 
 #include <cstddef>
 #include <boost/asio/async_result.hpp>
 #include <boost/asio/detail/deadline_timer_service.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/time_traits.hpp>
-#include <boost/asio/detail/timer_queue_ptime.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -37,7 +38,7 @@ template <typename TimeType,
     typename TimeTraits = boost::asio::time_traits<TimeType> >
 class deadline_timer_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public boost::asio::io_service::service
+  : public boost::asio::io_context::service
 #else
   : public boost::asio::detail::service_base<
       deadline_timer_service<TimeType, TimeTraits> >
@@ -46,7 +47,7 @@ class deadline_timer_service
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static boost::asio::io_service::id id;
+  static boost::asio::io_context::id id;
 #endif
 
   /// The time traits type.
@@ -70,11 +71,11 @@ public:
   typedef typename service_impl_type::implementation_type implementation_type;
 #endif
 
-  /// Construct a new timer service for the specified io_service.
-  explicit deadline_timer_service(boost::asio::io_service& io_service)
+  /// Construct a new timer service for the specified io_context.
+  explicit deadline_timer_service(boost::asio::io_context& io_context)
     : boost::asio::detail::service_base<
-        deadline_timer_service<TimeType, TimeTraits> >(io_service),
-      service_impl_(io_service)
+        deadline_timer_service<TimeType, TimeTraits> >(io_context),
+      service_impl_(io_context)
   {
   }
 
@@ -106,7 +107,7 @@ public:
   /// Get the expiry time for the timer as an absolute time.
   time_type expires_at(const implementation_type& impl) const
   {
-    return service_impl_.expires_at(impl);
+    return service_impl_.expiry(impl);
   }
 
   /// Set the expiry time for the timer as an absolute time.
@@ -119,14 +120,14 @@ public:
   /// Get the expiry time for the timer relative to now.
   duration_type expires_from_now(const implementation_type& impl) const
   {
-    return service_impl_.expires_from_now(impl);
+    return TimeTraits::subtract(service_impl_.expiry(impl), TimeTraits::now());
   }
 
   /// Set the expiry time for the timer relative to now.
   std::size_t expires_from_now(implementation_type& impl,
       const duration_type& expiry_time, boost::system::error_code& ec)
   {
-    return service_impl_.expires_from_now(impl, expiry_time, ec);
+    return service_impl_.expires_after(impl, expiry_time, ec);
   }
 
   // Perform a blocking wait on the timer.
@@ -142,20 +143,19 @@ public:
   async_wait(implementation_type& impl,
       BOOST_ASIO_MOVE_ARG(WaitHandler) handler)
   {
-    detail::async_result_init<
-      WaitHandler, void (boost::system::error_code)> init(
-        BOOST_ASIO_MOVE_CAST(WaitHandler)(handler));
+    async_completion<WaitHandler,
+      void (boost::system::error_code)> init(handler);
 
-    service_impl_.async_wait(impl, init.handler);
+    service_impl_.async_wait(impl, init.completion_handler);
 
     return init.result.get();
   }
 
 private:
   // Destroy all user-defined handler objects owned by the service.
-  void shutdown_service()
+  void shutdown()
   {
-    service_impl_.shutdown_service();
+    service_impl_.shutdown();
   }
 
   // The platform-specific implementation.
@@ -169,5 +169,7 @@ private:
 
 #endif // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
        // || defined(GENERATING_DOCUMENTATION)
+
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
 
 #endif // BOOST_ASIO_DEADLINE_TIMER_SERVICE_HPP

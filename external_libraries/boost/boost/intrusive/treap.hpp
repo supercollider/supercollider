@@ -354,9 +354,9 @@ class treap_impl
    //! <b>Throws</b>: If the comparison functor's swap call throws.
    void swap(treap_impl& other)
    {
-      tree_type::swap(other);
       //This can throw
       ::boost::adl_move_swap(this->priv_pcomp(), other.priv_pcomp());
+      tree_type::swap(other);
    }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.

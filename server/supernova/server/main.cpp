@@ -253,8 +253,8 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
             factory->load_plugin_folder(folder);
 #else
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / "plugins");
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) / "plugins");
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) );
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) );
 #endif
     }
 

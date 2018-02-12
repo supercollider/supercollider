@@ -9,14 +9,14 @@
 //  See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt
 //
-//  See http://www.boost.org/libs/smart_ptr/make_shared.html
-//  for documentation.
+//  See http://www.boost.org/libs/smart_ptr/ for documentation.
 
 #include <boost/config.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/smart_ptr/detail/sp_forward.hpp>
+#include <boost/smart_ptr/detail/sp_noexcept.hpp>
 #include <boost/type_traits/type_with_alignment.hpp>
 #include <boost/type_traits/alignment_of.hpp>
 #include <cstddef>
@@ -48,7 +48,7 @@ private:
 
 private:
 
-    void destroy()
+    void destroy() BOOST_SP_NOEXCEPT
     {
         if( initialized_ )
         {
@@ -70,39 +70,39 @@ private:
 
 public:
 
-    sp_ms_deleter() BOOST_NOEXCEPT : initialized_( false )
+    sp_ms_deleter() BOOST_SP_NOEXCEPT : initialized_( false )
     {
     }
 
-    template<class A> explicit sp_ms_deleter( A const & ) BOOST_NOEXCEPT : initialized_( false )
+    template<class A> explicit sp_ms_deleter( A const & ) BOOST_SP_NOEXCEPT : initialized_( false )
     {
     }
 
     // optimization: do not copy storage_
-    sp_ms_deleter( sp_ms_deleter const & ) BOOST_NOEXCEPT : initialized_( false )
+    sp_ms_deleter( sp_ms_deleter const & ) BOOST_SP_NOEXCEPT : initialized_( false )
     {
     }
 
-    ~sp_ms_deleter()
-    {
-        destroy();
-    }
-
-    void operator()( T * )
+    ~sp_ms_deleter() BOOST_SP_NOEXCEPT
     {
         destroy();
     }
 
-    static void operator_fn( T* ) // operator() can't be static
+    void operator()( T * ) BOOST_SP_NOEXCEPT
+    {
+        destroy();
+    }
+
+    static void operator_fn( T* ) BOOST_SP_NOEXCEPT // operator() can't be static
     {
     }
 
-    void * address() BOOST_NOEXCEPT
+    void * address() BOOST_SP_NOEXCEPT
     {
         return storage_.data_;
     }
 
-    void set_initialized() BOOST_NOEXCEPT
+    void set_initialized() BOOST_SP_NOEXCEPT
     {
         initialized_ = true;
     }
@@ -120,7 +120,7 @@ private:
 
 private:
 
-    void destroy()
+    void destroy() BOOST_SP_NOEXCEPT
     {
         if( initialized_ )
         {
@@ -142,35 +142,35 @@ private:
 
 public:
 
-    sp_as_deleter( A const & a ) BOOST_NOEXCEPT : a_( a ), initialized_( false )
+    sp_as_deleter( A const & a ) BOOST_SP_NOEXCEPT : a_( a ), initialized_( false )
     {
     }
 
     // optimization: do not copy storage_
-    sp_as_deleter( sp_as_deleter const & r ) BOOST_NOEXCEPT : a_( r.a_), initialized_( false )
+    sp_as_deleter( sp_as_deleter const & r ) BOOST_SP_NOEXCEPT : a_( r.a_), initialized_( false )
     {
     }
 
-    ~sp_as_deleter()
-    {
-        destroy();
-    }
-
-    void operator()( T * )
+    ~sp_as_deleter() BOOST_SP_NOEXCEPT
     {
         destroy();
     }
 
-    static void operator_fn( T* ) // operator() can't be static
+    void operator()( T * ) BOOST_SP_NOEXCEPT
+    {
+        destroy();
+    }
+
+    static void operator_fn( T* ) BOOST_SP_NOEXCEPT // operator() can't be static
     {
     }
 
-    void * address() BOOST_NOEXCEPT
+    void * address() BOOST_SP_NOEXCEPT
     {
         return storage_.data_;
     }
 
-    void set_initialized() BOOST_NOEXCEPT
+    void set_initialized() BOOST_SP_NOEXCEPT
     {
         initialized_ = true;
     }
