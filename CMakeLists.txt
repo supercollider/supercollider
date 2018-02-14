@@ -434,6 +434,10 @@ if(WIN32)
 	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
 endif()
 
+if(NOT SC_ABLETON)
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|Ableton")
+endif()
+
 if(APPLE)
 	if(SC_SYMLINK_CLASSLIB)
 		#if there are folders inside SCCLassLibrary abort cmake.
