@@ -20,3 +20,4 @@
 [submodule "external_libraries/link"]
 	path = external_libraries/link
 	url = https://github.com/Ableton/link
+	branch = win32
