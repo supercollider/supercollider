@@ -19,4 +19,4 @@
 	url = https://github.com/supercollider/yaml-cpp.git
 [submodule "editors/sc-el"]
 	path = editors/sc-el
-	url = https://github.com/supercollider/el-supercollider/
+	url = https://github.com/supercollider/scel/
