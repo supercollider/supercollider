@@ -242,6 +242,8 @@ else()
     option(SC_HIDAPI "Build with HID support" ON)
 endif()
 
+option(SC_ABLETON "Build with Ableton Link support" ON)
+
 #############################################
 # some default libraries
 
@@ -432,6 +434,10 @@ endif()
 
 if(WIN32)
 	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
+endif()
+
+if(NOT SC_ABLETON)
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|Ableton")
 endif()
 
 if(APPLE)

@@ -37,6 +37,7 @@ else ()
 endif ()
 
 set(sclang_sources
+    LangPrimSource/SC_Ableton_Link.cpp
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
@@ -268,6 +269,14 @@ if (NOT WIN32)
 		PROPERTY OUTPUT_NAME sclang)
 endif()
 
+if (SC_ABLETON)
+	message(STATUS "Compiling with Ableton Link support")
+	include(../external_libraries/link/AbletonLinkConfig.cmake)
+	target_link_libraries(libsclang Ableton::Link)
+
+	add_definitions(-DSC_ABLETON_LINK)
+endif()
+
 ## external libraries
 if(READLINE_FOUND)
 	message(STATUS "Compiling with Readline support")
@@ -325,6 +334,8 @@ target_link_libraries(sclang libsclang)
 target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
+
+
 
 if(LTO)
   target_compile_definitions(libsclang PUBLIC -flto -flto-report)
