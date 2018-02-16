@@ -568,39 +568,39 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrSlot key, typeSlot;
 		PyrSymbol *typeSym;
-		// test 'this[\type] == \rest' first
+		// easy test first: 'this[\type] == \rest'
 		SetSymbol(&key, s_type);
 		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
 		if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
 			SetBool(g->sp, 1);
 			return errNone;
-		} else {
-			PyrObject *array = slotRawObject(arraySlot);
-			PyrSymbol *slotSym;
-			PyrSlot *slot;
-			int32 size = array->size;
-			int32 i;
+		};
+		// failing that, scan slot values for a Rest instance or \ or \r
+		PyrObject *array = slotRawObject(arraySlot);
+		PyrSymbol *slotSym;
+		PyrSlot *slot;
+		int32 size = array->size;
+		int32 i;
 
-			slot = array->slots + 1;  // scan only the odd items
+		slot = array->slots + 1;  // scan only the odd items
 
-			for (i = 1; i < size; i += 2, slot += 2) {
-				if (isKindOfSlot(slot, class_rest)
-				    || isKindOfSlot(slot, class_metarest)
+		for (i = 1; i < size; i += 2, slot += 2) {
+			if (isKindOfSlot(slot, class_rest)
+			    || isKindOfSlot(slot, class_metarest)
+			) {
+				SetBool(g->sp, 1);
+				return errNone;
+			} else if(!slotSymbolVal(slot, &slotSym)) {
+				if(slotSym == s_empty
+					|| slotSym == s_r
+					|| slotSym == s_rest
 				) {
 					SetBool(g->sp, 1);
 					return errNone;
-				} else if(!slotSymbolVal(slot, &slotSym)) {
-					if(slotSym == s_empty
-						|| slotSym == s_r
-						|| slotSym == s_rest
-					) {
-						SetBool(g->sp, 1);
-						return errNone;
-					}
-				}  // why no 'else'?
-				// slotSymbolVal nonzero return = not a symbol;
-				// non-symbols don't indicate rests, so, ignore them.
-			}
+				}
+			}  // why no 'else'?
+			// slotSymbolVal nonzero return = not a symbol;
+			// non-symbols don't indicate rests, so, ignore them.
 		}
 	} else {
 		return errWrongType;
