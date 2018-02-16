@@ -46,7 +46,7 @@ PyrSymbol *s_proto, *s_parent;
 PyrSymbol *s_delta, *s_dur, *s_stretch;
 
 // used in prEvent_IsRest
-PyrSymbol *s_type, *s_rest, *s_empty, *s_r;
+PyrSymbol *s_type, *s_rest, *s_empty, *s_r, *s_isRest;
 PyrClass *class_rest, *class_metarest;
 
 #define HASHSYMBOL(sym) (sym >> 5)
@@ -568,14 +568,21 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrSlot key, typeSlot;
 		PyrSymbol *typeSym;
-		// easy test first: 'this[\type] == \rest'
+		// easy tests first: 'this[\type] == \rest'
 		SetSymbol(&key, s_type);
 		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
 		if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
 			SetBool(g->sp, 1);
 			return errNone;
 		};
-		// failing that, scan slot values for a Rest instance or \ or \r
+		// and, 'this[\isRest] == true'
+		SetSymbol(&key, s_isRest);
+		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+		if(IsTrue(&typeSlot)) {
+			SetBool(g->sp, 1);
+			return errNone;
+		};
+		// failing those, scan slot values for a Rest instance or \ or \r
 		PyrObject *array = slotRawObject(arraySlot);
 		PyrSymbol *slotSym;
 		PyrSlot *slot;
@@ -851,6 +858,7 @@ void initPatterns()
 	s_rest = getsym("rest");
 	s_empty = getsym("");
 	s_r = getsym("r");
+	s_isRest = getsym("isRest");
 
 	class_rest = getsym("Rest")->u.classobj;
 	class_metarest = getsym("Meta_Rest")->u.classobj;

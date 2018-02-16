@@ -148,6 +148,10 @@ TestAbstractFunction : UnitTest {
 
 		this.assertEquals((x: \rest).isRest, true, "event with an 'rest' symbol in arbitrary key should return true for isRest");
 
+		this.assertEquals((isRest: true).isRest, true, "event[\\isRest] == true is detected as a rest");
+
+		this.assertEquals((isRest: false, dur: Rest(1)).isRest, true, "event[\\isRest] == false does not cancel other entries' Rest status");
+
 		#[\dur, \degree, \paraplui, \type].do { |key|
 			var a, b, c, f;
 
