@@ -52,7 +52,7 @@ QPainter *imgPainter = 0;
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QString path( QtCollider::get<QString>(a) );
   QPixmap pixmap(path);
