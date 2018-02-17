@@ -37,17 +37,17 @@ unit_test_monitor_t::error_level
 unit_test_monitor_t::execute_and_translate( boost::function<void ()> const& func, unsigned timeout )
 {
     BOOST_TEST_I_TRY {
-        p_catch_system_errors.value     = runtime_config::get<bool>( runtime_config::CATCH_SYS_ERRORS );
+        p_catch_system_errors.value     = runtime_config::get<bool>( runtime_config::btrt_catch_sys_errors );
         p_timeout.value                 = timeout;
-        p_auto_start_dbg.value          = runtime_config::get<bool>( runtime_config::AUTO_START_DBG );
-        p_use_alt_stack.value           = runtime_config::get<bool>( runtime_config::USE_ALT_STACK );
-        p_detect_fp_exceptions.value    = runtime_config::get<bool>( runtime_config::DETECT_FP_EXCEPT );
+        p_auto_start_dbg.value          = runtime_config::get<bool>( runtime_config::btrt_auto_start_dbg );
+        p_use_alt_stack.value           = runtime_config::get<bool>( runtime_config::btrt_use_alt_stack );
+        p_detect_fp_exceptions.value    = runtime_config::get<bool>( runtime_config::btrt_detect_fp_except );
 
         vexecute( func );
     }
     BOOST_TEST_I_CATCH( execution_exception, ex ) {
         framework::exception_caught( ex );
-        framework::test_unit_aborted( framework::current_test_case() );
+        framework::test_unit_aborted( framework::current_test_unit() );
 
         // translate execution_exception::error_code to error_level
         switch( ex.code() ) {

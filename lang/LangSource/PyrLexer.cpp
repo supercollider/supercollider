@@ -1775,8 +1775,6 @@ bool parseOneClass(PyrSymbol *fileSym)
 
 void initPassOne()
 {
-	post("initPassOne started\n");
-
 	//dump_pool_histo(pyr_pool_runtime);
 	pyr_pool_runtime->FreeAllInternal();
 	//dump_pool_histo(pyr_pool_runtime);
@@ -1803,8 +1801,6 @@ void initPassOne()
 
 	// main class library folder: only used for relative path resolution
 	gCompileDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / "SCClassLibrary";
-
-	post("initPassOne done\n");
 }
 
 void finiPassOne()
@@ -1812,6 +1808,36 @@ void finiPassOne()
 	//postfl("->finiPassOne\n");
 	freeParserPool();
 	//postfl("<-finiPassOne\n");
+}
+
+/**
+ * \brief \c true if \c dir is one of the language config's default classlib directories
+ */
+static bool isDefaultClassLibraryDirectory(const bfs::path& dir)
+{
+	auto const& defaultDirs = gLanguageConfig->defaultClassLibraryDirectories();
+	auto const iter = std::find(defaultDirs.begin(), defaultDirs.end(), dir);
+	return iter != defaultDirs.end();
+}
+
+/**
+ * \brief Handles a missing directory encountered during compilation.
+ *
+ * If the directory is one of the default directories traversed during compilation,
+ * try to create it, silently ignoring failure (most likely from permissions failure).
+ * Otherwise, warn the user to help catch mistyped/missing directory names. See #3468.
+ */
+static void passOne_HandleMissingDirectory(const bfs::path& dir)
+{
+	if (isDefaultClassLibraryDirectory(dir)) {
+		boost::system::error_code ec{};
+		bfs::create_directories(dir, ec);
+	} else {
+		post("WARNING: Could not open directory: '%s'\n"
+			 "\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
+			 SC_Codecvt::path_to_utf8_str(dir).c_str()
+		);
+	}
 }
 
 bfs::path relativeToCompileDir(const bfs::path& p)
@@ -1871,12 +1897,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// If we got an error, post a warning if it was because the target wasn't found, and return success.
 		// Otherwise, post the error and fail.
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
-			post("WARNING: Could not open directory: '%s'\n"
-				"\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
-				SC_Codecvt::path_to_utf8_str(dir).c_str(),
-				ec.message().c_str()
-			);
-
+			passOne_HandleMissingDirectory(dir);
 			return true;
 		} else {
 			error("Could not open directory '%s': (%d) %s\n",
@@ -1974,7 +1995,7 @@ bool isValidSourceFileName(const bfs::path& path)
 bool passOne_ProcessOneFile(const bfs::path& path)
 {
 	bool success = true;
-	
+
 	const std::string path_str = SC_Codecvt::path_to_utf8_str(path);
 	const char* path_c_str = path_str.c_str();
 	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(path)) {
@@ -2101,8 +2122,6 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 
 	bool res = passOne();
 	if (res) {
-
-		postfl("\tpass 1 done\n");
 
 		if (!compileErrors) {
 			buildDepTree();

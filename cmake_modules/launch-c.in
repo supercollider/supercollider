@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# thanks to Craig Scott: https://crascit.com/2016/04/09/using-ccache-with-cmake/
+export CCACHE_CPP2=true
+exec "${RULE_LAUNCH_COMPILE}" "${CMAKE_CXX_COMPILER}" "$@"

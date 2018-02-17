@@ -4,7 +4,7 @@ Volume {
 
 	var <volume = 0.0, <lag = 0.1, <isMuted = false;
 
-	var ampSynth, defName, updateFunc, initFunc;
+	var <ampSynth, <numOutputChannels, defName, updateFunc, initFunc;
 	var <>window;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
@@ -12,36 +12,45 @@ Volume {
 	}
 
 	init {
-		if(server.serverRunning) { this.sendSynthDef };
-		if(initFunc.isNil) {
-			ServerBoot.add(initFunc = {
-				ampSynth = nil;
-				this.sendSynthDef;
-			}, server)
-		}
+		// execute immediately if we're already past server tree functions
+		if(server.serverRunning) {
+			this.sendSynthDef;
+			this.updateSynth;
+		};
+
+		initFunc = {
+			ampSynth = nil;
+			this.sendSynthDef;
+
+			// only create synth now if it won't be created by ServerTree
+			if (persist.not) { this.updateSynth };
+		};
+
+		ServerBoot.add(initFunc, server)
 	}
 
 	sendSynthDef {
-
-		forkIfNeeded {
-			var synthNumChans = this.numChannels;
-			defName = (\volumeAmpControl ++ synthNumChans).asSymbol;
-			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
+		if (server.hasBooted) {
+			fork {
+				numOutputChannels = this.numChannels;
+				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
+				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
 					XOut.ar(bus,
 						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-						In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag)
+						In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
 					);
-			}).send(server);
+				}).send(server);
 
-			server.sync;
+				server.sync;
 
-			if(updateFunc.isNil) {
-				ServerTree.add(updateFunc = {
+				updateFunc = {
 					ampSynth = nil;
 					if(persist) { this.updateSynth }
-				})
+				};
+
+				ServerTree.add(updateFunc, server);
 			}
-		}
+		};
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
@@ -56,7 +65,7 @@ Volume {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
 		var active = amp != 1.0;
 		if(active) {
-			if(server.serverRunning) {
+			if(server.hasBooted) {
 				if(ampSynth.isNil) {
 					ampSynth = Synth.after(server.defaultGroup, defName,
 						[\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
@@ -85,6 +94,13 @@ Volume {
 		}
 	}
 
+	freeSynth {
+		ServerTree.remove(updateFunc, server);
+		updateFunc = nil;
+		ampSynth.release;
+		ampSynth = nil
+	}
+
 	// sets volume back to 1 - removes the synth
 	reset {
 		isMuted = false;
@@ -110,7 +126,6 @@ Volume {
 		clippedVolume = volume.clip(min, max);
 		if(clippedVolume != volume) { this.volume_(clippedVolume) }
 	}
-
 
 	gui { | window, bounds |
 		^VolumeGui(this, window, bounds)

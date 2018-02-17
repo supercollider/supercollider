@@ -1,4 +1,3 @@
-
 Git {
 	var <>localPath, >url, tag, sha, remoteLatest, tags;
 	classvar gitIsInstalled;
@@ -45,6 +44,22 @@ Git {
 			match = out.findRegexp("^[a-zA-Z0-9]+\t([^ ]+) \\(fetch\\)");
 		if(match.size > 0, {
 			^match[1][1]
+		});
+		^nil
+	}
+	remoteAsHttpUrl {
+		var giturl = this.url;
+		var hosturl, path;
+
+		if(giturl.notNil, {
+			if(giturl.beginsWith("git@"), {
+				#hosturl, path = giturl.split($:);
+				^"https://%/%".format(hosturl.split($@).last, path)
+			});
+			if(giturl.beginsWith("git:"), {
+				^("https:" ++ giturl.copyToEnd(4))
+			});
+			^giturl;
 		});
 		^nil
 	}
@@ -114,18 +129,19 @@ Git {
 	}
 	*checkForGit {
 		var gitFind;
-		if(gitIsInstalled.isNil, {
-			if(thisProcess.platform.name !== 'windows', {
+		if(gitIsInstalled.isNil) {
+			if(thisProcess.platform.name !== 'windows') {
 				gitFind = "which git";
-			}, {
+			} {
 				gitFind = "where git";
-			});
+			};
 			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;
 				gitIsInstalled = false;
 			});
-		})
+		};
+		^gitIsInstalled
 	}
 }

@@ -2,7 +2,7 @@
 // detail/socket_ops.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,9 +18,8 @@
 #include <boost/asio/detail/config.hpp>
 
 #include <boost/system/error_code.hpp>
-#include <boost/asio/detail/shared_ptr.hpp>
+#include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/socket_types.hpp>
-#include <boost/asio/detail/weak_ptr.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -265,12 +264,16 @@ BOOST_ASIO_DECL int select(int nfds, fd_set* readfds, fd_set* writefds,
     fd_set* exceptfds, timeval* timeout, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_read(socket_type s,
-    state_type state, boost::system::error_code& ec);
+    state_type state, int msec, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_write(socket_type s,
-    state_type state, boost::system::error_code& ec);
+    state_type state, int msec, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int poll_connect(socket_type s, boost::system::error_code& ec);
+BOOST_ASIO_DECL int poll_error(socket_type s,
+    state_type state, int msec, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL int poll_connect(socket_type s,
+    int msec, boost::system::error_code& ec);
 
 #endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 

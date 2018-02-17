@@ -257,7 +257,7 @@ Event : Environment {
 
 				synthLib: nil,
 
-				group: 1,
+				group: { ~server.defaultGroup.nodeID },
 				out: 0,
 				addAction: 0,
 
@@ -373,7 +373,7 @@ Event : Environment {
 				delta: 0,
 
 				addAction: 0,
-				group: 1,
+				group: { ~server.defaultGroup.nodeID },
 				latency: 0.2,
 				instrument: \default,
 				hasGate: true,
@@ -435,9 +435,9 @@ Event : Environment {
 					parentType = ~parentTypes[~type];
 					parentType !? { currentEnvironment.parent = parentType };
 
-					~finish.value(currentEnvironment);
+					server = ~server = ~server ? Server.default;
 
-					server = ~server ? Server.default;
+					~finish.value(currentEnvironment);
 
 					tempo = ~tempo;
 					tempo !? { thisThread.clock.tempo = tempo };
@@ -619,7 +619,7 @@ Event : Environment {
 						// compute the control values and generate OSC commands
 
 						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group] ++ bndl;
+						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput] ++ bndl;
 
 						~schedBundleArray.(
 							~lag,

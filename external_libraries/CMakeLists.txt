@@ -26,6 +26,10 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 	add_library(boost_filesystem STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
 	target_include_directories(boost_filesystem PUBLIC boost)
 
+	aux_source_directory(boost/libs/regex/src boost_regex_src)
+	add_library(boost_regex STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
+	target_include_directories(boost_regex PUBLIC boost)
+
 	if(LTO)
 		set_property(TARGET boost_program_options boost_system boost_filesystem
 					 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
@@ -61,7 +65,14 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+	set_property( TARGET
+        boost_regex
+        boost_thread
+        boost_program_options
+        boost_system
+        boost_filesystem
+        PROPERTY FOLDER 3rdparty
+    )
 
 endif()
 

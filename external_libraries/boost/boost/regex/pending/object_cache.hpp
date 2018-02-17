@@ -19,12 +19,12 @@
 #ifndef BOOST_REGEX_OBJECT_CACHE_HPP
 #define BOOST_REGEX_OBJECT_CACHE_HPP
 
+#include <boost/config.hpp>
+#include <boost/shared_ptr.hpp>
 #include <map>
 #include <list>
 #include <stdexcept>
 #include <string>
-#include <boost/config.hpp>
-#include <boost/shared_ptr.hpp>
 #ifdef BOOST_HAS_THREADS
 #include <boost/regex/pending/static_mutex.hpp>
 #endif

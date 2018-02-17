@@ -34,6 +34,7 @@
 #include "SC_Endian.h"
 #include "SCBase.h"
 
+#define BOOST_MATH_DISABLE_FLOAT128 1
 #include "boost/math/special_functions.hpp"
 
 const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);

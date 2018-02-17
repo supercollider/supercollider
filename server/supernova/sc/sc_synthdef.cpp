@@ -381,8 +381,12 @@ void sc_synthdef::prepare(void)
     memory_requirement_ += (graph.size() + calc_unit_indices.size() + 1) * sizeof(Unit*); // reserves space for units (one more to allor prefetching)
 
     // memory that is required to fill the sc_synth data structure
-    const size_t ctor_alloc_size = parameter_count() * (sizeof(float) + sizeof(int) + sizeof(float*))
-                                 + constants.size() * sizeof(Wire);
+    // see SC_Graph.h for corresponding data structure
+    // mControls, mControlRates, mAudioBusOffset, mMapControls
+    const size_t param_alloc_size = parameter_count() * (sizeof(float) + sizeof(int) + sizeof(int32) + sizeof(float*));
+    // mWire
+    const size_t constant_alloc_size = constants.size() * sizeof(Wire);
+    const size_t ctor_alloc_size = param_alloc_size + constant_alloc_size;
 
     memory_requirement_ += ctor_alloc_size;
 

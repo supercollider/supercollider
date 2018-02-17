@@ -1,7 +1,7 @@
 class:: Server
 summary:: Object representing a server application
 categories:: Server>Abstractions
-related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference
+related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher
 
 description::
 
@@ -84,21 +84,24 @@ s.postln; // internal
 subsection::Accessing all servers
 
 method:: all
-get a link::Classes/Set:: of all servers
+returns:: a link::Classes/Set:: containing all servers.
 
 code::
 Server.all
 ::
 
 method:: allRunningServers
-returns:: the set of all running servers.
+returns:: a Set containing all running servers, according to the definition of link::#-serverRunning::.
 
 code::
 Server.allRunningServers
 ::
 
+method:: allBootedServers
+returns:: a Set containing all booted servers, according to the definition of link::#-hasBooted::.
+
 method:: named
-get an link::Classes/IdentityDictionary:: of all servers listed by their name
+returns:: An link::Classes/IdentityDictionary:: of all servers listed by their name
 
 code::
 Server.named.at(\default)
@@ -137,7 +140,7 @@ Switches the server program to scsynth. This is the default server.
 
 InstanceMethods::
 
-private:: doSend
+private:: doSend, prHandleClientLoginInfoFromServer, prHandleNotifyFailString, prPingApp, prOnServerProcessExit
 
 method:: sendMsg
 send an OSC-message to the server.
@@ -262,7 +265,12 @@ method:: options
 Get or set this Server's link::Classes/ServerOptions:: object. Changes to options only take effect when the server is rebooted.
 
 method:: defaultGroup
-returns:: this Server's default group.
+Return the default group on this Server for this client ID. This will be the
+same object as code::server.defaultGroups[server.clientID]::.
+
+method:: defaultGroups
+Return an array mapping client IDs to their associated default groups as
+link::Classes/Group:: objects.
 
 method:: volume
 Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. Level is in db.
@@ -345,6 +353,14 @@ Get process ID of running server (if not internal).
 method:: addr
 The network address of the server as a link::Classes/NetAddr::.
 
+method:: maxNumClients
+If known, the maximum number of clients allowed on the server. Otherwise, the value of link::Classes/ServerOptions#-maxLogins::, which is what will be requested after the server boots. This number is not guaranteed to be correct until link::#-serverRunning:: is code::true::.
+
+method:: clientID
+The getter returns the client ID of this client on the remote process. code::nil:: until the server is running.
+
+The setter attempts to set the client ID of this client for the remote server process. Fails on invalid input or if the server is running. Valid inputs are in the range code::[0..(this.maxNumClients-1)]::.
+
 method:: hasShmInterface
 Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
 The shared memory interface is initialized after first server boot.
@@ -352,8 +368,11 @@ The shared memory interface is initialized after first server boot.
 method:: serverBooting
 code::true:: if the server is booting, code::false:: otherwise.
 
+method:: hasBooted
+code::true:: if the server has booted. The server is not guaranteed to have a correct clientID, nor is it guaranteed that actions in link::Classes/ServerTree:: will have run yet.
+
 method:: serverRunning
-code::true:: if the server is running, code::false:: otherwise.
+code::true:: only if the server is fully ready. A server is fully ready once it has booted, received a reply to a code::/notify:: command, been given a client ID, and after the link::Classes/ServerTree:: has run.
 
 method:: unresponsive
 code::true:: if the server is unresponsive (specifically, if it has failed to respond after link::Classes/ServerOptions#-pingsBeforeConsideredDead:: ping attempts); code::false:: otherwise.
@@ -363,6 +382,9 @@ code::true:: if the server is running on the same machine as sclang, code::false
 
 method:: remoteControlled
 code::true:: if the server is not being controlled by the machine on which it is running, code::false:: otherwise. This value is the same as code::isLocal:: unless explicitly set.
+
+method:: userSpecifiedClientID
+Deprecated in 3.9. Returns code::false::. Server:clientID can now be set while a server is off, and is locked while the server is running. Thus, userSpecifiedClientID is no longer needed internally, and meaningless.
 
 subsection:: Message Bundling
 

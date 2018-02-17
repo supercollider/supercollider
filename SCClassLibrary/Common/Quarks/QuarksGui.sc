@@ -296,7 +296,7 @@ QuarkDetailView {
 
 			if(url.notNil, {
 				this.pushRow("Repository", makeBtn.value(url, {
-					this.openGithub();
+					this.openGitRemote();
 				}));
 			});
 
@@ -377,14 +377,8 @@ QuarkDetailView {
 			openOS(url);
 		});
 	}
-	openGithub {
-		var url = model.url;
-		if(url.notNil, {
-			if(url.beginsWith("git:"), {
-				url = "https:" ++ url.copyToEnd(4)
-			});
-			openOS(url);
-		});
+	openGitRemote {
+		model.git.remoteAsHttpUrl.openOS;
 	}
 	openLocalPath {
 		model.localPath.openOS;

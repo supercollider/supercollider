@@ -2,7 +2,7 @@
 // detail/handler_tracking.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,17 @@
 
 #include <boost/asio/detail/config.hpp>
 
-#if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
+namespace boost {
+namespace asio {
+
+class execution_context;
+
+} // namespace asio
+} // namespace boost
+
+#if defined(BOOST_ASIO_CUSTOM_HANDLER_TRACKING)
+# include BOOST_ASIO_CUSTOM_HANDLER_TRACKING
+#elif defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 # include <boost/system/error_code.hpp>
 # include <boost/asio/detail/cstdint.hpp>
 # include <boost/asio/detail/static_mutex.hpp>
@@ -30,7 +40,30 @@ namespace boost {
 namespace asio {
 namespace detail {
 
-#if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
+#if defined(BOOST_ASIO_CUSTOM_HANDLER_TRACKING)
+
+// The user-specified header must define the following macros:
+// - BOOST_ASIO_INHERIT_TRACKED_HANDLER
+// - BOOST_ASIO_ALSO_INHERIT_TRACKED_HANDLER
+// - BOOST_ASIO_HANDLER_TRACKING_INIT
+// - BOOST_ASIO_HANDLER_CREATION(args)
+// - BOOST_ASIO_HANDLER_COMPLETION(args)
+// - BOOST_ASIO_HANDLER_INVOCATION_BEGIN(args)
+// - BOOST_ASIO_HANDLER_INVOCATION_END
+// - BOOST_ASIO_HANDLER_OPERATION(args)
+// - BOOST_ASIO_HANDLER_REACTOR_REGISTRATION(args)
+// - BOOST_ASIO_HANDLER_REACTOR_DEREGISTRATION(args)
+// - BOOST_ASIO_HANDLER_REACTOR_READ_EVENT
+// - BOOST_ASIO_HANDLER_REACTOR_WRITE_EVENT
+// - BOOST_ASIO_HANDLER_REACTOR_ERROR_EVENT
+// - BOOST_ASIO_HANDLER_REACTOR_EVENTS(args)
+// - BOOST_ASIO_HANDLER_REACTOR_OPERATION(args)
+
+# if !defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
+#  define BOOST_ASIO_ENABLE_HANDLER_TRACKING 1
+# endif /// !defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
+
+#elif defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 
 class handler_tracking
 {
@@ -58,14 +91,16 @@ public:
   BOOST_ASIO_DECL static void init();
 
   // Record the creation of a tracked handler.
-  BOOST_ASIO_DECL static void creation(tracked_handler* h,
-      const char* object_type, void* object, const char* op_name);
+  BOOST_ASIO_DECL static void creation(
+      execution_context& context, tracked_handler& h,
+      const char* object_type, void* object,
+      uintmax_t native_handle, const char* op_name);
 
   class completion
   {
   public:
     // Constructor records that handler is to be invoked with no arguments.
-    BOOST_ASIO_DECL explicit completion(tracked_handler* h);
+    BOOST_ASIO_DECL explicit completion(const tracked_handler& h);
 
     // Destructor records only when an exception is thrown from the handler, or
     // if the memory is being freed without the handler having been invoked.
@@ -99,9 +134,32 @@ public:
     completion* next_;
   };
 
-  // Record an operation that affects pending handlers.
-  BOOST_ASIO_DECL static void operation(const char* object_type,
-      void* object, const char* op_name);
+  // Record an operation that is not directly associated with a handler.
+  BOOST_ASIO_DECL static void operation(execution_context& context,
+      const char* object_type, void* object,
+      uintmax_t native_handle, const char* op_name);
+
+  // Record that a descriptor has been registered with the reactor.
+  BOOST_ASIO_DECL static void reactor_registration(execution_context& context,
+      uintmax_t native_handle, uintmax_t registration);
+
+  // Record that a descriptor has been deregistered from the reactor.
+  BOOST_ASIO_DECL static void reactor_deregistration(execution_context& context,
+      uintmax_t native_handle, uintmax_t registration);
+
+  // Record a reactor-based operation that is associated with a handler.
+  BOOST_ASIO_DECL static void reactor_events(execution_context& context,
+      uintmax_t registration, unsigned events);
+
+  // Record a reactor-based operation that is associated with a handler.
+  BOOST_ASIO_DECL static void reactor_operation(
+      const tracked_handler& h, const char* op_name,
+      const boost::system::error_code& ec);
+
+  // Record a reactor-based operation that is associated with a handler.
+  BOOST_ASIO_DECL static void reactor_operation(
+      const tracked_handler& h, const char* op_name,
+      const boost::system::error_code& ec, std::size_t bytes_transferred);
 
   // Write a line of output.
   BOOST_ASIO_DECL static void write_line(const char* format, ...);
@@ -135,6 +193,22 @@ private:
 # define BOOST_ASIO_HANDLER_OPERATION(args) \
   boost::asio::detail::handler_tracking::operation args
 
+# define BOOST_ASIO_HANDLER_REACTOR_REGISTRATION(args) \
+  boost::asio::detail::handler_tracking::reactor_registration args
+
+# define BOOST_ASIO_HANDLER_REACTOR_DEREGISTRATION(args) \
+  boost::asio::detail::handler_tracking::reactor_deregistration args
+
+# define BOOST_ASIO_HANDLER_REACTOR_READ_EVENT 1
+# define BOOST_ASIO_HANDLER_REACTOR_WRITE_EVENT 2
+# define BOOST_ASIO_HANDLER_REACTOR_ERROR_EVENT 4
+
+# define BOOST_ASIO_HANDLER_REACTOR_EVENTS(args) \
+  boost::asio::detail::handler_tracking::reactor_events args
+
+# define BOOST_ASIO_HANDLER_REACTOR_OPERATION(args) \
+  boost::asio::detail::handler_tracking::reactor_operation args
+
 #else // defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 
 # define BOOST_ASIO_INHERIT_TRACKED_HANDLER
@@ -145,6 +219,13 @@ private:
 # define BOOST_ASIO_HANDLER_INVOCATION_BEGIN(args) (void)0
 # define BOOST_ASIO_HANDLER_INVOCATION_END (void)0
 # define BOOST_ASIO_HANDLER_OPERATION(args) (void)0
+# define BOOST_ASIO_HANDLER_REACTOR_REGISTRATION(args) (void)0
+# define BOOST_ASIO_HANDLER_REACTOR_DEREGISTRATION(args) (void)0
+# define BOOST_ASIO_HANDLER_REACTOR_READ_EVENT 0
+# define BOOST_ASIO_HANDLER_REACTOR_WRITE_EVENT 0
+# define BOOST_ASIO_HANDLER_REACTOR_ERROR_EVENT 0
+# define BOOST_ASIO_HANDLER_REACTOR_EVENTS(args) (void)0
+# define BOOST_ASIO_HANDLER_REACTOR_OPERATION(args) (void)0
 
 #endif // defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 

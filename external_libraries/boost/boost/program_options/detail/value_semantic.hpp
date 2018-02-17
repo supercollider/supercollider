@@ -8,6 +8,9 @@
 
 #include <boost/throw_exception.hpp>
 
+// forward declaration
+namespace boost { template<class T> class optional; }
+
 namespace boost { namespace program_options { 
 
     extern BOOST_PROGRAM_OPTIONS_DECL std::string arg;
@@ -150,6 +153,20 @@ namespace boost { namespace program_options {
                 boost::throw_exception(invalid_option_value(s[i]));
             }
         }
+    }
+
+    /** Validates optional arguments. */
+    template<class T, class charT>
+    void validate(boost::any& v,
+                  const std::vector<std::basic_string<charT> >& s,
+                  boost::optional<T>*,
+                  int)
+    {
+        validators::check_first_occurrence(v);
+        validators::get_single_string(s);
+        boost::any a;
+        validate(a, s, (T*)0, 0);
+        v = boost::any(boost::optional<T>(boost::any_cast<T>(a)));
     }
 
     template<class T, class charT>

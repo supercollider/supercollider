@@ -54,6 +54,7 @@ static inline void trace(const char *fmt, ...)
 	va_list ap;
 	va_start(ap, fmt);
 	vpost(fmt, ap);
+	va_end(ap);
 }
 #else
 static inline void trace(...)

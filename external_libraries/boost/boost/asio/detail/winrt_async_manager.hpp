@@ -2,7 +2,7 @@
 // detail/winrt_async_manager.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,7 +23,7 @@
 #include <boost/asio/detail/atomic_count.hpp>
 #include <boost/asio/detail/winrt_async_op.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -36,9 +36,9 @@ class winrt_async_manager
 {
 public:
   // Constructor.
-  winrt_async_manager(boost::asio::io_service& io_service)
-    : boost::asio::detail::service_base<winrt_async_manager>(io_service),
-      io_service_(use_service<io_service_impl>(io_service)),
+  winrt_async_manager(boost::asio::io_context& io_context)
+    : boost::asio::detail::service_base<winrt_async_manager>(io_context),
+      io_context_(use_service<io_context_impl>(io_context)),
       outstanding_ops_(1)
   {
   }
@@ -49,7 +49,7 @@ public:
   }
 
   // Destroy all user-defined handler objects owned by the service.
-  void shutdown_service()
+  void shutdown()
   {
     if (--outstanding_ops_ > 0)
     {
@@ -186,12 +186,12 @@ public:
               boost::system::system_category());
           break;
         }
-        io_service_.post_deferred_completion(handler);
+        io_context_.post_deferred_completion(handler);
         if (--outstanding_ops_ == 0)
           promise_.set_value();
       });
 
-    io_service_.work_started();
+    io_context_.work_started();
     ++outstanding_ops_;
     action->Completed = on_completed;
   }
@@ -223,12 +223,12 @@ public:
               boost::system::system_category());
           break;
         }
-        io_service_.post_deferred_completion(handler);
+        io_context_.post_deferred_completion(handler);
         if (--outstanding_ops_ == 0)
           promise_.set_value();
       });
 
-    io_service_.work_started();
+    io_context_.work_started();
     ++outstanding_ops_;
     operation->Completed = on_completed;
   }
@@ -264,19 +264,19 @@ public:
                 boost::system::system_category());
             break;
           }
-          io_service_.post_deferred_completion(handler);
+          io_context_.post_deferred_completion(handler);
           if (--outstanding_ops_ == 0)
             promise_.set_value();
         });
 
-    io_service_.work_started();
+    io_context_.work_started();
     ++outstanding_ops_;
     operation->Completed = on_completed;
   }
 
 private:
-  // The io_service implementation used to post completed handlers.
-  io_service_impl& io_service_;
+  // The io_context implementation used to post completed handlers.
+  io_context_impl& io_context_;
 
   // Count of outstanding operations.
   atomic_count outstanding_ops_;

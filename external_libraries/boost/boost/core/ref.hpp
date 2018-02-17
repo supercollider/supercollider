@@ -8,8 +8,8 @@
 #endif
 
 #include <boost/config.hpp>
-#include <boost/utility/addressof.hpp>
-#include <boost/detail/workaround.hpp>
+#include <boost/config/workaround.hpp>
+#include <boost/core/addressof.hpp>
 
 //
 //  ref.hpp - ref/cref, useful helper functions

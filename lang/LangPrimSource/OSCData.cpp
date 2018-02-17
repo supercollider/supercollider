@@ -763,7 +763,6 @@ void stopAsioThread();
 
 void init_OSC(int port)
 {
-	postfl("init_OSC\n");
 
 #ifdef _WIN32
 	WSAData wsaData;
@@ -986,7 +985,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 
 	if (!gInternalSynthServer.mWorld) {
 		SetPrintFunc(&vpost);
-		WorldOptions options = kDefaultWorldOptions;
+		WorldOptions options;
 
 		PyrObject *optionsObj = slotRawObject(a);
 		PyrSlot *optionsSlots = optionsObj->slots;

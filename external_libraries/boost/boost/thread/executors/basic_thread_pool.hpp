@@ -86,11 +86,18 @@ namespace executors
         for(;;)
         {
           work task;
-          queue_op_status st = work_queue.wait_pull(task);
-          if (st == queue_op_status::closed) {
+          try
+          {
+            queue_op_status st = work_queue.wait_pull(task);
+            if (st == queue_op_status::closed) {
+              return;
+            }
+            task();
+          }
+          catch (boost::thread_interrupted&)
+          {
             return;
           }
-          task();
         }
       }
       catch (...)
@@ -240,6 +247,7 @@ namespace executors
     {
       for (unsigned i = 0; i < threads.size(); ++i)
       {
+        threads[i].interrupt();
         threads[i].join();
       }
     }
