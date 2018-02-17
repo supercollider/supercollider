@@ -193,6 +193,15 @@ Image {
 		this.setSize(this.width, h);
 	}
 
+	pixelRatio {
+		_QImage_GetDevicePixelRatio
+	}
+
+	pixelRatio_{
+		|ratio|
+		_QImage_SetDevicePixelRatio
+	}
+
 	setSize { arg width, height, resizeMode;
 		if (resizeMode.isNil) {
 			resizeMode = if (scalesWhenResized, \ignoreAspectRatio, \doNotScale);
