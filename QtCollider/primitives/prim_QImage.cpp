@@ -500,6 +500,30 @@ QC_LANG_PRIMITIVE( QImage_ColorToPixel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
    QC::set( r, pixel );
    return errNone;
 }
+	
+QC_LANG_PRIMITIVE( QImage_GetDevicePixelRatio, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+	
+  Image *image = to_image(r);
+  SetFloat( r, image->getDevicePixelRatio() );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QImage_SetDevicePixelRatio, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+	
+  double ratio = 1;
+  int err = slotDoubleVal(a, &ratio);
+  if (err == errNone) {
+    Image* image = to_image(r);
+    image->setDevicePixelRatio(ratio);
+  }
+
+  return err;
+}
+
 
 void defineQImagePrimitives()
 {
@@ -526,6 +550,8 @@ void defineQImagePrimitives()
   definer.define<QImage_Formats>();
   definer.define<QImage_PixelToColor>();
   definer.define<QImage_ColorToPixel>();
+  definer.define<QImage_GetDevicePixelRatio>();
+  definer.define<QImage_SetDevicePixelRatio>();
 }
 
 } // namespace QtCollider
