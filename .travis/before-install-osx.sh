@@ -3,7 +3,14 @@
 brew update
 brew tap homebrew/versions
 brew outdated cmake || brew upgrade cmake
-brew install libsndfile python || true
+
+# according to https://docs.travis-ci.com/user/caching#ccache-cache
+brew install ccache
+export PATH="/usr/local/opt/ccache/libexec:$PATH"
+
+brew install libsndfile || true
 brew install qt5 || true
 brew link qt5 --force
-gem install xcpretty xcpretty-travis-formatter
+
+# To get less noise in xcode output
+gem install xcpretty

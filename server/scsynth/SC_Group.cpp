@@ -172,6 +172,8 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 						scprintf("%.14g", *ptr);
 					}
 				}
+				
+				delete[] names;
 			}
 		}
 		scprintf("\n");
@@ -358,6 +360,8 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 					packet->addf(*ptr);
 				}
 			}
+			
+			delete[] names;
 		}
 		child = next;
 	}

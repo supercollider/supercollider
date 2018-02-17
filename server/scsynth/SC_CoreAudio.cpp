@@ -536,11 +536,11 @@ SC_CoreAudioDriver::~SC_CoreAudioDriver()
 }
 
 std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID& device) {
-	std::vector<AudioValueRange>	result;
-	OSStatus						err;
-	UInt32							size;
-	UInt32							count;
-	std::auto_ptr<AudioValueRange>	validSampleRateRanges;
+	std::vector<AudioValueRange>		result;
+	OSStatus							err;
+	UInt32								size;
+	UInt32								count;
+	std::unique_ptr<AudioValueRange[]>	validSampleRateRanges;
 
 	AudioObjectPropertyAddress addr = {
 		kAudioDevicePropertyAvailableNominalSampleRates,
@@ -555,14 +555,14 @@ std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID&
 	} else {
 		if (size > 0) {
 			count = size / sizeof(AudioValueRange);
-			validSampleRateRanges.reset(new AudioValueRange[count]);
+			validSampleRateRanges = std::unique_ptr<AudioValueRange[]>(new AudioValueRange[count]);
 
 			err = AudioObjectGetPropertyData(device, &addr, 0, NULL, &size, validSampleRateRanges.get());
 			if (err != kAudioHardwareNoError) {
 				scprintf("get kAudioDevicePropertyAvailableNominalSampleRates error %4.4s\n", (char*)&err);
 			} else {
 				for (int i = 0; i < count; i++) {
-					result.push_back(validSampleRateRanges.get()[i]);
+					result.push_back(validSampleRateRanges[i]);
 				}
 			}
 		}

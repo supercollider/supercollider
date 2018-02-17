@@ -1,0 +1,25 @@
+{
+  "name": "supercollider",
+  "version": "1.0.0",
+  "description": "[![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider)",
+  "main": "changelog.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/supercollider/supercollider.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/supercollider/supercollider/issues"
+  },
+  "homepage": "https://github.com/supercollider/supercollider#readme",
+  "devDependencies": {
+    "lodash": "^4.16.2"
+  }
+}

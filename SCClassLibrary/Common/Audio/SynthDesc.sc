@@ -529,7 +529,9 @@ SynthDescLib {
 	}
 
 	*send { |server, tryToLoadReconstructedDefs = true|
-		global.send(server, tryToLoadReconstructedDefs);
+		if (server.hasBooted) {
+			global.send(server, tryToLoadReconstructedDefs);
+		}
 	}
 
 	*read { arg path;

@@ -93,7 +93,7 @@ Rests may be indicated in three ways.
 list::
 ## strong::Recommended::
 list::
-## emphasis::Rest: :: A link::Classes/Rest:: object that converts the event being processed into a rest.
+## emphasis::Rest: :: An instance of link::Classes/Rest:: that marks the event as a rest.
 ::
 ## strong::Legacy::
 list::
@@ -190,13 +190,13 @@ SynthDef(...).add;
 .send(s)	-->	.add
 
 
-section::"Rest" events
+section::Rest events
 
-Beginning with version 3.5, rests may be indicated using the link::Classes/Rest:: class. Advantages:
+Beginning with version 3.5, rests may be indicated using instances of link::Classes/Rest::.
 
 list::
 ## Rests may be given in any Pbind key-value pair. (Previously, rests could be indicated only in \type, \degree, \note, \midinote or \freq.)
-## A rest have a duration, e.g. code::Rest(0.5)::, and used in a duration stream (\dur or \delta).
+## A rest has a value, e.g. code::Rest(0.5)::, and will pass transparently through calculations.
 ## Addresses some problems with the former convention (to be discussed in brief below).
 ::
 
@@ -213,7 +213,7 @@ p = Pbind(
 	\arpeg, Pseq(pitches[ .. pitches.size - 2] ++ pitches.reverse[ .. pitches.size - 2], inf),
 		// if the note is found in the mask array, replace it with Rest
 		// then that note does not sound
-	\note, Pif(Pfunc { |event| mask.includes(event[\arpeg]) }, Rest, Pkey(\arpeg)),
+	\note, Pif(Pfunc { |event| mask.includes(event[\arpeg]) }, Rest(0), Pkey(\arpeg)),
 	\octave, 4,
 	\dur, 0.125
 ).play;
@@ -222,7 +222,11 @@ p = Pbind(
 p.stop;
 ::
 
-Prior to 3.5, the convention to include a rest in the middle of an event pattern is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported in 3.5, but not recommended.)
+note::
+In 3.9, it is no longer supported to use the Rest class in patterns. All rests need to have a value, e.g. code::Rest(0)::. Rest objects now support math operators. That is, you can now write code::Pseq([1, 2, Rest(0)], inf) * 2:: emphasis::and:: code::[1, 2, Rest(0)] * 2::. (Prior to 3.9, the former usage was supported, but only in Pbind, and the latter usage was not supported at all.)
+::
+
+The older convention for rests is to set the code::\freq:: key to a link::Classes/Symbol::. Commonly this is code::\rest::, but a backslash by itself is enough to suppress the note on the server. (This usage is still supported, but not recommended because it is limited to pitch-related keys only.)
 
 If it's the code::\freq:: key that determines whether the event as a rest or not, why does it work to use it with code::\note::? As noted, keys like code::\degree::, code::\note::, and code::\midinote:: are automatically converted into frequency. The math operations that perform the conversion preserve Symbols intact -- e.g., code::\rest + 1 == \rest:: . So the code::\rest:: value is passed all the way through the chain of conversions so that code::\freq:: in the event ends up receiving code::\rest::.
 

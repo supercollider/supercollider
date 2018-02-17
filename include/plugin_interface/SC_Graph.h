@@ -25,6 +25,11 @@
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
 
+/*
+ changes to this struct likely also mean that a change is needed for
+    static const int sc_api_version = x;
+ value in SC_InterfaceTable.h file.
+ */
 struct Graph
 {
 	Node mNode;
@@ -35,6 +40,7 @@ struct Graph
 	uint32 mNumControls;
 	float *mControls;
 	float **mMapControls;
+	int32 *mAudioBusOffsets;
 
 	// try this for setting the rate of a control
 	int *mControlRates;

@@ -4,12 +4,12 @@
 
 + Nil {
 	asGroup {
-		^Group.basicNew(this, 1)
+		^Server.default.defaultGroup
 	}
 }
 + Server {
 	asGroup {
-		^Group.basicNew(this, 1)
+		^this.defaultGroup
 	}
 }
 + Synth {

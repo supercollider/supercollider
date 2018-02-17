@@ -54,6 +54,60 @@ void SendDoneWithIntValue(ReplyAddress *inReply, const char *inCommandName, int 
 	SendReply(inReply, packet.data(), packet.size());
 }
 
+static void appendVarArgs(small_scpacket& packet, const char *oscFormat, va_list args)
+{
+	// support all the types the server currently does
+	while (*oscFormat != '\0') {
+		if (*oscFormat == 'i') {
+			int32 i = va_arg(args, int32);
+			packet.addtag('i');
+			packet.addi(i);
+		} else if(*oscFormat == 'h') {
+			int64 h = va_arg(args, int64);
+			packet.addtag('h');
+			packet.addii(h);
+		} else if (*oscFormat == 'f') {
+			float32 f = (float32)va_arg(args, double);
+			packet.addtag('f');
+			packet.addf(f);
+		} else if (*oscFormat == 'd') {
+			double d = va_arg(args, double);
+			packet.addtag('d');
+			packet.addd(d);
+		} else if (*oscFormat == 's') {
+			const char *s = va_arg(args, char*);
+			packet.addtag('s');
+			packet.adds(s);
+		} else if (*oscFormat == 'b') {
+			size_t len = va_arg(args, size_t);
+			++oscFormat;
+			uint8 *b = va_arg(args, uint8*);
+			packet.addtag('b');
+			packet.addb(b, len);
+		}
+
+		++oscFormat;
+	}
+}
+
+void SendDoneWithVarArgs(struct ReplyAddress *inReply, const char *inCommandName, const char *oscFormat, ...)
+{
+	small_scpacket packet;
+	int numArgs = strlen(oscFormat);
+	packet.adds("/done");
+	packet.maketags(2 + numArgs);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.adds(inCommandName);
+
+	va_list args;
+	va_start(args, oscFormat);
+	appendVarArgs(packet, oscFormat, args);
+	va_end(args);
+
+	SendReply(inReply, packet.data(), packet.size());
+}
+
 void SendFailure(ReplyAddress *inReply, const char *inCommandName, const char *errString)
 {
 	small_scpacket packet;
@@ -79,6 +133,26 @@ void SendFailureWithIntValue(ReplyAddress *inReply, const char *inCommandName, c
 	packet.adds(errString);
 	packet.addtag('i');
 	packet.addi((int)index);
+	SendReply(inReply, packet.data(), packet.size());
+}
+
+void SendFailureWithVarArgs(struct ReplyAddress *inReply, const char *inCommandName, const char *errString, const char *oscFormat, ...)
+{
+	small_scpacket packet;
+	int numArgs = strlen(oscFormat);
+	packet.adds("/fail");
+	packet.maketags(3 + numArgs);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.addtag('s');
+	packet.adds(inCommandName);
+	packet.adds(errString);
+
+	va_list args;
+	va_start(args, oscFormat);
+	appendVarArgs(packet, oscFormat, args);
+	va_end(args);
+
 	SendReply(inReply, packet.data(), packet.size());
 }
 

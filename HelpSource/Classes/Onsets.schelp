@@ -81,7 +81,7 @@ x = {
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 
-	chain = FFT(LocalBuf(1, 512), sig);
+	chain = FFT(LocalBuf(512), sig);
 
 	onsets = Onsets.kr(chain, MouseX.kr(0,1), \rcomplex);
 
@@ -109,7 +109,7 @@ x = {
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 
-	chain = FFT(LocalBuf(1, 512), sig);
+	chain = FFT(LocalBuf(512), sig);
 
 	onsets = Onsets.kr(chain, threshes, \rcomplex);
 

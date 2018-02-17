@@ -93,8 +93,7 @@ TestArray : UnitTest {
 		#[
 			// arsize, clumpsize -- different sizes to test:
 			[100,     10],
-			[121,     11],
-			[100000, 100]
+			[121,     11]
 		].do{ |settings|
 
 			arsize    = settings[0];

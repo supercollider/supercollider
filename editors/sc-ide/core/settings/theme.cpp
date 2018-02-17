@@ -177,6 +177,61 @@ void Theme::fillDark()
     addToTheme(mFormats, "postwindowemphasis", QColor("#e4e4e4"), Qt::transparent, true);
 }
 
+/*
+The MIT License (MIT)
+
+Copyright (c) 2016 Dracula Theme
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+https://github.com/dracula/dracula-theme/
+*/
+
+void Theme::fillDracula()
+{
+    addToTheme(mFormats, "text",               QColor("#f7fdff"), QColor("#282a36"));
+    addToTheme(mFormats, "currentLine",        QColor("#909194"), QColor("#282a36"));
+    addToTheme(mFormats, "searchResult",       QColor("#e4e4e4"), QColor("#194c7f"));
+    addToTheme(mFormats, "matchingBrackets",   QColor("#ff5500"), QColor("#001d49"), true);
+    addToTheme(mFormats, "mismatchedBrackets", QColor("#ffaa00"), QColor("#980000"));
+    addToTheme(mFormats, "evaluatedCode",      QColor("#e4e4e4"), QColor("#636397"));
+    addToTheme(mFormats, "whitespace",         QColor("#e4e4e4"));
+    addToTheme(mFormats, "keyword",            QColor("#ff76c7"), Qt::transparent, true);
+    addToTheme(mFormats, "built-in",           QColor("#e2e37a"));
+    addToTheme(mFormats, "env-var",            QColor("#ffb965"));
+    addToTheme(mFormats, "class",              QColor("#65e5ff"), Qt::transparent, true);
+    addToTheme(mFormats, "number",             QColor("#be90fc"));
+    addToTheme(mFormats, "symbol",             QColor("#45fc75"));
+    addToTheme(mFormats, "string",             QColor("#5df884"));
+    addToTheme(mFormats, "char",               QColor("#ff55ff"));
+    addToTheme(mFormats, "comment",            QColor("#6071a6"));
+    addToTheme(mFormats, "primitive",          QColor("#aaff7f"));
+    addToTheme(mFormats, "lineNumbers",        QColor("#909194"));
+    addToTheme(mFormats, "selection",          QColor("#e0eeff"));
+    addToTheme(mFormats, "postwindowtext",     QColor("#dfe0fc"));
+    addToTheme(mFormats, "postwindowerror",    QColor("#ff1f2a"));
+    addToTheme(mFormats, "postwindowwarning",  QColor("#de7100"));
+    addToTheme(mFormats, "postwindowsuccess",  QColor("#b0d206"));
+    addToTheme(mFormats, "postwindowemphasis", QColor("#e4e4e4"), Qt::transparent, true);
+}
+/* END MIT LICENSED CODE */
+
 void Theme::fillUser(const QString & name, const Manager *settings)
 {
     QString group = QStringLiteral("IDE/editor/themes/%1/").arg(name);
@@ -214,6 +269,9 @@ Theme::Theme(const QString & _name, Manager * settings)
     } else if (mName == "dark") {
         fillDark();
         mLocked = true;
+    } else if (mName == "dracula") {
+        fillDracula();
+        mLocked = true;
     } else {
         fillUser(mName, settings);
         mLocked = false;
@@ -231,6 +289,8 @@ Theme::Theme(const QString & _name, const QString & _source, Manager * settings)
         fillDefault();
     } else if (_source == "dark") {
         fillDark();
+    } else if (_source == "dracula") {
+        fillDracula();
     } else {
         fillUser(_source, settings);
     }
@@ -283,6 +343,7 @@ QList<QString> Theme::availableThemes()
 
     themes.append("default");
     themes.append("dark");
+    themes.append("dracula");
 
     mSettings->beginGroup("IDE/editor/themes");
     themes.append(mSettings->childGroups());
@@ -303,7 +364,7 @@ void Theme::save()
     while (i != mFormats.end()) {
         QTextCharFormat fm = *i.value();
         mSettings->setValue(i.key(), QVariant::fromValue<QTextCharFormat>(fm));
-        i++;
+        ++i;
     }
     mSettings->endGroup();
 }

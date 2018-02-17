@@ -200,14 +200,14 @@ TestPatternProxy : UnitTest {
 		Pdef(\x, (freq: 700));
 
 		assert.(
-			Pevent(Pdef(\x)).asStream.nextN(2),
+			Pdef(\x).asStream.nextN(2, ()),
 			[ ( 'freq': 700 ), ( 'freq': 700 ) ],
 			1.1
 		);
 
 
 		assert.(
-			Pevent(Pdef(\x)).asStream.nextN(2),
+			Pdef(\x).asStream.nextN(2, ()),
 			[ ( 'freq': 700 ), ( 'freq': 700 ) ],
 			1.2
 		);
@@ -215,7 +215,7 @@ TestPatternProxy : UnitTest {
 		Pdef(\x, (freq: 800));
 
 		assert.(
-			Pevent(Pdef(\x)).asStream.nextN(2),
+			Pdef(\x).asStream.nextN(2, ()),
 			[ ( 'freq': 800 ), ( 'freq': 800 ) ],
 			2.1
 		);
@@ -225,19 +225,19 @@ TestPatternProxy : UnitTest {
 
 
 		assert.(
-			Pevent(Psym(Pseq([\x, \y]))).asStream.nextN(3),
+			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
 			[ ( 'freq': 800 ), ( 'freq': 100 ), nil ],
 			2.2
 		);
 		assert.(
-			Pevent(Psym(Pseq([\x, \y]))).asStream.nextN(3),
+			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
 			[ ( 'freq': 800 ), ( 'freq': 100 ), nil ],
 			2.3
 		);
 
 		Pdef(\y, (freq: 200));
 		assert.(
-			Pevent(Psym(Pseq([\x, \y]))).asStream.nextN(3),
+			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
 			[ ( 'freq': 800 ), ( 'freq': 200 ), nil ],
 			3.1
 		);
@@ -246,14 +246,14 @@ TestPatternProxy : UnitTest {
 		Pdef(\y, Pn((freq: 200)));
 
 		assert.(
-			Pevent(Psym(Pseq([\x, \y]))).asStream.nextN(3),
+			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
 			[ ( 'freq': 800 ), ( 'freq': 200 ),  ( 'freq': 200 ) ],
 			3.2
 		);
 
 		Pdef(\y, (freq: 200));
 		assert.(
-			Pevent(Psym(Pseq([\x, \y]))).asStream.nextN(3),
+			Psym(Pseq([\x, \y])).asStream.nextN(3, ()),
 			[ ( 'freq': 800 ), ( 'freq': 200 ), nil ],
 			3.3
 		);
@@ -266,13 +266,13 @@ TestPatternProxy : UnitTest {
 			"Pdef default value should be Event.silent", false);
 		Pdef(\x, (freq: 800));
 
-		x = Pevent(Pdef(\x).endless).asStream;
+		x = Pdef(\x).endless.asStream;
 		a = Pdef.defaultValue;
 
-		assert.(x.nextN(3), [(freq: 800), a, a], 4.1);
+		assert.(x.nextN(3, ()), [(freq: 800), a, a], 4.1);
 
 		Pdef(\x, (freq: 900).loop);
-		assert.(x.nextN(3), [ (freq: 900), (freq: 900), (freq: 900) ], 4.2);
+		assert.(x.nextN(3, ()), [ (freq: 900), (freq: 900), (freq: 900) ], 4.2);
 
 		Pdefn.clear;
 		this.assert(Pdefn.defaultValue == 1, "Pdefn default value should be 1", false);
@@ -280,36 +280,36 @@ TestPatternProxy : UnitTest {
 		Pdefn(\x, 9);
 		x = Pdefn(\x).endless.asStream;
 		a = Pdefn.defaultValue;
-		assert.(x.nextN(3), [9, a, a], "Pdefn should return default value when empty");
+		assert.(x.nextN(3, ()), [9, a, a], "Pdefn should return default value when empty");
 		Pdefn(\x, Pseq([1, 2, 3]));
-		assert.(x.nextN(3), [1, 2, 3], "Pdefn should update when full");
+		assert.(x.nextN(3, ()), [1, 2, 3], "Pdefn should update when full");
 
 
 		// Pbindef
 		Pdef.clear;
 		Pbindef(\p, \z, 7);
 		assert.(
-			Pevent(Pbindef(\p)).asStream.nextN(3),
+			Pbindef(\p).asStream.nextN(3, ()),
 			[ ( 'z': 7 ), ( 'z': 7 ), ( 'z': 7 ) ],
 			5.1
 		);
 		Pbindef(\p, \z, Pn(7, 2));
 		assert.(
-			Pevent(Pbindef(\p)).asStream.nextN(3),
+			Pbindef(\p).asStream.nextN(3, ()),
 			[ ( 'z': 7 ), ( 'z': 7 ), nil ],
 			5.2
 		);
 		Pbindef(\p, \z, 7);
 
 		assert.(
-			Pevent(Pbindef(\p)).asStream.nextN(3),
+			Pbindef(\p).asStream.nextN(3, ()),
 			[ ( 'z': 7 ), ( 'z': 7 ), ( 'z': 7 ) ],
 			5.3
 		);
 		Pbindef(\p, \z, nil);
 
 		assert.(
-			Pevent(Pbindef(\p)).asStream.nextN(3),
+			Pbindef(\p).asStream.nextN(3, ()),
 			().dup(3),
 			5.4
 		);
@@ -320,14 +320,14 @@ TestPatternProxy : UnitTest {
 		Pdefn(\y, Pseq([1, 2, 3]));
 		Pdefn(\z, Pdefn(\x) + Pdefn(\y));
 		assert.(
-			Pdefn(\z).asStream.nextN(4),
+			Pdefn(\z).asStream.nextN(4, ()),
 			[ 10, 11, 12, nil ],
 			6.1
 		);
 
 		Pdefn(\x, -1);
 		assert.(
-			Pdefn(\z).asStream.nextN(4),
+			Pdefn(\z).asStream.nextN(4, ()),
 			[ 0, 1, 2, nil ],
 			6.2
 		);
@@ -341,21 +341,21 @@ TestPatternProxy : UnitTest {
 		Pbindef(\x,\midinote, Pseq([60,62,64,65,67,65,64,62], inf) + Pdefn(\m));
 
 		assert.(
-			Pevent(Pbindef(\x)).asStream.nextN(3),
+			Pbindef(\x).asStream.nextN(3, ()),
 			[ ( 'midinote': 72 ), ( 'midinote': 74 ), ( 'midinote': 76 ) ],
 			7.1
 		);
 
 		Pbindef(\x,\dur, 0.5);
 		assert.(
-			Pevent(Pbindef(\x)).asStream.nextN(3),
+			Pbindef(\x).asStream.nextN(3, ()),
 			[ ( 'dur': 0.5, 'midinote': 72 ), ( 'dur': 0.5, 'midinote': 74 ), ( 'dur': 0.5, 'midinote': 76 ) ],
 			7.2
 		);
 
 		Pdefn(\m, 11);
 		assert.(
-			Pevent(Pbindef(\x)).asStream.nextN(3),
+			Pbindef(\x).asStream.nextN(3, ()),
 			[ ( 'dur': 0.5, 'midinote': 71 ), ( 'dur': 0.5, 'midinote': 73 ), ( 'dur': 0.5, 'midinote': 75 ) ],
 			7.3
 		);
