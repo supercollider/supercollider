@@ -28,6 +28,7 @@
 #include <QTimer>
 #include <QResizeEvent>
 #include <QWindow>
+#include <QBackingStore>
 
 QC_DECLARE_QWIDGET_FACTORY(QcScopeShm);
 
@@ -146,7 +147,9 @@ void QcScopeShm::updateScope()
 
 void QcScopeShm::resizeEvent ( QResizeEvent * ev )
 {
-  _pixmap = QPixmap(ev->size());
+  qreal ratio = backingStore()->window()->devicePixelRatio();
+  _pixmap = QPixmap(ev->size() * ratio);
+  _pixmap.setDevicePixelRatio(ratio);
 }
 
 void QcScopeShm::paintEvent ( QPaintEvent * event )
@@ -162,6 +165,8 @@ void QcScopeShm::paintEvent ( QPaintEvent * event )
     int chanCount = _shm->reader.channels();
     int maxFrames = _shm->reader.max_frames();
     QRect area (_pixmap.rect());
+    area.setSize(area.size() / (int)_pixmap.devicePixelRatio());
+    
     p.begin(&_pixmap);
 
     switch (_style) {
@@ -247,15 +252,18 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
       painter.save();
       painter.translate( area.x(), area.y() + yOrigin );
       painter.setPen(pen);
+      
+      qreal ratio = 1.0 / _pixmap.devicePixelRatio();
 
       QPainterPath pathLine;
       QPainterPath pathFill;
 
-      int p=0, f=1; // pixel, frame
+      qreal p=0;
+      int f=1; // pixel, frame
       float min, max;
       min = max = frameData[0];
 
-      while( p++ < w )
+      while( (p += ratio) < w )
       {
         int f_max = fpp * p;
 
