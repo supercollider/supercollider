@@ -105,7 +105,7 @@ QcWidgetAction::QcWidgetAction()
 void QcAction::setIcon(const QtCollider::SharedImage & image)
 {
   if (image) {
-    QIcon icon(QPixmap::fromImage(image->image()));
+    QIcon icon(image->pixmap());
     QAction::setIcon(icon);
   } else {
     QAction::setIcon(QIcon());
