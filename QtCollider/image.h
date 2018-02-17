@@ -41,7 +41,7 @@ class Image
 
 public:
     Image():
-        transformationMode(Qt::FastTransformation),
+        transformationMode(Qt::SmoothTransformation),
         m_state(Null),
         m_painting(false)
     {
@@ -71,6 +71,7 @@ public:
         assert(!m_painting);
         if (m_state == PixmapState) {
             m_image = m_pixmap.toImage().convertToFormat(QImage::Format_ARGB32_Premultiplied);
+            m_image.setDevicePixelRatio(m_pixmap.devicePixelRatio());
             m_pixmap = QPixmap();
         }
         m_state = ImageState;
@@ -84,6 +85,7 @@ public:
             return m_pixmap;
         if (m_state == ImageState) {
             m_pixmap = QPixmap::fromImage(m_image);
+            m_pixmap.setDevicePixelRatio(m_image.devicePixelRatio());
             m_image = QImage();
         }
         m_state = PixmapState;
@@ -151,6 +153,7 @@ public:
         {
             if (m_state == ImageState) {
                 QImage new_image( new_size, QImage::Format_ARGB32_Premultiplied );
+                new_image.setDevicePixelRatio(m_image.devicePixelRatio());
                 new_image.fill( Qt::transparent );
                 QPainter painter(&new_image);
                 painter.drawImage( QPointF(0,0), m_image );
@@ -159,6 +162,7 @@ public:
             }
             else {
                 QPixmap new_pixmap( new_size );
+                new_pixmap.setDevicePixelRatio(m_pixmap.devicePixelRatio());
                 new_pixmap.fill( Qt::transparent );
                 QPainter painter(&new_pixmap);
                 painter.drawPixmap( QPointF(0,0), m_pixmap );
@@ -184,6 +188,30 @@ public:
             break;
         }
     }
+	
+	qreal getDevicePixelRatio() const
+	{
+		switch (m_state) {
+			case ImageState:
+				return m_image.devicePixelRatio();
+			case PixmapState:
+				return m_pixmap.devicePixelRatio();
+			default:
+				return 1;
+		}
+	}
+	
+	void setDevicePixelRatio( qreal ratio )
+	{
+		switch (m_state) {
+			case ImageState:
+				m_image.setDevicePixelRatio(ratio);
+			case PixmapState:
+				m_pixmap.setDevicePixelRatio(ratio);
+			default:
+				break;
+		}
+	}
 
     bool isPainting() const { return m_painting; }
     void setPainting( bool painting ) { m_painting = painting; }

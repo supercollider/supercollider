@@ -81,6 +81,11 @@ Image {
 		^ret;
 	}
 
+	*newSVG {
+		|path, size|
+		^super.new.prNewSVG(path, size);
+	}
+
 	*newEmpty { arg width, height;
 		^super.new.prNewEmpty(width, height);
 	}
@@ -191,6 +196,15 @@ Image {
 	}
 	height_ { arg h;
 		this.setSize(this.width, h);
+	}
+
+	pixelRatio {
+		_QImage_GetDevicePixelRatio
+	}
+
+	pixelRatio_{
+		|ratio|
+		_QImage_SetDevicePixelRatio
 	}
 
 	setSize { arg width, height, resizeMode;
@@ -373,6 +387,11 @@ Image {
 	// private primitives
 	prNewPath { arg path;
 		_QImage_NewPath
+		^this.primitiveFailed
+	}
+
+	prNewSVG { arg path;
+		_QImage_NewSVG
 		^this.primitiveFailed
 	}
 
