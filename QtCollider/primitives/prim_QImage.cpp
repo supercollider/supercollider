@@ -34,6 +34,7 @@
 #include <QImage>
 #include <QUrl>
 #include <QPainter>
+#include <QSvgRenderer>
 #include <QImageReader>
 #include <QImageWriter>
 #include <QEventLoop>
@@ -62,6 +63,39 @@ QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   Image *image = new Image();
   image->setPixmap(pixmap);
   initialize_image_object(g, slotRawObject(r), image);
+  return errNone;
+}
+	
+QC_LANG_PRIMITIVE( QImage_NewSVG, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QString   path( QtCollider::get<QString>(a) );
+  QSize     size(QtCollider::get<QSize>(a + 1));
+  QString   element(QtCollider::get<QString>(a + 2));
+  
+  QPainter painter;
+  QSvgRenderer svgRenderer(path);
+
+  if (size.isEmpty() || size.isNull()) {
+    size = svgRenderer.defaultSize();
+  }
+  
+  QPixmap pixmap(size);
+  pixmap.fill(Qt::transparent);
+  
+  painter.begin(&pixmap);
+  if (element.isEmpty()) {
+    svgRenderer.render(&painter);
+  } else {
+    svgRenderer.render(&painter, element);
+  }
+  painter.end();
+
+  Image *image = new Image();
+  image->setPixmap(pixmap);
+  initialize_image_object(g, slotRawObject(r), image);
+  
   return errNone;
 }
 
@@ -529,6 +563,7 @@ void defineQImagePrimitives()
 {
   LangPrimitiveDefiner definer;
   definer.define<QImage_NewPath>();
+  definer.define<QImage_NewSVG>();
   definer.define<QImage_NewURL>();
   definer.define<QImage_NewEmpty>();
   definer.define<QImage_NewFromWindow>();

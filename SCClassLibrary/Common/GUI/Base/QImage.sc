@@ -81,6 +81,11 @@ Image {
 		^ret;
 	}
 
+	*newSVG {
+		|path, size|
+		^super.new.prNewSVG(path, size);
+	}
+
 	*newEmpty { arg width, height;
 		^super.new.prNewEmpty(width, height);
 	}
@@ -382,6 +387,11 @@ Image {
 	// private primitives
 	prNewPath { arg path;
 		_QImage_NewPath
+		^this.primitiveFailed
+	}
+
+	prNewSVG { arg path;
+		_QImage_NewSVG
 		^this.primitiveFailed
 	}
 
