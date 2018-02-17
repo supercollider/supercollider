@@ -564,6 +564,7 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *dictslots = slotRawObject(g->sp)->slots;
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
+	static int isRestCount = 0;
 
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrSlot key, typeSlot;
@@ -579,6 +580,10 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 		SetSymbol(&key, s_isRest);
 		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
 		if(IsTrue(&typeSlot)) {
+			if(++isRestCount == 1)
+				post("\nWARNING: Setting isRest to true in an event is deprecated. See the Rest helpfile for supported ways to specify rests.\n\n");
+			if(isRestCount == 100)
+				isRestCount = 0;
 			SetBool(g->sp, 1);
 			return errNone;
 		};
