@@ -296,7 +296,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	*unformatTime { |str|
 		var h, m, s;
-		#h, m, s = str.split($:).collect(_.interpret);
+		#h, m, s = str.split($:).asInteger;
 		^h * 60 + m * 60 + s
 	}
 
