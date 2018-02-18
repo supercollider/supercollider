@@ -68,6 +68,21 @@ i.url.postln;
 )
 ::
 
+METHOD::openSVG
+Creates a new Image instance from the local SVG file at strong::path::.
+code::
+(
+i = Image.openSVG(SCDoc.helpSourceDir +/+ "images/plugin.svg", 200@200);
+i.plot(freeOnClose:true);
+i.url.postln;
+)
+::
+ARGUMENT::size
+A link::Classes/Size::. SVG contents will be drawn into an image of this size. If not provided, suggested size provided by SVG will be used.
+ARGUMENT::element
+A link::Classes/String:: refering to an element of the SVG. If this argument is provided, image will only include this element of the SVG.
+
+
 METHOD::openURL
 // NOT IMPLEMENTED YET
 Creates a new Image instance from a valid image at the specified URL strong::path::.
