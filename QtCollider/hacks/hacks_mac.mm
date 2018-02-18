@@ -64,7 +64,9 @@ bool AlwaysShowScrollbars() {
 }
 
 void DisableAutomaticWindowTabbing() {
-    [NSWindow setAllowsAutomaticWindowTabbing: NO];
+    if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_12) {
+        [NSWindow setAllowsAutomaticWindowTabbing: NO];
+    }
 }
 
 void activateApp() {
