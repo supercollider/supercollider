@@ -34,7 +34,7 @@
 #include <QImage>
 #include <QUrl>
 #include <QPainter>
-#include <QSvgRenderer>
+#include <QtSvg/QSvgRenderer>
 #include <QImageReader>
 #include <QImageWriter>
 #include <QEventLoop>
