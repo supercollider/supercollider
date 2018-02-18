@@ -403,7 +403,7 @@ elseif(WIN32)
     else()
       add_custom_command(TARGET SuperCollider
         PRE_BUILD
-        COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"
+        COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"\""
         COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
       )
     endif()
