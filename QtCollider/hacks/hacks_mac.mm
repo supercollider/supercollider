@@ -64,7 +64,7 @@ bool AlwaysShowScrollbars() {
 }
 
 void DisableAutomaticWindowTabbing() {
-    if ([NSWindow respondsToSelector:@selector(setAllowsAutomaticWindowTabbing)]) {
+    if ([NSWindow respondsToSelector:@selector(allowsAutomaticWindowTabbing)]) {
         [NSWindow setAllowsAutomaticWindowTabbing: NO];
     }
 }
