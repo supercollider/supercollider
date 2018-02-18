@@ -81,7 +81,7 @@ Image {
 		^ret;
 	}
 
-	*newSVG {
+	*openSVG {
 		|path, size|
 		^super.new.prNewSVG(path, size);
 	}
@@ -103,7 +103,11 @@ Image {
 
 	*open { arg path;
 		path = path.standardizePath;
-		^super.new.prNewPath(path);
+		if (path.extension == "svg") {
+			^super.openSVG(path);
+		} {
+			^super.new.prNewPath(path);
+		}
 	}
 
 	*openURL { arg url, timeout = 60;
