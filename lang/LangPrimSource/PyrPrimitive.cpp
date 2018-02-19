@@ -48,6 +48,7 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
+#include "SC_PrimRegistry.hpp"
 #include <map>
 
 #ifdef _WIN32
@@ -4244,9 +4245,6 @@ void initArchiverPrimitives();
 void initArrayPrimitives();
 	 initArrayPrimitives();
 
-void initBitPrimitives();
-	 initBitPrimitives();
-
 void initCharPrimitives();
 	 initCharPrimitives();
 
@@ -4338,6 +4336,7 @@ void initOpenGLPrimitives();
 
 	initSCDocPrimitives();
 
+	SC_PrimRegistry::instance().run_all();
 	s_recvmsg = getsym("receiveMsg");
 	post("\tFound %d primitives.\n", nextPrimitiveIndex());
 }
