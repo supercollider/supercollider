@@ -55,7 +55,7 @@ public:
 	void SetQuantum(double quantum);
 	std::size_t NumPeers() const { return mLink.numPeers(); }
 
-protected:
+private:
 	ableton::Link mLink;
 	double mQuantum;
 };

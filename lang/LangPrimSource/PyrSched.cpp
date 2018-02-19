@@ -664,16 +664,16 @@ TempoClock *TempoClock::sAll = 0;
 void TempoClock_stopAll(void)
 {
 	//printf("->TempoClock_stopAll %p\n", TempoClock::sAll);
-	TempoClock *clock = TempoClock::sAll;
+	TempoClock *clock = TempoClock::GetAll();
 	while (clock) {
-		TempoClock* next = clock->mNext;
+		TempoClock* next = clock->GetNext();
 		clock->Stop();
 		//printf("delete\n");
 		delete clock;
 		clock = next;
 	}
 	//printf("<-TempoClock_stopAll %p\n", TempoClock::sAll);
-	TempoClock::sAll = 0;
+	TempoClock::InitAll();
 }
 
 TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
@@ -956,7 +956,7 @@ int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	SetFloat(a, clock->mTempo);
+	SetFloat(a, clock->GetTempo());
 
 	return errNone;
 }
@@ -971,7 +971,7 @@ int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	SetFloat(a, clock->mBeatDur);
+	SetFloat(a, clock->GetBeatDur());
 
 	return errNone;
 }
