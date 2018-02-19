@@ -87,7 +87,7 @@ struct SC_PrimRegistryHelper {
     static_assert( numArgs > 0 );                                \
     static_assert( varArgs == 0 || varArgs == 1 );               \
     SCLANG_REGISTRY_HELPER_DECL(name) {                          \
-        SCLANG_PRIMITIVE_NAME( name )                            \
+        & SCLANG_PRIMITIVE_NAME( name )                          \
         SCLANG_PRIMITIVE_SYMBOL( name )                          \
         numArgs,                                                 \
         varArgs,                                                 \
