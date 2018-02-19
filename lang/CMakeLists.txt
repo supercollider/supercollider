@@ -37,7 +37,7 @@ else ()
 endif ()
 
 set(sclang_sources
-    LangPrimSource/SC_Ableton_Link.cpp
+	LangPrimSource/SC_Ableton_Link.cpp
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
@@ -334,8 +334,6 @@ target_link_libraries(sclang libsclang)
 target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
-
-
 
 if(LTO)
   target_compile_definitions(libsclang PUBLIC -flto -flto-report)

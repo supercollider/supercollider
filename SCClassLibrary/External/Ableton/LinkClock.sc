@@ -4,7 +4,7 @@ LinkClock : TempoClock {
 
 	var <>tempoChanged;
 
-	*newFromTempoClock { arg clock;
+	*newFromTempoClock { |clock|
 		^super.new(
 			clock.tempo,
 			clock.beats,
@@ -13,14 +13,14 @@ LinkClock : TempoClock {
 		).initFromTempoClock(clock)
 	}
 
-	initFromTempoClock { arg clock;
+	initFromTempoClock { |clock|
 		var oldQueue;
 		//stop TempoClock and save its queue
 		clock.stop;
 		oldQueue = clock.queue.copy;
 		this.setMeterAtBeat(clock.beatsPerBar, 0);
 
-		forBy(1, oldQueue.size-1, 3) {|i|
+		forBy(1, oldQueue.size-1, 3) { |i|
 			var task=oldQueue[i+1];
 			//reschedule task with this clock
 			this.schedAbs(oldQueue[i], task);
@@ -35,41 +35,41 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	//override primitives
-	beats_ { arg beats;
+	//override TempoClock primitives
+	beats_ { |beats|
 		_LinkClock_SetBeats
 		^this.primitiveFailed
 	}
 
-	// PRIVATE
-	prStart { arg tempo, beats, seconds;
-		_LinkClock_New
-		^this.primitiveFailed
-	}
-
-	setTempoAtBeat { arg newTempo, beats;
+	setTempoAtBeat { |newTempo, beats|
 		_LinkClock_SetTempoAtBeat
 		^this.primitiveFailed
 	}
-	setTempoAtSec { arg newTempo, secs;
+	setTempoAtSec { |newTempo, secs|
 		_LinkClock_SetTempoAtTime
 		^this.primitiveFailed
 	}
 
-	setMeterAtBeat { arg newBeatsPerBar, beats;
+	setMeterAtBeat { |newBeatsPerBar, beats|
 		beatsPerBar = newBeatsPerBar;
 		barsPerBeat = beatsPerBar.reciprocal;
 		this.prSetQuantum(beatsPerBar);
 		this.changed(\meter);
 	}
 
-	prSetQuantum { arg quantum;
+	// PRIVATE
+	prStart { |tempo, beats, seconds|
+		_LinkClock_New
+		^this.primitiveFailed
+	}
+
+	prSetQuantum { |quantum|
 		_LinkClock_SetQuantum;
 		^this.primitiveFailed
 	}
 
-	//throw tempo changed callback
-	prTempoChanged { arg tempo, beats, secs, clock;
+	// run tempo changed callback
+	prTempoChanged { |tempo, beats, secs, clock|
 		tempoChanged.value(tempo, beats, secs, clock);
 	}
 
