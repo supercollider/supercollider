@@ -72,6 +72,11 @@ struct SC_PrimRegistryHelper {
     }
 };
 
+// utilities
+#define SCLANG_STRINGIFY( s ) #s
+#define SCLANG_NUMARGS_MSG "sclang primitive must have at least 1 argument"
+#define SCLANG_VARARGS_MSG "sclang primitive's varargs quality must be either 0 or 1"
+
 /// Builds the C++ primitive function name
 #define SCLANG_PRIMITIVE_NAME( name ) \
     pr ## name
@@ -80,10 +85,6 @@ struct SC_PrimRegistryHelper {
 #define SCLANG_PRIMITIVE_SIGNATURE( name ) \
     int SCLANG_PRIMITIVE_NAME( name ) ( struct VMGlobals *g, int numArgsPushed )
 
-// utilities
-#define SCLANG_STRINGIFY( s ) #s
-#define SCLANG_NUMARGS_MSG "sclang primitive must have at least 1 argument"
-#define SCLANG_VARARGS_MSG "sclang primitive's varargs quality must be either 0 or 1"
 
 /// SuperCollider primitive symbol
 #define SCLANG_PRIMITIVE_SYMBOL( name ) \
@@ -124,7 +125,14 @@ struct SC_PrimRegistryHelper {
 #define LIBSCLANG_PRIMITIVE_GROUP( name ) \
     char LIBSCLANG_DUMMY_VAR( name )
 
-/// Use in \c initPrimitives() to initialize the primitive group
+/**
+ * Use in \c initPrimitives() to initialize the primitive group
+ *
+ * This macro is necessary because libsclang is statically linked into sclang, which means that
+ * static/dynamic initialization are not guaranteed to happen. We need to trigger it manually by
+ * referencing some external symbol. In this case we reference a dummy char that is created in
+ * another TU with \c LIBSCLANG_PRIMITIVE_GROUP.
+ */
 #define INIT_LIBSCLANG_PRIMITIVE_GROUP( name ) \
     extern char LIBSCLANG_DUMMY_VAR( name ); \
     char LIBSCLANG_DUMMY_VAR_LOCAL( name ) = LIBSCLANG_DUMMY_VAR( name ); \
