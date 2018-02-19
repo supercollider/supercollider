@@ -180,12 +180,17 @@ Color {
 	}
 
 	*fromHexString {|string|
-		var red, green, blue;
+		var digits, red, green, blue;
 		if(string[0] == $#, {string = string.copyToEnd(1)});
-		if(string.size == 3, {string = string[0] ++ string[0] ++ string[1] ++ string[1] ++ string[2] ++ string[2]});
-		red = (string[0].digit*16)+string[1].digit;
-		green = (string[2].digit*16)+string[3].digit;
-		blue = (string[4].digit*16)+string[5].digit;
+		digits = string.collectAs({|chr|
+			var val = chr.digit;
+			if(val>15, { "hex value 0x% out of bounds - clipping to 0xF".format(chr).warn });
+			val.min(15);
+		}, Array);
+		if(digits.size == 3, { digits = digits.stutter(2) });
+		red = digits[0] * 16 + digits[1];
+		green = digits[2] * 16 + digits[3];
+		blue = digits[4] * 16 + digits[5];
 		^this.new255(red, green, blue, 255);
 	}
 }
