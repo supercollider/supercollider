@@ -65,9 +65,9 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	: TempoClock(inVMGlobals, inTempoClockObj, inTempo, inBaseBeats, inBaseSeconds),
 	mLink(inTempo * 60.)
 {
-	//quantum
+	//quantum = beatsPerBar
 	int err = slotDoubleVal(&inTempoClockObj->slots[2], &mQuantum);
-	if(err) mQuantum=4.;
+	if(err) throw err;
 
 	mLink.enable(true);
 	mLink.setTempoCallback([this](double bpm) {
