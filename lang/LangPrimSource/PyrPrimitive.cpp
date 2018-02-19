@@ -4227,11 +4227,6 @@ void initPrimitives()
 	definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
 	definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
 
-	//void initOscilPrimitives();
-	//void initControllerPrimitives();
-
-	//initOscilPrimitives();
-	//initControllerPrimitives();
 	initMathPrimitives();
 	initSignalPrimitives();
 	initArrayPrimitives();
