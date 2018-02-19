@@ -4231,9 +4231,6 @@ void initPrimitives()
 	initSignalPrimitives();
 	initArrayPrimitives();
 
-void initArchiverPrimitives();
-	 initArchiverPrimitives();
-
 void initArrayPrimitives();
 	 initArrayPrimitives();
 
@@ -4330,6 +4327,7 @@ void initOpenGLPrimitives();
 
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Symbol );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Archiver );
 	SC_PrimRegistry::instance().run_all();
 
 	s_recvmsg = getsym("receiveMsg");
