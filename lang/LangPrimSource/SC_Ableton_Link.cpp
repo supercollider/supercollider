@@ -1,3 +1,5 @@
+#ifdef SC_ABLETON_LINK
+
 #include "PyrKernel.h"
 #include "PyrSched.h"
 #include "GC.h"
@@ -6,8 +8,6 @@
 
 #include "SCBase.h"
 #include "SC_Clock.h"
-
-#ifdef SC_ABLETON_LINK
 
 #include <ableton/Link.hpp>
 
@@ -188,8 +188,4 @@ void initLinkPrimitives()
 	definePrimitive(base, index++, "_LinkClock_SetQuantum", prLinkClock_SetQuantum, 2, 0);
 }
 
-#else
-void initLinkPrimitives()
-{
-}
 #endif

@@ -262,8 +262,4 @@ inline double DurToFloat(DurationType dur)
 	return secs.count() + 1.0e-9 * nanosecs.count();
 }
 
-#ifdef SC_ABLETON_LINK
-void initLink();
-#endif
-
 #endif
