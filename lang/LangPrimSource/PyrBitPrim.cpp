@@ -27,41 +27,37 @@ Primitives for some bit operations.
 #include "VMGlobals.h"
 #include "clz.h"
 
+#include "SC_Registry.hpp"
 
-int prNumBits(VMGlobals *g, int numArgsPushed);
-int prNumBits(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NumBits, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetRaw(a, NUMBITS(slotRawInt(a)));
 	return errNone;
 }
 
-int prLog2Ceil(VMGlobals *g, int numArgsPushed);
-int prLog2Ceil(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Log2Ceil, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetRaw(a, LOG2CEIL(slotRawInt(a)));
 	return errNone;
 }
 
-int prCLZ(VMGlobals *g, int numArgsPushed);
-int prCLZ(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( CLZ, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetRaw(a, CLZ(slotRawInt(a)));
 	return errNone;
 }
 
-int prCTZ(VMGlobals *g, int numArgsPushed);
-int prCTZ(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( CTZ, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetRaw(a, CTZ(slotRawInt(a)));
 	return errNone;
 }
 
-int prNextPowerOfTwo(VMGlobals *g, int numArgsPushed);
-int prNextPowerOfTwo(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NextPowerOfTwo, 1 )
 {
 	PyrSlot *a;
 
@@ -71,16 +67,14 @@ int prNextPowerOfTwo(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed);
-int prIsPowerOfTwo(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsPowerOfTwo, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetBool(a, ISPOWEROFTWO(slotRawInt(a)));
 	return errNone;
 }
 
-int prBinaryGrayCode(VMGlobals *g, int numArgsPushed);
-int prBinaryGrayCode(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BinaryGrayCode, 1 )
 {
 	PyrSlot *a;
 
@@ -89,8 +83,7 @@ int prBinaryGrayCode(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSetBit(VMGlobals *g, int numArgsPushed);
-int prSetBit(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SetBit, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -109,8 +102,7 @@ int prSetBit(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prHammingDistance(VMGlobals *g, int numArgsPushed);
-int prHammingDistance(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( HammingDistance, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -130,26 +122,6 @@ int prHammingDistance(VMGlobals *g, int numArgsPushed)
 
 	return errNone;
 }
-
-void initBitPrimitives();
-void initBitPrimitives()
-{
-	int base, index = 0;
-
-	base = nextPrimitiveIndex();
-
-	definePrimitive(base, index++, "_NextPowerOfTwo", prNextPowerOfTwo, 1, 0);
-	definePrimitive(base, index++, "_IsPowerOfTwo", prIsPowerOfTwo, 1, 0);
-	definePrimitive(base, index++, "_CLZ", prCLZ, 1, 0);
-	definePrimitive(base, index++, "_CTZ", prCTZ, 1, 0);
-	definePrimitive(base, index++, "_NumBits", prNumBits, 1, 0);
-	definePrimitive(base, index++, "_Log2Ceil", prLog2Ceil, 1, 0);
-	definePrimitive(base, index++, "_SetBit", prSetBit, 3, 0);
-	definePrimitive(base, index++, "_BinaryGrayCode", prBinaryGrayCode, 1, 0);
-	definePrimitive(base, index++, "_HammingDistance", prHammingDistance, 2, 0);
-
-}
-
 
 #if _SC_PLUGINS_
 
