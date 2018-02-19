@@ -289,8 +289,6 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
-
-
 if(LTO)
   target_compile_definitions(libsclang PUBLIC -flto -flto-report)
 

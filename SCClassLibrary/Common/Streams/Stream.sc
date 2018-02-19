@@ -415,7 +415,6 @@ PauseStream : Stream {
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
-		//stream.beats = beats;
 		clock = inClock;
 		^this.next(beats)
 	}
