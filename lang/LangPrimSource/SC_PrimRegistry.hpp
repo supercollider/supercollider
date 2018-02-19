@@ -84,6 +84,8 @@ struct SC_PrimRegistryHelper {
 /// Generates C++ function signature and registers with SC_PrimRegistry; private, do not use directly
 #define SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, varArgs ) \
     SCLANG_PRIMITIVE_SIGNATURE( name )                           \
+    static_assert( numArgs > 0 );                                \
+    static_assert( varArgs == 0 || varArgs == 1 );               \
     SCLANG_REGISTRY_HELPER_DECL(name) {                          \
         SCLANG_PRIMITIVE_NAME( name )                            \
         SCLANG_PRIMITIVE_SYMBOL( name )                          \
