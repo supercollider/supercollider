@@ -8,6 +8,8 @@
 
 #include <vector>
 
+#include "PyrPrimitive.h"
+
 using SC_PrimAction_t = void (*)();
 
 class SC_PrimRegistry {
