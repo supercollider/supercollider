@@ -114,4 +114,20 @@ struct SC_PrimRegistryHelper {
 #define SCLANG_DEFINE_VARARGS_PRIMITIVE( name, numArgs ) \
     SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, 1 )
 
+#define LIBSCLANG_DUMMY_VAR( name ) \
+    libsclang_dummy_var_ ## name
+
+#define LIBSCLANG_DUMMY_VAR_LOCAL( name ) \
+	libsclang_dummy_var_ ## name ## _local
+
+/// Use at the top of a file containing primitives
+#define LIBSCLANG_PRIMITIVE_GROUP( name ) \
+    char LIBSCLANG_DUMMY_VAR( name )
+
+/// Use in \c initPrimitives() to initialize the primitive group
+#define INIT_LIBSCLANG_PRIMITIVE_GROUP( name ) \
+    extern char LIBSCLANG_DUMMY_VAR( name ); \
+    char LIBSCLANG_DUMMY_VAR_LOCAL( name ) = LIBSCLANG_DUMMY_VAR( name ); \
+    (void)LIBSCLANG_DUMMY_VAR_LOCAL( name )
+
 #endif // SC_PRIMREGISTRY_HPP_INCLUDED

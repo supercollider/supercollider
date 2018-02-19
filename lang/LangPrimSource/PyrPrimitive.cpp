@@ -4336,7 +4336,9 @@ void initOpenGLPrimitives();
 
 	initSCDocPrimitives();
 
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
 	SC_PrimRegistry::instance().run_all();
+
 	s_recvmsg = getsym("receiveMsg");
 	post("\tFound %d primitives.\n", nextPrimitiveIndex());
 }

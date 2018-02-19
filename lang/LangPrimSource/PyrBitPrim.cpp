@@ -29,6 +29,8 @@ Primitives for some bit operations.
 
 #include "SC_PrimRegistry.hpp"
 
+LIBSCLANG_PRIMITIVE_GROUP( Bit );
+
 SCLANG_DEFINE_PRIMITIVE( NumBits, 1 )
 {
 	PyrSlot *a = g->sp;
