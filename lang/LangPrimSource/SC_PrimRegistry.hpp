@@ -79,7 +79,7 @@ struct SC_PrimRegistryHelper {
     SCLANG_STRINGIFY( _ ## name )
 
 #define SCLANG_REGISTRY_HELPER_DECL( name ) \
-    SC_PrimRegistryHelper name ## _RegistryHelper
+    static SC_PrimRegistryHelper name ## _RegistryHelper
 
 /// Generates C++ function signature and registers with SC_PrimRegistry; private, do not use directly
 #define SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, varArgs ) \
