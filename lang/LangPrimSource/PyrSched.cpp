@@ -233,6 +233,9 @@ using monotonic_clock = std::conditional<std::chrono::high_resolution_clock::is_
 
 static std::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
+#ifdef SC_ABLETON_LINK
+	void initLink();
+#endif
 SCLANG_DLLEXPORT_C void schedInit()
 {
 	using namespace std::chrono;
