@@ -123,47 +123,4 @@ SCLANG_DEFINE_PRIMITIVE( HammingDistance, 2 )
 	return errNone;
 }
 
-#if _SC_PLUGINS_
-
-#include "SCPlugin.h"
-
-// export the function that SC will call to load the plug in.
-#pragma export on
-extern "C" { SCPlugIn* loadPlugIn(void); }
-#pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn
-{
-public:
-	APlugIn();
-	virtual ~APlugIn();
-
-	virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn()
-{
-	// constructor for plug in
-}
-
-APlugIn::~APlugIn()
-{
-	// destructor for plug in
-}
-
-void APlugIn::AboutToCompile()
-{
-	// this is called each time the class library is compiled.
-	initBitPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn()
-{
-	return new APlugIn();
-}
-
 #endif
