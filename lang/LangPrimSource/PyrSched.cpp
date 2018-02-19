@@ -49,7 +49,7 @@
 
 #include "SC_Lock.h"
 
-#include "SC_Clock.h"
+#include "SC_Clock.hpp"
 
 #include <boost/sync/semaphore.hpp>
 #include <boost/sync/support/std_chrono.hpp>

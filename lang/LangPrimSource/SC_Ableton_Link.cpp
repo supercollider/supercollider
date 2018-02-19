@@ -7,7 +7,7 @@
 #include "PyrSymbol.h"
 
 #include "SCBase.h"
-#include "SC_Clock.h"
+#include "SC_Clock.hpp"
 
 #include <ableton/Link.hpp>
 
