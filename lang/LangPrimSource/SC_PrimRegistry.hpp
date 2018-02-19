@@ -28,8 +28,16 @@ public:
 
     void run_all() const
     {
-        for (auto const entry : m_entries)
-            definePrimitive(nextPrimitiveIndex(), 0, symbol, action, numArgs, varArgs);
+        for (auto const& entry : m_entries) {
+            definePrimitive(
+                    nextPrimitiveIndex(),
+                    0,
+                    entry.symbol,
+                    entry.action,
+                    entry.numArgs,
+                    entry.varArgs
+                    );
+        }
     }
 
     void add_entry(Entry&& entry)

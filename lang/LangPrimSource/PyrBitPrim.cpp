@@ -27,7 +27,7 @@ Primitives for some bit operations.
 #include "VMGlobals.h"
 #include "clz.h"
 
-#include "SC_Registry.hpp"
+#include "SC_PrimRegistry.hpp"
 
 SCLANG_DEFINE_PRIMITIVE( NumBits, 1 )
 {
