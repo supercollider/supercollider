@@ -73,7 +73,11 @@ public:
 		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
 	void Dump();
 
-//protected:
+	static TempoClock* GetAll() { return sAll; }
+	TempoClock* GetNext() const { return mNext; }
+	static void InitAll() { sAll = 0;}
+
+protected:
 	VMGlobals* g;
 	PyrObject* mTempoClockObj;
 	PyrHeap* mQueue;
@@ -86,8 +90,9 @@ public:
 	bool mRun;
 	SC_Thread mThread;
 	condition_variable_any mCondition;
-	TempoClock *mPrev, *mNext;
 
+private:
+	TempoClock *mPrev, *mNext;
 	static TempoClock *sAll;
 
 };
@@ -156,7 +161,7 @@ int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errWrongType;
 
-	clock->SetAll(clock->mTempo, beats, seconds);
+	clock->SetAll(clock->GetTempo(), beats, seconds);
 
 	return errNone;
 }
@@ -175,7 +180,7 @@ int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-	if(clock->mTempo <= 0.f) {
+	if(clock->GetTempo() <= 0.f) {
 		error("cannot set tempo from this method. The message 'etempo_' can be used instead.\n");
 		// prTempoClock_SetTempoAtTime can be used.
 		return errFailed;
