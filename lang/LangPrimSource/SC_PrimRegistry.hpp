@@ -10,18 +10,16 @@
 
 #include "PyrPrimitive.h"
 
-using SC_PrimAction_t = void (*)();
-
 class SC_PrimRegistry {
 public:
     struct Entry {
-        SC_PrimAction_t const action;
+        PrimitiveHandler const primitive;
         const char * symbol;
         int numArgs;
         int varArgs;
 
-        Entry(SC_PrimAction_t const action, const char * symbol, int numArgs, int varArgs) :
-            action{action},
+        Entry(PrimitiveHandler const primitive, const char * symbol, int numArgs, int varArgs) :
+            primitive{primitive},
             symbol{symbol},
             numArgs{numArgs},
             varArgs{varArgs}
@@ -35,7 +33,7 @@ public:
                     nextPrimitiveIndex(),
                     0,
                     entry.symbol,
-                    entry.action,
+                    entry.primitive,
                     entry.numArgs,
                     entry.varArgs
                     );
@@ -48,12 +46,13 @@ public:
     }
 
     // singleton
-    SC_PrimRegistry& instance()
+    static SC_PrimRegistry& instance()
     {
         static SC_PrimRegistry reg{};
         return reg;
     }
 
+    SC_PrimRegistry() = default;
     SC_PrimRegistry(SC_PrimRegistry const&) = delete;
     SC_PrimRegistry(SC_PrimRegistry&&) = delete;
 
@@ -63,13 +62,13 @@ private:
 
 struct SC_PrimRegistryHelper {
     SC_PrimRegistryHelper(
-            SC_PrimAction_t const action,
+            PrimitiveHandler const primitive,
             const char * const symbol,
             int numArgs,
             int varArgs,
-            SCPrimRegistry& reg)
+            SC_PrimRegistry& reg)
     {
-        reg.add_entry( {action, symbol, numArgs, varArgs} );
+        reg.add_entry( {primitive, symbol, numArgs, varArgs} );
     }
 };
 
@@ -81,7 +80,10 @@ struct SC_PrimRegistryHelper {
 #define SCLANG_PRIMITIVE_SIGNATURE( name ) \
     int SCLANG_PRIMITIVE_NAME( name ) ( struct VMGlobals *g, int numArgsPushed )
 
+// utilities
 #define SCLANG_STRINGIFY( s ) #s
+#define SCLANG_NUMARGS_MSG "sclang primitive must have at least 1 argument"
+#define SCLANG_VARARGS_MSG "sclang primitive's varargs quality must be either 0 or 1"
 
 /// SuperCollider primitive symbol
 #define SCLANG_PRIMITIVE_SYMBOL( name ) \
@@ -91,17 +93,17 @@ struct SC_PrimRegistryHelper {
     static SC_PrimRegistryHelper name ## _RegistryHelper
 
 /// Generates C++ function signature and registers with SC_PrimRegistry; private, do not use directly
-#define SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, varArgs ) \
-    SCLANG_PRIMITIVE_SIGNATURE( name )                           \
-    static_assert( numArgs > 0 );                                \
-    static_assert( varArgs == 0 || varArgs == 1 );               \
-    SCLANG_REGISTRY_HELPER_DECL(name) {                          \
-        & SCLANG_PRIMITIVE_NAME( name )                          \
-        SCLANG_PRIMITIVE_SYMBOL( name )                          \
-        numArgs,                                                 \
-        varArgs,                                                 \
-        SC_PrimRegistry::instance()                              \
-    };                                                           \
+#define SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, varArgs )       \
+    SCLANG_PRIMITIVE_SIGNATURE( name );                                \
+    static_assert( numArgs > 0, SCLANG_NUMARGS_MSG );                  \
+    static_assert( varArgs == 0 || varArgs == 1, SCLANG_VARARGS_MSG ); \
+    SCLANG_REGISTRY_HELPER_DECL( name ) {                              \
+        & SCLANG_PRIMITIVE_NAME( name ),                               \
+        SCLANG_PRIMITIVE_SYMBOL( name ),                               \
+        numArgs,                                                       \
+        varArgs,                                                       \
+        SC_PrimRegistry::instance()                                    \
+    };                                                                 \
     SCLANG_PRIMITIVE_SIGNATURE( name )
 
 /// Use to define an ordinary (non-varArgs) primitive.
