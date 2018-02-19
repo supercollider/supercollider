@@ -122,5 +122,3 @@ SCLANG_DEFINE_PRIMITIVE( HammingDistance, 2 )
 
 	return errNone;
 }
-
-#endif
