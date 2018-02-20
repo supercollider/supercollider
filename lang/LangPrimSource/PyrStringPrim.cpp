@@ -34,6 +34,7 @@ Primitives for String.
 #include "PyrLexer.h"
 #include "SC_Filesystem.hpp"
 #include "SC_Codecvt.hpp" // path_to_utf8_str
+#include "SC_PrimRegistry.hpp"
 #ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"
@@ -52,8 +53,9 @@ Primitives for String.
 using namespace std;
 namespace bfs = boost::filesystem;
 
-int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
-int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
+LIBSCLANG_PRIMITIVE_GROUP( String );
+
+SCLANG_DEFINE_PRIMITIVE( StringAsSymbol, 1 )
 {
 	PyrSlot *a;
 	char str[1024], *strp=0;
@@ -73,8 +75,7 @@ int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_AsInteger(struct VMGlobals *g, int numArgsPushed);
-int prString_AsInteger(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_AsInteger, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -87,8 +88,7 @@ int prString_AsInteger(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_AsFloat(struct VMGlobals *g, int numArgsPushed);
-int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_AsFloat, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -101,7 +101,7 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_AsCompileString, 1 )
 {
 	PyrSlot *a = g->sp;
 	PyrString* scstr = slotRawString(a);
@@ -124,7 +124,7 @@ int prString_AsCompileString(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_Format(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_Format, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -294,7 +294,7 @@ public:
 
 }
 
-int prString_Regexp(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_Regexp, 4 )
 {
 	/* not reentrant */
 	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
@@ -355,8 +355,7 @@ struct sc_regexp_match {
 	int len;
 };
 
-
-static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_FindRegexp, 3 )
 {
 	/* not reentrant */
 	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
@@ -436,7 +435,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prString_FindRegexpAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_FindRegexpAt, 3 )
 {
 	/* not reentrant */
 	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
@@ -507,8 +506,7 @@ int memcmpi(char *a, char *b, int len)
 	return 0;
 }
 
-int prStringCompare(struct VMGlobals *g, int numArgsPushed);
-int prStringCompare(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( StringCompare, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int cmp, length;
@@ -518,7 +516,7 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string)) return errWrongType;
-	
+
 	length = sc_min(slotRawObject(a)->size, slotRawObject(b)->size);
 	if (IsTrue(c)) cmp = memcmpi(slotRawString(a)->s, slotRawString(b)->s, length);
 	else cmp = memcmp(slotRawString(a)->s, slotRawString(b)->s, length);
@@ -530,8 +528,7 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prStringHash(struct VMGlobals *g, int numArgsPushed);
-int prStringHash(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( StringHash, 1 )
 {
 	PyrSlot *a = g->sp;
 	int hash = Hash(slotRawString(a)->s, slotRawString(a)->size);
@@ -539,8 +536,7 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_PathMatch(struct VMGlobals *g, int numArgsPushed);
-int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_PathMatch, 1 )
 {
 	PyrSlot *a = g->sp;
 	char pattern[PATH_MAX];
@@ -583,8 +579,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
-int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
+SCLANG_DEFINE_PRIMITIVE( String_Getenv, 1 )
 {
 	PyrSlot* arg = g->sp;
 	char key[256];
@@ -616,8 +611,7 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
-int prString_Setenv(struct VMGlobals* g, int numArgsPushed);
-int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
+SCLANG_DEFINE_PRIMITIVE( String_Setenv, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	char key[256];
@@ -646,8 +640,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
-int prStripRtf(struct VMGlobals *g, int numArgsPushed);
-int prStripRtf(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( StripRtf, 1 )
 {
 	PyrSlot *a = g->sp;
 	int len = slotRawObject(a)->size;
@@ -663,8 +656,7 @@ int prStripRtf(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prStripHtml(struct VMGlobals *g, int numArgsPushed);
-int prStripHtml(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( StripHtml, 1 )
 {
 	PyrSlot *a = g->sp;
 	int len = slotRawObject(a)->size;
@@ -680,8 +672,7 @@ int prStripHtml(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_Find(struct VMGlobals *g, int numArgsPushed);
-int prString_Find(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_Find, 4 )
 {
 	PyrSlot *a = g->sp - 3; // source string
 	PyrSlot *b = g->sp - 2; // search string
@@ -763,8 +754,7 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	} else return errWrongType;
 }
 
-int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed);
-int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_FindBackwards, 4 )
 {
 	PyrSlot *a = g->sp - 3; // source string
 	PyrSlot *b = g->sp - 2; // search string
@@ -850,8 +840,7 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
  *
  * Prints an error message if alias resolution failed.
  */
-int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
-int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
+SCLANG_DEFINE_PRIMITIVE( String_StandardizePath, 1 )
 {
 	PyrSlot* arg = g->sp;
 	char ipath[PATH_MAX];
@@ -876,7 +865,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	return errNone;
 }
 
-int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_EscapeChar, 2 )
 {
 	PyrSlot* arg = g->sp - 1;
 	PyrSlot* charToEscapeSlot = g->sp;
@@ -978,7 +967,7 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node & node, PyrObjec
 	}
 }
 
-int prString_ParseYAML(struct VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_ParseYAML, 1 )
 {
 	PyrSlot* arg = g->sp;
 
@@ -993,7 +982,7 @@ int prString_ParseYAML(struct VMGlobals* g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_ParseYAMLFile, 1 )
 {
 	PyrSlot* arg = g->sp;
 
@@ -1008,34 +997,4 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed)
 	yaml_traverse(g, doc, NULL, arg);
 
 	return errNone;
-}
-
-void initStringPrimitives();
-void initStringPrimitives()
-{
-	int base, index = 0;
-
-	base = nextPrimitiveIndex();
-
-	definePrimitive(base, index++, "_StringCompare", prStringCompare, 3, 0);
-	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);
-	definePrimitive(base, index++, "_StringPathMatch", prString_PathMatch, 1, 0);
-	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);
-	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);
-	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);
-	definePrimitive(base, index++, "_String_AsCompileString", prString_AsCompileString, 1, 0);
-	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
-	definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
-	definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
-	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
-	definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
-	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
-	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
-	definePrimitive(base, index++, "_String_FindRegexpAt", prString_FindRegexpAt, 3, 0);
-	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
-	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
-	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
-	definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
-	definePrimitive(base, index++, "_String_ParseYAML", prString_ParseYAML, 1, 0);
-	definePrimitive(base, index++, "_String_ParseYAMLFile", prString_ParseYAMLFile, 1, 0);
 }
