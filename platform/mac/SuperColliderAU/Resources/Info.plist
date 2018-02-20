@@ -9,16 +9,35 @@
 	<key>CFBundleIconFile</key>
 	<string>scau</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.sourceforge.SuperCollider</string>
+	<string>io.github.SuperCollider</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleSignature</key>
-	<string>????</string>
+	<string>SCAU</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
-</dict>
+	<key>AudioComponents</key>
+		<array>
+			<dict>
+				<key>description</key>
+				<string>SuperColliderAU</string>
+				<key>factoryFunction</key>
+				<string>SuperColliderAUFactory</string>
+				<key>manufacturer</key>
+				<string>SCAU</string>
+				<key>name</key>
+				<string>SCAU : SuperColliderAU</string>
+				<key>subtype</key>
+				<string>SCAU</string>
+				<key>type</key>
+				<string>aumf</string>
+				<key>version</key>
+				<integer>005</integer>
+			</dict>
+		</array>
+	</dict>
 </plist>

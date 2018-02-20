@@ -27,9 +27,8 @@
 	#define kSuperColliderAUVersion 0x00000005
 #endif
 
-#define SuperColliderAU_COMP_SUBTYPE		'SCAU'
+#define SuperColliderAU_COMP_SUBTYPE	'SCAU'
 #define SuperColliderAU_COMP_MANF			'SCAU'
 
 
 #endif
-

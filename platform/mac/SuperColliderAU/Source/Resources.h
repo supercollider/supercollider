@@ -20,6 +20,7 @@
 #ifndef _Resources_
 #define _Resources_
 #include "SC_World.h"
+#include "SC_WorldOptions.h"
 #include <CoreFoundation/CFString.h>
 
 #include <mach-o/dyld.h>
@@ -32,11 +33,11 @@ class Resources  {
 			const char* SC_PLUGIN_PATH;
 			const char* SC_SYNTHDEF_PATH;
 			const char* PLUGIN_SPEC_FILE;
-            const char* SERVER_CONFIG_FILE;
+      const char* SERVER_CONFIG_FILE;
 			CFStringRef getControlSpecPath();
 			CFStringRef getBundleResourcesPath();
-            CFStringRef getResourcePath(const char* resource);
-            CFPropertyListRef getPropertyList(const char* filename);
+      CFStringRef getResourcePath(const char* resource);
+      CFPropertyListRef getPropertyList(const char* filename);
 
 	private:
 			CFStringRef getResourcesPathFromDyldImage();

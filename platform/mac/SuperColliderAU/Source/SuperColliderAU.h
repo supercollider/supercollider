@@ -37,6 +37,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_World.h"
 #include "SC_HiddenWorld.h"
+#include "SC_Time.hpp"
 
 #include "SCProcess.h"
 #include "OSCMessages.h"
@@ -64,7 +65,7 @@ class SuperColliderAU : public AUMIDIEffectBase
 {
 public:
     Boolean haveSpecs;
-	SuperColliderAU(AudioUnit component);
+	  SuperColliderAU(AudioUnit component);
     virtual ~SuperColliderAU ();
 
 
@@ -98,12 +99,12 @@ public:
 	virtual ComponentResult		Initialize();
 
 
-    virtual ComponentResult 	Render(AudioUnitRenderActionFlags &		ioActionFlags,
+  virtual ComponentResult 	Render(AudioUnitRenderActionFlags &		ioActionFlags,
                                        const AudioTimeStamp &			inTimeStamp,
                                        UInt32							inNumberFrames);
 
 
-    ComponentResult				Reset(AudioUnitScope	inScope,
+  ComponentResult				Reset(AudioUnitScope	inScope,
 									  AudioUnitElement  inElement);
 
 	virtual OSStatus HandleNoteOn(UInt8 inChannel, UInt8 inNoteNumber, UInt8 inVelocity, UInt32 inStartFrame);
@@ -112,22 +113,22 @@ public:
 
 private:
 
-    World* world;
+  World* world;
 	SCProcess* superCollider;
 	Resources* resources;
 	OSCMessages* messages;
 	ControlSpecs* specs;
 	float* state;
-    Float64 currentBeat;
-    int lastBeatSent;
-    int lastTickSent;
-    int ticksPerBeat;
+  Float64 currentBeat;
+  int lastBeatSent;
+  int lastTickSent;
+  int ticksPerBeat;
 	double beatsPerTick;
-    Float64 previousBeat;
-    int64 gOSCoffset;
+  Float64 previousBeat;
+  int64 gOSCoffset;
 
 
-    void syncOSCOffsetWithTimeOfDay();
+  void syncOSCOffsetWithTimeOfDay();
 	double nextTickFrames(Float64 beat,Float64 tempo, UInt32 nFrames);
 	void resetBeats();
 	int64 getOscTime( const AudioTimeStamp & inTimeStamp);

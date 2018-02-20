@@ -24,10 +24,10 @@ size_t OSCMessages::parameterMessage(small_scpacket *packet, CFStringRef name, f
     packet->reset();
     CFIndex bufLength = CFStringGetMaximumSizeForEncoding(CFStringGetLength(name), kCFStringEncodingUTF8) + 1;
     char* buf = (char*) malloc(bufLength);
-	CFStringGetCString(name, buf, bufLength, kCFStringEncodingUTF8);
+	  CFStringGetCString(name, buf, bufLength, kCFStringEncodingUTF8);
     size_t nameSize = ((strlen(buf)+ 4) >> 2)*4;
     size_t messageSize = nameSize + 24;
-	packet->adds("/n_set");
+	  packet->adds("/n_set");
     packet->maketags(4);
     packet->addtag(',');
     packet->addtag('i');
@@ -42,19 +42,19 @@ size_t OSCMessages::parameterMessage(small_scpacket *packet, CFStringRef name, f
 
 
 small_scpacket OSCMessages::sendTickMessage(int64 oscTime, int bus){
-    small_scpacket packet;
-    packet.OpenBundle(oscTime);
-	packet.BeginMsg();
-	packet.adds("/c_set");
-    packet.maketags(3);
-    packet.addtag(',');
-    packet.addtag('i');
-    packet.addi(bus);
-    packet.addtag('f');
-    packet.addf(1.0);
+  small_scpacket packet;
+  packet.OpenBundle(oscTime);
+  packet.BeginMsg();
+  packet.adds("/c_set");
+  packet.maketags(3);
+  packet.addtag(',');
+  packet.addtag('i');
+  packet.addi(bus);
+  packet.addtag('f');
+  packet.addf(1.0);
 	packet.EndMsg();
-    packet.CloseBundle();
-    return packet;
+  packet.CloseBundle();
+  return packet;
 }
 
 
@@ -65,23 +65,23 @@ small_scpacket OSCMessages::initTreeMessage(){
 	packet.addtag(',');
 	packet.addtag('i');
 	packet.addi(1);
-    return packet;
+  return packet;
 }
 
 small_scpacket OSCMessages::quitMessage(){
 	small_scpacket packet;
 	packet.adds("/quit");
-    return packet;
+  return packet;
 }
 
 
 size_t OSCMessages::createSynthMessage(small_scpacket *packet, CFStringRef name){
 	packet->reset();
-    CFIndex bufLength = CFStringGetMaximumSizeForEncoding(CFStringGetLength(name), kCFStringEncodingUTF8) + 1;
-    char* buf = (char*) malloc(bufLength);
+  CFIndex bufLength = CFStringGetMaximumSizeForEncoding(CFStringGetLength(name), kCFStringEncodingUTF8) + 1;
+  char* buf = (char*) malloc(bufLength);
 	CFStringGetCString(name, buf, bufLength, kCFStringEncodingUTF8);
-    size_t nameSize = ((strlen(buf)+ 4) >> 2)*4;
-    size_t messageSize = nameSize+16;
+  size_t nameSize = ((strlen(buf)+ 4) >> 2)*4;
+  size_t messageSize = nameSize+16;
 	packet->adds("/s_new");
 	packet->maketags(3);
 	packet->addtag(',');
@@ -89,42 +89,38 @@ size_t OSCMessages::createSynthMessage(small_scpacket *packet, CFStringRef name)
 	packet->adds(buf);
 	packet->addtag('i');
 	packet->addi(kDefaultNodeId);
-    free (buf);
-    return messageSize;
+  free (buf);
+  return messageSize;
 }
 
 small_scpacket OSCMessages::noteMessage(int64 oscTime, int note, int velocity){
     small_scpacket packet;
     packet.OpenBundle(oscTime);
 
-	packet.BeginMsg();
-	packet.adds("/n_set");
+	  packet.BeginMsg();
+	  packet.adds("/n_set");
     packet.maketags(4);
     packet.addtag(',');
     packet.addtag('i');
     packet.addi(kDefaultNodeId);
-	packet.addtag('s');
-	packet.adds("/note");
+	  packet.addtag('s');
+	  packet.adds("/note");
     packet.addtag('i');
     packet.addi(note);
-	packet.EndMsg();
+	  packet.EndMsg();
 
-	packet.BeginMsg();
-	packet.adds("/n_set");
+	  packet.BeginMsg();
+	  packet.adds("/n_set");
     packet.maketags(4);
     packet.addtag(',');
     packet.addtag('i');
     packet.addi(kDefaultNodeId);
-	packet.addtag('s');
-	packet.adds("/velocity");
+	  packet.addtag('s');
+	  packet.adds("/velocity");
     packet.addtag('i');
     packet.addi(velocity);
-	packet.EndMsg();
+	  packet.EndMsg();
 
     packet.CloseBundle();
     return packet;
 }
-
-
-
-

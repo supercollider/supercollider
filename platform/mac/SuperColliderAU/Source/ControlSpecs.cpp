@@ -33,7 +33,7 @@ float  ControlSpecs::getValue(UInt32 specNum, CFStringRef valueKey)
     float value = 0;
     CFDictionaryRef thisParam  = (CFDictionaryRef) CFArrayGetValueAtIndex(params, specNum);
     CFNumberRef cfValue = (CFNumberRef)CFDictionaryGetValue(thisParam, valueKey);
-	if(cfValue) CFNumberGetValue(cfValue,kCFNumberFloat32Type,(void *)&value);
+		if(cfValue) CFNumberGetValue(cfValue,kCFNumberFloat32Type,(void *)&value);
     return value;
 }
 
@@ -58,15 +58,15 @@ long  ControlSpecs::getDisplayFlag(UInt32 specNum)
     int value = 0;
     CFDictionaryRef thisParam  = (CFDictionaryRef) CFArrayGetValueAtIndex(params, specNum);
     CFNumberRef cfValue = (CFNumberRef)CFDictionaryGetValue(thisParam, kDisplaySpecKey);
-	if (cfValue)CFNumberGetValue(cfValue,kCFNumberIntType,(void *)&value);
-	switch(value){
-		case 0: return 0;
-		case 1: return kAudioUnitParameterFlag_DisplaySquareRoot;
-		case 2: return kAudioUnitParameterFlag_DisplaySquared;
-		case 3: return kAudioUnitParameterFlag_DisplayCubed;
-		case 4: return kAudioUnitParameterFlag_DisplayCubeRoot;
-		case 5: return kAudioUnitParameterFlag_DisplayExponential;
-		case 6: return kAudioUnitParameterFlag_DisplayLogarithmic;
-	}
+		if (cfValue)CFNumberGetValue(cfValue,kCFNumberIntType,(void *)&value);
+		switch(value){
+			case 0: return 0;
+			case 1: return kAudioUnitParameterFlag_DisplaySquareRoot;
+			case 2: return kAudioUnitParameterFlag_DisplaySquared;
+			case 3: return kAudioUnitParameterFlag_DisplayCubed;
+			case 4: return kAudioUnitParameterFlag_DisplayCubeRoot;
+			case 5: return kAudioUnitParameterFlag_DisplayExponential;
+			case 6: return kAudioUnitParameterFlag_DisplayLogarithmic;
+		}
     return value;
 }
