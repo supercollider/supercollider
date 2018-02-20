@@ -29,47 +29,11 @@ Primitives for Arrays.
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
 #include <string.h>
+#include "SC_PrimRegistry.hpp"
 
-int basicSize(VMGlobals *g, int numArgsPushed);
-int basicMaxSize(VMGlobals *g, int numArgsPushed);
+LIBSCLANG_PRIMITIVE_GROUP( Array );
 
-int basicSwap(struct VMGlobals *g, int numArgsPushed);
-int basicAt(VMGlobals *g, int numArgsPushed);
-int basicRemoveAt(VMGlobals *g, int numArgsPushed);
-int basicClipAt(VMGlobals *g, int numArgsPushed);
-int basicWrapAt(VMGlobals *g, int numArgsPushed);
-int basicFoldAt(VMGlobals *g, int numArgsPushed);
-int basicPut(VMGlobals *g, int numArgsPushed);
-int basicClipPut(VMGlobals *g, int numArgsPushed);
-int basicWrapPut(VMGlobals *g, int numArgsPushed);
-int basicFoldPut(VMGlobals *g, int numArgsPushed);
-
-int prArrayAdd(VMGlobals *g, int numArgsPushed);
-int prArrayFill(VMGlobals *g, int numArgsPushed);
-int prArrayPop(VMGlobals *g, int numArgsPushed);
-int prArrayGrow(VMGlobals *g, int numArgsPushed);
-int prArrayCat(VMGlobals *g, int numArgsPushed);
-
-int prArrayReverse(VMGlobals *g, int numArgsPushed);
-int prArrayScramble(VMGlobals *g, int numArgsPushed);
-int prArrayRotate(VMGlobals *g, int numArgsPushed);
-int prArrayStutter(VMGlobals *g, int numArgsPushed);
-int prArrayMirror(VMGlobals *g, int numArgsPushed);
-int prArrayMirror1(VMGlobals *g, int numArgsPushed);
-int prArrayMirror2(VMGlobals *g, int numArgsPushed);
-int prArrayExtendWrap(VMGlobals *g, int numArgsPushed);
-int prArrayExtendFold(VMGlobals *g, int numArgsPushed);
-int prArrayPermute(VMGlobals *g, int numArgsPushed);
-int prArrayPyramid(VMGlobals *g, int numArgsPushed);
-int prArraySlide(VMGlobals *g, int numArgsPushed);
-int prArrayLace(VMGlobals *g, int numArgsPushed);
-int prArrayContainsSeqColl(VMGlobals *g, int numArgsPushed);
-int prArrayWIndex(VMGlobals *g, int numArgsPushed);
-int prArrayNormalizeSum(VMGlobals *g, int numArgsPushed);
-int prArrayIndexOfGreaterThan(VMGlobals *g, int numArgsPushed);
-
-
-int basicSize(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicSize, 1 )
 {
 	PyrSlot *a;
 	PyrObject *obj;
@@ -84,7 +48,7 @@ int basicSize(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicMaxSize(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicMaxSize, 1 )
 {
 	PyrSlot *a;
 	PyrObject *obj;
@@ -101,7 +65,7 @@ int basicMaxSize(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicSwap(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicSwap, 3 )
 {
 	PyrSlot *a, *b, *c, tempi, tempj;
 	int i, j;
@@ -136,7 +100,7 @@ int basicSwap(struct VMGlobals *g, int numArgsPushed)
 int getIndexedInt(PyrObject *obj, int index, int *value);
 void DumpBackTrace(VMGlobals *g);
 
-int basicAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicAt, 2 )
 {
 	PyrSlot *a, *b;
 	int index;
@@ -179,7 +143,7 @@ int basicAt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicRemoveAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicRemoveAt, 2 )
 {
 	PyrSlot *a, *b;
 	int index, length, elemsize;
@@ -327,7 +291,7 @@ int basicTakeAt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicWrapAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicWrapAt, 2 )
 {
 	PyrSlot *a, *b;
 	int index;
@@ -365,7 +329,7 @@ int basicWrapAt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicFoldAt, 2 )
 {
 	PyrSlot *a, *b;
 	int index;
@@ -403,7 +367,7 @@ int basicFoldAt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicClipAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicClipAt, 2 )
 {
 	PyrSlot *a, *b;
 	int index;
@@ -442,7 +406,7 @@ int basicClipAt(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int basicPut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicPut, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int index;
@@ -479,7 +443,7 @@ int basicPut(struct VMGlobals *g, int numArgsPushed)
 	} else return errIndexNotAnInteger;
 }
 
-int basicClipPut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicClipPut, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int index;
@@ -516,7 +480,7 @@ int basicClipPut(struct VMGlobals *g, int numArgsPushed)
 	} else return errIndexNotAnInteger;
 }
 
-int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicWrapPut, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int index;
@@ -553,7 +517,7 @@ int basicWrapPut(struct VMGlobals *g, int numArgsPushed)
 	} else return errIndexNotAnInteger;
 }
 
-int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicFoldPut, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int index;
@@ -590,7 +554,7 @@ int basicFoldPut(struct VMGlobals *g, int numArgsPushed)
 	} else return errIndexNotAnInteger;
 }
 
-int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayPutEach, 3 )
 {
 	PyrSlot *a, *b, *c;
 	PyrObject *obj;
@@ -626,7 +590,7 @@ int prArrayPutEach(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayAssocAt, 2 )
 {
 	PyrSlot *a, *b;
 	PyrObject *obj;
@@ -666,8 +630,7 @@ int prArrayAssocAt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayAssocPut, 3 )
 {
 	PyrSlot *a, *b, *c;
 	PyrObject *obj;
@@ -710,7 +673,7 @@ int prArrayAssocPut(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayIndexOf, 2 )
 {
 	PyrSlot *a, *b;
 	PyrObject *obj;
@@ -747,8 +710,7 @@ int prArrayIndexOf(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayPutSeries, 5 )
 {
 	PyrSlot *a, *b, *c, *d, *e;
 
@@ -808,7 +770,7 @@ int prArrayPutSeries(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayAdd, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	int maxelems, elemsize, format, tag, numbytes;
@@ -881,7 +843,7 @@ int prArrayAdd(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayInsert, 3 )
 {
 	PyrSlot *a, *b, *c, *slots1, *slots2;
 	PyrObject *array, *oldarray;
@@ -1063,7 +1025,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayFill(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayFill, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *array;
@@ -1147,7 +1109,7 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayPop(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayPop, 1 )
 {
 	PyrSlot *a, *slots;
 	PyrObject *array;
@@ -1199,8 +1161,7 @@ int prArrayPop(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayExtend, 3 )
 {
 	int numbytes, elemsize, format;
 	int err;
@@ -1288,7 +1249,7 @@ int prArrayExtend(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayGrow(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayGrow, 2 )
 {
 	PyrSlot *a, *b;
 	PyrObject *obj, *aobj;
@@ -1316,7 +1277,7 @@ int prArrayGrow(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayGrowClear, 2 )
 {
 	PyrSlot *a, *b;
 	PyrObject *obj, *aobj;
@@ -1353,7 +1314,7 @@ int prArrayGrowClear(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayCat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayCat, 2 )
 {
 	PyrSlot *a, *b;
 	PyrObject *obj, *aobj, *bobj;
@@ -1384,7 +1345,7 @@ int prArrayCat(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayAddAll, 2 )
 {
 	PyrSlot *a, *b;
 	PyrObject *obj, *aobj;
@@ -1419,8 +1380,7 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayOverwrite, 3 )
 {
 	PyrSlot *a, *b, *c;
 	PyrObject *obj, *aobj;
@@ -1462,7 +1422,7 @@ int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayReverse(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayReverse, 1 )
 {
 	PyrSlot *a, *slots1, *slots2;
 	PyrObject *obj1, *obj2;
@@ -1482,7 +1442,7 @@ int prArrayReverse(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayScramble(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayScramble, 1 )
 {
 	PyrSlot *a, *slots1, *slots2, temp;
 	PyrObject *obj1, *obj2;
@@ -1509,7 +1469,7 @@ int prArrayScramble(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayRotate(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayRotate, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
@@ -1533,7 +1493,7 @@ int prArrayRotate(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayStutter(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayStutter, 2 )
 {
 	PyrSlot *a, *b, *slots1, *slots2;
 	PyrObject *obj1, *obj2;
@@ -1560,7 +1520,7 @@ int prArrayStutter(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayMirror(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayMirror, 1 )
 {
 	PyrSlot *a, *slots;
 	PyrObject *obj1, *obj2;
@@ -1584,7 +1544,7 @@ int prArrayMirror(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayMirror1(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayMirror1, 1 )
 {
 	PyrSlot *a, *slots;
 	PyrObject *obj1, *obj2;
@@ -1608,7 +1568,7 @@ int prArrayMirror1(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayMirror2(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayMirror2, 1 )
 {
 	PyrSlot *a, *slots;
 	PyrObject *obj1, *obj2;
@@ -1633,7 +1593,7 @@ int prArrayMirror2(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayExtendWrap, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
@@ -1669,7 +1629,7 @@ int prArrayExtendWrap(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayExtendFold, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
@@ -1704,7 +1664,7 @@ int prArrayExtendFold(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayExtendLast, 2 )
 {
 	PyrSlot *a, *b, *slots, last;
 	PyrObject *obj1, *obj2;
@@ -1740,7 +1700,7 @@ int prArrayExtendLast(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayPermute(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayPermute, 2 )
 {
 	PyrSlot *a, *b, *slots1, *slots2, temp;
 	PyrObject *obj1, *obj2;
@@ -1770,7 +1730,7 @@ int prArrayPermute(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayAllTuples, 2 )
 {
 	PyrSlot *a, *b, *slots1, *slots2, *slots3, *slotToCopy;
 	PyrObject *obj1, *obj2, *obj3;
@@ -1821,7 +1781,7 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayPyramid, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj1, *obj2;
@@ -1971,7 +1931,7 @@ int prArrayPyramid(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArraySlide(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArraySlide, 3 )
 {
 	PyrSlot *a, *b, *c, *slots;
 	PyrObject *obj1, *obj2;
@@ -2002,7 +1962,7 @@ int prArraySlide(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayLace(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayLace, 2 )
 {
 	PyrSlot *a, *b, *slots, *slot;
 	PyrObject *obj1, *obj2, *obj3;
@@ -2062,7 +2022,7 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayContainsSeqColl(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayContainsSeqColl, 1 )
 {
 	PyrSlot *a, *slot, *endptr;
 	PyrObject *obj;
@@ -2086,7 +2046,7 @@ int prArrayContainsSeqColl(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayNormalizeSum, 1 )
 {
 	PyrSlot *a, *slots2;
 	PyrObject *obj1, *obj2;
@@ -2118,7 +2078,7 @@ int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
 
 
 
-int prArrayWIndex(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayWIndex, 1 )
 {
 	PyrSlot *a, *slots;
 	PyrObject *obj;
@@ -2166,7 +2126,7 @@ enum {
 	kEnv_loopNode
 };
 
-int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayEnvAt, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -2286,7 +2246,7 @@ int prArrayEnvAt(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayIndexOfGreaterThan, 2 )
 {
 	PyrSlot *a, *b, *slots;
 	PyrObject *obj;
@@ -2319,8 +2279,7 @@ int prArrayIndexOfGreaterThan(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-
-int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayUnlace, 3 )
 {
 	PyrSlot *a, *b, *c, *slots, *slots2, *slots3;
 	PyrObject *obj1, *obj2, *obj3;
@@ -2366,66 +2325,4 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	SetRaw(a, obj2);
 
 	return errNone;
-}
-
-void initArrayPrimitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_BasicSize", basicSize, 1, 0);
-	definePrimitive(base, index++, "_BasicMaxSize", basicMaxSize, 1, 0);
-
-	definePrimitive(base, index++, "_BasicSwap", basicSwap, 3, 0);
-	definePrimitive(base, index++, "_BasicAt", basicAt, 2, 0);
-	definePrimitive(base, index++, "_BasicRemoveAt", basicRemoveAt, 2, 0);
-	definePrimitive(base, index++, "_BasicTakeAt", basicTakeAt, 2, 0);
-	definePrimitive(base, index++, "_BasicClipAt", basicClipAt, 2, 0);
-	definePrimitive(base, index++, "_BasicWrapAt", basicWrapAt, 2, 0);
-	definePrimitive(base, index++, "_BasicFoldAt", basicFoldAt, 2, 0);
-	definePrimitive(base, index++, "_BasicPut", basicPut, 3, 0);
-	definePrimitive(base, index++, "_BasicClipPut", basicClipPut, 3, 0);
-	definePrimitive(base, index++, "_BasicWrapPut", basicWrapPut, 3, 0);
-	definePrimitive(base, index++, "_BasicFoldPut", basicFoldPut, 3, 0);
-
-	definePrimitive(base, index++, "_ArrayExtend", prArrayExtend, 3, 0);
-	definePrimitive(base, index++, "_ArrayGrow", prArrayGrow, 2, 0);
-	definePrimitive(base, index++, "_ArrayGrowClear", prArrayGrowClear, 2, 0);
-	definePrimitive(base, index++, "_ArrayAdd", prArrayAdd, 2, 0);
-	definePrimitive(base, index++, "_ArrayInsert", prArrayInsert, 3, 0);
-	definePrimitive(base, index++, "_ArrayFill", prArrayFill, 2, 0);
-	definePrimitive(base, index++, "_ArrayPop", prArrayPop, 1, 0);
-	definePrimitive(base, index++, "_ArrayCat", prArrayCat, 2, 0);
-	definePrimitive(base, index++, "_ArrayPutEach", prArrayPutEach, 3, 0);
-	definePrimitive(base, index++, "_ArrayAddAll", prArrayAddAll, 2, 0);
-	definePrimitive(base, index++, "_ArrayPutSeries", prArrayPutSeries, 5, 0);
-	definePrimitive(base, index++, "_ArrayOverwrite", prArrayOverwrite, 3, 0);
-	definePrimitive(base, index++, "_ArrayIndexOf", prArrayIndexOf, 2, 0);
-
-	definePrimitive(base, index++, "_ArrayNormalizeSum", prArrayNormalizeSum, 1, 0);
-	definePrimitive(base, index++, "_ArrayWIndex", prArrayWIndex, 1, 0);
-	definePrimitive(base, index++, "_ArrayReverse", prArrayReverse, 1, 0);
-	definePrimitive(base, index++, "_ArrayScramble", prArrayScramble, 1, 0);
-	definePrimitive(base, index++, "_ArrayMirror", prArrayMirror, 1, 0);
-	definePrimitive(base, index++, "_ArrayMirror1", prArrayMirror1, 1, 0);
-	definePrimitive(base, index++, "_ArrayMirror2", prArrayMirror2, 1, 0);
-	definePrimitive(base, index++, "_ArrayRotate", prArrayRotate, 2, 0);
-	definePrimitive(base, index++, "_ArrayPermute", prArrayPermute, 2, 0);
-	definePrimitive(base, index++, "_ArrayAllTuples", prArrayAllTuples, 2, 0);
-	definePrimitive(base, index++, "_ArrayPyramid", prArrayPyramid, 2, 0);
-	definePrimitive(base, index++, "_ArrayRotate", prArrayRotate, 2, 0);
-	definePrimitive(base, index++, "_ArrayExtendWrap", prArrayExtendWrap, 2, 0);
-	definePrimitive(base, index++, "_ArrayExtendFold", prArrayExtendFold, 2, 0);
-	definePrimitive(base, index++, "_ArrayExtendLast", prArrayExtendLast, 2, 0);
-	definePrimitive(base, index++, "_ArrayLace", prArrayLace, 2, 0);
-	definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
-	definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);
-	definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
-
-	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
-	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
-	definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
-
 }
