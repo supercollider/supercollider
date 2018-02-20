@@ -474,18 +474,14 @@ static void asioFunction()
 
 void startAsioThread()
 {
-	if (!gAsioThread.joinable()){
-		SC_Thread asioThread (&asioFunction);
-		gAsioThread = std::move(asioThread);
-	}
+	SC_Thread asioThread (&asioFunction);
+	gAsioThread = std::move(asioThread);
 }
 
 void stopAsioThread()
 {
-	if (gAsioThread.joinable()){
-		ioService.stop();
-		gAsioThread.join();
-	}
+	ioService.stop();
+	gAsioThread.join();
 }
 
 }

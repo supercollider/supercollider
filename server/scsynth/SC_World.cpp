@@ -296,6 +296,7 @@ void World_LoadGraphDefs(World* world)
 namespace scsynth {
 void startAsioThread();
 void stopAsioThread();
+extern SC_Thread gAsioThread;
 }
 
 
@@ -472,7 +473,10 @@ World* World_New(WorldOptions *inOptions)
 			hw->mAudioDriver = 0;
 		}
 
-		scsynth::startAsioThread();
+		if (!scsynth::gAsioThread.joinable()){
+			scsynth::startAsioThread();
+		}
+
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
 		World_Cleanup(world,true);
@@ -1003,7 +1007,9 @@ void World_Cleanup(World *world, bool unload_plugins)
 {
 	if (!world) return;
 
-	scsynth::stopAsioThread();
+	if (scsynth::gAsioThread.joinable()){
+		scsynth::stopAsioThread();
+	}
 
 	if(unload_plugins)
 		deinitialize_library();
