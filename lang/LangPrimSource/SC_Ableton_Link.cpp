@@ -11,8 +11,6 @@
 
 #include <ableton/Link.hpp>
 
-PyrSymbol* s_LinkTempoChanged;
-
 static std::chrono::microseconds linkTimeOfInitialization;
 void initLink()
 {
@@ -95,7 +93,7 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 		SetFloat(g->sp, secs);
 		++g->sp;
 		SetObject(g->sp, mTempoClockObj);
-		runInterpreter(g, s_LinkTempoChanged, 5);
+		runInterpreter(g, getsym("prTempoChanged"), 5);
 		g->canCallOS = false;
 		gLangMutex.unlock();
 	});
@@ -176,8 +174,6 @@ void initLinkPrimitives()
 	int base, index=0;
 
 	base = nextPrimitiveIndex();
-
-	s_LinkTempoChanged = getsym("prTempoChanged");
 
 	definePrimitive(base, index++, "_LinkClock_New", prClock_New<LinkClock>, 4, 0);
 	definePrimitive(base, index++, "_LinkClock_SetBeats", prClock_SetBeats<LinkClock>, 2, 0);
