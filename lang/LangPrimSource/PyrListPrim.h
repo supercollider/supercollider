@@ -22,13 +22,8 @@
 #ifndef _PYRARRAYPRIM_H_
 #define _PYRARRAYPRIM_H_
 
-void initArrayPrimitives();
-
-int prArrayMultiChanExpand(VMGlobals *g, int numArgsPushed);
-
 int arrayAtIdentityHash(PyrObject *array, PyrSlot *key);
 int arrayAtIdentityHashInPairs(PyrObject *array, PyrSlot *key);
 int arrayAtIdentityHashInPairsWithHash(PyrObject *array, PyrSlot *key, int hash);
-
 
 #endif
