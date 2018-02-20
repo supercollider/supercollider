@@ -124,6 +124,10 @@ void LinkClock::SetTempoAtBeat(double inTempo, double inBeats)
 	auto timeline = mLink.captureAppTimeline();
 	auto time = timeline.timeAtBeat(inBeats, mQuantum);
 	timeline.setTempo(inTempo*60., time);
+
+	mTempo = inTempo;
+	mBeatDur = 1. / inTempo;
+
 	mLink.commitAppTimeline(timeline);
 }
 
@@ -131,6 +135,10 @@ void LinkClock::SetTempoAtTime(double inTempo, double inSeconds)
 {
 	auto timeline = mLink.captureAppTimeline();
 	timeline.setTempo(inTempo*60., hrToLinkTime(inSeconds));
+
+	mTempo = inTempo;
+	mBeatDur = 1. / inTempo;
+
 	mLink.commitAppTimeline(timeline);
 }
 
