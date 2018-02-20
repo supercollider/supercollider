@@ -162,7 +162,7 @@ File : UnixFILE {
 	}
 
 	*prGetcwd { arg string;
-		_File_getcwd
+		_FileGetcwd
 		^this.primitiveFailed;
 	}
 }
