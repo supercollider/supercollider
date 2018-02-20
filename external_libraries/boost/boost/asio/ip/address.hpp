@@ -2,7 +2,7 @@
 // ip/address.hpp
 // ~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,9 +17,13 @@
 
 #include <boost/asio/detail/config.hpp>
 #include <string>
+#include <boost/asio/detail/throw_exception.hpp>
+#include <boost/asio/detail/string_view.hpp>
+#include <boost/asio/detail/type_traits.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/asio/ip/address_v4.hpp>
 #include <boost/asio/ip/address_v6.hpp>
+#include <boost/asio/ip/bad_address_cast.hpp>
 
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
 # include <iosfwd>
@@ -94,29 +98,34 @@ public:
   /// Get the address as an IP version 6 address.
   BOOST_ASIO_DECL boost::asio::ip::address_v6 to_v6() const;
 
-  /// Get the address as a string in dotted decimal format.
+  /// Get the address as a string.
   BOOST_ASIO_DECL std::string to_string() const;
 
-  /// Get the address as a string in dotted decimal format.
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use other overload.) Get the address as a string.
   BOOST_ASIO_DECL std::string to_string(boost::system::error_code& ec) const;
 
-  /// Create an address from an IPv4 address string in dotted decimal form,
-  /// or from an IPv6 address in hexadecimal notation.
-  BOOST_ASIO_DECL static address from_string(const char* str);
+  /// (Deprecated: Use make_address().) Create an address from an IPv4 address
+  /// string in dotted decimal form, or from an IPv6 address in hexadecimal
+  /// notation.
+  static address from_string(const char* str);
 
-  /// Create an address from an IPv4 address string in dotted decimal form,
-  /// or from an IPv6 address in hexadecimal notation.
-  BOOST_ASIO_DECL static address from_string(
-      const char* str, boost::system::error_code& ec);
+  /// (Deprecated: Use make_address().) Create an address from an IPv4 address
+  /// string in dotted decimal form, or from an IPv6 address in hexadecimal
+  /// notation.
+  static address from_string(const char* str, boost::system::error_code& ec);
 
-  /// Create an address from an IPv4 address string in dotted decimal form,
-  /// or from an IPv6 address in hexadecimal notation.
-  BOOST_ASIO_DECL static address from_string(const std::string& str);
+  /// (Deprecated: Use make_address().) Create an address from an IPv4 address
+  /// string in dotted decimal form, or from an IPv6 address in hexadecimal
+  /// notation.
+  static address from_string(const std::string& str);
 
-  /// Create an address from an IPv4 address string in dotted decimal form,
-  /// or from an IPv6 address in hexadecimal notation.
-  BOOST_ASIO_DECL static address from_string(
+  /// (Deprecated: Use make_address().) Create an address from an IPv4 address
+  /// string in dotted decimal form, or from an IPv6 address in hexadecimal
+  /// notation.
+  static address from_string(
       const std::string& str, boost::system::error_code& ec);
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Determine whether the address is a loopback address.
   BOOST_ASIO_DECL bool is_loopback() const;
@@ -167,6 +176,57 @@ private:
   // The underlying IPv6 address.
   boost::asio::ip::address_v6 ipv6_address_;
 };
+
+/// Create an address from an IPv4 address string in dotted decimal form,
+/// or from an IPv6 address in hexadecimal notation.
+/**
+ * @relates address
+ */
+BOOST_ASIO_DECL address make_address(const char* str);
+
+/// Create an address from an IPv4 address string in dotted decimal form,
+/// or from an IPv6 address in hexadecimal notation.
+/**
+ * @relates address
+ */
+BOOST_ASIO_DECL address make_address(
+    const char* str, boost::system::error_code& ec);
+
+/// Create an address from an IPv4 address string in dotted decimal form,
+/// or from an IPv6 address in hexadecimal notation.
+/**
+ * @relates address
+ */
+BOOST_ASIO_DECL address make_address(const std::string& str);
+
+/// Create an address from an IPv4 address string in dotted decimal form,
+/// or from an IPv6 address in hexadecimal notation.
+/**
+ * @relates address
+ */
+BOOST_ASIO_DECL address make_address(
+    const std::string& str, boost::system::error_code& ec);
+
+#if defined(BOOST_ASIO_HAS_STD_STRING_VIEW) \
+  || defined(GENERATING_DOCUMENTATION)
+
+/// Create an address from an IPv4 address string in dotted decimal form,
+/// or from an IPv6 address in hexadecimal notation.
+/**
+ * @relates address
+ */
+BOOST_ASIO_DECL address make_address(string_view str);
+
+/// Create an address from an IPv4 address string in dotted decimal form,
+/// or from an IPv6 address in hexadecimal notation.
+/**
+ * @relates address
+ */
+BOOST_ASIO_DECL address make_address(
+    string_view str, boost::system::error_code& ec);
+
+#endif // defined(BOOST_ASIO_HAS_STD_STRING_VIEW)
+       //  || defined(GENERATING_DOCUMENTATION)
 
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
 

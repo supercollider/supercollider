@@ -20,7 +20,7 @@
 #include <boost/config.hpp>
 #include <boost/smart_ptr/detail/sp_has_sync.hpp>
 
-#if defined( __clang__ ) && defined( __has_extension )
+#if !defined( __c2__ ) && defined( __clang__ ) && defined( __has_extension )
 # if __has_extension( __c_atomic__ )
 #   define BOOST_SP_HAS_CLANG_C11_ATOMICS
 # endif

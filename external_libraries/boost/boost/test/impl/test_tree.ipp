@@ -448,7 +448,26 @@ auto_test_unit_registrar::auto_test_unit_registrar( int )
 
 global_fixture::global_fixture()
 {
+    framework::register_global_fixture( *this );
+}
+
+global_fixture::~global_fixture()
+{
+    framework::deregister_global_fixture( *this );
+}
+
+// ************************************************************************** //
+// **************            global_configuration              ************** //
+// ************************************************************************** //
+
+global_configuration::global_configuration()
+{
     framework::register_observer( *this );
+}
+
+global_configuration::~global_configuration()
+{
+    framework::deregister_observer( *this );
 }
 
 //____________________________________________________________________________//

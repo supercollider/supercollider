@@ -2,7 +2,7 @@
 // detail/win_iocp_overlapped_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -20,11 +20,11 @@
 #if defined(BOOST_ASIO_HAS_IOCP)
 
 #include <boost/asio/error.hpp>
-#include <boost/asio/detail/addressof.hpp>
 #include <boost/asio/detail/bind_handler.hpp>
 #include <boost/asio/detail/fenced_block.hpp>
 #include <boost/asio/detail/handler_alloc_helpers.hpp>
 #include <boost/asio/detail/handler_invoke_helpers.hpp>
+#include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/operation.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
@@ -43,16 +43,18 @@ public:
     : operation(&win_iocp_overlapped_op::do_complete),
       handler_(BOOST_ASIO_MOVE_CAST(Handler)(handler))
   {
+    handler_work<Handler>::start(handler_);
   }
 
-  static void do_complete(io_service_impl* owner, operation* base,
+  static void do_complete(void* owner, operation* base,
       const boost::system::error_code& ec, std::size_t bytes_transferred)
   {
     // Take ownership of the operation object.
     win_iocp_overlapped_op* o(static_cast<win_iocp_overlapped_op*>(base));
     ptr p = { boost::asio::detail::addressof(o->handler_), o, o };
+    handler_work<Handler> w(o->handler_);
 
-    BOOST_ASIO_HANDLER_COMPLETION((o));
+    BOOST_ASIO_HANDLER_COMPLETION((*o));
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
@@ -70,7 +72,7 @@ public:
     {
       fenced_block b(fenced_block::half);
       BOOST_ASIO_HANDLER_INVOCATION_BEGIN((handler.arg1_, handler.arg2_));
-      boost_asio_handler_invoke_helpers::invoke(handler, handler.handler_);
+      w.complete(handler, handler.handler_);
       BOOST_ASIO_HANDLER_INVOCATION_END;
     }
   }

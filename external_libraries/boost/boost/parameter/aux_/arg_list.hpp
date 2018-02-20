@@ -339,6 +339,7 @@ struct arg_list : Next
     template <class Default>
     reference operator[](lazy_default<key_type, Default>) const
     {
+        BOOST_MPL_ASSERT_NOT((holds_maybe));
         return arg.value;
     }
 

@@ -34,7 +34,7 @@ namespace unit_test {
 /// Boost.Test framework on the current execution state.
 ///
 /// Several observers can be running at the same time, and it is not unusual to
-/// have interactions among them. The test_observer#priority member function allows the specification
+/// have interactions among them. The @ref test_observer::priority member function allows the specification
 /// of a particular order among them (lowest priority executed first, except specified otherwise).
 ///
 class BOOST_TEST_DECL test_observer {
@@ -44,9 +44,7 @@ public:
     //!
     //! @param[in] number_of_test_cases indicates the number of test cases. Only active
     //! test cases are taken into account.
-    //!
     virtual void    test_start( counter_t /* number_of_test_cases */ ) {}
-
 
     //! Called after the framework ends executing the test cases
     //!
@@ -98,6 +96,8 @@ public:
     //! additional data about the exception.
     virtual void    exception_caught( execution_exception const& ) {}
 
+    //! The priority indicates the order at which this observer is initialized
+    //! and tore down in the UTF framework. The order is lowest to highest priority.
     virtual int     priority() { return 0; }
 
 protected:

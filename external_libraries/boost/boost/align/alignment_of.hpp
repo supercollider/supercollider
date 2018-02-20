@@ -1,10 +1,9 @@
 /*
-(c) 2014-2016 Glen Joseph Fernandes
-<glenjofe -at- gmail.com>
+Copyright 2014-2016 Glen Joseph Fernandes
+(glenjofe@gmail.com)
 
-Distributed under the Boost Software
-License, Version 1.0.
-http://boost.org/LICENSE_1_0.txt
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
 */
 #ifndef BOOST_ALIGN_ALIGNMENT_OF_HPP
 #define BOOST_ALIGN_ALIGNMENT_OF_HPP
@@ -39,14 +38,15 @@ namespace alignment {
 
 template<class T>
 struct alignment_of
-    : detail::alignment_of<typename detail::element_type<T>::type> { };
+    : detail::alignment_of<typename
+        detail::element_type<T>::type>::type { };
 
 #if !defined(BOOST_NO_CXX14_VARIABLE_TEMPLATES)
 template<class T>
 constexpr std::size_t alignment_of_v = alignment_of<T>::value;
 #endif
 
-} /* .alignment */
-} /* .boost */
+} /* alignment */
+} /* boost */
 
 #endif

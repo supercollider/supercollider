@@ -11,6 +11,9 @@ clone_depth: 10
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
 image: Visual Studio 2015
 
+# disable automatic tests
+test: off
+
 environment:
     CMAKE_CONFIGURATION: Release
     ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
@@ -21,11 +24,13 @@ environment:
           CMAKE_GENERATOR: "Visual Studio 14 2015"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
 
         - QT_DIR: "C:/Qt/5.9/msvc2015_64"
           CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
           ARCH: "x64"
+          S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
 
 install:
 - ps: echo "Install phase start"
@@ -80,9 +85,65 @@ build_script:
 - cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
-notifications:
-    - provider: Webhook
-      url: https://webhooks.gitter.im/e/0f811b8a74efd99f4a4e
-      on_build_status_changed: true
-      on_build_failure: true
-      on_build_success: false
+# after_build instead of before_deploy so artifacts are collected at the right time
+after_build:
+- ps: $env:ARCHIVE_NAME="SC-Windows-$env:ARCH-$env:APPVEYOR_REPO_COMMIT.zip"
+- ps: $env:S3_URL="https://supercollider.s3.amazonaws.com/$env:S3_BUILDS_LOCATION/$env:ARCHIVE_NAME"
+- ps: $env:FWD_HTML="<html><head><meta http-equiv=""refresh"" content=""0; url='$env:S3_URL'"" /></head></html>"
+- ps: $env:BRANCH_ESC=$env:APPVEYOR_REPO_BRANCH -replace '/', ''
+- ps: cd $env:APPVEYOR_BUILD_FOLDER
+
+- echo "Making artifacts"
+- ps: mkdir artifacts
+- ps: cd artifacts
+- ps: echo $env:FWD_HTML > $env:BRANCH_ESC-latest.html
+- ps: Copy-Item -Path $env:APPVEYOR_BUILD_FOLDER/build/Install/SuperCollider . -Recurse
+- ps: 7z a $env:ARCHIVE_NAME -tzip SuperCollider
+- ps: rmdir -Recurse -Force SuperCollider
+- ps: >-
+    If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
+        # required for github releases
+        # -q because otherwise PS reads output from stderr and thinks there's a problem
+        git fetch --tags -q
+        $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
+        echo $env:FWD_HTML > $env:TAG_ESC.html
+        cd ../build
+        # to get NSIS in path for installer generation
+        $env:PATH="C:\Program Files (x86)\NSIS;$env:PATH"
+        cmake --build . --target installer --config Release
+    }
+- ps: cd ..
+
+after_deploy:
+- ps: echo "S3 Build Location = $env:S3_URL"
+
+artifacts:
+    - path: artifacts
+      name: art_folder
+    - path: build\Install\*.exe
+      name: installer
+      type: File
+
+deploy:
+# s3 upload - every commit
+- provider: S3
+  access_key_id:
+    secure: Imi70fjxyMWt9kwV9RfVT7qV8OaxA40iGlR1hO12SK4=
+  secret_access_key:
+    secure: 3K2MRfkIb7BJk4kCCakxcGAjkc1LCYZHpD32I52mYd//2WHE63xVJl/qd3Q1IBhI
+  bucket: supercollider
+  region: us-west-2
+  folder: $(S3_BUILDS_LOCATION)
+  artifact: art_folder
+  unzip: true
+  set_public: true
+
+# github releases - only tags
+- provider: GitHub
+  description: appveyor_$(APPVEYOR_REPO_TAG_NAME)
+  artifact: installer
+  auth_token:
+    secure: rxXJNY+6n25Th9R4+7qI+AcnTj0wCAMSnBGH2+5s7DlVLrAGsSY6+EEDbeHWGGeI
+  prerelease: true
+  on:
+    appveyor_repo_tag: true

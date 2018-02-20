@@ -10,6 +10,7 @@
  */
 
 #include <cstring>
+#include <boost/cstdint.hpp>
 #include <boost/date_time/posix_time/ptime.hpp>
 #include <boost/date_time/posix_time/posix_time_duration.hpp>
 #include <boost/date_time/filetime_functions.hpp>
@@ -21,21 +22,18 @@ namespace boost {
 
 namespace posix_time {
 
-
   //! Function that converts a time_t into a ptime.
   inline
   ptime from_time_t(std::time_t t)
   {
-    ptime start(gregorian::date(1970,1,1));
-    return start + seconds(static_cast<long>(t));
+    return ptime(gregorian::date(1970,1,1)) + seconds(static_cast<long>(t));
   }
 
   //! Function that converts a ptime into a time_t
   inline
   std::time_t to_time_t(ptime pt)
   {
-    time_duration dur = pt - ptime(gregorian::date(1970,1,1));
-    return std::time_t(dur.total_seconds());
+    return (pt - ptime(gregorian::date(1970,1,1))).total_seconds();
   }
 
   //! Convert a time to a tm structure truncating any fractional seconds
@@ -43,9 +41,9 @@ namespace posix_time {
   std::tm to_tm(const boost::posix_time::ptime& t) {
     std::tm timetm = boost::gregorian::to_tm(t.date());
     boost::posix_time::time_duration td = t.time_of_day();
-    timetm.tm_hour = td.hours();
-    timetm.tm_min = td.minutes();
-    timetm.tm_sec = td.seconds();
+    timetm.tm_hour = static_cast<int>(td.hours());
+    timetm.tm_min = static_cast<int>(td.minutes());
+    timetm.tm_sec = static_cast<int>(td.seconds());
     timetm.tm_isdst = -1; // -1 used when dst info is unknown
     return timetm;
   }
@@ -54,9 +52,9 @@ namespace posix_time {
   std::tm to_tm(const boost::posix_time::time_duration& td) {
     std::tm timetm;
     std::memset(&timetm, 0, sizeof(timetm));
-    timetm.tm_hour = date_time::absolute_value(td.hours());
-    timetm.tm_min = date_time::absolute_value(td.minutes());
-    timetm.tm_sec = date_time::absolute_value(td.seconds());
+    timetm.tm_hour = static_cast<int>(date_time::absolute_value(td.hours()));
+    timetm.tm_min = static_cast<int>(date_time::absolute_value(td.minutes()));
+    timetm.tm_sec = static_cast<int>(date_time::absolute_value(td.seconds()));
     timetm.tm_isdst = -1; // -1 used when dst info is unknown
     return timetm;
   }
@@ -82,7 +80,7 @@ namespace posix_time {
    *
    * \note The function is templated on the FILETIME type, so that
    *       it can be used with both native FILETIME and the ad-hoc
-   *       boost::date_time::winapi::file_time type.
+   *       boost::detail::winapi::FILETIME_ type.
    */
   template< typename TimeT, typename FileTimeT >
   inline

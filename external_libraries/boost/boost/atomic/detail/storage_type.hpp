@@ -38,7 +38,7 @@ BOOST_FORCEINLINE void non_atomic_load(T const volatile& from, T& to) BOOST_NOEX
 }
 
 template< std::size_t Size >
-struct buffer_storage
+struct BOOST_ATOMIC_DETAIL_MAY_ALIAS buffer_storage
 {
     BOOST_ALIGNMENT(16) unsigned char data[Size];
 
@@ -69,7 +69,7 @@ struct make_storage_type
 {
     typedef buffer_storage< Size > type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         type value;
 
@@ -81,9 +81,9 @@ struct make_storage_type
 template< >
 struct make_storage_type< 1u, false >
 {
-    typedef boost::uint8_t type;
+    typedef boost::uint8_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         type value;
 
@@ -95,9 +95,9 @@ struct make_storage_type< 1u, false >
 template< >
 struct make_storage_type< 1u, true >
 {
-    typedef boost::int8_t type;
+    typedef boost::int8_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         type value;
 
@@ -109,9 +109,9 @@ struct make_storage_type< 1u, true >
 template< >
 struct make_storage_type< 2u, false >
 {
-    typedef boost::uint16_t type;
+    typedef boost::uint16_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(2) type value;
 
@@ -123,9 +123,9 @@ struct make_storage_type< 2u, false >
 template< >
 struct make_storage_type< 2u, true >
 {
-    typedef boost::int16_t type;
+    typedef boost::int16_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(2) type value;
 
@@ -137,9 +137,9 @@ struct make_storage_type< 2u, true >
 template< >
 struct make_storage_type< 4u, false >
 {
-    typedef boost::uint32_t type;
+    typedef boost::uint32_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(4) type value;
 
@@ -151,9 +151,9 @@ struct make_storage_type< 4u, false >
 template< >
 struct make_storage_type< 4u, true >
 {
-    typedef boost::int32_t type;
+    typedef boost::int32_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(4) type value;
 
@@ -165,9 +165,9 @@ struct make_storage_type< 4u, true >
 template< >
 struct make_storage_type< 8u, false >
 {
-    typedef boost::uint64_t type;
+    typedef boost::uint64_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(8) type value;
 
@@ -179,9 +179,9 @@ struct make_storage_type< 8u, false >
 template< >
 struct make_storage_type< 8u, true >
 {
-    typedef boost::int64_t type;
+    typedef boost::int64_t BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(8) type value;
 
@@ -195,9 +195,9 @@ struct make_storage_type< 8u, true >
 template< >
 struct make_storage_type< 16u, false >
 {
-    typedef boost::uint128_type type;
+    typedef boost::uint128_type BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(16) type value;
 
@@ -209,9 +209,9 @@ struct make_storage_type< 16u, false >
 template< >
 struct make_storage_type< 16u, true >
 {
-    typedef boost::int128_type type;
+    typedef boost::int128_type BOOST_ATOMIC_DETAIL_MAY_ALIAS type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(16) type value;
 
@@ -222,9 +222,11 @@ struct make_storage_type< 16u, true >
 
 #elif !defined(BOOST_NO_ALIGNMENT)
 
-struct storage128_t
+struct BOOST_ATOMIC_DETAIL_MAY_ALIAS storage128_t
 {
-    boost::uint64_t data[2];
+    typedef boost::uint64_t BOOST_ATOMIC_DETAIL_MAY_ALIAS element_type;
+
+    element_type data[2];
 
     BOOST_FORCEINLINE bool operator! () const BOOST_NOEXCEPT
     {
@@ -252,7 +254,7 @@ struct make_storage_type< 16u, Signed >
 {
     typedef storage128_t type;
 
-    struct aligned
+    struct BOOST_ATOMIC_DETAIL_MAY_ALIAS aligned
     {
         BOOST_ALIGNMENT(16) type value;
 

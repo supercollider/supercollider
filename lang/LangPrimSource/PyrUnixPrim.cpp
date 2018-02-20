@@ -131,9 +131,6 @@ static void string_popen_thread_func(struct sc_process *process)
 	res = sc_pclose(stream, pid);
 	res = WEXITSTATUS(res);
 
-	if(process->postOutput)
-		postfl("RESULT = %d\n", res);
-
 	delete process;
 
 	gLangMutex.lock();
@@ -191,39 +188,39 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-	
+
 #ifdef SC_IPHONE
 	SetInt(a, 0);
 	return errNone;
 #endif
-	
+
 	if (NotObj(a)) return errWrongType;
 
 	obj = slotRawObject(a);
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
-		
+
 	if( obj->size < 1)
 		return errFailed;
-		
+
 	PyrSlot filenameSlot;
 	getIndexedSlot(obj, &filenameSlot, 0);
 	if (!isKindOfSlot(&filenameSlot, class_string)) return errWrongType;
 	char filename[PATH_MAX];
 	if (slotRawObject(&filenameSlot)->size > PATH_MAX - 1) return errFailed;
 	slotStrVal(&filenameSlot, filename, slotRawObject(&filenameSlot)->size + 1);
-	
+
 	std::vector<char *> argv (obj->size + 1);
-	
+
 	bfs::path p;
 	p /= filename;
 	std::string filenameOnly = p.filename().string();
 	std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());
 	vfilenameOnly.push_back('\0');
-	
+
 	argv[0] = vfilenameOnly.data();
 	argv[obj->size] = NULL;
-		
+
 	if(obj->size > 1) {
 		for (int i=1; i<obj->size; ++i) {
 			PyrSlot argSlot;
@@ -234,7 +231,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 			argv[i] = arg;
 		}
 	}
-	
+
 	sc_process *process = new sc_process;
 	process->stream = sc_popen_argv(filename, argv.data(), &process->pid, "r");
 	setvbuf(process->stream, 0, _IONBF, 0);
@@ -256,7 +253,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 
 	SetInt(a, pid);
 	return errNone;
-	
+
 }
 
 int prPidRunning(VMGlobals *g, int numArgsPushed);

@@ -41,6 +41,9 @@ public:
         while (result < n) {
             std::streamsize amt = 
                 iostreams::write(device_, s + result, n - result);
+            // write errors, like EOF on read, need to be handled.
+            if (amt == -1)
+                break;
             result += amt;
         }
         return result;    

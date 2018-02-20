@@ -5,16 +5,17 @@
 
 #ifndef UUID_E788439ED9F011DCB181F25B55D89593
 #define UUID_E788439ED9F011DCB181F25B55D89593
+
+#include <boost/exception/to_string.hpp>
+#include <boost/exception/detail/object_hex_dump.hpp>
+#include <boost/assert.hpp>
+
 #if (__GNUC__*100+__GNUC_MINOR__>301) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
 #pragma GCC system_header
 #endif
 #if defined(_MSC_VER) && !defined(BOOST_EXCEPTION_ENABLE_WARNINGS)
 #pragma warning(push,1)
 #endif
-
-#include <boost/exception/to_string.hpp>
-#include <boost/exception/detail/object_hex_dump.hpp>
-#include <boost/assert.hpp>
 
 namespace
 boost

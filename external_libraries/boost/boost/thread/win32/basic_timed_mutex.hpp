@@ -55,7 +55,7 @@ namespace boost
 #endif
                 if(old_event)
                 {
-                    win32::CloseHandle(old_event);
+                    winapi::CloseHandle(old_event);
                 }
             }
 
@@ -81,9 +81,9 @@ namespace boost
 
                     do
                     {
-                        unsigned const retval(win32::WaitForSingleObjectEx(sem, ::boost::detail::win32::infinite,0));
+                        unsigned const retval(winapi::WaitForSingleObjectEx(sem, ::boost::detail::win32::infinite,0));
                         BOOST_VERIFY(0 == retval || ::boost::detail::win32::wait_abandoned == retval);
-//                        BOOST_VERIFY(win32::WaitForSingleObject(
+//                        BOOST_VERIFY(winapi::WaitForSingleObject(
 //                                         sem,::boost::detail::win32::infinite)==0);
                         clear_waiting_and_try_lock(old_count);
                         lock_acquired=!(old_count&lock_flag_value);
@@ -142,7 +142,7 @@ namespace boost
 
                     do
                     {
-                        if(win32::WaitForSingleObjectEx(sem,::boost::detail::get_milliseconds_until(wait_until),0)!=0)
+                        if(winapi::WaitForSingleObjectEx(sem,::boost::detail::get_milliseconds_until(wait_until),0)!=0)
                         {
                             BOOST_INTERLOCKED_DECREMENT(&active_count);
                             return false;
@@ -210,7 +210,7 @@ namespace boost
                       }
                       chrono::milliseconds rel_time= chrono::ceil<chrono::milliseconds>(tp-now);
 
-                      if(win32::WaitForSingleObjectEx(sem,static_cast<unsigned long>(rel_time.count()),0)!=0)
+                      if(winapi::WaitForSingleObjectEx(sem,static_cast<unsigned long>(rel_time.count()),0)!=0)
                       {
                           BOOST_INTERLOCKED_DECREMENT(&active_count);
                           return false;
@@ -232,7 +232,7 @@ namespace boost
                 {
                     if(!win32::interlocked_bit_test_and_set(&active_count,event_set_flag_bit))
                     {
-                        win32::SetEvent(get_event());
+                        winapi::SetEvent(get_event());
                     }
                 }
             }
@@ -256,7 +256,7 @@ namespace boost
 #endif
                     if(old_event!=0)
                     {
-                        win32::CloseHandle(new_event);
+                        winapi::CloseHandle(new_event);
                         return old_event;
                     }
                     else

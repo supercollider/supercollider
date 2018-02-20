@@ -50,7 +50,11 @@ namespace boost
         // stack
         void set_stack_size(std::size_t size) BOOST_NOEXCEPT {
           if (size==0) return;
+#ifdef BOOST_THREAD_USES_GETPAGESIZE
           std::size_t page_size = getpagesize();
+#else
+          std::size_t page_size = ::sysconf( _SC_PAGESIZE);
+#endif
 #ifdef PTHREAD_STACK_MIN
           if (size<PTHREAD_STACK_MIN) size=PTHREAD_STACK_MIN;
 #endif
@@ -177,6 +181,7 @@ namespace boost
             thread_data_base* const thread_info;
             pthread_mutex_t* m;
             bool set;
+            bool done;
 
             void check_for_interruption()
             {
@@ -193,7 +198,7 @@ namespace boost
         public:
             explicit interruption_checker(pthread_mutex_t* cond_mutex,pthread_cond_t* cond):
                 thread_info(detail::get_current_thread_data()),m(cond_mutex),
-                set(thread_info && thread_info->interrupt_enabled)
+                set(thread_info && thread_info->interrupt_enabled), done(false)
             {
                 if(set)
                 {
@@ -208,9 +213,10 @@ namespace boost
                     BOOST_VERIFY(!pthread_mutex_lock(m));
                 }
             }
-            ~interruption_checker()
+            void unlock_if_locked()
             {
-                if(set)
+              if ( ! done) {
+                if (set)
                 {
                     BOOST_VERIFY(!pthread_mutex_unlock(m));
                     lock_guard<mutex> guard(thread_info->data_mutex);
@@ -221,6 +227,13 @@ namespace boost
                 {
                     BOOST_VERIFY(!pthread_mutex_unlock(m));
                 }
+                done = true;
+              }
+            }
+
+            ~interruption_checker() BOOST_NOEXCEPT_IF(false)
+            {
+                unlock_if_locked();
             }
         };
 #endif
@@ -231,10 +244,12 @@ namespace boost
         namespace hidden
         {
           void BOOST_THREAD_DECL sleep_for(const timespec& ts);
-          void BOOST_THREAD_DECL sleep_until(const timespec& ts);
+          void BOOST_THREAD_DECL sleep_until_realtime(const timespec& ts);
         }
 
 #ifdef BOOST_THREAD_USES_CHRONO
+        template <class Rep, class Period>
+        void sleep_for(const chrono::duration<Rep, Period>& d);
 #ifdef BOOST_THREAD_SLEEP_FOR_IS_STEADY
 
         inline
@@ -250,10 +265,12 @@ namespace boost
           namespace hidden
           {
             void BOOST_THREAD_DECL sleep_for(const timespec& ts);
-            void BOOST_THREAD_DECL sleep_until(const timespec& ts);
+            void BOOST_THREAD_DECL sleep_until_realtime(const timespec& ts);
           }
 
     #ifdef BOOST_THREAD_USES_CHRONO
+          template <class Rep, class Period>
+          void sleep_for(const chrono::duration<Rep, Period>& d);
     #ifdef BOOST_THREAD_SLEEP_FOR_IS_STEADY
 
           inline
@@ -275,7 +292,7 @@ namespace boost
 #endif
         inline void sleep(system_time const& abs_time)
         {
-          return boost::this_thread::hidden::sleep_until(boost::detail::to_timespec(abs_time));
+          return boost::this_thread::hidden::sleep_until_realtime(boost::detail::to_timespec(abs_time));
         }
 
         template<typename TimeDuration>

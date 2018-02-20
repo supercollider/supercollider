@@ -2,7 +2,7 @@
 // detail/resolver_service_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,10 +17,11 @@
 
 #include <boost/asio/detail/config.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/detail/mutex.hpp>
 #include <boost/asio/detail/noncopyable.hpp>
-#include <boost/asio/detail/operation.hpp>
+#include <boost/asio/detail/resolve_op.hpp>
 #include <boost/asio/detail/socket_ops.hpp>
 #include <boost/asio/detail/socket_types.hpp>
 #include <boost/asio/detail/scoped_ptr.hpp>
@@ -40,17 +41,17 @@ public:
   typedef socket_ops::shared_cancel_token_type implementation_type;
 
   // Constructor.
-  BOOST_ASIO_DECL resolver_service_base(boost::asio::io_service& io_service);
+  BOOST_ASIO_DECL resolver_service_base(boost::asio::io_context& io_context);
 
   // Destructor.
   BOOST_ASIO_DECL ~resolver_service_base();
 
   // Destroy all user-defined handler objects owned by the service.
-  BOOST_ASIO_DECL void shutdown_service();
+  BOOST_ASIO_DECL void base_shutdown();
 
   // Perform any fork-related housekeeping.
-  BOOST_ASIO_DECL void fork_service(
-      boost::asio::io_service::fork_event fork_ev);
+  BOOST_ASIO_DECL void base_notify_fork(
+      boost::asio::io_context::fork_event fork_ev);
 
   // Construct a new resolver implementation.
   BOOST_ASIO_DECL void construct(implementation_type& impl);
@@ -58,12 +59,21 @@ public:
   // Destroy a resolver implementation.
   BOOST_ASIO_DECL void destroy(implementation_type&);
 
+  // Move-construct a new resolver implementation.
+  BOOST_ASIO_DECL void move_construct(implementation_type& impl,
+      implementation_type& other_impl);
+
+  // Move-assign from another resolver implementation.
+  BOOST_ASIO_DECL void move_assign(implementation_type& impl,
+      resolver_service_base& other_service,
+      implementation_type& other_impl);
+
   // Cancel pending asynchronous operations.
   BOOST_ASIO_DECL void cancel(implementation_type& impl);
 
 protected:
   // Helper function to start an asynchronous resolve operation.
-  BOOST_ASIO_DECL void start_resolve_op(operation* op);
+  BOOST_ASIO_DECL void start_resolve_op(resolve_op* op);
 
 #if !defined(BOOST_ASIO_WINDOWS_RUNTIME)
   // Helper class to perform exception-safe cleanup of addrinfo objects.
@@ -92,29 +102,30 @@ protected:
   };
 #endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 
-  // Helper class to run the work io_service in a thread.
-  class work_io_service_runner;
+  // Helper class to run the work io_context in a thread.
+  class work_io_context_runner;
 
   // Start the work thread if it's not already running.
   BOOST_ASIO_DECL void start_work_thread();
 
-  // The io_service implementation used to post completions.
-  io_service_impl& io_service_impl_;
+  // The io_context implementation used to post completions.
+  io_context_impl& io_context_impl_;
 
 private:
   // Mutex to protect access to internal data.
   boost::asio::detail::mutex mutex_;
 
-  // Private io_service used for performing asynchronous host resolution.
-  boost::asio::detail::scoped_ptr<boost::asio::io_service> work_io_service_;
+  // Private io_context used for performing asynchronous host resolution.
+  boost::asio::detail::scoped_ptr<boost::asio::io_context> work_io_context_;
 
-  // The work io_service implementation used to post completions.
-  io_service_impl& work_io_service_impl_;
+  // The work io_context implementation used to post completions.
+  io_context_impl& work_io_context_impl_;
 
-  // Work for the private io_service to perform.
-  boost::asio::detail::scoped_ptr<boost::asio::io_service::work> work_;
+  // Work for the private io_context to perform.
+  boost::asio::executor_work_guard<
+      boost::asio::io_context::executor_type> work_;
 
-  // Thread used for running the work io_service's run loop.
+  // Thread used for running the work io_context's run loop.
   boost::asio::detail::scoped_ptr<boost::asio::detail::thread> work_thread_;
 };
 

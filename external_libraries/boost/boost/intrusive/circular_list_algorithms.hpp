@@ -69,7 +69,7 @@ class circular_list_algorithms
    //! <b>Throws</b>: Nothing.
    BOOST_INTRUSIVE_FORCEINLINE static void init(const node_ptr &this_node)
    {
-      const node_ptr null_node((node_ptr()));
+      const node_ptr null_node = node_ptr();
       NodeTraits::set_next(this_node, null_node);
       NodeTraits::set_previous(this_node, null_node);
    }

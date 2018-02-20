@@ -23,6 +23,7 @@
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/math/special_functions/cbrt.hpp>
 #include <boost/math/special_functions/cos_pi.hpp>
+#include <boost/math/special_functions/chebyshev.hpp>
 #include <boost/math/special_functions/digamma.hpp>
 #include <boost/math/special_functions/ellint_1.hpp>
 #include <boost/math/special_functions/ellint_2.hpp>

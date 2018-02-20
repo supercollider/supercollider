@@ -99,13 +99,6 @@ if(APPLE)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
 
-if (NOT Boost_FOUND)
-	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
-	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/src/*cpp)
-	file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
-	list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
-endif()
-
 file(GLOB_RECURSE headers ../include/*.h* )
 file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
 list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator happy
@@ -253,7 +246,7 @@ if (Boost_FOUND)
 	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 else()
 	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-	target_link_libraries(libsclang boost_thread)
+	target_link_libraries(libsclang boost_regex boost_thread boost_system boost_filesystem)
 endif()
 
 
