@@ -26,10 +26,11 @@ Primitives for Char.
 #include <ctype.h>
 #include "PyrPrimitive.h"
 #include "VMGlobals.h"
+#include "SC_PrimRegistry.hpp"
 
+LIBSCLANG_PRIMITIVE_GROUP( Char );
 
-int prToLower(struct VMGlobals *g, int numArgsPushed);
-int prToLower(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ToLower, 1 )
 {
 	PyrSlot *a;
 
@@ -40,8 +41,7 @@ int prToLower(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prToUpper(struct VMGlobals *g, int numArgsPushed);
-int prToUpper(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ToUpper, 1 )
 {
 	PyrSlot *a;
 
@@ -52,7 +52,7 @@ int prToUpper(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsLower(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsLower, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -62,7 +62,7 @@ int prIsLower(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsUpper(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsUpper, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -72,8 +72,7 @@ int prIsUpper(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsAlpha(struct VMGlobals *g, int numArgsPushed);
-int prIsAlpha(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsAlpha, 1 )
 {
 	PyrSlot *a;
 
@@ -85,8 +84,7 @@ int prIsAlpha(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsAlphaNum(struct VMGlobals *g, int numArgsPushed);
-int prIsAlphaNum(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsAlphaNum, 1 )
 {
 	PyrSlot *a;
 
@@ -98,8 +96,7 @@ int prIsAlphaNum(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsControl(struct VMGlobals *g, int numArgsPushed);
-int prIsControl(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsControl, 1 )
 {
 	PyrSlot *a;
 
@@ -111,8 +108,7 @@ int prIsControl(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsDigit(struct VMGlobals *g, int numArgsPushed);
-int prIsDigit(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsDigit, 1 )
 {
 	PyrSlot *a;
 
@@ -124,8 +120,7 @@ int prIsDigit(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsPrint(struct VMGlobals *g, int numArgsPushed);
-int prIsPrint(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsPrint, 1 )
 {
 	PyrSlot *a;
 
@@ -137,8 +132,7 @@ int prIsPrint(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsPunct(struct VMGlobals *g, int numArgsPushed);
-int prIsPunct(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsPunct, 1 )
 {
 	PyrSlot *a;
 
@@ -150,8 +144,7 @@ int prIsPunct(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIsSpace(struct VMGlobals *g, int numArgsPushed);
-int prIsSpace(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsSpace, 1 )
 {
 	PyrSlot *a;
 
@@ -163,8 +156,7 @@ int prIsSpace(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prAsciiValue(struct VMGlobals *g, int numArgsPushed);
-int prAsciiValue(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AsciiValue, 1 )
 {
 	PyrSlot *a;
 
@@ -175,8 +167,7 @@ int prAsciiValue(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prDigitValue(struct VMGlobals *g, int numArgsPushed);
-int prDigitValue(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DigitValue, 1 )
 {
 	PyrSlot *a;
 	char c;
@@ -197,9 +188,7 @@ int prDigitValue(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prAsAscii(struct VMGlobals *g, int numArgsPushed);
-int prAsAscii(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AsAscii, 1 )
 {
 	PyrSlot *a;
 
@@ -209,8 +198,7 @@ int prAsAscii(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prAsDigit(struct VMGlobals *g, int numArgsPushed);
-int prAsDigit(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AsDigit, 1 )
 {
 	PyrSlot *a;
 	int c;
@@ -227,29 +215,4 @@ int prAsDigit(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	return errNone;
-}
-
-void initCharPrimitives();
-void initCharPrimitives()
-{
-	int base, index = 0;
-
-	base = nextPrimitiveIndex();
-
-	definePrimitive(base, index++, "_AsciiValue", prAsciiValue, 1, 0);
-	definePrimitive(base, index++, "_DigitValue", prDigitValue, 1, 0);
-	definePrimitive(base, index++, "_AsAscii", prAsAscii, 1, 0);
-	definePrimitive(base, index++, "_AsDigit", prAsDigit, 1, 0);
-	definePrimitive(base, index++, "_ToLower", prToLower, 1, 0);
-	definePrimitive(base, index++, "_ToUpper", prToUpper, 1, 0);
-	definePrimitive(base, index++, "_IsLower", prIsLower, 1, 0);
-	definePrimitive(base, index++, "_IsUpper", prIsUpper, 1, 0);
-	definePrimitive(base, index++, "_IsAlpha", prIsAlpha, 1, 0);
-	definePrimitive(base, index++, "_IsAlphaNum", prIsAlphaNum, 1, 0);
-	definePrimitive(base, index++, "_IsPrint", prIsPrint, 1, 0);
-	definePrimitive(base, index++, "_IsPunct", prIsPunct, 1, 0);
-	definePrimitive(base, index++, "_IsControl", prIsControl, 1, 0);
-	definePrimitive(base, index++, "_IsSpace", prIsSpace, 1, 0);
-	definePrimitive(base, index++, "_IsDecDigit", prIsDigit, 1, 0);
-
 }
