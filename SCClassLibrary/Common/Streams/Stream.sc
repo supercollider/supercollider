@@ -507,7 +507,7 @@ EventStreamPlayer : PauseStream {
 
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
-				clock.sched(0, this );
+				thisThread.clock.sched(0, this );
 				isWaiting = false;
 				this.changed(\playing)
 			};
