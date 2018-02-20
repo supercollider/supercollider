@@ -4230,9 +4230,6 @@ void initPrimitives()
 	initMathPrimitives();
 	initSignalPrimitives();
 
-void initPlatformPrimitives();
-	initPlatformPrimitives();
-
 void initStringPrimitives();
 	initStringPrimitives();
 
@@ -4321,6 +4318,7 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Array );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Char );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( File );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Platform );
 	SC_PrimRegistry::instance().run_all();
 
 	s_recvmsg = getsym("receiveMsg");
