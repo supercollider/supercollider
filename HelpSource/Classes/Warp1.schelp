@@ -50,48 +50,55 @@ code::
 s.boot;
 
 (
-var winenv;
-// a custom envelope - not a very good one, but you can hear the difference between this
-// and the default
-winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
-z = Buffer.sendCollection(s, winenv.discretize, 1);
-
-SynthDef(\warp, { |out, bufnum = 0, envbuf = -1|
-	var sound, pointer, filelength, pitch, env, dir;
+x = { |envbuf = -1|
+	var pointer, pitch;
 	// pointer - move from beginning to end of soundfile over 15 seconds
-	pointer = Line.kr(0, 1, 15);
+	pointer = LFSaw.ar(1/15).range(0, 1);
 	// control pitch with MouseX
 	pitch = MouseX.kr(0.5, 2);
-	env = EnvGen.kr(Env([0.001, 1, 1, 0.001], [0.1, 14, 0.9], 'exp'), doneAction: Done.freeSelf);
-	sound = Warp1.ar(1, bufnum, pointer, pitch, 0.1, envbuf, 8, 0.1, 2);
-	Out.ar(out, sound * env);
-}).add;
+	Warp1.ar(
+		numChannels:1,
+		bufnum:b,
+		pointer:pointer,
+		freqScale:pitch,
+		windowSize:0.1,
+		envbufnum:envbuf,
+		overlaps:8,
+		windowRandRatio:0.1,
+		interp:2
+	)
+}.play
 
 )
 
-// use built-in env
-x = Synth(\warp, [\bufnum, b, \envbuf, -1])
 
-// switch to the custom env
-x.set(\envbuf, z)
+(
+// a custom envelope - not a very good one, but you can hear the difference
+// between this and the default
+var winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
+z = Buffer.sendCollection(s, winenv.discretize, 1);
+x.set(\envbuf, z);
+)
+
+// the default is -1
 x.set(\envbuf, -1);
 
-x.free;
+// relase and end
+x.relase; z.free;
+
 ::
 
 code::
 (
 b.free;
-b= Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
-SynthDef(\warp2, { |out, bufnum|
-	var pointer = Phasor.ar(0, SampleDur.ir / BufDur.ir(bufnum) * XLine.kr(1, 0.25, 20));
-	var sound = Warp1.ar(1, bufnum, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
-	Out.ar(out, Pan2.ar(sound, pointer * 2 - 1, 0.25));
-}).add;
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
+{
+	var pointer = Phasor.ar(0, SampleDur.ir / BufDur.ir(b) * XLine.kr(1, 0.25, 20));
+	var sound = Warp1.ar(1, b, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
+	Pan2.ar(sound, pointer * 2 - 1, 0.25)
+}.play
 )
-x = Synth(\warp2, [\bufnum, b])
-x.free
-b.free
+b.free;
 ::
 
