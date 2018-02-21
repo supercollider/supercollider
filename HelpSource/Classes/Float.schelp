@@ -69,11 +69,10 @@ pi.asStringPrec(6)
 
 subsection::Using Floats as replacement for Integers
 
-Because in SuperCollider, an link::Classes/Integer:: is only 16 bit, it may be useful to calculate with floats also when only whole numbers are needed. You can use 64 bit floats for integer calculations up to code::9007199254740992:: (about code::9 x 10^15::)
+Because in SuperCollider, an link::Classes/Integer:: is only 16 bit, it may be useful to calculate with floats also when only whole numbers are needed. You can use 64 bit floats for integer calculations up to code::9007199254740992:: (code::2 ^ 53::, or about code::9 x 10^15::)
 
 code::
-
-a = 9007199254740991.0;
+a = 2 ** 53 - 1
 b = a + 1;
 c = a + 2;
 b - a // correct (1)
