@@ -1323,6 +1323,74 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b, *c;
+	char mode[12];
+
+	a = g->sp - 2;
+	b = g->sp - 1; //argv
+	c = g->sp;     //mode
+
+	if (NotObj(b)) return errWrongType;
+
+	if (NotObj(c) || !isKindOf(slotRawObject(c), class_string))
+		return errWrongType;
+	if (slotRawObject(c)->size > 11) return errFailed;
+
+	PyrFile *pfile = (PyrFile*)slotRawObject(a);
+
+	PyrObject *obj = slotRawObject(b);
+	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
+		return errNotAnIndexableObject;
+
+	if( obj->size < 1)
+		return errFailed;
+
+	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
+	mode[slotRawString(c)->size] = 0;
+
+	PyrSlot filenameSlot;
+	getIndexedSlot(obj, &filenameSlot, 0);
+	if (!isKindOfSlot(&filenameSlot, class_string)) return errWrongType;
+	char filename[PATH_MAX];
+	if (slotRawObject(&filenameSlot)->size > PATH_MAX - 1) return errFailed;
+	slotStrVal(&filenameSlot, filename, slotRawObject(&filenameSlot)->size + 1);
+
+	std::vector<char *> argv (obj->size + 1);
+
+	bfs::path p;
+	p /= filename;
+	std::string filenameOnly = p.filename().string();
+	std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());
+	vfilenameOnly.push_back('\0');
+
+	argv[0] = vfilenameOnly.data();
+	argv[obj->size] = NULL;
+
+	if(obj->size > 1) {
+		for (int i=1; i<obj->size; ++i) {
+			PyrSlot argSlot;
+			getIndexedSlot(obj, &argSlot, i);
+			if (!isKindOfSlot(&argSlot, class_string)) return errWrongType;
+			char *arg = new char[slotRawObject(&argSlot)->size + 1];
+			slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
+			argv[i] = arg;
+		}
+	}
+
+	pid_t pid;
+	FILE *file = sc_popen_argv(filename, argv.data(), &pid, mode);
+
+	if (file) {
+		SetPtr(&pfile->fileptr, file);
+		SetInt(a, pid);
+	} else {
+		SetNil(a);
+	}
+	return errNone;
+}
+
 int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
@@ -1781,6 +1849,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
 
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
+	definePrimitive(base, index++, "_PipeOpenArgv", prPipeOpenArgv, 3, 0);
 	definePrimitive(base, index++, "_PipeClose", prPipeClose, 2, 0);
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
