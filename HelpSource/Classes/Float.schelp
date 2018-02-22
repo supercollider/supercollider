@@ -67,15 +67,52 @@ pi.asStringPrec(6)
 7.4.asStringPrec(50)
 ::
 
+
+log2(inf.asInteger)
+2 ** 31 - inf.asInteger
+
 subsection::Using Floats as replacement for Integers
 
-Because in SuperCollider, an link::Classes/Integer:: is only 16 bit, it may be useful to calculate with floats also when only whole numbers are needed. You can use 64 bit floats for integer calculations up to code::9007199254740992:: (code::2 ^ 53::, or about code::9 x 10^15::)
+In SuperCollider, Floats are 64 bit wide. Because  an link::Classes/Integer:: is only 32 bit, it can capture only numbers up to code::± 2147483647::, which is code::2^31:: (one bit is for the sign), or about code::2 x 10^9::.
+
+Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64 bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Note that you still may get floating point errors when you apply certain operations.
 
 code::
+// testing the limits of 64 bit float (2^53)
 a = 2 ** 53 - 1
 b = a + 1;
 c = a + 2;
 b - a // correct (1)
 c - a // incorrect (also 1)
 ::
+
+Here is a classical example for an algorithm:
+
+code::
+// eucidean algorithm
+(
+g = { |a, b|
+	if(b == 0) {
+		a
+	} {
+		g.(b, mod(a, b))
+	}
+}
+)
+
+// check if a power of two
+
+x = 2147483647 * 3;
+g.(x, 3); // wrong, returns 1
+x = 2147483647.0 * 3;
+g.(x, 3); // correct, returns 3
+
+x = 2007199254740992.0 * 3;
+g.(x, 3); // correct, returns 3
+x = 9007199254740992.0 * 3;
+g.(x, 3); // still happens to be correct, but better not count on it …
+::
+
+
+
 
