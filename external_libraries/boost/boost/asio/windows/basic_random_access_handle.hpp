@@ -2,7 +2,7 @@
 // windows/basic_random_access_handle.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -16,6 +16,8 @@
 #endif // defined(_MSC_VER) && (_MSC_VER >= 1200)
 
 #include <boost/asio/detail/config.hpp>
+
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
 
 #if defined(BOOST_ASIO_HAS_WINDOWS_RANDOM_ACCESS_HANDLE) \
   || defined(GENERATING_DOCUMENTATION)
@@ -47,10 +49,6 @@ class basic_random_access_handle
   : public basic_handle<RandomAccessHandleService>
 {
 public:
-  /// (Deprecated: Use native_handle_type.) The native representation of a
-  /// handle.
-  typedef typename RandomAccessHandleService::native_handle_type native_type;
-
   /// The native representation of a handle.
   typedef typename RandomAccessHandleService::native_handle_type
     native_handle_type;
@@ -60,12 +58,12 @@ public:
    * This constructor creates a random-access handle without opening it. The
    * handle needs to be opened before data can be written to or read from it.
    *
-   * @param io_service The io_service object that the random-access handle will
+   * @param io_context The io_context object that the random-access handle will
    * use to dispatch handlers for any asynchronous operations performed on the
    * handle.
    */
-  explicit basic_random_access_handle(boost::asio::io_service& io_service)
-    : basic_handle<RandomAccessHandleService>(io_service)
+  explicit basic_random_access_handle(boost::asio::io_context& io_context)
+    : basic_handle<RandomAccessHandleService>(io_context)
   {
   }
 
@@ -74,7 +72,7 @@ public:
    * This constructor creates a random-access handle object to hold an existing
    * native handle.
    *
-   * @param io_service The io_service object that the random-access handle will
+   * @param io_context The io_context object that the random-access handle will
    * use to dispatch handlers for any asynchronous operations performed on the
    * handle.
    *
@@ -82,9 +80,9 @@ public:
    *
    * @throws boost::system::system_error Thrown on failure.
    */
-  basic_random_access_handle(boost::asio::io_service& io_service,
+  basic_random_access_handle(boost::asio::io_context& io_context,
       const native_handle_type& handle)
-    : basic_handle<RandomAccessHandleService>(io_service, handle)
+    : basic_handle<RandomAccessHandleService>(io_context, handle)
   {
   }
 
@@ -97,7 +95,7 @@ public:
    * move will occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_random_access_handle(io_service&)
+   * constructed using the @c basic_random_access_handle(io_context&)
    * constructor.
    */
   basic_random_access_handle(basic_random_access_handle&& other)
@@ -115,7 +113,7 @@ public:
    * move will occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_random_access_handle(io_service&)
+   * constructed using the @c basic_random_access_handle(io_context&)
    * constructor.
    */
   basic_random_access_handle& operator=(basic_random_access_handle&& other)
@@ -214,7 +212,7 @@ public:
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * boost::asio::io_service::post().
+   * boost::asio::io_context::post().
    *
    * @note The write operation may not transmit all of the data to the peer.
    * Consider using the @ref async_write_at function if you need to ensure that
@@ -334,7 +332,7 @@ public:
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * boost::asio::io_service::post().
+   * boost::asio::io_context::post().
    *
    * @note The read operation may not read all of the requested number of bytes.
    * Consider using the @ref async_read_at function if you need to ensure that
@@ -374,5 +372,7 @@ public:
 
 #endif // defined(BOOST_ASIO_HAS_WINDOWS_RANDOM_ACCESS_HANDLE)
        //   || defined(GENERATING_DOCUMENTATION)
+
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
 
 #endif // BOOST_ASIO_WINDOWS_BASIC_RANDOM_ACCESS_HANDLE_HPP

@@ -9,9 +9,10 @@
  * $Date$
  */
 
-#include "boost/date_time/gregorian/gregorian_types.hpp"
-#include "boost/date_time/date_formatting_locales.hpp" // sets BOOST_DATE_TIME_NO_LOCALE
-#include "boost/date_time/gregorian/parsers.hpp"
+#include <boost/date_time/compiler_config.hpp>
+#include <boost/date_time/gregorian/gregorian_types.hpp>
+#include <boost/date_time/date_formatting_locales.hpp> // sets BOOST_DATE_TIME_NO_LOCALE
+#include <boost/date_time/gregorian/parsers.hpp>
 
 //This file is basically commented out if locales are not supported
 #ifndef BOOST_DATE_TIME_NO_LOCALE
@@ -26,7 +27,7 @@ namespace boost {
 namespace gregorian {
   
   //! Configuration of the output facet template
-  struct greg_facet_config
+  struct BOOST_SYMBOL_VISIBLE greg_facet_config
   {
     typedef boost::gregorian::greg_month month_type;
     typedef boost::date_time::special_values special_value_enum;
@@ -365,8 +366,7 @@ namespace gregorian {
 
 } } //namespace gregorian
 
-#endif  
-    
-    
+#endif
+
 #endif
 

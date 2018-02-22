@@ -2,7 +2,7 @@
 // serial_port_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -55,10 +55,10 @@ public:
   public:
     explicit baud_rate(unsigned int rate = 0);
     unsigned int value() const;
-    BOOST_ASIO_DECL boost::system::error_code store(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID store(
         BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec) const;
-    BOOST_ASIO_DECL boost::system::error_code load(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID load(
         const BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec);
   private:
@@ -75,10 +75,10 @@ public:
     enum type { none, software, hardware };
     BOOST_ASIO_DECL explicit flow_control(type t = none);
     type value() const;
-    BOOST_ASIO_DECL boost::system::error_code store(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID store(
         BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec) const;
-    BOOST_ASIO_DECL boost::system::error_code load(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID load(
         const BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec);
   private:
@@ -95,10 +95,10 @@ public:
     enum type { none, odd, even };
     BOOST_ASIO_DECL explicit parity(type t = none);
     type value() const;
-    BOOST_ASIO_DECL boost::system::error_code store(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID store(
         BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec) const;
-    BOOST_ASIO_DECL boost::system::error_code load(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID load(
         const BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec);
   private:
@@ -115,10 +115,10 @@ public:
     enum type { one, onepointfive, two };
     BOOST_ASIO_DECL explicit stop_bits(type t = one);
     type value() const;
-    BOOST_ASIO_DECL boost::system::error_code store(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID store(
         BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec) const;
-    BOOST_ASIO_DECL boost::system::error_code load(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID load(
         const BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec);
   private:
@@ -134,10 +134,10 @@ public:
   public:
     BOOST_ASIO_DECL explicit character_size(unsigned int t = 8);
     unsigned int value() const;
-    BOOST_ASIO_DECL boost::system::error_code store(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID store(
         BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec) const;
-    BOOST_ASIO_DECL boost::system::error_code load(
+    BOOST_ASIO_DECL BOOST_ASIO_SYNC_OP_VOID load(
         const BOOST_ASIO_OPTION_STORAGE& storage,
         boost::system::error_code& ec);
   private:

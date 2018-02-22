@@ -29,6 +29,7 @@
 // aliases since members rebind_alloc and rebind_traits require it.
 #if defined(_LIBCPP_HAS_NO_TEMPLATE_ALIASES)
 #    define BOOST_NO_CXX11_ALLOCATOR
+#    define BOOST_NO_CXX11_POINTER_TRAITS
 #endif
 
 #if __cplusplus < 201103
@@ -53,6 +54,7 @@
 #  define BOOST_NO_CXX11_HDR_UNORDERED_SET
 #  define BOOST_NO_CXX11_NUMERIC_LIMITS
 #  define BOOST_NO_CXX11_ALLOCATOR
+#  define BOOST_NO_CXX11_POINTER_TRAITS
 #  define BOOST_NO_CXX11_SMART_PTR
 #  define BOOST_NO_CXX11_HDR_FUNCTIONAL
 #  define BOOST_NO_CXX11_STD_ALIGN
@@ -91,6 +93,17 @@
 #if (_LIBCPP_VERSION < 4000) || (__cplusplus <= 201402L)
 #  define BOOST_NO_CXX17_STD_APPLY
 #endif
+#if (_LIBCPP_VERSION > 4000) && (__cplusplus > 201402L) && !defined(_LIBCPP_ENABLE_CXX17_REMOVED_AUTO_PTR)
+#  define BOOST_NO_AUTO_PTR
+#endif
+#if (_LIBCPP_VERSION > 4000) && (__cplusplus > 201402L) && !defined(_LIBCPP_ENABLE_CXX17_REMOVED_RANDOM_SHUFFLE)
+#  define BOOST_NO_CXX98_RANDOM_SHUFFLE
+#endif
+#if (_LIBCPP_VERSION > 4000) && (__cplusplus > 201402L) && !defined(_LIBCPP_ENABLE_CXX17_REMOVED_BINDERS)
+#  define BOOST_NO_CXX98_BINDERS
+#endif
+
+#define BOOST_NO_CXX17_ITERATOR_TRAITS
 
 #if (_LIBCPP_VERSION <= 1101) && !defined(BOOST_NO_CXX11_THREAD_LOCAL)
 // This is a bit of a sledgehammer, because really it's just libc++abi that has no

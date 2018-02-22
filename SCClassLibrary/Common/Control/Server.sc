@@ -381,7 +381,7 @@ Server {
 	// clientID is settable while server is off, and locked while server is running
 	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to % - %. clientID is still %.";
 		if (this.serverRunning) {
 			failstr.format(name, val.cs, "server is running", clientID).warn;
 			^this
@@ -394,7 +394,7 @@ Server {
 		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
 				clientID
 			).warn;
 			^this
@@ -903,16 +903,25 @@ Server {
 		this.connectSharedMemory;
 	}
 
+	prOnServerProcessExit { |exitCode|
+		"Server '%' exited with exit code %."
+			.format(this.name, exitCode)
+			.postln;
+		statusWatcher.quit(watchShutDown: false);
+	}
+
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".postln;
+			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
-			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
+			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+				this.prOnServerProcessExit(exitCode);
+			});
+			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
 	}
@@ -984,9 +993,9 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".postln;
+			"Internal server has quit.".postln;
 		} {
-			"'/quit' sent\n".postln;
+			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
 		pid = nil;

@@ -19,7 +19,7 @@
 #include "sndfile.hh"
 
 #include "buffer_manager.hpp"
-#include "utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 #include "utilities/sized_array.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 

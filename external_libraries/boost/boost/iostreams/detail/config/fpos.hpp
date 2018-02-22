@@ -25,7 +25,7 @@
 #include <boost/config.hpp>
 
 # if (defined(_YVALS) || defined(_CPPLIB_VER)) && !defined(__SGI_STL_PORT) && \
-     !defined(_STLPORT_VERSION) && !defined(__QNX__)
+     !defined(_STLPORT_VERSION) && !defined(__QNX__) && !defined(_VX_CPU)
      /**/
      
 #include <boost/iostreams/detail/ios.hpp>

@@ -26,7 +26,7 @@
 #include "utils.hpp"
 #include "nova-tt/nova-tt/rw_mutex.hpp"
 
-#include <utilities/malloc_aligned.hpp>
+#include "malloc_aligned.hpp"
 
 namespace nova   {
 namespace bi = boost::intrusive;

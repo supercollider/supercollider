@@ -26,6 +26,19 @@ code::
 UnitTest.gui
 ::
 
+METHOD:: run
+Run all methods whose names begin with code::test_::.
+
+code::
+TestUnitTest.new.run;
+::
+
+ARGUMENT:: reset
+If code::true::, first runs link::#*reset:: on the class.
+
+ARGUMENT:: report
+If code::true::, outputs the test results.
+
 METHOD:: runTest
 Run a single test method.
 
@@ -48,40 +61,7 @@ UnitTest.runAll;
 ::
 
 
-METHOD:: runTestClassForClass
-runs testclass for a class
-
-ARGUMENT:: class
-the class
-
-ARGUMENT:: reset
-reset UnitTest environment
-
-ARGUMENT:: report
-report on pass/fail
-
-
-
-
-
-
 INSTANCEMETHODS::
-
-METHOD:: run
-All method names that start with test_ are invoked.
-
-ARGUMENT:: reset
-(describe argument here)
-
-ARGUMENT:: report
-(describe argument here)
-
-returns:: (describe returnvalue here)
-
-code::
-TestUnitTest.new.run;
-::
-
 
 METHOD:: runTestMethod
 Run a single test method of this class

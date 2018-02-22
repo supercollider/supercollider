@@ -307,6 +307,7 @@ template <class charT, class traits>
 boost::intmax_t global_toi(const charT*& p1, const charT* p2, int radix, const traits& t)
 {
    (void)t; // warning suppression
+   boost::intmax_t limit = (std::numeric_limits<boost::intmax_t>::max)() / radix;
    boost::intmax_t next_value = t.value(*p1, radix);
    if((p1 == p2) || (next_value < 0) || (next_value >= radix))
       return -1;
@@ -319,6 +320,8 @@ boost::intmax_t global_toi(const charT*& p1, const charT* p2, int radix, const t
       result *= radix;
       result += next_value;
       ++p1;
+      if (result > limit)
+         return -1;
    }
    return result;
 }
@@ -330,11 +333,11 @@ inline const charT* get_escape_R_string()
 #  pragma warning(push)
 #  pragma warning(disable:4309 4245)
 #endif
-   static const charT e1[] = { '(', '?', '>', '\x0D', '\x0A', '?',
-      '|', '[', '\x0A', '\x0B', '\x0C', static_cast<unsigned char>('\x85'), '\\', 'x', '{', '2', '0', '2', '8', '}',
+   static const charT e1[] = { '(', '?', '>', '\\', 'x', '0', 'D', '\\', 'x', '0', 'A', '?',
+      '|', '[', '\\', 'x', '0', 'A', '\\', 'x', '0', 'B', '\\', 'x', '0', 'C', static_cast<unsigned char>('\x85'), '\\', 'x', '{', '2', '0', '2', '8', '}',
                 '\\', 'x', '{', '2', '0', '2', '9', '}', ']', ')', '\0' };
-   static const charT e2[] = { '(', '?', '>', '\x0D', '\x0A', '?',
-      '|', '[', '\x0A', '\x0B', '\x0C', static_cast<unsigned char>('\x85'), ']', ')', '\0' };
+   static const charT e2[] = { '(', '?', '>', '\\', 'x', '0', 'D', '\\', 'x', '0', 'A', '?',
+      '|', '[', '\\', 'x', '0', 'A', '\\', 'x', '0', 'B', '\\', 'x', '0', 'C', static_cast<unsigned char>('\x85'), ']', ')', '\0' };
 
    charT c = static_cast<charT>(0x2029u);
    bool b = (static_cast<unsigned>(c) == 0x2029u);
@@ -352,8 +355,8 @@ inline const char* get_escape_R_string<char>()
 #  pragma warning(push)
 #  pragma warning(disable:4309)
 #endif
-   static const char e2[] = { '(', '?', '>', '\x0D', '\x0A', '?',
-      '|', '[', '\x0A', '\x0B', '\x0C', '\x85', ']', ')', '\0' };
+   static const char e2[] = { '(', '?', '>', '\\', 'x', '0', 'D', '\\', 'x', '0', 'A', '?',
+      '|', '[', '\\', 'x', '0', 'A', '\\', 'x', '0', 'B', '\\', 'x', '0', 'C', '\\', 'x', '8', '5', ']', ')', '\0' };
    return e2;
 #ifdef BOOST_MSVC
 #  pragma warning(pop)

@@ -9,66 +9,10 @@
 
 #include <boost/config.hpp>
 #include <boost/detail/lightweight_mutex.hpp>
+#include <boost/math/tools/atomic.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/math/tools/toms748_solve.hpp>
 #include <vector>
-
-#ifdef BOOST_HAS_THREADS
-
-#ifndef BOOST_NO_CXX11_HDR_ATOMIC
-#  include <atomic>
-#  define BOOST_MATH_ATOMIC_NS std
-#if ATOMIC_INT_LOCK_FREE == 2
-typedef std::atomic<int> atomic_counter_type;
-typedef int atomic_integer_type;
-#elif ATOMIC_SHORT_LOCK_FREE == 2
-typedef std::atomic<short> atomic_counter_type;
-typedef short atomic_integer_type;
-#elif ATOMIC_LONG_LOCK_FREE == 2
-typedef std::atomic<long> atomic_counter_type;
-typedef long atomic_integer_type;
-#elif ATOMIC_LLONG_LOCK_FREE == 2
-typedef std::atomic<long long> atomic_counter_type;
-typedef long long atomic_integer_type;
-#else
-#  define BOOST_MATH_NO_ATOMIC_INT
-#endif
-
-#else // BOOST_NO_CXX11_HDR_ATOMIC
-//
-// We need Boost.Atomic, but on any platform that supports auto-linking we do
-// not need to link against a separate library:
-//
-#define BOOST_ATOMIC_NO_LIB
-#include <boost/atomic.hpp>
-#  define BOOST_MATH_ATOMIC_NS boost
-
-namespace boost{ namespace math{ namespace detail{
-
-//
-// We need a type to use as an atomic counter:
-//
-#if BOOST_ATOMIC_INT_LOCK_FREE == 2
-typedef boost::atomic<int> atomic_counter_type;
-typedef int atomic_integer_type;
-#elif BOOST_ATOMIC_SHORT_LOCK_FREE == 2
-typedef boost::atomic<short> atomic_counter_type;
-typedef short atomic_integer_type;
-#elif BOOST_ATOMIC_LONG_LOCK_FREE == 2
-typedef boost::atomic<long> atomic_counter_type;
-typedef long atomic_integer_type;
-#elif BOOST_ATOMIC_LLONG_LOCK_FREE == 2
-typedef boost::atomic<long long> atomic_counter_type;
-typedef long long atomic_integer_type;
-#else
-#  define BOOST_MATH_NO_ATOMIC_INT
-#endif
-
-}}} // namespaces
-
-#endif  // BOOST_NO_CXX11_HDR_ATOMIC
-
-#endif // BOOST_HAS_THREADS
 
 namespace boost{ namespace math{ namespace detail{
 //

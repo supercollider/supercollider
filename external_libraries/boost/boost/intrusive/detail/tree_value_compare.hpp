@@ -37,7 +37,8 @@ struct disable_if_smartref_to
       || detail::is_same
             <From, typename pointer_traits
                      < typename pointer_rebind
-                           <ValuePtr, const typename pointer_element<ValuePtr>::type>::type>
+                           < ValuePtr
+                           , const typename boost::movelib::pointer_element<ValuePtr>::type>::type>
                   ::reference>::value
       >
 {};
@@ -45,11 +46,13 @@ struct disable_if_smartref_to
 //This function object takes a KeyCompare function object
 //and compares values that contains keys using KeyOfValue
 template< class ValuePtr, class KeyCompare, class KeyOfValue
-        , bool = boost::intrusive::detail::is_same<typename pointer_element<ValuePtr>::type, typename KeyOfValue::type>::value >
+        , bool = boost::intrusive::detail::is_same
+   <typename boost::movelib::pointer_element<ValuePtr>::type, typename KeyOfValue::type>::value >
 struct tree_value_compare
    :  public boost::intrusive::detail::ebo_functor_holder<KeyCompare>
 {
-   typedef typename pointer_element<ValuePtr>::type   value_type;
+   typedef typename
+      boost::movelib::pointer_element<ValuePtr>::type value_type;
    typedef KeyCompare                                 key_compare;
    typedef KeyOfValue                                 key_of_value;
    typedef typename KeyOfValue::type                  key_type;
@@ -114,7 +117,8 @@ template<class ValuePtr, class KeyCompare, class KeyOfValue>
 struct tree_value_compare<ValuePtr, KeyCompare, KeyOfValue, true>
    :  public boost::intrusive::detail::ebo_functor_holder<KeyCompare>
 {
-   typedef typename pointer_element<ValuePtr>::type   value_type;
+   typedef typename
+      boost::movelib::pointer_element<ValuePtr>::type value_type;
    typedef KeyCompare                                 key_compare;
    typedef KeyOfValue                                 key_of_value;
    typedef typename KeyOfValue::type                  key_type;

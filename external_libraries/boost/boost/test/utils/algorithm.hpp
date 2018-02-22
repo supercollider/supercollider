@@ -15,9 +15,15 @@
 // STL
 #include <utility>
 #include <algorithm> // std::find
-#include <functional> // std::bind1st
+#include <functional> // std::bind1st or std::bind
 
 #include <boost/test/detail/suppress_warnings.hpp>
+
+#ifdef BOOST_NO_CXX98_BINDERS
+#define BOOST_TEST_BIND1ST(F,A) std::bind( (F), (A), std::placeholders::_1 )
+#else
+#define BOOST_TEST_BIND1ST(F,A) std::bind1st( (F), (A) )
+#endif
 
 //____________________________________________________________________________//
 
@@ -109,7 +115,7 @@ find_first_not_of( ForwardIterator1 first1, ForwardIterator1 last1,
                    Predicate pred )
 {
     while( first1 != last1 ) {
-        if( std::find_if( first2, last2, std::bind1st( pred, *first1 ) ) == last2 )
+        if( std::find_if( first2, last2, BOOST_TEST_BIND1ST( pred, *first1 ) ) == last2 )
             break;
         ++first1;
     }
@@ -159,9 +165,9 @@ find_last_of( BidirectionalIterator1 first1, BidirectionalIterator1 last1,
         return last1;
 
     BidirectionalIterator1 it1 = last1;
-    while( --it1 != first1 && std::find_if( first2, last2, std::bind1st( pred, *it1 ) ) == last2 ) {}
+    while( --it1 != first1 && std::find_if( first2, last2, BOOST_TEST_BIND1ST( pred, *it1 ) ) == last2 ) {}
 
-    return it1 == first1 && std::find_if( first2, last2, std::bind1st( pred, *it1 ) ) == last2 ? last1 : it1;
+    return it1 == first1 && std::find_if( first2, last2, BOOST_TEST_BIND1ST( pred, *it1 ) ) == last2 ? last1 : it1;
 }
 
 //____________________________________________________________________________//
@@ -206,9 +212,9 @@ find_last_not_of( BidirectionalIterator1 first1, BidirectionalIterator1 last1,
         return last1;
 
     BidirectionalIterator1 it1 = last1;
-    while( --it1 != first1 && std::find_if( first2, last2, std::bind1st( pred, *it1 ) ) != last2 ) {}
+    while( --it1 != first1 && std::find_if( first2, last2, BOOST_TEST_BIND1ST( pred, *it1 ) ) != last2 ) {}
 
-    return it1 == first1 && std::find_if( first2, last2, std::bind1st( pred, *it1 ) ) == last2 ? last1 : it1;
+    return it1 == first1 && std::find_if( first2, last2, BOOST_TEST_BIND1ST( pred, *it1 ) ) == last2 ? last1 : it1;
 }
 
 //____________________________________________________________________________//

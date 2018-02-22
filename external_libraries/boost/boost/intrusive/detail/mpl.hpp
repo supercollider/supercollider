@@ -86,8 +86,8 @@ struct ls_zeros<1>
 
 // Infrastructure for providing a default type for T::TNAME if absent.
 #define BOOST_INTRUSIVE_INSTANTIATE_DEFAULT_TYPE_TMPLT(TNAME)     \
-   template <typename T, typename DefaultType>                    \
-   struct boost_intrusive_default_type_ ## TNAME                  \
+   template <typename T>                                          \
+   struct boost_intrusive_has_type_ ## TNAME                      \
    {                                                              \
       template <typename X>                                       \
       static char test(int, typename X::TNAME*);                  \
@@ -95,19 +95,29 @@ struct ls_zeros<1>
       template <typename X>                                       \
       static int test(...);                                       \
                                                                   \
-      struct DefaultWrap { typedef DefaultType TNAME; };          \
-                                                                  \
       static const bool value = (1 == sizeof(test<T>(0, 0)));     \
+   };                                                             \
+                                                                  \
+   template <typename T, typename DefaultType>                    \
+   struct boost_intrusive_default_type_ ## TNAME                  \
+   {                                                              \
+      struct DefaultWrap { typedef DefaultType TNAME; };          \
                                                                   \
       typedef typename                                            \
          ::boost::intrusive::detail::if_c                         \
-            <value, T, DefaultWrap>::type::TNAME type;            \
+            < boost_intrusive_has_type_ ## TNAME<T>::value        \
+            , T, DefaultWrap>::type::TNAME type;                  \
    };                                                             \
    //
 
 #define BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(INSTANTIATION_NS_PREFIX, T, TNAME, TIMPL)   \
       typename INSTANTIATION_NS_PREFIX                                                       \
          boost_intrusive_default_type_ ## TNAME< T, TIMPL >::type                            \
+//
+
+#define BOOST_INTRUSIVE_HAS_TYPE(INSTANTIATION_NS_PREFIX, T, TNAME)  \
+      INSTANTIATION_NS_PREFIX                                        \
+         boost_intrusive_has_type_ ## TNAME< T >::value              \
 //
 
 #define BOOST_INTRUSIVE_INSTANTIATE_EVAL_DEFAULT_TYPE_TMPLT(TNAME)\

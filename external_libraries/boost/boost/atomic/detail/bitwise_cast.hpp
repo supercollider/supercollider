@@ -25,9 +25,26 @@
 #pragma once
 #endif
 
+#if defined(BOOST_GCC) && (BOOST_GCC+0) >= 40600
+#pragma GCC diagnostic push
+// missing initializer for member var
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#endif
+
 namespace boost {
 namespace atomics {
 namespace detail {
+
+template< typename T >
+BOOST_FORCEINLINE T* addressof(T& value) BOOST_NOEXCEPT
+{
+    // Note: The point of using a local struct as the intermediate type instead of char is to avoid gcc warnings
+    // if T is a const volatile char*:
+    // warning: casting 'const volatile char* const' to 'const volatile char&' does not dereference pointer
+    // The local struct makes sure T is not related to the cast target type.
+    struct opaque_type;
+    return reinterpret_cast< T* >(&const_cast< opaque_type& >(reinterpret_cast< const volatile opaque_type& >(value)));
+}
 
 template< typename To, typename From >
 BOOST_FORCEINLINE To bitwise_cast(From const& from) BOOST_NOEXCEPT
@@ -39,8 +56,8 @@ BOOST_FORCEINLINE To bitwise_cast(From const& from) BOOST_NOEXCEPT
     value = {};
     BOOST_ATOMIC_DETAIL_MEMCPY
     (
-        &reinterpret_cast< char& >(value.to),
-        &reinterpret_cast< const char& >(from),
+        atomics::detail::addressof(value.to),
+        atomics::detail::addressof(from),
         (sizeof(From) < sizeof(To) ? sizeof(From) : sizeof(To))
     );
     return value.to;
@@ -49,5 +66,9 @@ BOOST_FORCEINLINE To bitwise_cast(From const& from) BOOST_NOEXCEPT
 } // namespace detail
 } // namespace atomics
 } // namespace boost
+
+#if defined(BOOST_GCC) && (BOOST_GCC+0) >= 40600
+#pragma GCC diagnostic pop
+#endif
 
 #endif // BOOST_ATOMIC_DETAIL_BITWISE_CAST_HPP_INCLUDED_

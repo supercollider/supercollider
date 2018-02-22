@@ -2,7 +2,7 @@
 // posix/stream_descriptor_service.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,13 +17,15 @@
 
 #include <boost/asio/detail/config.hpp>
 
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+
 #if defined(BOOST_ASIO_HAS_POSIX_STREAM_DESCRIPTOR) \
   || defined(GENERATING_DOCUMENTATION)
 
 #include <cstddef>
 #include <boost/asio/async_result.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/detail/reactive_descriptor_service.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
@@ -35,7 +37,7 @@ namespace posix {
 /// Default service implementation for a stream descriptor.
 class stream_descriptor_service
 #if defined(GENERATING_DOCUMENTATION)
-  : public boost::asio::io_service::service
+  : public boost::asio::io_context::service
 #else
   : public boost::asio::detail::service_base<stream_descriptor_service>
 #endif
@@ -43,7 +45,7 @@ class stream_descriptor_service
 public:
 #if defined(GENERATING_DOCUMENTATION)
   /// The unique service identifier.
-  static boost::asio::io_service::id id;
+  static boost::asio::io_context::id id;
 #endif
 
 private:
@@ -58,13 +60,6 @@ public:
   typedef service_impl_type::implementation_type implementation_type;
 #endif
 
-  /// (Deprecated: Use native_handle_type.) The native descriptor type.
-#if defined(GENERATING_DOCUMENTATION)
-  typedef implementation_defined native_type;
-#else
-  typedef service_impl_type::native_handle_type native_type;
-#endif
-
   /// The native descriptor type.
 #if defined(GENERATING_DOCUMENTATION)
   typedef implementation_defined native_handle_type;
@@ -72,10 +67,10 @@ public:
   typedef service_impl_type::native_handle_type native_handle_type;
 #endif
 
-  /// Construct a new stream descriptor service for the specified io_service.
-  explicit stream_descriptor_service(boost::asio::io_service& io_service)
-    : boost::asio::detail::service_base<stream_descriptor_service>(io_service),
-      service_impl_(io_service)
+  /// Construct a new stream descriptor service for the specified io_context.
+  explicit stream_descriptor_service(boost::asio::io_context& io_context)
+    : boost::asio::detail::service_base<stream_descriptor_service>(io_context),
+      service_impl_(io_context)
   {
   }
 
@@ -109,11 +104,12 @@ public:
   }
 
   /// Assign an existing native descriptor to a stream descriptor.
-  boost::system::error_code assign(implementation_type& impl,
+  BOOST_ASIO_SYNC_OP_VOID assign(implementation_type& impl,
       const native_handle_type& native_descriptor,
       boost::system::error_code& ec)
   {
-    return service_impl_.assign(impl, native_descriptor, ec);
+    service_impl_.assign(impl, native_descriptor, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Determine whether the descriptor is open.
@@ -123,17 +119,11 @@ public:
   }
 
   /// Close a stream descriptor implementation.
-  boost::system::error_code close(implementation_type& impl,
+  BOOST_ASIO_SYNC_OP_VOID close(implementation_type& impl,
       boost::system::error_code& ec)
   {
-    return service_impl_.close(impl, ec);
-  }
-
-  /// (Deprecated: Use native_handle().) Get the native descriptor
-  /// implementation.
-  native_type native(implementation_type& impl)
-  {
-    return service_impl_.native_handle(impl);
+    service_impl_.close(impl, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Get the native descriptor implementation.
@@ -149,18 +139,20 @@ public:
   }
 
   /// Cancel all asynchronous operations associated with the descriptor.
-  boost::system::error_code cancel(implementation_type& impl,
+  BOOST_ASIO_SYNC_OP_VOID cancel(implementation_type& impl,
       boost::system::error_code& ec)
   {
-    return service_impl_.cancel(impl, ec);
+    service_impl_.cancel(impl, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Perform an IO control command on the descriptor.
   template <typename IoControlCommand>
-  boost::system::error_code io_control(implementation_type& impl,
+  BOOST_ASIO_SYNC_OP_VOID io_control(implementation_type& impl,
       IoControlCommand& command, boost::system::error_code& ec)
   {
-    return service_impl_.io_control(impl, command, ec);
+    service_impl_.io_control(impl, command, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Gets the non-blocking mode of the descriptor.
@@ -170,10 +162,11 @@ public:
   }
 
   /// Sets the non-blocking mode of the descriptor.
-  boost::system::error_code non_blocking(implementation_type& impl,
+  BOOST_ASIO_SYNC_OP_VOID non_blocking(implementation_type& impl,
       bool mode, boost::system::error_code& ec)
   {
-    return service_impl_.non_blocking(impl, mode, ec);
+    service_impl_.non_blocking(impl, mode, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Gets the non-blocking mode of the native descriptor implementation.
@@ -183,10 +176,36 @@ public:
   }
 
   /// Sets the non-blocking mode of the native descriptor implementation.
-  boost::system::error_code native_non_blocking(implementation_type& impl,
+  BOOST_ASIO_SYNC_OP_VOID native_non_blocking(implementation_type& impl,
       bool mode, boost::system::error_code& ec)
   {
-    return service_impl_.native_non_blocking(impl, mode, ec);
+    service_impl_.native_non_blocking(impl, mode, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
+  }
+
+  /// Wait for the descriptor to become ready to read, ready to write, or to
+  /// have pending error conditions.
+  BOOST_ASIO_SYNC_OP_VOID wait(implementation_type& impl,
+      descriptor_base::wait_type w, boost::system::error_code& ec)
+  {
+    service_impl_.wait(impl, w, ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
+  }
+
+  /// Asynchronously wait for the descriptor to become ready to read, ready to
+  /// write, or to have pending error conditions.
+  template <typename WaitHandler>
+  BOOST_ASIO_INITFN_RESULT_TYPE(WaitHandler,
+      void (boost::system::error_code))
+  async_wait(implementation_type& impl, descriptor_base::wait_type w,
+      BOOST_ASIO_MOVE_ARG(WaitHandler) handler)
+  {
+    async_completion<WaitHandler,
+      void (boost::system::error_code)> init(handler);
+
+    service_impl_.async_wait(impl, w, init.completion_handler);
+
+    return init.result.get();
   }
 
   /// Write the given data to the stream.
@@ -205,11 +224,10 @@ public:
       const ConstBufferSequence& buffers,
       BOOST_ASIO_MOVE_ARG(WriteHandler) handler)
   {
-    boost::asio::detail::async_result_init<
-      WriteHandler, void (boost::system::error_code, std::size_t)> init(
-        BOOST_ASIO_MOVE_CAST(WriteHandler)(handler));
+    boost::asio::async_completion<WriteHandler,
+      void (boost::system::error_code, std::size_t)> init(handler);
 
-    service_impl_.async_write_some(impl, buffers, init.handler);
+    service_impl_.async_write_some(impl, buffers, init.completion_handler);
 
     return init.result.get();
   }
@@ -230,20 +248,19 @@ public:
       const MutableBufferSequence& buffers,
       BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
   {
-    boost::asio::detail::async_result_init<
-      ReadHandler, void (boost::system::error_code, std::size_t)> init(
-        BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+    boost::asio::async_completion<ReadHandler,
+      void (boost::system::error_code, std::size_t)> init(handler);
 
-    service_impl_.async_read_some(impl, buffers, init.handler);
+    service_impl_.async_read_some(impl, buffers, init.completion_handler);
 
     return init.result.get();
   }
 
 private:
   // Destroy all user-defined handler objects owned by the service.
-  void shutdown_service()
+  void shutdown()
   {
-    service_impl_.shutdown_service();
+    service_impl_.shutdown();
   }
 
   // The platform-specific implementation.
@@ -258,5 +275,7 @@ private:
 
 #endif // defined(BOOST_ASIO_HAS_POSIX_STREAM_DESCRIPTOR)
        //   || defined(GENERATING_DOCUMENTATION)
+
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
 
 #endif // BOOST_ASIO_POSIX_STREAM_DESCRIPTOR_SERVICE_HPP

@@ -53,7 +53,7 @@
 # include <sys/param.h>
 #endif
 
-#include "../supernova/utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 
 // undefine the shadowed scfft functions
 #undef scfft_create
@@ -462,12 +462,12 @@ World* World_New(WorldOptions *inOptions)
 				scprintf("start audio failed.\n");
 				return 0;
 			}
-			
+
 #ifdef __APPLE__
 			SC::Apple::disableAppNap();
 #endif
-			
-			
+
+
 		} else {
 			hw->mAudioDriver = 0;
 		}
