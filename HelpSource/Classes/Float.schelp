@@ -39,6 +39,9 @@ code::
 ::
 See also: link::Guides/Randomness::
 
+method::xrand2
+returns::a random float from this.neg to this, excluding the value exclude.
+
 method:: isFloat
 returns:: code::true:: since this is a Float.
 
@@ -53,6 +56,14 @@ returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit doub
 
 method:: low32Bits
 returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+
+method:: asCompileString
+returns:: a string that when interpreted matches the receiver, if the number is within the range given in code::storeOn::.
+
+code::
+a = 2.81882773638;
+a.asCompileString.interpret == a;
+::
 
 method:: asStringPrec
 Returns a string representation of the number, with the desired precision (i.e. number of significant figures).
