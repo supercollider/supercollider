@@ -38,15 +38,20 @@ public:
     QLocalSocket * mSocket;
     
     QString getTextMirrorForDocument(QByteArray & id, int pos = 0, int range = -1);
+    void requestFullSync();
     QPair<int, int> getSelectionMirrorForDocument(QByteArray & id);
     
     void setTextMirrorForDocument(QByteArray & id, const QString & text, int pos = 0, int range = -1);
     void setSelectionMirrorForDocument(QByteArray & id, int start = 0, int range = 0);
+    
+    bool isConnected() const;
 
 private Q_SLOTS:
-    
     void readIDEData();
-    
+    void onError();
+    void onConnected();
+    void onDisconnected();
+
 private:
     
     void onResponse( const QString & selector, const QVariantList & argList );
@@ -60,6 +65,7 @@ private:
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;
     QMutex mTextMirrorHashMutex;
     QMutex mSelMirrorHashMutex;
+    int mFullSyncCount;
 };
 
 

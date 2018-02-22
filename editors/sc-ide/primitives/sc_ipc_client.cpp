@@ -38,12 +38,123 @@
 #include "sc_ipc_client.hpp"
 #include "localsocket_utils.hpp"
 
-SCIpcClient::SCIpcClient( const char * ideName ):
-        mSocket(NULL)
+
+struct YAMLSerializer
+{
+    YAML::Emitter emitter;
+    
+public:
+    explicit YAMLSerializer (PyrSlot * slot)
+    {
+        serialize(slot);
+    }
+    
+    const char * data ()
+    {
+        return emitter.c_str();
+    }
+    
+    size_t size()
+    {
+        return emitter.size();
+    }
+    
+private:
+    void serialize(PyrSlot * slot)
+    {
+        if (IsFloat(slot)) {
+            emitter << slotRawFloat(slot);
+            return;
+        }
+        
+        switch (GetTag(slot)) {
+            case tagNil:
+                emitter << YAML::Null;
+                return;
+                
+            case tagInt:
+                emitter << slotRawInt(slot);
+                return;
+                
+            case tagFalse:
+                emitter << false;
+                return;
+                
+            case tagTrue:
+                emitter << true;
+                return;
+                
+            case tagObj:
+                serialize(slotRawObject(slot));
+                return;
+                
+            case tagSym:
+                emitter << YAML::DoubleQuoted << slotRawSymbol(slot)->name;
+                return;
+                
+            default:
+                printf ("type: %d\n", GetTag(slot));
+                throw std::runtime_error("YAMLSerializer: not implementation for this type");
+        }
+    }
+    
+    void serialize(PyrObject * object)
+    {
+        if (isKindOf(object, class_string)) {
+            PyrObjectHdr * hdr = static_cast<PyrObjectHdr*>(object);
+            PyrString * str = static_cast<PyrString*>(hdr);
+            
+            size_t len = str->size;
+            char * cstr = new char[len + 10];
+            memcpy(cstr, str->s, len);
+            cstr[len] = 0; // zero-terminate
+            emitter << YAML::DoubleQuoted << cstr;
+            delete[] cstr;
+            return;
+        }
+        
+        if (isKindOf(object, class_arrayed_collection)) {
+            emitter << YAML::BeginSeq;
+            for (size_t i = 0; i != object->size; ++i)
+                serialize(object->slots + i);
+            
+            emitter << YAML::EndSeq;
+            return;
+        }
+        throw std::runtime_error("YAMLSerializer: not implementation for this type");
+    }
+};
+
+SCIpcClient::SCIpcClient( const char * ideName )
+    : mSocket(NULL)
+    , mFullSyncCount(0)
 {
     mSocket = new QLocalSocket();
+    
+    connect(mSocket, SIGNAL(readyRead()),
+            this, SLOT(readIDEData()));
+    connect(mSocket, SIGNAL(error(QLocalSocket::LocalSocketError)),
+            this, SIGNAL(onError()));
+    connect(mSocket, SIGNAL(connected()),
+            this, SIGNAL(onConnected()));
+    connect(mSocket, SIGNAL(disconnected()),
+            this, SIGNAL(onDisconnected()));
+
     mSocket->connectToServer(QString(ideName));
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+}
+
+void SCIpcClient::onError()
+{
+    error("IPC error: %s", mSocket->errorString().toLatin1().constData());
+}
+
+void SCIpcClient::onConnected()
+{
+}
+
+void SCIpcClient::onDisconnected()
+{
+    error("IPC client disconnected from %s", mSocket->fullServerName().toLatin1().constData());
 }
 
 void SCIpcClient::send(const char * data, size_t length)
@@ -54,6 +165,11 @@ void SCIpcClient::send(const char * data, size_t length)
 SCIpcClient::~SCIpcClient()
 {
     mSocket->disconnectFromServer();
+}
+
+bool SCIpcClient::isConnected() const
+{
+    return mSocket->state() != QLocalSocket::UnconnectedState;
 }
 
 void SCIpcClient::readIDEData() {
@@ -128,53 +244,60 @@ void SCIpcClient::updateDocSelection( const QVariantList & argList )
 QString SCIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int range)
 {
     QString returnText;
+    QMutexLocker lock(&mTextMirrorHashMutex);
+    
     if (mDocumentTextMirrors.contains(id)) {
         if((pos == 0) && range == -1){
-            mTextMirrorHashMutex.lock();
             returnText = mDocumentTextMirrors[id];
-            mTextMirrorHashMutex.unlock();
         } else {
-            mTextMirrorHashMutex.lock();
             QString existingText = mDocumentTextMirrors[id];
             if (range == -1) range = existingText.size() - pos;
             QStringRef returnTextRef = QStringRef(&existingText, pos, range);
             returnText = returnTextRef.toString();
-            mTextMirrorHashMutex.unlock();
         }
     } else {
-        post("WARNING: Attempted to access missing Text Mirror for Document %s\n", id.constData());
+        if (mFullSyncCount == 0) {
+            mFullSyncCount++;
+            requestFullSync();
+        } else {
+            post("WARNING: Attempted to access missing Text Mirror for Document %s\n", id.constData());
+        }
     }
     return returnText;
 }
 
 void SCIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text, int pos, int range)
 {
+    QMutexLocker lock(&mTextMirrorHashMutex);
+
     if((pos == 0) && range == -1){
-        mTextMirrorHashMutex.lock();
+        mFullSyncCount = 0;
         mDocumentTextMirrors[id] = text;
-        mTextMirrorHashMutex.unlock();
     } else {
         if (mDocumentTextMirrors.contains(id)) {
-            mTextMirrorHashMutex.lock();
             QString existingText = mDocumentTextMirrors[id];
             int size = existingText.size();
             if (pos > size) pos = size;
             if (range == -1) range = existingText.size() - pos;
             mDocumentTextMirrors[id] = existingText.replace(pos, range, text);
-            mTextMirrorHashMutex.unlock();
         } else {
-            post("WARNING: Attempted to modify missing Text Mirror for Document %s\n", id.constData());
+            if (mFullSyncCount == 0) {
+                mFullSyncCount++;
+                requestFullSync();
+            } else {
+                post("WARNING: Attempted to modify missing Text Mirror for Document %s\n", id.constData());
+            }
         }
     }
 }
 
 QPair<int, int> SCIpcClient::getSelectionMirrorForDocument(QByteArray & id)
 {
+    QMutexLocker lock(&mSelMirrorHashMutex);
+
     QPair<int, int> selection;
     if (mDocumentSelectionMirrors.contains(id)) {
-        mSelMirrorHashMutex.lock();
         selection = mDocumentSelectionMirrors[id];
-        mSelMirrorHashMutex.unlock();
     } else {
         post("WARNING: Attempted to access missing Selection Mirror for Document %s\n", id.constData());
         selection = qMakePair(0, 0);
@@ -184,18 +307,18 @@ QPair<int, int> SCIpcClient::getSelectionMirrorForDocument(QByteArray & id)
 
 void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int range)
 {
-    mSelMirrorHashMutex.lock();
+    QMutexLocker lock(&mSelMirrorHashMutex);
+
     mDocumentSelectionMirrors[id] = qMakePair(start, range);
-    mSelMirrorHashMutex.unlock();
 }
 
 
-static SCIpcClient * gIpcClient = NULL;
+static std::unique_ptr<SCIpcClient> gIpcClient;
 
 
 int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
 {
-    if (gIpcClient) {
+    if (gIpcClient ? gIpcClient->isConnected() : false) {
         error("ScIDE already connected\n");
         return errFailed;
     }
@@ -207,7 +330,7 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
     if (status != errNone)
         return errWrongType;
 
-    gIpcClient = new SCIpcClient(ideName);
+    gIpcClient.reset(new SCIpcClient(ideName));
 
     return errNone;
 }
@@ -216,100 +339,23 @@ int ScIDE_Connected(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
 
-    SetBool(returnSlot, gIpcClient != 0);
+    SetBool(returnSlot, gIpcClient ? gIpcClient->isConnected() : false);
 
     return errNone;
 }
 
-struct YAMLSerializer
+void SCIpcClient::requestFullSync()
 {
-    YAML::Emitter emitter;
-
-public:
-    explicit YAMLSerializer (PyrSlot * slot)
-    {
-        serialize(slot);
-    }
-
-    const char * data ()
-    {
-        return emitter.c_str();
-    }
-
-    size_t size()
-    {
-        return emitter.size();
-    }
-
-private:
-    void serialize(PyrSlot * slot)
-    {
-        if (IsFloat(slot)) {
-            emitter << slotRawFloat(slot);
-            return;
-        }
-
-        switch (GetTag(slot)) {
-        case tagNil:
-            emitter << YAML::Null;
-            return;
-
-        case tagInt:
-            emitter << slotRawInt(slot);
-            return;
-
-        case tagFalse:
-            emitter << false;
-            return;
-
-        case tagTrue:
-            emitter << true;
-            return;
-
-        case tagObj:
-            serialize(slotRawObject(slot));
-            return;
-
-        case tagSym:
-            emitter << YAML::DoubleQuoted << slotRawSymbol(slot)->name;
-            return;
-
-        default:
-            printf ("type: %d\n", GetTag(slot));
-            throw std::runtime_error("YAMLSerializer: not implementation for this type");
-        }
-    }
-
-    void serialize(PyrObject * object)
-    {
-        if (isKindOf(object, class_string)) {
-            PyrObjectHdr * hdr = static_cast<PyrObjectHdr*>(object);
-            PyrString * str = static_cast<PyrString*>(hdr);
-
-            size_t len = str->size;
-            char * cstr = new char[len + 10];
-            memcpy(cstr, str->s, len);
-            cstr[len] = 0; // zero-terminate
-            emitter << YAML::DoubleQuoted << cstr;
-            delete[] cstr;
-            return;
-        }
-
-        if (isKindOf(object, class_arrayed_collection)) {
-            emitter << YAML::BeginSeq;
-            for (size_t i = 0; i != object->size; ++i)
-                serialize(object->slots + i);
-
-            emitter << YAML::EndSeq;
-            return;
-        }
-        throw std::runtime_error("YAMLSerializer: not implementation for this type");
-    }
-};
+    PyrSlot trueSlot {};
+    SetBool(&trueSlot, true);
+    YAMLSerializer serializer(&trueSlot);
+    
+    sendSelectorAndData(gIpcClient->mSocket, QString("enableDocumentTextMirror"), QString::fromUtf8(serializer.data()));
+}
 
 int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!gIpcClient) {
+    if (gIpcClient ? !gIpcClient->isConnected() : true) {
         error("ScIDE not connected\n");
         return errFailed;
     }
@@ -348,7 +394,7 @@ int ScIDE_GetQUuid(struct VMGlobals *g, int numArgsPushed)
 
 int ScIDE_GetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!gIpcClient) {
+    if (gIpcClient ? !gIpcClient->isConnected() : true) {
         error("ScIDE not connected\n");
         return errFailed;
     }
@@ -381,7 +427,7 @@ int ScIDE_GetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
 
 int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!gIpcClient) {
+    if (gIpcClient ? !gIpcClient->isConnected() : true) {
         error("ScIDE not connected\n");
         return errFailed;
     }
@@ -421,7 +467,7 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
 
 int ScIDE_GetDocSelectionStart(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!gIpcClient) {
+    if (gIpcClient ? !gIpcClient->isConnected() : true) {
         error("ScIDE not connected\n");
         return errFailed;
     }
@@ -444,7 +490,7 @@ int ScIDE_GetDocSelectionStart(struct VMGlobals *g, int numArgsPushed)
 
 int ScIDE_GetDocSelectionRange(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!gIpcClient) {
+    if (gIpcClient ? !gIpcClient->isConnected() : true) {
         error("ScIDE not connected\n");
         return errFailed;
     }
@@ -467,7 +513,7 @@ int ScIDE_GetDocSelectionRange(struct VMGlobals *g, int numArgsPushed)
 
 int ScIDE_SetDocSelectionMirror(struct VMGlobals *g, int numArgsPushed)
 {
-    if (!gIpcClient) {
+    if (gIpcClient ? !gIpcClient->isConnected() : true) {
         error("ScIDE not connected\n");
         return errFailed;
     }

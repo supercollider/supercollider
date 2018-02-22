@@ -385,8 +385,13 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
 
 void ScProcess::onStart()
 {
-    if(!mIpcServer->isListening()) // avoid a warning on stderr
-        mIpcServer->listen(mIpcServerName);
+    if(!mIpcServer->isListening()) { // avoid a warning on stderr
+        QLocalServer::removeServer(mIpcServerName);
+        bool success = mIpcServer->listen(mIpcServerName);
+        if (!success) {
+            MainWindow::instance()->showStatusMessage(QStringLiteral("Failed to connect to ipc server"));
+        }
+    }
 
     QString command = QStringLiteral("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
