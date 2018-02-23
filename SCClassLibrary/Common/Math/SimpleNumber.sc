@@ -523,14 +523,21 @@ SimpleNumber : Number {
 	}
 
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
-		clock.sched(this, {
-					if (lag != 0) {
-						SystemClock.sched(lag, {
-							server.sendBundle(latency ? server.latency, *bundleArray)
-						})
-					} {
-						server.sendBundle(latency ? server.latency, *bundleArray)
-					}
-		})
+		if (lag != 0) {
+			clock.sched(this, {
+				SystemClock.sched(lag, {
+					server.sendBundle(latency ? server.latency, *bundleArray)
+				})
+			})
+		} {
+			if(this != 0) {
+				clock.sched(this, {
+					server.sendBundle(latency ? server.latency, *bundleArray)
+				})
+			} {
+				server.sendBundle(latency ? server.latency, *bundleArray)
+			}
+		}
+
 	}
 }
