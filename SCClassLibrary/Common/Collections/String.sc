@@ -15,6 +15,16 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
+	loadLibrarySymbols {
+		_StringLoadLibrarySymbols
+		^this.primitiveFailed
+	}
+
+	callLibrarySymbol {
+		_StringCallLibrarySymbol
+		^this.primitiveFailed
+	}
+
 	// runs a unix command and sends stdout to the post window
 	unixCmd { arg action, postOutput = true;
 		var pid;

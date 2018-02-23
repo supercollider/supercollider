@@ -1,0 +1,135 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+\section{Motivation}
+
+Interoperability between programming languages is a desirable feature 
+in complex software systems. While functions in scripting languages and virtual machine
+languages can be called in a dynamic manner, statically compiled programming
+languages such as C, C++ and Objective-C lack this ability.\\
+The majority of systems use C function interfaces as their system-level 
+interface. Calling these (foreign) functions from within a dynamic environment 
+often involves the development of so called "glue code" on both sides,
+the use of external tools generating communication code, or integration
+of other middleware fulfilling that purpose. However, even inside a completely
+static environment, without having to bridge multiple languages, it
+can be very useful to call functions dynamically. Consider, for example, message 
+systems, dynamic function call dispatch mechanisms, without even knowing about the 
+target.\\
+
+The \product{dyncall} library project provides a clean and portable C interface
+to dynamically issue calls to foreign code using small call kernels written in
+assembly. Instead of providing code for every bridged function call, which
+unnecessarily results in code bloat, only a modest number of instructions are used
+to invoke all the calls.\\
+
+\subsection{Static function calls in C}
+
+The C programming language and its direct derivatives are limited in the way 
+function calls are handled. A C compiler regards a function call as a
+fully qualified atomic operation. In such a statically typed environment, this 
+includes the function call's argument arity and type, as well as the
+return type.\\
+
+
+\subsection{Anatomy of machine-level calls}
+
+The process of calling a function on the machine level yields a common pattern:
+
+\begin{enumerate}
+\item The target function's calling convention dictates how the stack is 
+prepared, arguments are passed, results are returned and how to clean up
+afterwards.
+\item Function call arguments are loaded in registers and on the stack according
+to the calling convention that take alignment constraints into account.
+\item Control flow transfer from caller to callee.
+\item Process return value, if any. Some calling conventions specify that
+the caller is responsible for cleaning up the argument stack.
+\end{enumerate}
+
+
+\newpage
+
+%\paragraph{Example}
+The following example depicts a C source and the corresponding assembly for the X86 32-bit processor architecture.
+
+
+\begin{lstlisting}[label=cfuncall,caption=C function call,language=C]
+extern void f(int x, double y,float z);
+void caller()
+{
+  f(1,2.0,3.0f);
+}
+\end{lstlisting}
+
+
+\begin{lstlisting}[label=x86asm,caption=Assembly X86 32-bit function call,language={[x86masm]Assembler}]
+.global f         ; external symbol 'f'
+caller:
+  push  40400000H ; 3.0f (32 bit float)
+                  ; 2.0  (64 bit float)
+  push  40000000H ;          low  DWORD
+  push  0H        ;          high DWORD 
+  push  1H        ; 1    (32 bit integer)
+  call  f         ; call 'f'
+  add   esp, 16   ; cleanup stack
+\end{lstlisting}
+
+
+\begin{comment}
+
+Due to the statically compiled nature of the
+language itself, the abstraction to the underlying hardware machine 
+These languages make an abstraction to the machine in a way, where a function 
+call is an atomic operation that has to be fully qualified at compilation time.
+
+This library follows the approach to abstract the construction of a function call
+and provides a small and clean implementation that is extendable by ports to
+compilers, operating-systems and processor architectures.
+The library solely uses a small kernel function to perform the actual call and
+does not require just-in-time code generation.
+
+General-purpose programming languages such as C\footnote{and derived programming
+languages such as C++ and Objective-C} are powerful statically compiled 
+programming languages that allow to implement low-level tasks. They abstract
+the underlying hardware to a degree where one is allowed to write functions
+that implement algorithms. At the same time, this
+
+Although C is very powerful and a portable language to implement time-critical
+and performance greedy application - it is limited in the way it handles calls
+to functions.
+
+General-purpose programming languages such as C and C++ are limited in the way 
+function calls are handled. These languages make an abstraction to the 
+underlying hardware architecture, so that writing algorithms can be done in a 
+portable way. While C is quite flexible in case of pointer arithmetics and
+I/O in main memory, the flexibility ends at the function call.
+
+In contrast to implementing algorithms, the function call in C is something 
+that is black-box to the language. 
+
+One can either fully bind and call a function at once or none at all.
+
+ construct a half-baked function-call without providing C code that performs a particular desired function call
+in regard to arity, argument type list, return type and calling convention.
+The compiler requires exact information about the desired calling convention, 
+arity, argument- and return types.
+\end{comment}
+

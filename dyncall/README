@@ -1,0 +1,122 @@
+dyncall - A Generic Dynamic FFI package
+=======================================
+
+dyncall is a low-level toolkit providing a portable abstraction for 
+handling native code dynamically at run time.
+It comprises three independent components, available as C libraries, namely:
+
+ - 'dyncall' for making function calls,
+ - 'dyncallback' or writing generic callback handlers, and
+ - 'dynload' for loading code.
+
+The package provides abstractions to the Application Binary Interface 
+of various hardware platforms such as x86, AMD64, ARM32/64, PowerPC32/64,
+MIPS32/64 and SPARC32/64.
+
+Our releases are thoroughly tested across all supported platforms using a
+flexible test suite.
+
+A typical application for the use of dyncall is the back-end of a FFI 
+(foreign function interface) for scripting languages to connect with 
+the C/C++ world.
+
+The binary footprint of the package is approx. 10-20 kb, depending on
+the platform.
+Besides the test suite already mentioned, comprehensive documentation is
+available.
+
+
+Building the libraries
+----------------------
+
+Prequisites: 
+ - C compiler such as gcc, clang, sunpro or msvc.
+ - Assembler such as gas (gnu/apple), fbe or masm.
+ - Build system such as 'shell/make', cmake, nmake (windows) or mk (plan9).
+
+
+Supported Architectures and ABIs:
+---------------------------------
+
+ - x86     32/64-bit  (cdecl, fastcall, stdcall, C++ this calls, syscalls, plan9)
+ - ARM     AArch32/64 (32: ARM/Thumb mode, v4t-v7, oabi/eabi, soft/hardfloat ABIs; 64: AAPCS64)
+ - MIPS    32/64-bit  (o32, n64, eabi)
+ - PowerPC 32/64-bit  (32: Mac OS X, System V; 64: System V little and big endian ELF ABI)
+ - Sparc   32/64-bit  (v7/8 and v9)
+
+NOTE: Callback support is currently available on
+      x86-32/64, arm32 softfloat ABIs, arm64, PPC64 and PPC32 Linux/OS X.
+
+Supported Operating Systems:
+----------------------------
+
+ - Android
+ - *BSD
+ - Haiku
+ - iOS
+ - Linux
+ - Mac OS X
+ - Microsoft Windows
+ - Minix
+ - Nintendo DS Homebrew
+ - Plan9 / 9front
+ - Playstation Portable Homebrew
+ - ReactOS
+ - Solaris
+
+
+Building the libraries
+----------------------
+
+Using configure shell script and GNU/BSD/Sun make system.
+
+$ ./configure
+$ make
+$ make install
+
+Testing:
+
+$ make tests
+$ make run-tests
+
+
+Build 'out-of-source'
+---------------------
+
+$ cd <build_dir>
+$ <src_dir>/configure --prefix=<install_dir>
+$ make
+$ sudo make install
+
+
+Building using CMake
+--------------------
+
+$ cmake 
+$ make
+$ sudo make install
+
+
+Building on Windows
+-------------------
+
+See doc/README.Windows
+
+
+Platform-specific build details
+-------------------------------
+
+See doc/README.*
+
+
+Building the manual
+-------------------
+
+Make sure pdflatex is installed and run
+
+$ make docs
+
+
+Please refer to http://www.dyncall.org, dyncall(3), dyncallback(3), the dyncall
+manual and platform-specific READMEs under doc/ for more information.
+

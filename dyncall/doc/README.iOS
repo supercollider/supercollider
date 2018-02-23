@@ -1,0 +1,77 @@
+Building DynCall for apple's iOS platforms (iPhone, iPod touch, iPad)
+=====================================================================
+
+
+Environment Setup for Cross-Compilation using iPhone SDK:
+
+  $ source ./buildsys/scripts/setenv-sdk-ios.sh
+
+
+Package Configuration
+
+  $ ./configure --target=iOS --sdk=<MAJOR>.<MINOR>
+
+
+Building
+
+  $ make 
+  
+
+
+Details:
+
+This builds by default universal binaries (armv7,arm64).
+
+Required configure switches:
+
+  --target=[iOS|iPhoneSimulator]
+  
+  --sdk=<version> (tested versions 2.0..4.0, 6.1, 8.3)
+
+
+Supported Tool-chains
+
+  gcc, clang
+
+
+
+
+
+Other ways to build
+-------------------
+
+Building directly with Makefile.embedded ..
+
+  ARMv7 for iOS 6.1
+
+  $ make -f Makefile.embedded ios61-os
+  $ cd test && make -f Makefile.embedded ios61-os
+
+  ARMv7 (no thumb) for iOS 6.1
+
+  $ make -f Makefile.embedded ios61-os-nothumb
+  $ cd test && make -f Makefile.embedded ios61-os-nothumb
+
+  Simulator for iOS 6.1
+
+  $ make -f Makefile.embedded ios61-sim
+  $ cd test && make -f Makefile.embedded ios61-sim
+
+  ARMv7/ARM64 Universal build for iOS 8.3
+
+  $ make -f Makefile.embedded ios83-os-universal
+  $ cd test && make -f Makefile.embedded ios83-os-universal
+
+  Tested Mac OS X platforms: 10.[7,8,10]
+  Tested Xcode toolchains: 4.6, 6.3
+
+
+Building directly with Makefile.generic ..
+
+  $ source buildsys/scripts/setenv-sdk-ios.sh
+  $ source buildsys/scripts/setenv-cross-ios.sh
+
+  make -f Makefile.generic ...
+
+  uses armv6 and sdk 4.3 as default, can be changed in 'setenv-cross-ios.sh'.
+

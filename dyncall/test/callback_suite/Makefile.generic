@@ -1,0 +1,50 @@
+APP      = callback_suite
+OBJS     = env.o handler.o sigstrings.o invokers.o do_test.o main.o print.o signature_utils.o
+SRCTOP   = ${VPATH}/../..
+BLDTOP   = ../..
+CFLAGS  += -I${SRCTOP}/dyncall -I${SRCTOP}/dyncallback
+LDLIBS  += -L${BLDTOP}/dyncall -ldyncall_s -L${BLDTOP}/dyncallback -ldyncallback_s
+LUA      = lua
+AUTOS    = _auto_config.h _auto_sigstrings.h _auto_invokers.h \
+		   _auto_invoke_macros.h _auto_invoke_table.h _auto_signatures.txt
+
+.PHONY: all clean install config clean-config 
+all: ${APP}
+${APP}: ${OBJS} 
+	${CC} ${CFLAGS} ${LDFLAGS} ${OBJS} ${LDLIBS} -o ${APP}
+clean:
+	rm -f ${APP} ${OBJS}
+install:
+	mkdir -p ${PREFIX}/test
+	cp ${APP} ${PREFIX}/test
+config: clean-config ${AUTOS}
+config-random:
+	echo "-- auto-generated file from template config-random.lua (created by GNUmake)" >config.lua
+	cat config-random.lua >>config.lua
+	${MAKE} config
+config-stress1:
+	echo "-- auto-generated file from template config-stress1.lua (created by GNUmake)" >config.lua
+	cat config-stress1.lua >>config.lua
+	${MAKE} config
+
+clean-config: clean
+	rm -f ${AUTOS}
+
+_auto_signatures.txt: 
+	${LUA} make-signatures.lua >$@
+
+_auto_invokers.h: _auto_signatures.txt 
+	${LUA} make-invokers.lua <$> >$@
+
+_auto_sigstrings.h: _auto_signatures.txt
+	${LUA} make-cstrings.lua <$> >$@
+
+_auto_config.h: 
+	${LUA} make-config.lua >$@
+
+_auto_invoke_macros.h:
+	${LUA} make-invoke-macros.lua >$@
+
+_auto_invoke_table.h:
+	${LUA} make-invoke-table.lua >$@
+

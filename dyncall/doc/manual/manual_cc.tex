@@ -1,0 +1,48 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+
+% ==================================================
+% Calling Conventions
+% ==================================================
+
+\section{Calling Conventions}
+
+\paragraph{Before we go any further\ldots}
+
+It is important to understand that this section isn't a general
+purpose description of the present calling conventions.
+It merely explains the calling conventions \textbf{for the parameter/return types
+supported by \dc}, not for aggregates (structures, unions and classes), SIMD
+data types (\_\_m64, \_\_m128, \_\_m128i, \_\_m128d), etc.\\
+We strongly advise the reader not to use this document as a general purpose
+calling convention reference.
+
+\input{callconvs/callconv_x86}\newpage
+\input{callconvs/callconv_x64}\newpage
+\input{callconvs/callconv_ppc32}\newpage
+\input{callconvs/callconv_ppc64}\newpage
+\input{callconvs/callconv_arm32}\newpage
+\input{callconvs/callconv_arm64}\newpage
+\input{callconvs/callconv_mips32}\newpage
+\input{callconvs/callconv_mips64}\newpage
+\input{callconvs/callconv_sparc32}\newpage
+\input{callconvs/callconv_sparc64}
+

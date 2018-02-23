@@ -1,0 +1,19 @@
+APP = callback_suite
+OBJS = env.o handler.o sigstrings.o invokers.o do_test.o main.o print.o signature_utils.o
+
+SRCTOP   = ../..
+BLDTOP   = ${SRCTOP}
+CFLAGS  += -I${SRCTOP}/dyncall -I${SRCTOP}/dyncallback
+LDFLAGS += -L${BLDTOP}/dyncall -L${BLDTOP}/dyncallback
+LDLIBS  += -ldyncall_s -ldyncallback_s
+
+all: ${APP}
+
+.PHONY: all clean install
+
+${APP}: ${OBJS} 
+	${CC} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP} 
+
+clean:
+	rm -f ${APP} ${OBJS}
+

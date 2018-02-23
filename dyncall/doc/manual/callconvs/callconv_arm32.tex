@@ -1,0 +1,408 @@
+%
+% Copyright (c) 2007,2010 Daniel Adler <dadler@uni-goettingen.de>,
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+
+% ==================================================
+% ARM32
+% ==================================================
+\subsection{ARM32 Calling Convention}
+
+\paragraph{Overview}
+
+The ARM32 family of processors is based on the Advanced RISC Machines (ARM)
+processor architecture (32 bit RISC).
+The word size is 32 bits (and the programming model is LLP64).\\
+Basically, this family of microprocessors can be run in 2 major modes:\\
+\\
+\begin{tabular*}{0.95\textwidth}{2 B}
+Mode          & Description\\
+\hline
+{\bf ARM}     & 32bit instruction set\\
+{\bf THUMB}   & compressed instruction set using 16bit wide instruction encoding\\
+\end{tabular*}
+\\
+\\
+For more details, take a look at the ARM-THUMB Procedure Call Standard (ATPCS) \cite{ATPCS}, the Procedure Call Standard for the ARM Architecture (AAPCS) \cite{AAPCS}, as well as the Debian ARM EABI port wiki \cite{armeabi}.\\
+\\
+\paragraph{\product{dyncall} support}
+
+Currently, the \product{dyncall} library supports the ARM and THUMB mode of the ARM32 family (ATPCS \cite{ATPCS} and EABI \cite{armeabi}), excluding manually triggered ARM-THUMB interworking calls. Although it's quite possible that the current implementation runs on other ARM processor families as well, please note that only the ARMv4t family has been thoroughly tested at the time of writing. Please report if the code runs on other ARM families, too.\\
+It is important to note, that dyncall supports the ARM architecture calling convention variant {\bf with floating point hardware disabled} (meaning that the FPA and the VFP (scalar mode) procedure call standards are not supported).
+This processor family features some instruction sets accelerating DSP and multimedia application like the ARM Jazelle Technology (direct Java bytecode execution, providing acceleration for some bytecodes while calling software code for others), etc. that are not supported by the dyncall library.\\
+
+
+\subsubsection{ATPCS ARM mode}
+
+
+\paragraph{Registers and register usage}
+
+In ARM mode, the ARM32 processor has sixteen 32 bit general purpose registers, namely r0-r15:\\
+\\
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name         & Brief description\\
+\hline
+{\bf r0}     & parameter 0, scratch, return value\\
+{\bf r1}     & parameter 1, scratch, return value\\
+{\bf r2-r3}  & parameters 2 and 3, scratch\\
+{\bf r4-r10} & permanent\\
+{\bf r11}    & frame pointer, permanent\\
+{\bf r12}    & scratch\\
+{\bf r13}    & stack pointer, permanent\\
+{\bf r14}    & link register, permanent\\
+{\bf r15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+\end{tabular*}
+\caption{Register usage on arm32}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item first four words are passed using r0-r3
+\item subsequent parameters are pushed onto the stack (in right to left order, such that the stack pointer points to the first of the remaining parameters)
+\item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first four words to a reserved stack area adjacent to the other parameters on the stack
+\item parameters \textless=\ 32 bits are passed as 32 bit words
+\item 64 bit parameters are passed as two 32 bit parts (even partly via the register and partly via the stack, although this doesn't seem to be specified in the ATPCS), with the loword coming first
+\item structures and unions are passed by value, with the first four words of the parameters in r0-r3
+\item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc... (see {\bf return values})
+\item keeping the stack eight-byte aligned can improve memory access performance and is required by LDRD and STRD on ARMv5TE processors which are part of the ARM32 family, so, in order to avoid problems one should always align the stack (tests have shown, that GCC does care about the alignment when using the ellipsis)
+\end{itemize}
+
+\paragraph{Return values}
+\begin{itemize}
+\item return values \textless=\ 32 bits use r0
+\item 64 bit return values use r0 and r1
+\item if return value is a structure, the caller allocates space for the return value on the stack in its frame and passes a pointer to it in r0
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                         & \vdots       &                                      &                              \\
+\hhline{~=~~}
+register save area                       & \hspace{4cm} &                                      & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+\mrlbrace{7}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots       &                                      &                              \\
+                                         & \ldots       &                                      &                              \\
+\hhline{~=~~}
+                                         & r3           & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2           &                                      &                              \\
+                                         & r1           &                                      &                              \\
+                                         & r0           &                                      &                              \\
+\hhline{~-~~}
+register save area (with return address) &              &                                      &                              \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+parameter area                           & \vdots       &                                      &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on arm32}
+\end{figure}
+
+
+\newpage
+
+\subsubsection{ATPCS THUMB mode}
+
+
+\paragraph{Status}
+
+\begin{itemize}
+\item The ATPCS THUMB mode is untested.
+\item Ellipse calls may not work.
+\item C++ this calls do not work.
+\end{itemize}
+
+\paragraph{Registers and register usage}
+
+In THUMB mode, the ARM32 processor family supports eight 32 bit general purpose registers r0-r7 and access to high order registers r8-r15:\\
+\\
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name         & Brief description\\
+\hline
+{\bf r0}     & parameter 0, scratch, return value\\
+{\bf r1}     & parameter 1, scratch, return value\\
+{\bf r2,r3}  & parameters 2 and 3, scratch\\
+{\bf r4-r6}  & permanent\\
+{\bf r7}     & frame pointer, permanent\\
+{\bf r8-r11} & permanent\\
+{\bf r12}    & scratch\\
+{\bf r13}    & stack pointer, permanent\\
+{\bf r14}    & link register, permanent\\
+{\bf r15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+\end{tabular*}
+\caption{Register usage on arm32 thumb mode}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item first four words are passed using r0-r3
+\item subsequent parameters are pushed onto the stack (in right to left order, such that the stack pointer points to the first of the remaining parameters)
+\item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first four words to a reserved stack area adjacent to the other parameters on the stack
+\item parameters \textless=\ 32 bits are passed as 32 bit words
+\item 64 bit parameters are passed as two 32 bit parts (even partly via the register and partly via the stack), although this doesn't seem to be specified in the ATPCS), with the loword coming first
+\item structures and unions are passed by value, with the first four words of the parameters in r0-r3
+\item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc. (see {\bf return values})
+\item keeping the stack eight-byte aligned can improve memory access performance and is required by LDRD and STRD on ARMv5TE processors which are part of the ARM32 family, so, in order to avoid problems one should always align the stack (tests have shown, that GCC does care about the alignment when using the ellipsis)
+\end{itemize}
+
+\paragraph{Return values}
+\begin{itemize}
+\item return values \textless=\ 32 bits use r0
+\item 64 bit return values use r0 and r1
+\item if return value is a structure, the caller allocates space for the return value on the stack in its frame and passes a pointer to it in r0
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                         & \vdots       &                                      &                              \\
+\hhline{~=~~}
+register save area                       & \hspace{4cm} &                                      & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+\mrlbrace{7}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots       &                                      &                              \\
+                                         & \ldots       &                                      &                              \\
+\hhline{~=~~}
+                                         & r3           & \mrrbrace{4}{spill area (if needed)} & \mrrbrace{7}{current frame}  \\
+                                         & r2           &                                      &                              \\
+                                         & r1           &                                      &                              \\
+                                         & r0           &                                      &                              \\
+\hhline{~-~~}
+register save area (with return address) &              &                                      &                              \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+parameter area                           & \vdots       &                                      &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on arm32 thumb mode}
+\end{figure}
+
+
+
+\newpage
+
+\subsubsection{EABI (ARM and THUMB mode)}
+
+
+The ARM EABI is very similar to the ABI outlined in ARM-THUMB procedure call
+standard (ATPCS) \cite{ATPCS} - however, the EABI requires the stack to be
+8-byte aligned at function entries, as well as for 64 bit parameters. The latter
+are aligned on 8-byte boundaries on the stack and 2-registers for a parameter
+passed via register. In order to achieve such an alignment, a register might
+have to be skipped for parameters passed via registers, or 4-bytes on the stack
+for parameters passed via the stack. Refer to the Debian ARM EABI port wiki
+for more information \cite{armeabi}.\\
+\\
+\paragraph{Status}
+
+\begin{itemize}
+\item The EABI THUMB mode is tested and works fine (contrary to the ATPCS).
+\item Ellipse calls do not work.
+\item C++ this calls do not work.
+\end{itemize}
+
+\newpage
+
+\subsubsection{ARM on Apple's iOS (Darwin) Platform}
+
+
+The iOS runs on ARMv6 (iOS 2.0) and ARMv7 (iOS 3.0) architectures.
+Typically code is compiled in Thumb mode.\\
+\\
+\paragraph{Register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name         & Brief description\\
+\hline
+{\bf R0}     & parameter 0, scratch, return value\\
+{\bf R1}     & parameter 1, scratch, return value\\
+{\bf R2,R3}  & parameters 2 and 3, scratch\\
+{\bf R4-R6}  & permanent\\
+{\bf R7}     & frame pointer, permanent\\
+{\bf R8}     & permanent\\
+{\bf R9}     & permanent(iOS 2.0) and scratch (since iOS 3.0)\\
+{\bf R10-R11}& permanent\\
+{\bf R12}    & scratch, intra-procedure scratch register (IP) used by dynamic linker\\
+{\bf R13}    & stack pointer, permanent\\
+{\bf R14}    & link register, permanent\\
+{\bf R15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+{\bf CPSR}   & Program status register\\
+{\bf D0-D7}  & scratch. aliases S0-S15, on ARMv7 also as Q0-Q3. Not accessible from Thumb mode on ARMv6.\\
+{\bf D8-D15} & permanent, aliases S16-S31, on ARMv7 also as Q4-A7. Not accesible from Thumb mode on ARMv6.\\
+{\bf D16-D31}& Only available in ARMv7, aliases Q8-Q15.\\
+{\bf FPSCR}  & VFP status register.\\
+\end{tabular*}
+\caption{Register usage on ARM Apple iOS}
+\end{table}
+
+The ABI is based on the AAPCS but with some important differences listed below:
+
+\begin{itemize}
+\item R7 instead of R11 is used as frame pointer
+\item R9 is scratch since iOS 3.0, was preserved before.
+\end{itemize}
+
+
+\subsubsection{ARM hard float (armhf)}
+
+
+Most debian-based Linux systems on ARMv7 (or ARMv6 with FPU) platforms use a calling convention referred to
+as armhf, using 16 32-bit floating point registers of the FPU of the VFPv3-D16 extension to the ARM architecture.
+The instruction set used for armhf is Thumb-2. Refer to the debian wiki for more information \cite{armhf}.
+
+Code is little-endian, rest is similar to EABI with an 8-byte aligned stack, etc..\\
+\\
+\paragraph{Register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name         & Brief description\\
+\hline
+{\bf R0}     & parameter 0, scratch, non floating point return value\\
+{\bf R1}     & parameter 1, scratch, non floating point return value\\
+{\bf R2,R3}  & parameters 2 and 3, scratch\\
+{\bf R4,R5}  & permanent\\
+{\bf R6}     & scratch\\
+{\bf R7}     & frame pointer, permanent\\
+{\bf R8}     & permanent\\
+{\bf R9,R10} & scratch\\
+{\bf R11}    & permanent\\
+{\bf R12}    & scratch, intra-procedure scratch register (IP) used by dynamic linker\\
+{\bf R13}    & stack pointer, permanent\\
+{\bf R14}    & link register, permanent\\
+{\bf R15}    & program counter (note: due to pipeline, r15 points to 2 instructions ahead)\\
+{\bf CPSR}   & Program status register\\
+{\bf S0}     & floating point argument, floating point return value, single precision\\
+{\bf D0}     & floating point argument, floating point return value, double precision, aliases S0-S1, \\
+{\bf S1-S15} & floating point arguments, single precision\\
+{\bf D1-D7}  & aliases S2-S15, floating point arguments, double precision\\
+{\bf FPSCR}  & VFP status register.\\
+\end{tabular*}
+\caption{Register usage on armhf}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item first four non-floating-point words are passed using r0-r3
+\item out of those, 64bit parameters use 2 registers, either r0,r1 or r2,r3 (skipped registers are left unused)
+\item first 16 single-precision, or 8 double-precision arguments are passed via s0-s15 or d0-d7, respectively (note that since s and d registers are aliased, already used ones are skipped)
+\item subsequent parameters are pushed onto the stack (in right to left order, such that the stack pointer points to the first of the remaining parameters)
+\item note that as soon one floating point parameter is passed via the stack, subsequent single precision floating point parameters are also pushed onto the stack even if there are still free S* registers
+\item float and double vararg function parameters (no matter if in ellipsis part of function, or not) are passed like int or long long parameters, vfp registers aren't used
+\item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first four words (for first 4 integer arguments) to a reserved stack area adjacent to the other parameters on the stack
+\item parameters \textless=\ 32 bits are passed as 32 bit words
+\item structures and unions are passed by value, with the first four words of the parameters in r0-r3 @@@?check doc
+\item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc. (see {\bf return values})
+\item callee spills, caller reserves spill area space, though
+\end{itemize}
+
+\paragraph{Return values}
+\begin{itemize}
+\item non floating point return values \textless=\ 32 bits use r0
+\item non floating point 64-bit return values use r0 and r1
+\item single precision floating point return value uses s0
+\item double precision floating point return value uses d0
+\item if return value is a structure, the caller allocates space for the return value on the stack in its frame and passes a pointer to it in r0
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                         & \vdots       &                                      &                              \\
+\hhline{~=~~}
+register save area                       & \hspace{4cm} &                                      & \mrrbrace{6}{caller's frame} \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+\mrlbrace{7}{parameter area}             & r0-r3        & \mrrbrace{1}{spill area (if needed)} &                              \\
+\hhline{~-~~}
+                                         & \ldots       & \mrrbrace{3}{stack parameters}       &                              \\
+                                         & \ldots       &                                      &                              \\
+                                         & \ldots       &                                      &                              \\
+\hhline{~=~~}
+register save area (with return address) &              &                                      & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+local data                               &              &                                      &                              \\
+\hhline{~-~~}
+parameter area                           & \vdots       &                                      &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on arm32 armhf}
+\end{figure}
+
+
+\newpage
+
+
+\subsubsection{Architectures}
+
+The ARM architecture family contains several revisions with capabilities and
+extensions (such as thumb-interworking, more vector registers, ...)
+The following table sums up the most important properties of the various
+architecture standards, from a calling convention perspective.
+
+% iPhone 3GS : ARM Cortex-A8
+% Nintendo DS: ARM 7 and ARM 9
+% ARM 7: ARMv4T
+% ARM 9: ARMv4T, HTC Wizard
+% Cortex-*: ARMv7, Raspberry Pi 2, ...
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{lll}
+Arch   & Platforms & Details \\
+\hline
+ARMv4  & & \\
+ARMv4T & ARM 7, ARM 9, Neo FreeRunner (OpenMoko) & \\
+ARMv5  & ARM 9E & BLX instruction available \\
+ARMv6  & & No vector registers available in thumb \\
+ARMv7  & iPod touch, iPhone 3GS/4, Raspberry Pi 2 & VFP throughout available, armhf calling convention on some platforms \\
+ARMv8  & iPhone 6 and higher & 64bit support \\
+\end{tabular*}
+\caption{Overview of ARM Architecture, Platforms and Details}
+\end{table}
+
+\newpage
+

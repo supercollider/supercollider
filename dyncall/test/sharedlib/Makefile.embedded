@@ -1,0 +1,16 @@
+MAKEFILE  = Makefile.embedded
+MAKE_CMD  = ${MAKE} -f ${MAKEFILE}
+TARGET    = libsharedlib.so
+OBJS      = sharedlib.o
+CPPFLAGS += -I../../dynload
+LDFLAGS  += -L../../dynload
+LDLIBS   += -ldynload_s
+
+${TARGET}: ${OBJS}
+	${CC} -shared -o $@ $? ${LDFLAGS} ${LDLIBS}
+all: ${TARGET}
+clean:
+	rm -f ${TARGET} ${OBJS}
+
+sun-gcc:
+	CC=gcc CFLAGS="${CFLAGS} -fPIC" ${MAKE_CMD} all

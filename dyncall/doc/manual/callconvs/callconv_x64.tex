@@ -1,0 +1,235 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+% ==================================================
+% x64
+% ==================================================
+\subsection{x64 Calling Convention}
+
+
+\paragraph{Overview}
+
+The x64 (64bit) architecture designed by AMD is based on Intel's x86 (32bit)
+architecture, supporting it natively. It is sometimes referred to as x86-64,
+AMD64, or, cloned by Intel, EM64T or Intel64.\\
+On this processor, a word is defined to be 16 bits in size, a dword 32 bits
+and a qword 64 bits. Note that this is due to historical reasons (terminology
+didn't change with the introduction of 32 and 64 bit processors).\\
+The x64 calling convention for MS Windows \cite{x64Win} differs from the
+SystemV x64 calling convention \cite{x64SysV} used by Linux/*BSD/...
+Note that this is not the only difference between these operating systems. The
+64 bit programming model in use by 64 bit windows is LLP64, meaning that the C
+types int and long remain 32 bits in size, whereas long long becomes 64 bits.
+Under Linux/*BSD/... it's LP64.\\
+\\
+Compared to the x86 architecture, the 64 bit versions of the registers are
+called rax, rbx, etc.. Furthermore, there are eight new general purpose
+registers r8-r15.\\
+
+
+
+\paragraph{\product{dyncall} support}
+
+\product{dyncall} supports the MS Windows and System V calling convention.\\
+\\
+
+
+
+\subsubsection{MS Windows}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name                & Brief description\\
+\hline
+{\bf rax}           & scratch, return value\\
+{\bf rbx}           & permanent\\
+{\bf rcx}           & scratch, parameter 0 if integer or pointer\\
+{\bf rdx}           & scratch, parameter 1 if integer or pointer\\
+{\bf rdi}           & permanent\\
+{\bf rsi}           & permanent\\
+{\bf rbp}           & permanent, may be used ase frame pointer\\
+{\bf rsp}           & stack pointer\\
+{\bf r8-r9}         & scratch, parameter 2 and 3 if integer or pointer\\
+{\bf r10-r11}       & scratch, permanent if required by caller (used for syscall/sysret)\\
+{\bf r12-r15}       & permanent\\
+{\bf xmm0}          & scratch, floating point parameter 0, floating point return value\\
+{\bf xmm1-xmm3}     & scratch, floating point parameters 1-3\\
+{\bf xmm4-xmm5}     & scratch, permanent if required by caller\\
+{\bf xmm6-xmm15}    & permanent\\
+\end{tabular*}
+\caption{Register usage on x64 MS Windows platform}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item first 4 integer/pointer parameters are passed via rcx, rdx, r8, r9 (from left to right), others are pushed on stack (there is a
+preserve area for the first 4)
+\item float and double parameters are passed via xmm0l-xmm3l
+\item first 4 parameters are passed via the correct register depending on the parameter type - with mixed float and int parameters,
+some registers are left out (e.g. first parameter ends up in rcx or xmm0, second in rdx or xmm1, etc.)
+\item parameters in registers are right justified
+\item parameters \textless\ 64bits are not zero extended - zero the upper bits contiaining garbage if needed (but they are always
+passed as a qword)
+\item parameters \textgreater\ 64 bit are passed by reference
+\item if callee takes address of a parameter, first 4 parameters must be dumped (to the reserved space on the stack) - for
+floating point parameters, value must be stored in integer AND floating point register
+\item caller cleans up the stack, not the callee (like cdecl)
+\item stack is always 16byte aligned - since return address is 64 bits in size, stacks with an odd number of parameters are
+already aligned
+\item ellipsis calls take floating point values in int and float registers (single precision floats are promoted to double precision
+as defined for ellipsis calls)
+\item if size of parameters \textgreater\ 1 page of memory (usually between 4k and 64k), chkstk must be called
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 64 bits) are returned via the rax register
+\item floating point types are returned via the xmm0 register
+\item for types \textgreater\ 64 bits, a secret first parameter with an address to the return value is passed
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{9}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{7}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & r9 or xmm3     & \mrrbrace{4}{spill area}       &                              \\
+                                  & r8 or xmm2     &                                &                              \\
+                                  & rdx or xmm1    &                                &                              \\
+                                  & rcx or xmm0    &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x64 Microsoft platform}
+\end{figure}
+
+
+
+\newpage
+
+\subsubsection{System V (Linux / *BSD / MacOS X)}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name                & Brief description\\
+\hline
+{\bf rax}           & scratch, return value\\
+{\bf rbx}           & permanent\\
+{\bf rcx}           & scratch, parameter 3 if integer or pointer\\
+{\bf rdx}           & scratch, parameter 2 if integer or pointer, return value\\
+{\bf rdi}           & scratch, parameter 0 if integer or pointer\\
+{\bf rsi}           & scratch, parameter 1 if integer or pointer\\
+{\bf rbp}           & permanent, may be used ase frame pointer\\
+{\bf rsp}           & stack pointer\\
+{\bf r8-r9}         & scratch, parameter 4 and 5 if integer or pointer\\
+{\bf r10-r11}       & scratch\\
+{\bf r12-r15}       & permanent\\
+{\bf xmm0}          & scratch, floating point parameters 0, floating point return value\\
+{\bf xmm1-xmm7}     & scratch, floating point parameters 1-7\\
+{\bf xmm8-xmm15}    & scratch\\
+{\bf st0-st1}       & scratch, 16 byte floating point return value\\
+{\bf st2-st7}       & scratch\\
+\end{tabular*}
+\caption{Register usage on x64 System V (Linux/*BSD)}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item first 6 integer/pointer parameters are passed via rdi, rsi, rdx, rcx, r8, r9
+\item first 8 floating point parameters \textless=\ 64 bits are passed via xmm0l-xmm7l
+\item parameters in registers are right justified
+\item parameters that are not passed via registers are pushed onto the stack
+\item parameters \textless\ 64bits are not zero extended - zero the upper bits contiaining garbage if needed (but they are always
+passed as a qword)
+\item integer/pointer parameters \textgreater\ 64 bit are passed via 2 registers
+\item if callee takes address of a parameter, number of used xmm registers is passed silently in al (passed number mustn't be
+exact but an upper bound on the number of used xmm registers)
+\item stack is always 16byte aligned - since return address is 64 bits in size, stacks with an odd number of parameters are
+already aligned
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 64 bits) are returned via the rax register
+\item floating point types are returned via the xmm0 register
+\item for types \textgreater\ 64 bits, a secret first parameter with an address to the return value is passed - the passed in address
+will be returned in rax
+\item floating point values \textgreater\ 64 bits are returned via st0 and st1
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack frame is always 16-byte aligned. Note that there is no spill area.
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x64 System V (Linux/*BSD)}
+\end{figure}
+

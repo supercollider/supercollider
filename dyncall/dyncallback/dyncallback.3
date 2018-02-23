@@ -1,0 +1,139 @@
+.\" Copyright (c) 2007-2014 Daniel Adler <dadler AT uni-goettingen DOT de>, 
+.\"                         Tassilo Philipp <tphilipp AT potion-studios DOT com>
+.\" 
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate$
+.Dt dyncallback 3
+.Sh NAME
+.Nm dyncallback
+.Nd callback interface of dyncall
+.Sh SYNOPSIS
+.In dyncall_callback.h
+.Ft DCCallback *
+.Fn dcbNewCallback "const char * signature" "DCCallbackHandler * funcptr" "void * userdata"
+.Ft void
+.Fn dcbInitCallback "DCCallback * pcb" "const char * signature" "DCCallbackHandler * funcptr" "void * userdata"
+.Ft void
+.Fn dcbFreeCallback "DCCallback * pcb"
+.Ft void
+.Fn dcbGetUserData "DCCallback * pcb"
+.Sh DESCRIPTION
+The
+.Nm
+dyncall library has an interface to create callback objects, that can be passed
+to functions as callback arguments. In other words, a pointer to the callback
+object can be "called", directly. The callback handler then allows iterating
+dynamically over the arguments once called back.
+.Pp
+.Fn dcbNewCallback
+creates a new callback object, where
+.Ar signature
+is a signature string describing the function to be called back (see manual or
+dyncall_signature.h for format). This is needed for
+.Nm
+dyncallback to correctly prepare the arguments passed in by the function that
+calls the callback handler. Note that the handler doesn't return the value
+specified in the signature, directly, but a signature character, specifying the
+return value's type.
+The return value itself is stored where the handler's
+3rd parameter points to (see below).
+.Ar funcptr
+is a pointer to the
+.Nm
+dyncallback callback handler (see below), and
+.Ar userdata
+a pointer to arbitrary user data you want to use in the callback handler.
+Use the returned pointer as callback argument in functions requiring a callback
+function pointer.
+.Pp
+.Fn dcbInitCallback
+(re)initialize the callback object.
+.Pp
+.Fn dcbFreeCallback
+destroys and frees the callback handler.
+.Pp
+.Fn dcbGetUserData
+returns a pointer to the userdata passed to the callback object on creation or
+initialization.
+.Pp
+Declaration of a dyncallback handler (following function pointer definition in
+dyncallback/dyncall_callback.h):
+.Bd -literal -offset indent
+char cbHandler(DCCallback* cb,
+               DCArgs*     args,
+               DCValue*    result,
+               void*       userdata);
+.Ed
+.Pp
+.Ar cb is a pointer to the DCCallback object in use
+.Nm
+result is a pointer to a DCValue object in order to store the callback's
+return value (output, to be set by handler). Finally,
+.Ar userdata is a pointer to some user defined data that can be
+set when creating the callback object.
+The handler itself returns a signature character (see manual for format)
+specifying the data type used for
+.Ar result .
+.Sh EXAMPLE
+Let's say, we want to create a callback object and call it. For simplicity, this
+example will omit passing it as a function pointer to a function (e.g. compar
+in qsort(), etc.) and demonstrate calling it, directly. First, we need to define
+our callback handler - the following handler illustrates how to access the passed-
+in arguments:
+.Bd -literal -offset indent
+char cbHandler(DCCallback* cb,
+               DCArgs*     args,
+               DCValue*    result,
+               void*       userdata)
+{
+  int* ud = (int*)userdata;
+  int       arg1 = dcbArgInt     (args);
+  float     arg2 = dcbArgFloat   (args);
+  short     arg3 = dcbArgShort   (args);
+  double    arg4 = dcbArgDouble  (args);
+  long long arg5 = dcbArgLongLong(args);
+
+  // .. do something ..
+
+  result->s = 1244;
+  return 's';
+}
+.Ed
+.Pp
+Note that the return value of the handler is a signature character, not the
+actual return value, itself.
+Now, let's call it through a DCCallback object:
+.Bd -literal -offset indent
+  DCCallback* cb;
+  short result = 0;
+  int userdata = 1337;
+  cb = dcbNewCallback("ifsdl)s", &cbHandler, &userdata);
+  result = ((short(*)(int, float, short, double, long long))cb)
+    (123, 23.f, 3, 1.82, 9909ll);
+  dcbFreeCallback(cb);
+.Ed
+.Sh CONFORMING TO
+The dyncallback library needs at least a c99 compiler with additional support
+for anonymous structs/unions (which were introduced officially in c11). Given
+that those are generally supported by pretty much all major c99 conforming
+compilers (as default extension), it should build fine with a c99 toolchain.
+Strictly speaking, dyncall conforms to c11, though.
+.Ed
+.Sh SEE ALSO
+.Xr dyncall 3 ,
+.Xr dynload 3
+and the dyncall manual (available in HTML and PDF format) for more information.
+.Sh AUTHORS
+.An "Daniel Adler" Aq dadler@uni-goettingen.de
+.An "Tassilo Philipp" Aq tphilipp@potion-studios.com

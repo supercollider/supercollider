@@ -1,0 +1,134 @@
+.386
+.MODEL FLAT
+.CODE
+
+_dcCall_x86_cdecl PROC
+OPTION PROLOGUE:NONE, EPILOGUE:NONE
+ push ebp
+  mov ebp, esp
+ push esi
+ push edi
+ mov esi, dword ptr[ebp+12]
+ mov ecx, dword ptr[ebp+16]
+ sub esp, ecx
+ mov edi, esp
+ shr ecx, 2
+ rep movsd
+ call dword ptr[ebp+8]
+ add esp, dword ptr[ebp+16]
+ pop edi
+ pop esi
+ mov esp, ebp
+ pop ebp
+ ret
+_dcCall_x86_cdecl ENDP
+_dcCall_x86_win32_msthis PROC
+OPTION PROLOGUE:NONE, EPILOGUE:NONE
+ push ebp
+ mov ebp, esp
+ push esi
+ push edi
+ mov esi, dword ptr [ebp+12]
+ mov ecx, dword ptr [ebp+16]
+ mov eax, dword ptr [esi+0]
+ add esi, 4
+ sub ecx, 4
+ sub esp, ecx
+ mov edi, esp
+ rep movsb
+ mov ecx, eax
+ call dword ptr[ebp+8]
+ pop edi
+ pop esi
+ mov esp, ebp
+ pop ebp
+ ret
+_dcCall_x86_win32_msthis ENDP
+_dcCall_x86_win32_std PROC
+OPTION PROLOGUE:NONE, EPILOGUE:NONE
+ push ebp
+ mov ebp, esp
+ push esi
+ push edi
+ mov esi, dword ptr[ebp+12]
+ mov ecx, dword ptr[ebp+16]
+ sub esp, ecx
+ mov edi, esp
+ rep movsb
+ call dword ptr[ebp+8]
+ pop edi
+ pop esi
+ mov esp, ebp
+ pop ebp
+ ret
+_dcCall_x86_win32_std ENDP
+_dcCall_x86_win32_fast PROC
+OPTION PROLOGUE:NONE, EPILOGUE:NONE
+ push ebp
+ mov ebp, esp
+ push esi
+ push edi
+ mov esi, dword ptr[ebp+12]
+ mov ecx, dword ptr[ebp+16]
+ mov eax, dword ptr[esi+0]
+ mov edx, dword ptr[esi+4]
+ add esi, 8
+ sub ecx, 8
+ mov dword ptr [ebp+16], ecx
+ sub esp, ecx
+ mov edi, esp
+ rep movsb
+ mov ecx, eax
+ call dword ptr[ebp+8]
+ pop edi
+ pop esi
+ mov esp, ebp
+ pop ebp
+ ret
+_dcCall_x86_win32_fast ENDP
+_dcCall_x86_sys_int80h_linux PROC
+OPTION PROLOGUE:NONE, EPILOGUE:NONE
+ push ebp
+  mov ebp, esp
+ push ebx
+ push esi
+ push edi
+ mov eax, dword ptr[ebp+12]
+ mov ebx, dword ptr[eax+0]
+ mov ecx, dword ptr[eax+4]
+ mov edx, dword ptr[eax+8]
+ mov esi, dword ptr[eax+12]
+ mov edi, dword ptr[eax+16]
+ mov eax, dword ptr[ebp+8]
+ int 80h
+ pop edi
+ pop esi
+ pop ebx
+ mov esp, ebp
+ pop ebp
+ ret
+_dcCall_x86_sys_int80h_linux ENDP
+_dcCall_x86_sys_int80h_bsd PROC
+OPTION PROLOGUE:NONE, EPILOGUE:NONE
+ push ebp
+  mov ebp, esp
+ push esi
+ push edi
+ mov esi, dword ptr[ebp+12]
+ mov ecx, dword ptr[ebp+16]
+ sub esp, ecx
+ mov edi, esp
+ shr ecx, 2
+ rep movsd
+ mov eax, dword ptr[ebp+8]
+ call _do_int
+ pop edi
+ pop esi
+ mov esp, ebp
+ pop ebp
+ ret
+_do_int:
+ int 80h
+ ret
+_dcCall_x86_sys_int80h_bsd ENDP
+END

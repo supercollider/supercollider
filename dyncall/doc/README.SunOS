@@ -1,0 +1,91 @@
+Building DynCall on Solaris and other SunOS distributions
+=========================================================
+
+
+Current Status of Solaris Architectures:
+
+i386      : ok.
+AMD64     : ok.
+SPARC     : no dyncallback support.
+SPARC64   : bugs in dyncall (see BUGS), no dyncallback support.
+
+Supported Compilers: SunPro C/C++ compiler and GCC.
+Supported Build-Systems: configure/make, Makefile.embedded and CMake.
+
+
+Details
+=======
+It has been ported and tested for x86 and sparc32/64 on Solaris 10/X86 
+using the SunPro compiler suite and sun's make. The same goes for
+OpenSolaris distributions - the library builds and runs fine on Nexenta
+x86 and x64.
+On Solaris, it also cross-builds for amd64 just fine, but the we don't
+have access to a x64 Solaris to run the tests.
+
+
+Building DynCall:
+-----------------
+
+  $ ./configure
+  $ make
+
+
+
+It is also possible to use 'Makefile.embedded' for sun make, GNU make and
+BSD make:
+
+
+Build with SUN make and compilers from sun using Makefile.embedded:
+-------------------------------------------------------------------
+
+  $ make -f Makefile.embedded sun
+  $ (cd test; make -f Makefile.embedded sun)
+
+
+Build for sparc64 with SUN make and compilers from sun using Makefile.embedded:
+-------------------------------------------------------------------------------
+
+  $ make -f Makefile.embedded sun-64bit
+  $ (cd test; make -f Makefile.embedded sun-64bit)
+
+
+Build with SUN make and GNU C compiler using Makefile.embedded:
+---------------------------------------------------------------
+
+  $ make -f Makefile.embedded sun-gcc
+  $ (cd test; make -f Makefile.embedded sun-gcc)
+ 
+
+Build for sparc64 with SUN make and GNU C compiler using Makefile.embedded:
+---------------------------------------------------------------------------
+
+  $ make -f Makefile.embedded sun-gcc-64bit
+  $ (cd test; make -f Makefile.embedded sun-gcc-64bit)
+
+
+NOTE: There are still issues with the sparc64 port on Solaris.
+
+
+Build with CMake, Sun make and SunPro for sparc64:
+--------------------------------------------------
+
+  $ cmake -DCMAKE_C_FLAGS=-m64 -DCMAKE_ASM_FLAGS=-m64 -DCMAKE_CXX_FLAGS=-m64 .
+  $ make
+
+Installation
+------------
+
+  $ make -f Makefile.embedded PREFIX=<some/prefix> install
+
+
+Tested Platforms
+----------------
+
+x86/amd64: 
+  - using Solaris 10 using SunPro Tools
+  - using Nexenta (SunOS 5.11 kernel) using GNU tools
+
+sparc 32/64 bit:
+  - SunOS 5.1 using SunPro and GCC on a Sun Fire V440 via developer account
+    thanks to gwdg.de!
+

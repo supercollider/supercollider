@@ -1,0 +1,168 @@
+Building DynCall with generic makefiles
+=======================================
+
+
+Description
+-----------
+
+Makefile.generic is a simple and _hybrid_ make-based build system setup for dyncall, 
+designed to work with with GNU and BSD make.
+
+This build-flavour supports two operating modes: Embedded and Configure.
+
+Project files are specified in Makefile.generic.
+
+
+History
+-------
+During the integration of dyncall into the R package rdyncall, there
+was a need for a clean simple build system that could be launched from R
+and works with various make's such as GNU, BSD and sun make.
+
+
+Generic Usage
+-------------
+
+[g|bsd]make [-f Makefile.generic] [all|clean|install|...] [INSTALL_TOP=<path>]
+
+
+Embedded Mode
+-------------
+Makefile.generic makefiles are taken "as-is" without the need for extra configuration.
+
+<VAR1>=<VALUE1> ... bsdmake -f Makefile.generic
+<VAR1>=<VALUE1> ... gmake -f Makefile.generic
+
+(Note that setting an env var as above (<VAR1>=<VALUE1>) before running a command is
+shell specific. If your shell doesn't support this, set it according to the shell's
+style.)
+
+Example:
+  dyncall libraries should compile fine on most platforms:
+  
+  BSDmake:
+  $ bsdmake -f Makefile.generic
+
+  GNUmake:
+  $ make -f Makefile.generic
+
+  The tests sometimes require special attention to additional 'usual' libraries
+  such as math and dynamic linker run-time libs.
+  $ LDLIBS="-lm -ldl" make -f Makefile.generic
+
+
+Configure Mode
+--------------
+
+Usage:
+
+  cd <build-dir> # build-dir can be arbitrary
+  ../<path-to-source>/configure [--prefix=<path>]
+  make
+  make install [DESTDIR=<path>]
+
+The configure script 'configure' writes 'Makefile' files that 
+include 'Makefile.generic' and setup variables such as 
+VPATH, {SRC,BLD}{TOP,DIR}.
+
+Two build types are supported: In-source and out-of-Source.
+
+in-source builds:
+Makefile's are created in parallel to the Makefile.generic files.
+
+out-of-source builds:
+the configure script is executed from a (possible empty) build directory. 
+The source directory tree is duplicated into that directory.
+
+
+Useful Variables
+----------------
+
+For libraries:
+  CC, CFLAGS, CPPFLAGS
+For tests:
+  CXX, LDLIBS
+
+MAKE_CMD - The make tool (including -f flag) to run sub-directories.
+SRCTOP   - Source top-level directory (defaults to relative top).
+BLDTOP   - Build  top-level directory (defaults to SRCTOP).
+SRCDIR   - Source directory (defaults to '.').
+BLDDIR   - Build  directory (defaults to SRCDIR).
+
+e.g. Makefile.generic in source-tree:
+
+SRCTOP ?= ../../../ # relative path to source-top
+BLDTOP ?= ${SRCTOP} # defaults for in-source builds
+SRCDIR ?= .         # relative path to current directory
+BLDDIR ?= ${BLDDIR} # relative path to current directory
+
+
+Include Directories
+-------------------
+Use -I${SRCTOP}/... to refer to other include directories.
+
+
+Link Directories
+----------------
+Use -L${BLDTOP}/... to refer to other build directories.
+
+
+Plaform Notes:
+--------------
+Linux: 
+- all: ok.
+  make -f Makefile.generic all
+- tests: need 'm' and 'dl' libs. 
+  ( cd tests ; LDLIBS="-lm -ldl" make -f Makefile.generic )
+- see batch script: buildsys/scripts/batch-build-linux.sh
+
+Minix: No dynload support. No '-fPIC' is allowed.
+- dynload: unsupport, no dynamic linker present in Minix 3.
+- dyn{call,callback}: ok, without '-fPIC'!
+  ( cd dyncall ; CFLAGS= make -f Makefile.generic dyncall dyncallback )
+- tests: ok
+  ( cd test ; make -f Makefile.generic all-dyncall all-dyncallback )
+- see batch script: buildsys/scripts/batch-build-minix.sh
+
+NetBSD/FreeBSD:
+- all: ok.
+  make -f Makefile.generic all
+- tests: need math lib:
+  ( cd tests ; LDLIBS="-lm" make -f Makefile.generic )
+
+OpenBSD:
+- all: ok.
+  make -f Makefile.generic all
+- tests: *.cpp implicit rule not set, therefore only c tests work:
+  ( cd tests ; LDLIBS="-lm" make -f Makefile.generic all-c )
+- install: ok.
+
+Haiku Alpha 2:
+- dynload: elf.h header found, install system source for dynload support
+- dyn{call,callback}: ok.
+  make -f Makefile.generic dyncall dyncallback
+- tests: ok
+  ( cd test ; make -f Makefile.generic all-dyncall all-dyncallback )
+
+
+Build notes related to dyncall:
+-------------------------------
+
+CFLAGS
+  Use '-fPIC' for at least 64-bit systems and when you want the code to be 
+  included as a shared library or module image.
+LDLIBS
+  Use '-lm' for test/suite - it uses pow function.
+  Use '-ldl' for dynload examples such as test/nm and test/resolve_self on Linux.
+
+
+Feature:
+--------
+configure --prefix=<prefix> -> Makefile DESTDIR=variable
+make -f Makefile.generic DESTDIR=<prefix>
+
+
+Todo: 
+-----
+- sun's make: CXX does not exist.. no rule for *.cpp files but *.cc.
+

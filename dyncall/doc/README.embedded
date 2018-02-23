@@ -1,0 +1,84 @@
+Makefile.embedded - hybrid DynCall makefiles for GNU, BSD and SUN make
+======================================================================
+
+
+Brief overview
+--------------
+This is one of the latest build systems designed for DynCall.
+It was designed for being embeddable in bigger 'make' based systems.
+It uses a very simple structure and it does not require any 'configure' phase.
+Instead the user can specify the CFLAGS and LDFLAGS by himself.
+For a couple of platforms, the make system supports phony targets of popular
+operating-systems such as 'bsd'.
+
+Building the library:
+---------------------
+$ make -f Makefile.embedded <variant>
+
+Building the tests:
+-------------------
+$ cd test ; make -f Makefile.embedded <variant>
+
+Installation:
+-------------
+$ make -f Makefile.embedded PREFIX=/usr/local install
+
+Installation with support for DESTDIR:
+--------------------------------------
+$ make -f Makefile.embedded DESTDIR=/tmp/staging PREFIX=/usr/local install
+
+
+Available variants:
+-------------------
+bsd                   Free/Net/Open/DragonFly/Mir BSD     
+linux                 Linux
+osx                   Mac OS X
+osx-universal         Mac OS X universal binaries (i386,x86_64 and ppc)
+sun                   SunOS and Sun Pro compiler
+sun-64bit             SunOS and Sun Pro compiler for sparc64(? amd64) 
+sun-gcc               SunOS and GCC compiler
+sun-gcc-64bit         SunOS and GCC compiler for sparc64 (? amd64)
+ios61                 iOS SDK 6.1 armv7  (untested!)
+ios61-nothumb         iOS SDK 6.1 armv7 -mno-thumb (untested!)
+
+Tweaking the build:
+-------------------
+$ VAR1=<VALUE1> VAR2=<VALUE2> .. make -f Makefile.embedded <variant>
+
+Adding a variant
+-----------------
+Currently we deal with two files to specify a custom target.
+
+The top-level Makefile.embedded controls for building the libraries.
+Useful variables are AR, CC, CFLAGS and ASFLAGS.
+
+The test/Makefile.embedded file controls for building the tests.
+The tests currently involve sometimes C++ and some platforms need
+to link with the math library. Others need the dynamic linker.
+Useful variables are CXX, CC, CCC (Sun), CFLAGS, CCFLAGS (Sun), 
+CXXFLAGS andLDFLAGS.
+
+Background
+----------
+During the preparation for the public release of the R package 'rdyncall' I was 
+looking for a way to get DynCall integrated into an existing Make system such 
+as offered by R for build R packages. 
+
+It was inspired by the make files of Lua which are damn simple and
+don't need a configure but a user that knows the target platform name.
+
+The source package can be configured automatically during compilation and
+does not require explicit configuration anymore using "*.S" files that
+are Assembly files which are preprocessed by the C Preprocessor.
+
+This feature is available by GCC and SunPro compilers.
+
+Limitations
+-----------
+
+Mac OS X universal static libraries require to use 
+
+'libtool -static -o libname.a obj1.o obj2.o ...' instead of 'ar cru libname.a obj1.o obj2.o'.
+We use predefined variables AR and ARFLAGS. 
+The variant osx-universal uses AR=libtool.
+

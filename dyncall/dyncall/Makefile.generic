@@ -1,0 +1,16 @@
+LIBNAME = dyncall
+OBJS = dyncall_vector.o dyncall_api.o dyncall_callvm.o dyncall_callvm_base.o dyncall_call.o dyncall_callf.o dyncall_struct.o
+HEADERS = ${VPATH}/dyncall_macros.h ${VPATH}/dyncall_config.h ${VPATH}/dyncall_types.h ${VPATH}/dyncall.h ${VPATH}/dyncall_signature.h ${VPATH}/dyncall_value.h ${VPATH}/dyncall_callf.h ${VPATH}/dyncall_alloc.h
+LIB = lib${LIBNAME}_s.a
+.PHONY: all clean install
+all: ${LIB}
+${LIB}: ${OBJS}
+	${AR} ${ARFLAGS} ${LIB} ${OBJS}
+clean:
+	rm -f ${OBJS} ${LIB}
+install: all
+	mkdir -p ${PREFIX}/lib 
+	mkdir -p ${PREFIX}/include
+	cp ${LIB} ${PREFIX}/lib
+	cp ${HEADERS} ${PREFIX}/include
+

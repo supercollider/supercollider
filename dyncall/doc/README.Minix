@@ -1,0 +1,37 @@
+Building DynCall on Minix 3
+===========================
+
+
+Status:
+-------
+- Compiles under GNU tool-chain on Minix 3.1.8 using script for Makefile.generic
+  or by building specific make targets
+- dyncall: tests run ok.
+- dyncallback: minor bugs on dyncallback (some cases fail)
+- dynload: unsupported due to missing dynamic linker.
+- Integration of ACK tool-chain is in progress but not functional at the moment...
+
+
+Building:
+---------
+
+1) using configure and make:
+$ ./configure
+$ make libdyncall libdyncallback
+
+2) or using build script for gcc (using Makefile.generic):
+$ sh buildsys/scripts/batch-build-minix.sh
+
+
+Minix facts:
+------------
+- posix make
+- ACK (Amsterdam Compiler Kit) compiler for C, Modula-2 and Pascal
+  using own Assembly format
+- ACK Assembler:
+   if very first character is '#' - C preprocessor is run..
+
+- Minix 32-bit: 
+- ACK 32-bit compiler: long long is not supported
+- Minix 16-bit: not yet reviewed...
+

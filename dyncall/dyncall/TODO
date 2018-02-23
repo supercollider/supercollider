@@ -1,0 +1,9 @@
+- implement structure passing for all calling conventinos and platforms
+- make sure that struct support for ellipsis calls are not forgotten (copy everything by value)
+
+- merge arm32_thumb_{gas/apple} and include thumb support for portasm
+- check dyncall_call_x64_traditional_cpp.S / try-sync with win64 masm
+- remove dyncall_call_x86_apple.s
+- x64 port cleanup: all x64 calling conventions on all platforms
+- remove dyncall_call_x86_masm.asm dyncall_call_x64_masm.asm
+- x64 verification: return values are passed via RAX and RDX, and XMM0 and XMM1.

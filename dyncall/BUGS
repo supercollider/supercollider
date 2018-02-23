@@ -1,0 +1,4 @@
+- add support for SELinux
+- dyncall sparc v7/v8: -xO3 on SunPro segfaults in tests.
+- dyncall sparc64 port: works fine on Debian 6, but has issues on OpenBSD and Solaris regarding passing of float and double values.
+- this BUGS file should be merged with ToDo or vice-versa

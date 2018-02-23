@@ -1,0 +1,62 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+% ==================================================
+% PowerPC 64
+% ==================================================
+\subsection{PowerPC (64bit) Calling Convention}
+
+\paragraph{Overview}
+
+\begin{itemize}
+\item Word size is 64 bits
+\item Big endian (MSB) and litte endian (LSB) operating modes.
+\item Apple Mac OS X/Darwin PPC is specified in "Mac OS X ABI Function Call Guide"\cite{ppcMacOSX}. It uses Big Endian (MSB).
+\item Linux PPC 64-bit ABI is specified in "64-bit PowerPC ELF Application Binary Interface Supplement"\cite{ppcelf64abi} which is based on "System V ABI".
+\end{itemize}
+
+\paragraph{\product{dyncall} support}
+
+\product{Dyncall} supports PowerPC (64bit) Big Endian and Little Endian ELF ABIs on System V systems (Linux, etc.), including syscalls. Mac OS X is not supported.
+
+
+\subsubsection{PPC64 ELF ABI}
+
+\paragraph{Registers and register usage}
+
+@@@
+
+
+\paragraph{Parameter passing}
+
+@@@
+\begin{itemize}
+\item integer parameters \textless\ 64 bit are right-justified (meaning occupy higher-address bytes) in their 8-byte slot on the stack, requiring extra-care for big-endian targets
+\end{itemize}
+
+
+\paragraph{Return values}
+
+@@@
+
+
+\paragraph{Stack layout}
+
+@@@
+

@@ -1,0 +1,19 @@
+APP = callback_plain
+OBJS = callback_plain.o
+
+SRCTOP   = ../..
+BLDTOP   = ${SRCTOP}
+CFLAGS  += -I${SRCTOP}/dyncall
+LDFLAGS += -L${BLDDIR}/dyncallback
+LDLIBS  += -ldyncallback_s
+
+all: ${APP}
+
+.PHONY: all clean install
+
+${APP}: ${OBJS} 
+	${CC} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP} 
+
+clean:
+	rm -f ${APP} ${OBJS}
+

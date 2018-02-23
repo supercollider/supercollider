@@ -1,0 +1,17 @@
+APP      = plain_c++
+OBJS     = test_main.o
+TOP      = ../..
+CFLAGS  += -I${TOP}/dyncall
+LDFLAGS += -L${TOP}/dyncall
+LDLIBS  += -ldyncall_s 
+
+all: ${APP}
+
+.PHONY: all clean install
+
+${APP}: ${OBJS} 
+	${CXX} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP}
+
+clean:
+	rm -f ${APP} ${OBJS}
+

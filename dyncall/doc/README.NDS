@@ -1,0 +1,25 @@
+Build instructions for DynCall on Nintendo DS
+   using devkitPro and NMake under Windows
+=============================================
+
+
+To build the library, you have to configure it first.
+Since the NDS build uses devkitPro and NMake, assure
+to have them in your %PATH%.
+
+To configure the library, call one of the following,
+depending if you want to use the processor in ARM or
+THUMB mode:
+
+  configure.bat /tool-gcc /target-nds-arm
+  configure.bat /tool-gcc /target-nds-thumb
+
+Note that the /tool-gcc flag is needed, because we're
+using devkitARM (via devkitPro) which is based on the
+GCC toolchain. The /target-nds-* flags don't imply
+this.
+
+Then, call:
+
+  nmake /F Nmakefile
+

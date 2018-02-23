@@ -1,0 +1,16 @@
+APP      = suite3
+OBJS     = case.o main.o
+TOP      = ../..
+CFLAGS  += -I${TOP}/dyncall
+LDFLAGS += -L${TOP}/dyncall
+LDLIBS  += -ldyncall_s
+
+.PHONY: all clean autogen
+
+all: ${APP}
+${APP}: ${OBJS} 
+	${CXX} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP}
+clean:
+	rm -f ${APP} ${OBJS}
+autogen:
+	python mkcase.py 1>case.h 2>config.h

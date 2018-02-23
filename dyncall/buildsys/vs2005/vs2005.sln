@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dyncall", "dyncall\dyncall.vcproj", "{DF67B85F-C8F8-4FB1-A701-867A9C835ABA}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_plain", "test_plain\test_plain.vcproj", "{65E1A63C-079D-4F72-8307-E070A499D2EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DF67B85F-C8F8-4FB1-A701-867A9C835ABA} = {DF67B85F-C8F8-4FB1-A701-867A9C835ABA}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF67B85F-C8F8-4FB1-A701-867A9C835ABA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DF67B85F-C8F8-4FB1-A701-867A9C835ABA}.Debug|Win32.Build.0 = Debug|Win32
+		{DF67B85F-C8F8-4FB1-A701-867A9C835ABA}.Release|Win32.ActiveCfg = Release|Win32
+		{DF67B85F-C8F8-4FB1-A701-867A9C835ABA}.Release|Win32.Build.0 = Release|Win32
+		{65E1A63C-079D-4F72-8307-E070A499D2EA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{65E1A63C-079D-4F72-8307-E070A499D2EA}.Debug|Win32.Build.0 = Debug|Win32
+		{65E1A63C-079D-4F72-8307-E070A499D2EA}.Release|Win32.ActiveCfg = Release|Win32
+		{65E1A63C-079D-4F72-8307-E070A499D2EA}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

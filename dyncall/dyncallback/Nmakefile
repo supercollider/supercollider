@@ -1,0 +1,71 @@
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+#///////////////////////////////////////////////////
+#
+#	nmake makefile
+#	Nmakefile
+#
+#///////////////////////////////////////////////////
+
+
+TOP=..
+
+!INCLUDE $(TOP)\buildsys\nmake\prolog.nmake
+
+
+!IF "$(BUILD_OS)" == "windows"
+
+TARGETS = libdyncallback_s.lib #libdyncallback.lib libdyncallback.dll
+OBJS = dyncall_thunk.obj dyncall_alloc_wx.obj dyncall_args.obj dyncall_callback.obj dyncall_callback_$(BUILD_ARCH)_masm.obj 
+
+libdyncallback_s.lib: $(OBJS)
+	echo Creating library $@ ...
+	$(AR) $(ARFLAGS) /OUT:"$@" $(OBJS) > nul
+
+libdyncallback.dll libdyncallback.lib: $(OBJS)
+	echo Creating shared/import library $@ ...
+	$(LD) /DLL $(LDFLAGS) $(OBJS) > nul
+
+
+!ELSE IF "$(BUILD_OS)" == "nds"
+
+TARGETS = libdyncallback_s.a
+OBJS = dyncall_thunk.o dyncall_alloc_wx.o dyncall_args.o dyncall_callback.o dyncall_callback_$(BUILD_ARCH)_gas.o 
+
+libdyncallback_s.a: $(OBJS)
+	echo Creating library $@ ...
+	$(AR) -rc $(ARFLAGS) "$@" $(OBJS)
+
+
+!ELSE
+
+TARGETS = libdyncallback_s.a
+#OBJS = dyncall_thunk.obj dyncall_alloc_wx.obj dyncall_args.obj dyncall_callback.obj dyncall_callback_$(BUILD_ARCH).obj
+
+libdyncallback_s.a:# $(OBJS)
+	echo Not building dyncallback: There is no dyncallback support on this platform.
+#	echo Creating library $@ ...
+#	$(AR) -rc $(ARFLAGS) "$@" $(OBJS)
+
+!ENDIF
+
+
+!INCLUDE $(TOP)\buildsys\nmake\epilog.nmake
+

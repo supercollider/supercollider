@@ -1,0 +1,107 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2012-2017 Daniel Adler <dadler@uni-goettingen.de>,
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\subsection{SPARC Calling Convention}
+
+\paragraph{Overview}
+
+The SPARC family of processors is based on the SPARC instruction set architecture, which comes in basically tree revisions,
+V7, V8\cite{SPARCV8}\cite{SPARCSysV} and V9\cite{SPARCV9}\cite{SPARCV9SysV}. The former two are 32-bit whereas the latter refers to the 64-bit SPARC architecture (see next chapter).
+SPARC uses big endian byte order.\\
+
+\paragraph{\product{dyncall} support}
+
+\product{dyncall} fully supports the SPARC 32-bit instruction set (V7 and V8), for calls and callbacks.
+
+\subsubsection{SPARC (32-bit) Calling Convention}
+
+\paragraph{Register usage}
+
+\begin{itemize}
+\item 32 single floating point registers (f0-f31, usable as 8 quad precision q0,q4,q8,...,q28, 16 double precision d0,d2,d4,...,d30)
+\item 32 32-bit integer/pointer registers out of a bigger (vendor/model dependent) number that are accessible at a time (8 are global ones (g*), whereas the remaining 24 form a register window with 8 input (i*), 8 output (o*) and 8 local (l*) ones)
+\item calling a function shifts the register window, the old output registers become the new input registers (old local and input ones are not accessible anymore)
+\end{itemize}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{lll}
+Name                          & Alias                          & Brief description\\
+\hline
+{\bf \%g0}                    & \%r0                           & Read-only, hardwired to 0 \\
+{\bf \%g1-\%g7}               & \%r1-\%r7                      & Global \\
+{\bf \%o0,\%o1 and \%i0,\%i1} & \%r8,\%r9 and \%r24,\%r25      & Output and input argument registers, return value \\
+{\bf \%o2-\%o5 and \%i2-\%i5} & \%r10-\%r13 and \%r26-\%r29    & Output and input argument registers \\
+{\bf \%o6 and \%i6}           & \%r14 and \%r30, \%sp and \%fp & Stack and frame pointer \\
+{\bf \%o7 and \%i7}           & \%r15 and \%r31                & Return address (caller writes to o7, callee uses i7) \\
+{\bf \%l0-\%l7}               & \%r16-\%r23                    & preserve \\
+{\bf \%f0,\%f1}               &                                & Floating point return value \\
+{\bf \%f2-\%f31}              &                                & scratch \\
+\end{tabular*}
+\caption{Register usage on sparc calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+\begin{itemize}
+\item stack grows down
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item stack always aligned to 8 bytes
+\item first 6 integers and floats are passed independently in registers using \%o0-\%o5
+\item for every other argument the stack is used
+\item all arguments \textless=\ 32 bit are passed as 32 bit values
+\item 64 bit arguments are passed like two consecutive \textless=\ 32 bit values
+\item minimum stack size is 64 bytes, b/c stack pointer must always point at enough space to store all \%i* and \%l* registers, used when running out of register windows
+\item if needed, register spill area is adjacent to parameters
+\item results are expected by caller to be returned in \%o0/\%o1 (after reg window restore, meaning callee writes to \%i0/\%i1) for integers, \%f0/\%f1 for floats, and for structs/unions a pointer to them is used as a hidden stack parameter (see below)
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                   & \vdots                      &                                &                               \\
+\hhline{~=~~}
+local data (and padding)           & \hspace{4cm}                &                                & \mrrbrace{9}{caller's frame}  \\
+\hhline{~-~~}
+\mrlbrace{7}{parameter area}       & argument x                  & \mrrbrace{3}{stack parameters} &                               \\
+                                   & \ldots                      &                                &                               \\
+                                   & argument 6                  &                                &                               \\
+                                   & input argument 5 spill      & \mrrbrace{3}{spill area}       &                               \\
+                                   & \ldots                      &                                &                               \\
+                                   & input argument 0 spill      &                                &                               \\
+                                   & struct/union return pointer &                                &                               \\
+\hhline{~-~~}
+register save area (\%i* and \%l*) &                             &                                &                               \\
+\hhline{~=~~}
+local data (and padding)           &                             &                                & \mrrbrace{3}{current frame}   \\
+\hhline{~-~~}
+parameter area                     &                             &                                &                               \\
+\hhline{~-~~}
+                                   & \vdots                      &                                &                               \\
+\hhline{~-~~}
+\end{tabular}
+\\
+\\
+\\
+\caption{Stack layout on sparc32 calling convention}
+\end{figure}
+

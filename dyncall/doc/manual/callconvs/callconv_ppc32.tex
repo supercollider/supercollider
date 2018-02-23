@@ -1,0 +1,243 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+% ==================================================
+% PowerPC 32
+% ==================================================
+\subsection{PowerPC (32bit) Calling Convention}
+
+\paragraph{Overview}
+
+\begin{itemize}
+\item Word size is 32 bits
+\item Big endian (MSB) and litte endian (LSB) operating modes.
+\item Processor operates on floats in double precision floating point arithmetc (IEEE-754) values directly (single precision is converted on the fly)
+\item Apple Mac OS X/Darwin PPC is specified in "Mac OS X ABI Function Call Guide"\cite{ppcMacOSX}. It uses Big Endian (MSB).
+\item Linux PPC 32-bit ABI is specified in "LSB for PPC"\cite{ppc32LSB} which is based on "System V ABI". It uses Big Endian (MSB).
+\item PowerPC EABI is defined in the "PowerPC Embedded Application Binary Interface 32-Bit Implementation".
+\end{itemize}
+
+\paragraph{\product{dyncall} support}
+
+\product{Dyncall} and \product{dyncallback} are supported for PowerPC (32bit) Big Endian (MSB) on Darwin (tested on Apple Mac OS X) and Linux, however, fail for *BSD.
+
+
+\subsubsection{Mac OS X/Darwin}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name                & Brief description\\
+\hline
+{\bf gpr0}          & scratch\\
+{\bf gpr1}          & stack pointer\\
+{\bf gpr2}          & scratch\\
+{\bf gpr3,gpr4}     & return value, parameter 0 and 1 for integer or pointer\\
+{\bf gpr5-gpr10}    & parameter 2-7 for integer or pointer parameters\\
+{\bf gpr11}         & permanent\\
+{\bf gpr12}         & branch target for dynamic code generation\\
+{\bf gpr13-31}      & permanent\\
+{\bf fpr0}          & scratch\\
+{\bf fpr1}          & floating point return value, floating point parameter 0 (always double precision)\\
+{\bf fpr2-fpr13}    & floating point parameters 1-12 (always double precision)\\
+{\bf fpr14-fpr31}   & permanent\\
+{\bf v0-v1}         & scratch\\
+{\bf v2-v13}        & vector parameters\\
+{\bf v14-v19}       & scratch\\
+{\bf v20-v31}       & permanent\\
+{\bf lr}            & scratch, link-register\\
+{\bf ctr}           & scratch, count-register\\
+{\bf cr0-cr1}       & scratch\\
+{\bf cr2-cr4}       & permanent\\
+{\bf cr5-cr7}       & scratch\\
+\end{tabular*}
+\caption{Register usage on Darwin PowerPC 32-Bit}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item the first 8 integer parameters are passed in registers gpr3-gpr10
+\item the first 12 floating point parameters are passed in registers fpr1-fpr13
+\item if a float parameter is passed via a register, gpr registers are skipped for subsequent integer parameters (based on the size of
+the float - 1 register for single precision and 2 for double precision floating point values)
+\item the caller pushes subsequent parameters onto the stack
+\item for every parameter passed via a register, space is reserved in the stack parameter area (in order to spill the parameters if
+needed - e.g. varargs)
+\item ellipsis calls take floating point values in int and float registers (single precision floats are promoted to double precision
+as defined for ellipsis calls)
+\item all nonvector parameters are aligned on 4-byte boundaries
+\item vector parameters are aligned on 16-byte boundaries
+\item composite parameters with size of 1 or 2 bytes occupy low-order bytes of their 4-byte area. INCONSISTENT with other 32-bit PPC
+binary interfaces. In AIX and OS 9, padding bytes always follow the data structure
+\item composite parameters 3 bytes or larger in size occupy high-order bytes
+\item integer parameters \textless\ 32 bit are right-justified (meaning occupy higher-address bytes) in their 4-byte slot on the stack, requiring extra-care for big-endian targets
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of integer \textless=\ 32bit or pointer type use gpr3
+\item 64 bit integers use gpr3 and gpr4 (hiword in gpr3, loword in gpr4)
+\item floating point values are returned via fpr1
+\item structures \textless=\ 64 bits use gpr3 and gpr4
+\item for types \textgreater\ 64 bits, a secret first parameter with an address to the return value is passed
+\end{itemize}
+
+\pagebreak
+
+\paragraph{Stack layout}
+
+Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots              &                                      &                               \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}        &                                      & \mrrbrace{13}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{6}{parameter area}      & \ldots              & \mrrbrace{3}{stack parameters}       &                               \\
+                                  & \ldots              &                                      &                               \\
+                                  & \ldots              &                                      &                               \\
+                                  & \ldots              & \mrrbrace{3}{spill area (as needed)} &                               \\
+                                  & \ldots              &                                      &                               \\
+                                  & gpr3 or fpr1        &                                      &                               \\
+\hhline{~-~~}
+\mrlbrace{6}{linkage area}        & reserved            &                                      &                               \\
+                                  & reserved            &                                      &                               \\
+                                  & reserved            &                                      &                               \\
+                                  & return address      &                                      &                               \\
+                                  & reserved for callee &                                      &                               \\
+                                  & saved by callee     &                                      &                               \\
+\hhline{~=~~}
+local data                        &                     &                                      & \mrrbrace{3}{current frame}   \\
+\hhline{~-~~}
+parameter area                    &                     &                                      &                               \\
+\hhline{~-~~}
+linkage area                      & \vdots              &                                      &                               \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on ppc32 Darwin}
+\end{figure}
+
+\subsubsection{System V PPC 32-bit}
+
+\paragraph{Status}
+
+\begin{itemize}
+\item C++ this calls do not work.
+\end{itemize}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name              & Brief description\\
+\hline
+{\bf r0}          & scratch\\
+{\bf r1}          & stack pointer\\
+{\bf r2}          & system-reserved\\
+{\bf r3-r4}       & parameter passing and return value\\
+{\bf r5-r10}      & parameter passing\\
+{\bf r11-r12}     & scratch\\
+{\bf r13}         & Small data area pointer register\\
+{\bf r14-r30}     & Local variables\\
+{\bf r31}         & Used for local variables or \emph{environment pointer}\\
+{\bf f0}          & scratch\\
+{\bf f1}          & parameter passing and return value\\
+{\bf f2-f8}       & parameter passing\\
+{\bf f9-13}       & scratch\\
+{\bf f14-f31}     & Local variables\\
+{\bf cr0-cr7}     & Conditional register fields, each 4-bit wide (cr0-cr1 and   cr5-cr7 are scratch)\\
+{\bf lr}          & Link register (scratch)\\
+{\bf ctr}         & Count register (scratch) \\
+{\bf xer}         & Fixed-point exception register (scratch)\\
+{\bf fpscr}       & Floating-point Status and Control Register\\
+% {\bf v0-v1}         & scratch\\
+% {\bf v2-v13}        & vector parameters\\
+% {\bf v14-v19}       & scratch\\
+% {\bf v20-v31}       & permanent\\
+% {\bf lr}            & scratch, link-register\\
+% {\bf ctr}           & scratch, count-register\\
+% {\bf cr0-cr1}       & scratch\\
+% {\bf cr2-cr4}       & permanent\\
+% {\bf cr5-cr7}       & scratch\\
+\end{tabular*}
+\caption{Register usage on System V ABI PowerPC Processor}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item Stack pointer (r1) is always 16-byte aligned. The EABI differs here - it is 8-byte alignment.
+\item 8 general-purpose registers (r3-r10) for integer and pointer types.
+\item 8 floating-pointer registers (f1-f8) for float (promoted to double) and double types.
+\item Additional arguments are passed on the stack directly after the back-chain and saved return address (8 bytes structure) on the callers stack frame.
+\item 64-bit integer data types are passed in general-purpose registers as a whole in two
+ 32-bit general purpose registers (an odd and an even e.g. r3 and r4), probably skipping an even integer register.
+ or passed on the stack. They are never splitted into a register and stack part.
+\item Ellipse calls set CR bit 6 
+\item integer parameters \textless\ 32 bit are right-justified (meaning occupy high-order bytes) in their 4-byte area, requiring extra-care for big-endian targets
+\end{itemize}
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item 32-bit integers use register r3, 64-bit use registers r3 and r4 (hiword in r3, loword in r4).
+\item floating-point values are returned using register f1.
+\end{itemize}
+
+\pagebreak
+
+\paragraph{Stack layout}
+
+Stack frame is always 16-byte aligned. Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots                     &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}               &                                & \mrrbrace{6}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots                     & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots                     &                                &                              \\
+                                  & \ldots                     &                                &                              \\
+\hhline{~-~~}
+                                  & saved return address (for callee) &                                &                              \\
+\hhline{~-~~}
+                                  & parent stack frame pointer &                                &                              \\
+\hhline{~=~~}
+local data                        &                            &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                            &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots                     &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\\
+\\
+\\
+\caption{Stack layout on System V ABI for PowerPC 32-bit calling convention}
+\end{figure}

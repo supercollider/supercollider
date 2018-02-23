@@ -1,0 +1,205 @@
+.\" Copyright (c) 2007-2013 Daniel Adler <dadler AT uni-goettingen DOT de>, 
+.\"                         Tassilo Philipp <tphilipp AT potion-studios DOT com>
+.\" 
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate$
+.Dt dyncall 3
+.Sh NAME
+.Nm dyncall
+.Nd encapsulation of architecture-, OS- and compiler-specific function call
+semantics 
+.Sh SYNOPSIS
+.In dyncall.h
+.Ft DCCallVM *
+.Fn dcNewCallVM "DCsize size"
+.Ft void
+.Fn dcFree "DCCallVM * vm"
+.Ft void
+.Fn dcMode "DCCallVM * vm" "DCint mode"
+.Ft void
+.Fn dcReset "DCCallVM * vm"
+.Ft void
+.Fn dcArgBool "DCCallVM * vm" "DCbool arg"
+.Ft void
+.Fn dcArgChar "DCCallVM * vm" "DCchar arg"
+.Ft void
+.Fn dcArgShort "DCCallVM * vm" "DCshort arg"
+.Ft void
+.Fn dcArgInt "DCCallVM * vm" "DCint arg"
+.Ft void
+.Fn dcArgLong "DCCallVM * vm" "DClong arg"
+.Ft void
+.Fn dcArgLongLong "DCCallVM * vm" "DClonglong arg"
+.Ft void
+.Fn dcArgFloat "DCCallVM * vm" "DCfloat arg"
+.Ft void
+.Fn dcArgDouble "DCCallVM * vm" "DCdouble arg"
+.Ft void
+.Fn dcArgPointer "DCCallVM * vm" "DCpointer arg"
+.Ft DCvoid
+.Fn dcCallVoid "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCbool
+.Fn dcCallBool "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCchar
+.Fn dcCallChar "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCshort
+.Fn dcCallShort "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCint
+.Fn dcCallInt "DCCallVM * vm" "DCpointer funcptr"
+.Ft DClong
+.Fn dcCallLong "DCCallVM * vm" "DCpointer funcptr"
+.Ft DClonglong
+.Fn dcCallLongLong "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCfloat
+.Fn dcCallFloat "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCdouble
+.Fn dcCallDouble "DCCallVM * vm" "DCpointer funcptr"
+.Ft DCpointer
+.Fn dcCallPointer "DCCallVM * vm" "DCpointer funcptr"
+.Ft void
+.Fn dcArgF "DCCallVM * vm" "const DCsigchar * signature" "..."
+.Ft void
+.Fn dcVArgF "DCCallVM * vm" "const DCsigchar * signature" "va_list args"
+.Ft void
+.Fn dcCallF "DCCallVM * vm" "DCValue * result" "DCpointer funcptr" "const DCsigchar * signature" "..."
+.Ft void
+.Fn dcVCallF "DCCallVM * vm" "DCValue * result" "DCpointer funcptr" "const DCsigchar * signature" "va_list args"
+.Sh DESCRIPTION
+The
+.Nm
+library encapsulates architecture-, OS- and compiler-specific function call
+semantics in a virtual "bind argument parameters from left to right and then
+call" interface allowing programmers to call C functions in a completely
+dynamic manner.
+.Pp
+In other words, instead of calling a function directly, the
+.Nm
+library provides a mechanism to push the function parameters manually and to
+issue the call afterwards.
+.Pp
+Since the idea behind this concept is similar to call dispatching mechanisms
+of virtual machines, the object that can be dynamically loaded with arguments,
+and then used to actually invoke the call, is called CallVM. It is possible to
+change the calling convention used by the CallVM at run-time. Due to the fact
+that nearly every platform comes with one or more distinct calling conventions, the
+.Nm
+library project intends to be a portable and open-source approach to the variety of
+compiler-specific binary interfaces, platform specific subtleties, and so on...
+.Pp
+.Fn dcNewCallVM
+creates a new CallVM object, where
+.Ar size
+specifies the max size of the internal stack that will be allocated and used to
+bind the arguments to. Use
+.Fn dcFree
+to destroy the CallVM object.
+.Pp
+.Fn dcMode
+sets the calling convention to use. See dyncall.h for a list of
+available modes. Note that some mode/platform combinations don't make any
+sense (e.g. using a PowerPC calling convention on a MIPS platform) and are
+silently ignored.
+.Pp
+.Fn dcReset
+resets the internal stack of arguments and prepares it for a new call.
+This function should be called after setting the call mode (using dcMode), but
+prior to binding arguments to the CallVM. Use it also when reusing a CallVM, as
+arguments don't get flushed automatically after a function call invocation.
+Note: you should also call this function after initial creation of the a CallVM
+object, as dcNewCallVM doesn't do this, implicitly.
+.Pp
+.Fn dcArgBool ,
+.Fn dcArgChar ,
+.Fn dcArgShort ,
+.Fn dcArgInt ,
+.Fn dcArgLong ,
+.Fn dcArgLongLong ,
+.Fn dcArgFloat ,
+.Fn dcArgDouble
+and
+.Fn dcArgPointer
+are used to bind arguments of the named types to the CallVM object. Arguments should
+be bound in
+.Em "left to right"
+order regarding the C function prototype.
+.Pp
+.Fn dcCallVoid ,
+.Fn dcCallBool ,
+.Fn dcCallChar ,
+.Fn dcCallShort ,
+.Fn dcCallInt ,
+.Fn dcCallLong ,
+.Fn dcCallLongLong ,
+.Fn dcCallFloat ,
+.Fn dcCallDouble
+and
+.Fn dcCallPointer
+call the function with the bound arguments and returning the named type, where
+.Ar funcptr
+is a pointer to the function to call. After the invocation of the function
+call, the argument values are still bound to the CallVM and a second call
+using the same arguments can be issued. Call
+.Fn reset
+to clear the internal argument stack.
+.Pp
+.Fn dcArgF ,
+.Fn dcVArgF ,
+.Fn dcCallF
+and
+.Fn dcVCallF
+can be used to bind arguments in a printf-style call, using a signature
+string encoding the argument types and return type. The former 2 only bind
+the arguments to the
+.Ar vm
+object (and ignore return types specified in the
+signature), whereas the latter two issue a call to the given function pointer,
+afterwards. The return value will be stored in
+.Ar result .
+For information about the signature format, refer to the
+.Nm
+manual in PDF format.
+.Sh EXAMPLE
+Let's say, we want to make a call to the function:
+.Bd -literal -offset indent
+	double sqrt(double x); 
+.Ed
+.Pp
+Using the
+.Nm
+library, this function would be called as follows: 
+.Bd -literal -offset indent
+	double r;
+	DCCallVM* vm = dcNewCallVM(4096);
+	dcMode(vm, DC_CALL_C_DEFAULT);
+	dcReset(vm);
+	dcArgDouble(vm, 4.2373);
+	r = dcCallDouble(vm, (DCpointer)&sqrt);
+	dcFree(vm);
+.Ed
+.Sh CONFORMING TO
+The dyncall library needs at least a c99 compiler with additional support for
+anonymous structs/unions (which were introduced officially in c11). Given that
+those are generally supported by pretty much all major c99 conforming compilers
+(as default extension), it should build fine with a c99 toolchain. Strictly
+speaking, dyncall conforms to c11, though.
+.Ed
+.Sh SEE ALSO
+.Xr dyncallback 3 ,
+.Xr dynload 3
+and the
+.Nm
+manual (available in HTML and PDF format) for more information.
+.Sh AUTHORS
+.An "Daniel Adler" Aq dadler@uni-goettingen.de
+.An "Tassilo Philipp" Aq tphilipp@potion-studios.com

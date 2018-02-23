@@ -1,0 +1,20 @@
+APP = thunk
+OBJS = test_thunk.o
+
+SRCTOP   = ../..
+BLDTOP   = ../..
+CFLAGS  += -I${SRCTOP}/dyncallback -I${SRCTOP}/dyncall
+LDFLAGS += -L${BLDTOP}/dyncallback
+LDLIBS  += -ldyncallback_s
+LINK     = ${CC}
+
+all: ${APP}
+
+.PHONY: all clean 
+
+${APP}: ${OBJS} 
+	${CC} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP} 
+
+clean:
+	rm -f ${APP} ${OBJS}
+

@@ -1,0 +1,25 @@
+TARGET	= call_suite ${OBJS} 
+OBJS	= globals.o invoke.o cases.o main.o
+
+SRCDIR 	= ../..
+BLDDIR 	= ${SRCDIR}
+LUA	= lua
+
+CPPFLAGS	+= -I${SRCDIR}/dyncall
+LDFLAGS		+= -L${BLDDIR}/dyncall
+LDLIBS		+= -ldyncall_s
+
+.PHONY: all clean config config-random
+
+all: ${TARGET}
+call_suite: ${OBJS}
+	${CC} ${OBJS} ${LDFLAGS} ${LDLIBS} -o $@
+config:
+	${LUA} mk-cases.lua <design.txt >cases.h
+config-random: 
+	${LUA} rand-sig.lua >cases.txt
+	${LUA} mk-cases.lua <cases.txt >cases.h
+cases.o: cases.h 
+clean:
+	rm -f ${TARGET}
+

@@ -1,0 +1,112 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2012-2017 Daniel Adler <dadler@uni-goettingen.de>,
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\subsection{SPARC64 Calling Convention}
+
+\paragraph{Overview}
+
+The SPARC family of processors is based on the SPARC instruction set architecture, which comes in basically tree revisions,
+V7, V8\cite{SPARCV8}\cite{SPARCSysV} and V9\cite{SPARCV9}\cite{SPARCV9SysV}. The former two are 32-bit (see previous chapter) whereas the latter refers to the 64-bit SPARC architecture.
+SPARC uses big endian byte order, however, V9 supports also little endian byte order, but for data access only, not instruction access.\\
+\\
+There are two probosals, one from Sun and one from Hal, which disagree on how to handle some aspects of this calling convention.\\
+
+\paragraph{\product{dyncall} support}
+
+\product{dyncall} fully supports the SPARC 64-bit instruction set (V9), for calls and callbacks.
+
+\subsubsection{SPARC (64-bit) Calling Convention}
+
+\begin{itemize}
+\item 32 double precision floating point registers (d0,d2,d4,...,d62, usable as 16 quad precision ones q0,q4,q8,...g60, and also first half of them are usable as 32 single precision registers f0-f31)
+\item 32 64-bit integer/pointer registers out of a bigger (vendor/model dependent) number that are accessible at a time (8 are global ones (g*), whereas the remaining 24 form a register window with 8 input (i*), 8 output (o*) and 8 local (l*) ones)
+\item calling a function shifts the register window, the old output registers become the new input registers (old local and input ones are not accessible anymore)
+\item stack and frame pointer are offset by a BIAS of 2047 (see official doc for reasons)
+\end{itemize}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{lll}
+Name                          & Alias                          & Brief description\\
+\hline
+{\bf \%g0}                    & \%r0                           & Read-only, hardwired to 0 \\
+{\bf \%g1-\%g7}               & \%r1-\%r7                      & Global \\
+{\bf \%o0-\%o3 and \%i0-\%i3} & \%r8-\%r11 and \%r24-\%r27     & Output and input argument registers, return value \\
+{\bf \%o4,\%o5 and \%i4,\%i5} & \%r12,\%r13 and \%r28,\%r29    & Output and input argument registers \\
+{\bf \%o6 and \%i6}           & \%r14 and \%r30, \%sp and \%fp & Stack and frame pointer (NOTE, value is pointing to stack/frame minus a BIAS of 2047) \\
+{\bf \%o7 and \%i7}           & \%r15 and \%r31                & Return address (caller writes to o7, callee uses i7) \\
+{\bf \%l0-\%l7}               & \%r16-\%r23                    & preserve \\
+{\bf \%d0,\%d2,\%d4,\%d6}     &                                & Floating point arguments, return value \\
+{\bf \%d8,\%d10,...,\%d30}    &                                & Floating point arguments \\
+{\bf \%d32,\%d36,...,\%d62}   &                                & scratch (but, according do Hal, \%d16,...,\%d46 are preserved) \\
+\end{tabular*}
+\caption{Register usage on sparc64 calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+\begin{itemize}
+\item stack grows down
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item stack frame is always aligned to 16 bytes
+\item first 6 integers are passed in registers using \%o0-\%o5
+\item first 8 quad precision floating point args (or 16 double precision, or 32 single precision) are passed in floating point registers (\%q0,\%q4,...,\%q28 or \%d0,\%d2,...,\%d30 or \%f0-\%f32, respectively)
+\item for every other argument the stack is used
+\item single precision floating point args are passed in odd \%f* registers, and are "right aligned" in their 8-byte space on the stack
+\item for every argument passed, corresponding \%o*, \%f* register or stack space is skipped (e.g. passing a doube as 3rd call argument, \%d4 is used and \%o2 is skipped)
+\item all arguments \textless=\ 64 bit are passed as 64 bit values
+\item minimum stack size is 128 bytes, b/c stack pointer must always point at enough space to store all \%i* and \%l* registers, used when running out of register windows
+\item if needed, register spill area (for integer arguments passed via \%o0-\%o5) is adjacent to parameters
+\item results are expected by caller to be returned in \%o0-\%o3 (after reg window restore, meaning callee writes to \%i0-\%i3) for integers, \%d0,\%d2,\%d4,\%d6 for floats
+\item structs/unions up to 32b, the fields are returned via the respective registers mentioned in the previous bullet point
+\item for structs/unions \textgreater= 32b, the caller allocates the space and a pointer to it is passed as hidden first parameter to the function called (meaning in \%o0)
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                   & \vdots                      &                                &                               \\
+\hhline{~=~~}
+local data (and padding)           & \hspace{4cm}                &                                & \mrrbrace{8}{caller's frame}  \\
+\hhline{~-~~}
+\mrlbrace{6}{parameter area}       & argument x                  & \mrrbrace{3}{stack parameters} &                               \\
+                                   & \ldots                      &                                &                               \\
+                                   & argument 6                  &                                &                               \\
+                                   & input argument 5 spill      & \mrrbrace{3}{spill area}       &                               \\
+                                   & \ldots                      &                                &                               \\
+                                   & input argument 0 spill      &                                &                               \\
+\hhline{~-~~}
+register save area (\%i* and \%l*) &                             &                                &                               \\
+\hhline{~=~~}
+local data (and padding)           &                             &                                & \mrrbrace{3}{current frame}   \\
+\hhline{~-~~}
+parameter area                     &                             &                                &                               \\
+\hhline{~-~~}
+                                   & \vdots                      &                                &                               \\
+\hhline{~-~~}
+\end{tabular}
+\\
+\\
+\\
+\caption{Stack layout on sparc64 calling convention}
+\end{figure}
+

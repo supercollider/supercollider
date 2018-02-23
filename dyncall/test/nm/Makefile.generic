@@ -1,0 +1,18 @@
+APP       = nm
+OBJS      = nm.o
+SRCTOP    = ${VPATH}/../..
+BLDTOP    = ../..
+CFLAGS   += -I${SRCTOP}/dynload
+LDLIBS_D += -L${BLDTOP}/dynload -ldynload_s
+# Works on: Darwin, NetBSD.
+# Linux: add '-ldl'
+.PHONY: all clean install
+all: ${APP}
+${APP}: ${OBJS} 
+	${CC} ${CFLAGS} ${LDFLAGS} ${OBJS} ${LDLIBS_D} ${LDLIBS} -o ${APP}
+clean:
+	rm -f ${APP} ${OBJS}
+install:
+	mkdir -p ${PREFIX}/test
+	cp ${APP} ${PREFIX}/test
+

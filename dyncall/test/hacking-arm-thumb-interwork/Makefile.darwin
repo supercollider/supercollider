@@ -1,0 +1,26 @@
+TARGETS		= test
+TARGET_ARCH	+= -arch armv6
+TARGET_ARCH	+= -isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk
+# TARGET_ARCH	+= -mno-thumb-interwork
+# TARGET_ARCH	+= -mthumb-interwork 
+CFLAGS		+= -mthumb
+# CFLAGS		= -mthumb-interwork
+# CFLAGS_THUMB	= -mthumb $(CFLAGS)
+# CFLAGS		+= -mthumb-interwork
+all: $(LOADLIBES) test
+
+thumb.o: thumb.c
+	$(CC) -c $(CPPFLAGS) $(CFLAGS) $(TARGET_ARCH) -mthumb $< -o $@
+
+arm.o: arm.c
+
+test.o: test.c
+
+test: test.o thumb.o arm.o
+	$(LINK.o) $^ $(OUTPUT_OPTION)
+
+%.s: %.c
+	$(CC) -S $(CPPFLAGS) $(CFLAGS) $(TARGET_ARCH) $< -o $@
+
+clean:
+	$(RM) $(TARGETS) *.o

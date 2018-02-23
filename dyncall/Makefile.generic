@@ -1,0 +1,38 @@
+.PHONY: all clean install tests docs run-tests clean distclean libdyncall libdyncallback libdynload
+all: libdyncall libdyncallback libdynload
+install: all install-libdyncall install-libdyncallback install-libdynload
+libdyncall:
+	cd dyncall && ${MAKE} all
+libdyncallback:
+	cd dyncallback && ${MAKE} all
+libdynload:
+	cd dynload && ${MAKE} all
+install-libdyncall: libdyncall
+	cd dyncall && ${MAKE} install
+install-libdyncallback: libdyncallback
+	cd dyncallback && ${MAKE} install
+install-libdynload: libdynload
+	cd dynload && ${MAKE} install
+clean:
+	cd dyncall && ${MAKE} $@
+	cd dynload && ${MAKE} $@
+	cd dyncallback && ${MAKE} $@
+	cd test && ${MAKE} $@
+	cd doc && ${MAKE} $@
+tests: tests-libdyncall tests-libdyncallback tests-libdynload
+tests-libdyncall: libdyncall
+	cd test && ${MAKE} all-dyncall
+tests-libdyncallback: libdyncallback
+	cd test && ${MAKE} all-dyncallback
+tests-libdynload: libdynload
+	cd test && ${MAKE} all-dynload
+docs:
+	cd doc && ${MAKE} all
+run-tests: all
+	cd test && ${MAKE} $@
+distclean: clean
+	rm -f Makefile.config
+	find . -type f -name "Makefile.generic" | sed s/\.generic$$// | xargs rm
+show-compiler-predefs:
+	${CC} ${CFLAGS} -dM -E - < /dev/null
+

@@ -1,0 +1,20 @@
+LIBNAME = dyncallback
+OBJS = dyncall_alloc_wx.o dyncall_args.o dyncall_callback.o dyncall_callback_arch.o dyncall_thunk.o
+HEADERS = ${VPATH}/dyncall_thunk.h ${VPATH}/dyncall_thunk_x86.h ${VPATH}/dyncall_thunk_ppc32.h ${VPATH}/dyncall_thunk_x64.h ${VPATH}/dyncall_thunk_arm32.h ${VPATH}/dyncall_thunk_arm64.h ${VPATH}/dyncall_args.h ${VPATH}/dyncall_callback.h
+TOP = ${VPATH}/..
+CFLAGS += -I${TOP}/dyncall 
+
+LIB = lib${LIBNAME}_s.a
+
+.PHONY: all clean install
+
+all: ${LIB}
+${LIB}: ${OBJS}
+	${AR} ${ARFLAGS} ${LIB} ${OBJS}
+clean:
+	rm -f ${OBJS} ${LIB}
+install: all
+	mkdir -p ${PREFIX}/lib
+	mkdir -p ${PREFIX}/include
+	cp ${LIB} ${PREFIX}/lib
+	cp ${HEADERS} ${PREFIX}/include

@@ -43,6 +43,9 @@ Primitives for Unix.
 #include <vector>
 #include <boost/filesystem.hpp>
 
+#include "../../dyncall/dynload/dynload.h"
+#include "../../dyncall/dyncall/dyncall.h"
+
 #ifdef _WIN32
 #include "SC_Win32Utils.h"
 #else
@@ -180,6 +183,251 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 	SetInt(a, pid);
 	return errNone;
 }
+
+int prString_LoadLibrarySymbols(struct VMGlobals *g, int numArgsPushed);
+int prString_LoadLibrarySymbols(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *a = g->sp;
+    
+    if (!isKindOfSlot(a, class_string)) return errWrongType;
+    
+    char *libpath = new char[slotRawObject(a)->size + 1];
+    slotStrVal(a, libpath, slotRawObject(a)->size + 1);
+    
+    DLSyms* syms = dlSymsInit(libpath);
+    if (syms) {
+        int symCount = dlSymsCount(syms);
+
+        PyrObject *obj = newPyrArray(g->gc, symCount, 0, true);
+        obj->size = 0;
+        PyrSlot *array = obj->slots;
+        SetObject(a, obj);
+
+        for (int i = 0; i < symCount; ++i) {
+            const char* symbol = dlSymsName(syms, i);
+            if (symbol) {
+                int size = strlen(symbol); // Discard trailing newline
+                PyrString *symString = newPyrStringN(g->gc, size, 0, true);
+                memcpy(symString->s, symbol, size);
+                SetObject(&array[i], symString);
+                g->gc->GCWrite(obj, symString); // we know matched_string is white so we can use GCWriteNew
+                obj->size++;
+            }
+        }
+        
+        dlSymsCleanup(syms);
+    }
+    
+    delete [] libpath;
+
+    return errNone;
+}
+
+struct DcLibrary
+    : boost::noncopyable
+{
+    DcLibrary(const char* libpath) {
+        lib = dlLoadLibrary(libpath);
+    }
+    
+    ~DcLibrary() {
+        //if (lib) { dlFreeLibrary(lib); }
+    }
+    
+    DLLib* operator->() const { return lib; }
+    DLLib* operator*() const {  return lib; }
+    operator bool() const {  return !!lib; }
+
+    DLLib*  lib;
+};
+
+struct DcVM
+    : boost::noncopyable
+{
+    DcVM() {
+        vm = dcNewCallVM(4096);
+        if (vm) {
+            dcMode(vm, DC_CALL_C_DEFAULT);
+            dcReset(vm);
+        }
+    }
+    
+    ~DcVM() {
+        if (vm) dcFree(vm);
+    }
+    
+    DCCallVM* operator->() const { return vm; }
+    DCCallVM* operator*() const { return vm; }
+    operator bool() const {  return !!vm; }
+
+    DCCallVM* vm;
+};
+
+int prString_CallLibrarySymbol(struct VMGlobals *g, int numArgsPushed);
+int prString_CallLibrarySymbol(struct VMGlobals *g, int numArgsPushed)
+{
+    PyrSlot *thisSlot       = g->sp - 3;
+    PyrSlot *symbolSlot     = g->sp - 2;
+    PyrSlot *signatureSlot  = g->sp - 1;
+    PyrSlot *argsSlot       = g->sp - 0;
+
+    if (!isKindOfSlot(thisSlot, class_string)) return errWrongType;
+    if (!isKindOfSlot(symbolSlot, class_string)) return errWrongType;
+    if (!isKindOfSlot(signatureSlot, class_string)) return errWrongType;
+    if (!isKindOfSlot(argsSlot, class_array)) return errWrongType;
+
+    char* libpath = new char[slotRawObject(thisSlot)->size + 1];
+    slotStrVal(thisSlot, libpath, slotRawObject(thisSlot)->size + 1);
+
+    char* symbol = new char[slotRawObject(symbolSlot)->size + 1];
+    slotStrVal(symbolSlot, symbol, slotRawObject(symbolSlot)->size + 1);
+
+    char* signature = new char[slotRawObject(signatureSlot)->size + 1];
+    slotStrVal(signatureSlot, signature, slotRawObject(signatureSlot)->size + 1);
+
+    PyrObject* args = slotRawObject(argsSlot);
+
+    DcLibrary lib(libpath);
+    if (lib) {
+        void* funcPtr = dlFindSymbol(*lib, symbol);
+        
+        if (funcPtr) {
+            DcVM vm;
+                    
+            int i = 0;
+            for (; i < args->size; ++i) {
+                char sigType = signature[i];
+                
+                if (sigType == 0 || args->size <= i) {
+                    // We've either run out of signature, or run out of arguments
+                    return errFailed;
+                }
+                
+                PyrSlot argSlot;
+                getIndexedSlot(args, &argSlot, i);
+                
+                switch (sigType) {
+                    case 'B': {
+                        if (IsTrue(&argSlot)) {
+                            dcArgBool(*vm, true);
+                        } else if (IsFalse(&argSlot)) {
+                            dcArgBool(*vm, false);
+                        } else {
+                            return errWrongType;
+                        }
+                        break;
+                    }
+                    case 'i': {
+                        int i = 0;
+                        if (slotVal(&argSlot, &i)) {
+                            return errWrongType;
+                        }
+                        dcArgInt(*vm, (DCint)i);
+                        break;
+                    }
+                    case 'I': {
+                        uint ui = 0;
+                        if (slotVal(&argSlot, &ui)) {
+                            return errWrongType;
+                        }
+                        dcArgInt(*vm, (DCint)(DCuint)i);
+                        break;
+                    }
+                    case 'j': {
+                        long l = 0;
+                        if (slotVal(&argSlot, &l)) {
+                            return errWrongType;
+                        }
+                        dcArgLong(*vm, (DClong)i);
+                        break;
+                    }
+                    case 'J': {
+                        unsigned long ul = 0;
+                        if (slotVal(&argSlot, &ul)) {
+                            return errWrongType;
+                        }
+                        dcArgLong(*vm, (DClong)(DCulong)ul);
+                        break;
+                    }
+                    case 'f': {
+                        float f = 0;
+                        if (slotVal(&argSlot, &f)) {
+                            return errWrongType;
+                        }
+                        dcArgFloat(*vm, (DCfloat)f);
+                        break;
+                    }
+                    case 'd': {
+                        double d = 0;
+                        if (slotVal(&argSlot, &d)) {
+                            return errWrongType;
+                        }
+                        dcArgDouble(*vm, (DCdouble)d);
+                        break;
+                    }
+                    case 'Z': {
+                        if (!isKindOfSlot(&argSlot, class_array)) return errWrongType;
+                        char* argStr = new char[slotRawObject(&argSlot)->size + 1];
+                        slotStrVal(signatureSlot, signature, slotRawObject(signatureSlot)->size + 1);
+                        dcArgPointer(*vm, argStr);
+                    }
+                    default:
+                        return errFailed;
+                }
+            }
+                
+            i++; // skip ")" in signature
+            char returnType = signature[i];
+            if (returnType == 0) return errFailed;
+            
+            switch (returnType) {
+                case 'B': {
+                    SetBool(thisSlot, dcCallBool(*vm, funcPtr));
+                    break;
+                }
+                case 'i': {
+                    SetInt(thisSlot, dcCallInt(*vm, funcPtr));
+                    break;
+                }
+                case 'I': {
+                    SetInt(thisSlot, (DCuint)dcCallInt(*vm, funcPtr));
+                    break;
+                }
+                case 'j': {
+                    SetInt(thisSlot, dcCallLong(*vm, funcPtr));
+                    break;
+                }
+                case 'J': {
+                    SetInt(thisSlot, (DCulong)dcCallLong(*vm, funcPtr));
+                    break;
+                }
+                case 'f': {
+                    SetFloat(thisSlot, dcCallFloat(*vm, funcPtr));
+                    break;
+                }
+                case 'd': {
+                    SetFloat(thisSlot, dcCallDouble(*vm, funcPtr));
+                    break;
+                }
+                case 'Z': {
+                    const char* result = (const char*)dcCallPointer(*vm, funcPtr);
+                    int size = strlen(result);
+                    PyrString *strobj = newPyrStringN(g->gc, size, 0, true);
+                    memcpy(strobj->s, result, size);
+                    SetObject(thisSlot, strobj);
+                    break;
+                }
+                default:
+                    return errWrongType;
+            }
+        }
+    }
+    
+    delete [] libpath;
+    
+    return errNone;
+}
+
 
 int prArrayPOpen(struct VMGlobals *g, int numArgsPushed);
 int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
@@ -452,6 +700,8 @@ void initUnixPrimitives()
 	definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
 	definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
 	definePrimitive(base, index++, "_String_POpen", prString_POpen, 2, 0);
+    definePrimitive(base, index++, "_StringLoadLibrarySymbols", prString_LoadLibrarySymbols, 1, 0);
+    definePrimitive(base, index++, "_StringCallLibrarySymbol", prString_CallLibrarySymbol, 4, 0);
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
 	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
@@ -461,4 +711,5 @@ void initUnixPrimitives()
 	definePrimitive(base, index++, "_PidRunning", prPidRunning, 1, 0);
 	definePrimitive(base, index++, "_GetPid", prGetPid, 1, 0);
 	definePrimitive(base, index++, "_ArrayPOpen", prArrayPOpen, 2, 0);
+    
 }

@@ -1,0 +1,15 @@
+TARGET	= libdyncallback_s.a
+OBJS	= dyncall_alloc_wx.o dyncall_args.o dyncall_callback.o dyncall_callback_arch.o dyncall_thunk.o
+CFLAGS += -I../dyncall
+HEADERS = dyncall_callback.h dyncall_args.h
+all: ${TARGET}
+${TARGET}: ${OBJS}
+	${AR} ${ARFLAGS} $@ ${OBJS}
+clean:
+	rm -f ${OBJS} ${TARGET}
+install: all
+	mkdir -p ${DESTDIR}${PREFIX}/include
+	cp ${HEADERS} ${DESTDIR}${PREFIX}/include
+	mkdir -p ${DESTDIR}${PREFIX}/lib
+	cp ${TARGET} ${DESTDIR}${PREFIX}/lib
+.PHONY: all clean install

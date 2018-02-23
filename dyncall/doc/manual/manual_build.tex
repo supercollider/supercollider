@@ -1,0 +1,176 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+\section{Building the library}
+
+The library has been built and used successfully on several 
+platform/architecture configurations and build systems.
+Please see notes on specfic platforms to check if the target
+architecture is currently supported.
+
+
+\subsection{Requirements}
+
+The following tools are supported directly to build the \product{dyncall} library.
+However, as the number of source files to be compiled for a given
+platform is small, it shouldn't be difficult to build it manually with
+another toolchain.
+\begin{itemize}
+\item C compiler to build the \product{dyncall} library (GCC, Clang, SunPro or Microsoft C/C++ compiler)
+\item C++ compiler to build the optional test cases (GCC, Clang, SunPro or Microsoft C/C++ compiler)
+\item BSD make, GNU make, Microsoft nmake or mk (on Plan9) as automated build tools
+\item Python (optional - for generation of some test cases)
+\item Lua (optional - for generation of some test cases)
+\item CMake (optional support)
+\end{itemize}
+
+
+\subsection{Supported/tested platforms and build systems}
+
+Building \product{dyncall} is a straightforward two-step process, first configure, then make. The
+library should be able to be built with the default operating systems' build tools, so BSD make on
+BSD and derived systems, GNU make on GNU and compatible, mk on Plan9, nmake on Windows, etc..
+This is a detailed overview of platforms and their build tools that are known to build
+\product{dyncall}:\\
+\\
+
+
+\begin{tabular*}{0.75\textwidth}{lll}
+\textbf{Platform}             & Build Tool(s)       & Compiler, SDK                              \\
+\hline
+\textbf{Windows}              & nmake,Visual Studio & cl, cygwin (gcc), mingw (gcc)              \\
+\textbf{Unix-like}            & GNU/BSD/Sun make    & gcc, clang, sunc                           \\
+\textbf{Plan9}                & mk                  & 8c                                         \\
+\textbf{Haiku/BeOS}           & GNU make            & gcc                                        \\
+\textbf{iOS/iPhone}           & GNU make            & gcc and iPhone SDK on Mac OS X             \\
+\textbf{Nintendo DS}          & nmake               & devkitPro\cite{devkitPro} tools on Windows \\
+\textbf{Playstation Portable} & GNU make            & psptoolchain\cite{psptoolchain} tools      \\
+\end{tabular*}\\
+
+\pagebreak
+
+\subsection{Build instructions}
+
+
+\begin{enumerate}
+\item Configure the source (not needed for Makefile.embedded)
+
+\paragraph{*nix flavour}
+\begin{lstlisting}
+./configure [--option ...]
+\end{lstlisting}
+
+Available options (omit for defaults):
+
+\begin{tabular*}{0.75\textwidth}{ll}
+{\tt --help}                     & display help                             \\
+{\tt --prefix=\textit{path}}     & specify installation prefix (Unix shell) \\
+{\tt --target=\textit{platform}} & MacOSX,iOS,iPhoneSimulator,PSP,...       \\
+{\tt --sdk=\textit{version}}     & SDK version                              \\
+\end{tabular*}
+
+\paragraph{Windows flavour, and cross-build from Windows (PSP, NDS, etc.)}
+
+\begin{lstlisting}
+.\configure [/option ...]
+\end{lstlisting}
+
+Available options:
+
+\begin{tabular*}{0.75\textwidth}{ll}
+{\tt /?}                       & display help                                  \\
+{\tt /prefix \textit{path}}    & set installation prefix (GNU make only)       \\
+{\tt /prefix-bd \textit{path}} & set build directory prefix (GNU make only)    \\
+{\tt /target-x86}              & build for x86 architecture (default)          \\
+{\tt /target-x64}              & build for x64 architecture                    \\
+{\tt /target-psp}              & build for PlayStation Portable (homebrew SDK) \\
+{\tt /target-nds-arm}          & build for Nintendo DS (devkitPro, ARM mode)   \\
+{\tt /target-nds-thumb}        & build for Nintendo DS (devkitPro, THUMB mode) \\
+{\tt /tool-msvc}               & use Microsoft Visual C++ compiler (default)   \\
+{\tt /tool-gcc}                & use GNU Compiler Collection                   \\
+{\tt /asm-ml}                  & use Microsoft Macro Assembler (default)       \\
+{\tt /asm-as}                  & use the GNU Assembler                         \\
+{\tt /asm-nasm}                & use NASM Assembler                            \\
+{\tt /config-release}          & build release version (default)               \\
+{\tt /config-debug}            & build debug version                           \\
+\end{tabular*}
+
+
+\paragraph{Plan 9 flavour}
+
+\begin{lstlisting}
+./configure.rc [--option ...]
+\end{lstlisting}
+
+Available options (none, at the moment):
+
+\begin{tabular*}{0.75\textwidth}{ll}
+{\tt --help} & display help \\
+\end{tabular*}
+
+
+\item Build the static libraries \product{dyncall}, \product{dynload} and \product{dyncallback}
+\begin{lstlisting}
+make                      # for {GNU,BSD} Make
+nmake /f Nmakefile        # for NMake on Windows
+mk                        # for mk on Plan9
+\end{lstlisting}
+
+\item Install libraries and includes (supported for GNU and BSD make based builds, only)
+\begin{lstlisting}
+make install 
+\end{lstlisting}
+
+\item Optionally, build the test suite
+\begin{lstlisting}
+make tests                     # for {GNU,BSD} Make
+nmake /f Nmakefile tests       # for NMake on Windows
+mk tests                       # for mk on Plan9
+\end{lstlisting}% @@@ check Plan9, should work already
+\end{enumerate}
+
+\subsection{Build-tool specific notes}
+
+Some platforms require some manual tweaks:
+
+Problem: Build fails because CC and/or related are not set, or different compiler,
+linker, etc. should be used.
+
+Solution: Set the 'CC' and other environment variables explicitly to the desired
+tools. E.g.:
+
+\begin{lstlisting}
+CC=gcc make
+\end{lstlisting}
+
+
+Problem: On windows using mingw and msys/unixutils 'Make', the make uses
+'cc' for C compilation, which does not exist in mingw.
+
+Solution: Set the 'CC' environment variable explicitly to 'gcc' (as in
+the example above).
+
+\subsection{Build with CMake}
+
+\begin{lstlisting}
+cmake -DCMAKE_INSTALL_PREFIX=<location>
+make
+\end{lstlisting}
+

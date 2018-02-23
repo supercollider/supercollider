@@ -1,0 +1,75 @@
+MAKEFILE = Makefile.embedded
+MAKE_CMD = ${MAKE} -f ${MAKEFILE} 
+all:
+	cd dynload && ${MAKE_CMD}
+	cd dyncall && ${MAKE_CMD}
+	cd dyncallback && ${MAKE_CMD}
+tests: 
+	cd test && ${MAKE_CMD} 
+clean:
+	cd dynload     && ${MAKE_CMD} clean
+	cd dyncall     && ${MAKE_CMD} clean
+	cd dyncallback && ${MAKE_CMD} clean
+	cd test        && ${MAKE_CMD} clean
+install:
+	cd dynload     && ${MAKE_CMD} install
+	cd dyncall     && ${MAKE_CMD} install
+	cd dyncallback && ${MAKE_CMD} install
+bsd:
+	${MAKE_CMD} all
+linux:
+	${MAKE_CMD} all
+linux64:
+	CFLAGS="${CFLAGS} -m64" ASFLAGS="${ASFLAGS} -m64" ${MAKE_CMD} all
+minix-gcc:
+	cd dyncall	&& CC=gcc CFLAGS= ${MAKE_CMD} 
+	cd dyncallback	&& CC=gcc CFLAGS= ${MAKE_CMD} 
+mingw32:
+	${MAKE_CMD} CC=gcc AS="gcc -c" all
+osx:
+	${MAKE_CMD} all
+osx-universal:
+	CFLAGS="${CFLAGS} -arch i386 -arch x86_64 -arch ppc" ASFLAGS="${ASFLAGS} -arch i386 -arch x86_64 -arch ppc" AR="libtool" ARFLAGS="-static -o" ${MAKE_CMD} all
+osx-template:
+	CC="${CC} ${OSX_ARCH}" AS="${AS} ${OSX_ARCH}" ${MAKE_CMD}
+osx-i386:
+	OSX_ARCH="-arch i386" ${MAKE_CMD} osx-template
+sun:
+	CFLAGS="${CFLAGS}" ${MAKE_CMD} all
+sun-64bit:
+	CFLAGS="${CFLAGS} -m64" ASFLAGS="${ASFLAGS} -m64" ${MAKE_CMD} all
+
+sun-gcc:
+	CC=gcc CFLAGS="${CFLAGS} -fPIC" ${MAKE_CMD} all
+sun-gcc-64bit:
+	CC=gcc CFLAGS="${CFLAGS} -m64" ASFLAGS="${ASFLAGS} -m64" ${MAKE_CMD} all
+ios-sdkroot:
+	\
+  AS="${CC} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  CC="${CC} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  CXX="${CXX} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  LD="${LD} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  ASFLAGS="-isysroot ${IOS_SDKROOT}"\
+  CFLAGS="-isysroot ${IOS_SDKROOT}"\
+  CXXFLAGS="-isysroot ${IOS_SDKROOT}"\
+  LDFLAGS="-Wl,-syslibroot ${IOS_SDKROOT}"\
+  ${MAKE_CMD} all  
+ios:
+	IOS_SDKROOT="`xcode-select -print-path`/Platforms/iPhone${IOS_PLATFORM}.platform/Developer/SDKs/iPhone${IOS_PLATFORM}${IOS_SDK}.sdk" ${MAKE_CMD} ios-sdkroot
+ios-sim:
+	IOS_PLATFORM="Simulator" ${MAKE_CMD} ios
+ios-os:
+	IOS_PLATFORM="OS"        ${MAKE_CMD} ios
+# NOTE iOS 6.1 does not support armv6 (has no libs)
+ios61-os:
+	IOS_SDK="6.1" IOS_ARCH="-arch armv7"             ${MAKE_CMD} ios-os
+ios61-os-no-thumb:
+	IOS_SDK="6.1" IOS_ARCH="-arch armv7 -mno-thumb"  ${MAKE_CMD} ios-os
+ios61-sim:
+	IOS_SDK="6.1" IOS_ARCH="-arch i386"              ${MAKE_CMD} ios-sim
+ios83-os-universal:
+	IOS_SDK="8.3" IOS_ARCH="-arch armv7 -arch arm64" ${MAKE_CMD} ios-os
+ios83-sim:
+	IOS_SDK="8.3" IOS_ARCH="-arch i386"              ${MAKE_CMD} ios-sim
+
+.PHONY: all tests clean install bsd linux linux64 minix-gcc mingw32 osx osx-universal sun sun-64bit sun-gcc sun-gcc-64bit

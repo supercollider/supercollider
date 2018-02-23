@@ -1,0 +1,762 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+% ==================================================
+% x86 
+% ==================================================
+\subsection{x86 Calling Conventions}
+
+
+\paragraph{Overview}
+
+There are numerous different calling conventions on the x86 processor
+architecture, like cdecl \cite{x86cdecl}, MS fastcall \cite{x86Winfastcall}, GNU
+fastcall \cite{x86GNUfastcall}, Borland fastcall \cite{x86Borlandfastcall}, Watcom
+fastcall \cite{x86Watcomfastcall}, Win32 stdcall \cite{x86Winstdcall}, MS thiscall
+\cite{x86Winthiscall}, GNU thiscall \cite{x86GNUthiscall}, the pascal calling
+convention \cite{x86Pascal} and a cdecl-like version for Plan9 \cite{x86Plan9}
+(dubbed plan9call by us), etc.\\
+
+
+\paragraph{\product{dyncall} support}
+
+Currently cdecl, stdcall, fastcall (MS and GNU), thiscall (MS and GNU) and
+plan9call are supported.\\
+\\
+
+
+\subsubsection{cdecl}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch\\
+{\bf edx}     & scratch, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 cdecl calling convention}
+\end{table}
+
+
+\pagebreak
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item all arguments are pushed onto the stack
+\end{itemize}
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers
+\item floating point types are returned via the st0 register (except on Minix, where they are returned as integers are)
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 cdecl calling convention}
+\end{figure}
+
+
+\pagebreak
+
+\subsubsection{MS fastcall}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch, parameter 0\\
+{\bf edx}     & scratch, parameter 1, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 fastcall (MS) calling convention}
+\end{table}
+
+
+\pagebreak
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item called function cleans up the stack
+\item first two integers/pointers (\textless=\ 32bit) are passed via ecx and edx (even if preceded by other arguments)
+\item integer types 64 bits in size @@@ ? first in edx:eax ?
+\item if first argument is a 64 bit integer, it is passed via ecx and edx
+\item all other parameters are pushed onto the stack
+\end{itemize}
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers@@@verify
+\item floating point types are returned via the st0 register@@@ really ?
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 fastcall (MS) calling convention}
+\end{figure}
+
+
+\pagebreak
+
+\subsubsection{GNU fastcall}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch, parameter 0\\
+{\bf edx}     & scratch, parameter 1, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 fastcall (GNU) calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item called function cleans up the stack
+\item first two integers/pointers (\textless=\ 32bit) are passed via ecx and edx (even if preceded by other arguments)
+\item if first argument is a 64 bit integer, it is pushed on the stack and the two registers are skipped 
+\item all other parameters are pushed onto the stack
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register.
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers.
+\item floating point types are returned via the st0.
+\end{itemize}
+
+
+\pagebreak
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 fastcall (GNU) calling convention}
+\end{figure}
+
+
+\subsubsection{Borland fastcall}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, parameter 0, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch, parameter 2\\
+{\bf edx}     & scratch, parameter 1, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 fastcall (Borland) calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: left-to-right
+\item called function cleans up the stack
+\item first three integers/pointers (\textless=\ 32bit) are passed via eax, ecx and edx (even if preceded by other arguments@@@?)
+\item integer types 64 bits in size @@@ ?
+\item all other parameters are pushed onto the stack
+\end{itemize}
+
+
+\pagebreak
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers@@@ verify
+\item floating point types are returned via the st0 register@@@ really ?
+\end{itemize}
+
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 fastcall (Borland) calling convention}
+\end{figure}
+
+
+\subsubsection{Watcom fastcall}
+
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, parameter 0, return value@@@\\
+{\bf ebx}     & scratch when used for parameter, parameter 2\\
+{\bf ecx}     & scratch when used for parameter, parameter 3\\
+{\bf edx}     & scratch when used for parameter, parameter 1, return value@@@\\
+{\bf esi}     & scratch when used for return pointer @@@??\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 fastcall (Watcom) calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item called function cleans up the stack
+\item first four integers/pointers (\textless=\ 32bit) are passed via eax, edx, ebx and ecx (even if preceded by other arguments@@@?)
+\item integer types 64 bits in size @@@ ?
+\item all other parameters are pushed onto the stack
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register@@@verify, I thnik its esi?
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers@@@ verify
+\item floating point types are returned via the st0 register@@@ really ?
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 fastcall (Watcom) calling convention}
+\end{figure}
+
+
+
+\subsubsection{win32 stdcall}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch\\
+{\bf edx}     & scratch, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 stdcall calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item Stack parameter order: right-to-left
+\item Called function cleans up the stack
+\item All parameters are pushed onto the stack
+\item Stack is usually 4 byte aligned (GCC \textgreater=\ 3.x seems to use a 16byte alignement@@@)
+\item Function name is decorated by prepending an underscore character and appending a '@' character and the number of bytes of stack space required
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers
+\item floating point types are returned via the st0 register
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 stdcall calling convention}
+\end{figure}
+
+\subsubsection{MS thiscall}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch, parameter 0\\
+{\bf edx}     & scratch, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 thiscall (MS) calling convention}
+\end{table}
+
+\newpage
+
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item called function cleans up the stack
+\item first parameter (this pointer) is passed via ecx
+\item all other parameters are pushed onto the stack
+\item Function name is decorated by prepending a '@' character and appending a '@' character and the number of bytes (decimal) of stack space required
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers@@@verify
+\item floating point types are returned via the st0 register@@@ really ?
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 thiscall (MS) calling convention}
+\end{figure}
+
+
+
+\subsubsection{GNU thiscall}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch\\
+{\bf edx}     & scratch, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 thiscall (GNU) calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item all parameters are pushed onto the stack
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers@@@verify
+\item floating point types are returned via the st0 register@@@ really ?
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 thiscall (GNU) calling convention}
+\end{figure}
+
+
+
+\subsubsection{pascal}
+
+The best known uses of the pascal calling convention are the 16 bit OS/2 APIs, Microsoft Windows 3.x and Borland Delphi 1.x.
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & permanent\\
+{\bf ecx}     & scratch\\
+{\bf edx}     & scratch, return value\\
+{\bf esi}     & permanent\\
+{\bf edi}     & permanent\\
+{\bf ebp}     & permanent\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 pascal calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: left-to-right
+\item called function cleans up the stack
+\item all parameters are pushed onto the stack
+\end{itemize}
+
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits are returned via the eax and edx registers
+\item floating point types are returned via the st0 register
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on x86 pascal calling convention}
+\end{figure}
+
+
+\newpage
+
+\subsubsection{plan9call}
+
+\paragraph{Registers and register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline
+{\bf eax}     & scratch, return value\\
+{\bf ebx}     & scratch\\
+{\bf ecx}     & scratch\\
+{\bf edx}     & scratch\\
+{\bf esi}     & scratch\\
+{\bf edi}     & scratch\\
+{\bf ebp}     & scratch\\
+{\bf esp}     & stack pointer\\
+{\bf st0}     & scratch, floating point return value\\
+{\bf st1-st7} & scratch\\
+\end{tabular*}
+\caption{Register usage on x86 plan9call calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack%@@@ doesn't belong to "parameter passing"
+\item all parameters are pushed onto the stack
+\end{itemize}
+
+\pagebreak
+
+\paragraph{Return values}
+
+\begin{itemize}
+\item return values of pointer or integral type (\textless=\ 32 bits) are returned via the eax register
+\item integers \textgreater\ 32 bits or structures are returned by the caller allocating the space and
+passing a pointer to the callee as a new, implicit first parameter (this means, on the stack)
+\item floating point types are returned via the st0 register (called F0 in plan9 8a's terms)
+\end{itemize}
+
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~=~~}
+local data                        & \hspace{4cm}   &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}
+\mrlbrace{3}{parameter area}      & \ldots         & \mrrbrace{3}{stack parameters} &                              \\
+                                  & \ldots         &                                &                              \\
+                                  & \ldots         &                                &                              \\
+\hhline{~-~~}
+                                  & return address &                                &                              \\
+\hhline{~=~~}
+local data                        &                &                                & \mrrbrace{3}{current frame}  \\
+\hhline{~-~~}
+parameter area                    &                &                                &                              \\
+\hhline{~-~~}
+                                  & \vdots         &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\\
+\\
+\\
+\caption{Stack layout on x86 plan9call calling convention}
+\end{figure}

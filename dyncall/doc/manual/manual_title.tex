@@ -1,0 +1,93 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007-2014 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newcommand{\dyncallversion}{0.9}
+\newcommand{\titlelogo}{%
+\begingroup%
+\setlength{\unitlength}{1mm}%
+\begin{picture}(0,0)(-38,110)%
+\includegraphics[scale=0.35]{dyncall_logo}%
+\end{picture}%
+\endgroup%
+%\begingroup
+%\setlength{\unitlength}{1bp}%
+%\begin{picture}(250,400)%
+%\end{picture}%
+%\endgroup
+%
+%
+%\setlength{\unitlength}{1mm}
+%\begin{picture}(60, 40)
+%\put(42,31){\circle*{1}}
+%\put(42,30){\circle{2}}
+%\put(40,31){\circle{4}}
+%\put(40,30){\circle{8}}
+%\put(41,31){\circle{16}}
+%\put(41,30){\circle{32}}
+%\put(19,31){\circle{1}}
+%\put(20,30){\circle*{2}}
+%\put(21,31){\circle{3}}
+%\put(19,30){\circle{4}}
+%\put(21,31){\circle{5}}
+%\put(20,30){\circle{6}}
+%\put(19,31){\circle{7}}
+%\put(20,30){\circle{8}}
+%\put(19,31){\circle{9}}
+%\put(20,30){\circle{10}}
+%\put(21,31){\circle{11}}
+%\put(20,30){\circle{12}}
+%\put(21,31){\circle{13}}
+%\put(20,30){\circle{14}}
+%\put(20,12){\circle*{3}}
+%\put(23,10){\circle*{2}}
+%\put(27, 9){\circle*{3}}
+%\put(32,10){\circle*{4}}
+%\put(37,12){\circle*{5}}
+%\end{picture}
+}
+
+% Don't output a dedicated title page for html
+\ifnhtml{
+
+\begin{titlepage}
+\begin{center}%
+	{\Huge \textbf{\product{dyncall}}}\\%
+        \ \\%
+        Version \dyncallversion\\%
+        \ \\%
+        \ \\%
+	\ \\%
+	Daniel {\sc Adler} \small{\tt{(dadler@uni-goettingen.de)}}\\%
+	Tassilo {\sc Philipp} \small{\tt{(tphilipp@potion-studios.com)}}%
+\end{center}
+%
+\titlelogo
+\begin{center}
+	\today
+\end{center}
+\end{titlepage}
+
+} %ifnhtml
+
+% For html, this will just become a title/date, etc.
+\ifhtml{
+	\HCode{<h1>Manual <small>dyncall \dyncallversion</small></h1>}
+	\today
+}
+

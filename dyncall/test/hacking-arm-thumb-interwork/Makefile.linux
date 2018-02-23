@@ -1,0 +1,10 @@
+TARGETS		= test
+TARGET_ARCH	+= -mthumb-interwork
+all: test
+thumb.o: thumb.c
+	$(COMPILE.c) $< -mthumb $(OUTPUT_OPTION)
+test: test.o thumb.o arm.o
+	$(LINK.o) $^ $(OUTPUT_OPTION)
+clean:
+	$(RM) $(TARGETS) *.o
+

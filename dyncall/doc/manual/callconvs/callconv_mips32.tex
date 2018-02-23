@@ -1,0 +1,204 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\subsection{MIPS32 Calling Convention}
+
+\paragraph{Overview}
+
+Multiple revisions of the MIPS Instruction set exist, namely MIPS I, MIPS II, MIPS III, MIPS IV, MIPS32 and MIPS64.
+Nowadays, MIPS32 and MIPS64 are the main ones used for 32-bit and 64-bit instruction sets, respectively.\\
+Given MIPS processor are often used for embedded devices, several add-on extensions exist for the MIPS family, for example: 
+
+\begin{description}
+\item [MIPS-3D] simple floating-point SIMD instructions dedicated to common 3D tasks.
+\item [MDMX] (MaDMaX) more extensive integer SIMD instruction set using 64 bit floating-point registers.
+\item [MIPS16e] adds compression to the instruction stream to make programs take up less room (allegedly a response to the THUMB instruction set of the ARM architecture).
+\item [MIPS MT] multithreading additions to the system similar to HyperThreading.
+\end{description}
+
+Unfortunately, there is actually no such thing as "The MIPS Calling Convention". Many possible conventions are used
+by many different environments such as \emph{O32}\cite{MIPSo32}, \emph{O64}\cite{MIPSo64}, \emph{N32}\cite{MIPSn32/n64}, \emph{N64}\cite{MIPSn32/n64}, \emph{EABI}\cite{MIPSeabi} and \emph{NUBI}\cite{MIPSnubi}.\\
+
+\paragraph{\product{dyncall} support}
+
+Currently, dyncall supports for MIPS 32-bit architectures the widely-used O32 calling convention (for big- and little-endian targets),
+as well as EABI (which is used on the Homebrew SDK for the Playstation Portable). \product{dyncall} currently does not support MIPS16e
+(contrary to the like-minded ARM-THUMB, which is supported). Both, calls and callbacks are supported.
+
+\subsubsection{MIPS EABI 32-bit Calling Convention}
+
+\paragraph{Register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{lll}
+Name                                   & Alias                & Brief description\\
+\hline
+{\bf \$0}                              & {\bf \$zero}         & Hardware zero \\
+{\bf \$1}                              & {\bf \$at}           & Assembler temporary \\
+{\bf \$2-\$3}                          & {\bf \$v0-\$v1}      & Integer results \\
+{\bf \$4-\$11}                         & {\bf \$a0-\$a7}      & Integer arguments, or double precision float arguments\\
+{\bf \$12-\$15,\$24}                   & {\bf \$t4-\$t7,\$t8} & Integer temporaries \\
+{\bf \$25}                             & {\bf \$t9}           & Integer temporary, hold the address of the called function for all PIC calls (by convention) \\
+{\bf \$16-\$23}                        & {\bf \$s0-\$s7}      & Preserved \\
+{\bf \$26,\$27}                        & {\bf \$kt0,\$kt1}    & Reserved for kernel \\
+{\bf \$28}                             & {\bf \$gp}           & Global pointer, preserve \\
+{\bf \$29}                             & {\bf \$sp}           & Stack pointer, preserve \\
+{\bf \$30}                             & {\bf \$s8}           & Frame pointer, preserve \\
+{\bf \$31}                             & {\bf \$ra}           & Return address, preserve \\
+{\bf hi, lo}                           &                      & Multiply/divide special registers \\
+{\bf \$f0,\$f2}                        &                      & Float results \\
+{\bf \$f1,\$f3,\$f4-\$f11,\$f20-\$f23} &                      & Float temporaries \\
+{\bf \$f12-\$f19}                      &                      & Single precision float arguments \\
+\end{tabular*}
+\caption{Register usage on MIPS32 EABI calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item Stack grows down
+\item Stack parameter order: right-to-left
+\item Caller cleans up the stack
+\item first 8 integers (\textless=\ 32bit) are passed in registers \$a0-\$a7
+\item first 8 single precision floating point arguments are passed in registers \$f12-\$f19
+\item if either integer or float registers are used up, the stack is used
+\item 64-bit stack arguments are always aligned to 8 bytes
+\item 64-bit integers or double precision floats are passed on two general purpose registers starting at an even register number, skipping one odd register
+\item \$a0-\$a7 and \$f12-\$f19 are not required to be preserved
+\item results are returned in \$v0 (32-bit), \$v0 and \$v1 (64-bit), \$f0 or \$f0 and \$f2 (2 $\times$ 32 bit float e.g. complex)
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                         & \vdots       &                                &                              \\
+\hhline{~=~~}                            
+register save area                       & \hspace{4cm} &                                & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}                            
+local data                               &              &                                &                              \\
+\hhline{~-~~}                            
+\mrlbrace{3}{parameter area}             & \ldots       & \mrrbrace{3}{stack parameters} &                              \\
+                                         & \ldots       &                                &                              \\
+                                         & \ldots       &                                &                              \\
+\hhline{~=~~}
+register save area (with return address) &              &                                & \mrrbrace{5}{current frame}  \\
+\hhline{~-~~}
+local data                               &              &                                &                              \\
+\hhline{~-~~}
+parameter area                           &              &                                &                              \\
+\hhline{~-~~}
+                                         & \vdots       &                                &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on mips32 eabi calling convention}
+\end{figure}
+
+\newpage
+
+\subsubsection{MIPS O32 32-bit Calling Convention}
+
+\paragraph{Register usage}
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{lll}
+Name                         & Alias                & Brief description\\
+\hline                                                             
+{\bf \$0}                    & {\bf \$zero}         & hardware zero \\
+{\bf \$1}                    & {\bf \$at}           & assembler temporary \\
+{\bf \$2-\$3}                & {\bf \$v0-\$v1}      & return value, scratch \\
+{\bf \$4-\$7}                & {\bf \$a0-\$a3}      & first integer arguments, scratch\\
+{\bf \$8-\$15,\$24}          & {\bf \$t0-\$t7,\$t8} & temporaries, scratch \\
+{\bf \$25}                   & {\bf \$t9}           & temporary, hold the address of the called function for all PIC calls (by convention) \\
+{\bf \$16-\$23}              & {\bf \$s0-\$s7}      & preserved \\
+{\bf \$26,\$27}              & {\bf \$k0,\$k1}      & reserved for kernel \\
+{\bf \$28}                   & {\bf \$gp}           & global pointer, preserved by caller \\
+{\bf \$29}                   & {\bf \$sp}           & stack pointer, preserve \\
+{\bf \$30}                   & {\bf \$fp}           & frame pointer, preserve \\
+{\bf \$31}                   & {\bf \$ra}           & return address, preserve \\
+{\bf hi, lo}                 &                      & multiply/divide special registers \\
+{\bf \$f0-\$f3}              &                      & float return value, scratch \\
+{\bf \$f4-\$f11,\$f16-\$f19} &                      & float temporaries, scratch \\
+{\bf \$f12-\$f15}            &                      & first floating point arguments, scratch \\
+{\bf \$f20-\$f31}            &                      & preserved \\
+\end{tabular*}
+\caption{Register usage on MIPS O32 calling convention}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item Stack grows down
+\item Stack parameter order: right-to-left
+\item Caller cleans up the stack
+\item Caller is required to always leave a 16-byte spill area for\$a0-\$a3 at the and of {\bf its} frame, to be used and spilled to by the callee, if needed
+\item The different stack areas (local data, register save area, parameter area) are each aligned to 8 bytes.
+\item generally, first four 32bit arguments are passed in registers \$a0-\$a3, respectively (see below for exceptions if first arg is a float)
+\item subsequent parameters are passed vie the stack
+\item 64-bit params passed via registers are passed using either two registers (starting at an even register number, skipping an odd one if necessary), or via the stack using an 8-byte alignment
+\item if the very first call argument is a float, up to 2 floats or doubles can be passed via \$f12 and \$f14, respectively, for first and second argument
+\item if any arguments are passed via float registers, skip \$a0-\$a3 for subsequent arguments as if the values were passed via them
+\item note that if the first argument is not a float, but the second, it'll get passed via the \$a? registers
+\item results are returned in \$v0 (32-bit int return values), \$f0 (32-bit float), \$v0 and \$v1 (64-bit int), \$f0 and \$f3 (64bit float)
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                         & \vdots         &                                &                               \\
+\hhline{~=~~}                            
+local data                               & \hspace{4cm}   &                                & \mrrbrace{12}{caller's frame} \\
+\hhline{~-~~}                            
+register save area                       & return address &                                &                               \\
+                                         & s7             &                                &                               \\
+                                         & \vdots         &                                &                               \\
+                                         & s0             &                                &                               \\
+\hhline{~-~~}                                             
+\mrlbrace{7}{parameter area}             & \ldots         & \mrrbrace{3}{stack parameters} &                               \\
+                                         & \ldots         &                                &                               \\
+                                         & \ldots         &                                &                               \\
+                                         & a3             & \mrrbrace{4}{spill area}       &                               \\
+                                         & a2             &                                &                               \\
+                                         & a1             &                                &                               \\
+                                         & a0             &                                &                               \\
+\hhline{~=~~}                                             
+local data                               &                &                                & \mrrbrace{5}{current frame}   \\
+\hhline{~-~~}                                             
+register save area (with return address) &                &                                &                               \\
+\hhline{~-~~}                                             
+parameter area                           &                &                                &                               \\
+                                         & \vdots         &                                &                               \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on MIPS O32 calling convention}
+\end{figure}
+
+\newpage
+
+\subsubsection{MIPS N32 32-bit Calling Convention}
+
+@@@
+

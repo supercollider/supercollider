@@ -1,0 +1,291 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+\section{Bindings to programming languages}
+
+Through binding of the \product{dyncall} library into a scripting environment,
+the scripting language can gain system programming status to a certain degree.\\
+The \product{dyncall} library provides bindings to Erlang\cite{Erlang}, Java\cite{Java},
+Lua\cite{Lua}, Python\cite{Python}, R\cite{R}, Ruby\cite{Ruby}, Go\cite{Go} and the shell/command line.\\
+However, please note that some of these bindings are work-in-progress and not
+automatically tested, meaning it might require some additional work to make them
+work.
+
+\subsection{Common Architecture}
+
+The binding interfaces of the \product{dyncall} library to various scripting
+languages share a common set of functionality to invoke a function call.
+
+\subsubsection{Dynamic loading of code}
+
+The helper library \emph{dynload} which accompanies the \product{dyncall}
+library provides an abstract interface to operating-system specific mechanisms
+for loading and accessing executable code out of, but not limited to, shared
+libraries.
+
+\subsubsection{Functions}
+
+All bindings are based on a common interface convention providing a common set
+of the following 4 functions (exact spelling depending on the binding's scripting
+environment):
+\begin{description}
+\item [load] - load a module of compiled code
+\item [free] - unload a module of compiled code
+\item [find] - find function pointer by symbolic names
+\item [call] - invoke a function call
+\end{description}
+
+\pagebreak
+
+\subsubsection{Signatures}
+
+A signature is a character string that represents a function's arguments and
+return value types. It is used in the scripting language bindings invoke
+functions to perform automatic type-conversion of the languages' types to the
+low-level C/C++ data types. This is an essential part of mapping the more flexible
+and often abstract data types provided in scripting languages conveniently to the
+strict machine-level data types used by C-libraries.
+The high-level C interface functions \capi{dcCallF()}, \capi{dcVCallF()},
+\capi{dcArgF()} and \capi{dcVArgF()} of the \product{dyncall} library also make
+use of this signature string format.\\
+\\
+The format of a \product{dyncall} signature string is as depicted below:
+
+
+\paragraph{\product{dyncall} signature string format}
+
+\begin{center}
+\group{input parameter type signature character}* \sigchar{)} \group{return
+type signature character} \\
+\end{center}
+
+The \group{input parameter type signature character} sequence left to the
+\sigchar{)} is in left-to-right order of the corresponding C function
+parameter type list.\\
+The special \group{return type signature character} \sigchar{v} specifies
+that the function does not return a value and corresponds to \capi{void}
+functions in C.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{cl}
+Signature character & C/C++ data type \\
+\hline
+\sigchar{B} & \_Bool, bool \\
+\sigchar{c} & char \\
+\sigchar{C} & unsigned char \\
+\sigchar{s} & short \\
+\sigchar{S} & unsigned short \\
+\sigchar{i} & int \\
+\sigchar{I} & unsigned int \\
+\sigchar{j} & long \\
+\sigchar{J} & unsigned long \\
+\sigchar{l} & long long, int64\_t \\
+\sigchar{L} & unsigned long long, uint64\_t \\
+\sigchar{f} & float \\
+\sigchar{d} & double \\
+\sigchar{p} & void* \\
+\sigchar{Z} & const char* (pointing to C string) \\
+\sigchar{v} & void \\
+\end{tabular*}
+\caption{Type signature encoding for function call data types}
+\label{sigchar}
+\end{center}
+\end{table}
+
+Please note that using a \sigchar{(} at the beginning of a signature string is possible,
+although not required. The character doesn't have any meaning and will simply be
+ignored. However, using it prevents annoying syntax highlighting problems with some code
+editors.
+
+\pagebreak
+
+\paragraph{Examples of C function prototypes}
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{rll}
+& C function prototype & dyncall signature \\
+\hline
+void      & f1();                                     & \sigstr{)v}\\
+int       & f2(int, int);                             & \sigstr{ii)i}\\
+long long & f3(void*);                                & \sigstr{p)L}\\
+void      & f3(int**);                                & \sigstr{p)v}\\
+double    & f4(int, bool, char, double, const char*); & \sigstr{iBcdZ)d}\\
+\end{tabular*}
+\caption{Type signature examples of C function prototypes}
+\label{sigex}
+\end{center}
+\end{table}
+
+
+
+\subsection{Erlang language bindings}
+
+The OTP library application {\tt erldc} implements the Erlang language bindings.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{ll}
+Signature character & accepted Erlang data types\\
+\hline
+\sigchar{B} & atoms 'true' and 'false' converted to bool\\
+\sigchar{c}, \sigchar{C} & integer cast to (unsigned) char\\
+\sigchar{s}, \sigchar{S} & integer cast to (unsigned) short\\
+\sigchar{i}, \sigchar{I} & integer cast to (unsigned) int\\
+\sigchar{j}, \sigchar{J} & integer cast to (unsigned) long\\
+\sigchar{l}, \sigchar{L} & integer cast to (unsigned) long long\\
+\sigchar{f}              & decimal cast to float\\
+\sigchar{d}              & decimal cast to double\\
+\sigchar{p}              & binary (previously returned from call\_ptr or callf) cast to void*\\
+\sigchar{Z}              & string cast to void*\\
+\sigchar{v}              & no return type\\
+\end{tabular*}
+\caption{Type signature encoding for Erlang bindings}
+\label{Erlangsigchar}
+\end{center}
+\end{table}
+
+\pagebreak
+
+\subsection{Go language bindings}
+
+A Go binding is provided through the {\tt godc} package. Since Go's type system is basically a superset of C's, the type mapping from Go to C is straightforward.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{ll}
+Signature character & accepted Go data types\\
+\hline
+\sigchar{B} & bool\\
+\sigchar{c}, \sigchar{C} & int8, uint8\\
+\sigchar{s}, \sigchar{S} & int16, uint16\\
+\sigchar{i}, \sigchar{I} & int, uint\\
+\sigchar{j}, \sigchar{J} & int32, uint32\\
+\sigchar{l}, \sigchar{L} & int64, uint64\\
+\sigchar{f}              & float32\\
+\sigchar{d}              & float64\\
+\sigchar{p}, \sigchar{Z} & uintptr, unsafe.Pointer\\
+\sigchar{v}              & no return type\\
+\end{tabular*}
+\caption{Type signature encoding for Go bindings}
+\label{Gosigchar}
+\end{center}
+\end{table}
+
+Note that passing a Go-{\tt string} directly to a C-function expecting a pointer is not directly possible. However, the binding comes with
+two helper functions, {\tt AllocCString(value string) unsafe.Pointer} and {\tt FreeCString(value unsafe.Pointer)} to help with converting
+a {\tt string} to an {\tt unsafe.Pointer} which then can be passed to {\tt ArgPointer(value unsafe.Pointer)}. Once you are done with this
+temporary string, free it using {\tt FreeCString(value unsafe.Pointer)}.
+
+
+\subsection{Python language bindings}
+
+The python module {\tt pydc} implements the Python language bindings,
+namely {\tt load}, {\tt find}, {\tt free}, {\tt call}.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{ll}
+Signature character & accepted Python data types\\
+\hline
+\sigchar{B} & bool \\
+\sigchar{c} & if string, take first item\\
+\sigchar{s} & int, check in range\\
+\sigchar{i} & int\\
+\sigchar{j} & int\\
+\sigchar{l} & long, casted to long long\\
+\sigchar{f} & float\\
+\sigchar{d} & double\\
+\sigchar{p} & string or long casted to void*\\
+\sigchar{v} & no return type\\
+\end{tabular*}
+\caption{Type signature encoding for Python bindings}
+\label{Pysigchar}
+\end{center}
+\end{table}
+
+\pagebreak
+
+\subsection{R language bindings}
+
+The R package {\tt rdyncall} implements the R langugae bindings providing the function
+{\tt .dyncall() }.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{ll}
+Signature character & accepted R data types\\
+\hline
+\sigchar{B} & coerced to logical vector, first item\\
+\sigchar{c} & coerced to integer vector, first item truncated char\\
+\sigchar{C} & coerced to integer vector, first item truncated to unsigned char\\
+\sigchar{s} & coerced to integer vector, first item truncated to short\\
+\sigchar{S} & coerced to integer vector, first item truncated to unsigned short\\
+\sigchar{i} & coerced to integer vector, first item\\
+\sigchar{I} & coerced to integer vector, first item casted to unsigned int\\
+\sigchar{j} & coerced to integer vector, first item\\
+\sigchar{J} & coerced to integer vector, first item casted to unsigned long\\
+\sigchar{l} & coerced to numeric, first item casted to long long\\
+\sigchar{L} & coerced to numeric, first item casted to unsigned long long\\
+\sigchar{f} & coerced to numeric, first item casted to float\\
+\sigchar{d} & coerced to numeric, first item\\
+\sigchar{p} & external pointer or coerced to string vector, first item\\
+\sigchar{Z} & coerced to string vector, first item\\
+\sigchar{v} & no return type\\
+\end{tabular*}
+\caption{Type signature encoding for R bindings}
+\label{Rsigchar}
+\end{center}
+\end{table}
+
+Some notes on the R Binding:
+\begin{itemize}
+\item Unsigned 32-bit integers are represented as signed integers in R.
+\item 64-bit integer types do not exist in R, therefore we use double floats
+to represent 64-bit integers (using only the 52-bit mantissa part).
+\end{itemize}
+
+\pagebreak
+
+\subsection{Ruby language bindings}
+
+The Ruby gem {\tt rbdc} implements the Ruby language bindings.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular*}{0.75\textwidth}{ll}
+Signature character & accepted Ruby data types\\
+\hline
+\sigchar{B} & TrueClass, FalseClass, NilClass, Fixnum casted to bool\\
+\sigchar{c}, \sigchar{C} & Fixnum cast to (unsigned) char\\
+\sigchar{s}, \sigchar{S} & Fixnum cast to (unsigned) short\\
+\sigchar{i}, \sigchar{I} & Fixnum cast to (unsigned) int\\
+\sigchar{j}, \sigchar{J} & Fixnum cast to (unsigned) long\\
+\sigchar{l}, \sigchar{L} & Fixnum cast to (unsigned) long long\\
+\sigchar{f}              & Float cast to float\\
+\sigchar{d}              & Float cast to double\\
+\sigchar{p}, \sigchar{Z} & String cast to void*\\
+\sigchar{v}              & no return type\\
+\end{tabular*}
+\caption{Type signature encoding for Ruby bindings}
+\label{Rubysigchar}
+\end{center}
+\end{table}

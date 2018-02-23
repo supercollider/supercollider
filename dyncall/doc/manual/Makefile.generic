@@ -1,0 +1,50 @@
+all: manual.pdf
+
+sources: *.tex callconvs/*.tex dyncall_logo.* dyncall_watermark.*
+
+pdf: manual.pdf
+
+html:: html/manual.html
+#html-single: html/manual.html
+#html-split: html/manual.html
+
+clean:
+	# pdf
+	cd "${VPATH}" && for i in pdf aux lof log lol lot out toc; do rm -f manual.$$i || true; done
+	# html
+	cd "${VPATH}" && ( \
+		for i in 4ct 4tc css dvi html idv lg tmp xref; do rm -f manual.$$i || true; done; \
+		for i in manual*x.png manual*.html texput.log manual_*.log zzmanual.eps zzmanual.ps custom_tex4ht.env multirow.4ht; do rm -f $$i || true; done; \
+		rm -r html || true; \
+	)
+
+
+# Main target dependencies --->
+
+
+html/manual.html: manual_tex4ht.cfg sources
+	# The following runs htlatex, but sets up a few things beforehand to control
+	# it's behavior:
+	# - create custom, local version of tex4ht.env based on default one, but with
+	#   better bitmaps
+	# - create empty multirow.4ht file, to simply override tex4ht's default one,
+	#   which produces wrong output in our case - since all the tables where we
+	#   use the multirow package are rendered into .pngs for our html doc, we don't
+	#   need any tex4ht specific version outputing html
+	cd "${VPATH}" &&  ( \
+		:>./multirow.4ht; \
+		cp $$(dirname $$(which tex4ht))/../share/texmf-dist/tex4ht/base/unix/tex4ht.env ./custom_tex4ht.env; \
+		sed -E -i '' 's/(Text|Graphics)(AlphaBits)=[1,2,3]([^0-9])/\1\2=4\3/g' custom_tex4ht.env; \
+		mkdir -p ./html/; \
+		htlatex manual.tex manual_tex4ht " -cunihtf -e./custom_tex4ht.env -utf8" "-e./custom_tex4ht.env -d./html/"; \
+		rm ./html/*.css; \
+	)
+	# Postprocessing. Inject menu into output html pages. Replace some pieces, etc..
+	for f in "${VPATH}/html/"*.html; do \
+		sed -E -i '' $$'s/([[:space:]]class=["\'])lstlisting(["\'])/\\1ttDiv\\2/' "$$f"; \
+	done
+
+manual.pdf: sources
+	# run twice for toc on some tex installs
+	cd "${VPATH}" && for i in 1 2; do pdflatex -output-directory="${PWD}" manual.tex; done
+

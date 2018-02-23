@@ -219,6 +219,8 @@ option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)"
 
 option(SCLANG_SERVER "Build with internal server." ON)
 
+option(DYNCALL "Build with dyncall support." ON)
+
 option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
@@ -269,6 +271,10 @@ if(SYSTEM_YAMLCPP)
   find_package(YamlCpp)
 else()
   set(YAMLCPP_FOUND OFF)
+endif()
+
+if (DYNCALL)
+	add_subdirectory(dyncall)
 endif()
 
 #############################################

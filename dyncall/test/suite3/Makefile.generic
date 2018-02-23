@@ -1,0 +1,16 @@
+APP       = suite3
+OBJS      = case.o main.o
+SRCTOP    = ${VPATH}/../..
+BLDTOP    = ../..
+CPPFLAGS += -I${SRCTOP}/dyncall
+LDLIBS   += -L${BLDTOP}/dyncall -ldyncall_s
+.PHONY: all clean install
+all: ${APP}
+${APP}: ${OBJS} 
+	${CXX} ${CXXFLAGS} ${LDFLAGS} ${OBJS} ${LDLIBS} -o ${APP}
+clean:
+	rm -f ${APP} ${OBJS}
+install:
+	mkdir -p ${PREFIX}/test
+	cp ${APP} ${PREFIX}/test
+

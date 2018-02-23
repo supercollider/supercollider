@@ -1,0 +1,67 @@
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+#///////////////////////////////////////////////////
+#
+#	MSVC nmake rules
+#	tool_MSVC.nmake
+#
+#///////////////////////////////////////////////////
+
+
+
+CC  =cl
+CXX =cl
+AR  =lib
+!IF "$(BUILD_ARCH)" == "x64"
+AS  =ml64
+!ELSE IF "$(BUILD_ARCH)" == "x86"
+AS  =ml
+!ENDIF
+LD  =link
+
+ASFLAGS  = /c /nologo
+CFLAGS   = /EHsc /GR- /GS- /Ox /c /nologo /I$(TOP)\dyncall /I$(TOP)\dyncallback
+CXXFLAGS = $(CFLAGS)
+LDFLAGS  = /OPT:REF /OPT:ICF /NOLOGO
+ARFLAGS  = /NOLOGO
+
+
+.SUFFIXES:
+.SUFFIXES: .obj .exe .dll .lib .pdf .c .cpp .asm .tex .cc
+
+
+.asm.obj:
+	echo .asm.obj: Assembling $< ...
+	$(AS) $(ASFLAGS) /Fo$@ $<
+
+.c.obj:
+	echo .c.obj: Compiling $< ...
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+.cpp.obj:
+	echo .cpp.obj: Compiling $< ...
+	$(CXX) $(CXXFLAGS) /Fo$@ $<
+
+.cc.obj:
+	echo .cc.obj: Compiling $< ...
+	$(CXX) $(CXXFLAGS) /Fo$@ $<
+
+.tex.pdf:
+	pdflatex $<

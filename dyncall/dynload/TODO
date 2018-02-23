@@ -1,0 +1,17 @@
+- RTLD_LAZY in darwin, why not in unix?
+- Failed On Open Solaris 11:
+  
+In file included from dynload_syms.c:28:
+dynload_syms_elf.c:56: error: syntax error before "Elf_Dyn"
+dynload_syms_elf.c:56: warning: data definition has no type or storage class
+dynload_syms_elf.c: In function `dlSymsInit':
+dynload_syms_elf.c:155: error: `pDyn' undeclared (first use in this function)
+dynload_syms_elf.c:155: error: (Each undeclared identifier is reported only once
+dynload_syms_elf.c:155: error: for each function it appears in.)
+dynload_syms_elf.c:155: error: syntax error before ')' token
+dynload_syms_elf.c:160: error: `DT_NULL' undeclared (first use in this function)
+dynload_syms_elf.c:163: error: `DT_STRTAB' undeclared (first use in this function)
+dynload_syms_elf.c:164: error: `DT_SYMTAB' undeclared (first use in this function)
+dynload_syms_elf.c:165: error: `DT_HASH' undeclared (first use in this function)
+make: *** [dynload_syms.o] Error 1
+

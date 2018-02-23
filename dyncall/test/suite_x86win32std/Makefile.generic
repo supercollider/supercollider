@@ -1,0 +1,25 @@
+APP = suite_x86win32std
+OBJS = case.o main.o
+
+SRCTOP   = ../..
+BLDTOP   = ../../
+CFLAGS  += -I${SRCTOP}/dyncall
+LDFLAGS += -L${BLDTOP}/dyncall
+LDLIBS  += -ldyncall_s 
+LINK     = ${CC}
+
+all: ${APP}
+
+.PHONY: all clean install
+
+RM      ?= rm -f
+AR      ?= ar
+MKDIR   ?= mkdir
+INSTALL ?= install -p
+
+${APP}: ${OBJS} 
+	${LINK} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP} ${TARGET_ARCH}
+
+clean:
+	${RM} ${APP} ${OBJS}
+

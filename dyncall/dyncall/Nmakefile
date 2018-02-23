@@ -1,0 +1,62 @@
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+#///////////////////////////////////////////////////
+#
+#	nmake makefile
+#	Nmakefile
+#
+#///////////////////////////////////////////////////
+
+
+TOP=..
+
+!INCLUDE $(TOP)\buildsys\nmake\prolog.nmake
+
+
+!IF "$(BUILD_OS)" == "windows"
+
+TARGETS = libdyncall_s.lib #libdyncall.lib libdyncall.dll
+
+OBJS = dyncall_call_$(BUILD_ARCH)_generic_masm.obj dyncall_vector.obj dyncall_vector.obj dyncall_callvm.obj dyncall_callvm_base.obj dyncall_api.obj dyncall_callf.obj dyncall_struct.obj
+
+libdyncall_s.lib: $(OBJS)
+	echo Creating library $@ ...
+	$(AR) $(ARFLAGS) /OUT:"$@" $(OBJS) > nul
+
+libdyncall.dll libdyncall.lib: $(OBJS)
+	echo Creating shared/import library $@ ...
+	$(LD) /DLL $(LDFLAGS) $(OBJS) > nul
+
+
+!ELSE IF "$(BUILD_OS)" == "nds"
+
+TARGETS = libdyncall_s.a
+
+OBJS = dyncall_call.o dyncall_vector.o dyncall_vector.o dyncall_callvm.o dyncall_callvm_base.o dyncall_api.o dyncall_callf.o
+
+libdyncall_s.a: $(OBJS)
+	echo Creating library $@ ...
+	$(AR) -rc $(ARFLAGS) "$@" $(OBJS)
+
+!ENDIF
+
+
+!INCLUDE $(TOP)\buildsys\nmake\epilog.nmake
+

@@ -1,0 +1,119 @@
+.\" Copyright (c) 2007-2017 Daniel Adler <dadler AT uni-goettingen DOT de>, 
+.\"                         Tassilo Philipp <tphilipp AT potion-studios DOT com>
+.\" 
+.\" Permission to use, copy, modify, and distribute this software for any
+.\" purpose with or without fee is hereby granted, provided that the above
+.\" copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+.\" WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+.\" MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+.\" ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+.\" WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+.\" OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.Dd $Mdocdate$
+.Dt dynload 3
+.Sh NAME
+.Nm dynload
+.Nd encapsulates dynamic loading mechanisms and
+gives access to functions in foreign dynamic libraries and code modules.
+.Sh SYNOPSIS
+.In dynload.h
+.Ft DLLib *
+.Fn dlLoadLibrary "const char * libpath"
+.Ft void
+.Fn dlFreeLibrary "DLLib * pLib"
+.Ft void *
+.Fn dlFindSymbol "DLLib * pLib" "const char * pSymbolName"
+.Ft int
+.Fn dlGetLibraryPath "DLLib * pLib" "char * sOut" "int bufSize"
+.Ft DLSyms*
+.Fn dlSymsInit "const char * libPath"
+.Ft void
+.Fn dlSymsCleanup "DLSyms * pSyms"
+.Ft int
+.Fn dlSymsCount "DLSyms * pSyms"
+.Ft const char*
+.Fn dlSymsName "DLSyms * pSyms" "int index"
+.Ft const char*
+.Fn dlSymsNameFromValue "DLSyms * pSyms" "void * value"
+.Sh DESCRIPTION
+The
+.Nm
+library provides an interface to load foreign dynamic libraries and access
+to their symbols.
+.Pp
+.Fn dlLoadLibrary
+loads a dynamic library at
+.Ar libpath
+and returns a handle to it for use in
+.Fn dlFreeLibrary 
+and
+.Fn dlFindSymbol
+calls. Passing a null pointer for the
+.Ar libpath
+argument is valid, and returns a handle to the main executable of the calling code. Also, searching libraries in library paths (e.g. by just passing the library's leaf name) should work, however, they are OS specific. Returns a null pointer on error.
+.Pp
+.Fn dlFreeLibrary 
+frees the loaded library with handle
+.Ar pLib .
+.Pp
+.Fn dlFindSymbol
+returns a pointer to a symbol with name
+.Ar pSymbolName
+in the library with handle
+.Ar pLib ,
+or returns a null pointer if the symbol cannot be found. The name is specified as it would appear in C source code (mangled if C++, etc.).
+.Pp
+.Fn dlGetLibraryPath
+can be used to get a copy of the path to the library loaded with handle
+.Ar pLib .
+The parameter
+.Ar sOut
+is a pointer to a buffer of size
+.Ar bufSize
+(in bytes), to hold the output string. The return value is the size of the buffer (in bytes) needed to hold the null-terminated string, or 0 if it can't be looked up. If
+.Ar bufSize
+>= return value > 1, a null-terminted string with the path to the library should be in
+.Ar sOut .
+If it returns 0, the library name wasn't able to be found. Please note that this might happen in some rare cases, so make sure to always check.
+.Pp
+The dlSyms* functions can be used to iterate over symbols. Since they can be used on libraries that are not linked, they are made
+for symbol name lookups, not to get symbols' addresses. For that refer to
+.Fn dlFindSymbol .
+.Fn dlSymsInit
+will return a handle (or null pointer on error) to the shared object specified by
+.Ar libPath ,
+to be used with the other dlSyms* functions. Note that contrary to loading and linking libraries, no (OS-specific) rules for searching libraries in library paths, etc. apply. The handle must be freed with
+.Fn dlSymsCleanup .
+.Fn dlSymsCount
+returns the number of symbols in the shared object,
+.Fn dlSymsName
+and
+.Fn dlSymsNameFromValue
+are used to lookup symbol names using an index or symbol's address, respectively, returning a null pointer on error. The names are returned as they would appear in C source code (mangled if C++, etc.). The address passed to
+.Fn dlSymsNameFromValue
+must point to a loaded symbol.
+.Sh BUGS
+.Fn dlGetLibraryPath
+is not thread-safe on Darwin (macOS, iOS, ...) and OpenBSD.
+.Fn dlSymsInit
+is not thread-safe on Darwin.
+.Fn dlGetLibraryPath
+will not work on the following platforms when the library in question doesn't have the (default)
+.Fn _init
+and
+.Fn _fini
+symbols exported (rare, but possible): Haiku (all versions), OpenBSD < 3.7, NetBSD < 5.1, FreeBSD < 4.8
+.Sh CONFORMING TO
+The dynload library conforms to c99.
+.Ed
+.Sh SEE ALSO
+.Xr dyncall 3 ,
+.Xr dyncallback 3
+and the dyncall manual (available in HTML and PDF format) for more information.
+.Sh AUTHORS
+.An "Daniel Adler" Aq dadler@uni-goettingen.de
+.An "Tassilo Philipp" Aq tphilipp@potion-studios.com

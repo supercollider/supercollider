@@ -1,0 +1,245 @@
+This file lists bigger/noteworthy changes, only...
+
+Version 1.0 (upcoming)
+dyncall:
+  o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori Mitsugi!)
+  o fixed potential buffer overrun on ARM64
+  o error code handling (dcGetError) changes, flag is now cleared (work still underway)
+  o MIPS n64 ellipsis call fixes
+  o ARM32 armhf ellipsis call fixes
+  o fixed ARM32-THUMB stack alignment issues (found on Cortex-m0, thanks Darren Whobrey!)
+  o better C++ compiler support (for pointer conversions)
+dyncallback:
+  o PPC64 single-precision float fixes for more than 13 float args (thanks Masanori Mitsugi!)
+  o MIPS o32 (big- and little-endian), EABI (32 bit, little-endian) and n64 (big-endian) support
+  o SPARC32 (v7/v8) support
+  o SPARC64 (v9) support
+  o PPC32 fixes for (old) Darwin/OS X systems
+  o POSIX compliance: fallback for wx alloc on systems that don't have mmap()'s MAP_ANON
+  o allocated space used for thunk now always W^X (req. for e.g. OpenBSD >= 6.0)
+dynload:
+  o major reliability/stability fixes for Mach-O dlSyms* functions to (thanks Stéphane Mons for help):
+    better handle loading dylibs by symlink, relative path, random casing, etc.
+    fixes to symbol name lookups that used wrong offsets before
+    64-bit platform fixes (was broken on x64 and never supported on others)
+  o allowing Mach-O dlSyms* lib to be used standalone (consistent with ELF and PE impls now)
+  o simplifications of implemention on Darwin, sharing parts with *nix implementation
+  o potentially breaking change on macos/Darwin platforms: all functions now consistently accept or
+    return symbol names as they would appear in C code, instead of the raw ones in object files
+  o added new function dlGetLibraryPath, allowing lookups of path to library via handle
+general:
+  o assembly code now built by explicitily asking for non-execstack, for safer/easier integration
+    into other projects/builds, where needed; needed b/c of questionable default behaviours of some
+    toolchains (thanks Thorsten Behrens for report and analysis)
+doc:
+  o working html doc generation from TEX sources
+  o SPARC32 (v7/v8) calling convention description
+  o SPARC64 (v9) calling convention description
+bindings:
+  o better documentation, removed relative path dependencies, general cleanup
+  o python: updated to latest signature format (was still on 0.1)
+  o java: rewritten (old version was never complete, anyways)
+tests:
+  o added new dynload_plain test covering basic use of all dynload functions
+buildsys:
+  o cmake: made to work on systems without C++ compiler (thanks Franklin Mathieu)
+
+Version 0.9 (2015/12/31)
+dyncall:
+  o ARM64 support (AAPCS64 on Linux & Apple's derived version on iOS)
+  o armhf calling convention support for ARM32
+  o PPC64 support, including syscalls (thanks Masanori Mitsugi!)
+  o introduced dcArgF and dcVArgF for flexible/convenient argument binding (works like dcCallF/dcVCallF but without the function call)
+  o using -fPIC by default for FreeBSD
+  o PPC32 linux syscall support
+  o fixed return value errors for ARM32 on some platforms (e.g. freebsd/arm32, nintendo ds); arm & thumb mode
+dyncallback:
+  o ARM64 support (AAPCS64 on Linux, Apple's derived version on iOS)
+  o armhf calling convention support for ARM32
+  o PPC64 support (thanks Masanori Mitsugi!)
+  o PPC32 System V support (Linux)
+  o fix for PPC32 Darwin/OS X
+  o more intuitive specification of callback return type
+doc:
+  o added ARM64 support info and calling convention documentation
+  o added ARM32 armhf section
+  o added PPC64 support info
+  o cleanup, brought all up to date, etc.
+tests:
+  o callf test covers new argf interface
+  o several fixes to some test suites
+buildsys:
+  o more flexible testsuite build and 'pack' target for convenience
+  o fixes/additions for OS X universal builds
+  o added iOS universal build support for armv7/arm64
+  o helper script for generic .elf -> EBOOT.PBP creation for PSP
+  o Sun make fixes for C++ code in test suite
+bindings:
+  o erldc: Erlang binding (thanks Erik!)
+infrastructure:
+  o moved to hg
+  o moved bindings to own repository
+
+Version 0.8 (2014/03/24)
+buildsys:
+  o big simplification make-based build system, no more distinct GNU and BSD makefiles anymore
+  o new, much simpler ./configure for new make-based build-system
+  o support for in-source and out-of-source builds for make-based build systems
+  o made configure.bat guess x64 as target arch for x64 windows hosts
+  o based more sources on portasm generation
+dyncall:
+  o fix for ARMv7 Thumb-2 code (tested on iPhone 4 CDMA / iOS 6.0.1)
+  o bugfixes for -O2 builds for SPARC-v9 and SPARC-v7
+  o new optimized call kernel for SPARC-v9 without conditionals
+  o bigger refactoring and optimization of MIPS o32
+  o x64 optimizations
+dyncallback:
+  o added callback support for plan9
+  o big cleanup, removal of duplicate files after introduction of portasm
+  o include path fixes for public facing APIs (removed relative paths)
+doc:
+  o cleanup of manual and corrections
+  o added info about newly supported and/or tested platforms (e.g. FreeBSD on ARM)
+  o restructured folder layout for documentation
+  o added API doc for dyncallback and dynload
+  o added manpages for dyncallback and dynload
+tests:
+  o added arm/thumb interwork test suite
+bindings:
+  o godc: added bindings for Go
+  o rbdc: fixed and extended ruby bindings
+  o shdc: renamed shell binding to shdc and added feature to list shared-objects' symbols
+
+Version 0.7 (2012/01/02)
+architecture:
+  o added subproject: portasm - portable (GNU AS,+Apple and MASM) assembly framework
+  o added subproject: autovar - predefined macro framework (was dyncall_macros.h)
+  o added support for Solaris and SunPro compiler for i386, x86_64, sparc and sparc64
+  o improved auto-detection via preprocessor defines
+dyncall updates:
+  o uses portasm (GNU,Apple,Microsoft) common sources for x86,x64,ppc32,arm32_arm
+  o added support for sparc (32-bit) (tested on linux/debian,openbsd,solaris)
+  o added support for sparc (64-bit) (tested on linux/debian,openbsd,solaris)
+  o bug fixes for x64/win64 calling convention
+  o added support for mingw32-w64 on x64
+  o improved cdecl x86 calling convention: stack always 16 byte aligned
+  o updated API and initial support for structs (for x86/AMD64)
+  o initial support for syscalls on x86, added x86 int80h linux/bsd
+  o added Minix port (stable)
+  o optimized vector buffer for small type pushing
+  o minor fix for amd64/sysv: alignment to 32-byte
+  o bug fix for ppc32/sysv: ellipsis calls work now
+  o updated API, introduced DC_CALL_C_ELLIPSIS_VARARGS
+  o changed interface: dcMode does not reset internally anymore
+dyncallback updates:
+  o uses portasm for x86,x64
+  o added Solaris/x86/sunpro port (stable)
+  o added Minix port (unstable)
+  o callback support for Darwin/ppc32
+  o updates source, uses relative includes
+dynload updates:
+  o fixes for missing includes (dyncall_alloc.h)
+  o fixes for self-resolving symbols on windows
+  o removed Dbghelf.lib dependency
+  o bug fixes for cygwin/x86
+  o fixes for beos/haiku
+  o no dependencies to libdyncall sources.
+buildsys additions:
+  o added zero-config (BSD,GNU,SUN) make files (Makefile.embedded)
+  o added in/out-of-source configure2 w/ (BSD,GNU) make files (Makefile.generic)
+  o added bootstrap lua script (download/build)
+  o Nmakefile: more tests included (resolve_self)
+  o improved cross-compilation for iOS (upgrade to 4.3 sdk)
+  o darwin 8.0 support
+  o added 'install' support for Makefile.embedded
+buildsys/gmake updates:
+  o added support for msvc/x64 tool-chain
+  o default settings for build-dir changed to '.'
+  o cleanup: removed top-level Make{Prolog,Epilog,Rules} files and updated all sub-projects and tests
+  o added support for DESTDIR staging installation
+  o added support for manual page installation
+buildsys/cmake updates:
+  o updated find module scripts (see cmake/Modules)
+  o added support for using dyncall as sub-project (via *Config.cmake files)
+    see details in README.CMake
+  o fixes for msvc and ml
+  o fixes for CPack
+  o fixes for universal builds on Mac OS X
+  o supports SunPro with *.S files.
+  o added experimental 'dynMake' portable make-based build-system (not stable, yet)
+documentation updates:
+  o added dyncallback documentation
+  o updated dyncall documentation
+  o minor updates
+tests:
+  o added flexible test suite for calls (call_suite) based on Lua and C
+  o added syscall test
+  o updates to resolve-self test (adding additional link flags to export symbols)
+  o improved dir name portability (renamed plain_c++ -> plain_cxx)
+  o renamed *.cpp -> *.cc files (OpenBSD/Sun make has no implicit rules for cpp)
+
+Version 0.6 (2010/09/25)
+building:
+  o new build systems: CMake and Plan9's mk
+  o buildsys/gmake tool chain update: pcc and iphone sdk
+  o x64 bugfix: added "-fPIC" even for static libs
+dynload updates:
+  o enum symbols update: Mach-O and Win64 (thanks Olivier)
+  o numerous convenience changes to dynload interface (thanks Olivier)
+  o added support for resolving application images itself
+dyncall updates:
+  o new platform support: arm/iphone (armv6), x86/Plan9
+  o new MIPS calling conventions: o32, n64 (both endian models)
+  o cleanup: unexported functions in MASM files, b/c export not needed (thanks Olivier)
+  o interface update: added error reporting facility 'dcGetError'
+  o bugfix for ppc32/sysv: ellipsis calls were broken
+  o interface update: added new abstract mode for ellipsis calls (DC_CALL_C_ELLIPSIS)
+docs:
+  o comprehensive update
+tests:
+  o plain: split "plain" test up in C and C++ part
+  o callbacksuite: added multiple configuration support for callback_suite
+
+Version 0.5 (2010/02/01)
+  o renamed arm9 stuff to arm32
+  o added non-EABI ABI for arm32 (before, EABI was the default implementation)
+  o added dyncallback support for x64/windows (thanks Olivier), x64/darwin, arm32/arm, arm32/thumb
+  o synced documentation again with current state of the source (lots of small changes)
+  o updated ruby binding to current state of signature string (still some features missing, though)
+  o added a couple of new options to configure scripts (e.g. prefix-bd, new targets, etc.)
+  o darwin universal binary support
+  o added new tests callback_plain and calback_suite
+  o added Haiku/BeOS support
+
+Version 0.4 (2009/07/06)
+  o added 'doc' makefile target for coherency and ease of use
+  o fixed nmake buildfiles and configure.bat (were out of date and wrong)
+  o test suite clean up (GNUmake, BSDmake):
+    target "config" modified, phony without dependencies to other builds
+  o bugfix: GNU fastcall calling convention for float and double arguments was wrong (no skip of register)
+  o update: x86win32* suite tests are built on cygwin now, added total result output
+  o signature types change:
+    C Strings: 'S' -> 'Z'
+    long: 'l' -> 'j'
+    long long: 'L' -> 'l'
+    added unsigned integer type signature characters: upper case encoding
+  o added: callbacks component (support only for some platforms ATM)
+  o added: test cases for alloc_wx, thunk
+  o updated Documentation
+
+Version 0.3 (2009/01/17)
+  o added Linux PPC32 support
+  o added ARM THUMB mode support
+  o cosmetic changes, documentation updated
+  o bugfix: on cygwin exported C symbols in GNU as are prefixed with '_' now.
+  o removed scons build support
+
+Version 0.2 (2008/05/18)
+  o added scons build support
+  o configure variables all prefix CONFIG_* now
+  o configure variable INSTALL_DIR changed to INSTALL_PREFIX
+  o configure (shell version) option "--prefix" changed to "--prefix=<path>"
+
+Version 0.1 (2008/01/23)
+  o initial release
+

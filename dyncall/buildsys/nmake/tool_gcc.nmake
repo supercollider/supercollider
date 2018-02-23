@@ -1,0 +1,82 @@
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+#///////////////////////////////////////////////////
+#
+#	GCC nmake rules
+#	tool_gcc.nmake
+#
+#///////////////////////////////////////////////////
+
+
+CC  =arm-eabi-gcc
+CXX =arm-eabi-g++
+AR  =arm-eabi-ar
+AS  =arm-eabi-as
+LD  =arm-eabi-g++#arm-eabi-ld
+OCP =arm-eabi-objcopy
+
+!IF "$(BUILD_ARCH)" == "arm32_thumb"
+
+ASFLAGS  = -g -mthumb -mthumb-interwork
+CFLAGS   = -g -Wall -O2 -I$(TOP)\dyncall -I$(TOP)\dyncallback -fomit-frame-pointer -ffast-math -fno-strict-aliasing -mthumb -mthumb-interwork
+CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions
+LDFLAGS  = -g -mno-fpu -mthumb -mthumb-interwork
+ARFLAGS  =
+
+!ELSE IF "$(BUILD_ARCH)" == "arm32_arm"
+
+ASFLAGS  = -g
+CFLAGS   = -g -Wall -O2 -I$(TOP)\dyncall -I$(TOP)\dyncallback -fomit-frame-pointer -ffast-math -fno-strict-aliasing
+CXXFLAGS = $(CFLAGS) -fno-rtti -fno-exceptions
+LDFLAGS  = -g -mno-fpu
+ARFLAGS  =
+
+!ENDIF
+
+
+!IF "$(BUILD_OS)" == "nds"
+CFLAGS   = $(CFLAGS) -DARM9 -mcpu=arm9tdmi -mtune=arm9tdmi -D__nds__ -I"$(DEVKITPRO_PATH)/libnds/include"
+CXXFLAGS = $(CXXFLAGS) -D__nds__ -I"$(DEVKITPRO_PATH)/libnds/include"
+LDFLAGS  = $(LDFLAGS) -specs=ds_arm9.specs
+!ENDIF
+
+
+.SUFFIXES:
+.SUFFIXES: .o .so .a .arm9 .nds .pdf .c .cpp .S .tex .cc
+
+
+.S.o:
+	echo .S.o: Assembling $< ...
+	$(CC) $(ASFLAGS) $(CFLAGS) -o $@ -c $<
+
+.c.o:
+	echo .c.o: Compiling $< ...
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+.cpp.o:
+	echo .cpp.o: Compiling $< ...
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+.cc.o:
+	echo .cc.o: Compiling $< ...
+	$(CXX) $(CXXFLAGS) -o $@ -c $<
+
+.tex.pdf:
+	pdflatex $<

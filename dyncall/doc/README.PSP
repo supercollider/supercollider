@@ -1,0 +1,30 @@
+Cross-compile DynCall for PSP using PSP-SDK
+===========================================
+
+
+Make sure the PSP SDK's is installed and that the build tools (e.g. psp-gcc) are
+in your PATH. Also make sure that your PSP SDK's include files are in your CPATH
+
+
+Status:
+-------
+
+- dyncall: tests run ok.
+- dyncallback: all good.
+- dynload: unsupported due to missing dynamic linker and ELF headers.
+  
+
+
+There are currently two ways to build dyncall for PSP.
+
+Build using configure and make:
+-------------------------------
+
+  $ ./configure --target=PSP
+  $ make libdyncall libdyncallback
+
+
+Build using build script for gcc (using Makefile.generic):
+----------------------------------------------------------
+  $ sh buildsys/scripts/batch-build-psp.sh
+

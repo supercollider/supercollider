@@ -1,0 +1,20 @@
+MAKEFILE = Makefile.embedded
+MAKE_CMD = ${MAKE} -f ${MAKEFILE} 
+TARGET	= libdyncall_s.a
+OBJS	= dyncall_vector.o dyncall_api.o dyncall_callvm.o dyncall_callvm_base.o dyncall_call.o dyncall_callf.o dyncall_struct.o
+HEADERS	= dyncall_macros.h dyncall_config.h dyncall_types.h dyncall.h dyncall_signature.h dyncall_value.h dyncall_callf.h dyncall_alloc.h
+all: ${TARGET}
+libdyncall_s.a: ${OBJS}
+	${AR} ${ARFLAGS} $@ ${OBJS}
+clean:
+	rm -f ${OBJS} ${TARGET}
+install: all
+	mkdir -p ${DESTDIR}${PREFIX}/include
+	cp ${HEADERS} ${DESTDIR}${PREFIX}/include
+	mkdir -p ${DESTDIR}${PREFIX}/lib
+	cp ${TARGET}  ${DESTDIR}${PREFIX}/lib
+	mkdir -p ${DESTDIR}${PREFIX}/man/man3
+	gzip -c dyncall.3 >${DESTDIR}${PREFIX}/man/man3/dyncall.3.gz
+.PHONY: all clean install
+osx-universal:
+	CFLAGS="${CFLAGS} -arch i386 -arch x86_64 -arch ppc" ASFLAGS="${ASFLAGS} -arch i386 -arch x86_64 -arch ppc" AR="libtool" ARFLAGS="-static -o" ${MAKE_CMD} all

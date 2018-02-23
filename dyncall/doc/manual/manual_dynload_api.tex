@@ -1,0 +1,87 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007-2017 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+\section{\product{Dynload} C library API}
+
+The \product{dynload} library encapsulates dynamic loading mechanisms and
+gives access to functions in foreign dynamic libraries and code modules.
+
+\subsection{Loading code}
+
+\begin{lstlisting}[language=c,label=dl-load]
+DLLib* dlLoadLibrary(const char* libpath);
+void  dlFreeLibrary(void* libhandle);
+\end{lstlisting}
+
+\lstinline{dlLoadLibrary} loads a dynamic library at \lstinline{libpath}
+and returns a handle to it for use in \lstinline{dlFreeLibrary} and
+\lstinline{dlFindSymbol} calls. Passing a null pointer for the \lstinline{libpath}
+argument is valid, and returns a handle to the main executable of the calling code.
+Also, searching libraries in library paths (e.g. by just passing the library's leaf
+name) should work, however, they are OS specific. Returns a null pointer on error.
+
+\lstinline{dlFreeLibrary} frees the loaded library with handle \lstinline{pLib}.
+
+\subsection{Retrieving functions}
+
+\begin{lstlisting}[language=c]
+void* dlFindSymbol(void* libhandle, const char* symbol);
+\end{lstlisting}
+
+This function returns a pointer to a symbol with name \lstinline{pSymbolName} in the
+library with handle \lstinline{pLib}, or returns a null pointer if the symbol cannot
+be found. The name is specified as it would appear in C source code (mangled if C++, etc.).
+
+\subsection{Misc functions}
+\begin{lstlisting}[language=c]
+int dlGetLibraryPath(DLLib* pLib, char* sOut, int bufSize);
+\end{lstlisting}
+
+This function can be used to get a copy of the path to the library loaded with handle
+\lstinline{pLib}. The parameter \lstinline{sOut} is a pointer to a buffer of size
+\lstinline{bufSize} (in bytes), to hold the output string. The return value is the size
+of the buffer (in bytes) needed to hold the null-terminated string, or 0 if it can't be
+looked up. If \lstinline{bufSize} >= return value > 1, a null-terminted string with the
+path to the library should be in \lstinline{sOut}.  If it returns 0, the library name wasn't
+able to be found. Please note that this might happen in some rare cases, so make sure to always check.
+
+\subsection{Symbol iteration}
+
+\begin{lstlisting}[language=c]
+DLSyms*     dlSymsInit(const char* libPath);
+void        dlSymsCleanup(DLSyms* pSyms);
+int         dlSymsCount(DLSyms* pSyms);
+const char* dlSymsName(DLSyms* pSyms, int index);
+const char* dlSymsNameFromValue(DLSyms* pSyms, void* value); /* symbol must be loaded */
+\end{lstlisting}
+
+
+These functions can be used to iterate over symbols. Since they can be used on libraries that are not linked, they are made
+for symbol name lookups, not to get a symbol's address. For that refer to
+\lstinline{dlFindSymbol}. \lstinline{dlSymsInit} will return a handle (or a null pointer
+on error) to the shared object specified by \lstinline{libPath}, to be used with the other dlSyms* functions. Note that contrary
+to loading and linking libraries, no (OS-specific) rules for searching libraries in library paths, etc. apply. The handle must be freed with
+\lstinline{dlSymsCleanup}. \lstinline{dlSymsCount} returns the number of
+symbols in the shared object, \lstinline{dlSymsName} and \lstinline{dlSymsNameFromValue}
+are used to lookup symbol names using an index or symbol's address, respectively,
+returning a null pointer on error. The names are returned as they would appear
+in C source code (mangled if C++, etc.). The address passed to \lstinline{dlSymsNameFromValue}
+must point to a loaded symbol.
+

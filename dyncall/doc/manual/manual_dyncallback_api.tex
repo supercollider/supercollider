@@ -1,0 +1,99 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2013 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+\section{\emph{Dyncallback} C library API}
+
+This library extends \product{dyncall} with function callback support, allowing
+the user to dynamically create a callback object that can be called directly,
+or passed to functions expecting a function-pointer as argument.\\
+\\
+Invoking a \product{dyncallback} calls into a user-defined unified handler that 
+permits iteration and thus dynamic handling over the called-back-function's
+parameters.\\
+\\
+The flexibility is constrained by the set of supported types, though.\\
+\\
+For style conventions and supported types, see \product{dyncall} API section.
+In order to use \product{dyncallback}, include {\tt "dyncall\_callback.h"}.
+
+\subsection{Callback Object}
+
+The \emph{Callback Object} is the core component to this library.
+
+\paragraph{Types}
+
+\begin{lstlisting}[language=c]
+typedef struct DCCallback DCCallback;
+\end{lstlisting}
+
+\paragraph{Details}
+The \emph{Callback Object} is an object that mimics a fully typed function
+call to another function (a generic callback handler, in this case).\\
+\\
+This means, a pointer to this object is passed to a function accepting a pointer
+to a callback function \emph{as the very callback function pointer itself}.
+Or, if called directly, cast a pointer to this object to a function pointer and
+issue a call.
+
+
+\subsection{Allocation}
+
+\paragraph{Functions}
+
+\begin{lstlisting}[language=c]
+DCCallback* dcbNewCallback(const char*        signature,
+                           DCCallbackHandler* funcptr,
+                           void*              userdata);
+void dcbFreeCallback(DCCallback* pcb);
+\end{lstlisting}
+
+\lstinline{dcbNewCallback} creates and initializes a new \emph{Callback} object,
+where \lstinline{signature} is the needed function signature (format is the
+one outlined in the language bindings-section of this manual, see Table \ref{sigchar})
+of the function to mimic, \lstinline{funcptr} is a pointer to a callback handler,
+and \lstinline{userdata} a pointer to custom data that might be useful in the
+handler.
+Use \lstinline{dcbFreeCallback} to destroy the \emph{Callback} object.\\
+\\
+As with \capi{dcNewCallVM}/\capi{dcFree}, this will allocate memory using the
+system allocators or custom overrides.
+
+
+\subsection{Callback handler}
+
+The unified callback handler's declaration used when creating a \capi{DCCallback}
+is:
+
+\begin{lstlisting}
+char cbHandler(DCCallback* cb,
+               DCArgs*     args,
+               DCValue*    result,
+               void*       userdata);
+\end{lstlisting}
+
+\capi{cb} is a pointer to the \capi{DCCallback} object in use, \capi{args} allows
+for dynamic iteration over the called-back-function's arguments (input) and
+\capi{result} is a pointer to a \capi{DCValue} object in order to store the
+callback's return value (output, to be set by handler).\\
+Finally, \capi{userdata} is a pointer to some user defined data that can be
+set when creating the callback object.
+The handler itself returns a signature character (see Table \ref{sigchar}) specifying the
+data type used for \capi{result}.
+

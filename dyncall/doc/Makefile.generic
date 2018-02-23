@@ -1,0 +1,3 @@
+.PHONY: all
+all clean:
+	cd manual && ${MAKE} $@

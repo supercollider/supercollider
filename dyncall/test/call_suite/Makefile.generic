@@ -1,0 +1,21 @@
+APP     = call_suite
+OBJS    = globals.o invoke.o cases.o main.o
+SRCTOP  = ${VPATH}/../..
+BLDTOP  = ../..
+CFLAGS += -I${SRCTOP}/dyncall
+LDLIBS += -L${BLDTOP}/dyncall -ldyncall_s 
+LUA     = lua
+.PHONY: all clean install config config-random
+all: ${APP}
+${APP}: ${OBJS} 
+	${CC} ${CFLAGS} ${LDFLAGS} ${OBJS} ${LDLIBS} -o ${APP} 
+clean:
+	rm -f ${APP} ${OBJS}
+install:
+	mkdir -p ${PREFIX}/test
+	cp ${APP} ${PREFIX}/test
+config:
+	${LUA} mk-cases.lua <design.txt >cases.h
+config-random: 
+	${LUA} rand-sig.lua >cases.txt
+	${LUA} mk-cases.lua <cases.txt >cases.h

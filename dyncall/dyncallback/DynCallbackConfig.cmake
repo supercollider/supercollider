@@ -1,0 +1,2 @@
+set(DYNCALLBACK_INCLUDE_DIRS ${DynCall_SOURCE_DIR}/dyncallback)
+set(DYNCALLBACK_LIBRARIES dyncallback_s)

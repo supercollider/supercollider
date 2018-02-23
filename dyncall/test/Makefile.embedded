@@ -1,0 +1,112 @@
+MAKEFILE = Makefile.embedded
+MAKE_CMD = ${MAKE} -f ${MAKEFILE} 
+all: all-dyncall all-dyncallback all-dynload
+all-dynload:
+	cd nm && ${MAKE_CMD}
+	cd dynload_plain && ${MAKE_CMD}
+	cd resolve_self && ${MAKE_CMD}
+all-dyncall:
+	cd suite && ${MAKE_CMD}
+	cd call_suite && ${MAKE_CMD}
+	cd suite2 && ${MAKE_CMD}
+	cd suite3 && ${MAKE_CMD}
+	cd suite_floats && ${MAKE_CMD}
+	cd callf && ${MAKE_CMD}
+	cd plain && ${MAKE_CMD}
+	cd plain_c++ && ${MAKE_CMD}
+	cd ellipsis && ${MAKE_CMD}
+all-dyncallback:
+	cd thunk && ${MAKE_CMD}
+	cd malloc_wx && ${MAKE_CMD}
+	cd callback_plain && ${MAKE_CMD}
+	cd callback_suite && ${MAKE_CMD}
+all-c:
+	cd plain && ${MAKE_CMD}
+	cd syscall && ${MAKE_CMD}
+	cd suite && ${MAKE_CMD}
+	cd call_suite && ${MAKE_CMD}
+	cd callf && ${MAKE_CMD}
+	cd nm && ${MAKE_CMD}
+	cd dynload_plain && ${MAKE_CMD}
+	cd resolve_self && ${MAKE_CMD}
+	cd thunk && ${MAKE_CMD}
+	cd malloc_wx && ${MAKE_CMD}
+	cd callback_plain && ${MAKE_CMD}
+	cd callback_suite && ${MAKE_CMD}
+all-win32:
+	cd suite_x86win32std  && ${MAKE_CMD}
+	cd suite_x86win32fast && ${MAKE_CMD}
+	cd suite2_x86win32std && ${MAKE_CMD}
+	cd suite2_x86win32fast && ${MAKE_CMD}
+run-all-win32:
+	suite_X86win32std/suite_x86win32std
+	suite_X86win32fast/suite_x86win32fast
+	suite2_X86win32std/suite2_x86win32std
+	suite2_X86win32fast/suite2_x86win32fast
+all-unix:
+	cd syscall && ${MAKE_CMD}
+clean:
+	cd plain && ${MAKE_CMD} clean
+	cd plain_c++ && ${MAKE_CMD} clean
+	cd syscall && ${MAKE_CMD} clean
+	cd suite && ${MAKE_CMD} clean
+	cd call_suite && ${MAKE_CMD} clean
+	cd suite2 && ${MAKE_CMD} clean
+	cd suite3 && ${MAKE_CMD} clean
+	cd suite_floats && ${MAKE_CMD} clean
+	cd callback_plain && ${MAKE_CMD} clean
+	cd callback_suite && ${MAKE_CMD} clean
+	cd ellipsis && ${MAKE_CMD} clean
+	cd callf && ${MAKE_CMD} clean
+	cd nm && ${MAKE_CMD} clean
+	cd dynload_plain && ${MAKE_CMD} clean
+	cd resolve_self && ${MAKE_CMD} clean
+	cd thunk && ${MAKE_CMD} clean
+	cd malloc_wx && ${MAKE_CMD} clean
+	cd syscall && ${MAKE_CMD} clean
+bsd:
+	LDLIBS="${LDLIBS} -lm" ${MAKE_CMD} all
+linux:
+	LDLIBS="${LDLIBS} -lm -ldl" ${MAKE_CMD} all
+linux64:
+	CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" CCFLAGS="${CXXFLAGS} -m64" LDFLAGS="${LDFLAGS} -m64" LDLIBS="${LDLIBS} -lm -ldl" ${MAKE_CMD} all-c
+mingw32:
+	${MAKE_CMD} CC="gcc" all
+osx:
+	${MAKE_CMD} all
+osx-template:
+	CC="${CC} ${OSX_ARCH}" AS="${AS} ${OSX_ARCH}" CXX="${CXX} ${OSX_ARCH}" ${MAKE_CMD}
+osx-universal:
+	OSX_ARCH="-arch i386 -arch x86_64" ${MAKE_CMD} osx-template
+osx-i386:
+	OSX_ARCH="-arch i386" ${MAKE_CMD} osx-template
+sun:
+	CXX=CC LDLIBS="${LDLIBS} -lm" ${MAKE_CMD} all
+sun-64bit:
+	CXX=CC CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" CCFLAGS="${CXXFLAGS} -m64" LDFLAGS="${LDFLAGS} -m64" LDLIBS="${LDLIBS} -lm" ${MAKE_CMD} all
+sun-gcc:
+	CC=gcc CCC=g++ CXX=g++ LDLIBS="${LDLIBS} -lm" ${MAKE_CMD} all
+sun-gcc-64bit:
+	CC=gcc CCC=g++ CXX=g++ CFLAGS="${CFLAGS} -m64" CXXFLAGS="${CXXFLAGS} -m64" CCFLAGS=-m64 LDFLAGS="${LDFLAGS} -m64" LDLIBS="${LDLIBS} -lm" ${MAKE_CMD} all
+ios-sdkroot:
+	\
+  CC="${CC} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  CXX="${CXX} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  LD="${LD} ${IOS_ARCH} -miphoneos-version-min=${IOS_SDK}"\
+  ASFLAGS="-isysroot ${IOS_SDKROOT}"\
+  CFLAGS="-isysroot ${IOS_SDKROOT}"\
+  CXXFLAGS="-isysroot ${IOS_SDKROOT}"\
+  LDFLAGS="-Wl,-syslibroot ${IOS_SDKROOT}"\
+  ${MAKE_CMD} all  
+ios:
+	IOS_SDKROOT="`xcode-select -print-path`/Platforms/iPhone${IOS_PLATFORM}.platform/Developer/SDKs/iPhone${IOS_PLATFORM}${IOS_SDK}.sdk" ${MAKE_CMD} ios-sdkroot
+ios-sim:
+	IOS_PLATFORM="Simulator" ${MAKE_CMD} ios
+ios-os:
+	IOS_PLATFORM="OS"        ${MAKE_CMD} ios
+ios61-os:
+	IOS_SDK="6.1" IOS_ARCH="-arch armv7"            ${MAKE_CMD} ios-os
+ios61-os-no-thumb:
+	IOS_SDK="6.1" IOS_ARCH="-arch armv7 -mno-thumb" ${MAKE_CMD} ios-os
+ios61-sim:
+	IOS_SDK="6.1" IOS_ARCH="-arch i386"             ${MAKE_CMD} ios-sim

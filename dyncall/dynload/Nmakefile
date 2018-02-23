@@ -1,0 +1,57 @@
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+#///////////////////////////////////////////////////
+#
+#	nmake makefile
+#	Nmakefile
+#
+#///////////////////////////////////////////////////
+
+
+TOP=..
+
+!INCLUDE $(TOP)\buildsys\nmake\prolog.nmake
+
+
+!IF "$(BUILD_OS)" == "windows"
+
+TARGETS = libdynload_s.lib
+OBJS = dynload.obj dynload_syms.obj
+
+$(TARGETS): $(OBJS)
+	echo Creating library $@ ...
+	lib $(ARFLAGS) /OUT:"$@" $(OBJS) > nul
+
+
+!ELSE IF "$(BUILD_OS)" == "nds"
+
+TARGETS = libdynload_s.a
+OBJS = dynload_unix.o
+
+$(TARGETS):# $(OBJS)
+	echo Not building dynload: There is no dynload support on this platform.
+#	echo Creating library $@ ...
+#	$(AR) -rc $(ARFLAGS) "$@" $(OBJS)
+
+!ENDIF
+
+
+!INCLUDE $(TOP)\buildsys\nmake\epilog.nmake
+

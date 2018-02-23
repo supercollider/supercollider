@@ -1,0 +1,86 @@
+ALL=call_suite callback_suite plain plain_c++ suite suite2 suite3 suite_floats ellipsis callf syscall nm dynload_plain resolve_self thunk malloc_wx callback_plain
+PACK=call_suite callback_suite plain plain_c++ suite suite2 suite3 suite_floats ellipsis callf dynload_plain resolve_self callback_plain
+ALL_C=plain call_suite suite callf syscall nm dynload_plain resolve_self thunk malloc_wx callback_plain callback_suite
+.PHONY: all clean run-tests install distclean ${ALL} 
+all clean install: 
+	${MAKE} TARGET=$@ ${ALL}
+${ALL}::
+	cd $@ && ${MAKE} ${TARGET}
+run-tests: all
+	${VPATH}/run-build.sh ${ALL} | grep "result:"
+all-c:
+	cd plain && ${MAKE}
+	cd call_suite && ${MAKE}
+	cd suite && ${MAKE}
+	cd callf && ${MAKE}
+	cd syscall && ${MAKE}
+	cd nm && ${MAKE}
+	cd dynload_plain && ${MAKE}
+	cd resolve_self && ${MAKE}
+	cd thunk && ${MAKE}
+	cd malloc_wx && ${MAKE}
+	cd callback_plain && ${MAKE}
+	cd callback_suite && ${MAKE}
+all-win32:
+	cd suite_x86win32std  && ${MAKE}
+	cd suite_x86win32fast && ${MAKE}
+	cd suite2_x86win32std && ${MAKE}
+	cd suite2_x86win32fast && ${MAKE}
+run-win32:
+	suite_X86win32std/suite_x86win32std
+	suite_X86win32fast/suite_x86win32fast
+	suite2_X86win32std/suite2_x86win32std
+	suite2_X86win32fast/suite2_x86win32fast
+all-dyncall:
+	cd plain && ${MAKE}
+	cd plain_c++ && ${MAKE}
+	cd call_suite && ${MAKE}
+	cd suite && ${MAKE}
+	cd suite2 && ${MAKE}
+	cd suite3 && ${MAKE}
+	cd suite_floats && ${MAKE}
+	cd ellipsis && ${MAKE}
+	cd callf && ${MAKE}
+	cd syscall && ${MAKE}
+run-dyncall:
+	plain/plain
+	plain_c++/plain_c++
+	call_suite/call_suite
+	suite/suite
+	suite2/suite2
+	suite3/suite3
+	suite_floats/suite_floats
+	ellipsis/ellipsis
+	callf/callf
+	syscall/syscall
+# BUG: need to disable on sparc: testStructSize not found
+#	cd plain && ${MAKE}
+all-dynload:
+	cd nm && ${MAKE}
+	cd dynload_plain && ${MAKE}
+	cd resolve_self && ${MAKE}
+run-dynload:
+	#nm/nm
+	dynload_plain/dynload_plain
+	resolve_self/resolve_self
+all-dyncallback:
+	cd thunk && ${MAKE}
+	cd malloc_wx && ${MAKE}
+	cd callback_plain && ${MAKE}
+	cd callback_suite && ${MAKE}
+run-dyncallback:
+	thunk/thunk
+	malloc_wx/malloc_wx
+	callback_plain/callback_plain
+	callback_suite/callback_suite
+
+linux:
+	LDLIBS="-lm -ldl" ${MAKE} all
+bsd:
+	LDLIBS="-lm" ${MAKE} all
+
+pack: ${PACK}
+	${VPATH}/pack-tests.sh ${PACK}
+
+distclean:
+	rm -rf _work _packed

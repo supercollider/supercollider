@@ -230,7 +230,9 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-
+if (DYNCALL)
+    target_link_libraries(libsclang dynload_s dyncall_s dyncallback_s)
+endif()
 
 if (SC_WII OR APPLE)
 	if (BLUETOOTH_FOUND AND CWIID_FOUND)

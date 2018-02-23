@@ -1,0 +1,187 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+
+\section{Overview}
+
+The \product{dyncall} library encapsulates architecture-, OS- and compiler-specific
+function call semantics in a virtual %
+%
+\casehtml{\Tg<span class="marker">}{\begin{center}}%
+\emph{bind argument parameters from left to right and then call}
+\casehtml{\Tg</span>}{\end{center}}%
+ %
+interface allowing programmers to call C functions 
+in a completely dynamic manner. In other words, instead of calling a function 
+directly, the \product{dyncall} library provides a mechanism to push the function parameters 
+manually and to issue the call afterwards.\\
+Since the idea behind this concept is similar to call dispatching mechanisms
+of virtual machines, the object that can be dynamically loaded with arguments,
+and then used to actually invoke the call, is called CallVM. It is possible to
+change the calling convention used by the CallVM at run-time.
+Due to the fact that nearly every platform comes with one or more distinct calling
+conventions, the \product{dyncall} library project intends to be a portable and open-source
+approach to the variety of compiler-specific binary interfaces, platform specific
+subtleties, and so on\ldots\\
+\\
+The core of the library consists of dynamic implementations of different 
+calling conventions written in assembler.
+Although the library aims to be highly portable, some assembler code needs to 
+be written for nearly every platform/compiler/OS combination.
+Unfortunately, there are architectures we just don't have at home or work. If 
+you want to see \product{dyncall} running on such a platform, feel free to send
+in code and patches, or even to donate hardware you don't need anymore.
+Check the \textbf{supported platforms} section for an overview of the supported 
+platforms and the different calling convention sections for details about the 
+support.
+\\
+\begin{comment}
+@@@
+A typical binary library consists of symbolic names that map to variables and
+functions, the latter being pre-compiled for a
+specific calling convention and architecture. Given \product{dyncall} has been ported to
+that binary platform, it is possible to call such a function dynamically 
+without writing glue code or prototypes or even knowing its C declaration - 
+all that is needed is a pointer to it.\\
+To avoid confusion, note that from the point of view of the library all 
+parameters are handled the same way, even though the implementation might use
+other ways to pass parameters in order to suit specific calling conventions.\\
+\end{comment}
+
+
+\subsection{Features}
+
+\begin{itemize}
+\item A portable and extendable function call interface for the C programming 
+language.
+\item Ports to major platforms including Windows, Mac OS X, Linux, BSD derivates, iPhone and embedded devices and more, including lesser known and/or older platforms like Plan 9, Playstation Portable, Nintendo DS, etc..
+\item Add-on language bindings to Python, R, Ruby, Go, Erlang, Java, Lua, sh, ...
+\item High-level state machine design using C to model calling convention
+parameter transfer.
+\item One assembly \emph{hybrid} call routine per calling convention.
+\item Formatted call, vararg function API.
+\item Comprehensive test suite.
+\end{itemize}
+
+\pagebreak
+
+\subsection{Showcase}
+
+\paragraph{Foreign function call in C}
+This section demonstrates how the foreign function call is issued without, and then 
+with, the help of the \product{dyncall} library and scripting language
+bindings.
+
+\begin{lstlisting}[language=c,caption=Foreign function call in C]
+double call_as_sqrt(void* funptr, double x)
+{
+  return ( ( double (*)(double) )funptr)(x);
+}
+\end{lstlisting}
+
+\paragraph{\product{Dyncall} C library example}
+
+The same operation can be broken down into atomic pieces 
+(specify calling convention, binding arguments, invoking the call)
+using the \dc\ library.
+
+\begin{lstlisting}[language=c,caption=Dyncall C library example]
+#include <dyncall.h>
+double call_as_sqrt(void* funptr, double x)
+{
+  double r;
+  DCCallVM* vm = dcNewCallVM(4096);
+  dcMode(vm, DC_CALL_C_DEFAULT);
+  dcReset(vm);
+  dcArgDouble(vm, x);  
+  r = dcCallDouble(vm, funptr);
+  dcFree(vm);
+  return r;
+}
+\end{lstlisting}
+
+As you can see, this is more code after all, but completely dynamic.
+And definitely less than generated glue-code for each function call, if
+used correctly.
+
+The following are examples from script bindings:
+
+\paragraph{Python example}
+
+\begin{lstlisting}[language=python,caption=Dyncall Python bindings example]
+import pydc
+def call_as_sqrt(funptr,x):
+  return pydc.call(funptr,"d)d", x)
+\end{lstlisting}
+
+
+\paragraph{R example}
+
+\begin{lstlisting}[language=R,caption=Dyncall R bindings example,escapeinside={TEX}{XET}] % escapeinside is a workaround for issues with '<' in lstlisting+tex4ht
+library(rdyncall)
+call.as.sqrt TEX\textlessXET- function(funptr,x)
+  .dyncall(funptr,"d)d", x)
+\end{lstlisting}
+
+
+\pagebreak
+
+\subsection{Supported platforms/architectures}
+
+The feature matrix below gives a brief overview of the currently supported
+platforms. Different colors are used, where a green cell indicates a supported
+platform, yellow a platform that might work (but is untested) and red a platform
+that is currently unsupported. Gray cells are combinations that don't exist
+at the time of writing, or that are not taken into account.\\
+Light green cells mark complete feature support, as in dyncall and dyncallback. Dark green means basic support but lacking features (e.g. dyncall support, but not dyncallback).
+Please note that a green cell (even a light-green one) doesn't imply that all existing calling conventions/features/build tools are supported for that platform (but the most
+important).
+For detailed info about a platform's support consult the calling convention appendix.
+
+\begin{table}[h]
+\begin{tabular}{r|*{3}{c!{\color{gray2}\vrule}}*{4}{c!{\color{gray2}\vrule}}*{11}{c!{\color{gray2}\vrule}}}
+                              & \ninety{\bf Alpha} & \ninety{\bf ARM} & \ninety{\bf ARM64} & \multicolumn{2}{c!{\color{gray2}\vrule}}{\ninety{\bf MIPS}} & \multicolumn{2}{c!{\color{gray2}\vrule}}{\ninety{\bf MIPS64}} & \ninety{\bf SuperH} & \ninety{\bf PowerPC} & \ninety{\bf PowerPC64} & \ninety{\bf m68k} & \ninety{\bf m88k} & \ninety{\bf x86} & \ninety{\bf x64} & \ninety{\bf Itanium} & \ninety{\bf SPARC} & \ninety{\bf SPARC64} & \ninety{\bf RISC-V} \\
+% also include hardfloat, here@@@                                                                                                                                                                                                                                                                                                                                                                                                               
+                              &                    &                  &                    & \ninety{\tiny EB} & \ninety{\tiny EL}                       & \ninety{\tiny EB} & \ninety{\tiny EL}                         &                     &                      &                        &                   &                   &                  &                  &                      &                    &                      &                     \\
+\hline                                                                                                                                                                                                                                                                                                                                                                                                                                          
+{\bf Windows family}          & \marknotx          & \markunkn        & \marknotx          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \markcmpl        & \markcmpl        & \marknimp            & \marknotx          & \marknotx            & \marknotx           \\
+{\bf Linux}                   & \marknimp          & \markcmpl        & \markcmpl          & \markcmpl         & \markunkn                               & \markunkn         & \markcmpl                                 & \marknimp           & \markcmpl            & \markcmpl              & \marknimp         & \marknimp         & \markcmpl        & \markcmpl        & \marknimp            & \markcmpl          & \markcmpl            & \marknimp           \\
+{\bf macOS / iOS / Darwin}    & \marknotx          & \markcmpl        & \markcmpl          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \markcmpl            & \markunkn              & \marknotx         & \marknotx         & \markcmpl        & \markcmpl        & \marknotx            & \marknotx          & \marknotx            & \marknotx           \\
+{\bf FreeBSD}                 & \marknimp          & \markcmpl        & \markcmpl          & \markunkn         & \markunkn                               & \markunkn         & \markunkn                                 & \marknotx           & \markimpl            & \markcmpl              & \marknotx         & \marknotx         & \markcmpl        & \markcmpl        & \marknimp            & \marknotx          & \markcmpl            & \marknimp           \\
+{\bf NetBSD}                  & \marknimp          & \markcmpl        & \marknotx          & \markunkn         & \markcmpl                               & \markunkn         & \markunkn                                 & \marknimp           & \markimpl            & \marknotx              & \marknimp         & \marknimp         & \markcmpl        & \markcmpl        & \marknimp            & \markcmpl          & \markcmpl            & \marknimp           \\
+{\bf OpenBSD}                 & \marknimp          & \markcmpl        & \markunkn          & \markunkn         & \markunkn                               & \markcmpl         & \markunkn                                 & \marknimp           & \markunkn            & \marknotx              & \marknimp         & \marknimp         & \markcmpl        & \markcmpl        & \marknimp            & \markcmpl          & \markcmpl            & \marknotx           \\
+{\bf DragonFlyBSD}            & \marknotx          & \marknotx        & \marknotx          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \markcmpl        & \markcmpl        & \marknotx            & \marknotx          & \marknotx            & \marknotx           \\
+{\bf Solaris / SunOS}         & \marknotx          & \marknotx        & \marknotx          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \markcmpl        & \markcmpl        & \marknotx            & \markcmpl          & \markimpl            & \marknotx           \\
+{\bf Plan 9 / 9front}         & \marknimp          & \marknimp        & \marknotx          & \marknimp         & \marknimp                               & \marknotx         & \marknotx                                 & \marknotx           & \marknimp            & \marknotx              & \marknotx         & \marknotx         & \markcmpl        & \marknimp        & \marknotx            & \marknimp          & \marknotx            & \marknotx           \\
+{\bf Haiku / BeOS}            & \marknotx          & \marknotx        & \marknotx          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \markcmpl        & \marknotx        & \marknotx            & \marknotx          & \marknotx            & \marknotx           \\
+{\bf Minix}                   & \marknotx          & \markunkn        & \marknotx          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \markcmpl        & \marknotx        & \marknotx            & \marknotx          & \marknotx            & \marknotx           \\
+{\bf Playstation Portable}    & \marknotx          & \marknotx        & \marknotx          & \marknotx         & \markcmpl                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \marknotx        & \marknotx        & \marknotx            & \marknotx          & \marknotx            & \marknotx           \\
+{\bf Nintendo DS}             & \marknotx          & \markcmpl        & \marknotx          & \marknotx         & \marknotx                               & \marknotx         & \marknotx                                 & \marknotx           & \marknotx            & \marknotx              & \marknotx         & \marknotx         & \marknotx        & \marknotx        & \marknotx            & \marknotx          & \marknotx            & \marknotx           \\
+\end{tabular}
+\caption{Supported platforms}%
+\end{table}
+
+\subsection{Build Requirements}
+
+The library needs at least a c99 compiler with additional support for anonymous
+structs/unions (which were introduced officially in c11). Given that those are
+generally supported by pretty much all major c99 conforming compilers (as
+default extension), it should build fine with a c99 toolchain.
+

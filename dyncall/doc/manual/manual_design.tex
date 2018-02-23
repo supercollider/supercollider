@@ -1,0 +1,49 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+\section{Library Design}
+
+
+\subsection{Design considerations}
+
+The \product{dyncall} library encapsulates function call invocation semantics
+that depend on the compiler, operating system and architecture.
+The core library is driven by a function call invocation engine, 
+named \emph{CallVM}, that encapsulates a call stack to foreign functions 
+and manages the following three phases that constitute a truly dynamic function
+call:
+
+\begin{enumerate}
+\item Specify the calling convention. Some run-time platforms, such as
+Microsoft Windows on a 32-bit X86 architecture, even support multiple calling
+conventions.
+\item Specify the function call arguments in a specific order. The 
+interface design dictates a \emph{left to right} order for C and C++ function 
+calls in which the arguments are bound.
+\item Specify the target function address, expected return value and 
+invoke the function call.
+\end{enumerate}
+
+The calling convention mode entirely depends on the way the foreign function
+has been compiled and specifies the low-level details on how a function
+actually expects input parameters (in memory, in registers or both) and how to
+return its result(s).
+
+

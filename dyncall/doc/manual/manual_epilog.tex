@@ -1,0 +1,93 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+\newpage
+
+\section{Epilog}
+
+\subsection{Stability and security considerations}
+
+Since the \product{dyncall} library doesn't know anything about the called
+function itself (except its address), no parameter-type validation is done.
+This means that in order to avoid crashes, data corruption, etc., the user is
+required to ascertain the number and types of parameters. It is strongly advised to
+double check the parameter types of every function to be called, and not to
+call unknown functions at all.\\
+
+Consider a simple program that issues a call by directly passing some
+unchecked command line arguments to the call itself, or even worse, by indirectly
+choosing a library to load and a function to call without verification.
+Such unchecked input data can quite easily be used to intentionally crash the
+program or to take over control of the program flow.\\
+If not used with care, programs depending on the \product{dyncall},
+\product{dyncallback} and \product{dynload} libraries, can be exploited as
+arbitrary function call dispatchers through manipulation of their input data.
+Successful exploits of badly formed programs like outlined above can be misused
+as powerful tools for a wide variety of malicious attacks, \ldots
+ 
+
+\subsection{Embedding}
+
+The \product{dyncall} library strives to have a minimal set of dependencies,
+meaning no required runtime dependencies and usually only the necessary tools
+to build the library as build-time dependencies, like a compiler and assembler,
+linker, etc..
+The library uses some heap-memory to store the CallVM and uses by default the
+platform's \capi{malloc()} and \capi{free()} calls. However, providing custom
+\capi{dcAllocMem} and \capi{dcFreeMem} C-preprocessor definitions will override
+the default behaviour.
+See \shell{dyncall/dyncall\_alloc.h} for details.
+
+
+\subsection{Multi-threading}
+
+The \product{dyncall} library is thread-safe and reentrant, by means that it
+works correctly during execution of multiple threads if, and only if there is
+at most a single thread pushing arguments to one CallVM. Since there's no
+limitation on the number of created CallVM objects, it is recommended to keep a
+copy per thread if mutliple threads make use of \product{dyncall} in parallel.
+Invoking the call should always be thread-safe, however, whether the called
+function is thread-safe is up to the programmer to verify, of course.
+
+\subsection{Supported types}
+
+Currently, the \product{dyncall} library supports all of ANSI C's integer,
+floating point and pointer types as function call arguments and return values.
+Additionally, C++'s \capi{bool} and C99's \capi{\_Bool} types are supported.
+Due to the still rare and often incomplete support of the \capi{long double}
+type on various platforms, the latter is currently not officially supported.
+
+\subsection{Roadmap}
+
+The \product{dyncall} library should be extended by a wide variety of other
+calling conventions and ported to other and more esoteric platforms. With its
+low memory footprint it surely comes in handy on embedded systems.
+Furthermore, the authors plan to provide more scripting language bindings,
+examples, and other projects based on \product{dyncall}.\\
+Besides \product{dyncall} and \product{dyncallback}, the \product{dynload}
+library needs to be extended with support for other shared library formats
+(e.g. AmigaOS .library or GEM \cite{.ldg} files).
+
+
+\subsection{Related libraries}
+
+Besides the \product{dyncall} library, there are other free and open projects
+with similar goals. The most noteworthy libraries are libffi \cite{libffi},
+C/Invoke \cite{cinvoke} and libffcall \cite{libffcall}.
+

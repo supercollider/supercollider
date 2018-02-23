@@ -1,0 +1,69 @@
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007,2009 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+#///////////////////////////////////////////////////
+#
+#	nmake makefile
+#	Nmakefile
+#
+#///////////////////////////////////////////////////
+
+
+TOP = ..\..
+
+!INCLUDE $(TOP)\buildsys\nmake\prolog.nmake
+
+
+AUTOS = config.h case.h
+
+
+!IF "$(BUILD_OS)" == "windows"
+
+TARGETS = ellipsis.exe
+OBJS = main.obj ellipsis.obj# ..\testmain\main_ansic.obj
+
+$(TARGETS): $(OBJS)
+	echo Linking $@ ...
+	$(LD) /OUT:"$@" $(LDFLAGS) $(OBJS) $(TOP)\dyncall\libdyncall_s.lib > nul
+
+
+!ELSE IF "$(BUILD_OS)" == "nds"
+
+TARGETS = ellipsis.nds
+OBJS = main.o ellipsis.o# ..\testmain\main_NDS.o
+
+$(TARGETS): $(OBJS)
+	echo Linking $@ ...
+	$(LD) $(LDFLAGS) $(OBJS) $(DEVKITPRO_PATH)\libnds\lib\libnds9.a $(TOP)/dyncall/libdyncall_s.a -o "$(@B).elf"
+	$(OCP) -O binary "$(@B).elf" "$(@B).arm9"
+	ndstool -c "$@" -9 "$(@B).arm9"
+	del "$(@B).elf" "$(@B).arm9"
+
+!ENDIF
+
+
+
+$(OBJS): $(AUTOS)
+
+$(AUTOS): mkcase.py
+	python mkcase.py >case.h 2>config.h
+
+
+!INCLUDE $(TOP)\buildsys\nmake\epilog.nmake
+

@@ -1,0 +1,18 @@
+APP = malloc_wx
+OBJS = test_wx.o
+
+TOP      = ../..
+CFLAGS  += -I${TOP}/dyncallback -I${TOP}/dyncall
+LDFLAGS += -L${TOP}/dyncallback
+LDLIBS  += -ldyncallback_s
+
+all: ${APP}
+
+.PHONY: all clean 
+
+${APP}: ${OBJS} 
+	${CC} ${OBJS} ${LDFLAGS} ${LDLIBS} -o ${APP} 
+
+clean:
+	rm -f ${APP} ${OBJS}
+

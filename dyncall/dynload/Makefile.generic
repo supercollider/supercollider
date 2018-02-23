@@ -1,0 +1,18 @@
+LIBNAME = dynload
+OBJS 	= dynload.o dynload_syms.o
+HEADERS = ${VPATH}/dynload.h 
+
+LIB = lib${LIBNAME}_s.a
+
+.PHONY: all clean install
+
+all: ${LIB}
+${LIB}: ${OBJS}
+	${AR} ${ARFLAGS} ${LIB} ${OBJS}
+clean:
+	rm -f ${OBJS} ${LIB}
+install: all
+	mkdir -p ${PREFIX}/lib
+	mkdir -p ${PREFIX}/include
+	cp ${LIB} ${PREFIX}/lib
+	cp ${HEADERS} ${PREFIX}/include

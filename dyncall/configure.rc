@@ -1,0 +1,234 @@
+#!/bin/rc
+#//////////////////////////////////////////////////////////////////////////////
+#
+# Copyright (c) 2007-2010 Daniel Adler <dadler@uni-goettingen.de>, 
+#                         Tassilo Philipp <tphilipp@potion-studios.com>
+#
+# Permission to use, copy, modify, and distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+#//////////////////////////////////////////////////////////////////////////////
+
+# --- configure settings ------------------------------------------------------
+
+PACKAGE=dyncall
+CONFIG_PREFIX=/usr/local #@@@
+
+# --- output error message ----------------------------------------------------
+fn error {
+  echo error: $*
+  exit 1
+}
+
+# --- output warning message --------------------------------------------------
+
+fn warning {
+  echo warning: $*
+}
+
+# --- output info message -----------------------------------------------------
+
+fn info {
+  echo $*
+}
+
+# --- print usage -------------------------------------------------------------
+
+fn usage {
+  echo $PACKAGE' configuration shell-script'
+  echo 'Usage:'
+  echo '  configure [ options ]'
+  echo
+  echo 'Options:'
+  echo '  --help'
+  echo '   -h                print this page'
+  #echo
+  #echo '  --target-x86       build for x86 architecture platform'
+  #echo '  --target-x64       build for x64 architecture platform'
+  #echo '  --target-ppc32     build for ppc32 architecture platform'
+  #echo '  --target-arm-arm   build for ARM architecture platform (ARM mode)'
+  #echo '  --target-arm-thumb build for ARM architecture platform (THUMB mode)'
+  #echo
+  #echo '  --tool-pcc         use Portable C Compiler'
+  #echo 
+  #echo '  --asm-xa           use Plan9 Assemblers (0a, 1a, 2a, etc.)'
+  #echo
+  #echo '  --config-release   build release version (default)'
+  #echo '  --config-debug     build debug version'
+  echo
+  exit 0
+}
+
+# --- guess operating system -------------------------------------------------
+
+CONFIG_OS=()
+fn guess_os {
+  CONFIG_OS='plan9'
+  info 'guess os '$CONFIG_OS
+}
+
+# --- guess architecture -----------------------------------------------------
+
+CONFIG_ARCH=()
+fn guess_arch {
+  CONFIG_ARCH='x86'
+  switch($cputype) {
+    case 386
+      CONFIG_ARCH='x86'
+    case amd64
+      CONFIG_ARCH='x64'
+    case arm
+      CONFIG_ARCH='arm32_arm'
+    case power
+      CONFIG_ARCH='ppc32'
+    case mips
+      CONFIG_ARCH='mips32'
+    case *
+      warning 'unknown architecture '$cputype' - using default (x86)'
+  }
+  info 'guess arch '$CONFIG_ARCH
+}
+
+# --- guess tool chain -------------------------------------------------------
+
+CONFIG_TOOL=()
+fn guess_tool {
+  #CONFIG_TOOL=`{grep CC /$objtype/mkfile | sed s/CC.//}
+  CONFIG_TOOL='pcc'
+  info 'guess tool '$CONFIG_TOOL
+}
+
+# --- guess assembler --------------------------------------------------------
+
+CONFIG_ASM=()
+fn guess_asm {
+  CONFIG_ASM=`{grep AS /$objtype/mkfile | sed s/AS.//}
+  info 'guess assembler '$CONFIG_ASM
+}
+
+# --- process arguments ------------------------------------------------------
+
+fn args {
+  while(! ~ $#* 0 && ~ $1 -*) {
+    OPT=$1
+    shift
+
+    switch($OPT) {
+      case --help -h
+        usage
+      #case --target-x86
+        #CONFIG_ARCH='x86'
+      #case --target-x64
+        #CONFIG_ARCH='x64'
+      #case --target-ppc32
+        #CONFIG_ARCH='ppc32'
+      #case --target-arm-arm
+        #CONFIG_ARCH='arm32_arm'
+      #case --target-arm-thumb
+        #CONFIG_ARCH='arm32_thumb'
+      #case --tool-pcc
+        #CONFIG_TOOL=pcc
+        #CONFIG_ASM=2a
+      #case --tool-xa
+        #CONFIG_ASM=2a
+      #case --config-release
+        #CONFIG_CONFIG=release
+      #case --config-debug
+        #CONFIG_CONFIG=debug
+      case *
+        warning 'unknown option '$OPT
+    }
+  }
+}
+
+# --- guess variables --------------------------------------------------------
+
+fn guess {
+  if(~ $#CONFIG_OS 0) {
+    guess_os
+    if(~ $#CONFIG_OS 0) {
+      error 'unsupported operating system '$OS
+    }
+  }
+
+  if(~ $#CONFIG_ARCH 0) {
+    guess_arch 
+    if(~ $#CONFIG_ARCH 0) {
+      error 'unsupported architecture '$ARCH
+    }
+  }
+
+  if(~ $#CONFIG_TOOL 0) {
+    guess_tool
+    if(~ $#CONFIG_TOOL 0) {
+      error 'no tool'
+    }
+  }
+
+  if(~ $#CONFIG_ASM 0) {
+    guess_asm
+    if(~ $#CONFIG_ASM 0) {
+      error 'no assembler tool'
+    }
+  }
+
+  if(~ $#CONFIG_CONFIG 0) {
+    CONFIG_CONFIG=release
+  }
+}
+  
+# --- set default variables --------------------------------------------------
+
+fn set_defaults {
+  CONFIG_HOST=$CONFIG_OS
+}
+
+# --- derive variables -------------------------------------------------------
+
+fn derive_vars {
+  BUILD_HOST=$CONFIG_HOST
+  if(! ~ $CONFIG_HOST $CONFIG_OS) {
+    BUILD_HOST=$CONFIG_HOST'_'$CONFIG_OS
+  }
+}
+
+# --- write ConfigVars files ------------------------------------------------
+
+fn output {
+  echo '#auto-generated by '$PACKAGE'/configure' >$1
+  echo 'CONFIG_PACKAGE='$PACKAGE >>$1
+  echo 'CONFIG_HOST='$CONFIG_HOST >>$1
+  echo 'CONFIG_OS='$CONFIG_OS >>$1
+  echo 'CONFIG_ARCH='$CONFIG_ARCH >>$1
+  echo 'CONFIG_TOOL='$CONFIG_TOOL >>$1
+  echo 'CONFIG_ASM='$CONFIG_ASM >>$1
+  echo 'CONFIG_CONFIG='$CONFIG_CONFIG >>$1
+  echo 'CONFIG_PREFIX='$CONFIG_PREFIX >>$1
+  if(! ~ $#CONFIG_BUILDPREFIX 0) {
+    echo 'CONFIG_BUILDPREFIX='$CONFIG_BUILDPREFIX >>$1
+  }
+  echo '' >>$1
+}
+
+# --- main -------------------------------------------------------------------
+
+fn main {
+  args $*
+  info '* configure package '$PACKAGE
+  guess
+  set_defaults
+  derive_vars
+  output ConfigVars 
+}
+
+main $*
+

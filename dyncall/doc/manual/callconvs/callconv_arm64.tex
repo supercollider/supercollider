@@ -1,0 +1,138 @@
+%
+% Copyright (c) 2014,2015 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+
+% ==================================================
+% ARM64
+% ==================================================
+\subsection{ARM64 Calling Convention}
+
+\paragraph{Overview}
+
+ARMv8 introduced the AArch64 calling convention. ARM64 chips can be run in 64 or 32bit mode, but not by the same process. Interworking is only intra-process.\\
+The word size is defined to be 32 bits, a dword 64 bits. Note that this is due to historical reasons (terminology didn't change from ARM32).\\
+For more details, take a look at the Procedure Call Standard for the ARM 64-bit Architecture \cite{AAPCS64}.\\
+
+\paragraph{\product{dyncall} support}
+
+The \product{dyncall} library supports the ARM 64-bit AArch64 PCS ABI, for calls and callbacks.
+
+\subsubsection{AAPCS64 Calling Convention}
+
+\paragraph{Registers and register usage}
+
+ARM64 features thirty-one 64 bit general purpose registers, namely x0-x30.
+Also, there is SP, a register with restricted use, used for the stack pointer,
+and PC dedicated as program counter. Additionally, there are thirty-two 128 bit
+registers v0-v31, to be used as SIMD and floating point registers, referred to
+as q0-q31, d0-d31 and s0-s31, respectively, depending on their use:\\
+
+\begin{table}[h]
+\begin{tabular*}{0.95\textwidth}{3 B}
+Name          & Brief description\\
+\hline        
+{\bf x0-x7}   & parameters, scratch, return value\\
+{\bf x8}      & indirect result location pointer\\
+{\bf x9-x15}  & scratch\\
+{\bf x16}     & permanent in some cases, can have special function (IP0), see doc\\
+{\bf x17}     & permanent in some cases, can have special function (IP1), see doc\\
+{\bf x18}     & reserved as platform register, advised not to be used for handwritten, portable asm, see doc \\
+{\bf x19-x28} & permanent\\
+{\bf x29}     & permanent, frame pointer\\
+{\bf x30}     & permanent, link register\\
+{\bf SP}      & permanent, stack pointer\\
+{\bf PC}      & program counter\\
+\end{tabular*}
+\caption{Register usage on arm64}
+\end{table}
+
+\paragraph{Parameter passing}
+
+\begin{itemize}
+\item stack parameter order: right-to-left
+\item caller cleans up the stack
+\item first 8 integer arguments are passed using x0-x7
+\item first 8 floating point arguments are passed using d0-d7
+\item subsequent parameters are pushed onto the stack
+\item if the callee takes the address of one of the parameters and uses it to address other parameters (e.g. varargs) it has to copy - in its prolog - the first 8 integer and 8 floating-point registers to a reserved stack area adjacent to the other parameters on the stack (only the unnamed parameters require saving, though)
+\item structures and unions are passed by value, with the first four words of the parameters in r0-r3
+\item if return value is a structure, a pointer pointing to the return value's space is passed in r0, the first parameter in r1, etc... (see {\bf return values})
+\item stack is required to be throughout eight-byte aligned
+\end{itemize}
+
+\paragraph{Return values}
+\begin{itemize}
+\item integer return values use x0
+\item floating-point return values use d0
+\item otherwise, the caller allocates space, passes pointer to it to the callee through x8, and callee writes return value to this space
+\end{itemize}
+
+\paragraph{Stack layout}
+
+Stack directly after function prolog:\\
+
+\begin{figure}[h]
+\begin{tabular}{5|3|1 1}
+\hhline{~-~~}
+                                   & \vdots       &                                       &                              \\
+\hhline{~=~~}                                                                            
+register save area                 & \hspace{4cm} &                                       & \mrrbrace{5}{caller's frame} \\
+\hhline{~-~~}                                                                            
+local data                         &              &                                       &                              \\
+\hhline{~-~~}                                                                             
+\mrlbrace{13}{parameter area}      & \ldots       & \mrrbrace{3}{stack parameters}        &                              \\
+                                   & \ldots       &                                       &                              \\
+                                   & \ldots       &                                       &                              \\
+\hhline{~=~~}                                     
+                                   & x0           & \mrrbrace{10}{spill area (if needed)} & \mrrbrace{15}{current frame} \\
+                                   & x1           &                                       &                              \\
+                                   & \ldots       &                                       &                              \\
+                                   & x2           &                                       &                              \\
+                                   & x7           &                                       &                              \\
+                                   & d0           &                                       &                              \\
+                                   & d1           &                                       &                              \\
+                                   & \ldots       &                                       &                              \\
+                                   & d2           &                                       &                              \\
+                                   & d7           &                                       &                              \\
+\hhline{~-~~}                                                                             
+register save area                 &              &                                       &                              \\
+\hhline{~-~~}                                                                             
+local data                         &              &                                       &                              \\
+\hhline{~-~~}                                                                             
+link and frame register            & x30          &                                       &                              \\
+                                   & x29          &                                       &                              \\
+\hhline{~-~~}                                                                             
+parameter area                     & \vdots       &                                       &                              \\
+\hhline{~-~~}
+\end{tabular}
+\caption{Stack layout on arm64}
+\end{figure}
+
+\newpage
+
+
+\subsubsection{Apple's ARM64 Function Calling Conventions}
+
+\paragraph{Overview}
+
+Apple's ARM64 calling convention is based on the AAPCS64 standard, however, diverges in some ways.
+Only the differences are listed here, for more details, take a look at Apple's official documentation \cite{AppleARM64}.
+
+\begin{itemize}
+\item arguments passed via stack use only the space they need, but are subject to the type alignment requirements (which is 1 byte for char and bool, 2 for short, 4 for int and 8 for every other type)
+\item caller is required to sign and zero-extend arguments smaller than 32bits
+\end{itemize}
+

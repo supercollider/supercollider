@@ -1,0 +1,209 @@
+%//////////////////////////////////////////////////////////////////////////////
+%
+% Copyright (c) 2007-2014 Daniel Adler <dadler@uni-goettingen.de>, 
+%                         Tassilo Philipp <tphilipp@potion-studios.com>
+%
+% Permission to use, copy, modify, and distribute this software for any
+% purpose with or without fee is hereby granted, provided that the above
+% copyright notice and this permission notice appear in all copies.
+%
+% THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+% WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+% MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+% ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+% WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+% ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+%
+%//////////////////////////////////////////////////////////////////////////////
+
+% Set the normal line height for the entire document (some command depend on it).
+\newcommand{\normallineheight}{10pt}
+\documentclass[\normallineheight,a4paper]{article}
+
+
+% Value multiplier.
+\newlength\mrbraceheight
+\newcommand{\tassimultiply}[2]{%
+\setlength{\mrbraceheight}{0pt}%
+\newcount\qq%
+\qq=1	% Subtract 1 by starting at 1 .
+\loop%
+	\addtolength\mrbraceheight{#2}%
+	\advance\qq by 1%
+\ifnum\qq < #1 \repeat%
+}
+
+
+% Conditional if tex4ht is on or not
+\newcommand{\ifhtml}[1]{%
+	\ifx\HCode\Undef \else%
+		#1%
+	\fi%
+}
+\newcommand{\ifnhtml}[1]{%
+	\ifx\HCode\Undef%
+		#1%
+	\fi%
+}
+\newcommand{\casehtml}[2]{%
+	\ifx\HCode\Undef%
+		#2%
+	\else%
+		#1%
+	\fi%
+}
+
+
+% Packages.
+\usepackage{a4wide}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{color}
+\usepackage{colortbl}
+\usepackage{bigdelim}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{moreverb}
+\usepackage{listings}
+\usepackage{hyperref}
+\ifnhtml{\usepackage{watermark}}
+
+
+% Define own commands and style.
+\newcommand{\dc}{\emph{dyncall}}
+\newcommand{\capi}[1]{%
+	\noindent%
+		{\tt #1}%
+}
+\newcommand{\tab}{\indent}
+
+\newcommand{\shell}[1]{\noindent{\tt #1}}
+
+% Multiline table row with left or right curly brace.
+%\newcommand{\mrrbrace}[2]{\tassimultiply{#1}{5pt} \multirow{#1}{*}{$\smash{\left. {\vrule height 0pt depth \mrbraceheight width 0pt}\right\}}$#2}}
+\newcommand{\mrrbrace}[2]{\rdelim\}{#1}{\normallineheight} \multirow{#1}{*}{#2}                                 }
+\newcommand{\mrlbrace}[2]{                                 \multirow{#1}{*}{#2} \ldelim\{{#1}{\normallineheight}}
+
+
+\newcommand{\tablewidth}{130mm}
+%\setlength{\oddsidemargin}{10mm}
+%\setlength{\textwidth}{140mm}
+%\setlength{\parindent}{0mm}
+%\setlength{\parskip}{1ex plus 0.5ex minus 0.2ex}
+
+\newcommand{\ninety}[1]{\begin{sideways}#1\end{sideways}}
+
+\renewcommand{\paragraph}[1]{%
+	\par\vspace{12pt}%
+	\noindent%
+	\textbf{#1}%
+	\par%
+	\vspace{6pt}%
+}%
+
+% Set a watermark, but not when running htlatex
+\ifnhtml{%
+\watermark{%
+\begingroup%
+\setlength{\unitlength}{1mm}%
+\begin{picture}(0,0)(32,300)%
+	\includegraphics[scale=1.0]{dyncall_watermark}%
+\end{picture}%
+\endgroup%
+}%
+}
+
+
+% Use a sans-serif font.
+\renewcommand{\familydefault}{\sfdefault}
+
+
+\definecolor{defbkgd}{gray}{1.0}
+\definecolor{gray1}{gray}{0.9}
+\definecolor{gray2}{gray}{0.8}
+\definecolor{gray3}{gray}{0.7}
+\definecolor{gray4}{gray}{0.6}
+\definecolor{lightgreen}{rgb}{0.0,1.0,0.0}
+\definecolor{darkgreen}{rgb}{0.0,0.6,0.0}
+
+% Define some column types for our colortables
+\usepackage{array}
+
+\newcommand{\cellcA}{}
+\newcommand{\cellcB}{}
+\newcommand{\cellcC}{}
+\newcommand{\cellcD}{}
+\newcolumntype{1}{l}
+\newcolumntype{2}{l}
+\newcolumntype{3}{l}
+\newcolumntype{4}{l}
+\newcolumntype{5}{r}
+\newcolumntype{6}{r}
+\newcolumntype{7}{r}
+\newcolumntype{8}{r}
+\newcolumntype{A}{p{\tablewidth}}
+\newcolumntype{B}{p{\tablewidth}}
+\newcolumntype{C}{p{\tablewidth}}
+\newcolumntype{D}{p{\tablewidth}}
+
+% listings package related settings
+
+\lstset{captionpos=b}
+\lstset{frame=tblr}
+\lstset{frameround=tttt}
+\lstset{basicstyle=\ttfamily}
+
+% text building blocks
+\newcommand{\group}[1]{\textit{$<$#1$>$}}
+\newcommand{\sigchar}[1]{'{\tt #1}'}
+\newcommand{\sigstr}[1]{"{\tt #1}"}
+\newcommand{\cenum}[1]{#1}
+\newcommand{\product}[1]{\emph{#1}}
+
+% colors used to signalize undefined, not used, supported, etc. states.
+\newcommand{\marknull}{\cellcolor{white}}
+\newcommand{\markcmpl}{\cellcolor{lightgreen}}
+\newcommand{\markimpl}{\cellcolor{darkgreen}}
+\newcommand{\marknimp}{\cellcolor{red}}
+\newcommand{\markunkn}{\cellcolor{yellow}}
+\newcommand{\marknotx}{\cellcolor{gray1}}
+
+
+% table of contents config
+\setcounter{tocdepth}{3}
+
+
+\begin{document}
+
+% html output options (that need to come after \begin{document})..
+\ifhtml{
+	\Configure{tableofcontents*}{chapter}
+}
+
+% main document content -->
+\input{manual_title}
+\newpage
+\tableofcontents
+\newpage
+\ifnhtml{
+	\listoftables
+	\listoffigures
+	\lstlistoflistings
+}
+\newpage
+\input{manual_motivation}
+\input{manual_overview}
+\input{manual_build}
+\input{manual_bindings}
+\input{manual_design}
+\input{manual_devel}
+\input{manual_epilog}
+\appendix
+\addtocontents{toc}{\protect\pagebreak}
+\input{manual_dyncall_api}
+\input{manual_dyncallback_api}
+\input{manual_dynload_api}
+\input{manual_cc}
+\input{manual_literature}
+\end{document}
