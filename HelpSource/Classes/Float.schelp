@@ -110,6 +110,11 @@ f.(18) // integer overrun: -898433024
 f.(18.0) // float is ok.
 // check the ratio between adjacent factorials:
 f.(18.0) / f.(17.0) == 18 // true
+// 18 is already the largest possible factorial representable in 64 bit float (< 2^53)
+{:x, x<-(1..40), f.(x.asFloat) < (2 ** 53) }.all.last
+// but the correctness for comparing adjacent factorials goes up much higher (to 170)
+{:x, x<-(1..180), f.(x.asFloat) / f.(x.asFloat - 1) == x }.all.last
+f.(170.0) // 7.257415615308e+306. Note that this number won't be precise enough for other tests.
 ::
 
 code::
