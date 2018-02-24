@@ -28,7 +28,7 @@ ScoreStreamPlayer : Server {
 
 	initScoreStreamPlayer {
 		this.latency_(0);
-		Server.set.remove(this); // we do not want to be part of the server list
+		Server.all.remove(this); // we do not want to be part of the server list
 		^this
 	}
 
