@@ -192,7 +192,7 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 	
 	bfs::path dir(fileName.parent_path());
 	if(!(bfs::exists(dir)))
-		postfl("WARNING: Cannot create config file. First create the directory %s\n", dir.c_str());
+		postfl("WARNING: Cannot create config file. First create the directory '%s'\n", dir.c_str());
 
 	bfs::ofstream fout(fileName);
 	fout << out.c_str();
