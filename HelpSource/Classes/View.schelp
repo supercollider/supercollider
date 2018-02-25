@@ -151,6 +151,10 @@ METHOD:: absoluteBounds
 
 	returns:: A Rect describing the absolute position and the size of the view on the screen.
 
+METHOD:: devicePixelRatio
+
+	returns:: A number representing the pixel ratio of the View. A pixel ratio of >1 represents a high DPI surface. This value should be used in cases where pixel-specific geometry is required when drawing with link::Classes/Pen::.
+
 METHOD:: sizeHint
 
 	returns:: A Size describing the preferred size of the view to comfortably display its contents and allow useful interaction.

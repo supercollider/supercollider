@@ -325,7 +325,7 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
 
     install(TARGETS SuperCollider
           DESTINATION ${scappbundlename})
@@ -354,7 +354,7 @@ if(APPLE)
     install(DIRECTORY "${QT_PLUGINS_DIR}/"
             DESTINATION ${plugin_dest_dir}
             COMPONENT Runtime
-            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport)/[^_]*\\.dylib")
+            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport|styles)/[^_]*\\.dylib")
 
     set(QtWebEngineCoreDir
         "${CMAKE_PREFIX_PATH}/lib/QtWebEngineCore.framework/Versions/5" CACHE PATH "Path to the QtWebEngineProcess")

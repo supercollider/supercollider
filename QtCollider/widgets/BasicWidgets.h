@@ -26,12 +26,14 @@
 #include "QcMenu.h"
 #include "../layouts/classic_layouts.hpp"
 #include "image_painter.h"
+#include <QBackingStore>
 
 class QcSimpleWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_PROPERTY( QList<QAction*> actions READ actions());
+  Q_PROPERTY( float devicePixelRatio READ devicePixelRatio );
 
 public:
   const QColor & background() const { return _bkg; }
@@ -42,6 +44,8 @@ public:
   Q_INVOKABLE
   void removeBackgroundImage() { _bkg_image.clear(); update(); }
   
+  float devicePixelRatio() const { return backingStore()->window()->devicePixelRatio(); }
+
   Q_INVOKABLE void addAction(QAction* action)        { QWidget::addAction(action); }
   
   Q_INVOKABLE void removeAction(QAction* action)     { QWidget::removeAction(action); }

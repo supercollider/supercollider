@@ -157,21 +157,6 @@ QWebPageAction {
 	*new { arg symbol; ^this.perform(symbol); }
 }
 
-QMenuRole {
-	classvar
-	<noRole = 0,
-	<textHeuristicRole = 1,
-	<applicationSpecificRole = 2,
-	<aboutQtRole = 3,
-
-	<aboutRole = 4,
-	<preferencesRole = 5,
-	<quitRole = 6
-	;
-
-	*new { arg symbol; ^this.perform(symbol) }
-}
-
 QRenderProcessTerminationStatus {
 	classvar
 	normalTerminationStatus = 0,
@@ -239,17 +224,7 @@ QLevelIndicatorStyle {
 	<continuous = 0,
 	<led = 1;
 
-	*new { arg style; ^style.isInteger.if(style, { this.perform(style) }) }
+	*new { arg style;
+		^ this.perform( style.isInteger.if({ #[\continuous, \led][style] }, style) );
 	}
-
-QToolButtonStyle {
-	classvar
-	iconOnly  =	0,
-	textOnly = 	1,
-	textBesideIcon = 2,
-	textUnderIcon = 3,
-	followStyle = 4
-	;
-
-	*new { arg style; ^style.isInteger.if(style, { this.perform(style) }) }
 }

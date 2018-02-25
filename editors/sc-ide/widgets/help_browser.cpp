@@ -138,7 +138,7 @@ void HelpBrowser::createActions()
     ovrAction->addToWidget(mWebView);
 
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection(false)));
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
     ovrAction->addToWidget(mWebView);
 
     // For the sake of display:

@@ -9,8 +9,8 @@ brew install ccache
 export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
 brew install libsndfile || true
-brew install qt55 || true
-brew link qt55 --force
+brew install qt5 || true
+brew link qt5 --force
 
 # To get less noise in xcode output
 gem install xcpretty
