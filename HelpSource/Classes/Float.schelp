@@ -107,14 +107,13 @@ f.(18.0) // float is ok.
 // check the ratio between adjacent factorials:
 f.(18.0) / f.(17.0) == 18 // true
 // 18 is already the largest possible factorial representable in 64-bit float (< 2^53)
-{:x, x<-(1..40), f.(x.asFloat) < (2 ** 53) }.all.last
+{:x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
 // but the correctness for comparing adjacent factorials goes up much higher (to 170)
-{:x, x<-(1..180), f.(x.asFloat) / f.(x.asFloat - 1) == x }.all.last
+{:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
 f.(170.0) // 7.257415615308e+306.
 f.(170.0) / f.(169.0) // => 170.0
-// Note that this number won't be precise enough for other tests:
-{:x, x<-(1..180), f.(x.asFloat) / f.(x.asFloat - 2) == (x * ( x - 1)) }.all.last // 167
 ::
+
 
 code::
 // testing the limits of 64-bit float (2^53)
