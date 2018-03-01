@@ -1,6 +1,6 @@
 File : UnixFILE {
 
-	classvar <openDialogs, <systemIsCaseSensitive;
+	classvar <systemIsCaseSensitive;
 
 	*initClass {
 		var f = this.filenameSymbol.asString;
