@@ -176,8 +176,8 @@ Pipe : UnixFILE {
 		^super.new.open(commandLine, mode)
 	}
 
-	*argv { arg executableAndArguments, mode;
-		^super.new.openArgv(executableAndArguments, mode)
+	*argv { arg args, mode;
+		^super.new.openArgv(args, mode);
 	}
 
 	*call { arg command, onSuccess, onError, maxLineLength=4096;
@@ -237,12 +237,12 @@ Pipe : UnixFILE {
 		}
 	}
 
-	openArgv { arg executableAndArguments, mode;
+	openArgv { arg args, mode;
 		/* open the file. mode is a string passed
 			to popen, so should be one of:
 			"r","w"
 		*/
-		if ((pid = this.prOpenArgv(executableAndArguments, mode)).notNil) {
+		if ((pid = this.prOpenArgv(args, mode)).notNil) {
 			this.addOpenFile;
 		}
 	}
@@ -273,7 +273,7 @@ Pipe : UnixFILE {
 		^this.primitiveFailed
 	}
 
-	prOpenArgv { arg  programAndArguments, mode;
+	prOpenArgv { arg  args, mode;
 		/* open the file with explicit list of arguments. mode is a string passed
 			to popen, so should be one of:
 			"r","w"

@@ -1325,68 +1325,56 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 
 int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b, *c;
+	PyrSlot *callerSlot, *argsSlot, *modeSlot;
 	char mode[12];
 
-	a = g->sp - 2;
-	b = g->sp - 1; //argv
-	c = g->sp;     //mode
+	callerSlot = g->sp - 2;
+	argsSlot = g->sp - 1;
+	modeSlot = g->sp;
 
-	if (NotObj(b)) return errWrongType;
+	if (NotObj(argsSlot)) return errWrongType;
 
-	if (NotObj(c) || !isKindOf(slotRawObject(c), class_string))
+	if (NotObj(modeSlot) || !isKindOf(slotRawObject(modeSlot), class_string))
 		return errWrongType;
-	if (slotRawObject(c)->size > 11) return errFailed;
+	if (slotRawObject(modeSlot)->size > 11) return errFailed;
 
-	PyrFile *pfile = (PyrFile*)slotRawObject(a);
+	PyrFile *pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-	PyrObject *obj = slotRawObject(b);
-	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
+	PyrObject *argsColl = slotRawObject(argsSlot);
+	if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
-	if( obj->size < 1)
+	if( argsColl->size < 1)
 		return errFailed;
 
-	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
-	mode[slotRawString(c)->size] = 0;
+	memcpy(mode, slotRawString(modeSlot)->s, slotRawObject(modeSlot)->size);
+	mode[slotRawString(modeSlot)->size] = 0;
 
-	PyrSlot filenameSlot;
-	getIndexedSlot(obj, &filenameSlot, 0);
-	if (!isKindOfSlot(&filenameSlot, class_string)) return errWrongType;
-	char filename[PATH_MAX];
-	if (slotRawObject(&filenameSlot)->size > PATH_MAX - 1) return errFailed;
-	slotStrVal(&filenameSlot, filename, slotRawObject(&filenameSlot)->size + 1);
+	std::vector<char *> argv (argsColl->size + 1);
+	argv[argsColl->size] = nullptr;
 
-	std::vector<char *> argv (obj->size + 1);
-
-	bfs::path p;
-	p /= filename;
-	std::string filenameOnly = p.filename().string();
-	std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());
-	vfilenameOnly.push_back('\0');
-
-	argv[0] = vfilenameOnly.data();
-	argv[obj->size] = NULL;
-
-	if(obj->size > 1) {
-		for (int i=1; i<obj->size; ++i) {
-			PyrSlot argSlot;
-			getIndexedSlot(obj, &argSlot, i);
-			if (!isKindOfSlot(&argSlot, class_string)) return errWrongType;
-			char *arg = new char[slotRawObject(&argSlot)->size + 1];
-			slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
-			argv[i] = arg;
-		}
+	for (int i=0; i<argsColl->size; ++i) {
+		PyrSlot argSlot;
+		getIndexedSlot(argsColl, &argSlot, i);
+		if (!isKindOfSlot(&argSlot, class_string))
+			return errWrongType;
+		char *arg = new char[slotRawObject(&argSlot)->size + 1];
+		slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
+		argv[i] = arg;
 	}
 
 	pid_t pid;
-	FILE *file = sc_popen_argv(filename, argv.data(), &pid, mode);
+	FILE *file = sc_popen_argv(argv[0], argv.data(), &pid, mode);
+
+	for (int i=0; i<argsColl->size; ++i) {
+		delete [] argv[i];
+	}
 
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
-		SetInt(a, pid);
+		SetInt(callerSlot, pid);
 	} else {
-		SetNil(a);
+		SetNil(callerSlot);
 	}
 	return errNone;
 }
