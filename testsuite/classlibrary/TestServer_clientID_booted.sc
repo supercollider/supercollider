@@ -93,8 +93,6 @@ TestServer_clientID_booted : UnitTest {
 		.notified_(false)
 		.serverRunning_(false);
 
-		//		1.wait;
-
 		// now login again from the same server object
 		// should get "This seems to be a login after loss of network ... all is well" post.
 		server.startAliveThread;
