@@ -21,6 +21,7 @@
 #include <boost/atomic/atomic_flag.hpp>
 #include <boost/atomic/detail/atomic_template.hpp>
 #include <boost/atomic/detail/operations.hpp>
+#include <boost/atomic/detail/extra_operations.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once

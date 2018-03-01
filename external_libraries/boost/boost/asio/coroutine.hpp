@@ -2,7 +2,7 @@
 // coroutine.hpp
 // ~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -206,7 +206,7 @@ class coroutine_ref;
  * {
  *   do
  *   {
- *     socket_.reset(new tcp::socket(io_service_));
+ *     socket_.reset(new tcp::socket(io_context_));
  *     yield acceptor->async_accept(*socket_, *this);
  *     fork server(*this)();
  *   } while (is_parent());
@@ -228,7 +228,7 @@ class coroutine_ref;
  * Note that @c fork doesn't do the actual forking by itself. It is the
  * application's responsibility to create a clone of the coroutine and call it.
  * The clone can be called immediately, as above, or scheduled for delayed
- * execution using something like io_service::post().
+ * execution using something like io_context::post().
  *
  * @par Alternate macro names
  *
@@ -291,7 +291,7 @@ private:
       bail_out_of_coroutine: \
       break; \
     } \
-    else case 0:
+    else /* fall-through */ case 0:
 
 #define BOOST_ASIO_CORO_YIELD_IMPL(n) \
   for (_coro_value = (n);;) \
@@ -303,12 +303,12 @@ private:
     else \
       switch (_coro_value ? 0 : 1) \
         for (;;) \
-          case -1: if (_coro_value) \
+          /* fall-through */ case -1: if (_coro_value) \
             goto terminate_coroutine; \
           else for (;;) \
-            case 1: if (_coro_value) \
+            /* fall-through */ case 1: if (_coro_value) \
               goto bail_out_of_coroutine; \
-            else case 0:
+            else /* fall-through */ case 0:
 
 #define BOOST_ASIO_CORO_FORK_IMPL(n) \
   for (_coro_value = -(n);; _coro_value = (n)) \

@@ -200,6 +200,8 @@ struct movable_array
         data_   = rhs.data_;
 
         rhs.data_ = nullptr;
+        
+        return *this;
     }
 
     ~movable_array(void)

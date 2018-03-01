@@ -140,9 +140,9 @@ class new_allocator
    //!Throws std::bad_alloc if there is no enough memory
    pointer allocate(size_type count)
    {
-	   if(BOOST_UNLIKELY(count > this->max_size()))
-	      throw_bad_alloc();
-	   return static_cast<T*>(::operator new(count*sizeof(T)));
+      if(BOOST_UNLIKELY(count > this->max_size()))
+         throw_bad_alloc();
+      return static_cast<T*>(::operator new(count*sizeof(T)));
    }
 
    //!Deallocates previously allocated memory.

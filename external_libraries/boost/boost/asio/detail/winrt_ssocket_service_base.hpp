@@ -2,7 +2,7 @@
 // detail/winrt_ssocket_service_base.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,10 +21,10 @@
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/socket_base.hpp>
-#include <boost/asio/detail/addressof.hpp>
 #include <boost/asio/detail/buffer_sequence_adapter.hpp>
+#include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/socket_types.hpp>
 #include <boost/asio/detail/winrt_async_manager.hpp>
 #include <boost/asio/detail/winrt_socket_recv_op.hpp>
@@ -63,10 +63,10 @@ public:
 
   // Constructor.
   BOOST_ASIO_DECL winrt_ssocket_service_base(
-      boost::asio::io_service& io_service);
+      boost::asio::io_context& io_context);
 
   // Destroy all user-defined handler objects owned by the service.
-  BOOST_ASIO_DECL void shutdown_service();
+  BOOST_ASIO_DECL void base_shutdown();
 
   // Construct a new socket implementation.
   BOOST_ASIO_DECL void construct(base_implementation_type&);
@@ -91,6 +91,10 @@ public:
 
   // Destroy a socket implementation.
   BOOST_ASIO_DECL boost::system::error_code close(
+      base_implementation_type& impl, boost::system::error_code& ec);
+
+  // Release ownership of the socket.
+  BOOST_ASIO_DECL native_handle_type release(
       base_implementation_type& impl, boost::system::error_code& ec);
 
   // Get the native socket representation.
@@ -200,11 +204,11 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef winrt_socket_send_op<ConstBufferSequence, Handler> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
-      boost_asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(buffers, handler);
 
-    BOOST_ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_send"));
+    BOOST_ASIO_HANDLER_CREATION((io_context_.context(),
+          *p.p, "socket", &impl, 0, "async_send"));
 
     start_send_op(impl,
         buffer_sequence_adapter<boost::asio::const_buffer,
@@ -220,7 +224,7 @@ public:
   {
     boost::system::error_code ec = boost::asio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
-    io_service_.get_io_service().post(
+    io_context_.get_io_context().post(
         detail::bind_handler(handler, ec, bytes_transferred));
   }
 
@@ -256,11 +260,11 @@ public:
     // Allocate and construct an operation to wrap the handler.
     typedef winrt_socket_recv_op<MutableBufferSequence, Handler> op;
     typename op::ptr p = { boost::asio::detail::addressof(handler),
-      boost_asio_handler_alloc_helpers::allocate(
-        sizeof(op), handler), 0 };
+      op::ptr::allocate(handler), 0 };
     p.p = new (p.v) op(buffers, handler);
 
-    BOOST_ASIO_HANDLER_CREATION((p.p, "socket", &impl, "async_receive"));
+    BOOST_ASIO_HANDLER_CREATION((io_context_.context(),
+          *p.p, "socket", &impl, 0, "async_receive"));
 
     start_receive_op(impl,
         buffer_sequence_adapter<boost::asio::mutable_buffer,
@@ -276,7 +280,7 @@ public:
   {
     boost::system::error_code ec = boost::asio::error::operation_not_supported;
     const std::size_t bytes_transferred = 0;
-    io_service_.get_io_service().post(
+    io_context_.get_io_context().post(
         detail::bind_handler(handler, ec, bytes_transferred));
   }
 
@@ -329,8 +333,8 @@ protected:
       winrt_async_op<Windows::Storage::Streams::IBuffer^>* op,
       bool is_continuation);
 
-  // The io_service implementation used for delivering completions.
-  io_service_impl& io_service_;
+  // The io_context implementation used for delivering completions.
+  io_context_impl& io_context_;
 
   // The manager that keeps track of outstanding operations.
   winrt_async_manager& async_manager_;

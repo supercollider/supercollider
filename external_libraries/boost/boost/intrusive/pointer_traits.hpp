@@ -20,7 +20,7 @@
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/detail/workaround.hpp>
 #include <boost/intrusive/pointer_rebind.hpp>
-#include <boost/intrusive/detail/pointer_element.hpp>
+#include <boost/move/detail/pointer_element.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <cstddef>
 
@@ -97,7 +97,7 @@ struct pointer_traits
       //
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_EVAL_DEFAULT
          ( boost::intrusive::detail::, Ptr, element_type
-         , boost::intrusive::detail::first_param<Ptr>)                        element_type;
+         , boost::movelib::detail::first_param<Ptr>)                          element_type;
       //
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT
          (boost::intrusive::detail::, Ptr, difference_type, std::ptrdiff_t)   difference_type;

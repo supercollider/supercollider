@@ -19,6 +19,7 @@
 #include <boost/format/detail/compat_workarounds.hpp>
 #include <boost/utility/base_from_member.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/config.hpp>
 #include <boost/assert.hpp>
 
 namespace boost {
@@ -62,7 +63,7 @@ namespace boost {
                                         = ::std::ios_base::in | ::std::ios_base::out)
                 : putend_(NULL), is_allocated_(false), mode_(mode) 
                 { dealloc(); str(s); }
-            virtual ~basic_altstringbuf() 
+            virtual ~basic_altstringbuf() BOOST_NOEXCEPT_OR_NOTHROW
                 { dealloc(); }
             using streambuf_t::pbase;
             using streambuf_t::pptr;
@@ -137,13 +138,13 @@ namespace boost {
         public:
             typedef Alloc  allocator_type;
             basic_oaltstringstream() 
-                : pbase_type(new stringbuf_t), stream_t(rdbuf()) 
+                : pbase_type(new stringbuf_t), stream_t(pbase_type::member.get())
                 { }
             basic_oaltstringstream(::boost::shared_ptr<stringbuf_t> buf) 
-                : pbase_type(buf), stream_t(rdbuf()) 
+                : pbase_type(buf), stream_t(pbase_type::member.get())
                 { }
             basic_oaltstringstream(stringbuf_t * buf) 
-                : pbase_type(buf, No_Op() ), stream_t(rdbuf()) 
+                : pbase_type(buf, No_Op() ), stream_t(pbase_type::member.get())
                 { }
             stringbuf_t * rdbuf() const 
                 { return pbase_type::member.get(); }

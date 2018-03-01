@@ -28,7 +28,7 @@
 #include <boost/sync/semaphore.hpp>
 
 #include "dsp_thread_queue.hpp"
-#include "../utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 #include "nova-tt/mlock.hpp"
 
 namespace nova {

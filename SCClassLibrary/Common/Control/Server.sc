@@ -265,8 +265,9 @@ Server {
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
-	var <name, <addr, <clientID, <userSpecifiedClientID = false;
+	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
+	var maxNumClients; // maxLogins as sent from booted scsynth
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
 
@@ -320,26 +321,17 @@ Server {
 
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
-		options = argOptions ? ServerOptions.new;
+		options = argOptions ?? { ServerOptions.new };
 
 		// set name to get readable posts from clientID set
 		name = argName.asSymbol;
 
-		if(argClientID.notNil) {
-			userSpecifiedClientID = true;
-			if (argClientID >= options.maxLogins) {
-				warn("% : user-specified clientID % is greater than maxLogins!"
-					"\nPlease adjust clientID or options.maxLogins."
-					.format(name, argClientID));
-				^nil
-			};
-		};
+		// make statusWatcher before clientID, so .serverRunning works
+		statusWatcher = ServerStatusWatcher(server: this);
 
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
 
-
-		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
 		recorder.notifyServer = true;
@@ -351,12 +343,12 @@ Server {
 
 	}
 
+	maxNumClients { ^maxNumClients ?? { options.maxLogins } }
+
 	remove {
 		all.remove(this);
 		named.removeAt(this.name);
 	}
-
-	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
@@ -375,26 +367,34 @@ Server {
 	}
 
 	initTree {
-		this.newNodeAllocators;
-		this.sendDefaultGroups;
-		tree.value(this);
-		ServerTree.run(this);
+		fork({
+			this.sendDefaultGroups;
+			tree.value(this);
+			this.sync;
+			ServerTree.run(this);
+			this.sync;
+		}, AppClock);
 	}
 
-	/* id allocators */
+	/* clientID */
 
-	// private, called from server notify response with next free clientID
+	// clientID is settable while server is off, and locked while server is running
+	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to % - %. clientID is still %.";
+		if (this.serverRunning) {
+			failstr.format(name, val.cs, "server is running", clientID).warn;
+			^this
+		};
 
 		if(val.isInteger.not) {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
 		};
-		if (val < 0 or: { val >= this.numClients }) {
+		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.numClients range of 0 - %".format(this.numClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
 				clientID
 			).warn;
 			^this
@@ -405,10 +405,9 @@ Server {
 		};
 		clientID = val;
 		this.newAllocators;
-		if (statusWatcher.notNil and: { this.serverRunning }) {
-			this.initTree;
-		};
 	}
+
+	/* clientID-based id allocators */
 
 	newAllocators {
 		this.newNodeAllocators;
@@ -422,7 +421,7 @@ Server {
 		nodeAllocator = nodeAllocClass.new(
 			clientID,
 			options.initialNodeID,
-			options.maxLogins
+			this.maxNumClients
 		);
 		// defaultGroup and defaultGroups depend on allocator,
 		// so always make them here:
@@ -436,8 +435,8 @@ Server {
 
 		var audioBusIOOffset = options.firstPrivateBus;
 
-		numControlPerClient = options.numControlBusChannels div: this.numClients;
-		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.numClients;
+		numControlPerClient = options.numControlBusChannels div: this.maxNumClients;
+		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.maxNumClients;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
 		controlBusClientOffset = numControlPerClient * clientID;
@@ -457,9 +456,8 @@ Server {
 		);
 	}
 
-
 	newBufferAllocators {
-		var numBuffersPerClient = options.numBuffers div: this.numClients;
+		var numBuffersPerClient = options.numBuffers div: this.maxNumClients;
 		var numReservedBuffers = options.reservedNumBuffers;
 		var bufferClientOffset = numBuffersPerClient * clientID;
 
@@ -511,6 +509,56 @@ Server {
 		^nodeAllocator.freePerm(id)
 	}
 
+	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
+
+		// only set maxLogins if not internal server
+		if (inProcess.not) {
+			if (newMaxLogins.notNil) {
+				if (newMaxLogins != options.maxLogins) {
+					"%: server process has maxLogins % - adjusting my options accordingly.\n"
+					.postf(this, newMaxLogins);
+				} {
+					"%: server process's maxLogins (%) matches with my options.\n"
+					.postf(this, newMaxLogins);
+				};
+				options.maxLogins = maxNumClients = newMaxLogins;
+			} {
+				"%: no maxLogins info from server process.\n"
+				.postf(this, newMaxLogins);
+			};
+		};
+
+		if (newClientID == clientID) {
+			"%: keeping clientID (%) as confirmed by server process.\n"
+			.postf(this, newClientID);
+		} {
+			"%: setting clientID to %, as obtained from server process.\n"
+			.postf(this, newClientID);
+		};
+		this.clientID = newClientID;
+	}
+
+	prHandleNotifyFailString {|failString, msg|
+
+		// post info on some known error cases
+		case
+		{ failString.asString.contains("already registered") } {
+			"% - already registered with clientID %.\n".postf(this, msg[3]);
+			statusWatcher.notified = true;
+		} { failString.asString.contains("not registered") } {
+			// unregister when already not registered:
+			"% - not registered.\n".postf(this);
+			statusWatcher.notified = false;
+		} { failString.asString.contains("too many users") } {
+			"% - could not register, too many users.\n".postf(this);
+			statusWatcher.notified = false;
+		} {
+			// throw error if unknown failure
+			Error(
+				"Failed to register with server '%' for notifications: %\n"
+				"To recover, please reboot the server.".format(this, msg)).throw;
+		};
+	}
 
 	/* network messages */
 
@@ -725,13 +773,9 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	// defaultGroups for all clients on this server:
-
-	allClientIDs { ^(0..options.maxLogins-1) }
-
 	// keep defaultGroups for all clients on this server:
 	makeDefaultGroups {
-		defaultGroups = this.allClientIDs.collect { |clientID|
+		defaultGroups = this.maxNumClients.collect { |clientID|
 			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
 		};
 		defaultGroup = defaultGroups[clientID];
@@ -780,6 +824,7 @@ Server {
 	peakCPU { ^statusWatcher.peakCPU }
 	sampleRate { ^statusWatcher.sampleRate }
 	actualSampleRate { ^statusWatcher.actualSampleRate }
+	hasBooted { ^statusWatcher.hasBooted }
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
@@ -843,8 +888,14 @@ Server {
 		}
 	}
 
+
+	// FIXME: recover should happen later, after we have a valid clientID!
+	// would then need check whether maxLogins and clientID have changed or not,
+	// and recover would only be possible if no changes.
 	bootInit { | recover = false |
-		if(recover) { this.newNodeAllocators } { this.newAllocators };
+		// if(recover) { this.newNodeAllocators } {
+		// 	"% calls newAllocators\n".postf(thisMethod);
+		// this.newAllocators };
 		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 		if(sendQuit.isNil) {
 			sendQuit = this.inProcess or: { this.isLocal };
@@ -852,15 +903,25 @@ Server {
 		this.connectSharedMemory;
 	}
 
+	prOnServerProcessExit { |exitCode|
+		"Server '%' exited with exit code %."
+			.format(this.name, exitCode)
+			.postln;
+		statusWatcher.quit(watchShutDown: false);
+	}
+
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".postln;
+			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
+			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
-			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
+			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+				this.prOnServerProcessExit(exitCode);
+			});
+			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
 	}
@@ -932,13 +993,14 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".postln;
+			"Internal server has quit.".postln;
 		} {
-			"'/quit' sent\n".postln;
+			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
 		pid = nil;
 		sendQuit = nil;
+		maxNumClients = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
@@ -1003,6 +1065,10 @@ Server {
 				if(server.isLocal) { server.freeAll }
 			}
 		}
+	}
+
+	*allBootedServers {
+		^this.all.select(_.hasBooted)
 	}
 
 	*allRunningServers {

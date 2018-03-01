@@ -619,7 +619,7 @@ Event : Environment {
 						// compute the control values and generate OSC commands
 
 						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group] ++ bndl;
+						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput] ++ bndl;
 
 						~schedBundleArray.(
 							~lag,

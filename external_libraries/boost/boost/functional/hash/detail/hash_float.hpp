@@ -241,7 +241,7 @@ namespace boost
         template <class T>
         inline bool is_zero(T v)
         {
-#if !defined(__GNUC__)
+#if !defined(__GNUC__) && !defined(__clang__)
             return v == 0;
 #else
             // GCC's '-Wfloat-equal' will complain about comparing

@@ -26,16 +26,30 @@ code::
 UnitTest.gui
 ::
 
-METHOD:: runTest
-Run a single test for methodName.
+METHOD:: run
+Run all methods whose names begin with code::test_::.
 
-ARGUMENT:: methodName
-Should have the format code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::
+code::
+TestUnitTest.new.run;
+::
+
+ARGUMENT:: reset
+If code::true::, first runs link::#*reset:: on the class.
+
+ARGUMENT:: report
+If code::true::, outputs the test results.
+
+METHOD:: runTest
+Run a single test method.
 
 code::
 UnitTest.reset;
 UnitTest.runTest("TestUnitTest:test_assert");
 ::
+
+ARGUMENT:: methodName
+A link::Classes/String:: referring to the class and test method
+within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
 
 
 METHOD:: runAll
@@ -47,133 +61,135 @@ UnitTest.runAll;
 ::
 
 
-METHOD:: runTestClassForClass
-runs testclass for a class
-
-ARGUMENT:: class
-the class
-
-ARGUMENT:: reset
-reset UnitTest environment
-
-ARGUMENT:: report
-report on pass/fail
-
-
-
-
-
-
 INSTANCEMETHODS::
-
-METHOD:: run
-All method names that start with test_ are invoked.
-
-ARGUMENT:: reset
-(describe argument here)
-
-ARGUMENT:: report
-(describe argument here)
-
-returns:: (describe returnvalue here)
-
-code::
-TestUnitTest.new.run;
-::
-
-
-
-
 
 METHOD:: runTestMethod
 Run a single test method of this class
-
-ARGUMENT:: method
-the method to run
 
 code::
 TestUnitTest.new.runTestMethod(TestUnitTest.findMethod(\test_assert));
 ::
 
+ARGUMENT:: method
+the method to run
+
 returns:: (describe returnvalue here)
 
-PRIVATE:: assert, assertArrayFloatEquals, asynchAssert, tearDown, setUp, assertEquals, failed, passed, assertFloatEquals, s, ifAsserts, findTestMethods, wait, bootServer
+PRIVATE:: s, run, findTestMethods, setUp, tearDown
 
-
-SECTION:: Writing tests by subclassing UnitTest
-
-code::
-YourClass.test
-::
-Runs the test class for code::YourClass::, which is assumed to be named code::TestYourClass::.
-
-If no test class if found it politely declines.
-
-note::
-UnitTests for the Common library classes are kept in the CommonTests quark. 	This enables you to easily install and uninstall these tests.
-::
-
-
-Make sure to implement the methods code::setUp:: and code::tearDown::. They will be called before and after the test.
 
 METHOD:: assert
 
-argument:: test
-Make sure that this returns a boolean, where code::true:: means that the test is passed.
+Asserts that an expression must be true.
+
+code::
+this.assert(2 == 2, "passes");
+this.assert(2 == 2.00001, "fails");
+::
+
+argument:: boolean
+A boolean, where code::true:: means that the test is passed.
 
 argument:: message
-posted if report is true.
+A message describing the purpose of the assertion, e.g. code::"foo
+should be less than bar"::.
+Posted if code::report:: is true.
+
+argument:: report
+Reports the result of the test if code::true::.
 
 argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
 
+METHOD:: assertEquals
+
+Asserts that an expression code::a:: is equal to the value code::b::,
+where equality is determined according to code::a::'s implementation
+of code::==::.
+
 code::
-UnitTest.new.assert(2 == 2, "Two does equal two.");
-UnitTest.new.assert(2 == 2.00001, "Two does equal two.");
+this.assertEquals(2 + 2, 4, "passes");
+this.assertEquals(2 + 2, 5, "fails");
 ::
+
+argument:: a
+the experimentally produced value
+
+argument:: b
+the expected value
+
+argument:: message
+A message describing the purpose of the assertion, e.g.
+code::"Adding two numbers should return their sum."::.
+Posted if code::report:: is true.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
 
 METHOD:: assertFloatEquals
 
-Make sure that the two floats code::a:: and code::b:: equal within a given range (code::within::).
+Asserts that an expression code::a:: returning a float is within a
+given range (code::within::) of being equal to code::b::.
 
+code::
+this.assertFloatEquals(2, 2.0001, "Pass since 2 is close enough to 2.0001.", 0.001);
+this.assertFloatEquals(2, 2.0001, "Fail since 2 isn't close enough to 2.0001.", 0.0001);
+::
 
 argument:: a
-a float
+the experimentally produced float value
 
 argument:: b
-a float
+the expected float value
 
 argument:: message
-posted if report is true.
+A message describing the purpose of the assertion, e.g.
+code::"Adding two numbers should return their sum."::.
+Posted if code::report:: is true.
+
+argument:: within
+The range within which code::a:: must be of code::b:: in
+order for the test to pass.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
 
 argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
 
 
-
-code::
-UnitTest.new.assertFloatEquals(2, 2.00001, "Two does equal two.", 0.00001);
-UnitTest.new.assertFloatEquals(2, 2.001, "Two does equal two.", 0.0001);
-::
-
-method:: assertArrayFloatEquals
+METHOD:: assertArrayFloatEquals
 Make sure that the two arrays of floats code::a:: and code::b:: equal within a given range (code::within::).
 
+code::
+this.assertArrayFloatEquals([2, 3] + 0.0001, [2, 3], "Pass since pairs of floats are close enough", 0.001);
+this.assertArrayFloatEquals([2, 3.0001], [2, 3], "Fail since pairs of floats aren't both close enough", 0.0001);
+::
+
 argument:: a
-an code::Array:: of floats
+the experimentally produced value, which is an code::Array:: of floats
 
 argument:: b
-an code::Array:: of floats
+the code::Array:: of float values expected
 
 argument:: message
-posted if report is true.
+A message describing the purpose of the assertion, e.g.
+code::"Arrays foo and bar should be equal."::.
+Posted if code::report:: is true.
+
+argument:: within
+The range within which each item of code::a:: must be of the
+corresponding item in code::b:: in order for the test to pass.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
 
 argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
 
-code::
-UnitTest.new.assertArrayFloatEquals([2, 3], [2, 3] + 0.00001, "Same Floats", 0.000001);
-::
 
 METHOD:: ifAsserts
 Make a further assertion only if it passed, or only if it failed.
@@ -210,14 +226,31 @@ code::
 )
 ::
 
-METHOD:: failed
-call failure directly.
+METHOD:: passed
+Register a passed test.
 
 code::
-UnitTest.new.passed(message: "this passed");
+this.passed(message: "this passed");
 ::
 
-SUBSECTION:: UnitTest (sub)class  example.
+METHOD:: failed
+Register a test failure.
+
+code::
+this.failed(message: "this failed");
+::
+
+EXAMPLES::
+
+Write tests by subclassing UnitTest, and defining methods whose names
+begins code::test_::.  Each test method will be called from a fresh
+instance of the subclass.
+
+If you implement the methods code::setUp:: and code::tearDown:: in
+your test class, they will be called before and after every test.
+This can help to eliminate repetitive code, and makes it easier to
+maintain your tests by ensuring that they all run under the same set
+of conditions.
 
 code::
 TestYourClass : UnitTest {
@@ -229,9 +262,7 @@ TestYourClass : UnitTest {
 	}
 
 	test_yourMethod {
-
-		// every method named test_
-		// will be run
+		// every method whose name begins with "test_" will be run
 
 		this.assert( 6 == 6, "6 should equal 6");
 

@@ -549,7 +549,7 @@ SynthDef {
 	add { arg libname, completionMsg, keepDef = true;
 		var	servers, desc = this.asSynthDesc(libname ? \global, keepDef);
 		if(libname.isNil) {
-			servers = Server.allRunningServers
+			servers = Server.allBootedServers
 		} {
 			servers = SynthDescLib.getLib(libname).servers
 		};
@@ -571,9 +571,9 @@ SynthDef {
 
 	// only send to servers
 	send { arg server, completionMsg;
-		var servers = (server ?? { Server.allRunningServers }).asArray;
+		var servers = (server ?? { Server.allBootedServers }).asArray;
 		servers.do { |each|
-			if(each.serverRunning.not) {
+			if(each.hasBooted.not) {
 				"Server % not running, could not send SynthDef.".format(server.name).warn
 			};
 			if(metadata.trueAt(\shouldNotSend)) {

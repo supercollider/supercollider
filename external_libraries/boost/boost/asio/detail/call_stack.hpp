@@ -2,7 +2,7 @@
 // detail/call_stack.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -26,7 +26,7 @@ namespace asio {
 namespace detail {
 
 // Helper class to determine whether or not the current thread is inside an
-// invocation of io_service::run() for a specified io_service object.
+// invocation of io_context::run() for a specified io_context object.
 template <typename Key, typename Value = unsigned char>
 class call_stack
 {

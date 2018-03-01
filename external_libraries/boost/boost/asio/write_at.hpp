@@ -2,7 +2,7 @@
 // write_at.hpp
 // ~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,9 +18,12 @@
 #include <boost/asio/detail/config.hpp>
 #include <cstddef>
 #include <boost/asio/async_result.hpp>
-#include <boost/asio/basic_streambuf_fwd.hpp>
 #include <boost/asio/detail/cstdint.hpp>
 #include <boost/asio/error.hpp>
+
+#if !defined(BOOST_ASIO_NO_EXTENSIONS)
+# include <boost/asio/basic_streambuf_fwd.hpp>
+#endif // !defined(BOOST_ASIO_NO_EXTENSIONS)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -225,6 +228,7 @@ std::size_t write_at(SyncRandomAccessWriteDevice& d,
     uint64_t offset, const ConstBufferSequence& buffers,
     CompletionCondition completion_condition, boost::system::error_code& ec);
 
+#if !defined(BOOST_ASIO_NO_EXTENSIONS)
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
 
 /// Write all of the supplied data at the specified offset before returning.
@@ -383,6 +387,7 @@ std::size_t write_at(SyncRandomAccessWriteDevice& d, uint64_t offset,
     boost::system::error_code& ec);
 
 #endif // !defined(BOOST_ASIO_NO_IOSTREAM)
+#endif // !defined(BOOST_ASIO_NO_EXTENSIONS)
 
 /*@}*/
 /**
@@ -438,7 +443,7 @@ std::size_t write_at(SyncRandomAccessWriteDevice& d, uint64_t offset,
  * Regardless of whether the asynchronous operation completes immediately or
  * not, the handler will not be invoked from within this function. Invocation of
  * the handler will be performed in a manner equivalent to using
- * boost::asio::io_service::post().
+ * boost::asio::io_context::post().
  *
  * @par Example
  * To write a single data buffer use the @ref buffer function as follows:
@@ -516,7 +521,7 @@ async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
  * Regardless of whether the asynchronous operation completes immediately or
  * not, the handler will not be invoked from within this function. Invocation of
  * the handler will be performed in a manner equivalent to using
- * boost::asio::io_service::post().
+ * boost::asio::io_context::post().
  *
  * @par Example
  * To write a single data buffer use the @ref buffer function as follows:
@@ -537,6 +542,7 @@ async_write_at(AsyncRandomAccessWriteDevice& d,
     CompletionCondition completion_condition,
     BOOST_ASIO_MOVE_ARG(WriteHandler) handler);
 
+#if !defined(BOOST_ASIO_NO_EXTENSIONS)
 #if !defined(BOOST_ASIO_NO_IOSTREAM)
 
 /// Start an asynchronous operation to write all of the supplied data at the
@@ -582,7 +588,7 @@ async_write_at(AsyncRandomAccessWriteDevice& d,
  * Regardless of whether the asynchronous operation completes immediately or
  * not, the handler will not be invoked from within this function. Invocation of
  * the handler will be performed in a manner equivalent to using
- * boost::asio::io_service::post().
+ * boost::asio::io_context::post().
  */
 template <typename AsyncRandomAccessWriteDevice, typename Allocator,
     typename WriteHandler>
@@ -648,7 +654,7 @@ async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
  * Regardless of whether the asynchronous operation completes immediately or
  * not, the handler will not be invoked from within this function. Invocation of
  * the handler will be performed in a manner equivalent to using
- * boost::asio::io_service::post().
+ * boost::asio::io_context::post().
  */
 template <typename AsyncRandomAccessWriteDevice, typename Allocator,
     typename CompletionCondition, typename WriteHandler>
@@ -659,6 +665,7 @@ async_write_at(AsyncRandomAccessWriteDevice& d, uint64_t offset,
     BOOST_ASIO_MOVE_ARG(WriteHandler) handler);
 
 #endif // !defined(BOOST_ASIO_NO_IOSTREAM)
+#endif // !defined(BOOST_ASIO_NO_EXTENSIONS)
 
 /*@}*/
 

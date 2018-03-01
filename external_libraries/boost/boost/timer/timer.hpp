@@ -41,7 +41,7 @@ namespace timer
     nanosecond_type user;
     nanosecond_type system;
 
-    void clear() { wall = user = system = 0LL; }
+    void clear() { wall = user = system = 0; }
   };
       
   const short         default_places = 6;

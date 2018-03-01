@@ -21,7 +21,7 @@
 
 #include "InitAlloc.h"
 
-#include "../../server/supernova/utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 
 AllocPool *pyr_pool_compile = 0;
 AllocPool *pyr_pool_runtime = 0;

@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_serial_port_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -30,12 +30,13 @@ namespace asio {
 namespace detail {
 
 win_iocp_serial_port_service::win_iocp_serial_port_service(
-    boost::asio::io_service& io_service)
-  : handle_service_(io_service)
+    boost::asio::io_context& io_context)
+  : service_base<win_iocp_serial_port_service>(io_context),
+    handle_service_(io_context)
 {
 }
 
-void win_iocp_serial_port_service::shutdown_service()
+void win_iocp_serial_port_service::shutdown()
 {
 }
 

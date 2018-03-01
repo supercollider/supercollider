@@ -20,7 +20,6 @@
 #include <boost/chrono/ceil.hpp>
 #endif
 #include <boost/thread/detail/delete.hpp>
-#include <boost/assert.hpp>
 
 #include <boost/config/abi_prefix.hpp>
 

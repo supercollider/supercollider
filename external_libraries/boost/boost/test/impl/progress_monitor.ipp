@@ -124,7 +124,7 @@ progress_monitor_impl& s_pm_impl() { static progress_monitor_impl the_inst; retu
 void
 progress_monitor_t::test_start( counter_t test_cases_amount )
 {
-    s_pm_impl().m_color_output = runtime_config::get<bool>( runtime_config::COLOR_OUTPUT );
+    s_pm_impl().m_color_output = runtime_config::get<bool>( runtime_config::btrt_color_output );
 
     PM_SCOPED_COLOR();
 

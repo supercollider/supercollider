@@ -12,20 +12,23 @@
 #include <boost/detail/workaround.hpp>
 #include <boost/thread/detail/platform.hpp>
 
+//#define BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC
 //#define BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS
 // ATTRIBUTE_MAY_ALIAS
 
-#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
+//#if defined(__GNUC__) && !defined(__INTEL_COMPILER)
+#if !defined(BOOST_NO_MAY_ALIAS)
 
-  // GCC since 3.3 has may_alias attribute that helps to alleviate optimizer issues with
-  // regard to violation of the strict aliasing rules.
+  // GCC since 3.3 and some other compilers have may_alias attribute that helps
+  // to alleviate optimizer issues with regard to violation of the strict aliasing rules.
 
   #define BOOST_THREAD_DETAIL_USE_ATTRIBUTE_MAY_ALIAS
-  #define BOOST_THREAD_ATTRIBUTE_MAY_ALIAS __attribute__((__may_alias__))
-#else
-  #define BOOST_THREAD_ATTRIBUTE_MAY_ALIAS
 #endif
-
+#if defined(BOOST_MAY_ALIAS)
+#define BOOST_THREAD_ATTRIBUTE_MAY_ALIAS BOOST_MAY_ALIAS
+#else
+#define BOOST_THREAD_ATTRIBUTE_MAY_ALIAS
+#endif
 
 #if defined BOOST_THREAD_THROW_IF_PRECONDITION_NOT_SATISFIED
 #define BOOST_THREAD_ASSERT_PRECONDITION(EXPR, EX) \
@@ -384,7 +387,7 @@
 
 // provided for backwards compatibility, since this
 // macro was used for several releases by mistake.
-#if defined(BOOST_THREAD_DYN_DLL) && ! defined BOOST_THREAD_DYN_LINK
+#if defined(BOOST_THREAD_DYN_DLL) && ! defined(BOOST_THREAD_DYN_LINK)
 # define BOOST_THREAD_DYN_LINK
 #endif
 
@@ -443,7 +446,7 @@
 // Tell the autolink to link dynamically, this will get undef'ed by auto_link.hpp
 // once it's done with it:
 //
-#if defined(BOOST_THREAD_USE_DLL)
+#if defined(BOOST_THREAD_USE_DLL) &  ! defined(BOOST_DYN_LINK)
 #   define BOOST_DYN_LINK
 #endif
 //

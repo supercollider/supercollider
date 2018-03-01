@@ -1,4 +1,4 @@
-/* Copyright 2003-2014 Joaquin M Lopez Munoz.
+/* Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -187,6 +187,8 @@ protected:
   bool modify_(node_type*){return true;}
 
   bool modify_rollback_(node_type*){return true;}
+
+  bool check_rollback_(node_type*)const{return true;}
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
   /* serialization */

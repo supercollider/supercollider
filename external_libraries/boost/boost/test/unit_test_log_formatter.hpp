@@ -248,7 +248,7 @@ public:
     // @name Log entry context report
 
     /// Invoked by Unit Test Framework to start log entry context report
-
+    //
     /// Unit Test Framework logs for failed assertions and uncaught exceptions context if one was defined by a test module.
     /// Context consists of multiple "scopes" identified by description messages assigned by the test module using
     /// BOOST_TEST_INFO/BOOST_TEST_CONTEXT statements.
@@ -258,18 +258,20 @@ public:
     virtual void        entry_context_start( std::ostream& os, log_level l ) = 0;
 
     /// Invoked by Unit Test Framework to report log entry context "scope" description
-
+    //
     /// Each "scope" description is reported by separate call to log_entry_context.
     /// @param[in] os   output stream to write a messages into
+    /// @param[in] l    entry log_level, to be used to fine tune the message
     /// @param[in] value  context "scope" description
     /// @see log_entry_start, entry_context_finish
-    virtual void        log_entry_context( std::ostream& os, const_string value ) = 0;
+    virtual void        log_entry_context( std::ostream& os, log_level l, const_string value ) = 0;
 
     /// Invoked by Unit Test Framework to finish log entry context report
-
+    ///
     /// @param[in] os   output stream to write a messages into
+    /// @param[in] l    entry log_level, to be used to fine tune the message
     /// @see log_entry_start, entry_context_context
-    virtual void        entry_context_finish( std::ostream& os ) = 0;
+    virtual void        entry_context_finish( std::ostream& os, log_level l ) = 0;
     // @}
 
     // @name Log level management

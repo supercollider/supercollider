@@ -86,7 +86,7 @@
         class function_object_ai_and_ai_prime
         {
         public:
-          function_object_ai_and_ai_prime(const Policy pol) : my_pol(pol) { }
+          function_object_ai_and_ai_prime(const Policy& pol) : my_pol(pol) { }
 
           boost::math::tuple<T, T> operator()(const T& x) const
           {
@@ -137,7 +137,7 @@
         class function_object_bi_and_bi_prime
         {
         public:
-          function_object_bi_and_bi_prime(const Policy pol) : my_pol(pol) { }
+          function_object_bi_and_bi_prime(const Policy& pol) : my_pol(pol) { }
 
           boost::math::tuple<T, T> operator()(const T& x) const
           {

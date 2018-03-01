@@ -30,7 +30,7 @@
 #include "../server/server_args.hpp"
 #include "../server/memory_pool.hpp"
 #include "../server/server.hpp"
-#include "../utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 #include "../utilities/sized_array.hpp"
 
 #include "SC_Prototypes.h"
