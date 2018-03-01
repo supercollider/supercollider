@@ -127,14 +127,6 @@ TestServer_clientID_booted : UnitTest {
 
 	}
 
-	// temp replacement for Platform:killProcessByID
-	killProcessByID { |pid|
-		Platform.case(
-			\windows, { ("taskkill /F /pid " ++ pid).unixCmd },
-			{ ("kill -9 " ++ pid).unixCmd }
-		)
-	}
-
 	// test that logins to a (pseudo-) remote server process work as intended
 	// first login initializes fully,
 	// second login from same address gets the same clientID, and sets running state.
@@ -168,9 +160,7 @@ TestServer_clientID_booted : UnitTest {
 		);
 
 		remote1.remove;
-		// FIXME: when addKillMethod PR is in, replace with
-		// thisProcess.platform.killProcessByID(serverPid);
-		this.killProcessByID(serverPid);
+		thisProcess.platform.killProcessByID(serverPid);
 	}
 
 	test_repeatedRemoteLogin {
@@ -226,8 +216,6 @@ TestServer_clientID_booted : UnitTest {
 		// cleanup
 		remote1.remove;
 		remote2.remove;
-		// FIXME: when addKillMethod PR is in, replace with
-		// thisProcess.platform.killProcessByID(serverPid);
-		this.killProcessByID(serverPid);
+		thisProcess.platform.killProcessByID(serverPid);
 	}
 }
