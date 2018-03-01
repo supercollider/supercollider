@@ -25,10 +25,10 @@ For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 ClassMethods::
 
 method:: from32Bits
-returns:: a new Float from a 32 bit word.
+returns:: a new Float from a 32-bit word.
 
 method:: from64Bits
-returns:: a new Float from a 64 bit word.
+returns:: a new Float from a 64-bit word.
 
 InstanceMethods::
 
@@ -65,10 +65,10 @@ method:: as32Bits
 returns:: an Integer which is the bit pattern of this as a 32bit single precision float
 
 method:: high32Bits
-returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+returns:: an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
 method:: low32Bits
-returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+returns:: an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
 method:: asCompileString
 returns:: a string that when interpreted matches the receiver, if the number is within the range given in code::storeOn::.
@@ -91,34 +91,33 @@ pi.asStringPrec(6)
 7.4.asStringPrec(50)
 ::
 
-
-log2(inf.asInteger)
-2 ** 31 - inf.asInteger
-
 subsection::Using Floats as replacement for Integers
 
-In SuperCollider, Floats are 64 bit wide. Because  an link::Classes/Integer:: is only 32 bit, it can capture only numbers up to code::± 2147483647::, which is code::2^31:: (one bit is for the sign), or about code::2 x 10^9::.
+In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer:: is only 32-bit, it can capture only whole numbers up to code::-2147483648 .. +2147483647::, which is code::2^31:: (one bit is for the sign), or about code::2 x 10^9::.
 
-Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64 bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Note that you still may get floating point errors when you apply certain operations.
+Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64-bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Note that you still may get floating point errors when you apply certain operations.
 
 
 code::
 // compare factorial:
 f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
 f.(14); // integer
-f.(18) // integer overrun: -898433024
+f.(18) // integer overflow: -898433024
 f.(18.0) // float is ok.
 // check the ratio between adjacent factorials:
 f.(18.0) / f.(17.0) == 18 // true
-// 18 is already the largest possible factorial representable in 64 bit float (< 2^53)
+// 18 is already the largest possible factorial representable in 64-bit float (< 2^53)
 {:x, x<-(1..40), f.(x.asFloat) < (2 ** 53) }.all.last
 // but the correctness for comparing adjacent factorials goes up much higher (to 170)
 {:x, x<-(1..180), f.(x.asFloat) / f.(x.asFloat - 1) == x }.all.last
-f.(170.0) // 7.257415615308e+306. Note that this number won't be precise enough for other tests.
+f.(170.0) // 7.257415615308e+306.
+f.(170.0) / f.(169.0) // => 170.0
+// Note that this number won't be precise enough for other tests:
+{:x, x<-(1..180), f.(x.asFloat) / f.(x.asFloat - 2) == (x * ( x - 1)) }.all.last // 167
 ::
 
 code::
-// testing the limits of 64 bit float (2^53)
+// testing the limits of 64-bit float (2^53)
 a = 2 ** 53 - 1
 b = a + 1;
 c = a + 2;
