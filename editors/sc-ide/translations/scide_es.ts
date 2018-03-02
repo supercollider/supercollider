@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="es_ES">
+<TS version="2.1" language="es_ES">
 <context>
     <name>ConfigDialog</name>
     <message>
@@ -62,89 +62,144 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="178"/>
+        <location filename="../forms/settings_editor.ui" line="164"/>
+        <source>Completion</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="170"/>
+        <source>Auto insert matching parentheses, brackets, quotes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="194"/>
         <source>Display</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="184"/>
+        <location filename="../forms/settings_editor.ui" line="200"/>
         <source>Wrap text in code editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="191"/>
+        <location filename="../forms/settings_editor.ui" line="207"/>
         <source>Wrap text in post window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="200"/>
+        <location filename="../forms/settings_editor.ui" line="214"/>
+        <source>Disable blinking cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="221"/>
+        <source>Highlight current line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="228"/>
+        <source>Highlight background of entire contents of matching brackets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="231"/>
+        <source>Highlight bracket contents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="240"/>
         <source>Post window scrollback:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="213"/>
+        <location filename="../forms/settings_editor.ui" line="253"/>
         <source> lines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="261"/>
+        <location filename="../forms/settings_editor.ui" line="289"/>
+        <source>Inactive Editor Fade (alpha 0 - 255)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="324"/>
+        <source>Use a drop-down instead of tabs in the editor view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="331"/>
+        <source>Switch to drop-down mode when splitting the editor view</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="352"/>
         <source>Font &amp;&amp; Colors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="267"/>
+        <location filename="../forms/settings_editor.ui" line="358"/>
         <source>Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="287"/>
+        <location filename="../forms/settings_editor.ui" line="378"/>
         <source>Show only monospaced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="310"/>
+        <location filename="../forms/settings_editor.ui" line="401"/>
         <source>Family:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="317"/>
+        <location filename="../forms/settings_editor.ui" line="408"/>
         <source>Size:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="340"/>
+        <location filename="../forms/settings_editor.ui" line="431"/>
         <source>Antialias</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="369"/>
+        <location filename="../forms/settings_editor.ui" line="460"/>
         <source>Colors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="398"/>
+        <location filename="../forms/settings_editor.ui" line="489"/>
         <source>Background:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="427"/>
-        <location filename="../forms/settings_editor.ui" line="463"/>
+        <location filename="../forms/settings_editor.ui" line="518"/>
+        <location filename="../forms/settings_editor.ui" line="554"/>
         <source>X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="434"/>
+        <location filename="../forms/settings_editor.ui" line="525"/>
         <source>Foreground:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="474"/>
+        <location filename="../forms/settings_editor.ui" line="565"/>
         <source>Italic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_editor.ui" line="481"/>
+        <location filename="../forms/settings_editor.ui" line="572"/>
         <source>Bold</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="602"/>
+        <source>copy ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_editor.ui" line="609"/>
+        <source>delete</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -179,12 +234,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../core/sc_introspection.cpp" line="229"/>
+        <location filename="../core/sc_introspection.cpp" line="213"/>
         <source>Sclang Introspection not available, yet!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_introspection.cpp" line="243"/>
+        <location filename="../core/sc_introspection.cpp" line="227"/>
         <source>Class not defined!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -192,29 +247,29 @@
 <context>
     <name>ScIDE::Docklet</name>
     <message>
-        <location filename="../widgets/util/docklet.cpp" line="128"/>
-        <location filename="../widgets/util/docklet.cpp" line="277"/>
+        <location filename="../widgets/util/docklet.cpp" line="149"/>
+        <location filename="../widgets/util/docklet.cpp" line="305"/>
         <source>Undock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/util/docklet.cpp" line="132"/>
-        <location filename="../widgets/util/docklet.cpp" line="247"/>
+        <location filename="../widgets/util/docklet.cpp" line="153"/>
+        <location filename="../widgets/util/docklet.cpp" line="275"/>
         <source>Detach</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/util/docklet.cpp" line="136"/>
+        <location filename="../widgets/util/docklet.cpp" line="157"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/util/docklet.cpp" line="247"/>
+        <location filename="../widgets/util/docklet.cpp" line="275"/>
         <source>Attach</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/util/docklet.cpp" line="277"/>
+        <location filename="../widgets/util/docklet.cpp" line="305"/>
         <source>Dock</source>
         <translation type="unfinished"></translation>
     </message>
@@ -222,7 +277,7 @@
 <context>
     <name>ScIDE::Document</name>
     <message>
-        <location filename="../core/doc_manager.cpp" line="41"/>
+        <location filename="../core/doc_manager.cpp" line="67"/>
         <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
@@ -230,36 +285,25 @@
 <context>
     <name>ScIDE::DocumentManager</name>
     <message>
-        <location filename="../core/doc_manager.cpp" line="142"/>
+        <location filename="../core/doc_manager.cpp" line="316"/>
         <source>Cannot open file: %1 (file does not exist)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/doc_manager.cpp" line="160"/>
-        <location filename="../core/doc_manager.cpp" line="211"/>
+        <location filename="../core/doc_manager.cpp" line="334"/>
+        <location filename="../core/doc_manager.cpp" line="393"/>
+        <location filename="../core/doc_manager.cpp" line="435"/>
         <source>Cannot open file for reading: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/doc_manager.cpp" line="175"/>
+        <location filename="../core/doc_manager.cpp" line="349"/>
         <source>Opening RTF File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/doc_manager.cpp" line="176"/>
+        <location filename="../core/doc_manager.cpp" line="350"/>
         <source>Warning: RTF file will be converted to plain-text scd file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/doc_manager.cpp" line="290"/>
-        <location filename="../core/doc_manager.cpp" line="297"/>
-        <source>File Extension Changed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/doc_manager.cpp" line="291"/>
-        <location filename="../core/doc_manager.cpp" line="298"/>
-        <source>The extension of the file has changed. Please reopen file to update editor mode</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -364,8 +408,44 @@ Apply desired actions to selected documents, until the list is empty.</source>
 <context>
     <name>ScIDE::DocumentsDocklet</name>
     <message>
-        <location filename="../widgets/doc_list.cpp" line="126"/>
+        <location filename="../widgets/doc_list.cpp" line="158"/>
         <source>Documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScIDE::EditorTabBar</name>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="249"/>
+        <source>Close All Tabs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="252"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="253"/>
+        <source>Close Other Tabs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="254"/>
+        <source>Close Tabs to the Right</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScIDE::GenericLookupDialog</name>
+    <message>
+        <location filename="../widgets/lookup_dialog.cpp" line="114"/>
+        <source>Cannot open file: %1 (file does not exist)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/lookup_dialog.cpp" line="122"/>
+        <source>Cannot open file for reading: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -385,32 +465,42 @@ Apply desired actions to selected documents, until the list is empty.</source>
 <context>
     <name>ScIDE::HelpBrowser</name>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="103"/>
+        <location filename="../widgets/help_browser.cpp" line="116"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="106"/>
+        <location filename="../widgets/help_browser.cpp" line="119"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/help_browser.cpp" line="123"/>
         <source>Zoom In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="110"/>
+        <location filename="../widgets/help_browser.cpp" line="127"/>
         <source>Zoom Out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="114"/>
+        <location filename="../widgets/help_browser.cpp" line="131"/>
+        <source>Reset Zoom</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/help_browser.cpp" line="135"/>
         <source>Evaluate as Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="256"/>
+        <location filename="../widgets/help_browser.cpp" line="306"/>
         <source>Can not use help - interpreter not running!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="261"/>
+        <location filename="../widgets/help_browser.cpp" line="311"/>
         <source>Sending request</source>
         <translation type="unfinished"></translation>
     </message>
@@ -418,7 +508,7 @@ Apply desired actions to selected documents, until the list is empty.</source>
 <context>
     <name>ScIDE::HelpBrowserDocklet</name>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="378"/>
+        <location filename="../widgets/help_browser.cpp" line="466"/>
         <source>Help browser</source>
         <translation type="unfinished"></translation>
     </message>
@@ -426,8 +516,26 @@ Apply desired actions to selected documents, until the list is empty.</source>
 <context>
     <name>ScIDE::HelpBrowserFindBox</name>
     <message>
-        <location filename="../widgets/help_browser.cpp" line="339"/>
-        <source>Find...</source>
+        <location filename="../widgets/help_browser.cpp" line="421"/>
+        <source>Find in page...</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScIDE::LangStatusBox</name>
+    <message>
+        <location filename="../widgets/lang_status_box.cpp" line="54"/>
+        <source>Inactive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/lang_status_box.cpp" line="59"/>
+        <source>Booting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/lang_status_box.cpp" line="64"/>
+        <source>Active</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -442,22 +550,22 @@ Apply desired actions to selected documents, until the list is empty.</source>
 <context>
     <name>ScIDE::LookupDialog</name>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="186"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="239"/>
         <source>Look Up Implementations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="188"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="241"/>
         <source>Enter class or method name...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="203"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="256"/>
         <source>Introspection data not yet available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="365"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="430"/>
         <source>No result for query</source>
         <translation type="unfinished"></translation>
     </message>
@@ -465,636 +573,680 @@ Apply desired actions to selected documents, until the list is empty.</source>
 <context>
     <name>ScIDE::MainWindow</name>
     <message>
-        <location filename="../widgets/main_window.cpp" line="78"/>
-        <location filename="../widgets/main_window.cpp" line="822"/>
-        <source>Inactive</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="83"/>
+        <location filename="../widgets/main_window.cpp" line="115"/>
         <source>Interpreter:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="85"/>
+        <location filename="../widgets/main_window.cpp" line="117"/>
         <source>Server:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="93"/>
+        <location filename="../widgets/main_window.cpp" line="125"/>
         <source>Command Line:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="219"/>
+        <location filename="../widgets/main_window.cpp" line="256"/>
         <source>Text Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="220"/>
+        <location filename="../widgets/main_window.cpp" line="257"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="224"/>
+        <location filename="../widgets/main_window.cpp" line="261"/>
         <source>&amp;Quit...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="225"/>
+        <location filename="../widgets/main_window.cpp" line="262"/>
         <source>Ctrl+Q</source>
         <comment>Quit application</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="226"/>
+        <location filename="../widgets/main_window.cpp" line="263"/>
         <source>Quit SuperCollider IDE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="231"/>
+        <location filename="../widgets/main_window.cpp" line="268"/>
         <source>&amp;New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="232"/>
+        <location filename="../widgets/main_window.cpp" line="269"/>
         <source>Ctrl+N</source>
         <comment>New document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="233"/>
+        <location filename="../widgets/main_window.cpp" line="270"/>
         <source>Create a new document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="238"/>
+        <location filename="../widgets/main_window.cpp" line="275"/>
         <source>&amp;Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="239"/>
+        <location filename="../widgets/main_window.cpp" line="276"/>
         <source>Ctrl+O</source>
         <comment>Open document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="240"/>
+        <location filename="../widgets/main_window.cpp" line="277"/>
         <source>Open an existing file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="245"/>
-        <location filename="../widgets/main_window.cpp" line="246"/>
+        <location filename="../widgets/main_window.cpp" line="282"/>
+        <location filename="../widgets/main_window.cpp" line="283"/>
         <source>Open startup file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="251"/>
+        <location filename="../widgets/main_window.cpp" line="288"/>
+        <location filename="../widgets/main_window.cpp" line="289"/>
+        <source>Open user support directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="294"/>
         <source>&amp;Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="252"/>
+        <location filename="../widgets/main_window.cpp" line="295"/>
         <source>Ctrl+S</source>
         <comment>Save document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="253"/>
+        <location filename="../widgets/main_window.cpp" line="296"/>
         <source>Save the current document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="258"/>
+        <location filename="../widgets/main_window.cpp" line="301"/>
         <source>Save &amp;As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="259"/>
+        <location filename="../widgets/main_window.cpp" line="302"/>
         <source>Ctrl+Shift+S</source>
         <comment>Save &amp;As...</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="260"/>
+        <location filename="../widgets/main_window.cpp" line="303"/>
         <source>Save the current document into a different file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="265"/>
+        <location filename="../widgets/main_window.cpp" line="308"/>
+        <source>Save As Extension...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="309"/>
+        <source>Save the current document into a different file in the extensions folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="314"/>
         <source>Save All...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="266"/>
+        <location filename="../widgets/main_window.cpp" line="315"/>
         <source>Ctrl+Alt+S</source>
         <comment>Save all documents</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="267"/>
+        <location filename="../widgets/main_window.cpp" line="316"/>
         <source>Save all open documents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="272"/>
-        <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="273"/>
-        <source>Ctrl+W</source>
-        <comment>Close document</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="274"/>
-        <source>Close the current document</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="279"/>
+        <location filename="../widgets/main_window.cpp" line="321"/>
         <source>Close All...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="280"/>
+        <location filename="../widgets/main_window.cpp" line="322"/>
         <source>Ctrl+Shift+W</source>
         <comment>Close all documents</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="281"/>
+        <location filename="../widgets/main_window.cpp" line="323"/>
         <source>Close all documents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="286"/>
+        <location filename="../widgets/main_window.cpp" line="328"/>
         <source>&amp;Reload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="287"/>
+        <location filename="../widgets/main_window.cpp" line="329"/>
         <source>F5</source>
         <comment>Reload document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="288"/>
+        <location filename="../widgets/main_window.cpp" line="330"/>
         <source>Reload the current document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="292"/>
+        <location filename="../widgets/main_window.cpp" line="334"/>
         <source>Clear</source>
         <comment>Clear recent documents</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="293"/>
+        <location filename="../widgets/main_window.cpp" line="335"/>
         <source>Clear list of recent documents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="300"/>
+        <location filename="../widgets/main_window.cpp" line="342"/>
         <source>&amp;New Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="301"/>
+        <location filename="../widgets/main_window.cpp" line="343"/>
         <source>Open a new session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="306"/>
+        <location filename="../widgets/main_window.cpp" line="348"/>
         <source>Save Session &amp;As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="307"/>
+        <location filename="../widgets/main_window.cpp" line="349"/>
         <source>Save the current session with a different name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="312"/>
+        <location filename="../widgets/main_window.cpp" line="354"/>
         <source>&amp;Manage Sessions...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="317"/>
+        <location filename="../widgets/main_window.cpp" line="359"/>
         <source>&amp;Switch Session...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="319"/>
+        <location filename="../widgets/main_window.cpp" line="361"/>
         <source>Ctrl+Shift+Q</source>
         <comment>Switch Session</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="324"/>
+        <location filename="../widgets/main_window.cpp" line="366"/>
         <source>&amp;Find...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="325"/>
+        <location filename="../widgets/main_window.cpp" line="367"/>
         <source>Ctrl+F</source>
         <comment>Find</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="326"/>
+        <location filename="../widgets/main_window.cpp" line="368"/>
         <source>Find text in document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="331"/>
+        <location filename="../widgets/main_window.cpp" line="373"/>
         <source>&amp;Replace...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="332"/>
+        <location filename="../widgets/main_window.cpp" line="374"/>
         <source>Ctrl+R</source>
         <comment>Replace</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="333"/>
+        <location filename="../widgets/main_window.cpp" line="375"/>
         <source>Find and replace text in document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="338"/>
+        <location filename="../widgets/main_window.cpp" line="380"/>
         <source>&amp;Command Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="339"/>
+        <location filename="../widgets/main_window.cpp" line="381"/>
         <source>Command line for quick code evaluation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="340"/>
+        <location filename="../widgets/main_window.cpp" line="382"/>
         <source>Ctrl+E</source>
         <comment>Show command line</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="344"/>
+        <location filename="../widgets/main_window.cpp" line="386"/>
+        <source>&amp;Command Line from selection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="387"/>
+        <source>Ctrl+Shift+E</source>
+        <comment>Fill command line with current selection</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="392"/>
         <source>&amp;Go To Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="345"/>
+        <location filename="../widgets/main_window.cpp" line="393"/>
         <source>Tool to jump to a line by number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="346"/>
+        <location filename="../widgets/main_window.cpp" line="394"/>
         <source>Ctrl+L</source>
         <comment>Show go-to-line tool</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="351"/>
+        <location filename="../widgets/main_window.cpp" line="399"/>
         <source>&amp;Close Tool Panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="352"/>
+        <location filename="../widgets/main_window.cpp" line="400"/>
         <source>Close any open tool panel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="353"/>
+        <location filename="../widgets/main_window.cpp" line="401"/>
         <source>Esc</source>
         <comment>Close tool box</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="357"/>
+        <location filename="../widgets/main_window.cpp" line="405"/>
         <source>&amp;Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="359"/>
+        <location filename="../widgets/main_window.cpp" line="407"/>
         <source>Ctrl+Shift+F</source>
         <comment>Show ScIDE in Full Screen</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="363"/>
+        <location filename="../widgets/main_window.cpp" line="411"/>
         <source>Focus Post Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="364"/>
+        <location filename="../widgets/main_window.cpp" line="412"/>
         <source>Focus post window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="365"/>
+        <location filename="../widgets/main_window.cpp" line="413"/>
         <source>Ctrl+P</source>
         <comment>Focus post window</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="371"/>
+        <location filename="../widgets/main_window.cpp" line="419"/>
         <source>Look Up Implementations...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="372"/>
+        <location filename="../widgets/main_window.cpp" line="420"/>
         <source>Ctrl+Shift+I</source>
         <comment>Look Up Implementations</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="373"/>
+        <location filename="../widgets/main_window.cpp" line="421"/>
         <source>Open dialog to look up implementations of a class or a method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="377"/>
+        <location filename="../widgets/main_window.cpp" line="425"/>
         <source>Look Up Implementations for Cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="378"/>
+        <location filename="../widgets/main_window.cpp" line="426"/>
         <source>Ctrl+I</source>
         <comment>Look Up Implementations for Cursor</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="379"/>
+        <location filename="../widgets/main_window.cpp" line="427"/>
         <source>Look up implementations of class or method under cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="384"/>
+        <location filename="../widgets/main_window.cpp" line="432"/>
         <source>Look Up References...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="385"/>
+        <location filename="../widgets/main_window.cpp" line="433"/>
         <source>Ctrl+Shift+U</source>
         <comment>Look Up References</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="386"/>
+        <location filename="../widgets/main_window.cpp" line="434"/>
         <source>Open dialog to look up references to a class or a method</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="390"/>
+        <location filename="../widgets/main_window.cpp" line="438"/>
         <source>Look Up References for Cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="391"/>
+        <location filename="../widgets/main_window.cpp" line="439"/>
         <source>Ctrl+U</source>
         <comment>Look Up References For Selection</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="392"/>
+        <location filename="../widgets/main_window.cpp" line="440"/>
         <source>Look up references to class or method under cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="397"/>
-        <source>&amp;Preferences</source>
+        <location filename="../widgets/main_window.cpp" line="445"/>
+        <source>Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="399"/>
+        <location filename="../widgets/main_window.cpp" line="454"/>
+        <source>Show &amp;Help Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="455"/>
+        <source>Show and focus the Help Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="460"/>
+        <source>How to Use SuperCollider IDE</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="461"/>
+        <source>Open the SuperCollider IDE guide</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="465"/>
+        <source>Report a bug...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="466"/>
+        <source>Report a bug</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1043"/>
+        <source>SuperCollider Class File (*.sc)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1044"/>
+        <location filename="../widgets/main_window.cpp" line="1161"/>
+        <source>SuperCollider Help Source (*.schelp)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1090"/>
+        <source>Extenstion &quot;.scd&quot; was automatically added to the selected file name, but the file &quot;%1&quot; already exists.
+
+Do you wish to overwrite it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1096"/>
+        <source>Overwrite File?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1188"/>
+        <source>Supercollider didn&apos;t quit properly last time
+Do you want to restore files saved as temporary backups?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1191"/>
+        <source>Restore files?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="447"/>
         <source>Ctrl+,</source>
         <comment>Show configuration dialog</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="401"/>
+        <location filename="../widgets/main_window.cpp" line="449"/>
         <source>Show configuration dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="407"/>
-        <source>Open &amp;Help Browser</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="408"/>
-        <source>Open help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="413"/>
+        <location filename="../widgets/main_window.cpp" line="470"/>
         <source>Look Up Documentation for Cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="414"/>
+        <location filename="../widgets/main_window.cpp" line="471"/>
         <source>Ctrl+D</source>
         <comment>Look Up Documentation for Cursor</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="415"/>
+        <location filename="../widgets/main_window.cpp" line="472"/>
         <source>Look up documentation for text under cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="420"/>
+        <location filename="../widgets/main_window.cpp" line="477"/>
         <source>Look Up Documentation...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="421"/>
+        <location filename="../widgets/main_window.cpp" line="478"/>
         <source>Ctrl+Shift+D</source>
         <comment>Look Up Documentation</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="422"/>
+        <location filename="../widgets/main_window.cpp" line="479"/>
         <source>Enter text to look up in documentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="427"/>
+        <location filename="../widgets/main_window.cpp" line="484"/>
         <source>&amp;About SuperCollider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="432"/>
+        <location filename="../widgets/main_window.cpp" line="489"/>
         <source>About &amp;Qt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="439"/>
+        <location filename="../widgets/main_window.cpp" line="496"/>
         <source>Show/hide Post docklet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="445"/>
+        <location filename="../widgets/main_window.cpp" line="502"/>
         <source>Show/hide Documents docklet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="451"/>
+        <location filename="../widgets/main_window.cpp" line="508"/>
         <source>Show/hide Help browser docklet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="461"/>
+        <location filename="../widgets/main_window.cpp" line="549"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="464"/>
+        <location filename="../widgets/main_window.cpp" line="552"/>
         <source>Open Recent</source>
         <comment>Open a recent document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="481"/>
+        <location filename="../widgets/main_window.cpp" line="571"/>
         <source>&amp;Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="484"/>
+        <location filename="../widgets/main_window.cpp" line="574"/>
         <source>&amp;Open Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="495"/>
+        <location filename="../widgets/main_window.cpp" line="585"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="519"/>
+        <location filename="../widgets/main_window.cpp" line="610"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="520"/>
+        <location filename="../widgets/main_window.cpp" line="611"/>
         <source>&amp;Docklets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="526"/>
+        <location filename="../widgets/main_window.cpp" line="617"/>
         <source>&amp;Tool Panels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="554"/>
+        <location filename="../widgets/main_window.cpp" line="650"/>
         <source>&amp;Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="577"/>
+        <location filename="../widgets/main_window.cpp" line="669"/>
+        <source>Se&amp;rver</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="690"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="697"/>
+        <location filename="../widgets/main_window.cpp" line="806"/>
         <source>Save Current Session</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="698"/>
+        <location filename="../widgets/main_window.cpp" line="807"/>
         <source>Enter a name for the session:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="827"/>
-        <source>Booting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="834"/>
-        <source>Active</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="878"/>
-        <location filename="../widgets/main_window.cpp" line="910"/>
+        <location filename="../widgets/main_window.cpp" line="951"/>
+        <location filename="../widgets/main_window.cpp" line="983"/>
         <source>SuperCollider IDE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="879"/>
+        <location filename="../widgets/main_window.cpp" line="952"/>
         <source>There are unsaved changes in document &apos;%1&apos;.
 
 Do you want to save it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="911"/>
+        <location filename="../widgets/main_window.cpp" line="984"/>
         <source>There are unsaved changes in document &apos;%1&apos;.
 
 Do you want to reload it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="938"/>
+        <location filename="../widgets/main_window.cpp" line="1027"/>
         <source>Saving read-only file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="939"/>
+        <location filename="../widgets/main_window.cpp" line="1028"/>
         <source>File is read-only. Please select a new location to save to.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="950"/>
+        <location filename="../widgets/main_window.cpp" line="1041"/>
+        <location filename="../widgets/main_window.cpp" line="1159"/>
+        <source>All Files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/main_window.cpp" line="1042"/>
         <source>SuperCollider Document (*.scd)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="951"/>
-        <source>SuperCollider Class file (*.sc)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="953"/>
-        <location filename="../widgets/main_window.cpp" line="1002"/>
-        <source>All files (*)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="1003"/>
+        <location filename="../widgets/main_window.cpp" line="1160"/>
         <source>SuperCollider (*.scd *.sc)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="1004"/>
-        <source>SCDoc (*.schelp)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/main_window.cpp" line="1148"/>
+        <location filename="../widgets/main_window.cpp" line="1349"/>
         <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="1274"/>
+        <location filename="../widgets/main_window.cpp" line="1477"/>
         <source>About SuperCollider IDE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="1356"/>
+        <location filename="../widgets/main_window.cpp" line="1573"/>
         <source>Look up Documentation For</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="1405"/>
+        <location filename="../widgets/main_window.cpp" line="1672"/>
         <source>Open binary file?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/main_window.cpp" line="1406"/>
+        <location filename="../widgets/main_window.cpp" line="1673"/>
         <source>
 
 The file has an unrecognized extension. It may be a binary file. Would you still like to open it?</source>
@@ -1104,449 +1256,508 @@ The file has an unrecognized extension. It may be a binary file. Would you still
 <context>
     <name>ScIDE::MultiEditor</name>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="265"/>
+        <location filename="../widgets/multi_editor.cpp" line="376"/>
         <source>Text Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="270"/>
+        <location filename="../widgets/multi_editor.cpp" line="381"/>
         <source>&amp;Undo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="271"/>
+        <location filename="../widgets/multi_editor.cpp" line="382"/>
         <source>Ctrl+Z</source>
         <comment>Undo</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="272"/>
+        <location filename="../widgets/multi_editor.cpp" line="383"/>
         <source>Undo last editing action</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="278"/>
+        <location filename="../widgets/multi_editor.cpp" line="389"/>
         <source>Re&amp;do</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="279"/>
+        <location filename="../widgets/multi_editor.cpp" line="390"/>
         <source>Ctrl+Shift+Z</source>
         <comment>Redo</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="280"/>
+        <location filename="../widgets/multi_editor.cpp" line="391"/>
         <source>Redo next editing action</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="286"/>
+        <location filename="../widgets/multi_editor.cpp" line="397"/>
         <source>Cu&amp;t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="287"/>
+        <location filename="../widgets/multi_editor.cpp" line="398"/>
         <source>Ctrl+X</source>
         <comment>Cut</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="289"/>
+        <location filename="../widgets/multi_editor.cpp" line="400"/>
         <source>Cut text to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="295"/>
+        <location filename="../widgets/multi_editor.cpp" line="406"/>
         <source>&amp;Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="296"/>
+        <location filename="../widgets/multi_editor.cpp" line="407"/>
         <source>Ctrl+C</source>
         <comment>Copy</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="298"/>
+        <location filename="../widgets/multi_editor.cpp" line="409"/>
         <source>Copy text to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="304"/>
+        <location filename="../widgets/multi_editor.cpp" line="415"/>
         <source>&amp;Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="305"/>
+        <location filename="../widgets/multi_editor.cpp" line="416"/>
         <source>Ctrl+V</source>
         <comment>Paste</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="307"/>
+        <location filename="../widgets/multi_editor.cpp" line="418"/>
         <source>Paste text from clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="312"/>
-        <location filename="../widgets/multi_editor.cpp" line="313"/>
+        <location filename="../widgets/multi_editor.cpp" line="423"/>
+        <location filename="../widgets/multi_editor.cpp" line="424"/>
         <source>Autoindent Line or Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="318"/>
+        <location filename="../widgets/multi_editor.cpp" line="429"/>
         <source>Trigger Autocompletion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="319"/>
+        <location filename="../widgets/multi_editor.cpp" line="430"/>
         <source>Suggest possible completions of text at cursor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="320"/>
+        <location filename="../widgets/multi_editor.cpp" line="431"/>
         <source>Ctrl+Space</source>
         <comment>Trigger Autocompletion</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="326"/>
+        <location filename="../widgets/multi_editor.cpp" line="437"/>
         <source>Trigger Method Call Aid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="327"/>
+        <location filename="../widgets/multi_editor.cpp" line="438"/>
         <source>Show arguments for currently typed method call</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="328"/>
+        <location filename="../widgets/multi_editor.cpp" line="439"/>
         <source>Ctrl+Shift+Space</source>
         <comment>Trigger Method Call Aid</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="335"/>
+        <location filename="../widgets/multi_editor.cpp" line="446"/>
         <source>Toggle &amp;Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="336"/>
+        <location filename="../widgets/multi_editor.cpp" line="447"/>
         <source>Ctrl+/</source>
         <comment>Toggle Comment</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="338"/>
+        <location filename="../widgets/multi_editor.cpp" line="449"/>
         <source>Toggle Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="344"/>
+        <location filename="../widgets/multi_editor.cpp" line="455"/>
         <source>Toggle &amp;Overwrite Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="345"/>
+        <location filename="../widgets/multi_editor.cpp" line="456"/>
         <source>Insert</source>
         <comment>Toggle Overwrite Mode</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="351"/>
+        <location filename="../widgets/multi_editor.cpp" line="462"/>
         <source>Copy Line Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="352"/>
+        <location filename="../widgets/multi_editor.cpp" line="463"/>
         <source>Ctrl+Alt+Up</source>
         <comment>Copy Line Up</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="358"/>
+        <location filename="../widgets/multi_editor.cpp" line="469"/>
         <source>Copy Line Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="359"/>
+        <location filename="../widgets/multi_editor.cpp" line="470"/>
         <source>Ctrl+Alt+Down</source>
         <comment>Copy Line Up</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="365"/>
+        <location filename="../widgets/multi_editor.cpp" line="476"/>
         <source>Move Line Up</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="366"/>
+        <location filename="../widgets/multi_editor.cpp" line="477"/>
         <source>Ctrl+Shift+Up</source>
         <comment>Move Line Up</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="372"/>
+        <location filename="../widgets/multi_editor.cpp" line="483"/>
         <source>Move Line Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="373"/>
+        <location filename="../widgets/multi_editor.cpp" line="484"/>
         <source>Ctrl+Shift+Down</source>
         <comment>Move Line Up</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="379"/>
+        <location filename="../widgets/multi_editor.cpp" line="490"/>
+        <source>Delete Word</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="492"/>
+        <source>Meta+W</source>
+        <comment>Delete Word</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="499"/>
         <source>Go to Previous Block</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="380"/>
+        <location filename="../widgets/multi_editor.cpp" line="500"/>
         <source>Ctrl+[</source>
         <comment>Go to Previous Block</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="387"/>
+        <location filename="../widgets/multi_editor.cpp" line="507"/>
         <source>Go to Next Block</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="388"/>
+        <location filename="../widgets/multi_editor.cpp" line="508"/>
         <source>Ctrl+]</source>
         <comment>Go to Next Block</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="395"/>
+        <location filename="../widgets/multi_editor.cpp" line="514"/>
+        <source>Select Enclosing Block</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="515"/>
+        <source>Ctrl+Shift+B</source>
+        <comment>Select Enclosing Block</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="517"/>
+        <source>Select everything between brackets that contain cursor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="523"/>
         <source>Go to Previous Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="396"/>
-        <source>Alt+[</source>
+        <location filename="../widgets/multi_editor.cpp" line="524"/>
+        <source>Ctrl+Alt+[</source>
         <comment>Go to Previous Region</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="403"/>
-        <source>Go to Next Region</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/multi_editor.cpp" line="404"/>
-        <source>Alt+]</source>
+        <location filename="../widgets/multi_editor.cpp" line="532"/>
+        <source>Ctrl+Alt+]</source>
         <comment>Go to Next Region</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="410"/>
+        <location filename="../widgets/multi_editor.cpp" line="643"/>
+        <source>Alt+Tab</source>
+        <comment>Switch Document</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="531"/>
+        <source>Go to Next Region</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="538"/>
         <source>Go to Previous Empty Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="411"/>
+        <location filename="../widgets/multi_editor.cpp" line="539"/>
         <source>Ctrl+Up</source>
         <comment>Go to Previous Empty Line</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="416"/>
+        <location filename="../widgets/multi_editor.cpp" line="544"/>
         <source>Go to Next Empty Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="417"/>
+        <location filename="../widgets/multi_editor.cpp" line="545"/>
         <source>Ctrl+Down</source>
         <comment>Go to Next Empty Line</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="422"/>
+        <location filename="../widgets/multi_editor.cpp" line="550"/>
         <source>Select Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="423"/>
+        <location filename="../widgets/multi_editor.cpp" line="551"/>
         <source>Ctrl+Shift+R</source>
         <comment>Select Region</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="432"/>
+        <location filename="../widgets/multi_editor.cpp" line="560"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="561"/>
+        <source>Ctrl+W</source>
+        <comment>Close document</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="563"/>
+        <source>Close the current document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="568"/>
         <source>&amp;Enlarge Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="433"/>
+        <location filename="../widgets/multi_editor.cpp" line="569"/>
         <source>Ctrl++</source>
         <comment>Enlarge font</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="435"/>
+        <location filename="../widgets/multi_editor.cpp" line="571"/>
         <source>Increase displayed font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="440"/>
+        <location filename="../widgets/multi_editor.cpp" line="576"/>
         <source>&amp;Shrink Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="441"/>
+        <location filename="../widgets/multi_editor.cpp" line="577"/>
         <source>Ctrl+-</source>
         <comment>Shrink font</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="443"/>
+        <location filename="../widgets/multi_editor.cpp" line="579"/>
         <source>Decrease displayed font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="448"/>
+        <location filename="../widgets/multi_editor.cpp" line="584"/>
         <source>&amp;Reset Font Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="449"/>
+        <location filename="../widgets/multi_editor.cpp" line="585"/>
         <source>Ctrl+0</source>
         <comment>Reset font</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="450"/>
+        <location filename="../widgets/multi_editor.cpp" line="586"/>
         <source>Reset displayed font size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="454"/>
+        <location filename="../widgets/multi_editor.cpp" line="590"/>
         <source>Show Spaces and Tabs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="460"/>
+        <location filename="../widgets/multi_editor.cpp" line="601"/>
+        <source>Show Line Number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="603"/>
+        <source>Ctrl+Alt+#</source>
+        <comment>Show Line Number</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="608"/>
+        <source>Show Autocomplete Help</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/multi_editor.cpp" line="613"/>
         <source>Use Spaces for Indentation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="462"/>
+        <location filename="../widgets/multi_editor.cpp" line="615"/>
         <source>Indent with spaces instead of tabs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="468"/>
+        <location filename="../widgets/multi_editor.cpp" line="621"/>
         <source>Next Document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="470"/>
+        <location filename="../widgets/multi_editor.cpp" line="623"/>
         <source>Alt+Right</source>
         <comment>Next Document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="472"/>
+        <location filename="../widgets/multi_editor.cpp" line="625"/>
         <source>Ctrl+Alt+Right</source>
         <comment>Next Document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="477"/>
+        <location filename="../widgets/multi_editor.cpp" line="630"/>
         <source>Previous Document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="479"/>
+        <location filename="../widgets/multi_editor.cpp" line="632"/>
         <source>Alt+Left</source>
         <comment>Previous Document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="481"/>
+        <location filename="../widgets/multi_editor.cpp" line="634"/>
         <source>Ctrl+Alt+Left</source>
         <comment>Previous Document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="486"/>
+        <location filename="../widgets/multi_editor.cpp" line="639"/>
         <source>Switch Document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="488"/>
+        <location filename="../widgets/multi_editor.cpp" line="641"/>
         <source>Ctrl+Tab</source>
         <comment>Switch Document</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="490"/>
-        <source>Meta+Tab</source>
-        <comment>Switch Document</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/multi_editor.cpp" line="495"/>
+        <location filename="../widgets/multi_editor.cpp" line="648"/>
         <source>Split To Right</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="500"/>
+        <location filename="../widgets/multi_editor.cpp" line="653"/>
         <source>Split To Bottom</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="505"/>
+        <location filename="../widgets/multi_editor.cpp" line="658"/>
         <source>Remove Current Split</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="510"/>
+        <location filename="../widgets/multi_editor.cpp" line="663"/>
         <source>Remove All Splits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="518"/>
+        <location filename="../widgets/multi_editor.cpp" line="671"/>
         <source>Evaluate &amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="519"/>
+        <location filename="../widgets/multi_editor.cpp" line="672"/>
         <source>Evaluate current File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="526"/>
+        <location filename="../widgets/multi_editor.cpp" line="679"/>
         <source>&amp;Evaluate Selection, Line or Region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="527"/>
+        <location filename="../widgets/multi_editor.cpp" line="680"/>
         <source>Ctrl+Return</source>
         <comment>Evaluate region</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="528"/>
+        <location filename="../widgets/multi_editor.cpp" line="681"/>
         <source>Evaluate current region</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="535"/>
+        <location filename="../widgets/multi_editor.cpp" line="688"/>
         <source>&amp;Evaluate Selection or Line</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="536"/>
+        <location filename="../widgets/multi_editor.cpp" line="689"/>
         <source>Shift+Return</source>
         <comment>Evaluate selection/line</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/multi_editor.cpp" line="537"/>
+        <location filename="../widgets/multi_editor.cpp" line="690"/>
         <source>Evaluate current selection/line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1554,7 +1765,7 @@ The file has an unrecognized extension. It may be a binary file. Would you still
 <context>
     <name>ScIDE::PostDocklet</name>
     <message>
-        <location filename="../widgets/post_window.cpp" line="294"/>
+        <location filename="../widgets/post_window.cpp" line="393"/>
         <source>Post window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1562,68 +1773,83 @@ The file has an unrecognized extension. It may be a binary file. Would you still
 <context>
     <name>ScIDE::PostWindow</name>
     <message>
-        <location filename="../widgets/post_window.cpp" line="64"/>
+        <location filename="../widgets/post_window.cpp" line="70"/>
         <source>Post Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="66"/>
+        <location filename="../widgets/post_window.cpp" line="72"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="74"/>
+        <location filename="../widgets/post_window.cpp" line="80"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="75"/>
+        <location filename="../widgets/post_window.cpp" line="81"/>
         <source>Clear post window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="77"/>
+        <location filename="../widgets/post_window.cpp" line="83"/>
         <source>Ctrl+Shift+P</source>
         <comment>Clear post window</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="86"/>
+        <location filename="../widgets/post_window.cpp" line="92"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/post_window.cpp" line="93"/>
+        <source>Close the current document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/post_window.cpp" line="97"/>
         <source>Enlarge Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="88"/>
+        <location filename="../widgets/post_window.cpp" line="99"/>
         <source>Enlarge post window font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="92"/>
+        <location filename="../widgets/post_window.cpp" line="103"/>
         <source>Shrink Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="94"/>
+        <location filename="../widgets/post_window.cpp" line="105"/>
         <source>Shrink post window font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="102"/>
+        <location filename="../widgets/post_window.cpp" line="109"/>
+        <source>Reset Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/post_window.cpp" line="117"/>
         <source>Wrap Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="103"/>
+        <location filename="../widgets/post_window.cpp" line="118"/>
         <source>Wrap lines wider than the post window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="109"/>
+        <location filename="../widgets/post_window.cpp" line="124"/>
         <source>Auto Scroll</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/post_window.cpp" line="110"/>
+        <location filename="../widgets/post_window.cpp" line="125"/>
         <source>Scroll to bottom on new posts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1631,17 +1857,17 @@ The file has an unrecognized extension. It may be a binary file. Would you still
 <context>
     <name>ScIDE::ReferencesDialog</name>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="431"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="502"/>
         <source>Look Up References</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="433"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="504"/>
         <source>Enter class or method name...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/lookup_dialog.cpp" line="469"/>
+        <location filename="../widgets/lookup_dialog.cpp" line="540"/>
         <source>Introspection data not yet available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1655,152 +1881,252 @@ The file has an unrecognized extension. It may be a binary file. Would you still
     </message>
     <message>
         <location filename="../core/sc_process.cpp" line="67"/>
-        <location filename="../core/sc_process.cpp" line="71"/>
-        <location filename="../core/sc_process.cpp" line="265"/>
+        <source>Boot or Quit Interpreter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_process.cpp" line="72"/>
         <source>Boot Interpreter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="75"/>
-        <location filename="../core/sc_process.cpp" line="248"/>
+        <location filename="../core/sc_process.cpp" line="77"/>
         <source>Quit Interpreter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="80"/>
+        <location filename="../core/sc_process.cpp" line="82"/>
         <source>Reboot Interpreter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="85"/>
+        <location filename="../core/sc_process.cpp" line="87"/>
         <source>Recompile Class Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="86"/>
+        <location filename="../core/sc_process.cpp" line="88"/>
         <source>Ctrl+Shift+l</source>
         <comment>Recompile Class Library)</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="91"/>
+        <location filename="../core/sc_process.cpp" line="93"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="92"/>
+        <location filename="../core/sc_process.cpp" line="94"/>
         <source>Ctrl+.</source>
         <comment>Stop (a.k.a. cmd-period)</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="113"/>
+        <location filename="../core/sc_process.cpp" line="99"/>
+        <source>Quarks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_process.cpp" line="132"/>
         <source>Interpreter is already running.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="146"/>
+        <location filename="../core/sc_process.cpp" line="165"/>
         <source>Failed to start interpreter!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="152"/>
-        <location filename="../core/sc_process.cpp" line="163"/>
-        <location filename="../core/sc_process.cpp" line="210"/>
+        <location filename="../core/sc_process.cpp" line="171"/>
+        <location filename="../core/sc_process.cpp" line="182"/>
+        <location filename="../core/sc_process.cpp" line="236"/>
         <source>Interpreter is not running!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="181"/>
+        <location filename="../core/sc_process.cpp" line="196"/>
         <source>Failed to stop interpreter!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_process.cpp" line="217"/>
+        <location filename="../core/sc_process.cpp" line="243"/>
         <source>Error when passing data to interpreter!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_process.cpp" line="309"/>
+        <source>Interpreter has crashed or stopped forcefully. [Exit code: %1]
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_process.cpp" line="312"/>
+        <source>Interpreter has quit. [Exit code: %1]
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>ScIDE::ScServer</name>
     <message>
-        <location filename="../core/sc_server.cpp" line="58"/>
+        <location filename="../core/sc_server.cpp" line="62"/>
         <source>Sound Synthesis Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_server.cpp" line="61"/>
-        <source>Boot or quit server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="62"/>
-        <source>Ctrl+B</source>
-        <comment>Boot or quit default server</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../core/sc_server.cpp" line="66"/>
-        <source>Reboot server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="67"/>
-        <source>Ctrl+Shift+B</source>
-        <comment>Reboot default server</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="71"/>
-        <source>Show server meter</source>
+        <source>Boot or quit default server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../core/sc_server.cpp" line="72"/>
+        <source>Ctrl+B</source>
+        <comment>Boot default server</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="82"/>
+        <source>&amp;Kill All Servers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="87"/>
+        <source>&amp;Reboot Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="91"/>
+        <source>Show Server Meter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="96"/>
+        <source>Show Scope</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="97"/>
+        <source>Ctrl+Shift+M</source>
+        <comment>Show scope</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="101"/>
+        <source>Show Freqscope</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="102"/>
+        <source>Ctrl+Alt+M</source>
+        <comment>Show freqscope</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="106"/>
+        <source>Dump Node Tree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="111"/>
+        <source>Dump Node Tree with Controls</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="116"/>
+        <source>Show Node Tree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="117"/>
+        <source>Ctrl+Alt+T</source>
+        <comment>Show node tree</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="121"/>
+        <source>Server Dump OSC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="126"/>
+        <source>Mute</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="127"/>
+        <source>Ctrl+Alt+End</source>
+        <comment>Mute sound output.</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="146"/>
+        <source>Increase Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="147"/>
+        <source>Ctrl+Alt+PgUp</source>
+        <comment>Increase volume</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="151"/>
+        <source>Decrease Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="152"/>
+        <source>Ctrl+Alt+PgDown</source>
+        <comment>Decrease volume</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="156"/>
+        <source>Restore Volume to 0 dB</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="157"/>
+        <source>Ctrl+Alt+Home</source>
+        <comment>Restore volume</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="161"/>
+        <source>Recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="167"/>
+        <source>Pause Recording</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../core/sc_server.cpp" line="92"/>
         <source>Ctrl+M</source>
         <comment>Show server meter</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_server.cpp" line="76"/>
-        <source>Dump node tree</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="77"/>
+        <location filename="../core/sc_server.cpp" line="107"/>
         <source>Ctrl+T</source>
         <comment>Dump node tree</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_server.cpp" line="81"/>
-        <source>Dump node tree with controls</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="82"/>
+        <location filename="../core/sc_server.cpp" line="112"/>
         <source>Ctrl+Shift+T</source>
         <comment>Dump node tree with controls</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_server.cpp" line="234"/>
+        <location filename="../core/sc_server.cpp" line="77"/>
         <source>&amp;Quit Server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../core/sc_server.cpp" line="235"/>
-        <source>Quit sound synthesis server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="240"/>
+        <location filename="../core/sc_server.cpp" line="71"/>
         <source>&amp;Boot Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../core/sc_server.cpp" line="241"/>
-        <source>Boot sound synthesis server</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1871,48 +2197,53 @@ The file has an unrecognized extension. It may be a binary file. Would you still
 <context>
     <name>ScIDE::Settings::EditorPage</name>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="136"/>
-        <source>General</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="140"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="172"/>
         <source>Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="151"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="188"/>
         <source>Line Numbers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="159"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="188"/>
         <source>Selected Text</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="168"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="186"/>
         <source>Search Result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="168"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="186"/>
         <source>Matching Brackets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="169"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="186"/>
+        <source>Current Line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="187"/>
         <source>Mismatched Brackets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="169"/>
+        <location filename="../widgets/settings/editor_page.cpp" line="187"/>
         <source>Evaluated Code</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/editor_page.cpp" line="182"/>
-        <source>Syntax Highlighting</source>
+        <location filename="../widgets/settings/editor_page.cpp" line="188"/>
+        <source>Post Window Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="189"/>
+        <source>Whitespace</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1965,27 +2296,101 @@ The file has an unrecognized extension. It may be a binary file. Would you still
         <source>Primitive</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="193"/>
+        <source>Post Window Error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="193"/>
+        <source>Post Window Warning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="193"/>
+        <source>Post Window Success</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="194"/>
+        <source>Post Window Emphasis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="470"/>
+        <source>Copy theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="471"/>
+        <source>copy the selected theme:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="480"/>
+        <source>Theme Already Existing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/editor_page.cpp" line="481"/>
+        <source>This theme already exists, pick another one
+</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScIDE::Settings::SclangPage</name>
     <message>
-        <location filename="../widgets/settings/sclang_page.cpp" line="86"/>
+        <location filename="../widgets/settings/sclang_page.cpp" line="110"/>
         <source>ScLang include directories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/sclang_page.cpp" line="103"/>
+        <location filename="../widgets/settings/sclang_page.cpp" line="127"/>
         <source>ScLang exclude directories</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/sclang_page.cpp" line="211"/>
-        <source>ScLang configuration file updated</source>
+        <location filename="../widgets/settings/sclang_page.cpp" line="238"/>
+        <source>Sclang configuration file updated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../widgets/settings/sclang_page.cpp" line="212"/>
-        <source>The ScLang configuration has been updated. Recompile the class library to apply changes.</source>
+        <location filename="../widgets/settings/sclang_page.cpp" line="239"/>
+        <source>The SuperCollider language configuration has been updated. Reboot the interpreter to apply the changes.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/sclang_page.cpp" line="273"/>
+        <source>New Configuration File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/sclang_page.cpp" line="274"/>
+        <source>Create configuration file &apos;sclang_conf_*.yaml&apos; with &apos;*&apos; replaced by:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/sclang_page.cpp" line="285"/>
+        <source>File Already Exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/sclang_page.cpp" line="286"/>
+        <source>Configuration file already exists:
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/sclang_page.cpp" line="304"/>
+        <source>Delete Configuration File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../widgets/settings/sclang_page.cpp" line="305"/>
+        <source>Are you sure you want to delete the following configuration file?
+This action is immediate and cannot be undone.
+</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2131,35 +2536,52 @@ Would you like to override it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="55"/>
-        <source>Interpreter Options</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../forms/settings_sclang.ui" line="73"/>
+        <location filename="../forms/settings_sclang.ui" line="123"/>
         <source>Include:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="122"/>
+        <location filename="../forms/settings_sclang.ui" line="172"/>
         <source>Exclude:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="168"/>
+        <location filename="../forms/settings_sclang.ui" line="220"/>
         <source>Post Inline Warnings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="100"/>
-        <location filename="../forms/settings_sclang.ui" line="146"/>
+        <location filename="../forms/settings_sclang.ui" line="71"/>
+        <location filename="../forms/settings_sclang.ui" line="150"/>
+        <location filename="../forms/settings_sclang.ui" line="196"/>
         <source>+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/settings_sclang.ui" line="110"/>
-        <location filename="../forms/settings_sclang.ui" line="156"/>
+        <location filename="../forms/settings_sclang.ui" line="43"/>
+        <source>Active config file:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_sclang.ui" line="68"/>
+        <source>Save a new config file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_sclang.ui" line="84"/>
+        <location filename="../forms/settings_sclang.ui" line="160"/>
+        <location filename="../forms/settings_sclang.ui" line="206"/>
         <source>-</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_sclang.ui" line="105"/>
+        <source>Interpreter Options (stored in current active config file)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/settings_sclang.ui" line="227"/>
+        <source>Exclude default search paths</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
