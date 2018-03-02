@@ -1332,6 +1332,11 @@ int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
 	argsSlot = g->sp - 1;
 	modeSlot = g->sp;
 
+#ifdef SC_IPHONE
+	SetInt(callerSlot, 0);
+	return errNone;
+#endif
+
 	if (NotObj(argsSlot)) return errWrongType;
 
 	if (NotObj(modeSlot) || !isKindOf(slotRawObject(modeSlot), class_string))
