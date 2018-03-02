@@ -186,58 +186,41 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrObject *obj;
 
-	PyrSlot *a = g->sp - 1;
-	PyrSlot *b = g->sp;
+	PyrSlot *callerSlot = g->sp - 1;
+	PyrSlot *args = g->sp;
 
 #ifdef SC_IPHONE
 	SetInt(a, 0);
 	return errNone;
 #endif
 
-	if (NotObj(a)) return errWrongType;
+	if (NotObj(callerSlot))
+		return errWrongType;
 
-	obj = slotRawObject(a);
+	obj = slotRawObject(callerSlot);
 	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
-	if( obj->size < 1)
+	if (obj->size < 1)
 		return errFailed;
-
-	PyrSlot filenameSlot;
-	getIndexedSlot(obj, &filenameSlot, 0);
-	if (!isKindOfSlot(&filenameSlot, class_string)) return errWrongType;
-	char filename[PATH_MAX];
-	if (slotRawObject(&filenameSlot)->size > PATH_MAX - 1) return errFailed;
-	slotStrVal(&filenameSlot, filename, slotRawObject(&filenameSlot)->size + 1);
 
 	std::vector<char *> argv (obj->size + 1);
 
-	bfs::path p;
-	p /= filename;
-	std::string filenameOnly = p.filename().string();
-	std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());
-	vfilenameOnly.push_back('\0');
-
-	argv[0] = vfilenameOnly.data();
-	argv[obj->size] = NULL;
-
-	if(obj->size > 1) {
-		for (int i=1; i<obj->size; ++i) {
-			PyrSlot argSlot;
-			getIndexedSlot(obj, &argSlot, i);
-			if (!isKindOfSlot(&argSlot, class_string)) return errWrongType;
-			char *arg = new char[slotRawObject(&argSlot)->size + 1];
-			slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
-			argv[i] = arg;
-		}
+	for (int i=0; i<obj->size; ++i) {
+		PyrSlot argSlot;
+		getIndexedSlot(obj, &argSlot, i);
+		if (!isKindOfSlot(&argSlot, class_string)) return errWrongType;
+		char *arg = new char[slotRawObject(&argSlot)->size + 1];
+		slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
+		argv[i] = arg;
 	}
 
 	sc_process *process = new sc_process;
-	process->stream = sc_popen_argv(filename, argv.data(), &process->pid, "r");
+	process->stream = sc_popen_argv(argv[0], argv.data(), &process->pid, "r");
 	setvbuf(process->stream, 0, _IONBF, 0);
 	pid_t pid = process->pid;
 
-	process->postOutput = IsTrue(b);
+	process->postOutput = IsTrue(args);
 
 	if(process->stream == NULL) {
 		delete process;
@@ -247,13 +230,12 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 	SC_Thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
-	for (int i=1; i<obj->size; ++i) {
+	for (int i=0; i<obj->size; ++i) {
 		delete [] argv[i];
 	}
 
-	SetInt(a, pid);
+	SetInt(callerSlot, pid);
 	return errNone;
-
 }
 
 int prPidRunning(VMGlobals *g, int numArgsPushed);
