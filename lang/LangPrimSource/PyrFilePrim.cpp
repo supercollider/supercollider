@@ -1371,8 +1371,8 @@ int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
 	pid_t pid;
 	FILE *file = sc_popen_argv(argv[0], argv.data(), &pid, mode);
 
-	for (int i=0; i<argsColl->size; ++i) {
-		delete [] argv[i];
+	for (char *arg : argv) {
+		delete [] arg;
 	}
 
 	if (file) {

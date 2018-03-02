@@ -230,8 +230,8 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 	SC_Thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
-	for (int i=0; i<obj->size; ++i) {
-		delete [] argv[i];
+	for (char *arg : argv) {
+		delete [] arg;
 	}
 
 	SetInt(callerSlot, pid);
