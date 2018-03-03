@@ -484,6 +484,11 @@ void stopAsioThread()
 	gAsioThread.join();
 }
 
+bool asioThreadStarted()
+{
+	return gAsioThread.joinable();
+}
+
 }
 
 using namespace scsynth;

@@ -296,7 +296,7 @@ void World_LoadGraphDefs(World* world)
 namespace scsynth {
 void startAsioThread();
 void stopAsioThread();
-extern SC_Thread gAsioThread;
+bool asioThreadStarted();
 }
 
 
@@ -473,7 +473,7 @@ World* World_New(WorldOptions *inOptions)
 			hw->mAudioDriver = 0;
 		}
 
-		if (!scsynth::gAsioThread.joinable()){
+		if (!scsynth::asioThreadStarted()){
 			scsynth::startAsioThread();
 		}
 
@@ -1007,7 +1007,7 @@ void World_Cleanup(World *world, bool unload_plugins)
 {
 	if (!world) return;
 
-	if (scsynth::gAsioThread.joinable()){
+	if (scsynth::asioThreadStarted()){
 		scsynth::stopAsioThread();
 	}
 
