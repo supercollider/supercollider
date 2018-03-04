@@ -1,0 +1,111 @@
+class::LinkClock
+categories::Scheduling>Clocks
+summary::Scheduler synchronized with Ableton Link
+related::Classes/TempoClock
+
+Description::
+
+LinkClock is a link::Classes/TempoClock:: based on Ableton Link, a protocol
+that synchronizes beat and tempo over a local network.
+
+note::
+To ensure proper synchronization, you should verify that audio latency is the same for every program connected to the Link session. See link::Classes/Server#-latency::.
+::
+
+Classmethods::
+
+method::new
+Creates a new instance of LinkClock.
+
+argument:: tempo
+The initial link::#-tempo#tempo::. Defaults to code::1::.
+
+argument:: beats
+The time in beats, corresponding to the reference time. Default to code::0::.
+
+argument:: seconds
+The reference time in seconds. See link::Classes/TempoClock#-new::.
+
+argument:: queueSize
+The storage size of the scheduling queue. See link::Classes/TempoClock#-new::.
+
+discussion::
+If an existing Link session is found on the local network, the object connects
+to it and use its properties: the code::tempo:: argument is discarded in favor
+of the session tempo, and the code::beat:: argument can be shifted to ensure
+proper beat synchronization accross every program.
+If not, a new Link session is locally created and initialized with the
+constructor arguments.
+
+method::newFromTempoClock
+Creates a new instance of LinkClock derived from a link::Classes/TempoClock::.
+
+argument::clock
+The link::Classes/TempoClock:: used to create the LinkClock.
+
+discussion::
+The LinkClock link::#-tempo#tempo::, link::#-beats#beats::,
+link::#-seconds#seconds:: and link::#-beatsPerBar#beatsPerBar:: values are
+set to those of the TempoClock. The TempoClock is then stopped and all of its
+tasks are rescheduled by the newly created LinkClock, so that they are now
+synchronized with the Link session.
+
+Instancemethods::
+
+private:: initFromTempoClock, prSetQuantum, prStart, prTempoChanged
+
+method:: tempo
+Sets or gets the current session tempo at the current logical time. Note that
+the tempo isn't consistent within sclang: any program connected can change
+it at any time.
+
+method:: beats
+Sets or gets the current logical time in beats. Before being set, a new value
+can be shifted to ensure consitency of the beat phase accross the session.
+
+method:: numPeers
+Gets the number of peers connected to the current Link session.
+
+method:: tempoChanged
+argument:: value
+a link::Classes/Function:: evaluated whenever the session tempo is changed. It
+is passed the following arguments:
+definitionList::
+## tempo || the new tempo
+## beats || the elapsed time in beats when tempo was changed.
+## seconds || the elapsed time in seconds when tempo was changed.
+## clock || a reference to this object
+::
+
+Examples::
+
+code::
+(
+s.waitForBoot({
+	SynthDef(\click, { |freq=400, amp=0.2|
+		var sig = SinOsc.ar(freq, 0.5pi) *
+			Env.perc(0.001,0.06).ar(Done.freeSelf, levelScale: amp);
+		OffsetOut.ar(0, sig.dup)
+	}).add;
+})
+)
+
+// try to lauch a program using Ableton Link to test synchronization
+
+// set audio latency, this should be the same in every application
+s.latency = nil;
+
+// create a synchronized clock
+l = LinkClock(1);
+
+// this should be in sync
+p = Pbind(\instrument, \click, \freq, Pseq([900, Pn(400,3)],inf)).play(l, quant:4);
+
+// changing the tempo in another application should affect tempo in SC
+// changing the tempo in SC should affect every connected application
+l.tempo = 90/60;
+
+p.stop;
+l.stop;
+
+::
