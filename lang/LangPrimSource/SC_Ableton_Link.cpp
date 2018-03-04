@@ -154,6 +154,10 @@ int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	SetInt(a, clock->NumPeers());
 
@@ -167,6 +171,10 @@ int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
 	LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+	if (!clock) {
+		error("clock is not running.\n");
+		return errFailed;
+	}
 
 	double quantum;
 	int err = slotDoubleVal(b, &quantum);
