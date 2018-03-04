@@ -541,8 +541,8 @@ if(SC_DOC_RENDER)
 	file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
 
 	add_custom_target(doc ALL
-		COMMAND $<TARGET_FILE_DIR:sclang>/sclang${CMAKE_EXECUTABLE_SUFFIX}
-			-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+		COMMAND sclang
+			-a -l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
 			platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		DEPENDS sclang ${SCDocSources} ${SCDocClasses})
