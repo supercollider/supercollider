@@ -454,9 +454,20 @@ void RunningSum2_Ctor( RunningSum2* unit )
     unit->reset     = false;
     unit->msquares  = (float*)RTAlloc(unit->mWorld, unit->maxsamps * sizeof(float));
 
+    if (unit->msquares == nullptr) {
+        SETCALC(*ClearUnitOutputs);
+        ClearUnitOutputs(unit, 1);
+        if (unit->mWorld->mVerbosity > -2) {
+            printf("Failed to allocate memory for RunningSum2\n");
+        }
+        return;
+    }
+
     //initialise to zeroes
     for (int i=0; i < unit->maxsamps; ++i)
         unit->msquares[i] = 0.f;
+
+    ZOUT0(0) = 0.f;
 }
 
 void RunningSum2_Dtor(RunningSum2 *unit)
