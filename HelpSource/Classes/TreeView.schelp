@@ -96,6 +96,13 @@ METHOD:: sort
 	ARGUMENT:: descending
 		Whether to sort in descending or ascending fashion. The default is ascending.
 
+METHOD:: setColumnWidth
+
+	ARGUMENT:: column
+		The integer index of the column to modify
+	ARGUMENT:: width
+		Integer width in pixels
+
 PRIVATE:: background
 
 
