@@ -63,31 +63,35 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 	- To quickly create a topic branch based on develop: `git checkout -b topic/my-fix develop`.
 	- Please avoid working directly on the `develop` branch.
 	- Please do not work off of the `master` branch, which is stable and only includes releases.
+- As the time passes, make sure to keep your for updated - see [Updating your fork](#updating-your-fork) below.
 
 ### Making changes
 
 - Make commits of logical units.
-- Check for unnecessary whitespace, and make sure you are following the whitespace conventions of the edited files, before committing.
-- Make sure your commit messages are descriptive and in the proper format:
+- Please refer to [Code Style Guide](https://github.com/supercollider/supercollider/wiki/%5BWIP%5D-Code-style-guidelines). Note that code style, such as whitespace conventions, depend on the language (`C++` vs `SuperCollider` vs `SCDoc Markup`)
+- Make sure your commit messages are descriptive and in the proper format.
+	- Commit messages follow the schema "category: content", e.g. `docs: Make the example in CONTRIBUTING imperative and concrete`, or `help: Update RunningSum2 help file`, or `class library: do this and that`, or `plugins: add missing function definition`.
+	- A more complete example:
 
-        docs: Make the example in CONTRIBUTING imperative and concrete
+	        docs: Make the example in CONTRIBUTING imperative and concrete
 
-        Without this patch applied the example commit message in the CONTRIBUTING
-        document is not a concrete example. This is a problem because the
-        contributor is left to imagine what the commit message should look like
-        based on a description rather than an example. This patch fixes the
-        problem by making the example concrete and imperative.
+	        Without this patch applied the example commit message in the CONTRIBUTING
+	        document is not a concrete example. This is a problem because the
+	        contributor is left to imagine what the commit message should look like
+	        based on a description rather than an example. This patch fixes the
+	        problem by making the example concrete and imperative.
 
-        The first line is a real life imperative statement which optionally identifies
-        the component being changed. The body describes the behavior without the patch,
-        why this is a problem, and how the patch fixes the problem when applied.
+	        The first line is a real life imperative statement which optionally identifies
+	        the component being changed. The body describes the behavior without the patch,
+	        why this is a problem, and how the patch fixes the problem when applied.
 
 - Make sure you have added the necessary tests for your changes.
 - Make sure you have documented your changes, if necessary.
 
 ### Submitting changes as Pull Requests
 
-- Push your changes to a topic branch in the fork of your repository. If you are working locally, do this with `git push -u my-gh-repo topic/my-fix`. `my-gh-repo` is typically `origin`; check with `git remote -v`.
+- First make sure your fork is up to date! See [Updating your fork](#updating-your-fork) below.
+- Push your changes to a topic branch in the fork of your repository. If you are working locally, do this with `git push -u origin topic/my-fix`. `origin` should be the remote of your fork; check with `git remote -v`.
 - Submit a pull request to the SuperCollider repository.
 - The core team looks at pull requests on a regular basis in a weekly meeting that we hold in a public meeting. The hangout is announced in the weekly status updates that are sent to the sc-dev list.
 - You may receive feedback and requests for changes. We expect changes to be made in a timely manner. We may close the pull request if it isn't showing any activity.
@@ -116,7 +120,12 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 	- Checkout the `develop` branch: `git checkout develop`
 	- Pull changes into the `develop` branch: `git pull upstream develop`
 	- If you have already created your topic branch:
-		- Update it with the changes in the `develop`: `git rebase develop topic/branch-description`
+		- Update it with the changes in the `develop` branch using `rebase`: `git rebase develop topic/branch-description`
+		- **Note:** if you have already pushed your branch, rebasing will make your local branch diverge from the remote (`origin`). This may happen in the case that you need to make additional commits in response to developer feedback before your pull request is accepted. In that case you have two options:
+			- rebase, after which you'll need to force push: `git checkout topic/branch-description` followed by `git push origin -f`
+				- **Warning:** this is often advised against as it will change the commit history and is not recommended if there is more than one person working on the branch; however, this will create a clean commit history with only your commits in the branch
+			- don't rebase, but instead `git checkout topic/branch-description`, then `git pull`, followed by `git push origin`
+				- this will result in having all the commits to `develop` since creating the branch included in your pull request; it will however avoid "force pushing"
 	- If you have not yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
 
 ### Additional resources
