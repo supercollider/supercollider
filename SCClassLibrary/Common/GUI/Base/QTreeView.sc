@@ -41,6 +41,10 @@ TreeView : View {
 		this.invokeMethod( \sort, [column, descending] )
 	}
 
+	columnWidth { arg column;
+		^this.invokeMethod( \columnWidth, [column] )
+	}
+
 	setColumnWidth { arg column, width;
 		this.invokeMethod( \setColumnWidth, [column, width] )
 	}
