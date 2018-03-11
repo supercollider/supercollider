@@ -37,7 +37,7 @@ QC_DECLARE_FACTORY( QcListWidget, QcListWidgetFactory );
 QcListWidget::QcListWidget() : _emitAction(true)
 {
   connect( this, SIGNAL( currentItemChanged( QListWidgetItem*, QListWidgetItem* ) ),
-           this, SLOT( onCurrentItemChanged() ) );
+           this, SLOT( currentItemChanged(ItemPtr, ItemPtr) ) );
 }
 
 void QcListWidget::setItems( const QVariantList & items )

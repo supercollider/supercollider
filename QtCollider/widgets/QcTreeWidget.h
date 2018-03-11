@@ -92,7 +92,9 @@ Q_SIGNALS:
 
   void action();
   void itemPressedAction();
-  void currentItemChanged();
+  void currentItemChanged(ItemPtr, ItemPtr);
+  void expanded(QcTreeWidget::ItemPtr);
+  void collapsed(QcTreeWidget::ItemPtr);
 
 public:
 
@@ -103,7 +105,11 @@ public:
 
   QVariantList columns() const;
   void setColumns( const QVariantList & );
-
+	
+public Q_SLOTS:
+  void onExpanded(QTreeWidgetItem*);
+  void onCollapsed(QTreeWidgetItem*);
+	
 protected:
 
   virtual void keyPressEvent( QKeyEvent * );

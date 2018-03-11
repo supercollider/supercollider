@@ -228,3 +228,16 @@ QLevelIndicatorStyle {
 		^ this.perform( style.isInteger.if({ #[\continuous, \led][style] }, style) );
 	}
 }
+
+QMenuRole {
+	classvar
+	<noRole = 0,
+	<textHeuristicRole = 1,
+	<applicationSpecificRole = 2,
+	<aboutQtRole = 3,
+	<aboutRole = 4,
+	<preferencesRole = 5,
+	<quitRole = 6;
+
+	*new { arg name; ^this.perform(name) }
+}
