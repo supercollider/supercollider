@@ -27,7 +27,6 @@
 #include "PyrPrimitiveProto.h"
 #include "PyrSignal.h"
 #include "PyrSched.h"
-#include "PyrSignalPrim.h"
 #include "PyrFilePrim.h"
 #include "PyrMathPrim.h"
 #include "PyrListPrim.h"
@@ -4228,7 +4227,6 @@ void initPrimitives()
 	definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
 
 	initMathPrimitives();
-	initSignalPrimitives();
 
 void initUnixPrimitives();
 	initUnixPrimitives();
@@ -4314,6 +4312,7 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Platform );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( String );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
 	SC_PrimRegistry::instance().run_all();
 
 	s_recvmsg = getsym("receiveMsg");
