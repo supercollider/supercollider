@@ -45,11 +45,7 @@ int class_array_index, class_array_maxsubclassindex;
 int class_identdict_index, class_identdict_maxsubclassindex;
 
 PyrClass *class_identdict;
-PyrSymbol *s_proto, *s_parent;
-PyrSymbol *s_delta, *s_dur, *s_stretch;
 
-// used in prEvent_IsRest
-PyrSymbol *s_type, *s_rest, *s_empty, *s_r, *s_isRest;
 PyrClass *class_rest, *class_metarest;
 
 #define HASHSYMBOL(sym) (sym >> 5)
@@ -57,6 +53,19 @@ PyrClass *class_rest, *class_metarest;
 #define ISKINDOF(obj, lo, hi)  (\
 	objClassIndex = slotRawInt(&obj->classptr->classIndex),	\
 	objClassIndex >= lo && objClassIndex <= hi)
+
+SCLANG_DEFINE_SYMBOL_SIMPLE( proto );
+SCLANG_DEFINE_SYMBOL_SIMPLE( parent );
+SCLANG_DEFINE_SYMBOL_SIMPLE( delta );
+SCLANG_DEFINE_SYMBOL_SIMPLE( dur );
+SCLANG_DEFINE_SYMBOL_SIMPLE( stretch );
+
+// used in Event_IsRest
+SCLANG_DEFINE_SYMBOL_SIMPLE( type );
+SCLANG_DEFINE_SYMBOL_SIMPLE( rest );
+SCLANG_DEFINE_SYMBOL( s_empty, "" );
+SCLANG_DEFINE_SYMBOL_SIMPLE( r );
+SCLANG_DEFINE_SYMBOL_SIMPLE( isRest );
 
 SCLANG_DEFINE_PRIMITIVE( ArrayMultiChannelExpand, 1 )
 {
@@ -811,19 +820,6 @@ void initPatterns()
 
 	class_array_index = slotRawInt(&class_array->classIndex);
 	class_array_maxsubclassindex = slotRawInt(&class_array->maxSubclassIndex);
-
-	s_parent = getsym("parent");
-	s_proto = getsym("proto");
-	s_delta = getsym("delta");
-	s_dur = getsym("dur");
-	s_stretch = getsym("stretch");
-
-	// used in prEvent_IsRest
-	s_type = getsym("type");
-	s_rest = getsym("rest");
-	s_empty = getsym("");
-	s_r = getsym("r");
-	s_isRest = getsym("isRest");
 
 	class_rest = getsym("Rest")->u.classobj;
 	class_metarest = getsym("Meta_Rest")->u.classobj;
