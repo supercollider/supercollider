@@ -63,7 +63,7 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 	- To quickly create a topic branch based on develop: `git checkout -b topic/my-fix develop`.
 	- Please avoid working directly on the `develop` branch.
 	- Please do not work off of the `master` branch, which is stable and only includes releases.
-- As the time passes, make sure to keep your for updated - see [Updating your fork](#updating-your-fork) below.
+- As the time passes, make sure to keep your fork updated - see [Updating your fork](#updating-your-fork) below.
 
 ### Making changes
 
@@ -90,15 +90,14 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 
 ### Submitting changes as Pull Requests
 
-- First make sure your fork is up to date! See [Updating your fork](#updating-your-fork) below.
-- Push your changes to a topic branch in the fork of your repository. If you are working locally, do this with `git push -u origin topic/my-fix`. `origin` should be the remote of your fork; check with `git remote -v`.
+- Push your changes to a topic branch in the fork of your repository. If you are working locally, do this with `git push -u origin topic/branch-description`. `origin` should be the remote of your fork; check with `git remote -v`.
 - Submit a pull request to the SuperCollider repository.
 - The core team looks at pull requests on a regular basis in a weekly meeting that we hold in a public meeting. The hangout is announced in the weekly status updates that are sent to the sc-dev list.
 - You may receive feedback and requests for changes. We expect changes to be made in a timely manner. We may close the pull request if it isn't showing any activity.
 
 ### Updating your fork
 In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another `remote`, usually called `upstream`. **Please note:** naming the main repository `upstream` is just a convention, not a requirement. If you already have a differently named `remote` pointing to the main SuperCollider repository, you can use that name instead of `upstream`.
-- If you have not yet created the `upstream` `remote`, create it first:
+- If you have not yet added the `upstream` `remote`, do so now:
 	- Check the list of remotes: `git remote -v`. The output should look like this:
 
 			origin	https://github.com/your-name/supercollider.git (fetch)
@@ -114,19 +113,20 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 			upstream	https://github.com/supercollider/supercollider (push)
 
 	- Now you can proceed to updating your fork (see below).
-- If you have already created the `upstream` `remote`, update your fork:
+- If you have already added the `upstream` `remote`, update your fork:
 	- Be sure to have all local changes committed before doing this!
 	- Update from the `upstream` repository: `git fetch upstream`
 	- Checkout the `develop` branch: `git checkout develop`
-	- Pull changes into the `develop` branch: `git pull upstream develop`
-	- If you have already created your topic branch:
-		- Update it with the changes in the `develop` branch using `rebase`: `git rebase develop topic/branch-description`
-		- **Note:** if you have already pushed your branch, rebasing will make your local branch diverge from the remote (`origin`). This may happen in the case that you need to make additional commits in response to developer feedback before your pull request is accepted. In that case you have two options:
-			- rebase, after which you'll need to force push: `git checkout topic/branch-description` followed by `git push origin -f`
-				- **Warning:** this is often advised against as it will change the commit history and is not recommended if there is more than one person working on the branch; however, this will create a clean commit history with only your commits in the branch
-			- don't rebase, but instead `git checkout topic/branch-description`, then `git pull`, followed by `git push origin`
-				- this will result in having all the commits to `develop` since creating the branch included in your pull request; it will however avoid "force pushing"
+	- Pull changes into the `develop` branch: `git pull upstream develop`. Your `develop` branch is now up-to-date.
+	- If you have already created your topic branch, you can update it with the changes in `develop` by either rebasing or pulling - see [Notes on rebasing](#notes-on-rebasing) below.
 	- If you have not yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
+
+### Notes on rebasing
+Rebasing is one way to integrate changes from one branch onto another, in this case `develop` onto your `topic/branch-description`. You don't usually need to `rebase` unless there have been changes to the code you're working on in the `develop` branch in `upstream`. If you need to rebase, use `git rebase develop topic/branch-description`. Note that if you rebase after already having pushed your branch, it will make your local branch diverge from the remote (`origin`). In that case you have two options:
+- rebase, after which you'll need to force push: `git checkout topic/branch-description` followed by `git push origin -f`
+	- This will change the commit history and is not recommended if there is more than one person working on the branch; however, it will create a clean commit history with only your commits in the pull request.
+- don't rebase, but instead `git checkout topic/branch-description`, then `git pull`, followed by `git push origin`
+	- The result will be that your pull request will include your commits in addition to all other commits to `develop` since your branch was created (without changing the commit history).
 
 ### Additional resources
 More information can be found on the [git workflow wiki page](https://github.com/supercollider/supercollider/wiki/git-workflow-and-guidelines).
