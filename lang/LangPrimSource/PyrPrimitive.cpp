@@ -4313,7 +4313,10 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( String );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
-	SC_PrimRegistry::instance().run_all();
+
+	SC_PrimRegistry<SC_PrimDefinerEntry>::instance().run_all();
+
+	SC_PrimRegistry<SC_SymbolDefinerEntry>::instance().run_all();
 
 	s_recvmsg = getsym("receiveMsg");
 	post("\tFound %d primitives.\n", nextPrimitiveIndex());

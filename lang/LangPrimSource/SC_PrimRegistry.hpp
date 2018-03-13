@@ -15,35 +15,16 @@
 
 #include "PyrPrimitive.h"
 #include "SC_PrimRegistryMacros.hpp"
+#include "PyrSymbolTable.h"
 
+template<typename Entry>
 class SC_PrimRegistry {
 public:
-    struct Entry {
-        PrimitiveHandler const primitive;
-        const char * symbol;
-        int numArgs;
-        int varArgs;
-
-        Entry(PrimitiveHandler const primitive, const char * symbol, int numArgs, int varArgs) :
-            primitive{primitive},
-            symbol{symbol},
-            numArgs{numArgs},
-            varArgs{varArgs}
-        {}
-    };
 
     void run_all() const
     {
-        for (auto const& entry : m_entries) {
-            definePrimitive(
-                    nextPrimitiveIndex(),
-                    0,
-                    entry.symbol,
-                    entry.primitive,
-                    entry.numArgs,
-                    entry.varArgs
-                    );
-        }
+        for (auto const& entry : m_entries)
+            entry();
     }
 
     void add_entry(Entry&& entry)
@@ -51,32 +32,74 @@ public:
         m_entries.push_back(entry);
     }
 
-    // singleton
-    static SC_PrimRegistry& instance()
+    static SC_PrimRegistry<Entry>& instance()
     {
-        static SC_PrimRegistry reg{};
-        return reg;
+        static SC_PrimRegistry<Entry> inst{};
+        return inst;
     }
 
     SC_PrimRegistry() = default;
+    SC_PrimRegistry operator=(SC_PrimRegistry const&) = delete;
     SC_PrimRegistry(SC_PrimRegistry const&) = delete;
-    SC_PrimRegistry(SC_PrimRegistry&&) = delete;
 
 private:
     std::vector<Entry> m_entries;
 };
 
-struct SC_PrimRegistryHelper {
-    SC_PrimRegistryHelper(
+/// Entry type for defining primitives
+class SC_PrimDefinerEntry {
+public:
+    SC_PrimDefinerEntry(
             PrimitiveHandler const primitive,
-            const char * const symbol,
+            char const * const symbol,
             int numArgs,
             int varArgs,
-            SC_PrimRegistry& reg)
+            SC_PrimRegistry<SC_PrimDefinerEntry>& reg
+    ):
+        m_primitive{primitive},
+        m_symbol{symbol},
+        m_numArgs{numArgs},
+        m_varArgs{varArgs}
     {
-        reg.add_entry( {primitive, symbol, numArgs, varArgs} );
+        reg.add_entry(std::move(*this));
     }
+
+    void operator()() const
+    {
+        definePrimitive(nextPrimitiveIndex(), 0, m_symbol, m_primitive, m_numArgs, m_varArgs);
+    }
+
+private:
+    PrimitiveHandler const m_primitive;
+    char const * const m_symbol;
+    int const m_numArgs;
+    int const m_varArgs;
 };
+
+/// Entry type for defining symbol pointers like \c s_parent to avoid repeated lookups.
+class SC_SymbolDefinerEntry {
+public:
+    SC_SymbolDefinerEntry(
+        PyrSymbol ** const symbol,
+        char const * const string,
+        SC_PrimRegistry<SC_SymbolDefinerEntry>& reg
+    ):
+        m_symbol{symbol},
+        m_string{string}
+    {
+        reg.add_entry(std::move(*this));
+    }
+
+    void operator()() const
+    {
+        *m_symbol = getsym(m_string);
+    }
+
+private:
+    PyrSymbol ** const m_symbol;
+    char const * const m_string;
+};
+
 /// Use to define an ordinary (non-varArgs) primitive.
 #define SCLANG_DEFINE_PRIMITIVE( name, numArgs )                                                      \
     SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, 0 )
@@ -95,6 +118,18 @@ struct SC_PrimRegistryHelper {
     SCLANG_TEMPLATE_PRIMITIVE_SIGNATURE( name, T );                                                   \
     BOOST_PP_SEQ_FOR_EACH( SCLANG_REGISTER_TEMPLATE_PRIMITIVE_HELPER, (name)(numArgs)(0), TypeSeq );  \
     SCLANG_TEMPLATE_PRIMITIVE_SIGNATURE( name, T )
+
+// ------------ symbols ----------------------
+
+/// Use to define a symbol. During interpreter init the symbol will be reloaded using getsym
+#define SCLANG_DEFINE_SYMBOL( name, value )                                                           \
+    SCLANG_SYMBOL_DECL( name );                                                                       \
+    SCLANG_SYMBOL_DEFINER( name, value )
+
+/// Use to define a symbol whose variable is \c s_name and whose value is \c "name".
+#define SCLANG_DEFINE_SYMBOL_SIMPLE( name )                                                           \
+    SCLANG_SYMBOL_DECL( BOOST_PP_CAT( s_, name ) );                                                   \
+    SCLANG_SYMBOL_DEFINER( BOOST_PP_CAT( s_, name), BOOST_PP_STRINGIZE( name ) )
 
 // ------------ libsclang macros -------------
 
