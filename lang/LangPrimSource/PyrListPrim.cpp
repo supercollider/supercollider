@@ -611,10 +611,9 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 		SetSymbol(&key, s_isRest);
 		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
 		if(IsTrue(&typeSlot)) {
-			if(++isRestCount == 1)
+			if (isRestCount == 0)
 				post("\nWARNING: Setting isRest to true in an event is deprecated. See the Rest helpfile for supported ways to specify rests.\n\n");
-			if(isRestCount == 100)
-				isRestCount = 0;
+			isRestCount = (isRestCount + 1) % 100;
 			SetBool(g->sp, 1);
 			return errNone;
 		};
