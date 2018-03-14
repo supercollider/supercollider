@@ -559,6 +559,37 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+/// Returns whether the slot is considered a rest for \c Event.isRest.
+static bool slotIsRestlike(PyrSlot* slot)
+{
+	PyrSymbol * slotSym;
+	if (isKindOfSlot(slot, class_rest) || isKindOfSlot(slot, class_metarest)) {
+		return true;
+	} else if(!slotSymbolVal(slot, &slotSym)) {
+		return slotSym == s_empty
+			|| slotSym == s_r
+			|| slotSym == s_rest;
+	}
+	// why no 'else'?
+	// slotSymbolVal nonzero return = not a symbol;
+	// non-symbols don't indicate rests, so, ignore them.
+
+	return false;
+}
+
+/// Returns whether the dictionary has an entry with a 'restlike' value (see \c slotIsRestlike).
+static bool dictHasRestlikeValue(PyrObject* array)
+{
+	auto finalSlot = array->slots + array->size;
+
+	// odd-numered slots are values
+	for (auto slot = array->slots + 1; slot < finalSlot; slot += 2)
+		if (slotIsRestlike(slot))
+			return true;
+
+	return false;
+}
+
 int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed);
 int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 {
@@ -587,32 +618,12 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 			SetBool(g->sp, 1);
 			return errNone;
 		};
-		// failing those, scan slot values for a Rest instance or \ or \r
+
+		// failing those, scan slot values for something rest-like
 		PyrObject *array = slotRawObject(arraySlot);
-		PyrSymbol *slotSym;
-		PyrSlot *slot;
-		int32 size = array->size;
-		int32 i;
-
-		slot = array->slots + 1;  // scan only the odd items
-
-		for (i = 1; i < size; i += 2, slot += 2) {
-			if (isKindOfSlot(slot, class_rest)
-			    || isKindOfSlot(slot, class_metarest)
-			) {
-				SetBool(g->sp, 1);
-				return errNone;
-			} else if(!slotSymbolVal(slot, &slotSym)) {
-				if(slotSym == s_empty
-					|| slotSym == s_r
-					|| slotSym == s_rest
-				) {
-					SetBool(g->sp, 1);
-					return errNone;
-				}
-			}  // why no 'else'?
-			// slotSymbolVal nonzero return = not a symbol;
-			// non-symbols don't indicate rests, so, ignore them.
+		if (dictHasRestlikeValue(array)) {
+			SetBool(g->sp, 1);
+			return errNone;
 		}
 	} else {
 		return errWrongType;
