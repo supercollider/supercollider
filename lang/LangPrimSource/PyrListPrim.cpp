@@ -597,38 +597,34 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
 	static int isRestCount = 0;
 
-	if (isKindOfSlot(arraySlot, class_array)) {
-		PyrSlot key, typeSlot;
-		PyrSymbol *typeSym;
-		// easy tests first: 'this[\type] == \rest'
-		SetSymbol(&key, s_type);
-		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
-		if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
-			SetBool(g->sp, 1);
-			return errNone;
-		};
-		// and, 'this[\isRest] == true'
-		SetSymbol(&key, s_isRest);
-		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
-		if(IsTrue(&typeSlot)) {
-			if (isRestCount == 0)
-				post("\nWARNING: Setting isRest to true in an event is deprecated. See the Rest helpfile for supported ways to specify rests.\n\n");
-			isRestCount = (isRestCount + 1) % 100;
-			SetBool(g->sp, 1);
-			return errNone;
-		};
-
-		// failing those, scan slot values for something rest-like
-		PyrObject *array = slotRawObject(arraySlot);
-		if (dictHasRestlikeValue(array)) {
-			SetBool(g->sp, 1);
-			return errNone;
-		}
-	} else {
+	if (!isKindOfSlot(arraySlot, class_array)) {
 		return errWrongType;
 	}
 
-	SetBool(g->sp, 0);
+	PyrSlot key, typeSlot;
+	PyrSymbol *typeSym;
+	// easy tests first: 'this[\type] == \rest'
+	SetSymbol(&key, s_type);
+	identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+	if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
+		SetBool(g->sp, 1);
+		return errNone;
+	}
+
+	// and, 'this[\isRest] == true'
+	SetSymbol(&key, s_isRest);
+	identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+	if(IsTrue(&typeSlot)) {
+		if (isRestCount == 0)
+			post("\nWARNING: Setting isRest to true in an event is deprecated. See the Rest helpfile for supported ways to specify rests.\n\n");
+		isRestCount = (isRestCount + 1) % 100;
+		SetBool(g->sp, 1);
+		return errNone;
+	}
+
+	// failing those, scan slot values for something rest-like
+	PyrObject *array = slotRawObject(arraySlot);
+	SetBool(g->sp, dictHasRestlikeValue(array) ? 1 : 0);
 	return errNone;
 }
 
