@@ -19,7 +19,8 @@ definitionList::
 CLASSMETHODS::
 
 METHOD:: store
-Store the current configuration to file.
+Store the current configuration to file. Throws an error if the config file cannot be opened or if
+writing fails.
 
 argument:: file
 Path to the configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
