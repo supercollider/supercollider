@@ -394,6 +394,21 @@ Pfin : FilterPattern {
 }
 
 
+Pcleanup : FuncFilterPattern {
+
+	embedInStream { arg event;
+		var inevent;
+		var stream = pattern.asStream;
+		var cleanup = EventStreamCleanup.new;
+		cleanup.addFunction(event, func);
+		loop {
+			inevent = stream.next(event) ?? { ^event };
+			cleanup.update(inevent);
+			event = inevent.yield;
+		}
+	}
+}
+
 
 // it is not correct to call stream.next(nil) on a value stream
 // but there is no good way to distinguish in Pfin so we need a subclass

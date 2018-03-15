@@ -33,12 +33,59 @@ TestPattern : UnitTest {
 			Pbind(\x, 7).collect { |event| event.put(\y, 8) },
 		];
 
-		[identical, identical].allTuples.postln.do { |pair|
+		[identical, identical].allTuples.do { |pair|
 			assertUnfolded.(*pair)
 		};
 
 
 	}
+
+
+	test_pattern_pcleanup_noop {
+		var called = false;
+		var cleanupPattern = Pcleanup({ called = true }, Pn(1, inf));
+		var pattern = Pevent(Pfin(1, cleanupPattern));
+		var eventStream = pattern.asStream;
+		eventStream.next;
+		this.assert(called.not, "Pcleanup should not call cleanup before its stream has externally ended");
+	}
+
+	test_pattern_pcleanup_call {
+		var called = false;
+		var cleanupPattern = Pcleanup({ called = true }, Pn(1, inf));
+		var pattern = Pevent(Pfin(1, cleanupPattern));
+		var eventStream = pattern.asStream;
+		eventStream.next;
+		eventStream.next;
+		this.assert(called, "Pcleanup should call cleanup when its stream has externally ended");
+	}
+
+	test_pattern_pcleanup_after {
+		var called = false;
+		var cleanupPattern = Pcleanup({ called = true }, Pn(1, inf));
+		var pattern = Pevent(Pfin(1, cleanupPattern));
+		var eventStream = pattern.asStream;
+		eventStream.next;
+		this.assert(called.not, "Pcleanup should not call cleanup before end");
+		eventStream.next;
+		this.assert(called, "Pcleanup should call cleanup when its stream has externally ended");
+		called = false;
+		eventStream.nextN(8);
+		this.assert(called.not, "Pcleanup should call cleanup only once");
+	}
+
+
+	test_pattern_pcleanup_inner_end {
+		var called = false;
+		var cleanupPattern = Pcleanup({ called = true }, Pn(1, 2));
+		var pattern = Pevent(cleanupPattern);
+		var eventStream = pattern.asStream;
+		eventStream.next;
+		eventStream.next;
+		eventStream.next;
+		this.assert(called.not, "Pcleanup should not call cleanup when its inner stream ends");
+	}
+
 
 /*
 	test_storeArgs {
