@@ -27,10 +27,15 @@ Primitives for Unix.
 #include <errno.h>
 #include <signal.h>
 
+#include <tuple>
+#include <vector>
+
+#include "PyrObject.h"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "PyrSched.h"
+#include "PyrFilePrim.h"
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
@@ -40,8 +45,8 @@ Primitives for Unix.
 
 #include "SC_Lock.h"
 
-#include <vector>
 #include <boost/filesystem.hpp>
+#include <boost/variant.hpp>
 
 #ifdef _WIN32
 #include "SC_Win32Utils.h"
@@ -109,19 +114,13 @@ int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-struct sc_process {
-	pid_t pid;
-	FILE *stream;
-	bool postOutput;
-};
-
-static void string_popen_thread_func(struct sc_process *process)
+static void string_popen_thread_func(pid_t pid, FILE *stream, bool postOutput)
 {
-	FILE *stream = process->stream;
-	pid_t pid = process->pid;
 	char buf[1024];
 
-	while (process->postOutput) {
+	setvbuf(stream, 0, _IONBF, 0);
+
+	while (postOutput) {
 		char *string = fgets(buf, 1024, stream);
 		if (!string) break;
 		postText(string, strlen(string));
@@ -130,8 +129,6 @@ static void string_popen_thread_func(struct sc_process *process)
 	int res;
 	res = sc_pclose(stream, pid);
 	res = WEXITSTATUS(res);
-
-	delete process;
 
 	gLangMutex.lock();
 	if(compiledOK) {
@@ -147,47 +144,39 @@ static void string_popen_thread_func(struct sc_process *process)
 int prString_POpen(struct VMGlobals *g, int numArgsPushed);
 int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp - 1;
-	PyrSlot *b = g->sp;
+	PyrSlot *callerSlot     = g->sp - 1;
+	PyrSlot *postOutputSlot = g->sp;
 
-	if (!isKindOfSlot(a, class_string)) return errWrongType;
-
-	char *cmdline = new char[slotRawObject(a)->size + 1];
-	slotStrVal(a, cmdline, slotRawObject(a)->size + 1);
+	boost::variant<int,std::string> cmdline = slotStrStdStrVal(callerSlot);
+	if (cmdline.which() == 0)
+		return boost::get<int>(cmdline);
 
 #ifdef SC_IPHONE
 	SetInt(a, 0);
 	return errNone;
 #endif
 
-	sc_process *process = new sc_process;
-	process->stream = sc_popen(cmdline, &process->pid, "r");
-	setvbuf(process->stream, 0, _IONBF, 0);
-	pid_t pid = process->pid;
-
-	process->postOutput = IsTrue(b);
-
-	delete [] cmdline;
-
-	if(process->stream == NULL) {
-		delete process;
-		return errFailed;
+	boost::optional<std::tuple<pid_t, FILE *>> o = sc_popen(boost::get<std::string>(std::move(cmdline)), {"r"});
+	if (o) {
+		pid_t pid;
+		FILE *stream;
+		std::tie(pid, stream) = *o;
+		SC_Thread thread(std::bind(
+							 string_popen_thread_func,
+							 pid, stream, IsTrue(postOutputSlot)));
+		thread.detach();
+		SetInt(callerSlot, pid);
+		return errNone;
 	}
-
-	SC_Thread thread(std::bind(string_popen_thread_func, process));
-	thread.detach();
-
-	SetInt(a, pid);
-	return errNone;
+	else
+		return errFailed;
 }
 
 int prArrayPOpen(struct VMGlobals *g, int numArgsPushed);
 int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrObject *obj;
-
-	PyrSlot *callerSlot = g->sp - 1;
-	PyrSlot *args = g->sp;
+	PyrSlot *callerSlot =     g->sp - 1;
+	PyrSlot *postOutputSlot = g->sp;
 
 #ifdef SC_IPHONE
 	SetInt(a, 0);
@@ -197,45 +186,34 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 	if (NotObj(callerSlot))
 		return errWrongType;
 
-	obj = slotRawObject(callerSlot);
-	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
+	PyrObject *argsColl = slotRawObject(callerSlot);
+	//argsColl must be a collection
+	if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
 		return errNotAnIndexableObject;
 
-	if (obj->size < 1)
+	//collection must contain at least one string: the path of executable to run
+	if (argsColl->size < 1)
 		return errFailed;
 
-	std::vector<char *> argv (obj->size + 1);
+	boost::variant<int, std::vector<std::string>> strings = PyrCollToVectorStdString(argsColl);
+	if (strings.which() == 0)
+		return boost::get<int>(strings);
 
-	for (int i=0; i<obj->size; ++i) {
-		PyrSlot argSlot;
-		getIndexedSlot(obj, &argSlot, i);
-		if (!isKindOfSlot(&argSlot, class_string)) return errWrongType;
-		char *arg = new char[slotRawObject(&argSlot)->size + 1];
-		slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
-		argv[i] = arg;
-	}
+	boost::optional<std::tuple<pid_t, FILE *>> o = sc_popen_argv(boost::get<std::vector<std::string>>(strings), {"r"});
+	if (o) {
+		pid_t pid;
+		FILE *stream;
+		std::tie(pid, stream) = *o;
+		SC_Thread thread(std::bind(
+							 string_popen_thread_func,
+							 pid, stream, IsTrue(postOutputSlot)));
+		thread.detach();
 
-	sc_process *process = new sc_process;
-	process->stream = sc_popen_argv(argv[0], argv.data(), &process->pid, "r");
-	setvbuf(process->stream, 0, _IONBF, 0);
-	pid_t pid = process->pid;
-
-	process->postOutput = IsTrue(args);
-
-	if(process->stream == NULL) {
-		delete process;
+		SetInt(callerSlot, pid);
+		return errNone;
+	} else {
 		return errFailed;
 	}
-
-	SC_Thread thread(std::bind(string_popen_thread_func, process));
-	thread.detach();
-
-	for (char *arg : argv) {
-		delete [] arg;
-	}
-
-	SetInt(callerSlot, pid);
-	return errNone;
 }
 
 int prPidRunning(VMGlobals *g, int numArgsPushed);

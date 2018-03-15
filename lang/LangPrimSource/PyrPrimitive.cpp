@@ -129,6 +129,59 @@ int slotStrVal(PyrSlot *slot, char *str, int maxlen)
 	return errWrongType;
 }
 
+/**
+ * \brief Convert an sclang string or symbol into an std:string
+ * \param slot the sclang string or symbol
+ * \return a variant containing either an int, in which case an error occurred and the
+ * the return value is the error code, or an std:string in which case no
+ * error occurred.
+ *
+ * Intended usage:
+ *
+ * boost::variant<int, std::string> string = slotStrStdStrVal(modeSlot);
+ *	if (string.which() == 0)
+ *		return boost::get<int>(string); or do something else with error number
+ *
+ * the string is obtained (in case of no error) with
+ * boost::get<std::string>(string)
+ */
+boost::variant<int,std::string> slotStdStrVal(PyrSlot *slot)
+{
+	//will use move semantics
+	return	IsSym(slot) ?
+		boost::variant<int,std::string>(std::move(
+			std::string(slotRawSymbol(slot)->name, (size_t) slotRawSymbol(slot)->length)))
+	:	(isKindOfSlot(slot, class_string) ?
+		boost::variant<int,std::string>(std::move(
+			std::string(slotRawString(slot)->s, slotRawObject(slot)->size)))
+		: boost::variant<int,std::string>(errWrongType));
+}
+
+/**
+ * \brief Convert an sclang string into an std:string
+ * \param slot the sclang string
+ * \return a boost::variant containing either an int, in which case an error occurred and the
+ * the return value is the error code, or an std:string in which case no
+ * error occurred.
+ *
+ * Intended usage:
+ *
+ * boost::variant<int, std::string> string = slotStrStdStrVal(modeSlot);
+ *	if (string.which() == 0)
+ *		return boost::get<int>(string); or do something else with error number
+ *
+ * the string is obtained (in case of no error) with
+ * boost::get<std::string>(string)
+ */
+boost::variant<int,std::string> slotStrStdStrVal(PyrSlot *slot)
+{
+	std::string t(slotRawString(slot)->s, slotRawObject(slot)->size);
+	//will use move semantics
+	return	isKindOfSlot(slot, class_string) ?
+		boost::variant<int,std::string>(std::move(t))
+		: boost::variant<int,std::string>(errWrongType);
+}
+
 int slotPStrVal(PyrSlot *slot, unsigned char *str)
 {
 	if (IsSym(slot)) {
