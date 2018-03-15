@@ -3594,6 +3594,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numAr
 static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *fileString = g->sp;
+	bfs::path config_path;
 
 	if (NotNil(fileString)) {
 		char path[MAXPATHLEN];
@@ -3601,16 +3602,18 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 		if (error)
 			return errWrongType;
 
-		const bfs::path& config_path = SC_Codecvt::utf8_str_to_path(path);
+		config_path = SC_Codecvt::utf8_str_to_path(path);
 		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	} else {
-		const bfs::path& config_path =
+		config_path =
 			SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
 			/ "sclang_conf.yaml";
-		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	}
 
-	return errNone;
+	if (!gLanguageConfig->writeLibraryConfigYAML(config_path))
+		return errFailed;
+	else
+		return errNone;
 }
 
 static int prLanguageConfig_getPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
