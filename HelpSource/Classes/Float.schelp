@@ -93,9 +93,9 @@ pi.asStringPrec(6)
 
 subsection::Using Floats as replacement for Integers
 
-In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer:: is only 32-bit, it can capture only whole numbers up to code::-2147483648 .. +2147483647::, which is code::2^31:: (one bit is for the sign), or about code::2 x 10^9::.
+In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer::  is 32-bit, it can only capture integers in the range code::-2147483648 .. +2147483647::, or about code:: 2 x 10^9 ::.
 
-Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64-bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Note that you still may get floating point errors when you apply certain operations.
+Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64-bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Sometimes one can go even further (see example below).
 
 
 code::
@@ -108,21 +108,8 @@ f.(18.0) // float is ok.
 f.(18.0) / f.(17.0) == 18 // true
 // 18 is already the largest possible factorial representable in 64-bit float (< 2^53)
 {:x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
-// but the correctness for comparing adjacent factorials goes up much higher (to 170)
-{:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
-f.(170.0) // 7.257415615308e+306.
-f.(170.0) / f.(169.0) // => 170.0
 ::
 
-
-code::
-// testing the limits of 64-bit float (2^53)
-a = 2 ** 53 - 1
-b = a + 1;
-c = a + 2;
-b - a // correct (1)
-c - a // incorrect (also 1)
-::
 
 Here is a classical example for an algorithm:
 
@@ -150,6 +137,27 @@ g.(x, 3); // correct, returns 3
 x = 9007199254740992.0 * 3;
 g.(x, 3); // still happens to be correct, but better not count on it …
 ::
+
+
+
+Testing the limits of 64-bit float (2^53)
+
+code::
+a = 2 ** 53 - 1
+b = a + 1;
+c = a + 2;
+b - a // correct (1)
+c - a // incorrect (also 1)
+
+
+// How high you can go depends on the calculation:
+// here we divide two numbers that follow each other
+// and it is correct up to f.(170), about 7.25e+306.
+f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
+{:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
+
+::
+
 
 
 
