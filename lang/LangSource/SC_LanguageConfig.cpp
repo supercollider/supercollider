@@ -164,6 +164,9 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
 
 bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 {
+	if (!bfs::exists(fileName.parent_path()))
+		return false;
+
 	using namespace YAML;
 	Emitter out;
 	out.SetIndent(4);
@@ -192,7 +195,7 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 
 	bfs::ofstream fout(fileName);
 	fout << out.c_str();
-	return true;
+	return fout.good();
 }
 
 bool SC_LanguageConfig::defaultLibraryConfig(bool standalone)

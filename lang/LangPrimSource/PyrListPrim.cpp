@@ -46,7 +46,7 @@ PyrSymbol *s_proto, *s_parent;
 PyrSymbol *s_delta, *s_dur, *s_stretch;
 
 // used in prEvent_IsRest
-PyrSymbol *s_type, *s_rest, *s_empty, *s_r;
+PyrSymbol *s_type, *s_rest, *s_empty, *s_r, *s_isRest;
 PyrClass *class_rest, *class_metarest;
 
 #define HASHSYMBOL(sym) (sym >> 5)
@@ -559,54 +559,72 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+/// Returns whether the slot is considered a rest for \c Event.isRest.
+static bool slotIsRestlike(PyrSlot* slot)
+{
+	PyrSymbol * slotSym;
+	if (isKindOfSlot(slot, class_rest) || isKindOfSlot(slot, class_metarest)) {
+		return true;
+	} else if(!slotSymbolVal(slot, &slotSym)) {
+		return slotSym == s_empty
+			|| slotSym == s_r
+			|| slotSym == s_rest;
+	}
+	// why no 'else'?
+	// slotSymbolVal nonzero return = not a symbol;
+	// non-symbols don't indicate rests, so, ignore them.
+
+	return false;
+}
+
+/// Returns whether the dictionary has an entry with a 'restlike' value (see \c slotIsRestlike).
+static bool dictHasRestlikeValue(PyrObject* array)
+{
+	auto finalSlot = array->slots + array->size;
+
+	// odd-numered slots are values
+	for (auto slot = array->slots + 1; slot < finalSlot; slot += 2)
+		if (slotIsRestlike(slot))
+			return true;
+
+	return false;
+}
+
 int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed);
 int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *dictslots = slotRawObject(g->sp)->slots;
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
+	static int isRestCount = 0;
 
-	if (isKindOfSlot(arraySlot, class_array)) {
-		PyrSlot key, typeSlot;
-		PyrSymbol *typeSym;
-		// test 'this[\type] == \rest' first
-		SetSymbol(&key, s_type);
-		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
-		if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
-			SetBool(g->sp, 1);
-			return errNone;
-		} else {
-			PyrObject *array = slotRawObject(arraySlot);
-			PyrSymbol *slotSym;
-			PyrSlot *slot;
-			int32 size = array->size;
-			int32 i;
-
-			slot = array->slots + 1;  // scan only the odd items
-
-			for (i = 1; i < size; i += 2, slot += 2) {
-				if (isKindOfSlot(slot, class_rest)
-				    || isKindOfSlot(slot, class_metarest)
-				) {
-					SetBool(g->sp, 1);
-					return errNone;
-				} else if(!slotSymbolVal(slot, &slotSym)) {
-					if(slotSym == s_empty
-						|| slotSym == s_r
-						|| slotSym == s_rest
-					) {
-						SetBool(g->sp, 1);
-						return errNone;
-					}
-				}  // why no 'else'?
-				// slotSymbolVal nonzero return = not a symbol;
-				// non-symbols don't indicate rests, so, ignore them.
-			}
-		}
-	} else {
+	if (!isKindOfSlot(arraySlot, class_array)) {
 		return errWrongType;
 	}
 
-	SetBool(g->sp, 0);
+	PyrSlot key, typeSlot;
+	PyrSymbol *typeSym;
+	// easy tests first: 'this[\type] == \rest'
+	SetSymbol(&key, s_type);
+	identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+	if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
+		SetBool(g->sp, 1);
+		return errNone;
+	}
+
+	// and, 'this[\isRest] == true'
+	SetSymbol(&key, s_isRest);
+	identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+	if(IsTrue(&typeSlot)) {
+		if (isRestCount == 0)
+			post("\nWARNING: Setting isRest to true in an event is deprecated. See the Rest helpfile for supported ways to specify rests.\n\n");
+		isRestCount = (isRestCount + 1) % 100;
+		SetBool(g->sp, 1);
+		return errNone;
+	}
+
+	// failing those, scan slot values for something rest-like
+	PyrObject *array = slotRawObject(arraySlot);
+	SetBool(g->sp, dictHasRestlikeValue(array) ? 1 : 0);
 	return errNone;
 }
 
@@ -851,6 +869,7 @@ void initPatterns()
 	s_rest = getsym("rest");
 	s_empty = getsym("");
 	s_r = getsym("r");
+	s_isRest = getsym("isRest");
 
 	class_rest = getsym("Rest")->u.classobj;
 	class_metarest = getsym("Meta_Rest")->u.classobj;

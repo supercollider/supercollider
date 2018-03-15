@@ -225,9 +225,45 @@ ServerStatusWatcher {
 
 	// final actions needed to finish booting
 	prFinalizeBoot {
-		ServerBoot.run(server);
-		server.sync;
-		server.initTree;
+		// this needs to be forked so that ServerBoot and ServerTree will definitely run before
+		// notified is true.
+		fork({
+			ServerBoot.run(server);
+			server.sync;
+			server.initTree;
+
+			this.notified = true;
+			server.changed(\serverRunning);
+		}, AppClock)
+	}
+
+	// This method attempts to recover from a loss of client-server contact,
+	// which is a serious emergency in live shows. So it posts a lot of info
+	// on the recovered state, and possibly helpful next user actions.
+
+	prHandleLoginWhenAlreadyRegistered { |clientIDFromProcess|
+		"% - handling login request though already registered - \n".postf(server);
+
+		// by default, only reset clientID if changed, to leave allocators untouched:
+		if (clientIDFromProcess != server.clientID) {
+			// make sure we can set the clientID, and set it
+			notified = false;
+			server.clientID_(clientIDFromProcess);
+			"*** This seems to be a login after a crash, or from a new server object,\n"
+			"*** so you may want to release currently running synths by hand:".postln;
+			"%.defaultGroup.release;\n".postf(server.cs);
+			"*** and you may want to redo server boot finalization by hand:".postln;
+			"%.statusWatcher.prFinalizeBoot;\n\n".postf(server.cs);
+		} {
+			// same clientID, so leave all server resources in the state they were in!
+			"This seems to be a login after a loss of network contact - \n"
+			"- reconnected with the same clientID as before, so probably all is well.\n".postln;
+		};
+
+		// ensure that statuswatcher is in the correct state immediately.
+		this.notified = true;
+		unresponsive = false;
+		server.changed(\serverRunning);
 	}
 
 	prSendNotifyRequest { |flag = true, addingStatusWatcher|
@@ -252,15 +288,7 @@ ServerStatusWatcher {
 				// XXX: this is a workaround because using `serverBooting` is not reliable
 				// when server is rebooted quickly.
 				if(addingStatusWatcher) {
-					// this needs to be forked so that ServerBoot and ServerTree will definitely run before
-					// notified is true.
-					fork({
-						this.prFinalizeBoot;
-
-						// serverRunning will now return true, and serverBooting will be marked as false
-						notified = true;
-						server.changed(\serverRunning);
-					}, AppClock);
+					this.prFinalizeBoot;
 				} {
 					notified = true;
 				}
