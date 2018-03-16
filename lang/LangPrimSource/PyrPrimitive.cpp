@@ -4271,11 +4271,6 @@ void initLIDPrimitives();
 void initSerialPrimitives();
 	initSerialPrimitives();
 
-#ifdef HAVE_WII
-void initWiiPrimitives();
-	initWiiPrimitives();
-#endif
-
 #endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
@@ -4313,6 +4308,10 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( String );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
+
+#ifdef HAVE_WII
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
+#endif
 
 	// run primitive and symbol definers
 	SC_PrimRegistry<SC_PrimDefinerEntry>::instance().run_all();

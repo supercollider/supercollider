@@ -30,11 +30,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
  */
+#ifdef HAVE_WII
 
 #ifdef __APPLE__
     #include <Carbon/Carbon.h>
 #endif
 
+#include "SC_PrimRegistry.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -48,9 +50,6 @@
 #include "SC_InlineBinaryOp.h"
 #include "PyrSched.h"
 #include "GC.h"
-
-
-#ifdef HAVE_WII
 
 #ifdef __APPLE__
 	#include <mach/mach.h>
@@ -79,24 +78,25 @@
 #include <string.h>
 #include <errno.h>
 
+LIBSCLANG_PRIMITIVE_GROUP( Wii );
 
 //--------- PyrSymbols ------------
-PyrSymbol * s_wiiDisconnected;
-PyrSymbol * s_wiiConnected;
-PyrSymbol * s_handleEvent;
+SCLANG_DEFINE_SYMBOL( s_wiiDisconnected, "prDisconnectAction" );
+SCLANG_DEFINE_SYMBOL( s_wiiConnected, "prConnectAction" );
+SCLANG_DEFINE_SYMBOL( s_handleEvent, "prHandleEvent" );
 
-PyrSymbol * s_handleBatteryEvent;
-PyrSymbol * s_handleExtensionEvent;
-PyrSymbol * s_handleNunchukEvent;
-PyrSymbol * s_handleClassicEvent;
-PyrSymbol * s_handleIREvent;
-PyrSymbol * s_handleAccEvent;
-PyrSymbol * s_handleButtonEvent;
+SCLANG_DEFINE_SYMBOL( s_handleBatteryEvent, "prHandleBatteryEvent" );
+SCLANG_DEFINE_SYMBOL( s_handleExtensionEvent, "prHandleExtensionEvent" );
+SCLANG_DEFINE_SYMBOL( s_handleNunchukEvent, "prHandleNunchukEvent" );
+SCLANG_DEFINE_SYMBOL( s_handleClassicEvent, "prHandleClassicEvent" );
+SCLANG_DEFINE_SYMBOL( s_handleIREvent, "prHandleIREvent" );
+SCLANG_DEFINE_SYMBOL( s_handleAccEvent, "prHandleAccEvent" );
+SCLANG_DEFINE_SYMBOL( s_handleButtonEvent, "prHandleButtonEvent" );
 
-static PyrSymbol* s_wii = 0;
-static PyrSymbol* s_wiiCalibrationInfoClass = 0;
-static PyrSymbol* s_wiiLEDStateClass = 0;
-static PyrSymbol* s_readError = 0;
+SCLANG_DEFINE_SYMBOL( s_wii, "WiiMote" );
+SCLANG_DEFINE_SYMBOL( s_wiiCalibrationInfoClass, "WiiCalibrationInfo" );
+SCLANG_DEFINE_SYMBOL( s_wiiLEDStateClass, "WiiLEDState" );
+SCLANG_DEFINE_SYMBOL( s_readError, "prReadError" );
 
 extern bool compiledOK;
 //int gNumberOfWiiDevices = 0;
@@ -1128,7 +1128,7 @@ void SC_WII::readError()
 
 //------------ primitives ---------------
 
-int prWii_Start(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Start, 2 )
 {
 	float updtime;
 	int err;
@@ -1145,13 +1145,13 @@ int prWii_Start(VMGlobals* g, int numArgsPushed)
 	return SC_WIIManager::instance().start(updtime);
 }
 
-int prWii_Stop(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Stop, 1 )
 {
 // 	if (!g->canCallOS) return errCantCallOS;
 	return SC_WIIManager::instance().stop();
 }
 
-int prWii_Discover(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Discover, 3 )
 {
 	int curid, nmotes;
 	int err;
@@ -1205,7 +1205,7 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	return errNone;
 }
 
-int prWii_Open(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Open, 1 )
 {
 	PyrSlot* args = g->sp;
 	int err;
@@ -1223,7 +1223,7 @@ int prWii_Open(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWii_Close(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Close, 1 )
 {
 	PyrSlot* args = g->sp;
 
@@ -1236,7 +1236,7 @@ int prWii_Close(VMGlobals *g, int numArgsPushed)
 	return dev->close();
 }
 
-int prWiiAddress(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Address, 1 )
 {
 	PyrSlot* args = g->sp;
 	int err;
@@ -1281,7 +1281,7 @@ int prWiiAddress(VMGlobals *g, int numArgsPushed)
 // 	return errNone;
 // }
 
-int prWiiConnect(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Connect, 1 )
 {
 	PyrSlot* args = g->sp;
 	int err;
@@ -1297,7 +1297,7 @@ int prWiiConnect(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiDisconnect(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Disconnect, 1 )
 {
 	PyrSlot* args = g->sp;
 	int err;
@@ -1313,7 +1313,7 @@ int prWiiDisconnect(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiCalibration(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Calibration, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -1752,7 +1752,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	return errNone;
 // }
 
-int prWiiSetLED(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_SetLED, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -1819,7 +1819,7 @@ int prWiiSetLED(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiSetVibration(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_SetVibration, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -1857,7 +1857,7 @@ int prWiiSetVibration(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiSetExpansion(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_EnableExpansion, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -1897,7 +1897,7 @@ int prWiiSetExpansion(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiSetIRSensor(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_EnableIRSensor, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -1938,7 +1938,7 @@ int prWiiSetIRSensor(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiSetMotionSensor(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_EnableMotionSensor, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -1977,7 +1977,7 @@ int prWiiSetMotionSensor(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiSetButtons(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_EnableButtons, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -2015,7 +2015,7 @@ int prWiiSetButtons(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prWiiEnable(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Wii_Enable, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -2216,91 +2216,4 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 //
 // 	return errNone;
 // }
-
-void initWiiPrimitives()
-{
-	int base, index;
-
-	s_wii = getsym("WiiMote");
-	s_wiiCalibrationInfoClass = getsym("WiiCalibrationInfo");	// has calibration date for all axes
-//	s_wiiLEDStateClass = getsym("WiiLEDState");			// has the four LED states
-
-// 	s_wiiRemoteClass = getsym("WiiRemote");			// Remote
-// 	s_wiiNunChuckClass = getsym("WiiNunChuck");		// NunChuck
-// 	s_wiiClassicClass = getsym("WiiClassic");		// Classic
-// 	s_wiiAction = getsym("prWiiMoteAction");
-
-	s_wiiDisconnected = getsym("prDisconnectAction");
-	s_wiiConnected = getsym("prConnectAction");
-	s_readError = getsym("prReadError");
-
-/// general event on MacOSX
-	s_handleEvent = getsym("prHandleEvent");
-
-/// separate events on Linux:
-	s_handleBatteryEvent = getsym("prHandleBatteryEvent");
-	s_handleExtensionEvent = getsym("prHandleExtensionEvent");
-	s_handleButtonEvent = getsym("prHandleButtonEvent");
-	s_handleNunchukEvent = getsym("prHandleNunchukEvent");
-	s_handleClassicEvent = getsym("prHandleClassicEvent");
-	s_handleIREvent = getsym("prHandleIREvent");
-	s_handleAccEvent = getsym("prHandleAccEvent");
-
-	base = nextPrimitiveIndex();
-	index = 0;
-	definePrimitive(base, index++, "_Wii_Start", prWii_Start, 2, 0); // starts the eventloop
-	definePrimitive(base, index++, "_Wii_Discover", prWii_Discover, 3, 0); // discovers a new device
-	definePrimitive(base, index++, "_Wii_Stop", prWii_Stop, 1, 0); // stops the eventloop
-
-	definePrimitive(base, index++, "_Wii_Open", prWii_Open, 1, 0 );
-// 	definePrimitive(base, index++, "_Wii_Update", prWii_Update, 1, 0 );
-// 	definePrimitive(base, index++, "_Wii_UpdateData", prWii_UpdateData, 9, 0 );
-	definePrimitive(base, index++, "_Wii_Close", prWii_Close, 1, 0 );
-
-	definePrimitive(base, index++, "_Wii_Address", prWiiAddress, 1, 0);
-// 	definePrimitive(base, index++, "_Wii_SetAddress", prWiiSetAddress, 2, 0);
-
-	definePrimitive(base, index++, "_Wii_Connect", prWiiConnect, 1, 0);
-	definePrimitive(base, index++, "_Wii_Disconnect", prWiiDisconnect, 1, 0);
-
-	definePrimitive(base, index++, "_Wii_Calibration", prWiiCalibration, 2, 0);
-
-// 	definePrimitive(base, index++, "_Wii_GetExpansion", prWiiGetExpansion, 1, 0);
-// 	definePrimitive(base, index++, "_Wii_GetBattery", prWiiGetBattery, 1, 0);
-//
-// 	definePrimitive(base, index++, "_Wii_GetButtons", prWiiGetButtons, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_GetMotion", prWiiGetMotion, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_GetIR", prWiiGetIR, 2, 0);
-//
-// 	definePrimitive(base, index++, "_Wii_GetNunchukButtons", prWiiGetNunchukButtons, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_GetNunchukJoy", prWiiGetNunchukJoy, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_GetNunchukMotion", prWiiGetNunchukMotion, 2, 0);
-
-// 	definePrimitive(base, index++, "_Wii_GetClassicButtons", prWiiGetClassicButtons, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_GetClassicJoy", prWiiGetClassicJoy, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_GetClassicAnalog", prWiiGetClassicAnalog, 2, 0);
-
-// 	definePrimitive(base, index++, "_Wii_GetLED", prWiiGetLED, 2, 0);
-
-	definePrimitive(base, index++, "_Wii_SetLED", prWiiSetLED, 2, 0);
-
-	definePrimitive(base, index++, "_Wii_SetVibration", prWiiSetVibration, 2, 0);
-
-// 	definePrimitive(base, index++, "_Wii_InitSpeaker", prWiiInitSpeaker, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_PlaySpeaker", prWiiPlaySpeaker, 5, 0);
-// 	definePrimitive(base, index++, "_Wii_MuteSpeaker", prWiiMuteSpeaker, 2, 0);
-// 	definePrimitive(base, index++, "_Wii_EnableSpeaker", prWiiEnableSpeaker, 2, 0);
-
-	definePrimitive(base, index++, "_Wii_Enable", prWiiEnable, 2, 0);
-	definePrimitive(base, index++, "_Wii_EnableButtons", prWiiSetButtons, 2, 0);
-	definePrimitive(base, index++, "_Wii_EnableIRSensor", prWiiSetIRSensor, 2, 0);
-	definePrimitive(base, index++, "_Wii_EnableMotionSensor", prWiiSetMotionSensor, 2, 0);
-	definePrimitive(base, index++, "_Wii_EnableExpansion", prWiiSetExpansion, 2, 0);
-
-}
-#else // NOT HAVE_WII
-void initWiiPrimitives()
-{
-	//other platforms?
-}
-#endif
+#endif // HAVE_WII
