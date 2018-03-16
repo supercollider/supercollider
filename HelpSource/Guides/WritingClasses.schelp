@@ -173,7 +173,8 @@ Superclass {
 
 MyClass : Superclass {
     var y;
-    init {
+
+	init {
         super.init;
         y = 6;
     }
@@ -284,9 +285,11 @@ methods should take only one argument to support both ways of expression consist
 
 code::
 MyClass {
-    variable_ { | newValue |
+
+	variable_ { | newValue |
         variable = newValue.clip(minval,maxval);
     }
+
 }
 ::
 
@@ -295,10 +298,12 @@ not return the new value from your setter.
 
 code::
 MyClass {
-    variable_ { | newValue |
+
+	variable_ { | newValue |
         myVariable = newValue;
         ^newValue       // DO NOT DO THIS
     }
+
 }
 ::
 
@@ -309,11 +314,15 @@ file name starts with a lower case letter: the name of the method or feature tha
 
 code::
 + Class {
-    newMethod {
-    }
+
+	newMethod {
+
+	}
 
     *newClassMethod {
-    }
+
+	}
+
 }
 ::
 
@@ -325,13 +334,15 @@ classes that inherit from a Collection type class.
 
 code::
 MyClass[slot] {
-    *new {
+
+	*new {
          ^super.new
     }
 
     at { |i|
-        ("Index "++i).postln
+        ("Index " ++ i).postln
     }
+
 }
 ::
 
@@ -340,15 +351,21 @@ a = MyClass();
 a[3];
 ::
 
-Defining a custom array of Points:
+For example, defining a custom array of Points:
 
 code::
 MyPointArray[slot] : RawArray {
-    center {
-		^Point(*this.asArray.flop.collect{ |item| item.sum / item.size } )
+
+	center {
+		var coords = this.asArray.flop;
+		var means = coords.collect { |item| item.mean };
+		var x = means[0];
+		var y = means[1];
+		^Point(x, y)
 	}
-    asArray{
-		^this.collect{ |elem| elem.asArray }
+
+	asArray{
+		^this.collect { |elem| elem.asArray }
 	}
 }
 ::
@@ -364,7 +381,9 @@ code::
 MyTestPoint {
     var <x, <y;
 
-    *new{ |x, y| ^super.newCopyArgs(x, y) }
+    *new { |x, y|
+		^super.newCopyArgs(x, y)
+	}
 
     printOn { | stream |
         stream << "MyTestPoint( " << x << ", " << y << " )";
@@ -389,10 +408,14 @@ code::
 MyTestPoint {
     var <x, <y;
 
-    *new{ |x, y| ^super.newCopyArgs(x,y) }
+    *new { |x, y|
+		^super.newCopyArgs(x,y)
+	}
 
     storeOn { | stream |
-        stream << "MyTestPoint.new(" << x << ", " << y << ")";
+		// note that <<< stands for storeOn, and << for printOn.
+		// we want x and y to be completely represented
+        stream << "MyTestPoint.new(" <<< x << ", " <<< y << ")"
     }
 }
 
@@ -400,16 +423,18 @@ MyTestPoint {
 MyTestPoint {
     var <x, <y;
 
-    *new{ |x, y| ^super.newCopyArgs(x,y) }
+    *new { |x, y|
+		^super.newCopyArgs(x,y)
+	}
 
     storeArgs { | stream |
-        ^[x,y]
+        ^[x, y]
     }
 }
 ::
 
 code::
-MyTestPoint(2,3).asCompileString;
+MyTestPoint(2, 3).asCompileString;
 ::
 
 section:: Catching methods that are not explicitly defined
@@ -418,7 +443,6 @@ It is possible to catch calls to methods that are not explicitly defined in a Cl
 
 code::
 MyClass {
-    *new { ^super.new }
 
     doesNotUnderstand { | selector...args |
         (this.class ++ " does not understand method " ++ selector);
