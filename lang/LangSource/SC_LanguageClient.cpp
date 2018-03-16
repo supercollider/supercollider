@@ -106,7 +106,8 @@ SC_LanguageClient::SC_LanguageClient(const char* name)
 SC_LanguageClient::~SC_LanguageClient()
 {
 	lockInstance();
-	gInstance = 0;
+	gInstance = nullptr;
+	delete mHiddenClient;
 	unlockInstance();
 }
 

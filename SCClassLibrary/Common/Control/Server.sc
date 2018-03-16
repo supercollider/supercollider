@@ -543,8 +543,11 @@ Server {
 		// post info on some known error cases
 		case
 		{ failString.asString.contains("already registered") } {
+			// when already registered, msg[3] is the clientID by which
+			// the requesting client was registered previously
 			"% - already registered with clientID %.\n".postf(this, msg[3]);
-			statusWatcher.notified = true;
+			statusWatcher.prHandleLoginWhenAlreadyRegistered(msg[3]);
+
 		} { failString.asString.contains("not registered") } {
 			// unregister when already not registered:
 			"% - not registered.\n".postf(this);
