@@ -4272,10 +4272,6 @@ void initSerialPrimitives();
 	initSerialPrimitives();
 
 #endif
-#ifdef __APPLE__
-void initCoreAudioPrimitives();
-	initCoreAudioPrimitives();
-#endif
 
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
@@ -4311,6 +4307,10 @@ void initOpenGLPrimitives();
 
 #ifdef HAVE_WII
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
+#endif
+
+#ifdef __APPLE__
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreAudio );
 #endif
 
 	// run primitive and symbol definers
