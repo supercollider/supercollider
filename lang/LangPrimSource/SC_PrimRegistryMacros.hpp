@@ -85,6 +85,20 @@
         SC_PrimRegistry<SC_SymbolDefinerEntry>::instance()                                            \
     }
 
+// ------------ custom initializers ----------
+
+#define SCLANG_CUSTOM_INITIALIZER_DEFINER_DECL( name )                                                \
+    static SC_InitializerDefinerEntry BOOST_PP_CAT( name, _InitializerDefinerEntry )
+
+#define SCLANG_CUSTOM_INITIALIZER_DECL( name )                                                        \
+    void name()
+
+#define SCLANG_CUSTOM_INITIALIZER_DEFINER( name )                                                     \
+    SCLANG_CUSTOM_INITIALIZER_DEFINER_DECL( name ) {                                                  \
+        & name,                                                                                       \
+        SC_PrimRegistry<SC_InitializerDefinerEntry>::instance()                                       \
+    }
+
 // ------------ libsclang macros -------------
 
 // utility

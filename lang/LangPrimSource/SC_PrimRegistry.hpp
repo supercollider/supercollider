@@ -17,6 +17,8 @@
 #include "SC_PrimRegistryMacros.hpp"
 #include "PyrSymbolTable.h"
 
+using SC_Initializer_t = void (*)();
+
 template<typename Entry>
 class SC_PrimRegistry {
 public:
@@ -100,6 +102,27 @@ private:
     char const * const m_string;
 };
 
+/// Entry type for defining custom initializers
+class SC_InitializerDefinerEntry {
+public:
+    SC_InitializerDefinerEntry(
+        SC_Initializer_t func,
+        SC_PrimRegistry<SC_InitializerDefinerEntry>& reg
+    ):
+        m_func{func}
+    {
+        reg.add_entry(std::move(*this));
+    }
+
+    void operator()() const
+    {
+        (*m_func)();
+    }
+
+private:
+    SC_Initializer_t m_func;
+};
+
 /// Use to define an ordinary (non-varArgs) primitive.
 #define SCLANG_DEFINE_PRIMITIVE( name, numArgs )                                                      \
     SCLANG_DEFINE_PRIMITIVE_HELPER( name, numArgs, 0 )
@@ -131,9 +154,17 @@ private:
     SCLANG_SYMBOL_DECL( BOOST_PP_CAT( s_, name ) );                                                   \
     SCLANG_SYMBOL_DEFINER( BOOST_PP_CAT( s_, name), BOOST_PP_STRINGIZE( name ) )
 
+// ------------ custom init ------------------
+
+/// Use to define a custom initializing method that will run after those for primitives and symbols.
+#define SCLANG_DEFINE_CUSTOM_INITIALIZER( name )                                                      \
+    SCLANG_CUSTOM_INITIALIZER_DECL( name );                                                           \
+    SCLANG_CUSTOM_INITIALIZER_DEFINER( name );                                                        \
+    SCLANG_CUSTOM_INITIALIZER_DECL( name )
+
 // ------------ libsclang macros -------------
 
-/// Use at the top of a file containing primitives
+/// Use in a translation unit that uses any of these macros.
 #define LIBSCLANG_PRIMITIVE_GROUP( name )                                                             \
     char LIBSCLANG_DUMMY_VAR( name )
 
