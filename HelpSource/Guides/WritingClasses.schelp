@@ -32,7 +32,7 @@ MyClass : SomeSuperclass {
 Without specifying a superclass, link::Classes/Object:: is assumed as the default superclass.
 
 code::
-MyClass { // :Object is implied
+MyClass { // : Object is implied
 
 }
 ::
@@ -45,11 +45,11 @@ within the instance method, the keyword code::this:: refers to the instance.
 
 code::
 MyClass {
-    *classMethod { arg argument;
+    *classMethod { | argument |
 
     }
 
-    instanceMethod { arg argument;
+    instanceMethod { | argument |
 
     }
 }
@@ -66,12 +66,12 @@ MyClass {
         ^returnObject
     }
 
-    someOtherMethod { arg aBoolean;
-        if(aBoolean,{
+    someOtherMethod { | aBoolean |
+		if(aBoolean) {
             ^someObject
-        },{
+        } {
             ^someOtherObject
-        })
+        }
     }
 
 }
@@ -92,10 +92,11 @@ MyClass {
     }
 
     // this is a normal constructor method
-    *new1 { arg arga,argb,argc;
-        ^super.new.init(arga,argb,argc)
+    *new1 { | arga, argb, argc |
+        ^super.new.init(arga, argb, argc)
     }
-    init { arg arga,argb,argc;
+
+    init { | arga, argb ,argc |
         // do initiation here
     }
 }
@@ -118,16 +119,16 @@ code::
 MyClass {
     var <a,b,c;
 
-    *new { arg a,b,c;
-        ^super.newCopyArgs(a,b,c)
+    *new { | a, b, c |
+        ^super.newCopyArgs(a, b, c)
     }
 }
 
 MyChildClass : MyClass{
     var <d;
 
-    *new { arg a,b,c,d;
-        ^super.newCopyArgs(a,b,c,d)
+    *new { | a, b, c, d |
+        ^super.newCopyArgs(a, b, c, d)
     }
 }
 ::
@@ -154,12 +155,12 @@ the method it has defined first and then looks in the superclass. Here code::MyC
 
 code::
 Superclass {
-    calculate { arg in; in * 2 }
-    value { arg in; ^this.calculate(in) }
+    calculate { |in| ^in * 2 }
+    value { |in| ^this.calculate(in) }
 }
 
 MyClass : Superclass {
-    calculate { arg in; in * 3 }
+    calculate { |in| ^in * 3 }
 }
 ::
 
@@ -235,7 +236,7 @@ methods should take only one argument to support both ways of expression consist
 
 code::
 MyClass {
-    variable_ { arg newValue;
+    variable_ { | newValue |
         variable = newValue.clip(minval,maxval);
     }
 }
@@ -246,7 +247,7 @@ not return the new value from your setter.
 
 code::
 MyClass {
-    variable_ { arg newValue;
+    variable_ { | newValue |
         myVariable = newValue;
         ^newValue       // DO NOT DO THIS
     }
@@ -280,7 +281,7 @@ MyClass[slot] {
          ^super.new
     }
 
-    at {|i|
+    at { |i|
         ("Index "++i).postln
     }
 }
@@ -295,8 +296,12 @@ Defining a custom array of Points:
 
 code::
 MyPointArray[slot] : RawArray {
-    center { ^Point(*this.asArray.flop.collect{ |item| item.sum / item.size } ) }
-    asArray{ ^this.collect{ |elem| elem.asArray } }
+    center {
+		^Point(*this.asArray.flop.collect{ |item| item.sum / item.size } )
+	}
+    asArray{
+		^this.collect{ |elem| elem.asArray }
+	}
 }
 ::
 
@@ -311,16 +316,16 @@ code::
 MyTestPoint {
     var <x, <y;
 
-    *new{ |x,y| ^super.newCopyArgs(x,y) }
+    *new{ |x, y| ^super.newCopyArgs(x, y) }
 
-    printOn { arg stream;
+    printOn { | stream |
         stream << "MyTestPoint( " << x << ", " << y << " )";
     }
 }
 ::
 
 code::
-a = MyTestPoint(2,3);
+a = MyTestPoint(2, 3)
 ::
 
 subsection:: Defining custom asCompileString behaviour
@@ -336,9 +341,9 @@ code::
 MyTestPoint {
     var <x, <y;
 
-    *new{ |x,y| ^super.newCopyArgs(x,y) }
+    *new{ |x, y| ^super.newCopyArgs(x,y) }
 
-    storeOn { arg stream;
+    storeOn { | stream |
         stream << "MyTestPoint.new(" << x << ", " << y << ")";
     }
 }
@@ -347,9 +352,9 @@ MyTestPoint {
 MyTestPoint {
     var <x, <y;
 
-    *new{ |x,y| ^super.newCopyArgs(x,y) }
+    *new{ |x, y| ^super.newCopyArgs(x,y) }
 
-    storeArgs { arg stream;
+    storeArgs { | stream |
         ^[x,y]
     }
 }
@@ -367,10 +372,10 @@ code::
 MyClass {
     *new { ^super.new }
 
-    doesNotUnderstand { arg selector...args;
-        (this.class++" does not understand method "++selector);
+    doesNotUnderstand { | selector...args |
+        (this.class ++ " does not understand method " ++ selector);
 
-        If(UGen.findRespondingMethodFor(selector).notNil){
+        if(UGen.findRespondingMethodFor(selector).notNil) {
             "But UGen understands this method".postln
         };
     }
