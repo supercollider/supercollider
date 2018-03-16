@@ -181,6 +181,58 @@ MyClass : Superclass {
 ::
 
 
+section:: Initializing Variables directly
+
+In a variable declaration, variables can be directly initialized. This works for link::Reference/Literals:: only.
+
+code::
+MyClass {
+	classvar all = #[];
+	var x = 8;
+	var y = #[1, 2, 3];
+}
+::
+
+In class definitions, it is not possible to chain assignments (e.g. code:: var x = 9; var y = x + 1::).
+
+
+section:: Variable Scope
+
+An instance variable is accessible from all instance methods of this class and its subclasses. A class variable is accessible from all class and instance methods of this class and its subclasses. Instance variables of the same name as override the scope of class variables of the same name.
+
+code::
+MyClass {
+	classvar x = 0, y = 1;
+	var x = 1;
+
+	*returnX { ^x } // returns 0
+	returnX { ^x } // returns 1
+	returnXY { ^x + y } // returns 2
+}
+::
+
+Subclasses can override class variable declarations (but not instance variables). Then the class variables of the superclass are not accessible in the subclass anymore.
+
+code::
+Superclass {
+    classvar x = 0;
+
+	returnX { ^x }
+	returnXHere { ^x }
+}
+
+MyClass : Superclass {
+    classvar x = 1;
+
+	returnXHere { ^x }
+}
+
+// Superclass.returnXHere returns 0
+// MyClass.returnXHere returns 1
+// MyClass.returnX returns 0
+
+
+::
 
 section:: Getter Setter
 
