@@ -39,7 +39,7 @@ MyClass { // : Object is implied
 
 section:: Methods
 
-class methods are specified with the asterisk within the class method, the keyword code::this:: refers to the class. A
+Class methods are specified with the asterisk within the class method, the keyword code::this:: refers to the class. A
 class in SuperCollider is itself an object.  It is an instance of link::Classes/Class::. Instance methods are specified
 within the instance method, the keyword code::this:: refers to the instance.
 
@@ -86,13 +86,9 @@ and its memory allocated.
 
 code::
 MyClass {
-    // this example adds no new functionality
-    *new {
-        ^super.new
-    }
 
     // this is a normal constructor method
-    *new1 { | arga, argb, argc |
+    *new { | arga, argb, argc |
         ^super.new.init(arga, argb, argc)
     }
 
