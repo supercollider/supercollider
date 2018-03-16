@@ -14,6 +14,50 @@ x = [1, 2, 3, 4].rotate(1);
 c = a + b;
 ::
 
+section:: Assignment in Declaration
+
+When declaring a variable, a value can be assigned to it immediately:
+
+code::
+(
+var x = 1;
+var y = -1;
+x + y
+)
+::
+
+Such assignments can be chained up:
+code::
+(
+var x = 1;
+var y = x + 9;
+x + y
+)
+::
+
+section:: Reassignment
+
+A variable can be given a new value of any kind at any time.
+code::
+x = 7;
+x = [1, 6, 3, 4, 1];
+x = { rrand(1, 10) };
+x = nil;
+::
+
+In some cases, chains of reassignment are useful:
+code::
+(
+{
+	var sig;
+	sig = SinOsc.ar(LFNoise0.kr(10).exprange(1, 1000));
+	sig = SinOsc.ar(310, sig * 3);
+	sig = SinOsc.ar(230, sig * 0.4);
+	sig * 0.2
+}.play
+)
+::
+
 section:: Multiple Assignment
 
 A multiple assignment statement assigns the elements of a link::Classes/Collection:: which is the result of an expression on the right hand side, to a list of variables on the left hand side.
@@ -51,6 +95,7 @@ code::
 point.x = 5;
 ::
 This type of assignment is translated to the first form by the compiler. The two syntaxes are equivalent.
+
 
 section:: Series Assignment to an ArrayedCollection or List
 
