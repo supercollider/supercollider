@@ -1,13 +1,14 @@
 title:: Writing Classes
 summary:: Writing SuperCollider Classes
 categories:: Language>OOP
-related:: Reference/Classes, Classes/Class
+related:: Reference/Classes, Classes/Class, Classes/Object
 
 
 SuperCollider follows a pure object-oriented paradigm. It is not built on data types, but on objects, which respond to messages. A class is an object that holds information about how its objects (instances) respond to such messages. Writing a class gives a definition of this behavior.
 
-What follows is not a tutorial for how to write a class system. It gives an overview of some typical expressions.
+What follows is not a tutorial for how to write a class system. It gives an overview of some typical expressions. See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
 
+There is also an overview of the current full link::Overviews/ClassTree::.
 
 note:: Class definitions are statically compiled when you launch SuperCollider or "recompile the library." This means
 that class definitions must be saved into a file with the extension .sc, in a disk location where SuperCollider looks
@@ -241,6 +242,9 @@ section::Alternatives to inheritance
 Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and less a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
 
 subsection::Polymorphism
+
+See also: link::Guides/Polymorphism::
+
 Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. Instead of inheriting all methods, you can simply implement some of the same methods in your class.
 
 code::
@@ -523,7 +527,7 @@ MyTestPoint(2, 3).asCompileString;
 
 section:: Catching undefined method calls
 
-When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::. Normally this throws an error. By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them (For an example, see code::IdentityDictionary::).
+When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::. Normally this throws an error. By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them (For an example, see the class definition of code::IdentityDictionary::).
 
 code::
 MyClass {
