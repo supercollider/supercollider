@@ -161,7 +161,7 @@ MyClass : SomeSuperclass {
 
 section:: Instances
 
-code::Object.new:: will return to you a new object. When overriding the class method code::.new:: you must call the
+code::Object.new:: will return a new object. When overriding the class method code::.new:: you must call the
 superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created
 and its memory allocated.
 
@@ -184,8 +184,7 @@ we are calling the code::.init:: method on that object, which is an instance met
 
 Warning:: If the superclass also happened to call super.new.init it will have expected to call the .init method defined
 in that class (the superclass), but instead the message .init will find the implementation of the class that the object
-actually is, which is our new subclass.  So you should use a unique method name like myclassinit if this is likely to be
-a problem.
+actually is, which is our new subclass. In such cases, a unique method name like myclassInit should be used.
 ::
 
 One easy way to copy the arguments passed to the instance variables when creating a class is to use link::Classes/Object#*newCopyArgs::.  This
@@ -239,10 +238,10 @@ MyClass {
 
 section::Alternatives to inheritance
 
-Overreliance on inheritance is usually a design flaw. Is your "subclass" really some kind of "superclass" or are you just trying to swipe all of daddy's methods? Do a websearch for Design Patterns.
+Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and less a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
 
 subsection::Polymorphism
-Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. This is what is called strong::polymorphism:: - instead of inheriting all methds, you can provide some of the same methods to your class.
+Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. Instead of inheriting all methods, you can simply implement some of the same methods in your class.
 
 code::
 MyClass {
@@ -272,7 +271,7 @@ MyClass {
 }
 
 // depending on what "action" is, objects of this class will behave differently
-a = MyClass({ "hello you" });
+a = MyClass({ "hello." });
 b = MyClass({ |i| log2(i) * sin(i * pi) });
 a.value(8);
 b.value(8);
@@ -364,20 +363,20 @@ MyClass {
 }
 ::
 
-you now have the methods:
+This provides the following methods:
 
 code::
 someObject.getMe;
 someObject.setMe_(value);
 ::
 
-this also allows us to say:
+And it also allows us to say:
 
 code::
 someObject.setMe = value;
 
 someObject.getMeOrSetMe_(5);
-someObject.getMeOrSetMe.postln;
+someObject.getMeOrSetMe;
 ::
 
 
@@ -394,8 +393,7 @@ MyClass {
 }
 ::
 
-A setter method should always return the receiver. This is standard OOP practice (outside of SuperCollider as well). Do
-not return the new value from your setter.
+A setter method should always return the receiver. This is standard OOP practice. Never return the new value from your setter.
 
 code::
 MyClass {
@@ -409,7 +407,7 @@ MyClass {
 ::
 
 subsection::Constants
-Constants are variables, that, well, don't vary. You can only define them initially.
+Constants are variables, that, well, don't vary. They can be assigned only initially.
 
 code::
 MyClass {
@@ -556,5 +554,5 @@ In other words, you can't inherit from two separate classes that are defined in 
 
 If you should happen to declare a variable in a subclass and use the same name as a variable declared in a superclass,
 you will find that both variables exist, but only the one in the object's actual class is accessible.  You should not do
-that. This will at some point become an error worthy of compilation failure.
+that.
 ::
