@@ -293,7 +293,6 @@ void dumpbcstat()
 #endif
 
 void initPatterns();
-void initThreads();
 void initGUI();
 
 #ifndef _WIN32
@@ -337,7 +336,6 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	// initialize process random number generator
 	g->rgen = (RGen*)(slotRawObject(&g->thread->randData)->slots);
 
-	initThreads();
 	initPatterns();
 	initUniqueMethods();
 	initGUI();

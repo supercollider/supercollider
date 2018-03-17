@@ -73,7 +73,6 @@ namespace bfs = boost::filesystem;
 int yyparse();
 
 extern bool gTraceInterpreter;
-PyrSymbol *s_recvmsg;
 
 void initPatternPrimitives();
 
@@ -2852,10 +2851,6 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 	}
 }*/
 
-
-PyrSymbol *s_prready;
-PyrSymbol *s_prrunnextthread;
-
 void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
 void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed)
 {
@@ -4315,7 +4310,6 @@ void initOpenGLPrimitives();
 	// run custom initializers
 	SC_PrimRegistry<SC_InitializerDefinerEntry>::instance().run_all();
 
-	s_recvmsg = getsym("receiveMsg");
 	post("\tFound %d primitives.\n", nextPrimitiveIndex());
 }
 
@@ -4330,12 +4324,4 @@ void deinitMIDIPrimitives();
 	deinitMIDIPrimitives();
 #endif
 
-}
-
-
-void initThreads();
-void initThreads()
-{
-	s_prrunnextthread = getsym("prRunNextThread");
-	s_prready = getsym("prReady");
 }
