@@ -209,13 +209,15 @@ subsection::Polymorphism
 Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. This is what is called strong::polymorphism:: - instead of inheriting all methds, you can provide some of the same methods to your class.
 
 code::
-// objects of this class will respond to the message "value", just like a function.
 MyClass {
+	var count = 0;
 	value {
-
+		^count = count + 1
 	}
 }
-
+// objects of this class will respond to the message "value", just like a function.
+a = MyClass.new;
+a.value; // returns 1
 ::
 
 
@@ -223,7 +225,6 @@ subsection::Object Composition
 Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
 
 code::
-// depending on what "action" is, objects of this class will behave differently
 MyClass {
 	var action;
 	*new { |action|
@@ -233,6 +234,12 @@ MyClass {
 		action.value;
 	}
 }
+
+// depending on what "action" is, objects of this class will behave differently
+a = MyClass({ "hello you" });
+b = MyClass({ |i| log2(i) * sin(i * pi) });
+a.value(8);
+b.value(8);
 ::
 
 
@@ -438,8 +445,7 @@ a.allOfThem; // [1, 2, 3]
 section:: Printing custom messages to post window
 
 By default when postln is called on an class instance the name of the class is printed in a post window. When
-code::postln:: or code::asString:: is called on a class instance, the class then calls code::printOn:: which can be
-overridden to obtain more useful information.
+code::postln:: or code::asString:: is called on a class instance, the class then calls code::printOn:: which by default returns just the object's class name. This should be overridden to obtain more useful information.
 
 code::
 MyTestPoint {
