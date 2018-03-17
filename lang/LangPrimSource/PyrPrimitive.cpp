@@ -4226,25 +4226,9 @@ void initPrimitives()
 void initGUIPrimitives();
 	initGUIPrimitives();
 
-#ifdef SC_APP
-void initSCViewPrimitives();
-	initSCViewPrimitives();
-
-void initRendezvousPrimitives();
-	initRendezvousPrimitives();
-
-void initCocoaFilePrimitives();
-	initCocoaFilePrimitives();
-#endif
-
 #ifdef SC_HIDAPI
 void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
-#endif
-
-#ifdef SCOGL_COMPILE
-void initOpenGLPrimitives();
-	initOpenGLPrimitives();
 #endif
 
 #ifdef __APPLE__
