@@ -4246,11 +4246,6 @@ void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
 #endif
 
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
-
-
-#endif
-
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
@@ -4283,8 +4278,11 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Sched );
+
+#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
+#endif
 
 #ifdef HAVE_WII
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
