@@ -27,6 +27,7 @@ Primitives for Unix.
 #include <errno.h>
 #include <signal.h>
 
+#include "SC_PrimRegistry.hpp"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
@@ -49,13 +50,15 @@ Primitives for Unix.
 #include <libgen.h>
 #endif
 
+LIBSCLANG_PRIMITIVE_GROUP( Unix );
+
 namespace bfs = boost::filesystem;
 
 extern bool compiledOK;
-PyrSymbol* s_unixCmdAction;
 
-int prString_System(struct VMGlobals *g, int numArgsPushed);
-int prString_System(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_SYMBOL( s_unixCmdAction, "doUnixCmdAction" );
+
+SCLANG_DEFINE_PRIMITIVE( String_System, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -69,8 +72,7 @@ int prString_System(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_Basename(struct VMGlobals *g, int numArgsPushed);
-int prString_Basename(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_Basename, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -89,8 +91,7 @@ int prString_Basename(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prString_Dirname(struct VMGlobals *g, int numArgsPushed);
-int prString_Dirname(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_Dirname, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -144,8 +145,7 @@ static void string_popen_thread_func(struct sc_process *process)
 	gLangMutex.unlock();
 }
 
-int prString_POpen(struct VMGlobals *g, int numArgsPushed);
-int prString_POpen(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( String_POpen, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -181,8 +181,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prArrayPOpen(struct VMGlobals *g, int numArgsPushed);
-int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ArrayPOpen, 2 )
 {
 	PyrObject *obj;
 
@@ -256,8 +255,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 
 }
 
-int prPidRunning(VMGlobals *g, int numArgsPushed);
-int prPidRunning(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PidRunning, 1 )
 {
 	PyrSlot *a;
 
@@ -289,8 +287,7 @@ int prPidRunning(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prUnix_Errno(struct VMGlobals *g, int numArgsPushed);
-int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Unix_Errno, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -315,7 +312,7 @@ static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, std::chrono::syst
 	SetFloat(slots+7, std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
 }
 
-int prLocalTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LocalTime, 1 )
 {
 	using namespace std::chrono;
 	system_clock::time_point now = system_clock::now();
@@ -327,7 +324,7 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prGMTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GMTime, 1 )
 {
 	using namespace std::chrono;
 	system_clock::time_point now = system_clock::now();
@@ -338,8 +335,7 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prAscTime(struct VMGlobals *g, int numArgsPushed);
-int prAscTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AscTime, 1 )
 {
 	PyrSlot *a = g->sp;
 	PyrSlot *slots = slotRawObject(a)->slots;
@@ -372,8 +368,7 @@ int prAscTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prStrFTime(struct VMGlobals *g, int numArgsPushed);
-int prStrFTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( StrFTime, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -416,16 +411,14 @@ int prStrFTime(struct VMGlobals *g, int numArgsPushed)
 
 int32 timeseed();
 
-int prTimeSeed(struct VMGlobals *g, int numArgsPushed);
-int prTimeSeed(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TimeSeed, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetInt(a, timeseed());
 	return errNone;
 }
 
-int prGetPid(VMGlobals *g, int numArgsPushed);
-int prGetPid(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetPid, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetInt(a,
@@ -436,29 +429,4 @@ int prGetPid(VMGlobals *g, int numArgsPushed)
 #endif
 		);
 	return errNone;
-}
-
-
-void initUnixPrimitives();
-void initUnixPrimitives()
-{
-	int base, index = 0;
-
-	base = nextPrimitiveIndex();
-
-	s_unixCmdAction = getsym("doUnixCmdAction");
-
-	definePrimitive(base, index++, "_String_System", prString_System, 1, 0);
-	definePrimitive(base, index++, "_String_Basename", prString_Basename, 1, 0);
-	definePrimitive(base, index++, "_String_Dirname", prString_Dirname, 1, 0);
-	definePrimitive(base, index++, "_String_POpen", prString_POpen, 2, 0);
-	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
-	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
-	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
-	definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
-	definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
-	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
-	definePrimitive(base, index++, "_PidRunning", prPidRunning, 1, 0);
-	definePrimitive(base, index++, "_GetPid", prGetPid, 1, 0);
-	definePrimitive(base, index++, "_ArrayPOpen", prArrayPOpen, 2, 0);
 }

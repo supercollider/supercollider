@@ -4228,8 +4228,6 @@ void initPrimitives()
 
 	initMathPrimitives();
 
-void initUnixPrimitives();
-	initUnixPrimitives();
 
 void init_OSC_primitives();
 	init_OSC_primitives();
@@ -4304,6 +4302,7 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( String );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
 
 #ifdef HAVE_WII
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
