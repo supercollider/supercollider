@@ -45,13 +45,13 @@ within the instance method, the keyword code::this:: refers to the instance.
 
 code::
 MyClass {
-    *classMethod { | argument |
+	*classMethod { | argument |
 
-    }
+	}
 
-    instanceMethod { | argument |
+	instanceMethod { | argument |
 
-    }
+	}
 }
 ::
 
@@ -62,17 +62,17 @@ such thing as returning void in SuperCollider.
 
 code::
 MyClass {
-    someMethod {
-        ^returnObject
-    }
+	someMethod {
+		^returnObject
+	}
 
-    someOtherMethod { | aBoolean |
+	someOtherMethod { | aBoolean |
 		if(aBoolean) {
-            ^someObject
-        } {
-            ^someOtherObject
-        }
-    }
+			^someObject
+		} {
+			^someOtherObject
+		}
+	}
 
 }
 ::
@@ -87,14 +87,14 @@ and its memory allocated.
 code::
 MyClass {
 
-    // this is a normal constructor method
-    *new { | arga, argb, argc |
-        ^super.new.init(arga, argb, argc)
-    }
+	// this is a normal constructor method
+	*new { | arga, argb, argc |
+		^super.new.init(arga, argb, argc)
+	}
 
-    init { | arga, argb ,argc |
-        // do initiation here
-    }
+	init { | arga, argb ,argc |
+		// do initiation here
+	}
 }
 ::
 
@@ -113,19 +113,19 @@ starting the parent classes and working it's way down to the current class.
 
 code::
 MyClass {
-    var <a,b,c;
+	var <a,b,c;
 
-    *new { | a, b, c |
-        ^super.newCopyArgs(a, b, c)
-    }
+	*new { | a, b, c |
+		^super.newCopyArgs(a, b, c)
+	}
 }
 
 MyChildClass : MyClass{
-    var <d;
+	var <d;
 
-    *new { | a, b, c, d |
-        ^super.newCopyArgs(a, b, c, d)
-    }
+	*new { | a, b, c, d |
+		^super.newCopyArgs(a, b, c, d)
+	}
 }
 ::
 
@@ -137,8 +137,8 @@ Class variables are accessible within class methods and in any instance methods.
 
 code::
 MyClass {
-    classvar myClassvar;
-    var myInstanceVar;
+	classvar myClassvar;
+	var myInstanceVar;
 }
 ::
 
@@ -151,12 +151,12 @@ the method it has defined first and then looks in the superclass. Here code::MyC
 
 code::
 Superclass {
-    calculate { |in| ^in * 2 }
-    value { |in| ^this.calculate(in) }
+	calculate { |in| ^in * 2 }
+	value { |in| ^this.calculate(in) }
 }
 
 MyClass : Superclass {
-    calculate { |in| ^in * 3 }
+	calculate { |in| ^in * 3 }
 }
 ::
 
@@ -164,20 +164,20 @@ If the method of the superclass is needed, it can be called by super.
 
 code::
 Superclass {
-    var x;
+	var x;
 
-    init {
-        x = 5;
-    }
+	init {
+		x = 5;
+	}
 }
 
 MyClass : Superclass {
-    var y;
+	var y;
 
 	init {
-        super.init;
-        y = 6;
-    }
+		super.init;
+		y = 6;
+	}
 }
 ::
 
@@ -216,14 +216,14 @@ Subclasses can override class variable declarations (but not instance variables)
 
 code::
 Superclass {
-    classvar x = 0;
+	classvar x = 0;
 
 	returnX { ^x }
 	returnXHere { ^x }
 }
 
 MyClass : Superclass {
-    classvar x = 1;
+	classvar x = 1;
 
 	returnXHere { ^x }
 }
@@ -242,15 +242,15 @@ explicitly give access:
 
 code::
 MyClass : Superclass {
-    var myVariable;
+	var myVariable;
 
-    variable {
-        ^myVariable
-    }
+	variable {
+		^myVariable
+	}
 
-    variable_ { arg newValue;
-        myVariable = newValue;
-    }
+	variable_ { arg newValue;
+		myVariable = newValue;
+	}
 }
 ::
 
@@ -259,7 +259,7 @@ teletype::>::.
 
 code::
 MyClass {
-    var <getMe, >setMe, <>getMeOrSetMe;
+	var <getMe, >setMe, <>getMeOrSetMe;
 }
 ::
 
@@ -287,8 +287,8 @@ code::
 MyClass {
 
 	variable_ { | newValue |
-        variable = newValue.clip(minval,maxval);
-    }
+		variable = newValue.clip(minval,maxval);
+	}
 
 }
 ::
@@ -300,9 +300,9 @@ code::
 MyClass {
 
 	variable_ { | newValue |
-        myVariable = newValue;
-        ^newValue       // DO NOT DO THIS
-    }
+		myVariable = newValue;
+		^newValue       // DO NOT DO THIS
+	}
 
 }
 ::
@@ -319,7 +319,7 @@ code::
 
 	}
 
-    *newClassMethod {
+	*newClassMethod {
 
 	}
 
@@ -336,12 +336,12 @@ code::
 MyClass[slot] {
 
 	*new {
-         ^super.new
-    }
+		^super.new
+	}
 
-    at { |i|
-        ("Index " ++ i).postln
-    }
+	at { |i|
+		("Index " ++ i).postln
+	}
 
 }
 ::
@@ -379,15 +379,15 @@ overridden to obtain more useful information.
 
 code::
 MyTestPoint {
-    var <x, <y;
+	var <x, <y;
 
-    *new { |x, y|
+	*new { |x, y|
 		^super.newCopyArgs(x, y)
 	}
 
-    printOn { | stream |
-        stream << "MyTestPoint( " << x << ", " << y << " )";
-    }
+	printOn { | stream |
+		stream << "MyTestPoint( " << x << ", " << y << " )";
+	}
 }
 ::
 
@@ -406,30 +406,30 @@ method can be used instead of code::storeOn::.
 code::
 // either
 MyTestPoint {
-    var <x, <y;
+	var <x, <y;
 
-    *new { |x, y|
+	*new { |x, y|
 		^super.newCopyArgs(x,y)
 	}
 
-    storeOn { | stream |
+	storeOn { | stream |
 		// note that <<< stands for storeOn, and << for printOn.
 		// we want x and y to be completely represented
-        stream << "MyTestPoint.new(" <<< x << ", " <<< y << ")"
-    }
+		stream << "MyTestPoint.new(" <<< x << ", " <<< y << ")"
+	}
 }
 
 // or
 MyTestPoint {
-    var <x, <y;
+	var <x, <y;
 
-    *new { |x, y|
+	*new { |x, y|
 		^super.newCopyArgs(x,y)
 	}
 
-    storeArgs { | stream |
-        ^[x, y]
-    }
+	storeArgs { | stream |
+		^[x, y]
+	}
 }
 ::
 
@@ -437,20 +437,20 @@ code::
 MyTestPoint(2, 3).asCompileString;
 ::
 
-section:: Catching methods that are not explicitly defined
+section:: Catching undefined method calls
 
-It is possible to catch calls to methods that are not explicitly defined in a Class by overriding code::doesNotUnderstand::.
+When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::. Normally this throws an error. By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them (For an example, see code::IdentityDictionary::).
 
 code::
 MyClass {
 
-    doesNotUnderstand { | selector...args |
-        (this.class ++ " does not understand method " ++ selector);
+	doesNotUnderstand { | selector...args |
+		(this.class ++ " does not understand method " ++ selector);
 
-        if(UGen.findRespondingMethodFor(selector).notNil) {
-            "But UGen understands this method".postln
-        };
-    }
+		if(UGen.findRespondingMethodFor(selector).notNil) {
+			"But UGen understands this method".postln
+		};
+	}
 }
 ::
 
