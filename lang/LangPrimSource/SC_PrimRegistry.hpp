@@ -178,7 +178,6 @@ private:
  */
 #define INIT_LIBSCLANG_PRIMITIVE_GROUP( name )                                                        \
     extern char LIBSCLANG_DUMMY_VAR( name );                                                          \
-    char LIBSCLANG_DUMMY_VAR_LOCAL( name ) = LIBSCLANG_DUMMY_VAR( name );                             \
-    (void)LIBSCLANG_DUMMY_VAR_LOCAL( name )
+    char LIBSCLANG_DUMMY_VAR_LOCAL( name ) = LIBSCLANG_DUMMY_VAR( name )
 
 #endif // SC_PRIMREGISTRY_HPP_INCLUDED

@@ -68,6 +68,51 @@
 #pragma clang diagnostic ignored "-Warray-bounds"
 #endif
 
+// ------ sclang primitive groups ----------
+// This ensures that by the time initPrimitives() is called, each group's TU has been initialized
+// and its primitives and symbols registered in the registries found in SC_PrimRegistry.hpp.
+
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Archiver );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Array );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Char );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( File );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( OSCData );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Platform );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( SCDoc );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Sched );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( String );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Symbol );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
+
+#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
+#endif
+
+#ifdef HAVE_WII
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
+#endif
+
+#ifdef __APPLE__
+INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreAudio );
+#endif
+
+#ifdef __linux__
+INIT_LIBSCLANG_PRIMITIVE_GROUP( LID );
+#endif
+
+#if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
+INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
+#endif
+
+#ifdef SC_IDE
+INIT_LIBSCLANG_PRIMITIVE_GROUP( ScIDE );
+#endif
+
+// ----------------------------------------
+
 namespace bfs = boost::filesystem;
 
 int yyparse();
@@ -4239,46 +4284,6 @@ void initHIDAPIPrimitives();
 #ifdef SC_QT
 	QtCollider::initPrimitives();
 #endif
-
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Symbol );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Archiver );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Array );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Char );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( File );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Platform );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( String );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Sched );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( OSCData );
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( SCDoc );
-
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
-#endif
-
-#ifdef HAVE_WII
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
-#endif
-
-#ifdef __APPLE__
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreAudio );
-#endif
-
-#ifdef __linux__
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( LID );
-#endif
-
-#if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
-#endif
-
-#ifdef SC_IDE
-	INIT_LIBSCLANG_PRIMITIVE_GROUP( ScIDE );
-#endif
-
 	// run primitive and symbol definers
 	SC_PrimRegistry<SC_PrimDefinerEntry>::instance().run_all();
 	SC_PrimRegistry<SC_SymbolDefinerEntry>::instance().run_all();
