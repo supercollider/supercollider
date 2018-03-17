@@ -29,6 +29,7 @@
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 
+#include "SC_PrimRegistry.hpp"
 #include "PyrPrimitive.h"
 #include "SCBase.h"
 #include "GC.h"
@@ -37,6 +38,8 @@
 
 #include "sc_ipc_client.hpp"
 #include "localsocket_utils.hpp"
+
+LIBSCLANG_PRIMITIVE_GROUP( ScIDE );
 
 SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL)
@@ -193,7 +196,7 @@ void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int 
 static SCIpcClient * gIpcClient = NULL;
 
 
-int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_Connect, 2 )
 {
     if (gIpcClient) {
         error("ScIDE already connected\n");
@@ -212,7 +215,7 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_Connected(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_Connected, 1 )
 {
     PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
 
@@ -307,7 +310,7 @@ private:
     }
 };
 
-int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_Send, 3 )
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -337,7 +340,7 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_GetQUuid(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_GetQUuid, 0 )
 {
     PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
 
@@ -346,7 +349,7 @@ int ScIDE_GetQUuid(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_GetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_GetDocTextMirror, 4 )
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -379,7 +382,7 @@ int ScIDE_GetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_SetDocTextMirror, 5 )
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -419,7 +422,7 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_GetDocSelectionStart(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_GetDocSelectionStart, 2 )
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -442,7 +445,7 @@ int ScIDE_GetDocSelectionStart(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_GetDocSelectionRange(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_GetDocSelectionRange, 2 )
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -465,7 +468,7 @@ int ScIDE_GetDocSelectionRange(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int ScIDE_SetDocSelectionMirror(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ScIDE_SetDocSelectionMirror, 4 )
 {
     if (!gIpcClient) {
         error("ScIDE not connected\n");
@@ -489,21 +492,6 @@ int ScIDE_SetDocSelectionMirror(struct VMGlobals *g, int numArgsPushed)
     QByteArray key = QByteArray(id);
     
     gIpcClient->setSelectionMirrorForDocument(key, start, range);
-    
-    return errNone;
-}
 
-void initScIDEPrimitives()
-{
-    int base = nextPrimitiveIndex();
-    int index = 0;
-    definePrimitive(base, index++, "_ScIDE_Connect",   ScIDE_Connect, 2, 0);
-    definePrimitive(base, index++, "_ScIDE_Connected", ScIDE_Connected, 1, 0);
-    definePrimitive(base, index++, "_ScIDE_Send",      ScIDE_Send, 3, 0);
-    definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
-    definePrimitive(base, index++, "_ScIDE_GetDocTextMirror", ScIDE_GetDocTextMirror, 4, 0);
-    definePrimitive(base, index++, "_ScIDE_SetDocTextMirror", ScIDE_SetDocTextMirror, 5, 0);
-    definePrimitive(base, index++, "_ScIDE_GetDocSelectionStart", ScIDE_GetDocSelectionStart, 2, 0);
-    definePrimitive(base, index++, "_ScIDE_GetDocSelectionRange", ScIDE_GetDocSelectionRange, 2, 0);
-    definePrimitive(base, index++, "_ScIDE_SetDocSelectionMirror", ScIDE_SetDocSelectionMirror, 4, 0);
+    return errNone;
 }

@@ -4240,11 +4240,6 @@ void initHIDAPIPrimitives();
 	QtCollider::initPrimitives();
 #endif
 
-#ifdef SC_IDE
-	void initScIDEPrimitives();
-	initScIDEPrimitives();
-#endif
-
 	initSCDocPrimitives();
 
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
@@ -4279,6 +4274,10 @@ void initHIDAPIPrimitives();
 
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
+#endif
+
+#ifdef SC_IDE
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( ScIDE );
 #endif
 
 	// run primitive and symbol definers
