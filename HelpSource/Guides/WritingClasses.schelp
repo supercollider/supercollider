@@ -3,8 +3,11 @@ summary:: Writing SuperCollider Classes
 categories:: Language>OOP
 related:: Reference/Classes, Classes/Class
 
-For a basic tutorial on how standard object-orientated classes are composed, look elsewhere
-link::http://www.google.com/search?q=oop+class+tutorial::
+
+SuperCollider follows a pure object-oriented paradigm. It is not built on data types, but on objects, which respond to messages. A class is an object that holds information about how its objects (instances) respond to such messages. Writing a class gives a definition of this behavior.
+
+What follows is not a tutorial for how to write a class system. It gives an overview of some typical expressions.
+
 
 note:: Class definitions are statically compiled when you launch SuperCollider or "recompile the library." This means
 that class definitions must be saved into a file with the extension .sc, in a disk location where SuperCollider looks
@@ -21,38 +24,32 @@ It is not possible to enter a class definition into an interpreter window and ex
 
 
 
-section:: Inheriting
 
-code::
-MyClass : SomeSuperclass {
+section:: Instance Methods
 
-}
-::
+Each object instance responds to its strong::instance methods::.Within instance methods, the keyword code::this:: refers to the instance itself.
 
-Without specifying a superclass, link::Classes/Object:: is assumed as the default superclass.
+An instance is independent of all the other instances, unless otherwise specified.
 
-code::
-MyClass { // : Object is implied
-
-}
-::
-
-section:: Methods
-
-Class methods are specified with the asterisk within the class method, the keyword code::this:: refers to the class. A
-class in SuperCollider is itself an object.  It is an instance of link::Classes/Class::. Instance methods are specified
-within the instance method, the keyword code::this:: refers to the instance.
 
 code::
 MyClass {
-	*classMethod { | argument |
-
-	}
 
 	instanceMethod { | argument |
+		this.anotherInstanceMethod(argument)
+	}
 
+	anotherInstanceMethod { | argument |
+		"hello instance".postln
 	}
 }
+::
+
+This could then be used as follows:
+
+code::
+a = MyClass.new // returns a new instance
+a.instanceMethod // posts "hello instance"
 ::
 
 
@@ -76,6 +73,54 @@ MyClass {
 
 }
 ::
+
+
+section:: Class Methods
+
+An object's strong::class methods:: are defined together with the instance methods. Class methods are specified with the asterisk (teletype::*::). Within class methods, the keyword code::this:: refers to the class.
+
+A link::Classes/Class:: is itself an object. It is what all instances of it have in common.
+
+code::
+MyClass {
+	*classMethod { | argument |
+		this.anotherClassMethod(argument)
+	}
+
+	*anotherClassMethod { | argument |
+		"hello class".postln
+	}
+
+}
+::
+
+This could then be used as follows:
+
+code::
+MyClass.classMethod // posts "hello class"
+::
+
+section:: Inheriting
+
+To avoid having to write the same code several times, classes can strong::inherit:: implementations from their strong::superclasses::.
+
+code::
+MyClass : SomeSuperclass {
+
+}
+::
+
+Without specifying a superclass, link::Classes/Object:: is assumed as the default superclass.
+
+code::
+MyClass { // : Object is implied
+
+}
+::
+
+This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
+
+
 
 
 section:: New Instance creation
@@ -107,21 +152,21 @@ actually is, which is our new subclass.  So you should use a unique method name 
 a problem.
 ::
 
-One easy way to copy the arguments passed to the instance variables when creating a class is to use newCopyArgs.  This
+One easy way to copy the arguments passed to the instance variables when creating a class is to use link::Classes/Object#*newCopyArgs::.  This
 method will copy the arguments to the instance variables in the order that the variables were defined in the class,
-starting the parent classes and working it's way down to the current class.
+starting from the parent classes and working it's way down to the current class.
 
 code::
 MyClass {
-	var <a,b,c;
+	var a,b,c;
 
 	*new { | a, b, c |
 		^super.newCopyArgs(a, b, c)
 	}
 }
 
-MyChildClass : MyClass{
-	var <d;
+MyChildClass : MyClass {
+	var d;
 
 	*new { | a, b, c, d |
 		^super.newCopyArgs(a, b, c, d)
@@ -129,22 +174,69 @@ MyChildClass : MyClass{
 }
 ::
 
-Over reliance on inheritance is usually a design flaw.  Explore "object composition" rather than trying to obtain all
-your powers through inheritance. Is your "subclass" really some kind of "superclass" or are you just trying to swipe all
-of daddy's methods? Do a websearch for Design Patterns.
-
 Class variables are accessible within class methods and in any instance methods.
 
 code::
 MyClass {
 	classvar myClassvar;
-	var myInstanceVar;
+
+	instanceMethod {
+		^myClassvar
+	}
 }
 ::
 
 Initializations on class level (e.g. to set up code::classvar::s) can be implemented by overloading the link::Classes/Class#*initClass:: method.
 
-section:: Overriding Methods (Overloading)
+code::
+MyClass {
+	classvar myClassvar;
+
+	*initClass {
+		myClassvar = IdentityDictionary.new;
+	}
+}
+::
+
+
+
+
+section::Alternatives to inheritance
+
+Overreliance on inheritance is usually a design flaw. Is your "subclass" really some kind of "superclass" or are you just trying to swipe all of daddy's methods? Do a websearch for Design Patterns.
+
+subsection::Polymorphism
+Two completely unrelated objects can respond to the same messages and therefore be used together in the same code. For example, link::Classes/Function:: and link::Classes/Event:: have no common superclass apart from the general class link::Classes/Object::. But both respond to the message code::play::. This is what is called strong::polymorphism:: - instead of inheriting all methds, you can provide some of the same methods to your class.
+
+code::
+// objects of this class will respond to the message "value", just like a function.
+MyClass {
+	value {
+
+	}
+}
+
+::
+
+
+subsection::Object Composition
+Often, an object passes control to one of the objects it has in its instance variables. Because these objects can be of any kind, this is a very flexible way to achieve a wide range of functionalities. For example, a link::Classes/Button:: has an code::action:: instance variable, which may hold anything that responds to the message code::value::.
+
+code::
+// depending on what "action" is, objects of this class will behave differently
+MyClass {
+	var action;
+	*new { |action|
+		^super.newCopyArgs(action)
+	}
+	value {
+		action.value;
+	}
+}
+::
+
+
+section::Overriding Methods (Overloading)
 
 In order to change the behaviour of the superclass, often methods are overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
@@ -329,7 +421,7 @@ code::
 
 section:: Slotted classes
 
-Classes defined with [slot] can use the syntax myClass[i] which will call myClass.at(i). This is useful when defining
+Classes defined with code::[slot]:: can use the syntax myClass[i] which will call myClass.at(i). This is useful when defining
 classes that inherit from a Collection type class.
 
 code::
