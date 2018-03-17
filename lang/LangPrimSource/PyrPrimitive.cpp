@@ -4246,11 +4246,6 @@ void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
 #endif
 
-#if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
-void initMIDIPrimitives();
-	initMIDIPrimitives();
-#endif
-
 #if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 
 
@@ -4301,6 +4296,10 @@ void initOpenGLPrimitives();
 
 #ifdef __linux__
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( LID );
+#endif
+
+#if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
 #endif
 
 	// run primitive and symbol definers
