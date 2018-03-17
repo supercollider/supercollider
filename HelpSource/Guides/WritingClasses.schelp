@@ -23,9 +23,31 @@ It is not possible to enter a class definition into an interpreter window and ex
 ::
 
 
+section:: Inheriting
+
+To avoid having to write the same code several times, classes can strong::inherit:: implementations from their strong::superclasses::.
+
+code::
+MyClass : SomeSuperclass {
+
+}
+::
+
+Without specifying a superclass, link::Classes/Object:: is assumed as the default superclass.
+
+code::
+MyClass { // : Object is implied
+
+}
+::
+
+This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
 
 
-section:: Instance Methods
+
+section:: Methods
+
+subsection:: Instance Methods
 
 Each object instance responds to its strong::instance methods::.Within instance methods, the keyword code::this:: refers to the instance itself.
 
@@ -75,7 +97,7 @@ MyClass {
 ::
 
 
-section:: Class Methods
+subsection:: Class Methods
 
 An object's strong::class methods:: are defined together with the instance methods. Class methods are specified with the asterisk (teletype::*::). Within class methods, the keyword code::this:: refers to the class.
 
@@ -100,26 +122,40 @@ code::
 MyClass.classMethod // posts "hello class"
 ::
 
-section:: Inheriting
 
-To avoid having to write the same code several times, classes can strong::inherit:: implementations from their strong::superclasses::.
+subsection::Overriding Methods (Overloading)
+
+In order to change the behaviour of the superclass, often methods are overridden. Note that an object looks always for
+the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
 
 code::
+SomeSuperclass {
+	calculate { |in| ^in * 2 }
+	value { |in| ^this.calculate(in) }
+}
+
+MyClass : SomeSuperclass {
+	calculate { |in| ^in * 3 }
+}
+::
+
+If the method of the superclass is needed, it can be called by super.
+
+code::
+SomeSuperclass {
+
+	value {
+		^100.rand
+	}
+}
+
 MyClass : SomeSuperclass {
 
+	value {
+		^super.value * 2
+	}
 }
 ::
-
-Without specifying a superclass, link::Classes/Object:: is assumed as the default superclass.
-
-code::
-MyClass { // : Object is implied
-
-}
-::
-
-This is why in the above example, the message code::new:: can be called without being explicitly defined in the class.
-
 
 
 
@@ -242,46 +278,12 @@ a.value(8);
 b.value(8);
 ::
 
-
-section::Overriding Methods (Overloading)
-
-In order to change the behaviour of the superclass, often methods are overridden. Note that an object looks always for
-the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
-
-code::
-Superclass {
-	calculate { |in| ^in * 2 }
-	value { |in| ^this.calculate(in) }
-}
-
-MyClass : Superclass {
-	calculate { |in| ^in * 3 }
-}
-::
-
-If the method of the superclass is needed, it can be called by super.
-
-code::
-Superclass {
-	var x;
-
-	init {
-		x = 5;
-	}
-}
-
-MyClass : Superclass {
-	var y;
-
-	init {
-		super.init;
-		y = 6;
-	}
-}
-::
+Often, variables like code::action:: above are filled with custom objects that belong to code::MyClass::. Thus, one will write many small classes that can be well combined in such a way. This is called "pluggable behavior".
 
 
-section:: Initializing Variables directly
+section::Variables
+
+subsection:: Initializing Variables directly
 
 In a variable declaration, variables can be directly initialized. This works for link::Reference/Literals:: only.
 
@@ -296,7 +298,7 @@ MyClass {
 In class definitions, it is not possible to chain assignments (e.g. code:: var x = 9; var y = x + 1::).
 
 
-section:: Variable Scope
+subsection:: Variable Scope
 
 An instance variable is accessible from all instance methods of this class and its subclasses. A class variable is accessible from all class and instance methods of this class and its subclasses. Instance variables of the same name as override the scope of class variables of the same name.
 
@@ -314,33 +316,33 @@ MyClass {
 Subclasses can override class variable declarations (but not instance variables). Then the class variables of the superclass are not accessible in the subclass anymore.
 
 code::
-Superclass {
+SomeSuperclass {
 	classvar x = 0;
 
 	returnX { ^x }
 	returnXHere { ^x }
 }
 
-MyClass : Superclass {
+MyClass : SomeSuperclass {
 	classvar x = 1;
 
 	returnXHere { ^x }
 }
 
-// Superclass.returnXHere returns 0
+// SomeSuperclass.returnXHere returns 0
 // MyClass.returnXHere returns 1
 // MyClass.returnX returns 0
 
 
 ::
 
-section:: Getter Setter
+subsection:: Getter Setter
 
 SuperCollider demands that variables are not accessible outside of the class or instance. A method must be added to
 explicitly give access:
 
 code::
-MyClass : Superclass {
+MyClass : SomeSuperclass {
 	var myVariable;
 
 	variable {
@@ -442,7 +444,9 @@ a = MyClass[1, 2, 3];
 a.allOfThem; // [1, 2, 3]
 ::
 
-section:: Printing custom messages to post window
+section:: Printing to String
+
+subsection:: Printing custom messages to post window
 
 By default when postln is called on an class instance the name of the class is printed in a post window. When
 code::postln:: or code::asString:: is called on a class instance, the class then calls code::printOn:: which by default returns just the object's class name. This should be overridden to obtain more useful information.
