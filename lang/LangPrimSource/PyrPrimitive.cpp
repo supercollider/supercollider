@@ -60,8 +60,6 @@
 #  include "QtCollider.h"
 #endif
 
-#include "SCDocPrim.h"
-
 #include <boost/filesystem/path.hpp> // path
 
 #ifdef __clang__

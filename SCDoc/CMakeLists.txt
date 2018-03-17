@@ -6,7 +6,6 @@ set(SCDOC_SRCS
     ${SCDOC_DIR}/SCDoc.tab.cpp
     ${SCDOC_DIR}/lex.scdoc.cpp
     ${SCDOC_DIR}/SCDocPrim.cpp
-    ${SCDOC_DIR}/SCDocPrim.h
 )
 
 if(CMAKE_COMPILER_IS_CLANG)
