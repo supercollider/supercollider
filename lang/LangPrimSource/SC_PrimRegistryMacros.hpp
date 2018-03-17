@@ -7,10 +7,10 @@
 #define SC_PRIMREGISTRYMACROS_HPP_INCLUDED
 
 // utilities
-#define SCLANG_NUMARGS_MSG "sclang primitive must have at least 1 argument"
+#define SCLANG_NUMARGS_MSG "sclang primitive must have a nonnegative number of arguments"
 #define SCLANG_VARARGS_MSG "sclang primitive's varargs quality must be either 0 or 1"
 #define SCLANG_PRIMITIVE_STATIC_ASSERTS( numArgs, varArgs )                                           \
-    static_assert( numArgs > 0, SCLANG_NUMARGS_MSG );                                                 \
+    static_assert( numArgs >= 0, SCLANG_NUMARGS_MSG );                                                \
     static_assert( varArgs == 0 || varArgs == 1, SCLANG_VARARGS_MSG )
 
 /// Builds the C++ primitive function name
