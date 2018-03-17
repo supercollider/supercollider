@@ -111,6 +111,10 @@ INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( ScIDE );
 #endif
 
+#ifdef SC_HIDAPI
+INIT_LIBSCLANG_PRIMITIVE_GROUP( HID );
+#endif
+
 // ----------------------------------------
 
 namespace bfs = boost::filesystem;
@@ -4270,11 +4274,6 @@ void initPrimitives()
 
 void initGUIPrimitives();
 	initGUIPrimitives();
-
-#ifdef SC_HIDAPI
-void initHIDAPIPrimitives();
-	initHIDAPIPrimitives();
-#endif
 
 #ifdef __APPLE__
 	void initSpeechPrimitives();

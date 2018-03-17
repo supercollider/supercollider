@@ -24,6 +24,7 @@
 
 */
 
+#include "SC_PrimRegistry.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -46,7 +47,9 @@
 
 extern bool compiledOK;
 
-#ifdef HAVE_HIDAPI
+#ifdef SC_HIDAPI
+
+LIBSCLANG_PRIMITIVE_GROUP( HID );
 
 #if 1
 static inline void trace(const char *fmt, ...)
@@ -97,11 +100,10 @@ wchar_t * char_to_wchar( char * chs )
 	return wchs;
 }
 
-static PyrSymbol* s_hidapi = nullptr;
-static PyrSymbol* s_hidElementData = nullptr;
-static PyrSymbol* s_hidDeviceData = nullptr;
-static PyrSymbol* s_hidClosed = nullptr;
-
+SCLANG_DEFINE_SYMBOL( s_hidapi, "HID" );
+SCLANG_DEFINE_SYMBOL( s_hidElementData, "prHIDElementData" );
+SCLANG_DEFINE_SYMBOL( s_hidDeviceData, "prHIDDeviceData" );
+SCLANG_DEFINE_SYMBOL( s_hidClosed, "prHIDDeviceClosed" );
 
 class SC_HID_API_Threadpool
 {
@@ -465,7 +467,7 @@ void SC_HID_APIManager::handleDevice( int joy_idx, struct hid_dev_desc * devd, s
 
 // ----------  primitive calls: ---------------
 
-int prHID_API_Initialize(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( HID_API_Initialize, 1 )
 {
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot *self = args + 0;
@@ -475,13 +477,14 @@ int prHID_API_Initialize(VMGlobals* g, int numArgsPushed)
 	return SC_HID_APIManager::instance().init();
 }
 
-int prHID_API_CloseAll(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( HID_API_CloseAll, 1 )
 {
 	// close all devices, and cleanup manager
 	return SC_HID_APIManager::instance().closeAll();
 }
 
-int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
+SCLANG_DEFINE_PRIMITIVE( HID_API_BuildDeviceList, 1 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot *self = args + 0;
 	// no arguments
@@ -558,7 +561,8 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	return errNone;
 }
 
-int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_OpenDevice, 3 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg1  = args + 1;
@@ -600,7 +604,8 @@ int prHID_API_Open( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_Close( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_CloseDevice, 2 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg  = args + 1;
@@ -618,7 +623,8 @@ int prHID_API_Close( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_GetInfo, 2 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg  = args + 1;
@@ -689,7 +695,8 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_GetNumberOfCollections( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_GetNumberOfCollections, 2 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg  = args + 1;
@@ -711,7 +718,8 @@ int prHID_API_GetNumberOfCollections( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_GetCollectionInfo( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_GetCollectionInfo, 3 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg1  = args + 1;
@@ -781,7 +789,8 @@ int prHID_API_GetCollectionInfo( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_GetNumberOfElements( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_GetNumberOfElements, 2 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg  = args + 1;
@@ -803,7 +812,8 @@ int prHID_API_GetNumberOfElements( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_GetElementInfo, 4 )
+{
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot* self = args + 0;
 	PyrSlot* arg1  = args + 1;
@@ -869,7 +879,8 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_SetElementOutput, 3 )
+{
 	PyrSlot * args = g->sp - numArgsPushed + 1;
 	PyrSlot * joyIdSlot     = args + 1;
 	PyrSlot * elementIdSlot = args + 2;
@@ -911,7 +922,8 @@ int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
 	return errNone;
 }
 
-int prHID_API_SetElementRepeat( VMGlobals* g, int numArgsPushed ){
+SCLANG_DEFINE_PRIMITIVE( HID_API_SetElementRepeat, 3 )
+{
 	PyrSlot * args = g->sp - numArgsPushed + 1;
 	PyrSlot * joyIdSlot     = args + 1;
 	PyrSlot * elementIdSlot = args + 2;
@@ -956,56 +968,14 @@ void close_HID_API_Devices(){
 	SC_HID_APIManager::instance().closeAll();
 }
 
-void initHIDAPIPrimitives()
+SCLANG_DEFINE_CUSTOM_INITIALIZER( initHID )
 {
-	int base, index;
-
 	close_HID_API_Devices();
-
-	s_hidapi = getsym("HID");
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_HID_API_Initialize", prHID_API_Initialize, 1, 0); // this initializes the hid subsystem
-	definePrimitive(base, index++, "_HID_API_CloseAll", prHID_API_CloseAll, 1, 0);   // this also cleans up and closes devices
-
-	definePrimitive(base, index++, "_HID_API_BuildDeviceList", prHID_API_BuildDeviceList, 1, 0); // this gets device info about the various devices that are attached
-
-	definePrimitive(base, index++, "_HID_API_OpenDevice", prHID_API_Open, 3, 0); // opens a specific device
-	definePrimitive(base, index++, "_HID_API_CloseDevice", prHID_API_Close, 2, 0); // closes a specific device
-
-	definePrimitive(base, index++, "_HID_API_GetInfo", prHID_API_GetInfo, 2, 0); // gets info about a specific device
-	definePrimitive(base, index++, "_HID_API_GetNumberOfCollections", prHID_API_GetNumberOfCollections, 2, 0); // gets number of elements of a device
-	definePrimitive(base, index++, "_HID_API_GetCollectionInfo", prHID_API_GetCollectionInfo, 3, 0); // gets info about a specific device element
-	definePrimitive(base, index++, "_HID_API_GetNumberOfElements", prHID_API_GetNumberOfElements, 2, 0); // gets number of elements of a device
-	definePrimitive(base, index++, "_HID_API_GetElementInfo", prHID_API_GetElementInfo, 4, 0); // gets info about a specific device element
-
-	definePrimitive(base, index++, "_HID_API_SetElementOutput", prHID_API_SetElementOutput, 3, 0); // sets the output value of a specific device element, and sends the report
-	definePrimitive(base, index++, "_HID_API_SetElementRepeat", prHID_API_SetElementRepeat, 3, 0); // sets the repeat property of a specific device element
-
-	s_hidElementData = getsym("prHIDElementData"); // send back element data
-	s_hidDeviceData = getsym("prHIDDeviceData"); // send back device data
-	s_hidClosed = getsym("prHIDDeviceClosed"); // send back that device was closed
 }
 
 void deinitHIDAPIPrimitives()
 {
-	SC_HID_APIManager::instance().closeAll();
+	close_HID_API_Devices();
 }
 
-#else // no HID API
-
-void initHIDAPIPrimitives()
-{
-	//other platforms?
-}
-
-void deinitHIDAPIPrimitives()
-{
-}
-
-#endif /// HAVE_API_HID
-
-
-// EOF
+#endif // SC_HIDAPI
