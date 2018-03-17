@@ -4256,11 +4256,6 @@ void initMIDIPrimitives();
 	initMIDIPrimitives();
 #endif
 
-#if defined __linux__
-void initLIDPrimitives();
-	initLIDPrimitives();
-#endif
-
 #if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 
 
@@ -4307,6 +4302,10 @@ void initOpenGLPrimitives();
 
 #ifdef __APPLE__
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreAudio );
+#endif
+
+#ifdef __linux__
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( LID );
 #endif
 
 	// run primitive and symbol definers
