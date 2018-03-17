@@ -543,16 +543,3 @@ a = MyClass();
 a.someMethodThatDoesNotExist
 ::
 
-section:: Tricks and Traps
-
-definitionList::
-
-## "Superclass not found..."
-
-|| In one given code file, you can only put classes that inherit from each Object, each other, and one external class.
-In other words, you can't inherit from two separate classes that are defined in separate files.
-
-If you should happen to declare a variable in a subclass and use the same name as a variable declared in a superclass,
-you will find that both variables exist, but only the one in the object's actual class is accessible.  You should not do
-that.
-::
