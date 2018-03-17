@@ -269,12 +269,17 @@ static bool set_realtime_priority(int thread_index)
 #ifdef NOVA_TT_PRIORITY_RT
 
 #ifdef JACK_BACKEND
+#ifndef _WIN32
         int priority = instance->realtime_priority();
         if (priority >= 0)
             success = true;
-
+#else
+		int priority = thread_priority_interval_rt().second;
+		success = true;
+#endif
 #elif _WIN32
         int priority = thread_priority_interval_rt().second;
+		success = true;
 #else
         int min, max;
         boost::tie(min, max) = thread_priority_interval_rt();
@@ -282,14 +287,25 @@ static bool set_realtime_priority(int thread_index)
         priority = std::max(min, priority);
 #endif
 
-        if (success)
+        if (success){
+			std::cout << "setting thread priority " << priority << std::endl;
             success = thread_set_priority_rt(priority);
+		}
 #endif
     }
 
-    if (!success)
-        std::cout << "Warning: cannot raise thread priority" << std::endl;
+    if (!success){
+#ifdef _WIN32
+		std::cout << "win32 error setting thread priority " << std::endl;
+		char *s;
+        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       nullptr, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 
+        std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
+        LocalFree( s );
+#endif
+        std::cout << "Warning: cannot raise thread priority" << std::endl;
+	}
     return success;
 }
 
@@ -334,8 +350,8 @@ void realtime_engine_functor::init_thread(void)
     set_daz_ftz();
 
 #ifndef __APPLE__
-    if (!thread_set_affinity(0))
-        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+    //if (!thread_set_affinity(0))
+    //    std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
 #endif
 
 #ifdef JACK_BACKEND
