@@ -408,6 +408,17 @@ MyClass {
 }
 ::
 
+subsection::Constants
+Constants are variables, that, well, don't vary. You can only define them initially.
+
+code::
+MyClass {
+	const <zero = 0;
+}
+
+MyClass.zero // returns 0
+::
+
 section:: External Method Files
 
 Methods may be added to Classes in separate files.  This is equivalent to Categories in Objective-C.  By convention, the
