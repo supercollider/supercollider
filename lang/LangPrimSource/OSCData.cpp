@@ -963,17 +963,6 @@ SCLANG_DEFINE_PRIMITIVE( MatchLangIP, 2 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( Exit, 1 )
-{
-	PyrSlot *a = g->sp;
-
-	exit(slotRawInt(a));
-
-	//post("exit %d\n", slotRawInt(a));
-	//DumpBackTrace(g);
-	return errNone;
-}
-
 extern "C" {
 	int vpost(const char *fmt, va_list vargs);
 }
