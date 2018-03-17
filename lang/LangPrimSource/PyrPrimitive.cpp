@@ -4223,10 +4223,6 @@ void initPrimitives()
 
 	initMathPrimitives();
 
-
-void init_OSC_primitives();
-	init_OSC_primitives();
-
 void initGUIPrimitives();
 	initGUIPrimitives();
 
@@ -4279,6 +4275,7 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Sched );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( OSCData );
 
 #if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );

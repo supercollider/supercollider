@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "SC_PrimRegistry.hpp"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #include "PyrInterpreter.h"
@@ -52,8 +53,9 @@
 #else
 
 #include <iphlpapi.h>
-
 #endif
+
+LIBSCLANG_PRIMITIVE_GROUP( OSCData );
 
 struct InternalSynthServerGlobals
 {
@@ -72,7 +74,9 @@ SC_UdpInPort* gUDPport = 0;
 
 PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool runGC);
 
-PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
+SCLANG_DEFINE_SYMBOL_SIMPLE( recvOSCmessage );
+SCLANG_DEFINE_SYMBOL_SIMPLE( NetAddr );
+
 extern bool compiledOK;
 
 std::vector<SC_UdpCustomInPort *> gCustomUdpPorts;
@@ -381,7 +385,7 @@ static void netAddrTcpClientNotifyFunc(void *clientData)
 	gLangMutex.unlock();
 }
 
-static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_Connect, 1 )
 {
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
@@ -407,7 +411,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_Disconnect, 1 )
 {
 	int err = errNone;
 
@@ -424,7 +428,7 @@ static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 }
 
 
-static int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( NetAddr_SendMsg, 1 )
 {
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
@@ -439,7 +443,7 @@ static int prNetAddr_SendMsg(VMGlobals *g, int numArgsPushed)
 }
 
 
-static int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( NetAddr_SendBundle, 2 )
 {
 	PyrSlot* netAddrSlot = g->sp - numArgsPushed + 1;
 	PyrSlot* args = netAddrSlot + 1;
@@ -459,7 +463,7 @@ static int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(slotRawObject(netAddrSlot), packet.size(), (char*)packet.buf);
 }
 
-static int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_SendRaw, 2 )
 {
 	PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* arraySlot = g->sp;
@@ -477,7 +481,7 @@ static int prNetAddr_SendRaw(VMGlobals *g, int numArgsPushed)
 	return netAddrSend(netAddrObj, msglen, bufptr, false);
 }
 
-static int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_GetBroadcastFlag, 1 )
 {
 	if (gUDPport == 0)
 		return errFailed;
@@ -493,7 +497,7 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_SetBroadcastFlag, 2 )
 {
 	if (gUDPport == 0)
 		return errFailed;
@@ -508,7 +512,7 @@ static int prNetAddr_SetBroadcastFlag(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_BundleSize, 1 )
 {
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
@@ -519,7 +523,7 @@ static int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_MsgSize, 1 )
 {
 	PyrSlot* args = g->sp;
 	big_scpacket packet;
@@ -534,7 +538,7 @@ static int prNetAddr_MsgSize(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NetAddr_UseDoubles, 2 )
 {
 	//PyrSlot* netAddrSlot = g->sp - 1;
 	PyrSlot* flag = g->sp;
@@ -544,7 +548,7 @@ static int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Array_OSCBytes, 1 )
 {
 	PyrSlot* a = g->sp;
 	PyrObject *array = slotRawObject(a);
@@ -672,7 +676,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 static PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
 {
 	VMGlobals *g = gMainVMGlobals;
-	PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
+	PyrObject *obj = instantiateObject(g->gc, s_NetAddr->u.classobj, 2, true, false);
 	PyrSlot *slots = obj->slots;
 	SetInt(slots+0, inReply->mAddress.to_v4().to_ulong());
 	SetInt(slots+1, inReply->mPort);
@@ -705,7 +709,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortN
 
 			PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
 			++g->sp; SetObject(g->sp, arrayObj);
-			runInterpreter(g, s_recvoscmsg, 5);
+			runInterpreter(g, s_recvOSCmessage, 5);
 		}
 		data += msgSize;
 	}
@@ -724,7 +728,7 @@ void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPort
 	++g->sp; SetInt(g->sp, inPortNum);
 	++g->sp; SetObject(g->sp, arrayObj);
 
-	runInterpreter(g, s_recvoscmsg, 5);
+	runInterpreter(g, s_recvOSCmessage, 5);
 }
 
 void FreeOSCPacket(OSC_Packet *inPacket)
@@ -782,8 +786,7 @@ void init_OSC(int port)
 	}
 }
 
-int prOpenUDPPort(VMGlobals *g, int numArgsPushed);
-int prOpenUDPPort(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( OpenUDPPort, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -827,7 +830,7 @@ void cleanup_OSC()
 
 extern boost::asio::io_service ioService;
 
-static int prGetHostByName(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetHostByName, 1 )
 {
 	PyrSlot *a = g->sp;
 	char hostname[256];
@@ -869,8 +872,7 @@ static int prGetHostByName(VMGlobals *g, int numArgsPushed)
 #endif
 }
 
-int prGetLangPort(VMGlobals *g, int numArgsPushed);
-int prGetLangPort(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetLangPort, 1 )
 {
 	PyrSlot *a = g->sp;
 	if (!gUDPport) return errFailed;
@@ -878,8 +880,7 @@ int prGetLangPort(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prMatchLangIP(VMGlobals *g, int numArgsPushed);
-int prMatchLangIP(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( MatchLangIP, 2 )
 {
 	PyrSlot *argString = g->sp;
     char ipstring[40];
@@ -962,8 +963,7 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prExit(VMGlobals *g, int numArgsPushed);
-int prExit(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Exit, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -979,7 +979,7 @@ extern "C" {
 }
 
 #ifndef NO_INTERNAL_SERVER
-int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BootInProcessServer, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -1081,7 +1081,7 @@ int getScopeBuf(uint32 index, SndBuf *buf, bool& didChange)
 	return errNone;
 }
 
-int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( QuitInProcessServer, 1 )
 {
 	//PyrSlot *a = g->sp;
 
@@ -1097,7 +1097,7 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 #else // NO_INTERNAL_SERVER
-int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( QuitInProcessServer, 1 )
 {
 	// no-op. Better to have this than to overwrite in lang.
 	return errNone;
@@ -1109,8 +1109,7 @@ inline int32 BUFMASK(int32 x)
 	return (1 << (31 - CLZ(x))) - 1;
 }
 
-int prAllocSharedControls(VMGlobals *g, int numArgsPushed);
-int prAllocSharedControls(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AllocSharedControls, 2 )
 {
 	//PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -1138,8 +1137,7 @@ int prAllocSharedControls(VMGlobals *g, int numArgsPushed)
 }
 
 
-int prGetSharedControl(VMGlobals *g, int numArgsPushed);
-int prGetSharedControl(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetSharedControl, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -1156,8 +1154,7 @@ int prGetSharedControl(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSetSharedControl(VMGlobals *g, int numArgsPushed);
-int prSetSharedControl(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SetSharedControl, 3 )
 {
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1195,7 +1192,7 @@ static int disconnectSharedMem(VMGlobals *g, PyrObject * object)
 	return errNone;
 }
 
-int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ServerShmInterface_connectSharedMem, 2 )
 {
 #if !defined(SC_IPHONE)
 	PyrSlot *a = g->sp - 1;
@@ -1226,7 +1223,7 @@ int prConnectSharedMem(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prDisconnectSharedMem(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ServerShmInterface_disconnectSharedMem, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -1235,7 +1232,7 @@ int prDisconnectSharedMem(VMGlobals *g, int numArgsPushed)
 	return disconnectSharedMem(g, self);
 }
 
-int prGetControlBusValue(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ServerShmInterface_getControlBusValue, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -1262,7 +1259,7 @@ int prGetControlBusValue(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prGetControlBusValues(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ServerShmInterface_getControlBusValues, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1299,7 +1296,7 @@ int prGetControlBusValues(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSetControlBusValue(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ServerShmInterface_setControlBusValue, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1331,7 +1328,7 @@ int prSetControlBusValue(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSetControlBusValues(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ServerShmInterface_setControlBusValues, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1365,54 +1362,4 @@ int prSetControlBusValues(VMGlobals *g, int numArgsPushed)
 		control_busses[i] = value;
 	}
 	return errNone;
-}
-
-void init_OSC_primitives();
-void init_OSC_primitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_NetAddr_Connect", prNetAddr_Connect, 1, 0);
-	definePrimitive(base, index++, "_NetAddr_Disconnect", prNetAddr_Disconnect, 1, 0);
-	definePrimitive(base, index++, "_NetAddr_SendMsg", prNetAddr_SendMsg, 1, 1);
-	definePrimitive(base, index++, "_NetAddr_SendBundle", prNetAddr_SendBundle, 2, 1);
-	definePrimitive(base, index++, "_NetAddr_SendRaw", prNetAddr_SendRaw, 2, 0);
-	definePrimitive(base, index++, "_NetAddr_GetBroadcastFlag", prNetAddr_GetBroadcastFlag, 1, 0);
-	definePrimitive(base, index++, "_NetAddr_SetBroadcastFlag", prNetAddr_SetBroadcastFlag, 2, 0);
-	definePrimitive(base, index++, "_NetAddr_BundleSize", prNetAddr_BundleSize, 1, 0);
-	definePrimitive(base, index++, "_NetAddr_MsgSize", prNetAddr_MsgSize, 1, 0);
-
-	definePrimitive(base, index++, "_NetAddr_UseDoubles", prNetAddr_UseDoubles, 2, 0);
-	definePrimitive(base, index++, "_Array_OSCBytes", prArray_OSCBytes, 1, 0);
-	definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
-	definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
-    definePrimitive(base, index++, "_MatchLangIP", prMatchLangIP, 2, 0);
-	definePrimitive(base, index++, "_Exit", prExit, 1, 0);
-#ifndef NO_INTERNAL_SERVER
-	definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
-#endif
-	definePrimitive(base, index++, "_QuitInProcessServer", prQuitInProcessServer, 1, 0);
-	definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);
-	definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
-	definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
-	definePrimitive(base, index++, "_OpenUDPPort", prOpenUDPPort, 2, 0);
-
-	// server shared memory interface
-	definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
-	definePrimitive(base, index++, "_ServerShmInterface_disconnectSharedMem", prDisconnectSharedMem, 1, 0);
-	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValue", prGetControlBusValue, 2, 0);
-	definePrimitive(base, index++, "_ServerShmInterface_getControlBusValues", prGetControlBusValues, 3, 0);
-
-	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValue", prSetControlBusValue, 3, 0);
-	definePrimitive(base, index++, "_ServerShmInterface_setControlBusValues", prSetControlBusValues, 3, 0);
-
-	//post("initOSCRecs###############\n");
-	s_call = getsym("call");
-	s_write = getsym("write");
-	s_recvoscmsg = getsym("recvOSCmessage");
-	s_recvoscbndl = getsym("recvOSCbundle");
-	s_netaddr = getsym("NetAddr");
 }
