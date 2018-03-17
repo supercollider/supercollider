@@ -4240,8 +4240,6 @@ void initHIDAPIPrimitives();
 	QtCollider::initPrimitives();
 #endif
 
-	initSCDocPrimitives();
-
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Symbol );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Archiver );
@@ -4255,6 +4253,7 @@ void initHIDAPIPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Sched );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( OSCData );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( SCDoc );
 
 #if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
