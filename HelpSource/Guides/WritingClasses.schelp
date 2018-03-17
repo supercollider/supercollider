@@ -123,7 +123,7 @@ MyClass.classMethod // posts "hello class"
 ::
 
 
-subsection::Overriding Methods (Overloading)
+subsection::Overriding methods (overloading)
 
 In order to change the behaviour of the superclass, often methods are overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
@@ -159,7 +159,7 @@ MyClass : SomeSuperclass {
 
 
 
-section:: New Instance creation
+section:: Instances
 
 code::Object.new:: will return to you a new object. When overriding the class method code::.new:: you must call the
 superclass, which in turn calls its superclass, up until code::Object.new:: is called and an object is actually created
@@ -283,7 +283,7 @@ Often, variables like code::action:: above are filled with custom objects that b
 
 section::Variables
 
-subsection:: Initializing Variables directly
+subsection:: Initializing variables directly
 
 In a variable declaration, variables can be directly initialized. This works for link::Reference/Literals:: only.
 
@@ -336,7 +336,7 @@ MyClass : SomeSuperclass {
 
 ::
 
-subsection:: Getter Setter
+subsection:: Getter and Setter
 
 SuperCollider demands that variables are not accessible outside of the class or instance. A method must be added to
 explicitly give access:
@@ -419,7 +419,7 @@ MyClass {
 MyClass.zero // returns 0
 ::
 
-section:: External Method Files
+section:: External method files
 
 Methods may be added to Classes in separate files.  This is equivalent to Categories in Objective-C.  By convention, the
 file name starts with a lower case letter: the name of the method or feature that the methods are supporting.
@@ -455,7 +455,7 @@ a = MyClass[1, 2, 3];
 a.allOfThem; // [1, 2, 3]
 ::
 
-section:: Printing to String
+section:: Printing to string
 
 subsection:: Printing custom messages to post window
 
@@ -521,6 +521,7 @@ MyTestPoint {
 code::
 MyTestPoint(2, 3).asCompileString;
 ::
+
 
 section:: Catching undefined method calls
 
