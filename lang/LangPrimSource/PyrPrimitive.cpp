@@ -4266,8 +4266,6 @@ void initLIDPrimitives();
 
 #if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 
-void initSerialPrimitives();
-	initSerialPrimitives();
 
 #endif
 
@@ -4303,6 +4301,7 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
 
 #ifdef HAVE_WII
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );

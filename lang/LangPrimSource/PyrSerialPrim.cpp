@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "SC_PrimRegistry.hpp"
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
@@ -49,6 +50,11 @@
 
 #include "SC_FIFO.h"
 #include "SC_Lock.h"
+
+LIBSCLANG_PRIMITIVE_GROUP( Serial );
+
+SCLANG_DEFINE_SYMBOL( s_dataAvailable, "prDataAvailable" );
+SCLANG_DEFINE_SYMBOL( s_doneAction, "prDoneAction" );
 
 class SerialPort
 {
@@ -101,9 +107,6 @@ public:
 		{ }
 	};
 
-	static PyrSymbol* s_dataAvailable;
-	static PyrSymbol* s_doneAction;
-
 public:
 	SerialPort(PyrObject* obj, const char* serialport, const Options& options);
 	~SerialPort();
@@ -148,9 +151,6 @@ private:
 	std::atomic<bool>	m_running;
 	SC_Thread				m_thread;
 };
-
-PyrSymbol* SerialPort::s_dataAvailable = 0;
-PyrSymbol* SerialPort::s_doneAction = 0;
 
 SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& options)
 	: m_obj(obj),
@@ -548,7 +548,7 @@ static SerialPort* getSerialPort(PyrSlot* slot)
 	return (SerialPort*)slotRawPtr(&slotRawObject(slot)->slots[0]);
 }
 
-static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SerialPort_Open, 2 + SerialPort::kNumOptions )
 {
 	PyrSlot *args = g->sp - 1 - SerialPort::kNumOptions;
 
@@ -603,7 +603,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SerialPort_Close, 1 )
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
@@ -612,7 +612,7 @@ static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SerialPort_Cleanup, 1 )
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
@@ -632,7 +632,7 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prSerialPort_Next(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SerialPort_Next, 1 )
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
@@ -649,7 +649,7 @@ static int prSerialPort_Next(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SerialPort_Put, 2 )
 {
 	PyrSlot *args = g->sp - 1;
 
@@ -673,7 +673,7 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prSerialPort_RXErrors(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SerialPort_RXErrors, 1 )
 {
 	PyrSlot* self = g->sp;
 	SerialPort* port = (SerialPort*)getSerialPort(self);
@@ -681,23 +681,3 @@ static int prSerialPort_RXErrors(struct VMGlobals *g, int numArgsPushed)
 	SetInt(self, port->rxErrors());
 	return errNone;
 }
-
-void initSerialPrimitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_SerialPort_Open",     prSerialPort_Open, 2+SerialPort::kNumOptions, 0);
-	definePrimitive(base, index++, "_SerialPort_Close",    prSerialPort_Close, 1, 0);
-	definePrimitive(base, index++, "_SerialPort_Next",     prSerialPort_Next, 1, 0);
-	definePrimitive(base, index++, "_SerialPort_Put",      prSerialPort_Put, 2, 0);
-	definePrimitive(base, index++, "_SerialPort_RXErrors", prSerialPort_RXErrors, 1, 0);
-	definePrimitive(base, index++, "_SerialPort_Cleanup",    prSerialPort_Cleanup, 1, 0);
-
-	SerialPort::s_dataAvailable = getsym("prDataAvailable");
-	SerialPort::s_doneAction = getsym("prDoneAction");
-}
-
-// EOF
