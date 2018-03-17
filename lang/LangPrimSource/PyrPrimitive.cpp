@@ -4246,9 +4246,6 @@ void initCocoaFilePrimitives();
 	initCocoaFilePrimitives();
 #endif
 
-void initSchedPrimitives();
-	initSchedPrimitives();
-
 #ifdef SC_HIDAPI
 void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
@@ -4302,6 +4299,7 @@ void initOpenGLPrimitives();
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Signal );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Unix );
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Serial );
+	INIT_LIBSCLANG_PRIMITIVE_GROUP( Sched );
 
 #ifdef HAVE_WII
 	INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );

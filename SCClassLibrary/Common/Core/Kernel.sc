@@ -398,7 +398,7 @@ Process {
 	}
 
 	*monotonicClockTime {
-		_monotonicClockTime
+		_MonotonicClockTime
 		^this.primitiveFailed
 	}
 
