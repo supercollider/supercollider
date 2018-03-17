@@ -52,22 +52,20 @@ code::
 
 subsection:: Ref
 The link::Classes/Ref:: class provides a way to create an indirect reference to an object. It can be used to pass a value by reference. Ref objects have a single instance variable called code::value::.
-The code::value:: method returns the value of the instance variable code::value::. Here is the class definition for Ref:
+The code::value:: method returns the value of the instance variable code::value::. Here is a part of the class definition for Ref:
 code::
 Ref : AbstractFunction
 {
     var <>value;
-    *new { arg thing; ^super.new.value_(thing) }
+
+	*new { arg thing; ^super.new.value_(thing) }
     set { arg thing; value = thing }
     get { ^value }
     dereference { ^value }
     asRef { ^this }
 
-    //behave like a stream
+    // behave like a stream
     next { ^value }
-    embedInStream { arg inval;
-        ^this.value.embedInStream(inval)
-    }
 
     printOn { arg stream;
         stream << "`(" << value << ")";
