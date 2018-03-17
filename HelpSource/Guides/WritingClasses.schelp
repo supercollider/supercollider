@@ -421,47 +421,19 @@ code::
 
 section:: Slotted classes
 
-Classes defined with code::[slot]:: can use the syntax myClass[i] which will call myClass.at(i). This is useful when defining
-classes that inherit from a Collection type class.
+Classes defined with code::[slot]:: can use the syntax code::myClass[...]:: which will call code::myClass.new:: and then code::this.add(each):: for each item in the square brackets.
 
 code::
-MyClass[slot] {
-
-	*new {
-		^super.new
-	}
-
-	at { |i|
-		("Index " ++ i).postln
-	}
-
-}
-::
-
-code::
-a = MyClass();
-a[3];
-::
-
-For example, defining a custom array of Points:
-
-code::
-MyPointArray[slot] : RawArray {
-
-	center {
-		var coords = this.asArray.flop;
-		var means = coords.collect { |item| item.mean };
-		var x = means[0];
-		var y = means[1];
-		^Point(x, y)
-	}
-
-	asArray{
-		^this.collect { |elem| elem.asArray }
+MyClass[] {
+	var <allOfThem;
+	add { |item|
+		allOfThem = allOfThem.add(item)
 	}
 }
-::
 
+a = MyClass[1, 2, 3];
+a.allOfThem; // [1, 2, 3]
+::
 
 section:: Printing custom messages to post window
 
