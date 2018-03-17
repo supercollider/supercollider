@@ -123,8 +123,6 @@ int yyparse();
 
 extern bool gTraceInterpreter;
 
-void initPatternPrimitives();
-
 typedef struct {
 	PrimitiveHandler func;
 	PyrSymbol* name;
