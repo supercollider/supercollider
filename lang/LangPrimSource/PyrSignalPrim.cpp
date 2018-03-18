@@ -38,7 +38,7 @@ extern "C" {
 
 LIBSCLANG_PRIMITIVE_GROUP( Signal );
 
-SCLANG_DEFINE_PRIMITIVE( signalFill, 2 )
+SCLANG_DEFINE_PRIMITIVE( SignalFill, 2 )
 {
 	PyrSlot *a, *b;
 	int err;
@@ -53,7 +53,7 @@ SCLANG_DEFINE_PRIMITIVE( signalFill, 2 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalScale, 2 )
+SCLANG_DEFINE_PRIMITIVE( SignalScale, 2 )
 {
 	PyrSlot *a, *b;
 	int err;
@@ -68,7 +68,7 @@ SCLANG_DEFINE_PRIMITIVE( signalScale, 2 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalOffset, 2 )
+SCLANG_DEFINE_PRIMITIVE( SignalOffset, 2 )
 {
 	PyrSlot *a, *b;
 	int err;
@@ -83,7 +83,7 @@ SCLANG_DEFINE_PRIMITIVE( signalOffset, 2 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalString, 1 )
+SCLANG_DEFINE_PRIMITIVE( SignalString, 1 )
 {
 	PyrSlot *a;
 	PyrString *string;
@@ -107,7 +107,7 @@ SCLANG_DEFINE_PRIMITIVE( signalString, 1 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalPeak, 1 )
+SCLANG_DEFINE_PRIMITIVE( SignalPeak, 1 )
 {
 	PyrSlot *a;
 
@@ -117,7 +117,7 @@ SCLANG_DEFINE_PRIMITIVE( signalPeak, 1 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalNormalize, 3 )
+SCLANG_DEFINE_PRIMITIVE( SignalNormalize, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
@@ -142,7 +142,7 @@ SCLANG_DEFINE_PRIMITIVE( signalNormalize, 3 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalNormalizeTransferFn, 1 )
+SCLANG_DEFINE_PRIMITIVE( SignalNormalizeTransferFn, 1 )
 {
 	PyrSlot *a;
 
@@ -152,7 +152,7 @@ SCLANG_DEFINE_PRIMITIVE( signalNormalizeTransferFn, 1 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalIntegral, 1 )
+SCLANG_DEFINE_PRIMITIVE( SignalIntegral, 1 )
 {
 	PyrSlot *a;
 
@@ -162,7 +162,7 @@ SCLANG_DEFINE_PRIMITIVE( signalIntegral, 1 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalInvert, 3 )
+SCLANG_DEFINE_PRIMITIVE( SignalInvert, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
@@ -187,7 +187,7 @@ SCLANG_DEFINE_PRIMITIVE( signalInvert, 3 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalReverse, 3 )
+SCLANG_DEFINE_PRIMITIVE( SignalReverse, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
@@ -212,7 +212,7 @@ SCLANG_DEFINE_PRIMITIVE( signalReverse, 3 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalRotate, 2 )
+SCLANG_DEFINE_PRIMITIVE( SignalRotate, 2 )
 {
 	PyrSlot *a, *b;
 	int err, rot;
@@ -227,7 +227,7 @@ SCLANG_DEFINE_PRIMITIVE( signalRotate, 2 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalOverDub, 3 )
+SCLANG_DEFINE_PRIMITIVE( SignalOverDub, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -245,7 +245,7 @@ SCLANG_DEFINE_PRIMITIVE( signalOverDub, 3 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalOverWrite, 3 )
+SCLANG_DEFINE_PRIMITIVE( SignalOverWrite, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -263,7 +263,7 @@ SCLANG_DEFINE_PRIMITIVE( signalOverWrite, 3 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalFade, 5 )
+SCLANG_DEFINE_PRIMITIVE( SignalFade, 5 )
 {
 	PyrSlot *a, *b, *c, *d, *e;
 	int err;
@@ -298,7 +298,7 @@ SCLANG_DEFINE_PRIMITIVE( signalFade, 5 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalAddHarmonic, 4 )
+SCLANG_DEFINE_PRIMITIVE( SignalAddHarmonic, 4 )
 {
 	PyrSlot *a, *b, *c, *d;
 	int err;
@@ -327,7 +327,7 @@ SCLANG_DEFINE_PRIMITIVE( signalAddHarmonic, 4 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signalAddChebyshev, 3 )
+SCLANG_DEFINE_PRIMITIVE( SignalAddChebyshev, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -391,7 +391,7 @@ void wavetableAsSignal(float *wavetable, float *signal, int size)
 
 //////////////////////////////////////////////////////////////////////////////
 
-SCLANG_DEFINE_PRIMITIVE( signalAsWavetable, 1 )
+SCLANG_DEFINE_PRIMITIVE( SignalAsWavetable, 1 )
 {
 	PyrSlot *a;
 	int size;
@@ -431,7 +431,7 @@ SCLANG_DEFINE_PRIMITIVE( wavetableAsSignal, 1 )
 //class_signal
 
 #if 1
-SCLANG_DEFINE_PRIMITIVE( signal_FFT, 3 )
+SCLANG_DEFINE_PRIMITIVE( Signal_FFT, 3 )
 {
 	PyrSlot *a, *b, *c;
 
@@ -523,7 +523,7 @@ SCLANG_DEFINE_PRIMITIVE( signal_FFT, 3 )
 	return errNone;
 }
 
-SCLANG_DEFINE_PRIMITIVE( signal_IFFT, 3 )
+SCLANG_DEFINE_PRIMITIVE( Signal_IFFT, 3 )
 {
 	PyrSlot *a, *b, *c;
 
