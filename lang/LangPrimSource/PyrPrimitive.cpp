@@ -76,6 +76,7 @@ INIT_LIBSCLANG_PRIMITIVE_GROUP( Bit );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( Char );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( File );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( List );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Math );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( OSCData );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( Platform );
 INIT_LIBSCLANG_PRIMITIVE_GROUP( SCDoc );
@@ -4266,8 +4267,6 @@ void initPrimitives()
 	definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
 	definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
 	definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
-
-	initMathPrimitives();
 
 void initGUIPrimitives();
 	initGUIPrimitives();
