@@ -21,6 +21,8 @@
 #ifndef _OPCODES_H_
 #define _OPCODES_H_
 
+// "X Macro" idiom [https://en.wikipedia.org/wiki/X_Macro]
+// Allows for quick and correct lists in multiple locations
 #define SPECIAL_UNARY_MATH_OPS \
 	X(Neg, neg)                \
 	X(Not, not)                \
@@ -77,6 +79,8 @@
 	X(Ramp, ramp)              \
 	X(SCurve, scurve)
 
+// These need to be separate from the others because they are handled differently when defining
+// primitives (see PyrPrimitive.cpp)
 #define SPECIAL_BINARY_MATH_OPS_WITHOUT_ADVERBS \
 	X(Add, +)                                   \
 	X(Sub, -)                                   \
