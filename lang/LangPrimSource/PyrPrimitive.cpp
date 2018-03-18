@@ -102,7 +102,7 @@ INIT_LIBSCLANG_PRIMITIVE_GROUP( LID );
 #endif
 
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
-INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( MIDI );
 #endif
 
 #ifdef SC_IDE
@@ -4291,14 +4291,10 @@ void initGUIPrimitives();
 
 void deinitPrimitives()
 {
+	// run custom deinitializers
 	SC_DeinitializerDefiner::instance().run_all();
 #ifdef SC_HIDAPI
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();
 #endif
-#if defined(HAVE_PORTMIDI) || defined(HAVE_ALSA)
-void deinitMIDIPrimitives();
-	deinitMIDIPrimitives();
-#endif
-
 }

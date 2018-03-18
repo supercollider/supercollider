@@ -52,7 +52,7 @@ added prRestartMIDI
 #include "PyrSched.h"
 #include "GC.h"
 
-LIBSCLANG_PRIMITIVE_GROUP( CoreMIDI );
+LIBSCLANG_PRIMITIVE_GROUP( MIDI );
 
 SCLANG_DEFINE_SYMBOL( s_domidiaction, "doAction" );
 SCLANG_DEFINE_SYMBOL( s_midiNoteOnAction, "doNoteOnAction" );
