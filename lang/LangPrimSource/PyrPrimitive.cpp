@@ -191,7 +191,9 @@ int slotPStrVal(PyrSlot *slot, unsigned char *str)
 	return errWrongType;
 }
 
-int instVarAt(struct VMGlobals *g, int numArgsPushed)
+int blockValueEnvir(struct VMGlobals *g, int numArgsPushed);
+
+SCLANG_DEFINE_PRIMITIVE( InstVarAt, 2 )
 {
 	PyrSlot *a, *b;
 	int index;
@@ -224,7 +226,7 @@ int instVarAt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int instVarPut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( InstVarPut, 3 )
 {
 	PyrSlot *a, *b, *c, *slot;
 	int index;
@@ -264,7 +266,7 @@ int instVarPut(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int instVarSize(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( InstVarSize, 1 )
 {
 	PyrSlot *a;
 	PyrObject *obj;
@@ -284,7 +286,7 @@ int instVarSize(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int objectHash(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectHash, 1 )
 {
 	PyrSlot *a;
 	int hash;
@@ -296,7 +298,7 @@ int objectHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectClass(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectClass, 1 )
 {
 	PyrSlot *a;
 	PyrClass *classobj;
@@ -307,7 +309,7 @@ int objectClass(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prPrimitiveError(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PrimitiveError, 1 )
 {
 	PyrSlot *a;
 
@@ -316,8 +318,7 @@ int prPrimitiveError(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prStackDepth(struct VMGlobals *g, int numArgsPushed);
-int prStackDepth(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( StackDepth, 1 )
 {
 	PyrSlot *a;
 
@@ -328,21 +329,21 @@ int prStackDepth(struct VMGlobals *g, int numArgsPushed)
 
 extern void DumpStack(VMGlobals *g, PyrSlot *sp);
 
-int prDumpStack(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DumpStack, 1 )
 {
 	DumpStack(g, g->sp);
 	return errNone;
 }
 
 void DumpDetailedBackTrace(VMGlobals *g);
-int prDumpDetailedBackTrace(struct VMGlobals *g, int numArgsPushed);
-int prDumpDetailedBackTrace(struct VMGlobals *g, int numArgsPushed)
+
+SCLANG_DEFINE_PRIMITIVE( DumpDetailedBackTrace, 1 )
 {
 	DumpDetailedBackTrace(g);
 	return errNone;
 }
 
-int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PrimitiveErrorString, 1 )
 {
 	PyrSlot *a;
 	PyrString *string;
@@ -393,7 +394,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 
 
 
-int prPostString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PostString, 1 )
 {
 	PyrSlot *a;
 
@@ -404,7 +405,7 @@ int prPostString(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prPostLine(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PostLine, 1 )
 {
 	PyrSlot *a;
 
@@ -416,7 +417,7 @@ int prPostLine(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prDebugger(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( HostDebugger, 1 )
 {
 	PyrSlot *a;
 
@@ -425,10 +426,7 @@ int prDebugger(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-
-
-int prObjectString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectString, 1 )
 {
 	PyrSlot *a;
 	PyrString *string;
@@ -448,8 +446,7 @@ int prObjectString(struct VMGlobals *g, int numArgsPushed)
 	}
 }
 
-int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed);
-int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Float_AsStringPrec, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -472,8 +469,7 @@ int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
 
 }
 
-int prAsCompileString(struct VMGlobals *g, int numArgsPushed);
-int prAsCompileString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectCompileString, 1 )
 {
 	PyrSlot *a;
 	PyrString *string;
@@ -503,7 +499,7 @@ int prAsCompileString(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prClassString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ClassString, 1 )
 {
 	PyrSlot *a;
 	PyrClass *classobj;
@@ -516,8 +512,7 @@ int prClassString(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prPrimName(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PrimName, 1 )
 {
 	PyrSlot *a;
 	PyrThread *thread;
@@ -532,7 +527,7 @@ int prPrimName(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectIsKindOf, 2 )
 {
 	PyrSlot *a, *b;
 	PyrClass *classobj, *testclass;
@@ -577,8 +572,7 @@ int objectIsKindOf(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int objectIsMemberOf(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectIsMemberOf, 2 )
 {
 	PyrSlot *a, *b;
 	PyrClass *classobj, *testclass;
@@ -597,7 +591,7 @@ int objectIsMemberOf(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectIdentical(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Identical, 2 )
 {
 	PyrSlot *a, *b;
 
@@ -611,7 +605,7 @@ int objectIdentical(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectNotIdentical(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NotIdentical, 2 )
 {
 	PyrSlot *a, *b;
 
@@ -625,8 +619,7 @@ int objectNotIdentical(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int basicNewClear(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicNewClear, 2 )
 {
 	PyrSlot *a, *b;
 	int size;
@@ -657,8 +650,7 @@ int basicNewClear(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed);
-int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( BasicNewCopyArgsToInstVars, 1 )
 {
 	PyrSlot *a, *b;
 	PyrClass *classobj;
@@ -684,9 +676,7 @@ int basicNewCopyArgsToInstanceVars(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-
-int basicNew(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( BasicNew, 2 )
 {
 	PyrSlot *a, *b;
 	int size;
@@ -717,7 +707,6 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
 bool isClosed(PyrBlock* fundef);
 bool isClosed(PyrBlock* fundef)
 {
@@ -734,8 +723,7 @@ bool isWithinClosed(PyrBlock* fundef)
 	return false;
 }
 
-int prFunctionDefAsFunction(struct VMGlobals *g, int numArgsPushed);
-int prFunctionDefAsFunction(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunctionDefAsFunction, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -755,8 +743,7 @@ int prFunctionDefAsFunction(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFunctionDefDumpContexts(struct VMGlobals *g, int numArgsPushed);
-int prFunctionDefDumpContexts(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunctionDefDumpContexts, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -768,10 +755,7 @@ int prFunctionDefDumpContexts(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-
-int prFunctionDefIsClosed(struct VMGlobals *g, int numArgsPushed);
-int prFunctionDefIsClosed(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunctionDefIsClosed, 1 )
 {
 	PyrSlot *a = g->sp;
 	PyrBlock *block = slotRawBlock(a);
@@ -780,8 +764,7 @@ int prFunctionDefIsClosed(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed);
-int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunctionDefIsWithinClosed, 1 )
 {
 	PyrSlot *a = g->sp;
 	PyrBlock *block = slotRawBlock(a);
@@ -789,7 +772,6 @@ int prFunctionDefIsWithinClosed(struct VMGlobals *g, int numArgsPushed)
 	SetBool(a, isWithinClosed(block));
 	return errNone;
 }
-
 
 void reallocStack(struct VMGlobals *g, int stackNeeded, int stackDepth)
 {
@@ -804,8 +786,7 @@ void reallocStack(struct VMGlobals *g, int stackNeeded, int stackDepth)
 	g->sp = array->slots + stackDepth - 1;
 }
 
-
-int blockValueArray(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( FunctionValueArray, 1 )
 {
 	PyrSlot *b;
 	PyrObject *array;
@@ -854,10 +835,7 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 	}
 }
 
-int blockValueEnvir(struct VMGlobals *g, int numArgsPushed);
-
-int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed);
-int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( FunctionValueArrayEnvir, 1 )
 {
 	PyrSlot *b;
 	PyrObject *array;
@@ -1607,7 +1585,6 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed);
 int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 {
 	PyrSlot *recvrSlot, *selSlot, *listSlot;
@@ -1668,8 +1645,7 @@ int objectPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 	return errNone;
 }
 
-
-int objectPerformList(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( ObjectPerformList, 2 )
 {
 	PyrSlot *recvrSlot, *selSlot, *listSlot;
 	PyrSlot *pslot, *qslot;
@@ -1801,7 +1777,6 @@ int objectSuperPerform(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed);
 int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPushed)
 {
 	PyrSlot *recvrSlot, *selSlot, *listSlot;
@@ -1870,7 +1845,7 @@ int objectSuperPerformWithKeys(VMGlobals *g, int numArgsPushed, int numKeyArgsPu
 }
 
 
-int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( SuperPerformList, 2 )
 {
 	PyrSlot *recvrSlot, *selSlot, *listSlot;
 	PyrSlot *pslot, *qslot;
@@ -1920,10 +1895,7 @@ int objectSuperPerformList(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-
-
-int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectPerformMsg, 2 )
 {
 	PyrSlot *recvrSlot, *selSlot, *listSlot;
 	PyrSlot *pslot, *qslot;
@@ -1975,9 +1947,7 @@ int objectPerformSelList(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed);
-int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_VARARGS_PRIMITIVE( ArrayPerformMsg, 1 )
 {
 	PyrSlot *recvrSlot, *selSlot, *arraySlot;
 	PyrSlot *pslot, *qslot;
@@ -2023,7 +1993,7 @@ int arrayPerformMsg(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int objectDump(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectDump, 1 )
 {
 	PyrSlot *a;
 
@@ -2033,38 +2003,33 @@ int objectDump(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prTotalFree(struct VMGlobals *g, int numArgsPushed);
-int prTotalFree(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TotalFree, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetInt(a, g->allocPool->TotalFree());
 	return errNone;
 }
 
-int prLargestFreeBlock(struct VMGlobals *g, int numArgsPushed);
-int prLargestFreeBlock(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LargestFreeBlock, 1 )
 {
 	PyrSlot *a = g->sp;
 	SetInt(a, g->allocPool->LargestFreeChunk());
 	return errNone;
 }
 
-int dumpGCinfo(struct VMGlobals *g, int numArgsPushed);
-int dumpGCinfo(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GCInfo, 1 )
 {
 	g->gc->DumpInfo();
 	return errNone;
 }
 
-int dumpGCdumpGrey(struct VMGlobals *g, int numArgsPushed);
-int dumpGCdumpGrey(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GCDumpGrey, 1 )
 {
 	g->gc->DumpGrey();
 	return errNone;
 }
 
-int dumpGCdumpSet(struct VMGlobals *g, int numArgsPushed);
-int dumpGCdumpSet(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GCDumpSet, 2 )
 {
 	PyrSlot *b = g->sp;
 	int set;
@@ -2075,32 +2040,28 @@ int dumpGCdumpSet(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prGCSanity(struct VMGlobals *g, int numArgsPushed);
-int prGCSanity(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GCSanity, 1 )
 {
 	g->gc->SanityCheck();
 	return errNone;
 }
 
 #if GCDEBUG
-int prTraceAllPathsTo(struct VMGlobals *g, int numArgsPushed);
-int prTraceAllPathsTo(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TraceAllPathsTo, 1 )
 {
 	PyrSlot *a = g->sp;
 	g->gc->TracePathsTo(slotRawObject(a), false);
 	return errNone;
 }
 
-int prTraceAnyPathsTo(struct VMGlobals *g, int numArgsPushed);
-int prTraceAnyPathsTo(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TraceAnyPathsTo, 1 )
 {
 	PyrSlot *a = g->sp;
 	g->gc->TracePathsTo(slotRawObject(a), true);
 	return errNone;
 }
 
-int prTraceAnyPathToAllInstancesOf(struct VMGlobals *g, int numArgsPushed);
-int prTraceAnyPathToAllInstancesOf(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TraceAnyPathToAllInstancesOf, 1 )
 {
 	PyrSlot *a = g->sp;
 	g->gc->TraceAnyPathToAllInstancesOf(slotRawClass(a)->name.us);
@@ -2110,7 +2071,7 @@ int prTraceAnyPathToAllInstancesOf(struct VMGlobals *g, int numArgsPushed)
 
 extern PyrClass *gClassList;
 
-int prAllClasses(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AllClasses, 1 )
 {
 	PyrSlot *a;
 	PyrClass *classobj;
@@ -2130,7 +2091,7 @@ int prAllClasses(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prPostClassTree(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DumpClassSubtree, 1 )
 {
 	PyrSlot *a;
 
@@ -2139,7 +2100,7 @@ int prPostClassTree(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prDumpBackTrace(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DumpBackTrace, 1 )
 {
 	PyrSlot *a;
 
@@ -2226,8 +2187,7 @@ static void MakeDebugFrame(VMGlobals *g, PyrFrame *frame, PyrSlot *outSlot)
 	constructor.makeDebugFrame(g, frame, outSlot);
 }
 
-int prGetBackTrace(VMGlobals *g, int numArgsPushed);
-int prGetBackTrace(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetBackTrace, 1 )
 {
 	PyrSlot *a;
 
@@ -2237,7 +2197,7 @@ int prGetBackTrace(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prObjectShallowCopy(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectShallowCopy, 1 )
 {
 	PyrSlot *a;
 
@@ -2251,8 +2211,7 @@ int prObjectShallowCopy(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prObjectCopyImmutable(struct VMGlobals *g, int numArgsPushed);
-int prObjectCopyImmutable(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectCopyImmutable, 1 )
 {
 	PyrSlot *a;
 
@@ -2267,8 +2226,7 @@ int prObjectCopyImmutable(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed);
-int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectIsMutable, 1 )
 {
 	PyrSlot *a;
 
@@ -2285,8 +2243,7 @@ int prObjectIsMutable(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed);
-int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectIsPermanent, 1 )
 {
 	PyrSlot *a;
 
@@ -2303,10 +2260,7 @@ int prObjectIsPermanent(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-
-int prDeepFreeze(struct VMGlobals *g, int numArgsPushed);
-int prDeepFreeze(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectDeepFreeze, 1 )
 {
 	PyrSlot *a;
 
@@ -2316,9 +2270,7 @@ int prDeepFreeze(struct VMGlobals *g, int numArgsPushed)
 	return err;
 }
 
-
-int prDeepCopy(struct VMGlobals *g, int numArgsPushed);
-int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectDeepCopy, 1 )
 {
 	PyrSlot *a;
 
@@ -2327,9 +2279,6 @@ int prDeepCopy(struct VMGlobals *g, int numArgsPushed)
 	int err = copier.doDeepCopy(a);
 	return err;
 }
-
-
-
 
 bool IsSimpleLiteralSlot(PyrSlot* slot);
 bool IsSimpleLiteralSlot(PyrSlot* slot)
@@ -2347,9 +2296,7 @@ bool IsSimpleLiteralSlot(PyrSlot* slot)
 	}
 }
 
-
-
-int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectCopyRange, 3 )
 {
 	PyrSlot *a, *b, *c;
 
@@ -2366,7 +2313,7 @@ int prObjectCopyRange(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prObjectCopySeries(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectCopySeries, 4 )
 {
 	PyrSlot *a, *b, *c, *d;
 
@@ -2436,9 +2383,9 @@ zerolength:
 	return errNone;
 }
 
-void switchToThread(struct VMGlobals *g, struct PyrThread *newthread, int oldstate, int *numArgsPushed);
+void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
 
-int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Halt, 1 )
 {
 	switchToThread(g, slotRawThread(&g->process->mainThread), tDone, &numArgsPushed);
 	// return all the way out.
@@ -2457,8 +2404,7 @@ int haltInterpreter(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prCanCallOS(struct VMGlobals *g, int numArgsPushed);
-int prCanCallOS(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( CanCallOS, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -2469,8 +2415,7 @@ int prCanCallOS(struct VMGlobals *g, int numArgsPushed)
 
 extern bool gGenerateTailCallByteCodes;
 
-int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
-int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetTailCallOptimize, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -2479,8 +2424,7 @@ int prGetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed);
-int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SetTailCallOptimize, 2 )
 {
 	//PyrSlot *a = g->sp - 1;
 
@@ -2497,8 +2441,7 @@ int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prTraceOn(struct VMGlobals *g, int numArgsPushed);
-int prTraceOn(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Trace, 1 )
 {
 	PyrSlot *a;
 
@@ -2507,8 +2450,7 @@ int prTraceOn(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prKeywordError(struct VMGlobals *g, int numArgsPushed);
-int prKeywordError(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( KeywordError, 1 )
 {
 	PyrSlot *a;
 
@@ -2517,8 +2459,7 @@ int prKeywordError(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFunDef_NumArgs(struct VMGlobals *g, int numArgsPushed);
-int prFunDef_NumArgs(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunDef_NumArgs, 1 )
 {
 	PyrSlot *a;
 	PyrMethodRaw *methraw;
@@ -2529,8 +2470,7 @@ int prFunDef_NumArgs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFunDef_NumVars(struct VMGlobals *g, int numArgsPushed);
-int prFunDef_NumVars(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunDef_NumVars, 1 )
 {
 	PyrSlot *a;
 	PyrMethodRaw *methraw;
@@ -2541,8 +2481,7 @@ int prFunDef_NumVars(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFunDef_VarArgs(struct VMGlobals *g, int numArgsPushed);
-int prFunDef_VarArgs(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FunDef_VarArgs, 1 )
 {
 	PyrSlot *a;
 	PyrMethodRaw *methraw;
@@ -2563,7 +2502,7 @@ int undefinedPrimitive(struct VMGlobals *g, int numArgsPushed)
 
 void dumpByteCodes(PyrBlock *theBlock);
 
-int prDumpByteCodes(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DumpByteCodes, 1 )
 {
 	PyrSlot *a;
 
@@ -2572,7 +2511,7 @@ int prDumpByteCodes(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prObjectPointsTo(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectPointsTo, 2 )
 {
 	PyrSlot *a, *b, temp;
 	PyrObject *obj;
@@ -2597,7 +2536,7 @@ int prObjectPointsTo(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prObjectRespondsTo(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ObjectRespondsTo, 2 )
 {
 	PyrSlot *a, *b;
 	PyrClass *classobj;
@@ -2668,7 +2607,7 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g)
 }
 
 #if !SCPLAYER
-int prCompileString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( CompileExpression, 2 )
 {
 	PyrSlot *a, *b;
 	PyrString *string;
@@ -2747,8 +2686,7 @@ int prCompileString(struct VMGlobals *g, int numArgsPushed)
 char sCodeStringIn[8192];
 char sCodeStringOut[8192];
 
-int prUGenCodeString(struct VMGlobals *g, int numArgsPushed);
-int prUGenCodeString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( UGenCodeString, 5 )
 {
 	PyrSlot *aa, *bb, *cc, *dd, *ee;
 	char *out = sCodeStringOut;
@@ -2898,7 +2836,6 @@ void threadSanity(VMGlobals *g, PyrThread *thread)
 	}
 }*/
 
-void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed);
 void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numArgsPushed)
 {
 	PyrThread *oldthread;
@@ -3090,8 +3027,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 
 extern PyrSymbol *s_prstart;
 
-int prThreadInit(struct VMGlobals *g, int numArgsPushed);
-int prThreadInit(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Thread_Init, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int stacksize, err;
@@ -3131,8 +3067,7 @@ int prThreadInit(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed);
-int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Thread_RandSeed, 2 )
 {
 	PyrSlot *a = g->sp - 1;	// thread
 	PyrSlot *b = g->sp;		// rand seed
@@ -3156,8 +3091,7 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed);
-int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Thread_GetRandData, 1 )
 {
 	PyrSlot *a = g->sp;	// thread
 
@@ -3176,8 +3110,7 @@ int prThreadGetRandData(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed);
-int prThreadSetRandData(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Thread_SetRandData, 2 )
 {
 	PyrSlot *a = g->sp - 1;	// thread
 	PyrSlot *b = g->sp;		// rand data array
@@ -3235,8 +3168,7 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 #endif
 
 
-int prRoutineYield(struct VMGlobals *g, int numArgsPushed);
-int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RoutineYield, 1 )
 {
 	PyrSlot value;
 
@@ -3268,8 +3200,7 @@ int prRoutineYield(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed);
-int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RoutineAlwaysYield, 1 )
 {
 	PyrSlot value;
 
@@ -3300,8 +3231,7 @@ int prRoutineAlwaysYield(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prRoutineResume(struct VMGlobals *g, int numArgsPushed);
-int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RoutineResume, 2 )
 {
 	PyrSlot *a, *b, threadSlot, value;
 	PyrThread *thread;
@@ -3378,8 +3308,7 @@ int prRoutineResume(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prRoutineReset(struct VMGlobals *g, int numArgsPushed);
-int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RoutineReset, 1 )
 {
 	PyrThread *thread;
 	int state;
@@ -3427,8 +3356,7 @@ int prRoutineReset(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prRoutineStop(struct VMGlobals *g, int numArgsPushed);
-int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RoutineStop, 1 )
 {
 	PyrThread *thread;
 	int state;
@@ -3459,9 +3387,7 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed);
-int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RoutineYieldAndReset, 2 )
 {
 	PyrSlot *a, *b, value;
 	int state;
@@ -3499,11 +3425,9 @@ int prRoutineYieldAndReset(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
 bool gBlork = false;
 
-int prBlork(struct VMGlobals *g, int numArgsPushed);
-int prBlork(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Blork, 1 )
 {
 	PyrSlot *a;
 
@@ -3514,8 +3438,7 @@ int prBlork(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed);
-int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( MainOverwriteMsg, 1 )
 {
 	PyrSlot *a = g->sp;
 	PyrString* string = newPyrString(g->gc, overwriteMsg.c_str(), 0, false);
@@ -3523,7 +3446,7 @@ int prOverwriteMsg(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prAppClockSchedNotify(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AppClock_SchedNotify, 1 )
 {
 	//NOTE: the _AppClock_SchedNotify primitive shall be redefined by language clients
 	// if they wish to respond to AppClock scheduling notifications
@@ -3555,12 +3478,12 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 	return errNone;
 }
 
-static int prLanguageConfig_getIncludePaths(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_getIncludePaths, 1 )
 {
 	return prLanguageConfig_getLibraryPaths(g, numArgsPushed, includePaths);
 }
 
-static int prLanguageConfig_getExcludePaths(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_getExcludePaths, 1 )
 {
 	return prLanguageConfig_getLibraryPaths(g, numArgsPushed, excludePaths);
 }
@@ -3582,12 +3505,12 @@ static int prLanguageConfig_addLibraryPath(struct VMGlobals * g, int numArgsPush
 	return errNone;
 }
 
-static int prLanguageConfig_addIncludePath(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_addIncludePath, 2 )
 {
 	return prLanguageConfig_addLibraryPath(g, numArgsPushed, includePaths);
 }
 
-static int prLanguageConfig_addExcludePath(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_addExcludePath, 2 )
 {
 	return prLanguageConfig_addLibraryPath(g, numArgsPushed, excludePaths);
 }
@@ -3609,17 +3532,17 @@ static int prLanguageConfig_removeLibraryPath(struct VMGlobals * g, int numArgsP
 	return errNone;
 }
 
-static int prLanguageConfig_removeIncludePath(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_removeIncludePath, 2 )
 {
 	return prLanguageConfig_removeLibraryPath(g, numArgsPushed, includePaths);
 }
 
-static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_removeExcludePath, 2 )
 {
 	return prLanguageConfig_removeLibraryPath(g, numArgsPushed, excludePaths);
 }
 
-static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_getCurrentConfigPath, 1 )
 {
 	PyrSlot *a = g->sp;
 	const std::string& config_path = SC_Codecvt::path_to_utf8_str(gLanguageConfig->getConfigPath());
@@ -3633,7 +3556,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numAr
 	return errNone;
 }
 
-static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_writeConfigFile, 2 )
 {
 	PyrSlot *fileString = g->sp;
 	bfs::path config_path;
@@ -3658,14 +3581,14 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 		return errNone;
 }
 
-static int prLanguageConfig_getPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_getPostInlineWarnings, 1 )
 {
 	PyrSlot *result = g->sp;
 	SetBool(result, SC_LanguageConfig::getPostInlineWarnings());
 	return errNone;
 }
 
-static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LanguageConfig_setPostInlineWarnings, 2 )
 {
 	PyrSlot *arg = g->sp;
 
@@ -3679,22 +3602,21 @@ static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numA
 	return errNone;
 }
 
-
-static int prVersionMajor(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SC_VersionMajor, 1 )
 {
 	PyrSlot *result = g->sp;
 	SetInt(result, SC_VersionMajor);
 	return errNone;
 }
 
-static int prVersionMinor(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SC_VersionMinor, 1 )
 {
 	PyrSlot *result = g->sp;
 	SetInt(result, SC_VersionMinor);
 	return errNone;
 }
 
-static int prVersionPatch(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SC_VersionPatch, 1 )
 {
 	PyrSlot *result = g->sp;
 	SetObject(result, newPyrString(g->gc, SC_VersionPatch, 0, 1));
@@ -4135,138 +4057,10 @@ void initPrimitives()
 	definePrimitive(base, opRandRange, "_RandRange", prSpecialBinaryArithMsg, 3, 0);
 	definePrimitive(base, opExpRandRange, "_ExpRandRange", prSpecialBinaryArithMsg, 3, 0);
 
-	// general primitives
-	base = nextPrimitiveIndex();
-	index = 0;
-	definePrimitive(base, index++, "_Halt", haltInterpreter, 1, 0);
-	definePrimitive(base, index++, "_InstVarAt", instVarAt, 2, 0);
-	definePrimitive(base, index++, "_InstVarPut", instVarPut, 3, 0);
-	definePrimitive(base, index++, "_InstVarSize", instVarSize, 1, 0);
-	definePrimitive(base, index++, "_ObjectHash", objectHash, 1, 0);
-	definePrimitive(base, index++, "_ObjectClass", objectClass, 1, 0);
-	definePrimitive(base, index++, "_BasicNew", basicNew, 2, 0);
-	definePrimitive(base, index++, "_BasicNewClear", basicNewClear, 2, 0);
-	definePrimitive(base, index++, "_BasicNewCopyArgsToInstVars", basicNewCopyArgsToInstanceVars, 1, 1);
-	//definePrimitive(base, index++, "_BasicNewCopyArgsByName", basicNewCopyArgsByName, 1, 1);
-
-	definePrimitiveWithKeys(base, index, "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
-	index+=2;
-	definePrimitiveWithKeys(base, index, "_FunctionValueEnvir", blockValueEnvir, blockValueEnvirWithKeys, 1, 1);
-	index+=2;
-
-	definePrimitive(base, index++, "_FunctionValueArray", blockValueArray, 1, 1);
-	definePrimitive(base, index++, "_FunctionValueArrayEnvir", blockValueArrayEnvir, 1, 1);
-	definePrimitive(base, index++, "_FunctionDefAsFunction", prFunctionDefAsFunction, 1, 0);
-	definePrimitive(base, index++, "_FunctionDefDumpContexts", prFunctionDefDumpContexts, 1, 0);
-	definePrimitive(base, index++, "_FunctionDefIsClosed", prFunctionDefIsClosed, 1, 0);
-	definePrimitive(base, index++, "_FunctionDefIsWithinClosed", prFunctionDefIsWithinClosed, 1, 0);
-
-	definePrimitive(base, index++, "_ObjectIsKindOf", objectIsKindOf, 2, 0);
-	definePrimitive(base, index++, "_ObjectIsMemberOf", objectIsMemberOf, 2, 0);
-	definePrimitive(base, index++, "_ObjectDump", objectDump, 1, 0);
-	definePrimitive(base, index++, "_TotalFree", prTotalFree, 1, 0);
-	definePrimitive(base, index++, "_LargestFreeBlock", prLargestFreeBlock, 1, 0);
-
-	definePrimitive(base, index++, "_GCInfo", dumpGCinfo, 1, 0);
-	definePrimitive(base, index++, "_GCDumpGrey", dumpGCdumpGrey, 1, 0);
-	definePrimitive(base, index++, "_GCDumpSet", dumpGCdumpSet, 2, 0);
-	definePrimitive(base, index++, "_GCSanity", prGCSanity, 1, 0);
-#if GCDEBUG
-	definePrimitive(base, index++, "_TraceAllPathsTo", prTraceAllPathsTo, 1, 0);
-	definePrimitive(base, index++, "_TraceAnyPathsTo", prTraceAnyPathsTo, 1, 0);
-	definePrimitive(base, index++, "_TraceAnyPathToAllInstancesOf", prTraceAnyPathToAllInstancesOf, 1, 0);
-#endif
-
-	definePrimitive(base, index++, "_Identical", objectIdentical, 2, 0);
-	definePrimitive(base, index++, "_NotIdentical", objectNotIdentical, 2, 0);
-	definePrimitiveWithKeys(base, index, "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
-	index+=2;
-	definePrimitive(base, index++, "_ObjectPerformList", objectPerformList, 2, 1);
-	definePrimitiveWithKeys(base, index, "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);
-	index+=2;
-	definePrimitive(base, index++, "_SuperPerformList", objectSuperPerformList, 2, 1);
-	definePrimitive(base, index++, "_ObjectPerformMsg", objectPerformSelList, 2, 0);
-	//definePrimitive(base, index++, "_ArrayPerformMsg", arrayPerformMsg, 1, 1);
-	definePrimitive(base, index++, "_ObjectString", prObjectString, 1, 0);
-	definePrimitive(base, index++, "_Float_AsStringPrec", prFloat_AsStringPrec, 2, 0);
-	definePrimitive(base, index++, "_ObjectCompileString", prAsCompileString, 1, 0);
-	definePrimitive(base, index++, "_ClassString", prClassString, 1, 0);
-	definePrimitive(base, index++, "_PostString", prPostString, 1, 0);
-	definePrimitive(base, index++, "_PostLine", prPostLine, 1, 0);
-	definePrimitive(base, index++, "_HostDebugger", prDebugger, 1, 0);
-	definePrimitive(base, index++, "_Trace", prTraceOn, 1, 0);
-	definePrimitive(base, index++, "_CanCallOS", prCanCallOS, 1, 0);
-	definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
-	definePrimitive(base, index++, "_GetTailCallOptimize", prGetTailCallOptimize, 1, 0);
-	definePrimitive(base, index++, "_SetTailCallOptimize", prSetTailCallOptimize, 2, 0);
-
-
-	definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);
-	definePrimitive(base, index++, "_PrimitiveErrorString", prPrimitiveErrorString, 1, 0);
-	definePrimitive(base, index++, "_DumpStack", prDumpStack, 1, 0);
-	definePrimitive(base, index++, "_DumpDetailedBackTrace", prDumpDetailedBackTrace, 1, 0);
-	definePrimitive(base, index++, "_StackDepth", prStackDepth, 1, 0);
-	definePrimitive(base, index++, "_PrimName", prPrimName, 1, 0);
-	definePrimitive(base, index++, "_ObjectShallowCopy", prObjectShallowCopy, 1, 0);
-	definePrimitive(base, index++, "_ObjectCopyImmutable", prObjectCopyImmutable, 1, 0);
-	definePrimitive(base, index++, "_ObjectCopyRange", prObjectCopyRange, 3, 0);
-	definePrimitive(base, index++, "_ObjectCopySeries", prObjectCopySeries, 4, 0);
-	definePrimitive(base, index++, "_ObjectPointsTo", prObjectPointsTo, 2, 0);
-	definePrimitive(base, index++, "_ObjectRespondsTo", prObjectRespondsTo, 2, 0);
-	definePrimitive(base, index++, "_ObjectIsMutable", prObjectIsMutable, 1, 0);
-	definePrimitive(base, index++, "_ObjectIsPermanent", prObjectIsPermanent, 1, 0);
-	definePrimitive(base, index++, "_ObjectDeepFreeze", prDeepFreeze, 1, 0);
-	definePrimitive(base, index++, "_ObjectDeepCopy", prDeepCopy, 1, 0);
-
-#if !SCPLAYER
-	definePrimitive(base, index++, "_CompileExpression", prCompileString, 2, 0);
-#endif
-	definePrimitive(base, index++, "_GetBackTrace", prGetBackTrace, 1, 0);
-	definePrimitive(base, index++, "_DumpBackTrace", prDumpBackTrace, 1, 0);
-	definePrimitive(base, index++, "_DumpByteCodes", prDumpByteCodes, 1, 0);
-
-	definePrimitive(base, index++, "_AllClasses", prAllClasses, 1, 0);
-	definePrimitive(base, index++, "_DumpClassSubtree", prPostClassTree, 1, 0);
-
-//	definePrimitive(base, index++, "_TabletTracking", prTabletTracking, 1, 0);
-
-	definePrimitive(base, index++, "_FunDef_NumArgs", prFunDef_NumArgs, 1, 0);
-	definePrimitive(base, index++, "_FunDef_NumVars", prFunDef_NumVars, 1, 0);
-	definePrimitive(base, index++, "_FunDef_VarArgs", prFunDef_VarArgs, 1, 0);
-
-	definePrimitive(base, index++, "_Thread_Init", prThreadInit, 3, 0);
-	definePrimitive(base, index++, "_Thread_RandSeed", prThreadRandSeed, 2, 0);
-	definePrimitive(base, index++, "_Thread_GetRandData", prThreadGetRandData, 1, 0);
-	definePrimitive(base, index++, "_Thread_SetRandData", prThreadSetRandData, 2, 0);
-//	definePrimitive(base, index++, "_ThreadRun", prThreadRun, 2, 0);
-//	definePrimitive(base, index++, "_RunNextThread", prRunNextThread, 1, 0);
-	definePrimitive(base, index++, "_RoutineYield", prRoutineYield, 1, 0);
-	definePrimitive(base, index++, "_RoutineAlwaysYield", prRoutineAlwaysYield, 1, 0);
-	definePrimitive(base, index++, "_RoutineResume", prRoutineResume, 2, 0);
-	definePrimitive(base, index++, "_RoutineReset", prRoutineReset, 1, 0);
-	definePrimitive(base, index++, "_RoutineYieldAndReset", prRoutineYieldAndReset, 2, 0);
-	definePrimitive(base, index++, "_RoutineStop", prRoutineStop, 1, 0);
-
-//	definePrimitive(base, index++, "_IsDemo", prIsDemo, 1, 0);
-	definePrimitive(base, index++, "_Blork", prBlork, 1, 0);
-	definePrimitive(base, index++, "_UGenCodeString", prUGenCodeString, 5, 0);
-	definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);
-
-	definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
-	definePrimitive(base, index++, "_LanguageConfig_getCurrentConfigPath", prLanguageConfig_getCurrentConfigPath, 1, 0);
-	definePrimitive(base, index++, "_LanguageConfig_getIncludePaths", prLanguageConfig_getIncludePaths, 1, 0);
-	definePrimitive(base, index++, "_LanguageConfig_getExcludePaths", prLanguageConfig_getExcludePaths, 1, 0);
-	definePrimitive(base, index++, "_LanguageConfig_addIncludePath", prLanguageConfig_addIncludePath, 2, 0);
-	definePrimitive(base, index++, "_LanguageConfig_addExcludePath", prLanguageConfig_addExcludePath, 2, 0);
-	definePrimitive(base, index++, "_LanguageConfig_removeIncludePath", prLanguageConfig_removeIncludePath, 2, 0);
-	definePrimitive(base, index++, "_LanguageConfig_removeExcludePath", prLanguageConfig_removeExcludePath, 2, 0);
-	definePrimitive(base, index++, "_LanguageConfig_writeConfigFile", prLanguageConfig_writeConfigFile, 2, 0);
-	definePrimitive(base, index++, "_LanguageConfig_getPostInlineWarnings", prLanguageConfig_getPostInlineWarnings, 1, 0);
-	definePrimitive(base, index++, "_LanguageConfig_setPostInlineWarnings", prLanguageConfig_setPostInlineWarnings, 2, 0);
-
-	definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
-	definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
-	definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
+	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
+	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_FunctionValueEnvir", blockValueEnvir, blockValueEnvirWithKeys, 1, 1);
+	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
+	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);
 
 void initGUIPrimitives();
 	initGUIPrimitives();
