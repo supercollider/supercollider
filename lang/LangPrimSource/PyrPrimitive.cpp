@@ -95,6 +95,7 @@ INIT_LIBSCLANG_PRIMITIVE_GROUP( Wii );
 
 #ifdef __APPLE__
 INIT_LIBSCLANG_PRIMITIVE_GROUP( CoreAudio );
+INIT_LIBSCLANG_PRIMITIVE_GROUP( Speech );
 #endif
 
 #ifdef __linux__
@@ -4270,11 +4271,6 @@ void initPrimitives()
 
 void initGUIPrimitives();
 	initGUIPrimitives();
-
-#ifdef __APPLE__
-	void initSpeechPrimitives();
-		initSpeechPrimitives();
-#endif
 
 #ifdef SC_QT
 	QtCollider::initPrimitives();
