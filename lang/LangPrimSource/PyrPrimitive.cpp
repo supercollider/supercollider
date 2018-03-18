@@ -4291,6 +4291,7 @@ void initGUIPrimitives();
 
 void deinitPrimitives()
 {
+	SC_DeinitializerDefiner::instance().run_all();
 #ifdef SC_HIDAPI
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();

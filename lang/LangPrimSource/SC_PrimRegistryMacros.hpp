@@ -104,16 +104,21 @@
         SCLANG_REGISTRY_INSTANCE( Symbol )                                                            \
     }
 
-// ------------ custom initializers ----------
+// ------------ custom [de]initializers ------
 
-#define SCLANG_CUSTOM_INITIALIZER_DECL( name )                                                        \
+#define SCLANG_CUSTOM_FUNCTION_DECL( name )                                                           \
     void name()
 
-#define SCLANG_CUSTOM_INITIALIZER_DEFINER( name )                                                     \
-    SCLANG_REGISTRY_ENTRY_DEFINER_DECL( Initializer, name ) {                                         \
+#define SCLANG_CUSTOM_FUNCTION_DEFINER( Subtype, name )                                               \
+    SCLANG_REGISTRY_ENTRY_DEFINER_DECL( Subtype, name ) {                                             \
         { &name },                                                                                    \
-        SCLANG_REGISTRY_INSTANCE( Initializer )                                                       \
+        SCLANG_REGISTRY_INSTANCE( Subtype )                                                           \
     }
+
+#define SCLANG_DEFINE_CUSTOM_FUNCTION( Subtype, name )                                                \
+    SCLANG_CUSTOM_FUNCTION_DECL( name );                                                              \
+    SCLANG_CUSTOM_FUNCTION_DEFINER( Subtype, name );                                                  \
+    SCLANG_CUSTOM_FUNCTION_DECL( name )
 
 // ------------ libsclang macros -------------
 

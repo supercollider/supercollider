@@ -102,6 +102,7 @@ struct SC_DeinitializerDefinition
 using SC_PrimDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_PrimDefinition>>;
 using SC_SymbolDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_SymbolDefinition>>;
 using SC_InitializerDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_InitializerDefinition>>;
+using SC_DeinitializerDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_DeinitializerDefinition>>;
 
 /// Use to define an ordinary (non-varArgs) primitive.
 #define SCLANG_DEFINE_PRIMITIVE( name, numArgs )                                                      \
@@ -134,13 +135,15 @@ using SC_InitializerDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detai
     SCLANG_SYMBOL_DECL( BOOST_PP_CAT( s_, name ) );                                                   \
     SCLANG_SYMBOL_DEFINER( BOOST_PP_CAT( s_, name), BOOST_PP_STRINGIZE( name ) )
 
-// ------------ custom init ------------------
+// ------------ custom init and deinit -------
 
 /// Use to define a custom initializing method that will run after those for primitives and symbols.
 #define SCLANG_DEFINE_CUSTOM_INITIALIZER( name )                                                      \
-    SCLANG_CUSTOM_INITIALIZER_DECL( name );                                                           \
-    SCLANG_CUSTOM_INITIALIZER_DEFINER( name );                                                        \
-    SCLANG_CUSTOM_INITIALIZER_DECL( name )
+    SCLANG_DEFINE_CUSTOM_FUNCTION( Initializer, name )
+
+/// Use to define a custom deinitializing method that will run during language shutdown.
+#define SCLANG_DEFINE_CUSTOM_DEINITIALIZER( name )                                                    \
+    SCLANG_DEFINE_CUSTOM_FUNCTION( Deinitializer, name )
 
 // ------------ libsclang macros -------------
 
