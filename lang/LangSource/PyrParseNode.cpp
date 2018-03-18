@@ -4493,67 +4493,13 @@ void initSpecialSelectors()
 	PyrSymbol **sel;
 	long i;
 
-	sel = gSpecialUnarySelectors;
-
 #define X( op_name, op_desc ) sel[ op ## op_name ] = getsym( # op_desc );
+	sel = gSpecialUnarySelectors;
 	SPECIAL_UNARY_MATH_OPS
-#undef X
-
 	sel = gSpecialBinarySelectors;
-
-	sel[opAdd] = getsym("+");
-	sel[opSub] = getsym("-");
-	sel[opMul] = getsym("*");
-
-	sel[opFDiv] = getsym("/");
-	sel[opIDiv] = getsym("div");
-	sel[opMod] = getsym("mod");
-	sel[opEQ] = getsym("==");
-	sel[opNE] = getsym("!=");
-	sel[opLT] = getsym("<");
-	sel[opGT] = getsym(">");
-	sel[opLE] = getsym("<=");
-	sel[opGE] = getsym(">=");
-	//sel[opIdentical] = getsym("===");
-	//sel[opNotIdentical] = getsym("!==");
-	sel[opMin] = getsym("min");
-	sel[opMax] = getsym("max");
-	sel[opBitAnd] = getsym("bitAnd");
-	sel[opBitOr] = getsym("bitOr");
-	sel[opBitXor] = getsym("bitXor");
-	sel[opLCM] = getsym("lcm");
-	sel[opGCD] = getsym("gcd");
-	sel[opRound] = getsym("round");
-	sel[opRoundUp] = getsym("roundUp");
-	sel[opTrunc] = getsym("trunc");
-	sel[opAtan2] = getsym("atan2");
-	sel[opHypot] = getsym("hypot");
-	sel[opHypotx] = getsym("hypotApx");
-	sel[opPow] = getsym("pow");
-	sel[opShiftLeft] = getsym("leftShift");
-	sel[opShiftRight] = getsym("rightShift");
-	sel[opUnsignedShift] = getsym("unsignedRightShift");
-	sel[opFill] = getsym("fill");
-	sel[opRing1] = getsym("ring1");	// a * (b + 1) == a * b + a
-	sel[opRing2] = getsym("ring2");	// a * b + a + b
-	sel[opRing3] = getsym("ring3");	// a*a*b
-	sel[opRing4] = getsym("ring4");	// a*a*b - a*b*b
-	sel[opDifSqr] = getsym("difsqr");	// a*a - b*b
-	sel[opSumSqr] = getsym("sumsqr");	// a*a + b*b
-	sel[opSqrSum] = getsym("sqrsum");	// (a + b)^2
-	sel[opSqrDif] = getsym("sqrdif");	// (a - b)^2
-	sel[opAbsDif] = getsym("absdif");	//
-	sel[opThresh] = getsym("thresh");	//
-	sel[opAMClip] = getsym("amclip");	//
-	sel[opScaleNeg] = getsym("scaleneg");	//
-	sel[opClip2] = getsym("clip2");
-	sel[opFold2] = getsym("fold2");
-	sel[opWrap2] = getsym("wrap2");
-	sel[opExcess] = getsym("excess");
-	sel[opFirstArg] = getsym("firstArg");
-	sel[opRandRange] = getsym("rrand");
-	sel[opExpRandRange] = getsym("exprand");
-
+	SPECIAL_BINARY_MATH_OPS_WITHOUT_ADVERBS
+	SPECIAL_BINARY_MATH_OPS_WITH_ADVERBS
+#undef X
 
 	sel = gSpecialSelectors;
 

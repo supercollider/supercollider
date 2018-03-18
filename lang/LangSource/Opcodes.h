@@ -77,6 +77,59 @@
 	X(Ramp, ramp)              \
 	X(SCurve, scurve)
 
+#define SPECIAL_BINARY_MATH_OPS_WITHOUT_ADVERBS \
+	X(Add, +)                                   \
+	X(Sub, -)                                   \
+	X(Mul, *)
+
+#define SPECIAL_BINARY_MATH_OPS_WITH_ADVERBS         \
+	X(IDiv, div)                                     \
+	X(FDiv, /)                                       \
+	X(Mod, mod)                                      \
+	X(EQ, ==)                                        \
+	X(NE, !=)                                        \
+	X(LT, <)                                         \
+	X(GT, >)                                         \
+	X(LE, <=)                                        \
+	X(GE, >=)                                        \
+	X(Min, min)                                      \
+	X(Max, max)                                      \
+	X(BitAnd, bitAnd)                                \
+	X(BitOr, bitOr)                                  \
+	X(BitXor, bitXor)                                \
+	X(LCM, lcm)                                      \
+	X(GCD, gcd)                                      \
+	X(Round, round)                                  \
+	X(RoundUp, roundUp)                              \
+	X(Trunc, trunc)                                  \
+	X(Atan2, atan2)                                  \
+	X(Hypot, hypot)                                  \
+	X(Hypotx, hypotApx)                              \
+	X(Pow, pow)                                      \
+	X(ShiftLeft, leftShift)                          \
+	X(ShiftRight, rightShift)                        \
+	X(UnsignedShift, unsignedRightShift)             \
+	X(Fill, fill)                                    \
+	X(Ring1, ring1)   /* a * (b + 1) == a * b + a */ \
+	X(Ring2, ring2)   /* a * b + a + b */            \
+	X(Ring3, ring3)   /* a*a*b */                    \
+	X(Ring4, ring4)   /* a*a*b - a*b*b */            \
+	X(DifSqr, difsqr) /* a*a - b*b */                \
+	X(SumSqr, sumsqr) /* a*a + b*b */                \
+	X(SqrSum, sqrsum) /* (a + b)^2 */                \
+	X(SqrDif, sqrdif) /* (a - b)^2 */                \
+	X(AbsDif, absdif) /* |a - b| */                  \
+	X(Thresh, thresh)                                \
+	X(AMClip, amclip)                                \
+	X(ScaleNeg, scaleneg)                            \
+	X(Clip2, clip2)                                  \
+	X(Excess, excess)                                \
+	X(Fold2, fold2)                                  \
+	X(Wrap2, wrap2)                                  \
+	X(FirstArg, firstArg)                            \
+	X(RandRange, rrand)                              \
+	X(ExpRandRange, exprand)
+
 /* opcodes */
 enum {
 	opExtended,				//  0
@@ -146,59 +199,10 @@ enum {
 
 /* special binary math operators */
 enum {
-	opAdd,
-	opSub,
-	opMul,
-	opIDiv,
-	opFDiv,
-	opMod,
-	opEQ,
-	opNE,
-	opLT,
-	opGT,
-	opLE,
-	opGE,
-	//opIdentical,
-	//opNotIdentical,
-
-	opMin,
-	opMax,
-	opBitAnd,
-	opBitOr,
-	opBitXor,
-	opLCM,
-	opGCD,
-	opRound,
-	opRoundUp,
-	opTrunc,
-	opAtan2,
-	opHypot,
-	opHypotx,
-	opPow,
-	opShiftLeft,
-	opShiftRight,
-	opUnsignedShift,
-	opFill,
-	opRing1,	// a * (b + 1) == a * b + a
-	opRing2,	// a * b + a + b
-	opRing3,	// a*a*b
-	opRing4,	// a*a*b - a*b*b
-	opDifSqr,	// a*a - b*b
-	opSumSqr,	// a*a + b*b
-	opSqrSum,	// (a + b)^2
-	opSqrDif,	// (a - b)^2
-	opAbsDif,	// |a - b|
-	opThresh,
-	opAMClip,
-	opScaleNeg,
-	opClip2,
-	opExcess,
-	opFold2,
-	opWrap2,
-	opFirstArg,
-	opRandRange,
-	opExpRandRange,
-
+#define X( op_name, op_desc ) op ## op_name,
+	SPECIAL_BINARY_MATH_OPS_WITHOUT_ADVERBS
+	SPECIAL_BINARY_MATH_OPS_WITH_ADVERBS
+#undef X
 	opNumBinarySelectors
 };
 

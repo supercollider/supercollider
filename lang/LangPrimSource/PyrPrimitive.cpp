@@ -3949,59 +3949,20 @@ void initPrimitives()
 
 	// binary operators
 	base = nextPrimitiveIndex();
-	definePrimitive(base, opAdd, "_Add", prAddNum, 2, 0);
-	definePrimitive(base, opSub, "_Sub", prSubNum, 2, 0);
-	definePrimitive(base, opMul, "_Mul", prMulNum, 2, 0);
 
-	definePrimitive(base, opIDiv, "_IDiv", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opFDiv, "_FDiv", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opMod, "_Mod", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opEQ, "_EQ", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opNE, "_NE", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opLT, "_LT", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opGT, "_GT", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opLE, "_LE", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opGE, "_GE", prSpecialBinaryArithMsg, 3, 0);
-	//definePrimitive(base, opIdentical, "_Identical", prSpecialBinaryArithMsg, 3, 0);
-	//definePrimitive(base, opNotIdentical, "_NotIdentical", prSpecialBinaryArithMsg, 3, 0);
+#define X( op_name, op_desc )                             \
+	definePrimitive(base, BOOST_PP_CAT( op, op_name ),    \
+		BOOST_PP_STRINGIZE( BOOST_PP_CAT( _, op_name ) ), \
+		BOOST_PP_SEQ_CAT( (pr)(op_name)(Num) ), 2, 0);
+	SPECIAL_BINARY_MATH_OPS_WITHOUT_ADVERBS
+#undef X
 
-	definePrimitive(base, opMin, "_Min", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opMax, "_Max", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opBitAnd, "_BitAnd", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opBitOr, "_BitOr", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opBitXor, "_BitXor", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opLCM, "_LCM", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opGCD, "_GCD", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opRound, "_Round", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opRoundUp, "_RoundUp", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opTrunc, "_Trunc", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opAtan2, "_Atan2", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opHypot, "_Hypot", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opHypotx, "_HypotApx", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opPow, "_Pow", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opShiftLeft, "_ShiftLeft", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opShiftRight, "_ShiftRight", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opUnsignedShift, "_UnsignedShift", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opFill, "_Fill", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opRing1, "_Ring1", prSpecialBinaryArithMsg, 3, 0);	// a * (b + 1) == a * b + a
-	definePrimitive(base, opRing2, "_Ring2", prSpecialBinaryArithMsg, 3, 0);	// a * b + a + b
-	definePrimitive(base, opRing3, "_Ring3", prSpecialBinaryArithMsg, 3, 0);	// a*a*b
-	definePrimitive(base, opRing4, "_Ring4", prSpecialBinaryArithMsg, 3, 0);	// a*a*b - a*b*b
-	definePrimitive(base, opDifSqr, "_DifSqr", prSpecialBinaryArithMsg, 3, 0);	// a*a - b*b
-	definePrimitive(base, opSumSqr, "_SumSqr", prSpecialBinaryArithMsg, 3, 0);	// a*a + b*b
-	definePrimitive(base, opSqrSum, "_SqrSum", prSpecialBinaryArithMsg, 3, 0);	// (a + b)^2
-	definePrimitive(base, opSqrDif, "_SqrDif", prSpecialBinaryArithMsg, 3, 0);	// (a - b)^2
-	definePrimitive(base, opAbsDif, "_AbsDif", prSpecialBinaryArithMsg, 3, 0);	// abs(a - b)
-	definePrimitive(base, opThresh, "_Thresh", prSpecialBinaryArithMsg, 3, 0);	// a * max(0,b)
-	definePrimitive(base, opAMClip, "_AMClip", prSpecialBinaryArithMsg, 3, 0);	// a * max(0,b)
-	definePrimitive(base, opScaleNeg, "_ScaleNeg", prSpecialBinaryArithMsg, 3, 0);	// a < 0 ? a*b : a
-	definePrimitive(base, opClip2, "_Clip2", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opFold2, "_Fold2", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opWrap2, "_Wrap2", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opExcess, "_Excess", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opFirstArg, "_FirstArg", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opRandRange, "_RandRange", prSpecialBinaryArithMsg, 3, 0);
-	definePrimitive(base, opExpRandRange, "_ExpRandRange", prSpecialBinaryArithMsg, 3, 0);
+#define X( op_name, op_desc )                             \
+	definePrimitive(base, BOOST_PP_CAT( op, op_name ),    \
+		BOOST_PP_STRINGIZE( BOOST_PP_CAT( _, op_name ) ), \
+		prSpecialBinaryArithMsg, 3, 0);
+	SPECIAL_BINARY_MATH_OPS_WITH_ADVERBS
+#undef X
 
 	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
 	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_FunctionValueEnvir", blockValueEnvir, blockValueEnvirWithKeys, 1, 1);
