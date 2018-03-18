@@ -53,7 +53,7 @@ class SC_PrimRegistryEntry
 public:
     using Registry_t = SC_PrimRegistry<SC_PrimRegistryEntry<T>>;
 
-    SC_PrimRegistryEntry(T&& entry, Registry_t& reg) : m_entry{entry}
+    SC_PrimRegistryEntry(T&& entry, Registry_t& reg) : m_entry(entry)
     {
         reg.add_entry(std::move(*this));
     }
