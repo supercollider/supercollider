@@ -210,21 +210,6 @@ enum {
 	opNumBinarySelectors
 };
 
-/* other special math operators */
-enum {
-	/* 3 operands */
-	opDivz,
-	opClip,
-	opWrap,
-	opFold,
-	opRampMult,
-	opMix,
-	/* 4 operands */
-	opPoly3,
-	/* 5 operands */
-	opMapRange
-};
-
 enum {
 	opmNew,
 	opmInit,
