@@ -106,6 +106,9 @@ METHOD:: columnWidth
 
 METHOD:: setColumnWidth
 
+Sets the width of a column. The rightmost column must extend at least to the right bound of the
+TreeView.
+
 	ARGUMENT:: column
 		The integer index of the column to modify
 	ARGUMENT:: width
