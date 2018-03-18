@@ -3939,67 +3939,13 @@ void initPrimitives()
 
 	// unary operators
 	base = nextPrimitiveIndex();
-	definePrimitive(base, opNeg, "_Neg", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opBitNot, "_BitNot", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opAbs, "_Abs", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opAsFloat, "_AsFloat", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opAsInt, "_AsInt", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCeil, "_Ceil", doSpecialUnaryArithMsg, 1, 0);			// 5
-	definePrimitive(base, opFloor, "_Floor", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opFrac, "_Frac", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opSign, "_Sign", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opSquared, "_Squared", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCubed, "_Cubed", doSpecialUnaryArithMsg, 1, 0);			//10
-	definePrimitive(base, opSqrt, "_Sqrt", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opExp, "_Exp", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opRecip, "_Recip", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opMIDICPS, "_MIDICPS", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCPSMIDI, "_CPSMIDI", doSpecialUnaryArithMsg, 1, 0);		//15
 
-	definePrimitive(base, opMIDIRatio, "_MIDIRatio", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opRatioMIDI, "_RatioMIDI", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opDbAmp, "_DbAmp", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opAmpDb, "_AmpDb", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opOctCPS, "_OctCPS", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCPSOct, "_CPSOct", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opLog, "_Log", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opLog2, "_Log2", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opLog10, "_Log10", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opSin, "_Sin", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCos, "_Cos", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opTan, "_Tan", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opArcSin, "_ArcSin", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opArcCos, "_ArcCos", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opArcTan, "_ArcTan", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opSinH, "_SinH", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCosH, "_CosH", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opTanH, "_TanH", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opRand, "_Rand", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opRand2, "_Rand2", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opLinRand, "_LinRand", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opBiLinRand, "_BiLinRand", doSpecialUnaryArithMsg, 1, 0);
-
-	definePrimitive(base, opSum3Rand, "_Sum3Rand", doSpecialUnaryArithMsg, 1, 0);
-//	definePrimitive(base, opExpRand, "_ExpRand", doSpecialUnaryArithMsg, 1, 0);
-//	definePrimitive(base, opBiExpRand, "_BiExpRand", doSpecialUnaryArithMsg, 1, 0);
-//	definePrimitive(base, opGammaRand, "_GammaRand", doSpecialUnaryArithMsg, 1, 0);
-//	definePrimitive(base, opGaussRand, "_GaussRand", doSpecialUnaryArithMsg, 1, 0);
-//	definePrimitive(base, opPoiRand, "_PoiRand", doSpecialUnaryArithMsg, 1, 0);
-
-	definePrimitive(base, opDistort, "_Distort", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opSoftClip, "_SoftClip", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opCoin, "_Coin", doSpecialUnaryArithMsg, 1, 0);
-
-	definePrimitive(base, opRectWindow, "_RectWindow", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opHanWindow, "_HanWindow", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opWelchWindow, "_WelchWindow", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opTriWindow, "_TriWindow", doSpecialUnaryArithMsg, 1, 0);
-
-	definePrimitive(base, opSCurve, "_SCurve", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opRamp, "_Ramp", doSpecialUnaryArithMsg, 1, 0);
-
-	definePrimitive(base, opDigitValue, "_DigitValue", doSpecialUnaryArithMsg, 1, 0);
-
+#define X( op_name, op_desc )                             \
+	definePrimitive(base, BOOST_PP_CAT( op, op_name ),    \
+		BOOST_PP_STRINGIZE( BOOST_PP_CAT( _, op_name ) ), \
+		doSpecialUnaryArithMsg, 1, 0);
+	SPECIAL_UNARY_MATH_OPS
+#undef X
 
 	// binary operators
 	base = nextPrimitiveIndex();

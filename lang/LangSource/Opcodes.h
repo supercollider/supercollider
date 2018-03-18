@@ -21,6 +21,62 @@
 #ifndef _OPCODES_H_
 #define _OPCODES_H_
 
+#define SPECIAL_UNARY_MATH_OPS \
+	X(Neg, neg)                \
+	X(Not, not)                \
+	X(IsNil, isNil)            \
+	X(NotNil, notNil)          \
+	X(BitNot, bitNot)          \
+	X(Abs, abs)                \
+	X(AsFloat, asFloat)        \
+	X(AsInt, asInt)            \
+	X(Ceil, ceil)              \
+	X(Floor, floor)            \
+	X(Frac, frac)              \
+	X(Sign, sign)              \
+	X(Squared, squared)        \
+	X(Cubed, cubed)            \
+	X(Sqrt, sqrt)              \
+	X(Exp, exp)                \
+	X(Recip, reciprocal)       \
+	X(MIDICPS, midicps)        \
+	X(CPSMIDI, cpsmidi)        \
+	X(MIDIRatio, midiratio)    \
+	X(RatioMIDI, ratiomidi)    \
+	X(DbAmp, dbamp)            \
+	X(AmpDb, ampdb)            \
+	X(OctCPS, octcps)          \
+	X(CPSOct, cpsoct)          \
+	X(Log, log)                \
+	X(Log2, log2)              \
+	X(Log10, log10)            \
+	X(Sin, sin)                \
+	X(Cos, cos)                \
+	X(Tan, tan)                \
+	X(ArcSin, asin)            \
+	X(ArcCos, acos)            \
+	X(ArcTan, atan)            \
+	X(SinH, sinh)              \
+	X(CosH, cosh)              \
+	X(TanH, tanh)              \
+	X(Rand, rand)              \
+	X(Rand2, rand2)            \
+	X(LinRand, linrand)        \
+	X(BiLinRand, bilinrand)    \
+	X(Sum3Rand, sum3rand)      \
+	X(Distort, distort)        \
+	X(SoftClip, softclip)      \
+	X(Coin, coin)              \
+	X(DigitValue, digitValue)  \
+	X(Silence, silence)        \
+	X(Thru, thru)              \
+	X(RectWindow, rectWindow)  \
+	X(HanWindow, hanWindow)    \
+	X(WelchWindow, welWindow)  \
+	X(TriWindow, triWindow)    \
+	X(Ramp, ramp)              \
+	X(SCurve, scurve)
+
 /* opcodes */
 enum {
 	opExtended,				//  0
@@ -79,71 +135,9 @@ enum {
 
 /* special unary math operators */
 enum {
-	opNeg,
-	opNot,
-	opIsNil,
-	opNotNil,
-	opBitNot,
-	opAbs,
-	opAsFloat,
-	opAsInt,
-	opCeil,			//5
-	opFloor,
-	opFrac,
-	opSign,
-	opSquared,
-	opCubed,		//10
-	opSqrt,
-	opExp,
-	opRecip,
-	opMIDICPS,
-	opCPSMIDI,		//15
-
-	opMIDIRatio,
-	opRatioMIDI,
-	opDbAmp,
-	opAmpDb,
-	opOctCPS,		//20
-	opCPSOct,
-	opLog,
-	opLog2,
-	opLog10,
-	opSin,			//25
-	opCos,
-	opTan,
-	opArcSin,
-	opArcCos,
-	opArcTan,
-	opSinH,
-	opCosH,			//30
-	opTanH,
-	opRand,
-	opRand2,
-	opLinRand,
-	opBiLinRand,
-
-//	opExpRand,
-//	opBiExpRand,
-	opSum3Rand,
-//	opGammaRand,
-//	opGaussRand,
-//	opPoiRand,
-
-	opDistort,
-	opSoftClip,
-	opCoin,
-
-	opDigitValue,
-	opSilence,
-	opThru,
-	opRectWindow,
-	opHanWindow,
-	opWelchWindow,
-	opTriWindow,
-
-	opRamp,
-	opSCurve,
-
+#define X( op_name, op_desc ) op ## op_name,
+	SPECIAL_UNARY_MATH_OPS
+#undef X
 	opNumUnarySelectors
 };
 

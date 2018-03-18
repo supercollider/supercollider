@@ -4494,71 +4494,10 @@ void initSpecialSelectors()
 	long i;
 
 	sel = gSpecialUnarySelectors;
-	sel[opNeg] = getsym("neg");
-	sel[opRecip] = getsym("reciprocal");
-	sel[opNot] = getsym("not");
-	sel[opIsNil] = getsym("isNil");
-	sel[opNotNil] = getsym("notNil");
-	sel[opBitNot] = getsym("bitNot");
-	sel[opAbs] = getsym("abs");
-	sel[opAsFloat] = getsym("asFloat");
-	sel[opAsInt] = getsym("asInt");
-	sel[opCeil] = getsym("ceil");			//5
-	sel[opFloor] = getsym("floor");
-	sel[opFrac] = getsym("frac");
-	sel[opSign] = getsym("sign");
-	sel[opSquared] = getsym("squared");
-	sel[opCubed] = getsym("cubed");		//10
-	sel[opSqrt] = getsym("sqrt");
-	sel[opExp] = getsym("exp");
-	sel[opMIDICPS] = getsym("midicps");
-	sel[opCPSMIDI] = getsym("cpsmidi");
-	sel[opMIDIRatio] = getsym("midiratio");
-	sel[opRatioMIDI] = getsym("ratiomidi");
-	sel[opAmpDb] = getsym("ampdb");		//15
-	sel[opDbAmp] = getsym("dbamp");
-	sel[opOctCPS] = getsym("octcps");
-	sel[opCPSOct] = getsym("cpsoct");
-	sel[opLog] = getsym("log");
-	sel[opLog2] = getsym("log2");			//20
-	sel[opLog10] = getsym("log10");
-	sel[opSin] = getsym("sin");
-	sel[opCos] = getsym("cos");
-	sel[opTan] = getsym("tan");
-	sel[opArcSin] = getsym("asin");		//25
-	sel[opArcCos] = getsym("acos");
-	sel[opArcTan] = getsym("atan");
-	sel[opSinH] = getsym("sinh");
-	sel[opCosH] = getsym("cosh");
-	sel[opTanH] = getsym("tanh");			//30
-	sel[opRand] = getsym("rand");
-	sel[opRand2] = getsym("rand2");
-	sel[opLinRand] = getsym("linrand");
-	sel[opBiLinRand] = getsym("bilinrand");
-	sel[opSum3Rand] = getsym("sum3rand");
-/*
-	sel[opExpRand] = getsym("exprand");
-	sel[opBiExpRand] = getsym("biexprand");
-	sel[opGammaRand] = getsym("gammarand");
-	sel[opGaussRand] = getsym("gaussrand");
-	sel[opPoiRand] = getsym("poirand");
-*/
-	sel[opDistort] = getsym("distort");
-	sel[opSoftClip] = getsym("softclip");
-	sel[opCoin] = getsym("coin");
 
-	sel[opRectWindow] = getsym("rectWindow");
-	sel[opHanWindow] = getsym("hanWindow");
-	sel[opWelchWindow] = getsym("welWindow");
-	sel[opTriWindow] = getsym("triWindow");
-
-	sel[opSCurve] = getsym("scurve");
-	sel[opRamp] = getsym("ramp");
-
-	sel[opDigitValue] = getsym("digitValue");
-	sel[opSilence] = getsym("silence");
-	sel[opThru] = getsym("thru");
-
+#define X( op_name, op_desc ) sel[ op ## op_name ] = getsym( # op_desc );
+	SPECIAL_UNARY_MATH_OPS
+#undef X
 
 	sel = gSpecialBinarySelectors;
 
