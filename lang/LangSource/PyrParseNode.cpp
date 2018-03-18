@@ -4501,99 +4501,10 @@ void initSpecialSelectors()
 	SPECIAL_BINARY_MATH_OPS_WITH_ADVERBS
 #undef X
 
+#define X( op_name, op_desc ) sel[ opm ## op_name ] = getsym( # op_desc );
 	sel = gSpecialSelectors;
-
-	sel[opmNew] = getsym("new");
-	sel[opmNewClear] = getsym("newClear");
-	sel[opmNewCopyArgs] = getsym("newCopyArgs");
-	sel[opmInit] = getsym("init");
-	sel[opmAt] = getsym("at");
-	sel[opmPut] = getsym("put");
-	sel[opmNext] = getsym("next");
-	sel[opmReset] = getsym("reset");
-	sel[opmValue] = getsym("value");
-	sel[opmCopyToEnd] = getsym("copyToEnd");		// used by multiple assignment
-	//sel[opmIsNil] = getsym("isNil");
-	//sel[opmNotNil] = getsym("notNil");
-	sel[opmSize] = getsym("size");
-	sel[opmClass] = getsym("class");
-	sel[opmIf] = getsym("if");
-	sel[opmWhile] = getsym("while");
-	sel[opmFor] = getsym("for");
-	sel[opmAnd] = getsym("and");
-	sel[opmOr] = getsym("or");
-	sel[opmCase] = getsym("case");
-	sel[opmSwitch] = getsym("switch");
-	sel[opmIdentical] = getsym("===");
-	sel[opmNotIdentical] = getsym("!==");
-
-	sel[opmPrint] = getsym("print");
-	sel[opmAdd] = getsym("add");
-	sel[opmRemove] = getsym("remove");
-	sel[opmIndexOf] = getsym("indexOf");
-	sel[opmWrapAt] = getsym("wrapAt");
-	sel[opmClipAt] = getsym("clipAt");
-	sel[opmFoldAt] = getsym("foldAt");
-	sel[opmWrapPut] = getsym("wrapPut");
-	sel[opmClipPut] = getsym("clipPut");
-	sel[opmFoldPut] = getsym("foldPut");
-	sel[opmDo] = getsym("do");
-	sel[opmCollect] = getsym("collect");
-	sel[opmSelect] = getsym("select");
-	sel[opmReject] = getsym("reject");
-	sel[opmAny] = getsym("any");
-	sel[opmEvery] = getsym("every");
-	sel[opmFind] = getsym("find");
-
-	sel[opmChoose] = getsym("choose");
-
-	sel[opmValueList] = getsym("valueList");
-	sel[opmAddFirst] = getsym("addFirst");
-
-	sel[opmPrimitiveFailed] = getsym("primitiveFailed");
-	sel[opmSubclassResponsibility] = getsym("subclassResponsibility");
-	sel[opmShouldNotImplement] = getsym("shouldNotImplement");
-	sel[opmDoesNotUnderstand] = getsym("doesNotUnderstand");	// not really needed
-	sel[opmNotYetImplemented] = getsym("notYetImplemented");
-
-	sel[opmAtSign] = getsym("@");
-	sel[opmWrapAtSign] = getsym("@@");
-	sel[opmClipAtSign] = getsym("|@|");
-	sel[opmFoldAtSign] = getsym("@|@");
-
-	sel[opmMultiNew] = getsym("multiNew"); // UGens
-	sel[opmMultiNewList] = getsym("multiNewList"); // UGens
-	sel[opmAR] = getsym("ar"); // UGens
-	sel[opmKR] = getsym("kr"); // UGens
-	sel[opmIR] = getsym("ir"); // UGens
-
-	sel[opmEnvirGet] = getsym("envirGet");
-	sel[opmEnvirPut] = getsym("envirPut");
-
-	sel[opmHalt] = getsym("halt");
-	sel[opmForBy] = getsym("forBy");
-	sel[opmForSeries] = getsym("forSeries");
-	sel[opmReverseDo] = getsym("reverseDo");
-	sel[opmLoop] = getsym("loop");
-	sel[opmNonBooleanError] = getsym("mustBeBoolean");
-
-	sel[opmCopy] = getsym("copy");
-	sel[opmPerformList] = getsym("performList");
-	sel[opmIsKindOf] = getsym("isKindOf");
-	sel[opmPostln] = getsym("postln");
-	sel[opmAsString] = getsym("asString");
-
-	sel[opmPlusPlus] = getsym("++");
-	sel[opmLTLT] = getsym("<<");
-	sel[opmQuestionMark] = getsym("?");
-	sel[opmDoubleQuestionMark] = getsym("??");
-	sel[opmExclamationQuestionMark] = getsym("!?");
-
-	sel[opmYield] = getsym("yield");
-	sel[opmName] = getsym("name");
-	sel[opmMulAdd] = getsym("madd");
-
-	sel[opmSeries] = getsym("series");
+	SPECIAL_SELECTORS
+#undef X
 
 	for (i=0; i<opNumUnarySelectors; ++i) {
 		gSpecialUnarySelectors[i]->specialIndex = i;

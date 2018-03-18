@@ -134,6 +134,85 @@
 	X(RandRange, rrand)                              \
 	X(ExpRandRange, exprand)
 
+#define SPECIAL_SELECTORS                             \
+	X(New, new)                                       \
+	X(Init, init)                                     \
+	X(At, at)                                         \
+	X(Put, put)                                       \
+	X(Next, next)                                     \
+	X(Reset, reset)                                   \
+	X(Value, value)                                   \
+	X(CopyToEnd, copyToEnd)                           \
+	X(Add, add)                                       \
+	X(Size, size)                                     \
+	X(Class, class)                                   \
+	X(If, if)                                         \
+	X(While, while)                                   \
+	X(For, for)                                       \
+	X(And, and)                                       \
+	X(Or, or)                                         \
+	X(Case, case)                                     \
+	X(Switch, switch)                                 \
+	X(Identical, ===)                                 \
+	X(NotIdentical, !==)                              \
+	X(Print, print)                                   \
+	X(Remove, remove)                                 \
+	X(IndexOf, indexOf)                               \
+	X(WrapAt, wrapAt)                                 \
+	X(ClipAt, clipAt)                                 \
+	X(FoldAt, foldAt)                                 \
+	X(WrapPut, wrapPut)                               \
+	X(ClipPut, clipPut)                               \
+	X(FoldPut, foldPut)                               \
+	X(Do, do)                                         \
+	X(Collect, collect)                               \
+	X(Select, select)                                 \
+	X(Reject, reject)                                 \
+	X(Any, any)                                       \
+	X(Every, every)                                   \
+	X(Find, find)                                     \
+	X(Choose, choose)                                 \
+	X(ValueList, valueList)                           \
+	X(AddFirst, addFirst)                             \
+	X(PrimitiveFailed, primitiveFailed)               \
+	X(SubclassResponsibility, subclassResponsibility) \
+	X(ShouldNotImplement, shouldNotImplement)         \
+	X(NotYetImplemented, notYetImplemented)           \
+	X(DoesNotUnderstand, doesNotUnderstand)           \
+	X(AtSign, @)                                      \
+	X(WrapAtSign, @@)                                 \
+	X(ClipAtSign, |@|)                                \
+	X(FoldAtSign, @|@)                                \
+	X(NewClear, newClear)                             \
+	X(NewCopyArgs, newCopyArgs)                       \
+	X(MultiNew, multiNew)                             \
+	X(MultiNewList, multiNewList)                     \
+	X(AR, ar)                                         \
+	X(KR, kr)                                         \
+	X(IR, ir)                                         \
+	X(Copy, copy)                                     \
+	X(PerformList, performList)                       \
+	X(IsKindOf, isKindOf)                             \
+	X(Postln, postln)                                 \
+	X(AsString, asString)                             \
+	X(EnvirGet, envirGet)                             \
+	X(EnvirPut, envirPut)                             \
+	X(Halt, halt)                                     \
+	X(ForBy, forBy)                                   \
+	X(ForSeries, forSeries)                           \
+	X(ReverseDo, reverseDo)                           \
+	X(Loop, loop)                                     \
+	X(NonBooleanError, mustBeBoolean)                 \
+	X(PlusPlus, ++)                                   \
+	X(LTLT, <<)                                       \
+	X(QuestionMark, ?)                                \
+	X(DoubleQuestionMark, ?? ) /* ??) is a trigraph*/ \
+	X(ExclamationQuestionMark, !?)                    \
+	X(Yield, yield)                                   \
+	X(Name, name)                                     \
+	X(MulAdd, madd)                                   \
+	X(Series, series)
+
 /* opcodes */
 enum {
 	opExtended,				//  0
@@ -211,95 +290,9 @@ enum {
 };
 
 enum {
-	opmNew,
-	opmInit,
-	opmAt,
-	opmPut,
-	opmNext,
-	opmReset,
-	opmValue,
-	opmCopyToEnd,		// used by multi assign
-	opmAdd,					// used by dynamic list
-	//opmIsNil,
-	//opmNotNil,
-	opmSize,
-	opmClass,
-	opmIf,
-	opmWhile,
-	opmFor,
-	opmAnd,
-	opmOr,
-	opmCase,
-	opmSwitch,
-	opmIdentical,
-	opmNotIdentical,
-	opmPrint,
-	opmRemove,
-	opmIndexOf,
-	opmWrapAt,
-	opmClipAt,
-	opmFoldAt,
-	opmWrapPut,
-	opmClipPut,
-	opmFoldPut,
-	opmDo,
-	opmCollect,
-	opmSelect,
-	opmReject,
-	opmAny,
-	opmEvery,
-	opmFind,
-	opmChoose,
-	opmValueList,
-	opmAddFirst,
-	opmPrimitiveFailed,
-	opmSubclassResponsibility,
-	opmShouldNotImplement,
-	opmNotYetImplemented,
-	opmDoesNotUnderstand,
-
-	opmAtSign,
-	opmWrapAtSign,
-	opmClipAtSign,
-	opmFoldAtSign,
-
-	opmNewClear,
-	opmNewCopyArgs,
-	opmMultiNew,
-	opmMultiNewList,
-	opmAR,
-	opmKR,
-	opmIR,
-
-	opmCopy,
-	opmPerformList,
-	opmIsKindOf,
-	opmPostln,
-	opmAsString,
-
-	opmEnvirGet,
-	opmEnvirPut,
-
-	opmHalt,
-	opmForBy,
-	opmForSeries,
-	opmReverseDo,
-	opmLoop,
-
-	opmNonBooleanError,
-
-	opmPlusPlus,
-	opmLTLT,
-	opmQuestionMark,
-	opmDoubleQuestionMark,
-	opmExclamationQuestionMark,
-
-	opmYield,
-	opmName,
-	opmMulAdd,
-
-	opmSeries,
-
+#define X( op_name, op_desc ) opm ## op_name,
+	SPECIAL_SELECTORS
+#undef X
 	opmNumSpecialSelectors
 };
 
