@@ -3964,10 +3964,10 @@ void initPrimitives()
 	SPECIAL_BINARY_MATH_OPS_WITH_ADVERBS
 #undef X
 
-	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
-	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_FunctionValueEnvir", blockValueEnvir, blockValueEnvirWithKeys, 1, 1);
-	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
-	definePrimitiveWithKeys(base, nextPrimitiveIndex(), "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);
+	definePrimitiveWithKeys(0, nextPrimitiveIndex(), "_FunctionValue", blockValue, blockValueWithKeys, 1, 1);
+	definePrimitiveWithKeys(0, nextPrimitiveIndex(), "_FunctionValueEnvir", blockValueEnvir, blockValueEnvirWithKeys, 1, 1);
+	definePrimitiveWithKeys(0, nextPrimitiveIndex(), "_ObjectPerform", objectPerform, objectPerformWithKeys, 2, 1);
+	definePrimitiveWithKeys(0, nextPrimitiveIndex(), "_SuperPerform", objectSuperPerform, objectSuperPerformWithKeys, 2, 1);
 
 void initGUIPrimitives();
 	initGUIPrimitives();
