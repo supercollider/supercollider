@@ -4280,11 +4280,11 @@ void initGUIPrimitives();
 	QtCollider::initPrimitives();
 #endif
 	// run primitive and symbol definers
-	SC_PrimRegistry<SC_PrimDefinerEntry>::instance().run_all();
-	SC_PrimRegistry<SC_SymbolDefinerEntry>::instance().run_all();
+	SC_PrimDefiner::instance().run_all();
+	SC_SymbolDefiner::instance().run_all();
 
 	// run custom initializers
-	SC_PrimRegistry<SC_InitializerDefinerEntry>::instance().run_all();
+	SC_InitializerDefiner::instance().run_all();
 
 	post("\tFound %d primitives.\n", nextPrimitiveIndex());
 }

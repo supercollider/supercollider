@@ -6,12 +6,26 @@
 #ifndef SC_PRIMREGISTRYMACROS_HPP_INCLUDED
 #define SC_PRIMREGISTRYMACROS_HPP_INCLUDED
 
-// utilities
+#include <boost/preprocessor/seq/elem.hpp>
+#include <boost/preprocessor/seq/cat.hpp>
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
+// utilities ----------------------------------------------------------------------------------------
+
 #define SCLANG_NUMARGS_MSG "sclang primitive must have a nonnegative number of arguments"
 #define SCLANG_VARARGS_MSG "sclang primitive's varargs quality must be either 0 or 1"
 #define SCLANG_PRIMITIVE_STATIC_ASSERTS( numArgs, varArgs )                                           \
     static_assert( numArgs >= 0, SCLANG_NUMARGS_MSG );                                                \
     static_assert( varArgs == 0 || varArgs == 1, SCLANG_VARARGS_MSG )
+
+// Makes it easy to refer to the global definer for Primitives, Symbols, etc.
+#define SCLANG_REGISTRY_INSTANCE( Type )                                                              \
+    BOOST_PP_SEQ_CAT( (SC_)(Type)(Definer::instance()) )
+
+// Makes it easy to declare the type of an entry for Primitives, Symbols, etc.
+#define SCLANG_REGISTRY_ENTRY_TYPE( Type )                                                            \
+    BOOST_PP_SEQ_CAT( (detail::SC_PrimRegistryEntry<detail::SC_)(Type)(Definition>) )
 
 /// Builds the C++ primitive function name
 #define SCLANG_PRIMITIVE_NAME( name )                                                                 \
@@ -31,16 +45,18 @@
     BOOST_PP_STRINGIZE( BOOST_PP_CAT( _, name) )
 
 #define SCLANG_REGISTRY_HELPER_DECL( name )                                                           \
-    static SC_PrimDefinerEntry BOOST_PP_CAT( name, _RegistryDefiner )
+    static SCLANG_REGISTRY_ENTRY_TYPE( Prim ) BOOST_PP_CAT( name, _RegistryDefiner )
 
 #define SCLANG_REGISTRY_HELPER_DEFN( name, numArgs, varArgs )                                         \
     SCLANG_PRIMITIVE_STATIC_ASSERTS( numArgs, varArgs );                                              \
     SCLANG_REGISTRY_HELPER_DECL( name ) {                                                             \
-        & SCLANG_PRIMITIVE_NAME( name ),                                                              \
-        SCLANG_PRIMITIVE_SYMBOL( name ),                                                              \
-        numArgs,                                                                                      \
-        varArgs,                                                                                      \
-        SC_PrimRegistry<SC_PrimDefinerEntry>::instance()                                              \
+        {                                                                                             \
+            & SCLANG_PRIMITIVE_NAME( name ),                                                          \
+            SCLANG_PRIMITIVE_SYMBOL( name ),                                                          \
+            numArgs,                                                                                  \
+            varArgs                                                                                   \
+        },                                                                                            \
+        SCLANG_REGISTRY_INSTANCE( Prim )                                                              \
     };
 
 /// Generates C++ function signature and registers with SC_PrimRegistry; private, do not use directly
@@ -54,12 +70,14 @@
 /// Helper, do not use directly.
 #define SCLANG_REGISTER_TEMPLATE_PRIMITIVE( name, numArgs, varArgs, Type )                            \
     SCLANG_PRIMITIVE_STATIC_ASSERTS( numArgs, varArgs );                                              \
-    SCLANG_REGISTRY_HELPER_DECL( BOOST_PP_CAT( name, BOOST_PP_CAT(_, Type) ) ) {                      \
-        & SCLANG_PRIMITIVE_NAME( name )<Type>,                                                        \
-        SCLANG_PRIMITIVE_SYMBOL( BOOST_PP_CAT( name, BOOST_PP_CAT(_, Type) ) ),                       \
-        numArgs,                                                                                      \
-        varArgs,                                                                                      \
-        SC_PrimRegistry<SC_PrimDefinerEntry>::instance()                                              \
+    SCLANG_REGISTRY_HELPER_DECL( BOOST_PP_SEQ_CAT( (name)(_)(Type) ) ) {                              \
+        {                                                                                             \
+            & SCLANG_PRIMITIVE_NAME( name )<Type>,                                                    \
+            SCLANG_PRIMITIVE_SYMBOL( BOOST_PP_SEQ_CAT( (name)(_)(Type) ) ),                           \
+            numArgs,                                                                                  \
+            varArgs                                                                                   \
+        },                                                                                            \
+        SCLANG_REGISTRY_INSTANCE( Prim )                                                              \
     }
 
 /// Helper, do not use directly.
@@ -73,30 +91,29 @@
 // ------------ symbols ----------------------
 
 #define SCLANG_SYMBOL_DEFINER_ENTRY_DECL( name )                                                      \
-    static SC_SymbolDefinerEntry BOOST_PP_CAT( name, _SymbolDefinerEntry )
+    static SCLANG_REGISTRY_ENTRY_TYPE( Symbol ) BOOST_PP_CAT( name, _SymbolDefinerEntry )
 
 #define SCLANG_SYMBOL_DECL( name )                                                                    \
     PyrSymbol * name;
 
 #define SCLANG_SYMBOL_DEFINER( name, value )                                                          \
     SCLANG_SYMBOL_DEFINER_ENTRY_DECL( name ) {                                                        \
-        & name,                                                                                       \
-        value,                                                                                        \
-        SC_PrimRegistry<SC_SymbolDefinerEntry>::instance()                                            \
+        { &name, value },                                                                             \
+        SCLANG_REGISTRY_INSTANCE( Symbol )                                                            \
     }
 
 // ------------ custom initializers ----------
 
 #define SCLANG_CUSTOM_INITIALIZER_DEFINER_DECL( name )                                                \
-    static SC_InitializerDefinerEntry BOOST_PP_CAT( name, _InitializerDefinerEntry )
+    static SCLANG_REGISTRY_ENTRY_TYPE( Initializer ) BOOST_PP_CAT( name, _InitializerDefinerEntry )
 
 #define SCLANG_CUSTOM_INITIALIZER_DECL( name )                                                        \
     void name()
 
 #define SCLANG_CUSTOM_INITIALIZER_DEFINER( name )                                                     \
     SCLANG_CUSTOM_INITIALIZER_DEFINER_DECL( name ) {                                                  \
-        & name,                                                                                       \
-        SC_PrimRegistry<SC_InitializerDefinerEntry>::instance()                                       \
+        { &name },                                                                                    \
+        SCLANG_REGISTRY_INSTANCE( Initializer )                                                       \
     }
 
 // ------------ libsclang macros -------------

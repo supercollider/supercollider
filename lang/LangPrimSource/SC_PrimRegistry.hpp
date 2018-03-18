@@ -9,15 +9,12 @@
 #include <vector>
 
 #include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/cat.hpp>
 
 #include "PyrPrimitive.h"
 #include "SC_PrimRegistryMacros.hpp"
 #include "PyrSymbolTable.h"
-
-using SC_Initializer_t = void (*)();
 
 template<typename Entry>
 class SC_PrimRegistry {
@@ -48,80 +45,63 @@ private:
     std::vector<Entry> m_entries;
 };
 
-/// Entry type for defining primitives
-class SC_PrimDefinerEntry {
+namespace detail {
+
+template <typename T>
+class SC_PrimRegistryEntry
+{
 public:
-    SC_PrimDefinerEntry(
-            PrimitiveHandler const primitive,
-            char const * const symbol,
-            int numArgs,
-            int varArgs,
-            SC_PrimRegistry<SC_PrimDefinerEntry>& reg
-    ):
-        m_primitive{primitive},
-        m_symbol{symbol},
-        m_numArgs{numArgs},
-        m_varArgs{varArgs}
+    using Registry_t = SC_PrimRegistry<SC_PrimRegistryEntry<T>>;
+
+    SC_PrimRegistryEntry(T&& entry, Registry_t& reg) : m_entry{entry}
     {
         reg.add_entry(std::move(*this));
     }
+
+    void operator()() const { m_entry(); }
+
+private:
+    T const m_entry;
+};
+
+struct SC_PrimDefinition
+{
+    PrimitiveHandler const m_primitive;
+    char const * const m_symbol;
+    int const m_numArgs;
+    int const m_varArgs;
 
     void operator()() const
     {
         definePrimitive(nextPrimitiveIndex(), 0, m_symbol, m_primitive, m_numArgs, m_varArgs);
     }
-
-private:
-    PrimitiveHandler const m_primitive;
-    char const * const m_symbol;
-    int const m_numArgs;
-    int const m_varArgs;
 };
 
-/// Entry type for defining symbol pointers like \c s_parent to avoid repeated lookups.
-class SC_SymbolDefinerEntry {
-public:
-    SC_SymbolDefinerEntry(
-        PyrSymbol ** const symbol,
-        char const * const string,
-        SC_PrimRegistry<SC_SymbolDefinerEntry>& reg
-    ):
-        m_symbol{symbol},
-        m_string{string}
-    {
-        reg.add_entry(std::move(*this));
-    }
-
-    void operator()() const
-    {
-        *m_symbol = getsym(m_string);
-    }
-
-private:
+struct SC_SymbolDefinition
+{
     PyrSymbol ** const m_symbol;
     char const * const m_string;
+    void operator()() const { *m_symbol = getsym(m_string); }
 };
 
-/// Entry type for defining custom initializers
-class SC_InitializerDefinerEntry {
-public:
-    SC_InitializerDefinerEntry(
-        SC_Initializer_t func,
-        SC_PrimRegistry<SC_InitializerDefinerEntry>& reg
-    ):
-        m_func{func}
-    {
-        reg.add_entry(std::move(*this));
-    }
-
-    void operator()() const
-    {
-        (*m_func)();
-    }
-
-private:
-    SC_Initializer_t m_func;
+struct SC_InitializerDefinition
+{
+    void (*m_func)();
+    void operator()() const { (*m_func)(); }
 };
+
+struct SC_DeinitializerDefinition
+{
+    void (*m_func)();
+    void operator()() const { (*m_func)(); }
+};
+
+} // namespace detail
+
+// Global registry types
+using SC_PrimDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_PrimDefinition>>;
+using SC_SymbolDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_SymbolDefinition>>;
+using SC_InitializerDefiner = SC_PrimRegistry<detail::SC_PrimRegistryEntry<detail::SC_InitializerDefinition>>;
 
 /// Use to define an ordinary (non-varArgs) primitive.
 #define SCLANG_DEFINE_PRIMITIVE( name, numArgs )                                                      \
