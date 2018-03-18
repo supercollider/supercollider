@@ -213,6 +213,59 @@
 	X(MulAdd, madd)                                   \
 	X(Series, series)
 
+// The layout of classes here reflects the inheritance hierarchy
+#define BUILTIN_CLASSES                \
+	X(object)                          \
+		X(symbol)                      \
+		X(nil)                         \
+		X(boolean)                     \
+			X(true)                    \
+			X(false)                   \
+		X(magnitude)                   \
+			X(char)                    \
+			X(number)                  \
+				X(complex)             \
+				X(simple_number)       \
+					X(int)             \
+					X(float)           \
+		X(method)                      \
+		X(fundef)                      \
+		X(stream)                      \
+		X(func)                        \
+		X(frame)                       \
+		X(process)                     \
+			X(main)                    \
+		X(class)                       \
+		X(string)                      \
+		X(collection)                  \
+			X(sequenceable_collection) \
+				X(arrayed_collection)  \
+					X(array)           \
+					X(int8array)       \
+					X(int16array)      \
+					X(int32array)      \
+					X(floatarray)      \
+						X(signal)      \
+					X(doublearray)     \
+					X(symbolarray)     \
+				X(list)                \
+				X(linkedlist)          \
+			X(bag)                     \
+			X(set)                     \
+			X(identityset)             \
+			X(dictionary)              \
+			X(identitydictionary)      \
+			X(sortedlist)              \
+		X(synth)                       \
+		X(ref)                         \
+		X(environment)                 \
+		X(event)                       \
+		X(wavetable)                   \
+		X(env)                         \
+		X(routine)                     \
+		X(color)                       \
+		X(rect)
+
 /* opcodes */
 enum {
 	opExtended,				//  0
@@ -351,65 +404,10 @@ enum {
 	selNumSelectorTypes
 };
 
-
-
-/*
-	special classes:
-	Object, List, Number, Int, Float, Signal, Complex, Point
-*/
 enum {
-	op_class_object,
-		op_class_symbol,
-		op_class_nil,
-		op_class_boolean,
-			op_class_true,
-			op_class_false,
-		op_class_magnitude,
-			op_class_char,
-			op_class_number,
-				op_class_complex,
-				op_class_simple_number,
-					op_class_int,
-					op_class_float,
-		op_class_method,
-		op_class_fundef,
-		op_class_stream,
-		op_class_func,
-		op_class_frame,
-		op_class_process,
-			op_class_main,
-		op_class_class,
-		op_class_string,
-		op_class_collection,
-			op_class_sequenceable_collection,
-				op_class_arrayed_collection,
-					op_class_array,
-					op_class_int8array,
-					op_class_int16array,
-					op_class_int32array,
-					op_class_floatarray,
-						op_class_signal,
-					op_class_doublearray,
-					op_class_symbolarray,
-				op_class_list,
-				op_class_linkedlist,
-			op_class_bag,
-			op_class_set,
-			op_class_identityset,
-			op_class_dictionary,
-			op_class_identitydictionary,
-			op_class_sortedlist,
-		op_class_synth,
-		op_class_ref,
-		op_class_environment,
-		op_class_event,
-		op_class_wavetable,
-		op_class_env,
-
-		op_class_routine,
-		op_class_color,
-		op_class_rect,
-
+#define X( klass ) op_class_ ## klass,
+	BUILTIN_CLASSES
+#undef X
 	op_NumSpecialClasses
 };
 

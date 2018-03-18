@@ -4432,60 +4432,10 @@ extern PyrSymbol *s_env;
 
 void initSpecialClasses()
 {
-	gSpecialClasses[op_class_object] = s_object;
-		gSpecialClasses[op_class_symbol] = s_symbol;
-		gSpecialClasses[op_class_nil] = s_nil;
-		gSpecialClasses[op_class_boolean] = s_boolean;
-			gSpecialClasses[op_class_true] = s_true;
-			gSpecialClasses[op_class_false] = s_false;
-		gSpecialClasses[op_class_magnitude] = s_magnitude;
-			gSpecialClasses[op_class_char] = s_char;
-			gSpecialClasses[op_class_number] = s_number;
-				gSpecialClasses[op_class_complex] = s_complex;
-				gSpecialClasses[op_class_simple_number] = s_simple_number;
-					gSpecialClasses[op_class_int] = s_int;
-					gSpecialClasses[op_class_float] = s_float;
-		gSpecialClasses[op_class_method] = s_method;
-		gSpecialClasses[op_class_fundef] = s_fundef;
-		gSpecialClasses[op_class_stream] = s_stream;
-		gSpecialClasses[op_class_func] = s_func;
-		gSpecialClasses[op_class_frame] = s_frame;
-		gSpecialClasses[op_class_process] = s_process;
-		gSpecialClasses[op_class_main] = s_main;
-		gSpecialClasses[op_class_class] = s_class;
-		gSpecialClasses[op_class_string] = s_string;
-
-		gSpecialClasses[op_class_collection] = s_collection;
-		gSpecialClasses[op_class_sequenceable_collection] = s_sequenceable_collection;
-			gSpecialClasses[op_class_arrayed_collection] = s_arrayed_collection;
-				gSpecialClasses[op_class_array] = s_array;
-				gSpecialClasses[op_class_int8array] = s_int8array;
-				gSpecialClasses[op_class_int16array] = s_int16array;
-				gSpecialClasses[op_class_int32array] = s_int32array;
-				gSpecialClasses[op_class_floatarray] = s_floatarray;
-					gSpecialClasses[op_class_signal] = s_signal;
-				gSpecialClasses[op_class_doublearray] = s_doublearray;
-				gSpecialClasses[op_class_symbolarray] = s_symbolarray;
-			gSpecialClasses[op_class_list] = s_list;
-				gSpecialClasses[op_class_linkedlist] = s_linkedlist;
-			gSpecialClasses[op_class_bag] = s_bag;
-			gSpecialClasses[op_class_set] = s_set;
-			gSpecialClasses[op_class_identityset] = s_identityset;
-			gSpecialClasses[op_class_dictionary] = s_dictionary;
-			gSpecialClasses[op_class_identitydictionary] = s_identitydictionary;
-			gSpecialClasses[op_class_sortedlist] = s_sortedlist;
-
-			gSpecialClasses[op_class_synth] = s_synth;
-			gSpecialClasses[op_class_ref] = s_ref;
-			gSpecialClasses[op_class_environment] = s_environment;
-			gSpecialClasses[op_class_event] = s_event;
-			gSpecialClasses[op_class_wavetable] = s_wavetable;
-			gSpecialClasses[op_class_env] = s_env;
-			gSpecialClasses[op_class_routine] = s_routine;
-			gSpecialClasses[op_class_color] = s_color;
-			gSpecialClasses[op_class_rect] = s_rect;
-
-			//Infinitum, Point, Rect, ??
+	// Each builtin class gets a symbol corresponding to its name. See Opcodes.h
+#define X( klass ) gSpecialClasses[ op_class_ ## klass ] = s_ ## klass ;
+	BUILTIN_CLASSES
+#undef X
 }
 
 void initSpecialSelectors()
