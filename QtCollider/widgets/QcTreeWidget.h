@@ -88,6 +88,9 @@ public:
 
   Q_INVOKABLE void sort( int column, bool descending );
 
+  Q_INVOKABLE int columnWidth( int column );
+  Q_INVOKABLE void setColumnWidth( int column, int width );
+
 Q_SIGNALS:
 
   void action();
