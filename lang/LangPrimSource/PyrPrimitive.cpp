@@ -3933,7 +3933,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 
 void initPrimitives()
 {
-	int base, index;
+	int base;
 
 	initPrimitiveTable();
 
