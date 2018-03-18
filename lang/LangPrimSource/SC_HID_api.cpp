@@ -973,7 +973,7 @@ SCLANG_DEFINE_CUSTOM_INITIALIZER( initHID )
 	close_HID_API_Devices();
 }
 
-void deinitHIDAPIPrimitives()
+SCLANG_DEFINE_CUSTOM_INITIALIZER( deinitHID )
 {
 	close_HID_API_Devices();
 }
