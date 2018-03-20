@@ -31,6 +31,7 @@
 
 #include <cstddef>
 #include <cassert>
+#include <vector>
 
 struct PyrSymbol;
 
@@ -157,6 +158,21 @@ inline int slotVal(PyrSlot * slot, numeric_type *value)
 		return errNone;
 	}
 	return errWrongType;
+}
+
+template <typename numeric_type>
+inline void setSlotVal(PyrSlot * slot, numeric_type value);
+
+template <>
+inline void setSlotVal<int>(PyrSlot * slot, int value)
+{
+	SetInt(slot, value);
+}
+
+template <>
+inline void setSlotVal<double>(PyrSlot * slot, double value)
+{
+	SetFloat(slot, value);
 }
 
 inline int slotFloatVal(PyrSlot *slot, float *value)
