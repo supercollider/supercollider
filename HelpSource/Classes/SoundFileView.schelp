@@ -700,17 +700,14 @@ sfv.mouseDownAction_({ |view, x, y, mod, buttonNumber|
 .mouseUpAction_({ |view, x, y, mod|
 	mouseButton = nil;
 })
-.mouseMoveAction = { |view, x, y, mod|
+.mouseMoveAction_({ |view, x, y, mod|
 	var rangeSize, rangeStart;
-	// bitAnd expression: Only shift key is pressed
-	if(mouseButton == 1 and: { mod.bitAnd(0x00FE0000) == 0x20000 }) {
-		rangeSize = view.xZoom / dur;
-	};
 	if(mouseButton == 1) {
+		rangeSize = view.xZoom / dur;
 		rangeStart = view.scrollPos * (1 - rangeSize);
+		sfZoom.lo_(rangeStart).range_(rangeSize);
 	};
-	sfZoom.lo_(rangeStart).range_(rangeSize);
-};
+});
 
 w.front;
 )
