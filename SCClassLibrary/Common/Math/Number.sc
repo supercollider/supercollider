@@ -178,19 +178,7 @@ Number : Magnitude {
 	/*  Polynomials  */
 	// Legendre (and Associated) Polynomials
 	//
-	// The definition of the associated Legendre polynomial used here includes a leading Condon-Shortley phase term
-	// of (-1)m. This matches the definition given by Abramowitz and Stegun (8.6.6) and that used by Mathworld and
-	// Mathematica's LegendreP function. However, uses in the literature do not always include this phase term, and
-	// strangely the specification for the associated Legendre function in the C++ TR1 (assoc_legendre) also omits it,
-	// in spite of stating that it uses Abramowitz and Stegun as the final arbiter on these matters.
-	//
-	// See:
-	// Weisstein, Eric W. "Legendre Polynomial." From MathWorld--A Wolfram Web Resource.
-	//
-	// Abramowitz, M. and Stegun, I. A. (Eds.). "Legendre Functions" and "Orthogonal Polynomials." Ch. 22 in Chs. 8
-	// and 22 in Handbook of Mathematical Functions with Formulas, Graphs, and Mathematical Tables, 9th printing.
-	// New York: Dover, pp. 331-339 and 771-802, 1972.
-	//
+	// See boost documentation for a note about the Condon-Shortley phase term of (-1)^m
 	// "http://www.boost.org/doc/libs/1_65_1/libs/math/doc/html/math_toolkit/sf_poly/legendre.html"]
 	//
 	// TODO: where to clip values at [-1,1] ??
@@ -254,7 +242,7 @@ Number : Magnitude {
 	// Spherical Harmonics
 
     sphHarm { |m, theta, phi| _SphHarmComplex; ^this.primitiveFailed }
-    sphHarmRe { |m, theta, phi| _SphHarmReal; ^this.primitiveFailed }
+    sphHarmReal { |m, theta, phi| _SphHarmReal; ^this.primitiveFailed }
     sphHarmImag { |m, theta, phi| _SphHarmImag; ^this.primitiveFailed }
 
 
