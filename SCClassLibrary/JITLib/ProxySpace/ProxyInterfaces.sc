@@ -247,11 +247,12 @@ SynthControl : AbstractPlayControl {
 				// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;
-		}
+		};
+		prevBundle !? { prevBundle.cancel; prevBundle = nil };
 	}
 
 	freeToBundle {
-		prevBundle !? { prevBundle.cancel };
+		prevBundle !? { prevBundle.cancel; prevBundle = nil };
 	}
 
 	set { | ... args |
