@@ -121,9 +121,7 @@ METHOD:: readFileWithTask
 
 METHOD:: data
 
-    Gets the display data, or sets custom data instead of a sound file.
-
-    It is not possible to get the data.
+    Sets custom data instead of a sound file. This is a setter only; it is not possible to get the data. If you need access to the data, you must keep it in your own variable.
 
    Setting this property assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
 
