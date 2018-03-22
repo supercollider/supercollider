@@ -76,7 +76,7 @@ Number : Magnitude {
 	// gamma(value + 1) - 1
 	gamma1pm1 { _TGamma1pm1; ^this.primitiveFailed }
 	// log gamma
-	gammaLog { _LGamma; ^this.primitiveFailed }
+	gammaLn { _LGamma; ^this.primitiveFailed }
 	// digamma, trigamma, polygamma
 	gammaDi { _DiGamma; ^this.primitiveFailed }
 	gammaTri { _TriGamma; ^this.primitiveFailed }
@@ -227,16 +227,11 @@ Number : Magnitude {
 	// calculate the roots (zeros) of Chebyshev polynomial
 	// "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
 	// "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
-	chebyZeros {
+	chebyshevZeros {
 		var n = this.asInt;
 		^(1..n).collect({ arg k;
 			cos(pi* ((2*k) - 1) / (2*n))
 		});
-	}
-
-	chebyMaxZero {
-		var n = this.asInt;
-		^cos(pi * (2*n).reciprocal)
 	}
 
 	// Spherical Harmonics
@@ -264,7 +259,7 @@ Number : Magnitude {
 	besselModPrime2 { |x| _BesselKPrime; ^this.primitiveFailed }
 	besselSphPrime { |x| _BesselSphPrime; ^this.primitiveFailed }
 	besselSphPrime2 { |x| _BesselNeumannSphPrime; ^this.primitiveFailed }
-	// Zero finder for bessel polynomials of first and second kind
+	// Zero finder for Bessel Functions of first and second kind
 	// Retrieve one zero at a time, by index
 	besselZero { |index| _BesselZero; ^this.primitiveFailed }
 	besselZero2 { |index| _BesselNeumannZero; ^this.primitiveFailed }
