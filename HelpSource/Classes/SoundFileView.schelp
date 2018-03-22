@@ -219,7 +219,7 @@ METHOD:: xZoom
     returns:: A Float, in seconds of audio displayed.
 
 METHOD:: yZoom
-    Vertical scaling. code::yZoom = 1:: sets 0 dBFS to the top and bottom of the view. 0.5 is half as tall.
+    Vertical scaling. code::yZoom = 1:: sets ±1.0 to the top and bottom of the view. If code::yZoom = 2::, the view covers ±0.5.
 
     returns:: A Float scaling factor.
 
