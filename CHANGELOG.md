@@ -41,6 +41,8 @@ Fixed an off-by-one error in a warning message for `Server:clientID_` ([#3487](h
 
 `Server` now tries to recover in the case of a lost connection between client and server ([#3486](https://github.com/supercollider/supercollider/pull/3486)).
 
+Fixed an error when producing a `Score` containing an `Event` with a multichannel `timingOffset` ([#3544](https://github.com/supercollider/supercollider/pull/3544)).
+
 IDE & SCDoc: Fixed
 -----
 
