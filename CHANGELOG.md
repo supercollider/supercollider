@@ -3,6 +3,8 @@
 3.9.2 (2018-03-23)
 ==================
 
+Contributors to this release: adcxyz, brianlheim, davidgranstrom, jamshark70, patrickdupuis, snappizz, telephon, vivid-synth
+
 General: Fixed
 -----
 
