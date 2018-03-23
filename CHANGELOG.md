@@ -1,6 +1,6 @@
 # Change Log
 
-3.9.1 (2017-02-05)
+3.9.1 (2018-02-05)
 ==================
 
 Contributors to this release: antonhornquist, aspiers, brianlheim, cappelnord, florian-grond, gusano, jamshark70, patrickdupuis, redFrik, shimpe, telephon
