@@ -280,6 +280,14 @@ QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errNone;
 }
 
+QC_LANG_PRIMITIVE( Qt_SetStyleSheet, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+    QString const str = QtCollider::get( a );
+    static_cast<QApplication*>( QcApplication::instance() )->setStyleSheet( str );
+    QtCollider::set( r, QString{"Success"} );
+    return errNone;
+}
+
 void defineMiscPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -299,6 +307,7 @@ void defineMiscPrimitives()
   definer.define<Qt_IsMethodOverridden>();
   definer.define<QWebView_ClearMemoryCaches>();
   definer.define<Qt_CursorPosition>();
+  definer.define<Qt_SetStyleSheet>();
 }
 
 } // namespace QtCollider

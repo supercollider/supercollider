@@ -127,6 +127,11 @@ QtGUI {
 		^this.primitiveFailed;
 	}
 
+	*setStyleSheet { arg style;
+		_Qt_SetStyleSheet
+		^this.primitiveFailed;
+	}
+
 	*selectedText {
 		var view = this.focusView;
 		if( view.notNil ) {
