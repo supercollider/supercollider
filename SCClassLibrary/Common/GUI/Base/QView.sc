@@ -297,6 +297,14 @@ View : QObject {
 		this.setProperty( \windowTitle, string );
 	}
 
+	objectName {
+		^this.getProperty( \objectName );
+	}
+
+	objectName_ { arg string;
+		this.setProperty( \objectName, string );
+	}
+
 	front {
 		_QWidget_BringFront
 		^this.primitiveFailed;
