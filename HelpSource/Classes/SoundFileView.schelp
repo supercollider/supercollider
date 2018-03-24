@@ -121,9 +121,7 @@ METHOD:: readFileWithTask
 
 METHOD:: data
 
-    Gets the display data, or sets custom data instead of a sound file.
-
-    It is not possible to get the data.
+    Sets custom data instead of a sound file. This is a setter only; it is not possible to get the data. If you need access to the data, you must keep it in your own variable.
 
    Setting this property assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
 
@@ -213,16 +211,26 @@ METHOD:: zoomSelection
     argument::
         The index of the selection; an Integer between 0 an 63.
 
+METHOD:: xZoom
+    The number of seconds of audio to display in the view. E.g., to zoom out by a factor of 2, code::view.xZoom = dataDuration / 2::. (You are responsible for keeping track of the data duration.)
+
+    returns:: A Float, in seconds of audio displayed.
+
+METHOD:: yZoom
+    Vertical scaling. code::yZoom = 1:: sets ±1.0 to the top and bottom of the view. If code::yZoom = 2::, the view covers ±0.5.
+
+    returns:: A Float scaling factor.
+
 METHOD:: scrollPos
 
-    The scrolling position of the view, as a fraction of the total scrolling range.
+    The scrolling position of the view, as a fraction of the total scrolling range. The total scrolling range is code::totalDuration - xZoom::.
 
     returns::
         A Float in the range of 0.0 to 1.0.
 
 METHOD:: scrollTo
 
-    Scrolls to a fraction of the total scrolling range.
+    Scrolls to a fraction of the total scrolling range. The total scrolling range is code::totalDuration - xZoom::.
 
     argument::
         A Float in the range of 0.0 to 1.0.
@@ -241,7 +249,6 @@ METHOD:: scrollToStart
 METHOD:: scrollToEnd
 
     Scrolls to the end.
-
 
 SUBSECTION:: Selection
 
@@ -640,4 +647,66 @@ a.zoom(4);
 
 w.close;
 
+::
+
+SUBSECTION:: Adding a scroll bar
+
+Zooming and scrolling by mouse, directly in a SoundFileView, may not be immediately intuitive. (Most users wouldn't guess to shift-right-click!) You can add a link::Classes/RangeSlider:: to act as a scrollbar.
+
+Notes:
+
+list::
+## If the user shift-right-clicks, the only way to track the SoundFileView's display changes is by using mouse actions: link::Classes/View#-mouseDownAction:: and link::Classes/View#-mouseUpAction:: to know which button is pressed, and link::Classes/View#-mouseMoveAction:: to read the new scrolling and zooming values.
+## link::Classes/SoundFileView#-xZoom:: is in seconds, while the range slider is normalized to a 0-1 range. So code::xZoom == slider.range * duration::, and code::slider.range == xZoom / duration::.
+## link::Classes/SoundFileView#-scrollPos:: is normalized to the "total scrolling range," where 1.0 is scrolled fully to the right. We have to subtract the displayed area: code::slider.lo = sfv.scrollPos / (1 - slider.size)::, with some refinements to avoid division by 0.
+::
+
+code::
+
+f = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+f.readData(d = Signal.newClear(f.numFrames * f.numChannels));
+f.close;
+
+(
+var w = Window("test", Rect(700, 200, 600, 300)),
+file, sfv, sfZoom, mouseButton,
+dur = d.size / f.sampleRate / f.numChannels;
+
+w.layout = VLayout(
+	sfv = SoundFileView(),
+	sfZoom = RangeSlider().orientation_(\horizontal)
+);
+
+sfZoom.lo_(0).range_(1)
+.action_({ |view|
+	var divisor, rangeStart;
+	rangeStart = view.lo;
+	divisor = 1 - sfZoom.range;
+	if(divisor < 0.0001) {
+		rangeStart = 0;
+		divisor = 1;
+	};
+	sfv.xZoom_(sfZoom.range * dur)
+	.scrollTo(rangeStart / divisor)
+});
+
+sfv.setData(d, startFrame: 0, channels: f.numChannels, samplerate: f.sampleRate);
+
+sfv.mouseDownAction_({ |view, x, y, mod, buttonNumber|
+	mouseButton = buttonNumber;
+})
+.mouseUpAction_({ |view, x, y, mod|
+	mouseButton = nil;
+})
+.mouseMoveAction_({ |view, x, y, mod|
+	var rangeSize, rangeStart;
+	if(mouseButton == 1) {
+		rangeSize = view.xZoom / dur;
+		rangeStart = view.scrollPos * (1 - rangeSize);
+		sfZoom.lo_(rangeStart).range_(rangeSize);
+	};
+});
+
+w.front;
+)
 ::
