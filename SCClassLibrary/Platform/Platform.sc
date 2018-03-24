@@ -172,9 +172,20 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
+	killProcessByID { |pid|
+		^this.subclassResponsibility(\killProcessByID)
+	}
+
 	killAll { |cmdLineArgs|
 		^this.subclassResponsibility(\killAll)
 	}
+
+	// used to format paths correctly for command-line calls
+	// On Windows, encloses with quotes; on Unix systems, escapes spaces.
+	formatPathForCmdLine { |path|
+		^this.subclassResponsibility
+	}
+
 }
 
 UnixPlatform : Platform {
@@ -196,6 +207,10 @@ UnixPlatform : Platform {
 		^arch.asSymbol;
 	}
 
+	killProcessByID { |pid|
+		("kill -9 " ++ pid).unixCmd;
+	}
+
 	killAll { |cmdLineArgs|
 		("killall -9 " ++ cmdLineArgs).unixCmd;
 	}
@@ -206,4 +221,9 @@ UnixPlatform : Platform {
 			File.exists(path);
 		});
 	}
+
+	formatPathForCmdLine { |path|
+		^path.escapeChar($ );
+	}
+
 }

@@ -74,6 +74,15 @@ platform recordings directory
 method:: defaultTempDir
 default directory for temporary files
 
+method:: formatPathForCmdLine
+
+argument:: path
+A path string.
+
+returns:: The input string formatted as a command-line argument. On Windows this
+method quotes the string. On Unix-based systems this method escapes space
+characters with a backslash.
+
 subsection:: Features
 
 method:: when
@@ -143,6 +152,28 @@ files to be loaded on startup
 
 method:: loadStartupFiles
 (re)load startup files
+
+subsection:: System commands
+
+method:: killAll
+kill all processes as defined by cmdLineArgs.
+argument:: cmdLineArgs
+a string containing one or several process names.
+code::
+// e.g. kill all possibly running servers (scsynth or supernova)
+thisProcess.platform.killAll("scsynth supernova");
+::
+
+method:: killProcessByID
+kill a single process as identified by its process ID.
+argument:: pid
+an Integer which is the pid of the process to kill.
+code::
+// start a server program from the cmdLine for testing
+~pid = unixCmd(Server.program + s.options.asOptionsString(57100));
+// kill just that server program by its pid:
+thisProcess.platform.killProcessByID(~pid);
+::
 
 subsection:: Features
 

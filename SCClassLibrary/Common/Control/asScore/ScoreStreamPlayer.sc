@@ -28,7 +28,7 @@ ScoreStreamPlayer : Server {
 
 	initScoreStreamPlayer {
 		this.latency_(0);
-		Server.set.remove(this); // we do not want to be part of the server list
+		Server.all.remove(this); // we do not want to be part of the server list
 		^this
 	}
 
@@ -42,10 +42,10 @@ ScoreStreamPlayer : Server {
 	prepareEvent { | event |
 		event = event.copy;
 		event.use({
-			~schedBundle = { | lag, offset, server ...bundle |
+			~schedBundle = flop { | lag, offset, server ... bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			};
-			~schedBundleArray = { | lag, offset, server, bundle |
+			~schedBundleArray = flop { | lag, offset, server, bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			};
 		});
@@ -57,10 +57,10 @@ ScoreStreamPlayer : Server {
 		proto = (
 			server: this,
 
-			schedBundle: { | lag, offset, server ...bundle |
+			schedBundle: flop { | lag, offset, server ...bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			},
-			schedBundleArray: { | lag, offset, server, bundle |
+			schedBundleArray: flop { | lag, offset, server, bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			}
 		);
