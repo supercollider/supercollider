@@ -40,6 +40,45 @@ TestPattern : UnitTest {
 
 	}
 
+
+	test_pattern_zero_length {
+		var func, patterns;
+
+		func = { |pat|
+			this.assert(Pseq([pat, 1]).asStream.next == 1,
+				"% : a pattern of length zero should return nothing but pass control".format(pat)
+			)
+		};
+		patterns = [
+			Pfuncn({ 2 }, 0),
+			Pseries(length:0),
+			Pgeom(length:0),
+			Pbrown(length:0),
+			Pgbrown(length:0),
+			Pwhite(length:0),
+			Pprob([1, 2, 3], length:0),
+			Ptime(repeats:0),
+			Pkey(repeats:0),
+			Pseq([20, 30], repeats:0),
+			Pser([20, 30], repeats:0),
+			Pshuf([20, 30], repeats:0),
+			Prand([20, 30], repeats:0),
+			Pxrand([20, 30], repeats:0),
+			Pwrand([20, 30], repeats:0),
+			Pfsm([20, 30], repeats:0),
+			Pdfsm([20, 30], repeats:0),
+			Ptuple([20, 30], repeats:0),
+			Place([20, 30], repeats:0),
+			Ppatlace([20, 30], repeats:0),
+			Pslide([20, 30], repeats:0),
+			Pwalk([20, 30], repeats:0),
+		];
+
+		patterns.do(func)
+
+	}
+
+
 /*
 	test_storeArgs {
 		Pattern.allSubclasses.do({ |class|
