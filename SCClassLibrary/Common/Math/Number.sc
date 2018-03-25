@@ -78,9 +78,9 @@ Number : Magnitude {
 	// log gamma
 	gammaLn { _LGamma; ^this.primitiveFailed }
 	// digamma, trigamma, polygamma
-	gammaDi { _DiGamma; ^this.primitiveFailed }
-	gammaTri { _TriGamma; ^this.primitiveFailed }
-	gammaPoly { |z| _PolyGamma; ^this.primitiveFailed }
+	gammaDi { _Digamma; ^this.primitiveFailed }
+	gammaTri { _Trigamma; ^this.primitiveFailed }
+	gammaPoly { |z| _Polygamma; ^this.primitiveFailed }
 	// gamma(this) / gamma(b)
 	gammaRatio { |b| _TGammaRatio; ^this.primitiveFailed }
 	// gamma(this) / gamma(this + delta)
@@ -137,31 +137,31 @@ Number : Magnitude {
 	// All require 0 <= x <= 1
 	// normalised incomplete beta function of a, b and x
 	// require a,b >= 0, and in addition that not both a and b are zero
-	betaI { |b, x| _BetaI; ^this.primitiveFailed }
+	betaI { |b, x| _IBeta; ^this.primitiveFailed }
 	// normalised complement of the incomplete beta function of a, b and x
 	// require a,b >= 0, and in addition that not both a and b are zero
-	betaIC { |b, x| _BetaIC; ^this.primitiveFailed }
+	betaIC { |b, x| _IBetaC; ^this.primitiveFailed }
 	// full (non-normalised) incomplete beta function of a, b and x
 	// require a,b > 0
-	betaIFull { |b, x| _BetaIFull; ^this.primitiveFailed }
+	betaIFull { |b, x| _IBetaFull; ^this.primitiveFailed }
 	// full (non-normalised) complement of the incomplete beta function of a, b and x
 	// require a,b > 0
-	betaIFullC { |b, x| _BetaIFullC; ^this.primitiveFailed }
+	betaIFullC { |b, x| _IBetaFullC; ^this.primitiveFailed }
 	// Incomplete beta function inverses
 	// Requires: a,b > 0 and 0 <= p <= 1
-	betaIInv { |b, p| _BetaIInv; ^this.primitiveFailed }
+	betaIInv { |b, p| _IBetaInv; ^this.primitiveFailed }
 	// Requires: a,b > 0 and 0 <= q <= 1
-	betaICInv { |b, q| _BetaICInv; ^this.primitiveFailed }
+	betaICInv { |b, q| _IBetaCInv; ^this.primitiveFailed }
 	// Requires: b > 0, 0 < x < 1 and 0 <= p <= 1
-	betaIInvA { |x, p| _BetaIInvA; ^this.primitiveFailed }
+	betaIInvA { |x, p| _IBetaInvA; ^this.primitiveFailed }
 	// Requires: b > 0, 0 < x < 1 and 0 <= q <= 1
-	betaICInvA { |x, q| _BetaICInvA; ^this.primitiveFailed }
+	betaICInvA { |x, q| _IBetaCInvA; ^this.primitiveFailed }
 	// Requires: a > 0, 0 < x < 1 and 0 <= p <= 1
-	betaIInvB { |x, p| _BetaIInvB; ^this.primitiveFailed }
+	betaIInvB { |x, p| _IBetaInvB; ^this.primitiveFailed }
 	// Requires: a > 0, 0 < x < 1 and 0 <= q <= 1
-	betaICInvB { |x, q| _BetaICInvB; ^this.primitiveFailed }
+	betaICInvB { |x, q| _IBetaCInvB; ^this.primitiveFailed }
 	// Incomplete beta function derivative
-	betaIDerivative { |b, x| _BetaIDerivative; ^this.primitiveFailed }
+	betaIDerivative { |b, x| _IBetaDerivative; ^this.primitiveFailed }
 
 
 	/*  Error functions */
@@ -236,40 +236,40 @@ Number : Magnitude {
 
 	// Spherical Harmonics
 
-    sphHarm { |m, theta, phi| _SphHarmComplex; ^this.primitiveFailed }
-    sphHarmReal { |m, theta, phi| _SphHarmReal; ^this.primitiveFailed }
-    sphHarmImag { |m, theta, phi| _SphHarmImag; ^this.primitiveFailed }
+    sphHarm { |m, theta, phi| _SphericalHarmonic; ^this.primitiveFailed }
+    sphHarmReal { |m, theta, phi| _SphericalHarmonicR; ^this.primitiveFailed }
+    sphHarmImag { |m, theta, phi| _SphericalHarmonicI; ^this.primitiveFailed }
 
 
 	/*	Bessel Functions  */
 
 	//  First and Second Kinds
-	bessel { |x| _BesselJ; ^this.primitiveFailed }
-	bessel2 { |x| _BesselNeumann; ^this.primitiveFailed }
+	bessel { |x| _CylBesselJ; ^this.primitiveFailed }
+	bessel2 { |x| _CylNeumann; ^this.primitiveFailed }
 	//  Modified, First and Second Kinds
-	besselMod { |x| _BesselI; ^this.primitiveFailed }
-	besselMod2 { |x| _BesselK; ^this.primitiveFailed }
+	besselMod { |x| _CylBesselI; ^this.primitiveFailed }
+	besselMod2 { |x| _CylBesselK; ^this.primitiveFailed }
 	// Spherical, First and Second Kinds
-	besselSph { |x| _BesselSph; ^this.primitiveFailed }
-	besselSph2 { |x| _BesselNeumannSph; ^this.primitiveFailed }
+	besselSph { |x| _SphBessel; ^this.primitiveFailed }
+	besselSph2 { |x| _SphNeumann; ^this.primitiveFailed }
 	// Derivatives
-	besselPrime { |x| _BesselJPrime; ^this.primitiveFailed }
-	besselPrime2 { |x| _BesselNeumannPrime; ^this.primitiveFailed }
-	besselModPrime { |x| _BesselIPrime; ^this.primitiveFailed }
-	besselModPrime2 { |x| _BesselKPrime; ^this.primitiveFailed }
-	besselSphPrime { |x| _BesselSphPrime; ^this.primitiveFailed }
-	besselSphPrime2 { |x| _BesselNeumannSphPrime; ^this.primitiveFailed }
+	besselPrime { |x| _CylBesselJPrime; ^this.primitiveFailed }
+	besselPrime2 { |x| _CylNeumannPrime; ^this.primitiveFailed }
+	besselModPrime { |x| _CylBesselIPrime; ^this.primitiveFailed }
+	besselModPrime2 { |x| _CylBesselKPrime; ^this.primitiveFailed }
+	besselSphPrime { |x| _SphBesselSphPrime; ^this.primitiveFailed }
+	besselSphPrime2 { |x| _SphNeumannPrime; ^this.primitiveFailed }
 	// Zero finder for Bessel Functions of first and second kind
 	// Retrieve one zero at a time, by index
-	besselZero { |index| _BesselZero; ^this.primitiveFailed }
-	besselZero2 { |index| _BesselNeumannZero; ^this.primitiveFailed }
+	besselZero { |index| _CylBesselJZero; ^this.primitiveFailed }
+	besselZero2 { |index| _CylNeumannZero; ^this.primitiveFailed }
 
 
 	/*  Hankel Functions  */
 
 	// Cyclic
-	hankelCyc { |x| _CycHankel1; ^this.primitiveFailed }
-	hankelCyc2 { |x| _CycHankel2; ^this.primitiveFailed }
+	hankelCyc { |x| _CylHankel1; ^this.primitiveFailed }
+	hankelCyc2 { |x| _CylHankel2; ^this.primitiveFailed }
 	// Spherical
 	hankelSph { |x| _SphHankel1; ^this.primitiveFailed }
 	hankelSph2 { |x| _SphHankel2; ^this.primitiveFailed }
@@ -300,21 +300,21 @@ Number : Magnitude {
 
 	//  Elliptic Integrals of the First, Second, Third Kind, D - Legendre Form
 	// Requires -1 <= k <= 1
-	ellipInt1i { |phi| _Ellint1Incomplete; ^this.primitiveFailed }
+	ellipInt1i { |phi| _Ellint1I; ^this.primitiveFailed }
 	// Requires -1 <= k <= 1
-	ellipInt1c { _Ellint1Complete; ^this.primitiveFailed }
+	ellipInt1c { _Ellint1C; ^this.primitiveFailed }
 	// Requires -1 <= k <= 1
-	ellipInt2i { |phi| _Ellint2Incomplete; ^this.primitiveFailed }
+	ellipInt2i { |phi| _Ellint2I; ^this.primitiveFailed }
 	// Requires -1 <= k <= 1
-	ellipInt2c { _Ellint2Complete; ^this.primitiveFailed }
+	ellipInt2c { _Ellint2C; ^this.primitiveFailed }
 	// Requires -1 <= k <= 1 and n < 1/sin2(φ)
-	ellipInt3i { |n, phi| _Ellint3Incomplete; ^this.primitiveFailed	}
+	ellipInt3i { |n, phi| _Ellint3I; ^this.primitiveFailed	}
 	// Requires -1 <= k <= 1 and n < 1
-	ellipInt3c { |n| _Ellint3Complete; ^this.primitiveFailed }
+	ellipInt3c { |n| _Ellint3C; ^this.primitiveFailed }
 	// Requires -1 <= k <= 1
-	ellipIntDi { |phi| _EllintDIncomplete; ^this.primitiveFailed }
+	ellipIntDi { |phi| _EllintDI; ^this.primitiveFailed }
 	// Requires -1 <= k <= 1
-	ellipIntDc { _EllintDComplete; ^this.primitiveFailed }
+	ellipIntDc { _EllintDC; ^this.primitiveFailed }
 
 	// Jacobi Zeta Function
 	// Requires -1 <= k <= 1
@@ -376,12 +376,13 @@ Number : Magnitude {
 
 	/*  Inverse Hyperbolic Functions  */
 
-	asinh { _ASinH; ^this.primitiveFailed }
+	asinh { _AsinH; ^this.primitiveFailed }
 	// requires x >= 1
-	acosh { _ACosH; ^this.primitiveFailed }
-	atanh { _ATanH; ^this.primitiveFailed }
+	acosh { _AcosH; ^this.primitiveFailed }
+	atanh { _AtanH; ^this.primitiveFailed }
 
 
 	/*	Owen's T function */
+
 	owensT { |a| _OwensT; ^this.primitiveFailed }
 }
