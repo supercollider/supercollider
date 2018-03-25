@@ -71,7 +71,6 @@ TestPattern : UnitTest {
 			Place([20, 30], repeats:0),
 			Ppatlace([20, 30], repeats:0),
 			Pslide([20, 30], repeats:0),
-			Pwalk([20, 30], repeats:0),
 		];
 
 		patterns.do(func)
