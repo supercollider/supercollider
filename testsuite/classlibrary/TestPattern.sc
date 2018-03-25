@@ -45,8 +45,9 @@ TestPattern : UnitTest {
 		var func, patterns;
 
 		func = { |pat|
-			this.assert(Pseq([pat, 1]).asStream.next == 1,
-				"% : a pattern of length zero should return nothing but pass control".format(pat)
+			var val = Pseq([pat, 1]).asStream.next(());
+			this.assert(val == 1,
+				"% : a pattern of length zero should return nothing but pass control (returned %)".format(pat, val)
 			)
 		};
 		patterns = [
@@ -56,10 +57,20 @@ TestPattern : UnitTest {
 			Pbrown(length:0),
 			Pgbrown(length:0),
 			Pwhite(length:0),
+			Pmeanrand(length:0),
+			Plprand(length:0),
+			Phprand(length:0),
+			Pexprand(length:0),
+			Ppoisson(length:0),
+			Pcauchy(length:0),
+			Pbeta(length:0),
+			Pgauss(length:0),
 			Pprob([1, 2, 3], length:0),
 			Ptime(repeats:0),
 			Pkey(repeats:0),
 			Pseq([20, 30], repeats:0),
+			Pseg([20, 30], repeats:0),
+			Pstep([20, 30], repeats:0),
 			Pser([20, 30], repeats:0),
 			Pshuf([20, 30], repeats:0),
 			Prand([20, 30], repeats:0),
@@ -71,6 +82,17 @@ TestPattern : UnitTest {
 			Place([20, 30], repeats:0),
 			Ppatlace([20, 30], repeats:0),
 			Pslide([20, 30], repeats:0),
+			Pindex(repeats:0),
+			Pevent(Pget(\a, 20, repeats:0), (eventScope: ())),
+			Pgate(repeats:0),
+			Pn(repeats:0),
+			Pdict((a: 20), Pn(\a), repeats:0),
+			Peventmod({ ~a = ~a + 1 }, (a: 20), repeats:0),
+			Ppar([Pbind.new], repeats:0),
+			Pgpar([Pbind.new], repeats:0),
+			Ptpar([0.0, Pbind.new], repeats:0),
+			Pfpar([Pbind.new], repeats:0),
+
 		];
 
 		patterns.do(func)
