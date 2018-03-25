@@ -764,20 +764,23 @@ NodeProxy : BusPlug {
 
 	// bundle: send single object
 	sendObjectToBundle { | bundle, object, extraArgs, index |
-		var target, nodes;
-		var synthID = object.playToBundle(bundle, { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray }, this);
-		if(synthID.notNil) {
-			if(index.notNil and: { objects.size > 1 }) { // if nil, all are sent anyway
-				// make list of nodeIDs following the index
-				nodes = Array(4);
-				objects.doRange({ arg obj;
-					var id = obj.nodeID;
-					if(id.notNil and: { id != synthID })
-					{ nodes = nodes ++ id ++ synthID };
-				}, index + 1);
-				if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
-			};
+		var synthID = object.playToBundle(bundle, {
+			nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray
+		}, this);
+		if(synthID.notNil and: { index.notNil } and: { objects.size > 1 }) { // if nil, all are sent anyway
+			this.orderSynthsToBundle(bundle, synthID, index)
 		}
+	}
+
+	orderSynthsToBundle { |bundle, nodeID, index|
+		// make list of nodeIDs following the index
+		var nodes = Array(4);
+		objects.doRange({ arg obj;
+			var id = obj.nodeID;
+			if(id.notNil and: { id != nodeID })
+			{ nodes = nodes.add(id).add(nodeID) };
+		}, index + 1);
+		if(nodes.size > 0) { bundle.add(["/n_before"] ++ nodes.reverse) };
 	}
 
 	// bundle: remove single object
