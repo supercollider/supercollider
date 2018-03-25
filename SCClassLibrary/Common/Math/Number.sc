@@ -146,7 +146,7 @@ Number : Magnitude {
 	betaIFull { |b, x| _IBetaFull; ^this.primitiveFailed }
 	// full (non-normalised) complement of the incomplete beta function of a, b and x
 	// require a,b > 0
-	betaIFullC { |b, x| _IBetaFullC; ^this.primitiveFailed }
+	betaIFullC { |b, x| _IBetaCFull; ^this.primitiveFailed }
 	// Incomplete beta function inverses
 	// Requires: a,b > 0 and 0 <= p <= 1
 	betaIInv { |b, p| _IBetaInv; ^this.primitiveFailed }
