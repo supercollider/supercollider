@@ -100,9 +100,10 @@ MyClass {
 
 subsection:: Class Methods
 
-An object's strong::class methods:: are defined together with the instance methods. Class methods are specified with the asterisk (teletype::*::). Within class methods, the keyword code::this:: refers to the class.
+An object's strong::class methods:: are defined together with its instance methods. They are specified with the asterisk (teletype::*::).
 
-A link::Classes/Class:: is itself an object. It is what all instances of it have in common.
+
+A link::Classes/Class:: is itself an object. It is what all instances of it have in common. Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
 
 code::
 MyClass {
@@ -126,7 +127,7 @@ MyClass.classMethod // posts "hello class"
 
 subsection::Overriding methods (overloading)
 
-In order to change the behaviour of the superclass, often methods are overridden. Note that an object looks always for
+To change the behaviour of the superclass, methods can be overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
 
 code::
@@ -174,7 +175,7 @@ MyClass {
 		^super.new.init(arga, argb, argc)
 	}
 
-	init { | arga, argb ,argc |
+	init { | arga, argb, argc |
 		// do initiation here
 	}
 }
@@ -239,7 +240,7 @@ MyClass {
 
 section::Alternatives to inheritance
 
-Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and less a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
+Overreliance on inheritance is usually a design flaw. Inheritance is mainly a way to organise code, and shouldn't be mistaken for a categorisation of objects. Two objects may respond to a message in different ways (polymorphism), and objects delegate control to ther objects they hold in their instance variables (object composition).
 
 subsection::Polymorphism
 
@@ -523,6 +524,10 @@ MyTestPoint {
 code::
 MyTestPoint(2, 3).asCompileString;
 ::
+
+section::Private Methods
+
+Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::. This is just a strong::naming convention::, the message can still be called from anywhere. It is not recommended to do this.
 
 
 section:: Catching undefined method calls
