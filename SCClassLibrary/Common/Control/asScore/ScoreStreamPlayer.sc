@@ -36,16 +36,23 @@ ScoreStreamPlayer : Server {
 	secs2beats { | beats | ^beats }
 
 	add { | beats, args|
-		bundleList = bundleList.add([beats min: maxTime] ++ args)
+		beats = beats min: maxTime;
+		if(beats.isArray) {
+			beats.flop.collect { |each|
+				bundleList = bundleList.add([beats] ++ args)
+			}
+		} {
+			bundleList = bundleList.add([beats] ++ args)
+		}
 	}
 
 	prepareEvent { | event |
 		event = event.copy;
 		event.use({
-			~schedBundle = flop { | lag, offset, server ... bundle |
+			~schedBundle = { | lag, offset, server ... bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			};
-			~schedBundleArray = flop { | lag, offset, server, bundle |
+			~schedBundleArray = { | lag, offset, server, bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			};
 		});
@@ -57,10 +64,10 @@ ScoreStreamPlayer : Server {
 		proto = (
 			server: this,
 
-			schedBundle: flop { | lag, offset, server ...bundle |
+			schedBundle: { | lag, offset, server ... bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			},
-			schedBundleArray: flop { | lag, offset, server, bundle |
+			schedBundleArray: { | lag, offset, server, bundle |
 				this.add(offset * tempo + lag + beats, bundle)
 			}
 		);
