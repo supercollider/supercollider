@@ -39,7 +39,7 @@ ScoreStreamPlayer : Server {
 		beats = beats min: maxTime;
 		if(beats.isArray) {
 			beats.flop.collect { |each|
-				bundleList = bundleList.add([beats] ++ args)
+				bundleList = bundleList.add([each] ++ args)
 			}
 		} {
 			bundleList = bundleList.add([beats] ++ args)
