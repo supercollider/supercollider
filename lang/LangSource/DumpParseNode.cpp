@@ -417,6 +417,22 @@ static void printObject(PyrSlot * slot, PyrObject * obj, char *str)
 	}
 }
 
+// Assumed: str has enough space to hold the representation of d
+static void prettyFormatFloat(char* str, double d)
+{
+	sprintf(str, "%.14g", d);
+
+	// append a trailing '.0' if the number would look like an integer.
+	for ( ; *str; ++str) {
+		if ((*str < '0' || *str > '9') && *str != '-')
+			return;
+	}
+
+	str[0] = '.';
+	str[1] = '0';
+	str[2] = '\0';
+}
+
 void slotOneWord(PyrSlot *slot, char *str)
 {
 	str[0] = 0;
@@ -459,7 +475,7 @@ void slotOneWord(PyrSlot *slot, char *str)
 			sprintf(str, "ptr%p", slotRawPtr(slot));
 			break;
 		default :
-			sprintf(str, "%.14g", slotRawFloat(slot));
+			prettyFormatFloat(str, slotRawFloat(slot));
 			break;
 	}
 }
@@ -507,7 +523,7 @@ bool postString(PyrSlot *slot, char *str)
 			sprintf(str, "%p", slotRawPtr(slot));
 			break;
 		default :
-			sprintf(str, "%.14g", slotRawFloat(slot));
+			prettyFormatFloat(str, slotRawFloat(slot));
 			break;
 	}
 	return res;
