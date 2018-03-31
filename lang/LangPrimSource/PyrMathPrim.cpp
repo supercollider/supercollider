@@ -1372,8 +1372,8 @@ void initMathPrimitives()
 	// Incomplete Betas, normalized and non-normalized
 	definePrimitive(base, index++, "_IBeta", prBoostThreeArg<double, double, double, double, boost::math::ibeta<double>>, 3, 0);
 	definePrimitive(base, index++, "_IBetaC", prBoostThreeArg<double, double, double, double, boost::math::ibetac<double>>, 3, 0);
-	definePrimitive(base, index++, "_IBetaFull", prBoostThreeArg<double, double, double, double, boost::math::beta<double>>, 3, 0);
-	definePrimitive(base, index++, "_IBetaCFull", prBoostThreeArg<double, double, double, double, boost::math::betac<double>>, 3, 0);
+	definePrimitive(base, index++, "_BetaFull", prBoostThreeArg<double, double, double, double, boost::math::beta<double>>, 3, 0);
+	definePrimitive(base, index++, "_BetaCFull", prBoostThreeArg<double, double, double, double, boost::math::betac<double>>, 3, 0);
 	// Incomplete Betas, inverse
 	definePrimitive(base, index++, "_IBetaInv", prBoostThreeArg<double, double, double, double, boost::math::ibeta_inv<double>>, 3, 0);
 	definePrimitive(base, index++, "_IBetaCInv", prBoostThreeArg<double, double, double, double, boost::math::ibetac_inv<double>>, 3, 0);
@@ -1416,6 +1416,9 @@ void initMathPrimitives()
 	// First and Second Kinds
 	definePrimitive(base, index++, "_CylBesselJ", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_j<double>>, 2, 0);
 	definePrimitive(base, index++, "_CylNeumannJ", prBoostTwoArg<double, double, double, boost::math::cyl_neumann<double>>, 2, 0);
+	// Zero finder
+	definePrimitive(base, index++, "_CylBesselJZero", prBoostTwoArg<double, double, int, boost::math::cyl_bessel_j_zero<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylNeumannZero", prBoostTwoArg<double, double, int, boost::math::cyl_neumann_zero<double>>, 2, 0);
 	// Modified, First and Second Kinds
 	definePrimitive(base, index++, "_CylBesselI", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_i<double>>, 2, 0);
 	definePrimitive(base, index++, "_CylBesselK", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_k<double>>, 2, 0);
@@ -1429,9 +1432,6 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_CylBesselKPrime", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_k_prime<double>>, 2, 0);
 	definePrimitive(base, index++, "_SphBesselPrime", prBoostTwoArg<double, unsigned, double, boost::math::sph_bessel_prime<double>>, 2, 0);
 	definePrimitive(base, index++, "_SphNeumannPrime",prBoostTwoArg<double, unsigned, double, boost::math::sph_neumann_prime<double>>, 2, 0);
-	// Zero finder
-	definePrimitive(base, index++, "_CylBesselJZero", prBoostTwoArg<double, double, int, boost::math::cyl_bessel_j_zero<double>>, 2, 0);
-	definePrimitive(base, index++, "_CylNeumannZero", prBoostTwoArg<double, double, int, boost::math::cyl_neumann_zero<double>>, 2, 0);
 	
 	//  Hankel Functions:
 	// Cyclic
@@ -1446,7 +1446,8 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_AiryBi", prBoostOneArg<double, double, boost::math::airy_bi<double>>, 1, 0);
 	definePrimitive(base, index++, "_AiryAiPrime", prBoostOneArg<double, double, boost::math::airy_ai_prime<double>>, 1, 0);
 	definePrimitive(base, index++, "_AiryBiPrime", prBoostOneArg<double, double, boost::math::airy_bi_prime<double>>, 1, 0);
-	definePrimitive(base, index++, "_AiryZero", prBoostOneArg<double, int, boost::math::airy_ai_zero<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryAiZero", prBoostOneArg<double, int, boost::math::airy_ai_zero<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryBiZero", prBoostOneArg<double, int, boost::math::airy_bi_zero<double>>, 1, 0);
 	
 	//  Elliptic Integrals:
 	// Elliptic Integrals - Carlson Form
@@ -1456,13 +1457,13 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_EllintRc", prBoostTwoArg<double, double, double, boost::math::ellint_rc<double>>, 2, 0);
 	definePrimitive(base, index++, "_EllintRg", prBoostThreeArg<double, double, double, double, boost::math::ellint_rg<double>>, 3, 0);
 	// Elliptic Integrals of the First, Second, Third Kind, D - Legendre Form
-	definePrimitive(base, index++, "_Ellint1I", prBoostTwoArg<double, double, double, boost::math::ellint_1<double>>, 2, 0);
+	definePrimitive(base, index++, "_Ellint1", prBoostTwoArg<double, double, double, boost::math::ellint_1<double>>, 2, 0);
 	definePrimitive(base, index++, "_Ellint1C", prBoostOneArg<double, double, boost::math::ellint_1<double>>, 1, 0);
-	definePrimitive(base, index++, "_Ellint2I", prBoostTwoArg<double, double, double, boost::math::ellint_2<double>>, 2, 0);
+	definePrimitive(base, index++, "_Ellint2", prBoostTwoArg<double, double, double, boost::math::ellint_2<double>>, 2, 0);
 	definePrimitive(base, index++, "_Ellint2C", prBoostOneArg<double, double, boost::math::ellint_2<double>>, 1, 0);
-	definePrimitive(base, index++, "_Ellint3I", prBoostThreeArg<double, double, double, double, boost::math::ellint_3<double>>, 3, 0);
+	definePrimitive(base, index++, "_Ellint3", prBoostThreeArg<double, double, double, double, boost::math::ellint_3<double>>, 3, 0);
 	definePrimitive(base, index++, "_Ellint3C", prBoostTwoArg<double, double, double, boost::math::ellint_3<double>>, 2, 0);
-	definePrimitive(base, index++, "_EllintDI", prBoostTwoArg<double, double, double, boost::math::ellint_d<double>>, 2, 0);
+	definePrimitive(base, index++, "_EllintD", prBoostTwoArg<double, double, double, boost::math::ellint_d<double>>, 2, 0);
 	definePrimitive(base, index++, "_EllintDC", prBoostOneArg<double, double, boost::math::ellint_d<double>>, 1, 0);
 	// Jacobi Zeta, Heuman Lambda Function
 	definePrimitive(base, index++, "_JacobiZeta", prBoostTwoArg<double, double, double, boost::math::jacobi_zeta<double>>, 2, 0);
@@ -1487,8 +1488,8 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_Zeta", prBoostOneArg<double, double, boost::math::zeta<double>>, 1, 0);
 	
 	//  Exponential Integrals:
-	definePrimitive(base, index++, "_ExpIntEn", prBoostTwoArg<double, double, double, boost::math::expint<double>>, 2, 0);
-	definePrimitive(base, index++, "_ExpInt", prBoostOneArg<double, double, boost::math::expint<double>>, 1, 0);
+	definePrimitive(base, index++, "_ExpintEn", prBoostTwoArg<double, double, double, boost::math::expint<double>>, 2, 0);
+	definePrimitive(base, index++, "_ExpintEi", prBoostOneArg<double, double, boost::math::expint<double>>, 1, 0);
 	
 	//  Basic functions:
 	definePrimitive(base, index++, "_SinPi", prBoostOneArg<double, double, boost::math::sin_pi<double>>, 1, 0);
@@ -1501,13 +1502,13 @@ void initMathPrimitives()
 	definePrimitive(base, index++, "_Hypot2", prBoostTwoArg<double, double, double, boost::math::hypot<double>>, 2, 0);
 	
 	// Sinus Cardinal and Hyperbolic Sinus Cardinal Functions:
-	definePrimitive(base, index++, "_SinCpi", prBoostOneArg<double, double, boost::math::sinc_pi<double>>, 1, 0);
-	definePrimitive(base, index++, "_SinHCpi", prBoostOneArg<double, double, boost::math::sinhc_pi<double>>, 1, 0);
+	definePrimitive(base, index++, "_SincPi", prBoostOneArg<double, double, boost::math::sinc_pi<double>>, 1, 0);
+	definePrimitive(base, index++, "_SinhcPi", prBoostOneArg<double, double, boost::math::sinhc_pi<double>>, 1, 0);
 	
 	// Inverse Hyperbolic Functions:
-	definePrimitive(base, index++, "_AsinH", prBoostOneArg<double, double, boost::math::asinh<double>>, 1, 0);
-	definePrimitive(base, index++, "_AcosH", prBoostOneArg<double, double, boost::math::acosh<double>>, 1, 0);
-	definePrimitive(base, index++, "_AtanH", prBoostOneArg<double, double, boost::math::atanh<double>>, 1, 0);
+	definePrimitive(base, index++, "_Asinh", prBoostOneArg<double, double, boost::math::asinh<double>>, 1, 0);
+	definePrimitive(base, index++, "_Acosh", prBoostOneArg<double, double, boost::math::acosh<double>>, 1, 0);
+	definePrimitive(base, index++, "_Atanh", prBoostOneArg<double, double, boost::math::atanh<double>>, 1, 0);
 	
 	//	Owen's T function:
 	definePrimitive(base, index++, "_OwensT", prBoostTwoArg<double, double, double, boost::math::owens_t<double>>, 2, 0);
