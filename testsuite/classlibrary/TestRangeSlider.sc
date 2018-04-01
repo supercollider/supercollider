@@ -1,6 +1,6 @@
-// TestServer_GUI.sc
-// Author: Brian Heim (brianlheim@gmail.com)
-// Tests for GUI behavior during ServerBoot, ServerTree, ServerQuit
+// TestRangerSlider.sc
+// Original Author: Brian Heim (brianlheim@gmail.com)
+
 TestRangeSlider : UnitTest {
 
 	var slider;
