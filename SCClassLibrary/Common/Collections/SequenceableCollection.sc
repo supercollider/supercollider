@@ -1304,21 +1304,41 @@ SequenceableCollection : Collection {
 
 	//	asUGenInput { ^this.asArray.asUGenInput }
 
+	// this method could be refactored by dispatching, but we're trying to keep the overhead low.
+
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
+
+		// "this" is an array of delta times for the clock (usually in beats)
+		// "lag" is a value or an array of tempo independent absolute lag times (in seconds)
+
+		var sendBundle;
+
 		latency = latency ? server.latency;
+		sendBundle = { |i| server.sendBundle(latency, bundleArray.wrapAt(i)) };
+
 		if (lag != 0) {
 			lag = lag.asArray;
-			this.do { |time, i|
-				clock.sched(time, {
-					SystemClock.sched(lag.wrapAt(i), {
-						server.sendBundle(latency, bundleArray.wrapAt(i)) })
-				})
+
+			this.do { |delta, i|
+				if(delta != 0) {
+					// schedule on both clocks
+					clock.sched(delta, {
+						SystemClock.sched(lag.wrapAt(i), { sendBundle.value(i) })
+					})
+				} {
+					// schedule only on the system clock
+					SystemClock.sched(lag.wrapAt(i), { sendBundle.value(i) })
+				}
 			}
 		} {
-			this.do { |time, i|
-				clock.sched(time, {
-					server.sendBundle(latency, bundleArray.wrapAt(i))
-				})
+			this.do { |delta, i|
+				if(delta != 0) {
+					// schedule only on the clock passed in
+					clock.sched(delta, { sendBundle.value(i) })
+				} {
+					// send directly
+					sendBundle.value(i)
+				}
 			}
 		}
 	}
