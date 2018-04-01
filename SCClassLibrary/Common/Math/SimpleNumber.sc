@@ -522,20 +522,27 @@ SimpleNumber : Number {
 		^this
 	}
 
+	// this method could be refactored by dispatching, but we're trying to keep the overhead low.
+
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
+		var sendBundle = { server.sendBundle(latency ? server.latency, *bundleArray) };
+		// "this" is the delta time for the clock (usually in beats)
+		// "lag" is a tempo independent absolute lag time (in seconds)
 		if (lag != 0) {
-			clock.sched(this, {
-				SystemClock.sched(lag, {
-					server.sendBundle(latency ? server.latency, *bundleArray)
-				})
-			})
+			if(this != 0) {
+				// schedule on both clocks
+				clock.sched(this, { SystemClock.sched(lag, sendBundle) })
+			} {
+				// only lag specified: schedule only on the system clock
+				SystemClock.sched(lag, sendBundle)
+			}
 		} {
 			if(this != 0) {
-				clock.sched(this, {
-					server.sendBundle(latency ? server.latency, *bundleArray)
-				})
+				// only delta specified: schedule only on the clock passed in
+				clock.sched(this, sendBundle)
 			} {
-				server.sendBundle(latency ? server.latency, *bundleArray)
+				// no delays: send directly
+				sendBundle.value
 			}
 		}
 
