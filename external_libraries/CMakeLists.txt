@@ -95,6 +95,8 @@ if(NOT YAMLCPP_FOUND)
   add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
   target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
+  set(YAMLCPP_LIBRARY yaml)
+  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
 
   if(CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
