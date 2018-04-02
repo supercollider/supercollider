@@ -31,18 +31,26 @@ UnitTest {
 	tearDown {}
 
 	*run { | reset = true, report = true|
-		this.new.run(reset, report);
+
+		if(reset) { this.class.reset };
+		if(report) { ("RUNNING UNIT TEST" + this).inform };
+
+		this.forkIfNeeded {
+			this.runAllTestMethods;
+			if(report) { this.report };
+			nil
+		}
 	}
 
 	// run all UnitTest subclasses
 	*runAll {
 		^this.forkIfNeeded {
 			this.reset;
-			this.allSubclasses.do ({ |testClass|
-				testClass.run(false,false);
+			this.allSubclasses.do { |testClass|
+				testClass.run(false, false);
 				0.1.wait;
-			});
-			this.report;
+			};
+			this.report
 		}
 	}
 
@@ -55,6 +63,14 @@ UnitTest {
 		method = class.findMethod(method.asSymbol);
 		if(method.isNil) { Error("Test method not found "+methodName).throw };
 		class.new.runTestMethod(method);
+	}
+
+	runAllTestMethods {
+		this.forkIfNeeded {
+			this.findTestMethods.do { |method|
+				this.new.runTestMethod(method)
+			}
+		}
 	}
 
 	// run a single test method of this class
@@ -148,8 +164,8 @@ UnitTest {
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
 		var details =
-			"Is:\n\t" + a +
-			"\nShould equal (within range" + within ++ "):\n\t" + b;
+		"Is:\n\t" + a +
+		"\nShould equal (within range" + within ++ "):\n\t" + b;
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
