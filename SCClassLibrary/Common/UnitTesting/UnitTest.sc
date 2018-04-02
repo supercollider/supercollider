@@ -24,6 +24,18 @@ UnitTest {
 
 	}
 
+	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
+	*runTest { | methodName |
+		var class, method, unitTest;
+		# class, method = methodName.split($:);
+		class = class.asSymbol.asClass;
+		method.asSymbol;
+		method = class.findMethod(method.asSymbol);
+		if(method.isNil) { Error("Test method not found "+methodName).throw };
+		class.new.runTestMethod(method);
+	}
+
+
 	// called before each test
 	setUp {}
 
@@ -50,17 +62,6 @@ UnitTest {
 			};
 			this.report
 		}
-	}
-
-	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
-	*runTest { | methodName |
-		var class, method, unitTest;
-		# class, method = methodName.split($:);
-		class = class.asSymbol.asClass;
-		method.asSymbol;
-		method = class.findMethod(method.asSymbol);
-		if(method.isNil) { Error("Test method not found "+methodName).throw };
-		class.new.runTestMethod(method);
 	}
 
 	*runAllTestMethods {
@@ -204,42 +205,46 @@ UnitTest {
 
 	// make a further assertion only if it passed, or only if it failed
 	ifAsserts { | boolean, message, ifPassedFunc, ifFailedFunc, report = true|
-		if(boolean.not,{
-			this.failed(currentMethod,message, report);
+		if(boolean.not) {
+			this.failed(currentMethod, message, report);
 			ifFailedFunc.value;
-		},{
+		} {
 			this.passed(currentMethod,message, report);
 			ifPassedFunc.value;
-		});
+		};
 		^boolean
 	}
 
 	// waits for condition with a maxTime limit
 	// if time expires, the test is a failure
 	wait { |condition, failureMessage, maxTime = 10.0|
-		var limit;
-		limit = maxTime / 0.05;
-		while({
+
+		var limit = maxTime / 0.05;
+
+		while {
 			condition.value.not and:
 			{(limit = limit - 1) > 0}
-		},{
+		} {
 			0.05.wait;
-		});
-		if(limit == 0 and: failureMessage.notNil,{
+		};
+
+		if(limit == 0 and: failureMessage.notNil) {
 			this.failed(currentMethod,failureMessage)
-		})
+		}
 	}
 
 	// wait is better
 	asynchAssert { |waitConditionBlock, testBlock, timeoutMessage = "", timeout = 10|
-		var limit;
-		limit = timeout / 0.1;
+
+		var limit = timeout / 0.1;
+
 		while {
 			waitConditionBlock.value.not and:
 			{ (limit = limit - 1) > 0 }
 		} {
 			0.1.wait;
 		};
+
 		if(limit == 0) {
 			this.failed(currentMethod,"Timeout:" + timeoutMessage)
 		} {
@@ -262,10 +267,11 @@ UnitTest {
 
 	// call failure directly
 	failed { | method, message, report = true, details |
-		var r;
-		r = UnitTestResult(this, method, message, details);
+
+		var r = UnitTestResult(this, method, message, details);
 		failures = failures.add(r);
-		if(report){
+
+		if(report) {
 			Post << Char.nl << "FAIL: ";
 			r.report;
 			Post << Char.nl;
@@ -274,10 +280,11 @@ UnitTest {
 
 	// call pass directly
 	passed { | method, message, report = true, details |
-		var r;
-		r = UnitTestResult(this, method, message, details);
+
+		var r = UnitTestResult(this, method, message, details);
 		passes = passes.add(r);
-		if(report && reportPasses) {
+
+		if(report and: { reportPasses }) {
 			Post << "PASS: ";
 			r.report(passVerbosity == brief);
 		};
@@ -337,54 +344,68 @@ UnitTest {
 	findTestMethods {
 		^this.class.findTestMethods
 	}
+
 	*findTestMethods {
-		^methods.select({ arg m;
+		^methods.select { |m|
 			m.name.asString.copyRange(0,4) == "test_"
-		})
+		}
 	}
+
 	*classesWithTests { | package = 'Common'|
-		^Quarks.classesInPackage(package).select({ |c| UnitTest.findTestClass(c).notNil })
+		^Quarks.classesInPackage(package).select { |c|
+			UnitTest.findTestClass(c).notNil
+		}
 	}
+
 	*classesWithoutTests { |package = 'Common'|
-		^Quarks.classesInPackage(package).difference( UnitTest.classesWithTests(package) );
+		^Quarks.classesInPackage(package).difference(UnitTest.classesWithTests(package))
 	}
 
 	// whom I am testing
 	*findTestedClass {
 		^this.name.asString.copyToEnd(4).asSymbol.asClass
 	}
+
 	// methods in the tested class that do not have test_ methods written
 	*untestedMethods {
 		var testedClass,testMethods,testedMethods,untestedMethods;
 		testedClass = this.findTestedClass;
 		// what methods in the target class do not have tests written for them ?
 		testMethods = this.findTestMethods;
-		testedMethods = testMethods.collect({ |meth|
+		testedMethods = testMethods.collect { |meth|
 			testedClass.findMethod(meth.name.asString.copyToEnd(5).asSymbol)
-		}).reject(_.isNil);
-		if(testedMethods.isNil or: {testedMethods.isEmpty},{
-			untestedMethods = testedClass.methods;
-		},{
-			untestedMethods =
-			testedClass.methods.select({ |meth| testedMethods.includes(meth).not });
-		});
+		}.reject(_.isNil);
+
+		if(testedMethods.isNil or: { testedMethods.isEmpty }) {
+			untestedMethods = testedClass.methods
+		} {
+			untestedMethods = testedClass.methods.select { |meth|
+				testedMethods.includes(meth).not
+			}
+		};
+
 		// reject getters,setters, empty methods
-		untestedMethods = untestedMethods.reject({ |meth| meth.code.isNil });
+		untestedMethods = untestedMethods.reject { |meth| meth.code.isNil };
 		^untestedMethods
 	}
-	*listUntestedMethods { arg forClass;
-		this.findTestClass(forClass).untestedMethods.do({|m| m.name.postln })
+
+	*listUntestedMethods { | forClass |
+		this.findTestClass(forClass).untestedMethods.do {|m| m.name.postln }
 	}
+
 	// private
 	*reset {
 		failures = [];
 		passes = [];
 		routine.stop;
 	}
+
 	s {
 		^Server.default; // for convenient translation to/from example code
 	}
+
 }
+
 
 UnitTestResult {
 
