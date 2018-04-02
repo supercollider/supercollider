@@ -330,12 +330,7 @@ UnitTest {
 	}
 
 	*forkIfNeeded { |function|
-		^if(thisThread.isKindOf(Routine)) {
-			// we are inside the Routine already
-			function.value
-		} {
-			Routine(function).play(AppClock)
-		}
+		function.forkIfNeeded(AppClock)
 	}
 
 	// returns the methods named test_
