@@ -106,19 +106,17 @@ UnitTest {
 	}
 
 	assertEquals { |a, b, message = "", report = true, onFailure |
-		var details = "Is:\n\t" + a + "\nShould be:\n\t" + b;
+		var details = "Is:\n\t % \nShould be:\n\t %".format(a, b);
 		this.assert(a == b, message, report, onFailure, details);
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
 		var details =
-		"Is:\n\t" + a +
-		"\nShould equal (within range" + within ++ "):\n\t" + b;
+		"Is:\n\t % \nShould equal (within range" + within ++ "):\n\t %".format(a, b);
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
 	assertArrayFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-
 		var results, startFrom, someHaveFailed;
 		a = a.asArray;
 
@@ -167,7 +165,6 @@ UnitTest {
 	// waits for condition with a maxTime limit
 	// if time expires, the test is a failure
 	wait { |condition, failureMessage, maxTime = 10.0|
-
 		var limit = maxTime / 0.05;
 
 		while {
@@ -184,7 +181,6 @@ UnitTest {
 
 	// wait is better
 	asynchAssert { |waitConditionBlock, testBlock, timeoutMessage = "", timeout = 10|
-
 		var limit = timeout / 0.1;
 
 		while {
@@ -229,7 +225,6 @@ UnitTest {
 
 	// call pass directly
 	passed { | method, message, report = true, details |
-
 		var r = UnitTestResult(this, method, message, details);
 		passes = passes.add(r);
 
