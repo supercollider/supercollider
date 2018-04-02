@@ -31,15 +31,13 @@ UnitTest {
 	tearDown {}
 
 	*run { | reset = true, report = true|
-
-		if(reset) { this.class.reset };
+		var function;
+		if(reset) { this.reset };
 		if(report) { ("RUNNING UNIT TEST" + this).inform };
-
 		this.forkIfNeeded {
 			this.runAllTestMethods;
 			if(report) { this.report };
-			nil
-		}
+		};
 	}
 
 	// run all UnitTest subclasses
@@ -65,7 +63,7 @@ UnitTest {
 		class.new.runTestMethod(method);
 	}
 
-	runAllTestMethods {
+	*runAllTestMethods {
 		this.forkIfNeeded {
 			this.findTestMethods.do { |method|
 				this.new.runTestMethod(method)
@@ -83,7 +81,6 @@ UnitTest {
 			this.perform(method.name);
 			this.tearDown;
 			this.class.report;
-			nil
 		}
 	}
 
@@ -329,27 +326,7 @@ UnitTest {
 	// private - use TestYourClass.run
 
 	run { | reset = true, report = true|
-		var function;
-		if(reset) { this.class.reset };
-		if(report) { ("RUNNING UNIT TEST" + this).inform };
-		this.class.forkIfNeeded {
-			this.findTestMethods.do { |method|
-				this.setUp;
-				currentMethod = method;
-				//{
-				this.perform(method.name);
-				// unfortunately this removes the interesting part of the call stack
-				//}.try({ |err|
-				//	("ERROR during test"+method).postln;
-				//	err.throw;
-				//});
-
-				this.tearDown;
-			};
-			if(report) { this.class.report };
-			nil
-		};
-
+		this.class.run
 	}
 
 	*forkIfNeeded { |function|
@@ -517,7 +494,6 @@ UnitTestScript : UnitTest {
 			currentMethod = this;
 			path.load.value(this);
 			this.class.report;
-			nil
 		}
 	}
 
