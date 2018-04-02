@@ -254,6 +254,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 
 	opt.mArgc = argc;
 	opt.mArgv = argv;
+	gPostDest = stderr;
 
 	// read library configuration file
 	if (opt.mLibraryConfigFile)
@@ -270,6 +271,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 
 	// startup library
 	compileLibrary(opt.mStandalone);
+	gPostDest = stdout;
 
 	// enter main loop
 	if (codeFile) executeFile(codeFile);
@@ -286,6 +288,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 		cleanupInput();
 	}
 
+	gPostDest = stderr;
 	if (opt.mCallStop) stopMain();
 
 	// shutdown library
