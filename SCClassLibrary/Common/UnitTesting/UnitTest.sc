@@ -277,7 +277,7 @@ UnitTest {
 	// private - use TestYourClass.run
 
 	run { | reset = true, report = true|
-		this.class.run
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\run))
 	}
 
 	*forkIfNeeded { |function|
