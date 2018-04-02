@@ -29,9 +29,10 @@ UnitTest {
 		var class, method, unitTest;
 		# class, method = methodName.split($:);
 		class = class.asSymbol.asClass;
-		method.asSymbol;
 		method = class.findMethod(method.asSymbol);
-		if(method.isNil) { Error("Test method not found "+methodName).throw };
+		if(method.isNil) {
+			Error("Test method not found " + methodName).throw
+		};
 		class.new.runTestMethod(method);
 	}
 
@@ -42,8 +43,7 @@ UnitTest {
 	// called after each test
 	tearDown {}
 
-	*run { | reset = true, report = true|
-		var function;
+	*run { | reset = true, report = true |
 		if(reset) { this.reset };
 		if(report) { ("RUNNING UNIT TEST" + this).inform };
 		this.forkIfNeeded {
@@ -74,7 +74,6 @@ UnitTest {
 
 	// run a single test method of this class
 	runTestMethod { | method |
-		var function;
 		("RUNNING UNIT TEST" + this.class.name ++ ":" ++ method.name).inform;
 		this.class.forkIfNeeded {
 			this.setUp;
@@ -120,15 +119,16 @@ UnitTest {
 
 	assertArrayFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
 		// Check whether all in array meet the condition.
-		var results, startFrom;
+		var results, startFrom, someHaveFailed;
 		a = a.asArray;
 		results = if(b.isArray) {
 			a.collect {|item, index| (item - b[index]).abs <= within }
 		}{
 			a.collect {|item, index| (item - b).abs <= within }
 		};
+		someHaveFailed = results.includes(false);
 
-		if(results.any(_ == false)) {
+		if(someHaveFailed) {
 			startFrom = results.indexOf(false);
 			// Add failure details:
 			message = message ++
@@ -147,11 +147,10 @@ UnitTest {
 				{ onFailure.value }.defer;
 				Error("UnitTest halted with onFailure handler.").throw;
 			};
-			^false
-		}{
+		} {
 			this.passed(currentMethod,message, report)
-			^true
 		}
+		^someHaveFailed
 	}
 
 	// make a further assertion only if it passed, or only if it failed
@@ -298,7 +297,7 @@ UnitTest {
 
 	*findTestMethods {
 		^methods.select { |m|
-			m.name.asString.copyRange(0,4) == "test_"
+			m.name.asString.beginsWith("test_")
 		}
 	}
 
@@ -313,6 +312,7 @@ UnitTest {
 	}
 
 	// whom I am testing
+	// removing "Test" by copyToEnd(4)
 	*findTestedClass {
 		^this.name.asString.copyToEnd(4).asSymbol.asClass
 	}
