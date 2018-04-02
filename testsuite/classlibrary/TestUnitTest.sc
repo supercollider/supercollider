@@ -1,31 +1,40 @@
 
 TestUnitTest : UnitTest {
 
-	var someVar,toreDown,count = 0;
+	var someVar, setUp = false, toreDown = false;
 
 	setUp {
-		someVar = "setUp";
-		count = count + 1;
+		setUp = true;
 	}
+
 	tearDown {
-		someVar = "tearDown";
 		toreDown = true;
 	}
 
 	test_setUp {
-		this.assert( count == 1, "count should be on 1");
-		this.assert( someVar == "setUp", "someVar be set in setUp" );
+		this.assert( setUp, "setUp should have happened" )
 	}
-	test_toreDown{
+
+	/*test_toreDown {
 		this.assert( toreDown, "toreDown should be set at the end of the last test" );
 		this.assert( count == 2, "count should be on 2");
-	}
-	test_setUp2 {
-		this.assert( count == 3, "count should be on 3");
-	}
+	}*/
+
+
 	test_assert {
 		this.assert(true, "assert(true) should certainly work");
 	}
+
+	test_isolation_first {
+		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
+		someVar = 2;
+	}
+
+	test_isolation_second {
+		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
+		someVar = 2;
+	}
+
 /*
 	test_failure {
 		this.assert( false, "should fail")
