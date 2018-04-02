@@ -118,14 +118,12 @@ UnitTest {
 	}
 
 	assertArrayFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-		// Check whether all in array meet the condition.
+
 		var results, startFrom, someHaveFailed;
 		a = a.asArray;
-		results = if(b.isArray) {
-			a.collect {|item, index| (item - b[index]).abs <= within }
-		}{
-			a.collect {|item, index| (item - b).abs <= within }
-		};
+
+		// Check whether all in array meet the condition.
+		results = (a - b).abs <= within;
 		someHaveFailed = results.includes(false);
 
 		if(someHaveFailed) {
