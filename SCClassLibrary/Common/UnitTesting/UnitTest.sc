@@ -142,15 +142,16 @@ UnitTest {
 				a[startFrom..],
 				if(b.isArray) { b[startFrom..] } { b }
 			);
-			this.failed(currentMethod,message, report);
+			this.failed(currentMethod, message, report);
+
 			if(onFailure.notNil) {
 				{ onFailure.value }.defer;
 				Error("UnitTest halted with onFailure handler.").throw;
 			};
 		} {
-			this.passed(currentMethod,message, report)
+			this.passed(currentMethod, message, report)
 		}
-		^someHaveFailed
+		^someHaveFailed.not
 	}
 
 	// make a further assertion only if it passed, or only if it failed
