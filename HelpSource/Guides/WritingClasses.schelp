@@ -6,7 +6,7 @@ related:: Reference/Classes, Classes/Class, Classes/Object
 
 SuperCollider follows a pure object-oriented paradigm. It is not built on data types, but on objects, which respond to messages. A class is an object that holds information about how its objects (instances) respond to such messages. Writing a class gives a definition of this behavior.
 
-What follows is not a tutorial for how to write a class system. It gives an overview of some typical expressions. See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
+This is an overview of idioms used in writing classes. It is not a tutorial on writing a system of interrelated classes. It gives an overview of some typical expressions. See also: link::Guides/Intro-to-Objects::, link::Reference/Messages::, and link::Reference/Classes::.
 
 There is also an overview of the current full link::Overviews/ClassTree::.
 
@@ -50,10 +50,7 @@ section:: Methods
 
 subsection:: Instance Methods
 
-Each object instance responds to its strong::instance methods::.Within instance methods, the keyword code::this:: refers to the instance itself.
-
-An instance is independent of all the other instances, unless otherwise specified.
-
+Each object instance responds to its strong::instance methods::. Instance methods are called in the local context of the object. Within instance methods, the keyword code::this:: refers to the instance itself.
 
 code::
 MyClass {
@@ -100,7 +97,8 @@ MyClass {
 
 subsection:: Class Methods
 
-An object's strong::class methods:: are defined together with its instance methods. They are specified with the asterisk (teletype::*::).
+
+An object's  strong::class methods:: are defined alongside its instance methods. They are specified with an asterisk (teletype::*::) before the method name.
 
 
 A link::Classes/Class:: is itself an object. It is what all instances of it have in common. Class methods are the instance methods of the object's class. That's why within class methods, the keyword code::this:: refers to the class.
@@ -127,7 +125,7 @@ MyClass.classMethod // posts "hello class"
 
 subsection::Overriding methods (overloading)
 
-To change the behaviour of the superclass, methods can be overridden. Note that an object looks always for
+To change the behaviour inherited from the superclass, methods can be overridden. Note that an object looks always for
 the method it has defined first and then looks in the superclass. Here code::MyClass.value(2):: will return 6, not 4:
 
 code::
@@ -141,7 +139,7 @@ MyClass : SomeSuperclass {
 }
 ::
 
-If the method of the superclass is needed, it can be called by super.
+The keyword code::super:: can be used to call methods on the superclass
 
 code::
 SomeSuperclass {
@@ -270,8 +268,8 @@ MyClass {
 	*new { |action|
 		^super.newCopyArgs(action)
 	}
-	value {
-		action.value;
+	value { |x|
+		action.value(x);
 	}
 }
 
@@ -289,7 +287,7 @@ section::Variables
 
 subsection:: Initializing variables directly
 
-In a variable declaration, variables can be directly initialized. This works for link::Reference/Literals:: only.
+In a variable declaration, variables can be directly initialized. Only link::Reference/Literals:: may be used to initialize variables this way. This means that it is not possible to chain assignments (e.g. code:: var x = 9; var y = x + 1::).
 
 code::
 MyClass {
@@ -299,12 +297,10 @@ MyClass {
 }
 ::
 
-In class definitions, it is not possible to chain assignments (e.g. code:: var x = 9; var y = x + 1::).
-
 
 subsection:: Variable Scope
 
-An instance variable is accessible from all instance methods of this class and its subclasses. A class variable is accessible from all class and instance methods of this class and its subclasses. Instance variables of the same name as override the scope of class variables of the same name.
+An instance variable is accessible strong::from all instance methods:: of this class and its subclasses. A class variable, by contrast, is accessible strong::from all class and instance methods:: of this class and its subclasses. Instance variables will shadow class variables of the same name.
 
 code::
 MyClass {
@@ -340,7 +336,7 @@ MyClass : SomeSuperclass {
 
 ::
 
-subsection:: Getter and Setter
+subsection:: Getters and Setters
 
 SuperCollider demands that variables are not accessible outside of the class or instance. A method must be added to
 explicitly give access:
@@ -353,7 +349,7 @@ MyClass : SomeSuperclass {
 		^myVariable
 	}
 
-	variable_ { arg newValue;
+	variable_ { | newValue |
 		myVariable = newValue;
 	}
 }
@@ -385,8 +381,7 @@ someObject.getMeOrSetMe;
 ::
 
 
-A getter or setter method created in this fashion may be overridden in a subclass by manually writing the method setter
-methods should take only one argument to support both ways of expression consistently.  eg.
+A getter or setter method created in this fashion may be overridden in a subclass by explicitly defining the method. Setter methods should take only one argument to support both ways of expression consistently.  eg.
 
 code::
 MyClass {
@@ -398,21 +393,11 @@ MyClass {
 }
 ::
 
-A setter method should always return the receiver. This is standard OOP practice. Never return the new value from your setter.
+A setter method should always return the receiver. This allows us to be sure that several setters can chained up.
 
-code::
-MyClass {
-
-	variable_ { | newValue |
-		myVariable = newValue;
-		^newValue       // DO NOT DO THIS
-	}
-
-}
-::
 
 subsection::Constants
-Constants are variables, that, well, don't vary. They can be assigned only initially.
+Constants are variables, that, well, don't vary. They can only be assigned initially.
 
 code::
 MyClass {
@@ -527,12 +512,12 @@ MyTestPoint(2, 3).asCompileString;
 
 section::Private Methods
 
-Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::. This is just a strong::naming convention::, the message can still be called from anywhere. It is not recommended to do this.
+Private methods are marked by a prefix code::pr::, e.g. code::prBundleSize::. This is just a strong::naming convention::; the message can still be called from anywhere. It is recommended to stick to convention and only call private methods from within the class that defines them.
 
 
 section:: Catching undefined method calls
 
-When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::. Normally this throws an error. By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them (For an example, see the class definition of code::IdentityDictionary::).
+When a message is received that is undefined, the receiver calls the method code::doesNotUnderstand::. Normally this throws an error. By overriding code::doesNotUnderstand::, it is possible to catch those calls and use them. For an example, see the class definition of code::IdentityDictionary::.
 
 code::
 MyClass {

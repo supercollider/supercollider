@@ -14,35 +14,21 @@ x = [1, 2, 3, 4].rotate(1);
 c = a + b;
 ::
 
-section:: Assignment in Declaration
-
-When declaring a variable, a value can be assigned to it immediately:
+A variable can be assigned a value at any time, including during declaration.
 
 code::
 (
-var x = 1;
-var y = -1;
-x + y
+// assignment in declaration
+var one = 1;
+var two = 2;
+var four = two + 2;
+
+// reassign
+two = two + one;
+two = "and now for something completely different"
+two = nil;
+
 )
-::
-
-Such assignments can be chained up:
-code::
-(
-var x = 1;
-var y = x + 9;
-x + y
-)
-::
-
-section:: Reassignment
-
-A variable can be given a new value of any kind at any time.
-code::
-x = 7;
-x = [1, 6, 3, 4, 1];
-x = { rrand(1, 10) };
-x = nil;
 ::
 
 In some cases, chains of reassignment are useful:
