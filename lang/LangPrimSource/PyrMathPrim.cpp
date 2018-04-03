@@ -1099,15 +1099,13 @@ int prSphericalHarmonic(struct VMGlobals *g, int numArgsPushed)
 	double theta = 0.0;
 	double phi = 0.0;
 
-	PyrObject *sphOrd = slotRawObject(a);
-
 	err = slotDoubleVal(d, &phi);
 	if (err) return err;
 	err = slotDoubleVal(c, &theta);
 	if (err) return err;
 	err = slotIntVal(b, &m);
 	if (err) return err;
-	err = slotIntVal(sphOrd->slots+0, &n); // from the first slot of the object being called
+	err = slotIntVal(a, &n);
 	if (err) return err;
 
 	auto res_cmplx =  boost::math::spherical_harmonic(n, m, theta, phi);
@@ -1415,7 +1413,7 @@ void initMathPrimitives()
 	//	Bessel Functions:
 	// First and Second Kinds
 	definePrimitive(base, index++, "_CylBesselJ", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_j<double>>, 2, 0);
-	definePrimitive(base, index++, "_CylNeumannJ", prBoostTwoArg<double, double, double, boost::math::cyl_neumann<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylNeumann", prBoostTwoArg<double, double, double, boost::math::cyl_neumann<double>>, 2, 0);
 	// Zero finder
 	definePrimitive(base, index++, "_CylBesselJZero", prBoostTwoArg<double, double, int, boost::math::cyl_bessel_j_zero<double>>, 2, 0);
 	definePrimitive(base, index++, "_CylNeumannZero", prBoostTwoArg<double, double, int, boost::math::cyl_neumann_zero<double>>, 2, 0);
