@@ -44,8 +44,8 @@ struct SoundCache {
     delete [] sum;
     delete [] sum2;
   }
-  short *min;
-  short *max;
+  float *min;
+  float *max;
   float *sum;
   float *sum2;
 };
@@ -284,13 +284,13 @@ public:
   inline sf_count_t duration() { return _dur; }
 
   virtual bool displayData( int channel, double offset, double duration,
-                            short *minBuffer,
-                            short *maxBuffer,
-                            short *minRMS,
-                            short *maxRMS,
+                            float *minBuffer,
+                            float *maxBuffer,
+                            float *minRMS,
+                            float *maxRMS,
                             int bufferSize ) = 0;
 
-  virtual short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved ) = 0;
+  virtual float *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved ) = 0;
 
 protected:
   SoundStream()
@@ -312,20 +312,20 @@ public:
   ~SoundFileStream();
   void load( SNDFILE *sf, const SF_INFO &sf_info, sf_count_t beginning, sf_count_t duration );
   bool integrate( int channel, double offset, double duration,
-                  short *minBuffer,
-                  short *maxBuffer,
+                  float *minBuffer,
+                  float *maxBuffer,
                   float *sumBuffer,
                   float *sum2Buffer,
                   int bufferSize );
   bool displayData( int channel, double offset, double duration,
-                    short *minBuffer,
-                    short *maxBuffer,
-                    short *minRMS,
-                    short *maxRMS,
+                    float *minBuffer,
+                    float *maxBuffer,
+                    float *minRMS,
+                    float *maxRMS,
                     int bufferSize );
-  short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
+  float *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
 private:
-  short *_data;
+  float *_data;
   sf_count_t _dataSize;
   sf_count_t _dataOffset;
 };
@@ -352,12 +352,12 @@ public:
   inline bool loading() { return _loading; }
   inline int loadProgress() { return _loadProgress; }
   bool displayData( int channel, double offset, double duration,
-                    short *minBuffer,
-                    short *maxBuffer,
-                    short *minRMS,
-                    short *maxRMS,
+                    float *minBuffer,
+                    float *maxBuffer,
+                    float *minRMS,
+                    float *maxRMS,
                     int bufferSize );
-  short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
+  float *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
 
 Q_SIGNALS:
   void loadProgress( int );

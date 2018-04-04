@@ -43,23 +43,10 @@ void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf
   _dataOffset = beg;
   _dataSize = dur;
 
-  _data = new short [_dataSize * info.channels];
+  _data = new float [_dataSize * info.channels];
   sf_seek( sf, _dataOffset, SEEK_SET);
 
-  if (info.format & SF_FORMAT_FLOAT || info.format & SF_FORMAT_DOUBLE)
-  {
-    // libsndfile reading float into short is broken for non-power-of-two channel counts
-    int sampleCount = _dataSize * info.channels;
-    float *tmp = new float [sampleCount];
-    _dataSize = sf_readf_float( sf, tmp, _dataSize );
-    for (int i = 0; i < sampleCount; ++i)
-        _data[i] = std::max( -1.f, std::min( 1.f, tmp[i] ) ) * std::numeric_limits<short>::max();
-    delete[] tmp;
-  }
-  else
-  {
-    _dataSize = sf_readf_short( sf, _data, _dataSize );
-  }
+  _dataSize = sf_readf_float( sf, _data, _dataSize );
 
   _ch = info.channels;
   _beg = _dataOffset;
@@ -68,7 +55,7 @@ void SoundFileStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, sf
 
 bool SoundFileStream::integrate
 ( int ch, double f_beg, double f_dur,
-  short *minBuffer, short *maxBuffer, float *sumBuf, float *sum2Buf, int bufferSize )
+  float *minBuffer, float *maxBuffer, float *sumBuf, float *sum2Buf, int bufferSize )
 {
   bool ok = _data != 0
             && ch < channels()
@@ -100,9 +87,9 @@ bool SoundFileStream::integrate
     float frac1 = f_pos1 + 1.f - ceil(f_pos1);
 
     // get min, max and sum
-    short *samples = _data + (data_pos * channels()) + ch;
-    short min = SHRT_MAX;
-    short max = SHRT_MIN;
+    float *samples = _data + (data_pos * channels()) + ch;
+    float min = std::numeric_limits<float>::max();
+    float max = std::numeric_limits<float>::min();
     float sum = 0.f;
     float sum2 = 0.f;
     int f; // frame
@@ -134,7 +121,7 @@ bool SoundFileStream::integrate
 
 bool SoundFileStream::displayData
 ( int ch, double f_beg, double f_dur,
-  short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
+  float *minBuffer, float *maxBuffer, float *minRMS, float *maxRMS, int bufferSize )
 {
   bool ok = _data != 0
             && ch < channels()
@@ -146,11 +133,8 @@ bool SoundFileStream::displayData
   double f_pos = f_beg - _dataOffset;
   double f_pos_max = _dataSize;
 
-  short min = SHRT_MAX;
-  short max = SHRT_MIN;
-
-  double D_SHRT_MAX = (double) SHRT_MAX;
-  double D_SHRT_MIN = (double) SHRT_MIN;
+  float min = std::numeric_limits<float>::max();
+  float max = std::numeric_limits<float>::min();
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
@@ -172,7 +156,7 @@ bool SoundFileStream::displayData
     float frac1 = f_pos1 + 1.f - ceil(f_pos1);
 
     // get min, max and sum
-    short *samples = _data + (data_pos * channels()) + ch;
+    float *samples = _data + (data_pos * channels()) + ch;
 
     float sum = 0.f;
     float sum2 = 0.f;
@@ -198,8 +182,8 @@ bool SoundFileStream::displayData
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
-    minRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg - stdDev ));
-    maxRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg + stdDev ));
+    minRMS[i] = avg - stdDev;
+    maxRMS[i] = avg + stdDev;
 
     f_pos = f_pos1;
     min = maxBuffer[i];
@@ -209,7 +193,7 @@ bool SoundFileStream::displayData
   return true;
 }
 
-short *SoundFileStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
+float *SoundFileStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
 {
   if( ch > channels() || b < _dataOffset || b + d > _dataOffset + _dataSize ) return 0;
   *interleaved = true;
