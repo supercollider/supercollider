@@ -7,9 +7,12 @@ First and foremost, thank you! We appreciate that you want to contribute to Supe
 Creating an issue is the simplest form of contributing to a project. But there are many ways to contribute, including the following:
 
 - Updating or correcting documentation
-- Feature requests
-- Bug reports
-- Translation files for the IDE
+- Fixing an open issue
+- Requesting a feature
+- Reporting a bug
+- Translating the IDE into a language you know (see "Additional Resources" below)
+
+If you're new to this project, check out the issues tagged ["good first issue"](https://github.com/supercollider/supercollider/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) – fixing one of these is a great way to get started as a contributor!
 
 If you'd like to learn more about contributing in general, the [Guide to Idiomatic Contributing](https://github.com/jonschlinkert/idiomatic-contributing) has a lot of useful information.
 
