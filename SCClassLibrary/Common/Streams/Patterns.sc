@@ -393,7 +393,6 @@ Pseries : Pattern {	// arithmetic series
 		var cur = start.value(inval);
 		var len = length.value(inval);
 		var stepStr = step.asStream, stepVal;
-		if(len <= 0) { ^inval };
 		while { counter < len } {
 			stepVal = stepStr.next(inval);
 			if(stepVal.isNil) { ^inval };
@@ -417,7 +416,6 @@ Pgeom : Pattern {	// geometric series
 		var cur = start.value(inval);
 		var len = length.value(inval);
 		var growStr = grow.asStream, growVal;
-		if(len <= 0) { ^inval };
 		while { counter < len } {
 			growVal = growStr.next(inval);
 			if(growVal.isNil) { ^inval };
