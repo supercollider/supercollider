@@ -198,9 +198,9 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	boost::system::error_code error_code;
 	bfs::copy_file(p1, p2, error_code);
 	if (error_code)
-		postfl("Warning: %s (copy from \"%s\" to \"%s\")\n", error_code.message().c_str(), p1.c_str(), p2.c_str());
+		postfl("Warning: %s (copy from \"%s\" to \"%s\")\n", error_code.message().c_str(), filename1, filename2);
 
-	return errNone;
+	return error_code.value();
 }
 
 int prFileType(struct VMGlobals * g, int numArgsPushed)
