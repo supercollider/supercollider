@@ -452,8 +452,8 @@ String[char] : RawArray {
 		hasLeftSep = this.notEmpty and: { this.last.isPathSeparator };
 		hasRightSep = path.notEmpty and: { path.first.isPathSeparator };
 		if(hasLeftSep && hasRightSep) {
-			// drop both and use the preferred separator
-			^this.drop(-1) ++ sep ++ path.drop(1)
+			// prefer using the LHS separator
+			^this ++ path.drop(1)
 		};
 
 		if(hasLeftSep || hasRightSep) {
