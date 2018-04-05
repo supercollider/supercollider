@@ -82,5 +82,11 @@ TestString : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
+	test_appendPathSep_stringWithPathName_convertsToPathName {
+		var result = "abc" +/+ PathName("def");
+		var expected = PathName("abc" +/+ "def");
+		this.assertEquals(result, expected);
+	}
+
 }
 
