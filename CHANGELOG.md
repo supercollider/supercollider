@@ -148,6 +148,8 @@ Supernova loads plugins from "Extensions/plugins" rather than "Extensions" ([#33
 
 `LevelIndicator.style()` is broken, which leads to confusing warning messages ([#3398](https://github.com/supercollider/supercollider/pull/3398)).
 
+`File.copy` crashes the interpreter if the destination file exists ([#3401](https://github.com/supercollider/supercollider/issues/3401)).
+
 On Windows, SerialPort is not available ([#1008](https://github.com/supercollider/supercollider/issues/1008)).
 
 On Windows, Supernova is not available.
