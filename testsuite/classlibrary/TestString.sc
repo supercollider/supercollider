@@ -63,11 +63,22 @@ TestString : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
-	// Windows should accept / as a path separator in this case
+	// Windows should accept / as a path separator in these cases, and prefer using the LHS slash
 	test_appendPathSep_slashWithSlash_onlyOneSep {
-		var sep = thisProcess.platform.pathSeparator.asString;
 		var result = "abc/" +/+ "/def";
-		var expected = "abc" ++ sep ++ "def";
+		var expected = "abc/def";
+		this.assertEquals(result, expected);
+	}
+
+	test_appendPathSep_slashWithBackslash_onlyOneSep {
+		var result = "abc/" +/+ "\\def";
+		var expected = thisProcess.platform.isPathSeparator($\\).if { "abc/def" } { "abc/\\def" };
+		this.assertEquals(result, expected);
+	}
+
+	test_appendPathSep_backslashWithBackslash {
+		var result = "abc\\" +/+ "\\def";
+		var expected = thisProcess.platform.isPathSeparator($\\).if { "abc\\def" } { "abc\\/\\def" };
 		this.assertEquals(result, expected);
 	}
 
