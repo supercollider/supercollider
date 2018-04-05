@@ -343,7 +343,7 @@ String[char] : RawArray {
 
 	inspectorClass { ^StringInspector }
 
-	/// unix
+	// -------- path operations --------------------------------------------------
 
 	standardizePath {
 		_String_StandardizePath
