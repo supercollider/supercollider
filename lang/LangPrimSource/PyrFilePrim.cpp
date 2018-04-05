@@ -195,7 +195,11 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 
 	const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
 	const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
-	bfs::copy(p1, p2);
+	boost::system::error_code error_code;
+	bfs::copy_file(p1, p2, error_code);
+	if (error_code)
+		postfl("Warning: %s (copy from \"%s\" to \"%s\")\n", error_code.message().c_str(), p1.c_str(), p2.c_str());
+
 	return errNone;
 }
 
