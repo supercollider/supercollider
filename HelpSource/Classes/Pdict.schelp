@@ -1,6 +1,6 @@
 class:: Pdict
 summary:: pattern that embeds patterns from a dictionary
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pbind
 
 description::

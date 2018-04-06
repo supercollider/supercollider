@@ -1,6 +1,6 @@
 class:: NodeProxy
 summary:: a reference on a server
-categories:: Libraries>JITLib>NodeProxy, Live Coding
+categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace
 
 description::

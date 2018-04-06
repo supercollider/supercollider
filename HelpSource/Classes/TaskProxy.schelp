@@ -1,6 +1,6 @@
 class:: TaskProxy
 summary:: event stream reference
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Tdef
 
 description::

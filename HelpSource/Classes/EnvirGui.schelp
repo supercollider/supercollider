@@ -1,6 +1,6 @@
 class:: EnvirGui
 summary:: display the contents of an environment for editing
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/EZText, Classes/TdefGui, Classes/PdefGui
 
 description::
