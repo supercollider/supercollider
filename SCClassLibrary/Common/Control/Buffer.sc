@@ -592,7 +592,7 @@ Buffer {
 				<< "numFrames  : " << msg[2] << Char.nl
 				<< "numChannels : " << msg[3] << Char.nl
 				<< "sampleRate : " << msg[4] << Char.nl << Char.nl;
-		}, \b_info, server.addr).oneShot;
+		}, \b_info, server.addr, nil, [bufnum]).oneShot;
 		server.listSendMsg([\b_query, bufnum])
 	}
 
