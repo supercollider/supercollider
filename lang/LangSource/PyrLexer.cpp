@@ -1879,7 +1879,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 
 	// Using a recursive_directory_iterator is much faster than actually calling this function
 	// recursively. Speedup from the switch was about 1.5x.
-	bfs::recursive_directory_iterator rditer(expdir, bfs::symlink_option::no_recurse, ec);
+	bfs::recursive_directory_iterator rditer(expdir, bfs::symlink_option::recurse, ec);
 
 	// Check preconditions: are we able to access the file, and should we compile it according to
 	// the language configuration?
@@ -1906,18 +1906,15 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path path = *rditer;
+		bool shouldNotCompile = passOne_ShouldNotCompile(path);
 
 		// If the file is a directory, perform the same checks as above to see if we should
 		// skip compilation on it.
-		if (bfs::is_directory(path)) {
-
-			if (passOne_ShouldNotCompile(path)) {
-				rditer.no_push();
-			} else {
-				// By not calling no_push(), we allow the iterator to enter the directory
-				compiledDirectories.insert(path);
-			}
-
+		if (shouldNotCompile) {
+			rditer.no_push();
+		} else if (bfs::is_directory(path)) {
+			// By not calling no_push(), we allow the iterator to enter the directory
+			compiledDirectories.insert(path);
 		} else { // ordinary file
 			// Try to resolve a potential alias or symlink. Possible outcomes:
 			// - it was an alias & is also a directory: try to recurse on it
@@ -1925,31 +1922,25 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 			// - it was not an alias, or was an alias that wasn't a directory: try to process it as a source file
 			bool didResolve = false;
 			auto respath = SC_Filesystem::resolveIfAlias(path, didResolve);
-			if (bfs::is_symlink(respath, ec)) {
-				// ignore errors
-				respath = bfs::read_symlink(respath, ec);
-				didResolve = true;
-			}
 
 			if (respath.empty()) {
-				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
-			} else if (didResolve) {
-				if (bfs::is_directory(respath, ec)) {
-					if (!passOne_ProcessDir(respath)) {
-						return false;
-					}
-				} else {
-					if (!passOne_ProcessOneFile(respath)) {
-						return false;
-					}
+				post("WARNING: Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+			} else if (didResolve && bfs::is_directory(respath)) {
+				if (!passOne_ProcessDir(respath)) {
+					return false;
+				}
+			} else {
+				if (!passOne_ProcessOneFile(respath)) {
+					return false;
 				}
 			}
 		}
 
-		// Error-code version of `++`
 		rditer.increment(ec);
-		if (ec) {
-			// Continue compilation with warning.
+
+		// The shouldNotCompile check is there so that this message isn't printed if we accidentally
+		// recursed on a broken symlink that shouldn't have been compiled. See #3597.
+		if (ec && !shouldNotCompile) {
 			post("WARNING: '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
 		}
 	}
