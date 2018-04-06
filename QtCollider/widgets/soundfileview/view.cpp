@@ -762,8 +762,9 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
     // draw bounding lines
     p.setPen( QColor(100,100,100) );
-    p.drawLine( x, halfChH, x+width, halfChH );
-    p.drawLine( x, -halfChH, x+width, -halfChH );
+    float halfChHScaled = halfChH * _yZoom;
+    p.drawLine( x, halfChHScaled, x+width, halfChHScaled );
+    p.drawLine( x, -halfChHScaled, x+width, -halfChHScaled );
 
     p.save();
 
