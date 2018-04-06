@@ -1859,6 +1859,31 @@ static bool passOne_ShouldNotCompile(const bfs::path& p)
 		(SC_Filesystem::instance().shouldNotCompile(p));
 }
 
+/**
+ * Try to resolve a potential alias. Possible outcomes:
+ * - it was a good alias or not an alias: recurse if directory, process if file
+ * - it was a bad alias: let the user know, continue compiling
+ */
+static bool passOne_ProcessDirEntry(const bfs::path& path)
+{
+	bool didResolve = false;
+	auto respath = SC_Filesystem::resolveIfAlias(path, didResolve);
+
+	if (respath.empty()) {
+		post("WARNING: Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+	} else if (didResolve && bfs::is_directory(respath)) {
+		if (!passOne_ProcessDir(respath)) {
+			return false;
+		}
+	} else {
+		if (!passOne_ProcessOneFile(respath)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 /** \brief Compile the contents of a single directory
  *
  * Recursively compiles any .sc files in a single directory. Skips files or directories as specified
@@ -1868,7 +1893,7 @@ static bool passOne_ShouldNotCompile(const bfs::path& p)
  * \param dir : The directory to traverse, as a `path` object
  * \returns `true` if processing was successful, `false` if it failed.
  */
-static bool passOne_ProcessDir(const bfs::path& dir)
+bool passOne_ProcessDir(const bfs::path& dir)
 {
 	// Prefer non-throwing versions of filesystem functions, since they are actually not unexpected
 	// and because it's faster to use error codes.
@@ -1912,23 +1937,8 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		} else if (bfs::is_directory(path)) {
 			compiledDirectories.insert(path);
 		} else { // non-directory
-			// Try to resolve a potential alias or symlink. Possible outcomes:
-			// - it was an alias & is also a directory: try to recurse on it
-			// - resolution failed: returns empty path: let the user know
-			// - it was not an alias, or was an alias that wasn't a directory: try to process it as a source file
-			bool didResolve = false;
-			auto respath = SC_Filesystem::resolveIfAlias(path, didResolve);
-
-			if (respath.empty()) {
-				post("WARNING: Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
-			} else if (didResolve && bfs::is_directory(respath)) {
-				if (!passOne_ProcessDir(respath)) {
-					return false;
-				}
-			} else {
-				if (!passOne_ProcessOneFile(respath)) {
-					return false;
-				}
+			if (!passOne_ProcessDirEntry(path)) {
+				return false;
 			}
 		}
 
