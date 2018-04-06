@@ -1897,8 +1897,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 	// Check preconditions: are we able to access the file, and should we compile it according to
 	// the language configuration?
 	if (ec) {
-		// If we got an error, post a warning if it was because the target wasn't found, and return success.
-		// Otherwise, post the error and fail.
+		// "File not found" is just a warning
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
 			passOne_HandleMissingDirectory(expdir);
 			return true;
