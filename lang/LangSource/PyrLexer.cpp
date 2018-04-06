@@ -1845,41 +1845,28 @@ bfs::path relativeToCompileDir(const bfs::path& p)
 	return bfs::relative(p, gCompileDir);
 }
 
-/** \brief Determines whether the directory should be skipped during compilation.
- *
- * \param dir : The directory to check, as a `path` object
+/**
+ * \param p The path to check
  * \returns `true` iff any of the following conditions is true:
  * - the directory has already been compiled
- * - the language configuration says this path is excluded
- * - SC_Filesystem::shouldNotCompileDirectory(dir) returns `true`
+ * - this path has been explicitly marked as excluded by user
+ * - SC_Filesystem::shouldNotCompile(dir) returns `true`
  */
-static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
+static bool passOne_ShouldNotCompile(const bfs::path& p)
 {
-	return (compiledDirectories.find(dir) != compiledDirectories.end()) ||
-		(gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) ||
-		(SC_Filesystem::instance().shouldNotCompileDirectory(dir));
+	return (compiledDirectories.find(p) != compiledDirectories.end()) ||
+		(gLanguageConfig && gLanguageConfig->pathIsExcluded(p)) ||
+		(SC_Filesystem::instance().shouldNotCompile(p));
 }
 
 /** \brief Compile the contents of a single directory
  *
- * This method compiles any .sc files in a single directory, working
- * via depth-first recursion. This routine is designed to fail gracefully,
- * and only indicates failure if something truly unexpected happens. These
- * conditions are:
- * - an error occurred while trying to open a directory, other than the case
- *    the case that the object doesn't exist.
- * - an error occurred while calling `passOne_processOneFile` on a file
- * - an error occurred in a recursive call of this routine on a macOS alias
- * Otherwise, this method returns success, even if:
- * - `dir` does not exist
- * - Iterating to the next file fails for any reason at all
- *
- * This method returns with a success state immediately if the directory
- * should not be compiled according to the language configuration.
+ * Recursively compiles any .sc files in a single directory. Skips files or directories as specified
+ * by the user and as given by the compilation process specification. Compilation is lenient; the
+ * only true failure is when a file fails to compile.
  *
  * \param dir : The directory to traverse, as a `path` object
  * \returns `true` if processing was successful, `false` if it failed.
- *   See above for what constitutes success and failure conditions.
  */
 static bool passOne_ProcessDir(const bfs::path& dir)
 {
@@ -1909,7 +1896,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		}
 
 		return true;
-	} else if (passOne_ShouldSkipDirectory(expdir)) {
+	} else if (passOne_ShouldNotCompile(expdir)) {
 		return true;
 	} else {
 		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(expdir).c_str());
@@ -1924,7 +1911,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// skip compilation on it.
 		if (bfs::is_directory(path)) {
 
-			if (passOne_ShouldSkipDirectory(path)) {
+			if (passOne_ShouldNotCompile(path)) {
 				rditer.no_push();
 			} else {
 				// By not calling no_push(), we allow the iterator to enter the directory
