@@ -1912,18 +1912,13 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 			return false;
 		}
 	} else if (passOne_ShouldSkipDirectory(expdir)) {
-		// If we should skip the directory, just return success now.
 		return true;
 	} else {
-		// Let the user know we are in fact compiling this directory.
 		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(expdir).c_str());
 	}
 
-	// Record that we have touched this directory already.
 	compiledDirectories.insert(expdir);
 
-	// Invariant: we have processed (or begun to process) every directory or file already
-	// touched by the iterator.
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path path = *rditer;
 
@@ -1932,9 +1927,8 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		if (bfs::is_directory(path)) {
 
 			if (passOne_ShouldSkipDirectory(path)) {
-				rditer.no_push(); // don't "push" into the next level of the hierarchy
+				rditer.no_push();
 			} else {
-				// Mark this directory as compiled.
 				// By not calling no_push(), we allow the iterator to enter the directory
 				compiledDirectories.insert(path);
 			}
@@ -1961,7 +1955,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// Error-code version of `++`
 		rditer.increment(ec);
 		if (ec) {
-			// If iteration failed, allow compilation to continue, but bail out of this directory.
+			// Continue compilation with warning.
 			error("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
 			return true;
 		}
