@@ -1900,16 +1900,15 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// "File not found" is just a warning
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
 			passOne_HandleMissingDirectory(expdir);
-			return true;
 		} else {
 			error("Could not open directory '%s': (%d) %s\n",
 				SC_Codecvt::path_to_utf8_str(expdir).c_str(),
 				ec.value(),
 				ec.message().c_str()
 			);
-
-			return false;
 		}
+
+		return true;
 	} else if (passOne_ShouldSkipDirectory(expdir)) {
 		return true;
 	} else {
