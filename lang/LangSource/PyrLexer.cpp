@@ -1881,10 +1881,8 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 	// recursively. Speedup from the switch was about 1.5x.
 	bfs::recursive_directory_iterator rditer(expdir, bfs::symlink_option::recurse, ec);
 
-	// Check preconditions: are we able to access the file, and should we compile it according to
-	// the language configuration?
 	if (ec) {
-		// "File not found" is just a warning
+		// "File not found" is worthy of a special warning
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
 			passOne_HandleMissingDirectory(expdir);
 		} else {
@@ -1906,16 +1904,14 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path path = *rditer;
+
 		bool shouldNotCompile = passOne_ShouldNotCompile(path);
 
-		// If the file is a directory, perform the same checks as above to see if we should
-		// skip compilation on it.
 		if (shouldNotCompile) {
 			rditer.no_push();
 		} else if (bfs::is_directory(path)) {
-			// By not calling no_push(), we allow the iterator to enter the directory
 			compiledDirectories.insert(path);
-		} else { // ordinary file
+		} else { // non-directory
 			// Try to resolve a potential alias or symlink. Possible outcomes:
 			// - it was an alias & is also a directory: try to recurse on it
 			// - resolution failed: returns empty path: let the user know
