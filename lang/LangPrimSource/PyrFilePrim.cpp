@@ -55,7 +55,7 @@ Primitives for File i/o.
 #include <cerrno>
 #include <fcntl.h>
 #include <math.h>
-#include <sstream> 
+#include <sstream>
 
 /* boost headers */
 #include <boost/filesystem.hpp>
@@ -201,8 +201,8 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error_code)
 	{
 		std::ostringstream s;
-		s << "Error: " << error_code.message() << " (copy from \"" << filename1 << "\" to \"" << filename2 << "\")\n";
-		throw std::runtime_error(s.str().c_str());
+		s << error_code.message() << ": copy from \"" << filename1 << "\" to \"" << filename2 << "\"";
+		throw std::runtime_error(s.str());
 	}
 	
 	return errNone;
