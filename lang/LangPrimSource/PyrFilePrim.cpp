@@ -55,6 +55,7 @@ Primitives for File i/o.
 #include <cerrno>
 #include <fcntl.h>
 #include <math.h>
+#include <sstream>
 
 /* boost headers */
 #include <boost/filesystem.hpp>
@@ -195,7 +196,15 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 
 	const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
 	const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
-	bfs::copy(p1, p2);
+	boost::system::error_code error_code;
+	bfs::copy(p1, p2, error_code);
+	if (error_code)
+	{
+		std::ostringstream s;
+		s << error_code.message() << ": copy from \"" << filename1 << "\" to \"" << filename2 << "\"";
+		throw std::runtime_error(s.str());
+	}
+	
 	return errNone;
 }
 
