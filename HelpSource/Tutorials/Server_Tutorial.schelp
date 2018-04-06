@@ -1,6 +1,6 @@
-title:: SuperCollider 3 Server Tutorial
+title:: Server Tutorial
 summary:: A short tutorial covering many concepts
-categories:: Tutorials
+categories:: Tutorials, Server
 
 To follow this tutorial you should read
 
@@ -10,7 +10,7 @@ and
 
 link::Reference/Server-Command-Reference::.
 
-Since version 3.6 SuperCollider consists of three separate components:
+SuperCollider consists of three separate components:
 The sound synthesiser (audio server), the  programming language (and language interpreter) and the code editor (integrated development environment, or shortly, IDE).
 
 The server can run either inside the language application ("internal server"), as a separate program on the same machine ("local server"), or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.
