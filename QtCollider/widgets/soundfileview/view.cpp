@@ -732,12 +732,15 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   // geometry
   float spacing = pix->height() * 0.15f / (sfInfo.channels + 1);
   float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
-  float yScale = -chHeight / 65535.f * _yZoom;
+  float yScale = -chHeight / (float)USHRT_MAX * _yZoom;
   //spacing /= yscale;
 
   // initial painter setup
   QPen minMaxPen;
   QPen rmsPen;
+
+  minMaxPen.setWidth(0);
+  rmsPen.setWidth(0);
 
   float halfChH = chHeight * 0.5;
   p.translate( 0.f, halfChH + spacing );
