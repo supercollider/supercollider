@@ -1956,8 +1956,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		rditer.increment(ec);
 		if (ec) {
 			// Continue compilation with warning.
-			error("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
-			return true;
+			post("WARNING: '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
 		}
 	}
 	return true;
