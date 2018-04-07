@@ -1,5 +1,29 @@
 # Change Log
 
+3.9.3 (2018-04-07)
+==================
+
+Contributors to this release: brianlheim, mneilsen, patrickdupuis, telephon
+
+General: Fixed
+-----
+
+It is now possible to build the project using a system install of yaml-cpp. Previously the `SYSTEM_YAMLCPP` CMake option was broken ([#3557](https://github.com/supercollider/supercollider/pulls/3557)).
+
+Improvements to documentation on writing and designing classes ([#3605](https://github.com/supercollider/supercollider/pulls/3605)).
+
+sclang: Fixed
+-----
+
+Fixed a regression from 3.8 to 3.9 that prevented the tilde character from being expanded to the user's home directory during class library compilation ([#3646](https://github.com/supercollider/supercollider/pulls/3646)).
+
+Class library: Fixed
+-----
+
+Fixed an issue with handling of ranges in `RangeSlider:setSpan` and `:setDeviation` ([#3620](https://github.com/supercollider/supercollider/pulls/3620)).
+
+Fixed a regression in `Score`'s multichannel expansion from 3.9.1 to 3.9.2 ([#3608](https://github.com/supercollider/supercollider/pulls/3608)).
+
 3.9.2 (2018-03-23)
 ==================
 
