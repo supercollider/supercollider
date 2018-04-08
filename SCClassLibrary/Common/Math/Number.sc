@@ -69,6 +69,7 @@ Number : Magnitude {
 	bernouliB2n { _BernouliB2n; ^this.primitiveFailed }
 	tangentT2n { _TangentT2n; ^this.primitiveFailed }
 
+
 	/*  Gamma  */
 
 	// "true gamma" of input value
@@ -114,14 +115,6 @@ Number : Magnitude {
 
 	// TODO: replace Integer:factorial?
 	factorial { _Factorial; ^this.primitiveFailed }
-	// TODO: overflow_error handling?
-	// factorial {
-	//     if (this > 170) {
-	//         format("Resolution is too low for this factorial: % (max 170)", this).throw;
-	//     } {
-	//         ^prFactorial(this)
-	//     }
-	// }
 	doubleFactorial { _DoubleFactorial; ^this.primitiveFailed }
 	// both x and i can be negative as well as positive
 	risingFactorial { |i| _RisingFactorial; ^this.primitiveFailed }
@@ -132,6 +125,7 @@ Number : Magnitude {
 
 
 	/* Beta functions */
+
 	beta { |b| _Beta; ^this.primitiveFailed }
 	// incomplete beta functions
 	// All require 0 <= x <= 1
@@ -165,6 +159,7 @@ Number : Magnitude {
 
 
 	/*  Error functions */
+
 	// error function of z
 	erf { _Erf; ^this.primitiveFailed }
 	// complement of error function
@@ -176,17 +171,18 @@ Number : Magnitude {
 
 
 	/*  Polynomials  */
+
 	// Legendre (and Associated) Polynomials
-	//
 	// See boost documentation for a note about the Condon-Shortley phase term of (-1)^m
 	// "http://www.boost.org/doc/libs/1_65_1/libs/math/doc/html/math_toolkit/sf_poly/legendre.html"]
-	//
-	// TODO: where to clip values at [-1,1] ??
+
 	legendreP { |x| _LegendreP; ^this.primitiveFailed }
 	legendrePPrime { |x| _LegendrePPrime; ^this.primitiveFailed }
 	legendrePZeros { _LegendrePZeros; ^this.primitiveFailed }
 	legendrePAssoc { |m, x| _LegendrePAssoc; ^this.primitiveFailed }
-	// TODO: proper way to catch error?
+
+	// Protect from l < 0. Boost won't catch this out of range value and interpreter hangs.
+	// TODO: another better way to catch error?
 	legendreQ { |x|
 		if (this < 0) {
 			format("n = %, but Legendre Polynomial of the Second Kind requires n >= 0", this).throw
@@ -196,9 +192,12 @@ Number : Magnitude {
 	// TODO: name?
 	prLegendreQ { |x| _LegendreQ; ^this.primitiveFailed }
 
+
 	//  Laguerre polynomial
 
 	laguerre { |x| _Laguerre; ^this.primitiveFailed }
+
+	// Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
 	// TODO: proper way to catch error?
 	laguerreAssoc { |m, x|
 		if (this < 0) {
@@ -210,6 +209,7 @@ Number : Magnitude {
 
 	// Hermite Polynomial
 
+	// Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
 	// TODO: proper way to catch error?
 	hermite { arg x;
 		if (this < 0) {
@@ -219,7 +219,9 @@ Number : Magnitude {
 	}
 	prHermite { |x| _Hermite; ^this.primitiveFailed }
 
+
 	// Chebyshev polynomials - first, second kind & derivative
+
 	chebyshevT { |x| _ChebyshevT; ^this.primitiveFailed }
 	chebyshevU { |x| _ChebyshevU; ^this.primitiveFailed }
 	chebyshevTPrime { |x| _ChebyshevTPrime; ^this.primitiveFailed }
@@ -227,7 +229,7 @@ Number : Magnitude {
 	// calculate the roots (zeros) of Chebyshev polynomial
 	// "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
 	// "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
-	chebyshevZeros {
+	chebyshevTZeros {
 		var n = this.asInt;
 		^(1..n).collect({ arg k;
 			cos(pi* ((2*k) - 1) / (2*n))
