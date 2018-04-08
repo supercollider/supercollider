@@ -95,7 +95,7 @@ b.collect(_.asHexString(2)) // [ F0, 9F, 98, 82 ]
 subsection:: Comparing strings
 
 method::compare
-Returns a -1, 0, or 1 depending on whether the receiver should be sorted before the argument, is equal to the argument or should be sorted after the argument. This is a case sensitive compare.
+Returns an integer less than, equal to or greater than zero, depending on whether the receiver should be sorted before the argument, is equal to the argument or should be sorted after the argument. This is a case sensitive compare.
 
 method::<
 Returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument.
