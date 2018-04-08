@@ -1,6 +1,6 @@
 class:: MonitorGui
 summary:: display and control a Monitor
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/NodeProxy, Classes/Ndef, Classes/JITGui, Classes/NdefGui
 
 description::

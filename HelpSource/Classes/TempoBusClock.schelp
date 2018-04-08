@@ -1,6 +1,6 @@
 class:: TempoBusClock
 summary:: a clock that synchronizes its tempo with the server
-categories:: Libraries>JITLib>NodeProxy, Live Coding
+categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/TempoClock
 
 ClassMethods::

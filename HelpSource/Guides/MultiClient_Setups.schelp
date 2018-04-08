@@ -1,6 +1,6 @@
 TITLE:: Multi-client Setups
 SUMMARY:: How to set up and shared servers for multiple clients in SuperCollider
-CATEGORIES:: Guides
+CATEGORIES:: Server>Architecture, Tutorials
 related:: Classes/ServerOptions, Classes/Server
 KEYWORD:: server, multi-client
 

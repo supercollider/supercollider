@@ -1,6 +1,6 @@
 title::SynthDefs versus Synths
 summary:: The use of precompiled SynthDefs as opposed to always compiling on the fly
-categories:: SC3 vs SC2
+categories:: Language>SC3 vs SC2
 
 In SC2 code::Synth.play:: was the standard way to compile a emphasis::ugenGraphFunc:: and play it. Each time you executed code::Synth.play::, or Spawned a new event, that function was compiled anew. SC3 on the other hand, makes use of what are called SynthDefs. A link::Classes/SynthDef:: takes a emphasis::ugenGraphFunc:: and compiles it to a kind of bytecode (sort of like Java bytecode) which can be understood by the server app. The server reads the link::Classes/SynthDef:: and creates a synth node based upon it.
 

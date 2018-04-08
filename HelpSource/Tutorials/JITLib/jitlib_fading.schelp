@@ -1,6 +1,6 @@
 title:: jitlib_fading
 summary:: Fade envelope generation and crossfading
-categories:: Libraries>JITLib>Tutorials, Tutorials>JITLib
+categories:: JITLib>Tutorials, Tutorials>JITLib
 related:: Overviews/JITLib
 
 link::Classes/NodeProxy:: ( link::Classes/ProxySynthDef:: ) looks for inner envelopes in your definition function to find out whether a fade envelope is needed or not. In case there is no other inner possibility of freeing the synth, either

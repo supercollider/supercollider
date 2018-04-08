@@ -1,6 +1,6 @@
 class:: Monitor
 summary:: link between busses
-categories:: Libraries>JITLib>NodeProxy, Live Coding
+categories:: JITLib>NodeProxy, Live Coding
 related:: Reference/playN, Classes/NodeProxy, Classes/Bus
 
 description::
