@@ -25,10 +25,9 @@ Build requirements
    * http://www.mega-nerd.com/libsndfile
    * _the_ soundfile i/o library
 
- * cmake >= 2.8.11
+ * cmake >= 3.5
    * http://www.cmake.org
    * cross-platform build system
-   * cmake >= 3.1 is required for supernova (an alternate server with parallel processing capabilities). supernova is built by default if cmake is new enough.
 
  * fftw >= 3.0
    * http://www.fftw.org
@@ -98,7 +97,7 @@ for building supercollider:
  - libcwiid-dev (for wiimote support)
  - pkg-config
  - git (used by the Quarks package management system)
- - cmake (on some platforms, cmake >= 2.9 may require manual build)
+ - cmake
  - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev
 
 More details for building on embedded linux platforms (Raspberry Pi, 
