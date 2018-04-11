@@ -4,8 +4,6 @@
 #include <vector>
 #include <string>
 
-#include <boost/optional/optional.hpp>
-
 #ifndef _WIN32
 #include <unistd.h>
 #include <sys/wait.h>
@@ -30,15 +28,15 @@
 #define WEXITSTATUS(w)  (w)
 #define WTERMSIG(w)     (w)
 
-boost::optional<std::tuple<pid_t, FILE *>> sc_popen_c(const char *utf8_cmd, const char *mode);
+std::tuple<pid_t, FILE *> sc_popen_c(const char *utf8_cmd, const char *mode);
 #else
-boost::optional<std::tuple<pid_t, FILE *>> sc_popen_c_argv(const char *filename, char *const argv[], const char *type);
+std::tuple<pid_t, FILE *> sc_popen_c_argv(const char *filename, char *const argv[], const char *type);
 #endif
 
 /** \brief Opens a pipe to a separate process.
  *
  * This function assumes a UTF-8 encoded, narrow-char string.
  */
-boost::optional<std::tuple<pid_t, FILE *>> sc_popen(std::string &&command, const std::string &type);
-boost::optional<std::tuple<pid_t, FILE *>> sc_popen_argv(const std::vector<std::string> &strings,  const std::string &type);
+std::tuple<pid_t, FILE *> sc_popen(std::string &&command, const std::string &type);
+std::tuple<pid_t, FILE *> sc_popen_argv(const std::vector<std::string> &strings,  const std::string &type);
 int sc_pclose(FILE *iop, pid_t mPid);

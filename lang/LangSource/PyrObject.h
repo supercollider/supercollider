@@ -288,6 +288,6 @@ inline long MAXINDEXSIZE(PyrObjectHdr* obj)
 	return ((1L << obj->obj_sizeclass) * gFormatElemCapc[ obj->obj_format ]);
 }
 
-boost::variant<int,std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll);
+std::tuple<int,std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll);
 
 void InstallFinalizer(VMGlobals* g, PyrObject *inObj, int slotIndex, ObjFuncPtr inFunc);

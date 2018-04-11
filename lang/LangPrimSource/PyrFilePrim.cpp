@@ -47,6 +47,9 @@ Primitives for File i/o.
 #include <math.h>
 #include <sstream>
 
+/* C++ stdlib headers */
+#include <tuple>
+
 /* boost headers */
 #include <boost/filesystem.hpp>
 
@@ -1299,21 +1302,23 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 
 	PyrFile *pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-	boost::variant<int,std::string> commandLine = slotStrStdStrVal(commandLineSlot);
-	if (commandLine.which() == 0)
-		return boost::get<int>(commandLine);
+	//c++17 structured binding declarations will make this into a single line
+	//auto [error, string] = ...
+	int error;
+	std::string commandLine;
+	std::tie(error, commandLine) = slotStrStdStrVal(commandLineSlot);
+	if (error != errNone)
+		return error;
 
-	boost::variant<int,std::string> mode = slotStrStdStrVal(modeSlot);
-	if (mode.which() == 0)
-		return boost::get<int>(mode);
+	std::string mode;
+	std::tie(error, mode) = slotStrStdStrVal(modeSlot);
+	if (error != errNone)
+		return error;
 
-	boost::optional<std::tuple<pid_t, FILE *>> o = sc_popen(boost::get<std::string>(std::move(commandLine)), boost::get<std::string>(mode));
-	if (o) {
-		//c++17 structured binding declarations will make this into a single line
-		//auto [pid, file] = *o;
-		pid_t pid;
-		FILE *file;
-		std::tie(pid, file) = *o;
+	pid_t pid;
+	FILE *file;
+	std::tie(pid, file) = sc_popen(std::move(commandLine), mode);
+	if (file != nullptr) {
 		SetPtr(&pfile->fileptr, file);
 		SetInt(callerSlot, pid);
 	} else {
@@ -1349,22 +1354,24 @@ int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
 	if (argsColl->size < 1)
 		return errFailed;
 
-	boost::variant<int, std::string> mode = slotStrStdStrVal(modeSlot);
-	if (mode.which() == 0)
-		return boost::get<int>(mode);
+	//c++17 structured binding declarations will make this into a single line
+	//auto [error, mode] = ...;
+	int error;
+	std::string mode;
+	std::tie(error, mode) = slotStrStdStrVal(modeSlot);
+	if (error != errNone)
+		return error;
 
-	boost::variant<int, std::vector<std::string>> strings = PyrCollToVectorStdString(argsColl);
-	if (strings.which() == 0)
-		return boost::get<int>(strings);
+	std::vector<std::string> strings;
+	std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
+	if (error != errNone)
+		return error;
 
-	boost::optional<std::tuple<pid_t, FILE *>> o = sc_popen_argv(boost::get<std::vector<std::string>>(strings), boost::get<std::string>(mode));
+	pid_t pid;
+	FILE *file;
+	std::tie(pid, file) = sc_popen_argv(strings, mode);
 
-	if (o) {
-		//c++17 structured binding declarations will make this into a single line
-		//auto [pid, file] = *o;
-		pid_t pid;
-		FILE *file;
-		std::tie(pid, file) = *o;
+	if (file != nullptr) {
 		SetPtr(&pfile->fileptr, file);
 		SetInt(callerSlot, pid);
 	} else {

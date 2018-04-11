@@ -2817,24 +2817,24 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 /**
  * @brief obtain a vector of strings from an sclang collection of sclang strings.
  * @param coll The sclang collection containing strings
- * @return a boost::variant containing either an int, in which case an error occurred and the
- * the return value is the error code, or a vector of std:string's in which case no
- * error occurred.
+ * @return a tuple containing an int (the error code) and a vector of std:string's.
+ * If an error occurs an empty vector is returned.
  */
-boost::variant<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll) {
+std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll) {
 	std::vector<std::string> strings;
 	for (int i=0; i<coll->size; ++i) {
 		PyrSlot argSlot;
 		getIndexedSlot(coll, &argSlot, i);
-		//will use move semantics
-		boost::variant<int, std::string> string = slotStrStdStrVal(&argSlot);
-		if (string.which() == 0)
-			return boost::get<int>(string);
-		//will use move semantics
-		strings.push_back(boost::get<std::string>(std::move(string)));
+		int error;
+		std::string string;
+		std::tie(error, string) = slotStrStdStrVal(&argSlot);
+		if (error != errNone) {
+			strings.clear();
+			return std::make_tuple(error, strings);
+		}
+		strings.push_back(std::move(string));
 	}
-	//explicit move needed when creating variant object for return
-	return boost::variant<int, std::vector<std::string>>(std::move(strings));
+	return make_tuple(errNone, std::move(strings));
 }
 
 static int hashPtr(void* ptr)

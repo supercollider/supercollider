@@ -132,54 +132,33 @@ int slotStrVal(PyrSlot *slot, char *str, int maxlen)
 /**
  * \brief Convert an sclang string or symbol into an std:string
  * \param slot the sclang string or symbol
- * \return a variant containing either an int, in which case an error occurred and the
- * the return value is the error code, or an std:string in which case no
- * error occurred.
- *
- * Intended usage:
- *
- * boost::variant<int, std::string> string = slotStrStdStrVal(modeSlot);
- *	if (string.which() == 0)
- *		return boost::get<int>(string); or do something else with error number
- *
- * the string is obtained (in case of no error) with
- * boost::get<std::string>(string)
+ * \return a tuple containing an int, an error code, and an std:string.
+ *  In case of an error the string will be empty.
  */
-boost::variant<int,std::string> slotStdStrVal(PyrSlot *slot)
+std::tuple<int,std::string> slotStdStrVal(PyrSlot *slot)
 {
-	//will use move semantics
 	return	IsSym(slot) ?
-		boost::variant<int,std::string>(std::move(
-			std::string(slotRawSymbol(slot)->name, (size_t) slotRawSymbol(slot)->length)))
+		std::make_tuple(
+			errNone,
+			std::string(slotRawSymbol(slot)->name, (size_t) slotRawSymbol(slot)->length))
 	:	(isKindOfSlot(slot, class_string) ?
-		boost::variant<int,std::string>(std::move(
-			std::string(slotRawString(slot)->s, slotRawObject(slot)->size)))
-		: boost::variant<int,std::string>(errWrongType));
+		std::make_tuple(
+			errNone,
+			std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+		: std::make_tuple(errWrongType, std::string()));
 }
 
 /**
  * \brief Convert an sclang string into an std:string
  * \param slot the sclang string
- * \return a boost::variant containing either an int, in which case an error occurred and the
- * the return value is the error code, or an std:string in which case no
- * error occurred.
- *
- * Intended usage:
- *
- * boost::variant<int, std::string> string = slotStrStdStrVal(modeSlot);
- *	if (string.which() == 0)
- *		return boost::get<int>(string); or do something else with error number
- *
- * the string is obtained (in case of no error) with
- * boost::get<std::string>(string)
+ * \return a tuple containing an int, an error code, and an std:string.
+ *  In case of an error the string will be empty.
  */
-boost::variant<int,std::string> slotStrStdStrVal(PyrSlot *slot)
+std::tuple<int,std::string> slotStrStdStrVal(PyrSlot *slot)
 {
-	std::string t(slotRawString(slot)->s, slotRawObject(slot)->size);
-	//will use move semantics
 	return	isKindOfSlot(slot, class_string) ?
-		boost::variant<int,std::string>(std::move(t))
-		: boost::variant<int,std::string>(errWrongType);
+		std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+		: std::make_tuple(errWrongType, std::string());
 }
 
 int slotPStrVal(PyrSlot *slot, unsigned char *str)

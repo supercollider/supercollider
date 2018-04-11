@@ -46,7 +46,6 @@ Primitives for Unix.
 #include "SC_Lock.h"
 
 #include <boost/filesystem.hpp>
-#include <boost/variant.hpp>
 
 #ifdef _WIN32
 #include "SC_Win32Utils.h"
@@ -147,20 +146,21 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *callerSlot     = g->sp - 1;
 	PyrSlot *postOutputSlot = g->sp;
 
-	boost::variant<int,std::string> cmdline = slotStrStdStrVal(callerSlot);
-	if (cmdline.which() == 0)
-		return boost::get<int>(cmdline);
+	int error;
+	std::string cmdline;
+	std::tie(error, cmdline) = slotStrStdStrVal(callerSlot);
+	if (error != errNone)
+		return error;
 
 #ifdef SC_IPHONE
 	SetInt(a, 0);
 	return errNone;
 #endif
 
-	boost::optional<std::tuple<pid_t, FILE *>> o = sc_popen(boost::get<std::string>(std::move(cmdline)), {"r"});
-	if (o) {
-		pid_t pid;
-		FILE *stream;
-		std::tie(pid, stream) = *o;
+	pid_t pid;
+	FILE *stream;
+	std::tie(pid, stream) = sc_popen(std::move(cmdline), "r");
+	if (stream != nullptr) {
 		SC_Thread thread(std::bind(
 							 string_popen_thread_func,
 							 pid, stream, IsTrue(postOutputSlot)));
@@ -195,20 +195,20 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 	if (argsColl->size < 1)
 		return errFailed;
 
-	boost::variant<int, std::vector<std::string>> strings = PyrCollToVectorStdString(argsColl);
-	if (strings.which() == 0)
-		return boost::get<int>(strings);
+	int error;
+	std::vector<std::string> strings;
+	std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
+	if (error != errNone)
+		return error;
 
-	boost::optional<std::tuple<pid_t, FILE *>> o = sc_popen_argv(boost::get<std::vector<std::string>>(strings), {"r"});
-	if (o) {
-		pid_t pid;
-		FILE *stream;
-		std::tie(pid, stream) = *o;
+	pid_t pid;
+	FILE *stream;
+	std::tie(pid, stream) = sc_popen_argv(strings, "r");
+	if (stream != nullptr) {
 		SC_Thread thread(std::bind(
 							 string_popen_thread_func,
 							 pid, stream, IsTrue(postOutputSlot)));
 		thread.detach();
-
 		SetInt(callerSlot, pid);
 		return errNone;
 	} else {
