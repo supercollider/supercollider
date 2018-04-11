@@ -118,6 +118,10 @@ SoundFileView : View {
 
 	yZoom_ { arg factor; this.setProperty( \yZoom, factor.asFloat ); }
 
+	yOffset { ^this.getProperty( \yOffset ); }
+
+	yOffset_ { arg offset; this.setProperty( \yOffset, offset.asFloat ); }
+
 	//// Selections
 
 	selections { ^this.getProperty( \selections ); }

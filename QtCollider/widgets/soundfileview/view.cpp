@@ -59,6 +59,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _beg(0.0),
   _dur(0.0),
   _yZoom(1.f),
+  _yOffset(0.f),
 
   pixmap(0),
   _bkgColor( QColor(0,0,0) ),
@@ -282,6 +283,11 @@ float QcWaveform::yZoom()
   return _yZoom;
 }
 
+float QcWaveform::yOffset()
+{
+  return _yOffset;
+}
+
 QVariantList QcWaveform::selections() const
 {
   QVariantList slist;
@@ -441,6 +447,12 @@ void QcWaveform::setXZoom( double seconds )
 void QcWaveform::setYZoom( double factor )
 {
   _yZoom = factor;
+  redraw();
+}
+
+void QcWaveform::setYOffset( double offset )
+{
+  _yOffset = offset;
   redraw();
 }
 
@@ -727,10 +739,10 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // geometry
-  float spacing = pix->height() * 0.15f / (sfInfo.channels + 1);
+  float spacing = pix->height() * 0.15f / (float) sfInfo.channels;
   float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
+  float yOffsetPx = -chHeight / 2.0f * _yOffset;
   float yScale = -chHeight / 2.0f * _yZoom;
-  //spacing /= yscale;
 
   // initial painter setup
   QPen minMaxPen;
@@ -740,9 +752,9 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   rmsPen.setWidth(0);
 
   float halfChH = chHeight * 0.5;
-  p.translate( 0.f, halfChH + spacing );
-
   float halfChHScaled = halfChH * _yZoom;
+
+  p.translate( 0.f, halfChH + ( spacing / 2.0f) + yOffsetPx );
 
   int waveColorN = _waveColors.count();
   int ch;

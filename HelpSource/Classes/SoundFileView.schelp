@@ -221,6 +221,11 @@ METHOD:: yZoom
 
     returns:: A Float scaling factor.
 
+METHOD:: yOffset
+    Vertical offset. code::yOffset = 0:: sets value of 0.0 in the middle of the channel's view, while code::yOffset = 1::, sets 0.0 at the top and code::yOffset = -1:: sets 0.0 at the bottom of the view. This is performed after (and thus is not scaled by) the link::#-yZoom:: factor.
+
+    returns:: A Float offset.
+
 METHOD:: scrollPos
 
     The scrolling position of the view, as a fraction of the total scrolling range. The total scrolling range is code::totalDuration - xZoom::.
