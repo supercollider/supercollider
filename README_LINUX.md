@@ -179,7 +179,8 @@ builds in a specific build directory:
 
 ### Qt GUI
 
-By default, the Qt GUI support will be built into sclang. If you want to build without it configure cmake like this:
+By default, the Qt GUI support will be built into sclang. 
+If you want to build without it configure cmake like this:
 
 ```
 $> cmake -DSC_QT=OFF ..
