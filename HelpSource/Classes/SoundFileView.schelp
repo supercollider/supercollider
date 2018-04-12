@@ -226,6 +226,11 @@ METHOD:: yOffset
 
     returns:: A Float offset.
 
+METHOD:: spacing
+    A ratio between vertical space outside of the ±1.0 value range and channel's full height. code::spacing = 0.1:: (the default) makes top and bottom spaces add up to code::0.1 * height:: (each of them occupying half of that), while ±1.0 value range occupies code::0.9 * height::. The value is clipped in the range from code::0.0:: to  code::1.0::.
+
+    returns:: A Float scaling factor.
+
 METHOD:: scrollPos
 
     The scrolling position of the view, as a fraction of the total scrolling range. The total scrolling range is code::totalDuration - xZoom::.

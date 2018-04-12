@@ -122,6 +122,10 @@ SoundFileView : View {
 
 	yOffset_ { arg offset; this.setProperty( \yOffset, offset.asFloat ); }
 
+	spacing { ^this.getProperty( \spacing ); }
+
+	spacing_ { arg factor; this.setProperty( \spacing, factor.asFloat ); }
+
 	//// Selections
 
 	selections { ^this.getProperty( \selections ); }

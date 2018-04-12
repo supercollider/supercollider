@@ -60,6 +60,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _dur(0.0),
   _yZoom(1.f),
   _yOffset(0.f),
+  _spacing(0.1f),
 
   pixmap(0),
   _bkgColor( QColor(0,0,0) ),
@@ -288,6 +289,11 @@ float QcWaveform::yOffset()
   return _yOffset;
 }
 
+float QcWaveform::spacing()
+{
+  return _spacing;
+}
+
 QVariantList QcWaveform::selections() const
 {
   QVariantList slist;
@@ -453,6 +459,12 @@ void QcWaveform::setYZoom( double factor )
 void QcWaveform::setYOffset( double offset )
 {
   _yOffset = offset;
+  redraw();
+}
+
+void QcWaveform::setSpacing( double factor )
+{
+  _spacing = qBound(0.0, factor, 1.0);
   redraw();
 }
 
@@ -739,8 +751,8 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // geometry
-  float spacing = pix->height() * 0.15f / (float) sfInfo.channels;
-  float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
+  float spacing = pix->height() * _spacing / (float) sfInfo.channels;
+  float chHeight = pix->height() * (1.0f - _spacing) / (float) sfInfo.channels;
   float yOffsetPx = -chHeight / 2.0f * _yOffset;
   float yScale = -chHeight / 2.0f * _yZoom;
 
