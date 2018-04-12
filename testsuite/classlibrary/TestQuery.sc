@@ -24,20 +24,22 @@ TestQuery : UnitTest {
 		buffer.query({ |...args| responce = args });
 		server.sync;
 
-		this.assertEquals(responce, ['/b_info', 0, 512, 1, server.sampleRate], "Buffer.query should post correct info");
+		this.assertEquals(responce, ['/b_info', buffer.bufnum, 512, 1, server.sampleRate], "Buffer.query should post correct info");
 
 	}
 
 	test_multiBufferQuery {
 
-		var bufnums = Array(3);
+		var responces = Array(3);
 		var buffers = 3.collect { Buffer.alloc(server, 512) };
+		var bufnums;
 		server.sync;
 
-		buffers.do { |buf| buf.query({ |...args| bufnums.add(args[1]) }) };
+		bufnums = buffers.collect { |buf| buf.bufnum };
+		buffers.do { |buf| buf.query({ |...args| responces.add(args[1]) }) };
 		server.sync;
 
-		this.assertEquals(bufnums, [0, 1, 2], "All buffers must be queried");
+		this.assertEquals(responces, bufnums, "All buffers must be queried");
 
 	}
 
