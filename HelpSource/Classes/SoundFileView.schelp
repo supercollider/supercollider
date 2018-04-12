@@ -501,7 +501,7 @@ METHOD:: timeCursorColor
 
 METHOD:: elasticMode
 
-    ???
+    Not operational, for compatibility only.
 
 SUBSECTION:: Actions
 
@@ -637,9 +637,6 @@ a.selections;
 // setSelection (index, selection);
 a.setSelection(0, [234, 2345]);
 a.selection(1); // returns [start, size].
-
-
-a.elasticMode = true;   // not sure if this is working yet?
 
 (       // mouseUpAction
 a.mouseUpAction = {
