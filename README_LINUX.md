@@ -250,7 +250,8 @@ Supercollider comes with its own powerful IDE. Run it with:
 $> scide
 ```
 
-Alternatively, you can use sclang in combination with your preferred text editor out of emacs/vim/gedit. See the `README.md` files in `editors/*` for installation and usage. Another alternative is to simply run the `sclang` executable which will provide a readline-based interface.
+Alternatively, you can use sclang in combination with your preferred text editor out of emacs/vim/gedit. See the `README.md` files in `editors/*` for 
+installation and usage. Another alternative is to simply run the `sclang` executable which will provide a readline-based interface.
 
 `sclang` executes the startup file `~/.config/SuperCollider/startup.scd` after class library initialization. This file can contain statements to set up your supercollider environment, like setting default variables. An example can be found in `Linux/examples/sclang.sc`.
 
