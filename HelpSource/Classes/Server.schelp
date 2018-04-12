@@ -39,29 +39,29 @@ argument:: name
 a symbol;  each Server object is stored in one global classvariable under its name.
 
 argument:: addr
-an optional instance of link::Classes/NetAddr::, providing host and port.
+an optional instance of the link::Classes/NetAddr::, providing host and port.
 The default is the localhost address using port 57110; the same as the local server.
 
 argument:: options
 an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
 
 argument:: clientID
-an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
+an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage, the server will supply an ID automatically when a client registers for the link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations, you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
 
 method:: remote
-Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted, and starts listening immediately. You should not call link::#-boot:: on an instance created using this method.
+Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted and starts listening immediately. You should not call link::#-boot:: on an instance created using this method.
 
 argument:: name
 a symbol;  each Server object is stored in one global classvariable under its name.
 
 argument:: addr
-an optional instance of link::Classes/NetAddr::, providing ip address of the remote machine and port the app is listening on.
+an optional instance of the link::Classes/NetAddr::, providing ip address of the remote machine and port the app is listening on.
 
 argument:: options
 an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
 
 argument:: clientID
-an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
+an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage, the server will supply an ID automatically when a client registers for the link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations, you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
 
 
 method:: local
@@ -90,15 +90,15 @@ code::
 Server.all
 ::
 
-method:: allRunningServers
-returns:: a Set containing all running servers, according to the definition of link::#-serverRunning::.
+method::allRunningServers
+returns:: a Set containing all running servers, according to the definition of the link::#-serverRunning::.
 
 code::
 Server.allRunningServers
 ::
 
 method:: allBootedServers
-returns:: a Set containing all booted servers, according to the definition of link::#-hasBooted::.
+returns:: a Set containing all booted servers, according to the definition of the link::#-hasBooted::.
 
 method:: named
 returns:: An link::Classes/IdentityDictionary:: of all servers listed by their name
@@ -135,7 +135,7 @@ Switches the server program to supernova. Check link::Classes/ParGroup:: how to 
 
 method:: scsynth
 
-Switches the server program to scsynth. This is the default server.
+ This is the default server.
 
 
 InstanceMethods::
@@ -162,7 +162,7 @@ s.sendBundle(0.2, ["/s_new", "default", x = s.nextNodeID, 0, 1], ["/n_set", x, "
 method:: sendRaw
 
 method:: listSendMsg
-as sendMsg, but takes an array as argument.
+as sendMsg, but takes an array as an argument.
 
 method:: listSendBundle
 as sendBundle, but takes an array as argument.
@@ -222,10 +222,10 @@ If true, start a Routine to send a /status message to the server every so often.
 argument:: recover
 If true, create a new node ID allocator for the server, but use the old buffer and bus allocators. This is useful if the server process did not actually stop. In normal use, the default value "false" should be used.
 argument:: onFailure
-In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use link::#-waitForBoot:: or link::#-doWhenBooted::.
+In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use the link::#-waitForBoot:: or the  link::#-doWhenBooted::.
 
 discussion::
-You cannot boot a server app on a remote machine, but you can initialise the allocators by calling this message.
+You cannot boot a server app on a remote machine, but you can initialize the allocators by calling this message.
 
 method:: quit
 quit the server application
@@ -237,7 +237,7 @@ argument::onFailure
 A function that is called when quit has failed.
 
 argument::watchShutDown
-a boolean to tell the server whether to watch status during shutdown.
+a boolean to tell the server whether to watch status during the shutdown.
 
 method:: reboot
 quit and restart the server application
@@ -255,7 +255,7 @@ method:: status
 query the server status
 
 method:: notify
-The server sends notifications, for example if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. if code::flag:: is set to false, these messages will not be sent to this client. The default is true. If true the server will respond with a clientID (scsynth only) which can be useful in multi-client situations. If this is different from any previously received ID new allocators will be created. See link::#Local vs. Remote Servers, Multi-client Configurations:: for more information.
+The server sends notifications, for example, if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. if code::flag:: is set to false, these messages will not be sent to this client. The default is true. If true the server will respond with a clientID (scsynth only) which can be useful in multi-client situations. If this is different from any previously received ID new allocators will be created. See link::#Local vs. Remote Servers, Multi-client Configurations:: for more information.
 
 method:: ping
 measure the time between server and client, which may vary. the code::func:: is
@@ -273,7 +273,7 @@ Return an array mapping client IDs to their associated default groups as
 link::Classes/Group:: objects.
 
 method:: volume
-Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. Level is in db.
+Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. The level is in db.
 
 method:: mute
 mute the server's output. This can also be toggled from the Server window with the 'm' key.
@@ -297,7 +297,7 @@ method:: inputBus
 Return a link::Classes/Bus:: object that represents the input audio bus.
 
 method:: outputBus
-Return a link::Classes/Bus:: object that represents the output audio bus.
+Return a link::Classes/Bus:: an object that represents the output audio bus.
 
 
 subsection:: Information and debugging
@@ -316,7 +316,7 @@ note:: teletype::/status:: messages won't be posted, when dumping is enabled::
 method:: queryAllNodes
 Post a representation of this Server's current node tree to the post window. See link::#-plotTree:: for a graphical variant.
 discussion::
-Very helpful for debugging. For local servers this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
+Very helpful for debugging. For local servers, this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
 code::
 s.boot;
 s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
@@ -330,7 +330,7 @@ method:: latency
 The current latency of the server. See link::Guides/ServerTiming:: for details.
 
 method:: sampleRate
-An integer representing the nominal sample rate of the server; in other words, the sample rate that was requested of the server when it was booted.
+An integer representing the nominal sample rate of the server; in other words, the sample rate that was requested by the server when it was booted.
 
 method:: actualSampleRate
 A floating-point number representing the current hardware sample rate, which may drift.
@@ -339,22 +339,22 @@ method:: numSynths
 Get number of running link::Classes/Synth::s.
 
 method:: numGroups
-Get number of link::Classes/Group::s.
+Get the number of the link::Classes/Group::s.
 
 method:: numUGens
-Get number of running link::Classes/UGen::s.
+Get the number of running link::Classes/UGen::s.
 
 method:: numSynthDefs
 Get number of loaded link::Classes/SynthDef::initions.
 
 method:: pid
-Get process ID of running server (if not internal).
+Get process ID of the running server (if not internal).
 
 method:: addr
 The network address of the server as a link::Classes/NetAddr::.
 
 method:: maxNumClients
-If known, the maximum number of clients allowed on the server. Otherwise, the value of link::Classes/ServerOptions#-maxLogins::, which is what will be requested after the server boots. This number is not guaranteed to be correct until link::#-serverRunning:: is code::true::.
+If known, the maximum number of clients allowed on the server. Otherwise, the value of the link::Classes/ServerOptions#-maxLogins::, which is what will be requested after the server boots. This number is not guaranteed to be correct until link::#-serverRunning:: is the code::true::.
 
 method:: clientID
 The getter returns the client ID of this client on the remote process. code::nil:: until the server is running.
@@ -369,7 +369,7 @@ method:: serverBooting
 code::true:: if the server is booting, code::false:: otherwise.
 
 method:: hasBooted
-code::true:: if the server has booted. The server is not guaranteed to have a correct clientID, nor is it guaranteed that actions in link::Classes/ServerTree:: will have run yet.
+code::true:: if the server has booted. The server is not guaranteed to have a correct clientID, nor is it guaranteed that actions in the link::Classes/ServerTree:: will have run yet.
 
 method:: serverRunning
 code::true:: only if the server is fully ready. A server is fully ready once it has booted, received a reply to a code::/notify:: command, been given a client ID, and after the link::Classes/ServerTree:: has run.
@@ -388,7 +388,7 @@ Deprecated in 3.9. Returns code::false::. Server:clientID can now be set while a
 
 subsection:: Message Bundling
 
-Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also link::Guides/Bundled-Messages::
+The server provides support for automatically bundling messages. This is quite convenient in object style and ensures synchronous execution. See also link::Guides/Bundled-Messages::
 
 method:: makeBundle
 The Function code::func:: is evaluated, and all OSC messages generated by it are deferred and added to a bundle.
@@ -408,7 +408,7 @@ s.boot;
 (
 // send a synth def to server
 SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
-	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
+    Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
 }).add;
 )
 
@@ -416,9 +416,9 @@ SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
 // and executed simultaneously after 2 seconds.
 (
 s.makeBundle(2.0, {
-	x = Synth.new("tpulse");
-	a = Bus.control.set(440);
-	x.map(\freq, a);
+    x = Synth.new("tpulse");
+    a = Bus.control.set(440);
+    x.map(\freq, a);
 });
 )
 x.free;
@@ -426,13 +426,13 @@ x.free;
 // don't send
 (
 b = s.makeBundle(false, {
-	x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
+    x = { PinkNoise.ar(0.1) * In.kr(0, 1); }.play;
 });
 )
 // now pass b as a pre-existing bundle, and start both synths synchronously
 (
 s.makeBundle(nil, { // nil executes ASAP
-	y = { SinOsc.kr(0.2).abs }.play(x, 0, 0, \addBefore); // sine envelope
+    y = { SinOsc.kr(0.2).abs }.play(x, 0, 0, \addBefore); // sine envelope
 }, b);
 )
 x.free; y.free;
@@ -440,12 +440,12 @@ x.free; y.free;
 // Throw an Error
 (
 try {
-	s.makeBundle(nil, {
-		s.farkermartin;
-	});
+    s.makeBundle(nil, {
+        s.farkermartin;
+    });
 } { |error|
-	("Look Ma, normal operations resume even though:\n" + error.errorString).postln;
-	x = { FSinOsc.ar(440, 0, 0.2) }.play; // This works fine
+    ("Look Ma, normal operations resume even though:\n" + error.errorString).postln;
+    x = { FSinOsc.ar(440, 0, 0.2) }.play; // This works fine
 }
 )
 x.free;
@@ -453,9 +453,9 @@ x.free;
 // use sync
 (
 s.makeBundle(nil, {
-	b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-	s.sync; // wait until load is done and then send the rest of the bundle
-	x = { PlayBuf.ar(1, b) * 0.5 }.play;
+    b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+    s.sync; // wait until load is done and then send the rest of the bundle
+    x = { PlayBuf.ar(1, b) * 0.5 }.play;
 });
 )
 x.free; b.free;
@@ -467,9 +467,9 @@ discussion::
 code::
 (
 s.bind {
-	a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
+    a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
     s.sync;
-	a.set(\freq, 400);
+    a.set(\freq, 400);
 }
 )
 ::
@@ -489,7 +489,7 @@ set the number of shared control buses. Must be done before the internal server 
 
 subsection:: Persistent Node Trees
 
-The class link::Classes/ServerTree:: can be used to store functions which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed.
+The class link::Classes/ServerTree:: can be used to store functions which will be evaluated after the server is booted after all nodes are freed and after cmd-. is pressed.
 This allows, for example, for one to create a persistent basic node structure. ServerTree is evaluated in the method initTree after the default group is created, so its existence can be relied upon.
 
 method:: initTree
@@ -539,7 +539,7 @@ the first channel to be output. The default is 0.
 argument:: bufsize
 the size of the buffer for the ScopeView. The default is 4096.
 argument:: zoom
-a zoom value for the scope's X axis. Larger values show more. The default is 1.
+a zoom value for the scope's X-axis. Larger values show more. The default is 1.
 argument:: rate
 whether to display audio or control rate buses (either \audio or \control)
 
@@ -556,7 +556,7 @@ argument:: interval
 Polling interval.
 
 method:: plotTreeView
-Plot the node/group tree graphically on a given view.
+Plot the node/group tree graphically in a given view.
 
 argument:: interval
 Polling interval.
@@ -571,7 +571,7 @@ returns:: Function to be evaluated in order to clean up all actions performed in
 
 subsection:: Recording Support
 
-The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile.
+The following methods are for convenience use. For recording with sample-accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile.
 
 This functionality is also available through the recording button on the server windows.
 Pressing it once calls record, and pressing it again calls stopRecording (see below). When doing so the file created will be in your recordings folder and be named for the current date and time.
@@ -597,16 +597,16 @@ s.boot; // start the server
 // something to record
 (
 SynthDef("bubbles", { |out|
-	var f, sound;
-	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
-	sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
-	Out.ar(out, sound);
+    var f, sound;
+    f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
+    sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
+    Out.ar(out, sound);
 }).add;
 )
 
 x = Synth.new("bubbles");
 
-s.prepareForRecord; // if you want to start recording on a precise moment in time, you have to call this first.
+s.prepareForRecord; // if you want to start recording at a precise moment in time, you have to call this first.
 
 s.record;
 
@@ -621,7 +621,7 @@ x.free; // stop the synths
 // look in your recordings folder and you'll find a file named for this date and time
 ::
 
-Recording is done via an of link::Classes/Recorder:: - a server holds one instance implicitly.
+The recording is done via an of the link::Classes/Recorder:: - a server holds one instance implicitly.
 
 method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
@@ -644,7 +644,7 @@ the number of channels to record - defaults to server numChannels
 argument:: node
 the node to record - defaults to server rootnode
 argument:: duration
-duration to record - defaults to inf
+duration of record - defaults to inf
 
 discussion::
 If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
@@ -653,13 +653,13 @@ method:: pauseRecording
 Pauses recording. Can be resumed by executing record again.
 
 method:: stopRecording
-Stops recording, closes the file, and frees the associated resources.
+Stops recording closes the file and frees the associated resources.
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
 
 method:: recChannels
-Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
+Get/set the number of channels (int) to record. Is automatically set to the value of a link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
@@ -672,12 +672,12 @@ Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/Dis
 
 subsection:: Asynchronous Commands
 
-Server provides support for waiting on the completion of asynchronous OSC-commands such as reading or writing soundfiles. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
+The server provides support for waiting on the completion of asynchronous OSC-commands such as reading or writing sound files. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
 
 method:: bootSync
 Boot the Server and wait until it has completed before resuming the thread.
 argument:: condition
-an optional instance of link::Classes/Condition:: used for evaluating this.
+an optional instance of the link::Classes/Condition:: used for evaluating this.
 
 method:: sendMsgSync
 Send the following message to the wait until it has completed before resuming the thread.
@@ -689,7 +689,7 @@ one or more valid OSC messages.
 method:: sync
 Send a code::/sync:: message to the server, which will reply with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
-an optional instance of link::Classes/Condition:: used for evaluating this.
+an optional instance of the link::Classes/Condition:: used for evaluating this.
 argument:: bundles
 one or more OSC messages which will be bundled before the sync message (thus ensuring that they will arrive before the /sync message). argument:: latency
 allows for the message to be evaluated at a specific point in the future.
@@ -699,38 +699,36 @@ This may be slightly less safe then sendMsgSync under UDP on a wide area network
 code::
 (
 Routine.run {
-	var c;
+    var c;
 
-	// create a condition variable to control execution of the Routine
-	c = Condition.new;
+    // create a condition variable to control execution of the Routine
+    c = Condition.new;
 
-	s.bootSync(c);
-	\BOOTED.postln;
+    s.bootSync(c);
+    \BOOTED.postln;
 
-	s.sendMsgSync(c, "/b_alloc", 0, 44100, 2);
-	s.sendMsgSync(c, "/b_alloc", 1, 44100, 2);
-	s.sendMsgSync(c, "/b_alloc", 2, 44100, 2);
-	\b_alloc_DONE.postln;
+    s.sendMsgSync(c, "/b_alloc", 0, 44100, 2);
+    s.sendMsgSync(c, "/b_alloc", 1, 44100, 2);
+    s.sendMsgSync(c, "/b_alloc", 2, 44100, 2);
+    \b_alloc_DONE.postln;
 };
 )
 
 (
 Routine.run {
-	var c;
+    var c;
 
-	// create a condition variable to control execution of the Routine
-	c = Condition.new;
+    // create a condition variable to control execution of the Routine
+    c = Condition.new;
 
-	s.bootSync(c);
-	\BOOTED.postln;
+    s.bootSync(c);
+    \BOOTED.postln;
 
-	s.sendMsg("/b_alloc", 0, 44100, 2);
-	s.sendMsg("/b_alloc", 1, 44100, 2);
-	s.sendMsg("/b_alloc", 2, 44100, 2);
-	s.sync(c);
-	\b_alloc_DONE.postln;
+    s.sendMsg("/b_alloc", 0, 44100, 2);
+    s.sendMsg("/b_alloc", 1, 44100, 2);
+    s.sendMsg("/b_alloc", 2, 44100, 2);
+    s.sync(c);
+    \b_alloc_DONE.postln;
 };
 )
 ::
-
-
