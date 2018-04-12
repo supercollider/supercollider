@@ -69,8 +69,17 @@ SoundFileView : View {
 	drawsRMS { ^this.getProperty( \drawsRMS ); }
 	drawsRMS_ { arg boolean; this.setProperty( \drawsRMS, boolean ); }
 
+	drawsCenterLine { ^this.getProperty( \drawsCenterLine ); }
+	drawsCenterLine_ { arg boolean; this.setProperty( \drawsCenterLine, boolean ); }
+
+	drawsBoundingLines { ^this.getProperty( \drawsBoundingLines ); }
+	drawsBoundingLines_ { arg boolean; this.setProperty( \drawsBoundingLines, boolean ); }
+
 	waveColors { ^this.getProperty( \waveColors ) }
 	waveColors_ { arg colors; this.setProperty( \waveColors, colors ) }
+
+	antialiasing { ^this.getProperty( \antialiasing ); }
+	antialiasing_ { arg boolean; this.setProperty( \antialiasing, boolean ); }
 
 	//// Info
 
