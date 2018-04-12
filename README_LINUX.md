@@ -140,8 +140,7 @@ builds in a specific build directory:
    frontends like ccmake or cmake-gui, or by simply editing the
    `build/CMakeCache.txt` file.
 
-   For example to enable a release build to run the following in your build
-   directory:
+   For example to enable a release build run the following in your build:
 
    ```
    $> cmake -DCMAKE_BUILD_TYPE=Release ..
