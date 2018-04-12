@@ -41,4 +41,4 @@ January 2011
 
     - You can also tap respring in SBSettings
 
-    If the codesigning has worked correctly (remember to only use non-fat binaries), (and if there's no cold wind blowing from the northwest) you can now start SuperCollider.app from the Springboard and take the world by storm.
+        If the codesigning has worked correctly (remember to only use non-fat binaries), (and if there's no cold wind blowing from the northwest) you can now start SuperCollider.app from the Springboard and take the world by storm.
