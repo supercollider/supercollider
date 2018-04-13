@@ -182,14 +182,12 @@ Number : Magnitude {
 	legendrePAssoc { |m, x| _LegendrePAssoc; ^this.primitiveFailed }
 
 	// Protect from l < 0. Boost won't catch this out of range value and interpreter hangs.
-	// TODO: another better way to catch error?
 	legendreQ { |x|
 		if (this < 0) {
 			format("n = %, but Legendre Polynomial of the Second Kind requires n >= 0", this).throw
 		};
 		^prLegendreQ(this, x)
 	}
-	// TODO: name?
 	prLegendreQ { |x| _LegendreQ; ^this.primitiveFailed }
 
 
@@ -198,7 +196,6 @@ Number : Magnitude {
 	laguerre { |x| _Laguerre; ^this.primitiveFailed }
 
 	// Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
-	// TODO: proper way to catch error?
 	laguerreAssoc { |m, x|
 		if (this < 0) {
 			format("n = %, but Associated Laguerre Polynomial requires n >= 0", this).throw
@@ -210,7 +207,6 @@ Number : Magnitude {
 	// Hermite Polynomial
 
 	// Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
-	// TODO: proper way to catch error?
 	hermite { arg x;
 		if (this < 0) {
 			format("n = %, but Hermite Polynomial requires n >= 0", this).throw
