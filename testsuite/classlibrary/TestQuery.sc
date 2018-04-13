@@ -39,7 +39,7 @@ TestQuery : UnitTest {
 		buffers.do { |buf| buf.query({ |...args| responces.add(args[1]) }) };
 		server.sync;
 
-		this.assertEquals(responces, bufnums, "All buffers must be queried");
+		this.assertEquals(responces, bufnums, "All requested buffers must be queried");
 
 	}
 
