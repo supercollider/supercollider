@@ -273,6 +273,11 @@ private:
   sf_count_t _dragFrame;
   double _dragData;
   double _dragData2;
+
+  // display tweaks
+  int _rmsBrighterBy = 20; //percentage of the color of RMS being brigher than peakColor, when peakColor is set through _waveColors
+  int _rmsMaxFpp = 128; // when frames-per-pixel drops below this value (zoom in), the RMS waveform starts to fade out, as its calculation becomes less precise
+  int _rmsMinFpp = 32; // when frames-per-pixel drops below this value, RMS waveform disapperas completely
 };
 
 class SoundStream {

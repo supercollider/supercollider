@@ -749,8 +749,8 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
     if( ch < waveColorN && _waveColors[ch].isValid() ) {
       QColor clr( _waveColors[ch] );
-      rmsPen.setColor( clr );
-      minMaxPen.setColor( clr.darker( 140 ) );
+      rmsPen.setColor( clr.lighter( 100 + _rmsBrighterBy ) );
+      minMaxPen.setColor( clr );
     }
     else {
       rmsPen.setColor( _rmsColor );
@@ -786,20 +786,37 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
       Q_ASSERT( ok );
 
+      int rmsAlpha = rmsPen.color().alpha();
+
       int i;
       for( i = 0; i < width; ++i ) {
         float min = minBuffer[i];
         float max = maxBuffer[i];
-        if( max != min ) {
+        int minMaxPxDiff = int((max - min) * -yScale);
+        if( minMaxPxDiff != 0 ) {
           p.setPen( minMaxPen );
           p.drawLine( QPointF(x + i, min), QPointF(x + i, max));
+
+          if( rmsAlpha > 0 && minMaxPxDiff > 4 ) { //only draw RMS when there's some vertical space
+            if( _fpp > _rmsMaxFpp ) {
+              p.setPen( rmsPen );
+              p.drawLine( QPointF(x + i, minRMS[i]), QPointF(x + i, maxRMS[i]));
+            } else {
+              if( _fpp > _rmsMinFpp ) {
+                QColor thisColor = rmsPen.color();
+                thisColor.setAlpha(rmsAlpha * (_fpp - _rmsMinFpp) / (_rmsMaxFpp - _rmsMinFpp));
+                rmsPen.setColor(thisColor);
+                p.setPen( rmsPen );
+                p.drawLine( QPointF(x + i, minRMS[i]), QPointF(x + i, maxRMS[i]));
+              }
+            }
+          }
+
         }
         else {
           p.setPen( minMaxPen );
           p.drawPoint( QPointF(x + i, min) );
         }
-        p.setPen( rmsPen );
-        p.drawLine( QPointF(x + i, minRMS[i]), QPointF(x + i, maxRMS[i]));
       }
     }
     else {
@@ -831,7 +848,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         path.lineTo( QPointF( f * ppf + dx, (qreal) *data ) );
       }
 
-      p.setPen( rmsPen );
+      p.setPen( minMaxPen );
       p.drawPath( path );
     }
 

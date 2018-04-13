@@ -89,7 +89,7 @@ bool SoundFileStream::integrate
     // get min, max and sum
     float *samples = _data + (data_pos * channels()) + ch;
     float min = std::numeric_limits<float>::max();
-    float max = std::numeric_limits<float>::min();
+    float max = std::numeric_limits<float>::lowest();
     float sum = 0.f;
     float sum2 = 0.f;
     int f; // frame
@@ -134,7 +134,7 @@ bool SoundFileStream::displayData
   double f_pos_max = _dataSize;
 
   float min = std::numeric_limits<float>::max();
-  float max = std::numeric_limits<float>::min();
+  float max = std::numeric_limits<float>::lowest();
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {

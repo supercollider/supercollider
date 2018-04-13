@@ -169,7 +169,6 @@ void SoundCacheStream::allocate ( int nf, int ch )
     size_t bytes = nf * sizeof(float);
     memset( min, 0, bytes );
     memset( max, 0, bytes );
-    bytes = nf * sizeof(float);
     memset( sum, 0, bytes );
     memset( sum2, 0, bytes );
   }
@@ -223,7 +222,7 @@ bool SoundCacheStream::displayData
   double cache_pos = (f_beg - _dataOffset) / _fpu ;
 
   float min = std::numeric_limits<float>::max();
-  float max = std::numeric_limits<float>::min();
+  float max = std::numeric_limits<float>::lowest();
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
