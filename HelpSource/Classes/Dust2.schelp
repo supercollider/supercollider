@@ -1,5 +1,5 @@
 class:: Dust2
-summary:: Random impulses.
+summary:: Random impulses
 related:: Classes/Dust
 categories::  UGens>Generators>Stochastic
 
@@ -14,10 +14,10 @@ classmethods::
 method::ar, kr
 
 argument::density
-Average number of impulses per second.
+The average number of impulses per second.
 
 argument::mul
-Output will be multiplied by this value.
+The output will be multiplied by this value.
 
 argument::add
 This value will be added to the output.
@@ -28,19 +28,18 @@ code::
 
 (
 SynthDef("help-Dust2", { arg out=0;
-	Out.ar(out,
-		Dust2.ar(200, 0.5)
-	)
+    Out.ar(out,
+        Dust2.ar(200, 0.5)
+    )
 }).play;
 )
 
 (
 SynthDef("help-Dust2", { arg out=0;
-	Out.ar(out,
-		Dust2.ar(XLine.kr(20000, 2, 10), 0.5)
-	)
+   Out.ar(out,
+       Dust2.ar(XLine.kr(20000, 2, 10), 0.5)
+  )
 }).play;
 )
 
 ::
-
