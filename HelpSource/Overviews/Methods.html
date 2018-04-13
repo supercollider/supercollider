@@ -1,75 +1,76 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <title>Methods | SuperCollider Help</title>
-    <link rel='stylesheet' href='../scdoc.css' type='text/css' />
-    <link rel='stylesheet' href='../custom.css' type='text/css' />
-    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-    <script>
-        var scdoc_title = "Methods";
-        var scdoc_sc_version = "";
-    </script>
-    <script src="../docmap.js" type="text/javascript"></script>
-    <script src="../scdoc.js" type="text/javascript"></script>
-<noscript>
-<p>The method index needs JavaScript.
-</noscript>
+  <title>Methods | SuperCollider Help</title>
+  <link rel='stylesheet' href='../scdoc.css' type='text/css' />
+  <link rel='stylesheet' href='../custom.css' type='text/css' />
+  <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+  <script>
+    var scdoc_title = "Methods";
+    var scdoc_sc_version = "";
+  </script>
+  <script src="../docmap.js" type="text/javascript"></script>
+  <script src="../scdoc.js" type="text/javascript"></script>
+  <noscript>
+    <p>The method index needs JavaScript.
+  </noscript>
 
-<script type="text/javascript">
-var methods;
-var subclassCache = {};
+  <script type="text/javascript">
+    var methods;
+    var subclassCache = {};
 
-function buildMethodList() {
-    methods = {};
-    for(var k in docmap) {
+    function buildMethodList() {
+      methods = {};
+      for (var k in docmap) {
         var doc = docmap[k];
         var mets = doc.methods;
-        if(mets) {
-            for(var j=0;j<mets.length;j++) {
-                var m = mets[j];
-                var mname = m.slice(2);
-                var pfx = m[1];
-                var undoc = m[0]=="?";
-                if(!methods.hasOwnProperty(mname))
-                    methods[mname] = [];
-                methods[mname].push({doc:doc,pfx:pfx,undoc:undoc});
-            }
+        if (mets) {
+          for (var j = 0; j < mets.length; j++) {
+            var m = mets[j];
+            var mname = m.slice(2);
+            var pfx = m[1];
+            var undoc = m[0] == "?";
+            if (!methods.hasOwnProperty(mname))
+              methods[mname] = [];
+            methods[mname].push({ doc: doc, pfx: pfx, undoc: undoc });
+          }
         }
+      }
     }
-}
-function getSubClasses(doc) {
-    var a = [];
-    if(doc.subclasses) {
-        for(var i=0;i<doc.subclasses.length;i++) {
-            var x = doc.subclasses[i];
-            var v = docmap["Classes/"+x];
-            a.push(x);
-            if(v)
-                a = a.concat(getSubClasses(v));
+    function getSubClasses(doc) {
+      var a = [];
+      if (doc.subclasses) {
+        for (var i = 0; i < doc.subclasses.length; i++) {
+          var x = doc.subclasses[i];
+          var v = docmap["Classes/" + x];
+          a.push(x);
+          if (v)
+            a = a.concat(getSubClasses(v));
         }
+      }
+      return a;
     }
-    return a;
-}
 
-function showMethod(mname, node) {
-    var div = document.createElement("div");
-    div.className = "method_item";
-    var x = document.createElement("div");
-    x.className = "method_name";
-    x.appendChild(document.createTextNode(mname));
-    div.appendChild(x);
+    function showMethod(mname, node) {
+      var div = document.createElement("div");
+      div.className = "method_item";
+      var x = document.createElement("div");
+      x.className = "method_name";
+      x.appendChild(document.createTextNode(mname));
+      div.appendChild(x);
 
-    var x = methods[mname].sort(function(a,b) {
-            a = a.pfx + a.doc.title;
-            b = b.pfx + b.doc.title;
-            if(a<b) return -1;
-            else
-            if(a>b) return +1;
-            else
+      var x = methods[mname].sort(function (a, b) {
+        a = a.pfx + a.doc.title;
+        b = b.pfx + b.doc.title;
+        if (a < b) return -1;
+        else
+          if (a > b) return +1;
+          else
             return 0;
-    });
+      });
 
-    for(var i=0;i<x.length;i++) {
+      for (var i = 0; i < x.length; i++) {
         var m = x[i];
         var v = m.doc;
 
@@ -78,184 +79,187 @@ function showMethod(mname, node) {
         div.appendChild(div2);
 
         var p = m.pfx;
-        if(p==".") p=" ";
-        div2.appendChild(document.createTextNode(p+" "));
+        if (p == ".") p = " ";
+        div2.appendChild(document.createTextNode(p + " "));
         var a = document.createElement("a");
-        a.setAttribute("href",helpRoot+"/"+v.path+".html#"+m.pfx+mname);
+        a.setAttribute("href", helpRoot + "/" + v.path + ".html#" + m.pfx + mname);
         a.innerHTML = v.title;
-        if(m.undoc)
-            a.className = "undoc";
+        if (m.undoc)
+          a.className = "undoc";
         div2.appendChild(a);
-        div2.appendChild(document.createTextNode(" - "+v.summary+" "));
+        div2.appendChild(document.createTextNode(" - " + v.summary + " "));
         var n = document.createElement("span");
         n.className = "soft";
-        var res = "["+v.path.split("/")[0];
-        if(v.installed=="extension")
-            res += " +";
-        else if(v.installed=="missing")
-            res += " - missing!";
-        n.innerHTML = res+"]";
+        var res = "[" + v.path.split("/")[0];
+        if (v.installed == "extension")
+          res += " +";
+        else if (v.installed == "missing")
+          res += " - missing!";
+        n.innerHTML = res + "]";
         div2.appendChild(n);
 
-        if(v.path=="Classes/Object") {
-            var n = document.createElement("div");
-            n.className = "met_subclasses";
-            n.appendChild(document.createTextNode("Inherited by: All classes"));
-            div2.appendChild(n);
+        if (v.path == "Classes/Object") {
+          var n = document.createElement("div");
+          n.className = "met_subclasses";
+          n.appendChild(document.createTextNode("Inherited by: All classes"));
+          div2.appendChild(n);
         } else {
-            if(v.subclasses && v.subclasses.length>0) {
-                var n;
-                if(subclassCache[v.path]) {
-                    n = subclassCache[v.path].cloneNode(true);
-                } else {
-                    var subs = getSubClasses(v);
-                    n = document.createElement("div");
-                    var m = n;
-                    n.className = "met_subclasses";
-                    n.appendChild(document.createTextNode("Inherited by: "));
-                    for(var j=0;j<subs.length;j++) {
-                        var a = document.createElement("a");
-                        a.setAttribute("href", helpRoot+"/Classes/"+subs[j]+".html");
-                        if(j==10 && subs.length > 14) {
-                            m = document.createElement("span");
-                            m.className = "hiddenspan";
-                            m.style.display = "none";
-                            n.appendChild(m);
-                            var a2 = document.createElement("a");
-                            a2.setAttribute("href","#");
-                            a2.className = "seemore";
-                            a2.innerHTML = "&hellip; see "+(subs.length-10)+" more";
-                            n.appendChild(document.createTextNode(" "));
-                            n.appendChild(a2);
-                        }
-                        if(j>0)
-                            m.appendChild(document.createTextNode(", "));
-                        a.innerHTML = subs[j];
-                        m.appendChild(a);
-                    }
-                    subclassCache[v.path] = n;
+          if (v.subclasses && v.subclasses.length > 0) {
+            var n;
+            if (subclassCache[v.path]) {
+              n = subclassCache[v.path].cloneNode(true);
+            } else {
+              var subs = getSubClasses(v);
+              n = document.createElement("div");
+              var m = n;
+              n.className = "met_subclasses";
+              n.appendChild(document.createTextNode("Inherited by: "));
+              for (var j = 0; j < subs.length; j++) {
+                var a = document.createElement("a");
+                a.setAttribute("href", helpRoot + "/Classes/" + subs[j] + ".html");
+                if (j == 10 && subs.length > 14) {
+                  m = document.createElement("span");
+                  m.className = "hiddenspan";
+                  m.style.display = "none";
+                  n.appendChild(m);
+                  var a2 = document.createElement("a");
+                  a2.setAttribute("href", "#");
+                  a2.className = "seemore";
+                  a2.innerHTML = "&hellip; see " + (subs.length - 10) + " more";
+                  n.appendChild(document.createTextNode(" "));
+                  n.appendChild(a2);
                 }
-                (function() {
-                    var a = n.getElementsByClassName("seemore")[0];
-                    if(a) {
-                        var m = n.getElementsByClassName("hiddenspan")[0];
-                        a.onclick = function() {
-                            m.style.display = "";
-                            a.parentNode.removeChild(a);
-                            return false;
-                        }
-                    }
-                })();
-                div2.appendChild(n);
+                if (j > 0)
+                  m.appendChild(document.createTextNode(", "));
+                a.innerHTML = subs[j];
+                m.appendChild(a);
+              }
+              subclassCache[v.path] = n;
             }
+            (function () {
+              var a = n.getElementsByClassName("seemore")[0];
+              if (a) {
+                var m = n.getElementsByClassName("hiddenspan")[0];
+                a.onclick = function () {
+                  m.style.display = "";
+                  a.parentNode.removeChild(a);
+                  return false;
+                }
+              }
+            })();
+            div2.appendChild(n);
+          }
         }
+      }
+
+      node.appendChild(div);
     }
 
-    node.appendChild(div);
-}
+    function did_load() {
+      var hash = unescape(window.location.hash.slice(1));
 
-function did_load() {
-    var hash = unescape(window.location.hash.slice(1));
+      helpRoot = ".."; fixTOC();
 
-    helpRoot=".."; fixTOC();
+      buildMethodList();
 
-    buildMethodList();
+      showmethods();
+    }
 
-    showmethods();
-}
+    function showmethods() {
+      var hash = unescape(window.location.hash.slice(1));
+      var res = document.getElementById("methods");
+      res.innerHTML = "";
 
-function showmethods() {
-    var hash = unescape(window.location.hash.slice(1));
-    var res = document.getElementById("methods");
-    res.innerHTML = "";
-
-    var section = undefined;
-    if(/^section_/.test(hash))
+      var section = undefined;
+      if (/^section_/.test(hash))
         section = hash[8];
-    else if(hash) {
+      else if (hash) {
         var div = document.createElement("p");
         div.className = "searchlink";
         div.appendChild(document.createTextNode("Do you want to "));
         var a = document.createElement("a");
-        a.setAttribute("href","../Search.html#"+hash);
-        a.appendChild(document.createTextNode("search for '"+hash+"'"));
+        a.setAttribute("href", "../Search.html#" + hash);
+        a.appendChild(document.createTextNode("search for '" + hash + "'"));
         div.appendChild(a);
         div.appendChild(document.createTextNode(" instead?"));
         res.appendChild(div);
         document.getElementById("total_count").innerHTML = "Showing single method:";
         document.getElementById("method_note").innerHTML = "";
-        if(methods[hash]) {
-            showMethod(hash,res);
-            return;
+        if (methods[hash]) {
+          showMethod(hash, res);
+          return;
         }
         var div = document.createElement("p");
-        div.appendChild(document.createTextNode("Method not found: "+hash));
+        div.appendChild(document.createTextNode("Method not found: " + hash));
         res.appendChild(div);
-        window.location = "../Search.html#"+hash;
+        window.location = "../Search.html#" + hash;
         return;
-    }
+      }
 
-    var cap = undefined;
-    var div = document.createElement("p");
-    div.className = "jump";
-    div.innerHTML = "Show section: ";
+      var cap = undefined;
+      var div = document.createElement("p");
+      div.className = "jump";
+      div.innerHTML = "Show section: ";
 
-    var mets = [];
-    for(var k in methods) {
+      var mets = [];
+      for (var k in methods) {
         mets.push(k);
-    }
-    mets = mets.sort();
+      }
+      mets = mets.sort();
 
-    for(var i=0;i<mets.length;i++) {
+      for (var i = 0; i < mets.length; i++) {
         var k = mets[i];
-        if(cap != k[0]) {
-            cap = k[0];
-            if(section == undefined)
-                section = cap;
-            var a = document.createElement("a");
-            a.setAttribute("href","#section_"+cap);
-            a.innerHTML=cap.toUpperCase();
-            div.appendChild(a);
-            div.appendChild(document.createTextNode(" "));
+        if (cap != k[0]) {
+          cap = k[0];
+          if (section == undefined)
+            section = cap;
+          var a = document.createElement("a");
+          a.setAttribute("href", "#section_" + cap);
+          a.innerHTML = cap.toUpperCase();
+          div.appendChild(a);
+          div.appendChild(document.createTextNode(" "));
         }
-    }
-    res.appendChild(div);
+      }
+      res.appendChild(div);
 
-    var x = document.createElement("h2");
-    x.innerHTML = section.toUpperCase();
-    res.appendChild(x);
+      var x = document.createElement("h2");
+      x.innerHTML = section.toUpperCase();
+      res.appendChild(x);
 
-    var count = 0;
-    for(var i = 0; i<mets.length;i++) {
+      var count = 0;
+      for (var i = 0; i < mets.length; i++) {
         var k = mets[i];
-        if(k[0]==section) {
-            showMethod(k, res);
-            count++;
+        if (k[0] == section) {
+          showMethod(k, res);
+          count++;
         }
-    }
-    document.getElementById("total_count").innerHTML = count + " methods (" + mets.length + " total)";
+      }
+      document.getElementById("total_count").innerHTML = count + " methods (" + mets.length + " total)";
 
-}
-window.onhashchange = showmethods;
-</script>
+    }
+    window.onhashchange = showmethods;
+  </script>
 
 </head>
-<body onload="did_load()">
-<div class='contents'>
-<div id="menubar"></div>
-<div class='header'>
-    <div id='label'><span id='folder'>Overviews</span></div>
-    <h1>Methods</h1>
-    <div id='summary'>Alphabetical index of all methods</div>
-</div>
-<div id="total_count"></div>
-<div id='methods'>
-    Generating method index, please wait...
-</div>
-<div id='method_note'>
-You can show a specific method by appending '#NAME' to this page url, where NAME is the name of the method.
-</div>
-</div>
-</body>
-</html>
 
+<body onload="did_load()">
+  <div class='contents'>
+    <div id="menubar"></div>
+    <div class='header'>
+      <div id='label'>
+        <span id='folder'>Overviews</span>
+      </div>
+      <h1>Methods</h1>
+      <div id='summary'>Alphabetical index of all methods</div>
+    </div>
+    <div id="total_count"></div>
+    <div id='methods'>
+      Generating method index, please wait...
+    </div>
+    <div id='method_note'>
+      You can show a specific method by appending '#NAME' to this page url, where NAME is the name of the method.
+    </div>
+  </div>
+</body>
+
+</html>
