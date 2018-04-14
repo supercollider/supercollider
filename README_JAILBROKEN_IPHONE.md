@@ -19,26 +19,26 @@ January 2011
 
  - Alternatively, you can also build a "fat" binary that contains builds for both architectures and "thin" it afterward:
 
-    cd into you SuperCollider.app directory and type
-    `lipo SuperCollider -thin [yourArchitecture] -output [newFileName]`
+	cd into you SuperCollider.app directory and type
+	`lipo SuperCollider -thin [yourArchitecture] -output [newFileName]`
 
-    Then replace the SuperCollider executable inside your app folder with the "thinned" one. Of course, you have to also name it SuperCollider. And I'm sure there's also a lipo command that automatically replaces the original file.
+	Then replace the SuperCollider executable inside your app folder with the "thinned" one. Of course, you have to also name it SuperCollider. And I'm sure there's also a lipo command that automatically replaces the original file.
 
 8. Get the App on the iDevice. You can either use Cyberduck or follow these directions: http://blog.paulbetts.org/index.php/2008/07/22/running-your-iphone-sdk-app-on-iphone-without-the-app-store
 
 9. Follow the instructions in the link above to code sign the app. That will be:
-    ```
-    $> chmod 755 /Applications/SuperCollider.app
-    $> ldid -S /Applications/SuperCollider.app/SuperCollider
-    ```
+	```
+	$> chmod 755 /Applications/SuperCollider.app
+	$> ldid -S /Applications/SuperCollider.app/SuperCollider
+	```
 
 10. Logout of your device and close SSH
 
 11. Restart the springboard:
-    ```
-    $> killall SpringBoard
-    ```
+	```
+	$> killall SpringBoard
+	```
 
-    - You can also tap respring in SBSettings
+	- You can also tap respring in SBSettings
 
 	If the codesigning has worked correctly (remember to only use non-fat binaries), (and if there's no cold wind blowing from the northwest) you can now start SuperCollider.app from the Springboard and take the world by storm.
