@@ -172,6 +172,20 @@ inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
 inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (slot)->uf = (val); }
 #endif
 
+template <typename numeric_type>
+inline void setSlotVal(PyrSlot * slot, numeric_type value);
+
+template <>
+inline void setSlotVal<int>(PyrSlot * slot, int value)
+{
+	SetInt(slot, value);
+}
+
+template <>
+inline void setSlotVal<double>(PyrSlot * slot, double value)
+{
+	SetFloat(slot, value);
+}
 
 inline bool IsObj(const PyrSlot* slot) { return ((slot)->utag == tagObj); }
 inline bool NotObj(const PyrSlot* slot) { return ((slot)->utag != tagObj); }

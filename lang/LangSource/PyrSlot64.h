@@ -129,6 +129,20 @@ inline void SetBool(PyrSlot* slot, bool test) { slot->tag = (test ? tagTrue : ta
 inline void SetNil(PyrSlot* slot)             { slot->tag = tagNil;                      slot->u.i = 0; }
 inline void SetFloat(PyrSlot* slot, double val)    { slot->tag = tagFloat; slot->u.f = val; }
 
+template <typename numeric_type>
+inline void setSlotVal(PyrSlot * slot, numeric_type value);
+
+template <>
+inline void setSlotVal<int>(PyrSlot * slot, int value)
+{
+	SetInt(slot, value);
+}
+
+template <>
+inline void setSlotVal<double>(PyrSlot * slot, double value)
+{
+	SetFloat(slot, value);
+}
 
 /* raw setter functions, no typecheck */
 inline void SetRawChar(PyrSlot* slot, int val)     { assert(IsChar(slot));  slot->u.c = val; }
@@ -158,21 +172,6 @@ inline int slotVal(PyrSlot * slot, numeric_type *value)
 		return errNone;
 	}
 	return errWrongType;
-}
-
-template <typename numeric_type>
-inline void setSlotVal(PyrSlot * slot, numeric_type value);
-
-template <>
-inline void setSlotVal<int>(PyrSlot * slot, int value)
-{
-	SetInt(slot, value);
-}
-
-template <>
-inline void setSlotVal<double>(PyrSlot * slot, double value)
-{
-	SetFloat(slot, value);
 }
 
 inline int slotFloatVal(PyrSlot *slot, float *value)
