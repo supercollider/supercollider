@@ -62,20 +62,20 @@ code::
 
 (
 {
-    z = WhiteNoise.ar(0.2);
-    z + AllpassN.ar(z, 0.01, XLine.kr(0.0001, 0.01, 20), 0.2)
+	z = WhiteNoise.ar(0.2);
+	z + AllpassN.ar(z, 0.01, XLine.kr(0.0001, 0.01, 20), 0.2)
 }.play)
 
 (
 {
-    z = WhiteNoise.ar(0.2);
-    z + AllpassL.ar(z, 0.01, XLine.kr(0.0001, 0.01, 20), 0.2)
+	z = WhiteNoise.ar(0.2);
+	z + AllpassL.ar(z, 0.01, XLine.kr(0.0001, 0.01, 20), 0.2)
 }.play)
 
 (
 {
-    z = WhiteNoise.ar(0.2);
-    z + AllpassC.ar(z, 0.01, XLine.kr(0.0001, 0.01, 20), 0.2)
+	z = WhiteNoise.ar(0.2);
+	z + AllpassC.ar(z, 0.01, XLine.kr(0.0001, 0.01, 20), 0.2)
 }.play)
 
 
