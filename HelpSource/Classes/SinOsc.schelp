@@ -8,8 +8,8 @@ Description::
 
 Generates a sine wave.
 Uses a wavetable lookup oscillator with linear interpolation.
-Frequency and phase modulation are provided for audio-rate modulation.
-Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
+Frequency and phase modulation is provided for audio-rate modulation.
+Technically, code::SinOsc:: uses the same implementation as a link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
 
 subsection:: Other sinewaves oscillators
 
@@ -36,7 +36,7 @@ Sampled at audio-rate.
 note::phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.::
 
 argument::mul
-Output will be multiplied by this value.
+The output will be multiplied by this value.
 
 argument::add
 This value will be added to the output.
@@ -60,4 +60,3 @@ code::
 { SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;
 
 ::
-
