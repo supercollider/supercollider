@@ -25,6 +25,12 @@
 #include "../../Common.h"
 #include "../../QcHelper.h"
 
+// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
+// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
+#ifdef _WIN32
+#  include <windows.h>
+#  define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#endif // _WIN32
 #include <sndfile.h>
 
 #include <QVBoxLayout>
