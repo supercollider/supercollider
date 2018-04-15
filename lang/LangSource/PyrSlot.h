@@ -60,4 +60,18 @@ int slotStrLen(PyrSlot *slot);
 int slotPStrVal(PyrSlot *slot, unsigned char *str);
 int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol);
 
+template <typename numeric_type>
+inline void setSlotVal(PyrSlot * slot, numeric_type value);
+
+template <>
+inline void setSlotVal<int>(PyrSlot * slot, int value)
+{
+	SetInt(slot, value);
+}
+
+template <>
+inline void setSlotVal<double>(PyrSlot * slot, double value)
+{
+	SetFloat(slot, value);
+}
 #endif
