@@ -72,6 +72,7 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( float gridOffset READ gridOffset WRITE setGridOffset );
   Q_PROPERTY( float gridResolution READ gridResolution WRITE setGridResolution );
   Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
+  Q_PROPERTY( bool drawsRMS READ drawsRMS WRITE setDrawsRMS );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_PROPERTY( QColor peakColor READ peakColor WRITE setPeakColor );
   Q_PROPERTY( QColor rmsColor READ rmsColor WRITE setRmsColor );
@@ -151,6 +152,8 @@ public:
 
   bool drawsWaveform() const { return _drawWaveform; }
   void setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
+  bool drawsRMS() const { return _drawRMS; }
+  void setDrawsRMS( bool b ) { _drawRMS = b; redraw(); }
   QVariantList waveColors() const;
   void setWaveColors( const QVariantList & );
 
@@ -258,6 +261,7 @@ private:
   QColor _gridColor;
   bool dirty;
   bool _drawWaveform;
+  bool _drawRMS;
   QList<QColor> _waveColors;
 
   // interaction

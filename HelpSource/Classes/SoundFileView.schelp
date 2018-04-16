@@ -443,6 +443,13 @@ METHOD:: drawsWaveForm
     argument::
         A Boolean.
 
+METHOD:: drawsRMS
+
+    Whether the RMS data for the waveform is displayed. Defaults to code::true::.
+
+    argument::
+        A Boolean.
+
 METHOD:: timeCursorOn
 
     Whether the time cursor is displayed. Defaults to code::false::.

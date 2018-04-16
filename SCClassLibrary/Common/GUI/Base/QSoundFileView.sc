@@ -64,8 +64,10 @@ SoundFileView : View {
 	}
 
 	drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
-
 	drawsWaveForm_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
+
+	drawsRMS { ^this.getProperty( \drawsRMS ); }
+	drawsRMS_ { arg boolean; this.setProperty( \drawsRMS, boolean ); }
 
 	waveColors { ^this.getProperty( \waveColors ) }
 	waveColors_ { arg colors; this.setProperty( \waveColors, colors ) }

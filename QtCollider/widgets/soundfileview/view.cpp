@@ -67,7 +67,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _cursorColor( QColor(255,0,0) ),
   _gridColor( QColor(100,100,200) ),
   dirty(false),
-  _drawWaveform(true)
+  _drawWaveform(true),
+  _drawRMS(true)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
 
@@ -797,7 +798,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
           p.setPen( minMaxPen );
           p.drawLine( QPointF(x + i, min), QPointF(x + i, max));
 
-          if( rmsAlpha > 0 && minMaxPxDiff > 4 ) { //only draw RMS when there's some vertical space
+          if( _drawRMS && rmsAlpha > 0 && minMaxPxDiff > 4 ) {
             if( _fpp > _rmsMaxFpp ) {
               p.setPen( rmsPen );
               p.drawLine( QPointF(x + i, minRMS[i]), QPointF(x + i, maxRMS[i]));
