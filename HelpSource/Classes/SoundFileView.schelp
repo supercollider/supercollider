@@ -408,6 +408,29 @@ METHOD:: readSelectionWithTask
 
 SUBSECTION:: Display
 
+METHOD:: peakColor
+
+    The color of the peak-to-peak data. This can be overridden by link::#-waveColors::.
+
+    argument::
+        A code::Color::.
+
+METHOD:: rmsColor
+
+    The color of the RMS data.
+
+    argument::
+        A code::Color::.
+
+METHOD:: waveColors
+
+    An array of colors for the peak-to-peak data for each channel, allowing each channel to be represented by a different color. It overrides link::#-peakColor::. In order to revert to using code::.peakColor::, set code::.waveColors:: to an empty array: code::.waveColors_([])::.
+
+    note::link::#-rmsColor:: stays the same for all channels. However, using alpha blending, it is possible to display RMS data using either a lighter (e.g. code::.rmsColor_(Color.grey(1, 0.3))::) or a darker (e.g. code::.rmsColor_(Color.grey(0, 0.3))::) shade of the peak-to-peak color.::
+
+    argument::
+        And array of code::[Color]::.
+
 METHOD:: gridOn
 
     Whether the grid is displayed. Defaults to code::true::.
