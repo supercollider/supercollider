@@ -833,7 +833,8 @@ x.free; b.free;
 
 method:: query
 Sends a b_query message to the server, asking for a description of this buffer. The results are posted to the post window. Does not update instance vars.
-
+argument:: action
+An optional Function to be evaluated which will be passed the buffer's information as argument. Providing a function here will bypass this method's normal behaviour. A description of the buffer will not be posted.
 method:: updateInfo
 Sends a b_query message to the server, asking for a description of this buffer. Upon reply this Buffer's instance variables are automatically updated.
 argument:: action
