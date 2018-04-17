@@ -4,7 +4,7 @@ TestQuery : UnitTest {
 
 	setUp {
 
-		server = Server.default;
+		server = Server(this.class.name);
 		this.bootServer(server);
 
 	}
@@ -12,7 +12,7 @@ TestQuery : UnitTest {
 	tearDown {
 
 		Buffer.freeAll;
-		server.quit;
+		server.quit.remove;
 
 	}
 
