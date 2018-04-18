@@ -100,6 +100,8 @@ public:
 
     virtual float get(slot_index_t slot_id) const = 0;
 
+    virtual bool getMappedSymbol(slot_index_t slot_id, char * str) const = 0;
+
     /** set a slot */
     /* @{ */
     virtual void set(slot_index_t slot_id, float val) override = 0;
