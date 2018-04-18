@@ -18,6 +18,11 @@ public:
         return 0.f;
     }
 
+    virtual bool getMappedSymbol(slot_index_t slot_id, char * str) const
+    {
+        return false;
+    }
+
     virtual void set(slot_index_t slot_id, sample val)
     {}
 
