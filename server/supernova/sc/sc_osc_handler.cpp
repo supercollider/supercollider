@@ -1588,6 +1588,7 @@ void dump_controls(rt_string_stream & stream, abstract_synth const & synth, int 
     const size_t number_of_slots = synth.number_of_slots();
 
     bool eol_pending = false;
+    char str[10];
 
     for (size_t control_index = 0; control_index != number_of_slots; ++control_index) {
         const char * name_of_slot = synth.name_of_slot(control_index);
@@ -1604,7 +1605,10 @@ void dump_controls(rt_string_stream & stream, abstract_synth const & synth, int 
         } else
             stream << ", ";
 
-        stream << synth.get(control_index); /*FIXME: this seems not to check for mapped controls*/
+        if (synth.getMappedSymbol(control_index, str))
+            stream << str;
+        else
+            stream << synth.get(control_index);
     }
     if (eol_pending)
         stream << endl;
