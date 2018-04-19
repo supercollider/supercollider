@@ -288,7 +288,7 @@ static bool set_realtime_priority(int thread_index)
 #endif
 
         if (success){
-			std::cout << "setting thread priority " << priority << std::endl;
+			//std::cout << "setting thread priority " << priority << std::endl;
             success = thread_set_priority_rt(priority);
 		}
 #endif
