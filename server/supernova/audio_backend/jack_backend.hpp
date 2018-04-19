@@ -23,10 +23,10 @@
 #include <string>
 #include <vector>
 
-/*
+
 #ifdef _WIN32
-#define PTHREAD_WIN32
-#endif*/
+#define _PTHREAD_H
+#endif
 
 #include <jack/jack.h>
 #include <jack/thread.h>
@@ -275,7 +275,7 @@ private:
     {
         std::atomic_thread_fence(std::memory_order_acquire);
         jack_backend * self = static_cast<jack_backend*>(arg);
-        if (int(jack_client_thread_id(self->client)) == pthread_self())
+        if (jack_client_thread_id(self->client) == pthread_self())
             engine_functor::init_thread();
         else
             name_thread("Jack Helper");
