@@ -25,7 +25,7 @@ If the trigger is audio rate then the grains will start with
 sample accuracy.
 
 argument::bufnum
-The index of the buffer to use. It must be one channel (mono)
+The index of the buffer to use. It must be a one channel (mono)
 buffer.
 
 argument::rate
