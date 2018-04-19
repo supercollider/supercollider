@@ -200,7 +200,7 @@ struct movable_array
         data_   = rhs.data_;
 
         rhs.data_ = nullptr;
-        
+
         return *this;
     }
 
@@ -1488,22 +1488,9 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
                 else
                     p << osc::int32(i);
 
-                // analogous place in scsynth: SC_Group.cpp: void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
-                if (scsynth.mMapControls[i] != (scsynth.mControls+i)) {
-                    /* we use a bus mapping */
-                    int bus;
-                    char str[10];
-
-                    if (scsynth.mControlRates[i] == 2) {
-                        bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mAudioBus);
-                        bus = (int)((float)bus / scsynth.mNode.mWorld->mBufLength);
-                        sprintf(str, "%c%d", 'a', bus);
-                    } else {
-                        bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mControlBus);
-                        sprintf(str, "%c%d", 'c', bus);
-                    };
+                char str[10];
+                if (scsynth.getMappedSymbol(i, str))
                     p << str;
-                }
                 else
                     p << scsynth.mControls[i];
             }
@@ -1588,7 +1575,6 @@ void dump_controls(rt_string_stream & stream, abstract_synth const & synth, int 
     const size_t number_of_slots = synth.number_of_slots();
 
     bool eol_pending = false;
-    char str[10];
 
     for (size_t control_index = 0; control_index != number_of_slots; ++control_index) {
         const char * name_of_slot = synth.name_of_slot(control_index);
@@ -1605,6 +1591,7 @@ void dump_controls(rt_string_stream & stream, abstract_synth const & synth, int 
         } else
             stream << ", ";
 
+        char str[10];
         if (synth.getMappedSymbol(control_index, str))
             stream << str;
         else
