@@ -350,8 +350,8 @@ void realtime_engine_functor::init_thread(void)
     set_daz_ftz();
 
 #ifndef __APPLE__
-    //if (!thread_set_affinity(0))
-    //    std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+    if (!thread_set_affinity(0))
+        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
 #endif
 
 #ifdef JACK_BACKEND
