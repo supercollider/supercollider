@@ -84,10 +84,10 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
-    if(NOT MSYS AND (AUDIOAPI STREQUAL portaudio))
+    if(NOT MSYS) # AND (AUDIOAPI STREQUAL portaudio))
       set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
       add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
-    endif(NOT MSYS AND (AUDIOAPI STREQUAL portaudio))
+    endif(NOT MSYS) #AND (AUDIOAPI STREQUAL portaudio))
 endif(WIN32)
 
 #############################################
