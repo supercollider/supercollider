@@ -61,7 +61,7 @@ code::
 (
 {
     var freqs, mix;
-    freqs = [56, 59, 63, 64, 72, 84].midicps;
+    freqs = [34, 46, 52, 56, 59, 63, 64, 72, 86, 98].midicps;
 
     mix = 0.25 * Mix.arFill(freqs.size, {|i|
         var freq;
