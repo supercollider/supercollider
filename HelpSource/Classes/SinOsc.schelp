@@ -75,7 +75,7 @@ code::
         ]
     });
 
-    Out.ar(0, GVerb.ar(mix * Blip.kr(rrand(0.01, 0.1)), rrand(1, 300), rrand(1, 30), 0.55, 0.51, 15, -24, -46, -40, mul:0.03));
+    Out.ar(0, GVerb.ar(mix * Blip.kr(rrand(0.01, 0.1)), rrand(1, 300), rrand(1, 30), 0.55, 0.51, 15, -24, -46, -40, mul:0.006));
 }.scope;
 )
 
