@@ -2819,7 +2819,7 @@ static inline bool EnvGen_nextSegment(EnvGen * unit, int & counter, double & lev
 {
 	if (unit->m_stage == ENVGEN_NOT_STARTED) { 
 		counter = INT_MAX;
-		 return true;
+		return true;
 	}
 
 	//Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
