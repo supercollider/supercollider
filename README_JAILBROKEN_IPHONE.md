@@ -3,7 +3,7 @@ Installing SuperCollider in a Jailbroken iDevice
 
 January 2011
 
-1. Jailbreak your iDevice (both blackrain on iphone and redsn0w for iOS 4.1 on 2nd gen iPod Touch are reported to work)
+1. Jailbreak your iDevice (both blackrain on iPhone and redsn0w for iOS 4.1 on 2nd gen iPod Touch are reported to work)
 
 2. Install OpenSSH and ldid from Cydia. You probably also want to install SBSettings for a convenient way to among other things switch SSH on and off. It's a must-have app for jailbroken iDevices. You should have SSH turned off at all times except when you really need it
 
@@ -13,11 +13,11 @@ January 2011
 
 5. Disable code signing. For sdk 3.0 and above you need to disable code signing by editing the file `/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS3.0.sdk/SDKSettings.plist`. Follow the instructions at http://thebigboss.org/hosting-repository/submit-your-app/compile-for-cydia-submission
 
-6. Open the iphone xcode projects,  in the project and in the SuperCollider target settings -> build, set code signing to “Don’t code sign”.
+6. Open the iPhone Xcode projects,  in the project and in the SuperCollider target settings -> build, set code signing to “Don’t code sign”.
 
 7. Find the architecture settings also in the build tab of the project's and the targets SuperCollider info window and set it to the architecture of the device your iDevice (armv6 or armv7)
 
- - Alternatively, you can also build a "fat" binary that contains builds for both architectures and "thin" it afterwards:
+ - Alternatively, you can also build a "fat" binary that contains builds for both architectures and "thin" it afterward:
 
 	cd into you SuperCollider.app directory and type
 	`lipo SuperCollider -thin [yourArchitecture] -output [newFileName]`
