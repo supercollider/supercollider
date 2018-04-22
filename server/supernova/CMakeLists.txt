@@ -106,7 +106,7 @@ else()
   endif()
 endif()
 
-if((APPLE OR MSYS) AND (AUDIOAPI STREQUAL portaudio))
+if(APPLE OR (MSYS AND (AUDIOAPI STREQUAL portaudio)))
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
         message(FATAL_ERROR "Portaudio missing")
