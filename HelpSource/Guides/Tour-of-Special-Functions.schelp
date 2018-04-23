@@ -42,11 +42,7 @@ getPlotLay = { |plot, text|
 		params = [0];
 		samps = data;
 		samps.collect({ |smp|
-			if (func.isKindOf(Symbol)) {
-				smp.perform(func)
-			}{
-				func.(smp)
-			}
+			func.applyTo(smp)
 		}).select({|me| me.notNil})
 	}
 	{ // 2D data
@@ -54,11 +50,7 @@ getPlotLay = { |plot, text|
 		txt = txt ++ params.asString;
 		params.collect({ |param, i|
 			samps.collect({ |smp|
-				if (func.isKindOf(Symbol)) {
-					param.perform(func, smp, i)
-				}{
-					func.(param, smp, i)
-				}
+				func.applyTo(param, smp, i)
 			}).select({|me| me.notNil})
 		});
 	};
