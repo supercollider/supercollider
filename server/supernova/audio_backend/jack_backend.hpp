@@ -24,10 +24,6 @@
 #include <vector>
 
 
-#ifdef _WIN32
-#define _PTHREAD_H
-#endif
-
 #include <jack/jack.h>
 #include <jack/thread.h>
 #ifdef SC_JACK_USE_METADATA_API
@@ -275,7 +271,11 @@ private:
     {
         std::atomic_thread_fence(std::memory_order_acquire);
         jack_backend * self = static_cast<jack_backend*>(arg);
+#ifdef _WIN32
+        if (jack_client_thread_id(self->client) == GetCurrentThread())
+#else
         if (jack_client_thread_id(self->client) == pthread_self())
+#endif
             engine_functor::init_thread();
         else
             name_thread("Jack Helper");
