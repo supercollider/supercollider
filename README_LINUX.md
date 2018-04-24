@@ -213,7 +213,7 @@ Building a Debian package
 -------------------------
 
 The most up-to-date Debian packaging rules are maintained by the
-debian Multimedia team. Repository (with debian/ folder):
+Debian Multimedia team. Repository (with debian/ folder):
 
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 
