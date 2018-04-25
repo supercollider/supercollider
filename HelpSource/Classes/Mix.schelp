@@ -56,5 +56,19 @@ play({
 	Mix.fill(8, { SinOsc.ar(500 + 500.0.rand, 0, 0.05) });
 }))
 
+(
+{
+	var sound=Mix.fill(n: rrand(1, 4), 
+		function: {[Pulse.ar(freq: 4400*4, 
+			width: WhiteNoise.ar(1), 
+			mul: Blip.ar([rrand(0.01, 30), 
+			rrand(0.01, 30)])
+			)]}
+		); 
+	var rev=GVerb.ar(in: sound); 
+	Out.ar(bus: 0, channelsArray: sound+(rev * 0.06));
+}.scope;
+)
+
 ::
 
