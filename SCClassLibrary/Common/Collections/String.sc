@@ -449,6 +449,8 @@ String[char] : RawArray {
 			^PathName(this +/+ path.fullPath)
 		};
 
+		// convert to string before concatenation.
+		path = path.asString;
 		hasLeftSep = this.notEmpty and: { this.last.isPathSeparator };
 		hasRightSep = path.notEmpty and: { path.first.isPathSeparator };
 		if(hasLeftSep && hasRightSep) {

@@ -283,16 +283,18 @@ system. The strings are joined to avoid duplicate path separators.
 If code::this:: ends with a path separator and code::path:: begins with one, then the separator
 in code::path:: is dropped. If there is a path separator on either side, this has the same effect as
 using code::++::. If neither side has a path separator, the platform's preferred separator
-(code::\\:: on Windows, code::/:: otherwise) is added.
+('\' on Windows, '/' otherwise) is added.
 
-If code::path:: is a link::Classes/PathName::, the result will be a PathName.
+Returns code::this:: and code::path:: concatenated. If code::path:: was a PathName, the result is a
+PathName; otherwise, it is a String.
 
 argument::path
 
-Either a String or link::Classes/PathName::.
+Any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
+link::Classes/PathName::.
 
 code::
-// On Windows, this produces "foo\\\\bar"; on other platforms, "foo/bar"
+// On Windows, this produces "foo\\bar"; on other platforms, "foo/bar"
 "foo" +/+ "bar"
 
 // On all platforms, this produces "foo/bar": +/+ prefers using an existing separator
@@ -300,8 +302,11 @@ code::
 "foo" +/+ "/bar"
 "foo/" +/+ "/bar"
 
-// On Windows, this produces "foo\\\\bar"; on other platforms, "foo/\\\\bar"
-"foo" +/+ "\\\\bar"
+// On Windows, this produces "foo\\bar"; on other platforms, "foo/\\bar"
+"foo" +/+ "\\bar"
+
+// Concatenating a symbol is also OK
+"foo" +/+ 'bar'
 ::
 
 method::catArgs
