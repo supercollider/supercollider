@@ -88,5 +88,11 @@ TestString : UnitTest {
 		this.assertEquals(result.fullPath, expected.fullPath);
 	}
 
+	// should work with symbols too for backward compatibility
+	test_appendPathSep_stringWithSymbol_producesString {
+		var sep = thisProcess.platform.pathSeparator.asString;
+		this.assertEquals("dir" +/+ 'file', "dir%file".format(sep));
+	}
+
 }
 
