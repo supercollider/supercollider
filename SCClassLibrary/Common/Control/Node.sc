@@ -145,11 +145,12 @@ Node {
 		action = action ?? {
 			{ |cmd, argnodeID, parent, prev, next, isGroup, head, tail|
 				var group = isGroup == 1;
-				(
-					if(group, "Group: ", "Synth: ") ++ "%\nParent: %\nPrev: %\nNext: %\n" ++ if(group, "Head: %\nTail: %\n\n", "\n")
-				).format(
+				postf(
+					if(group, "Group: ", "Synth: ")
+						++ "%\nParent: %\nPrev: %\nNext: %\n"
+						++ if(group, "Head: %\nTail: %\n\n", "\n"),
 					argnodeID, parent, prev, next, head, tail
-				).postln
+				);
 			}
 		};
 		OSCFunc({ |msg|
