@@ -78,7 +78,7 @@ TestQuery : UnitTest {
 		nodes.do { |node| node.query({ |...args| responses.add(args[1]) }) };
 		server.sync;
 
-		this.assertEquals(responses, nodeIDs, "All requested buffers must be queried");
+		this.assertEquals(responses, nodeIDs, "All requested nodes must be queried");
 
 	}
 
