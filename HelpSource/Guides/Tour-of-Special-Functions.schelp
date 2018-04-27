@@ -35,30 +35,28 @@ getPlotLay = { |plot, text|
 };
 
 ~multiPlot = { |func, data, txt, min, max|
-	var res, params, samps, pltr;
-	var gridcol = Color.gray.alpha_(0.3);
+	var res, params, samps, clumped, pltr;
+	var gridcol = Color.gray.alpha_(0.2);
 
-	res = if (data.shape.size == 1) { // 1D data
-		params = [0];
+	if (data.shape.size == 1) {
 		samps = data;
-		samps.collect({ |smp|
-			func.applyTo(smp)
-		}).select({|me| me.notNil})
-	}
-	{ // 2D data
+		clumped = data.asList.flop;
+	}{
 		#params, samps = data;
 		txt = txt ++ params.asString;
-		params.collect({ |param, i|
-			samps.collect({ |smp|
-				func.applyTo(param, smp, i)
-			}).select({|me| me.notNil})
-		});
+		clumped = params.collect{|param, i|
+			samps.collect([param, _, i])
+		}
 	};
+
+	res = clumped.collect({ |bundle, i|
+		bundle.collect(func.applyTo(*_)).select(_.notNil)
+	});
 
 	pltr = res.plot( txt, minval: min, maxval: max).superpose_(true);
 
 	pltr.plots[0]
-	.plotColor_(genCol.(params.size, rrand(0,1.0)))
+	.plotColor_(genCol.(params !? params.size ?? 1, rrand(0,1.0)))
 	.domainSpec_([samps.minItem, samps.maxItem].asSpec)
 	.gridColorX_(gridcol).gridColorY_(gridcol)
 	;
