@@ -1002,11 +1002,6 @@ here match closely with those found in the source library, as do argument names.
 Below you'll find descriptions of the functions and their bounds, but for
 visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
 
-note::The following methods are documented in the style of a generic function call
-rather than an instance method. That is to say, the style shown here
-suggests the usage: code::foo(a, b)::, though the method could equivalently
-be called by: code::a.foo(b)::::
-
 warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
 happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
 a useful message at the end of the error regarding proper ranges and the erroneous value supplied.

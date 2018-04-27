@@ -675,14 +675,13 @@ Below you'll find descriptions of the functions and their bounds, but for
 visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
 
 note::The following methods are documented slightly clearer in
-link::Classes/SimpleNumber#Special Functions:: on account of the help formatting.
-There you'll find the methods documented in the style of a generic function calls
-rather than an instance method. The style shown here misleadingly shows
-methods with a preceding code::.:: but should be read to suggests the usage:
-code::foo([a], [b])::. These methods could equivalently be called by:
-code::[a].foo([b]):: Also, those methods with only one argument do not show that
-argument in the method name below, which is implicitly each element passed in
-from the collection, e.g. code::foo([a]):: or code::[a].foo::.::
+link::Classes/SimpleNumber#Special Functions:: using functional notation.
+As of this writing, a bug in the help file formatting misleadingly documents
+the methods in receiver notation (methods preceded by code::.::), but should
+be read to suggests the usage: code::foo([a], [b])::. The equivalent receiver
+notation is: code::[a].foo([b])::. Note that those methods with only one argument erroneously omit that
+argument from the argument list; each element in the collection is implicitly
+passed as the method's argument, e.g. code::foo([a]):: or code::[a].foo::::
 
 warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
 happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
