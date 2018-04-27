@@ -19,6 +19,7 @@
 */
 
 
+#include "SC_PrimRegistry.hpp"
 #include "PyrKernel.h"
 #include "PyrSched.h"
 #include "GC.h"
@@ -43,15 +44,15 @@
 # include <pthread.h>
 #endif
 
-
 #include "SC_Win32Utils.h"
 #include "SCBase.h"
 
 #include "SC_Lock.h"
 
-
 #include <boost/sync/semaphore.hpp>
 #include <boost/sync/support/std_chrono.hpp>
+
+LIBSCLANG_PRIMITIVE_GROUP( Sched );
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -972,8 +973,7 @@ void TempoClock::Dump()
 	post("mBaseBeats %g\n", mBaseBeats);
 }
 
-int prTempoClock_New(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_New, 4 )
 {
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
@@ -1005,8 +1005,7 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_Free, 1 )
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -1018,8 +1017,7 @@ int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_Clear, 1 )
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -1028,8 +1026,7 @@ int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_Dump, 1 )
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -1039,8 +1036,7 @@ int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_Tempo, 1 )
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -1054,8 +1050,7 @@ int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_BeatDur, 1 )
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -1069,8 +1064,7 @@ int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_ElapsedBeats, 1 )
 {
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -1084,8 +1078,7 @@ int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_Beats, 1 )
 {
 	PyrSlot *a = g->sp;
 	double beats, seconds;
@@ -1109,7 +1102,7 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_SetBeats, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -1134,8 +1127,7 @@ int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_Sched, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1171,8 +1163,7 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_SchedAbs, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1193,8 +1184,7 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_SetTempoAtBeat, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1228,8 +1218,7 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_SetAll, 4 )
 {
 	PyrSlot *a = g->sp - 3;
 	PyrSlot *b = g->sp - 2;
@@ -1257,8 +1246,7 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_SetTempoAtTime, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1284,8 +1272,7 @@ int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 
 
 
-int prTempoClock_BeatsToSecs(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_BeatsToSecs(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_BeatsToSecs, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -1305,8 +1292,7 @@ int prTempoClock_BeatsToSecs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed);
-int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( TempoClock_SecsToBeats, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -1327,8 +1313,7 @@ int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
-int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SystemClock_Clear, 1 )
 {
 	//PyrSlot *a = g->sp;
 
@@ -1337,8 +1322,7 @@ int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed);
-int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SystemClock_Sched, 3 )
 {
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1358,8 +1342,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed);
-int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SystemClock_SchedAbs, 3 )
 {
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1375,45 +1358,14 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ElapsedTime, 1 )
 {
 	SetFloat(g->sp, elapsedTime());
 	return errNone;
 }
 
-int prmonotonicClockTime(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( MonotonicClockTime, 1 )
 {
 	SetFloat(g->sp, monotonicClockTime());
 	return errNone;
-}
-
-void initSchedPrimitives()
-{
-	int base, index=0;
-
-	base = nextPrimitiveIndex();
-
-	definePrimitive(base, index++, "_TempoClock_New", prTempoClock_New, 4, 0);
-	definePrimitive(base, index++, "_TempoClock_Free", prTempoClock_Free, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_Clear", prTempoClock_Clear, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_Dump", prTempoClock_Dump, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_Sched", prTempoClock_Sched, 3, 0);
-	definePrimitive(base, index++, "_TempoClock_SchedAbs", prTempoClock_SchedAbs, 3, 0);
-	definePrimitive(base, index++, "_TempoClock_Tempo", prTempoClock_Tempo, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_BeatDur", prTempoClock_BeatDur, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_ElapsedBeats", prTempoClock_ElapsedBeats, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_Beats", prTempoClock_Beats, 1, 0);
-	definePrimitive(base, index++, "_TempoClock_SetBeats", prTempoClock_SetBeats, 2, 0);
-	definePrimitive(base, index++, "_TempoClock_SetTempoAtBeat", prTempoClock_SetTempoAtBeat, 3, 0);
-	definePrimitive(base, index++, "_TempoClock_SetTempoAtTime", prTempoClock_SetTempoAtTime, 3, 0);
-	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);
-	definePrimitive(base, index++, "_TempoClock_BeatsToSecs", prTempoClock_BeatsToSecs, 2, 0);
-	definePrimitive(base, index++, "_TempoClock_SecsToBeats", prTempoClock_SecsToBeats, 2, 0);
-
-	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
-	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);
-	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);
-
-	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
-    definePrimitive(base, index++, "_monotonicClockTime", prmonotonicClockTime, 1, 0);
 }

@@ -2,12 +2,12 @@ title:: Writing Primitives
 summary:: Writing Primitives
 categories:: Internals
 
-Although much of SuperCollider's functionality is implemented in the SuperCollider language itself, for reasons of efficiency, some functionality is implemented in 'back end' C++ functions called 'primitives'. This document provides guidance to members of the SC development community on writing primitives.
+Although much of SuperCollider's functionality is implemented in the SuperCollider language itself, for reasons of efficiency, some functionality is implemented in back end C++ functions called strong::primitives::. This document provides guidance to members of the SC development community on writing primitives.
 
 section:: Example
 subsection:: SuperCollider code
 
-Primitive calls are preceded with an underscore, so for example _myPrimitiveName. Here is an example call to a primitive in an SC class:
+Primitive calls are preceded with an underscore, so for example teletype::_MyPrimitiveName::. Here is an example call to a primitive in an SC class:
 
 code::
 Cocoa {
@@ -18,7 +18,7 @@ Cocoa {
 }
 ::
 
-In the example above the primitive is dispatched at _Cocoa_GetPathsDialog. If it is successful, it will return without executing the code below that. Primitive functions (see below) return an integer, which should be one of the values defined in the file PyrErrors.h:
+In the example above the primitive is dispatched at code::_Cocoa_GetPathsDialog::. If it is successful, it will return without executing the code below that. Primitive functions (see below) return an integer, which should be one of the values defined in the file PyrErrors.h:
 
 teletype::
 enum { // primitive errors
@@ -42,7 +42,7 @@ enum { // primitive errors
 };
 ::
 
-If your primitive can return any value besides code::errNone:: then you will need to provide handling code after the primitive call. In most cases this will be code::^this.primitiveFailed::. This will throw an Error giving the user information about what went wrong.
+If your primitive can return any value besides teletype::errNone:: then you will need to provide handling code after the primitive call. In most cases this will be code::^this.primitiveFailed::. This will throw an Error giving the user information about what went wrong.
 
 In some cases, you may wish to execute fallback SC code instead of throwing an Error. This can be useful in cases where for example a primitive provides an optimised version of a method which is not usable in all instances. Here is an example of how this can be done:
 
@@ -53,64 +53,39 @@ flop {
 }
 ::
 
-Note that returning anything besides errNone will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some preparatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
+Note that returning anything besides teletype::errNone:: will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some preparatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
 
 code::
 // do initial work here
-openUDPPort {|portNum|
+openUDPPort { |portNum|
 	var result;
-	if(openPorts.includes(portNum), {^true});
+	if(openPorts.includes(portNum)) { ^true };
 	result = this.prOpenUDPPort(portNum);
-	if(result, { openPorts = openPorts.add(portNum); });
-	^result;
+	if(result) { openPorts = openPorts.add(portNum) };
+	^result
 }
 
 // this method only calls the primitive, and throws any primitive errors
-prOpenUDPPort {|portNum|
+prOpenUDPPort { |portNum|
 	_OpenUDPPort
-	^this.primitiveFailed;
+	^this.primitiveFailed
 }
 ::
-
-subsection:: Define your primitive
-
-In your primitive source code define the primitive:
-
-teletype::
-void initCocoaFilePrimitives()
-{
-    int base, index;
-
-    base = nextPrimitiveIndex();
-    index = 0;
-
-    definePrimitive(base, index++, "_Cocoa_GetPathsDialog", prGetPathsDialog, 2, 0);
-    // further primitives can be laid in...
-    //definePrimitive(base, index++, "_Cocoa_SaveAsPlist", prSaveAsPlist, 3, 0);
-}
-::
-
-
-Here is the prototype for definePrimitive:
-
-teletype::
-int definePrimitive(int base, int index, char *name, PrimitiveHandler handler, int numArgs, int varArgs);
-::
-
-The numArgs is the number of arguments that were passed into the SuperCollider method that calls the primitive, plus one
-to include the receiver which is passed in as the first argument.
-
-(TODO varArgs ...)
 
 subsection:: Write your primitive
 
-teletype::g->sp:: is the top of the stack and is the last argument pushed.
-teletype::g->sp - inNumArgsPushed + 1 :: is the receiver and where the result goes.
+Use the macro teletype::SCLANG_DEFINE_PRIMITIVE( Foo, 3 ):: instead of a typical function signature.  This declares a C++ function teletype::prFoo::, a SuperCollider primitive teletype::_Foo::, and informs sclang that invoking the primitive teletype::_Foo:: will put 3 arguments on the virtual machine stack and then call teletype::prFoo::.
 
-In this example, the numArgsPushed will be 2 (as specified in definePrimitive)
+Inside your primitive, you will have access to two extra variables: teletype::g::, which is a pointer to the global virtual machine state, and teletype::numArgsPushed::, the number of arguments that were actually pushed to the stack before calling this primitive. This is typically only useful for variadic primitives (see below). Note that teletype::numArgsPushed:: also includes the receiver of the primitive message.
+
+teletype::g->sp:: is the top of the stack and is the last argument pushed.
+
+teletype::g->sp - numArgsPushed + 1 :: is the receiver and where the result goes.
+
+Here is an example with two arguments:
 
 teletype::
-int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( GetPathsDialog, 2 )
 {
     if (!g->canCallOS) return errCantCallOS; //if its deferred, does this matter ?
 
@@ -124,8 +99,38 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 ::
 
 This example does not set the receiver, so the primitive returns the original receiver unchanged (still an instance of
-Cocoa). Or set the object at teletype::receiver:: which again is at teletype::(g->sp - numArgsPushed + 1)::.
+Cocoa). To change this, we could set the receiver PyrSlot, which again is at teletype::(g->sp - numArgsPushed + 1)::.
 
+subsection:: Variadic primitives
+
+To write a variadic ("varArgs") primitive, use the macro teletype::SCLANG_DEFINE_VARARGS_PRIMITIVE( Name, Nargs )::. The second argument to this macro indicates how many arguments are expected at minimum; teletype::numArgsPushed:: will hold the actual number of arguments passed, including variadic arguments.
+
+subsection:: Related functionality
+
+Several other macros are defined in SC_PrimRegistry.hpp to ease the process of writing primitives. The macros teletype::SCLANG_DEFINE_SYMBOL:: and teletype::SCLANG_DEFINE_SYMBOL_SIMPLE:: can be used to create teletype::PyrSymbol:: pointers tied to specific keywords in sclang. This can be useful in performance-critical situations to avoid the slight overhead of a symbol table lookup.
+
+Typical usage looks like:
+
+teletype::
+#include "PrimRegistry.hpp"
+
+// Expands to `PyrSymbol * s_Foo;`. `s_Foo` is set to `getsym("Foo")` during interpreter startup.
+SCLANG_DEFINE_SYMBOL_SIMPLE( Foo );
+
+// A more verbose way to write the preceding example, mainly for legacy usage.
+SCLANG_DEFINE_SYMBOL( s_Bar, "Bar" );
+
+SCLANG_DEFINE_PRIMITIVE( UseFooBar, 2 )
+{
+	// primitive code that uses s_Foo and s_Bar
+}
+::
+
+teletype::SCLANG_DEFINE_SYMBOL:: is primarily available for the sake of older code; new code should prefer teletype::SCLANG_DEFINE_SYMBOL_SIMPLE::.
+
+The macro teletype::SCLANG_DEFINE_CUSTOM_INITIALIZER:: allows you to write a function that will run every time the interpreter starts up, after primitives and symbols have been initialized.
+
+Refer to the in-source documentation of teletype::LIBSCLANG_PRIMITIVE_GROUP:: and teletype::INIT_LIBSCLANG_PRIMITIVE_GROUP:: if you are writing a completely new primitive source file.
 
 section:: Guidelines
 
@@ -281,7 +286,7 @@ numberedlist::
 
 Here's an example of how a complete primitive might look:
 teletype::
-int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( MyPrimitive )
 {
     PyrSlot* arg = g->sp;
     float number;

@@ -28,6 +28,7 @@ added prRestartMIDI
 04/feb/03 prListMIDIEndpoints modification by Ron Kuivila added jt.
 */
 
+#include "SC_PrimRegistry.hpp"
 #include "PortMIDI.h"
 #include "PortTime.h"
 
@@ -50,24 +51,26 @@ added prRestartMIDI
 #include <cstring>
 #include <vector>
 
+LIBSCLANG_PRIMITIVE_GROUP( MIDI );
+
 using std::memset;
 
 // symbols to call back into lang
-PyrSymbol* s_domidiaction;
-PyrSymbol* s_midiNoteOnAction;
-PyrSymbol* s_midiNoteOffAction;
-PyrSymbol* s_midiTouchAction;
-PyrSymbol* s_midiControlAction;
-PyrSymbol* s_midiPolyTouchAction;
-PyrSymbol* s_midiProgramAction;
-PyrSymbol* s_midiBendAction;
-PyrSymbol* s_midiSysexAction;
-PyrSymbol* s_midiInvalidSysexAction;
-PyrSymbol* s_midiSysrtAction;
-PyrSymbol* s_midiSMPTEAction;
-PyrSymbol* s_midiin;
-PyrSymbol* s_numMIDIDev;
-PyrSymbol* s_midiclient;
+SCLANG_DEFINE_SYMBOL( s_domidiaction, "doAction" );
+SCLANG_DEFINE_SYMBOL( s_midiNoteOnAction, "doNoteOnAction" );
+SCLANG_DEFINE_SYMBOL( s_midiNoteOffAction, "doNoteOffAction" );
+SCLANG_DEFINE_SYMBOL( s_midiTouchAction, "doTouchAction" );
+SCLANG_DEFINE_SYMBOL( s_midiControlAction, "doControlAction" );
+SCLANG_DEFINE_SYMBOL( s_midiPolyTouchAction, "doPolyTouchAction" );
+SCLANG_DEFINE_SYMBOL( s_midiProgramAction, "doProgramAction" );
+SCLANG_DEFINE_SYMBOL( s_midiBendAction, "doBendAction" );
+SCLANG_DEFINE_SYMBOL( s_midiSysexAction, "doSysexAction" );
+SCLANG_DEFINE_SYMBOL( s_midiInvalidSysexAction, "doInvalidSysexAction" );
+SCLANG_DEFINE_SYMBOL( s_midiSysrtAction, "doSysrtAction" );
+SCLANG_DEFINE_SYMBOL( s_midiSMPTEAction, "doSMPTEaction" );
+SCLANG_DEFINE_SYMBOL( s_midiin, "MIDIIn" );
+SCLANG_DEFINE_SYMBOL( s_numMIDIDev, "prSetNumberOfDevices" );
+SCLANG_DEFINE_SYMBOL( s_midiclient, "MIDIClient" );
 
 const int kMaxMidiPorts = 128;
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
@@ -485,7 +488,7 @@ void midiListEndpoints()
 /*
 -------------------------------------------------------------
 */
-int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ListMIDIEndpoints, 1 )
 {
 	PyrSlot *a = g->sp;
 	int numSrc = getNumSources();
@@ -578,7 +581,7 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 -------------------------------------------------------------
 */
 
-int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ConnectMIDIIn, 3 )
 {
 	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 
@@ -626,7 +629,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 /*
 -------------------------------------------------------------
 */
-int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DisconnectMIDIIn, 3 )
 {
 	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 
@@ -657,7 +660,7 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 /*
 -------------------------------------------------------------
 */
-int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( InitMIDI, 3 )
 {
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -674,13 +677,13 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	return initMIDI(numIn, numOut);
 }
 
-int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( DisposeMIDIClient, 1 )
 {
 	midiCleanUp();
 	return errNone;
 }
 
-int prRestartMIDI(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( RestartMIDI, 1 )
 {
 	/* Do nothing */
 	return errNone;
@@ -694,8 +697,8 @@ free(pk);
 }
 */
 
-int prSendSysex(VMGlobals *g, int numArgsPushed)
-{	
+SCLANG_DEFINE_PRIMITIVE( SendSysex, 3 )
+{
 	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 	int err, uid;
 	
@@ -722,7 +725,7 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 /*
 -------------------------------------------------------------
 */
-int prSendMIDIOut(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SendMIDIOut, 9 )
 {
 	lock_guard<SC_Lock> mulo(gPmStreamMutex);
 	//port, uid, len, hiStatus, loStatus, a, b, latency
@@ -772,46 +775,17 @@ int initMIDIClient()
 	return errNone;
 }
 
-int prInitMIDIClient(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( InitMIDIClient, 1 )
 {
 	return initMIDIClient();
 }
 
-void initMIDIPrimitives()
+SCLANG_DEFINE_CUSTOM_INITIALIZER( initMIDI )
 {
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	s_midiin = getsym("MIDIIn");
-	s_domidiaction = getsym("doAction");
-	s_midiNoteOnAction = getsym("doNoteOnAction");
-	s_midiNoteOffAction = getsym("doNoteOffAction");
-	s_midiTouchAction = getsym("doTouchAction");
-	s_midiControlAction = getsym("doControlAction");
-	s_midiPolyTouchAction = getsym("doPolyTouchAction");
-	s_midiProgramAction = getsym("doProgramAction");
-	s_midiBendAction = getsym("doBendAction");
-	s_midiSysexAction = getsym("doSysexAction");
-	s_midiInvalidSysexAction = getsym("doInvalidSysexAction"); // client can handle incorrect case
-	s_midiSysrtAction = getsym("doSysrtAction");
-	s_midiSMPTEAction = getsym("doSMPTEaction");
-	s_numMIDIDev = getsym("prSetNumberOfDevices");
-	s_midiclient = getsym("MIDIClient");
-	definePrimitive(base, index++, "_ListMIDIEndpoints", prListMIDIEndpoints, 1, 0);	
-	definePrimitive(base, index++, "_InitMIDI", prInitMIDI, 3, 0);
-	definePrimitive(base, index++, "_InitMIDIClient", prInitMIDIClient, 1, 0);	
-	definePrimitive(base, index++, "_ConnectMIDIIn", prConnectMIDIIn, 3, 0);
-	definePrimitive(base, index++, "_DisconnectMIDIIn", prDisconnectMIDIIn, 3, 0);
-	definePrimitive(base, index++, "_DisposeMIDIClient", prDisposeMIDIClient, 1, 0);
-	definePrimitive(base, index++, "_RestartMIDI", prRestartMIDI, 1, 0);
-	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
-	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0);
 	midiCleanUp();
 }
 
-void deinitMIDIPrimitives()
+SCLANG_DEFINE_CUSTOM_DEINITIALIZER( deinitMIDI )
 {
 	midiCleanUp();
 }

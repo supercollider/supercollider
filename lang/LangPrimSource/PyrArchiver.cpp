@@ -30,8 +30,11 @@ An object archiving system for SuperCollider.
 #include "GC.h"
 #include "ReadWriteMacros.h"
 
-int prAsArchive(struct VMGlobals *g, int numArgsPushed);
-int prAsArchive(struct VMGlobals *g, int numArgsPushed)
+#include "SC_PrimRegistry.hpp"
+
+LIBSCLANG_PRIMITIVE_GROUP( Archiver );
+
+SCLANG_DEFINE_PRIMITIVE( AsArchive, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -53,8 +56,7 @@ int prAsArchive(struct VMGlobals *g, int numArgsPushed)
 	return err;
 }
 
-int prUnarchive(struct VMGlobals *g, int numArgsPushed);
-int prUnarchive(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Unarchive, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -67,8 +69,7 @@ int prUnarchive(struct VMGlobals *g, int numArgsPushed)
 	return err;
 }
 
-int prWriteArchive(struct VMGlobals *g, int numArgsPushed);
-int prWriteArchive(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( WriteArchive, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -96,8 +97,7 @@ int prWriteArchive(struct VMGlobals *g, int numArgsPushed)
 	return err;
 }
 
-int prReadArchive(struct VMGlobals *g, int numArgsPushed);
-int prReadArchive(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ReadArchive, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -122,64 +122,3 @@ int prReadArchive(struct VMGlobals *g, int numArgsPushed)
 	}
 	return err;
 }
-
-void initArchiverPrimitives();
-void initArchiverPrimitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_AsArchive", prAsArchive, 1, 0);
-	definePrimitive(base, index++, "_Unarchive", prUnarchive, 1, 0);
-	definePrimitive(base, index++, "_WriteArchive", prWriteArchive, 2, 0);
-	definePrimitive(base, index++, "_ReadArchive", prReadArchive, 2, 0);
-}
-
-
-#if _SC_PLUGINS_
-
-#include "SCPlugin.h"
-
-// export the function that SC will call to load the plug in.
-#pragma export on
-extern "C" { SCPlugIn* loadPlugIn(void); }
-#pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn
-{
-public:
-	APlugIn();
-	virtual ~APlugIn();
-
-	virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn()
-{
-	// constructor for plug in
-}
-
-APlugIn::~APlugIn()
-{
-	// destructor for plug in
-}
-
-void APlugIn::AboutToCompile()
-{
-	// this is called each time the class library is compiled.
-	initArchiverPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn()
-{
-	return new APlugIn();
-}
-
-#endif
-

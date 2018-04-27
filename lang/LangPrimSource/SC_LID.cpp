@@ -28,6 +28,7 @@
 
 #include <atomic>
 
+#include "SC_PrimRegistry.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrSymbolTable.h"
@@ -44,6 +45,8 @@
 #include "GC.h"
 #include "SC_LanguageClient.h"
 
+LIBSCLANG_PRIMITIVE_GROUP( LID );
+
 #if HAVE_LID
 #include <errno.h>
 #include <fcntl.h>
@@ -54,6 +57,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+
 #define BITS_PER_LONG			(sizeof(long) * 8)
 #define NBITS(x)				((((x) - 1) / BITS_PER_LONG) + 1)
 #define OFF(x)					((x) % BITS_PER_LONG)
@@ -63,11 +67,11 @@
 
 extern bool compiledOK;
 
-static PyrSymbol* s_inputDeviceClass = 0;
-static PyrSymbol* s_inputDeviceInfoClass = 0;
-static PyrSymbol* s_absInfoClass = 0;
-static PyrSymbol* s_handleEvent = 0;
-static PyrSymbol* s_readError = 0;
+SCLANG_DEFINE_SYMBOL( s_inputDeviceClass, "LID" );
+SCLANG_DEFINE_SYMBOL( s_inputDeviceInfoClass, "LIDInfo" );
+SCLANG_DEFINE_SYMBOL( s_absInfoClass, "LIDAbsInfo" );
+SCLANG_DEFINE_SYMBOL( s_handleEvent, "prHandleEvent" );
+SCLANG_DEFINE_SYMBOL( s_readError, "prReadError" );
 
 // =====================================================================
 // SC_LID
@@ -547,7 +551,7 @@ void SC_LIDManager::loop()
 // =====================================================================
 // Primitive Interface
 
-int prLID_Open(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_Open, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -569,7 +573,7 @@ int prLID_Open(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_Close(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_Close, 1 )
 {
 	PyrSlot* args = g->sp;
 
@@ -582,7 +586,7 @@ int prLID_Close(VMGlobals *g, int numArgsPushed)
 	return dev->close();
 }
 
-int prLID_EventTypeSupported(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_EventTypeSupported, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int evtType;
@@ -604,7 +608,7 @@ int prLID_EventTypeSupported(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_EventCodeSupported(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_EventCodeSupported, 3 )
 {
 	PyrSlot* args = g->sp - 2;
 	int evtType, evtCode;
@@ -629,7 +633,7 @@ int prLID_EventCodeSupported(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_GetInfo, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int err;
@@ -667,7 +671,7 @@ int prLID_GetInfo(VMGlobals* g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_GetKeyState(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_GetKeyState, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 	int evtCode;
@@ -687,7 +691,7 @@ int prLID_GetKeyState(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_GetAbsInfo(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_GetAbsInfo, 3 )
 {
 	PyrSlot* args = g->sp - 2;
 	int evtCode;
@@ -721,7 +725,7 @@ int prLID_GetAbsInfo(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_Grab(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_Grab, 2 )
 {
 	PyrSlot* args = g->sp - 1;
 
@@ -734,19 +738,19 @@ int prLID_Grab(VMGlobals *g, int numArgsPushed)
 	return dev->grab(IsTrue(args+1));
 }
 
-int prLID_Start(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_Start, 1 )
 {
 // 	if (!g->canCallOS) return errCantCallOS;
 	return SC_LIDManager::instance().start();
 }
 
-int prLID_Stop(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_Stop, 1 )
 {
 // 	if (!g->canCallOS) return errCantCallOS;
 	return SC_LIDManager::instance().stop();
 }
 
-int prLID_SetLedState(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_SetLedState, 3 )
 {
 // 	post( "set led state primitive called" );
 	PyrSlot* args = g->sp - 2;
@@ -769,7 +773,7 @@ int prLID_SetLedState(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLID_SetMscState(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_SetMscState, 3 )
 {
 // 	post( "set msc state primitive called\n" );
 	PyrSlot* args = g->sp - 2;
@@ -792,60 +796,16 @@ int prLID_SetMscState(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-void SC_LIDInit()
-{
-	int base, index;
-
-	s_inputDeviceClass = getsym("LID");
-	s_inputDeviceInfoClass = getsym("LIDInfo");
-	s_absInfoClass = getsym("LIDAbsInfo");
-	s_handleEvent = getsym("prHandleEvent");
-	s_readError = getsym("prReadError");
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_LID_Open", prLID_Open, 2, 0);
-	definePrimitive(base, index++, "_LID_Close", prLID_Close, 1, 0);
-	definePrimitive(base, index++, "_LID_EventTypeSupported", prLID_EventTypeSupported, 2, 0);
-	definePrimitive(base, index++, "_LID_EventCodeSupported", prLID_EventCodeSupported, 3, 0);
-	definePrimitive(base, index++, "_LID_GetInfo", prLID_GetInfo, 2, 0);
-	definePrimitive(base, index++, "_LID_GetKeyState", prLID_GetKeyState, 2, 0);
-	definePrimitive(base, index++, "_LID_GetAbsInfo", prLID_GetAbsInfo, 3, 0);
-	definePrimitive(base, index++, "_LID_Grab", prLID_Grab, 2, 0);
-	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
-	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
-	definePrimitive(base, index++, "_LID_SetLedState", prLID_SetLedState, 3, 0); // added by Marije Baalman
-	definePrimitive(base, index++, "_LID_SetMscState", prLID_SetMscState, 3, 0);
-}
-
 #else // !HAVE_LID
-int prLID_Start(VMGlobals* g, int numArgsPushed)
+
+SCLANG_DEFINE_PRIMITIVE( LID_Start, 1 )
 {
 	return errNone;
 }
 
-int prLID_Stop(VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( LID_Stop, 1 )
 {
 	return errNone;
-}
-
-void SC_LIDInit()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_LID_Start", prLID_Start, 1, 0);
-	definePrimitive(base, index++, "_LID_Stop", prLID_Stop, 1, 0);
 }
 
 #endif // HAVE_LID
-
-void initLIDPrimitives()
-{
-	SC_LIDInit();
-}
-
-// EOF

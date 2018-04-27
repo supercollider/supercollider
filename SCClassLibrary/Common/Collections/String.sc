@@ -379,7 +379,7 @@ String[char] : RawArray {
 		^File.getcwd ++ sep ++ this;
 	}
 
-	pathMatch { _StringPathMatch ^this.primitiveFailed } // glob
+	pathMatch { _String_PathMatch ^this.primitiveFailed } // glob
 	load {
 		^thisProcess.interpreter.executeFile(this);
 	}

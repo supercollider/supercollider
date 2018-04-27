@@ -21,8 +21,6 @@
 #ifndef _PYRMATHPRIM_H_
 #define _PYRMATHPRIM_H_
 
-void initMathPrimitives();
-
 int prAddNum(VMGlobals *g, int numArgsPushed);
 int prSubNum(VMGlobals *g, int numArgsPushed);
 int prMulNum(VMGlobals *g, int numArgsPushed);
@@ -30,22 +28,5 @@ int prMulNum(VMGlobals *g, int numArgsPushed);
 int prAddInt(VMGlobals *g, int numArgsPushed);
 int prSubInt(VMGlobals *g, int numArgsPushed);
 int prMulInt(VMGlobals *g, int numArgsPushed);
-
-int prAddFloat(VMGlobals *g, int numArgsPushed);
-int prSubFloat(VMGlobals *g, int numArgsPushed);
-int prMulFloat(VMGlobals *g, int numArgsPushed);
-
-int mathClip(VMGlobals *g, int numArgsPushed);
-int mathWrap(VMGlobals *g, int numArgsPushed);
-int mathFold(VMGlobals *g, int numArgsPushed);
-int mathClipInt(VMGlobals *g, int numArgsPushed);
-int mathWrapInt(VMGlobals *g, int numArgsPushed);
-int mathFoldInt(VMGlobals *g, int numArgsPushed);
-int mathClipFloat(VMGlobals *g, int numArgsPushed);
-int mathWrapFloat(VMGlobals *g, int numArgsPushed);
-int mathFoldFloat(VMGlobals *g, int numArgsPushed);
-int mathClipSignal(VMGlobals *g, int numArgsPushed);
-int mathWrapSignal(VMGlobals *g, int numArgsPushed);
-int mathFoldSignal(VMGlobals *g, int numArgsPushed);
 
 #endif

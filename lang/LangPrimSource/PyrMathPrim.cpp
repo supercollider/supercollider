@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "SC_PrimRegistry.hpp"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "PyrMathPrim.h"
@@ -36,6 +37,8 @@
 
 #define BOOST_MATH_DISABLE_FLOAT128 1
 #include "boost/math/special_functions.hpp"
+
+LIBSCLANG_PRIMITIVE_GROUP( Math );
 
 const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 
@@ -342,42 +345,37 @@ int prMulNum(VMGlobals *g, int numArgsPushed)
 	return prOpNum<mulNum>(g, numArgsPushed);
 }
 
-
-int prAddFloat(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AddFloat, 2 )
 {
 	return prOpFloat<addNum>(g, numArgsPushed);
 }
 
-int prSubFloat(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SubFloat, 2 )
 {
 	return prOpFloat<subNum>(g, numArgsPushed);
 }
 
-int prMulFloat(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( MulFloat, 2 )
 {
 	return prOpFloat<mulNum>(g, numArgsPushed);
 }
 
-int prAddInt(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AddInt, 2 )
 {
 	return prOpInt<addNum>(g, numArgsPushed);
 }
 
-int prSubInt(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SubInt, 2 )
 {
 	return prOpInt<subNum>(g, numArgsPushed);
 }
 
-int prMulInt(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( MulInt, 2 )
 {
 	return prOpInt<mulNum>(g, numArgsPushed);
 }
 
-
-
-
-int prNthPrime(VMGlobals *g, int numArgsPushed);
-int prNthPrime(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NthPrime, 1 )
 {
 	PyrSlot *a;
 	int n, p;
@@ -393,8 +391,7 @@ int prNthPrime(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prPrevPrime(VMGlobals *g, int numArgsPushed);
-int prPrevPrime(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PrevPrime, 1 )
 {
 	PyrSlot *a;
 	int n, p, i;
@@ -411,8 +408,7 @@ int prPrevPrime(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prNextPrime(VMGlobals *g, int numArgsPushed);
-int prNextPrime(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( NextPrime, 1 )
 {
 	PyrSlot *a;
 	int n, p, i;
@@ -429,9 +425,7 @@ int prNextPrime(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prIsPrime(VMGlobals *g, int numArgsPushed);
-int prIsPrime(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IsPrime, 1 )
 {
 	PyrSlot *a;
 	int n, p, sqrtn, i;
@@ -462,8 +456,7 @@ int prIsPrime(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prIndexOfPrime(VMGlobals *g, int numArgsPushed);
-int prIndexOfPrime(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( IndexOfPrime, 1 )
 {
 	PyrSlot *a;
 	int n, p;
@@ -486,9 +479,7 @@ int prIndexOfPrime(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-
-int prAs32Bits(VMGlobals *g, int numArgsPushed);
-int prAs32Bits(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( As32Bits, 1 )
 {
 	PyrSlot *a = g->sp;
 	// return an integer that is a bit pattern for the 32 bit float representation
@@ -498,8 +489,7 @@ int prAs32Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prHigh32Bits(VMGlobals *g, int numArgsPushed);
-int prHigh32Bits(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( High32Bits, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -514,8 +504,7 @@ int prHigh32Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prLow32Bits(VMGlobals *g, int numArgsPushed);
-int prLow32Bits(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Low32Bits, 1 )
 {
 	PyrSlot *a = g->sp;
 
@@ -530,8 +519,7 @@ int prLow32Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFrom32Bits(VMGlobals *g, int numArgsPushed);
-int prFrom32Bits(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( From32Bits, 2 )
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
@@ -547,8 +535,7 @@ int prFrom32Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFrom64Bits(VMGlobals *g, int numArgsPushed);
-int prFrom64Bits(VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( From64Bits, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -573,7 +560,7 @@ int prFrom64Bits(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathClipInt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ClipInt, 3 )
 {
 	PyrSlot *a, *b, *c;
 	double lo, hi;
@@ -599,7 +586,7 @@ int mathClipInt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathClipFloat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ClipFloat, 3 )
 {
 	PyrSlot *a, *b, *c;
 	double lo, hi;
@@ -623,7 +610,7 @@ int mathClipFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathClipSignal(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ClipSignal, 3 )
 {
 	PyrSlot *a, *b, *c;
 	float lo, hi;
@@ -652,7 +639,7 @@ int mathClipSignal(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( WrapInt, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -679,7 +666,7 @@ int mathWrapInt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathWrapFloat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( WrapFloat, 3 )
 {
 	PyrSlot *a, *b, *c;
 	double lo, hi;
@@ -703,7 +690,7 @@ int mathWrapFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathWrapSignal(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( WrapSignal, 3 )
 {
 	PyrSlot *a, *b, *c;
 	float lo, hi;
@@ -732,7 +719,7 @@ int mathWrapSignal(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FoldInt, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -759,7 +746,7 @@ int mathFoldInt(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathFoldFloat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FoldFloat, 3 )
 {
 	PyrSlot *a, *b, *c;
 	double lo, hi;
@@ -783,7 +770,7 @@ int mathFoldFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int mathFoldSignal(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FoldSignal, 3 )
 {
 	PyrSlot *a, *b, *c;
 	float lo, hi;
@@ -812,7 +799,7 @@ int mathFoldSignal(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SimpleNumberSeries, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -961,7 +948,7 @@ int prSimpleNumberSeries(struct VMGlobals *g, int numArgsPushed)
 
 */
 
-int prAsFraction(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( AsFraction, 3 )
 {
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
@@ -1080,41 +1067,3 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 		}
 	}
 }
-
-void initMathPrimitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-	definePrimitive(base, index++, "_AddInt", prAddInt, 2, 0);
-	definePrimitive(base, index++, "_SubInt", prSubInt, 2, 0);
-	definePrimitive(base, index++, "_MulInt", prMulInt, 2, 0);
-	definePrimitive(base, index++, "_AddFloat", prAddFloat, 2, 0);
-	definePrimitive(base, index++, "_SubFloat", prSubFloat, 2, 0);
-	definePrimitive(base, index++, "_MulFloat", prMulFloat, 2, 0);
-	definePrimitive(base, index++, "_NthPrime", prNthPrime, 1, 0);
-	definePrimitive(base, index++, "_PrevPrime", prPrevPrime, 1, 0);
-	definePrimitive(base, index++, "_NextPrime", prNextPrime, 1, 0);
-	definePrimitive(base, index++, "_IsPrime", prIsPrime, 1, 0);
-	definePrimitive(base, index++, "_IndexOfPrime", prIndexOfPrime, 1, 0);
-	definePrimitive(base, index++, "_As32Bits", prAs32Bits, 1, 0);
-	definePrimitive(base, index++, "_High32Bits", prHigh32Bits, 1, 0);
-	definePrimitive(base, index++, "_Low32Bits", prLow32Bits, 1, 0);
-	definePrimitive(base, index++, "_From32Bits", prFrom32Bits, 2, 0);
-	definePrimitive(base, index++, "_From64Bits", prFrom64Bits, 3, 0);
-
-	definePrimitive(base, index++, "_ClipInt", mathClipInt, 3, 0);
-	definePrimitive(base, index++, "_ClipFloat", mathClipFloat, 3, 0);
-	definePrimitive(base, index++, "_ClipSignal", mathClipSignal, 3, 0);
-	definePrimitive(base, index++, "_WrapInt", mathWrapInt, 3, 0);
-	definePrimitive(base, index++, "_WrapFloat", mathWrapFloat, 3, 0);
-	definePrimitive(base, index++, "_WrapSignal", mathWrapSignal, 3, 0);
-	definePrimitive(base, index++, "_FoldInt", mathFoldInt, 3, 0);
-	definePrimitive(base, index++, "_FoldFloat", mathFoldFloat, 3, 0);
-	definePrimitive(base, index++, "_FoldSignal", mathFoldSignal, 3, 0);
-
-	definePrimitive(base, index++, "_SimpleNumberSeries", prSimpleNumberSeries, 3, 0);
-	definePrimitive(base, index++, "_AsFraction", prAsFraction, 3, 0);
-}
-

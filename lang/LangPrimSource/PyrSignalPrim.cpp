@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include "SC_PrimRegistry.hpp"
 #include "PyrSymbol.h"
 #include "PyrKernel.h"
 #include "PyrObject.h"
@@ -35,8 +36,9 @@ extern "C" {
 #include <string.h>
 #include <math.h>
 
+LIBSCLANG_PRIMITIVE_GROUP( Signal );
 
-int prSignalFill(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalFill, 2 )
 {
 	PyrSlot *a, *b;
 	int err;
@@ -51,7 +53,7 @@ int prSignalFill(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalScale(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalScale, 2 )
 {
 	PyrSlot *a, *b;
 	int err;
@@ -66,7 +68,7 @@ int prSignalScale(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalOffset(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalOffset, 2 )
 {
 	PyrSlot *a, *b;
 	int err;
@@ -81,7 +83,7 @@ int prSignalOffset(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalString, 1 )
 {
 	PyrSlot *a;
 	PyrString *string;
@@ -105,7 +107,7 @@ int prSignalString(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalPeak(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalPeak, 1 )
 {
 	PyrSlot *a;
 
@@ -115,7 +117,7 @@ int prSignalPeak(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalNormalize(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalNormalize, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
@@ -140,7 +142,7 @@ int prSignalNormalize(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalNormalizeTransferFn(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalNormalizeTransferFn, 1 )
 {
 	PyrSlot *a;
 
@@ -150,7 +152,7 @@ int prSignalNormalizeTransferFn(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalIntegral(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalIntegral, 1 )
 {
 	PyrSlot *a;
 
@@ -160,7 +162,7 @@ int prSignalIntegral(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalInvert(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalInvert, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
@@ -185,7 +187,7 @@ int prSignalInvert(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalReverse(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalReverse, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err, start, end;
@@ -210,7 +212,7 @@ int prSignalReverse(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalRotate(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalRotate, 2 )
 {
 	PyrSlot *a, *b;
 	int err, rot;
@@ -225,7 +227,7 @@ int prSignalRotate(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalOverDub(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalOverDub, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -243,7 +245,7 @@ int prSignalOverDub(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalOverWrite(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalOverWrite, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -261,7 +263,7 @@ int prSignalOverWrite(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalFade(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalFade, 5 )
 {
 	PyrSlot *a, *b, *c, *d, *e;
 	int err;
@@ -296,7 +298,7 @@ int prSignalFade(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalAddHarmonic(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalAddHarmonic, 4 )
 {
 	PyrSlot *a, *b, *c, *d;
 	int err;
@@ -325,8 +327,7 @@ int prSignalAddHarmonic(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignalAddChebyshev(struct VMGlobals *g, int numArgsPushed);
-int prSignalAddChebyshev(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalAddChebyshev, 3 )
 {
 	PyrSlot *a, *b, *c;
 	int err;
@@ -390,7 +391,7 @@ void wavetableAsSignal(float *wavetable, float *signal, int size)
 
 //////////////////////////////////////////////////////////////////////////////
 
-int prSignalAsWavetable(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SignalAsWavetable, 1 )
 {
 	PyrSlot *a;
 	int size;
@@ -414,7 +415,7 @@ int prSignalAsWavetable(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prWavetableAsSignal(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( wavetableAsSignal, 1 )
 {
 	PyrSlot *a;
 	PyrObject *signal, *wavetable;
@@ -430,8 +431,7 @@ int prWavetableAsSignal(struct VMGlobals *g, int numArgsPushed)
 //class_signal
 
 #if 1
-int prSignal_FFT(struct VMGlobals *g, int numArgsPushed);
-int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Signal_FFT, 3 )
 {
 	PyrSlot *a, *b, *c;
 
@@ -523,8 +523,7 @@ int prSignal_FFT(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed);
-int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Signal_IFFT, 3 )
 {
 	PyrSlot *a, *b, *c;
 
@@ -603,35 +602,3 @@ int prSignal_IFFT(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 #endif
-
-void initSignalPrimitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-	definePrimitive(base, index++, "_SignalPeak", prSignalPeak, 1, 0);
-	definePrimitive(base, index++, "_SignalNormalize", prSignalNormalize, 3, 0);
-	definePrimitive(base, index++, "_SignalNormalizeTransferFn", prSignalNormalizeTransferFn, 1, 0);
-	definePrimitive(base, index++, "_SignalIntegral", prSignalIntegral, 1, 0);
-	definePrimitive(base, index++, "_SignalReverse", prSignalReverse, 3, 0);
-	definePrimitive(base, index++, "_SignalInvert", prSignalInvert, 3, 0);
-	definePrimitive(base, index++, "_SignalRotate", prSignalRotate, 2, 0);
-
-	definePrimitive(base, index++, "_SignalFill", prSignalFill, 2, 0);
-	definePrimitive(base, index++, "_SignalScale", prSignalScale, 2, 0);
-	definePrimitive(base, index++, "_SignalOffset", prSignalOffset, 2, 0);
-	definePrimitive(base, index++, "_SignalOverDub", prSignalOverDub, 3, 0);
-	definePrimitive(base, index++, "_SignalOverWrite", prSignalOverWrite, 3, 0);
-	definePrimitive(base, index++, "_SignalFade", prSignalFade, 5, 0);
-	definePrimitive(base, index++, "_SignalAddHarmonic", prSignalAddHarmonic, 4, 0);
-	definePrimitive(base, index++, "_SignalAddChebyshev", prSignalAddChebyshev, 3, 0);
-	definePrimitive(base, index++, "_SignalString", prSignalString, 1, 0);
-	definePrimitive(base, index++, "_SignalAsWavetable", prSignalAsWavetable, 1, 0);
-	definePrimitive(base, index++, "_WavetableAsSignal", prWavetableAsSignal, 1, 0);
-
-	definePrimitive(base, index++, "_Signal_FFT", prSignal_FFT, 3, 0);
-	definePrimitive(base, index++, "_Signal_IFFT", prSignal_IFFT, 3, 0);
-}
-
-

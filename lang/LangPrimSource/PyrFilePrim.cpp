@@ -32,6 +32,7 @@ Primitives for File i/o.
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
 #include "sc_popen.h"
+#include "SC_PrimRegistry.hpp"
 
 // on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
 // See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
@@ -79,7 +80,9 @@ Primitives for File i/o.
 
 namespace bfs = boost::filesystem;
 
-int prFileDelete(struct VMGlobals *g, int numArgsPushed)
+LIBSCLANG_PRIMITIVE_GROUP( File );
+
+SCLANG_DEFINE_PRIMITIVE( FileDelete, 2 )
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
@@ -100,7 +103,7 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileMTime(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileMTime, 2 )
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
@@ -115,7 +118,7 @@ int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileExists(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileExists, 2 )
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
@@ -130,7 +133,7 @@ int prFileExists(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
+SCLANG_DEFINE_PRIMITIVE( FileRealPath, 2 )
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char ipath[PATH_MAX];
@@ -163,7 +166,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	return errNone;
 }
 
-int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileMkDir, 2 )
 {
 	PyrSlot *b = g->sp;
 	char filename[PATH_MAX];
@@ -181,7 +184,7 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileCopy(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileCopy, 3 )
 {
 	PyrSlot *b = g->sp - 1, *c = g->sp;
 	char filename1[PATH_MAX];
@@ -208,7 +211,7 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileType(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileType, 2 )
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
@@ -223,7 +226,7 @@ int prFileType(struct VMGlobals * g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileSize(struct VMGlobals * g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileSize, 2 )
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
@@ -239,7 +242,7 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 }
 
 
-int prFileOpen(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileOpen, 3 )
 {
 	PyrSlot *a, *b, *c;
 	char filename[PATH_MAX];
@@ -316,7 +319,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileClose(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileClose, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -331,7 +334,7 @@ int prFileClose(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileFlush(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileFlush, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -344,7 +347,7 @@ int prFileFlush(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePos(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePos, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -361,7 +364,7 @@ int prFilePos(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileLength(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileLength, 1 )
 {
 	PyrSlot * a = g->sp;
 	PyrFile *pfile = (PyrFile*)slotRawObject(a);
@@ -381,7 +384,7 @@ int prFileLength(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileSeek(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileSeek, 3 )
 {
 	PyrSlot *a, *b, *c;
 	PyrFile *pfile;
@@ -407,7 +410,7 @@ int prFileSeek(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFileWrite(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileWrite, 2 )
 {
 	PyrSlot *a, *b, *ptr;
 	PyrFile *pfile;
@@ -510,7 +513,7 @@ int prFileWrite(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFileWriteLE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileWriteLE, 2 )
 {
 	PyrSlot *a, *b, *ptr;
 	PyrFile *pfile;
@@ -612,7 +615,7 @@ int prFileWriteLE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileReadLine, 2 )
 {
 	PyrSlot *a, *b; // receiver(a File), string
 	PyrFile *pfile;
@@ -636,7 +639,7 @@ int prFileReadLine(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutInt32(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutInt32, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -659,7 +662,7 @@ int prFilePutInt32(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutInt16(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutInt16, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -684,7 +687,7 @@ int prFilePutInt16(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFilePutInt32LE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutInt32LE, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -707,7 +710,7 @@ int prFilePutInt32LE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutInt16LE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutInt16LE, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -731,7 +734,7 @@ int prFilePutInt16LE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutInt8(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutInt8, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -755,7 +758,7 @@ int prFilePutInt8(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutChar(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutChar, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -778,7 +781,7 @@ int prFilePutChar(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutFloat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutFloat, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -804,7 +807,7 @@ int prFilePutFloat(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutDouble(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutDouble, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -829,7 +832,7 @@ int prFilePutDouble(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFilePutFloatLE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutFloatLE, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -855,7 +858,7 @@ int prFilePutFloatLE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutDoubleLE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutDoubleLE, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -879,7 +882,7 @@ int prFilePutDoubleLE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFilePutString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FilePutString, 2 )
 {
 	PyrSlot *a, *b;
 	PyrFile *pfile;
@@ -900,7 +903,7 @@ int prFilePutString(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFileGetDouble(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetDouble, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -920,7 +923,7 @@ int prFileGetDouble(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetFloat(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetFloat, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -941,7 +944,7 @@ int prFileGetFloat(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFileGetDoubleLE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetDoubleLE, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -961,7 +964,7 @@ int prFileGetDoubleLE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetFloatLE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetFloatLE, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -981,7 +984,7 @@ int prFileGetFloatLE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetChar(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetChar, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -1000,7 +1003,7 @@ int prFileGetChar(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetInt8(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetInt8, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -1019,7 +1022,7 @@ int prFileGetInt8(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetInt16(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetInt16, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -1039,7 +1042,7 @@ int prFileGetInt16(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetInt32, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -1061,7 +1064,7 @@ int prFileGetInt32(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-int prFileGetInt16LE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetInt16LE, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -1081,7 +1084,7 @@ int prFileGetInt16LE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetInt32LE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetInt32LE, 1 )
 {
 	PyrSlot *a;
 	PyrFile *pfile;
@@ -1101,7 +1104,7 @@ int prFileGetInt32LE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileReadRaw, 2 )
 {
 	PyrFile *pfile;
 	FILE *file;
@@ -1182,7 +1185,7 @@ int prFileReadRaw(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileReadRawLE, 2 )
 {
 	PyrFile *pfile;
 	FILE *file;
@@ -1263,7 +1266,7 @@ int prFileReadRawLE(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( FileGetcwd, 2 )
 {
 	//PyrSlot* a = g->sp - 1; // File
 	PyrSlot* string = g->sp;
@@ -1299,7 +1302,7 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 // Pipe primitives
 //----------------------------------------------------------------------------//
 
-int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PipeOpen, 3 )
 {
 	PyrSlot *a, *b, *c;
 	char mode[12];
@@ -1335,7 +1338,7 @@ int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prPipeClose(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( PipeClose, 2 )
 {
 	PyrSlot *a;
 	PyrSlot *b;
@@ -1494,8 +1497,7 @@ int sndfileFormatInfoToStrings(struct SF_INFO *info, const char **stringHead,  c
 	return error;
 }
 
-int prSFOpenRead(struct VMGlobals *g, int numArgsPushed);
-int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFOpenRead, 2 )
 {
 	PyrSlot *a, *b;
 	char filename[PATH_MAX];
@@ -1545,8 +1547,7 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed);
-int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFOpenWrite, 2 )
 {
 	PyrSlot *a, *b;
 	char filename[PATH_MAX];
@@ -1623,8 +1624,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSFClose(struct VMGlobals *g, int numArgsPushed);
-int prSFClose(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFClose, 1 )
 {
 	PyrSlot *a;
 
@@ -1639,8 +1639,7 @@ int prSFClose(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSFRead(struct VMGlobals *g, int numArgsPushed);
-int prSFRead(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFRead, 2 )
 {
 	PyrSlot *a, *b;
 
@@ -1672,8 +1671,7 @@ int prSFRead(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSFWrite(struct VMGlobals *g, int numArgsPushed);
-int prSFWrite(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFWrite, 2 )
 {
 	PyrSlot *a, *b;
 
@@ -1705,8 +1703,7 @@ int prSFWrite(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSFSeek(struct VMGlobals *g, int numArgsPushed);
-int prSFSeek(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFSeek, 3 )
 {
 	PyrSlot *a, *b, *c;
 
@@ -1728,8 +1725,7 @@ int prSFSeek(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed);
-int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SFHeaderInfoString, 1 )
 {
 
 	PyrSlot *a;
@@ -1748,107 +1744,18 @@ int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
 
 #else // !NO_LIBSNDFILE
 
-int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFOpenRead, 2 ) { return errFailed; }
 
-int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFOpenWrite, 2 ) { return errFailed; }
 
-int prSFClose(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFClose, 1 ) { return errFailed; }
 
-int prSFWrite(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFWrite, 2 ) { return errFailed; }
 
-int prSFRead(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFRead, 2 ) { return errFailed; }
 
-int prSFSeek(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFSeek, 3 ) { return errFailed; }
 
-int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
-{
-	return errFailed;
-}
+SCLANG_DEFINE_PRIMITIVE( SFHeaderInfoString, 1 ) { return errFailed; }
 
 #endif // !NO_LIBSNDFILE
-
-/////////////
-
-void initFilePrimitives()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	definePrimitive(base, index++, "_SFOpenRead", prSFOpenRead, 2, 0);
-	definePrimitive(base, index++, "_SFOpenWrite", prSFOpenWrite, 2, 0);
-	definePrimitive(base, index++, "_SFClose", prSFClose, 1, 0);
-	definePrimitive(base, index++, "_SFWrite", prSFWrite, 2, 0);
-	definePrimitive(base, index++, "_SFRead", prSFRead, 2, 0);
-	definePrimitive(base, index++, "_SFSeek", prSFSeek, 3, 0);
-	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
-
-	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
-	definePrimitive(base, index++, "_PipeClose", prPipeClose, 2, 0);
-
-	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
-	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
-	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
-	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);
-	definePrimitive(base, index++, "_FileMkDir", prFileMkDir, 2, 0);
-	definePrimitive(base, index++, "_FileCopy", prFileCopy, 3, 0);
-	definePrimitive(base, index++, "_FileType", prFileType, 2, 0);
-	definePrimitive(base, index++, "_FileSize", prFileSize, 2, 0);
-
-	definePrimitive(base, index++, "_FileOpen", prFileOpen, 3, 0);
-	definePrimitive(base, index++, "_FileClose", prFileClose, 1, 0);
-	definePrimitive(base, index++, "_FileFlush", prFileFlush, 1, 0);
-	definePrimitive(base, index++, "_FileSeek", prFileSeek, 3, 0);
-	definePrimitive(base, index++, "_FilePos", prFilePos, 1, 0);
-	definePrimitive(base, index++, "_FileLength", prFileLength, 1, 0);
-	definePrimitive(base, index++, "_FileWrite", prFileWrite, 2, 0);
-	definePrimitive(base, index++, "_FileWriteLE", prFileWriteLE, 2, 0);
-	definePrimitive(base, index++, "_FileReadLine", prFileReadLine, 2, 0);
-	definePrimitive(base, index++, "_File_getcwd", prFileGetcwd, 2, 0);
-
-	definePrimitive(base, index++, "_FilePutChar", prFilePutChar, 2, 0);
-	definePrimitive(base, index++, "_FilePutInt8", prFilePutInt8, 2, 0);
-	definePrimitive(base, index++, "_FilePutInt16", prFilePutInt16, 2, 0);
-	definePrimitive(base, index++, "_FilePutInt32", prFilePutInt32, 2, 0);
-	definePrimitive(base, index++, "_FilePutFloat", prFilePutFloat, 2, 0);
-	definePrimitive(base, index++, "_FilePutDouble", prFilePutDouble, 2, 0);
-	definePrimitive(base, index++, "_FilePutInt16LE", prFilePutInt16LE, 2, 0);
-	definePrimitive(base, index++, "_FilePutInt32LE", prFilePutInt32LE, 2, 0);
-	definePrimitive(base, index++, "_FilePutFloatLE", prFilePutFloatLE, 2, 0);
-	definePrimitive(base, index++, "_FilePutDoubleLE", prFilePutDoubleLE, 2, 0);
-
-	definePrimitive(base, index++, "_FileGetChar", prFileGetChar, 1, 0);
-	definePrimitive(base, index++, "_FileGetInt8", prFileGetInt8, 1, 0);
-	definePrimitive(base, index++, "_FileGetInt16", prFileGetInt16, 1, 0);
-	definePrimitive(base, index++, "_FileGetInt32", prFileGetInt32, 1, 0);
-	definePrimitive(base, index++, "_FileGetFloat", prFileGetFloat, 1, 0);
-	definePrimitive(base, index++, "_FileGetDouble", prFileGetDouble, 1, 0);
-	definePrimitive(base, index++, "_FileGetInt16LE", prFileGetInt16LE, 1, 0);
-	definePrimitive(base, index++, "_FileGetInt32LE", prFileGetInt32LE, 1, 0);
-	definePrimitive(base, index++, "_FileGetFloatLE", prFileGetFloatLE, 1, 0);
-	definePrimitive(base, index++, "_FileGetDoubleLE", prFileGetDoubleLE, 1, 0);
-
-	definePrimitive(base, index++, "_FilePutString", prFilePutString, 2, 0);
-
-	definePrimitive(base, index++, "_FileReadRaw", prFileReadRaw, 2, 0);
-	definePrimitive(base, index++, "_FileReadRawLE", prFileReadRawLE, 2, 0);
-}

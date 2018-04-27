@@ -17,6 +17,7 @@
 *
 ************************************************************************/
 
+#include "SC_PrimRegistry.hpp"
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
@@ -32,7 +33,9 @@
 #include "SCDoc.h"
 //}
 
-PyrSymbol *s_scdoc_node;
+LIBSCLANG_PRIMITIVE_GROUP( SCDoc );
+
+SCLANG_DEFINE_SYMBOL( s_scdoc_node, "SCDocNode" );
 
 static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, PyrSlot *slot)
 {
@@ -68,7 +71,7 @@ static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, Py
 }
 
 
-int prSCDoc_ParseFile(struct VMGlobals* g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( SCDoc_ParseFile, 3 )
 {
 	PyrSlot *a, *b, *c;
     char filename[PATH_MAX];
@@ -94,16 +97,3 @@ int prSCDoc_ParseFile(struct VMGlobals* g, int numArgsPushed)
     }
     return errNone;
 }
-
-void initSCDocPrimitives()
-{
-	int base, index = 0;
-	
-	s_scdoc_node = getsym("SCDocNode");
-
-	base = nextPrimitiveIndex();
-
-	definePrimitive(base, index++, "_SCDoc_ParseFile", prSCDoc_ParseFile, 3, 0);
-
-}
-

@@ -20,11 +20,14 @@
 
 #include <CoreAudio/AudioHardware.h>
 
+#include "SC_PrimRegistry.hpp"
 #include "SCBase.h"
 #include "VMGlobals.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
 #include "GC.h"
+
+LIBSCLANG_PRIMITIVE_GROUP( CoreAudio );
 
 enum
 {
@@ -137,7 +140,7 @@ int listDevices(struct VMGlobals *g, int type)
 	return 1;
 }
 
-int prListAudioDevices(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( ListAudioDevices, 3 )
 {
 	int in = 0;
 	int out = 0;
@@ -151,9 +154,4 @@ int prListAudioDevices(struct VMGlobals *g, int numArgsPushed)
 
 	if (listDevices(g, type)) return errNone;
 	return errFailed;
-}
-
-void initCoreAudioPrimitives()
-{
-	definePrimitive(nextPrimitiveIndex(), 0, "_ListAudioDevices", prListAudioDevices, 3, 0);
 }

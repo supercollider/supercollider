@@ -26,6 +26,7 @@ Primitives for platform dependent directories, constants etc.
 #include "SC_Filesystem.hpp" // getDirectory
 #include "SC_Filesystem.hpp" // path_to_utf8_str
 #include "SC_LanguageConfig.hpp" // getIdeName
+#include "SC_PrimRegistry.hpp"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #ifdef _WIN32
@@ -35,10 +36,12 @@ Primitives for platform dependent directories, constants etc.
 
 #include <boost/filesystem/path.hpp> // path
 
+LIBSCLANG_PRIMITIVE_GROUP( Platform );
+
 namespace bfs = boost::filesystem;
 using DirName = SC_Filesystem::DirName;
 
-static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirName dirname)
+static inline int Platform_getDirectory(const struct VMGlobals *g, const DirName dirname)
 {
 	PyrSlot *a = g->sp;
 	const bfs::path& p = SC_Filesystem::instance().getDirectory(dirname);
@@ -47,74 +50,52 @@ static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirNa
 	return errNone;
 }
 
-static int prPlatform_userHomeDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_userHomeDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::UserHome);
+	return Platform_getDirectory(g, DirName::UserHome);
 }
 
-static int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_systemAppSupportDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::SystemAppSupport);
+	return Platform_getDirectory(g, DirName::SystemAppSupport);
 }
 
-static int prPlatform_userAppSupportDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_userAppSupportDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::UserAppSupport);
+	return Platform_getDirectory(g, DirName::UserAppSupport);
 }
 
-static int prPlatform_systemExtensionDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_systemExtensionDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::SystemExtension);
+	return Platform_getDirectory(g, DirName::SystemExtension);
 }
 
-static int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_userExtensionDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::UserExtension);
+	return Platform_getDirectory(g, DirName::UserExtension);
 }
 
-static int prPlatform_userConfigDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_userConfigDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::UserConfig);
+	return Platform_getDirectory(g, DirName::UserConfig);
 }
 
-static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_resourceDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::Resource);
+	return Platform_getDirectory(g, DirName::Resource);
 }
 
 #ifdef _WIN32
-static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( WinPlatform_myDocumentsDir, 1 )
 {
-	return prPlatform_getDirectory(g, DirName::MyDocuments);
+	return Platform_getDirectory(g, DirName::MyDocuments);
 }
 #endif
 
-static int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
+SCLANG_DEFINE_PRIMITIVE( Platform_ideName, 1 )
 {
 	PyrSlot *a = g->sp;
 	PyrString* string = newPyrString(g->gc, SC_Filesystem::instance().getIdeName().c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }
-
-void initPlatformPrimitives();
-void initPlatformPrimitives()
-{
-	int base, index = 0;
-
-	base = nextPrimitiveIndex();
-
-	definePrimitive(base, index++, "_Platform_userHomeDir", prPlatform_userHomeDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_systemAppSupportDir", prPlatform_systemAppSupportDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_userAppSupportDir", prPlatform_userAppSupportDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_systemExtensionDir", prPlatform_systemExtensionDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_userExtensionDir", prPlatform_userExtensionDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_userConfigDir", prPlatform_userConfigDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_resourceDir", prPlatform_resourceDir, 1, 0);
-	definePrimitive(base, index++, "_Platform_ideName", prPlatform_ideName, 1, 0);
-#ifdef _WIN32
-	definePrimitive(base, index++, "_WinPlatform_myDocumentsDir", prWinPlatform_myDocumentsDir, 1, 0);
-#endif
-}
-
-// EOF

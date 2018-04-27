@@ -23,6 +23,7 @@
  */
 
 #include <Carbon/Carbon.h>
+#include "SC_PrimRegistry.hpp"
 #include "InitAlloc.h"
 
 #include "SCBase.h"
@@ -47,14 +48,17 @@
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSDictionary.h>
 
+LIBSCLANG_PRIMITIVE_GROUP( Speech );
+
+SCLANG_DEFINE_SYMBOL( s_speech, "Speech" );
+SCLANG_DEFINE_SYMBOL( s_speechwordAction, "doWordAction" );
+SCLANG_DEFINE_SYMBOL( s_speechdoneAction, "doSpeechDoneAction" );
+
 //comment the following line to use cocoa speech
 #define useCarbonSpeech
 
 /////////////////////
 const int kMaxSpeechChannels = 32;
-PyrSymbol * s_speech;
-PyrSymbol * s_speechwordAction;
-PyrSymbol * s_speechdoneAction;
 #ifdef useCarbonSpeech
 SpeechChannel fCurSpeechChannel[kMaxSpeechChannels];
 char *speechStrings[kMaxSpeechChannels];
@@ -102,9 +106,8 @@ pascal void OurWordCallBackProc ( SpeechChannel inSpeechChannel, long inRefCon, 
 #endif
 }
 
-int prInitSpeech(struct VMGlobals *g, int numArgsPushed);
-int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( InitSpeech, 2 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-1;
 	PyrSlot *b = g->sp;
@@ -144,9 +147,8 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
 //NewSpeechDoneUPP(SpeechDoneProcPtr userRoutine);
 //theErr = SetSpeechInfo (fCurSpeechChannel, soSpeechDoneCallBack, OurSpeechDoneCallBackProc);
 
-int prSpeakText(struct VMGlobals *g, int numArgsPushed);
-int prSpeakText(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SpeakText, 3 )
+{
 	OSErr theErr = noErr;
 	PyrSlot *a = g->sp-1;
 	PyrSlot *str = g->sp;
@@ -190,9 +192,8 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
-int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechRate, 3 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
@@ -214,9 +215,8 @@ int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
-int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechPitch, 3 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
@@ -240,9 +240,8 @@ int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
-int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechPitchMod, 3 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
@@ -261,9 +260,8 @@ int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
-int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed) {
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechVolume, 3 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
@@ -290,9 +288,8 @@ int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed) {
 
 //		theErr = PauseSpeechAt (fCurSpeechChannel, kImmediate);
 //		theErr = ContinueSpeech (fCurSpeechChannel);
-int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechPause, 3 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
@@ -317,9 +314,8 @@ int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
-int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechStopAt, 3 )
+{
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
@@ -345,9 +341,8 @@ int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
 	return errNone;
 }
 
-int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed);
-int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( SetSpeechVoice, 3 )
+{
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-2;
 	PyrSlot *b = g->sp-1;
@@ -378,9 +373,8 @@ int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 }
 
 #ifndef useCarbonSpeech
-int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed);
-int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
-
+SCLANG_DEFINE_PRIMITIVE( GetSpeechVoiceNames, 2 )
+{
 	PyrSlot *a = g->sp-1;
 	PyrSlot *b = g->sp;
 
@@ -407,8 +401,8 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 }
 #endif
 
-int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed);
-int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
+SCLANG_DEFINE_PRIMITIVE( SpeechVoiceIsSpeaking, 2 )
+{
 	PyrSlot *out = g->sp-1;
 	PyrSlot *b = g->sp;
     int chan, err;
@@ -428,46 +422,13 @@ int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
 
 }
 
-void initSpeechPrimitives ()
-{
-	int base, index;
-
-	base = nextPrimitiveIndex();
-	index = 0;
-
-	s_speechwordAction = getsym("doWordAction");
-	s_speechdoneAction = getsym("doSpeechDoneAction");
-	s_speech = getsym("Speech");
-
-	definePrimitive(base, index++, "_SpeakText", prSpeakText, 3, 0);
-	definePrimitive(base, index++, "_InitSpeech", prInitSpeech, 2, 0);
-	definePrimitive(base, index++, "_SetSpeechRate", prSetSpeechRate, 3, 0);
-	definePrimitive(base, index++, "_SetSpeechPitch", prSetSpeechPitch, 3, 0);
-	definePrimitive(base, index++, "_SetSpeechPitchMod", prSetSpeechPitchMod, 3, 0);
-	definePrimitive(base, index++, "_SetSpeechVoice", prSetSpeechVoice, 3, 0);
-	definePrimitive(base, index++, "_SetSpeechVolume", prSetSpeechVolume, 3, 0);
-	definePrimitive(base, index++, "_SetSpeechPause", prSetSpeechPause, 3, 0); //0 pause, 1 continue
-	definePrimitive(base, index++, "_SetSpeechStopAt", prSetSpeechStop, 3, 0); //0 kImmediate, 1 kEndOfWord, 2 kEndOfSentence
-	definePrimitive(base, index++, "_SpeechVoiceIsSpeaking", prSpeechVoiceIsSpeaking, 2, 0);
-#ifndef useCarbonSpeech
-	definePrimitive(base, index++, "_GetSpeechVoiceNames", prGetSpeechVoiceNames, 2, 0);
-#endif
-
 #ifdef useCarbonSpeech
+SCLANG_DEFINE_CUSTOM_INITIALIZER( initSpeech )
+{
 	for(int i=0; i<kMaxSpeechChannels; ++i){
 		speechStrings[i] = NULL;
 		if(fCurSpeechChannel[i]) DisposeSpeechChannel(fCurSpeechChannel[i]);
 		fCurSpeechChannel[i] = NULL;
 	}
-#else
-	#if 0
-	if(speechSynthsArray){
-//		[speechSynthsArray enumerator]
-		[speechSynthsArray release];
-		speechSynthsArray = NULL;
-	}
-	#endif
-#endif
 }
-
-
+#endif // useCarbonSpeech

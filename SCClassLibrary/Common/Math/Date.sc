@@ -71,7 +71,7 @@ Date {
 	}
 	format {
 		arg format;
-		_prStrFTime;
+		_StrFTime;
 		^this.primitiveFailed
 	}
 }
