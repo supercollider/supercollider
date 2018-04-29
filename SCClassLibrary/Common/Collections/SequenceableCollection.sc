@@ -859,8 +859,8 @@ SequenceableCollection : Collection {
 	gammaQDerivative { |a, x| ^this.gammaPDerivative(a, x).neg }
 
 	//	Factorials and Binomial Coefficients:
-	factorial { ^this.performUnaryOp('zeta') }
-	doubleFactorial { ^this.performUnaryOp('zeta') }
+	factorial { ^this.performUnaryOp('factorial') }
+	doubleFactorial { ^this.performUnaryOp('doubleFactorial') }
 	risingFactorial { |x, i| ^this.performBinaryOp('risingFactorial', x, i) }
 	fallingFactorial { |x, i| ^this.performBinaryOp('fallingFactorial', x, i) }
 	binomialCoefficient { |n, k| ^this.performBinaryOp('binomialCoefficient', n, k) }
