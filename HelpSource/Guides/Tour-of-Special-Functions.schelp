@@ -27,18 +27,20 @@ var genCol, getPlotLay, multiPlot, layOutPlots, plotSpecs;
 
 // generate colors for each plot
 genCol = { |num, offset=(rrand(0,1.0)), range=(rrand(0.15,1.3))|
-	num.collect{ |i| Color.hsv(((i/(max(num,1.0001)-1)) * range + offset).wrap(0,1), 0.6, 1, 1)}
+	num.collect { |i|
+		Color.hsv(((i/(max(num,1.0001)-1)) * range + offset).wrap(0,1), 0.6, 1, 1)
+	}
 };
 // generate a vertical layout for the plot and its text
 getPlotLay = { |plot, text|
-	VLayout(plot, StaticText().string_(text).maxHeight_(50).align_(\center), 10);
+	VLayout(plot, StaticText().string_(text).maxHeight_(50).align_(\center), 10)
 };
 
 ~multiPlot = { |func, data, txt, min, max|
 	var res, params, samps, clumped, pltr;
 	var gridcol = Color.gray.alpha_(0.2);
 
-	if (data.shape.size == 1) {
+	if(data.shape.size == 1) {
 		samps = data;
 		clumped = data.asList.flop;
 	}{
@@ -69,23 +71,26 @@ getPlotLay = { |plot, text|
 	var vl = VLayout();
 	var sb = Window.screenBounds;
 
-	cols = numCols ?? {plotters.size.sqrt.ceil.asInt};
+	cols = numCols ?? { plotters.size.sqrt.ceil.asInteger };
 	wscl = cols.linlin(1, 4, 0.5, 0.9);
 	w = Window(title,
 		Rect().width_(sb.width*wscl).height_(sb.height).center_(sb.center)
 	).view.layout_(vl).front;
 
-	colbut = Button().states_([["Light Plots"],["Dark Plots"]]).maxSize_(Size(80,15));
+	colbut = Button().states_([["Light Plots"], ["Dark Plots"]]).maxSize_(Size(80,15));
 	vl.add(HLayout(nil, colbut));
 
-	plotters.do{ |pltr, i|
+	plotters.do { |pltr, i|
 		var plot = pltr.parent.view.children[0];
-		if( i%(cols) == 0 ) {vl.add(hl = HLayout())};
+		if(i % cols == 0) {
+			vl.add(hl = HLayout())
+		};
 		plotlay = getPlotLay.(plot, pltr.name.asString);
 		hl.add(plotlay);
 		pltr.parent.close;
 	};
-	if((plotters.size)%cols > 0) {
+
+	if((plotters.size) % cols > 0) {
 		((cols-(plotters.size)%cols)).do{hl.add(StaticText().string_(""))}
 	};
 
@@ -119,7 +124,7 @@ CODE::
 
 /* Tangent numbers */
 
-(0..15).do{ |i| postf("% %\n", i, tangentT2n(i)) }
+(0..15).do { |i| postf("% %\n", i, tangentT2n(i)) }
 ::
 
 
@@ -133,7 +138,7 @@ CODE::
 var checkCall, plotSpecs;
 // make sure z isn't a negative integer
 checkCall = { |selector, z|
-	if ((z <= 0) nand: {(z % 1) == 0}) { z.perform(selector) }
+	if ((z <= 0) nand: { (z % 1) == 0 }) { z.perform(selector) }
 };
 
 plotSpecs = [
@@ -163,7 +168,7 @@ plotSpecs = [
 		0, 30
 	],
 	[   // make sure z isn't a negative integer
-		{ |n,z| if (((z<=0) and: ((z % 1) == 0) ).not) {polygamma(n, z)} },
+		{ |n, z| if ( z <= 0 nand: { (z % 1) == 0 }) { polygamma(n, z) } },
 		[[2,3], (-6, -5.99 .. 5)],
 		"polygamma(z)\nPolygamma\nn=",
 		-50, 400
@@ -197,14 +202,14 @@ var plotSpecs = [
 		[ [0.5,1,5,10], (0.0001, 0.05 .. 15) ],
 		"tgammaUpper(a, z)\nUpper incomplete gamma function (non-normalized)\na=",
 	],
-	[	{ |delta, z| if (z.neg != delta) {tgammaDeltaRatio(z, delta)} },
+	[	{ |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
 		[[-0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1], (0.0001, 0.1 .. 40)],
 		"tgammaDeltaRatio(z, delta)\nGamma Delta Ratio\ndelta=",
 		0, 7,
 	]
 ];
 
-~layOutPlots.( plotSpecs.collect{ |data| ~multiPlot.(*data) }, "Gamma Functions (cont'd)", 2 );
+~layOutPlots.( plotSpecs.collect { |data| ~multiPlot.(*data) }, "Gamma Functions (cont'd)", 2 );
 )
 ::
 
@@ -606,7 +611,7 @@ var plotSpecs = [
 	],
 ];
 
-~layOutPlots.( plotSpecs.collect{ |data| ~multiPlot.(*data) }, "Derivatives of Bessel Functions",2 );
+~layOutPlots.( plotSpecs.collect{ |data| ~multiPlot.(*data) }, "Derivatives of Bessel Functions", 2);
 )
 ::
 
@@ -709,7 +714,7 @@ var plotSpecs = [
 	]
 ];
 
-~layOutPlots.( plotSpecs.collect{ |data| ~multiPlot.(*data) }, "Airy Functions" );
+~layOutPlots.( plotSpecs.collect { |data| ~multiPlot.(*data) }, "Airy Functions" );
 )
 ::
 
@@ -801,9 +806,9 @@ var plotSpecs =
 	step = range[1] - range[0] / samps;
 	us = (range[0], range[0]+step .. range[1]);
 	method = (\jacobi ++ variant).asSymbol;
-	data = ks.collect({ |k|
-		us.collect({ |u| k.perform(method, u) })
-	}).flat;
+	data = ks.collect { |k|
+		us.collect { |u| k.perform(method, u) }
+	}.flat;
 	[
 		method,
 		[ks, us],
