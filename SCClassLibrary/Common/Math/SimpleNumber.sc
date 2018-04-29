@@ -134,8 +134,8 @@ SimpleNumber : Number {
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
 
-	degrad { ^this*pi/180 }
-	raddeg { ^this*180/pi }
+	degrad { ^this * pi / 180 }
+	raddeg { ^this * 180 / pi }
 
 	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
 		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
@@ -622,6 +622,7 @@ SimpleNumber : Number {
 		size = floor((last - this) / step + 0.001).asInteger + 1;
 		^Array.series(size, this, step) */
 	}
+
 	seriesIter { |second, last|
 		var step, size;
 
@@ -643,7 +644,7 @@ SimpleNumber : Number {
 					val = val + step;
 				};
 			}
-		}{
+		} {
 			r {
 				var val = this;
 				while {
