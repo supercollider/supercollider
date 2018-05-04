@@ -413,10 +413,11 @@ SoundFile {
 			ev.use {
 				server = ~server ?? { Server.default};
 				if(~instrument.isNil) {
-					SynthDef(defname, { |out, amp=1, bufnum, sustain, ar=0, dr=0.01, gate=1|
+					SynthDef(defname, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
 						var sig = VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum));
-						var env = EnvGen.kr(Env.linen(ar, (sustain - ar - dr).max(0), dr), gate, doneAction: Done.freeSelf); 
-						Out.ar(out, sig * env * amp)
+						var env = EnvGen.kr(Env.linen(atk, (sustainTime-atk-rel).max(0), rel), 1, doneAction: Done.freeSelf); 
+						var earlyGate = Linen.kr(gate, atk, 1, rel, Done.freeSelf);
+						Out.ar(out, sig * env * earlyGate * amp)
 					}).add;
 					~instrument = defname;
 					condition = Condition.new;
