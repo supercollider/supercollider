@@ -100,9 +100,9 @@ Where strong::bufferSize::, strong::firstFrame::, strong::lastFrame:: are for bu
 code::
 SynthDef(\diskIn2, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
 	var sig = VDiskIn.ar(2, bufnum, BufRateScale.kr(bufnum));
-	var env = EnvGen.kr(Env.linen(atk, (sustainTime-atk-rel).max(0), rel), 1, doneAction: Done.freeSelf);
-	var earlyGate = Linen.kr(gate, 0, 1, rel, Done.freeSelf);
-	Out.ar(out, sig * env * earlyGate * amp)
+	var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+	var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+	Out.ar(out, sig * env * amp)
 });
 ::
 The control strong::sustainTime:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback

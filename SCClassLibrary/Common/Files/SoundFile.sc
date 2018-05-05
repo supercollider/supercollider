@@ -415,9 +415,9 @@ SoundFile {
 				if(~instrument.isNil) {
 					SynthDef(defname, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
 						var sig = VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum));
-						var env = EnvGen.kr(Env.linen(atk, (sustainTime-atk-rel).max(0), rel), 1, doneAction: Done.freeSelf); 
-						var earlyGate = Linen.kr(gate, 0, 1, rel, Done.freeSelf);
-						Out.ar(out, sig * env * earlyGate * amp)
+						var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+						var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+						Out.ar(out, sig * env * amp)
 					}).add;
 					~instrument = defname;
 					condition = Condition.new;
