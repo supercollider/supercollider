@@ -16,10 +16,9 @@ TestSoundFile : UnitTest {
 
 		server = Server(this.class.name);
 		this.bootServer(server);
-		
+
 		soundFile = SoundFile(path);
-		server.sync;
-		
+
 	}
 
 	tearDown {
@@ -32,13 +31,9 @@ TestSoundFile : UnitTest {
 	test_isOpen {
 
 		soundFile.openRead;
-		server.sync;
-
 		this.assert(soundFile.isOpen, "SoundFile should now be opened");
 
 		soundFile.close;
-		server.sync;
-
 		this.assert(soundFile.isOpen.not, "SoundFile should now be closed");
 
 	}
@@ -48,8 +43,6 @@ TestSoundFile : UnitTest {
 		var instVars;
 
 		soundFile.openRead;
-		server.sync;
-
 		this.assert(soundFile.fileptr.notNil, "SoundFile pointer should not be Nil after opening");
 
 		// collect all instance variables into a Dictionary, remove problematic 'fileptr'
