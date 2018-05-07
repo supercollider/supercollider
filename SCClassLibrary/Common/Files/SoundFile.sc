@@ -440,6 +440,14 @@ SoundFile {
 							["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
 					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
 				};
+				if (closeWhenDone) {
+					onClose = SimpleController(ev).put(\n_end, {
+						ev.setwatchers;
+						ev.close;
+						onClose.remove;
+					});
+					ev.addDependant(onClose)
+				};
 				if (playNow) {
 					packet = server.makeBundle(false, {ev.play})[0];
 						// makeBundle creates an array of messages
@@ -451,13 +459,6 @@ SoundFile {
 							["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
 						]);
 			};
-		};
-		if (closeWhenDone) {
-			onClose = SimpleController(ev).put(\n_end, {
-				ev.close;
-				onClose.remove;
-			});
-			ev.addDependant(onClose)
 		};
 		^ev;
 	}
