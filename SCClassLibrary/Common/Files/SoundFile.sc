@@ -438,7 +438,7 @@ SoundFile {
 					OSCFunc({
 						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
 							["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
-					}, "/n_end", server.addr, nil, ev[\id][0]).oneShot;
+					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
 				};
 				if (playNow) {
 					packet = server.makeBundle(false, {ev.play})[0];
