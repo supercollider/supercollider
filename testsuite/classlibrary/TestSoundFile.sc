@@ -1,6 +1,6 @@
 TestSoundFile : UnitTest {
 
-	var soundFile, path, info;
+	var soundFile, path;
 
 	setUp {
 
@@ -18,10 +18,15 @@ TestSoundFile : UnitTest {
 	test_isOpen {
 
 		soundFile.openRead;
-		this.assert(soundFile.isOpen, "SoundFile should now be opened");
+		this.assert(soundFile.isOpen, "SoundFile should be opened");
 
+	}
+
+	test_close {
+
+		soundFile.openRead;
 		soundFile.close;
-		this.assert(soundFile.isOpen.not, "SoundFile should now be closed");
+		this.assert(soundFile.isOpen.not, "SoundFile should be closed");
 
 	}
 
