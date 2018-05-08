@@ -13,18 +13,13 @@ TestSoundFile : UnitTest {
 			(\sampleFormat -> "int16"),
 			(\headerFormat -> "WAV")
 		];
-
-		server = Server(this.class.name);
-		this.bootServer(server);
-
 		soundFile = SoundFile(path);
 
 	}
 
 	tearDown {
 
-		if (soundFile.isOpen) { soundFile.close };
-		server.quit.remove;
+		soundFile.close;
 
 	}
 
