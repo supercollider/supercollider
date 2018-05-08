@@ -1,6 +1,6 @@
 TestSoundFile : UnitTest {
 
-	var server, soundFile, path, info;
+	var soundFile, path, info;
 
 	setUp {
 
