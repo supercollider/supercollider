@@ -5,14 +5,6 @@ TestSoundFile : UnitTest {
 	setUp {
 
 		path = Platform.resourceDir +/+ "sounds/a11wlk01.wav";
-		info = IdentityDictionary[
-			(\numFrames -> 188893),
-			(\numChannels -> 1),
-			(\path -> path),
-			(\sampleRate -> 44100),
-			(\sampleFormat -> "int16"),
-			(\headerFormat -> "WAV")
-		];
 		soundFile = SoundFile(path);
 
 	}
@@ -36,6 +28,14 @@ TestSoundFile : UnitTest {
 	test_instVars {
 
 		var instVars;
+		var info = IdentityDictionary[
+			(\numFrames -> 188893),
+			(\numChannels -> 1),
+			(\path -> path),
+			(\sampleRate -> 44100),
+			(\sampleFormat -> "int16"),
+			(\headerFormat -> "WAV")
+		];
 
 		soundFile.openRead;
 		this.assert(soundFile.fileptr.notNil, "SoundFile pointer should not be Nil after opening");
