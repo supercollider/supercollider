@@ -441,9 +441,10 @@ SoundFile {
 					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
 				};
 				if (closeWhenDone) {
+					ev.setwatchers;
 					onClose = SimpleController(ev).put(\n_end, {
-						ev.setwatchers;
 						ev.close;
+						this.close;
 						onClose.remove;
 					});
 					ev.addDependant(onClose)
