@@ -137,7 +137,7 @@ inline SNDFILE* sndfileOpenFromCStr(const char *path, int mode, SF_INFO *sfinfo)
 
 // Safely creates a handle using a raw cstring on any platform
 inline SndfileHandle makeSndfileHandle(
-	const char *path, int mode, int format = 0, int channels = 0, int samplerate = 0)
+	const char *path, int mode = SFM_READ, int format = 0, int channels = 0, int samplerate = 0)
 {
 	const std::wstring path_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(path);
 	return SndfileHandle(path_w.c_str(), mode, format, channels, samplerate);
@@ -158,7 +158,7 @@ inline SNDFILE* sndfileOpenFromCStr(const char *path, int mode, SF_INFO *sfinfo)
 
 // simple forward
 inline SndfileHandle makeSndfileHandle(
-	const char *path, int mode, int format = 0, int channels = 0, int samplerate = 0)
+	const char *path, int mode = SFM_READ, int format = 0, int channels = 0, int samplerate = 0)
 {
 	return SndfileHandle(path, mode, format, channels, samplerate);
 }
