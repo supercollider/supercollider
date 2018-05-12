@@ -19,7 +19,7 @@
 #include <cstdarg>
 #include <random>
 
-#include "sndfile.hh"
+#include "SC_SndFileHelpers.hpp"
 
 #include "sc_plugin_interface.hpp"
 #include "sc_ugen_factory.hpp"
@@ -942,7 +942,7 @@ SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, u
 
 void sc_plugin_interface::buffer_read_alloc(uint32_t index, const char * filename, uint32_t start, uint32_t frames)
 {
-    SndfileHandle f(filename);
+    auto f = makeSndfileHandle(filename);
     if (f.rawHandle() == nullptr)
         throw std::runtime_error(f.strError());
 
@@ -966,7 +966,7 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char 
                                                      uint32_t frames, uint32_t channel_count,
                                                      const uint32_t * channel_data)
 {
-    SndfileHandle f(filename);
+    auto f = makeSndfileHandle(filename);
     if (f.rawHandle() == nullptr)
         throw std::runtime_error(f.strError());
 
@@ -997,7 +997,7 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char * filename, con
     SndBuf * buf = World_GetNRTBuf(&world, index);
     int format = headerFormatFromString(header_format) | sampleFormatFromString(sample_format);
 
-    SndfileHandle sf(filename, SFM_WRITE, format, buf->channels, buf->samplerate);
+    auto sf = makeSndfileHandle(filename, SFM_WRITE, format, buf->channels, buf->samplerate);
 
     if (!sf)
         return -1;
@@ -1036,7 +1036,7 @@ void sc_plugin_interface::buffer_read(uint32_t index, const char * filename, uin
     if (uint32_t(buf->frames) < start_buffer)
         throw std::runtime_error("buffer already full");
 
-    SndfileHandle sf(filename, SFM_READ);
+    auto sf = makeSndfileHandle(filename, SFM_READ);
     buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
 
     if (sf.channels() != buf->channels)
@@ -1065,7 +1065,7 @@ void sc_plugin_interface::buffer_read_channel(uint32_t index, const char * filen
     if (uint32_t(buf->frames) >= start_buffer)
         throw std::runtime_error("buffer already full");
 
-    SndfileHandle sf(filename, SFM_READ);
+    auto sf = makeSndfileHandle(filename, SFM_READ);
     buffer_read_verify(sf, start_file, buf->samplerate, !leave_open);
 
     uint32_t sf_channels = uint32_t(sf.channels());
