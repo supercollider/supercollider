@@ -25,7 +25,15 @@
 #include "SC_Errors.h"
 
 #ifndef NO_LIBSNDFILE
-#include "sndfile.h"
+
+// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
+// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
+#ifdef _WIN32
+#  include <windows.h>
+#  define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#endif // _WIN32
+#include <sndfile.h>
+
 #include "string.h"
 
 #include <boost/algorithm/string/predicate.hpp> // iequals
@@ -109,7 +117,24 @@ static inline int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char 
 	return kSCErr_None;
 }
 
-#else
+// ------------------------------ platform-specific functions ------------------------------
+#ifdef _WIN32
+
+inline SNDFILE* sndfileOpen(LPCWSTR wpath, int mode, SF_INFO *sfinfo)
+{
+	return sf_wchar_open(wpath, mode, sfinfo);
+}
+
+#else // not _WIN32
+
+inline SNDFILE* sndfileOpen(const char *path, int mode, SF_INFO *sfinfo)
+{
+	return sf_open(path, mode, sfinfo);
+}
+
+#endif // _WIN32
+
+#else // not NO_LIBSNDFILE
 
 static inline int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatString, const char *sampleFormatString)
 {
