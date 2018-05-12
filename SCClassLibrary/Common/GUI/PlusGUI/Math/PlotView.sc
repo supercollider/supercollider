@@ -769,14 +769,13 @@ Plotter {
 
 
 + Function {
-	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
-
+	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
 
-		this.loadToFloatArray(duration, server, { |array, buf|
+		this.getToFloatArray(duration, target, { |array, buf|
 			var numChan = buf.numChannels;
 			{
 				plotter.setValue(
