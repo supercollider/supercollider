@@ -33,6 +33,7 @@
 #  define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 #endif // _WIN32
 #include <sndfile.h>
+#include <sndfile.hh>
 
 #include "string.h"
 
@@ -133,6 +134,14 @@ inline SNDFILE* sndfileOpenFromCStr(const char *path, int mode, SF_INFO *sfinfo)
 	return sndfileOpen(path_w.c_str(), mode, sfinfo);
 }
 
+// Safely creates a handle using a raw cstring on any platform
+inline SndfileHandle makeSndfileHandle(
+	const char *path, int mode, int format = 0, int channels = 0, int samplerate = 0)
+{
+	const std::wstring path_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(path);
+	return SndfileHandle(path_w.c_str(), mode, format, channels, samplerate);
+}
+
 #else // not _WIN32
 
 inline SNDFILE* sndfileOpen(const char *path, int mode, SF_INFO *sfinfo)
@@ -144,6 +153,13 @@ inline SNDFILE* sndfileOpen(const char *path, int mode, SF_INFO *sfinfo)
 inline SNDFILE* sndfileOpenFromCStr(const char *path, int mode, SF_INFO *sfinfo)
 {
 	return sndfileOpen(path, mode, sfinfo);
+}
+
+// simple forward
+inline SndfileHandle makeSndfileHandle(
+	const char *path, int mode, int format = 0, int channels = 0, int samplerate = 0)
+{
+	return SndfileHandle(path, mode, format, channels, samplerate);
 }
 
 #endif // _WIN32
