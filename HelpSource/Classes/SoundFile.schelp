@@ -98,13 +98,14 @@ table::
 ::
 Where strong::bufferSize::, strong::firstFrame::, strong::lastFrame:: are for buffer and playback position, and strong::out::, strong::server::, strong::group::, strong::addAction::, strong::amp:: are synth parameters. Here is the default SynthDef used for stereo files:
 code::
-SynthDef(\diskIn2, { | bufnum, out, gate = 1, sustain, amp = 1, ar = 0, dr = 0.01 |
-	Out.ar(out, DiskIn.ar(2, bufnum)
-	* Linen.kr(gate, ar, 1, dr, 2)
-	* EnvGen.kr(Env.linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: Done.freeSelf) * amp)
+SynthDef(\diskIn2, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
+	var sig = VDiskIn.ar(2, bufnum, BufRateScale.kr(bufnum));
+	var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+	var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+	Out.ar(out, sig * env * amp)
 });
 ::
-The control strong::sustain:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback
+The control strong::sustainTime:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback
 
 argument::playNow
 This is a link::Classes/Boolean:: that determines whether the file is to be played immediately after cueing.
