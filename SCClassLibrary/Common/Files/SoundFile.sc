@@ -425,7 +425,7 @@ SoundFile {
 				};
 				ev.synth;	// set up as a synth event (see Event)
 				~bufnum =  server.bufferAllocator.alloc(1);
-				~bufferSize = 0x10000;
+				~bufferSize = ~bufferSize ? 0x10000;
 				~firstFrame = ~firstFrame ? 0;
 				~lastFrame = ~lastFrame ? numFrames;
 				~sustainTime = (~lastFrame - ~firstFrame)/(sampleRate ?? {server.sampleRate ? 44100});
