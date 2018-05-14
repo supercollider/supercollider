@@ -428,7 +428,7 @@ SoundFile {
 				~bufferSize = 0x10000;
 				~firstFrame = ~firstFrame ? 0;
 				~lastFrame = ~lastFrame ? numFrames;
-				~sustain = (~lastFrame - ~firstFrame)/(sampleRate ?? {server.options.sampleRate ? 44100});
+				~sustainTime = (~lastFrame - ~firstFrame)/(sampleRate ?? {server.options.sampleRate ? 44100});
 				~close = { | ev |
 						server.bufferAllocator.free(ev[\bufnum]);
 						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
