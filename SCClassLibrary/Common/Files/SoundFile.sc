@@ -406,7 +406,7 @@ SoundFile {
 	}
 
 	cue { | ev, playNow = false, closeWhenDone = false |
-		var server, packet, defname = "diskIn" ++ numChannels, condition, onClose;
+		var server, packet, defname = "diskIn" ++ numChannels, onClose;
 		ev = ev ? ();
 		if (this.numFrames == 0) { this.info };
 		fork {
@@ -420,8 +420,7 @@ SoundFile {
 						Out.ar(out, sig * env * amp)
 					}).add;
 					~instrument = defname;
-					condition = Condition.new;
-					server.sync(condition);
+					server.sync;
 				};
 				ev.synth;	// set up as a synth event (see Event)
 				~bufnum =  server.bufferAllocator.alloc(1);
