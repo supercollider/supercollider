@@ -86,7 +86,7 @@ argument::ev
 An link::Classes/Event:: can passed as an argument allowing playback to be customized using the following keys:
 table::
 ## strong::key:: || strong::default value:: || strong::what it does::
-## bufferSize || 65536 ||
+## bufferSize || 65536 || Must be a power of two (65536, 131072 or 262144 recommended)
 ## firstFrame || 0 || first frame to play
 ## lastFrame || nil || last frame to play (nil plays to end of file)
 ## out: || 0 || sets output bus
@@ -118,7 +118,7 @@ e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the defaul
 
 argument:: closeWhenDone
 
-A flag to indicate wether the code::SoundFile:: will be closed after it's done playing. Default is False.
+A flag to indicate wether the code::SoundFile:: and buffer will be closed after playback is finished. Default is False.
 
 subsection::Read/Write
 
