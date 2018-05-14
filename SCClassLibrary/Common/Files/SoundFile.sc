@@ -433,20 +433,11 @@ SoundFile {
 						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
 							["/b_free", ev[\bufnum] ]  )
 				};
-				~setwatchers = { |ev|
-					OSCFunc({
-						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
-							["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
-					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
-				};
 				if (closeWhenDone) {
-					ev.setwatchers;
-					onClose = SimpleController(ev).put(\n_end, {
+					OSCFunc({
 						ev.close;
 						this.close;
-						onClose.remove;
-					});
-					ev.addDependant(onClose)
+					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
 				};
 				if (playNow) {
 					packet = server.makeBundle(false, {ev.play})[0];
