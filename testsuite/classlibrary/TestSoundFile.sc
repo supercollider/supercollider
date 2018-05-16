@@ -53,7 +53,6 @@ TestSoundFile : UnitTest {
 
 	}
 
-<<<<<<< HEAD
 	// tests several features:
 	// openRead and openWrite class methods (not tested above)
 	// readData and writeData
