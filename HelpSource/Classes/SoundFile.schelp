@@ -118,7 +118,7 @@ e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the defaul
 
 argument:: closeWhenDone
 
-A flag to indicate wether the code::SoundFile:: and buffer will be closed after playback is finished. Default is False.
+A flag to indicate whether the code::SoundFile:: and buffer will be closed after playback is finished. Default is False.
 
 subsection::Read/Write
 
