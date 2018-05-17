@@ -319,34 +319,6 @@ endif()
 
 # Installation
 
-# mac/windows: find the Qt deploy utility.
-# See https://doc.qt.io/qt-5/windows-deployment.html for windeployqt
-# See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
-if(APPLE OR WIN32)
-    if(APPLE)
-        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
-        # only the IDE executable is scanned normally, so force scanning of sclang as well
-        # to get QtWebEngine, libsndfile, and other libs
-        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
-                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
-                -verbose=1
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
-            ")
-    else()
-        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
-        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
-                --verbose 1 --no-compiler-runtime
-                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
-            ")
-    endif()
-
-    if(NOT DEPLOY_PROG)
-        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
-    endif()
-
-    message(STATUS "Found Qt deploy utility: ${DEPLOY_PROG}")
-endif()
-
 if(APPLE)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
@@ -430,7 +402,32 @@ else()
       DESTINATION "share/SuperCollider/translations")
 endif()
 
+# mac/windows: find the Qt deploy utility.
+# See https://doc.qt.io/qt-5/windows-deployment.html for windeployqt
+# See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
 if(APPLE OR WIN32)
+    if(APPLE)
+        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        # only the IDE executable is scanned normally, so force scanning of sclang as well
+        # to get QtWebEngine, libsndfile, and other libs
+        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+                -verbose=1
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+            ")
+    else() # WIN32
+        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
+        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+                --verbose 1 --no-compiler-runtime
+                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
+            ")
+    endif()
+
+    if(NOT DEPLOY_PROG)
+        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
+    endif()
+
+    message(STATUS "Found Qt deploy utility: ${DEPLOY_PROG}")
     install(CODE
         "
             message(STATUS \"Deploying additional Qt resources and libraries\")
