@@ -438,13 +438,17 @@ elseif(WIN32)
       list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
-    include(DeployQt5)
-    install_qt5_executable(
-      "${SC_WIN_BUNDLE_NAME}/sclang.exe"
-      ""
-      ""
-      "${SC_WIN_DLL_DIRS}"
+    # run fixup_bundle to get FFTW, libsndfile, MSVC, and Qt libs
+    # run windeployqt to auto-deploy QtWebEngine dependencies
+    install(CODE
+        "
+            include(BundleUtilities)
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\" \"\" \"${SC_WIN_DLL_DIRS}\")
+            message(STATUS \"Deploying additional Qt resources and libraries\")
+            execute_process(COMMAND \"${QT_BIN_PATH}/windeployqt\" --verbose 1 --no-compiler-runtime \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\")
+        "
     )
+
 
 else()
   install(TARGETS SuperCollider
