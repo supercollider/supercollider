@@ -1,6 +1,6 @@
 class:: NodeMap
 summary:: store control values and bus mappings
-categories:: Libraries>JITLib>NodeProxy, Server>Nodes, Server>Abstractions
+categories:: JITLib>NodeProxy, Server>Nodes, Server>Abstractions
 related:: Classes/Bus
 
 description::

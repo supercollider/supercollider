@@ -12,7 +12,7 @@ Stefan Kersten first ported the code to Linux in 2003.
 Build requirements
 ------------------
 
-(most of these will be available in your linux distribution as packages )
+(most of these will be available in your Linux distribution as packages )
 
  * gcc >= 4.8
    http://www.gnu.org/software/gcc
@@ -40,7 +40,7 @@ Build requirements
 
 Build requirements (optional features)
 --------------------------------------
-(most of these will be available in your linux distribution as packages)
+(most of these will be available in your Linux distribution as packages)
 
  * Qt >= 5.3 (+ qtwebkit)
    * http://qt-project.org
@@ -50,11 +50,11 @@ Build requirements (optional features)
 
  * alsa
    * http://www.alsa-project.org
-   * advanced linux sound architecture drivers and library, for sclang's MIDI interface
+   * advanced Linux sound architecture drivers and library, for sclang's MIDI interface
 
  * libudev
    * http://www.freedesktop.org/software/systemd/man/libudev.html
-   * interaction with the device manager of linux (used for HID support)
+   * interaction with the device manager of Linux (used for HID support)
 
  * libreadline >= 5
    * http://savannah.gnu.org/projects/readline
@@ -66,7 +66,7 @@ Build requirements (optional features)
 
  * libcwiid
    * http://abstrakraft.org/cwiid
-   * library for wiimote support
+   * library for Wiimote support
 
  * linux kernel >= 2.6
    * http://www.kernel.org
@@ -99,14 +99,14 @@ for building supercollider:
  - pkg-config
  - git (used by the Quarks package management system)
  - cmake (on some platforms, cmake >= 2.9 may require manual build)
- - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev libqt5opengl5-dev
+ - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev
 
-More details for building on embedded linux platforms (Raspberry Pi, 
+More details for building on embedded Linux platforms (Raspberry Pi, 
 Beaglebone Black) can be found here:
 
     http://supercollider.github.io/development/building
 
-The recommended version of gcc is 4.8
+The minimum required version of GCC is 4.8.
 
 
 Building
@@ -140,14 +140,13 @@ builds in a specific build directory:
    frontends like ccmake or cmake-gui, or by simply editing the
    `build/CMakeCache.txt` file.
 
-   For example to enable a release build run the following in your build
-   directory:
+   For example to enable a release build run the following in your build:
 
    ```
    $> cmake -DCMAKE_BUILD_TYPE=Release ..
    ```
 
-   In some situations it is preferable to install libraries and plugins
+   In some situations, it is preferable to install libraries and plugins
    not in the `lib` directory but in a suffixed one, e.g. `lib64`.
    In such a case you can set the cmake variable `LIB_SUFFIX`.
    For example if you whish to install into `lib64`:
@@ -162,7 +161,7 @@ builds in a specific build directory:
    $> make install
    ```
 
-   For the above step you will probably need super-user privileges,
+   For the above step, you will probably need super-user privileges,
    e.g. using "sudo".
 
    Also, please run
@@ -180,17 +179,17 @@ builds in a specific build directory:
 
 ### Qt GUI
 
-By default the Qt GUI support will be built into sclang.
+By default, the Qt GUI support will be built into sclang. 
 If you want to build without it configure cmake like this:
 
 ```
 $> cmake -DSC_QT=OFF ..
 ```
 
-Note: running headless SC in a X-less environment requires
+Note: running headless SC in an X-less environment requires
 jackd without D-bus support. On Raspbian Jessie this requires
 compiling jackd rather than using the packaged version.
-Also note that you will get errors on sclang startup from
+Also, note that you will get errors on sclang startup from
 classes requiring Qt. A workaround and more details are 
 described in:
 
@@ -213,7 +212,7 @@ This assumes your ccache executables are installed into `/usr/lib/ccache` - you 
 Building a Debian package
 -------------------------
 
-The most up-to-date debian packaging rules are maintained by the
+The most up-to-date Debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
@@ -275,7 +274,7 @@ Environment
 The jack audio driver interface is configured based on various
 environment variables:
 
- * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that the server's inputs should connect to by default
+ * SC_JACK_DEFAULT_INPUTS comma-separated list of jack ports that the server's inputs should connect by default
 
    ```
    $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
@@ -287,7 +286,7 @@ environment variables:
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that the server's outputs should be connected to by default.
+ * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by default.
 
    ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
@@ -301,7 +300,7 @@ environment variables:
 
 Two additional environment variables substitute directories for the default
 search path for plugins and synth definitions, respectively. Directory
-names are separated by ':' as in the unix PATH variable:
+names are separated by ':' as in the Unix PATH variable:
 
  * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
 

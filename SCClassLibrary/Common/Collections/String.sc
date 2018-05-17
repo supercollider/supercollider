@@ -343,7 +343,7 @@ String[char] : RawArray {
 
 	inspectorClass { ^StringInspector }
 
-	/// unix
+	// -------- path operations --------------------------------------------------
 
 	standardizePath {
 		_String_StandardizePath
@@ -353,21 +353,21 @@ String[char] : RawArray {
 		_String_RealPath
 		^this.primitiveFailed
 	}
+
 	withTrailingSlash {
-		var sep = thisProcess.platform.pathSeparator;
-		if(this.last != sep, {
-			^this ++ sep
-		},{
-			^this
-		})
+		^if(this.isEmpty or: { this.last.isPathSeparator.not }) {
+			this ++ thisProcess.platform.pathSeparator
+		} {
+			this
+		}
 	}
+
 	withoutTrailingSlash {
-		var sep = thisProcess.platform.pathSeparator;
-		if(this.last == sep,{
-			^this.copyRange(0, this.size-2)
-		},{
-			^this
-		})
+		^if(this.isEmpty or: { this.last.isPathSeparator.not }) {
+			this
+		} {
+			this.drop(-1)
+		}
 	}
 
 	absolutePath {
@@ -442,17 +442,27 @@ String[char] : RawArray {
 
 	// path concatenate
 	+/+ { arg path;
-		var pathSeparator = thisProcess.platform.pathSeparator;
+		var sep = thisProcess.platform.pathSeparator;
+		var hasLeftSep, hasRightSep;
 
 		if (path.respondsTo(\fullPath)) {
 			^PathName(this +/+ path.fullPath)
 		};
 
-		if (this.last == pathSeparator or: { path.first == pathSeparator }) {
+		// convert to string before concatenation.
+		path = path.asString;
+		hasLeftSep = this.notEmpty and: { this.last.isPathSeparator };
+		hasRightSep = path.notEmpty and: { path.first.isPathSeparator };
+		if(hasLeftSep && hasRightSep) {
+			// prefer using the LHS separator
+			^this ++ path.drop(1)
+		};
+
+		if(hasLeftSep || hasRightSep) {
 			^this ++ path
 		};
 
-		^this ++ pathSeparator ++ path
+		^this ++ sep ++ path
 	}
 
 	asRelativePath { |relativeTo|

@@ -23,14 +23,6 @@
 #include <array>
 #include <string>
 
-// allows for linking into a dylib on darwin
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-	#include <crt_externs.h>
-	#define environ (*_NSGetEnviron())
-#else
-	extern char **environ;
-#endif
-
 FILE *
 sc_popen(const char *command, pid_t *pidp, const char *type)
 {
@@ -104,7 +96,7 @@ sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char 
 			(void)close(pdes[1]);
 		}
 
-		execve(filename, argv, environ);
+		execvp(filename, argv);
 		exit(127);
 		/* NOTREACHED */
 	}

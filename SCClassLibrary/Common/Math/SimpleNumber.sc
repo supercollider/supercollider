@@ -150,6 +150,214 @@ SimpleNumber : Number {
 	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
 	previousPowerOf { arg base; ^pow(base, ceil(log(this) / log(base)) - 1) }
 
+
+	/*  Boost Special Functions  */
+
+	//  Number Series:
+	bernouliB2n { _BernouliB2n; ^this.primitiveFailed }
+	tangentT2n { _TangentT2n; ^this.primitiveFailed }
+
+	//  Gamma:
+	tgamma { _TGamma; ^this.primitiveFailed }
+	tgamma1pm1 { _TGamma1pm1; ^this.primitiveFailed }
+	lgamma { _LGamma; ^this.primitiveFailed }
+	digamma { _Digamma; ^this.primitiveFailed }
+	trigamma { _Trigamma; ^this.primitiveFailed }
+	polygamma { |z| _Polygamma; ^this.primitiveFailed }
+	tgammaRatio { |b| _TGammaRatio; ^this.primitiveFailed }
+	tgammaDeltaRatio { |delta| _TGammaDeltaRatio; ^this.primitiveFailed }
+	gammaP { |z| _GammaP; ^this.primitiveFailed }
+	gammaQ { |z| _GammaQ; ^this.primitiveFailed }
+	tgammaLower { |z| _TGammaLower; ^this.primitiveFailed }
+	tgammaUpper { |z| _TGammaI; ^this.primitiveFailed }
+	//  Incomplete Gamma Function Inverses
+	gammaPInv { |p| _GammaPInv; ^this.primitiveFailed }
+	gammaQInv { |q| _GammaQInv; ^this.primitiveFailed }
+	gammaPInvA { |p| _GammaPInvA; ^this.primitiveFailed }
+	gammaQInvA { |q| _GammaQInvA; ^this.primitiveFailed }
+	//  Derivatives of the Incomplete Gamma Function
+	gammaPDerivative { |x| _GammaPDerivative; ^this.primitiveFailed }
+	gammaQDerivative { |x| ^this.gammaPDerivative(x).neg }
+
+	//	Factorials and Binomial Coefficients:
+	factorial { _Factorial; ^this.primitiveFailed }
+	doubleFactorial { _DoubleFactorial; ^this.primitiveFailed }
+	risingFactorial { |i| _RisingFactorial; ^this.primitiveFailed }
+	fallingFactorial { |i| _FallingFactorial; ^this.primitiveFailed }
+	binomialCoefficient { |k| _BinomialCoefficient; ^this.primitiveFailed }
+
+	//  Beta functions:
+	beta { |b| _Beta; ^this.primitiveFailed }
+	//  Incomplete beta functions
+	ibeta { |b, x| _IBeta; ^this.primitiveFailed }
+	ibetaC { |b, x| _IBetaC; ^this.primitiveFailed }
+	betaFull { |b, x| _BetaFull; ^this.primitiveFailed }
+	betaFullC { |b, x| _BetaCFull; ^this.primitiveFailed }
+	//  Incomplete beta function inverses
+	ibetaInv { |b, p| _IBetaInv; ^this.primitiveFailed }
+	ibetaCInv { |b, q| _IBetaCInv; ^this.primitiveFailed }
+	ibetaInvA { |x, p| _IBetaInvA; ^this.primitiveFailed }
+	ibetaCInvA { |x, q| _IBetaCInvA; ^this.primitiveFailed }
+	ibetaInvB { |x, p| _IBetaInvB; ^this.primitiveFailed }
+	ibetaCInvB { |x, q| _IBetaCInvB; ^this.primitiveFailed }
+	//  Incomplete beta function derivative
+	ibetaDerivative { |b, x| _IBetaDerivative; ^this.primitiveFailed }
+
+	//  Error functions:
+	erf { _Erf; ^this.primitiveFailed }
+	erfC { _ErfC; ^this.primitiveFailed }
+	erfInv { _ErfInv; ^this.primitiveFailed }
+	erfCInv { _ErfCInv; ^this.primitiveFailed }
+
+	//  Polynomials:
+	// Legendre (and Associated), Laguerre (and Associated),
+	// Hermite, Chebyshev Polynomials (first & second kind, derivative, zero (root) finder)
+	// See boost documentation for a note about the Condon-Shortley phase term of (-1)^m
+	// "http://www.boost.org/doc/libs/1_65_1/libs/math/doc/html/math_toolkit/sf_poly/legendre.html"]
+	legendreP { |x| _LegendreP; ^this.primitiveFailed }
+	legendrePPrime { |x| _LegendrePPrime; ^this.primitiveFailed }
+	legendrePZeros { _LegendrePZeros; ^this.primitiveFailed }
+	legendrePAssoc { |m, x| _LegendrePAssoc; ^this.primitiveFailed }
+	legendreQ { |x|
+		//  Protect from l < 0. Boost won't catch this out of range value and interpreter hangs.
+		if (this < 0) {
+			format("n = %, but Legendre Polynomial of the Second Kind requires n >= 0", this).throw
+		};
+		^prLegendreQ(this, x)
+	}
+	prLegendreQ { |x| _LegendreQ; ^this.primitiveFailed }
+	laguerre { |x| _Laguerre; ^this.primitiveFailed }
+	laguerreAssoc { |m, x|
+		//  Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
+		if (this < 0) {
+			format("n = %, but Associated Laguerre Polynomial requires n >= 0", this).throw
+		};
+		^prLaguerreAssoc(this, m, x);
+	}
+	prLaguerreAssoc { |m, x| _LaguerreAssoc; ^this.primitiveFailed }
+	hermite { |x|
+		//  Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
+		if (this < 0) {
+			format("n = %, but Hermite Polynomial requires n >= 0", this).throw
+		};
+		^prHermite(this, x);
+	}
+	prHermite { |x| _Hermite; ^this.primitiveFailed }
+	chebyshevT { |x| _ChebyshevT; ^this.primitiveFailed }
+	chebyshevU { |x| _ChebyshevU; ^this.primitiveFailed }
+	chebyshevTPrime { |x| _ChebyshevTPrime; ^this.primitiveFailed }
+	//  "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
+	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
+	chebyshevTZeros {
+		var n = this.asInt;
+		^(1..n).collect({ arg k;
+			cos(pi* ((2*k) - 1) / (2*n))
+		});
+	}
+
+	//  Spherical Harmonics
+	sphericalHarmonic { |m, theta, phi| _SphericalHarmonic; ^this.primitiveFailed }
+	sphericalHarmonicR { |m, theta, phi| _SphericalHarmonicR; ^this.primitiveFailed }
+	sphericalHarmonicI { |m, theta, phi| _SphericalHarmonicI; ^this.primitiveFailed }
+
+	//	Bessel Functions:
+	//  First and second kind, zero finders, modified first and second kinds,
+	//  spherical first and second kinds, derivatives
+	cylBesselJ { |x| _CylBesselJ; ^this.primitiveFailed }
+	cylNeumann { |x| _CylNeumann; ^this.primitiveFailed }
+	cylBesselJZero { |index| _CylBesselJZero; ^this.primitiveFailed }
+	cylNeumannZero { |index| _CylNeumannZero; ^this.primitiveFailed }
+	cylBesselI { |x| _CylBesselI; ^this.primitiveFailed }
+	cylBesselK { |x| _CylBesselK; ^this.primitiveFailed }
+	sphBessel { |x| _SphBessel; ^this.primitiveFailed }
+	sphNeumann { |x| _SphNeumann; ^this.primitiveFailed }
+	cylBesselJPrime { |x| _CylBesselJPrime; ^this.primitiveFailed }
+	cylNeumannPrime { |x| _CylNeumannPrime; ^this.primitiveFailed }
+	cylBesselIPrime { |x| _CylBesselIPrime; ^this.primitiveFailed }
+	cylBesselKPrime { |x| _CylBesselKPrime; ^this.primitiveFailed }
+	sphBesselPrime { |x| _SphBesselPrime; ^this.primitiveFailed }
+	sphNeumannPrime { |x| _SphNeumannPrime; ^this.primitiveFailed }
+
+	//  Hankel Functions:
+	cylHankel1 { |x| _CylHankel1; ^this.primitiveFailed }
+	cylHankel2 { |x| _CylHankel2; ^this.primitiveFailed }
+	sphHankel1 { |x| _SphHankel1; ^this.primitiveFailed }
+	sphHankel2 { |x| _SphHankel2; ^this.primitiveFailed }
+
+	//  Airy Functions:
+	airyAi { _AiryAi; ^this.primitiveFailed }
+	airyBi { _AiryBi; ^this.primitiveFailed }
+	airyAiPrime { _AiryAiPrime; ^this.primitiveFailed }
+	airyBiPrime { _AiryBiPrime; ^this.primitiveFailed }
+	airyAiZero { _AiryAiZero; ^this.primitiveFailed }
+	airyBiZero { _AiryBiZero; ^this.primitiveFailed }
+
+	//  Elliptic Integrals:
+	//  Carlson Form
+	ellintRf { |y, z| _EllintRf; ^this.primitiveFailed }
+	ellintRd { |y, z| _EllintRd; ^this.primitiveFailed }
+	ellintRj { |y, z, p| _EllintRj; ^this.primitiveFailed }
+	ellintRc { |y| _EllintRc; ^this.primitiveFailed }
+	ellintRg { |y, z| _EllintRg; ^this.primitiveFailed }
+	//  Legendre Form - First, Second, Third Kind, D
+	ellint1 { |phi| _Ellint1; ^this.primitiveFailed }
+	ellint1C { _Ellint1C; ^this.primitiveFailed }
+	ellint2 { |phi| _Ellint2; ^this.primitiveFailed }
+	ellint2C { _Ellint2C; ^this.primitiveFailed }
+	ellint3 { |n, phi| _Ellint3; ^this.primitiveFailed	}
+	ellint3C { |n| _Ellint3C; ^this.primitiveFailed }
+	ellintD { |phi| _EllintD; ^this.primitiveFailed }
+	ellintDC { _EllintDC; ^this.primitiveFailed }
+	//  Jacobi Zeta, Heuman Lambda Functions
+	jacobiZeta { |phi| _JacobiZeta; ^this.primitiveFailed }
+	heumanLambda { |phi| _HeumanLambda; ^this.primitiveFailed }
+
+	//  Jacobi Elliptic Functions:
+	jacobiCd { |u| _JacobiCd; ^this.primitiveFailed }
+	jacobiCn { |u| _JacobiCn; ^this.primitiveFailed }
+	jacobiCs { |u| _JacobiCs; ^this.primitiveFailed }
+	jacobiDc { |u| _JacobiDc; ^this.primitiveFailed }
+	jacobiDn { |u| _JacobiDn; ^this.primitiveFailed }
+	jacobiDs { |u| _JacobiDs; ^this.primitiveFailed }
+	jacobiNc { |u| _JacobiNc; ^this.primitiveFailed }
+	jacobiNd { |u| _JacobiNd; ^this.primitiveFailed }
+	jacobiNs { |u| _JacobiNs; ^this.primitiveFailed }
+	jacobiSc { |u| _JacobiSc; ^this.primitiveFailed }
+	jacobiSd { |u| _JacobiSd; ^this.primitiveFailed }
+	jacobiSn { |u| _JacobiSn; ^this.primitiveFailed }
+
+	//  Riemann Zeta Function:
+	zeta { _Zeta; ^this.primitiveFailed }
+
+	//  Exponential Integrals:
+	expintEn { |z| _ExpintEn; ^this.primitiveFailed }
+	expintEi { _ExpintEi; ^this.primitiveFailed }
+
+	//  Basic Functions:
+	sinPi { _SinPi; ^this.primitiveFailed }
+	cosPi { _CosPi; ^this.primitiveFailed }
+	log1p { _Log1p; ^this.primitiveFailed }
+	expm1{ _ExpM1; ^this.primitiveFailed }
+	cbrt { _Cbrt; ^this.primitiveFailed }
+	sqrt1pm1 { _Sqrt1pm1; ^this.primitiveFailed }
+	powm1{ |y| _PowM1; ^this.primitiveFailed }
+	// hypot not needed... slightly slower than current implementation of hypot
+
+	//  Sinus Cardinal ("sinc") and Hyperbolic Sinus Cardinal Functions:
+	sincPi { _SincPi; ^this.primitiveFailed }
+	sinhcPi { _SinhcPi; ^this.primitiveFailed }
+
+	//  Inverse Hyperbolic Functions:
+	asinh { _Asinh; ^this.primitiveFailed }
+	acosh { _Acosh; ^this.primitiveFailed }
+	atanh { _Atanh; ^this.primitiveFailed }
+
+	//	Owen's T function:
+	owensT { |a| _OwensT; ^this.primitiveFailed }
+
+	/*  end Boost Special Functions  */
+
+
 	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
@@ -522,15 +730,29 @@ SimpleNumber : Number {
 		^this
 	}
 
+	// this method could be refactored by dispatching, but we're trying to keep the overhead low.
+
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
-		clock.sched(this, {
-					if (lag != 0) {
-						SystemClock.sched(lag, {
-							server.sendBundle(latency ? server.latency, *bundleArray)
-						})
-					} {
-						server.sendBundle(latency ? server.latency, *bundleArray)
-					}
-		})
+		var sendBundle = { server.sendBundle(latency ? server.latency, *bundleArray) };
+		// "this" is the delta time for the clock (usually in beats)
+		// "lag" is a tempo independent absolute lag time (in seconds)
+		if (lag != 0) {
+			if(this != 0) {
+				// schedule on both clocks
+				clock.sched(this, { SystemClock.sched(lag, sendBundle) })
+			} {
+				// only lag specified: schedule only on the system clock
+				SystemClock.sched(lag, sendBundle)
+			}
+		} {
+			if(this != 0) {
+				// only delta specified: schedule only on the clock passed in
+				clock.sched(this, sendBundle)
+			} {
+				// no delays: send directly
+				sendBundle.value
+			}
+		}
+
 	}
 }

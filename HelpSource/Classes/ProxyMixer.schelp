@@ -1,6 +1,6 @@
 class:: ProxyMixer
 summary:: mix control for a proxyspace or Ndef.all
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/ProxySpace, Classes/Ndef, Classes/JITGui, Classes/NdefGui, Classes/MonitorGui, Classes/NdefParamGui
 
 description::

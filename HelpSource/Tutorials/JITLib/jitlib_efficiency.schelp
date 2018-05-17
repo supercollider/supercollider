@@ -1,6 +1,6 @@
 title:: jitlib_efficiency
 summary:: Efficient coding with NodeProxy
-categories:: Libraries>JITLib>Tutorials, Tutorials>JITLib
+categories:: JITLib>Tutorials, Tutorials>JITLib
 related:: Overviews/JITLib
 
 link::Classes/NodeProxy:: (and, in disguise link::Classes/ProxySpace::) represent "pronouns", placeholders for all kinds of sound producing objects that are able to write to a specific bus on the server.

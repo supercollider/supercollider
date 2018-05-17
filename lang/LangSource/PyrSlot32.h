@@ -172,7 +172,6 @@ inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
 inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (slot)->uf = (val); }
 #endif
 
-
 inline bool IsObj(const PyrSlot* slot) { return ((slot)->utag == tagObj); }
 inline bool NotObj(const PyrSlot* slot) { return ((slot)->utag != tagObj); }
 

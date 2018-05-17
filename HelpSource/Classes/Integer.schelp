@@ -60,9 +60,6 @@ returns:: an array with a fibonacci series of this size beginning with strong::a
 method:: factors
 returns:: the prime factors as array.
 
-method:: factorial
-returns:: the factorial of this.
-
 
 subsection:: Random Numbers
 See also: link::Guides/Randomness::

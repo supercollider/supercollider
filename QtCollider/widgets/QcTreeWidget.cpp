@@ -199,6 +199,19 @@ void QcTreeWidget::sort( int column, bool descending )
   sortItems( column, descending ? Qt::DescendingOrder : Qt::AscendingOrder );
 }
 
+int QcTreeWidget::columnWidth( int column )
+{
+  if ( column < 0 || column >= columnCount() )
+      return -1;
+  else
+      return QTreeWidget::columnWidth( column );
+}
+
+void QcTreeWidget::setColumnWidth( int column, int width )
+{
+  QTreeWidget::setColumnWidth( column, width );
+}
+
 void QcTreeWidget::keyPressEvent( QKeyEvent *e )
 {
   QTreeWidget::keyPressEvent( e );

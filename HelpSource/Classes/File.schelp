@@ -8,7 +8,7 @@ A class for reading and writing files. Not sound files.
 
 ClassMethods::
 
-private::prGetcwd, prType
+private::prGetcwd, prType, openDialog, openDialogs, saveDialog
 
 method::new
 Create a File instance and open the file. If the open fails, link::Classes/UnixFILE#-isOpen#isOpen:: will return false.

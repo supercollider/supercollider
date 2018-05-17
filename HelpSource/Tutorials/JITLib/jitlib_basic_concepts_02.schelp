@@ -1,6 +1,6 @@
 title:: jitlib_basic_concepts_02
 summary:: proxy space - basic concepts
-categories:: Libraries>JITLib>Tutorials, Tutorials>JITLib
+categories:: JITLib>Tutorials, Tutorials>JITLib
 related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_01, Tutorials/JITLib/jitlib_basic_concepts_03
 
 external structure of the node proxy, referencing in proxyspace and environments.

@@ -23,7 +23,13 @@ METHOD:: new
 Create a new, enabled OSCFunc.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, ...otherArgs]::, the time that the message was sent (plus the latency if the message was in a bundle), a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+A link::Classes/Function:: or similar object which will respond to the incoming message.  When evaluated it will be passed the following arguments:
+table::
+## msg || message as an link::Classes/Array:: in the form code::[OSC address, args1, arg2, ...]::
+## time || the time received (for messages) / the time sent plus the latency (if the message was in a bundle)
+## addr || a link::Classes/NetAddr:: corresponding to the IP address of the strong::sender::
+## recvPort || link::Classes/Integer:: corresponding to the port on which the message was strong::received::.
+::
 
 argument:: path
 A link::Classes/Symbol:: indicating the path of the OSC address of this object. Note that OSCFunc demands OSC compliant addresses. If the path does not begin with a / one will be added automatically.

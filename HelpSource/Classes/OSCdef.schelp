@@ -22,7 +22,13 @@ argument:: key
 The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::, the time that the message was sent (plus the latency if the message was in a bundle), a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the following arguments:
+table::
+## msg || message as an link::Classes/Array:: in the form code::[OSC address, args1, arg2, ...]::
+## time || the time received (for messages) / the OSC bundle's timestamp (if the message was in a bundle)
+## addr || a link::Classes/NetAddr:: corresponding to the IP address of the strong::sender::
+## recvPort || link::Classes/Integer:: corresponding to the port on which the message was strong::received::.
+::
 
 argument:: path
 A link::Classes/Symbol:: indicating the path of the OSC address of this object. Note that OSCdef demands OSC compliant addresses. If the path does not begin with a / one will be added automatically.
@@ -48,7 +54,7 @@ argument:: key
 The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: [OSCAddress, other args], the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: [OSC address, args1, arg2, ...], the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
 
 argument:: path
 A link::Classes/Symbol:: indicating the path of the OSC address of this object. Note that OSCdef demands OSC compliant addresses. If the path does not begin with a / one will be added automatically. Pattern matching will be applied to any incoming messages to see if they match this address. Note that according to the OSC spec, regular expression wildcards are only permitted in the incoming message's address pattern. Thus path should not contain wildcards. For more details on OSC pattern matching, see http://opensoundcontrol.org/spec-1_0

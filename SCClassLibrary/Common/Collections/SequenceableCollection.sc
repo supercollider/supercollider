@@ -829,6 +829,193 @@ SequenceableCollection : Collection {
 	rrand { arg aNumber, adverb; ^this.performBinaryOp('rrand', aNumber, adverb) }
 	exprand { arg aNumber, adverb; ^this.performBinaryOp('exprand', aNumber, adverb) }
 
+
+	/*  Boost Special Functions  */
+
+	//  Number Series:
+	bernouliB2n { ^this.performUnaryOp('bernouliB2n') }
+	tangentT2n { ^this.performUnaryOp('tangentT2n') }
+
+	//  Gamma:
+	tgamma { ^this.performUnaryOp('tgamma') }
+	tgamma1pm1 { ^this.performUnaryOp('tgamma1pm1') }
+	lgamma { ^this.performUnaryOp('lgamma') }
+	digamma { ^this.performUnaryOp('digamma') }
+	trigamma { ^this.performUnaryOp('trigamma') }
+	polygamma { |n, z| ^this.performBinaryOp('polygamma', n, z) }
+	tgammaRatio { |a, b| ^this.performBinaryOp('tgammaRatio', a, b) }
+	tgammaDeltaRatio { |a, delta| ^this.performBinaryOp('tgammaDeltaRatio', a, delta) }
+	gammaP { |a, z| ^this.performBinaryOp('gammaP', a, z) }
+	gammaQ { |a, z| ^this.performBinaryOp('gammaQ', a, z) }
+	tgammaLower { |a, z| ^this.performBinaryOp('tgammaLower', a, z) }
+	tgammaUpper { |a, z| ^this.performBinaryOp('tgammaUpper', a, z) }
+	//  Incomplete Gamma Function Inverses
+	gammaPInv { |a, p| ^this.performBinaryOp('gammaPInv', a, p) }
+	gammaQInv { |a, q| ^this.performBinaryOp('gammaQInv', a, q) }
+	gammaPInvA { |x, p| ^this.performBinaryOp('gammaPInvA', x, p) }
+	gammaQInvA { |x, q| ^this.performBinaryOp('gammaQInvA', x, q) }
+	//  Derivatives of the Incomplete Gamma Function
+	gammaPDerivative { |a, x| ^this.performBinaryOp('gammaPDerivative', a, x) }
+	gammaQDerivative { |a, x| ^this.gammaPDerivative(a, x).neg }
+
+	//	Factorials and Binomial Coefficients:
+	factorial { ^this.performUnaryOp('zeta') }
+	doubleFactorial { ^this.performUnaryOp('zeta') }
+	risingFactorial { |x, i| ^this.performBinaryOp('risingFactorial', x, i) }
+	fallingFactorial { |x, i| ^this.performBinaryOp('fallingFactorial', x, i) }
+	binomialCoefficient { |n, k| ^this.performBinaryOp('binomialCoefficient', n, k) }
+
+	//  Beta functions:
+	beta { |a, b| ^this.performBinaryOp('beta', a, b) }
+	//  Incomplete beta functions
+	ibeta { |... args| ^this.multiChannelPerform('ibeta', *args) }
+	ibetaC { |... args| ^this.multiChannelPerform('ibetaC', *args) }
+	betaFull { |... args| ^this.multiChannelPerform('betaFull', *args) }
+	betaFullC { |... args| ^this.multiChannelPerform('betaFullC', *args) }
+	//  Incomplete beta function inverses
+	ibetaInv { |... args| ^this.multiChannelPerform('ibetaInv', *args) }
+	ibetaCInv { |... args| ^this.multiChannelPerform('ibetaCInv', *args) }
+	ibetaInvA { |... args| ^this.multiChannelPerform('ibetaInvA', *args) }
+	ibetaCInvA { |... args| ^this.multiChannelPerform('ibetaCInvA', *args) }
+	ibetaInvB { |... args| ^this.multiChannelPerform('ibetaInvB', *args) }
+	ibetaCInvB { |... args| ^this.multiChannelPerform('ibetaCInvB', *args) }
+	//  Incomplete beta function derivative
+	ibetaDerivative { |... args| ^this.multiChannelPerform('ibetaDerivative', *args) }
+
+	//  Error functions:
+	erf { ^this.performUnaryOp('erf') }
+	erfC { ^this.performUnaryOp('erfC') }
+	erfInv { ^this.performUnaryOp('erfInv') }
+	erfCInv { ^this.performUnaryOp('erfCInv') }
+
+	//  Polynomials:
+	// Legendre (and Associated), Laguerre (and Associated),
+	// Hermite, Chebyshev Polynomials (first & second kind, derivative, zero (root) finder)
+	// See boost documentation regarding the Condon-Shortley phase term of (-1)^m
+	// "http://www.boost.org/doc/libs/1_65_1/libs/math/doc/html/math_toolkit/sf_poly/legendre.html"]
+	legendreP { |n, x| ^this.performBinaryOp('legendreP', n, x) }
+	legendrePPrime { |n, x| ^this.performBinaryOp('legendrePPrime', n, x) }
+	legendrePZeros { ^this.performUnaryOp('legendrePZeros') }
+	legendrePAssoc { |... args| ^this.multiChannelPerform('legendrePAssoc', *args) }
+	legendreQ { |n, x| ^this.performBinaryOp('legendreQ', n, x) }
+	laguerre { |n, x| ^this.performBinaryOp('laguerre', n, x) }
+	laguerreAssoc { |... args| ^this.multiChannelPerform('laguerreAssoc', *args) }
+	hermite { |n, x| ^this.performBinaryOp('hermite', n, x) }
+	chebyshevT { |n, x| ^this.performBinaryOp('chebyshevT', n, x) }
+	chebyshevU { |n, x| ^this.performBinaryOp('chebyshevU', n, x) }
+	chebyshevTPrime { |n, x| ^this.performBinaryOp('chebyshevTPrime', n, x) }
+	//  "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
+	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
+	chebyshevTZeros {
+		var n = this.asInt;
+		^(1..n).collect({ arg k;
+			cos(pi* ((2*k) - 1) / (2*n))
+		});
+	}
+
+	//  Spherical Harmonics:
+	sphericalHarmonic { |... args| ^this.multiChannelPerform('sphericalHarmonic', *args) }
+	sphericalHarmonicR { |... args| ^this.multiChannelPerform('sphericalHarmonicR', *args) }
+	sphericalHarmonicI { |... args| ^this.multiChannelPerform('sphericalHarmonicI', *args) }
+
+	//	Bessel Functions:
+	//  First and second kind, zero finders, modified first and second kinds,
+	//  spherical first and second kinds, derivatives
+	cylBesselJ { |v, x| ^this.performBinaryOp('cylBesselJ', v, x) }
+	cylNeumann { |v, x| ^this.performBinaryOp('cylNeumann', v, x) }
+	cylBesselJZero { |v, index| ^this.performBinaryOp('cylBesselJZero', v, index) }
+	cylNeumannZero { |v, index| ^this.performBinaryOp('cylNeumannZero', v, index) }
+	cylBesselI { |v, x| ^this.performBinaryOp('cylBesselI', v, x) }
+	cylBesselK { |v, x| ^this.performBinaryOp('cylBesselK', v, x) }
+	sphBessel { |v, x| ^this.performBinaryOp('sphBessel', v, x) }
+	sphNeumann { |v, x| ^this.performBinaryOp('sphNeumann', v, x) }
+	cylBesselJPrime { |v, x| ^this.performBinaryOp('cylBesselJPrime', v, x) }
+	cylNeumannPrime { |v, x| ^this.performBinaryOp('cylNeumannPrime', v, x) }
+	cylBesselIPrime { |v, x| ^this.performBinaryOp('cylBesselIPrime', v, x) }
+	cylBesselKPrime { |v, x| ^this.performBinaryOp('cylBesselKPrime', v, x) }
+	sphBesselPrime { |v, x| ^this.performBinaryOp('sphBesselPrime', v, x) }
+	sphNeumannPrime { |v, x| ^this.performBinaryOp('sphNeumannPrime', v, x) }
+
+	//  Hankel Functions:
+	cylHankel1 { |v, x| ^this.performBinaryOp('cylHankel1', v, x) }
+	cylHankel2 { |v, x| ^this.performBinaryOp('cylHankel2', v, x) }
+	sphHankel1 { |v, x| ^this.performBinaryOp('sphHankel1', v, x) }
+	sphHankel2 { |v, x| ^this.performBinaryOp('sphHankel2', v, x) }
+
+	//  Airy Functions:
+	airyAi { ^this.performUnaryOp('airyAi') }
+	airyBi { ^this.performUnaryOp('airyBi') }
+	airyAiPrime { ^this.performUnaryOp('airyAiPrime') }
+	airyBiPrime { ^this.performUnaryOp('airyBiPrime') }
+	airyAiZero { ^this.performUnaryOp('airyAiZero') }
+	airyBiZero { ^this.performUnaryOp('airyBiZero') }
+
+	//  Elliptic Integrals:
+	//  Carlson Form
+	ellintRf { |... args| ^this.multiChannelPerform('ellintRf', *args) }
+	ellintRd { |... args| ^this.multiChannelPerform('ellintRd', *args) }
+	ellintRj { |... args| ^this.multiChannelPerform('ellintRj', *args) }
+	ellintRc { |x, y| ^this.performBinaryOp('ellintRc', x, y) }
+	ellintRg { |... args| ^this.multiChannelPerform('ellintRg', *args) }
+	//  Legendre Form - First, Second, Third Kind, D
+	ellint1 { |k, phi| ^this.performBinaryOp('ellint1', k, phi) }
+	ellint1C { ^this.performUnaryOp('ellint1C') }
+	ellint2 { |k, phi| ^this.performBinaryOp('ellint2', k, phi) }
+	ellint2C { ^this.performUnaryOp('ellint2C') }
+	ellint3 { |... args| ^this.multiChannelPerform('ellint3', *args) }
+	ellint3C { |k, n| ^this.performBinaryOp('ellint3C', k, n) }
+	ellintD { |k, phi| ^this.performBinaryOp('ellintD', k, phi) }
+	ellintDC { ^this.performUnaryOp('ellintDC') }
+	//  Jacobi Zeta, Heuman Lambda Functions
+	jacobiZeta { |k, phi| ^this.performBinaryOp('jacobiZeta', k, phi) }
+	heumanLambda { |k, phi| ^this.performBinaryOp('heumanLambda', k, phi) }
+
+	//  Jacobi Elliptic Functions:
+	jacobiCd { |k, u| ^this.performBinaryOp('jacobiCd', k, u) }
+	jacobiCn { |k, u| ^this.performBinaryOp('jacobiCn', k, u) }
+	jacobiCs { |k, u| ^this.performBinaryOp('jacobiCs', k, u) }
+	jacobiDc { |k, u| ^this.performBinaryOp('jacobiDc', k, u) }
+	jacobiDn { |k, u| ^this.performBinaryOp('jacobiDn', k, u) }
+	jacobiDs { |k, u| ^this.performBinaryOp('jacobiDs', k, u) }
+	jacobiNc { |k, u| ^this.performBinaryOp('jacobiNc', k, u) }
+	jacobiNd { |k, u| ^this.performBinaryOp('jacobiNd', k, u) }
+	jacobiNs { |k, u| ^this.performBinaryOp('jacobiNs', k, u) }
+	jacobiSc { |k, u| ^this.performBinaryOp('jacobiSc', k, u) }
+	jacobiSd { |k, u| ^this.performBinaryOp('jacobiSd', k, u) }
+	jacobiSn { |k, u| ^this.performBinaryOp('jacobiSn', k, u) }
+
+	//  Riemann Zeta Function:
+	zeta { ^this.performUnaryOp('zeta') }
+
+	//  Exponential Integrals:
+	expintEn { |n, z| ^this.performBinaryOp('expintEn', n, z) }
+	expintEi { ^this.performUnaryOp('expintEi') }
+
+	//  Basic Functions:
+	sinPi { ^this.performUnaryOp('sinPi') }
+	cosPi { ^this.performUnaryOp('cosPi') }
+	log1p { ^this.performUnaryOp('log1p') }
+	expm1 { ^this.performUnaryOp('expm1') }
+	cbrt { ^this.performUnaryOp('cbrt') }
+	sqrt1pm1 { ^this.performUnaryOp('sqrt1pm1') }
+	powm1 { |x, y| ^this.performBinaryOp('powm1', x, y) }
+	// hypot not needed... slightly slower than current implementation of hypot
+
+	//  Sinus Cardinal ("sinc") and Hyperbolic Sinus Cardinal Functions:
+	sincPi { ^this.performUnaryOp('sincPi') }
+	sinhcPi { ^this.performUnaryOp('sinhcPi') }
+
+	//  Inverse Hyperbolic Functions:
+	asinh { ^this.performUnaryOp('asinh') }
+	acosh { ^this.performUnaryOp('acosh') }
+	atanh { ^this.performUnaryOp('atanh') }
+
+	//	Owen's T function:
+	owensT { |h, a| ^this.performBinaryOp('owensT', h, a) }
+
+	/*  end Boost Special Functions  */
+
+
 	// math op dispatch support
 	performUnaryOp { arg aSelector;
 		^this.collect({ arg item; item.perform(aSelector) });
@@ -1304,21 +1491,41 @@ SequenceableCollection : Collection {
 
 	//	asUGenInput { ^this.asArray.asUGenInput }
 
+	// this method could be refactored by dispatching, but we're trying to keep the overhead low.
+
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
+
+		// "this" is an array of delta times for the clock (usually in beats)
+		// "lag" is a value or an array of tempo independent absolute lag times (in seconds)
+
+		var sendBundle;
+
 		latency = latency ? server.latency;
+		sendBundle = { |i| server.sendBundle(latency, bundleArray.wrapAt(i)) };
+
 		if (lag != 0) {
 			lag = lag.asArray;
-			this.do { |time, i|
-				clock.sched(time, {
-					SystemClock.sched(lag.wrapAt(i), {
-						server.sendBundle(latency, bundleArray.wrapAt(i)) })
-				})
+
+			this.do { |delta, i|
+				if(delta != 0) {
+					// schedule on both clocks
+					clock.sched(delta, {
+						SystemClock.sched(lag.wrapAt(i), { sendBundle.value(i) })
+					})
+				} {
+					// schedule only on the system clock
+					SystemClock.sched(lag.wrapAt(i), { sendBundle.value(i) })
+				}
 			}
 		} {
-			this.do { |time, i|
-				clock.sched(time, {
-					server.sendBundle(latency, bundleArray.wrapAt(i))
-				})
+			this.do { |delta, i|
+				if(delta != 0) {
+					// schedule only on the clock passed in
+					clock.sched(delta, { sendBundle.value(i) })
+				} {
+					// send directly
+					sendBundle.value(i)
+				}
 			}
 		}
 	}

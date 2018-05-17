@@ -31,6 +31,7 @@
 
 #include <cstddef>
 #include <cassert>
+#include <vector>
 
 struct PyrSymbol;
 
@@ -127,7 +128,6 @@ inline void SetFalse(PyrSlot* slot)           { slot->tag = tagFalse;           
 inline void SetBool(PyrSlot* slot, bool test) { slot->tag = (test ? tagTrue : tagFalse); slot->u.i = 0; }
 inline void SetNil(PyrSlot* slot)             { slot->tag = tagNil;                      slot->u.i = 0; }
 inline void SetFloat(PyrSlot* slot, double val)    { slot->tag = tagFloat; slot->u.f = val; }
-
 
 /* raw setter functions, no typecheck */
 inline void SetRawChar(PyrSlot* slot, int val)     { assert(IsChar(slot));  slot->u.c = val; }

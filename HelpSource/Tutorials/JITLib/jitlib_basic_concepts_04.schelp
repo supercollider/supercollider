@@ -1,6 +1,6 @@
 title:: jitlib_basic_concepts_04
 summary:: Timing in NodeProxy
-categories:: Libraries>JITLib>Tutorials, Tutorials>JITLib
+categories:: JITLib>Tutorials, Tutorials>JITLib
 related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_03
 
 Changes that happen to NodeProxy, most importantly setting its source, are normally done

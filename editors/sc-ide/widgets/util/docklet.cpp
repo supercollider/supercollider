@@ -205,10 +205,10 @@ void Docklet::toggleFloating()
 
 void Docklet::toggleDetached()
 {
-    setDetached( !isDetached() );
+    setDetachedAndVisible( !isDetached(), this->isVisible() );
 }
 
-void Docklet::setDetached( bool detach )
+void Docklet::setDetachedAndVisible( bool detach, bool visible )
 {
     if (isDetached() == detach)
         return;
@@ -226,11 +226,15 @@ void Docklet::setDetached( bool detach )
 
     QWidget *container = currentContainer();
 
-    container->show();
+    // NOTE: Only call show() if the docklet is set to visible otherwise we might
+    // get into some timing issue where show() can be called after setVisible(false)
+    // https://github.com/supercollider/supercollider/issues/3287
+    if (visible)
+        container->show();
 
     // NOTE: set geometry after show() or else some geometry modifying events
     // are postponed!
-    qDebug() << (detach ? "win:" : "dock:") <<  "set geom (setDetached):" << undockedGeom << this;
+    qDebug() << (detach ? "win:" : "dock:") <<  "set geom (setDetachedAndVisible):" << undockedGeom << this;
     if (!undockedGeom.isNull())
         container->setGeometry( undockedGeom );
 
@@ -291,12 +295,11 @@ void Docklet::restoreDetachedState( const QByteArray & data )
 {
     if (!data.isEmpty()) {
         bool visible = data.at(0) == 1;
-        setDetached( true );
+        setDetachedAndVisible( true, visible );
         mWindow->restoreGeometry( data.mid(1) );
-        mWindow->setVisible( visible );
     }
     else
-        setDetached( false );
+        setDetachedAndVisible( false, this->isVisible() );
 }
 
 void Docklet::updateDockAction()

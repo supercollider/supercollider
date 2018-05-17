@@ -193,6 +193,8 @@ x.release(5); // override the Env's specified 1 second release time
 
 method:: query
 Sends an n_query message to the server, which will reply with a message containing information about this node and its place in the server's node tree.
+argument:: action
+An optional Function to be called. If the node is a code::Synth::, the function will take the arguments code::serverCmd, nodeID, parent, prev, next, isGroup::. If the node is a code::Group::, the function will take the arguments code::serverCmd, nodeID, parent, prev, next, isGroup, head, tail::. Providing a function here will bypass code::query::'s normal behaviour, i.e., the usual node information will not be posted.
 discussion::
 This information will be printed to the post window. (See also the queryAllNodes method of Server.) "parent" indicates the Node's enclosing group. If "prev" or "next" are equal to -1 that indicates that there are no other nodes in the enclosing group before or after this one, respectively.
 code::

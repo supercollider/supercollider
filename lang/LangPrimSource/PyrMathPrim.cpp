@@ -36,6 +36,10 @@
 
 #define BOOST_MATH_DISABLE_FLOAT128 1
 #include "boost/math/special_functions.hpp"
+#include "boost/math/special_functions/spherical_harmonic.hpp"
+#include "boost/math/special_functions/legendre.hpp"
+#include "PyrSymbol.h"
+#include <vector>
 
 const int INT_MAX_BY_PyrSlot = INT_MAX / sizeof(PyrSlot);
 
@@ -1081,6 +1085,217 @@ int prAsFraction(struct VMGlobals *g, int numArgsPushed)
 	}
 }
 
+int prSphericalHarmonic(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 3; // n (spherical order)
+	PyrSlot *b = g->sp - 2; // m (index within the order)
+	PyrSlot *c = g->sp - 1; // theta
+	PyrSlot *d = g->sp;     // phi
+
+	int err;
+
+	int n = 0;
+	int m = 0;
+	double theta = 0.0;
+	double phi = 0.0;
+
+	err = slotDoubleVal(d, &phi);
+	if (err) return err;
+	err = slotDoubleVal(c, &theta);
+	if (err) return err;
+	err = slotIntVal(b, &m);
+	if (err) return err;
+	err = slotIntVal(a, &n);
+	if (err) return err;
+
+	auto res_cmplx =  boost::math::spherical_harmonic(n, m, theta, phi);
+
+	PyrObject *obj = instantiateObject( gMainVMGlobals->gc, getsym("Complex")->u.classobj, 0, true, true );
+	SetObject( a, obj );
+
+	PyrSlot *slots = obj->slots;
+	SetFloat( slots+0, res_cmplx.real() );
+	SetFloat( slots+1, res_cmplx.imag() );
+	
+	return errNone;
+}
+
+template <typename Arg1T, typename Arg2T, std::complex<double>BoostFunctionT(Arg1T, Arg2T)>
+int prBoostTwoArgRetComplex(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp-1;
+	PyrSlot *b = g->sp;
+	
+	Arg1T arg1 = {};
+	Arg2T arg2 = {};
+	
+	int err = slotVal(a, &arg1); // slotVal only unwraps/extracts numeric values
+	if (err) return err;
+	err = slotVal(b, &arg2);
+	if (err) return err;
+	
+	auto res_cmplx =  BoostFunctionT(arg1, arg2);
+	
+	PyrObject *obj = instantiateObject( gMainVMGlobals->gc, getsym("Complex")->u.classobj, 0, true, true );
+	SetObject( a, obj );
+	
+	PyrSlot *slots = obj->slots;
+	SetFloat( slots+0, res_cmplx.real() );
+	SetFloat( slots+1, res_cmplx.imag() );
+	
+	return errNone;
+}
+
+template <typename Arg1T, std::vector<double> BoostFunctionT(Arg1T)>
+int prBoostOneArgRetArray(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	Arg1T arg1;
+	
+	int err = slotVal(a, &arg1); // slotVal only unwraps/extracts numeric values
+	if (err) return err;
+	
+	auto res = BoostFunctionT(arg1);
+	
+	PyrObject *array = newPyrArray( g->gc, res.size(), 0, true );
+	SetObject( a, array );
+	
+	PyrSlot *s = array->slots;
+	for (auto item : res) {
+		SetFloat( s, item );
+		++array->size;
+		++s;
+	}
+	
+	return errNone;
+}
+
+template <typename RetT, RetT BoostFunctionT(unsigned, double const&)>
+int prBoostCheby(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp-1;
+	PyrSlot *b = g->sp;
+	
+	int arg1 = 0;
+	double arg2 = 0.0;
+	
+	int err = slotIntVal(a, &arg1);
+	if (err) return err;
+	err = slotDoubleVal(b, &arg2);
+	if (err) return err;
+	
+	RetT res = BoostFunctionT(arg1, arg2);
+	setSlotVal(a, res);
+	
+	return errNone;
+}
+
+template <typename RetT, RetT BoostFunctionT(double const&)>
+int prBoostsqrt1pm1(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	double arg1 = 0;
+	
+	int err = slotDoubleVal(a, &arg1);
+	if (err) return err;
+	
+	RetT res = BoostFunctionT(arg1);
+	setSlotVal(a, res);
+	
+	return errNone;
+}
+
+template <typename RetT, typename Arg1T, RetT BoostFunctionT(Arg1T)>
+int prBoostOneArg(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	
+	Arg1T arg1;
+	
+	int err = slotVal(a, &arg1); // slotVal only unwraps/extracts numeric values
+	if (err) return err;
+	
+	RetT res = BoostFunctionT(arg1);
+	setSlotVal(a, res);
+	
+	return errNone;
+}
+
+template <typename RetT, typename Arg1T, typename Arg2T, RetT BoostFunctionT(Arg1T, Arg2T)>
+int prBoostTwoArg(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp-1;
+	PyrSlot *b = g->sp;
+	
+	Arg1T arg1 = {};
+	Arg2T arg2 = {};
+	
+	int err = slotVal(a, &arg1); // slotVal only unwraps/extracts numeric values
+	if (err) return err;
+	err = slotVal(b, &arg2);
+	if (err) return err;
+	
+	RetT res = BoostFunctionT(arg1, arg2);
+	setSlotVal(a, res);
+	
+	return errNone;
+}
+
+template <typename RetT, typename Arg1T, typename Arg2T, typename Arg3T, RetT BoostFunctionT(Arg1T, Arg2T, Arg3T)>
+int prBoostThreeArg(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp-2;
+	PyrSlot *b = g->sp-1;
+	PyrSlot *c = g->sp;
+	
+	Arg1T arg1 = {};
+	Arg2T arg2 = {};
+	Arg3T arg3 = {};
+	
+	int err = slotVal(a, &arg1); // slotVal only unwraps/extracts numeric values
+	if (err) return err;
+	err = slotVal(b, &arg2);
+	if (err) return err;
+	err = slotVal(c, &arg3);
+	if (err) return err;
+
+	RetT res = BoostFunctionT(arg1, arg2, arg3);
+	setSlotVal(a, res);
+	
+	return errNone;
+}
+
+template <typename RetT, typename Arg1T, typename Arg2T, typename Arg3T, typename Arg4T, RetT BoostFunctionT(Arg1T, Arg2T, Arg3T, Arg4T)>
+int prBoostFourArg(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp-3;
+	PyrSlot *b = g->sp-2;
+	PyrSlot *c = g->sp-1;
+	PyrSlot *d = g->sp;
+	
+	Arg1T arg1 = {};
+	Arg2T arg2 = {};
+	Arg3T arg3 = {};
+	Arg4T arg4 = {};
+	
+	int err = slotVal(a, &arg1); // slotVal only unwraps/extracts numeric values
+	if (err) return err;
+	err = slotVal(b, &arg2);
+	if (err) return err;
+	err = slotVal(c, &arg3);
+	if (err) return err;
+	err = slotVal(d, &arg4);
+	if (err) return err;
+	
+	RetT res = BoostFunctionT(arg1, arg2, arg3, arg4);
+	setSlotVal(a, res);
+	
+	return errNone;
+}
+
+
 void initMathPrimitives()
 {
 	int base, index;
@@ -1116,5 +1331,184 @@ void initMathPrimitives()
 
 	definePrimitive(base, index++, "_SimpleNumberSeries", prSimpleNumberSeries, 3, 0);
 	definePrimitive(base, index++, "_AsFraction", prAsFraction, 3, 0);
+
+	//  Number Series:
+	definePrimitive(base, index++, "_BernouliB2n", prBoostOneArg<double, int, boost::math::bernoulli_b2n<double>>, 1, 0);
+	definePrimitive(base, index++, "_TangentT2n", prBoostOneArg<double, int, boost::math::tangent_t2n<double>>, 1, 0);
+	
+	//  Gamma:
+	definePrimitive(base, index++, "_TGamma", prBoostOneArg<double, double, boost::math::tgamma<double>>, 1, 0);
+	definePrimitive(base, index++, "_TGamma1pm1", prBoostOneArg<double, double, boost::math::tgamma1pm1<double>>, 1, 0);
+	definePrimitive(base, index++, "_LGamma", prBoostOneArg<double, double, boost::math::lgamma<double>>, 1, 0);
+	definePrimitive(base, index++, "_Digamma", prBoostOneArg<double, double, boost::math::digamma<double>>, 1, 0);
+	definePrimitive(base, index++, "_Trigamma", prBoostOneArg<double, double, boost::math::trigamma<double>>, 1, 0);
+	definePrimitive(base, index++, "_Polygamma", prBoostTwoArg<double, int, double, boost::math::polygamma<double>>, 2, 0);
+	definePrimitive(base, index++, "_TGammaRatio", prBoostTwoArg<double, double, double, boost::math::tgamma_ratio<double>>, 2, 0);
+	definePrimitive(base, index++, "_TGammaDeltaRatio", prBoostTwoArg<double, double, double, boost::math::tgamma_delta_ratio<double>>, 2, 0);
+	// Incomplete Gamma Functions
+	definePrimitive(base, index++, "_GammaP", prBoostTwoArg<double, double, double, boost::math::gamma_p<double>>, 2, 0);
+	definePrimitive(base, index++, "_GammaQ", prBoostTwoArg<double, double, double, boost::math::gamma_q<double>>, 2, 0);
+	definePrimitive(base, index++, "_TGammaLower", prBoostTwoArg<double, double, double, boost::math::tgamma_lower<double>>, 2, 0);
+	definePrimitive(base, index++, "_TGammaI", prBoostTwoArg<double, double, double, boost::math::tgamma<double>>, 2, 0);
+	// Incomplete Gamma Function Inverses
+	definePrimitive(base, index++, "_GammaPInv", prBoostTwoArg<double, double, double, boost::math::gamma_p_inv<double>>, 2, 0);
+	definePrimitive(base, index++, "_GammaQInv", prBoostTwoArg<double, double, double, boost::math::gamma_q_inv<double>>, 2, 0);
+	definePrimitive(base, index++, "_GammaPInvA", prBoostTwoArg<double, double, double, boost::math::gamma_p_inva<double>>, 2, 0);
+	definePrimitive(base, index++, "_GammaQInvA", prBoostTwoArg<double, double, double, boost::math::gamma_q_inva<double>>, 2, 0);
+	// Incomplete Gamma Function Derivative
+	definePrimitive(base, index++, "_GammaPDerivative", prBoostTwoArg<double, double, double, boost::math::gamma_p_derivative<double>>, 2, 0);
+	
+	//	Factorials and Binomial Coefficients:
+	definePrimitive(base, index++, "_Factorial", prBoostOneArg<double, unsigned, boost::math::factorial<double>>, 1, 0);
+	definePrimitive(base, index++, "_DoubleFactorial", prBoostOneArg<double, unsigned int, boost::math::double_factorial<double>>, 1, 0);
+	definePrimitive(base, index++, "_RisingFactorial", prBoostTwoArg<double, double, int, boost::math::rising_factorial<double>>, 2, 0);
+	definePrimitive(base, index++, "_FallingFactorial", prBoostTwoArg<double, double, unsigned, boost::math::falling_factorial<double>>, 2, 0);
+	definePrimitive(base, index++, "_BinomialCoefficient", prBoostTwoArg<double, unsigned, unsigned, boost::math::binomial_coefficient<double>>, 2, 0);
+
+	//	Beta Functions:
+	definePrimitive(base, index++, "_Beta", prBoostTwoArg<double, double, double, boost::math::beta<double>>, 2, 0);
+	// Incomplete Betas, normalized and non-normalized
+	definePrimitive(base, index++, "_IBeta", prBoostThreeArg<double, double, double, double, boost::math::ibeta<double>>, 3, 0);
+	definePrimitive(base, index++, "_IBetaC", prBoostThreeArg<double, double, double, double, boost::math::ibetac<double>>, 3, 0);
+	definePrimitive(base, index++, "_BetaFull", prBoostThreeArg<double, double, double, double, boost::math::beta<double>>, 3, 0);
+	definePrimitive(base, index++, "_BetaCFull", prBoostThreeArg<double, double, double, double, boost::math::betac<double>>, 3, 0);
+	// Incomplete Betas, inverse
+	definePrimitive(base, index++, "_IBetaInv", prBoostThreeArg<double, double, double, double, boost::math::ibeta_inv<double>>, 3, 0);
+	definePrimitive(base, index++, "_IBetaCInv", prBoostThreeArg<double, double, double, double, boost::math::ibetac_inv<double>>, 3, 0);
+	definePrimitive(base, index++, "_IBetaInvA", prBoostThreeArg<double, double, double, double, boost::math::ibeta_inva<double>>, 3, 0);
+	definePrimitive(base, index++, "_IBetaCInvA", prBoostThreeArg<double, double, double, double, boost::math::ibetac_inva<double>>, 3, 0);
+	definePrimitive(base, index++, "_IBetaInvB", prBoostThreeArg<double, double, double, double, boost::math::ibeta_invb<double>>, 3, 0);
+	definePrimitive(base, index++, "_IBetaCInvB", prBoostThreeArg<double, double, double, double, boost::math::ibetac_invb<double>>, 3, 0);
+	// 	Incomplete Betas, derivative
+	definePrimitive(base, index++, "_IBetaDerivative", prBoostThreeArg<double, double, double, double, boost::math::ibeta_derivative<double>>, 3, 0);
+	
+	//  Error functions:
+	definePrimitive(base, index++, "_Erf", prBoostOneArg<double, double, boost::math::erf<double>>, 1, 0);
+	definePrimitive(base, index++, "_ErfC", prBoostOneArg<double, double, boost::math::erfc<double>>, 1, 0);
+	definePrimitive(base, index++, "_ErfInv", prBoostOneArg<double, double, boost::math::erf_inv<double>>, 1, 0);
+	definePrimitive(base, index++, "_ErfCInv", prBoostOneArg<double, double, boost::math::erfc_inv<double>>, 1, 0);
+
+	//  Polynomials:
+	// Legendre (and Associated)
+	definePrimitive(base, index++, "_LegendreP", prBoostTwoArg<double, int, double, boost::math::legendre_p<double>>, 2, 0);
+	definePrimitive(base, index++, "_LegendrePPrime", prBoostTwoArg<double, int, double, boost::math::legendre_p_prime<double>>, 2, 0);
+	definePrimitive(base, index++, "_LegendrePZeros", prBoostOneArgRetArray<int, boost::math::legendre_p_zeros<double>>, 1, 0); // TODO: generalize return array form?
+	definePrimitive(base, index++, "_LegendrePAssoc", prBoostThreeArg<double, int, int, double, boost::math::legendre_p<double>>, 3, 0);
+	definePrimitive(base, index++, "_LegendreQ", prBoostTwoArg<double, unsigned, double, boost::math::legendre_q<double>>, 2, 0);
+	// Laguerre (and Associated)
+	definePrimitive(base, index++, "_Laguerre", prBoostTwoArg<double, unsigned, double, boost::math::laguerre<double>>, 2, 0);
+	definePrimitive(base, index++, "_LaguerreAssoc", prBoostThreeArg<double, unsigned, double, double, boost::math::laguerre<double>>, 3, 0);
+	// Hermite
+	definePrimitive(base, index++, "_Hermite", prBoostTwoArg<double, unsigned, double, boost::math::hermite<double>>, 2, 0);
+	// Chebyshev
+	
+	definePrimitive(base, index++, "_ChebyshevT", prBoostCheby<double, boost::math::chebyshev_t<double>>, 2, 0);
+	definePrimitive(base, index++, "_ChebyshevU", prBoostCheby<double, boost::math::chebyshev_u<double>>, 2, 0);
+	definePrimitive(base, index++, "_ChebyshevTPrime", prBoostCheby<double, boost::math::chebyshev_t_prime<double>>, 2, 0);
+	// Spherical Harmonics
+	definePrimitive(base, index++, "_SphericalHarmonic", prSphericalHarmonic, 4, 0);
+	definePrimitive(base, index++, "_SphericalHarmonicR", prBoostFourArg<double, unsigned, int, double, double, boost::math::spherical_harmonic_r<double>>, 4, 0);
+	definePrimitive(base, index++, "_SphericalHarmonicI", prBoostFourArg<double, unsigned, int, double, double, boost::math::spherical_harmonic_i<double>>, 4, 0);
+	
+	//	Bessel Functions:
+	// First and Second Kinds
+	definePrimitive(base, index++, "_CylBesselJ", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_j<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylNeumann", prBoostTwoArg<double, double, double, boost::math::cyl_neumann<double>>, 2, 0);
+	// Zero finder
+	definePrimitive(base, index++, "_CylBesselJZero", prBoostTwoArg<double, double, int, boost::math::cyl_bessel_j_zero<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylNeumannZero", prBoostTwoArg<double, double, int, boost::math::cyl_neumann_zero<double>>, 2, 0);
+	// Modified, First and Second Kinds
+	definePrimitive(base, index++, "_CylBesselI", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_i<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylBesselK", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_k<double>>, 2, 0);
+	// Spherical, First and Second Kinds
+	definePrimitive(base, index++, "_SphBessel", prBoostTwoArg<double, unsigned, double, boost::math::sph_bessel<double>>, 2, 0);
+	definePrimitive(base, index++, "_SphNeumann",	prBoostTwoArg<double, unsigned, double, boost::math::sph_neumann<double>>, 2, 0);
+	// Derivatives
+	definePrimitive(base, index++, "_CylBesselJPrime", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_j_prime<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylNeumannPrime", prBoostTwoArg<double, double, double, boost::math::cyl_neumann_prime<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylBesselIPrime", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_i_prime<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylBesselKPrime", prBoostTwoArg<double, double, double, boost::math::cyl_bessel_k_prime<double>>, 2, 0);
+	definePrimitive(base, index++, "_SphBesselPrime", prBoostTwoArg<double, unsigned, double, boost::math::sph_bessel_prime<double>>, 2, 0);
+	definePrimitive(base, index++, "_SphNeumannPrime",prBoostTwoArg<double, unsigned, double, boost::math::sph_neumann_prime<double>>, 2, 0);
+	
+	//  Hankel Functions:
+	// Cyclic
+	definePrimitive(base, index++, "_CylHankel1", prBoostTwoArgRetComplex<double, double, boost::math::cyl_hankel_1<double>>, 2, 0);
+	definePrimitive(base, index++, "_CylHankel2", prBoostTwoArgRetComplex<double, double, boost::math::cyl_hankel_2<double>>, 2, 0);
+	// Spherical
+	definePrimitive(base, index++, "_SphHankel1", prBoostTwoArgRetComplex<double, double, boost::math::sph_hankel_1<double>>, 2, 0);
+	definePrimitive(base, index++, "_SphHankel2", prBoostTwoArgRetComplex<double, double, boost::math::sph_hankel_2<double>>, 2, 0);
+
+	//  Airy Functions:
+	definePrimitive(base, index++, "_AiryAi", prBoostOneArg<double, double, boost::math::airy_ai<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryBi", prBoostOneArg<double, double, boost::math::airy_bi<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryAiPrime", prBoostOneArg<double, double, boost::math::airy_ai_prime<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryBiPrime", prBoostOneArg<double, double, boost::math::airy_bi_prime<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryAiZero", prBoostOneArg<double, int, boost::math::airy_ai_zero<double>>, 1, 0);
+	definePrimitive(base, index++, "_AiryBiZero", prBoostOneArg<double, int, boost::math::airy_bi_zero<double>>, 1, 0);
+	
+	//  Elliptic Integrals:
+	// Elliptic Integrals - Carlson Form
+	definePrimitive(base, index++, "_EllintRf", prBoostThreeArg<double, double, double, double, boost::math::ellint_rf<double>>, 3, 0);
+	definePrimitive(base, index++, "_EllintRd", prBoostThreeArg<double, double, double, double, boost::math::ellint_rd<double>>, 3, 0);
+	definePrimitive(base, index++, "_EllintRj", prBoostFourArg<double, double, double, double, double, boost::math::ellint_rj<double>>, 4, 0);
+	definePrimitive(base, index++, "_EllintRc", prBoostTwoArg<double, double, double, boost::math::ellint_rc<double>>, 2, 0);
+	definePrimitive(base, index++, "_EllintRg", prBoostThreeArg<double, double, double, double, boost::math::ellint_rg<double>>, 3, 0);
+	// Elliptic Integrals of the First, Second, Third Kind, D - Legendre Form
+	definePrimitive(base, index++, "_Ellint1", prBoostTwoArg<double, double, double, boost::math::ellint_1<double>>, 2, 0);
+	definePrimitive(base, index++, "_Ellint1C", prBoostOneArg<double, double, boost::math::ellint_1<double>>, 1, 0);
+	definePrimitive(base, index++, "_Ellint2", prBoostTwoArg<double, double, double, boost::math::ellint_2<double>>, 2, 0);
+	definePrimitive(base, index++, "_Ellint2C", prBoostOneArg<double, double, boost::math::ellint_2<double>>, 1, 0);
+	definePrimitive(base, index++, "_Ellint3", prBoostThreeArg<double, double, double, double, boost::math::ellint_3<double>>, 3, 0);
+	definePrimitive(base, index++, "_Ellint3C", prBoostTwoArg<double, double, double, boost::math::ellint_3<double>>, 2, 0);
+	definePrimitive(base, index++, "_EllintD", prBoostTwoArg<double, double, double, boost::math::ellint_d<double>>, 2, 0);
+	definePrimitive(base, index++, "_EllintDC", prBoostOneArg<double, double, boost::math::ellint_d<double>>, 1, 0);
+	// Jacobi Zeta, Heuman Lambda Function
+	definePrimitive(base, index++, "_JacobiZeta", prBoostTwoArg<double, double, double, boost::math::jacobi_zeta<double>>, 2, 0);
+	definePrimitive(base, index++, "_HeumanLambda", prBoostTwoArg<double, double, double, boost::math::heuman_lambda<double>>, 2, 0);
+
+	
+	//  Jacobi Elliptic Functions:
+	definePrimitive(base, index++, "_JacobiCd", prBoostTwoArg<double, double, double, boost::math::jacobi_cd<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiCn", prBoostTwoArg<double, double, double, boost::math::jacobi_cn<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiCs", prBoostTwoArg<double, double, double, boost::math::jacobi_cs<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiDc", prBoostTwoArg<double, double, double, boost::math::jacobi_dc<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiDn", prBoostTwoArg<double, double, double, boost::math::jacobi_dn<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiDs", prBoostTwoArg<double, double, double, boost::math::jacobi_ds<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiNc", prBoostTwoArg<double, double, double, boost::math::jacobi_nc<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiNd", prBoostTwoArg<double, double, double, boost::math::jacobi_nd<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiNs", prBoostTwoArg<double, double, double, boost::math::jacobi_ns<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiSc", prBoostTwoArg<double, double, double, boost::math::jacobi_sc<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiSd", prBoostTwoArg<double, double, double, boost::math::jacobi_sd<double>>, 2, 0);
+	definePrimitive(base, index++, "_JacobiSn", prBoostTwoArg<double, double, double, boost::math::jacobi_sn<double>>, 2, 0);
+	
+	//  Zeta Function:
+	definePrimitive(base, index++, "_Zeta", prBoostOneArg<double, double, boost::math::zeta<double>>, 1, 0);
+	
+	//  Exponential Integrals:
+	definePrimitive(base, index++, "_ExpintEn", prBoostTwoArg<double, double, double, boost::math::expint<double>>, 2, 0);
+	definePrimitive(base, index++, "_ExpintEi", prBoostOneArg<double, double, boost::math::expint<double>>, 1, 0);
+	
+	//  Basic functions:
+	definePrimitive(base, index++, "_SinPi", prBoostOneArg<double, double, boost::math::sin_pi<double>>, 1, 0);
+	definePrimitive(base, index++, "_CosPi", prBoostOneArg<double, double, boost::math::cos_pi<double>>, 1, 0);
+	definePrimitive(base, index++, "_Log1p", prBoostOneArg<double, double, boost::math::log1p<double>>, 1, 0);
+	definePrimitive(base, index++, "_ExpM1", prBoostOneArg<double, double, boost::math::expm1<double>>, 1, 0);
+	definePrimitive(base, index++, "_Cbrt", prBoostOneArg<double, double, boost::math::cbrt<double>>, 1, 0);
+	definePrimitive(base, index++, "_Sqrt1pm1", prBoostsqrt1pm1<double, boost::math::sqrt1pm1<double>>, 1, 0);
+	definePrimitive(base, index++, "_PowM1", prBoostTwoArg<double, double, double, boost::math::powm1<double>>, 2, 0);
+	definePrimitive(base, index++, "_Hypot2", prBoostTwoArg<double, double, double, boost::math::hypot<double>>, 2, 0);
+	
+	// Sinus Cardinal and Hyperbolic Sinus Cardinal Functions:
+	definePrimitive(base, index++, "_SincPi", prBoostOneArg<double, double, boost::math::sinc_pi<double>>, 1, 0);
+	definePrimitive(base, index++, "_SinhcPi", prBoostOneArg<double, double, boost::math::sinhc_pi<double>>, 1, 0);
+	
+	// Inverse Hyperbolic Functions:
+	definePrimitive(base, index++, "_Asinh", prBoostOneArg<double, double, boost::math::asinh<double>>, 1, 0);
+	definePrimitive(base, index++, "_Acosh", prBoostOneArg<double, double, boost::math::acosh<double>>, 1, 0);
+	definePrimitive(base, index++, "_Atanh", prBoostOneArg<double, double, boost::math::atanh<double>>, 1, 0);
+	
+	//	Owen's T function:
+	definePrimitive(base, index++, "_OwensT", prBoostTwoArg<double, double, double, boost::math::owens_t<double>>, 2, 0);
 }
 
