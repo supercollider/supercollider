@@ -330,63 +330,38 @@ if(APPLE)
     install(TARGETS SuperCollider
           DESTINATION ${scappbundlename})
 
-    set(QtWebEngineProcess
-        "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app" CACHE PATH "Path to the QtWebEngineProcess")
-    set(QtWebEngineProcessTarget
-        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/")
-
     # for processing into the plist:
     set_property(TARGET SuperCollider
 	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
 
-    set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
+    # deploy app using Qt's macdeployqt
+    find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+    if(NOT DEPLOY_PROG)
+        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
+    endif()
 
-    include(InstallRequiredSystemLibraries)
-
-    set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
-    set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
-
-    include(DeployQt5)
-    file(GLOB_RECURSE QTPLUGINS
-           "${plugin_dest_dir}/*.dylib")
-
-    # install Qt plugins (adapted from kvirc)
-    install(DIRECTORY "${QT_PLUGINS_DIR}/"
-            DESTINATION ${plugin_dest_dir}
-            COMPONENT Runtime
-            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport|styles)/[^_]*\\.dylib")
-
-    set(QtWebEngineCoreDir
-        "${CMAKE_PREFIX_PATH}/lib/QtWebEngineCore.framework/Versions/5" CACHE PATH "Path to the QtWebEngineProcess")
-    set(QtWebEngineProcessTarget
-        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers")
-
-    install(
-        DIRECTORY "${QtWebEngineCoreDir}/Helpers/QtWebEngineProcess.app"
-        DESTINATION ${QtWebEngineProcessTarget}
-        USE_SOURCE_PERMISSIONS)
-
-    install(
-        DIRECTORY "${QtWebEngineCoreDir}/Resources/"
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/"
-        COMPONENT Runtime
-        FILES_MATCHING PATTERN "*.*")
-
+    message(STATUS "Found macdeployqt: ${DEPLOY_PROG}")
     install(CODE
         "
-            file(GLOB_RECURSE QTPLUGINS
-                \"${plugin_dest_dir}/*.dylib\")
-            file(GLOB_RECURSE SCPLUGINS
-                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
-            include(BundleUtilities)
-            set(BU_CHMOD_BUNDLE_ITEMS ON)
-            fixup_bundle(\"${QtWebEngineProcessTarget}/QtWebEngineProcess.app\"
-                \"${QtWebEngineProcessTarget}/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\" \"\")
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
-                \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\"
-                IGNORE_ITEM \"QtWebEngineProcess\")
+            message(STATUS \"Deploying additional Qt resources and libraries\")
+            # only the IDE executable is scanned normally, so force scanning of sclang as well
+            # to get QtWebEngine, libsndfile, and other libs
+            execute_process(COMMAND ${DEPLOY_PROG}
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+                -verbose=1
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+                RESULT_VARIABLE RES
+                OUTPUT_VARIABLE OUT
+                ERROR_VARIABLE ERR
+                )
+            if(OUT)
+                message(STATUS \"Deploy result: \${OUT}\")
+            endif()
+            if(RES)
+                message(FATAL_ERROR \"Deploy failed with error: \${ERR}\")
+            endif()
         "
-        COMPONENT Runtime)
+    )
 
 elseif(WIN32)
 
