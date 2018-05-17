@@ -65,6 +65,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     webPage->setDelegateReload(true);
 
     mWebView = new QWebEngineView;
+    // setPage does not take ownership of webPage; it must be deleted manually later (see below)
     mWebView->setPage( webPage );
     mWebView->settings()->setAttribute( QWebEngineSettings::LocalStorageEnabled, true );
     mWebView->setContextMenuPolicy( Qt::CustomContextMenu );
@@ -105,6 +106,12 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()) );
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
+
+    // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
+    // Note that putting this in the destructor doesn't work.
+    connect( QApplication::instance(), &QApplication::aboutToQuit, [webPage]() {
+        delete webPage;
+    });
 
     createActions();
 
