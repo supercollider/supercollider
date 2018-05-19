@@ -30,6 +30,7 @@
 #    include <system_error> // system_error, error_code, error_category
 #endif // _WIN32
 
+#include <atomic>
 #include <stdexcept>
 #include <sstream>
 
@@ -128,13 +129,10 @@ public:
 		return true;
 	}
 
-	int rxErrors()
+	int rxErrorsSinceLastQuery()
 	{
 		// errors since last query
-		int x         = m_rxErrors[1];
-		int res       = x-m_rxErrors[0];
-		m_rxErrors[0] = x;
-		return res;
+		return m_rxErrors.exchange(0);
 	}
 
 	void stop()
@@ -188,7 +186,7 @@ private:
 			uint8_t byte = m_rxbuffer[index];
 			bool putSuccessful = m_rxfifo.push(byte);
 			if (!putSuccessful)
-				m_rxErrors[1]++;
+				m_rxErrors++;
 		}
 
 		dataAvailable();
@@ -205,7 +203,7 @@ private:
 	Options			m_options;
 
 	// rx buffers
-	int			m_rxErrors[2] = {0, 0};
+	std::atomic<int> m_rxErrors;
 	FIFO		m_rxfifo;
 	uint8_t		m_rxbuffer[kBufferSize];
 };
@@ -396,7 +394,7 @@ static int prSerialPort_RXErrors(struct VMGlobals *g, int numArgsPushed)
 	if (!port)
 		return errFailed;
 
-	SetInt(self, port->rxErrors());
+	SetInt(self, port->rxErrorsSinceLastQuery());
 	return errNone;
 }
 
