@@ -71,8 +71,7 @@ public:
 
 		serial_port::parity::type parity{serial_port::parity::none};
 
-		/// Whether to use XON/XOFF signals (software) or not (hardward).
-		/// Corresponds to \c xonxoff in SC code.
+		/// Whether to use XON/XOFF signals (software), RTS/CTS signals (hardware), or neither.
 		serial_port::flow_control::type flow_control{serial_port::flow_control::hardware};
 	};
 
@@ -94,8 +93,6 @@ public:
 		m_port.set_option(serial_port::flow_control(options.flow_control));
 
 		setExclusive(options.exclusive);
-
-		// FIXME: crtscts
 	}
 
 	~SerialPort()
@@ -321,7 +318,9 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	options.parity = asParityType(parity);
 
+	// crtscts = use hardware signals for control flow
 	bool useHardware = IsTrue(args+7);
+	// xonxoff = use XON/XOFF message bytes for control flow
 	bool useSoftware = IsTrue(args+8);
 	options.flow_control = asFlowControlType(useHardware, useSoftware);
 
