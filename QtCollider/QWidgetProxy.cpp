@@ -379,14 +379,10 @@ bool QWidgetProxy::interpretMouseWheelEvent( QObject *o, QEvent *e, QList<QVaria
   QPoint pt = _mouseEventWidget == w ?
               we->pos() :
               _mouseEventWidget->mapTo( w, we->pos() );
-  
-  // Qt::Orientation ort = we->orientation();
-  // calculate degrees: delta is in 1/8 of a degree.
-  // int deg = we->delta() / 8;
-  
+
   QPointF delta = we->pixelDelta();
-  delta *= 0.25f; // This matches scaling of old delta
-  
+  delta *= 0.25f; // This matches old scaling of delta
+
   args << pt.x();
   args << pt.y();
   args << (int) we->modifiers();
