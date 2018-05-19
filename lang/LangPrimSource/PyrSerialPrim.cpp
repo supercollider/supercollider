@@ -52,8 +52,10 @@ public:
 	struct Options
 	{
 		bool exclusive = false;
-		size_t baudrate = 9600;
-		size_t databits = 8;
+		serial_port::baud_rate baudrate = serial_port::baud_rate{9600};
+
+		/// Corresponds to \c databits in SC code
+		serial_port::character_size charsize = serial_port::character_size{8};
 		bool stopbit = true;
 		serial_port::parity::type parity = serial_port::parity::none;
 		bool crtscts = false;
@@ -71,9 +73,9 @@ public:
 	{
 		using namespace boost::asio;
 
-		m_port.set_option(serial_port::baud_rate(options.baudrate));
+		m_port.set_option(options.baudrate);
 		m_port.set_option(serial_port::parity(options.parity));
-		m_port.set_option(serial_port::character_size(options.databits));
+		m_port.set_option(options.charsize);
 
 		// FIXME: flow control / xonxoff
 		// FIXME: stop bits
@@ -255,12 +257,12 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	int baudrate;
 	err = slotIntVal(args+3, &baudrate);
 	if (err) return err;
-	options.baudrate = baudrate;
+	options.baudrate = serial_port::baud_rate{static_cast<unsigned int>(baudrate)};
 
-	int databits;
-	err = slotIntVal(args+4, &databits);
+	int charsize;
+	err = slotIntVal(args+4, &charsize);
 	if (err) return err;
-	options.databits = databits;
+	options.charsize = serial_port::character_size{static_cast<unsigned int>(charsize)};
 
 	options.stopbit = IsTrue(args+5);
 
