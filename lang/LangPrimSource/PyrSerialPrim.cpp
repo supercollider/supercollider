@@ -23,6 +23,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#ifndef _WIN32
+#    include <termios.h> // TIOCEXCL
+#    include <sys/ioctl.h> // ioctl
+#    include <errno.h> // errno
+#    include <system_error> // system_error, error_code, error_category
+#endif // _WIN32
+
 #include <stdexcept>
 #include <sstream>
 
@@ -86,7 +93,8 @@ public:
 		m_port.set_option(serial_port::stop_bits(options.stop_bits));
 		m_port.set_option(serial_port::flow_control(options.flow_control));
 
-		// FIXME: exclusive
+		setExclusive(options.exclusive);
+
 		// FIXME: crtscts
 	}
 
@@ -139,6 +147,10 @@ public:
 	}
 
 private:
+	/// Sets this serial port to exclusive mode. Has no effect on Windows. Throws \c system_error
+	/// on failure.
+	void setExclusive(bool);
+
 	void dataAvailable()
 	{
 		gLangMutex.lock();
@@ -215,6 +227,20 @@ private:
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
 PyrSymbol* SerialPort::s_doneAction = 0;
+
+void SerialPort::setExclusive(bool b)
+{
+#ifndef _WIN32
+	if (!b) {
+		return;
+	}
+
+	int fd = m_port.native_handle();
+	if (ioctl(fd, TIOCEXCL) == -1) {
+		throw std::system_error(std::error_code(errno, std::system_category()));
+	}
+#endif // _WIN32
+}
 
 // =====================================================================
 // primitives
