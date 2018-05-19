@@ -270,14 +270,14 @@ void HelpBrowser::findText( const QString & text, bool backwards )
   
 bool HelpBrowser::helpBrowserHasFocus() const {
     QWidget* focused = QApplication::focusWidget();
-    
-    while (focused != NULL) {
+
+    while (focused) {
         if (focused == mWebView) {
             return true;
         }
         focused = qobject_cast<QWidget*>(focused->parent());
     }
-    
+
     return false;
 }
 
