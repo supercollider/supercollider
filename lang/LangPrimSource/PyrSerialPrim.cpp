@@ -255,7 +255,6 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 
 	char portName[PATH_MAX];
 	err = slotStrVal(args+1, portName, sizeof(portName));
-	printf("portName %s\n", portName);
 	if (err) return err;
 
 	SerialPort::Options options{};
@@ -288,10 +287,8 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	try {
 		port = new SerialPort(slotRawObject(self), portName, options);
 	} catch (std::exception & e) {
-		std::ostringstream os;
-		os << "SerialPort Error: " << e.what();
-		post(os.str().c_str());
-		return errFailed;
+		delete port;
+		throw;
 	}
 
 	SetPtr(slotRawObject(self)->slots+0, port);
