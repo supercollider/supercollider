@@ -43,6 +43,11 @@ extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
 class SerialPort
 {
 public:
+	static const int kNumOptions = 7;
+	static const int kBufferSize = 8192;
+
+	using FIFO = boost::lockfree::spsc_queue<uint8_t, boost::lockfree::capacity<kBufferSize>>;
+
 	enum Parity
 	{
 		kNoParity,
@@ -60,11 +65,6 @@ public:
 		bool crtscts = false;
 		bool xonxoff = false;
 	};
-
-	static const int kNumOptions = 7;
-	static const int kBufferSize = 8192;
-
-	typedef boost::lockfree::spsc_queue<uint8_t, boost::lockfree::capacity<kBufferSize> > FIFO;
 
 	static PyrSymbol* s_dataAvailable;
 	static PyrSymbol* s_doneAction;
