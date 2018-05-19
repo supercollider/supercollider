@@ -23,7 +23,7 @@ QCallback : QObject {
 			this.prOnCalledSignals.do({
 				|signal|
 				if (action.notNil) { this.disconnectFunction(signal.asSymbol, action) };
-				if (newAction.notNil) { this.connectFunction(signal.asSymbol, { |cb, v| newAction.(v) }, true) }
+				if (newAction.notNil) { this.connectFunction(signal.asSymbol, { |func, v| newAction.(v) }, true) }
 			});
 			action = newAction;
 		}
@@ -94,13 +94,13 @@ WebView : View {
 	}
 
 	toHtml {
-		|cb|
-		this.invokeMethod('toHtml', [cb.as(QCallback)]);
+		|func|
+		this.invokeMethod('toHtml', [func.as(QCallback)]);
 	}
 
 	toPlainText {
-		|cb|
-		this.invokeMethod('toPlainText', [cb.as(QCallback)]);
+		|func|
+		this.invokeMethod('toPlainText', [func.as(QCallback)]);
 	}
 
 	setContent {
@@ -110,8 +110,8 @@ WebView : View {
 	}
 
 	runJavaScript {
-		|javascript, cb|
-		this.invokeMethod('runJavaScript', [javascript, cb.as(QCallback)], false);
+		|javascript, func|
+		this.invokeMethod('runJavaScript', [javascript, func.as(QCallback)], false);
 	}
 
 	setAttribute {
@@ -135,8 +135,8 @@ WebView : View {
 	}
 
 	findText {
-		|text, reversed=false, cb=({})|
-		this.invokeMethod('findText', [text, reversed, cb.as(QCallback)]);
+		|text, reversed=false, func=({})|
+		this.invokeMethod('findText', [text, reversed, func.as(QCallback)]);
 	}
 
 	onLinkActivated_ {
