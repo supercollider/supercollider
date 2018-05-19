@@ -52,19 +52,21 @@ public:
 	struct Options
 	{
 		bool exclusive = false;
-		serial_port::baud_rate baudrate = serial_port::baud_rate{9600};
+		bool crtscts = false;
+
+		serial_port::baud_rate baudrate{9600};
 
 		/// Corresponds to \c databits in SC code
-		serial_port::character_size charsize = serial_port::character_size{8};
+		serial_port::character_size charsize{8};
 
 		/// Number of stop bits to send. In SC code, true = 2, false = 1
-		serial_port::stop_bits::type stop_bits = serial_port::stop_bits::two;
-		serial_port::parity::type parity = serial_port::parity::none;
-		bool crtscts = false;
+		serial_port::stop_bits::type stop_bits{serial_port::stop_bits::two};
+
+		serial_port::parity::type parity{serial_port::parity::none};
 
 		/// Whether to use XON/XOFF signals (software) or not (hardward).
 		/// Corresponds to \c xonxoff in SC code.
-		serial_port::flow_control::type flow_control = serial_port::flow_control::hardware;
+		serial_port::flow_control::type flow_control{serial_port::flow_control::hardware};
 	};
 
 	static PyrSymbol* s_dataAvailable;
