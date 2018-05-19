@@ -40,6 +40,7 @@ QLimits {
 	*new { arg limit; ^dict[limit]; }
 }
 
+// FIXME: use const instead of classvar for all enum-like classes
 QKey {
 	classvar
 	<left = 16r1000012,
