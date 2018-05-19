@@ -37,6 +37,7 @@
 #include <boost/lockfree/spsc_queue.hpp>
 
 using boost::uint8_t;
+using boost::asio::serial_port;
 
 extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
 
@@ -47,7 +48,6 @@ public:
 	static const int kBufferSize = 8192;
 
 	using FIFO = boost::lockfree::spsc_queue<uint8_t, boost::lockfree::capacity<kBufferSize>>;
-	using Parity = boost::asio::serial_port::parity;
 
 	struct Options
 	{
@@ -55,7 +55,7 @@ public:
 		size_t baudrate = 9600;
 		size_t databits = 8;
 		bool stopbit = true;
-		Parity parity = Parity(Parity::none);
+		serial_port::parity::type parity = serial_port::parity::none;
 		bool crtscts = false;
 		bool xonxoff = false;
 	};
@@ -215,19 +215,19 @@ static SerialPort* getSerialPort(PyrSlot* slot)
 	return (SerialPort*)slotRawPtr(&slotRawObject(slot)->slots[0]);
 }
 
-static SerialPort::Parity::type asParityType(int i)
+static serial_port::parity::type asParityType(int i)
 {
-	using Parity = SerialPort::Parity;
+	using parity = serial_port::parity;
 	switch(i) {
 	case 0:
-		return Parity::none;
+		return parity::none;
 	case 1:
-		return Parity::even;
+		return parity::even;
 	case 2:
-		return Parity::odd;
+		return parity::odd;
 	default:
 		printf("*** WARNING: SerialPort: unknown parity: %d. Defaulting to none.\n", i);
-		return Parity::none;
+		return parity::none;
 	}
 }
 
@@ -267,7 +267,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	int parity;
 	err = slotIntVal(args+6, &parity);
 	if (err) return err;
-	options.parity = SerialPort::Parity(asParityType(parity));
+	options.parity = asParityType(parity);
 
 	options.crtscts = IsTrue(args+7);
 	options.xonxoff = IsTrue(args+8);
