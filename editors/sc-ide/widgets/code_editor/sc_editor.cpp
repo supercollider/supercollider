@@ -1357,11 +1357,9 @@ void ScCodeEditor::evaluateRegion()
     QString text;
 
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
-    if (help) {
-        if (help->browser()->helpBrowserHasFocus()) {
-            help->browser()->evaluateSelection(true);
-            return; // early return
-        }
+    if (help && help->browser()->helpBrowserHasFocus()) {
+        help->browser()->evaluateSelection(true);
+        return; // early return
     }
 
     // Try current selection
