@@ -220,7 +220,7 @@ private:
 	Options			m_options;
 
 	// rx buffers
-	int			m_rxErrors[2];
+	int			m_rxErrors[2] = {0, 0};
 	FIFO		m_rxfifo;
 	uint8_t		m_rxbuffer[kBufferSize];
 };
@@ -292,7 +292,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 
 	PyrSlot* self = args+0;
 
-	if (getSerialPort(self) != 0)
+	if (getSerialPort(self))
 		return errFailed;
 
 	char portName[PATH_MAX];
@@ -340,8 +340,9 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
-	SerialPort* port = (SerialPort*)getSerialPort(self);
-	if (port == 0) return errFailed;
+	SerialPort* port = getSerialPort(self);
+	if (!port)
+		return errFailed;
 	port->stop();
 	return errNone;
 }
@@ -349,9 +350,10 @@ static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
 static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
-	SerialPort* port = (SerialPort*)getSerialPort(self);
+	SerialPort* port = getSerialPort(self);
 
-	if (port == 0) return errFailed;
+	if (!port)
+		return errFailed;
 	/*
 	if (port->isCurrentThread()) {
 		post("Cannot cleanup SerialPort from this thread. Call from AppClock thread.");
@@ -367,9 +369,9 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 static int prSerialPort_Next(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
-	SerialPort* port = (SerialPort*)getSerialPort(self);
-//	printf( "port %i", port );
-	if (port == 0) return errFailed;
+	SerialPort* port = getSerialPort(self);
+	if (!port)
+		return errFailed;
 
 	uint8_t byte;
 	if (port->get(&byte)) {
@@ -386,8 +388,9 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *args = g->sp - 1;
 
 	PyrSlot* self = args+0;
-	SerialPort* port = (SerialPort*)getSerialPort(self);
-	if (port == 0) return errFailed;
+	SerialPort* port = getSerialPort(self);
+	if (!port)
+		return errFailed;
 
 	PyrSlot* src = args+1;
 
@@ -408,8 +411,10 @@ static int prSerialPort_Put(struct VMGlobals *g, int numArgsPushed)
 static int prSerialPort_RXErrors(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
-	SerialPort* port = (SerialPort*)getSerialPort(self);
-	if (port == 0) return errFailed;
+	SerialPort* port = getSerialPort(self);
+	if (!port)
+		return errFailed;
+
 	SetInt(self, port->rxErrors());
 	return errNone;
 }
