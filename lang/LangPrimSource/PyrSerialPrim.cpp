@@ -61,7 +61,10 @@ public:
 		serial_port::stop_bits::type stop_bits = serial_port::stop_bits::two;
 		serial_port::parity::type parity = serial_port::parity::none;
 		bool crtscts = false;
-		bool xonxoff = false;
+
+		/// Whether to use XON/XOFF signals (software) or not (hardward).
+		/// Corresponds to \c xonxoff in SC code.
+		serial_port::flow_control::type flow_control = serial_port::flow_control::hardware;
 	};
 
 	static PyrSymbol* s_dataAvailable;
@@ -79,9 +82,10 @@ public:
 		m_port.set_option(serial_port::parity(options.parity));
 		m_port.set_option(options.charsize);
 		m_port.set_option(serial_port::stop_bits(options.stop_bits));
+		m_port.set_option(serial_port::flow_control(options.flow_control));
 
-		// FIXME: flow control / xonxoff
-		// FIXME: stop bits
+		// FIXME: exclusive
+		// FIXME: crtscts
 	}
 
 	~SerialPort()
@@ -275,7 +279,9 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	options.parity = asParityType(parity);
 
 	options.crtscts = IsTrue(args+7);
-	options.xonxoff = IsTrue(args+8);
+	options.flow_control = IsTrue(args+8) ?
+							serial_port::flow_control::software :
+							serial_port::flow_control::hardware;
 
 	try {
 		port = new SerialPort(slotRawObject(self), portName, options);
