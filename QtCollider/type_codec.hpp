@@ -448,10 +448,10 @@ struct TypeCodec<QObjectT, void>
 
   static QObjectT safeRead( PyrSlot *slot )
   {
-    QObjectProxy* proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
+    auto proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
 
     if (proxy) {
-      QObjectT action = qobject_cast<QObjectT>(proxy->object());
+      auto action = qobject_cast<QObjectT>(proxy->object());
       return action;
     } else {
       return 0;
@@ -460,7 +460,7 @@ struct TypeCodec<QObjectT, void>
 
   static void write(PyrSlot * slot, QObjectT object)
   {
-    QObject* qobject = qobject_cast<QObject*>(object);
+    auto qobject = qobject_cast<QObject*>(object);
     TypeCodec<QObject*>::write(slot, qobject);
   }
 

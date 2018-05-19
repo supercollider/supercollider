@@ -31,8 +31,8 @@
 #include <QPalette>
 #include <QGLWidget>
 
-//typedef QGLWidget QcCanvasBase;
-typedef QWidget QcCanvasBase;
+//using QcCanvasBase = QGLWidget;
+using QcCanvasBase = QWidget;
 
 class QcCanvas : public QcCanvasBase
 {

@@ -301,22 +301,18 @@ void WebView::updateEditable(bool ok) {
     }
   }
 }
-  
+
 bool WebView::overrideNavigation() const
 {
   WebPage* p = qobject_cast<WebPage*>(page());
-  if (p) {
-    return p->delegateNavigation();
-  } else {
-    return false;
-  }
+  return p ? p->delegateNavigation() : false;
 }
 
 void WebView::setOverrideNavigation(bool b)
 {
   WebPage* p = qobject_cast<WebPage*>(page());
   if (p) {
-    return p->setDelegateNavigation(b);
+    p->setDelegateNavigation(b);
   }
 }
 

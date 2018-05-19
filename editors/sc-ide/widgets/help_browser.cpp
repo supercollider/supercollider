@@ -385,7 +385,7 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
 {
     QMenu menu;
     
-    const QWebEngineContextMenuData& contextData = mWebView->page()->contextMenuData();
+    const auto& contextData = mWebView->page()->contextMenuData();
   
     if (!contextData.linkUrl().isEmpty()) {
         menu.addAction( mWebView->pageAction(QWebEnginePage::CopyLinkToClipboard) );
