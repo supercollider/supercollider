@@ -66,8 +66,8 @@ public:
 public:
 	SerialPort(PyrObject* obj, const char* serialport, const Options& options):
 		m_obj(obj),
-		m_options(options),
-		m_port(ioService, serialport)
+		m_port(ioService, serialport),
+		m_options(options)
 	{
 		using namespace boost::asio;
 
@@ -176,7 +176,7 @@ private:
 			return;
 		}
 
-		for (std::size_t index; index != bytesTransferred; ++index) {
+		for (std::size_t index = 0; index != bytesTransferred; ++index) {
 			uint8_t byte = m_rxbuffer[index];
 			bool putSuccessful = m_rxfifo.push(byte);
 			if (!putSuccessful)
