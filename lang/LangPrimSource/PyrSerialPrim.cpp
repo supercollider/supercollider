@@ -56,7 +56,9 @@ public:
 
 		/// Corresponds to \c databits in SC code
 		serial_port::character_size charsize = serial_port::character_size{8};
-		bool stopbit = true;
+
+		/// Number of stop bits to send. In SC code, true = 2, false = 1
+		serial_port::stop_bits::type stop_bits = serial_port::stop_bits::two;
 		serial_port::parity::type parity = serial_port::parity::none;
 		bool crtscts = false;
 		bool xonxoff = false;
@@ -76,6 +78,7 @@ public:
 		m_port.set_option(options.baudrate);
 		m_port.set_option(serial_port::parity(options.parity));
 		m_port.set_option(options.charsize);
+		m_port.set_option(serial_port::stop_bits(options.stop_bits));
 
 		// FIXME: flow control / xonxoff
 		// FIXME: stop bits
@@ -264,7 +267,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	options.charsize = serial_port::character_size{static_cast<unsigned int>(charsize)};
 
-	options.stopbit = IsTrue(args+5);
+	options.stop_bits = IsTrue(args+5) ? serial_port::stop_bits::two : serial_port::stop_bits::one;
 
 	int parity;
 	err = slotIntVal(args+6, &parity);
