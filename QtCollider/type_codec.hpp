@@ -445,11 +445,11 @@ struct TypeCodec<QObjectT, void>
   {
     return safeRead(slot);
   }
-  
+
   static QObjectT safeRead( PyrSlot *slot )
   {
     QObjectProxy* proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
-    
+
     if (proxy) {
       QObjectT action = qobject_cast<QObjectT>(proxy->object());
       return action;
@@ -457,13 +457,13 @@ struct TypeCodec<QObjectT, void>
       return 0;
     }
   }
-  
+
   static void write(PyrSlot * slot, QObjectT object)
   {
     QObject* qobject = qobject_cast<QObject*>(object);
     TypeCodec<QObject*>::write(slot, qobject);
   }
-  
+
 };
 
 } // namespace QtCollider

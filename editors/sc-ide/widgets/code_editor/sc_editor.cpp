@@ -1316,7 +1316,7 @@ void ScCodeEditor::findReferences()
 void ScCodeEditor::evaluateLine()
 {
     QString text;
-  
+
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
     if (help) {
         if (help->browser()->helpBrowserHasFocus()) {
@@ -1324,7 +1324,7 @@ void ScCodeEditor::evaluateLine()
             return; // early return
         }
     }
-  
+
     // Try current selection
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection())
@@ -1365,7 +1365,7 @@ void ScCodeEditor::evaluateRegion()
             return; // early return
         }
     }
-    
+
     // Try current selection
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection())
