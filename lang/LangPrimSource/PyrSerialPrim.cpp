@@ -268,6 +268,22 @@ static serial_port::parity::type asParityType(int i)
 	}
 }
 
+// Throws if both are true
+static serial_port::flow_control::type asFlowControlType(bool hardware, bool software)
+{
+	using flow_control = serial_port::flow_control;
+
+	if (hardware && software) {
+		throw std::runtime_error("SerialPort: xonxoff and crtscts cannot both be true");
+	} else if (hardware) {
+		return flow_control::hardware;
+	} else if (software) {
+		return flow_control::software;
+	} else {
+		return flow_control::none;
+	}
+}
+
 static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *args = g->sp - 1 - SerialPort::kNumOptions;
@@ -305,10 +321,9 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 	options.parity = asParityType(parity);
 
-	options.crtscts = IsTrue(args+7);
-	options.flow_control = IsTrue(args+8) ?
-							serial_port::flow_control::software :
-							serial_port::flow_control::hardware;
+	bool useHardware = IsTrue(args+7);
+	bool useSoftware = IsTrue(args+8);
+	options.flow_control = asFlowControlType(useHardware, useSoftware);
 
 	try {
 		port = new SerialPort(slotRawObject(self), portName, options);

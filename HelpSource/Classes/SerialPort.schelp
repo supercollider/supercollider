@@ -33,6 +33,9 @@ software flow control (true | false)
 argument::exclusive
 open the device exclusively (true | false)
 
+discussion::
+code::crtscts:: and code::xonxoff:: cannot both be true.
+
 method::devices
 returns an array of available device.
 code::
