@@ -47,13 +47,7 @@ public:
 	static const int kBufferSize = 8192;
 
 	using FIFO = boost::lockfree::spsc_queue<uint8_t, boost::lockfree::capacity<kBufferSize>>;
-
-	enum Parity
-	{
-		kNoParity,
-		kEvenParity,
-		kOddParity
-	};
+	using Parity = boost::asio::serial_port::parity;
 
 	struct Options
 	{
@@ -61,7 +55,7 @@ public:
 		size_t baudrate = 9600;
 		size_t databits = 8;
 		bool stopbit = true;
-		Parity parity = kNoParity;
+		Parity parity = Parity(Parity::none);
 		bool crtscts = false;
 		bool xonxoff = false;
 	};
@@ -78,19 +72,7 @@ public:
 		using namespace boost::asio;
 
 		m_port.set_option(serial_port::baud_rate(options.baudrate));
-
-		switch (options.parity) {
-		case kNoParity:
-			m_port.set_option(serial_port::parity(serial_port::parity::none));
-			break;
-		case kEvenParity:
-			m_port.set_option(serial_port::parity(serial_port::parity::even));
-			break;
-		case kOddParity:
-			m_port.set_option(serial_port::parity(serial_port::parity::odd));
-			break;
-		}
-
+		m_port.set_option(serial_port::parity(options.parity));
 		m_port.set_option(serial_port::character_size(options.databits));
 
 		// FIXME: flow control / xonxoff
@@ -233,6 +215,22 @@ static SerialPort* getSerialPort(PyrSlot* slot)
 	return (SerialPort*)slotRawPtr(&slotRawObject(slot)->slots[0]);
 }
 
+static SerialPort::Parity::type asParityType(int i)
+{
+	using Parity = SerialPort::Parity;
+	switch(i) {
+	case 0:
+		return Parity::none;
+	case 1:
+		return Parity::even;
+	case 2:
+		return Parity::odd;
+	default:
+		printf("*** WARNING: SerialPort: unknown parity: %d. Defaulting to none.\n", i);
+		return Parity::none;
+	}
+}
+
 static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *args = g->sp - 1 - SerialPort::kNumOptions;
@@ -269,7 +267,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	int parity;
 	err = slotIntVal(args+6, &parity);
 	if (err) return err;
-	options.parity = (SerialPort::Parity)parity;
+	options.parity = SerialPort::Parity(asParityType(parity));
 
 	options.crtscts = IsTrue(args+7);
 	options.xonxoff = IsTrue(args+8);
