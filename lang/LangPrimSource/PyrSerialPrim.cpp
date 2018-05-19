@@ -23,7 +23,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <atomic>
 #include <stdexcept>
 #include <sstream>
 
@@ -53,23 +52,13 @@ public:
 
 	struct Options
 	{
-		Options()
-			: exclusive(false),
-			  baudrate(9600),
-			  databits(8),
-			  stopbit(true),
-			  parity(kNoParity),
-			  crtscts(false),
-			  xonxoff(false)
-		{ }
-
-		bool	exclusive;
-		size_t	baudrate;
-		size_t	databits;
-		bool	stopbit;
-		Parity	parity;
-		bool	crtscts;
-		bool	xonxoff;
+		bool exclusive = false;
+		size_t baudrate = 9600;
+		size_t databits = 8;
+		bool stopbit = true;
+		Parity parity = kNoParity;
+		bool crtscts = false;
+		bool xonxoff = false;
 	};
 
 	static const int kNumOptions = 7;
@@ -260,7 +249,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	printf("portName %s\n", portName);
 	if (err) return err;
 
-	SerialPort::Options options;
+	SerialPort::Options options{};
 	SerialPort* port = 0;
 
 	options.exclusive = IsTrue(args+2);
@@ -314,10 +303,12 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 	SerialPort* port = (SerialPort*)getSerialPort(self);
 
 	if (port == 0) return errFailed;
+	/*
 	if (port->isCurrentThread()) {
 		post("Cannot cleanup SerialPort from this thread. Call from AppClock thread.");
 		return errFailed;
 	}
+	*/
 
 	delete port;
 	SetNil(slotRawObject(self)->slots+0);
