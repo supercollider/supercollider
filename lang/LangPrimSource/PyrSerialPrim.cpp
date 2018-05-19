@@ -148,33 +148,21 @@ private:
 	/// on failure.
 	void setExclusive(bool);
 
-	void dataAvailable()
+	void runCommand(PyrSymbol* cmd)
 	{
 		gLangMutex.lock();
-		PyrSymbol *method = s_dataAvailable;
 		if (m_obj) {
 			VMGlobals *g = gMainVMGlobals;
 			g->canCallOS = true;
 			++g->sp; SetObject(g->sp, m_obj);
-			runInterpreter(g, method, 1);
+			runInterpreter(g, cmd, 1);
 			g->canCallOS = false;
 		}
 		gLangMutex.unlock();
 	}
 
-	void doneAction()
-	{
-		gLangMutex.lock();
-		PyrSymbol *method = s_doneAction;
-		if (m_obj) {
-			VMGlobals *g = gMainVMGlobals;
-			g->canCallOS = true;
-			++g->sp; SetObject(g->sp, m_obj);
-			runInterpreter(g, method, 1);
-			g->canCallOS = false;
-		}
-		gLangMutex.unlock();
-	}
+	void doneAction() { runCommand(s_doneAction); }
+	void dataAvailable() { runCommand(s_dataAvailable); }
 
 	void doRead(const boost::system::error_code& error,
 				std::size_t bytesTransferred)
