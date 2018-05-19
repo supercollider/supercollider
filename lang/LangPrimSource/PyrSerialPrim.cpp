@@ -51,6 +51,7 @@ extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
 class SerialPort
 {
 public:
+	// 7, not 6 - the last two options passed in are condensed into flow_control
 	static const int kNumOptions = 7;
 	static const int kBufferSize = 8192;
 
@@ -59,7 +60,6 @@ public:
 	struct Options
 	{
 		bool exclusive = false;
-		bool crtscts = false;
 
 		serial_port::baud_rate baudrate{9600};
 
@@ -353,12 +353,6 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 
 	if (!port)
 		return errFailed;
-	/*
-	if (port->isCurrentThread()) {
-		post("Cannot cleanup SerialPort from this thread. Call from AppClock thread.");
-		return errFailed;
-	}
-	*/
 
 	delete port;
 	SetNil(slotRawObject(self)->slots+0);
