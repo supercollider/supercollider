@@ -76,22 +76,22 @@ private:
     QString mMsg;
     int mDotCount;
 };
-  
+
 class HelpWebPage : public QtCollider::WebPage
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  HelpWebPage(HelpBrowser* browser);
-  
+    HelpWebPage(HelpBrowser* browser);
+
 private:
-  HelpBrowser* mBrowser;
+    HelpBrowser* mBrowser;
 };
 
 class HelpBrowser : public QWidget
 {
     Q_OBJECT
-  
+
 public:
     enum ActionRole {
         GoHome,

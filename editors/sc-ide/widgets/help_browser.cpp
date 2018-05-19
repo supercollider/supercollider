@@ -46,15 +46,15 @@
 #endif
 
 namespace ScIDE {
-  
+
 HelpWebPage::HelpWebPage(HelpBrowser* browser)
-  : WebPage(browser), mBrowser(browser)
+    : WebPage(browser), mBrowser(browser)
 {
-  setDelegateNavigation(true);
-  connect( this, SIGNAL(navigationRequested(const QUrl &, QWebEnginePage::NavigationType, bool)),
-          browser, SLOT(onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool)) );
+    setDelegateNavigation(true);
+    connect( this, SIGNAL(navigationRequested(const QUrl &, QWebEnginePage::NavigationType, bool)),
+             browser, SLOT(onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool)) );
 }
-  
+
 HelpBrowser::HelpBrowser( QWidget * parent ):
     QWidget(parent)
 {

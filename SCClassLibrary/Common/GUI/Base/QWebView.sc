@@ -253,43 +253,43 @@ WebView : View {
 		onJavaScriptMsg = func;
 	}
 
-	zoom					{ 			^this.getProperty('zoom') }
-	zoom_					{ |zoom| 	this.setProperty('zoom', zoom) }
+	zoom { ^this.getProperty('zoom') }
+	zoom_ { |zoom| this.setProperty('zoom', zoom) }
 
-	hasSelection			{ 			^this.getProperty('hasSelection') }
+	hasSelection { ^this.getProperty('hasSelection') }
 
-	selectedText			{ 			^this.getProperty('selectedText') }
+	selectedText { ^this.getProperty('selectedText') }
 
-	title					{ 			^this.getProperty('title') }
+	title { ^this.getProperty('title') }
 
-	requestedUrl			{			^this.getProperty('requestedUrl') }
+	requestedUrl { ^this.getProperty('requestedUrl') }
 
-	url						{ 			^this.getProperty('url') }
-	url_					{ |url| 	this.setProperty('url', url) }
+	url { ^this.getProperty('url') }
+	url_ { |url| this.setProperty('url', url) }
 
-	enterInterpretsSelection { 			^this.getProperty('enterInterpretsSelection') }
-	enterInterpretsSelection_{ |b| 		this.setProperty('enterInterpretsSelection', b) }
+	enterInterpretsSelection { ^this.getProperty('enterInterpretsSelection') }
+	enterInterpretsSelection_ { |b| this.setProperty('enterInterpretsSelection', b) }
 
-	editable				{ 			^this.getProperty('editable') }
-	editable_				{ |b| 		this.setProperty('editable', b) }
+	editable { ^this.getProperty('editable') }
+	editable_ { |b| this.setProperty('editable', b) }
 
-	pageBackgroundColor		{ 			^this.getProperty('backgroundColor') }
-	pageBackgroundColor_	{ |color| 	this.setProperty('backgroundColor', color) }
+	pageBackgroundColor { ^this.getProperty('backgroundColor') }
+	pageBackgroundColor_ { |color| this.setProperty('backgroundColor', color) }
 
-	contentsSize			{ 			^this.getProperty('contentsSize') }
+	contentsSize { ^this.getProperty('contentsSize') }
 
-	scrollPosition			{ 			^this.getProperty('scrollPosition') }
+	scrollPosition { ^this.getProperty('scrollPosition') }
 
-	audioMuted				{ 			^this.getProperty('audioMuted') }
-	audioMuted_				{ |muted| 	this.setProperty('audioMuted', muted) }
+	audioMuted { ^this.getProperty('audioMuted') }
+	audioMuted_ { |muted| this.setProperty('audioMuted', muted) }
 
-	overrideNavigation		{ 			^this.getProperty('overrideNavigation') }
-	overrideNavigation_		{ |b| 		this.setProperty('overrideNavigation', b) }
+	overrideNavigation { ^this.getProperty('overrideNavigation') }
+	overrideNavigation_ { |b| this.setProperty('overrideNavigation', b) }
 
-	back 					{ this.triggerPageAction(\back) }
-	forward					{ this.triggerPageAction(\forward) }
-	stop					{ this.triggerPageAction(\stop) }
-	reload					{ this.triggerPageAction(\reload) }
+	back { this.triggerPageAction(\back) }
+	forward { this.triggerPageAction(\forward) }
+	stop { this.triggerPageAction(\stop) }
+	reload { this.triggerPageAction(\reload) }
 
 
 	////////////////////////////////////////////////////////////////////////
