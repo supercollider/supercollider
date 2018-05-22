@@ -49,6 +49,14 @@ using boost::asio::serial_port;
 
 extern boost::asio::io_service ioService; // defined in SC_ComPort.cpp
 
+/**
+ * \brief Serial port abstraction
+ *
+ * Uses SerialPort::Options for configuration. The port is opened on construction, and destruction
+ * releases all resourses by canceling outstanding TX/RX requests and closing the port.
+ * This class polls the port on a separate thread and immediately reads available data into an
+ * internal buffer.
+ */
 class SerialPort
 {
 public:
@@ -56,10 +64,18 @@ public:
 	static const int kNumOptions = 7;
 	static const int kBufferSize = 8192;
 
+	/// Type of the underlying FIFO buffer.
 	using FIFO = boost::lockfree::spsc_queue<uint8_t, boost::lockfree::capacity<kBufferSize>>;
 
+	/**
+	 * \brief Serial port configuration options.
+	 *
+	 * \note The two SuperCollider options \c xonxoff and \c crtscts are used together to set
+	 * Options::flow_control.
+	 */
 	struct Options
 	{
+		/// Whether to request exclusive access to this port. Not implemented on Windows.
 		bool exclusive = false;
 
 		serial_port::baud_rate baudrate{9600};
@@ -80,6 +96,12 @@ public:
 	static PyrSymbol* s_doneAction;
 
 public:
+	/**
+	 * \brief Opens port, sets options, and starts polling thread
+	 *
+	 * May throw \c std::system_error or \c boost::system::system_error during creation if opening
+	 * the port fails or if setting options fails.
+	 */
 	SerialPort(PyrObject* obj, const char* serialport, const Options& options):
 		m_obj(obj),
 		m_port(ioService, serialport),
@@ -112,11 +134,13 @@ public:
 
 	const Options& options() const { return m_options; }
 
+	/// Blocking single-byte write. Returns whether the write was successful.
 	bool put(uint8_t byte)
 	{
 		return m_port.write_some(boost::asio::buffer(&byte, sizeof(byte))) == sizeof(byte);
 	}
 
+	/// Non-blocking single-byte read. Returns whether the read was successful.
 	bool get(uint8_t* byte)
 	{
 		uint8_t ret;
@@ -129,12 +153,13 @@ public:
 		return true;
 	}
 
+	/// The number of read errors since the last time this method was called.
 	int rxErrorsSinceLastQuery()
 	{
-		// errors since last query
 		return m_rxErrors.exchange(0);
 	}
 
+	/// Cancels all outstanding reads and writes and closes the port.
 	void stop()
 	{
 		m_port.cancel();
@@ -146,6 +171,7 @@ private:
 	/// on failure.
 	void setExclusive(bool);
 
+	/// Calls a one-arg SuperCollider command on this object.
 	void runCommand(PyrSymbol* cmd)
 	{
 		gLangMutex.lock();
@@ -159,7 +185,10 @@ private:
 		gLangMutex.unlock();
 	}
 
+	/// Runs the doneAction callback function on the SuperCollider \c SerialPort object.
 	void doneAction() { runCommand(s_doneAction); }
+
+	/// Notifies the object that data is available, unblocking any blocking reads.
 	void dataAvailable() { runCommand(s_dataAvailable); }
 
 	void doRead(const boost::system::error_code& error,
@@ -195,17 +224,18 @@ private:
 	}
 
 
-	// language interface
-	PyrObject*		m_obj;
-	boost::asio::serial_port m_port;
+	PyrObject* m_obj; ///< Language object representing this port.
+	boost::asio::serial_port m_port; ///< Port object.
+	Options m_options; ///< Serial interface options.
 
-	// serial interface
-	Options			m_options;
-
-	// rx buffers
+	/// Count of read errors since last query
 	std::atomic<int> m_rxErrors;
-	FIFO		m_rxfifo;
-	uint8_t		m_rxbuffer[kBufferSize];
+
+	/// I/O buffer
+	FIFO m_rxfifo;
+
+	/// Temp buffer for reads
+	uint8_t m_rxbuffer[kBufferSize];
 };
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
@@ -225,8 +255,8 @@ void SerialPort::setExclusive(bool b)
 #endif // _WIN32
 }
 
-// =====================================================================
-// primitives
+// ================================================================================================
+// helpers
 
 static SerialPort* getSerialPort(PyrSlot* slot)
 {
@@ -266,6 +296,9 @@ static serial_port::flow_control::type asFlowControlType(bool hardware, bool sof
 		return flow_control::none;
 	}
 }
+
+// ================================================================================================
+// primitives
 
 static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 {
