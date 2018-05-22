@@ -4,8 +4,17 @@ SoundFileView : View {
 	var <metaAction;
 	var <>elasticMode; // NOTE: no-op, only for compatibility
 	var curDoneAction;
+	var closeSoundFile = false;
 
 	*qtClass { ^'QcWaveform' }
+
+	*new { |parent, bounds|
+		^super.new(parent, bounds).initSFView;
+	}
+
+	initSFView {
+		this.connectFunction('loadingDone()', { if (closeSoundFile) {soundfile.close; closeSoundFile = false} });
+	}
 
 	load { arg filename, startFrame, frames, block, doneAction;
 		if( filename.isString && filename != "" ) {
@@ -45,22 +54,23 @@ SoundFileView : View {
 		this.invokeMethod( \write, [data, offset.asInteger] );
 	}
 
-	readFile { arg aSoundFile, startFrame, frames, block, closeFile, doneAction;
+	readFile { arg aSoundFile, startFrame, frames, block, closeFile = false, doneAction;
+		if (closeFile == true) { closeSoundFile = true };
 		this.load( aSoundFile.path, startFrame, frames, block, doneAction );
 	}
 
-	read { arg startFrame, frames, block, closeFile, doneAction;
+	read { arg startFrame, frames, block, closeFile = false, doneAction;
 		if( soundfile.notNil ) {
-			this.readFile( soundfile, startFrame, frames, block, nil, doneAction );
+			this.readFile( soundfile, startFrame, frames, block, closeFile, doneAction );
 		};
 	}
 
 	readFileWithTask { arg soundFile, startFrame, frames, block, doneAction, showProgress;
-		this.readFile( soundFile, startFrame, frames, block, nil, doneAction );
+		this.readFile( soundFile, startFrame, frames, block, false, doneAction );
 	}
 
 	readWithTask { arg startFrame, frames, block, doneAction, showProgress;
-		this.read( startFrame, frames, block, nil, doneAction );
+		this.read( startFrame, frames, block, false, doneAction );
 	}
 
 	drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
