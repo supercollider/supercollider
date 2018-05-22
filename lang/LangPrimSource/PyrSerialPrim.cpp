@@ -38,6 +38,7 @@
 #include "PyrPrimitive.h"
 #include "PyrSched.h"
 #include "SCBase.h"
+#include "SC_Lock.h"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -116,20 +117,13 @@ public:
 		m_port.set_option(serial_port::flow_control(options.flow_control));
 
 		setExclusive(options.exclusive);
+
+		m_readThread = SC_Thread{ &SerialPort::startRead, this };
 	}
 
 	~SerialPort()
 	{
 		stop();
-	}
-
-	void startRead()
-	{
-		m_port.async_write_some(boost::asio::buffer(m_rxbuffer, kBufferSize),
-								boost::bind(&SerialPort::doRead, this,
-											boost::asio::placeholders::error,
-											boost::asio::placeholders::bytes_transferred)
-								);
 	}
 
 	const Options& options() const { return m_options; }
@@ -164,6 +158,8 @@ public:
 	{
 		m_port.cancel();
 		m_port.close();
+		SetNil(m_obj->slots+0);
+		m_readThread.join();
 	}
 
 private:
@@ -191,26 +187,20 @@ private:
 	/// Notifies the object that data is available, unblocking any blocking reads.
 	void dataAvailable() { runCommand(s_dataAvailable); }
 
-	void doRead(const boost::system::error_code& error,
-				std::size_t bytesTransferred)
+	void startRead()
 	{
+		auto const&& buf = boost::asio::buffer(m_rxbuffer, kBufferSize);
+		boost::system::error_code ec{};
+		m_port.async_read_some(buf, boost::bind(
+				&SerialPort::doRead,
+				this,
+				boost::asio::placeholders::error,
+				boost::asio::placeholders::bytes_transferred)
+			);
+	}
 
-#if 0
-		// FIXME: when?
-		if (error == ???) {
-			if ( m_dodone )
-				doneAction();
-			return;
-		}
-#endif
-
-		if (error) {
-			// what to do?
-			printf("SerialPort::doRead error: %s", error.message().c_str());
-			startRead();
-			return;
-		}
-
+	void doRead(const boost::system::error_code& ec, std::size_t bytesTransferred)
+	{
 		for (std::size_t index = 0; index != bytesTransferred; ++index) {
 			uint8_t byte = m_rxbuffer[index];
 			bool putSuccessful = m_rxfifo.push(byte);
@@ -218,15 +208,24 @@ private:
 				m_rxErrors++;
 		}
 
-		dataAvailable();
+		if (bytesTransferred > 0) {
+			dataAvailable();
+		}
 
-		startRead();
+		printf("SerialPort: doRead got %u bytes\n", bytesTransferred);
+
+		if (!ec) {
+			startRead();
+		} else {
+			doneAction();
+		}
 	}
 
 
 	PyrObject* m_obj; ///< Language object representing this port.
 	boost::asio::serial_port m_port; ///< Port object.
 	Options m_options; ///< Serial interface options.
+	SC_Thread m_readThread; ///< Polling thread.
 
 	/// Count of read errors since last query
 	std::atomic<int> m_rxErrors;
