@@ -14,6 +14,9 @@ Scroll using right-click + mouse-left/right.
 
 CLASSMETHODS::
 
+METHOD:: new
+    Creates a new SoundFileView instance. See link::Classes/View#*new:: for more details.
+
 PRIVATE:: key
 
 
