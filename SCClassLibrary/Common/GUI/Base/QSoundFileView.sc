@@ -13,7 +13,15 @@ SoundFileView : View {
 	}
 
 	initSFView {
-		this.connectFunction('loadingDone()', { if (closeSoundFile) {soundfile.close; closeSoundFile = false} });
+		this.connectFunction(
+			'loadingDone()',
+			{
+				if (closeSoundFile) {
+					soundfile.close;
+					closeSoundFile = false
+				}
+			}
+		)
 	}
 
 	load { arg filename, startFrame, frames, block, doneAction;
