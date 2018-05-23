@@ -106,7 +106,8 @@ public:
 	SerialPort(PyrObject* obj, const char* serialport, const Options& options):
 		m_obj(obj),
 		m_port(ioService, serialport),
-		m_options(options)
+		m_options(options),
+		m_rxErrors(0)
 	{
 		using namespace boost::asio;
 
