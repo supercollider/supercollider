@@ -198,7 +198,7 @@ else()
     set(SC_IDE False)
   endif()
 endif (SC_QT)
-
+option(NO_UIUGENS "Disable building of UIUGens plugin (for use with UI-less compiles)" OFF)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
