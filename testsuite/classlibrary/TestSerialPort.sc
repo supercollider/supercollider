@@ -3,6 +3,9 @@
 //
 // These tests perform integration testing on SerialPort by creating an input/output pair of virtual serial ports
 // prior to each test.
+//
+// To run these tests on macOS/Linux, you need the `socat` utility. To run on Windows, you need to install `com0com`
+// and configure it for use with the CNCA0 and CNCB0 ports.
 
 TestSerialPort : UnitTest {
 
@@ -22,7 +25,7 @@ TestSerialPort : UnitTest {
 	// Create a pair of virtual serial ports and return their names
 	createPorts {
 		if(thisProcess.platform.name === \windows) {
-			Error("Not yet implemented").throw;
+			^this.createCom0comPorts();
 		} {
 			^this.createSocatPorts();
 		};
@@ -36,6 +39,13 @@ TestSerialPort : UnitTest {
 		};
 	}
 
+	createCom0comPorts {
+		var cmd = "\"C:/Porgram Files (x86)/com0com/setupc.exe install Portname=CNC0A Portname=CNC0B";
+		var res = cmd.unixCmd;
+		res.postln;
+		^["CNCA0", "CNCB0"];
+	}
+
 	createSocatPorts {
 		var cmd = "socat -d -d pty,raw,echo=0 pty,raw,echo=0 2>&1";
 		var pipe = Pipe.new(cmd, "r");
@@ -44,7 +54,7 @@ TestSerialPort : UnitTest {
 		first = pipe.getLine;
 		first = first.findRegexp("/dev/ttys.*");
 		if(first.isEmpty) {
-			Error("socat is not installed");
+			Error("socat is not installed").throw;
 		};
 
 		first = first[0][1];
@@ -52,7 +62,7 @@ TestSerialPort : UnitTest {
 		second = pipe.getLine;
 		second = second.findRegexp("/dev/ttys.*");
 		if(second.isEmpty) {
-			Error("couldn't read second tty from socat");
+			Error("couldn't read second tty from socat").throw;
 		};
 
 		second = second[0][1];
