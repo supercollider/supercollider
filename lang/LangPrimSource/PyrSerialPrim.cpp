@@ -130,6 +130,9 @@ public:
 	const Options& options() const { return m_options; }
 
 	/// Blocking single-byte write. Returns whether the write was successful.
+	/**
+	 * \note Throws \c boost::system::system_error if write fails.
+	 */
 	bool put(uint8_t byte)
 	{
 		return m_port.write_some(boost::asio::buffer(&byte, sizeof(byte))) == sizeof(byte);
@@ -149,6 +152,9 @@ public:
 	}
 
 	/// The number of read errors since the last time this method was called.
+	/**
+	 * A read error occurs when the FIFO is too full to receive data; the extra bytes are lost.
+	 */
 	int rxErrorsSinceLastQuery()
 	{
 		return m_rxErrors.exchange(0);
@@ -188,6 +194,8 @@ private:
 	/// Notifies the object that data is available, unblocking any blocking reads.
 	void dataAvailable() { runCommand(s_dataAvailable); }
 
+	/// Starts an async read with SerialPort::doRead as a callback. Loops back until a read error is
+	/// encountered.
 	void startRead()
 	{
 		auto const&& buf = boost::asio::buffer(m_rxbuffer, kBufferSize);
@@ -212,8 +220,6 @@ private:
 		if (bytesTransferred > 0) {
 			dataAvailable();
 		}
-
-		printf("SerialPort: doRead got %u bytes\n", bytesTransferred);
 
 		if (!ec) {
 			startRead();
@@ -265,6 +271,7 @@ static SerialPort* getSerialPort(PyrSlot* slot)
 	return (SerialPort*)slotRawPtr(&slotRawObject(slot)->slots[0]);
 }
 
+/// Translates between SC parity IDs and boost::asio::serial_port parity types.
 static serial_port::parity::type asParityType(int i)
 {
 	using parity = serial_port::parity;
@@ -281,7 +288,10 @@ static serial_port::parity::type asParityType(int i)
 	}
 }
 
-// Throws if both are true
+/// Translates between SC xonxoff/crtscts args and boost::asio::serial_port flow_control types.
+/**
+ * \note Throws std::runtime_error if both arguments are true.
+ */
 static serial_port::flow_control::type asFlowControlType(bool hardware, bool software)
 {
 	using flow_control = serial_port::flow_control;
