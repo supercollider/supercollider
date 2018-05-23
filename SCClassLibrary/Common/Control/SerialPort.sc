@@ -136,14 +136,13 @@ SerialPort {
 		^this.primitiveFailed
 	}
 	primCleanup {
-		// _SerialPort_Cleanup must be called from the AppClock thread.
 		_SerialPort_Cleanup
 		^this.primitiveFailed
 	}
 	prCleanup{
 		if (this.isOpen) {
 			allPorts.remove(this);
-			defer({ this.primCleanup }, 0);
+			this.primCleanup;
 		}
 	}
 	prPut { | byte |
