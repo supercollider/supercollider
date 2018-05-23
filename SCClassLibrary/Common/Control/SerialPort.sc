@@ -127,7 +127,7 @@ SerialPort {
 	}
 
 	// PRIMITIVE
-	prOpen { | ... args | // was: | port, baudRate | but that misses out on all the other args?
+	prOpen { | ... args |
 		_SerialPort_Open
 		^this.primitiveFailed
 	}
