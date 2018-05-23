@@ -4301,17 +4301,16 @@ void initLIDPrimitives();
 	initLIDPrimitives();
 #endif
 
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
-
 void initSerialPrimitives();
 	initSerialPrimitives();
 
+#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 #ifdef HAVE_WII
 void initWiiPrimitives();
 	initWiiPrimitives();
 #endif
-
 #endif
+
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
