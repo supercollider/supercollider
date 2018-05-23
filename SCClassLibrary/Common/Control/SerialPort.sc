@@ -104,18 +104,25 @@ SerialPort {
 
 	// always blocks
 	put { | byte, timeout=0.005 |
-		if ( dataptr.notNil ){
-			while { this.prPut(byte).not } {
-				timeout.wait;
-				timeout = timeout * 2;
-			}
+		if (timeout != 0.005) {
+			"SerialPort:-put: the timeout argument is deprecated and will be removed in a future release".warn
+		};
+
+		if (dataptr.notNil) {
+			^this.prPut(byte);
 		}{
 			"SerialPort not open".warn;
+			^false;
 		}
 	}
+
 	putAll { | bytes, timeout=0.005 |
+		if (timeout != 0.005) {
+			"SerialPort:-putAll: the timeout argument is deprecated and will be removed in a future release".warn
+		};
+
 		bytes.do { |byte|
-			this.put(byte, timeout);
+			this.put(byte);
 		}
 	}
 
