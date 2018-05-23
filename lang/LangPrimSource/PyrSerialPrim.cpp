@@ -130,12 +130,11 @@ public:
 	const Options& options() const { return m_options; }
 
 	/// Blocking single-byte write. Returns whether the write was successful.
-	/**
-	 * \note Throws \c boost::system::system_error if write fails.
-	 */
 	bool put(uint8_t byte)
 	{
-		return m_port.write_some(boost::asio::buffer(&byte, sizeof(byte))) == sizeof(byte);
+		boost::system::error_code ec{};
+		m_port.write_some(boost::asio::buffer(&byte, sizeof(byte)), ec);
+		return !ec;
 	}
 
 	/// Non-blocking single-byte read. Returns whether the read was successful.
