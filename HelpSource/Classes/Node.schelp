@@ -183,7 +183,7 @@ This is similar to map above, but you specify the number of sequential Controls 
 method:: release, releaseMsg
 This method causes the receiver to be freed over the specified amount of time. This is a convenience method which assumes that the synth contains an envelope generator (an EnvGen, Linen, or similar UGen) running a sustaining envelope (see Env) and that it's gate argument is set to a control called \gate.
 argument:: releaseTime
-The amount of time in seconds over which the node should be released. Default is 0. Negative values are threated as 0.
+The amount of time in seconds over which the node should be released. Default is 0. Negative values are treated as 0.
 discussion::
 If the receiver is a Group, all nodes within the group will be released.
 code::
