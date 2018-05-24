@@ -123,7 +123,7 @@ Node {
 		^[17, nodeID, controlName, numControls, value] ++ args.asControlInput; //"n_fill"
 	}
 
-	release { arg releaseTime;
+	release { |releaseTime = 0|
 		server.sendMsg(*this.releaseMsg(releaseTime))
 	}
 
