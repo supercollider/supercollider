@@ -127,13 +127,13 @@ Node {
 		server.sendMsg(*this.releaseMsg(releaseTime))
 	}
 
-	releaseMsg { arg releaseTime;
+	releaseMsg { |releaseTime = 0|
 		//assumes a control called 'gate' in the synth
-		if(releaseTime.isNil, {
-			releaseTime = 0.0;
-		}, {
-			releaseTime = -1.0 - releaseTime;
-		});
+		if (releaseTime > 0) {
+			releaseTime = (releaseTime + 1).neg;
+		} {
+			releaseTime = 0;
+		};
 		^[15, nodeID, \gate, releaseTime]
 	}
 
