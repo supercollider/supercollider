@@ -673,7 +673,7 @@ Pkey : Pattern {
 
 	embedInStream { |inval|
 		var outval, keystream = key.asStream;
-		repeats.value(inval).do {
+		(repeats.value(inval) ?? { inf }).do {
 			outval = inval[keystream.next(inval)];
 			if(outval.isNil) { ^inval };
 			inval = outval.yield;
