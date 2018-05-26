@@ -1027,7 +1027,7 @@ Event : Environment {
 						msgFunc = ~defaultMsgFunc;
 					};
 
-					msgs = msgFunc.valueEnvir.flop;
+					msgs = msgFunc.valueEnvir.asArray.flop;
 					ids = Event.checkIDs(~id, server);
 					if (ids.isNil) { ids = msgs.collect { server.nextNodeID } };
 					bndl = ids.collect { |id, i|
