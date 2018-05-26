@@ -6,7 +6,7 @@ SimpleNumber : Number {
 	numChannels { ^1 }
 
 	magnitude { ^this.abs }
-	angle { if (this >= 0, {^0.0}, {^pi} ) }
+	angle { ^if(this >= 0) { 0.0 } { pi } }
 
 
 	neg { _Neg; ^this.primitiveFailed }
@@ -66,60 +66,60 @@ SimpleNumber : Number {
 	scurve { _SCurve; ^this.primitiveFailed }
 	ramp { _Ramp; ^this.primitiveFailed }
 
-	+ { arg aNumber, adverb; _Add; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
-	- { arg aNumber, adverb; _Sub; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
-	* { arg aNumber, adverb; _Mul; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
-	/ { arg aNumber, adverb; _FDiv; ^aNumber.performBinaryOpOnSimpleNumber('/', this, adverb) }
-	mod { arg aNumber, adverb; _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
-	div { arg aNumber, adverb; _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this, adverb) }
-	pow { arg aNumber, adverb; _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this, adverb) }
-	min { arg aNumber, adverb; _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) }
-	max { arg aNumber=0.0, adverb; _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
-	bitAnd { arg aNumber, adverb; _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this, adverb) }
-	bitOr { arg aNumber, adverb; _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
-	bitXor { arg aNumber, adverb; _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }
-	bitHammingDistance { arg aNumber, adverb; _HammingDistance  ^aNumber.performBinaryOpOnSimpleNumber('hammingDistance', this, adverb) }
+	+ { |aNumber, adverb| _Add; ^aNumber.performBinaryOpOnSimpleNumber('+', this, adverb) }
+	- { |aNumber, adverb| _Sub; ^aNumber.performBinaryOpOnSimpleNumber('-', this, adverb) }
+	* { |aNumber, adverb| _Mul; ^aNumber.performBinaryOpOnSimpleNumber('*', this, adverb) }
+	/ { |aNumber, adverb| _FDiv; ^aNumber.performBinaryOpOnSimpleNumber('/', this, adverb) }
+	mod { |aNumber, adverb| _Mod; ^aNumber.performBinaryOpOnSimpleNumber('mod', this, adverb) }
+	div { |aNumber, adverb| _IDiv; ^aNumber.performBinaryOpOnSimpleNumber('div', this, adverb) }
+	pow { |aNumber, adverb| _Pow; ^aNumber.performBinaryOpOnSimpleNumber('pow', this, adverb) }
+	min { |aNumber, adverb| _Min; ^aNumber.performBinaryOpOnSimpleNumber('min', this, adverb) }
+	max { |aNumber=0.0, adverb| _Max; ^aNumber.performBinaryOpOnSimpleNumber('max', this, adverb) }
+	bitAnd { |aNumber, adverb| _BitAnd; ^aNumber.performBinaryOpOnSimpleNumber('bitAnd', this, adverb) }
+	bitOr { |aNumber, adverb| _BitOr; ^aNumber.performBinaryOpOnSimpleNumber('bitOr', this, adverb) }
+	bitXor { |aNumber, adverb| _BitXor; ^aNumber.performBinaryOpOnSimpleNumber('bitXor', this, adverb) }
+	bitHammingDistance { |aNumber, adverb| _HammingDistance  ^aNumber.performBinaryOpOnSimpleNumber('hammingDistance', this, adverb) }
 	bitTest { arg bit; ^( (this.bitAnd(1.leftShift(bit))) != 0) }
-	lcm { arg aNumber, adverb; _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
-	gcd { arg aNumber, adverb; _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
-	round { arg aNumber=1.0, adverb; _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
-	roundUp { arg aNumber=1.0, adverb; _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
-	trunc { arg aNumber=1.0, adverb; _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
-	atan2 { arg aNumber, adverb; _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
-	hypot { arg aNumber, adverb; _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }
-	hypotApx { arg aNumber, adverb; _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this, adverb) }
-	leftShift { arg aNumber=1, adverb; _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this, adverb) }
-	rightShift { arg aNumber=1, adverb; _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this, adverb) }
-	unsignedRightShift { arg aNumber, adverb; _UnsignedShift; ^aNumber.performBinaryOpOnSimpleNumber('unsignedRightShift', this, adverb) }
-	ring1 { arg aNumber, adverb; _Ring1; ^aNumber.performBinaryOpOnSimpleNumber('ring1', this, adverb) }
-	ring2 { arg aNumber, adverb; _Ring2; ^aNumber.performBinaryOpOnSimpleNumber('ring2', this, adverb) }
-	ring3 { arg aNumber, adverb; _Ring3; ^aNumber.performBinaryOpOnSimpleNumber('ring3', this, adverb) }
-	ring4 { arg aNumber, adverb; _Ring4; ^aNumber.performBinaryOpOnSimpleNumber('ring4', this, adverb) }
-	difsqr { arg aNumber, adverb; _DifSqr; ^aNumber.performBinaryOpOnSimpleNumber('difsqr', this, adverb) }
-	sumsqr { arg aNumber, adverb; _SumSqr; ^aNumber.performBinaryOpOnSimpleNumber('sumsqr', this, adverb) }
-	sqrsum { arg aNumber, adverb; _SqrSum; ^aNumber.performBinaryOpOnSimpleNumber('sqrsum', this, adverb) }
-	sqrdif { arg aNumber, adverb; _SqrDif; ^aNumber.performBinaryOpOnSimpleNumber('sqrdif', this, adverb) }
-	absdif { arg aNumber, adverb; _AbsDif; ^aNumber.performBinaryOpOnSimpleNumber('absdif', this, adverb) }
-	thresh { arg aNumber, adverb; _Thresh; ^aNumber.performBinaryOpOnSimpleNumber('thresh', this, adverb) }
-	amclip { arg aNumber, adverb; _AMClip; ^aNumber.performBinaryOpOnSimpleNumber('amclip', this, adverb) }
-	scaleneg { arg aNumber, adverb; _ScaleNeg; ^aNumber.performBinaryOpOnSimpleNumber('scaleneg', this, adverb) }
-	clip2 { arg aNumber, adverb; _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
-	fold2 { arg aNumber, adverb; _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
-	wrap2 { arg aNumber, adverb; _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
+	lcm { |aNumber, adverb| _LCM; ^aNumber.performBinaryOpOnSimpleNumber('lcm', this, adverb) }
+	gcd { |aNumber, adverb| _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
+	round { |aNumber=1.0, adverb| _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
+	roundUp { |aNumber=1.0, adverb| _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
+	trunc { |aNumber=1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
+	atan2 { |aNumber, adverb| _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
+	hypot { |aNumber, adverb| _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }
+	hypotApx { |aNumber, adverb| _HypotApx; ^aNumber.performBinaryOpOnSimpleNumber('hypotApx', this, adverb) }
+	leftShift { |aNumber=1, adverb| _ShiftLeft; ^aNumber.performBinaryOpOnSimpleNumber('leftShift', this, adverb) }
+	rightShift { |aNumber=1, adverb| _ShiftRight; ^aNumber.performBinaryOpOnSimpleNumber('rightShift', this, adverb) }
+	unsignedRightShift { |aNumber, adverb| _UnsignedShift; ^aNumber.performBinaryOpOnSimpleNumber('unsignedRightShift', this, adverb) }
+	ring1 { |aNumber, adverb| _Ring1; ^aNumber.performBinaryOpOnSimpleNumber('ring1', this, adverb) }
+	ring2 { |aNumber, adverb| _Ring2; ^aNumber.performBinaryOpOnSimpleNumber('ring2', this, adverb) }
+	ring3 { |aNumber, adverb| _Ring3; ^aNumber.performBinaryOpOnSimpleNumber('ring3', this, adverb) }
+	ring4 { |aNumber, adverb| _Ring4; ^aNumber.performBinaryOpOnSimpleNumber('ring4', this, adverb) }
+	difsqr { |aNumber, adverb| _DifSqr; ^aNumber.performBinaryOpOnSimpleNumber('difsqr', this, adverb) }
+	sumsqr { |aNumber, adverb| _SumSqr; ^aNumber.performBinaryOpOnSimpleNumber('sumsqr', this, adverb) }
+	sqrsum { |aNumber, adverb| _SqrSum; ^aNumber.performBinaryOpOnSimpleNumber('sqrsum', this, adverb) }
+	sqrdif { |aNumber, adverb| _SqrDif; ^aNumber.performBinaryOpOnSimpleNumber('sqrdif', this, adverb) }
+	absdif { |aNumber, adverb| _AbsDif; ^aNumber.performBinaryOpOnSimpleNumber('absdif', this, adverb) }
+	thresh { |aNumber, adverb| _Thresh; ^aNumber.performBinaryOpOnSimpleNumber('thresh', this, adverb) }
+	amclip { |aNumber, adverb| _AMClip; ^aNumber.performBinaryOpOnSimpleNumber('amclip', this, adverb) }
+	scaleneg { |aNumber, adverb| _ScaleNeg; ^aNumber.performBinaryOpOnSimpleNumber('scaleneg', this, adverb) }
+	clip2 { |aNumber, adverb| _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
+	fold2 { |aNumber, adverb| _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
+	wrap2 { |aNumber, adverb| _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
 
-	excess { arg aNumber, adverb; _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
-	firstArg { arg aNumber, adverb; _FirstArg; ^aNumber.performBinaryOpOnSimpleNumber('firstArg', this, adverb) }
-	rrand { arg aNumber, adverb; _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this, adverb) }
-	exprand { arg aNumber, adverb; _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this, adverb) }
+	excess { |aNumber, adverb| _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
+	firstArg { |aNumber, adverb| _FirstArg; ^aNumber.performBinaryOpOnSimpleNumber('firstArg', this, adverb) }
+	rrand { |aNumber, adverb| _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this, adverb) }
+	exprand { |aNumber, adverb| _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this, adverb) }
 
-	== { arg aNumber, adverb; _EQ; ^aNumber.perform('==', this, adverb) }
-	!= { arg aNumber, adverb; _NE; ^aNumber.perform('!=', this, adverb) }
-	< { arg aNumber, adverb; _LT; ^aNumber.performBinaryOpOnSimpleNumber('<', this, adverb) }
-	> { arg aNumber, adverb; _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this, adverb) }
-	<= { arg aNumber, adverb; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
-	>= { arg aNumber, adverb; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
+	== { |aNumber, adverb| _EQ; ^aNumber.perform('==', this, adverb) }
+	!= { |aNumber, adverb| _NE; ^aNumber.perform('!=', this, adverb) }
+	< { |aNumber, adverb| _LT; ^aNumber.performBinaryOpOnSimpleNumber('<', this, adverb) }
+	> { |aNumber, adverb| _GT; ^aNumber.performBinaryOpOnSimpleNumber('>', this, adverb) }
+	<= { |aNumber, adverb| _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
+	>= { |aNumber, adverb| _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
 
-	equalWithPrecision { arg that, precision=0.0001, relativePrecision=0;
+	equalWithPrecision { |that, precision = 0.0001, relativePrecision = 0|
 		^if(relativePrecision > 0) {
 			absdif(this, that) < max(precision, relativePrecision * min(abs(this), abs(that)))
 		} {
@@ -134,21 +134,21 @@ SimpleNumber : Number {
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
 
-	degrad { ^this*pi/180 }
-	raddeg { ^this*180/pi }
+	degrad { ^this * pi / 180 }
+	raddeg { ^this * 180 / pi }
 
-	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
+	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
 		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
 	}
-	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
-	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+	performBinaryOpOnComplex { |aSelector, aComplex, adverb| ^aComplex.perform(aSelector, this.asComplex, adverb) }
+	performBinaryOpOnSignal { |aSelector, aSignal, adverb|
 		BinaryOpFailureError(this, aSelector, [aSignal, adverb]).throw;
 	}
 
 	nextPowerOfTwo { ^this.nextPowerOf(2) }
-	nextPowerOf { arg base; ^pow(base, ceil(log(this) / log(base))) }
+	nextPowerOf { |base| ^pow(base, ceil(log(this) / log(base))) }
 	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
-	previousPowerOf { arg base; ^pow(base, ceil(log(this) / log(base)) - 1) }
+	previousPowerOf { |base| ^pow(base, ceil(log(this) / log(base)) - 1) }
 
 
 	/*  Boost Special Functions  */
@@ -220,7 +220,7 @@ SimpleNumber : Number {
 	legendrePAssoc { |m, x| _LegendrePAssoc; ^this.primitiveFailed }
 	legendreQ { |x|
 		//  Protect from l < 0. Boost won't catch this out of range value and interpreter hangs.
-		if (this < 0) {
+		if(this < 0) {
 			format("n = %, but Legendre Polynomial of the Second Kind requires n >= 0", this).throw
 		};
 		^prLegendreQ(this, x)
@@ -229,18 +229,18 @@ SimpleNumber : Number {
 	laguerre { |x| _Laguerre; ^this.primitiveFailed }
 	laguerreAssoc { |m, x|
 		//  Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
-		if (this < 0) {
+		if(this < 0) {
 			format("n = %, but Associated Laguerre Polynomial requires n >= 0", this).throw
 		};
-		^prLaguerreAssoc(this, m, x);
+		^prLaguerreAssoc(this, m, x)
 	}
 	prLaguerreAssoc { |m, x| _LaguerreAssoc; ^this.primitiveFailed }
 	hermite { |x|
 		//  Protect from m < 0. Boost won't catch this out of range value and interpreter hangs.
-		if (this < 0) {
+		if(this < 0) {
 			format("n = %, but Hermite Polynomial requires n >= 0", this).throw
 		};
-		^prHermite(this, x);
+		^prHermite(this, x)
 	}
 	prHermite { |x| _Hermite; ^this.primitiveFailed }
 	chebyshevT { |x| _ChebyshevT; ^this.primitiveFailed }
@@ -249,10 +249,10 @@ SimpleNumber : Number {
 	//  "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
 	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
 	chebyshevTZeros {
-		var n = this.asInt;
-		^(1..n).collect({ arg k;
-			cos(pi* ((2*k) - 1) / (2*n))
-		});
+		var n = this.asInteger;
+		^(1..n).collect { |k|
+			cos(pi * ((2 * k) - 1) / (2 * n))
+		}
 	}
 
 	//  Spherical Harmonics
@@ -358,114 +358,106 @@ SimpleNumber : Number {
 	/*  end Boost Special Functions  */
 
 
-	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+	snap { |resolution = 1.0, margin = 0.05, strength = 1.0|
 		var round = round(this, resolution);
 		var diff = round - this;
-		if(abs(diff) < margin) {
-			^this + (strength * diff)
-		} {
-			^this
-		}
+		^if(abs(diff) < margin) { this + (strength * diff) } { this }
 	}
 
 
-	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+	softRound { |resolution = 1.0, margin = 0.05, strength = 1.0|
 		var round = round(this, resolution);
 		var diff = round - this;
-		if(abs(diff) > margin) {
-			^this + (strength * diff)
-		} {
-			^this
-		}
+		^if(abs(diff) > margin) { this + (strength * diff) } { this }
 	}
 
-	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	linlin { |inMin, inMax, outMin, outMax, clip = \minmax|
 		// linear to linear mapping
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+		^(this - inMin) / (inMax - inMin) * (outMax - outMin) + outMin
 	}
 
-	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	linexp { |inMin, inMax, outMin, outMax, clip=\minmax|
 		// linear to exponential mapping
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		^pow(outMax/outMin, (this-inMin)/(inMax-inMin)) * outMin
+		^pow(outMax / outMin, (this - inMin) / (inMax - inMin)) * outMin
 	}
 
-	explin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	explin { |inMin, inMax, outMin, outMax, clip=\minmax|
 		// exponential to linear mapping
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		^(log(this/inMin)) / (log(inMax/inMin)) * (outMax-outMin) + outMin;
+		^(log(this / inMin)) / (log(inMax / inMin)) * (outMax - outMin) + outMin
 	}
 
-	expexp { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	expexp { |inMin, inMax, outMin, outMax, clip=\minmax|
 		// exponential to exponential mapping
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		^pow(outMax/outMin, log(this/inMin) / log(inMax/inMin)) * outMin;
+		^pow(outMax / outMin, log(this / inMin) / log(inMax / inMin)) * outMin
 	}
 
-	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+	lincurve { |inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax|
 		var grow, a, b, scaled;
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		if (abs(curve) < 0.001) {
+		if(abs(curve) < 0.001) {
 			// If the value should be clipped, it has already been clipped (above).
 			// If we got this far, then linlin does not need to do any clipping.
 			// Inlining the formula here makes it even faster.
-			^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+			^(this - inMin) / (inMax - inMin) * (outMax - outMin) + outMin
 		};
 
 		grow = exp(curve);
@@ -473,26 +465,26 @@ SimpleNumber : Number {
 		b = outMin + a;
 		scaled = (this - inMin) / (inMax - inMin);
 
-		^b - (a * pow(grow, scaled));
+		^b - (a * pow(grow, scaled))
 	}
 
-	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
+	curvelin { |inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax|
 		var grow, a, b, scaled;
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		if (abs(curve) < 0.001) {
+		if(abs(curve) < 0.001) {
 			// If the value should be clipped, it has already been clipped (above).
-			^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+			^(this - inMin) / (inMax - inMin) * (outMax - outMin) + outMin
 		};
 
 		grow = exp(curve);
@@ -502,55 +494,55 @@ SimpleNumber : Number {
 		^log((b - this) / a) * (outMax - outMin) / curve + outMin
 	}
 
-	bilin { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+	bilin { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax|
 		// triangular linear mapping
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		^if (this >= inCenter) {
-			this.linlin(inCenter, inMax, outCenter, outMax, \none);
+		^if(this >= inCenter) {
+			this.linlin(inCenter, inMax, outCenter, outMax, \none)
 		} {
-			this.linlin(inMin, inCenter, outMin, outCenter, \none);
+			this.linlin(inMin, inCenter, outMin, outCenter, \none)
 		}
 	}
 
-	biexp { arg inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax;
+	biexp { |inCenter, inMin, inMax, outCenter, outMin, outMax, clip=\minmax|
 		// triangular exponential mapping
 		switch(clip,
 			\minmax, {
-				if (this <= inMin, { ^outMin });
-				if (this >= inMax, { ^outMax });
+				if(this <= inMin) { ^outMin };
+				if(this >= inMax) { ^outMax };
 			},
 			\min, {
-				if (this <= inMin, { ^outMin });
+				if(this <= inMin) { ^outMin };
 			},
 			\max, {
-				if (this >= inMax, { ^outMax });
+				if(this >= inMax) { ^outMax };
 			}
 		);
-		^if (this >= inCenter) {
-			this.explin(inCenter, inMax, outCenter, outMax, \none);
+		^if(this >= inCenter) {
+			this.explin(inCenter, inMax, outCenter, outMax, \none)
 		} {
-			this.explin(inMin, inCenter, outMin, outCenter, \none);
+			this.explin(inMin, inCenter, outMin, outCenter, \none)
 		}
 	}
 
-	moddif { arg aNumber = 0.0, mod = 1.0;
+	moddif { |aNumber = 0.0, mod = 1.0|
 		var diff = absdif(this, aNumber) % mod;
 		var modhalf = mod * 0.5;
 		^modhalf - absdif(diff, modhalf)
 	}
 
-	lcurve { arg a = 1.0, m = 0.0, n = 1.0, tau = 1.0;
+	lcurve { |a = 1.0, m = 0.0, n = 1.0, tau = 1.0|
 		var rTau, x = this.neg;
 		^if(tau == 1.0) {
 			a * (m * exp(x) + 1) / (n * exp(x) + 1)
@@ -559,16 +551,20 @@ SimpleNumber : Number {
 			a * (m * exp(x) * rTau + 1) / (n * exp(x) * rTau + 1)
 		}
 	}
-	gauss { arg standardDeviation;
-		^((((-2*log(1.0.rand)).sqrt * sin(2pi.rand)) * standardDeviation) + this)
+	gauss { |standardDeviation|
+		^(((sqrt(-2 * log(1.0.rand)) * sin(2pi.rand)) * standardDeviation) + this)
 	}
-	gaussCurve { arg a = 1.0, b = 0.0, c = 1.0;
+	gaussCurve { |a = 1.0, b = 0.0, c = 1.0|
 		^a * (exp(squared(this - b) / (-2.0 * squared(c))))
 	}
 
-	asPoint { ^Point.new(this, this) }
+	asPoint {
+		^Point.new(this, this)
+	}
 
-	asWarp { arg spec; ^CurveWarp.new(spec, this) }
+	asWarp { |spec|
+		^CurveWarp.new(spec, this)
+	}
 
 	// scheduled Routine support
 	wait { ^this.yield }
@@ -579,10 +575,10 @@ SimpleNumber : Number {
 		nil.yield;
 	}
 
-	printOn { arg stream;
+	printOn { |stream|
 		stream.putAll(this.asString);
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		stream.putAll(this.asString);
 	}
 
@@ -590,7 +586,9 @@ SimpleNumber : Number {
 	rate { ^'scalar' } // scalarRate constant
 	asAudioRateInput { ^if(this == 0) { Silent.ar } { DC.ar(this) } }
 
-	madd   { arg mul, add; ^(this * mul) + add; }
+	madd  { |mul, add|
+		^(this * mul) + add
+	}
 
 	lag    { ^this }
 	lag2   { ^this }
@@ -601,88 +599,91 @@ SimpleNumber : Number {
 	varlag { ^this }
 	slew   { ^this }
 
-	poll { arg trig = 10, label, trigid = -1;
+	poll { |trig = 10, label, trigid = -1|
 		^Poll(trig, this, label, trigid)
 	}
 
 	// support for writing synth defs
-	writeInputSpec { arg file, synth;
+	writeInputSpec { |file, synth|
 		var constIndex = synth.constants.at(this.asFloat);
-		if (constIndex.isNil) {
+		if(constIndex.isNil) {
 			Error("SimpleNumber-writeInputSpec constant not found: " ++ this.asFloat).throw;
 		};
 		file.putInt32(-1);
 		file.putInt32(constIndex);
 	}
 
-	series { arg second, last;
+	series { |second, last|
 		_SimpleNumberSeries
 		^this.primitiveFailed
 		/* var step, size;
-		second = second ?? { if (this < last) { this + 1 } { this - 1 } };
+		second = second ?? { if(this < last) { this + 1 } { this - 1 } };
 		step = second - this;
 		size = floor((last - this) / step + 0.001).asInteger + 1;
 		^Array.series(size, this, step) */
 	}
-	seriesIter { arg second, last;
+
+	seriesIter { |second, last|
 		var step, size;
-		if (second.isNil) {
+
+		if(second.isNil) {
 			last = last ? inf;
-			step = if (this < last, 1, -1);
+			step = if(this < last, 1, -1);
 		}{
-			last ?? { last = if (second < this, -inf, inf) };
+			last ?? { last = if(second < this, -inf, inf) };
 			step = second - this;
 		};
-		^if (step < 0) {
+
+		^if(step < 0) {
 			r {
 				var val = this;
 				while {
 					val >= last;
-				}{
+				} {
 					val.yield;
 					val = val + step;
 				};
 			}
-		}{
+		} {
 			r {
 				var val = this;
 				while {
 					val <= last;
-				}{
+				} {
 					val.yield;
 					val = val + step;
-				};
+				}
 			}
 		}
 	}
 
 
-	degreeToKey { arg scale, stepsPerOctave = 12;
+	degreeToKey { |scale, stepsPerOctave = 12|
 		var scaleDegree = this.round.asInteger;
 		var accidental = (this - scaleDegree) * 10.0;
 		^scale.performDegreeToKey(scaleDegree, stepsPerOctave, accidental)
 	}
 
-	keyToDegree { arg scale, stepsPerOctave=12;
+	keyToDegree { |scale, stepsPerOctave = 12|
 		^scale.performKeyToDegree(this, stepsPerOctave)
 	}
 
-	nearestInList { arg list;  // collection is sorted
+	nearestInList { |list|  // collection is sorted
 		^list.performNearestInList(this);
 	}
 
-	nearestInScale { arg scale, stepsPerOctave=12; // collection is sorted
+	nearestInScale { |scale, stepsPerOctave = 12| // collection is sorted
 		^scale.performNearestInScale(this, stepsPerOctave);
 	}
 
-	partition { arg parts=2, min=1;
+	partition { |parts = 2, min = 1|
 		// randomly partition a number into parts of at least min size :
 		var n = this - (min - 1 * parts);
 		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
 	}
 
-	nextTimeOnGrid { arg clock;
-		^clock.nextTimeOnGrid(this, 0);
+	nextTimeOnGrid { |clock|
+		^clock.nextTimeOnGrid(this, 0)
 	}
 
 	playAndDelta {}
@@ -693,7 +694,7 @@ SimpleNumber : Number {
 	// receiver is a time in seconds, returns string "ddd:hh:mm:ss.sss"
 	// see String:asSecs for complement
 
-	asTimeString { arg precision = 0.001, maxDays = 365, dropDaysIfPossible = true;
+	asTimeString { |precision = 0.001, maxDays = 365, dropDaysIfPossible = true|
 		var decimal, days, hours, minutes, seconds, mseconds;
 		decimal = this.asInteger;
 		days = decimal.div(86400).min(maxDays);
@@ -714,14 +715,15 @@ SimpleNumber : Number {
 		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
 
-	asFraction {|denominator=100, fasterBetter=true|
+	asFraction { |denominator = 100, fasterBetter = true|
 		_AsFraction
 		// asFraction will return a fraction that is the best approximation up to the given
 		// denominator.
 		// if fasterBetter is true it may find a much closer approximation and do it faster.
 		^this.primitiveFailed
 	}
-	prSimpleNumberSeries { arg second, last;
+
+	prSimpleNumberSeries { | second, last |
 		_SimpleNumberSeries
 		^this.primitiveFailed
 	}
