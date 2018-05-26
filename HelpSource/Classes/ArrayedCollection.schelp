@@ -88,7 +88,7 @@ y.foldAt(5).postln; // this returns the value at index 1
 ::
 
 method::plot
-Plot data in a GUI window. See link::Reference/plot:: for more details.
+Plot values in a GUI window.  See link::Reference/plot:: for more details. When the receiver contains code::nil:: items, the plot fails with an error.
 
 method::swap
 Swap the values at indices i and j.
