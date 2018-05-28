@@ -19,8 +19,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYRSLOTGENERIC_H_
-#define _PYRSLOTGENERIC_H_
+#pragma once
 
 // generic pyrslot implementation
 #define PYR_SLOTS_GENERIC
@@ -304,5 +303,3 @@ inline void slotCopy(PyrSlot *dst, const PyrSlot *src, int num)
 	for (int i=0; i<num; ++i)
 		slotCopy(dst + i, src + i);
 }
-
-#endif

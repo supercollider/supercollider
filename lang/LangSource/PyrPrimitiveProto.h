@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYRPRIMITIVEPROTO_H_
-#define _PYRPRIMITIVEPROTO_H_
+#pragma once
 
 #include "PyrPrimitive.h"
 
@@ -78,5 +77,3 @@ void initPrimitives();
 void deinitPrimitives();
 void doPrimitive(VMGlobals* g, struct PyrMethod* meth, int numArgsPushed);
 void doPrimitiveWithKeys(VMGlobals* g, struct PyrMethod* meth, int allArgsPushed, int numKeysPushed);
-
-#endif

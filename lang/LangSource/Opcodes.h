@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _OPCODES_H_
-#define _OPCODES_H_
+#pragma once
 
 /* opcodes */
 enum {
@@ -432,7 +431,3 @@ enum {
 
 	op_NumSpecialClasses
 };
-
-
-
-#endif

@@ -21,8 +21,7 @@
  *
  */
 
-#ifndef SC_LANGUAGECONFIG_HPP_INCLUDED
-#define SC_LANGUAGECONFIG_HPP_INCLUDED
+#pragma once
 
 #include <vector>
 #include <string>
@@ -87,5 +86,3 @@ private:
 	static Path gConfigFile;
 	static bool gPostInlineWarnings;
 };
-
-#endif // SC_LANGUAGECONFIG_HPP_INCLUDED

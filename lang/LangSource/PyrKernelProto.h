@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _PYRKERNELPROTO_H_
-#define _PYRKERNELPROTO_H_
+#pragma once
 
 PyrClass* newClassObj(PyrClass *classObjSuperClass,
 	PyrSymbol* className, PyrSymbol* superClassName,
@@ -56,7 +55,3 @@ PyrMethod* newPyrMethod();
 PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
 	int numInstVars, int numClassVars);
 void addIntrinsicVar(PyrClass *classobj, const char *varName, PyrSlot *slot);
-
-
-
-#endif

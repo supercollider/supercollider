@@ -24,8 +24,7 @@
 // It uses AdvancingAllocPool as its parent allocator.
 // It is very fast. This is used to allocate Unit output buffers.
 
-#ifndef _PowerOfTwoAllocPool_
-#define _PowerOfTwoAllocPool_
+#pragma once
 
 #include <stdexcept>
 #include <stdlib.h>
@@ -148,7 +147,3 @@ private:
 	int mNumLargeObjects;
 	int mNumAlloc, mNumFree;
 };
-
-
-#endif
-

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SymbolTable_
-#define _SymbolTable_
+#pragma once
 
 #include "PyrSymbol.h"
 #include "AdvancingAllocPool.h"
@@ -78,5 +77,3 @@ private:
 	PyrSymbol **mTable;
 	int mNumItems, mMaxItems, mMask;
 };
-
-#endif
