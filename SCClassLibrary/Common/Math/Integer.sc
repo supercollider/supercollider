@@ -173,8 +173,8 @@ Integer : SimpleNumber {
 
 	factorial {
 		if(this > 12) {
-			Error("Insufficient integer precision for this number (factorial(%)). "
-				"Try to use a float instead.".format(this)).throw
+			Error("factorial: insufficient integer precision for this number (%). "
+				"Use Float.factorial instead.".format(this)).throw
 		};
 		^super.factorial.asInteger
 	}
