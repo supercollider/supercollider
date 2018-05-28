@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef OSC_SERVER_HPP
-#define OSC_SERVER_HPP
+#pragma once
 
 #include <thread>
 
@@ -88,5 +87,3 @@ private:
 using detail::network_thread;
 
 } /* namespace nova */
-
-#endif /* OSC_SERVER_HPP */

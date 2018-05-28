@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef TEMPLATE_FUNCTIONS_HPP
-#define TEMPLATE_FUNCTIONS_HPP
+#pragma once
 
 #include <cmath>
 #include <algorithm> // for std::min & std::max
@@ -285,5 +284,3 @@ always_inline I scale_linear_clipped(I in,
 
 
 } /* namespace nova */
-
-#endif /* TEMPLATE_FUNCTIONS_HPP */

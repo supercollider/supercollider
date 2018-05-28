@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef AUDIO_BACKEND_SNDFILE_BACKEND_HPP
-#define AUDIO_BACKEND_SNDFILE_BACKEND_HPP
+#pragma once
 
 #include <atomic>
 #include <chrono>
@@ -344,5 +343,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* AUDIO_BACKEND_SNDFILE_BACKEND_HPP */

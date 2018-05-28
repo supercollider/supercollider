@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Group_
-#define _SC_Group_
+#pragma once
 
 #include "SC_Graph.h"
 
@@ -30,5 +29,3 @@ struct Group {
 	Node *mHead, *mTail;
 };
 typedef struct Group Group;
-
-#endif

@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Lib_
-#define _SC_Lib_
+#pragma once
 
 #include "SC_Errors.h"
 #include "SC_Types.h"
@@ -56,6 +55,3 @@ inline const int32 *GetKey(const SC_NamedObj *inObj)
 {
 	return inObj->mName;
 }
-
-#endif
-

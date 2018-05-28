@@ -16,12 +16,9 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef BRANCH_HINTS_HPP
-#define BRANCH_HINTS_HPP
+#pragma once
 
 #include <boost/config.hpp>
 
 #define likely(x)   BOOST_LIKELY(x)
 #define unlikely(x) BOOST_UNLIKELY(x)
-
-#endif /* BRANCH_HINTS_HPP */
