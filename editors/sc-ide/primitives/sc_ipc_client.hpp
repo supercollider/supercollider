@@ -18,8 +18,7 @@
  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-#ifndef SuperCollider_sc_ipc_client_hpp
-#define SuperCollider_sc_ipc_client_hpp
+#pragma once
 
 #include <QObject>
 #include <QLocalSocket>
@@ -61,7 +60,3 @@ private:
     QMutex mTextMirrorHashMutex;
     QMutex mSelMirrorHashMutex;
 };
-
-
-
-#endif

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_CORE_UTIL_OVERRIDING_ACTION_HPP_INCLUDED
-#define SCIDE_CORE_UTIL_OVERRIDING_ACTION_HPP_INCLUDED
+#pragma once
 
 #include <QAction>
 #include <QWidget>
@@ -103,5 +102,3 @@ protected:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_CORE_UTIL_OVERRIDING_ACTION_HPP_INCLUDED

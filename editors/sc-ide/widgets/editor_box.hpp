@@ -19,8 +19,7 @@
 */
 
 
-#ifndef SCIDE_WIDGET_CODE_EDITOR_EDITOR_BOX_HPP
-#define SCIDE_WIDGET_CODE_EDITOR_EDITOR_BOX_HPP
+#pragma once
 
 #include <QWidget>
 #include <QStackedLayout>
@@ -131,5 +130,3 @@ private:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGET_CODE_EDITOR_EDITOR_BOX_HPP
