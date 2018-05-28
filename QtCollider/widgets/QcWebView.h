@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_WEB_VIEW_H
-#define QC_WEB_VIEW_H
+#pragma once
 
 #include <QWebEngineView>
 #include <QWebEnginePage>
@@ -203,7 +202,3 @@ private:
 
 using namespace QtCollider;
 Q_DECLARE_METATYPE( QcCallback* );
-
-
-
-#endif // QC_WEB_VIEW_H

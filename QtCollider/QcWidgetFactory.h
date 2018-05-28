@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_WIDGET_FACTORY_H
-#define QC_WIDGET_FACTORY_H
+#pragma once
 
 #include "QcObjectFactory.h"
 #include "QWidgetProxy.h"
@@ -131,5 +130,3 @@ protected:
 };
 
 #define QC_DECLARE_QWIDGET_FACTORY( QWIDGET ) QC_DECLARE_FACTORY( QWIDGET, QcWidgetFactory<QWIDGET> )
-
-#endif

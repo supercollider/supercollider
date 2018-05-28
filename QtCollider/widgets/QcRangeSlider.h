@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_RANGE_SLIDER
-#define QC_RANGE_SLIDER
+#pragma once
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
@@ -100,5 +99,3 @@ class QcRangeSlider :
 
     QColor _knobColor;
 };
-
-#endif

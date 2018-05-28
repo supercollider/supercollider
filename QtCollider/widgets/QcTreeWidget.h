@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_TREE_WIDGET_H
-#define QC_TREE_WIDGET_H
+#pragma once
 
 #include "../Common.h"
 #include "../QObjectProxy.h"
@@ -118,5 +117,3 @@ private:
 };
 
 Q_DECLARE_METATYPE( QcTreeWidget::ItemPtr );
-
-#endif

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SIGNALSPY_H
-#define QC_SIGNALSPY_H
+#pragma once
 
 #include "Common.h"
 #include "QObjectProxy.h"
@@ -177,6 +176,3 @@ protected:
 
   PyrObject * _handler;
 };
-
-
-#endif //QC_SIGNALSPY_H

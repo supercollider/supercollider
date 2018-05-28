@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef _SC_QT_COMMON_H
-#define _SC_QT_COMMON_H
+#pragma once
 
 #include "debug.h"
 
@@ -113,5 +112,3 @@ QC_DO_SYMBOLS
 #define SC_CLASS( SYM ) SC_SYM(SYM)->u.classobj
 
 }
-
-#endif //_SC_QT_COMMON_H

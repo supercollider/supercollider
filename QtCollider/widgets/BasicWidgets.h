@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef _WIDGETS_H
-#define _WIDGETS_H
+#pragma once
 
 #include "QcCanvas.h"
 #include "../layouts/classic_layouts.hpp"
@@ -95,5 +94,3 @@ class QcCustomPainted : public QcCanvas
     virtual void resizeEvent( QResizeEvent *e ) { QcCanvas::resizeEvent(e); if(!layout()) l.resize(e); }
     QtCollider::DefaultLayout l;
 };
-
-#endif // _WIDGETS_H
