@@ -30,8 +30,7 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
-# define YY_SCDOC_SCDOC_TAB_HPP_INCLUDED
+#pragma once
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -139,5 +138,3 @@ struct YYLTYPE
 extern YYSTYPE scdoclval;
 extern YYLTYPE scdoclloc;
 int scdocparse (void);
-
-#endif /* !YY_SCDOC_SCDOC_TAB_HPP_INCLUDED  */
