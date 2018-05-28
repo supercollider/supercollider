@@ -18,8 +18,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_SCOPE_BUFFER_HPP
-#define SC_SCOPE_BUFFER_HPP
+#pragma once
 
 #include <atomic>
 
@@ -275,5 +274,3 @@ public:
 };
 
 } /* namespace detail_server_shm */
-
-#endif

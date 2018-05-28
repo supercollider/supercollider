@@ -18,9 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
-#ifndef _SC_SyncCondition_
-#define _SC_SyncCondition_
+#pragma once
 
 #include "SC_Lock.h"
 
@@ -81,5 +79,3 @@ private:
 	SC_Lock mutex;
 	int read, write;
 };
-
-#endif
