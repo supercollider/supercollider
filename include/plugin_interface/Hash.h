@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _Hash_
-#define _Hash_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_Endian.h"
@@ -147,6 +146,3 @@ inline int32 Hash(const int32 *inKey)
 	} while (c & kLASTCHAR);
     return hash;
 }
-
-#endif
-

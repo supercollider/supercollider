@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_BoundsMacros_
-#define _SC_BoundsMacros_
+#pragma once
 
 #include <cstdlib>              /* std::abs */
 #include <cmath>                /* std::abs */
@@ -34,5 +33,3 @@ inline T sc_clip(T x, U lo, V hi)
 {
     return std::max(std::min(x, (T)hi), (T)lo);
 }
-
-#endif

@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SCComplex_
-#define _SCComplex_
+#pragma once
 
 #include "SC_Complex.h"
 
@@ -31,5 +30,3 @@ typedef Complex SCComplex;
 
 inline void init_SCComplex(InterfaceTable *inTable)
 {}
-
-#endif

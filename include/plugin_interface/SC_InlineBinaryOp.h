@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _BinaryOpUGen_
-#define _BinaryOpUGen_
+#pragma once
 
 #include "SC_BoundsMacros.h"
 #include "SC_InlineUnaryOp.h"
@@ -696,6 +695,3 @@ inline long sc_round(long x, long quant)
 }
 
 #endif
-
-#endif
-

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_Graph_
-#define _SC_Graph_
+#pragma once
 
 #include "SC_Node.h"
 #include "SC_Rate.h"
@@ -64,5 +63,3 @@ struct Graph
 	int localMaxBufNum;
 };
 typedef struct Graph Graph;
-
-#endif

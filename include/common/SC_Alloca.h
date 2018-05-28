@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_ALLOCA_H
-#define _SC_ALLOCA_H
+#pragma once
 
 #ifdef __linux__
 #include <alloca.h>
@@ -32,6 +31,3 @@
 #endif
 
 #endif
-
-
-#endif /* _SC_ALLOCA_H */

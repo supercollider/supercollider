@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_Types_
-#define _SC_Types_
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -67,6 +66,3 @@ const unsigned int kSCNameByteLen = 8 * sizeof(int32);
 #else
 #define sc_typeof_cast(x) /* (typeof(x)) */
 #endif
-
-#endif
-
