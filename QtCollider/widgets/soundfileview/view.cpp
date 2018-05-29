@@ -98,12 +98,12 @@ void QcWaveform::load( const QString& filename, int beg, int dur )
 static SNDFILE* sndfileOpenQString( const QString& filename, int mode, SF_INFO* info)
 {
 #ifdef _WIN32
-    auto name = filename.toStdWString().c_str();
+    auto name = filename.toStdWString();
 #else
-    auto name = filename.toStdString().c_str();
+    auto name = filename.toStdString();
 #endif // _WIN32
 
-    return sndfileOpen(name, mode, info);
+    return sndfileOpen(name.c_str(), mode, info);
 }
 
 // Negative dur is considered a failure, otherwise we could use dur == -1 to mean "load the whole file."
