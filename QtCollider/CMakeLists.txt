@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.8.11)
-
 set(required_qt_version 5.2)
 
 find_package(Qt5Core)

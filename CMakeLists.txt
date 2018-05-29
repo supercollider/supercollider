@@ -4,8 +4,11 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
-cmake_minimum_required (VERSION 2.8.12)
-set(SUPERNOVA_CMAKE_MINVERSION 3.1)
+if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
+    set(LINUX_OR_BSD 1)
+endif()
+
+cmake_minimum_required (VERSION 3.5)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -199,11 +202,8 @@ endif (SC_QT)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
-    option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
-else()
-    option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
-endif()
+# Build supernova by default only when on Linux or BSD systems
+option(SUPERNOVA "Build with supernova as optional audio synthesis server" ${LINUX_OR_BSD})
 
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
