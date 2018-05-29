@@ -724,7 +724,7 @@ Plotter {
 
 
 + ArrayedCollection {
-	plot { |name, bounds, discrete=false, numChannels, minval, maxval, separately = true|
+	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
 		var array, plotter;
 		array = this.as(Array);
 
@@ -736,13 +736,17 @@ Plotter {
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
-		array = array.collect {|elem|
+		array = array.collect {|elem, i|
 			if (elem.isKindOf(Env)) {
 				elem.asMultichannelSignal.flop
 			} {
+				if(elem.isNil) {
+					Error("cannot plot array: non-numeric value at index %".format(i)).throw
+				};
 				elem
 			}
 		};
+
 		plotter.setValue(
 			array,
 			findSpecs: true,
