@@ -45,9 +45,8 @@ UnitTest {
 
 	*run { | reset = true, report = true |
 		if(reset) { this.reset };
-		if(report) { ("RUNNING UNIT TEST" + this).inform };
 		this.forkIfNeeded {
-			this.runAllTestMethods;
+			this.runAllTestMethods(report);
 			if(report) { this.report };
 		};
 	}
@@ -64,23 +63,25 @@ UnitTest {
 		}
 	}
 
-	*runAllTestMethods {
+	*runAllTestMethods { |report = true|
 		this.forkIfNeeded {
 			this.findTestMethods.do { |method|
-				this.new.runTestMethod(method)
+				this.new.runTestMethod(method, report)
 			}
 		}
 	}
 
 	// run a single test method of this class
-	runTestMethod { | method |
-		("RUNNING UNIT TEST" + this.class.name ++ ":" ++ method.name).inform;
+	runTestMethod { | method, report = true |
+		if(report) {
+			"\nRUNNING UNIT TEST -- %: %\n".format(this.class.name, method.name).inform
+		};
 		this.class.forkIfNeeded {
 			this.setUp;
 			currentMethod = method;
 			this.perform(method.name);
 			this.tearDown;
-			this.class.report;
+			if(report) { this.class.report };
 		}
 	}
 
@@ -263,7 +264,7 @@ UnitTest {
 
 	*report {
 		Post.nl;
-		"UNIT TEST.............".inform;
+		"UNIT TESTS FOR '%' COMPLETED".format(this.class.name).inform;
 		if(failures.size > 0) {
 			"There were failures:".inform;
 			failures.do { arg results;
