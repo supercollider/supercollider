@@ -141,7 +141,7 @@ ServerOptions {
 			o = o ++ " -U " ++ if(ugenPluginsPath.isString) {
 				ugenPluginsPath
 			} {
-				ugenPluginsPath.join("; ");
+				ugenPluginsPath.join(":");
 			};
 		});
 		if (memoryLocking, {
