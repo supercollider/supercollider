@@ -123,14 +123,18 @@ Node {
 		^[17, nodeID, controlName, numControls, value] ++ args.asControlInput; //"n_fill"
 	}
 
-	release { |releaseTime = 0|
+	release { |releaseTime|
 		server.sendMsg(*this.releaseMsg(releaseTime))
 	}
 
-	releaseMsg { |releaseTime = 0|
+	releaseMsg { |releaseTime|
 		//assumes a control called 'gate' in the synth
-		if (releaseTime > 0) {
-			releaseTime = (releaseTime + 1).neg;
+		if (releaseTime.notNil) {
+			if (releaseTime <= 0) {
+				releaseTime = -1;
+			} {
+				releaseTime = (releaseTime+1).neg;
+			};
 		} {
 			releaseTime = 0;
 		};
