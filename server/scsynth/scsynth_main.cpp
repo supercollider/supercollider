@@ -94,8 +94,14 @@ void Usage()
 		"          -2 suppresses informational and many error messages, as well as\n"
 		"             messages from Poll.\n"
 		"          The default is 0.\n"
-		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
-		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
+#ifdef _WIN32
+		"   -U <ugen-plugins-path>\n"    
+		"          A list of paths seperated by `;`.\n"
+#else
+		"   -U <ugen-plugins-path>\n"
+		"          A list of paths seperated by `:`.\n"
+#endif
+		"          If specified, standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
 		"          if specified, prevents file-accessing OSC commands from\n"
 		"          accessing files outside <restricted-path>.\n"
