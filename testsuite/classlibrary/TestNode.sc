@@ -1,17 +1,24 @@
 TestNode : UnitTest {
 
-	test_get {
-		var s, node, set_value, get_value;
-		this.bootServer;
-		s = this.s;
+	var server, node;
 
-		SynthDef(\test_get, {
-			|control = 8|
-		}).add;
-		s.sync;
+	setUp {
+		server = Server(this.class.name);
+		this.bootServer(server);
+	}
+
+	tearDown {
+		server.quit.remove;
+	}
+
+	test_get {
+		var set_value, get_value;
+
+		SynthDef(\test_get, { |control = 8| }).add;
+		server.sync;
 		set_value = 888;
 		node = Synth(\test_get, [control: set_value]);
-		s.sync;
+		server.sync;
 
 		get_value = 0;
 		node.get(\control, { |value|
@@ -24,21 +31,17 @@ TestNode : UnitTest {
 	}
 
 	test_getn {
-		var s, node, setn_values, getn_values;
-		this.bootServer;
-		s = this.s;
+		var setn_values, getn_values;
 
-		SynthDef(\test_getn, {
-			|control1 = 2, control2 = 22.2, control3 = 222|
-		}).add;
-		s.sync;
+		SynthDef(\test_getn, { |control1 = 2, control2 = 22.2, control3 = 222| }).add;
+		server.sync;
 		setn_values = [888, 88.8, 8.88];
 		node = Synth(\test_getn, [
 			control1: setn_values[0],
 			control2: setn_values[1],
 			control3: setn_values[2]
 		]);
-		s.sync;
+		server.sync;
 
 		getn_values = 0;
 		node.getn(0, 3, { |values|
@@ -47,6 +50,24 @@ TestNode : UnitTest {
 		0.1.wait;
 
 		this.assertArrayFloatEquals(getn_values, setn_values, "Node:getn works", 0.001);
+		node.free;
+	}
+
+	test_release {
+		var msg;
+
+		node = Synth(\default);
+		server.sync;
+
+		msg = node.releaseMsg(nil);
+		this.assertEquals(msg[3], 0, "nil should set gate to 0");
+
+		msg = node.releaseMsg(0);
+		this.assertEquals(msg[3], -1, "0 should set gate to -1");
+
+		msg = node.releaseMsg(2);
+		this.assertEquals(msg[3], -3, "2 should set gate to -3");
+
 		node.free;
 	}
 
