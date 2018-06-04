@@ -53,7 +53,7 @@ TestNode : UnitTest {
 		node.free;
 	}
 
-	test_release {
+	test_releaseMsg {
 		var msg;
 
 		node = Synth(\default);
@@ -68,7 +68,38 @@ TestNode : UnitTest {
 		msg = node.releaseMsg(2);
 		this.assertEquals(msg[3], -3, "2 should set gate to -3");
 
+		msg = node.releaseMsg(-2);
+		this.assertEquals(msg[3], -1, "A negative value should set gate to -1");
+
 		node.free;
+	}
+
+	test_releaseServerGate {
+		var reply, msg;
+
+		SynthDef(\sendReply, { |gate=1, out=0|
+			var sig = DC.ar(0.1) * EnvGen.kr(Env.asr(), gate, doneAction: 2);
+			SendReply.kr(gate<=0, '/gateVal', gate, 9999);
+			Out.ar(out, sig);
+		}).add;
+
+		OSCFunc({ |replyMsg| reply = replyMsg }, '/gateVal', server.addr);
+		server.sync;
+
+		[[0,-1], [2,-3], [nil,0], [-2,-1]].do { |releaseGatePair|
+			node = Synth(\sendReply);
+			server.sync;
+
+			msg = ['/gateVal', node.nodeID, 9999, releaseGatePair[1].asFloat];
+			node.release(releaseGatePair[0]);
+			server.sync;
+
+			this.assertEquals(reply, msg, "Gate should be set to % in Server".format(releaseGatePair[1]));
+			reply = nil;
+		};
+
+		node.free;
+
 	}
 
 }
