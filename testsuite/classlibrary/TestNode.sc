@@ -78,19 +78,19 @@ TestNode : UnitTest {
 		var reply, msg;
 
 		SynthDef(\sendReply, { |gate=1, out=0|
-			var sig = DC.ar(0.1) * EnvGen.kr(Env.asr(), gate, doneAction: 2);
-			SendReply.kr(gate<=0, '/gateVal', gate, 9999);
+			var sig = DC.ar(0.1) * EnvGen.kr(Env.cutoff(1e-3), gate, doneAction: Done.freeSelf);
+			SendReply.kr(gate<=0, '/gateVal', gate);
 			Out.ar(out, sig);
 		}).add;
 
 		OSCFunc({ |replyMsg| reply = replyMsg }, '/gateVal', server.addr);
 		server.sync;
 
-		[[0,-1], [2,-3], [nil,0], [-2,-1]].do { |releaseGatePair|
+		[0, -1, 2, -3, nil, 0, -2, -1].clump(2).do { |releaseGatePair|
 			node = Synth(\sendReply);
 			server.sync;
 
-			msg = ['/gateVal', node.nodeID, 9999, releaseGatePair[1].asFloat];
+			msg = ['/gateVal', node.nodeID, -1, releaseGatePair[1].asFloat];
 			node.release(releaseGatePair[0]);
 			server.sync;
 
