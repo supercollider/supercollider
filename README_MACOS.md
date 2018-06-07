@@ -342,7 +342,7 @@ And for `scsynth`:
 
     #!/bin/sh
     cd /full/path/to/SuperCollider.app/Contents/Resources
-    export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Resources/plugins/";
+    export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Contents/Resources/plugins/";
     exec ./scsynth $*
 
 ###### Why not just symlink them ?
