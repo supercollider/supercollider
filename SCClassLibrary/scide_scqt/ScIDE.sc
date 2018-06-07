@@ -881,17 +881,25 @@ Document {
 
 	// envir stuff
 
-	envir_ { | ev |
-		envir = ev;
-		if (this.class.current == this) {
-			if(envir.isNil) {
+	hasSavedPreviousEnvironment {
+		^savedEnvir.notNil
+	}
+
+	envir_ { | newEnvir |
+
+		envir = newEnvir;
+
+		if(this.isFront) {
+			if(newEnvir.isNil) {
 				this.restoreCurrentEnvironment
 			} {
-				if (savedEnvir.isNil) {
-					this.saveCurrentEnvironment
-				}
+				if(this.hasSavedPreviousEnvironment.not) {
+					savedEnvir = currentEnvironment;
+				};
+				currentEnvironment = envir;
 			}
 		}
+
 	}
 
 	restoreCurrentEnvironment {
