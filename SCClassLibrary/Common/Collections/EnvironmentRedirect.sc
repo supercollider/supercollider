@@ -160,20 +160,14 @@ EnvironmentRedirect {
 		stream << " ]" ;
 	}
 
-	linkDoc { arg doc, pushNow = true;
+	linkDoc { arg doc;
 		doc = doc ? Document.current;
 		doc.envir_(this);
-		if(pushNow and: { doc != Document.current } and: { currentEnvironment !== this })  {
-			this.push // otherwise this is done by doc.envir_(this)
-		};
 	}
 
-	unlinkDoc { arg doc, popNow = false;
+	unlinkDoc { arg doc;
 		doc = doc ? Document.current;
 		if(doc.envir === this) { doc.envir_(nil) };
-		if(popNow and: { doc != Document.current } and: { currentEnvironment === this })  {
-			this.pop // otherwise this is done by doc.envir_(nil)
-		};
 	}
 
 	// networking
