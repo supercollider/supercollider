@@ -454,7 +454,7 @@ Document {
 	var <keyDownAction, <keyUpAction, <mouseUpAction, <mouseDownAction;
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
 
-	var <envir, savedEnvir;
+	var <envir, <savedEnvir;
 	var <editable = true, <promptToSave = true;
 
 	*initClass{
