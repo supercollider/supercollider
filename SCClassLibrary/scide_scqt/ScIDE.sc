@@ -584,7 +584,7 @@ Document {
 
 	closed {
 		onClose.value(this); // call user function
-		this.restoreCurrentEnvironment;
+		this.restorePreviousEnvironment;
 		allDocuments.remove(this);
 	}
 
@@ -698,13 +698,13 @@ Document {
 
 	didBecomeKey {
 		this.class.current = this;
-		this.saveCurrentEnvironment;
+		this.pushLinkedEnvironment;
 		toFrontAction.value(this);
 	}
 
 	didResignKey {
 		endFrontAction.value(this);
-		this.restoreCurrentEnvironment;
+		this.restorePreviousEnvironment;
 	}
 
 	keyDown { | modifiers, unicode, keycode, key |
@@ -891,7 +891,7 @@ Document {
 
 		if(this.isFront) {
 			if(newEnvir.isNil) {
-				this.restoreCurrentEnvironment
+				this.restorePreviousEnvironment
 			} {
 				if(this.hasSavedPreviousEnvironment.not) {
 					savedEnvir = currentEnvironment;
@@ -902,14 +902,14 @@ Document {
 
 	}
 
-	restoreCurrentEnvironment {
+	restorePreviousEnvironment { // happens on leaving focus
 		if (savedEnvir.notNil) {
 			currentEnvironment = savedEnvir;
 			savedEnvir = nil;
 		}
 	}
 
-	saveCurrentEnvironment {
+	pushLinkedEnvironment { // happens on focus
 		if (envir.notNil) {
 			savedEnvir = currentEnvironment;
 			currentEnvironment = envir;
