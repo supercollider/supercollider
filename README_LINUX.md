@@ -8,26 +8,23 @@ All of these are required for building scsynth and supernova.
 
 - [gcc][gcc] >= 4.8
 - [cmake][cmake] >= 3.5: Cross-platform build system.
-- [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
+- [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [fftw][fftw] >= 3.0: FFT library.
 - [libxt][libxt]: X toolkit intrinsics, required for UGens such as `MouseX`. (Support for building the servers without X is in progress.)
+- [libavahi-client][libavahi-client]: For zero-configuration networking. Can be turned off by setting the CMake flag `NO_AVAHI=ON`, but turning it off is not recommended.
+
 
 [gcc]: http://www.gnu.org/software/gcc
 [libjack]: http://www.jackaudio.org/
 [cmake]: http://www.cmake.org
 [libsndfile]: http://www.mega-nerd.com/libsndfile
 [fftw]: http://www.fftw.org
+[libavahi-client]: http://www.avahi.org
 [libxt]: http://www.X.org
 
 Recommended packages
 --------------------
-
-For scsynth and supernova:
-
-- [libavahi-client][libavahi-client]
-
-[libavahi-client]: http://www.avahi.org
 
 For sclang and scide:
 
@@ -59,17 +56,32 @@ The following command installs all the recommended dependencies for sclang excep
 
     sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config
 
+Installing Qt
+-------------
+
+Qt is required to be able to run the SuperCollider IDE.
+
 Qt is trickier to install. As of June 2018, the version made available in the Debian repositories is too old for SuperCollider — 5.7 or later is required to build the IDE and sclang's Qt GUI system.
 
-The [Qt official website](https://www.qt.io/) can be used to get Qt versions.
+### Installing Qt using the official installer
 
-More conveniently, if you are on Ubuntu 14.04 (Trusty), 16.04 (Xenial), or 18.04 (Bionic), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
+You can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
+
+At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
+
+Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
+
+### Installing Qt on Debian
+
+If you are on Ubuntu 14.04 (Trusty), 16.04 (Xenial), or 18.04 (Bionic), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
 
 On Xenial or Bionic:
 
     sudo apt-add-repository ppa:beineri/opt-qt511-`lsb_release -sc`
     sudo apt-get update
-    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine
+    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg
+    # If using the IDE:
+    sudo apt-get install qt511webengine
 
 (The `lsb_release -sc` command is there to substitute `xenial` or `bionic`.)
 
@@ -77,7 +89,9 @@ On Trusty, only Qt 5.10 and below are available:
 
     sudo apt-add-repository ppa:beineri/opt-qt510-trusty
     sudo apt-get update
-    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine
+    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg
+    # If using the IDE:
+    sudo apt-get install qt510webengine
 
 [Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
 
@@ -109,9 +123,9 @@ If you are installing sclang with Qt and IDE, it is required to tell SuperCollid
 
 The location of `/path/to/qt5` will depend on how you installed Qt:
 
-- If you used the Launchpad PPA's described in the above section, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
-- If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory: `Qt5.x.x/5.x/gcc/` (32-bit) or `Qt5.x.x/5.x/gcc_64/` (64-bit).
-- If you used your Linux distribution's repositories, it will be `/usr/lib/i386-linux-gnu/` (32-bit) or `/usr/lib/x86_64-linux-gnu/` (64-bit).
+- If you used the Launchpad PPA's described above, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
+- If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
+- When newer versions of Qt become available through your Linux distribution's repositories, the directory `/usr/lib/x86_64-linux-gnu/` (64-bit) or `/usr/lib/i386-linux-gnu/` (32-bit) will work.
 
 If you want to build without Qt entirely, run
 
@@ -130,13 +144,23 @@ If you're building SC for production use, make sure to build in release mode:
 
     cmake -DCMAKE_BUILD_TYPE=Release ..
 
+This sets the compiler to the best optimization settings.
+
 #### Install location
 
-By default, SuperCollider installs in `/usr/local`, a system-wide install. Maybe you can't or don't want to use superuser privileges, or just want to install for a single user. To do so, set `CMAKE_PREFIX_PATH`:
+By default, SuperCollider installs in `/usr/local`, a system-wide install. Maybe you can't or don't want to use superuser privileges, or just want to install for a single user. To do so, set `CMAKE_INSTALL_PREFIX` to the desired installation directory. One good place to put it would be `$HOME/usr/local`:
 
-    cmake -DCMAKE_PREFIX_PATH=~/usr/local ..
+    cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
 
-Make sure `~/usr/local/bin` is in your `PATH` if you do this.
+Make sure the `bin` subdirectory (in this case, `~/usr/local/bin`) is in your `PATH` if you do this.
+
+#### Speeding up repeated builds
+
+If you are developing SC or you're constantly pulling in the latest changes, rebuilding SC repeatedly can be a drag. Installing `ccache` can speed up re-compilation. Here is how to configure cmake to use it:
+
+    cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
+
+This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
 
 #### Library suffix
 
@@ -159,6 +183,8 @@ And to install, run
 
 You will need to use `sudo make install` if you are doing a system-wide installation, which is the default.
 
+You can freely alternate between setting CMake flags and hitting `make`.
+
 After installing for the first time, please run
 
     sudo ldconfig
@@ -168,16 +194,6 @@ To uninstall:
     make uninstall
 
 (or `sudo make uninstall`).
-
-### Speeding up repeated builds
-
-If you build SuperCollider repeatedly, we recommend installing `ccache`
-which can speed up re-compilation. Here is how to configure cmake to use it:
-
-    cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
-
-This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
-
 
 Building a Debian package
 -------------------------
