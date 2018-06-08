@@ -11,7 +11,7 @@ All of these are required for building scsynth and supernova.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [fftw][fftw] >= 3.0: FFT library.
-- [libxt][libxt]: X toolkit intrinsics.
+- [libxt][libxt]: X toolkit intrinsics, required for UGens such as `MouseX`. (Support for building the servers without X is in progress.)
 
 [gcc]: http://www.gnu.org/software/gcc
 [libjack]: http://www.jackaudio.org/
@@ -122,9 +122,7 @@ jackd without D-bus support. On Raspbian Jessie this requires
 compiling jackd rather than using the packaged version.
 Also, note that you will get errors on sclang startup from
 classes requiring Qt. A workaround and more details are
-described in:
-
-    http://supercollider.github.io/development/building-raspberrypi
+described in on the [RPi](http://supercollider.github.io/development/building-raspberrypi) page.
 
 #### Release build
 
