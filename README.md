@@ -84,8 +84,15 @@ License
 
 SuperCollider is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License or (at your option) any later
+Foundation; either version 3 of the License or (at your option) any later
 version. See [COPYING](COPYING) for the license text.
+
+SuperCollider was originally published under the terms of version 2 or later of the GPL, but the
+application now includes some GPL3-licensed code. If you have a need specifically for GPL2
+compatibility then it is possible to recompile SuperCollider from source without the GPL3 elements.
+To do this, use the CMake option `-DNO_GPL3=ON`.
+
+SuperCollider's help documentation is published under a Creative Commons license.
 
 - SuperCollider 3.1 was released on 2007-10-31
 - SuperCollider 3.2 was released on 2008-02-19
