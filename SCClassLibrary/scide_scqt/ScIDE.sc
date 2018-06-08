@@ -794,7 +794,6 @@ Document {
 				this.text.interpret;
 			}
 		};
-		current = this;
 		initAction.value(this);
 	}
 
