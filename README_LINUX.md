@@ -41,11 +41,10 @@ Build requirements (optional features)
 --------------------------------------
 (most of these will be available in your Linux distribution as packages)
 
- * Qt >= 5.3 (+ qtwebkit)
+ * Qt >= 5.7 (+ qtwebengine)
    * http://qt-project.org
    * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
-   * Qt >= 5.0 should work, but build-test is done against 5.3
-   * As of this writing, there are known issues with building on Qt >= 5.6.
+   * The latest version should work. Tests are done against 5.9.
 
  * alsa
    * http://www.alsa-project.org

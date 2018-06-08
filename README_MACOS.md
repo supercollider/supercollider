@@ -43,11 +43,8 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, libsndfile, readline, and qt5.5**, installed via homebrew:
-  `brew install git cmake readline qt55`
-
-  *Note*: SuperCollider depends on Qt5WebKit, which was dropped from Qt in 5.6. So make sure you request Qt5.5 (`qt55`) and not the latest version (`qt5`).
-  Use `brew info` to see the version of a package, and see `brew switch` or `brew pin` if you want to use Qt5.5 as your default version.
+- **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 3.7**, installed via homebrew:
+  `brew install git cmake readline qt5`
 
 - If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
   `brew install portaudio`
@@ -73,9 +70,9 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
     # or, if you want to build with supernova:
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSUPERNOVA=ON ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
     cmake --build . --target install --config RelWithDebInfo
 
 If successful this will build the application into `build/Install/SuperCollider/`
@@ -97,12 +94,12 @@ More info on *supernova* can be found in the section **Frequently used cmake set
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
 This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it.
-Depending on your configuration, you might need to use `qt5` instead of `qt55`; use `brew info` to confirm you are referring to the correct version.
+Use `brew info` to confirm you are referring to the correct version of Qt.
 
 If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
 Qt tree.
