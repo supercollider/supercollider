@@ -258,23 +258,23 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
       QPainterPath pathLine;
       QPainterPath pathFill;
 
-      qreal p=0;
-      int f=1; // pixel, frame
+      qreal pixel=0;
+      int frame = 1;
       float min, max;
       min = max = frameData[0];
 
-      while( (p += ratio) < w )
+      while( (pixel += ratio) < w )
       {
-        int f_max = fpp * p;
+        int f_max = fpp * pixel;
 
-        for(; f < f_max; ++f)
+        for(; frame < f_max; ++frame)
         {
-          float d = frameData[f];
+          float d = frameData[frame];
           if( d < min ) min = d;
           if( d > max ) max = d;
         }
 
-        qreal x = p-1;
+        qreal x = pixel-1;
         float y = max * yRatio;
         pathLine.moveTo( x, y );
         y = qMax( min * yRatio, y+1 );
