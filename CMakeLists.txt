@@ -576,7 +576,7 @@ if(APPLE)
 #	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
-    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/SCcube.icns")
+    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/sc_ide.icns")
 endif()
 
 if(NOT WIN32) # We define a custom 'package' target in platform/windows/CMakeLists.txt

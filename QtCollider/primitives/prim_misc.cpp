@@ -25,6 +25,7 @@
 #include "../type_codec.hpp"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
+#include "../widgets/QcWebView.h"
 #include "../style/style.hpp"
 #include "QtCollider.h"
 
@@ -34,12 +35,13 @@
 
 #include <PyrKernel.h>
 
+#include <QDesktopServices>
 #include <QFontDatabase>
 #include <QFontInfo>
 #include <QFontMetrics>
 #include <QDesktopWidget>
 #include <QStyleFactory>
-#include <QWebSettings>
+#include <QWebEngineSettings>
 #include <QCursor>
 
 namespace QtCollider {
@@ -235,7 +237,8 @@ QC_LANG_PRIMITIVE( QWebView_ClearMemoryCaches, 0, PyrSlot *r, PyrSlot *a, VMGlob
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QWebSettings::clearMemoryCaches();
+  // @TODO WebEngine: New cache method?
+  // QWebEngineSettings::clearMemoryCaches();
 
   return errNone;
 }
@@ -280,6 +283,22 @@ QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errNone;
 }
 
+QC_LANG_PRIMITIVE( Qt_SetUrlHandler, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  
+  QString str = QtCollider::get( a );
+  
+  if (IsNil(a+1)) {
+    QDesktopServices::unsetUrlHandler(str);
+  } else {
+    QcCallback* cb = QtCollider::get( a+1 );
+    QDesktopServices::setUrlHandler(str, cb, "onCalled");
+  }
+  
+  return errNone;
+}
+
 void defineMiscPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -299,6 +318,7 @@ void defineMiscPrimitives()
   definer.define<Qt_IsMethodOverridden>();
   definer.define<QWebView_ClearMemoryCaches>();
   definer.define<Qt_CursorPosition>();
+  definer.define<Qt_SetUrlHandler>();
 }
 
 } // namespace QtCollider

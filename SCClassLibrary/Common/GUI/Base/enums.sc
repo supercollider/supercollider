@@ -40,6 +40,7 @@ QLimits {
 	*new { arg limit; ^dict[limit]; }
 }
 
+// FIXME: use const instead of classvar for all enum-like classes
 QKey {
 	classvar
 	<left = 16r1000012,
@@ -82,6 +83,88 @@ QWebFontFamily {
 	<sansSerif = 3,
 	<cursive = 4,
 	<fantasy = 5;
+
+	*new { arg symbol; ^this.perform(symbol); }
+}
+
+QWebAttribute {
+	classvar
+	<autoLoadImages = 0,
+	<javascriptEnabled = 1,
+	<javascriptCanOpenWindows = 2,
+	<javascriptCanAccessClipboard = 3,
+	<linksIncludedInFocusChain = 4,
+	<localStorageEnabled = 5,
+	<localContentCanAccessRemoteUrls = 6,
+	<xssAuditingEnabled = 7,
+	<spatialNavigationEnabled = 8,
+	<localContentCanAccessFileUrls = 9,
+	<hyperlinkAuditingEnabled = 10,
+	<scrollAnimatorEnabled = 11,
+	<errorPageEnabled = 12,
+	<pluginsEnabled = 13,
+	<fullScreenSupportEnabled = 14,
+	<screenCaptureEnabled = 15,
+	<webGLEnabled = 16,
+	<accelerated2dCanvasEnabled = 17,
+	<autoLoadIconsForPage = 18,
+	<touchIconsEnabled = 19,
+	<focusOnNavigationEnabled = 20,
+	<printElementBackgrounds = 21,
+	<allowRunningInsecureContent = 22
+	;
+
+	*new { arg symbol; ^this.perform(symbol); }
+}
+
+QWebPageAction {
+	classvar
+	<noWebAction = -1,
+	<back = 0,
+	<forward = 1,
+	<stop = 2,
+	<reload = 3,
+	<cut = 4,
+	<copy = 5,
+	<paste = 6,
+	<undo = 7,
+	<redo = 8,
+	<selectAll = 9,
+	<reloadAndBypassCache = 10,
+	<pasteAndMatchStyle = 11,
+	<openLinkInThisWindow = 12,
+	<openLinkInNewWindow = 13,
+	<openLinkInNewTab = 14,
+	<copyLinkToClipboard = 15,
+	<downloadLinkToDisk = 16,
+	<copyImageToClipboard = 17,
+	<copyImageUrlToClipboard = 18,
+	<downloadImageToDisk = 19,
+	<copyMediaUrlToClipboard = 20,
+	<toggleMediaControls = 21,
+	<toggleMediaLoop = 22,
+	<toggleMediaPlayPause = 23,
+	<toggleMediaMute = 24,
+	<downloadMediaToDisk = 25,
+	<inspectElement = 26,
+	<exitFullScreen = 27,
+	<requestClose = 28,
+	<unselect = 29,
+	<savePage = 30,
+	<openLinkInNewBackgroundTab = 31,
+	<viewSource = 32
+	;
+
+	*new { arg symbol; ^this.perform(symbol); }
+}
+
+QRenderProcessTerminationStatus {
+	classvar
+	normalTerminationStatus = 0,
+	abnormalTerminationStatus = 1,
+	crashedTerminationStatus = 2,
+	killedTerminationStatus = 3
+	;
 
 	*new { arg symbol; ^this.perform(symbol); }
 }

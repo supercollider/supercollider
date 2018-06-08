@@ -81,6 +81,11 @@ Image {
 		^ret;
 	}
 
+	*openSVG {
+		|path, size|
+		^super.new.prNewSVG(path, size);
+	}
+
 	*newEmpty { arg width, height;
 		^super.new.prNewEmpty(width, height);
 	}
@@ -98,7 +103,11 @@ Image {
 
 	*open { arg path;
 		path = path.standardizePath;
-		^super.new.prNewPath(path);
+		if (path.extension == "svg") {
+			^super.openSVG(path);
+		} {
+			^super.new.prNewPath(path);
+		}
 	}
 
 	*openURL { arg url, timeout = 60;
@@ -191,6 +200,15 @@ Image {
 	}
 	height_ { arg h;
 		this.setSize(this.width, h);
+	}
+
+	pixelRatio {
+		_QImage_GetDevicePixelRatio
+	}
+
+	pixelRatio_{
+		|ratio|
+		_QImage_SetDevicePixelRatio
 	}
 
 	setSize { arg width, height, resizeMode;
@@ -373,6 +391,11 @@ Image {
 	// private primitives
 	prNewPath { arg path;
 		_QImage_NewPath
+		^this.primitiveFailed
+	}
+
+	prNewSVG { arg path;
+		_QImage_NewSVG
 		^this.primitiveFailed
 	}
 

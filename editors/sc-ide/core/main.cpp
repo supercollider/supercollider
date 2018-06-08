@@ -59,7 +59,6 @@ int main( int argc, char *argv[] )
         return 0;
 
     // Set up translations
-
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qtTranslator);
@@ -82,14 +81,13 @@ int main( int argc, char *argv[] )
     app.installTranslator(&scideTranslator);
 
     // Set up style
-
     app.setStyle( new ScIDE::Style(app.style()) );
 
     // Go...
-
     Main * main = Main::instance();
-
     MainWindow *win = new MainWindow(main);
+
+    app.setWindowIcon(QIcon("qrc:///icons/sc-ide-svg"));
 
     // NOTE: load session after GUI is created, so that GUI can respond
     Settings::Manager *settings = main->settings();
@@ -172,7 +170,7 @@ void SingleInstanceGuard::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
 
-    // After we have put the data in the buffer, process it    
+    // After we have put the data in the buffer, process it
     int avail = mIpcData.length();
     do{
         if (mReadSize == 0 && avail > 4){
@@ -223,6 +221,10 @@ Main::Main(void) :
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
+  
+#ifdef Q_OS_MAC
+    QtCollider::Mac::DisableAutomaticWindowTabbing();
+#endif
 
     connect(mScProcess, SIGNAL(response(QString,QString)),
             mDocManager, SLOT(handleScLangMessage(QString,QString)));
@@ -276,8 +278,8 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
     {
         result = true;
     }
-#endif 
-  
+#endif
+
     return result;
 }
 

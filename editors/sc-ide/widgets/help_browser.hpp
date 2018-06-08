@@ -22,8 +22,9 @@
 #define SCIDE_WIDGETS_HELP_BROWSER_HPP_INCLUDED
 
 #include "util/docklet.hpp"
+#include "QtCollider/widgets/web_page.hpp"
 
-#include <QWebView>
+#include <QWebEngineView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QBasicTimer>
@@ -37,6 +38,7 @@ namespace Settings { class Manager; }
 
 class HelpBrowserDocklet;
 class HelpBrowserFindBox;
+class HelpBrowser;
 
 class LoadProgressIndicator : public QLabel
 {
@@ -75,6 +77,17 @@ private:
     int mDotCount;
 };
 
+class HelpWebPage : public QtCollider::WebPage
+{
+    Q_OBJECT
+
+public:
+    HelpWebPage(HelpBrowser* browser);
+
+private:
+    HelpBrowser* mBrowser;
+};
+
 class HelpBrowser : public QWidget
 {
     Q_OBJECT
@@ -101,6 +114,8 @@ public:
     QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
 
     QUrl url() const { return mWebView->url(); }
+    
+    bool helpBrowserHasFocus() const;
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -109,19 +124,19 @@ public slots:
     void zoomIn();
     void zoomOut();
     void resetZoom();
-    void evaluateSelection();
+    void evaluateSelection(bool region = false );
     void findText( const QString & text, bool backwards = false );
     bool openDocumentation();
     void openDefinition();
     void openCommandLine();
     void findReferences();
+    void onLinkClicked( const QUrl &, QWebEnginePage::NavigationType type, bool isMainFrame );
 
 signals:
     void urlChanged();
 
 private slots:
     void onContextMenuRequest( const QPoint & pos );
-    void onLinkClicked( const QUrl & );
     void onReload();
     void onScResponse( const QString & command, const QString & data );
     void onJsConsoleMsg(const QString &, int, const QString & );
@@ -134,7 +149,7 @@ private:
     void sendRequest( const QString &code );
     QString symbolUnderCursor();
 
-    QWebView *mWebView;
+    QWebEngineView *mWebView;
     LoadProgressIndicator *mLoadProgressIndicator;
 
     QSize mSizeHint;

@@ -93,16 +93,38 @@ function showAllSubclasses(a) {
     a.style.display = "none";
 }
 
-/*
-This key event handler selects the whole line when pressing shift/ctrl-enter with no selection.
-But the problem is that it does not update the selection sent to the client.
-This is probably because the WebView catches the key event before javascript does!
-A fix might be to expose a function to JS that evaluates selection, and call it here.
-Or can the WebView make sure that JS has responded to all key events before getting the selection?
-*/
+// If no selection, select the contents of the current lang-sc block. Return selected text in either case.
+function selectRegion() {
+    var s = window.getSelection();
+    var r = s.getRangeAt(0);
+    if (r.collapsed) {
+        var target = r.startContainer;
+
+        var top = target;
+        while (top && (!top.className || top.className.indexOf("lang-sc") == -1)) {
+            top = top.parentNode;
+        }
+
+        if (top) {
+            var r2 = document.createRange();
+
+            r2.setStartBefore(top.firstChild);
+            r2.setEndAfter(top.lastChild)
+
+            s.removeAllRanges();
+            s.addRange(r2);
+
+            return top.innerText
+        };
+    } else {
+        return s.toString();
+    }
+}
+
+// If no selection, select the contents of the current line. Return selected text in either case.
 function selectLine() {
-    var s =  window.getSelection();
-    var r = s.getRangeAt();
+    var s = window.getSelection();
+    var r = s.getRangeAt(0);
 
     function findleft(p) {
         var y, j;
@@ -171,7 +193,11 @@ function selectLine() {
         }
         s.removeAllRanges();
         s.addRange(r2);
+
+        return s.toString();
     }
+
+    return r.text;
 }
 
 function countChar(str,chr) {
@@ -191,8 +217,8 @@ var code_click_node;
 var code_click_pos;
 
 function selectParens(ev) {
-    var s =  window.getSelection();
-    var r = s.getRangeAt();
+    var s = window.getSelection();
+    var r = s.getRangeAt(0);
     var r2 = document.createRange();
     var j;
 

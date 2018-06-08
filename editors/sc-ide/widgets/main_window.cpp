@@ -642,8 +642,6 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
     menu->addAction( mActions[FocusPostWindow] );
-    menu->addSeparator();
-    menu->addAction( mActions[ShowFullScreen] );
 
     menuBar->addMenu(menu);
 

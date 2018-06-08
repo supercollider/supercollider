@@ -34,6 +34,8 @@
 #include <QKeyEvent>
 #include <QIcon>
 
+#include "hacks/hacks_mac.hpp"
+
 #ifdef Q_OS_MAC
 #include "../../common/SC_Apple.hpp"
 #endif
@@ -73,6 +75,11 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.lock();
   _instance = this;
   _mutex.unlock();
+  this->setAttribute(Qt::AA_UseHighDpiPixmaps);
+  
+#ifdef Q_OS_MAC
+  QtCollider::Mac::DisableAutomaticWindowTabbing();
+#endif
 
   if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
     QIcon icon;

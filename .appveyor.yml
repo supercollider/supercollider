@@ -9,7 +9,7 @@ version: '{build}' # incremented with each build
 clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
-image: Visual Studio 2013
+image: Visual Studio 2015
 
 # disable automatic tests
 test: off
@@ -20,14 +20,14 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.5/msvc2013"
-          CMAKE_GENERATOR: "Visual Studio 12 2013"
+        - QT_DIR: "C:/Qt/5.9/msvc2015"
+          CMAKE_GENERATOR: "Visual Studio 14 2015"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
 
-        - QT_DIR: "C:/Qt/5.5/msvc2013_64"
-          CMAKE_GENERATOR: "Visual Studio 12 2013 Win64"
+        - QT_DIR: "C:/Qt/5.9/msvc2015_64"
+          CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
           ARCH: "x64"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
@@ -59,7 +59,7 @@ install:
 # can't use appveyor DownloadFile because it's FTP
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 12.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
+- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
 - cmd: cd ..
 - cmd: move fftw "C:/%PROGFILES%/fftw"
 - cmd: echo "Done installing fftw"
