@@ -269,7 +269,7 @@ t = TextView(w.asView,Rect(10,10, 500,200))
 )
 
 // Using the Window you just created, try these in succession, and test how the text view responds
-t.mouseUpAction_{|it, x, y, modifiers, buttonNumber, clickCount, pos| [pos].postln};
+t.mouseUpAction_{|it, x, y, modifiers, buttonNumber| [x, y].postln};
 t.autohidesScrollers_(false);
 t.hasVerticalScroller_(false);
 t.hasVerticalScroller_(true);

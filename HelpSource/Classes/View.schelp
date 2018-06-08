@@ -525,7 +525,7 @@ METHOD:: mouseDownAction
 METHOD:: mouseUpAction
     The object to be evaluated when a mouse button is released after it was pressed on the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers, buttonNumber::. See link::#Mouse actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
