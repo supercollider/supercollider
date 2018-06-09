@@ -30,7 +30,6 @@ Table of contents
     - SuperNova
     - Other targets (install, installer)
     - PortAudio
-    - FLAC support
   - Common build problems
     - Dirty build states
     - Wrong libraries found
@@ -274,14 +273,13 @@ version of each library as appropriate.
 Required components:
 
 - **[Git][Git]** for Windows
-- **[CMake][cmake]**
-- **[Visual Studio 12 2013][VS2013]**: note that you will need to join Visual
-  Studio Team Services (for free) in order to download this older version
-- **[Qt][Qt]** 5.5.1. Use the package `msvc2013_64` for a 64-bit build,
-  `msvc2013` for 32-bit.
-- **[libsndfile][libsndfile]** >= 1.0.25. The binary distribution for Windows
-  does not have FLAC support. For building with FLAC support, see the "FLAC
-  Support" section below.
+- **[CMake][cmake]** >= 3.7.2. You will need at least this version to generate project files for
+  VS2017. 3.5 is the absolute supported minimum.
+- **[Visual Studio 14 2017][VS2017]**. 2015 is also supported.
+- **[Qt][Qt]** >= 5.7 or later. We recommend using the latest version. Use the package `msvc2017_64`
+  (or `msvc2015_64`) for a 64-bit build, `msvc2015` for 32-bit (VS2015 and 2017 are both compatible
+  with this 32-bit distribution).
+- **[libsndfile][libsndfile]** >= 1.0.25
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
 Optional, but highly recommended:
@@ -355,7 +353,7 @@ In order to get support for ASIO drivers, follow this directory structure:
             ...
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
-Prompt for VS2013** (note that this this is not `cmd.exe`), `cd` to the
+Prompt for VS2017** (note that this is not `cmd.exe`), `cd` to the
 directory where FFTW is installed and, for a **64-bit** build:
 
     lib /machine:x64 /def:libfftw3f-3.def
@@ -382,20 +380,20 @@ may need to modify them if you installed Qt somewhere else. The following
 commands should be executed starting from the root directory of the
 SuperCollider repository.
 
-    SET PATH=C:\Qt\5.5\msvc2013_64\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013_64
+    SET PATH=C:\Qt\5.5\msvc2017_64\bin;%PATH%
+    SET CMAKE_PREFIX_PATH=C:\Qt\5.11.0\msvc2017_64
     mkdir build
     cd build
-    cmake -G "Visual Studio 12 2013 Win64" ..
+    cmake -G "Visual Studio 15 2017 Win64" ..
     cmake --build . --config Release
 
 For a 32-bit build, you will use a different generator and Qt directory:
 
-    SET PATH=C:\Qt\5.5\msvc2013\bin;%PATH%
-    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2013
+    SET PATH=C:\Qt\5.5\msvc2015\bin;%PATH%
+    SET CMAKE_PREFIX_PATH=C:\Qt\5.5\msvc2015
     mkdir build
     cd build
-    cmake -G "Visual Studio 12 2013" ..
+    cmake -G "Visual Studio 15 2017" ..
     cmake --build . --config Release
 
 For the final step, you can also build from within Visual Studio:
@@ -504,18 +502,6 @@ like to tweak the PortAudio build you can single it out from the SC build with:
 DSound support out of the box. If you want ASIO or WDM-KS, you need to build
 PortAudio within MSYS2. Users have experienced issues using the WASAPI backend
 to build in MinGW-based environments. Use Visual Studio if you need WASAPI.
-
-### FLAC support
-
-The binaries distrubted by the libsndfile website do not come with FLAC support,
-which means that your SuperCollider build won't have it, either.  Unfortunately,
-there does not seem to be an easy way to get such a binary.  Instructions for
-building libsndfile with FLAC support can be found in the [libsndfile
-readme][libsndfile readme], but it's probably easiest to drop in the
-FLAC-enabled DLL that comes with our Windows releases.
-
-If you are interested in building it yourself, please check out ["Building
-libsndfile with FLAC support"][libsndfileFLAC] on the project wiki.
 
 Common build problems
 ---------------------
@@ -1277,7 +1263,7 @@ The following libraries and tools were used to build the Windows installers
 - Qt5.5.1
   - for Windows-x86-VS: distribution `msvc2013`
   - for Windows-x64-VS: distribution `msvc2013_64`
-- libsndfile 1.0.28, compiled by Brian Heim for FLAC support
+- libsndfile 1.0.28
 - FFTW 3.3.5
 - ASIO SDK 2.3
 - DirectX v9 (June 2010)
@@ -1321,7 +1307,6 @@ software publicly and freely available.
 [NSIS]: http://nsis.sourceforge.net/Download (create installer)
 [portaudio]: http://www.portaudio.com/
 [Qt]: http://www.qt.io/download-open-source/#section-2 (Qt official distribution, choose online installer)
-[Qt55]: https://download.qt.io/archive/qt/5.5/5.5.1/
 [readline]: http://gnuwin32.sourceforge.net/packages/readline.htm
 [readline doc]: https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 [SC]: https://supercollider.github.io (Main SC-site)
@@ -1329,8 +1314,7 @@ software publicly and freely available.
 [SC repo]: https://github.com/supercollider/supercollider (SC source repository on Github with issue tracker)
 [SC help]: http://doc.sccode.org/Help.html (SC online help)
 [VS]: https://my.visualstudio.com/downloads
-[VS2013]: https://www.visualstudio.com/vs/older-downloads/ (you need to create a free developer account to download Visual Studio 2013, community edition)
+[VS2017]: https://www.visualstudio.com/downloads/ (Visual Studio)
 [Windows 8 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk (Windows 8.1 SDK including debugger used by Qt Creator)
 [Windows 10 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk  (Windows 10 SDK including debugger used by Qt Creator)
-[libsndfileFLAC]: https://github.com/supercollider/supercollider/wiki/Building-libsndfile-with-FLAC-support-(Windows,-VS-2017) (Building libsndfile with FLAC support)
 [libsndfile readme]: https://github.com/erikd/libsndfile/blob/master/README.md (libsndfile readme)
