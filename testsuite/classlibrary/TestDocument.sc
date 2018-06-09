@@ -1,73 +1,125 @@
-TestDocument : UnitTest {
+TestDocumentEnvir : UnitTest {
 
+	var doc, envir1, envir2, envir0;
 
-	test_document_envir {
-
-		var doc, envir1, envir2, envir0;
-		var closeCount = 0, closeCounter, endFrontCount = 0, endFrontCounter;
-
+	setUp {
 		envir0 = (a: 0);
 		envir1 = (a: 27);
 		envir2 = (a: 29);
 
 		currentEnvironment = envir0;
 		doc = Document(envir: envir1);
+	}
 
-		// check base state
+	tearDown {
+		doc.close;
+		currentEnvironment = topEnvironment;
+	}
+
+	test_new_document_in_background {
 		this.assert(doc.isFront.not,
 			"new document should be created in the background by default");
+	}
 
-		this.assert(currentEnvironment === envir0,
+	test_new_document_in_background_neutral {
+		this.assertEquals(currentEnvironment, envir0,
 			"background document linked with envir on creation should not change currentEnvironment");
+	}
+
+	test_set_envir_in_background {
 
 		doc.envir = envir2;
 
-		this.assert(currentEnvironment === envir0,
+		this.assertEquals(currentEnvironment, envir0,
 			"background document linked with envir interactively should not change currentEnvironment");
 
+	}
+
+	test_document_to_front {
+
+		doc.envir = envir2;
 
 		doc.front;
 
-		this.assert(currentEnvironment === envir2,
+		this.assertEquals(currentEnvironment, envir2,
 			"focused document linked with envir should push its environment");
+	}
 
-		this.assert(doc.savedEnvir === envir0,
+	test_document_to_front_save_old_envir {
+
+		doc.envir = envir2;
+
+		doc.front;
+
+		this.assertEquals(doc.savedEnvir, envir0,
 			"focused document linked with envir should save its old environment");
+	}
+
+	test_set_envir_in_foreground {
+
+		doc.envir = envir2;
+
+		doc.front;
 
 		doc.envir = envir1;
 
-		this.assert(currentEnvironment === envir1,
+		this.assertEquals(currentEnvironment, envir1,
 			"focused document linked with envir should push envir when envir is changed");
 
-		this.assert(doc.savedEnvir === envir0,
+	}
+
+	test_set_envir_in_foreground_keep_old_envir {
+
+		doc.envir = envir2;
+
+		doc.front;
+
+		doc.envir = envir1;
+
+		this.assertEquals(doc.savedEnvir, envir0,
 			"focused document linked with envir should keep its old saved environment when envir is changed");
 
-		closeCounter = { closeCount = closeCount + 1 };
-		endFrontCounter = { endFrontCount = endFrontCount + 1 };
-		doc.onClose = closeCounter;
-		doc.endFrontAction = endFrontCounter;
+	}
+
+	test_onClose {
+		var test = { this.assertEquals(count, 1, "onClose should be called not more than once") };
+		var count = 0;
+		var counter = { count = count + 1; test.value; };
+		doc.onClose = counter;
+		doc.close;
+
+	}
+
+	test_endFront_on_close {
+
+		var test = { this.assertEquals(count, 1, "endFrontAction should be called not more than once") };
+		var count = 0;
+		var counter = { count = count + 1; test.value; };
+		doc.endFrontAction = counter;
+		doc.close;
+	}
+
+	test_close_restore_old_envir {
+
+		var test = {
+			this.assertEquals(currentEnvironment, envir0,
+				"closing document linked with envir should restore original currentEnvironment"
+			)
+		};
+
+		doc.envir = envir2;
+
+		doc.front;
+
+		doc.onClose = test;
 
 		doc.close;
 
-		/*
-
-		0.3.wait;
-
-		this.assertEquals(closeCount, 1, "onClose should be called once");
-		this.assertEquals(endFrontCount, 1, "endFrontAction should be called once");
-
-
-
-		// this fails, has envir1 (a: 27) as current.
-		// the test works when done by hand, it just fails in the test environment
-
-		this.assertEquals(currentEnvironment, envir0,
-			"closing document linked with envir should restore original currentEnvironment");
-		*/
-
-
 
 	}
+
+
+
 
 }
 
