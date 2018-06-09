@@ -123,3 +123,37 @@ TestDocumentEnvir : UnitTest {
 
 }
 
+
+TestEnvironmentDocument : UnitTest {
+	var doc;
+
+	setUp {
+		currentEnvironment = topEnvironment;
+		doc = Document();
+	}
+
+	tearDown {
+		doc.close;
+	}
+
+	test_linkDoc {
+		var envir = (a: 9);
+		doc.front;
+		envir.linkDoc(doc);
+		this.assertEquals(currentEnvironment, envir, "a linked environment should be current when document has focus");
+	}
+
+	test_unlinkDoc {
+		var envir = (a: 9);
+		var oldCurrent = currentEnvironment;
+		doc.front;
+
+		envir.linkDoc(doc);
+		envir.unlinkDoc(doc);
+		this.assertEquals(currentEnvironment, oldCurrent, "a linked environment restore original envir when unlinked");
+
+	}
+
+}
+
+
