@@ -53,32 +53,11 @@ TestNode : UnitTest {
 		node.free;
 	}
 
-	test_releaseMsg {
-		var msg;
-
-		node = Synth(\default);
-		server.sync;
-
-		msg = node.releaseMsg(nil);
-		this.assertEquals(msg[3], 0, "nil should set gate to 0");
-
-		msg = node.releaseMsg(0);
-		this.assertEquals(msg[3], -1, "0 should set gate to -1");
-
-		msg = node.releaseMsg(2);
-		this.assertEquals(msg[3], -3, "2 should set gate to -3");
-
-		msg = node.releaseMsg(-2);
-		this.assertEquals(msg[3], -1, "A negative value should set gate to -1");
-
-		node.free;
-	}
-
-	test_releaseServerGate {
+	test_node_releaseGate {
 		var reply, msg;
 
 		SynthDef(\sendReply, { |gate=1, out=0|
-			var sig = DC.ar(0.1) * EnvGen.kr(Env.cutoff(1e-3), gate, doneAction: Done.freeSelf);
+			var sig = DC.ar(0.01) * EnvGen.kr(Env.cutoff(1e-3), gate, doneAction: 2);
 			SendReply.kr(gate<=0, '/gateVal', gate);
 			Out.ar(out, sig);
 		}).add;
