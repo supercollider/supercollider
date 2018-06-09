@@ -406,7 +406,7 @@ SoundFile {
 	}
 
 	cue { | ev, playNow = false, closeWhenDone = false |
-		var server, packet, defname = "diskIn" ++ numChannels, onClose;
+		var server, packet, defname = "diskIn" ++ numChannels;
 		ev = ev ? ();
 		if (this.numFrames == 0) { this.info };
 		fork {
