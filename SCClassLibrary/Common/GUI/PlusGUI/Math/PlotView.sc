@@ -361,8 +361,15 @@ Plot {
 	}
 
 	getIndex { |x|
-		var offset = if(this.hasSteplikeDisplay) { 0.5 } { 0.0 }; // needs to be fixed.
-		^(this.getRelativePositionX(x) - offset).round.asInteger
+		var ycoord = this.dataCoordinates;
+		var xcoord = this.domainCoordinates(ycoord.size);
+		var binwidth = 0;
+		var offset;
+		if (xcoord.size > 0) {
+			binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0];
+		};
+		offset = if(this.hasSteplikeDisplay) { binwidth/2.0 } { 0.0 };
+		^(this.getRelativePositionX(x - offset)).round.asInteger;
 	}
 
 	getDataPoint { |x|
