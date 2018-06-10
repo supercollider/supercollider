@@ -138,13 +138,17 @@ Also, note that you will get errors on sclang startup from
 classes requiring Qt. A workaround and more details are
 described in on the [RPi](http://supercollider.github.io/development/building-raspberrypi) page.
 
-#### Release build
+#### Compiler optimizations
 
-If you're building SC for production use, make sure to build in release mode:
+If you're building SC for production use and/or don't plan on using a debugger, make sure to build in release mode:
 
     cmake -DCMAKE_BUILD_TYPE=Release ..
 
-This sets the compiler to the best optimization settings.
+This sets the compiler to the best optimization settings. Switch back to the defaults using `cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..`.
+
+If you're compiling SC only for use on your own machine (that is, you aren't cross-compiling or packaging SC for distribution), it is recommended to turn on the `NATIVE` flag to enable CPU-specific optimizations:
+
+    cmake -DNATIVE=ON ..
 
 #### Install location
 
@@ -173,6 +177,8 @@ For example if you wish to install into `lib64`:
 
 ### Step 3: Build
 
+If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flgs.
+
 After setting your CMake flags, just run
 
     make
@@ -182,8 +188,6 @@ And to install, run
     make install
 
 You will need to use `sudo make install` if you are doing a system-wide installation, which is the default.
-
-You can freely alternate between setting CMake flags and hitting `make`.
 
 After installing for the first time, please run
 
