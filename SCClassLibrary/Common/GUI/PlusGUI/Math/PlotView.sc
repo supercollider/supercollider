@@ -184,10 +184,10 @@ Plot {
 					this.perform(mode, xcoord, y);
 					if (this.needsPenFill(mode)) {
 						Pen.fillColor = plotColor.wrapAt(i);
-						Pen.fill;
+						Pen.fill
 					} {
 						Pen.strokeColor = plotColor.wrapAt(i);
-						Pen.stroke;
+						Pen.stroke
 					}
 				}
 			} {
@@ -196,10 +196,10 @@ Plot {
 				Pen.fillColor= plotColor.at(0);
 				this.perform(mode, xcoord, ycoord);
 				if (this.needsPenFill(mode)) {
-					Pen.fill;
+					Pen.fill
 				} {
-					Pen.stroke;
-				};
+					Pen.stroke
+				}
 			};
 			Pen.joinStyle = 0;
 		};
@@ -255,14 +255,14 @@ Plot {
 		Pen.smoothing_(false);
 		y.size.do { |i|
 			var p = x[i] @ y[i];
-			var nextx = x[i+1] ?? {plotBounds.right};
+			var nextx = x[i + 1] ?? {plotBounds.right};
 			var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip:nil);
 			var rely = y[i] - centery;
-			var gap = (nextx-x[i])*0.1;
+			var gap = (nextx - x[i]) * 0.1;
 			if (rely < 0) {
-				Pen.addRect(Rect(x[i] + gap, centery + rely, nextx-x[i]-(2*gap), rely.abs));
+				Pen.addRect(Rect(x[i] + gap, centery + rely, nextx- x[i] - (2 * gap), rely.abs))
 			} {
-				Pen.addRect(Rect(x[i] + gap, centery, nextx-x[i]-(2*gap), rely));
+				Pen.addRect(Rect(x[i] + gap, centery, nextx - x[i] - ( 2 * gap), rely))
 			}
 		}
 	}
@@ -366,10 +366,10 @@ Plot {
 		var binwidth = 0;
 		var offset;
 		if (xcoord.size > 0) {
-			binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0];
+			binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
 		};
 		offset = if(this.hasSteplikeDisplay) { binwidth/2.0 } { 0.0 };
-		^(this.getRelativePositionX(x - offset)).round.asInteger;
+		^this.getRelativePositionX(x - offset).round.asInteger
 	}
 
 	getDataPoint { |x|
