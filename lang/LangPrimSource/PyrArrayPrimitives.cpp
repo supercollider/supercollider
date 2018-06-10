@@ -2046,11 +2046,13 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 				if (isKindOf(obj3, class_list)) {
 					obj3 = slotRawObject(&obj3->slots[0]); // get the list's array
 				}
-				if (obj3 && isKindOf(obj3, class_array) && obj3->size>0) {
-					m = j % obj3->size;
-					slotCopy(&obj2->slots[i],&obj3->slots[m]);
-				} else {
-					SetNil(&obj2->slots[i]);
+				if (obj3 && isKindOf(obj3, class_array)) {
+					if (obj3->size>0) {
+						m = j % obj3->size;
+						slotCopy(&obj2->slots[i],&obj3->slots[m]);
+					} else {
+						SetNil(&obj2->slots[i]);
+					}
 				}
 			} else {
 				slotCopy(&obj2->slots[i],&slots[k]);
