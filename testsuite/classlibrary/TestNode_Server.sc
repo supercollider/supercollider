@@ -12,44 +12,44 @@ TestNode_Server : UnitTest {
 	}
 
 	test_get {
-		var set_value, get_value, node;
+		var setValue, getValue, node;
 
 		SynthDef(\test_get, { |control = 8| }).add;
 		server.sync;
-		set_value = 888;
-		node = Synth(\test_get, [control: set_value]);
+		setValue = 888;
+		node = Synth(\test_get, [control: setValue]);
 		server.sync;
 
-		get_value = 0;
+		getValue = 0;
 		node.get(\control, { |value|
-			get_value = value;
+			getValue = value;
 		});
 		0.1.wait;
 
-		this.assertFloatEquals(get_value, set_value, "Node:get works", 0.001);
+		this.assertFloatEquals(getValue, setValue, "Node:get works", 0.001);
 		node.free;
 	}
 
 	test_getn {
-		var setn_values, getn_values, node;
+		var setnValues, getnValues, node;
 
 		SynthDef(\test_getn, { |control1 = 2, control2 = 22.2, control3 = 222| }).add;
 		server.sync;
-		setn_values = [888, 88.8, 8.88];
+		setnValues = [888, 88.8, 8.88];
 		node = Synth(\test_getn, [
-			control1: setn_values[0],
-			control2: setn_values[1],
-			control3: setn_values[2]
+			control1: setnValues[0],
+			control2: setnValues[1],
+			control3: setnValues[2]
 		]);
 		server.sync;
 
-		getn_values = 0;
+		getnValues = 0;
 		node.getn(0, 3, { |values|
-			getn_values = values;
+			getnValues = values;
 		});
 		0.1.wait;
 
-		this.assertArrayFloatEquals(getn_values, setn_values, "Node:getn works", 0.001);
+		this.assertArrayFloatEquals(getnValues, setnValues, "Node:getn works", 0.001);
 		node.free;
 	}
 
