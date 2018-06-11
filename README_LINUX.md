@@ -80,7 +80,7 @@ If you are on Ubuntu 14.04 (Trusty), 16.04 (Xenial), or 18.04 (Bionic), [Stephan
 
 On Xenial or Bionic:
 
-    sudo apt-add-repository ppa:beineri/opt-qt511-`lsb_release -sc`
+    sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-`lsb_release -sc`
     sudo apt-get update
     sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg
     # If using the IDE:
@@ -90,7 +90,7 @@ On Xenial or Bionic:
 
 On Trusty, only Qt 5.10 and below are available:
 
-    sudo apt-add-repository ppa:beineri/opt-qt510-trusty
+    sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
     sudo apt-get update
     sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg
     # If using the IDE:
