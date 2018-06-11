@@ -46,7 +46,10 @@ For sclang and scide:
 Installing requirements on Debian
 ---------------------------------
 
-Building on embedded Linux platforms such as the Raspberry Pi or Beaglebone Black can be found at [a dedicated web page](http://supercollider.github.io/development/building). (Those instructions will be merged here soon.)
+There are dedicated web pages for building on particular embedded Linux platforms:
+
+- [Raspberry Pi](http://supercollider.github.io/development/building-raspberrypi)
+- [BeagleBone Black](https://supercollider.github.io/development/building-beagleboneblack)
 
 On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
@@ -130,13 +133,6 @@ The location of `/path/to/qt5` will depend on how you installed Qt:
 If you want to build without Qt entirely, run
 
     cmake -DSC_QT=OFF ..
-
-Note: running headless SC in an X-less environment requires
-jackd without D-bus support. On Raspbian Jessie this requires
-compiling jackd rather than using the packaged version.
-Also, note that you will get errors on sclang startup from
-classes requiring Qt. A workaround and more details are
-described in on the [RPi](http://supercollider.github.io/development/building-raspberrypi) page.
 
 #### Compiler optimizations
 
