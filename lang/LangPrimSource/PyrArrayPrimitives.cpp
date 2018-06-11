@@ -2053,6 +2053,8 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 					} else {
 						SetNil(&obj2->slots[i]);
 					}
+				} else {
+					slotCopy(&obj2->slots[i],&obj3->slots[k]);
 				}
 			} else {
 				slotCopy(&obj2->slots[i],&slots[k]);
