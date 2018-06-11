@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _sc_msg_iter_
-#define _sc_msg_iter_
+#pragma once
 
 #include "SC_Endian.h"
 #include "SC_Types.h"
@@ -318,5 +317,3 @@ inline void sc_msg_iter::skipb()
 	rdpos += len4;
 	count ++;
 }
-
-#endif

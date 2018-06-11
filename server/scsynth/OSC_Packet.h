@@ -26,8 +26,7 @@
  *
  */
 
-#ifndef _OSC_Packet_
-#define _OSC_Packet_
+#pragma once
 
 #include "SC_ReplyImpl.hpp"
 #include "SC_Types.h"
@@ -40,5 +39,3 @@ struct OSC_Packet
 
 	ReplyAddress mReplyAddr;
 };
-
-#endif

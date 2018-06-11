@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef AUDIO_BACKEND_AUDIO_BACKEND_COMMON_HPP
-#define AUDIO_BACKEND_AUDIO_BACKEND_COMMON_HPP
+#pragma once
 
 #include <vector>
 
@@ -169,6 +168,3 @@ public:
 
 } /* namespace detail */
 } /* namespace nova */
-
-
-#endif /* AUDIO_BACKEND_AUDIO_BACKEND_COMMON_HPP */

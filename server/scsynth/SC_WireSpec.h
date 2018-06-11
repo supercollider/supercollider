@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_WireSpec_
-#define _SC_WireSpec_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -43,5 +42,3 @@ struct OutputSpec
 	uint32 mNumConsumers;
 };
 typedef struct OutputSpec OutputSpec;
-
-#endif

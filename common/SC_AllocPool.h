@@ -27,8 +27,7 @@ Improved bit block scanning by using a count leading zeroes instruction.
 
 */
 
-#ifndef _AllocPool_
-#define _AllocPool_
+#pragma once
 
 #include "SC_List.h"
 #include "clz.h"
@@ -275,4 +274,3 @@ private:
 	unsigned long mBinBlocks[4];
 };
 
-#endif

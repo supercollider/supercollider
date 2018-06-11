@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef LANG_MISCINLINEMATH_H
-#define LANG_MISCINLINEMATH_H
+#pragma once
 
 #define NUMPRIMES 6542
 long nthPrime(int n);
@@ -55,5 +54,3 @@ inline double linexp(double x, double a, double b, double c, double d)
     if (x >= b) return d;
     return pow(d/c, (x-a)/(b-a)) * c;
 }
-
-#endif

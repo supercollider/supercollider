@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Complex_
-#define _SC_Complex_
+#pragma once
 
 #include <cmath>
 
@@ -266,5 +265,3 @@ inline Polar operator*=(Polar a, float b)
 	a.mag *= b;
 	return a;
 }
-
-#endif

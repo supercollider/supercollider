@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_ABSTRACT_STEP_VALUE
-#define QC_ABSTRACT_STEP_VALUE
+#pragma once
 
 class QcAbstractStepValue
 {
@@ -42,5 +41,3 @@ class QcAbstractStepValue
     double _ctrlScale;
     double _altScale;
 };
-
-#endif

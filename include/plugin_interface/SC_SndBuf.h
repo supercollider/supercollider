@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SndBuf_
-#define _SndBuf_
+#pragma once
 
 #include <stdint.h>
 
@@ -242,6 +241,3 @@ inline float cubicinterp(float x, float y0, float y1, float y2, float y3)
 
 	return ((c3 * x + c2) * x + c1) * x + c0;
 }
-
-
-#endif

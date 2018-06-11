@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_PAINTING_H
-#define QC_PAINTING_H
+#pragma once
 
 class QPainter;
 class QWidget;
@@ -38,5 +37,3 @@ namespace QtCollider {
 
   QPainter * globalPainter();
 }
-
-#endif

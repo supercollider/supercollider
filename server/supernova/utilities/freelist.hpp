@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef UTILITIES_FREELIST_HPP
-#define UTILITIES_FREELIST_HPP
+#pragma once
 
 #include <boost/lockfree/detail/tagged_ptr.hpp>
 #include <atomic>
@@ -86,5 +85,3 @@ private:
 
 
 } /* namespace nova */
-
-#endif /* UTILITIES_FREELIST_HPP */

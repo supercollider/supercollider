@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED
-#define SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED
+#pragma once
 
 #include <QSettings>
 #include <QTextCharFormat>
@@ -32,5 +31,3 @@ QSettings::Format serializationFormat();
 }} // namespace ScIDE::Settings
 
 Q_DECLARE_METATYPE( QTextCharFormat )
-
-#endif // SCIDE_CORE_SETTINGS_SERIALIZATION_HPP_INCLUDED

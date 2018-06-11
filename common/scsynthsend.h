@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _scpacket_
-#define _scpacket_
+#pragma once
 
 #include "SC_Endian.h"
 #include "SC_Types.h"
@@ -157,7 +156,3 @@ struct scpacket {
 
 typedef scpacket<> small_scpacket;
 typedef scpacket<65516> big_scpacket;
-
-
-#endif
-

@@ -24,8 +24,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 
 */
 
-#ifndef _GC_
-#define _GC_
+#pragma once
 
 #include "PyrObject.h"
 #include "VMGlobals.h"
@@ -356,5 +355,3 @@ inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRu
 	}
 	return obj;
 }
-
-#endif

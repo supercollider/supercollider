@@ -18,8 +18,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_OSCUTILS_HPP
-#define SC_OSCUTILS_HPP
+#pragma once
 
 #include "SC_ReplyImpl.hpp"
 #include <cinttypes>
@@ -215,5 +214,3 @@ static void DumpReplyAddress(ReplyAddress *inReplyAddress)
 	scprintf("mReplyFunc %p\n", (void*)inReplyAddress->mReplyFunc);
 }
 #endif
-
-#endif // SC_OSCUTILS_HPP

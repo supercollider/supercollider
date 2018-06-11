@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_OBJECT_FACTORY_H
-#define QC_OBJECT_FACTORY_H
+#pragma once
 
 #include "QObjectProxy.h"
 #include "Common.h"
@@ -130,7 +129,3 @@ protected:
 #define QC_ADD_FACTORY( QOBJECT ) \
   void add_factory_##QOBJECT(); \
   add_factory_##QOBJECT()
-
-
-
-#endif //QC_OBJECT_FACTORY_H

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_LAYOUTS_H
-#define QC_LAYOUTS_H
+#pragma once
 
 #include "stack_layout.hpp"
 #include "../Common.h"
@@ -284,5 +283,3 @@ public:
       QtCollider::StackLayout::insertWidget(index, w);
   }
 };
-
-#endif

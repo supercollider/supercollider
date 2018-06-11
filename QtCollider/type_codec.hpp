@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_TYPE_CODEC_INCLUDED
-#define QT_COLLIDER_TYPE_CODEC_INCLUDED
+#pragma once
 
 #include "widgets/QcTreeWidget.h"
 #include "image.h"
@@ -467,5 +466,3 @@ struct TypeCodec<QObjectT, void>
 };
 
 } // namespace QtCollider
-
-#endif // QT_COLLIDER_TYPE_CODEC_INCLUDED

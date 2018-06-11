@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _ReadWriteMacros_
-#define _ReadWriteMacros_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_Endian.h"
@@ -342,7 +341,3 @@ inline void SC_IOStream<char*>::writeUInt8(uint8 inInt)
 {
 	*s++ = (inInt & 255);
 }
-
-
-#endif
-

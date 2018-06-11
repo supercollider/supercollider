@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SYNTH_HPP
-#define SERVER_SYNTH_HPP
+#pragma once
 
 #include <cassert>
 #include <iostream>
@@ -154,5 +153,3 @@ public:
 };
 
 } /* namespace nova */
-
-#endif /* SERVER_SYNTH_HPP */

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_IMAGE_INCLUDED
-#define QT_COLLIDER_IMAGE_INCLUDED
+#pragma once
 
 #include <QImage>
 #include <QPixmap>
@@ -230,5 +229,3 @@ typedef QSharedPointer<QtCollider::Image> SharedImage;
 } // namespace QtCollider
 
 Q_DECLARE_METATYPE( QtCollider::SharedImage );
-
-#endif // QT_COLLIDER_IMAGE_INCLUDED

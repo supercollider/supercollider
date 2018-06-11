@@ -19,8 +19,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_REPLYIMPL_HPP
-#define SC_REPLYIMPL_HPP
+#pragma once
 
 #include "SC_Reply.h"
 
@@ -52,5 +51,3 @@ inline void SendReply(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize)
 {
 	(inReplyAddr->mReplyFunc)(inReplyAddr, inBuf, inSize);
 }
-
-#endif // SC_REPLYIMPL_HPP

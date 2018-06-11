@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef EXISTS_HPP
-#define EXISTS_HPP
+#pragma once
 
 namespace nova
 {
@@ -29,5 +28,3 @@ bool inline exists (container const & c, typename container::key_type const & k)
 }
 
 } /* namespace nova */
-
-#endif /* EXISTS_HPP */

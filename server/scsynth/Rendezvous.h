@@ -27,8 +27,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _Rendezvous_
-#define _Rendezvous_
+#pragma once
 
 typedef enum {
 	kSCRendezvous_UDP,
@@ -36,6 +35,3 @@ typedef enum {
 } SCRendezvousProtocol;
 
 void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum);
-
-#endif
-

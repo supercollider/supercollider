@@ -1,5 +1,4 @@
-#ifndef _SC_VFP11_
-#define _SC_VFP11_
+#pragma once
 
 #include <TargetConditionals.h>
 
@@ -293,7 +292,3 @@ inline void vcopy(float *dest, float *a, int len)
           "cc", "memory");
 #endif
 }
-
-
-
-#endif

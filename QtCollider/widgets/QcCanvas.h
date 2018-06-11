@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_CANVAS_H
-#define QC_CANVAS_H
+#pragma once
 
 #include "image_painter.h"
 
@@ -93,5 +92,3 @@ private:
   QColor _bkg;
   QtCollider::ImagePainter _bkg_image;
 };
-
-#endif

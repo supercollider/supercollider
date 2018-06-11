@@ -22,9 +22,6 @@
 
 
 #if SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
-#ifndef _SC_AU_
-#define _SC_AU_
-
 
 #include "SC_CoreAudio.h"
 #include "SC_Prototypes.h"
@@ -49,7 +46,4 @@ extern "C" {
 	void AUCallback(SC_AUAudioDriver *driver,AudioBufferList* in, AudioBufferList* out, AudioTimeStamp* inTimeStamp, UInt32 inFramesToProcess, Float64 sampleRate, int64 oscTime);
 }
 
-
-
-#endif
 #endif

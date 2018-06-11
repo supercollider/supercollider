@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_DemandUnit_
-#define _SC_DemandUnit_
+#pragma once
 
 #include "SC_Unit.h"
 #include "SC_Wire.h"
@@ -69,5 +68,3 @@ inline void ResetInput(Unit* unit, int index)
 #define DEMANDINPUT(index) DemandInput(unit, (index))
 #define DEMANDINPUT_A(index, offset) DemandInputA(unit, (index), (offset))
 #define RESETINPUT(index) ResetInput(unit, (index))
-
-#endif

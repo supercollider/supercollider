@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Wire_
-#define _SC_Wire_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -32,5 +31,3 @@ struct Wire
 	float32 mScalarValue;
 };
 typedef struct Wire Wire;
-
-#endif

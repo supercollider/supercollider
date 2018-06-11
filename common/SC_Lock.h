@@ -18,9 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
-#ifndef _SC_Lock_
-#define _SC_Lock_
+#pragma once
 
 #include <chrono>
 #include <condition_variable>
@@ -37,5 +35,3 @@ using std::cv_status;
 typedef std::condition_variable_any condition_variable_any;
 
 typedef SC_Lock mutex;
-
-#endif

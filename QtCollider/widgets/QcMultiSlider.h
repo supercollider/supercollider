@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_MULTI_SLIDER
-#define QC_MULTI_SLIDER
+#pragma once
 
 #include "../QcHelper.h"
 #include "../style/style.hpp"
@@ -154,5 +153,3 @@ class QcMultiSlider : public QWidget, QcHelper, QtCollider::Style::Client
     // temporary
     QPoint moveOrigin;
 };
-
-#endif

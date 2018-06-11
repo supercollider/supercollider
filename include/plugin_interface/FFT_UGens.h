@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef FFT_UGENS_H
-#define FFT_UGENS_H
+#pragma once
 
 #include "SC_PlugIn.h"
 #include "SCComplex.h"
@@ -139,5 +138,3 @@ struct PV_Unit : Unit
 	} else if (numbins != unit->m_numbins) return;
 
 extern InterfaceTable *ft;
-
-#endif

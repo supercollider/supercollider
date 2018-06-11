@@ -1,5 +1,4 @@
-#ifndef WINTIME_H
-#define WINTIME_H
+#pragma once
 
 #include <WinSock2.h> // for timeval struct
 #include <windows.h>
@@ -23,5 +22,3 @@ inline int gettimeofday(struct timeval* p, void* tz /* IGNORED */)
     p->tv_sec = (long)((now.ns100 - (116444736000000000LL)) / 10000000LL);
     return 0;
 }
-
-#endif

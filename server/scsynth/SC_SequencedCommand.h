@@ -26,8 +26,7 @@
  * so that you only need to write the functions.
  */
 
-#ifndef _SC_SequencedCommand_
-#define _SC_SequencedCommand_
+#pragma once
 
 #include "OSC_Packet.h"
 #include "SC_World.h"
@@ -549,8 +548,3 @@ protected:
 
 	virtual void CallDestructor();
 };
-
-///////////////////////////////////////////////////////////////////////////
-
-#endif
-

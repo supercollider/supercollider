@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_QOBJECT_PROXY_H
-#define QC_QOBJECT_PROXY_H
+#pragma once
 
 #include "Common.h"
 
@@ -201,5 +200,3 @@ struct ScMethodCallEvent : public QEvent
 } // namespace
 
 Q_DECLARE_METATYPE( QObjectProxy * );
-
-#endif //QC_QOBJECT_PROXY_H
