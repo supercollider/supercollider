@@ -1,4 +1,4 @@
-TestDocumentEnvir : UnitTest {
+TestDocumentEnvironment : UnitTest {
 
 	var doc, envir1, envir2, envir0;
 
