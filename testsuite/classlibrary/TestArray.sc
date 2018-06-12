@@ -163,3 +163,98 @@ TestArray : UnitTest {
 	} // End test_arraystats
 
 } // End class
+
+TestArrayLace : UnitTest {
+	test_empty_returns_empty {
+		var array, result;
+		array = [];
+		result = array.lace;
+		this.assertEquals(result, [], "lace: empty array with no length argument should return empty array");
+	}
+
+	test_empty_with_length_argument_returns_empty {
+		var array, result;
+		array = [];
+		result = array.lace(8);
+		this.assertEquals(result, [], "lace: empty array with length argument should return empty array");
+	}
+
+	test_empty_subarray_returns_nil {
+		var array, result;
+		array = [[]];
+		result = array.lace;
+		this.assertEquals(result, [ nil ], "lace: empty subarray should return empty array");
+	}
+
+	test_flat_without_length_arg {
+		var array, result;
+		array = [1, 2, 3, 4, 5];
+		result = array.lace;
+		this.assertEquals(result, array, "lace: flat array should return a copy of itself");
+	}
+
+	test_flat_with_empty_subarray_substitutes_nil {
+		var array, result;
+		array = [1, 2, [], 4, 5];
+		result = array.lace;
+		this.assertEquals(result, [1, 2, nil, 4, 5], "lace: empty subarrays should be substituted for nil");
+	}
+
+	test_flat_with_length_arg_small {
+		var array, result, n;
+		n = 3;
+		array = [1, 2, 3, 4, 5];
+		result = array.lace(n);
+		this.assertEquals(result, array.keep(n),
+			"lace: flat array should return a copy of itself shortened to the length given in the argument");
+	}
+
+	test_flat_with_length_arg_large {
+		var array, result, n;
+		n = 18;
+		array = [1, 2, 3, 4, 5];
+		result = array.lace(n);
+		this.assertEquals(result, array.wrapExtend(n),
+			"lace: flat array should return itself extended to the length given in the argument");
+	}
+
+	test_subarrays_of_equal_length_without_length_arg {
+		var array, result;
+		array = [[1, 4, 7], [2, 5, 8], [3, 6, 9]];
+		result = array.lace;
+		this.assertEquals(result, [1, 2, 3, 4, 5, 6, 7, 8, 9],
+			"lace: subarrays of equal length should lace correctly without length arugment");
+	}
+
+	test_subarrays_of_unequal_length_without_length_arg {
+		var array, result;
+		array = [[1, 4], [2, 5, 7], [3, 6, 8, 9]];
+		result = array.lace;
+		this.assertEquals(result, [1, 2, 3, 4, 5, 6],
+			"lace: if not supplied, length should be computed using the minimum length subarray");
+	}
+
+	test_mixture_of_flat_and_arrays_without_length_arg {
+		var array, result;
+		array = [[10, 9], 8, [7, 6, 5], [4], [3, 2, 1, 0]];
+		result = array.lace;
+		this.assertEquals(result, [10, 8, 7, 4, 3],
+			"lace: single-length items with no length argument should only be copied once.");
+	}
+
+	test_subarrays_with_complete_length_arg {
+		var array, result;
+		array = [[1, 2, 3, 4], [5, 6, 7, 8], [-1, -2, -3, -4]];
+		result = array.lace(12);
+		this.assertEquals(result, [1, 5, -1, 2, 6, -2, 3, 7, -3, 4, 8, -4],
+			"lace: complete length argument should return completely laced array");
+	}
+
+	test_subarrays_with_length_arg_shorter_than_number_of_subarrays {
+		var array, result;
+		array = [["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]];
+		result = array.lace(3);
+		this.assertEquals(result, ["a", "c", "e"],
+			"lace: short length argument should return first members of first subarrays");
+	}
+} // End class
