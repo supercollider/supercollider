@@ -375,22 +375,32 @@ method::play
 
 Play a Synth from UGens returned by the function. The function arguments become controls that can be set afterwards.
 
-This works as follows:play wraps the UGens in a SynthDef and sends it to the target. When this asynchronous command is completed, it creates one synth from this definition.
+This works as follows: play wraps the UGens in a SynthDef and sends it to the target. When this asynchronous command is completed, it creates one synth from this definition.
+
+
+argument::target
+A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+
+argument::outbus
+A bus number that determines the output channel. This is equivalent to code::Out.ar(outbus, signal)::. The default is 0.
+
+argument::fadeTime
+Crossfade time for attack and release of the synth. The default is 0.02 seconds, which is just enough to avoid a click.
+
+argument::addAction
+The add action for the synth.  For a list of valid addActions see link::Classes/Synth::
+
+argument::args
+An array of key value pairs of control names and control values which are used when starting the synth.
 
 note::
 Some UGens are added in this process.
 list::
-## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
+## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::\gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
 ::
 ::
 
-argument::target A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
 
-argument::outbus A bus number that determines the output channel. This is equivalent to code:: Out.ar(outbus, signal)::. The default is 0.
-
-fadeTime::crossfade time for attack and release of the synth. The default is 0.02 seconds, which is just enough to avoid a click.
-
-addAction::For a list of valid addActions see link::Classes/Synth::args::an array of key value pairs of control names and control values which are used when starting the synth
 
 
 code::
