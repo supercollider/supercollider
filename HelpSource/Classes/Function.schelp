@@ -373,12 +373,30 @@ subsection::Audio
 
 method::play
 
-This is probably the simplest way to get audio in SC3. It wraps the Function in a SynthDef (adding an Out ugen if needed), creates and starts a new Synth with it, and returns the Synth object. A Linen is also added to avoid clicks, which is configured to allow the resulting Synth to have its \gate argument set, or to respond to a release message. Args in the function become args in the resulting def.
+Play a Synth from UGens returned by the function. The function arguments become controls that can be set afterwards.
+
+This works as follows:play wraps the UGens in a SynthDef and sends it to the target. When this asynchronous command is completed, it creates one synth from this definition.
+
+note::
+Some UGens are added in this process.
+list::
+## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
+::
+::
+
+argument::target A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+
+argument::outbus A bus number that determines the output channel. This is equivalent to code:: Out.ar(outbus, signal)::. The default is 0.
+
+fadeTime::crossfade time for attack and release of the synth. The default is 0.02 seconds, which is just enough to avoid a click.
+
+addAction::For a list of valid addActions see link::Classes/Synth::args::an array of key value pairs of control names and control values which are used when starting the synth
+
 
 code::
 x = { |freq = 440| SinOsc.ar(freq, 0, 0.3) }.play; // this returns a Synth object;
 x.set(\freq, 880); // note you can set the freq argument
-x.defName; // the name of the resulting SynthDef (generated automatically in a cycle of 512)
+x.defName; // the name of the resulting SynthDef
 x.release(4); // fadeout over 4 seconds
 ::
 
@@ -393,16 +411,6 @@ SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3))}).play;
 
 Function.play is often more convenient than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
 
-argument::target
-a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
-argument::outbus
-the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
-argument::fadeTime
-a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.
-argument::addAction
-see Synth for a list of valid addActions. The default is \addToHead.
-argument::args
-arguments
 
 method::scope
 

@@ -73,8 +73,14 @@ section:: Playing single Synths from SynthDefs on the server
 The following play messages both cause a SynthDef to be written, send it to the server
 and start a synth with it there.
 
-Note that they should not be used in quickly running automated processes,
+note::
+Some UGens are added in this process.
+list::
+## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
+::
+Also note that they should not be used in quickly running automated processes,
 as there are more efficient alternatives ( see link::Guides/SynthDefsVsSynths:: )
+::
 
 subsection:: function.play (target, outbus, fadeTime, addAction, args)
 
@@ -85,6 +91,7 @@ table::
 ## addAction || where to add the node (\addToHead by default)
 ## args || controls to set when starting the synth
 ::
+
 
 See link::Classes/Function#-play::
 
@@ -118,7 +125,7 @@ to a bus number provided in the argument passed to code::.play::
 
 code::
 (
-x = SynthDef("test", { arg out, amp=0.1;
+x = SynthDef(\test, { arg out, amp=0.1;
 	var sound;
 	sound = PinkNoise.ar(amp * [1,1]);
 	Out.ar(out, sound);
