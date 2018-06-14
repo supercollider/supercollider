@@ -62,9 +62,7 @@ The following command installs all the recommended dependencies for sclang excep
 Installing Qt
 -------------
 
-Qt is required to be able to run the SuperCollider IDE.
-
-Qt is trickier to install. As of June 2018, the version made available in the Debian repositories is too old for SuperCollider — 5.7 or later is required to build the IDE and sclang's Qt GUI system.
+**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system.
 
 ### Installing Qt using the official installer
 
@@ -74,27 +72,33 @@ At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
-### Installing Qt on Ubuntu
+### Installing Qt on recent Debian derivatives
 
-If you are on Ubuntu 14.04 (Trusty), 16.04 (Xenial), or 18.04 (Bionic), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
+Depending on your Debian flavor and version, your distribution's PPA may be stuck in an old version of Qt. Try this command to query the Qt version available to you:
 
-On Xenial or Bionic:
+    apt-cache policy qt5-default
 
-    sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-`lsb_release -sc`
+If this displays version 5.7 or later, installing Qt is easy:
+
+    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev
+
+If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), check the next section. Otherwise, you will have to use the official Qt installer. Sorry.
+
+### Installing Qt on Ubuntu Trusty or Xenial
+
+If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
+
+On Xenial:
+
+    sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-xenial
     sudo apt-get update
-    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg
-    # If using the IDE:
-    sudo apt-get install qt511webengine
-
-(The `lsb_release -sc` command is there to substitute `xenial` or `bionic`.)
+    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine
 
 On Trusty, only Qt 5.10 and below are available:
 
     sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
     sudo apt-get update
-    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg
-    # If using the IDE:
-    sudo apt-get install qt510webengine
+    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine
 
 [Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
 
@@ -118,17 +122,16 @@ Depending on what SuperCollider components you wish to install, you can set CMak
 
 We will cover a few important settings. There are others, which you can view with `cmake -LH ..`. We will document more of them in this README file soon.
 
-#### Qt
+#### Nonstandard Qt locations
 
-If you are installing sclang with Qt and IDE, it is required to tell SuperCollider where Qt is. To do so:
+If you are installing sclang with GUI features and the IDE, and you installed Qt using the official Qt installer or the Trusty/Xenial PPAs, you will need to tell SuperCollider where Qt is. To do so:
 
     cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
 
 The location of `/path/to/qt5` will depend on how you installed Qt:
 
-- If you used the Launchpad PPA's described above, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
-- If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
-- When newer versions of Qt become available through your Linux distribution's repositories, the directory `/usr/lib/x86_64-linux-gnu/` (64-bit) or `/usr/lib/i386-linux-gnu/` (32-bit) will work.
+- If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit Linux) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
+- If you used the Trusty/Xenial PPA's described above, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
 
 If you want to build without Qt entirely, run
 
@@ -152,7 +155,7 @@ By default, SuperCollider installs in `/usr/local`, a system-wide install. Maybe
 
     cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
 
-Make sure the `bin` subdirectory (in this case, `~/usr/local/bin`) is in your `PATH` if you do this.
+Make sure `~/usr/local/bin` is in your `PATH` if you do this. You can do that by adding a line such as `PATH=$PATH:$HOME/usr/local/bin` to `~/.profile`.
 
 #### Speeding up repeated builds
 
@@ -173,11 +176,13 @@ For example if you wish to install into `lib64`:
 
 ### Step 3: Build
 
-If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flgs.
+If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flags.
 
 After setting your CMake flags, just run
 
     make
+
+The `-j` option allows multiple jobs to be run simultaneously, which can improve compile times on machines with multiple cores. The optimal `-j` setting varies between machines, but a good rule of thumb is the number of cores plus one. For example, on a 4-core system, try `make -j5`.
 
 And to install, run
 
