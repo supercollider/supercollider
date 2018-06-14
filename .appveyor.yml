@@ -20,7 +20,7 @@ environment:
     ASIO_ZIP: asiosdk2.3.zip
 
     matrix:
-        - QT_DIR: "C:/Qt/5.11.0/msvc2015"
+        - QT_DIR: "C:/Qt/5.9/msvc2015"
           CMAKE_GENERATOR: "Visual Studio 15 2017"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
