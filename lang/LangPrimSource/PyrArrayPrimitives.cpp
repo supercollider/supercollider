@@ -2019,7 +2019,7 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 		// the length of the shortest sub-array and the number of sub-arrays.
 		for (j=0; j<numLists; ++j) {
 			slot = slots + j;
-			if(isKindOfSlot(slot, class_array))	{
+			if(isKindOfSlot(slot, class_array)) {
 				len = slotRawObject(slot)->size;
 				if(j==0 || n>len) { n = len; }
 			} else {
@@ -2054,7 +2054,7 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 						SetNil(&obj2->slots[i]);
 					}
 				} else {
-					slotCopy(&obj2->slots[i],&obj3->slots[k]);
+					slotCopy(&obj2->slots[i],&slots[k]);
 				}
 			} else {
 				slotCopy(&obj2->slots[i],&slots[k]);
