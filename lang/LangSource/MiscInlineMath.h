@@ -45,7 +45,7 @@ inline double expexp(double x, double a, double b, double c, double d)
 {
     if (x <= a) return c;
     if (x >= b) return d;
-    return pow(d/c, log(x/a)) / (log(b/a)) * c;
+    return pow(d/c, log(x/a) / log(b/a)) * c;
 }
 
 inline double linexp(double x, double a, double b, double c, double d)
