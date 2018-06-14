@@ -74,7 +74,7 @@ At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
-### Installing Qt on Debian
+### Installing Qt on Ubuntu
 
 If you are on Ubuntu 14.04 (Trusty), 16.04 (Xenial), or 18.04 (Bionic), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
 
