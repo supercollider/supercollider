@@ -62,17 +62,9 @@ The following command installs all the recommended dependencies for sclang excep
 Installing Qt
 -------------
 
-**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system.
+**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system. This may be a little complicated since some versions of some Linux distributions are stuck with old Qt versions.
 
-### Installing Qt using the official installer
-
-You can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
-
-At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
-
-Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
-
-### Installing Qt on recent Debian derivatives
+### Installing Qt on recent Debian-like operating systems
 
 Depending on your Debian flavor and version, your distribution's PPA may be stuck in an old version of Qt. Try this command to query the Qt version available to you:
 
@@ -101,6 +93,14 @@ On Trusty, only Qt 5.10 and below are available:
     sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine
 
 [Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
+
+### Installing Qt using the official installer
+
+Worst case scenario, you can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
+
+At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
+
+Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
 Building
 --------
