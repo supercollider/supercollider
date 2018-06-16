@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_TEXT_EDIT
-#define QC_TEXT_EDIT
+#pragma once
 
 #include "../QcHelper.h"
 
@@ -76,5 +75,3 @@ class QcTextEdit : public QTextEdit, QcHelper
     QString _document;
     bool _interpretSelection;
 };
-
-#endif

@@ -335,7 +335,7 @@ QRect Style::subElementRect
         return r;
     }
     case QStyle::SE_TabBarTabText: {
-        const QStyleOptionTab *tabOption = static_cast<const QStyleOptionTab*>(option);
+        const auto *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         int lMargin = 5;
         if (tabOption->leftButtonSize.width() > 0)

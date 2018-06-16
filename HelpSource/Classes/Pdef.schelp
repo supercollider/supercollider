@@ -1,6 +1,6 @@
 class:: Pdef
 summary:: stream reference definition
-categories:: Libraries>JITLib>Patterns
+categories:: JITLib>Patterns
 related:: Classes/Pdefn, Classes/PdefGui
 
 description::

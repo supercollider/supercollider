@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_WIN32UTILS_H
-#define _SC_WIN32UTILS_H
+#pragma once
 
 #ifdef _WIN32
 
@@ -73,4 +72,3 @@ int win32_pipewrite(int s, char *buf, int len);
 #endif
 
 #endif //_WIN32
-#endif // SC_WIN32UTILS_H

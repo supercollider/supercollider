@@ -585,14 +585,18 @@ Buffer {
 		^[\b_close, bufnum, completionMessage.value(this) ]
 	}
 
-	query {
+	query { |action|
 		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
-		OSCFunc({ arg msg;
-			Post << "bufnum   : " << msg[1] << Char.nl
-				<< "numFrames  : " << msg[2] << Char.nl
-				<< "numChannels : " << msg[3] << Char.nl
-				<< "sampleRate : " << msg[4] << Char.nl << Char.nl;
-		}, \b_info, server.addr).oneShot;
+		action = action ?? {
+			{ |addr, bufnum, numFrames, numChannels, sampleRate|
+				"bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n".format(
+					bufnum, numFrames, numChannels, sampleRate
+				).postln;
+			}
+		};
+		OSCFunc({ |msg|
+			action.valueArray(msg)
+		}, \b_info, server.addr, nil, [bufnum]).oneShot;
 		server.listSendMsg([\b_query, bufnum])
 	}
 

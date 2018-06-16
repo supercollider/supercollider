@@ -1,6 +1,6 @@
 title:: Synchronous and Asynchronous Execution
 summary:: The problem of simultaneous synchronous and asynchronous execution
-categories:: SC3 vs SC2
+categories:: Language>SC3 vs SC2
 
 Using a program such as SuperCollider introduces a number of issues regarding timing and order of execution. Realtime audio synthesis requires that samples are calculated and played back at a certain rate and on a certain schedule, in order to avoid dropouts, glitches, etc. Other tasks, such as loading a sample into memory, might take arbitrary amounts of time, and may not be needed within a definite timeframe. This is the difference between synchronous and asynchronous tasks.
 

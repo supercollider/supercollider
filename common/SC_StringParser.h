@@ -18,8 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 // USA
 
-#ifndef _SC_StringParser_
-#define _SC_StringParser_
+#pragma once
 
 #define SC_MAX_TOKEN_LENGTH 256
 
@@ -41,6 +40,3 @@ public:
 	bool AtEnd() const;
 	const char *NextToken();
 };
-
-#endif
-

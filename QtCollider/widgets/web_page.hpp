@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_WEB_PAGE_HPP_INCLUDED
-#define QC_WEB_PAGE_HPP_INCLUDED
+#pragma once
 
 #include <QWebEnginePage>
 
@@ -57,5 +56,3 @@ private:
 };
 
 } // namespace QtCollider
-
-#endif // QC_WEB_PAGE_HPP_INCLUDED

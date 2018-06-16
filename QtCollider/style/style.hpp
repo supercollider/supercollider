@@ -1,5 +1,4 @@
-#ifndef QC_STYLE_H
-#define QC_STYLE_H
+#pragma once
 
 #include "ProxyStyle.hpp"
 #include "routines.hpp"
@@ -70,5 +69,3 @@ private:
 
 } // namespace QtCollider
 } // namespace Style
-
-#endif

@@ -240,22 +240,22 @@ CODE::
 (
 var browser, webview, reloadStop, prev, next, urlBox, go;
 
-webview 	= WebView()
-				.minSize_(300@200);
-reloadStop	= Button()
-				.states_([["※"], ["◙"]])
-				.fixedSize_(36@28);
-prev		= Button()
-				.states_([["⇦"]])
-				.fixedSize_(36@28);
-next		= Button()
-				.states_([["⇨"]])
-				.fixedSize_(36@28);
-urlBox		= TextField()
-				.minWidth_(100);
-go			= Button()
-				.states_([["⌘"]])
-				.fixedSize_(36@28);
+webview = WebView()
+	.minSize_(300@200);
+reloadStop = Button()
+	.states_([["※"], ["◙"]])
+	.fixedSize_(36@28);
+prev = Button()
+	.states_([["⇦"]])
+	.fixedSize_(36@28);
+next = Button()
+	.states_([["⇨"]])
+	.fixedSize_(36@28);
+urlBox = TextField()
+	.minWidth_(100);
+go = Button()
+	.states_([["⌘"]])
+	.fixedSize_(36@28);
 
 reloadStop.action = {
 	|v|
@@ -266,10 +266,10 @@ reloadStop.action = {
 	}
 };
 
-prev.action 	= { webview.back };
-next.action 	= { webview.forward };
-urlBox.action 	= { webview.url = urlBox.string };
-go.action 		= { webview.url = urlBox.string };
+prev.action = { webview.back };
+next.action = { webview.forward };
+urlBox.action = { webview.url = urlBox.string };
+go.action = { webview.url = urlBox.string };
 
 webview.onUrlChanged = {
 	|view, url|

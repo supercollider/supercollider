@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_TREE_WIDGET_H
-#define QC_TREE_WIDGET_H
+#pragma once
 
 #include "../Common.h"
 #include "../QObjectProxy.h"
@@ -88,6 +87,9 @@ public:
 
   Q_INVOKABLE void sort( int column, bool descending );
 
+  Q_INVOKABLE int columnWidth( int column );
+  Q_INVOKABLE void setColumnWidth( int column, int width );
+
 Q_SIGNALS:
 
   void action();
@@ -121,5 +123,3 @@ private:
 };
 
 Q_DECLARE_METATYPE( QcTreeWidget::ItemPtr );
-
-#endif

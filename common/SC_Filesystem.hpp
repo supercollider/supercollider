@@ -46,8 +46,7 @@
  *  02110-1301 USA
  */
 
-#ifndef SC_FILESYSTEM_HPP_INCLUDED
-#define SC_FILESYSTEM_HPP_INCLUDED
+#pragma once
 
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
@@ -296,5 +295,3 @@ private:
 	DirMap mDirectoryMap;
 	std::string mIdeName;
 };
-
-#endif // SC_FILESYSTEM_HPP_INCLUDED

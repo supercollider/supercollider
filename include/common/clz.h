@@ -24,8 +24,7 @@ count leading zeroes function and those that can be derived from it
 */
 
 
-#ifndef _CLZ_
-#define _CLZ_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -213,6 +212,3 @@ inline uint32 RotateLeft (uint32 x, uint32 s)
 	s = s & 31;
 	return (x >> (32-s)) | (x << s);
 }
-
-#endif
-

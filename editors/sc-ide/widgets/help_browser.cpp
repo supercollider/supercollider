@@ -46,15 +46,15 @@
 #endif
 
 namespace ScIDE {
-  
+
 HelpWebPage::HelpWebPage(HelpBrowser* browser)
-  : WebPage(browser), mBrowser(browser)
+    : WebPage(browser), mBrowser(browser)
 {
-  setDelegateNavigation(true);
-  connect( this, SIGNAL(navigationRequested(const QUrl &, QWebEnginePage::NavigationType, bool)),
-          browser, SLOT(onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool)) );
+    setDelegateNavigation(true);
+    connect( this, SIGNAL(navigationRequested(const QUrl &, QWebEnginePage::NavigationType, bool)),
+             browser, SLOT(onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool)) );
 }
-  
+
 HelpBrowser::HelpBrowser( QWidget * parent ):
     QWidget(parent)
 {
@@ -65,6 +65,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     webPage->setDelegateReload(true);
 
     mWebView = new QWebEngineView;
+    // setPage does not take ownership of webPage; it must be deleted manually later (see below)
     mWebView->setPage( webPage );
     mWebView->settings()->setAttribute( QWebEngineSettings::LocalStorageEnabled, true );
     mWebView->setContextMenuPolicy( Qt::CustomContextMenu );
@@ -105,6 +106,12 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()) );
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
+
+    // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
+    // Note that putting this in the destructor doesn't work.
+    connect( QApplication::instance(), &QApplication::aboutToQuit, [webPage]() {
+        delete webPage;
+    });
 
     createActions();
 
@@ -263,14 +270,14 @@ void HelpBrowser::findText( const QString & text, bool backwards )
   
 bool HelpBrowser::helpBrowserHasFocus() const {
     QWidget* focused = QApplication::focusWidget();
-    
-    while (focused != NULL) {
+
+    while (focused) {
         if (focused == mWebView) {
             return true;
         }
         focused = qobject_cast<QWidget*>(focused->parent());
     }
-    
+
     return false;
 }
 
@@ -378,7 +385,7 @@ void HelpBrowser::onContextMenuRequest( const QPoint & pos )
 {
     QMenu menu;
     
-    const QWebEngineContextMenuData& contextData = mWebView->page()->contextMenuData();
+    const auto& contextData = mWebView->page()->contextMenuData();
   
     if (!contextData.linkUrl().isEmpty()) {
         menu.addAction( mWebView->pageAction(QWebEnginePage::CopyLinkToClipboard) );

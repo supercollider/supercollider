@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_TYPE_CODEC_INCLUDED
-#define QT_COLLIDER_TYPE_CODEC_INCLUDED
+#pragma once
 
 #include "widgets/QcTreeWidget.h"
 #include "widgets/QcMenu.h"
@@ -486,27 +485,25 @@ struct TypeCodec<QObjectT, void>
   {
     return safeRead(slot);
   }
-  
+
   static QObjectT safeRead( PyrSlot *slot )
   {
-    QObjectProxy* proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
-    
+    auto proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
+
     if (proxy) {
-      QObjectT action = qobject_cast<QObjectT>(proxy->object());
+      auto action = qobject_cast<QObjectT>(proxy->object());
       return action;
     } else {
       return 0;
     }
   }
-  
+
   static void write(PyrSlot * slot, QObjectT object)
   {
-    QObject* qobject = qobject_cast<QObject*>(object);
+    auto qobject = qobject_cast<QObject*>(object);
     TypeCodec<QObject*>::write(slot, qobject);
   }
-  
+
 };
 
 } // namespace QtCollider
-
-#endif // QT_COLLIDER_TYPE_CODEC_INCLUDED

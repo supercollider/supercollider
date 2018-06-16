@@ -23,8 +23,7 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 
 */
 
-#ifndef _VMGLOBALS_H_
-#define _VMGLOBALS_H_
+#pragma once
 
 #include "PyrSlot.h"
 #include "SC_AllocPool.h"
@@ -96,5 +95,3 @@ inline void FifoMsg::Free(struct VMGlobals* g)
 extern VMGlobals gVMGlobals;
 extern VMGlobals *gMainVMGlobals;
 extern VMGlobals *gCompilingVMGlobals;
-#endif
-

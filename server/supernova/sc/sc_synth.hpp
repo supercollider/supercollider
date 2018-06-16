@@ -17,8 +17,7 @@
 //  Boston, MA 02111-1307, USA.
 
 
-#ifndef SC_SYNTH_HPP
-#define SC_SYNTH_HPP
+#pragma once
 
 #include "SC_Unit.h"
 #include "SC_Graph.h"
@@ -235,5 +234,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* SC_SYNTH_HPP */

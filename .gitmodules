@@ -17,3 +17,6 @@
 [submodule "external_libraries/yaml-cpp"]
 	path = external_libraries/yaml-cpp
 	url = https://github.com/supercollider/yaml-cpp.git
+[submodule "editors/sc-el"]
+	path = editors/sc-el
+	url = https://github.com/supercollider/scel/

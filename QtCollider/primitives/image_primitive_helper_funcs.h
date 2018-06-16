@@ -21,8 +21,7 @@
 
 // these functions are useful for the creation of QImage SC objects
 
-#ifndef SuperCollider_image_primitive_helper_funcs_h
-#define SuperCollider_image_primitive_helper_funcs_h
+#pragma once
 
 #include <QImage>
 #include "../image.h"
@@ -95,5 +94,3 @@ namespace QtCollider {
     }
     
 } // namespace QtCollider
-
-#endif

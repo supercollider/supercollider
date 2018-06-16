@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_SYNTHDEF_HPP
-#define SC_SYNTHDEF_HPP
+#pragma once
 
 #include <cstdint>
 #include <map>
@@ -162,5 +161,3 @@ std::vector<sc_synthdef> read_synthdefs(const char * buffer, const char * buffer
 std::vector<sc_synthdef> read_synthdef_file(boost::filesystem::path const & filename);
 
 } /* namespace nova */
-
-#endif /* SC_SYNTHDEF_HPP */

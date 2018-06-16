@@ -258,37 +258,38 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
       QPainterPath pathLine;
       QPainterPath pathFill;
 
-      qreal p=0;
-      int f=1; // pixel, frame
+      int frame = 1;
       float min, max;
       min = max = frameData[0];
 
-      while( (p += ratio) < w )
+      for( qreal pixel = 0; pixel < w; pixel += ratio )
       {
-        int f_max = fpp * p;
-
-        for(; f < f_max; ++f)
+        for( ; frame < fpp * pixel; ++frame )
         {
-          float d = frameData[f];
+          float const d = frameData[frame];
           if( d < min ) min = d;
           if( d > max ) max = d;
         }
 
-        qreal x = p-1;
+        // Make sure min is always lesser; otherwise if no frames are read
+        // this produces odd-looking artifacts as min and max are accidentally
+        // swapped twice and a line-pixel-line sequence is drawn.
+        // TODO: interpolate in this case somehow?
+        if (min > max)
+          std::swap( min, max );
+
         float y = max * yRatio;
-        pathLine.moveTo( x, y );
-        y = qMax( min * yRatio, y+1 );
-        pathLine.lineTo( x, y );
+        pathLine.moveTo( pixel, y );
+        y = qMax( min * yRatio, y + 1 );
+        pathLine.lineTo( pixel, y );
         
         if (_fill) {
-          pathFill.moveTo( x, y );
-          pathFill.lineTo( x, 0 );
+          pathFill.moveTo( pixel, y );
+          pathFill.lineTo( pixel, 0 );
         }
         
         // flip min/max to ensure continuity
-        float val = min;
-        min = max;
-        max = val;
+        std::swap( min, max );
       }
       
       pen.setColor(strokeColor);

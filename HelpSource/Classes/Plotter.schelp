@@ -121,6 +121,7 @@ table::
 ## code::\plines:: || combination of lines and points
 ## code::\levels:: || horizontal lines
 ## code::\steps:: || connecting data points with step interpolation
+## code::\bars:: || bar graph with filled bars
 ::
 discussion::
 code::
@@ -130,6 +131,7 @@ a.plotMode = \plines; a.refresh;
 a.plotMode = \levels; a.refresh;
 a.plotMode = \steps; a.refresh;
 a.plotMode = \linear; a.refresh;
+a.plotMode = \bars; a.refresh;
 ::
 
 method:: setProperties
@@ -250,7 +252,7 @@ a.parent.onClose = { x.release };
 
 (
 a = { (0..10).scramble.normalize(300, 400) }.dup.plot;
-a.specs = \freq; a.plotMode = \levels;
+a.specs = \freq; a.plotMode = \bars;
 a.editMode = true;
 x = {
 	var phase = SinOsc.ar(\rate.kr(a.value[1]));

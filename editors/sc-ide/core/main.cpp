@@ -48,7 +48,7 @@ using namespace ScIDE;
 int main( int argc, char *argv[] )
 {
     QApplication app(argc, argv);
-  
+
     QStringList arguments (QApplication::arguments());
     arguments.pop_front(); // application path
 
@@ -82,7 +82,7 @@ int main( int argc, char *argv[] )
 
     // Set up style
     app.setStyle( new ScIDE::Style(app.style()) );
-  
+
     // Go...
     Main * main = Main::instance();
     MainWindow *win = new MainWindow(main);
@@ -170,7 +170,7 @@ void SingleInstanceGuard::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
 
-    // After we have put the data in the buffer, process it    
+    // After we have put the data in the buffer, process it
     int avail = mIpcData.length();
     do{
         if (mReadSize == 0 && avail > 4){
@@ -278,8 +278,8 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
     {
         result = true;
     }
-#endif 
-  
+#endif
+
     return result;
 }
 

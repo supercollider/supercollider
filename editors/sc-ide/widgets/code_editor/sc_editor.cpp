@@ -1316,15 +1316,13 @@ void ScCodeEditor::findReferences()
 void ScCodeEditor::evaluateLine()
 {
     QString text;
-  
+
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
-    if (help) {
-        if (help->browser()->helpBrowserHasFocus()) {
-            help->browser()->evaluateSelection(false);
-            return; // early return
-        }
+    if (help && help->browser()->helpBrowserHasFocus()) {
+        help->browser()->evaluateSelection(false);
+        return; // early return
     }
-  
+
     // Try current selection
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection())
@@ -1359,13 +1357,11 @@ void ScCodeEditor::evaluateRegion()
     QString text;
 
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
-    if (help) {
-        if (help->browser()->helpBrowserHasFocus()) {
-            help->browser()->evaluateSelection(true);
-            return; // early return
-        }
+    if (help && help->browser()->helpBrowserHasFocus()) {
+        help->browser()->evaluateSelection(true);
+        return; // early return
     }
-    
+
     // Try current selection
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection())

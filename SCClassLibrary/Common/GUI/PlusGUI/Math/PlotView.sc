@@ -182,14 +182,24 @@ Plot {
 				ycoord.flop.do { |y, i|
 					Pen.beginPath;
 					this.perform(mode, xcoord, y);
-					Pen.strokeColor = plotColor.wrapAt(i);
-					Pen.stroke;
+					if (this.needsPenFill(mode)) {
+						Pen.fillColor = plotColor.wrapAt(i);
+						Pen.fill
+					} {
+						Pen.strokeColor = plotColor.wrapAt(i);
+						Pen.stroke
+					}
 				}
 			} {
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
+				Pen.fillColor= plotColor.at(0);
 				this.perform(mode, xcoord, ycoord);
-				Pen.stroke;
+				if (this.needsPenFill(mode)) {
+					Pen.fill
+				} {
+					Pen.stroke
+				}
 			};
 			Pen.joinStyle = 0;
 		};
@@ -238,6 +248,22 @@ Plot {
 		y.size.do { |i|
 			Pen.lineTo(x[i] @ y[i]);
 			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+		}
+	}
+
+	bars { |x, y |
+		Pen.smoothing_(false);
+		y.size.do { |i|
+			var p = x[i] @ y[i];
+			var nextx = x[i + 1] ?? {plotBounds.right};
+			var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip:nil);
+			var rely = y[i] - centery;
+			var gap = (nextx - x[i]) * 0.1;
+			if (rely < 0) {
+				Pen.addRect(Rect(x[i] + gap, centery + rely, nextx- x[i] - (2 * gap), rely.abs))
+			} {
+				Pen.addRect(Rect(x[i] + gap, centery, nextx - x[i] - ( 2 * gap), rely))
+			}
 		}
 	}
 
@@ -327,12 +353,23 @@ Plot {
 	}
 
 	hasSteplikeDisplay {
-		^#[\levels, \steps].includes(plotter.plotMode)
+		^#[\levels, \steps, \bars].includes(plotter.plotMode)
+	}
+
+	needsPenFill {
+		^#[\bars].includes(plotter.plotMode)
 	}
 
 	getIndex { |x|
-		var offset = if(this.hasSteplikeDisplay) { 0.5 } { 0.0 }; // needs to be fixed.
-		^(this.getRelativePositionX(x) - offset).round.asInteger
+		var ycoord = this.dataCoordinates;
+		var xcoord = this.domainCoordinates(ycoord.size);
+		var binwidth = 0;
+		var offset;
+		if (xcoord.size > 0) {
+			binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
+		};
+		offset = if(this.hasSteplikeDisplay) { binwidth/2.0 } { 0.0 };
+		^this.getRelativePositionX(x - offset).round.asInteger
 	}
 
 	getDataPoint { |x|
@@ -397,7 +434,7 @@ Plotter {
 			interactionView = UserView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
 		};
-		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
+		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
 
 		interactionView
 		.background_(Color.clear)
@@ -724,7 +761,7 @@ Plotter {
 
 
 + ArrayedCollection {
-	plot { |name, bounds, discrete=false, numChannels, minval, maxval, separately = true|
+	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
 		var array, plotter;
 		array = this.as(Array);
 
@@ -736,13 +773,17 @@ Plotter {
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
-		array = array.collect {|elem|
+		array = array.collect {|elem, i|
 			if (elem.isKindOf(Env)) {
 				elem.asMultichannelSignal.flop
 			} {
+				if(elem.isNil) {
+					Error("cannot plot array: non-numeric value at index %".format(i)).throw
+				};
 				elem
 			}
 		};
+
 		plotter.setValue(
 			array,
 			findSpecs: true,
@@ -769,14 +810,13 @@ Plotter {
 
 
 + Function {
-	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
-
+	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
 
-		this.loadToFloatArray(duration, server, { |array, buf|
+		this.getToFloatArray(duration, target, { |array, buf|
 			var numChan = buf.numChannels;
 			{
 				plotter.setValue(

@@ -17,7 +17,7 @@ To install, link::https://github.com/supercollider/supercollider##download the s
 
 CLASSMETHODS::
 
-PRIVATE:: allTestClasses, classesWithTests, classesWithoutTests, failures, findTestClass, findTestClasses, findTestMethods, findTestedClass, forkIfNeeded, listUntestedMethods, passes, report, reportPasses, reset, run, untestedMethods
+PRIVATE:: allTestClasses, classesWithTests, classesWithoutTests, failures, findTestClass, findTestClasses, findTestMethods, findTestedClass, forkIfNeeded, listUntestedMethods, passes, report, reset, run, untestedMethods
 
 METHOD:: gui
 A graphical interface to run and browse all tests
@@ -25,6 +25,29 @@ A graphical interface to run and browse all tests
 code::
 UnitTest.gui
 ::
+
+METHOD:: reportPasses
+Accessor controlling whether passing tests should be reported.
+Defaults to code::true::.  See also link::#*passVerbosity:: which
+controls how much detail is reported from passing tests
+when this is set to true.
+
+ARGUMENT:: value
+Should be code::true:: or code::false::.
+
+METHOD:: passVerbosity
+Accessor controlling whether extra details should be reported for
+passing tests.
+
+Defaults to code::UnitTest.full:: so that all details are reported;
+however this behaviour may be too verbose for some, for whom it is
+sufficient to see that a test is passing without needing to see the
+detail.  If set to code::UnitTest.brief::, and link::#*reportPasses::
+is true, passes will be reported, but without any extra details which
+may be provided by assertions.
+
+ARGUMENT:: value
+Should be code::UnitTest.full:: or code::UnitTest.brief::.
 
 METHOD:: run
 Run all methods whose names begin with code::test_::.
@@ -101,11 +124,20 @@ Reports the result of the test if code::true::.
 argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
 
+argument:: details
+Some optional extra details which will be passed to the reporting framework
+for display unless brief reporting is requested (see link::#*passVerbosity::).
+
 METHOD:: assertEquals
 
 Asserts that an expression code::a:: is equal to the value code::b::,
 where equality is determined according to code::a::'s implementation
 of code::==::.
+
+Automatically passes details of the equality check to the reporting
+framework, which will be displayed if the assertion fails, and also if
+it passes and link::#*reportPasses:: is code::true:: and
+link::#*passVerbosity:: is not set to code::UnitTest.brief::.
 
 code::
 this.assertEquals(2 + 2, 4, "passes");
@@ -133,6 +165,11 @@ METHOD:: assertFloatEquals
 
 Asserts that an expression code::a:: returning a float is within a
 given range (code::within::) of being equal to code::b::.
+
+Automatically passes details of the equality check to the reporting
+framework, which will be displayed if the assertion fails, and also if
+it passes and link::#*reportPasses:: is code::true:: and
+link::#*passVerbosity:: is not set to code::UnitTest.brief::.
 
 code::
 this.assertFloatEquals(2, 2.0001, "Pass since 2 is close enough to 2.0001.", 0.001);
@@ -229,6 +266,23 @@ code::
 METHOD:: passed
 Register a passed test.
 
+ARGUMENT:: method
+Name of the method in which the test is passing.
+
+ARGUMENT:: message
+A message describing the purpose of the assertion, e.g. code::"foo
+should be less than bar"::.
+Posted if neither code::report:: nor link::#*reportPasses:: are false.
+
+argument:: report
+Reports the result of the test if true and link::#*reportPasses:: is true.
+
+argument:: details
+Some optional extra details which will be displayed if
+link::#*reportPasses:: is true and link::#*passVerbosity:: is
+not set to code::UnitTest.brief::.
+
+DISCUSSION::
 code::
 this.passed(message: "this passed");
 ::
@@ -236,6 +290,22 @@ this.passed(message: "this passed");
 METHOD:: failed
 Register a test failure.
 
+ARGUMENT:: method
+Name of the method in which the test is failing.
+
+ARGUMENT:: message
+A message describing the purpose of the assertion, e.g. code::"foo
+should be less than bar"::.
+Posted if code::report:: is true.
+
+argument:: report
+Reports the result of the test if true.
+
+argument:: details
+Some optional extra details which will be displayed if code::report::
+is true.
+
+DISCUSSION::
 code::
 this.failed(message: "this failed");
 ::

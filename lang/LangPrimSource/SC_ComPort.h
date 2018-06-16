@@ -18,8 +18,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_ComPort_
-#define _SC_ComPort_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -134,7 +133,3 @@ private:
 	ClientNotifyFunc	mClientNotifyFunc;
 	void*				mClientData;
 };
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#endif

@@ -25,8 +25,7 @@ Thus it is very fast.
 
 */
 
-#ifndef _AdvancingAllocPool_
-#define _AdvancingAllocPool_
+#pragma once
 
 #include <stdexcept>
 #include <stdlib.h>
@@ -78,5 +77,3 @@ private:
 	AdvancingAllocPoolChunk *mChunks;
 	AdvancingAllocPoolChunk *mFatties;
 };
-
-#endif

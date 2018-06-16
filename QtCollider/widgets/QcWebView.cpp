@@ -159,7 +159,7 @@ void WebView::setContent(const QVector<int>& data, const QString& mimeType, cons
     size_t i = 0;
     for (int val : data) {
       byteData.push_back((char)val);
-}
+    }
     page()->setContent(byteData, mimeType, baseUrl);
   }
 }
@@ -171,7 +171,7 @@ void WebView::toHtml(QcCallback* cb) const
       page()->toHtml(cb->asFunctor());
     } else {
       page()->toHtml([](const QString&){});
-}
+    }
   } else {
     cb->asFunctor()(QString());
   }
@@ -184,7 +184,7 @@ void WebView::toPlainText(QcCallback* cb) const
       page()->toPlainText(cb->asFunctor());
     } else {
       page()->toPlainText([](const QString&){});
-}
+    }
   } else {
     cb->asFunctor()(QString());
   }
@@ -197,7 +197,7 @@ void WebView::runJavaScript(const QString& script, QcCallback* cb)
       page()->runJavaScript(script, cb->asFunctor());
     } else {
       page()->runJavaScript(script, [](const QVariant&){});
-}
+    }
   } else {
     cb->asFunctor()(QString());
   }
@@ -207,7 +207,7 @@ void WebView::setWebAttribute(int attr, bool on)
 {
   if (page()) {
     page()->settings()->setAttribute((QWebEngineSettings::WebAttribute)attr, on);
-}
+  }
 }
 
 bool WebView::testWebAttribute(int attr)
@@ -221,7 +221,7 @@ void WebView::resetWebAttribute(int attr)
 {
   if (page()) {
     page()->settings()->resetAttribute((QWebEngineSettings::WebAttribute)attr);
-}
+  }
 }
 
 void WebView::navigate(const QString& urlString)
@@ -239,7 +239,7 @@ void WebView::findText( const QString &searchText, bool reversed, QcCallback* cb
     QWebEngineView::findText(searchText, flags);
   } else {
     QWebEngineView::findText(searchText, flags, cb->asFunctor());
-}
+  }
 }
 
 void WebView::onPageReload()
@@ -249,27 +249,28 @@ void WebView::onPageReload()
 
 void WebView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu;
+  QMenu menu;
 
   const QWebEngineContextMenuData& contextData = page()->contextMenuData();
 
   if (!contextData.linkUrl().isEmpty()) {
-      menu.addAction( pageAction(QWebEnginePage::CopyLinkToClipboard) );
-        menu.addSeparator();
-    }
+    menu.addAction( pageAction(QWebEnginePage::CopyLinkToClipboard) );
+    menu.addSeparator();
+  }
 
   if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
-      menu.addAction( pageAction(QWebEnginePage::Copy) );
-      if (contextData.isContentEditable())
-          menu.addAction( pageAction(QWebEnginePage::Paste) );
-        menu.addSeparator();
+    menu.addAction( pageAction(QWebEnginePage::Copy) );
+    if (contextData.isContentEditable()) {
+      menu.addAction( pageAction(QWebEnginePage::Paste) );
     }
+    menu.addSeparator();
+  }
 
   menu.addAction( pageAction(QWebEnginePage::Back) );
   menu.addAction( pageAction(QWebEnginePage::Forward) );
   menu.addAction( pageAction(QWebEnginePage::Reload) );
 
-    menu.exec( event->globalPos() );
+  menu.exec( event->globalPos() );
 }
 
 void WebView::keyPressEvent( QKeyEvent *e )
@@ -300,22 +301,18 @@ void WebView::updateEditable(bool ok) {
     }
   }
 }
-  
+
 bool WebView::overrideNavigation() const
 {
   WebPage* p = qobject_cast<WebPage*>(page());
-  if (p) {
-    return p->delegateNavigation();
-  } else {
-    return false;
-  }
+  return p ? p->delegateNavigation() : false;
 }
 
 void WebView::setOverrideNavigation(bool b)
 {
   WebPage* p = qobject_cast<WebPage*>(page());
   if (p) {
-    return p->setDelegateNavigation(b);
+    p->setDelegateNavigation(b);
   }
 }
 

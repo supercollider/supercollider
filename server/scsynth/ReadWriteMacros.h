@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _ReadWriteMacros_
-#define _ReadWriteMacros_
+#pragma once
 
 #include "SC_Types.h"
 #include <stdio.h>
@@ -126,6 +125,3 @@ inline void readData(char *&buf, char *outData, size_t inLength)
 	memcpy(outData, buf, inLength);
 	buf += inLength;
 }
-
-
-#endif

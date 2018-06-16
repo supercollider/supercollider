@@ -378,7 +378,9 @@ QuarkDetailView {
 		});
 	}
 	openGitRemote {
-		model.git.remoteAsHttpUrl.openOS;
+		if (model.git.notNil, {
+			model.git.remoteAsHttpUrl.openOS;
+		}, { model.url.openOS });
 	}
 	openLocalPath {
 		model.localPath.openOS;

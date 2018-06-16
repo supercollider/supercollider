@@ -1,5 +1,5 @@
 title:: Aggregate Device
-categories:: Platform>macOS (OS X)
+categories:: Platform>macOS
 summary:: How to access the built-in soundcard on macOS 10.4+
 related:: Classes/ServerOptions
 

@@ -1,6 +1,6 @@
 class:: ProxySpace
 summary:: an environment of references on a server
-categories:: Libraries>JITLib>Environments, Live Coding, Collections>Unordered
+categories:: JITLib>Environments, Live Coding, Collections>Unordered
 related:: Classes/NodeProxy, Classes/ProxyMixer, Overviews/JITLib
 
 description::

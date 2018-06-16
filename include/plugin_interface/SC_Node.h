@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Node_
-#define _SC_Node_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -43,6 +42,3 @@ struct Node
 typedef struct Node Node;
 
 enum { kNode_Go, kNode_End, kNode_On, kNode_Off, kNode_Move, kNode_Info };
-
-#endif
-

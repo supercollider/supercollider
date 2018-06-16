@@ -1,6 +1,6 @@
 title:: recursive_phrasing
 summary:: Recursive phrases and granular composite sounds
-categories:: Libraries>JITLib>Tutorials
+categories:: JITLib>Tutorials
 related:: Overviews/JITLib, Classes/Pdef, Classes/PlazyEnvirN
 
 Pdef can be used as a global storage for event patterns. Here a way is provided by which these definitions can be used as an instrument that consists of several events (a emphasis::phrase::), such as a cloud of short grains. Furthermore, this scheme can be applied recursively, so that structures like a cloud of clouds can be constructed.

@@ -1,47 +1,3 @@
-QCallback : QObject {
-	var <action;
-
-	*qtClass { ^'QtCollider::QcCallback'; }
-
-	*new {
-		|func|
-		^super.new.action_(func)
-	}
-
-	*newFrom {
-		|other|
-		if (other.isKindOf(QCallback)) {
-			^QCallback(other.action)
-		} {
-			^QCallback(other)
-		}
-	}
-
-	action_{
-		|newAction|
-		if (newAction != action) {
-			this.prOnCalledSignals.do({
-				|signal|
-				if (action.notNil) { this.disconnectFunction(signal.asSymbol, action) };
-				if (newAction.notNil) { this.connectFunction(signal.asSymbol, { |cb, v| newAction.(v) }, true) }
-			});
-			action = newAction;
-		}
-	}
-
-	value {
-		|...args|
-		action.value(*args)
-	}
-
-	prOnCalledSignals {
-		^this.methods(false, true, false).select({
-			|sig|
-			sig.asString.find("onCalled").notNil
-		})
-	}
-}
-
 WebView : View {
 	classvar urlHandlers;
 
@@ -94,13 +50,13 @@ WebView : View {
 	}
 
 	toHtml {
-		|cb|
-		this.invokeMethod('toHtml', [cb.as(QCallback)]);
+		|func|
+		this.invokeMethod('toHtml', [func.as(QCallback)]);
 	}
 
 	toPlainText {
-		|cb|
-		this.invokeMethod('toPlainText', [cb.as(QCallback)]);
+		|func|
+		this.invokeMethod('toPlainText', [func.as(QCallback)]);
 	}
 
 	setContent {
@@ -110,8 +66,8 @@ WebView : View {
 	}
 
 	runJavaScript {
-		|javascript, cb|
-		this.invokeMethod('runJavaScript', [javascript, cb.as(QCallback)], false);
+		|javascript, func|
+		this.invokeMethod('runJavaScript', [javascript, func.as(QCallback)], false);
 	}
 
 	setAttribute {
@@ -135,8 +91,8 @@ WebView : View {
 	}
 
 	findText {
-		|text, reversed=false, cb=({})|
-		this.invokeMethod('findText', [text, reversed, cb.as(QCallback)]);
+		|text, reversed=false, func=({})|
+		this.invokeMethod('findText', [text, reversed, func.as(QCallback)]);
 	}
 
 	onLinkActivated_ {
@@ -253,76 +209,42 @@ WebView : View {
 		onJavaScriptMsg = func;
 	}
 
-	zoom					{ 			^this.getProperty('zoom') }
-	zoom_					{ |zoom| 	this.setProperty('zoom', zoom) }
+	zoom { ^this.getProperty('zoom') }
+	zoom_ { |zoom| this.setProperty('zoom', zoom) }
 
-	hasSelection			{ 			^this.getProperty('hasSelection') }
+	hasSelection { ^this.getProperty('hasSelection') }
 
-	selectedText			{ 			^this.getProperty('selectedText') }
+	selectedText { ^this.getProperty('selectedText') }
 
-	title					{ 			^this.getProperty('title') }
+	title { ^this.getProperty('title') }
 
-	requestedUrl			{			^this.getProperty('requestedUrl') }
+	requestedUrl { ^this.getProperty('requestedUrl') }
 
-	url						{ 			^this.getProperty('url') }
-	url_					{ |url| 	this.setProperty('url', url) }
+	url { ^this.getProperty('url') }
+	url_ { |url| this.setProperty('url', url) }
 
-	enterInterpretsSelection { 			^this.getProperty('enterInterpretsSelection') }
-	enterInterpretsSelection_{ |b| 		this.setProperty('enterInterpretsSelection', b) }
+	enterInterpretsSelection { ^this.getProperty('enterInterpretsSelection') }
+	enterInterpretsSelection_ { |b| this.setProperty('enterInterpretsSelection', b) }
 
-	editable				{ 			^this.getProperty('editable') }
-	editable_				{ |b| 		this.setProperty('editable', b) }
+	editable { ^this.getProperty('editable') }
+	editable_ { |b| this.setProperty('editable', b) }
 
-	pageBackgroundColor		{ 			^this.getProperty('backgroundColor') }
-	pageBackgroundColor_	{ |color| 	this.setProperty('backgroundColor', color) }
+	pageBackgroundColor { ^this.getProperty('backgroundColor') }
+	pageBackgroundColor_ { |color| this.setProperty('backgroundColor', color) }
 
-	contentsSize			{ 			^this.getProperty('contentsSize') }
+	contentsSize { ^this.getProperty('contentsSize') }
 
-	scrollPosition			{ 			^this.getProperty('scrollPosition') }
+	scrollPosition { ^this.getProperty('scrollPosition') }
 
-	audioMuted				{ 			^this.getProperty('audioMuted') }
-	audioMuted_				{ |muted| 	this.setProperty('audioMuted', muted) }
+	audioMuted { ^this.getProperty('audioMuted') }
+	audioMuted_ { |muted| this.setProperty('audioMuted', muted) }
 
-	overrideNavigation		{ 			^this.getProperty('overrideNavigation') }
-	overrideNavigation_		{ |b| 		this.setProperty('overrideNavigation', b) }
+	overrideNavigation { ^this.getProperty('overrideNavigation') }
+	overrideNavigation_ { |b| this.setProperty('overrideNavigation', b) }
 
-	back 					{ this.triggerPageAction(\back) }
-	forward					{ this.triggerPageAction(\forward) }
-	stop					{ this.triggerPageAction(\stop) }
-	reload					{ this.triggerPageAction(\reload) }
+	back { this.triggerPageAction(\back) }
+	forward { this.triggerPageAction(\forward) }
+	stop { this.triggerPageAction(\stop) }
+	reload { this.triggerPageAction(\reload) }
 
-
-	////////////////////////////////////////////////////////////////////////
-	// DEPRECATED
-
-	// Get the displayed content in html form.
-	html {
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\toHtml));
-		^"";
-	}
-
-	// Set html content.
-	html_{
-		|htmlString|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\setHtml));
-		^this.setHtml(htmlString)
-	}
-
-	// Try to extract plain text from html content and return it.
-	plainText {
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\toPlainText));
-		^"";
-	}
-
-	evaluateJavaScript {
-		|script|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\runJavaScript));
-		^this.invokeMethod(\runJavaScript, script);
-	}
-
-	onReload_ {
-		|func|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\onReloadTriggered));
-		^this.invokeMethod(\onReloadTriggered, func);
-	}
 }

@@ -679,21 +679,21 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     painter->setRenderHint( QPainter::SmoothPixmapTransform,
                             image->transformationMode == Qt::SmoothTransformation );
     painter->setOpacity(opacity);
-	
-	int result = errNone;
-	
-	if (isKindOfSlot(a+0, SC_CLASS(Point))) {
-		QPointF point = QtCollider::read<QPointF>(a+0);
-		painter->drawPixmap(point, pixmap, source);
-	}
-	else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
-		QRectF target = QtCollider::read<QRectF>(a+0);
-		painter->drawPixmap(target, pixmap, source);
-	}
-	else {
-		result = errWrongType;
-	}
-	
+
+    int result = errNone;
+
+    if (isKindOfSlot(a+0, SC_CLASS(Point))) {
+        QPointF point = QtCollider::read<QPointF>(a+0);
+        painter->drawPixmap(point, pixmap, source);
+    }
+    else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
+        QRectF target = QtCollider::read<QRectF>(a+0);
+        painter->drawPixmap(target, pixmap, source);
+    }
+    else {
+        result = errWrongType;
+    }
+
     painter->restore();
 
     return result;

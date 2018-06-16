@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_CANVAS_H
-#define QC_CANVAS_H
+#pragma once
 
 #include "image_painter.h"
 
@@ -31,8 +30,8 @@
 #include <QPalette>
 #include <QGLWidget>
 
-//typedef QGLWidget QcCanvasBase;
-typedef QWidget QcCanvasBase;
+//using QcCanvasBase = QGLWidget;
+using QcCanvasBase = QWidget;
 
 class QcCanvas : public QcCanvasBase
 {
@@ -93,5 +92,3 @@ private:
   QColor _bkg;
   QtCollider::ImagePainter _bkg_image;
 };
-
-#endif

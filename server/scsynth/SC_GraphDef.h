@@ -18,9 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
-#ifndef _SC_GraphDef_
-#define _SC_GraphDef_
+#pragma once
 
 #include "SC_SynthDef.h"
 #include "HashTable.h"
@@ -83,5 +81,3 @@ SCErr GraphDef_DeleteMsg(struct World *inWorld, GraphDef *inDef);
 void GraphDef_Dump(GraphDef *inGraphDef);
 int32 GetHash(ParamSpec* inParamSpec);
 int32* GetKey(ParamSpec* inParamSpec);
-
-#endif

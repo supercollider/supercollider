@@ -718,7 +718,7 @@ code::
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // same as Buffer.plot
-b.loadToFloatArray(action: { arg array; a = array; {a.plot;}.defer; "done".postln;});
+b.loadToFloatArray(action: { arg array; a = array; { a.plot }.defer; "done".postln });
 b.free;
 ::
 
@@ -740,7 +740,7 @@ code::
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // like Buffer.plot
-b.getToFloatArray(wait:0.01,action:{arg array; a = array; {a.plot;}.defer;"done".postln;});
+b.getToFloatArray(wait:0.01,action:{arg array; a = array; { a.plot }.defer; "done".postln });
 b.free;
 ::
 
@@ -833,7 +833,8 @@ x.free; b.free;
 
 method:: query
 Sends a b_query message to the server, asking for a description of this buffer. The results are posted to the post window. Does not update instance vars.
-
+argument:: action
+An optional Function to be called which takes the arguments code::msgType, bufnum, numFrames, numChannels, sampleRate::. Providing a function here will bypass code::query::'s normal behaviour, i.e., the usual buffer information will not be posted.
 method:: updateInfo
 Sends a b_query message to the server, asking for a description of this buffer. Upon reply this Buffer's instance variables are automatically updated.
 argument:: action

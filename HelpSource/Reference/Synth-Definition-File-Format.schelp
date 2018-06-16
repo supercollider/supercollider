@@ -16,13 +16,13 @@ list::
 This document describes SynthDef2's format. See link::#Original SynthDef format:: for the differences between SynthDef and SynthDef2.
 
 section:: Basic types
-All data is stored big endian. All data is packed, not padded or aligned.
+All data is stored big endian. All integers, unless otherwise noted, are signed. All data is packed, not padded or aligned.
 definitionlist::
 ## int32 || a 32 bit integer.
 ## int16 || a 16 bit integer.
 ## int8 || an 8 bit integer.
 ## float32 || a 32 bit IEEE floating point number.
-## pstring || a pascal format string: a byte giving the length followed by that many bytes.
+## pstring || a pascal format string: a byte (an strong::unsigned:: int8) giving the length followed by that many bytes.
 ::
 
 section:: File Format

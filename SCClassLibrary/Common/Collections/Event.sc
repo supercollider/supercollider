@@ -27,7 +27,7 @@ Event : Environment {
 
 	*addEventType { arg type, func, parentEvent;
 		partialEvents.playerEvent.eventTypes.put(type, func);
-		this.addParentType(parentEvent)
+		this.addParentType(type, parentEvent)
 	}
 
 	*addParentType { arg type, parentEvent;

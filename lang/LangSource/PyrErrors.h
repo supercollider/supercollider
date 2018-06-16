@@ -23,8 +23,7 @@ virtual machine error codes.
 
 */
 
-#ifndef _SCErrors_
-#define _SCErrors_
+#pragma once
 
 enum { // primitive errors
 	errReturn = -1,	// not really an error.. primitive executed a non-local return
@@ -45,5 +44,3 @@ enum { // primitive errors
 
     errLastError
 };
-
-#endif

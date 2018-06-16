@@ -1,5 +1,3 @@
-cmake_minimum_required( VERSION 2.8.11 )
-
 # This makes sclang/scide work with a Qt installation at a fixed, non-system location.
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -7,19 +5,18 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 find_package(Qt5Core)
 find_package(Qt5Concurrent)
 find_package(Qt5LinguistTools)
-find_package(Qt5OpenGL)
-find_package(Qt5Positioning)
+# find_package(Qt5OpenGL)
 find_package(Qt5PrintSupport)
 find_package(Qt5Qml)
 find_package(Qt5Quick)
-find_package(Qt5Sensors)
 find_package(Qt5Sql)
 find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
 find_package(Qt5Widgets)
 
 set(QT_IDE_LIBRARIES
-    Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
+    # Qt5::OpenGL
+    Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Sql)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -200,6 +197,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
 # Needed for auto-generated forms headers:
@@ -274,7 +272,7 @@ endif()
 
 target_link_libraries( SuperCollider
     ${QT_IDE_LIBRARIES}
-    yaml
+    ${YAMLCPP_LIBRARY}
     oscpack
 )
 
@@ -330,63 +328,9 @@ if(APPLE)
     install(TARGETS SuperCollider
           DESTINATION ${scappbundlename})
 
-    set(QtWebEngineProcess
-        "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app" CACHE PATH "Path to the QtWebEngineProcess")
-    set(QtWebEngineProcessTarget
-        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/")
-
     # for processing into the plist:
     set_property(TARGET SuperCollider
 	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
-
-    set(MACOSX_BUNDLE_BUNDLE_NAME "${scappbundlename}")
-
-    include(InstallRequiredSystemLibraries)
-
-    set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
-    set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
-
-    include(DeployQt5)
-    file(GLOB_RECURSE QTPLUGINS
-           "${plugin_dest_dir}/*.dylib")
-
-    # install Qt plugins (adapted from kvirc)
-    install(DIRECTORY "${QT_PLUGINS_DIR}/"
-            DESTINATION ${plugin_dest_dir}
-            COMPONENT Runtime
-            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport|styles)/[^_]*\\.dylib")
-
-    set(QtWebEngineCoreDir
-        "${CMAKE_PREFIX_PATH}/lib/QtWebEngineCore.framework/Versions/5" CACHE PATH "Path to the QtWebEngineProcess")
-    set(QtWebEngineProcessTarget
-        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers")
-
-    install(
-        DIRECTORY "${QtWebEngineCoreDir}/Helpers/QtWebEngineProcess.app"
-        DESTINATION ${QtWebEngineProcessTarget}
-        USE_SOURCE_PERMISSIONS)
-
-    install(
-        DIRECTORY "${QtWebEngineCoreDir}/Resources/"
-        DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/"
-        COMPONENT Runtime
-        FILES_MATCHING PATTERN "*.*")
-
-    install(CODE
-        "
-            file(GLOB_RECURSE QTPLUGINS
-                \"${plugin_dest_dir}/*.dylib\")
-            file(GLOB_RECURSE SCPLUGINS
-                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
-            include(BundleUtilities)
-            set(BU_CHMOD_BUNDLE_ITEMS ON)
-            fixup_bundle(\"${QtWebEngineProcessTarget}/QtWebEngineProcess.app\"
-                \"${QtWebEngineProcessTarget}/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\" \"\")
-            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
-                \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\"
-                IGNORE_ITEM \"QtWebEngineProcess\")
-        "
-        COMPONENT Runtime)
 
 elseif(WIN32)
 
@@ -403,7 +347,7 @@ elseif(WIN32)
     else()
       add_custom_command(TARGET SuperCollider
         PRE_BUILD
-        COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"
+        COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"\""
         COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
       )
     endif()
@@ -438,13 +382,15 @@ elseif(WIN32)
       list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
-    include(DeployQt5)
-    install_qt5_executable(
-      "${SC_WIN_BUNDLE_NAME}/sclang.exe"
-      ""
-      ""
-      "${SC_WIN_DLL_DIRS}"
+    # run fixup_bundle prior to deployment to get FFTW, libsndfile, MSVC, and Qt libs
+    # will run windeployqt afterward to auto-deploy QtWebEngine dependencies
+    install(CODE
+        "
+            include(BundleUtilities)
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\" \"\" \"${SC_WIN_DLL_DIRS}\")
+        "
     )
+
 
 else()
   install(TARGETS SuperCollider
@@ -452,6 +398,50 @@ else()
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
   install(FILES ${translations}
       DESTINATION "share/SuperCollider/translations")
+endif()
+
+# mac/windows: find the Qt deploy utility.
+# See https://doc.qt.io/qt-5/windows-deployment.html for windeployqt
+# See https://doc.qt.io/qt-5/osx-deployment.html for macdeployqt
+if(APPLE OR WIN32)
+    if(APPLE)
+        find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
+        # only the IDE executable is scanned normally, so force scanning of sclang as well
+        # to get QtWebEngine, libsndfile, and other libs
+        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+                -verbose=1
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+            ")
+    else() # WIN32
+        find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
+        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+                --verbose 1 --no-compiler-runtime
+                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
+            ")
+    endif()
+
+    if(NOT DEPLOY_PROG)
+        message(FATAL_ERROR "Could not find macdeployqt executable. Please make sure it is in PATH or CMAKE_PREFIX_PATH/bin")
+    endif()
+
+    message(STATUS "Found Qt deploy utility: ${DEPLOY_PROG}")
+    install(CODE
+        "
+            message(STATUS \"Deploying additional Qt resources and libraries\")
+            execute_process(COMMAND ${DEPLOY_CMD}
+                RESULT_VARIABLE RES
+                OUTPUT_VARIABLE OUT
+                ERROR_VARIABLE ERR
+                )
+            if(OUT)
+                message(STATUS \"Deploy result: \${OUT}\")
+            endif()
+            if(RES)
+                message(FATAL_ERROR \"Deploy failed with error: \${ERR}\")
+            endif()
+        "
+    )
 endif()
 
 if (LINUX)

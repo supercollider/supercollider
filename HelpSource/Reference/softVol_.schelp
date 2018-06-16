@@ -1,6 +1,6 @@
 title:: softVol_
 summary:: set a nodeproxy's vol conditionally
-categories:: Libraries>JITLib>GUI
+categories:: JITLib>GUI
 related:: Reference/softSet, Reference/softPut
 
 description::

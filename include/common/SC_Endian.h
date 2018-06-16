@@ -27,8 +27,7 @@
 
 */
 
-#ifndef SC_ENDIAN_H_INCLUDED
-#define SC_ENDIAN_H_INCLUDED
+#pragma once
 
 #if defined(__APPLE__)
 
@@ -127,5 +126,3 @@ static inline unsigned short sc_ntohs(unsigned short x)
 #ifndef LITTLE_ENDIAN
 # error LITTLE_ENDIAN undefined, check __FILE__
 #endif // LITTLE_ENDIAN
-
-#endif // SC_ENDIAN_H_INCLUDED

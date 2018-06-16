@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_SC_SERVER_HPP_INCLUDED
-#define SCIDE_SC_SERVER_HPP_INCLUDED
+#pragma once
 
 #include <QObject>
 #include <QtNetwork/QUdpSocket>
@@ -182,5 +181,3 @@ private:
 };
 
 }
-
-#endif // SCIDE_SC_SERVER_HPP_INCLUDED

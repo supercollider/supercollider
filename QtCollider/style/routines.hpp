@@ -1,5 +1,4 @@
-#ifndef QC_STYLE_ROUTINES_H
-#define QC_STYLE_ROUTINES_H
+#pragma once
 
 #include <QPainter>
 #include <QPalette>
@@ -263,5 +262,3 @@ QPointF pos ( const QPointF & value, const RectT & bounds )
 
 } // namespace QtCollider
 } // namespace Style
-
-#endif

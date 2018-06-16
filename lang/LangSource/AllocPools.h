@@ -23,12 +23,8 @@ Pools for memory allocation.
 
 */
 
-
-#ifndef _AllocPools_
-#define _AllocPools_
+#pragma once
 
 class AllocPool;
 extern AllocPool *pyr_pool_compile;
 extern AllocPool *pyr_pool_runtime;
-
-#endif

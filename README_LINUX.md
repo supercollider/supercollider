@@ -1,219 +1,209 @@
-Welcome to SuperCollider for Linux!
-===================================
-
-Intro
------
-
-SuperCollider is a synthesis engine (scsynth or supernova) and programming language (sclang), originally Mac-based but now very widely used and actively developed on Linux.
-
-Stefan Kersten first ported the code to Linux in 2003.
-
+Building SuperCollider on Linux
+===============================
 
 Build requirements
 ------------------
 
-(most of these will be available in your linux distribution as packages )
+All of these are required for building scsynth and supernova.
 
- * gcc >= 4.8
-   http://www.gnu.org/software/gcc
-
- * jack and libjack
-   * http://jackit.sourceforge.net
-   * jack audio connection kit
-
- * libsndfile >= 1.0
-   * http://www.mega-nerd.com/libsndfile
-   * _the_ soundfile i/o library
-
- * cmake >= 2.8.11
-   * http://www.cmake.org
-   * cross-platform build system
-   * cmake >= 3.1 is required for supernova (an alternate server with parallel processing capabilities). supernova is built by default if cmake is new enough.
-
- * fftw >= 3.0
-   * http://www.fftw.org
-   * fast FFT transform library (for frequency-domain analysis, phase-vocoder effects)
-
- * libxt
-   * http://www.X.org
-   * X toolkit intrinsics
-
-Build requirements (optional features)
---------------------------------------
-(most of these will be available in your linux distribution as packages)
-
- * Qt >= 5.3 (+ qtwebkit)
-   * http://qt-project.org
-   * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
-   * Qt >= 5.0 should work, but build-test is done against 5.3
-   * As of this writing, there are known issues with building on Qt >= 5.6.
-
- * alsa
-   * http://www.alsa-project.org
-   * advanced linux sound architecture drivers and library, for sclang's MIDI interface
-
- * libudev
-   * http://www.freedesktop.org/software/systemd/man/libudev.html
-   * interaction with the device manager of linux (used for HID support)
-
- * libreadline >= 5
-   * http://savannah.gnu.org/projects/readline
-   * provides convenient CLI interface for sclang
-
- * libavahi-client
-   * http://www.avahi.org
-   * a more powerful zeroconf service discovery implementation
-
- * libcwiid
-   * http://abstrakraft.org/cwiid
-   * library for wiimote support
-
- * linux kernel >= 2.6
-   * http://www.kernel.org
-   * for sclang's linux input device (LID) interface
-
- * for `scel`: the **emacs** interface see [editors/scel/README.md](editors/scel/README.md)
-
- * for `sced`: the **gedit** interface see [editors/sced/README.md](editors/sced/README.md)
-
- * for `scvim`: the **vim** interface see [editors/scvim/README.md](editors/scvim/README.md)
+- [gcc][gcc] >= 4.8
+- [cmake][cmake] >= 3.5: Cross-platform build system.
+- [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
+- [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
+- [fftw][fftw] >= 3.0: FFT library.
+- [libxt][libxt]: X toolkit intrinsics, required for UGens such as `MouseX`. (Support for building the servers without X is in progress.)
+- [libavahi-client][libavahi-client]: For zero-configuration networking. Can be turned off by setting the CMake flag `NO_AVAHI=ON`, but turning it off is not recommended.
 
 
-Build requirements (debian users)
+[gcc]: http://www.gnu.org/software/gcc
+[libjack]: http://www.jackaudio.org/
+[cmake]: http://www.cmake.org
+[libsndfile]: http://www.mega-nerd.com/libsndfile
+[fftw]: http://www.fftw.org
+[libavahi-client]: http://www.avahi.org
+[libxt]: http://www.X.org
+
+Recommended packages
+--------------------
+
+For sclang and scide:
+
+- [Qt][Qt] >= 5.7: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit. It's best to get the latest Qt 5.x version.
+- QtWebEngine: required for the IDE.
+- [git][git]: Required for sclang's Quarks system.
+- [ALSA][ALSA]: Linux sound library, required for sclang MIDI support.
+- [libudev][libudev]: Device manager library, required for HID support.
+- [Linux kernel][Linux kernel] >= 2.6: Required for LID support.
+- [libreadline][libreadline] >= 5: Required for sclang's CLI interface.
+
+[Qt]: http://qt-project.org
+[ALSA]: http://www.alsa-project.org
+[libudev]: http://www.freedesktop.org/software/systemd/man/libudev.html
+[libreadline]: http://savannah.gnu.org/projects/readline
+[Linux kernel]: http://www.kernel.org
+[git]: https://git-scm.com/
+
+Installing requirements on Debian
 ---------------------------------
 
-On debian (unstable) you can install the following packages and be set
-for building supercollider:
+There are dedicated web pages for building on particular embedded Linux platforms:
 
- - build-essential
- - libjack-dev or libjack-jackd2-dev
- - libsndfile1-dev
- - libasound2-dev
- - libavahi-client-dev
- - libicu-dev
- - libreadline6-dev
- - libfftw3-dev
- - libxt-dev
- - libudev-dev
- - libcwiid-dev (for wiimote support)
- - pkg-config
- - git (used by the Quarks package management system)
- - cmake (on some platforms, cmake >= 2.9 may require manual build)
- - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev libqt5opengl5-dev
+- [Raspberry Pi](http://supercollider.github.io/development/building-raspberrypi)
+- [BeagleBone Black](https://supercollider.github.io/development/building-beagleboneblack)
 
-More details for building on embedded linux platforms (Raspberry Pi, 
-Beaglebone Black) can be found here:
+On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
-    http://supercollider.github.io/development/building
+    sudo apt-get install build-essential cmake libjack-dev libjack-jackd2-dev libsndfile1-dev libfftw3-dev libxt-dev libavahi-client-dev
 
-The recommended version of gcc is 4.8
+The following command installs all the recommended dependencies for sclang except for Qt:
 
+    sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config
+
+Installing Qt
+-------------
+
+**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system. This may be a little complicated since some versions of some Linux distributions are stuck with old Qt versions.
+
+### Installing Qt on recent Debian-like operating systems
+
+Depending on your Debian flavor and version, your distribution's PPA may be stuck in an old version of Qt. Try this command to query the Qt version available to you:
+
+    apt-cache policy qt5-default
+
+If this displays version 5.7 or later, installing Qt is easy:
+
+    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev
+
+If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), check the next section. Otherwise, you will have to use the official Qt installer. Sorry.
+
+### Installing Qt on Ubuntu Trusty or Xenial
+
+If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), [Stephan Binner's Launchpad PPAs][Stephan Binner's Launchpad PPAs] allow for simple installation of new Qt versions.
+
+On Xenial:
+
+    sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-xenial
+    sudo apt-get update
+    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine
+
+On Trusty, only Qt 5.10 and below are available:
+
+    sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
+    sudo apt-get update
+    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine
+
+[Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
+
+### Installing Qt using the official installer
+
+Worst case scenario, you can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
+
+At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
+
+Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
 Building
 --------
 
- - to build supercollider with cmake, it is suggested to do out-of-tree
-builds in a specific build directory:
+### Step 1: Make a build directory
 
-   ```
-   $> mkdir build
-   $> cd build
-   $> cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
-   ```
+First, `cd` into the root of the SuperCollider source directory (where this file resides).
 
-   The `..` at the end is easy to miss. Don't forget it!
+Create a build directory and `cd` into it:
 
-   The location of `/path/to/qt5` will depend on how you installed Qt:
+    mkdir build
+    cd build
 
-   - If you used your Linux distribution's repositories, it will be `/usr/lib/i386-linux-gnu/` (32-bit) or `/usr/lib/x86_64-linux-gnu/` (64-bit).
-   - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory: `Qt5.x.x/5.x/gcc/` (32-bit) or `Qt5.x.x/5.x/gcc_64/` (64-bit).
+You can actually name this whatever you want, allowing you to have multiple independent build directories. If your SuperCollider source is also a git repository, the `.gitignore` file is configured to ignore files of the form `build*`.
 
-   You can see the available build options with ```cmake -LH```.
+### Step 2: Set CMake flags
 
- - to run the build process run:
+Depending on what SuperCollider components you wish to install, you can set CMake flags. You can set CMake flags on the command line using `cmake -DKEY=value ..`. You can also use cmake frontends like ccmake or cmake-gui, or simply edit the `CMakeCache.txt` file. CMake flags are persistent and you only need to run these commands once each.
 
-   ```
-   $> make
-   ```
+We will cover a few important settings. There are others, which you can view with `cmake -LH ..`. We will document more of them in this README file soon.
 
-   The build process can be configured using the cmake program, cmake
-   frontends like ccmake or cmake-gui, or by simply editing the
-   `build/CMakeCache.txt` file.
+#### Nonstandard Qt locations
 
-   For example to enable a release build run the following in your build
-   directory:
+If you are installing sclang with GUI features and the IDE, and you installed Qt using the official Qt installer or the Trusty/Xenial PPAs, you will need to tell SuperCollider where Qt is. To do so:
 
-   ```
-   $> cmake -DCMAKE_BUILD_TYPE=Release ..
-   ```
+    cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
 
-   In some situations it is preferable to install libraries and plugins
-   not in the `lib` directory but in a suffixed one, e.g. `lib64`.
-   In such a case you can set the cmake variable `LIB_SUFFIX`.
-   For example if you whish to install into `lib64`:
+The location of `/path/to/qt5` will depend on how you installed Qt:
 
-   ```
-   $> cmake -DLIB_SUFFIX=64 ..
-   ```
+- If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit Linux) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
+- If you used the Trusty/Xenial PPA's described above, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
 
- - to install the whole program, run:
+If you want to build without Qt entirely, run
 
-   ```
-   $> make install
-   ```
+    cmake -DSC_QT=OFF ..
 
-   For the above step you will probably need super-user privileges,
-   e.g. using "sudo".
+#### Compiler optimizations
 
-   Also, please run
+If you're building SC for production use and/or don't plan on using a debugger, make sure to build in release mode:
 
-   ```
-   $> sudo ldconfig
-   ```
-   after installing for the first time.
+    cmake -DCMAKE_BUILD_TYPE=Release ..
 
- - to uninstall:
+This sets the compiler to the best optimization settings. Switch back to the defaults using `cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..`.
 
-   ```
-   $> make uninstall
-   ```
+If you're compiling SC only for use on your own machine (that is, you aren't cross-compiling or packaging SC for distribution), it is recommended to turn on the `NATIVE` flag to enable CPU-specific optimizations:
 
-### Qt GUI
+    cmake -DNATIVE=ON ..
 
-By default the Qt GUI support will be built into sclang.
-If you want to build without it configure cmake like this:
+#### Install location
 
-```
-$> cmake -DSC_QT=OFF ..
-```
+By default, SuperCollider installs in `/usr/local`, a system-wide install. Maybe you can't or don't want to use superuser privileges, or just want to install for a single user. To do so, set `CMAKE_INSTALL_PREFIX` to the desired installation directory. One good place to put it would be `$HOME/usr/local`:
 
-Note: running headless SC in a X-less environment requires
-jackd without D-bus support. On Raspbian Jessie this requires
-compiling jackd rather than using the packaged version.
-Also note that you will get errors on sclang startup from
-classes requiring Qt. A workaround and more details are 
-described in:
+    cmake -DCMAKE_INSTALL_PREFIX=~/usr/local ..
 
-    http://supercollider.github.io/development/building-raspberrypi 
+Make sure `~/usr/local/bin` is in your `PATH` if you do this. You can do that by adding a line such as `PATH=$PATH:$HOME/usr/local/bin` to `~/.profile`.
 
+#### Speeding up repeated builds
 
+If you are developing SC or you're constantly pulling in the latest changes, rebuilding SC repeatedly can be a drag. Installing `ccache` can speed up re-compilation. Here is how to configure cmake to use it:
 
-### Speeding up repeated builds
-
-If you build SuperCollider repeatedly, we recommend installing `ccache`
-which can speed up re-compilation. Here is how to configure cmake to use it:
-
-```
-$> cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
-```
+    cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc ..
 
 This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
 
+#### Library suffix
+
+In some situations, it is preferable to install libraries and plugins
+not in the `lib` directory but in a suffixed one, e.g. `lib64`.
+In such a case you can set the cmake variable `LIB_SUFFIX`.
+For example if you wish to install into `lib64`:
+
+    cmake -DLIB_SUFFIX=64 ..
+
+### Step 3: Build
+
+If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flags.
+
+After setting your CMake flags, just run
+
+    make
+
+The `-j` option allows multiple jobs to be run simultaneously, which can improve compile times on machines with multiple cores. The optimal `-j` setting varies between machines, but a good rule of thumb is the number of cores plus one. For example, on a 4-core system, try `make -j5`.
+
+And to install, run
+
+    make install
+
+You will need to use `sudo make install` if you are doing a system-wide installation, which is the default.
+
+After installing for the first time, please run
+
+    sudo ldconfig
+
+To uninstall:
+
+    make uninstall
+
+(or `sudo make uninstall`).
 
 Building a Debian package
 -------------------------
 
-The most up-to-date debian packaging rules are maintained by the
+The most up-to-date Debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
@@ -275,7 +265,7 @@ Environment
 The jack audio driver interface is configured based on various
 environment variables:
 
- * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that the server's inputs should connect to by default
+ * SC_JACK_DEFAULT_INPUTS comma-separated list of jack ports that the server's inputs should connect by default
 
    ```
    $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
@@ -287,7 +277,7 @@ environment variables:
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that the server's outputs should be connected to by default.
+ * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by default.
 
    ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
@@ -301,7 +291,7 @@ environment variables:
 
 Two additional environment variables substitute directories for the default
 search path for plugins and synth definitions, respectively. Directory
-names are separated by ':' as in the unix PATH variable:
+names are separated by ':' as in the Unix PATH variable:
 
  * SC_PLUGIN_PATH, SC_SYNTHDEF_PATH
 

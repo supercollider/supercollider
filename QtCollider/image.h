@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_IMAGE_INCLUDED
-#define QT_COLLIDER_IMAGE_INCLUDED
+#pragma once
 
 #include <QImage>
 #include <QPixmap>
@@ -188,30 +187,30 @@ public:
             break;
         }
     }
-	
-	qreal getDevicePixelRatio() const
-	{
-		switch (m_state) {
-			case ImageState:
-				return m_image.devicePixelRatio();
-			case PixmapState:
-				return m_pixmap.devicePixelRatio();
-			default:
-				return 1;
-		}
-	}
-	
-	void setDevicePixelRatio( qreal ratio )
-	{
-		switch (m_state) {
-			case ImageState:
-				m_image.setDevicePixelRatio(ratio);
-			case PixmapState:
-				m_pixmap.setDevicePixelRatio(ratio);
-			default:
-				break;
-		}
-	}
+
+    qreal getDevicePixelRatio() const
+    {
+        switch (m_state) {
+        case ImageState:
+            return m_image.devicePixelRatio();
+        case PixmapState:
+            return m_pixmap.devicePixelRatio();
+        default:
+            return 1;
+        }
+    }
+
+    void setDevicePixelRatio( qreal ratio )
+    {
+        switch (m_state) {
+        case ImageState:
+            m_image.setDevicePixelRatio(ratio);
+        case PixmapState:
+            m_pixmap.setDevicePixelRatio(ratio);
+        default:
+            break;
+        }
+    }
 
     bool isPainting() const { return m_painting; }
     void setPainting( bool painting ) { m_painting = painting; }
@@ -230,5 +229,3 @@ typedef QSharedPointer<QtCollider::Image> SharedImage;
 } // namespace QtCollider
 
 Q_DECLARE_METATYPE( QtCollider::SharedImage );
-
-#endif // QT_COLLIDER_IMAGE_INCLUDED

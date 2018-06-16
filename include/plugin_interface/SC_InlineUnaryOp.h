@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _UnaryOpUGen_
-#define _UnaryOpUGen_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_Constants.h"
@@ -557,9 +556,3 @@ inline int32 sc_grayCode(int32 x)
 {
 	return x ^ (x >> 1);
 }
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-
-#endif

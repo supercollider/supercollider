@@ -96,6 +96,24 @@ METHOD:: sort
 	ARGUMENT:: descending
 		Whether to sort in descending or ascending fashion. The default is ascending.
 
+METHOD:: columnWidth
+
+	ARGUMENT:: column
+		The integer index of a column
+	RETURNS::
+		Integer width of column in pixels. If code::column:: is not in the range
+		code::0..(numColumns-1)::, returns code::-1::.
+
+METHOD:: setColumnWidth
+
+Sets the width of a column. The rightmost column must extend at least to the right bound of the
+TreeView.
+
+	ARGUMENT:: column
+		The integer index of the column to modify
+	ARGUMENT:: width
+		Integer width in pixels
+
 PRIVATE:: background
 
 

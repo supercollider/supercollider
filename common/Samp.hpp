@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_Samp_
-#define _SC_Samp_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -35,5 +34,4 @@ extern float32 gSineWavetable[2*kSineSize];
 void SignalAsWavetable(float32* signal, float32* wavetable, long inSize);
 void WavetableAsSignal(float32* wavetable, float32* signal, long inSize);
 
-#endif
 

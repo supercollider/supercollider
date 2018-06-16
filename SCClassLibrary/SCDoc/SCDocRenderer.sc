@@ -255,7 +255,7 @@ SCDocHTMLRenderer {
 
 		stream
 		<< "<div id='toc'>\n"
-		<< "<div id='toctitle'>" << displayedTitle << ": table of contents</div>\n"
+		<< "<div id='toctitle'>" << displayedTitle << ":</div>\n"
 		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
 		this.renderTOC(stream, body);
 		stream << "</div>";

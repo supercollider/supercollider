@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SOUND_FILE_VIEW_H
-#define QC_SOUND_FILE_VIEW_H
+#pragma once
 
 #include "../../Common.h"
 #include "../../QcHelper.h"
@@ -395,5 +394,3 @@ private:
   SNDFILE *_sf;
   SF_INFO _info;
 };
-
-#endif

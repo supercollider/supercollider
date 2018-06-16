@@ -1,6 +1,6 @@
 class:: PbindProxy
 summary:: incremental event pattern reference
-categories:: Libraries>JITLib>Patterns,  Streams-Patterns-Events>Patterns, Live Coding
+categories:: JITLib>Patterns,  Streams-Patterns-Events>Patterns, Live Coding
 related:: Classes/Pbindef, Classes/Pdef
 
 description::
