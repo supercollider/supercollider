@@ -119,10 +119,12 @@ MainMenu {
 		applicationMenu.addDependant({
 			|menu, what|
 			if (what == \aboutToShow) {
-				this.prUpdateServersMenu();
+				{ this.prUpdateServersMenu() }.defer;
 			}
 		});
-		Server.all.do(_.addDependant({ this.prUpdateServersMenu() }));
+		Server.all.do(_.addDependant({
+			{ this.prUpdateServersMenu() }.defer
+		}));
 
 		registered = List();
 
