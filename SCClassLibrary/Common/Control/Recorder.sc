@@ -108,10 +108,7 @@ Recorder {
 
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
 		dir = path.dirname;
-		if(File.exists(dir).not) {
-			dir.mkdir;
-			"created recordings directory: '%'\n".postf(dir)
-		};
+		if(File.exists(dir).not) { dir.mkdir };
 
 		recordBuf = Buffer.alloc(server,
 			bufSize,
