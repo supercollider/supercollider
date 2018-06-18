@@ -2015,13 +2015,21 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 	numLists = obj1->size;
 
 	if(IsNil(b)) {
+		// If length argument is unspecified, compute length as the multiple of
+		// the length of the shortest sub-array and the number of sub-arrays.
 		for (j=0; j<numLists; ++j) {
 			slot = slots + j;
-			if(isKindOfSlot(slot, class_array))	{
+			if(isKindOfSlot(slot, class_list)) {
+				obj2 = slotRawObject(slot);
+				slot = &obj2->slots[0];
+			}
+			if(isKindOfSlot(slot, class_array)) {
 				len = slotRawObject(slot)->size;
 				if(j==0 || n>len) { n = len; }
 			} else {
-				return errFailed; // this primitive only handles Arrays.
+				// If not an array we assume a max per-element length of one.
+				n = 1;
+				break;
 			}
 		}
 		n = n * numLists;
@@ -2043,8 +2051,12 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 					obj3 = slotRawObject(&obj3->slots[0]); // get the list's array
 				}
 				if (obj3 && isKindOf(obj3, class_array)) {
-					m = j % obj3->size;
-					slotCopy(&obj2->slots[i],&obj3->slots[m]);
+					if (obj3->size>0) {
+						m = j % obj3->size;
+						slotCopy(&obj2->slots[i],&obj3->slots[m]);
+					} else {
+						SetNil(&obj2->slots[i]);
+					}
 				} else {
 					slotCopy(&obj2->slots[i],&slots[k]);
 				}
@@ -2054,10 +2066,15 @@ int prArrayLace(struct VMGlobals *g, int numArgsPushed)
 			k = (k+1) % obj1->size;
 			if (k == 0) j++;
 		}
+		obj2->size = n;
 	} else {
-		obj2 = instantiateObject(g->gc, obj1->classptr, n, true, true);
+		if (isKindOf(obj1, class_array)) {
+			obj2 = newPyrArray(g->gc, 0, 0, true);
+		} else {
+			obj2 = instantiateObject(g->gc, obj1->classptr, n, true, true);
+			obj2->size = n;
+		}
 	}
-	obj2->size = n;
 	SetRaw(a, obj2);
 	return errNone;
 }
