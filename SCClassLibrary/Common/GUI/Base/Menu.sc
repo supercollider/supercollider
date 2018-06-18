@@ -470,7 +470,7 @@ ToolBar : AbstractActionView {
 	orientation_{ |i| 	^this.setProperty(\orientation, QOrientation(i)) }
 
 	toolButtonStyle { 		^this.getProperty(\toolButtonStyle) }
-	toolButtonStyle_{ |i| 	^this.setProperty(\toolButtonStyle, QToolButtonStyle(i)) }
+	toolButtonStyle_{ |i| 	^this.setProperty(\toolButtonStyle, i) }
 
 	// These are not currently functional in an SC context
 	movable 	{ 		^this.getProperty(\movable) }
