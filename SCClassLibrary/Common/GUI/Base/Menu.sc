@@ -53,6 +53,9 @@ MenuAction : AbstractMenuAction {
 	checked 	{ 		^this.getProperty(\checked) }
 	checked_ 	{ |b| 	this.checkable = true; ^this.setProperty(\checked, b) }
 
+	enabled 	{ 		^this.getProperty(\enabled) }
+	enabled_ 	{ |b| 	^this.setProperty(\enabled, b) }
+
 	toolTip 	{ 		^this.getProperty(\toolTip) }
 	toolTip_ 	{ |str| ^this.setProperty(\toolTip, str) }
 
