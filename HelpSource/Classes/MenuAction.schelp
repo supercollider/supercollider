@@ -215,7 +215,7 @@ s.waitForBoot {
 	~synth = nil;
 	~playSynth = {
 		if (~synth.isNil) {
-			~synth = { SinOsc.ar(440) }.play;
+			~synth = { SinOsc.ar(440) * 0.1 }.play;
 
 			~startAction.enabled = false;
 			~stopAction.enabled = true;

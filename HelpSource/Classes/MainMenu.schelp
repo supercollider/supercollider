@@ -6,10 +6,12 @@ related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
 DESCRIPTION::
 MainMenu is used to control items displayed in the application-level menu.
 
+note::This class controls the application menu for sclang, and not for the IDE.::
+
 CODE::
 (
 ~testTone = MenuAction("Test Tone", {
-	{ SinOsc.ar(400) }.play;
+	{ SinOsc.ar(400) * 0.1 }.play;
 });
 
 MainMenu.register(~testTone, "Tests");
