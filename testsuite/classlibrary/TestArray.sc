@@ -242,6 +242,22 @@ TestArrayLace : UnitTest {
 			"lace: single-length items with no length argument should only be copied once");
 	}
 
+	test_list_with_sublists_without_length_arg {
+		var list, result;
+		list = List[List[1, 2, 3], List[4, 5, 6], List[7, 8]];
+		result = list.lace;
+		this.assertEquals(result, List[1, 4, 7, 2, 5, 8],
+			"lace: lists with sublists and no length argument should compute length using minimum length sublist");
+	}
+
+	test_subarray_and_sublist_mixture_without_length_arg {
+		var array, result;
+		array = [["z", "y"], List[9, 8, 7], [\a, \b, \c]];
+		result = array.lace;
+		this.assertEquals(result, ["z", 9, \a, "y", 8, \b],
+			"lace: arrays with mixture of sublists and subarrays should compute length using minimum length element");
+	}
+
 	test_subarrays_with_complete_length_arg {
 		var array, result;
 		array = [[1, 2, 3, 4], [5, 6, 7, 8], [-1, -2, -3, -4]];
