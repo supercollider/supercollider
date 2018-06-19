@@ -80,6 +80,11 @@ METHOD:: font
 ARGUMENT::
 	A link::Classes/Font::
 
+METHOD:: statusTip
+	Informative text that will be shown on mouse-over.
+ARGUMENT::
+	A link::Classes/String:
+
 SUBSECTION:: Events
 	Menu actions broadcast several kinds of events that can be registered for with the standard link::Classes/Object#-addDependant:: calls.
 	Events broadcast by menu:
