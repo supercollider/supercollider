@@ -41,7 +41,7 @@ METHOD:: orientation
 METHOD:: toolButtonStyle
 	Controls whether the toolbar shows icons, text, or both.
 	ARGUMENT::
-		A link::Classes/QToolButtonStyle::
+		An integer; one of the values of link::Classes/QToolButtonStyle::.
 	DISCUSSION::
 		CODE::
 (
@@ -103,7 +103,7 @@ s.waitForBoot {
 		.icon_(~startIcon)
 		.action_({
 			if (~synth.isNil) {
-				~synth = { |f| SinOsc.ar(f) }.play(args:[\f, ~freq]);
+				~synth = { |f| SinOsc.ar(f) * 0.1 }.play(args:[\f, ~freq]);
 				~synth.onFree { ~synth = nil };
 				~play.icon = ~stopIcon;
 			} {

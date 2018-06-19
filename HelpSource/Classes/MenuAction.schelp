@@ -70,6 +70,11 @@ METHOD:: checkable
 	ARGUMENT::
 		A Boolean
 
+METHOD:: enabled
+	Indicates that the action is enabled; otherwise it will be greyed out and uninteractive.
+	ARGUMENT::
+		A Boolean
+
 METHOD:: icon
 	An link::Classes/Image:: associated with the action - to be shown next to the name of the action in both menus and toolbars.
 	ARGUMENT::
@@ -220,7 +225,7 @@ s.waitForBoot {
 	~synth = nil;
 	~playSynth = {
 		if (~synth.isNil) {
-			~synth = { SinOsc.ar(440) }.play;
+			~synth = { SinOsc.ar(440) * 0.1 }.play;
 
 			~startAction.enabled = false;
 			~stopAction.enabled = true;

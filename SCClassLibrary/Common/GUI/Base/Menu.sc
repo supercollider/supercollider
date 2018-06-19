@@ -53,6 +53,9 @@ MenuAction : AbstractMenuAction {
 	checked 	{ 		^this.getProperty(\checked) }
 	checked_ 	{ |b| 	this.checkable = true; ^this.setProperty(\checked, b) }
 
+	enabled 	{ 		^this.getProperty(\enabled) }
+	enabled_ 	{ |b| 	^this.setProperty(\enabled, b) }
+
 	toolTip 	{ 		^this.getProperty(\toolTip) }
 	toolTip_ 	{ |str| ^this.setProperty(\toolTip, str) }
 
@@ -470,7 +473,7 @@ ToolBar : AbstractActionView {
 	orientation_{ |i| 	^this.setProperty(\orientation, QOrientation(i)) }
 
 	toolButtonStyle { 		^this.getProperty(\toolButtonStyle) }
-	toolButtonStyle_{ |i| 	^this.setProperty(\toolButtonStyle, QToolButtonStyle(i)) }
+	toolButtonStyle_{ |i| 	^this.setProperty(\toolButtonStyle, i) }
 
 	// These are not currently functional in an SC context
 	movable 	{ 		^this.getProperty(\movable) }
