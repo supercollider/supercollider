@@ -774,7 +774,7 @@ View : QObject {
 
 		if ((actions.size > 0) && (actions != [nil])) {
 			this.enableContextMenu = true;
-			actions.do({ |a| this.insertMenuAction(a.asAction) });
+			actions.do({ |a| this.insertMenuAction(a.asMenuAction) });
 		} {
 			this.enableContextMenu = false;
 		}

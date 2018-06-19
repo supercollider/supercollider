@@ -27,7 +27,7 @@ AbstractMenuAction : QObject {
 	menu 		{ 		^this.getProperty(\menu) }
 	menu_ 		{ |b| 	^this.setProperty(\menu, b) }
 
-	asAction { ^this }
+	asMenuAction { ^this }
 }
 
 MenuAction : AbstractMenuAction {
@@ -355,12 +355,12 @@ AbstractActionView : View {
 
 	addAction {
 		|action|
-		^this.invokeMethod('addAction', action.asAction);
+		^this.invokeMethod('addAction', action.asMenuAction);
 	}
 
 	removeAction {
 		|action|
-		^this.invokeMethod('removeAction', action.asAction);
+		^this.invokeMethod('removeAction', action.asMenuAction);
 	}
 
 	insertAction {
@@ -369,7 +369,7 @@ AbstractActionView : View {
 			before = this.actions[before]
 		};
 
-		^this.invokeMethod('insertAction', before, action.asAction);
+		^this.invokeMethod('insertAction', before, action.asMenuAction);
 	}
 }
 
@@ -436,7 +436,7 @@ Menu : AbstractActionView {
 		this.invokeMethod(\popup, [point, action])
 	}
 
-	asAction {
+	asMenuAction {
 		^MenuAction(this.title).menu_(this)
 	}
 
@@ -484,20 +484,20 @@ ToolBar : AbstractActionView {
 	}
 
 +View {
-	asAction {
+	asMenuAction {
 		|func|
 		^CustomViewAction(this, func)
 	}
 }
 
 +Function {
-	asAction {
+	asMenuAction {
 		^MenuAction().action_(this)
 	}
 }
 
 +String {
-	asAction {
+	asMenuAction {
 		^MenuAction().string_(this)
 	}
 }
