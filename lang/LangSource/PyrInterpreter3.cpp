@@ -1652,31 +1652,42 @@ HOT void Interpret(VMGlobals *g)
 				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 : {
 					PyrSlot * vars = g->frame->vars;
-					if (IsFloat(vars+1)) {
-						SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
-					}
-					if (IsFloat(vars+2)) {
-						SetInt(&vars[2], (int32)(slotRawFloat(&vars[2])));
-					}
-					int tag = GetTag(&vars[1]);
-					if ((tag != tagInt)
-							|| NotInt(&vars[2])) {
-						error("Integer-forBy : endval or stepval not an Integer.\n");
+					if (IsFloat(vars+1) || IsFloat(vars+2)) {
+						if (IsInt(vars+1)) {
+							SetFloat(&vars[1], (float)(slotRawInt(&vars[1])));
+						}
+						if (IsInt(vars+2)) {
+							SetFloat(&vars[2], (float)(slotRawInt(&vars[2])));
+						}
+						SetFloat(&vars[4], (float)(slotRawInt(&g->receiver)));
+					} else  {
+						int tag = GetTag(&vars[1]);
+						if ((tag != tagInt)
+								|| NotInt(&vars[2])) {
+							error("Integer-forBy : endval or stepval not an Integer.\n");
 
-						slotCopy(++sp, &g->receiver);
-						numArgsPushed = 1;
-						selector = gSpecialSelectors[opmPrimitiveFailed];
-						slot = sp;
+							slotCopy(++sp, &g->receiver);
+							numArgsPushed = 1;
+							selector = gSpecialSelectors[opmPrimitiveFailed];
+							slot = sp;
 
-						goto class_lookup;
+							goto class_lookup;
+						}
+						slotCopy(&vars[4], &g->receiver);
 					}
-					slotCopy(&vars[4], &g->receiver);
 					dispatch_opcode;
 				}
 				case 8 : {
 					PyrSlot * vars = g->frame->vars;
-					if ((slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
-							|| (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]))) {
+					bool continue_for_by = false;
+					if (IsFloat(vars+4)) {
+						continue_for_by = (slotRawFloat(&vars[2]) >= 0.0 && slotRawFloat(&vars[4]) <= slotRawFloat(&vars[1]))
+							|| (slotRawFloat(&vars[2]) < 0.0 && slotRawFloat(&vars[4]) >= slotRawFloat(&vars[1]));
+					} else {
+						continue_for_by = (slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
+							|| (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]));
+					}
+					if (continue_for_by) {
 						slotCopy(++sp, &vars[3]); // push function
 						slotCopy(++sp, &vars[4]); // push i
 						slotCopy(++sp, &vars[5]); // push j
@@ -1696,8 +1707,12 @@ HOT void Interpret(VMGlobals *g)
 				}
 				case 9 : {
 					--sp ; // Drop
-					PyrSlot * vars = g->frame->vars;
-					SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
+					PyrSlot * vars = g->frame->vars;  // loop increment
+					if (IsFloat(vars+4)) {
+						SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[2]));
+					} else {
+						SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
+					}
 					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
 					dispatch_opcode;
