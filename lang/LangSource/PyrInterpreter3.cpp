@@ -1654,12 +1654,12 @@ HOT void Interpret(VMGlobals *g)
 					PyrSlot * vars = g->frame->vars;
 					if (IsFloat(vars+1) || IsFloat(vars+2)) {
 						if (IsInt(vars+1)) {
-							SetFloat(&vars[1], (float)(slotRawInt(&vars[1])));
+							SetFloat(&vars[1], (double)(slotRawInt(&vars[1])));
 						}
 						if (IsInt(vars+2)) {
-							SetFloat(&vars[2], (float)(slotRawInt(&vars[2])));
+							SetFloat(&vars[2], (double)(slotRawInt(&vars[2])));
 						}
-						SetFloat(&vars[4], (float)(slotRawInt(&g->receiver)));
+						SetFloat(&vars[4], (double)(slotRawInt(&g->receiver)));
 					} else  {
 						int tag = GetTag(&vars[1]);
 						if ((tag != tagInt)
