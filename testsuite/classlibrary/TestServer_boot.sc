@@ -60,6 +60,49 @@ TestServer_boot : UnitTest {
 		s.quit;
 	}
 
+	test_rebootOffServer {
+		var cond = Condition();
+		var timeout = 5;
+
+		s.doWhenBooted({ cond.unhang });
+		s.reboot;
+
+		fork { timeout.wait; cond.unhang };
+		cond.hang;
+
+		this.assert(s.serverRunning,
+			"A turned-off server should be running after reboot."
+		);
+		s.quit;
+
+	}
+
+	test_rebootRunningServer {
+		var cond = Condition();
+		var timeout = 5;
+
+		s.doWhenBooted {
+			// first boot OK, starting reboot from here
+			s.reboot {
+				s.doWhenBooted({
+					// only unhang after second reboot worked
+					cond.unhang
+
+				})
+			};
+		};
+		s.boot;
+
+		fork { timeout.wait; cond.unhang };
+		cond.hang;
+
+		this.assert(s.serverRunning,
+			"A running server should be running again after reboot."
+		);
+		s.quit;
+	}
+
+
 	// test that setting notify=false, then notify=true doesn't cause ServerBoot to be run
 	test_notifyAndServerBootActions {
 		var count = 0;
