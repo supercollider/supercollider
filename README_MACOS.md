@@ -44,7 +44,7 @@ Prerequisites:
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
 - **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
-  `brew install git cmake readline qt5`
+  `brew install git cmake libsndfile readline qt5`
 
 - If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
   `brew install portaudio`
@@ -239,6 +239,12 @@ Common arguments to control the build configuration are:
     readline) to be universal builds too:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
+
+  * By default the build will only be compatible with the macOS / OS X version (and
+    subsequent versions) on which the compiler was run. To build with compatibility
+    for previous versions of macOS / OS X, you can use e.g.:
+
+    `-DCMAKE_OSX_DEPLOYMENT_TARGET=10.10`
 
   * Homebrew installations of libsndfile should be detected automatically. To link to a
     version of libsndfile that is not installed in /usr/local/include|lib, you can use:
