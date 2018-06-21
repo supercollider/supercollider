@@ -59,9 +59,6 @@ MenuAction : AbstractMenuAction {
 	toolTip 	{ 		^this.getProperty(\toolTip) }
 	toolTip_ 	{ |str| ^this.setProperty(\toolTip, str) }
 
-	statusTip 	{ 		^this.getProperty(\statusTip) }
-	statusTip_ 	{ |str| ^this.setProperty(\statusTip, str) }
-
 	font 		{ 		^this.getProperty(\font) }
 	font_ 		{ |font| ^this.setProperty(\font, font) }
 
