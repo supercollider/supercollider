@@ -24,8 +24,7 @@
 #include "../../Common.h"
 #include "../../QcHelper.h"
 
-#include <sndfile.h>
-
+#include "SC_SndFileHelpers.hpp"
 #include <QVBoxLayout>
 #include <QScrollBar>
 #include <QSlider>
@@ -213,6 +212,9 @@ protected:
   virtual void mouseMoveEvent( QMouseEvent * );
 
 private:
+
+  /// \param allFrames If true, all frames are loaded and duration is ignored.
+  void load( const QString& filename, int beginning, int duration, bool allFrames );
 
   void doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beginning, sf_count_t duration );
   inline void updateFPP() { _fpp = width() ? (double) _dur / width() : 0.0; }

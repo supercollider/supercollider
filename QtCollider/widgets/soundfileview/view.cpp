@@ -86,36 +86,43 @@ QcWaveform::~QcWaveform()
 void QcWaveform::load( const QString& filename )
 {
   qcDebugMsg( 1, "QcWaveform::load( filename )" );
-
-  SF_INFO new_info;
-  memset( &new_info, 0, sizeof(SF_INFO) );
-
-  SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
-
-  if( !new_sf ) {
-    qcErrorMsg(QStringLiteral("Could not open soundfile: ") + filename);
-    return;
-  }
-
-  doLoad( new_sf, new_info, 0, new_info.frames );
+  load( filename, 0, 0, true );
 }
 
 void QcWaveform::load( const QString& filename, int beg, int dur )
 {
   qcDebugMsg( 1, "QcWaveform::load( filename, beg, dur )" );
+  load( filename, beg, dur, false );
+}
 
+static SNDFILE* sndfileOpenQString( const QString& filename, int mode, SF_INFO* info)
+{
+#ifdef _WIN32
+    auto name = filename.toStdWString();
+#else
+    auto name = filename.toStdString();
+#endif // _WIN32
+
+    return sndfileOpen(name.c_str(), mode, info);
+}
+
+// Negative dur is considered a failure, otherwise we could use dur == -1 to mean "load the whole file."
+void QcWaveform::load( const QString& filename, int beg, int dur, bool allFrames )
+{
   SF_INFO new_info;
   memset( &new_info, 0, sizeof(SF_INFO) );
 
-  SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
+  SNDFILE *new_sf = sndfileOpenQString( filename, SFM_READ, &new_info );
 
   if( !new_sf ) {
     qcErrorMsg(QStringLiteral("Could not open soundfile: ") + filename);
     return;
   }
 
+  dur = allFrames ? new_info.frames : dur;
   doLoad( new_sf, new_info, beg, dur );
 }
+
 
 void QcWaveform::load( const QVector<double> & data, int offset, int ch, int sr )
 {

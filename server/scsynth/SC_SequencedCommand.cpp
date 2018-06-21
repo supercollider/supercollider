@@ -537,7 +537,7 @@ bool BufAllocReadCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
@@ -638,7 +638,7 @@ bool BufReadCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
@@ -801,7 +801,7 @@ bool BufAllocReadChannelCmd::Stage2()
 
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
@@ -928,7 +928,7 @@ bool BufReadChannelCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
@@ -1079,7 +1079,7 @@ bool BufWriteCmd::Stage2()
 	mFileInfo.samplerate = (int)buf->samplerate;
 	mFileInfo.channels = buf->channels;
 
-	SNDFILE* sf = sf_open(mFilename, SFM_WRITE, &mFileInfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_WRITE, &mFileInfo);
 	if (!sf) {
 		char str[512];
 		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
