@@ -44,7 +44,7 @@ Prerequisites:
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
 - **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
-  `brew install git cmake readline qt5`
+  `brew install git cmake libsndfile readline qt5`
 
 - If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
   `brew install portaudio`
