@@ -94,7 +94,7 @@ Q_SIGNALS:
 
   void action();
   void itemPressedAction();
-  void currentItemChanged(ItemPtr, ItemPtr);
+  void currentItemChanged();
   void expanded(QcTreeWidget::ItemPtr);
   void collapsed(QcTreeWidget::ItemPtr);
 

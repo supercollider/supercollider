@@ -45,7 +45,7 @@ QcTreeWidget::QcTreeWidget()
   connect( this, SIGNAL( itemPressed(QTreeWidgetItem*, int) ),
            this, SIGNAL( itemPressedAction() ) );
   connect( this, SIGNAL( currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*) ),
-           this, SIGNAL( currentItemChanged(ItemPtr, ItemPtr) ) );
+           this, SIGNAL( currentItemChanged() ) );
 
   connect( this, SIGNAL( itemExpanded(QTreeWidgetItem*) ),
            this, SLOT( onExpanded(QTreeWidgetItem*) ) );
