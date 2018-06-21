@@ -9,7 +9,7 @@ version: '{build}' # incremented with each build
 clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
-image: Visual Studio 2015
+image: Visual Studio 2017
 
 # disable automatic tests
 test: off
@@ -21,21 +21,27 @@ environment:
 
     matrix:
         - QT_DIR: "C:/Qt/5.9/msvc2015"
-          CMAKE_GENERATOR: "Visual Studio 14 2015"
+          CMAKE_GENERATOR: "Visual Studio 15 2017"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
+          # https://www.appveyor.com/docs/lang/cpp/
+          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars32.bat"
 
-        - QT_DIR: "C:/Qt/5.9/msvc2015_64"
-          CMAKE_GENERATOR: "Visual Studio 14 2015 Win64"
+        - QT_DIR: "C:/Qt/5.11.0/msvc2017_64"
+          CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
           ARCH: "x64"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
+          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars64.bat"
 
 install:
 - ps: echo "Install phase start"
 
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
+
+# Load command-line tools (lib.exe)
+- cmd: call "%VCVARS_SCRIPT%"
 
 - cmd: echo "Get submodules"
 - cmd: git submodule update --init --recursive
@@ -59,7 +65,7 @@ install:
 # can't use appveyor DownloadFile because it's FTP
 - ps: Invoke-WebRequest $env:FFTW_URL -OutFile fftw.zip
 - ps: 7z x fftw.zip -y
-- cmd: "\"C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/bin/lib\" /machine:%ARCH% /def:libfftw3f-3.def"
+- cmd: lib.exe /machine:%ARCH% /def:libfftw3f-3.def
 - cmd: cd ..
 - cmd: move fftw "C:/%PROGFILES%/fftw"
 - cmd: echo "Done installing fftw"
