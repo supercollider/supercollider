@@ -189,19 +189,19 @@ UnitTest {
 		}
 	}
 
-	testForException { |func, errorClass|
-		var test = if(errorClass.isNil) { _.isException } { _.isKindOf(errorClass.asClass) };
+	testForThrow { |func, errorClass|
+		var test = if(errorClass.isNil) { _.notNil } { _.isKindOf(errorClass.asClass) };
 		var result = false;
-		func.try { |error| result = test.(error) };
+		func.catch { |error| result = test.(error) };
 		^result
 	}
 
 	assertThrow { | func, message, errorClass, report = true, details |
-		this.assert(this.testForException(func, errorClass), message, report, details: details)
+		this.assert(this.testForThrow(func, errorClass), message, report, details: details)
 	}
 
 	assertNoThrow { | func, message, errorClass, report = true, onFailure, details |
-		this.assert(not(this.testForException(func, errorClass)), message, report, details: details)
+		this.assert(not(this.testForThrow(func, errorClass)), message, report, details: details)
 	}
 
 
