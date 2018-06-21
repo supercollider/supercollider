@@ -240,6 +240,12 @@ Common arguments to control the build configuration are:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
 
+  * By default the build will only be compatible with the macOS / OS X version (and
+    subsequent versions) on which the compiler was run. To build with compatibility
+    for previous versions of macOS / OS X, you can use e.g.:
+
+    `-DCMAKE_OSX_DEPLOYMENT_TARGET=10.10`
+
   * Homebrew installations of libsndfile should be detected automatically. To link to a
     version of libsndfile that is not installed in /usr/local/include|lib, you can use:
 
