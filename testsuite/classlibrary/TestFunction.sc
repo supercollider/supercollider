@@ -36,6 +36,33 @@ TestFunction : UnitTest {
 		this.assert(obj.b == 42, "function should be able to set instance variable that has no setter");
 	}
 
+	test_try_with_error {
+		var result = false;
+		try { 7.snooze_error_away } { result = true };
+		this.assert(result, "try should call handler on error");
+	}
+
+	test_try_without_error {
+		var result = true;
+		try { 7.throw } { result = false };
+		this.assert(result, "try should not call handler on throw");
+	}
+
+
+	test_catch_with_throw {
+		var result = false;
+		catch { 7.throw } { |thrown| result = (thrown == 7) };
+		this.assert(result, "catch should call handler on throw and pass object that is thrown");
+	}
+
+	test_catch_without_throw {
+		var result = true;
+		try { 5 + 7 } { result = false };
+		this.assert(result, "catch should not call handler when nothing is thrown");
+	}
+
+
+
 
 }
 
