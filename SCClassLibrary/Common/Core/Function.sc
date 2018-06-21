@@ -189,11 +189,18 @@ Function : AbstractFunction {
 		};
 	}
 
+	catch { arg handler;
+		var result = this.prTry;
+		if (result.notNil) { ^handler.value(result); }
+		{ ^result }
+	}
+
 	try { arg handler;
 		var result = this.prTry;
 		if (result.isException) { ^handler.value(result); }
 		{ ^result }
 	}
+
 	prTry {
 		var result, thread = thisThread;
 		var next = thread.exceptionHandler,
