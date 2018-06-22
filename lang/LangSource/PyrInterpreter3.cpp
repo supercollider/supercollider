@@ -1652,6 +1652,9 @@ HOT void Interpret(VMGlobals *g)
 				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 : {
 					PyrSlot * vars = g->frame->vars;
+					// If any argument is floating point we cast all arguments
+					// to floating point, including the accumulator. This avoids
+					// potential infinite loops due to integer truncation.
 					if (IsFloat(vars+1) || IsFloat(vars+2)) {
 						if (IsInt(vars+1)) {
 							SetFloat(&vars[1], (double)(slotRawInt(&vars[1])));
@@ -1707,7 +1710,7 @@ HOT void Interpret(VMGlobals *g)
 				}
 				case 9 : {
 					--sp ; // Drop
-					PyrSlot * vars = g->frame->vars;  // loop increment
+					PyrSlot * vars = g->frame->vars;
 					if (IsFloat(vars+4)) {
 						SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[2]));
 					} else {
