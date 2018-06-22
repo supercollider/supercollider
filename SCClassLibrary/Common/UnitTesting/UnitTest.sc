@@ -189,6 +189,22 @@ UnitTest {
 		}
 	}
 
+	testForThrow { |func, errorClass|
+		var test = if(errorClass.isNil) { _.notNil } { _.isKindOf(errorClass.asClass) };
+		var result = false;
+		func.catch { |error| result = test.(error) };
+		^result
+	}
+
+	assertThrow { | func, message, errorClass, report = true, details |
+		this.assert(this.testForThrow(func, errorClass), message, report, details: details)
+	}
+
+	assertNoThrow { | func, message, errorClass, report = true, onFailure, details |
+		this.assert(not(this.testForThrow(func, errorClass)), message, report, details: details)
+	}
+
+
 	// make a further assertion only if it passed, or only if it failed
 	ifAsserts { | boolean, message, ifPassedFunc, ifFailedFunc, report = true|
 		if(boolean.not,{
