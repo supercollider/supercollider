@@ -189,19 +189,20 @@ UnitTest {
 		}
 	}
 
-	testForException { |func, errorClass|
-		var test = if(errorClass.isNil) { _.notNil } { _.isKindOf(errorClass.asClass) };
-		var result = false;
-		func.try { |error| result = test.(error) };
-		^result
-	}
-
-	assertException { | func, message, errorClass, report = true, onFailure, details |
-		this.assert(this.testForException(func, errorClass), message, report, onFailure, details)
+	assertException { | func, errorClass, message, report = true, onFailure, details |
+		var resultingError;
+		errorClass = errorClass.asClass;
+		func.try { |error|
+			if(error.isKindOf(errorClass)) { resultingError = error };
+		};
+		this.assertEquals(resultingError.class, errorClass, "resultingError should match the given errorClass");
+		this.assert(resultingError.notNil, message, report, onFailure, details)
 	}
 
 	assertNoException { | func, message, report = true, onFailure, details |
-		this.assert(not(this.testForException(func)), message, report, onFailure, details)
+		var result = true;
+		func.try { |error| result = false };
+		this.assert(result, message, report, onFailure, details)
 	}
 
 

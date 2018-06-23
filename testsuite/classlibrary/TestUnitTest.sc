@@ -45,7 +45,7 @@ TestUnitTest : UnitTest {
 	}
 
 	test_exception_assertException_error {
-		this.assertException({ 1789.monarchy }, "assertException should return true for any error")
+		this.assertException({ 1789.monarchy }, DoesNotUnderstandError, "assertException should return true for any error")
 	}
 
 	test_exception_assertException_throw {
@@ -54,8 +54,8 @@ TestUnitTest : UnitTest {
 
 	test_exception_assertException_specificError {
 		this.assertException({ BinaryOpFailureError.new.throw },
+			BinaryOpFailureError,
 			"assertException should return true for specific error",
-			BinaryOpFailureError
 		)
 	}
 
