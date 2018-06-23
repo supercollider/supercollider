@@ -197,15 +197,15 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get extended special opcode
 			switch (op2) {
 				case opgProcess : // push thisProcess
-					post(" %02X    opgProcess\n", op1, op2); break;
+					post(" %02X    opgProcess\n", op2); break;
 				case opgThread : // push thisThread
-					post(" %02X    opgThread\n", op1, op2); break;
+					post(" %02X    opgThread\n", op2); break;
 				case opgMethod : // push thisMethod
-					post(" %02X    opgMethod\n", op1, op2); break;
+					post(" %02X    opgMethod\n", op2); break;
 				case opgFunctionDef : // push thisBlock
-					post(" %02X    opgFunctionDef\n", op1, op2); break;
+					post(" %02X    opgFunctionDef\n", op2); break;
 				case opgFunction : // push thisClosure
-					post(" %02X    opgFunction\n", op1, op2); break;
+					post(" %02X    opgFunction\n", op2); break;
 			}
 			break;
 
