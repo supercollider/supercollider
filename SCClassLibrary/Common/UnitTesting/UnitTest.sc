@@ -196,12 +196,12 @@ UnitTest {
 		^result
 	}
 
-	assertException { | func, message, errorClass, report = true, details |
-		this.assert(this.testForException(func, errorClass), message, report, details: details)
+	assertException { | func, message, errorClass, report = true, onFailure, details |
+		this.assert(this.testForException(func, errorClass), message, report, onFailure, details)
 	}
 
-	assertNoException { | func, message, errorClass, report = true, onFailure, details |
-		this.assert(not(this.testForException(func, errorClass)), message, report, details: details)
+	assertNoException { | func, message, report = true, onFailure, details |
+		this.assert(not(this.testForException(func)), message, report, onFailure, details)
 	}
 
 
