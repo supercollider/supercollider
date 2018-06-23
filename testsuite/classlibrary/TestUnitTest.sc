@@ -44,7 +44,24 @@ TestUnitTest : UnitTest {
 		this.assertEquals( TestMixedBundleTester.findTestedClass, MixedBundleTester)
 	}
 
+	test_assertException {
+		this.assertException({ 1789.monarchy }, "assertException should return true for any error")
+	}
 
+	test_assertException_for_throw {
+		this.assertNoException({ \stone.throw }, "assertException should return false for thrown object")
+	}
+
+	test_assertException_with_specific_error {
+		this.assertException({ BinaryOpFailureError.new.throw },
+			"assertException should return true for specific error",
+			BinaryOpFailureError
+		)
+	}
+
+	test_assertNoException {
+		this.assertNoException({ try { 1789.monarchy } }, "assertNoThrow should return true for not an error")
+	}
 
 
 	/*** IF YOU ADD MORE TESTS, UPDATE THE numTestMethods var ***/
