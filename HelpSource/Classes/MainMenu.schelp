@@ -6,6 +6,8 @@ related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
 DESCRIPTION::
 MainMenu is used to control items displayed in the application-level menu.
 
+note::This class is only functional on macOS.::
+
 note::This class controls the application menu for sclang, and not for the IDE.::
 
 CODE::
