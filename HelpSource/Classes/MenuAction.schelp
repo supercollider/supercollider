@@ -107,10 +107,11 @@ f = {
 	|action, what, value|
 	"MenuAction '%' sent event %, value = %".format(action.string, "\\" ++ what, value).postln;
 	if (what == \hovered) { "Hovering over: %".format(action).postln };
-	if (what == \triggered) { "Action triggered: %".format(value).postln; };
+	if (what == \triggered) { "Action triggered: %".format(value).postln; m.destroy };
 };
-a.addDependant(f); b.addDependant(f);
-m.front;
+a.addDependant(f);
+b.addDependant(f);
+m.onClose_({ a.removeDependant(f); b.removeDependant(f) }).front;
 )
 	::
 
@@ -158,7 +159,7 @@ code::
 	MenuAction("Option C").toolTip_("No one really likes C."),
 );
 
-~menu.addDependant({
+~actionFunc = {
 	|obj, what, action|
 	if (what == \hovered) {
 		~text.string = action.toolTip
@@ -166,8 +167,9 @@ code::
 	if (what == \aboutToHide) {
 		~text.string = ""
 	}
-});
-~view.front;
+};
+~menu.addDependant(~actionFunc);
+~view.onClose_({ ~menu.removeDependant(~actionFunc) }).front;
 
 )
 ::

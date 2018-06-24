@@ -79,13 +79,15 @@ SUBSECTION:: Events
 (
 m = Menu(MenuAction("Option A"), MenuAction("Option B")).title_("Event Example");
 
-m.addDependant({
+f = {
 	|menu, what, value|
 	"Menu '%' sent event %, value = %".format(menu.title, "\\" ++ what, value).postln;
 	if (what == \hovered) { "Hovering over: %".format(value).postln };
-	if (what == \triggered) { "Action triggered: %".format(value).postln; };
-});
-m.front;
+	if (what == \triggered) { "Action triggered: %".format(value).postln; menu.destroy };
+};
+
+m.addDependant(f);
+m.onClose_({ m.removeDependant(f) }).front;
 )
 	::
 

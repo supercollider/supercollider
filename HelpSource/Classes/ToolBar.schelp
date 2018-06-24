@@ -89,15 +89,16 @@ s.waitForBoot {
 		MenuAction("500"),
 	).title_(~freq);
 
-	~freqMenu.addDependant({
+	~updateFunc = {
 		|obj, what, action|
 		if (what == \triggered) {
 			~freq = action.string.asInteger;
 			~freqMenu.title = ~freq;
 			~synth !? { ~synth.set(\f, ~freq) };
 		}
-	});
+	};
 
+	~freqMenu.addDependant(~updateFunc);
 
 	~play = MenuAction("play")
 		.icon_(~startIcon)
@@ -112,7 +113,8 @@ s.waitForBoot {
 			}
 		});
 
-	ToolBar(~play, ~freqMenu).minWidth_(200).front
+	~toolBar = ToolBar(~play, ~freqMenu).minWidth_(200).front;
+	~toolBar.onClose_({ ~freqMenu.removeDependant(~updateFunc) })
 }
 )
 ::
