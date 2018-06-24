@@ -52,7 +52,7 @@ TestSerialPort : UnitTest {
 		var first, second;
 
 		first = pipe.getLine;
-		first = first.findRegexp("/dev/ttys.*");
+		first = first.findRegexp("/dev/(ttys|pts).*");
 		if(first.isEmpty) {
 			Error("socat is not installed").throw;
 		};
@@ -60,7 +60,7 @@ TestSerialPort : UnitTest {
 		first = first[0][1];
 
 		second = pipe.getLine;
-		second = second.findRegexp("/dev/ttys.*");
+		second = second.findRegexp("/dev/(ttys|pts).*");
 		if(second.isEmpty) {
 			Error("couldn't read second tty from socat").throw;
 		};
