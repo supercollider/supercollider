@@ -190,19 +190,45 @@ UnitTest {
 	}
 
 	assertException { | func, errorClass, message, report = true, onFailure, details |
-		var resultingError;
+		var moreDetails = nil;
+		var passed = false;
 		errorClass = errorClass.asClass;
+
 		func.try { |error|
-			if(error.isKindOf(errorClass)) { resultingError = error };
+			if(error.isKindOf(errorClass)) {
+				// Add extra info in case the class was an unexpected child type.
+				moreDetails = "Received exception of class '%', with message: '%'".format(
+					error.class.name,
+					error.errorString
+				);
+				passed = true;
+			} {
+				moreDetails = "Received exception of class '%', with message: '%'\nExpected class '%'".format(
+					error.class.name,
+					error.errorString,
+					errorClass.name
+				);
+			}
 		};
-		this.assertEquals(resultingError.class, errorClass, "resultingError should match the given errorClass");
-		this.assert(resultingError.notNil, message, report, onFailure, details)
+
+		moreDetails = moreDetails ?? { "Function did not throw an exception" };
+		if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
+		^this.assert(passed, message, report, onFailure, details);
 	}
 
 	assertNoException { | func, message, report = true, onFailure, details |
-		var result = true;
-		func.try { |error| result = false };
-		this.assert(result, message, report, onFailure, details)
+		var moreDetails;
+		var passed = true;
+
+		func.try { |error|
+			moreDetails = "Function threw an exception of class '%', with message: '%'".format(
+				error.class.name,
+				error.errorString
+			);
+			if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
+			passed = false;
+		};
+		^this.assert(passed, message, report, onFailure, details)
 	}
 
 
