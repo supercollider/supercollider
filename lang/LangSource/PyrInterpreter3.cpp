@@ -1652,17 +1652,11 @@ HOT void Interpret(VMGlobals *g)
 				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 : {
 					PyrSlot * vars = g->frame->vars;
-					if (IsFloat(vars+1)) {
-						SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
-					}
-					if (IsFloat(vars+2)) {
-						SetInt(&vars[2], (int32)(slotRawFloat(&vars[2])));
-					}
-					int tag = GetTag(&vars[1]);
-					if ((tag != tagInt)
-							|| NotInt(&vars[2])) {
-						error("Integer-forBy : endval or stepval not an Integer.\n");
-
+					// Detect case of a zero-valued stepval argument, which
+					// would result in an infinite loop.
+					if ((IsFloat(vars+2) && slotRawFloat(&vars[2]) == 0.0) ||
+						(IsInt(vars+2) && slotRawInt(&vars[2]) == 0)) {
+						error("Integer-forBy: zero-valued stepval argument.\n");
 						slotCopy(++sp, &g->receiver);
 						numArgsPushed = 1;
 						selector = gSpecialSelectors[opmPrimitiveFailed];
@@ -1670,13 +1664,45 @@ HOT void Interpret(VMGlobals *g)
 
 						goto class_lookup;
 					}
-					slotCopy(&vars[4], &g->receiver);
+					// If any argument is floating point we cast all arguments
+					// to floating point, including the accumulator. This avoids
+					// potential infinite loops due to integer truncation.
+					if (IsFloat(vars+1) || IsFloat(vars+2)) {
+						if (IsInt(vars+1)) {
+							SetFloat(&vars[1], (double)(slotRawInt(&vars[1])));
+						}
+						if (IsInt(vars+2)) {
+							SetFloat(&vars[2], (double)(slotRawInt(&vars[2])));
+						}
+						SetFloat(&vars[4], (double)(slotRawInt(&g->receiver)));
+					} else  {
+						int tag = GetTag(&vars[1]);
+						if ((tag != tagInt)
+								|| NotInt(&vars[2])) {
+							error("Integer-forBy : endval or stepval not an Integer or Float.\n");
+
+							slotCopy(++sp, &g->receiver);
+							numArgsPushed = 1;
+							selector = gSpecialSelectors[opmPrimitiveFailed];
+							slot = sp;
+
+							goto class_lookup;
+						}
+						slotCopy(&vars[4], &g->receiver);
+					}
 					dispatch_opcode;
 				}
 				case 8 : {
 					PyrSlot * vars = g->frame->vars;
-					if ((slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
-							|| (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]))) {
+					bool continueForBy = false;
+					if (IsFloat(vars+4)) {
+						continueForBy = (slotRawFloat(&vars[2]) >= 0.0 && slotRawFloat(&vars[4]) <= slotRawFloat(&vars[1]))
+							|| (slotRawFloat(&vars[2]) < 0.0 && slotRawFloat(&vars[4]) >= slotRawFloat(&vars[1]));
+					} else {
+						continueForBy = (slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
+							|| (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]));
+					}
+					if (continueForBy) {
 						slotCopy(++sp, &vars[3]); // push function
 						slotCopy(++sp, &vars[4]); // push i
 						slotCopy(++sp, &vars[5]); // push j
@@ -1697,7 +1723,11 @@ HOT void Interpret(VMGlobals *g)
 				case 9 : {
 					--sp ; // Drop
 					PyrSlot * vars = g->frame->vars;
-					SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
+					if (IsFloat(vars+4)) {
+						SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[2]));
+					} else {
+						SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[2])); // inc i
+					}
 					SetRaw(&vars[5], slotRawInt(&vars[5]) + 1); // inc j
 					ip -= 4;
 					dispatch_opcode;
