@@ -1652,6 +1652,18 @@ HOT void Interpret(VMGlobals *g)
 				// Integer-forBy : 143 7, 143 8, 143 9
 				case 7 : {
 					PyrSlot * vars = g->frame->vars;
+					// Detect case of a zero-valued stepval argument, which
+					// would result in an infinite loop.
+					if ((IsFloat(vars+2) && slotRawFloat(&vars[2]) == 0.0) ||
+						(IsInt(vars+2) && slotRawInt(&vars[2]) == 0)) {
+						error("Integer-forBy: zero-valued stepval argument.\n");
+						slotCopy(++sp, &g->receiver);
+						numArgsPushed = 1;
+						selector = gSpecialSelectors[opmPrimitiveFailed];
+						slot = sp;
+
+						goto class_lookup;
+					}
 					// If any argument is floating point we cast all arguments
 					// to floating point, including the accumulator. This avoids
 					// potential infinite loops due to integer truncation.
@@ -1667,7 +1679,7 @@ HOT void Interpret(VMGlobals *g)
 						int tag = GetTag(&vars[1]);
 						if ((tag != tagInt)
 								|| NotInt(&vars[2])) {
-							error("Integer-forBy : endval or stepval not an Integer.\n");
+							error("Integer-forBy : endval or stepval not an Integer or Float.\n");
 
 							slotCopy(++sp, &g->receiver);
 							numArgsPushed = 1;
@@ -1682,15 +1694,15 @@ HOT void Interpret(VMGlobals *g)
 				}
 				case 8 : {
 					PyrSlot * vars = g->frame->vars;
-					bool continue_for_by = false;
+					bool continueForBy = false;
 					if (IsFloat(vars+4)) {
-						continue_for_by = (slotRawFloat(&vars[2]) >= 0.0 && slotRawFloat(&vars[4]) <= slotRawFloat(&vars[1]))
+						continueForBy = (slotRawFloat(&vars[2]) >= 0.0 && slotRawFloat(&vars[4]) <= slotRawFloat(&vars[1]))
 							|| (slotRawFloat(&vars[2]) < 0.0 && slotRawFloat(&vars[4]) >= slotRawFloat(&vars[1]));
 					} else {
-						continue_for_by = (slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
+						continueForBy = (slotRawInt(&vars[2]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[1]))
 							|| (slotRawInt(&vars[2]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[1]));
 					}
-					if (continue_for_by) {
+					if (continueForBy) {
 						slotCopy(++sp, &vars[3]); // push function
 						slotCopy(++sp, &vars[4]); // push i
 						slotCopy(++sp, &vars[5]); // push j
