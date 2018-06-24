@@ -27,6 +27,7 @@ QC_DECLARE_QOBJECT_FACTORY(QcFileDialog);
 QcFileDialog::QcFileDialog( int fileMode, int acceptMode, const QString& startDir ) {
   dialog = new QFileDialog();
 
+  dialog->setOption(QFileDialog::DontUseNativeDialog);
   dialog->setDirectory(QDir{startDir});
 
   switch(fileMode) {
