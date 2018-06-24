@@ -1,14 +1,12 @@
 TITLE:: MainMenu
-summary:: A manager for application-level menus.
+summary:: A manager for sclang's application-level menu in macOS
 categories:: GUI
 related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
 
 DESCRIPTION::
-MainMenu is used to control items displayed in the application-level menu.
+This class allows control over items displayed in the sclang application-level menu in macOS. (Linux and Windows don't have application-level menus, so the methods in this class don't do anything on those platforms. Instead, create a window and add a link::Classes/ToolBar:: to it.)
 
-note::This class is only functional on macOS.::
-
-note::This class controls the application menu for sclang, and not for the IDE.::
+note:: This is the menu for the sclang application, not the IDE. ::
 
 CODE::
 (
