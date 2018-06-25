@@ -13,6 +13,7 @@ TestNode_Server : UnitTest {
 
 	test_get {
 		var setValue, getValue, node;
+		var condition = Condition.new;
 
 		SynthDef(\test_get, { |control = 8| }).add;
 		server.sync;
@@ -23,8 +24,9 @@ TestNode_Server : UnitTest {
 		getValue = 0;
 		node.get(\control, { |value|
 			getValue = value;
+			condition.unhang;
 		});
-		0.1.wait;
+		condition.hang;
 
 		this.assertFloatEquals(getValue, setValue, "Node:get works", 0.001);
 		node.free;
@@ -32,6 +34,7 @@ TestNode_Server : UnitTest {
 
 	test_getn {
 		var setnValues, getnValues, node;
+		var condition = Condition.new;
 
 		SynthDef(\test_getn, { |control1 = 2, control2 = 22.2, control3 = 222| }).add;
 		server.sync;
@@ -46,8 +49,9 @@ TestNode_Server : UnitTest {
 		getnValues = 0;
 		node.getn(0, 3, { |values|
 			getnValues = values;
+			condition.unhang;
 		});
-		0.1.wait;
+		condition.hang;
 
 		this.assertArrayFloatEquals(getnValues, setnValues, "Node:getn works", 0.001);
 		node.free;
