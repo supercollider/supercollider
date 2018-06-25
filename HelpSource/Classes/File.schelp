@@ -111,6 +111,27 @@ method::mtime
 Get last modification time in seconds since the Epoch.
 returns:: an link::Classes/Integer::
 
+subsection:: Error handling in filesystem utilities
+
+If one of the above file system primitives fails, in most cases, a PrimitiveFailedError object will be thrown:
+
+code::
+File.mkdir("/usr/oh-no-you-cant");
+
+ERROR: Primitive '_FileMkDir' failed.
+caught exception 'boost::filesystem::create_directory: Permission denied: "/usr/oh-no-you-cant"' in primitive in method Meta_File:mkdir
+::
+
+The methods link::Classes/Function#-try:: and link::Classes/Function#-protect:: can detect and handle these errors. See link::Guides/Understanding-Errors:: for details.
+
+Currently, link::Classes/File#*copy::, link::Classes/File#*fileSize::, link::Classes/File#*mkdir::, link::Classes/File#*mtime::, and link::Classes/File#*type:: throw errors upon failure.
+
+link::Classes/File#*delete:: does not throw an error, but instead returns a Boolean:
+
+list::
+## code::true:: -- You can assume that the path no longer exists. (Either it existed and was deleted, or it didn't exist and it still doesn't exist.)
+## code::false:: -- The file could not be deleted (probably a permissions error). Your code should assume that the path still exists.
+::
 
 InstanceMethods::
 
