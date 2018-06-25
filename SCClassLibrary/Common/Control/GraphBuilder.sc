@@ -55,28 +55,41 @@ NamedControl {
 	var <name, <values, <lags, <rate, <fixedLag;
 	var <control;
 
-	*ar { arg  name, values, lags;
-		^this.new(name, values, \audio, lags, false)
+	*ar { arg  name, values, lags, spec;
+		^this.newSpec(name, values, \audio, lags, false, spec)
 	}
 
-	*kr { arg  name, values, lags, fixedLag = false;
-		^this.new(name, values, \control, lags, fixedLag)
+	*kr { arg  name, values, lags, fixedLag = false, spec;
+		^this.newSpec(name, values, \control, lags, fixedLag, spec)
 	}
 
-	*ir { arg  name, values, lags;
-		^this.new(name, values, \scalar, lags, false)
+	*ir { arg  name, values, lags, spec;
+		^this.newSpec(name, values, \scalar, lags, false, spec)
 	}
 
-	*tr { arg  name, values, lags;
-		^this.new(name, values, \trigger, lags, false)
+	*tr { arg  name, values, lags, spec;
+		^this.newSpec(name, values, \trigger, lags, false, spec)
 	}
 
-	*new { arg name, values, rate, lags, fixedLag = false;
+	*new { arg name, values, rate, lags, fixedLag = false, spec;
 		var res;
+
+		this.initDict;
 
 		name = name.asSymbol;
 
-		this.initDict;
+		if (spec.notNil) {
+			spec = spec.asSpec;
+
+			if (values.isNil) {
+				values = spec.default;
+			};
+
+			UGen.buildSynthDef.specs[name] !? _.setFrom(spec) ?? {
+				UGen.buildSynthDef.specs[name] = spec;
+			};
+		};
+
 		res = currentControls.at(name);
 
 		lags = lags.deepCollect(inf, {|elem|
@@ -120,6 +133,11 @@ NamedControl {
 		}
 	}
 
+	*newSpec { arg name, values, rate, lags, fixedLag = false, spec;
+		this.initDict;
+
+	}
+
 	init {
 		var prefix, ctlName, ctl, selector;
 
@@ -158,6 +176,9 @@ NamedControl {
 
 		control = control.asArray.reshapeLike(values).unbubble;
 	}
+
+
+
 
 	*initDict {
 		if(UGen.buildSynthDef !== buildSynthDef or: currentControls.isNil) {

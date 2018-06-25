@@ -413,5 +413,8 @@ SynthDefControl : SynthControl {
 		bytes = control.bytes; // copy cached data
 	}
 
+	specs {
+		^synthDef.specs
+	}
 
 }

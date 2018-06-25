@@ -17,6 +17,25 @@ ControlName {
 		//stream << "\n"
 	}
 
+	spec {
+		^UGen.buildSynthDef.specs[name]
+	}
+
+	spec_{
+		|spec|
+		if (spec.notNil) {
+			spec = spec.asSpec;
+
+			defaultValue ?? {
+				defaultValue = spec.default;
+			};
+
+			UGen.buildSynthDef.specs[name] !? _.setFrom(spec) ?? {
+				UGen.buildSynthDef.specs[name] = spec;
+			};
+		}
+	}
+
 }
 
 Control : MultiOutUGen {

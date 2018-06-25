@@ -488,7 +488,11 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		}
 	}
 
-
+	specs {
+		metadata ?? { metadata = () };
+		metadata[\specs] ?? { metadata[\specs] = () };
+		^metadata[\specs]
+	}
 }
 
 SynthDescLib {

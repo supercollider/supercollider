@@ -990,6 +990,21 @@ NodeProxy : BusPlug {
 		};
 		^SynthDef(name, func);
 	}
+
+	specs {
+		var specs = ();
+		this.objects.do {
+			|obj|
+			if (obj.respondsTo(\specs)) {
+				specs = specs.merge(obj.specs, {
+					|a, b, key|
+					"Duplicate specs for key: % - only one will be used.".format(key).warn;
+					a;
+				});
+			}
+		};
+		^specs
+	}
 }
 
 
