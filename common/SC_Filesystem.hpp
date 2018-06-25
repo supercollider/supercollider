@@ -65,6 +65,14 @@
 /// Default IDE name.
 #define SC_DEFAULT_IDE_NAME "none"
 
+/// Name of the plugins subdirectory of the Resources dir
+#define SC_PLUGIN_DIR_NAME "plugins"
+
+/// Extension for server plugins.
+#ifndef SC_PLUGIN_EXT
+#   define SC_PLUGIN_EXT ".scx"
+#endif
+
 #include <map> // map
 #include <algorithm> // std::transform
 #include <string> // std::string
@@ -192,7 +200,7 @@ public:
 	  * \param p a path to resolve
 	  * \param isAlias set to true if p is an alias
 	  * \return An empty path if resolution failed; otherwise, the resolved path.
-	  * 
+	  *
 	  * If the path was not an alias, a copy is returned. */
 	// Could possibly be split into `isAlias` and `resolveAlias` to avoid
 	// unnecessary copying - bh
