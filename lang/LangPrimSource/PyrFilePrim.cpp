@@ -162,11 +162,8 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::system::error_code error_code;
 	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	bfs::create_directories(p, error_code);
-	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
+	bfs::create_directories(p);
 
 	return errNone;
 }
