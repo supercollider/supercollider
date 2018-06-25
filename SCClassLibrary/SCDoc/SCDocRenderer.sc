@@ -262,8 +262,8 @@ SCDocHTMLRenderer {
 		stream << "</div>";
 
 		stream
-		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
+		<< "<div class='contents'>\n"
 		<< "<div class='header'>\n";
 
 		if(thisIsTheMainHelpFile.not) {
