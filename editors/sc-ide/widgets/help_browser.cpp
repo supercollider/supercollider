@@ -239,7 +239,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url, QWebEnginePage::NavigationTyp
 
 void HelpBrowser::onReload()
 {
-    mWebView->triggerPageAction(QWebEnginePage::ReloadAndBypassCache);
+    onLinkClicked( mWebView->url(), QWebEnginePage::NavigationTypeReload, true );
 }
 
 void HelpBrowser::zoomIn()
