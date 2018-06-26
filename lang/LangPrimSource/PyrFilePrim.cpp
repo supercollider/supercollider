@@ -155,7 +155,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 
 int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *b = g->sp;
+	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
 
 	int error = slotStrVal(b, filename, PATH_MAX);
@@ -163,8 +163,9 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 		return error;
 
 	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	bfs::create_directories(p);
+	bool result = bfs::create_directories(p);
 
+	SetBool(a, result);
 	return errNone;
 }
 
