@@ -86,6 +86,12 @@ Answers if the filesystem is case sensitive or not.
 method::mkdir
 Create directory at path, including any missing parent directories.
 
+returns:: a link::Classes/Boolean::, as follows:
+list::
+## code::true:: -- A new directory was created at code::path::.
+## code::false:: -- A directory already existed at code::path::; a new one was not created.
+::
+
 method::delete
 Deletes the file at that path. Use only for good, never for evil.
 
