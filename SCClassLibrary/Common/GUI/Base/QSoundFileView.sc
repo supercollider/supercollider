@@ -78,9 +78,6 @@ SoundFileView : View {
 	waveColors { ^this.getProperty( \waveColors ) }
 	waveColors_ { arg colors; this.setProperty( \waveColors, colors ) }
 
-	antialiasing { ^this.getProperty( \antialiasing ); }
-	antialiasing_ { arg boolean; this.setProperty( \antialiasing, boolean ); }
-
 	//// Info
 
 	startFrame { ^this.getProperty( \startFrame ); }

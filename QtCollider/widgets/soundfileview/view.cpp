@@ -71,7 +71,7 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   dirty(false),
   _drawWaveform(true),
   _drawRMS(true),
-  _antialiasing(false),
+  // _antialiasing(false), //TODO
   _drawsCenterLine(true),
   _drawsBoundingLines(true)
 {
@@ -715,7 +715,7 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   QPainter p( pix );
 
-  if( _antialiasing ) p.setRenderHint( QPainter::Antialiasing );
+  // if( _antialiasing ) p.setRenderHint( QPainter::Antialiasing ); //TODO
 
   if( !_cache || !_cache->ready() ) return;
 

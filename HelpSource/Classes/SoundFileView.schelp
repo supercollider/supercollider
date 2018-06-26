@@ -494,13 +494,6 @@ METHOD:: drawsBoundingLines
     argument::
         A Boolean.
 
-METHOD:: antialiasing
-
-    Whether the waveform is rendered more smoothly. Setting this to code::true:: is more computationally expensive. Defaults to code::false::.
-
-    argument::
-        A Boolean.
-
 METHOD:: timeCursorOn
 
     Whether the time cursor is displayed. Defaults to code::false::.

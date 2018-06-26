@@ -75,7 +75,7 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( float gridResolution READ gridResolution WRITE setGridResolution );
   Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
   Q_PROPERTY( bool drawsRMS READ drawsRMS WRITE setDrawsRMS );
-  Q_PROPERTY( bool antialiasing READ antialiasing WRITE setAntialiasing );
+  // Q_PROPERTY( bool antialiasing READ antialiasing WRITE setAntialiasing ); //TODO: antialiasing doesn't look good when enabled, would probably require reworking the waveform drawing mechanism?
   Q_PROPERTY( bool drawsCenterLine READ drawsCenterLine WRITE setDrawsCenterLine );
   Q_PROPERTY( bool drawsBoundingLines READ drawsBoundingLines WRITE setDrawsBoundingLines );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
@@ -163,8 +163,8 @@ public:
   void setDrawsRMS( bool b ) { _drawRMS = b; redraw(); }
   QVariantList waveColors() const;
   void setWaveColors( const QVariantList & );
-  bool antialiasing() const { return _antialiasing; }
-  void setAntialiasing( bool b ) { _antialiasing = b; redraw(); }
+  // bool antialiasing() const { return _antialiasing; } //TODO
+  // void setAntialiasing( bool b ) { _antialiasing = b; redraw(); }
   bool drawsCenterLine() const { return _drawsCenterLine; }
   void setDrawsCenterLine( bool b ) { _drawsCenterLine = b; redraw(); }
   bool drawsBoundingLines() const { return _drawsBoundingLines; }
@@ -279,7 +279,7 @@ private:
   bool dirty;
   bool _drawWaveform;
   bool _drawRMS;
-  bool _antialiasing;
+  // bool _antialiasing; //TODO
   bool _drawsCenterLine;
   bool _drawsBoundingLines; //at the values of ±1.0
   QList<QColor> _waveColors;
