@@ -108,6 +108,11 @@ UGen : AbstractFunction {
 			Wrap.perform(Wrap.methodSelectorForRate(rate), this, lo, hi)
 		}
 	}
+
+	degrad { ^this * (pi/180) }
+
+	raddeg { ^this * (180/pi) }
+
 	blend { arg that, blendFrac = 0.5;
 		var pan;
 		^if (rate == \demand || that.rate == \demand) {
