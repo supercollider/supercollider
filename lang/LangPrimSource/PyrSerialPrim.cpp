@@ -40,6 +40,7 @@
 #include "SCBase.h"
 #include "SC_Lock.h"
 
+#include <boost/asio/use_future.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/cstdint.hpp>
@@ -119,12 +120,12 @@ public:
 
 		setExclusive(options.exclusive);
 
-		m_readThread = SC_Thread{ &SerialPort::startRead, this };
+		m_readThread = SC_Thread{ &SerialPort::doRead, this };
 	}
 
 	~SerialPort()
 	{
-		stop();
+		m_readThread.join();
 	}
 
 	const Options& options() const { return m_options; }
@@ -164,8 +165,6 @@ public:
 	{
 		m_port.cancel();
 		m_port.close();
-		SetNil(m_obj->slots+0);
-		m_readThread.join();
 	}
 
 private:
@@ -193,40 +192,33 @@ private:
 	/// Notifies the object that data is available, unblocking any blocking reads.
 	void dataAvailable() { runCommand(s_dataAvailable); }
 
-	/// Starts an async read with SerialPort::doRead as a callback. Loops back until a read error is
-	/// encountered.
-	void startRead()
+	/// Reads endlessly from port until an error is encountered, at which point the SerialPort
+	/// object's `doneAction` runs.
+	void doRead()
 	{
 		auto const&& buf = boost::asio::buffer(m_rxbuffer, kBufferSize);
-		boost::system::error_code ec{};
-		m_port.async_read_some(buf, boost::bind(
-				&SerialPort::doRead,
-				this,
-				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred)
-			);
-	}
+		while (true) {
+			auto txFuture = m_port.async_read_some(buf, boost::asio::use_future);
+			try {
+				// blocks until read completes
+				auto bytesTransferred = txFuture.get();
+				for (std::size_t index = 0; index != bytesTransferred; ++index) {
+					uint8_t byte = m_rxbuffer[index];
+					bool putSuccessful = m_rxfifo.push(byte);
+					if (!putSuccessful)
+						m_rxErrors++;
+				}
 
-	void doRead(const boost::system::error_code& ec, std::size_t bytesTransferred)
-	{
-		for (std::size_t index = 0; index != bytesTransferred; ++index) {
-			uint8_t byte = m_rxbuffer[index];
-			bool putSuccessful = m_rxfifo.push(byte);
-			if (!putSuccessful)
-				m_rxErrors++;
-		}
-
-		if (bytesTransferred > 0) {
-			dataAvailable();
-		}
-
-		if (!ec) {
-			startRead();
-		} else {
-			doneAction();
+				if (bytesTransferred > 0) {
+					dataAvailable();
+				}
+			} catch (const boost::system::system_error& e) {
+				// TODO: pass info on error to sclang? ignore spurious errors?
+				doneAction();
+				return;
+			}
 		}
 	}
-
 
 	PyrObject* m_obj; ///< Language object representing this port.
 	boost::asio::serial_port m_port; ///< Port object.
@@ -356,6 +348,7 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 		port = new SerialPort(slotRawObject(self), portName, options);
 	} catch (std::exception & e) {
 		delete port;
+		// TODO: check error types to provide better messages, such as when port doesn't exist
 		throw;
 	}
 
@@ -364,6 +357,14 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+/** \brief Stop a SerialPort object.
+ *
+ * When `close` is triggered, a complex sequence of events happens:
+ * 1. Port is closed and SerialPort object is marked as closed
+ * 2. This SC thread eventually yields, allowing the SerialPort's doneAction to run via read thread
+ * 3. That doneAction causes a deferred call to `prSerialPort_Cleanup` and then yields
+ * 4. `Cleanup` sets the dataptr to nil and destroys the C++ object, causing the read thread to join
+ */
 static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* self = g->sp;
@@ -371,6 +372,7 @@ static int prSerialPort_Close(struct VMGlobals *g, int numArgsPushed)
 	if (!port)
 		return errFailed;
 	port->stop();
+
 	return errNone;
 }
 

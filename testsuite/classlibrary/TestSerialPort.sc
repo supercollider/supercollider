@@ -1,5 +1,4 @@
 // Tests for SerialPort
-// Brian Heim, 22 May 2018
 //
 // These tests perform integration testing on SerialPort by creating an input/output pair of virtual serial ports
 // prior to each test.
@@ -85,6 +84,7 @@ TestSerialPort : UnitTest {
 		port.close();
 	}
 
+	// TODO: use assertException
 	test_open_onMissingDevice {
 		try {
 			SerialPort("/dev/doesnt_exist")

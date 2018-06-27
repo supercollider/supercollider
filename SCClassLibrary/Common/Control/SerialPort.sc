@@ -1,13 +1,13 @@
 SerialPort {
 	classvar <>devicePattern, allPorts;
-	var dataptr, semaphore;
+	var dataptr, semaphore, <isOpen = false;
 
 	var <>doneAction;
 
 	*initClass {
 		allPorts = Array[];
 		ShutDown.add {
-			this.cleanupAll;
+			this.closeAll;
 		};
 	}
 
@@ -55,22 +55,21 @@ SerialPort {
 
 	initSerialPort { | ... args |
 		semaphore = Semaphore(0);
-		if ( dataptr.isNil ){
+		if ( isOpen.not ){
 			this.prOpen(*args);
 			allPorts = allPorts.add(this);
-			doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
+			isOpen = true;
 		}
 	}
 
-	isOpen {
-		^dataptr.notNil
-	}
 	close {
 		if (this.isOpen) {
 			this.prClose;
+			isOpen = false;
 			allPorts.remove(this);
 		}
 	}
+
 	*closeAll {
 		var ports = allPorts;
 		allPorts = Array[];
@@ -78,9 +77,8 @@ SerialPort {
 	}
 
 	*cleanupAll {
-		var ports = allPorts;
-		allPorts = Array[];
-		ports.do(_.primCleanup);
+		this.deprecated(thisMethod, SerialPort.findMethod('closeAll'));
+		this.closeAll
 	}
 
 	// non-blocking read
@@ -108,7 +106,7 @@ SerialPort {
 			"SerialPort:-put: the timeout argument is deprecated and will be removed in a future release".warn
 		};
 
-		if (dataptr.notNil) {
+		if (isOpen) {
 			^this.prPut(byte);
 		}{
 			"SerialPort not open".warn;
@@ -131,32 +129,41 @@ SerialPort {
 		_SerialPort_Open
 		^this.primitiveFailed
 	}
+
+	// Close the port; triggers doneAction
 	prClose {
 		_SerialPort_Close
 		^this.primitiveFailed
 	}
-	primCleanup {
-		_SerialPort_Cleanup
-		^this.primitiveFailed
-	}
-	prCleanup{
-		if (this.isOpen) {
-			allPorts.remove(this);
-			this.primCleanup;
-		}
-	}
+
 	prPut { | byte |
 		_SerialPort_Put
 		^this.primitiveFailed
 	}
+
+	// Deletes the C++ object for this port.
+	prCleanup {
+		_SerialPort_Cleanup
+		^this.primitiveFailed
+	}
+
+	// callback from C++ read thread
 	prDataAvailable {
-		// callback
 		semaphore.signal;
 	}
+
+	// callback from C++ read thread when done
 	prDoneAction {
-		// callback
-		this.doneAction.value;
-		// cleanup the port
-		this.prCleanup
+		// Catches case where connection is closed unexpectedly.
+		isOpen = false;
+
+		// Ensure memory is freed even if doneAction throws.
+		protect {
+			this.doneAction.value
+		} {
+			// Needs to run after this callback; otherwise crash when
+			// we try to wait for this thread to join, from itself.
+			{ this.prCleanup }.defer(0);
+		}
 	}
 }
