@@ -92,7 +92,7 @@ Deprecated; use link::#*closeAll:: instead.
 
 InstanceMethods::
 
-private::initSerialPort, prOpen, prClose, primCleanup, prCleanup, prPut, prDataAvailable, prDoneAction
+private::prInit, prOpen, prClose, primCleanup, prCleanup, prPut, prDataAvailable, prDoneAction
 
 method::isOpen
 Whether this object represents a valid serial port connection.

@@ -41,7 +41,7 @@ SerialPort {
 			};
 		}
 
-		^super.new.initSerialPort(
+		^super.new.prInit(
 			port,
 			exclusive,
 			baudrate,
@@ -53,7 +53,7 @@ SerialPort {
 		)
 	}
 
-	initSerialPort { | ... args |
+	prInit { | ... args |
 		semaphore = Semaphore(0);
 		if ( isOpen.not ){
 			this.prOpen(*args);
