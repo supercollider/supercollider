@@ -248,9 +248,9 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME);
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension));
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension));
-        vector<std::string> directories;
         const char * env_plugin_path = getenv("SC_PLUGIN_PATH");
         if (env_plugin_path) {
+            vector<std::string> directories;
             boost::split(directories, env_plugin_path, boost::is_any_of(pathSeparator));
             for (string const & path : directories) {
                 factory->load_plugin_folder(path);
