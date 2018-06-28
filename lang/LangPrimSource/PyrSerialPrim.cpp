@@ -346,6 +346,13 @@ static int prSerialPort_Open(struct VMGlobals *g, int numArgsPushed)
 
 	try {
 		port = new SerialPort(slotRawObject(self), portName, options);
+	} catch (boost::system::system_error & e) {
+		delete port;
+		if (e.code().value() == boost::system::errc::no_such_file_or_directory) {
+			throw std::runtime_error(std::string("SerialPort: port '") + portName + "' does not exist");
+		} else {
+			throw;
+		}
 	} catch (std::exception & e) {
 		delete port;
 		// TODO: check error types to provide better messages, such as when port doesn't exist
