@@ -83,6 +83,46 @@ UnitTest.reset;
 UnitTest.runAll;
 ::
 
+METHOD:: runTests
+run a list of testItems and optionally post how long they take.
+
+code::
+// same as TestServer_clientID.run;
+UnitTest.runTests(TestServer_clientID, false)
+
+// an example list of classes and methods "<TestClass:testMethod>"
+(
+UnitTest.runTests([
+	TestServer_clientID,
+	"TestServer_boot:test_bootSync"
+]);
+)
+
+// make a subgroup of server tests:
+(
+~serverTestClasses = UnitTest.allSubclasses.select { |cl|
+	var namestr = cl.name.asString;
+	namestr.contains("Server") and: { namestr.contains("GUI").not };
+};
+)
+// test that they all work with scsynth ...
+Server.scsynth;
+UnitTest.runTests(~serverTestClasses);
+
+// and supernova as well
+Server.supernova;
+UnitTest.runTests(~serverTestClasses);
+::
+
+ARGUMENT:: testItems
+a list of testItems given as classes and method names
+in the format of code::"<TestClass:testMethod>" ::
+
+ARGUMENT:: postTimes
+flag whether to post individual and total test times or not.
+
+
+
 
 INSTANCEMETHODS::
 
