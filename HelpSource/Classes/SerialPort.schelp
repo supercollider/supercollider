@@ -87,6 +87,9 @@ SerialPort.devices;
 method::closeAll
 Calls link::#-close:: on all ports.
 
+method::cleanupAll
+Deprecated; use link::#*closeAll:: instead.
+
 InstanceMethods::
 
 private::initSerialPort, prOpen, prClose, primCleanup, prCleanup, prPut, prDataAvailable, prDoneAction
