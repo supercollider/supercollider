@@ -74,7 +74,8 @@ Buffer {
 		this.cache;
 		path = argpath;
 		this.startFrame = startFrame;
-		^["/b_allocReadChannel", bufnum, path, startFrame, (numFrames ? -1).asInt] ++ channels ++ [completionMessage.value(this)]
+		completionMessage !? { completionMessage = [completionMessage.value(this)] };
+		^["/b_allocReadChannel", bufnum, path, startFrame, (numFrames ? -1).asInt] ++ channels ++ completionMessage
 	}
 
 	// read whole file into memory for PlayBuf etc.
