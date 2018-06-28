@@ -66,7 +66,6 @@ SerialPort {
 		if (this.isOpen) {
 			this.prClose;
 			isOpen = false;
-			allPorts.remove(this);
 		}
 	}
 
@@ -163,7 +162,8 @@ SerialPort {
 		} {
 			// Needs to run after this callback; otherwise crash when
 			// we try to wait for this thread to join, from itself.
-			{ this.prCleanup }.defer(0);
+			// Remove reference as last act, otherwise we risk GC running early.
+			{ this.prCleanup; allPorts.remove(this) }.defer(0);
 		}
 	}
 }
