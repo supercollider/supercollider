@@ -22,9 +22,11 @@
 #pragma once
 
 #include "widgets/QcTreeWidget.h"
+#include "widgets/QcMenu.h"
 #include "image.h"
 
 #include <PyrSlot.h>
+#include <PyrKernel.h>
 
 #include <QDebug>
 #include <QChar>
@@ -39,6 +41,7 @@
 #include <QFont>
 #include <QPalette>
 #include <QWidget>
+#include <QLayout>
 #include <QVector>
 #include <QUrl>
 #include <QVariantList>
@@ -90,6 +93,28 @@ void set( PyrSlot *slot, const T & val )
   // write is always type-safe
   TypeCodec<T>::write( slot, val );
 }
+  
+template<typename IteratorT>
+static void setObjectList( PyrSlot *slot, int size, IteratorT iter, IteratorT end)
+{
+  typedef typename IteratorT::value_type ValueT;
+  VMGlobals *g = gMainVMGlobals;
+  
+  PyrObject *array = newPyrArray( g->gc, size, 0, true );
+  SetObject( slot, array );
+  
+  PyrSlot *s = array->slots;
+  for ( ; iter != end; ++iter)
+  {
+    if (size > 0) {
+      TypeCodec<ValueT>::write(s, *iter);
+      ++array->size;
+      ++s;
+      --size;
+    }
+  }
+}
+
 
 // TypeCodecs
 
@@ -369,20 +394,8 @@ template <> struct TypeCodec<QObject*>
   static void write( PyrSlot *, QObject * );
 };
 
-template <> struct TypeCodec<QWidget*>
-{
-  static QWidget* read( PyrSlot * )
-  {
-    qWarning("WARNING: QtCollider: reading QWidget* from PyrSlot not supported.");
-    return 0;
-  }
 
-  static void write( PyrSlot *slot, QWidget * widget )
-  {
-    TypeCodec<QObject*>::write(slot, widget);
-  }
-};
-
+#define TYPE_IS_QOBJECT(type) std::is_convertible<QObjectT, QObject*>::value
 template <> struct TypeCodec<PyrObject*>
 {
   static PyrObject* read( PyrSlot * )
@@ -423,6 +436,34 @@ template <> struct TypeCodec< QVector<double> >
   static QVector<double> read( PyrSlot *slot );
 
   static void write( PyrSlot *slot, const QVector<double> & );
+};
+  
+template <typename ContainedT>
+struct TypeCodec< QVector<ContainedT> >
+{
+  static QVector<ContainedT> read( PyrSlot *slot ) {
+    qWarning("WARNING: TypeCodec<PyrObject*>::read(PyrSlot*) = NO-OP");
+    return QVector<ContainedT>();
+  }
+  
+  static void write( PyrSlot *slot, const QVector<ContainedT> & vec)
+  {
+    setObjectList(slot, vec.size(), vec.begin(), vec.end());
+  }
+};
+
+template <typename ContainedT>
+struct TypeCodec< QList<ContainedT> >
+{
+  static QList<ContainedT> read( PyrSlot *slot ) {
+    qWarning("WARNING: TypeCodec<PyrObject*>::read(PyrSlot*) = NO-OP");
+    return QList<ContainedT>();
+  }
+  
+  static void write( PyrSlot *slot, const QList<ContainedT> & vec)
+  {
+    setObjectList(slot, vec.size(), vec.begin(), vec.end());
+  }
 };
 
 template <> struct TypeCodec<QVariantList>

@@ -21,6 +21,8 @@
 
 #include "QcButton.h"
 #include "../QcWidgetFactory.h"
+#include <QStylePainter>
+#include <QStyle>
 
 QC_DECLARE_QWIDGET_FACTORY(QcButton);
 
@@ -60,6 +62,7 @@ void QcButton::setState( int i )
 
   currentState = qBound( 0, i, c-1 );
   setText( states[currentState].text );
+  
   update();
 }
 
@@ -77,35 +80,85 @@ void QcButton::doAction()
   Q_EMIT( action((int)QApplication::keyboardModifiers()) );
 }
 
-void QcButton::paintEvent ( QPaintEvent * )
+void QcButton::paintEvent ( QPaintEvent * e)
 {
   using namespace QtCollider::Style;
   using QtCollider::Style::RoundRect;
 
-  QPainter p(this);
-  p.setRenderHint( QPainter::Antialiasing, true );
-
+  QStylePainter sp(this);
+  QPalette plt(palette());
+  
   State state;
   if(states.count()) state = states[currentState];
 
-  const QPalette &plt = palette();
-  bool sunken = isDown();
-  int radius = 2;
+  if (state.textColor.isValid()) plt.setColor(QPalette::ButtonText, state.textColor);
+  if (state.buttonColor.isValid()) plt.setColor(QPalette::Button, state.buttonColor);
+  
+  QStyleOptionButton option;
+  initStyleOption(&option);
+  
+  QStyleOptionButton mbiOption = option;
 
-  if(!state.buttonColor.isValid()) state.buttonColor = plt.color(QPalette::Button);
-  if(sunken) state.buttonColor = state.buttonColor.darker(120);
+  QPainter p(this);
+  p.setRenderHint( QPainter::Antialiasing, true );
+
+  bool sunken   = isDown();
+  int radius    = 2;
+  bool hasMenu  = (option.features & QStyleOptionButton::HasMenu);
+  int mbiSize   = hasMenu ? sp.style()->pixelMetric(QStyle::PM_MenuButtonIndicator, &option, this)
+                          : 0;
+  
+  if(sunken) {
+    plt.setColor(QPalette::ButtonText, plt.color(QPalette::ButtonText).darker(120));
+    option.rect.translate(1,1);
+  }
+  
+  option.palette = plt;
 
   QColor focusClr( hasFocus() ? focusColor() : QColor() );
 
   QRect r(rect());
-
+  
   RoundRect frame( r, radius );
   if( sunken )
-    drawSunken( &p, plt, frame, state.buttonColor, focusClr);
+    drawSunken( &p, plt, frame, plt.color(QPalette::Button), focusClr);
   else
-    drawRaised( &p, plt, frame, state.buttonColor, focusClr );
-
-  p.setPen( state.textColor.isValid() ? state.textColor : plt.color(QPalette::ButtonText) );
-  if(sunken) r.translate(1,1);
-  p.drawText( r,  Qt::AlignCenter, text() );
+    drawRaised( &p, plt, frame, plt.color(QPalette::Button), focusClr );
+  
+  p.setPen(plt.color(QPalette::ButtonText));
+    
+  option.rect.adjust(0, 0, -mbiSize, 0);
+  sp.drawControl(QStyle::CE_PushButtonLabel, option);
+  
+  if (hasMenu) {
+    mbiOption.rect = QRect(r.right() - mbiSize + 2,
+                           r.height() / 2 - mbiSize / 2 + 3,
+                           mbiSize - 6,
+                           mbiSize - 6);
+    sp.style()->drawPrimitive(QStyle::PE_IndicatorArrowDown, &mbiOption, &p, this);
+  }
 }
+
+void QcButton::setQcMenu(QcMenu* menu)
+{
+  QPushButton::setMenu(menu);
+}
+
+QcMenu* QcButton::qcmenu() const
+{
+  QMenu* menu = QPushButton::menu();
+  QcMenu* qcmenu = qobject_cast<QcMenu*>(menu);
+  return qcmenu;
+}
+
+void QcButton::setIcon(const QtCollider::SharedImage & image)
+{
+  if (image) {
+    QIcon icon = QIcon(image->pixmap());
+    QAbstractButton::setIcon(icon);
+  } else {
+    QAbstractButton::setIcon(QIcon());
+  }
+    
+}
+

@@ -99,9 +99,13 @@ namespace QtCollider {
   QC_DO_SYMBOL(WebPage); \
   QC_DO_SYMBOL(QObject); \
   QC_DO_SYMBOL(Layout); \
+  QC_DO_SYMBOL(ScrollCanvas); \
   QC_DO_SYMBOL(TreeViewItem); \
   QC_DO_SYMBOL(Gradient); \
   QC_DO_SYMBOL(HiliteGradient); \
+  QC_DO_SYMBOL(AbstractMenuAction); \
+  QC_DO_SYMBOL(Menu); \
+  QC_DO_SYMBOL(View); \
   QC_DO_SYMBOL(Image);
 
 #define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
