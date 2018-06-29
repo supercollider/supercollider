@@ -244,7 +244,7 @@ Symbol {
 	}
 
 	ar { | val, lag, spec |
-		^NamedControl.ar(this, val, lag, spec:spec)
+		^NamedControl.ar(this, val, lag, spec)
 	}
 
 	matchOSCAddressPattern { arg addressPattern;
