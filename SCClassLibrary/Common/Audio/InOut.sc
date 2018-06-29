@@ -27,11 +27,11 @@ ControlName {
 			spec = spec.asSpec;
 
 			defaultValue ?? {
-				defaultValue = spec.default
+				defaultValue = spec.default;
 			};
 
 			UGen.buildSynthDef.specs[name] !? _.setFrom(spec) ?? {
-				UGen.buildSynthDef.specs[name] = spec
+				UGen.buildSynthDef.specs[name] = spec;
 			};
 		}
 	}
