@@ -39,14 +39,14 @@ TestControlSpec : UnitTest {
 		a = ControlSpec(1, 2, \lin, 0.1, 1.5, "test units");
 		b = ControlSpec().setFrom(a);
 
-		this.assertEquals(b.minval, 1);
-		this.assertEquals(b.maxval, 2);
-		this.assert(b.warp.isKindOf(LinearWarp));
-		this.assertEquals(b.warp.spec, b);
-		this.assertEquals(b.step, 0.1);
-		this.assertEquals(b.default, 1.5);
-		this.assertEquals(b.units, "test units");
-		this.assertEquals(b.grid.spec, b);
+		this.assertEquals(b.minval, 1, "set minval");
+		this.assertEquals(b.maxval, 2, "set maxval");
+		this.assert(b.warp.isKindOf(LinearWarp), "set warp");
+		this.assertEquals(b.warp.spec, b, "set warp:spec");
+		this.assertEquals(b.step, 0.1, "set step");
+		this.assertEquals(b.default, 1.5, "set default");
+		this.assertEquals(b.units, "test units", "set units");
+		this.assertEquals(b.grid.spec, b, "set grid");
 	}
 
 	test_defcontrols_args {
@@ -60,7 +60,7 @@ TestControlSpec : UnitTest {
 			Out.ar(0, SinOsc.ar(freq));
 		}).add;
 
-		this.assertEquals(spec, def.specs[\freq]);
+		this.assertEquals(spec, def.specs[\freq], "spec set correctly on synth argument");
 	}
 
 	test_defcontrols_symbols {
@@ -79,10 +79,10 @@ TestControlSpec : UnitTest {
 			Out.ar(0, SinOsc.ar(freq));
 		}).add;
 
-		this.assertEquals(spec, def.specs[\dur]);
-		this.assertEquals(spec, def.specs[\freq]);
-		this.assertEquals(spec, def.specs[\input]);
-		this.assertEquals(spec, def.specs[\gate]);
+		this.assertEquals(spec, def.specs[\dur], "set correctly with named ir control");
+		this.assertEquals(spec, def.specs[\freq], "set correctly with named kr control");
+		this.assertEquals(spec, def.specs[\input], "set correctly with named ar control");
+		this.assertEquals(spec, def.specs[\gate], "set correctly with named tr control");
 	}
 
 	test_defcontrols_metadata {
@@ -95,7 +95,7 @@ TestControlSpec : UnitTest {
 			Out.ar(0, SinOsc.ar(freq));
 		}, metadata: ( specs: ( freq: spec ))).add;
 
-		this.assertEquals(spec, def.specs[\freq]);
+		this.assertEquals(spec, def.specs[\freq], "set correctly in metadata blob");
 	}
 
 	test_defcontrols_nodeproxy {
@@ -108,7 +108,7 @@ TestControlSpec : UnitTest {
 			SinOsc.ar(\freq.kr(spec:spec));
 		};
 
-		this.assertEquals(spec, proxy.specs[\freq]);
+		this.assertEquals(spec, proxy.specs[\freq], "set correctly in NodeProxy");
 	}
 
 	test_def_defaults {
@@ -119,7 +119,7 @@ TestControlSpec : UnitTest {
 			freq = \freq.kr(spec:ControlSpec(0, 10000, default:123));
 		}).add;
 
-		this.assertEquals(def.desc.controls[0].defaultValue, 123);
+		this.assertEquals(def.desc.controls[0].defaultValue, 123, "set default correctly from SynthDef");
 	}
 
 
