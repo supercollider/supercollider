@@ -193,14 +193,14 @@ QWidget * QcTreeWidget::itemWidget( const QcTreeWidget::ItemPtr &item, int colum
   return item ? QTreeWidget::itemWidget( item, column ) : 0;
 }
 
-void QcTreeWidget::setItemWidget( const QcTreeWidget::ItemPtr &item, int column, QObjectProxy *o )
+void QcTreeWidget::setItemWidget( const QcTreeWidget::ItemPtr &item, int column, QWidget *o )
 {
   if( !item ) return;
 
-  QWidget *w = qobject_cast<QWidget*>(o->object());
-  if( !w ) return;
+  if( !o )
+    return;
 
-  QTreeWidget::setItemWidget( item, column, w );
+  QTreeWidget::setItemWidget( item, column, o );
 }
 
 void QcTreeWidget::removeItemWidget( const QcTreeWidget::ItemPtr &item, int column )
