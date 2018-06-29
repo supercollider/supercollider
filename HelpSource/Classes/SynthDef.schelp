@@ -485,12 +485,11 @@ Pbind(
 
 
 subsection:: Inline ControlSpec definitions
-Sometimes, it can be clearer to specify a link::Classes/ControlSpec:: for a parameter at the point of it's usage in a SynthDef, rather than elsewhere.
+Sometimes, it can be clearer to specify a link::Classes/ControlSpec:: for a parameter at the point of its usage in a SynthDef, rather than elsewhere.
 Specs can be set either when contructing a link::Classes/NamedControl:: or as a property of a SynthDef argument.
 code::
 (
-~def = SynthDef(\argumentExample, {
-	|freq, amp|
+~def = SynthDef(\argumentExample, { |freq, amp|
 	var sig;
 	freq.spec = ControlSpec(20, 20000, \exp);
 	amp.spec = ControlSpec(0, 1);

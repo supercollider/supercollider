@@ -491,7 +491,7 @@ method::controlKeysValues
 Get all key value pairs from default arguments.
 
 method::specs
-Get the specs array from SynthDef metadata.Note that, for a NodeProxy with multiple sources, result will be a dictionary containing specs of ALL source SynthDefs.
+Get the specs array from SynthDef metadata. Note that, for a NodeProxy with multiple sources, result will be a dictionary containing specs of ALL source SynthDefs.
 code::
 ~p = NodeProxy.audio(Server.default, 2);
 ~p.put(0, { SinOsc.ar(\freq.kr(100, spec:[50, 400])) });
