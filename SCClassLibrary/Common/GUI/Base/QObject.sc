@@ -36,6 +36,8 @@ QObject {
 	var qObject, finalizer;
 	var virtualSlots;
 
+	const errQtMethodNotFound = 5500; // PyrErrors.h
+
 	*qtClass { ^nil }
 
 	*meta { ^QMetaObject(this.qtClass) }
@@ -135,7 +137,11 @@ QObject {
 
 	invokeMethod { arg method, arguments, synchronous = true;
 		_QObject_InvokeMethod
-		^this.primitiveFailed
+		if(Thread.primitiveError == errQtMethodNotFound) {
+			QMethodNotFoundError(this, method, arguments).throw;
+		} {
+			^this.primitiveFailed;
+		}
 	}
 
 	////////////////////// private //////////////////////////////////

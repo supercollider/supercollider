@@ -534,9 +534,7 @@ QC_LANG_PRIMITIVE( QObject_InvokeMethod, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g
     cType = Qt::QueuedConnection;
   }
 
-  bool ok = proxy->invokeMethod( method->name, retSlot, methodArgs, cType );
-
-  return ok ? errNone : errFailed;
+  return proxy->invokeMethod( method->name, retSlot, methodArgs, cType );
 }
 
 QC_LANG_PRIMITIVE( QObject_IsValid, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )

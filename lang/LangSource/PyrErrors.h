@@ -39,6 +39,7 @@ enum { // primitive errors
 	errOutOfMemory,
 	errCantCallOS,
 	errException,
+	errQtMethodNotFound = 5500, // Indicates invokeMethod error. Used in QObject.sc
 
 	errPropertyNotFound = 6000,
 

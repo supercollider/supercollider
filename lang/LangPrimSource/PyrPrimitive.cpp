@@ -338,6 +338,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 			}
 			break;
 		}
+		case errQtMethodNotFound : str = "QtGUI method could not be found."; break;
 		default : str = "Failed.";
 	}
 	string = newPyrString(g->gc, str.c_str(), 0, true);

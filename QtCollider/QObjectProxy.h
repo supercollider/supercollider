@@ -113,8 +113,17 @@ class QObjectProxy : public QObject
     bool setEventHandler( int eventType, PyrSymbol *method, QtCollider::Synchronicity, bool enabled = true );
     bool setEventHandlerEnabled( int eventType, bool enabled );
 
-    // thread-safe if connection == queued
-    bool invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
+    /**
+     * \brief Invokes a Qt GUI method on an object.
+     *
+     * Thread-safe if connectionn type is queued
+     *
+     * \param method The name of the method
+     * \param ret The slot in which to place the return value
+     * \param arg The receiver of the call
+     * \return An error code from PyrErrors.h indicating the reason for failure.
+     */
+    int invokeMethod( const char *method, PyrSlot *ret, PyrSlot *arg, Qt::ConnectionType );
 
     void destroy( DestroyAction );
 

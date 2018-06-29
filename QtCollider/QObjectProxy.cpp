@@ -33,6 +33,7 @@
 #include <QVarLengthArray>
 #include <QThread>
 
+#include <PyrErrors.h>
 #include <PyrKernel.h>
 #include <VMGlobals.h>
 
@@ -113,13 +114,13 @@ static bool serializeSignature( QVarLengthArray<char, 512> & dst,
   return true;
 }
 
-bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
+int QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *argSlot,
                                  Qt::ConnectionType ctype )
 {
   QMutexLocker locker(&mutex);
 
   if( !qObject )
-    return true;
+    return errNone;
 
   MetaValue args[10];
 
@@ -144,12 +145,12 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   {
       MetaType *type = MetaType::find(argslots + i);
       if(!type)
-        return false;
+        return errQtMethodNotFound;
 
       void *mem =  alloca(type->size());
       if(!mem) {
         qcErrorMsg("Could not allocate stack space for argument!");
-        return false;
+        return errOutOfMemory;
       }
 
       args[i].read(mem, type, argslots + i);
@@ -158,7 +159,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   // serialize signature
   QVarLengthArray<char, 512> sig;
   if ( !serializeSignature( sig, method, argc, args ) )
-    return false;
+    return errQtMethodNotFound;
 
   // get the meta method
   const QMetaObject *mo = qObject->metaObject();
@@ -172,7 +173,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   if( mi < 0 || mi >= mo->methodCount()  ) {
     qcProxyDebugMsg( 1, QStringLiteral("WARNING: No such method: %1::%2").arg( mo->className() )
                         .arg( sig.constData() ) );
-    return false;
+    return errQtMethodNotFound;
   }
 
   QMetaMethod mm = mo->method( mi );
@@ -188,13 +189,13 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
     MetaType *type = MetaType::find(rtype_id);
     if(!type) {
       qcErrorMsg(QStringLiteral("No translation for return type '%1'").arg(rtype_name));
-      return false;
+      return errQtMethodNotFound;
     }
 
     void *mem = alloca(type->size());
     if (!mem) {
       qcErrorMsg("Could not allocate stack space for return value");
-      return false;
+      return errOutOfMemory;
     }
 
     returnVal.read(mem, type, 0); // default construction
@@ -220,7 +221,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
     returnVal.write( retSlot );
 
   // done
-  return success;
+  return success ? errNone : errFailed;
 }
 
 void QObjectProxy::invokeScMethod
