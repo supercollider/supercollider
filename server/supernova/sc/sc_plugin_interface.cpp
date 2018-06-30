@@ -975,7 +975,7 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char 
     auto f = makeSndfileHandle(filename);
     if (f.rawHandle() == nullptr)
         throw std::runtime_error(f.strError());
-    
+
     uint32_t sf_channels = uint32_t(f.channels());
     const uint32_t * max_chan = std::max_element(channel_data, channel_data + channel_count);
     if (*max_chan >= sf_channels)
