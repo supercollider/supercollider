@@ -813,7 +813,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
 	if (mNumFrames <= 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
 
-    if (mNumChannels > 0){
+    if (mNumChannels > 0) {
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
 			const char* str = "Channel index out of range.\n";
