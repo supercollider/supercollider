@@ -101,7 +101,7 @@ HelpBrowser {
 				if(newPath == oldPath) {webView.onLoadFinished.value};
 				webView.focus;
 			} {|err|
-				webView.html = err.errorString;
+				webView.setHtml(err.errorString);
 				err.throw;
 			};
 			CmdPeriod.remove(this);
@@ -181,7 +181,7 @@ HelpBrowser {
 				.resize_(1)
 				.string_(str)
 				.value_(openNewWin)
-				.action_({ |b| openNewWin = b.value });
+				.action_({ |b| openNewWin = b.value; webView.overrideNavigation = openNewWin; });
 		} {
 			str = "Open links in same window";
 			w = str.bounds.width + 5;
@@ -189,7 +189,7 @@ HelpBrowser {
 				.resize_(1)
 				.states_([[str],["Open links in new window"]])
 				.value_(openNewWin.asInteger)
-				.action_({ |b| openNewWin = b.value.asBoolean });
+				.action_({ |b| openNewWin = b.value.asBoolean; webView.overrideNavigation = openNewWin; });
 		};
 
 		x = 0;
@@ -212,29 +212,31 @@ HelpBrowser {
 		w = winRect.width - 10;
 		h = winRect.height - y - marg;
 		webView = WebView.new( window, Rect(x,y,w,h) ).resize_(5);
-		webView.html = "Please wait while initializing Help... (This might take several seconds the first time)";
+		webView.setHtml("Please wait while initializing Help... (This might take several seconds the first time)");
 
-		if(webView.respondsTo(\setFontFamily)) {
-			webView.setFontFamily(\fixed, Platform.case(
-				\osx, { "Monaco" },
-				\linux, { "Andale Mono" },
-				{ "Monospace" }
-			))
-		};
+		webView.setFontFamily(\fixed, Platform.case(
+			\osx, { "Monaco" },
+			\linux, { "Andale Mono" },
+			{ "Monospace" }
+		));
 
 		webView.onLoadFinished = {
 			this.stopAnim;
 			window.name = "SuperCollider Help: %".format(webView.title);
 		};
+
 		webView.onLoadFailed = { this.stopAnim };
+
 		webView.onLinkActivated = {|wv, url|
 			var redirected, newPath, oldPath;
 			redirected = this.redirectTextFile(url);
+
 			if (not(redirected)) {
 				if(openNewWin) {
 					#newPath, oldPath = [url,webView.url].collect {|x|
 						if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 					};
+
 				};
 				if(newPath!=oldPath) {
 					HelpBrowser.new(newWin:true).goTo(url);
@@ -243,16 +245,14 @@ HelpBrowser {
 				};
 			}
 		};
-		if(webView.respondsTo(\onReload_)) {
-			webView.onReload = {|wv, url|
-				WebView.clearCache;
-				this.goTo(url);
-			};
+
+		webView.onReloadTriggered = {|wv, url|
+			WebView.clearCache;
+			this.goTo(url);
 		};
-		if(webView.respondsTo(\onJavaScriptMsg_)) {
-			webView.onJavaScriptMsg = {|wv, err, type|
-				"JavaScript %: %".format(if(type==0,"Error","Message"),err).postln;
-			};
+
+		webView.onJavaScriptMsg = {|wv, err, type|
+			"JavaScript %: %".format(if(type==0,"Error","Message"),err).postln;
 		};
 
 		toggleFind = {
@@ -287,6 +287,8 @@ HelpBrowser {
 		toolbar[\Forward].action = { this.goForward };
 		toolbar[\Reload].action = { this.goTo( webView.url ) };
 		txtFind.action = { |x| webView.findText( x.string ) };
+
+		{ this.goHome() }.defer;
 	}
 
 	redirectTextFile {|url|
