@@ -813,7 +813,15 @@ bool BufAllocReadChannelCmd::Stage2()
 	else if (mFileOffset > fileinfo.frames) mFileOffset = fileinfo.frames;
 	if (mNumFrames <= 0 || mNumFrames + mFileOffset > fileinfo.frames) mNumFrames = fileinfo.frames - mFileOffset;
 
-    if (mNumChannels > 0) {
+	if (mNumChannels == 0) {
+		// alloc data size
+		mFreeData = buf->data;
+		SCErr err = bufAlloc(buf, fileinfo.channels, mNumFrames, fileinfo.samplerate);
+		if (err) goto leave;
+		// read all channels
+		sf_seek(sf, mFileOffset, SEEK_SET);
+		sf_readf_float(sf, buf->data, mNumFrames);
+	} else {
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
 			const char* str = "Channel index out of range.\n";
