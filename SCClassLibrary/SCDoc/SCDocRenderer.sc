@@ -430,7 +430,7 @@ SCDocHTMLRenderer {
 					args2 = m2.argNames !? {m2.argNames[1..]};
 				};
 				maxargs.do {|i|
-					var a = args2[i];
+					var a = args2 !? args2[i];
 					var b = lastargs[i];
 					if(a!=b and: {a!=nil} and: {b!=nil}) {
 						methArgsMismatch = true;
