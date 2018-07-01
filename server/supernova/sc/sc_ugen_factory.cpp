@@ -32,6 +32,7 @@
 #include "SC_World.h"
 #include "SC_Wire.h"
 #include "ErrorMessage.hpp"
+#include "SC_Filesystem.hpp" // SC_PLUGIN_EXT
 
 namespace nova {
 
