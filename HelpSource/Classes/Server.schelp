@@ -39,7 +39,7 @@ argument:: name
 a symbol;  each Server object is stored in one global classvariable under its name.
 
 argument:: addr
-an optional instance of the link::Classes/NetAddr::, providing host and port.
+an optional instance of link::Classes/NetAddr::, providing host and port.
 The default is the localhost address using port 57110; the same as the local server.
 
 argument:: options
