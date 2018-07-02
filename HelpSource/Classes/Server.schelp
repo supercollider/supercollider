@@ -5,7 +5,7 @@ related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server
 
 description::
 
-A Server object is a representation of a server application. It is used to control scsynth (or supernova) from the SuperCollider language. (See link::Guides/Server-Guide::, as well as a link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses, and buffers.
+A Server object is a representation of a server application. It is used to control scsynth (or supernova) from the SuperCollider language. (See link::Guides/Server-Guide::, as well as link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses, and buffers.
 
 The server application represented by a Server object might be running on the same machine as the sclang, or it may be running on a remote machine.
 
