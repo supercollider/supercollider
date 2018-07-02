@@ -162,7 +162,7 @@ s.sendBundle(0.2, ["/s_new", "default", x = s.nextNodeID, 0, 1], ["/n_set", x, "
 method:: sendRaw
 
 method:: listSendMsg
-as sendMsg, but takes an array as an argument.
+as sendMsg, but takes an array as argument.
 
 method:: listSendBundle
 as sendBundle, but takes an array as argument.
