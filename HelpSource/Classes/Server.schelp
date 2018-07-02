@@ -273,7 +273,7 @@ Return an array mapping client IDs to their associated default groups as
 link::Classes/Group:: objects.
 
 method:: volume
-Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. The level is in db.
+Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. Level is in db.
 
 method:: mute
 mute the server's output. This can also be toggled from the Server window with the 'm' key.
