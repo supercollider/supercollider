@@ -237,7 +237,7 @@ argument::onFailure
 A function that is called when quit has failed.
 
 argument::watchShutDown
-a boolean to tell the server whether to watch status during the shutdown.
+a boolean to tell the server whether to watch status during shutdown.
 
 method:: reboot
 quit and restart the server application
