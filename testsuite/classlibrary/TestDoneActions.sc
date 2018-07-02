@@ -45,21 +45,3 @@ TestDoneActions : UnitTest {
 	}
 
 }
-
-TestDoneActionsSupernova : TestDoneActions {
-
-	setUp {
-		Server.supernova;
-		super.setUp;
-	}
-
-	tearDown {
-		super.tearDown;
-		Server.scsynth;
-	}
-
-	// this is needed so that the UnitTest run  method can find the method selector
-	test_freeSelfAndResumeNext {
-		super.test_freeSelfAndResumeNext
-	}
-}
