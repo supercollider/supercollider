@@ -4,6 +4,7 @@ UnitTest {
 	const <brief = 1, <full = 2;
 	classvar <failures, <passes, routine, <>reportPasses = true, <>passVerbosity;
 	classvar <allTestClasses;
+	classvar <>postTimes = true;
 
 	*initClass {
 		passVerbosity = full;
@@ -59,14 +60,15 @@ UnitTest {
 
 	// run a single test method of this class
 	runTestMethod { | method |
-		var function;
+		var start = Main.elapsedTime, runTime;
 		("RUNNING UNIT TEST" + this.class.name ++ ":" ++ method.name).inform;
 		this.class.forkIfNeeded {
 			this.setUp;
 			currentMethod = method;
 			this.perform(method.name);
 			this.tearDown;
-			this.class.report;
+			runTime = Main.elapsedTime - start;
+			this.class.report(runTime);
 			nil
 		}
 	}
@@ -76,12 +78,10 @@ UnitTest {
 
 	*runTests { |testItems, postTimes = false|
 		^this.forkIfNeeded {
-			var startTime = Main.elapsedTime;
+			var start = Main.elapsedTime;
 			this.reset;
 			testItems = testItems ?? { this.allSubclasses };
 			testItems.do ({ |testItem|
-				var myStartTime = Main.elapsedTime;
-				var myTestTime;
 				if (testItem.isKindOf(Class)) {
 					// assume this is a UnitTest:
 					if (testItem.superclasses.includes(UnitTest)) {
@@ -98,20 +98,11 @@ UnitTest {
 						}
 					}
 				};
-				myTestTime = Main.elapsedTime - myStartTime;
-				if (postTimes) {
-					"*** % took % seconds to run.\n".postf(testItem, myTestTime);
-				};
 				0.1.wait;
 			});
-			if (postTimes) {
-				"*** % for items: % took % seconds to run.\n".postf(
-					thisMethod,
-					testItems,
-					Main.elapsedTime - startTime
-				);
-			};
-			this.report;
+			this.report(Main.elapsedTime - start);
+		}
+	}
 		}
 	}
 
@@ -341,9 +332,13 @@ UnitTest {
 		^("Test" ++ forClass.name.asString).asSymbol.asClass
 	}
 
-	*report {
+	*report { |runTime|
+		var str =  "UNIT TEST.............";
+		if (postTimes and: { runTime.notNil }) {
+			str = str + "runTime: %".format(runTime.round(0.00001))
+		};
 		Post.nl;
-		"UNIT TEST.............".inform;
+		str.postln;
 		if(failures.size > 0) {
 			"There were failures:".inform;
 			failures.do { arg results;
@@ -361,6 +356,7 @@ UnitTest {
 		if(reset) { this.class.reset };
 		if(report) { ("RUNNING UNIT TEST" + this).inform };
 		this.class.forkIfNeeded {
+			var start = Main.elapsedTime, runTime;
 			this.findTestMethods.do { |method|
 				this.setUp;
 				currentMethod = method;
@@ -374,7 +370,8 @@ UnitTest {
 
 				this.tearDown;
 			};
-			if(report) { this.class.report };
+			runTime = Main.elapsedTime - start;
+			if(report) { this.class.report(runTime) };
 			nil
 		};
 
