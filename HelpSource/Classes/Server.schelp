@@ -255,7 +255,7 @@ method:: status
 query the server status
 
 method:: notify
-The server sends notifications, for example, if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. if code::flag:: is set to false, these messages will not be sent to this client. The default is true. If true the server will respond with a clientID (scsynth only) which can be useful in multi-client situations. If this is different from any previously received ID new allocators will be created. See link::#Local vs. Remote Servers, Multi-client Configurations:: for more information.
+The server sends notifications, for example, if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. If code::flag:: is set to false, these messages will not be sent to this client. The default is true. If true the server will respond with a clientID (scsynth only) which can be useful in multi-client situations. If this is different from any previously received ID new allocators will be created. See link::#Local vs. Remote Servers, Multi-client Configurations:: for more information.
 
 method:: ping
 measure the time between server and client, which may vary. the code::func:: is
