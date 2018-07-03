@@ -354,7 +354,7 @@ method:: addr
 The network address of the server as a link::Classes/NetAddr::.
 
 method:: maxNumClients
-If known, the maximum number of clients allowed on the server. Otherwise, the value of link::Classes/ServerOptions#-maxLogins::, which is what will be requested after the server boots. This number is not guaranteed to be correct until link::#-serverRunning:: is the code::true::.
+If known, the maximum number of clients allowed on the server. Otherwise, the value of link::Classes/ServerOptions#-maxLogins::, which is what will be requested after the server boots. This number is not guaranteed to be correct until link::#-serverRunning:: is code::true::.
 
 method:: clientID
 The getter returns the client ID of this client on the remote process. code::nil:: until the server is running.
