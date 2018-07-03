@@ -153,7 +153,7 @@ method:: sendBundle
 send an OSC-bundle to the server.
 discussion::
 Since the network may have irregular performance, time allows for the bundle to be evaluated at a specified point in the future.
-Thus all messages are synchronous relative to each other but delayed by a constant offset.
+Thus all messages are synchronous relative to each other, but delayed by a constant offset.
 If such a bundle arrives late, the server replies with a late message but still evaluates it.
 code::
 s.sendBundle(0.2, ["/s_new", "default", x = s.nextNodeID, 0, 1], ["/n_set", x, "freq", 500]);
