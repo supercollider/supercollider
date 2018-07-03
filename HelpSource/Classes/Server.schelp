@@ -682,14 +682,14 @@ an optional instance of link::Classes/Condition:: used for evaluating this.
 method:: sendMsgSync
 Send the following message to the wait until it has completed before resuming the thread.
 argument:: condition
-an optional instance of the link::Classes/Condition:: used for evaluating this.
+an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args
 one or more valid OSC messages.
 
 method:: sync
 Send a code::/sync:: message to the server, which will reply with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
-an optional instance of the link::Classes/Condition:: used for evaluating this.
+an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: bundles
 one or more OSC messages which will be bundled before the sync message (thus ensuring that they will arrive before the /sync message). argument:: latency
 allows for the message to be evaluated at a specific point in the future.
