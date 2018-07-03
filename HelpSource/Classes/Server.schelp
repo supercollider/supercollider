@@ -369,7 +369,7 @@ method:: serverBooting
 code::true:: if the server is booting, code::false:: otherwise.
 
 method:: hasBooted
-code::true:: if the server has booted. The server is not guaranteed to have a correct clientID, nor is it guaranteed that actions in the link::Classes/ServerTree:: will have run yet.
+code::true:: if the server has booted. The server is not guaranteed to have a correct clientID, nor is it guaranteed that actions in link::Classes/ServerTree:: will have run yet.
 
 method:: serverRunning
 code::true:: only if the server is fully ready. A server is fully ready once it has booted, received a reply to a code::/notify:: command, been given a client ID, and after the link::Classes/ServerTree:: has run.
