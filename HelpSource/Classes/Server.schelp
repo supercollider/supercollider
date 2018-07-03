@@ -98,7 +98,7 @@ Server.allRunningServers
 ::
 
 method:: allBootedServers
-returns:: a Set containing all booted servers, according to the definition of the link::#-hasBooted::.
+returns:: a Set containing all booted servers, according to the definition of link::#-hasBooted::.
 
 method:: named
 returns:: An link::Classes/IdentityDictionary:: of all servers listed by their name
