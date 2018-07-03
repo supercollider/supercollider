@@ -653,7 +653,7 @@ method:: pauseRecording
 Pauses recording. Can be resumed by executing record again.
 
 method:: stopRecording
-Stops recording closes the file and frees the associated resources.
+Stops recording, closes the file, and frees the associated resources.
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
