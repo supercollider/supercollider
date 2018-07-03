@@ -339,7 +339,7 @@ method:: numSynths
 Get number of running link::Classes/Synth::s.
 
 method:: numGroups
-Get the number of the link::Classes/Group::s.
+Get the number of link::Classes/Group::s.
 
 method:: numUGens
 Get the number of running link::Classes/UGen::s.
