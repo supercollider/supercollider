@@ -677,7 +677,7 @@ The server provides support for waiting on the completion of asynchronous OSC-co
 method:: bootSync
 Boot the Server and wait until it has completed before resuming the thread.
 argument:: condition
-an optional instance of the link::Classes/Condition:: used for evaluating this.
+an optional instance of link::Classes/Condition:: used for evaluating this.
 
 method:: sendMsgSync
 Send the following message to the wait until it has completed before resuming the thread.
