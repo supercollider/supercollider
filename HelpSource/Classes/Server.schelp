@@ -55,7 +55,7 @@ argument:: name
 a symbol;  each Server object is stored in one global classvariable under its name.
 
 argument:: addr
-an optional instance of the link::Classes/NetAddr::, providing IP address of the remote machine and port the app is listening on.
+an optional instance of link::Classes/NetAddr::, providing IP address of the remote machine and port the app is listening on.
 
 argument:: options
 an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
