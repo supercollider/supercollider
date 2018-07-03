@@ -91,7 +91,7 @@ Server.all
 ::
 
 method:: allRunningServers
-returns:: a Set containing all running servers, according to the definition of the link::#-serverRunning::.
+returns:: a Set containing all running servers, according to the definition of link::#-serverRunning::.
 
 code::
 Server.allRunningServers
