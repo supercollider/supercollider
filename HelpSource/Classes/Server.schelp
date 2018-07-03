@@ -222,7 +222,7 @@ If true, start a Routine to send a /status message to the server every so often.
 argument:: recover
 If true, create a new node ID allocator for the server, but use the old buffer and bus allocators. This is useful if the server process did not actually stop. In normal use, the default value "false" should be used.
 argument:: onFailure
-In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use the link::#-waitForBoot:: or link::#-doWhenBooted::.
+In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use link::#-waitForBoot:: or link::#-doWhenBooted::.
 
 discussion::
 You cannot boot a server app on a remote machine, but you can initialize the allocators by calling this message.
