@@ -489,7 +489,7 @@ set the number of shared control buses. Must be done before the internal server 
 
 subsection:: Persistent Node Trees
 
-The class link::Classes/ServerTree:: can be used to store functions which will be evaluated after the server is booted, after all, nodes are freed, and after cmd-. is pressed.
+The class link::Classes/ServerTree:: can be used to store functions which will be evaluated after the server is booted, after all nodes are freed, and after cmd-. is pressed.
 This allows, for example, for one to create a persistent basic node structure. ServerTree is evaluated in the method initTree after the default group is created, so its existence can be relied upon.
 
 method:: initTree
