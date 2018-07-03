@@ -48,14 +48,13 @@ UnitTest {
 	}
 
 	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
-	*runTest { | methodName |
-		var class, method, unitTest;
-		# class, method = methodName.split($:);
-		class = class.asSymbol.asClass;
-		method.asSymbol;
-		method = class.findMethod(method.asSymbol);
-		if(method.isNil) { Error("Test method not found "+methodName).throw };
-		class.new.runTestMethod(method);
+	*runTest { | methodString |
+		var method = this.findTestMethodFor(methodString);
+		if(method.isNil) {
+			warn("*** Test method not found "+ method.class ++ ":" ++ method.name)
+		} {
+			method.ownerClass.new.runTestMethod(method)
+		}
 	}
 
 	// run a single test method of this class
@@ -103,6 +102,38 @@ UnitTest {
 			this.report(Main.elapsedTime - start);
 		}
 	}
+
+	// could be moved to e.g. Method.find(methodString):
+	*findMethodFor { |methodString|
+
+		var className, methodName, class, method;
+		# class, methodName = methodString.split($:);
+		class = class.asSymbol.asClass;
+		if (class.notNil) {
+			method = class.findMethod(methodName.asSymbol);
+		};
+
+		if (method.isNil) {
+			"no method found for: %\n".postf(methodString.cs);
+		};
+		^method
+	}
+
+	// could be moved to e.g. Method.isTest
+	*isTestMethod { |method|
+		^method.ownerClass.superclasses.includes(UnitTest) and: {
+			method.name.asString.beginsWith("test_")
+		}
+	}
+
+	// specific for UnitTest:
+	*findTestMethodFor { |methodString|
+		var method = this.findMethodFor(methodString);
+		if (method.notNil and: { this.isTestMethod(method) }) {
+			^method
+		} {
+			"no method found for: %\n".postf(methodString.cs);
+			^nil
 		}
 	}
 
