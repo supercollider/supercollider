@@ -83,7 +83,7 @@ UnitTest {
 			testItems.do ({ |testItem|
 				if (testItem.isKindOf(Class)) {
 					// assume this is a UnitTest:
-					if (testItem.superclasses.includes(UnitTest)) {
+					if (testItem.isKindOf(Meta_UnitTest)) {
 						testItem.run(false,false);
 					} {
 						"%: testItem % is not a unit test subclass."
