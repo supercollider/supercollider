@@ -16,7 +16,7 @@ TestSoundFile_Server : UnitTest {
 	}
 
 	test_cue_passInEvent {
-		var cueEvent, testEvent, group, condition = Condition.new;
+		var cueEvent, testEvent, condition = Condition.new;
 
 		testEvent = (foo: true);
 		cueEvent = soundFile.cue(testEvent);
