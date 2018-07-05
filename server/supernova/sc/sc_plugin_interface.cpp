@@ -213,6 +213,22 @@ void free_node_and_pause_following(Unit * unit)
         sc_factory->add_pause_node(next);
 }
 
+void free_node_and_resume_following(Unit * unit)
+{
+	server_node * node = static_cast<sc_synth*>(unit->mParent);
+	sc_factory->add_done_node(node);
+
+	if (node->get_parent()->is_parallel()) {
+		spin_lock::scoped_lock lock(log_guard);
+		log("parallel groups have no notion of following nodes\n");
+		return;
+	}
+	
+	server_node * next = node->next_node();
+	if (next)
+		sc_factory->add_resume_node(next);
+}
+	
 void free_node_and_following_children(Unit * unit)
 {
     server_node * node = static_cast<sc_synth*>(unit->mParent);
@@ -550,6 +566,11 @@ void done_action(int done_action, struct Unit *unit)
         // free the enclosing group and all nodes within it (including this synth)
         nova::free_parent_group(unit);
         return;
+	
+	case 15:
+		// free this synth and resume the following node
+		nova::free_node_and_resume_following(unit);
+		return;
 
     default:
         return;
