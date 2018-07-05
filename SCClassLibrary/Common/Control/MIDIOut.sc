@@ -402,8 +402,17 @@ MIDIOut {
 			^this.new(index, endPoint.uid)
 		} {
 			if(index < MIDIClient.myoutports) {
+				// 'index' here is for "SuperCollider:out0", ":out1" etc.
+				// Practically speaking, this establishes associations:
+				// out0 --> destinations[0]
+				// out1 --> destinations[1] and so on.
+				// It looks weird but, in fact, it does ensure a 1-to-1 connection.
+				// Explained further in MIDIOut help.
 				^this.new(index, endPoint.uid)
 			} {
+				// If you didn't initialize enough MIDI output ports,
+				// it will connect the new device to 0.
+				// Connections with a UID are always 1-to-1.
 				^this.new(0, endPoint.uid)
 			}
 		}
