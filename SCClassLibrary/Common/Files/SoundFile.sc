@@ -436,7 +436,6 @@ SoundFile {
 				if (closeWhenDone) {
 					OSCFunc({
 						ev[\close].value(ev);
-						this.close;
 					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
 				};
 				if (playNow) {
