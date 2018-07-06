@@ -18,7 +18,7 @@ Create a new MIDIOut instance. Note that this method is not safe for cross-platf
 
 argument::port
 definitionList::
-## OSX, Windows || The index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
+## macOS, Windows || The index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
 ## Linux || The output port number. teletype::MIDIEndPoint("SuperCollider", "out0"):: is port 0; teletype::"out1":: is port 1. In Linux, this argument has no connection at all to code::MIDIClient.destinations::.
 ::
 
@@ -113,7 +113,7 @@ subsection::Linux specific: Connecting and disconnecting ports
 
 In Linux, the MIDIOut architecture is different from other operating systems.
 
-In OSX and Windows, a MIDIOut instance is bound to a specific destination MIDI device.
+In macOS and Windows, a MIDIOut instance is bound to a specific destination MIDI device.
 
 SuperCollider in Linux uses the ALSA MIDI layer. ALSA MIDI applications send messages out through a "virtual output port," which is one of the members of code::MIDIClient.sources::.
 
@@ -139,7 +139,7 @@ m = MIDIOut(0);  // use virtual source port "out0"
 m.connect(1);  // connect to MIDIClient.destinations[1]
 ::
 
-WARNING:: The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an entirely different meaning in Linux, compared to OSX and Windows. If user code calls this method emphasis::and:: cross-platform compatibility is needed, it is the user's responsibility to handle Linux separately. User code can check the platform using code::thisProcess.platform.name:: (which returns one of code::\osx::, code::\linux:: or code::\windows::). Or, for compatibility, use link::#*newByName:: instead.::
+WARNING:: The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an entirely different meaning in Linux, compared to macOS and Windows. If user code calls this method emphasis::and:: cross-platform compatibility is needed, it is the user's responsibility to handle Linux separately. User code can check the platform using code::thisProcess.platform.name:: (which returns one of code::\osx::, code::\linux:: or code::\windows::). Or, for compatibility, use link::#*newByName:: instead.::
 
 link::Classes/MIDIOut#*new:: optionally takes a second argument, for the uid of the MIDI destination device. This establishes a direct connection to the target, which is not visible in Qjackctl. The teletype::port:: argument is irrelevant in this case; the MIDIOut instance is always one-to-one with the target.
 
@@ -148,7 +148,7 @@ link::Classes/MIDIOut#*newByName:: should create one-to-one MIDIOut connections 
 strong::Compatibility::
 list::
 ## code::MIDIOut.newByName("device", "port"):: -- Should be compatible on all systems.
-## code::MIDIOut(index):: -- OSX, Windows (teletype::index:: is the device's index in code::MIDIClient.destinations::). Note that this usage is emphasis::not:: compatible with Linux! OSX and Windows users should not expect Linux users to be able to run this style of connection.
+## code::MIDIOut(index):: -- macOS, Windows (teletype::index:: is the device's index in code::MIDIClient.destinations::). Note that this usage is emphasis::not:: compatible with Linux! macOS and Windows users should not expect Linux users to be able to run this style of connection.
 ## code::MIDIOut(0, MIDIClient.destinations[index].uid):: -- Linux only (teletype::index:: is the device's index in code::MIDIClient.destinations::).
 ::
 
