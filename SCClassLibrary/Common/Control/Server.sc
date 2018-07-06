@@ -885,13 +885,36 @@ Server {
 				this.quit;
 				this.boot;
 			}, {
-				this.bootServerApp({
-					if(startAliveThread) { statusWatcher.startAliveThread }
-				})
+				this.waitForPidRelease {
+					this.bootServerApp({
+						if(startAliveThread) { statusWatcher.startAliveThread }
+					})
+				};
 			}, 0.25);
 		}
 	}
 
+	waitForPidRelease { |onDone, onFailure, timeout = 1|
+		var bootStart;
+		if (this.inProcess or: { this.isLocal.not }) {
+			onDone.value;
+			^this
+		};
+		// FIXME: quick and dirty fix for supernova reboot hang on osx:
+		// if we have just quit before running server.boot,
+		// we wait until server process really ends and sets its pid to nil
+		forkIfNeeded {
+			bootStart = Main.elapsedTime;
+			while {
+				pid.notNil and: {
+					Main.elapsedTime - bootStart < timeout
+				}
+			} {
+				0.05.wait
+			};
+			if (pid.isNil) { onDone.value } { onFailure.value };
+		}
+	}
 
 	// FIXME: recover should happen later, after we have a valid clientID!
 	// would then need check whether maxLogins and clientID have changed or not,
