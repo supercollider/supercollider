@@ -923,6 +923,7 @@ Server {
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+				pid = nil;
 				this.prOnServerProcessExit(exitCode);
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
@@ -1002,7 +1003,8 @@ Server {
 			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
-		pid = nil;
+		// let server process reset pid to nil!
+		// pid = nil;
 		sendQuit = nil;
 		maxNumClients = nil;
 
