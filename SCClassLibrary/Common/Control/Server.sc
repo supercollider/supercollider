@@ -527,15 +527,16 @@ Server {
 				.postf(this, newMaxLogins);
 			};
 		};
-
-		if (newClientID == clientID) {
-			"%: keeping clientID (%) as confirmed by server process.\n"
-			.postf(this, newClientID);
-		} {
-			"%: setting clientID to %, as obtained from server process.\n"
-			.postf(this, newClientID);
+		if (newClientID.notNil) {
+			if (newClientID == clientID) {
+				"%: keeping clientID (%) as confirmed by server process.\n"
+				.postf(this, newClientID);
+			} {
+				"%: setting clientID to %, as obtained from server process.\n"
+				.postf(this, newClientID);
+			};
+			this.clientID = newClientID;
 		};
-		this.clientID = newClientID;
 	}
 
 	prHandleNotifyFailString {|failString, msg|
