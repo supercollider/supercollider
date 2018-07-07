@@ -245,6 +245,26 @@ f.forkIfNeeded;
 { "we are now in a routine".postln; 1.wait; f.forkIfNeeded }.fork;
 ::
 
+method::whenTrueWithin
+
+When func.value becomes true within timeout, then do thenFunc, else to elseFunc.
+
+code::
+(
+a = nil;
+{ a == 2 }.whenTrueWithin(2, { "did it on time!".postln }, { "too late ...".postln });
+fork { 1.99.wait; a = 2 };
+)
+// can be used for branching when preparation may fail:
+(
+{ s.serverRunning }.whenTrueWithin(3,
+	{ "YES! doWhenBooted...".postln; ().play },
+	{ "NO! boot timed out - quitting again.".postln; s.quit }
+);
+fork { s.quit; 1.wait; s.boot };
+)
+::
+
 method::block
 
 Break from a loop. Calls the receiver with an argument which is a function that returns from the method block. To exit the loop, call .value on the function passed in. You can pass a value to this function and that value will be returned from the block method.

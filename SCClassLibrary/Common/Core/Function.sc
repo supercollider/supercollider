@@ -159,6 +159,18 @@ Function : AbstractFunction {
 		^thisThread;
 	}
 
+	whenTrueWithin { |timeout = 3, thenFunc, elseFunc, dt = (1/16)|
+		var remaining = timeout;
+		^Routine {
+			while {
+				remaining = remaining - dt;
+				this.value.not and: { remaining >= 0 }
+			} {
+				dt.wait;
+			};
+			if (this.value, thenFunc, elseFunc)
+		}.play(AppClock)
+	}
 
 	awake { arg beats, seconds, clock;
 		var time = seconds; // prevent optimization
