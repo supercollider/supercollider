@@ -894,10 +894,10 @@ Server {
 		}
 	}
 
-	waitForPidRelease { |onDone, onFailure, timeout = 1|
+	waitForPidRelease { |onComplete, onFailure, timeout = 1|
 		var bootStart;
 		if (this.inProcess or: { this.isLocal.not }) {
-			onDone.value;
+			onComplete.value;
 			^this
 		};
 		// FIXME: quick and dirty fix for supernova reboot hang on osx:
@@ -912,7 +912,7 @@ Server {
 			} {
 				0.05.wait
 			};
-			if (pid.isNil) { onDone.value } { onFailure.value };
+			if (pid.isNil, onComplete, onFailure);
 		}
 	}
 
