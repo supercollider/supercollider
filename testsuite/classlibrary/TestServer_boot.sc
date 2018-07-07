@@ -62,40 +62,30 @@ TestServer_boot : UnitTest {
 	}
 
 	test_rebootOffServer {
-		var cond = Condition();
-		var timeout = 5;
-
-		s.doWhenBooted({ cond.unhang });
 		s.reboot;
-
-		fork { timeout.wait; cond.unhang };
-		cond.hang;
+		this.wait({ s.serverRunning }, "server reboot failed.", 5);
 
 		this.assert(s.serverRunning,
 			"A turned-off server should be running after reboot."
 		);
 		s.quit;
-
 	}
 
 	test_rebootRunningServer {
-		var cond = Condition();
-		var timeout = 5;
+		var rebooted = false;
 
+		s.quit;
 		s.doWhenBooted {
 			// first boot OK, starting reboot from here
 			s.reboot {
-				s.doWhenBooted({
-					// only unhang after second reboot worked
-					cond.unhang
-
-				})
+				s.doWhenBooted {
+					rebooted = true
+				}
 			};
 		};
 		s.boot;
 
-		fork { timeout.wait; cond.unhang };
-		cond.hang;
+		this.wait({ rebooted }, "server reboot failed.", 5);
 
 		this.assert(s.serverRunning,
 			"A running server should be running again after reboot."
