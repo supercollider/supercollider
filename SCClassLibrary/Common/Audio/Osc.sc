@@ -8,7 +8,8 @@
 		add - add to signal or scalar
 */
 
-Osc : PureUGen {
+Osc : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
@@ -19,7 +20,8 @@ Osc : PureUGen {
 	}
 }
 
-SinOsc : PureUGen {
+SinOsc : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
@@ -30,7 +32,8 @@ SinOsc : PureUGen {
 	}
 }
 
-SinOscFB : PureUGen {
+SinOscFB : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq=440.0, feedback=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', freq, feedback).madd(mul, add)
@@ -41,7 +44,8 @@ SinOscFB : PureUGen {
 	}
 }
 
-OscN : PureUGen {
+OscN : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufnum, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, phase).madd(mul, add)
@@ -53,7 +57,8 @@ OscN : PureUGen {
 }
 
 
-VOsc : PureUGen {
+VOsc : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufpos, freq=440.0, phase=0.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq, phase).madd(mul, add)
@@ -64,7 +69,8 @@ VOsc : PureUGen {
 	}
 }
 
-VOsc3 : PureUGen {
+VOsc3 : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufpos, freq1=110.0, freq2=220.0, freq3=440.0, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufpos, freq1, freq2, freq3).madd(mul, add)
@@ -75,7 +81,8 @@ VOsc3 : PureUGen {
 	}
 }
 
-COsc : PureUGen {
+COsc : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufnum, freq=440.0, beats=0.5, mul=1.0, add=0.0;
 		^this.multiNew('audio', bufnum, freq, beats).madd(mul, add)
@@ -86,14 +93,16 @@ COsc : PureUGen {
 	}
 }
 
-Formant : PureUGen {
+Formant : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg fundfreq = 440.0, formfreq = 1760.0, bwfreq = 880.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', fundfreq, formfreq, bwfreq).madd(mul, add)
 	}
 }
 
-LFSaw : PureUGen {
+LFSaw : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, iphase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase).madd(mul, add)
@@ -132,7 +141,8 @@ LFGauss : UGen {
 
 }
 
-LFPulse : PureUGen {
+LFPulse : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase, width).madd(mul, add)
@@ -144,7 +154,8 @@ LFPulse : PureUGen {
 	signalRange { ^\unipolar }
 }
 
-VarSaw : PureUGen {
+VarSaw : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, iphase = 0.0, width = 0.5, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, iphase, width).madd(mul, add)
@@ -155,7 +166,8 @@ VarSaw : PureUGen {
 	}
 }
 
-Impulse : PureUGen {
+Impulse : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, phase = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', freq, phase).madd(mul, add)
@@ -168,7 +180,8 @@ Impulse : PureUGen {
 }
 
 
-SyncSaw : PureUGen {
+SyncSaw : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg syncFreq = 440.0, sawFreq = 440.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', syncFreq, sawFreq).madd(mul, add)
@@ -192,7 +205,8 @@ SyncSaw : PureUGen {
 //	signalRange { ^\unipolar }
 //}
 
-Index : PureUGen {
+Index : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufnum, in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', bufnum, in).madd(mul, add)
@@ -218,7 +232,8 @@ Shaper : Index {
 IndexL : Index {
 }
 
-DegreeToKey : PureUGen {
+DegreeToKey : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg bufnum, in = 0.0, octave = 12.0, mul = 1.0, add = 0.0;
 		^this.multiNew('audio', bufnum, in, octave).madd(mul, add)
@@ -229,7 +244,8 @@ DegreeToKey : PureUGen {
 	}
 }
 
-Select : PureUGen {
+Select : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg which, array;
 		^this.multiNewList(['audio', which] ++ array)
@@ -297,7 +313,8 @@ SelectXFocus {
 	}
 }
 
-Vibrato : PureUGen {
+Vibrato : UGen {
+	*isPureUGen { ^true }
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
 				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
