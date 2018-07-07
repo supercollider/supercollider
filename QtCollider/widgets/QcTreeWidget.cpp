@@ -47,6 +47,10 @@ QcTreeWidget::QcTreeWidget()
   connect( this, SIGNAL( currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*) ),
            this, SIGNAL( currentItemChanged() ) );
 
+  connect( this, SIGNAL( itemExpanded(QTreeWidgetItem*) ),
+           this, SLOT( onExpanded(QTreeWidgetItem*) ) );
+  connect( this, SIGNAL( itemCollapsed(QTreeWidgetItem*) ),
+           this, SLOT( onCollapsed(QTreeWidgetItem*) ) );
 }
 
 QVariantList QcTreeWidget::columns() const
@@ -69,6 +73,16 @@ void QcTreeWidget::setColumns( const QVariantList & varList )
   Q_FOREACH( const QVariant & var, varList )
     labels << var.toString();
   setHeaderLabels( labels );
+}
+
+void QcTreeWidget::onExpanded(QTreeWidgetItem* item)
+{
+  Q_EMIT( expanded(QcTreeWidget::Item::safePtr( item )) );
+}
+
+void QcTreeWidget::onCollapsed(QTreeWidgetItem* item)
+{
+  Q_EMIT( collapsed(QcTreeWidget::Item::safePtr( item )) );
 }
 
 QcTreeWidget::ItemPtr QcTreeWidget::currentItem() const

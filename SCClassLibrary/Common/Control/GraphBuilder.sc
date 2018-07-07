@@ -10,7 +10,7 @@ GraphBuilder {
 				// Out, SendTrig, [ ] etc. probably a 0.0
 				result
 			} {
-				if(fadeTime.notNil) {
+				if(fadeTime.notNil and: { UGen.buildSynthDef.canReleaseSynth.not }) {
 					result = this.makeFadeEnv(fadeTime) * result;
 				};
 				outClass = outClass.asClass;

@@ -198,7 +198,7 @@ else()
     set(SC_IDE False)
   endif()
 endif (SC_QT)
-
+option(NO_X11 "Disables the building of plugins that require the X11 library (for UI-less compiles)" OFF)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 

@@ -181,11 +181,11 @@ discussion::
 This is similar to map above, but you specify the number of sequential Controls to map. If this Node is a Group this will mapn all Nodes within the Group.
 
 method:: release, releaseMsg
-This is a convenience method which assumes that the synth contains an envelope generator (an EnvGen, Linen, or similar UGen) running a sustaining envelope (see Env) and that it's gate argument is set to a control called \gate. This method will cause the envelope to release.
+This method causes the receiver to be freed after the specified amount of time. This is a convenience method which assumes that the synth contains an envelope generator (an EnvGen, Linen, or similar UGen) running a sustaining envelope (see link::Classes/Env#Sustained Envelope Creation Methods::) and that this envelope's gate argument is set to a control called code::\gate::.
 argument:: releaseTime
-if not nil, it will override the envelope's decay or release time.
+The amount of time in seconds during which the node will release. If set to a value code::<= 0::, the synth will release immediately. A code::nil:: value will cause the synth to release using its enveloppe's normal release stage(s).
 discussion::
-If this Node is a Group this will release all Nodes within the Group.
+If the receiver is a Group, all nodes within the group will be released.
 code::
 x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction: Done.freeSelf) }.play;
 x.release(5); // override the Env's specified 1 second release time

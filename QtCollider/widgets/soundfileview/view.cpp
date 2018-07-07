@@ -59,6 +59,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _beg(0.0),
   _dur(0.0),
   _yZoom(1.f),
+  _yOffset(0.f),
+  _spacing(0.1f),
 
   pixmap(0),
   _bkgColor( QColor(0,0,0) ),
@@ -67,7 +69,11 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _cursorColor( QColor(255,0,0) ),
   _gridColor( QColor(100,100,200) ),
   dirty(false),
-  _drawWaveform(true)
+  _drawWaveform(true),
+  _drawRMS(true),
+  // _antialiasing(false), //TODO
+  _drawsCenterLine(true),
+  _drawsBoundingLines(true)
 {
   memset( &sfInfo, 0, sizeof(SF_INFO) );
 
@@ -86,36 +92,43 @@ QcWaveform::~QcWaveform()
 void QcWaveform::load( const QString& filename )
 {
   qcDebugMsg( 1, "QcWaveform::load( filename )" );
-
-  SF_INFO new_info;
-  memset( &new_info, 0, sizeof(SF_INFO) );
-
-  SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
-
-  if( !new_sf ) {
-    qcErrorMsg(QStringLiteral("Could not open soundfile: ") + filename);
-    return;
-  }
-
-  doLoad( new_sf, new_info, 0, new_info.frames );
+  load( filename, 0, 0, true );
 }
 
 void QcWaveform::load( const QString& filename, int beg, int dur )
 {
   qcDebugMsg( 1, "QcWaveform::load( filename, beg, dur )" );
+  load( filename, beg, dur, false );
+}
 
+static SNDFILE* sndfileOpenQString( const QString& filename, int mode, SF_INFO* info)
+{
+#ifdef _WIN32
+    auto name = filename.toStdWString();
+#else
+    auto name = filename.toStdString();
+#endif // _WIN32
+
+    return sndfileOpen(name.c_str(), mode, info);
+}
+
+// Negative dur is considered a failure, otherwise we could use dur == -1 to mean "load the whole file."
+void QcWaveform::load( const QString& filename, int beg, int dur, bool allFrames )
+{
   SF_INFO new_info;
   memset( &new_info, 0, sizeof(SF_INFO) );
 
-  SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
+  SNDFILE *new_sf = sndfileOpenQString( filename, SFM_READ, &new_info );
 
   if( !new_sf ) {
     qcErrorMsg(QStringLiteral("Could not open soundfile: ") + filename);
     return;
   }
 
+  dur = allFrames ? new_info.frames : dur;
   doLoad( new_sf, new_info, beg, dur );
 }
+
 
 void QcWaveform::load( const QVector<double> & data, int offset, int ch, int sr )
 {
@@ -222,10 +235,6 @@ void QcWaveform::write( const QVector<double> & data, int offset )
 
 void QcWaveform::doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beg, sf_count_t dur )
 {
-  // set up soundfile to scale data in range [-1,1] to int range
-  // when reading floating point data as int
-  sf_command( new_sf, SFC_SET_SCALE_FLOAT_INT_READ, NULL, SF_TRUE );
-
   // check beginning and duration validity
 
   if( beg < 0 || dur < 1 || beg + dur > new_info.frames ) {
@@ -283,6 +292,16 @@ float QcWaveform::xZoom()
 float QcWaveform::yZoom()
 {
   return _yZoom;
+}
+
+float QcWaveform::yOffset()
+{
+  return _yOffset;
+}
+
+float QcWaveform::spacing()
+{
+  return _spacing;
 }
 
 QVariantList QcWaveform::selections() const
@@ -444,6 +463,18 @@ void QcWaveform::setXZoom( double seconds )
 void QcWaveform::setYZoom( double factor )
 {
   _yZoom = factor;
+  redraw();
+}
+
+void QcWaveform::setYOffset( double offset )
+{
+  _yOffset = offset;
+  redraw();
+}
+
+void QcWaveform::setSpacing( double factor )
+{
+  _spacing = qBound(0.0, factor, 1.0);
   redraw();
 }
 
@@ -691,6 +722,8 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
   QPainter p( pix );
 
+  // if( _antialiasing ) p.setRenderHint( QPainter::Antialiasing ); //TODO
+
   if( !_cache || !_cache->ready() ) return;
 
   // check for sane situation:
@@ -730,17 +763,22 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   }
 
   // geometry
-  float spacing = pix->height() * 0.15f / (sfInfo.channels + 1);
-  float chHeight = pix->height() * 0.85f / (float) sfInfo.channels;
-  float yScale = -chHeight / 65535.f * _yZoom;
-  //spacing /= yscale;
+  float spacing = pix->height() * _spacing / (float) sfInfo.channels;
+  float chHeight = pix->height() * (1.0f - _spacing) / (float) sfInfo.channels;
+  float yOffsetPx = -chHeight / 2.0f * _yOffset;
+  float yScale = -chHeight / 2.0f * _yZoom;
 
   // initial painter setup
   QPen minMaxPen;
   QPen rmsPen;
 
+  minMaxPen.setWidth(0);
+  rmsPen.setWidth(0);
+
   float halfChH = chHeight * 0.5;
-  p.translate( 0.f, halfChH + spacing );
+  float halfChHScaled = halfChH * _yZoom;
+
+  p.translate( 0.f, halfChH + ( spacing / 2.0f) + yOffsetPx );
 
   int waveColorN = _waveColors.count();
   int ch;
@@ -748,58 +786,78 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
 
     if( ch < waveColorN && _waveColors[ch].isValid() ) {
       QColor clr( _waveColors[ch] );
-      rmsPen.setColor( clr );
-      minMaxPen.setColor( clr.darker( 140 ) );
+      rmsPen.setColor( _rmsColor );
+      minMaxPen.setColor( clr );
     }
     else {
       rmsPen.setColor( _rmsColor );
       minMaxPen.setColor( _peakColor );
     }
 
-    // draw center line
-    p.setPen( QColor(90,90,90) );
-    p.drawLine( x, 0, x + width, 0 );
+    if( _drawsCenterLine ) {
+      // draw center line
+      p.setPen( QColor(90,90,90) );
+      p.drawLine( x, 0, x + width, 0 );
+    }
 
-    // draw bounding lines
-    p.setPen( QColor(100,100,100) );
-    p.drawLine( x, halfChH, x+width, halfChH );
-    p.drawLine( x, -halfChH, x+width, -halfChH );
+    if( _drawsBoundingLines ) {
+      // draw bounding lines
+      p.setPen( QColor(100,100,100) );
+
+      p.drawLine( x, halfChHScaled, x+width, halfChHScaled );
+      p.drawLine( x, -halfChHScaled, x+width, -halfChHScaled );
+    }
 
     p.save();
 
-    p.setClipping(true);
-    p.setClipRect( x, -halfChH, x+width, chHeight );
     p.scale( 1.f, yScale );
 
     if( _fpp > 1.0 ) {
 
       // draw min-max regions and RMS
-      short * minBuffer = (short*)alloca(width * sizeof(short));
-      short * maxBuffer = (short*)alloca(width * sizeof(short));;
-      short * minRMS = (short*)alloca(width * sizeof(short));;
-      short * maxRMS = (short*)alloca(width * sizeof(short));;
+      float * minBuffer = (float*)alloca(width * sizeof(float));
+      float * maxBuffer = (float*)alloca(width * sizeof(float));;
+      float * minRMS = (float*)alloca(width * sizeof(float));;
+      float * maxRMS = (float*)alloca(width * sizeof(float));;
 
       bool ok = soundStream->displayData( ch, f_beg, f_dur,
                                         minBuffer, maxBuffer,
                                         minRMS, maxRMS,
                                         width );
-//    printf("integration ok: %i\n", ok);
+
       Q_ASSERT( ok );
+
+      int rmsAlpha = rmsPen.color().alpha();
 
       int i;
       for( i = 0; i < width; ++i ) {
-        short min = minBuffer[i];
-        short max = maxBuffer[i];
-        if( max != min ) {
+        float min = minBuffer[i];
+        float max = maxBuffer[i];
+        int minMaxPxDiff = int((max - min) * -yScale);
+        if( minMaxPxDiff != 0 ) {
           p.setPen( minMaxPen );
-          p.drawLine( x + i, min, x + i, max );
+          p.drawLine( QPointF(x + i, min), QPointF(x + i, max));
+
+          if( _drawRMS && rmsAlpha > 0 && minMaxPxDiff > 4 ) {
+            if( _fpp > _rmsMaxFpp ) {
+              p.setPen( rmsPen );
+              p.drawLine( QPointF(x + i, minRMS[i]), QPointF(x + i, maxRMS[i]));
+            } else {
+              if( _fpp > _rmsMinFpp ) {
+                QColor thisColor = rmsPen.color();
+                thisColor.setAlpha(rmsAlpha * (_fpp - _rmsMinFpp) / (_rmsMaxFpp - _rmsMinFpp));
+                rmsPen.setColor(thisColor);
+                p.setPen( rmsPen );
+                p.drawLine( QPointF(x + i, minRMS[i]), QPointF(x + i, maxRMS[i]));
+              }
+            }
+          }
+
         }
         else {
           p.setPen( minMaxPen );
-          p.drawPoint( x + i, min );
+          p.drawPoint( QPointF(x + i, min) );
         }
-        p.setPen( rmsPen );
-        p.drawLine( x + i, minRMS[i], x + i, maxRMS[i] );
       }
     }
     else {
@@ -810,8 +868,8 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
       qreal dx = (i_beg - f_beg) * ppf;
 
       bool interleaved = false;
-      short *data = soundStream->rawFrames( ch, i_beg, i_count, &interleaved );
-      //printf("got raw frames ok: %i\n", data != 0 );
+      float *data = soundStream->rawFrames( ch, i_beg, i_count, &interleaved );
+
       Q_ASSERT( data != 0 );
       int step = interleaved ? soundStream->channels() : 1;
 
@@ -828,10 +886,10 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
         path.lineTo( pt );
       }
       if( i_count && !haveOneMore ) {
-        path.lineTo( QPointF( f * ppf + dx, (qreal)*data ) );
+        path.lineTo( QPointF( f * ppf + dx, (qreal) *data ) );
       }
 
-      p.setPen( rmsPen );
+      p.setPen( minMaxPen );
       p.drawPath( path );
     }
 

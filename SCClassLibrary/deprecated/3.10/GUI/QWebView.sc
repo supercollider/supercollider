@@ -1,4 +1,4 @@
-+ QWebView {
++ WebView {
 
 	// Get the displayed content in html form.
 	html {
@@ -27,7 +27,7 @@
 
 	onReload_ {
 		|func|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\onReloadTriggered));
-		^this.invokeMethod(\onReloadTriggered, func);
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\onReloadTriggered_));
+		^this.onReloadTriggered_(func);
 	}
 }

@@ -299,6 +299,125 @@ QC_LANG_PRIMITIVE( Qt_SetUrlHandler, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   return errNone;
 }
 
+QC_LANG_PRIMITIVE( Qt_SetAppMenus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  
+  QList<QMenu*> menuList;
+  
+  
+  if( isKindOfSlot( a, class_array ) ) {
+    QMenuBar* menuBar = QcApplication::getMainMenu();
+    if (menuBar) {
+      menuBar->clear();
+      
+      PyrObject *obj = slotRawObject( a );
+      PyrSlot *slots = obj->slots;
+      int size = obj->size;
+      
+      for( int i = 0; i < size; ++i, ++slots ) {
+        QMenu* menu = QtCollider::get<QMenu*>(slots);
+        if (menu) {
+          menuBar->addMenu(menu);
+        } else {
+          menuBar->addSeparator();
+        }
+      }
+    }
+  }
+  
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QView_AddActionToView, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  
+  QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
+  QObjectProxy* actionObj = TypeCodec<QObjectProxy*>::safeRead(a + 1);
+  QObjectProxy* beforeObj = TypeCodec<QObjectProxy*>::safeRead(a + 2);
+  
+  if (widgetObj && actionObj) {
+    QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
+    QAction* action = qobject_cast<QAction*>(actionObj->object());
+    QAction* beforeAction = beforeObj ? qobject_cast<QAction*>(beforeObj->object()) : 0;
+    
+    if (!beforeAction) {
+      PyrSlot* indexArg = a + 2;
+    
+      if (NotNil(indexArg)) {
+        if (IsInt(indexArg)) {
+          int index = std::max(slotRawInt(indexArg), 0);
+          
+          auto actions = widget->actions();
+          
+          if (index < actions.size()) {
+            beforeAction = actions[index];
+          }
+        } else {
+          return errFailed;
+        }
+      }
+    }
+    
+    if (widget && action) {
+      if (beforeAction) {
+        widget->insertAction(beforeAction, action);
+      } else {
+        widget->addAction(action);
+      }
+      return errNone;
+    }
+  }
+  
+  return errFailed;
+}
+
+QC_LANG_PRIMITIVE( QView_RemoveActionFromView, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  
+  QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
+  QObjectProxy* actionObj = TypeCodec<QObjectProxy*>::safeRead(a + 1);
+  
+  if (widgetObj && actionObj) {
+    QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
+    QAction* action = qobject_cast<QAction*>(actionObj->object());
+    
+    if (widget && action) {
+      widget->removeAction(action);
+      return errNone;
+    }
+    
+  }
+
+  return errFailed;
+}
+  
+QC_LANG_PRIMITIVE( QView_RemoveAllActionsFromView, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  
+  QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
+  
+  if (widgetObj) {
+    QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
+    
+    if (widget) {
+      auto actions = widget->actions();
+      for (auto action : actions) {
+        widget->removeAction(action);
+      }
+
+      return errNone;
+    }
+  }
+  
+  return errFailed;
+}
+
+
+
 void defineMiscPrimitives()
 {
   LangPrimitiveDefiner definer;
@@ -319,6 +438,10 @@ void defineMiscPrimitives()
   definer.define<QWebView_ClearMemoryCaches>();
   definer.define<Qt_CursorPosition>();
   definer.define<Qt_SetUrlHandler>();
+  definer.define<Qt_SetAppMenus>();
+  definer.define<QView_AddActionToView>();
+  definer.define<QView_RemoveActionFromView>();
+  definer.define<QView_RemoveAllActionsFromView>();
 }
 
 } // namespace QtCollider

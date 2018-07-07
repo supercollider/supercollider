@@ -45,14 +45,6 @@
 # include <sys/param.h>
 #endif // _WIN32
 
-// Plugin directory in resource directory
-#define SC_PLUGIN_DIR_NAME "plugins"
-
-// Extension for binary plugins
-#ifndef SC_PLUGIN_EXT
-#  define SC_PLUGIN_EXT ".scx"
-#endif
-
 #include <boost/filesystem/path.hpp> // path
 #include <boost/filesystem/operations.hpp> // is_directory
 

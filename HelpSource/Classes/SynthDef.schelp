@@ -190,8 +190,10 @@ argument:: mdPlugin
 
 
 method:: play
-A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it create one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is \addToHead.
+A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it creates one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is code::\addToHead::.
 Returns:: a corresponding Synth object.
+
+
 
 
 Examples::

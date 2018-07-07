@@ -6,14 +6,21 @@ categories:: External Control>MIDI
 description::
 a MIDIOut is bound to a specific link::Classes/MIDIEndPoint:: as defined by the operating system.
 
+Linux users, or any users who require cross-platform compatibility with Linux, should read link::#Linux specific: Connecting and disconnecting ports:: carefully.
+
 ClassMethods::
 
 private::connectByUID, disconnectByUID
 
 method::new
 
+Create a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
+
 argument::port
-the index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
+definitionList::
+## macOS, Windows || The index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
+## Linux || The output port number. teletype::MIDIEndPoint("SuperCollider", "out0"):: is port 0; teletype::"out1":: is port 1. In Linux, this argument has no connection at all to code::MIDIClient.destinations::.
+::
 
 argument::uid
 definitionList::
@@ -22,7 +29,7 @@ definitionList::
 ::
 
 method::newByName
-Searches for the device by name. This is safer then depending on the index which will change if your studio setup changes.
+Searches for the MIDI output device, by a name found in the code::MIDIClient.destinations:: array. This is safer then depending on the index which will change if your studio setup changes. It is also Linux compatible.
 code::
 //list connected out ports with names:
 MIDIClient.init;
@@ -65,7 +72,7 @@ Examples::
 code::
 MIDIClient.init;
 
-m = MIDIOut(0);
+m = MIDIOut(0);  // Linux users: MIDIOut(0, MIDIClient.destinations[0].uid)
 m.noteOn(16, 60, 60);
 m.noteOn(16, 61, 60);
 m.noteOff(16, 61, 60);
@@ -90,7 +97,7 @@ subsection::Using patterns for sending MIDI events
 
 code::
 MIDIClient.init;
-m = MIDIOut(0);
+m = MIDIOut(0);  // Linux users: MIDIOut(0, MIDIClient.destinations[0].uid)
 
 a = Pbind(\degree, Prand([1, 2, 3, [0, 5]], inf), \bend, Pwhite(0, 76, inf));
 
@@ -104,24 +111,47 @@ See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI outp
 
 subsection::Linux specific: Connecting and disconnecting ports
 
-On Linux, a MIDIOut can be created without setting the destination:
+In Linux, the MIDIOut architecture is different from other operating systems.
+
+In macOS and Windows, a MIDIOut instance is bound to a specific destination MIDI device.
+
+SuperCollider in Linux uses the ALSA MIDI layer. ALSA MIDI applications send messages out through a "virtual output port," which is one of the members of code::MIDIClient.sources::.
 
 code::
-m = MIDIOut(0);
+MIDIClient.init;
 ::
 
-In this case each message will be sent to all ports connected to SuperCollider's first MIDI output.
+teletype::
+MIDI Sources:
+	MIDIEndPoint("System", "Timer")
+	MIDIEndPoint("System", "Announce")
+	MIDIEndPoint("Midi Through", "Midi Through Port-0")
+	MIDIEndPoint("SuperCollider", "out0")
+	MIDIEndPoint("SuperCollider", "out1")
+::
 
-A connection can be made through:
+At this point, creating code::MIDIOut(0):: tells SuperCollider that this MIDIOut object should direct messages to teletype::MIDIEndPoint("SuperCollider", "out0")::. (It seems strange, if you think of SuperCollider sending messages to this MIDI emphasis::source::. It is more accurate to think of SuperCollider sending messages emphasis::through:: this port. The port is, then, a source for the rest of the system.)
+
+A code::MIDIOut(0):: object, then, will not reach any destinations by default. The user needs to connect destination devices to the virtual source port, using either a graphical tool such as Qjackctl, or by MIDIOut's teletype::connect:: method.
 
 code::
-m.connect( 2 );
+m = MIDIOut(0);  // use virtual source port "out0"
+m.connect(1);  // connect to MIDIClient.destinations[1]
 ::
 
-Note that by connecting in this way, you can connect more than one destination to the MIDI output.
-You can also use other tools to connect to a MIDIOut port of SC, e.g. through aconnect or QJackCtl (on the ALSA tab).
+WARNING:: The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an entirely different meaning in Linux, compared to macOS and Windows. If user code calls this method emphasis::and:: cross-platform compatibility is needed, it is the user's responsibility to handle Linux separately. User code can check the platform using code::thisProcess.platform.name:: (which returns one of code::\osx::, code::\linux:: or code::\windows::). Or, for compatibility, use link::#*newByName:: instead.::
 
-If you set the uid in MIDIOut, a direct connection is established and data will only be sent to that MIDI input port, and not to any other connections made to SC's MIDI output port (through the connect message or external tools).
+link::Classes/MIDIOut#*new:: optionally takes a second argument, for the uid of the MIDI destination device. This establishes a direct connection to the target, which is not visible in Qjackctl. The teletype::port:: argument is irrelevant in this case; the MIDIOut instance is always one-to-one with the target.
+
+link::Classes/MIDIOut#*newByName:: should create one-to-one MIDIOut connections on all platforms.
+
+strong::Compatibility::
+list::
+## code::MIDIOut.newByName("device", "port"):: -- Should be compatible on all systems.
+## code::MIDIOut(index):: -- macOS, Windows (teletype::index:: is the device's index in code::MIDIClient.destinations::). Note that this usage is emphasis::not:: compatible with Linux! macOS and Windows users should not expect Linux users to be able to run this style of connection.
+## code::MIDIOut(0, MIDIClient.destinations[index].uid):: -- Linux only (teletype::index:: is the device's index in code::MIDIClient.destinations::).
+::
+
 
 subsection::macOS specific: Sending MIDI to other applications
 
@@ -163,7 +193,7 @@ Note: Tempo = %aaaaaaabbbbbbb / 24, max 300 BPM, min 30 BPM
 so to create and send a valid set tempo sysex command from SuperCollider to this machinedrum do...
 code::
 MIDIClient.init;
-m = MIDIOut(0);
+m = MIDIOut(0);  // Linux users: MIDIOut(0, MIDIClient.destinations[0].uid)
 m.sysex(Int8Array[0xf0, 0x00, 0x20, 0x3c, 0x02, 0x00, 0x61, 21, 54, 0xf7]);
 ::
 

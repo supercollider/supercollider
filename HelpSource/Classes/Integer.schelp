@@ -202,6 +202,18 @@ code::
 ::
 
 
+subsection:: Integer Math
+
+method:: factorial
+returns:: the factorial of the receiver as an integer. This will overflow for numbers code::> 12:: and throw an error. Floating point factorials can be used in such cases (see: link::Classes/SimpleNumber#-factorial::).
+
+discussion::
+code::
+12.factorial
+23.0.factorial // for larger factorials, use floats.
+::
+
+
 subsection:: Misc
 
 method:: pidRunning
