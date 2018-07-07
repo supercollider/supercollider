@@ -290,6 +290,7 @@ Object  {
 	isCollection { ^false }
 	isArray { ^false }
 	isString { ^false }
+	isIdentifier { ^false }
 	containsSeqColl { ^false }
 	isValidUGenInput { ^false }
 	isException { ^false }
