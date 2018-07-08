@@ -208,6 +208,18 @@ InTrig : AbstractIn {
 AbstractOut : UGen {
 	numOutputs { ^0 }
 	writeOutputSpecs {}
+
+	*checkChannelCount {
+		|bus, channelsArray|
+		if (bus.isKindOf(Bus) and: { bus.numChannels < channelsArray.size}) {
+			"% is writing % channels out to an array of size %".format(
+				this.name,
+				channelsArray.size,
+				bus.numChannels
+			).warn;
+		};
+	}
+
 	checkInputs {
 		if (rate == 'audio', {
 			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
@@ -237,10 +249,12 @@ AbstractOut : UGen {
 Out : AbstractOut {
 	*ar { arg bus, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
+		this.checkChannelCount(bus, channelsArray);
 		this.multiNewList(['audio', bus] ++ channelsArray)
 		^0.0		// Out has no output
 	}
 	*kr { arg bus, channelsArray;
+		this.checkChannelCount(bus, channelsArray);
 		this.multiNewList(['control', bus] ++ channelsArray.asArray)
 		^0.0		// Out has no output
 	}
@@ -271,11 +285,13 @@ LocalOut : AbstractOut {
 XOut : AbstractOut {
 	*ar { arg bus, xfade, channelsArray;
 		channelsArray = this.replaceZeroesWithSilence(channelsArray.asUGenInput(this).asArray);
-		this.multiNewList(['audio', bus, xfade] ++ channelsArray)
+		this.checkChannelCount(bus, channelsArray);
+		this.multiNewList(['audio', bus, xfade] ++ channelsArray);
 		^0.0		// Out has no output
 	}
 	*kr { arg bus, xfade, channelsArray;
-		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray)
+		this.checkChannelCount(bus, channelsArray);
+		this.multiNewList(['control', bus, xfade] ++ channelsArray.asArray);
 		^0.0		// Out has no output
 	}
 	*numFixedArgs { ^2 }
