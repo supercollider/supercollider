@@ -315,6 +315,12 @@ h4 {
     color: #777;
 }
 
+/* http://nicolasgallagher.com/jump-links-and-viewport-positioning/demo/#method-C */
+.anchor {
+    margin-top: -3em !important;
+    padding-top: 3em !important;
+}
+
 dt {
     font-weight: bold;
 }
