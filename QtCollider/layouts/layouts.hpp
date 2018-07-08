@@ -122,32 +122,20 @@ public:
     }
   }
 
-  void setStretch( QObjectProxy *p, int stretch ) {
-    QWidget *w = qobject_cast<QWidget*>( p->object() );
-    if( w ) {
-      BOXLAYOUT::setStretchFactor( w, stretch );
-      return;
-    }
-
-    QLayout *l = qobject_cast<QLayout*>( p->object() );
-    if(l) {
-      BOXLAYOUT::setStretchFactor( l, stretch );
-      return;
-    }
+  void setStretch( QWidget *w, int stretch ) {
+    BOXLAYOUT::setStretchFactor( w, stretch );
   }
 
-  void setAlignment( QObjectProxy *p, Qt::Alignment alignment ) {
-    QWidget *w = qobject_cast<QWidget*>( p->object() );
-    if( w ) {
-      BOXLAYOUT::setAlignment( w, alignment );
-      return;
-    }
+  void setStretch( QLayout *l, int stretch ) {
+    BOXLAYOUT::setStretchFactor( l, stretch );
+  }
 
-    QLayout *l = qobject_cast<QLayout*>( p->object() );
-    if(l) {
-      BOXLAYOUT::setAlignment( l, alignment );
-      return;
-    }
+  void setAlignment( QWidget *w, Qt::Alignment alignment ) {
+    BOXLAYOUT::setAlignment( w, alignment );
+  }
+
+  void setAlignment( QLayout *l, Qt::Alignment alignment ) {
+    BOXLAYOUT::setAlignment( l, alignment );
   }
 };
 
@@ -163,15 +151,21 @@ public:
   Q_INVOKABLE void setStretch( int index, int stretch ) {
     QBoxLayout::setStretch( index, stretch );
   }
-  Q_INVOKABLE void setStretch( QObjectProxy *p, int stretch ) {
-    QcBoxLayout<QHBoxLayout>::setStretch( p, stretch );
+  Q_INVOKABLE void setStretch( QWidget *w, int stretch ) {
+    QcBoxLayout<QHBoxLayout>::setStretch( w, stretch );
+  }
+  Q_INVOKABLE void setStretch( QLayout *l, int stretch ) {
+    QcBoxLayout<QHBoxLayout>::setStretch( l, stretch );
   }
   Q_INVOKABLE void setAlignment( int i, int a ) {
     itemAt(i)->setAlignment( (Qt::Alignment) a );
     update();
   }
-  Q_INVOKABLE void setAlignment( QObjectProxy *p, int a ) {
-    QcBoxLayout<QHBoxLayout>::setAlignment( p, (Qt::Alignment) a );
+  Q_INVOKABLE void setAlignment( QWidget *w, int a ) {
+    QcBoxLayout<QHBoxLayout>::setAlignment( w, (Qt::Alignment) a );
+  }
+  Q_INVOKABLE void setAlignment( QLayout *l, int a ) {
+    QcBoxLayout<QHBoxLayout>::setAlignment( l, (Qt::Alignment) a );
   }
 };
 
@@ -187,15 +181,21 @@ public:
   Q_INVOKABLE void setStretch( int index, int stretch ) {
     QBoxLayout::setStretch( index, stretch );
   }
-  Q_INVOKABLE void setStretch( QObjectProxy *p, int stretch ) {
-    QcBoxLayout<QVBoxLayout>::setStretch( p, stretch );
+  Q_INVOKABLE void setStretch( QWidget *w, int stretch ) {
+    QcBoxLayout<QVBoxLayout>::setStretch( w, stretch );
+  }
+  Q_INVOKABLE void setStretch( QLayout *l, int stretch ) {
+    QcBoxLayout<QVBoxLayout>::setStretch( l, stretch );
   }
   Q_INVOKABLE void setAlignment( int i, int a ) {
     itemAt(i)->setAlignment( (Qt::Alignment) a );
     update();
   }
-  Q_INVOKABLE void setAlignment( QObjectProxy *p, int a ) {
-    QcBoxLayout<QVBoxLayout>::setAlignment( p, (Qt::Alignment) a );
+  Q_INVOKABLE void setAlignment( QWidget *w, int a ) {
+    QcBoxLayout<QVBoxLayout>::setAlignment( w, (Qt::Alignment) a );
+  }
+  Q_INVOKABLE void setAlignment( QLayout *l, int a ) {
+    QcBoxLayout<QVBoxLayout>::setAlignment( l, (Qt::Alignment) a );
   }
 };
 
@@ -220,18 +220,11 @@ public:
       update();
     }
   }
-  Q_INVOKABLE void setAlignment( QObjectProxy *p, int a ) {
-    QWidget *w = qobject_cast<QWidget*>( p->object() );
-    if( w ) {
-      QLayout::setAlignment( w, (Qt::Alignment) a );
-      return;
-    }
-
-    QLayout *l = qobject_cast<QLayout*>( p->object() );
-    if(l) {
-      QLayout::setAlignment( l, (Qt::Alignment) a );
-      return;
-    }
+  Q_INVOKABLE void setAlignment( QWidget *w, int a ) {
+    QLayout::setAlignment( w, (Qt::Alignment) a );
+  }
+  Q_INVOKABLE void setAlignment( QLayout *l, int a ) {
+    QLayout::setAlignment( l, (Qt::Alignment) a );
   }
   Q_INVOKABLE int minRowHeight( int row ) {
     return ( row >= 0 && row < rowCount() ) ? rowMinimumHeight( row ) : 0;
@@ -263,9 +256,8 @@ public:
     }
   }
 
-  Q_INVOKABLE void insertWidget( int index, QObjectProxy *proxy )
+  Q_INVOKABLE void insertWidget( int index, QWidget *w )
   {
-    if (QWidget *w = qobject_cast<QWidget*>( proxy->object() ))
-      QtCollider::StackLayout::insertWidget(index, w);
+    QtCollider::StackLayout::insertWidget(index, w);
   }
 };
