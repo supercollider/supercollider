@@ -377,6 +377,8 @@ pre.code {
 a.method-name {
     color: black;
     font-weight: bold;
+    margin-top: -3em;
+    padding-top: 3em;
 }
 
 .method {
