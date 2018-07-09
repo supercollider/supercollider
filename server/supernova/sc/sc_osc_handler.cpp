@@ -2357,8 +2357,9 @@ void handle_b_allocReadChannel(ReceivedMessage const & msg, endpoint_ptr endpoin
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
 
-    // sclang formats the last completion message as int, so we skip the last element
-    for (uint i = 0; i != channel_args - 1; ++i)  {
+    // Any remaining Int arguments are channels, followed by an optional
+    // completion message.
+    for (uint i = 0; i < channel_args; ++i)  {
         if (arg->IsInt32()) {
             channels[i] = arg->AsInt32Unchecked(); arg++;
             ++channel_count;
