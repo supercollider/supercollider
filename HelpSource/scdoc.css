@@ -165,7 +165,6 @@ a.menu-link.title {
 }
 
 .submenu, #toc {
-    margin-top: 0.5em;
     padding: 0.5em;
     position: absolute;
     display: none;
@@ -486,8 +485,10 @@ td p {
 
 #toc {
     width: 20em;
-    max-height: 90vh;
-    overflow: auto;
+    max-height: calc(100vh - 3em);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
     right: 0;
     line-height: 130%;
 }
