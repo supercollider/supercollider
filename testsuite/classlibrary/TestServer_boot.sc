@@ -14,9 +14,15 @@ TestServer_boot : UnitTest {
 		// XXX: no efficient way to wait
 		// FIXME: supernova hangs here unless we resend notify in the while loop
 		server.notify_(false);
-		while { server.notified } { server.notify_(false); 0.1.wait };
+		while { server.notified } {
+			server.statusWatcher.sendNotifyRequest(false);
+			0.1.wait
+		};
 		server.notify_(true);
-		while { server.notified.not } { server.notify_(false); 0.1.wait };
+		while { server.notified.not } {
+			server.statusWatcher.sendNotifyRequest(true);
+			0.1.wait
+		};
 	}
 
 	test_waitForBoot {
