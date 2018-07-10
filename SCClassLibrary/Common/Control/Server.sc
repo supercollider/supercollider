@@ -885,7 +885,7 @@ Server {
 				this.quit;
 				this.boot;
 			}, {
-				this.waitForPidRelease {
+				this.prWaitForPidRelease {
 					this.bootServerApp({
 						if(startAliveThread) { statusWatcher.startAliveThread }
 					})
@@ -894,13 +894,13 @@ Server {
 		}
 	}
 
-	waitForPidRelease { |onComplete, onFailure, timeout = 1|
+	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
 		var bootStart;
 		if (this.inProcess or: { this.isLocal.not }) {
 			onComplete.value;
 			^this
 		};
-		// FIXME: quick and dirty fix for supernova reboot hang on osx:
+		// FIXME: quick and dirty fix for supernova reboot hang on macOS:
 		// if we have just quit before running server.boot,
 		// we wait until server process really ends and sets its pid to nil
 		forkIfNeeded {
@@ -931,6 +931,7 @@ Server {
 	}
 
 	prOnServerProcessExit { |exitCode|
+		pid = nil;
 		"Server '%' exited with exit code %."
 			.format(this.name, exitCode)
 			.postln;
@@ -946,7 +947,6 @@ Server {
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
-				pid = nil;
 				this.prOnServerProcessExit(exitCode);
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
