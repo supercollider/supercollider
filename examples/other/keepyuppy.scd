@@ -37,6 +37,11 @@
 *
 */
 
+// For voice-over, you need the say-Quark installed (unix/macOs only)
+
+Quarks.install("say");
+
+
 
 s.boot; // First make sure the server is on
 
@@ -62,6 +67,8 @@ SynthDef(\whackit, {Out.ar(0, SinOsc.ar(74, 0.5pi,
 ~game = {
 
 	var whacks, xpos, ypos, xvel, yvel, whack, dogravity, framedur, doc, whackdisabled, whackspacing;
+
+	var selector = if(\Say.asClass.notNil) { \say } { \postln };
 
 
 	whacks = 0;
@@ -137,13 +144,13 @@ SynthDef(\whackit, {Out.ar(0, SinOsc.ar(74, 0.5pi,
 		1.5.wait;
 		AppClock.sched(0.0, {doc.close;});
 		switch(whacks,
-			0, {("You didn't hit the ball - sorry").speak;},
-			1, {("You hit the ball once").speak;},
-			2, {("You hit the ball twice").speak;},
-			3, {("You hit the ball 3 times").speak;},
-			4, {("You hit the ball 4 times - well done").speak;},
-			5, {("You hit the ball 5 times - well done").speak;},
-			{("You hit the ball "+whacks+" times - well done indeed!").speak;}
+			0, {("You didn't hit the ball - sorry").perform(selector) },
+			1, {("You hit the ball once").perform(selector) },
+			2, {("You hit the ball twice").perform(selector) },
+			3, {("You hit the ball 3 times").perform(selector) },
+			4, {("You hit the ball 4 times - well done").perform(selector) },
+			5, {("You hit the ball 5 times - well done").perform(selector) },
+			{("You hit the ball "+whacks+" times - well done indeed!").perform(selector) }
 		);
 
 	}).play(AppClock);
