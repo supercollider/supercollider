@@ -314,10 +314,23 @@ h4 {
     color: #777;
 }
 
-/* http://nicolasgallagher.com/jump-links-and-viewport-positioning/demo/#method-C */
-.anchor {
-    margin-top: -3em !important;
-    padding-top: 3em !important;
+/* https://css-tricks.com/hash-tag-links-padding/ */
+.anchor::before {
+    display: block;
+    content: " ";
+    margin-top: -3em;
+    height: 3em;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+a.method-name::before {
+    display: inline-block;
+    content: " ";
+    margin-top: -5em;
+    height: 5em;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 dt {
@@ -377,8 +390,6 @@ pre.code {
 a.method-name {
     color: black;
     font-weight: bold;
-    margin-top: -3em;
-    padding-top: 3em;
 }
 
 .method {
