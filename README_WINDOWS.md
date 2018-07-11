@@ -244,7 +244,7 @@ Required components:
 - **[Git][Git]** for Windows
 - **[CMake][cmake]** >= 3.7.2. You will need at least this version to generate project files for
   VS2017. 3.5 is the absolute supported minimum.
-- **[Visual Studio 14 2017][VS2017]**. 2015 is also supported.
+- **[Visual Studio 15 2017][VS2017]** with C++ core features. VS2015 is also supported.
 - **[Qt][Qt]** >= 5.7 or later. We recommend using the latest version. Use the package `msvc2017_64`
   (or `msvc2015_64`) for a 64-bit build, `msvc2015` for 32-bit (VS2015 and 2017 are both compatible
   with this 32-bit distribution).
