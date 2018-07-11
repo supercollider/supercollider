@@ -341,6 +341,9 @@ the following folder structure *exactly*:
             lib
         fftw
 
+(Note: `libsndfile`'s installed files are by default placed in
+`C:\Program Files\Mega-Nerd\libsndfile`.)
+
 In order to get support for ASIO drivers, follow this directory structure:
 
     supercollider
