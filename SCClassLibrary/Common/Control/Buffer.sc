@@ -51,7 +51,7 @@ Buffer {
 		server.listSendMsg(this.allocReadMsg( argpath, startFrame, numFrames, completionMessage))
 	}
 
-	allocReadChannel { arg argpath, startFrame, numFrames = 0, channels = -1, completionMessage;
+	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
 		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame, numFrames, channels,
@@ -74,7 +74,8 @@ Buffer {
 		this.cache;
 		path = argpath;
 		this.startFrame = startFrame;
-		^["/b_allocReadChannel", bufnum, path, startFrame, (numFrames ? -1).asInt] ++ channels ++ [completionMessage.value(this)]
+		completionMessage !? { completionMessage = [completionMessage.value(this)] };
+		^["/b_allocReadChannel", bufnum, path, startFrame, (numFrames ? -1).asInt] ++ channels ++ completionMessage
 	}
 
 	// read whole file into memory for PlayBuf etc.
