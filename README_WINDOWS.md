@@ -1237,6 +1237,8 @@ The following libraries and tools were used to build the Windows installers
 Known issues
 ============
 
+- READLINE/Command line-mode for sclang is not available.
+
 - Supernova is not available.
 
 - using shell commands from SC only works in a quite limited way (and always did).
