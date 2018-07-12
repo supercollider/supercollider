@@ -248,7 +248,7 @@ Required components:
 - **[Qt][Qt]** >= 5.7 or later. We recommend using the latest version. Use the package `msvc2017_64`
   (or `msvc2015_64`) for a 64-bit build, `msvc2015` for 32-bit (VS2015 and 2017 are both compatible
   with this 32-bit distribution).
-- **[libsndfile][libsndfile]** >= 1.0.25
+- **[libsndfile][libsndfile]** >= 1.0.25.
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
 Optional, but highly recommended:
@@ -292,9 +292,10 @@ SDK; for DSound, install the DirectX SDK (see the preceding section).
 from headaches if CMake cannot find them for whatever reason.
 
 Create a new folder next to where you cloned SuperCollider. If you're making a
-32-bit build, call it `x86`; use `x64` for 64-bit. Move the installed files of
-`libsndfile` and the library for `fftw` so that they match
-the following folder structure *exactly*:
+32-bit build, call it `x86`; use `x64` for 64-bit. Next, move the installed
+files of `libsndfile` (by default, placed in `C:\Program Files\Mega-Nerd\libsndfile`)
+and the library for `fftw` so that they match the
+following folder structure *exactly*:
 
     supercollider
     x64 (or x86)
@@ -303,9 +304,6 @@ the following folder structure *exactly*:
             include
             lib
         fftw
-
-(Note: `libsndfile`'s installed files are by default placed in
-`C:\Program Files\Mega-Nerd\libsndfile`.)
 
 In order to get support for ASIO drivers, follow this directory structure:
 
