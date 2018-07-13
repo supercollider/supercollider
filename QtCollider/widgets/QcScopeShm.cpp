@@ -165,7 +165,7 @@ void QcScopeShm::paintEvent ( QPaintEvent * event )
     int chanCount = _shm->reader.channels();
     int maxFrames = _shm->reader.max_frames();
     QRect area (_pixmap.rect());
-    area.setSize(area.size() / (int)_pixmap.devicePixelRatio());
+    area.setSize(area.size() / _pixmap.devicePixelRatio());
     
     p.begin(&_pixmap);
 
