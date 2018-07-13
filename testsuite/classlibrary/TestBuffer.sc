@@ -245,4 +245,24 @@ TestBuffer : UnitTest {
 		buffer.free;
 	}
 
+	test_getToFloatArray {
+		var server, data;
+		this.bootServer;
+		server = Server.default;
+		data = [1.0, 5.0, 3.0, [9.0, -9.0], 2.0];
+
+		{
+			Duty.ar(SampleDur.ir, 0, Dseq(data, inf))
+		}.asBuffer(0.2, server, { |buffer|
+
+			buffer.getToFloatArray(0, data.size * 2, action: { |array|
+				this.assertEquals(array.as(Array), data.flop.lace,
+					"getToFloatArray should get correct data"
+				)
+			})
+		})
+
+
+	}
+
 }
