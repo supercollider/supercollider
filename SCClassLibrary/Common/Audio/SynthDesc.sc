@@ -460,7 +460,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 	}
 
 	writeMetadata { arg path, mdPlugin;
-		if(metadata.isNil || (metadata.size == 0)) { AbstractMDPlugin.clearMetadata(path); ^this };
+		if (metadata.size == 0) { AbstractMDPlugin.clearMetadata(path); ^this };
 		(mdPlugin ?? { this.class.mdPlugin }).writeMetadata(metadata, def, path);
 	}
 
