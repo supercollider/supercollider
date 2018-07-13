@@ -4306,11 +4306,6 @@ void initLIDPrimitives();
 void initSerialPrimitives();
 	initSerialPrimitives();
 
-#ifdef HAVE_WII
-void initWiiPrimitives();
-	initWiiPrimitives();
-#endif
-
 #endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
