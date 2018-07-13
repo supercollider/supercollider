@@ -101,13 +101,13 @@ CustomViewAction : AbstractMenuAction {
 MainMenu {
 	classvar <otherMenus;
 	classvar <applicationMenu;
-	classvar <serversMenu;
+	classvar <serversMenu, serversMenuActions;
 	classvar <registered;
 	classvar systemMenus;
 	classvar <>buildAppMenusAction;
 
 	*initClass {
-		serversMenu = Menu(MenuAction.separator).title_("Servers");
+		serversMenu = Menu().title_("Servers");
 
 		applicationMenu = Menu(
 			MenuAction("Stop", { CmdPeriod.run; }).shortcut_("Ctrl+."),
@@ -230,7 +230,7 @@ MainMenu {
 		};
 
 		^menu;
-					}
+	}
 
 	*prGetMenuGroup {
 		|menuName, groupName|
@@ -244,57 +244,80 @@ MainMenu {
 		} {
 			group = List();
 			menu.add(groupName -> group);
-				};
+		};
 
 		^group;
 	}
 
 	*prUpdateServersMenu {
-		serversMenu.clear();
+		if (serversMenu.actions.size == 0) {
+			serversMenu.addAction(MenuAction.separator);
+			serversMenu.addAction(MenuAction("Kill All", { Server.killAll; }));
+		};
+
+		serversMenuActions = serversMenuActions ?? { () };
+		serversMenuActions.keys.difference(Server.all.asSet).do {
+			|missing|
+			serversMenuActions[missing].do {
+				|action|
+				serversMenu.removeAction(action);
+			};
+			serversMenuActions[missing] = nil;
+		};
+
 		Server.all.do {
 			|s|
-			var running, options, kill, default;
+			var actionsList;
+			// var running, options, kill, default;
 			var startString, runningString, defaultString;
+
+			actionsList = serversMenuActions[s] ?? {
+				var actions, new = ();
+				serversMenuActions[s] = new;
+
+				new[\name] = MenuAction().font_(Font(italic:true)).action_({
+					Server.default = s;
+				});
+
+				new[\running] = MenuAction().action_({
+					if (s.serverRunning) {
+						s.quit;
+					} {
+						s.boot;
+					}
+				});
+
+				new[\kill] = MenuAction("Kill", { s.kill });
+
+				new[\options] = MenuAction("Options...", {
+					\ServerOptionsGui.asClass.new(s);
+				});
+
+				new[\separator] = MenuAction.separator;
+
+				actions = ([\name, \running, \kill] ++ (\ServerOptionsGui.asClass !? \options) ++ [\separator]);
+				actions = actions.collect(new.at(_));
+				actions.do {
+					|a|
+					serversMenu.insertAction(serversMenu.actions.size - 2, a);
+				};
+
+				new;
+			};
 
 			startString = if (s.serverRunning, "Stop", "Boot");
 			runningString = if (s.serverRunning, "(running)", "(stopped)");
 			defaultString = if (s == Server.default, "◎", " ");
 
-			running = MenuAction(startString);
-			running.action = {
-				if (s.serverRunning) {
-					s.quit;
-				} {
-					s.boot;
-				}
-			};
+			actionsList[\name].string = defaultString + s.name + runningString;
+
+			actionsList[\running].string = startString;
 			if ((s == Server.default) && s.serverRunning.not) {
-				running.shortcut = "Ctrl+B";
+				actionsList[\running].shortcut = "Ctrl+B";
 			};
 
-			kill = MenuAction("Kill");
-			kill.action = { s.kill };
-
-			options = MenuAction("Options...");
-			options.action_({
-				\ServerOptionsGui.asClass.new(s);
-			});
-
-			serversMenu.addAction(MenuAction(defaultString + s.name + runningString).font_(Font(italic:true)));
-			serversMenu.addAction(running);
-
-			if (s.serverRunning) {
-				serversMenu.addAction(kill)
-			};
-
-			if (\ServerOptionsGui.asClass.notNil) {
-				serversMenu.addAction(options);
-			};
-
-			serversMenu.addAction(MenuAction.separator);
+			actionsList[\kill].enabled = (s.serverRunning);
 		};
-
-		serversMenu.addAction(MenuAction("Kill All", { Server.killAll; }));
 	}
 
 
@@ -481,7 +504,7 @@ ToolBar : AbstractActionView {
 
 	floating 	{ 		^this.getProperty(\floating) }
 	floating_ 	{ |b| 	^this.setProperty(\floating, b) }
-	}
+}
 
 +View {
 	asMenuAction {
