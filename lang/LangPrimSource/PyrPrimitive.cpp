@@ -4317,11 +4317,6 @@ void initOpenGLPrimitives();
 	initOpenGLPrimitives();
 #endif
 
-#ifdef __APPLE__
-	void initSpeechPrimitives();
-		initSpeechPrimitives();
-#endif
-
 #ifdef SC_QT
 	QtCollider::initPrimitives();
 #endif

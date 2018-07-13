@@ -111,9 +111,7 @@ if(UNIX)
 		list(APPEND sclang_sources
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
-			LangPrimSource/SC_Speech.mm
 			)
-		add_definitions(-DHAVE_SPEECH)
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
