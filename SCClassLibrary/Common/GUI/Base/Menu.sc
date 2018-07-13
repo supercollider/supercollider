@@ -369,7 +369,7 @@ AbstractActionView : View {
 			before = this.actions[before]
 		};
 
-		^this.invokeMethod('insertAction', before, action.asMenuAction);
+		^this.invokeMethod('insertAction', [before.asMenuAction, action.asMenuAction]);
 	}
 }
 
