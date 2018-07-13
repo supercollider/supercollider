@@ -253,3 +253,13 @@ QToolButtonStyle {
 
 	*new { arg name; ^this.perform(name) }
 }
+
+QScrollHint {
+	classvar
+	<ensureVisible = 0,
+	<positionAtTop = 1,
+	<positionAtBottom = 2,
+	<positionAtCenter = 3;
+
+	*new { arg name; ^this.perform(name) }
+}

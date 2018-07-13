@@ -37,6 +37,15 @@ METHOD:: insertChild
 	RETURNS::
 		An instance of TreeViewItem representing the new item.
 
+METHOD:: expand, collapse
+	Expand or collapse the item, if it has children.
+
+METHOD:: scrollToItem
+	Scroll the item into view.
+
+	ARGUMENT:: behavior
+		A symbol: code::\ensureVisible, \positionAtTop, \positionAtBottom, \positionAtCenter::
+
 METHOD:: strings
 	The text in the data fields.
 

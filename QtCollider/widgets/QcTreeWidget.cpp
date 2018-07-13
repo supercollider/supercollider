@@ -40,17 +40,26 @@ QcTreeWidget::QcTreeWidget()
   setAttribute(Qt::WA_AcceptTouchEvents);
 
   // Forward signals to argument-less versions connectable from SC.
-  connect( this, SIGNAL( itemActivated(QTreeWidgetItem*, int) ),
-           this, SIGNAL( action() ) );
-  connect( this, SIGNAL( itemPressed(QTreeWidgetItem*, int) ),
-           this, SIGNAL( itemPressedAction() ) );
-  connect( this, SIGNAL( currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*) ),
-           this, SIGNAL( currentItemChanged() ) );
-
-  connect( this, SIGNAL( itemExpanded(QTreeWidgetItem*) ),
-           this, SLOT( onExpanded(QTreeWidgetItem*) ) );
-  connect( this, SIGNAL( itemCollapsed(QTreeWidgetItem*) ),
-           this, SLOT( onCollapsed(QTreeWidgetItem*) ) );
+  connect( this, &QTreeWidget::itemActivated,
+           this, &QcTreeWidget::action );
+  connect( this, &QTreeWidget::itemPressed,
+           this, &QcTreeWidget::itemPressed );
+  connect( this, &QTreeWidget::itemClicked,
+           this, &QcTreeWidget::itemClicked );
+  connect( this, &QTreeWidget::itemDoubleClicked,
+           this, &QcTreeWidget::itemDoubleClicked );
+  connect( this, &QTreeWidget::itemEntered,
+           this, &QcTreeWidget::itemEntered );
+  connect( this, &QTreeWidget::itemChanged,
+           this, &QcTreeWidget::itemChanged );
+  connect( this, &QTreeWidget::itemExpanded,
+           this, &QcTreeWidget::itemExpanded );
+  connect( this, &QTreeWidget::itemCollapsed,
+           this, &QcTreeWidget::itemCollapsed );
+  connect( this, &QTreeWidget::itemExpanded,
+           this, &QcTreeWidget::itemExpanded );
+  connect( this, &QTreeWidget::currentItemChanged,
+           this, &QcTreeWidget::currentItemChanged );
 }
 
 QVariantList QcTreeWidget::columns() const
@@ -73,16 +82,6 @@ void QcTreeWidget::setColumns( const QVariantList & varList )
   Q_FOREACH( const QVariant & var, varList )
     labels << var.toString();
   setHeaderLabels( labels );
-}
-
-void QcTreeWidget::onExpanded(QTreeWidgetItem* item)
-{
-  Q_EMIT( expanded(QcTreeWidget::Item::safePtr( item )) );
-}
-
-void QcTreeWidget::onCollapsed(QTreeWidgetItem* item)
-{
-  Q_EMIT( collapsed(QcTreeWidget::Item::safePtr( item )) );
 }
 
 QcTreeWidget::ItemPtr QcTreeWidget::currentItem() const
@@ -224,6 +223,31 @@ int QcTreeWidget::columnWidth( int column )
 void QcTreeWidget::setColumnWidth( int column, int width )
 {
   QTreeWidget::setColumnWidth( column, width );
+}
+
+void QcTreeWidget::scrollToItem(QcTreeWidget::ItemPtr item, int behavior)
+{
+  QTreeWidget::scrollToItem(item, (QAbstractItemView::ScrollHint)behavior);
+}
+
+void QcTreeWidget::expandItem(QcTreeWidget::ItemPtr item)
+{
+  QTreeWidget::expandItem(item);
+}
+
+void QcTreeWidget::collapseItem(QcTreeWidget::ItemPtr item)
+{
+  QTreeWidget::collapseItem(item);
+}
+
+void QcTreeWidget::setCurrentItemRow(QcTreeWidget::ItemPtr item)
+{
+  QTreeWidget::setCurrentItem(item.ptr());
+}
+
+void QcTreeWidget::setCurrentItem(QcTreeWidget::ItemPtr item, int column)
+{
+  QTreeWidget::setCurrentItem(item.ptr(), column);
 }
 
 void QcTreeWidget::keyPressEvent( QKeyEvent *e )

@@ -84,6 +84,26 @@ METHOD:: addChild
 METHOD:: insertChild
 	Alias for link::#-addChild::, provided for compatibility with TreeViewItem.
 
+METHOD:: expandItem, collapseItem
+	Expand or collapse an item.
+
+	ARGUMENT::
+		A link::Classes/TreeViewItem::
+
+METHOD:: expandItemAt, collapseItemAt
+	Expand or collapse an item at an index.
+
+	ARGUMENT::
+		An link::Classes/Integer::
+
+METHOD:: scrollToItem
+	Scroll to an item.
+
+	ARGUMENT:: item
+		A TreeViewItem
+	ARGUMENT:: behavior
+		A symbol: code::\ensureVisible, \positionAtTop, \positionAtBottom, \positionAtCenter::
+
 SUBSECTION:: Appearance
 
 METHOD:: sort
@@ -133,8 +153,32 @@ METHOD:: canSort
 
 SUBSECTION:: Actions
 
-METHOD:: itemPressedAction
-	The object to be evaluated when a mouse button is pressed on an item, passing this view as the argument.
+METHOD:: onItemPressed
+	The object to be evaluated when a mouse button is pressed on an item.
 
-METHOD:: onItemChanged
-	The object to be evaluated whenever the current item changes, passing this view as the argument.
+	Callback arguments: current link::Classes/TreeView::, clicked link::Classes/TreeViewItem::
+
+METHOD:: onItemClicked
+	The object to be evaluated when a list item is clicked.
+
+	Callback arguments: current link::Classes/TreeView::, clicked link::Classes/TreeViewItem::, click count
+
+METHOD:: action
+	The object to be evaluated when the selection has changed.
+
+	Callback arguments: current link::Classes/TreeView::, selected link::Classes/TreeViewItem::, selected column index
+
+METHOD:: onItemExpanded
+	The object to be evaluated when an item is expanded.
+
+	Callback arguments: current link::Classes/TreeView::, clicked link::Classes/TreeViewItem::
+
+METHOD:: onItemCollapsed
+	The object to be evaluated when an item is collapsed.
+
+	Callback arguments: current link::Classes/TreeView::, clicked link::Classes/TreeViewItem::
+
+METHOD:: onCurrentItemChanged
+	The object to be evaluated when the current item changes
+
+	Callback arguments: current link::Classes/TreeView::, old link::Classes/TreeViewItem::, new link::Classes/TreeViewItem::

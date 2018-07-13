@@ -37,7 +37,23 @@ using namespace QtCollider;
 class QcTreeWidget : public QTreeWidget
 {
 public:
-
+  class Item;
+  
+  class ItemPtr : public SafePtr<Item> {
+  public:
+    using InheritedT = SafePtr<Item>;
+    
+    ItemPtr( QTreeWidgetItem* ptr )
+      : InheritedT(QcTreeWidget::Item::safePtr(ptr))
+    {}
+    
+    ItemPtr() : InheritedT(0) {}
+    ItemPtr( const ItemPtr & other ) :  InheritedT(other) {}
+    ItemPtr( Item* ptr ) : InheritedT(ptr) {}
+    
+    operator const QTreeWidgetItem*() { return ptr(); }
+  };
+  
   class Item : public QTreeWidgetItem
   {
   public:
@@ -47,17 +63,15 @@ public:
     Item( const QStringList & strings )
       : QTreeWidgetItem( strings, Item::Type ), _safePtr(this) {}
     ~Item() { _safePtr.invalidate(); }
-    SafePtr<Item> safePtr() const { return _safePtr; }
-    static SafePtr<Item> safePtr( QTreeWidgetItem* );
-    static void initialize( VMGlobals *, PyrObject *, const SafePtr<Item> & );
+    ItemPtr safePtr() const { return _safePtr; }
+    static ItemPtr safePtr( QTreeWidgetItem* );
+    static void initialize( VMGlobals *, PyrObject *, const ItemPtr & );
     static int finalize( VMGlobals *, PyrObject * );
     bool operator< ( const QTreeWidgetItem & other ) const;
   private:
-    SafePtr<Item> _safePtr;
+    ItemPtr _safePtr;
   };
-
-  typedef SafePtr<Item> ItemPtr;
-
+  
   Q_OBJECT
   Q_PROPERTY( QVariantList columns READ columns WRITE setColumns )
   Q_PROPERTY( QcTreeWidget::ItemPtr currentItem READ currentItem WRITE setCurrentItem );
@@ -69,10 +83,10 @@ public:
   Q_INVOKABLE int indexOfItem( const QcTreeWidget::ItemPtr & );
 
   Q_INVOKABLE QcTreeWidget::ItemPtr addItem
-  ( const QcTreeWidget::ItemPtr & parent, const QVariantList & data );
+    ( const QcTreeWidget::ItemPtr & parent, const QVariantList & data );
 
   Q_INVOKABLE QcTreeWidget::ItemPtr insertItem
-  ( const QcTreeWidget::ItemPtr & parent, int index, const QVariantList & data );
+    ( const QcTreeWidget::ItemPtr & parent, int index, const QVariantList & data );
 
   Q_INVOKABLE void removeItem( const QcTreeWidget::ItemPtr & );
 
@@ -90,13 +104,22 @@ public:
   Q_INVOKABLE int columnWidth( int column );
   Q_INVOKABLE void setColumnWidth( int column, int width );
 
-Q_SIGNALS:
+  Q_INVOKABLE void scrollToItem(QcTreeWidget::ItemPtr, int);
+  Q_INVOKABLE void expandItem(QcTreeWidget::ItemPtr);
+  Q_INVOKABLE void collapseItem(QcTreeWidget::ItemPtr);
+  Q_INVOKABLE void setCurrentItemRow(QcTreeWidget::ItemPtr item);
+  Q_INVOKABLE void setCurrentItem(QcTreeWidget::ItemPtr item, int column);
 
-  void action();
-  void itemPressedAction();
-  void currentItemChanged();
-  void expanded(QcTreeWidget::ItemPtr);
-  void collapsed(QcTreeWidget::ItemPtr);
+Q_SIGNALS:
+  void itemPressed(QcTreeWidget::ItemPtr item, int column);
+  void itemClicked(QcTreeWidget::ItemPtr item, int column);
+  void itemDoubleClicked(QcTreeWidget::ItemPtr item, int column);
+  void action(QcTreeWidget::ItemPtr item, int column); //    void itemActivated(QTreeWidgetItem *item, int column)
+  void itemEntered(QcTreeWidget::ItemPtr item, int column);
+  void itemChanged(QcTreeWidget::ItemPtr item, int column);
+  void itemExpanded(QcTreeWidget::ItemPtr item);
+  void itemCollapsed(QcTreeWidget::ItemPtr item);
+  void currentItemChanged(QcTreeWidget::ItemPtr current, QcTreeWidget::ItemPtr previous);
 
 public:
 
@@ -107,10 +130,6 @@ public:
 
   QVariantList columns() const;
   void setColumns( const QVariantList & );
-	
-public Q_SLOTS:
-  void onExpanded(QTreeWidgetItem*);
-  void onCollapsed(QTreeWidgetItem*);
 	
 protected:
 
