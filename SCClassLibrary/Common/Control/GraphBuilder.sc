@@ -84,10 +84,6 @@ NamedControl {
 			if (values.isNil) {
 				values = spec.default;
 			};
-
-			UGen.buildSynthDef.specs[name] !? _.setFrom(spec) ?? {
-				UGen.buildSynthDef.specs[name] = spec;
-			};
 		};
 
 		res = currentControls.at(name);
@@ -125,6 +121,8 @@ NamedControl {
 				^res.control;
 			}
 		};
+
+		res.spec = spec; // Set after we've finished without error.
 
 		^if(lags.notNil) {
 			res.control.lag(lags).unbubble
@@ -172,13 +170,22 @@ NamedControl {
 		control = control.asArray.reshapeLike(values).unbubble;
 	}
 
-
-
-
 	*initDict {
 		if(UGen.buildSynthDef !== buildSynthDef or: currentControls.isNil) {
 			buildSynthDef = UGen.buildSynthDef;
 			currentControls = IdentityDictionary.new;
+		};
+	}
+
+	spec {
+		^UGen.buildSynthDef.specs[name]
+	}
+
+	spec_{
+		|spec|
+		spec = spec.asSpec;
+		this.spec !? _.setFrom(spec) ?? {
+			UGen.buildSynthDef.specs[name] = spec
 		};
 	}
 }
