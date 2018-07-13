@@ -2,8 +2,8 @@
 # Note that you need to "make install" for this information to be copied into all places.
 
 set(PROJECT_VERSION_MAJOR 3)
-set(PROJECT_VERSION_MINOR 9)
-set(PROJECT_VERSION_PATCH .3)
+set(PROJECT_VERSION_MINOR 10)
+set(PROJECT_VERSION_PATCH .0-beta1)
 
 if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
 
