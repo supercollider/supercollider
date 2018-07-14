@@ -280,6 +280,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
+	var <pidReleaseCondition;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -338,6 +339,8 @@ Server {
 
 		this.name = argName;
 		all.add(this);
+
+		pidReleaseCondition = Condition({ this.pid == nil });
 
 		Server.changed(\serverAdded, this);
 
@@ -895,24 +898,28 @@ Server {
 	}
 
 	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
-		var bootStart;
-		if (this.inProcess or: { this.isLocal.not }) {
+		var timer;
+		if (this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
 			onComplete.value;
 			^this
 		};
+
 		// FIXME: quick and dirty fix for supernova reboot hang on macOS:
 		// if we have just quit before running server.boot,
 		// we wait until server process really ends and sets its pid to nil
+		timer = fork {
+			timeout.wait;
+			pidReleaseCondition.unhang;
+		};
+
 		forkIfNeeded {
-			bootStart = Main.elapsedTime;
-			while {
-				pid.notNil and: {
-					Main.elapsedTime - bootStart < timeout
-				}
+			pidReleaseCondition.hang;
+			if (pidReleaseCondition.test.value) {
+				timer.stop;
+				onComplete.value;
 			} {
-				0.05.wait
-			};
-			if (pid.isNil, onComplete, onFailure);
+				onFailure.value
+			}
 		}
 	}
 
@@ -932,6 +939,8 @@ Server {
 
 	prOnServerProcessExit { |exitCode|
 		pid = nil;
+		pidReleaseCondition.signal;
+
 		"Server '%' exited with exit code %."
 			.format(this.name, exitCode)
 			.postln;
