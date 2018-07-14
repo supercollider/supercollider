@@ -7,7 +7,7 @@ html, body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 10pt;
+    font-size: 1em;
     color: black;
     background: white;
 }
@@ -15,13 +15,17 @@ body {
 div.contents {
     margin: 0;
     padding: 3em 1em;
+    overflow: auto;
+    word-break: break-all;
 }
 
 table {
     border-collapse: collapse;
-    font-size: 10pt;
-    margin-top: 1em;
+    font-size: 1em;
+    margin-top: 0.5em;
     margin-left: 2em;
+    margin-bottom: 0.5em;
+    width: 90%;
 }
 table td {
     border: 1px solid #ddd;
@@ -33,7 +37,7 @@ table table {
 }
 
 p {
-    margin-top: 1em;
+    margin-top: 0.3em;
     margin-bottom: 0.3em;
 }
 
@@ -70,7 +74,7 @@ ul.inheritedmets li {
     font-family: monospace;
 }
 a.inheritedmets_toggle {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #558;
     font-weight: normal;
 /*    margin-left: 2em;*/
@@ -93,11 +97,11 @@ a.subclass_toggle:hover {
 
 
 #menubar {
-    position: fixed;
+    position: fixed; /* fixed; */ /* relative; */
     font-family: Arial, Helvetica, sans-serif;
     text-indent: 0;
     width: 100%;
-    padding: 0.5em 0;
+    padding: 0.2em 0;
     background-color: #f9f9f9;
     box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
 }
@@ -111,7 +115,7 @@ a.subclass_toggle:hover {
     padding: 0;
     margin: 0;
     border-right: 1px solid #ddd;
-    font-size: 10pt;
+    font-size: 0.8em;
     display: inline-block;
 }
 
@@ -189,11 +193,12 @@ a.menu-link.title {
 .toc_search {
     margin-left: 10px;
     color: #999;
-    font-size: 9pt;
+    font-size: 0.9em;
 }
 
 .toc_search input {
     border: 1px solid #ddd;
+    margin-bottom: 1em;
 }
 
 
@@ -225,14 +230,14 @@ a.menu-link.title {
 }
 
 #superclasses {
-    font-size: 9pt;
+    font-size: 0.5em;
     color: #444;
     font-weight: normal;
 }
 
 .extension-indicator-ctr {
     float: right;
-    font-size: 12pt;
+    font-size: 0.4em;
     padding: 0.4em 0.4em 0.2em 0.4em;
     background-color: #601c8b;
     color: white;
@@ -250,14 +255,14 @@ a.menu-link.title {
 }
 
 .subheader {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #444;
     margin-top: 1em;
 }
 
 .jump {
     text-align: right;
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
 }
 .jump a {
@@ -267,7 +272,7 @@ a.menu-link.title {
 }
 
 a.footnote {
-    font-size: 9pt;
+    font-size: 0.9em;
     top: -0.1em;
 }
 div.footnotes {
@@ -279,7 +284,7 @@ div.footnotes {
 div.footnote {
     margin-bottom: 0.5em;
     margin-top: 0.5em;
-    font-size: 9pt;
+    font-size: 0.9em;
 }
 
 .soft {
@@ -288,30 +293,31 @@ div.footnote {
 
 h1 {
     margin: 0.1em 0;
-    font-size: 2.6em;
+    font-size: 2.4em;
     margin-bottom: 0em;
 }
 
 h2 {
     border-bottom: 1px solid #ddd;
-    margin-top: 1.0em;
+    margin-top: 1.3em;
     text-align: left;
     margin-bottom: 2px;
-    font-size: 1.6em;
+    font-size: 2em;
 }
 
 h3 {
-    margin-top: 2.0em;
+    margin-top: 0.9em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.4em;
+    font-size: 1.6em;
 }
 
 h4 {
-    margin-top: 1em;
+    margin-top: 0.5em;
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
+    font-size: 1.2em;
 }
 
 /* https://css-tricks.com/hash-tag-links-padding/ */
@@ -343,7 +349,7 @@ dd {
 
 code, pre {
     font-family: monospace;
-    font-size: 9pt;
+    font-size: 1.05em;
 }
 
 pre {
@@ -360,12 +366,13 @@ pre.code {
 
 .image {
     text-align: center;
-    margin: 2em;
-    font-size: 9pt;
+    margin: 0.3em;
+    font-size: 0.9en;
 }
 
 .image img {
-    margin-bottom: 1em;
+    margin-bottom: 0.5em;
+    max-width: 100%;
 }
 
 .methprefix {
@@ -402,13 +409,13 @@ a.method-name {
 }
 
 .extmethod {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #444;
     padding-left: 0.2em;
 }
 
 .supmethod {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #444;
     padding-left: 0.2em;
 }
@@ -429,7 +436,8 @@ table.arguments td.argumentname, td.argumentdesc {
 
 td.argumentname {
     font-weight: bold;
-}
+    width: 6em;
+    }
 
 div.returnvalue {
     margin-left: 2em;
@@ -462,11 +470,11 @@ td p {
 }*/
 
 .doclink {
-    font-size: 9pt;
+    font-size: 0.7em;
     color: #888;
     text-align: right;
     margin-top: 2em;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
     border-top: 1px solid #ddd;
 }
 .doclink a {
@@ -494,6 +502,7 @@ td p {
 
 #toc-container {
     float: right;
+    font-size: 0.8em
 }
 
 #toc {
@@ -513,12 +522,12 @@ td p {
 }
 
 li {
-    padding-bottom: 0.5em;
+    padding-bottom: 0.3em;
 }
 
 ul.toc {
     list-style-type: none;
-    margin: 0;
+    margin: 0em;
     padding: 0;
 }
 ul.toc ul {
@@ -526,7 +535,7 @@ ul.toc ul {
 }
 ul.toc li {
     margin: 0;
-    padding: 0;
+    padding: 0.15em;
 }
 
 ul.toc li a {
@@ -553,6 +562,7 @@ ul.toc li a:hover {
 .toc3 {
     font-family: monospace;
     font-weight: normal;
+    font-size: 1.2em
 /*    font-size: 9.5pt;*/
 }
 .toc3 a {
@@ -674,7 +684,7 @@ div.met_docs {
 /*    margin-left: 2em;*/
 }
 div.met_subclasses {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
     margin-left: 3em;
     text-align: left;
@@ -690,23 +700,23 @@ div.met_subclasses a.seemore {
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
     background: #eee;
 }
 #search_checks0 {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
     border-bottom: 1px solid #ddd;
     margin-top: 1em;
     padding-bottom: 1em;
 }
 table#search_settings {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #555;
     width: 100%;
     margin-left: 0px;
-    margin-right: 0px;*/
+    margin-right: 0px;
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;
@@ -717,11 +727,11 @@ table#search_settings {
 }
 #random {
     text-align: right;
-    font-size: 9pt;
+    font-size: 0.9em;
 }
 #js_error {
     font-family: Andale Mono, monospace;
-    font-size: 9pt;
+    font-size: 0.9em;
     color: red;
 }
 
@@ -736,7 +746,7 @@ table#search_settings {
     margin-left: 2em;
 }
 div.met_subclasses {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
     margin-left: 3em;
     text-align: left;
@@ -752,23 +762,23 @@ div.met_subclasses a.seemore {
 
 .method_name {
     font-family: Andale Mono, monospace;
-    font-size: 9.5pt;
+    font-size: 1em;
 }
 #method_note {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
     border-top: 1px solid #ddd;
     text-align: center;
     margin-top: 2em;
 }
 #total_count {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
 }
 .searchlink {
     background: #eed;
     text-align: center;
-    font-size: 9pt;
+    font-size: 0.9em;
     padding: 0.25em;
     margin: 0.25em 0;
 }
@@ -782,6 +792,6 @@ div.met_subclasses a.seemore {
     margin-top: 0.2em;
 }
 #total_count {
-    font-size: 9pt;
+    font-size: 0.9em;
     color: #777;
 }
