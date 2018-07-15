@@ -174,12 +174,6 @@ struct Dstutter : public Unit
 	float m_value;
 };
 
-struct Donce : public Unit
-{
-	int m_bufcounter;
-	float m_prev;
-};
-
 struct Dpoll : public Unit
 {
 	char *m_id_string;
@@ -282,9 +276,6 @@ void Dpoll_next(Dpoll *unit, int inNumSamples);
 
 void Dreset_Ctor(Dreset *unit);
 void Dreset_next(Dreset *unit, int inNumSamples);
-
-void Donce_Ctor(Donce *unit);
-void Donce_next(Donce *unit, int inNumSamples);
 
 void Dconst_Ctor(Dconst *unit);
 void Dconst_next(Dconst *unit, int inNumSamples);
@@ -625,7 +616,7 @@ void Duty_next_dd(Duty *unit, int inNumSamples)
 void Duty_Ctor(Duty *unit)
 {
 	// DEMANDINPUT_A is not needed here, because we are at init time.
-	
+
 	if (INRATE(duty_reset) == calc_FullRate) {
 
 			SETCALC(Duty_next_da);
@@ -2215,30 +2206,6 @@ void Dreset_Ctor(Dreset *unit)
 
 //////////////////////////////
 
-
-
-void Donce_next(Donce *unit, int inNumSamples)
-{
-	if (inNumSamples) {
-		if (unit->m_bufcounter == unit->mWorld->mBufCounter) {
-			OUT0(0) = unit->m_prev;
-		} else {
-			float x = DEMANDINPUT_A(0, inNumSamples);
-			unit->m_prev = x;
-			OUT0(0) = x;
-		}
-	} else {
-		RESETINPUT(0);
-	}
-}
-
-void Donce_Ctor(Donce *unit)
-{
-	SETCALC(Donce_next);
-	OUT0(0) = 0.f;
-}
-
-
 inline double sc_loop(Unit *unit, double in, double hi, int loop)
 {
 	// avoid the divide if possible
@@ -2458,7 +2425,6 @@ PluginLoad(Demand)
 	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Dstutter);
 	DefineSimpleUnit(Dconst);
-	DefineSimpleUnit(Donce);
 	DefineSimpleUnit(Dreset);
 	DefineDtorUnit(Dpoll);
 }
