@@ -35,7 +35,6 @@ else ()
 endif ()
 
 set(sclang_sources
-	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
@@ -109,9 +108,7 @@ if(UNIX)
 		list(APPEND sclang_sources
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
-			LangPrimSource/SC_Speech.mm
 			)
-		add_definitions(-DHAVE_SPEECH)
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -153,25 +150,6 @@ if(SC_HIDAPI)
     add_definitions(-DSC_HIDAPI)
 endif(SC_HIDAPI)
 
-if(SC_WII)
-	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		find_package(CWiid)
-		find_package(Bluetooth)
-
-		if (BLUETOOTH_FOUND AND CWIID_FOUND)
-			add_definitions(-DHAVE_WII)
-			include_directories(${CWIID_INCLUDE_DIRS} ${BLUETOOTH_INCLUDE_DIRS})
-			message(STATUS "Compiling with WiiMote support")
-		else()
-			message(SEND_ERROR "Cannot find libcwiid or libbluetooth.\n (If Wii support is not required, then set SC_WII=no)")
-		endif()
-	elseif(APPLE)
-                add_definitions(-DHAVE_WII)
-                list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
-                include_directories(LangPrimSource/WiiMote_OSX)
-	endif()
-endif()
-
 if(SC_QT OR SC_IDE)
 	set(QT_COLLIDER_LANG_CLIENT ON)
 	include(../QtCollider/CMakeLists.txt)
@@ -199,8 +177,7 @@ endif()
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
-if(SC_IDE OR SC_QT)
-	find_package(Qt5Core)
+if(SC_QT OR SC_IDE)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
 	message(STATUS "Found Qt: " ${QtCore_location} )
     get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
@@ -224,17 +201,6 @@ if(SC_HIDAPI)
     target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
   endif()
 endif()
-
-
-
-if (SC_WII OR APPLE)
-	if (BLUETOOTH_FOUND AND CWIID_FOUND)
-		target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})
-	elseif(APPLE)
-		target_link_libraries(libsclang "-framework IOBluetooth")
-	endif()
-endif()
-
 
 if (Boost_FOUND)
 	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})

@@ -213,4 +213,36 @@ TestBuffer : UnitTest {
 		buffer.free;
 	}
 
+	test_allocReadChannelMsg_missingChannelsAndCompletionMessage {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, -1);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, -1]);
+		buffer.free;
+	}
+
+	test_allocReadChannelMsg_emptyChannelsWithCompletionMessage {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, 25, [], ["test_message", 1, 2, 3]);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, 25, ["test_message", 1, 2, 3]]);
+		buffer.free;
+	}
+
+	test_allocReadChannelMsg_validChannelsNoCompletionMessage {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, -1, [7, 0, 1]);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, -1, 7, 0, 1]);
+		buffer.free;
+	}
+
+	test_allocReadChannelMsg_allArgumentsProvided {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, -1, [1, 0], ["complete", "xx"]);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, -1, 1, 0, ["complete", "xx"]]);
+		buffer.free;
+	}
+
 }

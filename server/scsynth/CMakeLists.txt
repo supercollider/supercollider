@@ -147,9 +147,8 @@ elseif(NOT NO_LIBSNDFILE)
 endif(SNDFILE_FOUND)
 
 if(UNIX AND NOT APPLE)
-	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/SuperCollider/plugins\"")
+	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
 endif()
-
 
 if(NOT NO_AVAHI)
 	if(APPLE)

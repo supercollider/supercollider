@@ -32,6 +32,7 @@
 #include "SC_World.h"
 #include "SC_Wire.h"
 #include "ErrorMessage.hpp"
+#include "SC_Filesystem.hpp" // SC_PLUGIN_EXT
 
 namespace nova {
 
@@ -260,6 +261,11 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
     using namespace std;
 
+    // Ignore files that don't have the extension of an SC plugin
+    if (path.extension() != SC_PLUGIN_EXT) {
+        return;
+    }
+
     void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == nullptr)
         return;
@@ -312,6 +318,11 @@ void sc_ugen_factory::close_handles(void)
 
 void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
+    // Ignore files that don't have the extension of an SC plugin
+    if (path.extension() != SC_PLUGIN_EXT) {
+        return;
+    }
+
     //std::cout << "try open plugin: " << path << std::endl;
     const char * filename = path.string().c_str();
     HINSTANCE hinstance = LoadLibrary( path.string().c_str() );

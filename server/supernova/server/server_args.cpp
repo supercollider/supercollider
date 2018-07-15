@@ -65,8 +65,13 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("verbose,V", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
                                                             "-2 suppresses informational and many error messages, as well as\n"
                                                             "messages from Poll.")
-        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "a colon-separated list of paths\n"
-                                                                    "if -U is specified, the standard paths are NOT searched for plugins.")
+#ifdef _WIN32
+        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths seperated by `;`.\n"
+                                                            "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
+#else
+        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths seperated by `:`.\n"
+                                                            "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
+#endif
         ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
         ("threads,T", value<uint16_t>(&threads)->default_value(boost::thread::physical_concurrency()), "number of audio threads")
         ;

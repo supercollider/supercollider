@@ -217,7 +217,17 @@ METHOD:: xZoom
     returns:: A Float, in seconds of audio displayed.
 
 METHOD:: yZoom
-    Vertical scaling. code::yZoom = 1:: sets ±1.0 to the top and bottom of the view. If code::yZoom = 2::, the view covers ±0.5.
+    Vertical scaling. The default code::yZoom = 1:: sets ±1.0 to the top and bottom of the view. If code::yZoom = 2::, the view covers ±0.5 of the value range.
+
+    returns:: A Float scaling factor.
+
+METHOD:: yOffset
+    Vertical offset. The default code::yOffset = 0:: sets value of 0.0 in the middle of the channel's view, while code::yOffset = 1::, sets 0.0 at the top and code::yOffset = -1:: sets 0.0 at the bottom of the view. This is performed after (and thus is not scaled by) the link::#-yZoom:: factor.
+
+    returns:: A Float offset.
+
+METHOD:: spacing
+    A ratio between vertical space outside of the ±1.0 value range and channel's full height. The default code::spacing = 0.1:: makes top and bottom spaces add up to code::0.1 * height:: (each of them occupying half of that), while ±1.0 value range occupies code::0.9 * height::. The value is clipped in the range from code::0.0:: to  code:: 1.0::.
 
     returns:: A Float scaling factor.
 
@@ -408,6 +418,29 @@ METHOD:: readSelectionWithTask
 
 SUBSECTION:: Display
 
+METHOD:: peakColor
+
+    The color of the peak-to-peak data. This can be overridden by link::#-waveColors::. Defaults to code::Color(0.95, 0.7)::.
+
+    argument::
+        A code::Color::.
+
+METHOD:: rmsColor
+
+    The color of the RMS data. Defaults to code::Color(1.0, 1.0)::.
+
+    argument::
+        A code::Color::.
+
+METHOD:: waveColors
+
+    An array of colors for the peak-to-peak data for each channel, allowing each channel to be represented by a different color. Defaults to code::[ ]::. Once set, it overrides link::#-peakColor::. In order to revert to using code::.peakColor::, set code::.waveColors:: back to an empty array: code::.waveColors_([])::.
+
+    note::link::#-rmsColor:: stays the same for all channels. However, using alpha blending, it is possible to display RMS data using either a lighter (e.g. code::.rmsColor_(Color.grey(1, 0.3))::) or a darker (e.g. code::.rmsColor_(Color.grey(0, 0.3))::) shade of the peak-to-peak color.::
+
+    argument::
+        And array of code::[Color]::.
+
 METHOD:: gridOn
 
     Whether the grid is displayed. Defaults to code::true::.
@@ -443,6 +476,24 @@ METHOD:: drawsWaveForm
     argument::
         A Boolean.
 
+METHOD:: drawsRMS
+
+    Whether the RMS data for the waveform is displayed. Defaults to code::true::.
+
+METHOD:: drawsCenterLine
+
+    Whether the center line (at value 0.0) is displayed. Defaults to code::true::.
+
+    argument::
+        A Boolean.
+
+METHOD:: drawsBoundingLines
+
+    Whether the bounding lines (at values ±1.0) are displayed. Defaults to code::true::.
+
+    argument::
+        A Boolean.
+
 METHOD:: timeCursorOn
 
     Whether the time cursor is displayed. Defaults to code::false::.
@@ -466,7 +517,7 @@ METHOD:: timeCursorColor
 
 METHOD:: elasticMode
 
-    ???
+    Not operational, for compatibility only.
 
 SUBSECTION:: Actions
 
@@ -497,7 +548,6 @@ f.inspect;
 
 a.soundfile = f;
 a.read(0, f.numFrames);
-a.elasticMode = true;
 
 a.timeCursorOn = true;
 a.timeCursorColor = Color.red;
@@ -602,9 +652,6 @@ a.selections;
 // setSelection (index, selection);
 a.setSelection(0, [234, 2345]);
 a.selection(1); // returns [start, size].
-
-
-a.elasticMode = true;   // not sure if this is working yet?
 
 (       // mouseUpAction
 a.mouseUpAction = {

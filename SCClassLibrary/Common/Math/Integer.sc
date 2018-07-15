@@ -171,6 +171,14 @@ Integer : SimpleNumber {
 		*/
 	}
 
+	factorial {
+		if(this > 12) {
+			Error("factorial: insufficient integer precision for this number (%). "
+				"Use Float.factorial instead.".format(this)).throw
+		};
+		^super.factorial.asInteger
+	}
+
 	// exit the program and return the result code to unix shell
 	exit {
 		_Exit
@@ -219,6 +227,7 @@ Integer : SimpleNumber {
 	geom { arg start, grow;
 		^Array.geom(this, start, grow);
 	}
+
 	fib { arg a=0.0, b=1.0;
 		^Array.fib(this, a, b);
 	}

@@ -1,26 +1,5 @@
-function toggle_visibility(e) {
-    if(e.style.display == 'none') {
-        e.style.display = 'block';
-        return e;
-    } else {
-        e.style.display = 'none';
-        return undefined;
-    }
-}
-
 var storage;
-var sidetoc;
-var toc;
 var menubar;
-var allItems;
-
-function resize_handler() {
-    var height = window.innerHeight - menubar.clientHeight - 20;
-    if(sidetoc)
-        sidetoc.style.height = height;
-    if(toc)
-        toc.style.maxHeight = height * 0.75;
-}
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
@@ -384,22 +363,33 @@ function selectParens(ev) {
     }
 }
 
+function create_menubar_item(text, link, post_processing) {
+    var a = $("<a>").text(text).addClass("menu-link").attr("href", link);
+    var li = $("<li>").addClass("menuitem").append(a);
+    $("#nav").append(li);
+    if (post_processing) {
+        post_processing(a, li);
+    }
+}
+
 escape_regexp = function(str) {
   var specials = new RegExp("[.*+?|()\\[\\]{}\\\\]", "g"); // .*+?|()[]{}\
   return str.replace(specials, "\\$&");
 }
 
-function toc_search(ev) {
+var toc_items;
+function toc_search(search_string) {
 //TODO: on enter, go to first match
-    var re = RegExp("^"+escape_regexp(ev.target.value),"i");
-    for(var i=0;i<allItems.length;i++) {
-        var li = allItems[i];
+    var re = RegExp("^"+escape_regexp(search_string),"i");
+
+    for(var i=0;i<toc_items.length;i++) {
+        var li = toc_items[i];
         var a = li.firstChild;
         if(re.test(a.innerHTML)) {
             li.style.display = "";
             var lev = li.className[3];
             for(var i2 = i-1;i2>=0;i2--) {
-                var e = allItems[i2];
+                var e = toc_items[i2];
                 if(e.className[3]<lev) {
                     e.style.display = "";
                     lev -= 1;
@@ -412,14 +402,46 @@ function toc_search(ev) {
     }
 }
 
+
+function set_up_toc() {
+    var toc_container = $("<div>", {id: "toc-container"})
+        .insertBefore($("#menubar").children().first());
+
+    var toc_link = $("<a>", {
+        href: "#",
+        class: "menu-link",
+        text: "Table of contents \u25bc"
+    }).appendTo(toc_container);
+
+    $("#toc").appendTo(toc_container);
+
+    toc_items = $("#toc ul").first().find("li");
+    $("#toc_search").on("keyup", function (e) {
+        var search_string = $("#toc_search").val();
+        toc_search(search_string);
+    });
+
+    $(document).on("click", function (e) {
+        if (!$(e.target).closest(toc_container).length) {
+            $("#toc").hide();
+        }
+    });
+
+    toc_link.on("click", function (e) {
+        e.preventDefault();
+        $("#toc").toggle();
+        if ($("#toc").is(":visible")) {
+            $("#toc_search").focus();
+        }
+    });
+}
+
 function fixTOC() {
     var x = document.getElementsByClassName("lang-sc");
     for(var i=0;i<x.length;i++) {
         var e = x[i];
-
         // make all code examples editable!
         e.setAttribute("contentEditable",true);
-
         // select parenthesis on double-click
         e.onclick = function(ev) {
             var r =  window.getSelection().getRangeAt(0);
@@ -439,130 +461,42 @@ function fixTOC() {
         storage = {};
     }
 
-    var openMenu;
-    var inMenu = false;
+    $("#menubar").append($("<ul>", {id: "nav"}));
 
-    var toggleMenu = function(e) {
-        if(openMenu) {
-            openMenu.style.display = 'none';
-        }
-        if(e != openMenu) {
-            e.style.display = 'block';
-            openMenu = e;
-        } else {
-            openMenu = undefined;
-        }
-        inMenu = true;
+    create_menubar_item("SuperCollider " + scdoc_sc_version, helpRoot + "/Help.html");
+
+    create_menubar_item(scdoc_title, "#", function (a, li) {
+        a.addClass("title");
+    });
+
+    create_menubar_item("Browse", helpRoot + "/Browse.html");
+    create_menubar_item("Search", helpRoot + "/Search.html");
+
+    create_menubar_item("Indexes \u25bc", "#", function (a, li) {
+        var indexes_menu = $("<div>", {class: "submenu"}).hide()
+            .appendTo(li);
+
+        var nav_items = ["Documents", "Classes", "Methods"];
+        nav_items.forEach(function (item) {
+            $("<a>", {
+                text: item,
+                href: helpRoot + "/Overviews/" + item + ".html"
+            }).appendTo(indexes_menu);
+        });
+
+        a.on("click", function (e) {
+            e.preventDefault();
+            indexes_menu.toggle();
+        });
+
+        $(document).on("click", function (e) {
+            if (!$(e.target).closest(li).length) {
+                indexes_menu.hide();
+            }
+        });
+    });
+
+    if ($("#toc").length) {
+        set_up_toc();
     }
-
-    document.onclick = function(e) {
-        if(openMenu && !inMenu && e.target.id!="toc_search") {
-            openMenu.style.display = 'none';
-            openMenu = undefined;
-        }
-        inMenu = false;
-        return true;
-    }
-
-// make header menu
-    var bar = document.getElementById("menubar");
-    menubar = bar;
-    var nav = ["SuperCollider " + scdoc_sc_version, "Browse", "Search"];
-    var url = ["Help.html","Browse.html","Search.html"];
-    var nav_item;
-    var a;
-    for(var i=0;i<nav.length;i++) {
-        nav_item = document.createElement("div");
-        nav_item.className = "menuitem";
-        a = document.createElement("a");
-        a.innerHTML = nav[i];
-        a.setAttribute("href",helpRoot+"/"+url[i]);
-        a.className = "navlink";
-        nav_item.appendChild(a);
-        bar.appendChild(nav_item);
-    }
-
-    nav_item = document.createElement("div");
-    nav_item.className = "menuitem";
-    var a = document.createElement("a");
-    a.innerHTML = "Indexes &#9660;";
-    a.setAttribute("href","#");
-    var m1 = document.createElement("div");
-    m1.className = "submenu";
-    m1.style.display = "none";
-    a.onclick = function() {
-        toggleMenu(m1);
-        return false;
-    };
-    var nav = ["Documents","Classes","Methods"];
-    for(var i=0;i<nav.length;i++) {
-        var b = document.createElement("a");
-        b.setAttribute("href",helpRoot+"/Overviews/"+nav[i]+".html");
-        b.innerHTML = nav[i];
-        m1.appendChild(b);
-    }
-    nav_item.appendChild(a);
-    nav_item.appendChild(m1);
-    bar.appendChild(nav_item);
-
-    toc = document.getElementById("toc");
-    if (toc) {
-        allItems = toc.getElementsByTagName("ul")[0].getElementsByTagName("li");
-        document.getElementById("toc_search").onkeyup = toc_search;
-
-        toc.style.display = 'none';
-
-        nav_item = document.createElement("div");
-        nav_item.className = "menuitem";
-        var toc_link = document.createElement("a");
-        toc_link.setAttribute("href", "#");
-        toc_link.className = "navlink";
-        toc_link.innerHTML = "Table of contents";
-        toc_link.onclick = function() {
-            scroll(0,0);
-            return false;
-        }
-        nav_item.appendChild(toc_link);
-        bar.appendChild(nav_item);
-        toc_link.onclick = function() {
-            document.getElementById("toc_search").focus();
-            toggle_toc();
-            return false;
-        };
-
-        var close_link = document.createElement("a");
-        close_link.setAttribute("href","#");
-        close_link.className = "close-link";
-        close_link.innerHTML = "X";
-        close_link.addEventListener("click", function () {
-            toggle_toc();
-        }, false);
-        toc.insertBefore(close_link,toc.firstChild);
-        resize_handler();
-        if (storage.tocOpen === "yes") {
-            show_toc();
-        }
-    }
-    window.onresize = resize_handler;
-}
-
-function show_toc() {
-    toc.style.display = "block";
-    document.querySelector(".contents").style.marginLeft = "20em";
-}
-
-function hide_toc() {
-    toc.style.display = "none";
-    document.querySelector(".contents").style.marginLeft = "0";
-}
-
-function toggle_toc() {
-    if (storage.tocOpen === "yes") {
-        hide_toc();
-        storage.tocOpen = "no";
-    } else {
-        show_toc();
-        storage.tocOpen = "yes";
-    }
-    resize_handler();
 }

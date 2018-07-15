@@ -138,11 +138,12 @@ ServerOptions {
 			o = o ++ " -P " ++ restrictedPath;
 		});
 		if (ugenPluginsPath.notNil, {
-			o = o ++ " -U " ++ if(ugenPluginsPath.isString) {
-				ugenPluginsPath
-			} {
-				ugenPluginsPath.join("; ");
-			};
+			if(ugenPluginsPath.isString, {
+				ugenPluginsPath = ugenPluginsPath.bubble;
+			});
+			o = o ++ " -U " ++ ugenPluginsPath.collect{|p|
+				thisProcess.platform.formatPathForCmdLine(p)
+			}.join(Platform.pathDelimiter);
 		});
 		if (memoryLocking, {
 			o = o ++ " -L";

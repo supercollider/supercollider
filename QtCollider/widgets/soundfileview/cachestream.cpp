@@ -71,20 +71,20 @@ void SoundCacheStream::load( const QVector<double> & data, int nf, int offset, i
 
   for( int c = 0; c < ch; ++c )
   {
-    short *min = _caches[c].min = new short [nf];
-    short *max = _caches[c].max = new short [nf];
+    float *min = _caches[c].min = new float [nf];
+    float *max = _caches[c].max = new float [nf];
     float *sum = _caches[c].sum = new float [nf];
     float *sum2 = _caches[c].sum2 = new float [nf];
 
     int s = c + (offset * ch);
     for( int f = 0; f < nf; ++f, s += ch )
     {
-      double val = std::max(-1.0, std::min(1.0, data[s])) * SHRT_MAX;
+      double val = data[s];
       min[f] = val;
       sum[f] = val;
       sum2[f] = val * val;
     }
-    memcpy( max, min, nf * sizeof(short) );
+    memcpy( max, min, nf * sizeof(float) );
   }
 
   _loadProgress = 100;
@@ -130,8 +130,8 @@ void SoundCacheStream::load( SNDFILE *sf, const SF_INFO &info, sf_count_t beg, s
   _caches = new SoundCache [info.channels];
   int ch;
   for( ch = 0; ch < info.channels; ++ch ) {
-    _caches[ch].min = new short [_dataSize];
-    _caches[ch].max = new short [_dataSize];
+    _caches[ch].min = new float [_dataSize];
+    _caches[ch].max = new float [_dataSize];
     _caches[ch].sum = new float [_dataSize];
     _caches[ch].sum2 = new float [_dataSize];
   }
@@ -161,15 +161,14 @@ void SoundCacheStream::allocate ( int nf, int ch )
 
   for( int c = 0; c < ch; ++c )
   {
-    short *min = _caches[c].min = new short [nf];
-    short *max = _caches[c].max = new short [nf];
+    float *min = _caches[c].min = new float [nf];
+    float *max = _caches[c].max = new float [nf];
     float *sum = _caches[c].sum = new float [nf];
     float *sum2 = _caches[c].sum2 = new float [nf];
 
-    size_t bytes = nf * sizeof(short);
+    size_t bytes = nf * sizeof(float);
     memset( min, 0, bytes );
     memset( max, 0, bytes );
-    bytes = nf * sizeof(float);
     memset( sum, 0, bytes );
     memset( sum2, 0, bytes );
   }
@@ -191,26 +190,26 @@ void SoundCacheStream::write( const QVector<double> & data, int offset, int coun
 
   for( int c = 0; c < _ch; ++c )
   {
-    short *min = _caches[c].min;
-    short *max = _caches[c].max;
+    float *min = _caches[c].min;
+    float *max = _caches[c].max;
     float *sum = _caches[c].sum;
     float *sum2 = _caches[c].sum2;
 
     int s = c;
     for( int f = offset; f < end; ++f, s += _ch )
     {
-      double val = std::max(-1.0, std::min(1.0, data[s])) * SHRT_MAX;
+      double val = data[s];
       min[f] = val;
       sum[f] = val;
       sum2[f] = val * val;
     }
-    memcpy( max + offset, min + offset, count * sizeof(short) );
+    memcpy( max + offset, min + offset, count * sizeof(float) );
   }
 }
 
 bool SoundCacheStream::displayData
 ( int ch, double f_beg, double f_dur,
-  short *minBuffer, short *maxBuffer, short *minRMS, short *maxRMS, int bufferSize )
+  float *minBuffer, float *maxBuffer, float *minRMS, float *maxRMS, int bufferSize )
 {
   bool ok = _ready
             && ch < channels()
@@ -222,11 +221,8 @@ bool SoundCacheStream::displayData
   double ratio = f_dur / _fpu / bufferSize;
   double cache_pos = (f_beg - _dataOffset) / _fpu ;
 
-  short min = SHRT_MAX;
-  short max = SHRT_MIN;
-
-  double D_SHRT_MAX = (double) SHRT_MAX;
-  double D_SHRT_MIN = (double) SHRT_MIN;
+  float min = std::numeric_limits<float>::max();
+  float max = std::numeric_limits<float>::lowest();
 
   int i;
   for( i = 0; i < bufferSize; ++i ) {
@@ -240,13 +236,11 @@ bool SoundCacheStream::displayData
     int frame_count = ceil(cache_pos) - f ;
     float frac1 = cache_pos + 1.f - ceil(cache_pos);
 
-    //short min = SHRT_MAX;
-    //short max = SHRT_MIN;
     double sum = 0.0;
     double sum2 = 0.0;
 
-    short *p_min = _caches[ch].min;
-    short *p_max = _caches[ch].max;
+    float *p_min = _caches[ch].min;
+    float *p_max = _caches[ch].max;
     float *p_sum = _caches[ch].sum;
     float *p_sum2 = _caches[ch].sum2;
     int countdown = frame_count;
@@ -276,8 +270,8 @@ bool SoundCacheStream::displayData
 
     minBuffer[i] = min;
     maxBuffer[i] = max;
-    minRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg - stdDev ));
-    maxRMS[i] = std::max(D_SHRT_MIN, std::min(D_SHRT_MAX, avg + stdDev ));
+    minRMS[i] = avg - stdDev;
+    maxRMS[i] = avg + stdDev;
 
     // assure continuity from pixel to pixel
     min = maxBuffer[i];
@@ -287,7 +281,7 @@ bool SoundCacheStream::displayData
   return true;
 }
 
-short *SoundCacheStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
+float *SoundCacheStream::rawFrames( int ch, sf_count_t b, sf_count_t d, bool *interleaved )
 {
   if( !_ready || _fpu != 1.0 || ch > channels() ||
       b < _dataOffset || b + d > _dataOffset + _dataSize )

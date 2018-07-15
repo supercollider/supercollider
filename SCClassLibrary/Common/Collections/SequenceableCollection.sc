@@ -842,31 +842,31 @@ SequenceableCollection : Collection {
 	lgamma { ^this.performUnaryOp('lgamma') }
 	digamma { ^this.performUnaryOp('digamma') }
 	trigamma { ^this.performUnaryOp('trigamma') }
-	polygamma { |n, z| ^this.performBinaryOp('polygamma', n, z) }
-	tgammaRatio { |a, b| ^this.performBinaryOp('tgammaRatio', a, b) }
-	tgammaDeltaRatio { |a, delta| ^this.performBinaryOp('tgammaDeltaRatio', a, delta) }
-	gammaP { |a, z| ^this.performBinaryOp('gammaP', a, z) }
-	gammaQ { |a, z| ^this.performBinaryOp('gammaQ', a, z) }
-	tgammaLower { |a, z| ^this.performBinaryOp('tgammaLower', a, z) }
-	tgammaUpper { |a, z| ^this.performBinaryOp('tgammaUpper', a, z) }
+	polygamma { |n, z| ^this.multiChannelPerform('polygamma', n, z) }
+	tgammaRatio { |a, b| ^this.multiChannelPerform('tgammaRatio', a, b) }
+	tgammaDeltaRatio { |a, delta| ^this.multiChannelPerform('tgammaDeltaRatio', a, delta) }
+	gammaP { |a, z| ^this.multiChannelPerform('gammaP', a, z) }
+	gammaQ { |a, z| ^this.multiChannelPerform('gammaQ', a, z) }
+	tgammaLower { |a, z| ^this.multiChannelPerform('tgammaLower', a, z) }
+	tgammaUpper { |a, z| ^this.multiChannelPerform('tgammaUpper', a, z) }
 	//  Incomplete Gamma Function Inverses
-	gammaPInv { |a, p| ^this.performBinaryOp('gammaPInv', a, p) }
-	gammaQInv { |a, q| ^this.performBinaryOp('gammaQInv', a, q) }
-	gammaPInvA { |x, p| ^this.performBinaryOp('gammaPInvA', x, p) }
-	gammaQInvA { |x, q| ^this.performBinaryOp('gammaQInvA', x, q) }
+	gammaPInv { |a, p| ^this.multiChannelPerform('gammaPInv', a, p) }
+	gammaQInv { |a, q| ^this.multiChannelPerform('gammaQInv', a, q) }
+	gammaPInvA { |x, p| ^this.multiChannelPerform('gammaPInvA', x, p) }
+	gammaQInvA { |x, q| ^this.multiChannelPerform('gammaQInvA', x, q) }
 	//  Derivatives of the Incomplete Gamma Function
-	gammaPDerivative { |a, x| ^this.performBinaryOp('gammaPDerivative', a, x) }
+	gammaPDerivative { |a, x| ^this.multiChannelPerform('gammaPDerivative', a, x) }
 	gammaQDerivative { |a, x| ^this.gammaPDerivative(a, x).neg }
 
 	//	Factorials and Binomial Coefficients:
-	factorial { ^this.performUnaryOp('zeta') }
-	doubleFactorial { ^this.performUnaryOp('zeta') }
-	risingFactorial { |x, i| ^this.performBinaryOp('risingFactorial', x, i) }
-	fallingFactorial { |x, i| ^this.performBinaryOp('fallingFactorial', x, i) }
-	binomialCoefficient { |n, k| ^this.performBinaryOp('binomialCoefficient', n, k) }
+	factorial { ^this.performUnaryOp('factorial') }
+	doubleFactorial { ^this.performUnaryOp('doubleFactorial') }
+	risingFactorial { |x, i| ^this.multiChannelPerform('risingFactorial', x, i) }
+	fallingFactorial { |x, i| ^this.multiChannelPerform('fallingFactorial', x, i) }
+	binomialCoefficient { |n, k| ^this.multiChannelPerform('binomialCoefficient', n, k) }
 
 	//  Beta functions:
-	beta { |a, b| ^this.performBinaryOp('beta', a, b) }
+	beta { |a, b| ^this.multiChannelPerform('beta', a, b) }
 	//  Incomplete beta functions
 	ibeta { |... args| ^this.multiChannelPerform('ibeta', *args) }
 	ibetaC { |... args| ^this.multiChannelPerform('ibetaC', *args) }
@@ -893,17 +893,17 @@ SequenceableCollection : Collection {
 	// Hermite, Chebyshev Polynomials (first & second kind, derivative, zero (root) finder)
 	// See boost documentation regarding the Condon-Shortley phase term of (-1)^m
 	// "http://www.boost.org/doc/libs/1_65_1/libs/math/doc/html/math_toolkit/sf_poly/legendre.html"]
-	legendreP { |n, x| ^this.performBinaryOp('legendreP', n, x) }
-	legendrePPrime { |n, x| ^this.performBinaryOp('legendrePPrime', n, x) }
+	legendreP { |n, x| ^this.multiChannelPerform('legendreP', n, x) }
+	legendrePPrime { |n, x| ^this.multiChannelPerform('legendrePPrime', n, x) }
 	legendrePZeros { ^this.performUnaryOp('legendrePZeros') }
 	legendrePAssoc { |... args| ^this.multiChannelPerform('legendrePAssoc', *args) }
-	legendreQ { |n, x| ^this.performBinaryOp('legendreQ', n, x) }
-	laguerre { |n, x| ^this.performBinaryOp('laguerre', n, x) }
+	legendreQ { |n, x| ^this.multiChannelPerform('legendreQ', n, x) }
+	laguerre { |n, x| ^this.multiChannelPerform('laguerre', n, x) }
 	laguerreAssoc { |... args| ^this.multiChannelPerform('laguerreAssoc', *args) }
-	hermite { |n, x| ^this.performBinaryOp('hermite', n, x) }
-	chebyshevT { |n, x| ^this.performBinaryOp('chebyshevT', n, x) }
-	chebyshevU { |n, x| ^this.performBinaryOp('chebyshevU', n, x) }
-	chebyshevTPrime { |n, x| ^this.performBinaryOp('chebyshevTPrime', n, x) }
+	hermite { |n, x| ^this.multiChannelPerform('hermite', n, x) }
+	chebyshevT { |n, x| ^this.multiChannelPerform('chebyshevT', n, x) }
+	chebyshevU { |n, x| ^this.multiChannelPerform('chebyshevU', n, x) }
+	chebyshevTPrime { |n, x| ^this.multiChannelPerform('chebyshevTPrime', n, x) }
 	//  "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
 	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
 	chebyshevTZeros {
@@ -921,26 +921,26 @@ SequenceableCollection : Collection {
 	//	Bessel Functions:
 	//  First and second kind, zero finders, modified first and second kinds,
 	//  spherical first and second kinds, derivatives
-	cylBesselJ { |v, x| ^this.performBinaryOp('cylBesselJ', v, x) }
-	cylNeumann { |v, x| ^this.performBinaryOp('cylNeumann', v, x) }
-	cylBesselJZero { |v, index| ^this.performBinaryOp('cylBesselJZero', v, index) }
-	cylNeumannZero { |v, index| ^this.performBinaryOp('cylNeumannZero', v, index) }
-	cylBesselI { |v, x| ^this.performBinaryOp('cylBesselI', v, x) }
-	cylBesselK { |v, x| ^this.performBinaryOp('cylBesselK', v, x) }
-	sphBessel { |v, x| ^this.performBinaryOp('sphBessel', v, x) }
-	sphNeumann { |v, x| ^this.performBinaryOp('sphNeumann', v, x) }
-	cylBesselJPrime { |v, x| ^this.performBinaryOp('cylBesselJPrime', v, x) }
-	cylNeumannPrime { |v, x| ^this.performBinaryOp('cylNeumannPrime', v, x) }
-	cylBesselIPrime { |v, x| ^this.performBinaryOp('cylBesselIPrime', v, x) }
-	cylBesselKPrime { |v, x| ^this.performBinaryOp('cylBesselKPrime', v, x) }
-	sphBesselPrime { |v, x| ^this.performBinaryOp('sphBesselPrime', v, x) }
-	sphNeumannPrime { |v, x| ^this.performBinaryOp('sphNeumannPrime', v, x) }
+	cylBesselJ { |v, x| ^this.multiChannelPerform('cylBesselJ', v, x) }
+	cylNeumann { |v, x| ^this.multiChannelPerform('cylNeumann', v, x) }
+	cylBesselJZero { |v, index| ^this.multiChannelPerform('cylBesselJZero', v, index) }
+	cylNeumannZero { |v, index| ^this.multiChannelPerform('cylNeumannZero', v, index) }
+	cylBesselI { |v, x| ^this.multiChannelPerform('cylBesselI', v, x) }
+	cylBesselK { |v, x| ^this.multiChannelPerform('cylBesselK', v, x) }
+	sphBessel { |v, x| ^this.multiChannelPerform('sphBessel', v, x) }
+	sphNeumann { |v, x| ^this.multiChannelPerform('sphNeumann', v, x) }
+	cylBesselJPrime { |v, x| ^this.multiChannelPerform('cylBesselJPrime', v, x) }
+	cylNeumannPrime { |v, x| ^this.multiChannelPerform('cylNeumannPrime', v, x) }
+	cylBesselIPrime { |v, x| ^this.multiChannelPerform('cylBesselIPrime', v, x) }
+	cylBesselKPrime { |v, x| ^this.multiChannelPerform('cylBesselKPrime', v, x) }
+	sphBesselPrime { |v, x| ^this.multiChannelPerform('sphBesselPrime', v, x) }
+	sphNeumannPrime { |v, x| ^this.multiChannelPerform('sphNeumannPrime', v, x) }
 
 	//  Hankel Functions:
-	cylHankel1 { |v, x| ^this.performBinaryOp('cylHankel1', v, x) }
-	cylHankel2 { |v, x| ^this.performBinaryOp('cylHankel2', v, x) }
-	sphHankel1 { |v, x| ^this.performBinaryOp('sphHankel1', v, x) }
-	sphHankel2 { |v, x| ^this.performBinaryOp('sphHankel2', v, x) }
+	cylHankel1 { |v, x| ^this.multiChannelPerform('cylHankel1', v, x) }
+	cylHankel2 { |v, x| ^this.multiChannelPerform('cylHankel2', v, x) }
+	sphHankel1 { |v, x| ^this.multiChannelPerform('sphHankel1', v, x) }
+	sphHankel2 { |v, x| ^this.multiChannelPerform('sphHankel2', v, x) }
 
 	//  Airy Functions:
 	airyAi { ^this.performUnaryOp('airyAi') }
@@ -955,40 +955,40 @@ SequenceableCollection : Collection {
 	ellintRf { |... args| ^this.multiChannelPerform('ellintRf', *args) }
 	ellintRd { |... args| ^this.multiChannelPerform('ellintRd', *args) }
 	ellintRj { |... args| ^this.multiChannelPerform('ellintRj', *args) }
-	ellintRc { |x, y| ^this.performBinaryOp('ellintRc', x, y) }
+	ellintRc { |x, y| ^this.multiChannelPerform('ellintRc', x, y) }
 	ellintRg { |... args| ^this.multiChannelPerform('ellintRg', *args) }
 	//  Legendre Form - First, Second, Third Kind, D
-	ellint1 { |k, phi| ^this.performBinaryOp('ellint1', k, phi) }
+	ellint1 { |k, phi| ^this.multiChannelPerform('ellint1', k, phi) }
 	ellint1C { ^this.performUnaryOp('ellint1C') }
-	ellint2 { |k, phi| ^this.performBinaryOp('ellint2', k, phi) }
+	ellint2 { |k, phi| ^this.multiChannelPerform('ellint2', k, phi) }
 	ellint2C { ^this.performUnaryOp('ellint2C') }
 	ellint3 { |... args| ^this.multiChannelPerform('ellint3', *args) }
-	ellint3C { |k, n| ^this.performBinaryOp('ellint3C', k, n) }
-	ellintD { |k, phi| ^this.performBinaryOp('ellintD', k, phi) }
+	ellint3C { |k, n| ^this.multiChannelPerform('ellint3C', k, n) }
+	ellintD { |k, phi| ^this.multiChannelPerform('ellintD', k, phi) }
 	ellintDC { ^this.performUnaryOp('ellintDC') }
 	//  Jacobi Zeta, Heuman Lambda Functions
-	jacobiZeta { |k, phi| ^this.performBinaryOp('jacobiZeta', k, phi) }
-	heumanLambda { |k, phi| ^this.performBinaryOp('heumanLambda', k, phi) }
+	jacobiZeta { |k, phi| ^this.multiChannelPerform('jacobiZeta', k, phi) }
+	heumanLambda { |k, phi| ^this.multiChannelPerform('heumanLambda', k, phi) }
 
 	//  Jacobi Elliptic Functions:
-	jacobiCd { |k, u| ^this.performBinaryOp('jacobiCd', k, u) }
-	jacobiCn { |k, u| ^this.performBinaryOp('jacobiCn', k, u) }
-	jacobiCs { |k, u| ^this.performBinaryOp('jacobiCs', k, u) }
-	jacobiDc { |k, u| ^this.performBinaryOp('jacobiDc', k, u) }
-	jacobiDn { |k, u| ^this.performBinaryOp('jacobiDn', k, u) }
-	jacobiDs { |k, u| ^this.performBinaryOp('jacobiDs', k, u) }
-	jacobiNc { |k, u| ^this.performBinaryOp('jacobiNc', k, u) }
-	jacobiNd { |k, u| ^this.performBinaryOp('jacobiNd', k, u) }
-	jacobiNs { |k, u| ^this.performBinaryOp('jacobiNs', k, u) }
-	jacobiSc { |k, u| ^this.performBinaryOp('jacobiSc', k, u) }
-	jacobiSd { |k, u| ^this.performBinaryOp('jacobiSd', k, u) }
-	jacobiSn { |k, u| ^this.performBinaryOp('jacobiSn', k, u) }
+	jacobiCd { |k, u| ^this.multiChannelPerform('jacobiCd', k, u) }
+	jacobiCn { |k, u| ^this.multiChannelPerform('jacobiCn', k, u) }
+	jacobiCs { |k, u| ^this.multiChannelPerform('jacobiCs', k, u) }
+	jacobiDc { |k, u| ^this.multiChannelPerform('jacobiDc', k, u) }
+	jacobiDn { |k, u| ^this.multiChannelPerform('jacobiDn', k, u) }
+	jacobiDs { |k, u| ^this.multiChannelPerform('jacobiDs', k, u) }
+	jacobiNc { |k, u| ^this.multiChannelPerform('jacobiNc', k, u) }
+	jacobiNd { |k, u| ^this.multiChannelPerform('jacobiNd', k, u) }
+	jacobiNs { |k, u| ^this.multiChannelPerform('jacobiNs', k, u) }
+	jacobiSc { |k, u| ^this.multiChannelPerform('jacobiSc', k, u) }
+	jacobiSd { |k, u| ^this.multiChannelPerform('jacobiSd', k, u) }
+	jacobiSn { |k, u| ^this.multiChannelPerform('jacobiSn', k, u) }
 
 	//  Riemann Zeta Function:
 	zeta { ^this.performUnaryOp('zeta') }
 
 	//  Exponential Integrals:
-	expintEn { |n, z| ^this.performBinaryOp('expintEn', n, z) }
+	expintEn { |n, z| ^this.multiChannelPerform('expintEn', n, z) }
 	expintEi { ^this.performUnaryOp('expintEi') }
 
 	//  Basic Functions:
@@ -998,7 +998,7 @@ SequenceableCollection : Collection {
 	expm1 { ^this.performUnaryOp('expm1') }
 	cbrt { ^this.performUnaryOp('cbrt') }
 	sqrt1pm1 { ^this.performUnaryOp('sqrt1pm1') }
-	powm1 { |x, y| ^this.performBinaryOp('powm1', x, y) }
+	powm1 { |x, y| ^this.multiChannelPerform('powm1', x, y) }
 	// hypot not needed... slightly slower than current implementation of hypot
 
 	//  Sinus Cardinal ("sinc") and Hyperbolic Sinus Cardinal Functions:
@@ -1011,7 +1011,7 @@ SequenceableCollection : Collection {
 	atanh { ^this.performUnaryOp('atanh') }
 
 	//	Owen's T function:
-	owensT { |h, a| ^this.performBinaryOp('owensT', h, a) }
+	owensT { |h, a| ^this.multiChannelPerform('owensT', h, a) }
 
 	/*  end Boost Special Functions  */
 
@@ -1024,6 +1024,7 @@ SequenceableCollection : Collection {
 	performBinaryOp { arg aSelector, theOperand, adverb;
 		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
 	}
+
 	performBinaryOpOnSeqColl { arg aSelector, theOperand, adverb;
 		var size, newList;
 		if (adverb == nil) {

@@ -1,0 +1,250 @@
+TITLE:: MenuAction
+summary:: An individual menu or toolbar item, that performs an action when clicked.
+categories:: GUI
+related:: Classes/Menu, Classes/ToolBar, Classes/MainMenu
+
+DESCRIPTION::
+A MenuAction represents a single action that can occupy multiple link::Classes/Menu::s or a link::Classes/ToolBar::s, and will evaluate a function when activated.
+When added to a menu, these are displayed as menu items. When added to a toolbar, they appear as buttons.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+	Create a new Action. Note that one action may occupy multiple menus and toolbars.
+
+	ARGUMENT:: string
+		The name of the action. This will be it's display name if added to a menu.
+
+	ARGUMENT:: function
+		A function to perform when the action is activated.
+
+METHOD:: separator
+	An action that represents a menu or toolbar separator. These are not selectable or clickable.
+
+	ARGUMENT:: string
+		A label for the separator. These are not always visible, depending on your OS and context.
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: string
+	A string representing the name of the action. This is used as text when it is placed in menus, and on toolbars if it does not have an icon.
+	ARGUMENT::
+		A String
+
+METHOD:: menu
+	A Menu. If present, this action acts as a submenu, or a pop-up menu when placed on a toolbar.
+	ARGUMENT::
+		A link::Classes/Menu::
+
+METHOD:: shortcut
+	A string representing the keyboard shortcut to trigger this action. Keyboard shortcuts are available when an action is attached to a link::Classes/ToolBar::, or when it's part of the context menu for a View (see link::Classes/View#-setContextMenuActions::)
+	Shortcut strings are of the form e.g. "Ctrl+M", "Shift+Alt+space" etc. See https://doc.qt.io/qt-5/qkeysequence.html#details for more info.
+	ARGUMENT::
+		A String
+
+METHOD:: checked
+	Indicates whether the action is checked or unchecked.
+	ARGUMENT::
+		A boolean.
+
+METHOD:: toolTip
+	A string to display when hovering over the menu item / button.
+	ARGUMENT::
+		A String
+
+METHOD:: separator
+	Indicates whether the action is a separator.
+	ARGUMENT::
+		A Boolean.
+
+METHOD:: iconVisible
+	Indicates whether the icon for this action will be visible.
+	ARGUMENT::
+		A Boolean.
+
+METHOD:: checkable
+	Indicates that the action shows a checkbox and is checkable.
+	ARGUMENT::
+		A Boolean
+
+METHOD:: enabled
+	Indicates that the action is enabled; otherwise it will be greyed out and uninteractive.
+	ARGUMENT::
+		A Boolean
+
+METHOD:: icon
+	An link::Classes/Image:: associated with the action - to be shown next to the name of the action in both menus and toolbars.
+	ARGUMENT::
+		An link::Classes/Image::
+
+METHOD:: font
+	The font used to display the action's name. Note that special fonts may or may not be displayed depending on OS and context (e.g. system menu, context menu, toolbar). For example, OSX application menus will honor italicized fonts, but not the font family itself.
+ARGUMENT::
+	A link::Classes/Font::
+
+SUBSECTION:: Events
+	Menu actions broadcast several kinds of events that can be registered for with the standard link::Classes/Object#-addDependant:: calls.
+	Events broadcast by menu:
+
+	LIST::
+		## code::\changed:: (issued when one of the actions properties changes)
+		## code::\triggered:: (issued when the action is clicked / activated - value is a boolean representing whether the action is checked)
+		## code::\hovered::
+		## code::\toggled::
+	::
+
+	STRONG:: Events example ::
+	CODE::
+(
+m = Menu(
+	a = MenuAction("Option A"),
+	b = MenuAction("Option B")
+).title_("Event Example");
+f = {
+	|action, what, value|
+	"MenuAction '%' sent event %, value = %".format(action.string, "\\" ++ what, value).postln;
+	if (what == \hovered) { "Hovering over: %".format(action).postln };
+	if (what == \triggered) { "Action triggered: %".format(value).postln; m.destroy };
+};
+a.addDependant(f);
+b.addDependant(f);
+m.onClose_({ a.removeDependant(f); b.removeDependant(f) }).front;
+)
+	::
+
+EXAMPLES::
+
+STRONG:: Simple checkable menu item ::
+code::
+(
+~view = View().layout_(HLayout(
+	Button()
+		.states_([["Options..."]])
+		.action_({ ~menu.front })
+));
+~menu = Menu(
+	MenuAction("enabled")
+		.checkable_(true)
+		.action_({
+			|a, enabled|
+			if (enabled) {
+				"Enabled".postln;
+				~view.background = Color.green(1, 0.5);
+			} {
+				"Disabled".postln;
+				~view.background = Color.clear;
+			}
+		})
+);
+~view.front;
+)
+::
+
+STRONG:: Action help strings ::
+code::
+(
+~view = View(bounds:300@100).layout_(VLayout(
+	Button()
+		.states_([["Options..."]])
+		.action_({ ~menu.front }),
+	~text = TextView()
+));
+
+~menu = Menu (
+	MenuAction("Option A").toolTip_("I like option A..."),
+	MenuAction("Option B").toolTip_("But option B is better..."),
+	MenuAction("Option C").toolTip_("No one really likes C."),
+);
+
+~actionFunc = {
+	|obj, what, action|
+	if (what == \hovered) {
+		~text.string = action.toolTip
+	};
+	if (what == \aboutToHide) {
+		~text.string = ""
+	}
+};
+~menu.addDependant(~actionFunc);
+~view.onClose_({ ~menu.removeDependant(~actionFunc) }).front;
+
+)
+::
+
+
+STRONG:: A more complex example ::
+code::
+(
+s.waitForBoot {
+	~startIcon = Image(40).draw({
+		Pen.fillColor = Color.green;
+		Pen.moveTo(5@5);
+		Pen.lineTo(35@20);
+		Pen.lineTo(5@35);
+		Pen.lineTo(5@5);
+		Pen.fill;
+	});
+	~stopIcon = Image(40).draw({
+		Pen.fillColor = Color.red;
+		Pen.fillRect(Rect(10, 10, 20, 20));
+	});
+
+	~startAction = MenuAction("start")
+					.action_({ ~playSynth.() })
+					.icon_(~startIcon)
+					.toolTip_("Start playing synth.")
+					.shortcut_("space")
+					.font_(Font(bold:true, size:18));
+	~stopAction = MenuAction("stop")
+					.action_({ ~stopSynth.() })
+					.icon_(~stopIcon)
+					.toolTip_("Stop the synth.")
+					.enabled_(false)
+					.shortcut_(".")
+					.font_(Font(bold:true, size:18));
+	~playing = MenuAction("playing")
+					.enabled_(false)
+					.checkable_(true)
+					.checked_(false);
+
+	~view = View(bounds:300@200).layout_(VLayout(
+		ToolBar(~startAction, ~stopAction, MenuAction.separator, ~playing).focus,
+		nil,
+		Button().states_([["Options..."]]).action_({
+			Menu(~startAction, ~stopAction, MenuAction.separator, ~playing).front;
+		})
+	));
+	~view.onClose_({ ~stopSynth.() });
+
+	~synth = nil;
+	~playSynth = {
+		if (~synth.isNil) {
+			~synth = { SinOsc.ar(440) * 0.1 }.play;
+
+			~startAction.enabled = false;
+			~stopAction.enabled = true;
+			~playing.checked = true;
+
+			~synth.onFree({
+				~synth = nil;
+				{
+					~playing.checked = false;
+					~startAction.enabled = true;
+					~stopAction.enabled = false;
+				}.defer
+			})
+		}
+	};
+
+	~stopSynth = {
+		~synth !? { ~synth.free };
+	};
+
+	~view.front;
+
+}
+)
+::

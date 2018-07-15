@@ -38,17 +38,13 @@ void QcGridLayout::addItem( const QVariantList &data )
 
   QVariant varObject = data[0];
 
-  QObjectProxy *p = varObject.value<QObjectProxy*>();
-
-  if( !p || !p->object() ) return;
-
-  QWidget *w = qobject_cast<QWidget*>( p->object() );
+  QWidget *w = varObject.value<QWidget*>();
   if( w ) {
     addWidget( w, row, column, rSpan, cSpan, alignment );
     return;
   }
 
-  QLayout *l = qobject_cast<QLayout*>( p->object() );
+  QLayout *l = varObject.value<QLayout*>();
   if(l) {
     addLayout( l, row, column, rSpan, cSpan, alignment );
     return;
