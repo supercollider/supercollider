@@ -107,7 +107,7 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 			origin	https://github.com/your-name/supercollider.git (push)
 
 	- Add a new remote called `upstream`, pointing to the SuperCollider repository:
-	`git remote add upstream https://github.com/your-name/supercollider.git`
+	`git remote add upstream https://github.com/supercollider/supercollider.git`
 	- Check the list of remotes again: `git remote -v`. Now the output should look like this:
 
 			origin	https://github.com/your-name/supercollider.git (fetch)
