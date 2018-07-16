@@ -99,8 +99,8 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 - You may receive feedback and requests for changes. We expect changes to be made in a timely manner. We may close the pull request if it isn't showing any activity.
 
 ### Updating your fork
-In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another `remote`, usually called `upstream`. **Please note:** naming the main repository `upstream` is just a convention, not a requirement. If you already have a differently named `remote` pointing to the main SuperCollider repository, you can use that name instead of `upstream`.
-- If you have not yet added the `upstream` `remote`, do so now:
+In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another remote, usually called `upstream`. **Please note:** naming the main repository `upstream` is just a convention, not a requirement. If you already have a differently named remote pointing to the main SuperCollider repository, you can use that name instead of `upstream`.
+- If you have not yet added the `upstream` remote, do so now:
 	- Check the list of remotes: `git remote -v`. The output should look like this:
 
 			origin	https://github.com/your-name/supercollider.git (fetch)
@@ -116,7 +116,7 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 			upstream	https://github.com/supercollider/supercollider (push)
 
 	- Now you can proceed to updating your fork (see below).
-- If you have already added the `upstream` `remote`, update your fork:
+- If you have already added the `upstream` remote, update your fork:
 	- Be sure to have all local changes committed before doing this!
 	- Update from the `upstream` repository: `git fetch upstream`
 	- Checkout the `develop` branch: `git checkout develop`
