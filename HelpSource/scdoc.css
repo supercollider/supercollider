@@ -8,14 +8,6 @@ html, body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    /* font-family: 'Helvetica Neue', 
-    			 'Helvetica',
-    			 'Apple SD Gothic Neo',
-    			 'NanumBarunGothic',
-    			 'Malgun Gothic',
-    			 dotum,
-    			 'Lucida Grande',
-    			 sans-serif; */
     font-size: 0.85em;
     color: black;
     background: white;
@@ -51,11 +43,15 @@ p {
     margin-bottom: 0em;
     line-height: 133%;
     text-align: auto;
+    text-indent: 1em;}
 }
 
+/*
 p + p {
   margin-top: 0;
-  text-indent: 1em;}
+  text-indent: 1em;
+}
+*/
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
