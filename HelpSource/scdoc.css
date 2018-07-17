@@ -149,6 +149,18 @@ a.menu-link:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+#menubar .menuitem a.home span,
+#menubar .menuitem a.title {
+    display: none;
+}
+
+@media (min-width: 512px) {
+    #menubar .menuitem a.home span,
+    #menubar .menuitem a.title {
+        display: initial;
+    }
+}
+
 #menubar .menuitem:last-child {
     border-right: none;
 }

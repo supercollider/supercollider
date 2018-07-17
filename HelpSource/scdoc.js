@@ -156,7 +156,12 @@ function fixTOC() {
 
     $("#menubar").append($("<ul>", {id: "nav"}));
 
-    create_menubar_item("SuperCollider " + scdoc_sc_version, helpRoot + "/Help.html");
+    create_menubar_item("", helpRoot + "/Help.html", function (a, li) {
+        a.addClass("home");
+        $('<span>', { 
+            text: "SuperCollider " + scdoc_sc_version
+        }).appendTo(a);
+    });
 
     create_menubar_item(scdoc_title, "#", function (a, li) {
         a.addClass("title");
