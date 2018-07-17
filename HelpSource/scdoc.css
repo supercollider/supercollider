@@ -3,29 +3,31 @@ html, body {
     padding: 0;
     margin: 0;
     position: relative;
+    text-align: justify;
 }
 
 body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 1em;
+    font-size: 0.85em;
     color: black;
     background: white;
 }
 
 div.contents {
     margin: 0;
-    padding: 3em 1em;
+    padding: 2em 1em;
     overflow: auto;
-    word-break: break-all;
+    word-break: break-word;
+    text-indent: 0em;
 }
 
 table {
     border-collapse: collapse;
-    font-size: 1em;
+    font-size: 100%;
     margin-top: 0.5em;
-    margin-left: 2em;
+    margin-left: 0em;
     margin-bottom: 0.5em;
-    width: 90%;
+    width: 100%;
 }
 table td {
     border: 1px solid #ddd;
@@ -37,13 +39,16 @@ table table {
 }
 
 p {
-    margin-top: 0.3em;
-    margin-bottom: 0.3em;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    line-height: 132%;
+    text-align: auto;;
 }
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
     color: #449;
+    word-break: break-all;
 }
 
 a:link:hover {
@@ -63,6 +68,11 @@ a:link:hover {
 .inheritedmets_class a {
     color: #333;
 }
+
+ul {
+margin-top: 0em;
+margin-bottom: 0em;
+}
 ul.inheritedmets {
     list-style: none;
     padding: 0;
@@ -74,7 +84,7 @@ ul.inheritedmets li {
     font-family: monospace;
 }
 a.inheritedmets_toggle {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #558;
     font-weight: normal;
 /*    margin-left: 2em;*/
@@ -115,7 +125,7 @@ a.subclass_toggle:hover {
     padding: 0;
     margin: 0;
     border-right: 1px solid #ddd;
-    font-size: 0.8em;
+    font-size: 0.7em;
     display: inline-block;
 }
 
@@ -193,7 +203,7 @@ a.menu-link.title {
 .toc_search {
     margin-left: 10px;
     color: #999;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 
 .toc_search input {
@@ -208,7 +218,7 @@ a.menu-link.title {
 
 #label {
     color: #666;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 
 #summary {
@@ -216,10 +226,13 @@ a.menu-link.title {
     font-size: 1.1em;
     font-style: italic;
     color: #444;
+    padding-bottom: 1em;
+    border-bottom: 1px solid #000;
 }
 #related {
     font-weight: bold;
     margin-top: 0.5em;
+    margin-bottom: 3em;
 }
 #filename {
     word-break: break-all;
@@ -255,14 +268,14 @@ a.menu-link.title {
 }
 
 .subheader {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #444;
     margin-top: 1em;
 }
 
 .jump {
     text-align: right;
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #555;
 }
 .jump a {
@@ -272,19 +285,23 @@ a.menu-link.title {
 }
 
 a.footnote {
-    font-size: 0.9em;
+    font-size: 0.8em;
     top: -0.1em;
 }
 div.footnotes {
+    padding-top: 0.5em;
     border-top: 1px solid #aaa;
     margin-left: 2em;
     margin-top: 3em;
     margin-right: 2em;
 }
 div.footnote {
+    padding-top: 1.5em;
     margin-bottom: 0.5em;
     margin-top: 0.5em;
-    font-size: 0.9em;
+    font-size: 0.83em;
+    line-height: 140%;
+    text-align: left;
 }
 
 .soft {
@@ -293,31 +310,32 @@ div.footnote {
 
 h1 {
     margin: 0.1em 0;
-    font-size: 2.4em;
+    font-size: 2em;
     margin-bottom: 0em;
 }
 
 h2 {
     border-bottom: 1px solid #ddd;
-    margin-top: 1.3em;
+    margin-top: 2.6em;
     text-align: left;
-    margin-bottom: 2px;
-    font-size: 2em;
-}
-
-h3 {
-    margin-top: 0.9em;
-    margin-bottom: 1px;
-    text-align: left;
+    margin-bottom: 0.5em;
     font-size: 1.6em;
 }
 
+h3 {
+    margin-top: 2.2em;
+    margin-bottom: 1px;
+    text-align: left;
+    font-size: 1.2em;
+}
+
 h4 {
-    margin-top: 0.5em;
+    margin-top: 1.4em;
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
-    font-size: 1.2em;
+    font-size: 0.9em;
+    text-align: left;
 }
 
 /* https://css-tricks.com/hash-tag-links-padding/ */
@@ -325,7 +343,7 @@ h4 {
     display: block;
     content: " ";
     margin-top: -3em;
-    height: 3em;
+    height: 2em;
     visibility: hidden;
     pointer-events: none;
 }
@@ -341,20 +359,27 @@ a.method-name::before {
 
 dt {
     font-weight: bold;
+    font-size: 1.05em;
 }
 dd {
-    margin-top: 0.25em;
-    margin-bottom: 1.25em;
+    margin-top: 0.3em;
+    margin-bottom: 1.2em;
+    margin-left: 1.5em;
+    line-height: 132%;
 }
 
 code, pre {
     font-family: monospace;
-    font-size: 1.05em;
+    font-size: 1.02em;
+    text-indent: 0em;
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    line-height: 132%;
 }
 
 pre {
     border-left: 2px solid #e0e0e0;
-    padding-left: 1em;
+    padding-left: 0.5em;
 }
 
 code.code, pre.code {
@@ -366,12 +391,12 @@ pre.code {
 
 .image {
     text-align: center;
-    margin: 0.3em;
-    font-size: 0.9en;
+    margin: 0.8em;
+    font-size: 0.85en;
 }
 
 .image img {
-    margin-bottom: 0.5em;
+    margin-bottom: 0em;
     max-width: 100%;
 }
 
@@ -385,13 +410,15 @@ pre.code {
 .method-code {
     font-family: monospace;
     font-weight: normal;
-    font-size: 1.05em !important;
-    margin-bottom: 0em;
-    margin-top: 0.75em;
+    font-size: 1.2em; !important;
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
     padding: 0.25em;
     border: none;
     padding-left: 4em;
     text-indent: -4em;
+    margin-top: 0.3em;
+    line-height: 132%;
 }
 
 a.method-name {
@@ -401,7 +428,8 @@ a.method-name {
 
 .method {
     margin-left: 2em;
-    margin-bottom: 2em;
+    margin-bottom: 1em;
+    font-size: 2;
 }
 
 .argstr {
@@ -409,13 +437,14 @@ a.method-name {
 }
 
 .extmethod {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: #444;
     padding-left: 0.2em;
+    text-align: left;
 }
 
 .supmethod {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #444;
     padding-left: 0.2em;
 }
@@ -436,7 +465,7 @@ table.arguments td.argumentname, td.argumentdesc {
 
 td.argumentname {
     font-weight: bold;
-    width: 6em;
+    width: 7em;
     }
 
 div.returnvalue {
@@ -470,11 +499,11 @@ td p {
 }*/
 
 .doclink {
-    font-size: 0.7em;
+    font-size: 0.5em;
     color: #888;
     text-align: right;
-    margin-top: 2em;
-    margin-bottom: 1em;
+    margin-top: 2.5em;
+    margin-bottom: 0.5em;
     border-top: 1px solid #ddd;
 }
 .doclink a {
@@ -502,7 +531,7 @@ td p {
 
 #toc-container {
     float: right;
-    font-size: 0.8em
+    font-size: 0.7em
 }
 
 #toc {
@@ -522,20 +551,29 @@ td p {
 }
 
 li {
-    padding-bottom: 0.3em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    padding-left: 0em;
+    text-indent: 0em;
+    margin-left: -1.5em;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    line-height: 150%;
 }
 
 ul.toc {
     list-style-type: none;
     margin: 0em;
-    padding: 0;
+    padding: 0em;
 }
 ul.toc ul {
     margin-left: 1em;
+    margin-top: 0em;
+    margin-bottom: 0em;
 }
 ul.toc li {
     margin: 0;
-    padding: 0.15em;
+    padding: 0;
 }
 
 ul.toc li a {
@@ -575,6 +613,7 @@ ul.tree, ul.tree ul {
  margin: 0;
  padding: 0;
  margin-left: 1em;
+ 
 }
 
 ul.tree ul {
@@ -615,7 +654,7 @@ a.clslnk {
 .kwd { color: #880; } /* special values like true, nil.. */
 .com { color: #822; } /* comments */
 .typ { color: #008; } /* class names */
-.lit { color: #066; } /* numbers and character literals */
+.lit { color: #066; } /* fs and character literals */
 .pun { color: #555; } /* punctuation */
 .pln { color: #000; } /* plain text, methods and variable names */
 .tag { color: #059; } /* special variables like super, thisProcess... */
@@ -684,7 +723,7 @@ div.met_docs {
 /*    margin-left: 2em;*/
 }
 div.met_subclasses {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #777;
     margin-left: 3em;
     text-align: left;
@@ -700,19 +739,19 @@ div.met_subclasses a.seemore {
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #555;
     background: #eee;
 }
 #search_checks0 {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #555;
     border-bottom: 1px solid #ddd;
     margin-top: 1em;
     padding-bottom: 1em;
 }
 table#search_settings {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #555;
     width: 100%;
     margin-left: 0px;
@@ -727,11 +766,11 @@ table#search_settings {
 }
 #random {
     text-align: right;
-    font-size: 0.9em;
+    font-size: 0.8em;
 }
 #js_error {
     font-family: Andale Mono, monospace;
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: red;
 }
 
@@ -746,7 +785,7 @@ table#search_settings {
     margin-left: 2em;
 }
 div.met_subclasses {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #777;
     margin-left: 3em;
     text-align: left;
@@ -762,23 +801,23 @@ div.met_subclasses a.seemore {
 
 .method_name {
     font-family: Andale Mono, monospace;
-    font-size: 1em;
+    font-size: 0.8em;
 }
 #method_note {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #777;
     border-top: 1px solid #ddd;
     text-align: center;
     margin-top: 2em;
 }
 #total_count {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #777;
 }
 .searchlink {
     background: #eed;
     text-align: center;
-    font-size: 0.9em;
+    font-size: 0.8em;
     padding: 0.25em;
     margin: 0.25em 0;
 }
@@ -792,6 +831,6 @@ div.met_subclasses a.seemore {
     margin-top: 0.2em;
 }
 #total_count {
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #777;
 }
