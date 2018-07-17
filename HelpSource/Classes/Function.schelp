@@ -253,11 +253,12 @@ code::
 (
 a = nil;
 { a == 2 }.whenTrueWithin(2, { "did it on time!".postln }, { "too late ...".postln });
-fork { 1.99.wait; a = 2 };
+fork { 1.999.wait; a = 2 };
 )
-// can be used for branching when preparation may fail:
+
+// can be used for branching when some preparation may fail:
 (
-{ s.serverRunning }.whenTrueWithin(3,
+{ s.serverRunning }.whenTrueWithin(4,
 	{ "YES! doWhenBooted...".postln; ().play },
 	{ "NO! boot timed out - quitting again.".postln; s.quit }
 );

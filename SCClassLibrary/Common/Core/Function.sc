@@ -159,17 +159,26 @@ Function : AbstractFunction {
 		^thisThread;
 	}
 
-	whenTrueWithin { |timeout = 3, thenFunc, elseFunc, dt = (1/16)|
-		var remaining = timeout;
-		^Routine {
-			while {
-				remaining = remaining - dt;
-				this.value.not and: { remaining >= 0 }
+	whenTrueWithin { |timeout = 3, thenFunc, elseFunc, dt = 0.1, clock = (SystemClock)|
+		var stillWaiting = true;
+
+		clock.sched(timeout, {
+			if (stillWaiting) {
+				stillWaiting = false;
+				if (this.value, thenFunc, elseFunc);
+			}
+		});
+
+		clock.sched(dt, {
+			if (stillWaiting and: { this.value }) {
+				stillWaiting = false;
+				thenFunc.value;
+				nil
 			} {
-				dt.wait;
-			};
-			if (this.value, thenFunc, elseFunc)
-		}.play(AppClock)
+				// reschedule
+				dt
+			}
+		})
 	}
 
 	awake { arg beats, seconds, clock;
