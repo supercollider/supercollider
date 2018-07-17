@@ -8,6 +8,14 @@ html, body {
 
 body {
     font-family: Arial, Helvetica, sans-serif;
+    /* font-family: 'Helvetica Neue', 
+    			 'Helvetica',
+    			 'Apple SD Gothic Neo',
+    			 'NanumBarunGothic',
+    			 'Malgun Gothic',
+    			 dotum,
+    			 'Lucida Grande',
+    			 sans-serif; */
     font-size: 0.85em;
     color: black;
     background: white;
@@ -41,9 +49,13 @@ table table {
 p {
     margin-top: 0em;
     margin-bottom: 0em;
-    line-height: 132%;
-    text-align: auto;;
+    line-height: 133%;
+    text-align: auto;
 }
+
+p + p {
+  margin-top: 0;
+  text-indent: 1em;}
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
@@ -365,7 +377,7 @@ dd {
     margin-top: 0.3em;
     margin-bottom: 1.2em;
     margin-left: 1.5em;
-    line-height: 132%;
+    line-height: 133%;
 }
 
 code, pre {
@@ -374,7 +386,7 @@ code, pre {
     text-indent: 0em;
     margin-top: 0.3em;
     margin-bottom: 0.3em;
-    line-height: 132%;
+    line-height: 133%;
 }
 
 pre {
@@ -418,7 +430,7 @@ pre.code {
     padding-left: 4em;
     text-indent: -4em;
     margin-top: 0.3em;
-    line-height: 132%;
+    line-height: 133%;
 }
 
 a.method-name {
