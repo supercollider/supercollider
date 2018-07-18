@@ -18,6 +18,7 @@ div.contents {
     padding: 2em 1em;
     overflow: auto;
     word-break: break-word;
+    /*text-indent: 0;*/
 }
 
 table {
