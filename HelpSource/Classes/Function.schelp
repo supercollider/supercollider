@@ -255,14 +255,23 @@ a = nil;
 { a == 2 }.whenTrueWithin(2, { "did it on time!".postln }, { "too late ...".postln });
 fork { 1.999.wait; a = 2 };
 )
-
-// can be used for branching when some preparation may fail:
+::
+This is useful when the state of interest is to be observed from a distance only,
+and the processes that change the state should remain as decoupled as possible.
+(When coupling is not a problem, using Condition is the cleaner solution.)
+code::
 (
-{ s.serverRunning }.whenTrueWithin(4,
-	{ "YES! doWhenBooted...".postln; ().play },
-	{ "NO! boot timed out - quitting again.".postln; s.quit }
+// multiple processes change a state over time:
+a = List[];
+fork { 32.do { 0.5.rand.wait; a.add(32.rand) }; "done 1".postln  };
+fork { 32.do { 1.0.rand.wait; a.add(32.rand) }; "done 2".postln  };
+
+// to keep them decoupled, we poll the state of interest,
+// rather than attaching a condition.signal construction to each of them
+{ a.size > 32 }.whenTrueWithin(4,
+	{ "YES! list size sufficient.".postln;},
+	{ "NO ...".postln; }
 );
-fork { s.quit; 1.wait; s.boot };
 )
 ::
 
