@@ -898,7 +898,7 @@ Server {
 	}
 
 	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
-		var timer;
+		var waiting = true;
 		if (this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
 			onComplete.value;
 			^this
@@ -907,15 +907,16 @@ Server {
 		// FIXME: quick and dirty fix for supernova reboot hang on macOS:
 		// if we have just quit before running server.boot,
 		// we wait until server process really ends and sets its pid to nil
-		timer = fork {
-			timeout.wait;
-			pidReleaseCondition.unhang;
-		};
+		SystemClock.sched(timeout, {
+			if (waiting) {
+				pidReleaseCondition.unhang
+			}
+		});
 
 		forkIfNeeded {
 			pidReleaseCondition.hang;
 			if (pidReleaseCondition.test.value) {
-				timer.stop;
+				waiting = false;
 				onComplete.value;
 			} {
 				onFailure.value
