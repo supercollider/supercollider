@@ -601,17 +601,31 @@ a.clslnk {
 
 /* Pretty printing styles. Used with prettify.js. */
 
-.str { color: #070; } /* strings */
-.kwd { color: #880; } /* special values like true, nil.. */
-.com { color: #822; } /* comments */
-.typ { color: #008; } /* class names */
-.lit { color: #066; } /* numbers and character literals */
-.pun { color: #555; } /* punctuation */
-.pln { color: #000; } /* plain text, methods and variable names */
-.tag { color: #059; } /* special variables like super, thisProcess... */
-.dec { color: #508; } /* declarations like var, const... */
-.atn { color: #285; } /* symbols */
-.atv { color: #750; } /* environment vars */
+.str { color: rgb(95, 95, 95) } /* strings */
+.kwd { color: rgb(0, 0, 230) } /* special values like true, nil.. */
+.com { color: rgb(192, 0, 0) } /* comments */
+.typ { color: rgb(0, 0, 210) } /* class names */
+.lit { color: rgb(152, 0, 153) } /* numbers and character literals */
+.pun { color: rgb(85, 85, 85) } /* punctuation */
+.pln { color: rgb(0, 0, 0) } /* plain text, methods and variable names */
+.tag { color: rgb(51, 51, 191) } /* special variables like super, thisProcess... */
+.dec { color: rgb(0, 0, 230); font-weight: bold; } /* declarations like var, const... */
+.atn { color: rgb(0, 115, 0) } /* symbols */
+.atv { color: rgb(140, 70, 20) } /* environment vars */
+
+@media print {
+    .str { color: rgb(95, 95, 95) } /* strings */
+    .kwd { color: rgb(0, 0, 230); font-weight: bold; } /* special values like true, nil.. */
+    .com { color: rgb(192, 0, 0); font-style: italic; } /* comments */
+    .typ { color: rgb(0, 0, 210); font-weight: bold; } /* class names */
+    .lit { color: rgb(152, 0, 153) } /* numbers and character literals */
+    .pun { color: rgb(85, 85, 85) } /* punctuation */
+    .pln { color: rgb(0, 0, 0) } /* plain text, methods and variable names */
+    .tag { color: rgb(51, 51, 191); font-weight: bold; } /* special variables like super, thisProcess... */
+    .dec { color: rgb(0, 0, 230); font-weight: bold; } /* declarations like var, const... */
+    .atn { color: rgb(0, 115, 0) } /* symbols */
+    .atv { color: rgb(140, 70, 20) } /* environment vars */
+}
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
@@ -629,19 +643,6 @@ li.L3,
 li.L5,
 li.L7,
 li.L9 { background: #eee }
-
-@media print {
-  .str { color: #060; }
-  .kwd { color: #006; font-weight: bold; }
-  .com { color: #600; font-style: italic; }
-  .typ { color: #404; font-weight: bold; }
-  .lit { color: #044; }
-  .pun { color: #440; }
-  .pln { color: #000; }
-  .tag { color: #006; font-weight: bold; }
-  .atn { color: #404; }
-  .atv { color: #060; }
-}
 
 /* from HelpSource/Search.html */
 
