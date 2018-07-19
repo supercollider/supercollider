@@ -4286,6 +4286,11 @@ void initCocoaFilePrimitives();
 void initSchedPrimitives();
 	initSchedPrimitives();
 
+#ifdef SC_ABLETON_LINK
+void initLinkPrimitives();
+	initLinkPrimitives();
+#endif
+
 #ifdef SC_HIDAPI
 void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();

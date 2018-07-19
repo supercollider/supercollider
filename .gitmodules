@@ -17,6 +17,9 @@
 [submodule "external_libraries/yaml-cpp"]
 	path = external_libraries/yaml-cpp
 	url = https://github.com/supercollider/yaml-cpp.git
+[submodule "external_libraries/link"]
+	path = external_libraries/link
+	url = https://github.com/Ableton/link
 [submodule "editors/sc-el"]
 	path = editors/sc-el
 	url = https://github.com/supercollider/scel/
