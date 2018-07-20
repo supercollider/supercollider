@@ -245,6 +245,36 @@ f.forkIfNeeded;
 { "we are now in a routine".postln; 1.wait; f.forkIfNeeded }.fork;
 ::
 
+method::whenTrueWithin
+
+When func.value becomes true within timeout, then do thenFunc, else to elseFunc.
+
+code::
+(
+a = nil;
+{ a == 2 }.whenTrueWithin(2, { "did it on time!".postln }, { "too late ...".postln });
+fork { 1.999.wait; a = 2 };
+)
+::
+This is useful when the state of interest is to be observed from a distance only,
+and the processes that change the state should remain as decoupled as possible.
+(When coupling is not a problem, using Condition is the cleaner solution.)
+code::
+(
+// multiple processes change a state over time:
+a = List[];
+fork { 32.do { 0.5.rand.wait; a.add(32.rand) }; "done 1".postln  };
+fork { 32.do { 1.0.rand.wait; a.add(32.rand) }; "done 2".postln  };
+
+// to keep them decoupled, we poll the state of interest,
+// rather than attaching a condition.signal construction to each of them
+{ a.size > 32 }.whenTrueWithin(4,
+	{ "YES! list size sufficient.".postln;},
+	{ "NO ...".postln; }
+);
+)
+::
+
 method::block
 
 Break from a loop. Calls the receiver with an argument which is a function that returns from the method block. To exit the loop, call .value on the function passed in. You can pass a value to this function and that value will be returned from the block method.
