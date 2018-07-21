@@ -99,6 +99,34 @@ TestPattern : UnitTest {
 
 	}
 
+	// test bug #3851: Pstretch applied to Ppar should operate on deltas, not only dur
+	// bug: Ppar sets event deltas.
+	// Pstretch used to miss this and change only the output event's dur, not delta.
+	// After Pstretch, dur and delta should be the same.
+	test_PstretchDeltas {
+		var pattern = Pbind(\dur, Pn(1, 1)),
+		ppar = Ppar([pattern], 1),
+		pstretch = Pstretch(0.5, ppar),
+		event = pstretch.asStream.next(());
+
+		this.assert(
+			event.delta == event[\dur] and: { event.delta == 0.5 },
+			"Pstretch should stretch deltas of Ppar"
+		);
+	}
+
+	// the bug did not occur in Pstretchp, but let's test it anyway
+	test_PstretchpDeltas {
+		var pattern = Pbind(\dur, Pn(1, 1)),
+		ppar = Ppar([pattern], 1),
+		pstretch = Pstretchp(0.5, ppar),
+		event = pstretch.asStream.next(());
+
+		this.assert(
+			event.delta == event[\dur] and: { event.delta == 0.5 },
+			"Pstretchp should stretch deltas of Ppar"
+		);
+	}
 
 /*
 	test_storeArgs {
