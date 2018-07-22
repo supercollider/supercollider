@@ -1,3 +1,4 @@
+
 html, body {
     height: 100%;
     padding: 0;
@@ -5,6 +6,7 @@ html, body {
     position: relative;
     text-align: justify;
     font-size: 0.9em;
+    line-height: 1.5em;
 }
 
 body {
@@ -40,7 +42,7 @@ table table {
 p {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
-    line-height: 1.3em;}
+    }
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
@@ -293,7 +295,7 @@ div.footnote {
     margin-left: 0.4em;
     margin-top: 0.4em;
     font-size: 0.83em;
-    line-height: 140%;
+    line-height: 1.4em;
     text-align: left;
 }
 
@@ -302,8 +304,9 @@ div.footnote {
 }
 
 h1 {
-    margin: 0.1em;
-    font-size: 2em;
+    margin-top: 0.5em;
+    margin-bottom: 0.3em;
+    font-size: 2.3em;
 }
 
 h2 {
@@ -364,7 +367,7 @@ code, pre {
     /*text-indent: 0;*/
     margin-top: 0.3em;
     margin-bottom: 0.3em;
-    line-height: 120%;
+    line-height: 1.35em;
 }
 
 pre {
@@ -376,7 +379,6 @@ code.code, pre.code {
 }
 
 pre.code {
-
 }
 
 .image {
@@ -406,7 +408,6 @@ pre.code {
     padding-left: 4em;
     text-indent: -4em;
     margin-top: 0.3em;
-    line-height: 133%;
 }
 
 a.method-name {
@@ -517,7 +518,7 @@ td p {
     overflow-x: hidden;
     overflow-wrap: break-word;
     right: 0;
-    line-height: 130%;
+    line-height: 1.3em;
 }
 #toctitle {
     font-weight: bold;
@@ -534,7 +535,7 @@ li {
     margin-left: -1.5em;
     margin-top: 0;
     margin-bottom: 0;
-    line-height: 150%;
+    line-height: 1.5em;
 }
 
 ul.toc {
