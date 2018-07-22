@@ -323,10 +323,10 @@ code::
 
 // if you supply a gate it fades in and out. evaluate this several times
 (
-~out = SynthDef("w", { arg out=0, gate=1.0;
+~out = SynthDef("w", { arg out=0, gate=1.0, fadeTime = 0.1;
 	Out.ar(out,
 		SinOsc.ar([Rand(430, 800), Rand(430, 800)], 0, 0.2)
-			* EnvGen.kr(Env.asr(1,1,1), gate, doneAction: Done.freeSelf)
+			* EnvGen.kr(Env.asr(fadeTime, 1, fadeTime), gate, doneAction: Done.freeSelf)
 	)
 	});
 )
@@ -339,10 +339,10 @@ code::
 // if the synth def is in the synthdesc lib (.add) its gate is detected.
 
 (
-SynthDef("staub", { arg out, gate=1;
+SynthDef("staub", { arg out, gate=1, fadeTime = 0.1;
 	Out.ar(out,
 		Ringz.ar(Dust.ar(15), Rand(1, 3) * 3000*[1,1], 0.001)
-			* EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf)
+		* EnvGen.kr(Env.asr(fadeTime, 1, fadeTime), gate, doneAction: Done.freeSelf)
 	)
 }).add;
 )
