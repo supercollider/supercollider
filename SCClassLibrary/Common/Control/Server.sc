@@ -280,7 +280,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-	var <pidReleaseCondition;
+	var pidReleaseCondition;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
