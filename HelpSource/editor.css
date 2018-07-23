@@ -1,0 +1,50 @@
+.CodeMirror {
+    height: auto;
+    padding: 0 1em;
+    margin-top: 1em;
+    border-left: 2px solid #e1e1e1;
+    font-size: .9em;
+}
+
+.CodeMirror-cursors,
+.CodeMirror pre {
+    z-index: 1 !important;
+}
+
+.CodeMirror-selected,
+.CodeMirror-line::selection,
+.CodeMirror-line > span::selection,
+.CodeMirror-line > span > span::selection { 
+    background: rgba(248, 162, 0, 0.5) !important; 
+}
+
+textarea.editor {
+    opacity: 0;
+}
+
+/* syntax hightlighting */
+.cm-s-default .cm-string { color: rgb(95, 95, 95) }
+.cm-s-default .cm-atom { color: rgb(0, 0, 230) }
+.cm-s-default .cm-comment { color: rgb(192, 0, 0) }
+.cm-s-default .cm-type { color: rgb(0, 0, 210) }
+.cm-s-default .cm-literal { color: rgb(152, 0, 153) }
+.cm-s-default .cm-punctuation { color: rgb(85, 85, 85) }
+.cm-s-default .cm-plain { color: rgb(0, 0, 0) }
+.cm-s-default .cm-keyword { color: rgb(51, 51, 191) }
+.cm-s-default .cm-declaration { color: rgb(0, 0, 230); font-weight: bold; }
+.cm-s-default .cm-attribute-name { color: rgb(0, 115, 0) }
+.cm-s-default .cm-env-var { color: rgb(140, 70, 20) }
+
+@media print {
+    .cm-s-default .cm-string { color: rgb(95, 95, 95) }
+    .cm-s-default .cm-atom { color: rgb(0, 0, 230); font-weight: bold; }
+    .cm-s-default .cm-comment { color: rgb(192, 0, 0); font-style: italic; }
+    .cm-s-default .cm-type { color: rgb(0, 0, 210); font-weight: bold; }
+    .cm-s-default .cm-literal { color: rgb(152, 0, 153) }
+    .cm-s-default .cm-punctuationn { color: rgb(85, 85, 85) }
+    .cm-s-default .cm-plain { color: rgb(0, 0, 0) }
+    .cm-s-default .cm-keyword { color: rgb(51, 51, 191); font-weight: bold; }
+    .cm-s-default .cm-declaration { color: rgb(0, 0, 230); font-weight: bold; }
+    .cm-s-default .cm-attribute-name { color: rgb(0, 115, 0) }
+    .cm-s-default .cm-env-var { color: rgb(140, 70, 20) }
+}
