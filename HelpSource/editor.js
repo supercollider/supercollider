@@ -65,12 +65,11 @@ const selectRegion = (reset = true ) => {
     const findLeftParen = cursor => {
         let cursorLeft = editor.findPosH(cursor, -1, 'char')
         if (cursorLeft.hitSide)
-            return null
+            return cursorLeft
         let ch = editor.getLine(cursorLeft.line)
             .slice(cursorLeft.ch, cursorLeft.ch+1)
         if (ch === ')') {
-            let cursorInner = findLeftParen(cursorLeft)
-            return cursorInner ? findLeftParen(cursorInner) : cursorInner
+            return findLeftParen(findLeftParen(cursorLeft))
         }
         if (ch === '(')
             return cursorLeft
@@ -80,12 +79,11 @@ const selectRegion = (reset = true ) => {
     const findRightParen = cursor => {
         let cursorRight = editor.findPosH(cursor, 1, 'char')
         if (cursorRight.hitSide)
-            return null
+            return cursorRight
         let ch = editor.getLine(cursorRight.line)
             .slice(cursorRight.ch-1, cursorRight.ch)
         if (ch === '(') {
-            let cursorInner = findRightParen(cursorRight)
-            return cursorInner ? findRightParen(cursorInner) : cursorInner
+            return findRightParen(findRightParen(cursorRight))
         }
         if (ch === ')')
             return cursorRight
@@ -102,17 +100,27 @@ const selectRegion = (reset = true ) => {
     let leftCursor = findLeftParen(cursor)
     let rightCursor = findRightParen(cursor)
 
-    do {
-        if (!leftCursor || !rightCursor)
-            return selectLine(reset)
+    while (!leftCursor.hitSide || !rightCursor.hitSide) {
         parenPairs.push([leftCursor, rightCursor])
         leftCursor = findLeftParen(leftCursor)
         rightCursor = findRightParen(rightCursor)
-    } while (leftCursor && rightCursor)
+    }
 
-    let parenPair = parenPairs.pop()
+    /* no parens found */
+    if (parenPairs.length === 0)
+        return selectLine(reset)
+    
+    let pair = parenPairs.pop()
+    leftCursor = pair[0]
+    rightCursor = pair[1]
+
+    /* parens are inline */
+    if (leftCursor.ch > 0)
+        return selectLine(reset)
+
+    /* parens are a region */
     cursor = editor.getCursor()
-    editor.addSelection(parenPair[0], parenPair[1])
+    editor.addSelection(leftCursor, rightCursor)
     
     if (reset)
         setTimeout(() => {
