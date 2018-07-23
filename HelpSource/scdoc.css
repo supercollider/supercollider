@@ -100,6 +100,7 @@ a.subclass_toggle:hover {
     padding: 0.5em 0;
     background-color: #f9f9f9;
     box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
+    z-index: 2;
 }
 
 #nav {
@@ -351,13 +352,6 @@ pre {
     padding-left: 1em;
 }
 
-code.code, pre.code {
-}
-
-pre.code {
-
-}
-
 .image {
     text-align: center;
     margin: 2em;
@@ -594,55 +588,6 @@ a.undoc {
     color: #88b;
     text-decoration: line-through;
 }
-
-/* auto class links. note that color can be overridden by prettify rules below */
-a.clslnk {
-}
-
-/* Pretty printing styles. Used with prettify.js. */
-
-.str { color: rgb(95, 95, 95) } /* strings */
-.kwd { color: rgb(0, 0, 230) } /* special values like true, nil.. */
-.com { color: rgb(192, 0, 0) } /* comments */
-.typ { color: rgb(0, 0, 210) } /* class names */
-.lit { color: rgb(152, 0, 153) } /* numbers and character literals */
-.pun { color: rgb(85, 85, 85) } /* punctuation */
-.pln { color: rgb(0, 0, 0) } /* plain text, methods and variable names */
-.tag { color: rgb(51, 51, 191) } /* special variables like super, thisProcess... */
-.dec { color: rgb(0, 0, 230); font-weight: bold; } /* declarations like var, const... */
-.atn { color: rgb(0, 115, 0) } /* symbols */
-.atv { color: rgb(140, 70, 20) } /* environment vars */
-
-@media print {
-    .str { color: rgb(95, 95, 95) } /* strings */
-    .kwd { color: rgb(0, 0, 230); font-weight: bold; } /* special values like true, nil.. */
-    .com { color: rgb(192, 0, 0); font-style: italic; } /* comments */
-    .typ { color: rgb(0, 0, 210); font-weight: bold; } /* class names */
-    .lit { color: rgb(152, 0, 153) } /* numbers and character literals */
-    .pun { color: rgb(85, 85, 85) } /* punctuation */
-    .pln { color: rgb(0, 0, 0) } /* plain text, methods and variable names */
-    .tag { color: rgb(51, 51, 191); font-weight: bold; } /* special variables like super, thisProcess... */
-    .dec { color: rgb(0, 0, 230); font-weight: bold; } /* declarations like var, const... */
-    .atn { color: rgb(0, 115, 0) } /* symbols */
-    .atv { color: rgb(140, 70, 20) } /* environment vars */
-}
-
-/* Specify class=linenums on a pre to get line numbering */
-ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
-li.L0,
-li.L1,
-li.L2,
-li.L3,
-li.L5,
-li.L6,
-li.L7,
-li.L8 { list-style-type: none }
-/* Alternate shading for lines */
-li.L1,
-li.L3,
-li.L5,
-li.L7,
-li.L9 { background: #eee }
 
 /* from HelpSource/Search.html */
 
