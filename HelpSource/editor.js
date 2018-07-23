@@ -29,8 +29,8 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: { 
-                'Cmd-Enter': selectRegion
-                //'Shift-Enter': selectLine
+                'Cmd-Enter': selectRegion,
+                'Shift-Enter': selectLine
             }
         })
 
@@ -40,7 +40,7 @@ const init = () => {
                 .slice(cursor.ch-1,cursor.ch).match(/[()]/)
             if (parenMatch) {
                 editor.replaceSelection(parenMatch[0])
-                selectRegion()
+                selectRegion(false)
             }
         })
 
@@ -53,14 +53,14 @@ const init = () => {
 
 
 /* returns the code selection, line or block */
-const selectRegion = () => {
+const selectRegion = (reset = true ) => {
     let range = window.getSelection().getRangeAt(0)
     let textarea = range.startContainer.parentNode.previousSibling
     if (!textarea) return
     let editor = textarea.editor
 
     if (editor.somethingSelected())
-        return editor.getSelection()
+        return selectLine(reset)
 
     const findLeftParen = cursor => {
         let cursorLeft = editor.findPosH(cursor, -1, 'char')
@@ -104,28 +104,40 @@ const selectRegion = () => {
 
     do {
         if (!leftCursor || !rightCursor)
-            return selectLine()
+            return selectLine(reset)
         parenPairs.push([leftCursor, rightCursor])
         leftCursor = findLeftParen(leftCursor)
         rightCursor = findRightParen(rightCursor)
     } while (leftCursor && rightCursor)
 
     let parenPair = parenPairs.pop()
+    cursor = editor.getCursor()
     editor.addSelection(parenPair[0], parenPair[1])
+    
+    if (reset)
+        setTimeout(() => {
+            editor.setCursor(cursor, null, { scroll: false })
+        }, 400)
+
     return editor.getSelection()
 }
 
 /* returns the code selection or line */
-const selectLine = () => {
+const selectLine = (reset = true) => {
     let range = window.getSelection().getRangeAt(0)
     let textarea = range.startContainer.parentNode.previousSibling
     if (!textarea) return
     let editor = textarea.editor
+    let cursor = editor.getCursor()
+
+    if (reset)
+        setTimeout(() => {
+            editor.setCursor(cursor, null, { scroll: false })
+        }, 400)
 
     if (editor.somethingSelected())
         return editor.getSelection()
     else {
-        let cursor = editor.getCursor()
         editor.addSelection({ line: cursor.line, ch: 0 },
             { line: cursor.line, ch: editor.getLine(cursor.line).length })
         return editor.getSelection()
