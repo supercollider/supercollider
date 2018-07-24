@@ -14,6 +14,13 @@ SerialPort {
 	// device listing
 	*devices {
 		var regQueryResult, devices;
+		var regexp;
+
+		// Backward compatibility
+		if(devicePattern.notNil) {
+			^devicePattern.pathMatch;
+		};
+
 		if(thisProcess.platform.name == \windows) {
 			// There are somewhere around a dozen ways you can get a list of serial port devices
 			// on Windows. We here duplicate the method used in JSSC (Java Simple Serial Connector),
@@ -42,12 +49,19 @@ SerialPort {
 			};
 			^devices;
 		} {
-			^(devicePattern ?? {
-				thisProcess.platform.name.switch(
-					\linux,   "/dev/tty[A,S,U]*",
-					\osx,     "/dev/tty.*"
-				)
-			}).pathMatch
+			// These regexps are also taken from the Arduino IDE:
+			// https://github.com/arduino/Arduino/blob/ec2e9a642a085b32701cf81297ee7c1570177195/arduino-core/src/processing/app/SerialPortList.java#L48
+			regexp = thisProcess.platform.name.switch(
+				\linux,   "^(ttyS|ttyUSB|ttyACM|ttyAMA|rfcomm|ttyO)[0-9]{1,3}",
+				\osx,     "^(tty|cu)\\..*"
+			);
+			devices = [];
+			PathName("/dev/").files.do { |path|
+				if(regexp.matchRegexp(path.fileName)) {
+					devices = devices.add(path.fullPath);
+				};
+			};
+			^devices;
 		};
 	}
 	*listDevices {
@@ -65,6 +79,7 @@ SerialPort {
 			exclusive(false) |
 
 		if (port.isNumber) {
+			"Using integers to identify serial ports is deprecated. Please pass strings instead.".warn;
 			port = this.devices[port] ?? {
 				Error("invalid port index").throw;
 			};
