@@ -13,13 +13,42 @@ SerialPort {
 
 	// device listing
 	*devices {
-		^(devicePattern ?? {
-			thisProcess.platform.name.switch(
-				\linux,   "/dev/tty[A,S,U]*",
-				\osx,     "/dev/tty.*",
-				\windows, "COM"
-			)
-		}).pathMatch
+		var regQueryResult, devices;
+		if(thisProcess.platform.name == \windows) {
+			// There are somewhere around a dozen ways you can get a list of serial port devices
+			// on Windows. We here duplicate the method used in JSSC (Java Simple Serial Connector),
+			// which is in turn used in the Arduino IDE. If it's good enough for Arduino, it's good
+			// enough for us.
+
+			// The registry key HKLM\HARDWARE\DEVICEMAP\SERIALCOMM can be queried using the below
+			// "reg query" command. The next step is to parse its output, which looks like this
+			// (note the use of 4 spaces rather than tabs):
+
+			// HKEY_LOCAL_MACHINE\Hardware\DeviceMap\SerialComm
+			//     \Device\Serial0    REG_SZ    COM3
+			//     \Device\LSIModem5    REG_SZ    COM4
+			//     \Device\USBSER000    REG_SZ    COM5
+
+			// The regexp "\\bREG_SZ {4}(.*)$" matches our desired port names (COM3/COM4/COM5).
+
+			regQueryResult = "reg query HKLM\\HARDWARE\\DEVICEMAP\\SERIALCOMM".unixCmdGetStdOut;
+			devices = [];
+			regQueryResult.split($\n).do { |line|
+				var match;
+				match = line.findRegexp("\\bREG_SZ {4}(.*)$");
+				if(match.notEmpty) {
+					devices = devices.add(match[1][1]);
+				};
+			};
+			^devices;
+		} {
+			^(devicePattern ?? {
+				thisProcess.platform.name.switch(
+					\linux,   "/dev/tty[A,S,U]*",
+					\osx,     "/dev/tty.*"
+				)
+			}).pathMatch
+		};
 	}
 	*listDevices {
 		this.devices.do(_.postln);
