@@ -136,7 +136,7 @@ More information can be found on the [git workflow wiki page](https://github.com
 
 You can also refer to Github's guide to [forking a repository](https://help.github.com/articles/fork-a-repo/) and [syncing a fork](https://help.github.com/articles/syncing-a-fork/).
 
-Instructions on adding translation files for the IDE can be found in [DEVELOPING.md](https://github.com/supercollider/supercollider/wiki/[WIP]-Developer-info-%28DEVELOPING.md%29#adding-ide-translations)
+Instructions on adding translation files for the IDE can be found in `DEVELOPING.md`.
 
 ## Above and beyond
 
