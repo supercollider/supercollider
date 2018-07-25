@@ -78,6 +78,13 @@ the wild." These are standards the community has agreed upon for new UGens:
 Tools
 =====
 
+Continuous Integration and Skipping Commits
+-------------------------------------------
+
+We have CI provided by AppVeyor (Windows) and Travis (Linux, macOS). If a commit changes _only_
+non-schelp documentation, _without_ renaming, adding, or removing files, you may want to consider
+adding `[skip ci]` to the commit message so it does not waste CI resources.
+
 S3 Build Hosting
 ----------------
 
