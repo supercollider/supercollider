@@ -134,9 +134,9 @@ deploy:
 # s3 upload - every commit
 - provider: S3
   access_key_id:
-    secure: Imi70fjxyMWt9kwV9RfVT7qV8OaxA40iGlR1hO12SK4=
+    secure: cUwCIb/EtpG3uAP48WylcMNxAh3yEbPNcQGPZDnh6go=
   secret_access_key:
-    secure: 3K2MRfkIb7BJk4kCCakxcGAjkc1LCYZHpD32I52mYd//2WHE63xVJl/qd3Q1IBhI
+    secure: 9n0lOPh/3hpwSEf1l0QySYngrgWYqplZozQ9ZJMxtDARIV5DIBn/NXttTfkh1Z3k
   bucket: supercollider
   region: us-west-2
   folder: $(S3_BUILDS_LOCATION)
