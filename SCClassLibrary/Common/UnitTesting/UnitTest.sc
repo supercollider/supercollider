@@ -46,7 +46,7 @@ UnitTest {
 	*run { | reset = true, report = true |
 		if(reset) { this.reset };
 		this.forkIfNeeded {
-			this.runAllTestMethods(report);
+			this.prRunAllTestMethods(report);
 		};
 	}
 
@@ -62,16 +62,6 @@ UnitTest {
 		}
 	}
 
-	*runAllTestMethods { |report = true|
-		"RUNNING UNIT TEST '%'".format(this.name).inform;
-		this.forkIfNeeded {
-			this.findTestMethods.do { |method|
-				this.new.runTestMethod(method, false)
-			};
-			if(report) { this.report };
-		}
-	}
-
 	// run a single test method of this class
 	runTestMethod { | method, report = true |
 		this.class.forkIfNeeded {
@@ -80,6 +70,17 @@ UnitTest {
 			this.perform(method.name);
 			this.tearDown;
 			if(report) { this.class.report };
+		}
+	}
+
+
+	*prRunAllTestMethods { |report = true|
+		"RUNNING UNIT TEST '%'".format(this.name).inform;
+		this.forkIfNeeded {
+			this.findTestMethods.do { |method|
+				this.new.runTestMethod(method, false)
+			};
+			if(report) { this.report };
 		}
 	}
 
