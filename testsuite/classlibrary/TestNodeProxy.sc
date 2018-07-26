@@ -8,6 +8,9 @@ TestNodeProxy : UnitTest {
 		s = Server.default;
 		s.quit;
 
+		// fail safe for large inits - must be Integer for supernova
+		s.options.numWireBufs = (64 * (2**7)).asInteger;
+
 		Ndef.clear;
 		x = nil;
 		Ndef(\x, { x = "rebuilt"; SinOsc.ar([661.1, 877.1, 551.1]) });
@@ -82,9 +85,6 @@ TestNodeProxy : UnitTest {
 		this.assert(Ndef(\x).loaded != true,
 			"after server quit: send should not assume server resources loaded");
 		*/
-
-		// fail safe for large inits
-		s.options.numWireBufs = 64 * (2**7);
 
 		// CLEAR
 		Ndef.clear;
