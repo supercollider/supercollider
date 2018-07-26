@@ -41,15 +41,15 @@ TestNamedControl : UnitTest {
 
 	test_incompatibleValues_acrossMultipleInstances_throwsError {
 		var defaultValues, error;
-		try {
+		this.assertException({
 			SynthDef(\test, {
 				var a = NamedControl(\x, [1, 2, 3]);
 				var b = NamedControl(\x, [1, 2]);
 				defaultValues = a.source.values;
 			});
-		} { |e| error = e };
+		}, Error)
 
-		this.assert(error.isException)
+
 	}
 
 
