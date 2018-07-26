@@ -119,14 +119,13 @@ UnitTest {
 		^method
 	}
 
-	// could be moved to e.g. Method.isTest
+	// specific for UnitTest:
 	*isTestMethod { |method|
-		^method.ownerClass.superclasses.includes(UnitTest) and: {
+		^method.ownerClass.isKindOf(Meta_UnitTest) and: {
 			method.name.asString.beginsWith("test_")
 		}
 	}
 
-	// specific for UnitTest:
 	*findTestMethodFor { |methodString|
 		var method = this.findMethodFor(methodString);
 		if (method.notNil and: { this.isTestMethod(method) }) {
