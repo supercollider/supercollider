@@ -3,7 +3,6 @@ html, body {
     padding: 0;
     margin: 0;
     position: relative;
-    overflow-y: hidden;
 }
 
 body {
@@ -14,11 +13,8 @@ body {
 }
 
 div.contents {
-    position: relative;
-    height: 100%;
-    overflow: auto;
     margin: 0;
-    padding: 0em 1em;
+    padding: 3em 1em;
 }
 
 table {
@@ -97,45 +93,54 @@ a.subclass_toggle:hover {
 
 
 #menubar {
+    position: fixed;
     font-family: Arial, Helvetica, sans-serif;
     text-indent: 0;
-    padding: 0;
     width: 100%;
     padding: 0.5em 0;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 1em;
+    background-color: #f9f9f9;
+    box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
+}
+
+#nav {
+    padding: 0;
+    margin: 0;
 }
 
 #menubar .menuitem {
+    padding: 0;
     margin: 0;
-    padding: 0px;
-    padding-left: 0.75em;
-    padding-right: 0.75em;
     border-right: 1px solid #ddd;
     font-size: 10pt;
     display: inline-block;
+}
 
+#menubar .menuitem:first-child {
+    /* It is better to make the logo a background image instead of an <img> because it is purely
+    decorative. */
+    background-image: url("images/SC_icon.png");
+    background-repeat: no-repeat;
+    background-position: 0.5em center;
+    background-size: 1.5em;
+}
+
+a.menu-link {
+    color: #666;
+    padding: 0 0.75em 0 0.75em;
     /* This ensures that the logo isn't cut off. */
     min-height: 1.5em;
     /* This gets the text to vertically center. Discovered by accident. */
     line-height: 1.5em;
 }
-
-#menubar .menuitem:first-child {
-    padding-left: 0;
-
-    /* It is better to make the logo a background image instead of an <img> because it is purely
-    decorative. */
-    background-image: url("images/SC_icon.png");
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 1.5em;
+a.menu-link:hover {
+    text-decoration: none;
+    color: #999;
 }
 
 #menubar .menuitem:first-child a {
     /* The cube logo is actually *under* the <a>, but it shows through so that it looks like it
     is part of the link. */
-    padding-left: 2em;
+    padding-left: 2.5em;
 }
 
 #menubar .menuitem:first-child a:hover {
@@ -147,12 +152,8 @@ a.subclass_toggle:hover {
     border-right: none;
 }
 
-.menuitem a {
-    color: #666;
-}
-.menuitem a:hover {
-    text-decoration: none;
-    color: #999;
+a.menu-link.title {
+    font-weight: bold;
 }
 
 #topdoctitle {
@@ -163,14 +164,12 @@ a.subclass_toggle:hover {
     cursor: pointer;
 }
 
-.submenu {
-    margin-top: 2px;
+.submenu, #toc {
     padding: 0.5em;
-    background: #eee;
-    display: none;
     position: absolute;
-    border: 1px solid #aaa;
-    border-radius: 4px;
+    display: none;
+    background-color: #f9f9f9;
+    border: thin solid #ddd;
 }
 
 .submenu a {
@@ -313,6 +312,25 @@ h4 {
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
+}
+
+/* https://css-tricks.com/hash-tag-links-padding/ */
+.anchor::before {
+    display: block;
+    content: " ";
+    margin-top: -3em;
+    height: 3em;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+a.method-name::before {
+    display: inline-block;
+    content: " ";
+    margin-top: -5em;
+    height: 5em;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 dt {
@@ -474,18 +492,18 @@ td p {
     color: black;
 }
 
+#toc-container {
+    float: right;
+}
+
 #toc {
-    float: left;
-
     width: 20em;
-    height: 100%;
-    overflow: auto;
-
-    margin: 0;
-    padding: 0;
+    max-height: calc(100vh - 3em);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+    right: 0;
     line-height: 130%;
-    display: none;
-    background: #eee;
 }
 #toctitle {
     font-weight: bold;
@@ -541,14 +559,6 @@ ul.toc li a:hover {
     color: #555;
 }
 
-a.close-link {
-    float: right;
-    font-size: 80%;
-    color: #558;
-    padding: 1em;
-    display: inline-block;
-}
-
 ul.tree, ul.tree ul {
  list-style-type: none;
  background: url(images/vline.png) repeat-y;
@@ -591,17 +601,31 @@ a.clslnk {
 
 /* Pretty printing styles. Used with prettify.js. */
 
-.str { color: #070; } /* strings */
-.kwd { color: #880; } /* special values like true, nil.. */
-.com { color: #822; } /* comments */
-.typ { color: #008; } /* class names */
-.lit { color: #066; } /* numbers and character literals */
-.pun { color: #555; } /* punctuation */
-.pln { color: #000; } /* plain text, methods and variable names */
-.tag { color: #059; } /* special variables like super, thisProcess... */
-.dec { color: #508; } /* declarations like var, const... */
-.atn { color: #285; } /* symbols */
-.atv { color: #750; } /* environment vars */
+.str { color: rgb(95, 95, 95) } /* strings */
+.kwd { color: rgb(0, 0, 230) } /* special values like true, nil.. */
+.com { color: rgb(192, 0, 0) } /* comments */
+.typ { color: rgb(0, 0, 210) } /* class names */
+.lit { color: rgb(152, 0, 153) } /* numbers and character literals */
+.pun { color: rgb(85, 85, 85) } /* punctuation */
+.pln { color: rgb(0, 0, 0) } /* plain text, methods and variable names */
+.tag { color: rgb(51, 51, 191) } /* special variables like super, thisProcess... */
+.dec { color: rgb(0, 0, 230); font-weight: bold; } /* declarations like var, const... */
+.atn { color: rgb(0, 115, 0) } /* symbols */
+.atv { color: rgb(140, 70, 20) } /* environment vars */
+
+@media print {
+    .str { color: rgb(95, 95, 95) } /* strings */
+    .kwd { color: rgb(0, 0, 230); font-weight: bold; } /* special values like true, nil.. */
+    .com { color: rgb(192, 0, 0); font-style: italic; } /* comments */
+    .typ { color: rgb(0, 0, 210); font-weight: bold; } /* class names */
+    .lit { color: rgb(152, 0, 153) } /* numbers and character literals */
+    .pun { color: rgb(85, 85, 85) } /* punctuation */
+    .pln { color: rgb(0, 0, 0) } /* plain text, methods and variable names */
+    .tag { color: rgb(51, 51, 191); font-weight: bold; } /* special variables like super, thisProcess... */
+    .dec { color: rgb(0, 0, 230); font-weight: bold; } /* declarations like var, const... */
+    .atn { color: rgb(0, 115, 0) } /* symbols */
+    .atv { color: rgb(140, 70, 20) } /* environment vars */
+}
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
@@ -619,19 +643,6 @@ li.L3,
 li.L5,
 li.L7,
 li.L9 { background: #eee }
-
-@media print {
-  .str { color: #060; }
-  .kwd { color: #006; font-weight: bold; }
-  .com { color: #600; font-style: italic; }
-  .typ { color: #404; font-weight: bold; }
-  .lit { color: #044; }
-  .pun { color: #440; }
-  .pln { color: #000; }
-  .tag { color: #006; font-weight: bold; }
-  .atn { color: #404; }
-  .atv { color: #060; }
-}
 
 /* from HelpSource/Search.html */
 

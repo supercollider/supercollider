@@ -199,7 +199,7 @@ PatternControl : StreamControl {
 SynthControl : AbstractPlayControl {
 
 	var <server, <>nodeID;
-	var <canReleaseSynth=false, <canFreeSynth=false;
+	var <canReleaseSynth=false, <canFreeSynth=false, <hasFadeTimeControl=false;
 	var prevBundle;
 
 
@@ -215,6 +215,7 @@ SynthControl : AbstractPlayControl {
 		if(desc.notNil) {
 			canFreeSynth = desc.canFreeSynth;
 			canReleaseSynth = desc.hasGate && canFreeSynth;
+			hasFadeTimeControl = desc.controls.any { |x| x.name === \fadeTime };
 		};
 		if(proxy.isNeutral) { rate = \audio };
 		^proxy.initBus(rate)
@@ -238,12 +239,17 @@ SynthControl : AbstractPlayControl {
 
 	stopToBundle { | bundle, fadeTime |
 		if(nodeID.notNil) {
+
 			if(canReleaseSynth) {
-				bundle.addAll([['/error', -1], [15, nodeID, \gate, -1.0 - fadeTime, \fadeTime, fadeTime], ['/error', -2]]);
+				if(hasFadeTimeControl) {
+					bundle.addAll([['/error', -1], [15, nodeID, \fadeTime, fadeTime, \gate, 0], ['/error', -2]])
+				} {
+					bundle.addAll([['/error', -1], [15, nodeID, \gate, -1.0 - fadeTime.abs], ['/error', -2]])
+				}
 			} {
 				if(canFreeSynth.not) { //"/n_free"
 					bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);
-				};
+				}
 				// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;

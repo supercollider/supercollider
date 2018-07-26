@@ -22,4 +22,14 @@ TestInteger : UnitTest {
 		21.forBy(14.5, -3.125, { | i, j | forByArguments.add([i, j]); });
 		this.assertEquals(forByArguments, List[[21.0, 0], [17.875, 1], [14.75, 2]]);
 	}
+
+	test_forBy_nonIntegerOrFloatArguments_exception {
+		this.assertException({10.forBy("yellow", 1, { | i, j | i.postln; })}, PrimitiveFailedError);
+		this.assertException({1.forBy(10, [ 5 ], { | i, j | j.postln; })}, PrimitiveFailedError);
+	}
+
+	test_forBy_zeroStepValue_exception {
+		this.assertException({-1.forBy(20, 0, { | i, j | i.postln; })}, PrimitiveFailedError);
+		this.assertException({100.forBy(200, 0.0, { | i, j | j.postln; })}, PrimitiveFailedError);
+	}
 }

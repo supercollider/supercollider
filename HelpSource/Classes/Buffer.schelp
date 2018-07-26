@@ -483,7 +483,7 @@ The first frame of the soundfile to read. The default is 0, which is the beginni
 argument:: numFrames
 The number of frames to read. The default is -1, which will read the whole file.
 argument:: channels
-An Array of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided.
+An Array of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided. If absent or an empty array all channels will be read from soundfile in order.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 discussion::
