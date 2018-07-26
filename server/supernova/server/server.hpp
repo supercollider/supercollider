@@ -231,6 +231,16 @@ public:
         sc_osc_handler::set_last_now(lasts, nows);
     }
 
+	void compensate_latency(void)
+	{
+		sc_osc_handler::add_last_now(
+				time_tag::from_samples(
+					audio_backend::get_latency(),
+					audio_backend::get_samplerate()
+				)
+			);
+	}
+
 public:
     HOT void tick()
     {
@@ -310,6 +320,8 @@ inline void realtime_engine_functor::sync_clock(void)
         instance->set_last_now(oscTime,oscTime + oscInc);
     }else
         instance->update_time_from_system();
+
+	instance->compensate_latency();
 }
 
 

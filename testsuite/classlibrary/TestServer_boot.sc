@@ -12,10 +12,17 @@ TestServer_boot : UnitTest {
 
 	cycleNotify { |server|
 		// XXX: no efficient way to wait
+		// FIXME: supernova hangs here unless we resend notify in the while loop
 		server.notify_(false);
-		while { server.notified } { 0.1.wait };
+		while { server.notified } {
+			server.statusWatcher.sendNotifyRequest(false);
+			0.1.wait
+		};
 		server.notify_(true);
-		while { server.notified.not } { 0.1.wait };
+		while { server.notified.not } {
+			server.statusWatcher.sendNotifyRequest(true);
+			0.1.wait
+		};
 	}
 
 	test_waitForBoot {
@@ -59,6 +66,39 @@ TestServer_boot : UnitTest {
 		of.free;
 		s.quit;
 	}
+
+	test_rebootOffServer {
+		s.reboot;
+		this.wait({ s.serverRunning }, "server reboot failed.", 5);
+
+		this.assert(s.serverRunning,
+			"A turned-off server should be running after reboot."
+		);
+		s.quit;
+	}
+
+	test_rebootRunningServer {
+		var rebooted = false;
+
+		s.quit;
+		s.doWhenBooted {
+			// first boot OK, starting reboot from here
+			s.reboot {
+				s.doWhenBooted {
+					rebooted = true
+				}
+			};
+		};
+		s.boot;
+
+		this.wait({ rebooted }, "server reboot failed.", 5);
+
+		this.assert(s.serverRunning,
+			"A running server should be running again after reboot."
+		);
+		s.quit;
+	}
+
 
 	// test that setting notify=false, then notify=true doesn't cause ServerBoot to be run
 	test_notifyAndServerBootActions {

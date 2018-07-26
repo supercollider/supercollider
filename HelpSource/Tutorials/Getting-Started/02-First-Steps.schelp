@@ -104,7 +104,7 @@ code::
 
 Note also, having an extra semi-colon at the very end of the last piece of code does not hurt and is tolerated by SC for reasons of convenience. 
 
-A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by holding down the Command key, and pressing \ . The Command key is the one with the apple symbol on it.
+A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by holding down the Command key, and pressing \ . The Command key is the one with the ⌘ symbol on it.
 
 By convention this kind of key sequence is written Cmd - \
 

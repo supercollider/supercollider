@@ -91,7 +91,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
-			op3 = numTemps - *ip++ - 1; // get temp var index
+			op3 = *ip++; // get temp var index
 			if (op3 < numArgNames) {
 				post(" %02X %02X PushTempVarX '%s'\n", op2, op3,
 					slotRawSymbolArray(&block->argNames)->symbols[op3]->name);
@@ -107,7 +107,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
-			op2 = numTemps - *ip++ - 1; // get temp var index
+			op2 = *ip++; // get temp var index
 			if (op2 < numArgNames) {
 				post(" %02X	   PushTempZeroVarX '%s'\n", op2,
 					slotRawSymbolArray(&theBlock->argNames)->symbols[op2]->name);
@@ -197,15 +197,15 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			op2 = *ip++; // get extended special opcode
 			switch (op2) {
 				case opgProcess : // push thisProcess
-					post(" %02X    opgProcess\n", op1, op2); break;
+					post(" %02X    opgProcess\n", op2); break;
 				case opgThread : // push thisThread
-					post(" %02X    opgThread\n", op1, op2); break;
+					post(" %02X    opgThread\n", op2); break;
 				case opgMethod : // push thisMethod
-					post(" %02X    opgMethod\n", op1, op2); break;
+					post(" %02X    opgMethod\n", op2); break;
 				case opgFunctionDef : // push thisBlock
-					post(" %02X    opgFunctionDef\n", op1, op2); break;
+					post(" %02X    opgFunctionDef\n", op2); break;
 				case opgFunction : // push thisClosure
-					post(" %02X    opgFunction\n", op1, op2); break;
+					post(" %02X    opgFunction\n", op2); break;
 			}
 			break;
 
@@ -235,7 +235,7 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 			numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 			numTemps = numArgNames + numVarNames;
 
-			op3 = numTemps - *ip++ - 1; // get temp var index
+			op3 = *ip++; // get temp var index
 			if (op3 >= 0 && op3 < numArgNames) {
 				post(" %02X    PushTempVar '%s'\n", op3,
 					slotRawSymbolArray(&block->argNames)->symbols[op3]->name);
@@ -348,9 +348,8 @@ unsigned char* dumpOneByteCode(PyrBlock *theBlock, PyrClass* theClass, unsigned 
 		case 84 :  case 85 :  case 86 :  case 87 :
 		case 88 :  case 89 :  case 90 :  case 91 :
 		case 92 :  case 93 :  case 94 :  case 95 :
-			op2 = op1 & 15;
 			op3 = *ip++; // get class var index
-			post(" %02X %02X PushClassVar\n", op2, op3);
+			post(" %02X PushClassVar\n", op3);
 			break;
 
 		// PushSpecialValue

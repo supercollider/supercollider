@@ -2087,7 +2087,7 @@ void handle_s_getn(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr co
             break;
         if (!it->IsInt32())
             throw std::runtime_error("invalid count");
-        argument_count += it->AsInt32Unchecked(); ++it;
+        argument_count += it->AsInt32Unchecked();
     }
 
     size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;
@@ -2109,6 +2109,8 @@ void handle_s_getn(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr co
         if (control_count < 0)
             break;
 
+        p << control_count;
+        
         for (int i = 0; i != control_count; ++i)
             p << s->get(control + i);
     }
@@ -2357,8 +2359,9 @@ void handle_b_allocReadChannel(ReceivedMessage const & msg, endpoint_ptr endpoin
     size_t channel_count = 0;
     sized_array<uint, rt_pool_allocator<uint> > channels(channel_args);
 
-    // sclang formats the last completion message as int, so we skip the last element
-    for (uint i = 0; i != channel_args - 1; ++i)  {
+    // Any remaining Int arguments are channels, followed by an optional
+    // completion message.
+    for (uint i = 0; i < channel_args; ++i)  {
         if (arg->IsInt32()) {
             channels[i] = arg->AsInt32Unchecked(); arg++;
             ++channel_count;
@@ -2687,7 +2690,7 @@ void handle_b_set(ReceivedMessage const & msg)
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
     if( !data ) {
-        log_printf("/b_set called on unallocated buffer");
+        log_printf("/b_set called on unallocated buffer\n");
         return;
     }
 
@@ -2708,7 +2711,7 @@ void handle_b_setn(ReceivedMessage const & msg)
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
     if( !data ) {
-        log_printf("/b_setn called on unallocated buffer");
+        log_printf("/b_setn called on unallocated buffer\n");
         return;
     }
 
@@ -2734,7 +2737,7 @@ void handle_b_fill(ReceivedMessage const & msg)
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
     if( !data ) {
-        log_printf("/b_fill called on unallocated buffer");
+        log_printf("/b_fill called on unallocated buffer\n");
         return;
     }
 
@@ -2817,7 +2820,7 @@ void handle_b_get(ReceivedMessage const & msg, endpoint_ptr endpoint)
     const SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
     const sample * data = buf->data;
     if( !data ) {
-        log_printf("/b_get called on unallocated buffer");
+        log_printf("/b_get called on unallocated buffer\n");
         return;
     }
 
@@ -2874,7 +2877,7 @@ void handle_b_getn(ReceivedMessage const & msg, endpoint_ptr endpoint)
     const SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
     const sample * data = buf->data;
     if( !data ) {
-        log_printf("/b_getn called on unallocated buffer");
+        log_printf("/b_getn called on unallocated buffer\n");
         return;
     }
     const int max_sample = buf->frames * buf->channels;

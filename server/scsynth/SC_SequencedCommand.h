@@ -32,9 +32,7 @@
 #include "SC_World.h"
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
-#ifndef NO_LIBSNDFILE
-#include <sndfile.h>
-#endif
+#include "SC_SndFileHelpers.hpp"
 #include <new>
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)	\

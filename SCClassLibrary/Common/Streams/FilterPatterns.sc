@@ -271,26 +271,26 @@ Pstretch : FilterPattern {
 		^super.new(pattern).value_(value)
 	}
 	storeArgs { ^[value,pattern] }
-	embedInStream {  arg event;
+	embedInStream {  arg inevent;
 		var cleanup = EventStreamCleanup.new;
-		var inevent;
+		var event;
 		var val, delta;
 		var valStream = value.asStream;
 		var evtStream = pattern.asStream;
 
 		loop {
-			inevent = evtStream.next(event).asEvent;
-			if (inevent.isNil) { ^cleanup.exit(event) };
-			val = valStream.next(inevent);
-			if (val.isNil) { ^cleanup.exit(event) };
+			event = evtStream.next(inevent).asEvent;
+			if (event.isNil) { ^cleanup.exit(inevent) };
+			val = valStream.next(event);
+			if (val.isNil) { ^cleanup.exit(inevent) };
 
 			delta = event[\delta];
 			if (delta.notNil) {
-				inevent[\delta] = delta * val;
+				event[\delta] = delta * val;
 			};
-			inevent[\dur] = inevent[\dur] * val;
-			cleanup.update(inevent);
-			event = yield(inevent);
+			event[\dur] = event[\dur] * val;
+			cleanup.update(event);
+			inevent = yield(event);
 		}
 	}
 }
@@ -299,27 +299,27 @@ Pstretch : FilterPattern {
 
 Pstretchp : Pstretch {
 
-	embedInStream { arg event;
-		var evtStream, val, inevent, delta;
+	embedInStream { arg inevent;
+		var evtStream, val, event, delta;
 		var valStream = value.asStream;
 		while {
-			val = valStream.next(event);
+			val = valStream.next(inevent);
 			val.notNil
 		} {
 			evtStream = pattern.asStream;
 			while {
-				inevent = evtStream.next(event);
-				inevent.notNil
+				event = evtStream.next(inevent);
+				event.notNil
 			} {
-				delta = inevent[\delta];
+				delta = event[\delta];
 				if (delta.notNil) {
-					inevent[\delta] = delta * val;
+					event[\delta] = delta * val;
 				};
-				inevent[\dur] = inevent[\dur] * val;
-				event = inevent.yield;
+				event[\dur] = event[\dur] * val;
+				inevent = event.yield;
 			};
 		};
-		^event;
+		^inevent;
 	}
 }
 

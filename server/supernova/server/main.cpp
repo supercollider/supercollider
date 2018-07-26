@@ -242,20 +242,20 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
             }
         }
     } else {
-#ifdef __linux__
-        const path home = resolve_home();
-        std::vector<path> folders = { "/usr/local/lib/SuperCollider/plugins",
-                                      "/usr/lib" LIB_SUFFIX "/SuperCollider/plugins",
-                                      home / "/.local/share/SuperCollider/Extensions",
-                                      home / "share/SuperCollider/plugins" };
-
-        for (path const & folder : folders)
-            factory->load_plugin_folder(folder);
-#else
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / "plugins");
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) );
-        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) );
+#ifdef SC_PLUGIN_DIR
+        factory->load_plugin_folder(SC_PLUGIN_DIR);
 #endif
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME);
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension));
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension));
+        const char * env_plugin_path = getenv("SC_PLUGIN_PATH");
+        if (env_plugin_path) {
+            vector<std::string> directories;
+            boost::split(directories, env_plugin_path, boost::is_any_of(pathSeparator));
+            for (string const & path : directories) {
+                factory->load_plugin_folder(path);
+            }
+        }
     }
 
 #ifndef NDEBUG

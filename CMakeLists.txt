@@ -198,7 +198,7 @@ else()
     set(SC_IDE False)
   endif()
 endif (SC_QT)
-
+option(NO_X11 "Disables the building of plugins that require the X11 library (for UI-less compiles)" OFF)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
@@ -218,8 +218,6 @@ endif(WIN32)
 option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
-
-option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")

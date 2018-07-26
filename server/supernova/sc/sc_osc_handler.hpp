@@ -385,6 +385,12 @@ public:
         last = lasts;
     }
 
+	void add_last_now(time_tag const & add)
+	{
+		now += add;
+		last += add;
+	}
+
     void update_time_from_system(void)
     {
         now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());

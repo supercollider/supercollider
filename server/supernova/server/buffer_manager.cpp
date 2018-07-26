@@ -42,7 +42,7 @@ namespace
 
 SndfileHandle open_file(const char * file, std::size_t start_frame)
 {
-    SndfileHandle sndfile(file);
+    auto sndfile = makeSndfileHandle(file);
     if (!sndfile)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 
@@ -119,7 +119,7 @@ void buffer_wrapper::write_file(const char * file, const char * header_format, c
 
     format |= sample_format_tag;
 
-    SndfileHandle sndfile(file, SFM_WRITE, format, channels_, sample_rate_);
+    auto sndfile = makeSndfileHandle(file, SFM_WRITE, format, channels_, sample_rate_);
     if (!sndfile)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 

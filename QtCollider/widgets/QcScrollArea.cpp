@@ -95,14 +95,9 @@ QcScrollArea::QcScrollArea()
            this, SIGNAL(scrolled()) );
 }
 
-void QcScrollArea::setWidget( QObjectProxy *proxy )
+void QcScrollArea::setWidget( QWidget *widget )
 {
-  QWidget *w = qobject_cast<QWidget*>( proxy->object() );
-  if( !w ) {
-    qcErrorMsg( "QcScrollArea::setCanvas: given proxy does not contain a valid widget." );
-    return;
-  }
-  QScrollArea::setWidget( w );
+  QScrollArea::setWidget( widget );
   setWidgetResizable( true );
 }
 

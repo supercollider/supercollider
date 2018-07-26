@@ -1,7 +1,7 @@
 TITLE:: Tour of Special Functions
 SUMMARY:: Examples and plots for Boost Special Functions
 CATEGORIES:: Guides
-related:: Classes/Number
+related:: Classes/SimpleNumber
 KEYWORD:: special functions, boost
 
 
@@ -266,7 +266,7 @@ var plotSpecs = [
 	],
 	[   { |a, x, i| ibetaC(a, bs[i], x) },
 		[as, xs],
-		"ibetaC(a, b, x)\nCompliment of Incomplete Beta function (norm)\nbs=[1,2,5,7,9]  as=",
+		"ibetaC(a, b, x)\nComplement of Incomplete Beta function (norm)\nbs=[1,2,5,7,9]  as=",
 		0, 1
 	],
 	[   { |a, x, i| betaFull(a, bs[i], x) },
@@ -276,7 +276,7 @@ var plotSpecs = [
 	],
 	[   { |a, x, i| betaFullC(a, bs[i], x) },
 		[as, xs],
-		"betaFullC(a, b, x)\nCompliment of the Incomplete Beta function (non-norm)\nbs=[1,2,5,7,9]  as=",
+		"betaFullC(a, b, x)\nComplement of the Incomplete Beta function (non-norm)\nbs=[1,2,5,7,9]  as=",
 		0, 0.125
 	]
 ];
@@ -346,7 +346,7 @@ var plotSpecs = [
     ],
     [   \erfC,
         erfSamps,
-        "erfC(z)\nCompliment of the Error Function",
+        "erfC(z)\nComplement of the Error Function",
         0, 2
     ],
     [   \erfInv,
@@ -356,7 +356,7 @@ var plotSpecs = [
     ],
     [   \erfCInv,
         (0.001, 0.002 .. 1.999),
-        "erfCInv(z)\nInverse of the Compliment of the Error Function",
+        "erfCInv(z)\nInverse of the Complement of the Error Function",
         -3, 2
     ]
 ];

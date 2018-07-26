@@ -164,6 +164,12 @@ code::
 { SinOsc.ar(500 + LFPulse.ar(4).bipolar(40), 0, 0.5) * 0.1 }.play;
 ::
 
+method:: degrad
+Converts degrees to radians. This method multiplies the receiver's output by code::pi/180::.
+
+method:: raddeg
+Converts radians to degrees. This method multiplies the receiver's output by code::180/pi::.
+
 method:: clip
 Wraps the receiver in a link::Classes/Clip:: UGen, clipping its output at code::lo:: and code::hi::.
 

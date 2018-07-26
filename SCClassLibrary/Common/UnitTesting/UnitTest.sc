@@ -189,6 +189,49 @@ UnitTest {
 		}
 	}
 
+	assertException { | func, errorClass, message, report = true, onFailure, details |
+		var moreDetails = nil;
+		var passed = false;
+		errorClass = errorClass.asClass;
+
+		func.try { |error|
+			if(error.isKindOf(errorClass)) {
+				// Add extra info in case the class was an unexpected child type.
+				moreDetails = "Received exception of class '%', with message: '%'".format(
+					error.class.name,
+					error.errorString
+				);
+				passed = true;
+			} {
+				moreDetails = "Received exception of class '%', with message: '%'\nExpected class '%'".format(
+					error.class.name,
+					error.errorString,
+					errorClass.name
+				);
+			}
+		};
+
+		moreDetails = moreDetails ?? { "Function did not throw an exception" };
+		if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
+		^this.assert(passed, message, report, onFailure, details);
+	}
+
+	assertNoException { | func, message, report = true, onFailure, details |
+		var moreDetails;
+		var passed = true;
+
+		func.try { |error|
+			moreDetails = "Function threw an exception of class '%', with message: '%'".format(
+				error.class.name,
+				error.errorString
+			);
+			if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
+			passed = false;
+		};
+		^this.assert(passed, message, report, onFailure, details)
+	}
+
+
 	// make a further assertion only if it passed, or only if it failed
 	ifAsserts { | boolean, message, ifPassedFunc, ifFailedFunc, report = true|
 		if(boolean.not,{

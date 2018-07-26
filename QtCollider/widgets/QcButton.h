@@ -20,6 +20,7 @@
 ************************************************************************/
 
 #include "../QcHelper.h"
+#include "QcMenu.h"
 #include "../style/style.hpp"
 
 #include <QPushButton>
@@ -30,11 +31,14 @@ class QcButton : public QPushButton, QcHelper, QtCollider::Style::Client
   Q_PROPERTY( QVariantList states READ dummyVariantList WRITE setStates );
   Q_PROPERTY( int value READ getValue WRITE setValue );
   Q_PROPERTY( QColor focusColor READ focusColor WRITE setFocusColor );
-
+  Q_PROPERTY( QcMenu* menu READ qcmenu WRITE setQcMenu );
+  Q_PROPERTY( const QtCollider::SharedImage& icon READ icon WRITE setIcon);
+  
   public:
     QcButton();
   Q_SIGNALS:
     void action(int);
+  
   protected:
 #ifdef Q_WS_MAC
     bool hitButton( const QPoint & ) const;
@@ -51,6 +55,13 @@ class QcButton : public QPushButton, QcHelper, QtCollider::Style::Client
     void setStates( const QVariantList & );
     void setValue( int val ) { setState( val ); }
     int getValue() const { return currentState; }
+
+    void setQcMenu(QcMenu* menu);
+    QcMenu* qcmenu() const;
+
+    QtCollider::SharedImage icon() { return QtCollider::SharedImage(); }
+    void setIcon(const QtCollider::SharedImage & image);
+
     void setState( int );
     void cycleStates();
     QList<State> states;

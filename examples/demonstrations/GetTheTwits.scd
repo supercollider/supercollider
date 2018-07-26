@@ -5,8 +5,8 @@
 // =====================================================================
 
 // NOTE: to use this script you need to have installed the Quark: XML
-// See the Quarks helpfile on how to install this Quark.
-// You also need to have "curl" installed on your system.
+
+Quarks.install("XML");
 
 (
 var p, a, l, d, doc;

@@ -18,13 +18,13 @@ static bool AlwaysShowScrollbars() {
   return QtCollider::Mac::AlwaysShowScrollbars();
 
 #elif defined(Q_OS_X11)
-  return !QcApplication::SystemHasMouseWheel();
+  return true;
 
 #elif defined(Q_OS_WIN)
-  return !QcApplication::SystemHasMouseWheel();
+  return true;
 
 #else
-  return !QcApplication::SystemHasMouseWheel();
+  return true;
 #endif
 };
 

@@ -2,17 +2,22 @@
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-find_package(Qt5Core)
-find_package(Qt5Concurrent)
-find_package(Qt5LinguistTools)
-# find_package(Qt5OpenGL)
-find_package(Qt5PrintSupport)
-find_package(Qt5Qml)
-find_package(Qt5Quick)
-find_package(Qt5Sql)
-find_package(Qt5WebEngine)
-find_package(Qt5WebEngineWidgets)
-find_package(Qt5Widgets)
+find_package(
+    Qt5 ${REQUIRED_QT_VERSION}
+    COMPONENTS
+    Core
+    Concurrent
+    LinguistTools
+    # OpenGL
+    PrintSupport
+    Qml
+    Quick
+    Sql
+    WebEngine
+    WebEngineWidgets
+    Widgets
+    REQUIRED
+)
 
 set(QT_IDE_LIBRARIES
     # Qt5::OpenGL

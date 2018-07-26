@@ -244,3 +244,7 @@ if(${LIB_SUFFIX})
 else()
     add_definitions(-DLIB_SUFFIX="")
 endif()
+
+if(UNIX AND NOT APPLE)
+    target_compile_definitions(libsupernova PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
+endif()

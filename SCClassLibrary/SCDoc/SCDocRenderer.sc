@@ -232,6 +232,7 @@ SCDocHTMLRenderer {
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
+		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
@@ -261,8 +262,8 @@ SCDocHTMLRenderer {
 		stream << "</div>";
 
 		stream
-		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
+		<< "<div class='contents'>\n"
 		<< "<div class='header'>\n";
 
 		if(thisIsTheMainHelpFile.not) {
@@ -430,7 +431,7 @@ SCDocHTMLRenderer {
 					args2 = m2.argNames !? {m2.argNames[1..]};
 				};
 				maxargs.do {|i|
-					var a = args2[i];
+					var a = args2 !? args2[i];
 					var b = lastargs[i];
 					if(a!=b and: {a!=nil} and: {b!=nil}) {
 						methArgsMismatch = true;

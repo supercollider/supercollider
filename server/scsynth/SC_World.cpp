@@ -596,7 +596,8 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	sndfileFormatInfoFromStrings(&outputFileInfo,
 		inOptions->mNonRealTimeOutputHeaderFormat, inOptions->mNonRealTimeOutputSampleFormat);
 
-	world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
+	world->hw->mNRTOutputFile = sndfileOpenFromCStr(
+		inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
 	sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, NULL, SF_TRUE);
 
 	if (!world->hw->mNRTOutputFile)
@@ -605,7 +606,8 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	outputFileBuf = (float*)calloc(1, world->mNumOutputs * fileBufFrames * sizeof(float));
 
 	if (inOptions->mNonRealTimeInputFilename) {
-		world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
+		world->hw->mNRTInputFile = sndfileOpenFromCStr(
+			inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
 		if (!world->hw->mNRTInputFile)
 			throw std::runtime_error("Couldn't open non real time input file.\n");
 

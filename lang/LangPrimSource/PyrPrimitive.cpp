@@ -4306,11 +4306,6 @@ void initLIDPrimitives();
 void initSerialPrimitives();
 	initSerialPrimitives();
 
-#ifdef HAVE_WII
-void initWiiPrimitives();
-	initWiiPrimitives();
-#endif
-
 #endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
@@ -4320,11 +4315,6 @@ void initCoreAudioPrimitives();
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
-#endif
-
-#ifdef __APPLE__
-	void initSpeechPrimitives();
-		initSpeechPrimitives();
 #endif
 
 #ifdef SC_QT
