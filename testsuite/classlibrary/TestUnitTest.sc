@@ -1,14 +1,10 @@
 
 TestUnitTest : UnitTest {
 
-	var someVar, setUp = false, toreDown = false;
+	var someVar, setUp = false;
 
 	setUp {
 		setUp = true;
-	}
-
-	tearDown {
-		toreDown = true;
 	}
 
 	test_setUp {
