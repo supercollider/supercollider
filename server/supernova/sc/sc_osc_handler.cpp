@@ -2087,7 +2087,7 @@ void handle_s_getn(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr co
             break;
         if (!it->IsInt32())
             throw std::runtime_error("invalid count");
-        argument_count += it->AsInt32Unchecked(); ++it;
+        argument_count += it->AsInt32Unchecked();
     }
 
     size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;
@@ -2109,6 +2109,8 @@ void handle_s_getn(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr co
         if (control_count < 0)
             break;
 
+        p << control_count;
+        
         for (int i = 0; i != control_count; ++i)
             p << s->get(control + i);
     }
