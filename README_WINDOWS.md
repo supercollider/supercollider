@@ -155,37 +155,6 @@ supercollider language ('sclang'), the help system will likely open with the pag
 explaining that term. Of course there is also the menu entry 'Help' -> 'Show
 Help Browser'.
 
-
-Using SuperCollider in command line mode
-----------------------------------------
-
-**This is currently unsupported.**
-
-1. Open a Windows command line window (the cmd.exe program).
-
-2. Navigate to the SuperCollider installation folder.
-
-3. Start up the `sclang.exe` program to enter the SuperCollider command line.
-
-4. You can now type SuperCollider code and evaluate it by pressing
-the Enter (Return) key. You can browse the previous commands using
-the up and down arrow keys.
-
-5. Important keyboard shortcuts:
-
-      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run
-      `Ctrl+x`: recompile the class library
-      `Ctrl+d`: quit the SuperCollider command line
-
-The interface uses the GNU library [Readline][Readline doc].
-
-If you want to use SC Help outside of the IDE, you must generate the help
-files first by running `SCDoc.renderAll`. Help files will by default
-be created in the 'user application support directory' (see below). Usually
-the html-files are aggregated with each help-file opened. With this command all
-files are generated at once.
-
-
 Configuration- and support files
 --------------------------------
 
@@ -275,11 +244,11 @@ Required components:
 - **[Git][Git]** for Windows
 - **[CMake][cmake]** >= 3.7.2. You will need at least this version to generate project files for
   VS2017. 3.5 is the absolute supported minimum.
-- **[Visual Studio 14 2017][VS2017]**. 2015 is also supported.
+- **[Visual Studio 15 2017][VS2017]** with C++ core features. VS2015 is also supported.
 - **[Qt][Qt]** >= 5.7 or later. We recommend using the latest version. Use the package `msvc2017_64`
   (or `msvc2015_64`) for a 64-bit build, `msvc2015` for 32-bit (VS2015 and 2017 are both compatible
   with this 32-bit distribution).
-- **[libsndfile][libsndfile]** >= 1.0.25
+- **[libsndfile][libsndfile]** >= 1.0.25.
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
 Optional, but highly recommended:
@@ -289,8 +258,6 @@ Optional, but highly recommended:
 
 Optional components:
 
-- **[readline][readline]** for command-line support. However, this is currently
-  non-functional.
 - **DirectX SDK** [v.9][dx9sdk] for Direct Sound support in Portaudio
 - **[NSIS][nsis]** to create an installation executable. Make sure to add
   `makensis` to your `PATH`!
@@ -325,17 +292,14 @@ SDK; for DSound, install the DirectX SDK (see the preceding section).
 from headaches if CMake cannot find them for whatever reason.
 
 Create a new folder next to where you cloned SuperCollider. If you're making a
-32-bit build, call it `x86`; use `x64` for 64-bit. Move the installed files of
-`libsndfile` and the libraries for `readline` and `fftw` so that they match
-the following folder structure *exactly*:
+32-bit build, call it `x86`; use `x64` for 64-bit. Next, move the installed
+files of `libsndfile` (by default, placed in `C:\Program Files\Mega-Nerd\libsndfile`)
+and the library for `fftw` so that they match the
+following folder structure *exactly*:
 
     supercollider
     x64 (or x86)
         libsndfile
-            bin
-            include
-            lib
-        readline
             bin
             include
             lib
@@ -576,8 +540,8 @@ the walkthrough 'Avoiding the command line: From CMake-Gui to Visual Studio'.
 The aspects relating to environment settings are relevant for other use cases
 as well)
 - study the file CMakeCache.txt in the root build folder. The quickest way to
-find the relevant entries is by searching for the library names (readline,
-sndfile, fftw and Qt5). Look for paths pointing to headers (include_dir),
+find the relevant entries is by searching for the library names (sndfile,
+fftw and Qt5). Look for paths pointing to headers (include_dir),
 (import-) libraries, dll's and dll-directories.
 
 You can change build settings both in CMake-Gui and by editing CMakeCache.txt.
@@ -886,17 +850,17 @@ additional values. After the configuration CMake-Gui will present you with a
 long list of cmake variables alongside with the values assigned to them as
 stored in the cache. In the box at the bottom you can scroll through the output
 CMake produced during configuration and analyse it. At this stage it is good to
-scroll through the central pane and check for the paths related to the "smaller"
-libraries (libsndfile, fftw (and readline, you want to work on that)) and the
-Qt5 related paths. Do they fit the locations we expect? If not, you may try to
-correct it in the window presented. On the other hand, errors in this stage are
-more likely to be caused by conflicts with your system settings, typos in paths
-or the like. In that case it is better to fix the error at its root, as such
-mistakes are likely to cause build errors later on. Common causes are
-conflicting Qt and MinGW installs, or alternative versions of the smaller
-dependencies that were detected by CMake. In that case you will have to work
-out, how to correct things while both keeping your overall system functional,
-and allowing for a successful SC build.
+scroll through the central pane and check for the paths related to the
+"smaller" libraries (libsndfile, fftw) and the Qt5 related paths. Do they fit
+the locations we expect? If not, you may try to correct it in the window
+presented. On the other hand, errors in this stage are more likely to be caused
+by conflicts with your system settings, typos in paths or the like. In that
+case it is better to fix the error at its root, as such mistakes are likely to
+cause build errors later on. Common causes are conflicting Qt and MinGW
+installs, or alternative versions of the smaller dependencies that were
+detected by CMake. In that case you will have to work out, how to correct
+things while both keeping your overall system functional, and allowing for a
+successful SC build.
 
 If everything looks okay, you need to hit "generate" to create the files used to
 build by VS. CMake-Gui introduces a distinction between 'configure' and
@@ -1149,9 +1113,9 @@ Commonly used variables to modify the build configuration are:
       -DINSTALL_HELP=OFF
 
 * Server-only: Currently there is no straightforward way to build server-only.
-  Even if you mark only the server target (and the plugins), sclang is pulled in
-  as well. So a bit of patience is required. You can turn off Qt (`-DSC_QT=OFF`)
-  and skip Readline, to save on the dependencies. To make it easier to assemble a
+  Even if you mark only the server target (and the plugins), sclang is pulled
+  in as well. So a bit of patience is required. You can turn off Qt
+  (`-DSC_QT=OFF`) to save on the dependencies. To make it easier to assemble a
   server bundle, the custom target "install_server_only" is provided. It can be
   used in place of the comprehensive "install". The custom target will copy
   scsynth's target folder and run fixup_bundle on scsynth to pull in required
@@ -1244,8 +1208,7 @@ CMake:
     set QT_PREFIX_PATH=%QT_HOME%/%QT_FLAVOUR%
     set SNDFILE_PREFIX_PATH="C:/Program Files/nerd/libsndfile"
     set FFTW_PREFIX_PATH=%USERPROFILE%/fftw
-    set READLINE_PREFIX_PATH=D:/scdeps/x64/readline
-    set CMAKE_PREFIX_PATH=%QT_PREFIX_PATH%;%SNDFILE_PREFIX_PATH%;%FFTW_PREFIX_PATH%;%READLINE_PREFIX_PATH%
+    set CMAKE_PREFIX_PATH=%QT_PREFIX_PATH%;%SNDFILE_PREFIX_PATH%;%FFTW_PREFIX_PATH%
     cmake --build .
     start Supercollider.sln
 
@@ -1272,7 +1235,7 @@ The following libraries and tools were used to build the Windows installers
 Known issues
 ============
 
-- READLINE/Command line-mode is not available.
+- READLINE/Command line-mode for sclang is not available.
 
 - Supernova is not available.
 
@@ -1307,8 +1270,6 @@ software publicly and freely available.
 [NSIS]: http://nsis.sourceforge.net/Download (create installer)
 [portaudio]: http://www.portaudio.com/
 [Qt]: http://www.qt.io/download-open-source/#section-2 (Qt official distribution, choose online installer)
-[readline]: http://gnuwin32.sourceforge.net/packages/readline.htm
-[readline doc]: https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 [SC]: https://supercollider.github.io (Main SC-site)
 [SC mailing lists]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 [SC repo]: https://github.com/supercollider/supercollider (SC source repository on Github with issue tracker)
