@@ -860,14 +860,17 @@ Plotter {
 
 + Buffer {
 	plot { |name, bounds, minval, maxval, separately = false|
-		var plotter;
+		var plotter, selector;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
+		selector = if(server.isLocal) { \loadToFloatArray } { \getToFloatArray };
+
 		plotter = [0].plot(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
 			bounds, minval: minval, maxval: maxval
 		);
-		this.loadToFloatArray(action: { |array, buf|
+
+		this.perform(selector, action: { |array, buf|
 			{
 				plotter.setValue(
 					array.unlace(buf.numChannels),
