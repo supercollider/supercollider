@@ -246,7 +246,8 @@ TestBuffer : UnitTest {
 	}
 
 	test_getToFloatArray {
-		var server, data;
+		var server, data, condition, inTime = false;
+		condition = Condition.new;
 		this.bootServer;
 		server = Server.default;
 		data = [1.0, 5.0, 3.0, [9.0, -9.0], 2.0];
@@ -256,11 +257,22 @@ TestBuffer : UnitTest {
 		}.asBuffer(0.2, server, { |buffer|
 
 			buffer.getToFloatArray(0, data.size * 2, action: { |array|
+				condition.unhang;
 				this.assertEquals(array.as(Array), data.flop.lace,
 					"getToFloatArray should get correct data"
-				)
+				);
+				inTime = true;
 			})
-		})
+		});
+
+		fork {
+			3.wait;
+			condition.unhang;
+		};
+
+		condition.hang;
+
+		this.assert(inTime, "reply should happen in time (within less than 3 seconds)")
 
 
 	}
