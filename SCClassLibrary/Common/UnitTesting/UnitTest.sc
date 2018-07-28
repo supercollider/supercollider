@@ -319,10 +319,6 @@ UnitTest {
 
 	// private - use TestYourClass.run
 
-	run { | reset = true, report = true|
-		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\run))
-	}
-
 	*forkIfNeeded { |function|
 		function.forkIfNeeded(AppClock)
 	}
