@@ -811,12 +811,15 @@ Plotter {
 
 + Function {
 	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
-		var name = this.asCompileString, plotter;
+
+		var name = this.asCompileString, plotter, selector;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
+		target = target.asTarget;
+		selector = if(target.server.isLocal) { \loadToFloatArray } { \getToFloatArray };
 
-		this.getToFloatArray(duration, target, { |array, buf|
+		this.perform(selector, duration, target, action: { |array, buf|
 			var numChan = buf.numChannels;
 			{
 				plotter.setValue(
