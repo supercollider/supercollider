@@ -8,41 +8,46 @@
 
 TestSerialPort : UnitTest {
 
+	var skipSerialTests;
 	var input;
 	var output;
 
 	const kBufferSize = 8192;
 
 	setUp {
+		if(this.skipSerialTests) { ^this };
 		#input, output = this.createPorts();
 	}
 
 	tearDown {
+		if(this.skipSerialTests) { ^this };
 		this.destroyPorts();
+	}
+
+	// Return true if we are on Windows or socat is not installed.
+	// This method memoizes its results.
+	skipSerialTests {
+		if(skipSerialTests.notNil) {
+			^skipSerialTests;
+		};
+		skipSerialTests = false;
+		if(thisProcess.platform.name == \windows) {
+			skipSerialTests = true;
+		};
+		if("which socat".systemCmd != 0) {
+			"Skipping SerialPort tests because socat is not installed.".warn;
+			skipSerialTests = true;
+		};
+		^skipSerialTests;
 	}
 
 	// Create a pair of virtual serial ports and return their names
 	createPorts {
-		if(thisProcess.platform.name === \windows) {
-			^this.createCom0comPorts();
-		} {
-			^this.createSocatPorts();
-		};
+		^this.createSocatPorts();
 	}
 
 	destroyPorts {
-		if(thisProcess.platform.name === \windows) {
-			Error("Not yet implemented").throw;
-		} {
-			"killall socat".unixCmdGetStdOut();
-		};
-	}
-
-	createCom0comPorts {
-		var cmd = "\"C:/Porgram Files (x86)/com0com/setupc.exe install Portname=CNC0A Portname=CNC0B";
-		var res = cmd.unixCmd;
-		res.postln;
-		^["CNCA0", "CNCB0"];
+		"killall socat".unixCmdGetStdOut();
 	}
 
 	createSocatPorts {
@@ -79,13 +84,18 @@ TestSerialPort : UnitTest {
 	// ----------- tests -----------------------------------------------------------------------------------------
 
 	test_open_onExistingDevice_defaultArgs {
-		var port = this.mkPort(input);
+		var port;
+		if(this.skipSerialTests) { ^this };
+
+		port = this.mkPort(input);
 		this.assert(port.isOpen);
 		port.close();
 	}
 
 	// TODO: use assertException
 	test_open_onMissingDevice {
+		if(this.skipSerialTests) { ^this };
+
 		try {
 			SerialPort("/dev/doesnt_exist")
 		} { |e|
@@ -96,14 +106,20 @@ TestSerialPort : UnitTest {
 	}
 
 	test_close {
-		var port = this.mkPort(input);
+		var port;
+		if(this.skipSerialTests) { ^this };
+
+		port = this.mkPort(input);
 		port.close();
 		this.assert(port.isOpen.not);
 	}
 
 	test_connectionLost {
-		var in = this.mkPort(input);
-		var cond = Condition();
+		var in, cond;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
+		cond = Condition();
 		this.destroyPorts();
 
 		fork { 3.wait; cond.test_(true) };
@@ -113,17 +129,22 @@ TestSerialPort : UnitTest {
 	}
 
 	test_next_noData_producesNil {
-		var port = this.mkPort(input);
+		var port;
+		if(this.skipSerialTests) { ^this };
+
+		port = this.mkPort(input);
 		this.assertEquals(port.next, nil);
 		port.close();
 	}
 
 	test_putAndNext_oneByte {
-		var in = this.mkPort(input);
-		var out = this.mkPort(output);
-		var result = nil;
-		var rout;
-		var cond = Condition();
+		var in, out, result, rout, cond;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
+		out = this.mkPort(output);
+		result = nil;
+		cond = Condition();
 
 		out.put($a);
 
@@ -144,11 +165,14 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAndNext_twoBytes {
-		var in = this.mkPort(input);
-		var out = this.mkPort(output);
-		var result = nil;
-		var rout;
-		var cond = Condition();
+		var in, out, result, rout, cond;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
+		out = this.mkPort(output);
+		result = nil;
+		rout;
+		cond = Condition();
 
 		out.put($a);
 		out.put($b);
@@ -171,12 +195,15 @@ TestSerialPort : UnitTest {
 	}
 
 	test_putAndRead_oneByte {
-		var in = this.mkPort(input);
-		var out = this.mkPort(output);
+		var in, out, rout, cond, result;
+		if(this.skipSerialTests) { ^this };
 
-		var rout;
-		var cond = Condition();
-		var result = nil;
+		in = this.mkPort(input);
+		out = this.mkPort(output);
+
+		rout;
+		cond = Condition();
+		result = nil;
 
 		out.put($a);
 		rout = fork { result = in.read; cond.test_(true).signal };
@@ -190,41 +217,50 @@ TestSerialPort : UnitTest {
 	}
 
 	test_rxErrors_noDataSent_isZero {
-		var in = this.mkPort(input);
+		var in;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
 		this.assertEquals(in.rxErrors, 0);
 		in.close();
 	}
 
-	test_rxErrors_bufferOverflow {
-		var in = this.mkPort(input);
-		var out = this.mkPort(output);
-		var cond = Condition();
-		var rxErrs = 0;
+	// test_rxErrors_bufferOverflow {
+	// 	var in, out, cond, rxErrs;
+	// 	if(this.skipSerialTests) { ^this };
 
-		// Overflow the buffer by exactly 1
-		for(0, kBufferSize) { |i|
-			out.put($a);
-			0.000001.wait;
-		};
+	// 	in = this.mkPort(input);
+	// 	out = this.mkPort(output);
+	// 	cond = Condition();
+	// 	rxErrs = 0;
 
-		"meow".postln;
-		fork { 3.wait; cond.test_(true).signal };
+	// 	// Overflow the buffer by exactly 1
+	// 	for(0, kBufferSize) { |i|
+	// 		out.put($a);
+	// 		0.000001.wait;
+	// 	};
 
-		// spin until all data has been read
-		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
+	// 	"meow".postln;
+	// 	fork { 3.wait; cond.test_(true).signal };
 
-		this.assertEquals(rxErrs, 1);
+	// 	// spin until all data has been read
+	// 	while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
 
-		in.close();
-		out.close();
-	}
+	// 	this.assertEquals(rxErrs, 1);
+
+	// 	in.close();
+	// 	out.close();
+	// }
 
 	test_putAll {
-		var in = this.mkPort(input);
-		var out = this.mkPort(output);
-		var result = nil;
-		var rout;
-		var cond = Condition();
+		var in, out, result, rout, cond;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
+		out = this.mkPort(output);
+		result = nil;
+		rout;
+		cond = Condition();
 
 		out.putAll("Hello");
 
@@ -250,9 +286,12 @@ TestSerialPort : UnitTest {
 	}
 
 	test_doneAction_onNormalClose {
-		var in = this.mkPort(input);
-		var ranAction = false;
-		var cond = Condition();
+		var in, ranAction, cond;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
+		ranAction = false;
+		cond = Condition();
 
 		in.doneAction_ {
 			ranAction = true;
@@ -268,9 +307,12 @@ TestSerialPort : UnitTest {
 
 
 	test_doneAction_onConnectionLost {
-		var in = this.mkPort(input);
-		var ranAction = false;
-		var cond = Condition();
+		var in, ranAction, cond;
+		if(this.skipSerialTests) { ^this };
+
+		in = this.mkPort(input);
+		ranAction = false;
+		cond = Condition();
 
 		in.doneAction_ {
 			ranAction = true;
