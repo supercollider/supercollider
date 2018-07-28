@@ -56,12 +56,11 @@ the wild." These are standards the community has agreed upon for new UGens:
     - `throw`/`catch`: use return codes instead.
     - `dynamic_cast`
     - System calls. These are complicated to handle and require use of an NRT thread.
-  - Any calls to `RTAlloc` should be protected from `RTAlloc` returning a null pointer. This usually happens when there
-    isn't enough real-time memory left, and results in a **server crash** if the code is not protected from attempts to
-    read from an unallocated buffer.
+  - Any calls to `RTAlloc` should check the result for `NULL`. This usually happens when there
+    isn't enough real-time memory left. The server will crash if this check is not made.
   - The Ctor sample should be initialized. If this is not done, very nasty bugs can occur.
-  - Zap dangerous values (subnormals, infinities, nans) in feedback loops to 0. SC provides a `zapgremlins` function
-    that does this for you.
+  - Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero. SC provides a
+    `zapgremlins` function that does this for you.
 - **Utility:**
   - UGens should have both `.ar` and `.kr` methods if applicable.
   - Sample rate and block size independence should be maintained if applicable. For example, audio UGens shouldn't sound
