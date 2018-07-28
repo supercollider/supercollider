@@ -281,6 +281,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
+	var pidReleaseCondition;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -339,6 +340,8 @@ Server {
 
 		this.name = argName;
 		all.add(this);
+
+		pidReleaseCondition = Condition({ this.pid == nil });
 
 		Server.changed(\serverAdded, this);
 
@@ -528,15 +531,16 @@ Server {
 				.postf(this, newMaxLogins);
 			};
 		};
-
-		if (newClientID == clientID) {
-			"%: keeping clientID (%) as confirmed by server process.\n"
-			.postf(this, newClientID);
-		} {
-			"%: setting clientID to %, as obtained from server process.\n"
-			.postf(this, newClientID);
+		if (newClientID.notNil) {
+			if (newClientID == clientID) {
+				"%: keeping clientID (%) as confirmed by server process.\n"
+				.postf(this, newClientID);
+			} {
+				"%: setting clientID to %, as obtained from server process.\n"
+				.postf(this, newClientID);
+			};
+			this.clientID = newClientID;
 		};
-		this.clientID = newClientID;
 	}
 
 	prHandleNotifyFailString {|failString, msg|
@@ -885,13 +889,41 @@ Server {
 				this.quit;
 				this.boot;
 			}, {
-				this.bootServerApp({
-					if(startAliveThread) { statusWatcher.startAliveThread }
-				})
+				this.prWaitForPidRelease {
+					this.bootServerApp({
+						if(startAliveThread) { statusWatcher.startAliveThread }
+					})
+				};
 			}, 0.25);
 		}
 	}
 
+	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
+		var waiting = true;
+		if (this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
+			onComplete.value;
+			^this
+		};
+
+		// FIXME: quick and dirty fix for supernova reboot hang on macOS:
+		// if we have just quit before running server.boot,
+		// we wait until server process really ends and sets its pid to nil
+		SystemClock.sched(timeout, {
+			if (waiting) {
+				pidReleaseCondition.unhang
+			}
+		});
+
+		forkIfNeeded {
+			pidReleaseCondition.hang;
+			if (pidReleaseCondition.test.value) {
+				waiting = false;
+				onComplete.value;
+			} {
+				onFailure.value
+			}
+		}
+	}
 
 	// FIXME: recover should happen later, after we have a valid clientID!
 	// would then need check whether maxLogins and clientID have changed or not,
@@ -908,6 +940,9 @@ Server {
 	}
 
 	prOnServerProcessExit { |exitCode|
+		pid = nil;
+		pidReleaseCondition.signal;
+
 		"Server '%' exited with exit code %."
 			.format(this.name, exitCode)
 			.postln;
@@ -1002,7 +1037,8 @@ Server {
 			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
-		pid = nil;
+		// let server process reset pid to nil!
+		// pid = nil;
 		sendQuit = nil;
 		maxNumClients = nil;
 
