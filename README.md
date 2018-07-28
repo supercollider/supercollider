@@ -3,9 +3,14 @@
 
 **SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
 
-- scsynth, a real-time audio server, forms the core of the platform. It features 400+ unit generators ("UGens") for analysis, synthesis, and processing. Some of the audio techniques it supports include additive synthesis, subtractive, FM, granular, FFT, and physical modeling. You can write your own UGens in C++, and users have already contributed several hundred more to the sc3-plugins repository.
-- sclang, an interpreted programming language, controls scsynth via Open Sound Control. You can use sclang for algorithmic sequencing, connecting your app to external hardware including MIDI controllers, or writing GUIs and visual displays. sclang has a stock of user-contributed extensions called Quarks.
-- scide is an editor for sclang with an integrated help system.
+- **scsynth**, a real-time audio server with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing
+- **supernova**, an alternative to scsynth with support for parallel DSP on multi-core processors
+- **sclang**, an interpreted programming language that controls scsynth
+- **scide**, an editing environment for sclang with an integrated help system
+
+sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
+
+SuperCollider is written in C++11 using several third-party libraries, including Qt and Boost.
 
 Install
 -------
@@ -19,19 +24,23 @@ To get the latest stable version, Linux users will need to build SuperCollider t
 Learn
 -----
 
-The official SC docs can be viewed in the SuperCollider IDE's built-in help viewer. A copy is also hosted online at [doc.sccode.org](http://doc.sccode.org/).
+The official docs can be viewed in the SuperCollider IDE's built-in documentation browser. You can also view them online at [doc.sccode.org](http://doc.sccode.org/).
 
-We recommend the following third-party tutorials:
+We recommend the following resources for learning SC:
 
 - [A Gentle Introduction to SuperCollider](https://works.bepress.com/bruno-ruviaro/3/), a free ebook by Bruno Ruviaro
 - [Eli Fieldsteel's video tutorials](https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC)
+- [Getting Started with SC](http://doc.sccode.org/Tutorials/Getting-Started/00-Getting-Started-With-SC.html)
+- [SCCode.org](http://sccode.org/), a repository of user-submitted examples
 
 Discuss
 -------
 
 You can [sign up for mailing lists][list signup], and view the archives for [sc-users][sc-users archives] and [sc-dev][sc-dev archives].
 
-We also have a [forum][Discourse] and a [Slack][Slack].
+We also have a [forum][Discourse] and a [Slack chat][Slack].
+
+Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to all the above communities.
 
 [list signup]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 [sc-users archives]: https://www.listarc.bham.ac.uk/lists/sc-users/
