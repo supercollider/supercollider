@@ -94,5 +94,28 @@ TestString : UnitTest {
 		this.assertEquals("dir" +/+ 'file', "dir%file".format(sep));
 	}
 
-}
+	test_asSecs_stringDddHhMmSsSss_convertsToSeconds {
+		var result = "001:01:01:01.001".asSecs;
+		var expected = 90061.001;
+		this.assertEquals(result, expected);
+	}
 
+	test_asSecs_stringSsSss_convertsToSeconds {
+		var result = "01.001".asSecs;
+		var expected = 1.001;
+		this.assertEquals(result, expected);
+	}
+
+	test_asSecs_stringMmSs_convertsToSeconds {
+		var result = "01:01".asSecs;
+		var expected = 61.0;
+		this.assertEquals(result, expected);
+	}
+
+	test_asSecs_stringSs_convertsToSeconds {
+		var result = "01".asSecs;
+		var expected = 1.0;
+		this.assertEquals(result, expected);
+	}
+
+}
