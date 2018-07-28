@@ -248,8 +248,12 @@ TestBuffer : UnitTest {
 	test_getToFloatArray {
 		var server, data, condition, inTime = false;
 		condition = Condition.new;
-		this.bootServer;
-		server = Server.default;
+
+		server = Server(this.class.name);
+		this.bootServer(server);
+		server.notify;
+		server.sync;
+
 		data = [1.0, 5.0, 3.0, [9.0, -9.0], 2.0];
 
 		{
@@ -272,8 +276,9 @@ TestBuffer : UnitTest {
 
 		condition.hang;
 
-		this.assert(inTime, "reply should happen in time (within less than 3 seconds)")
+		this.assert(inTime, "reply should happen in time (within less than 3 seconds)");
 
+		server.quit.remove;
 
 	}
 
