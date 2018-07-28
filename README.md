@@ -1,7 +1,5 @@
-[SuperCollider](https://supercollider.github.io/) [![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider) [![Appveyor](https://ci.appveyor.com/api/projects/status/github/supercollider/supercollider?branch=develop&svg=true)](https://ci.appveyor.com/project/brianlheim/supercollider-mu8dk) | [Join us on Slack][Slack]
+[SuperCollider](https://supercollider.github.io/) [![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider) [![Appveyor](https://ci.appveyor.com/api/projects/status/github/supercollider/supercollider?branch=develop&svg=true)](https://ci.appveyor.com/project/brianlheim/supercollider-mu8dk)
 =========================
-
-[Slack]: https://join.slack.com/t/scsynth/shared_invite/enQtMzk3OTY3MzE0MTAyLWY1ZGE1MTJjYmI5NTRkZjFmNjZmNmYxOWI0NDZkNjdkMzdkNjgxNTJhZGVlOTEwYjdjMDY5OWM0ZTA4NWFiOGY
 
 **SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
 
@@ -39,6 +37,7 @@ We also have a [forum][Discourse] and a [Slack][Slack].
 [sc-users archives]: https://www.listarc.bham.ac.uk/lists/sc-users/
 [sc-dev archives]: https://www.listarc.bham.ac.uk/lists/sc-dev/
 [Discourse]: https://scsynth.org/
+[Slack]: https://join.slack.com/t/scsynth/shared_invite/enQtMzk3OTY3MzE0MTAyLWY1ZGE1MTJjYmI5NTRkZjFmNjZmNmYxOWI0NDZkNjdkMzdkNjgxNTJhZGVlOTEwYjdjMDY5OWM0ZTA4NWFiOGY
 
 Contribute
 ----------
