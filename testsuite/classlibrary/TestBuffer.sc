@@ -246,7 +246,7 @@ TestBuffer : UnitTest {
 	}
 
 	test_getToFloatArray {
-		var server, data, condition, inTime = false;
+		var server, data, condition, inTime = false, timeOutTask;
 		condition = Condition.new;
 
 		server = Server(this.class.name);
@@ -269,12 +269,14 @@ TestBuffer : UnitTest {
 			})
 		});
 
-		fork {
+		timeOutTask = fork {
 			3.wait;
 			condition.unhang;
 		};
 
 		condition.hang;
+
+		timeOutTask.stop;
 
 		this.assert(inTime, "reply should happen in time (within less than 3 seconds)");
 
