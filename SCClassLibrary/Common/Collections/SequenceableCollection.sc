@@ -1544,6 +1544,21 @@ SequenceableCollection : Collection {
 		}
 	}
 
+	unixCmdGetStdOut { arg maxLineLength=1024;
+		var pipe, lines, line, pid;
+
+		if(this.notEmpty) {
+			pipe = Pipe.argv(this, "r");
+			lines = "";
+			line = pipe.getLine(maxLineLength);
+			while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
+			pipe.close;
+			^lines
+		} {
+			Error("Collection should have at least the filepath of the program to run.").throw
+		}
+	}
+
 	prUnixCmd { arg postOutput = true;
 		_ArrayPOpen
 		^this.primitiveFailed

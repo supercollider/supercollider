@@ -27,6 +27,8 @@ PyrObject represents the structure of all SC Objects.
 
 #include "PyrSlot.h"
 
+#include <vector>
+
 /* special gc colors */
 enum {
 	obj_permanent		= 1,		// sent to gc->New as a flag
@@ -285,5 +287,7 @@ inline long MAXINDEXSIZE(PyrObjectHdr* obj)
 {
 	return ((1L << obj->obj_sizeclass) * gFormatElemCapc[ obj->obj_format ]);
 }
+
+std::tuple<int,std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll);
 
 void InstallFinalizer(VMGlobals* g, PyrObject *inObj, int slotIndex, ObjFuncPtr inFunc);
