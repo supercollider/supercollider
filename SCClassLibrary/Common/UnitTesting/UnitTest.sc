@@ -47,13 +47,30 @@ UnitTest {
 		}
 	}
 
-	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
-	*runTest { | methodString |
-		var method = this.findTestMethodFor(methodString);
-		if(method.isNil) {
-			warn("*** Test method not found "+ method.class ++ ":" ++ method.name)
+	// run a class or single test in the name format
+	// "TestPolyPlayerPool:test_prepareChildrenToBundle"
+	*runTest { | testItem |
+		var method, failString;
+		case { testItem.isKindOf(Class) } {
+			if (testItem.isKindOf(Meta_UnitTest)) {
+				testItem.run(false, false)
+			} {
+				failString = "%: testItem % is not a subclass of UnitTest."
+			}
+		} { testItem.isKindOf(String) } {
+			method = this.findTestMethodFor(testItem);
+			if(method.notNil) {
+				method.ownerClass.new.runTestMethod(method)
+			} {
+				failString = "%: testItem % is not a valid testMethod string such as %."
+			}
 		} {
-			method.ownerClass.new.runTestMethod(method)
+			failString = "%: testItem % is neither a subclass of UnitTest,"
+			" nor a valid test-method string such as %."
+		};
+
+		if (failString.notNil) {
+			failString.format(thisMethod, testItem.cs, "TestABC:test_xyz".cs).warn
 		}
 	}
 
@@ -80,31 +97,16 @@ UnitTest {
 			var start = Main.elapsedTime;
 			this.reset;
 			testItems = testItems ?? { this.allSubclasses };
-			testItems.do ({ |testItem|
-				if (testItem.isKindOf(Class)) {
-					// assume this is a UnitTest:
-					if (testItem.isKindOf(Meta_UnitTest)) {
-						testItem.run(false,false);
-					} {
-						"%: testItem % is not a unit test subclass."
-						.format(testItem.cs).warn;
-					}
-				} {
-					if (testItem.isKindOf(String)) {
-						try { UnitTest.runTest(testItem) } {
-							"%: testItem % is not a unit test method string."
-							.format(testItem.cs).warn;
-						}
-					}
-				};
+			testItems.do { |testItem|
+				UnitTest.runTest(testItem);
 				0.1.wait;
-			});
+			};
 			this.report(Main.elapsedTime - start);
 		}
 	}
 
 	// could be moved to e.g. Method.find(methodString):
-	*findMethodFor { |methodString|
+	*findMethodFor { |methodString, postNotFound = true|
 
 		var className, methodName, class, method;
 		# class, methodName = methodString.split($:);
@@ -113,8 +115,8 @@ UnitTest {
 			method = class.findMethod(methodName.asSymbol);
 		};
 
-		if (method.isNil) {
-			"no method found for: %\n".postf(methodString.cs);
+		if (method.isNil and: postNotFound) {
+			"% - no method found for: %\n".postf(thisMethod, methodString.cs);
 		};
 		^method
 	}
@@ -127,11 +129,11 @@ UnitTest {
 	}
 
 	*findTestMethodFor { |methodString|
-		var method = this.findMethodFor(methodString);
+		var method = this.findMethodFor(methodString, false);
 		if (method.notNil and: { this.isTestMethod(method) }) {
 			^method
 		} {
-			"no method found for: %\n".postf(methodString.cs);
+			"no test method found for: %\n".postf(methodString.cs);
 			^nil
 		}
 	}
@@ -213,8 +215,8 @@ UnitTest {
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
 		var details =
-			"Is:\n\t" + a +
-			"\nShould equal (within range" + within ++ "):\n\t" + b;
+		"Is:\n\t" + a +
+		"\nShould equal (within range" + within ++ "):\n\t" + b;
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
