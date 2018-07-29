@@ -862,7 +862,7 @@ subsection:: Starting UNIX processes
 private::prUnixCmd
 
 method::unixCmd
-Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the absolute path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
@@ -872,13 +872,13 @@ An link::Classes/Integer:: - the pid of the newly created process. Use link::Cla
 discussion::
 Example:
 code::
-["/bin/ls","/"].unixCmd;
+["ls","/"].unixCmd;
 ::
 
 method::unixCmdGetStdOut
-Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the absolute path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 code::
-~listing = ["/bin/ls","/"].unixCmdGetStdOut; // Grab
+~listing = ["ls","/"].unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).stutter.join.postln; // Mangle
 ::
 

@@ -19,7 +19,7 @@ A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to std
 method::argv
 
 argument::executableAndArguments
-A link::Classes/SequenceableCollection:: containining strings where the first string is the absolute path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
 A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
@@ -41,7 +41,7 @@ method::openArgv
 Open the file.
 
 argument::executableAndArguments
-A link::Classes/SequenceableCollection:: containining strings where the first string is the absolute path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
 A link::Classes/String:: passed to popen, so should be one of: "r","w"
@@ -75,7 +75,7 @@ code::
 // this pipes in stdout from ls
 (
 var p, l;
-p = Pipe.argv(["/bin/ls","-l"], "r");			// list directory contents in long format
+p = Pipe.argv(["ls","-l"], "r");			// list directory contents in long format
 l = p.getLine;					// get the first line
 while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
 p.close;					// close the pipe to avoid that nasty buildup
