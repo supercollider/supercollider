@@ -50,7 +50,7 @@ ARGUMENT:: value
 Should be code::UnitTest.full:: or code::UnitTest.brief::.
 
 METHOD:: run
-Run all methods whose names begin with code::test_::.
+Run all methods (of a UnitTest subclass) whose names begin with code::test_::.
 
 code::
 TestUnitTest.new.run;
@@ -62,19 +62,6 @@ If code::true::, first runs link::#*reset:: on the class.
 ARGUMENT:: report
 If code::true::, outputs the test results.
 
-METHOD:: runTest
-Run a single test method.
-
-code::
-UnitTest.reset;
-UnitTest.runTest("TestUnitTest:test_assert");
-::
-
-ARGUMENT:: methodName
-A link::Classes/String:: referring to the class and test method
-within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
-
-
 METHOD:: runAll
 runs all subclasses of UnitTest
 
@@ -82,6 +69,21 @@ code::
 UnitTest.reset;
 UnitTest.runAll;
 ::
+
+METHOD:: runTest
+Run a single test method or class
+
+code::
+UnitTest.reset;
+UnitTest.runTest("TestUnitTest:test_assert");
+UnitTest.runTest(TestUnitTest);
+::
+
+ARGUMENT:: testItem
+can be a link::Classes/String:: referring to a class and a test method
+within it, e.g. code::"TestUnitTest:test_assert"::, then this single method runs;
+
+when a subclass of UnitTest, all tests in that class run.
 
 METHOD:: runTests
 run a list of testItems and optionally post how long they take.
