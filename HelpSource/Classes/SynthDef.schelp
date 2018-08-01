@@ -229,39 +229,61 @@ x.free;
 
 subsection:: Argument Rates
 code::
-// the following two defs are equivalent. The first uses a 't_' arg:
 (
-SynthDef(\trigTest, { |out, t_trig=0, freq=440| // t_trig creates a TrigControl
+SynthDef(\trigTest1, { |out, t_trig=0, freq=440| // t_trig creates a TrigControl
 	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(t_trig, 0.005, 1.0)));
-}, [0, 4]		// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)
-);
+}, [0, 0, 4]		// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)
+).add;
 )
 
+
+// Using the first version
+y = Synth(\trigTest1);
+y.set(\t_trig, 1); // you can do this multiple times
+y.set(\t_trig, 1, \freq, 220); // hear how the freq lags
+y.free;
+
+// Pbind and Pmono know about the t_ notation so you should use the parameter trig
+(
+Pmono(\trigTest1, *[
+	trig: Prand([0, 1], inf),  // for random trigger, use trig, not t_trig
+	freq: Pwhite(lo: 220, hi: 440, length: 10),
+	dur: 1
+]).play;
+)
+	
 // This second version makes trig a \tr arg by specifying it in the rates array.
 (
 SynthDef(\trigTest2, { |out, trig=0, freq=440|
 	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(trig, 0.005, 1.0)));
-	}, [\tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
+	}, [0, \tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
 ).add;
 )
 
-// Different way of writing the same thing
+// Different way of writing the same thing using NamedControls
 (
 SynthDef(\trigTest2, { |out|
 	Out.ar(out, SinOsc.ar(\freq.kr(440, 4) + [0,1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
 }).add;
 )
 
-
-// Using the second version create a synth
-z = Synth.head(s, \trigTest2);
+// Using the second version, create a synth
+z = Synth(\trigTest2);
 
 // now trigger the decay envelope
 z.set(\trig, 1); 				// you can do this multiple times
 z.set(\trig, 1, \freq, 220); 	// hear how the freq lags
 z.set(\trig, 1, \freq, 880);
-
 z.free; //free the synth
+
+// use trig in Pbind and Pmono
+(
+Pmono(\trigTest2, *[
+	trig: Prand([0, 1], inf),  // for random trigger, use trig, not t_trig
+	freq: Pwhite(lo: 220, hi: 440, length: 10),
+	dur: 1
+]).play;
+)
 ::
 
 subsection:: Variants
