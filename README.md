@@ -4,8 +4,8 @@
 **SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
 
 - **scsynth**, a real-time audio server with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing
-- **supernova**, an alternative to scsynth with support for parallel DSP on multi-core processors
-- **sclang**, an interpreted programming language that controls scsynth
+- **supernova**, an alternative server to scsynth with support for parallel DSP on multi-core processors
+- **sclang**, an interpreted programming language that controls the servers
 - **scide**, an editing environment for sclang with an integrated help system
 
 sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
@@ -65,7 +65,7 @@ Read our [contributing guide](CONTRIBUTING.md) to learn about our development pr
 
 ### Good First Issues
 
-To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list or on [Slack][Slack].
+To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or on the [forum][Discourse].
 
 License
 -------
