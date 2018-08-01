@@ -32,6 +32,13 @@ or most requested features.
 When, in the example milestones above, 3.10 is released, we would move all 3.9.x-milestoned issues to 3.10.x,
 and then collectively decide which issues ought to move from 3.x to 3.11 and from 3.10.x to 3.10.1.
 
+Deprecation
+-----------
+
+SuperCollider class library deprecations are currently made on a case-by-case basis using the `Object:-deprecated`
+method. When a method or class is deprecated, it is moved to `SCClassLibrary/deprecated`. Deprecations are removed on a
+case-by-case basis with each minor (3.x) release.
+
 Standards for New UGens
 =======================
 
