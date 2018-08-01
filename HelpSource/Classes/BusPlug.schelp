@@ -84,7 +84,6 @@ Number of channels returned. If the receiver is neutral or reshaping is elastic,
 
 argument::offset
 Channel offset when reading a bus that has more channels than numChannels, cross fading between adjacent channels.
-"/Users/wanninger/Library/Application Support/SuperCollider/Help/Overviews/Methods.html"
 argument::clip
 If set to 'wrap', exceeding channels will wrap around, if set to 'clip', repeat the last one.
 
