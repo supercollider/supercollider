@@ -47,6 +47,9 @@ Primitives for File i/o.
 #include <math.h>
 #include <sstream>
 
+/* C++ stdlib headers */
+#include <tuple>
+
 /* boost headers */
 #include <boost/filesystem.hpp>
 
@@ -1289,36 +1292,90 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b, *c;
-	char mode[12];
-	PyrFile *pfile;
-	FILE *file;
+	PyrSlot *callerSlot =      g->sp - 2;
+	PyrSlot *commandLineSlot = g->sp - 1;
+	PyrSlot *modeSlot =        g->sp;
 
-	a = g->sp - 2;
-	b = g->sp - 1;
-	c = g->sp;
-
-	if (NotObj(c) || !isKindOf(slotRawObject(c), class_string)
-		|| NotObj(b) || !isKindOf(slotRawObject(b), class_string))
+	//commandLine and mode must be objects
+	if (NotObj(modeSlot) || NotObj(commandLineSlot))
 		return errWrongType;
-	if (slotRawObject(c)->size > 11) return errFailed;
-	pfile = (PyrFile*)slotRawObject(a);
 
-        char *commandLine = (char*)malloc(slotRawObject(b)->size + 1);
-	memcpy(commandLine, slotRawString(b)->s, slotRawObject(b)->size);
-	commandLine[slotRawString(b)->size] = 0;
+	PyrFile *pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
-	mode[slotRawString(c)->size] = 0;
+	//c++17 structured binding declarations will make this into a single line
+	//auto [error, string] = ...
+	int error;
+	std::string commandLine;
+	std::tie(error, commandLine) = slotStrStdStrVal(commandLineSlot);
+	if (error != errNone)
+		return error;
+
+	std::string mode;
+	std::tie(error, mode) = slotStrStdStrVal(modeSlot);
+	if (error != errNone)
+		return error;
 
 	pid_t pid;
-	file = sc_popen(commandLine, &pid, mode);
-	free(commandLine);
-	if (file) {
+	FILE *file;
+	std::tie(pid, file) = sc_popen(std::move(commandLine), mode);
+	if (file != nullptr) {
 		SetPtr(&pfile->fileptr, file);
-		SetInt(a, pid);
+		SetInt(callerSlot, pid);
 	} else {
-		SetNil(a);
+		SetNil(callerSlot);
+	}
+	return errNone;
+}
+
+int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *callerSlot = g->sp - 2;
+	PyrSlot *argsSlot = g->sp - 1;
+	PyrSlot *modeSlot = g->sp;
+
+	//????
+#ifdef SC_IPHONE
+	SetInt(callerSlot, 0);
+	return errNone;
+#endif
+
+	//argsSlot must be an object
+	if (NotObj(argsSlot) || NotObj(modeSlot))
+		return errWrongType;
+
+	PyrFile *pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
+
+	PyrObject *argsColl = slotRawObject(argsSlot);
+
+	//argsColl must be a collection
+	if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
+		return errNotAnIndexableObject;
+	//collection must contain at least one string: the path of executable to run
+	if (argsColl->size < 1)
+		return errFailed;
+
+	//c++17 structured binding declarations will make this into a single line
+	//auto [error, mode] = ...;
+	int error;
+	std::string mode;
+	std::tie(error, mode) = slotStrStdStrVal(modeSlot);
+	if (error != errNone)
+		return error;
+
+	std::vector<std::string> strings;
+	std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
+	if (error != errNone)
+		return error;
+
+	pid_t pid;
+	FILE *file;
+	std::tie(pid, file) = sc_popen_argv(strings, mode);
+
+	if (file != nullptr) {
+		SetPtr(&pfile->fileptr, file);
+		SetInt(callerSlot, pid);
+	} else {
+		SetNil(callerSlot);
 	}
 	return errNone;
 }
@@ -1335,7 +1392,8 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	pfile = (PyrFile*)slotRawObject(a);
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
-	if (file == NULL) return errNone;
+	if (file == NULL)
+		return errNone;
 	pid = (pid_t) slotRawInt(b);
 
 	SetPtr(&pfile->fileptr, NULL);
@@ -1781,6 +1839,7 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
 
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
+	definePrimitive(base, index++, "_PipeOpenArgv", prPipeOpenArgv, 3, 0);
 	definePrimitive(base, index++, "_PipeClose", prPipeClose, 2, 0);
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
