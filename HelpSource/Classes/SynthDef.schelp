@@ -259,7 +259,7 @@ y = Synth(\trigTest1);
 Pbind(*[
 	type: \set,
 	id: y.nodeID,
-    args: #[\t_trig],
+  args: #[\t_trig],
 	t_trig: Prand([0, 1], 8)
 ]).play;
 )
