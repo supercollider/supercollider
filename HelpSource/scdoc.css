@@ -4,8 +4,8 @@ html, body {
     padding: 0;
     margin: 0;
     position: relative;
-    text-align: justify;
-    font-size: 0.9em;
+    text-align: left;
+    font-size: 0.89em;
     line-height: 1.5em;
 }
 
@@ -20,7 +20,7 @@ div.contents {
     padding: 2em 1em;
     overflow: auto;
     word-break: break-word;
-    /*text-indent: 0;*/
+    page-break-inside: avoid; /* the menubar is printed out on the first page only when the height of the first div too tall  */
 }
 
 table {
@@ -43,6 +43,11 @@ p {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
     }
+/*
+p + p {
+    text-indent: 1em;
+}
+*/
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
@@ -57,7 +62,6 @@ a:link:hover {
 #inheritedclassmets, #inheritedinstmets {
     margin-top: 1em;
 }
-
 .inheritedmets_class {
     font-weight: bold;
     color: #555;
@@ -72,6 +76,7 @@ ul {
 margin-top: 0;
 margin-bottom: 0;
 }
+
 ul.inheritedmets {
     list-style: none;
     padding: 0;
@@ -79,9 +84,11 @@ ul.inheritedmets {
     margin-left: 2em;
     margin-top: 0.25em;
 }
+
 ul.inheritedmets li {
     font-family: monospace;
 }
+
 a.inheritedmets_toggle {
     
     color: #558;
@@ -103,7 +110,6 @@ a.subclass_toggle:hover {
     text-decoration: none;
     color: #000;
 }
-
 
 #menubar {
     position: fixed; /* fixed; */ /* relative; */
@@ -188,12 +194,10 @@ a.menu-link.title {
         position: relative;
         display: block;
         margin: 0;
-/*      padding: 5px 10px;*/
         padding: 0.2em;
         width: auto;
         white-space: nowrap;
         text-align: left;
-/*      text-decoration: none;*/
         color: #447;
         font-weight: bold;
 }
@@ -207,7 +211,6 @@ a.menu-link.title {
     border: 1px solid #ddd;
     margin-bottom: 1em;
 }
-
 
 .header {
   padding-bottom: 0.18em;
@@ -305,7 +308,7 @@ div.footnote {
 h1 {
     margin-top: 0.5em;
     margin-bottom: 0.3em;
-    font-size: 2.3em;
+    font-size: 1.5em;
 }
 
 h2 {
@@ -313,14 +316,14 @@ h2 {
     margin-top: 2.6em;
     text-align: left;
     margin-bottom: 0.5em;
-    font-size: 1.6em;
+    font-size: 1.3em;
 }
 
 h3 {
     margin-top: 2.2em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.2em;
+    font-size: 1.1em;
 }
 
 h4 {
@@ -367,6 +370,7 @@ code, pre {
     margin-top: 0.3em;
     margin-bottom: 0.3em;
     line-height: 1.35em;
+    font-size: 1.05em;
 }
 
 pre {
@@ -388,6 +392,8 @@ pre.code {
 .image img {
     margin-bottom: 0;
     max-width: 100%;
+    page-break-inside: auto;
+    page-break-inside: avoid;
 }
 
 .methprefix {
@@ -439,6 +445,7 @@ table.arguments {
     margin-bottom: 0;
     margin-top: 0.5em;
     border-collapse: collapse;
+    width: auto;
 }
 
 table.arguments td.argumentname, td.argumentdesc {
@@ -476,7 +483,8 @@ td p {
 }
 
 .doclink {
-    font-size: 0.5em;
+    font-size: 0.85em;
+    line-height: 1.1em;
     color: #888;
     text-align: right;
     margin-top: 2.5em;
@@ -531,7 +539,7 @@ li {
     padding-bottom: 0;
     padding-left: 0;
     /*text-indent: 0;*/
-    margin-left: -1.5em;
+    margin-left: -1.9em;
     margin-top: 0;
     margin-bottom: 0;
     line-height: 1.5em;
