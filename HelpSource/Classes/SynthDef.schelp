@@ -241,7 +241,7 @@ y.set(\t_trig, 1); // you can do this multiple times
 y.set(\t_trig, 1, \freq, 220); // hear how the freq lags
 y.free;
 
-// Pbind and Pmono with the default \note event type use an automatically-generated
+// Pbind with the default \note event type, and Pmono, use an automatically-generated
 // function to look up argument values. This function translates \trig in the 
 // event to \t_trig in the synth.
 (
