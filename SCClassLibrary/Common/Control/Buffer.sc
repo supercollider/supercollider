@@ -352,20 +352,18 @@ Buffer {
 	}
 
 	free { arg completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg( this.freeMsg(completionMessage) )
 	}
 
 	freeMsg { arg completionMessage;
 		var msg;
-		if(bufnum.notNil) {
-			this.uncache;
-			server.bufferAllocator.free(bufnum);
-			msg = [\b_free, bufnum, completionMessage.value(this)];
-			bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
-			^msg
-		} {
-			(this.class.name ++ " has already been freed").warn
-		}
+		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
+		this.uncache;
+		server.bufferAllocator.free(bufnum);
+		msg = [\b_free, bufnum, completionMessage.value(this)];
+		bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
+		^msg
 	}
 
 	*freeAll { arg server;
