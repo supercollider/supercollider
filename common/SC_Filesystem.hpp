@@ -143,22 +143,25 @@ public:
 
 	//-------------------------------- GENERAL UTILITIES -----------------------------------//
 
-	/** \brief Checks whether a directory should be compiled.
-	  * \param p a directory path
-	  * \return True if the directory should not be traversed during compilation.
+	/** \brief Checks whether a path should be compiled.
+	  * \param p a path
+	  * \return True if the path should not be traversed during compilation.
 	  *
-	  * Specifically, returns true if the directory name, ignoreing case, is equal to:
-	  * - one of ".svn", ".git", or "_darcs"
-	  * - one of "help" or "ignore"
+	  * Specifically, returns true if the final element of the path:
+	  * - begins with '.'
+	  * - one of "help", "ignore", or "_darcs"
 	  * - a string starting with "scide_" but not ending with the current IDE name
 	  * - one of "windows", "osx", "iphone", or "linux", but that is not the name of the current platform.
+	  * All comparisons are case-insensitive.
 	  */
-	bool shouldNotCompileDirectory(const Path& p) const
+	bool shouldNotCompile(const Path& p) const
 	{
 		std::string dirname = SC_Codecvt::path_to_utf8_str(p.filename());
+		if (dirname.c_str()[0] == '.')
+			return true;
+
 		std::transform(dirname.begin(), dirname.end(), dirname.begin(), ::tolower);
-		return dirname == "help" || dirname == "ignore" || dirname == ".svn" ||
-		       dirname == ".git" || dirname == "_darcs" ||
+		return dirname == "help" || dirname == "ignore" || dirname == "_darcs" ||
 		       isUnusedIdeDirectoryName(dirname) ||
 		       isNonHostPlatformDirectoryName(dirname);
 	}

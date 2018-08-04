@@ -1845,43 +1845,55 @@ bfs::path relativeToCompileDir(const bfs::path& p)
 	return bfs::relative(p, gCompileDir);
 }
 
-/** \brief Determines whether the directory should be skipped during compilation.
- *
- * \param dir : The directory to check, as a `path` object
+/**
+ * \param p The path to check
  * \returns `true` iff any of the following conditions is true:
  * - the directory has already been compiled
- * - the language configuration says this path is excluded
- * - SC_Filesystem::shouldNotCompileDirectory(dir) returns `true`
+ * - this path has been explicitly marked as excluded by user
+ * - SC_Filesystem::shouldNotCompile(dir) returns `true`
  */
-static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
+static bool passOne_ShouldNotCompile(const bfs::path& p)
 {
-	return (compiledDirectories.find(dir) != compiledDirectories.end()) ||
-		(gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) ||
-		(SC_Filesystem::instance().shouldNotCompileDirectory(dir));
+	return (compiledDirectories.find(p) != compiledDirectories.end()) ||
+		(gLanguageConfig && gLanguageConfig->pathIsExcluded(p)) ||
+		(SC_Filesystem::instance().shouldNotCompile(p));
+}
+
+/**
+ * Try to resolve a potential alias. Possible outcomes:
+ * - it was a good alias or not an alias: recurse if directory, process if file
+ * - it was a bad alias: let the user know, continue compiling
+ */
+static bool passOne_ProcessDirEntry(const bfs::path& path)
+{
+	bool didResolve = false;
+	auto respath = SC_Filesystem::resolveIfAlias(path, didResolve);
+
+	if (respath.empty()) {
+		post("WARNING: Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+	} else if (didResolve && bfs::is_directory(respath)) {
+		if (!passOne_ProcessDir(respath)) {
+			return false;
+		}
+	} else {
+		if (!passOne_ProcessOneFile(respath)) {
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /** \brief Compile the contents of a single directory
  *
- * This method compiles any .sc files in a single directory, working
- * via depth-first recursion. This routine is designed to fail gracefully,
- * and only indicates failure if something truly unexpected happens. These
- * conditions are:
- * - an error occurred while trying to open a directory, other than the case
- *    the case that the object doesn't exist.
- * - an error occurred while calling `passOne_processOneFile` on a file
- * - an error occurred in a recursive call of this routine on a macOS alias
- * Otherwise, this method returns success, even if:
- * - `dir` does not exist
- * - Iterating to the next file fails for any reason at all
- *
- * This method returns with a success state immediately if the directory
- * should not be compiled according to the language configuration.
+ * Recursively compiles any .sc files in a single directory. Skips files or directories as specified
+ * by the user and as given by the compilation process specification. Compilation is lenient; the
+ * only true failure is when a file fails to compile.
  *
  * \param dir : The directory to traverse, as a `path` object
  * \returns `true` if processing was successful, `false` if it failed.
- *   See above for what constitutes success and failure conditions.
  */
-static bool passOne_ProcessDir(const bfs::path& dir)
+bool passOne_ProcessDir(const bfs::path& dir)
 {
 	// Prefer non-throwing versions of filesystem functions, since they are actually not unexpected
 	// and because it's faster to use error codes.
@@ -1891,79 +1903,51 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 	const bfs::path expdir = SC_Filesystem::instance().expandTilde(dir);
 
 	// Using a recursive_directory_iterator is much faster than actually calling this function
-	// recursively. Speedup from the switch was about 1.5x. _Do_ recurse on symlinks.
+	// recursively. Speedup from the switch was about 1.5x.
 	bfs::recursive_directory_iterator rditer(expdir, bfs::symlink_option::recurse, ec);
 
-	// Check preconditions: are we able to access the file, and should we compile it according to
-	// the language configuration?
 	if (ec) {
-		// If we got an error, post a warning if it was because the target wasn't found, and return success.
-		// Otherwise, post the error and fail.
+		// "File not found" is worthy of a special warning
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
 			passOne_HandleMissingDirectory(expdir);
-			return true;
 		} else {
 			error("Could not open directory '%s': (%d) %s\n",
 				SC_Codecvt::path_to_utf8_str(expdir).c_str(),
 				ec.value(),
 				ec.message().c_str()
 			);
-
-			return false;
 		}
-	} else if (passOne_ShouldSkipDirectory(expdir)) {
-		// If we should skip the directory, just return success now.
+
+		return true;
+	} else if (passOne_ShouldNotCompile(expdir)) {
 		return true;
 	} else {
-		// Let the user know we are in fact compiling this directory.
 		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(expdir).c_str());
 	}
 
-	// Record that we have touched this directory already.
 	compiledDirectories.insert(expdir);
 
-	// Invariant: we have processed (or begun to process) every directory or file already
-	// touched by the iterator.
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path path = *rditer;
 
-		// If the file is a directory, perform the same checks as above to see if we should
-		// skip compilation on it.
-		if (bfs::is_directory(path)) {
+		bool shouldNotCompile = passOne_ShouldNotCompile(path);
 
-			if (passOne_ShouldSkipDirectory(path)) {
-				rditer.no_push(); // don't "push" into the next level of the hierarchy
-			} else {
-				// Mark this directory as compiled.
-				// By not calling no_push(), we allow the iterator to enter the directory
-				compiledDirectories.insert(path);
-			}
-
-		} else { // ordinary file
-			// Try to resolve a potential alias. Possible outcomes:
-			// - it was an alias & is also a directory: try to recurse on it
-			// - resolution failed: returns empty path: let the user know
-			// - it was not an alias, or was an alias that wasn't a directory: try to process it as a source file
-			bool isAlias = false;
-			const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
-			if (isAlias && bfs::is_directory(respath)) {
-				// If the resolved alias is a directory, recurse on it.
-				if (!passOne_ProcessDir(respath)) {
-					return false;
-				}
-			} else if (respath.empty()) {
-				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
-			} else if (!passOne_ProcessOneFile(respath)) {
+		if (shouldNotCompile) {
+			rditer.no_push();
+		} else if (bfs::is_directory(path)) {
+			compiledDirectories.insert(path);
+		} else { // non-directory
+			if (!passOne_ProcessDirEntry(path)) {
 				return false;
 			}
 		}
 
-		// Error-code version of `++`
 		rditer.increment(ec);
-		if (ec) {
-			// If iteration failed, allow compilation to continue, but bail out of this directory.
-			error("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
-			return true;
+
+		// The shouldNotCompile check is there so that this message isn't printed if we accidentally
+		// recursed on a broken symlink that shouldn't have been compiled. See #3597.
+		if (ec && !shouldNotCompile) {
+			post("WARNING: '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
 		}
 	}
 	return true;

@@ -392,7 +392,7 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 		const bfs::path path = *rditer;
 
 		if (bfs::is_directory(path)) {
-			if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
+			if (SC_Filesystem::instance().shouldNotCompile(path))
 				rditer.no_push();
 			else
 				; // do nothing; recursion for free
