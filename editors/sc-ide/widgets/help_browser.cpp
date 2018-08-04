@@ -130,23 +130,23 @@ void HelpBrowser::createActions()
 
     mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
     connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
-    ovrAction->addToWidget(mWebView);
+    ovrAction->addToWidget(this);
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
-    ovrAction->addToWidget(mWebView);
+    ovrAction->addToWidget(this);
 
     mActions[ZoomOut] = ovrAction = new OverridingAction(tr("Zoom Out"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
-    ovrAction->addToWidget(mWebView);
+    ovrAction->addToWidget(this);
 
     mActions[ResetZoom] = ovrAction = new OverridingAction(tr("Reset Zoom"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
-    ovrAction->addToWidget(mWebView);
+    ovrAction->addToWidget(this);
 
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
-    ovrAction->addToWidget(mWebView);
+    ovrAction->addToWidget(this);
 
     // For the sake of display:
     mWebView->pageAction(QWebEnginePage::Copy)->setShortcut( QKeySequence::Copy );
