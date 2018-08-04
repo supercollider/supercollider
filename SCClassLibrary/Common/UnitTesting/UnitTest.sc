@@ -30,8 +30,8 @@ UnitTest {
 	// called after each test
 	tearDown {}
 
-	*run { | reset = true, report = true|
-		this.new.run(reset, report);
+	*run { | reset = true, report = true, postHeader = true|
+		this.new.run(reset, report, postHeader)
 	}
 
 	// run all UnitTest subclasses
