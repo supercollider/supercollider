@@ -179,7 +179,7 @@ void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 			memcpy(strobj->s, buf, size);
 			
 			// this calls GCWriteNew for us
-			SetNewObjectInObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, &ptr);
+			SetNewObjectInObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, std::move(ptr));
 		}
 		unlock();
     }
