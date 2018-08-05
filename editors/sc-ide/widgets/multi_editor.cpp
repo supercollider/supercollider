@@ -958,8 +958,8 @@ void MultiEditor::switchSession( Session *session )
         }
 
         // restore tabs
-        foreach ( Document * doc, documentList )
-            addTab(doc);
+        for (int i = 0; i < documentList.size(); ++i)
+            insertTab(documentList[i], i);
 
         // restore editors
         if (session->contains("editors")) {
@@ -1005,7 +1005,7 @@ void MultiEditor::switchSession( Session *session )
         emit splitViewDeactivated();
 }
 
-int MultiEditor::addTab( Document * doc )
+int MultiEditor::insertTab(Document *doc, int insertIndex)
 {
     if (!doc)
         return -1;
@@ -1020,8 +1020,8 @@ int MultiEditor::addTab( Document * doc )
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    int currentIndex = mTabs->currentIndex();
-    tabIdx = mTabs->insertTab( currentIndex + 1, icon, doc->title() );
+    insertIndex = insertIndex < 0 ? mTabs->currentIndex() + 1 : insertIndex;
+    tabIdx = mTabs->insertTab( insertIndex, icon, doc->title() );
     mTabs->setTabData( tabIdx, QVariant::fromValue<Document*>(doc) );
 
     mDocModifiedSigMap.setMapping(tdoc, doc);
@@ -1080,7 +1080,7 @@ void MultiEditor::switchDocument()
 
 void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectionLength )
 {
-    addTab(doc);
+    insertTab(doc);
 
     currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
     currentBox()->setFocus(Qt::OtherFocusReason);
