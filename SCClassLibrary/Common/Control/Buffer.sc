@@ -352,19 +352,25 @@ Buffer {
 	}
 
 	free { arg completionMessage;
-		server.listSendMsg( this.freeMsg(completionMessage) )
+		if(bufnum.isNil) {
+			"Cannot call free on a Buffer that has been freed".warn;
+			^nil
+		} {
+			server.listSendMsg(this.freeMsg(completionMessage))
+		}
 	}
 
 	freeMsg { arg completionMessage;
 		var msg;
-		if(bufnum.notNil) {
+		if(bufnum.isNil) {
+			"Cannot construct a freeMsg for a Buffer that has been freed".warn;
+			^nil
+		} {
 			this.uncache;
 			server.bufferAllocator.free(bufnum);
 			msg = [\b_free, bufnum, completionMessage.value(this)];
 			bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
 			^msg
-		} {
-			(this.class.name ++ " has already been freed").warn
 		}
 	}
 
