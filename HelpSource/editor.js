@@ -29,8 +29,8 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: { 
-                'Cmd-Enter': selectRegion,
-                'Shift-Enter': selectLine
+                'Cmd-Enter': () => selectRegion(),
+                'Shift-Enter': () => selectLine()
             }
         })
 
@@ -39,8 +39,8 @@ const init = () => {
             let parenMatch = editor.getLine(cursor.line)
                 .slice(cursor.ch-1,cursor.ch).match(/[()]/)
             if (parenMatch) {
-                editor.replaceSelection(parenMatch[0])
-                selectRegion(false)
+                editor.undoSelection()
+                selectRegion({ flash: false })
             }
         })
 
@@ -52,15 +52,15 @@ const init = () => {
 }
 
 
-/* returns the code selection, line or block */
-const selectRegion = (reset = true ) => {
+/* returns the code selection, line or region */
+const selectRegion = (options = { flash: true }) => {
     let range = window.getSelection().getRangeAt(0)
     let textarea = range.startContainer.parentNode.previousSibling
     if (!textarea) return
     let editor = textarea.editor
 
     if (editor.somethingSelected())
-        return selectLine(reset)
+        return selectLine(options)
 
     const findLeftParen = cursor => {
         let cursorLeft = editor.findPosH(cursor, -1, 'char')
@@ -108,7 +108,7 @@ const selectRegion = (reset = true ) => {
 
     /* no parens found */
     if (parenPairs.length === 0)
-        return selectLine(reset)
+        return selectLine(options)
     
     let pair = parenPairs.pop()
     leftCursor = pair[0]
@@ -116,40 +116,40 @@ const selectRegion = (reset = true ) => {
 
     /* parens are inline */
     if (leftCursor.ch > 0)
-        return selectLine(reset)
+        return selectLine(options)
 
     /* parens are a region */
-    cursor = editor.getCursor()
-    editor.addSelection(leftCursor, rightCursor)
-    
-    if (reset)
-        setTimeout(() => {
-            editor.setCursor(cursor, null, { scroll: false })
-        }, 400)
-
-    return editor.getSelection()
+    if (options.flash === false) {
+        editor.addSelection(leftCursor, rightCursor)
+        return editor.getSelection()
+    } else {
+        let marker = editor.markText(leftCursor, rightCursor, { className: 'text-flash' })
+        setTimeout(() => marker.clear(), 300)
+        return editor.getRange(leftCursor, rightCursor)
+    }
 }
 
 /* returns the code selection or line */
-const selectLine = (reset = true) => {
+const selectLine = (options = { flash: true }) => {
     let range = window.getSelection().getRangeAt(0)
     let textarea = range.startContainer.parentNode.previousSibling
     if (!textarea) return
     let editor = textarea.editor
     let cursor = editor.getCursor()
 
-    if (reset)
-        setTimeout(() => {
-            editor.setCursor(cursor, null, { scroll: false })
-        }, 400)
-
-    if (editor.somethingSelected())
-        return editor.getSelection()
-    else {
-        editor.addSelection({ line: cursor.line, ch: 0 },
-            { line: cursor.line, ch: editor.getLine(cursor.line).length })
-        return editor.getSelection()
+    if (editor.somethingSelected()) {
+        from = editor.getCursor('start')
+        to = editor.getCursor('end')
+    } else {
+        from = { line: cursor.line, ch: 0 }
+        to = { line: cursor.line, ch: editor.getLine(cursor.line).length }
     }
+
+    if (!options.flash)
+        return editor.getRange(from, to)
+    let marker = editor.markText(from, to, { className: 'text-flash' })
+    setTimeout(() => marker.clear(), 300)
+    return editor.getRange(from, to)
 }
 
 init()
