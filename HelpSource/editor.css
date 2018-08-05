@@ -1,9 +1,14 @@
+textarea.editor {
+    opacity: 0;
+}
+
 .CodeMirror {
     height: auto;
     padding: 0 1em;
     margin-top: 1em;
     border-left: 2px solid #e1e1e1;
-    font-size: .9em;
+    font-size: 1em;
+    line-height: normal;
 }
 
 .CodeMirror-cursors,
@@ -15,11 +20,26 @@
 .CodeMirror-line::selection,
 .CodeMirror-line > span::selection,
 .CodeMirror-line > span > span::selection { 
-    background: rgba(248, 162, 0, 0.5) !important; 
+    background: rgba(248, 162, 0, 0.5) !important;
 }
 
-textarea.editor {
-    opacity: 0;
+@keyframes text-flash {
+    0% { 
+        background: rgba(248, 162, 0, 0);
+        color: black;
+    }
+    40% { 
+        background: rgba(248, 162, 0, 1); 
+        color: black,
+    }
+    100% { 
+        background: rgba(248, 162, 0, 0); 
+        color: black;
+    }
+}
+
+.CodeMirror .text-flash {
+    animation: text-flash .35s ease-in;
 }
 
 /* syntax hightlighting */
