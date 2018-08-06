@@ -52,7 +52,24 @@ public:
 	
 	NewPyrObjectPtr& operator=(NewPyrObjectPtr &other) = delete; // no assignment operator
 	
-	operator bool() const // test for nullptr/if object has been set
+	// move constructor
+	NewPyrObjectPtr(NewPyrObjectPtr&& other) : mPyrObj(other.mPyrObj), mMadeReachable(other.mMadeReachable), mGC(other.mGC)
+	{
+		other.mPyrObj = nullptr;
+	}
+	
+	NewPyrObjectPtr& operator=(NewPyrObjectPtr &&other) // move assignment constructor
+	{
+		if (this != &other) {
+			mPyrObj = other.mPyrObj;
+			mMadeReachable = other.mMadeReachable;
+			mGC = other.mGC;
+			other.mPyrObj = nullptr;
+		}
+		return *this;
+	}
+	
+	operator bool() const // test for nullptr/if object has been set or moved
 	{
 		return bool(mPyrObj);
 	}
@@ -63,7 +80,7 @@ public:
 	{
 		mMadeReachable = true;
 		PyrObjectHdr* released = mPyrObj;
-		mPyrObj = 0;
+		mPyrObj = nullptr;
 		decrementGC();
 		return released;
 	}
