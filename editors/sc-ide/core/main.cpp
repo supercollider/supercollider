@@ -26,7 +26,6 @@
 #include "../widgets/help_browser.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
-#include "../widgets/style/style.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
@@ -80,17 +79,37 @@ int main( int argc, char *argv[] )
     scideTranslator.load( ideTranslationFile, ideTranslationPath );
     app.installTranslator(&scideTranslator);
 
+    // Load settings so that we can copy editor color values into the UI colors,
+    // which must be set before window is created.
+    Main *main = Main::instance();
+    Settings::Manager *settings = main->settings();
+
+    const QTextCharFormat *format = &settings->getThemeVal("text");
+    QBrush text_background = format->background();
+    QBrush text_foreground = format->foreground();
+
+    // Palette must be set before style, for consistent application.
+    app.setPalette(QPalette(
+        text_foreground,    // windowText
+        text_background,    // button
+        text_background,    // light
+        text_background,    // dark
+        text_background,    // mid
+        text_foreground,    // text
+        text_foreground,    // bright_text
+        text_background,    // base
+        text_background     // window
+    ));
+
     // Set up style
     app.setStyle( new ScIDE::Style(app.style()) );
 
     // Go...
-    Main * main = Main::instance();
     MainWindow *win = new MainWindow(main);
 
     app.setWindowIcon(QIcon("qrc:///icons/sc-ide-svg"));
 
     // NOTE: load session after GUI is created, so that GUI can respond
-    Settings::Manager *settings = main->settings();
     SessionManager *sessions = main->sessionManager();
 
     // NOTE: window has to be shown before restoring its geometry,
