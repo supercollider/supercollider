@@ -31,6 +31,7 @@
 #include "sc_server.hpp"
 #include "doc_manager.hpp"
 #include "settings/manager.hpp"
+#include "../widgets/style/style.hpp"
 
 namespace ScIDE {
 
@@ -107,6 +108,24 @@ public Q_SLOTS:
 
     void applySettings() {
         Q_EMIT(applySettingsRequest(mSettings));
+
+        const QTextCharFormat *format = &mSettings->getThemeVal("text");
+        QBrush text_background = format->background();
+        QBrush text_foreground = format->foreground();
+
+        qApp->setPalette(QPalette(
+            text_foreground,    // windowText
+            text_background,    // button
+            text_background,    // light
+            text_background,    // dark
+            text_background,    // mid
+            text_foreground,    // text
+            text_foreground,    // bright_text
+            text_background,    // base
+            text_background     // window
+        ));
+
+        qApp->setStyle(qApp->style());
     }
 
     void quit();
