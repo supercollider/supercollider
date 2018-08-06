@@ -1901,6 +1901,50 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	return newobj;
 }
 
+NewPyrObjectPtr instantiateObjectWithPtr(class PyrGC *gc, PyrClass* classobj, int size,
+							 bool fill, bool runGC)
+{
+	PyrObject *newobj, *proto;
+	int numbytes, format, flags;
+	
+	format = slotRawInt(&classobj->instanceFormat);
+	flags = slotRawInt(&classobj->instanceFlags);
+	
+	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
+		// create an indexable object
+		numbytes = size * gFormatElemSize[format];
+		newobj = gc->New(numbytes, flags, format, runGC);
+		if (fill) {
+			newobj->size = size;
+			if (format == obj_slot) {
+				nilSlots(newobj->slots, size);
+			} else {
+				memset(newobj->slots, format == obj_char ? ' ' : 0, size * gFormatElemSize[format]);
+			}
+		} else {
+			newobj->size = 0;
+		}
+	} else {
+		if (IsObj(&classobj->iprototype)) {
+			proto = slotRawObject(&classobj->iprototype);
+			size = proto->size;
+			numbytes = size * sizeof(PyrSlot);
+			newobj = gc->New(numbytes, flags, format, runGC);
+			newobj->size = size;
+			if (size) {
+				memcpy(newobj->slots, proto->slots, numbytes);
+			}
+		} else {
+			numbytes = 0;
+			newobj = gc->New(numbytes, flags, format, runGC);
+			newobj->size = 0;
+		}
+	}
+	newobj->classptr = classobj;
+	NewPyrObjectPtr ptr(gc, newobj);
+	return ptr;
+}
+
 PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool runGC);
 PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool runGC)
 {
@@ -2496,6 +2540,18 @@ PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool runGC)
 	string->size = length;
 	memcpy(string->s, s, length);
 	return string;
+}
+
+NewPyrObjectPtr newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC)
+{
+	PyrString* string;
+	
+	if (!gc) string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
+	else string = (PyrString*)gc->New(length, flags, obj_char, runGC);
+	string->classptr = class_string;
+	string->size = length; // filled with garbage!
+	NewPyrObjectPtr ptr(gc, string);
+	return ptr;
 }
 
 PyrString* newPyrStringN(class PyrGC *gc, int length, int flags, bool runGC)
