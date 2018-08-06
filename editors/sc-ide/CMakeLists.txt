@@ -5,23 +5,34 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 find_package(
     Qt5 ${REQUIRED_QT_VERSION}
     COMPONENTS
-    Core
     Concurrent
+    Core
     LinguistTools
     # OpenGL
     PrintSupport
     Qml
     Quick
     Sql
+    WebChannel
     WebEngine
     WebEngineWidgets
+    WebSockets
     Widgets
     REQUIRED
 )
 
 set(QT_IDE_LIBRARIES
+    Qt5::Concurrent
+    Qt5::Core
     # Qt5::OpenGL
-    Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Sql)
+    Qt5::PrintSupport
+    Qt5::Qml
+    Qt5::Quick
+    Qt5::Sql
+    Qt5::WebChannel
+    Qt5::WebEngineWidgets
+    Qt5::WebSockets
+)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -101,6 +112,10 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
+    widgets/util/volume_widget.hpp
+    widgets/util/WebSocketTransport.hpp
+    widgets/util/WebSocketClientWrapper.hpp
+    widgets/util/IDEWebChannelWrapper.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
@@ -152,6 +167,7 @@ set ( ide_src
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
+    widgets/util/WebSocketTransport.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
