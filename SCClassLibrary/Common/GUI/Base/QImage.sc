@@ -103,7 +103,7 @@ Image {
 
 	*open { arg path;
 		path = path.standardizePath;
-		if (path.extension == "svg") {
+		if (PathName(path).extension == "svg") {
 			^super.openSVG(path);
 		} {
 			^super.new.prNewPath(path);
