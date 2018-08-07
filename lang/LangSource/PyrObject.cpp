@@ -1901,7 +1901,7 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	return newobj;
 }
 
-NewPyrObjectPtr instantiateObjectWithPtr(class PyrGC *gc, PyrClass* classobj, int size,
+NewPyrObjectPtr<PyrObject> instantiateObjectWithPtr(class PyrGC *gc, PyrClass* classobj, int size,
 							 bool fill, bool runGC)
 {
 	PyrObject *newobj, *proto;
@@ -1941,7 +1941,7 @@ NewPyrObjectPtr instantiateObjectWithPtr(class PyrGC *gc, PyrClass* classobj, in
 		}
 	}
 	newobj->classptr = classobj;
-	NewPyrObjectPtr ptr(gc, newobj);
+	NewPyrObjectPtr<PyrObject> ptr(gc, newobj);
 	return ptr;
 }
 
@@ -2542,7 +2542,7 @@ PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool runGC)
 	return string;
 }
 
-NewPyrObjectPtr newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC)
+NewPyrObjectPtr<PyrString> newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC)
 {
 	PyrString* string;
 	
@@ -2550,7 +2550,7 @@ NewPyrObjectPtr newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, boo
 	else string = (PyrString*)gc->New(length, flags, obj_char, runGC);
 	string->classptr = class_string;
 	string->size = length; // filled with garbage!
-	NewPyrObjectPtr ptr(gc, string);
+	NewPyrObjectPtr<PyrString> ptr(gc, string);
 	return ptr;
 }
 

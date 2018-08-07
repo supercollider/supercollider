@@ -34,6 +34,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "PyrSlot.h"
 #include "PyrSymbol.h"
 #include "PyrKernel.h"
+#include "NewPyrObjectPtr.h"
 
 void DumpSimpleBackTrace(VMGlobals *g);
 
@@ -370,6 +371,50 @@ inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRu
 		obj->obj_sizeclass = sizeclass;
 	}
 	return obj;
+}
+
+////////////////
+// NewPyrObjectPtr member funcs; these need to be defined after the GC
+
+template <typename PyrT>
+// eventually this increment should be in the GC itself probably to prevent circumvention
+// but for now this allows backwards compatibility
+void NewPyrObjectPtr<PyrT>::incrementGC()
+{
+	mGC->incrementUnreachableCount();
+}
+
+template <typename PyrT>
+void NewPyrObjectPtr<PyrT>::decrementGC()
+{
+	mGC->decrementUnreachableCount();
+}
+
+// a NewPyrObjectPtr is either white or released and useless
+// so we can assume here that this is safe.
+template <typename PyrT>
+PyrT* NewPyrObjectPtr<PyrT>::releaseAndWriteNew(PyrObject* parent)
+{
+	PyrT *released = this->release();
+	mGC->GCWriteNew((PyrObjectHdr*)parent, released);
+	return released;
+}
+
+template <typename PyrT>
+NewPyrObjectPtr<PyrT>::~NewPyrObjectPtr()
+{
+	// don't delete pyrObj just check that it's been used
+	// We cannot throw from the destructor, so just post an error and terminate
+	// sclang is basically burnt toast at this stage anyway, or will be soon.
+	if(!mMadeReachable) {
+		PyrMethod *meth = gMainVMGlobals->primitiveMethod;
+		char *lastPrimitiveClass, *lastPrimitiveMethod;
+		lastPrimitiveClass = slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name;
+		lastPrimitiveMethod = slotRawSymbol(&meth->name)->name;
+		
+		printf("ERROR: Unused PyrObject created in primitive called from %s:%s. Terminating...\n", lastPrimitiveClass, lastPrimitiveMethod);
+		std::terminate();
+	}
 }
 
 #endif

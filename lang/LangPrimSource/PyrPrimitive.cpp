@@ -667,7 +667,7 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 		size = 0;
 	}
 
-	NewPyrObjectPtr ptr = instantiateObjectWithPtr(g->gc, classobj, size, false, true);
+	NewPyrObjectPtr<PyrObject> ptr = instantiateObjectWithPtr(g->gc, classobj, size, false, true);
 	SetNewObjectOnStack(a, std::move(ptr));
 	return errNone;
 }
@@ -675,8 +675,8 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 int prAllocateWhileUnreachable(struct VMGlobals *g, int numArgsPushed);
 int prAllocateWhileUnreachable(struct VMGlobals *g, int numArgsPushed)
 {
-	NewPyrObjectPtr ptr(g->gc, newPyrStringN(g->gc, 8, 0, true));
-	//NewPyrObjectPtr ptr2(g->gc, newPyrStringN(g->gc, 8, 0, true)); // comment this out to see the Unused object error
+	NewPyrObjectPtr<PyrString> ptr(g->gc, newPyrStringN(g->gc, 8, 0, true));
+	//NewPyrObjectPtr<PyrString> ptr2(g->gc, newPyrStringN(g->gc, 8, 0, true)); // comment this out to see the Unused object error
 	return errNone;
 }
 

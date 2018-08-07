@@ -110,8 +110,11 @@ inline bool NotPtr(const PyrSlot* slot) { return slot->tag != tagPtr; }
 /* setter functions */
 inline void SetInt(PyrSlot* slot, int val)           { slot->tag = tagInt;  slot->u.i = val; }
 inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val)      { slot->tag = tagObj;  slot->u.o = (struct PyrObject*)(val); }
-inline void SetNewObjectOnStack(PyrSlot* slot, NewPyrObjectPtr&& val)      { slot->tag = tagObj;  slot->u.o = (struct PyrObject*)(val.release()); }
-inline void SetNewObjectInObject(PyrSlot* slot, NewPyrObjectPtr&& val)
+
+template <typename PyrT>
+inline void SetNewObjectOnStack(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)      { slot->tag = tagObj;  slot->u.o = (struct PyrObject*)(val.release()); }
+template <typename PyrT>
+inline void SetNewObjectInObject(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)
 {
 	PyrObjectHdr *obj = val.get();
 	slot->tag = tagObj;

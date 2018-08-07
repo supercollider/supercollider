@@ -151,8 +151,10 @@ inline int GetTag(const PyrSlot* slot) { return slot->utag; }
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val)    {  (slot)->utag = tagInt;  (slot)->ui = (val); }
 inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val) {  (slot)->utag = tagObj;   (slot)->uo = (PyrObject*)(val); }
-inline void SetNewObjectOnStack(PyrSlot* slot, NewPyrObjectPtr&& val)      { slot->utag = tagObj;  slot->uo = (struct PyrObject*)(val.release()); }
-inline void SetNewObjectInObject(PyrSlot* slot, NewPyrObjectPtr&& val)
+template <typename PyrT>
+inline void SetNewObjectOnStack(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)      { slot->utag = tagObj;  slot->uo = (struct PyrObject*)(val.release()); }
+template <typename PyrT>
+inline void SetNewObjectInObject(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)
 {
 	PyrObjectHdr *obj = val.get();
 	slot->utag = tagObj;

@@ -174,7 +174,7 @@ void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 		if (isLibraryCompiled()) {
 			VMGlobals *g = gMainVMGlobals;
 
-			NewPyrObjectPtr ptr = newPyrStringNWithPtr(g->gc, size, 0, true);
+			NewPyrObjectPtr<PyrString> ptr = newPyrStringNWithPtr(g->gc, size, 0, true);
 			PyrString* strobj = (PyrString*)ptr.get();
 			memcpy(strobj->s, buf, size);
 			

@@ -28,6 +28,7 @@ This file contains the definitions of the core objects that implement the class 
 
 #include "PyrObject.h"
 #include "VMGlobals.h"
+#include "NewPyrObjectPtr.h"
 
 #define classClassNumInstVars 19
 
@@ -237,12 +238,12 @@ extern PyrMethod *gNullMethod; // used to fill row table
 
 PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	bool fill, bool collect);
-NewPyrObjectPtr instantiateObjectWithPtr(class PyrGC *gc, PyrClass* classobj, int size,
+NewPyrObjectPtr<PyrObject> instantiateObjectWithPtr(class PyrGC *gc, PyrClass* classobj, int size,
 							 bool fill, bool collect);
 
 PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
 PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool collect);
-NewPyrObjectPtr newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC);
+NewPyrObjectPtr<PyrString> newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC);
 PyrString* newPyrStringN(class PyrGC *gc, int size, int flags, bool collect);
 PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect);
 PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool collect);

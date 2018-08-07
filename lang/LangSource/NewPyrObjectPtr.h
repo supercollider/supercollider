@@ -30,10 +30,11 @@ class PyrGC;
 struct PyrObjectHdr;
 struct PyrObject;
 
+template <typename PyrT>
 class NewPyrObjectPtr
 {
 private:
-	PyrObjectHdr* mPyrObj;
+	PyrT* mPyrObj;
 	bool mMadeReachable = false;
 	class PyrGC* mGC;
 	
@@ -41,7 +42,7 @@ public:
 	void incrementGC();
 	void decrementGC();
 	
-	NewPyrObjectPtr(class PyrGC* inGC = 0, PyrObjectHdr* inPtr = 0) : mPyrObj(inPtr), mGC(inGC)
+	NewPyrObjectPtr(class PyrGC* inGC = 0, PyrT* inPtr = 0) : mPyrObj(inPtr), mGC(inGC)
 	{
 		// eventually, this should happen in the GC itself to avoid circumvention
 		// for now it happens here for testing purposes and backwards compatibility.
@@ -76,30 +77,30 @@ public:
 	
 	~NewPyrObjectPtr();
 	
-	PyrObjectHdr* release() //consume the object
+	PyrT* release() //consume the object
 	{
 		mMadeReachable = true;
-		PyrObjectHdr* released = mPyrObj;
+		PyrT* released = mPyrObj;
 		mPyrObj = nullptr;
 		decrementGC();
 		return released;
 	}
 	
-	PyrObjectHdr* releaseAndWriteNew(PyrObject* parent);
+	PyrT* releaseAndWriteNew(PyrObject* parent);
 	
-	PyrObjectHdr* get() // access without consuming
+	PyrT* get() // access without consuming
 	{
 		mMadeReachable = true;
 		return mPyrObj;
 	}
 	
 	// might be needed
-	PyrObjectHdr& operator* () const
+	PyrT& operator* () const
 	{
 		return *mPyrObj;
 	}
 	
-	PyrObjectHdr* operator-> () const
+	PyrT* operator-> () const
 	{
 		return mPyrObj;
 	}
