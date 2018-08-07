@@ -26,12 +26,14 @@ TestSerialPort : UnitTest {
 
 	// Return true if we are on Windows or socat is not installed.
 	// This method memoizes its results.
+	// FIXME find better way to annotate/skip tests
 	skipSerialTests {
 		if(skipSerialTests.notNil) {
 			^skipSerialTests;
 		};
 		skipSerialTests = false;
 		if(thisProcess.platform.name == \windows) {
+			"Skipping SerialPort tests because platform is Windows.".warn;
 			skipSerialTests = true;
 		};
 		if("which socat".systemCmd != 0) {
@@ -92,17 +94,9 @@ TestSerialPort : UnitTest {
 		port.close();
 	}
 
-	// TODO: use assertException
-	test_open_onMissingDevice {
+	test_open_errorOnMissingDevice {
 		if(this.skipSerialTests) { ^this };
-
-		try {
-			SerialPort("/dev/doesnt_exist")
-		} { |e|
-			^this.passed(thisMethod);
-		};
-
-		this.failed(thisMethod, "Trying to open a missing serial port should throw");
+		this.assertException( { SerialPort("/dev/doesnt_exist") }, PrimitiveFailedError, "Trying to open a missing serial port should throw");
 	}
 
 	test_close {
@@ -159,6 +153,7 @@ TestSerialPort : UnitTest {
 
 		cond.wait();
 		this.assertEquals(result, $a.ascii);
+		rout.stop();
 
 		in.close();
 		out.close();
@@ -171,7 +166,6 @@ TestSerialPort : UnitTest {
 		in = this.mkPort(input);
 		out = this.mkPort(output);
 		result = nil;
-		rout;
 		cond = Condition();
 
 		out.put($a);
@@ -189,6 +183,7 @@ TestSerialPort : UnitTest {
 		cond.wait();
 		this.assertEquals(result, $a.ascii);
 		this.assertEquals(in.next, $b.ascii);
+		rout.stop();
 
 		in.close();
 		out.close();
@@ -211,6 +206,7 @@ TestSerialPort : UnitTest {
 
 		cond.wait();
 		this.assertEquals(result, $a.ascii);
+		rout.stop();
 
 		in.close();
 		out.close();
@@ -225,32 +221,31 @@ TestSerialPort : UnitTest {
 		in.close();
 	}
 
-	// test_rxErrors_bufferOverflow {
-	// 	var in, out, cond, rxErrs;
-	// 	if(this.skipSerialTests) { ^this };
+	test_rxErrors_bufferOverflow {
+		var in, out, cond, rxErrs;
+		if(this.skipSerialTests) { ^this };
 
-	// 	in = this.mkPort(input);
-	// 	out = this.mkPort(output);
-	// 	cond = Condition();
-	// 	rxErrs = 0;
+		in = this.mkPort(input);
+		out = this.mkPort(output);
+		cond = Condition();
+		rxErrs = 0;
 
-	// 	// Overflow the buffer by exactly 1
-	// 	for(0, kBufferSize) { |i|
-	// 		out.put($a);
-	// 		0.000001.wait;
-	// 	};
+		// Overflow the buffer by exactly 1
+		for(0, kBufferSize) { |i|
+			out.put($a);
+			0.0001.wait;
+		};
 
-	// 	"meow".postln;
-	// 	fork { 3.wait; cond.test_(true).signal };
+		fork { 3.wait; cond.test_(true).signal };
 
-	// 	// spin until all data has been read
-	// 	while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
+		// spin until all data has been read
+		while { (rxErrs == 0) and: cond.test.not } { rxErrs = in.rxErrors; 0.01.wait; };
 
-	// 	this.assertEquals(rxErrs, 1);
+		this.assert(rxErrs > 0);
 
-	// 	in.close();
-	// 	out.close();
-	// }
+		in.close();
+		out.close();
+	}
 
 	test_putAll {
 		var in, out, result, rout, cond;
@@ -280,6 +275,7 @@ TestSerialPort : UnitTest {
 		this.assertEquals(in.next, $l.ascii);
 		this.assertEquals(in.next, $o.ascii);
 		this.assertEquals(in.next, nil);
+		rout.stop();
 
 		in.close();
 		out.close();
