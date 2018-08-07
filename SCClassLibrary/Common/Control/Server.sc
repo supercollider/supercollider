@@ -632,7 +632,7 @@ Server {
 		var file, buffer;
 		dir = dir ? SynthDef.synthDefDir;
 		file = File(dir ++ name ++ ".scsyndef","r");
-		if(file.isNil) { ^nil };
+		if(file.isOpen.not) { ^nil };
 		protect {
 			buffer = Int8Array.newClear(file.length);
 			file.read(buffer);
