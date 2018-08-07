@@ -119,8 +119,18 @@ d.atAll([\hello, \z, \hello, \c, \whello]);
 
 method::getPairs
 Return an link::Classes/Array:: with all keys and values pairwise.
+
+discussion::
+
 code::
 d = (hello: 9, whello: 77, z: 99);
+d.getPairs;
+::
+
+Note that, unlike link::#-asPairs::, getPairs will return nil with an empty Dictionary.
+
+code::
+d = Dictionary.new;
 d.getPairs;
 ::
 
@@ -297,8 +307,16 @@ argument::class
 The class of the collection to be returned. By default this is an link::Classes/Array::.
 
 discussion::
+
 code::
 d = (a: 5, b: 7, c: 1, d: 0);
+d.asPairs;
+::
+
+Note that, unlike link::#-getPairs::, asPairs will return an empty Array with an empty Dictionary.
+
+code::
+d = Dictionary.new;
 d.asPairs;
 ::
 
