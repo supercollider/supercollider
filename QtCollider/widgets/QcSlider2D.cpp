@@ -126,6 +126,15 @@ void QcSlider2D::keyPressEvent ( QKeyEvent *e )
   }
 }
 
+void QcSlider2D::setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
+                                   int tileMode, double opacity )
+{
+    _bkg_image.setImage( image, rect, tileMode, opacity );
+
+    if( !testAttribute(Qt::WA_WState_InPaintEvent) )
+        update();
+}
+
 void QcSlider2D::paintEvent ( QPaintEvent *e )
 {
   using namespace QtCollider::Style;
@@ -141,6 +150,9 @@ void QcSlider2D::paintEvent ( QPaintEvent *e )
 
   RoundRect frame(rect(), 2);
   drawSunken( &p, plt, frame, grooveColor(), hasFocus() ? focusColor() : QColor() );
+
+  if (_bkg_image.isValid())
+    _bkg_image.paint( &p, rect() );
 
   Ellipse thumb(thumbRect());
   drawRaised( &p, plt, thumb, plt.color(QPalette::Button).lighter(105) );

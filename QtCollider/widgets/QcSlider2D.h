@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include "image_painter.h"
+
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
 #include "../style/style.hpp"
@@ -52,6 +54,10 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
     void setKnobColor(const QColor &c) { _knobColor = c; update(); }
     QSize sizeHint() const { return QSize(150,150); }
     QSize minimumSizeHint() const { return QSize(30,30); }
+
+    Q_INVOKABLE
+    void setBackgroundImage( const QtCollider::SharedImage & image, const QRectF & rect,
+                            int tileMode, double opacity );
   public Q_SLOTS:
     void incrementX( double factor = 1.f );
     void decrementX( double factor = 1.f );
@@ -74,4 +80,5 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
     double _step;
 
     QColor _knobColor;
+    QtCollider::ImagePainter _bkg_image;
 };
