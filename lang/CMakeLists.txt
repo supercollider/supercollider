@@ -51,6 +51,7 @@ set(sclang_sources
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
+	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
 	LangSource/ByteCodeArray.cpp
 	LangSource/DumpParseNode.cpp
@@ -99,10 +100,6 @@ endif()
 file(GLOB_RECURSE headers ../include/*.h* )
 file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
 list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator happy
-
-if(NOT WIN32)
-	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
-endif()
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
