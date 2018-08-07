@@ -550,4 +550,11 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
+	parseJSON {
+		^this.parseYAML
+	}
+
+	parseJSONFile {
+		^this.parseYAMLFile
+	}
 }
