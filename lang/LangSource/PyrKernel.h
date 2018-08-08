@@ -242,6 +242,7 @@ NewPyrObjectPtr<PyrObject> instantiateObjectWithPtr(class PyrGC *gc, PyrClass* c
 							 bool fill, bool collect);
 
 PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect);
+NewPyrObjectPtr<PyrString> newPyrStringWithPtr(class PyrGC *gc, const char *s, int flags, bool runGC);
 PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool collect);
 NewPyrObjectPtr<PyrString> newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC);
 PyrString* newPyrStringN(class PyrGC *gc, int size, int flags, bool collect);

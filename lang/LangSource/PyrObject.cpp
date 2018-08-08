@@ -2542,6 +2542,20 @@ PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool runGC)
 	return string;
 }
 
+NewPyrObjectPtr<PyrString> newPyrStringWithPtr(class PyrGC *gc, const char *s, int flags, bool runGC)
+{
+	PyrString* string;
+	int length = strlen(s);
+	
+	if (!gc) string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
+	else string = (PyrString*)gc->New(length, flags, obj_char, runGC);
+	string->classptr = class_string;
+	string->size = length;
+	memcpy(string->s, s, length);
+	NewPyrObjectPtr<PyrString> ptr(gc, string);
+	return ptr;
+}
+
 NewPyrObjectPtr<PyrString> newPyrStringNWithPtr(class PyrGC *gc, int length, int flags, bool runGC)
 {
 	PyrString* string;
