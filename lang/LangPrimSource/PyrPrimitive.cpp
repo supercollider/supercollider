@@ -3514,10 +3514,8 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 
 	for (size_t i = 0; i != numberOfPaths; ++i) {
 		const std::string& utf8_path = SC_Codecvt::path_to_utf8_str(dirVector[i]);
-		PyrString * pyrString = newPyrString(g->gc, utf8_path.c_str(), 0, true);
-		SetObject(resultArray->slots + i, pyrString);
-		g->gc->GCWriteNew( resultArray,  pyrString ); // we know pyrString is white so we can use GCWriteNew
-		resultArray->size++;
+		NewPyrObjectPtr<PyrString> ptr = newPyrStringWithPtr(g->gc, utf8_path.c_str(), 0, true);
+		AppendObjectToSizedObject(resultArray, std::move(ptr));
 	}
 	return errNone;
 }
