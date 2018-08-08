@@ -82,26 +82,11 @@ int main( int argc, char *argv[] )
     // Load settings so that we can copy editor color values into the UI colors,
     // which must be set before window is created.
     Main *main = Main::instance();
-    Settings::Manager *settings = main->settings();
-
-    const QTextCharFormat *format = &settings->getThemeVal("text");
-    QBrush text_background = format->background();
-    QBrush text_foreground = format->foreground();
 
     // Palette must be set before style, for consistent application.
-    app.setPalette(QPalette(
-        text_foreground,    // windowText
-        text_background,    // button
-        text_background,    // light
-        text_background,    // dark
-        text_background,    // mid
-        text_foreground,    // text
-        text_foreground,    // bright_text
-        text_background,    // base
-        text_background     // window
-    ));
+    main->setAppPaletteFromSettings();
 
-    // Set up style
+   // Set up style
     app.setStyle( new ScIDE::Style(app.style()) );
 
     // Go...
@@ -117,6 +102,7 @@ int main( int argc, char *argv[] )
     // been saved un-maximized.
     win->show();
 
+    Settings::Manager *settings = main->settings();
     QString startSessionName = settings->value("IDE/startWithSession").toString();
     if (startSessionName == "last") {
         QString lastSession = sessions->lastSession();
@@ -240,7 +226,7 @@ Main::Main(void) :
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
-  
+
 #ifdef Q_OS_MAC
     QtCollider::Mac::DisableAutomaticWindowTabbing();
 #endif
@@ -257,6 +243,68 @@ void Main::quit() {
     storeSettings();
     mScProcess->stopLanguage();
     QApplication::quit();
+}
+
+void Main::setAppPaletteFromSettings() {
+    const QTextCharFormat *format = &mSettings->getThemeVal("text");
+    QBrush text_bg = format->background();
+    QBrush text_fg = format->foreground();
+
+    QBrush mid_bg, dark_bg;
+    // If the text is darker than the background we we create contrast colors
+    // that are darker in value than the background, otherwise we do the
+    // opposite.
+    if (text_fg.color().value() < text_bg.color().value()) {
+        mid_bg = QBrush(text_bg.color().darker(200));
+        dark_bg = QBrush(text_bg.color().darker(300));
+    } else {
+        // QtColor::lighter() multiplies the value of the color by the provided
+        // percentage factor, so if the value is zero it has no effect. In that
+        // case we darken the foreground color, since hue information is lost
+        // in maximum black.
+        if (text_bg.color().value() > 0) {
+            mid_bg = QBrush(text_bg.color().lighter(200));
+            dark_bg = QBrush(text_bg.color().lighter(300));
+        } else {
+            mid_bg = QBrush(text_fg.color().darker(500));
+            dark_bg = QBrush(text_fg.color().darker(1000));
+        }
+    }
+
+    QBrush clamp_fg = text_fg;
+
+#ifdef Q_OS_MACOS
+    // On OS X Qt uses Cocoa-style native buttons, which are currently rendered
+    // with a hard-coded white background. If we are using a light text on dark
+    // background themes this means the text can be washed out and not readable
+    // on the controls. For this platform we therefore clamp the text color to
+    // be at most half value.
+    if (clamp_fg.color().value() > 127) {
+        int hue = clamp_fg.color().hue();
+        int sat = clamp_fg.color().saturation();
+        clamp_fg = QBrush(QColor::fromHsv(hue, sat, 127));
+    }
+#endif
+
+    qApp->setPalette(QPalette(
+        clamp_fg,      // windowText - text color for active and inactive tab
+                       //    bars, and most non-bold text in controls, including
+                       //    the selector buttons at the top of the editor
+                       //    settings tab.
+        text_bg,       // button - background color of active tab.
+        text_fg,       // light - no observed use in current ui.
+        dark_bg,       // dark - color for dividers around tabs, the background
+                       //     color around the Auto Scroll button, and selection
+                       //     background color in the settings tab menu.
+        mid_bg,        // mid - background color for the help and log dock bars
+                       //     as well as inactive tabs.
+        clamp_fg,      // text - text color for home and autoscroll dock bars,
+                       //     tab selector names in settings, and most buttons.
+        text_fg,       // bright_text - no observed use in current UI.
+        text_bg,       // base - no observed use in current UI.
+        mid_bg         // window - background color of settings window and the color
+                       //     of the frame drawn around the editor widgets.
+    ));
 }
 
 bool Main::eventFilter(QObject *object, QEvent *event)
@@ -301,7 +349,6 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
 
     return result;
 }
-
 
 bool Main::openDocumentation(const QString & string)
 {
