@@ -183,6 +183,7 @@ public:
 	
 	void decrementUnreachableCount() { mUnreachableObjects--; }
 	void incrementUnreachableCount() { mUnreachableObjects++; }
+	int32 numUnreachableObjects() { return mUnreachableObjects; }
 
 private:
 	inline PyrObject * Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect);

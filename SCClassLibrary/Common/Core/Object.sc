@@ -55,6 +55,10 @@ Object  {
 		_GCSanity
 		^this.primitiveFailed
 	}
+	gcUnreachableCount { // should always be zero
+		_GCUnreachableCount 
+		^this.primitiveFailed
+	}
 	canCallOS {
 		_CanCallOS
 		^this.primitiveFailed
