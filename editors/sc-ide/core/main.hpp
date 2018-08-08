@@ -87,7 +87,7 @@ public:
     {
         instance()->scProcess()->evaluateCode(text, silent);
     }
-    
+
     static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
     {
         if(instance()->scProcess()->compiled())
@@ -108,27 +108,12 @@ public Q_SLOTS:
 
     void applySettings() {
         Q_EMIT(applySettingsRequest(mSettings));
-
-        const QTextCharFormat *format = &mSettings->getThemeVal("text");
-        QBrush text_background = format->background();
-        QBrush text_foreground = format->foreground();
-
-        qApp->setPalette(QPalette(
-            text_foreground,    // windowText
-            text_background,    // button
-            text_background,    // light
-            text_background,    // dark
-            text_background,    // mid
-            text_foreground,    // text
-            text_foreground,    // bright_text
-            text_background,    // base
-            text_background     // window
-        ));
-
+        setAppPaletteFromSettings();
         qApp->setStyle(qApp->style());
     }
 
     void quit();
+    void setAppPaletteFromSettings();
 
 Q_SIGNALS:
     void storeSettingsRequest(Settings::Manager *);
@@ -138,7 +123,7 @@ private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
     bool nativeEventFilter(const QByteArray&, void* message, long*);
-    
+
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
     ScServer * mScServer;
