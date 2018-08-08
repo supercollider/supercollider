@@ -2706,8 +2706,7 @@ HOT void Interpret(VMGlobals *g)
 						if (obj->IsImmutable()) { StoreToImmutableB(g, sp, ip); }
 						else {
 							if (numArgsPushed >= 2) {
-								slotCopy(&obj->slots[index], sp + 1);
-								g->gc->GCWrite(obj, sp + 1);
+								slotCopyAndGCWrite(&obj->slots[index], sp + 1, obj, g->gc);
 							} else
 								slotCopy(&obj->slots[index], &gSpecialValues[svNil]);
 							slotCopy(sp, slot);
@@ -2721,8 +2720,7 @@ HOT void Interpret(VMGlobals *g)
 					case methAssignClassVar : /* assign class var */
 						sp -= numArgsPushed - 1;
 						if (numArgsPushed >= 2) {
-							slotCopy(&g->classvars->slots[methraw->specialIndex], sp + 1);
-							g->gc->GCWrite(g->classvars, sp + 1);
+							slotCopyAndGCWrite(&g->classvars->slots[methraw->specialIndex], sp + 1, g->classvars, g->gc);
 						} else
 							slotCopy(&g->classvars->slots[methraw->specialIndex], &gSpecialValues[svNil]);
 						slotCopy(sp, slot);
