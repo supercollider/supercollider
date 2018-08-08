@@ -668,7 +668,7 @@ int basicNew(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	NewPyrObjectPtr<PyrObject> ptr = instantiateObjectWithPtr(g->gc, classobj, size, false, true);
-	SetNewObjectOnStack(a, std::move(ptr));
+	SetObjectOnStack(a, std::move(ptr));
 	return errNone;
 }
 

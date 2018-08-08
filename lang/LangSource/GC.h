@@ -417,4 +417,69 @@ NewPyrObjectPtr<PyrT>::~NewPyrObjectPtr()
 	}
 }
 
+////////////////
+// safer object set funcs; these need to be defined after the GC
+
+// existing object
+inline void SetObjectInObject(PyrSlot* slot, struct PyrObjectHdr* val, PyrGC* gc)
+{
+	SetObject(slot, val); // 32 or 64 bit version
+	gc->GCWrite(slotRawObject(slot), val); // update GC
+}
+
+// new object
+template <typename PyrT>
+inline void SetObjectInObject(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)
+{
+	PyrObjectHdr *obj = val.get();
+	SetObject(slot, obj); // 32 or 64 bit version
+	val.releaseAndWriteNew(slotRawObject(slot)); // free new object pointer and update GC
+}
+
+// existing object
+inline void AppendObjectToSizedObject(PyrObject* parent, struct PyrObjectHdr* val, PyrGC* gc)
+{
+	assert(MAXINDEXSIZE(parent) > parent->size);
+	SetObject(&parent->slots[parent->size], val); // 32 or 64 bit version
+	gc->GCWrite(parent, val); // update GC
+	parent->size++; // update parent size
+}
+
+// new object
+template <typename PyrT>
+inline void AppendObjectToSizedObject(PyrObject* parent, NewPyrObjectPtr<PyrT>&& val)
+{
+	assert(MAXINDEXSIZE(parent) > parent->size);
+	PyrObjectHdr *obj = val.get();
+	SetObject(&parent->slots[parent->size], obj); // 32 or 64 bit version
+	val.releaseAndWriteNew(parent); // free new object pointer and update GC
+	parent->size++; // update parent size
+}
+
+// existing object
+inline void SetObjectOnStack(PyrSlot* slot, struct PyrObjectHdr* val)
+{
+	SetObject(slot, val);  // 32 or 64 bit version
+}
+
+// new object
+template <typename PyrT>
+inline void SetObjectOnStack(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)
+{
+	SetObject(slot, val.release());  // 32 or 64 bit version
+}
+
+// safer slot copy funcs
+inline void slotCopyAndGCWrite(PyrSlot *dst, const PyrSlot *src, PyrObject* inParent, PyrGC* gc)
+{
+	slotCopy(dst, src);
+	gc->GCWrite((PyrObjectHdr*)inParent, (PyrObjectHdr*)slotRawObject(src));
+}
+
+inline void slotCopyAndGCWrite(PyrSlot *dst, const PyrSlot *src, int num, PyrObject* inParent, PyrGC* gc)
+{
+	for (int i=0; i<num; ++i)
+		slotCopyAndGCWrite(dst + i, src + i, inParent, gc);
+}
+
 #endif
