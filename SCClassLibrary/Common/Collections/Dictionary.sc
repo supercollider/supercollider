@@ -371,6 +371,7 @@ Dictionary : Set {
 	}
 
 	== { arg that;
+		if (that === this) { ^true };
 		if(that.isKindOf(this.class).not) { ^false };
 		if(that.size != this.size) { ^false };
 		that.keysValuesDo { |key, val|

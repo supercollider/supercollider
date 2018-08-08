@@ -88,6 +88,7 @@ String[char] : RawArray {
 		^this.compare(aString, false) >= 0
 	}
 	== { arg aString;
+		if (this === aString) { ^true };
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) == 0
 	}
