@@ -229,10 +229,14 @@ SCDocHTMLRenderer {
 		stream
 		<< "</title>\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/codemirror.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
 		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
+		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
@@ -240,12 +244,10 @@ SCDocHTMLRenderer {
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
-		<< "<script src='" << baseDir << "/prettify.js' type='text/javascript'></script>\n"
-		<< "<script src='" << baseDir << "/lang-sc.js' type='text/javascript'></script>\n"
 		<< "</head>\n";
 
 		stream
-		<< "<body onload='fixTOC();prettyPrint()'>\n";
+		<< "<body onload='fixTOC()'>\n";
 
 
 		displayedTitle = if(
@@ -553,12 +555,12 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<pre class='code prettyprint lang-sc'>"
+				stream << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</pre>\n";
+				<< "</textarea>\n";
 			},
 			\CODE, {
-				stream << "<code class='code prettyprint lang-sc'>"
+				stream << "<code>"
 				<< this.escapeSpecialChars(node.text)
 				<< "</code>";
 			},
@@ -958,7 +960,9 @@ SCDocHTMLRenderer {
 		};
 		stream << "link::" << doc.path << "::<br>"
 		<< "</div>"
-		<< "</div></body></html>";
+		<< "</div>"
+		<< "<script src='" << baseDir << "/editor.js' type='text/javascript'></script>\n"
+		<< "</body></html>";
 	}
 
 	*renderOnStream {|stream, doc, root|

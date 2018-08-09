@@ -113,6 +113,7 @@ a.subclass_toggle:hover {
     padding: 0.2em 0;
     background-color: #f9f9f9;
     box-shadow: 0 0 0.25em rgba(128, 128, 128, 0.5);
+    z-index: 2;
 }
 
 #nav {
@@ -374,12 +375,6 @@ pre {
     padding-left: 0.5em;
 }
 
-code.code, pre.code {
-}
-
-pre.code {
-}
-
 .image {
     text-align: center;
     margin: 0.3em;
@@ -616,54 +611,6 @@ ul.tree li:last-child {
 a.undoc {
     color: #88b;
     text-decoration: line-through;
-}
-
-/* auto class links. note that color can be overridden by prettify rules below */
-a.clslnk {
-}
-
-/* Pretty printing styles. Used with prettify.js. */
-
-.str { color: #070; } /* strings */
-.kwd { color: #880; } /* special values like true, nil.. */
-.com { color: #822; } /* comments */
-.typ { color: #008; } /* class names */
-.lit { color: #066; } /* fs and character literals */
-.pun { color: #555; } /* punctuation */
-.pln { color: #000; } /* plain text, methods and variable names */
-.tag { color: #059; } /* special variables like super, thisProcess... */
-.dec { color: #508; } /* declarations like var, const... */
-.atn { color: #285; } /* symbols */
-.atv { color: #750; } /* environment vars */
-
-/* Specify class=linenums on a pre to get line numbering */
-ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
-li.L0,
-li.L1,
-li.L2,
-li.L3,
-li.L5,
-li.L6,
-li.L7,
-li.L8 { list-style-type: none }
-/* Alternate shading for lines */
-li.L1,
-li.L3,
-li.L5,
-li.L7,
-li.L9 { background: #eee }
-
-@media print {
-  .str { color: #060; }
-  .kwd { color: #006; font-weight: bold; }
-  .com { color: #600; font-style: italic; }
-  .typ { color: #404; font-weight: bold; }
-  .lit { color: #044; }
-  .pun { color: #440; }
-  .pln { color: #000; }
-  .tag { color: #006; font-weight: bold; }
-  .atn { color: #404; }
-  .atv { color: #060; }
 }
 
 /* from HelpSource/Search.html */
