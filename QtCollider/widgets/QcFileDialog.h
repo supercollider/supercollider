@@ -25,6 +25,7 @@
 
 #include <QFileDialog>
 #include <QPointer>
+#include <QTimer>
 
 class QcFileDialog : public QObject
 {
@@ -55,8 +56,11 @@ Q_SIGNALS:
 private Q_SLOTS:
 
   void show() {
-    dialog->exec();
-    dialog->deleteLater();
+    auto thisDialog = dialog;
+    QTimer::singleShot(1, [thisDialog]() {
+      thisDialog->exec();
+      thisDialog->deleteLater();
+    });
   }
 
   void onFinished( int res ) {
