@@ -42,6 +42,10 @@ File : UnixFILE {
 		_FileDelete
 		^this.primitiveFailed
 	}
+	*deleteAll { arg pathName;
+		_FileDeleteAll
+		^this.primitiveFailed
+	}
 	*mtime { arg pathName;
 		_FileMTime
 		^this.primitiveFailed
