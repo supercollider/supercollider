@@ -800,6 +800,19 @@ A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dict
 method::parseYAMLFile
 Same as code::parseYAML:: but parse a file directly instead of a string. This is faster than reading a file into a string and then parse it.
 
+method::parseJSON
+This method is currently just an alias for link::#-parseYAML::, in the future it will only accept valid JSON.
+returns::
+A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
+
+code::
+"{\"a\": 1}".parseYAML;
+"{\"a\": 1}".parseJSON;
+::
+
+method::parseJSONFile
+This method is currently just an alias for link::#-parseYAMLFile::, in the future it will only accept valid JSON files.
+
 subsection::Document Support
 
 method::newTextWindow
