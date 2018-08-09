@@ -81,6 +81,9 @@ struct VMGlobals {
 	
 	// primitive exceptions
 	std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions;
+	
+	// utlities
+	PyrSlot* getReceiverSlot() { return sp - numpop; }
 } ;
 
 inline void FifoMsg::Perform(struct VMGlobals* g)
