@@ -70,6 +70,7 @@ Collection {
 	@ { | index | ^this[index] }
 
 	== { | aCollection |
+		if (this === aCollection) { ^true };
 		if (aCollection.class != this.class) { ^false };
 		if (this.size != aCollection.size) { ^false };
 		this.do { | item, i |
