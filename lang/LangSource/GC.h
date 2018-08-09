@@ -458,15 +458,17 @@ inline void AppendObjectToSizedObject(PyrObject* parent, NewPyrObjectPtr<PyrT>&&
 }
 
 // existing object
-inline void SetObjectOnStack(PyrSlot* slot, struct PyrObjectHdr* val)
+inline void SetObjectOnStack(VMGlobals* g, struct PyrObjectHdr* val)
 {
+	PyrSlot* slot = g->getReceiverSlot();
 	SetObject(slot, val);  // 32 or 64 bit version
 }
 
 // new object
 template <typename PyrT>
-inline void SetObjectOnStack(PyrSlot* slot, NewPyrObjectPtr<PyrT>&& val)
+inline void SetObjectOnStack(VMGlobals* g, NewPyrObjectPtr<PyrT>&& val)
 {
+	PyrSlot* slot = g->getReceiverSlot();
 	SetObject(slot, val.release());  // 32 or 64 bit version
 }
 
