@@ -248,7 +248,7 @@ code::
 ::
 
 method::asSecs
-Return a link::Classes/Float:: based on converting a time string in format (dd):hh:mm:ss.s. This is the inverse method to link::Classes/SimpleNumber#-asTimeString::.
+Return a link::Classes/Float:: based on converting a time string in format (ddd):hh:mm:ss.sss. This is the inverse method to link::Classes/SimpleNumber#-asTimeString::.
 code::
 (45296.asTimeString).asSecs;
 "32.1".asSecs;
