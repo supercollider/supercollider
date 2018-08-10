@@ -250,24 +250,25 @@ void Main::setAppPaletteFromSettings() {
     QBrush text_bg = format->background();
     QBrush text_fg = format->foreground();
 
-    QBrush mid_bg, dark_bg;
-    // If the text is darker than the background we we create contrast colors
-    // that are darker in value than the background, otherwise we do the
-    // opposite.
+    QBrush active_bg, inactive_bg;
+    // If we are using a dark text on light background we use the light background
+    // color for active tabs, and darken it somewhat for inactive tabs.
     if (text_fg.color().value() < text_bg.color().value()) {
-        mid_bg = QBrush(text_bg.color().darker(200));
-        dark_bg = QBrush(text_bg.color().darker(300));
+        active_bg = text_bg;
+        inactive_bg = QBrush(text_bg.color().darker(125));
     } else {
+        // When using light text on a dark background the active tab pops more
+        // as a lighter version of the background color.
+        inactive_bg = text_bg;
+
         // QtColor::lighter() multiplies the value of the color by the provided
         // percentage factor, so if the value is zero it has no effect. In that
         // case we darken the foreground color, since hue information is lost
         // in maximum black.
         if (text_bg.color().value() > 0) {
-            mid_bg = QBrush(text_bg.color().lighter(200));
-            dark_bg = QBrush(text_bg.color().lighter(300));
+            active_bg = QBrush(text_bg.color().lighter(150));
         } else {
-            mid_bg = QBrush(text_fg.color().darker(500));
-            dark_bg = QBrush(text_fg.color().darker(1000));
+            active_bg = QBrush(text_fg.color().darker(300));
         }
     }
 
@@ -291,18 +292,18 @@ void Main::setAppPaletteFromSettings() {
                        //    bars, and most non-bold text in controls, including
                        //    the selector buttons at the top of the editor
                        //    settings tab.
-        text_bg,       // button - background color of active tab.
+        active_bg,     // button - background color of *active* tab.
         text_fg,       // light - no observed use in current ui.
-        dark_bg,       // dark - color for dividers around tabs, the background
+        inactive_bg,   // dark - color for dividers around tabs, the background
                        //     color around the Auto Scroll button, and selection
                        //     background color in the settings tab menu.
-        mid_bg,        // mid - background color for the help and log dock bars
-                       //     as well as inactive tabs.
+        inactive_bg,   // mid - background color for the help and log dock bars
+                       //     as well as *inactive* tabs.
         clamp_fg,      // text - text color for home and autoscroll dock bars,
                        //     tab selector names in settings, and most buttons.
         text_fg,       // bright_text - no observed use in current UI.
         text_bg,       // base - no observed use in current UI.
-        mid_bg         // window - background color of settings window and the color
+        text_bg        // window - background color of settings window and the color
                        //     of the frame drawn around the editor widgets.
     ));
 }
