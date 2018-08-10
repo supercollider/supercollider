@@ -198,11 +198,7 @@ function fixTOC() {
 // to IDE functionality at "IDE" which is made globally available here after the page and
 // WebSocket have loaded.
 function setUpWebChannel() {
-    if (location.search != "")
-        var baseUrl = (/[?&]webChannelBaseUrl=([A-Za-z0-9\-:/\.]+)/.exec(location.search)[1]);
-    else
-        var baseUrl = "ws://localhost:12344";
-
+    var baseUrl = "ws://localhost:12344";
     var socket = new WebSocket(baseUrl);
     socket.onclose = function() { };
     socket.onerror = function(error) {
