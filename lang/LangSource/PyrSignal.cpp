@@ -532,12 +532,15 @@ PyrObject* signal_excess_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 
 bool signal_equal_xx(VMGlobals *g, PyrObject* ina, PyrObject* inb)
 {
-	float *a = (float*)(ina->slots) - 1;
-	float *b = (float*)(inb->slots) - 1;
-	float *endptr = a + ina->size;
 	if (ina->size != inb->size) return false;
 	if (slotRawSymbol(&ina->slots[ kSignalRate ]) != slotRawSymbol(&inb->slots[ kSignalRate ])) return false;
-	while (a < endptr) { if (*++a != *++b) return false; }
+	float *a = (float*)(ina->slots);
+	float *b = (float*)(inb->slots);
+	for (int i = 0; i < ina->size; i++) {
+		if (a[i] != b[i]) {
+			return false;
+		}
+	}
 	return true;
 }
 
