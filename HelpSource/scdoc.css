@@ -14,7 +14,7 @@ body {
 
 div.contents {
     margin: 0;
-    padding: 3em 1em;
+    padding: 3em 1em 1em;
 }
 
 table {
@@ -141,7 +141,7 @@ a.menu-link:hover {
 #menubar .menuitem:first-child a {
     /* The cube logo is actually *under* the <a>, but it shows through so that it looks like it
     is part of the link. */
-    padding-left: 2.5em;
+    padding-left: 2em;
 }
 
 #menubar .menuitem:first-child a:hover {
@@ -150,23 +150,23 @@ a.menu-link:hover {
 }
 
 #menubar .menuitem a.home span,
-#menubar .menuitem a.title {
+#menubar .toc-link span {
     display: none;
 }
 
 @media (min-width: 512px) {
+    #menubar .menuitem:first-child a {
+        padding-left: 2.5em;
+    }
+
     #menubar .menuitem a.home span,
-    #menubar .menuitem a.title {
+    #menubar .toc-link span {
         display: initial;
     }
 }
 
 #menubar .menuitem:last-child {
     border-right: none;
-}
-
-a.menu-link.title {
-    font-weight: bold;
 }
 
 #topdoctitle {
@@ -327,6 +327,13 @@ h4 {
     color: #777;
 }
 
+h1,
+h2,
+h3,
+h4 {
+    word-wrap: break-word;
+}
+
 /* https://css-tricks.com/hash-tag-links-padding/ */
 .anchor::before {
     display: block;
@@ -372,6 +379,7 @@ pre {
 
 .image img {
     margin-bottom: 1em;
+    max-width: 100%;
 }
 
 .methprefix {
@@ -477,6 +485,7 @@ td p {
 }
 .doclink a {
     color: #444;
+    word-wrap: break-word;
 }
 
 #sidetoc {
