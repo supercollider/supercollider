@@ -247,7 +247,7 @@ void Main::setAppPaletteFromSettings() {
     QBrush text_bg = format->background();
     QBrush text_fg = format->foreground();
 
-    int value_difference = text_bg.color().value - text_fg.color().value();
+    int value_difference = text_bg.color().value() - text_fg.color().value();
     if (std::abs(value_difference) < 32) {
         // If we are on the darker end of the spectrum we lighten the background,
         // to avoid interfering with color clamping of foreground text on OS X.
@@ -305,7 +305,7 @@ void Main::setAppPaletteFromSettings() {
     // on the controls. For this platform we therefore clamp the text color to
     // be at most half value.
     if (clamp_fg.color().value() > 127) {
-        clamp_fg = QColor::fromHsv(clamp_fg.color().hue()
+        clamp_fg = QColor::fromHsv(clamp_fg.color().hue(),
                                    clamp_fg.color().saturation(),
                                    127);
     }
