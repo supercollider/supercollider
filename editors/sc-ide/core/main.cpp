@@ -250,12 +250,34 @@ void Main::setAppPaletteFromSettings() {
     QBrush text_bg = format->background();
     QBrush text_fg = format->foreground();
 
-    QBrush active_bg, inactive_bg;
+    if (std::abs(text_bg.color().value() - text_fg.color().value()) < 16) {
+        // If we are on the darker end of the spectrum we lighten the background,
+        // to avoid interfering with color clamping of foreground text on OS X.
+        if (text_bg.color().value() < 127) {
+            text_bg = QColor::fromHsv(text_bg.color().hue(),
+                                      text_bg.color().saturation(),
+                                      text_bg.color().value() + 32);
+        } else {
+            // Otherwise we can darken the foreground color, once gain in keeping
+            // with the idea we don't want to overly lighten foreground text colors.
+            text_fg = QColor::fromHsv(text_fg.color().hue(),
+                                      text_fg.color().saturation(),
+                                      text_fg.color().value() - 32);
+        }
+    }
+
+    QBrush active_bg, inactive_bg, disabled_fg, disabled_shadow;
     // If we are using a dark text on light background we use the light background
     // color for active tabs, and darken it somewhat for inactive tabs.
     if (text_fg.color().value() < text_bg.color().value()) {
         active_bg = text_bg;
-        inactive_bg = QBrush(text_bg.color().darker(125));
+        inactive_bg = text_bg.color().darker(125);
+        // Disabled text is rendered twice, once in disabled text foreground
+        // color and once with a "shadow" color. We base the disabled text
+        // colors here off the background color, to make them pop less than
+        // regular text.
+        disabled_fg = text_bg.color().darker(150);
+        disabled_shadow = text_bg.color().darker(200);
     } else {
         // When using light text on a dark background the active tab pops more
         // as a lighter version of the background color.
@@ -266,9 +288,13 @@ void Main::setAppPaletteFromSettings() {
         // case we darken the foreground color, since hue information is lost
         // in maximum black.
         if (text_bg.color().value() > 0) {
-            active_bg = QBrush(text_bg.color().lighter(150));
+            active_bg = text_bg.color().lighter(150);
+            disabled_fg = inactive_bg.color().lighter(200);
+            disabled_shadow = inactive_bg.color().lighter(175);
         } else {
-            active_bg = QBrush(text_fg.color().darker(300));
+            active_bg = text_fg.color().darker(300);
+            disabled_fg = text_fg.color().darker(350);
+            disabled_shadow = text_fg.color().darker(400);
         }
     }
 
@@ -281,31 +307,37 @@ void Main::setAppPaletteFromSettings() {
     // on the controls. For this platform we therefore clamp the text color to
     // be at most half value.
     if (clamp_fg.color().value() > 127) {
-        int hue = clamp_fg.color().hue();
-        int sat = clamp_fg.color().saturation();
-        clamp_fg = QBrush(QColor::fromHsv(hue, sat, 127));
+        clamp_fg = QColor::fromHsv(clamp_fg.color().hue()
+                                   clamp_fg.color().saturation(),
+                                   127);
     }
 #endif
 
-    qApp->setPalette(QPalette(
-        clamp_fg,      // windowText - text color for active and inactive tab
-                       //    bars, and most non-bold text in controls, including
-                       //    the selector buttons at the top of the editor
-                       //    settings tab.
-        active_bg,     // button - background color of *active* tab.
-        text_fg,       // light - no observed use in current ui.
-        inactive_bg,   // dark - color for dividers around tabs, the background
-                       //     color around the Auto Scroll button, and selection
-                       //     background color in the settings tab menu.
-        inactive_bg,   // mid - background color for the help and log dock bars
-                       //     as well as *inactive* tabs.
-        clamp_fg,      // text - text color for home and autoscroll dock bars,
-                       //     tab selector names in settings, and most buttons.
-        text_fg,       // bright_text - no observed use in current UI.
-        text_bg,       // base - no observed use in current UI.
-        text_bg        // window - background color of settings window and the color
-                       //     of the frame drawn around the editor widgets.
-    ));
+    QPalette palette(
+        clamp_fg,         // windowText - text color for active and inactive tab
+                          //    bars, and most non-bold text in controls, including
+                          //    the selector buttons at the top of the editor
+                          //    settings tab.
+        active_bg,        // button - background color of *active* tab and buttons.
+        disabled_shadow,  // light - shadow for disabled text.
+        inactive_bg,      // dark - color for dividers around tabs and the background
+                          //     color around the Auto Scroll button.
+        inactive_bg,      // mid - background color for the help and log dock bars
+                          //     as well as *inactive* tabs.
+        clamp_fg,         // text - text color for home and autoscroll dock bars,
+                          //     tab selector names in settings, and most buttons.
+        text_fg,          // bright_text - no observed use in current UI.
+        text_bg,          // base - no observed use in current UI.
+        text_bg           // window - background color of menu bars, dialogs.
+    );
+
+    // Set a few other colors, namely the foreground color of disabled text
+    // and the selection background color.
+    palette.setBrush(QPalette::Disabled, QPalette::Text, disabled_fg);
+    palette.setBrush(QPalette::Normal, QPalette::Highlight, active_bg);
+    palette.setBrush(QPalette::Normal, QPalette::HighlightedText, text_fg);
+
+    qApp->setPalette(palette);
 }
 
 bool Main::eventFilter(QObject *object, QEvent *event)
