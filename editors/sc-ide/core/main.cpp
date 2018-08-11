@@ -297,6 +297,7 @@ void Main::setAppPaletteFromSettings() {
     }
 
     QBrush clamp_fg = text_fg;
+    QBrush clamp_highlight = active_bg;
 
 #ifdef Q_OS_MACOS
     // On OS X Qt uses Cocoa-style native buttons, which are currently rendered
@@ -308,6 +309,15 @@ void Main::setAppPaletteFromSettings() {
         clamp_fg = QColor::fromHsv(clamp_fg.color().hue(),
                                    clamp_fg.color().saturation(),
                                    127);
+    }
+    
+    // We must also do the same for the highlight color, which renders against
+    // some hard-coded white backgrounds like in the theme option picker.
+    if (clamp_highlight.color().value() > 127) {
+        clamp_highlight = QColor::fromHsv(clamp_highlight.color().hue(),
+                                          clamp_highlight.color().saturation(),
+                                          127);
+        
     }
 #endif
 
@@ -332,8 +342,8 @@ void Main::setAppPaletteFromSettings() {
     // Set a few other colors, namely the foreground color of disabled text
     // and the selection background color.
     palette.setBrush(QPalette::Disabled, QPalette::Text, disabled_fg);
-    palette.setBrush(QPalette::Normal, QPalette::Highlight, active_bg);
-    palette.setBrush(QPalette::Normal, QPalette::HighlightedText, text_fg);
+    palette.setBrush(QPalette::Normal, QPalette::Highlight, clamp_highlight);
+    palette.setBrush(QPalette::Normal, QPalette::HighlightedText, clamp_fg);
 
     qApp->setPalette(palette);
 }
