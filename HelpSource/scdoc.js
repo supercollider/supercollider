@@ -212,12 +212,9 @@ function setUpWebChannel() {
     }
 }
 
-// Fixes the TOC and sets up the QWebChannel for communicating back to C++ code
-function didLoadRenderedWindow() {
-    fixTOC();
-
+$(function () {
     // Check that webchannel.js was loaded
     if(typeof QWebChannel !== "undefined") {
         setUpWebChannel();
     }
-}
+});

@@ -249,7 +249,7 @@ SCDocHTMLRenderer {
 		// QWebChannel access
 		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
 		<< "</head>\n"
-		<< "<body onload='didLoadRenderedWindow()'>\n";
+		<< "<body onload='fixTOC()'>\n";
 
 
 		displayedTitle = if(
