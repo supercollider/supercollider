@@ -398,7 +398,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 
   QKeyEvent *ke = static_cast<QKeyEvent*>( e );
 
-  int key = ke->key();
+  int key = ke->isAutoRepeat();
 
   int mods = ke->modifiers();
 
