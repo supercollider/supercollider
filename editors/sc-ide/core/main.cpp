@@ -79,11 +79,8 @@ int main( int argc, char *argv[] )
     scideTranslator.load( ideTranslationFile, ideTranslationPath );
     app.installTranslator(&scideTranslator);
 
-    // Load settings so that we can copy editor color values into the UI colors,
-    // which must be set before window is created.
-    Main *main = Main::instance();
-
     // Palette must be set before style, for consistent application.
+    Main *main = Main::instance();
     main->setAppPaletteFromSettings();
 
    // Set up style
@@ -95,6 +92,7 @@ int main( int argc, char *argv[] )
     app.setWindowIcon(QIcon("qrc:///icons/sc-ide-svg"));
 
     // NOTE: load session after GUI is created, so that GUI can respond
+    Settings::Manager *settings = main->settings();
     SessionManager *sessions = main->sessionManager();
 
     // NOTE: window has to be shown before restoring its geometry,
@@ -102,7 +100,6 @@ int main( int argc, char *argv[] )
     // been saved un-maximized.
     win->show();
 
-    Settings::Manager *settings = main->settings();
     QString startSessionName = settings->value("IDE/startWithSession").toString();
     if (startSessionName == "last") {
         QString lastSession = sessions->lastSession();
