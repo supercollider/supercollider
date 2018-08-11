@@ -250,19 +250,20 @@ void Main::setAppPaletteFromSettings() {
     QBrush text_bg = format->background();
     QBrush text_fg = format->foreground();
 
-    if (std::abs(text_bg.color().value() - text_fg.color().value()) < 16) {
+    int value_difference = text_bg.color().value - text_fg.color().value();
+    if (std::abs(value_difference) < 32) {
         // If we are on the darker end of the spectrum we lighten the background,
         // to avoid interfering with color clamping of foreground text on OS X.
         if (text_bg.color().value() < 127) {
             text_bg = QColor::fromHsv(text_bg.color().hue(),
                                       text_bg.color().saturation(),
-                                      text_bg.color().value() + 32);
+                                      text_bg.color().value() + 32 - value_difference);
         } else {
             // Otherwise we can darken the foreground color, once gain in keeping
             // with the idea we don't want to overly lighten foreground text colors.
             text_fg = QColor::fromHsv(text_fg.color().hue(),
                                       text_fg.color().saturation(),
-                                      text_fg.color().value() - 32);
+                                      text_fg.color().value() - (32 - value_difference));
         }
     }
 
