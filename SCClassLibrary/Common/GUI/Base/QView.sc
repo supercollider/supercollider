@@ -499,11 +499,11 @@ View : QObject {
 
 	defaultKeyUpAction { arg char, modifiers, unicode, keycode, key; }
 
-	keyDown { arg char, modifiers, unicode, keycode, key;
+	keyDown { arg char, modifiers, unicode, keycode, key, repeat;
 		if( keyDownAction.notNil ) {
-			^keyDownAction.value( this, char, modifiers, unicode, keycode, key );
+			^keyDownAction.value( this, char, modifiers, unicode, keycode, key, repeat);
 		} {
-			^this.defaultKeyDownAction( char, modifiers, unicode, keycode, key );
+			^this.defaultKeyDownAction( char, modifiers, unicode, keycode, key, repeat);
 		};
 	}
 
@@ -624,19 +624,19 @@ View : QObject {
 	moveEvent { onMove.value(this) }
 	resizeEvent { onResize.value(this) }
 
-	keyDownEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
+  keyDownEvent { arg char, modifiers, unicode, keycode, key, spontaneous, repeat;
 		modifiers = QKeyModifiers.toCocoa(modifiers);
 
 		if( spontaneous ) {
 			// this event has never been propagated to parent yet
-			View.globalKeyDownAction.value( this, char, modifiers, unicode, keycode, key );
+			View.globalKeyDownAction.value( this, char, modifiers, unicode, keycode, key, repeat);
 		};
 
 		if( (key == 16r1000020) || (key == 16r1000021) ||
 			(key == 16r1000022) || (key == 16r1000023 ) )
 		{ this.keyModifiersChanged( modifiers ) };
 
-		^this.keyDown( char, modifiers, unicode, keycode, key );
+		^this.keyDown( char, modifiers, unicode, keycode, key, repeat);
 	}
 
 	keyUpEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
