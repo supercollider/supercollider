@@ -398,7 +398,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 
   QKeyEvent *ke = static_cast<QKeyEvent*>( e );
 
-  int key = ke->isAutoRepeat();
+  int key = ke->key();
 
   int mods = ke->modifiers();
 
@@ -437,6 +437,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
   args << keycode;
   args << key;
   args << ke->spontaneous();
+  args << ke->isAutoRepeat();
 
   return true;
 }
