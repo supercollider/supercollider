@@ -507,12 +507,12 @@ View : QObject {
 		};
 	}
 
-	keyUp { arg char, modifiers, unicode, keycode, key;
+	keyUp { arg char, modifiers, unicode, keycode, key, repeat;
 		keyTyped = char;
 		if( keyUpAction.notNil ) {
-			^keyUpAction.value( this, char, modifiers, unicode, keycode, key );
+			^keyUpAction.value( this, char, modifiers, unicode, keycode, key, repeat );
 		} {
-			^this.defaultKeyUpAction( char, modifiers, unicode, keycode, key );
+			^this.defaultKeyUpAction( char, modifiers, unicode, keycode, key, repeat );
 		};
 	}
 
@@ -639,19 +639,19 @@ View : QObject {
 		^this.keyDown( char, modifiers, unicode, keycode, key, repeat);
 	}
 
-	keyUpEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
+	keyUpEvent { arg char, modifiers, unicode, keycode, key, spontaneous, repeat;
 		modifiers = QKeyModifiers.toCocoa(modifiers);
 
 		if( spontaneous ) {
 			// this event has never been propagated to parent yet
-			View.globalKeyUpAction.value( this, char, modifiers, unicode, keycode, key );
+			View.globalKeyUpAction.value( this, char, modifiers, unicode, keycode, key, repeat );
 		};
 
 		if( (key == 16r1000020) || (key == 16r1000021) ||
 			(key == 16r1000022) || (key == 16r1000023 ) )
 		{ this.keyModifiersChanged( modifiers ) };
 
-		^this.keyUp( char, modifiers, unicode, keycode, key );
+		^this.keyUp( char, modifiers, unicode, keycode, key, repeat );
 	}
 
 	mouseDownEvent { arg x, y, modifiers, buttonNumber, clickCount;
