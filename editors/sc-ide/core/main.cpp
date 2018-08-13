@@ -266,18 +266,19 @@ void Main::setAppPaletteFromSettings() {
         }
     }
 
-    QBrush active_bg, inactive_bg, disabled_fg, disabled_shadow;
+    QBrush active_bg, inactive_bg, highlight, disabled_fg, disabled_shadow;
     // If we are using a dark text on light background we use the light background
     // color for active tabs, and darken it somewhat for inactive tabs.
     if (text_fg.color().value() < text_bg.color().value()) {
         active_bg = text_bg;
         inactive_bg = text_bg.color().darker(125);
+        highlight = text_bg.color().darker(150);
         // Disabled text is rendered twice, once in disabled text foreground
         // color and once with a "shadow" color. We base the disabled text
         // colors here off the background color, to make them pop less than
         // regular text.
-        disabled_fg = text_bg.color().darker(150);
-        disabled_shadow = text_bg.color().darker(200);
+        disabled_fg = text_bg.color().darker(200);
+        disabled_shadow = text_bg.color().darker(250);
     } else {
         // When using light text on a dark background the active tab pops more
         // as a lighter version of the background color.
@@ -289,20 +290,19 @@ void Main::setAppPaletteFromSettings() {
         // in maximum black.
         if (text_bg.color().value() > 0) {
             active_bg = text_bg.color().lighter(150);
-            disabled_fg = inactive_bg.color().lighter(200);
-            disabled_shadow = inactive_bg.color().lighter(175);
+            highlight = text_bg.color().lighter(175);
+            disabled_shadow = inactive_bg.color().lighter(200);
+            disabled_fg = inactive_bg.color().lighter(225);
         } else {
             active_bg = text_fg.color().darker(300);
-            disabled_fg = text_fg.color().darker(350);
-            disabled_shadow = text_fg.color().darker(400);
+            highlight = text_fg.color().darker(350);
+            disabled_fg = text_fg.color().darker(400);
+            disabled_shadow = text_fg.color().darker(450);
         }
     }
 
-    QBrush clamp_fg = text_fg;
-    QBrush clamp_highlight = active_bg;
-
     QPalette palette(
-        clamp_fg,         // windowText - text color for active and inactive tab
+        text_fg,          // windowText - text color for active and inactive tab
                           //    bars, and most non-bold text in controls, including
                           //    the selector buttons at the top of the editor
                           //    settings tab.
@@ -312,7 +312,7 @@ void Main::setAppPaletteFromSettings() {
                           //     color around the Auto Scroll button.
         inactive_bg,      // mid - background color for the help and log dock bars
                           //     as well as *inactive* tabs.
-        clamp_fg,         // text - text color for home and autoscroll dock bars,
+        text_fg,          // text - text color for home and autoscroll dock bars,
                           //     tab selector names in settings, and most buttons.
         text_fg,          // bright_text - no observed use in current UI.
         text_bg,          // base - no observed use in current UI.
@@ -322,8 +322,8 @@ void Main::setAppPaletteFromSettings() {
     // Set a few other colors, namely the foreground color of disabled text
     // and the selection background color.
     palette.setBrush(QPalette::Disabled, QPalette::Text, disabled_fg);
-    palette.setBrush(QPalette::Normal, QPalette::Highlight, clamp_highlight);
-    palette.setBrush(QPalette::Normal, QPalette::HighlightedText, clamp_fg);
+    palette.setBrush(QPalette::Normal, QPalette::Highlight, highlight);
+    palette.setBrush(QPalette::Normal, QPalette::HighlightedText, text_fg);
 
     qApp->setPalette(palette);
 }
