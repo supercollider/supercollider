@@ -41,6 +41,7 @@
 #include <QLibraryInfo>
 #include <QTranslator>
 #include <QDebug>
+#include <QStyleFactory>
 
 using namespace ScIDE;
 
@@ -79,11 +80,14 @@ int main( int argc, char *argv[] )
     scideTranslator.load( ideTranslationFile, ideTranslationPath );
     app.installTranslator(&scideTranslator);
 
+    // Force Fusion style to appear consistently on all platforms.
+    app.setStyle(QStyleFactory::create("Fusion"));
+
     // Palette must be set before style, for consistent application.
     Main *main = Main::instance();
     main->setAppPaletteFromSettings();
 
-   // Set up style
+    // Install style proxy.
     app.setStyle( new ScIDE::Style(app.style()) );
 
     // Go...
@@ -249,15 +253,13 @@ void Main::setAppPaletteFromSettings() {
 
     int value_difference = text_bg.color().value() - text_fg.color().value();
     if (std::abs(value_difference) < 32) {
-        // If we are on the darker end of the spectrum we lighten the background,
-        // to avoid interfering with color clamping of foreground text on OS X.
+        // If we are on the darker end of the spectrum we lighten the background.
         if (text_bg.color().value() < 127) {
             text_bg = QColor::fromHsv(text_bg.color().hue(),
                                       text_bg.color().saturation(),
                                       text_bg.color().value() + 32 - value_difference);
         } else {
-            // Otherwise we can darken the foreground color, once gain in keeping
-            // with the idea we don't want to overly lighten foreground text colors.
+            // Otherwise we can darken the foreground color.
             text_fg = QColor::fromHsv(text_fg.color().hue(),
                                       text_fg.color().saturation(),
                                       text_fg.color().value() - (32 - value_difference));
@@ -298,28 +300,6 @@ void Main::setAppPaletteFromSettings() {
 
     QBrush clamp_fg = text_fg;
     QBrush clamp_highlight = active_bg;
-
-#ifdef Q_OS_MACOS
-    // On OS X Qt uses Cocoa-style native buttons, which are currently rendered
-    // with a hard-coded white background. If we are using a light text on dark
-    // background themes this means the text can be washed out and not readable
-    // on the controls. For this platform we therefore clamp the text color to
-    // be at most half value.
-    if (clamp_fg.color().value() > 127) {
-        clamp_fg = QColor::fromHsv(clamp_fg.color().hue(),
-                                   clamp_fg.color().saturation(),
-                                   127);
-    }
-    
-    // We must also do the same for the highlight color, which renders against
-    // some hard-coded white backgrounds like in the theme option picker.
-    if (clamp_highlight.color().value() > 127) {
-        clamp_highlight = QColor::fromHsv(clamp_highlight.color().hue(),
-                                          clamp_highlight.color().saturation(),
-                                          127);
-        
-    }
-#endif
 
     QPalette palette(
         clamp_fg,         // windowText - text color for active and inactive tab
