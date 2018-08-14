@@ -412,11 +412,13 @@ if(APPLE OR WIN32)
     if(APPLE)
         find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
-        # to get QtWebEngine, libsndfile, and other libs
+        # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
+        # because macdeployqt is a fickle beast.
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
                 -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
             ")
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
