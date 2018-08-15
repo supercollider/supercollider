@@ -811,12 +811,13 @@ Plotter {
 
 + Function {
 	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
-		var name = this.asCompileString, plotter;
+
+		var name = this.asCompileString, plotter, action;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
-
-		this.getToFloatArray(duration, target, { |array, buf|
+		target = target.asTarget;
+		action = { |array, buf|
 			var numChan = buf.numChannels;
 			{
 				plotter.setValue(
@@ -830,7 +831,13 @@ Plotter {
 				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 				plotter.refresh;
 			}.defer
-		})
+		};
+
+		if(target.server.isLocal) {
+			this.loadToFloatArray(duration, target, action:action)
+		} {
+			this.getToFloatArray(duration, target, action:action)
+		};
 
 		^plotter
 	}
@@ -857,14 +864,16 @@ Plotter {
 
 + Buffer {
 	plot { |name, bounds, minval, maxval, separately = false|
-		var plotter;
+		var plotter, action;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
+
 		plotter = [0].plot(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
 			bounds, minval: minval, maxval: maxval
 		);
-		this.loadToFloatArray(action: { |array, buf|
+
+		action = { |array, buf|
 			{
 				plotter.setValue(
 					array.unlace(buf.numChannels),
@@ -877,7 +886,14 @@ Plotter {
 				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
 				plotter.refresh;
 			}.defer
-		});
+		};
+
+		if(server.isLocal) {
+			this.loadToFloatArray(action:action)
+		} {
+			this.getToFloatArray(action:action)
+		};
+
 		^plotter
 	}
 }
