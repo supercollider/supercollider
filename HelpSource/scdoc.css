@@ -83,7 +83,7 @@ ul.inheritedmets li {
     font-family: monospace;
 }
 a.inheritedmets_toggle {
-    
+
     color: #558;
     font-weight: normal;
 /*    margin-left: 2em;*/
@@ -112,7 +112,7 @@ a.subclass_toggle:hover {
     width: 100%;
     padding: 0.2em 0;
     background-color: #f9f9f9;
-    box-shadow: 0 0 0.25em rgba(128, 128, 128, 0.5);
+    box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
     z-index: 2;
 }
 
@@ -215,7 +215,7 @@ a.menu-link.title {
 }
 
 #label {
-    color: #666;   
+    color: #666;
 }
 
 #summary {
@@ -372,9 +372,26 @@ code, pre {
 
 pre {
     border-left: 2px solid #e0e0e0;
+<<<<<<< HEAD
     padding-left: 0.5em;
 }
 
+||||||| merged common ancestors
+    padding-left: 1em;
+}
+
+code.code, pre.code {
+}
+
+pre.code {
+
+}
+
+=======
+    padding-left: 1em;
+}
+
+>>>>>>> 3.10
 .image {
     text-align: center;
     margin: 0.3em;
@@ -424,7 +441,7 @@ a.method-name {
     text-align: left;
 }
 
-.supmethod {    
+.supmethod {
     color: #444;
     padding-left: 0.2em;
 }
@@ -680,7 +697,7 @@ table#search_settings {
     padding: 2px;
 }
 #random {
-    text-align: right;    
+    text-align: right;
 }
 #js_error {
     font-family: Andale Mono, monospace;

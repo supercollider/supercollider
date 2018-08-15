@@ -369,7 +369,7 @@ Converts this into an audiorate input.
 
 method:: asTimeString
 Produces a time string in the format code::ddd:hh:mm:ss.sss::, interpreting the receiver as time in
-seconds. See link::String#-asSecs:: for the inverse function.
+seconds. See link::Classes/String#-asSecs:: for the inverse function.
 argument:: precision
 accuracy of the millisecond format; the string will always be formatted with 3 decimal places for
 milliseconds. Minimum value: 0.001.

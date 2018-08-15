@@ -295,37 +295,39 @@ Buffer {
 	// risky without wait
 	getToFloatArray { arg index = 0, count, wait = 0.01, timeout = 3, action;
 		var refcount, array, pos, getsize, resp, done = false;
+
 		pos = index = index.asInteger;
-		count = (count ? (numFrames * numChannels)).asInteger;
+		count = (count ??  { numFrames * numChannels }).asInteger;
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
 		count = count + pos;
-		//("refcount" + refcount).postln;
+
 		resp = OSCFunc({ arg msg;
 			if(msg[1] == bufnum, {
-				//("received" + msg).postln;
 				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2] - index);
 				refcount = refcount - 1;
-				//("countDown" + refcount).postln;
-				if(refcount <= 0, {done = true; resp.clear; action.value(array, this); });
+				if(refcount <= 0, { done = true; resp.clear; action.value(array, this) });
 			});
 		}, '/b_setn', server.addr);
+
 		{
-			while({ pos < count }, {
+			while { pos < count } {
 				// 1633 max size for getn under udp
 				getsize = min(1633, count - pos);
-				//("sending from" + pos).postln;
 				server.listSendMsg(this.getnMsg(pos, getsize));
 				pos = pos + getsize;
 				if(wait >= 0) { wait.wait } { server.sync };
-			});
+			};
 
 		}.forkIfNeeded;
+
 		// lose the responder if the network choked
 		SystemClock.sched(timeout, {
-			if(done.not, { resp.free; "Buffer-streamToFloatArray failed!".warn;
+			if(done.not) {
+				resp.free;
+				"Buffer-streamToFloatArray failed!".warn;
 				"Try increasing wait time".postln
-			})
+			}
 		})
 	}
 
@@ -350,19 +352,25 @@ Buffer {
 	}
 
 	free { arg completionMessage;
-		server.listSendMsg( this.freeMsg(completionMessage) )
+		if(bufnum.isNil) {
+			"Cannot call free on a Buffer that has been freed".warn;
+			^nil
+		} {
+			server.listSendMsg(this.freeMsg(completionMessage))
+		}
 	}
 
 	freeMsg { arg completionMessage;
 		var msg;
-		if(bufnum.notNil) {
+		if(bufnum.isNil) {
+			"Cannot construct a freeMsg for a Buffer that has been freed".warn;
+			^nil
+		} {
 			this.uncache;
 			server.bufferAllocator.free(bufnum);
 			msg = [\b_free, bufnum, completionMessage.value(this)];
 			bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
 			^msg
-		} {
-			(this.class.name ++ " has already been freed").warn
 		}
 	}
 

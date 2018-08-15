@@ -779,7 +779,7 @@ Document {
 	prReadTextFromFile {|path|
 		var file;
 		file = File.new(path, "r");
-		if (file.isNil, {
+		if (file.isOpen.not, {
 			error("Document open failed\n");
 		});
 		this.prSetTextMirror(quuid, file.readAllString, 0, -1);

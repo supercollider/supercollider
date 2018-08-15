@@ -4333,12 +4333,9 @@ void initLIDPrimitives();
 	initLIDPrimitives();
 #endif
 
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
-
 void initSerialPrimitives();
 	initSerialPrimitives();
 
-#endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();

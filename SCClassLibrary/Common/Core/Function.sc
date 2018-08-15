@@ -297,7 +297,7 @@ Function : AbstractFunction {
 			if(running.not) { server.bootSync; 1.wait };
 			numFrames = duration * server.sampleRate;
 			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
-			buffer.numFrames = numFrames;
+			buffer.numFrames = numFrames.asInteger;
 			buffer.numChannels = numChannels;
 			buffer = buffer.alloc(numFrames, numChannels);
 			server.sync;
