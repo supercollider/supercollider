@@ -1,4 +1,5 @@
 const init = () => {
+    /* based on editors/sc-ide/core/sc_lexer.cpp */
     CodeMirror.defineSimpleMode('scd', {
         start: [
             { regex: /^\s+/, token: 'whitespace' },
@@ -12,13 +13,14 @@ const init = () => {
             { regex: /^\b[A-Z]\w*/, token: 'class' },
             { regex: /^\b_\w+/, token: 'primitive' },
             { regex: /^\\\w*/, token: 'symbol' },
-            { regex: /^\$\\\?./, token: 'char' },
+            { regex: /^'[^']+'/, token: 'symbol' },
+            { regex: /^\$\\?./, token: 'char' },
             { regex: /^~\w+/, token: 'env-var' },
             { regex: /^\/\/[^\r\n]*/, token: 'comment single-line-comment' },
             { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string' },
             { regex: /^[-.,;#()\[\]{}]/, token: 'text punctuation' },
             { regex: /\/\*/, push: 'comment', token: 'comment multi-line-comment' },
-            { regex: /^[\+-\\*/&\\|\\^%<>=]+/, token: 'text operator' },
+            { regex: /^[+\-*/&\|\^%<>=]+/, token: 'text operator' },
         ],
         comment: [
             { regex: /\*\//, pop: true, token: 'comment multi-line-comment' },
