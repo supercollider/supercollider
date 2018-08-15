@@ -74,7 +74,7 @@ METHOD:: load
 Clear all installed quarks and load a list from a file.
 Relative paths in the file are resolved relative to the file itself.
 eg. ./classes/my-quark
-Unix style tildas (~/supercollider/quarks/my-quark) resolve to the user's home directory, even on Windows.
+Unix style tildes (~/supercollider/quarks/my-quark) resolve to the user's home directory, even on Windows.
 By convention the file is called quarks.txt
 ARGUMENT:: path
 path of file to load. May contain ~ or relative paths (root is current working directory)
