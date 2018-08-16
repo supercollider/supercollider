@@ -86,7 +86,7 @@ void Style::drawComplexControl
             const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(option);
             QStyleOptionSlider opt2( *optSlider );
             opt2.styleObject = NULL;
-            
+
             QProxyStyle::drawComplexControl( control, &opt2, painter, widget );
             return;
         }
@@ -206,8 +206,8 @@ void Style::drawControl
 
         painter->setRenderHint( QPainter::Antialiasing, true );
 
-        bool highlight = tabOption->state & QStyle::State_Selected
-                || tabOption->state & QStyle::State_MouseOver;
+        bool selected = tabOption->state & QStyle::State_Selected;
+        bool mouseOver = tabOption->state & QStyle::State_MouseOver;
 
         QRectF r = tabOption->rect;
 
@@ -227,13 +227,20 @@ void Style::drawControl
             break;
         }
 
-        QColor fill = option->palette.color(QPalette::Button);
-        QColor edge = option->palette.color(QPalette::Dark);
-        if (highlight)
-            painter->setBrush(fill);
-        else
-            painter->setBrush(Qt::NoBrush);
-        painter->setPen(edge);
+        // XXX
+        QColor fill;
+        if (selected) {
+            fill = option->palette.color(QPalette::Window);
+        } else {
+            fill = option->palette.color(QPalette::Window);
+            fill = fill.darker(110);
+            if (mouseOver) {
+                fill = fill.lighter(120);
+            }
+        }
+
+        painter->setBrush(fill);
+        painter->setPen(Qt::NoPen);
         painter->drawRoundedRect(r, 4, 4);
 
         painter->restore();
