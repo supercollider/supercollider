@@ -20,7 +20,7 @@ const init = () => {
             { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string' },
             { regex: /^[-.,;#()\[\]{}]/, token: 'text punctuation' },
             { regex: /\/\*/, push: 'comment', token: 'comment multi-line-comment' },
-            { regex: /^[+\-*/&\|\^%<>=]+/, token: 'text operator' },
+            { regex: /^[+\-*/&\|\^%<>=!?]+/, token: 'text operator' },
         ],
         comment: [
             { regex: /\*\//, pop: true, token: 'comment multi-line-comment' },
