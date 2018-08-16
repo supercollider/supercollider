@@ -112,7 +112,6 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
-    widgets/util/volume_widget.hpp
     widgets/util/WebSocketTransport.hpp
     widgets/util/WebSocketClientWrapper.hpp
     widgets/util/IDEWebChannelWrapper.hpp
