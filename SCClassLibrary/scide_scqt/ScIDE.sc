@@ -426,9 +426,7 @@ ScIDE {
 	}
 
 	*send { |id, data|
-		defer {
-			this.prSend(id, data)
-		}
+		{ this.prSend(id, data) }.defer(0.05)
 	}
 
 
