@@ -128,9 +128,10 @@ protected:
     QTextCharFormat mSearchResultTextFormat;
 
     QList<QTextEdit::ExtraSelection> mSearchSelections;
-    
+
+    bool mShowFocusRect = false;
     QGraphicsRectItem *mFocusRect = 0;
-    
+
     int mInactiveFadeAlpha = 0;
 
 private:

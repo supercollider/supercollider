@@ -160,7 +160,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     setShowLinenumber( showLinenumber );
     mLineIndicator->setLineCount(blockCount());
     setPalette(palette);
-    
+
     setActiveAppearance(hasFocus());
 }
 
@@ -541,7 +541,7 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * event)
     if (mDoc->keyDownActionEnabled() || Main::documentManager()->globalKeyDownActionEnabled())
         doKeyAction(event);
 }
-    
+
 void GenericCodeEditor::handleKeyDown(QKeyEvent *event, QTextCursor & textCursor)
 {
     if (textCursor.block() == textDocument()->lastBlock()) {
@@ -623,15 +623,15 @@ void GenericCodeEditor::keyReleaseEvent(QKeyEvent * e)
 {
     if(mDoc->keyUpActionEnabled() || Main::documentManager()->globalKeyUpActionEnabled()) doKeyAction(e);
 }
-    
+
 void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
 {
     int key = ke->key();
-    
+
     int mods = ke->modifiers();
-    
+
     QChar character;
-    
+
 #ifdef Q_OS_MAC
     bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
     if (mods & Qt::MetaModifier && isLetter)
@@ -652,9 +652,9 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
             character = QChar(QChar::ReplacementCharacter);
         }
     }
-    
+
     int unicode = character.unicode();
-    
+
 #ifdef Q_WS_X11
     KeySym sym = ke->nativeVirtualKey();
     int keycode = XKeysymToKeycode( QX11Info::display(), sym );
@@ -663,7 +663,7 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     int keycode = ke->nativeVirtualKey();
 #endif
     QString type;
-    
+
     if(ke->type() == QEvent::KeyPress)
     {
         type = QStringLiteral("keyDown");
@@ -672,9 +672,9 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     }
 
     Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
-    
+
 }
-    
+
 void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
 {
     if (mDoc->mouseDownActionEnabled()) {
@@ -689,13 +689,13 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
             default:
                 button = -1;
         }
-    
+
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     }
-    
+
     QPlainTextEdit::mousePressEvent(e);
 }
-    
+
 void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
 {
     if (mDoc->mouseDownActionEnabled()) {
@@ -710,13 +710,13 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
             default:
                 button = -1;
         }
-        
+
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     }
-    
+
     QPlainTextEdit::mouseDoubleClickEvent(e);
 }
-    
+
 void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
 {
     if (mDoc->mouseUpActionEnabled()) {
@@ -731,9 +731,9 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
             default:
                 button = -1;
         }
-        
+
         Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
-        
+
     }
     QPlainTextEdit::mouseReleaseEvent(e);
 }
@@ -765,20 +765,26 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 #endif
 }
-    
+
 void GenericCodeEditor::focusInEvent( QFocusEvent *e )
 {
-    if(mFocusRect){
-        mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
-        mFocusRect->setVisible(true);
+    if (mShowFocusRect) {
+        if(mFocusRect){
+            mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
+            mFocusRect->setVisible(true);
+        } else {
+            QColor rectColor = palette().color(QPalette::Text);
+            rectColor.setAlpha(80);
+            mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
+        }
     } else {
-        QColor rectColor = palette().color(QPalette::Text);
-        rectColor.setAlpha(80);
-        mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
+        if (mFocusRect) {
+            mFocusRect->setVisible(false);
+        }
     }
     QPlainTextEdit::focusInEvent(e);
 }
-    
+
 void GenericCodeEditor::focusOutEvent( QFocusEvent *e )
 {
     if (mFocusRect) {
@@ -882,7 +888,7 @@ void GenericCodeEditor::onCursorPositionChanged()
     mLastCursorBlock = textCursor().blockNumber();
     updateDocLastSelection();
 }
-    
+
 void GenericCodeEditor::updateDocLastSelection()
 {
     QTextCursor cursor = textCursor();
@@ -927,13 +933,13 @@ void GenericCodeEditor::updateExtraSelections()
 void GenericCodeEditor::resizeEvent( QResizeEvent *e )
 {
     QPlainTextEdit::resizeEvent( e );
-    
+
     if (hasFocus()) {
         if (mFocusRect) {
             mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
         }
     }
-    
+
     QRect cr = contentsRect();
     mLineIndicator->resize( mLineIndicator->width(), cr.height() );
 
@@ -991,14 +997,14 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
         bottom = top + blockBoundingRect(block).height();
         ++blockNumber;
     }
-    
+
     if(!mEditorBoxIsActive) {
         QColor color = plt.color(QPalette::Mid);
         if(color.lightness() >= 128)
             color = color.darker(60);
         else
             color = color.lighter(50);
-        
+
         color.setAlpha(inactiveFadeAlpha());
         p.fillRect( r, color );
     }
