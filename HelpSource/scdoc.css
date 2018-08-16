@@ -159,6 +159,12 @@ a.menu-link:hover {
     display: none;
 }
 
+@media (max-width: 320px) {
+    #toc-container {
+        display: none;
+    }
+}
+
 @media (min-width: 512px) {
     #menubar .menuitem:first-child a {
         padding-left: 2.5em;
