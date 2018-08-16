@@ -51,6 +51,10 @@ a:link:hover {
     text-decoration: underline;
 }
 
+input {
+    max-width: 100%;
+}
+
 #inheritedclassmets, #inheritedinstmets {
     margin-top: 1em;
 }
