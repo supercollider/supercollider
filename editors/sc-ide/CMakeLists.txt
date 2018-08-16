@@ -123,6 +123,7 @@ file (GLOB_RECURSE all_hdr *hpp)
 
 set ( ide_src
     core/main.cpp
+    core/app_palette.cpp
     core/sig_mux.cpp
     core/doc_manager.cpp
     core/sc_process.cpp
