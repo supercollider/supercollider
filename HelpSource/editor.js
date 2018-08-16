@@ -30,7 +30,7 @@ const init = () => {
             viewportMargin: Infinity,
             extraKeys: { 
                 'Cmd-Enter': () => selectRegion(),
-                'Shift-Enter': () => selectLine()
+                'Shift-Enter': () => evalLine()
             }
         })
 
@@ -129,7 +129,12 @@ const selectRegion = (options = { flash: true }) => {
     }
 }
 
-/* returns the code selection or line */
+const evalLine = () => {
+    // Ask IDE to eval line. Calls back to `selectLine()`
+    window.IDE.evaluateLine();
+}
+
+// Returns the code selection or line
 const selectLine = (options = { flash: true }) => {
     let range = window.getSelection().getRangeAt(0)
     let textarea = range.startContainer.parentNode.previousSibling

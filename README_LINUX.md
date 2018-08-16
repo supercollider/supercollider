@@ -86,13 +86,13 @@ On Xenial:
 
     sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-xenial
     sudo apt-get update
-    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine
+    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine qt511websockets
 
 On Trusty, only Qt 5.10 and below are available:
 
     sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
     sudo apt-get update
-    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine
+    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine qt510websockets
 
 [Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
 
