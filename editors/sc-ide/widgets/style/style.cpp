@@ -20,6 +20,7 @@
 */
 
 #include "style.hpp"
+#include "../../core/util/color.hpp"
 
 #include <QPainter>
 #include <QStyleOption>
@@ -227,15 +228,13 @@ void Style::drawControl
             break;
         }
 
-        // XXX
         QColor fill;
         if (selected) {
             fill = option->palette.color(QPalette::Window);
         } else {
-            fill = option->palette.color(QPalette::Window);
-            fill = fill.darker(110);
+            fill = option->palette.color(QPalette::Mid);
             if (mouseOver) {
-                fill = fill.lighter(120);
+                fill = color::lighten(fill, 10);
             }
         }
 

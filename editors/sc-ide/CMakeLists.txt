@@ -134,6 +134,7 @@ set ( ide_src
     core/settings/manager.cpp
     core/settings/theme.cpp
     core/session_manager.cpp
+    core/util/color.cpp
     core/util/standard_dirs.cpp
     core/util/scdoc_log.cpp
     widgets/cmd_line.cpp

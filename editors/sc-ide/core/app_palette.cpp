@@ -19,6 +19,7 @@
 */
 
 #include "main.hpp"
+#include "util/color.hpp"
 #include <QBrush>
 
 using namespace ScIDE;
@@ -33,7 +34,7 @@ void Main::setAppPaletteFromSettings() {
     QColor window_text = format->foreground().color();
 
     // QPalette::Button = background color of buttons.
-    QColor button;
+    QColor button = window;
 
     // QPalette::Light = shadow for disabled text.
     QColor disabled_shadow;
@@ -66,38 +67,26 @@ void Main::setAppPaletteFromSettings() {
         }
     }
 
-    // If we are using a dark text on light background we use the light background
-    // color for active tabs, and darken it somewhat for inactive tabs.
-    if (window_text.value() < window.value()) {
-        button = window;
-        mid = window.darker(125);
-        highlight = window.darker(150);
+    bool dark_on_light = window_text.value() < window.value();
+    if (dark_on_light) {
+        // If we are using a dark text on light background we use the light background
+        // color for active tabs, and darken it somewhat for inactive tabs.
+        mid = color::darken(window, 23);
+        highlight = color::darken(window, 50);
+
         // Disabled text is rendered twice, once in disabled text foreground
         // color and once with a "shadow" color. We base the disabled text
         // colors here off the background color, to make them pop less than
         // regular text.
-        disabled_text = window.darker(200);
-        disabled_shadow = window.darker(250);
+        disabled_text = color::darken(window, 20);
+        disabled_shadow = color::darken(window, 20);
     } else {
         // When using light text on a dark background the active tab pops more
         // as a lighter version of the background color.
-        mid = window;
-
-        // QtColor::lighter() multiplies the value of the color by the provided
-        // percentage factor, so if the value is zero it has no effect. In that
-        // case we darken the foreground color, since hue information is lost
-        // in maximum black.
-        if (window.value() > 0) {
-            button = window.lighter(150);
-            highlight = window.lighter(175);
-            disabled_shadow = mid.lighter(200);
-            disabled_text = mid.lighter(225);
-        } else {
-            button = window_text.darker(300);
-            highlight = window_text.darker(350);
-            disabled_text = window_text.darker(400);
-            disabled_shadow = window_text.darker(450);
-        }
+        mid = color::lighten(window, 23);
+        highlight = color::lighten(window, 30);
+        disabled_shadow = color::lighten(window, 40);
+        disabled_text = color::lighten(window, 40);
     }
 
     QPalette palette = QPalette(
