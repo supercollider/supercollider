@@ -226,9 +226,12 @@ void Style::drawControl
 
         // For inactive tabs, add a thin dark line to the right side for visual
         // separation.
-        // TODO: disable this little line for the rightmost tab, and for the
-        // tab immediately to the left of the active tab.
-        if (!selected) {
+        if (
+            !selected
+            && !(tabOption->selectedPosition == QStyleOptionTab::NextIsSelected)
+            && !(tabOption->position == QStyleOptionTab::End)
+            && !(tabOption->position == QStyleOptionTab::OnlyOneTab)
+        ) {
             QPen pen(color::darken(fill, 20), 1);
             painter->setPen(pen);
             painter->drawLine(rect.topRight(), rect.bottomRight());
