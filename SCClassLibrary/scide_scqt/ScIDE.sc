@@ -426,7 +426,7 @@ ScIDE {
 	}
 
 	*send { |id, data|
-		// deferring is needed to fix broken navigation in the help browser on some systems
+		// FIXME: deferring is needed to fix broken navigation in the help browser on some systems
 		// a hack solution for an issue that needs more investigation
 		{ this.prSend(id, data) }.defer(0.05)
 	}
