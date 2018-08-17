@@ -312,6 +312,33 @@ void Style::drawPrimitive
         painter->drawRect( option->rect );
         painter->restore();
         return;
+    case PE_IndicatorTabClose: {
+        QPoint center = option->rect.center();
+        int rect_width = option->rect.width();
+        // a = half of the width of the X.
+        int a = rect_width * 0.5f * 0.4f;
+        float cx = center.x() + 0.5f;
+        float cy = center.y() + 0.5f;
+
+        QColor x_color(option->palette.color(QPalette::WindowText));
+        if ((option->state & State_Enabled) && (option->state & State_MouseOver)) {
+            x_color = color::lighten(x_color, 40);
+        }
+
+        float thickness = 1.5f;
+        // Sometimes this needs adjusting for symmetrical results on different
+        // line thicknesses.
+        float extend = 0.0f;
+
+        QPen pen(x_color, thickness);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(pen);
+        painter->drawLine(QLineF(cx - a, cy - a, cx + a + extend, cy + a + extend));
+        painter->drawLine(QLineF(cx - a, cy + a, cx + a + extend, cy - a - extend));
+        painter->restore();
+        return;
+    }
     default:
         QProxyStyle::drawPrimitive(element, option, painter, widget);
     }

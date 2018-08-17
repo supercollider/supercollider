@@ -24,10 +24,18 @@ namespace ScIDE {
 namespace color {
 
 QColor lighten(const QColor& color, int amount) {
+    int value = color.value() + amount;
+
+    if (value < 0) {
+        value = 0;
+    } else if (value > 255) {
+        value = 255;
+    }
+
     return QColor::fromHsv(
         color.hue(),
         color.saturation(),
-        color.value() + amount
+        value
     );
 }
 
