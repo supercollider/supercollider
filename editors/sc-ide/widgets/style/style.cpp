@@ -205,28 +205,8 @@ void Style::drawControl
 
         painter->save();
 
-        painter->setRenderHint( QPainter::Antialiasing, true );
-
         bool selected = tabOption->state & QStyle::State_Selected;
         bool mouseOver = tabOption->state & QStyle::State_MouseOver;
-
-        QRectF r = tabOption->rect;
-
-        switch (tabOption->shape) {
-        case QTabBar::RoundedNorth:
-        case QTabBar::TriangularNorth:
-            r.adjust(0.5, 0.5, -0.5, 4);
-            painter->setClipRect( tabOption->rect.adjusted(0,0,0,-1) );
-            break;
-        case QTabBar::RoundedSouth:
-        case QTabBar::TriangularSouth:
-            r.adjust(0.5, -4, -0.5, -0.5);
-            painter->setClipRect( tabOption->rect.adjusted(0,1,0,0) );
-            break;
-        default:
-            qWarning("ScIDE::Style: tab shape not supported");
-            break;
-        }
 
         QColor fill;
         if (selected) {
@@ -238,9 +218,21 @@ void Style::drawControl
             }
         }
 
+        // Draw tab rectangle.
+        QRect rect = tabOption->rect;
         painter->setBrush(fill);
         painter->setPen(Qt::NoPen);
-        painter->drawRoundedRect(r, 4, 4);
+        painter->drawRect(rect);
+
+        // For inactive tabs, add a thin dark line to the right side for visual
+        // separation.
+        // TODO: disable this little line for the rightmost tab, and for the
+        // tab immediately to the left of the active tab.
+        if (!selected) {
+            QPen pen(color::darken(fill, 20), 1);
+            painter->setPen(pen);
+            painter->drawLine(rect.topRight(), rect.bottomRight());
+        }
 
         painter->restore();
 
