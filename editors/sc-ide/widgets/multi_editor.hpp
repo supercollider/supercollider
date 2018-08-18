@@ -191,7 +191,15 @@ private:
     void breakSignalConnections();
     void createActions();
     void updateActions();
-    int addTab( Document * );
+
+    /**
+     * Put a new doc into the editor. If `doc` is already opened, this simply returns its current index.
+     *
+     * @param doc The doc to insert.
+     * @param insertIndex Index at which to insert. If negative, the doc is inserted after the current tab.
+     * @return The index of the tab.
+     */
+    int insertTab(Document *doc, int insertIndex = -1);
     CodeEditorBox *newBox( MultiSplitter * );
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( GenericCodeEditor * );
