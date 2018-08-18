@@ -252,9 +252,17 @@ void Style::drawControl
 
         QRect textRect = subElementRect( QStyle::SE_TabBarTabText, option, widget );
 
+        painter->save();
+        QColor text_color = option->palette.color(QPalette::WindowText);
+        if (!selected) {
+            text_color = color::interpolate(text_color, fill, 0.3f);
+        }
+        painter->setPen(text_color);
         painter->drawText( textRect,
                            Qt::AlignCenter | Qt::TextShowMnemonic,
                            tabOption->text );
+        painter->restore();
+
         return;
     }
     case CE_Splitter:
@@ -315,7 +323,11 @@ void Style::drawPrimitive
         float cx = center.x() + 0.5f;
         float cy = center.y() + 0.5f;
 
-        QColor x_color(option->palette.color(QPalette::WindowText));
+        QColor x_color = option->palette.color(QPalette::WindowText);
+        if (!(option->state & QStyle::State_Selected)) {
+            QColor background = option->palette.color(QPalette::Mid);
+            x_color = color::interpolate(x_color, background, 0.3f);
+        }
         if ((option->state & State_Enabled) && (option->state & State_MouseOver)) {
             x_color = color::lighten(x_color, 40);
         }

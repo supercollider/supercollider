@@ -27,6 +27,7 @@ namespace color {
 
 QColor lighten(const QColor& color, int amount);
 QColor darken(const QColor& color, int amount);
+QColor interpolate(const QColor& color_1, const QColor& color_2, float amount);
 
 } // namespace color
 } // namespace ScIDE

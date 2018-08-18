@@ -43,5 +43,13 @@ QColor darken(const QColor& color, int amount) {
     return lighten(color, -amount);
 }
 
+QColor interpolate(const QColor& color_1, const QColor& color_2, float amount) {
+    return QColor(
+        color_1.red() * (1 - amount) + color_2.red() * amount,
+        color_1.green() * (1 - amount) + color_2.green() * amount,
+        color_1.blue() * (1 - amount) + color_2.blue() * amount
+    );
+}
+
 } // namespace color
 } // namespace ScIDE
