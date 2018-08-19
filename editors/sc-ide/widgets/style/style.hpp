@@ -54,6 +54,8 @@ public:
 
 private:
     bool shouldNotHandle(const QWidget *widget) const;
+
+    static constexpr float kDeselectedTabBlend = 0.3f;
 };
 
 } // namespace ScIDE

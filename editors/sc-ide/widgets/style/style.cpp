@@ -208,19 +208,19 @@ void Style::drawControl
         bool selected = tabOption->state & QStyle::State_Selected;
         bool mouseOver = tabOption->state & QStyle::State_MouseOver;
 
-        QColor fill;
+        QColor background_color;
         if (selected) {
-            fill = option->palette.color(QPalette::Window);
+            background_color = option->palette.color(QPalette::Window);
         } else {
-            fill = option->palette.color(QPalette::Mid);
+            background_color = option->palette.color(QPalette::Mid);
             if (mouseOver) {
-                fill = color::lighten(fill, 10);
+                background_color = color::lighten(background_color, 10);
             }
         }
 
         // Draw tab rectangle.
         QRect rect = tabOption->rect;
-        painter->setBrush(fill);
+        painter->setBrush(background_color);
         painter->setPen(Qt::NoPen);
         painter->drawRect(rect);
 
@@ -232,7 +232,7 @@ void Style::drawControl
             && !(tabOption->position == QStyleOptionTab::End)
             && !(tabOption->position == QStyleOptionTab::OnlyOneTab)
         ) {
-            QPen pen(color::darken(fill, 20), 1);
+            QPen pen(color::darken(background_color, 20), 1);
             painter->setPen(pen);
             painter->drawLine(rect.topRight(), rect.bottomRight());
         }
@@ -254,8 +254,13 @@ void Style::drawControl
 
         painter->save();
         QColor text_color = option->palette.color(QPalette::WindowText);
+        if (selected) {
+            QFont font;
+            font.setBold(true);
+            painter->setFont(font);
+        }
         if (!selected) {
-            text_color = color::interpolate(text_color, fill, 0.3f);
+            text_color = color::interpolate(text_color, background_color, kDeselectedTabBlend);
         }
         painter->setPen(text_color);
         painter->drawText( textRect,
@@ -326,7 +331,7 @@ void Style::drawPrimitive
         QColor x_color = option->palette.color(QPalette::WindowText);
         if (!(option->state & QStyle::State_Selected)) {
             QColor background = option->palette.color(QPalette::Mid);
-            x_color = color::interpolate(x_color, background, 0.3f);
+            x_color = color::interpolate(x_color, background, kDeselectedTabBlend);
         }
         if ((option->state & State_Enabled) && (option->state & State_MouseOver)) {
             x_color = color::lighten(x_color, 40);
