@@ -40,12 +40,6 @@ The minimum required version is now CMake 3.5 instead of CMake 2.8 ([#3656](http
 
 scel (the emacs package) is now a submodule ([#3519](https://github.com/supercollider/supercollider/pull/3519)).
 
-General: Deprecated
-----------
-
-General: Removed
-------
-
 General: Fixed
 -----
 
@@ -65,15 +59,6 @@ scsynth and supernova: Added
 
 supernova now has latency compensation ([#3790](https://github.com/supercollider/supercollider/pull/3790)).
 
-scsynth and supernova: Changed
--------
-
-scsynth and supernova: Deprecated
-----------
-
-scsynth and supernova: Removed
-------
-
 scsynth and supernova: Fixed
 -----
 
@@ -84,21 +69,6 @@ For consistency with scsynth, supernova no longer requires the final argument to
 Fixed a missing newline in some of supernova's error messages ([#3897](https://github.com/supercollider/supercollider/pull/3897)).
 
 Fixed errors in supernova's `/s_getn` ([#3893](https://github.com/supercollider/supercollider/pull/3893)).
-
-UGens: Added
------
-
-UGens: Changed
--------
-
-UGens: Deprecated
-----------
-
-UGens: Removed
--------
-
-UGens: Fixed
------
 
 sclang: Added
 -----
@@ -123,9 +93,6 @@ sclang: Changed
 **Breaking change:** `File:mkdir` now returns a Boolean indicating whether the operation was successful. Previously, it returned the File object ([#3635](https://github.com/supercollider/supercollider/issues/3635)).
 
 Scrollbars now always appear for ScrollView on Linux an Windows, as a temporary workaround for a very odd dependency on the use of the scroll wheel ([#3686](https://github.com/supercollider/supercollider/pull/3686)).
-
-sclang: Deprecated
-----------
 
 sclang: Removed
 -------
@@ -178,9 +145,6 @@ Class library: Deprecated
 
 Providing an integer index for `SerialPort.new` is deprecated ([#3809](https://github.com/supercollider/supercollider/pull/3809)).
 
-Class library: Removed
--------
-
 Class library: Fixed
 -----
 
@@ -210,21 +174,12 @@ Fixed some bugs in `EnvGate`: throwing an error when `fadeTime` is a constant ra
 
 Fixed occasional hangs when rebooting supernova ([#3848](https://github.com/supercollider/supercollider/pull/3848)).
 
-IDE & SCDoc: Added
------
-
 IDE & SCDoc: Changed
 -------
 
 The IDE now has a unified look across all platforms, and its color scheme adapts to match the editor theme ([#3950](https://github.com/supercollider/supercollider/pull/3950)).
 
 The SCDoc TOC and menubar have been redesigned again ([#3831](https://github.com/supercollider/supercollider/pull/3831)).
-
-IDE & SCDoc: Deprecated
-----------
-
-IDE & SCDoc: Removed
--------
 
 IDE & SCDoc: Fixed
 -----
