@@ -13,7 +13,7 @@ const init = () => {
             { regex: /^\b[A-Z]\w*/, token: 'class' },
             { regex: /^\b_\w+/, token: 'primitive' },
             { regex: /^\\\w*/, token: 'symbol' },
-            { regex: /^'[^']+'/, token: 'symbol' },
+            { regex: /'(?:[^\\]|\\.)*?(?:'|$)/, token: 'symbol' },
             { regex: /^\$\\?./, token: 'char' },
             { regex: /^~\w+/, token: 'env-var' },
             { regex: /^\/\/[^\r\n]*/, token: 'comment single-line-comment' },
