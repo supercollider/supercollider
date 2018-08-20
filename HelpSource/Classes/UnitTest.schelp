@@ -50,7 +50,7 @@ ARGUMENT:: value
 Should be code::UnitTest.full:: or code::UnitTest.brief::.
 
 METHOD:: run
-Run all methods whose names begin with code::test_::.
+Run all methods (of a UnitTest subclass) whose names begin with code::test_::.
 
 code::
 TestUnitTest.new.run;
@@ -62,19 +62,6 @@ If code::true::, first runs link::#*reset:: on the class.
 ARGUMENT:: report
 If code::true::, outputs the test results.
 
-METHOD:: runTest
-Run a single test method.
-
-code::
-UnitTest.reset;
-UnitTest.runTest("TestUnitTest:test_assert");
-::
-
-ARGUMENT:: methodName
-A link::Classes/String:: referring to the class and test method
-within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
-
-
 METHOD:: runAll
 runs all subclasses of UnitTest
 
@@ -82,6 +69,61 @@ code::
 UnitTest.reset;
 UnitTest.runAll;
 ::
+
+METHOD:: runTest
+Run a single test method or class
+
+code::
+UnitTest.reset;
+UnitTest.runTest("TestUnitTest:test_assert");
+UnitTest.runTest(TestUnitTest);
+::
+
+ARGUMENT:: testItem
+can be a link::Classes/String:: referring to a class and a test method
+within it, e.g. code::"TestUnitTest:test_assert"::, then this single method runs;
+
+when a subclass of UnitTest, all tests in that class run.
+
+METHOD:: runTests
+run a list of testItems and optionally post how long they take.
+
+code::
+// same as TestServer_clientID.run;
+UnitTest.runTests(TestServer_clientID, false)
+
+// an example list of classes and methods "<TestClass:testMethod>"
+(
+UnitTest.runTests([
+	TestServer_clientID,
+	"TestServer_boot:test_bootSync"
+]);
+)
+
+// make a subgroup of server tests:
+(
+~serverTestClasses = UnitTest.allSubclasses.select { |cl|
+	var namestr = cl.name.asString;
+	namestr.contains("Server") and: { namestr.contains("GUI").not };
+};
+)
+// test that they all work with scsynth ...
+Server.scsynth;
+UnitTest.runTests(~serverTestClasses);
+
+// and supernova as well
+Server.supernova;
+UnitTest.runTests(~serverTestClasses);
+::
+
+ARGUMENT:: testItems
+a list of testItems given as classes and method names
+in the format of code::"<TestClass:testMethod>" ::
+
+ARGUMENT:: postTimes
+flag whether to post individual and total test times or not.
+
+
 
 
 INSTANCEMETHODS::

@@ -4,6 +4,7 @@ UnitTest {
 	const <brief = 1, <full = 2;
 	classvar <failures, <passes, routine, <>reportPasses = true, <>passVerbosity;
 	classvar <allTestClasses;
+	classvar <>postTimes = true;
 
 	*initClass {
 		passVerbosity = full;
@@ -46,28 +47,94 @@ UnitTest {
 		}
 	}
 
-	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
-	*runTest { | methodName |
-		var class, method, unitTest;
-		# class, method = methodName.split($:);
-		class = class.asSymbol.asClass;
-		method.asSymbol;
-		method = class.findMethod(method.asSymbol);
-		if(method.isNil) { Error("Test method not found "+methodName).throw };
-		class.new.runTestMethod(method);
+	// run a class or single test in the name format
+	// "TestPolyPlayerPool:test_prepareChildrenToBundle"
+	*runTest { | testItem |
+		var method, failString;
+		case { testItem.isKindOf(Class) } {
+			if (testItem.isKindOf(Meta_UnitTest)) {
+				testItem.run(false, false)
+			} {
+				failString = "%: testItem % is not a subclass of UnitTest."
+			}
+		} { testItem.isKindOf(String) } {
+			method = this.findTestMethodFor(testItem);
+			if(method.notNil) {
+				method.ownerClass.new.runTestMethod(method)
+			} {
+				failString = "%: testItem % is not a valid testMethod string such as %."
+			}
+		} {
+			failString = "%: testItem % is neither a subclass of UnitTest,"
+			" nor a valid test-method string such as %."
+		};
+
+		if (failString.notNil) {
+			failString.format(thisMethod, testItem.cs, "TestABC:test_xyz".cs).warn
+		}
 	}
 
 	// run a single test method of this class
 	runTestMethod { | method |
-		var function;
+		var start = Main.elapsedTime, runTime;
 		("RUNNING UNIT TEST" + this.class.name ++ ":" ++ method.name).inform;
 		this.class.forkIfNeeded {
 			this.setUp;
 			currentMethod = method;
 			this.perform(method.name);
 			this.tearDown;
-			this.class.report;
+			runTime = Main.elapsedTime - start;
+			this.class.report(runTime);
 			nil
+		}
+	}
+
+	// run a list of testItems which can be UnitTest classes or method names
+	// in the format "TestPolyPlayerPool:test_prepareChildrenToBundle"
+
+	*runTests { |testItems, postTimes = false|
+		^this.forkIfNeeded {
+			var start = Main.elapsedTime;
+			this.reset;
+			testItems = testItems ?? { this.allSubclasses };
+			testItems.do { |testItem|
+				UnitTest.runTest(testItem);
+				0.1.wait;
+			};
+			this.report(Main.elapsedTime - start);
+		}
+	}
+
+	// could be moved to e.g. Method.find(methodString):
+	*findMethodFor { |methodString, postNotFound = true|
+
+		var className, methodName, class, method;
+		# class, methodName = methodString.split($:);
+		class = class.asSymbol.asClass;
+		if (class.notNil) {
+			method = class.findMethod(methodName.asSymbol);
+		};
+
+		if (method.isNil and: postNotFound) {
+			"% - no method found for: %\n".postf(thisMethod, methodString.cs);
+		};
+		^method
+	}
+
+	// specific for UnitTest:
+	*isTestMethod { |method|
+		^method.ownerClass.isKindOf(Meta_UnitTest) and: {
+			method.name.asString.beginsWith("test_")
+		}
+	}
+
+	*findTestMethodFor { |methodString|
+		var method = this.findMethodFor(methodString, false);
+		if (method.notNil and: { this.isTestMethod(method) }) {
+			^method
+		} {
+			"no test method found for: %\n".postf(methodString.cs);
+			^nil
 		}
 	}
 
@@ -148,8 +215,8 @@ UnitTest {
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
 		var details =
-			"Is:\n\t" + a +
-			"\nShould equal (within range" + within ++ "):\n\t" + b;
+		"Is:\n\t" + a +
+		"\nShould equal (within range" + within ++ "):\n\t" + b;
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
@@ -340,9 +407,13 @@ UnitTest {
 		^("Test" ++ forClass.name.asString).asSymbol.asClass
 	}
 
-	*report {
+	*report { |runTime|
+		var str =  "UNIT TEST.............";
+		if (postTimes and: { runTime.notNil }) {
+			str = str + "runTime: %".format(runTime.round(0.00001))
+		};
 		Post.nl;
-		"UNIT TEST.............".inform;
+		str.postln;
 		if(failures.size > 0) {
 			"There were failures:".inform;
 			failures.do { arg results;
@@ -360,6 +431,7 @@ UnitTest {
 		if(reset) { this.class.reset };
 		if(report) { ("RUNNING UNIT TEST" + this).inform };
 		this.class.forkIfNeeded {
+			var start = Main.elapsedTime, runTime;
 			this.findTestMethods.do { |method|
 				this.setUp;
 				currentMethod = method;
@@ -373,7 +445,8 @@ UnitTest {
 
 				this.tearDown;
 			};
-			if(report) { this.class.report };
+			runTime = Main.elapsedTime - start;
+			if(report) { this.class.report(runTime) };
 			nil
 		};
 
