@@ -37,8 +37,7 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: { 
-                'Cmd-Enter': () => selectRegion(),
-                'Shift-Enter': () => evalLine()
+                'Shift-Enter': evalLine
             }
         })
 
@@ -59,6 +58,10 @@ const init = () => {
 
 }
 
+const evalLine = () => {
+    // Ask IDE to eval line. Calls back to `selectLine()`
+    window.IDE.evaluateLine();
+}
 
 /* returns the code selection, line or region */
 const selectRegion = (options = { flash: true }) => {
@@ -135,11 +138,6 @@ const selectRegion = (options = { flash: true }) => {
         setTimeout(() => marker.clear(), 300)
         return editor.getRange(leftCursor, rightCursor)
     }
-}
-
-const evalLine = () => {
-    // Ask IDE to eval line. Calls back to `selectLine()`
-    window.IDE.evaluateLine();
 }
 
 // Returns the code selection or line
