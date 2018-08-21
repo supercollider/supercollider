@@ -67,10 +67,9 @@ void Main::setAppPaletteFromSettings() {
         }
     }
 
-    bool dark_on_light = window_text.value() < window.value();
+    int window_value = window.value();
+    bool dark_on_light = window_text.value() < window_value;
     if (dark_on_light) {
-        // If we are using a dark text on light background we use the light background
-        // color for active tabs, and darken it somewhat for inactive tabs.
         mid = color::darken(window, 23);
         highlight = color::darken(window, 50);
 
@@ -81,9 +80,12 @@ void Main::setAppPaletteFromSettings() {
         disabled_text = color::darken(window, 20);
         disabled_shadow = color::darken(window, 20);
     } else {
-        // When using light text on a dark background the active tab pops more
-        // as a lighter version of the background color.
-        mid = color::lighten(window, 23);
+        int mid_lightening = 23;
+        int minimum_mid_value = 29;
+        mid = color::lighten(window, mid_lightening);
+        if (mid.value() < minimum_mid_value) {
+            mid = color::setValue(mid, minimum_mid_value);
+        }
         highlight = color::lighten(window, 30);
         disabled_shadow = color::lighten(window, 40);
         disabled_text = color::lighten(window, 40);

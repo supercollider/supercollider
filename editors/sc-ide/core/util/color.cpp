@@ -51,5 +51,13 @@ QColor interpolate(const QColor& color_1, const QColor& color_2, float amount) {
     );
 }
 
+QColor setValue(const QColor& color, int value) {
+    return QColor::fromHsv(
+        color.hue(),
+        color.saturation(),
+        value
+    );
+}
+
 } // namespace color
 } // namespace ScIDE
