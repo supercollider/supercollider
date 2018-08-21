@@ -771,7 +771,7 @@ void GenericCodeEditor::updateFocusRect()
     if (mFocusRect) {
         QRect viewportRect = viewport()->rect();
         QRect focusRect = QRect(
-            viewportRect.bottomLeft() + QPoint(0, -3),
+            viewportRect.bottomLeft() + QPoint(0, -2),
             viewportRect.bottomRight()
         );
         mFocusRect->setRect(focusRect);
@@ -785,7 +785,7 @@ void GenericCodeEditor::focusInEvent( QFocusEvent *e )
         mFocusRect->setVisible(true);
     } else {
         QColor rectColor = palette().color(QPalette::Text);
-        rectColor.setAlpha(20);
+        rectColor.setAlpha(40);
         mFocusRect = mOverlay->addRect(QRect(0, 0, 0, 0), Qt::NoPen, rectColor);
         updateFocusRect();
     }
