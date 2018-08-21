@@ -74,7 +74,7 @@ METHOD:: load
 Clear all installed quarks and load a list from a file.
 Relative paths in the file are resolved relative to the file itself.
 eg. ./classes/my-quark
-Unix style tildas (~/supercollider/quarks/my-quark) resolve to the user's home directory, even on Windows.
+Unix style tildes (~/supercollider/quarks/my-quark) resolve to the user's home directory, even on Windows.
 By convention the file is called quarks.txt
 ARGUMENT:: path
 path of file to load. May contain ~ or relative paths (root is current working directory)
@@ -96,6 +96,15 @@ returns:: this
 METHOD:: folder
 Path of the downloaded-quarks folder where Quarks are cloned to before installing.
 returns:: path
+
+METHOD:: checkForUpdates
+Scan through all downloaded, git-repository quarks and download any updates. This uses teletype::git fetch::; updates will be retrieved but not applied to the working copy (i.e., no visible change to the environment). After this, repositories will be aware of new branches and version tags.
+
+This will take several seconds per quark. The SC interpreter will be unresponsive during each individual quark update.
+ARGUMENT:: done
+(Optional) A function to evaluate after all quarks have been checked.
+ARGUMENT:: quarkAction
+(Optional) A function to evaluate emphasis::before:: checking each individual quark. This function receives the Quark object as an argument, so you can use it, for instance, to print the quark name and have a running status update in the post window: code::Quarks.checkForUpdates(quarkAction: { |quark| "Updating %\n".postf(quark.name) });::.
 
 METHOD:: fetchDirectory
 Private.
