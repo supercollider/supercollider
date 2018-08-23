@@ -37,8 +37,7 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: { 
-                'Cmd-Enter': () => selectRegion(),
-                'Shift-Enter': () => evalLine()
+                'Shift-Enter': evalLine
             }
         })
 
@@ -59,6 +58,10 @@ const init = () => {
 
 }
 
+const evalLine = () => {
+    // Ask IDE to eval line. Calls back to `selectLine()`
+    window.IDE.evaluateLine();
+}
 
 /* returns the code selection, line or region */
 const selectRegion = (options = { flash: true }) => {
@@ -76,9 +79,8 @@ const selectRegion = (options = { flash: true }) => {
             return cursorLeft
         let ch = editor.getLine(cursorLeft.line)
             .slice(cursorLeft.ch, cursorLeft.ch+1)
-        if (ch === ')') {
+        if (ch === ')')
             return findLeftParen(findLeftParen(cursorLeft))
-        }
         if (ch === '(')
             return cursorLeft
         return findLeftParen(cursorLeft)
@@ -90,9 +92,8 @@ const selectRegion = (options = { flash: true }) => {
             return cursorRight
         let ch = editor.getLine(cursorRight.line)
             .slice(cursorRight.ch-1, cursorRight.ch)
-        if (ch === '(') {
+        if (ch === '(')
             return findRightParen(findRightParen(cursorRight))
-        }
         if (ch === ')')
             return cursorRight
         return findRightParen(cursorRight)
@@ -135,11 +136,6 @@ const selectRegion = (options = { flash: true }) => {
         setTimeout(() => marker.clear(), 300)
         return editor.getRange(leftCursor, rightCursor)
     }
-}
-
-const evalLine = () => {
-    // Ask IDE to eval line. Calls back to `selectLine()`
-    window.IDE.evaluateLine();
 }
 
 // Returns the code selection or line
