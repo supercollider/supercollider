@@ -4,16 +4,18 @@ Building SuperCollider on Linux
 Build requirements
 ------------------
 
-All of these are required for building scsynth and supernova.
+These are strict requirements for scsynth and supernova:
 
 - [gcc][gcc] >= 4.8
 - [cmake][cmake] >= 3.5: Cross-platform build system.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [fftw][fftw] >= 3.0: FFT library.
-- [libxt][libxt]: X toolkit intrinsics, required for UGens such as `MouseX`. (Support for building the servers without X is in progress.)
-- [libavahi-client][libavahi-client]: For zero-configuration networking. Can be turned off by setting the CMake flag `NO_AVAHI=ON`, but turning it off is not recommended.
 
+These packages are required by default for scsynth and supernova, but the components that require them can be disabled with flags:
+
+- [libxt][libxt]: X toolkit intrinsics, required for UGens such as `MouseX`. To build the servers without X, use the `NO_X11=ON` CMake flag.
+- [libavahi-client][libavahi-client]: For zero-configuration networking. To build the servers without Avahi, use the `NO_AVAHI=ON` CMake flag.
 
 [gcc]: http://www.gnu.org/software/gcc
 [libjack]: http://www.jackaudio.org/
@@ -28,8 +30,7 @@ Recommended packages
 
 For sclang and scide:
 
-- [Qt][Qt] >= 5.7: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit. It's best to get the latest Qt 5.x version.
-- QtWebEngine: required for the IDE.
+- [Qt][Qt] >= 5.7 with QtWebEngine: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit. It's best to get the latest Qt 5.x version.
 - [git][git]: Required for sclang's Quarks system.
 - [ALSA][ALSA]: Linux sound library, required for sclang MIDI support.
 - [libudev][libudev]: Device manager library, required for HID support.

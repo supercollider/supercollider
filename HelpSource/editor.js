@@ -1,24 +1,32 @@
 const init = () => {
+    /* based on editors/sc-ide/core/sc_lexer.cpp */
     CodeMirror.defineSimpleMode('scd', {
         start: [
-            {regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string'},
-            {regex: /^[\t\n\r \xA0]+/, token: 'whitespace'},
-            {regex: /^\\\w+/, token: 'attribute-name'},
-            {regex: /^'[^']+'/, token: 'attribute-name'},
-            {regex: /^\w+\:/, token: 'attribute-name'},
-            {regex: /^\$(\\)?./, token: 'attribute-name'},
-            {regex: /^~\w+/, token: 'env-var'},
-            {regex: /^(?:super|thisFunctionDef|thisFunction|thisMethod|thisProcess|thisThread|this)\b/, token: 'keyword'},
-            {regex: /^(?:true|false|nil|inf)\b/, token: 'atom'},
-            {regex: /^(?:var|classvar|const|arg)\b/, token: 'declaration'},
-            {regex: /^\b([A-Z][A-Za-z_0-9]+)\b/, token: 'type'},
-            {regex: /^\/(?:\/.*|\*(?:\/|\**[^*/])*(?:\*+\/?)?)/, token: 'comment'},
-            {regex: /^-?\d+r[\da-zA-Z]+(\.[\da-zA-Z]+)?/, token: 'literal'},
-            {regex: /^-?(?:(?:\d+(\.\d+)?)(?:e[+\-]?\d+)?(pi)?)|(?:pi\b)/, token: 'literal'},
-            {regex: /^[a-z_]\w*/i, token: 'plain'},
-            {regex: /^[-.,;#()\[\]{}]/, token: 'punctuation'}
+            { regex: /^\s+/, token: 'whitespace' },
+            { regex: /^(?:arg|classvar|const|super|this|var)\b/, token: 'keyword' },
+            { regex: /^(?:false|inf|nil|true|thisFunction|thisFunctionDef|thisMethod|thisProcess|thisThread|currentEnvironment|topEnvironment)\b/, token: 'built-in' },
+            { regex: /^\b\d+r[0-9a-zA-Z]*(\.[0-9A-Z]*)?/, token: 'number radix-float' },
+            { regex: /^\b((\d+(\.\d+)?([eE][-+]?\d+)?(pi)?)|pi)\b/, token: 'number float' },
+            { regex: /^\b0(x|X)(\d|[a-f]|[A-F])+/, token: 'number hex-int' },
+            { regex: /^\b[A-Za-z_]\w*\:/, token: 'symbol symbol-arg' },
+            { regex: /^[a-z]\w*/, token: 'text name' },
+            { regex: /^\b[A-Z]\w*/, token: 'class' },
+            { regex: /^\b_\w+/, token: 'primitive' },
+            { regex: /^\\\w*/, token: 'symbol' },
+            { regex: /'(?:[^\\]|\\.)*?(?:'|$)/, token: 'symbol' },
+            { regex: /^\$\\?./, token: 'char' },
+            { regex: /^~\w+/, token: 'env-var' },
+            { regex: /^\/\/[^\r\n]*/, token: 'comment single-line-comment' },
+            { regex: /"(?:[^\\]|\\.)*?(?:"|$)/, token: 'string' },
+            { regex: /^[-.,;#()\[\]{}]/, token: 'text punctuation' },
+            { regex: /\/\*/, push: 'comment', token: 'comment multi-line-comment' },
+            { regex: /^[+\-*/&\|\^%<>=!?]+/, token: 'text operator' },
+        ],
+        comment: [
+            { regex: /\*\//, pop: true, token: 'comment multi-line-comment' },
+            { regex: /./, token: 'comment multi-line-comment' }
         ]
-    });
+    })
 
     let textareas = Array.from(document.querySelectorAll('textarea'))
     textareas.forEach(textarea => {
@@ -29,8 +37,7 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: { 
-                'Cmd-Enter': () => selectRegion(),
-                'Shift-Enter': () => evalLine()
+                'Shift-Enter': evalLine
             }
         })
 
@@ -51,6 +58,10 @@ const init = () => {
 
 }
 
+const evalLine = () => {
+    // Ask IDE to eval line. Calls back to `selectLine()`
+    window.IDE.evaluateLine();
+}
 
 /* returns the code selection, line or region */
 const selectRegion = (options = { flash: true }) => {
@@ -68,9 +79,8 @@ const selectRegion = (options = { flash: true }) => {
             return cursorLeft
         let ch = editor.getLine(cursorLeft.line)
             .slice(cursorLeft.ch, cursorLeft.ch+1)
-        if (ch === ')') {
+        if (ch === ')')
             return findLeftParen(findLeftParen(cursorLeft))
-        }
         if (ch === '(')
             return cursorLeft
         return findLeftParen(cursorLeft)
@@ -82,9 +92,8 @@ const selectRegion = (options = { flash: true }) => {
             return cursorRight
         let ch = editor.getLine(cursorRight.line)
             .slice(cursorRight.ch-1, cursorRight.ch)
-        if (ch === '(') {
+        if (ch === '(')
             return findRightParen(findRightParen(cursorRight))
-        }
         if (ch === ')')
             return cursorRight
         return findRightParen(cursorRight)
@@ -127,11 +136,6 @@ const selectRegion = (options = { flash: true }) => {
         setTimeout(() => marker.clear(), 300)
         return editor.getRange(leftCursor, rightCursor)
     }
-}
-
-const evalLine = () => {
-    // Ask IDE to eval line. Calls back to `selectLine()`
-    window.IDE.evaluateLine();
 }
 
 // Returns the code selection or line
