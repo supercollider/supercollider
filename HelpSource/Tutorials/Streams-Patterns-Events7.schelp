@@ -155,7 +155,7 @@ e.stream = Pbind(
 	),
 	\amp, 0.05,
 	\octave, 5,
-	\instrument, \Help_SPE7_CFString1
+	\instrument, \help_SPE7_CFString1
 ).asStream;
 )
 ::
