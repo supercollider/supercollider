@@ -38,7 +38,7 @@ list::
 
 code::
 (
-var s = Server(\nrt,
+var server = Server(\nrt,
 	options: ServerOptions.new
 	.numOutputBusChannels_(2)
 	.numInputBusChannels_(2)
@@ -50,7 +50,7 @@ a = Score([
 			Out.ar(out, SinOsc.ar(freq, 0, 0.2).dup)
 		}).asBytes
 	]],
-	[0.0, (x = Synth.basicNew(\NRTsine, s, 1000)).newMsg(args: [freq: 400])],
+	[0.0, (x = Synth.basicNew(\NRTsine, server, 1000)).newMsg(args: [freq: 400])],
 	[1.0, x.freeMsg]
 ]);
 
@@ -58,12 +58,12 @@ a.recordNRT(
 	outputFilePath: "~/nrt-help.wav".standardizePath,
 	headerFormat: "wav",
 	sampleFormat: "int16",
-	options: s.options,
+	options: server.options,
 	duration: 1,
 	action: { "done".postln }
 );
 
-s.remove;
+server.remove;
 )
 ::
 
@@ -84,12 +84,12 @@ NOTE:: Times are adjusted for the clock's tempo. link::Classes/Score#*new:: allo
 Server abstraction objects (Synth, Group, Buffer etc.) include methods to give you the OSC message. So, a Score may frequently include idioms such as:
 
 list::
-## Create a group: code::[time, Group.basicNew(s).newMsg]::
-## Create a synth: code::[time, Synth.basicNew(\defname, s).newMsg(target, args: [...])]::
-## Read a buffer from disk: code::[time, Buffer(s).allocReadMsg(path)]::
+## Create a group: code::[time, Group.basicNew(server).newMsg]::
+## Create a synth: code::[time, Synth.basicNew(\defname, server).newMsg(target, args: [...])]::
+## Read a buffer from disk: code::[time, Buffer(server).allocReadMsg(path)]::
 ::
 
-NOTE:: Normal usage of link::Classes/Synth:: or link::Classes/Buffer:: communicates immediately with the server: code::Synth.new(...):: transmits teletype::/s_new::; code::Buffer.alloc(s, ...):: sends teletype::/b_alloc::. To build a NRT score, create the object as a placeholder (no immediate communication) and then ask a placeholder for the message: link::Classes/Synth#*basicNew:: and link::Classes/Synth#-newMsg::, or link::Classes/Buffer#*new:: and link::Classes/Buffer#-allocMsg:: or link::Classes/Buffer#-allocReadMsg::. If you have only used real-time synthesis, this code style is unfamiliar, but it's worth practicing. ::
+NOTE:: Normal usage of link::Classes/Synth:: or link::Classes/Buffer:: communicates immediately with the server: code::Synth.new(...):: transmits teletype::/s_new::; code::Buffer.alloc(server, ...):: sends teletype::/b_alloc::. To build a NRT score, create the object as a placeholder (no immediate communication) and then ask a placeholder for the message: link::Classes/Synth#*basicNew:: and link::Classes/Synth#-newMsg::, or link::Classes/Buffer#*new:: and link::Classes/Buffer#-allocMsg:: or link::Classes/Buffer#-allocReadMsg::. If you have only used real-time synthesis, this code style is unfamiliar, but it's worth practicing. ::
 
 Note:: The result of, e.g., teletype::newMsg:: is already the array representing the message. So it is sufficient for each Score item to be an array containing the time and method call. The subarray should be explicit only when writing the message by hand. ::
 
@@ -98,7 +98,7 @@ Consult help files for the server abstraction classes for additional "...Msg" me
 If you save the code::Synth.basicNew(...):: instance in a variable, then you can free it later using either link::Classes/Node#-freeMsg:: or link::Classes/Node#-releaseMsg::, e.g.:
 
 code::
-[1.0, (x = Synth.basicNew(\default, s)).newMsg(args: [freq: 200])],
+[1.0, (x = Synth.basicNew(\default, server)).newMsg(args: [freq: 200])],
 [2.0, x.releaseMsg]
 ::
 
@@ -173,14 +173,14 @@ SynthDef(\NRTsine, { |out, freq = 440|
 )
 
 (
-var s = Server(\nrt,
+var server = Server(\nrt,
 	options: ServerOptions.new
 	.numOutputBusChannels_(2)
 	.numInputBusChannels_(2)
 );
 
 a = Score([
-	[0.0, (x = Synth.basicNew(\NRTsine, s, 1000)).newMsg(args: [freq: 400])],
+	[0.0, (x = Synth.basicNew(\NRTsine, server, 1000)).newMsg(args: [freq: 400])],
 	[1.0, x.freeMsg]
 ]);
 
@@ -188,12 +188,12 @@ a.recordNRT(
 	outputFilePath: PathName.tmp +/+ "nrt-help-fail.wav",
 	headerFormat: "wav",
 	sampleFormat: "int16",
-	options: s.options,
+	options: server.options,
 	duration: 1,
 	action: { "done".postln }
 );
 
-s.remove;
+server.remove;
 )
 ::
 
@@ -220,12 +220,12 @@ The preceding example, for simplicity, adds only one synth. Another approach is 
 
 code::
 (
-var s = Server(\nrt,
+var server = Server(\nrt,
 	options: ServerOptions.new
 	.numOutputBusChannels_(2)
 	.numInputBusChannels_(2)
 ),
-defaultGroup = Group.basicNew(s);
+defaultGroup = Group.basicNew(server);
 
 var time = 0;
 
@@ -241,7 +241,7 @@ x = Score([
 ]);
 
 100.do {
-	x.add([time, Synth.basicNew(\singrain, s)
+	x.add([time, Synth.basicNew(\singrain, server)
 		.newMsg(g, [freq: exprand(200, 800), time: exprand(0.1, 1.0)])
 	]);
 	time = time + exprand(0.02, 0.25)
@@ -252,11 +252,11 @@ x.recordNRT(
 	sampleRate: 44100,
 	headerFormat: "AIFF",
 	sampleFormat: "int16",
-	options: s.options,
+	options: server.options,
 	duration: x.endTime + 1
 );
 
-s.remove;
+server.remove;
 )
 ::
 
@@ -268,12 +268,12 @@ The example audio file is not very long, but processing here is almost instantan
 
 code::
 (
-var s,
+var server,
 inputFile = SoundFile.openRead(Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 inputFile.close;  // doesn't need to stay open; we just need the stats
 
-s = Server(\nrt,
+server = Server(\nrt,
 	options: ServerOptions.new
 	.numOutputBusChannels_(2)
 	.numInputBusChannels_(inputFile.numChannels)
@@ -288,7 +288,7 @@ x = Score([
 			Out.ar(0, IFFT(fft).dup)
 		}).asBytes
 	]],
-	[0.0, Synth.basicNew(\fft, s).newMsg]
+	[0.0, Synth.basicNew(\fft, server).newMsg]
 ]);
 
 x.recordNRT(
@@ -297,11 +297,11 @@ x.recordNRT(
 	sampleRate: 44100,
 	headerFormat: "AIFF",
 	sampleFormat: "int16",
-	options: s.options,
+	options: server.options,
 	duration: inputFile.duration
 );
 
-s.remove;
+server.remove;
 )
 ::
 
@@ -313,7 +313,7 @@ First, a simple example using the default SynthDef. This example does not requir
 
 code::
 (
-var s = Server(\nrt,
+var server = Server(\nrt,
 	options: ServerOptions.new
 	.numOutputBusChannels_(2)
 	.numInputBusChannels_(2)
@@ -330,11 +330,11 @@ x.recordNRT(
 	sampleRate: 44100,
 	headerFormat: "AIFF",
 	sampleFormat: "int16",
-	options: s.options,
+	options: server.options,
 	duration: 120
 );
 
-s.remove;
+server.remove;
 )
 ::
 
@@ -342,7 +342,7 @@ It is somewhat trickier to use Buffers and custom SynthDefs with pattern-generat
 
 code::
 (
-var s = Server(\nrt,
+var server = Server(\nrt,
 	options: ServerOptions.new
 	.numOutputBusChannels_(2)
 	.numInputBusChannels_(2)
@@ -353,7 +353,7 @@ def = SynthDef(\buf1, { |out, bufnum, rate = 1, time = 0.1, start = 0, amp = 0.1
 	Out.ar(out, (sig * (eg * amp)).dup);
 }),
 // the pattern needs a placeholder for the buffer
-buf = Buffer.new(s, 0, 1);
+buf = Buffer.new(server, 0, 1);
 
 def.add;  // the pattern needs the def in the SynthDescLib
 
@@ -377,11 +377,11 @@ x.recordNRT(
 	sampleRate: 44100,
 	headerFormat: "AIFF",
 	sampleFormat: "int16",
-	options: s.options,
+	options: server.options,
 	duration: 20
 );
 
-s.remove;
+server.remove;
 )
 ::
 
@@ -401,6 +401,11 @@ code::
 
 (
 fork {
+	var server = Server(\nrt,
+		options: ServerOptions.new
+		.numOutputBusChannels_(2)
+		.numInputBusChannels_(2)
+	);
 	var resultbuf, resultpath, oscpath, score, dur, sf, cond, size, data;
 
 	// get duration
@@ -412,7 +417,7 @@ fork {
 	oscpath = PathName.tmp +/+ UniqueID.next ++ ".osc";
 
 	score = Score([
-		[0, (resultbuf = Buffer.new(s, 1000, 1, 0)).allocMsg],
+		[0, (resultbuf = Buffer.new(server, 1000, 1, 0)).allocMsg],
 		[0, [\d_recv, SynthDef(\onsets, {
 			var sig = SoundIn.ar(0), // will come from NRT input file
 			fft = FFT(LocalBuf(512, 1), sig),
@@ -425,7 +430,7 @@ fork {
 			BufWr.ar(timer, resultbuf, K2A.ar(i), loop: 0);
 			BufWr.kr(i, resultbuf, DC.kr(0), 0);  // # of points in index 0
 		}).asBytes]],
-		[0, Synth.basicNew(\onsets, s, 1000).newMsg],
+		[0, Synth.basicNew(\onsets, server, 1000).newMsg],
 		[dur, resultbuf.writeMsg(resultpath, headerFormat: "AIFF", sampleFormat: "float")]
 	]);
 
@@ -451,6 +456,7 @@ fork {
 	sf.close;
 
 	File.delete(oscpath); File.delete(resultpath);
+	server.remove;
 
 	data.postln;  // these are your onsets!
 };
