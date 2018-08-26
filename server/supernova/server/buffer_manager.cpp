@@ -16,7 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#include "sndfile.hh"
+//#include "sndfile.hh"
 
 #include "buffer_manager.hpp"
 #include "malloc_aligned.hpp"
