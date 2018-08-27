@@ -113,6 +113,8 @@ protected:
 
     void hideMouseCursor();
 
+    void updateFocusRect();
+
     class LineIndicator *mLineIndicator;
     QGraphicsScene *mOverlay;
     QWidget *mOverlayWidget;
@@ -128,9 +130,9 @@ protected:
     QTextCharFormat mSearchResultTextFormat;
 
     QList<QTextEdit::ExtraSelection> mSearchSelections;
-    
+
     QGraphicsRectItem *mFocusRect = 0;
-    
+
     int mInactiveFadeAlpha = 0;
 
 private:
