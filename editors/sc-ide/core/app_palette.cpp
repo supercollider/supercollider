@@ -80,12 +80,7 @@ void Main::setAppPaletteFromSettings() {
         disabled_text = color::darken(window, 20);
         disabled_shadow = color::darken(window, 20);
     } else {
-        int mid_lightening = 23;
-        int minimum_mid_value = 29;
-        mid = color::lighten(window, mid_lightening);
-        if (mid.value() < minimum_mid_value) {
-            mid = color::setValue(mid, minimum_mid_value);
-        }
+        mid = color::darken(window, 20);
         highlight = color::lighten(window, 30);
         disabled_shadow = color::lighten(window, 40);
         disabled_text = color::lighten(window, 40);

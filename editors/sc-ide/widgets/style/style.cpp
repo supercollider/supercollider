@@ -22,6 +22,8 @@
 #include "style.hpp"
 #include "../../core/util/color.hpp"
 
+#include <cmath>
+
 #include <QPainter>
 #include <QStyleOption>
 #include <QDockWidget>
@@ -218,6 +220,11 @@ void Style::drawControl
             }
         }
 
+        QColor text_color = option->palette.color(QPalette::WindowText);
+        if (!selected) {
+            text_color = color::interpolate(text_color, background_color, kDeselectedTabBlend);
+        }
+
         // Draw tab rectangle.
         QRect rect = tabOption->rect;
         painter->setBrush(background_color);
@@ -237,7 +244,30 @@ void Style::drawControl
             painter->drawLine(rect.topRight(), rect.bottomRight());
         }
 
+        // If the contrast between active and inactive tabs is stupidly low,
+        // then use an overline to distinguish them. This happens when the user
+        // sets a really dark background color.
+        int window_mid_value_difference = abs(
+            option->palette.color(QPalette::Window).value()
+            - option->palette.color(QPalette::Mid).value()
+        );
+
+        if (
+            selected
+            && window_mid_value_difference < 20
+        ) {
+            painter->setBrush(text_color);
+            painter->drawRect(
+                rect.left(),
+                rect.top(),
+                rect.right(),
+                rect.top() + 2
+            );
+        }
+
         painter->restore();
+
+        // Draw icon.
 
         if (!tabOption->icon.isNull()) {
             QPixmap pixmap = tabOption->icon.pixmap( tabOption->iconSize );
@@ -250,17 +280,15 @@ void Style::drawControl
             painter->drawPixmap( iconRect, pixmap );
         }
 
+        // Draw text.
+
         QRect textRect = subElementRect( QStyle::SE_TabBarTabText, option, widget );
 
         painter->save();
-        QColor text_color = option->palette.color(QPalette::WindowText);
         if (selected) {
             QFont font;
             font.setBold(true);
             painter->setFont(font);
-        }
-        if (!selected) {
-            text_color = color::interpolate(text_color, background_color, kDeselectedTabBlend);
         }
         painter->setPen(text_color);
         painter->drawText( textRect,
