@@ -194,12 +194,13 @@ hook for clients to write frontend.css
 
 
 instancemethods::
-Note:: All platform methods except code::name: can and should be called as class methods of code::Platform::. It is recommended to replace uses of code::thisProcess.platform::
+Note:: All platform methods except code::name:: can and should be called as class methods of code::Platform::. It is recommended to replace uses of code::thisProcess.platform:: as follows:
 code::
 // e.g. this line:
 thisProcess.platform.userHomeDir;
 // can be changed to simpler code:
 Platform.userHomeDir;
+::
 ::
 
 method:: name
