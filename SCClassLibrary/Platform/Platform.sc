@@ -18,12 +18,18 @@ Platform {
 		recordingsDir = this.userAppSupportDir +/+ "Recordings";
 	}
 
+	// cannot redirect 'name' to name because class has a name
 	name { ^this.subclassResponsibility }
+	*platformName { ^thisProcess.platform.name }
 
 	recompile {
 		_Recompile
 		^this.primitiveFailed
 	}
+	*recompile {
+		^thisProcess.platform.recompile
+	}
+
 	*case { | ... cases |
 		^thisProcess.platform.name.switch(*cases)
 	}
@@ -109,6 +115,9 @@ Platform {
 	startupFiles {
 		^[defaultStartupFile];
 	}
+	*startupFiles {
+		^thisProcess.platform.startupFiles
+	}
 
 	*deprecatedStartupFiles {|paths|
 		var postWarning = false;
@@ -128,6 +137,9 @@ Platform {
 		if(File.exists(afile), {afile.load})
 		}
 	}
+	*loadStartupFiles {
+		^thisProcess.platform.loadStartupFiles
+	}
 
 	// features
 	declareFeature { | aFeature |
@@ -140,6 +152,10 @@ Platform {
 		};
 		features.put(aFeature, true);
 	}
+	*declareFeature { | aFeature |
+		^thisProcess.platform.declareFeature(aFeature)
+	}
+
 	hasFeature { | symbol |
 		if (features.includesKey(symbol).not) {
 			features.put(
@@ -149,6 +165,10 @@ Platform {
 		};
 		^features.at(symbol)
 	}
+	*hasFeature { | symbol |
+		^thisProcess.platform.hasFeature(symbol)
+	}
+
 	when { | features, ifFunction, elseFunction |
 		^features.asArray.inject(true, { |v,x|
 			v and: { this.hasFeature(x) }
@@ -160,33 +180,47 @@ Platform {
 
 	// Prefer qt but fall back to swing if qt not installed.
 	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\swing} }
+	*defaultGUIScheme { ^thisProcess.platform.defaultGUIScheme }
 
 	isSleeping { ^false } // unless defined otherwise
 
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).
-	devLoc{ |inpath|
+	devLoc { |inpath|
 		var outpath;
 		if ( devpath.isNil ){ ^inpath };
 		outpath = inpath.copyToEnd( inpath.find( "SuperCollider") );
 		outpath = outpath.replace( "SuperCollider", devpath );
 		^outpath;
 	}
+	*devLoc { |inpath|
+		^thisProcess.platform.devLoc(inpath)
+	}
 
 	// hook for clients to write frontend.css
 	writeClientCSS {}
+	*writeClientCSS { ^thisProcess.platform.writeClientCSS }
 
 	killProcessByID { |pid|
 		^this.subclassResponsibility(\killProcessByID)
 	}
+	*killProcessByID { |pid|
+		^thisProcess.platform.killProcessByID(pid)
+	}
 
 	killAll { |cmdLineArgs|
 		^this.subclassResponsibility(\killAll)
+	}
+	*killAll { |cmdLineArgs|
+		^thisProcess.platform.killProcessByID(cmdLineArgs)
 	}
 
 	// used to format paths correctly for command-line calls
 	// On Windows, encloses with quotes; on Unix systems, escapes spaces.
 	formatPathForCmdLine { |path|
 		^this.subclassResponsibility
+	}
+	*formatPathForCmdLine { |path|
+		^thisProcess.platform.formatPathForCmdLine(path)
 	}
 
 }
