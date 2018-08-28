@@ -57,6 +57,14 @@ private:
     void fillSolarizedLight();
     void fillSolarizedDark();
 
+    void addToTheme(
+        const char *key,
+        const QColor & fg,
+        const QColor & bg = QColor(Qt::transparent),
+        bool bold = false,
+        bool italic = false
+    );
+
     bool mLocked;
     QMap<QString, QTextCharFormat *> mFormats;
     QString mName;
