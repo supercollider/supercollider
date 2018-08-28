@@ -48,26 +48,26 @@ Buffer {
 	allocRead { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadMsg( argpath, startFrame, numFrames, completionMessage))
+		server.listSendMsg(this.allocReadMsg( argpath, startFrame.asInteger, numFrames, completionMessage))
 	}
 
 	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame, numFrames, channels,
+		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame.asInteger, numFrames, channels,
 			completionMessage))
 	}
 
 	allocMsg { arg completionMessage;
 		this.cache;
-		^["/b_alloc", bufnum, numFrames.asInt, numChannels, completionMessage.value(this)]
+		^["/b_alloc", bufnum, numFrames.asInteger, numChannels, completionMessage.value(this)]
 	}
 
 	allocReadMsg { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
 		this.startFrame = startFrame;
-		^["/b_allocRead", bufnum, path, startFrame, (numFrames ? -1).asInt, completionMessage.value(this)]
+		^["/b_allocRead", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger, completionMessage.value(this)]
 	}
 
 	allocReadChannelMsg { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
@@ -75,7 +75,7 @@ Buffer {
 		path = argpath;
 		this.startFrame = startFrame;
 		completionMessage !? { completionMessage = [completionMessage.value(this)] };
-		^["/b_allocReadChannel", bufnum, path, startFrame, (numFrames ? -1).asInt] ++ channels ++ completionMessage
+		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels ++ completionMessage
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -134,7 +134,7 @@ Buffer {
 	readMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		path = argpath;
-		^["/b_read", bufnum, path, fileStartFrame, (numFrames ? -1).asInt,
+		^["/b_read", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
 			bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -142,7 +142,7 @@ Buffer {
 	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
-		^["/b_readChannel", bufnum, path, fileStartFrame, (numFrames ? -1).asInt,
+		^["/b_readChannel", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
 			bufStartFrame, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -162,7 +162,7 @@ Buffer {
 	}
 
 	cueSoundFileMsg { arg path, startFrame = 0, completionMessage;
-		^["/b_read", bufnum, path, startFrame, numFrames.asInt, 0, 1, completionMessage.value(this)]
+		^["/b_read", bufnum, path, startFrame.asInteger, numFrames.asInteger, 0, 1, completionMessage.value(this)]
 	}
 
 	// transfer a collection of numbers to a buffer through a file
@@ -455,12 +455,12 @@ Buffer {
 
 	fill { arg startAt, numFrames, value ... more;
 		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
-		server.listSendMsg([\b_fill, bufnum, startAt, numFrames.asInt, value] ++ more)
+		server.listSendMsg([\b_fill, bufnum, startAt, numFrames.asInteger, value] ++ more)
 	}
 
 	fillMsg { arg startAt, numFrames, value ... more;
 		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
-		^[\b_fill, bufnum, startAt, numFrames.asInt, value] ++ more
+		^[\b_fill, bufnum, startAt, numFrames.asInteger, value] ++ more
 	}
 
 	normalize { arg newmax=1, asWavetable=false;

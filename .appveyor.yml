@@ -149,7 +149,7 @@ deploy:
   description: appveyor_$(APPVEYOR_REPO_TAG_NAME)
   artifact: installer
   auth_token:
-    secure: rxXJNY+6n25Th9R4+7qI+AcnTj0wCAMSnBGH2+5s7DlVLrAGsSY6+EEDbeHWGGeI
+    secure: 6m5+IiGj/pLhiUJvZPqs7yOlSe0ttH3pklaM7w1i8ca4YRUrIKddsGTZAZo86qLx
   prerelease: true
   on:
     appveyor_repo_tag: true
