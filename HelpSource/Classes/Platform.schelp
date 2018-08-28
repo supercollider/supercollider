@@ -1,21 +1,34 @@
 class:: Platform
-summary:: handle cross-platform differencies
+summary:: handle cross-platform differences
 categories:: Platform
 
 description::
 The Platform class (along with its subclasses) handles things which differ between operating systems (mac/linux/windows/...), to simplify cross-platform aspects of SuperCollider.
+Currently implemented platforms include: OSXPlatform, LinuxPlatform, WindowsPlatform, UnixPlatform.
 
-Platform is an abstract class encapsulating various platform dependent constants and properties, such as directories, primitive features and startup files. The platform object is accessible through the code::platform:: method of the main process instance:
+Platform is an abstract class encapsulating various platform dependent constants and properties, such as directories, primitive features and startup files.
+In any running SuperCollider system, there is only a single platform object which represents the current operating system / platform. This object is accessible through the code::platform:: method of the main process instance:
 code::
 thisProcess.platform
 ::
 
-Currently implemented platforms include: OSXPlatform, LinuxPlatform, WindowsPlatform, UnixPlatform.
-
 classmethods::
-Most of Platforms class methods are simply wrappers to code::thisProcess.platform.method::.
+Note:: Almost all platform methods can be called as class methods of code::Platform::. As this is the recommended interface (for simplicity and clarity), they are documented only as class methods. So, almost all code that uses code::thisProcess.platform:: can be simplified, e.g.:
+code::
+thisProcess.platform.userHomeDir;
+// can be written shorter as:
+Platform.userHomeDir;
+::
+::
 
 subsection:: Platform name and platform dependent actions
+
+method:: platformName
+the name of the current platform
+code::
+Platform.platformName;   // redirects to:
+thisProcess.platform.name;
+::
 
 method:: case
 Perform actions depending on the current platform (name), just like Object:switch:
@@ -65,10 +78,16 @@ platform specific directory for class files (see link::Guides/UsingExtensions::)
 method:: pathSeparator
 platform specific path separator
 
+method:: isPathSeparator
+check whether a char is the path separator on this platform.
+
+method:: pathDelimiter
+platform specific path path delimiter
+
 method:: resourceDir
 platform specific resource directory
 
-method:: recordingsDir 
+method:: recordingsDir
 platform recordings directory
 
 method:: defaultTempDir
@@ -83,78 +102,18 @@ returns:: The input string formatted as a command-line argument. On Windows this
 method quotes the string. On Unix-based systems this method escapes space
 characters with a backslash.
 
-subsection:: Features
-
-method:: when
-Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
-code::
-Platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
-::
-
-instancemethods::
-
-private:: shutdown, startup
-
-method:: name
-returns the platform name
-
-method:: recompile
-recompile class library
-
-
-subsection:: Directories and filesystem stuff
-
-method:: classLibraryDir
-location of the bundled class library
-
-method:: helpDir
-location of the bundled help files
-
-method:: systemAppSupportDir
-system application support directory
-
-method:: systemExtensionDir
-system extension directory (see link::Guides/UsingExtensions::)
-
-method:: userHomeDir
-user home directory
-
-method:: userAppSupportDir
-user application support directory
-
-method:: userConfigDir
-directory for configuration files
-
-method:: userExtensionDir
-user extension directory (see link::Guides/UsingExtensions::)
-
-method:: platformDir
-platform specific directory for class files (see link::Guides/UsingExtensions::)
-
-method:: pathSeparator
-platform specific path separator
-
-method:: pathDelimiter
-platform specific path delimiter
-
-method:: recordingsDir
-platform recordings directory
-
-method:: resourceDir
-platform specific resource directory
-
-method:: defaultTempDir
-default directory for temporary files
-
-
 
 subsection:: Startup files
 
 method:: startupFiles
-files to be loaded on startup
+path(s) to the startup files to load
 
 method:: loadStartupFiles
 (re)load startup files
+
+method:: deprecatedStartupFiles
+test whether given paths are deprecated startup file paths, and warn if the case.
+
 
 subsection:: System commands
 
@@ -178,6 +137,16 @@ code::
 thisProcess.platform.killProcessByID(~pid);
 ::
 
+method:: recompile
+recompile the class library
+
+method:: clearMetadata
+clear metadata at the given path
+
+method:: devLoc
+???
+
+
 subsection:: Features
 
 Features are abstract symbols that can be declared by extension authors and be checked during runtime in user code. Apart from explicitly declared features, class and primitive names are implicitly declared.
@@ -188,16 +157,63 @@ Declare aSymbol to be a feature present in the runtime. Class names and primitiv
 method:: hasFeature
 Return true if the feature aSymbol is present in the runtime system. aSymbol can refer to explicitly declared features as well as class and primitive names.
 code::
-thisProcess.platform.hasFeature(\Object);
-thisProcess.platform.hasFeature('_SCWindow_BeginFullScreen');
-thisProcess.platform.hasFeature('_myFuncyPrimitive');
+Platform.hasFeature(\Object);
+Platform.hasFeature('_SCWindow_BeginFullScreen');
+Platform.hasFeature('_myFuncyPrimitive');
 
-thisProcess.platform.declareFeature('superCrazyCompositionSystem');
-thisProcess.platform.hasFeature('superCrazyCompositionSystem');
+Platform.declareFeature('superCrazyCompositionSystem');
+Platform.hasFeature('superCrazyCompositionSystem');
 ::
 
 method:: when
 Evaluate ifFunction if all features are present, otherwise evaluate elseFunction.
 code::
-thisProcess.platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
+Platform.when(#[\Document, \SCWindow], { "yeehah!".postln });
 ::
+
+
+subsection:: GUI and Help System
+
+method:: defaultGUIScheme
+platform-specific GUI scheme
+
+method:: makeServerWindowAction
+action to perform when a server window is made
+
+method:: makeSynthDescWindowAction
+action to perform when a synthdesc window is made
+
+method:: openHTMLFileAction
+action to perform when an HTML file is opened
+
+method:: openHelpFileAction
+action to perform when a help file is opened
+
+method:: writeClientCSS
+hook for clients to write frontend.css
+
+
+instancemethods::
+Note:: All platform methods except code::name: can and should be called as class methods of code::Platform::. It is recommended to replace uses of code::thisProcess.platform::
+code::
+// e.g. this line:
+thisProcess.platform.userHomeDir;
+// can be changed to simpler code:
+Platform.userHomeDir;
+::
+
+method:: name
+returns the platform name.
+code::
+thisProcess.platform.name;
+// equivalent Platform class method:
+Platform.platformName;
+::
+
+private:: shutdown, startup, recompile
+
+private:: clearMetadata, declareFeature, defaultGUIScheme, deprecatedStartupFiles, devLoc, hasFeature, isPathSeparator, killAll, killProcessByID(pid), loadStartupFiles, makeServerWindowAction, makeSynthDescWindowAction, openHTMLFileAction, openHelpFileAction, pathDelimiter, platformName, recompile, startupFiles, writeClientCSS
+
+private:: classLibraryDir, defaultTempDir, devpath, formatPathForCmdLine, helpDir, ideName, initPlatform, isSleeping, pathSeparator, platformDir, recordingsDir, resourceDir, systemAppSupportDir, systemExtensionDir, userAppSupportDir, userConfigDir, userExtensionDir, userHomeDir, when, formatPathForCmdLine, killProcessByID
+
+
