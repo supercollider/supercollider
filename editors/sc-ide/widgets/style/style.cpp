@@ -239,7 +239,7 @@ void Style::drawControl
             && !(tabOption->position == QStyleOptionTab::End)
             && !(tabOption->position == QStyleOptionTab::OnlyOneTab)
         ) {
-            QPen pen(color::darken(background_color, 20), 1);
+            QPen pen(option->palette.color(QPalette::Shadow), 1);
             painter->setPen(pen);
             painter->drawLine(rect.topRight(), rect.bottomRight());
         }
