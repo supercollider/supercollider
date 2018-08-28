@@ -53,7 +53,7 @@ void Theme::fillDefault()
     QColor comment("#848484");
     QColor red("#cc3626");
     QColor orange("#c07f00");
-    QColor yellow("#ada526");
+    // QColor yellow("#ada526"); // Not used currently.
     QColor green("#3f831e");
     QColor cyan("#3582bc");
     QColor blue("#3951c9");
@@ -67,13 +67,13 @@ void Theme::fillDefault()
     addToTheme("evaluatedCode",      background, orange);
     addToTheme("whitespace",         background);
     addToTheme("keyword",            red);
-    addToTheme("built-in",           yellow);
+    addToTheme("built-in",           purple);
     addToTheme("env-var",            orange);
     addToTheme("class",              cyan);
     addToTheme("number",             purple);
     addToTheme("symbol",             green);
     addToTheme("string",             blue);
-    addToTheme("char",               green);
+    addToTheme("char",               purple);
     addToTheme("comment",            comment);
     addToTheme("primitive",          orange);
     addToTheme("lineNumbers",        line_number);
