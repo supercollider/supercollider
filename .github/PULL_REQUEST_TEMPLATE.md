@@ -24,12 +24,12 @@ Checklist
 
 <!--- Complete an item by checking it: [x] -->
 
-- [ ] All tests are passing
-- [ ] If necessary, new tests were created to address changes in PR, and tests are passing
+- [ ] All previous tests are passing
+- [ ] Tests were created to address all code changes in this PR (including bug fixes), and tests are passing
 - [ ] Updated documentation, if necessary
 - [ ] This PR is ready for review
 
-<!--- See DEVELOPING.md for instructions on running and writing tests. -->
+<!--- See DEVELOPING.md and https://github.com/supercollider/supercollider/wiki/Unit-Testing-Guide for instructions on running and writing tests. -->
 
 Remaining Work
 --------------
