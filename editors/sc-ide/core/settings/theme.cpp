@@ -100,6 +100,48 @@ static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
 
 void Theme::fillDefault()
 {
+    QColor background("#f7f7f7");
+    QColor current_line("#efefef");
+    QColor selection("#d6d6d6");
+    QColor foreground("#1a1a1a");
+    QColor line_number("#c7c4c2");
+    QColor comment("#848484");
+    QColor red("#cc3626");
+    QColor orange("#c07f00");
+    QColor yellow("#ada526");
+    QColor green("#3f831e");
+    QColor cyan("#3582bc");
+    QColor blue("#3951c9");
+    QColor purple("#af33a6");
+
+    addToTheme(mFormats, "text",               foreground, background);
+    addToTheme(mFormats, "currentLine",        foreground, current_line);
+    addToTheme(mFormats, "searchResult",       background, blue);
+    addToTheme(mFormats, "matchingBrackets",   foreground, background, true);
+    addToTheme(mFormats, "mismatchedBrackets", background, red);
+    addToTheme(mFormats, "evaluatedCode",      background, orange);
+    addToTheme(mFormats, "whitespace",         background);
+    addToTheme(mFormats, "keyword",            red);
+    addToTheme(mFormats, "built-in",           yellow);
+    addToTheme(mFormats, "env-var",            orange);
+    addToTheme(mFormats, "class",              cyan);
+    addToTheme(mFormats, "number",             purple);
+    addToTheme(mFormats, "symbol",             green);
+    addToTheme(mFormats, "string",             blue);
+    addToTheme(mFormats, "char",               green);
+    addToTheme(mFormats, "comment",            comment);
+    addToTheme(mFormats, "primitive",          orange);
+    addToTheme(mFormats, "lineNumbers",        line_number);
+    addToTheme(mFormats, "selection",          foreground, selection);
+    addToTheme(mFormats, "postwindowtext",     foreground);
+    addToTheme(mFormats, "postwindowerror",    red);
+    addToTheme(mFormats, "postwindowwarning",  orange);
+    addToTheme(mFormats, "postwindowsuccess",  green);
+    addToTheme(mFormats, "postwindowemphasis", foreground, Qt::transparent, true);
+}
+
+void Theme::fillClassic()
+{
     addToTheme(mFormats, "text", QColor(Qt::black), QColor(Qt::white));
 
     QPalette appPlt(QApplication::palette());

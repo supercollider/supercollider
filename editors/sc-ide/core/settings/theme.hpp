@@ -51,6 +51,7 @@ public:
 private:
     void fillUser(const QString & theme, const Manager *settings);
     void fillDefault();
+    void fillClassic();
     void fillDark();
     void fillDracula();
     void fillSolarizedLight();
