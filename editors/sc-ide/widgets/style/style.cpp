@@ -260,8 +260,8 @@ void Style::drawControl
             painter->drawRect(
                 rect.left(),
                 rect.top(),
-                rect.right(),
-                rect.top() + 2
+                rect.width(),
+                2
             );
         }
 
