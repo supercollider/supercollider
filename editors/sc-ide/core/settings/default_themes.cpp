@@ -62,7 +62,7 @@ void Theme::fillDefault()
     add("text",               foreground, background);
     add("currentLine",        foreground, current_line);
     add("searchResult",       background, blue);
-    add("matchingBrackets",   foreground, background, true);
+    add("matchingBrackets",   foreground, current_line, true);
     add("mismatchedBrackets", background, red);
     add("evaluatedCode",      background, orange);
     add("whitespace",         background);
