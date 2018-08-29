@@ -29,7 +29,7 @@ Checklist
 - [ ] Updated documentation, if necessary
 - [ ] This PR is ready for review
 
-<!--- See DEVELOPING.md and https://github.com/supercollider/supercollider/wiki/Unit-Testing-Guide for instructions on running and writing tests. -->
+<!--- See DEVELOPING.md for instructions on running and writing tests. -->
 
 Remaining Work
 --------------
