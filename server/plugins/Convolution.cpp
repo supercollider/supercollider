@@ -594,8 +594,8 @@ void Convolution2L_next(Convolution2L *unit, int numSamples)
 		float * p3= unit->m_tempbuf;
 
 		// multiply the dc and nyquist components
-		p1[0] *= p2[0];
-		p1[1] *= p2[1];
+		p3[0] = p1[0] * p2[0];
+		p3[1] = p1[1] * p2[1];
 		//complex multiply
 		for (int i=1; i<numbins; ++i)
 		{
