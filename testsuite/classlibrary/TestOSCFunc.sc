@@ -1,6 +1,6 @@
 TestOSCFunc : UnitTest {
 
-	test_argSizeMatchingSucceeds {
+	test_argSizeMatching_Succeeds {
 		var cond = Condition();
 		var oscfunc;
 		var result = 0;
@@ -15,7 +15,7 @@ TestOSCFunc : UnitTest {
 		this.assertEquals(result, 1);
 	}
 
-	test_argSizeMatchingFails {
+	test_argSizeMatching_Fails {
 		var cond = Condition();
 		var oscfunc;
 		var result = 0;
