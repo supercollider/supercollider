@@ -55,8 +55,8 @@ void Theme::fillDefault()
     QColor orange("#c07f00");
     // QColor yellow("#ada526"); // Not used currently.
     QColor green("#3f831e");
-    QColor cyan("#3582bc");
-    QColor blue("#3951c9");
+    QColor cyan("#3478bc");
+    QColor blue("#3f39c9");
     QColor purple("#af33a6");
 
     addToTheme("text",               foreground, background);
