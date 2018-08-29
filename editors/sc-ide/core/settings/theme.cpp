@@ -79,7 +79,7 @@ int legacyTheme(Manager * settings)
     return 1;
 }
 
-void Theme::addToTheme(
+void Theme::add(
     const char *key,
     const QColor & fg,
     const QColor & bg, // = QColor(Qt::transparent)
@@ -202,7 +202,7 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
     }
 
     mFormats.remove(key);
-    addToTheme(key.toStdString().c_str(), fg, bg, fontWeight, newFormat.fontItalic());
+    add(key.toStdString().c_str(), fg, bg, fontWeight, newFormat.fontItalic());
 }
 
 const QTextCharFormat & Theme::format(const QString & key)

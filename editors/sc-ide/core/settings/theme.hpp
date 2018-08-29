@@ -57,7 +57,7 @@ private:
     void fillSolarizedLight();
     void fillSolarizedDark();
 
-    void addToTheme(
+    void add(
         const char *key,
         const QColor & fg,
         const QColor & bg = QColor(Qt::transparent),
