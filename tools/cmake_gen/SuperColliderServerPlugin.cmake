@@ -54,25 +54,28 @@ function(sc_add_server_plugin_properties target is_supernova)
 endfunction()
 
 function(sc_add_server_plugin name cpp sc schelp)
-    add_library(${name} MODULE "${cpp}")
-    install(TARGETS ${name} LIBRARY DESTINATION ${name})
+    if(SCSYNTH)
+        set(sy_name "${name}_scsynth")
+        add_library(${sy_name} MODULE "${cpp}")
+        install(TARGETS ${sy_name} LIBRARY DESTINATION ${name})
+        sc_add_server_plugin_properties(${sy_name} FALSE)
+        message(STATUS "Added server plugin target ${sy_name}")
+    endif()
+
+    if(SUPERNOVA)
+        set(sn_name "${name}_supernova")
+        add_library(${sn_name} MODULE "${cpp}")
+        # install scsynth/supernova targets to same dir
+        install(TARGETS ${sn_name} LIBRARY DESTINATION ${name}) 
+        sc_add_server_plugin_properties(${sn_name} TRUE)
+        message(STATUS "Added server plugin target ${sn_name}")
+    endif()
+
     if(sc)
         install(FILES "${sc}" DESTINATION ${name}/Classes)
     endif()
     if(schelp)
         install(FILES "${schelp}" DESTINATION ${name}/Help)
-    endif()
-
-    sc_add_server_plugin_properties(${name} FALSE)
-    message(STATUS "Added server plugin target ${name}")
-
-    if(SUPERNOVA)
-        set(sn_name "${name}_supernova")
-        add_library(${sn_name} MODULE "${cpp}")
-        # install scsynth/supernova targets together
-        install(TARGETS ${sn_name} LIBRARY DESTINATION ${name}) 
-        sc_add_server_plugin_properties(${sn_name} TRUE)
-        message(STATUS "Added server plugin target ${sn_name}")
     endif()
 endfunction()
 

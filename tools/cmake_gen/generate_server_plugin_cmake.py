@@ -1,34 +1,8 @@
 # Brian Heim
 # 2018-08-26
 #
-# The purpose of this program is to automatically generate CMakeLists.txt files for a set of
-# SuperCollider server plugins.
-#
-# Usage:
-#
-#   generate_server_plugin_cmake.py . --project-name MyPlugins --plugin-directories Plugin1 Plugin2
-#
-# or more simply:
-#
-#   generate_server_plugin_cmake.py . -P MyPlugins -p plugin1 plugin2
-#
-# For full usage see --help.
-#
-# It assumes your project is laid out in the following format:
-#
-#   root
-#   |-- README, COPYING, etc.
-#   |-+ Plugin1
-#   | |-- Plugin1.hpp
-#   | |-- Plugin1.cpp
-#   | .-- Plugin1.sc
-#   .-+ Plugin2
-#     |-- Plugin2.hpp
-#     |-- Plugin2.cpp
-#     .-- Plugin2.sc
+# See accompanying README for info.
 
-# TODO write up & support "flat dir mode"
-# basic idea: should specify cpp, sc, schelp dirs
 import argparse
 import os
 import sys
@@ -47,19 +21,40 @@ parser.add_argument('-s', '--cpp-standard', help = "C++ standard to use. Default
 parser.add_argument('-v', '--verbose', help = "Verbose output. Can be specified up to 2 times for more verbosity", action = 'count', default = 0)
 parser.add_argument('-a', '--author', help = "Project author name.")
 parser.add_argument('-D', '--date', help = "Project date. Defaults to now.")
-parser.add_argument('-f', '--flat-dir', help = "Use flat-directory configuration (TODO - docs)")
+parser.add_argument('-f', '--flat-dir', help = "Use flat-directory configuration. See README for more info.")
 parser.add_argument('-C', '--sc-files-dir', help = "For use with flat-directory configuration.  Directory where SC files can be found. Defaults to --flat-dir argument.")
 parser.add_argument('-H', '--schelp-files-dir', help = "For use with flat-directory configuration.  Directory where schelp files can be found. Defaults to --flat-dir argument.")
 args_ = parser.parse_args()
 
+HEADER_TEMPLATE = 'CMakeLists_header.template'
+FOOTER_TEMPLATE = 'CMakeLists_footer.template'
+TARGET_TEMPLATE_TEXT = '''
+################################################################################
+# Begin target {name}
+
+set({name}_cpp_files
+{cpp})
+set({name}_sc_files
+{sc})
+set({name}_schelp_files
+{schelp})
+
+sc_add_server_plugin("{name}"
+    "${{{name}_cpp_files}}"
+    "${{{name}_sc_files}}"
+    "${{{name}_schelp_files}}"
+)
+
+# End target {name}
+################################################################################
+'''
+
+# script output
 DEBUG = 2
 VERBOSE = 1
 NORMAL = 0
 WARNING = -1
 ERROR = -2
-
-HEADER_TEMPLATE = 'CMakeLists_header.template'
-FOOTER_TEMPLATE = 'CMakeLists_footer.template'
 
 def out(s, level):
     if args_.verbose >= level:
@@ -70,6 +65,7 @@ def out(s, level):
         else:
             print(s)
 
+# convenience FP utils
 def apply(f, l):
     for x in l:
         f(x)
@@ -83,6 +79,7 @@ def filternow(f, l):
 def zip2now(a, b):
     return list(zip(a, b))
 
+# main generation utility class
 class Generator:
     def __init__(self, args):
         self.args = args
@@ -149,28 +146,19 @@ class Generator:
         else:
             targets, project_files = self.find_project_files(self.args.plugins)
         out('Targets: {}; project_files: {}'.format(targets, project_files), DEBUG)
-        result = self.gen_header()
+        result = self.gen_section('header', HEADER_TEMPLATE)
         result += self.gen_targets(targets, project_files)
-        result += self.gen_footer()
+        result += self.gen_section('footer', FOOTER_TEMPLATE)
         self.write_cmake_file(result)
 
-    def gen_header(self):
-        out('Generating header', VERBOSE)
-        header_path = os.path.join(self.script_dir, HEADER_TEMPLATE)
-        out('Reading from header file {}'.format(header_path), DEBUG)
-        with open(header_path, mode='r') as f:
-            header = ''.join(f.readlines())
-        out('Configuring header', DEBUG)
-        return self.configure_text(header)
-
-    def gen_footer(self):
-        out('Generating footer', VERBOSE)
-        footer_path = os.path.join(self.script_dir, FOOTER_TEMPLATE)
-        out('Reading from footer file {}'.format(footer_path), DEBUG)
-        with open(footer_path, mode='r') as f:
-            footer = ''.join(f.readlines())
-        out('Configuring footer', DEBUG)
-        return self.configure_text(footer)
+    def gen_section(self, name, filename):
+        out('Generating {}'.format(name), VERBOSE)
+        path = os.path.join(self.script_dir, filename)
+        out('Reading from {} file {}'.format(name, path), DEBUG)
+        with open(path, mode='r') as f:
+            section = ''.join(f.readlines())
+        out('Configuring {}'.format(name), DEBUG)
+        return self.configure_text(section)
 
     def write_cmake_file(self, text):
         cmake_file = os.path.join(self.root_dir, 'CMakeLists.txt')
@@ -191,6 +179,7 @@ class Generator:
             )
         )
 
+    # replace '@xyz' variables in template text with script arguments
     def configure_text(self, text):
         envir = [
             ('project_name', self.args.project_name),
@@ -212,33 +201,12 @@ class Generator:
 
     def gen_target_cmake(self, name, cpp_files, sc_files, schelp_files):
         out('\tGenerating CMake for plugin {}'.format(name), VERBOSE)
-        result = '''
-################################################################################
-# Begin target {name}
-
-set({name}_cpp_files
-{cpp})
-set({name}_sc_files
-{sc})
-set({name}_schelp_files
-{schelp})
-
-sc_add_server_plugin("{name}"
-    "${{{name}_cpp_files}}"
-    "${{{name}_sc_files}}"
-    "${{{name}_schelp_files}}"
-)
-
-sc_config_compiler_flags("{name}")
-
-# End target {name}
-################################################################################
-'''.format(
+        result = TARGET_TEMPLATE_TEXT.format(
             name=name,
             cpp=self.join_file_list(cpp_files),
             sc=self.join_file_list(sc_files),
             schelp=self.join_file_list(schelp_files)
-            )
+        )
 
         return result
 
@@ -249,18 +217,19 @@ sc_config_compiler_flags("{name}")
         else:
             return ''
 
-    # scan each plugin dir
+    # return type is a tuple of plugin names and a map from plugin name to a map from 'sc', 'cpp',
+    # 'schelp' to the relevant files for that target. 'cpp' will map to both header and
+    # implementation files.
     def find_project_files(self, dirs):
         out('Scanning for project files.', VERBOSE)
-
         plugin_names = mapnow(lambda d: os.path.split(d)[1], dirs)
-
         result = dict()
         for d in dirs:
             result[d] = self.find_project_files_impl(d)
 
         return (plugin_names, result)
 
+    # Helper for find_project_files
     def find_project_files_impl(self, dir):
         dirmap = dict(cpp=[], sc=[], schelp=[])
         d = os.path.join(self.root_dir, dir)
@@ -280,6 +249,7 @@ sc_config_compiler_flags("{name}")
 
         return dirmap
 
+    # Gather all .cpp files in a directory, absolute paths
     def get_cpp_files(self, dir):
         entries = os.listdir(dir)
         cppfiles = zip2now(entries, map(lambda f: os.path.join(dir, f), entries))
@@ -288,6 +258,7 @@ sc_config_compiler_flags("{name}")
         cppfiles = sorted(cppfiles)
         return cppfiles
 
+    # Same as find_project_files, but with flat directories
     def find_project_files_flat(self, fulldir):
         out('Scanning for project files in dir: {}'.format(fulldir), VERBOSE)
         result = dict()
@@ -315,19 +286,18 @@ sc_config_compiler_flags("{name}")
 
             scan_for_filetype(self.full_flat_dir, pluginname, 'cpp', Generator.is_hpp_file)
 
-        # find all [sc, schelp] files in dir
-        # remove for all targets
-        # generate warning for remaining
+        # Find all [sc, schelp] files in dir. Match and remove files that share a name with known
+        # targets.  Generate warnings for the remaining files; as this signals some plugins may not
+        # have been found.
         def find_matching_files(dir, ext, test):
             extfiles = []
             for root, _, files in os.walk(dir):
-                # TODO filter out common test in scan_for_filetype above
                 extfiles.extend(mapnow(lambda f: os.path.join(root, f), filternow(test, files)))
 
             for plugin in plugins:
                 extname = plugin + '.' + ext
                 for extfile in extfiles:
-                    if extfile.endswith('/' + extname):
+                    if os.path.split(extfile)[1] == extname:
                         relpath = os.path.relpath(extfile, self.root_dir)
                         out('\tIncluding {} in target'.format(relpath), VERBOSE)
                         result[plugin][ext].append(relpath)
@@ -342,7 +312,7 @@ sc_config_compiler_flags("{name}")
 
         return (plugins, result)
 
-
+    # filetype tests
     @staticmethod
     def is_cpp_file(name):
         return any(map(lambda x: name.endswith(x), ['.cpp', '.cxx', '.c']))
@@ -373,7 +343,6 @@ sc_config_compiler_flags("{name}")
     @staticmethod
     def get_username():
         return getpass.getuser()
-
 
 
 g = Generator(args_)
