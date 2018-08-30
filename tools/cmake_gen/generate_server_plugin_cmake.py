@@ -369,6 +369,7 @@ class Generator:
         return getpass.getuser()
 
     def install_modules(self):
+        out('Installing CMake modules', DEBUG)
         modules_dir = os.path.join(g.root_dir, 'cmake_modules')
 
         try:
@@ -379,6 +380,10 @@ class Generator:
 
         for module in MODULES:
             pfrom = os.path.join(self.script_dir, module)
+            if not os.path.exists(pfrom):
+                out('Module does not exist: {}'.format(pfrom), ERROR)
+                continue
+
             out('Installing {} to {}'.format(pfrom, modules_dir), VERBOSE)
             shutil.copy(pfrom, modules_dir)
 
