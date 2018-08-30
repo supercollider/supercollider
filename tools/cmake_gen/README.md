@@ -78,6 +78,9 @@ Although this program is meant for plugins that use the preferred C++ plugin API
 used on projects that are C-only; .c, .cpp, .cxx and the header counterparts are all recognized as
 valid C++ source file extensions.
 
+The `--install-cmake` and `--install-cmake-only` options assume that the CMake modules to copy are
+in the same directory as the script.
+
 ### Generated CMake
 
 The generated CMake file has the following options and features:
