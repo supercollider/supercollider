@@ -27,12 +27,18 @@ endif()
 
 ################################################################################
 # options
-option(SUPERNOVA "Build plugins for supernova" OFF)
+option(SUPERNOVA "Build plugins for supernova" ON)
+option(SCSYNTH "Build plugins for scsynth" ON)
 option(NATIVE "Optimize for native architecture" OFF)
 option(STRICT "Use strict warning flags" OFF)
 
 sc_check_sc_path("${SC_PATH}")
 message(STATUS "Found SuperCollider: ${SC_PATH}")
+
+include("${SC_PATH}/SCVersion.txt")
+set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
+message(STATUS "Building plugins for SuperCollider version: ${PROJECT_VERSION}")
+
 message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
 
 ################################################################################
