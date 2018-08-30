@@ -6,6 +6,7 @@
 import argparse
 import os
 import sys
+import shutil
 import getpass
 import re
 import datetime
@@ -24,8 +25,15 @@ parser.add_argument('-D', '--date', help = "Project date. Defaults to now.")
 parser.add_argument('-f', '--flat-dir', help = "Use flat-directory configuration. See README for more info.")
 parser.add_argument('-C', '--sc-files-dir', help = "For use with flat-directory configuration.  Directory where SC files can be found. Defaults to --flat-dir argument.")
 parser.add_argument('-H', '--schelp-files-dir', help = "For use with flat-directory configuration.  Directory where schelp files can be found. Defaults to --flat-dir argument.")
-args_ = parser.parse_args()
+parser.add_argument('-I', '--install-cmake', action = 'store_true',
+        help = "Install CMake modules after running. root/cmake_modules is created if necessary.")
+parser.add_argument('--install-cmake-only', action = 'store_true',
+        help = "Install CMake modules without running generation script.")
 
+MODULES = [
+    'SuperColliderCompilerConfig.cmake',
+    'SuperColliderServerPlugin.cmake'
+];
 HEADER_TEMPLATE = 'CMakeLists_header.template'
 FOOTER_TEMPLATE = 'CMakeLists_footer.template'
 TARGET_TEMPLATE_TEXT = '''
@@ -56,8 +64,10 @@ NORMAL = 0
 WARNING = -1
 ERROR = -2
 
+verbosity_ = 0
+
 def out(s, level):
-    if args_.verbose >= level:
+    if verbosity_ >= level:
         if level == WARNING:
             print('WARNING: ' + s)
         elif level == ERROR:
@@ -82,12 +92,30 @@ def zip2now(a, b):
 # main generation utility class
 class Generator:
     def __init__(self, args):
+        global verbosity_
+        verbosity_ = args.verbose
         self.args = args
         self.script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.root_dir = os.path.realpath(args.root)
-        self.validate()
+        if not args_.install_cmake_only:
+            self.validate()
 
     def validate(self):
+        flatmode = self.args.flat_dir or self.args.sc_files_dir or self.args.schelp_files_dir
+        if flatmode and self.args.plugins:
+            out('Cannot specify both flat-dir mode and individual plugin directories', ERROR)
+            exit(1)
+
+        if not flatmode:
+            if not self.args.plugins:
+                out('Must specify one of -p or -f', ERROR)
+                parser.print_help()
+                exit(1)
+            else:
+                pass # in plugins mode
+        else:
+            self.validate_flatmode()
+
         out('Config: Directory of this script: ' + self.script_dir, DEBUG)
         out('Config: Absolute path of root directory: ' + self.root_dir, DEBUG)
 
@@ -114,11 +142,7 @@ class Generator:
             self.args.project_name = os.path.split(self.root_dir)[1]
             out('Config: No project name given, using parent of root dirctory: {}'.format(self.args.project_name), VERBOSE)
 
-        flatmode = self.args.flat_dir or self.args.sc_files_dir or self.args.schelp_files_dir
-        if flatmode and self.args.plugins:
-            out('Cannot specify both flat-dir mode and individual plugin directories', ERROR)
-            exit(1)
-
+    def validate_flatmode(self):
         if not self.args.sc_files_dir:
             self.args.sc_files_dir = self.args.flat_dir
         if not self.args.schelp_files_dir:
@@ -344,6 +368,27 @@ class Generator:
     def get_username():
         return getpass.getuser()
 
+    def install_modules(self):
+        modules_dir = os.path.join(g.root_dir, 'cmake_modules')
 
-g = Generator(args_)
-g.generate_cmake()
+        try:
+            os.mkdir(modules_dir)
+            out('Created cmake_modules directory {}.'.format(modules_dir), DEBUG)
+        except FileExistsError:
+            out('cmake_modules directory {} already existed'.format(modules_dir), DEBUG)
+
+        for module in MODULES:
+            pfrom = os.path.join(self.script_dir, module)
+            out('Installing {} to {}'.format(pfrom, modules_dir), VERBOSE)
+            shutil.copy(pfrom, modules_dir)
+
+        out('Installed {} CMake modules'.format(len(MODULES)), NORMAL)
+
+if __name__ == "__main__":
+    args_ = parser.parse_args()
+    g = Generator(args_)
+    if not args_.install_cmake_only:
+        g.generate_cmake()
+
+    if args_.install_cmake or args_.install_cmake_only:
+        g.install_modules()
