@@ -32,7 +32,6 @@ before_install:
  - echo "$TRAVIS_COMMIT_MESSAGE" | grep -q "^Merge [a-f0-9]\{40\} into [a-f0-9]\{40\}$" && echo "$TRAVIS_COMMIT_MESSAGE" | sed -E "s/Merge ([a-f0-9]*) .*/\1/g" | xargs git show -s --format=%B | grep -F -q '[skip travis]' && echo "[skip travis] found in commit being merged in, exiting" && exit 0
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
-
 before_script:
  - mkdir BUILD && cd BUILD
 
