@@ -46,7 +46,7 @@ namespace ScIDE { namespace Settings {
 void Theme::fillDefault()
 {
     QColor background("#f7f7f7");
-    QColor current_line("#efefef");
+    QColor current_line("#eaeaea");
     QColor selection("#d6d6d6");
     QColor foreground("#1a1a1a");
     QColor line_number("#c7c4c2");
