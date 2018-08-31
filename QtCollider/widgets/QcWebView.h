@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "../QcCallback.hpp"
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineCallback>
@@ -35,57 +36,7 @@ Q_DECLARE_METATYPE(QUrl)
 namespace QtCollider {
 
 class WebPage;
-class QcCallback;
 
-class QcCallbackWeakFunctor
-{
-public:
-  QcCallbackWeakFunctor(QPointer<QcCallback> cb)
-    : _cb(cb)
-  {}
-  
-  template <typename RESULT>
-  void operator()(RESULT r) const;
-
-private:
-  QPointer<QcCallback> _cb;
-};
-
-class QcCallback : public QObject
-{
-  Q_OBJECT
-
-public:
-  QcCallback() {}
-  
-  template<typename CallbackT>
-  void call(const CallbackT& result)
-  {
-    Q_EMIT(onCalled(result));
-  }
-  
-  QcCallbackWeakFunctor asFunctor()
-  {
-    return QcCallbackWeakFunctor(QPointer<QcCallback>(this));
-  }
-  
-Q_SIGNALS:
-  void onCalled(bool);
-  void onCalled(const QString&);
-  void onCalled(const QVariant&);
-  void onCalled(const QUrl&);
-};
-  
-template <typename RESULT>
-void QcCallbackWeakFunctor::operator()(RESULT r) const
-  {
-  if (_cb) {
-    _cb->call(r);
-  }
-}
-
-
-  
 class WebView : public QWebEngineView
 {
   Q_OBJECT
@@ -120,14 +71,14 @@ Q_SIGNALS:
   void geometryChangeRequested(const QRect& geom);
   void windowCloseRequested();
   void navigationRequested(const QUrl &, int, bool);
-  
+
   void renderProcessTerminated(int terminationStatus, int exitCode);
-  
+
   void scrollPositionChanged(const QPointF &position);
   void contentsSizeChanged(const QSizeF &size);
   void audioMutedChanged(bool muted);
   void recentlyAudibleChanged(bool recentlyAudible);
-  
+
 public:
 
   WebView( QWidget *parent = 0 );
@@ -136,11 +87,11 @@ public:
   Q_PROPERTY( bool hasSelection READ hasSelection );
   Q_PROPERTY( QString selectedText READ selectedText );
   Q_PROPERTY( QString title READ title );
-  
+
   Q_PROPERTY( bool overrideNavigation READ overrideNavigation WRITE setOverrideNavigation );
     bool overrideNavigation() const;
     void setOverrideNavigation(bool b);
-  
+
   Q_PROPERTY( QString url READ url WRITE setUrl );
   QString url() const;
   void setUrl( const QString & );
@@ -164,17 +115,17 @@ public:
   Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
     QColor backgroundColor() const          { return page() ? page()->backgroundColor() : QColor(); }
     void setBackgroundColor(QColor c)       { if (page()) page()->setBackgroundColor(c); }
-  
+
   Q_PROPERTY(QSizeF contentsSize READ contentsSize)
     QSizeF contentsSize() const             { return page() ? page()->contentsSize() : QSizeF(0, 0); }
-  
+
   Q_PROPERTY(QPointF scrollPosition READ scrollPosition)
     QPointF scrollPosition() const          { return page() ? page()->scrollPosition() : QPointF(0, 0); }
-  
+
   Q_PROPERTY(bool audioMuted READ isAudioMuted WRITE setAudioMuted)
     bool isAudioMuted() const               { return page() ? page()->isAudioMuted() : false; }
     void setAudioMuted(bool m)              { if (page()) page()->setAudioMuted(m); }
-  
+
   Q_PROPERTY(bool recentlyAudible READ recentlyAudible)
     bool recentlyAudible() const            { return page() ? page()->recentlyAudible() : false; }
 
@@ -193,12 +144,9 @@ public Q_SLOTS:
 
 private:
   void connectPage(QtCollider::WebPage* page);
-  
+
   bool _interpretSelection;
   bool _editable;
 };
 
 } // namespace QtCollider
-
-using namespace QtCollider;
-Q_DECLARE_METATYPE( QcCallback* );

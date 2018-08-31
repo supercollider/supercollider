@@ -34,7 +34,6 @@
 #include <QWebEngineCallback>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
-QC_DECLARE_QOBJECT_FACTORY(QcCallback);
 
 namespace QtCollider {
 
@@ -69,16 +68,16 @@ void WebView::connectPage(QtCollider::WebPage* page)
 {
   connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
            this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
-    
+
   connect (page, SIGNAL(linkHovered(const QString &)),
            this, SIGNAL(linkHovered(const QString &)));
 
   connect (page, SIGNAL(geometryChangeRequested(const QRect&)),
            this, SIGNAL(geometryChangeRequested(const QRect&)));
-  
+
   connect (page, SIGNAL(windowCloseRequested()),
            this, SIGNAL(windowCloseRequested()));
-  
+
   connect (page, SIGNAL(scrollPositionChanged(const QPointF&)),
            this, SIGNAL(scrollPositionChanged(const QPointF&)));
 
@@ -105,7 +104,7 @@ void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTermination
 {
   Q_EMIT(renderProcessTerminated((int)status, code));
 }
-  
+
 void WebView::triggerPageAction( int action, bool checked )
 {
   QWebEngineView::triggerPageAction((QWebEnginePage::WebAction)action, checked);
@@ -139,12 +138,12 @@ void WebView::setFontFamily( int generic, const QString & specific )
 {
   settings()->setFontFamily( (QWebEngineSettings::FontFamily) generic, specific );
 }
-  
+
 QAction* WebView::pageAction( QWebEnginePage::WebAction action) const
 {
   return QWebEngineView::pageAction(action);
 }
-  
+
 void WebView::setHtml ( const QString &html, const QString &baseUrl )
 {
   if (page()) {
