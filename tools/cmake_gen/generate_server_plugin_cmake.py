@@ -112,7 +112,12 @@ class Generator:
                 parser.print_help()
                 exit(1)
             else:
-                pass # in plugins mode
+                for plugin in self.args.plugins:
+                    plugin_path = os.path.join(self.root_dir, plugin)
+                    if not os.path.exists(plugin_path):
+                        out('Config: Plugin directory does not exist: {}'.format(plugin_path), ERROR)
+                        exit(1)
+
         else:
             self.validate_flatmode()
 
@@ -134,7 +139,7 @@ class Generator:
             out('Config: No author given, using user profile name: {}'.format(user), NORMAL)
             self.args.author = user
         if not self.args.date:
-            date = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.datetime.now())
+            date = '{:%Y-%m-%d}'.format(datetime.datetime.now())
             out('Config: No date given, using now: {}'.format(date), VERBOSE)
             self.args.date = date
 
@@ -246,10 +251,20 @@ class Generator:
     # implementation files.
     def find_project_files(self, dirs):
         out('Scanning for project files.', VERBOSE)
-        plugin_names = mapnow(lambda d: os.path.split(d)[1], dirs)
+        out('Directories: {}'.format(dirs), DEBUG)
+
+        # split will return (path, '') if path ends in dir separator
+        def get_real_parent(path):
+            head, tail = os.path.split(path)
+            if tail == '':
+                return os.path.split(head)[1]
+            else:
+                return tail
+
+        plugin_names = mapnow(get_real_parent, dirs)
         result = dict()
-        for d in dirs:
-            result[d] = self.find_project_files_impl(d)
+        for d, p in zip(dirs, plugin_names):
+            result[p] = self.find_project_files_impl(d)
 
         return (plugin_names, result)
 
