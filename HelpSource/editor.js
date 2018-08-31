@@ -6,6 +6,7 @@ const init = () => {
             { regex: /^(?:arg|classvar|const|super|this|var)\b/, token: 'keyword' },
             { regex: /^(?:false|inf|nil|true|thisFunction|thisFunctionDef|thisMethod|thisProcess|thisThread|currentEnvironment|topEnvironment)\b/, token: 'built-in' },
             { regex: /^\b\d+r[0-9a-zA-Z]*(\.[0-9A-Z]*)?/, token: 'number radix-float' },
+            { regex: /^\b\d+(s+|b+|[sb]\d+)\b/, token: 'number scale-degree' },
             { regex: /^\b((\d+(\.\d+)?([eE][-+]?\d+)?(pi)?)|pi)\b/, token: 'number float' },
             { regex: /^\b0(x|X)(\d|[a-f]|[A-F])+/, token: 'number hex-int' },
             { regex: /^\b[A-Za-z_]\w*\:/, token: 'symbol symbol-arg' },
@@ -36,7 +37,7 @@ const init = () => {
             value: code,
             lineWrapping: true,
             viewportMargin: Infinity,
-            extraKeys: { 
+            extraKeys: {
                 'Shift-Enter': evalLine
             }
         })
@@ -118,7 +119,7 @@ const selectRegion = (options = { flash: true }) => {
     /* no parens found */
     if (parenPairs.length === 0)
         return selectLine(options)
-    
+
     let pair = parenPairs.pop()
     leftCursor = pair[0]
     rightCursor = pair[1]
