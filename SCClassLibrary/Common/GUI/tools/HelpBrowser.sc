@@ -96,7 +96,9 @@ HelpBrowser {
 				url = SCDoc.prepareHelpForURL(url) ?? { brokenAction.(urlString) };
 				newPath = url.path;
 				oldPath = URI(webView.url).path;
-				webView.url = url.asString;
+				// FIXME: deferring is needed to fix broken navigation in the HelpBrowser on some systems
+				// a hack solution for an issue that needs more investigation
+				{ webView.url = url.asString }.defer(0.05);
 				// needed since onLoadFinished is not called if the path did not change:
 				if(newPath == oldPath) {webView.onLoadFinished.value};
 				webView.focus;
