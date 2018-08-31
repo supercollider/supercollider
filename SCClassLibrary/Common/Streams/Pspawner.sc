@@ -100,29 +100,30 @@ Pspawn : FilterPattern {
 
 	embedInStream { |inevent|
 		^Spawner({ |sp|
-			var	event, stream = pattern.asStream, child;
+			var	event, stream = pattern.asStream, child, method;
 			while { (event = stream.next(spawnProtoEvent.copy.put(\spawner, sp))).notNil } {
+				method = event[\method];
 				case
-				{ event.method == \wait } {
-					event.spawner.wait(event.delta)
+				{ method == \wait } {
+					event[\spawner].wait(event.delta)
 				}
-				{ #[seq, par].includes(event.method) } {
+				{ #[seq, par].includes(method) } {
 					child = event[\pattern];
 					if(child.isKindOf(Symbol)) {
 						child = (event[\dict] ? Pdef).at(child);
 					};
-					event.spawner.perform(event.method, child.value(event));
+					event[\spawner].perform(event.method, child.value(event));
 					if(event.delta > 0) {
-						event.spawner.wait(event.delta)
+						event[\spawner].wait(event.delta)
 					}
 				}
 				// suspend requires access to the specific stream
 				// don't know how to get it... maybe implement later
-				{ event.method == \suspendAll } {
-					event.spawner.suspendAll
+				{ method == \suspendAll } {
+					event[\spawner].suspendAll
 				}
 				{ "Unrecognized method % in spawner event."
-					.format(event.method.asCompileString).warn;
+					.format(method.asCompileString).warn;
 				}
 			};
 		}).embedInStream(inevent)
