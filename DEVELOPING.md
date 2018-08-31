@@ -89,7 +89,10 @@ Continuous Integration and Skipping Commits
 
 We have CI provided by AppVeyor (Windows) and Travis (Linux, macOS). If a commit changes _only_
 non-schelp documentation, _without_ renaming, adding, or removing files, you may want to consider
-adding `[skip ci]` to the commit message so it does not waste CI resources.
+adding `[skip ci]` to the commit message so it does not waste CI resources. This is especially
+important with AppVeyor since their service only allows one active build at a time.
+
+To skip only Travis, use `[skip travis]`; to skip only AppVeyor, use `[skip appveyor]`.
 
 S3 Build Hosting
 ----------------

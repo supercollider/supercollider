@@ -25,7 +25,13 @@ cache:
  - ccache
 
 before_install:
+# this checks (1) does the commit message contain [skip travis]? (2) then print a message and exit
+ - if echo "$TRAVIS_COMMIT_MESSAGE" | grep -F -q "[skip travis]" ; then echo "[skip travis] has been found, exiting" && exit 0 ; fi
+# this checks (1) are we in an auto-generated merge commit? (2) what is the commit hash of the
+# merged-in branch? (3) does it contain [skip travis]? (4) then print a message and exit
+ - echo "$TRAVIS_COMMIT_MESSAGE" | grep -q "^Merge [a-f0-9]\{40\} into [a-f0-9]\{40\}$" && echo "$TRAVIS_COMMIT_MESSAGE" | sed -E "s/Merge ([a-f0-9]*) .*/\1/g" | xargs git show -s --format=%B | grep -F -q '[skip travis]' && echo "[skip travis] found in commit being merged in, exiting" && exit 0
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
+
 
 before_script:
  - mkdir BUILD && cd BUILD
