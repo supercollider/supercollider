@@ -133,6 +133,7 @@ set ( ide_src
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/settings/theme.cpp
+    core/settings/default_themes.cpp
     core/session_manager.cpp
     core/util/color.cpp
     core/util/standard_dirs.cpp
