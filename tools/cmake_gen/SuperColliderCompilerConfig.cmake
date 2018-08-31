@@ -8,13 +8,6 @@ cmake_host_system_information(RESULT has_sse QUERY HAS_SSE)
 cmake_host_system_information(RESULT has_sse2 QUERY HAS_SSE2)
 cmake_host_system_information(RESULT has_sse_fp QUERY HAS_SSE_FP)
 
-# TODO
-# if(SC_USE_EXTENDED_SIMD)
-#     cmake_host_system_information(RESULT has_sse_mmx QUERY HAS_SSE_MMX)
-#     cmake_host_system_information(RESULT has_mmx QUERY HAS_MMX)
-#     cmake_host_system_information(RESULT has_mmx_plus QUERY HAS_MMX_PLUS)
-# endif()
-
 function(sc_config_compiler_flags target)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
         target_compile_options(${target} PUBLIC
