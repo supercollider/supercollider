@@ -47,7 +47,9 @@ set({name}_sc_files
 set({name}_schelp_files
 {schelp})
 
-sc_add_server_plugin("{name}"
+sc_add_server_plugin(
+    "{project}/{name}" # desination directory
+    "{name}" # target name
     "${{{name}_cpp_files}}"
     "${{{name}_sc_files}}"
     "${{{name}_schelp_files}}"
@@ -231,6 +233,7 @@ class Generator:
     def gen_target_cmake(self, name, cpp_files, sc_files, schelp_files):
         out('\tGenerating CMake for plugin {}'.format(name), VERBOSE)
         result = TARGET_TEMPLATE_TEXT.format(
+            project=self.args.project_name,
             name=name,
             cpp=self.join_file_list(cpp_files),
             sc=self.join_file_list(sc_files),
