@@ -3,8 +3,4 @@
 # END PLUGIN TARGET DEFINITION
 ################################################################################
 
-foreach(sc_server_plugin IN LISTS all_sc_server_plugins)
-    sc_config_compiler_flags(${sc_server_plugin})
-endforeach()
-
 message(STATUS "Generating plugin targets done")

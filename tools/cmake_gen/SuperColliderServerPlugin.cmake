@@ -2,6 +2,8 @@
 # 2018-08-26
 # Functions for configuring SuperCollider server plugins
 
+include(SuperColliderCompilerConfig)
+
 function(sc_check_sc_path path)
     if(NOT path)
         set(sc_path_default "../supercollider")
@@ -42,12 +44,11 @@ function(sc_add_server_plugin_properties target is_supernova)
         ${SC_PATH}/include/common
         ${SC_PATH}/common
     )
-    if(is_supernova)
-        target_include_directories(${target} PUBLIC
-            ${SC_PATH}/external_libraries/nova-tt
-            ${SC_PATH}/external_libraries/boost
-        )
-    endif()
+
+    # from CompilerConfig module
+    sc_config_compiler_flags(${target})
+
+    target_compile_definitions(${target} PRIVATE $<$<BOOL:${is_supernova}>:SUPERNOVA>)
 
     list(APPEND all_sc_server_plugins ${target})
     set(all_sc_server_plugins ${all_sc_server_plugins} PARENT_SCOPE)
