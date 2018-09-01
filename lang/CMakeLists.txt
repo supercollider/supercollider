@@ -182,6 +182,10 @@ if(SC_QT OR SC_IDE)
 	message(STATUS "Found Qt: " ${QtCore_location} )
     get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
+  if(QT_WEBENGINE)
+    message(STATUS "Building with QtWebEngine")
+    target_compile_definitions(libsclang PUBLIC QT_WEBENGINE)
+  endif()
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()
 
