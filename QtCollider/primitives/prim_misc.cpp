@@ -25,8 +25,8 @@
 #include "../type_codec.hpp"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
-#include "../widgets/QcWebView.h"
 #include "../style/style.hpp"
+#include "../QcCallback.hpp"
 #include "QtCollider.h"
 
 #ifdef Q_OS_MAC
@@ -41,7 +41,6 @@
 #include <QFontMetrics>
 #include <QDesktopWidget>
 #include <QStyleFactory>
-#include <QWebEngineSettings>
 #include <QCursor>
 
 namespace QtCollider {
@@ -286,35 +285,35 @@ QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 QC_LANG_PRIMITIVE( Qt_SetUrlHandler, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
-  
+
   QString str = QtCollider::get( a );
-  
+
   if (IsNil(a+1)) {
     QDesktopServices::unsetUrlHandler(str);
   } else {
     QcCallback* cb = QtCollider::get( a+1 );
     QDesktopServices::setUrlHandler(str, cb, "onCalled");
   }
-  
+
   return errNone;
 }
 
 QC_LANG_PRIMITIVE( Qt_SetAppMenus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
-  
+
   QList<QMenu*> menuList;
-  
-  
+
+
   if( isKindOfSlot( a, class_array ) ) {
     QMenuBar* menuBar = QcApplication::getMainMenu();
     if (menuBar) {
       menuBar->clear();
-      
+
       PyrObject *obj = slotRawObject( a );
       PyrSlot *slots = obj->slots;
       int size = obj->size;
-      
+
       for( int i = 0; i < size; ++i, ++slots ) {
         QMenu* menu = QtCollider::get<QMenu*>(slots);
         if (menu) {
@@ -325,32 +324,32 @@ QC_LANG_PRIMITIVE( Qt_SetAppMenus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
       }
     }
   }
-  
+
   return errNone;
 }
 
 QC_LANG_PRIMITIVE( QView_AddActionToView, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
-  
+
   QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
   QObjectProxy* actionObj = TypeCodec<QObjectProxy*>::safeRead(a + 1);
   QObjectProxy* beforeObj = TypeCodec<QObjectProxy*>::safeRead(a + 2);
-  
+
   if (widgetObj && actionObj) {
     QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
     QAction* action = qobject_cast<QAction*>(actionObj->object());
     QAction* beforeAction = beforeObj ? qobject_cast<QAction*>(beforeObj->object()) : 0;
-    
+
     if (!beforeAction) {
       PyrSlot* indexArg = a + 2;
-    
+
       if (NotNil(indexArg)) {
         if (IsInt(indexArg)) {
           int index = std::max(slotRawInt(indexArg), 0);
-          
+
           auto actions = widget->actions();
-          
+
           if (index < actions.size()) {
             beforeAction = actions[index];
           }
@@ -359,7 +358,7 @@ QC_LANG_PRIMITIVE( QView_AddActionToView, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
         }
       }
     }
-    
+
     if (widget && action) {
       if (beforeAction) {
         widget->insertAction(beforeAction, action);
@@ -369,40 +368,40 @@ QC_LANG_PRIMITIVE( QView_AddActionToView, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
       return errNone;
     }
   }
-  
+
   return errFailed;
 }
 
 QC_LANG_PRIMITIVE( QView_RemoveActionFromView, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
-  
+
   QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
   QObjectProxy* actionObj = TypeCodec<QObjectProxy*>::safeRead(a + 1);
-  
+
   if (widgetObj && actionObj) {
     QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
     QAction* action = qobject_cast<QAction*>(actionObj->object());
-    
+
     if (widget && action) {
       widget->removeAction(action);
       return errNone;
     }
-    
+
   }
 
   return errFailed;
 }
-  
+
 QC_LANG_PRIMITIVE( QView_RemoveAllActionsFromView, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
-  
+
   QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
-  
+
   if (widgetObj) {
     QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
-    
+
     if (widget) {
       auto actions = widget->actions();
       for (auto action : actions) {
@@ -412,7 +411,7 @@ QC_LANG_PRIMITIVE( QView_RemoveAllActionsFromView, 1, PyrSlot *r, PyrSlot *a, VM
       return errNone;
     }
   }
-  
+
   return errFailed;
 }
 
