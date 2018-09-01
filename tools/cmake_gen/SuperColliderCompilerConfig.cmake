@@ -4,9 +4,25 @@
 # Compiler configuration help for server plugins
 
 # assume we are not mixing C and C++ compiler vendors
-cmake_host_system_information(RESULT has_sse QUERY HAS_SSE)
-cmake_host_system_information(RESULT has_sse2 QUERY HAS_SSE2)
-cmake_host_system_information(RESULT has_sse_fp QUERY HAS_SSE_FP)
+if(CMAKE_VERSION VERSION_LESS 3.10)
+    # slower/more complicated way
+    include(CheckCCompilerFlag)
+    include(CheckCXXCompilerFlag)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
+        CHECK_CXX_COMPILER_FLAG(-msse has_sse)
+        CHECK_CXX_COMPILER_FLAG(-msse2 has_sse2)
+        CHECK_CXX_COMPILER_FLAG(-mfpmath=sse has_sse_fp)
+    elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        CHECK_CXX_COMPILER_FLAG(/arch:SSE has_sse)
+        CHECK_CXX_COMPILER_FLAG(/arch:SSE2 has_sse2)
+    else()
+        message(WARNING "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}. You may want to modify SuperColliderCompilerConfig.cmake to add checks for SIMD flags and other optimizations.")
+    endif()
+else()
+    cmake_host_system_information(RESULT has_sse QUERY HAS_SSE)
+    cmake_host_system_information(RESULT has_sse2 QUERY HAS_SSE2)
+    cmake_host_system_information(RESULT has_sse_fp QUERY HAS_SSE_FP)
+endif()
 
 function(sc_config_compiler_flags target)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang|GNU")
