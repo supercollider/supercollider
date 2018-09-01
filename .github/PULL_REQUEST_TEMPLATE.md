@@ -25,7 +25,7 @@ Checklist
 <!--- Complete an item by checking it: [x] -->
 
 - [ ] All previous tests are passing
-- [ ] Tests were created to address all code changes in this PR (including bug fixes), and tests are passing
+- [ ] Tests were updated or created to address changes in this PR, and tests are passing
 - [ ] Updated documentation, if necessary
 - [ ] This PR is ready for review
 
