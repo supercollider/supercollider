@@ -99,6 +99,7 @@ class Generator:
         self.args = args
         self.script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.root_dir = os.path.realpath(args.root)
+        self.project_name_spaceless = self.args.project_name.replace(' ', '')
         if not args_.install_cmake_only:
             self.validate()
 
@@ -233,7 +234,7 @@ class Generator:
     def gen_target_cmake(self, name, cpp_files, sc_files, schelp_files):
         out('\tGenerating CMake for plugin {}'.format(name), VERBOSE)
         result = TARGET_TEMPLATE_TEXT.format(
-            project=self.args.project_name,
+            project=self.project_name_spaceless,
             name=name,
             cpp=self.join_file_list(cpp_files),
             sc=self.join_file_list(sc_files),
