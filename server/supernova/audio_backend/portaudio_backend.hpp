@@ -30,6 +30,7 @@
 #include "audio_backend_common.hpp"
 #include "utilities/branch_hints.hpp"
 #include "cpu_time_info.hpp"
+#include "SC_PaUtils.hpp"
 
 namespace nova {
 
@@ -84,33 +85,12 @@ public:
             report_error(device_number);
 
         printf("Available Audio Devices:\n");
-        for (int i = 0; i != device_number; ++i) {
-            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(i);
-            if (device_info) {
-                printf("%d: %s (%d inputs, %d outputs)\n", i, device_info->name, device_info->maxInputChannels,
-                       device_info->maxOutputChannels);
-            }
+        for (int i = 0; i < device_number; i++) {
+            const PaDeviceInfo* pdi = Pa_GetDeviceInfo(i);
+            printf("%d: %s (%d ins, %d outs)\n", i, GetPaDeviceName(i).c_str(), pdi->maxInputChannels,
+                   pdi->maxOutputChannels);
         }
         printf("\n");
-    }
-
-    bool match_device(std::string const& device, int& r_device_index) {
-        if (device.empty())
-            return true;
-
-        int device_number = Pa_GetDeviceCount();
-        if (device_number < 0) {
-            report_error(device_number);
-            return false;
-        }
-
-        for (int i = 0; i != device_number; ++i) {
-            if (device_name(i) == device) {
-                r_device_index = i;
-                return true;
-            }
-        }
-        return false;
     }
 
     void report_latency() {
@@ -121,14 +101,49 @@ public:
         }
     }
 
+    // open PA stream
+    // input_device and output_device are names of requested audio devices
+    // if empty, default system device(s) will be used
+    // inchans and outchans are numbers of requested hardware input/output channels
+    // setting inchans/outchans to 0 disables input/output respctively
     bool open_stream(std::string const& input_device, unsigned int inchans, std::string const& output_device,
                      unsigned int outchans, unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize) {
         int input_device_index, output_device_index;
-        if (!match_device(input_device, input_device_index) || !match_device(output_device, output_device_index))
+
+        input_device_index = GetPaDeviceFromName(input_device.c_str(), true);
+        output_device_index = GetPaDeviceFromName(output_device.c_str(), false);
+
+        // check device selection, select defaults if needed
+        std::cout << std::endl;
+        PaError checked =
+            TryGetDefaultPaDevices(&input_device_index, &output_device_index, inchans, outchans, samplerate);
+        std::cout << std::endl;
+
+        std::cout << "Opening audio devices:" << std::endl;
+        if (inchans)
+            std::cout << "  In: " << GetPaDeviceName(input_device_index) << std::endl;
+        if (outchans)
+            std::cout << "  Out: " << GetPaDeviceName(output_device_index) << std::endl;
+
+        // if we got an error from CheckPaDevices, stop here
+        if (checked != paNoError) {
+            report_error(checked);
             return false;
+        }
 
         PaStreamParameters in_parameters, out_parameters;
         PaTime suggestedLatencyIn, suggestedLatencyOut;
+
+        if (!samplerate) {
+            if (outchans)
+                samplerate = Pa_GetDeviceInfo(output_device_index)->defaultSampleRate;
+            else if (inchans)
+                samplerate = Pa_GetDeviceInfo(input_device_index)->defaultSampleRate;
+
+            // use 44100 as a last resort
+            if (samplerate == 0)
+                samplerate = 44100;
+        }
 
         if (h_blocksize == 0) {
             if (inchans)
@@ -150,11 +165,7 @@ public:
 
             inchans = std::min(inchans, (unsigned int)device_info->maxInputChannels);
 
-            in_parameters.device = input_device_index;
-            in_parameters.channelCount = inchans;
-            in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            in_parameters.suggestedLatency = suggestedLatencyIn;
-            in_parameters.hostApiSpecificStreamInfo = nullptr;
+            in_parameters = MakePaStreamParameters(input_device_index, inchans, suggestedLatencyIn);
         }
 
         if (outchans) {
@@ -162,20 +173,18 @@ public:
 
             outchans = std::min(outchans, (unsigned int)device_info->maxOutputChannels);
 
-            out_parameters.device = output_device_index;
-            out_parameters.channelCount = outchans;
-            out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            out_parameters.suggestedLatency = suggestedLatencyOut;
-            out_parameters.hostApiSpecificStreamInfo = nullptr;
+            out_parameters = MakePaStreamParameters(output_device_index, outchans, suggestedLatencyOut);
         }
 
         PaStreamParameters* in_stream_parameters = inchans ? &in_parameters : nullptr;
         PaStreamParameters* out_stream_parameters = outchans ? &out_parameters : nullptr;
 
         PaError supported = Pa_IsFormatSupported(in_stream_parameters, out_stream_parameters, samplerate);
-        report_error(supported);
-        if (supported != 0)
+        if (supported != paNoError) {
+            report_error(supported);
             return false;
+        }
+
 
         engine_initalised = false;
         blocksize_ = pa_blocksize;
@@ -191,7 +200,6 @@ public:
             const PaStreamInfo* psi = Pa_GetStreamInfo(stream);
             if (psi)
                 latency_ = (uint32_t)(psi->outputLatency * psi->sampleRate);
-            fprintf(stdout, "  latency: %d\n", latency_);
         }
 
         input_channels = inchans;
@@ -244,21 +252,7 @@ public:
 
     void get_cpuload(float& peak, float& average) const { cpu_time_accumulator.get(peak, average); }
 
-    std::pair<std::string, std::string> default_device_names() {
-        const PaDeviceIndex default_input = Pa_GetDefaultInputDevice();
-        const PaDeviceIndex default_output = Pa_GetDefaultOutputDevice();
-
-        std::cout << default_input << " " << default_output;
-
-        return std::make_pair(device_name(default_input), device_name(default_output));
-    }
-
 private:
-    std::string device_name(PaDeviceIndex device_index) {
-        const PaDeviceInfo* device_info = Pa_GetDeviceInfo(device_index);
-        return std::string(device_info->name);
-    }
-
     int perform(const void* inputBuffer, void* outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
         if (unlikely(!engine_initalised)) {

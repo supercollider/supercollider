@@ -44,7 +44,7 @@ server_arguments::server_arguments(int argc, char* argv[]) {
         ("block-size,z", value<uint32_t>(&blocksize)->default_value(64), "audio block size")
         ("hardware-buffer-size,Z", value<int32_t>(&hardware_buffer_size)->default_value(0), "hardware buffer size")
         ("use-system-clock,C", value<uint16_t>(&use_system_clock)->default_value(0), "type of clock sampleclock=0 systemclock=1")
-        ("samplerate,S", value<uint32_t>(&samplerate)->default_value(44100), "hardware sample rate")
+        ("samplerate,S", value<uint32_t>(&samplerate)->default_value(0), "hardware sample rate")
         ("buffers,b", value<uint32_t>(&buffers)->default_value(1024), "number of sample buffers")
         ("max-nodes,n", value<uint32_t>(&max_nodes)->default_value(1024), "maximum number of server nodes")
         ("max-synthdefs,d", value<uint32_t>(&max_synthdefs)->default_value(1024), "maximum number of synthdefs")

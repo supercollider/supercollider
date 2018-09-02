@@ -62,7 +62,7 @@ nova_server::nova_server(server_arguments const& args):
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
     /** first guess: needs to be updated, once the backend is started */
-    time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
+    time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate ? args.samplerate : 44100);
 
     if (!args.non_rt)
         start_receive_thread();
@@ -223,7 +223,7 @@ static bool set_realtime_priority(int thread_index) {
 
 #ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
     double blocksize = server_arguments::instance().blocksize;
-    double samplerate = server_arguments::instance().samplerate;
+    double samplerate = server_arguments::instance().samplerate ? server_arguments::instance().samplerate : 44100;
 
     double ns_per_block = 1e9 / samplerate * blocksize;
 
