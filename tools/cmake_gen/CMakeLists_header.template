@@ -42,6 +42,9 @@ include("${SC_PATH}/SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
 message(STATUS "Building plugins for SuperCollider version: ${PROJECT_VERSION}")
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "Install prefix" FORCE)
+endif()
 message(STATUS "Install directory set to: ${CMAKE_INSTALL_PREFIX}")
 
 ################################################################################
