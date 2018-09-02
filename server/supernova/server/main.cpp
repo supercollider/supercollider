@@ -153,7 +153,7 @@ void start_audio_backend(server_arguments const& args) {
 
     std::string input_device, output_device;
     if (args.hw_name.empty()) {
-        boost::tie(input_device, output_device) = instance->default_device_names();
+        // do nothing
     } else if (args.hw_name.size() == 1) {
         input_device = output_device = args.hw_name[0];
     } else {
@@ -161,32 +161,34 @@ void start_audio_backend(server_arguments const& args) {
         output_device = args.hw_name[1];
     }
 
-    cout << "opening portaudio device name: ";
-    cout << input_device << " / " << output_device << endl;
-
-    if (input_device == "nil") {
+    if (input_channels == 0)
         input_device.clear();
-        input_channels = 0;
-    }
-
-    if (output_device == "nil") {
+    if (output_channels == 0)
         output_device.clear();
-        output_channels = 0;
-    }
 
-    cout << "opening portaudio device name: ";
-    cout << input_device << " / " << output_device << endl;
-
+    cout << "opening portaudio devices:\n";
+    cout << "  In: " << input_device << "\n";
+    cout << "  Out: " << output_device << endl;
 
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
                                          args.blocksize, args.hardware_buffer_size);
 
     if (!success) {
-        cout << "could not open portaudio device name: " << input_device << " / " << output_device << endl;
+        cout << "could not open portaudio devices:\n";
+        cout << "  In: " << input_device << "\n";
+        cout << "  Out: " << output_device << endl;
         exit(1);
     }
-    cout << "opened portaudio device name: ";
-    cout << input_device << " / " << output_device << endl;
+    cout << "opened portaudio devices:\n";
+    cout << "  In: " << input_device << "\n";
+    cout << "  Out: " << output_device << endl;
+
+    unsigned int real_sampling_rate = instance->get_samplerate();
+
+    if (args.samplerate != real_sampling_rate) {
+        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
+        sc_factory->reset_sampling_rate(real_sampling_rate);
+    }
 
     instance->report_latency();
 

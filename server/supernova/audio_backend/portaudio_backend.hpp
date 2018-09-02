@@ -87,30 +87,36 @@ public:
         for (int i = 0; i != device_number; ++i) {
             const PaDeviceInfo* device_info = Pa_GetDeviceInfo(i);
             if (device_info) {
+#ifndef __APPLE__
+                // list APIs on Windows and Linux
+                const PaHostApiInfo* api_info = Pa_GetHostApiInfo(device_info->hostApi);
+                printf("%d: %s : %s (%d inputs, %d outputs)\n", i, api_info->name, device_info->name,
+                       device_info->maxInputChannels, device_info->maxOutputChannels);
+#else
                 printf("%d: %s (%d inputs, %d outputs)\n", i, device_info->name, device_info->maxInputChannels,
                        device_info->maxOutputChannels);
+#endif
             }
         }
         printf("\n");
     }
 
-    bool match_device(std::string const& device, int& r_device_index) {
+    PaDeviceIndex match_device(std::string const& device) {
         if (device.empty())
-            return true;
+            return paNoDevice;
 
         int device_number = Pa_GetDeviceCount();
         if (device_number < 0) {
             report_error(device_number);
-            return false;
+            return paNoDevice;
         }
 
         for (int i = 0; i != device_number; ++i) {
             if (device_name(i) == device) {
-                r_device_index = i;
-                return true;
+                return i;
             }
         }
-        return false;
+        return paNoDevice;
     }
 
     void report_latency() {
@@ -121,14 +127,208 @@ public:
         }
     }
 
-    bool open_stream(std::string const& input_device, unsigned int inchans, std::string const& output_device,
-                     unsigned int outchans, unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize) {
+    // this function will select default PA devices if they are not defined
+    // it will also try to check for some configuration problems
+    // numIns, numOuts and sampleRate are only the requested values, can change later
+    PaError CheckPaDevices(int* inDevice, int* outDevice, int numIns, int numOuts, double sampleRate) {
+        // make independent checks whether we are using only input, only output, or both input and outputTouched
+        if (numIns && !numOuts) {
+            // inputs only
+            *outDevice = paNoDevice;
+#ifdef _WIN32
+            // in case we don't have a proper device, let's try to open one on ASIO
+            if (*inDevice == paNoDevice) {
+                *inDevice = Pa_GetHostApiInfo(Pa_HostApiTypeIdToHostApiIndex(paASIO))->defaultInputDevice;
+                if (*inDevice != paNoDevice)
+                    fprintf(stdout, "Selected default ASIO input device\n");
+            }
+#endif
+            // check for requested sample rate
+            if (*inDevice != paNoDevice) {
+                if (sampleRate) {
+                    // check if device can support requested SR
+                    PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+                    PaStreamParameters parameters;
+                    parameters.device = *inDevice;
+                    parameters.sampleFormat = fmt;
+                    parameters.hostApiSpecificStreamInfo = NULL;
+                    parameters.channelCount = Pa_GetDeviceInfo(*outDevice)->maxOutputChannels;
+                    PaError err = Pa_IsFormatSupported(&parameters, nullptr, sampleRate);
+                    if (err != paNoError) {
+                        fprintf(stdout,
+                                "PortAudio error: %s\nRequested sample rate %f for device %s is not supported\n",
+                                Pa_GetErrorText(err), sampleRate, Pa_GetDeviceInfo(*outDevice)->name);
+                    }
+                }
+            }
+            // in case we still don't have a proper device, use the default device
+            if (*inDevice == paNoDevice) {
+                *inDevice = Pa_GetDefaultInputDevice();
+                if (*inDevice != paNoDevice)
+                    fprintf(stdout, "Selected default system input device\n");
+            }
+        } else if (!numIns && numOuts) {
+            // outputs only
+            *inDevice = paNoDevice;
+#ifdef _WIN32
+            // in case we don't have a proper device, let's try to open one on ASIO
+            if (*outDevice == paNoDevice) {
+                *outDevice = Pa_GetHostApiInfo(Pa_HostApiTypeIdToHostApiIndex(paASIO))->defaultOutputDevice;
+                if (*outDevice != paNoDevice)
+                    fprintf(stdout, "Selected default ASIO output device\n");
+            }
+#endif
+            // check for requested sample rate
+            if (*outDevice != paNoDevice) {
+                if (sampleRate) {
+                    // check if device can support requested SR
+                    PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+                    PaStreamParameters parameters;
+                    parameters.device = *outDevice;
+                    parameters.sampleFormat = fmt;
+                    parameters.hostApiSpecificStreamInfo = NULL;
+                    parameters.channelCount = Pa_GetDeviceInfo(*outDevice)->maxOutputChannels;
+                    PaError err =
+                        Pa_IsFormatSupported(nullptr, &parameters, Pa_GetDeviceInfo(*outDevice)->defaultSampleRate);
+                    if (err != paNoError) {
+                        fprintf(stdout,
+                                "PortAudio error: %s\nRequested sample rate %f for device %s is not supported\n",
+                                Pa_GetErrorText(err), sampleRate, Pa_GetDeviceInfo(*inDevice)->name);
+                    }
+                }
+            }
+
+            // in case we still don't have a proper device, use the default device
+            if (*outDevice == paNoDevice) {
+                *outDevice = Pa_GetDefaultOutputDevice();
+                if (*outDevice != paNoDevice)
+                    fprintf(stdout, "Selected default system output device\n");
+            }
+        } else if (numIns && numOuts) {
+            // inputs and outputs
+            // if one device is specified, let's try to open another one on matching api
+            if (*inDevice == paNoDevice && *outDevice != paNoDevice) {
+                *inDevice = Pa_GetHostApiInfo(Pa_GetDeviceInfo(*outDevice)->hostApi)->defaultInputDevice;
+                if (*inDevice != paNoDevice)
+                    fprintf(stdout, "Selected default %s input device\n",
+                            Pa_GetHostApiInfo(Pa_GetDeviceInfo(*inDevice)->hostApi)->name);
+            }
+            if (*inDevice != paNoDevice && *outDevice == paNoDevice) {
+                *outDevice = Pa_GetHostApiInfo(Pa_GetDeviceInfo(*inDevice)->hostApi)->defaultOutputDevice;
+                if (*outDevice != paNoDevice)
+                    fprintf(stdout, "Selected default %s output device\n",
+                            Pa_GetHostApiInfo(Pa_GetDeviceInfo(*outDevice)->hostApi)->name);
+            }
+#ifdef _WIN32
+            // check if devices are having mismatched API, but only if they are defined
+            if (*inDevice != paNoDevice && *outDevice != paNoDevice) {
+                if (Pa_GetDeviceInfo(*inDevice)->hostApi != Pa_GetDeviceInfo(*outDevice)->hostApi) {
+                    fprintf(
+                        stdout, "Requested devices %s and %s use different API. Setting output device to %s : %s.\n",
+                        Pa_GetDeviceInfo(*inDevice)->name, Pa_GetDeviceInfo(*outDevice)->name,
+                        Pa_GetHostApiInfo(Pa_GetDeviceInfo(*inDevice)->hostApi)->name,
+                        Pa_GetDeviceInfo(Pa_GetHostApiInfo(Pa_GetDeviceInfo(*inDevice)->hostApi)->defaultOutputDevice)
+                            ->name);
+                    *outDevice = Pa_GetHostApiInfo(Pa_GetDeviceInfo(*inDevice)->hostApi)->defaultOutputDevice;
+                }
+            }
+            // in case we don't have a proper device, let's try to open one on ASIO
+            if (*inDevice == paNoDevice || *outDevice == paNoDevice) {
+                *inDevice = Pa_GetHostApiInfo(Pa_HostApiTypeIdToHostApiIndex(paASIO))->defaultInputDevice;
+                *outDevice = Pa_GetHostApiInfo(Pa_HostApiTypeIdToHostApiIndex(paASIO))->defaultOutputDevice;
+                if (*inDevice != paNoDevice && *outDevice != paNoDevice)
+                    fprintf(stdout, "Selected default ASIO input/output devices\n");
+            }
+#endif
+            // check for matching sampleRate or requested sample rate
+            if (*inDevice != paNoDevice && *outDevice != paNoDevice) {
+                // these parameters are taken from the DriverSetup, here used for checking only
+                PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+                PaStreamParameters in_parameters, out_parameters;
+                in_parameters.device = *inDevice;
+                in_parameters.sampleFormat = fmt;
+                in_parameters.hostApiSpecificStreamInfo = NULL;
+                in_parameters.channelCount = Pa_GetDeviceInfo(*inDevice)->maxInputChannels;
+                out_parameters.device = *outDevice;
+                out_parameters.sampleFormat = fmt;
+                out_parameters.hostApiSpecificStreamInfo = NULL;
+                out_parameters.channelCount = Pa_GetDeviceInfo(*outDevice)->maxOutputChannels;
+                if (sampleRate) {
+                    // check if devices can support requested SR
+                    PaError err = Pa_IsFormatSupported(&in_parameters, &out_parameters, sampleRate);
+                    if (err != paNoError) {
+                        fprintf(stdout, "\nRequested sample rate %f for devices %s and %s is not supported.\n",
+                                sampleRate, Pa_GetDeviceInfo(*inDevice)->name, Pa_GetDeviceInfo(*outDevice)->name);
+                        return err;
+                    }
+                } else {
+                    // if we don't request SR, check if devices have maching SR
+                    uint32 inSR = uint32(Pa_GetDeviceInfo(*inDevice)->defaultSampleRate);
+                    uint32 outSR = uint32(Pa_GetDeviceInfo(*outDevice)->defaultSampleRate);
+                    if (inSR != outSR) {
+                        // if defaults are different, check if both devices can be opened using the OUTPUT's SR
+                        PaError err = Pa_IsFormatSupported(&in_parameters, &out_parameters,
+                                                           Pa_GetDeviceInfo(*outDevice)->defaultSampleRate);
+                        if (err != paNoError) {
+                            fprintf(stdout,
+                                    "\nRequested devices %s and %s use different sample rates. "
+                                    "Please set matching sample rates "
+                                    "in the Windows Sound Control Panel and try again.\n",
+                                    Pa_GetDeviceInfo(*inDevice)->name, Pa_GetDeviceInfo(*outDevice)->name);
+                            return err;
+                        }
+                    }
+                }
+            }
+
+            // in case we still don't have a proper device, use the default device
+            if (*inDevice == paNoDevice || *outDevice == paNoDevice) {
+                *inDevice = Pa_GetDefaultInputDevice();
+                *outDevice = Pa_GetDefaultOutputDevice();
+                if (*inDevice != paNoDevice && *outDevice != paNoDevice)
+                    fprintf(stdout, "Selected default system input/output devices\n");
+            }
+        } else {
+            // no inputs nor outputs
+            *inDevice = paNoDevice;
+            *outDevice = paNoDevice;
+        }
+        return paNoError;
+    }
+
+    bool open_stream(std::string& input_device, unsigned int inchans, std::string& output_device, unsigned int outchans,
+                     unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize) {
         int input_device_index, output_device_index;
-        if (!match_device(input_device, input_device_index) || !match_device(output_device, output_device_index))
+
+        input_device_index = match_device(input_device);
+        output_device_index = match_device(output_device);
+
+        // check device selection, select defaults if needed
+        fprintf(stdout, "\n");
+        PaError checked = CheckPaDevices(&input_device_index, &output_device_index, inchans, outchans, samplerate);
+        fprintf(stdout, "\n");
+
+        // if we got an error from CheckPaDevices, stop here
+        if (checked != paNoError) {
+            report_error(checked);
             return false;
+        }
+
+        // set device names
+        if (inchans)
+            input_device.assign(device_name(input_device_index));
+        if (outchans)
+            output_device.assign(device_name(output_device_index));
 
         PaStreamParameters in_parameters, out_parameters;
         PaTime suggestedLatencyIn, suggestedLatencyOut;
+
+        if (!samplerate) {
+            if (inchans)
+                samplerate = Pa_GetDeviceInfo(input_device_index)->defaultSampleRate;
+            if (outchans)
+                samplerate = Pa_GetDeviceInfo(output_device_index)->defaultSampleRate;
+        }
 
         if (h_blocksize == 0) {
             if (inchans)
@@ -173,9 +373,11 @@ public:
         PaStreamParameters* out_stream_parameters = outchans ? &out_parameters : nullptr;
 
         PaError supported = Pa_IsFormatSupported(in_stream_parameters, out_stream_parameters, samplerate);
-        report_error(supported);
-        if (supported != 0)
+        if (supported != 0) {
+            report_error(supported);
             return false;
+        }
+
 
         engine_initalised = false;
         blocksize_ = pa_blocksize;
@@ -191,7 +393,6 @@ public:
             const PaStreamInfo* psi = Pa_GetStreamInfo(stream);
             if (psi)
                 latency_ = (uint32_t)(psi->outputLatency * psi->sampleRate);
-            fprintf(stdout, "  latency: %d\n", latency_);
         }
 
         input_channels = inchans;
@@ -244,19 +445,20 @@ public:
 
     void get_cpuload(float& peak, float& average) const { cpu_time_accumulator.get(peak, average); }
 
-    std::pair<std::string, std::string> default_device_names() {
-        const PaDeviceIndex default_input = Pa_GetDefaultInputDevice();
-        const PaDeviceIndex default_output = Pa_GetDefaultOutputDevice();
-
-        std::cout << default_input << " " << default_output;
-
-        return std::make_pair(device_name(default_input), device_name(default_output));
-    }
-
 private:
     std::string device_name(PaDeviceIndex device_index) {
+#ifndef __APPLE__
+        // list APIs on Windows and Linux
+        const PaDeviceInfo* device_info = Pa_GetDeviceInfo(device_index);
+        const PaHostApiInfo* api_info = Pa_GetHostApiInfo(device_info->hostApi);
+        std::string dev_string = api_info->name;
+        dev_string += " : ";
+        dev_string += device_info->name;
+        return dev_string;
+#else
         const PaDeviceInfo* device_info = Pa_GetDeviceInfo(device_index);
         return std::string(device_info->name);
+#endif
     }
 
     int perform(const void* inputBuffer, void* outputBuffer, unsigned long frames,
