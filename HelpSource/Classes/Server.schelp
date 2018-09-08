@@ -754,4 +754,19 @@ Routine.run {
 )
 ::
 
+subsection:: Bela
 
+method:: belaScope
+Scope a number of channels from a Bus on this Server, to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+It is required that this Server is running on a Bela, and that it is thus capable of using BelaScope.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: index
+This server's bus index to scope. Defaults to 0.
+
+argument:: numChannels
+Number of channels to send to BelaScope, starting from the index supplied. Defaults to 2, or to link::Classes/ServerOptions#-numOutputBusChannels:: if index is 0.
+
+returns:: A link::Classes/Synth::, linking this Server's desired bus channels to BelaScope's bus.
