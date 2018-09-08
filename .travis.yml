@@ -25,6 +25,12 @@ cache:
  - ccache
 
 before_install:
+ - |
+  MODIFIED_FILES=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
+  if ! echo ${MODIFIED_FILES} | grep -qvE '(\.md$)|(^(examples|HelpSource|package|sounds|tools))/'; then
+    echo "No source files were changed, stopping build process."
+    exit 0
+  fi
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
