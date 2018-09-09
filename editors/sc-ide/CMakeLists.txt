@@ -436,7 +436,15 @@ if(APPLE OR WIN32)
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
                 -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/scsynth
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/supernova
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens.scx
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens_supernova.scx
                 -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+            ")
+        set(VERIFY_CMD "include(BundleUtilities)
+            message(STATUS \"Verifying app\")
+            verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
             ")
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
@@ -444,6 +452,7 @@ if(APPLE OR WIN32)
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
             ")
+        set(VERIFY_CMD "")
     endif()
 
     if(NOT DEPLOY_PROG)
@@ -465,6 +474,7 @@ if(APPLE OR WIN32)
             if(RES)
                 message(FATAL_ERROR \"Deploy failed with error: \${ERR}\")
             endif()
+            ${VERIFY_CMD}
         "
     )
 endif()
