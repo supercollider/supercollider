@@ -91,7 +91,7 @@ Please be as descriptive as possible when creating an issue. In order for us to 
 	        the component being changed. The body describes the behavior without the patch,
 	        why this is a problem, and how the patch fixes the problem when applied.
 
-- Make sure you have added the necessary tests for your changes.
+- Make sure you have added the necessary tests for your changes. All changes to code should include a test which checks for correct functionality, including regression tests for bug fixes. Info on best practice for Unit tests is available at https://github.com/supercollider/supercollider/wiki/Unit-Testing-Guide
 - Make sure you have documented your changes, if necessary.
 
 ### Submitting changes as Pull Requests
