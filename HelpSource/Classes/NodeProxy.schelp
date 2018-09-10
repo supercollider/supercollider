@@ -728,7 +728,7 @@ code::
 a = NodeProxy.audio(s,2);
 a.play;
 
-a.clock = TempoClock(2.0).permanent_(true); // round to every 2.0 seconds
+a.quant = 2.0; // quantize changes to the next 2.0-beat multiple
 a.source = { Ringz.ar(Impulse.ar(0.5, 0, 0.3), 3000, 0.01) };
 a[1] = { Ringz.ar(Impulse.ar([0.5, 1], 0, 0.3), 1000, 0.01) };
 a[2] = { Ringz.ar(Impulse.ar([3, 5]/2, 0, 0.3), 8000, 0.01) };

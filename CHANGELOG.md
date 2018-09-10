@@ -12,14 +12,13 @@ Release dates of 3.x versions:
 - 3.8: 2016-11-04
 - 3.9: 2018-01-13
 
-3.10.0-beta1 (2018-08-19)
+3.10.0-beta2 (2018-09-09)
 =========================
 
 Known issues
 ------------
 
 - FileDialog can hang — currently we are only able to reproduce on KDE, but other OS's could be affected ([#3807](https://github.com/supercollider/supercollider/issues/3807)).
-- The IDE theme was changed to the Qt Fusion style, so the 3.10 IDE it may look uglier than 3.9. Don't worry, the design is being improved.
 - On Windows and Linux, running code with Ctrl+Enter in the help browser (not the editor) only evaluates the current line ([#3989](https://github.com/supercollider/supercollider/issues/3989)).
 
 General: Added
@@ -54,6 +53,8 @@ Fixed a build failure with the CMake option `SYSTEM_YAMLCPP=on` ([#3558](https:/
 
 Fixed a misleading deprecation warning when `CMAKE_INSTALL_PREFIX` is set to the home directory in Linux ([#3613](https://github.com/supercollider/supercollider/pull/3613)).
 
+Fixed `CMAKE_PREFIX_PATH` incorrectly defaulting to `/usr/local/` on macOS under some conditions ([#4043](https://github.com/supercollider/supercollider/pull/4043)).
+
 scsynth and supernova: Added
 -----
 
@@ -69,6 +70,11 @@ For consistency with scsynth, supernova no longer requires the final argument to
 Fixed a missing newline in some of supernova's error messages ([#3897](https://github.com/supercollider/supercollider/pull/3897)).
 
 Fixed errors in supernova's `/s_getn` ([#3893](https://github.com/supercollider/supercollider/pull/3893)).
+
+UGens: Fixed
+-----
+
+Fixed clicks in Convolution2L ([#3687](https://github.com/supercollider/supercollider/pull/3687)).
 
 sclang: Added
 -----
@@ -174,12 +180,31 @@ Fixed some bugs in `EnvGate`: throwing an error when `fadeTime` is a constant ra
 
 Fixed occasional hangs when rebooting supernova ([#3848](https://github.com/supercollider/supercollider/pull/3848)).
 
+Fixed confusing user feedback with the "Check for updates" button in the quarks GUI ([#3986](https://github.com/supercollider/supercollider/pull/3986)).
+
+`Buffer` methods ensure that the buffer number in outbound OSC messages is an integer ([#3907](https://github.com/supercollider/supercollider/pull/3907)). This fixes errors in supernova, which is stricter than scsynth about the buffer number type.
+
+Fixed confusing user feedback with the "Check for updates" button in the quarks GUI ([#3986](https://github.com/supercollider/supercollider/pull/3986)).
+
+Fixed missing default arguments in `fold2`, `wrap2`, and `excess` methods of `Collection` for consistency with `SimpleNumber` ([#4037](https://github.com/supercollider/supercollider/pull/4037)).
+
+IDE & SCDoc: Added
+-----
+
+The IDE has a prettier default theme ([#4025](https://github.com/supercollider/supercollider/pull/4025)). The old theme still exists as "classic."
+
+The IDE now properly highlights scale degree literals like `4s` ([#4032](https://github.com/supercollider/supercollider/pull/4032)).
+
 IDE & SCDoc: Changed
 -------
+
+The IDE has a prettier default theme ([#4025](https://github.com/supercollider/supercollider/pull/4025)). The old theme still exists as "classic."
 
 The IDE now has a unified look across all platforms, and its color scheme adapts to match the editor theme ([#3950](https://github.com/supercollider/supercollider/pull/3950)).
 
 The SCDoc TOC and menubar have been redesigned again ([#3831](https://github.com/supercollider/supercollider/pull/3831)).
+
+Various tweaks to the appearance of the IDE: nicer tabs ([#3992](https://github.com/supercollider/supercollider/pull/3992)), better border colors ([#4022](https://github.com/supercollider/supercollider/pull/4022)).
 
 IDE & SCDoc: Fixed
 -----

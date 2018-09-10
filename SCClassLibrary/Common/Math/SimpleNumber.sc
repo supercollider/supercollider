@@ -103,11 +103,11 @@ SimpleNumber : Number {
 	thresh { |aNumber, adverb| _Thresh; ^aNumber.performBinaryOpOnSimpleNumber('thresh', this, adverb) }
 	amclip { |aNumber, adverb| _AMClip; ^aNumber.performBinaryOpOnSimpleNumber('amclip', this, adverb) }
 	scaleneg { |aNumber, adverb| _ScaleNeg; ^aNumber.performBinaryOpOnSimpleNumber('scaleneg', this, adverb) }
-	clip2 { |aNumber, adverb| _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
-	fold2 { |aNumber, adverb| _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
-	wrap2 { |aNumber, adverb| _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
+	clip2 { |aNumber=1, adverb| _Clip2; ^aNumber.performBinaryOpOnSimpleNumber('clip2', this, adverb) }
+	fold2 { |aNumber=1, adverb| _Fold2; ^aNumber.performBinaryOpOnSimpleNumber('fold2', this, adverb) }
+	wrap2 { |aNumber=1, adverb| _Wrap2; ^aNumber.performBinaryOpOnSimpleNumber('wrap2', this, adverb) }
 
-	excess { |aNumber, adverb| _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
+	excess { |aNumber=1, adverb| _Excess; ^aNumber.performBinaryOpOnSimpleNumber('excess', this, adverb) }
 	firstArg { |aNumber, adverb| _FirstArg; ^aNumber.performBinaryOpOnSimpleNumber('firstArg', this, adverb) }
 	rrand { |aNumber, adverb| _RandRange; ^aNumber.performBinaryOpOnSimpleNumber('rrand', this, adverb) }
 	exprand { |aNumber, adverb| _ExpRandRange; ^aNumber.performBinaryOpOnSimpleNumber('exprand', this, adverb) }
