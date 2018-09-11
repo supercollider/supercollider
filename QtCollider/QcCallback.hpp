@@ -29,48 +29,48 @@ class QcCallback;
 class QcCallbackWeakFunctor
 {
 public:
-  QcCallbackWeakFunctor(QPointer<QcCallback> cb)
-    : _cb(cb)
-  {}
+    QcCallbackWeakFunctor(QPointer<QcCallback> cb)
+        : _cb(cb)
+    {}
 
-  template <typename RESULT>
-  void operator()(RESULT r) const;
+    template <typename RESULT>
+    void operator()(RESULT r) const;
 
 private:
-  QPointer<QcCallback> _cb;
+    QPointer<QcCallback> _cb;
 };
 
 class QcCallback : public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
-  QcCallback() {}
+    QcCallback() {}
 
-  template<typename CallbackT>
-  void call(const CallbackT& result)
-  {
-    Q_EMIT(onCalled(result));
-  }
+    template<typename CallbackT>
+    void call(const CallbackT& result)
+    {
+        Q_EMIT(onCalled(result));
+    }
 
-  QcCallbackWeakFunctor asFunctor()
-  {
-    return QcCallbackWeakFunctor(QPointer<QcCallback>(this));
-  }
+    QcCallbackWeakFunctor asFunctor()
+    {
+        return QcCallbackWeakFunctor(QPointer<QcCallback>(this));
+    }
 
 Q_SIGNALS:
-  void onCalled(bool);
-  void onCalled(const QString&);
-  void onCalled(const QVariant&);
-  void onCalled(const QUrl&);
+    void onCalled(bool);
+    void onCalled(const QString&);
+    void onCalled(const QVariant&);
+    void onCalled(const QUrl&);
 };
 
 template <typename RESULT>
 void QcCallbackWeakFunctor::operator()(RESULT r) const
-  {
-  if (_cb) {
-    _cb->call(r);
-  }
+{
+    if (_cb) {
+        _cb->call(r);
+    }
 }
 
 } // namespace QtCollider
