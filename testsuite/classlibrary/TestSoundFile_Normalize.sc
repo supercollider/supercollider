@@ -21,8 +21,6 @@ TestSoundFile_Normalize : UnitTest {
 		if(soundFile.isOpen) {
 			peaks = soundFile.channelPeaks;
 			this.assertEquals(peaks, [0.5], "Channel peaks test should read 0.5");
-		} {
-			this.assert(false, "TestSoundFile_Normalize should be able to read the test file");
 		};
 		soundFile.close;
 	}
