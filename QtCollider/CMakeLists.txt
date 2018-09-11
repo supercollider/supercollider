@@ -1,5 +1,5 @@
 set(REQUIRED_QT_VERSION 5.7)
-option(QT_WEBENGINE "Build with Qt WebEngine." ON)
+option(SC_USE_WEBENGINE "Build with Qt WebEngine." ON)
 
 ###############################################################################
 # Components and libraries
@@ -22,7 +22,7 @@ set (QT_COLLIDER_LIBS
   Qt5::Quick Qt5::Qml Qt5::Sql Qt5::OpenGL Qt5::Svg
   ${MATH_LIBRARY})
 
-if(QT_WEBENGINE)
+if(SC_USE_WEBENGINE)
   list(APPEND QT_COMPONENTS WebEngine WebEngineCore WebEngineWidgets)
   list(APPEND QT_COLLIDER_LIBS Qt5::WebEngineCore Qt5::WebEngineWidgets)
 endif()
@@ -144,7 +144,7 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
 
-if(QT_WEBENGINE)
+if(SC_USE_WEBENGINE)
   list(APPEND QT_COLLIDER_HDRS
     ${QT_COLLIDER_DIR}/widgets/QcWebView.h
     ${QT_COLLIDER_DIR}/widgets/web_page.hpp
