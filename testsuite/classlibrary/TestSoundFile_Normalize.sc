@@ -36,7 +36,7 @@ TestSoundFile_Normalize : UnitTest {
 		// so you will not have floating point rounding error in the equality test below
 		// if you change this value, please make sure the denominator is a power of two!
 		soundFile.normalize(path2, "aiff", "float", maxAmp: 0.75);
-		soundFile.close;
+		// tearDown will close 'soundFile'
 
 		file2 = SoundFile.openRead(path2);
 		read = Signal.newClear(file2.numFrames);
