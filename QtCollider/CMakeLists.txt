@@ -144,11 +144,13 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
 
+set(QT_COLLIDER_WEBENGINE_HDRS
+  ${QT_COLLIDER_DIR}/widgets/QcWebView.h
+  ${QT_COLLIDER_DIR}/widgets/web_page.hpp
+)
+
 if(SC_USE_WEBENGINE)
-  list(APPEND QT_COLLIDER_HDRS
-    ${QT_COLLIDER_DIR}/widgets/QcWebView.h
-    ${QT_COLLIDER_DIR}/widgets/web_page.hpp
-  )
+  list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_WEBENGINE_HDRS})
   list(APPEND QT_COLLIDER_SRCS
     ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
     ${QT_COLLIDER_DIR}/widgets/web_page.cpp
@@ -179,6 +181,7 @@ list( APPEND QT_COLLIDER_SRCS
   ${QT_COLLIDER_OBJCPP_SRCS}
   ${QT_COLLIDER_MOC_SRCS}
   ${QT_COLLIDER_RCC}
+  ${QT_COLLIDER_WEBENGINE_HDRS}
 )
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)
