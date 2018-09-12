@@ -903,7 +903,7 @@ code::
 	winsize = trigrate.reciprocal;
 	trig = Impulse.ar(trigrate);
 	GrainSin.ar(2, trig, winsize, TRand.ar(440.0, 880.0, trig), LFNoise1.kr(0.2),
-		-1, 0.2)
+		-1, 512, 0.2)
 }.scope(2, zoom: 4);
 )
 
@@ -916,7 +916,7 @@ b = Buffer.sendCollection(s, Env([0, 1, 0], [0.5, 0.5], [8, -8]).discretize, 1);
 	winsize = trigrate.reciprocal;
 	trig = Impulse.ar(trigrate);
 	GrainSin.ar(2, trig, winsize, TRand.ar(440.0, 880.0, trig), LFNoise1.kr(0.2),
-		b, 0.2)
+		b, 512, 0.2)
 }.scope(2, zoom: 4);
 )
 ::
