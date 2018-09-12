@@ -21,6 +21,8 @@
 
 #pragma once
 
+#ifdef SC_USE_WEBENGINE
+
 #include "../QcCallback.hpp"
 #include <QWebEngineView>
 #include <QWebEnginePage>
@@ -150,3 +152,5 @@ private:
 };
 
 } // namespace QtCollider
+
+#endif // SC_USE_WEBENGINE
