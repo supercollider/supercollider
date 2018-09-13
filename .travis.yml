@@ -6,7 +6,15 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=true
+      env:
+          - QT=true
+          - SC_USE_WEBENGINE=ON
+    - os: linux
+      sudo: required
+      dist: trusty
+      env:
+          - QT=true
+          - SC_USE_WEBENGINE=OFF
       group: edge
     - os: linux
       sudo: required
@@ -15,7 +23,14 @@ matrix:
       group: edge
     - os: osx
       osx_image: xcode8.3
-      env: QT=true
+      env:
+          - QT=true
+          - SC_USE_WEBENGINE=ON
+    - os: osx
+      osx_image: xcode8.3
+      env:
+          - QT=true
+          - SC_USE_WEBENGINE=OFF
 
 # use ccache to speed up build times. on osx,
 # we install it during the the before_install step
