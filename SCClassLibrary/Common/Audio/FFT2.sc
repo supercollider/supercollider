@@ -86,22 +86,21 @@ RunningSum : UGen {
 
 
 // A running sum over a variable window of time
-RunningSum2 : UGen {
-	*ar { arg in, numsamp=40, maxsamp=400;
-		^this.multiNew('audio', in, numsamp, maxsamp);
+RunningSum2 : UGen
+{
+	*ar { arg in, numsamp=40, maxsamp=400, avg = 0;
+		^this.multiNew('audio', in, numsamp, maxsamp, avg);
 	}
-
-	*kr { arg in, numsamp=40, maxsamp=400;
-		^this.multiNew('control', in, numsamp, maxsamp);
+	
+	*kr { arg in, numsamp=40, maxsamp=400, avg = 0;
+		^this.multiNew('control', in, numsamp, maxsamp, avg);
 	}
-
+	
 	*avg { arg in, numsamp=40, maxsamp=400;
-		var r = UGen.methodSelectorForRate(in.rate);
-		^RunningSum2.perform(r, in, numsamp, maxsamp)*(numsamp.floor.reciprocal)
+		^RunningSum2.perform(UGen.methodSelectorForRate(in.rate), in, numsamp, maxsamp, avg: 1)
 	}
-
+	
 	*rms { arg in, numsamp=40, maxsamp=400;
-		var r = UGen.methodSelectorForRate(in.rate);
-		^(RunningSum2.perform(r, in.squared, numsamp, maxsamp)*(numsamp.floor.reciprocal)).sqrt
+		^RunningSum2.perform(UGen.methodSelectorForRate(in.rate), in.squared, numsamp, maxsamp, avg: 1).sqrt
 	}
 }

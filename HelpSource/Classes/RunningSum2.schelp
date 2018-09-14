@@ -4,16 +4,33 @@ related:: Classes/RunningSum
 categories:: UGens>Analysis, UGens>Maths
 
 description::
-A running sum over a variable number of samples. Includes convenience methods for calculating a running average and RMS over the window.
+A running sum, running average, or RMS over a variable number of samples.
 
 classmethods::
 method:: ar, kr
+Output the sum of audio or control rate samples.
 argument::in
 An input signal.
 argument::numsamp
-Size of the summing window, in samples. Modulatable between 1 and strong::maxsamps::. Default: 40.
+Size of the summing window, in samples. Modulatable between 1 and
+strong::maxsamp::. Default: 40.
 argument::maxsamp
-Maximum size of the summing window. Pre-allocates memory up to this size and your strong::numsamp:: will be clipped at this value.
+Maximum size of the summing window. Pre-allocates memory up to this size and
+your strong::numsamp:: will be clipped at this value. strong::maxsamp:: cannot
+be modulated.
+argument::avg
+A flag specifying whether to output the average of the running sum over the
+strong::numsamp:: frames. code::0:: outputs the sum, code::> 0:: outputs the
+average. This is used internally by the link::#*avg:: and link::#*rms::
+convenience methods.
+
+method:: avg
+Output the average of strong::numsamp:: audio or control rate samples. The
+output rate is determined by the rate of the strong::in:: signal.
+
+method:: rms
+Output the rms of strong::numsamp:: audio or control rate samples. The
+output rate is determined by the rate of the strong::in:: signal.
 
 examples::
 
