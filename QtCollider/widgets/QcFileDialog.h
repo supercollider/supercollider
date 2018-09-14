@@ -25,6 +25,7 @@
 
 #include <QFileDialog>
 #include <QPointer>
+#include <QTimer>
 
 class QcFileDialog : public QObject
 {
@@ -55,8 +56,19 @@ Q_SIGNALS:
 private Q_SLOTS:
 
   void show() {
-    dialog->exec();
-    dialog->deleteLater();
+    // If we show the dialog in the middle of an Interpret call, and the idle
+    // loop of the dialog tries to process SuperCollider events, we hang since
+    // we're already mid-interpret. We need to launch the dialog without SC
+    // on the stack, so we defer.
+
+    // QTimer doesn't actually defer things with 'msec' equal to 0, so we use
+    // a 1-millisecond delay.
+
+    auto thisDialog = dialog;
+    QTimer::singleShot(1, [thisDialog]() {
+      thisDialog->exec();
+      thisDialog->deleteLater();
+    });
   }
 
   void onFinished( int res ) {
