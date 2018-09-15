@@ -136,6 +136,17 @@ TestNodeProxy : UnitTest {
 
 	}
 
+	test_synthDefControl_build {
+		var s = Server.default;
+		s.quit;
+		this.bootServer(s);
+		s.sync;
+		1.wait;
+
+		Ndef.clear;
+		Ndef(\x, { Silent.ar });
+		this.assert(Ndef(\x).objects.first.hasFadeTimeControl, "functions should register their fadeTime control");
+	}
 
 }
 
