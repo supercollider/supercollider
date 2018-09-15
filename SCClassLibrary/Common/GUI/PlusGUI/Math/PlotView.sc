@@ -146,8 +146,21 @@ Plot {
 		};
 	}
 
+	// domainCoordinates { |size|
+	// 	var val = this.resampledDomainSpec.unmap(plotter.domain ?? { (0..size-1) });
+	// 	^plotBounds.left + (val * plotBounds.width);
+	// }
+
 	domainCoordinates { |size|
-		var val = this.resampledDomainSpec.unmap(plotter.domain ?? { (0..size-1) });
+		var step, val, resamps;
+		step = domainSpec.range / (size-1);
+		resamps = plotter.domain ?? {
+			// if no domain values specified, uniformly sample the domainSpec
+			(domainSpec.minval, domainSpec.minval + step .. domainSpec.maxval)
+		};
+		// val = this.resampledDomainSpec.unmap(resamps);
+		val = domainSpec.unmap(resamps);
+
 		^plotBounds.left + (val * plotBounds.width);
 	}
 
@@ -156,14 +169,14 @@ Plot {
 		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
 
-	resampledSize {
-		^min(value.size, plotBounds.width / plotter.resolution)
-	}
+	// resampledSize {
+	// 	^min(value.size, plotBounds.width / plotter.resolution)
+	// }
 
-	resampledDomainSpec {
-		var offset = if(this.hasSteplikeDisplay) { 0 } { 1 };
-		^domainSpec.copy.maxval_(this.resampledSize - offset)
-	}
+	// resampledDomainSpec {
+	// 	var offset = if(this.hasSteplikeDisplay) { 0 } { 1 };
+	// 	^domainSpec.copy.maxval_(this.resampledSize - offset)
+	// }
 
 	drawData {
 		var mode = plotter.plotMode;
@@ -369,7 +382,16 @@ Plot {
 			binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
 		};
 		offset = if(this.hasSteplikeDisplay) { binwidth/2.0 } { 0.0 };
-		^this.getRelativePositionX(x - offset).round.asInteger
+
+		// ^this.getRelativePositionX(x - offset).round.asInteger
+
+		// mtm
+		if (plotter.domain.notNil) {
+			^(plotter.domain.indexIn(this.getRelativePositionX(x)) - offset).round.asInteger
+		} {
+			// domain unspecified, values are evenly distributed between either side of the plot
+			^(((x - plotBounds.left) / plotBounds.width) * (value.size - 1) - offset).round.clip(0, value.size-1).asInteger
+		}
 	}
 
 	getDataPoint { |x|
@@ -402,7 +424,7 @@ Plot {
 Plotter {
 
 	var <>name, <>bounds, <>parent;
-	var <value, <data, <>domain;
+	var <value, <data, <domain;
 	var <plots, <specs, <domainSpecs;
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
@@ -565,6 +587,18 @@ Plotter {
 		};
 		this.updatePlots;
 		if(refresh) { this.refresh };
+	}
+
+	// domain values are within the domainSpec
+	// TODO: currently domain assumed to be identical across all channels
+	domain_ { |domainArray|
+		var dataSize;
+		dataSize = if (this.value.rank > 1) { this.value[0].size } { this.value.size };
+		if (domainArray.size != dataSize) {
+			Error(format("[Plotter:-domain_] Domain array size [%] does not match data array size [%]", domainArray.size, dataSize)).throw;
+		} {
+			domain = domainArray
+		}
 	}
 
 	superpose_ { |flag|
