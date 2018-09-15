@@ -12,13 +12,13 @@ method::new
 Returns an link::Classes/EnvGen::.
 
 argument::i_level
-initial level of envelope (if set to 1, it starts open)
+initial level of envelope (if set to 1, it starts open). If nil, the initila level depends on the code::fadeTime:: control: if code::fadeTime <= 0::, it starts with 1.0 to let through impulses on the first sample. Otherwise it starts at 0.
 
 argument::gate
-a gate input. if nil, EnvGate creates a link::Classes/NamedControl:: named 'gate'
+a gate input. If nil, EnvGate creates a link::Classes/NamedControl:: named 'gate'.
 
 argument::fadeTime
-an input for both attack and decay time. if nil, EnvGate creates a link::Classes/NamedControl:: named 'fadeTime' (default time: 0.02)
+an input for both attack and decay time. If nil, EnvGate creates a link::Classes/NamedControl:: named 'fadeTime'.
 
 argument::doneAction
 doneAction of the link::Classes/EnvGen::
