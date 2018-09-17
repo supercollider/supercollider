@@ -334,7 +334,7 @@ SynthDefControl : SynthControl {
 			canFreeSynth = synthDef.canFreeSynth;
 			controlNames = synthDef.allControlNames;
 			hasFadeTimeControl = controlNames.notNil and: {
-			 controlNames.any { |x| x.name === \fadeTime }
+				controlNames.any { |x| x.name === \fadeTime }
 			};
 		} {
 			synthDef = nil;
