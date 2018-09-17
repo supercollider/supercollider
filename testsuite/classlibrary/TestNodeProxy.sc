@@ -121,8 +121,8 @@ TestNodeProxy : UnitTest {
 
 	test_fadeTime {
 
-		var s = Server.default;
-		s.quit;
+		var s = Server(this.class.name);
+
 		this.bootServer(s);
 		s.sync;
 		1.wait;
@@ -133,11 +133,14 @@ TestNodeProxy : UnitTest {
 		Ndef(\x).clear(1);
 		1.01.wait;
 		this.assert(Ndef(\x).isNeutral, "after fadeTime of clear, node proxy should be neutral again");
+		s.quit;
+		s.remove;
 
 	}
 
 	test_synthDefControl_build {
-		var s = Server.default;
+
+		var s = Server(this.class.name);
 		s.quit;
 		this.bootServer(s);
 		s.sync;
@@ -146,6 +149,8 @@ TestNodeProxy : UnitTest {
 		Ndef.clear;
 		Ndef(\x, { Silent.ar });
 		this.assert(Ndef(\x).objects.first.hasFadeTimeControl, "functions should register their fadeTime control");
+		s.quit;
+		s.remove;
 	}
 
 }
