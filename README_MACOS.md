@@ -45,6 +45,9 @@ Prerequisites:
   See http://brew.sh for installation instructions.
 - **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
   `brew install git cmake libsndfile readline qt5`
+- If you are building with Qt libraries, you will also need the [requirements for
+  QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
+  10.9 and the macOS SDK for 10.10 or later.
 
 - If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
   `brew install portaudio`
