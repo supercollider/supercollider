@@ -325,7 +325,9 @@ Quarks {
 			if(fetch, { this.prFetchDirectory });
 			this.prReadDirectoryFile(dirTxtPath);
 		}.try({ arg err;
-			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
+			var text = err.tryPerform(\errorString);
+			if(text.isNil) { text = err.asString };
+			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), text)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
 				if(File.exists(dirTxtPath), {
