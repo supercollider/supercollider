@@ -233,19 +233,9 @@ Common arguments to control the build configuration are:
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
-  * Build a 32-bit version (sc 3.6 only):
-
-    `-DCMAKE_OSX_ARCHITECTURES='i386'`
-
-    or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary).
-    This is only possible up until macOS 10.6 and requires the dependencies (Qtlibs &
-    readline) to be universal builds too:
-
-    `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
-
-  * By default the build will only be compatible with the macOS / OS X version (and
+  * By default the build will only be compatible with the macOS (and
     subsequent versions) on which the compiler was run. To build with compatibility
-    for previous versions of macOS / OS X, you can use e.g.:
+    for previous versions of macOS, you can use e.g.:
 
     `-DCMAKE_OSX_DEPLOYMENT_TARGET=10.10`
 
