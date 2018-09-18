@@ -24,13 +24,15 @@ TestSoundFile_Server : UnitTest {
 	}
 
 	test_cue_playNow {
-		var cueEvent, condition = Condition.new;
+		var cueEvent, timeout, condition = Condition.new;
 
-		OSCFunc({ condition.unhang }, '/n_go', server.addr);
+		OSCdef(\isPlaying, { condition.unhang }, '/n_go', server.addr);
 		cueEvent = soundFile.cue((), true);
-		fork { 3.wait; condition.unhang };
+		timeout = fork { 3.wait; condition.unhang };
 		condition.hang;
 		this.assert(cueEvent.isRunning, "Event should play immediately after cueing");
+		timeout.stop;
+		OSCdef(\isPlaying).free;
 		cueEvent.stop;
 	}
 
