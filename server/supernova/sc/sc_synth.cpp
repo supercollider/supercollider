@@ -182,6 +182,23 @@ float sc_synth::get(slot_index_t slot_index) const
     return mControls[slot_index];
 }
 
+bool sc_synth::getMappedSymbol(slot_index_t slot_index, char * str) const
+{
+    // analogous place in scsynth: SC_Group.cpp: void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
+    bool isMapped = mMapControls[slot_index] != mControls+slot_index;
+    if (isMapped) {
+        if (mControlRates[slot_index] == 2) {
+            int bus = mMapControls[slot_index] - mNode.mWorld->mAudioBus;
+            bus = bus / mNode.mWorld->mBufLength;
+            sprintf(str, "a%d", bus);
+        } else {
+            int bus = mMapControls[slot_index] - mNode.mWorld->mControlBus;
+            sprintf(str, "c%d", bus);
+        }
+    }
+    return isMapped;
+}
+
 void sc_synth::map_control_bus_control (unsigned int slot_index, int control_bus_index)
 {
     if (slot_index >= mNumControls)
