@@ -61,6 +61,14 @@ struct RunningSum : public Unit {
 	float* msquares;
 };
 
+// like RunningSum, but with variable size summing window. - mtmccrea
+struct RunningSum2 : public Unit {
+    int nsamps, maxSamps, head, tail, resetCounter;
+    float msum, msum2;
+    bool reset;
+    float* msquares;
+};
+
 extern "C"
 {
 	void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit);
@@ -77,6 +85,10 @@ extern "C"
 	void RunningSum_next_k(RunningSum *unit, int inNumSamples);
 	void RunningSum_Ctor(RunningSum* unit);
 	void RunningSum_Dtor(RunningSum* unit);
+
+    void RunningSum2_Ctor(RunningSum2 *unit);
+    void RunningSum2_Dtor(RunningSum2 *unit);
+    void RunningSum2_next(RunningSum2 *unit, int inNumSamples);
 }
 
 #define PV_FEAT_GET_BUF_UNLOCKED \
@@ -419,9 +431,165 @@ void RunningSum_next_k( RunningSum *unit, int inNumSamples )
 	unit->msum2 =  sum2;
 }
 
+
+// RunningSum2 adds a variable window size to RunningSum - mtmccrea
+void RunningSum2_Ctor( RunningSum2* unit )
+{
+    if ((int) ZIN0(2) == 0) {
+        printf("RunningSum2 Error: maxSamps initialized to 0.\n");
+        SETCALC(*ClearUnitOutputs);
+        unit->mDone = true;
+        return;
+    }
+
+    SETCALC(RunningSum2_next);
+
+    unit->maxSamps  = (int) ZIN0(2);
+    unit->nsamps    = sc_max(1, sc_min((int) ZIN0(1), unit->maxSamps)); // clip(1, maxSamps)
+    unit->msum      = 0.0f;
+    unit->msum2     = 0.0f;
+    unit->resetCounter = 0;
+    unit->head      = 0; // first write position
+    unit->tail      = unit->maxSamps - unit->nsamps;
+    unit->reset     = false;
+    unit->msquares  = (float*)RTAlloc(unit->mWorld, unit->maxSamps * sizeof(float));
+
+    if (unit->msquares == nullptr) {
+        SETCALC(*ClearUnitOutputs);
+        ClearUnitOutputs(unit, 1);
+        if (unit->mWorld->mVerbosity > -2) {
+            printf("Failed to allocate memory for RunningSum2\n");
+        }
+        return;
+    }
+
+    // zero the summing buffer
+    for (int i=0; i < unit->maxSamps; ++i)
+        unit->msquares[i] = 0.f;
+
+    ZOUT0(0) = 0.f;
+}
+
+void RunningSum2_Dtor(RunningSum2 *unit)
+{
+    RTFree(unit->mWorld, unit->msquares);
+}
+
+void RunningSum2_next( RunningSum2 *unit, int inNumSamples )
+{
+    float *in   = ZIN(0);
+    float *out  = ZOUT(0);
+    float *data = unit->msquares;
+	
+	int newWinSize  = (int) ZIN0(1);  // number of samples to sum
+    int prevWinSize = unit->nsamps;   // keep track of previous block's window size
+	int curWinSize  = unit->nsamps;   // keep track of window size as it ramps to new size
+	int maxWinSize  = unit->maxSamps;
+	
+	int head = unit->head; // current write index in the rolling buffer
+    int tail = unit->tail; // current tail  index in the rolling buffer
+	
+    float sum = unit->msum;
+    float sum2 = unit->msum2; // modeled after RunningSum - thanks to Ross Bencina
+	
+	int resetCounter = unit->resetCounter; // trigger sum<>sum2 swap
+	bool winSizeChanged = false;
+	float sampSlope = 0.0;
+	bool avg = ZIN0(3) > 0.0; // output average flag
+	
+    newWinSize = sc_max(1, sc_min(newWinSize, maxWinSize));   // clamp [1, maxWinSize]
+	
+	if (newWinSize != prevWinSize) {
+		winSizeChanged = true;
+		sampSlope = CALCSLOPE( (float)newWinSize, prevWinSize );
+	}
+	
+	for (int i = 0; i < inNumSamples; ++i) {
+		
+		// handle change in summing window size
+		if (winSizeChanged) {
+			int steps = prevWinSize + (int)(sampSlope * (i+1)) - curWinSize;
+			
+			if (steps > 0) { // window grows
+				for (int j = 0; j < steps; ++j) {
+					tail--;
+					if (tail < 0)
+						tail += maxWinSize; // wrap
+					
+					sum += data[tail];
+					curWinSize++;
+					
+					if (resetCounter == curWinSize) {
+						sum = sum2;
+						resetCounter = 0;
+						sum2 = 0.0;
+					}
+				}
+			}
+			
+			if (steps < 0) { // window shrinks
+				for (int j = 0; j < abs(steps); ++j) {
+					sum -= data[tail];
+					tail++;
+					if (tail == maxWinSize)
+						tail = 0; // wrap
+					
+					curWinSize--;
+					if (resetCounter == curWinSize) {
+						sum = sum2;
+						resetCounter = 0;
+						sum2 = 0.0;
+					}
+				}
+			}
+				
+		}
+		
+		// remove last buffer sample
+		sum -= data[tail];
+		
+		// add and store new input sample
+		float next = ZXP(in);
+		data[head]= next;
+		sum += next;
+		sum2 += next;
+		
+		// write out
+		if (avg) {
+			ZXP(out) = sum / curWinSize;
+		} else {
+			ZXP(out) = sum;
+		}
+		
+		// increment and wrap the head and tail indices
+		head++;
+		if (head == maxWinSize)
+			head = 0;
+		
+		tail++;
+		if (tail == maxWinSize)
+			tail = 0;
+		
+		resetCounter++;
+		if (resetCounter == curWinSize) {
+			sum = sum2;
+			resetCounter = 0;
+			sum2 = 0.0;
+		}
+		
+		unit->nsamps = newWinSize;
+		unit->resetCounter = resetCounter;
+		unit->head  = head;
+		unit->tail  = tail;
+		unit->msum  = sum;
+		unit->msum2 = sum2;
+	}
+}
+
 void initFeatureDetectors(InterfaceTable *it)
 {
-	DefineDtorUnit(PV_JensenAndersen);
-	DefineDtorUnit(PV_HainsworthFoote);
-	DefineDtorUnit(RunningSum);
+    DefineDtorUnit(PV_JensenAndersen);
+    DefineDtorUnit(PV_HainsworthFoote);
+    DefineDtorUnit(RunningSum);
+    DefineDtorUnit(RunningSum2);
 }
