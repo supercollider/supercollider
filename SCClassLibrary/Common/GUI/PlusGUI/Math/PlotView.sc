@@ -849,8 +849,13 @@ Plotter {
 
 + Bus {
 	plot { |duration = 0.01, bounds, minval, maxval, separately = false|
-		^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately)
+		if (this.rate == \audio, {
+			^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+		},{
+			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+		});
 	}
+	
 	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
 		^this.plot(duration, bounds, minval, maxval)
 	}
