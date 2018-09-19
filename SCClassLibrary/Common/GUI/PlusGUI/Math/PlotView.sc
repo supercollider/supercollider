@@ -152,8 +152,9 @@ Plot {
 	// }
 
 	domainCoordinates { |size|
-		var step, val, resamps;
-		step = domainSpec.range / (size-1);
+		var range, step, val, resamps;
+		range = domainSpec.range;
+		step =  if (range == 0) { 0 } { range / (size-1) };
 		resamps = plotter.domain ?? {
 			// if no domain values specified, uniformly sample the domainSpec
 			(domainSpec.minval, domainSpec.minval + step .. domainSpec.maxval)
@@ -591,11 +592,17 @@ Plotter {
 		if(refresh) { this.refresh };
 	}
 
-	// domain values are within the domainSpec
+	// domain values are (un)mapped within the domainSpec
 	// TODO: currently domain assumed to be identical across all channels
 	domain_ { |domainArray|
 		var dataSize;
-		dataSize = if (this.value.rank > 1) { this.value[0].size } { this.value.size };
+
+		dataSize = if (this.value.rank > 1) {
+			this.value[0].size
+		} {
+			this.value.size
+		};
+
 		if (domainArray.size != dataSize) {
 			Error(format("[Plotter:-domain_] Domain array size [%] does not match data array size [%]", domainArray.size, dataSize)).throw;
 		} {
