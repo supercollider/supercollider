@@ -146,11 +146,6 @@ Plot {
 		};
 	}
 
-	// domainCoordinates { |size|
-	// 	var val = this.resampledDomainSpec.unmap(plotter.domain ?? { (0..size-1) });
-	// 	^plotBounds.left + (val * plotBounds.width);
-	// }
-
 	domainCoordinates { |size|
 		var range, step, val, resamps;
 		range = domainSpec.range;
@@ -159,7 +154,6 @@ Plot {
 			// if no domain values specified, uniformly sample the domainSpec
 			(domainSpec.minval, domainSpec.minval + step .. domainSpec.maxval)
 		};
-		// val = this.resampledDomainSpec.unmap(resamps);
 		val = domainSpec.unmap(resamps);
 
 		^plotBounds.left + (val * plotBounds.width);
@@ -169,15 +163,6 @@ Plot {
 		var val = spec.warp.unmap(this.prResampValues);
 		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
-
-	// resampledSize {
-	// 	^min(value.size, plotBounds.width / plotter.resolution)
-	// }
-
-	// resampledDomainSpec {
-	// 	var offset = if(this.hasSteplikeDisplay) { 0 } { 1 };
-	// 	^domainSpec.copy.maxval_(this.resampledSize - offset)
-	// }
 
 	drawData {
 		var mode = plotter.plotMode;
@@ -359,7 +344,6 @@ Plot {
 	}
 
 	getRelativePositionX { |x|
-		// ^this.resampledDomainSpec.map((x - plotBounds.left) / plotBounds.width)
 		^domainSpec.map((x - plotBounds.left) / plotBounds.width)
 	}
 
@@ -385,9 +369,6 @@ Plot {
 		};
 		offset = if(this.hasSteplikeDisplay) { binwidth/2.0 } { 0.0 };
 
-		// ^this.getRelativePositionX(x - offset).round.asInteger
-
-		// mtm
 		if (plotter.domain.notNil) {
 			^(plotter.domain.indexIn(this.getRelativePositionX(x)) - offset).round.asInteger
 		} {
@@ -593,8 +574,8 @@ Plotter {
 		if(refresh) { this.refresh };
 	}
 
+	// TODO: currently domain is constrained to being identical across all channels
 	// domain values are (un)mapped within the domainSpec
-	// TODO: currently domain assumed to be identical across all channels
 	domain_ { |domainArray|
 		var dataSize;
 
