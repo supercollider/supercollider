@@ -583,6 +583,7 @@ Plotter {
 
 	setValue { |arrays, findSpecs = true, refresh = true, separately = true, minval, maxval, defaultRange|
 		value = arrays;
+		domain = nil;  // for now require user to re-set domain after setting new value
 		data = this.prReshape(arrays);
 		if(findSpecs) {
 			this.calcDomainSpecs;
