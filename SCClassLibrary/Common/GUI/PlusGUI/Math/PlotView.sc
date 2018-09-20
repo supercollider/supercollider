@@ -585,8 +585,8 @@ Plotter {
 		value = arrays;
 		data = this.prReshape(arrays);
 		if(findSpecs) {
-			this.calcSpecs(separately, minval, maxval, defaultRange);
 			this.calcDomainSpecs;
+			this.calcSpecs(separately, minval, maxval, defaultRange);
 		};
 		this.updatePlots;
 		if(refresh) { this.refresh };
