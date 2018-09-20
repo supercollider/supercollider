@@ -226,6 +226,35 @@ code::
 a = { (40..300).scramble }.dup(2).plot;
 a.domainSpecs = \freq.asSpec; a.refresh;
 ::
+discussion::
+The default domainSpec when setting your Plotter link::#-value:: is a linear
+spec in the range code::[0, value.size-1]::. Unless you set link::#-domain::,
+your values are displayed as evenly sampled between the code::minval:: and
+code::maxval:: of the domainSpecs.
+
+If a new link::#-value:: is set, you will need to update your domainSpecs.
+
+method:: domain
+Set or get the x-axis positions of your data points. The size of the
+code::domainArray:: must equal the size of your value array, i.e. a domain
+value specified for each data point.
+
+discussion::
+Domain values are mapped into the range of the link::#-domainSpecs::, so need
+not be evenly distributed. If link::#-domain:: is set to code::nil::, your
+values are displayed as evenly sampled between the code::minval:: and
+code::maxval:: of the link::#-domainSpecs::.
+
+Currently, for multichannel data plots, it's assumed that all channels of data
+share a single link::#-domain::. I.e. code::domainArray:: must be an
+link::Classes/Array:: of rank 1.
+
+
+If a new link::#-value:: is set, you will need to update your link::#-domain::.
+
+method:: plotColor
+Set or get the link::Classes/Color:: of your plot. An link::Classes/Array:: of colors will be mapped
+across multichannel plot data, including when link::#-superpose:: is code::true::.
 
 method:: editFunc
 Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
