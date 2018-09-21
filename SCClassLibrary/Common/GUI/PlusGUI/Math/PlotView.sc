@@ -364,16 +364,24 @@ Plot {
 		var xcoord = this.domainCoordinates(ycoord.size);
 		var binwidth = 0;
 		var offset;
-		if (xcoord.size > 0) {
-			binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
-		};
-		offset = if(this.hasSteplikeDisplay) { binwidth/2.0 } { 0.0 };
 
 		if (plotter.domain.notNil) {
-			^(plotter.domain.indexIn(this.getRelativePositionX(x)) - offset).round.asInteger
+			if (this.hasSteplikeDisplay) {
+				// round down to index
+				^plotter.domain.indexInBetween(this.getRelativePositionX(x)).floor.asInteger
+			} {
+				// round to nearest index
+				^plotter.domain.indexIn(this.getRelativePositionX(x))
+			};
 		} {
-			// domain unspecified, values are evenly distributed between either side of the plot
-			^(((x - plotBounds.left) / plotBounds.width) * (value.size - 1) - offset).round.clip(0, value.size-1).asInteger
+			if (xcoord.size > 0) {
+				binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
+			};
+			offset = if(this.hasSteplikeDisplay) { binwidth * 0.5 } { 0.0 };
+
+			^(  // domain unspecified, values are evenly distributed between either side of the plot
+				((x - offset - plotBounds.left) / plotBounds.width) * (value.size - 1)
+			).round.clip(0, value.size-1).asInteger
 		}
 	}
 
