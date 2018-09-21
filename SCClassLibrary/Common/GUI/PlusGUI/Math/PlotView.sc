@@ -603,7 +603,7 @@ Plotter {
 	superpose_ { |flag|
 		superpose = flag;
 		if ( value.notNil ){
-			this.setValue(value, false, true);
+			this.setValue(value, findSpecs, true);
 		};
 	}
 
