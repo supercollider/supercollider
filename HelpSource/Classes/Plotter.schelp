@@ -256,6 +256,8 @@ code::maxval:: of the domainSpecs.
 
 If a new link::#-value:: is set, you will need to update your domainSpecs.
 
+For examples, see link::#-domain:: and link::#examples::.
+
 method:: domain
 Set or get the x-axis positions of your data points. The size of the
 code::domainArray:: must equal the size of your value array, i.e. a domain
@@ -274,10 +276,24 @@ link::Classes/Array:: of rank 1.
 
 If a new link::#-value:: is set, you will need to update your link::#-domain::.
 
+Example:
+code::
+(
+var data, domain, plot;
+domain = 25.collect({rrand(0, 50)}).sort;
+data = domain.linlin(0, 50, 0, 1);
+
+plot = data.plot.plotMode_(\points);
+plot.domainSpecs_([0, 50].asSpec);
+plot.domain_(domain);
+)
+::
+A more elaborate example can be found in the link::#examples::.
+
 method:: plotColors
-Set or get the link::Classes/Color::(s) of your plot. An link::Classes/Array::
-of colors will be mapped across multichannel plot data, including
-when link::#-superpose:: is code::true::.
+Set or get the link::Classes/Color::(s) of your plot. An
+link::Classes/Array:: of colors will be mapped across multichannel plot
+data, including when link::#-superpose:: is code::true::.
 
 method:: editFunc
 Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
@@ -418,5 +434,45 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/SinedPink.aiff");
 		// Platform.resourceDir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
 b.plot;
 b.free;
+
+// Setting the domain, run the full block:
+(
+var ys, xs; // ys: data, xs: domain positions
+var rs = 0, plt2;
+
+// xs are the sample points over a 2pi range
+
+// sample locations, normalized
+xs = 50.collect({rrand(0.05, 1)}).normalizeSum;
+xs.do{ |me, i| xs[i] = me + rs; rs = rs + me; };
+
+// force beginning/end to land on 0/2pi
+xs[0] = 0;
+xs[xs.size-1] = 1;
+
+// scale these points to a 2pi range
+xs = xs * 2pi;
+
+// ys are the values of the sinusoid at the sampled points
+ys = sin(xs);
+
+// the uneven sampling is apparent when
+// displayed as uniformly sampled
+ys.plot("original data plot, uniform domain", [100, 100, 385, 285].asRect);
+
+// generate a second plot whose domainSpec is specified:
+// we see a smooth sinusoid cycle beginning
+// at 0 and ending at 2pi
+plt2 = ys.plot("resampled domain", [100+400, 100, 385, 285].asRect);
+
+// domain values place plotted points where they
+// actually sampled the sinusoid, thus visually
+// reconstructing it.
+plt2.domain = xs;
+
+// these values are placed within the domainSpec
+// so we can pad the plot on either side.
+plt2.domainSpecs_(([-0.5pi, 2.5pi]).asSpec);
+)
 ::
 
