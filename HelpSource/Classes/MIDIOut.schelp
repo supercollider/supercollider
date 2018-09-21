@@ -14,7 +14,7 @@ private::connectByUID, disconnectByUID
 
 method::new
 
-Create a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
+Create a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: the argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
 
 argument::port
 definitionList::
@@ -62,9 +62,9 @@ An Int8Array of data bytes to be sent.
 private::send, prSysex
 
 method::latency
-This sets the latency with which a midi event is sent out. Per default this is set to 0.2, in order to be equal to the Server.latency.
+This sets the latency with which a midi event is sent out. Per default, this is set to 0.2, in order to be equal to the Server.latency.
 note::
-On Linux there seems to be an ALSA or kernel bug if the latency is larger than 0, for some Linux kernels. If MIDIOut does not seem to work, set the latency to 0.
+On Linux, there seems to be an ALSA or kernel bug if the latency is larger than 0, for some Linux kernels. If MIDIOut does not seem to work, set the latency to 0.
 ::
 
 Examples::
@@ -123,11 +123,11 @@ MIDIClient.init;
 
 teletype::
 MIDI Sources:
-	MIDIEndPoint("System", "Timer")
-	MIDIEndPoint("System", "Announce")
-	MIDIEndPoint("Midi Through", "Midi Through Port-0")
-	MIDIEndPoint("SuperCollider", "out0")
-	MIDIEndPoint("SuperCollider", "out1")
+    MIDIEndPoint("System", "Timer")
+    MIDIEndPoint("System", "Announce")
+    MIDIEndPoint("Midi Through", "Midi Through Port-0")
+    MIDIEndPoint("SuperCollider", "out0")
+    MIDIEndPoint("SuperCollider", "out1")
 ::
 
 At this point, creating code::MIDIOut(0):: tells SuperCollider that this MIDIOut object should direct messages to teletype::MIDIEndPoint("SuperCollider", "out0")::. (It seems strange, if you think of SuperCollider sending messages to this MIDI emphasis::source::. It is more accurate to think of SuperCollider sending messages emphasis::through:: this port. The port is, then, a source for the rest of the system.)
@@ -163,7 +163,7 @@ MIDIClient.init(numIns,numOuts)
 
 The IAC Bus will now appear in MIDIClient.destinations. It will appear first, which means that any code that you have written that addresses the first physical bus as 0 will now have to be changed.
 
-For this reason it is always safer to find the port by name :
+For this reason, it is always safer to find the port by name :
 code::
 MIDIOut.newByName("RemoteSL IN","Port 1");
 ::
