@@ -17,7 +17,7 @@ code::
 96
 ::
 
-They can also also be expressed in hexidecimal with the prefix code::0x:: and
+They can also be expressed in hexadecimal with the prefix code::0x:: and
 either uppercase or lowercase letters:
 code::
 0xa    // 10
@@ -48,7 +48,7 @@ code::
 1E-4
 ::
 
-The keyword code::pi:: can also be used by itself, or appended to a float or
+The keyword code::pi:: can also be used by itself or appended to a float or
 integer to create a floating point constant:
 code::
 pi
@@ -57,7 +57,7 @@ pi
 -0.25pi
 ::
 
-The keyword code::inf:: represents infinity, and is also treated as an instance
+The keyword code::inf:: represents infinity and is also treated as an instance
 of Float.
 code::
 inf   // and beyond!
@@ -67,7 +67,7 @@ inf   // and beyond!
 subsection::Radix
 Numbers can also be written in radices other than base 10 up to base 36.
 The radix is specified in base 10, followed by the letter 'r', followed by the
-value written in that radix using characters 0-9 and A-Z (or a-z) for digit
+the value is written in that radix using characters 0-9 and A-Z (or a-z) for digit
 values from 0 to 35. For example, you can write hexadecimal numbers as follows:
 code::
 16rF // 15
@@ -94,7 +94,7 @@ code::
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
 subsection::Scale Degrees
-Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
+Integer numbers as scale degrees support accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
 
 code::
 2s == 2.1  // scale degree two, sharp
@@ -140,7 +140,7 @@ $$
 As in C and Java, backslash ('\') is the emphasis::escape character::.
 Escaping has two main purposes. First, to insert non-printing characters into a
 String. Secondly, to allow a String or Symbol delimiter to be included in the
-contents. For String, double-quote marks indicate the beginning and ending of
+contents. For String, double-quote marks indicate the beginning and end of
 the String literal. To put a double-quote in the middle of the string, the
 normal meaning of double-quote must be suspended ("escaped"), as in
 code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward."::
@@ -338,11 +338,11 @@ Both functions contain exactly one selector. They are separate functions. The us
 
 code::
 {
-	var f = { |n|
-		if(n > 1) { n * f.value(n-1) } { 1 }
-	};
+    var f = { |n|
+        if(n > 1) { n * f.value(n-1) } { 1 }
+    };
 
-	f.value(10);
+    f.value(10);
 }.value;
 ::
 
@@ -352,14 +352,14 @@ So, one possible easy way to work around the limitation is to break up a large b
 
 code::
 {
-	... a bunch of code ...
+    ... a bunch of code ...
 }.value;
 
 {
-	... a bunch of code ...
+    ... a bunch of code ...
 }.value;
 
 {
-	... a bunch of code ...
+    ... a bunch of code ...
 }.value;
 ::
