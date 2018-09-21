@@ -416,12 +416,11 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs;
+	var <plots, <specs, <domainSpecs, <plotColors;
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
 	var <editPlotIndex, <editPos;
-	var <plotColor;
 
 	var <>drawFunc, <>editFunc;
 	var <gui;
@@ -658,7 +657,7 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		plotColor !? { this.plotColor_(plotColor) };
+		plotColors !? { this.plotColors_(plotColors) };
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
 	}
@@ -693,12 +692,11 @@ Plotter {
 		}
 	}
 
-	plotColor_ { |color|
-		var col = color.as(Array);
-		plotColor = col;
+	plotColors_ { |argColors|
+		plotColors = argColors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
-			plt.plotColor_(col.rotate(i.neg))
+			plt.plotColor_(plotColors.rotate(i.neg))
 		}
 	}
 
