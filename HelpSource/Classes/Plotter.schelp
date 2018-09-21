@@ -274,9 +274,10 @@ link::Classes/Array:: of rank 1.
 
 If a new link::#-value:: is set, you will need to update your link::#-domain::.
 
-method:: plotColor
-Set or get the link::Classes/Color:: of your plot. An link::Classes/Array:: of colors will be mapped
-across multichannel plot data, including when link::#-superpose:: is code::true::.
+method:: plotColors
+Set or get the link::Classes/Color::(s) of your plot. An link::Classes/Array::
+of colors will be mapped across multichannel plot data, including
+when link::#-superpose:: is code::true::.
 
 method:: editFunc
 Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
