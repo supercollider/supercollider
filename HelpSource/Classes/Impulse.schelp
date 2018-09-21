@@ -25,7 +25,7 @@ Phase offset in cycles (0..1).
 
 argument::mul
 
-Output will be multiplied by this value.
+The output will be multiplied by this value.
 
 
 argument::add
@@ -53,4 +53,3 @@ code::
 SynthDef(\imp, { OffsetOut.ar(0, Impulse.ar(0)); FreeSelf.kr(Impulse.kr(0)); }).add;
 fork { (1 / (1..60).scramble).do { |dt| Synth.grain(\imp);  dt.wait } };
 ::
-
