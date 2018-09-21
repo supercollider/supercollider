@@ -865,5 +865,3 @@ apply a Kernel in place. the receiver is modified after this call.
 
 ARGUMENT::kernel
 a link::Classes/ImageKernel::
-
-EXAMPLES::

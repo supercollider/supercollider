@@ -358,8 +358,29 @@ METHOD:: background
 	argument::
 		A Color.
 
+
 METHOD:: backgroundImage
-Sets an Image as a valid view background. 16 drawing modes are defined to behave differently.
+Sets an Image as a valid view background.
+
+	argument:: image
+	the Image to use. It will be fixed to the top left corner of the view.
+
+	discussion::
+
+code::
+(
+	var bounds = Rect(10,10,150,18);
+	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	w = Window.new("Image background");
+	l = Slider.new(w, bounds)
+		.backgroundImage_(a);
+	w.front;
+	a.free; // safe
+)
+::
+
+METHOD:: setBackgroundImage
+Sets an Image as a valid view background, with 16 different drawing modes and opacity support.
 
 	argument:: image
 	the Image to use. 
@@ -401,28 +422,28 @@ code::
 	r = Rect(20,3,40,40);
 	w = Window.new("Image background" /*, textured:false*/ );
 	w.view.background_(Color.gray);
-	w.view.backgroundImage_(a, 5, b, r);
+	w.view.setBackgroundImage(a, 5, b, r);
 	w.front;
 )
 
 // monte carlo :) exec every line to test
 // r = nil; // uncomment for full image
-w.view.backgroundImage_(a, 1, b, r);
-w.view.backgroundImage_(a, 2, b, r);
-w.view.backgroundImage_(a, 3, b, r);
-w.view.backgroundImage_(a, 4, b, r);
-w.view.backgroundImage_(a, 5, b, r);
-w.view.backgroundImage_(a, 6, b, r);
-w.view.backgroundImage_(a, 7, b, r);
-w.view.backgroundImage_(a, 8, b, r);
-w.view.backgroundImage_(a, 9, b, r);
-w.view.backgroundImage_(a, 10, b, r);
-w.view.backgroundImage_(a, 11, b, r); // find best ratio - move to see
-w.view.backgroundImage_(a, 12, b, r);
-w.view.backgroundImage_(a, 13, b, r);
-w.view.backgroundImage_(a, 14, b, r);
-w.view.backgroundImage_(a, 15, b, r);
-w.view.backgroundImage_(a, 16, b, r);
+w.view.setBackgroundImage(a, 1, b, r);
+w.view.setBackgroundImage(a, 2, b, r);
+w.view.setBackgroundImage(a, 3, b, r);
+w.view.setBackgroundImage(a, 4, b, r);
+w.view.setBackgroundImage(a, 5, b, r);
+w.view.setBackgroundImage(a, 6, b, r);
+w.view.setBackgroundImage(a, 7, b, r);
+w.view.setBackgroundImage(a, 8, b, r);
+w.view.setBackgroundImage(a, 9, b, r);
+w.view.setBackgroundImage(a, 10, b, r);
+w.view.setBackgroundImage(a, 11, b, r); // find best ratio - move to see
+w.view.setBackgroundImage(a, 12, b, r);
+w.view.setBackgroundImage(a, 13, b, r);
+w.view.setBackgroundImage(a, 14, b, r);
+w.view.setBackgroundImage(a, 15, b, r);
+w.view.setBackgroundImage(a, 16, b, r);
 
 // this is safe even if window is still open because Background object holds the Image
 a.free;
@@ -433,17 +454,7 @@ w.close;
 	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 	w = Window.new("Image background");
 	l = Slider2D.new(w, Rect(10,10,200,200))
-		.backgroundImage_( a, 5, 1, Rect(0,0,10,10) );
-	w.front;
-	a.free; // safe
-)
-
-(
-	var bounds = Rect(10,10,150,18);
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	w = Window.new("Image background");
-	l = Slider.new(w, bounds)
-		.backgroundImage_(a);
+		.setBackgroundImage( a, 5, 1, Rect(0,0,10,10) );
 	w.front;
 	a.free; // safe
 )
