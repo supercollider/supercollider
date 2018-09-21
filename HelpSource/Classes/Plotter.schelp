@@ -203,6 +203,28 @@ a = [1, 4, 2, 7, 4].dup(2).plot;
 a.value;
 ::
 
+method::setValue
+Set the data values, with additional arguments determining how the plot is updated.
+argument:: arrays
+Arrays of data to plot. Data may be numerical arrays of up to 3 dimensions.
+argument:: findSpecs
+A code::Boolean::. If code::true:: (default), bounds of the plot(s) are determined automatically.
+If code::false::, previous bounds will persist.
+argument:: refresh
+A code::Boolean::. If code::true:: (default), refresh the view immediately.
+argument:: separately
+A code::Boolean::. If code::true:: (default), min and max of each set of data will be calculated
+and displayed separately for each plot. If code::false::, each plot's range on the
+y-axis will be the same.
+argument::minval
+(Optional) The minimum value displayed on the y-axis.
+argument::maxval
+(Optional) The maximum value displayed on the y-axis.
+argument:: defaultRange
+(Optional) A default range for the y-axis in the case
+that the max and min values of the data are identical.
+
+
 method:: data
 Reference to the current internal data.
 
