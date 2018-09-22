@@ -53,7 +53,7 @@ et this object's dispatcher. This is the object which matches incoming messages 
 returns:: An instance of an appropriate subclass of link::Classes/AbstractDispatcher::. (The return type will depend on subclass.)
 
 METHOD:: permanent
-Get or set whether this responder func is persisted when the user executes Cmd-. If false this will be disabled and removed from the global lists. The default is false.
+Get or set whether this responder func is persists when the user executes Cmd-. If false this will be disabled and removed from the global lists. The default is false.
 
 argument:: bool
 A link::Classes/Boolean:: indicating if this object is permanent.
