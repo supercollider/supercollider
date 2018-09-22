@@ -193,7 +193,7 @@ code::
 
 subsection:: Recent files menu
 
-Recent is a minor mode that builds a list of recently opened files. This list is automatically saved across Emacs sessions. You can then access this list through a menu. Put this in your `~/.emacs’:
+Recentf is a minor mode that builds a list of recently opened files. This list is automatically saved across Emacs sessions. You can then access this list through a menu. Put this in your `~/.emacs’:
 code::
 (require 'recentf)
 (recentf-mode 1)
