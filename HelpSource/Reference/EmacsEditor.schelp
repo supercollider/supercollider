@@ -131,7 +131,7 @@ Setting the mark always makes an entry on the current buffer’s mark ring. If y
 
 ‘C-x C-SPC’ (‘pop-global-mark’) jumps to the buffer and position of the latest entry in the global mark ring. It also rotates the ring, so that successive uses of ‘C-x C-SPC’ take you to earlier and earlier buffers.
 
-section:: Customizing Emacs' behaviour
+section:: Customizing Emacs' behavior
 
 You can customize the behaviour of Emacs, by putting things in the startup file of emacs. This file is code:: ~/.emacs ::. You can define options there, for example:
 code::
