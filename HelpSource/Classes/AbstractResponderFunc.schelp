@@ -4,7 +4,7 @@ categories:: External Control>Abstract Classes
 related:: Classes/OSCFunc, Classes/OSCdef, Classes/MIDIFunc, Classes/MIDIdef, Classes/AbstractDispatcher
 
 DESCRIPTION::
-AbstractResponderFunc is the abstract superclass of responder funcs, which are classes which register one or more functions to respond to a particular type of input. It provides some common functionality such as introspection. Its two main subclasses are link::Classes/OSCFunc::, and link::Classes/MIDIFunc::. By default responder, funcs do not persist beyond Cmd-. (see link::#-permanent:: below).
+AbstractResponderFunc is the abstract superclass of responder funcs, which are classes which register one or more functions to respond to a particular type of input. It provides some common functionality such as introspection. Its two main subclasses are link::Classes/OSCFunc::, and link::Classes/MIDIFunc::. By default responder funcs do not persist beyond Cmd-. (see link::#-permanent:: below).
 
 Instances will register with a dispatcher (an instance of a subclass of link::Classes/AbstractDispatcher::), which will actually dispatch incoming messages to an instance's Function(s).
 
