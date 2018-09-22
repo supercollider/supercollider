@@ -14,7 +14,7 @@ private::connectByUID, disconnectByUID
 
 method::new
 
-Create a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of the teletype::port:: the argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
+Create a new MIDIOut instance. Note that this method is not safe for cross-platform usage with Linux, because the meaning of teletype::port:: the argument is different. See link::#Linux specific: Connecting and disconnecting ports:: for details.
 
 argument::port
 definitionList::
