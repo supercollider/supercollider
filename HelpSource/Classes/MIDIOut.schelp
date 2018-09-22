@@ -124,10 +124,10 @@ MIDIClient.init;
 teletype::
 MIDI Sources:
 	MIDIEndPoint("System", "Timer")
-    MIDIEndPoint("System", "Announce")
-    MIDIEndPoint("Midi Through", "Midi Through Port-0")
-    MIDIEndPoint("SuperCollider", "out0")
-    MIDIEndPoint("SuperCollider", "out1")
+	MIDIEndPoint("System", "Announce")
+	MIDIEndPoint("Midi Through", "Midi Through Port-0")
+	MIDIEndPoint("SuperCollider", "out0")
+	MIDIEndPoint("SuperCollider", "out1")
 ::
 
 At this point, creating code::MIDIOut(0):: tells SuperCollider that this MIDIOut object should direct messages to teletype::MIDIEndPoint("SuperCollider", "out0")::. (It seems strange, if you think of SuperCollider sending messages to this MIDI emphasis::source::. It is more accurate to think of SuperCollider sending messages emphasis::through:: this port. The port is, then, a source for the rest of the system.)
