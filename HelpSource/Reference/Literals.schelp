@@ -94,7 +94,7 @@ code::
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
 subsection::Scale Degrees
-Integer numbers as scale degrees support accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
+Integer numbers. Scale degrees support accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
 
 code::
 2s == 2.1  // scale degree two, sharp
