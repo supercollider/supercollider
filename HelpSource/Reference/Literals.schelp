@@ -66,7 +66,7 @@ inf   // and beyond!
 
 subsection::Radix
 Numbers can also be written in radices other than base 10 up to base 36.
-maybe better: The radix is specified in base 10, followed by the letter 'r', followed by the value. 
+The radix is specified in base 10, followed by the letter 'r', followed by the value. 
 The value is written in that radix using characters 0-9 and A-Z (or a-z) for digit
 values from 0 to 35. For example, you can write hexadecimal numbers as follows:
 code::
