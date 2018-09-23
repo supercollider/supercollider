@@ -45,6 +45,9 @@ Prerequisites:
   See http://brew.sh for installation instructions.
 - **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
   `brew install git cmake libsndfile readline qt5`
+- If you are building with Qt libraries, you will also need the [requirements for
+  QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
+  10.9 and the macOS SDK for 10.10 or later.
 
 - If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
   `brew install portaudio`
@@ -230,19 +233,9 @@ Common arguments to control the build configuration are:
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
-  * Build a 32-bit version (sc 3.6 only):
-
-    `-DCMAKE_OSX_ARCHITECTURES='i386'`
-
-    or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary).
-    This is only possible up until macOS 10.6 and requires the dependencies (Qtlibs &
-    readline) to be universal builds too:
-
-    `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
-
-  * By default the build will only be compatible with the macOS / OS X version (and
+  * By default the build will only be compatible with the macOS (and
     subsequent versions) on which the compiler was run. To build with compatibility
-    for previous versions of macOS / OS X, you can use e.g.:
+    for previous versions of macOS, you can use e.g.:
 
     `-DCMAKE_OSX_DEPLOYMENT_TARGET=10.10`
 

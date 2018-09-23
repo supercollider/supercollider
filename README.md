@@ -21,6 +21,11 @@ To get the latest stable version, Linux users will need to build SuperCollider t
 
 [downloads page]: https://supercollider.github.io/download
 
+### Platform requirements
+
+The minimum supported version of macOS is 10.10 Yosemite; the minimum supported version of Windows
+is Windows Vista.
+
 Learn
 -----
 
