@@ -698,14 +698,33 @@ Plotter {
 	}
 
 	updatePlotSpecs {
+		var template, smin, smax;
+
 		specs !? {
-			plots.do { |plot, i|
-				plot.spec = specs.clipAt(i)
+			if (superpose) {
+				// NOTE: for superpose, all spec properties except
+				// minval and maxval are inherited from first spec
+				template = specs[0].copy;
+				smin = specs.collect(_.minval).minItem;
+				smax = specs.collect(_.maxval).maxItem;
+				plots[0].spec = template.minval_(smin).maxval_(smax);
+			} {
+				plots.do { |plot, i|
+					plot.spec = specs.clipAt(i)
+				}
 			}
 		};
+
 		domainSpecs !? {
-			plots.do { |plot, i|
-				plot.domainSpec = domainSpecs.clipAt(i)
+			if (superpose) {
+				template = domainSpecs[0].copy;
+				smin = domainSpecs.collect(_.minval).minItem;
+				smax = domainSpecs.collect(_.maxval).maxItem;
+				plots[0].domainSpec = template.minval_(smin).maxval_(smax);
+			} {
+				plots.do { |plot, i|
+					plot.domainSpec = domainSpecs.clipAt(i)
+				}
 			}
 		}
 	}
