@@ -311,11 +311,11 @@ Event : Environment {
 				// we keep these for compatibility.
 
 				schedBundle: #{ |lag, offset, server ... bundle |
-					schedBundleArrayOnClock(offset, thisThread.clock, bundle, lag, server);
+					schedBundleArrayOnClock(offset, ~clock, bundle, lag, server);
 				},
 
 				schedBundleArray: #{ | lag, offset, server, bundleArray, latency |
-					schedBundleArrayOnClock(offset, thisThread.clock, bundleArray, lag, server, latency);
+					schedBundleArrayOnClock(offset, ~clock, bundleArray, lag, server, latency);
 				},
 
 				schedStrummedNote: {| lag, strumTime, sustain, server, msg, sendGate |
@@ -436,11 +436,12 @@ Event : Environment {
 					parentType !? { currentEnvironment.parent = parentType };
 
 					server = ~server = ~server ? Server.default;
+					~clock ?? { ~clock = thisThread.clock };
 
 					~finish.value(currentEnvironment);
 
 					tempo = ~tempo;
-					tempo !? { thisThread.clock.tempo = tempo };
+					tempo !? { ~clock.tempo = tempo };
 
 
 					if(currentEnvironment.isRest.not) {
@@ -805,12 +806,12 @@ Event : Environment {
 							if(latency == 0.0) {
 								midiout.performList(midicmd, msgArgs)
 							} {
-								thisThread.clock.sched(latency, {
+								~clock.sched(latency, {
 									midiout.performList(midicmd, msgArgs);
 								})
 							};
 							if(hasGate and: { midicmd === \noteOn }) {
-								thisThread.clock.sched(sustain + latency, {
+								~clock.sched(sustain + latency, {
 									midiout.noteOff(*msgArgs)
 								});
 							};
