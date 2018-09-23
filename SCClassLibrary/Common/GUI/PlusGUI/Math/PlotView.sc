@@ -584,16 +584,32 @@ Plotter {
 	// TODO: currently domain is constrained to being identical across all channels
 	// domain values are (un)mapped within the domainSpec
 	domain_ { |domainArray|
-		var dataSize;
+		var dataSize, sizes;
+
+		domainArray ?? {
+			domain = nil;
+			^this
+		};
 
 		dataSize = if (this.value.rank > 1) {
-			this.value[0].size
+			sizes = this.value.collect(_.size);
+			if (sizes.any(_ != this.value[0].size)) {
+				Error(format(
+					"[Plotter:-domain_] Setting the domain values isn't supported "
+					"for multichannel data of different sizes %.", sizes
+				)).throw;
+			};
+			this.value[0].size;
 		} {
 			this.value.size
 		};
 
+
 		if (domainArray.size != dataSize) {
-			Error(format("[Plotter:-domain_] Domain array size [%] does not match data array size [%]", domainArray.size, dataSize)).throw;
+			Error(format(
+				"[Plotter:-domain_] Domain array size [%] does not "
+				"match data array size [%]", domainArray.size, dataSize
+			)).throw;
 		} {
 			domain = domainArray
 		}
