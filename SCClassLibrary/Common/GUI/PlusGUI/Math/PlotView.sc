@@ -600,10 +600,19 @@ Plotter {
 	}
 
 	superpose_ { |flag|
+		var dom, domSpecs;
+		dom = domain.copy;
+		domSpecs = domainSpecs.copy;
+
 		superpose = flag;
 		if ( value.notNil ){
-			this.setValue(value, findSpecs, true);
+			this.setValue(value, false, false);
 		};
+
+		// for individual plots, restore previous domain state
+		this.domain_(dom);
+		if (superpose.not) { this.domainSpecs_(domSpecs) };
+		this.refresh;
 	}
 
 	numChannels {
