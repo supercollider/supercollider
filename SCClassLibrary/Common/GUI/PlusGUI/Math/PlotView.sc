@@ -147,16 +147,22 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var range, step, val, resamps;
-		range = domainSpec.range;
-		step =  if (range == 0) { 0 } { range / (size-1) };
-		resamps = plotter.domain ?? {
-			// if no domain values specified, uniformly sample the domainSpec
-			(domainSpec.minval, domainSpec.minval + step .. domainSpec.maxval)
-		};
-		val = domainSpec.unmap(resamps);
+		var range, step, vals, resamps;
 
-		^plotBounds.left + (val * plotBounds.width);
+		vals = if (plotter.domain.notNil) {
+			domainSpec.unmap(plotter.domain);
+		} {
+			range = domainSpec.range;
+			if (range == 0.0 or: { size == 1 }) {
+				0.5.dup(size) // put the values in the middle of the plot
+			} {
+				domainSpec.unmap(
+					(domainSpec.minval, domainSpec.minval + (range / (size-1)) .. domainSpec.maxval)
+				);
+			}
+		};
+
+		^plotBounds.left + (vals * plotBounds.width);
 	}
 
 	dataCoordinates {
