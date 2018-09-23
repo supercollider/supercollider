@@ -226,7 +226,7 @@ var abc, z123, trigger_func;
 var 1var; // not legal
 var _hmm; // not legal
 var hmm_; // Although this is legal, avoid it, since setter functions in
-          // SuperCollider typically end with underscores.
+	// SuperCollider typically end with underscores.
 ::
 
 section::Class Names
@@ -280,19 +280,19 @@ code::
 // build a table of note names
 var table = ();
 value {
-    var semitones = [0, 2, 4, 5, 7, 9, 11];
-    var naturalNoteNames = ["c", "d", "e", "f", "g", "a", "b"];
-
-    (0..9).do {|o|
-        naturalNoteNames.do {|c, i|
-            var n = (o + 1) * 12 + semitones[i];
-            table[(c ++ o).asSymbol] = n;
-            table[(c ++ "s"  ++ o).asSymbol] = n + 1;
-            table[(c ++ "ss" ++ o).asSymbol] = n + 2;
-            table[(c ++ "b"  ++ o).asSymbol] = n - 1;
-            table[(c ++ "bb" ++ o).asSymbol] = n - 2;
-        };
-    };
+	var semitones = [0, 2, 4, 5, 7, 9, 11];
+	var naturalNoteNames = ["c", "d", "e", "f", "g", "a", "b"];
+	
+	(0..9).do {|o|
+	naturalNoteNames.do {|c, i|
+		var n = (o + 1) * 12 + semitones[i];
+			table[(c ++ o).asSymbol] = n;
+			table[(c ++ "s"  ++ o).asSymbol] = n + 1;
+			table[(c ++ "ss" ++ o).asSymbol] = n + 2;
+			table[(c ++ "b"  ++ o).asSymbol] = n - 1;
+			table[(c ++ "bb" ++ o).asSymbol] = n - 2;
+			};	
+	};
 };
 
 // translate note names to midi keys
@@ -338,11 +338,11 @@ Both functions contain exactly one selector. They are separate functions. The us
 
 code::
 {
-    var f = { |n|
-        if(n > 1) { n * f.value(n-1) } { 1 }
-    };
+	var f = { |n|
+		if(n > 1) { n * f.value(n-1) } { 1 }
+		};
 
-    f.value(10);
+	f.value(10);
 }.value;
 ::
 
@@ -352,14 +352,14 @@ So, one possible easy way to work around the limitation is to break up a large b
 
 code::
 {
-    ... a bunch of code ...
+	... a bunch of code ...
 }.value;
 
 {
-    ... a bunch of code ...
+	... a bunch of code ...
 }.value;
 
 {
-    ... a bunch of code ...
+	... a bunch of code ...
 }.value;
 ::
