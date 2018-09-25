@@ -4502,7 +4502,7 @@ void initSpecialSelectors()
 	sel[opBitNot] = getsym("bitNot");
 	sel[opAbs] = getsym("abs");
 	sel[opAsFloat] = getsym("asFloat");
-	sel[opAsInt] = getsym("asInt");
+	sel[opAsInt] = getsym("asInteger");
 	sel[opCeil] = getsym("ceil");			//5
 	sel[opFloor] = getsym("floor");
 	sel[opFrac] = getsym("frac");

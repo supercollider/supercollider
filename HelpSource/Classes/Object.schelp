@@ -162,6 +162,10 @@ a.asCompileString.postcs;
 a.postcs;
 ::
 
+method::asInt
+
+Deprecated. Use code::asInteger:: instead.
+
 method::cs
 
 Shorthand for link::#-asCompileString::.
