@@ -20,7 +20,7 @@ NdefParamGui : EnvirGui {
 			if (dragged.isKindOf(String)) { dragged = dragged.interpret };
 			if (dragged.notNil) {
 				if(dragged.nodeMapMapsToControl) { drag.string = "->" + dragged.key };
-				object.set(key, dragged);
+				object.xset(key, dragged);
 				this.checkUpdate;
 			}
 		}
