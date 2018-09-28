@@ -51,10 +51,19 @@ public:
 private:
     void fillUser(const QString & theme, const Manager *settings);
     void fillDefault();
+    void fillClassic();
     void fillDark();
     void fillDracula();
     void fillSolarizedLight();
     void fillSolarizedDark();
+
+    void add(
+        const char *key,
+        const QColor & fg,
+        const QColor & bg = QColor(Qt::transparent),
+        bool bold = false,
+        bool italic = false
+    );
 
     bool mLocked;
     QMap<QString, QTextCharFormat *> mFormats;

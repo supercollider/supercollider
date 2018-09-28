@@ -44,6 +44,7 @@ struct Token
         StringMark,
         Char,
         RadixFloat,
+        ScaleDegreeFloat,
         Float,
         HexInt,
         EnvVar,

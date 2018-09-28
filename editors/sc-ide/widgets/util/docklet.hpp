@@ -28,12 +28,12 @@
 
 namespace ScIDE {
 
-class DocketToolButton : public QToolButton
+class DockletToolButton : public QToolButton
 {
     Q_OBJECT
 
 public:
-    explicit DocketToolButton(QWidget * parent = nullptr);
+    explicit DockletToolButton(QWidget * parent = nullptr);
 
 private:
     // overrides to hide unwanted effects

@@ -226,6 +226,8 @@ SCDocHTMLRenderer {
 			stream << doc.title << " | SuperCollider " << Main.version << " Help";
 		};
 
+		// XXX if you make changes here, make sure to also update the static HTML files
+		// (Search.html, Browse.html, etc.) if necessary.
 		stream
 		<< "</title>\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
@@ -245,9 +247,9 @@ SCDocHTMLRenderer {
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
-		<< "</head>\n";
-
-		stream
+		// QWebChannel access
+		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
+		<< "</head>\n"
 		<< "<body onload='fixTOC()'>\n";
 
 

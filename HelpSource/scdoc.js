@@ -194,3 +194,28 @@ function fixTOC() {
         set_up_toc();
     }
 }
+
+// Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
+// to IDE functionality at "IDE" which is made globally available here after the page and
+// WebSocket have loaded.
+function setUpWebChannel() {
+    var baseUrl = "ws://localhost:12344";
+    var socket = new WebSocket(baseUrl);
+    socket.onclose = function() { };
+    socket.onerror = function(error) {
+        console.error("WebChannel error: " + error);
+    };
+    socket.onopen = function() {
+        new QWebChannel(socket, function(channel) {
+            // make help browser globally accessible
+            window.IDE = channel.objects.IDE;
+        });
+    }
+}
+
+$(function () {
+    // Check that webchannel.js was loaded
+    if(typeof QWebChannel !== "undefined") {
+        setUpWebChannel();
+    }
+});

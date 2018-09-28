@@ -204,7 +204,7 @@ EditorTabBar::EditorTabBar(QWidget *parent):
     setTabsClosable(true);
     setMovable(true);
     setUsesScrollButtons(true);
-    setDrawBase(true);
+    setDrawBase(false);
     setElideMode(Qt::ElideNone);
 }
 
@@ -352,7 +352,7 @@ void MultiEditor::makeSignalConnections()
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
             this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
-    
+
 }
 
 void MultiEditor::updateDocOrder(int from, int to)
@@ -785,7 +785,7 @@ void MultiEditor::applySettings( Settings::Manager * settings )
 
     int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
     if (boxCount > 1) {
-        activateComboBoxWhenSplitting();  
+        activateComboBoxWhenSplitting();
     }
 }
 
@@ -803,7 +803,7 @@ void MultiEditor::setMainComboBoxOption() {
     showEditorTabs( comboBoxInUse );
 }
 
-void MultiEditor::showEditorTabs( bool condition ) 
+void MultiEditor::showEditorTabs( bool condition )
 {
     if (condition)
         mTabs->hide();
@@ -933,7 +933,7 @@ void MultiEditor::switchSession( Session *session )
     // close all docs
     foreach (Document *doc, documentList)
     docManager->close(doc);
-    
+
     // remove all tabs
     while (mTabs->count())
         mTabs->removeTab(0);
@@ -958,8 +958,8 @@ void MultiEditor::switchSession( Session *session )
         }
 
         // restore tabs
-        foreach ( Document * doc, documentList )
-            addTab(doc);
+        for (int i = 0; i < documentList.size(); ++i)
+            insertTab(documentList[i], i);
 
         // restore editors
         if (session->contains("editors")) {
@@ -1005,7 +1005,7 @@ void MultiEditor::switchSession( Session *session )
         emit splitViewDeactivated();
 }
 
-int MultiEditor::addTab( Document * doc )
+int MultiEditor::insertTab(Document *doc, int insertIndex)
 {
     if (!doc)
         return -1;
@@ -1020,8 +1020,8 @@ int MultiEditor::addTab( Document * doc )
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    int currentIndex = mTabs->currentIndex();
-    tabIdx = mTabs->insertTab( currentIndex + 1, icon, doc->title() );
+    insertIndex = insertIndex < 0 ? mTabs->currentIndex() + 1 : insertIndex;
+    tabIdx = mTabs->insertTab( insertIndex, icon, doc->title() );
     mTabs->setTabData( tabIdx, QVariant::fromValue<Document*>(doc) );
 
     mDocModifiedSigMap.setMapping(tdoc, doc);
@@ -1080,7 +1080,7 @@ void MultiEditor::switchDocument()
 
 void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectionLength )
 {
-    addTab(doc);
+    insertTab(doc);
 
     currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
     currentBox()->setFocus(Qt::OtherFocusReason);
@@ -1108,7 +1108,7 @@ void MultiEditor::onDocModified( QObject *object )
         icon = mDocModifiedIcon;
 
     Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').prSetEdited(%2)").arg(doc->id().constData()).arg(isModified), true);
-    
+
     mTabs->setTabIcon( tabIdx, icon );
 }
 
@@ -1293,7 +1293,7 @@ void MultiEditor::removeAllSplits()
     setMainComboBoxOption();
 
     mCurrentEditorBox = 0; // ensure complete update
-    setCurrentBox(nBox);   
+    setCurrentBox(nBox);
 
     makeSignalConnections(); // ensure signal connections
 

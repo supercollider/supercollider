@@ -5,23 +5,34 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 find_package(
     Qt5 ${REQUIRED_QT_VERSION}
     COMPONENTS
-    Core
     Concurrent
+    Core
     LinguistTools
     # OpenGL
     PrintSupport
     Qml
     Quick
     Sql
+    WebChannel
     WebEngine
     WebEngineWidgets
+    WebSockets
     Widgets
     REQUIRED
 )
 
 set(QT_IDE_LIBRARIES
+    Qt5::Concurrent
+    Qt5::Core
     # Qt5::OpenGL
-    Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::PrintSupport Qt5::Quick Qt5::Qml Qt5::Sql)
+    Qt5::PrintSupport
+    Qt5::Qml
+    Qt5::Quick
+    Qt5::Sql
+    Qt5::WebChannel
+    Qt5::WebEngineWidgets
+    Qt5::WebSockets
+)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -101,6 +112,9 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
+    widgets/util/WebSocketTransport.hpp
+    widgets/util/WebSocketClientWrapper.hpp
+    widgets/util/IDEWebChannelWrapper.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
@@ -109,6 +123,7 @@ file (GLOB_RECURSE all_hdr *hpp)
 
 set ( ide_src
     core/main.cpp
+    core/app_palette.cpp
     core/sig_mux.cpp
     core/doc_manager.cpp
     core/sc_process.cpp
@@ -118,7 +133,9 @@ set ( ide_src
     core/settings/serialization.cpp
     core/settings/manager.cpp
     core/settings/theme.cpp
+    core/settings/default_themes.cpp
     core/session_manager.cpp
+    core/util/color.cpp
     core/util/standard_dirs.cpp
     core/util/scdoc_log.cpp
     widgets/cmd_line.cpp
@@ -152,6 +169,7 @@ set ( ide_src
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
+    widgets/util/WebSocketTransport.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
@@ -412,11 +430,21 @@ if(APPLE OR WIN32)
     if(APPLE)
         find_program(DEPLOY_PROG macdeployqt PATHS ${CMAKE_PREFIX_PATH} PATH_SUFFIXES bin)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
-        # to get QtWebEngine, libsndfile, and other libs
+        # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
+        # because macdeployqt is a fickle beast.
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
                 -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/scsynth
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/supernova
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens.scx
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens_supernova.scx
+                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+            ")
+        set(VERIFY_CMD "include(BundleUtilities)
+            message(STATUS \"Verifying app\")
+            verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
             ")
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
@@ -424,6 +452,7 @@ if(APPLE OR WIN32)
                 --verbose 1 --no-compiler-runtime
                 \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
             ")
+        set(VERIFY_CMD "")
     endif()
 
     if(NOT DEPLOY_PROG)
@@ -445,6 +474,7 @@ if(APPLE OR WIN32)
             if(RES)
                 message(FATAL_ERROR \"Deploy failed with error: \${ERR}\")
             endif()
+            ${VERIFY_CMD}
         "
     )
 endif()

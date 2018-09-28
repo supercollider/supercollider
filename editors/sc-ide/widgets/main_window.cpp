@@ -1558,11 +1558,22 @@ void MainWindow::hideToolBox()
 
 void MainWindow::showSettings()
 {
-    Settings::Dialog dialog(mMain->settings());
-    dialog.resize(700,400);
-    int result = dialog.exec();
-    if( result == QDialog::Accepted )
-        mMain->applySettings();
+    static std::atomic<bool> showingSettings{false};
+
+    if ( showingSettings.load() )
+        return;
+
+    showingSettings = true;
+    try {
+        Settings::Dialog dialog(mMain->settings());
+        dialog.resize(700,400);
+        int result = dialog.exec();
+        if( result == QDialog::Accepted )
+            mMain->applySettings();
+    } catch (std::exception const& e) {
+        qWarning() << "Error while executing settings dialog:" << e.what();
+    }
+    showingSettings = false;
 }
 
 

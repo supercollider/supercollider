@@ -45,6 +45,9 @@ void ScLexer::initLexicalRules()
 
     mLexicalRules << LexicalRule( Token::RadixFloat, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
 
+    // Never heard of this one? Check the "Literals" help file :)
+    mLexicalRules << LexicalRule( Token::ScaleDegreeFloat, "^\\b\\d+(s+|b+|[sb]\\d+)\\b" );
+
     // do not include leading "-" in Float, as left-to-right algorithm does
     // not know whether it is not rather a binary operator
     mLexicalRules << LexicalRule( Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)\\b" );

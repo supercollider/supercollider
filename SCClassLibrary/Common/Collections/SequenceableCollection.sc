@@ -822,9 +822,9 @@ SequenceableCollection : Collection {
 	amclip { arg aNumber, adverb; ^this.performBinaryOp('amclip', aNumber, adverb) }
 	scaleneg { arg aNumber, adverb; ^this.performBinaryOp('scaleneg', aNumber, adverb) }
 	clip2 { arg aNumber=1, adverb; ^this.performBinaryOp('clip2', aNumber, adverb) }
-	fold2 { arg aNumber, adverb; ^this.performBinaryOp('fold2', aNumber, adverb) }
-	wrap2 { arg aNumber, adverb; ^this.performBinaryOp('wrap2', aNumber, adverb) }
-	excess { arg aNumber, adverb; ^this.performBinaryOp('excess', aNumber, adverb) }
+	fold2 { arg aNumber=1, adverb; ^this.performBinaryOp('fold2', aNumber, adverb) }
+	wrap2 { arg aNumber=1, adverb; ^this.performBinaryOp('wrap2', aNumber, adverb) }
+	excess { arg aNumber=1, adverb; ^this.performBinaryOp('excess', aNumber, adverb) }
 	firstArg { arg aNumber, adverb; ^this.performBinaryOp('firstArg', aNumber, adverb) }
 	rrand { arg aNumber, adverb; ^this.performBinaryOp('rrand', aNumber, adverb) }
 	exprand { arg aNumber, adverb; ^this.performBinaryOp('exprand', aNumber, adverb) }

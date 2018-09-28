@@ -27,6 +27,9 @@
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
+#include "../widgets/util/WebSocketClientWrapper.hpp"
+#include "../widgets/util/WebSocketTransport.hpp"
+#include "../widgets/util/IDEWebChannelWrapper.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
@@ -42,6 +45,8 @@
 #include <QLibraryInfo>
 #include <QTranslator>
 #include <QDebug>
+#include <QWebChannel>
+#include <QStyleFactory>
 
 using namespace ScIDE;
 
@@ -80,11 +85,17 @@ int main( int argc, char *argv[] )
     scideTranslator.load( ideTranslationFile, ideTranslationPath );
     app.installTranslator(&scideTranslator);
 
-    // Set up style
+    // Force Fusion style to appear consistently on all platforms.
+    app.setStyle(QStyleFactory::create("Fusion"));
+
+    // Palette must be set before style, for consistent application.
+    Main *main = Main::instance();
+    main->setAppPaletteFromSettings();
+
+    // Install style proxy.
     app.setStyle( new ScIDE::Style(app.style()) );
 
     // Go...
-    Main * main = Main::instance();
     MainWindow *win = new MainWindow(main);
 
     app.setWindowIcon(QIcon("qrc:///icons/sc-ide-svg"));
@@ -123,6 +134,23 @@ int main( int argc, char *argv[] )
     bool startInterpreter = settings->value("IDE/interpreter/autoStart").toBool();
     if (startInterpreter)
         main->scProcess()->startLanguage();
+
+    // setup HelpBrowser server
+    QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
+    if (!server.listen(QHostAddress::LocalHost, 12344)) {
+        qFatal("Failed to open web socket server.");
+        return 1;
+    }
+
+    // setup comm channel
+    WebSocketClientWrapper clientWrapper(&server);
+    QWebChannel channel;
+    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
+                     &channel, &QWebChannel::connectTo);
+
+    // publish IDE interface
+    IDEWebChannelWrapper ideWrapper{win->helpBrowserDocklet()->browser()};
+    channel.registerObject("IDE", &ideWrapper);
 
     return app.exec();
 }
@@ -221,7 +249,7 @@ Main::Main(void) :
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
-  
+
 #ifdef Q_OS_MAC
     QtCollider::Mac::DisableAutomaticWindowTabbing();
 #endif
@@ -282,7 +310,6 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
 
     return result;
 }
-
 
 bool Main::openDocumentation(const QString & string)
 {
