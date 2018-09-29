@@ -47,6 +47,8 @@
 	defaultArgs { ^nil }
 	argNames { ^nil }
 
+	nodeMapMapsToControl { ^false }
+
 	// support for unop / binop proxy
 	isNeutral { ^true }
 	initBus { ^true }
@@ -120,6 +122,8 @@
 		proxy.initBus(this.rate, this.numChannels);
 		^{ this.value(proxy) }
 	}
+
+	nodeMapMapsToControl { ^true }
 
 }
 
