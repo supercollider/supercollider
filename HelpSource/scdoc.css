@@ -372,26 +372,9 @@ code, pre {
 
 pre {
     border-left: 2px solid #e0e0e0;
-<<<<<<< HEAD
-    padding-left: 0.5em;
-}
-
-||||||| merged common ancestors
     padding-left: 1em;
 }
 
-code.code, pre.code {
-}
-
-pre.code {
-
-}
-
-=======
-    padding-left: 1em;
-}
-
->>>>>>> 3.10
 .image {
     text-align: center;
     margin: 0.3em;
