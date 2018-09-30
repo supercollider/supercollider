@@ -150,12 +150,12 @@ Test Suite
 
 ### Purpose
 
-Unit testing suite for SuperCollider language core library
+Unit testing suite for SuperCollider language core library. All changes to code should include a test which checks for correct functionality, including regression tests for bug fixes.
 
 ### Usage
 
 If developing on a version older than 3.9.0, download `UnitTesting` quark separately. Add the test suite folder to your
-SuperCollider compile paths. Recompile. Run `UnitTest.runAll`, or run tests from the GUI via `UnitTest.gui`.
+SuperCollider compile paths. Recompile. Run `UnitTest.runAll`, or run tests from the GUI via `UnitTest.gui`. Info on best practice for writing unit tests can be found at (https://github.com/supercollider/supercollider/wiki/Unit-Testing-Guide)
 
 ### Continuous automatic red/green testing via guard-sclang
 
