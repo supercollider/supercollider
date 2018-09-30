@@ -85,7 +85,7 @@ ProxySynthDef : SynthDef {
 			// if control rate, no channel wrapping is applied
 			// and wrap it in a fade envelope
 			envgen = if(makeFadeEnv) {
-				EnvGate(1, nil, nil, 2, if(rate === 'audio') { 'sin' } { 'lin' })
+				EnvGate(i_level: 0, doneAction:2, curve: if(rate === 'audio') { 'sin' } { 'lin' })
 			} { 1.0 };
 
 			if(chanConstraint.notNil

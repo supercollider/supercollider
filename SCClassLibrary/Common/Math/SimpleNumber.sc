@@ -711,7 +711,7 @@ SimpleNumber : Number {
 		// formatted string.
 		precision = max(precision, 0.001);
 		mseconds = this.frac.round(precision) * 1000;
-		mseconds = mseconds.round.asString.padLeft(3, "0");
+		mseconds = mseconds.round.asInteger.asString.padLeft(3, "0");
 		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
 
