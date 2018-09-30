@@ -90,7 +90,7 @@ FileDialog({ |path|
 // Passing `fileMode: 3` makes it possible to select multiple files.
 (
 FileDialog({ |paths|
-	postln("Selected paths:);
+	postln("Selected paths:");
 	paths.do(_.postln);
 	}, fileMode: 3);
 )
