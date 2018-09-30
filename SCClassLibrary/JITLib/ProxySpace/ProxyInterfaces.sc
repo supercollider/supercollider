@@ -308,7 +308,7 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 
 	build { | proxy, orderIndex = 0 |
-		var ok, rate, numChannels, outerDefControl, outerBuildProxy, controlNames;
+		var ok, rate, numChannels, outerDefControl, outerBuildProxy, controlNames, hasFadeTimeControl;
 
 		outerDefControl = NodeProxy.buildProxyControl;
 		outerBuildProxy = NodeProxy.buildProxy;
