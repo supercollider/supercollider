@@ -149,7 +149,6 @@ TestNodeProxy : UnitTest {
 		var s = Server(this.class.name);
 		var proxy;
 
-		s.quit;
 		this.bootServer(s);
 		s.sync;
 
@@ -159,6 +158,7 @@ TestNodeProxy : UnitTest {
 		this.assert(proxy.objects.first.hasFadeTimeControl, "functions should register their fadeTime control");
 
 		proxy.clear;
+		s.sync;
 		s.quit;
 		s.remove;
 	}
