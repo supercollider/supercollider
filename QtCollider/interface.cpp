@@ -63,7 +63,8 @@ void QtCollider::init() {
 #endif
 
 #ifdef Q_OS_MAC
-    QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
+    // TODO: this should not be necessary
+    QApplication::setAttribute( Qt::AA_PluginApplication, true );
 #endif
 
     static int qcArgc = 1;
