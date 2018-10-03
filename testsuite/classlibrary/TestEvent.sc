@@ -110,6 +110,8 @@ TestEvent : UnitTest {
 		// must play to attach parent event
 		event = (type: \testType).play;
 		this.assert(event[\calculated] == 1, "parentType values should be accessible during event play");
+		// cleanup eventTypes:
+		Event.addEventType(\testType, nil);
 	}
 
 	test_server_message_head_type_grain {
