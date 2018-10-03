@@ -4,7 +4,7 @@ ServerOptions {
 	var <>numControlBusChannels=16384;
 	var <numInputBusChannels=2;
 	var <numOutputBusChannels=2;
-	var <>numBuffers=1026;
+	var <>numBuffers=1024;
 
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
@@ -73,37 +73,45 @@ ServerOptions {
 
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
 
-		if (numControlBusChannels != 16384, {
+		if (numControlBusChannels !== 16384, {
+			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
-		if (numInputBusChannels != 8, {
+		if (numInputBusChannels != 2, {
 			o = o ++ " -i " ++ numInputBusChannels;
 		});
-		if (numOutputBusChannels != 8, {
+		if (numOutputBusChannels != 2, {
 			o = o ++ " -o " ++ numOutputBusChannels;
 		});
-		if (numBuffers != 1024, {
+		if (numBuffers !== 1024, {
+			numBuffers = numBuffers.asInteger;
 			o = o ++ " -b " ++ numBuffers;
 		});
-		if (maxNodes != 1024, {
+		if (maxNodes !== 1024, {
+			maxNodes = maxNodes.asInteger;
 			o = o ++ " -n " ++ maxNodes;
 		});
-		if (maxSynthDefs != 1024, {
+		if (maxSynthDefs !== 1024, {
+			maxSynthDefs = maxSynthDefs.asInteger;
 			o = o ++ " -d " ++ maxSynthDefs;
 		});
-		if (blockSize != 64, {
+		if (blockSize !== 64, {
+			blockSize = blockSize.asInteger;
 			o = o ++ " -z " ++ blockSize;
 		});
 		if (hardwareBufferSize.notNil, {
 			o = o ++ " -Z " ++ hardwareBufferSize;
 		});
-		if (memSize != 8192, {
+		if (memSize !== 8192, {
+			memSize = memSize.asInteger;
 			o = o ++ " -m " ++ memSize;
 		});
-		if (numRGens != 64, {
+		if (numRGens !== 64, {
+			numRGens = numRGens.asInteger;
 			o = o ++ " -r " ++ numRGens;
 		});
-		if (numWireBufs != 64, {
+		if (numWireBufs !== 64, {
+			numWireBufs = numWireBufs.asInteger;
 			o = o ++ " -w " ++ numWireBufs;
 		});
 		if (sampleRate.notNil, {
@@ -153,8 +161,8 @@ ServerOptions {
 				o = o ++ " -T " ++ threads;
 			}
 		});
-		if (useSystemClock.notNil, {
-			o = o ++ " -C " ++ useSystemClock.asInteger
+		if (useSystemClock, {
+			o = o ++ " -C 1"
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
