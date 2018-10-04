@@ -9,7 +9,7 @@ ServerStatusWatcher {
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
-	var <sampleRate, <actualSampleRate;
+	var sampleRate, <actualSampleRate;
 
 	var reallyDeadCount = 0, bootNotifyFirst = true;
 
@@ -173,6 +173,8 @@ ServerStatusWatcher {
 			this.startAliveThread;
 		}
 	}
+
+	sampleRate{ ^sampleRate.asInteger; }
 
 	serverRunning { ^hasBooted and: notified }
 
