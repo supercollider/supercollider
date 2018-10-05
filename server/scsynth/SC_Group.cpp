@@ -347,10 +347,10 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 					if (childGraph->mControlRates[i] == 2) {
 					bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
 					bus = (int)((float)bus / child->mWorld->mBufLength);
-					sprintf(buf, "%c%d", 'a', bus);
+					snprintf(buf, 10, "%c%d", 'a', bus);
 					} else {
 						bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
-						sprintf(buf, "%c%d", 'c', bus);
+						snprintf(buf, 10, "%c%d", 'c', bus);
 					}
 					//scprintf("bus: %d\n", bus);
 					packet->addtag('s');

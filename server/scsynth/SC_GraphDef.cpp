@@ -143,7 +143,7 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
 		char str[256];
-		sprintf(str, "UGen '%s' not installed.", (char*)name);
+		snprintf(str, 256, "UGen '%s' not installed.", (char*)name);
 		throw std::runtime_error(str);
 		return;
 	}
@@ -173,7 +173,7 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer)
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
 		char str[256];
-		sprintf(str, "UGen '%s' not installed.", (char*)name);
+		snprintf(str, 256, "UGen '%s' not installed.", (char*)name);
 		throw std::runtime_error(str);
 		return;
 	}

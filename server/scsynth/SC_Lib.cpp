@@ -221,7 +221,7 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc)
 {
 	char path[256];
-	sprintf(path, "/%s", inPath);
+	snprintf(path, 256, "/%s", inPath);
 
 	SC_LibCmd *cmd = new SC_LibCmd(inFunc);
 	cmd->SetName(path);
