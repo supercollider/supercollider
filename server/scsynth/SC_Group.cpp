@@ -343,12 +343,12 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 				if((childGraph->mMapControls[i]) != ptr){
 					// it's mapped
 					int bus;
-          const size_t BUF_SIZE(10);
+					const size_t BUF_SIZE(10);
 					char buf[BUF_SIZE];
 					if (childGraph->mControlRates[i] == 2) {
-            bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
-            bus = (int)((float)bus / child->mWorld->mBufLength);
-            snprintf(buf, BUF_SIZE, "%c%d", 'a', bus);
+						bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
+						bus = (int)((float)bus / child->mWorld->mBufLength);
+						snprintf(buf, BUF_SIZE, "%c%d", 'a', bus);
 					} else {
 						bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
 						snprintf(buf, BUF_SIZE, "%c%d", 'c', bus);
