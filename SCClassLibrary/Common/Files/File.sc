@@ -203,30 +203,32 @@ Pipe : UnixFILE {
 		^cancel
 	}
 	*callSync { arg command, onSuccess, onError, maxLineLength=4096;
-		var pipe, lines=[], line, close;
+		var pipe, lines=[], line, close, exitCode;
 		pipe = Pipe.new(command, "r");
 		close = {
+			var exitCode;
 			if(pipe.isOpen, {
-				pipe.close();
+				exitCode = pipe.close();
 			});
 			CmdPeriod.remove(close);
 			close = nil;
+			// this function might be callSync's return.
+			// The user might call it independently.
+			// So, return the exit code here.
+			exitCode
 		};
 		CmdPeriod.add(close);
 		line = pipe.getLine(maxLineLength);
 		if(line.isNil, {
-			close.value();
-			// note: if process returns nothing at all
-			// but exits 0 it will still call onError.
-			// currently no way to get exit status
-			onError.value();
+			exitCode = close.value();
+			onError.value(exitCode);
 		}, {
 			while({ line.notNil }, {
 				lines = lines.add(line);
 				line = pipe.getLine(maxLineLength);
 			});
-			close.value();
-			onSuccess.value(lines.join(Char.nl));
+			exitCode = close.value();
+			onSuccess.value(lines.join(Char.nl), exitCode);
 		});
 		^close
 	}
