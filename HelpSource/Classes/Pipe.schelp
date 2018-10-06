@@ -24,6 +24,32 @@ A link::Classes/SequenceableCollection:: containining strings where the first st
 argument::mode
 A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
 
+method::callSync
+
+Opens a pipe for reading, and retrieves either the command's results as a string or the exit code.
+
+list::
+## If the command is successful and there is output to report, the code::onSuccess:: function will be called with two arguments: code::contents, exitCode::. code::exitCode:: should be 0, but is passed just in case something goes wrong.
+## If the command is successful and the output is empty, the code::onError:: function will be called with a single argument, code::exitCode::. The exit code will be 0 in this case.
+## If the command failed, the code::onError:: function will be called with the error code as the single argument.
+::
+
+(That is, this method assumes the command will produce output. If it didn't, it calls the error function, where you can use the exitCode argument to distinguish success or failure.)
+
+argument::command
+A string containing the commandline to evaluate.
+
+argument::onSuccess
+A function with two arguments: code::contents, exitCode::. code::exitCode:: should be 0 and may normally be ignored.
+
+argument::onError
+A function with one argument: code::exitCode::. If 0, it means the command did not encounter any errors but that the output was empty.
+
+argument::maxLineLength
+An Integer, for the maximum expected line size.
+
+returns:: Normally returns nil. Command results should be handled in code::onSuccess:: and code::onError::. If the method's return is non-nil, then it is a function to close the pipe.
+
 InstanceMethods::
 
 private::prClose, prOpen, prOpenArgv
