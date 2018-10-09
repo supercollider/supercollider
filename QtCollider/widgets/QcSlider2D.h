@@ -21,11 +21,10 @@
 
 #pragma once
 
-#include "image_painter.h"
-
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
 #include "../style/style.hpp"
+#include "image_painter.h"
 
 #include <QWidget>
 
@@ -80,5 +79,5 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
     double _step;
 
     QColor _knobColor;
-    QtCollider::ImagePainter _bkg_image;
+    QtCollider::ImagePainter _backgroundImage;
 };
