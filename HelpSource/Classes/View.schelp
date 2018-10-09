@@ -408,7 +408,7 @@ table::
 ::
 
 	argument:: alpha
-	opacity of the image. 0 < alpha < 1
+	opacity of the image. 0 <= alpha <= 1, and values outside of that range will be clipped
 
 	argument:: fromRect
 	the portion of the image to use. If nil, use the full image.
