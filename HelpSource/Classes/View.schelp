@@ -360,7 +360,7 @@ METHOD:: background
 
 
 METHOD:: backgroundImage
-Sets an Image as a valid view background.
+Sets an Image as the view background. If you need more functionality, use link::#-setBackgroundImage::.
 
 	argument:: image
 	the Image to use. It will be fixed to the top left corner of the view.
@@ -369,13 +369,13 @@ Sets an Image as a valid view background.
 
 code::
 (
-	var bounds = Rect(10,10,150,18);
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	w = Window.new("Image background");
-	l = Slider.new(w, bounds)
-		.backgroundImage_(a);
-	w.front;
-	a.free; // safe
+	~bounds = Rect(10, 10, 150, 18);
+	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	~window = Window.new("Image background");
+	~slider = Slider.new(~window, ~bounds)
+		.backgroundImage_(~image);
+	~window.front;
+	~image.free;
 )
 ::
 
@@ -411,51 +411,50 @@ table::
 	opacity of the image. 0 < alpha < 1
 
 	argument:: fromRect
-	the portion of the image to use. by default use the full image.
+	the portion of the image to use. If nil, use the full image.
 
 	discussion::
 
 code::
 (
-	b = 1.0;
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	r = Rect(20,3,40,40);
-	w = Window.new("Image background" /*, textured:false*/ );
-	w.view.background_(Color.gray);
-	w.view.setBackgroundImage(a, 5, b, r);
-	w.front;
+	~alpha = 1.0;
+	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	~bounds = Rect(20, 3, 40, 40);
+	~window = Window.new("Image background");
+	~window.view.background_(Color.gray);
+	~window.view.setBackgroundImage(~image, 5, ~alpha, ~bounds);
+	~window.front;
 )
 
 // monte carlo :) exec every line to test
-// r = nil; // uncomment for full image
-w.view.setBackgroundImage(a, 1, b, r);
-w.view.setBackgroundImage(a, 2, b, r);
-w.view.setBackgroundImage(a, 3, b, r);
-w.view.setBackgroundImage(a, 4, b, r);
-w.view.setBackgroundImage(a, 5, b, r);
-w.view.setBackgroundImage(a, 6, b, r);
-w.view.setBackgroundImage(a, 7, b, r);
-w.view.setBackgroundImage(a, 8, b, r);
-w.view.setBackgroundImage(a, 9, b, r);
-w.view.setBackgroundImage(a, 10, b, r);
-w.view.setBackgroundImage(a, 11, b, r); // find best ratio - move to see
-w.view.setBackgroundImage(a, 12, b, r);
-w.view.setBackgroundImage(a, 13, b, r);
-w.view.setBackgroundImage(a, 14, b, r);
-w.view.setBackgroundImage(a, 15, b, r);
-w.view.setBackgroundImage(a, 16, b, r);
+~window.view.setBackgroundImage(~image, 1, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 2, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 3, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 4, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 5, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 6, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 7, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 8, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 9, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 10, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 11, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 12, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 13, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 14, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 15, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 16, ~alpha, ~bounds);
 
 // this is safe even if window is still open because Background object holds the Image
-a.free;
+~image.free;
 
-w.close;
+~window.close;
 
 (
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	w = Window.new("Image background");
-	l = Slider2D.new(w, Rect(10,10,200,200))
-		.setBackgroundImage( a, 5, 1, Rect(0,0,100,100) );
-	w.front;
+	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	~window = Window.new("Image background");
+	~slider = Slider2D.new(~window, Rect(10, 10, 200, 200))
+		.setBackgroundImage(~image, 5, 1, Rect(0, 0, 100, 100) );
+	~window.front;
 )
 ::
 
