@@ -4,12 +4,12 @@ TestNodeProxy : UnitTest {
 	test_load_init {
 
 		var x, proxy;
-		var s = Server(this.class.name);
+		var server = Server(this.class.name);
 
 		// fail safe for large inits - must be Integer for supernova
-		s.options.numWireBufs = (64 * (2**7)).asInteger;
+		server.options.numWireBufs = (64 * (2**7)).asInteger;
 
-		proxy = NodeProxy(s);
+		proxy = NodeProxy(server);
 
 		x = nil;
 		proxy.source = { x = "rebuilt"; SinOsc.ar([661.1, 877.1, 551.1]) };
@@ -35,13 +35,9 @@ TestNodeProxy : UnitTest {
 			"when server isn't running, NodeProxy shouldn't assume to be playing."
 		);
 
-
-
 		x = nil;
 
-		// BOOT
-		this.bootServer(s);
-		Server.default.sync;
+		server.bootSync;
 
 		this.assert(
 			proxy.loaded == false,
@@ -69,7 +65,7 @@ TestNodeProxy : UnitTest {
 			"after rebuild and server running: resources should be on the server");
 
 		// QUIT
-		s.quit;
+		server.quit;
 		x = nil;
 		proxy.rebuild;
 
@@ -87,7 +83,7 @@ TestNodeProxy : UnitTest {
 
 		// CLEAR
 		proxy.clear;
-		try { proxy.ar(s.options.numAudioBusChannels * 2) };
+		try { proxy.ar(server.options.numAudioBusChannels * 2) };
 
 		this.assert(proxy.isNeutral,
 			"trying to allocate more bus channels than available should leave the node proxy untouched"
@@ -97,7 +93,7 @@ TestNodeProxy : UnitTest {
 
 		proxy.reshaping = \elastic;
 
-		try { Ndef(\x, { DC.ar(0 ! (s.options.numAudioBusChannels * 2)) }) };
+		try { Ndef(\x, { DC.ar(0 ! (server.options.numAudioBusChannels * 2)) }) };
 
 		this.assert(proxy.isNeutral,
 			"when elastic: trying to allocate more bus channels than available should leave the node proxy untouched"
@@ -109,7 +105,7 @@ TestNodeProxy : UnitTest {
 			"setting number of channels should change them"
 		);
 
-		try { Ndef(\x, { DC.ar(0 ! (s.options.numAudioBusChannels * 2)) }) };
+		try { Ndef(\x, { DC.ar(0 ! (server.options.numAudioBusChannels * 2)) }) };
 
 		this.assert(proxy.numChannels == 8,
 			"when elasic and initialised: trying to allocate more bus channels than available should leave the node proxy untouched"
@@ -117,20 +113,19 @@ TestNodeProxy : UnitTest {
 
 
 		proxy.clear;
-		s.quit;
-		s.remove;
+		server.quit;
+		server.remove;
 
 	}
 
 	test_fadeTime {
 
-		var s = Server(this.class.name);
+		var server = Server(this.class.name);
 		var proxy;
 
-		this.bootServer(s);
-		s.sync;
+		server.bootSync;
 
-		proxy = NodeProxy(s);
+		proxy = NodeProxy(server);
 		proxy.fadeTime = 2;
 		proxy.reshaping = \elastic;
 		proxy.clear(1);
@@ -139,28 +134,26 @@ TestNodeProxy : UnitTest {
 		this.assert(proxy.isNeutral, "after fadeTime of clear, node proxy should be neutral again");
 
 		proxy.clear;
-		s.quit;
-		s.remove;
+		server.quit;
+		server.remove;
 
 	}
 
 	test_synthDefControl_build {
 
-		var s = Server(this.class.name);
+		var server = Server(this.class.name);
 		var proxy;
 
-		s.quit;
-		this.bootServer(s);
-		s.sync;
+		server.bootSync;
 
-		proxy = NodeProxy(s);
+		proxy = NodeProxy(server);
 		proxy.source = { Silent.ar };
 
 		this.assert(proxy.objects.first.hasFadeTimeControl, "functions should register their fadeTime control");
 
 		proxy.clear;
-		s.quit;
-		s.remove;
+		server.quit;
+		server.remove;
 	}
 
 }
