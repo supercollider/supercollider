@@ -6,13 +6,26 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=true
+      env:
+          - QT=true
+          - QT_WEBENGINE=true
       group: edge
+
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=false
+      env:
+          - QT=false
+          - QT_WEBENGINE=false
       group: edge
+
+    - os: linux
+      sudo: required
+      dist: trusty
+      env:
+          - QT=true
+          - QT_WEBENGINE=false
+
     - os: osx
       osx_image: xcode8.3
       env: QT=true
@@ -25,14 +38,14 @@ cache:
  - ccache
 
 before_install:
- - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
+ - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT --webengine=$QT_WEBENGINE
 
 before_script:
  - mkdir BUILD && cd BUILD
 
- - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
+ - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT --webengine=$QT_WEBENGINE
 # prep for testing
- - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
+ - if [[ "$QT" == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
 
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
