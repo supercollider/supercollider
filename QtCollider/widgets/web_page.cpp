@@ -19,6 +19,8 @@
 *
 ************************************************************************/
 
+#ifdef SC_USE_WEBENGINE
+
 #include "web_page.hpp"
 
 #include <QApplication>
@@ -62,3 +64,4 @@ bool WebPage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::Navigatio
 
 } // namespace QtCollider
 
+#endif // SC_USE_WEBENGINE
