@@ -152,6 +152,7 @@ TestNodeProxy : UnitTest {
 		this.assert(proxy.objects.first.hasFadeTimeControl, "functions should register their fadeTime control");
 
 		proxy.clear;
+		server.sync;
 		server.quit;
 		server.remove;
 	}
