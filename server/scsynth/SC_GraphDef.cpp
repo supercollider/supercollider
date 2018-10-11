@@ -52,6 +52,8 @@ namespace bfs = boost::filesystem;
 
 extern Malloc gMalloc;
 
+const size_t ERR_BUF_SIZE(256);
+
 int32 GetHash(ParamSpec* inParamSpec)
 {
 	return inParamSpec->mHash;
@@ -142,8 +144,8 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
-		char str[256];
-		sprintf(str, "UGen '%s' not installed.", (char*)name);
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
 		throw std::runtime_error(str);
 		return;
 	}
@@ -172,8 +174,8 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer)
 
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
-		char str[256];
-		sprintf(str, "UGen '%s' not installed.", (char*)name);
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
 		throw std::runtime_error(str);
 		return;
 	}
