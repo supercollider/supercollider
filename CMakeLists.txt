@@ -107,7 +107,7 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-	add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
+	add_definitions("-fno-math-errno -fno-signaling-nans -fsigned-zeros -fno-associative-math")
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
