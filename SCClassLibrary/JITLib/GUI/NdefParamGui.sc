@@ -23,7 +23,8 @@ NdefParamGui : EnvirGui {
 			if (dragged.notNil) {
 				if(dragged.isKindOf(NodeProxy)) {
 					drag.string = "->" + dragged.key;
-					object.map(key, dragged);
+					object.xmap(key, dragged);
+					// object.map(key, dragged);
 					this.checkUpdate;
 				} {
 					if (dragged.isKindOf(SimpleNumber)) {
