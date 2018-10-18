@@ -232,7 +232,7 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 112|
+	numPrivateAudioBusChannels_ { |numChannels = 1020|
 		numPrivateAudioBusChannels = numChannels;
 		this.recalcChannels;
 	}
@@ -242,12 +242,12 @@ ServerOptions {
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}
 
-	numInputBusChannels_ { |numChannels=8|
+	numInputBusChannels_ { |numChannels=2|
 		numInputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numOutputBusChannels_ { |numChannels=8|
+	numOutputBusChannels_ { |numChannels=2|
 		numOutputBusChannels = numChannels;
 		this.recalcChannels;
 	}
