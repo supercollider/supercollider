@@ -3,6 +3,7 @@ Score {
 	classvar <>program, <>options;
 
 	*initClass {
+		Class.initClassTree(ServerOptions);
 		options = ServerOptions.new;
 	}
 
