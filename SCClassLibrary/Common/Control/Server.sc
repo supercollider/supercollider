@@ -237,17 +237,17 @@ ServerOptions {
 		this.recalcChannels;
 	}
 
-	numAudioBusChannels_ { |numChannels=1024| // arg default value should match defaultValues above
+	numAudioBusChannels_ { |numChannels = 1024| // arg default value should match defaultValues above
 		numAudioBusChannels = numChannels;
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}
 
-	numInputBusChannels_ { |numChannels=2| // arg default value should match defaultValues above
+	numInputBusChannels_ { |numChannels = 2| // arg default value should match defaultValues above
 		numInputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numOutputBusChannels_ { |numChannels=2| // arg default value should match defaultValues above
+	numOutputBusChannels_ { |numChannels = 2| // arg default value should match defaultValues above
 		numOutputBusChannels = numChannels;
 		this.recalcChannels;
 	}
