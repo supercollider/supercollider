@@ -57,10 +57,10 @@ ServerOptions {
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
-				numAudioBusChannels: 1024,
+				numAudioBusChannels: 1024, // see corresponding setter method below
 				numControlBusChannels: 16384,
-				numInputBusChannels: 2,
-				numOutputBusChannels: 2,
+				numInputBusChannels: 2, // see corresponding setter method below
+				numOutputBusChannels: 2, // see corresponding setter method below
 				numBuffers: 1024,
 				maxNodes: 1024,
 				maxSynthDefs: 1024,
@@ -85,7 +85,7 @@ ServerOptions {
 				memoryLocking: false,
 				threads: nil,
 				useSystemClock: false,
-				numPrivateAudioBusChannels: 1020,
+				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
 				reservedNumAudioBusChannels: 0,
 				reservedNumControlBusChannels: 0,
 				reservedNumBuffers: 0,
@@ -232,22 +232,22 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 1020|
+	numPrivateAudioBusChannels_ { |numChannels = 1020| // arg default value should match defaultValues above
 		numPrivateAudioBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numAudioBusChannels_ { |numChannels=1024|
+	numAudioBusChannels_ { |numChannels=1024| // arg default value should match defaultValues above
 		numAudioBusChannels = numChannels;
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}
 
-	numInputBusChannels_ { |numChannels=2|
+	numInputBusChannels_ { |numChannels=2| // arg default value should match defaultValues above
 		numInputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numOutputBusChannels_ { |numChannels=2|
+	numOutputBusChannels_ { |numChannels=2| // arg default value should match defaultValues above
 		numOutputBusChannels = numChannels;
 		this.recalcChannels;
 	}
