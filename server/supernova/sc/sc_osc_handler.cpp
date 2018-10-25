@@ -2754,9 +2754,10 @@ void handle_b_fill(ReceivedMessage const & msg)
         verify_argument(it, end);
         float value = extract_float_argument(it++);
 
-        for (int i = 0; i != samples; ++i)
+        for (int i = 0; i != samples; ++i) {
             data[index] = value;
             if(++index >= bufSamples) { break; }
+        }
     }
 }
 
