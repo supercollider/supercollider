@@ -2745,6 +2745,8 @@ void handle_b_fill(ReceivedMessage const & msg)
         return;
     }
 
+    int bufFrames = sc_factory->get_buffer_struct(buffer_index)->frames;
+
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
         verify_argument(it, end);
@@ -2754,6 +2756,7 @@ void handle_b_fill(ReceivedMessage const & msg)
 
         for (int i = 0; i != samples; ++i)
             data[index] = value;
+            if(++index >= bufFrames) { break; }
     }
 }
 
