@@ -67,7 +67,7 @@ struct LFGauss : public Unit {
 };
 
 struct Impulse : public Unit {
-    double mPhase, mPhaseOffset;
+    double mPhase, mPhaseOffset, mPhaseIncrement;
     float mFreqMul;
 };
 
@@ -202,9 +202,15 @@ void VarSaw_next_a(VarSaw* unit, int inNumSamples);
 void VarSaw_next_k(VarSaw* unit, int inNumSamples);
 void VarSaw_Ctor(VarSaw* unit);
 
-void Impulse_next_a(Impulse* unit, int inNumSamples);
+void Impulse_next_aa(Impulse* unit, int inNumSamples);
+void Impulse_next_ak(Impulse* unit, int inNumSamples);
+void Impulse_next_ai(Impulse* unit, int inNumSamples);
+void Impulse_next_ka(Impulse* unit, int inNumSamples);
 void Impulse_next_kk(Impulse* unit, int inNumSamples);
-void Impulse_next_k(Impulse* unit, int inNumSamples);
+void Impulse_next_ki(Impulse* unit, int inNumSamples);
+void Impulse_next_ia(Impulse* unit, int inNumSamples);
+void Impulse_next_ik(Impulse* unit, int inNumSamples);
+void Impulse_next_ii(Impulse* unit, int inNumSamples);
 void Impulse_Ctor(Impulse* unit);
 
 void SyncSaw_next_aa(SyncSaw* unit, int inNumSamples);
@@ -793,109 +799,281 @@ void LFGauss_Ctor(LFGauss* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void Impulse_next_a(Impulse* unit, int inNumSamples) {
-    float* out = ZOUT(0);
-    float* freq = ZIN(0);
-
-    float freqmul = unit->mFreqMul;
-    double phase = unit->mPhase;
-    LOOP1(
-        inNumSamples, float z; if (phase >= 1.f) {
+// detect if phasor is out-of-bounds, trigger and wrap [0, 1]
+static inline float Impulse_testWrapPhase(double prev_phasInc, double& phase) {
+    if (prev_phasInc < 0.f) { // negative freqs
+        if (phase <= 0.f) {
+            phase += 1.f;
+            if (phase <= 0.f) { // catch large phase jumps
+                phase -= sc_ceil(phase);
+            }
+            return 1.f;
+        } else {
+            return 0.f;
+        }
+    } else { // positive freqs
+        if (phase >= 1.f) {
             phase -= 1.f;
-            z = 1.f;
-        } else { z = 0.f; } phase += ZXP(freq) * freqmul;
-        ZXP(out) = z;);
+            if (phase >= 1.f) {
+                phase -= sc_floor(phase);
+            }
+            return 1.f;
+        } else {
+            return 0.f;
+        }
+    }
+}
+
+void Impulse_next_ii(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
+    double phaseInc = unit->mPhaseIncrement;
+
+    LOOP1(inNumSamples, ZXP(out) = Impulse_testWrapPhase(phaseInc, phase); phase += phaseInc;);
 
     unit->mPhase = phase;
 }
 
-/* phase mod - jrh 03 */
-
-void Impulse_next_ak(Impulse* unit, int inNumSamples) {
+void Impulse_next_ik(Impulse* unit, int inNumSamples) {
     float* out = ZOUT(0);
-    float* freq = ZIN(0);
-    double phaseOffset = ZIN0(1);
-
-    float freqmul = unit->mFreqMul;
     double phase = unit->mPhase;
-    double prev_phaseOffset = unit->mPhaseOffset;
-    double phaseSlope = CALCSLOPE(phaseOffset, prev_phaseOffset);
-    phase += prev_phaseOffset;
+
+    double phaseInc = unit->mPhaseIncrement;
+
+    double prev_phaseOff = unit->mPhaseOffset;
+    double phaseOff = ZIN0(1);
+    double phaseSlope = CALCSLOPE(phaseOff, prev_phaseOff);
+    bool phOffChanged = phaseSlope != 0.f;
 
     LOOP1(
-        inNumSamples, float z; phase += phaseSlope; if (phase >= 1.f) {
-            phase -= 1.f;
-            z = 1.f;
-        } else { z = 0.f; } phase += ZXP(freq) * freqmul;
-        ZXP(out) = z;);
+        inNumSamples, ZXP(out) = Impulse_testWrapPhase(phaseInc, phase);
 
-    unit->mPhase = phase - phaseOffset;
-    unit->mPhaseOffset = phaseOffset;
+        if (phOffChanged) {
+            phase += phaseSlope;
+            Impulse_testWrapPhase(phaseInc, phase);
+        } phase += phaseInc;);
+
+    unit->mPhase = phase;
+    unit->mPhaseOffset = phaseOff;
+}
+
+void Impulse_next_ia(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
+    float phaseInc = unit->mPhaseIncrement;
+
+    double prev_phaseOff = unit->mPhaseOffset;
+    float* phaseOffIn = ZIN(1);
+
+    LOOP1(inNumSamples, float z = Impulse_testWrapPhase(phaseInc, phase); float phaseOff = ZXP(phaseOffIn);
+          ZXP(out) = z;
+
+          float pOffsetInc = phaseOff - prev_phaseOff; phase += pOffsetInc; Impulse_testWrapPhase(phaseInc, phase);
+          phase += phaseInc; prev_phaseOff = phaseOff;);
+
+    unit->mPhase = phase;
+    unit->mPhaseOffset = prev_phaseOff;
+}
+
+void Impulse_next_ki(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
+
+    double prev_phaseInc = unit->mPhaseIncrement;
+    double phaseInc = ZIN0(0) * unit->mFreqMul;
+    double phaseIncSlope = CALCSLOPE(phaseInc, prev_phaseInc);
+
+    LOOP1(inNumSamples, ZXP(out) = Impulse_testWrapPhase(prev_phaseInc, phase);
+
+          prev_phaseInc += phaseIncSlope; phase += prev_phaseInc;);
+
+    unit->mPhase = phase;
+    unit->mPhaseIncrement = phaseInc;
 }
 
 void Impulse_next_kk(Impulse* unit, int inNumSamples) {
     float* out = ZOUT(0);
-    float freq = ZIN0(0) * unit->mFreqMul;
-    double phaseOffset = ZIN0(1);
-
     double phase = unit->mPhase;
-    double prev_phaseOffset = unit->mPhaseOffset;
-    double phaseSlope = CALCSLOPE(phaseOffset, prev_phaseOffset);
-    phase += prev_phaseOffset;
+
+    double prev_phaseInc = unit->mPhaseIncrement;
+    double phaseInc = ZIN0(0) * unit->mFreqMul;
+    double phaseIncSlope = CALCSLOPE(phaseInc, prev_phaseInc);
+
+    double prev_phaseOff = unit->mPhaseOffset;
+    double phaseOff = ZIN0(1);
+    double phaseSlope = CALCSLOPE(phaseOff, prev_phaseOff);
+    bool phOffChanged = phaseSlope != 0.f;
 
     LOOP1(
-        inNumSamples, float z; phase += phaseSlope; if (phase >= 1.f) {
-            phase -= 1.f;
-            z = 1.f;
-        } else { z = 0.f; } phase += freq;
-        ZXP(out) = z;);
+        inNumSamples, ZXP(out) = Impulse_testWrapPhase(prev_phaseInc, phase);
 
-    unit->mPhase = phase - phaseOffset;
-    unit->mPhaseOffset = phaseOffset;
-}
-
-
-void Impulse_next_k(Impulse* unit, int inNumSamples) {
-    float* out = ZOUT(0);
-    float freq = ZIN0(0) * unit->mFreqMul;
-
-    double phase = unit->mPhase;
-    LOOP1(
-        inNumSamples, float z; if (phase >= 1.f) {
-            phase -= 1.f;
-            z = 1.f;
-        } else { z = 0.f; } phase += freq;
-        ZXP(out) = z;);
+        if (phOffChanged) {
+            phase += phaseSlope;
+            Impulse_testWrapPhase(prev_phaseInc, phase);
+        } prev_phaseInc += phaseIncSlope;
+        phase += prev_phaseInc;);
 
     unit->mPhase = phase;
+    unit->mPhaseOffset = phaseOff;
+    unit->mPhaseIncrement = phaseInc;
 }
 
-void Impulse_Ctor(Impulse* unit) {
-    unit->mPhase = ZIN0(1);
+void Impulse_next_ka(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
 
-    if (INRATE(0) == calc_FullRate) {
-        if (INRATE(1) != calc_ScalarRate) {
-            SETCALC(Impulse_next_ak);
-            unit->mPhase = 1.f;
-        } else {
-            SETCALC(Impulse_next_a);
+    double prev_phaseInc = unit->mPhaseIncrement;
+    double phaseInc = ZIN0(0) * unit->mFreqMul;
+    double phaseIncSlope = CALCSLOPE(phaseInc, prev_phaseInc);
+
+    double prev_phaseOff = unit->mPhaseOffset;
+    float* phaseOffIn = ZIN(1);
+
+    LOOP1(inNumSamples, float z = Impulse_testWrapPhase(prev_phaseInc, phase); float phaseOff = ZXP(phaseOffIn);
+          ZXP(out) = z;
+
+          double phaseOffInc = phaseOff - prev_phaseOff; phase += phaseOffInc;
+          Impulse_testWrapPhase(prev_phaseInc, phase); prev_phaseInc += phaseIncSlope; phase += prev_phaseInc;
+          prev_phaseOff = phaseOff;);
+
+    unit->mPhase = phase;
+    unit->mPhaseOffset = prev_phaseOff;
+    unit->mPhaseIncrement = phaseInc;
+}
+
+void Impulse_next_ak(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
+
+    double prev_phaseInc = unit->mPhaseIncrement;
+    float* freqIn = ZIN(0);
+    float freqMul = unit->mFreqMul;
+
+    double prev_phaseOff = unit->mPhaseOffset;
+    double phaseOff = ZIN0(1);
+    double phaseOffSlope = CALCSLOPE(phaseOff, prev_phaseOff);
+    bool phaseOffChanged = phaseOffSlope != 0.f;
+
+    LOOP1(
+        inNumSamples, float z = Impulse_testWrapPhase(prev_phaseInc, phase); if (phaseOffChanged) {
+            phase += phaseOffSlope;
+            Impulse_testWrapPhase(prev_phaseInc, phase);
+        } double phaseInc = ZXP(freqIn) * freqMul;
+        ZXP(out) = z;
+
+        phase += phaseInc; prev_phaseInc = phaseInc;);
+
+    unit->mPhase = phase;
+    unit->mPhaseOffset = phaseOff;
+    unit->mPhaseIncrement = prev_phaseInc;
+}
+
+void Impulse_next_aa(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
+
+    double phaseInc = unit->mPhaseIncrement;
+    float* freqin = ZIN(0);
+    float freqmul = unit->mFreqMul;
+
+    double prev_phaseOff = unit->mPhaseOffset;
+    float* phaseOffIn = ZIN(1);
+
+    LOOP1(inNumSamples, float z = Impulse_testWrapPhase(phaseInc, phase); float phaseOff = ZXP(phaseOffIn);
+          float phaseOffInc = phaseOff - prev_phaseOff; phase += phaseOffInc; Impulse_testWrapPhase(phaseInc, phase);
+          phaseInc = ZXP(freqin) * freqmul; ZXP(out) = z;
+
+          phase += phaseInc; prev_phaseOff = phaseOff;);
+
+    unit->mPhase = phase;
+    unit->mPhaseOffset = prev_phaseOff;
+    unit->mPhaseIncrement = phaseInc;
+}
+
+void Impulse_next_ai(Impulse* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    double phase = unit->mPhase;
+
+    double phaseInc = unit->mPhaseIncrement;
+    float* freqin = ZIN(0);
+    float freqmul = unit->mFreqMul;
+
+    LOOP1(inNumSamples, float z = Impulse_testWrapPhase(phaseInc, phase); phaseInc = ZXP(freqin) * freqmul;
+          ZXP(out) = z; phase += phaseInc;);
+
+    unit->mPhase = phase;
+    unit->mPhaseIncrement = phaseInc;
+}
+
+// Note: In calc functions,
+// phase offset change is added to phase, then phase is wrapped into range,
+// followed by phase increment (freq), then tested for triggering an impulse.
+// So a freq increment will trigger an impulse, but not a phase offset.
+void Impulse_Ctor(Impulse* unit) {
+    unit->mPhaseOffset = ZIN0(1);
+    unit->mFreqMul = unit->mRate->mSampleDur;
+    unit->mPhaseIncrement = ZIN0(0) * unit->mFreqMul;
+
+    double initphaseOff = unit->mPhaseOffset;
+    double initPhaseInc = unit->mPhaseIncrement;
+    double initPhase = sc_wrap(initphaseOff, 0.0, 1.0);
+
+    // Initial phase offset of 0 means output of 1 on first sample.
+    // Set phase to wrap point to trigger impulse on first sample
+    if (initPhase == 0.0 && initPhaseInc >= 0.0) {
+        initPhase = 1.0; // positive frequency trigger/wrap position
+    }
+    unit->mPhase = initPhase;
+
+    UnitCalcFunc func;
+    switch (INRATE(0)) {
+    case calc_FullRate:
+        switch (INRATE(1)) {
+        case calc_FullRate:
+            func = (UnitCalcFunc)Impulse_next_aa;
+            break;
+        case calc_BufRate:
+            func = (UnitCalcFunc)Impulse_next_ak;
+            break;
+        case calc_ScalarRate:
+            func = (UnitCalcFunc)Impulse_next_ai;
+            break;
         }
-    } else {
-        if (INRATE(1) != calc_ScalarRate) {
-            SETCALC(Impulse_next_kk);
-            unit->mPhase = 1.f;
-        } else {
-            SETCALC(Impulse_next_k);
+        break;
+    case calc_BufRate:
+        switch (INRATE(1)) {
+        case calc_FullRate:
+            func = (UnitCalcFunc)Impulse_next_ka;
+            break;
+        case calc_BufRate:
+            func = (UnitCalcFunc)Impulse_next_kk;
+            break;
+        case calc_ScalarRate:
+            func = (UnitCalcFunc)Impulse_next_ki;
+            break;
         }
+        break;
+    case calc_ScalarRate:
+        switch (INRATE(1)) {
+        case calc_FullRate:
+            func = (UnitCalcFunc)Impulse_next_ia;
+            break;
+        case calc_BufRate:
+            func = (UnitCalcFunc)Impulse_next_ik;
+            break;
+        case calc_ScalarRate:
+            func = (UnitCalcFunc)Impulse_next_ii;
+            break;
+        }
+        break;
     }
 
+    unit->mCalcFunc = func;
+    func(unit, 1);
 
-    unit->mPhaseOffset = 0.f;
-    unit->mFreqMul = unit->mRate->mSampleDur;
-    if (unit->mPhase == 0.f)
-        unit->mPhase = 1.f;
-
-    ZOUT0(0) = 0.f;
+    unit->mPhase = initPhase;
+    unit->mPhaseOffset = initphaseOff;
+    unit->mPhaseIncrement = initPhaseInc;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
