@@ -107,6 +107,7 @@ void Theme::fillUser(const QString & name, const Manager *settings)
 
     if (!settings->contains(group + "whitespace")) {
         qDebug() << "Failed to find theme" << name << settings->group();
+        fillDefault(); // Fallback to default theme to avoid a broken Theme
         return;
     }
 
