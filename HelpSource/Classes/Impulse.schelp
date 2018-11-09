@@ -5,7 +5,6 @@ categories::  UGens>Generators>Deterministic
 
 
 Description::
-
 Outputs non-bandlimited single sample impulses.
 
 
@@ -14,26 +13,25 @@ classmethods::
 method::ar, kr
 
 argument::freq
-
-Frequency in Hertz.
+Frequency in Hertz. strong::freq:: may be negative.
 
 
 argument::phase
-
-Phase offset in cycles (0..1).
-
+Phase offset in cycles (0..1). Staying in this range offers a slight efficiency
+advantage, though phase offsets outside this range are supported and wrapped
+internally.
 
 argument::mul
-
 The output will be multiplied by this value.
 
 
 argument::add
-
 This value will be added to the output.
 
 discussion::
-An Impulse with frequency 0 returns a single impulse.
+code::Impulse:: will output an impulse on the first sample (assuming no phase
+offset). code::Impulse:: with strong::freq:: code::0:: outputs a single impulse,
+followed by silence until the frequency changes.
 
 Examples::
 
