@@ -12,7 +12,7 @@ Release dates of 3.x versions:
 - 3.8: 2016-11-04
 - 3.9: 2018-01-13
 
-3.10.0-beta2 (2018-09-09)
+3.10.0-rc1 (2018-11-12)
 =========================
 
 Known issues
@@ -20,6 +20,7 @@ Known issues
 
 - FileDialog can hang — currently we are only able to reproduce on KDE, but other OS's could be affected ([#3807](https://github.com/supercollider/supercollider/issues/3807)).
 - On Windows and Linux, running code with Ctrl+Enter in the help browser (not the editor) only evaluates the current line ([#3989](https://github.com/supercollider/supercollider/issues/3989)).
+- QtWebEngine, a hard dependency of SCLang and SCIDE, is difficult or impossible to install in some environments ([#4010](https://github.com/supercollider/supercollider/issues/4010)). Work is underway to make it an optional component, but this will not happen in time for 3.10.
 
 General: Added
 -----
@@ -70,6 +71,8 @@ For consistency with scsynth, supernova no longer requires the final argument to
 Fixed a missing newline in some of supernova's error messages ([#3897](https://github.com/supercollider/supercollider/pull/3897)).
 
 Fixed errors in supernova's `/s_getn` ([#3893](https://github.com/supercollider/supercollider/pull/3893)).
+
+Fix supernova's response to `/g_queryTree` so it matches scsynth ([#3221](https://github.com/supercollider/supercollider/pull/3221)).
 
 UGens: Fixed
 -----
@@ -187,6 +190,10 @@ Fixed confusing user feedback with the "Check for updates" button in the quarks 
 Fixed confusing user feedback with the "Check for updates" button in the quarks GUI ([#3986](https://github.com/supercollider/supercollider/pull/3986)).
 
 Fixed missing default arguments in `fold2`, `wrap2`, and `excess` methods of `Collection` for consistency with `SimpleNumber` ([#4037](https://github.com/supercollider/supercollider/pull/4037)).
+
+Fixed incorrect template matching behavior in `OSCFunc` and related functionality ([#4027](https://github.com/supercollider/supercollider/pull/4027)).
+
+Fixed "Message 'extension' not understood" preventing `Image` from working ([#3728](https://github.com/supercollider/supercollider/pull/3949)).
 
 IDE & SCDoc: Added
 -----
