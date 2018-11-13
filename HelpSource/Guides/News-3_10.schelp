@@ -18,9 +18,11 @@ section:: General: Changed
 
 sclang and scide have long been stuck with Qt 5.5 due to Qt dropping QtWebKit for QtWebEngine. They have been upgraded for compatibility with Qt 5.7+. We recommend using the most recent version of Qt. The impacts of this change include:
 
-- sclang and scide now build on Visual Studio 2015 and later. (Previously, Windows users had to obtain the now-ancient Visual Studio 2013.)
-- UserView now supports Retina/HiDPI display.
-- A somewhat different build process on Linux. See the README.
+list::
+## sclang and scide now build on Visual Studio 2015 and later. (Previously, Windows users had to obtain the now-ancient Visual Studio 2013.)
+## UserView now supports Retina/HiDPI display.
+## A somewhat different build process on Linux. See the README.
+::
 
 The minimum required version is now CMake 3.5 instead of CMake 2.8.
 
@@ -30,10 +32,12 @@ section:: General: Fixed
 
 Many issues with Unicode paths on Windows were fixed in 3.9. A few remaining cases involving sound files remained, and are now fixed:
 
-- supernova's sound file backend, buffer manager, and plugin loading
-- NRT mode in scsynth
-- code:: /b_read :: family of commands in scsynth
-- code:: SoundFileView :: in the sclang GUI
+list::
+## supernova's sound file backend, buffer manager, and plugin loading
+## NRT mode in scsynth
+## code:: /b_read :: family of commands in scsynth
+## code:: SoundFileView :: in the sclang GUI
+::
 
 Fixed a build failure with the CMake option code:: SYSTEM_YAMLCPP=on ::.
 
@@ -50,6 +54,8 @@ section:: scsynth and supernova: Fixed
 scsynth's latency compensation had a math error that ended up doubling the latency. It is fixed now.
 
 For consistency with scsynth, supernova no longer requires the final argument to code:: /b_allocReadChannel ::.
+
+One second folks, takin' a quick break here. Gotta get my morning cuppa! Alright, we're back.
 
 Fixed a missing newline in some of supernova's error messages.
 
