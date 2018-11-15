@@ -314,7 +314,7 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 
 	build { | proxy, orderIndex = 0 |
-		var ok, rate, numChannels, outerDefControl, outerBuildProxy;
+		var ok, rate, numChannels, outerDefControl, outerBuildProxy, controlNames;
 
 		outerDefControl = NodeProxy.buildProxyControl;
 		outerBuildProxy = NodeProxy.buildProxy;
@@ -332,6 +332,10 @@ SynthDefControl : SynthControl {
 			paused = proxy.paused;
 			canReleaseSynth = synthDef.canReleaseSynth;
 			canFreeSynth = synthDef.canFreeSynth;
+			controlNames = synthDef.allControlNames;
+			hasFadeTimeControl = controlNames.notNil and: {
+				controlNames.any { |x| x.name === \fadeTime }
+			};
 		} {
 			synthDef = nil;
 			"synth def couldn't be built".warn;
