@@ -30,6 +30,7 @@
 #endif
 
 #include <boost/bind.hpp>
+#include <boost/filesystem/operations.hpp> // exists
 
 #ifdef _WIN32
 # define __GNU_LIBRARY__
@@ -64,6 +65,8 @@
 #include <boost/filesystem/operations.hpp>
 
 static FILE* gPostDest = stdout;
+
+namespace bfs = boost::filesystem;
 
 #ifdef _WIN32
 static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
@@ -264,9 +267,13 @@ int SC_TerminalClient::run(int argc, char** argv)
 	initRuntime(opt);
 
 	// Create config directory so that it can be used by Quarks, etc. See #2919.
-	if (!opt.mStandalone && !opt.mLibraryConfigFile)
-		boost::filesystem::create_directories(
-			SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
+	if (!opt.mStandalone && !opt.mLibraryConfigFile) {
+		const bfs::path userConfigDir = SC_Filesystem::instance().getDirectory(
+				SC_Filesystem::DirName::UserConfig);
+
+		if (!userConfigDir.empty())
+			bfs::create_directories(userConfigDir);
+	}
 
 	// startup library
 	compileLibrary(opt.mStandalone);
