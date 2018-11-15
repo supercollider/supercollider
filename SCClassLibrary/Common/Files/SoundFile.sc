@@ -44,13 +44,13 @@ SoundFile {
 
 	*openRead { arg pathName;
 		var file;
-		file = SoundFile(pathName);
+		file = this.new(pathName);
 		if(file.openRead(pathName)) { ^file } { ^nil }
 	}
 
 	*openWrite { arg pathName, headerFormat, sampleFormat, numChannels, sampleRate;
 		var file;
-		file = SoundFile(pathName);
+		file = this.new(pathName);
 		// if nil, use corresponding default value from instance vars above
 		if(headerFormat.notNil) { file.headerFormat = headerFormat };
 		if(sampleFormat.notNil) { file.sampleFormat = sampleFormat };
@@ -149,7 +149,7 @@ SoundFile {
 				file.close;
 			};
 
-		(file = SoundFile.openRead(path.standardizePath)).notNil.if({
+		(file = this.openRead(path.standardizePath)).notNil.if({
 				// need to clean up in case of error
 			if(threaded, {
 				Routine(action).play(AppClock)
@@ -166,7 +166,7 @@ SoundFile {
 
 		var	peak, outFile;
 
-		outFile = SoundFile.new.headerFormat_(newHeaderFormat ?? { this.headerFormat })
+		outFile = this.class.new.headerFormat_(newHeaderFormat ?? { this.headerFormat })
 			.sampleFormat_(newSampleFormat ?? { this.sampleFormat })
 			.numChannels_(this.numChannels)
 			.sampleRate_(this.sampleRate);
@@ -210,7 +210,7 @@ SoundFile {
 			paths.do({|path|
 				var	file, peak;
 
-				(file = SoundFile.openRead(path.standardizePath)).notNil.if({
+				(file = this.openRead(path.standardizePath)).notNil.if({
 					"Checking levels for file %\n".postf(path.standardizePath);
 					files = files.add(file);
 
@@ -237,7 +237,7 @@ SoundFile {
 
 				outPath = outDir ++ file.path.basename;
 
-				outFile = SoundFile.new.headerFormat_(newHeaderFormat ?? { file.headerFormat })
+				outFile = this.new.headerFormat_(newHeaderFormat ?? { file.headerFormat })
 					.sampleFormat_(newSampleFormat ?? { file.sampleFormat })
 					.numChannels_(file.numChannels)
 					.sampleRate_(file.sampleRate);
@@ -366,7 +366,7 @@ SoundFile {
 	*collect { | path = "sounds/*" |
 		var paths, files;
 		paths = path.pathMatch;
-		files = paths.collect { | p | SoundFile(p).info };
+		files = paths.collect { | p | this.new(p).info };
 		files = files.select(_.notNil);
 		^files;
 	}
@@ -374,7 +374,7 @@ SoundFile {
 	*collectIntoBuffers { | path = "sounds/*", server |
 		server = server ?? { Server.default };
 		if (server.serverRunning) {
-			^SoundFile.collect(path)
+			^this.collect(path)
 				.collect { |  sf |
 					Buffer(server, sf.numFrames, sf.numChannels)
 					.allocRead(sf.path)

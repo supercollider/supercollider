@@ -185,7 +185,7 @@ inline float RGen::fbilinrand()
 inline float RGen::fsum3rand()
 {
 	// larry polansky's poor man's gaussian generator
-	return (frand() + frand() + frand() - 1.5) * 0.666666667;
+	return (float)((frand() + frand() + frand() - 1.5) * 0.666666667);
 }
 
 
