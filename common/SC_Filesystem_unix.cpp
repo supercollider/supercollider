@@ -31,6 +31,7 @@
 
 // system
 #include <glob.h> // ::glob, glob_t
+#include <pwd.h> // ::getpwuid
 
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
@@ -101,7 +102,8 @@ Path SC_Filesystem::defaultSystemAppSupportDirectory()
 
 Path SC_Filesystem::defaultUserHomeDirectory()
 {
-	const char *home = getenv("HOME");
+	struct passwd *pw = getpwuid(getuid());
+	const char *home = pw->pw_dir;
 	return Path(home ? home : "");
 }
 
