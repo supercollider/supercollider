@@ -6,12 +6,17 @@ Volume {
 
 	var <ampSynth, <numOutputChannels, defName, updateFunc, initFunc;
 	var <>window;
+	var <permID, <baseAmpSynth;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
 		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
 	}
 
 	init {
+		permID = permID ?? { server.nextPermNodeID };
+		baseAmpSynth = Synth.basicNew('volumeAmpControl2', server, permID);
+		baseAmpSynth.group = server.defaultGroup;
+
 		// execute immediately if we're already past server tree functions
 		if(server.serverRunning) {
 			this.sendSynthDef;
@@ -40,6 +45,8 @@ Volume {
 			fork {
 				numOutputChannels = this.numChannels;
 				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
+				baseAmpSynth.defName = defName;
+
 				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
 					XOut.ar(bus,
 						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
@@ -64,11 +71,18 @@ Volume {
 	updateSynth {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
 		var active = amp != 1.0;
+
 		if(active) {
 			if(server.hasBooted) {
 				if(ampSynth.isNil) {
-					ampSynth = Synth.after(server.defaultGroup, defName,
-						[\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
+					// Synth.after(server.defaultGroup, defName,
+					// [\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
+
+					ampSynth = baseAmpSynth;
+					server.sendMsg(9, //"s_new"
+						defName, permID, Node.addActions[\addAfter], ampSynth.group.nodeID,
+						*[\volumeAmp, amp, \volumeLag, lag, \bus, startBus]
+					);
 				} {
 					ampSynth.set(\volumeAmp, amp);
 				}
