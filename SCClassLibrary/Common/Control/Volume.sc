@@ -25,8 +25,14 @@ Volume {
 			// only create synth now if it won't be created by ServerTree
 			if (persist.not) { this.updateSynth };
 		};
+		ServerBoot.add(initFunc, server);
 
-		ServerBoot.add(initFunc, server)
+		updateFunc = {
+			ampSynth = nil;
+			if(persist) { this.updateSynth }
+		};
+		ServerTree.add(updateFunc, server);
+
 	}
 
 	sendSynthDef {
@@ -43,12 +49,6 @@ Volume {
 
 				server.sync;
 
-				updateFunc = {
-					ampSynth = nil;
-					if(persist) { this.updateSynth }
-				};
-
-				ServerTree.add(updateFunc, server);
 			}
 		};
 	}
