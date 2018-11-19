@@ -88,53 +88,53 @@ void Theme::fillDefault()
 
 void Theme::fillClassic()
 {
-    add("text", QColor(Qt::black), QColor(Qt::white));
+    QColor background("#ffffff");
+    QColor white("#ffffff");
+    QColor black("#000000");
+    QColor gray("#888888");
+    QColor gray_current_line("#f4f4f4");
+    QColor orange("#F8A200");
+    QColor yellow("#ffff00");
+    QColor green_matched_brackets("#2bc93d");
+    QColor red_mismatched_brackets("#960000");
+    QColor gray_line_numbers("#b8b8b8");
+    QColor pale_blue("#3333bf");
+    QColor blue_keyword("#0000e6");
+    QColor blue_class("#0000d2");
+    QColor blue_selection("#308cc6");
+    QColor brown("#8c4614");
+    QColor purple("#980099");
+    QColor green("#007300");
+    QColor gray_string("#5f5f5f");
+    QColor red_comment("#bf0000");
+    QColor red_post_window("#d11c24");
+    QColor orange_post_window("#a57706");
+    QColor yellow_post_window("#738a05");
 
-    QPalette appPlt(QApplication::palette());
-    QColor bkg = appPlt.color(QPalette::Base);
-    int value = bkg.value();
-    if (value > 40)
-        bkg.setHsv(bkg.hue(), bkg.saturation(), value - 11);
-    else
-        bkg.setHsv(bkg.hue(), bkg.saturation(), value + 20);
-    add("currentLine", QColor(Qt::black), bkg.toRgb());
-    add("searchResult",
-               appPlt.color(QPalette::HighlightedText).darker(200),
-               appPlt.color(QPalette::Highlight).darker(200));
-    add("matchingBrackets", QColor("#2bc93d"), Qt::yellow, true);
-    add("mismatchedBrackets", Qt::white, QColor(150,0,0));
-    add("evaluatedCode", Qt::black, QColor("#F8A200"));
-
-    QPalette plt(QApplication::palette());
-    QColor base = plt.color(QPalette::Base);
-    QColor text = plt.color(QPalette::Text);
-    int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
-
-    QColor whitespace_color((base.red() + text.red()) / 2,
-                            (base.green() + text.green()) / 2,
-                            (base.blue() + text.blue()) / 2);
-
-    add("whitespace", whitespace_color);
-    add("keyword", QColor(0,0,230).lighter(shade),
-                                    QColor(Qt::transparent), true);
-    add("built-in", QColor(51,51,191).lighter(shade));
-    add("env-var", QColor(140,70,20).lighter(shade));
-    add("class", QColor(0,0,210).lighter(shade));
-    add("number", QColor(152,0,153).lighter(shade));
-    add("symbol", QColor(0,115,0).lighter(shade));
-    add("string", QColor(95,95,95).lighter(shade));
-    add("char", QColor(0,115,0).lighter(shade));
-    add("comment", QColor(191,0,0).lighter(shade));
-    add("primitive", QColor(51,51,191).lighter(shade));
-    add("lineNumbers", plt.color(QPalette::ButtonText),
-                                        plt.color(QPalette::Mid));
-    add("selection", plt.color(QPalette::HighlightedText),
-                                      plt.color(QPalette::Highlight));
-    add("postwindowtext", plt.color(QPalette::ButtonText));
-    add("postwindowerror", QColor(209, 28, 36));
-    add("postwindowwarning", QColor(165, 119, 6));
-    add("postwindowsuccess", QColor(115, 138, 5));
-    add("postwindowemphasis", Qt::black, Qt::transparent, true);
+    add("text", black, background);
+    add("currentLine", black, gray_current_line);
+    add("searchResult", black, orange);
+    add("matchingBrackets", green_matched_brackets, yellow, true);
+    add("mismatchedBrackets", white, red_mismatched_brackets);
+    add("evaluatedCode", black, orange);
+    add("whitespace", gray);
+    add("keyword", blue_keyword, QColor(Qt::transparent), true);
+    add("built-in", pale_blue);
+    add("env-var", brown);
+    add("class", blue_class);
+    add("number", purple);
+    add("symbol", green);
+    add("string", gray_string);
+    add("char", green);
+    add("comment", red_comment);
+    add("primitive", pale_blue);
+    add("lineNumbers", black, gray_line_numbers);
+    add("selection", white, blue_selection);
+    add("postwindowtext", black);
+    add("postwindowerror", red_post_window);
+    add("postwindowwarning", orange_post_window);
+    add("postwindowsuccess", yellow_post_window);
+    add("postwindowemphasis", black, Qt::transparent, true);
 }
 
 void Theme::fillDark()
