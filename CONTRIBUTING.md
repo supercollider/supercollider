@@ -74,7 +74,7 @@ Please be as descriptive as possible when creating an issue. In order for us to 
 ### Making changes
 
 - Make commits of logical units.
-- Please refer to [Code Style Guide](https://github.com/supercollider/supercollider/wiki/%5BWIP%5D-Code-style-guidelines). Note that code style, such as whitespace conventions, depend on the language (`C++` vs `SuperCollider` vs `SCDoc Markup`)
+- Please refer to [Code Style Guide](https://github.com/supercollider/supercollider/wiki/Code-style-guidelines). Note that code style, such as whitespace conventions, depend on the language (`C++` vs `SuperCollider` vs `SCDoc Markup`)
 - Make sure your commit messages are descriptive and in the proper format.
 	- Commit messages follow the schema "category: content", e.g. `docs: Make the example in CONTRIBUTING imperative and concrete`, or `help: Update RunningSum2 help file`, or `class library: do this and that`, or `plugins: add missing function definition`.
 	- A more complete example:
