@@ -88,52 +88,33 @@ void Theme::fillDefault()
 
 void Theme::fillClassic()
 {
-    add("text", QColor(Qt::black), QColor(Qt::white));
+    QColor orange("#F8A200");
+    QColor pale_blue("#3333bf");
+    QColor green("#007300");
 
-    QPalette appPlt(QApplication::palette());
-    QColor bkg = appPlt.color(QPalette::Base);
-    int value = bkg.value();
-    if (value > 40)
-        bkg.setHsv(bkg.hue(), bkg.saturation(), value - 11);
-    else
-        bkg.setHsv(bkg.hue(), bkg.saturation(), value + 20);
-    add("currentLine", QColor(Qt::black), bkg.toRgb());
-    add("searchResult",
-               appPlt.color(QPalette::HighlightedText).darker(200),
-               appPlt.color(QPalette::Highlight).darker(200));
-    add("matchingBrackets", QColor("#2bc93d"), Qt::yellow, true);
-    add("mismatchedBrackets", Qt::white, QColor(150,0,0));
-    add("evaluatedCode", Qt::black, QColor("#F8A200"));
-
-    QPalette plt(QApplication::palette());
-    QColor base = plt.color(QPalette::Base);
-    QColor text = plt.color(QPalette::Text);
-    int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
-
-    QColor whitespace_color((base.red() + text.red()) / 2,
-                            (base.green() + text.green()) / 2,
-                            (base.blue() + text.blue()) / 2);
-
-    add("whitespace", whitespace_color);
-    add("keyword", QColor(0,0,230).lighter(shade),
-                                    QColor(Qt::transparent), true);
-    add("built-in", QColor(51,51,191).lighter(shade));
-    add("env-var", QColor(140,70,20).lighter(shade));
-    add("class", QColor(0,0,210).lighter(shade));
-    add("number", QColor(152,0,153).lighter(shade));
-    add("symbol", QColor(0,115,0).lighter(shade));
-    add("string", QColor(95,95,95).lighter(shade));
-    add("char", QColor(0,115,0).lighter(shade));
-    add("comment", QColor(191,0,0).lighter(shade));
-    add("primitive", QColor(51,51,191).lighter(shade));
-    add("lineNumbers", plt.color(QPalette::ButtonText),
-                                        plt.color(QPalette::Mid));
-    add("selection", plt.color(QPalette::HighlightedText),
-                                      plt.color(QPalette::Highlight));
-    add("postwindowtext", plt.color(QPalette::ButtonText));
-    add("postwindowerror", QColor(209, 28, 36));
-    add("postwindowwarning", QColor(165, 119, 6));
-    add("postwindowsuccess", QColor(115, 138, 5));
+    add("text", Qt::black, Qt::white);
+    add("currentLine", Qt::black, QColor("#f4f4f4"));
+    add("searchResult", Qt::black, orange);
+    add("matchingBrackets", QColor("#2bc93d"), QColor("#ffff00"), true);
+    add("mismatchedBrackets", Qt::white, QColor("#960000"));
+    add("evaluatedCode", Qt::black, orange);
+    add("whitespace", QColor("#888888"));
+    add("keyword", QColor("#0000e6"), QColor(Qt::transparent), true);
+    add("built-in", pale_blue);
+    add("env-var", QColor("#8c4614"));
+    add("class", QColor("#0000d2"));
+    add("number", QColor("#980099"));
+    add("symbol", green);
+    add("string", QColor("#5f5f5f"));
+    add("char", green);
+    add("comment", QColor("#bf0000"));
+    add("primitive", pale_blue);
+    add("lineNumbers", Qt::black, QColor("#b8b8b8"));
+    add("selection", Qt::white, QColor("#308cc6"));
+    add("postwindowtext", Qt::black);
+    add("postwindowerror", QColor("#d11c24"));
+    add("postwindowwarning", QColor("#a57706"));
+    add("postwindowsuccess", QColor("#738a05"));
     add("postwindowemphasis", Qt::black, Qt::transparent, true);
 }
 
