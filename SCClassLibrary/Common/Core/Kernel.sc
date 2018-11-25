@@ -659,7 +659,7 @@ Interpreter {
 	compileFile { arg pathName;
 		var file, text;
 		file = File.new(pathName, "r");
-		if (file.isNil, {
+		if (file.isOpen.not, {
 			error("file open failed\n");
 			^nil
 		});

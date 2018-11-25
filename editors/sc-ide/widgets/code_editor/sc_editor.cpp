@@ -21,6 +21,8 @@
 #include "sc_editor.hpp"
 #include "autocompleter.hpp"
 #include "line_indicator.hpp"
+#include "main_window.hpp"
+#include "help_browser.hpp"
 #include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
@@ -33,6 +35,7 @@
 #include <QStack>
 #include <QMimeData>
 #include <QUrl>
+#include <QWebEngineView>
 
 namespace ScIDE {
 
@@ -1314,6 +1317,12 @@ void ScCodeEditor::evaluateLine()
 {
     QString text;
 
+    HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
+    if (help && help->browser()->helpBrowserHasFocus()) {
+        help->browser()->evaluateSelection(false);
+        return; // early return
+    }
+
     // Try current selection
     QTextCursor cursor = textCursor();
     if (cursor.hasSelection())
@@ -1346,6 +1355,12 @@ void ScCodeEditor::evaluateLine()
 void ScCodeEditor::evaluateRegion()
 {
     QString text;
+
+    HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
+    if (help && help->browser()->helpBrowserHasFocus()) {
+        help->browser()->evaluateSelection(true);
+        return; // early return
+    }
 
     // Try current selection
     QTextCursor cursor = textCursor();

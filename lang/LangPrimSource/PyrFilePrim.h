@@ -17,8 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
-#ifndef _PYRFILEPRIM_H_
-#define _PYRFILEPRIM_H_
+#pragma once
 
 #include "PyrObject.h"
 
@@ -56,7 +55,3 @@ long prFileGetDouble(VMGlobals *g, long numArgsPushed);
 
 long prFilePutString(VMGlobals *g, long numArgsPushed);
 long prFileRead(VMGlobals *g, long numArgsPushed);
-
-
-#endif
-

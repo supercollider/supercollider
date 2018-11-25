@@ -23,8 +23,7 @@ PyrObject represents the structure of all SC Objects.
 
 */
 
-#ifndef _PYROBJECT_H_
-#define _PYROBJECT_H_
+#pragma once
 
 #include "PyrSlot.h"
 
@@ -288,7 +287,3 @@ inline long MAXINDEXSIZE(PyrObjectHdr* obj)
 }
 
 void InstallFinalizer(VMGlobals* g, PyrObject *inObj, int slotIndex, ObjFuncPtr inFunc);
-
-/////
-
-#endif

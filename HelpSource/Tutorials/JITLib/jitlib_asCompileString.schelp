@@ -1,6 +1,6 @@
 title:: jitlib_asCompileString
 summary:: asCompileString in JITLib
-categories:: Libraries>JITLib>Tutorials
+categories:: JITLib>Tutorials
 
 code::
 { 10 + 6 * ~harry }.asCompileString;

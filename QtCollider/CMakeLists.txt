@@ -1,24 +1,26 @@
-cmake_minimum_required(VERSION 2.8.11)
+set(REQUIRED_QT_VERSION 5.7)
 
-set(required_qt_version 5.2)
-
-find_package(Qt5Core)
-find_package(Qt5Widgets)
-find_package(Qt5Network)
-find_package(Qt5WebKit)
-find_package(Qt5WebKitWidgets)
-find_package(Qt5PrintSupport)
-find_package(Qt5OpenGL)
-find_package(Qt5Sensors)
-find_package(Qt5Quick)
-find_package(Qt5Qml)
-find_package(Qt5Sql)
-find_package(Qt5Positioning)
-mark_as_advanced(Qt5Concurrent_DIR Qt5Core_DIR Qt5Gui_DIR Qt5LinguistTools_DIR Qt5Location_DIR Qt5Network_DIR Qt5OpenGL_DIR Qt5Positioning_DIR Qt5PrintSupport_DIR Qt5Qml_DIR Qt5Quick_DIR Qt5Sensors_DIR Qt5Sql_DIR Qt5WebKitWidgets_DIR Qt5WebKit_DIR Qt5Widgets_DIR Qt5X11Extras_DIR)
+find_package(
+  Qt5 ${REQUIRED_QT_VERSION}
+  COMPONENTS
+  Core
+  Widgets
+  Network
+  WebEngine
+  WebEngineCore
+  WebEngineWidgets
+  PrintSupport
+  OpenGL
+  Quick
+  Qml
+  Sql
+  Svg
+  REQUIRED
+)
 
 set (QT_COLLIDER_LIBS
-  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport
-  Qt5::OpenGL Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning
+  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebEngineCore Qt5::WebEngineWidgets Qt5::PrintSupport
+  Qt5::Quick Qt5::Qml Qt5::Sql Qt5::OpenGL Qt5::Svg
   ${MATH_LIBRARY})
 
 if (APPLE)
@@ -46,6 +48,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/QcListWidget.h
   ${QT_COLLIDER_DIR}/widgets/QcPopUpMenu.h
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.h
+  ${QT_COLLIDER_DIR}/widgets/QcMenu.h
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.h
   ${QT_COLLIDER_DIR}/widgets/QcNumberBox.h
   ${QT_COLLIDER_DIR}/widgets/QcSlider.h
@@ -97,6 +100,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcListWidget.cpp
   ${QT_COLLIDER_DIR}/widgets/QcPopUpMenu.cpp
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcMenu.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.cpp
   ${QT_COLLIDER_DIR}/widgets/QcAbstractStepValue.cpp
   ${QT_COLLIDER_DIR}/widgets/QcNumberBox.cpp
@@ -131,7 +135,7 @@ if(QT_COLLIDER_LANG_CLIENT)
 endif()
 
 
-set( QT_USE_QTWEBKIT TRUE )
+set( QT_USE_QTWEBENGINE TRUE )
 
 qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SLIDER_2D
-#define QC_SLIDER_2D
+#pragma once
 
 #include "QcAbstractStepValue.h"
 #include "../QcHelper.h"
@@ -76,5 +75,3 @@ class QcSlider2D : public QWidget, QcHelper, QcAbstractStepValue, QtCollider::St
 
     QColor _knobColor;
 };
-
-#endif

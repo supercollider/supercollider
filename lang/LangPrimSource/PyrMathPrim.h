@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYRMATHPRIM_H_
-#define _PYRMATHPRIM_H_
+#pragma once
 
 void initMathPrimitives();
 
@@ -47,5 +46,3 @@ int mathFoldFloat(VMGlobals *g, int numArgsPushed);
 int mathClipSignal(VMGlobals *g, int numArgsPushed);
 int mathWrapSignal(VMGlobals *g, int numArgsPushed);
 int mathFoldSignal(VMGlobals *g, int numArgsPushed);
-
-#endif

@@ -1,6 +1,6 @@
 class:: Ndef
 summary:: node proxy definition
-categories:: Libraries>JITLib>NodeProxy, Live Coding
+categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace, Classes/Tdef
 
 description::

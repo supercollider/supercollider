@@ -1,9 +1,23 @@
 Class:: Float
-summary:: Floating point number
+summary:: 64-bit Floating point number
 categories:: Math
 
 description::
 A 64-bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+
+code::
+// generate 10 random floats between 0 and 1
+{ 1.0.rand }.dup(10)
+
+// Pythagorean comma
+// expressed as a floating point number resulting from calculations with integers
+(
+var apotome = (3 ** 7) / (2 ** 11);
+var limma =   (2 ** 8) / (3 ** 5);
+
+apotome / limma
+)
+::
 
 Note that despite its name, link::Classes/FloatArray:: only holds 32-bit (single precision) floats.
 For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
@@ -11,10 +25,10 @@ For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 ClassMethods::
 
 method:: from32Bits
-returns:: a new Float from a 32 bit word.
+returns:: a new Float from a 32-bit word.
 
 method:: from64Bits
-returns:: a new Float from a 64 bit word.
+returns:: a new Float from a 64-bit word.
 
 InstanceMethods::
 
@@ -38,6 +52,9 @@ code::
 ::
 See also: link::Guides/Randomness::
 
+method::xrand2
+returns::a random float from this.neg to this, excluding the value exclude.
+
 method:: isFloat
 returns:: code::true:: since this is a Float.
 
@@ -48,10 +65,18 @@ method:: as32Bits
 returns:: an Integer which is the bit pattern of this as a 32bit single precision float
 
 method:: high32Bits
-returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+returns:: an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
 
 method:: low32Bits
-returns:: an Integer which is the bit pattern of high 32 bits of the 64 bit double precision floating point value
+returns:: an Integer which is the bit pattern of high 32-bits of the 64-bit double precision floating point value
+
+method:: asCompileString
+returns:: a string that when interpreted matches the receiver, if the number is within the range given in code::storeOn::.
+
+code::
+a = 2.81882773638;
+a.asCompileString.interpret == a;
+::
 
 method:: asStringPrec
 Returns a string representation of the number, with the desired precision (i.e. number of significant figures).
@@ -65,3 +90,75 @@ pi.asStringPrec(6)
 7.4.asStringPrec(5)
 7.4.asStringPrec(50)
 ::
+
+subsection::Using Floats as replacement for Integers
+
+In SuperCollider, Floats are 64-bit wide. Because  an link::Classes/Integer::  is 32-bit, it can only capture integers in the range code::-2147483648 .. +2147483647::, or about code:: 2 x 10^9 ::.
+
+Therefore, in some situations it can be useful to calculate with floats also when only whole numbers are needed. You can use 64-bit floats for integer calculations up to code::± 9007199254740992:: (code::2^53::, or about code::9 x 10^15::). Sometimes one can go even further (see example below).
+
+
+code::
+// compare factorial:
+f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
+f.(14); // integer
+f.(18) // integer overflow: -898433024
+f.(18.0) // float is ok.
+// check the ratio between adjacent factorials:
+f.(18.0) / f.(17.0) == 18 // true
+// 18 is already the largest possible factorial representable in 64-bit float (< 2^53)
+{:x, x<-(1.0..40), f.(x) < (2 ** 53) }.all.last
+::
+
+
+Here is a classical example for an algorithm:
+
+code::
+// eucidean algorithm
+(
+g = { |a, b|
+	if(b == 0) {
+		a
+	} {
+		g.(b, mod(a, b))
+	}
+}
+)
+
+// check if a power of two
+
+x = 2147483647 * 3;
+g.(x, 3); // wrong, returns 1
+x = 2147483647.0 * 3;
+g.(x, 3); // correct, returns 3
+
+x = 2007199254740992.0 * 3;
+g.(x, 3); // correct, returns 3
+x = 9007199254740992.0 * 3;
+g.(x, 3); // still happens to be correct, but better not count on it …
+::
+
+
+
+Testing the limits of 64-bit float (2^53)
+
+code::
+a = 2 ** 53 - 1
+b = a + 1;
+c = a + 2;
+b - a // correct (1)
+c - a // incorrect (also 1)
+
+
+// How high you can go depends on the calculation:
+// here we divide two numbers that follow each other
+// and it is correct up to f.(170), about 7.25e+306.
+f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
+{:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
+
+::
+
+
+
+
+

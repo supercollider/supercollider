@@ -3,6 +3,10 @@ if (NOT APPLE AND NOT WIN32)
 	add_definitions("-DSC_PLUGIN_EXT=\".so\"")
 endif()
 
+if(UNIX AND NOT APPLE)
+	set(LINUX_SC_PLUGIN_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/SuperCollider/plugins)
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-simd
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-tt

@@ -128,7 +128,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string>SCcube</string>
+	<string>sc_ide</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.sourceforge.supercollider</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -144,7 +144,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>(C) 2001-2012 James McCartney et al.</string>
+	<string>(C) 2001-2018 James McCartney et al.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

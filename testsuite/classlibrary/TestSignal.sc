@@ -29,4 +29,13 @@ TestSignal : UnitTest {
 		^( sig[midIndex-1] + sig[midIndex] / 2)
 	}
 
+	test_equality_true {
+		var test = 10.collect { |i| Signal.sineFill(64, [i]) == Signal.sineFill(64, [i]) }.asSet;
+		this.assertEquals(test, Set[true], "Identical signals are equal");
+	}
+
+	test_equality_false {
+		var test = 10.collect { |i| Signal.sineFill(64, [i]) != Signal.sineFill(64, [-1]) }.asSet;
+		this.assertEquals(test, Set[true], "Non-identical signals are not equal");
+	}
 }

@@ -19,81 +19,186 @@
 *
 ************************************************************************/
 
-#ifndef QC_WEB_VIEW_H
-#define QC_WEB_VIEW_H
+#pragma once
 
-#include <QWebView>
-#include <QWebPage>
+#include <QWebEngineView>
+#include <QWebEnginePage>
+#include <QWebEngineCallback>
+#include <QPointer>
 #include <QUrl>
+#include <QException>
+
+const static int kWebEngineTimeout = 10000;
+
+Q_DECLARE_METATYPE(QUrl)
 
 namespace QtCollider {
 
 class WebPage;
+class QcCallback;
 
-class WebView : public QWebView
+class QcCallbackWeakFunctor
+{
+public:
+  QcCallbackWeakFunctor(QPointer<QcCallback> cb)
+    : _cb(cb)
+  {}
+  
+  template <typename RESULT>
+  void operator()(RESULT r) const;
+
+private:
+  QPointer<QcCallback> _cb;
+};
+
+class QcCallback : public QObject
 {
   Q_OBJECT
-  Q_PROPERTY( QString url READ url WRITE setUrl );
-  Q_PROPERTY( QString html READ html )
-  Q_PROPERTY( QString plainText READ plainText )
-  Q_PROPERTY( int linkDelegationPolicy
-              READ linkDelegationPolicy WRITE setLinkDelegationPolicy )
-  Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
-  Q_PROPERTY( bool enterInterpretsSelection
-              READ interpretSelection WRITE setInterpretSelection );
-  Q_PROPERTY( bool editable
-               READ editable WRITE setEditable );
 
 public:
-  Q_INVOKABLE void setHtml ( const QString &html, const QString &baseUrl = QString() );
-  Q_INVOKABLE void evaluateJavaScript ( const QString &script );
+  QcCallback() {}
+  
+  template<typename CallbackT>
+  void call(const CallbackT& result)
+  {
+    Q_EMIT(onCalled(result));
+  }
+  
+  QcCallbackWeakFunctor asFunctor()
+  {
+    return QcCallbackWeakFunctor(QPointer<QcCallback>(this));
+  }
+  
+Q_SIGNALS:
+  void onCalled(bool);
+  void onCalled(const QString&);
+  void onCalled(const QVariant&);
+  void onCalled(const QUrl&);
+};
+  
+template <typename RESULT>
+void QcCallbackWeakFunctor::operator()(RESULT r) const
+  {
+  if (_cb) {
+    _cb->call(r);
+  }
+}
+
+
+  
+class WebView : public QWebEngineView
+{
+  Q_OBJECT
+
+public:
   Q_INVOKABLE void setFontFamily( int genericFontFamily, const QString & fontFamily );
+  Q_INVOKABLE void triggerPageAction( int action, bool checked );
+  Q_INVOKABLE QAction* pageAction( QWebEnginePage::WebAction ) const;
+
+  // QWebEnginePage forwards
+  Q_INVOKABLE void setHtml(const QString& html, const QString& baseUrl);
+  Q_INVOKABLE void setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl);
+  Q_INVOKABLE void toHtml(QcCallback* cb) const;
+  Q_INVOKABLE void toPlainText(QcCallback* cb) const;
+  Q_INVOKABLE void runJavaScript(const QString& script, QcCallback* cb);
+  Q_INVOKABLE void setWebAttribute(int attr, bool on);
+  Q_INVOKABLE bool testWebAttribute(int attr);
+  Q_INVOKABLE void resetWebAttribute(int attr);
+  Q_INVOKABLE void navigate(const QString& url);
 
 public Q_SLOTS:
-  void findText( const QString &searchText, bool reversed = false );
+  void findText( const QString &searchText, bool reversed, QcCallback* cb);
 
 Q_SIGNALS:
-  void linkActivated( const QString & );
+  void linkActivated( const QString &, int, bool );
+  void jsConsoleMsg( const QString &, int, const QString & );
   void reloadTriggered( const QString & );
   void interpret( const QString & code );
-  void jsConsoleMsg( const QString &, int, const QString & );
 
+  // QWebEnginePage forwards
+  void linkHovered(const QString &url);
+  void geometryChangeRequested(const QRect& geom);
+  void windowCloseRequested();
+  void navigationRequested(const QUrl &, int, bool);
+  
+  void renderProcessTerminated(int terminationStatus, int exitCode);
+  
+  void scrollPositionChanged(const QPointF &position);
+  void contentsSizeChanged(const QSizeF &size);
+  void audioMutedChanged(bool muted);
+  void recentlyAudibleChanged(bool recentlyAudible);
+  
 public:
 
   WebView( QWidget *parent = 0 );
 
+  Q_PROPERTY( qreal zoom READ zoomFactor WRITE setZoomFactor );
+  Q_PROPERTY( bool hasSelection READ hasSelection );
+  Q_PROPERTY( QString selectedText READ selectedText );
+  Q_PROPERTY( QString title READ title );
+  
+  Q_PROPERTY( bool overrideNavigation READ overrideNavigation WRITE setOverrideNavigation );
+    bool overrideNavigation() const;
+    void setOverrideNavigation(bool b);
+  
+  Q_PROPERTY( QString url READ url WRITE setUrl );
   QString url() const;
   void setUrl( const QString & );
-  QString html () const;
-  QString plainText () const;
 
-  int linkDelegationPolicy () const;
-  void setLinkDelegationPolicy ( int );
-  bool delegateReload() const;
-  void setDelegateReload( bool );
-  bool interpretSelection() const { return _interpretSelection; }
-  void setInterpretSelection( bool b ) { _interpretSelection = b; }
+  Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
+    bool delegateReload() const;
+    void setDelegateReload( bool );
+
+  Q_PROPERTY( bool enterInterpretsSelection READ interpretSelection WRITE setInterpretSelection );
+    bool interpretSelection() const         { return _interpretSelection; }
+    void setInterpretSelection( bool b )    { _interpretSelection = b; }
+
+  Q_PROPERTY( bool editable READ editable WRITE setEditable );
     bool editable() const { return _editable; }
-  void setEditable( bool b ) { _editable = b; page()->setContentEditable(b); }
+    void setEditable( bool b )              { _editable = b; updateEditable(true); }
 
-  inline static QUrl urlFromString( const QString & str ) {
-      return QUrl::fromUserInput(str);
-  }
+  // QWebEnginePage properties
+  Q_PROPERTY(QString requestedUrl READ requestedUrl)
+    QString requestedUrl() const            { return page() ? page()->requestedUrl().toString() : QString(); }
+
+  Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
+    QColor backgroundColor() const          { return page() ? page()->backgroundColor() : QColor(); }
+    void setBackgroundColor(QColor c)       { if (page()) page()->setBackgroundColor(c); }
+  
+  Q_PROPERTY(QSizeF contentsSize READ contentsSize)
+    QSizeF contentsSize() const             { return page() ? page()->contentsSize() : QSizeF(0, 0); }
+  
+  Q_PROPERTY(QPointF scrollPosition READ scrollPosition)
+    QPointF scrollPosition() const          { return page() ? page()->scrollPosition() : QPointF(0, 0); }
+  
+  Q_PROPERTY(bool audioMuted READ isAudioMuted WRITE setAudioMuted)
+    bool isAudioMuted() const               { return page() ? page()->isAudioMuted() : false; }
+    void setAudioMuted(bool m)              { if (page()) page()->setAudioMuted(m); }
+  
+  Q_PROPERTY(bool recentlyAudible READ recentlyAudible)
+    bool recentlyAudible() const            { return page() ? page()->recentlyAudible() : false; }
+
+  inline static QUrl urlFromString( const QString & str )
+                                            { return QUrl::fromUserInput(str); }
 
 protected:
   virtual void keyPressEvent( QKeyEvent * );
   virtual void contextMenuEvent ( QContextMenuEvent * );
 
-private Q_SLOTS:
-  void onLinkClicked( const QUrl & );
+public Q_SLOTS:
   void onPageReload();
-  void updateEditable(bool ok) { if(ok) page()->setContentEditable(_editable); }
+  void onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus, int);
+  void onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool);
+  void updateEditable(bool);
 
 private:
+  void connectPage(QtCollider::WebPage* page);
+  
   bool _interpretSelection;
   bool _editable;
 };
 
 } // namespace QtCollider
 
-#endif // QC_WEB_VIEW_H
+using namespace QtCollider;
+Q_DECLARE_METATYPE( QcCallback* );

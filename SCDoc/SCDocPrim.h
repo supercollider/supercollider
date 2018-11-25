@@ -1,7 +1,3 @@
-#ifndef _SCDOCPRIM_H_
-#define _SCDOCPRIM_H_
+#pragma once
 
 void initSCDocPrimitives(void);
-
-#endif
-

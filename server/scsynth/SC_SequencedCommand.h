@@ -26,16 +26,13 @@
  * so that you only need to write the functions.
  */
 
-#ifndef _SC_SequencedCommand_
-#define _SC_SequencedCommand_
+#pragma once
 
 #include "OSC_Packet.h"
 #include "SC_World.h"
 #include "SC_BufGen.h"
 #include "sc_msg_iter.h"
-#ifndef NO_LIBSNDFILE
-#include <sndfile.h>
-#endif
+#include "SC_SndFileHelpers.hpp"
 #include <new>
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)	\
@@ -549,8 +546,3 @@ protected:
 
 	virtual void CallDestructor();
 };
-
-///////////////////////////////////////////////////////////////////////////
-
-#endif
-

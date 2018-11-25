@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
-#define SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED
+#pragma once
 
 #include <QPlainTextEdit>
 #include <QGraphicsScene>
@@ -114,6 +113,8 @@ protected:
 
     void hideMouseCursor();
 
+    void updateFocusRect();
+
     class LineIndicator *mLineIndicator;
     QGraphicsScene *mOverlay;
     QWidget *mOverlayWidget;
@@ -129,9 +130,9 @@ protected:
     QTextCharFormat mSearchResultTextFormat;
 
     QList<QTextEdit::ExtraSelection> mSearchSelections;
-    
+
     QGraphicsRectItem *mFocusRect = 0;
-    
+
     int mInactiveFadeAlpha = 0;
 
 private:
@@ -143,5 +144,3 @@ private:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_CODE_EDITOR_EDITOR_HPP_INCLUDED

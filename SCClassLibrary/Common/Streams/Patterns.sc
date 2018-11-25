@@ -416,7 +416,6 @@ Pgeom : Pattern {	// geometric series
 		var cur = start.value(inval);
 		var len = length.value(inval);
 		var growStr = grow.asStream, growVal;
-
 		while { counter < len } {
 			growVal = growStr.next(inval);
 			if(growVal.isNil) { ^inval };
@@ -449,6 +448,7 @@ Pbrown : Pattern {
 		hiVal = hiStr.next(inval);
 		stepVal = stepStr.next(inval);
 		cur = rrand(loVal, hiVal);
+
 		if(loVal.isNil or: { hiVal.isNil } or: { stepVal.isNil }) { ^inval };
 
 		length.value(inval).do {
@@ -673,7 +673,7 @@ Pkey : Pattern {
 
 	embedInStream { |inval|
 		var outval, keystream = key.asStream;
-		repeats.value(inval).do {
+		(repeats.value(inval) ?? { inf }).do {
 			outval = inval[keystream.next(inval)];
 			if(outval.isNil) { ^inval };
 			inval = outval.yield;

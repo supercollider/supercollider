@@ -1,6 +1,6 @@
 class:: Pbindef
 summary:: incremental event pattern reference definition
-categories:: Libraries>JITLib>Patterns, Live Coding,  Streams-Patterns-Events>Patterns
+categories:: JITLib>Patterns, Live Coding,  Streams-Patterns-Events>Patterns
 related:: Classes/Pdef, Classes/Pbind
 
 description::

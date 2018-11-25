@@ -454,7 +454,7 @@ Document {
 	var <keyDownAction, <keyUpAction, <mouseUpAction, <mouseDownAction;
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
 
-	var <envir, savedEnvir;
+	var <envir, <savedEnvir;
 	var <editable = true, <promptToSave = true;
 
 	*initClass{
@@ -584,7 +584,7 @@ Document {
 
 	closed {
 		onClose.value(this); // call user function
-		this.restoreCurrentEnvironment;
+		this.restorePreviousEnvironment;
 		allDocuments.remove(this);
 	}
 
@@ -698,13 +698,13 @@ Document {
 
 	didBecomeKey {
 		this.class.current = this;
-		this.saveCurrentEnvironment;
+		this.pushLinkedEnvironment;
 		toFrontAction.value(this);
 	}
 
 	didResignKey {
 		endFrontAction.value(this);
-		this.restoreCurrentEnvironment;
+		this.restorePreviousEnvironment;
 	}
 
 	keyDown { | modifiers, unicode, keycode, key |
@@ -779,7 +779,7 @@ Document {
 	prReadTextFromFile {|path|
 		var file;
 		file = File.new(path, "r");
-		if (file.isNil, {
+		if (file.isOpen.not, {
 			error("Document open failed\n");
 		});
 		this.prSetTextMirror(quuid, file.readAllString, 0, -1);
@@ -794,7 +794,6 @@ Document {
 				this.text.interpret;
 			}
 		};
-		current = this;
 		initAction.value(this);
 	}
 
@@ -881,27 +880,35 @@ Document {
 
 	// envir stuff
 
-	envir_ { | ev |
-		envir = ev;
-		if (this.class.current == this) {
-			if(envir.isNil) {
-				this.restoreCurrentEnvironment
-			} {
-				if (savedEnvir.isNil) {
-					this.saveCurrentEnvironment
-				}
-			}
-		}
+	hasSavedPreviousEnvironment {
+		^savedEnvir.notNil
 	}
 
-	restoreCurrentEnvironment {
+	envir_ { | newEnvir |
+
+		envir = newEnvir;
+
+		if(this.isFront) {
+			if(newEnvir.isNil) {
+				this.restorePreviousEnvironment
+			} {
+				if(this.hasSavedPreviousEnvironment.not) {
+					savedEnvir = currentEnvironment;
+				};
+				currentEnvironment = envir;
+			}
+		}
+
+	}
+
+	restorePreviousEnvironment { // happens on leaving focus
 		if (savedEnvir.notNil) {
 			currentEnvironment = savedEnvir;
 			savedEnvir = nil;
 		}
 	}
 
-	saveCurrentEnvironment {
+	pushLinkedEnvironment { // happens on focus
 		if (envir.notNil) {
 			savedEnvir = currentEnvironment;
 			currentEnvironment = envir;

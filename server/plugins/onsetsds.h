@@ -19,8 +19,7 @@
 
 /** \file */
 
-#ifndef _OnsetsDS_
-#define _OnsetsDS_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -270,6 +269,4 @@ void onsetsds_detect(OnsetsDS* ods);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

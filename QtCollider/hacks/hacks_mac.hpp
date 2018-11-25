@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_MAC_HACKS_H
-#define QC_MAC_HACKS_H
+#pragma once
 
 #include <QWidget>
 
@@ -32,8 +31,7 @@ bool IsCmdPeriodKeyDown(void * event);
 bool isKeyWindow ( QWidget *w );
 bool AlwaysShowScrollbars();
 void activateApp ();
-    
+void DisableAutomaticWindowTabbing();
+
 } // namespace Mac
 } // namespace QtCollider
-
-#endif

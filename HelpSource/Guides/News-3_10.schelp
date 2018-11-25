@@ -1,0 +1,202 @@
+title:: News in 3.10
+summary:: All the news that's fit to .postln
+categories:: News
+
+section:: Known issues
+
+FileDialog can hang — currently we are only able to reproduce on KDE, but other OS's could be affected.
+
+On Windows and Linux, running code with Ctrl+Enter in the help browser (not the editor) only evaluates the current line.
+
+QtWebEngine, a hard dependency of SCLang and SCIDE, is difficult or impossible to install in some environments. Work is underway to make it an optional component, but this will not happen in time for 3.10.
+
+section:: General: Added
+
+A code:: NO_X11 :: option has been added to the build system so that server plugins requiring an X server such as MouseX can be omitted.
+
+section:: General: Changed
+
+sclang and scide have long been stuck with Qt 5.5 due to Qt dropping QtWebKit for QtWebEngine. They have been upgraded for compatibility with Qt 5.7+. We recommend using the most recent version of Qt. The impacts of this change include:
+
+list::
+## sclang and scide now build on Visual Studio 2015 and later. (Previously, Windows users had to obtain the now-ancient Visual Studio 2013.)
+## UserView now supports Retina/HiDPI display.
+## A somewhat different build process on Linux. See the README.
+::
+
+The minimum required version is now CMake 3.5 instead of CMake 2.8.
+
+scel (the emacs package) is now a submodule.
+
+section:: General: Fixed
+
+Many issues with Unicode paths on Windows were fixed in 3.9. A few remaining cases involving sound files remained, and are now fixed:
+
+list::
+## supernova's sound file backend, buffer manager, and plugin loading
+## NRT mode in scsynth
+## code:: /b_read :: family of commands in scsynth
+## code:: SoundFileView :: in the sclang GUI
+::
+
+Fixed a build failure with the CMake option code:: SYSTEM_YAMLCPP=on ::.
+
+Fixed a misleading deprecation warning when code:: CMAKE_INSTALL_PREFIX :: is set to the home directory in Linux.
+
+Fixed code:: CMAKE_PREFIX_PATH :: incorrectly defaulting to code:: /usr/local/ :: on macOS under some conditions.
+
+section:: scsynth and supernova: Added
+
+supernova now has latency compensation.
+
+section:: scsynth and supernova: Fixed
+
+scsynth's latency compensation had a math error that ended up doubling the latency. It is fixed now.
+
+For consistency with scsynth, supernova no longer requires the final argument to code:: /b_allocReadChannel ::.
+
+One second folks, takin' a quick break here. Gotta get my morning cuppa! Alright, we're back.
+
+Fixed a missing newline in some of supernova's error messages.
+
+Fixed errors in supernova's code:: /s_getn ::.
+
+Fix supernova's response to code:: /g_queryTree :: so it matches scsynth.
+
+section:: UGens: Fixed
+
+Fixed clicks in Convolution2L.
+
+section:: sclang: Added
+
+Menus are now supported in the Qt GUI. See help files for code:: Menu ::, code:: MenuAction ::, code:: ToolBar ::, and code:: MainMenu ::.
+
+Added wrappers for over 100 special mathematical functions (gamma function, Bessel functions, elliptic integrals, etc.) from the Boost library.
+
+SerialPort now works on Windows.
+
+code:: FileDialog :: and code:: Dialog :: now support a "path" argument that specifies a default directory when the dialog appears.
+
+code:: QTreeView :: has a new method: code:: setColumnWidth ::.
+
+section:: sclang: Changed
+
+strong:: Breaking change: :: code:: Float:asString :: now always produces a decimal point, so code:: 3.0.asString :: is now code:: "3.0" :: instead of code:: "3" ::.
+
+strong:: Breaking change: :: The code:: server :: argument has changed to code:: target :: in code:: Function:asBuffer ::, code:: Function:loadToFloatArray ::, and code:: Function:plot ::, and now allows spawning the plotting synth relative to a group or node rather than just a server.
+
+strong:: Breaking change: :: code:: File:mkdir :: now returns a Boolean indicating whether the operation was successful. Previously, it returned the File object.
+
+Scrollbars now always appear for ScrollView on Linux an Windows, as a temporary workaround for a very odd dependency on the use of the scroll wheel.
+
+section:: sclang: Removed
+
+Removed some unused Qt dependencies from the build system.
+
+section:: sclang: Fixed
+
+strong:: Breaking change: :: Fixed a long-standing math error in code:: SimpleNumber:expexp ::.
+
+Fixed extreme CPU usage of sclang when built without Qt.
+
+On Windows, the directory where extensions were installed was accidentally changed in 3.9. It has been reverted.
+
+Fixed a crash when calling code:: File.copy :: when the destination exists.
+
+Fixed two code:: Array:lace :: issues: a crash when any element is an empty array, and an error when no length argument is provided and any element is not an array.
+
+Fixed conditions where code:: Integer:forBy :: can cause sclang to freeze when the step size is 0 or a floating point value with an absolute value less than 1.
+
+Fixed some incorrect output in code:: FunctionDef:dumpByteCodes ::.
+
+Fixed code:: Node:release :: getting stuck on negative release times, which are now equivalent to 0.
+
+Fixed code:: == :: on code:: Signal :: objects randomly returning the wrong result.
+
+section:: Class library: Added
+
+code:: UnitTest.passVerbosity :: allows changing the verbosity of test failure reports. See the code:: UnitTest :: help file for more information.
+
+Added new UGen methods code:: .snap :: and code:: .softRound ::.
+
+code:: Node:query :: has a new code:: action :: argument, allowing specification of a callback function.
+
+code:: .degrad :: and code:: .raddeg :: are now implemented for UGens.
+
+section:: Class library: Changed
+
+The default behavior of code:: SerialPort.devices :: pattern matching has been improved to match a wider variety of devices on macOS and Linux.
+
+Internal calls to code:: .interpret :: have been removed from code:: Color.fromHexString :: and code:: History.unformatTime ::, improving both performance and security.
+
+section:: Class library: Deprecated
+
+code:: SerialPort.cleanupAll :: is deprecated.
+
+Providing an integer index for code:: SerialPort.new :: is deprecated.
+
+section:: Class library: Fixed
+
+code:: BufWr.ar :: no longer allows its input signals to be control rate, which caused the server to read from garbage memory.
+
+code:: Buffer:query :: returned incorrect results if multiple query messages are sent at once. This has been fixed.
+
+Fixed fragilities in path joining methods such as code:: +/+ ::, code:: withTrailingSlash ::, and code:: withoutTrailingSlash ::.
+
+Fixed bugs when certain pattern classes are passed in 0 as the number of repeats.
+
+Fixed code:: Event.addEventType :: ignoring the code:: parentEvent :: argument.
+
+Fixed code:: Pkey :: being skipped because the default number of repeats is code:: nil :: instead of code:: inf ::.
+
+Fixed some harmless but annoying errors about extensions of nonexistent classes when sclang is built without Qt.
+
+code:: ProxySpace:linkDoc :: was broken — switching documents did not actually change ProxySpaces. This is fixed now.
+
+code:: Recorder:prepareForRecord :: produced an error if the recordings path does not exist. It now makes the directory if it doesn't exist.
+
+Fixed bugs when providing multiple paths in code:: ServerOptions:ugensPluginPath ::.
+
+Fixed code:: HelpBrowser :: (the class, not the IDE help browser) being unusable since it didn't trigger rendering of help files when links are clicked.
+
+Fixed some bugs in code:: EnvGate ::: throwing an error when code:: fadeTime :: is a constant rather than a UGen input, and code:: i_level :: not behaving as documented.
+
+Fixed occasional hangs when rebooting supernova.
+
+Fixed confusing user feedback with the "Check for updates" button in the quarks GUI.
+
+code:: Buffer :: methods ensure that the buffer number in outbound OSC messages is an integer. This fixes errors in supernova, which is stricter than scsynth about the buffer number type.
+
+Fixed confusing user feedback with the "Check for updates" button in the quarks GUI.
+
+Fixed missing default arguments in code:: fold2 ::, code:: wrap2 ::, and code:: excess :: methods of code:: Collection :: for consistency with code:: SimpleNumber ::.
+
+Fixed incorrect template matching behavior in code:: OSCFunc :: and related functionality.
+
+Fixed "Message 'extension' not understood" preventing code:: Image :: from working.
+
+section:: IDE & SCDoc: Added
+
+The IDE has a prettier default theme. The old theme still exists as "classic."
+
+The IDE now properly highlights scale degree literals like code:: 4s ::.
+
+section:: IDE & SCDoc: Changed
+
+The IDE has a prettier default theme. The old theme still exists as "classic."
+
+The IDE now has a unified look across all platforms, and its color scheme adapts to match the editor theme.
+
+The SCDoc TOC and menubar have been redesigned again.
+
+Various tweaks to the appearance of the IDE: nicer tabs, better border colors.
+
+section:: IDE & SCDoc: Fixed
+
+When starting the IDE, detached docklet sometimes spawn as unresponsive. This has been fixed.
+
+Syntax colors in the help browser now match the IDE.
+
+Only one preference window can be open at a time now.
+
+Fixed tabs reversing in order when restoring a session.

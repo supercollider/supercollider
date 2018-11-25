@@ -2,7 +2,7 @@
 // basic_seq_packet_socket.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,7 +21,10 @@
 #include <boost/asio/detail/handler_type_requirements.hpp>
 #include <boost/asio/detail/throw_error.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/seq_packet_socket_service.hpp>
+
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+# include <boost/asio/seq_packet_socket_service.hpp>
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -37,19 +40,19 @@ namespace asio {
  * @e Distinct @e objects: Safe.@n
  * @e Shared @e objects: Unsafe.
  */
-template <typename Protocol,
-    typename SeqPacketSocketService = seq_packet_socket_service<Protocol> >
+template <typename Protocol
+    BOOST_ASIO_SVC_TPARAM_DEF1(= seq_packet_socket_service<Protocol>)>
 class basic_seq_packet_socket
-  : public basic_socket<Protocol, SeqPacketSocketService>
+  : public basic_socket<Protocol BOOST_ASIO_SVC_TARG>
 {
 public:
-  /// (Deprecated: Use native_handle_type.) The native representation of a
-  /// socket.
-  typedef typename SeqPacketSocketService::native_handle_type native_type;
-
   /// The native representation of a socket.
-  typedef typename SeqPacketSocketService::native_handle_type
-    native_handle_type;
+#if defined(GENERATING_DOCUMENTATION)
+  typedef implementation_defined native_handle_type;
+#else
+  typedef typename basic_socket<
+    Protocol BOOST_ASIO_SVC_TARG>::native_handle_type native_handle_type;
+#endif
 
   /// The protocol type.
   typedef Protocol protocol_type;
@@ -63,12 +66,12 @@ public:
    * socket needs to be opened and then connected or accepted before data can
    * be sent or received on it.
    *
-   * @param io_service The io_service object that the sequenced packet socket
+   * @param io_context The io_context object that the sequenced packet socket
    * will use to dispatch handlers for any asynchronous operations performed on
    * the socket.
    */
-  explicit basic_seq_packet_socket(boost::asio::io_service& io_service)
-    : basic_socket<Protocol, SeqPacketSocketService>(io_service)
+  explicit basic_seq_packet_socket(boost::asio::io_context& io_context)
+    : basic_socket<Protocol BOOST_ASIO_SVC_TARG>(io_context)
   {
   }
 
@@ -78,7 +81,7 @@ public:
    * needs to be connected or accepted before data can be sent or received on
    * it.
    *
-   * @param io_service The io_service object that the sequenced packet socket
+   * @param io_context The io_context object that the sequenced packet socket
    * will use to dispatch handlers for any asynchronous operations performed on
    * the socket.
    *
@@ -86,9 +89,9 @@ public:
    *
    * @throws boost::system::system_error Thrown on failure.
    */
-  basic_seq_packet_socket(boost::asio::io_service& io_service,
+  basic_seq_packet_socket(boost::asio::io_context& io_context,
       const protocol_type& protocol)
-    : basic_socket<Protocol, SeqPacketSocketService>(io_service, protocol)
+    : basic_socket<Protocol BOOST_ASIO_SVC_TARG>(io_context, protocol)
   {
   }
 
@@ -99,7 +102,7 @@ public:
    * it bound to the specified endpoint on the local machine. The protocol used
    * is the protocol associated with the given endpoint.
    *
-   * @param io_service The io_service object that the sequenced packet socket
+   * @param io_context The io_context object that the sequenced packet socket
    * will use to dispatch handlers for any asynchronous operations performed on
    * the socket.
    *
@@ -108,9 +111,9 @@ public:
    *
    * @throws boost::system::system_error Thrown on failure.
    */
-  basic_seq_packet_socket(boost::asio::io_service& io_service,
+  basic_seq_packet_socket(boost::asio::io_context& io_context,
       const endpoint_type& endpoint)
-    : basic_socket<Protocol, SeqPacketSocketService>(io_service, endpoint)
+    : basic_socket<Protocol BOOST_ASIO_SVC_TARG>(io_context, endpoint)
   {
   }
 
@@ -119,7 +122,7 @@ public:
    * This constructor creates a sequenced packet socket object to hold an
    * existing native socket.
    *
-   * @param io_service The io_service object that the sequenced packet socket
+   * @param io_context The io_context object that the sequenced packet socket
    * will use to dispatch handlers for any asynchronous operations performed on
    * the socket.
    *
@@ -129,10 +132,10 @@ public:
    *
    * @throws boost::system::system_error Thrown on failure.
    */
-  basic_seq_packet_socket(boost::asio::io_service& io_service,
+  basic_seq_packet_socket(boost::asio::io_context& io_context,
       const protocol_type& protocol, const native_handle_type& native_socket)
-    : basic_socket<Protocol, SeqPacketSocketService>(
-        io_service, protocol, native_socket)
+    : basic_socket<Protocol BOOST_ASIO_SVC_TARG>(
+        io_context, protocol, native_socket)
   {
   }
 
@@ -146,11 +149,10 @@ public:
    * will occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_seq_packet_socket(io_service&) constructor.
+   * constructed using the @c basic_seq_packet_socket(io_context&) constructor.
    */
   basic_seq_packet_socket(basic_seq_packet_socket&& other)
-    : basic_socket<Protocol, SeqPacketSocketService>(
-        BOOST_ASIO_MOVE_CAST(basic_seq_packet_socket)(other))
+    : basic_socket<Protocol BOOST_ASIO_SVC_TARG>(std::move(other))
   {
   }
 
@@ -163,12 +165,11 @@ public:
    * will occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_seq_packet_socket(io_service&) constructor.
+   * constructed using the @c basic_seq_packet_socket(io_context&) constructor.
    */
   basic_seq_packet_socket& operator=(basic_seq_packet_socket&& other)
   {
-    basic_socket<Protocol, SeqPacketSocketService>::operator=(
-        BOOST_ASIO_MOVE_CAST(basic_seq_packet_socket)(other));
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG>::operator=(std::move(other));
     return *this;
   }
 
@@ -182,15 +183,13 @@ public:
    * will occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_seq_packet_socket(io_service&) constructor.
+   * constructed using the @c basic_seq_packet_socket(io_context&) constructor.
    */
-  template <typename Protocol1, typename SeqPacketSocketService1>
+  template <typename Protocol1 BOOST_ASIO_SVC_TPARAM1>
   basic_seq_packet_socket(
-      basic_seq_packet_socket<Protocol1, SeqPacketSocketService1>&& other,
+      basic_seq_packet_socket<Protocol1 BOOST_ASIO_SVC_TARG1>&& other,
       typename enable_if<is_convertible<Protocol1, Protocol>::value>::type* = 0)
-    : basic_socket<Protocol, SeqPacketSocketService>(
-        BOOST_ASIO_MOVE_CAST2(basic_seq_packet_socket<
-          Protocol1, SeqPacketSocketService1>)(other))
+    : basic_socket<Protocol BOOST_ASIO_SVC_TARG>(std::move(other))
   {
   }
 
@@ -204,19 +203,26 @@ public:
    * will occur.
    *
    * @note Following the move, the moved-from object is in the same state as if
-   * constructed using the @c basic_seq_packet_socket(io_service&) constructor.
+   * constructed using the @c basic_seq_packet_socket(io_context&) constructor.
    */
-  template <typename Protocol1, typename SeqPacketSocketService1>
+  template <typename Protocol1 BOOST_ASIO_SVC_TPARAM1>
   typename enable_if<is_convertible<Protocol1, Protocol>::value,
       basic_seq_packet_socket>::type& operator=(
-        basic_seq_packet_socket<Protocol1, SeqPacketSocketService1>&& other)
+        basic_seq_packet_socket<Protocol1 BOOST_ASIO_SVC_TARG1>&& other)
   {
-    basic_socket<Protocol, SeqPacketSocketService>::operator=(
-        BOOST_ASIO_MOVE_CAST2(basic_seq_packet_socket<
-          Protocol1, SeqPacketSocketService1>)(other));
+    basic_socket<Protocol BOOST_ASIO_SVC_TARG>::operator=(std::move(other));
     return *this;
   }
 #endif // defined(BOOST_ASIO_HAS_MOVE) || defined(GENERATING_DOCUMENTATION)
+
+  /// Destroys the socket.
+  /**
+   * This function destroys the socket, cancelling any outstanding asynchronous
+   * operations associated with the socket as if by calling @c cancel.
+   */
+  ~basic_seq_packet_socket()
+  {
+  }
 
   /// Send some data on the socket.
   /**
@@ -300,7 +306,7 @@ public:
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * boost::asio::io_service::post().
+   * boost::asio::io_context::post().
    *
    * @par Example
    * To send a single data buffer use the @ref buffer function as follows:
@@ -322,8 +328,18 @@ public:
     // not meet the documented type requirements for a WriteHandler.
     BOOST_ASIO_WRITE_HANDLER_CHECK(WriteHandler, handler) type_check;
 
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     return this->get_service().async_send(this->get_implementation(),
         buffers, flags, BOOST_ASIO_MOVE_CAST(WriteHandler)(handler));
+#else // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    async_completion<WriteHandler,
+      void (boost::system::error_code, std::size_t)> init(handler);
+
+    this->get_service().async_send(this->get_implementation(),
+        buffers, flags, init.completion_handler);
+
+    return init.result.get();
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
   }
 
   /// Receive some data on the socket.
@@ -360,8 +376,13 @@ public:
       socket_base::message_flags& out_flags)
   {
     boost::system::error_code ec;
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     std::size_t s = this->get_service().receive(
         this->get_implementation(), buffers, 0, out_flags, ec);
+#else // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    std::size_t s = this->get_service().receive_with_flags(
+        this->get_implementation(), buffers, 0, out_flags, ec);
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     boost::asio::detail::throw_error(ec, "receive");
     return s;
   }
@@ -407,8 +428,13 @@ public:
       socket_base::message_flags& out_flags)
   {
     boost::system::error_code ec;
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     std::size_t s = this->get_service().receive(
         this->get_implementation(), buffers, in_flags, out_flags, ec);
+#else // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    std::size_t s = this->get_service().receive_with_flags(
+        this->get_implementation(), buffers, in_flags, out_flags, ec);
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     boost::asio::detail::throw_error(ec, "receive");
     return s;
   }
@@ -441,8 +467,13 @@ public:
       socket_base::message_flags in_flags,
       socket_base::message_flags& out_flags, boost::system::error_code& ec)
   {
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     return this->get_service().receive(this->get_implementation(),
         buffers, in_flags, out_flags, ec);
+#else // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    return this->get_service().receive_with_flags(this->get_implementation(),
+        buffers, in_flags, out_flags, ec);
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
   }
 
   /// Start an asynchronous receive.
@@ -471,7 +502,7 @@ public:
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * boost::asio::io_service::post().
+   * boost::asio::io_context::post().
    *
    * @par Example
    * To receive into a single data buffer use the @ref buffer function as
@@ -494,9 +525,20 @@ public:
     // not meet the documented type requirements for a ReadHandler.
     BOOST_ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     return this->get_service().async_receive(
         this->get_implementation(), buffers, 0, out_flags,
         BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+#else // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    async_completion<ReadHandler,
+      void (boost::system::error_code, std::size_t)> init(handler);
+
+    this->get_service().async_receive_with_flags(
+        this->get_implementation(), buffers, 0, out_flags,
+        init.completion_handler);
+
+    return init.result.get();
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
   }
 
   /// Start an asynchronous receive.
@@ -527,7 +569,7 @@ public:
    * Regardless of whether the asynchronous operation completes immediately or
    * not, the handler will not be invoked from within this function. Invocation
    * of the handler will be performed in a manner equivalent to using
-   * boost::asio::io_service::post().
+   * boost::asio::io_context::post().
    *
    * @par Example
    * To receive into a single data buffer use the @ref buffer function as
@@ -553,9 +595,20 @@ public:
     // not meet the documented type requirements for a ReadHandler.
     BOOST_ASIO_READ_HANDLER_CHECK(ReadHandler, handler) type_check;
 
+#if defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
     return this->get_service().async_receive(
         this->get_implementation(), buffers, in_flags, out_flags,
         BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
+#else // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
+    async_completion<ReadHandler,
+      void (boost::system::error_code, std::size_t)> init(handler);
+
+    this->get_service().async_receive_with_flags(
+        this->get_implementation(), buffers, in_flags, out_flags,
+        init.completion_handler);
+
+    return init.result.get();
+#endif // defined(BOOST_ASIO_ENABLE_OLD_SERVICES)
   }
 };
 

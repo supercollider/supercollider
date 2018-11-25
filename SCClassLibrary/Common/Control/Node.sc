@@ -123,17 +123,21 @@ Node {
 		^[17, nodeID, controlName, numControls, value] ++ args.asControlInput; //"n_fill"
 	}
 
-	release { arg releaseTime;
+	release { |releaseTime|
 		server.sendMsg(*this.releaseMsg(releaseTime))
 	}
 
-	releaseMsg { arg releaseTime;
+	releaseMsg { |releaseTime|
 		//assumes a control called 'gate' in the synth
-		if(releaseTime.isNil, {
-			releaseTime = 0.0;
-		}, {
-			releaseTime = -1.0 - releaseTime;
-		});
+		if (releaseTime.notNil) {
+			if (releaseTime <= 0) {
+				releaseTime = -1;
+			} {
+				releaseTime = (releaseTime+1).neg;
+			};
+		} {
+			releaseTime = 0;
+		};
 		^[15, nodeID, \gate, releaseTime]
 	}
 
@@ -141,23 +145,22 @@ Node {
 		server.sendMsg(10, nodeID);//"/n_trace"
 	}
 
-	query {
-		OSCFunc({ arg msg;
-			var cmd, argnodeID, parent, prev, next, isGroup, head, tail;
-			# cmd, argnodeID, parent, prev, next, isGroup, head, tail = msg;
-			// assuming its me ... if(nodeID == argnodeID)
-			Post
-				<< if(isGroup == 1, "Group:\t" , "Synth:\t") << nodeID << Char.nl
-				<< "parent:\t" << parent << Char.nl
-				<< "prev:\t" << prev << Char.nl
-				<< "next:\t" << next << Char.nl;
-			if(isGroup == 1) {
-				Post
-					<< "head:\t" << head << Char.nl
-					<< "tail:\t" << tail << Char.nl << Char.nl;
-			};
-		}, '/n_info', server.addr).oneShot;
-		server.sendMsg(46, nodeID) //"/n_query"
+	query { |action|
+		action = action ?? {
+			{ |cmd, argnodeID, parent, prev, next, isGroup, head, tail|
+				var group = isGroup == 1;
+				postf(
+					if(group, "Group: ", "Synth: ")
+						++ "%\nParent: %\nPrev: %\nNext: %\n"
+						++ if(group, "Head: %\nTail: %\n\n", "\n"),
+					argnodeID, parent, prev, next, head, tail
+				);
+			}
+		};
+		OSCFunc({ |msg|
+			action.valueArray(msg)
+		}, '/n_info', server.addr, nil, [nodeID]).oneShot;
+		server.sendMsg('/n_query', nodeID)
 	}
 
 	register { arg assumePlaying = false;

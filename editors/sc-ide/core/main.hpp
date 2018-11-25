@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_MAIN_HPP_INCLUDED
-#define SCIDE_MAIN_HPP_INCLUDED
+#pragma once
 
 #include <QAbstractNativeEventFilter>
 #include <QAction>
@@ -32,6 +31,7 @@
 #include "sc_server.hpp"
 #include "doc_manager.hpp"
 #include "settings/manager.hpp"
+#include "../widgets/style/style.hpp"
 
 namespace ScIDE {
 
@@ -87,7 +87,7 @@ public:
     {
         instance()->scProcess()->evaluateCode(text, silent);
     }
-    
+
     static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
     {
         if(instance()->scProcess()->compiled())
@@ -108,9 +108,12 @@ public Q_SLOTS:
 
     void applySettings() {
         Q_EMIT(applySettingsRequest(mSettings));
+        setAppPaletteFromSettings();
+        qApp->setStyle(qApp->style());
     }
 
     void quit();
+    void setAppPaletteFromSettings();
 
 Q_SIGNALS:
     void storeSettingsRequest(Settings::Manager *);
@@ -120,7 +123,7 @@ private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
     bool nativeEventFilter(const QByteArray&, void* message, long*);
-    
+
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
     ScServer * mScServer;
@@ -129,5 +132,3 @@ private:
 };
 
 }
-
-#endif

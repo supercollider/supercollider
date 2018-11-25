@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_CANVAS_H
-#define QC_CANVAS_H
+#pragma once
 
 #include "image_painter.h"
 
@@ -29,8 +28,12 @@
 #include <QBasicTimer>
 #include <QTime>
 #include <QPalette>
+#include <QGLWidget>
 
-class QcCanvas : public QWidget
+//using QcCanvasBase = QGLWidget;
+using QcCanvasBase = QWidget;
+
+class QcCanvas : public QcCanvasBase
 {
   Q_PROPERTY( bool clearOnRefresh READ clearOnRefresh WRITE setClearOnRefresh );
   Q_PROPERTY( bool drawingEnabled READ drawingEnabled WRITE setDrawingEnabled );
@@ -89,5 +92,3 @@ private:
   QColor _bkg;
   QtCollider::ImagePainter _bkg_image;
 };
-
-#endif

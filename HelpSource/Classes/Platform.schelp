@@ -134,6 +134,9 @@ platform specific directory for class files (see link::Guides/UsingExtensions::)
 method:: pathSeparator
 platform specific path separator
 
+method:: pathDelimiter
+platform specific path delimiter
+
 method:: recordingsDir
 platform recordings directory
 

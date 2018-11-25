@@ -14,7 +14,7 @@ matrix:
       env: QT=false
       group: edge
     - os: osx
-      osx_image: xcode7.3
+      osx_image: xcode8.3
       env: QT=true
 
 # use ccache to speed up build times. on osx,

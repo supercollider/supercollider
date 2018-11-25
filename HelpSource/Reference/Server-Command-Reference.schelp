@@ -589,7 +589,7 @@ table::
 ## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
 
-As b_allocRead, but reads individual channels into the allocated buffer in the order specified.
+As b_allocRead, but reads individual channels into the allocated buffer in the order specified. If the channels argument is absent or empty all channels are read in the order they appear in the file.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_allocReadChannel bufNum:: when complete.
 ::

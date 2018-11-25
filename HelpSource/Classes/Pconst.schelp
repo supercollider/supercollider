@@ -27,7 +27,7 @@ x = a.asStream;
 )
 
 
-//Pconst used as a sequence of pitches
+//Pconst used as a sequence of durations
 
 (
 SynthDef(\help_sinegrain,

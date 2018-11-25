@@ -263,16 +263,18 @@ Function : AbstractFunction {
 		^{ |... args| envir.use({ this.valueArray(args) }) }
 	}
 
-	asBuffer { |duration = 0.01, server, action, fadeTime = (0)|
-		var buffer, def, synth, name, numChannels, rate;
-		server = server ? Server.default;
+	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
+		var buffer, def, synth, name, numChannels, rate, server;
+		target = target.asTarget;
+		server = target.server;
+
 
 		name = this.hash.asString;
 		def = SynthDef(name, { |bufnum|
 			var	val = this.value;
 			if(val.isValidUGenInput.not) {
 				val.dump;
-				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
+				Error("reading signal failed: % is no valid UGen input".format(val)).throw
 			};
 			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
@@ -295,13 +297,13 @@ Function : AbstractFunction {
 			if(running.not) { server.bootSync; 1.wait };
 			numFrames = duration * server.sampleRate;
 			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
-			buffer.numFrames = numFrames;
+			buffer.numFrames = numFrames.asInteger;
 			buffer.numChannels = numChannels;
 			buffer = buffer.alloc(numFrames, numChannels);
 			server.sync;
 			def.send(server);
 			server.sync;
-			synth = Synth(name, [\bufnum, buffer], server);
+			synth = Synth(name, [\bufnum, buffer], target, \addAfter);
 			OSCFunc({
 				action.value(buffer);
 				server.sendMsg("/d_free", name);
@@ -311,9 +313,18 @@ Function : AbstractFunction {
 		^buffer
 	}
 
-	loadToFloatArray { |duration = 0.01, server, action|
-		this.asBuffer(duration, server, { |buffer|
+	loadToFloatArray { |duration = 0.01, target, action|
+		this.asBuffer(duration, target, { |buffer|
 			buffer.loadToFloatArray(action: { |array|
+				action.value(array, buffer);
+				buffer.free
+			})
+		})
+	}
+
+	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|
+		this.asBuffer(duration, target, { |buffer|
+			buffer.getToFloatArray(0, wait: wait, action: { |array|
 				action.value(array, buffer);
 				buffer.free
 			})

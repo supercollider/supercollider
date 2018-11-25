@@ -1,8 +1,13 @@
 UnitTest {
 
 	var currentMethod;
-	classvar <failures, <passes, routine, <>reportPasses = true;
+	const <brief = 1, <full = 2;
+	classvar <failures, <passes, routine, <>reportPasses = true, <>passVerbosity;
 	classvar <allTestClasses;
+
+	*initClass {
+		passVerbosity = full;
+	}
 
 	*findTestClasses {
 		allTestClasses = UnitTest.allSubclasses.collectAs({ |c|
@@ -123,26 +128,29 @@ UnitTest {
 	///////////////////////////////////////////////////////////////////////
 	// call these in your test_ methods to check conditions and pass or fail
 
-	assert { | boolean, message, report = true, onFailure |
+	assert { | boolean, message, report = true, onFailure, details |
 		if(boolean.not) {
-			this.failed(currentMethod, message, report);
+			this.failed(currentMethod, message, report, details);
 			if(onFailure.notNil) {
 				{ onFailure.value }.defer;
 				Error("UnitTest halted with onFailure handler.").throw;
 			};
 		} {
-			this.passed(currentMethod, message, report)
+			this.passed(currentMethod, message, report, details)
 		};
 		^boolean
 	}
 
 	assertEquals { |a, b, message = "", report = true, onFailure |
-		this.assert( a == b, message + "\nIs:\n\t" + a + "\nShould be:\n\t" + b + "\n", report, onFailure)
+		var details = "Is:\n\t" + a + "\nShould be:\n\t" + b;
+		this.assert(a == b, message, report, onFailure, details);
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-		this.assert( (a - b).abs <= within,
-			message + "\nIs:\n\t" + a + "\nShould equal (within range" + within ++ "):\n\t" + b + "\n", report, onFailure);
+		var details =
+			"Is:\n\t" + a +
+			"\nShould equal (within range" + within ++ "):\n\t" + b;
+		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
 	assertArrayFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
@@ -180,6 +188,49 @@ UnitTest {
 			^true
 		}
 	}
+
+	assertException { | func, errorClass, message, report = true, onFailure, details |
+		var moreDetails = nil;
+		var passed = false;
+		errorClass = errorClass.asClass;
+
+		func.try { |error|
+			if(error.isKindOf(errorClass)) {
+				// Add extra info in case the class was an unexpected child type.
+				moreDetails = "Received exception of class '%', with message: '%'".format(
+					error.class.name,
+					error.errorString
+				);
+				passed = true;
+			} {
+				moreDetails = "Received exception of class '%', with message: '%'\nExpected class '%'".format(
+					error.class.name,
+					error.errorString,
+					errorClass.name
+				);
+			}
+		};
+
+		moreDetails = moreDetails ?? { "Function did not throw an exception" };
+		if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
+		^this.assert(passed, message, report, onFailure, details);
+	}
+
+	assertNoException { | func, message, report = true, onFailure, details |
+		var moreDetails;
+		var passed = true;
+
+		func.try { |error|
+			moreDetails = "Function threw an exception of class '%', with message: '%'".format(
+				error.class.name,
+				error.errorString
+			);
+			if(details.isNil) { details = moreDetails } { details = details ++ "\n" ++ moreDetails };
+			passed = false;
+		};
+		^this.assert(passed, message, report, onFailure, details)
+	}
+
 
 	// make a further assertion only if it passed, or only if it failed
 	ifAsserts { | boolean, message, ifPassedFunc, ifFailedFunc, report = true|
@@ -240,23 +291,25 @@ UnitTest {
 	}
 
 	// call failure directly
-	failed { | method, message, report = true |
-		var r = UnitTestResult(this, method, message);
+	failed { | method, message, report = true, details |
+		var r;
+		r = UnitTestResult(this, method, message, details);
 		failures = failures.add(r);
 		if(report){
-			Post << Char.nl << "FAIL:";
+			Post << Char.nl << "FAIL: ";
 			r.report;
 			Post << Char.nl;
 		};
 	}
 
 	// call pass directly
-	passed { | method, message, report = true |
-		var r = UnitTestResult(this, method, message);
+	passed { | method, message, report = true, details |
+		var r;
+		r = UnitTestResult(this, method, message, details);
 		passes = passes.add(r);
-		if(report and: reportPasses) {
-			Post << "PASS:";
-			r.report;
+		if(report && reportPasses) {
+			Post << "PASS: ";
+			r.report(passVerbosity == brief);
 		};
 	}
 
@@ -293,8 +346,7 @@ UnitTest {
 		if(failures.size > 0) {
 			"There were failures:".inform;
 			failures.do { arg results;
-
-				results.report
+				results.report(true);
 			};
 		} {
 			"There were no failures".inform;
@@ -391,15 +443,22 @@ UnitTest {
 
 UnitTestResult {
 
-	var <testClass, <testMethod, <message;
+	var <testClass, <testMethod, <message, <details;
 
-	*new { |testClass, testMethod, message = ""|
-		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message)
+	*new { |testClass, testMethod, message = "", details|
+		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message, details)
 	}
 
-	report {
+	report { |brief=false|
 		var name = if(testMethod.notNil) { testMethod.name } { "unit test result" };
-		Post << testClass.asString << ":" << name << " - " << message << Char.nl;
+		Post << testClass.asString << ": " << name;
+		if (message.size > 0) {
+			Post << " - " << message;
+		};
+		if (brief.not && details.notNil) {
+			Post << Char.nl << details;
+		};
+		Post << Char.nl;
 	}
 }
 

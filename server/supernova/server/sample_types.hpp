@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SAMPLE_TYPES_HPP
-#define SERVER_SAMPLE_TYPES_HPP
+#pragma once
 
 #ifdef __GNUC__
 #define RESTRICTED_POINTERS
@@ -45,6 +44,3 @@ typedef aligned_sample * aligned_sample_ptr;
 typedef const aligned_sample * const_aligned_sample_ptr;
 
 } /* namespace nova */
-
-
-#endif /* SERVER_SAMPLE_TYPES_HPP */

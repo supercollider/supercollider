@@ -2,7 +2,7 @@
 // buffered_stream.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,7 +23,7 @@
 #include <boost/asio/buffered_stream_fwd.hpp>
 #include <boost/asio/detail/noncopyable.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -52,6 +52,9 @@ public:
 
   /// The type of the lowest layer.
   typedef typename next_layer_type::lowest_layer_type lowest_layer_type;
+
+  /// The type of the executor associated with the object.
+  typedef typename lowest_layer_type::executor_type executor_type;
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
@@ -88,11 +91,27 @@ public:
     return stream_impl_.lowest_layer();
   }
 
-  /// Get the io_service associated with the object.
-  boost::asio::io_service& get_io_service()
+  /// Get the executor associated with the object.
+  executor_type get_executor() BOOST_ASIO_NOEXCEPT
+  {
+    return stream_impl_.lowest_layer().get_executor();
+  }
+
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
+  /// (Deprecated: Use get_executor().) Get the io_context associated with the
+  /// object.
+  boost::asio::io_context& get_io_context()
+  {
+    return stream_impl_.get_io_context();
+  }
+
+  /// (Deprecated: Use get_executor().) Get the io_context associated with the
+  /// object.
+  boost::asio::io_context& get_io_service()
   {
     return stream_impl_.get_io_service();
   }
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
   /// Close the stream.
   void close()
@@ -101,9 +120,10 @@ public:
   }
 
   /// Close the stream.
-  boost::system::error_code close(boost::system::error_code& ec)
+  BOOST_ASIO_SYNC_OP_VOID close(boost::system::error_code& ec)
   {
-    return stream_impl_.close(ec);
+    stream_impl_.close(ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Flush all data from the buffer to the next layer. Returns the number of

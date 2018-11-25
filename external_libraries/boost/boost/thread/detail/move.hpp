@@ -18,9 +18,7 @@
 #include <boost/type_traits/remove_extent.hpp>
 #include <boost/type_traits/is_array.hpp>
 #include <boost/type_traits/is_function.hpp>
-#include <boost/type_traits/remove_cv.hpp>
 #include <boost/type_traits/add_pointer.hpp>
-#include <boost/type_traits/decay.hpp>
 #endif
 
 #include <boost/thread/detail/delete.hpp>

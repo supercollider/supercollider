@@ -1,5 +1,4 @@
-#ifndef QC_HELPER
-#define QC_HELPER
+#pragma once
 
 #include "Common.h"
 
@@ -20,5 +19,3 @@ struct QcHelper
     QFont dummyFont() const { return QFont(); }
     QVariantList dummyVariantList() const { return QVariantList(); }
 };
-
-#endif

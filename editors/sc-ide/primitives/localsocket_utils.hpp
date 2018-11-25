@@ -1,5 +1,4 @@
-#ifndef SCIDE_LOCALSOCKET_UTILS_HPP
-#define SCIDE_LOCALSOCKET_UTILS_HPP
+#pragma once
 
 #include <QByteArray>
 #include <QLocalSocket>
@@ -25,7 +24,3 @@ void sendSelectorAndData(QLocalSocket *socket, const QString& selector, const T&
     socket->write(baToStream);
     socket->flush();
 }
-
-
-#endif
-

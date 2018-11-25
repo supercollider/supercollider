@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SAFE_PTR_H
-#define QC_SAFE_PTR_H
+#pragma once
 
 #include "Common.h"
 
@@ -97,5 +96,3 @@ private:
 };
 
 } // namespace QtCollider
-
-#endif

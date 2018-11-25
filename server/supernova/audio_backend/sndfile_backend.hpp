@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef AUDIO_BACKEND_SNDFILE_BACKEND_HPP
-#define AUDIO_BACKEND_SNDFILE_BACKEND_HPP
+#pragma once
 
 #include <atomic>
 #include <chrono>
@@ -31,7 +30,7 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/sync/semaphore.hpp>
 
-#include <sndfile.hh>
+#include "SC_SndFileHelpers.hpp"
 
 #include "nova-tt/name_thread.hpp"
 #include "utilities/branch_hints.hpp"
@@ -84,7 +83,7 @@ public:
         block_size_ = block_size;
 
         if (!input_file_name.empty()) {
-            input_file = SndfileHandle(input_file_name.c_str(), SFM_READ);
+            input_file = makeSndfileHandle(input_file_name.c_str(), SFM_READ);
             if (!input_file)
                 throw std::runtime_error("cannot open input file");
 
@@ -98,7 +97,8 @@ public:
             input_channels = 0;
         read_position = 0;
 
-        output_file = SndfileHandle(output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
+        output_file = makeSndfileHandle(
+            output_file_name.c_str(), SFM_WRITE, format, output_channel_count, samplerate);
         if (!output_file)
             throw std::runtime_error("cannot open output file");
 
@@ -344,5 +344,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* AUDIO_BACKEND_SNDFILE_BACKEND_HPP */

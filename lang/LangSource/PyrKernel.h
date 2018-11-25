@@ -23,8 +23,7 @@ This file contains the definitions of the core objects that implement the class 
 
 */
 
-#ifndef _PYRKERNEL_H_
-#define _PYRKERNEL_H_
+#pragma once
 
 #include "PyrObject.h"
 #include "VMGlobals.h"
@@ -249,5 +248,3 @@ PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool col
 
 PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect);
 PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool collect);
-
-#endif

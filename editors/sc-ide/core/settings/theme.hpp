@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_CORE_SETTINGS_THEME_HPP_INCLUDED
-#define SCIDE_CORE_SETTINGS_THEME_HPP_INCLUDED
+#pragma once
 
 #include <QMap>
 #include <QList>
@@ -52,10 +51,19 @@ public:
 private:
     void fillUser(const QString & theme, const Manager *settings);
     void fillDefault();
+    void fillClassic();
     void fillDark();
     void fillDracula();
     void fillSolarizedLight();
     void fillSolarizedDark();
+
+    void add(
+        const char *key,
+        const QColor & fg,
+        const QColor & bg = QColor(Qt::transparent),
+        bool bold = false,
+        bool italic = false
+    );
 
     bool mLocked;
     QMap<QString, QTextCharFormat *> mFormats;
@@ -64,5 +72,3 @@ private:
 };
 
 }} // namespace ScIDE:Settings
-
-#endif

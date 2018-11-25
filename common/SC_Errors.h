@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Errors_
-#define _SC_Errors_
+#pragma once
 
 typedef int SCErr;
 
@@ -55,5 +54,3 @@ enum {
 
 	kSCErr_NumErrors
 };
-
-#endif

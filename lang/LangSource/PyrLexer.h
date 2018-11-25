@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _PYRLEXER_H_
-#define _PYRLEXER_H_
+#pragma once
 
 #include "PyrSlot.h"
 #include "PyrSymbol.h"
@@ -140,4 +139,3 @@ extern int radixcharpos, decptpos;
 
 int rtf2txt(char* txt);
 int html2txt(char* txt);
-#endif

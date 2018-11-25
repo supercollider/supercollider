@@ -47,6 +47,10 @@ QcTreeWidget::QcTreeWidget()
   connect( this, SIGNAL( currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*) ),
            this, SIGNAL( currentItemChanged() ) );
 
+  connect( this, SIGNAL( itemExpanded(QTreeWidgetItem*) ),
+           this, SLOT( onExpanded(QTreeWidgetItem*) ) );
+  connect( this, SIGNAL( itemCollapsed(QTreeWidgetItem*) ),
+           this, SLOT( onCollapsed(QTreeWidgetItem*) ) );
 }
 
 QVariantList QcTreeWidget::columns() const
@@ -69,6 +73,16 @@ void QcTreeWidget::setColumns( const QVariantList & varList )
   Q_FOREACH( const QVariant & var, varList )
     labels << var.toString();
   setHeaderLabels( labels );
+}
+
+void QcTreeWidget::onExpanded(QTreeWidgetItem* item)
+{
+  Q_EMIT( expanded(QcTreeWidget::Item::safePtr( item )) );
+}
+
+void QcTreeWidget::onCollapsed(QTreeWidgetItem* item)
+{
+  Q_EMIT( collapsed(QcTreeWidget::Item::safePtr( item )) );
 }
 
 QcTreeWidget::ItemPtr QcTreeWidget::currentItem() const
@@ -179,14 +193,14 @@ QWidget * QcTreeWidget::itemWidget( const QcTreeWidget::ItemPtr &item, int colum
   return item ? QTreeWidget::itemWidget( item, column ) : 0;
 }
 
-void QcTreeWidget::setItemWidget( const QcTreeWidget::ItemPtr &item, int column, QObjectProxy *o )
+void QcTreeWidget::setItemWidget( const QcTreeWidget::ItemPtr &item, int column, QWidget *o )
 {
   if( !item ) return;
 
-  QWidget *w = qobject_cast<QWidget*>(o->object());
-  if( !w ) return;
+  if( !o )
+    return;
 
-  QTreeWidget::setItemWidget( item, column, w );
+  QTreeWidget::setItemWidget( item, column, o );
 }
 
 void QcTreeWidget::removeItemWidget( const QcTreeWidget::ItemPtr &item, int column )
@@ -197,6 +211,19 @@ void QcTreeWidget::removeItemWidget( const QcTreeWidget::ItemPtr &item, int colu
 void QcTreeWidget::sort( int column, bool descending )
 {
   sortItems( column, descending ? Qt::DescendingOrder : Qt::AscendingOrder );
+}
+
+int QcTreeWidget::columnWidth( int column )
+{
+  if ( column < 0 || column >= columnCount() )
+      return -1;
+  else
+      return QTreeWidget::columnWidth( column );
+}
+
+void QcTreeWidget::setColumnWidth( int column, int width )
+{
+  QTreeWidget::setColumnWidth( column, width );
 }
 
 void QcTreeWidget::keyPressEvent( QKeyEvent *e )

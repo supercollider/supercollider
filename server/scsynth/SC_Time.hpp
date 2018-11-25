@@ -19,8 +19,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_TIME_HPP
-#define SC_TIME_HPP
+#pragma once
 
 #include "../../common/SC_Lock.h" // for chrono
 #include "SC_Types.h"
@@ -76,7 +75,3 @@ static inline int32 timeSeed()
 
 	return (int32)secs.count() ^ (int32)nsecs.count() ^ count--;
 }
-
-
-
-#endif // SC_TIME_HPP

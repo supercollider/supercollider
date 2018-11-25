@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SCOPE_H
-#define QC_SCOPE_H
+#pragma once
 
 #include "../QcHelper.h"
 
@@ -79,5 +78,3 @@ class QcScope : public QWidget, QcHelper
     QList<QColor> colors;
     QColor _bkg;
 };
-
-#endif

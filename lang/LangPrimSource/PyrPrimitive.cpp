@@ -4301,17 +4301,9 @@ void initLIDPrimitives();
 	initLIDPrimitives();
 #endif
 
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
-
 void initSerialPrimitives();
 	initSerialPrimitives();
 
-#ifdef HAVE_WII
-void initWiiPrimitives();
-	initWiiPrimitives();
-#endif
-
-#endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
@@ -4320,11 +4312,6 @@ void initCoreAudioPrimitives();
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
-#endif
-
-#ifdef __APPLE__
-	void initSpeechPrimitives();
-		initSpeechPrimitives();
 #endif
 
 #ifdef SC_QT

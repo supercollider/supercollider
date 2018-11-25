@@ -60,9 +60,6 @@ returns:: an array with a fibonacci series of this size beginning with strong::a
 method:: factors
 returns:: the prime factors as array.
 
-method:: factorial
-returns:: the factorial of this.
-
 
 subsection:: Random Numbers
 See also: link::Guides/Randomness::
@@ -202,6 +199,18 @@ discussion::
 code::
 23.indexOfPrime;
 25.indexOfPrime;
+::
+
+
+subsection:: Integer Math
+
+method:: factorial
+returns:: the factorial of the receiver as an integer. This will overflow for numbers code::> 12:: and throw an error. Floating point factorials can be used in such cases (see: link::Classes/SimpleNumber#-factorial::).
+
+discussion::
+code::
+12.factorial
+23.0.factorial // for larger factorials, use floats.
 ::
 
 

@@ -1,108 +1,78 @@
-Welcome to SuperCollider!
+[SuperCollider](https://supercollider.github.io/) [![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider) [![Appveyor](https://ci.appveyor.com/api/projects/status/github/supercollider/supercollider?branch=develop&svg=true)](https://ci.appveyor.com/project/brianlheim/supercollider-mu8dk)
 =========================
 
-[![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider) [![Appveyor](https://ci.appveyor.com/api/projects/status/github/supercollider/supercollider?branch=develop&svg=true)](https://ci.appveyor.com/project/brianlheim/supercollider-mu8dk) | [Join us on Slack](https://join.slack.com/t/scsynth/shared_invite/enQtMjk0MzA0NzgyOTkyLTYwNjdmYjFmNWY4NGIyZWM2YWY1NzZhMjM3MWQ0MmEwZTZkZDExOTRjMWI2NjBiMGQ1NTg1NDQyZjExNWFjZGM)
+**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
 
-**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It is free and open source software available for Windows, macOS, and Linux.
+- **scsynth**, a real-time audio server with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing
+- **supernova**, an alternative server to scsynth with support for parallel DSP on multi-core processors
+- **sclang**, an interpreted programming language that controls the servers
+- **scide**, an editing environment for sclang with an integrated help system
 
-SuperCollider features three major components:
+sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
 
-- scsynth, a real-time audio server, forms the core of the platform. It features 400+ unit generators ("UGens") for analysis, synthesis, and processing. Some of the audio techniques it supports include additive synthesis, subtractive, FM, granular, FFT, and physical modelling. You can write your own UGens in C++, and users have already contributed several hundred more to the sc3-plugins repository.
-- sclang, an interpreted programming language, controls scsynth via Open Sound Control. You can use sclang for algorithmic sequencing, connecting your app to external hardware including MIDI controllers, or writing GUIs and visual displays. sclang has a stock of user-contributed extensions called Quarks.
-- scide is an editor for sclang with an integrated help system.
+SuperCollider is written in C++11 using several third-party libraries, including Qt and Boost.
 
-SuperCollider was developed by James McCartney and originally released in 1996. In 2002, he generously released it as free software under the GNU General Public License. It is now maintained and developed by an active and enthusiastic community.
+Install
+-------
 
-http://supercollider.github.io/
+macOS and Windows builds for stable releases are provided at our [downloads page][downloads page]. See the [macOS README](README_MACOS.md) and [Windows README](README_WINDOWS.md) for instructions on usage, and how to build SC yourself.
 
-This README is a first help for anyone new to SuperCollider. There are many
-good resources available for learning SuperCollider, with up to date links from
-the site listed above, including links to forums and mailing lists.
+To get the latest stable version, Linux users will need to build SuperCollider themselves. See the [Linux README](README_LINUX.md) for instructions.
 
+[downloads page]: https://supercollider.github.io/download
 
-Usage
+### Platform requirements
+
+The minimum supported version of macOS is 10.10 Yosemite; the minimum supported version of Windows
+is Windows Vista.
+
+Learn
 -----
 
-SuperCollider consists of three separate components:
+The official docs can be viewed in the SuperCollider IDE's built-in documentation browser. You can also view them online at [doc.sccode.org](http://doc.sccode.org/).
 
-1. scsynth or supernova - audio engine (the "server")
-2. sclang - programming language runtime interpreter including Qt graphical user interfaces
-3. IDE (integrated development environment) - an editor for writing code and running supercollider
+We recommend the following resources for learning SC:
 
-To begin using SuperCollider, you usually start up the IDE:
+- [A Gentle Introduction to SuperCollider](https://works.bepress.com/bruno-ruviaro/3/), a free ebook by Bruno Ruviaro
+- [Eli Fieldsteel's video tutorials](https://www.youtube.com/playlist?list=PLPYzvS8A_rTaNDweXe6PX4CXSGq4iEWYC)
+- [Getting Started with SC](http://doc.sccode.org/Tutorials/Getting-Started/00-Getting-Started-With-SC.html)
+- [Nick Collins' SC tutorial](https://composerprogrammer.com/teaching/supercollider/sctutorial/tutorial.html)
+- [SCCode.org](http://sccode.org/), a repository of user-submitted examples
 
-- on Mac OS this is `SuperCollider.app`
-- on Linux and Windows, this is the `scide` executable
+Discuss
+-------
 
-You can get further help by using the IDE's integrated help
-system which can be invoked via the "Help" menu or using the key combination
-`Ctrl+D` (on Linux, Windows) or `Cmd+D` (on Mac OS). In the Help menu, you will
-also find an action that will take you directly to the help page on using the
-IDE.
+You can [sign up for mailing lists][list signup], and view the archives for [sc-users][sc-users archives] and [sc-dev][sc-dev archives].
 
-When starting the SuperCollider IDE, the audio server is not started
-automatically. You can start it using the "Language > Boot Server" menu action,
-or using the key combination `Ctrl+B` (on Linux, Windows) or `Cmd+B` (on Mac OS).
-This is just to remind you in case you're impatient and can't understand why
-you're not immediately getting sound.
+We also have a [forum][Discourse] and a [Slack chat][Slack].
 
-We suggest you to proceed by reading the tutorials available in the help
-system. Please note that some help pages are not up-to-date with the latest
-development of SuperCollider, especially when mentioning the code editing
-environment. Regarding this, it is best to refer to the help page specifically
-about the new SuperCollider IDE.
+Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to all the above communities.
 
-Also, please explore the IDE menus, which will let you discover a lot of
-functionality of the coding environment.
+[list signup]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+[sc-users archives]: https://www.listarc.bham.ac.uk/lists/sc-users/
+[sc-dev archives]: https://www.listarc.bham.ac.uk/lists/sc-dev/
+[Discourse]: https://scsynth.org/
+[Slack]: https://join.slack.com/t/scsynth/shared_invite/enQtMzk3OTY3MzE0MTAyLWY1ZGE1MTJjYmI5NTRkZjFmNjZmNmYxOWI0NDZkNjdkMzdkNjgxNTJhZGVlOTEwYjdjMDY5OWM0ZTA4NWFiOGY
 
-To get further information on SuperCollider usage or development, you should subscribe
-to the mailing lists:
+Contribute
+----------
 
-http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving SuperCollider.
 
-We hope you enjoy SuperCollider; please get involved in the active community!
+### [Code of Conduct](CODE_OF_CONDUCT.md)
 
+Please read our adopted [code of conduct](CODE_OF_CONDUCT.md) before contributing, so that you can understand what actions will and will not be tolerated.
 
-Reporting bugs
---------------
+### [Contributing Guide](CONTRIBUTING.md)
 
-Please report bugs to the github issue tracker or discuss on the sc-users mailing list.
-
-https://github.com/supercollider/supercollider/issues
+Read our [contributing guide](CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
 
 
-Building the Source Code
-------------------------
+### Good First Issues
 
-Platform specific build and install instructions can be found in the following files:
-
- - [README_MACOS.md](README_MACOS.md)
- - [README_LINUX.md](README_LINUX.md)
- - [README_WINDOWS.md](README_WINDOWS.md)
- - [README_IPHONE.md](README_IPHONE.md)
- - [README_JAILBROKEN_IPHONE.md](README_JAILBROKEN_IPHONE.md)
-
+To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or on the [forum][Discourse].
 
 License
 -------
 
-SuperCollider is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 2 of the License, or (at your option) any later
-version. See [COPYING](COPYING) for the license text.
-
-- SuperCollider 3.1 was released on 2007-10-31
-- SuperCollider 3.2 was released on 2008-02-19
-- SuperCollider 3.3 was released on 2009-04-30
-- SuperCollider 3.4 was released on 2010-07-15
-- SuperCollider 3.5 was released on 2012-03-16
-- SuperCollider 3.6 was released on 2012-11-28
-- SuperCollider 3.7 was released on 2016-03-13
-- SuperCollider 3.8 was released on 2016-11-04
-- SuperCollider 3.9 was released on 2018-01-13
-
-Outro
------
-
-Thanks to James McCartney, for making this great piece of audio
-software publicly and freely available!
+SuperCollider is free software available under Version 3 the GNU General Public License. See [COPYING](COPYING) for details.

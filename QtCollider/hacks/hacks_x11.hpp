@@ -21,8 +21,7 @@
 ************************************************************************/
 
 
-#ifndef QC_HACKS_HACKS_X11_HPP
-#define QC_HACKS_HACKS_X11_HPP
+#pragma once
 
 #include <QtGlobal>
 
@@ -31,7 +30,5 @@
 #include <QX11Info>
 
 bool raise_window(Display * display, QWidget * window);
-
-#endif
 
 #endif

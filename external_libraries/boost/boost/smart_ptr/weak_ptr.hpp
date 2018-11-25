@@ -6,16 +6,17 @@
 //
 //  Copyright (c) 2001, 2002, 2003 Peter Dimov
 //
-// Distributed under the Boost Software License, Version 1.0. (See
-// accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 //
-//  See http://www.boost.org/libs/smart_ptr/weak_ptr.htm for documentation.
+//  See http://www.boost.org/libs/smart_ptr/ for documentation.
 //
 
 #include <memory> // boost.TR1 include order fix
 #include <boost/smart_ptr/detail/shared_count.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
+#include <boost/smart_ptr/detail/sp_noexcept.hpp>
 
 namespace boost
 {
@@ -31,7 +32,7 @@ public:
 
     typedef typename boost::detail::sp_element< T >::type element_type;
 
-    weak_ptr() BOOST_NOEXCEPT : px(0), pn() // never throws in 1.30+
+    BOOST_CONSTEXPR weak_ptr() BOOST_SP_NOEXCEPT : px(0), pn()
     {
     }
 
@@ -41,11 +42,11 @@ public:
 
 // ... except in C++0x, move disables the implicit copy
 
-    weak_ptr( weak_ptr const & r ) BOOST_NOEXCEPT : px( r.px ), pn( r.pn )
+    weak_ptr( weak_ptr const & r ) BOOST_SP_NOEXCEPT : px( r.px ), pn( r.pn )
     {
     }
 
-    weak_ptr & operator=( weak_ptr const & r ) BOOST_NOEXCEPT
+    weak_ptr & operator=( weak_ptr const & r ) BOOST_SP_NOEXCEPT
     {
         px = r.px;
         pn = r.pn;
@@ -58,7 +59,7 @@ public:
 //  The "obvious" converting constructor implementation:
 //
 //  template<class Y>
-//  weak_ptr(weak_ptr<Y> const & r): px(r.px), pn(r.pn) // never throws
+//  weak_ptr(weak_ptr<Y> const & r): px(r.px), pn(r.pn)
 //  {
 //  }
 //
@@ -81,7 +82,7 @@ public:
     weak_ptr( weak_ptr<Y> const & r )
 
 #endif
-    BOOST_NOEXCEPT : px(r.lock().get()), pn(r.pn)
+    BOOST_SP_NOEXCEPT : px(r.lock().get()), pn(r.pn)
     {
         boost::detail::sp_assert_convertible< Y, T >();
     }
@@ -98,7 +99,7 @@ public:
     weak_ptr( weak_ptr<Y> && r )
 
 #endif
-    BOOST_NOEXCEPT : px( r.lock().get() ), pn( static_cast< boost::detail::weak_count && >( r.pn ) )
+    BOOST_SP_NOEXCEPT : px( r.lock().get() ), pn( static_cast< boost::detail::weak_count && >( r.pn ) )
     {
         boost::detail::sp_assert_convertible< Y, T >();
         r.px = 0;
@@ -106,13 +107,13 @@ public:
 
     // for better efficiency in the T == Y case
     weak_ptr( weak_ptr && r )
-    BOOST_NOEXCEPT : px( r.px ), pn( static_cast< boost::detail::weak_count && >( r.pn ) )
+    BOOST_SP_NOEXCEPT : px( r.px ), pn( static_cast< boost::detail::weak_count && >( r.pn ) )
     {
         r.px = 0;
     }
 
     // for better efficiency in the T == Y case
-    weak_ptr & operator=( weak_ptr && r ) BOOST_NOEXCEPT
+    weak_ptr & operator=( weak_ptr && r ) BOOST_SP_NOEXCEPT
     {
         this_type( static_cast< weak_ptr && >( r ) ).swap( *this );
         return *this;
@@ -131,7 +132,7 @@ public:
     weak_ptr( shared_ptr<Y> const & r )
 
 #endif
-    BOOST_NOEXCEPT : px( r.px ), pn( r.pn )
+    BOOST_SP_NOEXCEPT : px( r.px ), pn( r.pn )
     {
         boost::detail::sp_assert_convertible< Y, T >();
     }
@@ -139,7 +140,7 @@ public:
 #if !defined(BOOST_MSVC) || (BOOST_MSVC >= 1300)
 
     template<class Y>
-    weak_ptr & operator=( weak_ptr<Y> const & r ) BOOST_NOEXCEPT
+    weak_ptr & operator=( weak_ptr<Y> const & r ) BOOST_SP_NOEXCEPT
     {
         boost::detail::sp_assert_convertible< Y, T >();
 
@@ -152,7 +153,7 @@ public:
 #if !defined( BOOST_NO_CXX11_RVALUE_REFERENCES )
 
     template<class Y>
-    weak_ptr & operator=( weak_ptr<Y> && r ) BOOST_NOEXCEPT
+    weak_ptr & operator=( weak_ptr<Y> && r ) BOOST_SP_NOEXCEPT
     {
         this_type( static_cast< weak_ptr<Y> && >( r ) ).swap( *this );
         return *this;
@@ -161,7 +162,7 @@ public:
 #endif
 
     template<class Y>
-    weak_ptr & operator=( shared_ptr<Y> const & r ) BOOST_NOEXCEPT
+    weak_ptr & operator=( shared_ptr<Y> const & r ) BOOST_SP_NOEXCEPT
     {
         boost::detail::sp_assert_convertible< Y, T >();
 
@@ -173,50 +174,50 @@ public:
 
 #endif
 
-    shared_ptr<T> lock() const BOOST_NOEXCEPT
+    shared_ptr<T> lock() const BOOST_SP_NOEXCEPT
     {
         return shared_ptr<T>( *this, boost::detail::sp_nothrow_tag() );
     }
 
-    long use_count() const BOOST_NOEXCEPT
+    long use_count() const BOOST_SP_NOEXCEPT
     {
         return pn.use_count();
     }
 
-    bool expired() const BOOST_NOEXCEPT
+    bool expired() const BOOST_SP_NOEXCEPT
     {
         return pn.use_count() == 0;
     }
 
-    bool _empty() const // extension, not in std::weak_ptr
+    bool _empty() const BOOST_SP_NOEXCEPT // extension, not in std::weak_ptr
     {
         return pn.empty();
     }
 
-    void reset() BOOST_NOEXCEPT // never throws in 1.30+
+    void reset() BOOST_SP_NOEXCEPT
     {
         this_type().swap(*this);
     }
 
-    void swap(this_type & other) BOOST_NOEXCEPT
+    void swap(this_type & other) BOOST_SP_NOEXCEPT
     {
         std::swap(px, other.px);
         pn.swap(other.pn);
     }
 
     template<typename Y>
-    void _internal_aliasing_assign(weak_ptr<Y> const & r, element_type * px2)
+    void _internal_aliasing_assign(weak_ptr<Y> const & r, element_type * px2) BOOST_SP_NOEXCEPT
     {
         px = px2;
         pn = r.pn;
     }
 
-    template<class Y> bool owner_before( weak_ptr<Y> const & rhs ) const BOOST_NOEXCEPT
+    template<class Y> bool owner_before( weak_ptr<Y> const & rhs ) const BOOST_SP_NOEXCEPT
     {
         return pn < rhs.pn;
     }
 
-    template<class Y> bool owner_before( shared_ptr<Y> const & rhs ) const BOOST_NOEXCEPT
+    template<class Y> bool owner_before( shared_ptr<Y> const & rhs ) const BOOST_SP_NOEXCEPT
     {
         return pn < rhs.pn;
     }
@@ -238,12 +239,12 @@ private:
 
 };  // weak_ptr
 
-template<class T, class U> inline bool operator<(weak_ptr<T> const & a, weak_ptr<U> const & b) BOOST_NOEXCEPT
+template<class T, class U> inline bool operator<(weak_ptr<T> const & a, weak_ptr<U> const & b) BOOST_SP_NOEXCEPT
 {
     return a.owner_before( b );
 }
 
-template<class T> void swap(weak_ptr<T> & a, weak_ptr<T> & b) BOOST_NOEXCEPT
+template<class T> void swap(weak_ptr<T> & a, weak_ptr<T> & b) BOOST_SP_NOEXCEPT
 {
     a.swap(b);
 }

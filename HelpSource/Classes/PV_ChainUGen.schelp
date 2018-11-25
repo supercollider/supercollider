@@ -115,7 +115,8 @@ The function that processes each bin. It should be a function that takes code:: 
 code::
 // example function
 { | magnitude, phase, bin, index |
-	[mags.reverse, phases.reverse] // e.g. upside-down spectrum
+	// randomize magnitudes somewhat (noisier signal)
+	[magnitude * (5.0.rand2.dbamp), phase]
 }
 ::
 

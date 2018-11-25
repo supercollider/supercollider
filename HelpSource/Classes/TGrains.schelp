@@ -14,12 +14,12 @@ classmethods::
 method::ar
 
 argument::numChannels
-Number of output channels.
+The number of output channels.
 
 argument::trigger
 At each trigger, the following arguments are sampled and used as
 the arguments of a new grain. A trigger occurs when a signal
-changes from non-positive to positive value.
+changes from non-positive to a positive value.
 
 If the trigger is audio rate then the grains will start with
 sample accuracy.
@@ -30,7 +30,7 @@ buffer.
 
 argument::rate
 1.0 is normal, 2.0 is one octave up, 0.5 is one octave down -1.0
-is backwards normal rate… etc.
+is backward normal rate… etc.
 
 argument::centerPos
 The position in the buffer in seconds at which the grain envelope
@@ -54,7 +54,6 @@ argument::interp
 1, 2, or 4. Determines whether the grain uses (1) no
 interpolation, (2) linear interpolation, or (4) cubic
 interpolation.
-
 
 Examples::
 
@@ -110,8 +109,6 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }.scope(zoom: 4);
 )
 
-
-
 (
 {
 	var trate, dur, clk, pos, pan;
@@ -123,7 +120,6 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
 }.scope(zoom: 4);
 )
-
 
 (
 {
@@ -161,7 +157,6 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 }.scope(zoom: 4);
 )
 
-
 (
 {
 	var trate, dur;
@@ -170,7 +165,6 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	TGrains.ar(2, Impulse.ar(trate), b, (1.2 ** WhiteNoise.kr(3).round(1)), MouseX.kr(0,BufDur.kr(b)), dur, WhiteNoise.kr(0.6), 0.1);
 }.scope(zoom: 4);
 )
-
 
 // demand ugens as inputs
 (

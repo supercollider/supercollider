@@ -53,7 +53,7 @@
 # include <sys/param.h>
 #endif
 
-#include "../supernova/utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 
 // undefine the shadowed scfft functions
 #undef scfft_create
@@ -296,6 +296,7 @@ void World_LoadGraphDefs(World* world)
 namespace scsynth {
 void startAsioThread();
 void stopAsioThread();
+bool asioThreadStarted();
 }
 
 
@@ -462,17 +463,20 @@ World* World_New(WorldOptions *inOptions)
 				scprintf("start audio failed.\n");
 				return 0;
 			}
-			
+
 #ifdef __APPLE__
 			SC::Apple::disableAppNap();
 #endif
-			
-			
+
+
 		} else {
 			hw->mAudioDriver = 0;
 		}
 
-		scsynth::startAsioThread();
+		if (!scsynth::asioThreadStarted()){
+			scsynth::startAsioThread();
+		}
+
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
 		World_Cleanup(world,true);
@@ -592,7 +596,8 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	sndfileFormatInfoFromStrings(&outputFileInfo,
 		inOptions->mNonRealTimeOutputHeaderFormat, inOptions->mNonRealTimeOutputSampleFormat);
 
-	world->hw->mNRTOutputFile = sf_open(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
+	world->hw->mNRTOutputFile = sndfileOpenFromCStr(
+		inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
 	sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, NULL, SF_TRUE);
 
 	if (!world->hw->mNRTOutputFile)
@@ -601,7 +606,8 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	outputFileBuf = (float*)calloc(1, world->mNumOutputs * fileBufFrames * sizeof(float));
 
 	if (inOptions->mNonRealTimeInputFilename) {
-		world->hw->mNRTInputFile = sf_open(inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
+		world->hw->mNRTInputFile = sndfileOpenFromCStr(
+			inOptions->mNonRealTimeInputFilename, SFM_READ, &inputFileInfo);
 		if (!world->hw->mNRTInputFile)
 			throw std::runtime_error("Couldn't open non real time input file.\n");
 
@@ -1003,7 +1009,9 @@ void World_Cleanup(World *world, bool unload_plugins)
 {
 	if (!world) return;
 
-	scsynth::stopAsioThread();
+	if (scsynth::asioThreadStarted()){
+		scsynth::stopAsioThread();
+	}
 
 	if(unload_plugins)
 		deinitialize_library();

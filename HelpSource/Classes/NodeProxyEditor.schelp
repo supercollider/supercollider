@@ -1,6 +1,6 @@
 class:: NodeProxyEditor
 summary:: editor for a nodeproxy - replaced by NdefGui!
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/NdefGui
 
 description::

@@ -29,10 +29,10 @@ namespace QtCollider {
 void WebPage::triggerAction ( WebAction action, bool checked )
 {
   switch ( action ) {
-    case QWebPage::Reload:
+    case QWebEnginePage::Reload:
       if( _delegateReload ) return;
       break;
-    case QWebPage::Copy:
+    case QWebEnginePage::Copy:
       // ignore text formatting, copy only plain text:
       QApplication::clipboard()->setText( selectedText() );
       return;
@@ -40,12 +40,25 @@ void WebPage::triggerAction ( WebAction action, bool checked )
       break;
   }
 
-  QWebPage::triggerAction( action, checked );
+  QWebEnginePage::triggerAction( action, checked );
 }
 
-void WebPage::javaScriptConsoleMessage ( const QString & msg, int line, const QString & src )
+
+void WebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString& message, int lineNumber, const QString& sourceID)
 {
-  Q_EMIT( jsConsoleMsg(msg,line,src) );
+  Q_EMIT( jsConsoleMsg(message, lineNumber, sourceID) );
+}
+
+bool WebPage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
+{
+  if (type == QWebEnginePage::NavigationTypeLinkClicked) {
+    Q_EMIT(navigationRequested(url, type, isMainFrame));
+    if (_delegateNavigation) {
+      return false;
+    }
+  }
+  return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
 }
 
 } // namespace QtCollider
+

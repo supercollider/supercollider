@@ -131,6 +131,7 @@ namespace boost { namespace fusion
             void
             check_delim(Char c) const
             {
+                using namespace std;
                 if (!isspace(c))
                 {
                     if (stream.get() != c)

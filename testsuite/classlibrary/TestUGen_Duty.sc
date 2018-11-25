@@ -1,15 +1,23 @@
 TestUGen_Duty : UnitTest {
 
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+		this.bootServer(server);
+	}
+
+	tearDown {
+		server.quit.remove;
+	}
+
 	/*
 	func is called with dt (time between adjacent values) and the values as arguments.
 	*/
-
 	callAudioRateTestForFirstNFrames { |numFrames, func|
 		var values;
-		var server = Server.default;
 		var dt, dur, action;
-
-		if(server.serverRunning.not) { "server should be running for this test".throw };
+		var cond = Condition();
 
 		values = [1, 0.15, 1.1, 0.25, 2, 0.5];
 
@@ -21,8 +29,11 @@ TestUGen_Duty : UnitTest {
 				values.stutter(numFrames),
 				"Duty should output exact values at audio rate. Tested with % frames per value".format(numFrames)
 			);
+			cond.test_(true).signal;
 		};
 		{ func.value(dt, values) }.loadToFloatArray(dur, server, action);
+
+		cond.wait;
 	}
 
 	test_ar_1_frame {

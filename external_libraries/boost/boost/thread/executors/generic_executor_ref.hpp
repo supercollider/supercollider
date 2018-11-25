@@ -41,7 +41,7 @@ namespace boost
      * \par Synchronization
      * The completion of all the closures happen before the completion of the executor destructor.
      */
-    ~executor_ref() {};
+    ~executor_ref() {}
 
     /**
      * \par Effects

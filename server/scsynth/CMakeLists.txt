@@ -28,11 +28,6 @@ elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
-if (NOT Boost_FOUND)
-	file(GLOB boost_system_sources ../../external_libraries/boost/libs/system/src/*cpp)
-	file(GLOB boost_filesystem_sources ../../external_libraries/boost/libs/filesystem/src/*cpp)
-endif()
-
 set(scsynth_sources
 	SC_BufGen.cpp
 
@@ -67,9 +62,6 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
-
-	${boost_system_sources}
-	${boost_filesystem_sources}
 )
 
 if(APPLE)
@@ -155,9 +147,8 @@ elseif(NOT NO_LIBSNDFILE)
 endif(SNDFILE_FOUND)
 
 if(UNIX AND NOT APPLE)
-	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/SuperCollider/plugins\"")
+	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
 endif()
-
 
 if(NOT NO_AVAHI)
 	if(APPLE)

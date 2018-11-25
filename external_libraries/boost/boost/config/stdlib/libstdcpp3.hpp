@@ -101,8 +101,8 @@
 
 //
 //  Decide which version of libstdc++ we have, normally
-//  stdlibc++ C++0x support is detected via __GNUC__, __GNUC_MINOR__, and possibly
-//  __GNUC_PATCHLEVEL__ at the suggestion of Jonathan Wakely, one of the stdlibc++
+//  libstdc++ C++0x support is detected via __GNUC__, __GNUC_MINOR__, and possibly
+//  __GNUC_PATCHLEVEL__ at the suggestion of Jonathan Wakely, one of the libstdc++
 //  developers. He also commented:
 //
 //       "I'm not sure how useful __GLIBCXX__ is for your purposes, for instance in
@@ -110,7 +110,7 @@
 //       Although 4.3.0 was released earlier than 4.2.4, it has better C++0x support
 //       than any release in the 4.2 series."
 //
-//  Another resource for understanding stdlibc++ features is:
+//  Another resource for understanding libstdc++ features is:
 //  http://gcc.gnu.org/onlinedocs/libstdc++/manual/status.html#manual.intro.status.standard.200x
 //
 //  However, using the GCC version number fails when the compiler is clang since this
@@ -141,6 +141,37 @@
 #  define BOOST_LIBSTDCXX_VERSION 40400
 #elif __has_include(<array>)
 #  define BOOST_LIBSTDCXX_VERSION 40300
+#endif
+
+#if (BOOST_LIBSTDCXX_VERSION < 50100)
+// libstdc++ does not define this function as it's deprecated in C++11, but clang still looks for it,
+// defining it here is a terrible cludge, but should get things working:
+extern "C" char *gets (char *__s);
+#endif
+//
+// clang is unable to parse some GCC headers, add those workarounds here:
+//
+#if BOOST_LIBSTDCXX_VERSION < 50000
+#  define BOOST_NO_CXX11_HDR_REGEX
+#endif
+//
+// GCC 4.7.x has no __cxa_thread_atexit which
+// thread_local objects require for cleanup:
+//
+#if BOOST_LIBSTDCXX_VERSION < 40800
+#  define BOOST_NO_CXX11_THREAD_LOCAL
+#endif
+//
+// Early clang versions can handle <chrono>, not exactly sure which versions
+// but certainly up to clang-3.8 and gcc-4.6:
+//
+#if (__clang_major__ < 5)
+#  if BOOST_LIBSTDCXX_VERSION < 40800
+#     define BOOST_NO_CXX11_HDR_FUTURE
+#     define BOOST_NO_CXX11_HDR_MUTEX
+#     define BOOST_NO_CXX11_HDR_CONDITION_VARIABLE
+#     define BOOST_NO_CXX11_HDR_CHRONO
+#  endif
 #endif
 
 //
@@ -216,15 +247,17 @@
 #if (BOOST_LIBSTDCXX_VERSION < 40600) || !defined(BOOST_LIBSTDCXX11)
 #  define BOOST_NO_CXX11_HDR_TYPEINDEX
 #  define BOOST_NO_CXX11_ADDRESSOF
+#  define BOOST_NO_CXX17_ITERATOR_TRAITS
 #endif
 
 //  C++0x features in GCC 4.7.0 and later
 //
 #if (BOOST_LIBSTDCXX_VERSION < 40700) || !defined(BOOST_LIBSTDCXX11)
 // Note that although <chrono> existed prior to 4.7, "steady_clock" is spelled "monotonic_clock"
-// so 4.7.0 is the first truely conforming one.
+// so 4.7.0 is the first truly conforming one.
 #  define BOOST_NO_CXX11_HDR_CHRONO
 #  define BOOST_NO_CXX11_ALLOCATOR
+#  define BOOST_NO_CXX11_POINTER_TRAITS
 #endif
 //  C++0x features in GCC 4.8.0 and later
 //

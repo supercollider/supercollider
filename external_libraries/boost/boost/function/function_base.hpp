@@ -689,6 +689,10 @@ public: // should be protected, but GCC 2.95.3 will fail to allow access
   mutable detail::function::function_buffer functor;
 };
 
+#if defined(BOOST_CLANG)
+#   pragma clang diagnostic push
+#   pragma clang diagnostic ignored "-Wweak-vtables"
+#endif
 /**
  * The bad_function_call exception class is thrown when a boost::function
  * object is invoked
@@ -698,6 +702,9 @@ class bad_function_call : public std::runtime_error
 public:
   bad_function_call() : std::runtime_error("call to empty boost::function") {}
 };
+#if defined(BOOST_CLANG)
+#   pragma clang diagnostic pop
+#endif
 
 #ifndef BOOST_NO_SFINAE
 inline bool operator==(const function_base& f,

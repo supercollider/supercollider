@@ -15,7 +15,7 @@
 #include <boost/chrono/thread_clock.hpp>
 #include <boost/chrono/io/ios_base_state.hpp>
 #include <string>
-#include <iostream>
+#include <iosfwd>
 #include <ios>
 #include <locale>
 #include <algorithm>

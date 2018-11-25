@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_CORE_SC_LEXER_HPP_INCLUDED
-#define SCIDE_CORE_SC_LEXER_HPP_INCLUDED
+#pragma once
 
 #include "../widgets/code_editor/tokens.hpp"
 
@@ -86,5 +85,3 @@ private:
 };
 
 }
-
-#endif // SCIDE_CORE_SC_LEXER_HPP_INCLUDED

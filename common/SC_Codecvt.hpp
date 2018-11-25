@@ -36,9 +36,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  *  02110-1301 USA
  */
-
-#ifndef SC_CODECVT_HPP_INCLUDED
-#define SC_CODECVT_HPP_INCLUDED
+#pragma once
 
 #include <string> // string
 #include <boost/filesystem/path.hpp> // path
@@ -137,5 +135,3 @@ inline std::string native_to_utf8_str(const std::string& s)
 }
 
 } // SC_Codecvt
-
-#endif // SC_CODECVT_HPP_INCLUDED

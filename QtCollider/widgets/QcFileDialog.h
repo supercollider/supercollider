@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_FILE_DIALOG_H
-#define QC_FILE_DIALOG_H
+#pragma once
 
 #include "../Common.h"
 
@@ -33,8 +32,14 @@ class QcFileDialog : public QObject
 
 public:
 
+  /**
+   * \param fileMode What the user may select in the dialog
+   * \param acceptMode Whether for opening or saving files
+   * \param startDir What location the directory will open at
+   */
   Q_INVOKABLE QcFileDialog( int fileMode = QFileDialog::ExistingFile,
-                            int acceptMode = QFileDialog::AcceptOpen );
+                            int acceptMode = QFileDialog::AcceptOpen,
+                            const QString& startDir = QDir::home().path());
 
   ~QcFileDialog() {
     if (dialog) { dialog->deleteLater(); };
@@ -72,5 +77,3 @@ private:
 
   QPointer<QFileDialog> dialog;
 };
-
-#endif // QC_FILE_DIALOG_H

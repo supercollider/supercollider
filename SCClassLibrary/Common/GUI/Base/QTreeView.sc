@@ -41,6 +41,14 @@ TreeView : View {
 		this.invokeMethod( \sort, [column, descending] )
 	}
 
+	columnWidth { arg column;
+		^this.invokeMethod( \columnWidth, [column] )
+	}
+
+	setColumnWidth { arg column, width;
+		this.invokeMethod( \setColumnWidth, [column, width] )
+	}
+
 	itemPressedAction_ { arg action;
 		if(itemPressedAction.notNil) {
 			this.disconnectFunction( 'itemPressedAction()', itemPressedAction );

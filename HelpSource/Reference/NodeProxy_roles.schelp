@@ -1,6 +1,6 @@
 title:: NodeProxy roles
 summary:: Roles in NodeProxy
-categories:: Libraries>JITLib>NodeProxy
+categories:: JITLib>NodeProxy
 related:: Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
 
 Similar to Adverbs (see link::Guides/J-concepts-in-SC::), roles allow to specify how a source for a link::Classes/NodeProxy:: is being used. A role is an association of a link::Classes/Symbol:: and the new proxy source object.

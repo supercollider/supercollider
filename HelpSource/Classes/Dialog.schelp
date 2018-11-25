@@ -1,10 +1,12 @@
 CLASS:: Dialog
 summary:: Shows various system dialogs
 categories:: GUI>Accessories
+related:: Classes/FileDialog, Classes/File
 
 DESCRIPTION::
 This class allows to show various system dialogs. link::#*openPanel:: will show a dialog for selecting a file to open, and link::#*savePanel:: will show a dialog for selecting or creating a file to save to.
 
+The methods here are convenience functions built on top of link::Classes/FileDialog::.
 
 CLASSMETHODS::
 PRIVATE:: key
@@ -18,6 +20,9 @@ METHOD:: openPanel
 		An object to be evaluated when Cancel is pressed.
 	ARGUMENT:: multipleSelection
 		A Boolean indicating whether multiple files can be selected.
+	ARGUMENT:: path
+		A string. The dialog will initially display the contents of this path. The default is the current
+		user's home directory.
 	DISCUSSION::
 	Example:
 code::
@@ -37,6 +42,9 @@ METHOD:: savePanel
 		An object to be evaluated when OK is pressed. The chosen filename (as an absolute path) is passed as a String as argument. If the file already exists, the user will be asked to confirm.
 	ARGUMENT:: cancelFunc
 		An object to be evaluated when Cancel is pressed.
+	ARGUMENT:: path
+		A string. The dialog will initially display the contents of this path. The default is the current
+		user's home directory.
 	DISCUSSION::
 	Example:
 code::

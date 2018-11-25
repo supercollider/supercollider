@@ -34,6 +34,7 @@
 #include <QImage>
 #include <QUrl>
 #include <QPainter>
+#include <QtSvg/QSvgRenderer>
 #include <QImageReader>
 #include <QImageWriter>
 #include <QEventLoop>
@@ -52,7 +53,7 @@ QPainter *imgPainter = 0;
 
 QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-    if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
   QString path( QtCollider::get<QString>(a) );
   QPixmap pixmap(path);
@@ -62,6 +63,39 @@ QC_LANG_PRIMITIVE( QImage_NewPath, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   Image *image = new Image();
   image->setPixmap(pixmap);
   initialize_image_object(g, slotRawObject(r), image);
+  return errNone;
+}
+	
+QC_LANG_PRIMITIVE( QImage_NewSVG, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+
+  QString   path( QtCollider::get<QString>(a) );
+  QSize     size(QtCollider::get<QSize>(a + 1));
+  QString   element(QtCollider::get<QString>(a + 2));
+  
+  QPainter painter;
+  QSvgRenderer svgRenderer(path);
+
+  if (size.isEmpty() || size.isNull()) {
+    size = svgRenderer.defaultSize();
+  }
+  
+  QPixmap pixmap(size);
+  pixmap.fill(Qt::transparent);
+  
+  painter.begin(&pixmap);
+  if (element.isEmpty()) {
+    svgRenderer.render(&painter);
+  } else {
+    svgRenderer.render(&painter, element);
+  }
+  painter.end();
+
+  Image *image = new Image();
+  image->setPixmap(pixmap);
+  initialize_image_object(g, slotRawObject(r), image);
+  
   return errNone;
 }
 
@@ -500,11 +534,36 @@ QC_LANG_PRIMITIVE( QImage_ColorToPixel, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
    QC::set( r, pixel );
    return errNone;
 }
+	
+QC_LANG_PRIMITIVE( QImage_GetDevicePixelRatio, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+	
+  Image *image = to_image(r);
+  SetFloat( r, image->getDevicePixelRatio() );
+  return errNone;
+}
+
+QC_LANG_PRIMITIVE( QImage_SetDevicePixelRatio, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+  if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+	
+  double ratio = 1;
+  int err = slotDoubleVal(a, &ratio);
+  if (err == errNone) {
+    Image* image = to_image(r);
+    image->setDevicePixelRatio(ratio);
+  }
+
+  return err;
+}
+
 
 void defineQImagePrimitives()
 {
   LangPrimitiveDefiner definer;
   definer.define<QImage_NewPath>();
+  definer.define<QImage_NewSVG>();
   definer.define<QImage_NewURL>();
   definer.define<QImage_NewEmpty>();
   definer.define<QImage_NewFromWindow>();
@@ -526,6 +585,8 @@ void defineQImagePrimitives()
   definer.define<QImage_Formats>();
   definer.define<QImage_PixelToColor>();
   definer.define<QImage_ColorToPixel>();
+  definer.define<QImage_GetDevicePixelRatio>();
+  definer.define<QImage_SetDevicePixelRatio>();
 }
 
 } // namespace QtCollider

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef _SC_QT_COMMON_H
-#define _SC_QT_COMMON_H
+#pragma once
 
 #include "debug.h"
 
@@ -96,11 +95,17 @@ namespace QtCollider {
   QC_DO_SYMBOL(Size); \
   QC_DO_SYMBOL(QPalette); \
   QC_DO_SYMBOL(Font); \
+  QC_DO_SYMBOL(QCallback); \
+  QC_DO_SYMBOL(WebPage); \
   QC_DO_SYMBOL(QObject); \
   QC_DO_SYMBOL(Layout); \
+  QC_DO_SYMBOL(ScrollCanvas); \
   QC_DO_SYMBOL(TreeViewItem); \
   QC_DO_SYMBOL(Gradient); \
   QC_DO_SYMBOL(HiliteGradient); \
+  QC_DO_SYMBOL(AbstractMenuAction); \
+  QC_DO_SYMBOL(Menu); \
+  QC_DO_SYMBOL(View); \
   QC_DO_SYMBOL(Image);
 
 #define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
@@ -111,5 +116,3 @@ QC_DO_SYMBOLS
 #define SC_CLASS( SYM ) SC_SYM(SYM)->u.classobj
 
 }
-
-#endif //_SC_QT_COMMON_H

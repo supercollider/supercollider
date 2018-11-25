@@ -62,6 +62,18 @@ namespace boost
 {
     namespace hash_detail
     {
+#if defined(_HAS_AUTO_PTR_ETC) && !_HAS_AUTO_PTR_ETC
+        template <typename T>
+        struct hash_base
+        {
+            typedef T argument_type;
+            typedef std::size_t result_type;
+        };
+#else
+        template <typename T>
+        struct hash_base : std::unary_function<T, std::size_t> {};
+#endif
+
         struct enable_hash_value { typedef std::size_t type; };
 
         template <typename T> struct basic_numbers {};
@@ -92,6 +104,16 @@ namespace boost
 
 #if !defined(BOOST_NO_INTRINSIC_WCHAR_T)
         template <> struct basic_numbers<wchar_t> :
+            boost::hash_detail::enable_hash_value {};
+#endif
+
+#if !defined(BOOST_NO_CXX11_CHAR16_T)
+        template <> struct basic_numbers<char16_t> :
+            boost::hash_detail::enable_hash_value {};
+#endif
+
+#if !defined(BOOST_NO_CXX11_CHAR32_T)
+        template <> struct basic_numbers<char32_t> :
             boost::hash_detail::enable_hash_value {};
 #endif
 
@@ -419,7 +441,7 @@ namespace boost
 
 #define BOOST_HASH_SPECIALIZE(type) \
     template <> struct hash<type> \
-         : public std::unary_function<type, std::size_t> \
+         : public boost::hash_detail::hash_base<type> \
     { \
         std::size_t operator()(type v) const \
         { \
@@ -429,7 +451,7 @@ namespace boost
 
 #define BOOST_HASH_SPECIALIZE_REF(type) \
     template <> struct hash<type> \
-         : public std::unary_function<type, std::size_t> \
+         : public boost::hash_detail::hash_base<type> \
     { \
         std::size_t operator()(type const& v) const \
         { \
@@ -443,6 +465,12 @@ namespace boost
     BOOST_HASH_SPECIALIZE(unsigned char)
 #if !defined(BOOST_NO_INTRINSIC_WCHAR_T)
     BOOST_HASH_SPECIALIZE(wchar_t)
+#endif
+#if !defined(BOOST_NO_CXX11_CHAR16_T)
+    BOOST_HASH_SPECIALIZE(char16_t)
+#endif
+#if !defined(BOOST_NO_CXX11_CHAR32_T)
+    BOOST_HASH_SPECIALIZE(char32_t)
 #endif
     BOOST_HASH_SPECIALIZE(short)
     BOOST_HASH_SPECIALIZE(unsigned short)
@@ -458,6 +486,12 @@ namespace boost
     BOOST_HASH_SPECIALIZE_REF(std::string)
 #if !defined(BOOST_NO_STD_WSTRING) && !defined(BOOST_NO_INTRINSIC_WCHAR_T)
     BOOST_HASH_SPECIALIZE_REF(std::wstring)
+#endif
+#if !defined(BOOST_NO_CXX11_CHAR16_T)
+    BOOST_HASH_SPECIALIZE_REF(std::basic_string<char16_t>)
+#endif
+#if !defined(BOOST_NO_CXX11_CHAR32_T)
+    BOOST_HASH_SPECIALIZE_REF(std::basic_string<char32_t>)
 #endif
 
 #if !defined(BOOST_NO_LONG_LONG)
@@ -483,7 +517,7 @@ namespace boost
 
     template <class T>
     struct hash<T*>
-        : public std::unary_function<T*, std::size_t>
+        : public boost::hash_detail::hash_base<T*>
     {
         std::size_t operator()(T* v) const
         {
@@ -516,7 +550,7 @@ namespace boost
         {
             template <class T>
             struct inner
-                : public std::unary_function<T, std::size_t>
+                : public boost::hash_detail::hash_base<T>
             {
                 std::size_t operator()(T val) const
                 {
