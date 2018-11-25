@@ -11,9 +11,16 @@ Release dates of 3.x versions:
 - 3.7: 2016-03-13
 - 3.8: 2016-11-04
 - 3.9: 2018-01-13
+- 3.10: 2018-11-24
 
-3.10.0-rc1 (2018-11-12)
+3.10.0 (2018-11-24)
 =========================
+
+Contributors to this release: adcxyz, bagong, brianlheim, dkmayer, dmorgan-github, dyfer, g-roma,
+geoffroymontel, gusano, hardiksingh-rathore, htor, jamshark70, jpburstrom, LFSaw, lnihlen, lvm,
+markwheeler, mhetrick, miczac, muellmusik, nilninull, novadeviator, orbsmiv, patrickdupuis, paum3,
+prko, redFrik, sbl, scztt, sensestage, shimpe, simonvanderveldt, smiarx, smrg-lm, snappizz,
+sonoro1234, telephon, tem44, widp, Xon77, and many others.
 
 Known issues
 ------------
