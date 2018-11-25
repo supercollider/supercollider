@@ -88,53 +88,34 @@ void Theme::fillDefault()
 
 void Theme::fillClassic()
 {
-    QColor background("#ffffff");
-    QColor white("#ffffff");
-    QColor black("#000000");
-    QColor gray("#888888");
-    QColor gray_current_line("#f4f4f4");
     QColor orange("#F8A200");
-    QColor yellow("#ffff00");
-    QColor green_matched_brackets("#2bc93d");
-    QColor red_mismatched_brackets("#960000");
-    QColor gray_line_numbers("#b8b8b8");
     QColor pale_blue("#3333bf");
-    QColor blue_keyword("#0000e6");
-    QColor blue_class("#0000d2");
-    QColor blue_selection("#308cc6");
-    QColor brown("#8c4614");
-    QColor purple("#980099");
     QColor green("#007300");
-    QColor gray_string("#5f5f5f");
-    QColor red_comment("#bf0000");
-    QColor red_post_window("#d11c24");
-    QColor orange_post_window("#a57706");
-    QColor yellow_post_window("#738a05");
 
-    add("text", black, background);
-    add("currentLine", black, gray_current_line);
-    add("searchResult", black, orange);
-    add("matchingBrackets", green_matched_brackets, yellow, true);
-    add("mismatchedBrackets", white, red_mismatched_brackets);
-    add("evaluatedCode", black, orange);
-    add("whitespace", gray);
-    add("keyword", blue_keyword, QColor(Qt::transparent), true);
+    add("text", Qt::black, Qt::white);
+    add("currentLine", Qt::black, QColor("#f4f4f4"));
+    add("searchResult", Qt::black, orange);
+    add("matchingBrackets", QColor("#2bc93d"), QColor("#ffff00"), true);
+    add("mismatchedBrackets", Qt::white, QColor("#960000"));
+    add("evaluatedCode", Qt::black, orange);
+    add("whitespace", QColor("#888888"));
+    add("keyword", QColor("#0000e6"), QColor(Qt::transparent), true);
     add("built-in", pale_blue);
-    add("env-var", brown);
-    add("class", blue_class);
-    add("number", purple);
+    add("env-var", QColor("#8c4614"));
+    add("class", QColor("#0000d2"));
+    add("number", QColor("#980099"));
     add("symbol", green);
-    add("string", gray_string);
+    add("string", QColor("#5f5f5f"));
     add("char", green);
-    add("comment", red_comment);
+    add("comment", QColor("#bf0000"));
     add("primitive", pale_blue);
-    add("lineNumbers", black, gray_line_numbers);
-    add("selection", white, blue_selection);
-    add("postwindowtext", black);
-    add("postwindowerror", red_post_window);
-    add("postwindowwarning", orange_post_window);
-    add("postwindowsuccess", yellow_post_window);
-    add("postwindowemphasis", black, Qt::transparent, true);
+    add("lineNumbers", Qt::black, QColor("#b8b8b8"));
+    add("selection", Qt::white, QColor("#308cc6"));
+    add("postwindowtext", Qt::black);
+    add("postwindowerror", QColor("#d11c24"));
+    add("postwindowwarning", QColor("#a57706"));
+    add("postwindowsuccess", QColor("#738a05"));
+    add("postwindowemphasis", Qt::black, Qt::transparent, true);
 }
 
 void Theme::fillDark()
