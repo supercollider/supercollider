@@ -33,11 +33,11 @@ TestSerialPort : UnitTest {
 		};
 		skipSerialTests = false;
 		if(thisProcess.platform.name == \windows) {
-			"Skipping SerialPort tests because platform is Windows.".warn;
+			"Skipping most SerialPort tests because platform is Windows.".warn;
 			skipSerialTests = true;
 		};
 		if("which socat".systemCmd != 0) {
-			"Skipping SerialPort tests because socat is not installed.".warn;
+			"Skipping most SerialPort tests because socat is not installed.".warn;
 			skipSerialTests = true;
 		};
 		^skipSerialTests;
@@ -84,6 +84,11 @@ TestSerialPort : UnitTest {
 	}
 
 	// ----------- tests -----------------------------------------------------------------------------------------
+
+	test_devices {
+		// used to hang forever on macOS (#4131)
+		SerialPort.devices;
+	}
 
 	test_open_onExistingDevice_defaultArgs {
 		var port;
