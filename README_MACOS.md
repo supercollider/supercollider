@@ -1,5 +1,5 @@
-SuperCollider 3.8 for macOS (OS X)
-==================================
+Welcome to SuperCollider for macOS!
+===================================
 
 These are installation and build instructions for the macOS version of James McCartney's SuperCollider synthesis engine (scsynth) and programming language (sclang).
 
@@ -7,7 +7,8 @@ Pre-compiled releases are available for download at:
 
 https://github.com/SuperCollider/SuperCollider/releases
 
-
+You can also download a bleeding-edge build of the latest development branch
+[here](http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/osx/develop-latest.html).
 
 Table of contents
 -----------------
@@ -42,11 +43,11 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, libsndfile, readline, and qt5.5**, installed via homebrew:
-  `brew install git cmake readline qt55`
-
-  *Note*: SuperCollider depends on Qt5WebKit, which was dropped from Qt in 5.6. So make sure you request Qt5.5 (`qt55`) and not the latest version (`qt5`).
-  Use `brew info` to see the version of a package, and see `brew switch` or `brew pin` if you want to use Qt5.5 as your default version.
+- **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
+  `brew install git cmake libsndfile readline qt5`
+- If you are building with Qt libraries, you will also need the [requirements for
+  QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
+  10.9 and the macOS SDK for 10.10 or later.
 
 - If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
   `brew install portaudio`
@@ -72,9 +73,9 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
     # or, if you want to build with supernova:
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSUPERNOVA=ON ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
     cmake --build . --target install --config RelWithDebInfo
 
 If successful this will build the application into `build/Install/SuperCollider/`
@@ -96,12 +97,12 @@ More info on *supernova* can be found in the section **Frequently used cmake set
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
 This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it.
-Depending on your configuration, you might need to use `qt5` instead of `qt55`; use `brew info` to confirm you are referring to the correct version.
+Use `brew info` to confirm you are referring to the correct version of Qt.
 
 If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
 Qt tree.
@@ -232,15 +233,11 @@ Common arguments to control the build configuration are:
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
-  * Build a 32-bit version (sc 3.6 only):
+  * By default the build will only be compatible with the macOS (and
+    subsequent versions) on which the compiler was run. To build with compatibility
+    for previous versions of macOS, you can use e.g.:
 
-    `-DCMAKE_OSX_ARCHITECTURES='i386'`
-
-    or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary).
-    This is only possible up until macOS 10.6 and requires the dependencies (Qtlibs &
-    readline) to be universal builds too:
-
-    `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
+    `-DCMAKE_OSX_DEPLOYMENT_TARGET=10.10`
 
   * Homebrew installations of libsndfile should be detected automatically. To link to a
     version of libsndfile that is not installed in /usr/local/include|lib, you can use:
@@ -341,7 +338,7 @@ And for `scsynth`:
 
     #!/bin/sh
     cd /full/path/to/SuperCollider.app/Contents/Resources
-    export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Resources/plugins/";
+    export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Contents/Resources/plugins/";
     exec ./scsynth $*
 
 ###### Why not just symlink them ?

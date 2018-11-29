@@ -181,11 +181,11 @@ discussion::
 This is similar to map above, but you specify the number of sequential Controls to map. If this Node is a Group this will mapn all Nodes within the Group.
 
 method:: release, releaseMsg
-This is a convenience method which assumes that the synth contains an envelope generator (an EnvGen, Linen, or similar UGen) running a sustaining envelope (see Env) and that it's gate argument is set to a control called \gate. This method will cause the envelope to release.
+This method causes the receiver to be freed after the specified amount of time. This is a convenience method which assumes that the synth contains an envelope generator (an EnvGen, Linen, or similar UGen) running a sustaining envelope (see link::Classes/Env#Sustained Envelope Creation Methods::) and that this envelope's gate argument is set to a control called code::\gate::.
 argument:: releaseTime
-if not nil, it will override the envelope's decay or release time.
+The amount of time in seconds during which the node will release. If set to a value code::<= 0::, the synth will release immediately. A code::nil:: value will cause the synth to release using its enveloppe's normal release stage(s).
 discussion::
-If this Node is a Group this will release all Nodes within the Group.
+If the receiver is a Group, all nodes within the group will be released.
 code::
 x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction: Done.freeSelf) }.play;
 x.release(5); // override the Env's specified 1 second release time
@@ -193,6 +193,8 @@ x.release(5); // override the Env's specified 1 second release time
 
 method:: query
 Sends an n_query message to the server, which will reply with a message containing information about this node and its place in the server's node tree.
+argument:: action
+An optional Function to be called. If the node is a code::Synth::, the function will take the arguments code::serverCmd, nodeID, parent, prev, next, isGroup::. If the node is a code::Group::, the function will take the arguments code::serverCmd, nodeID, parent, prev, next, isGroup, head, tail::. Providing a function here will bypass code::query::'s normal behaviour, i.e., the usual node information will not be posted.
 discussion::
 This information will be printed to the post window. (See also the queryAllNodes method of Server.) "parent" indicates the Node's enclosing group. If "prev" or "next" are equal to -1 that indicates that there are no other nodes in the enclosing group before or after this one, respectively.
 code::

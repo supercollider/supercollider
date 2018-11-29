@@ -49,6 +49,8 @@ inline int setlinebuf(FILE *stream)
 void Usage();
 void Usage()
 {
+	WorldOptions defaultOptions;
+
 	scprintf(
 		"supercollider_synth  options:\n"
 		"   -v print the supercollider version and exit\n"
@@ -92,28 +94,34 @@ void Usage()
 		"          -2 suppresses informational and many error messages, as well as\n"
 		"             messages from Poll.\n"
 		"          The default is 0.\n"
-		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
-		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
+#ifdef _WIN32
+		"   -U <ugen-plugins-path>\n"    
+		"          A list of paths seperated by `;`.\n"
+#else
+		"   -U <ugen-plugins-path>\n"
+		"          A list of paths seperated by `:`.\n"
+#endif
+		"          If specified, standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
 		"          if specified, prevents file-accessing OSC commands from\n"
 		"          accessing files outside <restricted-path>.\n"
 		"\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
-		kDefaultWorldOptions.mNumControlBusChannels,
-		kDefaultWorldOptions.mNumAudioBusChannels,
-		kDefaultWorldOptions.mNumInputBusChannels,
-		kDefaultWorldOptions.mNumOutputBusChannels,
-		kDefaultWorldOptions.mBufLength,
-		kDefaultWorldOptions.mPreferredHardwareBufferFrameSize,
-		kDefaultWorldOptions.mPreferredSampleRate,
-		kDefaultWorldOptions.mNumBuffers,
-		kDefaultWorldOptions.mMaxNodes,
-		kDefaultWorldOptions.mMaxGraphDefs,
-		kDefaultWorldOptions.mRealTimeMemorySize,
-		kDefaultWorldOptions.mMaxWireBufs,
-		kDefaultWorldOptions.mNumRGens,
-		kDefaultWorldOptions.mRendezvous,
-		kDefaultWorldOptions.mLoadGraphDefs,
-		kDefaultWorldOptions.mMaxLogins
+		defaultOptions.mNumControlBusChannels,
+		defaultOptions.mNumAudioBusChannels,
+		defaultOptions.mNumInputBusChannels,
+		defaultOptions.mNumOutputBusChannels,
+		defaultOptions.mBufLength,
+		defaultOptions.mPreferredHardwareBufferFrameSize,
+		defaultOptions.mPreferredSampleRate,
+		defaultOptions.mNumBuffers,
+		defaultOptions.mMaxNodes,
+		defaultOptions.mMaxGraphDefs,
+		defaultOptions.mRealTimeMemorySize,
+		defaultOptions.mMaxWireBufs,
+		defaultOptions.mNumRGens,
+		defaultOptions.mRendezvous,
+		defaultOptions.mLoadGraphDefs,
+		defaultOptions.mMaxLogins
 	);
 	exit(1);
 }
@@ -146,7 +154,7 @@ int main(int argc, char* argv[])
 	int tcpPortNum = -1;
 	std::string bindTo("0.0.0.0");
 
-	WorldOptions options = kDefaultWorldOptions;
+	WorldOptions options;
 
 	for (int i=1; i<argc;) {
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {

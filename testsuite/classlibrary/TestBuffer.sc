@@ -213,4 +213,75 @@ TestBuffer : UnitTest {
 		buffer.free;
 	}
 
+	test_allocReadChannelMsg_missingChannelsAndCompletionMessage {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, -1);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, -1]);
+		buffer.free;
+	}
+
+	test_allocReadChannelMsg_emptyChannelsWithCompletionMessage {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, 25, [], ["test_message", 1, 2, 3]);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, 25, ["test_message", 1, 2, 3]]);
+		buffer.free;
+	}
+
+	test_allocReadChannelMsg_validChannelsNoCompletionMessage {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, -1, [7, 0, 1]);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, -1, 7, 0, 1]);
+		buffer.free;
+	}
+
+	test_allocReadChannelMsg_allArgumentsProvided {
+		var buffer, msg;
+		buffer = Buffer.new;
+		msg = buffer.allocReadChannelMsg("test_path", 0, -1, [1, 0], ["complete", "xx"]);
+		this.assertEquals(msg, ["/b_allocReadChannel", buffer.bufnum, "test_path", 0, -1, 1, 0, ["complete", "xx"]]);
+		buffer.free;
+	}
+
+	test_getToFloatArray {
+		var server, data, condition, inTime = false, timeOutTask;
+		condition = Condition.new;
+
+		server = Server(this.class.name);
+		this.bootServer(server);
+		server.notify;
+		server.sync;
+
+		data = [1.0, 5.0, 3.0, [9.0, -9.0], 2.0];
+
+		{
+			Duty.ar(SampleDur.ir, 0, Dseq(data, inf))
+		}.asBuffer(0.2, server, { |buffer|
+
+			buffer.getToFloatArray(0, data.size * 2, action: { |array|
+				condition.unhang;
+				this.assertEquals(array.as(Array), data.flop.lace,
+					"getToFloatArray should get correct data"
+				);
+				inTime = true;
+			})
+		});
+
+		timeOutTask = fork {
+			3.wait;
+			condition.unhang;
+		};
+
+		condition.hang;
+
+		timeOutTask.stop;
+
+		this.assert(inTime, "reply should happen in time (within less than 3 seconds)");
+
+		server.quit.remove;
+
+	}
+
 }

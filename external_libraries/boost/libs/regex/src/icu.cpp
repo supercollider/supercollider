@@ -430,7 +430,11 @@ icu_regex_traits::char_class_type icu_regex_traits::lookup_classname(const char_
 icu_regex_traits::string_type icu_regex_traits::lookup_collatename(const char_type* p1, const char_type* p2) const
 {
    string_type result;
+#ifdef BOOST_NO_CXX98_BINDERS
+   if(std::find_if(p1, p2, std::bind(std::greater< ::UChar32>(), std::placeholders::_1, 0x7f)) == p2)
+#else
    if(std::find_if(p1, p2, std::bind2nd(std::greater< ::UChar32>(), 0x7f)) == p2)
+#endif
    {
 #ifndef BOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS
       std::string s(p1, p2);

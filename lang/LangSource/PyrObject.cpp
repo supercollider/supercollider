@@ -2884,6 +2884,28 @@ int putIndexedFloat(PyrObject *obj, double val, int index)
 	}
 	return errNone;
 }
+/**
+ * @brief obtain a vector of strings from an sclang collection of sclang strings.
+ * @param coll The sclang collection containing strings
+ * @return a tuple containing an int (the error code) and a vector of std:string's.
+ * If an error occurs an empty vector is returned.
+ */
+std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll) {
+	std::vector<std::string> strings;
+	for (int i=0; i<coll->size; ++i) {
+		PyrSlot argSlot;
+		getIndexedSlot(coll, &argSlot, i);
+		int error;
+		std::string string;
+		std::tie(error, string) = slotStrStdStrVal(&argSlot);
+		if (error != errNone) {
+			strings.clear();
+			return std::make_tuple(error, strings);
+		}
+		strings.push_back(std::move(string));
+	}
+	return make_tuple(errNone, std::move(strings));
+}
 
 static int hashPtr(void* ptr)
 {

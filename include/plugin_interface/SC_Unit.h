@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Unit_
-#define _SC_Unit_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_SndBuf.h"
@@ -349,5 +348,3 @@ struct buffer_lock
 
 typedef void (*UnitCmdFunc)(struct Unit *unit, struct sc_msg_iter *args);
 typedef void (*PlugInCmdFunc)(World *inWorld, void* inUserData, struct sc_msg_iter *args, void *replyAddr);
-
-#endif

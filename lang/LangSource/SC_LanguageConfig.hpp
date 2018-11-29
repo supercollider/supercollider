@@ -21,8 +21,7 @@
  *
  */
 
-#ifndef SC_LANGUAGECONFIG_HPP_INCLUDED
-#define SC_LANGUAGECONFIG_HPP_INCLUDED
+#pragma once
 
 #include <vector>
 #include <string>
@@ -31,6 +30,15 @@
 class SC_LanguageConfig;
 extern SC_LanguageConfig* gLanguageConfig;
 
+/**
+ * \brief Language configuration settings.
+ *
+ * \c sclang uses a global instance of this class to manage knowledge of
+ * compilation paths.
+ *
+ * \c SC_LanguageConfig also provides services for the global language
+ * configuration file and the option for warning on function inlining.
+ */
 class SC_LanguageConfig
 {
 public:
@@ -41,6 +49,8 @@ public:
 
 	const DirVector& includedDirectories() const { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() const { return mExcludedDirectories; }
+	const DirVector& defaultClassLibraryDirectories() const
+	{ return mDefaultClassLibraryDirectories; }
 
 	void postExcludedDirectories(void) const;
 
@@ -76,5 +86,3 @@ private:
 	static Path gConfigFile;
 	static bool gPostInlineWarnings;
 };
-
-#endif // SC_LANGUAGECONFIG_HPP_INCLUDED

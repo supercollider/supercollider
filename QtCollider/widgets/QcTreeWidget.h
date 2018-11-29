@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_TREE_WIDGET_H
-#define QC_TREE_WIDGET_H
+#pragma once
 
 #include "../Common.h"
 #include "../QObjectProxy.h"
@@ -83,16 +82,21 @@ public:
   Q_INVOKABLE void setTextColor( const QcTreeWidget::ItemPtr &, int column, const QColor & );
 
   Q_INVOKABLE QWidget * itemWidget( const QcTreeWidget::ItemPtr &, int column );
-  Q_INVOKABLE void setItemWidget( const QcTreeWidget::ItemPtr &, int column, QObjectProxy * );
+  Q_INVOKABLE void setItemWidget( const QcTreeWidget::ItemPtr &, int column, QWidget * );
   Q_INVOKABLE void removeItemWidget( const QcTreeWidget::ItemPtr &, int column );
 
   Q_INVOKABLE void sort( int column, bool descending );
+
+  Q_INVOKABLE int columnWidth( int column );
+  Q_INVOKABLE void setColumnWidth( int column, int width );
 
 Q_SIGNALS:
 
   void action();
   void itemPressedAction();
   void currentItemChanged();
+  void expanded(QcTreeWidget::ItemPtr);
+  void collapsed(QcTreeWidget::ItemPtr);
 
 public:
 
@@ -103,7 +107,11 @@ public:
 
   QVariantList columns() const;
   void setColumns( const QVariantList & );
-
+	
+public Q_SLOTS:
+  void onExpanded(QTreeWidgetItem*);
+  void onCollapsed(QTreeWidgetItem*);
+	
 protected:
 
   virtual void keyPressEvent( QKeyEvent * );
@@ -115,5 +123,3 @@ private:
 };
 
 Q_DECLARE_METATYPE( QcTreeWidget::ItemPtr );
-
-#endif

@@ -147,22 +147,27 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var val = this.resampledDomainSpec.unmap(plotter.domain ?? { (0..size-1) });
-		^plotBounds.left + (val * plotBounds.width);
+		var range, step, vals, resamps;
+
+		vals = if (plotter.domain.notNil) {
+			domainSpec.unmap(plotter.domain);
+		} {
+			range = domainSpec.range;
+			if (range == 0.0 or: { size == 1 }) {
+				0.5.dup(size) // put the values in the middle of the plot
+			} {
+				domainSpec.unmap(
+					(domainSpec.minval, domainSpec.minval + (range / (size-1)) .. domainSpec.maxval)
+				);
+			}
+		};
+
+		^plotBounds.left + (vals * plotBounds.width);
 	}
 
 	dataCoordinates {
 		var val = spec.warp.unmap(this.prResampValues);
 		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
-	}
-
-	resampledSize {
-		^min(value.size, plotBounds.width / plotter.resolution)
-	}
-
-	resampledDomainSpec {
-		var offset = if(this.hasSteplikeDisplay) { 0 } { 1 };
-		^domainSpec.copy.maxval_(this.resampledSize - offset)
 	}
 
 	drawData {
@@ -182,14 +187,24 @@ Plot {
 				ycoord.flop.do { |y, i|
 					Pen.beginPath;
 					this.perform(mode, xcoord, y);
-					Pen.strokeColor = plotColor.wrapAt(i);
-					Pen.stroke;
+					if (this.needsPenFill(mode)) {
+						Pen.fillColor = plotColor.wrapAt(i);
+						Pen.fill
+					} {
+						Pen.strokeColor = plotColor.wrapAt(i);
+						Pen.stroke
+					}
 				}
 			} {
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
+				Pen.fillColor= plotColor.at(0);
 				this.perform(mode, xcoord, ycoord);
-				Pen.stroke;
+				if (this.needsPenFill(mode)) {
+					Pen.fill
+				} {
+					Pen.stroke
+				}
 			};
 			Pen.joinStyle = 0;
 		};
@@ -238,6 +253,22 @@ Plot {
 		y.size.do { |i|
 			Pen.lineTo(x[i] @ y[i]);
 			Pen.lineTo(x[i + 1] ?? { plotBounds.right } @ y[i]);
+		}
+	}
+
+	bars { |x, y |
+		Pen.smoothing_(false);
+		y.size.do { |i|
+			var p = x[i] @ y[i];
+			var nextx = x[i + 1] ?? {plotBounds.right};
+			var centery = 0.linlin(this.spec.minval, this.spec.maxval, plotBounds.bottom, plotBounds.top, clip:nil);
+			var rely = y[i] - centery;
+			var gap = (nextx - x[i]) * 0.1;
+			if (rely < 0) {
+				Pen.addRect(Rect(x[i] + gap, centery + rely, nextx- x[i] - (2 * gap), rely.abs))
+			} {
+				Pen.addRect(Rect(x[i] + gap, centery, nextx - x[i] - ( 2 * gap), rely))
+			}
 		}
 	}
 
@@ -319,7 +350,7 @@ Plot {
 	}
 
 	getRelativePositionX { |x|
-		^this.resampledDomainSpec.map((x - plotBounds.left) / plotBounds.width)
+		^domainSpec.map((x - plotBounds.left) / plotBounds.width)
 	}
 
 	getRelativePositionY { |y|
@@ -327,12 +358,37 @@ Plot {
 	}
 
 	hasSteplikeDisplay {
-		^#[\levels, \steps].includes(plotter.plotMode)
+		^#[\levels, \steps, \bars].includes(plotter.plotMode)
+	}
+
+	needsPenFill {
+		^#[\bars].includes(plotter.plotMode)
 	}
 
 	getIndex { |x|
-		var offset = if(this.hasSteplikeDisplay) { 0.5 } { 0.0 }; // needs to be fixed.
-		^(this.getRelativePositionX(x) - offset).round.asInteger
+		var ycoord = this.dataCoordinates;
+		var xcoord = this.domainCoordinates(ycoord.size);
+		var binwidth = 0;
+		var offset;
+
+		if (plotter.domain.notNil) {
+			if (this.hasSteplikeDisplay) {
+				// round down to index
+				^plotter.domain.indexInBetween(this.getRelativePositionX(x)).floor.asInteger
+			} {
+				// round to nearest index
+				^plotter.domain.indexIn(this.getRelativePositionX(x))
+			};
+		} {
+			if (xcoord.size > 0) {
+				binwidth = (xcoord[1] ?? {plotBounds.right}) - xcoord[0]
+			};
+			offset = if(this.hasSteplikeDisplay) { binwidth * 0.5 } { 0.0 };
+
+			^(  // domain unspecified, values are evenly distributed between either side of the plot
+				((x - offset - plotBounds.left) / plotBounds.width) * (value.size - 1)
+			).round.clip(0, value.size-1).asInteger
+		}
 	}
 
 	getDataPoint { |x|
@@ -365,8 +421,8 @@ Plot {
 Plotter {
 
 	var <>name, <>bounds, <>parent;
-	var <value, <data, <>domain;
-	var <plots, <specs, <domainSpecs;
+	var <value, <data, <domain;
+	var <plots, <specs, <domainSpecs, <plotColors;
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
@@ -397,7 +453,7 @@ Plotter {
 			interactionView = UserView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
 		};
-		modes = [\points, \levels, \linear, \plines, \steps].iter.loop;
+		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
 
 		interactionView
 		.background_(Color.clear)
@@ -521,20 +577,64 @@ Plotter {
 
 	setValue { |arrays, findSpecs = true, refresh = true, separately = true, minval, maxval, defaultRange|
 		value = arrays;
+		domain = nil;  // for now require user to re-set domain after setting new value
 		data = this.prReshape(arrays);
 		if(findSpecs) {
-			this.calcSpecs(separately, minval, maxval, defaultRange);
 			this.calcDomainSpecs;
+			this.calcSpecs(separately, minval, maxval, defaultRange);
 		};
 		this.updatePlots;
 		if(refresh) { this.refresh };
 	}
 
+	// TODO: currently domain is constrained to being identical across all channels
+	// domain values are (un)mapped within the domainSpec
+	domain_ { |domainArray|
+		var dataSize, sizes;
+
+		domainArray ?? {
+			domain = nil;
+			^this
+		};
+
+		dataSize = if (this.value.rank > 1) {
+			sizes = this.value.collect(_.size);
+			if (sizes.any(_ != this.value[0].size)) {
+				Error(format(
+					"[Plotter:-domain_] Setting the domain values isn't supported "
+					"for multichannel data of different sizes %.", sizes
+				)).throw;
+			};
+			this.value[0].size;
+		} {
+			this.value.size
+		};
+
+
+		if (domainArray.size != dataSize) {
+			Error(format(
+				"[Plotter:-domain_] Domain array size [%] does not "
+				"match data array size [%]", domainArray.size, dataSize
+			)).throw;
+		} {
+			domain = domainArray
+		}
+	}
+
 	superpose_ { |flag|
+		var dom, domSpecs;
+		dom = domain.copy;
+		domSpecs = domainSpecs.copy;
+
 		superpose = flag;
 		if ( value.notNil ){
-			this.setValue(value, false, true);
+			this.setValue(value, false, false);
 		};
+
+		// for individual plots, restore previous domain state
+		this.domain_(dom);
+		if (superpose.not) { this.domainSpecs_(domSpecs) };
+		this.refresh;
 	}
 
 	numChannels {
@@ -588,7 +688,7 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-
+		plotColors !? { this.plotColors_(plotColors) };
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
 	}
@@ -604,14 +704,33 @@ Plotter {
 	}
 
 	updatePlotSpecs {
+		var template, smin, smax;
+
 		specs !? {
-			plots.do { |plot, i|
-				plot.spec = specs.clipAt(i)
+			if (superpose) {
+				// NOTE: for superpose, all spec properties except
+				// minval and maxval are inherited from first spec
+				template = specs[0].copy;
+				smin = specs.collect(_.minval).minItem;
+				smax = specs.collect(_.maxval).maxItem;
+				plots[0].spec = template.minval_(smin).maxval_(smax);
+			} {
+				plots.do { |plot, i|
+					plot.spec = specs.clipAt(i)
+				}
 			}
 		};
+
 		domainSpecs !? {
-			plots.do { |plot, i|
-				plot.domainSpec = domainSpecs.clipAt(i)
+			if (superpose) {
+				template = domainSpecs[0].copy;
+				smin = domainSpecs.collect(_.minval).minItem;
+				smax = domainSpecs.collect(_.maxval).maxItem;
+				plots[0].domainSpec = template.minval_(smin).maxval_(smax);
+			} {
+				plots.do { |plot, i|
+					plot.domainSpec = domainSpecs.clipAt(i)
+				}
 			}
 		}
 	}
@@ -620,6 +739,14 @@ Plotter {
 		pairs.pairsDo { |selector, value|
 			selector = selector.asSetter;
 			plots.do { |x| x.perform(selector, value) }
+		}
+	}
+
+	plotColors_ { |argColors|
+		plotColors = argColors.as(Array);
+		plots.do { |plt, i|
+			// rotate colors to ensure proper behavior with superpose
+			plt.plotColor_(plotColors.rotate(i.neg))
 		}
 	}
 
@@ -724,7 +851,7 @@ Plotter {
 
 
 + ArrayedCollection {
-	plot { |name, bounds, discrete=false, numChannels, minval, maxval, separately = true|
+	plot { |name, bounds, discrete = false, numChannels, minval, maxval, separately = true|
 		var array, plotter;
 		array = this.as(Array);
 
@@ -736,13 +863,17 @@ Plotter {
 		if(discrete) { plotter.plotMode = \points };
 
 		numChannels !? { array = array.unlace(numChannels) };
-		array = array.collect {|elem|
+		array = array.collect {|elem, i|
 			if (elem.isKindOf(Env)) {
 				elem.asMultichannelSignal.flop
 			} {
+				if(elem.isNil) {
+					Error("cannot plot array: non-numeric value at index %".format(i)).throw
+				};
 				elem
 			}
 		};
+
 		plotter.setValue(
 			array,
 			findSpecs: true,
@@ -769,14 +900,14 @@ Plotter {
 
 
 + Function {
-	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
+	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
 
-		var name = this.asCompileString, plotter;
+		var name = this.asCompileString, plotter, action;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
-
-		this.loadToFloatArray(duration, server, { |array, buf|
+		target = target.asTarget;
+		action = { |array, buf|
 			var numChan = buf.numChannels;
 			{
 				plotter.setValue(
@@ -790,7 +921,13 @@ Plotter {
 				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
 				plotter.refresh;
 			}.defer
-		})
+		};
+
+		if(target.server.isLocal) {
+			this.loadToFloatArray(duration, target, action:action)
+		} {
+			this.getToFloatArray(duration, target, action:action)
+		};
 
 		^plotter
 	}
@@ -802,8 +939,13 @@ Plotter {
 
 + Bus {
 	plot { |duration = 0.01, bounds, minval, maxval, separately = false|
-		^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately)
+		if (this.rate == \audio, {
+			^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+		},{
+			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
+		});
 	}
+	
 	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
 		^this.plot(duration, bounds, minval, maxval)
 	}
@@ -817,14 +959,16 @@ Plotter {
 
 + Buffer {
 	plot { |name, bounds, minval, maxval, separately = false|
-		var plotter;
+		var plotter, action;
 		if(server.serverRunning.not) { "Server % not running".format(server).warn; ^nil };
 		if(numFrames.isNil) { "Buffer not allocated, can't plot data".warn; ^nil };
+
 		plotter = [0].plot(
 			name ? "Buffer plot (bufnum: %)".format(this.bufnum),
 			bounds, minval: minval, maxval: maxval
 		);
-		this.loadToFloatArray(action: { |array, buf|
+
+		action = { |array, buf|
 			{
 				plotter.setValue(
 					array.unlace(buf.numChannels),
@@ -837,7 +981,14 @@ Plotter {
 				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
 				plotter.refresh;
 			}.defer
-		});
+		};
+
+		if(server.isLocal) {
+			this.loadToFloatArray(action:action)
+		} {
+			this.getToFloatArray(action:action)
+		};
+
 		^plotter
 	}
 }

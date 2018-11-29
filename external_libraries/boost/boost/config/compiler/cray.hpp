@@ -10,7 +10,7 @@
 
 #define BOOST_COMPILER "Cray C version " BOOST_STRINGIZE(_RELEASE)
 
-#if _RELEASE < 8
+#if _RELEASE_MAJOR < 8
 #  error "Boost is not configured for Cray compilers prior to version 8, please try the configure script."
 #endif
 
@@ -21,8 +21,8 @@
 #  error "Unsupported Cray compiler, please try running the configure script."
 #endif
 
+#if _RELEASE_MINOR < 5 || __cplusplus < 201100
 #include <boost/config/compiler/common_edg.hpp>
-
 
 //
 //
@@ -39,6 +39,7 @@
 #define BOOST_NO_CXX11_TEMPLATE_ALIASES
 #define BOOST_NO_CXX11_STATIC_ASSERT
 #define BOOST_NO_SFINAE_EXPR
+#define BOOST_NO_CXX11_SFINAE_EXPR
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #define BOOST_NO_CXX11_RVALUE_REFERENCES
 #define BOOST_NO_CXX11_RANGE_BASED_FOR
@@ -88,6 +89,36 @@
 #define __ATOMIC_ACQ_REL 4
 #define __ATOMIC_SEQ_CST 5
 #endif
+
+#else  /* _RELEASE_MINOR */
+
+#define BOOST_HAS_VARIADIC_TMPL
+#define BOOST_HAS_UNISTD_H
+#define BOOST_HAS_TR1_COMPLEX_INVERSE_TRIG
+#define BOOST_HAS_TR1_COMPLEX_OVERLOADS
+#define BOOST_HAS_STDINT_H
+#define BOOST_HAS_STATIC_ASSERT
+#define BOOST_HAS_SIGACTION
+#define BOOST_HAS_SCHED_YIELD
+#define BOOST_HAS_RVALUE_REFS
+#define BOOST_HAS_PTHREADS
+#define BOOST_HAS_PTHREAD_YIELD
+#define BOOST_HAS_PTHREAD_MUTEXATTR_SETTYPE
+#define BOOST_HAS_PARTIAL_STD_ALLOCATOR
+#define BOOST_HAS_NRVO
+#define BOOST_HAS_NL_TYPES_H
+#define BOOST_HAS_NANOSLEEP
+#define BOOST_NO_CXX11_SMART_PTR
+#define BOOST_NO_CXX11_HDR_FUNCTIONAL
+#define BOOST_NO_CXX14_CONSTEXPR
+#define BOOST_HAS_LONG_LONG
+#define BOOST_HAS_FLOAT128
+
+#if __cplusplus < 201400
+#define BOOST_NO_CXX11_DECLTYPE_N3276
+#endif /* __cpluspus */
+
+#endif /* _RELEASE_MINOR */
 
 
 

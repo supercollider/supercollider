@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SynthDef_
-#define _SynthDef_
+#pragma once
 
 #include "SC_Types.h"
 #include "sc_msg_iter.h"
@@ -43,5 +42,3 @@ extern NodeDef gGroupNodeDef;
 
 void GroupNodeDef_Init();
 void NodeDef_Dump(NodeDef *inNodeDef);
-
-#endif

@@ -17,8 +17,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef FUNCTION_ATTRIBUTES_H
-#define FUNCTION_ATTRIBUTES_H
+#pragma once
 
 #ifdef __GNUC__
 
@@ -100,7 +99,3 @@
 #endif
 
 #endif
-
-
-
-#endif /* FUNCTION_ATTRIBUTES_H */

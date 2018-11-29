@@ -163,3 +163,174 @@ TestArray : UnitTest {
 	} // End test_arraystats
 
 } // End class
+
+TestArrayLace : UnitTest {
+	test_empty_returns_empty {
+		var array, result;
+		array = [];
+		result = array.lace;
+		this.assertEquals(result, [], "lace: empty array with no length argument should return empty array");
+	}
+
+	test_empty_with_length_argument_returns_empty {
+		var array, result;
+		array = [];
+		result = array.lace(8);
+		this.assertEquals(result, [], "lace: empty array with length argument should return empty array");
+	}
+
+	test_empty_subarray_returns_nil {
+		var array, result;
+		array = [[]];
+		result = array.lace;
+		this.assertEquals(result, [ nil ], "lace: empty subarray should return empty array");
+	}
+
+	test_flat_without_length_arg {
+		var array, result;
+		array = [1, 2, 3, 4, 5];
+		result = array.lace;
+		this.assertEquals(result, array, "lace: flat array should return a copy of itself");
+	}
+
+	test_flat_with_empty_subarray_substitutes_nil {
+		var array, result;
+		array = ["one", "two", [], "four", "five"];
+		result = array.lace;
+		this.assertEquals(result, ["one", "two", nil, "four", "five"], "lace: empty subarrays should be substituted for nil");
+	}
+
+	test_flat_with_length_arg_small {
+		var array, result, n;
+		n = 3;
+		array = [1, 2, 3, 4, 5];
+		result = array.lace(n);
+		this.assertEquals(result, array.keep(n),
+			"lace: flat array should return a copy of itself shortened to the length given in the argument");
+	}
+
+	test_flat_with_length_arg_large {
+		var array, result, n;
+		n = 18;
+		array = [1, 2, 3, 4, 5];
+		result = array.lace(n);
+		this.assertEquals(result, array.wrapExtend(n),
+			"lace: flat array should return itself extended to the length given in the argument");
+	}
+
+	test_subarrays_of_equal_length_without_length_arg {
+		var array, result;
+		array = [[1, 4, 7], [2, 5, 8], [3, 6, 9]];
+		result = array.lace;
+		this.assertEquals(result, [1, 2, 3, 4, 5, 6, 7, 8, 9],
+			"lace: subarrays of equal length should lace correctly without length arugment");
+	}
+
+	test_subarrays_of_unequal_length_without_length_arg {
+		var array, result;
+		array = [[1, 4], [2, 5, 7], [3, 6, 8, 9]];
+		result = array.lace;
+		this.assertEquals(result, [1, 2, 3, 4, 5, 6],
+			"lace: if not supplied, length should be computed using the minimum length subarray");
+	}
+
+	test_mixture_of_flat_and_arrays_without_length_arg {
+		var array, result;
+		array = [[10, 9], 8, [7, 6, 5], [4], [3, 2, 1, 0]];
+		result = array.lace;
+		this.assertEquals(result, [10, 8, 7, 4, 3],
+			"lace: single-length items with no length argument should only be copied once");
+	}
+
+	test_list_with_sublists_without_length_arg {
+		var list, result;
+		list = List[List[1, 2, 3], List[4, 5, 6], List[7, 8]];
+		result = list.lace;
+		this.assertEquals(result, List[1, 4, 7, 2, 5, 8],
+			"lace: lists with sublists and no length argument should compute length using minimum length sublist");
+	}
+
+	test_subarray_and_sublist_mixture_without_length_arg {
+		var array, result;
+		array = [["z", "y"], List[9, 8, 7], [\a, \b, \c]];
+		result = array.lace;
+		this.assertEquals(result, ["z", 9, \a, "y", 8, \b],
+			"lace: arrays with mixture of sublists and subarrays should compute length using minimum length element");
+	}
+
+	test_subarrays_with_complete_length_arg {
+		var array, result;
+		array = [[1, 2, 3, 4], [5, 6, 7, 8], [-1, -2, -3, -4]];
+		result = array.lace(12);
+		this.assertEquals(result, [1, 5, -1, 2, 6, -2, 3, 7, -3, 4, 8, -4],
+			"lace: complete length argument should return completely laced array");
+	}
+
+	test_subarrays_with_length_arg_shorter_than_number_of_subarrays {
+		var array, result;
+		array = [["a", "b"], ["c", "d"], ["e", "f"], ["g", "h"]];
+		result = array.lace(3);
+		this.assertEquals(result, ["a", "c", "e"],
+			"lace: short length argument should return first members of first subarrays");
+	}
+
+	test_subarrays_with_length_arg_equal_to_number_of_subarrays {
+		var array, result;
+		array = [[\tok1, \tok2, \tok3], [\tok4], [\tok5, \tok6], [\tok7, \tok8, \tok9, \tok10]];
+		result = array.lace(4);
+		this.assertEquals(result, [\tok1, \tok4, \tok5, \tok7],
+			"lace: equal length argument should return first members of all subarrays");
+	}
+
+	test_subarrays_with_length_arg_greater_than_number_of_subarrays {
+		var array, result;
+		array = [[1.0, -1.0, 2.0, -2.0, 3.0, -3.0], [4.0, -4.0, 5.0, -5.0]];
+		result = array.lace(5);
+		this.assertEquals(result, [1.0, 4.0, -1.0, -4.0, 2.0],
+			"lace: should iterate through each subarray until length argument elements copied");
+	}
+
+	test_subarrays_with_length_arg_equal_to_total_number_of_elements {
+		var array, result;
+		array = [[1], [2, 3], [4, 5, 6], [7, 8, 9, 10], [11, 12, 13, 14, 15]];
+		result = array.lace(15);
+		this.assertEquals(result, [1, 2, 4, 7, 11, 1, 3, 5, 8, 12, 1, 2, 6, 9, 13],
+			"lace: should advance through each array independently");
+	}
+
+	test_subarrays_with_length_arg_greater_than_total_number_of_elements {
+		var array, result;
+		array = [["one", "two", "three"], ["four", "five"], ["six"], "seven"];
+		result = array.lace(12);
+		this.assertEquals(result,
+			["one", "four", "six", "seven", "two", "five", "six", "seven", "three", "four", "six", "seven"],
+			"lace: should continue to fill from each array until reaching length argument");
+	}
+
+	test_subarrays_with_length_arg_equal_to_complete_lace {
+		var array, result;
+		array = [[3, 2, 1], 0, [5, 6], [10, 9, 8, 7], [12]];
+		result = array.lace(20);
+		this.assertEquals(result,
+			[3, 0, 5, 10, 12, 2, 0, 6, 9, 12, 1, 0, 5, 8, 12, 3, 0, 6, 7, 12],
+			"lace: should fill array with all interleaved values");
+	}
+
+	test_subarrays_with_length_arg_greater_than_complete_lace {
+		var array, result;
+		array = [[\a, \b], [\c, \d, \e], [\f]];
+		result = array.lace(12);
+		this.assertEquals(result, [\a, \c, \f, \b, \d, \f, \a, \e, \f, \b, \c, \f],
+			"lace: should start over once array is completely laced");
+	}
+
+	test_sublists_work_like_arrays {
+		var array, result;
+		array = [List[1, 2, 3], List[4, 5, 6], List[7, 8, 9]];
+		result = array.lace(9);
+		this.assertEquals(result, [1, 4, 7, 2, 5, 8, 3, 6, 9],
+			"lace: sublists should lace just like arrays do");
+	}
+
+
+} // End class

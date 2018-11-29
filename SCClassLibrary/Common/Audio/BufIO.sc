@@ -79,9 +79,15 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 	}
 	checkInputs {
-		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
-			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
-		});
+		if (rate == 'audio') {
+			if(inputs.at(1).rate != 'audio') {
+				^"phase input is not audio rate: % %".format(inputs.at(1), inputs.at(1).rate)
+			} {
+				if(inputs[3..].any { |x| x.rate != 'audio' }) {
+					^"inputArray input is not audio rate: % %".format(inputs[3..], inputs[3..].collect(_.rate))
+				}
+			}
+		};
 		^this.checkValidInputs
 	}
 }

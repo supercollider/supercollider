@@ -1,6 +1,6 @@
 TITLE:: PdefnGui
 summary:: a simple gui for Pdefns
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/Pdefn, Classes/PdefnAllGui, Classes/TdefAllGui
 
 DESCRIPTION::

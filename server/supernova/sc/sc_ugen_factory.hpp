@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_UGEN_FACTORY_HPP
-#define SC_UGEN_FACTORY_HPP
+#pragma once
 
 #include <boost/intrusive/set.hpp>
 #include <boost/intrusive/unordered_set.hpp>
@@ -239,6 +238,3 @@ private:
 extern std::unique_ptr<sc_ugen_factory> sc_factory;
 
 } /* namespace nova */
-
-
-#endif /* SC_UGEN_FACTORY_HPP */

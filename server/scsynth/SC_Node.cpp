@@ -471,5 +471,11 @@ void Unit_DoneAction(int doneAction, Unit *unit)
 		case 14 :
 			Node_End(&unit->mParent->mNode.mParent->mNode);
 			break;
+		case 15 :
+		{
+			Node_End(&unit->mParent->mNode);
+			Node* next = unit->mParent->mNode.mNext;
+			if (next) Node_SetRun(next, 1);
+		} break;
 	}
 }

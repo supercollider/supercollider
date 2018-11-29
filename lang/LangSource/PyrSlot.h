@@ -25,8 +25,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 
 */
 
-#ifndef _PYRSLOT_H_
-#define _PYRSLOT_H_
+#pragma once
 
 #if   ( __SIZEOF_POINTER__ == 8 ) || defined(__x86_64__) || defined(_M_X64)  || defined(__LP64__)  || defined(_WIN64)
 #include "PyrSlot64.h"
@@ -35,6 +34,8 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #else
 #error "no PyrSlot imlementation for this platform"
 #endif
+
+#include <string>
 
 extern PyrSlot o_nil, o_true, o_false, o_inf;
 extern PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo;
@@ -56,8 +57,23 @@ int slotIntVal(PyrSlot* slot, int *value);
 int slotFloatVal(PyrSlot* slot, float *value);
 int slotDoubleVal(PyrSlot *slot, double *value);
 int slotStrVal(PyrSlot *slot, char *str, int maxlen);
+std::tuple<int, std::string> slotStdStrVal(PyrSlot *slot);
+std::tuple<int, std::string> slotStrStdStrVal(PyrSlot *slot);
 int slotStrLen(PyrSlot *slot);
 int slotPStrVal(PyrSlot *slot, unsigned char *str);
 int slotSymbolVal(PyrSlot *slot, PyrSymbol **symbol);
 
-#endif
+template <typename numeric_type>
+inline void setSlotVal(PyrSlot * slot, numeric_type value);
+
+template <>
+inline void setSlotVal<int>(PyrSlot * slot, int value)
+{
+	SetInt(slot, value);
+}
+
+template <>
+inline void setSlotVal<double>(PyrSlot * slot, double value)
+{
+	SetFloat(slot, value);
+}

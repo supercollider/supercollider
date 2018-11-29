@@ -29,6 +29,7 @@
 #include "SC_Str4.h"
 #include "SC_WorldOptions.h"
 
+const size_t PATH_BUF_SIZE(256);
 
 void SendDone(ReplyAddress *inReply, const char *inCommandName)
 {
@@ -220,8 +221,8 @@ SCErr SC_LibCmd::Perform(struct World *inWorld, int inSize, char *inData, ReplyA
 
 SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc)
 {
-	char path[256];
-	sprintf(path, "/%s", inPath);
+	char path[PATH_BUF_SIZE];
+	snprintf(path, PATH_BUF_SIZE, "/%s", inPath);
 
 	SC_LibCmd *cmd = new SC_LibCmd(inFunc);
 	cmd->SetName(path);

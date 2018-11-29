@@ -121,6 +121,7 @@ table::
 ## code::\plines:: || combination of lines and points
 ## code::\levels:: || horizontal lines
 ## code::\steps:: || connecting data points with step interpolation
+## code::\bars:: || bar graph with filled bars
 ::
 discussion::
 code::
@@ -130,6 +131,7 @@ a.plotMode = \plines; a.refresh;
 a.plotMode = \levels; a.refresh;
 a.plotMode = \steps; a.refresh;
 a.plotMode = \linear; a.refresh;
+a.plotMode = \bars; a.refresh;
 ::
 
 method:: setProperties
@@ -201,6 +203,28 @@ a = [1, 4, 2, 7, 4].dup(2).plot;
 a.value;
 ::
 
+method::setValue
+Set the data values, with additional arguments determining how the plot is updated.
+argument:: arrays
+Arrays of data to plot. Data may be numerical arrays of up to 3 dimensions.
+argument:: findSpecs
+A code::Boolean::. If code::true:: (default), bounds of the plot(s) are determined automatically.
+If code::false::, previous bounds will persist.
+argument:: refresh
+A code::Boolean::. If code::true:: (default), refresh the view immediately.
+argument:: separately
+A code::Boolean::. If code::true:: (default), min and max of each set of data will be calculated
+and displayed separately for each plot. If code::false::, each plot's range on the
+y-axis will be the same.
+argument::minval
+(Optional) The minimum value displayed on the y-axis.
+argument::maxval
+(Optional) The maximum value displayed on the y-axis.
+argument:: defaultRange
+(Optional) A default range for the y-axis in the case
+that the max and min values of the data are identical.
+
+
 method:: data
 Reference to the current internal data.
 
@@ -224,6 +248,52 @@ code::
 a = { (40..300).scramble }.dup(2).plot;
 a.domainSpecs = \freq.asSpec; a.refresh;
 ::
+discussion::
+The default domainSpec when setting your Plotter link::#-value:: is a linear
+spec in the range code::[0, value.size-1]::. Unless you set link::#-domain::,
+your values are displayed as evenly sampled between the code::minval:: and
+code::maxval:: of the domainSpecs.
+
+If a new link::#-value:: is set, you will need to update your domainSpecs.
+
+For examples, see link::#-domain:: and link::#examples::.
+
+method:: domain
+Set or get the x-axis positions of your data points. The size of the
+code::domainArray:: must equal the size of your value array, i.e. a domain
+value specified for each data point.
+
+discussion::
+Domain values are mapped into the range of the link::#-domainSpecs::, so need
+not be evenly distributed. If link::#-domain:: is set to code::nil::, your
+values are displayed as evenly sampled between the code::minval:: and
+code::maxval:: of the link::#-domainSpecs::.
+
+Currently, for multichannel data plots, it's assumed that all channels of data
+share a single link::#-domain::. I.e. code::domainArray:: must be an
+link::Classes/Array:: of rank 1.
+
+
+If a new link::#-value:: is set, you will need to update your link::#-domain::.
+
+Example:
+code::
+(
+var data, domain, plot;
+domain = 25.collect({rrand(0, 50)}).sort;
+data = domain.linlin(0, 50, 0, 1);
+
+plot = data.plot.plotMode_(\points);
+plot.domainSpecs_([0, 50].asSpec);
+plot.domain_(domain);
+)
+::
+A more elaborate example can be found in the link::#examples::.
+
+method:: plotColors
+Set or get the link::Classes/Color::(s) of your plot. An
+link::Classes/Array:: of colors will be mapped across multichannel plot
+data, including when link::#-superpose:: is code::true::.
 
 method:: editFunc
 Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
@@ -250,7 +320,7 @@ a.parent.onClose = { x.release };
 
 (
 a = { (0..10).scramble.normalize(300, 400) }.dup.plot;
-a.specs = \freq; a.plotMode = \levels;
+a.specs = \freq; a.plotMode = \bars;
 a.editMode = true;
 x = {
 	var phase = SinOsc.ar(\rate.kr(a.value[1]));
@@ -364,5 +434,45 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/SinedPink.aiff");
 		// Platform.resourceDir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
 b.plot;
 b.free;
+
+// Setting the domain, run the full block:
+(
+var ys, xs; // ys: data, xs: domain positions
+var rs = 0, plt2;
+
+// xs are the sample points over a 2pi range
+
+// sample locations, normalized
+xs = 50.collect({rrand(0.05, 1)}).normalizeSum;
+xs.do{ |me, i| xs[i] = me + rs; rs = rs + me; };
+
+// force beginning/end to land on 0/2pi
+xs[0] = 0;
+xs[xs.size-1] = 1;
+
+// scale these points to a 2pi range
+xs = xs * 2pi;
+
+// ys are the values of the sinusoid at the sampled points
+ys = sin(xs);
+
+// the uneven sampling is apparent when
+// displayed as uniformly sampled
+ys.plot("original data plot, uniform domain", [100, 100, 385, 285].asRect);
+
+// generate a second plot whose domainSpec is specified:
+// we see a smooth sinusoid cycle beginning
+// at 0 and ending at 2pi
+plt2 = ys.plot("resampled domain", [100+400, 100, 385, 285].asRect);
+
+// domain values place plotted points where they
+// actually sampled the sinusoid, thus visually
+// reconstructing it.
+plt2.domain = xs;
+
+// these values are placed within the domainSpec
+// so we can pad the plot on either side.
+plt2.domainSpecs_(([-0.5pi, 2.5pi]).asSpec);
+)
 ::
 

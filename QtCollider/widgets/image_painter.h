@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_IMAGE_PAINTER_INCLUDED
-#define QT_COLLIDER_IMAGE_PAINTER_INCLUDED
+#pragma once
 
 #include "../image.h"
 #include "../debug.h"
@@ -95,6 +94,9 @@ struct ImagePainter
                                 image->transformationMode == Qt::SmoothTransformation );
 
         QRectF rect = sourceRect;
+        qreal ratio = pixmap.devicePixelRatio();
+        rect.setWidth(rect.width() / ratio);
+        rect.setHeight(rect.height() / ratio);
 
         if (horizontalMode == StretchHorizontally) {
             rect.moveLeft(targetRect.left());
@@ -218,5 +220,3 @@ struct ImagePainter
 };
 
 } // namespace QtCollider
-
-#endif // QT_COLLIDER_IMAGE_PAINTER_INCLUDED

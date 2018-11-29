@@ -130,6 +130,38 @@ int slotStrVal(PyrSlot *slot, char *str, int maxlen)
 	return errWrongType;
 }
 
+/**
+ * \brief Convert an sclang string or symbol into an std:string
+ * \param slot the sclang string or symbol
+ * \return a tuple containing an int, an error code, and an std:string.
+ *  In case of an error the string will be empty.
+ */
+std::tuple<int,std::string> slotStdStrVal(PyrSlot *slot)
+{
+	return	IsSym(slot) ?
+		std::make_tuple(
+			errNone,
+			std::string(slotRawSymbol(slot)->name, (size_t) slotRawSymbol(slot)->length))
+	:	(isKindOfSlot(slot, class_string) ?
+		std::make_tuple(
+			errNone,
+			std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+		: std::make_tuple(errWrongType, std::string()));
+}
+
+/**
+ * \brief Convert an sclang string into an std:string
+ * \param slot the sclang string
+ * \return a tuple containing an int, an error code, and an std:string.
+ *  In case of an error the string will be empty.
+ */
+std::tuple<int,std::string> slotStrStdStrVal(PyrSlot *slot)
+{
+	return	isKindOfSlot(slot, class_string) ?
+		std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+		: std::make_tuple(errWrongType, std::string());
+}
+
 int slotPStrVal(PyrSlot *slot, unsigned char *str)
 {
 	if (IsSym(slot)) {
@@ -3609,6 +3641,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numAr
 static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *fileString = g->sp;
+	bfs::path config_path;
 
 	if (NotNil(fileString)) {
 		char path[MAXPATHLEN];
@@ -3616,16 +3649,18 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 		if (error)
 			return errWrongType;
 
-		const bfs::path& config_path = SC_Codecvt::utf8_str_to_path(path);
+		config_path = SC_Codecvt::utf8_str_to_path(path);
 		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	} else {
-		const bfs::path& config_path =
+		config_path =
 			SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
 			/ "sclang_conf.yaml";
-		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	}
 
-	return errNone;
+	if (!gLanguageConfig->writeLibraryConfigYAML(config_path))
+		return errFailed;
+	else
+		return errNone;
 }
 
 static int prLanguageConfig_getPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
@@ -4315,17 +4350,9 @@ void initLIDPrimitives();
 	initLIDPrimitives();
 #endif
 
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
-
 void initSerialPrimitives();
 	initSerialPrimitives();
 
-#ifdef HAVE_WII
-void initWiiPrimitives();
-	initWiiPrimitives();
-#endif
-
-#endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
@@ -4334,11 +4361,6 @@ void initCoreAudioPrimitives();
 #ifdef SCOGL_COMPILE
 void initOpenGLPrimitives();
 	initOpenGLPrimitives();
-#endif
-
-#ifdef __APPLE__
-	void initSpeechPrimitives();
-		initSpeechPrimitives();
 #endif
 
 #ifdef SC_QT

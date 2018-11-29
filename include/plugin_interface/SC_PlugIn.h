@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_PLUGIN_H
-#define SC_PLUGIN_H
+#pragma once
 
 #include "SC_World.h"
 #include "SC_Graph.h"
@@ -56,5 +55,3 @@
 #undef min
 
 #endif
-
-#endif /* SC_PLUGIN_H */

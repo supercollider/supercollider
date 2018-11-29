@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _PYRMESSAGE_H_
-#define _PYRMESSAGE_H_
+#pragma once
 
 #include "PyrKernel.h"
 
@@ -48,8 +47,3 @@ void executeMethodWithKeys(VMGlobals *g, PyrMethod *meth, long allArgsPushed,
 		long numKeyArgsPushed);
 int keywordFixStack(VMGlobals *g, PyrMethod *meth, PyrMethodRaw *methraw, long allArgsPushed,
 		long numKeyArgsPushed);
-
-#endif
-
-
-

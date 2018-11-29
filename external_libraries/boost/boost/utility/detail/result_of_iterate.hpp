@@ -82,15 +82,12 @@ struct BOOST_PP_CAT(result_of_callable_fun_2_, BOOST_PP_ITERATION())<R(BOOST_PP_
 };
 
 template<typename F>
-struct BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION());
-
-template<typename F>
-struct BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION())<F *>
+struct BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION())
   : BOOST_PP_CAT(result_of_callable_fun_2_, BOOST_PP_ITERATION())<F>
 {};
 
 template<typename F>
-struct BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION())<F &>
+struct BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION())<F *>
   : BOOST_PP_CAT(result_of_callable_fun_2_, BOOST_PP_ITERATION())<F>
 {};
 
@@ -99,7 +96,7 @@ struct BOOST_PP_CAT(result_of_select_call_wrapper_type_, BOOST_PP_ITERATION())
   : mpl::eval_if<
         is_class<typename remove_reference<F>::type>,
         result_of_wrap_callable_class<F>,
-        mpl::identity<BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION())<typename remove_cv<F>::type> >
+        mpl::identity<BOOST_PP_CAT(result_of_callable_fun_, BOOST_PP_ITERATION())<typename remove_cv<typename remove_reference<F>::type>::type> >
     >
 {};
 

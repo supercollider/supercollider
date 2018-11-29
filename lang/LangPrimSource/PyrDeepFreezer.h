@@ -23,8 +23,7 @@ An object archiving system for SuperCollider.
 
 */
 
-#ifndef _PyrDeepFreezer_
-#define _PyrDeepFreezer_
+#pragma once
 
 #include <stdexcept>
 #include <cstring>
@@ -149,7 +148,3 @@ private:
 
 	PyrObject *initialObjectArray[kDeepFreezerObjectArrayInitialCapacity];
 };
-
-
-#endif
-

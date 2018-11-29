@@ -23,8 +23,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_STACK_LAYOUT_HPP_INCLUDED
-#define QT_COLLIDER_STACK_LAYOUT_HPP_INCLUDED
+#pragma once
 
 #include <QLayout>
 #include <QList>
@@ -83,5 +82,3 @@ private:
 };
 
 } // namespace QtCollider
-
-#endif // QT_COLLIDER_STACK_LAYOUT_HPP_INCLUDED

@@ -58,7 +58,7 @@ method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
 
 argument:: path
-a link::Classes/String:: representing the path and name of the output file.
+a link::Classes/String:: representing the path and name of the output file. If the directory does not exist, it will be created for you. (Note, however, that if this fails for any reason, recording will also fail.)
 
 argument::numChannels
 The number of output channels to record.

@@ -25,7 +25,7 @@
 #include <boost/container/detail/workaround.hpp>
 
 #include <boost/container/allocator_traits.hpp>
-#include <boost/container/detail/to_raw_pointer.hpp>
+#include <boost/move/detail/to_raw_pointer.hpp>
 #include <boost/container/detail/version_type.hpp>
 
 namespace boost {
@@ -152,7 +152,7 @@ struct scoped_destroy_deallocator
    ~scoped_destroy_deallocator()
    {
       if(m_ptr){
-         AllocTraits::destroy(m_alloc, container_detail::to_raw_pointer(m_ptr));
+         AllocTraits::destroy(m_alloc, boost::movelib::to_raw_pointer(m_ptr));
          priv_deallocate(m_ptr, alloc_version());
       }
    }
@@ -202,7 +202,7 @@ struct scoped_destructor_n
    ~scoped_destructor_n()
    {
       if(!m_p) return;
-      value_type *raw_ptr = container_detail::to_raw_pointer(m_p);
+      value_type *raw_ptr = boost::movelib::to_raw_pointer(m_p);
       while(m_n--){
          AllocTraits::destroy(m_a, raw_ptr++);
       }
@@ -270,12 +270,12 @@ class scoped_destructor
 };
 
 
-template<class Allocator>
+template<class Allocator, class Value = typename Allocator::value_type>
 class value_destructor
 {
    typedef boost::container::allocator_traits<Allocator> AllocTraits;
    public:
-   typedef typename Allocator::value_type value_type;
+   typedef Value value_type;
    value_destructor(Allocator &a, value_type &rv)
       : rv_(rv), a_(a)
    {}
@@ -317,7 +317,7 @@ class allocator_destroyer
 
    void operator()(const pointer &p)
    {
-      AllocTraits::destroy(a_, container_detail::to_raw_pointer(p));
+      AllocTraits::destroy(a_, boost::movelib::to_raw_pointer(p));
       this->priv_deallocate(p, alloc_version());
    }
 };
@@ -339,7 +339,7 @@ class allocator_destroyer_and_chain_builder
 
    void operator()(const typename Allocator::pointer &p)
    {
-      allocator_traits<Allocator>::destroy(a_, container_detail::to_raw_pointer(p));
+      allocator_traits<Allocator>::destroy(a_, boost::movelib::to_raw_pointer(p));
       c_.push_back(p);
    }
 };

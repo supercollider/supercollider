@@ -17,8 +17,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SHM_HPP
-#define SERVER_SHM_HPP
+#pragma once
 
 #include "scope_buffer.hpp"
 
@@ -203,5 +202,3 @@ using detail_server_shm::server_shared_memory_creator;
 using detail_server_shm::scope_buffer_writer;
 using detail_server_shm::scope_buffer_reader;
 using detail_server_shm::scope_buffer;
-
-#endif /* SERVER_SHM_HPP */

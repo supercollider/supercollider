@@ -423,7 +423,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_dot_repeat_slow()
 #pragma warning(push)
 #pragma warning(disable:4127)
 #endif
-   unsigned count = 0;
+   std::size_t count = 0;
    const re_repeat* rep = static_cast<const re_repeat*>(pstate);
    re_syntax_base* psingle = rep->next.p;
    // match compulsary repeats first:
@@ -497,7 +497,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_dot_repeat_fast()
 #pragma warning(disable:4267)
 #endif
    bool greedy = (rep->greedy) && (!(m_match_flags & regex_constants::match_any) || m_independent);   
-   std::size_t count = (std::min)(static_cast<std::size_t>(::boost::BOOST_REGEX_DETAIL_NS::distance(position, last)), static_cast<std::size_t>(greedy ? rep->max : rep->min));
+   std::size_t count = (std::min)(static_cast<std::size_t>(::boost::BOOST_REGEX_DETAIL_NS::distance(position, last)), greedy ? rep->max : rep->min);
    if(rep->min > count)
    {
       position = last;
@@ -657,7 +657,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_set_repeat()
 #endif
    const re_repeat* rep = static_cast<const re_repeat*>(pstate);
    const unsigned char* map = static_cast<const re_set*>(rep->next.p)->_map;
-   unsigned count = 0;
+   std::size_t count = 0;
    //
    // start by working out how much we can skip:
    //
@@ -753,7 +753,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_long_set_repeat()
    typedef typename traits::char_class_type char_class_type;
    const re_repeat* rep = static_cast<const re_repeat*>(pstate);
    const re_set_long<char_class_type>* set = static_cast<const re_set_long<char_class_type>*>(pstate->next.p);
-   unsigned count = 0;
+   std::size_t count = 0;
    //
    // start by working out how much we can skip:
    //
@@ -900,10 +900,27 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_recursion()
    {
       recursion_stack.reserve(50);
    }
+   //
+   // See if we've seen this recursion before at this location, if we have then
+   // we need to prevent infinite recursion:
+   //
+   for(typename std::vector<recursion_info<results_type> >::reverse_iterator i = recursion_stack.rbegin(); i != recursion_stack.rend(); ++i)
+   {
+      if(i->idx == static_cast<const re_brace*>(static_cast<const re_jump*>(pstate)->alt.p)->index)
+      {
+         if(i->location_of_start == position)
+            return false;
+         break;
+      }
+   }
+   //
+   // Now get on with it:
+   //
    recursion_stack.push_back(recursion_info<results_type>());
    recursion_stack.back().preturn_address = pstate->next.p;
    recursion_stack.back().results = *m_presult;
    recursion_stack.back().repeater_stack = next_count;
+   recursion_stack.back().location_of_start = position;
    pstate = static_cast<const re_jump*>(pstate)->alt.p;
    recursion_stack.back().idx = static_cast<const re_brace*>(pstate)->index;
 
@@ -979,6 +996,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_match()
          recursion_stack.push_back(recursion_info<results_type>());
          recursion_stack.back().preturn_address = saved_state;
          recursion_stack.back().results = *m_presult;
+         recursion_stack.back().location_of_start = position;
          return false;
       }
       return true;

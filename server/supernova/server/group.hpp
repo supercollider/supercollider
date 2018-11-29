@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_GROUP_HPP
-#define SERVER_GROUP_HPP
+#pragma once
 
 #include "memory_pool.hpp"
 #include "node_types.hpp"
@@ -409,5 +408,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* SERVER_GROUP_HPP */

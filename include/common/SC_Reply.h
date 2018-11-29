@@ -19,10 +19,7 @@
 */
 
 
-#ifndef _SC_Reply_
-#define _SC_Reply_
+#pragma once
 
 struct ReplyAddress;
 typedef void (*ReplyFunc)(struct ReplyAddress *inReplyAddr, char* inBuf, int inSize);
-
-#endif

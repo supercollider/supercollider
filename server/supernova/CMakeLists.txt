@@ -1,5 +1,3 @@
-cmake_minimum_required( VERSION 3.1 )
-
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
@@ -245,4 +243,8 @@ if(${LIB_SUFFIX})
     add_definitions(-DLIB_SUFFIX="${LIB_SUFFIX}")
 else()
     add_definitions(-DLIB_SUFFIX="")
+endif()
+
+if(UNIX AND NOT APPLE)
+    target_compile_definitions(libsupernova PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
 endif()

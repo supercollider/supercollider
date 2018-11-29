@@ -404,7 +404,7 @@ class SC_TcpInPort
 	friend class SC_TcpConnection;
 
 public:
-	SC_TcpInPort(struct World * world, std::string bindTo, int inPortNum, int inMaxConnections, int inBacklog):
+	SC_TcpInPort(struct World * world, const std::string & bindTo, int inPortNum, int inMaxConnections, int inBacklog):
 		mWorld(world),
 		acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
 		mAvailableConnections(inMaxConnections)
@@ -482,6 +482,11 @@ void stopAsioThread()
 {
 	ioService.stop();
 	gAsioThread.join();
+}
+
+bool asioThreadStarted()
+{
+	return gAsioThread.joinable();
 }
 
 }

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_CODE_EDITOR_SC_EDITOR_HPP_INCLUDED
-#define SCIDE_WIDGETS_CODE_EDITOR_SC_EDITOR_HPP_INCLUDED
+#pragma once
 
 #include "editor.hpp"
 #include "tokens.hpp"
@@ -37,9 +36,12 @@ class ScCodeEditor : public GenericCodeEditor
     Q_OBJECT
 
 public:
+    /** \brief Used to indicate whether an edit action should start a new edit
+     * block, which affects undo/redo operation grouping.
+     */
     enum EditBlockMode {
-        NewEditBlock,
-        JoinEditBlock
+        NewEditBlock, ///< Start a new edit block.
+        JoinEditBlock ///< Join this edit to the previous one.
     };
 
 public:
@@ -50,7 +52,6 @@ public:
 
 public:
     ScCodeEditor( Document *, QWidget *parent = 0 );
-    void setIndentWidth( int );
     QTextCursor currentRegion();
     void blinkCode( const QTextCursor & c );
     bool spaceIndent() { return mSpaceIndent; }
@@ -58,7 +59,10 @@ public:
 public slots:
     void applySettings( Settings::Manager * );
     void setSpaceIndent(bool on) { mSpaceIndent = on; }
+
+    /// Indents the currently-selected text.
     void indent( EditBlockMode = NewEditBlock );
+
     void triggerAutoCompletion();
     void triggerMethodCallAid();
     void toggleComment();
@@ -106,18 +110,50 @@ private:
     void addSingleLineComment( QTextCursor, int indentationLevel );
     void removeSingleLineComment( QTextCursor );
 
-    int indentedStartOfLine( const QTextBlock & );
-    void indent( const QTextCursor &, EditBlockMode = NewEditBlock );
-    QTextBlock indent( const QTextBlock & b, int level );
+    /** \brief Returns the index of the first non-whitespace character in
+     * \c block, or <tt>block.text().size()</tt> if the block is all whitespace.
+     */
+    int indentedStartOfLine( const QTextBlock & block );
+
+    /// Indents the text in \c selection according to editor preferences.
+    void indent( const QTextCursor & selection, EditBlockMode = NewEditBlock );
+
+    /** \brief Indents a line to a chosen level of indentation.
+     *
+     * \param block The line to indent.
+     * \param level The level of indentation.
+     * \return A new \c QTextBlock indented to the requested level.
+     */
+    QTextBlock indent( const QTextBlock & block, int level );
+
+    /** \brief Creates a string of indentation characters acccording to
+     * editor preferences.
+     *
+     * \param level The indentation level.
+     */
     QString makeIndentationString( int level );
-    int indentationLevel( const QTextCursor & );
-    void insertSpaceToNextTabStop( QTextCursor & );
+
+    /** \brief Get the indentation level for the cursor's selection start.
+     *
+     * \param cursor A cursor in the document.
+     * \return The number of levels of indentation there should be for
+     * the line where the \c cursor's selection starts, or -1 on failure.
+     */
+    int indentationLevel( const QTextCursor & cursor );
+
+    /** \brief Inserts enough whitespace at \c cursor to reach the next
+     * tab stop according to editor preferences.
+     */
+    void insertSpaceToNextTabStop( QTextCursor & cursor );
 
     bool insertMatchingTokens(const QString & token);
     bool removeMatchingTokens();
 
-    int mIndentWidth;
+    // Data members
+
+    /// If \c true, use spaces to indent.
     bool mSpaceIndent;
+
     bool mStepForwardEvaluation;
     int mBlinkDuration;
     bool mInsertMatchingTokens;
@@ -132,5 +168,3 @@ private:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_CODE_EDITOR_SC_EDITOR_HPP_INCLUDED

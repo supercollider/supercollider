@@ -20,8 +20,7 @@
 
 /*  a 4 byte aligned and zero padded string allows faster string operations. */
 
-#ifndef _SC_Str4_
-#define _SC_Str4_
+#pragma once
 
 #include "Hash.h"
 #include <stdio.h>
@@ -98,6 +97,3 @@ inline int sc_atoi(const char *string)
 	}
 	return value;
 }
-
-
-#endif

@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_World_
-#define _SC_World_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_Rate.h"
@@ -122,4 +121,3 @@ inline SndBuf* World_GetNRTBuf(struct World *inWorld, uint32 index)
 
 typedef void (*LoadPlugInFunc)(struct InterfaceTable *);
 typedef void (*UnLoadPlugInFunc)();
-#endif

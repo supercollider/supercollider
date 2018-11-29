@@ -59,6 +59,10 @@ struct key_nodeptr_comp
    //Use public inheritance to avoid MSVC bugs with closures
    :  public key_nodeptr_comp_types<KeyTypeKeyCompare, ValueTraits, KeyOfValue>::base_t
 {
+private:
+   struct sfinae_type;
+
+public:
    typedef key_nodeptr_comp_types<KeyTypeKeyCompare, ValueTraits, KeyOfValue> types_t;
    typedef typename types_t::value_traits          value_traits;
    typedef typename types_t::value_type            value_type;
@@ -83,32 +87,32 @@ struct key_nodeptr_comp
 
    //pred(pnode)
    template<class T1>
-   BOOST_INTRUSIVE_FORCEINLINE bool operator()(const T1 &t1, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value >::type* =0) const
+   BOOST_INTRUSIVE_FORCEINLINE bool operator()(const T1 &t1, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value, sfinae_type* >::type = 0) const
    {  return base().get()(key_of_value()(*traits_->to_value_ptr(t1)));  }
 
    //operator() 2 arg
    //pred(pnode, pnode)
    template<class T1, class T2>
    BOOST_INTRUSIVE_FORCEINLINE bool operator()
-      (const T1 &t1, const T2 &t2, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value && is_same_or_nodeptr_convertible<T2>::value >::type* =0) const
+      (const T1 &t1, const T2 &t2, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value && is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(*traits_->to_value_ptr(t1), *traits_->to_value_ptr(t2));  }
 
    //pred(pnode, key)
    template<class T1, class T2>
    BOOST_INTRUSIVE_FORCEINLINE bool operator()
-      (const T1 &t1, const T2 &t2, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value && !is_same_or_nodeptr_convertible<T2>::value >::type* =0) const
+      (const T1 &t1, const T2 &t2, typename enable_if_c< is_same_or_nodeptr_convertible<T1>::value && !is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(*traits_->to_value_ptr(t1), t2);  }
 
    //pred(key, pnode)
    template<class T1, class T2>
    BOOST_INTRUSIVE_FORCEINLINE bool operator()
-      (const T1 &t1, const T2 &t2, typename enable_if_c< !is_same_or_nodeptr_convertible<T1>::value && is_same_or_nodeptr_convertible<T2>::value >::type* =0) const
+      (const T1 &t1, const T2 &t2, typename enable_if_c< !is_same_or_nodeptr_convertible<T1>::value && is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(t1, *traits_->to_value_ptr(t2));  }
 
    //pred(key, key)
    template<class T1, class T2>
    BOOST_INTRUSIVE_FORCEINLINE bool operator()
-      (const T1 &t1, const T2 &t2, typename enable_if_c< !is_same_or_nodeptr_convertible<T1>::value && !is_same_or_nodeptr_convertible<T2>::value >::type* =0) const
+      (const T1 &t1, const T2 &t2, typename enable_if_c< !is_same_or_nodeptr_convertible<T1>::value && !is_same_or_nodeptr_convertible<T2>::value, sfinae_type* >::type = 0) const
    {  return base()(t1, t2);  }
 
    const ValueTraits *const traits_;

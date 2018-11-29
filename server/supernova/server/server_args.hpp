@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SERVER_ARGS_HPP
-#define SERVER_SERVER_ARGS_HPP
+#pragma once
 
 #include <stdint.h>
 #include <string>
@@ -87,5 +86,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* SERVER_SERVER_ARGS_HPP */

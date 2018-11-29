@@ -24,8 +24,7 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 
 */
 
-#ifndef _GC_
-#define _GC_
+#pragma once
 
 #include "PyrObject.h"
 #include "VMGlobals.h"
@@ -485,4 +484,3 @@ inline void slotCopyAndGCWrite(PyrSlot *dst, const PyrSlot *src, int num, PyrObj
 		slotCopyAndGCWrite(dst + i, src + i, inParent, gc);
 }
 
-#endif

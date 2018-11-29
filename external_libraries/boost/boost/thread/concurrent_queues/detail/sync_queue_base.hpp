@@ -3,7 +3,7 @@
 
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Vicente J. Botet Escriba 2013-2014. Distributed under the Boost
+// (C) Copyright Vicente J. Botet Escriba 2013-2017. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -17,9 +17,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/concurrent_queues/queue_op_status.hpp>
 
-#include <boost/chrono/duration.hpp>
 #include <boost/chrono/time_point.hpp>
-#include <boost/chrono/system_clocks.hpp>
 #include <boost/throw_exception.hpp>
 
 #include <boost/config/abi_prefix.hpp>
@@ -39,10 +37,6 @@ namespace detail
     typedef Queue underlying_queue_type;
     typedef typename Queue::size_type size_type;
     typedef queue_op_status op_status;
-
-    typedef typename chrono::steady_clock clock;
-    typedef typename clock::duration duration;
-    typedef typename clock::time_point time_point;
 
     // Constructors/Assignment/Destructors
     BOOST_THREAD_NO_COPYABLE(sync_queue_base)
@@ -92,7 +86,8 @@ namespace detail
 
     inline void wait_until_not_empty(unique_lock<mutex>& lk);
     inline bool wait_until_not_empty_or_closed(unique_lock<mutex>& lk);
-    inline queue_op_status wait_until_not_empty_until(unique_lock<mutex>& lk, time_point const&);
+    template <class WClock, class Duration>
+    queue_op_status wait_until_not_empty_until(unique_lock<mutex>& lk, chrono::time_point<WClock,Duration> const&);
 
     inline void notify_not_empty_if_needed(unique_lock<mutex>& )
     {
@@ -203,7 +198,8 @@ namespace detail
   }
 
   template <class ValueType, class Queue>
-  queue_op_status sync_queue_base<ValueType, Queue>::wait_until_not_empty_until(unique_lock<mutex>& lk, time_point const&tp)
+  template <class WClock, class Duration>
+  queue_op_status sync_queue_base<ValueType, Queue>::wait_until_not_empty_until(unique_lock<mutex>& lk, chrono::time_point<WClock,Duration> const&tp)
   {
     for (;;)
     {

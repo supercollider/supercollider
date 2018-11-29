@@ -80,13 +80,13 @@ private::prOpenRead, prOpenWrite
 subsection::Playback
 
 method::cue
-Allocates a buffer and cues the SoundFile for playback. Returns an event parameterized to play that buffer. (See link::Reference/NodeEvent:: for a description of how events can be used to control running synths.) The event responds to strong::play::, strong::stop::, strong::pause::, strong::resume::, keeping both the file and buffer open. The file is closed and the buffer is freed when the event is sent a strong::close:: message.
+Allocates a buffer and cues the SoundFile for playback. Returns an event parameterized to play that buffer. (See link::Reference/NodeEvent:: for a description of how events can be used to control running synths.) The event responds to strong::play::, strong::stop::, strong::pause::, strong::resume::, keeping the buffer open. The buffer is closed when the event is sent a strong::close:: message.
 
 argument::ev
 An link::Classes/Event:: can passed as an argument allowing playback to be customized using the following keys:
 table::
 ## strong::key:: || strong::default value:: || strong::what it does::
-## bufferSize || 65536 ||
+## bufferSize || 65536 || Must be a power of two (65536, 131072 or 262144 recommended)
 ## firstFrame || 0 || first frame to play
 ## lastFrame || nil || last frame to play (nil plays to end of file)
 ## out: || 0 || sets output bus
@@ -98,13 +98,14 @@ table::
 ::
 Where strong::bufferSize::, strong::firstFrame::, strong::lastFrame:: are for buffer and playback position, and strong::out::, strong::server::, strong::group::, strong::addAction::, strong::amp:: are synth parameters. Here is the default SynthDef used for stereo files:
 code::
-SynthDef(\diskIn2, { | bufnum, out, gate = 1, sustain, amp = 1, ar = 0, dr = 0.01 |
-	Out.ar(out, DiskIn.ar(2, bufnum)
-	* Linen.kr(gate, ar, 1, dr, 2)
-	* EnvGen.kr(Env.linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: Done.freeSelf) * amp)
+SynthDef(\diskIn2, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
+	var sig = VDiskIn.ar(2, bufnum, BufRateScale.kr(bufnum));
+	var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+	var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+	Out.ar(out, sig * env * amp)
 });
 ::
-The control strong::sustain:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback
+The control strong::sustainTime:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback
 
 argument::playNow
 This is a link::Classes/Boolean:: that determines whether the file is to be played immediately after cueing.
@@ -117,7 +118,7 @@ e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the defaul
 
 argument:: closeWhenDone
 
-A flag to indicate wether the code::SoundFile:: will be closed after it's done playing. Default is False.
+A flag to indicate whether the buffer will be closed after playback is finished. Default is False.
 
 subsection::Read/Write
 

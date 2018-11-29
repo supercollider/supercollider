@@ -100,11 +100,16 @@ Recorder {
 
 	prepareForRecord { | path, numChannels |
 		var bufSize = recBufSize ? server.recBufSize ?? { server.sampleRate.nextPowerOfTwo };
+		var dir;
 
 		recHeaderFormat = recHeaderFormat ? server.recHeaderFormat;
 		recSampleFormat = recSampleFormat ? server.recSampleFormat;
 		numChannels = numChannels ? server.recChannels;
+
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
+		dir = path.dirname;
+		if(File.exists(dir).not) { dir.mkdir };
+
 		recordBuf = Buffer.alloc(server,
 			bufSize,
 			numChannels,
@@ -167,18 +172,7 @@ Recorder {
 	makePath {
 		var timestamp;
 		var dir = thisProcess.platform.recordingsDir;
-		if(File.exists(dir).not) {
-			dir.mkdir;
-			"created recordings directory: '%'\n".postf(dir)
-		};
-
-		// temporary kludge to fix Date's brokenness on windows
-		timestamp = if(thisProcess.platform.name == \windows) {
-			Main.elapsedTime.round(0.01)
-		} {
-			Date.localtime.stamp
-		};
-
+		timestamp = Date.localtime.stamp;
 		^dir +/+ filePrefix ++ timestamp ++ "." ++ server.recHeaderFormat;
 	}
 

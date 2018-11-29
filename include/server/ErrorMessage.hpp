@@ -39,8 +39,7 @@
  *  02110-1301 USA
  */
 
-#ifndef COMMON_SERVER_ERRORMESSAGE_H_INCLUDED
-#define COMMON_SERVER_ERRORMESSAGE_H_INCLUDED
+#pragma once
 
 #include <string>
 #include <cassert>
@@ -116,5 +115,3 @@ std::string apiVersionNotFound(std::string const& utf8Filename)
 } // namespace ErrorMessage
 
 } // namespace scsynth
-
-#endif // COMMON_SERVER_ERRORMESSAGE_H_INCLUDED

@@ -1,6 +1,6 @@
 title:: playN
 summary:: distribute audio over multiple non-adjacent channels
-categories:: Libraries>JITLib>NodeProxy
+categories:: JITLib>NodeProxy
 related:: Classes/Monitor, Classes/Bus, Classes/NodeProxy, Classes/Ndef, Classes/ProxySpace
 
 method:: playN

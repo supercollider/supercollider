@@ -25,8 +25,7 @@ what loop constructs the compiler can best generate code.
 
 */
 
-#ifndef _Unroll_
-#define _Unroll_
+#pragma once
 
 #include <string.h>
 #include <cassert>
@@ -260,5 +259,3 @@ inline void loop1(int length, Functor const & f)
 		f();
 	} while (--i);
 }
-
-#endif

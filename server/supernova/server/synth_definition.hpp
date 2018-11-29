@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SYNTH_DEFINITION_HPP
-#define SERVER_SYNTH_DEFINITION_HPP
+#pragma once
 
 #include <cassert>
 #include <cstdint>
@@ -195,5 +194,3 @@ public:
 typedef boost::intrusive_ptr<synth_definition> synth_definition_ptr;
 
 } /* namespace nova */
-
-#endif /* SERVER_SYNTH_DEFINITION_HPP */

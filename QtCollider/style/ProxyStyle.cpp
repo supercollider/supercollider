@@ -3,7 +3,7 @@
 #include "../QcApplication.h"
 
 #include <QtGlobal>
-#include <QWebView>
+#include <QWebEngineView>
 #include <QStyleOptionSlider>
 #include <QPainter>
 
@@ -18,13 +18,13 @@ static bool AlwaysShowScrollbars() {
   return QtCollider::Mac::AlwaysShowScrollbars();
 
 #elif defined(Q_OS_X11)
-  return !QcApplication::SystemHasMouseWheel();
+  return true;
 
 #elif defined(Q_OS_WIN)
-  return !QcApplication::SystemHasMouseWheel();
+  return true;
 
 #else
-  return !QcApplication::SystemHasMouseWheel();
+  return true;
 #endif
 };
 
@@ -33,7 +33,7 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
 {
   // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
   if( ctrl == QStyle::CC_ScrollBar
-      && qobject_cast<const QWebView*>(w) != 0
+      && qobject_cast<const QWebEngineView*>(w) != 0
       && opt->type == QStyleOption::SO_Slider )
   {
     // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.

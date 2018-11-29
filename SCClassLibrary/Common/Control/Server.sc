@@ -138,11 +138,12 @@ ServerOptions {
 			o = o ++ " -P " ++ restrictedPath;
 		});
 		if (ugenPluginsPath.notNil, {
-			o = o ++ " -U " ++ if(ugenPluginsPath.isString) {
-				ugenPluginsPath
-			} {
-				ugenPluginsPath.join("; ");
-			};
+			if(ugenPluginsPath.isString, {
+				ugenPluginsPath = ugenPluginsPath.bubble;
+			});
+			o = o ++ " -U " ++ ugenPluginsPath.collect{|p|
+				thisProcess.platform.formatPathForCmdLine(p)
+			}.join(Platform.pathDelimiter);
 		});
 		if (memoryLocking, {
 			o = o ++ " -L";
@@ -280,6 +281,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
+	var pidReleaseCondition;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -339,6 +341,8 @@ Server {
 		this.name = argName;
 		all.add(this);
 
+		pidReleaseCondition = Condition({ this.pid == nil });
+
 		Server.changed(\serverAdded, this);
 
 	}
@@ -381,7 +385,7 @@ Server {
 	// clientID is settable while server is off, and locked while server is running
 	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to % - %. clientID is still %.";
 		if (this.serverRunning) {
 			failstr.format(name, val.cs, "server is running", clientID).warn;
 			^this
@@ -394,7 +398,7 @@ Server {
 		if (val < 0 or: { val >= this.maxNumClients }) {
 			failstr.format(name,
 				val.cs,
-				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients),
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
 				clientID
 			).warn;
 			^this
@@ -527,15 +531,16 @@ Server {
 				.postf(this, newMaxLogins);
 			};
 		};
-
-		if (newClientID == clientID) {
-			"%: keeping clientID (%) as confirmed by server process.\n"
-			.postf(this, newClientID);
-		} {
-			"%: setting clientID to %, as obtained from server process.\n"
-			.postf(this, newClientID);
+		if (newClientID.notNil) {
+			if (newClientID == clientID) {
+				"%: keeping clientID (%) as confirmed by server process.\n"
+				.postf(this, newClientID);
+			} {
+				"%: setting clientID to %, as obtained from server process.\n"
+				.postf(this, newClientID);
+			};
+			this.clientID = newClientID;
 		};
-		this.clientID = newClientID;
 	}
 
 	prHandleNotifyFailString {|failString, msg|
@@ -543,8 +548,11 @@ Server {
 		// post info on some known error cases
 		case
 		{ failString.asString.contains("already registered") } {
+			// when already registered, msg[3] is the clientID by which
+			// the requesting client was registered previously
 			"% - already registered with clientID %.\n".postf(this, msg[3]);
-			statusWatcher.notified = true;
+			statusWatcher.prHandleLoginWhenAlreadyRegistered(msg[3]);
+
 		} { failString.asString.contains("not registered") } {
 			// unregister when already not registered:
 			"% - not registered.\n".postf(this);
@@ -624,7 +632,7 @@ Server {
 		var file, buffer;
 		dir = dir ? SynthDef.synthDefDir;
 		file = File(dir ++ name ++ ".scsyndef","r");
-		if(file.isNil) { ^nil };
+		if(file.isOpen.not) { ^nil };
 		protect {
 			buffer = Int8Array.newClear(file.length);
 			file.read(buffer);
@@ -881,13 +889,41 @@ Server {
 				this.quit;
 				this.boot;
 			}, {
-				this.bootServerApp({
-					if(startAliveThread) { statusWatcher.startAliveThread }
-				})
+				this.prWaitForPidRelease {
+					this.bootServerApp({
+						if(startAliveThread) { statusWatcher.startAliveThread }
+					})
+				};
 			}, 0.25);
 		}
 	}
 
+	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
+		var waiting = true;
+		if (this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
+			onComplete.value;
+			^this
+		};
+
+		// FIXME: quick and dirty fix for supernova reboot hang on macOS:
+		// if we have just quit before running server.boot,
+		// we wait until server process really ends and sets its pid to nil
+		SystemClock.sched(timeout, {
+			if (waiting) {
+				pidReleaseCondition.unhang
+			}
+		});
+
+		forkIfNeeded {
+			pidReleaseCondition.hang;
+			if (pidReleaseCondition.test.value) {
+				waiting = false;
+				onComplete.value;
+			} {
+				onFailure.value
+			}
+		}
+	}
 
 	// FIXME: recover should happen later, after we have a valid clientID!
 	// would then need check whether maxLogins and clientID have changed or not,
@@ -903,16 +939,28 @@ Server {
 		this.connectSharedMemory;
 	}
 
+	prOnServerProcessExit { |exitCode|
+		pid = nil;
+		pidReleaseCondition.signal;
+
+		"Server '%' exited with exit code %."
+			.format(this.name, exitCode)
+			.postln;
+		statusWatcher.quit(watchShutDown: false);
+	}
+
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".postln;
+			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
-			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
+			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+				this.prOnServerProcessExit(exitCode);
+			});
+			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
 	}
@@ -984,12 +1032,13 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".postln;
+			"Internal server has quit.".postln;
 		} {
-			"'/quit' sent\n".postln;
+			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
-		pid = nil;
+		// let server process reset pid to nil!
+		// pid = nil;
 		sendQuit = nil;
 		maxNumClients = nil;
 

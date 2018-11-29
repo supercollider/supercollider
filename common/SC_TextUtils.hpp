@@ -19,12 +19,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_TEXTUTILS_HPP
-#define SC_TEXTUTILS_HPP
+#pragma once
 
 // strips out all the RichTextFile crap
 int rtf2txt(char* txt);
 int html2txt(char* txt);
-
-
-#endif // SC_TEXTUTILS_HPP

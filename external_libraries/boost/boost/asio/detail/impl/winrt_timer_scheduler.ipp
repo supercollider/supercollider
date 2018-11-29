@@ -2,7 +2,7 @@
 // detail/impl/winrt_timer_scheduler.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -29,9 +29,9 @@ namespace asio {
 namespace detail {
 
 winrt_timer_scheduler::winrt_timer_scheduler(
-    boost::asio::io_service& io_service)
-  : boost::asio::detail::service_base<winrt_timer_scheduler>(io_service),
-    io_service_(use_service<io_service_impl>(io_service)),
+    boost::asio::io_context& io_context)
+  : boost::asio::detail::service_base<winrt_timer_scheduler>(io_context),
+    io_context_(use_service<io_context_impl>(io_context)),
     mutex_(),
     event_(),
     timer_queues_(),
@@ -45,10 +45,10 @@ winrt_timer_scheduler::winrt_timer_scheduler(
 
 winrt_timer_scheduler::~winrt_timer_scheduler()
 {
-  shutdown_service();
+  shutdown();
 }
 
-void winrt_timer_scheduler::shutdown_service()
+void winrt_timer_scheduler::shutdown()
 {
   boost::asio::detail::mutex::scoped_lock lock(mutex_);
   shutdown_ = true;
@@ -65,10 +65,10 @@ void winrt_timer_scheduler::shutdown_service()
 
   op_queue<operation> ops;
   timer_queues_.get_all_timers(ops);
-  io_service_.abandon_operations(ops);
+  io_context_.abandon_operations(ops);
 }
 
-void winrt_timer_scheduler::fork_service(boost::asio::io_service::fork_event)
+void winrt_timer_scheduler::notify_fork(boost::asio::io_context::fork_event)
 {
 }
 
@@ -90,7 +90,7 @@ void winrt_timer_scheduler::run_thread()
     if (!ops.empty())
     {
       lock.unlock();
-      io_service_.post_deferred_completions(ops);
+      io_context_.post_deferred_completions(ops);
       lock.lock();
     }
   }

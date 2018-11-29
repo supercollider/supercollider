@@ -671,18 +671,6 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     else
         return errWrongType;
 
-    QRectF target;
-
-    if (isKindOfSlot(a+0, SC_CLASS(Point))) {
-        QPointF point = QtCollider::read<QPointF>(a+0);
-        target = QRectF(point.x(), point.y(), source.width(), source.height());
-    }
-    else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
-        target = QtCollider::read<QRectF>(a+0);
-    }
-    else
-        return errWrongType;
-
     int composition = QtCollider::get(a+3);
     float opacity = QtCollider::get(a+4);
 
@@ -691,10 +679,24 @@ QC_QPEN_PRIMITIVE( QPen_DrawImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     painter->setRenderHint( QPainter::SmoothPixmapTransform,
                             image->transformationMode == Qt::SmoothTransformation );
     painter->setOpacity(opacity);
-    painter->drawPixmap(target, pixmap, source);
+
+    int result = errNone;
+
+    if (isKindOfSlot(a+0, SC_CLASS(Point))) {
+        QPointF point = QtCollider::read<QPointF>(a+0);
+        painter->drawPixmap(point, pixmap, source);
+    }
+    else if (isKindOfSlot(a+0, SC_CLASS(Rect))) {
+        QRectF target = QtCollider::read<QRectF>(a+0);
+        painter->drawPixmap(target, pixmap, source);
+    }
+    else {
+        result = errWrongType;
+    }
+
     painter->restore();
 
-    return errNone;
+    return result;
 }
 
 QC_QPEN_PRIMITIVE( QPen_TileImage, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )

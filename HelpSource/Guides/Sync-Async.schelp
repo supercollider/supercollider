@@ -1,6 +1,6 @@
 title:: Synchronous and Asynchronous Execution
 summary:: The problem of simultaneous synchronous and asynchronous execution
-categories:: SC3 vs SC2
+categories:: Language>SC3 vs SC2
 
 Using a program such as SuperCollider introduces a number of issues regarding timing and order of execution. Realtime audio synthesis requires that samples are calculated and played back at a certain rate and on a certain schedule, in order to avoid dropouts, glitches, etc. Other tasks, such as loading a sample into memory, might take arbitrary amounts of time, and may not be needed within a definite timeframe. This is the difference between synchronous and asynchronous tasks.
 
@@ -165,10 +165,10 @@ SynthDef("help-Buffer",{ arg out=0, bufnum;
 y = Synth.basicNew("help-Buffer"); // not sent yet
 
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav", action: { arg buffer;
-		// synth add its s_new msg to follow
-		// after the buffer read completes
-		y.newMsg(s,\addToTail,[\bufnum,buffer])
-	} // .value NOT needed, unlike in the previous example
+       // synth send its s_new msg to follow
+       // after the buffer read completes
+       s.sendBundle(nil, y.newMsg(s,[\bufnum,buffer],\addToTail));
+   }
 );
 )
 
@@ -188,7 +188,7 @@ b = Buffer.alloc(s, 44100,
 
 // this is equivalent to the above
 (
-b = Buffer.alloc;
+b = Buffer.alloc(s, 44100);
 ("bufnum:" + b).postln;
 )
 ::
@@ -198,23 +198,24 @@ One can also evaluate a function in response to a 'done' message, or indeed any 
 code::
 (
 SynthDef("help-SendTrig",{
-	SendTrig.kr(Dust.kr(1.0), 0, 0.9);
+    SendTrig.kr(Dust.kr(1.0), 0, 0.9);
 }).send(s);
 
 // register to receive this message
 a = OSCFunc({ arg msg, time;
-	("This is the done message for the SynthDef.send:" + [time, msg]).postln;
-}, '/done', a.addr).oneShot; // remove me automatically when done
+    ("This is the done message for the SynthDef.send:" + [time, msg]).postln;
+}, '/done').oneShot; // remove me automatically when done
+
 b = OSCFunc({ arg msg, time;
-	[time, msg].postln;
-}, '/tr', s.addr);
+    [time, msg].postln;
+}, '/tr');
 c = OSCFunc({ arg msg;
-	"this is another call".postln;
-}, '/tr', s.addr);
+    "this is another call".postln;
+}, '/tr');
 )
 
 x = Synth.new("help-SendTrig");
 b.free;
 c.free;
-x.free;
+a.free;
 ::

@@ -1,6 +1,6 @@
 class:: Tdef
 summary:: task reference definition
-categories:: Libraries>JITLib>Patterns
+categories:: JITLib>Patterns
 related:: Classes/TaskProxy, Classes/Task, Classes/Routine
 
 description::

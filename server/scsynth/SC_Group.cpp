@@ -172,6 +172,8 @@ void Group_DumpNodeTreeAndControls(Group *inGroup)
 						scprintf("%.14g", *ptr);
 					}
 				}
+				
+				delete[] names;
 			}
 		}
 		scprintf("\n");
@@ -341,14 +343,15 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 				if((childGraph->mMapControls[i]) != ptr){
 					// it's mapped
 					int bus;
-					char buf[10]; //should be long enough
+					const size_t BUF_SIZE(10);
+					char buf[BUF_SIZE];
 					if (childGraph->mControlRates[i] == 2) {
-					bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
-					bus = (int)((float)bus / child->mWorld->mBufLength);
-					sprintf(buf, "%c%d", 'a', bus);
+						bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
+						bus = (int)((float)bus / child->mWorld->mBufLength);
+						snprintf(buf, BUF_SIZE, "%c%d", 'a', bus);
 					} else {
 						bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
-						sprintf(buf, "%c%d", 'c', bus);
+						snprintf(buf, BUF_SIZE, "%c%d", 'c', bus);
 					}
 					//scprintf("bus: %d\n", bus);
 					packet->addtag('s');
@@ -358,6 +361,8 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
 					packet->addf(*ptr);
 				}
 			}
+			
+			delete[] names;
 		}
 		child = next;
 	}

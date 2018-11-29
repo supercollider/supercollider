@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_NUMBER_BOX
-#define QC_NUMBER_BOX
+#pragma once
 
 #include <QLineEdit>
 
@@ -147,6 +146,4 @@ class NumberBoxWidget : public QDoubleSpinBox
     SCAbstractStepValue *modifier;
     float scrollStep;
 };
-#endif
-
 #endif

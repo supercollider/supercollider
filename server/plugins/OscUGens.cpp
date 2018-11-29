@@ -675,7 +675,7 @@ void Index_Ctor(Index *unit)
 	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(Index_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(Index_next_a);
 	} else {
 		SETCALC(Index_next_k);
@@ -739,7 +739,7 @@ void IndexL_Ctor(IndexL *unit)
 	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(IndexL_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(IndexL_next_a);
 	} else {
 		SETCALC(IndexL_next_k);
@@ -822,7 +822,7 @@ void FoldIndex_Ctor(FoldIndex *unit)
 	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(FoldIndex_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(FoldIndex_next_a);
 	} else {
 		SETCALC(FoldIndex_next_k);
@@ -885,7 +885,7 @@ void WrapIndex_Ctor(WrapIndex *unit)
 	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(WrapIndex_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(WrapIndex_next_a);
 	} else {
 		SETCALC(WrapIndex_next_k);
@@ -961,7 +961,7 @@ void IndexInBetween_Ctor(IndexInBetween *unit)
 	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(IndexInBetween_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(IndexInBetween_next_a);
 	} else {
 		SETCALC(IndexInBetween_next_k);
@@ -1031,7 +1031,7 @@ void DetectIndex_Ctor(DetectIndex *unit)
 	unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
 	if (BUFLENGTH == 1) {
 		SETCALC(DetectIndex_next_1);
-	} else if (INRATE(0) == calc_FullRate) {
+	} else if (INRATE(1) == calc_FullRate) {
 		SETCALC(DetectIndex_next_a);
 	} else {
 		SETCALC(DetectIndex_next_k);
@@ -1365,6 +1365,7 @@ void PSinGrain_next(PSinGrain *unit, int inNumSamples)
 			}
 		}
 	} while (remain>0);
+	unit->mCounter = counter;
 	unit->m_level = level;
 	unit->m_slope = slope;
 	unit->m_y1 = y1;

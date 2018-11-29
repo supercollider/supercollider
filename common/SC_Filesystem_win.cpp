@@ -123,7 +123,7 @@ bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s)
 Path SC_Filesystem::defaultSystemAppSupportDirectory()
 {
 	PWSTR wptr = nullptr;
-	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &wptr);
+	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_ProgramData, 0, nullptr, &wptr);
 	return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 

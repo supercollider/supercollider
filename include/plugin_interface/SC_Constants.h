@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_Constants_
-#define _SC_Constants_
+#pragma once
 
 #include <cmath>
 
@@ -52,5 +51,3 @@ const float truncFloat = (float)(3. * std::pow(2.0,22));
 const double truncDouble = 3. * std::pow(2.0,51);
 
 const float kBadValue = 1e20f; // used in the secant table for values very close to 1/0
-
-#endif

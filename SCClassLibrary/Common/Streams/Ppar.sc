@@ -65,6 +65,8 @@ Pgpar : Ppar {
 		var	lag = 0, clock = thisThread.clock,
 			groupReleaseTime = inevent[\groupReleaseTime] ? 0.1;
 
+		if(repeats <= 0) { ^inevent };
+
 		server = inevent[\server] ?? { Server.default };
 		ingroup = inevent[\group];
 		ids = { server.nextNodeID } ! this.numberOfGroups;

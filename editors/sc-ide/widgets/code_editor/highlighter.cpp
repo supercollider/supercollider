@@ -130,6 +130,7 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer & lexer)
 
         case Token::Float:
         case Token::HexInt:
+        case Token::ScaleDegreeFloat:
         case Token::RadixFloat:
             setFormat(tokenPosition, tokenLength, formats[NumberFormat]);
             break;

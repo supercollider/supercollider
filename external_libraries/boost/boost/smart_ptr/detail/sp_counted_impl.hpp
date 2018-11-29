@@ -26,6 +26,7 @@
 
 #include <boost/checked_delete.hpp>
 #include <boost/smart_ptr/detail/sp_counted_base.hpp>
+#include <boost/core/addressof.hpp>
 
 #if defined(BOOST_SP_USE_QUICK_ALLOCATOR)
 #include <boost/smart_ptr/detail/quick_allocator.hpp>
@@ -49,6 +50,19 @@ void sp_scalar_destructor_hook( void * px, std::size_t size, void * pn );
 
 namespace detail
 {
+
+// get_local_deleter
+
+template<class D> class local_sp_deleter;
+
+template<class D> D * get_local_deleter( D * /*p*/ )
+{
+    return 0;
+}
+
+template<class D> D * get_local_deleter( local_sp_deleter<D> * p );
+
+//
 
 template<class X> class sp_counted_impl_p: public sp_counted_base
 {
@@ -79,6 +93,11 @@ public:
     }
 
     virtual void * get_deleter( sp_typeinfo const & )
+    {
+        return 0;
+    }
+
+    virtual void * get_local_deleter( sp_typeinfo const & )
     {
         return 0;
     }
@@ -156,6 +175,11 @@ public:
     virtual void * get_deleter( sp_typeinfo const & ti )
     {
         return ti == BOOST_SP_TYPEID(D)? &reinterpret_cast<char&>( del ): 0;
+    }
+
+    virtual void * get_local_deleter( sp_typeinfo const & ti )
+    {
+        return ti == BOOST_SP_TYPEID(D)? boost::detail::get_local_deleter( boost::addressof( del ) ): 0;
     }
 
     virtual void * get_untyped_deleter()
@@ -236,15 +260,7 @@ public:
 
         A2 a2( a_ );
 
-#if !defined( BOOST_NO_CXX11_ALLOCATOR )
-
-        std::allocator_traits<A2>::destroy( a2, this );
-
-#else
-
         this->~this_type();
-
-#endif
 
         a2.deallocate( this, 1 );
     }
@@ -252,6 +268,11 @@ public:
     virtual void * get_deleter( sp_typeinfo const & ti )
     {
         return ti == BOOST_SP_TYPEID( D )? &reinterpret_cast<char&>( d_ ): 0;
+    }
+
+    virtual void * get_local_deleter( sp_typeinfo const & ti )
+    {
+        return ti == BOOST_SP_TYPEID(D)? boost::detail::get_local_deleter( boost::addressof( d_ ) ): 0;
     }
 
     virtual void * get_untyped_deleter()

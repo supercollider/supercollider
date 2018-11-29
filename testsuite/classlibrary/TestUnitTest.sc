@@ -1,56 +1,58 @@
 
 TestUnitTest : UnitTest {
 
-	var someVar,toreDown,count = 0;
+	var someVar, setUp = false;
 
 	setUp {
-		someVar = "setUp";
-		count = count + 1;
-	}
-	tearDown {
-		someVar = "tearDown";
-		toreDown = true;
+		setUp = true;
 	}
 
 	test_setUp {
-		this.assert( count == 1, "count should be on 1");
-		this.assert( someVar == "setUp", "someVar be set in setUp" );
+		this.assert( setUp, "setUp should have happened" )
 	}
-	test_toreDown{
-		this.assert( toreDown, "toreDown should be set at the end of the last test" );
-		this.assert( count == 2, "count should be on 2");
-	}
-	test_setUp2 {
-		this.assert( count == 3, "count should be on 3");
-	}
+
 	test_assert {
 		this.assert(true, "assert(true) should certainly work");
 	}
-/*
-	test_failure {
-		this.assert( false, "should fail")
-	}
-*/
 
-/*	test_assertAsynch {
-		Server.default.boot;
-		this.assertAsynch( Server.default.serverRunning, {
-			this.assert( Server.default.serverRunning,"server is indeed running");
-			}, "assert asynch should have triggered the server to boot and then run the test block");
+	test_isolation_first {
+		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
+		someVar = 2;
 	}
-*/
+
+	test_isolation_second {
+		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
+		someVar = 2;
+	}
 
 	test_findTestedClass {
 		this.assertEquals( TestMixedBundleTester.findTestedClass, MixedBundleTester)
 	}
 
+	test_assertException_implicitThrow {
+		this.assertException({ 1789.monarchy }, DoesNotUnderstandError, "assertException should return true for any error")
+	}
 
+	test_assertException_explicitThrow {
+		this.assertException({ BinaryOpFailureError("I prefer ternary").throw },
+			BinaryOpFailureError,
+			"assertException should return true for specific error",
+		)
+	}
 
+	test_assertNoException_nonExceptionThrow {
+		this.assertNoException({ \stone.throw }, "assertException should return false for thrown object")
+	}
+
+	test_assertNoException_nonThrowingFunction {
+		this.assertNoException({ try { 1789.monarchy } }, "assertNoThrow should return true for not an error")
+	}
 
 	/*** IF YOU ADD MORE TESTS, UPDATE THE numTestMethods var ***/
 	// test_findTestMethods {
 	// 	var numTestMethods = 7;
 	// 	this.assert( this.findTestMethods.size == numTestMethods, "should be " + numTestMethods + " test methods");
 	// }
+
 }
 

@@ -43,7 +43,7 @@ argument::decaytime
 Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
 argument::mul
-Output will be multiplied by this value.
+The output will be multiplied by this value.
 
 argument::add
 This value will be added to the output.
@@ -53,7 +53,7 @@ Examples::
 code::
 
 // Since the allpass delay has no audible effect as a resonator on
-// steady state sound ...
+// steady-state sound ...
 
 { AllpassC.ar(WhiteNoise.ar(0.1), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
 
@@ -85,4 +85,3 @@ code::
 { AllpassC.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
 
 ::
-

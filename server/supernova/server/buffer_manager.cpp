@@ -16,10 +16,9 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#include "sndfile.hh"
 
 #include "buffer_manager.hpp"
-#include "utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 #include "utilities/sized_array.hpp"
 #include "../../common/SC_SndFileHelpers.hpp"
 
@@ -42,7 +41,7 @@ namespace
 
 SndfileHandle open_file(const char * file, std::size_t start_frame)
 {
-    SndfileHandle sndfile(file);
+    auto sndfile = makeSndfileHandle(file);
     if (!sndfile)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 
@@ -119,7 +118,7 @@ void buffer_wrapper::write_file(const char * file, const char * header_format, c
 
     format |= sample_format_tag;
 
-    SndfileHandle sndfile(file, SFM_WRITE, format, channels_, sample_rate_);
+    auto sndfile = makeSndfileHandle(file, SFM_WRITE, format, channels_, sample_rate_);
     if (!sndfile)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 

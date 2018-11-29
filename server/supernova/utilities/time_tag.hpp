@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef UTILITIES_TIME_TAG_HPP
-#define UTILITIES_TIME_TAG_HPP
+#pragma once
 
 #include <cstdint>
 #include <cmath>
@@ -230,7 +229,7 @@ public:
 #ifdef BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
         time_duration offset = seconds(get_secs() - ntp_offset) + nanoseconds(get_nanoseconds());
 #else
-        time_duration offset = seconds(get_secs() - ntp_offset) + microseconds(get_nanoseconds()/1000);
+        time_duration offset = seconds(get_secs() - ntp_offset) + microseconds(static_cast<long>(get_nanoseconds()/1000));
 #endif
         return ptime(base, offset);
     }
@@ -240,5 +239,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* UTILITIES_TIME_TAG_HPP */

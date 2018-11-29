@@ -17,8 +17,7 @@
 *
 ************************************************************************/
 
-#ifndef _SC_APPLE_H_
-#define _SC_APPLE_H_
+#pragma once
 
 namespace SC {
 namespace Apple {
@@ -28,4 +27,3 @@ void disableAppNap ( );
 } // namespace Apple
 } // namespace SC
 
-#endif

@@ -1,6 +1,6 @@
 class:: NdefParamGui
 summary:: display the settings of a nodeproxy
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/EZText, Classes/NdefGui, Classes/EnvirGui
 
 description::

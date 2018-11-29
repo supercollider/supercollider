@@ -1,6 +1,6 @@
 class:: Maybe
 summary:: referentially transparent proxy object
-categories:: Libraries>JITLib>Environments, Live Coding
+categories:: JITLib>Environments, Live Coding
 related:: Classes/Fdef, Overviews/JITLib
 
 description::

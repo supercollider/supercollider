@@ -19,7 +19,7 @@
 #ifndef BOOST_REGEX_WORKAROUND_HPP
 #define BOOST_REGEX_WORKAROUND_HPP
 
-
+#include <boost/config.hpp>
 #include <new>
 #include <cstring>
 #include <cstdlib>
@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <iosfwd>
 #include <vector>
+#include <set>
 #include <map>
 #include <boost/limits.hpp>
 #include <boost/assert.hpp>

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_MULTI_EDITOR_HPP_INCLUDED
-#define SCIDE_WIDGETS_MULTI_EDITOR_HPP_INCLUDED
+#pragma once
 
 #include <QWidget>
 #include <QTabBar>
@@ -192,7 +191,15 @@ private:
     void breakSignalConnections();
     void createActions();
     void updateActions();
-    int addTab( Document * );
+
+    /**
+     * Put a new doc into the editor. If `doc` is already opened, this simply returns its current index.
+     *
+     * @param doc The doc to insert.
+     * @param insertIndex Index at which to insert. If negative, the doc is inserted after the current tab.
+     * @return The index of the tab.
+     */
+    int insertTab(Document *doc, int insertIndex = -1);
     CodeEditorBox *newBox( MultiSplitter * );
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( GenericCodeEditor * );
@@ -217,5 +224,3 @@ private:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_MULTI_EDITOR_HPP_INCLUDED

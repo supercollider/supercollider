@@ -19,13 +19,22 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_SNDFILEHELPERS_HPP_INCLUDED
-#define SC_SNDFILEHELPERS_HPP_INCLUDED
+#pragma once
 
 #include "SC_Errors.h"
 
 #ifndef NO_LIBSNDFILE
-#include "sndfile.h"
+
+// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
+// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
+#ifdef _WIN32
+#  include "SC_Codecvt.hpp" // utf8_cstr_to_utf16_wstring
+#  include <windows.h>
+#  define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#endif // _WIN32
+#include <sndfile.h>
+#include <sndfile.hh>
+
 #include "string.h"
 
 #include <boost/algorithm/string/predicate.hpp> // iequals
@@ -109,7 +118,53 @@ static inline int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char 
 	return kSCErr_None;
 }
 
-#else
+// ------------------------------ platform-specific functions ------------------------------
+#ifdef _WIN32
+
+inline SNDFILE* sndfileOpen(LPCWSTR wpath, int mode, SF_INFO *sfinfo)
+{
+	return sf_wchar_open(wpath, mode, sfinfo);
+}
+
+// This safely opens a sound file using a raw cstring on any platform
+inline SNDFILE* sndfileOpenFromCStr(const char *path, int mode, SF_INFO *sfinfo)
+{
+	// convert to wchar first
+	const std::wstring path_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(path);
+	return sndfileOpen(path_w.c_str(), mode, sfinfo);
+}
+
+// Safely creates a handle using a raw cstring on any platform
+inline SndfileHandle makeSndfileHandle(
+	const char *path, int mode = SFM_READ, int format = 0, int channels = 0, int samplerate = 0)
+{
+	const std::wstring path_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(path);
+	return SndfileHandle(path_w.c_str(), mode, format, channels, samplerate);
+}
+
+#else // not _WIN32
+
+inline SNDFILE* sndfileOpen(const char *path, int mode, SF_INFO *sfinfo)
+{
+	return sf_open(path, mode, sfinfo);
+}
+
+// simple forward
+inline SNDFILE* sndfileOpenFromCStr(const char *path, int mode, SF_INFO *sfinfo)
+{
+	return sndfileOpen(path, mode, sfinfo);
+}
+
+// simple forward
+inline SndfileHandle makeSndfileHandle(
+	const char *path, int mode = SFM_READ, int format = 0, int channels = 0, int samplerate = 0)
+{
+	return SndfileHandle(path, mode, format, channels, samplerate);
+}
+
+#endif // _WIN32
+
+#else // not NO_LIBSNDFILE
 
 static inline int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char *headerFormatString, const char *sampleFormatString)
 {
@@ -117,5 +172,3 @@ static inline int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char 
 }
 
 #endif /* NO_LIBSNDFILE */
-
-#endif /* SC_SNDFILEHELPERS_HPP_INCLUDED */

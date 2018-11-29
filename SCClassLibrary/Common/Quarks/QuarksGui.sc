@@ -196,7 +196,9 @@ QuarksGui {
 			model.fetchDirectory(true);
 			this.setMsg("Checking for updates to Quarks...", \info);
 			0.1.wait;
-			model.checkForUpdates();
+			model.checkForUpdates(nil, { |quark|
+				this.setMsg("Checking for updates to Quarks (%)...".format(quark.name), \info);
+			});
 		}, onComplete, onCancel)
 	}
 	installFolder {
@@ -378,7 +380,9 @@ QuarkDetailView {
 		});
 	}
 	openGitRemote {
-		model.git.remoteAsHttpUrl.openOS;
+		if (model.git.notNil, {
+			model.git.remoteAsHttpUrl.openOS;
+		}, { model.url.openOS });
 	}
 	openLocalPath {
 		model.localPath.openOS;

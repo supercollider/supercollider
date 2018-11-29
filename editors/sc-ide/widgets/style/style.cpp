@@ -20,6 +20,9 @@
 */
 
 #include "style.hpp"
+#include "../../core/util/color.hpp"
+
+#include <cmath>
 
 #include <QPainter>
 #include <QStyleOption>
@@ -29,7 +32,7 @@
 #include <QToolButton>
 #include <QLayout>
 #include <QDebug>
-#include <QWebView>
+#include <QWebEngineView>
 
 namespace ScIDE {
 
@@ -80,13 +83,13 @@ void Style::drawComplexControl
     // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
     case QStyle::CC_ScrollBar:
     {
-        if (qobject_cast<const QWebView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
+        if (qobject_cast<const QWebEngineView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
         {
             // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.
             const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(option);
             QStyleOptionSlider opt2( *optSlider );
             opt2.styleObject = NULL;
-            
+
             QProxyStyle::drawComplexControl( control, &opt2, painter, widget );
             return;
         }
@@ -200,43 +203,71 @@ void Style::drawControl
 
     switch(element) {
     case QStyle::CE_TabBarTab: {
-        const QStyleOptionTabV3 *tabOption = static_cast<const QStyleOptionTabV3*>(option);
+        const QStyleOptionTab *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         painter->save();
 
-        painter->setRenderHint( QPainter::Antialiasing, true );
+        bool selected = tabOption->state & QStyle::State_Selected;
+        bool mouseOver = tabOption->state & QStyle::State_MouseOver;
 
-        bool highlight = tabOption->state & QStyle::State_Selected
-                || tabOption->state & QStyle::State_MouseOver;
-
-        QRectF r = tabOption->rect;
-
-        switch (tabOption->shape) {
-        case QTabBar::RoundedNorth:
-        case QTabBar::TriangularNorth:
-            r.adjust(0.5, 0.5, -0.5, 4);
-            painter->setClipRect( tabOption->rect.adjusted(0,0,0,-1) );
-            break;
-        case QTabBar::RoundedSouth:
-        case QTabBar::TriangularSouth:
-            r.adjust(0.5, -4, -0.5, -0.5);
-            painter->setClipRect( tabOption->rect.adjusted(0,1,0,0) );
-            break;
-        default:
-            qWarning("ScIDE::Style: tab shape not supported");
-            break;
+        QColor background_color;
+        if (selected) {
+            background_color = option->palette.color(QPalette::Window);
+        } else {
+            background_color = option->palette.color(QPalette::Mid);
+            if (mouseOver) {
+                background_color = color::lighten(background_color, 10);
+            }
         }
 
-        QColor fill = option->palette.color(QPalette::Button);
-        QColor edge = option->palette.color(QPalette::Dark);
-        if (highlight)
-            painter->setBrush(fill);
-        else
-            painter->setBrush(Qt::NoBrush);
-        painter->setPen(edge);
-        painter->drawRoundedRect(r, 4, 4);
+        QColor text_color = option->palette.color(QPalette::WindowText);
+        if (!selected) {
+            text_color = color::interpolate(text_color, background_color, kDeselectedTabBlend);
+        }
+
+        // Draw tab rectangle.
+        QRect rect = tabOption->rect;
+        painter->setBrush(background_color);
+        painter->setPen(Qt::NoPen);
+        painter->drawRect(rect);
+
+        // For inactive tabs, add a thin dark line to the right side for visual
+        // separation.
+        if (
+            !selected
+            && !(tabOption->selectedPosition == QStyleOptionTab::NextIsSelected)
+            && !(tabOption->position == QStyleOptionTab::End)
+            && !(tabOption->position == QStyleOptionTab::OnlyOneTab)
+        ) {
+            QPen pen(option->palette.color(QPalette::Shadow), 1);
+            painter->setPen(pen);
+            painter->drawLine(rect.topRight(), rect.bottomRight());
+        }
+
+        // If the contrast between active and inactive tabs is stupidly low,
+        // then use an overline to distinguish them. This happens when the user
+        // sets a really dark background color.
+        int window_mid_value_difference = abs(
+            option->palette.color(QPalette::Window).value()
+            - option->palette.color(QPalette::Mid).value()
+        );
+
+        if (
+            selected
+            && window_mid_value_difference < 20
+        ) {
+            painter->setBrush(text_color);
+            painter->drawRect(
+                rect.left(),
+                rect.top(),
+                rect.width(),
+                2
+            );
+        }
 
         painter->restore();
+
+        // Draw icon.
 
         if (!tabOption->icon.isNull()) {
             QPixmap pixmap = tabOption->icon.pixmap( tabOption->iconSize );
@@ -249,11 +280,22 @@ void Style::drawControl
             painter->drawPixmap( iconRect, pixmap );
         }
 
+        // Draw text.
+
         QRect textRect = subElementRect( QStyle::SE_TabBarTabText, option, widget );
 
+        painter->save();
+        if (selected) {
+            QFont font;
+            font.setBold(true);
+            painter->setFont(font);
+        }
+        painter->setPen(text_color);
         painter->drawText( textRect,
                            Qt::AlignCenter | Qt::TextShowMnemonic,
                            tabOption->text );
+        painter->restore();
+
         return;
     }
     case CE_Splitter:
@@ -306,6 +348,37 @@ void Style::drawPrimitive
         painter->drawRect( option->rect );
         painter->restore();
         return;
+    case PE_IndicatorTabClose: {
+        QPoint center = option->rect.center();
+        int rect_width = option->rect.width();
+        // a = half of the width of the X.
+        int a = rect_width * 0.5f * 0.4f;
+        float cx = center.x() + 0.5f;
+        float cy = center.y() + 0.5f;
+
+        QColor x_color = option->palette.color(QPalette::WindowText);
+        if (!(option->state & QStyle::State_Selected)) {
+            QColor background = option->palette.color(QPalette::Mid);
+            x_color = color::interpolate(x_color, background, kDeselectedTabBlend);
+        }
+        if ((option->state & State_Enabled) && (option->state & State_MouseOver)) {
+            x_color = color::lighten(x_color, 40);
+        }
+
+        float thickness = 1.5f;
+        // Sometimes this needs adjusting for symmetrical results on different
+        // line thicknesses.
+        float extend = 0.0f;
+
+        QPen pen(x_color, thickness);
+        painter->save();
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(pen);
+        painter->drawLine(QLineF(cx - a, cy - a, cx + a + extend, cy + a + extend));
+        painter->drawLine(QLineF(cx - a, cy + a, cx + a + extend, cy - a - extend));
+        painter->restore();
+        return;
+    }
     default:
         QProxyStyle::drawPrimitive(element, option, painter, widget);
     }
@@ -335,7 +408,7 @@ QRect Style::subElementRect
         return r;
     }
     case QStyle::SE_TabBarTabText: {
-        const QStyleOptionTabV3 *tabOption = static_cast<const QStyleOptionTabV3*>(option);
+        const auto *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         int lMargin = 5;
         if (tabOption->leftButtonSize.width() > 0)

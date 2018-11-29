@@ -1,6 +1,6 @@
 class:: NodeProxy
 summary:: a reference on a server
-categories:: Libraries>JITLib>NodeProxy, Live Coding
+categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace
 
 description::
@@ -188,6 +188,23 @@ Ndef(\maus, { LFNoise0.kr(1 ! 8) + 1 }); // now 8 parallel channels of audio are
 ::
 
 
+
+subsection::Reserved parameters
+Three parameters are automatically specified if they don't exist in a given UGen function. You can override their use: code::[\out, \gate, \fadeTime]::
+
+subsection::Specifying your own envelope
+
+If a UGen function that is passed to the proxy has its own envelope, and if this envelope can free the synth, the node proxy uses this envelope instead of making its own. If you provide a code::fadeTime:: argument, the proxy's fadeTime will be used.
+
+code::
+Ndef(\sound).fadeTime = 3;
+(
+Ndef(\sound, { |fadeTime = 1, gate = 1|
+	var e = Env.adsr(fadeTime, 0.01, 0.4, fadeTime).ar(2, gate);
+	SinOsc.ar(100 + (e * 700), SinOsc.ar(208) * (1 - e) * 6) * e * 0.1
+}).play
+)
+::
 
 
 subsection::Making copies
@@ -711,7 +728,7 @@ code::
 a = NodeProxy.audio(s,2);
 a.play;
 
-a.clock = TempoClock(2.0).permanent_(true); // round to every 2.0 seconds
+a.quant = 2.0; // quantize changes to the next 2.0-beat multiple
 a.source = { Ringz.ar(Impulse.ar(0.5, 0, 0.3), 3000, 0.01) };
 a[1] = { Ringz.ar(Impulse.ar([0.5, 1], 0, 0.3), 1000, 0.01) };
 a[2] = { Ringz.ar(Impulse.ar([3, 5]/2, 0, 0.3), 8000, 0.01) };

@@ -474,16 +474,22 @@ FunctionDef {
 
 	argumentString { arg withDefaultValues=true;
 		var res = "", pairs = this.keyValuePairsFromArgs;
-		var last;
+		var last, noVarArgs;
 		if(pairs.isEmpty) { ^nil };
 		last = pairs.lastIndex;
+		noVarArgs = this.varArgs.not;
 		pairs.pairsDo { |name, defaultValue, i|
-			var value;
-			res = res ++ name;
-			if(withDefaultValues and: { defaultValue.notNil }) {
-				res = res ++ " = " ++ defaultValue.asCompileString
+			var value, notLast;
+			notLast = i + 1 != last;
+			if(notLast or: noVarArgs) {
+				res = res ++ name;
+				if(withDefaultValues and: { defaultValue.notNil }) {
+					res = res ++ " = " ++ defaultValue.asCompileString;
+				};
+			} {
+				res = res ++ "... " ++ name;
 			};
-			if(i + 1 != last) { res = res ++ ", " };
+			if(notLast) { res = res ++ ", " };
 		}
 		^res
 	}
@@ -659,7 +665,7 @@ Interpreter {
 	compileFile { arg pathName;
 		var file, text;
 		file = File.new(pathName, "r");
-		if (file.isNil, {
+		if (file.isOpen.not, {
 			error("file open failed\n");
 			^nil
 		});

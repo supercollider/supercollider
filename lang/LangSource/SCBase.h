@@ -18,8 +18,7 @@
 
 // Contains the most common definitions.
 
-#ifndef _SCBASE_
-#define _SCBASE_
+#pragma once
 
 #include <limits.h>
 #include <stdio.h>
@@ -66,5 +65,3 @@ SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals();
 SCLANG_DLLEXPORT_C struct PyrSymbol* getsym(const char *inName);
 SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const char *name);
 SCLANG_DLLEXPORT_C struct PyrSymbol* findsym(const char *name);
-
-#endif

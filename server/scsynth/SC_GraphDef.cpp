@@ -52,6 +52,8 @@ namespace bfs = boost::filesystem;
 
 extern Malloc gMalloc;
 
+const size_t ERR_BUF_SIZE(256);
+
 int32 GetHash(ParamSpec* inParamSpec)
 {
 	return inParamSpec->mHash;
@@ -142,8 +144,8 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer)
 
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
-		char str[256];
-		sprintf(str, "UGen '%s' not installed.", (char*)name);
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
 		throw std::runtime_error(str);
 		return;
 	}
@@ -172,8 +174,8 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer)
 
 	inUnitSpec->mUnitDef = GetUnitDef(name);
 	if (!inUnitSpec->mUnitDef) {
-		char str[256];
-		sprintf(str, "UGen '%s' not installed.", (char*)name);
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
 		throw std::runtime_error(str);
 		return;
 	}
@@ -352,8 +354,35 @@ inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer)
 	
 }
 
+// Allocation code shared between v1 and v2.
+// See https://github.com/supercollider/supercollider/issues/3266
+// TODO: refactor GraphDef to be less brittle.
+static void GraphDef_SetAllocSizes(GraphDef* graphDef)
+{
+	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
+	graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
+	graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
+
+	graphDef->mNodeDef.mAllocSize += graphDef->mWiresAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mUnitsAllocSize;
+	graphDef->mNodeDef.mAllocSize += graphDef->mCalcUnitsAllocSize;
+
+	graphDef->mControlAllocSize = graphDef->mNumControls * sizeof(float);
+	graphDef->mNodeDef.mAllocSize += graphDef->mControlAllocSize;
+
+	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
+	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
+
+	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int);
+	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
+
+	graphDef->mAudioMapBusOffsetSize = graphDef->mNumControls * sizeof(int32);
+	graphDef->mNodeDef.mAllocSize += graphDef->mAudioMapBusOffsetSize;
+}
+
 // ver 2
-/** \note Relevant supernova code: `sc_synthdef::prepare(void)`
+/** \note Relevant supernova code: \c sc_synthdef::prepare()
+ * \note Relevant v1 code: \c GraphDef_ReadVer1()
  */
 GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 inVersion)
 {
@@ -419,25 +448,7 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 
 	DoBufferColoring(inWorld, graphDef);
 
-	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
-	graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
-	graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
-
-	graphDef->mNodeDef.mAllocSize += graphDef->mWiresAllocSize;
-	graphDef->mNodeDef.mAllocSize += graphDef->mUnitsAllocSize;
-	graphDef->mNodeDef.mAllocSize += graphDef->mCalcUnitsAllocSize;
-
-	graphDef->mControlAllocSize = graphDef->mNumControls * sizeof(float);
-	graphDef->mNodeDef.mAllocSize += graphDef->mControlAllocSize;
-
-	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
-	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
-
-	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int*);
-	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
-
-	graphDef->mAudioMapBusOffsetSize = graphDef->mNumControls * sizeof(int32*);
-	graphDef->mNodeDef.mAllocSize += graphDef->mAudioMapBusOffsetSize;
+	GraphDef_SetAllocSizes(graphDef);
 
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;
@@ -516,23 +527,7 @@ GraphDef* GraphDef_ReadVer1(World *inWorld, char*& buffer, GraphDef* inList, int
 
 	DoBufferColoring(inWorld, graphDef);
 
-	graphDef->mWiresAllocSize = graphDef->mNumWires * sizeof(Wire);
-	graphDef->mUnitsAllocSize = graphDef->mNumUnitSpecs * sizeof(Unit*);
-	graphDef->mCalcUnitsAllocSize = graphDef->mNumCalcUnits * sizeof(Unit*);
-
-	graphDef->mNodeDef.mAllocSize += graphDef->mWiresAllocSize;
-	graphDef->mNodeDef.mAllocSize += graphDef->mUnitsAllocSize;
-	graphDef->mNodeDef.mAllocSize += graphDef->mCalcUnitsAllocSize;
-
-	graphDef->mControlAllocSize = graphDef->mNumControls * sizeof(float);
-	graphDef->mNodeDef.mAllocSize += graphDef->mControlAllocSize;
-
-	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
-	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
-
-	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int*);
-	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
-
+	GraphDef_SetAllocSizes(graphDef);
 
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;
@@ -842,7 +837,14 @@ inline uint32 BufColorAllocator::alloc(uint32 count)
 		outIndex = nextIndex++;
 	}
 	if (outIndex >= refsMaxSize) {
-		refs = (int16*)realloc(refs, refsMaxSize*2*sizeof(int16));
+		int16 * tmprefs = (int16*)realloc(refs, refsMaxSize*2*sizeof(int16));
+		if ( tmprefs == NULL ) {
+			free(refs);
+			refs = NULL;
+			throw std::runtime_error("buffer coloring error: reallocation failed.");
+		} else {
+			refs = tmprefs;
+		}
 		memset(refs + refsMaxSize, 0, refsMaxSize*sizeof(int16));
 		refsMaxSize *= 2;
 	}
@@ -855,7 +857,14 @@ inline bool BufColorAllocator::release(int inIndex)
 	if (refs[inIndex] == 0) return false;
 	if (--refs[inIndex] == 0) {
 		if (stackPtr >= stackMaxSize) {
-			stack = (int16*)realloc(stack, stackMaxSize*2*sizeof(int16));
+			int16* tmpstack = (int16*)realloc(stack, stackMaxSize*2*sizeof(int16));
+			if ( tmpstack == NULL ) {
+				free(stack);
+				stack = NULL;
+				throw std::runtime_error("buffer coloring error: reallocation during release failed.");
+			} else {
+				stack = tmpstack;
+			}
 			memset(stack + stackMaxSize, 0, stackMaxSize*sizeof(int16));
 			stackMaxSize *= 2;
 		}

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SCOPE_H
-#define QC_SCOPE_H
+#pragma once
 
 #include "../QcHelper.h"
 
@@ -112,5 +111,3 @@ class QcScopeShm : public QWidget, QcHelper
 
     QPixmap _pixmap;
 };
-
-#endif

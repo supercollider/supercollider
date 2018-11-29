@@ -18,8 +18,7 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-#ifndef SC_PLUGIN_HPP
-#define SC_PLUGIN_HPP
+#pragma once
 
 #include <cassert>
 
@@ -323,6 +322,3 @@ void registerUnit( InterfaceTable * ft, const char * name )
 
     (*ft->fDefineUnit)( name, sizeof(Unit), ctor, dtor, 0 );
 }
-
-
-#endif /* SC_PLUGIN_HPP */

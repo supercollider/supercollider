@@ -24,8 +24,7 @@ An object archiving system for SuperCollider.
 */
 
 
-#ifndef _PyrArchiver_
-#define _PyrArchiver_
+#pragma once
 
 #include "PyrObject.h"
 #include "SC_AllocPool.h"
@@ -560,7 +559,3 @@ private:
 
 	PyrObject *mInitialObjectArray[kObjectArrayInitialCapacity];
 };
-
-
-#endif
-

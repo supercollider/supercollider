@@ -93,6 +93,9 @@ Platform {
 	pathSeparator { ^this.subclassResponsibility }
 	*pathSeparator { ^thisProcess.platform.pathSeparator }
 
+	pathDelimiter{ ^this.subclassResponsibility }
+	*pathDelimiter { ^thisProcess.platform.pathDelimiter }
+
 	isPathSeparator { |char| ^this.subclassResponsibility }
 	*isPathSeparator { |char| ^thisProcess.platform.isPathSeparator(char) }
 
@@ -172,13 +175,25 @@ Platform {
 	// hook for clients to write frontend.css
 	writeClientCSS {}
 
+	killProcessByID { |pid|
+		^this.subclassResponsibility(\killProcessByID)
+	}
+
 	killAll { |cmdLineArgs|
 		^this.subclassResponsibility(\killAll)
 	}
+
+	// used to format paths correctly for command-line calls
+	// On Windows, encloses with quotes; on Unix systems, escapes spaces.
+	formatPathForCmdLine { |path|
+		^this.subclassResponsibility
+	}
+
 }
 
 UnixPlatform : Platform {
 	pathSeparator { ^$/ }
+    pathDelimiter { ^$: }
 
 	isPathSeparator { |char|
 		^(char === this.pathSeparator)
@@ -196,6 +211,10 @@ UnixPlatform : Platform {
 		^arch.asSymbol;
 	}
 
+	killProcessByID { |pid|
+		("kill -9 " ++ pid).unixCmd;
+	}
+
 	killAll { |cmdLineArgs|
 		("killall -9 " ++ cmdLineArgs).unixCmd;
 	}
@@ -206,4 +225,9 @@ UnixPlatform : Platform {
 			File.exists(path);
 		});
 	}
+
+	formatPathForCmdLine { |path|
+		^path.escapeChar($ );
+	}
+
 }

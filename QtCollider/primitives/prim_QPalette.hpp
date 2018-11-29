@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_PRIM_QPALETTE_HPP
-#define QC_PRIM_QPALETTE_HPP
+#pragma once
 
 #include <QPalette>
 
@@ -34,5 +33,3 @@ namespace QtCollider {
 void QPalette_Init( struct VMGlobals *g, struct PyrObject *obj, const QPalette & palette = QPalette() );
 
 }
-
-#endif

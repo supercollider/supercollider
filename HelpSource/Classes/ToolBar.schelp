@@ -1,0 +1,120 @@
+TITLE:: ToolBar
+summary:: An inline button bar populated by MenuActions
+categories:: GUI
+related:: Classes/Menu, Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
+
+DESCRIPTION::
+A ToolBar is similar to a link::Classes/Menu::, with several key differences:
+LIST::
+	## ToolBars act as regular link::Classes/View::s, and can be placed in layouts or in other views.
+	## MenuActions on a toolbar appear as buttons instead of being listed menu-style
+	## By default, MenuActions that have icons show ONLY the icon. MenuActions with text will appear as a text button. This can be changed using the toolButtonStyle property.
+::
+
+code::
+(
+View().fixedWidth_(300).layout_(HLayout(
+	ToolBar(
+		MenuAction("Option A", { "Option A".postln }),
+		MenuAction("Option B", { "Option B".postln }),
+		MenuAction("Option C", { "Option C".postln })
+	)
+)).front
+)
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+	Create a new ToolBar containing one or more actions.
+
+	ARGUMENT::
+		One or more link::Classes/MenuAction::
+
+INSTANCEMETHODS::
+
+METHOD:: orientation
+	The horizontal or vertical orientation of the ToolBar
+	ARGUMENT::
+		A link::Classes/QOrientation::
+
+METHOD:: toolButtonStyle
+	Controls whether the toolbar shows icons, text, or both.
+	ARGUMENT::
+		An integer; one of the values of link::Classes/QToolButtonStyle::.
+	DISCUSSION::
+		CODE::
+(
+~icon = Image(64).draw({ Pen.fillOval(Rect(0, 0, 64, 64)) });
+~styles = QToolButtonStyle.classVarNames;
+
+~tool = ToolBar(
+	MenuAction("Text")
+		.icon_(~icon)
+		.action_({
+			~tool.toolButtonStyle = (~tool.toolButtonStyle + 1) % ~styles.size;
+			~styles[~tool.toolButtonStyle].postln;
+		})
+).front;
+)
+		::
+
+EXAMPLES::
+
+code::
+(
+s.waitForBoot {
+	~synth = nil;
+	~freq = 300;
+
+	~startIcon = Image(40).draw({
+		Pen.fillColor = Color.green;
+		Pen.moveTo(5@5);
+		Pen.lineTo(35@20);
+		Pen.lineTo(5@35);
+		Pen.lineTo(5@5);
+		Pen.fill;
+	});
+
+	~stopIcon = Image(40).draw({
+		Pen.fillColor = Color.red;
+		Pen.fillRect(Rect(10, 10, 20, 20));
+	});
+
+	~freqMenu = Menu(
+		MenuAction("100"),
+		MenuAction("200"),
+		MenuAction("300"),
+		MenuAction("400"),
+		MenuAction("500"),
+	).title_(~freq);
+
+	~updateFunc = {
+		|obj, what, action|
+		if (what == \triggered) {
+			~freq = action.string.asInteger;
+			~freqMenu.title = ~freq;
+			~synth !? { ~synth.set(\f, ~freq) };
+		}
+	};
+
+	~freqMenu.addDependant(~updateFunc);
+
+	~play = MenuAction("play")
+		.icon_(~startIcon)
+		.action_({
+			if (~synth.isNil) {
+				~synth = { |f| SinOsc.ar(f) * 0.1 }.play(args:[\f, ~freq]);
+				~synth.onFree { ~synth = nil };
+				~play.icon = ~stopIcon;
+			} {
+				~synth.free;
+				~play.icon = ~startIcon;
+			}
+		});
+
+	~toolBar = ToolBar(~play, ~freqMenu).minWidth_(200).front;
+	~toolBar.onClose_({ ~freqMenu.removeDependant(~updateFunc) })
+}
+)
+::

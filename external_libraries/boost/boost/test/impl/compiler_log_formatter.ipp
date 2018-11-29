@@ -52,7 +52,7 @@ namespace {
 std::string
 test_phase_identifier()
 {
-    return framework::test_in_progress() ? framework::current_test_case().full_name() : std::string( "Test setup" );
+    return framework::test_in_progress() ? framework::current_test_unit().full_name() : std::string( "Test setup" );
 }
 
 } // local namespace
@@ -62,7 +62,7 @@ test_phase_identifier()
 void
 compiler_log_formatter::log_start( std::ostream& output, counter_t test_cases_amount )
 {
-    m_color_output = runtime_config::get<bool>( runtime_config::COLOR_OUTPUT );
+    m_color_output = runtime_config::get<bool>( runtime_config::btrt_color_output );
 
     if( test_cases_amount > 0 )
         output  << "Running " << test_cases_amount << " test "
@@ -260,21 +260,29 @@ compiler_log_formatter::print_prefix( std::ostream& output, const_string file_na
 void
 compiler_log_formatter::entry_context_start( std::ostream& output, log_level l )
 {
-    output << (l == log_successful_tests ? "\nAssertion" : "\nFailure" ) << " occurred in a following context:";
+    if( l == log_messages ) {
+        output << "\n[context:";
+    }
+    else {
+        output << (l == log_successful_tests ? "\nAssertion" : "\nFailure" ) << " occurred in a following context:";
+    }
 }
 
 //____________________________________________________________________________//
 
 void
-compiler_log_formatter::entry_context_finish( std::ostream& output )
+compiler_log_formatter::entry_context_finish( std::ostream& output, log_level l )
 {
+    if( l == log_messages ) {
+        output << "]";
+    }
     output.flush();
 }
 
 //____________________________________________________________________________//
 
 void
-compiler_log_formatter::log_entry_context( std::ostream& output, const_string context_descr )
+compiler_log_formatter::log_entry_context( std::ostream& output, log_level l, const_string context_descr )
 {
     output << "\n    " << context_descr;
 }

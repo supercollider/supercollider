@@ -18,9 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
-#ifndef _SC_Lib_Cintf_
-#define _SC_Lib_Cintf_
+#pragma once
 
 #include "SC_Lib.h"
 #include "SC_Reply.h"
@@ -48,7 +46,3 @@ void deinitialize_library();
 SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc);
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
-
-
-#endif
-

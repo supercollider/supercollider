@@ -1,7 +1,7 @@
 CLASS:: SimpleNumber
 summary:: one-dimensional value
 categories:: Math
-related::Classes/Polar, Classes/Complex, Classes/Float, Classes/Integer, Classes/UnaryOpUGen, Classes/BinaryOpUGen
+related::Classes/Polar, Classes/Complex, Classes/Float, Classes/Integer, Classes/UnaryOpUGen, Classes/BinaryOpUGen, Guides/Tour-of-Special-Functions
 
 DESCRIPTION::
 Base class for numbers which can be represented by a single one dimensional value.
@@ -12,6 +12,8 @@ CLASSMETHODS::
 
 method:: new
 allocates a new SimpleNumber.
+
+
 
 INSTANCEMETHODS::
 
@@ -367,7 +369,7 @@ Converts this into an audiorate input.
 
 method:: asTimeString
 Produces a time string in the format code::ddd:hh:mm:ss.sss::, interpreting the receiver as time in
-seconds. See link::String#-asSecs:: for the inverse function.
+seconds. See link::Classes/String#-asSecs:: for the inverse function.
 argument:: precision
 accuracy of the millisecond format; the string will always be formatted with 3 decimal places for
 milliseconds. Minimum value: 0.001.
@@ -990,3 +992,616 @@ subsection:: misc
 
 method:: isValidUGenInput
 returns:: false if receiver cannot be used in UGen.
+
+
+subsection::Special Functions
+
+A variety of Special Functions are supplied by the Boost C++ library. The library's
+link::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
+ serves as the primary reference for the following functions. The methods
+here match closely with those found in the source library, as do argument names.
+
+Below you'll find descriptions of the functions and their bounds, but for
+visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
+
+warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
+happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
+a useful message at the end of the error regarding proper ranges and the erroneous value supplied.
+Refer to the online documentation for more detailed descriptions, and the
+link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.::
+
+
+subsection:: Number Series
+Take a tour of link::Guides/Tour-of-Special-Functions#Number Series#Number Series::.
+
+method:: bernouliB2n
+Returns the (2*code::n::)th Bernoulli number.
+
+Because all odd numbered Bernoulli numbers are zero
+(apart from B(1) which is -1/2) the interface will only
+return the even numbered Bernoulli numbers.
+
+method:: tangentT2n
+Returns a single tangent number at code::i::. Also called a zag function.
+
+
+subsection:: Gamma Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Gamma Functions#Gamma Functions::.
+
+method:: tgamma
+Returns the "true gamma" of value code::z::.
+
+method:: tgamma1pm1
+Returns code::gamma(dz + 1) - 1::.
+
+method:: lgamma
+Returns the natural logarithm of the gamma function.
+
+method:: digamma
+Returns the digamma or psi function of code::z::.
+
+Digamma is defined as the logarithmic derivative of the gamma function.
+
+method:: trigamma
+Returns the trigamma function of code::z::.
+
+Trigamma is defined as the derivative of the digamma function.
+
+method:: polygamma
+Returns the polygamma function of code::z::.
+
+Polygamma is defined as the code::n::'th derivative of the digamma function.
+
+method:: tgammaRatio
+Returns the ratio of gamma functions code::tgamma(a) / tgamma(b)::.
+
+method:: tgammaDeltaRatio
+Returns the ratio of gamma functions code::tgamma(a) / tgamma(a+delta)::.
+
+method:: gammaP
+Returns the normalised lower incomplete gamma function.
+
+Requires code::a:: > 0 and code::z:: >= 0.
+
+method:: gammaQ
+Returns the normalised upper incomplete gamma function.
+
+Requires code::a:: > 0 and code::z:: >= 0.
+
+method:: tgammaLower
+Returns the full (non-normalised) lower incomplete gamma function.
+
+Requires code::a:: > 0 and code::z:: >= 0.
+
+method:: tgammaUpper
+Returns the full (non-normalised) upper incomplete gamma function.
+
+Requires code::a:: > 0 and code::z:: >= 0.
+
+method:: gammaPInv
+Returns a value such that code::p = gamma_p(a, x)::.
+
+Requires code::a:: > 0 and 1 >= code::p,q:: >= 0.
+
+method:: gammaQInv
+Returns a value x such that code::q = gamma_q(a, x)::.
+
+Requires code::a:: > 0 and 1 >= code::p,q:: >= 0.
+
+method:: gammaPInvA
+Returns a value such that code::p = gamma_p(a, x)::.
+
+Requires code::x:: > 0 and 1 >= code::p,q:: >= 0.
+
+method:: gammaQInvA
+Returns a value x such that code::q = gamma_q(a, x)::.
+
+Requires code::x:: > 0 and 1 >= code::p,q:: >= 0.
+
+method:: gammaPDerivative
+Implements the partial derivative with respect to x of the incomplete gamma function (lower).
+
+method:: gammaQDerivative
+Implements the partial derivative with respect to x of the incomplete gamma function (upper).
+
+
+subsection:: Factorials and Binomial Coefficients
+Take a tour of link::Guides/Tour-of-Special-Functions#Factorials and Binomial Coefficients#Factorials and Binomial Coefficients::.
+
+method:: factorial
+Returns code::i!::.
+
+warning::code::factorial:: will overflow if code::i > 170::::
+
+method:: doubleFactorial
+Returns code::i!!::.
+
+For strong::even:: code::i::, code::i !! = i(i-2)(i-4)(i-6) ... (4)(2)::.
+
+For strong::odd:: code::i::, code::i !! = i(i-2)(i-4)(i-6) ... (3)(1)::.
+
+method:: risingFactorial
+Returns the rising factorial of code::x:: and code::i:::
+
+code::x(x+1)(x+2)(x+3)...(x+i-1)::
+
+Both code::x:: and code::i:: can be negative as well as positive.
+
+method:: fallingFactorial
+Returns the falling factorial of code::x:: and code::i:::
+
+code::x(x-1)(x-2)(x-3)...(x-i+1)::
+
+This function is only defined for positive code::i::. Argument code::x:: can be either positive or negative.
+
+method:: binomialCoefficient
+Requires code::k:: <= code::n::.
+
+
+subsection:: Beta Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Beta Functions#Beta Functions::.
+
+method:: beta
+The beta function is defined by: code::tgamma(a)*tgamma(b) / tgamma(a+b)::.
+
+method:: ibeta
+Returns the normalised incomplete beta function of code::a::, code::b:: and code::x::.
+
+Require 0 <= code::x:: <= 1, code::a,b:: >= 0, and in addition that not both code::a:: and code::b:: are zero.
+
+method:: ibetaC
+Returns the normalised complement of the incomplete beta function of code::a::, code::b:: and code::x::.
+
+Require 0 <= code::x:: <= 1, code::a,b:: >= 0, and in addition that not both code::a:: and code::b:: are zero.
+
+method:: betaFull
+Returns the full (non-normalised) incomplete beta function of code::a::, code::b:: and code::x::.
+
+Require 0 <= code::x:: <= 1, and code::a,b:: > 0.
+
+method:: betaFullC
+Returns the full (non-normalised) complement of the incomplete beta function of code::a::, code::b:: and code::x::.
+
+Require 0 <= code::x:: <= 1, and code::a,b:: > 0.
+
+method:: ibetaInv
+Returns a value code::x:: such that: code::p = ibeta(a, b, x)::.
+
+Requires code::a,b:: > 0 and 0 <= code::p:: <= 1.
+
+method:: ibetaCInv
+Returns a value code::x:: such that: code::q = ibetaC(a, b, x)::.
+
+Requires code::a,b:: > 0 and 0 <= code::q:: <= 1.
+
+method:: ibetaInvA
+Returns a value code::a:: such that: code::p = ibeta(a, b, x)::.
+
+Requires code::b:: > 0, 0 < code::x:: < 1, and 0 <= code::p:: <= 1.
+
+method:: ibetaCInvA
+Returns a value code::a:: such that: code::q = ibetaC(a, b, x)::.
+
+Requires code::b:: > 0, 0 < code::x:: < 1, and 0 <= code::q:: <= 1.
+
+method:: ibetaInvB
+Returns a value code::b:: such that: code::p = ibeta(a, b, x)::.
+
+Requires code::a:: > 0, 0 < code::x:: < 1, and 0 <= code::p:: <= 1.
+
+method:: ibetaCInvB
+Returns a value code::b:: such that: code::q = ibetaC(a, b, x)::.
+
+Requires code::a:: > 0, 0 < code::x:: < 1, and 0 <= code::q:: <= 1.
+
+method:: ibetaDerivative
+Returns the partial derivative with respect to code::x:: of the incomplete
+beta function code::ibeta(a,b,x)::.
+
+
+subsection:: Error Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Error Functions#Error Functions::.
+
+method:: erf
+Returns the error function of code::z::.
+
+method:: erfC
+Returns the complement of the error function of code::z::.
+
+method:: erfInv
+Returns the inverse error function of code::z::, that is a value code::x:: such that:
+
+code::p = erf(x)::.
+
+method:: erfCInv
+Returns the inverse of the complement of the error function of code::z::,
+that is a value code::x:: such that:
+
+code::p = erfC(x)::
+
+
+subsection:: Polynomials
+Take a tour of link::Guides/Tour-of-Special-Functions#Polynomials#Polynomials::.
+
+method:: legendreP
+Returns the Legendre Polynomial of the first kind.
+
+Requires -1 <= code::x:: <= 1.
+
+method:: legendrePPrime
+Returns the derivatives of the Legendre polynomials.
+
+method:: legendrePZeros
+Since the Legendre polynomials are alternatively even and odd, only the
+non-negative zeros are returned. For the odd Legendre polynomials, the
+first zero is always zero. The rest of the zeros are returned in increasing order.
+
+method:: legendrePAssoc
+Returns the associated Legendre polynomial of the first kind.
+
+Requires -1 <= code::x:: <= 1.
+
+method:: legendreQ
+Returns the value of the Legendre polynomial that is the
+second solution to the Legendre differential equation.
+
+Requires -1 <= code::x:: <= 1.
+
+method:: laguerre
+Returns the value of the Laguerre Polynomial of order code::n:: at point code::x::.
+
+method:: laguerreAssoc
+Returns the Associated Laguerre polynomial of degree of dgree code::n:: and order code::m:: at point code::x::.
+
+method:: hermite
+Returns the value of the Hermite Polynomial of order code::n:: at point code::x::.
+
+method:: chebyshevT
+Returns the Chebyshev polynomials of the first kind.
+
+method:: chebyshevU
+Returns the Chebyshev polynomials of the second kind.
+
+method:: chebyshevTPrime
+Returns the derivatives of the Chebyshev polynomials of the first kind.
+
+method:: chebyshevTZeros
+Returns the roots (zeros) of the code::n::-th Chebyshev polynomial of the first kind.
+
+method:: sphericalHarmonic
+Returns the (code::Complex::) value of the Spherical Harmonic.
+
+code::theta:: is taken as the polar (colatitudinal) coordinate within code::[0, pi]::,
+and code::phi:: as the azimuthal (longitudinal) coordinate within code::[0,2pi]::.
+
+See boost documentation for further information, including a note about the
+Condon-Shortley phase term of code::(-1)^m::.
+
+method:: sphericalHarmonicR
+Returns the real part of the Spherical Harmonic.
+
+method:: sphericalHarmonicI
+Returns the imaginary part of the Spherical Harmonic.
+
+
+subsection:: Bessel Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Bessel Functions#Bessel Functions::.
+
+method:: cylBesselJ
+Returns the result of the Bessel functions of the first kind.
+
+The functions return the result of code::domain_error:: whenever the result is
+undefined or complex. This occurs when code::x < 0:: and code::v:: is
+not an integer, or when code::x == 0:: and code::v != 0::.
+
+method:: cylNeumann
+Returns the result of the Bessel functions of the second kind.
+
+The functions return the result of code::domain_error:: whenever the result is
+undefined or complex. This occurs when code::x <= 0::.
+
+method:: cylBesselJZero
+Returns a single zero or root of the Bessel function of the first kind.
+
+code::index:: is a 1-based index of zero of the cylindrical Bessel function of order code::v::.
+
+method:: cylNeumannZero
+Returns a single zero or root of the Neumann function (Bessel function of the second kind).
+
+code::index:: is a 1-based index of zero of the cylindrical Neumann function of order code::v::.
+
+method:: cylBesselI
+Returns the result of the modified Bessel functions of the first kind.
+
+method:: cylBesselK
+Returns the result of the modified Bessel functions of the second kind.
+
+Requires code::x > 0::.
+
+method:: sphBessel
+Returns the result of the spherical Bessel functions of the first kind.
+
+Requires code::x:: > 0.
+
+method:: sphNeumann
+Returns the result of the spherical Bessel functions of the first kind.
+
+Requires code::x:: > 0.
+
+method:: cylBesselJPrime
+Returns the first derivative with respect to x of the corresponding Bessel function.
+
+method:: cylNeumannPrime
+Returns the first derivative with respect to x of the corresponding Neumann function.
+
+Requires code:: x > 0::.
+
+method:: cylBesselIPrime
+Returns the first derivative with respect to x of the corresponding Bessel function.
+
+method:: cylBesselKPrime
+Returns the first derivative with respect to x of the corresponding Bessel function.
+
+Requires code:: x > 0::.
+
+method:: sphBesselPrime
+Returns the first derivative with respect to x of the corresponding Bessel function.
+
+Requires code:: x > 0::.
+
+method:: sphNeumannPrime
+Returns the first derivative with respect to x of the corresponding Neumann function.
+
+Requires code:: x > 0::.
+
+
+subsection:: Hankel Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Hankel Functions#Hankel Functions::.
+
+method:: cylHankel1
+Returns the result of the Hankel functions of the first kind.
+
+method:: cylHankel2
+Returns the result of the Hankel functions of the second kind.
+
+method:: sphHankel1
+Returns the result of the spherical Hankel functions of the first kind.
+
+method:: sphHankel2
+Returns the result of the spherical Hankel functions of the second kind.
+
+
+subsection:: Airy Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Airy Functions#Airy Functions::.
+
+method:: airyAi
+Returns the result of the Airy function Ai at code::x::.
+
+method:: airyBi
+Returns the result of the Airy function Bi at code::x::.
+
+method:: airyAiPrime
+Returns the derivative of the Airy function Ai at code::x::.
+
+method:: airyBiPrime
+Returns the derivative of the Airy function Bi at code::x::.
+
+method:: airyAiZero
+Returns the code::m::th zero or root of the Airy Ai function. The Airy Ai
+function has an infinite number of zeros on the negative real axis.
+
+code::m:: is 1-based.
+
+method:: airyBiZero
+Returns the code::m::th zero or root (1-based) of the Airy Bi function. The Airy Bi
+function has an infinite number of zeros on the negative real axis.
+
+code::m:: is 1-based.
+
+
+subsection:: Elliptic Integrals
+Take a tour of link::Guides/Tour-of-Special-Functions#Elliptic Integrals#Elliptic Integrals::.
+
+method:: ellintRf
+Returns Carlson's Elliptic Integral RF.
+
+Requires that code::x,y >= 0::, with at most one of them zero, and that code::z >= 0::.
+
+method:: ellintRd
+Returns Carlson's Elliptic Integral RD.
+
+Requires that code::x,y >= 0::, with at most one of them zero, and that code::z >= 0::.
+
+method:: ellintRj
+Returns Carlson's Elliptic Integral RJ.
+
+Requires that code::x,y,z >= 0::, with at most one of them zero, and that code::p != 0::.
+
+method:: ellintRc
+Returns Carlson's Elliptic Integral RC.
+
+Requires that code::x >= 0::, with at most one of them zero, and that code::y != 0::.
+
+method:: ellintRg
+Returns Carlson's Elliptic Integral RG.
+
+Requires that code::x,y >= 0::.
+
+method:: ellint1
+Returns the incomplete elliptic integral of the first kind, Legendre form.
+
+Requires code::-1 <= k <= 1::.
+
+method:: ellint1C
+Returns the complete elliptic integral of the first kind, Legendre form.
+
+Requires code::-1 <= k <= 1::.
+
+method:: ellint2
+Returns the incomplete elliptic integral of the second kind, Legendre form.
+
+Requires code::-1 <= k <= 1::.
+
+method:: ellint2C
+Returns the complete elliptic integral of the second kind, Legendre form.
+
+Requires code::-1 <= k <= 1::.
+
+method:: ellint3
+Returns the incomplete elliptic integral of the third kind, Legendre form.
+
+Requires code::-1 <= k <= 1:: and code::n < 1/sin^2(phi)::.
+
+method:: ellint3C
+Returns the complete elliptic integral of the third kind, Legendre form.
+
+Requires code::-1 <= k <= 1:: and code::n < 1::.
+
+method:: ellintD
+Returns the incomplete elliptic integral strong::D(phi, k)::, Legendre form.
+
+Requires code::-1 <= k <= 1::.
+
+method:: ellintDC
+Returns the complete elliptic integral strong::D(phi, k)::, Legendre form.
+
+Requires code::-1 <= k <= 1::.
+
+method:: jacobiZeta
+Returns the result of the Jacobi Zeta Function.
+
+Requires code::-1 <= k <= 1::.
+
+method:: heumanLambda
+Returns the result of the Heuman Lambda Function.
+
+Requires code::-1 <= k <= 1::.
+
+
+subsection:: Jacobi Elliptic Functions
+
+Like all elliptic functions, these can be parameterised in a number of ways:
+
+LIST::
+##In terms of a parameter code::m::.
+##In terms of the elliptic modulus code::k:: where code::m = k^2::.
+##In terms of the modular angle code::α::, where code::m = sin2α::.
+::
+This implementation takes the elliptic modulus code::k:: as the parameter.
+In addition the variable code::u:: is used to express an amplitude strong::φ::.
+All take the elliptic modulus as the first argument - this is for alignment with the link::#Elliptic Integrals::.
+
+Take a tour of link::Guides/Tour-of-Special-Functions#Jacobi Elliptic Functions#Jacobi Elliptic Functions::.
+
+method:: jacobiCd
+
+method:: jacobiCn
+
+method:: jacobiCs
+
+method:: jacobiDc
+
+method:: jacobiDn
+
+method:: jacobiDs
+
+method:: jacobiNc
+
+method:: jacobiNd
+
+method:: jacobiNs
+
+method:: jacobiSc
+
+method:: jacobiSd
+
+method:: jacobiSn
+
+
+subsection:: Zeta Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Zeta Functions#Zeta Functions::.
+
+method:: zeta
+Returns the zeta function of code::z::.
+
+Requires code::z != 1::.
+
+
+subsection:: Exponential Integrals
+Take a tour of link::Guides/Tour-of-Special-Functions#Exponential Integrals#Exponential Integrals::.
+
+method:: expintEn
+Returns the exponential integral En of code::z::.
+
+Requires that when code::n == 1::, code::z !=0::.
+
+method:: expintEi
+Returns the exponential integral of code::z::.
+
+Requires code::z != 0::.
+
+
+subsection:: Basic Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Basic Functions#Basic Functions::.
+
+method:: sinPi
+Returns code::sin(x * π)::.
+
+method:: cosPi
+Returns code::cos(x * π)::.
+
+method:: log1p
+Returns the natural logarithm of code::x+1::.
+
+method:: expm1
+Returns code::e^x - 1::.
+
+method:: cbrt
+Returns the cube root of code::x::.
+
+method:: sqrt1pm1
+Returns code::sqrt(1+x) - 1::.
+
+method:: powm1
+Returns code::x^y - 1::.
+
+
+subsection:: Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions, Inverse Hyperbolic Functions#Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions::.
+
+method:: sincPi
+Returns the Sinus Cardinal of code::x::. Also known as the "sinc" function.
+
+code::sincPi(x) = sin(x) / x::
+
+method:: sinhcPi
+Returns the Hyperbolic Sinus Cardinal of code::x::.
+
+code::sinhcPi(x) = sinh(x) / x::
+
+
+subsection:: Inverse Hyperbolic Functions
+Take a tour of link::Guides/Tour-of-Special-Functions#Sinus Cardinal (Sinc) and Hyperbolic Sinus Cardinal Functions, Inverse Hyperbolic Functions#Inverse Hyperbolic Functions::.
+
+method:: asinh
+Returns the reciprocal of the hyperbolic sine function at code::x::.
+
+method:: acosh
+Returns the reciprocal of the hyperbolic cosine function at code::x::.
+
+Requires code::x >= 1::.
+
+method:: atanh
+Returns the reciprocal of the hyperbolic sine function at code::x::.
+
+Requires code::-1 < x < 1::.
+
+
+subsection:: Owen's T Function
+Take a tour of link::Guides/Tour-of-Special-Functions#Owen#Owen's T Function::.
+
+method:: owensT
+Returns the Owens T function of code::h:: and code::a::.
+
+
+private:: acosh, airyAi, airyAiPrime, airyAiZero, acosh, airyAi, airyAiPrime, airyAiZero, airyBi, airyBiPrime, airyBiZero, asinh, atanh, bernouliB2n, beta, betaFull, betaFullC, binomialCoefficient, cbrt, chebyshevT, chebyshevTPrime, chebyshevTZeros, chebyshevU, cosPi, cylBesselI, cylBesselIPrime, cylBesselJ, cylBesselJPrime, cylBesselJZero, cylBesselK, cylBesselKPrime, cylHankel1, cylHankel2, cylNeumann, cylNeumannPrime, cylNeumannZero, digamma, doubleFactorial, ellint1, ellint1C, ellint2, ellint2C, ellint3, ellint3C, ellintD, ellintDC, ellintRc, ellintRd, ellintRf, ellintRg, ellintRj, erf, erfC, erfCInv, erfInv, expintEi, expintEn, expm1, factorial, fallingFactorial, gammaP, gammaPDerivative, gammaPInv, gammaPInvA, gammaQ, gammaQDerivative, gammaQInv, gammaQInvA, hermite, heumanLambda, ibeta, ibetaC, ibetaCInv, ibetaCInvA, ibetaCInvB, ibetaDerivative, ibetaInv, ibetaInvA, ibetaInvB, jacobiCd, jacobiCn, jacobiCs, jacobiDc, jacobiDn, jacobiDs, jacobiNc, jacobiNd, jacobiNs, jacobiSc, jacobiSd, jacobiSn, jacobiZeta, laguerre, laguerreAssoc, legendreP, legendrePAssoc, legendrePPrime, legendrePZeros, legendreQ, lgamma, log1p, owensT, polygamma, pow, powm1, prHermite, prLaguerreAssoc, prLegendreQ, risingFactorial, sinPi, sincPi, sinhcPi, sphBessel, sphBesselPrime, sphHankel1, sphHankel2, sphNeumann, sphNeumannPrime, sphericalHarmonic, sphericalHarmonicI, sphericalHarmonicR, sqrt1pm1, tangentT2n, tgamma, tgamma1pm1, tgammaDeltaRatio, tgammaLower, tgammaRatio, tgammaUpper, trigamma, zeta

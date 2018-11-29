@@ -33,16 +33,6 @@ Primitives for File i/o.
 #include "SCBase.h"
 #include "sc_popen.h"
 
-// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
-// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
-#ifndef NO_LIBSNDFILE
-#  ifdef _WIN32
-#    include <windows.h>
-#    define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
-#  endif // _WIN32
-#  include <sndfile.h>
-#endif // NO_LIBSNDFILE
-
 /* SuperCollider newer headers*/
 #include "SC_SndFileHelpers.hpp"
 #include "SC_Filesystem.hpp" // resolveIfAlias
@@ -55,6 +45,10 @@ Primitives for File i/o.
 #include <cerrno>
 #include <fcntl.h>
 #include <math.h>
+#include <sstream>
+
+/* C++ stdlib headers */
+#include <tuple>
 
 /* boost headers */
 #include <boost/filesystem.hpp>
@@ -95,6 +89,25 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 		SetFalse(a);
 	else
 		SetTrue(a);
+
+	return errNone;
+}
+
+int prFileDeleteAll(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp - 1, *b = g->sp;
+	char filename[PATH_MAX];
+
+	int error = slotStrVal(b, filename, PATH_MAX);
+	if (error != errNone)
+		return error;
+
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	if (bfs::remove_all(p) > 0) {
+		SetTrue(a);
+	} else {
+		SetFalse(a);
+	}
 
 	return errNone;
 }
@@ -164,19 +177,17 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 
 int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *b = g->sp;
+	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
 
 	int error = slotStrVal(b, filename, PATH_MAX);
 	if (error != errNone)
 		return error;
 
-	boost::system::error_code error_code;
 	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	bfs::create_directories(p, error_code);
-	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
+	bool result = bfs::create_directories(p);
 
+	SetBool(a, result);
 	return errNone;
 }
 
@@ -195,7 +206,15 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 
 	const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
 	const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
-	bfs::copy(p1, p2);
+	boost::system::error_code error_code;
+	bfs::copy(p1, p2, error_code);
+	if (error_code)
+	{
+		std::ostringstream s;
+		s << error_code.message() << ": copy from \"" << filename1 << "\" to \"" << filename2 << "\"";
+		throw std::runtime_error(s.str());
+	}
+	
 	return errNone;
 }
 
@@ -1292,36 +1311,90 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b, *c;
-	char mode[12];
-	PyrFile *pfile;
-	FILE *file;
+	PyrSlot *callerSlot =      g->sp - 2;
+	PyrSlot *commandLineSlot = g->sp - 1;
+	PyrSlot *modeSlot =        g->sp;
 
-	a = g->sp - 2;
-	b = g->sp - 1;
-	c = g->sp;
-
-	if (NotObj(c) || !isKindOf(slotRawObject(c), class_string)
-		|| NotObj(b) || !isKindOf(slotRawObject(b), class_string))
+	//commandLine and mode must be objects
+	if (NotObj(modeSlot) || NotObj(commandLineSlot))
 		return errWrongType;
-	if (slotRawObject(c)->size > 11) return errFailed;
-	pfile = (PyrFile*)slotRawObject(a);
 
-        char *commandLine = (char*)malloc(slotRawObject(b)->size + 1);
-	memcpy(commandLine, slotRawString(b)->s, slotRawObject(b)->size);
-	commandLine[slotRawString(b)->size] = 0;
+	PyrFile *pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
 
-	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
-	mode[slotRawString(c)->size] = 0;
+	//c++17 structured binding declarations will make this into a single line
+	//auto [error, string] = ...
+	int error;
+	std::string commandLine;
+	std::tie(error, commandLine) = slotStrStdStrVal(commandLineSlot);
+	if (error != errNone)
+		return error;
+
+	std::string mode;
+	std::tie(error, mode) = slotStrStdStrVal(modeSlot);
+	if (error != errNone)
+		return error;
 
 	pid_t pid;
-	file = sc_popen(commandLine, &pid, mode);
-	free(commandLine);
-	if (file) {
+	FILE *file;
+	std::tie(pid, file) = sc_popen(std::move(commandLine), mode);
+	if (file != nullptr) {
 		SetPtr(&pfile->fileptr, file);
-		SetInt(a, pid);
+		SetInt(callerSlot, pid);
 	} else {
-		SetNil(a);
+		SetNil(callerSlot);
+	}
+	return errNone;
+}
+
+int prPipeOpenArgv(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *callerSlot = g->sp - 2;
+	PyrSlot *argsSlot = g->sp - 1;
+	PyrSlot *modeSlot = g->sp;
+
+	//????
+#ifdef SC_IPHONE
+	SetInt(callerSlot, 0);
+	return errNone;
+#endif
+
+	//argsSlot must be an object
+	if (NotObj(argsSlot) || NotObj(modeSlot))
+		return errWrongType;
+
+	PyrFile *pfile = reinterpret_cast<PyrFile*>(slotRawObject(callerSlot));
+
+	PyrObject *argsColl = slotRawObject(argsSlot);
+
+	//argsColl must be a collection
+	if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
+		return errNotAnIndexableObject;
+	//collection must contain at least one string: the path of executable to run
+	if (argsColl->size < 1)
+		return errFailed;
+
+	//c++17 structured binding declarations will make this into a single line
+	//auto [error, mode] = ...;
+	int error;
+	std::string mode;
+	std::tie(error, mode) = slotStrStdStrVal(modeSlot);
+	if (error != errNone)
+		return error;
+
+	std::vector<std::string> strings;
+	std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
+	if (error != errNone)
+		return error;
+
+	pid_t pid;
+	FILE *file;
+	std::tie(pid, file) = sc_popen_argv(strings, mode);
+
+	if (file != nullptr) {
+		SetPtr(&pfile->fileptr, file);
+		SetInt(callerSlot, pid);
+	} else {
+		SetNil(callerSlot);
 	}
 	return errNone;
 }
@@ -1338,7 +1411,8 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp;
 	pfile = (PyrFile*)slotRawObject(a);
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
-	if (file == NULL) return errNone;
+	if (file == NULL)
+		return errNone;
 	pid = (pid_t) slotRawInt(b);
 
 	SetPtr(&pfile->fileptr, NULL);
@@ -1507,12 +1581,7 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	filename[slotRawString(b)->size] = 0;
 
 	info.format = 0;
-#ifdef _WIN32
-	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
-	file = sf_wchar_open(filename_w.c_str(), SFM_READ, &info);
-#else
-	file = sf_open(filename, SFM_READ, &info);
-#endif // _WIN32
+	file = sndfileOpenFromCStr(filename, SFM_READ, &info);
 
 	if (file) {
 		SetPtr(obj1->slots + 0, file);
@@ -1594,12 +1663,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
 	slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
 
-#ifdef _WIN32
-	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
-	file = sf_wchar_open(filename_w.c_str(), SFM_WRITE, &info);
-#else
-	file = sf_open(filename, SFM_WRITE, &info);
-#endif // _WIN32
+	file = sndfileOpenFromCStr(filename, SFM_WRITE, &info);
 
 	sf_command(file, SFC_SET_CLIPPING, NULL, SF_TRUE);
 
@@ -1794,9 +1858,11 @@ void initFilePrimitives()
 	definePrimitive(base, index++, "_SFHeaderInfoString", prSFHeaderInfoString, 1, 0);
 
 	definePrimitive(base, index++, "_PipeOpen", prPipeOpen, 3, 0);
+	definePrimitive(base, index++, "_PipeOpenArgv", prPipeOpenArgv, 3, 0);
 	definePrimitive(base, index++, "_PipeClose", prPipeClose, 2, 0);
 
 	definePrimitive(base, index++, "_FileDelete", prFileDelete, 2, 0);
+	definePrimitive(base, index++, "_FileDeleteAll", prFileDeleteAll, 2, 0);
 	definePrimitive(base, index++, "_FileMTime", prFileMTime, 2, 0);
 	definePrimitive(base, index++, "_FileExists", prFileExists, 2, 0);
 	definePrimitive(base, index++, "_FileRealPath", prFileRealPath, 2, 0);

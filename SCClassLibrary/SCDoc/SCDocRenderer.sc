@@ -226,12 +226,19 @@ SCDocHTMLRenderer {
 			stream << doc.title << " | SuperCollider " << Main.version << " Help";
 		};
 
+		// XXX if you make changes here, make sure to also update the static HTML files
+		// (Search.html, Browse.html, etc.) if necessary.
 		stream
 		<< "</title>\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/codemirror.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
+		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
+		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
@@ -239,12 +246,10 @@ SCDocHTMLRenderer {
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
-		<< "<script src='" << baseDir << "/prettify.js' type='text/javascript'></script>\n"
-		<< "<script src='" << baseDir << "/lang-sc.js' type='text/javascript'></script>\n"
-		<< "</head>\n";
-
-		stream
-		<< "<body onload='fixTOC();prettyPrint()'>\n";
+		// QWebChannel access
+		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
+		<< "</head>\n"
+		<< "<body onload='fixTOC()'>\n";
 
 
 		displayedTitle = if(
@@ -255,14 +260,14 @@ SCDocHTMLRenderer {
 
 		stream
 		<< "<div id='toc'>\n"
-		<< "<div id='toctitle'>" << displayedTitle << ": table of contents</div>\n"
+		<< "<div id='toctitle'>" << displayedTitle << ":</div>\n"
 		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
 		this.renderTOC(stream, body);
 		stream << "</div>";
 
 		stream
-		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
+		<< "<div class='contents'>\n"
 		<< "<div class='header'>\n";
 
 		if(thisIsTheMainHelpFile.not) {
@@ -430,7 +435,7 @@ SCDocHTMLRenderer {
 					args2 = m2.argNames !? {m2.argNames[1..]};
 				};
 				maxargs.do {|i|
-					var a = args2[i];
+					var a = args2 !? args2[i];
 					var b = lastargs[i];
 					if(a!=b and: {a!=nil} and: {b!=nil}) {
 						methArgsMismatch = true;
@@ -552,12 +557,12 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<pre class='code prettyprint lang-sc'>"
+				stream << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</pre>\n";
+				<< "</textarea>\n";
 			},
 			\CODE, {
-				stream << "<code class='code prettyprint lang-sc'>"
+				stream << "<code>"
 				<< this.escapeSpecialChars(node.text)
 				<< "</code>";
 			},
@@ -957,7 +962,9 @@ SCDocHTMLRenderer {
 		};
 		stream << "link::" << doc.path << "::<br>"
 		<< "</div>"
-		<< "</div></body></html>";
+		<< "</div>"
+		<< "<script src='" << baseDir << "/editor.js' type='text/javascript'></script>\n"
+		<< "</body></html>";
 	}
 
 	*renderOnStream {|stream, doc, root|

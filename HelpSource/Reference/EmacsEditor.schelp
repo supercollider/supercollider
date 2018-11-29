@@ -131,7 +131,7 @@ Setting the mark always makes an entry on the current buffer’s mark ring. If y
 
 ‘C-x C-SPC’ (‘pop-global-mark’) jumps to the buffer and position of the latest entry in the global mark ring. It also rotates the ring, so that successive uses of ‘C-x C-SPC’ take you to earlier and earlier buffers.
 
-section:: Customsing Emacs' behaviour
+section:: Customizing Emacs' behavior
 
 You can customize the behaviour of Emacs, by putting things in the startup file of emacs. This file is code:: ~/.emacs ::. You can define options there, for example:
 code::
@@ -193,7 +193,7 @@ code::
 
 subsection:: Recent files menu
 
-Recentf is a minor mode that builds a list of recently opened files. This list is is automatically saved across Emacs sessions. You can then access this list through a menu. Put this in your `~/.emacs’:
+Recentf is a minor mode that builds a list of recently opened files. This list is automatically saved across Emacs sessions. You can then access this list through a menu. Put this in your `~/.emacs’:
 code::
 (require 'recentf)
 (recentf-mode 1)
@@ -215,4 +215,3 @@ code::
 section:: More info on Emacs
 
 See the link::http://www.emacswiki.org/cgi-bin/wiki##Emacs Wiki::
-

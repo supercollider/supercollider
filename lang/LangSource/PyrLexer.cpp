@@ -1810,6 +1810,36 @@ void finiPassOne()
 	//postfl("<-finiPassOne\n");
 }
 
+/**
+ * \brief \c true if \c dir is one of the language config's default classlib directories
+ */
+static bool isDefaultClassLibraryDirectory(const bfs::path& dir)
+{
+	auto const& defaultDirs = gLanguageConfig->defaultClassLibraryDirectories();
+	auto const iter = std::find(defaultDirs.begin(), defaultDirs.end(), dir);
+	return iter != defaultDirs.end();
+}
+
+/**
+ * \brief Handles a missing directory encountered during compilation.
+ *
+ * If the directory is one of the default directories traversed during compilation,
+ * try to create it, silently ignoring failure (most likely from permissions failure).
+ * Otherwise, warn the user to help catch mistyped/missing directory names. See #3468.
+ */
+static void passOne_HandleMissingDirectory(const bfs::path& dir)
+{
+	if (isDefaultClassLibraryDirectory(dir)) {
+		boost::system::error_code ec{};
+		bfs::create_directories(dir, ec);
+	} else {
+		post("WARNING: Could not open directory: '%s'\n"
+			 "\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
+			 SC_Codecvt::path_to_utf8_str(dir).c_str()
+		);
+	}
+}
+
 bfs::path relativeToCompileDir(const bfs::path& p)
 {
 	return bfs::relative(p, gCompileDir);
@@ -1857,9 +1887,12 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 	// and because it's faster to use error codes.
 	boost::system::error_code ec;
 
+	// Perform tilde expansion on incoming dir.
+	const bfs::path expdir = SC_Filesystem::instance().expandTilde(dir);
+
 	// Using a recursive_directory_iterator is much faster than actually calling this function
 	// recursively. Speedup from the switch was about 1.5x. _Do_ recurse on symlinks.
-	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
+	bfs::recursive_directory_iterator rditer(expdir, bfs::symlink_option::recurse, ec);
 
 	// Check preconditions: are we able to access the file, and should we compile it according to
 	// the language configuration?
@@ -1867,32 +1900,27 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// If we got an error, post a warning if it was because the target wasn't found, and return success.
 		// Otherwise, post the error and fail.
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
-			post("WARNING: Could not open directory: '%s'\n"
-				"\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
-				SC_Codecvt::path_to_utf8_str(dir).c_str(),
-				ec.message().c_str()
-			);
-
+			passOne_HandleMissingDirectory(expdir);
 			return true;
 		} else {
 			error("Could not open directory '%s': (%d) %s\n",
-				SC_Codecvt::path_to_utf8_str(dir).c_str(),
+				SC_Codecvt::path_to_utf8_str(expdir).c_str(),
 				ec.value(),
 				ec.message().c_str()
 			);
 
 			return false;
 		}
-	} else if (passOne_ShouldSkipDirectory(dir)) {
+	} else if (passOne_ShouldSkipDirectory(expdir)) {
 		// If we should skip the directory, just return success now.
 		return true;
 	} else {
 		// Let the user know we are in fact compiling this directory.
-		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(dir).c_str());
+		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(expdir).c_str());
 	}
 
 	// Record that we have touched this directory already.
-	compiledDirectories.insert(dir);
+	compiledDirectories.insert(expdir);
 
 	// Invariant: we have processed (or begun to process) every directory or file already
 	// touched by the iterator.

@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_META_TYPE_INCLUDED
-#define QT_COLLIDER_META_TYPE_INCLUDED
+#pragma once
 
 #include "type_codec.hpp"
 
@@ -30,8 +29,6 @@
 #include <QVariant>
 
 namespace QtCollider {
-
-template <typename T> struct TypeCodec;
 
 struct MetaType
 {
@@ -212,5 +209,3 @@ inline bool set( PyrSlot *s, const QVariant &var )
 }
 
 } // namespace QtCollider
-
-#endif // QT_COLLIDER_META_TYPE_INCLUDED

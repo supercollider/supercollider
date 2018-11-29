@@ -1,6 +1,6 @@
 class:: ProxyMonitorGui
 summary:: controls the top-level of a nodeproxy and its monitor
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/ProxyMixer, Classes/NodeProxyEditor
 
 description::

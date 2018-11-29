@@ -1,7 +1,7 @@
 LanguageConfig {
 	*store {|file|
 		_LanguageConfig_writeConfigFile
-		^this.primitiveFailed
+		^MethodError("Could not write to file %".format(file.asCompileString), this).throw
 	}
 
 	*currentPath {

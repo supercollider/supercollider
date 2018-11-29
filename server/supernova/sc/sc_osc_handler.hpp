@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SC_OSC_HANDLER_HPP
-#define SERVER_SC_OSC_HANDLER_HPP
+#pragma once
 
 #include <algorithm>
 #include <mutex>
@@ -386,6 +385,12 @@ public:
         last = lasts;
     }
 
+	void add_last_now(time_tag const & add)
+	{
+		now += add;
+		last += add;
+	}
+
     void update_time_from_system(void)
     {
         now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
@@ -424,6 +429,3 @@ private:
 using detail::sc_osc_handler;
 
 } /* namespace nova */
-
-
-#endif /* SERVER_SC_OSC_HANDLER_HPP */

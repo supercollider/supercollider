@@ -2,7 +2,7 @@
 // ip/impl/address.ipp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -21,6 +21,7 @@
 #include <boost/asio/detail/throw_exception.hpp>
 #include <boost/asio/error.hpp>
 #include <boost/asio/ip/address.hpp>
+#include <boost/asio/ip/bad_address_cast.hpp>
 #include <boost/system/system_error.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
@@ -100,11 +101,60 @@ address& address::operator=(const boost::asio::ip::address_v6& ipv6_address)
   return *this;
 }
 
+address make_address(const char* str)
+{
+  boost::system::error_code ec;
+  address addr = make_address(str, ec);
+  boost::asio::detail::throw_error(ec);
+  return addr;
+}
+
+address make_address(const char* str, boost::system::error_code& ec)
+{
+  boost::asio::ip::address_v6 ipv6_address =
+    boost::asio::ip::make_address_v6(str, ec);
+  if (!ec)
+    return address(ipv6_address);
+
+  boost::asio::ip::address_v4 ipv4_address =
+    boost::asio::ip::make_address_v4(str, ec);
+  if (!ec)
+    return address(ipv4_address);
+
+  return address();
+}
+
+address make_address(const std::string& str)
+{
+  return make_address(str.c_str());
+}
+
+address make_address(const std::string& str,
+    boost::system::error_code& ec)
+{
+  return make_address(str.c_str(), ec);
+}
+
+#if defined(BOOST_ASIO_HAS_STD_STRING_VIEW)
+
+address make_address(string_view str)
+{
+  return make_address(static_cast<std::string>(str));
+}
+
+address make_address(string_view str,
+    boost::system::error_code& ec)
+{
+  return make_address(static_cast<std::string>(str), ec);
+}
+
+#endif // defined(BOOST_ASIO_HAS_STD_STRING_VIEW)
+
 boost::asio::ip::address_v4 address::to_v4() const
 {
   if (type_ != ipv4)
   {
-    std::bad_cast ex;
+    bad_address_cast ex;
     boost::asio::detail::throw_exception(ex);
   }
   return ipv4_address_;
@@ -114,7 +164,7 @@ boost::asio::ip::address_v6 address::to_v6() const
 {
   if (type_ != ipv6)
   {
-    std::bad_cast ex;
+    bad_address_cast ex;
     boost::asio::detail::throw_exception(ex);
   }
   return ipv6_address_;
@@ -127,56 +177,14 @@ std::string address::to_string() const
   return ipv4_address_.to_string();
 }
 
+#if !defined(BOOST_ASIO_NO_DEPRECATED)
 std::string address::to_string(boost::system::error_code& ec) const
 {
   if (type_ == ipv6)
     return ipv6_address_.to_string(ec);
   return ipv4_address_.to_string(ec);
 }
-
-address address::from_string(const char* str)
-{
-  boost::system::error_code ec;
-  address addr = from_string(str, ec);
-  boost::asio::detail::throw_error(ec);
-  return addr;
-}
-
-address address::from_string(const char* str, boost::system::error_code& ec)
-{
-  boost::asio::ip::address_v6 ipv6_address =
-    boost::asio::ip::address_v6::from_string(str, ec);
-  if (!ec)
-  {
-    address tmp;
-    tmp.type_ = ipv6;
-    tmp.ipv6_address_ = ipv6_address;
-    return tmp;
-  }
-
-  boost::asio::ip::address_v4 ipv4_address =
-    boost::asio::ip::address_v4::from_string(str, ec);
-  if (!ec)
-  {
-    address tmp;
-    tmp.type_ = ipv4;
-    tmp.ipv4_address_ = ipv4_address;
-    return tmp;
-  }
-
-  return address();
-}
-
-address address::from_string(const std::string& str)
-{
-  return from_string(str.c_str());
-}
-
-address address::from_string(const std::string& str,
-    boost::system::error_code& ec)
-{
-  return from_string(str.c_str(), ec);
-}
+#endif // !defined(BOOST_ASIO_NO_DEPRECATED)
 
 bool address::is_loopback() const
 {

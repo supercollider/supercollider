@@ -30,6 +30,8 @@
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "SC_WorldOptions.h"
 
+const size_t ERR_BUF_SIZE(512);
+
 #define GET_COMPLETION_MSG(msg) \
 	mMsgSize = msg.getbsize(); \
 	if (mMsgSize) { \
@@ -44,6 +46,7 @@ void PerformCompletionMsg(World *inWorld, OSC_Packet *inPacket);
 		OSC_Packet packet; \
 		packet.mData = mMsgData; \
 		packet.mSize = mMsgSize; \
+		packet.mIsBundle = false; \
 		packet.mReplyAddr = mReplyAddress; \
 		PacketStatus status = PerformCompletionMsg(mWorld, packet); \
 		if (status == PacketScheduled) { \
@@ -536,10 +539,10 @@ bool BufAllocReadCmd::Stage2()
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[512];
-		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithIntValue(&mReplyAddress, "/b_allocRead", str, mBufIndex);	//SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
@@ -637,18 +640,18 @@ bool BufReadCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[512];
-		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithIntValue(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
 	}
 	if (fileinfo.channels != buf->channels) {
-		char str[512];
+		char str[ERR_BUF_SIZE];
 		sf_close(sf);
-		sprintf(str, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
+		snprintf(str, ERR_BUF_SIZE, "Channel mismatch. File '%s' has %d channels. Buffer has %d channels.\n", mFilename, fileinfo.channels, buf->channels);
 		SendFailureWithIntValue(&mReplyAddress, "/b_read", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
@@ -800,10 +803,10 @@ bool BufAllocReadChannelCmd::Stage2()
 
 	SF_INFO fileinfo;
 	memset(&fileinfo, 0, sizeof(fileinfo));
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[512];
-		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 		scprintf(str);
 		return false;
@@ -927,10 +930,10 @@ bool BufReadChannelCmd::Stage2()
 	int framesToEnd = buf->frames - mBufOffset;
 	if (framesToEnd <= 0) return true;
 
-	SNDFILE* sf = sf_open(mFilename, SFM_READ, &fileinfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_READ, &fileinfo);
 	if (!sf) {
-		char str[512];
-		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_read", str);
 		scprintf(str);
 		return false;
@@ -1078,10 +1081,10 @@ bool BufWriteCmd::Stage2()
 	mFileInfo.samplerate = (int)buf->samplerate;
 	mFileInfo.channels = buf->channels;
 
-	SNDFILE* sf = sf_open(mFilename, SFM_WRITE, &mFileInfo);
+	SNDFILE* sf = sndfileOpenFromCStr(mFilename, SFM_WRITE, &mFileInfo);
 	if (!sf) {
-		char str[512];
-		sprintf(str, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
+		char str[ERR_BUF_SIZE];
+		snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened: %s\n", mFilename, sf_strerror(NULL));
 		SendFailureWithIntValue(&mReplyAddress, "/b_write", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_write", str);
 		scprintf(str);
 		return false;

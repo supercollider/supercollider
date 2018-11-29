@@ -1,6 +1,6 @@
 TITLE:: InBus
 summary::Return a range of channels from a bus, irrespective of node order
-categories::UGens>Input
+categories::UGens>InOut
 related:: Classes/In, Classes/XIn, Classes/InFeedback, Classes/XInFeedback
 
 DESCRIPTION::InBus provides a simple interface to the signal on a bus, crossfading between adjacent values.

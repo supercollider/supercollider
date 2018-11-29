@@ -1125,13 +1125,13 @@ bool AutoCompleter::trySwitchMethodCallArgument(bool backwards)
         argNum = 0;
 
     QString text = call.method->arguments[argNum].name;
-    text.append(":");
+    text.append(": ");
 
     // insert argument name
     if (argNameToken.isValid() && cursorAtArgName) {
         int pos = argNameToken.position();
         cursor.setPosition(pos);
-        cursor.setPosition(pos + argNameToken->length, QTextCursor::KeepAnchor);
+        cursor.setPosition(pos + argNameToken->length + 1, QTextCursor::KeepAnchor);
     }
     cursor.insertText(text);
 

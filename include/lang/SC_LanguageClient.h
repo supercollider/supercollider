@@ -24,8 +24,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_LANGUAGECLIENT_H_INCLUDED
-#define SC_LANGUAGECLIENT_H_INCLUDED
+#pragma once
 
 #include "SC_Export.h"
 #include <cstdio>
@@ -165,5 +164,3 @@ extern void postText(const char *text, long length);
 extern void postChar(char c);
 extern void error(const char *fmt, ...);
 extern void flushPostBuf();
-
-#endif // SC_LANGUAGECLIENT_H_INCLUDED

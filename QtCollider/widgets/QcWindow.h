@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_WINDOW_H
-#define QC_WINDOW_H
+#pragma once
 
 #include "BasicWidgets.h"
 #include "QcScrollArea.h"
@@ -40,5 +39,3 @@ public:
   QcScrollWindow() {}
   Q_INVOKABLE QcScrollWindow( const QString &title, const QRectF & geom, bool resizable, bool frame );
 };
-
-#endif
