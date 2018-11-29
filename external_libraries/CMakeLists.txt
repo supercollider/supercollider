@@ -74,6 +74,14 @@ if(NOT Boost_FOUND) # we compile boost ourselves
         PROPERTY FOLDER 3rdparty
     )
 
+  #oscpack
+  add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
+  target_include_directories(oscpack PRIVATE boost)
+  target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
+else()
+  #oscpack
+  add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
+  target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 endif()
 
 # tlsf
@@ -81,11 +89,6 @@ add_library(tlsf STATIC EXCLUDE_FROM_ALL "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
 set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
-
-#oscpack
-add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack PRIVATE boost)
-target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 
 if(LTO)
@@ -104,7 +107,11 @@ if(NOT YAMLCPP_FOUND)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
   add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
+  if(Boost_FOUND)
+    target_include_directories(yaml PUBLIC ${Boost_INCLUDE_DIRS})
+  else()
+    target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
+  endif()
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
   set(YAMLCPP_LIBRARY yaml)
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
