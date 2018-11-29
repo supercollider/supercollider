@@ -3,6 +3,7 @@ Score {
 	classvar <>program, <>options;
 
 	*initClass {
+		// ensure default values are available in ServerOptions
 		Class.initClassTree(ServerOptions);
 		options = ServerOptions.new;
 	}
