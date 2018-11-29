@@ -42,7 +42,8 @@ Try to follow these guidelines:
 - **Investigate the issue**: What is the minimum effort or code required to produce the issue? Does it happen every time? Can you get it to happen on someone else's computer? Someone else's operating system?
 - **See if a ticket already exists**: Search SuperCollider's [open issues](https://github.com/supercollider/supercollider/issues). If an issue for your problem already exists, leave your comments in the issue's thread. Make sure you give your version and system info plus any information that you don't see already noted in the ticket.
 - **Ask the community**: If you're unsure about how to investigate or recreate an issue, it may help to ask the [sc-dev](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2681767) or [sc-users](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2676391) mailing lists. You can also try asking on [Slack](https://scsynth.slack.com) or on the [Facebook group](https://www.facebook.com/groups/supercollider/).
-- **Proceed in creating your issue** Be sure to create your issue in the appropriate repository. Note that [sc3-plugins](https://github.com/supercollider/sc3-plugins) are maintained in their own repository separate from SuperCollider.
+- **Proceed in creating your issue**: Be sure to create your issue in the appropriate repository. Note that [sc3-plugins](https://github.com/supercollider/sc3-plugins) are maintained in their own repository separate from SuperCollider.
+- **One ticket at a time**: If you have multiple issues to report, please open separate tickets for each one.
 
 ### Creating an issue
 
