@@ -205,21 +205,18 @@ list(APPEND ide_src
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+  set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src
-        ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
-    )
+  list(APPEND ide_src ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm)
 elseif(WIN32)
-    list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+  list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -304,6 +301,7 @@ if(Boost_FOUND)
 else()
     # in-house-built boost system
     target_link_libraries( SuperCollider boost_system boost_filesystem )
+    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 endif()
 
 if(APPLE)
@@ -349,11 +347,11 @@ if(APPLE)
     SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
 
     install(TARGETS SuperCollider
-          DESTINATION ${scappbundlename})
+            DESTINATION ${scappbundlename})
 
     # for processing into the plist:
     set_property(TARGET SuperCollider
-	    PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
+                 PROPERTY MACOSX_BUNDLE_BUNDLE_NAME ${scappbundlename})
 
 elseif(WIN32)
 
