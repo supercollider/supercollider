@@ -75,7 +75,7 @@ Depending on your Debian flavor and version, your distribution's PPA may be stuc
 
 If this displays version 5.7 or later, installing Qt is easy:
 
-    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev
+    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
 
 If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), check the next section. Otherwise, you will have to use the official Qt installer. Sorry.
 
