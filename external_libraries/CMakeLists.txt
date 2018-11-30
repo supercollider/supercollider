@@ -85,7 +85,7 @@ set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 #oscpack
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
 target_include_directories(oscpack
-  PRIVATE $<IF:${SYSTEM_BOOST},${Boost_INCLUDE_DIRS},boost>)
+  PRIVATE $<IF:$<STREQUAL:${SYSTEM_BOOST},"ON">,${Boost_INCLUDE_DIRS},${CMAKE_SOURCE_DIR}/external_libraries/boost>)
 target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(LTO)
