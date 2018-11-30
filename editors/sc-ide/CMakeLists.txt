@@ -298,7 +298,7 @@ target_link_libraries( SuperCollider
     oscpack
 )
 
-if(Boost_FOUND)
+if(${SYSTEM_BOOST})
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
 else()
     # in-house-built boost system

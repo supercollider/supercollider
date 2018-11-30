@@ -12,7 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
 					)
 
-if (Boost_FOUND)
+if(SYSTEM_BOOST)
 	include_directories(${Boost_INCLUDE_DIRS})
 else()
 	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)

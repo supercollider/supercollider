@@ -147,7 +147,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 
-if(Boost_FOUND)
+if(SYSTEM_BOOST)
     target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
     target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
 else()
