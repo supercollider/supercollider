@@ -205,13 +205,13 @@ list(APPEND ide_src
 )
 
 if(APPLE)
-  set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 if(APPLE)
-  list(APPEND ide_src ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm)
+    list(APPEND ide_src ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm)
 elseif(WIN32)
-  list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+    list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
@@ -346,8 +346,7 @@ if(APPLE)
     # set how it shows up in the Info.plist file
     SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
 
-    install(TARGETS SuperCollider
-            DESTINATION ${scappbundlename})
+    install(TARGETS SuperCollider DESTINATION ${scappbundlename})
 
     # for processing into the plist:
     set_property(TARGET SuperCollider
