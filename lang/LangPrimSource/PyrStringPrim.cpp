@@ -575,7 +575,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 
 	// create array with appropriate reserved size
 	PyrObject* array = newPyrArray(g->gc, paths.size(), 0, true);
-	SetObject(a, array);
+	SetObject(a, array); // we don't need the receiver any more so this is okay
 
 	// convert paths and copy into sclang array.
 	for (int i = 0; i < paths.size(); ++i) {
