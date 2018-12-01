@@ -410,7 +410,8 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int match_count = matches.size();
 
 	PyrObject *result_array = newPyrArray(g->gc, match_count, 0, true);
-	SetObject(a, result_array);
+	++g->sp; // advance the stack to avoid overwriting receiver
+	SetObject(g->sp, result_array); // push result to make reachable
 
 	if( !match_count ) return errNone;
 
@@ -430,8 +431,11 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		array->size = 2;
 		SetInt(array->slots, pos + offset);
 		SetObject(array->slots+1, matched_string);
-		g->gc->GCWrite(array, matched_string); // we know matched_string is white so we can use GCWriteNew
+		g->gc->GCWriteNew(array, matched_string); // we know matched_string is white so we can use GCWriteNew
 	};
+	
+	--g->sp; // pop the stack back to the receiver slot since we stored result_array there above
+	SetObject(a, result_array); // now we can set the result in a
 
 	return errNone;
 }
@@ -483,7 +487,8 @@ static int prString_FindRegexpAt(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	PyrObject *array = newPyrArray(g->gc, 2, 0, true);
-	SetObject(a, array);
+	++g->sp;
+	SetObject(g->sp, array); // push on stack to make reachable
 
 	PyrString *matched_string = newPyrStringN(g->gc, matched_len, 0, true);
 	memcpy(matched_string->s, stringBegin, (size_t) matched_len);
@@ -492,6 +497,8 @@ static int prString_FindRegexpAt(struct VMGlobals *g, int numArgsPushed)
 	SetInt(array->slots+1, matched_len);
 	SetObject(array->slots, matched_string);
 	g->gc->GCWriteNew(array, matched_string); // we know matched_string is white so we can use GCWriteNew
+	--g->sp; // pop the stack back to the receiver slot since we stored array there above
+	SetObject(a, array); // now we can set the result in a
 
 	return errNone;
 }
