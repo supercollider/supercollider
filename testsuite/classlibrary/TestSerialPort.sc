@@ -77,10 +77,9 @@ TestSerialPort : UnitTest {
 	}
 
 	// Sanitizes done action to avoid extra post
-	mkPort { |dev ...args|
-		var port = SerialPort(dev, *args);
-		port.doneAction_({});
-		^port
+	// args should be an event with keyword-arg pairs for SerialPort.new, or nil
+	mkPort { |dev, args = (Event())|
+		^SerialPort.performWithEnvir(\new, args ++ (port: dev)).doneAction_({});
 	}
 
 	// ----------- tests -----------------------------------------------------------------------------------------
@@ -92,6 +91,41 @@ TestSerialPort : UnitTest {
 		port = this.mkPort(input);
 		this.assert(port.isOpen);
 		port.close();
+	}
+
+	// check that reasonable combinations of arguments are supported for opening ports
+	test_open_onExistingDevice_variousSupportedArgs {
+		var port;
+		var argLists = [
+			(),
+			(crtscts: true),
+			(xonxoff: true),
+			(parity: 'even'),
+			(parity: 'odd'),
+			(stopbit: false),
+			(databits: 7),
+			(baudrate: 19200),
+			(exclusive: true),
+		];
+		if(this.skipSerialTests) { ^this };
+
+		argLists.do { |argList|
+			var details = "Arguments: %".format(argList);
+			this.assertNoException({ port = this.mkPort(input, argList) },
+				"Opening serial port with reasonable arguments should not throw",
+				details: details);
+			this.assert(port.isOpen,
+				"Opening serial port with reasonable arguments should succeed",
+				details: details);
+			port.close();
+		};
+	}
+
+	test_open_errorOnExistingDevice_crtsctsAndXonxoffBothTrue {
+		if(this.skipSerialTests) { ^this };
+		this.assertException({ SerialPort(input, crtscts: true, xonxoff: true) },
+			PrimitiveFailedError,
+			"Trying to open a serial port with both xonxoff and crtscts should throw");
 	}
 
 	test_open_errorOnMissingDevice {
