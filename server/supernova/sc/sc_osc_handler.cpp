@@ -2756,9 +2756,9 @@ void handle_b_fill(ReceivedMessage const & msg)
 
         for (int i = 0; i != samples; ++i) {
             data[index] = value;
-	    ++index;
+            ++index;
             if (index >= bufSamples) {
-	        break;
+                break;
             }
         }
     }
