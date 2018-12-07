@@ -2740,10 +2740,12 @@ void handle_b_fill(ReceivedMessage const & msg)
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
-    if( !data ) {
+    if (!data) {
         log_printf("/b_fill called on unallocated buffer\n");
         return;
     }
+
+    int bufSamples = sc_factory->get_buffer_struct(buffer_index)->samples;
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2752,8 +2754,13 @@ void handle_b_fill(ReceivedMessage const & msg)
         verify_argument(it, end);
         float value = extract_float_argument(it++);
 
-        for (int i = 0; i != samples; ++i)
+        for (int i = 0; i != samples; ++i) {
             data[index] = value;
+            ++index;
+            if (index >= bufSamples) {
+                break;
+            }
+        }
     }
 }
 
