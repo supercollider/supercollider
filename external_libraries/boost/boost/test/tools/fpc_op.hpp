@@ -38,22 +38,19 @@ namespace op {
 
 template<typename OP>
 struct fpctraits {
-    static const bool cmp_direct = true;
-};
-
-template <typename Lhs, typename Rhs>
-struct fpctraits<op::NE<Lhs,Rhs> > {
-    static const bool cmp_direct = false;
+    // indicate if we should perform the operation with a "logical OR"
+    // with the "equality under tolerance".
+    static const bool equality_logical_disjunction = true;
 };
 
 template <typename Lhs, typename Rhs>
 struct fpctraits<op::LT<Lhs,Rhs> > {
-    static const bool cmp_direct = false;
+    static const bool equality_logical_disjunction = false;
 };
 
 template <typename Lhs, typename Rhs>
 struct fpctraits<op::GT<Lhs,Rhs> > {
-    static const bool cmp_direct = false;
+    static const bool equality_logical_disjunction = false;
 };
 
 //____________________________________________________________________________//
@@ -62,48 +59,30 @@ struct fpctraits<op::GT<Lhs,Rhs> > {
 // ************** set of overloads to select correct fpc algo  ************** //
 // ************************************************************************** //
 // we really only care about EQ vs NE. All other comparisons use direct first
-// and then need EQ. For example a < b (tolerance t) IFF a < b OR a == b (tolerance t)
+// and then need EQ. For example a <= b (tolerance t) IFF a <= b OR a == b (tolerance t)
 
 template <typename FPT, typename Lhs, typename Rhs, typename OP>
 inline assertion_result
-compare_fpv( Lhs const& lhs, Rhs const& rhs, OP* )
+compare_fpv( Lhs const& lhs, Rhs const& rhs, OP* cmp_operator)
 {
-    fpc::close_at_tolerance<FPT> P( fpc_tolerance<FPT>(), fpc::FPC_STRONG );
-
-    assertion_result ar( P( lhs, rhs ) );
-    if( !ar )
-        ar.message() << "Relative difference exceeds tolerance ["
-                     << P.tested_rel_diff() << " > " << P.fraction_tolerance() << ']';
-    return ar;
-}
-
-//____________________________________________________________________________//
-
-template <typename FPT, typename OP>
-inline assertion_result
-compare_fpv_near_zero( FPT const& fpv, OP* )
-{
-    fpc::small_with_tolerance<FPT> P( fpc_tolerance<FPT>() );
-
-    assertion_result ar( P( fpv ) );
-    if( !ar )
-        ar.message() << "Absolute value exceeds tolerance [|" << fpv << "| > "<< fpc_tolerance<FPT>() << ']';
-
-    return ar;
+    bool result = cmp_operator->eval_direct(lhs, rhs);
+    if(fpctraits<OP>::equality_logical_disjunction) {
+        return result || compare_fpv<FPT>(lhs, rhs, (op::EQ<Lhs, Rhs>*)0);
+    }
+    return result && compare_fpv<FPT>(lhs, rhs, (op::NE<Lhs, Rhs>*)0);
 }
 
 //____________________________________________________________________________//
 
 template <typename FPT, typename Lhs, typename Rhs>
 inline assertion_result
-compare_fpv( Lhs const& lhs, Rhs const& rhs, op::NE<Lhs,Rhs>* )
+compare_fpv_near_zero( FPT const& fpv, op::EQ<Lhs,Rhs>* )
 {
-    fpc::close_at_tolerance<FPT> P( fpc_tolerance<FPT>(), fpc::FPC_WEAK );
+    fpc::small_with_tolerance<FPT> P( fpc_tolerance<FPT>() );
 
-    assertion_result ar( !P( lhs, rhs ) );
+    assertion_result ar( P( fpv ) );
     if( !ar )
-        ar.message() << "Relative difference is within tolerance ["
-                     << P.tested_rel_diff() << " < " << fpc_tolerance<FPT>() << ']';
+        ar.message() << "Absolute value exceeds tolerance [|" << fpv << "| > "<< fpc_tolerance<FPT>() << ']';
 
     return ar;
 }
@@ -126,34 +105,48 @@ compare_fpv_near_zero( FPT const& fpv, op::NE<Lhs,Rhs>* )
 
 template <typename FPT, typename Lhs, typename Rhs>
 inline assertion_result
-compare_fpv( Lhs const& lhs, Rhs const& rhs, op::LT<Lhs,Rhs>* )
+compare_fpv( Lhs const& lhs, Rhs const& rhs, op::EQ<Lhs,Rhs>* )
 {
-    return lhs >= rhs ? assertion_result( false ) : compare_fpv<FPT>( lhs, rhs, (op::NE<Lhs,Rhs>*)0 );
-}
+    if( lhs == 0 ) {
+        return compare_fpv_near_zero( rhs, (op::EQ<Lhs,Rhs>*)0 );
+    }
+    else if( rhs == 0) {
+        return compare_fpv_near_zero( lhs, (op::EQ<Lhs,Rhs>*)0 );
+    }
+    else {
+        fpc::close_at_tolerance<FPT> P( fpc_tolerance<FPT>(), fpc::FPC_STRONG );
 
-template <typename FPT, typename Lhs, typename Rhs>
-inline assertion_result
-compare_fpv_near_zero( FPT const& fpv, op::LT<Lhs,Rhs>* )
-{
-    return fpv >= 0 ? assertion_result( false ) : compare_fpv_near_zero( fpv, (op::NE<Lhs,Rhs>*)0 );
+        assertion_result ar( P( lhs, rhs ) );
+        if( !ar )
+            ar.message() << "Relative difference exceeds tolerance ["
+                         << P.tested_rel_diff() << " > " << P.fraction_tolerance() << ']';
+        return ar;
+    }
 }
 
 //____________________________________________________________________________//
 
 template <typename FPT, typename Lhs, typename Rhs>
 inline assertion_result
-compare_fpv( Lhs const& lhs, Rhs const& rhs, op::GT<Lhs,Rhs>* )
+compare_fpv( Lhs const& lhs, Rhs const& rhs, op::NE<Lhs,Rhs>* )
 {
-    return lhs <= rhs ? assertion_result( false ) : compare_fpv<FPT>( lhs, rhs, (op::NE<Lhs,Rhs>*)0 );
-}
+    if( lhs == 0 ) {
+        return compare_fpv_near_zero( rhs, (op::NE<Lhs,Rhs>*)0 );
+    }
+    else if( rhs == 0 ) {
+        return compare_fpv_near_zero( lhs, (op::NE<Lhs,Rhs>*)0 );
+    }
+    else {
+        fpc::close_at_tolerance<FPT> P( fpc_tolerance<FPT>(), fpc::FPC_WEAK );
 
-template <typename FPT, typename Lhs, typename Rhs>
-inline assertion_result
-compare_fpv_near_zero( FPT const& fpv, op::GT<Lhs,Rhs>* )
-{
-    return fpv <= 0 ? assertion_result( false ) : compare_fpv_near_zero( fpv, (op::NE<Lhs,Rhs>*)0 );
-}
+        assertion_result ar( !P( lhs, rhs ) );
+        if( !ar )
+            ar.message() << "Relative difference is within tolerance ["
+                         << P.tested_rel_diff() << " < " << fpc_tolerance<FPT>() << ']';
 
+        return ar;
+    }
+}
 
 //____________________________________________________________________________//
 
@@ -177,22 +170,9 @@ public:                                                                 \
     static assertion_result                                             \
     eval( Lhs const& lhs, Rhs const& rhs )                              \
     {                                                                   \
-        if( lhs == 0 )                                                  \
+        if( fpc_tolerance<FPT>() == FPT(0) )                            \
         {                                                               \
-            return compare_fpv_near_zero( rhs, (OP*)0 );                \
-        }                                                               \
-                                                                        \
-        if( rhs == 0 )                                                  \
-        {                                                               \
-            return compare_fpv_near_zero( lhs, (OP*)0 );                \
-        }                                                               \
-                                                                        \
-        bool direct_res = eval_direct( lhs, rhs );                      \
-                                                                        \
-        if( (direct_res && fpctraits<OP>::cmp_direct) ||                \
-            fpc_tolerance<FPT>() == FPT(0) )                            \
-        {                                                               \
-            return direct_res;                                          \
+            return eval_direct( lhs, rhs );                             \
         }                                                               \
                                                                         \
         return compare_fpv<FPT>( lhs, rhs, (OP*)0 );                    \

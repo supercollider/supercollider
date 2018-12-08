@@ -18,9 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-
-#ifndef _SC_CoreAudio_
-#define _SC_CoreAudio_
+#pragma once
 
 #include "MsgFifo.h"
 #include "SC_FifoMsg.h"
@@ -373,5 +371,3 @@ inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 }
 
 #endif // SC_AUDIO_API == SC_AUDIO_API_ANDROIDJNI
-
-#endif

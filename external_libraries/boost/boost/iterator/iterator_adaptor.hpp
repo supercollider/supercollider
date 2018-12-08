@@ -8,8 +8,6 @@
 #define BOOST_ITERATOR_ADAPTOR_23022003THW_HPP
 
 #include <boost/static_assert.hpp>
-#include <boost/iterator.hpp>
-#include <boost/detail/iterator.hpp>
 
 #include <boost/iterator/iterator_categories.hpp>
 #include <boost/iterator/iterator_facade.hpp>

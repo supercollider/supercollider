@@ -20,30 +20,33 @@
 ************************************************************************/
 
 #include "QcWebView.h"
-#include "web_page.hpp"
+#include "../widgets/web_page.hpp"
 #include "../QcWidgetFactory.h"
-#include <QWebPage>
-#include <QWebFrame>
-#include <QWebElement>
+#include <QWebEnginePage>
+#include <QWebEngineSettings>
+#include <QWebEngineContextMenuData>
 #include <QAction>
 #include <QMenu>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QApplication>
 #include <QStyle>
+#include <QWebEngineCallback>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
+QC_DECLARE_QOBJECT_FACTORY(QcCallback);
 
 namespace QtCollider {
 
 WebView::WebView( QWidget *parent ) :
-  QWebView( parent ),
+  QWebEngineView( parent ),
   _interpretSelection(false),
   _editable(false)
 {
   QtCollider::WebPage *page = new WebPage(this);
   page->setDelegateReload(true);
   setPage( page );
+  connectPage( page );
 
   // Set the style's standard palette to avoid system's palette incoherencies
   // get in the way of rendering web pages
@@ -51,57 +54,71 @@ WebView::WebView( QWidget *parent ) :
 
   setAttribute(Qt::WA_AcceptTouchEvents);
 
-  page->action( QWebPage::Copy )->setShortcut( QKeySequence::Copy );
-  page->action( QWebPage::Paste )->setShortcut( QKeySequence::Paste );
-
-  connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
-  connect( page->action(QWebPage::Reload), SIGNAL(triggered(bool)),
-           this, SLOT(onPageReload()) );
+  page->action( QWebEnginePage::Copy )->setShortcut( QKeySequence::Copy );
+  page->action( QWebEnginePage::Paste )->setShortcut( QKeySequence::Paste );
+  page->action( QWebEnginePage::Reload )->setShortcut( QKeySequence::Refresh );
 
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
            Qt::QueuedConnection );
 
+  connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
+}
+
+void WebView::connectPage(QtCollider::WebPage* page)
+{
   connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
            this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
     
-  connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
+  connect (page, SIGNAL(linkHovered(const QString &)),
+           this, SIGNAL(linkHovered(const QString &)));
+
+  connect (page, SIGNAL(geometryChangeRequested(const QRect&)),
+           this, SIGNAL(geometryChangeRequested(const QRect&)));
+  
+  connect (page, SIGNAL(windowCloseRequested()),
+           this, SIGNAL(windowCloseRequested()));
+  
+  connect (page, SIGNAL(scrollPositionChanged(const QPointF&)),
+           this, SIGNAL(scrollPositionChanged(const QPointF&)));
+
+  connect (page, SIGNAL(contentsSizeChanged(const QSizeF&)),
+           this, SIGNAL(contentsSizeChanged(const QSizeF&)));
+
+  connect (page, SIGNAL(audioMutedChanged(bool)),
+           this, SIGNAL(audioMutedChanged(bool)));
+
+  connect (page, SIGNAL(recentlyAudibleChanged(bool)),
+           this, SIGNAL(recentlyAudibleChanged(bool)));
+
+  connect (page, SIGNAL(navigationRequested(QUrl,QWebEnginePage::NavigationType,bool)),
+           this, SLOT(onLinkClicked(QUrl,QWebEnginePage::NavigationType,bool)));
+
+  connect (page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)),
+          this, SLOT(onPageReload()) );
+
+  connect (page, SIGNAL(renderProcessTerminated(RenderProcessTerminationStatus, int)),
+          this, SLOT(onRenderProcessTerminated(RenderProcessTerminationStatus, int)) );
+}
+
+void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code)
+{
+  Q_EMIT(renderProcessTerminated((int)status, code));
+}
+  
+void WebView::triggerPageAction( int action, bool checked )
+{
+  QWebEngineView::triggerPageAction((QWebEnginePage::WebAction)action, checked);
 }
 
 QString WebView::url() const
 {
-  return QWebView::url().toString();
+  return QWebEngineView::url().toString();
 }
 
 void WebView::setUrl( const QString & str )
 {
   load( urlFromString(str) );
-}
-
-QString WebView::html () const
-{
-  return page()->mainFrame()->toHtml();
-}
-
-void WebView::setHtml ( const QString &html, const QString &baseUrl )
-{
-  QUrl url( baseUrl.isEmpty() ? QUrl() : urlFromString(baseUrl) );
-  QWebView::setHtml( html, url );
-}
-
-QString WebView::plainText () const
-{
-  return page()->mainFrame()->toPlainText();
-}
-
-int WebView::linkDelegationPolicy () const
-{
-  return (int)page()->linkDelegationPolicy();
-}
-
-void WebView::setLinkDelegationPolicy ( int p )
-{
-  page()->setLinkDelegationPolicy( (QWebPage::LinkDelegationPolicy)p );
 }
 
 bool WebView::delegateReload() const
@@ -120,26 +137,109 @@ void WebView::setDelegateReload( bool flag )
 
 void WebView::setFontFamily( int generic, const QString & specific )
 {
-  settings()->setFontFamily( (QWebSettings::FontFamily) generic, specific );
+  settings()->setFontFamily( (QWebEngineSettings::FontFamily) generic, specific );
+}
+  
+QAction* WebView::pageAction( QWebEnginePage::WebAction action) const
+{
+  return QWebEngineView::pageAction(action);
+}
+  
+void WebView::setHtml ( const QString &html, const QString &baseUrl )
+{
+  if (page()) {
+    page()->setHtml(html, baseUrl);
+}
 }
 
-void WebView::evaluateJavaScript ( const QString &script )
+void WebView::setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl)
 {
-  if( script.isEmpty() ) return;
-  QWebFrame *frame = page()->currentFrame();
-  if( frame ) frame->evaluateJavaScript( script );
+  if (page()) {
+    QByteArray byteData;
+    size_t i = 0;
+    for (int val : data) {
+      byteData.push_back((char)val);
+    }
+    page()->setContent(byteData, mimeType, baseUrl);
+  }
 }
 
-void WebView::findText( const QString &searchText, bool reversed )
+void WebView::toHtml(QcCallback* cb) const
 {
-  QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
-  if( reversed ) flags |= QWebPage::FindBackward;
-  QWebView::findText( searchText, flags );
+  if (page()) {
+    if (cb) {
+      page()->toHtml(cb->asFunctor());
+    } else {
+      page()->toHtml([](const QString&){});
+    }
+  } else {
+    cb->asFunctor()(QString());
+  }
 }
 
-void WebView::onLinkClicked( const QUrl &url )
+void WebView::toPlainText(QcCallback* cb) const
 {
-  Q_EMIT( linkActivated( url.toString() ) );
+  if (page()) {
+    if (cb) {
+      page()->toPlainText(cb->asFunctor());
+    } else {
+      page()->toPlainText([](const QString&){});
+    }
+  } else {
+    cb->asFunctor()(QString());
+  }
+}
+
+void WebView::runJavaScript(const QString& script, QcCallback* cb)
+{
+  if (page()) {
+    if (cb) {
+      page()->runJavaScript(script, cb->asFunctor());
+    } else {
+      page()->runJavaScript(script, [](const QVariant&){});
+    }
+  } else {
+    cb->asFunctor()(QString());
+  }
+}
+
+void WebView::setWebAttribute(int attr, bool on)
+{
+  if (page()) {
+    page()->settings()->setAttribute((QWebEngineSettings::WebAttribute)attr, on);
+  }
+}
+
+bool WebView::testWebAttribute(int attr)
+{
+  return page() ?
+    page()->settings()->testAttribute((QWebEngineSettings::WebAttribute)attr)
+    : false;
+}
+
+void WebView::resetWebAttribute(int attr)
+{
+  if (page()) {
+    page()->settings()->resetAttribute((QWebEngineSettings::WebAttribute)attr);
+  }
+}
+
+void WebView::navigate(const QString& urlString)
+{
+  QUrl url(urlString);
+  this->load(url);
+}
+
+void WebView::findText( const QString &searchText, bool reversed, QcCallback* cb )
+{
+  QWebEnginePage::FindFlags flags;
+  if( reversed ) flags |= QWebEnginePage::FindBackward;
+
+  if (!cb) {
+    QWebEngineView::findText(searchText, flags);
+  } else {
+    QWebEngineView::findText(searchText, flags, cb->asFunctor());
+  }
 }
 
 void WebView::onPageReload()
@@ -149,29 +249,28 @@ void WebView::onPageReload()
 
 void WebView::contextMenuEvent ( QContextMenuEvent * event )
 {
-    QMenu menu;
+  QMenu menu;
 
-    QPoint pos = event->pos();
+  const QWebEngineContextMenuData& contextData = page()->contextMenuData();
 
-    QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent( pos );
+  if (!contextData.linkUrl().isEmpty()) {
+    menu.addAction( pageAction(QWebEnginePage::CopyLinkToClipboard) );
+    menu.addSeparator();
+  }
 
-    if (!hitTest.linkElement().isNull()) {
-        menu.addAction( pageAction(QWebPage::CopyLinkToClipboard) );
-        menu.addSeparator();
+  if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
+    menu.addAction( pageAction(QWebEnginePage::Copy) );
+    if (contextData.isContentEditable()) {
+      menu.addAction( pageAction(QWebEnginePage::Paste) );
     }
+    menu.addSeparator();
+  }
 
-    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
-        menu.addAction( pageAction(QWebPage::Copy) );
-        if (hitTest.isContentEditable())
-            menu.addAction( pageAction(QWebPage::Paste) );
-        menu.addSeparator();
-    }
+  menu.addAction( pageAction(QWebEnginePage::Back) );
+  menu.addAction( pageAction(QWebEnginePage::Forward) );
+  menu.addAction( pageAction(QWebEnginePage::Reload) );
 
-    menu.addAction( pageAction(QWebPage::Back) );
-    menu.addAction( pageAction(QWebPage::Forward) );
-    menu.addAction( pageAction(QWebPage::Reload) );
-
-    menu.exec( event->globalPos() );
+  menu.exec( event->globalPos() );
 }
 
 void WebView::keyPressEvent( QKeyEvent *e )
@@ -190,7 +289,36 @@ void WebView::keyPressEvent( QKeyEvent *e )
         }
     }
 
-    QWebView::keyPressEvent( e );
+  QWebEngineView::keyPressEvent( e );
+}
+
+void WebView::updateEditable(bool ok) {
+  if (ok) {
+    if (_editable) {
+      page()->runJavaScript("document.documentElement.contentEditable = true");
+    } else {
+      page()->runJavaScript("document.documentElement.contentEditable = false");
+    }
+  }
+}
+
+bool WebView::overrideNavigation() const
+{
+  WebPage* p = qobject_cast<WebPage*>(page());
+  return p ? p->delegateNavigation() : false;
+}
+
+void WebView::setOverrideNavigation(bool b)
+{
+  WebPage* p = qobject_cast<WebPage*>(page());
+  if (p) {
+    p->setDelegateNavigation(b);
+  }
+}
+
+void WebView::onLinkClicked(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
+{
+  Q_EMIT(navigationRequested(url, (int)type, isMainFrame));
 }
 
 } // namespace QtCollider

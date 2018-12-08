@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef AUDIO_BACKEND_JACK_BACKEND_HPP
-#define AUDIO_BACKEND_JACK_BACKEND_HPP
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -72,6 +71,11 @@ public:
         return blocksize_;
     }
 
+    uint32_t get_latency(void) const
+    {
+        return latency_;
+    }
+
 public:
     void open_client(std::string const & server_name, std::string const & name, uint32_t input_port_count,
                      uint32_t output_port_count, uint32_t blocksize)
@@ -96,6 +100,7 @@ public:
         jack_set_thread_init_callback (client, jack_thread_init_callback, this);
         jack_set_process_callback (client, jack_process_callback, this);
         jack_set_xrun_callback(client, jack_xrun_callback, this);
+        jack_set_graph_order_callback(client, jack_graph_order_callback, this);
         jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, nullptr);
 
         /* register ports */
@@ -293,11 +298,39 @@ private:
         return static_cast<jack_backend*>(arg)->handle_xrun();
     }
 
+    static int jack_graph_order_callback(void* arg)
+    {
+        return static_cast<jack_backend*>(arg)->graph_order_changed();
+    }
+
     int handle_xrun(void)
     {
         time_is_synced = false;
         engine_functor::log_("Jack: xrun detected - resyncing clock\n");
         return 0;
+    }
+
+    int graph_order_changed()
+    {
+        time_is_synced = false;
+
+        jack_nframes_t lat = 0;
+        for(auto const& port: output_ports) {
+            jack_latency_range_t range;
+            jack_port_get_latency_range( port, JackPlaybackLatency, &range );
+            jack_nframes_t portLat = range.max;
+            if(portLat > lat) lat = portLat;
+        }
+
+        uint32_t latency = (uint32_t) lat;
+
+        if(latency != latency_) {
+            latency_ = latency;
+            double latms = lat / samplerate_ * 1e3;
+            engine_functor::log_printf_("JackDriver: max output latency %.1f ms\n", latms);
+        }
+
+        return true;
     }
 
     int perform(jack_nframes_t frames)
@@ -353,9 +386,8 @@ private:
     std::vector<jack_port_t*> input_ports, output_ports;
     jack_nframes_t jack_frames;
     cpu_time_info cpu_time_accumulator;
+
+    uint32_t latency_;
 };
 
 } /* namespace nova */
-
-
-#endif /* AUDIO_BACKEND_JACK_BACKEND_HPP */

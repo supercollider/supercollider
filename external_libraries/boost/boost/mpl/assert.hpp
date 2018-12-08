@@ -56,7 +56,7 @@
 // and GCC (which issues "unused variable" warnings when static constants are used 
 // at a function scope)
 #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x610)) \
-    || (BOOST_MPL_CFG_GCC != 0) || (BOOST_MPL_CFG_GPU != 0)
+    || (BOOST_MPL_CFG_GCC != 0) || (BOOST_MPL_CFG_GPU != 0) || defined(__PGI)
 #   define BOOST_MPL_AUX_ASSERT_CONSTANT(T, expr) enum { expr }
 #else
 #   define BOOST_MPL_AUX_ASSERT_CONSTANT(T, expr) BOOST_STATIC_CONSTANT(T, expr)

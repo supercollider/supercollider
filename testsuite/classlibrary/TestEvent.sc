@@ -102,6 +102,16 @@ TestEvent : UnitTest {
 
 	}
 
+	test_event_addParentType {
+		var event, noError = true;
+		Event.addEventType(\testType, {
+			~calculated = ~given;
+		}, (given: 1));
+		// must play to attach parent event
+		event = (type: \testType).play;
+		this.assert(event[\calculated] == 1, "parentType values should be accessible during event play");
+	}
+
 	test_server_message_head_type_grain {
 		this.assertEqualServerMessage(\grain, [9, \default, -1, 0,  this.defaultGroupID])
 	}

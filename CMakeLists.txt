@@ -4,8 +4,11 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
-cmake_minimum_required (VERSION 2.8.12)
-set(SUPERNOVA_CMAKE_MINVERSION 3.1)
+if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
+    set(LINUX_OR_BSD 1)
+endif()
+
+cmake_minimum_required (VERSION 3.5)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -71,7 +74,7 @@ ADD_CUSTOM_TARGET(uninstall
 if(WIN32)
     SET(SC_WIN_BUNDLE_NAME "SuperCollider" CACHE STRING "Folder name of SC install")
 
-    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
         SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
     else()
         SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
@@ -104,7 +107,7 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-	add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
+	add_definitions("-fno-math-errno -fno-signaling-nans -fsigned-zeros -fno-associative-math")
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -127,7 +130,7 @@ endif()
 
 if(APPLE)
 	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path")
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
 	endif()
 elseif(UNIX)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
@@ -195,15 +198,12 @@ else()
     set(SC_IDE False)
   endif()
 endif (SC_QT)
-
+option(NO_X11 "Disables the building of plugins that require the X11 library (for UI-less compiles)" OFF)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
-    option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
-else()
-    option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
-endif()
+# Build supernova by default only when on Linux or BSD systems
+option(SUPERNOVA "Build with supernova as optional audio synthesis server" ${LINUX_OR_BSD})
 
 option(SN_MEMORY_DEBUGGING "Build supernova for memory debugging (disable memory pools).")
 option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable memory pools).")
@@ -218,8 +218,6 @@ endif(WIN32)
 option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
-
-option(SC_WII "Build sclang with WII support (broken on osx after 10.7)" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
     option(NATIVE "Optimize binary for this architecture (binaries may not run on other machines).")
@@ -576,7 +574,7 @@ if(APPLE)
 #	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
-    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/SCcube.icns")
+    set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/sc_ide.icns")
 endif()
 
 if(NOT WIN32) # We define a custom 'package' target in platform/windows/CMakeLists.txt

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _FifoMsg_
-#define _FifoMsg_
+#pragma once
 
 typedef void (*FifoMsgFunc)(struct FifoMsg*);
 
@@ -54,6 +53,3 @@ inline void FifoMsg::Free()
 {
 	if (mFreeFunc) (mFreeFunc)(this);
 }
-
-#endif
-

@@ -68,6 +68,21 @@ i.url.postln;
 )
 ::
 
+METHOD::openSVG
+Creates a new Image instance from the local SVG file at strong::path::.
+code::
+(
+i = Image.openSVG(SCDoc.helpSourceDir +/+ "images/plugin.svg", 200@200);
+i.plot(freeOnClose:true);
+i.url.postln;
+)
+::
+ARGUMENT::size
+A link::Classes/Size::. SVG contents will be drawn into an image of this size. If not provided, suggested size provided by SVG will be used.
+ARGUMENT::element
+A link::Classes/String:: refering to an element of the SVG. If this argument is provided, image will only include this element of the SVG.
+
+
 METHOD::openURL
 // NOT IMPLEMENTED YET
 Creates a new Image instance from a valid image at the specified URL strong::path::.
@@ -697,6 +712,20 @@ a rectangle defining the portion to update in the receiver. By default strong::r
 
 ARGUMENT::start
 the array start index.
+
+
+METHOD::pixelRatio
+Get/set pixel ratio of the image.
+
+This does NOT affect the content of the image, only how it is interpreted when it is drawn onto a View or another Image.
+For example, in a high DPI context, the pixel ratio of a View might be 2. When drawing an image with a pixelRatio of 1, each pixel of the image will fill a 2x2 area of the View. If both the Image and the View had a pixel ratio of 2, each pixel would be 1:1 with pixels in the View.
+
+By default, the pixelRatio of all Images is 1 - emphasis::this ensures that an image will look the same when drawn on a normal or a high DPI view::. Setting a custom (!= 1) pixelRatio should generally only be done to draw specially rendered high DPI images to a View that is known to be high DPI.
+
+Note that when drawing to an Image using link::Classes/Pen::, pixelRatio is accounted for - so, a line of width 1 will have a true width of 1px for an image where code::image.pixelRatio==1::, and a true width of 2px where code::image.pixelRatio==2::.
+
+See link::Classes/View:-devicePixelRatio::.
+
 
 SUBSECTION::Instance Methods / Attributes for ImageFilter support
 

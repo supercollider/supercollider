@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_WIDGET_FACTORY_H
-#define QC_WIDGET_FACTORY_H
+#pragma once
 
 #include "QcObjectFactory.h"
 #include "QWidgetProxy.h"
@@ -65,8 +64,7 @@ public:
     // in constructor, or set later, but for some reason it is cheaper
     // if it is set here, before setting other stuff like geometry, etc.
 
-    QObjectProxy *parentProxy( arg[0].value<QObjectProxy*>() );
-    QWidget *parent = parentProxy ? qobject_cast<QWidget*>( parentProxy->object() ) : 0;
+    QWidget *parent = arg[0].value<QWidget*>();
 
     if( parent )
     {
@@ -131,5 +129,3 @@ protected:
 };
 
 #define QC_DECLARE_QWIDGET_FACTORY( QWIDGET ) QC_DECLARE_FACTORY( QWIDGET, QcWidgetFactory<QWIDGET> )
-
-#endif

@@ -33,16 +33,6 @@ Primitives for File i/o.
 #include "SCBase.h"
 #include "sc_popen.h"
 
-// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
-// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
-#ifndef NO_LIBSNDFILE
-#  ifdef _WIN32
-#    include <windows.h>
-#    define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
-#  endif // _WIN32
-#  include <sndfile.h>
-#endif // NO_LIBSNDFILE
-
 /* SuperCollider newer headers*/
 #include "SC_SndFileHelpers.hpp"
 #include "SC_Filesystem.hpp" // resolveIfAlias
@@ -55,6 +45,7 @@ Primitives for File i/o.
 #include <cerrno>
 #include <fcntl.h>
 #include <math.h>
+#include <sstream>
 
 /* boost headers */
 #include <boost/filesystem.hpp>
@@ -164,19 +155,17 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 
 int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *b = g->sp;
+	PyrSlot *a = g->sp - 1, *b = g->sp;
 	char filename[PATH_MAX];
 
 	int error = slotStrVal(b, filename, PATH_MAX);
 	if (error != errNone)
 		return error;
 
-	boost::system::error_code error_code;
 	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	bfs::create_directories(p, error_code);
-	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
+	bool result = bfs::create_directories(p);
 
+	SetBool(a, result);
 	return errNone;
 }
 
@@ -195,7 +184,15 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 
 	const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
 	const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
-	bfs::copy(p1, p2);
+	boost::system::error_code error_code;
+	bfs::copy(p1, p2, error_code);
+	if (error_code)
+	{
+		std::ostringstream s;
+		s << error_code.message() << ": copy from \"" << filename1 << "\" to \"" << filename2 << "\"";
+		throw std::runtime_error(s.str());
+	}
+	
 	return errNone;
 }
 
@@ -1507,12 +1504,7 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	filename[slotRawString(b)->size] = 0;
 
 	info.format = 0;
-#ifdef _WIN32
-	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
-	file = sf_wchar_open(filename_w.c_str(), SFM_READ, &info);
-#else
-	file = sf_open(filename, SFM_READ, &info);
-#endif // _WIN32
+	file = sndfileOpenFromCStr(filename, SFM_READ, &info);
 
 	if (file) {
 		SetPtr(obj1->slots + 0, file);
@@ -1594,12 +1586,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
 	slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
 
-#ifdef _WIN32
-	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
-	file = sf_wchar_open(filename_w.c_str(), SFM_WRITE, &info);
-#else
-	file = sf_open(filename, SFM_WRITE, &info);
-#endif // _WIN32
+	file = sndfileOpenFromCStr(filename, SFM_WRITE, &info);
 
 	sf_command(file, SFC_SET_CLIPPING, NULL, SF_TRUE);
 

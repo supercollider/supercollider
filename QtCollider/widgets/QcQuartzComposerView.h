@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_QUARTZCOMPOSER
-#define QC_QUARTZCOMPOSER
+#pragma once
 
 #include <QVariantList>
 
@@ -71,5 +70,3 @@ private:
     QCView *mQCView;
     
 };
-
-#endif

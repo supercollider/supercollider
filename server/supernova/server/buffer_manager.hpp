@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_BUFFER_MANAGER_HPP
-#define SERVER_BUFFER_MANAGER_HPP
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -27,7 +26,7 @@
 #include <vector>
 
 #include "nova-simd/simd_memory.hpp"
-#include "utilities/malloc_aligned.hpp"
+#include "malloc_aligned.hpp"
 
 
 namespace nova {
@@ -215,5 +214,3 @@ private:
 };
 
 } /* namespace nova */
-
-#endif /* SERVER_BUFFER_MANAGER_HPP */

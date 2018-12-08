@@ -48,33 +48,34 @@ Buffer {
 	allocRead { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadMsg( argpath, startFrame, numFrames, completionMessage))
+		server.listSendMsg(this.allocReadMsg( argpath, startFrame.asInteger, numFrames, completionMessage))
 	}
 
-	allocReadChannel { arg argpath, startFrame, numFrames = 0, channels = -1, completionMessage;
+	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame, numFrames, channels,
+		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame.asInteger, numFrames, channels,
 			completionMessage))
 	}
 
 	allocMsg { arg completionMessage;
 		this.cache;
-		^["/b_alloc", bufnum, numFrames.asInt, numChannels, completionMessage.value(this)]
+		^["/b_alloc", bufnum, numFrames.asInteger, numChannels, completionMessage.value(this)]
 	}
 
 	allocReadMsg { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		this.cache;
 		path = argpath;
 		this.startFrame = startFrame;
-		^["/b_allocRead", bufnum, path, startFrame, (numFrames ? -1).asInt, completionMessage.value(this)]
+		^["/b_allocRead", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger, completionMessage.value(this)]
 	}
 
 	allocReadChannelMsg { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		this.cache;
 		path = argpath;
 		this.startFrame = startFrame;
-		^["/b_allocReadChannel", bufnum, path, startFrame, (numFrames ? -1).asInt] ++ channels ++ [completionMessage.value(this)]
+		completionMessage !? { completionMessage = [completionMessage.value(this)] };
+		^["/b_allocReadChannel", bufnum, path, startFrame.asInteger, (numFrames ? -1).asInteger] ++ channels ++ completionMessage
 	}
 
 	// read whole file into memory for PlayBuf etc.
@@ -133,7 +134,7 @@ Buffer {
 	readMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, completionMessage;
 		path = argpath;
-		^["/b_read", bufnum, path, fileStartFrame, (numFrames ? -1).asInt,
+		^["/b_read", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
 			bufStartFrame, leaveOpen.binaryValue, completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -141,7 +142,7 @@ Buffer {
 	readChannelMsg { arg argpath, fileStartFrame = 0, numFrames = -1,
 					bufStartFrame = 0, leaveOpen = false, channels, completionMessage;
 		path = argpath;
-		^["/b_readChannel", bufnum, path, fileStartFrame, (numFrames ? -1).asInt,
+		^["/b_readChannel", bufnum, path, fileStartFrame.asInteger, (numFrames ? -1).asInteger,
 			bufStartFrame, leaveOpen.binaryValue] ++ channels ++ [completionMessage.value(this)]
 		// doesn't set my numChannels etc.
 	}
@@ -161,7 +162,7 @@ Buffer {
 	}
 
 	cueSoundFileMsg { arg path, startFrame = 0, completionMessage;
-		^["/b_read", bufnum, path, startFrame, numFrames.asInt, 0, 1, completionMessage.value(this)]
+		^["/b_read", bufnum, path, startFrame.asInteger, numFrames.asInteger, 0, 1, completionMessage.value(this)]
 	}
 
 	// transfer a collection of numbers to a buffer through a file
@@ -294,37 +295,39 @@ Buffer {
 	// risky without wait
 	getToFloatArray { arg index = 0, count, wait = 0.01, timeout = 3, action;
 		var refcount, array, pos, getsize, resp, done = false;
+
 		pos = index = index.asInteger;
-		count = (count ? (numFrames * numChannels)).asInteger;
+		count = (count ??  { numFrames * numChannels }).asInteger;
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
 		count = count + pos;
-		//("refcount" + refcount).postln;
+
 		resp = OSCFunc({ arg msg;
 			if(msg[1] == bufnum, {
-				//("received" + msg).postln;
 				array = array.overWrite(FloatArray.newFrom(msg.copyToEnd(4)), msg[2] - index);
 				refcount = refcount - 1;
-				//("countDown" + refcount).postln;
-				if(refcount <= 0, {done = true; resp.clear; action.value(array, this); });
+				if(refcount <= 0, { done = true; resp.clear; action.value(array, this) });
 			});
 		}, '/b_setn', server.addr);
+
 		{
-			while({ pos < count }, {
+			while { pos < count } {
 				// 1633 max size for getn under udp
 				getsize = min(1633, count - pos);
-				//("sending from" + pos).postln;
 				server.listSendMsg(this.getnMsg(pos, getsize));
 				pos = pos + getsize;
 				if(wait >= 0) { wait.wait } { server.sync };
-			});
+			};
 
 		}.forkIfNeeded;
+
 		// lose the responder if the network choked
 		SystemClock.sched(timeout, {
-			if(done.not, { resp.free; "Buffer-streamToFloatArray failed!".warn;
+			if(done.not) {
+				resp.free;
+				"Buffer-streamToFloatArray failed!".warn;
 				"Try increasing wait time".postln
-			})
+			}
 		})
 	}
 
@@ -349,19 +352,25 @@ Buffer {
 	}
 
 	free { arg completionMessage;
-		server.listSendMsg( this.freeMsg(completionMessage) )
+		if(bufnum.isNil) {
+			"Cannot call free on a Buffer that has been freed".warn;
+			^nil
+		} {
+			server.listSendMsg(this.freeMsg(completionMessage))
+		}
 	}
 
 	freeMsg { arg completionMessage;
 		var msg;
-		if(bufnum.notNil) {
+		if(bufnum.isNil) {
+			"Cannot construct a freeMsg for a Buffer that has been freed".warn;
+			^nil
+		} {
 			this.uncache;
 			server.bufferAllocator.free(bufnum);
 			msg = [\b_free, bufnum, completionMessage.value(this)];
 			bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
 			^msg
-		} {
-			(this.class.name ++ " has already been freed").warn
 		}
 	}
 
@@ -446,12 +455,12 @@ Buffer {
 
 	fill { arg startAt, numFrames, value ... more;
 		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
-		server.listSendMsg([\b_fill, bufnum, startAt, numFrames.asInt, value] ++ more)
+		server.listSendMsg([\b_fill, bufnum, startAt, numFrames.asInteger, value] ++ more)
 	}
 
 	fillMsg { arg startAt, numFrames, value ... more;
 		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
-		^[\b_fill, bufnum, startAt, numFrames.asInt, value] ++ more
+		^[\b_fill, bufnum, startAt, numFrames.asInteger, value] ++ more
 	}
 
 	normalize { arg newmax=1, asWavetable=false;
@@ -585,14 +594,18 @@ Buffer {
 		^[\b_close, bufnum, completionMessage.value(this) ]
 	}
 
-	query {
+	query { |action|
 		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
-		OSCFunc({ arg msg;
-			Post << "bufnum   : " << msg[1] << Char.nl
-				<< "numFrames  : " << msg[2] << Char.nl
-				<< "numChannels : " << msg[3] << Char.nl
-				<< "sampleRate : " << msg[4] << Char.nl << Char.nl;
-		}, \b_info, server.addr).oneShot;
+		action = action ?? {
+			{ |addr, bufnum, numFrames, numChannels, sampleRate|
+				"bufnum: %\nnumFrames: %\nnumChannels: %\nsampleRate: %\n".format(
+					bufnum, numFrames, numChannels, sampleRate
+				).postln;
+			}
+		};
+		OSCFunc({ |msg|
+			action.valueArray(msg)
+		}, \b_info, server.addr, nil, [bufnum]).oneShot;
 		server.listSendMsg([\b_query, bufnum])
 	}
 

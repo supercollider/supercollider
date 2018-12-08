@@ -1,6 +1,6 @@
 class:: Pnsym
 summary:: use a pattern of symbols to embed Pdefns
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdefn
 
 description::

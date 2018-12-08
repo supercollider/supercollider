@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _UnitDef_
-#define _UnitDef_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_Unit.h"
@@ -64,6 +63,3 @@ int Unit_DoCmd(World *inWorld, int inSize, char *inData);
 
 inline int32* GetKey(UnitCmd *inCmd) { return inCmd->mCmdName; }
 inline int32 GetHash(UnitCmd *inCmd) { return inCmd->mHash; }
-
-
-#endif

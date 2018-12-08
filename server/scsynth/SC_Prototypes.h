@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Prototypes_
-#define _SC_Prototypes_
+#pragma once
 
 #include <ctype.h> // for size_t
 #include <cstdlib>
@@ -225,6 +224,3 @@ int PerformAsynchronousCommand
 	);
 
 ////////////////////////////////////////////////////////////////////////
-
-#endif
-

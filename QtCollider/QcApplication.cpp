@@ -33,6 +33,10 @@
 #include <QFileOpenEvent>
 #include <QKeyEvent>
 #include <QIcon>
+#include <QMenuBar>
+#include <QSharedPointer>
+
+#include "hacks/hacks_mac.hpp"
 
 #ifdef Q_OS_MAC
 #include "../../common/SC_Apple.hpp"
@@ -73,6 +77,11 @@ QcApplication::QcApplication( int & argc, char ** argv )
   _mutex.lock();
   _instance = this;
   _mutex.unlock();
+  this->setAttribute(Qt::AA_UseHighDpiPixmaps);
+  
+#ifdef Q_OS_MAC
+  QtCollider::Mac::DisableAutomaticWindowTabbing();
+#endif
 
   if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
     QIcon icon;
@@ -81,6 +90,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
     icon.addFile(":/icons/sc-cube-32");
     icon.addFile(":/icons/sc-cube-16");
     setWindowIcon(icon);
+    _mainMenu = QSharedPointer<QMenuBar>(new QMenuBar(0));
   }
   
 #ifdef Q_OS_MAC
@@ -158,5 +168,16 @@ bool QcApplication::notify( QObject * object, QEvent * event )
         break;
     }
 
-    return QApplication::notify( object, event );
+    bool result = QApplication::notify( object, event );
+
+#ifdef Q_OS_MAC
+    // XXX Explicitly accept all handled events so they don't propagate outside the application.
+    // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
+    // native window if they aren't accepted here. This caused issue #4058. Accepting them here
+    // seems to solve the problem, but might cause other issues since it is a heavy-handed way
+    // of doing this. TODO - solve more elegantly
+    if (result)
+        event->accept();
+#endif
+    return result;
 }

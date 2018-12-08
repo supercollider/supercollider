@@ -164,6 +164,12 @@ code::
 { SinOsc.ar(500 + LFPulse.ar(4).bipolar(40), 0, 0.5) * 0.1 }.play;
 ::
 
+method:: degrad
+Converts degrees to radians. This method multiplies the receiver's output by code::pi/180::.
+
+method:: raddeg
+Converts radians to degrees. This method multiplies the receiver's output by code::180/pi::.
+
 method:: clip
 Wraps the receiver in a link::Classes/Clip:: UGen, clipping its output at code::lo:: and code::hi::.
 
@@ -209,6 +215,20 @@ Wraps the receiver in a link::Classes/DegreeToKey:: UGen.
 method:: minNyquist
 
 Wraps the receiver in a code::min:: link::Classes/BinaryOpUGen::, such that the lesser of the receiver's output and the Nyquist frequency is output. This can be useful to prevent aliasing.
+
+method:: snap
+
+Wraps the receiver so that its values are rounded within code::margin:: distance from a multiple of code::resolution:: to a multiple of resolution. By using code::margin:: and code::strength:: you can control when values will be rounded, and by how much. See link::Classes/SimpleNumber#-snap:: for more details.
+
+This can be used to make control signals (e.g. from sensors) "snap" to defined resolution. Example:
+code::
+s.boot;
+x = {SinOsc.ar((Line.kr(0, 10, 10).snap(1, 0.3, 1) + 60).poll.midicps, 0, -24.dbamp)}.play
+::
+
+method:: softRound
+
+Wraps the receiver so that its values are rounded outside of code::margin:: distance from a multiple of code::resolution:: to a multiple of resolution. By using code::margin:: and code::strength:: you can control when values will be rounded, and by how much. See link::Classes/SimpleNumber#-softRound:: for more details.
 
 method:: linlin
 Wraps the receiver so that a linear input range is mapped to a linear output range.
@@ -403,4 +423,3 @@ method:: init
 By default, this method stores the inputs (e.g. the arguments to code::*ar:: and code::*kr::) in the UGen.
 discussion::
 This may be overridden to do other initialisations, as long as the inputs are set correctly.
-

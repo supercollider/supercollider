@@ -152,7 +152,7 @@
 #  if defined(BOOST_REGEX_NO_W32) || BOOST_PLAT_WINDOWS_RUNTIME
 #    define BOOST_REGEX_NO_FILEITER
 #  endif
-#else // defined(_WIN32)
+#else /* defined(_WIN32) */
 #  if !defined(BOOST_HAS_DIRENT_H)
 #    define BOOST_REGEX_NO_FILEITER
 #  endif
@@ -163,7 +163,7 @@
 #  define BOOST_REGEX_NO_LIB
 #endif
 
-#if defined(__GNUC__) && (defined(_WIN32) || defined(__CYGWIN__))
+#if defined(__GNUC__) && !defined(_MSC_VER) && (defined(_WIN32) || defined(__CYGWIN__))
 /* gcc on win32 has problems if you include <windows.h>
    (sporadically generates bad code). */
 #  define BOOST_REGEX_NO_W32
@@ -255,7 +255,7 @@
  *
  ****************************************************************************/
 
-#if defined(BOOST_MSVC) && defined(_MSC_EXTENSIONS)
+#if defined(_MSC_VER) && defined(_MSC_EXTENSIONS)
 #if defined(_DEBUG) || defined(__MSVC_RUNTIME_CHECKS) || defined(_MANAGED) || defined(BOOST_REGEX_NO_FASTCALL)
 #  define BOOST_REGEX_CALL __cdecl
 #else
@@ -393,7 +393,7 @@ BOOST_REGEX_DECL void BOOST_REGEX_CALL reset_stack_guard_page();
  ****************************************************************************/
 
 #if !defined(BOOST_REGEX_RECURSIVE) && !defined(BOOST_REGEX_NON_RECURSIVE)
-#  if defined(BOOST_REGEX_HAS_MS_STACK_GUARD) && !defined(_STLP_DEBUG) && !defined(__STL_DEBUG) && !(defined(BOOST_MSVC) && (BOOST_MSVC >= 1400))
+#  if defined(BOOST_REGEX_HAS_MS_STACK_GUARD) && !defined(_STLP_DEBUG) && !defined(__STL_DEBUG) && !(defined(_MSC_VER) && (_MSC_VER >= 1400))
 #     define BOOST_REGEX_RECURSIVE
 #  else
 #     define BOOST_REGEX_NON_RECURSIVE

@@ -25,9 +25,10 @@
 
 #include <QPainter>
 #include <QPaintEvent>
+#include <QBackingStore>
 
 QcCanvas::QcCanvas( QWidget *parent )
-: QWidget( parent ),
+: QcCanvasBase( parent ),
   _paint( false ),
   _repaintNeeded( true ),
   _clearOnRefresh( true ),
@@ -134,7 +135,9 @@ void QcCanvas::paintEvent( QPaintEvent *e )
 {
   if( _paint && _repaintNeeded ) {
     if( _resize ) {
-      _pixmap = QPixmap( size() );
+      qreal pixelRatio = backingStore()->window()->devicePixelRatio();
+      _pixmap = QPixmap(size() * pixelRatio);
+      _pixmap.setDevicePixelRatio(pixelRatio);
       _resize = false;
       _clearOnce = true;
     }
@@ -167,7 +170,12 @@ void QcCanvas::paintEvent( QPaintEvent *e )
   if (_bkg_image.isValid())
       _bkg_image.paint( &painter, rect() );
 
-  if( _paint ) painter.drawPixmap( e->rect(), _pixmap, e->rect() );
+  if ( _paint ) {
+    qreal pixelRatio = round(backingStore()->window()->devicePixelRatio());
+    auto sourceRect = e->rect().intersected(QRect(0, 0, size().width(), size().height()));
+    sourceRect = QRect(sourceRect.topLeft() * pixelRatio, sourceRect.size() * pixelRatio);
+    painter.drawPixmap( e->rect(), _pixmap, sourceRect);
+  }
 }
 
 void QcCanvas::timerEvent( QTimerEvent *e )

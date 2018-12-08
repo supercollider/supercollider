@@ -2,7 +2,7 @@
 // detail/impl/handler_tracking.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -17,7 +17,11 @@
 
 #include <boost/asio/detail/config.hpp>
 
-#if defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
+#if defined(BOOST_ASIO_CUSTOM_HANDLER_TRACKING)
+
+// The handler tracking implementation is provided by the user-specified header.
+
+#elif defined(BOOST_ASIO_ENABLE_HANDLER_TRACKING)
 
 #include <cstdarg>
 #include <cstdio>
@@ -25,17 +29,15 @@
 
 #if defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
 # include <boost/asio/time_traits.hpp>
-#else // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
-# if defined(BOOST_ASIO_HAS_STD_CHRONO)
-#  include <chrono>
-# elif defined(BOOST_ASIO_HAS_BOOST_CHRONO)
-#  include <boost/chrono/system_clocks.hpp>
-# endif
+#elif defined(BOOST_ASIO_HAS_CHRONO)
+# include <boost/asio/detail/chrono.hpp>
 # include <boost/asio/detail/chrono_time_traits.hpp>
 # include <boost/asio/wait_traits.hpp>
 #endif // defined(BOOST_ASIO_HAS_BOOST_DATE_TIME)
 
-#if !defined(BOOST_ASIO_WINDOWS)
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+# include <boost/asio/detail/socket_types.hpp>
+#elif !defined(BOOST_ASIO_WINDOWS)
 # include <unistd.h>
 #endif // !defined(BOOST_ASIO_WINDOWS)
 
@@ -56,16 +58,11 @@ struct handler_tracking_timestamp
     boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
     boost::posix_time::time_duration now =
       boost::posix_time::microsec_clock::universal_time() - epoch;
-#elif defined(BOOST_ASIO_HAS_STD_CHRONO)
-    typedef chrono_time_traits<std::chrono::system_clock,
-        boost::asio::wait_traits<std::chrono::system_clock> > traits_helper;
+#elif defined(BOOST_ASIO_HAS_CHRONO)
+    typedef chrono_time_traits<chrono::system_clock,
+        boost::asio::wait_traits<chrono::system_clock> > traits_helper;
     traits_helper::posix_time_duration now(
-        std::chrono::system_clock::now().time_since_epoch());
-#elif defined(BOOST_ASIO_HAS_BOOST_CHRONO)
-    typedef chrono_time_traits<boost::chrono::system_clock,
-        boost::asio::wait_traits<boost::chrono::system_clock> > traits_helper;
-    traits_helper::posix_time_duration now(
-        boost::chrono::system_clock::now().time_since_epoch());
+        chrono::system_clock::now().time_since_epoch());
 #endif
     seconds = static_cast<uint64_t>(now.total_seconds());
     microseconds = static_cast<uint64_t>(now.total_microseconds() % 1000000);
@@ -96,13 +93,15 @@ void handler_tracking::init()
     state->current_completion_ = new tss_ptr<completion>;
 }
 
-void handler_tracking::creation(handler_tracking::tracked_handler* h,
-    const char* object_type, void* object, const char* op_name)
+void handler_tracking::creation(execution_context&,
+    handler_tracking::tracked_handler& h,
+    const char* object_type, void* object,
+    uintmax_t /*native_handle*/, const char* op_name)
 {
   static tracking_state* state = get_state();
 
   static_mutex::scoped_lock lock(state->mutex_);
-  h->id_ = state->next_id_++;
+  h.id_ = state->next_id_++;
   lock.unlock();
 
   handler_tracking_timestamp timestamp;
@@ -118,11 +117,12 @@ void handler_tracking::creation(handler_tracking::tracked_handler* h,
       "@asio|%llu.%06llu|%llu*%llu|%.20s@%p.%.50s\n",
 #endif // defined(BOOST_ASIO_WINDOWS)
       timestamp.seconds, timestamp.microseconds,
-      current_id, h->id_, object_type, object, op_name);
+      current_id, h.id_, object_type, object, op_name);
 }
 
-handler_tracking::completion::completion(handler_tracking::tracked_handler* h)
-  : id_(h->id_),
+handler_tracking::completion::completion(
+    const handler_tracking::tracked_handler& h)
+  : id_(h.id_),
     invoked_(false),
     next_(*get_state()->current_completion_)
 {
@@ -250,8 +250,9 @@ void handler_tracking::completion::invocation_end()
   }
 }
 
-void handler_tracking::operation(const char* object_type,
-    void* object, const char* op_name)
+void handler_tracking::operation(execution_context&,
+    const char* object_type, void* object,
+    uintmax_t /*native_handle*/, const char* op_name)
 {
   static tracking_state* state = get_state();
 
@@ -271,6 +272,54 @@ void handler_tracking::operation(const char* object_type,
       current_id, object_type, object, op_name);
 }
 
+void handler_tracking::reactor_registration(execution_context& /*context*/,
+    uintmax_t /*native_handle*/, uintmax_t /*registration*/)
+{
+}
+
+void handler_tracking::reactor_deregistration(execution_context& /*context*/,
+    uintmax_t /*native_handle*/, uintmax_t /*registration*/)
+{
+}
+
+void handler_tracking::reactor_events(execution_context& /*context*/,
+    uintmax_t /*native_handle*/, unsigned /*events*/)
+{
+}
+
+void handler_tracking::reactor_operation(
+    const tracked_handler& h, const char* op_name,
+    const boost::system::error_code& ec)
+{
+  handler_tracking_timestamp timestamp;
+
+  write_line(
+#if defined(BOOST_ASIO_WINDOWS)
+      "@asio|%I64u.%06I64u|.%I64u|%s,ec=%.20s:%d\n",
+#else // defined(BOOST_ASIO_WINDOWS)
+      "@asio|%llu.%06llu|.%llu|%s,ec=%.20s:%d\n",
+#endif // defined(BOOST_ASIO_WINDOWS)
+      timestamp.seconds, timestamp.microseconds,
+      h.id_, op_name, ec.category().name(), ec.value());
+}
+
+void handler_tracking::reactor_operation(
+    const tracked_handler& h, const char* op_name,
+    const boost::system::error_code& ec, std::size_t bytes_transferred)
+{
+  handler_tracking_timestamp timestamp;
+
+  write_line(
+#if defined(BOOST_ASIO_WINDOWS)
+      "@asio|%I64u.%06I64u|.%I64u|%s,ec=%.20s:%d,bytes_transferred=%I64u\n",
+#else // defined(BOOST_ASIO_WINDOWS)
+      "@asio|%llu.%06llu|.%llu|%s,ec=%.20s:%d,bytes_transferred=%llu\n",
+#endif // defined(BOOST_ASIO_WINDOWS)
+      timestamp.seconds, timestamp.microseconds,
+      h.id_, op_name, ec.category().name(), ec.value(),
+      static_cast<uint64_t>(bytes_transferred));
+}
+
 void handler_tracking::write_line(const char* format, ...)
 {
   using namespace std; // For sprintf (or equivalent).
@@ -287,7 +336,11 @@ void handler_tracking::write_line(const char* format, ...)
 
   va_end(args);
 
-#if defined(BOOST_ASIO_WINDOWS)
+#if defined(BOOST_ASIO_WINDOWS_RUNTIME)
+  wchar_t wline[256] = L"";
+  mbstowcs_s(0, wline, sizeof(wline) / sizeof(wchar_t), line, length);
+  ::OutputDebugStringW(wline);
+#elif defined(BOOST_ASIO_WINDOWS)
   HANDLE stderr_handle = ::GetStdHandle(STD_ERROR_HANDLE);
   DWORD bytes_written = 0;
   ::WriteFile(stderr_handle, line, length, &bytes_written, 0);

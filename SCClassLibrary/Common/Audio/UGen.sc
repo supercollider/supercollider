@@ -108,6 +108,11 @@ UGen : AbstractFunction {
 			Wrap.perform(Wrap.methodSelectorForRate(rate), this, lo, hi)
 		}
 	}
+
+	degrad { ^this * (pi/180) }
+
+	raddeg { ^this * (180/pi) }
+
 	blend { arg that, blendFrac = 0.5;
 		var pan;
 		^if (rate == \demand || that.rate == \demand) {
@@ -182,6 +187,19 @@ UGen : AbstractFunction {
 		);
 		^this
 	}
+
+	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+		var round = round(this, resolution);
+		var diff = round - this;
+		^Select.multiNew(this.rate, abs(diff) < margin, this, this + (strength * diff));
+	}
+
+	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+		var round = round(this, resolution);
+		var diff = round - this;
+		^Select.multiNew(this.rate, abs(diff) > margin, this, this + (strength * diff));
+	}
+
 	linlin { arg inMin, inMax, outMin, outMax, clip = \minmax;
 		if (this.rate == \audio) {
 			^LinLin.ar(this.prune(inMin, inMax, clip), inMin, inMax, outMin, outMax)

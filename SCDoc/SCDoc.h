@@ -1,5 +1,4 @@
-#ifndef SCDOC_H
-#define SCDOC_H
+#pragma once
 
 #include <stdint.h>
 #include <string.h>
@@ -39,5 +38,3 @@ DocNode * scdoc_parse_file(const std::string& fn, int mode);
 void doc_node_dump(DocNode *n);
 
 extern const char * scdoc_current_file;
-
-#endif

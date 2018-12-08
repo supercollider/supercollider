@@ -17,8 +17,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_EXPORTS_
-#define _SC_EXPORTS_
+#pragma once
 
 #if defined _WIN32 || defined __CYGWIN__
 #  define SC_API_IMPORT __declspec(dllimport)
@@ -60,6 +59,3 @@
 #  define SCLANG_DLLEXPORT_C C_LINKAGE
 #  define SCLANG_DLLEXPORT /*SC_API_IMPORT*/
 #endif
-
-#endif
-

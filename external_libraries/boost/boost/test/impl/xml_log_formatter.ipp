@@ -199,7 +199,7 @@ xml_log_formatter::entry_context_start( std::ostream& ostr, log_level )
 //____________________________________________________________________________//
 
 void
-xml_log_formatter::entry_context_finish( std::ostream& ostr )
+xml_log_formatter::entry_context_finish( std::ostream& ostr, log_level )
 {
     ostr << BOOST_TEST_L( "</Context>" );
 }
@@ -207,7 +207,7 @@ xml_log_formatter::entry_context_finish( std::ostream& ostr )
 //____________________________________________________________________________//
 
 void
-xml_log_formatter::log_entry_context( std::ostream& ostr, const_string context_descr )
+xml_log_formatter::log_entry_context( std::ostream& ostr, log_level, const_string context_descr )
 {
     ostr << BOOST_TEST_L( "<Frame>" ) << utils::cdata() << context_descr << BOOST_TEST_L( "</Frame>" );
 }

@@ -31,13 +31,14 @@ SystemSynthDefs {
 			(1..numChannels).do { arg i;
 				SynthDef("system_link_audio_" ++ i,
 					{ arg out=0, in=16, vol=1, level=1, lag=0.05, doneAction=2;
-						var env = EnvGate(doneAction:doneAction, curve:'sin') * Lag.kr(vol * level, lag);
+						var env = EnvGate(i_level: 0, doneAction:doneAction, curve:'sin')
+						* Lag.kr(vol * level, lag);
 						Out.ar(out, InFeedback.ar(in, i) * env)
 					}, [\kr, \kr, \kr, \kr, \kr, \ir]).add;
 
 				SynthDef("system_link_control_" ++ i,
 					{ arg out=0, in=16, doneAction=2;
-						var env = EnvGate(doneAction:doneAction, curve:'lin');
+						var env = EnvGate(i_level: 0, doneAction:doneAction, curve:'lin');
 						Out.kr(out, In.kr(in, i) * env)
 					}, [\kr, \kr, \ir]).add;
 

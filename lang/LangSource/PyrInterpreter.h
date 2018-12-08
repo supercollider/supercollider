@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYRINTERPRETER_H_
-#define _PYRINTERPRETER_H_
+#pragma once
 
 #include "PyrSlot.h"
 #include "VMGlobals.h"
@@ -44,5 +43,3 @@ bool FrameSanity(PyrFrame *frame, const char *tagstr);
 struct PyrProcess* newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
 void startProcess(VMGlobals *g, PyrSymbol *selector);
 SCLANG_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
-
-#endif

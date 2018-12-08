@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_HiddenWorld_
-#define _SC_HiddenWorld_
+#pragma once
 
 #include "SC_Types.h"
 #include "SC_Rate.h"
@@ -143,5 +142,3 @@ inline SC_AudioDriver *AudioDriver(World *inWorld)
 {
 	return inWorld->hw->mAudioDriver;
 }
-
-#endif

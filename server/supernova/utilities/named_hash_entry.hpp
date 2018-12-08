@@ -15,8 +15,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef UTILITIES_NAMED_HASH_ENTRY_HPP
-#define UTILITIES_NAMED_HASH_ENTRY_HPP
+#pragma once
 
 #include <string>
 
@@ -26,7 +25,7 @@
 #include "utils.hpp"
 #include "nova-tt/nova-tt/rw_mutex.hpp"
 
-#include <utilities/malloc_aligned.hpp>
+#include "malloc_aligned.hpp"
 
 namespace nova   {
 namespace bi = boost::intrusive;
@@ -318,5 +317,3 @@ struct named_hash_hash
 };
 
 }
-
-#endif /* UTILITIES_NAMED_HASH_ENTRY_HPP */

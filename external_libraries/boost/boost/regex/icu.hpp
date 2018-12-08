@@ -19,6 +19,7 @@
 #ifndef BOOST_REGEX_ICU_HPP
 #define BOOST_REGEX_ICU_HPP
 
+#include <boost/config.hpp>
 #include <unicode/utypes.h>
 #include <unicode/uchar.h>
 #include <unicode/coll.h>
@@ -389,12 +390,13 @@ inline u32regex make_u32regex(const U_NAMESPACE_QUALIFIER UnicodeString& s, boos
 // regex_match overloads that widen the character type as appropriate:
 //
 namespace BOOST_REGEX_DETAIL_NS{
-template<class MR1, class MR2>
-void copy_results(MR1& out, MR2 const& in)
+template<class MR1, class MR2, class NSubs>
+void copy_results(MR1& out, MR2 const& in, NSubs named_subs)
 {
    // copy results from an adapted MR2 match_results:
    out.set_size(in.size(), in.prefix().first.base(), in.suffix().second.base());
    out.set_base(in.base().base());
+   out.set_named_subs(named_subs);
    for(int i = 0; i < (int)in.size(); ++i)
    {
       if(in[i].matched || !i)
@@ -410,7 +412,7 @@ void copy_results(MR1& out, MR2 const& in)
       if(in[i].captures().size())
       {
          out[i].get_captures().assign(in[i].captures().size(), typename MR1::value_type());
-         for(int j = 0; j < out[i].captures().size(); ++j)
+         for(int j = 0; j < (int)out[i].captures().size(); ++j)
          {
             out[i].get_captures()[j].first = in[i].captures()[j].first.base();
             out[i].get_captures()[j].second = in[i].captures()[j].second.base();
@@ -443,7 +445,7 @@ bool do_regex_match(BidiIterator first, BidiIterator last,
    match_type what;
    bool result = ::boost::regex_match(conv_type(first, first, last), conv_type(last, first, last), what, e, flags);
    // copy results across to m:
-   if(result) copy_results(m, what);
+   if(result) copy_results(m, what, e.get_named_subs());
    return result;
 }
 template <class BidiIterator, class Allocator>
@@ -459,7 +461,7 @@ bool do_regex_match(BidiIterator first, BidiIterator last,
    match_type what;
    bool result = ::boost::regex_match(conv_type(first, first, last), conv_type(last, first, last), what, e, flags);
    // copy results across to m:
-   if(result) copy_results(m, what);
+   if(result) copy_results(m, what, e.get_named_subs());
    return result;
 }
 } // namespace BOOST_REGEX_DETAIL_NS
@@ -618,7 +620,7 @@ bool do_regex_search(BidiIterator first, BidiIterator last,
    match_type what;
    bool result = ::boost::regex_search(conv_type(first, first, last), conv_type(last, first, last), what, e, flags, conv_type(base));
    // copy results across to m:
-   if(result) copy_results(m, what);
+   if(result) copy_results(m, what, e.get_named_subs());
    return result;
 }
 template <class BidiIterator, class Allocator>
@@ -635,7 +637,7 @@ bool do_regex_search(BidiIterator first, BidiIterator last,
    match_type what;
    bool result = ::boost::regex_search(conv_type(first, first, last), conv_type(last, first, last), what, e, flags, conv_type(base));
    // copy results across to m:
-   if(result) copy_results(m, what);
+   if(result) copy_results(m, what, e.get_named_subs());
    return result;
 }
 }

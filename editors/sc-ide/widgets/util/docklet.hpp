@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_UTIL_DOCK_WIDGET_TITLE_BAR_HPP_INCLUDED
-#define SCIDE_WIDGETS_UTIL_DOCK_WIDGET_TITLE_BAR_HPP_INCLUDED
+#pragma once
 
 #include <QAction>
 #include <QDockWidget>
@@ -29,12 +28,12 @@
 
 namespace ScIDE {
 
-class DocketToolButton : public QToolButton
+class DockletToolButton : public QToolButton
 {
     Q_OBJECT
 
 public:
-    explicit DocketToolButton(QWidget * parent = nullptr);
+    explicit DockletToolButton(QWidget * parent = nullptr);
 
 private:
     // overrides to hide unwanted effects
@@ -74,7 +73,7 @@ public:
         return const_cast<Docklet*>(this)->currentContainer() != mDockWidget;
     }
 
-    void setDetached( bool detached );
+    void setDetachedAndVisible( bool detached, bool visible );
 
     bool isVisible() const
     {
@@ -159,5 +158,3 @@ private:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_UTIL_DOCK_WIDGET_TITLE_BAR_HPP_INCLUDED

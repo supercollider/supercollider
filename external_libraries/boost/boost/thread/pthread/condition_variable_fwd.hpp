@@ -17,6 +17,7 @@
 #if defined BOOST_THREAD_USES_DATETIME
 #include <boost/thread/xtime.hpp>
 #endif
+
 #ifdef BOOST_THREAD_USES_CHRONO
 #include <boost/chrono/system_clocks.hpp>
 #include <boost/chrono/ceil.hpp>
@@ -52,9 +53,9 @@ namespace boost
     class condition_variable
     {
     private:
-#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+//#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         pthread_mutex_t internal_mutex;
-#endif
+//#endif
         pthread_cond_t cond;
 
     public:
@@ -68,7 +69,12 @@ namespace boost
             unique_lock<mutex>& lock,
             struct timespec const &timeout)
         {
-          return do_wait_until(lock, boost::detail::timespec_plus(timeout, boost::detail::timespec_now()));
+#if defined BOOST_THREAD_HAS_CONDATTR_SET_CLOCK_MONOTONIC
+            return do_wait_until(lock, boost::detail::timespec_plus(timeout, boost::detail::timespec_now_monotonic()));
+#else
+            // old behavior was fine for monotonic
+            return do_wait_until(lock, boost::detail::timespec_plus(timeout, boost::detail::timespec_now_realtime()));
+#endif
         }
 
     public:
@@ -76,31 +82,37 @@ namespace boost
         condition_variable()
         {
             int res;
-#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+//#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+            // Even if it is not used, the internal_mutex exists (see
+            // above) and must be initialized (etc) in case some
+            // compilation units provide interruptions and others
+            // don't.
             res=pthread_mutex_init(&internal_mutex,NULL);
             if(res)
             {
                 boost::throw_exception(thread_resource_error(res, "boost::condition_variable::condition_variable() constructor failed in pthread_mutex_init"));
             }
-#endif
+//#endif
             res = detail::monotonic_pthread_cond_init(cond);
             if (res)
             {
-#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+//#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+                // ditto
                 BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
-#endif
+//#endif
                 boost::throw_exception(thread_resource_error(res, "boost::condition_variable::condition_variable() constructor failed in detail::monotonic_pthread_cond_init"));
             }
         }
         ~condition_variable()
         {
             int ret;
-#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+//#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+            // ditto
             do {
               ret = pthread_mutex_destroy(&internal_mutex);
             } while (ret == EINTR);
             BOOST_ASSERT(!ret);
-#endif
+//#endif
             do {
               ret = pthread_cond_destroy(&cond);
             } while (ret == EINTR);

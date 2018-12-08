@@ -1,6 +1,6 @@
 title:: Writing tests
 summary:: Get started with writing unit tests
-categories:: UnitTest
+categories:: Testing
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
 

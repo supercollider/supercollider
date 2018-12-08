@@ -151,6 +151,10 @@ METHOD:: absoluteBounds
 
 	returns:: A Rect describing the absolute position and the size of the view on the screen.
 
+METHOD:: devicePixelRatio
+
+	returns:: A number representing the pixel ratio of the View. A pixel ratio of >1 represents a high DPI surface. This value should be used in cases where pixel-specific geometry is required when drawing with link::Classes/Pen::.
+
 METHOD:: sizeHint
 
 	returns:: A Size describing the preferred size of the view to comfortably display its contents and allow useful interaction.
@@ -255,7 +259,7 @@ METHOD:: resizeToBounds
 
 METHOD:: resizeToHint
 
-	Resizes view to the bounds returned by link::#sizeHint::.		
+	Resizes view to the bounds returned by link::#sizeHint::.
 
 METHOD:: resize
 	Determines what happens with the view's position and size when its parent is resized. See link::Guides/GUI-Introduction#view:: for further explanation.
@@ -521,7 +525,7 @@ METHOD:: mouseDownAction
 METHOD:: mouseUpAction
     The object to be evaluated when a mouse button is released after it was pressed on the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers, buttonNumber::. See link::#Mouse actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
@@ -653,6 +657,61 @@ METHOD:: dragLabel
 
 	argument::
 		A String containing the text to be displayed.
+
+SUBSECTION:: Context Menus
+
+These methods are used to add context menu and shortcut key support to a View.
+
+CODE::
+(
+View().layout_(HLayout(
+	~text = StaticText().string_("Right-click me").minWidth_(100)
+)).front;
+
+~text.setContextMenuActions(
+	MenuAction("Red", { ~text.background = Color.red }),
+	MenuAction("Green", { ~text.background = Color.green }),
+	MenuAction("Blue", { ~text.background = Color.blue })
+)
+)
+::
+
+METHOD:: setContextMenuActions
+	Set the link::Classes/MenuAction::s that should appear in the context menu for this view. This implicitly calls link::Classes/View#-enableContextMenu::.
+
+	argument::
+		A list of one or more link::Classes/MenuAction::s. These will be shown when the context menu for this View is invoked by right-clicking.
+		In addition, the shortcut keys for these actions will be active in the context of this View. Calling this method with no actions will remove all context menus.
+
+METHOD:: enableContextMenu
+	Enablement of context menu support for this View. If true and actions are attached, a right click will show the context menu. This property can enable and disable context menu support for a View without removing the attached actions.
+
+	argument::
+		A Boolean
+
+METHOD:: insertMenuAction
+	Insert a link::Classes/MenuAction:: into the list of attached actions.
+
+	argument:: action
+		A link::Classes/MenuAction:: to add.
+
+	argument:: addBefore
+		A link::Classes/MenuAction:: or integer index value. The action will be inserted strong::before:: this item in the list. By default, actions are inserted at the end of the list.
+
+METHOD:: removeMenuAction
+	Remove a link::Classes/MenuAction:: from the list of attached actions.
+
+	argument:: action
+		A link::Classes/MenuAction:: to add.
+
+METHOD:: removeAllMenuActions
+	Remove all link::Classes/MenuAction::s from the view.
+
+METHOD:: enableContextMenu
+	Enablement of context menu support for this View. If true and actions are attached, a right click will show the context menu. This property can enable and disable context menu support for a View without removing the attached actions.
+
+	argument::
+		A Boolean
 
 
 

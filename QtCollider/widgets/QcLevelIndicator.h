@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_LEVEL_INDICATOR_H
-#define QC_LEVEL_INDICATOR_H
+#pragma once
 
 #include "../QcHelper.h"
 #include "../style/style.hpp"
@@ -88,5 +87,3 @@ private:
   QTimer *_clipTimer;
   QColor _meterColor, _warningColor, _criticalColor;
 };
-
-#endif

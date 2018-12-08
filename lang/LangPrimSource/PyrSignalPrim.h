@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _PYRSIGNALPRIM_H_
-#define _PYRSIGNALPRIM_H_
+#pragma once
 
 extern PyrSymbol *s_wavetable;
 extern struct PyrClass *class_wavetable;
@@ -52,5 +51,3 @@ int prSignalRotate(VMGlobals *g, int numArgsPushed);
 
 void signalAsWavetable(float *signal, float *wavetable, int size);
 void wavetableAsSignal(float *wavetable, float *signal, int size);
-
-#endif

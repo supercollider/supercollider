@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_PEN_PRINTER_H
-#define QC_PEN_PRINTER_H
+#pragma once
 
 #include "../painting.h"
 #include "../debug.h"
@@ -91,5 +90,3 @@ private:
   QPrinter printer;
   QPrintDialog *dialog;
 };
-
-#endif // QC_PEN_PRINTER_H

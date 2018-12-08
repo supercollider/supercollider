@@ -29,6 +29,12 @@ public:
     typedef typename boost::conditional<boost::is_volatile<U>::value, typename boost::add_volatile<CT>::type, CT>::type type;
 };
 
+#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
+
+   template <class T, class U> using copy_cv_t = typename copy_cv<T, U>::type;
+
+#endif
+
 } // namespace boost
 
 #endif // #ifndef BOOST_TYPE_TRAITS_COPY_CV_HPP_INCLUDED

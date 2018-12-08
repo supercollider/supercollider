@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_SYNTH_HPP
-#define SERVER_SYNTH_HPP
+#pragma once
 
 #include <cassert>
 #include <iostream>
@@ -100,6 +99,9 @@ public:
 
     virtual float get(slot_index_t slot_id) const = 0;
 
+    /** returns true (and writes characters to *str) if the control at slot_id is indeed mapped, otherwise returns false */
+    virtual bool getMappedSymbol(slot_index_t slot_id, char * str) const = 0;
+
     /** set a slot */
     /* @{ */
     virtual void set(slot_index_t slot_id, float val) override = 0;
@@ -154,5 +156,3 @@ public:
 };
 
 } /* namespace nova */
-
-#endif /* SERVER_SYNTH_HPP */

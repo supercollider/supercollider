@@ -19,8 +19,7 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYRSLOTGENERIC_H_
-#define _PYRSLOTGENERIC_H_
+#pragma once
 
 // generic pyrslot implementation
 #define PYR_SLOTS_GENERIC
@@ -31,6 +30,7 @@
 
 #include <cstddef>
 #include <cassert>
+#include <vector>
 
 struct PyrSymbol;
 
@@ -127,7 +127,6 @@ inline void SetFalse(PyrSlot* slot)           { slot->tag = tagFalse;           
 inline void SetBool(PyrSlot* slot, bool test) { slot->tag = (test ? tagTrue : tagFalse); slot->u.i = 0; }
 inline void SetNil(PyrSlot* slot)             { slot->tag = tagNil;                      slot->u.i = 0; }
 inline void SetFloat(PyrSlot* slot, double val)    { slot->tag = tagFloat; slot->u.f = val; }
-
 
 /* raw setter functions, no typecheck */
 inline void SetRawChar(PyrSlot* slot, int val)     { assert(IsChar(slot));  slot->u.c = val; }
@@ -304,5 +303,3 @@ inline void slotCopy(PyrSlot *dst, const PyrSlot *src, int num)
 	for (int i=0; i<num; ++i)
 		slotCopy(dst + i, src + i);
 }
-
-#endif

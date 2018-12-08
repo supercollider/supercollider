@@ -23,8 +23,7 @@ Functions for defining language primitives.
 
 */
 
-#ifndef _PYRPRIMITIVE_H_
-#define _PYRPRIMITIVE_H_
+#pragma once
 
 #include "PyrSlot.h"
 
@@ -38,5 +37,3 @@ int definePrimitiveWithKeys(int base, int index, const char *name,
 	int numArgs, int varArgs);
 int getPrimitiveNumArgs(int index);
 PyrSymbol* getPrimitiveName(int index);
-
-#endif

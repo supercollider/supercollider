@@ -23,6 +23,8 @@ WindowsPlatform : Platform {
 	}
 
 	pathSeparator { ^$\\ }
+    pathDelimiter { ^$; }
+
 	isPathSeparator { |char|
 		^#[$\\, $/].includes(char)
 	}

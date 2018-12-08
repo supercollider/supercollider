@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYROBJPROTO_H_
-#define _PYROBJPROTO_H_
+#pragma once
 
 #include "PyrObject.h"
 
@@ -39,6 +38,3 @@ bool FrameSanity(struct PyrFrame *frame, const char* tagstr);
 
 void dumpBadObject(PyrObject *obj);
 void initRawRegistry();
-
-#endif
-

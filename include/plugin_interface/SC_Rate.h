@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _Rate_
-#define _Rate_
+#pragma once
 
 enum { calc_ScalarRate, calc_BufRate, calc_FullRate, calc_DemandRate };
 
@@ -38,5 +37,3 @@ struct Rate
 	double mFilterSlope;
 };
 typedef struct Rate Rate;
-
-#endif

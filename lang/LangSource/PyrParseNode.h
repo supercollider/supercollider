@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _PYRPARSENODE_H_
-#define _PYRPARSENODE_H_
+#pragma once
 
 #include "PyrSlot.h"
 #include "PyrKernel.h"
@@ -556,5 +555,3 @@ extern PyrBlock *gCompilingBlock;
 */
 
 #define YYSTYPE intptr_t
-
-#endif

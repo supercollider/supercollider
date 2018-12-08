@@ -58,6 +58,27 @@ void TypeCodec<QString>::write( PyrSlot *slot, const QString & val )
 }
 
 
+QUrl TypeCodec<QUrl>::read( PyrSlot *slot )
+{
+  if( IsSym(slot) ) {
+    return QUrl(QString::fromUtf8( slotRawSymbol(slot)->name ));
+  }
+  else if( isKindOfSlot( slot, class_string ) ) {
+    int len = slotRawObject( slot )->size;
+    return QUrl(QString::fromUtf8( slotRawString(slot)->s, len ));
+  } else {
+    return QUrl();
+  }
+}
+
+
+void TypeCodec<QUrl>::write( PyrSlot *slot, const QUrl & val )
+{
+  PyrString *str = newPyrString( gMainVMGlobals->gc,
+                                val.toString(QUrl::None).toUtf8().constData(), 0, true );
+  SetObject( slot, str );
+}
+
 QPointF TypeCodec<QPointF>::read( PyrSlot *slot )
 {
   PyrSlot *slots = slotRawObject( slot )->slots;
@@ -252,8 +273,7 @@ QFont TypeCodec<QFont>::safeRead( PyrSlot *slot )
   else
     return QFont();
 }
-
-
+	
 QPalette TypeCodec<QPalette>::read( PyrSlot *slot )
 {
   QPalette *p = QPALETTE_FROM_OBJECT(slotRawObject(slot));
@@ -285,8 +305,7 @@ QObjectProxy * TypeCodec<QObjectProxy*>::safeRead( PyrSlot *slot )
   if( !isKindOfSlot( slot, SC_CLASS(QObject) ) ) return 0;
   return read(slot);
 }
-
-
+	
 void TypeCodec<QObject*>::write( PyrSlot *slot, QObject * obj )
 {
   QObjectProxy *proxy = QObjectProxy::fromObject(obj);
@@ -381,7 +400,7 @@ static QVector<numeric_type> toNumericVector( PyrObject *obj )
 
   return vector;
 }
-
+	
 template<typename numeric_type>
 static void setNumeric( PyrSlot *, numeric_type );
 
@@ -415,8 +434,7 @@ static void setNumericVector( PyrSlot *slot, const QVector<numeric_type> & vec )
     ++s;
   }
 }
-
-
+	
 QVector<double> TypeCodec< QVector<double> >::read( PyrSlot *slot )
 {
   return toNumericVector<double>(slotRawObject(slot));
@@ -440,7 +458,6 @@ void TypeCodec< QVector<int> >::write( PyrSlot *slot, const QVector<int> & vec )
   setNumericVector<int>( slot, vec );
 }
 
-
 QcTreeWidget::ItemPtr TypeCodec<QcTreeWidget::ItemPtr>::read( PyrSlot *slot )
 {
   PyrSlot *ptrSlot = slotRawObject(slot)->slots+0;
@@ -460,7 +477,7 @@ void TypeCodec<QcTreeWidget::ItemPtr>::write( PyrSlot *slot, const QcTreeWidget:
   QcTreeWidget::Item::initialize( gMainVMGlobals, obj, item );
   SetObject( slot, obj );
 }
-
+	
 SharedImage TypeCodec<SharedImage>::read( PyrSlot * slot )
 {
     SharedImage *ptr = reinterpret_cast<SharedImage*>( slotRawPtr( slotRawObject(slot)->slots+0 ) );
@@ -480,4 +497,6 @@ void TypeCodec<SharedImage>::write( PyrSlot *slot, SharedImage image )
     qWarning("WARNING: QtCollider: writing SharedImage to PyrSlot not supported.");
 }
 
-} // namespace QtCollider
+}
+
+// namespace QtCollider

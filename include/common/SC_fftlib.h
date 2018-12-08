@@ -19,8 +19,7 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 
 */
 
-#ifndef _SC_fftlib_
-#define _SC_fftlib_
+#pragma once
 
 #include <string.h>
 
@@ -74,5 +73,3 @@ void scfft_doifft(scfft *f);
 
 // destroy any resources held internally.
 void scfft_destroy(scfft *f, SCFFT_Allocator & alloc);
-
-#endif

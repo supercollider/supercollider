@@ -32,7 +32,7 @@
 #include <boost/cstdlib.hpp>    // for exit codes
 #include <boost/config.hpp>     // for workarounds
 #include <boost/core/ignore_unused.hpp> // for ignore_unused
-#ifndef BOOST_NO_EXCEPTION
+#ifndef BOOST_NO_EXCEPTIONS
 #include <boost/exception/get_error_info.hpp> // for get_error_info
 #include <boost/exception/current_exception_cast.hpp> // for current_exception_cast
 #endif
@@ -196,7 +196,7 @@ namespace boost {
 // **************                 throw_exception              ************** //
 // ************************************************************************** //
 
-#ifdef BOOST_NO_EXCEPTION
+#ifdef BOOST_NO_EXCEPTIONS
 void throw_exception( std::exception const & e ) { abort(); }
 #endif
 
@@ -216,7 +216,7 @@ namespace detail {
 #  define BOOST_TEST_VSNPRINTF( a1, a2, a3, a4 ) vsnprintf( (a1), (a2), (a3), (a4) )
 #endif
 
-#ifndef BOOST_NO_EXCEPTION
+#ifndef BOOST_NO_EXCEPTIONS
 
 template <typename ErrorInfo>
 typename ErrorInfo::value_type
@@ -1285,7 +1285,7 @@ execution_monitor::execute( boost::function<int ()> const& F )
     catch( ... )
       { detail::report_error( execution_exception::cpp_exception_error, "unknown type" ); }
 
-#endif // !BOOST_NO_EXCEPTION
+#endif // !BOOST_NO_EXCEPTIONS
 
     return 0;  // never reached; supplied to quiet compiler warnings
 } // execute
@@ -1342,6 +1342,12 @@ execution_exception::location::location( char const* file_name, size_t line_num,
 , m_function( func )
 {}
 
+execution_exception::location::location(const_string file_name, size_t line_num, char const* func )
+: m_file_name( file_name )
+, m_line_num( line_num )
+, m_function( func )
+{}
+
 //____________________________________________________________________________//
 
 // ************************************************************************** //
@@ -1354,11 +1360,7 @@ unsigned
 enable( unsigned mask )
 {
     boost::ignore_unused(mask);
-
-#if defined(UNDER_CE)
-    /* Not Implemented in Windows CE */
-    return BOOST_FPE_OFF;
-#elif defined(BOOST_SEH_BASED_SIGNAL_HANDLING)
+#if defined(BOOST_TEST_FPE_SUPPORT_WITH_SEH__)
     _clearfp();
 
 #if BOOST_WORKAROUND( BOOST_MSVC, <= 1310)
@@ -1373,9 +1375,10 @@ enable( unsigned mask )
     if( ::_controlfp_s( 0, old_cw & ~mask, BOOST_FPE_ALL ) != 0 )
         return BOOST_FPE_INV;
 #endif
-
     return ~old_cw & BOOST_FPE_ALL;
-#elif defined(__GLIBC__) && defined(__USE_GNU)
+
+#elif defined(BOOST_TEST_FPE_SUPPORT_WITH_GLIBC_EXTENSIONS__)
+    // same macro definition as in execution_monitor.hpp
     if (BOOST_FPE_ALL == BOOST_FPE_OFF)
         /* Not Implemented */
         return BOOST_FPE_OFF;
@@ -1395,12 +1398,8 @@ disable( unsigned mask )
 {
     boost::ignore_unused(mask);
 
-#if defined(UNDER_CE)
-    /* Not Implemented in Windows CE */
-    return BOOST_FPE_INV;
-#elif defined(BOOST_SEH_BASED_SIGNAL_HANDLING)
+#if defined(BOOST_TEST_FPE_SUPPORT_WITH_SEH__)
     _clearfp();
-
 #if BOOST_WORKAROUND( BOOST_MSVC, <= 1310)
     unsigned old_cw = ::_controlfp( 0, 0 );
     ::_controlfp( old_cw | mask, BOOST_FPE_ALL );
@@ -1413,9 +1412,9 @@ disable( unsigned mask )
     if( ::_controlfp_s( 0, old_cw | mask, BOOST_FPE_ALL ) != 0 )
         return BOOST_FPE_INV;
 #endif
-
     return ~old_cw & BOOST_FPE_ALL;
-#elif defined(__GLIBC__) && defined(__USE_GNU)
+
+#elif defined(BOOST_TEST_FPE_SUPPORT_WITH_GLIBC_EXTENSIONS__)
     if (BOOST_FPE_ALL == BOOST_FPE_OFF)
         /* Not Implemented */
         return BOOST_FPE_INV;

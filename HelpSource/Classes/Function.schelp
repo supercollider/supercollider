@@ -373,12 +373,40 @@ subsection::Audio
 
 method::play
 
-This is probably the simplest way to get audio in SC3. It wraps the Function in a SynthDef (adding an Out ugen if needed), creates and starts a new Synth with it, and returns the Synth object. A Linen is also added to avoid clicks, which is configured to allow the resulting Synth to have its \gate argument set, or to respond to a release message. Args in the function become args in the resulting def.
+Play a Synth from UGens returned by the function. The function arguments become controls that can be set afterwards.
+
+This works as follows: play wraps the UGens in a SynthDef and sends it to the target. When this asynchronous command is completed, it creates one synth from this definition.
+
+
+argument::target
+A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+
+argument::outbus
+A bus number that determines the output channel. This is equivalent to code::Out.ar(outbus, signal)::. The default is 0.
+
+argument::fadeTime
+Crossfade time for attack and release of the synth. The default is 0.02 seconds, which is just enough to avoid a click.
+
+argument::addAction
+The add action for the synth.  For a list of valid addActions see link::Classes/Synth::
+
+argument::args
+An array of key value pairs of control names and control values which are used when starting the synth.
+
+note::
+Some UGens are added in this process.
+list::
+## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::\gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
+::
+::
+
+
+
 
 code::
 x = { |freq = 440| SinOsc.ar(freq, 0, 0.3) }.play; // this returns a Synth object;
 x.set(\freq, 880); // note you can set the freq argument
-x.defName; // the name of the resulting SynthDef (generated automatically in a cycle of 512)
+x.defName; // the name of the resulting SynthDef
 x.release(4); // fadeout over 4 seconds
 ::
 
@@ -393,16 +421,6 @@ SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3))}).play;
 
 Function.play is often more convenient than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
 
-argument::target
-a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
-argument::outbus
-the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
-argument::fadeTime
-a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.
-argument::addAction
-see Synth for a list of valid addActions. The default is \addToHead.
-argument::args
-arguments
 
 method::scope
 
@@ -425,6 +443,9 @@ A zoom value for the scope's X axis. Larger values show more. The default is 1.
 
 method::plot
 
+note::See link::Reference/plot:: for a general reference on plotting::
+
+
 Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
 
 code::
@@ -434,19 +455,26 @@ code::
 ::
 
 
+
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
-argument::server
-The Server on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.
+argument::target
+The server, synth or group where the signal is picked up. See link::Reference/asTarget::.
+code::
+(
+var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play;
+{ In.ar(99, 2) }.plot(0.02, synth);
+)
+::
+
 argument::bounds
 An instance of Rect or Point indicating the bounds of the plot window.
 argument::minval
-the minimum value in the plot. Defaults to -1.0.
+the minimum value in the plot. If not specified, the signal's minimum is used.
 argument::maxval
-the maximum value in the plot. Defaults to 1.0.
+the maximum value in the plot. If not specified, the signal's maximum is used.
 argument:: separately
-For multi channel signals, set whether to use separate value display ranges or not.
-a window to place the plot in. If nil, one will be created for you.
+If set to code::true::, for multichannel signals use separate value display ranges, unless minval or maxval is specified already.
 
 
 method::asBuffer
@@ -455,8 +483,8 @@ Calculates duration in seconds worth of the output of this function asynchronous
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
 
-argument::server
-The server on which the function is calculated. The default is code::Server.default::.
+argument::target
+The synth or group after which the synth runs (see link::Reference/asTarget::). The default is the default group of code::Server.default::.
 
 argument::action
 A function that is called when the buffer is filled. It is passed the buffer as argument.
@@ -471,6 +499,61 @@ b = { Blip.ar(XLine.kr(10000, 4, 3) * [1, 1.2], 20) * 0.1 }.asBuffer(3, fadeTime
 b.plot; // after 3 seconds, you can see it.
 // play the soundfile back
 { PlayBuf.ar(b.numChannels, b, LFNoise2.kr(2 ! 8).exprange(0.15, 1), loop:1).sum }.play;
+::
+
+
+method:: loadToFloatArray
+Write a UGen function to a file and then load it into a FloatArray.
+
+argument:: duration
+Amount of data to record in seconds
+
+argument::target
+A server, synth, or group where to place the synth that plays the function
+
+argument::action
+A function to call when writing is finished.
+
+code::
+// get some data from the synth audio
+{ SinOsc.ar + GrayNoise.ar(0.1) }.loadToFloatArray(0.01, action: { arg array; a = array });
+a.postln;
+a.plot;
+
+// place it after some other node:
+z = { WhiteNoise.ar * 0.1 }.play; // play some noise
+{ BPF.ar(In.ar(0), 7000, 0.01) * 10 }.loadToFloatArray(0.01, z, action: { arg array; a = array });
+a.postln;
+::
+
+method:: getToFloatArray
+Stream the function audio values to the client using a series of getn messages and put the results into a FloatArray.
+
+argument:: duration
+Amount of data to record in seconds
+
+argument::target
+A server, synth, or group where to place the synth that plays the function
+
+argument::action
+A function to call when writing is finished.
+
+argument:: wait
+The amount of time in seconds to wait between sending getn messages. Longer times are safer. The default is 0.01 seconds which seems reliable under normal circumstances. A setting of 0 is not recommended.
+
+argument:: timeout
+The amount of time in seconds after which to post a warning if all replies have not yet been received. the default is 3.
+
+discussion::
+For a discussion of the difference between getToFloatArray and loadToFloatArray, see link::Classes/Buffer#-getToFloatArray:: and link::Classes/Buffer#-loadToFloatArray::.
+
+
+code::
+// get some data from the synth audio
+
+{ SinOsc.ar + GrayNoise.ar(0.1) }.getToFloatArray(0.01, action: { arg array; a = array });
+a.postln;
+a.plot;
 ::
 
 

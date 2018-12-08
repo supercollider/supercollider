@@ -15,7 +15,7 @@ if(SC_IDE)
 endif()
 
 if(SC_EL)
-	add_subdirectory(scel)
+	add_subdirectory(sc-el)
 endif()
 
 if(SC_ED)

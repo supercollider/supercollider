@@ -25,8 +25,7 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 
 */
 
-#ifndef _PYRSLOT32_H_
-#define _PYRSLOT32_H_
+#pragma once
 
 #include "SC_Endian.h"
 #include "SC_Types.h"
@@ -171,7 +170,6 @@ inline void SetFloat(PyrSlot* slot, double val)    { (slot)->uf = (val); }
 #else
 inline void SetFloat(PyrSlot* slot, double val)    { (slot)->utag = s_float; (slot)->uf = (val); }
 #endif
-
 
 inline bool IsObj(const PyrSlot* slot) { return ((slot)->utag == tagObj); }
 inline bool NotObj(const PyrSlot* slot) { return ((slot)->utag != tagObj); }
@@ -394,5 +392,3 @@ inline void slotCopy(PyrSlot *dst, const PyrSlot *src, int num)
 #undef uf
 
 #undef uop
-
-#endif

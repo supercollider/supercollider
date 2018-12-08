@@ -19,14 +19,12 @@
 *
 ************************************************************************/
 
-#ifndef QC_SOUND_FILE_VIEW_H
-#define QC_SOUND_FILE_VIEW_H
+#pragma once
 
 #include "../../Common.h"
 #include "../../QcHelper.h"
 
-#include <sndfile.h>
-
+#include "SC_SndFileHelpers.hpp"
 #include <QVBoxLayout>
 #include <QScrollBar>
 #include <QSlider>
@@ -44,8 +42,8 @@ struct SoundCache {
     delete [] sum;
     delete [] sum2;
   }
-  short *min;
-  short *max;
+  float *min;
+  float *max;
   float *sum;
   float *sum2;
 };
@@ -65,6 +63,8 @@ class QcWaveform : public QWidget, public QcHelper {
 
   Q_PROPERTY( float yZoom READ yZoom WRITE setYZoom );
   Q_PROPERTY( float xZoom READ xZoom WRITE setXZoom );
+  Q_PROPERTY( float yOffset READ yOffset WRITE setYOffset );
+  Q_PROPERTY( float spacing READ spacing WRITE setSpacing );
   Q_PROPERTY( bool cursorVisible READ cursorVisible WRITE setCursorVisible );
   Q_PROPERTY( bool cursorEditable READ cursorEditable WRITE setCursorEditable );
   Q_PROPERTY( int cursorPosition READ cursorPosition WRITE setCursorPosition );
@@ -72,6 +72,10 @@ class QcWaveform : public QWidget, public QcHelper {
   Q_PROPERTY( float gridOffset READ gridOffset WRITE setGridOffset );
   Q_PROPERTY( float gridResolution READ gridResolution WRITE setGridResolution );
   Q_PROPERTY( bool drawsWaveform READ drawsWaveform WRITE setDrawsWaveform );
+  Q_PROPERTY( bool drawsRMS READ drawsRMS WRITE setDrawsRMS );
+  // Q_PROPERTY( bool antialiasing READ antialiasing WRITE setAntialiasing ); //TODO: antialiasing doesn't look good when enabled, would probably require reworking the waveform drawing mechanism?
+  Q_PROPERTY( bool drawsCenterLine READ drawsCenterLine WRITE setDrawsCenterLine );
+  Q_PROPERTY( bool drawsBoundingLines READ drawsBoundingLines WRITE setDrawsBoundingLines );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
   Q_PROPERTY( QColor peakColor READ peakColor WRITE setPeakColor );
   Q_PROPERTY( QColor rmsColor READ rmsColor WRITE setRmsColor );
@@ -120,6 +124,8 @@ public:
   float zoom(); //visible fraction
   float xZoom(); //visible seconds
   float yZoom(); //factor
+  float yOffset(); //normalized value (1 equals half helght)
+  float spacing(); //factor for space otuside the ±1.0 value range
 
   QVariantList selections() const;
   int currentSelection() const { return _curSel; }
@@ -151,8 +157,16 @@ public:
 
   bool drawsWaveform() const { return _drawWaveform; }
   void setDrawsWaveform( bool b ) { _drawWaveform = b; update(); }
+  bool drawsRMS() const { return _drawRMS; }
+  void setDrawsRMS( bool b ) { _drawRMS = b; redraw(); }
   QVariantList waveColors() const;
   void setWaveColors( const QVariantList & );
+  // bool antialiasing() const { return _antialiasing; } //TODO
+  // void setAntialiasing( bool b ) { _antialiasing = b; redraw(); }
+  bool drawsCenterLine() const { return _drawsCenterLine; }
+  void setDrawsCenterLine( bool b ) { _drawsCenterLine = b; redraw(); }
+  bool drawsBoundingLines() const { return _drawsBoundingLines; }
+  void setDrawsBoundingLines( bool b ) { _drawsBoundingLines = b; redraw(); }
 
   const QColor & background() const { return _bkgColor; }
   void setBackground( const QColor &c )
@@ -187,6 +201,8 @@ public Q_SLOTS:
   void scrollToEnd();
   void setYZoom( double factor );
   void setXZoom( double seconds );
+  void setYOffset( double offset );
+  void setSpacing( double factor );
 
 
 Q_SIGNALS:
@@ -214,6 +230,9 @@ protected:
   virtual void mouseMoveEvent( QMouseEvent * );
 
 private:
+
+  /// \param allFrames If true, all frames are loaded and duration is ignored.
+  void load( const QString& filename, int beginning, int duration, bool allFrames );
 
   void doLoad( SNDFILE *new_sf, const SF_INFO &new_info, sf_count_t beginning, sf_count_t duration );
   inline void updateFPP() { _fpp = width() ? (double) _dur / width() : 0.0; }
@@ -248,6 +267,8 @@ private:
   double _dur;
   double _fpp;
   float _yZoom;
+  float _yOffset;
+  float _spacing;
 
   // painting
   QPixmap *pixmap;
@@ -258,6 +279,10 @@ private:
   QColor _gridColor;
   bool dirty;
   bool _drawWaveform;
+  bool _drawRMS;
+  // bool _antialiasing; //TODO
+  bool _drawsCenterLine;
+  bool _drawsBoundingLines; //at the values of ±1.0
   QList<QColor> _waveColors;
 
   // interaction
@@ -273,6 +298,10 @@ private:
   sf_count_t _dragFrame;
   double _dragData;
   double _dragData2;
+
+  // display tweaks
+  int _rmsMaxFpp = 128; // when frames-per-pixel drops below this value (zoom in), the RMS waveform starts to fade out, as its calculation becomes less precise
+  int _rmsMinFpp = 32; // when frames-per-pixel drops below this value, RMS waveform disapperas completely
 };
 
 class SoundStream {
@@ -284,13 +313,13 @@ public:
   inline sf_count_t duration() { return _dur; }
 
   virtual bool displayData( int channel, double offset, double duration,
-                            short *minBuffer,
-                            short *maxBuffer,
-                            short *minRMS,
-                            short *maxRMS,
+                            float *minBuffer,
+                            float *maxBuffer,
+                            float *minRMS,
+                            float *maxRMS,
                             int bufferSize ) = 0;
 
-  virtual short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved ) = 0;
+  virtual float *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved ) = 0;
 
 protected:
   SoundStream()
@@ -312,20 +341,20 @@ public:
   ~SoundFileStream();
   void load( SNDFILE *sf, const SF_INFO &sf_info, sf_count_t beginning, sf_count_t duration );
   bool integrate( int channel, double offset, double duration,
-                  short *minBuffer,
-                  short *maxBuffer,
+                  float *minBuffer,
+                  float *maxBuffer,
                   float *sumBuffer,
                   float *sum2Buffer,
                   int bufferSize );
   bool displayData( int channel, double offset, double duration,
-                    short *minBuffer,
-                    short *maxBuffer,
-                    short *minRMS,
-                    short *maxRMS,
+                    float *minBuffer,
+                    float *maxBuffer,
+                    float *minRMS,
+                    float *maxRMS,
                     int bufferSize );
-  short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
+  float *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
 private:
-  short *_data;
+  float *_data;
   sf_count_t _dataSize;
   sf_count_t _dataOffset;
 };
@@ -352,12 +381,12 @@ public:
   inline bool loading() { return _loading; }
   inline int loadProgress() { return _loadProgress; }
   bool displayData( int channel, double offset, double duration,
-                    short *minBuffer,
-                    short *maxBuffer,
-                    short *minRMS,
-                    short *maxRMS,
+                    float *minBuffer,
+                    float *maxBuffer,
+                    float *minRMS,
+                    float *maxRMS,
                     int bufferSize );
-  short *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
+  float *rawFrames( int channel, sf_count_t beginning, sf_count_t duration, bool *interleaved );
 
 Q_SIGNALS:
   void loadProgress( int );
@@ -395,5 +424,3 @@ private:
   SNDFILE *_sf;
   SF_INFO _info;
 };
-
-#endif

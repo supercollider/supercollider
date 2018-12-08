@@ -2,7 +2,7 @@
 // detail/descriptor_ops.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,6 +22,7 @@
   && !defined(__CYGWIN__)
 
 #include <cstddef>
+#include <boost/asio/error.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/asio/detail/socket_types.hpp>
 
@@ -99,6 +100,9 @@ BOOST_ASIO_DECL int poll_read(int d,
     state_type state, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_write(int d,
+    state_type state, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL int poll_error(int d,
     state_type state, boost::system::error_code& ec);
 
 } // namespace descriptor_ops

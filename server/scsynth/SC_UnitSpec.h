@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _SC_UnitSpec_
-#define _SC_UnitSpec_
+#pragma once
 
 #include <ctype.h> // for size_t
 
@@ -37,5 +36,3 @@ struct UnitSpec
 	size_t mAllocSize;
 };
 typedef struct UnitSpec UnitSpec;
-
-#endif

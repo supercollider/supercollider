@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _BufGen_
-#define _BufGen_
+#pragma once
 
 #include "SC_Types.h"
 
@@ -36,5 +35,3 @@ struct BufGen
 extern "C" {
 bool BufGen_Create(const char *inName, BufGenFunc inFunc);
 }
-
-#endif

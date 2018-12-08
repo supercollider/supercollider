@@ -122,7 +122,7 @@ inline int string_compare(const Seq& s, const C* p)
    {
       ++i;
    }
-   return (i == s.size()) ? -p[i] : s[i] - p[i];
+   return (i == s.size()) ? -(int)p[i] : (int)s[i] - (int)p[i];
 }
 # define STR_COMP(s,p) string_compare(s,p)
 
@@ -161,9 +161,9 @@ iterator BOOST_REGEX_CALL re_is_set_member(iterator next,
       if(*p == static_cast<charT>(0))
       {
          // treat null string as special case:
-         if(traits_inst.translate(*ptr, icase) != *p)
+         if(traits_inst.translate(*ptr, icase))
          {
-            while(*p == static_cast<charT>(0))++p;
+            ++p;
             continue;
          }
          return set_->isnot ? next : (ptr == next) ? ++next : ptr;
@@ -348,6 +348,7 @@ struct recursion_info
    const re_syntax_base* preturn_address;
    Results results;
    repeater_count<iterator>* repeater_stack;
+   iterator location_of_start;
 };
 
 #ifdef BOOST_MSVC
@@ -378,6 +379,9 @@ public:
       :  m_result(what), base(first), last(end), 
          position(first), backstop(l_base), re(e), traits_inst(e.get_traits()), 
          m_independent(false), next_count(&rep_obj), rep_obj(&next_count)
+#ifdef BOOST_REGEX_NON_RECURSIVE
+      , m_recursions(0)
+#endif
    {
       construct_init(e, f);
    }
@@ -546,7 +550,7 @@ private:
    void push_repeater_count(int i, repeater_count<BidiIterator>** s);
    void push_single_repeat(std::size_t c, const re_repeat* r, BidiIterator last_position, int state_id);
    void push_non_greedy_repeat(const re_syntax_base* ps);
-   void push_recursion(int idx, const re_syntax_base* p, results_type* presults);
+   void push_recursion(int idx, const re_syntax_base* p, results_type* presults, results_type* presults2);
    void push_recursion_pop();
    void push_case_change(bool);
 
@@ -565,6 +569,8 @@ private:
    bool m_unwound_alt;
    // We are unwinding a commit - used by independent subs to determine whether to stop there or carry on unwinding:
    //bool m_unwind_commit;
+   // Recursion limit:
+   unsigned m_recursions;
 #endif
 
    // these operations aren't allowed, so are declared private,

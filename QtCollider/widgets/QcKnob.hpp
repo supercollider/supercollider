@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_KNOB_HPP
-#define QC_KNOB_HPP
+#pragma once
 
 #include <QWidget>
 #include "QcAbstractStepValue.h"
@@ -70,5 +69,3 @@ private:
   QPoint _prevPos;
   bool _centered;
 };
-
-#endif // QC_KNOB_HPP

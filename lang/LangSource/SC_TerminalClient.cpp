@@ -408,9 +408,52 @@ void SC_TerminalClient::onQuit( int exitCode )
 
 extern void ElapsedTimeToChrono(double elapsed, std::chrono::system_clock::time_point & out_time_point);
 
+/**
+ * \brief Repeatedly calls the main AppClock loop.
+ *
+ * This method does the following:
+ *
+ * - Wraps \c tickLocked (locking \c gLangMutex before and after), which in
+ *   turn calls \c runLibrary.
+ * - Schedules to call itself again using a \c boost::asio::basic_waitable_timer
+ *   (\c mTimer).
+ *
+ * Since it calls itself, a single call to \c tick will cause the method to
+ * keep calling itself autonomously.
+ *
+ * If \c tick is called again externally while a timer is running, any
+ * previously scheduled \c tick call is canceled. This forces a premature \c
+ * tick, which will schedule itself again, and so on.
+ *
+ * The timed calls to \c tick are used for events scheduled on the AppClock.
+ * The interruption feature is used when sclang receives unanticipated events
+ * such as inbound OSC messages.
+ */
 void SC_TerminalClient::tick( const boost::system::error_code& error )
 {
-	mTimer.cancel();
+	/*
+	Even if the timeout is canceled, this callback will always fire (see docs
+	for boost::asio::basic_waitable_timer).
+
+	Distinguishing between a canceled and successful callback is done by
+	inspecting the error. If it turns out this method was called because of a
+	cancelled timer, we need to bail out and let the tick call that
+	interrupted us take over.
+
+	If we aren't the result of a canceled timer call, we're either the result
+	of a scheduled timer expiry, or we *are* the interruption and we need to
+	cancel any scheduled tick calls. Calling mTimer.cancel() if the error is
+	a success error code handles both cases.
+
+	Previously, instead of this if/else block, this was just a call to
+	mTimer.cancel(). This was causing this method to rapidly call itself
+	excessively, hogging the CPU. See discussion at #2144.
+	*/
+	if (error == boost::system::errc::success) {
+		mTimer.cancel();
+	} else {
+		return;
+	}
 
 	double secs;
 	lock();
@@ -647,7 +690,7 @@ void SC_TerminalClient::endInput()
 	mInputService.stop();
 	mStdIn.cancel();
 #ifdef _WIN32
-	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later 
+	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
 #endif
 	postfl("main: waiting for input thread to join...\n");

@@ -371,10 +371,10 @@ static void GraphDef_SetAllocSizes(GraphDef* graphDef)
 	graphDef->mMapControlsAllocSize = graphDef->mNumControls * sizeof(float*);
 	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlsAllocSize;
 
-	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int*);
+	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int);
 	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
 
-	graphDef->mAudioMapBusOffsetSize = graphDef->mNumControls * sizeof(int32*);
+	graphDef->mAudioMapBusOffsetSize = graphDef->mNumControls * sizeof(int32);
 	graphDef->mNodeDef.mAllocSize += graphDef->mAudioMapBusOffsetSize;
 }
 

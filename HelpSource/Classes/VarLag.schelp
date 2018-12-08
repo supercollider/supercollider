@@ -7,7 +7,9 @@ categories::  UGens>Filters>Linear
 Description::
 Similar to link::Classes/Lag:: but with other curve shapes than exponential.
 A change on the input will take the specified time to reach the new value.
-Useful for smoothing out control signals.
+Useful for smoothing out control (not audio) signals.
+
+warning:: code::VarLag.ar:: currently accepts audio-rate input, but the underlying implementation treats the input as control rate. Effectively, then, the "sampling rate" of VarLag's input is code::ControlRate.ir:: or code::server.sampleRate / server.options.blockSize::, and the maximum safe frequency to feed into VarLag is half of this. VarLag does not currently yield correct results for full-bandwidth audio-rate signals. Use code::VarLag.ar:: at your own risk.::
 
 classmethods::
 

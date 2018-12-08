@@ -46,8 +46,7 @@
  *  02110-1301 USA
  */
 
-#ifndef SC_FILESYSTEM_HPP_INCLUDED
-#define SC_FILESYSTEM_HPP_INCLUDED
+#pragma once
 
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
@@ -65,6 +64,14 @@
 
 /// Default IDE name.
 #define SC_DEFAULT_IDE_NAME "none"
+
+/// Name of the plugins subdirectory of the Resources dir
+#define SC_PLUGIN_DIR_NAME "plugins"
+
+/// Extension for server plugins.
+#ifndef SC_PLUGIN_EXT
+#   define SC_PLUGIN_EXT ".scx"
+#endif
 
 #include <map> // map
 #include <algorithm> // std::transform
@@ -193,7 +200,7 @@ public:
 	  * \param p a path to resolve
 	  * \param isAlias set to true if p is an alias
 	  * \return An empty path if resolution failed; otherwise, the resolved path.
-	  * 
+	  *
 	  * If the path was not an alias, a copy is returned. */
 	// Could possibly be split into `isAlias` and `resolveAlias` to avoid
 	// unnecessary copying - bh
@@ -296,5 +303,3 @@ private:
 	DirMap mDirectoryMap;
 	std::string mIdeName;
 };
-
-#endif // SC_FILESYSTEM_HPP_INCLUDED

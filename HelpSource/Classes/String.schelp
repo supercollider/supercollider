@@ -95,7 +95,7 @@ b.collect(_.asHexString(2)) // [ F0, 9F, 98, 82 ]
 subsection:: Comparing strings
 
 method::compare
-Returns a -1, 0, or 1 depending on whether the receiver should be sorted before the argument, is equal to the argument or should be sorted after the argument. This is a case sensitive compare.
+Returns an integer less than, equal to or greater than zero, depending on whether the receiver should be sorted before the argument, is equal to the argument or should be sorted after the argument. This is a case sensitive compare.
 
 method::<
 Returns a link::Classes/Boolean:: whether the receiver should be sorted before the argument.
@@ -277,8 +277,37 @@ code::
 ::
 
 method::+/+
-Path concatenation operator - useful for avoiding doubling-up slashes unnecessarily.
-code::"foo"+/+"bar":: returns code::"foo/bar"::
+Concatenates code::this:: and code::path::, as components of a filesystem path on the host operating
+system. The strings are joined to avoid duplicate path separators.
+
+If code::this:: ends with a path separator and code::path:: begins with one, then the separator
+in code::path:: is dropped. If there is a path separator on either side, this has the same effect as
+using code::++::. If neither side has a path separator, the platform's preferred separator
+('\' on Windows, '/' otherwise) is added.
+
+Returns code::this:: and code::path:: concatenated. If code::path:: was a PathName, the result is a
+PathName; otherwise, it is a String.
+
+argument::path
+
+Any object that can be converted to a string. Typically, either a String, link::Classes/Symbol::, or
+link::Classes/PathName::.
+
+code::
+// On Windows, this produces "foo\\bar"; on other platforms, "foo/bar"
+"foo" +/+ "bar"
+
+// On all platforms, this produces "foo/bar": +/+ prefers using an existing separator
+"foo/" +/+ "bar"
+"foo" +/+ "/bar"
+"foo/" +/+ "/bar"
+
+// On Windows, this produces "foo\\bar"; on other platforms, "foo/\\bar"
+"foo" +/+ "\\bar"
+
+// Concatenating a symbol is also OK
+"foo" +/+ 'bar'
+::
 
 method::catArgs
 Concatenate this string with the following args.
@@ -710,6 +739,10 @@ subsection::Pathname Support
 
 Also see link::#-+/+:: for path concatenation.
 
+The term "path separator" is a platform-independent term for the character(s) that can be used to
+separate components of a path. On Windows, both forward slash "/" and backward slash "\\" are path
+separators. On POSIX-based systems like macOS and Linux, only forward slash is allowed.
+
 method::shellQuote
 Return a new string suitable for use as a filename in a shell command, by enclosing it in single quotes ( teletype::':: ).
 If the string contains any single quotes they will be escaped.
@@ -733,10 +766,10 @@ argument::relativeTo
 The path to make this path relative to.
 
 method::withTrailingSlash
-Return this string with a trailing slash if that was not already the case.
+Appends a path separator if one is not already present.
 
 method::withoutTrailingSlash
-Return this string without a trailing slash if that was not already the case.
+Removes a trailing path separator if one is present.
 
 method::basename
 Return the filename from a Unix path.
@@ -798,12 +831,6 @@ code::
 ::
 
 subsection::Misc methods
-
-method::speak
-Deprecated. See link::Classes/Speech:: for the full reason and possible replacements. Sends string to the macOS speech synthesizer.
-code::
-"hi i'm talking with the default voice now, i guess".speak;
-::
 
 method::inspectorClass
 Returns class link::Classes/StringInspector::.

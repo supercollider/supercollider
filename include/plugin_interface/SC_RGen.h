@@ -46,8 +46,7 @@
 // - James McCartney
 //----------------------------------------------------------------------------//
 
-#ifndef _SC_RGen_
-#define _SC_RGen_
+#pragma once
 
 #include "SC_Endian.h"
 #include "SC_Types.h"
@@ -186,7 +185,7 @@ inline float RGen::fbilinrand()
 inline float RGen::fsum3rand()
 {
 	// larry polansky's poor man's gaussian generator
-	return (frand() + frand() + frand() - 1.5) * 0.666666667;
+	return (float)((frand() + frand() + frand() - 1.5) * 0.666666667);
 }
 
 
@@ -304,8 +303,3 @@ inline float fcoin( uint32& s1, uint32& s2, uint32& s3 )
 	u.i = 0x3F800000 | (0x80000000 & trand(s1,s2,s3));
 	return u.f;
 }
-
-
-
-#endif
-

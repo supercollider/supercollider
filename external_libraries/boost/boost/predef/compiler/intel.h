@@ -1,5 +1,5 @@
 /*
-Copyright Rene Rivera 2008-2015
+Copyright Rene Rivera 2008-2017
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE_1_0.txt or copy at
 http://www.boost.org/LICENSE_1_0.txt)
@@ -25,7 +25,8 @@ Version number available as major, minor, and patch.
     [[`__ICC`] [__predef_detection__]]
     [[`__ECC`] [__predef_detection__]]
 
-    [[`__INTEL_COMPILER`] [V.R.P]]
+    [[`__INTEL_COMPILER`] [V.R]]
+    [[`__INTEL_COMPILER` and `__INTEL_COMPILER_UPDATE`] [V.R.P]]
     ]
  */
 
@@ -33,8 +34,21 @@ Version number available as major, minor, and patch.
 
 #if defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || \
     defined(__ECC)
+/*`
+[note Because of an Intel mistake in the release version numbering when
+`__INTEL_COMPILER` is `9999` it is detected as version 12.1.0.]
+ */
+#   if !defined(BOOST_COMP_INTEL_DETECTION) && defined(__INTEL_COMPILER) && (__INTEL_COMPILER == 9999)
+#       define BOOST_COMP_INTEL_DETECTION BOOST_VERSION_NUMBER(12,1,0)
+#   endif
+#   if !defined(BOOST_COMP_INTEL_DETECTION) && defined(__INTEL_COMPILER) && defined(__INTEL_COMPILER_UPDATE)
+#       define BOOST_COMP_INTEL_DETECTION BOOST_VERSION_NUMBER( \
+            BOOST_VERSION_NUMBER_MAJOR(BOOST_PREDEF_MAKE_10_VVRR(__INTEL_COMPILER)), \
+            BOOST_VERSION_NUMBER_MINOR(BOOST_PREDEF_MAKE_10_VVRR(__INTEL_COMPILER)), \
+            __INTEL_COMPILER_UPDATE)
+#   endif
 #   if !defined(BOOST_COMP_INTEL_DETECTION) && defined(__INTEL_COMPILER)
-#       define BOOST_COMP_INTEL_DETECTION BOOST_PREDEF_MAKE_10_VRP(__INTEL_COMPILER)
+#       define BOOST_COMP_INTEL_DETECTION BOOST_PREDEF_MAKE_10_VVRR(__INTEL_COMPILER)
 #   endif
 #   if !defined(BOOST_COMP_INTEL_DETECTION)
 #       define BOOST_COMP_INTEL_DETECTION BOOST_VERSION_NUMBER_AVAILABLE

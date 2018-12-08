@@ -481,13 +481,13 @@ void SC_JackDriver::Run()
 
 		// main loop
 #ifdef SC_JACK_USE_DLL
-		int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
+		int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + .5);
 // 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
 		int64 oscInc = mOSCincrement = (int64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
 		mSmoothSampleRate = mDLL.SampleRate();
 		double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs /* 1/pow(2,32) */;
 #else
-		int64 oscTime = mOSCbuftime = OSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
+		int64 oscTime = mOSCbuftime = OSCTime(hostTime) + (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
 #endif

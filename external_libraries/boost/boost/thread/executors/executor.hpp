@@ -38,7 +38,7 @@ namespace boost
      * \par Synchronization
      * The completion of all the closures happen before the completion of the executor destructor.
      */
-    virtual ~executor() {};
+    virtual ~executor() {}
 
     /**
      * \par Effects

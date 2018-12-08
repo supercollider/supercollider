@@ -1,6 +1,6 @@
 class:: Pdefn
 summary:: non event stream reference definition
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdef
 
 description::

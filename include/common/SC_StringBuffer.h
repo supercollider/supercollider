@@ -18,8 +18,7 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 // USA
 
-#ifndef SC_STRINGBUFFER_H_INCLUDED
-#define SC_STRINGBUFFER_H_INCLUDED
+#pragma once
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -63,5 +62,3 @@ private:
 	char*	mPtr;
 	char*	mData;
 };
-
-#endif // SC_STRINGBUFFER_H_INCLUDED

@@ -664,6 +664,156 @@ code::
 ([1, 2, 3, 4] * [4, 5, 6, 7]);
 ::
 
+subsection::Math Support - Special Functions
+
+A variety of Special Functions are supplied by the Boost C++ library. The library's
+link::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
+ serves as the primary reference for the following functions. The methods
+here match closely with those found in the source library, as do argument names.
+
+Below you'll find descriptions of the functions and their bounds, but for
+visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
+
+note::The following methods are documented slightly clearer in
+link::Classes/SimpleNumber#Special Functions:: using functional notation.
+As of this writing, a bug in the help file formatting misleadingly documents
+the methods in receiver notation (methods preceded by code::.::), but should
+be read to suggests the usage: code::foo([a], [b])::. The equivalent receiver
+notation is: code::[a].foo([b])::. Note that those methods with only one argument erroneously omit that
+argument from the argument list; each element in the collection is implicitly
+passed as the method's argument, e.g. code::foo([a]):: or code::[a].foo::::
+
+warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
+happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
+a useful message at the end of the error regarding proper ranges and the erroneous value supplied.
+Refer to the online documentation for more detailed descriptions, and the
+link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.::
+
+copymethod:: SimpleNumber -bernouliB2n
+copymethod:: SimpleNumber -tangentT2n
+copymethod:: SimpleNumber -tgamma
+copymethod:: SimpleNumber -tgamma1pm1
+copymethod:: SimpleNumber -lgamma
+copymethod:: SimpleNumber -digamma
+copymethod:: SimpleNumber -trigamma
+copymethod:: SimpleNumber -polygamma
+copymethod:: SimpleNumber -tgammaRatio
+copymethod:: SimpleNumber -tgammaDeltaRatio
+copymethod:: SimpleNumber -gammaP
+copymethod:: SimpleNumber -gammaQ
+copymethod:: SimpleNumber -tgammaLower
+copymethod:: SimpleNumber -tgammaUpper
+copymethod:: SimpleNumber -gammaPInv
+copymethod:: SimpleNumber -gammaQInv
+copymethod:: SimpleNumber -gammaPInvA
+copymethod:: SimpleNumber -gammaQInvA
+copymethod:: SimpleNumber -gammaPDerivative
+copymethod:: SimpleNumber -gammaQDerivative
+copymethod:: SimpleNumber -factorial
+copymethod:: SimpleNumber -doubleFactorial
+copymethod:: SimpleNumber -risingFactorial
+copymethod:: SimpleNumber -fallingFactorial
+copymethod:: SimpleNumber -binomialCoefficient
+copymethod:: SimpleNumber -beta
+copymethod:: SimpleNumber -ibeta
+copymethod:: SimpleNumber -ibetaC
+copymethod:: SimpleNumber -betaFull
+copymethod:: SimpleNumber -betaFullC
+copymethod:: SimpleNumber -ibetaInv
+copymethod:: SimpleNumber -ibetaCInv
+copymethod:: SimpleNumber -ibetaInvA
+copymethod:: SimpleNumber -ibetaCInvA
+copymethod:: SimpleNumber -ibetaInvB
+copymethod:: SimpleNumber -ibetaCInvB
+copymethod:: SimpleNumber -ibetaDerivative
+copymethod:: SimpleNumber -erf
+copymethod:: SimpleNumber -erfC
+copymethod:: SimpleNumber -erfInv
+copymethod:: SimpleNumber -erfCInv
+copymethod:: SimpleNumber -legendreP
+copymethod:: SimpleNumber -legendrePPrime
+copymethod:: SimpleNumber -legendrePZeros
+copymethod:: SimpleNumber -legendrePAssoc
+copymethod:: SimpleNumber -legendreQ
+copymethod:: SimpleNumber -laguerre
+copymethod:: SimpleNumber -laguerreAssoc
+copymethod:: SimpleNumber -hermite
+copymethod:: SimpleNumber -chebyshevT
+copymethod:: SimpleNumber -chebyshevU
+copymethod:: SimpleNumber -chebyshevTPrime
+copymethod:: SimpleNumber -chebyshevTZeros
+copymethod:: SimpleNumber -sphericalHarmonic
+copymethod:: SimpleNumber -sphericalHarmonicR
+copymethod:: SimpleNumber -sphericalHarmonicI
+copymethod:: SimpleNumber -cylBesselJ
+copymethod:: SimpleNumber -cylNeumann
+copymethod:: SimpleNumber -cylBesselJZero
+copymethod:: SimpleNumber -cylNeumannZero
+copymethod:: SimpleNumber -cylBesselI
+copymethod:: SimpleNumber -cylBesselK
+copymethod:: SimpleNumber -sphBessel
+copymethod:: SimpleNumber -sphNeumann
+copymethod:: SimpleNumber -cylBesselJPrime
+copymethod:: SimpleNumber -cylNeumannPrime
+copymethod:: SimpleNumber -cylBesselIPrime
+copymethod:: SimpleNumber -cylBesselKPrime
+copymethod:: SimpleNumber -sphBesselPrime
+copymethod:: SimpleNumber -sphNeumannPrime
+copymethod:: SimpleNumber -cylHankel1
+copymethod:: SimpleNumber -cylHankel2
+copymethod:: SimpleNumber -sphHankel1
+copymethod:: SimpleNumber -sphHankel2
+copymethod:: SimpleNumber -airyAi
+copymethod:: SimpleNumber -airyBi
+copymethod:: SimpleNumber -airyAiPrime
+copymethod:: SimpleNumber -airyBiPrime
+copymethod:: SimpleNumber -airyAiZero
+copymethod:: SimpleNumber -airyBiZero
+copymethod:: SimpleNumber -ellintRf
+copymethod:: SimpleNumber -ellintRd
+copymethod:: SimpleNumber -ellintRj
+copymethod:: SimpleNumber -ellintRc
+copymethod:: SimpleNumber -ellintRg
+copymethod:: SimpleNumber -ellint1
+copymethod:: SimpleNumber -ellint1C
+copymethod:: SimpleNumber -ellint2
+copymethod:: SimpleNumber -ellint2C
+copymethod:: SimpleNumber -ellint3
+copymethod:: SimpleNumber -ellint3C
+copymethod:: SimpleNumber -ellintD
+copymethod:: SimpleNumber -ellintDC
+copymethod:: SimpleNumber -jacobiZeta
+copymethod:: SimpleNumber -heumanLambda
+copymethod:: SimpleNumber -jacobiCd
+copymethod:: SimpleNumber -jacobiCn
+copymethod:: SimpleNumber -jacobiCs
+copymethod:: SimpleNumber -jacobiDc
+copymethod:: SimpleNumber -jacobiDn
+copymethod:: SimpleNumber -jacobiDs
+copymethod:: SimpleNumber -jacobiNc
+copymethod:: SimpleNumber -jacobiNd
+copymethod:: SimpleNumber -jacobiNs
+copymethod:: SimpleNumber -jacobiSc
+copymethod:: SimpleNumber -jacobiSd
+copymethod:: SimpleNumber -jacobiSn
+copymethod:: SimpleNumber -zeta
+copymethod:: SimpleNumber -expintEn
+copymethod:: SimpleNumber -expintEi
+copymethod:: SimpleNumber -sinPi
+copymethod:: SimpleNumber -cosPi
+copymethod:: SimpleNumber -log1p
+copymethod:: SimpleNumber -expm1
+copymethod:: SimpleNumber -cbrt
+copymethod:: SimpleNumber -sqrt1pm1
+copymethod:: SimpleNumber -powm1
+copymethod:: SimpleNumber -sincPi
+copymethod:: SimpleNumber -sinhcPi
+copymethod:: SimpleNumber -asinh
+copymethod:: SimpleNumber -acosh
+copymethod:: SimpleNumber -atanh
+copymethod:: SimpleNumber -owensT
+
+
 subsection::Multichannel wrappers
 All of the following messages are performed on the elements of this collection, using link::Classes/Object#-multiChannelPerform::.
 
@@ -707,3 +857,4 @@ code::
 Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].convertRhythm)).play;
 ::
 
+private:: acosh, airyAi, airyAiPrime, airyAiZero, acosh, airyAi, airyAiPrime, airyAiZero, airyBi, airyBiPrime, airyBiZero, asinh, atanh, bernouliB2n, beta, betaFull, betaFullC, binomialCoefficient, cbrt, chebyshevT, chebyshevTPrime, chebyshevTZeros, chebyshevU, cosPi, cylBesselI, cylBesselIPrime, cylBesselJ, cylBesselJPrime, cylBesselJZero, cylBesselK, cylBesselKPrime, cylHankel1, cylHankel2, cylNeumann, cylNeumannPrime, cylNeumannZero, digamma, doubleFactorial, ellint1, ellint1C, ellint2, ellint2C, ellint3, ellint3C, ellintD, ellintDC, ellintRc, ellintRd, ellintRf, ellintRg, ellintRj, erf, erfC, erfCInv, erfInv, expintEi, expintEn, expm1, factorial, fallingFactorial, gammaP, gammaPDerivative, gammaPInv, gammaPInvA, gammaQ, gammaQDerivative, gammaQInv, gammaQInvA, hermite, heumanLambda, ibeta, ibetaC, ibetaCInv, ibetaCInvA, ibetaCInvB, ibetaDerivative, ibetaInv, ibetaInvA, ibetaInvB, jacobiCd, jacobiCn, jacobiCs, jacobiDc, jacobiDn, jacobiDs, jacobiNc, jacobiNd, jacobiNs, jacobiSc, jacobiSd, jacobiSn, jacobiZeta, laguerre, laguerreAssoc, legendreP, legendrePAssoc, legendrePPrime, legendrePZeros, legendreQ, lgamma, log1p, owensT, polygamma, pow, powm1, prHermite, prLaguerreAssoc, prLegendreQ, risingFactorial, sinPi, sincPi, sinhcPi, sphBessel, sphBesselPrime, sphHankel1, sphHankel2, sphNeumann, sphNeumannPrime, sphericalHarmonic, sphericalHarmonicI, sphericalHarmonicR, sqrt1pm1, tangentT2n, tgamma, tgamma1pm1, tgammaDeltaRatio, tgammaLower, tgammaRatio, tgammaUpper, trigamma, zeta

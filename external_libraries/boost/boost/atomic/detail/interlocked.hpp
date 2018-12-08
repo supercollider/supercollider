@@ -2,7 +2,7 @@
 #define BOOST_ATOMIC_DETAIL_INTERLOCKED_HPP
 
 //  Copyright (c) 2009 Helge Bahmann
-//  Copyright (c) 2012 - 2014 Andrey Semashev
+//  Copyright (c) 2012 - 2014, 2017 Andrey Semashev
 //
 //  Distributed under the Boost Software License, Version 1.0.
 //  See accompanying file LICENSE_1_0.txt or copy at
@@ -73,6 +73,8 @@ extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
 #pragma intrinsic(_InterlockedAnd)
 #pragma intrinsic(_InterlockedOr)
 #pragma intrinsic(_InterlockedXor)
+#pragma intrinsic(_interlockedbittestandset)
+#pragma intrinsic(_interlockedbittestandreset)
 #endif
 
 #define BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE(dest, exchange, compare) _InterlockedCompareExchange((long*)(dest), (long)(exchange), (long)(compare))
@@ -81,6 +83,18 @@ extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
 #define BOOST_ATOMIC_INTERLOCKED_AND(dest, arg) _InterlockedAnd((long*)(dest), (long)(arg))
 #define BOOST_ATOMIC_INTERLOCKED_OR(dest, arg) _InterlockedOr((long*)(dest), (long)(arg))
 #define BOOST_ATOMIC_INTERLOCKED_XOR(dest, arg) _InterlockedXor((long*)(dest), (long)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTS(dest, arg) _interlockedbittestandset((long*)(dest), (long)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTR(dest, arg) _interlockedbittestandreset((long*)(dest), (long)(arg))
+
+#if defined(_M_AMD64)
+#if defined(BOOST_MSVC)
+#pragma intrinsic(_interlockedbittestandset64)
+#pragma intrinsic(_interlockedbittestandreset64)
+#endif
+
+#define BOOST_ATOMIC_INTERLOCKED_BTS64(dest, arg) _interlockedbittestandset64((__int64*)(dest), (__int64)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTR64(dest, arg) _interlockedbittestandreset64((__int64*)(dest), (__int64)(arg))
+#endif // defined(_M_AMD64)
 
 #if (defined(_M_IX86) && _M_IX86 >= 500) || defined(_M_AMD64) || defined(_M_IA64)
 #if defined(BOOST_MSVC)
@@ -169,7 +183,7 @@ extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
 
 #endif
 
-#if _MSC_VER >= 1700 && defined(_M_ARM)
+#if _MSC_VER >= 1700 && (defined(_M_ARM) || defined(_M_ARM64))
 
 #if defined(BOOST_MSVC)
 #pragma intrinsic(_InterlockedExchangeAdd64)
@@ -251,10 +265,17 @@ extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
 #define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD64_ACQUIRE(dest, addend) _InterlockedExchangeAdd64_acq((__int64*)(dest), (__int64)(addend))
 #define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD64_RELEASE(dest, addend) _InterlockedExchangeAdd64_rel((__int64*)(dest), (__int64)(addend))
 
+#if defined(_M_ARM64)
+#define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD64((__int64*)(dest), byte_offset))
+#define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER_RELAXED(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD64_RELAXED((__int64*)(dest), byte_offset))
+#define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER_ACQUIRE(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD64_ACQUIRE((__int64*)(dest), byte_offset))
+#define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER_RELEASE(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD64_RELEASE((__int64*)(dest), byte_offset))
+#else
 #define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD((long*)(dest), byte_offset))
 #define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER_RELAXED(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_RELAXED((long*)(dest), byte_offset))
 #define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER_ACQUIRE(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_ACQUIRE((long*)(dest), byte_offset))
 #define BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_POINTER_RELEASE(dest, byte_offset) ((void*)BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD_RELEASE((long*)(dest), byte_offset))
+#endif
 
 #if defined(BOOST_MSVC)
 #pragma intrinsic(_InterlockedExchange8_nf)
@@ -386,6 +407,26 @@ extern "C" long __cdecl _InterlockedExchange( long volatile *, long );
 #define BOOST_ATOMIC_INTERLOCKED_XOR64_RELAXED(dest, arg) _InterlockedXor64_nf((__int64*)(dest), (__int64)(arg))
 #define BOOST_ATOMIC_INTERLOCKED_XOR64_ACQUIRE(dest, arg) _InterlockedXor64_acq((__int64*)(dest), (__int64)(arg))
 #define BOOST_ATOMIC_INTERLOCKED_XOR64_RELEASE(dest, arg) _InterlockedXor64_rel((__int64*)(dest), (__int64)(arg))
+
+#if defined(BOOST_MSVC)
+#pragma intrinsic(_interlockedbittestandset_nf)
+#pragma intrinsic(_interlockedbittestandset_acq)
+#pragma intrinsic(_interlockedbittestandset_rel)
+#endif
+
+#define BOOST_ATOMIC_INTERLOCKED_BTS_RELAXED(dest, arg) _interlockedbittestandset_nf((long*)(dest), (long)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTS_ACQUIRE(dest, arg) _interlockedbittestandset_acq((long*)(dest), (long)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTS_RELEASE(dest, arg) _interlockedbittestandset_rel((long*)(dest), (long)(arg))
+
+#if defined(BOOST_MSVC)
+#pragma intrinsic(_interlockedbittestandreset_nf)
+#pragma intrinsic(_interlockedbittestandreset_acq)
+#pragma intrinsic(_interlockedbittestandreset_rel)
+#endif
+
+#define BOOST_ATOMIC_INTERLOCKED_BTR_RELAXED(dest, arg) _interlockedbittestandreset_nf((long*)(dest), (long)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTR_ACQUIRE(dest, arg) _interlockedbittestandreset_acq((long*)(dest), (long)(arg))
+#define BOOST_ATOMIC_INTERLOCKED_BTR_RELEASE(dest, arg) _interlockedbittestandreset_rel((long*)(dest), (long)(arg))
 
 #endif // _MSC_VER >= 1700 && defined(_M_ARM)
 

@@ -19,13 +19,14 @@
 *
 ************************************************************************/
 
-#ifndef QT_COLLIDER_TYPE_CODEC_INCLUDED
-#define QT_COLLIDER_TYPE_CODEC_INCLUDED
+#pragma once
 
 #include "widgets/QcTreeWidget.h"
+#include "widgets/QcMenu.h"
 #include "image.h"
 
 #include <PyrSlot.h>
+#include <PyrKernel.h>
 
 #include <QDebug>
 #include <QChar>
@@ -40,14 +41,16 @@
 #include <QFont>
 #include <QPalette>
 #include <QWidget>
+#include <QLayout>
 #include <QVector>
+#include <QUrl>
 #include <QVariantList>
 
 class QObjectProxy;
 
 namespace QtCollider {
 
-template <typename T> struct TypeCodec { };
+template <typename T, typename EnabledT=void> struct TypeCodec { };
 
 // Forwarding from QtCollider namespace to TypeCodec
 
@@ -90,6 +93,28 @@ void set( PyrSlot *slot, const T & val )
   // write is always type-safe
   TypeCodec<T>::write( slot, val );
 }
+  
+template<typename IteratorT>
+static void setObjectList( PyrSlot *slot, int size, IteratorT iter, IteratorT end)
+{
+  typedef typename IteratorT::value_type ValueT;
+  VMGlobals *g = gMainVMGlobals;
+  
+  PyrObject *array = newPyrArray( g->gc, size, 0, true );
+  SetObject( slot, array );
+  
+  PyrSlot *s = array->slots;
+  for ( ; iter != end; ++iter)
+  {
+    if (size > 0) {
+      TypeCodec<ValueT>::write(s, *iter);
+      ++array->size;
+      ++s;
+      --size;
+    }
+  }
+}
+
 
 // TypeCodecs
 
@@ -209,6 +234,18 @@ template <> struct TypeCodec<QString>
   }
 
   static void write( PyrSlot *slot, const QString & val );
+};
+
+template <> struct TypeCodec<QUrl>
+{
+  static QUrl read( PyrSlot *slot );
+  
+  static QUrl safeRead( PyrSlot *slot )
+  {
+    return read(slot);
+  }
+  
+  static void write( PyrSlot *slot, const QUrl & val );
 };
 
 template <> struct TypeCodec<QPointF>
@@ -357,20 +394,8 @@ template <> struct TypeCodec<QObject*>
   static void write( PyrSlot *, QObject * );
 };
 
-template <> struct TypeCodec<QWidget*>
-{
-  static QWidget* read( PyrSlot * )
-  {
-    qWarning("WARNING: QtCollider: reading QWidget* from PyrSlot not supported.");
-    return 0;
-  }
 
-  static void write( PyrSlot *slot, QWidget * widget )
-  {
-    TypeCodec<QObject*>::write(slot, widget);
-  }
-};
-
+#define TYPE_IS_QOBJECT(type) std::is_convertible<QObjectT, QObject*>::value
 template <> struct TypeCodec<PyrObject*>
 {
   static PyrObject* read( PyrSlot * )
@@ -412,6 +437,34 @@ template <> struct TypeCodec< QVector<double> >
 
   static void write( PyrSlot *slot, const QVector<double> & );
 };
+  
+template <typename ContainedT>
+struct TypeCodec< QVector<ContainedT> >
+{
+  static QVector<ContainedT> read( PyrSlot *slot ) {
+    qWarning("WARNING: TypeCodec<PyrObject*>::read(PyrSlot*) = NO-OP");
+    return QVector<ContainedT>();
+  }
+  
+  static void write( PyrSlot *slot, const QVector<ContainedT> & vec)
+  {
+    setObjectList(slot, vec.size(), vec.begin(), vec.end());
+  }
+};
+
+template <typename ContainedT>
+struct TypeCodec< QList<ContainedT> >
+{
+  static QList<ContainedT> read( PyrSlot *slot ) {
+    qWarning("WARNING: TypeCodec<PyrObject*>::read(PyrSlot*) = NO-OP");
+    return QList<ContainedT>();
+  }
+  
+  static void write( PyrSlot *slot, const QList<ContainedT> & vec)
+  {
+    setObjectList(slot, vec.size(), vec.begin(), vec.end());
+  }
+};
 
 template <> struct TypeCodec<QVariantList>
 {
@@ -425,6 +478,32 @@ template <> struct TypeCodec<QVariantList>
   static void write( PyrSlot *slot, const QVariantList & );
 };
 
-} // namespace QtCollider
+template<typename QObjectT>
+struct TypeCodec<QObjectT, void>
+{
+  static QObjectT read( PyrSlot *slot )
+  {
+    return safeRead(slot);
+  }
 
-#endif // QT_COLLIDER_TYPE_CODEC_INCLUDED
+  static QObjectT safeRead( PyrSlot *slot )
+  {
+    auto proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
+
+    if (proxy) {
+      auto action = qobject_cast<QObjectT>(proxy->object());
+      return action;
+    } else {
+      return 0;
+    }
+  }
+
+  static void write(PyrSlot * slot, QObjectT object)
+  {
+    auto qobject = qobject_cast<QObject*>(object);
+    TypeCodec<QObject*>::write(slot, qobject);
+  }
+
+};
+
+} // namespace QtCollider

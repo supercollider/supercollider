@@ -22,8 +22,9 @@
 #include "metatype.hpp"
 #include "type_codec.hpp"
 #include "Common.h" // Make sure PyrObject* is declared to QMetaType
-
 #include <PyrKernel.h>
+
+#include "widgets/QcWebView.h"
 
 namespace QtCollider {
 
@@ -45,8 +46,13 @@ void MetaType::initAll()
   qRegisterMetaType< QVector<double> >();
   qRegisterMetaType< QVector<int> >();
   qRegisterMetaType<SharedImage>();
+  qRegisterMetaType<QcAction*>();
+  qRegisterMetaType<QcWidgetAction*>();
+  qRegisterMetaType<QcMenu*>();
+  qRegisterMetaType<QcToolBar*>();
+  qRegisterMetaType<QList<QAction*> >();
 
-  gMetaTypes.reserve(20);
+  gMetaTypes.reserve(30);
 
   qc_init_metatype<bool>();
   qc_init_metatype<int>();
@@ -66,12 +72,18 @@ void MetaType::initAll()
   qc_init_metatype<QObjectProxy*>();
   qc_init_metatype<QObject*>();
   qc_init_metatype<QWidget*>();
+  qc_init_metatype<QLayout*>();
   qc_init_metatype<PyrObject*>();
   qc_init_metatype<QcTreeWidget::ItemPtr>();
   qc_init_metatype<SharedImage>();
+  qc_init_metatype<QMenu*>();
+  qc_init_metatype<QAction*>();
+  qc_init_metatype<QList<QAction*>>();
   qc_init_metatype< QVector<double> >();
   qc_init_metatype< QVector<int> >();
   qc_init_metatype< QVariantList >();
+  qc_init_metatype<QUrl>();
+  qc_init_metatype<QcCallback*>();
 }
 
 MetaType *MetaType::find( PyrSlot *slot )
@@ -123,6 +135,21 @@ MetaType *MetaType::find( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, SC_CLASS(QPalette) ) ) {
         return metaType<QPalette>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(QCallback) ) ) {
+        return metaType<QcCallback*>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(AbstractMenuAction) ) ) {
+        return metaType<QAction*>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(Menu) ) ) {
+        return metaType<QMenu*>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(View) ) || isKindOfSlot( slot, SC_CLASS(ScrollCanvas) ) ) {
+        return metaType<QWidget*>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(Layout) ) ) {
+        return metaType<QLayout*>();
       }
       else if( isKindOfSlot( slot, SC_CLASS(QObject) ) ) {
         return metaType<QObjectProxy*>();

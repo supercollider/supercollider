@@ -103,7 +103,8 @@ public:
 
     /// \b Override: This function \b may be redefined in Derived class. Overrides \b must not throw.
     /// \return Hash code of a type. By default hashes types by raw_name().
-    /// \note <boost/functional/hash.hpp> has to be included if this function is used.
+    /// \note Derived class header \b must include <boost/functional/hash.hpp>, \b unless this function is redefined in
+    /// Derived class to not use boost::hash_range().
     inline std::size_t hash_code() const BOOST_NOEXCEPT {
         const char* const name_raw = derived().raw_name();
         return boost::hash_range(name_raw, name_raw + std::strlen(name_raw));

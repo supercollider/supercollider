@@ -190,8 +190,10 @@ argument:: mdPlugin
 
 
 method:: play
-A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it create one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is \addToHead.
+A convenience method which compiles the def and sends it to target's server. When this asynchronous command is completed, it creates one synth from this definition, using the argument values specified in the Array args.  For a list of valid addActions see link::Classes/Synth::. The default is code::\addToHead::.
 Returns:: a corresponding Synth object.
+
+
 
 
 Examples::
@@ -227,39 +229,74 @@ x.free;
 
 subsection:: Argument Rates
 code::
-// the following two defs are equivalent. The first uses a 't_' arg:
 (
-SynthDef(\trigTest, { |out, t_trig=0, freq=440| // t_trig creates a TrigControl
+SynthDef(\trigTest1, { |out, t_trig=0, freq=440| // t_trig creates a TrigControl
 	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(t_trig, 0.005, 1.0)));
-}, [0, 4]		// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)
-);
+}, [0, 0, 4]		// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)
+).add;
 )
 
+y = Synth(\trigTest1);
+y.set(\t_trig, 1); // you can do this multiple times
+y.set(\t_trig, 1, \freq, 220); // hear how the freq lags
+y.free;
+
+// Pbind with the default \note event type, and Pmono, use an automatically-generated
+// function to look up argument values. This function translates \trig in the 
+// event to \t_trig in the synth.
+(
+Pmono(\trigTest1, *[
+	trig: Prand([0, 1], inf),  // for random trigger, use trig, not t_trig
+	freq: Pwhite(lo: 220, hi: 440, length: 10),
+	dur: 1
+]).play;
+)
+
+// Note that With event type \set, there is no automatic translation so you 
+// should use t_trig in that case.
+y = Synth(\trigTest1);
+(
+Pbind(*[
+	type: \set,
+	id: y.nodeID,
+  args: #[\t_trig],
+	t_trig: Prand([0, 1], 8)
+]).play;
+)
+y.free;
+	
 // This second version makes trig a \tr arg by specifying it in the rates array.
 (
 SynthDef(\trigTest2, { |out, trig=0, freq=440|
 	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(trig, 0.005, 1.0)));
-	}, [\tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
+	}, [0, \tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
 ).add;
 )
 
-// Different way of writing the same thing
+// There is a different way of writing the same thing using NamedControls
 (
 SynthDef(\trigTest2, { |out|
 	Out.ar(out, SinOsc.ar(\freq.kr(440, 4) + [0,1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
 }).add;
 )
 
+// Using the second version, create a synth
+z = Synth(\trigTest2);
 
-// Using the second version create a synth
-z = Synth.head(s, \trigTest2);
-
-// now trigger the decay envelope
+// Now trigger the decay envelope
 z.set(\trig, 1); 				// you can do this multiple times
 z.set(\trig, 1, \freq, 220); 	// hear how the freq lags
 z.set(\trig, 1, \freq, 880);
-
 z.free; //free the synth
+
+// Use trig in Pbind and Pmono
+(
+Pmono(\trigTest2, *[
+	trig: Prand([0, 1], inf),  // for random trigger, use trig, not t_trig
+	freq: Pwhite(lo: 220, hi: 440, length: 10),
+	dur: 1
+]).play;
+)
 ::
 
 subsection:: Variants

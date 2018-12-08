@@ -45,6 +45,7 @@ BOOST_LIB_PREFIX
    + BOOST_LIB_TOOLSET
    + BOOST_LIB_THREAD_OPT
    + BOOST_LIB_RT_OPT
+   + BOOST_LIB_ARCH_AND_MODEL_OPT
    "-"
    + BOOST_LIB_VERSION
 
@@ -68,6 +69,9 @@ BOOST_LIB_RT_OPT:     A suffix that indicates the runtime library used,
                       d      debug build (release if not present).
                       p      STLport build.
                       n      STLport build without its IOStreams.
+
+BOOST_LIB_ARCH_AND_MODEL_OPT: The architecture and address model
+                              (-x32 or -x64 for x86/32 and x86/64 respectively)
 
 BOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x.y.
 
@@ -161,10 +165,15 @@ BOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x.y.
      // vc12:
 #    define BOOST_LIB_TOOLSET "vc120"
 
-# elif defined(BOOST_MSVC)
+#  elif defined(BOOST_MSVC) && (BOOST_MSVC < 1910)
 
-   // vc14:
-#  define BOOST_LIB_TOOLSET "vc140"
+     // vc14:
+#    define BOOST_LIB_TOOLSET "vc140"
+
+#  elif defined(BOOST_MSVC)
+
+     // vc14.1:
+#    define BOOST_LIB_TOOLSET "vc141"
 
 #  elif defined(__BORLANDC__)
 
@@ -357,6 +366,20 @@ BOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x.y.
 #endif
 
 //
+// BOOST_LIB_ARCH_AND_MODEL_OPT
+//
+
+#if defined( _M_IX86 )
+#  define BOOST_LIB_ARCH_AND_MODEL_OPT "-x32"
+#elif defined( _M_X64 )
+#  define BOOST_LIB_ARCH_AND_MODEL_OPT "-x64"
+#elif defined( _M_ARM )
+#  define BOOST_LIB_ARCH_AND_MODEL_OPT "-a32"
+#elif defined( _M_ARM64 )
+#  define BOOST_LIB_ARCH_AND_MODEL_OPT "-a64"
+#endif
+
+//
 // select linkage opt:
 //
 #if (defined(_DLL) || defined(_RTLDLL)) && defined(BOOST_DYN_LINK)
@@ -375,6 +398,7 @@ BOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x.y.
       && defined(BOOST_LIB_TOOLSET) \
       && defined(BOOST_LIB_THREAD_OPT) \
       && defined(BOOST_LIB_RT_OPT) \
+      && defined(BOOST_LIB_ARCH_AND_MODEL_OPT) \
       && defined(BOOST_LIB_VERSION)
 
 #ifdef BOOST_AUTO_LINK_TAGGED
@@ -388,14 +412,14 @@ BOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x.y.
 #     pragma message ("Linking to lib file: " BOOST_STRINGIZE(BOOST_LIB_NAME) ".lib")
 #  endif
 #elif defined(BOOST_LIB_BUILDID)
-#  pragma comment(lib, BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT "-" BOOST_LIB_VERSION "-" BOOST_STRINGIZE(BOOST_LIB_BUILDID) ".lib")
+#  pragma comment(lib, BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT BOOST_LIB_ARCH_AND_MODEL_OPT "-" BOOST_LIB_VERSION "-" BOOST_STRINGIZE(BOOST_LIB_BUILDID) ".lib")
 #  ifdef BOOST_LIB_DIAGNOSTIC
-#     pragma message ("Linking to lib file: " BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT "-" BOOST_LIB_VERSION "-" BOOST_STRINGIZE(BOOST_LIB_BUILDID) ".lib")
+#     pragma message ("Linking to lib file: " BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT BOOST_LIB_ARCH_AND_MODEL_OPT "-" BOOST_LIB_VERSION "-" BOOST_STRINGIZE(BOOST_LIB_BUILDID) ".lib")
 #  endif
 #else
-#  pragma comment(lib, BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT "-" BOOST_LIB_VERSION ".lib")
+#  pragma comment(lib, BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT BOOST_LIB_ARCH_AND_MODEL_OPT "-" BOOST_LIB_VERSION ".lib")
 #  ifdef BOOST_LIB_DIAGNOSTIC
-#     pragma message ("Linking to lib file: " BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT "-" BOOST_LIB_VERSION ".lib")
+#     pragma message ("Linking to lib file: " BOOST_LIB_PREFIX BOOST_STRINGIZE(BOOST_LIB_NAME) "-" BOOST_LIB_TOOLSET BOOST_LIB_THREAD_OPT BOOST_LIB_RT_OPT BOOST_LIB_ARCH_AND_MODEL_OPT "-" BOOST_LIB_VERSION ".lib")
 #  endif
 #endif
 
@@ -425,6 +449,9 @@ BOOST_LIB_VERSION:    The Boost version, in the form x_y, for Boost version x.y.
 #endif
 #if defined(BOOST_LIB_RT_OPT)
 #  undef BOOST_LIB_RT_OPT
+#endif
+#if defined(BOOST_LIB_ARCH_AND_MODEL_OPT)
+#  undef BOOST_LIB_ARCH_AND_MODEL_OPT
 #endif
 #if defined(BOOST_LIB_LINK_OPT)
 #  undef BOOST_LIB_LINK_OPT

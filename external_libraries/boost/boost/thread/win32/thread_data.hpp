@@ -153,7 +153,7 @@ namespace boost
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
             void interrupt()
             {
-                BOOST_VERIFY(detail::win32::SetEvent(interruption_handle)!=0);
+                BOOST_VERIFY(detail::winapi::SetEvent(interruption_handle)!=0);
             }
 #endif
             typedef detail::win32::handle native_handle_type;

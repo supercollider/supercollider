@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_SWITCH_SESSION_DIALOG_HPP_INCLUDED
-#define SCIDE_WIDGETS_SWITCH_SESSION_DIALOG_HPP_INCLUDED
+#pragma once
 
 #include <QDialog>
 #include <QListWidget>
@@ -46,5 +45,3 @@ private:
 };
 
 }
-
-#endif // SCIDE_WIDGETS_SWITCH_SESSION_DIALOG_HPP_INCLUDED

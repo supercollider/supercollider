@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef LANG_BYTECODEARRAY_H
-#define LANG_BYTECODEARRAY_H
+#pragma once
 
 
 typedef unsigned char Byte;
@@ -51,5 +50,3 @@ int compileOpcode(long opcode, long operand1);
 void compileJump(long opcode, long jumplen);
 int compileNumber(unsigned long value);
 int compileNumber24(unsigned long value);
-
-#endif

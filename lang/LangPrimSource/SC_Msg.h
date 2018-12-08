@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Msg_
-#define _SC_Msg_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,5 +48,3 @@ struct OSC_Packet
 };
 
 void FreeOSCPacket(OSC_Packet *inPacket);
-
-#endif

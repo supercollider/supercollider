@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_SCOPE_SHM_INTERFACE_HPP
-#define QC_SCOPE_SHM_INTERFACE_HPP
+#pragma once
 
 #include "../../common/server_shm.hpp"
 #include <QObject>
@@ -38,5 +37,3 @@ public:
 };
 
 } // namespace QtCollider
-
-#endif // QC_SCOPE_SHM_INTERFACE_HPP

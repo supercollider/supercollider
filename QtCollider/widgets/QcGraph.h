@@ -19,8 +19,7 @@
 *
 ************************************************************************/
 
-#ifndef QC_GRAPH_H
-#define QC_GRAPH_H
+#pragma once
 
 #include "../Common.h"
 #include "../QcHelper.h"
@@ -349,5 +348,3 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
 
     int _lastIndex; ///< The last node selected, regardless of the current state of selection
 };
-
-#endif

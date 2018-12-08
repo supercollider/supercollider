@@ -18,8 +18,7 @@
  *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-#ifndef SIMD_UNIT_HPP
-#define SIMD_UNIT_HPP
+#pragma once
 
 #include "SC_PlugIn.hpp"
 
@@ -185,5 +184,3 @@ struct SIMD_Unit:
 			nova::zerovec_simd<64>(out);
 	}
 };
-
-#endif /* SIMD_UNIT_HPP */

@@ -93,6 +93,9 @@ Platform {
 	pathSeparator { ^this.subclassResponsibility }
 	*pathSeparator { ^thisProcess.platform.pathSeparator }
 
+	pathDelimiter{ ^this.subclassResponsibility }
+	*pathDelimiter { ^thisProcess.platform.pathDelimiter }
+
 	isPathSeparator { |char| ^this.subclassResponsibility }
 	*isPathSeparator { |char| ^thisProcess.platform.isPathSeparator(char) }
 
@@ -190,6 +193,7 @@ Platform {
 
 UnixPlatform : Platform {
 	pathSeparator { ^$/ }
+    pathDelimiter { ^$: }
 
 	isPathSeparator { |char|
 		^(char === this.pathSeparator)

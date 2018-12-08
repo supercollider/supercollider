@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SC_PLUGIN_INTERFACE_HPP
-#define SC_PLUGIN_INTERFACE_HPP
+#pragma once
 
 #include <mutex>
 #include <vector>
@@ -218,5 +217,3 @@ public:
 };
 
 } /* namespace nova */
-
-#endif /* SC_PLUGIN_INTERFACE_HPP */

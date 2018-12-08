@@ -22,6 +22,7 @@
 #include <boost/type_index/detail/compile_time_type_info.hpp>
 
 #include <cstring>
+#include <boost/functional/hash.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/remove_cv.hpp>
 #include <boost/type_traits/remove_reference.hpp>
