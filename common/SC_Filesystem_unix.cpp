@@ -23,9 +23,9 @@
  */
 
 /*
- * SC_Filesystem implementation for Linux/FreeBSD.
+ * SC_Filesystem implementation for Linux/FreeBSD/OpenBSD.
  */
-#if defined(__linux__) || defined(__FreeBSD__)
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 
 #include "SC_Filesystem.hpp"
 
@@ -134,4 +134,4 @@ Path SC_Filesystem::defaultResourceDirectory()
 #endif
 }
 
-#endif // defined(__linux__) || defined(__FreeBSD__)
+#endif // defined(__linux__) || defined(__FreeBSD__) || defined(__OpenBSD__)
