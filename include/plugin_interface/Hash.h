@@ -62,7 +62,7 @@ inline int32 Hash(const char *inKey, size_t *outLength)
     hash += hash << 3;
     hash ^= hash >> 11;
     hash += hash << 15;
-    *outLength = inKey - origKey;
+    *outLength = (size_t)(inKey - origKey);
     return hash;
 }
 

@@ -159,13 +159,13 @@ public:
 	/// get number of inputs
 	int numInputs() const
 	{
-		return mNumInputs;
+		return int(mNumInputs);
 	}
 
 	/// get number of outputs
 	int numOutputs() const
 	{
-		return mNumOutputs;
+		return int(mNumOutputs);
 	}
 
 	/// test if input signal at index is scalar rate

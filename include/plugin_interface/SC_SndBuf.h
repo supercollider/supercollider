@@ -71,7 +71,6 @@ public:
 	rw_spinlock(rw_spinlock const & rhs)             = delete;
 	rw_spinlock & operator=(rw_spinlock const & rhs) = delete;
 	rw_spinlock(rw_spinlock && rhs)                  = delete;
-	rw_spinlock & operator=(rw_spinlock & rhs)       = delete;
 
 	~rw_spinlock() { assert(state == unlocked_state); }
 
