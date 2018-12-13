@@ -97,13 +97,9 @@ TestSerialPort : UnitTest {
 	test_open_onExistingDevice_variousSupportedArgs {
 		var port;
 		var argLists = [
-			(),
 			(crtscts: true),
 			(xonxoff: true),
-			(parity: 'even'),
-			(parity: 'odd'),
 			(stopbit: false),
-			(databits: 7),
 			(baudrate: 19200),
 			(exclusive: true),
 		];
