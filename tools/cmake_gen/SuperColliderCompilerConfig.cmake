@@ -48,7 +48,7 @@ function(sc_config_compiler_flags target)
             message(WARNING "-DNATIVE is not supported with MSVC")
         endif()
         target_compile_options(${target} PUBLIC
-            $<$<BOOL:${STRICT}>:"/Wall /WX">
+            $<$<BOOL:${STRICT}>:-Wall -WX>
             )
     else()
         message(WARNING "Unknown compiler: ${CMAKE_CXX_COMPILER_ID}. You may want to modify SuperColliderCompilerConfig.cmake to add checks for SIMD flags and other optimizations.")
