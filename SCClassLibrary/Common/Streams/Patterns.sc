@@ -645,6 +645,10 @@ Pprotect : FilterPattern {
 	asStream {
 		var rout = Routine(pattern.embedInStream(_));
 		rout.exceptionHandler = { |error|
+			// 'func' might throw an error
+			// we must clear the exceptionHandler before that
+			// otherwise, infinite recursion is the result
+			rout.exceptionHandler = nil;
 			func.value(error, rout);
 			nil.handleError(error)
 		};
