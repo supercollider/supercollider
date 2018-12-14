@@ -125,13 +125,10 @@ inline int32 Hash(const int32 *inKey, int32 inLength)
     return hash;
 }
 
-#ifndef _LASTCHAR_
-#define _LASTCHAR_
 #if BYTE_ORDER == LITTLE_ENDIAN
-const int32 kLASTCHAR = 0xFF000000;
+static const int32 kLASTCHAR = 0xFF000000;
 #else
-const int32 kLASTCHAR = 0x000000FF;
-#endif
+static const int32 kLASTCHAR = 0x000000FF;
 #endif
 
 inline int32 Hash(const int32 *inKey)
