@@ -126,9 +126,9 @@ inline int32 Hash(const int32 *inKey, int32 inLength)
 }
 
 #if BYTE_ORDER == LITTLE_ENDIAN
-static const int32 kLASTCHAR = 0xFF000000;
+const int32 kLASTCHAR = (int32)0xFF000000;
 #else
-static const int32 kLASTCHAR = 0x000000FF;
+const int32 kLASTCHAR = (int32)0x000000FF;
 #endif
 
 inline int32 Hash(const int32 *inKey)
