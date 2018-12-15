@@ -67,10 +67,9 @@ When an issue involves a crashing or unresponsive executable and you don't know 
 
 	- If you have created the fork before, bring it up-to-date with the SuperCollider repository. See [Updating your fork](#Updating-your-fork) below for details.
 - Create a topic branch from where you want to base your work.
-	- Your topic branch should be based on `develop`.
+	- Your topic branch should be based on `develop`, unless it is a trivial bug fix or documentation change, in which case it should be based on the latest release (`3.x`) branch.
 	- Our branch naming convention is `topic/branch-description`: for example, `topic/fix-sinosc` or `topic/document-object`.
 	- To quickly create a topic branch based on develop: `git checkout -b topic/my-fix develop`.
-	- Please avoid working directly on the `develop` branch.
 	- Please do not work off of the `master` branch, which is stable and only includes releases.
 - As time passes, make sure to keep your fork updated - see [Updating your fork](#Updating-your-fork) below.
 
