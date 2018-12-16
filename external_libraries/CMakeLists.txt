@@ -106,7 +106,7 @@ if(NOT YAMLCPP_FOUND)
 
   add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
   if(SYSTEM_BOOST)
-    target_include_directories(yaml PUBLIC ${Boost_INCLUDE_DIRS})
+    target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${Boost_INCLUDE_DIRS})
   else()
     target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
   endif()
