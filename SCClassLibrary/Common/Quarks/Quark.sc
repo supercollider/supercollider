@@ -41,6 +41,12 @@ Quark {
 	summary {
 		^this.data['summary']
 	}
+	author {
+		^this.data['author']
+	}
+	lastUpdated {
+		^(git !? _.log(1) !? _.first !? _[\date])
+	}
 	url {
 		^url ?? {
 			url = git !? { git.url }

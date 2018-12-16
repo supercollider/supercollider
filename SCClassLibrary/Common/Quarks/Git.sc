@@ -34,6 +34,45 @@ Git {
 			url = this.remote;
 		}
 	}
+
+	log {
+		|limit ...args|
+		var format, cmd, log, formatCodes;
+		formatCodes = [
+			["%H", 	\commit_hash],
+			["%T", 	\tree_hash],
+			["%an",	\author_name],
+			["%ae",	\author_email],
+			["%ad",	\date],
+			["%s",	\subject],
+			["%b",	\body],
+		].flop;
+
+		format = formatCodes[0].join("%x1f") ++ "%x1e";
+		cmd = ["log", "--format='%'".format(format), "--date=short"];
+		if (limit.notNil) {
+			cmd = cmd ++ ["-%".format(limit.asInteger.asString)];
+		};
+		if (args.notNil) {
+			cmd = cmd ++ args;
+		};
+
+		log = this.git(cmd);
+		^log.split(30.asAscii).collect({
+			|item|
+			item = item.stripWhiteSpace();
+			if (item.isEmpty.not) {
+				item = item.split(31.asAscii);
+				formatCodes[1].collectAs({
+					|key, i|
+					key -> item[i]
+				}, IdentityDictionary);
+			} {
+				nil;
+			}
+		}).select(_.notNil);
+	}
+
 	remote {
 		// detect origin of repo or nil
 		// origin	git://github.com/supercollider-quarks/MathLib (fetch)

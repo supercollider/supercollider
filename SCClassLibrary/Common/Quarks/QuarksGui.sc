@@ -31,17 +31,25 @@ QuarksGui {
 		bounds = Window.flipY(Window.availableBounds);
 		window = Window("Quarks", Rect(0, 0, min(bounds.width * 0.75, 1000), bounds.height * 0.9).center_(bounds.center));
 
-		colors = (
-			error: (bg: Color.fromHexString("#fcdede"), text: Color.fromHexString("#991111")),
-			info: (bg: Color.fromHexString("#e2eef9"), text: Color.fromHexString("#224466")),
-			warn: (bg: Color.fromHexString("#f7ea57"), text: Color.fromHexString("#494620")),
-			success: (bg: Color.fromHexString("#f5ffef"), text: Color.fromHexString("#6cc644")),
-			primary: (bg: Color.fromHexString("#76c656"), text: Color.white),
-			installed: (bg: Color.fromHexString("#76c656"), text: Color.white),
-			default: (bg: Color.white, text: Color.black)
-		);
+		window.layout_(VLayout([
+			StaticText().string_("Loading quarks..."),
+			align: \center
+		]));
 
-		btnUpdateDirectory = Button()
+		window.front;
+
+		defer({
+			colors = (
+				error: (bg: Color.fromHexString("#fcdede"), text: Color.fromHexString("#991111")),
+				info: (bg: Color.fromHexString("#e2eef9"), text: Color.fromHexString("#224466")),
+				warn: (bg: Color.fromHexString("#f7ea57"), text: Color.fromHexString("#494620")),
+				success: (bg: Color.fromHexString("#f5ffef"), text: Color.fromHexString("#6cc644")),
+				primary: (bg: Color.fromHexString("#76c656"), text: Color.white),
+				installed: (bg: Color.fromHexString("#76c656"), text: Color.white),
+				default: (bg: Color.white, text: Color.black)
+			);
+
+			btnUpdateDirectory = Button()
 			.states_([["Check for updates"], ["Checking..."]])
 			.toolTip_("Download directory listing from" + Quarks.directoryUrl)
 			.action_({
@@ -60,23 +68,23 @@ QuarksGui {
 				nil
 			});
 
-		btnQuarksHelp = Button().states_([["Help"]])
+			btnQuarksHelp = Button().states_([["Help"]])
 			.toolTip_("Open Quarks documentation")
 			.action_({ HelpBrowser.openBrowsePage("Quarks") });
 
-		btnInstallFolder = Button().states_([["Install a folder"]])
+			btnInstallFolder = Button().states_([["Install a folder"]])
 			.toolTip_("Install classes from a folder on your computer")
 			.action_({ this.installFolder });
 
-		/*btnOpenFolder = Button().states_([["Open Quarks Folder"]])
+			/*btnOpenFolder = Button().states_([["Open Quarks Folder"]])
 			.toolTip_("Open" + model.folder)
 			.action_({ model.openFolder });*/
 
-		btnClear = Button().states_([["Uninstall all"]])
+			btnClear = Button().states_([["Uninstall all"]])
 			.toolTip_("Uninstall all")
 			.action_({ model.clear; this.update; });
 
-		btnSave = Button().states_([["Save Quarks set"]])
+			btnSave = Button().states_([["Save Quarks set"]])
 			.toolTip_("Save currently installed quarks to a file")
 			.action_({
 				Dialog.savePanel({ |path|
@@ -86,7 +94,7 @@ QuarksGui {
 				})
 			});
 
-		btnLoad = Button().states_([["Load Quarks set"]])
+			btnLoad = Button().states_([["Load Quarks set"]])
 			.toolTip_("Install a set of quarks from a file")
 			.action_({
 				Dialog.openPanel({ |path|
@@ -102,7 +110,7 @@ QuarksGui {
 				});
 			});
 
-		btnRecompile = Button().states_([
+			btnRecompile = Button().states_([
 				["Recompile class library"],
 				["Recompile class library", colors.primary.text, colors.primary.bg]
 			])
@@ -110,13 +118,13 @@ QuarksGui {
 			.action_({ thisProcess.platform.recompile })
 			.enabled_(false);
 
-		lblMsg = StaticText()
+			lblMsg = StaticText()
 			.font_(GUI.font.new(size:13, usePointSize:true))
 			.align_(\center);
 
-		treeView = TreeView()
+			treeView = TreeView()
 			.setProperty(\rootIsDecorated, false)
-			.columns_(["", "", "Name", "Version", "Summary"])
+			.columns_(["", "", "Name", "Version", "Last Updated", "Author", "Summary"])
 			.itemPressedAction_({ |v|
 				detailView.visible = true;
 			})
@@ -136,9 +144,9 @@ QuarksGui {
 				})
 			});
 
-		detailView = QuarkDetailView.new;
+			detailView = QuarkDetailView.new;
 
-		window.layout =
+			window.layout =
 			VLayout(
 				HLayout(
 					btnUpdateDirectory,
@@ -153,9 +161,10 @@ QuarksGui {
 				[detailView.makeView(this), s:2]
 			);
 
-		quarkRows = Dictionary.new;
-		this.update;
-		window.front;
+			quarkRows = Dictionary.new;
+			this.update;
+			window.front;
+		}, 0.05)
 	}
 	update {
 		var recompile = false;
@@ -175,10 +184,15 @@ QuarksGui {
 			treeView.sort(0, true);
 			initialized = true;
 		});
-		treeView.invokeMethod(\resizeColumnToContents, 0);
-		treeView.invokeMethod(\resizeColumnToContents, 1);
-		treeView.invokeMethod(\resizeColumnToContents, 2);
-		treeView.invokeMethod(\resizeColumnToContents, 3);
+
+		treeView.numColumns.do { |i| treeView.invokeMethod(\resizeColumnToContents, i) };
+		(2..5).do {
+			|i|
+			if (treeView.columnWidth(i) > 180) {
+				treeView.setColumnWidth(i, 180)
+			}
+		};
+
 		btnRecompile.enabled = recompile;
 		btnRecompile.value = recompile.if(1, 0);
 		detailView.update();
@@ -572,6 +586,8 @@ QuarkRowView {
 			nil,
 			"",
 			"",
+			"",
+			"",
 			""
 		]).setView(1, btn);
 		treeItem.setTextColor(0, Color.clear);
@@ -620,13 +636,14 @@ QuarkRowView {
 
 		isInstalled = quark.isInstalled;
 		btn.value = isInstalled.binaryValue;
-
 		// this column has invisible text
 		// its used to sort the rows so that installed quarks are at the top
 		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
 		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
-		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
+		treeItem.setString(4, (quark.lastUpdated ? "").asString);
+		treeItem.setString(5, (quark.author ? "").asString);
+		treeItem.setString(6, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
 	}
 }
