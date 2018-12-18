@@ -116,8 +116,8 @@ public:
 		m_port.set_option(serial_port::parity(options.parity));
 		m_port.set_option(options.charsize);
 		m_port.set_option(serial_port::stop_bits(options.stop_bits));
-		m_port.set_option(serial_port::flow_control(options.flow_control));
 
+		setFlowControl(options.flow_control);
 		setExclusive(options.exclusive);
 
 		m_readThread = SC_Thread{ &SerialPort::doRead, this };
@@ -171,6 +171,10 @@ private:
 	/// Sets this serial port to exclusive mode. Has no effect on Windows. Throws \c system_error
 	/// on failure.
 	void setExclusive(bool);
+
+	/// Sets flow control behavior. Throws \c system_error if mode is not supported or if failure
+	/// occurs during set.
+	void setFlowControl(serial_port::flow_control::type control);
 
 	/// Calls a one-arg SuperCollider command on this object.
 	void runCommand(PyrSymbol* cmd)
@@ -237,6 +241,38 @@ private:
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
 PyrSymbol* SerialPort::s_doneAction = 0;
+
+void SerialPort::setFlowControl(serial_port::flow_control::type control)
+{
+	/* FIXME backported from 3.9 impl -- boost.asio doesn't correctly detect support for these features
+     * on macOS and possibly Linux (https://github.com/boostorg/asio/issues/65). Remove this if that issue
+     * is ever solved and we upgrade to that as minimum version. */
+#if !defined(_WIN32) && ( !defined(_POSIX_C_SOURCE) || defined(__USE_MISC) )
+	int fd = m_port.native_handle();
+	termios toptions;
+	if (::tcgetattr(fd, &toptions) < 0) {
+		throw std::system_error(std::error_code(errno, std::system_category()));
+	}
+
+	if (control == serial_port::flow_control::hardware) {
+	    toptions.c_cflag &= ~CRTSCTS;
+	} else {
+		toptions.c_cflag |= CRTSCTS;
+	}
+
+	if (control == serial_port::flow_control::hardware) {
+		toptions.c_iflag |= (IXON | IXOFF | IXANY);
+	} else {
+		toptions.c_iflag &= ~(IXON | IXOFF | IXANY);
+	}
+
+	if (::tcsetattr(fd, TCSAFLUSH, &toptions) < 0) {
+		throw std::system_error(std::error_code(errno, std::system_category()));
+	}
+#else // !_WIN32 && ( !_POSIX_C_SOURCE || __USE_MISC )
+	m_port.set_option(serial_port::flow_control(control));
+#endif // !_WIN32 && ( !_POSIX_C_SOURCE || __USE_MISC )
+}
 
 void SerialPort::setExclusive(bool b)
 {
