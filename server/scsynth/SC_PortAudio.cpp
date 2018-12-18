@@ -206,7 +206,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 
 		int bufFramePos = 0;
 #ifdef SC_PA_USE_DLL
-		int64 oscTime = mOSCbuftime = (uint64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
+		int64 oscTime = mOSCbuftime = (uint64)((mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + .5);
 // 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
 		int64 oscInc = mOSCincrement = (uint64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
 		mSmoothSampleRate = mDLL.SampleRate();
