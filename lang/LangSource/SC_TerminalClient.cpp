@@ -713,7 +713,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int)
 	PyrSlot* argvSlot = g->sp;
 
 	PyrObject* argvObj = newPyrArray(g->gc, argc * sizeof(PyrObject), 0, true);
-	SetObject(argvSlot, argvObj);
+	SetObject(argvSlot, argvObj); // this is okay here as we don't use the receiver
 
 	for (int i=0; i < argc; i++) {
 		PyrString* str = newPyrString(g->gc, argv[i], 0, true);

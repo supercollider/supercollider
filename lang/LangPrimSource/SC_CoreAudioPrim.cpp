@@ -96,7 +96,7 @@ int listDevices(struct VMGlobals *g, int type)
 	else num = numDevices;
 
     PyrObject* devArray = newPyrArray(g->gc, num * sizeof(PyrObject), 0, true);
-	SetObject(a, devArray);
+	SetObject(a, devArray); // this is okay here as we don't use the receiver below
 
 	int j = 0;
 	for (i=0; i<numDevices; i++)

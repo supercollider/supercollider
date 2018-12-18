@@ -3533,7 +3533,7 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 
 	size_t numberOfPaths = dirVector.size();
 	PyrObject * resultArray = newPyrArray(g->gc, numberOfPaths, 0, true);
-	SetObject(result, resultArray);
+	SetObject(result, resultArray); // this is okay here as we don't use the receiver
 
 	for (size_t i = 0; i != numberOfPaths; ++i) {
 		const std::string& utf8_path = SC_Codecvt::path_to_utf8_str(dirVector[i]);

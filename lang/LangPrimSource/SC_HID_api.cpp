@@ -492,7 +492,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	int result = SC_HID_APIManager::instance().build_devicelist();
 	if ( result > 0 ){
 		PyrObject* allDevsArray = newPyrArray(g->gc, result * sizeof(PyrObject), 0 , true);
-		SetObject( self, allDevsArray );
+		SetObject( self, allDevsArray ); // this is okay here as we don't use the receiver
 
 		struct hid_device_info *cur_dev = SC_HID_APIManager::instance().devinfos;
 		while( cur_dev ){
