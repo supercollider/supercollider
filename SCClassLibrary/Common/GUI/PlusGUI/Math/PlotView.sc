@@ -10,6 +10,8 @@ Plot {
 	var valueCache;
 
 	*initClass {
+		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+
 		StartUp.add {
 			GUI.skin.put(\plot, (
 				gridColorX: QtGUI.palette.highlight,
