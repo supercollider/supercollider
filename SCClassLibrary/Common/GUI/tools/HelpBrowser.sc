@@ -15,6 +15,9 @@ HelpBrowser {
 		Class.initClassTree(SCDoc);
 		defaultHomeUrl = SCDoc.helpTargetUrl ++ "/Help.html";
 
+		// Skip the rest of the init on Qt-less builds; the WebView
+		// class has dependencies on Qt primitives.
+		if(Platform.hasQt.not) { ^nil; };
 		StartUp.add {
 			NotificationCenter.register(SCDoc, \didIndexAllDocs, this) { WebView.clearCache }
 		}
