@@ -21,8 +21,7 @@ ControlName {
 		^UGen.buildSynthDef.specs[name]
 	}
 
-	spec_{
-		|spec|
+	spec_{ arg spec;
 		if (spec.notNil) {
 			spec = spec.asSpec;
 
