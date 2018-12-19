@@ -234,8 +234,7 @@ Warp {
 
 	*asWarp { arg spec; ^this.new(spec) }
 
-	asWarp {
-		|inSpec|
+	asWarp { arg inSpec;
 		^this.copy.spec_(inSpec)
 	}
 
