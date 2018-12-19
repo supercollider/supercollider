@@ -35,8 +35,7 @@ Git {
 		}
 	}
 
-	log {
-		|limit ...args|
+	log { |limit ...args|
 		var format, cmd, log, formatCodes;
 		formatCodes = [
 			["%H", 	\commit_hash],
