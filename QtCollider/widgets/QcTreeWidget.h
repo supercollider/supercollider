@@ -114,7 +114,7 @@ Q_SIGNALS:
   void itemPressed(QcTreeWidget::ItemPtr item, int column);
   void itemClicked(QcTreeWidget::ItemPtr item, int column);
   void itemDoubleClicked(QcTreeWidget::ItemPtr item, int column);
-  void action(QcTreeWidget::ItemPtr item, int column); //    void itemActivated(QTreeWidgetItem *item, int column)
+  void action(QcTreeWidget::ItemPtr item, int column); // forwarded from void itemActivated(QTreeWidgetItem *item, int column)
   void itemEntered(QcTreeWidget::ItemPtr item, int column);
   void itemChanged(QcTreeWidget::ItemPtr item, int column);
   void itemExpanded(QcTreeWidget::ItemPtr item);
