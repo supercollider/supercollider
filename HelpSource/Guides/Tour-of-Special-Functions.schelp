@@ -45,7 +45,11 @@ getPlotLay = { |plot, text|
 		clumped = data.asList.flop;
 	}{
 		#params, samps = data;
-		txt = txt ++ params.asString;
+		if (params.size > 6) {
+			txt = txt ++ format("( % .. % )", params.first, params.last);
+		} {
+			txt = txt ++ params.asString;
+		};
 		clumped = params.collect{ |param, i|
 			samps.collect([param, _, i])
 		}
@@ -186,24 +190,25 @@ CODE::
 (
 var plotSpecs = [
 	[   \gammaP,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 20) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 20) ],
 		"gammaP(a, z)\nLower incomplete gamma function (normalized)\na=",
 	],
 	[   \gammaQ,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 20) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 20) ],
 		"gammaQ(a, z)\nUpper incomplete gamma function (normalized)\na=",
 	],
 	[   \tgammaLower,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 15) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 6) ],
 		"tgammaLower(a, z)\nLower incomplete gamma function (non-normalized)\na=",
 		0, 3
 	],
 	[   \tgammaUpper,
-		[ [0.5,1,5,10], (0.0001, 0.05 .. 15) ],
+		[ (0.1, 0.3 .. 8), (0.01, 0.05 .. 6) ],
 		"tgammaUpper(a, z)\nUpper incomplete gamma function (non-normalized)\na=",
+		0, 3
 	],
-	[	{ |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
-		[[-0.5, -0.2, -0.1, 0.1, 0.2, 0.5, 1], (0.0001, 0.1 .. 40)],
+	[    { |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
+		[ (-0.5, -0.45  .. 1), (0.0001, 0.1 .. 40)],
 		"tgammaDeltaRatio(z, delta)\nGamma Delta Ratio\ndelta=",
 		0, 7
 	]
