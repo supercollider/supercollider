@@ -413,8 +413,12 @@ Plot {
 	}
 
 	prResampValues {
+		var dataRes, numSpecSteps, specStep, sizem1;
+
+		dataRes = plotBounds.width / max((value.size - 1), 1);
+
 		^if (
-			value.size <= (plotBounds.width / plotter.resolution) or:
+			(dataRes >= plotter.resolution) or:
 			{ plotter.domain.notNil } // don't resample if domain is specified
 		) {
 			value
@@ -422,8 +426,15 @@ Plot {
 			// resample
 			if (valueCache.isNil or: { resolution != plotter.resolution }) {
 				resolution = plotter.resolution;
+
 				// domain is nil, so data fills full domain/view width
-				valueCache = value.resamp1(plotBounds.width / resolution)
+				numSpecSteps = (plotBounds.width / resolution).floor.asInt;
+				specStep = numSpecSteps.reciprocal;
+				sizem1 = value.size - 1;
+
+				valueCache = (numSpecSteps + 1).collect{ |i|
+					value.blendAt((specStep * i) * sizem1)  // float index of new value
+				}
 			} {
 				valueCache
 			}
@@ -960,7 +971,7 @@ Plotter {
 			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
 		});
 	}
-	
+
 	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
 		^this.plot(duration, bounds, minval, maxval)
 	}
