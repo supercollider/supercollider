@@ -220,10 +220,10 @@ UnixPlatform : Platform {
 	}
 
 	defaultTempDir {
-		// +/+ "" looks funny but ensures trailing slash
-		^["/tmp/", this.userAppSupportDir +/+ ""].detect({ |path|
-			File.exists(path);
-		});
+		var dir;
+		dir = Platform.userAppSupportDir ++ "/tmp/";
+		dir.mkdir;
+		^dir;
 	}
 
 	formatPathForCmdLine { |path|
