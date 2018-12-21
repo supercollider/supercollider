@@ -7,7 +7,7 @@ Plot {
 	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
 
-	var valueCache;
+	var valueCache, resolution;
 
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
@@ -53,6 +53,8 @@ Plot {
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
+
+		resolution =  plotter.resolution;
 	}
 
 	bounds_ { |rect|
@@ -409,11 +411,22 @@ Plot {
 	copy {
 		^super.copy.drawGrid_(drawGrid.copy)
 	}
+
 	prResampValues {
-		^if(value.size <= (plotBounds.width / plotter.resolution)) {
+		^if (
+			value.size <= (plotBounds.width / plotter.resolution) or:
+			{ plotter.domain.notNil } // don't resample if domain is specified
+		) {
 			value
 		} {
-			valueCache ?? { valueCache = value.resamp1(plotBounds.width / plotter.resolution) }
+			// resample
+			if (valueCache.isNil or: { resolution != plotter.resolution }) {
+				resolution = plotter.resolution;
+				// domain is nil, so data fills full domain/view width
+				valueCache = value.resamp1(plotBounds.width / resolution)
+			} {
+				valueCache
+			}
 		}
 	}
 }
