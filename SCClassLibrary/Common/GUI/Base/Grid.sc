@@ -107,7 +107,7 @@ DrawGridX {
 				// value, [color]
 				var x;
 				val = val.asArray;
-				x = val[0].linlin(range[0],range[1],bounds.left,bounds.right);
+				x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
 				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
 				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
 				commands = commands.add( ['stroke' ] );
@@ -124,7 +124,7 @@ DrawGridX {
 					if(val[3].notNil,{
 						commands = commands.add( ['font_',val[3] ] );
 					});
-					x = val[0].linlin(range[0],range[1],bounds.left,bounds.right);
+					x = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.left, bounds.right);
 					commands = commands.add( ['stringAtPoint', val[1].asString, Point(x, bounds.bottom) + labelOffset ] );
 				}
 			});
@@ -153,7 +153,7 @@ DrawGridY : DrawGridX {
 				// value, [color]
 				var y;
 				val = val.asArray;
-				y = val[0].linlin(range[0],range[1],bounds.bottom,bounds.top);
+				y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
 				commands = commands.add( ['line', Point( bounds.left,y), Point(bounds.right,y) ] );
 				commands = commands.add( ['stroke' ] );
@@ -163,7 +163,7 @@ DrawGridY : DrawGridX {
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val,i;
 					var y;
-					y = val[0].linlin(range[0],range[1],bounds.bottom,bounds.top);
+					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 					if(val[2].notNil,{
 						commands = commands.add( ['color_',val[2] ] );
 					});
