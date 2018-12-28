@@ -118,8 +118,8 @@ function set_up_toc() {
 
     var toc_link = $("<a>", {
         href: "#",
-        class: "menu-link",
-        text: "Table of contents \u25bc"
+        class: "menu-link toc-link",
+        html: "T<span>able </span>O<span>f </span>C<span>ontents</span> \u25bc"
     }).appendTo(toc_container);
 
     $("#toc").appendTo(toc_container);
@@ -156,10 +156,11 @@ function fixTOC() {
 
     $("#menubar").append($("<ul>", {id: "nav"}));
 
-    create_menubar_item("SuperCollider " + scdoc_sc_version, helpRoot + "/Help.html");
-
-    create_menubar_item(scdoc_title, "#", function (a, li) {
-        a.addClass("title");
+    create_menubar_item("", helpRoot + "/Help.html", function (a, li) {
+        a.addClass("home");
+        $('<span>', { 
+            text: "SuperCollider"
+        }).appendTo(a);
     });
 
     create_menubar_item("Browse", helpRoot + "/Browse.html");
