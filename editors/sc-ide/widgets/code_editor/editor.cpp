@@ -876,7 +876,12 @@ void GenericCodeEditor::onDocumentFontChanged()
 
 void GenericCodeEditor::updateLayout()
 {
-    setViewportMargins( mLineIndicator->width(), 0, 0, 0 );
+    // Left margin equal to the width of one digit. If line numbers are
+    // present, this is the spacing between the line numbers and the code. If
+    // line numbers are not present, this is the margin to the left of the
+    // code.
+    int leftMargin = fontMetrics().width('9') * 0.8f;
+    setViewportMargins( mLineIndicator->width() + leftMargin, 0, 0, 0 );
     mOverlayWidget->setGeometry( viewport()->geometry() );
 }
 

@@ -93,7 +93,10 @@ int LineIndicator::widthForLineCount( int lineCount )
         ++digits;
     }
 
-    return 6 + fontMetrics().width('9') * digits;
+    // +6 pixels width because GenericCodeEditor::paintLineIndicator adds 4
+    // pixels right padding.
+    // +0.75 digits width for less cramped left margin.
+    return 6 + fontMetrics().width('9') * (digits + 0.75);
 }
 
 void LineIndicator::setHideLineIndicator( bool hide )
