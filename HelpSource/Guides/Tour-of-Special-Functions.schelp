@@ -167,15 +167,15 @@ plotSpecs = [
 		-2.5, 12.5
 	],
 	[   { |z| checkCall.(\trigamma, z) },
-		 (-3.99, -3.94 .. 10),
-		 "trigamma(z)\nTrigamma",
-		 0, 30
-	 ],
-	 [   // make sure z isn't a negative integer
-		 { |n, z| if ( z <= 0 nand: { (z % 1) == 0 }) { polygamma(n, z) } },
-		 [[2,3], (-6, -5.95 .. 5)],
-		 "polygamma(z)\nPolygamma\nn=",
-		 -50, 400
+		(-3.99, -3.94 .. 10),
+		"trigamma(z)\nTrigamma",
+		0, 30
+	],
+	[   // make sure z isn't a negative integer
+		{ |n, z| if ( z <= 0 nand: { (z % 1) == 0 }) { polygamma(n, z) } },
+		[[2,3], (-6, -5.95 .. 5)],
+		"polygamma(z)\nPolygamma\nn=",
+		-50, 400
 	 ]
 ];
 
@@ -207,7 +207,7 @@ var plotSpecs = [
 		"tgammaUpper(a, z)\nUpper incomplete gamma function (non-normalized)\na=",
 		0, 3
 	],
-	[    { |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
+	[   { |delta, z| if(z.neg != delta) { tgammaDeltaRatio(z, delta) } },
 		[ (-0.5, -0.45  .. 1), (0.0001, 0.1 .. 40)],
 		"tgammaDeltaRatio(z, delta)\nGamma Delta Ratio\ndelta=",
 		0, 7
@@ -590,7 +590,7 @@ var plotSpecs = [
 		"cylBesselJPrime(v, x)\nDerivative of the Bessel Function of the First Kind \nvs=",
 		-1, 1
 	],
-	[    \cylNeumannPrime,
+	[   \cylNeumannPrime,
 		[bPrimeVs, (0.04, 0.05 .. 20)],
 		"cylNeumannPrime(v, x)\nDerivative of the Bessel Function of the Second Kind \nvs=",
 		-1, 2
