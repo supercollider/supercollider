@@ -7,8 +7,6 @@ LinuxPlatform : UnixPlatform {
 	}
 	startup {
 
-		helpDir = this.systemAppSupportDir++"/Help";
-
 		// Server setup
 		Server.program = "exec scsynth";
 
