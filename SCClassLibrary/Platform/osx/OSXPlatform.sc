@@ -76,4 +76,11 @@ OSXPlatform : UnixPlatform {
 		file.putString(string);
 		file.close;
 	}
+
+	defaultTempDir {
+		var dir;
+		dir = Platform.userAppSupportDir +/+ "tmp";
+		if (File.exists(dir).not, { dir.mkdir; });
+		^dir;
+	}
 }
