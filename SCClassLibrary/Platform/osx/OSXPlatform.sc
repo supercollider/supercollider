@@ -79,7 +79,8 @@ OSXPlatform : UnixPlatform {
 
 	defaultTempDir {
 		var dir;
-		dir = Platform.userAppSupportDir +/+ "tmp";
+		// ensure trailing slash
+		dir = Platform.userAppSupportDir +/+ "tmp/";
 		if (File.exists(dir).not, { dir.mkdir; });
 		^dir;
 	}
