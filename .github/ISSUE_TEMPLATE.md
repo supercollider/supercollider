@@ -27,6 +27,8 @@ Error message (for bugs)
 // Please paste any error messages here **in their entirety**.
 // If this is a SuperCollider error message, include the full stack trace.
 // Link to a Gist (https://gist.github.com) if the message is long.
+// If your issue involves a crash, add a crash report.
+// See CONTRIBUTING.md in the root folder of the repository for instructions.
 ```
 
 Expected Behavior

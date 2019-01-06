@@ -8,7 +8,7 @@ const init = () => {
             { regex: /^\b\d+r[0-9a-zA-Z]*(\.[0-9A-Z]*)?/, token: 'number radix-float' },
             { regex: /^\b\d+(s+|b+|[sb]\d+)\b/, token: 'number scale-degree' },
             { regex: /^\b((\d+(\.\d+)?([eE][-+]?\d+)?(pi)?)|pi)\b/, token: 'number float' },
-            { regex: /^\b0(x|X)(\d|[a-f]|[A-F])+/, token: 'number hex-int' },
+            { regex: /^\b0x(\d|[a-f]|[A-F])+/, token: 'number hex-int' },
             { regex: /^\b[A-Za-z_]\w*\:/, token: 'symbol symbol-arg' },
             { regex: /^[a-z]\w*/, token: 'text name' },
             { regex: /^\b[A-Z]\w*/, token: 'class' },
