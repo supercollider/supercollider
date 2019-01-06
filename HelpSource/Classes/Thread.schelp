@@ -25,7 +25,7 @@ When code on a Thread starts or resumes another Thread (Routine), the former Thr
 becomes the latter's strong::parent::, and the latter its strong::child::. The parent
 Thread's execution is strong::blocked:: until the child Thread finishes or is suspended,
 at which point the parent Thread continues execution. The strong::current:: Thread may be
-accessed using link::#.thisThread#thisThread::, while a Thread's parent may be accessed
+accessed using link::#thisThread::, while a Thread's parent may be accessed
 using link::#-parent::.
 
 A Thread has
