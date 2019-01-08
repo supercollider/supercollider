@@ -42,7 +42,8 @@ Try to follow these guidelines:
 - **Investigate the issue**: What is the minimum effort or code required to produce the issue? Does it happen every time? Can you get it to happen on someone else's computer? Someone else's operating system?
 - **See if a ticket already exists**: Search SuperCollider's [open issues](https://github.com/supercollider/supercollider/issues). If an issue for your problem already exists, leave your comments in the issue's thread. Make sure you give your version and system info plus any information that you don't see already noted in the ticket.
 - **Ask the community**: If you're unsure about how to investigate or recreate an issue, it may help to ask the [sc-dev](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2681767) or [sc-users](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2676391) mailing lists. You can also try asking on [Slack](https://scsynth.slack.com) or on the [Facebook group](https://www.facebook.com/groups/supercollider/).
-- **Proceed in creating your issue** Be sure to create your issue in the appropriate repository. Note that [sc3-plugins](https://github.com/supercollider/sc3-plugins) are maintained in their own repository separate from SuperCollider.
+- **Proceed in creating your issue**: Be sure to create your issue in the appropriate repository. Note that [sc3-plugins](https://github.com/supercollider/sc3-plugins) are maintained in their own repository separate from SuperCollider.
+- **One ticket at a time**: If you have multiple issues to report, please open separate tickets for each one.
 
 ### Creating an issue
 
@@ -52,6 +53,8 @@ Please be as descriptive as possible when creating an issue. In order for us to 
 - **system**: Note your operating system and version
 - **extensions, plugins, helpers, etc.** (if applicable): List any extensions or modifications you are using
 - **error messages**: Paste all error messages *in their entirety* into the issue, or use a [gist](https://gist.github.com/) if the messages are very long.
+
+When an issue involves a crashing or unresponsive executable and you don't know why, providing a crash report can give developers a very helpful first step toward resolving the problem. See "Generating a crash report" below for instructions for your platform.
 
 ## Pull Requests
 
@@ -137,6 +140,34 @@ Rebasing is one way to integrate changes from one branch onto another, in this c
 	- This will change the commit history and is not recommended if there is more than one person working on the branch; however, it will create a clean commit history with only your commits in the pull request.
 - don't rebase, but instead `git checkout topic/branch-description`, then `git pull`, followed by `git push origin`
 	- The result will be that your pull request will include your commits in addition to all other commits to `develop` since your branch was created (without changing the commit history).
+
+## Generating a crash report
+
+### macOS
+
+Crash logs are in `~/Library/Logs/DiagnosticReports`. The following command will list the crash reports for a SuperCollider program with the most recent first:
+
+    ls -lt ~/Library/Logs/DiagnosticReports | grep -E 'SuperCollider|sclang|scsynth|supernova'
+
+If the app is hanging, and you think you know which one it is, you can force it to crash and produce a log by sending it a segfault signal:
+
+    pkill -SIGSEGV <sc-executable> # may need to execute twice to force a crash
+
+The crash log will be placed in `~/Library/Logs/DiagnosticReports` with the others.
+
+### Linux
+
+A core dump file is generated when an application crashes. See [this helpful article](https://linux-audit.com/understand-and-configure-core-dumps-work-on-linux/) for information on core dumps and how to enable them on your machine. You don't need to send us the full core dump (it will probably be quite large), but you can generate a helpful backgrace with gdb:
+
+    gdb <sc-executable> <core-file> -ex where -ex quit
+
+See `man gdb` for more information on using core files.
+
+For a hanging process, you can use the command `pkill -SIGSEGV <sc-executable>` to force a crash, which will then produce a core dump.
+
+### Windows
+
+We don't currently have an easy way to get good crash log information on Windows. You can view logs in Event Viewer, but there's not enough information there that would be helpful for us. If you know of an easy way to get a high-quality crash report on Windows, let us know!
 
 ## Additional resources
 

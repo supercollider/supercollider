@@ -24,6 +24,10 @@ Quarks {
 				("Quarks-install: path does not exist" + path).error;
 				^nil
 			});
+			if(File.type(path) != \directory, {
+				("Quarks-install: path is not a directory" + path).error;
+				^nil
+			});
 			quark = Quark.fromLocalPath(path);
 			this.installQuark(quark);
 			^quark
