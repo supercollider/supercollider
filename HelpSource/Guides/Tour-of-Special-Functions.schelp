@@ -176,7 +176,7 @@ plotSpecs = [
 		[[2,3], (-6, -5.95 .. 5)],
 		"polygamma(z)\nPolygamma\nn=",
 		-50, 400
-	 ]
+	]
 ];
 
 ~layOutPlots.( plotSpecs.collect{ |data| ~multiPlot.(*data) }, "Gamma Functions", 2 );
@@ -600,12 +600,12 @@ var plotSpecs = [
 		"cylBesselIPrime(v, x)\nDerivative of the Modified Bessel Function of the First Kind \nvs=",
 		-25, 25
 	],
-	[	\cylBesselKPrime,
+	[   \cylBesselKPrime,
 		[modBPrimeVs, (0.01, 0.05 .. 10)],
 		"cylBesselKPrime(v, x)\nDerivative of the Modified Bessel Function of the Second Kind \nvs=",
 		-0.5, 0
 	],
-	[	\sphBesselPrime,
+	[   \sphBesselPrime,
 		[modBPrimeVs, (0.001, 0.05 .. 20)],
 		"sphBesselPrime(v, x)\nDerivative of the Spherical Bessel Function of the First Kind \nvs=",
 	],
@@ -709,11 +709,11 @@ var plotSpecs = [
 	[ \airyBi, biSamps, "airyBi(z)", -2,15],
 	[ \airyAiPrime, aiSamps, "airyAiPrime(z)", -1.2, 1.2],
 	[ \airyBiPrime, biSamps, "airyBiPrime(z)", -1.2, 1.2],
-	[	\airyAi,
+	[   \airyAi,
 		genSamps.(\airyAiZero, 7),
 		"AiryAi from 7th zero\nairyAiZero(n)"
 	],
-	[	\airyBi,
+	[   \airyBi,
 		genSamps.(\airyBiZero, 7),
 		"AiryBi from 7th zero\nairyBiZero(n)"
 	]
