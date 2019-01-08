@@ -10,7 +10,7 @@ This view displays and does nothing by itself, but allows you to define how it w
 
 To define how the view is drawn you set the link::#-drawFunc:: variable to a link::Classes/Function:: within which you can use the link::Classes/Pen:: class to draw graphical primitives, such as lines, rectangles, ellipses, curves, and also text.
 
-This class offers convenient mechanisms for creating animations, that is, to automatically redraw itself in regular time intervals. See the link::#animation#Animation:: section of this document.
+This class offers convenient mechanisms for creating animations, that is, to automatically redraw itself in regular time intervals. See the link::#Animation:: section of this document.
 
 For a guide to using this view, see link::Guides/GUI-Introduction#Custom views::.
 
@@ -105,7 +105,7 @@ METHOD:: frame
 
 SUBSECTION:: Actions
 
-	The UserView by itself does not respond to any interaction by the user. You can define the modes of interaction entirely on your own using mouse and keyboard actions. See link::Guides/GUI-Introduction#Actions and hooks: make that button do something!#Actions and Hooks:: for detailed explanation.
+	The UserView by itself does not respond to any interaction by the user. You can define the modes of interaction entirely on your own using mouse and keyboard actions. See link::Guides/GUI-Introduction#Actions and hooks: Make that button do something!#Actions and Hooks:: for detailed explanation.
 
 	Note that there is no default mode of interaction with the UserView, so link::Classes/View#-action:: will never be triggered, if you don't implement that yourself.
 

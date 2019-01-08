@@ -17,10 +17,10 @@ method::use
 Creates a new Environment and sends use message.
 
 method::push
-Saves link::#.currentEnvironment:: on the stack.
+Saves link::#currentEnvironment:: on the stack.
 
 method::pop
-Restores link::#.currentEnvironment:: from the stack.
+Restores link::#currentEnvironment:: from the stack.
 
 INSTANCEMETHODS::
 
@@ -34,17 +34,17 @@ method::push
 Saves the receiver on the stack.
 
 method::pop
-Restores link::#.currentEnvironment:: from the stack.
+Restores link::#currentEnvironment:: from the stack.
 
 method::linkDoc
-Links the environment to the current document, so that it is the currentEnvironment only when one document is in focus. See:link::Classes/Document#envir::
+Links the environment to the current document, so that it is the currentEnvironment only when one document is in focus. See: link::Classes/Document#-envir::
 argument::doc
-The document to link to, defaults to the current document (link::Classes/Document#current::). If the document has focus or no document is given, the environment is pushed immediately.
+The document to link to, defaults to the current document (link::Classes/Document#*current::). If the document has focus or no document is given, the environment is pushed immediately.
 
 method::unlinkDoc
-Uninks the environment to the current document, so that it is the currentEnvironment only when one document is in focus. See:link::Classes/Document#envir::
+Uninks the environment to the current document, so that it is the currentEnvironment only when one document is in focus. See: link::Classes/Document#-envir::
 argument::doc
-The document to unlink from, defaults to the current document (link::Classes/Document#current::). If the document has focus or no document is given, the environment is popped immediately.
+The document to unlink from, defaults to the current document (link::Classes/Document#*current::). If the document has focus or no document is given, the environment is popped immediately.
 
 
 SECTION::PseudoVariables (global variables)
@@ -53,10 +53,10 @@ These are not methods, but global variables.
 warning::In general, you should not manipulate these variables directly. Instead, use the link::#-use::, link::#-push:: and link::#*pop:: methods.::
 
 method:: currentEnvironment
-determines environment used by "~" syntax, link::#.valueEnvir::, and link::#.valueArrayEnvir::
+determines environment used by "~" syntax, link::#valueEnvir::, and link::#valueArrayEnvir::
 
 method:: topEnvironment
-initial value of link::#.currentEnvironment::. code::~environmentVariables:: placed here can be used as "global variables," as long as the topEnvironment remains the currentEnvironment.
+initial value of link::#currentEnvironment::. code::~environmentVariables:: placed here can be used as "global variables," as long as the topEnvironment remains the currentEnvironment.
 
 code::
 ~abc = 10;  // Environment variable (acting like a global var)
@@ -87,22 +87,22 @@ Thus, ~abc is not truly a global variable because it is inaccessible if its envi
 SECTION::Related Messages
 
 method:: valueEnvir (arg1, arg2...)
-evaluates a function, looking up unspecified arguments in link::#.currentEnvironment::
+evaluates a function, looking up unspecified arguments in link::#currentEnvironment::
 
 method:: valueArrayEnvir (argArray)
-same as link::#.valueEnvir::, but with arguments in an array
+same as link::#valueEnvir::, but with arguments in an array
 
 
 SECTION::Overview
 
 subsection::topEnvironment, currentEnvironment, make and use
 
-When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#.topEnvironment:: and link::#.currentEnvironment::. The link::#.topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
+When SuperCollider starts, it creates an Environment that it stores in the pseudovariables link::#topEnvironment:: and link::#currentEnvironment::. The link::#topEnvironment:: provides a universally accessible collection of named values similar to the link::Classes/Interpreter:: variables a, b, c, ....
 
-The compiler provides a shortcut syntax where ~ is a placeholder for link::#.currentEnvironment::.
+The compiler provides a shortcut syntax where ~ is a placeholder for link::#currentEnvironment::.
 This makes the expression code::~myvariable;:: equivalent to code::currentEnvironment.at(\myvariable);:: and the expression code::~myvariable = 888;:: equivalent to code::currentEnvironment.put(\myvariable, 888);::
 
-The messages link::#*make::(function) and link::#*use::(function) replace link::#.currentEnvironment:: with the receiver. The message link::#*make:: is intended to be used when initializing an Environment, so it returns the Environment. The message link::#*use:: is for evaluating a functions within an Environment, so it returns the return value of the function.
+The messages link::#*make::(function) and link::#*use::(function) replace link::#currentEnvironment:: with the receiver. The message link::#*make:: is intended to be used when initializing an Environment, so it returns the Environment. The message link::#*use:: is for evaluating a functions within an Environment, so it returns the return value of the function.
 
 For example
 code::
@@ -125,7 +125,7 @@ evaluates the function within that environment.
 
 subsection::valueEnvir and valueArrayEnvir
 
-When Functions are evaluated with link::#.valueEnvir:: and link::#.valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
+When Functions are evaluated with link::#valueEnvir:: and link::#valueArrayEnvir:: unspecified arguments are looked up in the current Environment.
 If the argument is not found in the Environment its default value is used.
 code::
 (
@@ -147,7 +147,7 @@ Environment.use({
 });
 )
 ::
-Now here is how this can be used with an instrument function. Environments allow you to define instruments without having to worry about argument ordering conflicts. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because link::#.valueEnvir:: looks them up in the environment.
+Now here is how this can be used with an instrument function. Environments allow you to define instruments without having to worry about argument ordering conflicts. Even though the three functions below have the freq, amp and pan args declared in different orders it does not matter, because link::#valueEnvir:: looks them up in the environment.
 code::
 s.boot;
 
@@ -201,7 +201,7 @@ code::
 e = (a: "got it", f: { { ~a.postln }.defer(0.5) });
 e.use { e.f };
 ::
-link::Classes/Function#inEnvir#Function's inEnvir:: method attaches a function to a specific environment. If no environment is given, the current environment at the time of executing inEnvir is the default.
+link::Classes/Function#-inEnvir#Function's inEnvir:: method attaches a function to a specific environment. If no environment is given, the current environment at the time of executing inEnvir is the default.
 code::
 e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
 e.use { e.f };
@@ -252,7 +252,7 @@ code::
 e.mul2 = { |z| z.someVariable * 2 };
 e.mul2;
 ::
-Environment variables inside a function will refer to the currently active environment -- not to the Environment being addressed. This is to allow the object prototype to interact with the link::#.currentEnvironment::.
+Environment variables inside a function will refer to the currently active environment -- not to the Environment being addressed. This is to allow the object prototype to interact with the link::#currentEnvironment::.
 code::
 e.mul2 = { |z| ~someVariable * 2 };
 // this will throw an error because ~someVariable is nil in the currentEnvironment
