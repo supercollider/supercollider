@@ -131,7 +131,7 @@ code::
 
 section::Reverberation
 
-The next example is by James McCartney. It comes from the link::#Why Supercollider 2.0?#01 Why SuperCollider:: document that was part of the SuperCollider2 distribution.
+The next example is by James McCartney. It comes from the emphasis::Why Supercollider 2.0?:: document that was part of the SuperCollider2 distribution.
 
 The example is more or less a Schroeder reverb - a signal passed through a parallel bank of comb filters which then pass through a series of allpass filters.
 

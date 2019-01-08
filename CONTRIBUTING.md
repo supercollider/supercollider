@@ -121,8 +121,8 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 
 			origin	https://github.com/your-name/supercollider.git (fetch)
 			origin	https://github.com/your-name/supercollider.git (push)
-			upstream	https://github.com/supercollider/supercollider (fetch)
-			upstream	https://github.com/supercollider/supercollider (push)
+			upstream	https://github.com/supercollider/supercollider.git (fetch)
+			upstream	https://github.com/supercollider/supercollider.git (push)
 
 	- You can now proceed to update your fork.
 - If you've already added the `upstream` remote, you can update your fork by doing the following:
