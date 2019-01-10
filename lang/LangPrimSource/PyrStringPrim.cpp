@@ -413,8 +413,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	++g->sp; // advance the stack to avoid overwriting receiver
 	SetObject(g->sp, result_array); // push result to make reachable
 
-	if( !match_count ) return errNone;
-
 	for (int i = 0; i < match_count; ++i )
 	{
 		int pos = matches[i].pos;
