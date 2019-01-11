@@ -372,16 +372,19 @@ code::
 ::
 
 method::findRegexp
-POSIX regular expression search.
+POSIX regular expression search. This method searches exhaustively for all possible matches and collects them into an array of pairs, in the format code::[character index, matching string]::. As in the regular expression standard, code::*:: and code::+:: are greedy; the match list will include the largest possible distinct matches. Note, though, that parentheses for grouping will produce a separate result: code::"aaa".findRegexp("(a+)");:: appears to produce duplicated results code::[ [ 0, aaa ], [ 0, aaa ] ]::, but this is because the first match is for the parentheses and the second is for code::a+::.
+
 code::
 "foobar".findRegexp("o*bar");
 "32424 334 /**aaaaaa*/".findRegexp("/\\*\\*a*\\*/");
 "foobar".findRegexp("(o*)(bar)");
-"aaaabaaa".findAllRegexp("a+");
+"aaaabaaa".findRegexp("a+");
 ::
 
+Returns:: A nested array, where each sub-array is a pair, code::[character index, matching string]::. If there are no matches, an empty array.
+
 method::findAllRegexp
-Like link::#-findAll::, but use regular expressions. So unlike findRegexp, it will just return the indices of the
+Like link::#-findAll::, but use regular expressions. Unlike findRegexp, it returns only the indices of the matches: code::string.findAllRegexp(regexp):: returns the same as code::string.findRegexp(regexp).flop.at(0)::.
 
 code::
 "foobar".findAllRegexp("o*bar");
@@ -389,6 +392,8 @@ code::
 "foobar".findAllRegexp("(o*)(bar)");
 "aaaabaaa".findAllRegexp("a+");
 ::
+
+Returns:: An array of integer character indices pointing to all the possible matches.
 
 method::findRegexpAt
 Match a regular expression at the given offset, returning the match and the length of the match in an Array, or nil if it doesn't match.
@@ -404,6 +409,8 @@ code::
 "foobaroob".findRegexpAt("o*b+", 6); // [ oob, 3 ]
 "foobaroob".findRegexpAt("o*b+", 7); // [ ob,  2 ]
 ::
+
+Returns:: An array code::[matching string, length]:: if a match is found at the specified offset; code::nil:: if the offset doesn't match.
 
 subsection:: Searching strings
 
