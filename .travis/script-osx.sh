@@ -10,4 +10,9 @@ cmake --build $TRAVIS_BUILD_DIR/BUILD --config Release --target install | tee $B
 CMAKE_EXIT=$?
 set +o pipefail
 
+if [[ $CMAKE_EXIT != 0 ]]; then
+    echo "Build failed. Log:"
+    cat $BUILD_LOG
+fi
+
 exit $CMAKE_EXIT

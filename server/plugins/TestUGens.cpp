@@ -28,14 +28,6 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-inline int sc_fpclassify(float x)
-{
-	return std::fpclassify(x);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
 static InterfaceTable *ft;
 
 struct CheckBadValues : public Unit
@@ -83,7 +75,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 	case 1:		// post a line on every bad value
 		LOOP1(inNumSamples,
 			samp = ZXP(in);
-			classification = sc_fpclassify(samp);
+			classification = std::fpclassify(samp);
 			switch (classification)
 			{
 				case FP_INFINITE:
@@ -106,7 +98,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 	case 2:
 		LOOP1(inNumSamples,
 			samp = ZXP(in);
-			classification = CheckBadValues_fold_fpclasses(sc_fpclassify(samp));
+			classification = CheckBadValues_fold_fpclasses(std::fpclassify(samp));
 			if(classification != unit->prevclass) {
 				if(unit->sameCount == 0) {
 					Print("CheckBadValues: %s found in Synth %d, ID %d\n",
@@ -140,7 +132,7 @@ void CheckBadValues_next(CheckBadValues* unit, int inNumSamples)
 	default:		// no post
 		LOOP1(inNumSamples,
 			samp = ZXP(in);
-			classification = sc_fpclassify(samp);
+			classification = std::fpclassify(samp);
 			switch (classification)
 			{
 			case FP_INFINITE:
@@ -166,15 +158,12 @@ const char *CheckBadValues_fpclassString(int fpclass)
 		case FP_NORMAL:       return "normal";
 		case FP_NAN:          return "NaN";
 		case FP_INFINITE:     return "infinity";
-#ifndef _MSC_VER
 		case FP_ZERO:         return "zero";
-#endif
 		case FP_SUBNORMAL:    return "denormal";
 		default:              return "unknown";
 	}
 }
 
-#ifndef _MSC_VER
 inline int CheckBadValues_fold_fpclasses(int fpclass)
 {
 	switch(fpclass) {
@@ -182,12 +171,6 @@ inline int CheckBadValues_fold_fpclasses(int fpclass)
 		default:        return fpclass;
 	}
 }
-#else
-inline int CheckBadValues_fold_fpclasses(int fpclass)
-{
-	return fpclass;
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -216,7 +199,7 @@ void Sanitize_next_aa(Sanitize* unit, int inNumSamples)
 	for (int i = 0; i < inNumSamples; i++)
 	{
 		samp = in[i];
-		switch (sc_fpclassify(samp))
+		switch (std::fpclassify(samp))
 		{
 		case FP_INFINITE:
 		case FP_NAN:
@@ -239,7 +222,7 @@ void Sanitize_next_ak(Sanitize* unit, int inNumSamples)
 	for (int i = 0; i < inNumSamples; i++)
 	{
 		samp = in[i];
-		switch (sc_fpclassify(samp))
+		switch (std::fpclassify(samp))
 		{
 		case FP_INFINITE:
 		case FP_NAN:
@@ -257,7 +240,7 @@ void Sanitize_next_kk(Sanitize* unit, int inNumSamples)
 	float samp = IN0(0);
 	float replace = IN0(1);
 
-	switch (sc_fpclassify(samp))
+	switch (std::fpclassify(samp))
 	{
 	case FP_INFINITE:
 	case FP_NAN:
