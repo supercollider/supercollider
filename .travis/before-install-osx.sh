@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export BREW_NO_AUTO_UPDATE=1
-export BREW_NO_ANALYTICS=1
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_ANALYTICS=1
 
 # according to https://docs.travis-ci.com/user/caching#ccache-cache
 brew install ccache

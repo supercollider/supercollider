@@ -20,7 +20,7 @@ definitionList::
 ::
 ::
 
-Of these, only the child events are returned to the event stream player during play. The parent events are used strictly internally to control spawning behavior. The parent and child event streams do not mix together. Thus pattern composition ( link::Classes/Pchain:: ) and parallelization ( link::Classes/Ppar:: ) may be used without special handling. It is up to the user to be aware of whether the parent or child stream should be subject to further manipulation, and put that manipulation in the right place. If it is to affect the child stream, it should enclose the entire Pspawn; for the parent stream, it should be inside Pspawn. (See the link::#Examples:: below.)
+Of these, only the child events are returned to the event stream player during play. The parent events are used strictly internally to control spawning behavior. The parent and child event streams do not mix together. Thus pattern composition ( link::Classes/Pchain:: ) and parallelization ( link::Classes/Ppar:: ) may be used without special handling. It is up to the user to be aware of whether the parent or child stream should be subject to further manipulation, and put that manipulation in the right place. If it is to affect the child stream, it should enclose the entire Pspawn; for the parent stream, it should be inside Pspawn. (See the link::#examples:: below.)
 
 Pspawn uses the following items in the parent pattern:
 definitionList::
