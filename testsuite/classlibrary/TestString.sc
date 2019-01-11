@@ -119,14 +119,15 @@ TestString : UnitTest {
 	}
 
 	test_findRegexp_nonEmptyResult {
-		var result = "the quick brown fox".findRegexp("[a-zA-Z]+").flop;
-		this.assert(
-			result[0] == [0, 4, 10, 16] and: { result[1][2] == "brown" },
-			"`\"the quick brown fox\".findRegexp(\"[a-zA-Z]+\")` should return 4 results at indices [0, 4, 10, 16], and the third word should be 'brown'"
+		var result = "two words".findRegexp("[a-zA-Z]+");
+		this.assertEquals(
+			result,
+			[[0, "two"], [4, "words"]],
+			"`\"two words\".findRegexp(\"[a-zA-Z]+\")` should return a nested array of indices and matches"
 		)
 	}
 
-	test_findRegexp_EmptyResult {
+	test_findRegexp_emptyResult {
 		var result = "the quick brown fox".findRegexp("moo");
 		this.assertEquals(result, Array.new, "Non-matching findRegexp should return empty array");
 	}
