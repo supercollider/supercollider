@@ -337,7 +337,9 @@ code::
 
 subsection:: Regular expressions
 
-Note the inversion of the arguments:
+The String class provides access to the boost library's regular expression functions. Boost's default uses Perl settings. (Currently, there is no hook to override the regex style.) Syntax details may be found at link::https://www.boost.org/doc/libs/1_69_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html::.
+
+Note carefully the argument order:
 
 List::
 ## Code::regexp.matchRegexp(stringToSearch)::
@@ -347,7 +349,7 @@ List::
 Code::findRegexp:: follows the pattern established by link::Classes/String#-find::, where the receiver is the string to be searched. Code::matchRegexp:: follows the pattern of link::Reference/matchItem::, where the receiver is the pattern to match and the first argument is the object to be tested. This is a common source of confusion, but it is based on this precedent.
 
 method::matchRegexp
-POSIX regular expression matching. Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
+Perl regular expression matching (see link::Classes/String#Regular expressions::). Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
 
 note::This is code::regexp.matchRegexp(stringToSearch):: and not the other way around! See above: link::Classes/String#Regular expressions::.::
 
@@ -372,7 +374,11 @@ code::
 ::
 
 method::findRegexp
-POSIX regular expression search. This method searches exhaustively for all possible matches and collects them into an array of pairs, in the format code::[character index, matching string]::. As in the regular expression standard, code::*:: and code::+:: are greedy; the match list will include the largest possible distinct matches. Note, though, that parentheses for grouping will produce a separate result: code::"aaa".findRegexp("(a+)");:: appears to produce duplicated results code::[ [ 0, aaa ], [ 0, aaa ] ]::, but this is because the first match is for the parentheses and the second is for code::a+::.
+Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
+
+"Leftmost largest match": As in the regular expression standard, code::*:: and code::+:: are greedy; if it is possible to have more than one overlapping match for a part of the regular expression, the match list will include only the leftmost and largest of them. In code::"foobar".findRegexp("(o*)(bar)");:: below, code::"o*":: may potentially have three matches: code::"o":: at index 1 (second character), code::"o":: at index 2, and code::"oo":: at index 1. code::findRegexp:: will return only the last of these (code::"oo"::), because it begins in the leftmost-possible matching position, and it is the longest possible match at that position.
+
+Note, though, that parentheses for grouping (a "marked sub-expression" or "capturing group") will produce a separate result: code::"aaa".findRegexp("(a+)");:: appears to produce duplicated results code::[ [ 0, aaa ], [ 0, aaa ] ]::, but this is because the first match is for the parentheses and the second is for code::a+::.
 
 code::
 "foobar".findRegexp("o*bar");
@@ -384,7 +390,7 @@ code::
 Returns:: A nested array, where each sub-array is a pair, code::[character index, matching string]::. If there are no matches, an empty array.
 
 method::findAllRegexp
-Like link::#-findAll::, but use regular expressions. Unlike findRegexp, it returns only the indices of the matches: code::string.findAllRegexp(regexp):: returns the same as code::string.findRegexp(regexp).flop.at(0)::.
+Like link::#-findAll::, but use regular expressions (see link::Classes/String#Regular expressions::). Unlike findRegexp, it returns only the indices of the matches: code::string.findAllRegexp(regexp):: returns the same as code::string.findRegexp(regexp).flop.at(0)::.
 
 code::
 "foobar".findAllRegexp("o*bar");
@@ -396,7 +402,7 @@ code::
 Returns:: An array of integer character indices pointing to all the possible matches.
 
 method::findRegexpAt
-Match a regular expression at the given offset, returning the match and the length of the match in an Array, or nil if it doesn't match.
+Match a regular expression (see link::Classes/String#Regular expressions::) at the given offset, returning the match and the length of the match in an Array, or nil if it doesn't match.
 The match must begin right at the offset.
 
 code::
