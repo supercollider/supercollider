@@ -29,15 +29,15 @@ function(sc_check_sc_path path)
     set(SC_PATH ${full_path} PARENT_SCOPE)
 endfunction()
 
-function(sc_set_shared_module_prefix)
-    if(APPLE OR WIN32)
-        set(CMAKE_SHARED_MODULE_SUFFIX ".scx" PARENT_SCOPE)
-    endif()
-    set(CMAKE_SHARED_MODULE_PREFIX "" PARENT_SCOPE)
-endfunction()
-
 function(sc_add_server_plugin_properties target is_supernova)
-    set_target_properties(${target} PROPERTIES CXX_VISIBILITY_PRESET hidden)
+    set_target_properties(${target} PROPERTIES
+        CXX_VISIBILITY_PRESET hidden
+        PREFIX ""
+    )
+
+    if(APPLE OR WIN32)
+        set_target_properties(${target} PROPERTIES SUFFIX ".scx")
+    endif()
 
     target_include_directories(${target} PUBLIC
         ${SC_PATH}/include/plugin_interface
@@ -79,7 +79,5 @@ function(sc_add_server_plugin dest_dir name cpp sc schelp)
         install(FILES "${schelp}" DESTINATION ${dest_dir}/Help)
     endif()
 endfunction()
-
-sc_set_shared_module_prefix()
 
 set(all_sc_server_plugins)

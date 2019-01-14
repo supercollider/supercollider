@@ -71,7 +71,6 @@ public:
 	rw_spinlock(rw_spinlock const & rhs)             = delete;
 	rw_spinlock & operator=(rw_spinlock const & rhs) = delete;
 	rw_spinlock(rw_spinlock && rhs)                  = delete;
-	rw_spinlock & operator=(rw_spinlock & rhs)       = delete;
 
 	~rw_spinlock() { assert(state == unlocked_state); }
 
@@ -219,7 +218,7 @@ inline float lookupi2(const float *table, uint32_t phase, uint32_t mask)
 inline float lookupi1(const float* table0, const float* table1, uint32_t pphase, int32_t lomask)
 {
 	float pfrac = PhaseFrac1(pphase);
-	uint32_t index = ((pphase >> xlobits1) & lomask);
+	uint32_t index = ((pphase >> xlobits1) & (uint32_t)lomask);
 	float val1 = *(const float*)((const char*)table0 + index);
 	float val2 = *(const float*)((const char*)table1 + index);
 	return val1 + val2 * pfrac;

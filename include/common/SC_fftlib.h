@@ -42,6 +42,7 @@ class SCFFT_Allocator
 public:
 	virtual void* alloc(size_t size) = 0;
 	virtual void free(void* ptr) = 0;
+	virtual ~SCFFT_Allocator() {}
 };
 
 enum SCFFT_Direction

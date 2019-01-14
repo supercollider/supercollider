@@ -26,16 +26,6 @@
 #include <stdio.h>
 #include <limits.h>
 
-#ifndef _LASTCHAR_
-#define _LASTCHAR_
-#if BYTE_ORDER == LITTLE_ENDIAN
-const int32 kLASTCHAR = 0xFF000000;
-#else
-const int32 kLASTCHAR = 0x000000FF;
-#endif
-#endif
-
-
 void str4cpy(int32 *dst, const char *src);
 void mem4cpy(int32 *dst, const char *src, int charlen);
 
