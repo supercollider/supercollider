@@ -16,6 +16,8 @@ Release dates of 3.x versions:
 3.10.1-rc1 (2019-01-13)
 =======================
 
+Fixed an infinite hang in `SerialPort.devices` affecting macOS ([#4180](https://github.com/supercollider/supercollider/pull/4180)). **Testers:** the correctness of this fix is not fully certain, please try `SerialPort.devices` if you are on macOS.
+
 Fixed a build issue on OpenBSD ([#4203](https://github.com/supercollider/supercollider/pull/4203)).
 
 Fixed `/b_fill`, which was broken in supernova ([#4188](https://github.com/supercollider/supercollider/pull/4188)).
