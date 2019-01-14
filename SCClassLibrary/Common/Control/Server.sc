@@ -130,10 +130,12 @@ ServerOptions {
 			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
-		if (numInputBusChannels != defaultValues[\numInputBusChannels], {
+		// scsynth and supernova default to 8 input channels
+		if (numInputBusChannels != 8, {
 			o = o ++ " -i " ++ numInputBusChannels;
 		});
-		if (numOutputBusChannels != defaultValues[\numOutputBusChannels], {
+		// scsynth and supernova default to 8 output channels
+		if (numOutputBusChannels != 8, {
 			o = o ++ " -o " ++ numOutputBusChannels;
 		});
 		if (numBuffers !== defaultValues[\numBuffers], {
