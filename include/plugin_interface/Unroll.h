@@ -139,19 +139,19 @@ meanings of the indexing macros:
 inline void Clear(int numSamples, float *out)
 {
 	// The memset approach is valid on any system using IEEE floating-point. On other systems, please check...
-	memset(out, 0, numSamples * sizeof(float));
+	memset(out, 0, (unsigned int)numSamples * sizeof(float));
 }
 
 inline void Clear(int numSamples, double *out)
 {
 	// The memset approach is valid on any system using IEEE floating-point. On other systems, please check...
-	memset(out, 0, numSamples * sizeof(double));
+	memset(out, 0, (unsigned int)numSamples * sizeof(double));
 }
 
 
 inline void Copy(int numSamples, float *out, float *in)
 {
-	memcpy(out, in, numSamples * sizeof(float));
+	memcpy(out, in, (unsigned int)numSamples * sizeof(float));
 }
 
 inline void Fill(int numSamples, float *out, float level)
@@ -218,7 +218,7 @@ inline void ZCopy(int numSamples, float *out, const float *in)
 	if ((numSamples & 1) == 0) {
 		// copying doubles is faster on powerpc.
 		double *outd = (double*)(out + ZOFF) - ZOFF;
-		double *ind = (double*)(in + ZOFF) - ZOFF;
+		const double *ind = (const double*)(in + ZOFF) - ZOFF;
 		LOOP(numSamples >> 1, ZXP(outd) = ZXP(ind); );
 	} else {
 		LOOP(numSamples, ZXP(out) = ZXP(in); );
