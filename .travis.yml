@@ -29,6 +29,8 @@ before_install:
 
 before_script:
  - mkdir BUILD && cd BUILD
+ # Remove the "Version-" prefix.
+ - export VERSION_TO_BUILD=${TRAVIS_TAG##Version-}
 
  - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
 # prep for testing
@@ -70,7 +72,7 @@ deploy:
  # github releases - only tags
  - provider: releases
    api_key: $GITHUB_KEY
-   file: $HOME/artifacts/SC-$TRAVIS_COMMIT.zip
+   file: $HOME/SuperCollider-$VERSION_TO_BUILD-macOS.zip
    prerelease: true
    skip_cleanup: true
    on:
