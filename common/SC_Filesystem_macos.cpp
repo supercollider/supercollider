@@ -43,6 +43,8 @@
 #include <glob.h> // ::glob, glob_t
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 
+#include <algorithm> // std::mismatch
+
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
@@ -72,7 +74,7 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 		// Previously, used bookmarkDataWithContentsOfURL. But for some reason, the call would hang
 		// endlessly on certain files (e.g. /dev/auditsessions with mode crw-r--r--). So, we do the
 		// less reliable thing and try to resolve it forcefully. If it is an alias, the resulting
-		// path will be different. See issue #4131.
+		// path will be different (not always true, see below). See issue #4131.
 		NSURL* resolvedURL = [NSURL URLByResolvingAliasFileAtURL: aliasURL
                                     options: NSURLBookmarkResolutionWithoutMounting | NSURLBookmarkResolutionWithoutUI
                                     error: &error];
@@ -94,9 +96,18 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 			return Path();
 		}
 
-		auto resolvedPath = Path(resolvedNsPath);
-		isAlias = resolvedPath != p;
-		return resolvedPath;
+		// #4252 - URLByResolvingAliasFileAtURL will remove last trailing slash ('/Users/' ->
+		// '/Users', '/Users///' -> '/Users//'). Protect against this case.
+		auto * pEnd = p.c_str() + p.size();
+		const auto * mismatchPos = std::mismatch(p.c_str(), pEnd, resolvedNsPath).first;
+		// note that p.size() >= 1 because empty string would fail 'fileExistsAtPath'
+		if (mismatchPos == pEnd || (mismatchPos == pEnd - 1 && *mismatchPos == '/')) {
+			isAlias = false;
+			return p;
+		} else {
+			isAlias = true;
+			return Path(resolvedNsPath);
+		}
 	}
 
 	isAlias = false;
