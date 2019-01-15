@@ -329,6 +329,9 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
+	isRunning { ^ptr.notNil }
+	*isRunning { ^this.default.isRunning }
+
 	// PRIVATE
 	prStart { arg tempo, beats, seconds;
 		_TempoClock_New
