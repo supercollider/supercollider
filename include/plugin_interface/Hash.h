@@ -62,7 +62,7 @@ inline int32 Hash(const char *inKey, size_t *outLength)
     hash += hash << 3;
     hash ^= hash >> 11;
     hash += hash << 15;
-    *outLength = inKey - origKey;
+    *outLength = (size_t)(inKey - origKey);
     return hash;
 }
 
@@ -125,13 +125,10 @@ inline int32 Hash(const int32 *inKey, int32 inLength)
     return hash;
 }
 
-#ifndef _LASTCHAR_
-#define _LASTCHAR_
 #if BYTE_ORDER == LITTLE_ENDIAN
-const int32 kLASTCHAR = 0xFF000000;
+const int32 kLASTCHAR = (int32)0xFF000000;
 #else
-const int32 kLASTCHAR = 0x000000FF;
-#endif
+const int32 kLASTCHAR = (int32)0x000000FF;
 #endif
 
 inline int32 Hash(const int32 *inKey)

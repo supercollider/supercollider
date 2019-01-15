@@ -246,7 +246,8 @@ class Generator:
     # helper
     def join_file_list(self, files):
         if files:
-            return ''.join(map(lambda x: '    ' + x + '\n', files))
+            # CMake generally likes / more than \
+            return ''.join(map(lambda x: '    ' + x.replace('\\', '/') + '\n', files))
         else:
             return ''
 

@@ -477,7 +477,7 @@ inline int sc_rightShift(int a, int b)
 
 inline int sc_unsignedRightShift(int a, int b)
 {
-	return (uint32)a >> b;
+	return (int)((uint32)a >> b);
 }
 
 inline int sc_round(int x, int quant)

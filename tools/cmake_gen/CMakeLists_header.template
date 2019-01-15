@@ -37,6 +37,7 @@ message(STATUS "Building plugins for SuperCollider version: ${SC_VERSION}")
 
 # set project here to avoid SCVersion.txt clobbering our version info
 project(${project_name})
+sc_do_initial_compiler_config() # do after setting project so compiler ID is available
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR NOT CMAKE_INSTALL_PREFIX)
     message(WARNING "No install prefix provided, defaulting to $BUILD_DIR/install")
