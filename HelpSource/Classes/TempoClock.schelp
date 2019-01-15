@@ -93,6 +93,7 @@ method:: bars2beats
 method:: bar
 method:: nextBar
 method:: beatInBar
+method:: isRunning
 
 INSTANCEMETHODS::
 
@@ -103,6 +104,9 @@ Destroys the scheduler and releases the OS thread running the scheduler.
 
 method::clear
 Removes all tasks from the scheduling queue.
+
+method::isRunning
+returns:: A Boolean, true if the clock is active or false if the clock has been stopped.
 
 method::tempo
 Sets or gets the current tempo in beats per second at the current strong::logical time::.
