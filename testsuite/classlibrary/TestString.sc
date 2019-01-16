@@ -94,6 +94,27 @@ TestString : UnitTest {
 		this.assertEquals("dir" +/+ 'file', "dir%file".format(sep));
 	}
 
+	// regression tests for #4252
+	test_standardizePath_withTrailingSlash_shouldNotRemove {
+		var result = "~/".standardizePath;
+		var expected = "~".standardizePath ++ "/";
+		this.assertEquals(result, expected);
+	}
+
+	test_standardizePath_withTwoTrailingSlashes_shouldNotRemove {
+		var result = "~//".standardizePath;
+		var expected = "~".standardizePath ++ "//";
+		this.assertEquals(result, expected);
+	}
+
+	test_standardizePath_tilde_expandsToHome {
+		var result = "~".standardizePath;
+		var expected = Platform.userHomeDir;
+		this.assertEquals(result, expected);
+	}
+
+	// ------- time-related operations -----------------------------------------------
+
 	test_asSecs_stringDddHhMmSsSss_convertsToSeconds {
 		var result = "001:01:01:01.001".asSecs;
 		var expected = 90061.001;
