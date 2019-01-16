@@ -81,7 +81,7 @@ OSXPlatform : UnixPlatform {
 		var dir;
 		// ensure trailing slash
 		dir = Platform.userAppSupportDir +/+ "tmp/";
-		if (File.exists(dir).not, { dir.mkdir; });
+		if(File.exists(dir).not) { dir.mkdir };
 		^dir;
 	}
 }

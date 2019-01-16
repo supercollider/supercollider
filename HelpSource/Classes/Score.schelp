@@ -140,7 +140,7 @@ subsection::NRT Examples
 
 code::
 // A sample synthDef
-// Here we use store instead of add to store the compiled synthdef in Platform.defaultTempDir ++ "synthdefs/"
+// Here we use store instead of add to store the compiled synthdef in Platform.defaultTempDir +/+ "synthdefs/"
 // and make it available to the NRT server
 (
 SynthDef("helpscore", { |out, freq = 440|
@@ -160,13 +160,13 @@ g = [
 	[0.3, [\s_new, \helpscore, 1002, 0, 0, \freq, 220]],
 	[1, [\c_set, 0, 0]] // finish
 	];
-f = File(Platform.defaultTempDir ++ "score-test","w");
+f = File(Platform.defaultTempDir +/+ "score-test","w");
 f.write(g.asCompileString);
 f.close;
 )
 
 //convert it to a binary OSC file for use with NRT
-Score.writeFromFile(Platform.defaultTempDir ++ "score-test", Platform.defaultTempDir ++ "test.osc");
+Score.writeFromFile(Platform.defaultTempDir +/+ "score-test", Platform.defaultTempDir +/+ "test.osc");
 ::
 
 From the command line, the file can then be rendered from within the build directory:
@@ -188,7 +188,7 @@ g = [
 	[1, [\c_set, 0, 0]] // finish
 	];
 o = ServerOptions.new.numOutputBusChannels = 1; // mono output
-Score.recordNRT(g, Platform.defaultTempDir ++ "help-oscFile", Platform.defaultTempDir ++ "helpNRT.aiff", options: o); // synthesize
+Score.recordNRT(g, Platform.defaultTempDir +/+ "help-oscFile", Platform.defaultTempDir +/+ "helpNRT.aiff", options: o); // synthesize
 )
 ::
 
@@ -217,12 +217,12 @@ g = [
 	[0.3, [\s_new, \helpscore, 1003, 0, 0, \freq, 220]],
 	[1, [\c_set, 0, 0]] // finish
 	];
-f = File(Platform.defaultTempDir ++ "score-test","w");
+f = File(Platform.defaultTempDir +/+ "score-test","w");
 f.write(g.asCompileString);
 f.close;
 )
 
-z = Score.newFromFile(Platform.defaultTempDir ++ "score-test");
+z = Score.newFromFile(Platform.defaultTempDir +/+ "score-test");
 
 // play it on the default server
 z.play;
@@ -293,5 +293,5 @@ z.play;
 
 // rendering a pattern to sound file directly:
 // render the pattern to aiff (4 beats)
-p.render(Platform.defaultTempDir ++ "asScore-Help.aif", 4.0);
+p.render(Platform.defaultTempDir +/+ "asScore-Help.aif", 4.0);
 ::
