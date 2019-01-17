@@ -330,7 +330,6 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	}
 
 	isRunning { ^ptr.notNil }
-	*isRunning { ^this.default.isRunning }
 
 	// PRIVATE
 	prStart { arg tempo, beats, seconds;
@@ -395,6 +394,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	*bar { ^TempoClock.default.bar  }
 	*nextBar { | beat | ^TempoClock.default.nextBar(beat)  }
 	*beatInBar { ^TempoClock.default.beatInBar  }
+
+	*isRunning { ^this.default.isRunning }
 
 	archiveAsCompileString { ^true }
 }
