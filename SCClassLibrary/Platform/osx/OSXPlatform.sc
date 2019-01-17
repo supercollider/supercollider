@@ -79,7 +79,8 @@ OSXPlatform : UnixPlatform {
 
 	defaultTempDir {
 		var dir;
-		// ensure trailing slash
+		// ensure trailing slash due to backwards compatibility
+		// see discussion at https://github.com/supercollider/supercollider/pull/4221
 		dir = Platform.userAppSupportDir +/+ "tmp/";
 		if(File.exists(dir).not) { dir.mkdir };
 		^dir;
