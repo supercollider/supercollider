@@ -10,47 +10,55 @@ TestTempoClock : UnitTest {
 		clock.stop;
 	}
 
-	test_isRunning {
-		var beforeStop = clock.isRunning, afterStop;
-		clock.stop;
-		afterStop = clock.isRunning;
-		this.assert(beforeStop and: { afterStop.not }, "TempoClock:isRunning should be true before 'stop', and false afterward");
+	test_newClock_isRunningTrue {
+		this.assert(clock.isRunning, "An active TempoClock should return true for isRunning");
 	}
 
-	test_afterStop_isRemovedFromAll {
+	test_stop_isRunningFalse {
 		clock.stop;
-		this.assert(TempoClock.all.includes(clock).not, "TempoClock.all should not contain a stopped instance");
+		this.assert(clock.isRunning.not, "A stopped TempoClock should return false for isRunning");
+	}
+
+	test_stop_removesFromAll {
+		clock.stop;
+		this.assert(TempoClock.all.includes(clock).not);
 	}
 
 	test_threadWait_advancesCorrectTime {
-		var now = SystemClock.seconds, then, cond = Condition.new;
+		var timeBefore = SystemClock.seconds, timeAfter, cond = Condition.new;
 		{
 			1.wait;
-			then = SystemClock.seconds;
+			timeAfter = SystemClock.seconds;
 			cond.unhang;
 		}.fork(clock);
 		cond.hang;
 		// note: floating point math, == is not safe
-		this.assert((then - now absdif: 0.001) < 1e-10, "TempoClock 1000 beats/sec, 1 beat should be 0.001 seconds");
+		this.assertFloatEquals(
+			timeAfter - timeBefore, 0.001,
+			"TempoClock 1000 beats/sec, 1 beat should be 0.001 seconds",
+			within: 1e-10
+		)
 	}
 
 	test_beats2secs_validConversion {
-		this.assert(
-			clock.beats2secs(clock.beats + 1) - SystemClock.seconds absdif: 0.001 < 1e-10,
-			"TempoClock 1000 beats/sec, 'beats2secs' for now + 1 beat should be 0.001 seconds later"
+		this.assertFloatEquals(
+			clock.beats2secs(clock.beats + 1) - SystemClock.seconds, 0.001,
+			"TempoClock 1000 beats/sec, 'beats2secs' for now + 1 beat should be 0.001 seconds later",
+			within: 1e-10
 		)
 	}
 
 	test_secs2beats_validConversion {
-		this.assert(
-			clock.secs2beats(SystemClock.seconds + 1) - clock.beats absdif: 1000.0 < 1e-10,
-			"TempoClock 1000 beats/sec, 'secs2beats' for now + 1 second should be 1000 beats later"
+		this.assertFloatEquals(
+			clock.secs2beats(SystemClock.seconds + 1) - clock.beats, 1000.0,
+			"TempoClock 1000 beats/sec, 'secs2beats' for now + 1 second should be 1000 beats later",
+			within: 1e-10
 		)
 	}
 
-	test_defaultMeter_unchanged {
-		this.assert(
-			clock.beatsPerBar == 4,
+	test_beatsPerBar_defaultIs4 {
+		this.assertEquals(
+			clock.beatsPerBar, 4,
 			"A new TempoClock should have 4 beats per bar by default"
 		)
 	}
