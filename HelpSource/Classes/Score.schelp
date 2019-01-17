@@ -140,12 +140,14 @@ subsection::NRT Examples
 
 code::
 // A sample synthDef
+// Here we use store instead of add to store the compiled synthdef in Platform.defaultTempDir +/+ "synthdefs/"
+// and make it available to the NRT server
 (
 SynthDef("helpscore", { |out, freq = 440|
 	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
 	)
-}).add
+}).store;
 )
 
 // write a sample file for testing
@@ -158,19 +160,19 @@ g = [
 	[0.3, [\s_new, \helpscore, 1002, 0, 0, \freq, 220]],
 	[1, [\c_set, 0, 0]] // finish
 	];
-f = File("score-test","w");
+f = File(Platform.defaultTempDir +/+ "score-test","w");
 f.write(g.asCompileString);
 f.close;
 )
 
 //convert it to a binary OSC file for use with NRT
-Score.writeFromFile("score-test", "test.osc");
+Score.writeFromFile(Platform.defaultTempDir +/+ "score-test", Platform.defaultTempDir +/+ "test.osc");
 ::
 
 From the command line, the file can then be rendered from within the build directory:
 
 code::
-./scsynth -N test.osc _ test.aif 44100 AIFF int16 -o 1
+scsynth -N test.osc _ test.aif 44100 AIFF int16 -o 1
 ::
 
 Score also provides methods to do all this more directly:
@@ -186,7 +188,7 @@ g = [
 	[1, [\c_set, 0, 0]] // finish
 	];
 o = ServerOptions.new.numOutputBusChannels = 1; // mono output
-Score.recordNRT(g, "help-oscFile", "helpNRT.aiff", options: o); // synthesize
+Score.recordNRT(g, Platform.defaultTempDir +/+ "help-oscFile", Platform.defaultTempDir +/+ "helpNRT.aiff", options: o); // synthesize
 )
 ::
 
@@ -201,7 +203,7 @@ SynthDef("helpscore", { |out, freq = 440|
 	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
 	)
-}).add
+}).store;
 )
 
 // write a sample file for testing
@@ -215,12 +217,12 @@ g = [
 	[0.3, [\s_new, \helpscore, 1003, 0, 0, \freq, 220]],
 	[1, [\c_set, 0, 0]] // finish
 	];
-f = File("score-test","w");
+f = File(Platform.defaultTempDir +/+ "score-test","w");
 f.write(g.asCompileString);
 f.close;
 )
 
-z = Score.newFromFile("score-test");
+z = Score.newFromFile(Platform.defaultTempDir +/+ "score-test");
 
 // play it on the default server
 z.play;
@@ -267,25 +269,29 @@ SystemClock.sched(1.0, {z.stop;});
 subsection::creating Score from a pattern
 
 code::
-SynthDescLib.read;
+(
+SynthDef("helpscore", { |out, freq = 440|
+    Out.ar(out,
+        SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
+    )
+}).store;
+)
 
 // new pattern
 (
 p = Pbind(
-	\dur, Prand([0.3, 0.5], inf),
-	\freq, Prand([200, 300, 500],inf)
+    \instrument, \helpscore,
+    \dur, Prand([0.3, 0.5], inf),
+    \freq, Prand([200, 300, 500],inf)
 );
 )
 
 // make a score from the pattern, 4 beats long
 z = p.asScore(4.0);
-
 z.score.postcs;
 z.play;
 
 // rendering a pattern to sound file directly:
-
 // render the pattern to aiff (4 beats)
-
-p.render("asScore-Help.aif", 4.0);
+p.render(Platform.defaultTempDir +/+ "asScore-Help.aif", 4.0);
 ::
