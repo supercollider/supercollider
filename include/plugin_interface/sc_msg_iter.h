@@ -37,7 +37,7 @@ inline const char* OSCstrskip(const char *str)
 // returns the number of bytes (including padding) for an OSC string.
 inline size_t OSCstrlen(const char *strin)
 {
-	return OSCstrskip(strin) - strin;
+	return (size_t)(OSCstrskip(strin) - strin);
 }
 
 // returns a float, converting an int if necessary
@@ -82,7 +82,7 @@ struct sc_msg_iter
 	size_t getbsize();
 	void getb(char* outData, size_t inSize);
 	void skipb();
-	size_t remain() { return endpos - rdpos; }
+	size_t remain() { return (size_t)(endpos - rdpos); }
 
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
 };
@@ -280,26 +280,26 @@ inline size_t sc_msg_iter::getbsize()
 	if (remain() <= 0) return 0;
 	if (tags) {
 		if (tags[count] == 'b')
-			len = OSCint(rdpos);
+			len = (size_t)OSCint(rdpos);
 		else if (tags[count] == 'm')
 			len = 4;
 	}
 	return len;
 }
 
-inline void sc_msg_iter::getb(char* outArray, size_t size)
+inline void sc_msg_iter::getb(char* outArray, size_t arraySize)
 {
 	size_t len = 0;
 	if (tags[count] == 'b') {
-		len = OSCint(rdpos);
-		if (size < len) return;
+		len = (size_t)OSCint(rdpos);
+		if (arraySize < len) return;
 		rdpos += sizeof(int32);
 	}	else if (tags[count] == 'm') {
 		len = 4;
-		if (size < len) return;
+		if (arraySize < len) return;
 	}
 	size_t len4 = (len + 3) & (size_t)-4;
-	memcpy(outArray, rdpos, size);
+	memcpy(outArray, rdpos, arraySize);
 	rdpos += len4;
 	count ++;
 }
@@ -309,7 +309,7 @@ inline void sc_msg_iter::skipb()
 	size_t len = 0;
 	if (tags[count] == 'b')
 	{
-		len = OSCint(rdpos);
+		len = (size_t)OSCint(rdpos);
 		rdpos += sizeof(int32);
 	} else if (tags[count] == 'm')
 		len = 4;

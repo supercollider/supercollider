@@ -42,7 +42,8 @@ Try to follow these guidelines:
 - **Investigate the issue**: What is the minimum effort or code required to produce the issue? Does it happen every time? Can you get it to happen on someone else's computer? Someone else's operating system?
 - **See if a ticket already exists**: Search SuperCollider's [open issues](https://github.com/supercollider/supercollider/issues). If an issue for your problem already exists, leave your comments in the issue's thread. Make sure you give your version and system info plus any information that you don't see already noted in the ticket.
 - **Ask the community**: If you're unsure about how to investigate or recreate an issue, it may help to ask the [sc-dev](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2681767) or [sc-users](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2676391) mailing lists. You can also try asking on [Slack](https://scsynth.slack.com) or on the [Facebook group](https://www.facebook.com/groups/supercollider/).
-- **Proceed in creating your issue** Be sure to create your issue in the appropriate repository. Note that [sc3-plugins](https://github.com/supercollider/sc3-plugins) are maintained in their own repository separate from SuperCollider.
+- **Proceed in creating your issue**: Be sure to create your issue in the appropriate repository. Note that [sc3-plugins](https://github.com/supercollider/sc3-plugins) are maintained in their own repository separate from SuperCollider.
+- **One ticket at a time**: If you have multiple issues to report, please open separate tickets for each one.
 
 ### Creating an issue
 
@@ -52,6 +53,8 @@ Please be as descriptive as possible when creating an issue. In order for us to 
 - **system**: Note your operating system and version
 - **extensions, plugins, helpers, etc.** (if applicable): List any extensions or modifications you are using
 - **error messages**: Paste all error messages *in their entirety* into the issue, or use a [gist](https://gist.github.com/) if the messages are very long.
+
+When an issue involves a crashing or unresponsive executable and you don't know why, providing a crash report can give developers a very helpful first step toward resolving the problem. See "Generating a crash report" below for instructions for your platform.
 
 ## Pull Requests
 
@@ -64,10 +67,9 @@ Please be as descriptive as possible when creating an issue. In order for us to 
 
 	- If you have created the fork before, bring it up-to-date with the SuperCollider repository. See [Updating your fork](#Updating-your-fork) below for details.
 - Create a topic branch from where you want to base your work.
-	- Your topic branch should be based on `develop`.
+	- Your topic branch should be based on `develop`, unless it is a trivial bug fix or documentation change, in which case it should be based on the latest release (`3.x`) branch.
 	- Our branch naming convention is `topic/branch-description`: for example, `topic/fix-sinosc` or `topic/document-object`.
 	- To quickly create a topic branch based on develop: `git checkout -b topic/my-fix develop`.
-	- Please avoid working directly on the `develop` branch.
 	- Please do not work off of the `master` branch, which is stable and only includes releases.
 - As time passes, make sure to keep your fork updated - see [Updating your fork](#Updating-your-fork) below.
 
@@ -118,8 +120,8 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 
 			origin	https://github.com/your-name/supercollider.git (fetch)
 			origin	https://github.com/your-name/supercollider.git (push)
-			upstream	https://github.com/supercollider/supercollider (fetch)
-			upstream	https://github.com/supercollider/supercollider (push)
+			upstream	https://github.com/supercollider/supercollider.git (fetch)
+			upstream	https://github.com/supercollider/supercollider.git (push)
 
 	- You can now proceed to update your fork.
 - If you've already added the `upstream` remote, you can update your fork by doing the following:
@@ -130,13 +132,59 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 	- If you've already created your topic branch, you can update it with the changes in `develop` by either rebasing or pulling - see [Notes on rebasing](#Notes-on-rebasing).
 	- If you haven't yet created your topic branch, proceed to creating it as described in the [Pull Requests](#Pull-Requests) section.
 
-### Notes on rebasing
+### Notes on rebasing and merge conflicts
 
-Rebasing is one way to integrate changes from one branch onto another, in this case `develop` onto your `topic/branch-description`. You don't usually need to `rebase` unless there have been changes to the code you're working on in `upstream/develop`. If you need to rebase, use `git rebase develop topic/branch-description`. Note that if you rebase after already having pushed your branch, it will make your local branch diverge from the remote `origin` copy. In that case you have two options:
-- rebase, after which you'll need to force push: `git checkout topic/branch-description` followed by `git push origin -f`
-	- This will change the commit history and is not recommended if there is more than one person working on the branch; however, it will create a clean commit history with only your commits in the pull request.
-- don't rebase, but instead `git checkout topic/branch-description`, then `git pull`, followed by `git push origin`
-	- The result will be that your pull request will include your commits in addition to all other commits to `develop` since your branch was created (without changing the commit history).
+It is almost never a good idea to resolve merge conflicts via the GitHub interface or by merging the main branch in locally. This creates noise in commit history and makes it more difficult to perform other operations on branches later. In the SuperCollider project, the preferred way to resolve merge conflicts in a pull request is by rebasing.
+
+See `git help rebase` for `rebase` usage examples that include graphical representations.
+
+Rebasing (`git help rebase`) is a very useful command for four scenarios in particular:
+
+1. If you'd like to incorporate new commits on the base branch that contain relevant fixes or
+   features into your topic branch.
+2. If you'd like to resolve merge conflicts.
+3. If you'd like to change the branch your topic branch is based on. This may happen if, for instance, a maintainer requests that you make your bug fix merge request against a release branch (e.g. 3.9, 3.10) instead of develop. You will then need to rebase your topic branch onto the appropriate release branch.
+4. If you'd like to rewrite your commit history by combining or reordering some commits (not recommended for those newer to git).
+
+Rebase has an interactive mode (`git rebase -i`) which will show exactly which commits will be applied to the new base, and the order in which they will be applied. This can be very helpful when you're not completely sure what the result of a rebase will be.
+
+For scenarios (1) and (2), suppose that the current branch is `topic`, which is based on an old commit from the `develop` branch. To rebase, you can execute `git rebase -i develop`. You can examine the change list to make sure it's correct before continuing. Git will stop if it encounters a merge conflict, and give instructions on how to resolve it and continue the rebase.
+
+For scenario (3), suppose that there are three branches: `develop`, the release branch `3.10`, and the topic branch `topic` which is based on `develop`. Suppose that `topic` is currently checked out.  You would like it to be based on `3.10` instead of `develop`. An easy way to do this is with `git rebase -i --onto 3.10 develop topic`. Beware that you may need to resolve merge conflicts during this rebase.
+
+After rebasing, you may find it helpful to display the pretty-printed commit log with `git log --oneline --graph --decorate` to make sure all is well.
+
+In any case, after rebasing your local branch will now be out of sync with your remote branch. You will have to resolve this by force pushing: `git push --force origin topic`. If you realize later that you made a mistake with your rebase, it's always possible to go back to your previous local state using `git reflog`.
+
+For scenario (4), `git help rebase`'s section "Interactive mode" has extensive documentation on how to reorder and recombine commits. Also refer to the section on `--autosquash` for ideas on how to combine these features into a streamlined rebase-oriented workflow.
+
+## Generating a crash report
+
+### macOS
+
+Crash logs are in `~/Library/Logs/DiagnosticReports`. The following command will list the crash reports for a SuperCollider program with the most recent first:
+
+    ls -lt ~/Library/Logs/DiagnosticReports | grep -E 'SuperCollider|sclang|scsynth|supernova'
+
+If the app is hanging, and you think you know which one it is, you can force it to crash and produce a log by sending it a segfault signal:
+
+    pkill -SIGSEGV <sc-executable> # may need to execute twice to force a crash
+
+The crash log will be placed in `~/Library/Logs/DiagnosticReports` with the others.
+
+### Linux
+
+A core dump file is generated when an application crashes. See [this helpful article](https://linux-audit.com/understand-and-configure-core-dumps-work-on-linux/) for information on core dumps and how to enable them on your machine. You don't need to send us the full core dump (it will probably be quite large), but you can generate a helpful backgrace with gdb:
+
+    gdb <sc-executable> <core-file> -ex where -ex quit
+
+See `man gdb` for more information on using core files.
+
+For a hanging process, you can use the command `pkill -SIGSEGV <sc-executable>` to force a crash, which will then produce a core dump.
+
+### Windows
+
+We don't currently have an easy way to get good crash log information on Windows. You can view logs in Event Viewer, but there's not enough information there that would be helpful for us. If you know of an easy way to get a high-quality crash report on Windows, let us know!
 
 ## Additional resources
 

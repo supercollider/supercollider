@@ -13,6 +13,31 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
+3.10.1 (2019-01-17)
+===================
+
+Fixed an infinite hang in `SerialPort.devices` affecting macOS ([#4180](https://github.com/supercollider/supercollider/pull/4180)).
+
+Fixed `ServerOptions` producing eight channels instead of two channels when explicitly setting `numOutputBusChannels` or `numInputBusChannels` ([#4251](https://github.com/supercollider/supercollider/pull/4251)).
+
+Fixed a build issue on OpenBSD ([#4203](https://github.com/supercollider/supercollider/pull/4203)).
+
+Fixed `/b_fill`, which was broken in supernova ([#4188](https://github.com/supercollider/supercollider/pull/4188)).
+
+Fixed incorrect latency compensation in PortAudio driver ([#4210](https://github.com/supercollider/supercollider/pull/4210)).
+
+The `CheckBadValues` UGen incorrectly recognized zero as a bad value on Windows. This has been fixed ([#4240](https://github.com/supercollider/supercollider/pull/4240)).
+
+Fixed `crtscts` flag in `SerialPort.new`, which broke in 3.10 ([#4191](https://github.com/supercollider/supercollider/issues/4191)).
+
+Fixed lack of `backgroundImage` support for `Slider2D` ([#3952](https://github.com/supercollider/supercollider/pull/3952)).
+
+Fixed incorrect behavior of `String:asSecs` ([#3819](https://github.com/supercollider/supercollider/pull/3819)).
+
+`0X0` is an illegal hexadecimal literal in sclang, but SCIDE and SCDoc highlighted such strings as if they were correct. They have been updated ([#4170](https://github.com/supercollider/supercollider/pull/4170)).
+
+Fixed weird colors in SCIDE when changing from other themes to the "classic" theme ([#4161](https://github.com/supercollider/supercollider/pull/4161)).
+
 3.10.0 (2018-11-24)
 =========================
 

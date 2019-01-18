@@ -20,6 +20,9 @@
 
 #pragma once
 
+// TODO next time this is updated, change SC_PlugIn.hpp `in`, `zin`, etc. to take uint32s
+// TODO next time this is updated, change SC_PlugIn.hpp `numInputs`, `numOutputs` to have correct
+// return type
 static const int sc_api_version = 3;
 
 #include "SC_Types.h"

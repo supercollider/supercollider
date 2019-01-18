@@ -505,9 +505,9 @@ String[char] : RawArray {
 
 	asSecs { |maxDays = 365| // assume a timeString of ddd:hh:mm:ss.sss. see asTimeString.
 		var time = 0, sign = 1, str = this;
-		var limits = [inf, 60, 60, 24, maxDays];
-		var scaling = [0.001, 1.0, 60.0, 3600.0, 86400.0];
-		var padding = [3, 2, 2, 2, 3];
+		var limits = [60, 60, 24, maxDays];
+		var scaling = [1.0, 60.0, 3600.0, 86400.0];
+		var slotNames = [\seconds, \minutes, \hours, \days];
 
 		if (this.first == $-) {
 			str = this.drop(1);
@@ -515,14 +515,13 @@ String[char] : RawArray {
 		};
 
 		str.split($:).reverseDo { |num, i|
-			num = num.padRight(padding[i], "0").asInteger;
-			if (num > limits[i]) {
-				("asSecs: number greater than allowed:" + this).warn;
-				num = limits[i];
-			};
+			num = num.asFloat;
 			if (num < 0) {
-				("asSecs: negative numbers within slots not supported:" + this).warn;
-				num = 0;
+				format("%.asSecs: negative numbers within slots not supported, using absolute value", this).warn;
+				num = num.abs;
+			};
+			if (num > limits[i]) {
+				format("%.asSecs: number of % greater than %", this, slotNames[i], limits[i]).warn;
 			};
 			time = time + (num * scaling[i]);
 		};

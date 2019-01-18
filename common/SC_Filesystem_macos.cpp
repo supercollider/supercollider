@@ -43,6 +43,8 @@
 #include <glob.h> // ::glob, glob_t
 #include <mach-o/dyld.h> // _NSGetExecutablePath
 
+#include <algorithm> // std::mismatch
+
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
@@ -61,34 +63,53 @@ static const char* getBundleName();
 
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *nsstringPath = [NSString stringWithCString: p.c_str() encoding: NSUTF8StringEncoding];
+	NSString *nsPath = [NSString stringWithCString: p.c_str() encoding: NSUTF8StringEncoding];
 	BOOL isDirectory;
 
 	// does the file exist? If not just copy and bail
-	if ([[NSFileManager defaultManager] fileExistsAtPath: nsstringPath isDirectory: &isDirectory]) {
-		NSError *error;
-		NSData *bookmark = [NSURL bookmarkDataWithContentsOfURL: [NSURL fileURLWithPath:nsstringPath isDirectory: isDirectory] error: &error];
+	if ([[NSFileManager defaultManager] fileExistsAtPath: nsPath isDirectory: &isDirectory]) {
+		NSURL* aliasURL = [NSURL fileURLWithPath: nsPath isDirectory: isDirectory];
+		NSError *error = nil;
 
-		// is it an alias?
-		if (bookmark) {
+		// Previously, used bookmarkDataWithContentsOfURL. But for some reason, the call would hang
+		// endlessly on certain files (e.g. /dev/auditsessions with mode crw-r--r--). So, we do the
+		// less reliable thing and try to resolve it forcefully. If it is an alias, the resulting
+		// path will be different (not always true, see below). See issue #4131.
+		NSURL* resolvedURL = [NSURL URLByResolvingAliasFileAtURL: aliasURL
+                                    options: NSURLBookmarkResolutionWithoutMounting | NSURLBookmarkResolutionWithoutUI
+                                    error: &error];
+
+		// If there was an error, it was a broken alias. Otherwise no error even if it wasn't an alias
+		// to begin with; even if it doesn't exist (i.e. was destroyed between `fileExistsAtPath` and
+		// `URLByResolvingAliasFileAtURL`)!
+		if (error != nil) {
+		    isAlias = true;
+		    return Path();
+		}
+
+		const char *resolvedNsPath = [[resolvedURL path] cStringUsingEncoding: NSUTF8StringEncoding];
+
+		// Unlikely, but possible
+		if (resolvedNsPath == nullptr) {
+			assert(false && "Resolved path could not be converted to C string");
 			isAlias = true;
-			NSError *resolvedURLError;
-			BOOL isStale;
-			NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
-			// does it actually lead to something?
-			if (isStale || resolvedURL == nullptr) {
-				// Return original path.
-				return Path();
-			}
+			return Path();
+		}
 
-			NSString *resolvedString = [resolvedURL path];
-			const char *resolvedPath = [resolvedString cStringUsingEncoding: NSUTF8StringEncoding];
-			return Path(resolvedPath);
+		// #4252 - URLByResolvingAliasFileAtURL will remove last trailing slash ('/Users/' ->
+		// '/Users', '/Users///' -> '/Users//'). Protect against this case.
+		auto * pEnd = p.c_str() + p.size();
+		const auto * mismatchPos = std::mismatch(p.c_str(), pEnd, resolvedNsPath).first;
+		// note that p.size() >= 1 because empty string would fail 'fileExistsAtPath'
+		if (mismatchPos == pEnd || (mismatchPos == pEnd - 1 && *mismatchPos == '/')) {
+			isAlias = false;
+			return p;
+		} else {
+			isAlias = true;
+			return Path(resolvedNsPath);
 		}
 	}
 
-	[pool release];
 	isAlias = false;
 	return p;
 }

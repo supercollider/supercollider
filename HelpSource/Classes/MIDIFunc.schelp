@@ -93,7 +93,7 @@ A convenience method to create a new MIDIFunc which responds to MIDI smpte messa
 returns:: A new instance of MIDIFunc which responds to MIDI smpte messages.
 
 METHOD:: mtcQuarterFrame
-A convenience method to create a new MIDIFunc which responds to MIDI Time Code Quarter Frame messages. Note that the link::#smpte:: method above automatically assembles quarter frames into time code. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data, srcID, and pieceNumber. You will need to manually assemble each 8 messages into smpte.
+A convenience method to create a new MIDIFunc which responds to MIDI Time Code Quarter Frame messages. Note that the link::#*smpte:: method above automatically assembles quarter frames into time code. See link::#*new:: for argument descriptions. The responding code::func:: will be passed the arguments data, srcID, and pieceNumber. You will need to manually assemble each 8 messages into smpte.
 
 returns:: A new instance of MIDIFunc which responds to MIDI Time Code Quarter Frame messages.
 

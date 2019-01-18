@@ -28,17 +28,18 @@ Executables
 
 `SuperCollider.app` is the IDE (integrated development environment) for writing and executing SuperCollider code.
 
-Inside that application's folder (`SuperCollider.app/Contents/MacOS/`) are the two executables that make up supercollider itself:
+Inside that application are the executables that make up SuperCollider itself:
 
-`sclang` - the language interpreter including Qt gui
-`scsynth` - the audio engine
-
+- `sclang`, the language interpreter including Qt GUI components
+- `SuperCollider`, the IDE executable launched by the app
+- `scsynth`, the original audio engine
+- `supernova`, the newer audio engine which supports multithreading
 
 Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
-  Xcode >= 7 is recommended. Xcode 6 will work, but requires macOS >= 10.9.4.
+  Xcode >= 8 is recommended; use earlier versions at your own risk.
 - If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
@@ -55,13 +56,9 @@ Prerequisites:
 Obtaining the source code
 -------------------------
 
-**Note** Please do not use non-ASCII characters (above code point 127) in your
-SuperCollider program path (i.e. the names of the folders containing SuperCollider).
-Doing so will break options to open class or method files.
+SuperCollider is hosted on Github: https://github.com/SuperCollider/SuperCollider
 
-SC is on Github: https://github.com/SuperCollider/SuperCollider
-
-Get a copy of the source code:
+First, clone the repository with git:
 
     git clone --recursive https://github.com/SuperCollider/SuperCollider.git
 
