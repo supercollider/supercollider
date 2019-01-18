@@ -13,10 +13,12 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
-3.10.1-rc1 (2019-01-13)
-=======================
+3.10.1 (2019-01-17)
+===================
 
-Fixed an infinite hang in `SerialPort.devices` affecting macOS ([#4180](https://github.com/supercollider/supercollider/pull/4180)). **Testers:** the correctness of this fix is not fully certain, please try `SerialPort.devices` if you are on macOS.
+Fixed an infinite hang in `SerialPort.devices` affecting macOS ([#4180](https://github.com/supercollider/supercollider/pull/4180)).
+
+Fixed `ServerOptions` producing eight channels instead of two channels when explicitly setting `numOutputBusChannels` or `numInputBusChannels` ([#4251](https://github.com/supercollider/supercollider/pull/4251)).
 
 Fixed a build issue on OpenBSD ([#4203](https://github.com/supercollider/supercollider/pull/4203)).
 
