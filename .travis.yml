@@ -39,7 +39,7 @@ before_script:
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
  - $TRAVIS_BUILD_DIR/.travis/test.sh
- - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
+ - $TRAVIS_BUILD_DIR/.travis/package-$TRAVIS_OS_NAME.sh
 
 before_deploy:
  # required for github releases
@@ -72,11 +72,12 @@ deploy:
  # github releases - only tags
  - provider: releases
    api_key: $GITHUB_KEY
-   file: $HOME/SuperCollider-$VERSION_TO_BUILD-macOS.zip
+   file_glob: true
+   file: $HOME/uploads/*
    prerelease: true
    skip_cleanup: true
    on:
-     condition: $TRAVIS_OS_NAME = osx && ! -z $GITHUB_KEY
+     condition: ! -z $GITHUB_KEY
      tags: true
      all_branches: true
 
