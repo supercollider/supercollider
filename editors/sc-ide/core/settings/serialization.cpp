@@ -63,6 +63,11 @@ static QVariant parseTextFormat( const YAML::Node & node )
     std::string val;
     QTextCharFormat fm;
 
+    // Some really old themes have missing color: or background: entries, which
+    // caused problems here (bug #4218). We default to black if text color is
+    // not specified.
+    fm.setForeground(Qt::black);
+
     const Node ncolor = node[ "color" ];
     if(ncolor && ncolor.IsScalar()) {
         val = ncolor.as<std::string>();
@@ -70,11 +75,24 @@ static QVariant parseTextFormat( const YAML::Node & node )
     }
 
     const Node nbg = node[ "background" ];
+    bool have_background = false;
     if(nbg && nbg.IsScalar()) {
         val = nbg.as<std::string>();
         QColor color(val.c_str());
-        if(color.isValid())
+        if(color.isValid()) {
+            have_background = true;
             fm.setBackground(color);
+        }
+    }
+
+    // If background color is not specified, pick either black or white
+    // depending on what contrasts with the foreground color.
+    if (!have_background) {
+        if (fm.foreground().color().value() < 127) {
+            fm.setBackground(Qt::white);
+        } else {
+            fm.setBackground(Qt::black);
+        }
     }
 
     const Node nbold = node[ "bold" ];
