@@ -39,7 +39,7 @@ before_script:
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
  - $TRAVIS_BUILD_DIR/.travis/test.sh
- - $TRAVIS_BUILD_DIR/.travis/package-$TRAVIS_OS_NAME.sh
+ - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
 
 before_deploy:
  # required for github releases
