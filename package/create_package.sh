@@ -27,14 +27,14 @@ clean_sources() {
   cd "${source_dir}/${package_name}"
   echo "Removing unneeded files and folders..."
 
-  if [[ ${linux} -eq 1 ]]; then
+  if [ ${linux} -eq 1 ]; then
     find . \
       -iname windows \
       -or -iname osx \
       -or -name "*.xcodeproj" \
       -or -name scide_scapp \
       -or -iname "iPhone*" \
-      -exec rm -rfv {}
+      -exec rm -rfv {};
     rm -rfv \
       README_MACOS.md \
       README_WINDOWS.md \
@@ -88,7 +88,7 @@ linux=0
 suffix=""
 
 if [ ${#@} -gt 0 ]; then
-  while getopts 'hv:s:l' flag; do
+  while getopts 'hv:l' flag; do
     case "${flag}" in
       h) print_help
           ;;
