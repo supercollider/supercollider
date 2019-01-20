@@ -1375,7 +1375,7 @@ symbol3 : {
 		do {
 			c = input0();
 			if (c == '\\') {
-				c = input0();
+				input0();
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
@@ -1394,7 +1394,7 @@ string1 : {
 		do  {
 			c = input0();
 			if (c == '\\') {
-				c = input0();
+				input0();
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
