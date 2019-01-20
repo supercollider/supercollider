@@ -74,7 +74,13 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
         boost_filesystem
         PROPERTY FOLDER 3rdparty
     )
-
+  # we're using ALIAS'ed library names to be conform with SYSTEM_BOOST
+  add_library(boost_system_lib ALIAS "boost_system")
+  add_library(boost_program_options_lib ALIAS "boost_program_options")
+  add_library(boost_filesystem_lib ALIAS "boost_filesystem")
+  add_library(boost_regex_lib ALIAS "boost_regex")
+  add_library(boost_thread_lib ALIAS "boost_thread")
+  set(Boost_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/boost")
 endif()
 
 # tlsf
@@ -85,8 +91,7 @@ set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 
 #oscpack
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack
-  PRIVATE $<IF:$<STREQUAL:${SYSTEM_BOOST},"ON">,${Boost_INCLUDE_DIRS},${CMAKE_SOURCE_DIR}/external_libraries/boost>)
+target_include_directories(oscpack PRIVATE ${boost_include_dirs})
 target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(LTO)
@@ -105,11 +110,7 @@ if(NOT YAMLCPP_FOUND)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
   add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  if(SYSTEM_BOOST)
-    target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${Boost_INCLUDE_DIRS})
-  else()
-    target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
-  endif()
+  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${boost_include_dirs})
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
   set(YAMLCPP_LIBRARY yaml)
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)

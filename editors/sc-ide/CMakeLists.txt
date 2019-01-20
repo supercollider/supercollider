@@ -298,13 +298,8 @@ target_link_libraries( SuperCollider
     oscpack
 )
 
-if(SYSTEM_BOOST)
-    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
-else()
-    # in-house-built boost system
-    target_link_libraries( SuperCollider boost_system boost_filesystem )
-    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
-endif()
+target_link_libraries( SuperCollider boost_system_lib boost_filesystem_lib)
+include_directories(${boost_include_dirs})
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
