@@ -73,11 +73,11 @@ deploy:
  - provider: releases
    api_key: $GITHUB_KEY
    file_glob: true
-   file: $HOME/uploads/*
+   file: $HOME/SuperCollider-$VERSION_TO_BUILD-macOS.zip
    prerelease: true
    skip_cleanup: true
    on:
-     condition: ! -z $GITHUB_KEY
+     condition: $TRAVIS_OS_NAME = osx && ! -z $GITHUB_KEY
      tags: true
      all_branches: true
 
