@@ -139,10 +139,12 @@ private slots:
     void onReload();
     void onScResponse( const QString & command, const QString & data );
     void onJsConsoleMsg(const QString &, int, const QString & );
+    void onPageLoad();
 
 private:
     friend class HelpBrowserDocklet;
 
+    int m_server_port;
     void setUpServer();
     void createActions();
     bool eventFilter( QObject * object, QEvent * event);

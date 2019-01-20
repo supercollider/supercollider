@@ -99,6 +99,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()) );
     connect( mWebView, SIGNAL(customContextMenuRequested(QPoint)),
              this, SLOT(onContextMenuRequest(QPoint)) );
+    connect( mWebView, SIGNAL(loadFinished(bool)), this, SLOT(onPageLoad()) );
 
     connect( webPage->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()) );
     connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
@@ -110,6 +111,7 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     connect( scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()) );
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
+
 
     // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
     // Note that putting this in the destructor doesn't work.
@@ -126,8 +128,18 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
 
 void HelpBrowser::setUpServer() {
     QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
-    if (!server.listen(QHostAddress::LocalHost, 12344)) {
-        qWarning("Failed to open web socket server: %s", server.errorString().toLatin1().data());
+    m_server_port = 12344;
+
+    // Try eight consecutive ports to find an unblocked one. Otherwise fail.
+    bool success;
+    for (int i = 0; i < 8; i++) {
+        success = server.listen(QHostAddress::LocalHost, m_server_port);
+        if (success) {
+            break;
+        }
+        m_server_port += 1;
+    }
+    if (!success) {
         return;
     }
 
@@ -401,6 +413,11 @@ void HelpBrowser::onJsConsoleMsg(const QString &arg1, int arg2, const QString & 
     qWarning() << "*** ERROR in JavaScript:" << arg1;
     qWarning() << "* line:" << arg2;
     qWarning() << "* source ID:" << arg3;
+}
+
+void HelpBrowser::onPageLoad()
+{
+    mWebView->page()->runJavaScript(QString("setUpWebChannel(%1)").arg(m_server_port));
 }
 
 void HelpBrowser::onContextMenuRequest( const QPoint & pos )
