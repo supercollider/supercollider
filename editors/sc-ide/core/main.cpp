@@ -138,7 +138,7 @@ int main( int argc, char *argv[] )
     // setup HelpBrowser server
     QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
     if (!server.listen(QHostAddress::LocalHost, 12344)) {
-        qFatal("Failed to open web socket server.");
+        qFatal("Failed to open web socket server: %s", server.errorString().toLatin1().data());
         return 1;
     }
 
