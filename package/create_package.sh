@@ -34,7 +34,7 @@ clean_sources() {
       -or -name "*.xcodeproj" \
       -or -name scide_scapp \
       -or -iname "iPhone*" \
-      -exec rm -rfv {} \;
+      -exec rm -fv {} \;
     rm -rfv \
       README_MACOS.md \
       README_WINDOWS.md \
