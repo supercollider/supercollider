@@ -27,6 +27,9 @@
 #include "../core/util/overriding_action.hpp"
 #include "QtCollider/widgets/web_page.hpp"
 #include "QtCollider/hacks/hacks_qt.hpp"
+#include "../widgets/util/WebSocketClientWrapper.hpp"
+#include "../widgets/util/WebSocketTransport.hpp"
+#include "../widgets/util/IDEWebChannelWrapper.hpp"
 
 #include <QVBoxLayout>
 #include <QToolBar>
@@ -40,6 +43,7 @@
 #include <QDesktopWidget>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QWebChannel>
 
 #ifdef Q_OS_MAC
 #  include <QStyleFactory> // QStyleFactory::create, see below
@@ -118,6 +122,24 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     applySettings( Main::settings() );
 
     setFocusProxy(mWebView);
+}
+
+void HelpBrowser::setUpServer() {
+    QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
+    if (!server.listen(QHostAddress::LocalHost, 12344)) {
+        qWarning("Failed to open web socket server: %s", server.errorString().toLatin1().data());
+        return;
+    }
+
+    // setup comm channel
+    WebSocketClientWrapper clientWrapper(&server);
+    QWebChannel channel;
+    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
+                     &channel, &QWebChannel::connectTo);
+
+    // publish IDE interface
+    IDEWebChannelWrapper ideWrapper{this};
+    channel.registerObject("IDE", &ideWrapper);
 }
 
 void HelpBrowser::createActions()

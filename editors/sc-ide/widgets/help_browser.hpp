@@ -143,6 +143,7 @@ private slots:
 private:
     friend class HelpBrowserDocklet;
 
+    void setUpServer();
     void createActions();
     bool eventFilter( QObject * object, QEvent * event);
     void sendRequest( const QString &code );
