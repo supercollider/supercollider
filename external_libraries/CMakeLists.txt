@@ -3,7 +3,7 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
 endif()
 
 if(NOT SYSTEM_BOOST) # we compile boost ourselves
-	message(STATUS "building boost libraries manually")
+	message(STATUS "Using bundled boost")
 	# boost thread
 	aux_source_directory(boost/libs/thread/src/ boost_thread_src )
 
@@ -15,72 +15,65 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
 
-	aux_source_directory(boost/libs/system/src/ boost_system )
-	add_library(boost_system STATIC EXCLUDE_FROM_ALL ${boost_system})
-	target_include_directories(boost_system PUBLIC boost)
+	aux_source_directory(boost/libs/system/src/ boost_system_src )
+	add_library(boost_system_lib STATIC EXCLUDE_FROM_ALL ${boost_system_src})
+	target_include_directories(boost_system_lib PUBLIC boost)
 
-	aux_source_directory(boost/libs/program_options/src/ boost_program_options )
-	add_library(boost_program_options STATIC EXCLUDE_FROM_ALL ${boost_program_options})
-	target_include_directories(boost_program_options PUBLIC boost)
+	aux_source_directory(boost/libs/program_options/src/ boost_program_options_src )
+	add_library(boost_program_options_lib STATIC EXCLUDE_FROM_ALL ${boost_program_options_src})
+	target_include_directories(boost_program_options_lib PUBLIC boost)
 
 	aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
-	add_library(boost_filesystem STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
-	target_include_directories(boost_filesystem PUBLIC boost)
+	add_library(boost_filesystem_lib STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
+	target_include_directories(boost_filesystem_lib PUBLIC boost)
 
 	aux_source_directory(boost/libs/regex/src boost_regex_src)
-	add_library(boost_regex STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
-	target_include_directories(boost_regex PUBLIC boost)
+	add_library(boost_regex_lib STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
+	target_include_directories(boost_regex_lib PUBLIC boost)
 
 	if(LTO)
-		set_property(TARGET boost_program_options boost_system boost_filesystem
+		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
 					 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET boost_program_options boost_system boost_filesystem
+		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	add_library(boost_thread STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
-	target_link_libraries(boost_thread boost_system)
+	add_library(boost_thread_lib STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
+	target_link_libraries(boost_thread_lib boost_system_lib)
 #	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
-	target_include_directories(boost_thread PUBLIC boost)
-	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_USE_LIB) # for win32
+	target_include_directories(boost_thread_lib PUBLIC boost)
+	target_compile_definitions(boost_thread_lib PUBLIC BOOST_THREAD_USE_LIB) # for win32
 
 	if(PTHREADS_FOUND)
-		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
+		target_include_directories(boost_thread_lib PUBLIC ${PTHREADS_INCLUDE_DIR})
 	endif()
 	if(WIN32)
-		target_compile_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
+		target_compile_definitions( boost_thread_lib PRIVATE BOOST_THREAD_BUILD_LIB)
 	endif()
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		target_compile_options(boost_thread PRIVATE -fPIC)
-		target_link_libraries(boost_thread rt)
+		target_compile_options(boost_thread_lib PRIVATE -fPIC)
+		target_link_libraries(boost_thread_lib rt)
 	endif()
 
 	if(LTO)
-		set_property(TARGET boost_thread
+    set_property(TARGET boost_thread_lib
 			APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET boost_thread
+		set_property(TARGET boost_thread_lib
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
 	set_property( TARGET
-        boost_regex
-        boost_thread
-        boost_program_options
-        boost_system
-        boost_filesystem
+        boost_regex_lib
+        boost_thread_lib
+        boost_program_options_lib
+        boost_system_lib
+        boost_filesystem_lib
         PROPERTY FOLDER 3rdparty
     )
-  # we're using ALIAS'ed library names to be conform with SYSTEM_BOOST
-  add_library(boost_system_lib ALIAS "boost_system")
-  add_library(boost_program_options_lib ALIAS "boost_program_options")
-  add_library(boost_filesystem_lib ALIAS "boost_filesystem")
-  add_library(boost_regex_lib ALIAS "boost_regex")
-  add_library(boost_thread_lib ALIAS "boost_thread")
-  set(Boost_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/boost")
 endif()
 
 # tlsf
