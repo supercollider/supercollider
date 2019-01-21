@@ -8,7 +8,6 @@ To write, use and develop UnitTests, you need to
 
 list::
 ## install a sourcecode version of SuperCollider
-## install the code::UnitTesting:: Quark
 ## change your environment to include only core library functionality
 ## run UnitTests
 ::
@@ -17,17 +16,6 @@ section:: install a sourcecode version of SuperCollider
 
 Download or clone SuperCollider from github: https://github.com/supercollider/supercollider.
 It is not needed to compile SuperCollider from its sources, you can instead use a pre-compiled binary and include the relevant folders (code::SCClassLibrary, HelpSource, testsuite/classlibrary:: in your environment. See below for an example.
-
-section:: install the code::UnitTesting:: Quark
-
-The code::UnitTest:: framework is not part of the core library but provided as a quark. 
-To install it,  run
-
-code::
-Quarks.install("UnitTesting");
-::
-
-and recompile the language.
 
 section:: Change your environment to include only core library functionality
 
@@ -58,5 +46,3 @@ Core class code::UnitTest::s are located in the directory
 
 section:: Writing new tests
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
-
-
