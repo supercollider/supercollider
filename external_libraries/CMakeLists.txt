@@ -95,8 +95,8 @@ if(LTO)
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
-if(NOT YAMLCPP_FOUND)
-  message(STATUS "using bundled libyaml-cpp")
+if(NOT SYSTEM_YAMLCPP)
+  message(STATUS "Using bundled yaml-cpp")
 
   # yaml-cpp
   aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
