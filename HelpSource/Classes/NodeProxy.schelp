@@ -421,7 +421,7 @@ set the crossfade time. See: link::Tutorials/JITLib/jitlib_fading:: .
 
 subsection::Setting synth controls
 
-method::set, map, setn, mapn
+method::set, map, setn
 NodeProxy behaves like its link::Classes/NodeMap:: and very similar to a link::Classes/Synth::.
 
 note::Now the methods map, setn, mapn, and xmap are there just for backward compatibility reasons. Everything is done by set.::
@@ -448,8 +448,6 @@ definitionList::
 ## array of numbers || set the subsequent control channels to the corresponding value
 ## node proxy || map subsequent control channels to the corresponding proxy output channel
 ::
-
-
 
 method::unset, unmap
 Remove specified settings and unmap or unset the synths.

@@ -77,10 +77,12 @@ i.plot(freeOnClose:true);
 i.url.postln;
 )
 ::
+
+ARGUMENT::path
+A String containing the SVG file's path.
+
 ARGUMENT::size
 A link::Classes/Size::. SVG contents will be drawn into an image of this size. If not provided, suggested size provided by SVG will be used.
-ARGUMENT::element
-A link::Classes/String:: refering to an element of the SVG. If this argument is provided, image will only include this element of the SVG.
 
 
 METHOD::openURL
@@ -348,39 +350,6 @@ additional background to apply to the Window. may be useful for artifacts due to
 
 ARGUMENT::showInfo
 shows pixel coordinates while the mouse is over the image's plot window.
-
-METHOD::lockFocus
-sets the receiver as the current graphic context. So you can use Pen to draw inside of it.
-
-METHOD::unlockFocus
-restore the graphic context state. the receiver is not anymore the current graphic context.
-code::
-(
-	j = Image.new(400,300);
-
-	j.lockFocus;
-
-		Pen.translate(100, 100);
-		1000.do{
-			// set the Color
-			Pen.color = Color.green(rrand(0.0, 1), rrand(0.0, 0.5));
-			Pen.addAnnularWedge(
-				(100.rand)@(100.rand),
-				rrand(10, 50),
-				rrand(51, 100),
-				2pi.rand,
-				2pi.rand
-			);
-			Pen.perform([\stroke, \fill].choose);
-		};
-
-	j.unlockFocus;
-)
-
-j.plot;
-j.write("~/Desktop/my_drawing.png"); // write the image
-j.free;
-::
 
 METHOD::draw
 shortcut for drawing inside an image. equivalent to :
@@ -723,145 +692,3 @@ For example, in a high DPI context, the pixel ratio of a View might be 2. When d
 By default, the pixelRatio of all Images is 1 - emphasis::this ensures that an image will look the same when drawn on a normal or a high DPI view::. Setting a custom (!= 1) pixelRatio should generally only be done to draw specially rendered high DPI images to a View that is known to be high DPI.
 
 Note that when drawing to an Image using link::Classes/Pen::, pixelRatio is accounted for - so, a line of width 1 will have a true width of 1px for an image where code::image.pixelRatio==1::, and a true width of 2px where code::image.pixelRatio==2::.
-
-See link::Classes/View:-devicePixelRatio::.
-
-
-SUBSECTION::Instance Methods / Attributes for ImageFilter support
-
-see link::Classes/ImageFilter:: for more info
-
-METHOD::applyFilters
-apply an array of link::Classes/ImageFilter:: to the image. this should be considered as an in place operation, meaning the Image is altered after it.
-code::
-// ******** Built In CoreImage Generators ********
-// Generators are not filters, they actually create an image but do not need an input image
-// you just have to create an image of a new size
-// ** The Simple Random Filter **
-(
-f = ImageFilter.new(\CIRandomGenerator);
-a = Image.new(500@500);
-a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.black);
-a.bounds.postln;
-)
-
-// ** The StarShine example **
-(
-var width=500, height=500, centerVector;
-
-centerVector = [ width*0.5, height*0.5 ];
-a = Image.new(500@500);
-f = ImageFilter.new(\CIStarShineGenerator);
-
-f.center_(centerVector);
-f.radius_(width*0.05);
-f.color_(Color.blue);
-f.crossWidth_(2.0);
-f.crossAngle_(0.0);
-f.crossOpacity_(-4.0);
-
-a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.gray); // change background to see
-)
-
-
-// ** Starshine + Pixellate + ZoomBlur **
-(
-var width=500, height=500, centerVector;
-
-centerVector = [ width*0.5, height*0.5 ];
-a = Image.new(500@500);
-
-f = ImageFilter.new(\CIStarShineGenerator);
-g = ImageFilter.new(\CIPixellate);
-h = ImageFilter.new(\CIZoomBlur);
-
-f.center_(centerVector);
-f.radius_(width*0.05);
-f.color_(Color.blue);
-f.crossWidth_(2.0);
-f.crossAngle_(0.0);
-f.crossOpacity_(-4.0);
-g.center_(centerVector);
-h.center_(centerVector);
-h.amount_(50);
-
-a.applyFilters([f, g, h]);
-w = a.plot(freeOnClose:true, background:Color.black);
-)
-::
-
-ARGUMENT::filters
-a ImageFilter or an array of link::Classes/ImageFilter:: to be applied
-
-ARGUMENT::crop
-the crop region to finally use. This may be required for extending bounds since some ImageFilter / CoreImageFilters require to set a wider region (to be applied correctly) or may create a huge image. Setting crop to nil sets no crop region. In case the current maximum size of a filtered Image is 4096 / 4096. Any larger size will be clipped. by default crop is constrained to the receiver bounds.
-
-ARGUMENT::region
-NOTE::
-supported only in macOS 10.5 and later.
-::
-option to constrain the filter to a specific region IN the Image.
-
-METHOD::filteredWith
-returns a new Image, copy of the receiver filtered with an array of ImageFilter. arguments are the same as link::#-applyFilters:: (except for strong::region::).
-NOTE::
-Beware: you are responsible for freeing the newly created Image !!!
-::
-
-METHOD::filters
-filters is the instance variable that holds the array of ImageFilter attached to the receiver. This is a convenient for applying filters out place and changing the ImageFilter's attributes. see link::#-addFilter::, link::#-removeFilter::
-
-see link::Classes/ImageFilter:: for an example on how to use the strong::filters:: array.
-
-METHOD::addFilter
-you can also attach filters to the receiver for real-time changing operations. In this case the receiver will create a cache before each rendering to maintain his previous state, and allowing you to use filters without applying them in place. The cache is managed directly by the receiver. you can add several filters to the receiver, the first filter in the array is the first applied in the rendering chain.
-
-see link::Classes/ImageFilter:: for an example on how to use strong::addFilter::.
-
-ARGUMENT::filter
-a ImageFilter to apply before rendering of the image
-
-METHOD::removeFilter
-
-see link::Classes/ImageFilter:: for an example on how to use strong::removeFilter::.
-
-ARGUMENT::filter
-the ImageFilter to remove from the rendering chain.
-
-METHOD::flatten
-if link::#-filters:: is not zero sized, this method will apply all those filters in place. if the image is accelerated this method force a bitmap representation of the receiver.
-
-METHOD::invert
-invert the receiver
-code::
-(
-i = Image.new();
-i.invert;
-i.plot(freeOnClose:true);
-)
-::
-
-METHOD::crop
-crop the receiver
-code::
-(
-i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-i.crop( Rect(10,10,120,100) );
-i.plot(freeOnClose:true);
-)
-::
-
-ARGUMENT::aRect
-the cropping region
-
-SUBSECTION::Instance Methods / Attributes for ImageKernel support
-
-see link::Classes/ImageKernel:: for examples and more info.
-
-METHOD::applyKernel
-apply a Kernel in place. the receiver is modified after this call.
-
-ARGUMENT::kernel
-a link::Classes/ImageKernel::
