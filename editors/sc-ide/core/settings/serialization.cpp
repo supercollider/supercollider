@@ -51,6 +51,19 @@ struct IODeviceSource : boost::iostreams::source {
     QIODevice *mDev;
 };
 
+static QColor yamlNodeToColor(const YAML::Node & node) {
+    // Official way of making an invalid color -- see http://doc.qt.io/qt-5/qcolor.html#QColor
+    QColor invalid = QColor();
+    if (!node) {
+        return invalid;
+    }
+    if (!node.IsScalar()) {
+        return invalid;
+    }
+    auto color_string = node.as<std::string>().c_str();
+    return QColor(color_string);
+}
+
 static QVariant parseTextFormat( const YAML::Node & node )
 {
     using namespace YAML;
@@ -63,36 +76,25 @@ static QVariant parseTextFormat( const YAML::Node & node )
     std::string val;
     QTextCharFormat fm;
 
-    // Some really old themes have missing color: or background: entries, which
-    // caused problems here (bug #4218). We default to black if text color is
-    // not specified.
-    fm.setForeground(Qt::black);
+    // Some really old themes (from users who've stuck around since pre-3.7 and
+    // never touched their theme) have missing color: or background: entries,
+    // which caused problems here (bug #4218). We default to black if text
+    // color is not specified.
+    QColor color = yamlNodeToColor(node["color"]);
+    fm.setForeground(color.isValid()
+        ? color
+        : Qt::black);
 
-    const Node ncolor = node[ "color" ];
-    if(ncolor && ncolor.IsScalar()) {
-        val = ncolor.as<std::string>();
-        fm.setForeground(QColor(val.c_str()));
-    }
-
-    const Node nbg = node[ "background" ];
-    bool have_background = false;
-    if(nbg && nbg.IsScalar()) {
-        val = nbg.as<std::string>();
-        QColor color(val.c_str());
-        if(color.isValid()) {
-            have_background = true;
-            fm.setBackground(color);
-        }
-    }
-
-    // If background color is not specified, pick either black or white
-    // depending on what contrasts with the foreground color.
-    if (!have_background) {
-        if (fm.foreground().color().value() < 127) {
-            fm.setBackground(Qt::white);
-        } else {
-            fm.setBackground(Qt::black);
-        }
+    QColor backgroundColor = yamlNodeToColor(node["background"]);
+    if (backgroundColor.isValid()) {
+        fm.setBackground(backgroundColor);
+    } else {
+        // Background color defaults to white. Obviously if the text is a light
+        // color but the background color is not specified, the text will be
+        // unreadable. This doesn't actually happen in real themes affected
+        // by #4218 though. What's more important is that the IDE UI text,
+        // which is set by the theme colors, is still readable.
+        fm.setBackground(Qt::white);
     }
 
     const Node nbold = node[ "bold" ];
