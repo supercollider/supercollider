@@ -1,12 +1,10 @@
 <!-- Please see CONTRIBUTING.md for guidelines. -->
 
-Purpose and Motivation
-----------------------
+## Purpose and Motivation
 
-Fixes #
+<!-- If this fixes an open issue, link to it by writing "Fixes #555." -->
 
-Type of change
---------------
+## Types of changes
 
 <!-- Delete lines that don't apply -->
 
@@ -15,11 +13,9 @@ Type of change
 - New feature
 - Breaking change
 
-To-do list
-----------
+## To-do list
 
-<!-- Complete an item by checking it: [x] -->
-<!-- Delete lines that don't apply, add new entries to track your progress -->
+<!-- Complete an item by checking it: [x]. Add new entries to track your progress -->
 
 - [ ] Code is tested
 - [ ] All tests are passing
