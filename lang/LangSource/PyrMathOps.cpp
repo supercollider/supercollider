@@ -62,7 +62,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opBitNot : SetRaw(a, ~slotRawInt(a)); break;
 				case opAbs : SetRaw(a, sc_abs(slotRawInt(a))); break;
 				case opAsFloat : SetFloat(a, (double)slotRawInt(a)); break;
-				case opAsInt : SetRaw(a, (int)slotRawInt(a)); break;
+				case opAsInteger : SetRaw(a, (int)slotRawInt(a)); break;
 				case opCeil : SetRaw(a, slotRawInt(a)); break;
 				case opFloor : SetRaw(a, slotRawInt(a)); break;
 				case opFrac : SetRaw(a, 0); break;
@@ -122,7 +122,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				//case opNot : goto send_normal_1;
 				case opIsNil : SetFalse(a); break;
 				case opNotNil : SetTrue(a); break;
-				case opAsInt : SetTagRaw(a, tagInt); break;
+				case opAsInteger : SetTagRaw(a, tagInt); break;
 				case opDigitValue :
 					if (slotRawInt(a) >= '0' && slotRawInt(a) <= '9') SetInt(a, slotRawInt(a) - '0');
 					else if (slotRawInt(a) >= 'A' && slotRawInt(a) <= 'Z') SetInt(a, slotRawInt(a) - 'A');
@@ -165,7 +165,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 		case tagSym :
 			switch (opcode) {
 				case opAsFloat :
-				case opAsInt :
+				case opAsInteger :
 					goto send_normal_1;
 				case opIsNil : SetFalse(a); break;
 				case opNotNil : SetTrue(a); break;
@@ -214,7 +214,7 @@ int doSpecialUnaryArithMsg(VMGlobals *g, int numArgsPushed)
 				case opBitNot : SetRaw(a, ~(int)slotRawFloat(a)); break;
 				case opAbs : SetRaw(a, sc_abs(slotRawFloat(a))); break;
 				case opAsFloat : SetRaw(a, (double)slotRawFloat(a)); break;
-				case opAsInt :
+				case opAsInteger :
 				{
 					double val = slotRawFloat(a);
 					if (val == std::numeric_limits<double>::infinity())

@@ -292,7 +292,7 @@ Signal[float] : FloatArray {
 		^this + (blendFrac * (that - this));
 	}
 
-	asInteger { _AsInt; ^this.primitiveFailed }
+	asInteger { _AsInteger; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asSignal { ^this }
