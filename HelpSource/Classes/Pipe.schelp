@@ -18,7 +18,7 @@ A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to std
 
 method::argv
 
-argument::executableAndArguments
+argument::args
 A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
@@ -40,7 +40,7 @@ A link::Classes/String:: passed to popen, so should be one of: "r","w"
 method::openArgv
 Open the file.
 
-argument::executableAndArguments
+argument::args
 A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode

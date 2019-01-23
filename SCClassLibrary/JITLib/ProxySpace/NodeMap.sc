@@ -1,6 +1,3 @@
-
-
-
 NodeMap : IdentityDictionary {
 	var <>upToDate = false;
 	var setArgs;
@@ -122,8 +119,6 @@ ProxyNodeMap : NodeMap {
 		if(keys.isEmpty) { keys = this.keys };
 		this.map(currentEnvironment.getPairs(keys));
 	}
-
-
 
 	// unoptimized
 	parents {
