@@ -13,11 +13,15 @@ assignees: ''
 
 * SuperCollider version:
 * Operating system:
+* Other details (Qt version, audio driver, etc.):
 
 ## Steps to reproduce
 
-<!-- Use triple backticks ``` ``` to delimit code. Make sure to use a minimal example. -->
+```supercollider
+Paste code here. Use a minimal example please.
+```
 
 ## Expected vs. actual behavior
 
-<!-- Paste error messages in entirety, delimited by ``` ```. Use gist if it's very long. -->
+<!-- Paste error messages in entirety. Use gist if very long. -->
+<!-- If SC crashed, see CONTRIBUTING.md for how to make a crash report. -->
