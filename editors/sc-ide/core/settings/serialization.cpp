@@ -52,16 +52,11 @@ struct IODeviceSource : boost::iostreams::source {
 };
 
 static QColor yamlNodeToColor(const YAML::Node & node) {
-    // Official way of making an invalid color -- see http://doc.qt.io/qt-5/qcolor.html#QColor
-    QColor invalid = QColor();
-    if (!node) {
-        return invalid;
+    if (node && node.IsScalar()) {
+        return QColor(node.as<std::string>().c_str());
+    } else {
+        return QColor(); // default QColor constructor returns an invalid color
     }
-    if (!node.IsScalar()) {
-        return invalid;
-    }
-    auto color_string = node.as<std::string>().c_str();
-    return QColor(color_string);
 }
 
 static QVariant parseTextFormat( const YAML::Node & node )
@@ -81,9 +76,7 @@ static QVariant parseTextFormat( const YAML::Node & node )
     // which caused problems here (bug #4218). We default to black if text
     // color is not specified.
     QColor color = yamlNodeToColor(node["color"]);
-    fm.setForeground(color.isValid()
-        ? color
-        : Qt::black);
+    fm.setForeground(color.isValid() ? color : Qt::black);
 
     QColor backgroundColor = yamlNodeToColor(node["background"]);
     if (backgroundColor.isValid()) {
