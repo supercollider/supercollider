@@ -209,28 +209,6 @@ void start_audio_backend(server_arguments const & args)
 
 #endif
 
-boost::filesystem::path resolve_home(void)
-{
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
-    wordexp_t wexp;
-    int status = wordexp("~", &wexp, 0);
-    if (status || wexp.we_wordc != 1)
-        throw runtime_error("cannot detect home directory");
-
-    path home (wexp.we_wordv[0]);
-    wordfree(&wexp);
-    return home;
-#elif defined(__APPLE__)
-    path home(getenv("HOME"));
-    return home;
-#elif defined(_WIN32)
-    path home(getenv("USERPROFILE"));
-    return home;
-#else
-#error platform not supported
-#endif
-}
-
 void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * factory)
 {
     if (!args.ugen_paths.empty()) {
