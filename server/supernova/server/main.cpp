@@ -268,7 +268,7 @@ void load_synthdef_folder(nova_server & server, path const & folder, bool verbos
     if (verbose)
         std::cout << "Loading synthdefs from path: " << folder.string() << std::endl;
 
-    register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
+    register_synthdefs(server, sc_read_synthdefs_dir(folder));
 }
 
 void load_synthdefs(nova_server & server, server_arguments const & args)

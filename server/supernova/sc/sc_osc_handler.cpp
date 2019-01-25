@@ -2533,7 +2533,7 @@ void handle_b_read(ReceivedMessage const & msg, endpoint_ptr endpoint)
         goto fire_callback;
 
     if (arg != end)
-        message = std::move( extract_completion_message(arg) );
+        message = extract_completion_message(arg) ;
 
 fire_callback:
     movable_string fname(filename);
@@ -3084,7 +3084,7 @@ static std::vector<sc_synth_definition_ptr> wrapSynthdefs( std::vector<sc_synthd
         wrappedSynthdefs.emplace_back( std::move( ptr ) );
     }
 
-    return std::move( wrappedSynthdefs );
+    return wrappedSynthdefs ;
 }
 
 template <bool realtime>
