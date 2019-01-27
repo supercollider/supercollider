@@ -92,7 +92,7 @@ SynthDef("help_multichannel", { |out=0, freq=440, mod=0.1, modrange=20|
 			LFPar.kr(mod, 0, modrange) + freq
 		) * EnvGate(0.1)
 	)
-}).send(s);
+}).add;
 )
 ::
 code::
@@ -131,6 +131,54 @@ a = { |dur=1, x=1, n=10, freq=400|
 )
 
 a.value(5, [0.3, 0.3, 0.2], [12, 32, 64], [1000, 710, 700]);
+::
+
+subsection:: Multichannel expansion in Patterns
+Multichannel expansion does not quite follow the scheme one might expect from the previously described. E.g. the following doesn't multichannel-expand properly:
+code::
+(
+SynthDef(\help_multichannel, { |out=0, freq=#[342, 145]|
+	var env = EnvGate.new;
+	Out.ar(out, [SinOsc.ar(freq[0]), Saw.ar(freq[1])] * env * 0.2)
+}).add
+)
+
+// not working as expected
+// only freq in the left channel gets set correctly
+(
+a = Pbind(
+	\instrument, \help_multichannel,
+	\freq, Pseq([[342, 145], [187, 564], [234, 135]], inf),
+	\dur, 0.5
+).play;
+)
+::
+
+Instead wrap arrayed args in an extra pair of square brackets:
+
+code::
+a.stop;
+
+// freq in both channels set as expected
+(
+a = Pbind(
+	\instrument, \help_multichannel,
+	\freq, Pseq([[[342, 145]], [[187, 564]], [[234, 135]]], inf),
+	\dur, 0.5
+).play;
+)
+::
+
+Under the hood this is a consequence of how .flop prepares the given args to be passed to the Synth:
+
+code::
+// single square brackets
+[\freq, [342, 145]].flop
+// --> [ [ freq, 342 ], [ freq, 145 ] ]
+
+// double square brackets
+[\freq, [[342, 145]]].flop
+// --> [ [ freq, [ 342, 145 ] ] ]
 ::
 
 section:: Pitfalls
