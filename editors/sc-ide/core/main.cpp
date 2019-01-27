@@ -98,8 +98,6 @@ int main( int argc, char *argv[] )
     // Go...
     MainWindow *win = new MainWindow(main);
 
-    app.setWindowIcon(QIcon("qrc:///icons/sc-ide-svg"));
-
     // NOTE: load session after GUI is created, so that GUI can respond
     Settings::Manager *settings = main->settings();
     SessionManager *sessions = main->sessionManager();
