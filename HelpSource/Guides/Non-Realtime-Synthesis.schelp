@@ -243,7 +243,7 @@ File.delete(PathName.tmp +/+ "nrt-help-fail.wav");
 
 NOTE:: Another common technique to transmit SynthDefs to an NRT server is to use link::Classes/SynthDef#-writeDefFile:: to avoid this problem. This works by writing the SynthDef into the default SynthDef directory; then, the NRT server reads SynthDefs from the default location when it starts up. This approach is perfectly valid, but has the disadvantage of leaving teletype::.scsyndef:: files on disk that you might not need later. For that reason, this document demonstrates how to make SynthDefs available to NRT servers without using disk files. ::
 
-The good news is that a NRT server does not have to wait for "heavy" operations like receiving SynthDefs or loading buffers. Commands that are considered asynchronous in a realtime server behave as synchronous commands in NRT. So, you can simply front-load your Score with all the SynthDefs and Buffers, at time 0.0, and then start the audio processing also at time 0.0. The following examples demonstrate.
+The good news is that a NRT server does not have to wait for "heavy" operations like receiving SynthDefs or loading buffers. Commands that are considered asynchronous in a realtime server behave as synchronous commands in NRT. So, you can simply front-load your Score with all the SynthDefs and Buffers, at time 0.0, and then start the audio processing also at time 0.0. (However, you might need a slight offset for the audio processing because code::sort:: may not know which entries at time 0.0 must come first.) The following examples demonstrate.
 
 section:: Examples
 
@@ -342,7 +342,7 @@ subsection:: Generating NRT scores from patterns
 
 Event patterns can be converted into Scores by teletype::asScore::. (Note that teletype::asScore:: internally creates a Server instance to use for allocators. So, it is not necessary for this example to create a Server.)
 
-First, a simple example using the default SynthDef. This example does not require any extra resources.
+First, a simple example using the default SynthDef. Note that the default SynthDef is not stored to disk by default, so it is necessary to include it in the score. The slight time offset in code::asScore:: is necessary to be sure that the SynthDef message comes first.
 
 code::
 (
@@ -350,20 +350,23 @@ x = Pbind(
 	\freq, Pexprand(200, 800, inf),
 	\dur, Pexprand(0.8, 1.25, inf) * Pgeom(0.01, 1.0143978590819, 400),
 	\legato, 3,
-).asScore(120);
+).asScore(10, timeOffset: 0.001);
+
+x.add([0.0, [\d_recv, SynthDescLib.global[\default].def.asBytes]]);
+x.sort;
 
 x.recordNRT(
 	outputFilePath: "~/nrt.aiff".standardizePath,
 	sampleRate: 44100,
 	headerFormat: "AIFF",
 	sampleFormat: "int16",
-	options: server.options,
-	duration: 120
+	options: ServerOptions.new.numOutputBusChannels_(2),
+	duration: 10
 );
 )
 ::
 
-It is somewhat trickier to use Buffers and custom SynthDefs with pattern-generated Scores. It's possible to build the Score by teletype::asScore::, add setup instructions at time 0.0, and sort the commands in time order. But if the events also begin at time 0.0, sorting the score is not guaranteed to put the setup commands first. As a workaround, you can specify a short time offset in teletype::asScore::.
+To use Buffers and Buses, it is recommended to avoid conflicts with real-time server instances by creating a Server object just for the non-realtime process. It is not necessary to boot this server, only to use its allocators. After rendering, you may safely code::remove:: the server instance.
 
 code::
 (
