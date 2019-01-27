@@ -156,7 +156,6 @@ void WebView::setContent(const QVector<int>& data, const QString& mimeType, cons
 {
   if (page()) {
     QByteArray byteData;
-    size_t i = 0;
     for (int val : data) {
       byteData.push_back((char)val);
     }
