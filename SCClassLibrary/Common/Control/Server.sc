@@ -125,18 +125,12 @@ ServerOptions {
 		o = o ++ port;
 
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -i " ++ numInputBusChannels;
+		o = o ++ " -o " ++ numOutputBusChannels;
 
 		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
 			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
-		});
-		// scsynth and supernova default to 8 input channels
-		if (numInputBusChannels != 8, {
-			o = o ++ " -i " ++ numInputBusChannels;
-		});
-		// scsynth and supernova default to 8 output channels
-		if (numOutputBusChannels != 8, {
-			o = o ++ " -o " ++ numOutputBusChannels;
 		});
 		if (numBuffers !== defaultValues[\numBuffers], {
 			numBuffers = numBuffers.asInteger;
