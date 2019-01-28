@@ -296,10 +296,13 @@
 				};
 
 				{ | out |
-					var e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
+
+					var e, ctl = Control.names(["wet"++(index ? 0)]).kr(1.0);
 					if(proxy.rate === 'audio') {
+						e = ctl * EnvGate(i_level: 0, doneAction:2, curve:\sin);
 						XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
 					} {
+						e = ctl * EnvGate(i_level: 0, doneAction:2, curve:\lin);
 						XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))				};
 				}.buildForProxy( proxy, channelOffset, index )
 
@@ -354,17 +357,18 @@
 				};
 
 				{ | out |
-					var in;
-					var egate = EnvGate.new;
+					var in, e;
 					var wetamp = Control.names(["wet"++(index ? 0)]).kr(1.0);
 					var dryamp = 1 - wetamp;
 					if(proxy.rate === 'audio') {
 						in = In.ar(out, proxy.numChannels);
-						XOut.ar(out, egate, SynthDef.wrap(func, nil,
+						e = wetamp * EnvGate(i_level: 0, doneAction:2, curve:\sin);
+						XOut.ar(out, e, SynthDef.wrap(func, nil,
 							[in * wetamp]) + (dryamp * in))
 					} {
 						in = In.kr(out, proxy.numChannels);
-						XOut.kr(out, egate, SynthDef.wrap(func, nil,
+						e = wetamp * EnvGate(i_level: 0, doneAction:2, curve:\lin);
+						XOut.kr(out, e, SynthDef.wrap(func, nil,
 							[in * wetamp]) + (dryamp * in))
 					};
 				}.buildForProxy( proxy, channelOffset, index )
@@ -372,8 +376,15 @@
 
 			mix: #{ | func, proxy, channelOffset = 0, index |
 
-				{ var e = EnvGate.new * Control.names(["mix"++(index ? 0)]).kr(1.0);
-					e * SynthDef.wrap(func);
+				{
+					var e = Control.names(["mix" ++ (index ? 0)]).kr(1.0);
+					var sig = SynthDef.wrap(func);
+					var ctl = if(sig.rate == \audio) {
+						EnvGate(i_level: 0, doneAction:2, curve:\sin);
+					} {
+						EnvGate(i_level: 0, doneAction:2, curve:\lin);
+					};
+					e * ctl * sig
 				}.buildForProxy( proxy, channelOffset, index )
 			};
 
