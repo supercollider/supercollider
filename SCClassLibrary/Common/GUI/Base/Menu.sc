@@ -107,6 +107,8 @@ MainMenu {
 	classvar <>buildAppMenusAction;
 
 	*initClass {
+		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+
 		serversMenu = Menu(MenuAction.separator).title_("Servers");
 
 		applicationMenu = Menu(

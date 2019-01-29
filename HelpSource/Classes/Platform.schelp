@@ -74,6 +74,9 @@ platform recordings directory
 method:: defaultTempDir
 default directory for temporary files
 
+method:: hasQt
+true if the Qt library is available, false otherwise
+
 subsection:: Features
 
 method:: when
