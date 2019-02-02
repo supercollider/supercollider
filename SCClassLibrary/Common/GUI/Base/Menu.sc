@@ -312,8 +312,8 @@ MainMenu {
 			actionsList[\name].string = defaultString + s.name + runningString;
 
 			actionsList[\running].string = startString;
-			if ((s == Server.default) && s.serverRunning.not) {
-				actionsList[\running].shortcut = "Ctrl+B";
+			if(s == Server.default) {
+				actionsList[\running].shortcut = if(s.serverRunning, "", "Ctrl+B");
 			};
 
 			actionsList[\kill].enabled = (s.serverRunning);
