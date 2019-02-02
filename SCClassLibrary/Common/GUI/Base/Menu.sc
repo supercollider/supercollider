@@ -106,7 +106,9 @@ MainMenu {
 	classvar systemMenus;
 	classvar <>buildAppMenusAction;
 
-	*initClass {
+	*initClass {}
+
+	*initBuiltInMenus {
 		serversMenu = Menu().title_("Servers");
 
 		applicationMenu = Menu(
