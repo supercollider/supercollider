@@ -13,6 +13,23 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
+3.10.2-rc1 (2019-02-03)
+=======================
+
+Due to immature development status and lack of cross-platform compatibility, **MainMenu is no longer created by default** ([#4285](https://github.com/supercollider/supercollider/pull/4285)). It can be re-enabled by running `MainMenu.initBuiltInMenus` (add this to your startup file to permanently re-enable). The API for MainMenu is subject to change in the future.
+
+MainMenu consumes less resources and no longer causes a gradual memory leak ([#3870](https://github.com/supercollider/supercollider/pull/3870)).
+
+Fix SCIDE missing an icon on some Linux desktop environments ([#4269](https://github.com/supercollider/supercollider/pull/4269)).
+
+Fixed incorrect parsing of strings containing `\"` and single-quote symbols containing `\'` in class library files ([#4255](https://github.com/supercollider/supercollider/pull/4255)).
+
+Fixed language-side issues when using FFT UGens on a regular Buffer rather than a LocalBuf ([#4050](https://github.com/supercollider/supercollider/pull/4050)).
+
+Added `TempoClock:isRunning` method ([#4254](https://github.com/supercollider/supercollider/pull/4254)).
+
+Fixed some compiler warnings ([#4275](https://github.com/supercollider/supercollider/pull/4275), [#4274](https://github.com/supercollider/supercollider/pull/4274)).
+
 3.10.1 (2019-01-17)
 ===================
 
