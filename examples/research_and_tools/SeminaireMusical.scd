@@ -461,23 +461,23 @@ SynthDef("sm_bell", { arg freq=440, amp=0.5;
 }).add;
 
 (
-	SynthDef("sm_string", { arg freq=440, amp=0.5;
-		var u, exc, sustain;
-		amp = AmpComp.kr(freq) * amp;
-		exc = LFNoise2.ar(3000, Decay2.ar(Impulse.ar(0.0001, 0, 0.5), 0.006, 0.02));
-		sustain = Rand(1, 1.5);
-		u = LPF.ar(
-			CombN.ar(exc, 0.04, (freq * (1+[0, 0.001])).reciprocal, sustain).sum,
-			min(20000, freq * Rand(3, 2.3) ! 2)
-		).sum;
+SynthDef("sm_string", { arg freq=440, amp=0.5;
+	var u, exc, sustain;
+	amp = AmpComp.kr(freq) * amp;
+	exc = LFNoise2.ar(3000, Decay2.ar(Impulse.ar(0.0001, 0, 0.5), 0.006, 0.02));
+	sustain = Rand(1, 1.5);
+	u = LPF.ar(
+		CombN.ar(exc, 0.04, (freq * (1+[0, 0.001])).reciprocal, sustain).sum,
+		min(20000, freq * Rand(3, 2.3) ! 2)
+	).sum;
 
-		//DetectSilence.ar(u, doneAction:2);
-		amp = amp * EnvGen.kr(Env.linen(0, sustain, 0.1), doneAction:2);
-		Out.ar(0,
-			Pan2.ar(u * amp, freq.cpsmidi % 12 / 6 - 1)
-		);
+	//DetectSilence.ar(u, doneAction:2);
+	amp = amp * EnvGen.kr(Env.linen(0, sustain, 0.1), doneAction:2);
+	Out.ar(0,
+		Pan2.ar(u * amp, freq.cpsmidi % 12 / 6 - 1)
+	);
 
-	}).add;
+}).add;
 );
 
 SynthDef("sm_click", { arg freq=440, rate=1, amp=0.5;
