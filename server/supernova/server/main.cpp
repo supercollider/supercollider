@@ -209,28 +209,6 @@ void start_audio_backend(server_arguments const & args)
 
 #endif
 
-boost::filesystem::path resolve_home(void)
-{
-#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
-    wordexp_t wexp;
-    int status = wordexp("~", &wexp, 0);
-    if (status || wexp.we_wordc != 1)
-        throw runtime_error("cannot detect home directory");
-
-    path home (wexp.we_wordv[0]);
-    wordfree(&wexp);
-    return home;
-#elif defined(__APPLE__)
-    path home(getenv("HOME"));
-    return home;
-#elif defined(_WIN32)
-    path home(getenv("USERPROFILE"));
-    return home;
-#else
-#error platform not supported
-#endif
-}
-
 void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * factory)
 {
     if (!args.ugen_paths.empty()) {
@@ -268,7 +246,7 @@ void load_synthdef_folder(nova_server & server, path const & folder, bool verbos
     if (verbose)
         std::cout << "Loading synthdefs from path: " << folder.string() << std::endl;
 
-    register_synthdefs(server, std::move(sc_read_synthdefs_dir(folder)));
+    register_synthdefs(server, sc_read_synthdefs_dir(folder));
 }
 
 void load_synthdefs(nova_server & server, server_arguments const & args)
