@@ -148,13 +148,13 @@ Rebasing (`git help rebase`) is a very useful command for four scenarios in part
 
 Rebase has an interactive mode (`git rebase -i`) which will show exactly which commits will be applied to the new base, and the order in which they will be applied. This can be very helpful when you're not completely sure what the result of a rebase will be.
 
-For scenarios (1) and (2), suppose that the current branch is `topic-foo`, which is based on an old commit from the `develop` branch. To rebase, you can execute `git rebase -i develop`. You can examine the change list to make sure it's correct before continuing. Git will stop if it encounters a merge conflict, and give instructions on how to resolve it and continue the rebase.
+For scenarios (1) and (2), suppose that the current branch is `topic/foo`, which is based on an old commit from the `develop` branch. To rebase, you can execute `git rebase -i develop`. You can examine the change list to make sure it's correct before continuing. Git will stop if it encounters a merge conflict, and give instructions on how to resolve it and continue the rebase.
 
-For scenario (3), suppose that there are three branches: `develop`, the release branch `3.10`, and the topic branch `topic-foo` which is based on `develop`. Suppose that `topic-foo` is currently checked out.  You would like it to be based on `3.10` instead of `develop`. An easy way to do this is with `git rebase -i --onto 3.10 develop topic-foo`. Beware that you may need to resolve merge conflicts during this rebase.
+For scenario (3), suppose that there are three branches: `develop`, the release branch `3.10`, and the topic branch `topic/foo` which is based on `develop`. Suppose that `topic/foo` is currently checked out.  You would like it to be based on `3.10` instead of `develop`. An easy way to do this is with `git rebase -i --onto 3.10 develop topic/foo`. Beware that you may need to resolve merge conflicts during this rebase.
 
 After rebasing, you may find it helpful to display the pretty-printed commit log with `git log --oneline --graph --decorate` to make sure all is well.
 
-In any case, after rebasing your local branch will now be out of sync with your remote branch. You will have to resolve this by force pushing: `git push --force origin topic-foo`. If you realize later that you made a mistake with your rebase, it's always possible to go back to your previous local state using `git reflog`.
+In any case, after rebasing your local branch will now be out of sync with your remote branch. You will have to resolve this by force pushing: `git push --force origin topic/foo`. If you realize later that you made a mistake with your rebase, it's always possible to go back to your previous local state using `git reflog`.
 
 For scenario (4), `git help rebase`'s section "Interactive mode" has extensive documentation on how to reorder and recombine commits. Also refer to the section on `--autosquash` for ideas on how to combine these features into a streamlined rebase-oriented workflow.
 
