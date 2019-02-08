@@ -63,7 +63,7 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	prSetQuantum { |quantum|
+	prSetQuantum { |quantum|
 		_LinkClock_SetQuantum;
 		^this.primitiveFailed
 	}
@@ -73,5 +73,14 @@ LinkClock : TempoClock {
 		tempoChanged.value(tempo, beats, secs, clock);
 	}
 
+	latency {
+		_LinkClock_GetLatency
+		^this.primitiveFailed
+	}
+
+	latency_ { |lat|
+		_LinkClock_SetLatency
+		^this.primitiveFailed
+	}
 }
 
