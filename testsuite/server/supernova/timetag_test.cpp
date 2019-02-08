@@ -51,14 +51,3 @@ BOOST_AUTO_TEST_CASE( time_tag_test_2 )
 
     BOOST_REQUIRE(first <= next);
 }
-
-BOOST_AUTO_TEST_CASE( time_tag_test_3 )
-{
-    using namespace boost::posix_time;
-    time_tag now = time_tag::from_ptime(ptime(microsec_clock::universal_time()));
-
-    ptime pnow = now.to_ptime();
-
-/*     std::cout << now.get_secs() << std::endl; */
-/*     std::cout << pnow << std::endl; */
-}

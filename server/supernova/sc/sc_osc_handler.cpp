@@ -238,16 +238,6 @@ static inline void consume( T && object )
     T sink( std::forward<T> ( object ) ); // move object here (and destroy)
 }
 
-void send_done_message(endpoint_ptr const & endpoint)
-{
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
-    p << osc::BeginMessage("/done")
-      << osc::EndMessage;
-
-    endpoint->send(p.Data(), p.Size());
-}
-
 void send_done_message(endpoint_ptr const & endpoint, const char * cmd)
 {
     char buffer[128];
@@ -492,12 +482,6 @@ struct cmd_dispatcher<false>:
     }
 };
 
-void report_failure(endpoint_ptr const & endpoint, std::exception const & error, const char * command)
-{
-    std::cout << error.what() << std::endl;
-    send_fail_message(endpoint, command, error.what());
-}
-
 void report_failure(endpoint_ptr const & endpoint, std::exception const & error, const char * command, int bufnum)
 {
     std::cout << error.what() << std::endl;
@@ -607,37 +591,6 @@ void sc_notify_observers::send_trigger(int32_t node_id, int32_t trigger_id, floa
     cmd_dispatcher<true>::fire_io_callback([=](){
         fire_trigger(node_id, trigger_id, value);
     });
-}
-
-
-void fire_node_reply(int32_t node_id, int reply_id, movable_string && cmd,
-                     movable_array<float> && values)
-{
-    size_t buffer_size = 1024 + strlen(cmd.c_str()) + values.size()*sizeof(float);
-
-    char * buffer = (buffer_size < 2048) ? (char*)alloca(buffer_size)
-                                         : (char*)malloc(buffer_size);
-
-    try {
-        osc::OutboundPacketStream p(buffer, buffer_size);
-        p << osc::BeginMessage(cmd.c_str()) << osc::int32(node_id) << osc::int32(reply_id);
-
-        for (int i = 0; i != values.size(); ++i)
-            p << values[i];
-
-        p << osc::EndMessage;
-
-        instance->send_notification(p.Data(), p.Size());
-
-        movable_array<float> valus (std::move( values ));
-
-    } catch (...) {
-    }
-
-    cmd_dispatcher<true>::free_in_rt_thread( std::move(cmd), std::move(values) );
-
-    if (buffer_size >= 2048)
-        free(buffer);
 }
 
 void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const char* command_name,
@@ -2533,7 +2486,7 @@ void handle_b_read(ReceivedMessage const & msg, endpoint_ptr endpoint)
         goto fire_callback;
 
     if (arg != end)
-        message = std::move( extract_completion_message(arg) );
+        message = extract_completion_message(arg) ;
 
 fire_callback:
     movable_string fname(filename);
@@ -3084,7 +3037,7 @@ static std::vector<sc_synth_definition_ptr> wrapSynthdefs( std::vector<sc_synthd
         wrappedSynthdefs.emplace_back( std::move( ptr ) );
     }
 
-    return std::move( wrappedSynthdefs );
+    return wrappedSynthdefs ;
 }
 
 template <bool realtime>
