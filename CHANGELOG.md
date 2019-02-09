@@ -13,8 +13,8 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
-3.10.2-rc1 (2019-02-03)
-=======================
+3.10.2 (2019-02-08)
+===================
 
 Due to immature development status and lack of cross-platform compatibility, **MainMenu is no longer created by default** ([#4285](https://github.com/supercollider/supercollider/pull/4285)). It can be re-enabled by running `MainMenu.initBuiltInMenus` (add this to your startup file to permanently re-enable). The API for MainMenu is subject to change in the future.
 
