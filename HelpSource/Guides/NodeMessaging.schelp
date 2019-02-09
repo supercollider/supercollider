@@ -9,7 +9,7 @@ this messaging scheme is explained in detail in:
 list::
 ## link::Reference/Server-Architecture::
 ## link::Reference/Server-Command-Reference::
-## link::Tutorials/Tutorial::
+## link::Tutorials/Server_Tutorial::
 ::
 
 section:: Messaging nodes
@@ -161,4 +161,3 @@ Supplying an array for an argument in an event already has another meaning: mult
 code::
 (instrument: \controlList, freq: 220, detune: [[0.95, 1.005]], sustain: 2).play;
 ::
-

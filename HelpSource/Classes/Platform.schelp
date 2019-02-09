@@ -74,15 +74,6 @@ platform recordings directory
 method:: defaultTempDir
 default directory for temporary files
 
-method:: formatPathForCmdLine
-
-argument:: path
-A path string.
-
-returns:: The input string formatted as a command-line argument. On Windows this
-method quotes the string. On Unix-based systems this method escapes space
-characters with a backslash.
-
 subsection:: Features
 
 method:: when
@@ -100,7 +91,6 @@ returns the platform name
 
 method:: recompile
 recompile class library
-
 
 subsection:: Directories and filesystem stuff
 
@@ -146,7 +136,14 @@ platform specific resource directory
 method:: defaultTempDir
 default directory for temporary files
 
+method:: formatPathForCmdLine
 
+argument:: path
+A path string.
+
+returns:: The input string formatted as a command-line argument. On Windows this
+method quotes the string. On Unix-based systems this method escapes space
+characters with a backslash.
 
 subsection:: Startup files
 

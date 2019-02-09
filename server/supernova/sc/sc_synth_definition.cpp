@@ -72,7 +72,7 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
                                                           recursive_directory_iterator()     )) {
         if (!is_directory( entry.status() )) {
             auto path_name = entry.path();
-            futures.emplace_back( std::move(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} )) );
+            futures.emplace_back( async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} ) );
         }
     }
 

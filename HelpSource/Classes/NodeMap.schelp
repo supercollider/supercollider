@@ -49,9 +49,6 @@ returns the OSC message for setting a synth
 argument:: target
 a group, synth, or server to use as a nodeID to set.
 
-method::setn, map, mapn
-These are kept for backward compatibility. They redirect to link::#-set::.
-
 method::get
 Kept for backward compatibility.
 

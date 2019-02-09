@@ -96,6 +96,9 @@ TestUnitTest.new.runTestMethod(TestUnitTest.findMethod(\test_assert));
 ARGUMENT:: method
 the method to run
 
+ARGUMENT:: report
+Reports the result of the test if code::true:: (default is code::true::)
+
 returns:: (describe returnvalue here)
 
 PRIVATE:: s, run, findTestMethods, setUp, tearDown
@@ -237,6 +240,33 @@ a = UnitTest.new;
 a.ifAsserts(2 == 3, "yes", { a.assert(2 == 4) }, { a.assert(1 == 1, "but this is correct") });
 )
 ::
+
+method::assertException
+Make sure that a specific link::Classes/Exception:: or link::Classes/Error:: is thrown.
+
+argument:: func
+Pass the code that is expected to throw an error in this function.
+
+argument:: errorClass
+The class or class name which the error should be kind of.
+
+argument:: message
+A message describing the purpose of the assertion.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
+argument:: details
+Some optional extra details which will be passed to the reporting framework
+for display unless brief reporting is requested (see link::#*passVerbosity::).
+
+method::assertNoException
+Make sure that a specific link::Classes/Exception:: or link::Classes/Error:: is strong::not:: thrown.
+For arguments, see link::#-assertException::.
+
 
 method::wait
 Wait for a condition, consider failed after maxTime. Only valid within a test (or a routine).

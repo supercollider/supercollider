@@ -124,7 +124,7 @@ private:
                 int activation_limit = get_previous_activation_count(it, g.child_nodes.rend(), previous_activation_limit);
 
                 thread_queue_item * q_item =
-                    q->allocate_queue_item(queue_node(std::move(queue_node_data(static_cast<abstract_synth*>(*seq_it++))), node_count),
+                    q->allocate_queue_item(queue_node(queue_node_data(static_cast<abstract_synth*>(*seq_it++)), node_count),
                                             successors, activation_limit);
 
                 queue_node & q_node = q_item->get_job();
@@ -168,7 +168,7 @@ private:
             
 
             if (node.is_synth()) {
-                thread_queue_item * q_item = q->allocate_queue_item(queue_node(std::move(queue_node_data(static_cast<abstract_synth*>(&node)))),
+                thread_queue_item * q_item = q->allocate_queue_item(queue_node(queue_node_data(static_cast<abstract_synth*>(&node))),
                                                                     successors_from_parent, previous_activation_limit);
 
                 if (previous_activation_limit == 0)
