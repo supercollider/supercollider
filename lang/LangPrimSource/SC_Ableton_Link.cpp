@@ -72,6 +72,7 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mLatency = 0.;  // default, user should override
 
 	mLink.enable(true);
+	mLink.enableStartStopSync(true);
 	mLink.setTempoCallback([this](double bpm) {
 		double secs = elapsedTime();
 		double tempo = bpm / 60.;
@@ -101,6 +102,32 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 		gLangMutex.unlock();
 	});
 
+	mLink.setStartStopCallback([this](bool isPlaying) {
+		//call sclang callback
+		gLangMutex.lock();
+		g->canCallOS = false;
+		++g->sp;
+		SetObject(g->sp, mTempoClockObj);
+		++g->sp;
+		SetBool(g->sp, isPlaying);
+		runInterpreter(g, getsym("prStartStopSync"), 2);
+		g->canCallOS = false;
+		gLangMutex.unlock();
+	});
+	
+	mLink.setNumPeersCallback([this](std::size_t numPeers) {
+		//call sclang callback
+		gLangMutex.lock();
+		g->canCallOS = false;
+		++g->sp;
+		SetObject(g->sp, mTempoClockObj);
+		++g->sp;
+		SetInt(g->sp, numPeers);
+		runInterpreter(g, getsym("prNumPeersChanged"), 2);
+		g->canCallOS = false;
+		gLangMutex.unlock();
+	});
+	
 	auto sessionState = mLink.captureAppSessionState();
 	auto linkTime = hrToLinkTime(inBaseSeconds);
 	sessionState.requestBeatAtTime(inBaseBeats, linkTime, mQuantum);

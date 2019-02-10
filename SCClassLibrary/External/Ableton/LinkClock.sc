@@ -2,8 +2,6 @@
 
 LinkClock : TempoClock {
 
-	var <>tempoChanged;
-
 	*newFromTempoClock { |clock|
 		^super.new(
 			clock.tempo,
@@ -51,10 +49,8 @@ LinkClock : TempoClock {
 	}
 
 	setMeterAtBeat { |newBeatsPerBar, beats|
-		beatsPerBar = newBeatsPerBar;
-		barsPerBeat = beatsPerBar.reciprocal;
 		this.prSetQuantum(beatsPerBar);
-		this.changed(\meter);
+		super.setMeterAtBeat(newBeatsPerBar, beats);
 	}
 
 	// PRIVATE
@@ -70,7 +66,19 @@ LinkClock : TempoClock {
 
 	// run tempo changed callback
 	prTempoChanged { |tempo, beats, secs, clock|
-		tempoChanged.value(tempo, beats, secs, clock);
+		this.changed(\tempo);
+	}
+
+	prStartStopSync { |isPlaying|
+		if(isPlaying) {
+			this.changed(\linkStart);
+		} {
+			this.changed(\linkStop);
+		}
+	}
+
+	prNumPeersChanged { |numPeers|
+		this.changed(\numPeers, numPeers);
 	}
 
 	latency {

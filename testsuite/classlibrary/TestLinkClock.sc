@@ -6,20 +6,25 @@ TestLinkClock : UnitTest {
 	// see external_libraries/link/TEST-PLAN.md
 
 	// Test Plan - TEMPO-1
-	test_transmission_tempo {
+	// Tempo changes should be transmitted between connected apps.
+	test_settingTempo_transmitsToLinkPeers {
 		var clock1, clock2;
-		var semaphore = Semaphore(0);
+		var semaphore = Semaphore(0),
+		controller;
 
 		clock1 = LinkClock.new;
 		clock2 = LinkClock.new;
-		clock2.tempoChanged = { semaphore.signal};
+		controller = SimpleController(clock2).put(\tempo, {
+			controller.remove;
+			semaphore.signal
+		});
 
 		0.2.wait;
 		clock1.tempo = rrand(20,999)/60;
 
 		// signal semaphore after a certain time to avoid
 		// blocking the function
-		clock2.sched(2, { semaphore.signal});
+		clock2.sched(2, { semaphore.signal });
 
 		semaphore.wait;
 		this.assertFloatEquals( clock2.tempo, clock1.tempo,
@@ -32,7 +37,8 @@ TestLinkClock : UnitTest {
 	}
 
 	// Test Plan - TEMPO-2
-	test_preserve_session_tempo {
+	// Opening an app with Link enabled should not change the tempo of an existing Link session.
+	test_newLinkClock_shouldNotChangeLinkTempo {
 		var clock1, clock2, sessionTempo;
 
 		clock1 = LinkClock(130/60);
@@ -51,20 +57,27 @@ TestLinkClock : UnitTest {
 		clock2.stop;
 	}
 
+	// Test Plan - TEMPO-3
+	// When connected, loading a new document should not change the Link session tempo.
+	// SC does not change tempo when opening a code document, so this test is irrelevant.
+
 	// Test Plan - TEMPO-4
-	test_sync {
+	// Tempo range handling.
+	test_settingTempo_maintainsSyncOver20To999BPM {
 		var clock1, clock2;
-		var semaphore = Semaphore(0);
+		var semaphore = Semaphore(0), controller;
 		var phase1 = Array.newClear(2),
 			phase2 = Array.newClear(2);
 
 		clock1 = LinkClock(1).beats_(100.0.rand);
 		clock2 = LinkClock(1).beats_(100.0.rand);
-		clock2.tempoChanged = { semaphore.signal};
+		controller = SimpleController(clock2).put(\tempo, {
+			semaphore.signal
+		});
 
 		// test sync at 20 bpm
 		clock1.tempo = 20/60;
-		clock2.sched(2, { semaphore.signal});
+		clock2.sched(2, { semaphore.signal });
 		semaphore.wait;
 
 		phase1[0] = clock1.beatInBar;
@@ -72,7 +85,7 @@ TestLinkClock : UnitTest {
 
 		// test sync at 999 bpm
 		clock1.tempo = 999/60;
-		clock2.sched(2, { semaphore.signal});
+		clock2.sched(2, { semaphore.signal });
 		semaphore.wait;
 
 		phase1[1] = clock1.beatInBar;
@@ -85,10 +98,12 @@ TestLinkClock : UnitTest {
 
 		clock1.stop;
 		clock2.stop;
+		controller.remove;
 	}
 
 	// Test Plan - TEMPO-5
-	test_no_session_tempo {
+	// Enabling Link does not change app's tempo if there is no Link session to join.
+	test_newLinkClock_usesOwnTempoIfNoSession {
 		var clock, tempo;
 
 		tempo = rrand(20,999)/60;
@@ -111,7 +126,8 @@ TestLinkClock : UnitTest {
 	}
 
 	// Test Plan - BEATTIME-1
-	test_no_session_beattime {
+	// Enabling Link does not change app's beat time if there is no Link session to join.
+	test_newLinkClock_usesOwnBeatsIfNoSession {
 		var clock, beats, secs;
 
 		clock = LinkClock(1).beats_(100.0.rand);
@@ -136,7 +152,8 @@ TestLinkClock : UnitTest {
 	}
 
 	// Test Plan - BEATTIME-2
-	test_no_change_beattime {
+	// App's beat time does not change if another participant joins its session.
+	test_newLinkClock_syncsBeatsToExistingLinkClock {
 		var clock1, clock2;
 		var beats;
 
@@ -147,16 +164,16 @@ TestLinkClock : UnitTest {
 		clock2 = LinkClock(1);
 
 		this.assertEquals( clock1.beats, beats,
-			"clock beats should not change when a participant joins its session"
+			"first clock's beats should not change when a participant joins its session"
 		);
 
 		clock1.stop;
 		clock2.stop;
 	}
 
-	// test starting a LinkClock from a TempoClock and reschulding
-	// all its tasks
-	test_from_TempoClock {
+	// test starting a LinkClock from a TempoClock and rescheduling all its tasks
+	// SC-specific test, not part of Ableton's test plan
+	test_newFromTempoClock_reschedulesOldClockQueue {
 		var tempoClock = TempoClock.new;
 		var linkClock;
 		var routine, streamplayer;
@@ -176,8 +193,8 @@ TestLinkClock : UnitTest {
 			thisThread.clock.stop;
 			semaphore.signal;
 		});
-		routine = { loop{ 0.01.wait} }.fork(tempoClock);
-		streamplayer = Pbind(\dur, 0.1).play(tempoClock);
+		routine = { loop{ 0.01.wait } }.fork(tempoClock);
+		streamplayer = Pbind(\dur, 0.02).play(tempoClock);
 		0.1.wait;
 
 		linkClock = LinkClock.newFromTempoClock(tempoClock);
