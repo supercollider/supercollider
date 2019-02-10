@@ -39,14 +39,14 @@ public:
 	void SetAll(double inTempo, double inBeats, double inSeconds);
 	double BeatsToSecs(double beats) const
 	{
-		auto timeline = mLink.captureAppTimeline();
-		double secs = linkToHrTime(timeline.timeAtBeat(beats, mQuantum)) - mLatency;
+		auto sessionState = mLink.captureAppSessionState();
+		double secs = linkToHrTime(sessionState.timeAtBeat(beats, mQuantum)) - mLatency;
 		return secs;
 	}
 	double SecsToBeats(double secs) const
 	{
-		auto timeline = mLink.captureAppTimeline();
-		double beats = timeline.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
+		auto sessionState = mLink.captureAppSessionState();
+		double beats = sessionState.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
 		return beats;
 	}
 
@@ -76,8 +76,8 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 		double secs = elapsedTime();
 		double tempo = bpm / 60.;
 
-		auto timeline = mLink.captureAppTimeline();
-		double beats = timeline.beatAtTime(hrToLinkTime(secs), mQuantum);
+		auto sessionState = mLink.captureAppSessionState();
+		double beats = sessionState.beatAtTime(hrToLinkTime(secs), mQuantum);
 
 		mTempo = tempo;
 		mBeatDur = 1. / tempo;
@@ -101,49 +101,49 @@ LinkClock::LinkClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 		gLangMutex.unlock();
 	});
 
-	auto timeline = mLink.captureAppTimeline();
+	auto sessionState = mLink.captureAppSessionState();
 	auto linkTime = hrToLinkTime(inBaseSeconds);
-	timeline.requestBeatAtTime(inBaseBeats, linkTime, mQuantum);
-	mLink.commitAppTimeline(timeline);
+	sessionState.requestBeatAtTime(inBaseBeats, linkTime, mQuantum);
+	mLink.commitAppSessionState(sessionState);
 }
 
 void LinkClock::SetAll(double inTempo, double inBeats, double inSeconds)
 {
 
-	auto timeline = mLink.captureAppTimeline();
+	auto sessionState = mLink.captureAppSessionState();
 	auto linkTime = hrToLinkTime(inSeconds);
-	timeline.setTempo(inTempo * 60., linkTime);
-	timeline.requestBeatAtTime(inBeats,linkTime, mQuantum);
+	sessionState.setTempo(inTempo * 60., linkTime);
+	sessionState.requestBeatAtTime(inBeats,linkTime, mQuantum);
 
 	mTempo = inTempo;
 	mBeatDur = 1. / inTempo;
 
-	mLink.commitAppTimeline(timeline);
+	mLink.commitAppSessionState(sessionState);
 	mCondition.notify_one();
 }
 
 void LinkClock::SetTempoAtBeat(double inTempo, double inBeats)
 {
-	auto timeline = mLink.captureAppTimeline();
-	auto time = timeline.timeAtBeat(inBeats, mQuantum);
-	timeline.setTempo(inTempo*60., time);
+	auto sessionState = mLink.captureAppSessionState();
+	auto time = sessionState.timeAtBeat(inBeats, mQuantum);
+	sessionState.setTempo(inTempo*60., time);
 
 	mTempo = inTempo;
 	mBeatDur = 1. / inTempo;
 
-	mLink.commitAppTimeline(timeline);
+	mLink.commitAppSessionState(sessionState);
 	mCondition.notify_one();
 }
 
 void LinkClock::SetTempoAtTime(double inTempo, double inSeconds)
 {
-	auto timeline = mLink.captureAppTimeline();
-	timeline.setTempo(inTempo*60., hrToLinkTime(inSeconds));
+	auto sessionState = mLink.captureAppSessionState();
+	sessionState.setTempo(inTempo*60., hrToLinkTime(inSeconds));
 
 	mTempo = inTempo;
 	mBeatDur = 1. / inTempo;
 
-	mLink.commitAppTimeline(timeline);
+	mLink.commitAppSessionState(sessionState);
 	mCondition.notify_one();
 }
 
