@@ -51,17 +51,17 @@ buffers of the same size.
 
 argument::freq1
 
-Frequency in Hertz of the 1st oscillator.
+Frequency in Hertz of the 1st oscillator. (non-interpolated control-rate)
 
 
 argument::freq2
 
-Frequency in Hertz of the 2nd oscillator.
+Frequency in Hertz of the 2nd oscillator. (non-interpolated control-rate)
 
 
 argument::freq3
 
-Frequency in Hertz of the 3rd oscillator.
+Frequency in Hertz of the 3rd oscillator. (non-interpolated control-rate)
 
 
 argument::mul
@@ -78,93 +78,98 @@ Examples::
 
 code::
 
+// allocate and fill the buffers to be used by VOsc3
 (
-s = Server.local;
-// allocate and fill tables 0 to 7
-8.do({ arg i;
-	var n, a;
-	// allocate table
-	s.sendMsg(\b_alloc, i, 1024);
-	// generate array of harmonic amplitudes
-	n = (i+1)**2;
-	a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a);
-	// the argument '7' here is a flag for the \sine1 wave fill method -
-	// see the "Wave Fill Commands" section in the Server Command Reference
-});
+s.waitForBoot({
+
+	var numBufs = 8;
+
+	// allocate table of consecutive buffers
+	~bufs = Buffer.allocConsecutive(numBufs, s, 1024, 1);
+	s.sync;
+
+	~bufs.do({ arg buf, i;
+		var n, a;
+
+		// generate array of harmonic amplitudes
+		n = (i+1)**2;
+		a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });
+
+		// fill table
+		// argument '7': flag for the \sine1 wave fill method
+		// see "Wave Fill Commands" in the Server Command Reference
+		s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
+
+		s.sync;
+	});
+	"Buffers prepared.".postln;
+})
 )
 
+// play the synth, indexing into the buffers with MouseX
 (
-SynthDef("help-VOsc",{ arg out=0, bufoffset=0, freq=240;
-	var x;
+x = SynthDef("help-VOsc", { arg out = 0, bufoffset = 0, freq = 240;
 	// mouse x controls the wavetable position
-	x = MouseX.kr(0,7);
+	var bufindex = MouseX.kr(0, ~bufs.size - 1) + bufoffset;
+
 	Out.ar(out,
-		VOsc3.ar(bufoffset+x, freq+[0,1],freq+[0.37,1.1],freq+[0.43, -0.29], 0.3)
+		VOsc3.ar(
+			bufindex,
+			freq + [0,1],
+			freq + [0.37, 1.1],
+			freq + [0.43, -0.29],
+			0.3
+		)
 	)
-}).play(s,[\out, 0, \bufoffset, 0]);
+}).play(s,[\out, 0, \bufoffset, ~bufs.first.bufnum, \freq, 240]);
 )
 
+// fill the buffers with new harmonics on-the-fly
 (
-8.do({ arg i;
+~bufs.do({ arg buf, i;
 	var a;
-	s.sendMsg(\b_alloc, i, 1024); // allocate table
-	// generate array of harmonic amplitudes
 	a = Array.fill(i, 0) ++ [0.5, 1, 0.5];
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a);
+	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
 });
 )
 
+// new harmonics...
 (
-8.do({ arg i;
+~bufs.do({ arg buf, i;
 	var a, n;
-	s.sendMsg(\b_alloc, i, 1024); // allocate table
-	// generate array of harmonic amplitudes
 	n = (i+1)*8;
 	a = Array.fill(n,0);
 	(n>>1).do({ arg i; a.put(n.rand, 1) });
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a);
+
+	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
 });
 )
 
+// new harmonics...
 (
-8.do({ arg i;
-	var a;
-	s.sendMsg(\b_alloc, i, 1024); // allocate table
-	// generate array of harmonic amplitudes
+~bufs.do({ arg buf, i;
+	var a, n;
 	n = (i+1)**2;
-	a = Array.fill(n, { arg j; 1.0.rand2 });
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a);
+	a = Array.fill(n, { 1.0.rand2 });
+
+	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a);
 });
 )
 
+// new harmonics...
 (
-var a;
-a = Array.fill(64, { arg j; 1.0.rand2 });
-8.do({ arg i;
-	s.sendMsg(\b_alloc, i, 1024); // allocate table
-	// generate array of harmonic amplitudes
-	n = (i+1)**2;
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a.extend(n.asInteger));
+var a = Array.fill(64, { 1.0.rand2 });
+var n = [1, a.size].interpolate(~bufs.size-1);
+~bufs.do({ arg buf, i;
+	n[i].postln;
+	s.performList(\sendMsg, \b_gen, buf.bufnum, \sine1, 7, a.keep(n[i].asInteger).postln);
 });
 )
 
+// cleanup
 (
-var a;
-a = Array.fill(64, { arg j; 1/(j+1) });
-8.do({ arg i;
-	s.sendMsg(\b_alloc, i, 1024); // allocate table
-	// generate array of harmonic amplitudes
-	n = (i+1)**2;
-	// fill table
-	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a.extend(n.asInteger));
-});
+x.free;
+~bufs.do(_.free);
 )
 
 ::
-
