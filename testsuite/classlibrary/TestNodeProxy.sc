@@ -78,7 +78,7 @@ TestNodeProxy : UnitTest {
 		/* will be fixed in master
 		proxy.send;
 		this.assert(proxy.loaded != true,
-			"after server quit: send should not assume server resources loaded");
+		"after server quit: send should not assume server resources loaded");
 		*/
 
 		// CLEAR
@@ -152,6 +152,33 @@ TestNodeProxy : UnitTest {
 		this.assert(proxy.objects.first.hasFadeTimeControl, "functions should register their fadeTime control");
 
 		proxy.clear;
+		server.sync;
+		server.quit;
+		server.remove;
+	}
+
+	test_control_fade {
+		var server = Server(this.class.name);
+		var result, synth, proxy;
+		var cond = Condition.new;
+		var fadeTime = 1;
+		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
+
+		server.bootSync;
+
+		proxy = NodeProxy(server);
+		proxy.source = { DC.kr(2000) };
+		proxy.fadeTime = fadeTime;
+
+		0.2.wait;
+		proxy.source = 440;
+		waitTime.wait;
+
+		OSCFunc({ cond.unhang }, '/c_set');
+		proxy.bus.get({ |val| result = val });
+		cond.hang(1); // timeout after one second
+
+		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
 		server.sync;
 		server.quit;
 		server.remove;
