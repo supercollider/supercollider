@@ -96,6 +96,7 @@
 			channelOffset: channelOffset,
 			finish: #{
 				var proxy = ~proxy;
+				~server = proxy.server;
 				~array = ~array.wrapExtend(proxy.numChannels);
 				~out = proxy.index + ~channelOffset;
 				~group = proxy.group;
