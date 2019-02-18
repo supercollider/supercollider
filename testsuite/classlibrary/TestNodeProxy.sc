@@ -159,7 +159,7 @@ TestNodeProxy : UnitTest {
 
 	test_control_fade {
 		var server = Server(this.class.name);
-		var result, synth, proxy;
+		var result, proxy;
 		var cond = Condition.new;
 		var fadeTime = 1;
 		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
@@ -179,7 +179,7 @@ TestNodeProxy : UnitTest {
 		cond.hang(1); // timeout after one second
 
 		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
-		server.sync;
+
 		server.quit;
 		server.remove;
 	}
