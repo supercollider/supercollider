@@ -161,7 +161,7 @@ TestNodeProxy : UnitTest {
 		var server = Server(this.class.name);
 		var result, proxy;
 		var cond = Condition.new;
-		var fadeTime = 1;
+		var fadeTime = 0.1;
 		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
 
 		server.bootSync;
