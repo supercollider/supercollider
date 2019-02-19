@@ -159,7 +159,7 @@ TestNodeProxy : UnitTest {
 
 	test_control_fade {
 		var server = Server(this.class.name);
-		var result, proxy;
+		var result, proxy, timeout;
 		var cond = Condition.new;
 		var fadeTime = 0.1;
 		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
@@ -170,13 +170,14 @@ TestNodeProxy : UnitTest {
 		proxy.source = { DC.kr(2000) };
 		proxy.fadeTime = fadeTime;
 
-		0.2.wait;
 		proxy.source = 440;
 		waitTime.wait;
 
 		OSCFunc({ cond.unhang }, '/c_set');
+		timeout = fork{ 1.wait; cond.unhang };
 		proxy.bus.get({ |val| result = val });
-		cond.hang(1); // timeout after one second
+		cond.hang;
+		timeout.stop;
 
 		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
 
