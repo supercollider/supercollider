@@ -352,7 +352,7 @@
 
 	asCode { | namestring = "", dropOut = false |
 		^String.streamContents({ |stream|
-			var map;
+			var map, rate;
 			if(dropOut) {
 				map = this.copy;
 				map.removeAt(\out);
@@ -364,6 +364,20 @@
 			};
 
 			if(map.notEmpty) {
+				// 'map' might refer to other NodeProxies
+				// Before referring to them in an arg list,
+				// we should be sure they are initialized
+				// to the right rate and number of channels.
+				// It is OK if the 'source' definition comes later in the doc string.
+				map.keysValuesDo { |key, value|
+					if(value.isKindOf(BusPlug)) {
+						rate = value.rate;
+						if(rate != \audio) { rate = \control };
+						stream <<< value  // storeOn gets the ~key
+						<< "." << UGen.methodSelectorForRate(rate)
+						<< "(" << value.numChannels << ");\n";
+					};
+				};
 				stream << namestring << ".set(" <<<* map.asKeyValuePairs << ");" << Char.nl;
 			};
 			if(rates.notNil) {
