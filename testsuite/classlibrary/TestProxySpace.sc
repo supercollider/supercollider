@@ -2,7 +2,7 @@ TestProxySpace : UnitTest {
 
 
 	test_storeOn_recoversState {
-		var psA, psB, stream, bValue, bNodeMap, failedKey;
+		var psA, psB, stream, bValue, bNodeMap, aMapString, bMapString;
 		var server = Server(\test, NetAddr("127.0.0.1", 57111));
 
 		this.bootServer(server);
@@ -22,41 +22,34 @@ TestProxySpace : UnitTest {
 		};
 
 		psB = ProxySpace(server).make {
-			stream.collection.interpret;
+			stream.collection.debug("\n\n\n\nSTREAM:\n\n").interpret;
 		};
 
-		failedKey = block { |break|
-			psA.keysValuesDo { |key, value|
-				bValue = psB[key];
-				// basic checks
-				if(bValue.rate != value.rate or: {
-					bValue.numChannels != value.numChannels or: {
-						bValue.source.asCompileString != value.source.asCompileString
-					}
-				}) {
-					break.value(key);
-				};
-				// check nodemap
-				bNodeMap = bValue.nodeMap;
-				value.nodeMap.keysValuesDo { |parm, map|
-					// output bus indices will not match, skip them
-					if(#[out, i_out].includes(parm).not) {
-						if(map.asCompileString != bNodeMap[parm].asCompileString) {
-							break.value(key);
-						};
-					};
+		psA.keysValuesDo { |key, value|
+			bValue = psB[key];
+			// basic checks
+			this.assertEquals(value.rate, bValue.rate, "Restored NodeProxy rate should match original (%)".format(key));
+			this.assertEquals(value.numChannels, bValue.numChannels, "Restored NodeProxy numChannels should match original (%)".format(key));
+			this.assertEquals(value.source.asCompileString, bValue.source.asCompileString, "Restored NodeProxy source should match original (%)".format(key));
+			// check nodemap
+			bNodeMap = bValue.nodeMap;
+			value.nodeMap.keysValuesDo { |parm, map|
+				// output bus indices will not match, skip them
+				if(#[out, i_out].includes(parm).not) {
+					psA.use { aMapString = map.asCompileString };
+					psB.use { bMapString = bNodeMap[parm].asCompileString };
+					this.assertEquals(
+						aMapString, aMapString,
+						"Restored NodeProxy's nodeMap should match original (%, parameter %)"
+						.format(key, parm)
+					);
 				};
 			};
-			nil
 		};
 
 		psA.clear;
 		psB.clear;
 		server.quit;
-
-		this.assert(failedKey.isNil,
-			"ProxySpace document string should recover all proxies' sources, rates, numChannels and nodemaps %"
-			.format(if(failedKey.notNil) { "(% failed)".format(failedKey) } { "" })
-		);
+		server.remove;
 	}
 }
