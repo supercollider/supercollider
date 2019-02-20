@@ -7,7 +7,7 @@ TestNodeProxy : UnitTest {
 		var server = Server(this.class.name);
 
 		// fail safe for large inits - must be Integer for supernova
-		server.options.numWireBufs = (64 * (2**7)).asInteger;
+		server.options.numWireBufs = (64 * (2 ** 7)).asInteger;
 
 		proxy = NodeProxy(server);
 
@@ -174,7 +174,7 @@ TestNodeProxy : UnitTest {
 		waitTime.wait;
 
 		OSCFunc({ cond.unhang }, '/c_set');
-		timeout = fork{ 1.wait; cond.unhang };
+		timeout = fork { 1.wait; cond.unhang };
 		proxy.bus.get({ |val| result = val });
 		cond.hang;
 		timeout.stop;
