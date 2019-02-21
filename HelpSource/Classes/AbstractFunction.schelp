@@ -59,8 +59,10 @@ code::
 a = { "123.471".scramble }; b = a.asFloat; b.value;
 ::
 method::asInt
+Deprecated. Use code::asInteger:: instead.
+method::asInteger
 code::
-a = { "123471".scramble }; b = a.asInt; b.value;
+a = { "123471".scramble }; b = a.asInteger; b.value;
 ::
 method::ceil, floor, frac
 code::

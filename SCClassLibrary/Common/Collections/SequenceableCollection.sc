@@ -908,7 +908,7 @@ SequenceableCollection : Collection {
 	//  "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
 	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
 	chebyshevTZeros {
-		var n = this.asInt;
+		var n = this.asInteger;
 		^(1..n).collect({ arg k;
 			cos(pi* ((2*k) - 1) / (2*n))
 		});

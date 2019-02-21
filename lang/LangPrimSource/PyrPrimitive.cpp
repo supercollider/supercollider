@@ -4011,7 +4011,7 @@ void initPrimitives()
 	definePrimitive(base, opBitNot, "_BitNot", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opAbs, "_Abs", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opAsFloat, "_AsFloat", doSpecialUnaryArithMsg, 1, 0);
-	definePrimitive(base, opAsInt, "_AsInt", doSpecialUnaryArithMsg, 1, 0);
+	definePrimitive(base, opAsInteger, "_AsInteger", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opCeil, "_Ceil", doSpecialUnaryArithMsg, 1, 0);			// 5
 	definePrimitive(base, opFloor, "_Floor", doSpecialUnaryArithMsg, 1, 0);
 	definePrimitive(base, opFrac, "_Frac", doSpecialUnaryArithMsg, 1, 0);
