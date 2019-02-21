@@ -7,7 +7,7 @@ TestNodeProxy : UnitTest {
 		var server = Server(this.class.name);
 
 		// fail safe for large inits - must be Integer for supernova
-		server.options.numWireBufs = (64 * (2**7)).asInteger;
+		server.options.numWireBufs = (64 * (2 ** 7)).asInteger;
 
 		proxy = NodeProxy(server);
 
@@ -78,7 +78,7 @@ TestNodeProxy : UnitTest {
 		/* will be fixed in master
 		proxy.send;
 		this.assert(proxy.loaded != true,
-			"after server quit: send should not assume server resources loaded");
+		"after server quit: send should not assume server resources loaded");
 		*/
 
 		// CLEAR
@@ -153,6 +153,34 @@ TestNodeProxy : UnitTest {
 
 		proxy.clear;
 		server.sync;
+		server.quit;
+		server.remove;
+	}
+
+	test_control_fade {
+		var server = Server(this.class.name);
+		var result, proxy, timeout;
+		var cond = Condition.new;
+		var fadeTime = 0.1;
+		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
+
+		server.bootSync;
+
+		proxy = NodeProxy(server);
+		proxy.source = { DC.kr(2000) };
+		proxy.fadeTime = fadeTime;
+
+		proxy.source = 440;
+		waitTime.wait;
+
+		OSCFunc({ cond.unhang }, '/c_set');
+		timeout = fork { 1.wait; cond.unhang };
+		proxy.bus.get({ |val| result = val });
+		cond.hang;
+		timeout.stop;
+
+		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
+
 		server.quit;
 		server.remove;
 	}
