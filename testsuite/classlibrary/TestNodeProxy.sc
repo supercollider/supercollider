@@ -269,6 +269,7 @@ TestNodeProxy : UnitTest {
 
 		server.quit;
 		server.remove;
+	}
 
 	test_map_rates {
 
