@@ -53,7 +53,7 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
     connect(scLang, SIGNAL(stateChanged(QProcess::ProcessState)),
             this, SLOT(onScLangStateChanged(QProcess::ProcessState)));
     connect(scLang, SIGNAL(response(QString,QString)),
-            this, SLOT(onScLangReponse(QString,QString)));
+            this, SLOT(onScLangResponse(QString,QString)));
     connect(mUdpSocket, SIGNAL(readyRead()), this, SLOT(onServerDataArrived()));
 }
 
@@ -405,7 +405,7 @@ void ScServer::onScLangStateChanged( QProcess::ProcessState )
     updateEnabledActions();
 }
 
-void ScServer::onScLangReponse( const QString & selector, const QString & data )
+void ScServer::onScLangResponse( const QString & selector, const QString & data )
 {
     static QString defaultServerRunningChangedSelector("defaultServerRunningChanged");
     static QString mutedSelector("serverMuted");
