@@ -6,11 +6,18 @@ Signal[float] : FloatArray {
 	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=false;
 		^Signal.newClear(size).chebyFill(amplitudes, normalize, zeroOffset);
 	}
-	*hammingWindow { arg size, pad=0;
+	*hammingWindow_old { arg size, pad=0;
 		if (pad == 0, {
 			^this.newClear(size).fill(0.5).addSine(1, 0.39, -0.5pi);
 		},{
 			^this.newClear(size-pad).fill(0.5).addSine(1, 0.39, -0.5pi) ++ this.newClear(pad);
+		});
+	}
+	*hammingWindow { arg size, pad=0;
+		if (pad == 0, {
+			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi);
+		},{
+			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi) ++ this.newClear(pad);
 		});
 	}
 	*hanningWindow { arg size, pad=0;
