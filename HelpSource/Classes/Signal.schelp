@@ -92,6 +92,11 @@ the number of samples of the size that is zero padding.
 
 method::hammingWindow
 Fill a Signal of the given size with a Hamming window.
+
+warning::
+In versions of SuperCollider before 3.11, the implementation of code:: Signal.hammingWindow :: had incorrect coefficients. To get the old behavior back, use code:: Signal.hammingWindow_old ::.
+::
+
 code::
 Signal.hammingWindow(1024).plot;
 Signal.hammingWindow(1024, 512).plot;
@@ -128,6 +133,10 @@ Fourier Transform: Fill a Signal with the cosine table needed by the FFT methods
 code::
 Signal.fftCosTable(512).plot;
 ::
+
+method::hammingWindow_old
+
+This used to be code:: Signal.hammingWindow ::, but the coefficients were incorrect (making it a different window in the generalized Hamming window family). It is provided to assist in porting code to 3.11 and later.
 
 INSTANCEMETHODS::
 
