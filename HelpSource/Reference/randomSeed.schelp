@@ -32,16 +32,16 @@ Array.fill(7, r);
 
 subsection::Inheriting Seeds
 
-When a routine is created, it "inherits" its random number generator from the parent thread (link::Classes/Thread#.thisThread#thisThread::). If no particular randSeed is set (the normal case), it will tap the same stream of random number generators used by the parent.
+When a routine is created, it inherits its random number generator from the parent thread (link::Classes/Thread#.thisThread#thisThread::). If no particular randSeed is set (the normal case), then the same random number generator object provides numbers to both the parent and the child (one stream of random numbers, distributed between both).
 
-The parent thread is whichever Routine is in force at the moment of creating a new Routine. If no Routine is evaluating at that moment, then the parent is the sclang process master link::Classes/Thread:: -- that is, the default from which all Routines inherit the random number generator.
+The parent thread is whichever Routine is in force at the moment of creating a new Routine. If no Routine is evaluating at that moment, then the parent is the sclang process main link::Classes/Thread::. By default, all Routines inherit the random number generator from the main thread.
 
-To set the master random seed for the entire application, then, evaluate code::thisThread.randSeed = yourSeed:: outside of the context of any routine, as in the example below.
+To set the main random seed for the entire application, then, evaluate code::thisThread.randSeed = yourSeed:: outside of the context of any Routine, as in the example below.
 
 code::
 thisThread.randSeed = 1923;
 
-// create a function that returns a routine
+// create a function that returns a Routine
 
 r = { Routine({
 	loop({#[1,2,3,4,5].choose.yield })
@@ -55,12 +55,12 @@ thisThread.randSeed = 1923;
 Array.fill(7, r.value);
 ::
 
-When you set code::randSeed:: on a Routine, it switches to its own random number generator, independent of any other. Subsequently, routines created within the independent-RNG routine will inherit the separate random number generator.
+When you set code::randSeed:: on a Routine, the Routine switches to its own random number generator, independent of any other. Subsequently, Routines created within this Routine will inherit its unique random number generator.
 
 code::
 (
 thisThread.randSeed = 1000;
-TempoClock.sched(0, { 1000.rand.debug("master RNG"); 1 });
+TempoClock.sched(0, { 1000.rand.debug("main RNG"); 1 });
 
 fork {
 	2.1.wait;
@@ -69,15 +69,15 @@ fork {
 };
 )
 
-master RNG: 592 // sequence is 592, 876, 614, 236...
-master RNG: 876
-master RNG: 614
+main RNG: 592 // sequence is 592, 876, 614, 236...
+main RNG: 876
+main RNG: 614
 routine RNG: 592 // sequence is 592, 876...
-master RNG: 236
+main RNG: 236
 routine RNG: 876
 ::
 
-Note that this "inheritance" takes place only at the moment of creating a new routine. Calling code::next:: or code::play:: on the child routine does not override that routine's random number generator.
+Note that this inheritance takes place only at the moment of creating a new Routine. Calling code::next:: or code::play:: on the child Routine does not override that Routine's random number generator.
 
 subsection:: Audio example
 
