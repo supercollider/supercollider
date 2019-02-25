@@ -468,7 +468,7 @@ QuarkDetailView {
 		if(tags.size == 0 or: {
 			remoteLatest != model.git.shaForTag(tags.first);
 		}, {
-			versions.add([remoteLatest, "LATEST"]);
+			versions.add([remoteLatest, "Latest master"]);
 		});
 
 		// working copy
