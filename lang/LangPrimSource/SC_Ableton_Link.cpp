@@ -66,29 +66,8 @@ public:
         mLatency = latency;
     }
 
-    std::size_t NumPeers() const { return mLink.numPeers(); }
-
-private:
-    ableton::Link mLink;
-    double mQuantum;
-    double mLatency;
-};
-
-LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                            double tempo, double baseBeats, double baseSeconds)
-    : TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
-    mLink(tempo * 60.)
-{
-    //quantum = beatsPerBar
-    int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
-    if(err)
-        throw err;
-
-    mLatency = 0.;  // default, user should override
-
-    mLink.enable(true);
-    mLink.enableStartStopSync(true);
-    mLink.setTempoCallback([this](double bpm) {
+    void OnTempoChanged(double bpm)
+    {
         double secs = elapsedTime();
         double tempo = bpm / 60.;
 
@@ -115,9 +94,10 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
         runInterpreter(g, getsym("prTempoChanged"), 5);
         g->canCallOS = false;
         gLangMutex.unlock();
-    });
+    }
 
-    mLink.setStartStopCallback([this](bool isPlaying) {
+    void OnStartStop(bool isPlaying)
+    {
         //call sclang callback
         gLangMutex.lock();
         g->canCallOS = false;
@@ -128,9 +108,10 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
         runInterpreter(g, getsym("prStartStopSync"), 2);
         g->canCallOS = false;
         gLangMutex.unlock();
-    });
-    
-    mLink.setNumPeersCallback([this](std::size_t numPeers) {
+    }
+
+    void OnNumPeersChanged(std::size_t numPeers)
+    {
         //call sclang callback
         gLangMutex.lock();
         g->canCallOS = false;
@@ -141,7 +122,35 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
         runInterpreter(g, getsym("prNumPeersChanged"), 2);
         g->canCallOS = false;
         gLangMutex.unlock();
-    });
+    }
+
+    std::size_t NumPeers() const { return mLink.numPeers(); }
+
+private:
+    ableton::Link mLink;
+    double mQuantum;
+    double mLatency;
+};
+
+LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
+                            double tempo, double baseBeats, double baseSeconds)
+    : TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
+    mLink(tempo * 60.)
+{
+    //quantum = beatsPerBar
+    int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
+    if(err)
+        throw err;
+
+    mLatency = 0.;  // default, user should override
+
+    mLink.enable(true);
+    mLink.enableStartStopSync(true);
+    mLink.setTempoCallback([this](double bpm) { OnTempoChanged(bpm); });
+
+    mLink.setStartStopCallback([this](bool isPlaying) { OnStartStop(isPlaying); });
+    
+    mLink.setNumPeersCallback([this](std::size_t numPeers) { OnNumPeersChanged(numPeers); });
     
     auto sessionState = mLink.captureAppSessionState();
     auto linkTime = hrToLinkTime(baseSeconds);
