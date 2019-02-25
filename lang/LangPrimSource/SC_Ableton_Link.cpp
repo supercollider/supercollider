@@ -37,13 +37,13 @@ public:
     void SetTempoAtBeat(double tempo, double inBeats);
     void SetTempoAtTime(double tempo, double inSeconds);
     void SetAll(double tempo, double inBeats, double inSeconds);
-    double BeatsToSecs(double beats) const
+    double BeatsToSecs(double beats) const override
     {
         auto sessionState = mLink.captureAppSessionState();
         double secs = linkToHrTime(sessionState.timeAtBeat(beats, mQuantum)) - mLatency;
         return secs;
     }
-    double SecsToBeats(double secs) const
+    double SecsToBeats(double secs) const override
     {
         auto sessionState = mLink.captureAppSessionState();
         double beats = sessionState.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
@@ -193,7 +193,6 @@ void LinkClock::SetTempoAtTime(double tempo, double inSeconds)
 }
 
 //Primitives
-int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed);
 int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp;
@@ -208,8 +207,6 @@ int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-
-int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed);
 int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 1;
@@ -229,7 +226,6 @@ int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int prLinkClock_GetLatency(struct VMGlobals *g, int numArgsPushed);
 int prLinkClock_GetLatency(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp;
@@ -244,7 +240,6 @@ int prLinkClock_GetLatency(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed);
 int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 1;
