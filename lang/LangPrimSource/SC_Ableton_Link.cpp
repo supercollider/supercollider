@@ -81,7 +81,9 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
 {
     //quantum = beatsPerBar
     int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
-    if(err) throw err;
+    if(err)
+        throw err;
+
     mLatency = 0.;  // default, user should override
 
     mLink.enable(true);
