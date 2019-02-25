@@ -126,6 +126,15 @@ public:
 
     std::size_t NumPeers() const { return mLink.numPeers(); }
 
+    void CommitTempo(ableton::Link::SessionState sessionState, double tempo)
+    {
+        mTempo = tempo;
+        mBeatDur = 1. / tempo;
+
+        mLink.commitAppSessionState(sessionState);
+        mCondition.notify_one();
+    }
+  
 private:
     ableton::Link mLink;
     double mQuantum;
@@ -165,12 +174,7 @@ void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
     auto linkTime = hrToLinkTime(inSeconds);
     sessionState.setTempo(tempo * 60., linkTime);
     sessionState.requestBeatAtTime(inBeats,linkTime, mQuantum);
-
-    mTempo = tempo;
-    mBeatDur = 1. / tempo;
-
-    mLink.commitAppSessionState(sessionState);
-    mCondition.notify_one();
+    CommitTempo(sessionState, tempo);
 }
 
 void LinkClock::SetTempoAtBeat(double tempo, double inBeats)
@@ -178,24 +182,14 @@ void LinkClock::SetTempoAtBeat(double tempo, double inBeats)
     auto sessionState = mLink.captureAppSessionState();
     auto time = sessionState.timeAtBeat(inBeats, mQuantum);
     sessionState.setTempo(tempo*60., time);
-
-    mTempo = tempo;
-    mBeatDur = 1. / tempo;
-
-    mLink.commitAppSessionState(sessionState);
-    mCondition.notify_one();
+    CommitTempo(sessionState, tempo);
 }
 
 void LinkClock::SetTempoAtTime(double tempo, double inSeconds)
 {
     auto sessionState = mLink.captureAppSessionState();
     sessionState.setTempo(tempo*60., hrToLinkTime(inSeconds));
-
-    mTempo = tempo;
-    mBeatDur = 1. / tempo;
-
-    mLink.commitAppSessionState(sessionState);
-    mCondition.notify_one();
+    CommitTempo(sessionState, tempo);
 }
 
 //Primitives
