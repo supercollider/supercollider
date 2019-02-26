@@ -64,11 +64,7 @@ LinkClock : TempoClock {
 	}
 
 	prStartStopSync { |isPlaying|
-		if(isPlaying) {
-			this.changed(\linkStart);
-		} {
-			this.changed(\linkStop);
-		}
+		this.changed(if(isPlaying, \linkStart, \linkStop));
 	}
 
 	prNumPeersChanged { |numPeers|
