@@ -250,7 +250,6 @@ inline double DurToFloat(DurationType dur)
 {
     using namespace std::chrono;
     seconds secs         = duration_cast<seconds>(dur);
-    nanoseconds nanosecs = dur - secs;
 
     return duration_cast<duration<double, std::ratio<1>>>(dur).count();
 }
