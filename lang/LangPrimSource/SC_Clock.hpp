@@ -103,7 +103,7 @@ int prClock_New(struct VMGlobals *g, int numArgsPushed)
     int err = slotDoubleVal(b, &tempo);
     if (err) tempo = 1.;
     if (tempo <= 0.) {
-        error("invalid tempo %g\n", tempo);
+        error("negative tempo %g is invalid\n", tempo);
         SetPtr(slotRawObject(a)->slots+1, NULL);
         return errFailed;
     }
@@ -168,22 +168,22 @@ int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
         return errFailed;
     }
     if(clock->GetTempo() <= 0.f) {
-        error("cannot set tempo from this method. The message 'etempo_' can be used instead.\n");
+        error("cannot set negative tempo from this method. Use 'etempo_' instead.\n");
         // prTempoClock_SetTempoAtTime can be used.
         return errFailed;
     }
 
     double tempo, beat;
     int err = slotDoubleVal(b, &tempo);
-    if (err) return errFailed;
+    if (err) return errWrongType;
     if (tempo <= 0.) {
-        error("invalid tempo %g. The message 'etempo_' can be used instead.\n", tempo);
+        error("negative tempo %g is invalid. Use 'etempo_' instead.\n", tempo);
         // prTempoClock_SetTempoAtTime can be used.
         return errFailed;
     }
 
     err = slotDoubleVal(c, &beat);
-    if (err) return errFailed;
+    if (err) return errWrongType;
 
     clock->SetTempoAtBeat(tempo, beat);
 
@@ -206,13 +206,13 @@ int prClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 
     double tempo, beat, secs;
     int err = slotDoubleVal(b, &tempo);
-    if (err) return errFailed;
+    if (err) return errWrongType;
 
     err = slotDoubleVal(c, &beat);
-    if (err) return errFailed;
+    if (err) return errWrongType;
 
     err = slotDoubleVal(d, &secs);
-    if (err) return errFailed;
+    if (err) return errWrongType;
 
     clock->SetAll(tempo, beat, secs);
 
@@ -234,10 +234,10 @@ int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 
     double tempo, sec;
     int err = slotDoubleVal(b, &tempo);
-    if (err) return errFailed;
+    if (err) return errWrongType;
 
     err = slotDoubleVal(c, &sec);
-    if (err) return errFailed;
+    if (err) return errWrongType;
 
     clock->SetTempoAtTime(tempo, sec);
 
@@ -252,7 +252,7 @@ inline double DurToFloat(DurationType dur)
     seconds secs         = duration_cast<seconds>(dur);
     nanoseconds nanosecs = dur - secs;
 
-    return secs.count() + 1.0e-9 * nanosecs.count();
+    return duration_cast<duration<double, std::ratio<1>>>(dur).count();
 }
 
 #endif
