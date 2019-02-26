@@ -37,6 +37,16 @@ LinkClock : TempoClock {
 		super.setMeterAtBeat(newBeatsPerBar, beats);
 	}
 
+	latency {
+		_LinkClock_GetLatency
+		^this.primitiveFailed
+	}
+
+	latency_ { |lat|
+		_LinkClock_SetLatency
+		^this.primitiveFailed
+	}
+
 	// PRIVATE
 	prStart { |tempo, beats, seconds|
 		_LinkClock_New
@@ -84,15 +94,4 @@ LinkClock : TempoClock {
 
 		^this
 	}
-
-	latency {
-		_LinkClock_GetLatency
-		^this.primitiveFailed
-	}
-
-	latency_ { |lat|
-		_LinkClock_SetLatency
-		^this.primitiveFailed
-	}
 }
-
