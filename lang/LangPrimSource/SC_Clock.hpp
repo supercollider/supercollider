@@ -35,19 +35,12 @@ struct PyrHeap:
     PyrSlot slots[0]; // slots
 };
 
-//if ABLETON LINK functionality is on, we must define some methods virtual
-#ifdef SC_ABLETON_LINK
-#define CLOCK_VIRTUAL_METHOD virtual
-#else
-#define CLOCK_VIRTUAL_METHOD
-#endif
-
 class TempoClock
 {
 public:
     TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
                 double inTempo, double inBaseBeats, double inBaseSeconds);
-    CLOCK_VIRTUAL_METHOD ~TempoClock() {}
+    virtual ~TempoClock() {}
     void StopReq();
     void Stop();
     void StopAndDelete()
@@ -67,9 +60,9 @@ public:
     //void Flush();
     double GetTempo() const { return mTempo; }
     double GetBeatDur() const { return mBeatDur; }
-    CLOCK_VIRTUAL_METHOD double BeatsToSecs(double beats) const
+    virtual double BeatsToSecs(double beats) const
         { return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
-    CLOCK_VIRTUAL_METHOD double SecsToBeats(double secs) const
+    virtual double SecsToBeats(double secs) const
         { return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
     void Dump();
 
