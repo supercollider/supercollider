@@ -76,7 +76,7 @@ LinkClock : TempoClock {
 		//stop TempoClock and save its queue
 		clock.stop;
 		oldQueue = clock.queue.copy;
-		this.setMeterAtBeat(clock.beatsPerBar, 0);
+		this.setMeterAtBeat(clock.beatsPerBar, clock.baseBarBeat);
 
 		// queue format is grouped into threes:
 		// [size, time0, task0, priority0, time1, task1, priority1, ...]
