@@ -92,8 +92,6 @@ private:
 
 // Clock primitives
 template <typename Clock>
-int prClock_New(struct VMGlobals *g, int numArgsPushed);
-template <typename Clock>
 int prClock_New(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 3;
@@ -132,8 +130,6 @@ int prClock_New(struct VMGlobals *g, int numArgsPushed)
 }
 
 template <typename Clock>
-int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed);
-template <typename Clock>
 int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 1;
@@ -159,8 +155,6 @@ int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-template <typename Clock>
-int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed);
 template <typename Clock>
 int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 {
@@ -197,8 +191,6 @@ int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 }
 
 template <typename Clock>
-int prClock_SetAll(struct VMGlobals *g, int numArgsPushed);
-template <typename Clock>
 int prClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 3;
@@ -227,8 +219,6 @@ int prClock_SetAll(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-template <typename Clock>
-int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed);
 template <typename Clock>
 int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 {
