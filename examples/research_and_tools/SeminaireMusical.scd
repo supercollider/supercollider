@@ -1,15 +1,18 @@
 
-// Séminaire Musical Final 2007
+// Séminaire Musical
+// since 2007
 // julian rohrhuber
 // renate wieser
 
-(
-var dec, v_spiel, v_klang, v_neu, v_play, v_guess, v_display, v_sargam;
-var f_setButtons, f_neu, f_play, f_guess, f_playSargam, f_freeSargam;
-var spiel="sm_sine", freqs, index;
-var intervalle, freq0, note0, rates, nameList, amp=0.5, sargamSynth;
 
-var mode=\european, allowBase=true;
+(
+var dec, v_spiel, v_klang, v_neu, v_play, v_guess, v_display, v_context, v_referenceTone;
+var f_setButtons, f_neu, f_play, f_guess, f_playReferenceTone, f_freeReferenceTone;
+var spiel="sm_sine", freqs, index;
+var intervalle, freq0, note0, rates, nameList, numChoices, amp=0.5, referenceToneSynth;
+var partchRatios, partchTonalities, partchPairsToRatio;
+
+var mode=\western, allowBase=true;
 var eurNotes, indNotes, chords, chordKeys;
 
 if(Server.default.serverRunning.not) { Server.default.boot };
@@ -46,6 +49,34 @@ chords = IdentityDictionary[
 ];
 chordKeys = chords.keys.asArray;
 
+
+partchRatios =  #[
+	[1, 1], [81, 80], [33, 32], [21, 20], [16, 15], [12, 11], [11, 10], [10, 9], [9, 8],
+	[8, 7], [7, 6], [32, 27], [6, 5], [11, 9], [5, 4], [14, 11], [9, 7], [21, 16], [4, 3], [27, 20], [11, 8],
+	[7, 5], [10, 7], [16, 11], [40, 27], [3, 2], [32, 21], [14, 9], [11, 7], [8, 5], [18, 11], [5, 3], [27, 16],
+	[12, 7], [7, 4], [16, 9], [9, 5], [20, 11], [11, 6], [15, 8], [40, 21], [64, 33], [160, 81]
+];
+
+
+partchTonalities =  #[
+	[0,8,14,20,25,34],
+	[0,7,13,18,27,35],
+	[0,6,12,21,29,36],
+	[0,5,15,23,30,37],
+	[0,10,18,25,31,38],
+	[0,9,16,22,28,33],
+	[0,9,18,23,29,35],
+	[0,8,16,25,30,36],
+	[0,7,14,22,31,37],
+	[0,6,13,20,28,38],
+	[0,5,12,18,25,33],
+	[0,10,15,21,27,34]
+];
+
+partchPairsToRatio = { |pairs|
+	pairs.collect { |x| x.reduce('/') };
+};
+
 // GUI
 
 w = Window("Séminaire musical", Rect(10, 250, 880, 420));
@@ -57,23 +88,45 @@ v_spiel = ListView(w, Rect(0,0, 120, 130))
 ["noten", "frequenzen", "noten + oktave","intervalle","times","beatings", "akkorde"]
 );*/
 .items_(
-	["notes", "frequencies", "notes + octaves","intervals","times","beatings", "chords"]
+	[
+		"notes",
+		"frequencies",
+		"notes + octaves",
+		"intervals",
+		"times",
+		"beatings",
+		"chords"
+	]
 );
-dec.shift(5);
+dec.shift(10);
 v_klang = ListView(w, Rect(0,0, 100, 130)).items_(["sinus", "noise", "pulse", "bell", "piano", "timbre"]);
 
-dec.shift(20);
+dec.shift(10);
 
+/*
 StaticText(w, Rect(0,0, 100,20))
 .string_("Basic settings:")
 .align_(\left);
+*/
 
-Button(w, Rect(0,0, 80,20))
-.states_([["europe","india","numerical"], Color.black, Color.grey(0.8)].flop)
-.action_({ |v| mode = [\european, \indian, \numerical][v.value.asInteger]; f_neu.value; });
+v_context = ListView(w, Rect(0,0, 80, 130))
+.items_(
+	[
+		"western",
+		"indian",
+		"partch",
+		"numerical"
+	]
+);
+v_context.action = { |v|
+	mode = [\western, \indian, \partch, \numerical][v.value.asInteger];
+	f_neu.value
+};
 
-v_sargam = Button(w, Rect(0,0, 60, 20))
-.states_([["sargam", Color.black, Color.grey(0.8)], ["sargam", Color.red, Color.grey(0.8)]]);
+dec.shift(20);
+
+v_referenceTone = Button(w, Rect(0, 0, 180, 20))
+.states_([["reference tone off", Color.black, Color.grey(0.8)], ["reference tone", Color.red, Color.grey(0.8)]]);
 
 Button(w, Rect(0,0, 180, 20))
 .states_([["including low tones", Color.black, Color.grey(0.8)],["excluding low tones", Color.black, Color.grey(0.8)]])
@@ -114,7 +167,7 @@ v_guess = Array.fill(13, {
 
 dec.nextLine;
 dec.shift(20);
-v_display = StaticText(w, Rect(0,0,200,35));
+v_display = StaticText(w, Rect(0,0,300,35));
 
 w.front;
 
@@ -122,7 +175,9 @@ w.front;
 
 f_setButtons = { arg werte;
 	v_guess.do { |but, i|
-		but.states_([[werte[i].asString, Color.black, Color.grey(0.8)]]);
+		var val = werte[i];
+		val = val ?? { "" };
+		but.states_([[val.asString, Color.black, Color.grey(0.8)]]);
 		but.refresh;
 	};
 
@@ -130,8 +185,9 @@ f_setButtons = { arg werte;
 };
 f_setButtons.("" ! 13);
 f_neu = {
-	var sargamIsPlaying, minFreq, octaves;
-	sargamIsPlaying = v_sargam.value > 0;
+	var referenceToneIsPlaying, minFreq, octaves, tonality, randomOctaves, ratios;
+
+	referenceToneIsPlaying = v_referenceTone.value > 0;
 	if(allowBase) {
 		minFreq = 60;
 		octaves = #[0.5, 1, 2, 4];
@@ -140,41 +196,73 @@ f_neu = {
 		octaves = #[1, 2, 4];
 	};
 
-	index = 13.rand;
 	switch(v_spiel.value,
+
+		// notes
 		0, {
-			if(mode == \indian) {
+			switch(mode,
 
-				freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
-				// see: http://www.soundofindia.com/showarticle.asp?in_article_id=-446619640
-				nameList = indNotes;
-			} {
-				freqs = ((0..12) + 60).midicps;
-				if(mode == \numerical) { nameList = (0..12) } { nameList = eurNotes };
-			};
-			freq0 = freqs[0];
+				\indian, {
 
+					freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
+					// see: http://www.soundofindia.com/showarticle.asp?in_article_id=-446619640
+					nameList = indNotes;
+					freq0 = freqs[0];
+				},
+
+				\numerical, {
+					freqs = ((0..12) + 60).midicps;
+					freq0 = freqs[0];
+					nameList = (0..12)
+				},
+
+				\partch, {
+					tonality = partchTonalities.scramble.keep(3).flat.as(IdentitySet).as(Array).keep(13);
+					ratios = partchRatios.at(tonality);
+					freq0 = 392; // Partch's reference G
+					freqs = partchPairsToRatio.(ratios) * freq0;
+					nameList = ratios.collect { |x| "%/%".format(*x) };
+				},
+
+				{
+					freqs = ((0..12) + 60).midicps;
+					freq0 = freqs[0];
+					nameList = eurNotes;
+				}
+			)
 		},
+
+		// frequencies
 		1, {
 			nameList = { exprand(minFreq, 15000).round(1) } ! 13;
 			freqs = nameList;
 			freq0 = 440;
 		},
+		// notes + octaves
 		2, {
-			if(mode == \indian) {
-				freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
-				nameList = indNotes;
+			if(mode == \partch) {
+				tonality = partchTonalities.scramble.keep(3).flat.as(IdentitySet).as(Array).keep(13);
+				ratios = partchRatios.at(tonality);
+				freq0 = 392; // Partch's reference G
+				freqs = partchPairsToRatio.(ratios) * freq0;
+				nameList = ratios.collect { |x| "%/%".format(*x) };
+				randomOctaves = { octaves.choose } ! 13;
+				// TODO!!!
 			} {
-				freqs = ((0..12) + 60).midicps;
-				if(mode == \numerical) { nameList = (0..12) } { nameList = eurNotes };
+				if(mode == \indian) {
+					freqs = #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450, 480];
+					nameList = indNotes;
+				} {
+					freqs = ((0..12) + 60).midicps;
+					if(mode == \numerical) { nameList = (0..12) } { nameList = eurNotes };
+				};
+				freq0 = freqs[0];
+				freqs = freqs * ({ octaves.choose } ! 12);
 			};
-			freq0 = freqs[0];
-			freqs = freqs * ({ octaves.choose } ! 12);
-
-
 		},
+		// intervals
 		3, {
-			if(mode == \european) {
+			if(mode == \western) {
 				freq0 = ((0..12).choose + 60).midicps * octaves.choose;
 				intervalle = (1..12).midiratio.insert(9, 7/4); // insert 7/4
 				freqs = freq0 * intervalle;
@@ -183,7 +271,13 @@ f_neu = {
 					"-sext", "+sext", "7/4", "-sept", "sept", "oktav"
 				];
 			} {
-				freq0 =  #[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450].choose;
+				// TODO: proper partch intervals
+				freq0 =  if(mode == \partch) {
+					392
+				} {
+					#[240, 256, 270, 288, 300, 320, 337.5, 360, 384, 400, 432, 450].choose;
+				};
+
 				freq0 = freq0 * octaves.choose;
 				intervalle = [16/15, 9/8, 6/5, 5/4, 4/3, 17/12, 3/2, 8/5, 5/3, 7/4, 16/9, 15/8, 2/1];
 				freqs = freq0 * intervalle;
@@ -192,104 +286,120 @@ f_neu = {
 					"16/9", "15/8", "2/1"];
 			};
 		},
+		// times
 		4, {
-			freq0 = rrand(1600, 8000);
-			freqs = freq0 ! 13;
+			referenceToneIsPlaying = false;
+			freq0 = nil; // no base tone
+			freqs = rrand(1600, 8000)  ! 13;
 			rates = { exprand(0.9, 19) } ! 13;
 			nameList = rates.round(0.01);
 
 		},
+		// beatings
 		5, {
-			freq0 = ((0..11).choose + 60).midicps * octaves.choose;
-			freqs = freq0 ! 13;
+			referenceToneIsPlaying = false;
+			freq0 = nil; // no base tone
+			freqs = ((0..11).choose + 60).midicps * octaves.choose ! 13;
 			rates = { exprand(0.9, 40) } ! 13;
 			nameList = rates.round(0.01);
 
 		},
+		// chords
 		6, {
 			note0 = (0..11).choose + #[-12, 0].choose;
 			freq0 = (note0 + 60).midicps;
 			freqs = freq0 ! 13;
 			nameList = chordKeys[ (0..chordKeys.size-1).scramble.keep(13)].sort;
 
-	});
+		}
+	);
+	numChoices = freqs.size;
+	index = freqs.size.rand;
 	f_setButtons.(nameList);
-	f_freeSargam.value;
-	if(sargamIsPlaying) { f_playSargam.value };
+	f_freeReferenceTone.value;
+	if(referenceToneIsPlaying) { f_playReferenceTone.value };
 };
 
 f_neu.value; // init
 
 f_play = { |i|
-	switch(v_spiel.value,
-		3, { // intervall
-			fork {
-				Synth(spiel, [\freq, freq0, \amp, amp]);
-				0.4.wait;
-				Synth(spiel, [\freq, freq0 * intervalle[i], \amp, amp]);
-			}
-		},
-		4, { // rates
-			Synth("sm_click", [\freq, freq0, \rate, rates[i], \amp, amp])
-		},
-		5, { // beatings
-			if(spiel.postln == "sm_string") {
-				Synth("sm_string", [\freq, freq0,  \amp, amp]);
-				Synth("sm_string", [\freq, freq0 + rates[i], \amp, amp])
-			} {
-				Synth("sm_beatings", [\freq, freq0, \rate, rates[i], \amp, amp])
-			}
-		},
-		6, { // akkorde
-			fork {
-				var strum = [0, 0.04].choose.rand;
-				var notes = chords[nameList[i]].degreeToKey(#[0, 2, 4, 5, 7, 9, 11]) + note0;
-				notes.do { |val|
-					Synth(spiel, [\freq, (val + 60).midicps, \amp, amp * 0.5]);
-					strum.wait;
+	if(i < numChoices) {
+		switch(v_spiel.value,
+			3, { // intervall
+				fork {
+					Synth(spiel, [\freq, freq0, \amp, amp]);
+					0.4.wait;
+					Synth(spiel, [\freq, freq0 * intervalle[i], \amp, amp]);
 				}
-			}
+			},
+			4, { // rates
+				Synth("sm_click", [\freq, freq0, \rate, rates[i], \amp, amp])
+			},
+			5, { // beatings
+				if(spiel == "sm_string") {
+					Synth("sm_string", [\freq, freq0,  \amp, amp]);
+					Synth("sm_string", [\freq, freq0 + rates[i], \amp, amp])
+				} {
+					Synth("sm_beatings", [\freq, freq0, \rate, rates[i], \amp, amp])
+				}
+			},
+			6, { // akkorde
+				fork {
+					var strum = [0, 0.04].choose.rand;
+					var notes = chords[nameList[i]].degreeToKey(#[0, 2, 4, 5, 7, 9, 11]) + note0;
+					notes.do { |val|
+						Synth(spiel, [\freq, (val + 60).midicps, \amp, amp * 0.5]);
+						strum.wait;
+					}
+				}
 
-		},
-		{
-			Synth(spiel, [\freq, freqs[i], \amp, amp])
-		}
-	)
+			},
+			{
+				Synth(spiel, [\freq, freqs[i], \amp, amp])
+			}
+		)
+	}
 
 
 };
-f_playSargam = { v_sargam.valueAction = 1 };
-f_freeSargam = { v_sargam.valueAction = 0 };
+f_playReferenceTone = { v_referenceTone.valueAction = 1 };
+f_freeReferenceTone = { v_referenceTone.valueAction = 0 };
 
 // funktionen zu buttons
 v_neu.action = f_neu;
 v_play.action = { f_play.value(index) };
 v_spiel.action = f_neu;
 v_guess.do {|but, i|
+	var note, ratio;
 	but.action = {
 		if(index == i) {
 			but.states = [[but.states[0][0], Color.red, Color.yellow]];
 		};
 		f_play.value(i);
-		v_display.string = "note number last played:" + (freqs[i].cpsmidi - 60).round(0.1);
+		// MOVE THIS
+		note = (freqs[i].cpsmidi - 60).round(0.1);
+		ratio = (freqs[i] / freqs[0]).asFraction(1000);
+		v_display.string = "note number last played:" + note + "(% / %)".format(*ratio);
 	};
 };
 v_klang.action = {|view|
 	spiel =
 	["sm_sine", "sm_noise", "sm_pulse", "sm_bell", "sm_string", "sm_timbremix"][view.value.asInteger]
 };
-v_sargam.action = { |view|
-	view.value.postln;
-	if(view.value.isNil or: { view.value == 0 })
-	{ sargamSynth.release } { sargamSynth = Synth(\sm_sargam, [\freq, freq0, \amp, amp])
-	};
+v_referenceTone.action = { |view|
+	if(view.value.isNil or: { view.value == 0 }) {
+		if(referenceToneSynth.isPlaying) { referenceToneSynth.release };
+	} {
+		referenceToneSynth = Synth(\sm_referenceTone, [\freq, freq0, \amp, amp * freq0.notNil.asInteger]);
+		referenceToneSynth.register;
+	}
 };
 
 w.view.keyDownAction = { arg view, char;
 	f_play.value(char.ascii - 48 % 13);
 };
 
-w.onClose = { f_freeSargam.value };
+w.onClose = { f_freeReferenceTone.value };
 
 // synthdefs
 
@@ -396,7 +506,7 @@ SynthDef("sm_beatings", { arg freq=440, rate=1, amp=0.5;
 
 }).add;
 
-SynthDef("sm_sargam", { arg freq=440, amp=0.5, gate=1.0;
+SynthDef("sm_referenceTone", { arg freq=440, amp=0.5, gate=1.0;
 	var u;
 	amp = AmpComp.kr(freq) * amp * 0.5;
 	u = Pulse.ar(freq * [0.5, 1] +.t [Rand(0.2, 0.5), Rand(0.2, 0.5).neg],

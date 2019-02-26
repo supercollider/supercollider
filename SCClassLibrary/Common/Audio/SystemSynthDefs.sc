@@ -63,8 +63,9 @@ SystemSynthDefs {
 
 				SynthDef("system_setbus_control_" ++ i, { arg out = 0, fadeTime = 0, curve = 0;
 					var values = NamedControl.ir(\values, 0 ! i);
-					var env = Env([In.kr(out, i), values], [1], curve);
-					var sig = EnvGen.kr(env, timeScale: fadeTime, doneAction: 2);
+					var holdTime = ControlDur.ir; // we need this to make sure value isn't overridded accidentally
+					var env = Env([In.kr(out, i), values, values], [fadeTime, holdTime], curve);
+					var sig = EnvGen.kr(env, doneAction: 2);
 					ReplaceOut.kr(out, sig);
 				}, [\ir, \kr, \ir]).add;
 			};
