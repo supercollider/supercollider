@@ -20,7 +20,7 @@ TestLinkClock : UnitTest {
 		});
 
 		0.2.wait;
-		clock1.tempo = rrand(20,999)/60;
+		clock1.tempo = 3;
 
 		// signal semaphore after a certain time to avoid
 		// blocking the function
@@ -41,11 +41,11 @@ TestLinkClock : UnitTest {
 	test_newLinkClock_shouldNotChangeLinkTempo {
 		var clock1, clock2, sessionTempo;
 
-		clock1 = LinkClock(130/60);
+		clock1 = LinkClock(2.5);
 		0.5.wait;
 		sessionTempo = clock1.tempo;
 
-		clock2 = LinkClock(100/60);
+		clock2 = LinkClock(1);
 		0.5.wait;
 
 		this.assertFloatEquals( clock2.tempo, sessionTempo,
@@ -69,8 +69,9 @@ TestLinkClock : UnitTest {
 		var phase1 = Array.newClear(2),
 			phase2 = Array.newClear(2);
 
-		clock1 = LinkClock(1).beats_(100.0.rand);
-		clock2 = LinkClock(1).beats_(100.0.rand);
+		// initially, phase should disagree -- Link should bring into phase
+		clock1 = LinkClock(1).beats_(20);
+		clock2 = LinkClock(1).beats_(21);
 		controller = SimpleController(clock2).put(\tempo, {
 			semaphore.signal
 		});
@@ -106,7 +107,7 @@ TestLinkClock : UnitTest {
 	test_newLinkClock_usesOwnTempoIfNoSession {
 		var clock, tempo;
 
-		tempo = rrand(20,999)/60;
+		tempo = 5;
 		clock = LinkClock(tempo);
 		0.5.wait;
 
@@ -130,7 +131,7 @@ TestLinkClock : UnitTest {
 	test_newLinkClock_usesOwnBeatsIfNoSession {
 		var clock, beats, secs;
 
-		clock = LinkClock(1).beats_(100.0.rand);
+		clock = LinkClock(1).beats_(10);
 		secs = thisThread.clock.seconds;
 		beats = clock.secs2beats(secs);
 		0.4.wait;
