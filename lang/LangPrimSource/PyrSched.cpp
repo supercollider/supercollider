@@ -664,9 +664,9 @@ TempoClock *TempoClock::sAll = 0;
 void TempoClock_stopAll(void)
 {
 	//printf("->TempoClock_stopAll %p\n", TempoClock::sAll);
-	TempoClock *clock = TempoClock::GetAll();
+	auto *clock = TempoClock::GetAll();
 	while (clock) {
-		TempoClock* next = clock->GetNext();
+		auto *next = clock->GetNext();
 		clock->Stop();
 		//printf("delete\n");
 		delete clock;
