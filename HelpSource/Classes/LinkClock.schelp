@@ -101,7 +101,7 @@ synchronized with the Link session.
 
 Instancemethods::
 
-private:: initFromTempoClock, prSetQuantum, prStart, prTempoChanged, prStartStopSync, prNumPeersChanged, setMeterAtBeat, setTempoAtBeat, setTempoAtSec
+private:: prInitFromTempoClock, prSetQuantum, prStart, prTempoChanged, prStartStopSync, prNumPeersChanged, setMeterAtBeat, setTempoAtBeat, setTempoAtSec
 
 method:: latency
 Gets or sets the number of seconds of OSC messaging latency for which the code::LinkClock:: should account. In general, this should be set to match the server object's latency.
