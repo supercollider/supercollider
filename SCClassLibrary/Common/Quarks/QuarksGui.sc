@@ -289,6 +289,10 @@ QuarkDetailView {
 			if(model.data['version'].notNil, {
 				this.pushRow("Version", model.data['version'].asString);
 			});
+			// branch
+			if(model.branch.notNil, {
+				this.pushRow("Current branch", model.branch.asString);
+			});
 
 			if(webpage != url and: webpage.notNil, {
 				this.pushRow("Webpage", makeBtn.value(webpage, {
@@ -348,6 +352,7 @@ QuarkDetailView {
 					this.pushRow(k.asString, v.value().asString);
 				}
 			});
+
 
 			// versions
 			if(isDownloaded and: {model.git.notNil}, {

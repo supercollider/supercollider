@@ -34,6 +34,10 @@ Git {
 			url = this.remote;
 		}
 	}
+	branch {
+		var out = this.git(["rev-parse --abbrev-ref HEAD"]);
+		^if(out.size > 0) { out } { nil }
+	}
 	remote {
 		// detect origin of repo or nil
 		// origin	git://github.com/supercollider-quarks/MathLib (fetch)
