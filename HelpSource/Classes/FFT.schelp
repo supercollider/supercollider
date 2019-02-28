@@ -18,6 +18,10 @@ fft = FFT(LocalBuf(2048, 2), aStereoSignal);
 
 // YES: Use an array of two single-channel buffers
 fft = FFT(Array.fill(2, { LocalBuf(2048, 1) }), aStereoSignal);
+
+// Equivalent shortcut:
+// LocalBuf multichannel-expands, causing FFT to expand as well
+fft = FFT(LocalBuf(2048.dup(2), 1), aStereoSignal);
 ::
 
 See also link::Guides/FFT-Overview#Multichannel Expansion with FFT UGens::.
