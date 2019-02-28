@@ -1,145 +1,15 @@
 #ifdef SC_ABLETON_LINK
 
-#include "PyrKernel.h"
-#include "PyrSched.h"
-#include "GC.h"
-#include "PyrPrimitive.h"
-#include "PyrSymbol.h"
-
-#include "SCBase.h"
-#include "SC_Clock.hpp"
-
-#include <ableton/Link.hpp>
-
-static std::chrono::microseconds linkTimeOfInitialization;
-void initLink()
-{
-    linkTimeOfInitialization   = ableton::link::platform::Clock().micros();
-}
+#include "SC_Ableton_Link.hpp"
 
 inline std::chrono::microseconds hrToLinkTime(double secs){
     auto time = std::chrono::duration<double>(secs);
-    return std::chrono::duration_cast<std::chrono::microseconds>(time) + linkTimeOfInitialization;
+    return std::chrono::duration_cast<std::chrono::microseconds>(time) + LinkClock::GetInitTime();
 }
 
 inline double linkToHrTime(std::chrono::microseconds micros){
-    return DurToFloat(micros - linkTimeOfInitialization);
+    return DurToFloat(micros - LinkClock::GetInitTime());
 }
-
-class LinkClock : public TempoClock
-{
-public:
-    LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                double tempo, double baseBeats, double baseSeconds);
-
-    ~LinkClock() {}
-
-    void SetTempoAtBeat(double tempo, double inBeats);
-    void SetTempoAtTime(double tempo, double inSeconds);
-    void SetAll(double tempo, double inBeats, double inSeconds);
-    double BeatsToSecs(double beats) const override
-    {
-        auto sessionState = mLink.captureAppSessionState();
-        double secs = linkToHrTime(sessionState.timeAtBeat(beats, mQuantum)) - mLatency;
-        return secs;
-    }
-    double SecsToBeats(double secs) const override
-    {
-        auto sessionState = mLink.captureAppSessionState();
-        double beats = sessionState.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
-        return beats;
-    }
-
-    void SetQuantum(double quantum)
-    {
-        mQuantum = quantum;
-        mCondition.notify_one();
-    }
-    
-    double GetLatency() const
-    {
-        return mLatency;
-    }
-    
-    void SetLatency(double latency)
-    {
-        mLatency = latency;
-    }
-
-    void OnTempoChanged(double bpm)
-    {
-        double secs = elapsedTime();
-        double tempo = bpm / 60.;
-
-        auto sessionState = mLink.captureAppSessionState();
-        double beats = sessionState.beatAtTime(hrToLinkTime(secs), mQuantum);
-
-        mTempo = tempo;
-        mBeatDur = 1. / tempo;
-        mCondition.notify_one();
-
-        //call sclang callback
-        gLangMutex.lock();
-        g->canCallOS = false;
-        ++g->sp;
-        SetObject(g->sp, mTempoClockObj);
-        ++g->sp;
-        SetFloat(g->sp, mTempo);
-        ++g->sp;
-        SetFloat(g->sp, beats);
-        ++g->sp;
-        SetFloat(g->sp, secs);
-        ++g->sp;
-        SetObject(g->sp, mTempoClockObj);
-        runInterpreter(g, getsym("prTempoChanged"), 5);
-        g->canCallOS = false;
-        gLangMutex.unlock();
-    }
-
-    void OnStartStop(bool isPlaying)
-    {
-        //call sclang callback
-        gLangMutex.lock();
-        g->canCallOS = false;
-        ++g->sp;
-        SetObject(g->sp, mTempoClockObj);
-        ++g->sp;
-        SetBool(g->sp, isPlaying);
-        runInterpreter(g, getsym("prStartStopSync"), 2);
-        g->canCallOS = false;
-        gLangMutex.unlock();
-    }
-
-    void OnNumPeersChanged(std::size_t numPeers)
-    {
-        //call sclang callback
-        gLangMutex.lock();
-        g->canCallOS = false;
-        ++g->sp;
-        SetObject(g->sp, mTempoClockObj);
-        ++g->sp;
-        SetInt(g->sp, numPeers);
-        runInterpreter(g, getsym("prNumPeersChanged"), 2);
-        g->canCallOS = false;
-        gLangMutex.unlock();
-    }
-
-    std::size_t NumPeers() const { return mLink.numPeers(); }
-
-    void CommitTempo(ableton::Link::SessionState sessionState, double tempo)
-    {
-        mTempo = tempo;
-        mBeatDur = 1. / tempo;
-
-        mLink.commitAppSessionState(sessionState);
-        mCondition.notify_one();
-    }
-  
-private:
-    ableton::Link mLink;
-    double mQuantum;
-    double mLatency;
-};
 
 LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
                             double tempo, double baseBeats, double baseSeconds)
@@ -167,6 +37,13 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
     mLink.commitAppSessionState(sessionState);
 }
 
+std::chrono::microseconds LinkClock::mInitTime;
+
+void LinkClock::Init()
+{
+    mInitTime = ableton::link::platform::Clock().micros();
+}
+
 void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
 {
 
@@ -175,6 +52,20 @@ void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
     sessionState.setTempo(tempo * 60., linkTime);
     sessionState.requestBeatAtTime(inBeats,linkTime, mQuantum);
     CommitTempo(sessionState, tempo);
+}
+
+double LinkClock::BeatsToSecs(double beats) const
+{
+    auto sessionState = mLink.captureAppSessionState();
+    double secs = linkToHrTime(sessionState.timeAtBeat(beats, mQuantum)) - mLatency;
+    return secs;
+}
+
+double LinkClock::SecsToBeats(double secs) const
+{
+    auto sessionState = mLink.captureAppSessionState();
+    double beats = sessionState.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
+    return beats;
 }
 
 void LinkClock::SetTempoAtBeat(double tempo, double inBeats)
@@ -190,6 +81,35 @@ void LinkClock::SetTempoAtTime(double tempo, double inSeconds)
     auto sessionState = mLink.captureAppSessionState();
     sessionState.setTempo(tempo*60., hrToLinkTime(inSeconds));
     CommitTempo(sessionState, tempo);
+}
+void LinkClock::OnTempoChanged(double bpm)
+{
+    double secs = elapsedTime();
+    double tempo = bpm / 60.;
+
+    auto sessionState = mLink.captureAppSessionState();
+    double beats = sessionState.beatAtTime(hrToLinkTime(secs), mQuantum);
+
+    mTempo = tempo;
+    mBeatDur = 1. / tempo;
+    mCondition.notify_one();
+
+    //call sclang callback
+    gLangMutex.lock();
+    g->canCallOS = false;
+    ++g->sp;
+    SetObject(g->sp, mTempoClockObj);
+    ++g->sp;
+    SetFloat(g->sp, mTempo);
+    ++g->sp;
+    SetFloat(g->sp, beats);
+    ++g->sp;
+    SetFloat(g->sp, secs);
+    ++g->sp;
+    SetObject(g->sp, mTempoClockObj);
+    runInterpreter(g, getsym("prTempoChanged"), 5);
+    g->canCallOS = false;
+    gLangMutex.unlock();
 }
 
 //Primitives
