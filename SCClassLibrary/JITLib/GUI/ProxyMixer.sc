@@ -276,7 +276,7 @@ ProxyMixer : JITGui {
 				\name, object.asCode,
 				\arNames, arNames,
 				\krNames, krNames,
-				\editedName, editGui.object !? { editGui.object.key },
+				\editedName, editGui.object !? { editGui.object.key(proxyspace) },
 				\arOverflow, (arNames.size - numItems).max(0),
 				\krOverflow, (krNames.size - numItems).max(0)
 			]);
@@ -367,7 +367,9 @@ ProxyMixer : JITGui {
 			gui.edBut.value_(pxIsEdited.binaryValue);
 		};
 
-		editGui.checkUpdate;
+		this.proxyspace.use {
+			protect { editGui.checkUpdate }
+		};
 
 		prevState = newState;
 	}
