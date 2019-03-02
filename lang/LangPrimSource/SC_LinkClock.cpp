@@ -69,14 +69,14 @@ void LinkClock::SetTempoAtBeat(double tempo, double inBeats)
 {
     auto sessionState = mLink.captureAppSessionState();
     auto time = sessionState.timeAtBeat(inBeats, mQuantum);
-    sessionState.setTempo(tempo*60., time);
+    sessionState.setTempo(tempo * 60., time);
     CommitTempo(sessionState, tempo);
 }
 
 void LinkClock::SetTempoAtTime(double tempo, double inSeconds)
 {
     auto sessionState = mLink.captureAppSessionState();
-    sessionState.setTempo(tempo*60., hrToLinkTime(inSeconds));
+    sessionState.setTempo(tempo * 60., hrToLinkTime(inSeconds));
     CommitTempo(sessionState, tempo);
 }
 
@@ -110,7 +110,8 @@ void LinkClock::OnTempoChanged(double bpm)
     gLangMutex.unlock();
 }
 
-//Primitives
+// Primitives -------------------------------------------------------------------------------------
+
 int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp;

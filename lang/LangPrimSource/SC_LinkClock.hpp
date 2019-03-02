@@ -13,9 +13,14 @@
 
 #include <ableton/Link.hpp>
 
+/** TempoClock for use with Ableton Link.
+ *
+ * Represented in sclang as class LinkClock.
+ */
 class LinkClock : public TempoClock
 {
 public:
+    /// Called during PyrSched init.
     static void Init();
     static std::chrono::microseconds GetInitTime() { return LinkClock::InitTime; }
 private:
@@ -46,7 +51,6 @@ public:
 
     void OnStartStop(bool isPlaying)
     {
-        //call sclang callback
         gLangMutex.lock();
         g->canCallOS = false;
         ++g->sp;
@@ -60,7 +64,6 @@ public:
 
     void OnNumPeersChanged(std::size_t numPeers)
     {
-        //call sclang callback
         gLangMutex.lock();
         g->canCallOS = false;
         ++g->sp;
