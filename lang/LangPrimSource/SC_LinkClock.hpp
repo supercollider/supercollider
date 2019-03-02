@@ -16,17 +16,20 @@
 class LinkClock : public TempoClock
 {
 public:
-    LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                double tempo, double baseBeats, double baseSeconds);
-
-    ~LinkClock() {}
-
     static void Init();
     static std::chrono::microseconds GetInitTime() { return LinkClock::mInitTime; }
+private:
+    static std::chrono::microseconds mInitTime;
+
+public:
+    LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
+                double tempo, double baseBeats, double baseSeconds);
+    ~LinkClock() noexcept = default;
 
     void SetTempoAtBeat(double tempo, double inBeats);
     void SetTempoAtTime(double tempo, double inSeconds);
     void SetAll(double tempo, double inBeats, double inSeconds);
+
     double BeatsToSecs(double beats) const override;
     double SecsToBeats(double secs) const override;
 
@@ -36,15 +39,8 @@ public:
         mCondition.notify_one();
     }
 
-    double GetLatency() const
-    {
-        return mLatency;
-    }
-
-    void SetLatency(double latency)
-    {
-        mLatency = latency;
-    }
+    double GetLatency() const { return mLatency; }
+    void SetLatency(double latency) { mLatency = latency; }
 
     void OnTempoChanged(double bpm);
 
@@ -78,6 +74,7 @@ public:
 
     std::size_t NumPeers() const { return mLink.numPeers(); }
 
+private:
     void CommitTempo(ableton::Link::SessionState sessionState, double tempo)
     {
         mTempo = tempo;
@@ -86,9 +83,6 @@ public:
         mLink.commitAppSessionState(sessionState);
         mCondition.notify_one();
     }
-
-private:
-    static std::chrono::microseconds mInitTime;
 
     ableton::Link mLink;
     double mQuantum;
