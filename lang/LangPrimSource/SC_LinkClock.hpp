@@ -17,9 +17,9 @@ class LinkClock : public TempoClock
 {
 public:
     static void Init();
-    static std::chrono::microseconds GetInitTime() { return LinkClock::mInitTime; }
+    static std::chrono::microseconds GetInitTime() { return LinkClock::InitTime; }
 private:
-    static std::chrono::microseconds mInitTime;
+    static std::chrono::microseconds InitTime;
 
 public:
     LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,

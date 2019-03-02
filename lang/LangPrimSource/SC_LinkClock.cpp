@@ -39,7 +39,7 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
 
 void LinkClock::Init()
 {
-    mInitTime = ableton::link::platform::Clock().micros();
+    InitTime = ableton::link::platform::Clock().micros();
 }
 
 void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
