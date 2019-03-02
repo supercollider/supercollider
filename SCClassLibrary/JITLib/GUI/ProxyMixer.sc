@@ -182,10 +182,11 @@ ProxyMixer : JITGui {
 	setEdButs { |isSmall = false|
 		(arGuis ++ krGuis).do { |pxgui|
 			pxgui.edBut.states_([
-					["ed", skin.fontColor, skin.background],
-					["ed", skin.fontColor, skin.onColor]])
+				["ed", skin.fontColor, skin.background],
+				["ed", skin.fontColor, skin.onColor]])
 
-				.action_({ arg btn, mod;
+			.action_({ arg btn, mod;
+				this.proxyspace.use {
 					if (mod.notNil and: { mod.isAlt }) {
 						NdefGui(pxgui.object);
 					} {
@@ -194,8 +195,9 @@ ProxyMixer : JITGui {
 						arGuis.do { |gui| gui.edBut.value_(0) };
 						krGuis.do { |gui| gui.edBut.value_(0) };
 						btn.value_(1);
-					};
-				});
+					}
+				};
+			});
 		};
 	}
 
@@ -276,7 +278,7 @@ ProxyMixer : JITGui {
 				\name, object.asCode,
 				\arNames, arNames,
 				\krNames, krNames,
-				\editedName, editGui.object !? { editGui.object.key },
+				\editedName, editGui.object !? { editGui.object.key(this.proxyspace) },
 				\arOverflow, (arNames.size - numItems).max(0),
 				\krOverflow, (krNames.size - numItems).max(0)
 			]);
@@ -285,8 +287,7 @@ ProxyMixer : JITGui {
 	}
 
 	checkUpdate {
-		var newState = this.getState;
-
+		var newState;
 		var arNames, prevArNames, fullSize;
 		var krNames, prevKrNames;
 		var editName, prevEditName;
@@ -301,75 +302,80 @@ ProxyMixer : JITGui {
 			^this
 		};
 
-		if (newState[\name] != prevState[\name]) {
-			this.name_(newState[\name])
-		};
+		this.proxyspace.use {
+			newState = this.getState;
 
-		arNames = newState[\arNames];
-		prevArNames = prevState[\arNames];
-		fullSize = arNames.size;
-
-		if (newState[\arOverflow] > 0) {
-			arNames = arNames.drop(arKeysRotation).keep(numItems);
-			newState[\arNames] = arNames;
-		} {
-			arKeysRotation = 0;
-		};
-
-		arKeysRotation = min(arKeysRotation, newState[\arOverflow]);
-		arScroller.numItems_(fullSize).value_(arKeysRotation).visible_(newState[\arOverflow] > 0);
-
-
-		if (arNames != prevArNames) {
-			arGuis.do { |argui, i|
-				var newName = arNames[i];
-				var newPx = object.envir[newName];
-				argui.object_(newPx);
-				argui.zone.visible_(newPx.notNil);
+			if (newState[\name] != prevState[\name]) {
+				this.name_(newState[\name])
 			};
-		};
-		arGuis.do { |gui|
-			var pxIsEdited = gui.object.notNil and: { gui.object == editGui.object };
-			gui.checkUpdate;
-			if(gui.hasName.not) { gui.name = this.proxyspace.findKeyForValue(gui.object) };
-			gui.edBut.value_(pxIsEdited.binaryValue);
-		};
+
+			arNames = newState[\arNames];
+			prevArNames = prevState[\arNames];
+			fullSize = arNames.size;
+
+			if (newState[\arOverflow] > 0) {
+				arNames = arNames.drop(arKeysRotation).keep(numItems);
+				newState[\arNames] = arNames;
+			} {
+				arKeysRotation = 0;
+			};
+
+			arKeysRotation = min(arKeysRotation, newState[\arOverflow]);
+			arScroller.numItems_(fullSize).value_(arKeysRotation).visible_(newState[\arOverflow] > 0);
 
 
-		krNames = newState[\krNames];
-		prevKrNames = prevState[\krNames];
-		fullSize = krNames.size;
+			if (arNames != prevArNames) {
+				arGuis.do { |argui, i|
+					var newName = arNames[i];
+					var newPx = object.envir[newName];
+					argui.object_(newPx);
+					argui.name_(newName);
+					argui.zone.visible_(newPx.notNil);
+				};
+			};
+			arGuis.do { |gui|
+				var pxIsEdited = gui.object.notNil and: { gui.object == editGui.object };
+				gui.checkUpdate;
+				if(gui.hasName.not) { gui.name = this.proxyspace.findKeyForValue(gui.object) };
+				gui.edBut.value_(pxIsEdited.binaryValue);
+			};
 
-		if (newState[\krOverflow] > 0) {
-			krNames = krNames.drop(krKeysRotation).keep(numItems);
-			newState[\krNames] = krNames;
 
-		} {
-			krKeysRotation = 0;
-		};
-		krKeysRotation = min(krKeysRotation, newState[\krOverflow]);
-		krScroller.numItems_(fullSize)
+			krNames = newState[\krNames];
+			prevKrNames = prevState[\krNames];
+			fullSize = krNames.size;
+
+			if (newState[\krOverflow] > 0) {
+				krNames = krNames.drop(krKeysRotation).keep(numItems);
+				newState[\krNames] = krNames;
+
+			} {
+				krKeysRotation = 0;
+			};
+			krKeysRotation = min(krKeysRotation, newState[\krOverflow]);
+			krScroller.numItems_(fullSize)
 			.value_(krKeysRotation).visible_(newState[\krOverflow] > 0);
 
-		if (krNames != prevKrNames) {
-			krGuis.do { |krgui, i|
-				var newName = krNames[i];
-				var newPx = object.envir[newName];
-				krgui.object_(newPx);
-				krgui.zone.visible_(newPx.notNil);
+			if (krNames != prevKrNames) {
+				krGuis.do { |krgui, i|
+					var newName = krNames[i];
+					var newPx = object.envir[newName];
+					krgui.object_(newPx);
+					krgui.name_(newName);
+					krgui.zone.visible_(newPx.notNil);
+				};
 			};
-		};
 
-		krGuis.do { |gui|
-			var pxIsEdited = gui.object.notNil and: { gui.object == editGui.object };
-			gui.checkUpdate;
-			if(gui.hasName.not) { gui.name = this.proxyspace.findKeyForValue(gui.object) };
-			gui.edBut.value_(pxIsEdited.binaryValue);
-		};
+			krGuis.do { |gui|
+				var pxIsEdited = gui.object.notNil and: { gui.object == editGui.object };
+				gui.checkUpdate;
+				if(gui.hasName.not) { gui.name = this.proxyspace.findKeyForValue(gui.object) };
+				gui.edBut.value_(pxIsEdited.binaryValue);
+			};
 
-		editGui.checkUpdate;
-
-		prevState = newState;
+			editGui.checkUpdate;
+			prevState = newState;
+		}
 	}
 }
 
