@@ -1,6 +1,6 @@
 #ifdef SC_ABLETON_LINK
 
-#include "SC_Ableton_Link.hpp"
+#include "SC_LinkClock.hpp"
 
 inline std::chrono::microseconds hrToLinkTime(double secs){
     auto time = std::chrono::duration<double>(secs);

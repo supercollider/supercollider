@@ -50,7 +50,7 @@
 #include "SC_Lock.h"
 
 #include "SC_Clock.hpp"
-#include "SC_Ableton_Link.hpp"
+#include "SC_LinkClock.hpp"
 
 #include <boost/sync/semaphore.hpp>
 #include <boost/sync/support/std_chrono.hpp>
