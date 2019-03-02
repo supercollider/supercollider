@@ -88,10 +88,11 @@ public:
     }
 
 private:
+    static std::chrono::microseconds mInitTime;
+
     ableton::Link mLink;
     double mQuantum;
     double mLatency;
-    static std::chrono::microseconds mInitTime;
 };
 
 #endif // SC_ABLETON_LINK

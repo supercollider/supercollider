@@ -2,42 +2,40 @@
 
 #include "SC_LinkClock.hpp"
 
-inline std::chrono::microseconds hrToLinkTime(double secs){
+inline std::chrono::microseconds hrToLinkTime(double secs) {
     auto time = std::chrono::duration<double>(secs);
     return std::chrono::duration_cast<std::chrono::microseconds>(time) + LinkClock::GetInitTime();
 }
 
-inline double linkToHrTime(std::chrono::microseconds micros){
+inline double linkToHrTime(std::chrono::microseconds micros) {
     return DurToFloat(micros - LinkClock::GetInitTime());
 }
+
+std::chrono::microseconds LinkClock::InitTime;
 
 LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
                             double tempo, double baseBeats, double baseSeconds)
     : TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
     mLink(tempo * 60.)
 {
-    //quantum = beatsPerBar
+    // quantum = beatsPerBar
     int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
-    if(err)
+    if (err)
         throw err;
 
-    mLatency = 0.;  // default, user should override
+    mLatency = 0.; // default, user should override
 
     mLink.enable(true);
     mLink.enableStartStopSync(true);
     mLink.setTempoCallback([this](double bpm) { OnTempoChanged(bpm); });
-
     mLink.setStartStopCallback([this](bool isPlaying) { OnStartStop(isPlaying); });
-    
     mLink.setNumPeersCallback([this](std::size_t numPeers) { OnNumPeersChanged(numPeers); });
-    
+
     auto sessionState = mLink.captureAppSessionState();
     auto linkTime = hrToLinkTime(baseSeconds);
     sessionState.requestBeatAtTime(baseBeats, linkTime, mQuantum);
     mLink.commitAppSessionState(sessionState);
 }
-
-std::chrono::microseconds LinkClock::mInitTime;
 
 void LinkClock::Init()
 {
@@ -46,7 +44,6 @@ void LinkClock::Init()
 
 void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
 {
-
     auto sessionState = mLink.captureAppSessionState();
     auto linkTime = hrToLinkTime(inSeconds);
     sessionState.setTempo(tempo * 60., linkTime);
@@ -82,6 +79,7 @@ void LinkClock::SetTempoAtTime(double tempo, double inSeconds)
     sessionState.setTempo(tempo*60., hrToLinkTime(inSeconds));
     CommitTempo(sessionState, tempo);
 }
+
 void LinkClock::OnTempoChanged(double bpm)
 {
     double secs = elapsedTime();
@@ -139,7 +137,8 @@ int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
 
     double quantum;
     int err = slotDoubleVal(b, &quantum);
-    if(err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     clock->SetQuantum(quantum);
 
@@ -172,7 +171,8 @@ int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed)
 
     double latency;
     int err = slotDoubleVal(b, &latency);
-    if(err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     clock->SetLatency(latency);
 
@@ -181,7 +181,7 @@ int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed)
 
 void initLinkPrimitives()
 {
-    int base, index=0;
+    int base, index = 0;
 
     base = nextPrimitiveIndex();
 
