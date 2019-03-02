@@ -27,11 +27,6 @@
 #ifdef __APPLE__
 # include <CoreAudio/HostTime.h>
 #endif
-#ifdef _MSC_VER
-#include "wintime.h"
-#else
-#include <sys/time.h>
-#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,17 +38,22 @@
 # include <pthread.h>
 #endif
 
-
-#include "SC_Win32Utils.h"
 #include "SCBase.h"
-
 #include "SC_Lock.h"
-
 #include "SC_Clock.hpp"
 #include "SC_LinkClock.hpp"
 
 #include <boost/sync/semaphore.hpp>
 #include <boost/sync/support/std_chrono.hpp>
+
+// FIXME: These includes needs to be last on Windows, otherwise Ableton build breaks
+// (Windows header include ordering dependencies)
+#include "SC_Win32Utils.h"
+#ifdef _MSC_VER
+#include "wintime.h"
+#else
+#include <sys/time.h>
+#endif
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
