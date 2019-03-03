@@ -12,11 +12,7 @@ include_directories(${CMAKE_SOURCE_DIR}/external_libraries
 					${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
 					)
 
-if (Boost_FOUND)
-	include_directories(${Boost_INCLUDE_DIRS})
-else()
-	include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
-endif()
+include_directories(${boost_include_dirs})
 
 # here we choose who provides us with the FFT lib
 if (APPLE)

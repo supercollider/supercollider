@@ -199,7 +199,7 @@ if (SUPERNOVA)
 
 		if(SNDFILE_FOUND)
 			target_include_directories(DiskIO_UGens_supernova PUBLIC ${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
+      target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} boost_thread_lib)
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -217,7 +217,7 @@ endforeach()
 
 if(NOT NO_X11)
 	foreach(ugen ${uiugens})
-		target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
+    target_link_libraries(${ugen} boost_thread_lib)
 	endforeach()
 endif()
 

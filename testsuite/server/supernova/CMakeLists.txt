@@ -34,7 +34,7 @@ foreach(test ${simple_tests})
   string(REPLACE .cpp "" test_name ${test} )
   add_executable(${test_name} ${test})
 
-  target_link_libraries(${test_name} libsupernova boost_test boost_thread)
+  target_link_libraries(${test_name} libsupernova boost_test boost_thread_lib)
 
   add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 endforeach(test)

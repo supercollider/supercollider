@@ -253,20 +253,41 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
-  set(Boost_USE_MULTITHREADED      ON)
-  find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
-endif()
-
-if (Boost_FOUND)
-	link_directories(${Boost_LIBRARY_DIRS})
+    set(Boost_USE_MULTITHREADED ON)
+    find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
+    if (Boost_FOUND)
+        # we're specifically setting up the boost libraries here, so we can
+        # name them
+        add_library(boost_thread_lib SHARED IMPORTED)
+        set_property(TARGET boost_thread_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_THREAD_LIBRARY})
+        add_library(boost_system_lib SHARED IMPORTED)
+        set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_SYSTEM_LIBRARY})
+        add_library(boost_filesystem_lib SHARED IMPORTED)
+        set_property(TARGET boost_filesystem_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_FILESYSTEM_LIBRARY})
+        add_library(boost_program_options_lib SHARED IMPORTED)
+        set_property(TARGET boost_program_options_lib PROPERTY
+          IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
+        add_library(boost_regex_lib SHARED IMPORTED)
+        set_property(TARGET boost_regex_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_REGEX_LIBRARY})
+        add_library(boost_test_exec_monitor_lib SHARED IMPORTED)
+        set_property(TARGET boost_test_exec_monitor_lib PROPERTY
+          IMPORTED_LOCATION ${Boost_TEST_EXEC_MONITOR_LIBRARY})
+        set(boost_include_dirs ${Boost_INCLUDE_DIRS})
+    else()
+        message(FATAL_ERROR "Not able to use system boost because none was found.")
+    endif()
 else()
-	message(STATUS "building boost libraries manually")
+    set(boost_include_dirs ${CMAKE_SOURCE_DIR}/external_libraries/boost)
 endif()
 
 if(SYSTEM_YAMLCPP)
   find_package(YamlCpp)
 else()
-  set(YAMLCPP_FOUND OFF)
+  set(SYSTEM_YAMLCPP OFF)
 endif()
 
 #############################################

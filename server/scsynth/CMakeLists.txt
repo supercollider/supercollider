@@ -176,11 +176,8 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-if (Boost_FOUND)
-	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
-else()
-	target_link_libraries(libscsynth boost_system boost_filesystem)
-endif()
+target_link_libraries(libscsynth boost_system_lib boost_filesystem_lib)
+target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)

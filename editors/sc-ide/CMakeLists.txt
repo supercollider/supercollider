@@ -219,7 +219,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -299,12 +298,8 @@ target_link_libraries( SuperCollider
     oscpack
 )
 
-if(Boost_FOUND)
-    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
-else()
-    # in-house-built boost system
-    target_link_libraries( SuperCollider boost_system boost_filesystem )
-endif()
+target_link_libraries( SuperCollider boost_system_lib boost_filesystem_lib)
+include_directories(${boost_include_dirs})
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")

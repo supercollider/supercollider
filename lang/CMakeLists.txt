@@ -202,14 +202,8 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-if (Boost_FOUND)
-	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
-	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-else()
-	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-	target_link_libraries(libsclang boost_regex boost_thread boost_system boost_filesystem)
-endif()
-
+target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
+target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
