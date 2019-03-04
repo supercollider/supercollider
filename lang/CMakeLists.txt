@@ -35,7 +35,7 @@ else ()
 endif ()
 
 set(sclang_sources
-	LangPrimSource/SC_Ableton_Link.cpp
+    LangPrimSource/SC_LinkClock.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp

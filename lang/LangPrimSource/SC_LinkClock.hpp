@@ -13,20 +13,28 @@
 
 #include <ableton/Link.hpp>
 
+/** TempoClock for use with Ableton Link.
+ *
+ * Represented in sclang as class LinkClock.
+ */
 class LinkClock : public TempoClock
 {
 public:
+    /// Called during PyrSched init.
+    static void Init();
+    static std::chrono::microseconds GetInitTime() { return LinkClock::InitTime; }
+private:
+    static std::chrono::microseconds InitTime;
+
+public:
     LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
                 double tempo, double baseBeats, double baseSeconds);
-
-    ~LinkClock() {}
-
-    static void Init();
-    static std::chrono::microseconds GetInitTime() { return LinkClock::mInitTime; }
+    ~LinkClock() noexcept = default;
 
     void SetTempoAtBeat(double tempo, double inBeats);
     void SetTempoAtTime(double tempo, double inSeconds);
     void SetAll(double tempo, double inBeats, double inSeconds);
+
     double BeatsToSecs(double beats) const override;
     double SecsToBeats(double secs) const override;
 
@@ -36,21 +44,13 @@ public:
         mCondition.notify_one();
     }
 
-    double GetLatency() const
-    {
-        return mLatency;
-    }
-
-    void SetLatency(double latency)
-    {
-        mLatency = latency;
-    }
+    double GetLatency() const { return mLatency; }
+    void SetLatency(double latency) { mLatency = latency; }
 
     void OnTempoChanged(double bpm);
 
     void OnStartStop(bool isPlaying)
     {
-        //call sclang callback
         gLangMutex.lock();
         g->canCallOS = false;
         ++g->sp;
@@ -64,7 +64,6 @@ public:
 
     void OnNumPeersChanged(std::size_t numPeers)
     {
-        //call sclang callback
         gLangMutex.lock();
         g->canCallOS = false;
         ++g->sp;
@@ -78,6 +77,7 @@ public:
 
     std::size_t NumPeers() const { return mLink.numPeers(); }
 
+private:
     void CommitTempo(ableton::Link::SessionState sessionState, double tempo)
     {
         mTempo = tempo;
@@ -87,11 +87,9 @@ public:
         mCondition.notify_one();
     }
 
-private:
     ableton::Link mLink;
     double mQuantum;
     double mLatency;
-    static std::chrono::microseconds mInitTime;
 };
 
 #endif // SC_ABLETON_LINK
