@@ -35,6 +35,7 @@ else ()
 endif ()
 
 set(sclang_sources
+    LangPrimSource/SC_LinkClock.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
@@ -214,6 +215,14 @@ endif()
 if (NOT WIN32)
 	set_property(TARGET libsclang
 		PROPERTY OUTPUT_NAME sclang)
+endif()
+
+if (SC_ABLETON_LINK)
+	message(STATUS "Compiling with Ableton Link support")
+	include(../external_libraries/link/AbletonLinkConfig.cmake)
+	target_link_libraries(libsclang Ableton::Link)
+
+	add_definitions(-DSC_ABLETON_LINK)
 endif()
 
 ## external libraries

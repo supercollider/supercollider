@@ -20,3 +20,6 @@
 [submodule "editors/sc-el"]
 	path = editors/sc-el
 	url = https://github.com/supercollider/scel/
+[submodule "external_libraries/link"]
+	path = external_libraries/link
+	url = https://github.com/Ableton/link
