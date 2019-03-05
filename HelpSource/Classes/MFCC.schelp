@@ -225,9 +225,9 @@ a.plot;
 
 // ERBs (rough calculation, only really valid under 6000Hz, real scale goes up to 42 rather than 37 in 22000 Hz)
 (
-a = Array.fill(220, {|i| 
-	var f = i * 100; 
-	11.17 * log((f + 312) / (f + 14675)) + 43.0 
+a = Array.fill(220, {|i|
+	var f = i * 100;
+	11.17 * log((f + 312) / (f + 14675)) + 43.0
 })
 )
 a.plot

@@ -15,7 +15,7 @@ method:: scopeResponse
 Provides a simple way to visualise the frequency-wise effect of applying a filter
 discussion::
 code::
-s.boot // boot the server 
+s.boot // boot the server
 MoogFF.scopeResponse
 HPF.scopeResponse
 BRF.scopeResponse

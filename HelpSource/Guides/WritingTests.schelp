@@ -4,7 +4,7 @@ categories:: Testing
 related:: Reference/SCDocSyntax, Classes/SCDoc
 
 
-To write, use and develop UnitTests, you need to 
+To write, use and develop UnitTests, you need to
 
 list::
 ## install a sourcecode version of SuperCollider
@@ -19,7 +19,7 @@ It is not needed to compile SuperCollider from its sources, you can instead use 
 
 section:: Change your environment to include only core library functionality
 
-In order to mimick the standard SuperCollider installation, make sure that you have only the class library installed. 
+In order to mimick the standard SuperCollider installation, make sure that you have only the class library installed.
 
 Best practise is to create a separate code::.yaml:: configuration file that resides parallel to the default one. You can do this either interactively from within the preferences of your IDE (code::Preferences>Interpreter::), or programatically
 
@@ -30,7 +30,7 @@ LanguageConfig.addIncludePath(~travisBuildDir +/+ "testsuite/classlibrary");
 +   LanguageConfig.addExcludePath(Quarks.folder +/+ "UnitTesting/tests");
 +   postf("Writing configuration to %\n", ~sclangConf);
 +   LanguageConfig.store(~sclangConf);
-:: 
+::
 
 
 section:: Organisation

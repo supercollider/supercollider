@@ -84,7 +84,7 @@ code::
 	var in, chain;
 	in = WhiteNoise.ar(0.1);
 	chain = FFT(LocalBuf(2048), in);
-	chain.inspect; 
+	chain.inspect;
 	IFFT(chain) // inverse FFT
 }.play;
 )
