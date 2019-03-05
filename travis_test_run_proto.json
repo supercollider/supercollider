@@ -1,103 +1,103 @@
 {
   "tests": [
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestPlotter"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestUnitTest",
       "skip": true,
       "skipReason": "Unidentified UnitTest bug (FIXME)"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestEnv"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestArray"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestEvent"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestOSCBundle"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestNoOps"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestMixedBundleTester",
       "skip": true,
       "skipReason": "Unidentified UnitTest bug (FIXME)"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestFloat"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestNetAddr"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestCurveWarp"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "UnitTestScript"
-    }, 
+    },
     {
-      "test": "*", 
+      "test": "*",
       "suite": "TestSignal"
-    }, 
+    },
     {
-      "suite": "TestUnitTest", "test": "test_toreDown", 
+      "suite": "TestUnitTest", "test": "test_toreDown",
       "skip": true, "skipReason": "UnitTest bug"
-    }, 
+    },
     {
-      "suite": "TestUnitTest", "test": "test_setUp2", 
+      "suite": "TestUnitTest", "test": "test_setUp2",
       "skip": true, "skipReason": "UnitTest bug"
-    }, 
+    },
     {
       "suite": "TestUnitTest", "test": "test_findTestedClass",
       "skip": true, "skipReason": "Unidentified UnitTest bug"
     },
     {
-      "suite": "TestUnitTest", "test": "test_bootServer", 
+      "suite": "TestUnitTest", "test": "test_bootServer",
       "skip": true, "skipReason": "No server support on travis"
-    }, 
+    },
     {
-      "test": "test_sendBundle50", 
-      "suite": "TestNetAddr", 
-      "skipReason": "No server support on travis", 
+      "test": "test_sendBundle50",
+      "suite": "TestNetAddr",
+      "skipReason": "No server support on travis",
       "skip": true
-    }, 
+    },
     {
-      "test": "test_send", 
-      "suite": "TestMixedBundleTester", 
-      "skipReason": "No server support on travis", 
+      "test": "test_send",
+      "suite": "TestMixedBundleTester",
+      "skipReason": "No server support on travis",
       "skip": true
-    }, 
+    },
     {
-      "test": "test_findPreparationMessage", 
-      "suite": "TestMixedBundleTester", 
-      "skipReason": "No server support on travis", 
+      "test": "test_findPreparationMessage",
+      "suite": "TestMixedBundleTester",
+      "skipReason": "No server support on travis",
       "skip": true
-    }, 
+    },
     {
       "suite": "TestMixedBundleTester", "test": "test_defNames",
       "skip": true, "skipReason": "Unidentified UnitTest bug"
     },
     {
-      "test": "test_prepare", 
-      "suite": "TestOSCBundle", 
-      "skipReason": "No server support on travis", 
+      "test": "test_prepare",
+      "suite": "TestOSCBundle",
+      "skipReason": "No server support on travis",
       "skip": true
     }
   ]

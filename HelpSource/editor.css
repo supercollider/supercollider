@@ -19,21 +19,21 @@ textarea.editor {
 .CodeMirror-selected,
 .CodeMirror-line::selection,
 .CodeMirror-line > span::selection,
-.CodeMirror-line > span > span::selection { 
+.CodeMirror-line > span > span::selection {
     background: rgba(248, 162, 0, 0.5) !important;
 }
 
 @keyframes text-flash {
-    0% { 
+    0% {
         background: rgba(248, 162, 0, 0);
         color: black;
     }
-    40% { 
-        background: rgba(248, 162, 0, 1); 
+    40% {
+        background: rgba(248, 162, 0, 1);
         color: black,
     }
-    100% { 
-        background: rgba(248, 162, 0, 0); 
+    100% {
+        background: rgba(248, 162, 0, 0);
         color: black;
     }
 }
