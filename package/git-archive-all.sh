@@ -13,26 +13,26 @@
 # cd $GIT_DIR; git-archive-all.sh
 #
 # where $GIT_DIR is the root of your git superproject.
- 
+
 # DEBUGGING
 set -e
 set -C # noclobber
- 
+
 # TRAP SIGNALS
 trap 'cleanup' QUIT EXIT
- 
+
 # For security reasons, explicitly set the internal field separator
 # to newline, space, tab
 OLD_IFS=$IFS
 IFS='
 '
- 
+
 function cleanup () {
     rm -f $TMPFILE
     rm -f $TOARCHIVE
     IFS="$OLD_IFS"
 }
- 
+
 function usage () {
     echo "Usage is as follows:"
     echo
@@ -64,30 +64,30 @@ echo " If 'output_file' is specified, the resulting archive is created as the"
     echo " archive(s) are named with a dot-separated path of the archived directory and"
     echo " a file extension equal to their format (e.g., 'superdir.submodule1dir.tar')."
 }
- 
+
 function version () {
     echo "$PROGRAM version $VERSION"
 }
- 
+
 # Internal variables and initializations.
 readonly PROGRAM=`basename "$0"`
 readonly VERSION=0.2
- 
+
 OLD_PWD="`pwd`"
 TMPDIR=${TMPDIR:-/tmp}
 TMPFILE=`mktemp "$TMPDIR/$PROGRAM.XXXXXX"` # Create a place to store our work's progress
 TOARCHIVE=`mktemp "$TMPDIR/$PROGRAM.toarchive.XXXXXX"`
 OUT_FILE=$OLD_PWD # assume "this directory" without a name change by default
 SEPARATE=0
- 
+
 FORMAT=tar
 PREFIX=
 TREEISH=HEAD
- 
+
 # RETURN VALUES/EXIT STATUS CODES
 readonly E_BAD_OPTION=254
 readonly E_UNKNOWN=255
- 
+
 # Process command-line arguments.
 while test $# -gt 0; do
 case $1 in
@@ -96,45 +96,45 @@ case $1 in
 FORMAT="$1"
             shift
             ;;
- 
+
         --prefix )
             shift
 PREFIX="$1"
             shift
             ;;
- 
+
         --separate | -s )
             shift
 SEPARATE=1
             ;;
- 
+
         --version )
             version
             exit
             ;;
- 
+
         -? | --usage | --help )
             usage
             exit
             ;;
- 
+
         -* )
             echo "Unrecognized option: $1" >&2
             usage
             exit $E_BAD_OPTION
             ;;
- 
+
         * )
             break
             ;;
     esac
 done
- 
+
 if [ ! -z "$1" ]; then
 OUT_FILE="$1"
     shift
 fi
- 
+
 # Validate parameters; error early, error often.
 if [ $SEPARATE -eq 1 -a ! -d $OUT_FILE ]; then
 echo "When creating multiple archives, your destination must be a directory."
@@ -144,15 +144,15 @@ elif [ `git config -l | grep -q '^core\.bare=false'; echo $?` -ne 0 ]; then
 echo "$PROGRAM must be run from a git working copy (i.e., not a bare repository)."
     exit
 fi
- 
+
 # Create the superproject's git-archive
 git archive --format=$FORMAT --prefix="$PREFIX" $TREEISH > $TMPDIR/$(basename $(pwd)).$FORMAT
 echo $TMPDIR/$(basename $(pwd)).$FORMAT >| $TMPFILE # clobber on purpose
 superfile=`head -n 1 $TMPFILE`
- 
+
 # find all '.git' dirs, these show us the remaining to-be-archived dirs
 find . -name '.git' -type d -print | sed -e 's/^\.\///' -e 's/\.git$//' | grep -v '^$' >> $TOARCHIVE
- 
+
 while read path; do
 TREEISH=$(git submodule | grep "^ .*${path%/} " | cut -d ' ' -f 2) # git-submodule does not list trailing slashes in $path
     cd "$path"
@@ -164,7 +164,7 @@ TREEISH=$(git submodule | grep "^ .*${path%/} " | cut -d ' ' -f 2) # git-submodu
 echo "$TMPDIR"/"$(echo "$path" | sed -e 's/\//./g')"$FORMAT >> $TMPFILE
     cd "$OLD_PWD"
 done < $TOARCHIVE
- 
+
 # Concatenate archives into a super-archive.
 if [ $SEPARATE -eq 0 ]; then
 if [ $FORMAT == 'tar' ]; then
@@ -179,11 +179,11 @@ sed -e '1d' $TMPFILE | while read file; do
         done
 cd "$OLD_PWD"
     fi
- 
+
 echo "$superfile" >| $TMPFILE # clobber on purpose
 fi
- 
+
 while read file; do
 mv "$file" "$OUT_FILE"
 done < $TMPFILE
- 
+

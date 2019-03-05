@@ -10,7 +10,7 @@ library extensions.
 1) To install for one user move the quarks directory to
 "~/share/SuperCollider". To install for all users, move the quarks
 directory to "/usr/local/share/SuperCollider".
-      NOTE: you might see a folder called "Extensions" 
+      NOTE: you might see a folder called "Extensions"
       but DON'T put the quarks directory directly in there!
 
 2) Follow the steps outlined inside the Quarks helpfile to actually
