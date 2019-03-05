@@ -76,7 +76,7 @@ METHOD:: asPageLayout
 Similar to asFlowView, this message converts nil and various other objects to a PageLayout. This is already a PageLayout, so it returns self.
 
 argument:: name
-Ignored. If the receiver had been nil then the name would be the Window name. 
+Ignored. If the receiver had been nil then the name would be the Window name.
 
 argument:: bounds
 Ignored. Would have been used to size the PageLayout

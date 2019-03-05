@@ -29,7 +29,7 @@ table::
 
 section:: How Extensions Folders Should be Organised
 
-Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named 
+Class files and UGen plugins are recognised by their file extensions. Anything placed within a folder named
 teletype::ignore/:: (case insensitive) will be ignored when compiling the class library or loading plugins.
 
 Here is an example folder layout:

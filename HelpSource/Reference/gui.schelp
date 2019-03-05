@@ -42,7 +42,7 @@ list::
 ##  CompositeVIew
 ##  HLayoutView
 ##  VLayoutView
-##  nil (which will create a Window with a FlowView on it) 
+##  nil (which will create a Window with a FlowView on it)
 ::
 ## bounds ||
 list::

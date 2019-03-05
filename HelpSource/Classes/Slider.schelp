@@ -247,7 +247,7 @@ code::
 
 	(
 		s.waitForBoot({
-			
+
 			SynthDef(\pluck, { |out, freq=55|
 				Out.ar(out,
 					Pluck.ar(WhiteNoise.ar(0.06),

@@ -35,9 +35,9 @@ enum { // primitive errors
 	errOutOfMemory,
 	errCantCallOS,
 	errException,
-	
+
 	errPropertyNotFound = 6000,
-	
+
 	errLastError
 };
 ::
