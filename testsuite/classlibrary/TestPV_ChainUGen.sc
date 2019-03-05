@@ -4,14 +4,14 @@ UnitTest.gui
 */
 TestPV_ChainUGen : UnitTest {
 
-// This test manually creates an FFT frame equivalent to pure white noise, 
+// This test manually creates an FFT frame equivalent to pure white noise,
 // on which certain ugens' action should be a no-op
 test_whiteframe_noop {
 	var fakeframe;
-	
+
 	// Every real is 1.0, every imag is 0.0. same as every mag is 1.0, every phase is 0.0.
 	fakeframe = ([1,1] ++ {[1,0]}.dup(511)).flat;
-	
+
 	// All of these should be no-ops when applied to a faked frame with reals all 1 and imags all 0:
 	this.pv_equivalencetests_common(fakeframe,
 		Dictionary[
@@ -47,12 +47,12 @@ test_whiteframe_noop {
 // Various ugens have parameter settings which are supposed to zero the data
 test_whiteframe_zeroing {
 	var fakeframe;
-	
+
 	// Every real is 1.0, every imag is 0.0. same as every mag is 1.0, every phase is 0.0.
-	// NOTE: Here we actually set the DC and nyqquist to zero, not one, 
+	// NOTE: Here we actually set the DC and nyqquist to zero, not one,
 	//  because many ugens simply don't bother to touch them.
 	fakeframe = ([0,0] ++ {[1,0]}.dup(511)).flat;
-	
+
 	// All of these should be no-ops when applied to a faked frame with reals all 1 and imags all 0:
 	this.pv_equivalencetests_common(fakeframe,
 		Dictionary[
@@ -76,7 +76,7 @@ pv_equivalencetests_common { |fakeframe, tests, equaltothis, message|
 		b = Buffer.sendCollection(s, fakeframe);
 		0.05.wait;
 		s.sync;
-		
+
 		{var f; f = FFTTrigger(b); func.value(f); Line.ar(0, 0, 0.05, doneAction:2)}.play;
 		s.sync;
 		0.2.wait;
@@ -85,7 +85,7 @@ pv_equivalencetests_common { |fakeframe, tests, equaltothis, message|
 		});
 		s.sync;
 		rrand(0.12, 0.15).wait;
-		
+
 		b.free;
 		0.05.wait;
 		s.sync;

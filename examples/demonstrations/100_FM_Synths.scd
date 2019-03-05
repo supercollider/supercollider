@@ -54,7 +54,7 @@ modulatorF = { arg freq=440, mix=0, gate=1;
 	name = "fmgen_a_" ++ i;
 	SynthDef(name, { arg freq=440, amp=1, gate=1, pan=0;
 		var c, m;
-					
+
 		c = 0;
 		[
 			{
@@ -92,7 +92,7 @@ modulatorF = { arg freq=440, mix=0, gate=1;
 				}
 			},
 		].choose.value;
-		
+
 		DetectSilence.ar(c, doneAction: 2);
 		Out.ar(0, Pan2.ar(c, pan, amp));
 	}).add;
@@ -103,11 +103,11 @@ modulatorF = { arg freq=440, mix=0, gate=1;
 (
 // listen randomly to the random FM instruments.
 Routine({
-	var name;	
+	var name;
 	s.sendMsg(\s_new, \reverb, 1000, 1, 0);
 	name = "fmgen_a_" ++ 100.rand;
 	name.postln;
-	1000.do {	
+	1000.do {
 		var freq, id;
 		if (0.08.coin) { name = "fmgen_a_" ++ 100.rand; name.postln };
 		[1,1,1,1,1,2,2].choose.do {

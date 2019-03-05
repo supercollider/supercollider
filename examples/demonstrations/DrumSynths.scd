@@ -88,7 +88,7 @@ SynthDef(\SOShats,
 	var initial_bpf_contour, initial_bpf, initial_env;
 	var body_hpf, body_env;
 	var cymbal_mix;
-	
+
 	root_cymbal_square = Pulse.ar(freq, 0.5, mul: 1);
 	root_cymbal_pmosc = PMOsc.ar(root_cymbal_square,
 					[freq*1.34, freq*2.405, freq*3.09, freq*1.309],
