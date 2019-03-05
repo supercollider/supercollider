@@ -121,7 +121,7 @@ Crazy ideas:
 - or, let both parser and renderer be standalone.
   * introspection data could be provided by a machine-readable file written by sclang
     - class tree, their methods, the filenameSymbol for each class and method.
-    
+
     C classname
         F filenameSymbol
         CM methodname
@@ -136,7 +136,7 @@ Crazy ideas:
             etc...
         XC
     XC
-    
+
   but then we need also an output mode that generates sclang code for docmap construction.
 
 - even make the whole scdoc thing in C?
