@@ -23,7 +23,7 @@
 (
 var colorWindow, sortFn, screenBounds, btnWidth;
 colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winOnClose=true;
-	var w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];	
+	var w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];
 	bounds = bounds ? Rect(10, 10, 252, 240);
 	w = Window("Color browser", bounds, scroll: true);
 	w.view.decorator = FlowLayout(w.view.bounds, Point(0,0), Point(0,0));
@@ -31,15 +31,15 @@ colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winO
 		color = colAssoc.value;
 		colArr = color.asArray;
 		colName = colAssoc.key.asString;
-		if(colArr != prevCol, { 
+		if(colArr != prevCol, {
 			if (inclGrey.not, {
 				isGrey = colName.containsi("gray") or: {colName.containsi("grey")};
 			}, {
-				isGrey = false; 
+				isGrey = false;
 			});
 			if (isGrey.not, {
 				txtCol = if(colArr.sum < 2.45, {Color.white}, {Color.black});
-				btn = Button(w, Rect(0,0, btnWidth, (btnWidth/3).round)); 
+				btn = Button(w, Rect(0,0, btnWidth, (btnWidth/3).round));
 				btn.font = Font("Helvetica", fontSize);
 				btn.states = [["", txtCol, color],[colName, txtCol, color]];
 				btn.action_({ arg butt;
@@ -51,7 +51,7 @@ colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winO
 				});
 			});
 		});
-		prevCol = colArr;	
+		prevCol = colArr;
 	});
 	// Make a final window with selected colors
 	if (winOnClose, {

@@ -21,14 +21,14 @@ SinOsc.dumpMethodList  // list class methods alphabetically
 
 (
 // find all methods who have an argument name that starts with the letter g.
-Class.allClasses.do({ arg aClass; 
+Class.allClasses.do({ arg aClass;
 	if (aClass.methods.notNil, {
 		aClass.methods.do({ arg aMethod;
 			aMethod.argNames.do({ arg aSymbol;
 				if ( aSymbol.asString.at(0) == $g, {
 					postln(
-						aClass.name.asString ++ " " ++ 
-						aMethod.name.asString ++ " " ++ 
+						aClass.name.asString ++ " " ++
+						aMethod.name.asString ++ " " ++
 						aSymbol.asString
 					);
 				});

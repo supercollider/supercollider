@@ -44,7 +44,7 @@ TestNetAddr : UnitTest {
 	}
 
 	setUp {
-		server = Server.default; 
+		server = Server.default;
 		addr = server.addr;
 
 		// mmmmmmm.   fixtures.

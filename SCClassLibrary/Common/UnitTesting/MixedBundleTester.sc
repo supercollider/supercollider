@@ -76,7 +76,7 @@ MixedBundleTester : MixedBundle {
 			})
 		})
 	}
-	
+
 	*report {
 		bundlesSent.do({ |bnd,i|
 			Post << "######## Bundle " << i << " ###########################" << Char.nl;
@@ -120,6 +120,6 @@ MixedBundleTester : MixedBundle {
 		if(defName.isNil,{ Error("MixedBundleTester-includesDefName : defName was nil").throw });
 		^this.defNames.indexOfEqual(defName).notNil
 	}
- 
+
 }
 

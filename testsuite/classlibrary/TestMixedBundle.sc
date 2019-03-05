@@ -82,7 +82,7 @@ TestMixedBundle : UnitTest {
 		// one synth should be playing
 		this.assertEquals( Server.default.numSynths, 1, "should be one synth playing");
 	}
-	
+
 }
 
 

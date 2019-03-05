@@ -82,31 +82,31 @@ w.drawFunc = {
 
 		pen.width= penwidth;
 		pen.color=Color.yellow(yellowness);
-		
+
 		usedtime=time.min(1.0);
-	
+
 		todraw=(round((name.size)*usedtime).asInteger).max(1);
-		
+
 		todraw.do({arg j;
-		
+
 		xoscil= sin(2*pi*time+(j*pi*0.13))*140/(1+(10*time));
-		
+
 		yoscil= sin(2*pi*time+(j*pi*0.03))*200/(1+(200*time));
-		
+
 		xsizoscil= time*5+5;
-		
+
 		drawletter.value(name[j],50+(25*j)+(xoscil),10+yoscil,xsizoscil,xsizoscil,usedtime);
-		
+
 		});
-		
+
 	};
-		
-		
+
+
 };
 
-{ while { time<2.0 } { 
+{ while { time<2.0 } {
 
-w.refresh; 		
+w.refresh;
 time=(time+0.025); //%2.0;
 0.05.wait; } }.fork(AppClock)
 

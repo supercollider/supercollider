@@ -2,13 +2,13 @@
 (
 SynthDef("env", { arg i_outbus=0;
 	var env, envctl;
-	
+
 	// make a dummy 8 segment envelope
 	env = Env.newClear(8);
-	
+
 	// create a control argument array
 	envctl = Control.names([\env]).kr( env.asArray );
-	
+
 	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
 }).add;
 
