@@ -183,7 +183,7 @@ optsubsubsections: subsubsections
 subsubsections: subsubsections subsubsection { $$ = doc_node_add_child($1,$2); }
               | subsubsection { $$ = doc_node_make("(SUBSUBSECTIONS)",NULL,$1); }
               | body { $$ = doc_node_make_take_children("(SUBSUBSECTIONS)",NULL,$1); }
-; 
+;
 
 subsubsection: METHOD methnames optMETHODARGS eol methodbody
     {
@@ -328,7 +328,7 @@ listtag: LIST { $$ = "LIST"; }
        | TREE { $$ = "TREE"; }
        | NUMBEREDLIST { $$ = "NUMBEREDLIST"; }
 ;
-       
+
 rangetag: WARNING { $$ = "WARNING"; }
         | NOTE { $$ = "NOTE"; }
 ;
