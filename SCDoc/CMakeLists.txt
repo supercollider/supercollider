@@ -7,15 +7,15 @@ set(SCDOC_SRCS
     ${SCDOC_DIR}/lex.scdoc.cpp
     ${SCDOC_DIR}/SCDocPrim.cpp
     ${SCDOC_DIR}/SCDocPrim.h
-)
+    )
 
 if(CMAKE_COMPILER_IS_CLANG)
-  set_source_files_properties(
-    ${SCDOC_DIR}/lex.scdoc.cpp
-    PROPERTIES COMPILE_FLAGS "-Wno-deprecated-register -Wno-null-conversion")
+    set_source_files_properties(
+        ${SCDOC_DIR}/lex.scdoc.cpp
+        PROPERTIES COMPILE_FLAGS "-Wno-deprecated-register -Wno-null-conversion")
 endif()
 
 include_directories(
     ${SCDOC_DIR}
-)
+    )
 
