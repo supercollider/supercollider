@@ -146,15 +146,15 @@ def find_word(doc, where=None):
         i1 = where.copy()
 
     #scclass_regex = "[A-Za-z0-9_]"
-    
+
     while i1.backward_char():
         if not re.match("[A-Za-z0-9_]", i1.get_char()):
             break
-    
+
     if not i1.is_start():
         i1.forward_char()
     i2 = i1.copy()
-    
+
     while i2.forward_char():
         if not re.match("[A-Za-z0-9_]", i2.get_char()):
             break
@@ -322,10 +322,10 @@ class LogPanel(Gtk.ScrolledWindow):
 class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     __gtype_name__ = "ScedWindowActivatable"
     window = GObject.property(type=Gedit.Window)
-    
+
     def __init__(self):
         GObject.Object.__init__(self)
-    
+
     def do_activate(self):
         self.__insert_menu()
 
@@ -334,13 +334,13 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
     def do_update_state(self):
         pass
-    
+
     def __remove_menu(self):
         manager = self.window.get_ui_manager()
         manager.remove_ui(self.__ui_id)
         manager.remove_action_group(self.__actions)
         manager.ensure_update()
-    
+
     def __insert_menu(self):
         manager = self.window.get_ui_manager()
         self.__actions = Gtk.ActionGroup("ScedActions")
@@ -357,13 +357,13 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         manager.insert_action_group(self.__actions, -1)
         self.__ui_id = manager.add_ui_from_string(ui_str)
         manager.ensure_update()
-    
+
     def __remove_sc_menu(self):
         manager = self.window.get_ui_manager()
         manager.remove_ui(self.__scui_id)
         manager.remove_action_group(self.__sc_actions)
         manager.ensure_update()
-    
+
     def __insert_sc_menu(self):
         manager = self.window.get_ui_manager()
         self.__sc_actions = Gtk.ActionGroup("SuperColliderActions")
@@ -452,7 +452,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         manager.insert_action_group(self.__sc_actions, -1)
         self.__scui_id = manager.add_ui_from_string(scui_str)
         manager.ensure_update()
-    
+
     def on_sc_mode_activate(self, action, data=None):
         if action.get_active():
             self.__log_panel = LogPanel()
@@ -474,7 +474,7 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
             self.__lang.stop()
             self.__logger.stop()
             self.__remove_sc_menu()
-    
+
     def on_evaluate(self, action, data=None):
         doc = self.window.get_active_document()
 
