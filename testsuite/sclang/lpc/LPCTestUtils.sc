@@ -13,60 +13,60 @@
 * fast for SC. You are welcome to find faster methods.
 */
 
-/****** LAYOUT OF THIS FILE *******
-
-----major methods----
-
-evaluateAllStrings                 // main method: take an alphabet, evaluate all
-                                   //   strings in its language, and write to a file.
-evaluateString                     // evaluate a string; called by evaluateAllStrings
-compareFiles                       // compare two files (typically test/validation)
-compareHeaders                     // compare the headers; called by compareFiles
-compareData                        // compare the data; called by compareFiles
-
-----diff helper methods----
-
-writeDiffs                         // write an array of diffs to a file
-explainDiff                        // convert a diff to easily readable format
-makeDiff                           // construct a diff from two dictionaries
-
-----misc helper methods----
-
-makeTestString                     // make a test string given an alphabet and counter
-safeOpenFile                       // open a file, throwing errors immediately on fail
-safeMkdir                          // mkdir if no dir exists, throw error on fail
-parseTestResult                    // turn a line read from a file into structured data
-doOutputsMatch                     // return true iff two test results are considered
-                                   //   matching. see implementation for special cases.
-doFloatOutputsMatch                // return true if floats match for a more accepting
-                                   //   cross-platform interpretation
-incrementAlphabetCount             // increment an alphabet counter in-place
-debug                              // ordinary debugging method
-
-----data conversion methods----
-
-bytecodeToHexString                // Int8Array -> String of hex characters
-bytecodeFromHexString              // inverse of `bytecodeToHexString`
-stringToHexString                  // String of chars -> String of hex chars
-stringFromHexString                // inverse of `stringToHexString`
-
-----header I/O methods----
-
-writeHeader                        // write a header with test parameter info
-parseHeader                        // recover test data from a file's header
-
-----header parsing helper methods----
-
-verifyFieldName                    // these methods all perform specialized minor data
-parseBlockName                     //   validation. see implementations for details.
-parseAlphabetSize
-parseAlphabet
-parseStringLength
-parsePrefix
-parseSuffix
-parseTechnique
-
-************************************/
+/******** LAYOUT OF THIS FILE *******
+ *
+ * ----major methods----
+ *
+ * evaluateAllStrings                 // main method: take an alphabet, evaluate all
+ *                                    //   strings in its language, and write to a file.
+ * evaluateString                     // evaluate a string; called by evaluateAllStrings
+ * compareFiles                       // compare two files (typically test/validation)
+ * compareHeaders                     // compare the headers; called by compareFiles
+ * compareData                        // compare the data; called by compareFiles
+ *
+ * ----diff helper methods----
+ *
+ * writeDiffs                         // write an array of diffs to a file
+ * explainDiff                        // convert a diff to easily readable format
+ * makeDiff                           // construct a diff from two dictionaries
+ *
+ * ----misc helper methods----
+ *
+ * makeTestString                     // make a test string given an alphabet and counter
+ * safeOpenFile                       // open a file, throwing errors immediately on fail
+ * safeMkdir                          // mkdir if no dir exists, throw error on fail
+ * parseTestResult                    // turn a line read from a file into structured data
+ * doOutputsMatch                     // return true iff two test results are considered
+ *                                    //   matching. see implementation for special cases.
+ * doFloatOutputsMatch                // return true if floats match for a more accepting
+ *                                    //   cross-platform interpretation
+ * incrementAlphabetCount             // increment an alphabet counter in-place
+ * debug                              // ordinary debugging method
+ *
+ * ----data conversion methods----
+ *
+ * bytecodeToHexString                // Int8Array -> String of hex characters
+ * bytecodeFromHexString              // inverse of `bytecodeToHexString`
+ * stringToHexString                  // String of chars -> String of hex chars
+ * stringFromHexString                // inverse of `stringToHexString`
+ *
+ * ----header I/O methods----
+ *
+ * writeHeader                        // write a header with test parameter info
+ * parseHeader                        // recover test data from a file's header
+ *
+ * ----header parsing helper methods----
+ *
+ * verifyFieldName                    // these methods all perform specialized minor data
+ * parseBlockName                     //   validation. see implementations for details.
+ * parseAlphabetSize
+ * parseAlphabet
+ * parseStringLength
+ * parsePrefix
+ * parseSuffix
+ * parseTechnique
+ *
+ **************************************/
 
 LPCTestUtils {
 	const <compileErrorString = "!cErr";
@@ -259,8 +259,7 @@ LPCTestUtils {
 
 		// Master state (suffix `M` = `master`)
 		// Necessary for the case when alphabets differ in size.
-		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray
-		              .collect(_.asString).sort;
+		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray.collect(_.asString).sort;
 		var alphSizeM = alphM.size;
 		var ctrM = 0!strlen;
 
@@ -539,7 +538,7 @@ LPCTestUtils {
 		// If both nan of some sort, return true. `endsWith` because some systems
 		// may print NaN as `-nan`.
 		if( (a.endsWith(nanString) || a.endsWith(nanString_win)) &&
-			  (b.endsWith(nanString) || b.endsWith(nanString_win)) ) {
+				(b.endsWith(nanString) || b.endsWith(nanString_win)) ) {
 			this.debug(
 				"Ignoring a result because of nan."
 				"\tInput: " ++ input ++
@@ -552,7 +551,7 @@ LPCTestUtils {
 
 		// If both +inf, return true.
 		if( ((a == infString_pos) || (a == infString_pos_win)) &&
-			  ((b == infString_pos) || (b == infString_pos_win)) ) {
+				((b == infString_pos) || (b == infString_pos_win)) ) {
 			this.debug(
 				"Strings matched under cross-platform representations of +inf."
 				"\tInput: " ++ input ++
@@ -565,7 +564,7 @@ LPCTestUtils {
 
 		// If both -inf, return true.
 		if( ((a == infString_neg) || (a == infString_neg_win)) &&
-			  ((b == infString_neg) || (b == infString_neg_win)) ) {
+				(b == infString_neg) || (b == infString_neg_win)) ) {
 			this.debug(
 				"Strings matched under cross-platform representations of -inf."
 				"\tInput: " ++ input ++

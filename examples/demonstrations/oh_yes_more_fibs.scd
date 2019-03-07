@@ -145,23 +145,23 @@ var fib, bass, mel, ending,tune;
 fib = #[60, 62, 63, 65, 68, 73];
 
 bass = Pbind(
- \tempo, 1.5,
- \legato, 0.1,
- \dur, Pseq([1], 5),
- \midinote, Pxrand(fib - 24, 5)
+	\tempo, 1.5,
+	\legato, 0.1,
+	\dur, Pseq([1], 5),
+	\midinote, Pxrand(fib - 24, 5)
 );
 mel = Pbind(
- \tempo, 1.5,
- \legato, Prand([1,1,1/2,1/3, 1/5, 1/8], inf),
- \dur, Pshuf([1,1,Pseq([1/2],2),Pseq([1/3],3), Pseq([1/3], 3)], 1),
- \midinote, Prand( fib ++ [\rest, \rest] , 10)
+	\tempo, 1.5,
+	\legato, Prand([1,1,1/2,1/3, 1/5, 1/8], inf),
+	\dur, Pshuf([1,1,Pseq([1/2],2),Pseq([1/3],3), Pseq([1/3], 3)], 1),
+	\midinote, Prand( fib ++ [\rest, \rest] , 10)
 );
 
 tune = Pseq([
-   Ppar([ bass, mel, mel ],2),
-   Padd(\ctranspose, 7,  Ppar([ bass, mel, mel ],2)),
-   Padd(\ctranspose, -7, Ppar([ bass, mel, mel ],2))
-  ], inf);
+	Ppar([ bass, mel, mel ],2),
+	Padd(\ctranspose, 7,  Ppar([ bass, mel, mel ],2)),
+	Padd(\ctranspose, -7, Ppar([ bass, mel, mel ],2))
+], inf);
 
 tune.play
 

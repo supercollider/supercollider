@@ -468,7 +468,7 @@ PmonoArtic(
 )
 
 
- //richer sequence with some heavier moments
+//richer sequence with some heavier moments
 (
 Pbind(
 	\instrument,\mrostinato,
@@ -490,10 +490,10 @@ Pbind(
 //LinnDrum:
 // p. 23 get the samples from http://machines.hyperreal.org/manufacturers/Linn/LinnDrum/
 //The website is a nice resource; there are other sample kits there like Roland TR-909 and TR-808
- //I've just demoed a patch with three samples (kick, snare, hat): I've used Patterns below, though my personal preference would be explicit Busses, Groups, Synths and {}.fork for full control of routings
+//I've just demoed a patch with three samples (kick, snare, hat): I've used Patterns below, though my personal preference would be explicit Busses, Groups, Synths and {}.fork for full control of routings
 
 
- //load samples (assumed mono)
+//load samples (assumed mono)
 (
 var basepath = "/data/audio/percussion/linndrum/";
 
@@ -815,11 +815,11 @@ SynthDef(\basshighend,{|out= 0 freq = 440 amp = 0.1 gate=1 cutoff= 3000 rq=0.1 d
 	filterenv = EnvGen.ar(Env.adsr(0.0,0.5,0.2,0.2),gate,doneAction:2);
 	filter =  RLPF.ar(osc,cutoff*filterenv+100,rq);
 
- 	//distortion
- 	//filter = filter.distort.softclip;
+	//distortion
+	//filter = filter.distort.softclip;
 
 	ab = abs(filter);
- 	filter = (filter*(ab + drive)/(filter ** 2 + (drive - 1) * ab + 1));
+	filter = (filter*(ab + drive)/(filter ** 2 + (drive - 1) * ab + 1));
 
 	//remove low end
 	filter = BLowShelf.ar(filter,300,1.0,-12);
@@ -1200,7 +1200,7 @@ SynthDef(\whoorgan,{|out= 0 freq = 440 amp = 0.1 gate=1 cutoff=8000 rq=0.8 pan=(
 
 	//osc = Mix(Blip.ar(basefreq,16))*0.5;
 
-  	osc = Mix.fill(10,{|i| SinOsc.ar(basefreq*(i+1),0.0,(0.25+(0.75*LFNoise0.kr(10.1+i,0.5,0.5)))/(1.0+(0.5*i)))})*0.2;
+	osc = Mix.fill(10,{|i| SinOsc.ar(basefreq*(i+1),0.0,(0.25+(0.75*LFNoise0.kr(10.1+i,0.5,0.5)))/(1.0+(0.5*i)))})*0.2;
 
 	filter =  BLowPass.ar(osc,2000+(amp*cutoff),rq);
 
@@ -1250,7 +1250,7 @@ SynthDef(\eightoeightkick,{|out= 0 freq = 440 amp = 0.1 ringTime=10.0 releaseTim
 
 	var impulse, filter, env;
 
-  	impulse = Impulse.ar(0);
+	impulse = Impulse.ar(0);
 
 	filter = Ringz.ar(impulse,XLine.ar(freq,60,0.1),ringTime);
 
@@ -1429,7 +1429,7 @@ SynthDef(\justwannahavefun,{|out= 0 freq = 440 amp = 0.1 ringTime=10.0 pan=(-0.1
 
 	var impulse, filter, env;
 
-  	impulse = Impulse.ar(0);
+	impulse = Impulse.ar(0);
 
 	filter = Ringz.ar(impulse,(freq.cpsmidi + (Rand(0.2,1.2)*SinOsc.kr(Rand(10,50)))).midicps,ringTime);
 

@@ -74,13 +74,13 @@ AbstractLPCBrutalTest : UnitTest {
 			var filename = "%_%_%".format(alphabetName, len, testMode);
 
 			LPCTestUtils.evaluateAllStrings(
-				  alphabet: alphabets[alphabetName],
-				       len: len,
-				    prefix: prefix,
-				    suffix: suffix,
-				  filename: this.getActualDir +/+ filename,
-				 technique: this.evaluationTechnique,
-				  compress: true
+				alphabet: alphabets[alphabetName],
+				len: len,
+				prefix: prefix,
+				suffix: suffix,
+				filename: this.getActualDir +/+ filename,
+				technique: this.evaluationTechnique,
+				compress: true
 			);
 
 			if(this.performingValidation) {

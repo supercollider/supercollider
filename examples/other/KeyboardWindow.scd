@@ -66,7 +66,7 @@ w.view.decorator = FlowLayout(w.view.bounds);
 
 // define a function to handle key downs.
 w.view.keyDownAction = {|view, char, modifiers, unicode, keycode|
-	 var result;
+	var result;
 
 	// call the function
 	result = actions[char].value(char, modifiers);

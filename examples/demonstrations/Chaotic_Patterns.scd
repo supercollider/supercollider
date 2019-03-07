@@ -47,15 +47,15 @@ Paddp(\mtranspose, Pseq([0,-2, 2],1),Ppar([Pbindf(b, \stretch, 2.0, \octave, 3),
 (
 
 p = Prout({ var r, x;
-		// Initial value
-		x=0.5.rand;
-		 //     32-cycle, chaos?, ghost of 3-cycle in chaos,  chaos!
-		 //r = [3.569,    3.687,  3.8282,                     3.9].choose;
-		 r = rrand(3.4,4.0);
+	// Initial value
+	x=0.5.rand;
+	//     32-cycle, chaos?, ghost of 3-cycle in chaos,  chaos!
+	//r = [3.569,    3.687,  3.8282,                     3.9].choose;
+	r = rrand(3.4,4.0);
 
-		 // Uncomment this if you want to see the current r value
-		 //("// "++ r).postln;
-		 60.do({x = r * x * (1.0 - x); x.yield;}); });
+	// Uncomment this if you want to see the current r value
+	//("// "++ r).postln;
+	60.do({x = r * x * (1.0 - x); x.yield;}); });
 // scale p to a pentatonic scale
 b = Pbind(\scale, [0,3,5,7,9], \legato, p/2,\dur, Pseq([Pshuf([0.1,0.2,0.1],4)],5), \degree, p*12);
 

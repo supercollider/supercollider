@@ -15,10 +15,10 @@ TestMixedBundleTester : UnitTest {
 		Server.default.latency.wait;
 		0.01.wait;
 		this.assert( MixedBundleTester.findMessage( [ "/n_free",1001]),
-		 		"should find the message in its sent messages");
+				"should find the message in its sent messages");
 
 		this.assert( MixedBundleTester.findMessage( [ "/n_free"]),
-		 		"should match any /n_free message")
+				"should match any /n_free message")
 	}
 
 	test_findPreparationMessage {
@@ -45,10 +45,10 @@ TestMixedBundleTester : UnitTest {
 		(Server.default.latency * 2).wait;
 
 		this.assert( MixedBundleTester.findPreparationMessage(  ["/d_recv", d.asBytes] ),
-		 		"should find the synth def message in its preparation messages" );
+				"should find the synth def message in its preparation messages" );
 
 		this.assert( MixedBundleTester.findPreparationMessage(  ["/d_recv"] ),
-		 		"should match any synth def /d_recv" );
+				"should match any synth def /d_recv" );
 	}
 
 	// test that after sending that the bundle gets put in bundlesSent

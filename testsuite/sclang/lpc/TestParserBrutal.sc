@@ -24,8 +24,7 @@ TestParserBrutal : AbstractLPCBrutalTest {
 				// keywords
 				" var",
 				" arg",
-				// " while", // technically a keyword, but it doesn't get
-				             // treated any differently in practice
+				// " while", technically a keyword, but it doesn't get treated any differently in practice
 				" true",
 				" false",
 				" nil",

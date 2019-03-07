@@ -355,8 +355,8 @@ play({
 //////////////////////////////////////////////////////////////////////
 
 (
-    // strummable guitar
-    // use mouse to strum strings
+// strummable guitar
+// use mouse to strum strings
 {
 	var pitch, mousex, out;
 	// e a d g b e
@@ -382,8 +382,8 @@ play({
 //////////////////////////////////////////////////////////////////////
 
 (
-    // strummable 12 string guitar
-    // use mouse to strum strings
+// strummable 12 string guitar
+// use mouse to strum strings
 {
 	var pitch, mousex, out;
 	// e a d g b e
@@ -416,8 +416,8 @@ play({
 //////////////////////////////////////////////////////////////////////
 
 (
-    // bidirectional strummable guitar
-    // use mouse to strum strings
+// bidirectional strummable guitar
+// use mouse to strum strings
 {
 	var pitch1, pitch2, mousex, out;
 	// e a d g b e
@@ -447,8 +447,8 @@ play({
 //////////////////////////////////////////////////////////////////////
 
 (
-    // harmonic zither
-    // use mouse to strum strings
+// harmonic zither
+// use mouse to strum strings
 {
 	var pitch, mousex, mousey, out, triggerSpacing, panSpacing;
 	// harmonic series
@@ -474,8 +474,8 @@ play({
 //////////////////////////////////////////////////////////////////////
 
 (
-    // strummable metals
-    // use mouse to strum strings
+// strummable metals
+// use mouse to strum strings
 {
 	var mousex, out;
 	mousex = MouseX.kr;
@@ -502,7 +502,7 @@ play({
 //////////////////////////////////////////////////////////////////////
 
 (
-    // strummable pipes
+// strummable pipes
 {
 	var mousex, out;
 	mousex = MouseX.kr;
