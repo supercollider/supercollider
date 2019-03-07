@@ -30,20 +30,17 @@
 #include "../server/synth.hpp"
 #include "../server/memory_pool.hpp"
 
-namespace nova
-{
+namespace nova {
 
-class sc_synth:
-    public abstract_synth,
-    public Graph
+class sc_synth : public abstract_synth, public Graph
 {
-    typedef std::vector<struct Unit*, rt_pool_allocator<void*> > unit_vector;
+    typedef std::vector<struct Unit *, rt_pool_allocator<void *>> unit_vector;
     typedef sc_synthdef::graph_t graph_t;
 
     friend class sc_synth_definition;
 
 public:
-    sc_synth(int node_id, sc_synth_definition_ptr const & prototype);
+    sc_synth(int node_id, sc_synth_definition_ptr const &prototype);
 
     ~sc_synth(void);
 
@@ -57,18 +54,18 @@ public:
 
     HOT inline void perform(void)
     {
-        if (unlikely (!initialized))
+        if (unlikely(!initialized))
             prepare();
 
         if (likely(trace == 0)) {
             const size_t count = calc_unit_count;
-            Unit ** units = calc_units;
+            Unit **units = calc_units;
 
             const size_t preroll = count & 7;
 
             for (size_t i = 0; i != preroll; ++i) {
-                Unit * unit = units[i];
-                prefetch(units[i+1]);
+                Unit *unit = units[i];
+                prefetch(units[i + 1]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
             }
 
@@ -79,7 +76,7 @@ public:
                 return;
 
             for (size_t i = 0; i != unroll; ++i) {
-                Unit * unit = units[0];
+                Unit *unit = units[0];
                 prefetch(units[1]);
                 (unit->mCalcFunc)(unit, unit->mBufLength);
 
@@ -112,19 +109,18 @@ public:
                 (unit->mCalcFunc)(unit, unit->mBufLength);
                 units += 8;
             }
-        }
-        else
+        } else
             run_traced();
     }
 
-    void prefetch(Unit * unit)
+    void prefetch(Unit *unit)
     {
-        char * ptr = (char*) unit;
-        char * end = (char*) unit + sizeof(Unit) + 2 * sizeof(Wire)/* + 4 * sizeof(void*)*/;
+        char *ptr = (char *)unit;
+        char *end = (char *)unit + sizeof(Unit) + 2 * sizeof(Wire) /* + 4 * sizeof(void*)*/;
 
         static const size_t cacheline_size = 64;
 
-        for ( ; ptr < end; ptr += cacheline_size)
+        for (; ptr < end; ptr += cacheline_size)
 #ifdef __GNUC__
             __builtin_prefetch(ptr, 0, 0);
 #endif
@@ -134,13 +130,10 @@ public:
 
     void set(slot_index_t slot_index, sample val) override;
     float get(slot_index_t slot_index) const override;
-    bool getMappedSymbol(slot_index_t slot_index, char * str) const override;
-    void set_control_array(slot_index_t slot_index, size_t count, sample * val) override;
+    bool getMappedSymbol(slot_index_t slot_index, char *str) const override;
+    void set_control_array(slot_index_t slot_index, size_t count, sample *val) override;
 
-    sample get(slot_index_t slot_index)
-    {
-        return mControls[slot_index];
-    }
+    sample get(slot_index_t slot_index) { return mControls[slot_index]; }
 
     /* @{ */
     /** control mapping */
@@ -151,8 +144,7 @@ private:
     void map_control_buses_audio(unsigned int slot_index, int audio_bus_index, int count);
 
 public:
-    template <bool ControlBusIsAudio>
-    void map_control_bus(unsigned int slot_index, int bus_index)
+    template <bool ControlBusIsAudio> void map_control_bus(unsigned int slot_index, int bus_index)
     {
         if (ControlBusIsAudio)
             map_control_bus_audio(slot_index, bus_index);
@@ -160,8 +152,7 @@ public:
             map_control_bus_control(slot_index, bus_index);
     }
 
-    template <bool ControlBusIsAudio>
-    void map_control_buses(unsigned int slot_index, int bus_index, int count)
+    template <bool ControlBusIsAudio> void map_control_buses(unsigned int slot_index, int bus_index, int count)
     {
         if (ControlBusIsAudio)
             map_control_buses_audio(slot_index, bus_index, count);
@@ -169,8 +160,7 @@ public:
             map_control_buses_control(slot_index, bus_index, count);
     }
 
-    template <bool ControlBusIsAudio>
-    void map_control_bus(const char * slot_name, int bus_index)
+    template <bool ControlBusIsAudio> void map_control_bus(const char *slot_name, int bus_index)
     {
         int slot_index = resolve_slot(slot_name);
         if (slot_index == -1)
@@ -178,8 +168,7 @@ public:
         map_control_bus<ControlBusIsAudio>(slot_index, bus_index);
     }
 
-    template <bool ControlBusIsAudio>
-    void map_control_buses(const char * slot_name, int bus_index, int count)
+    template <bool ControlBusIsAudio> void map_control_buses(const char *slot_name, int bus_index, int count)
     {
         int controls_per_slot;
         int slot_index = resolve_slot_with_size(slot_name, controls_per_slot);
@@ -196,7 +185,7 @@ public:
     }
 
     template <bool ControlBusIsAudio>
-    void map_control_bus(const char * slot_name, size_t arrayed_slot_index, int bus_index)
+    void map_control_bus(const char *slot_name, size_t arrayed_slot_index, int bus_index)
     {
         int slot_base_index = resolve_slot(slot_name);
         if (slot_base_index == -1)
@@ -206,32 +195,26 @@ public:
     }
     /* @} */
 
-    void enable_tracing(void)
-    {
-        trace = 1;
-    }
+    void enable_tracing(void) { trace = 1; }
 
-    void apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, struct sc_msg_iter *args);
+    void apply_unit_cmd(const char *unit_cmd, unsigned int unit_index, struct sc_msg_iter *args);
 
 private:
     void run_traced(void);
 
-    sample get_constant(size_t index)
-    {
-        return static_cast<sc_synth_definition*>(class_ptr.get())->constants[index];
-    }
+    sample get_constant(size_t index) { return static_cast<sc_synth_definition *>(class_ptr.get())->constants[index]; }
 
     friend class sc_ugen_def;
 
-    bool initialized  = false;
+    bool initialized = false;
     int_fast8_t trace = 0;
-    Unit ** calc_units;
-    sample * unit_buffers = nullptr;
+    Unit **calc_units;
+    sample *unit_buffers = nullptr;
     int32_t calc_unit_count, unit_count;
 
     RGen rgen;
 
-    Unit ** units;
+    Unit **units;
 };
 
 } /* namespace nova */

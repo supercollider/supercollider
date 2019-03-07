@@ -26,9 +26,7 @@
 
 namespace ScIDE {
 
-CompletionMenu::CompletionMenu(QWidget * parent):
-    PopUpWidget(parent),
-    mCompletionRole(Qt::DisplayRole)
+CompletionMenu::CompletionMenu(QWidget *parent): PopUpWidget(parent), mCompletionRole(Qt::DisplayRole)
 {
     mModel = new QStandardItemModel(this);
     mFilterModel = new QSortFilterProxyModel(this);
@@ -49,7 +47,7 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     mLayout = new QHBoxLayout(this);
     mLayout->addWidget(mListView);
     mLayout->addWidget(mTextBrowser);
-    mLayout->setContentsMargins(1,1,1,1);
+    mLayout->setContentsMargins(1, 1, 1, 1);
 
     connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
     connect(mTextBrowser, SIGNAL(anchorClicked(const QUrl)), this, SLOT(onAnchorClicked(const QUrl)));
@@ -59,10 +57,7 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     parent->installEventFilter(this);
 }
 
-void CompletionMenu::addItem(QStandardItem * item)
-{
-    mModel->appendRow(item);
-}
+void CompletionMenu::addItem(QStandardItem *item) { mModel->appendRow(item); }
 
 void CompletionMenu::adapt()
 {
@@ -86,27 +81,21 @@ void CompletionMenu::setCompletionRole(int role)
 
 QString CompletionMenu::currentText()
 {
-    QStandardItem *item =
-        mModel->itemFromIndex (
-            mFilterModel->mapToSource (
-                mListView->currentIndex()));
+    QStandardItem *item = mModel->itemFromIndex(mFilterModel->mapToSource(mListView->currentIndex()));
     if (item)
         return item->data(mCompletionRole).toString();
 
     return QString();
 }
 
-const ScLanguage::Method * CompletionMenu::currentMethod()
+const ScLanguage::Method *CompletionMenu::currentMethod()
 {
-    QStandardItem *item =
-        mModel->itemFromIndex (
-            mFilterModel->mapToSource (
-                mListView->currentIndex()));
+    QStandardItem *item = mModel->itemFromIndex(mFilterModel->mapToSource(mListView->currentIndex()));
 
-    return item ? item->data(MethodRole).value<const ScLanguage::Method*>() : 0;
+    return item ? item->data(MethodRole).value<const ScLanguage::Method *>() : 0;
 }
 
-QString CompletionMenu::exec(const QRect & rect)
+QString CompletionMenu::exec(const QRect &rect)
 {
     QString result;
     QPointer<CompletionMenu> self = this;
@@ -117,25 +106,17 @@ QString CompletionMenu::exec(const QRect & rect)
     return result;
 }
 
-QSortFilterProxyModel *CompletionMenu::model()
-{
-    return mFilterModel;
-}
+QSortFilterProxyModel *CompletionMenu::model() { return mFilterModel; }
 
-QListView *CompletionMenu::view()
-{
-    return mListView;
-}
+QListView *CompletionMenu::view() { return mListView; }
 
-bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
+bool CompletionMenu::eventFilter(QObject *obj, QEvent *ev)
 {
-    if (isVisible() && obj == parentWidget() && ev->type() == QEvent::KeyPress)
-    {
+    if (isVisible() && obj == parentWidget() && ev->type() == QEvent::KeyPress) {
         static int oldIndex = 0;
 
-        QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
-        switch(kev->key())
-        {
+        QKeyEvent *kev = static_cast<QKeyEvent *>(ev);
+        switch (kev->key()) {
         case Qt::Key_Up:
         case Qt::Key_Down:
         case Qt::Key_PageUp:
@@ -158,9 +139,6 @@ bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
     return PopUpWidget::eventFilter(obj, ev);
 }
 
-void CompletionMenu::onAnchorClicked(QUrl url)
-{
-    emit infoClicked(QString(url.path()));
-}
+void CompletionMenu::onAnchorClicked(QUrl url) { emit infoClicked(QString(url.path())); }
 
 } // namespace ScIDE

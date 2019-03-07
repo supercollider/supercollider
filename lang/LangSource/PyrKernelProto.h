@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,21 +21,18 @@
 
 #pragma once
 
-PyrClass* newClassObj(PyrClass *classObjSuperClass,
-	PyrSymbol* className, PyrSymbol* superClassName,
-	int numInstVars, int numClassVars, int numConsts, int numInstMethods,
-	int instFormat, int instFlags);
+PyrClass *newClassObj(PyrClass *classObjSuperClass, PyrSymbol *className, PyrSymbol *superClassName, int numInstVars,
+                      int numClassVars, int numConsts, int numInstMethods, int instFormat, int instFlags);
 
-void reallocClassObj(PyrClass* classobj,
-	int numInstVars, int numClassVars, int numConsts, int numMethods,
-	int instFormat, int instFlags);
+void reallocClassObj(PyrClass *classobj, int numInstVars, int numClassVars, int numConsts, int numMethods,
+                     int instFormat, int instFlags);
 
-int numInstVars(PyrClass* classobj);
-int numClassVars(PyrClass* classobj);
+int numInstVars(PyrClass *classobj);
+int numClassVars(PyrClass *classobj);
 int numSuperInstVars(PyrClass *superclassobj);
-bool classFindInstVar(PyrClass* classobj, PyrSymbol *name, int *index);
-bool classFindClassVar(PyrClass** classobj, PyrSymbol *name, int *index);
-bool classFindConst(PyrClass** classobj, PyrSymbol *name, int *index);
+bool classFindInstVar(PyrClass *classobj, PyrSymbol *name, int *index);
+bool classFindClassVar(PyrClass **classobj, PyrSymbol *name, int *index);
+bool classFindConst(PyrClass **classobj, PyrSymbol *name, int *index);
 
 void buildClassTree();
 void indexClassTree(PyrClass *classobj, int numSuperMethods);
@@ -43,15 +40,14 @@ void postClassTree(PyrClass *classobj, int level);
 void setSelectorFlags();
 void buildBigMethodMatrix();
 
-bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index);
-bool funcFindVar(PyrBlock* func, PyrSymbol *name, int *index);
+bool funcFindArg(PyrBlock *func, PyrSymbol *name, int *index);
+bool funcFindVar(PyrBlock *func, PyrSymbol *name, int *index);
 void addMethod(PyrClass *classobj, PyrMethod *method);
 
 
-PyrMethod* classFindDirectMethod(PyrClass* classobj, PyrSymbol *name);
+PyrMethod *classFindDirectMethod(PyrClass *classobj, PyrSymbol *name);
 
-PyrBlock* newPyrBlock(int flags);
-PyrMethod* newPyrMethod();
-PyrClass* makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName,
-	int numInstVars, int numClassVars);
+PyrBlock *newPyrBlock(int flags);
+PyrMethod *newPyrMethod();
+PyrClass *makeIntrinsicClass(PyrSymbol *className, PyrSymbol *superClassName, int numInstVars, int numClassVars);
 void addIntrinsicVar(PyrClass *classobj, const char *varName, PyrSlot *slot);

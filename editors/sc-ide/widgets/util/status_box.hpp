@@ -28,15 +28,13 @@ namespace ScIDE {
 class StatusBoxMenu : public QMenu
 {
 public:
-    StatusBoxMenu(QWidget * parent = 0): QMenu(parent) {}
+    StatusBoxMenu(QWidget *parent = 0): QMenu(parent) {}
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent *e)
     {
         QAction *action = activeAction();
-        if ( action && action->isEnabled() && !action->menu() &&
-             action->property("keep_menu_open").toBool() )
-        {
+        if (action && action->isEnabled() && !action->menu() && action->property("keep_menu_open").toBool()) {
             action->setEnabled(false);
             QMenu::mouseReleaseEvent(e);
             action->setEnabled(true);
@@ -59,12 +57,13 @@ public:
 class StatusBox : public QWidget
 {
 public:
-    StatusBox(QWidget * parent = 0);
+    StatusBox(QWidget *parent = 0);
+
 protected:
     void addActionSeparator();
     void showContextMenu();
-    virtual void mousePressEvent( QMouseEvent * );
-    StatusBoxMenu * mMenu;
+    virtual void mousePressEvent(QMouseEvent *);
+    StatusBoxMenu *mMenu;
 };
 
 } // namespace ScIDE

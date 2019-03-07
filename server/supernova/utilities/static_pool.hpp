@@ -18,8 +18,7 @@
 
 #pragma once
 
-extern "C"
-{
+extern "C" {
 #include "tlsf.h"
 }
 
@@ -32,31 +31,22 @@ extern "C"
 
 namespace nova {
 
-template <std::size_t bytes,
-          bool blocking = false>
-class static_pool
+template <std::size_t bytes, bool blocking = false> class static_pool
 {
-    static_assert( bytes % sizeof(long) == 0,
-                   "static_pool: bytes not an integer mutiple of sizeof(long)");
+    static_assert(bytes % sizeof(long) == 0, "static_pool: bytes not an integer mutiple of sizeof(long)");
 
-    static const std::size_t poolsize = bytes/sizeof(long);
+    static const std::size_t poolsize = bytes / sizeof(long);
 
-    typedef typename boost::mpl::if_c<blocking,
-                                      std::mutex,
-                                      dummy_mutex>::type mutex_type;
+    typedef typename boost::mpl::if_c<blocking, std::mutex, dummy_mutex>::type mutex_type;
 
     typedef typename std::lock_guard<mutex_type> scoped_lock;
 
-    struct data:
-        mutex_type
+    struct data : mutex_type
     {
         std::array<long, poolsize> pool;
     };
 
-    void lock_memory(void)
-    {
-        mlock(data_.pool.data(), poolsize * sizeof(long));
-    }
+    void lock_memory(void) { mlock(data_.pool.data(), poolsize * sizeof(long)); }
 
 public:
     static_pool(bool lock = false) throw()
@@ -68,7 +58,6 @@ public:
         data_.pool.fill(0);
         std::size_t status = init_memory_pool(bytes, data_.pool.begin());
         assert(status > 0);
-
     }
 
     static_pool(static_pool const &) = delete;
@@ -79,22 +68,19 @@ public:
         destroy_memory_pool(data_.pool.begin());
     }
 
-    void * malloc(std::size_t size)
+    void *malloc(std::size_t size)
     {
         scoped_lock lock(data_);
         return malloc_ex(size, data_.pool.begin());
     }
 
-    void free(void * p)
+    void free(void *p)
     {
         scoped_lock lock(data_);
         free_ex(p, data_.pool.begin());
     }
 
-    std::size_t get_max_size(void)
-    {
-        return ::get_max_size(data_.pool.begin());
-    }
+    std::size_t get_max_size(void) { return ::get_max_size(data_.pool.begin()); }
 
 private:
     data data_;

@@ -5,7 +5,6 @@ extern "C" {
 
 void load(InterfaceTable *inTable)
 {
-  ::MessageBox(NULL, "void load(InterfaceTable *inTable)", "void load(InterfaceTable *inTable)", MB_OK);
+    ::MessageBox(NULL, "void load(InterfaceTable *inTable)", "void load(InterfaceTable *inTable)", MB_OK);
 }
-
 }

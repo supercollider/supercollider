@@ -23,7 +23,7 @@
 #include <QDialog>
 
 namespace Ui {
-    class ConfigDialog;
+class ConfigDialog;
 }
 
 namespace ScIDE { namespace Settings {
@@ -35,8 +35,7 @@ class Dialog : public QDialog
     Q_OBJECT
 
 public:
-
-    Dialog( Manager *settings, QWidget * parent = 0 );
+    Dialog(Manager *settings, QWidget *parent = 0);
     ~Dialog();
 
 public Q_SLOTS:
@@ -47,8 +46,8 @@ public Q_SLOTS:
     void apply();
 
 Q_SIGNALS:
-    void storeRequest( Manager * );
-    void loadRequest( Manager * );
+    void storeRequest(Manager *);
+    void loadRequest(Manager *);
 
 private:
     Manager *mManager;

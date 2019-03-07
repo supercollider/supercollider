@@ -29,20 +29,22 @@ class LineIndicator : public QWidget
     Q_OBJECT
 
 public:
-    LineIndicator( class GenericCodeEditor *editor );
-    void setHideLineIndicator( bool hide);
+    LineIndicator(class GenericCodeEditor *editor);
+    void setHideLineIndicator(bool hide);
 Q_SIGNALS:
     void widthChanged();
 public Q_SLOTS:
-    void setLineCount( int );
+    void setLineCount(int);
+
 protected:
-    virtual void paintEvent( QPaintEvent *e );
-    virtual void mousePressEvent( QMouseEvent * );
-    virtual void mouseMoveEvent( QMouseEvent * );
-    virtual void mouseDoubleClickEvent( QMouseEvent * );
-    virtual void changeEvent( QEvent * );
+    virtual void paintEvent(QPaintEvent *e);
+    virtual void mousePressEvent(QMouseEvent *);
+    virtual void mouseMoveEvent(QMouseEvent *);
+    virtual void mouseDoubleClickEvent(QMouseEvent *);
+    virtual void changeEvent(QEvent *);
+
 private:
-    int widthForLineCount( int lineCount );
+    int widthForLineCount(int lineCount);
 
     class GenericCodeEditor *mEditor;
     int mLineCount;

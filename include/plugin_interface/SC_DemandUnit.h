@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,16 +27,16 @@
 
 inline bool IsDemandInput(Unit* unit, int index)
 {
-	Unit* fromUnit = unit->mInput[index]->mFromUnit;
-	return fromUnit && fromUnit->mCalcRate == calc_DemandRate;
+    Unit* fromUnit = unit->mInput[index]->mFromUnit;
+    return fromUnit && fromUnit->mCalcRate == calc_DemandRate;
 }
 
 inline float DemandInput(Unit* unit, int index)
 {
-	Unit* fromUnit = unit->mInput[index]->mFromUnit;
-	if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
-		(fromUnit->mCalcFunc)(fromUnit, 1);
-	return IN0(index);
+    Unit* fromUnit = unit->mInput[index]->mFromUnit;
+    if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
+        (fromUnit->mCalcFunc)(fromUnit, 1);
+    return IN0(index);
 }
 
 // support for audio rate input to demand UGens
@@ -45,23 +45,25 @@ inline float DemandInput(Unit* unit, int index)
 
 inline float DemandInputA(Unit* unit, int index, int offset)
 {
-	Unit* fromUnit = unit->mInput[index]->mFromUnit;
-	if(!fromUnit) { return IN0(index); }
-	if (fromUnit->mCalcRate == calc_DemandRate) {
-		(fromUnit->mCalcFunc)(fromUnit, offset);
-		return IN0(index);
-	} else if (fromUnit->mCalcRate == calc_FullRate) {
-		return IN(index)[offset - 1];
-	} else {
-		return IN0(index);
-	}
+    Unit* fromUnit = unit->mInput[index]->mFromUnit;
+    if (!fromUnit) {
+        return IN0(index);
+    }
+    if (fromUnit->mCalcRate == calc_DemandRate) {
+        (fromUnit->mCalcFunc)(fromUnit, offset);
+        return IN0(index);
+    } else if (fromUnit->mCalcRate == calc_FullRate) {
+        return IN(index)[offset - 1];
+    } else {
+        return IN0(index);
+    }
 }
 
 inline void ResetInput(Unit* unit, int index)
 {
-	Unit* fromUnit = unit->mInput[index]->mFromUnit;
-	if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
-		(fromUnit->mCalcFunc)(fromUnit, 0);
+    Unit* fromUnit = unit->mInput[index]->mFromUnit;
+    if (fromUnit && fromUnit->mCalcRate == calc_DemandRate)
+        (fromUnit->mCalcFunc)(fromUnit, 0);
 }
 
 #define ISDEMANDINPUT(index) IsDemandInput(unit, (index))

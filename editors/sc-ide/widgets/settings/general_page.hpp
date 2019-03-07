@@ -23,7 +23,7 @@
 #include <QWidget>
 
 namespace Ui {
-    class GeneralConfigPage;
+class GeneralConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
@@ -39,11 +39,11 @@ public:
     ~GeneralPage();
 
 public slots:
-    void load( Manager * );
-    void store( Manager * );
+    void load(Manager *);
+    void store(Manager *);
 
 private slots:
-    void onStartSessionNameChanged( const QString & text );
+    void onStartSessionNameChanged(const QString &text);
 
 private:
     Ui::GeneralConfigPage *ui;

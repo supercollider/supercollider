@@ -31,14 +31,13 @@ class cpu_time_info
     typedef std::vector<float, boost::alignment::aligned_allocator<float, 64>> ringbuffer;
 
 public:
-    cpu_time_info()
-    {}
+    cpu_time_info() {}
 
-    void resize( int sampleRate, int blockSize, int seconds = 1 )
+    void resize(int sampleRate, int blockSize, int seconds = 1)
     {
         const size_t blocks = sampleRate * seconds / blockSize;
-        size = std::max( size_t(1), blocks );
-        buffer.resize( size, 0.f );
+        size = std::max(size_t(1), blocks);
+        buffer.resize(size, 0.f);
         index = size - 1;
     }
 
@@ -51,16 +50,16 @@ public:
         buffer[index] = f;
     }
 
-    void get(float & peak, float & average) const
+    void get(float& peak, float& average) const
     {
-        const float average_factor = 1.f/size;
+        const float average_factor = 1.f / size;
         float sum;
         horizontal_maxsum_vec_simd(peak, sum, buffer.data(), size);
         average = sum * average_factor;
     }
 
 private:
-    std::size_t size  = 0;
+    std::size_t size = 0;
     std::size_t index = 0;
     ringbuffer buffer;
 };

@@ -30,10 +30,10 @@
 
 namespace ScIDE {
 
-SessionManager::SessionManager( DocumentManager *docMng, QObject * parent ) :
-    QObject(parent),
-    mDocMng(docMng),
-    mCurrentSession(0)
+SessionManager::SessionManager(DocumentManager *docMng, QObject *parent):
+  QObject(parent),
+  mDocMng(docMng),
+  mCurrentSession(0)
 {}
 
 QDir SessionManager::sessionsDir()
@@ -47,8 +47,8 @@ QDir SessionManager::sessionsDir()
         return QDir();
     }
 
-    dir.setFilter( QDir::Files );
-    dir.setNameFilters( QStringList() << "*.yaml" );
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << "*.yaml");
 
     return dir;
 }
@@ -57,7 +57,7 @@ QStringList SessionManager::availableSessions()
 {
     QStringList sessions = sessionsDir().entryList();
     QStringList::iterator it;
-    for ( it = sessions.begin(); it != sessions.end(); ++it )
+    for (it = sessions.begin(); it != sessions.end(); ++it)
         *it = QFileInfo(*it).baseName();
     return sessions;
 }
@@ -68,7 +68,7 @@ QString SessionManager::lastSession()
     if (dir.path().isEmpty())
         return QString();
 
-    QString path = QFile::symLinkTarget( dir.filePath( ".last-session.lnk" ) );
+    QString path = QFile::symLinkTarget(dir.filePath(".last-session.lnk"));
 
     return QFileInfo(path).baseName();
 }
@@ -76,30 +76,30 @@ QString SessionManager::lastSession()
 void SessionManager::newSession()
 {
     if (!closeSession())
-      return;
+        return;
 
     QDir dir = sessionsDir();
     if (!dir.path().isEmpty())
-        saveLastSession( dir, QString() );
+        saveLastSession(dir, QString());
 
     emit switchSessionRequest(0);
 }
 
-Session *SessionManager::openSession( const QString & name )
+Session *SessionManager::openSession(const QString &name)
 {
     // NOTE: This will create a session if it doesn't exists
 
     if (!closeSession())
-      return 0;
+        return 0;
 
     QDir dir = sessionsDir();
     if (dir.path().isEmpty())
         return 0;
 
     QString sessionFile = dir.filePath(name + ".yaml");
-    mCurrentSession = new Session( sessionFile, name, Settings::serializationFormat() );
+    mCurrentSession = new Session(sessionFile, name, Settings::serializationFormat());
 
-    saveLastSession( dir, sessionFile );
+    saveLastSession(dir, sessionFile);
 
     emit switchSessionRequest(mCurrentSession);
 
@@ -114,7 +114,7 @@ void SessionManager::saveSession()
     }
 }
 
-Session * SessionManager::saveSessionAs( const QString & name )
+Session *SessionManager::saveSessionAs(const QString &name)
 {
     // TODO:
     // Maybe use a different data structure for Session instead of QSettings?
@@ -132,13 +132,13 @@ Session * SessionManager::saveSessionAs( const QString & name )
     }
 
     QString sessionFile = dir.filePath(name + ".yaml");
-    mCurrentSession = new Session( sessionFile, name, Settings::serializationFormat() );
+    mCurrentSession = new Session(sessionFile, name, Settings::serializationFormat());
 
     emit saveSessionRequest(mCurrentSession);
 
     mCurrentSession->sync();
 
-    saveLastSession( dir, sessionFile );
+    saveLastSession(dir, sessionFile);
 
     emit currentSessionNameChanged();
 
@@ -148,7 +148,7 @@ Session * SessionManager::saveSessionAs( const QString & name )
 bool SessionManager::closeSession()
 {
     if (!MainWindow::instance()->promptSaveDocs())
-      return false;
+        return false;
 
     if (mCurrentSession)
         emit saveSessionRequest(mCurrentSession);
@@ -158,7 +158,7 @@ bool SessionManager::closeSession()
     return true;
 }
 
-void SessionManager::removeSession( const QString & name )
+void SessionManager::removeSession(const QString &name)
 {
     QDir dir = sessionsDir();
     if (dir.path().isEmpty())
@@ -166,7 +166,7 @@ void SessionManager::removeSession( const QString & name )
 
     if (mCurrentSession && mCurrentSession->name() == name) {
         if (!closeSession())
-          return;
+            return;
         saveLastSession(dir, QString());
         emit switchSessionRequest(0);
     }
@@ -175,7 +175,7 @@ void SessionManager::removeSession( const QString & name )
         qWarning("Could not remove a session file!");
 }
 
-void SessionManager::renameSession( const QString & oldName, const QString & newName )
+void SessionManager::renameSession(const QString &oldName, const QString &newName)
 {
     if (mCurrentSession && mCurrentSession->name() == oldName) {
         saveSessionAs(newName);
@@ -190,17 +190,17 @@ void SessionManager::renameSession( const QString & oldName, const QString & new
     }
 }
 
-bool SessionManager::saveLastSession( const QDir & dir, const QString & sessionFile )
+bool SessionManager::saveLastSession(const QDir &dir, const QString &sessionFile)
 {
     QString linkFile = dir.filePath(".last-session.lnk");
 
-    if ( QFile::exists(linkFile) )
+    if (QFile::exists(linkFile))
         if (!QFile::remove(linkFile)) {
             qWarning("Could not remove old link to last session!");
             return false;
         }
 
-    if ( sessionFile.isEmpty() || QFile::link( sessionFile, linkFile ) )
+    if (sessionFile.isEmpty() || QFile::link(sessionFile, linkFile))
         return true;
     else
         qWarning("Could not create link to last session!");

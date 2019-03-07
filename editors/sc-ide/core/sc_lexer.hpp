@@ -31,7 +31,6 @@ namespace ScIDE {
 class ScLexer
 {
 public:
-
     enum State {
         InCode = 0,
         InString = 1,
@@ -47,7 +46,7 @@ private:
     struct LexicalRule
     {
         LexicalRule(): type(Token::Unknown) {}
-        LexicalRule( Token::Type t, const QString &s ): type(t), expr(s) {}
+        LexicalRule(Token::Type t, const QString &s): type(t), expr(s) {}
 
         Token::Type type;
         QRegExp expr;
@@ -59,27 +58,25 @@ private:
     static QVector<LexicalRule> mLexicalRules;
 
 public:
-    ScLexer( const QString & text, int offset = 0, int state = InCode):
-        mText(text), mOffset(offset), mState(state)
-    {}
+    ScLexer(const QString &text, int offset = 0, int state = InCode): mText(text), mOffset(offset), mState(state) {}
 
-    const QString & text() const { return mText; }
+    const QString &text() const { return mText; }
 
     int state() const { return mState; }
-    void setState( int state ) { mState = state; }
+    void setState(int state) { mState = state; }
 
     int offset() const { return mOffset; }
-    void setOffset( int offset ) { mOffset = offset; }
+    void setOffset(int offset) { mOffset = offset; }
 
-    Token::Type nextToken ( int & length );
+    Token::Type nextToken(int &length);
 
 private:
-    Token::Type nextTokenInCode( int & length );
-    Token::Type nextTokenInString( int & length );
-    Token::Type nextTokenInSymbol( int & length );
-    Token::Type nextTokenInComment( int & length );
+    Token::Type nextTokenInCode(int &length);
+    Token::Type nextTokenInString(int &length);
+    Token::Type nextTokenInSymbol(int &length);
+    Token::Type nextTokenInComment(int &length);
 
-    const QString & mText;
+    const QString &mText;
     int mOffset;
     int mState;
 };

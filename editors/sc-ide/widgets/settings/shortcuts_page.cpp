@@ -29,22 +29,22 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 
-Q_DECLARE_METATYPE(QAction*)
+Q_DECLARE_METATYPE(QAction *)
 Q_DECLARE_METATYPE(QKeySequence)
 
 namespace ScIDE { namespace Settings {
 
-ShortcutsPage::ShortcutsPage(QWidget *parent) :
-    QWidget(parent),
-    ui( new Ui::ShortcutConfigPage )
+ShortcutsPage::ShortcutsPage(QWidget *parent): QWidget(parent), ui(new Ui::ShortcutConfigPage)
 {
     ui->setupUi(this);
 
-    ui->clearSeq->setIcon( style()->standardIcon(QStyle::SP_DockWidgetCloseButton) );
+    ui->clearSeq->setIcon(style()->standardIcon(QStyle::SP_DockWidgetCloseButton));
 
     connect(ui->filter, SIGNAL(textChanged(QString)), this, SLOT(filterBy(QString)));
-    connect(ui->actionTree, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-            this, SLOT(showItem(QTreeWidgetItem*,QTreeWidgetItem*)));
+    connect(ui->actionTree,
+            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
+            this,
+            SLOT(showItem(QTreeWidgetItem *, QTreeWidgetItem *)));
 
     // automation
     connect(ui->defaultOpt, SIGNAL(clicked()), ui->customSeq, SLOT(reset()));
@@ -59,18 +59,15 @@ ShortcutsPage::ShortcutsPage(QWidget *parent) :
     connect(ui->customSeq, SIGNAL(editingFinished()), this, SLOT(apply()));
 }
 
-ShortcutsPage::~ShortcutsPage()
-{
-    delete ui;
-}
+ShortcutsPage::~ShortcutsPage() { delete ui; }
 
-void ShortcutsPage::load( Manager *s )
+void ShortcutsPage::load(Manager *s)
 {
     ui->actionTree->clear();
 
     s->beginGroup("IDE/shortcuts");
 
-    const QList<QAction*> & actions = s->actions();
+    const QList<QAction *> &actions = s->actions();
     foreach (QAction *action, actions)
         addAction(action, s);
 
@@ -80,33 +77,31 @@ void ShortcutsPage::load( Manager *s )
     ui->actionTree->header()->resizeSections(QHeaderView::ResizeToContents);
 }
 
-void ShortcutsPage::store( Manager *s )
+void ShortcutsPage::store(Manager *s)
 {
     s->beginGroup("IDE/shortcuts");
 
     s->remove("");
 
     int c = ui->actionTree->topLevelItemCount();
-    for (int i = 0; i < c; ++i)
-    {
+    for (int i = 0; i < c; ++i) {
         QTreeWidgetItem *item = ui->actionTree->topLevelItem(i);
-        QAction *action = item->data(0, ActionRole).value<QAction*>();
+        QAction *action = item->data(0, ActionRole).value<QAction *>();
         Q_ASSERT(action);
 
         QVariant var = item->data(0, CustomSequenceRole);
         if (var.isValid()) {
-            s->setValue( s->keyForAction(action), var );
+            s->setValue(s->keyForAction(action), var);
+        } else {
+            var = s->defaultValue(s->keyForAction(action));
         }
-        else {
-            var = s->defaultValue( s->keyForAction(action) );
-        }
-        action->setShortcut( var.value<QKeySequence>() );
+        action->setShortcut(var.value<QKeySequence>());
     }
 
     s->endGroup();
 }
 
-void ShortcutsPage::addAction( QAction *a, Manager *s )
+void ShortcutsPage::addAction(QAction *a, Manager *s)
 {
     QString description = a->statusTip();
     if (description.isEmpty())
@@ -115,18 +110,18 @@ void ShortcutsPage::addAction( QAction *a, Manager *s )
     QTreeWidgetItem *item = new QTreeWidgetItem;
     item->setIcon(0, a->icon());
     item->setText(0, a->text().remove('&'));
-    item->setText(2, description );
+    item->setText(2, description);
 
     QString key = s->keyForAction(a);
 
-    item->setData(0, ActionRole, QVariant::fromValue<QAction*>(a));
+    item->setData(0, ActionRole, QVariant::fromValue<QAction *>(a));
 
     item->setData(0, DefaultSequenceRole, s->defaultValue(key));
 
     if (s->isOverridden(key)) {
         // For reason of performance, ensure the variant holds a QKeySequence
         QKeySequence seq = s->value(key).value<QKeySequence>();
-        item->setData(0, CustomSequenceRole, QVariant::fromValue<QKeySequence>(seq) );
+        item->setData(0, CustomSequenceRole, QVariant::fromValue<QKeySequence>(seq));
     }
 
     updateItem(item);
@@ -134,35 +129,30 @@ void ShortcutsPage::addAction( QAction *a, Manager *s )
     ui->actionTree->addTopLevelItem(item);
 }
 
-void ShortcutsPage::filterBy( const QString &str )
+void ShortcutsPage::filterBy(const QString &str)
 {
     int c = ui->actionTree->topLevelItemCount();
-    if (str.isEmpty())
-    {
+    if (str.isEmpty()) {
         for (int i = 0; i < c; ++i)
             ui->actionTree->topLevelItem(i)->setHidden(false);
-    }
-    else
-    {
-        for (int i = 0; i < c; ++i)
-        {
+    } else {
+        for (int i = 0; i < c; ++i) {
             QTreeWidgetItem *item = ui->actionTree->topLevelItem(i);
             bool visible =
-                item->text(0).contains(str, Qt::CaseInsensitive)
-                || item->text(2).contains(str, Qt::CaseInsensitive);
+                item->text(0).contains(str, Qt::CaseInsensitive) || item->text(2).contains(str, Qt::CaseInsensitive);
             item->setHidden(!visible);
         }
     }
 }
 
-void ShortcutsPage::showItem( QTreeWidgetItem *item, QTreeWidgetItem *prev )
+void ShortcutsPage::showItem(QTreeWidgetItem *item, QTreeWidgetItem *prev)
 {
     QVariant defaultSeqVar = item ? item->data(0, DefaultSequenceRole) : QVariant();
     QString defaultSeq = defaultSeqVar.value<QKeySequence>().toString(QKeySequence::NativeText);
     ui->defaultSeq->setText(defaultSeq);
 
     QVariant customSeqVar = item ? item->data(0, CustomSequenceRole) : QVariant();
-    ui->customSeq->setSequence( customSeqVar.value<QKeySequence>() );
+    ui->customSeq->setSequence(customSeqVar.value<QKeySequence>());
 
     if (customSeqVar.isValid())
         ui->customOpt->setChecked(true);
@@ -170,21 +160,17 @@ void ShortcutsPage::showItem( QTreeWidgetItem *item, QTreeWidgetItem *prev )
         ui->defaultOpt->setChecked(true);
 }
 
-void ShortcutsPage::apply()
-{
-    applyTo( ui->actionTree->currentItem() );
-}
+void ShortcutsPage::apply() { applyTo(ui->actionTree->currentItem()); }
 
-void ShortcutsPage::applyTo( QTreeWidgetItem *targetItem )
+void ShortcutsPage::applyTo(QTreeWidgetItem *targetItem)
 {
-    if (!targetItem) return;
+    if (!targetItem)
+        return;
 
     bool seqIsCustom = ui->customOpt->isChecked();
 
     QKeySequence currentSeq =
-            seqIsCustom
-            ? ui->customSeq->sequence()
-            : targetItem->data(0, DefaultSequenceRole).value<QKeySequence>();
+        seqIsCustom ? ui->customSeq->sequence() : targetItem->data(0, DefaultSequenceRole).value<QKeySequence>();
 
     // Check for duplicates
     if (!currentSeq.isEmpty()) {
@@ -212,33 +198,27 @@ void ShortcutsPage::applyTo( QTreeWidgetItem *targetItem )
 
     if (seqIsCustom) {
         targetItem->setData(0, CustomSequenceRole, QVariant::fromValue(currentSeq));
-    }
-    else {
+    } else {
         targetItem->setData(0, CustomSequenceRole, QVariant());
     }
 
     updateItem(targetItem);
 }
 
-bool ShortcutsPage::confirmOverride( const QKeySequence &duplicateSequence,
-                                     QTreeWidgetItem *duplicateItem )
+bool ShortcutsPage::confirmOverride(const QKeySequence &duplicateSequence, QTreeWidgetItem *duplicateItem)
 {
     QString warningString = tr("Shortcut '%1' has already been assigned to '%2'.\n\n"
                                "Would you like to override it?");
 
     warningString = warningString.arg(duplicateSequence.toString(), duplicateItem->text(0));
 
-    QMessageBox::StandardButton result =
-            QMessageBox::warning( this,
-                                  tr("Duplicate Shortcut"),
-                                  warningString,
-                                  QMessageBox::Ok | QMessageBox::Cancel,
-                                  QMessageBox::Cancel );
+    QMessageBox::StandardButton result = QMessageBox::warning(
+        this, tr("Duplicate Shortcut"), warningString, QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
 
     return result == QMessageBox::Ok;
 }
 
-void ShortcutsPage::updateItem( QTreeWidgetItem *item )
+void ShortcutsPage::updateItem(QTreeWidgetItem *item)
 {
     QVariant seqData = item->data(0, CustomSequenceRole);
     if (!seqData.isValid())
@@ -249,7 +229,7 @@ void ShortcutsPage::updateItem( QTreeWidgetItem *item )
     item->setText(1, seq.toString(QKeySequence::NativeText));
 }
 
-QKeySequence ShortcutsPage::activeItemSequence( QTreeWidgetItem * item )
+QKeySequence ShortcutsPage::activeItemSequence(QTreeWidgetItem *item)
 {
     QVariant seqVar = item->data(0, CustomSequenceRole);
     if (!seqVar.isValid())

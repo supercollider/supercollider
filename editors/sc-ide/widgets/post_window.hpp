@@ -26,12 +26,13 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 
 class PostDocklet;
 
-class PostWindow:
-    public QPlainTextEdit
+class PostWindow : public QPlainTextEdit
 {
     Q_OBJECT
 
@@ -49,15 +50,15 @@ public:
         ActionCount
     };
 
-    explicit PostWindow(QWidget* parent = 0);
+    explicit PostWindow(QWidget *parent = 0);
 
-    void applySettings( Settings::Manager * );
-    void storeSettings( Settings::Manager * );
+    void applySettings(Settings::Manager *);
+    void storeSettings(Settings::Manager *);
 
-    QAction * action ( ActionRole role ) const { return mActions[role]; }
+    QAction *action(ActionRole role) const { return mActions[role]; }
 
     QSize sizeHint() const { return mSizeHint; }
-    QSize minimumSizeHint() const { return QSize(50,50); }
+    QSize minimumSizeHint() const { return QSize(50, 50); }
     QString symbolUnderCursor();
 
 signals:
@@ -77,9 +78,9 @@ public slots:
     void findReferences();
 
 protected:
-    virtual bool event( QEvent * );
-    virtual void wheelEvent( QWheelEvent * );
-    virtual void focusOutEvent (QFocusEvent *e);
+    virtual bool event(QEvent *);
+    virtual void wheelEvent(QWheelEvent *);
+    virtual void focusOutEvent(QFocusEvent *e);
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
     virtual QMimeData *createMimeDataFromSelection() const;
 
@@ -89,12 +90,12 @@ private slots:
 
 private:
     friend class PostDocklet;
-    void createActions( Settings::Manager * );
-    void updateActionShortcuts( Settings::Manager * );
+    void createActions(Settings::Manager *);
+    void updateActionShortcuts(Settings::Manager *);
     void zoomFont(int steps);
     QTextCharFormat formatForPostLine(QStringRef line);
 
-    QAction * mActions[ActionCount];
+    QAction *mActions[ActionCount];
     /*
     QAction * mAutoScrollAction;
     QAction * mClearAction;
@@ -105,19 +106,18 @@ private:
 };
 
 
-class PostDocklet:
-    public Docklet
+class PostDocklet : public Docklet
 {
     Q_OBJECT
 
 public:
-    PostDocklet(QWidget* parent = 0);
+    PostDocklet(QWidget *parent = 0);
 
 private slots:
     void onFloatingChanged(bool floating);
 
 public:
-    PostWindow * mPostWindow;
+    PostWindow *mPostWindow;
 };
 
 } // namespace ScIDE

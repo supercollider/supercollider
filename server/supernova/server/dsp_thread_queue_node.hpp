@@ -35,12 +35,10 @@ class queue_node_data
     typedef std::uint_fast8_t thread_count_type;
 
 public:
-    explicit queue_node_data(abstract_synth * node):
-        node(static_cast<sc_synth*>(node))
-    {}
+    explicit queue_node_data(abstract_synth* node): node(static_cast<sc_synth*>(node)) {}
 
-    explicit queue_node_data(queue_node_data const & rhs)  = default;
-    explicit queue_node_data(queue_node_data && rhs)       = default;
+    explicit queue_node_data(queue_node_data const& rhs) = default;
+    explicit queue_node_data(queue_node_data&& rhs) = default;
 
     void operator()(thread_count_type index)
     {
@@ -51,13 +49,11 @@ public:
 
 private:
     intrusive_ptr<sc_synth> node;
-    template <typename Alloc>
-    friend class dsp_queue_node;
+    template <typename Alloc> friend class dsp_queue_node;
 };
 
 /* implements runnable concept */
-template <typename Alloc = std::allocator<queue_node_data> >
-class dsp_queue_node
+template <typename Alloc = std::allocator<queue_node_data>> class dsp_queue_node
 {
     typedef std::vector<queue_node_data, typename Alloc::template rebind<queue_node_data>::other> node_container;
 
@@ -65,14 +61,11 @@ class dsp_queue_node
     typedef std::uint_fast8_t thread_count_type;
 
 public:
-    explicit dsp_queue_node(queue_node_data && node):
-        first( std::move(node) )
-    {}
+    explicit dsp_queue_node(queue_node_data&& node): first(std::move(node)) {}
 
-    dsp_queue_node(queue_node_data && node, std::size_t container_size):
-        first( std::move(node) )
+    dsp_queue_node(queue_node_data&& node, std::size_t container_size): first(std::move(node))
     {
-        nodes.reserve(container_size-1);
+        nodes.reserve(container_size - 1);
     }
 
     HOT void operator()(thread_count_type thread_index)
@@ -81,9 +74,9 @@ public:
 
         int remaining = node_count;
         if (remaining == 0)
-            return; //fast-path
+            return; // fast-path
 
-        queue_node_data * __restrict__ data = nodes.data();
+        queue_node_data* __restrict__ data = nodes.data();
 
         if (remaining & 1) {
             (*data)(thread_index);
@@ -96,7 +89,7 @@ public:
 
         if (remaining & 2) {
             (*data)(thread_index);
-            (*(data+1))(thread_index);
+            (*(data + 1))(thread_index);
 
             if (remaining == 2)
                 return;
@@ -106,9 +99,9 @@ public:
 
         if (remaining & 4) {
             (*data)(thread_index);
-            (*(data+1))(thread_index);
-            (*(data+2))(thread_index);
-            (*(data+3))(thread_index);
+            (*(data + 1))(thread_index);
+            (*(data + 2))(thread_index);
+            (*(data + 3))(thread_index);
 
             if (remaining == 4)
                 return;
@@ -119,16 +112,15 @@ public:
         assert(remaining >= 8);
         assert((remaining % 8) == 0);
 
-        for(;;)
-        {
+        for (;;) {
             (*data)(thread_index);
-            (*(data+1))(thread_index);
-            (*(data+2))(thread_index);
-            (*(data+3))(thread_index);
-            (*(data+4))(thread_index);
-            (*(data+5))(thread_index);
-            (*(data+6))(thread_index);
-            (*(data+7))(thread_index);
+            (*(data + 1))(thread_index);
+            (*(data + 2))(thread_index);
+            (*(data + 3))(thread_index);
+            (*(data + 4))(thread_index);
+            (*(data + 5))(thread_index);
+            (*(data + 6))(thread_index);
+            (*(data + 7))(thread_index);
 
             if (remaining == 8)
                 return;
@@ -137,16 +129,13 @@ public:
         }
     }
 
-    void add_node(abstract_synth * node)
+    void add_node(abstract_synth* node)
     {
         nodes.emplace_back(std::move(queue_node_data(node)));
         ++node_count;
     }
 
-    node_count_type size(void) const
-    {
-        return node_count + 1;
-    }
+    node_count_type size(void) const { return node_count + 1; }
 
 private:
     queue_node_data first;

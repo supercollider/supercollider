@@ -39,27 +39,28 @@
 
 namespace ScIDE {
 
-ScCodeEditor::ScCodeEditor( Document *doc, QWidget *parent ) :
-    GenericCodeEditor( doc, parent ),
-    mSpaceIndent(true),
-    mBlinkDuration(600),
-    mMouseBracketMatch(false),
-    mAutoCompleter( new AutoCompleter(this) )
+ScCodeEditor::ScCodeEditor(Document *doc, QWidget *parent):
+  GenericCodeEditor(doc, parent),
+  mSpaceIndent(true),
+  mBlinkDuration(600),
+  mMouseBracketMatch(false),
+  mAutoCompleter(new AutoCompleter(this))
 {
     Q_ASSERT(mDoc != 0);
 
-    connect( this, SIGNAL(cursorPositionChanged()),
-             this, SLOT(matchBrackets()) );
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(matchBrackets()));
 
-    connect( Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
-             this, SLOT(applySettings(Settings::Manager*)) );
+    connect(Main::instance(),
+            SIGNAL(applySettingsRequest(Settings::Manager *)),
+            this,
+            SLOT(applySettings(Settings::Manager *)));
 
     mAutoCompleter->documentChanged(textDocument());
 
-    applySettings( Main::settings() );
+    applySettings(Main::settings());
 }
 
-void ScCodeEditor::applySettings( Settings::Manager *settings )
+void ScCodeEditor::applySettings(Settings::Manager *settings)
 {
     settings->beginGroup("IDE/editor");
 
@@ -77,12 +78,11 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
     matchBrackets();
 }
 
-bool ScCodeEditor::event( QEvent *e )
+bool ScCodeEditor::event(QEvent *e)
 {
     switch (e->type()) {
-    case QEvent::KeyPress:
-    {
-        QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+    case QEvent::KeyPress: {
+        QKeyEvent *ke = static_cast<QKeyEvent *>(e);
         switch (ke->key()) {
         case Qt::Key_Tab:
             if (!tabChangesFocus()) {
@@ -102,42 +102,40 @@ bool ScCodeEditor::event( QEvent *e )
     return GenericCodeEditor::event(e);
 }
 
-void ScCodeEditor::keyPressEvent( QKeyEvent *e )
+void ScCodeEditor::keyPressEvent(QKeyEvent *e)
 {
     hideMouseCursor(e);
     bool actionInSuper = false;
 
-    QTextCursor cursor( textCursor() );
+    QTextCursor cursor(textCursor());
     bool cursorMoved = true;
 
     if (e == QKeySequence::MoveToNextWord)
-        moveToNextToken( cursor, QTextCursor::MoveAnchor );
+        moveToNextToken(cursor, QTextCursor::MoveAnchor);
     else if (e == QKeySequence::MoveToPreviousWord)
-        moveToPreviousToken( cursor, QTextCursor::MoveAnchor );
+        moveToPreviousToken(cursor, QTextCursor::MoveAnchor);
     else if (e == QKeySequence::SelectNextWord)
-        moveToNextToken( cursor, QTextCursor::KeepAnchor );
+        moveToNextToken(cursor, QTextCursor::KeepAnchor);
     else if (e == QKeySequence::SelectPreviousWord)
-        moveToPreviousToken( cursor, QTextCursor::KeepAnchor );
+        moveToPreviousToken(cursor, QTextCursor::KeepAnchor);
     else
         cursorMoved = false;
 
     if (cursorMoved) {
-        setTextCursor( cursor );
+        setTextCursor(cursor);
         doKeyAction(e);
         return;
     }
 
     switch (e->key()) {
-    case Qt::Key_Home:
-    {
+    case Qt::Key_Home: {
         Qt::KeyboardModifiers mods(e->modifiers());
         if (mods && mods != Qt::ShiftModifier) {
             GenericCodeEditor::keyPressEvent(e);
             return;
         }
 
-        QTextCursor::MoveMode mode =
-            mods & Qt::ShiftModifier ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor;
+        QTextCursor::MoveMode mode = mods & Qt::ShiftModifier ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor;
 
         QTextCursor c(textCursor());
         QTextBlock b(c.block());
@@ -155,10 +153,9 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         return;
     }
 
-    case Qt::Key_Backtab:
-    {
+    case Qt::Key_Backtab: {
         QTextCursor cursor = textCursor();
-        insertSpaceToNextTabStop( cursor );
+        insertSpaceToNextTabStop(cursor);
         ensureCursorVisible();
         doKeyAction(e);
         return;
@@ -171,29 +168,27 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
         actionInSuper = true;
         break;
     case Qt::Key_Enter:
-    case Qt::Key_Return:
-    {
+    case Qt::Key_Return: {
         QTextBlock cursorBlock = cursor.block();
         int cursorPosInBlock = cursor.position() - cursorBlock.position();
-        
+
         TokenIterator prevToken = TokenIterator::leftOf(cursorBlock, cursorPosInBlock);
         TokenIterator nextToken = TokenIterator::rightOf(cursorBlock, cursorPosInBlock);
-        
-        if (   nextToken.block() == cursorBlock
-            && nextToken.type() == Token::ClosingBracket
-            && prevToken.type() != Token::ClosingBracket // no double-newline if cursor is between closing brackets, i.e. ])
-            && !(prevToken.block().firstLineNumber() < nextToken.block().firstLineNumber()) // no double-nl if only whitespace to the left
-        )
-        {
+
+        if (nextToken.block() == cursorBlock && nextToken.type() == Token::ClosingBracket
+            && prevToken.type()
+                != Token::ClosingBracket // no double-newline if cursor is between closing brackets, i.e. ])
+            && !(prevToken.block().firstLineNumber()
+                 < nextToken.block().firstLineNumber()) // no double-nl if only whitespace to the left
+        ) {
             cursor.beginEditBlock();
             cursor.insertBlock();
             cursor.insertBlock();
             cursor.endEditBlock();
-            cursor.movePosition( QTextCursor::PreviousBlock, QTextCursor::KeepAnchor );
+            cursor.movePosition(QTextCursor::PreviousBlock, QTextCursor::KeepAnchor);
             indent(cursor, JoinEditBlock);
-            cursor.movePosition( QTextCursor::EndOfBlock );
-        }
-        else {
+            cursor.movePosition(QTextCursor::EndOfBlock);
+        } else {
             cursor.beginEditBlock();
             cursor.insertBlock();
             cursor.endEditBlock();
@@ -211,26 +206,27 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     }
 
     mAutoCompleter->keyPress(e);
-    if(!actionInSuper) doKeyAction(e);
+    if (!actionInSuper)
+        doKeyAction(e);
 }
 
-void ScCodeEditor::mouseReleaseEvent ( QMouseEvent *e )
+void ScCodeEditor::mouseReleaseEvent(QMouseEvent *e)
 {
     // Prevent deselection of bracket match:
-    if(!mMouseBracketMatch)
+    if (!mMouseBracketMatch)
         GenericCodeEditor::mouseReleaseEvent(e);
 
     mMouseBracketMatch = false;
 }
 
-void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
+void ScCodeEditor::mouseDoubleClickEvent(QMouseEvent *e)
 {
     // Always pass to superclass so as to handle line selection on triple click
     GenericCodeEditor::mouseDoubleClickEvent(e);
 
     if (e->button() == Qt::LeftButton) {
         QTextCursor cursor = cursorForPosition(e->pos());
-        QTextCursor selection = selectionForPosition( cursor.position() );
+        QTextCursor selection = selectionForPosition(cursor.position());
 
         if (!selection.isNull()) {
             mMouseBracketMatch = true;
@@ -240,20 +236,20 @@ void ScCodeEditor::mouseDoubleClickEvent( QMouseEvent * e )
     }
 }
 
-void ScCodeEditor::mouseMoveEvent( QMouseEvent *e )
+void ScCodeEditor::mouseMoveEvent(QMouseEvent *e)
 {
     // Prevent initiating a text drag:
-    if(!mMouseBracketMatch)
+    if (!mMouseBracketMatch)
         GenericCodeEditor::mouseMoveEvent(e);
 }
 
-void ScCodeEditor::dragEnterEvent( QDragEnterEvent * event )
+void ScCodeEditor::dragEnterEvent(QDragEnterEvent *event)
 {
     // The purpose is only to bypass GenericCodeEditor::dragEnterEvent:
     QPlainTextEdit::dragEnterEvent(event);
 }
 
-bool ScCodeEditor::canInsertFromMimeData ( const QMimeData * data ) const
+bool ScCodeEditor::canInsertFromMimeData(const QMimeData *data) const
 {
     if (data->hasUrls())
         return true;
@@ -261,7 +257,7 @@ bool ScCodeEditor::canInsertFromMimeData ( const QMimeData * data ) const
     return QPlainTextEdit::canInsertFromMimeData(data);
 }
 
-void ScCodeEditor::insertFromMimeData ( const QMimeData * data )
+void ScCodeEditor::insertFromMimeData(const QMimeData *data)
 {
     if (data->hasUrls()) {
         QTextCursor cursor = textCursor();
@@ -271,10 +267,10 @@ void ScCodeEditor::insertFromMimeData ( const QMimeData * data )
             cursor.insertText("[");
             cursor.insertBlock();
         }
-        for (int i = 0; i < urls.size(); ++ i) {
+        for (int i = 0; i < urls.size(); ++i) {
             QUrl url = urls[i];
             cursor.insertText("\"");
-            if ( QURL_IS_LOCAL_FILE(url) )
+            if (QURL_IS_LOCAL_FILE(url))
                 cursor.insertText(url.toLocalFile());
             else
                 cursor.insertText(url.toString());
@@ -288,24 +284,23 @@ void ScCodeEditor::insertFromMimeData ( const QMimeData * data )
             cursor.insertBlock();
             cursor.insertText("]");
         }
-    }
-    else
+    } else
         QPlainTextEdit::insertFromMimeData(data);
 }
 
-void ScCodeEditor::moveToNextToken( QTextCursor & cursor, QTextCursor::MoveMode mode )
+void ScCodeEditor::moveToNextToken(QTextCursor &cursor, QTextCursor::MoveMode mode)
 {
     if (cursor.atBlockEnd()) {
-        cursor.movePosition( QTextCursor::NextCharacter, mode );
+        cursor.movePosition(QTextCursor::NextCharacter, mode);
         return;
     }
 
-    QTextBlock block( cursor.block() );
+    QTextBlock block(cursor.block());
     QString blockText = block.text();
     int positionInBlock = cursor.position() - block.position();
 
     // go to end of token or end of word
-    TokenIterator tokenIt( block, positionInBlock );
+    TokenIterator tokenIt(block, positionInBlock);
     if (tokenIt.isValid())
         positionInBlock = tokenIt->positionInBlock + tokenIt->length;
     else {
@@ -324,17 +319,17 @@ void ScCodeEditor::moveToNextToken( QTextCursor & cursor, QTextCursor::MoveMode 
     while (positionInBlock < blockText.size() && blockText[positionInBlock].isSpace())
         ++positionInBlock;
 
-    cursor.setPosition( positionInBlock + block.position(), mode );
+    cursor.setPosition(positionInBlock + block.position(), mode);
 }
 
-void ScCodeEditor::moveToPreviousToken( QTextCursor & cursor, QTextCursor::MoveMode mode )
+void ScCodeEditor::moveToPreviousToken(QTextCursor &cursor, QTextCursor::MoveMode mode)
 {
     if (cursor.atBlockStart()) {
-        cursor.movePosition( QTextCursor::PreviousCharacter, mode );
+        cursor.movePosition(QTextCursor::PreviousCharacter, mode);
         return;
     }
 
-    QTextBlock block( cursor.block() );
+    QTextBlock block(cursor.block());
     QString blockText = block.text();
     int positionInBlock = cursor.position() - block.position() - 1;
 
@@ -347,20 +342,20 @@ void ScCodeEditor::moveToPreviousToken( QTextCursor & cursor, QTextCursor::MoveM
         return;
 
     // go to beginning of token or beginning of word
-    TokenIterator tokenIt( block, positionInBlock );
+    TokenIterator tokenIt(block, positionInBlock);
     if (tokenIt.isValid()) {
-        cursor.setPosition( tokenIt.position(), mode );
+        cursor.setPosition(tokenIt.position(), mode);
     } else {
         int pos = positionInBlock;
         if (blockText[pos].isLetterOrNumber()) {
-            while (pos > 0 && blockText[pos-1].isLetterOrNumber())
+            while (pos > 0 && blockText[pos - 1].isLetterOrNumber())
                 --pos;
         }
-        cursor.setPosition( pos + block.position(), mode );
+        cursor.setPosition(pos + block.position(), mode);
     }
 }
 
-bool ScCodeEditor::insertMatchingTokens( const QString & text )
+bool ScCodeEditor::insertMatchingTokens(const QString &text)
 {
     if (text.isEmpty())
         return false;
@@ -378,23 +373,20 @@ bool ScCodeEditor::insertMatchingTokens( const QString & text )
     bool isOpeningToken, isClosingToken;
 
     int idx;
-    if ( (idx = openingTokens.indexOf(token)) != -1 ) {
+    if ((idx = openingTokens.indexOf(token)) != -1) {
         matchingToken = closingTokens[idx];
         isOpeningToken = true;
         isClosingToken = token == matchingToken;
-    }
-    else if ( (idx = closingTokens.indexOf(token)) != -1 ) {
+    } else if ((idx = closingTokens.indexOf(token)) != -1) {
         matchingToken = openingTokens[idx];
         isClosingToken = true;
         isOpeningToken = token == matchingToken;
-    }
-    else
+    } else
         return false;
 
     cursor.beginEditBlock();
 
-    if (mInsertMatchingTokens)
-    {
+    if (mInsertMatchingTokens) {
         if (cursor.hasSelection()) {
             if (isOpeningToken) {
                 int start = cursor.selectionStart();
@@ -403,24 +395,19 @@ bool ScCodeEditor::insertMatchingTokens( const QString & text )
                 cursor.insertText(token);
                 cursor.setPosition(end + 1);
                 cursor.insertText(matchingToken);
-            }
-            else
+            } else
                 cursor.insertText(token);
-        }
-        else {
+        } else {
             if (isClosingToken && document->characterAt(cursorPosition) == token) {
                 cursor.movePosition(QTextCursor::NextCharacter);
-            }
-            else if (isOpeningToken) {
+            } else if (isOpeningToken) {
                 cursor.insertText(token);
                 cursor.insertText(matchingToken);
                 cursor.movePosition(QTextCursor::PreviousCharacter);
-            }
-            else
+            } else
                 cursor.insertText(token);
         }
-    }
-    else
+    } else
         cursor.insertText(token);
 
     cursor.endEditBlock();
@@ -444,7 +431,7 @@ bool ScCodeEditor::removeMatchingTokens()
     if (cursorPosition == 0)
         return false;
 
-    QChar previousChar = document->characterAt(cursorPosition-1);
+    QChar previousChar = document->characterAt(cursorPosition - 1);
     QChar nextChar;
     if (previousChar == '{')
         nextChar = '}';
@@ -469,19 +456,19 @@ bool ScCodeEditor::removeMatchingTokens()
     return true;
 }
 
-QTextCursor ScCodeEditor::selectionForPosition( int position )
+QTextCursor ScCodeEditor::selectionForPosition(int position)
 {
-    QTextBlock block( textDocument()->findBlock(position) );
+    QTextBlock block(textDocument()->findBlock(position));
     if (!block.isValid())
         return QTextCursor();
 
     int positionInBlock = position - block.position();
 
-    TokenIterator it = TokenIterator( block, positionInBlock );
+    TokenIterator it = TokenIterator(block, positionInBlock);
     if (it.type() == Token::Unknown) {
         // Token is invalid, or Token::Unknown (i.e. punctuations).
         // Prefer token at previous position.
-        TokenIterator alternativeIt = TokenIterator( block, positionInBlock - 1 );
+        TokenIterator alternativeIt = TokenIterator(block, positionInBlock - 1);
         if (alternativeIt.isValid())
             it = alternativeIt;
     }
@@ -489,8 +476,7 @@ QTextCursor ScCodeEditor::selectionForPosition( int position )
     if (it.isValid()) {
         switch (it->type) {
         case Token::OpeningBracket:
-        case Token::ClosingBracket:
-        {
+        case Token::ClosingBracket: {
             BracketPair match;
             matchBracket(it, match);
             if (match.first.isValid() && match.second.isValid()) {
@@ -510,9 +496,9 @@ QTextCursor ScCodeEditor::selectionForPosition( int position )
         }
 
         default:
-            QTextCursor selection( textDocument() );
-            selection.setPosition( it.position() );
-            selection.setPosition( selection.position() + it->length, QTextCursor::KeepAnchor );
+            QTextCursor selection(textDocument());
+            selection.setPosition(it.position());
+            selection.setPosition(selection.position() + it->length, QTextCursor::KeepAnchor);
             return selection;
         }
     }
@@ -525,19 +511,16 @@ void ScCodeEditor::matchBrackets()
     mBracketSelections.clear();
 
     QTextCursor cursor(textCursor());
-    QTextBlock block( cursor.block() );
+    QTextBlock block(cursor.block());
     int posInBlock = cursor.positionInBlock();
     TokenIterator it(block);
-    while (it.isValid() && it.block() == block)
-    {
-        const Token & token = *it;
+    while (it.isValid() && it.block() == block) {
+        const Token &token = *it;
         if (token.positionInBlock > posInBlock) {
             it = TokenIterator();
             break;
-        } else if (
-            (token.positionInBlock == posInBlock && token.type == Token::OpeningBracket) ||
-            (token.positionInBlock == posInBlock - 1 && token.type == Token::ClosingBracket)
-        )
+        } else if ((token.positionInBlock == posInBlock && token.type == Token::OpeningBracket)
+                   || (token.positionInBlock == posInBlock - 1 && token.type == Token::ClosingBracket))
             break;
         ++it;
     }
@@ -548,18 +531,14 @@ void ScCodeEditor::matchBrackets()
     }
 
     BracketPair match;
-    matchBracket( it, match );
+    matchBracket(it, match);
 
-    if( match.first.isValid() && match.second.isValid() )
-    {
-        const Token & tok1 = *match.first;
-        const Token & tok2 = *match.second;
+    if (match.first.isValid() && match.second.isValid()) {
+        const Token &tok1 = *match.first;
+        const Token &tok2 = *match.second;
 
-        if (
-            (tok1.character == '(' && tok2.character == ')')
-            || (tok1.character == '[' && tok2.character == ']')
-            || (tok1.character == '{' && tok2.character == '}')
-        ){
+        if ((tok1.character == '(' && tok2.character == ')') || (tok1.character == '[' && tok2.character == ']')
+            || (tok1.character == '{' && tok2.character == '}')) {
             QTextEdit::ExtraSelection selection;
             selection.format = mBracketHighlight;
             cursor.setPosition(match.first.position());
@@ -574,30 +553,26 @@ void ScCodeEditor::matchBrackets()
 
             if (mHighlightBracketContents) {
                 QTextCharFormat format;
-                format.setBackground( mBracketHighlight.background() );
+                format.setBackground(mBracketHighlight.background());
                 selection.format = format;
-                cursor.setPosition(match.first.position()+1);
+                cursor.setPosition(match.first.position() + 1);
                 cursor.setPosition(match.second.position(), QTextCursor::KeepAnchor);
                 selection.cursor = cursor;
                 mBracketSelections.append(selection);
             }
-        }
-        else {
+        } else {
             QTextEdit::ExtraSelection selection;
             selection.format = mBracketMismatchFormat;
             cursor.setPosition(match.first.position());
-            cursor.setPosition(match.second.position()+1, QTextCursor::KeepAnchor);
+            cursor.setPosition(match.second.position() + 1, QTextCursor::KeepAnchor);
             selection.cursor = cursor;
             mBracketSelections.append(selection);
         }
-    }
-    else
-    {
-        if ( it.type() == Token::OpeningBracket ) {
+    } else {
+        if (it.type() == Token::OpeningBracket) {
             cursor.setPosition(it.position());
             cursor.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-        }
-        else {
+        } else {
             cursor.setPosition(it.position() + 1);
             cursor.movePosition(QTextCursor::Start, QTextCursor::KeepAnchor);
         }
@@ -610,7 +585,7 @@ void ScCodeEditor::matchBrackets()
     updateExtraSelections();
 }
 
-int ScCodeEditor::indentedStartOfLine( const QTextBlock &b )
+int ScCodeEditor::indentedStartOfLine(const QTextBlock &b)
 {
     QString t(b.text());
     int n = t.size();
@@ -633,17 +608,11 @@ void ScCodeEditor::updateExtraSelections()
     setExtraSelections(selections);
 }
 
-void ScCodeEditor::indentCurrentRegion()
-{
-    indent(currentRegion());
-}
+void ScCodeEditor::indentCurrentRegion() { indent(currentRegion()); }
 
-void ScCodeEditor::indent( EditBlockMode editBlockMode )
-{
-    indent(textCursor(), editBlockMode);
-}
+void ScCodeEditor::indent(EditBlockMode editBlockMode) { indent(textCursor(), editBlockMode); }
 
-void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBlockMode )
+void ScCodeEditor::indent(const QTextCursor &selection, EditBlockMode editBlockMode)
 {
     if (selection.isNull())
         return;
@@ -657,29 +626,24 @@ void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBloc
 
     QTextDocument *doc = QPlainTextEdit::document();
     int startBlockNum = doc->findBlock(cursor.selectionStart()).blockNumber();
-    int endBlockNum = cursor.hasSelection() ?
-        doc->findBlock(cursor.selectionEnd()).blockNumber() : startBlockNum;
+    int endBlockNum = cursor.hasSelection() ? doc->findBlock(cursor.selectionEnd()).blockNumber() : startBlockNum;
 
     QStack<int> stack;
     int global_level = 0;
     int blockNum = 0;
     bool in_string = false;
     QTextBlock block = QPlainTextEdit::document()->begin();
-    while (block.isValid())
-    {
+    while (block.isValid()) {
         int initialStackSize = stack.size();
         int level = 0;
         bool block_start_in_string = in_string;
 
-        TextBlockData *data = static_cast<TextBlockData*>(block.userData());
-        if (data)
-        {
+        TextBlockData *data = static_cast<TextBlockData *>(block.userData());
+        if (data) {
             int count = data->tokens.size();
-            for (int idx = 0; idx < count; ++idx)
-            {
-                const Token & token = data->tokens[idx];
-                switch (token.type)
-                {
+            for (int idx = 0; idx < count; ++idx) {
+                const Token &token = data->tokens[idx];
+                switch (token.type) {
                 case Token::OpeningBracket:
                     if (token.character != '(' || stack.size() || token.positionInBlock)
                         ++level;
@@ -705,7 +669,7 @@ void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBloc
             }
         }
 
-        if(blockNum >= startBlockNum) {
+        if (blockNum >= startBlockNum) {
             int indentLevel;
             if (data && data->tokens.size() && data->tokens[0].type == Token::ClosingBracket)
                 indentLevel = stack.size();
@@ -716,7 +680,7 @@ void ScCodeEditor::indent( const QTextCursor & selection, EditBlockMode editBloc
             block = indent(block, indentLevel);
         }
 
-        if(blockNum == endBlockNum)
+        if (blockNum == endBlockNum)
             break;
 
         block = block.next();
@@ -736,18 +700,18 @@ QString ScCodeEditor::makeIndentationString(int level)
     if (level <= 0)
         return QString();
 
-    if ( mSpaceIndent ) {
+    if (mSpaceIndent) {
         const int spaces = mDoc->indentWidth() * level;
-        QString indentationString (spaces, QChar(' '));
+        QString indentationString(spaces, QChar(' '));
         return indentationString;
     } else {
         const int tabs = level;
-        QString indentationString (tabs, QChar('\t'));
+        QString indentationString(tabs, QChar('\t'));
         return indentationString;
     }
 }
 
-QTextBlock ScCodeEditor::indent( const QTextBlock & block, int level )
+QTextBlock ScCodeEditor::indent(const QTextBlock &block, int level)
 {
     QTextCursor cursor(block);
     cursor.movePosition(QTextCursor::StartOfBlock);
@@ -759,7 +723,7 @@ QTextBlock ScCodeEditor::indent( const QTextBlock & block, int level )
     return cursor.block();
 }
 
-int ScCodeEditor::indentationLevel(const QTextCursor & cursor)
+int ScCodeEditor::indentationLevel(const QTextCursor &cursor)
 {
     QTextDocument *doc = QPlainTextEdit::document();
     int startBlockNum = doc->findBlock(cursor.selectionStart()).blockNumber();
@@ -774,11 +738,11 @@ int ScCodeEditor::indentationLevel(const QTextCursor & cursor)
             level = 0;
         }
 
-        TextBlockData *data = static_cast<TextBlockData*>(block.userData());
+        TextBlockData *data = static_cast<TextBlockData *>(block.userData());
         if (data) {
             int count = data->tokens.size();
             for (int idx = 0; idx < count; ++idx) {
-                const Token & token = data->tokens[idx];
+                const Token &token = data->tokens[idx];
                 switch (token.type) {
                 case Token::OpeningBracket:
                     if (token.character != '(' || stack.size() || token.positionInBlock)
@@ -788,15 +752,14 @@ int ScCodeEditor::indentationLevel(const QTextCursor & cursor)
                 case Token::ClosingBracket:
                     if (level)
                         level -= 1;
-                    else if(!stack.isEmpty()) {
+                    else if (!stack.isEmpty()) {
                         stack.top() -= 1;
                         if (stack.top() <= 0)
                             stack.pop();
                     }
                     break;
 
-                default:
-                    ;
+                default:;
                 }
             }
         }
@@ -811,36 +774,31 @@ int ScCodeEditor::indentationLevel(const QTextCursor & cursor)
     return -1;
 }
 
-void ScCodeEditor::insertSpaceToNextTabStop( QTextCursor &cursor )
+void ScCodeEditor::insertSpaceToNextTabStop(QTextCursor &cursor)
 {
-    if ( mSpaceIndent ) {
+    if (mSpaceIndent) {
         const int indentWidth = mDoc->indentWidth();
-        if (indentWidth < 1) return;
+        if (indentWidth < 1)
+            return;
         const int spaces = indentWidth - (cursor.positionInBlock() % indentWidth);
-        QString spaceString (spaces, QChar(' '));
-        cursor.insertText( spaceString );
+        QString spaceString(spaces, QChar(' '));
+        cursor.insertText(spaceString);
     } else {
         cursor.insertText("\t");
     }
 }
 
-void ScCodeEditor::triggerAutoCompletion()
-{
-    mAutoCompleter->triggerCompletion();
-}
+void ScCodeEditor::triggerAutoCompletion() { mAutoCompleter->triggerCompletion(); }
 
-void ScCodeEditor::triggerMethodCallAid()
-{
-    mAutoCompleter->triggerMethodCallAid();
-}
+void ScCodeEditor::triggerMethodCallAid() { mAutoCompleter->triggerMethodCallAid(); }
 
-static bool isSingleLineComment(QTextBlock const & block)
+static bool isSingleLineComment(QTextBlock const &block)
 {
     static QRegExp commentRegex("^\\s*//.*");
     return commentRegex.exactMatch(block.text());
 }
 
-static bool isSingleLineComment(QTextCursor const & selection)
+static bool isSingleLineComment(QTextCursor const &selection)
 {
     QTextCursor cursor(selection);
     cursor.setPosition(selection.selectionStart());
@@ -857,10 +815,10 @@ static bool isSingleLineComment(QTextCursor const & selection)
     return true;
 }
 
-static bool isSelectionComment(QString const & text)
+static bool isSelectionComment(QString const &text)
 {
     QString trimmed = text.trimmed();
-    if ( trimmed.startsWith(QStringLiteral("/*")) && trimmed.endsWith(QStringLiteral("*/")) )
+    if (trimmed.startsWith(QStringLiteral("/*")) && trimmed.endsWith(QStringLiteral("*/")))
         return true;
     else
         return false;
@@ -881,7 +839,7 @@ void ScCodeEditor::toggleCommentSingleLine()
     QTextCursor cursor = textCursor();
     cursor.beginEditBlock();
 
-    toggleCommentSingleLine( cursor );
+    toggleCommentSingleLine(cursor);
 
     cursor.endEditBlock();
 }
@@ -895,7 +853,7 @@ void ScCodeEditor::addSingleLineComment(QTextCursor cursor, int indentation)
     cursor.setPosition(cursor.position() + indentedStartOfLine(currentBlock), QTextCursor::KeepAnchor);
 
     QString commentString = makeIndentationString(indentation) + QStringLiteral("// ")
-                            + makeIndentationString(blockIndentationLevel - indentation);
+        + makeIndentationString(blockIndentationLevel - indentation);
 
     cursor.insertText(commentString);
 
@@ -963,8 +921,7 @@ void ScCodeEditor::toggleCommentSelection()
         selectionCursor.setPosition(cursor.selectionStart());
 
         QTextBlock currentBlock = selectionCursor.block();
-        int firstBlockIndentation = isComment ? 0
-                                              : indentationLevel(selectionCursor);
+        int firstBlockIndentation = isComment ? 0 : indentationLevel(selectionCursor);
 
         do {
             QTextCursor blockCursor(currentBlock);
@@ -1003,7 +960,7 @@ void ScCodeEditor::toggleCommentSelection()
 
         // fix up selection
         const int position = selectionCursor.position();
-        const int anchor   = selectionCursor.anchor();
+        const int anchor = selectionCursor.anchor();
         if (position > anchor) {
             cursor.setPosition(position - selectionText.size());
             cursor.setPosition(position, QTextCursor::KeepAnchor);
@@ -1063,11 +1020,11 @@ TokenIterator ScCodeEditor::nextClosingBracket(TokenIterator it)
     return it;
 }
 
-void ScCodeEditor::matchBracket( const TokenIterator & bracket, BracketPair & match )
+void ScCodeEditor::matchBracket(const TokenIterator &bracket, BracketPair &match)
 {
     Q_ASSERT(bracket.isValid());
 
-    switch(bracket->type) {
+    switch (bracket->type) {
     case Token::OpeningBracket:
         match.first = bracket;
         match.second = nextClosingBracket(bracket.next());
@@ -1082,12 +1039,12 @@ void ScCodeEditor::matchBracket( const TokenIterator & bracket, BracketPair & ma
     }
 }
 
-void ScCodeEditor::nextBracketPair( const TokenIterator & startIt, BracketPair & bracketPair )
+void ScCodeEditor::nextBracketPair(const TokenIterator &startIt, BracketPair &bracketPair)
 {
-    TokenIterator it( startIt );
+    TokenIterator it(startIt);
     while (it.isValid()) {
         if (it->type == Token::OpeningBracket) {
-            matchBracket( it, bracketPair );
+            matchBracket(it, bracketPair);
             return;
         }
         ++it;
@@ -1099,19 +1056,18 @@ void ScCodeEditor::gotoNextBlock()
 {
     QTextCursor cursor = textCursor();
 
-    TokenIterator tokenIt = TokenIterator::rightOf( cursor.block(), cursor.positionInBlock() );
-    if (tokenIt.type() == Token::OpeningBracket
-            && tokenIt.block() == cursor.block()
-            && tokenIt->positionInBlock == cursor.positionInBlock())
+    TokenIterator tokenIt = TokenIterator::rightOf(cursor.block(), cursor.positionInBlock());
+    if (tokenIt.type() == Token::OpeningBracket && tokenIt.block() == cursor.block()
+        && tokenIt->positionInBlock == cursor.positionInBlock())
         ++tokenIt;
 
-    tokenIt = nextClosingBracket( tokenIt );
+    tokenIt = nextClosingBracket(tokenIt);
 
     if (tokenIt.isValid())
-        setTextCursor( cursorAt(tokenIt, 1) );
+        setTextCursor(cursorAt(tokenIt, 1));
     else {
-        cursor.movePosition( QTextCursor::End );
-        setTextCursor( cursor );
+        cursor.movePosition(QTextCursor::End);
+        setTextCursor(cursor);
     }
 }
 
@@ -1120,38 +1076,34 @@ void ScCodeEditor::gotoPreviousBlock()
     QTextCursor cursor = textCursor();
 
     TokenIterator tokenIt = TokenIterator::leftOf(cursor.block(), cursor.positionInBlock());
-    if (tokenIt.type() == Token::ClosingBracket
-            && tokenIt.block() == cursor.block()
-            && tokenIt->positionInBlock == cursor.positionInBlock() - 1)
+    if (tokenIt.type() == Token::ClosingBracket && tokenIt.block() == cursor.block()
+        && tokenIt->positionInBlock == cursor.positionInBlock() - 1)
         --tokenIt;
 
 
-    tokenIt = previousOpeningBracket( tokenIt );
+    tokenIt = previousOpeningBracket(tokenIt);
 
     if (tokenIt.isValid())
-        setTextCursor( cursorAt(tokenIt) );
+        setTextCursor(cursorAt(tokenIt));
     else {
-        cursor.movePosition( QTextCursor::Start );
-        setTextCursor( cursor );
+        cursor.movePosition(QTextCursor::Start);
+        setTextCursor(cursor);
     }
 }
 
-QTextCursor ScCodeEditor::blockAroundCursor( const QTextCursor & cursor )
+QTextCursor ScCodeEditor::blockAroundCursor(const QTextCursor &cursor)
 {
     TokenIterator left_bracket =
-            previousOpeningBracket(
-                TokenIterator::leftOf(cursor.block(), cursor.positionInBlock()) );
+        previousOpeningBracket(TokenIterator::leftOf(cursor.block(), cursor.positionInBlock()));
     if (!left_bracket.isValid())
         return QTextCursor();
-    TokenIterator right_bracket =
-            nextClosingBracket(
-                TokenIterator::rightOf(cursor.block(), cursor.positionInBlock()) );
+    TokenIterator right_bracket = nextClosingBracket(TokenIterator::rightOf(cursor.block(), cursor.positionInBlock()));
     if (!right_bracket.isValid())
         return QTextCursor();
 
     QTextCursor block_cursor = cursor;
-    block_cursor.setPosition( left_bracket.position() );
-    block_cursor.setPosition( right_bracket.position() + 1, QTextCursor::KeepAnchor );
+    block_cursor.setPosition(left_bracket.position());
+    block_cursor.setPosition(right_bracket.position() + 1, QTextCursor::KeepAnchor);
     return block_cursor;
 }
 
@@ -1162,24 +1114,22 @@ void ScCodeEditor::selectBlockAroundCursor()
         setTextCursor(block_cursor);
 }
 
-inline static bool tokenMaybeRegionStart( const TokenIterator & it )
+inline static bool tokenMaybeRegionStart(const TokenIterator &it)
 {
     Q_ASSERT(it.isValid());
-    return ( it->character == '(' && it->positionInBlock == 0 );
+    return (it->character == '(' && it->positionInBlock == 0);
 }
 
-inline static bool tokenMaybeRegionEnd( const TokenIterator & it )
+inline static bool tokenMaybeRegionEnd(const TokenIterator &it)
 {
     Q_ASSERT(it.isValid());
     if (it->character != ')')
         return false;
     TokenIterator next_it = it.next();
-    return (!next_it.isValid() ||
-            next_it.block() != it.block() ||
-            next_it->character == ';');
+    return (!next_it.isValid() || next_it.block() != it.block() || next_it->character == ';');
 }
 
-static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
+static bool bracketPairDefinesRegion(const BracketPair &bracketPair)
 {
     Q_ASSERT(bracketPair.first.isValid());
     Q_ASSERT(bracketPair.second.isValid());
@@ -1190,19 +1140,17 @@ static bool bracketPairDefinesRegion( const BracketPair & bracketPair )
     return true;
 }
 
-QTextCursor ScCodeEditor::regionAroundCursor(const QTextCursor & cursor)
+QTextCursor ScCodeEditor::regionAroundCursor(const QTextCursor &cursor)
 {
     int cursorPosition = cursor.position();
 
     BracketPair bracketPair;
-    TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
+    TokenIterator it = TokenIterator::rightOf(textDocument()->begin(), 0);
     while (it.isValid()) {
         nextBracketPair(it, bracketPair);
-        if (bracketPair.first.isValid() && bracketPair.first.position() < cursorPosition)
-        {
-            if ( bracketPair.second.isValid() && bracketPair.second.position() >= cursorPosition
-                 && bracketPairDefinesRegion(bracketPair) )
-            {
+        if (bracketPair.first.isValid() && bracketPair.first.position() < cursorPosition) {
+            if (bracketPair.second.isValid() && bracketPair.second.position() >= cursorPosition
+                && bracketPairDefinesRegion(bracketPair)) {
                 QTextCursor regionCursor(QPlainTextEdit::document());
                 regionCursor.setPosition(bracketPair.first.position());
                 regionCursor.setPosition(bracketPair.second.position() + 1, QTextCursor::KeepAnchor);
@@ -1225,11 +1173,11 @@ QTextCursor ScCodeEditor::currentRegion()
     int positionInBlock = cursor.positionInBlock();
 
     if (TokenIterator(block, positionInBlock - 1).type() == Token::ClosingBracket)
-        cursor.movePosition( QTextCursor::PreviousCharacter );
+        cursor.movePosition(QTextCursor::PreviousCharacter);
     else if (TokenIterator(block, positionInBlock).type() == Token::OpeningBracket)
-        cursor.movePosition( QTextCursor::NextCharacter );
+        cursor.movePosition(QTextCursor::NextCharacter);
 
-    return regionAroundCursor( cursor );
+    return regionAroundCursor(cursor);
 }
 
 void ScCodeEditor::selectCurrentRegion()
@@ -1245,14 +1193,12 @@ void ScCodeEditor::gotoNextRegion()
     int cursorPosition = cursor.position();
 
     BracketPair bracketPair;
-    TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
+    TokenIterator it = TokenIterator::rightOf(textDocument()->begin(), 0);
     while (it.isValid()) {
         nextBracketPair(it, bracketPair);
-        if ( bracketPair.first.isValid() && bracketPair.second.isValid()
-             && bracketPair.first.position() > cursorPosition
-             && bracketPairDefinesRegion(bracketPair))
-        {
-            setTextCursor( cursorAt(bracketPair.first) );
+        if (bracketPair.first.isValid() && bracketPair.second.isValid() && bracketPair.first.position() > cursorPosition
+            && bracketPairDefinesRegion(bracketPair)) {
+            setTextCursor(cursorAt(bracketPair.first));
             return;
         }
         it = bracketPair.second;
@@ -1269,12 +1215,10 @@ void ScCodeEditor::gotoPreviousRegion()
 
     BracketPair prevBracketPair;
     BracketPair bracketPair;
-    TokenIterator it = TokenIterator::rightOf( textDocument()->begin(), 0 );
-    while(it.isValid()) {
+    TokenIterator it = TokenIterator::rightOf(textDocument()->begin(), 0);
+    while (it.isValid()) {
         nextBracketPair(it, bracketPair);
-        if ( !bracketPair.second.isValid()
-             || bracketPair.second.position() >= cursorPosition - 1 )
-        {
+        if (!bracketPair.second.isValid() || bracketPair.second.position() >= cursorPosition - 1) {
             break;
         }
         if (bracketPairDefinesRegion(bracketPair)) {
@@ -1283,9 +1227,8 @@ void ScCodeEditor::gotoPreviousRegion()
         it = bracketPair.second;
     }
 
-    if ( prevBracketPair.first.isValid() && prevBracketPair.second.isValid() )
-    {
-        setTextCursor( cursorAt(prevBracketPair.second, 1) );
+    if (prevBracketPair.first.isValid() && prevBracketPair.second.isValid()) {
+        setTextCursor(cursorAt(prevBracketPair.second, 1));
         return;
     }
 
@@ -1293,31 +1236,19 @@ void ScCodeEditor::gotoPreviousRegion()
     setTextCursor(cursor);
 }
 
-bool ScCodeEditor::openDocumentation()
-{
-    return Main::openDocumentation(symbolUnderCursor());
-}
+bool ScCodeEditor::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }
 
-void ScCodeEditor::openDefinition()
-{
-    Main::openDefinition(symbolUnderCursor(), this);
-}
+void ScCodeEditor::openDefinition() { Main::openDefinition(symbolUnderCursor(), this); }
 
-void ScCodeEditor::openCommandLine()
-{
-    Main::openCommandLine(symbolUnderCursor());
-}
+void ScCodeEditor::openCommandLine() { Main::openCommandLine(symbolUnderCursor()); }
 
-void ScCodeEditor::findReferences()
-{
-    Main::findReferences(symbolUnderCursor(), this);
-}
+void ScCodeEditor::findReferences() { Main::findReferences(symbolUnderCursor(), this); }
 
 void ScCodeEditor::evaluateLine()
 {
     QString text;
 
-    HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
+    HelpBrowserDocklet *help = MainWindow::instance()->helpBrowserDocklet();
     if (help && help->browser()->helpBrowserHasFocus()) {
         help->browser()->evaluateSelection(false);
         return; // early return
@@ -1330,10 +1261,10 @@ void ScCodeEditor::evaluateLine()
     else {
         text = cursor.block().text();
 
-        if( mStepForwardEvaluation ) {
+        if (mStepForwardEvaluation) {
             QTextCursor newCursor = cursor;
             newCursor.movePosition(QTextCursor::NextBlock);
-            newCursor.setVerticalMovementX( cursor.verticalMovementX() );
+            newCursor.setVerticalMovementX(cursor.verticalMovementX());
             setTextCursor(newCursor);
         }
 
@@ -1345,18 +1276,18 @@ void ScCodeEditor::evaluateLine()
     if (text.isEmpty())
         return;
 
-    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+    text.replace(QChar(0x2029), QChar('\n'));
 
     Main::evaluateCode(text);
 
-    blinkCode( cursor );
+    blinkCode(cursor);
 }
 
 void ScCodeEditor::evaluateRegion()
 {
     QString text;
 
-    HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
+    HelpBrowserDocklet *help = MainWindow::instance()->helpBrowserDocklet();
     if (help && help->browser()->helpBrowserHasFocus()) {
         help->browser()->evaluateSelection(true);
         return; // early return
@@ -1375,10 +1306,10 @@ void ScCodeEditor::evaluateRegion()
             // If no current region, try current line
             cursor = textCursor();
             text = cursor.block().text();
-            if( mStepForwardEvaluation ) {
+            if (mStepForwardEvaluation) {
                 QTextCursor newCursor = cursor;
                 newCursor.movePosition(QTextCursor::NextBlock);
-                newCursor.setVerticalMovementX( cursor.verticalMovementX() );
+                newCursor.setVerticalMovementX(cursor.verticalMovementX());
                 setTextCursor(newCursor);
             }
             // Adjust cursor for code blinking:
@@ -1390,11 +1321,11 @@ void ScCodeEditor::evaluateRegion()
     if (text.isEmpty())
         return;
 
-    text.replace( QChar( 0x2029 ), QChar( '\n' ) );
+    text.replace(QChar(0x2029), QChar('\n'));
 
     Main::evaluateCode(text);
 
-    blinkCode( cursor );
+    blinkCode(cursor);
 }
 
 void ScCodeEditor::evaluateDocument()

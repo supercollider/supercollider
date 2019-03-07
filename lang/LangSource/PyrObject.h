@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,113 +31,111 @@ PyrObject represents the structure of all SC Objects.
 
 /* special gc colors */
 enum {
-	obj_permanent		= 1,		// sent to gc->New as a flag
-	obj_gcmarker		= 2		// gc treadmill marker
+    obj_permanent = 1, // sent to gc->New as a flag
+    obj_gcmarker = 2 // gc treadmill marker
 };
 
 /* obj flag fields */
-enum {
-	obj_inaccessible	= 4,
-	obj_immutable		= 16,
-	obj_marked			= 128
-};
+enum { obj_inaccessible = 4, obj_immutable = 16, obj_marked = 128 };
 
 /* format types : */
 enum {
-	obj_notindexed,
-	obj_slot,
-	obj_double,
-	obj_float,
-	obj_int32,
-	obj_int16,
-	obj_int8,
-	obj_char,
-	obj_symbol,
+    obj_notindexed,
+    obj_slot,
+    obj_double,
+    obj_float,
+    obj_int32,
+    obj_int16,
+    obj_int8,
+    obj_char,
+    obj_symbol,
 
-	NUMOBJFORMATS
+    NUMOBJFORMATS
 };
 
 
 /*
-	PyrObjectHdr : object header fields
-	prev, next : pointers in the GC treadmill
-	classptr : pointer to the object's class
-	size : number of slots or indexable elements.
+    PyrObjectHdr : object header fields
+    prev, next : pointers in the GC treadmill
+    classptr : pointer to the object's class
+    size : number of slots or indexable elements.
 
-	obj_format : what kind of data this object holds
-	obj_sizeclass : power of two size class of the object
-	obj_flags :
-		immutable : set if object may not be updated.
-		finalize : set if object requires finalization.
-		marked : used by garbage collector debug sanity check. may be used by primitives but must be cleared before exiting primitive.
-	gc_color : GC color : black, grey, white, free, permanent
-	scratch1 : undefined value. may be used within primitives as a temporary scratch value.
+    obj_format : what kind of data this object holds
+    obj_sizeclass : power of two size class of the object
+    obj_flags :
+        immutable : set if object may not be updated.
+        finalize : set if object requires finalization.
+        marked : used by garbage collector debug sanity check. may be used by primitives but must be cleared before
+   exiting primitive. gc_color : GC color : black, grey, white, free, permanent scratch1 : undefined value. may be used
+   within primitives as a temporary scratch value.
 */
 
-struct PyrObjectHdr {
-	struct PyrObjectHdr *prev, *next;
-	struct PyrClass *classptr;
-	int size;
+struct PyrObjectHdr
+{
+    struct PyrObjectHdr *prev, *next;
+    struct PyrClass *classptr;
+    int size;
 
-	unsigned char obj_format;
-	unsigned char obj_sizeclass;
-	unsigned char obj_flags;
-	unsigned char gc_color;
+    unsigned char obj_format;
+    unsigned char obj_sizeclass;
+    unsigned char obj_flags;
+    unsigned char gc_color;
 
-	int scratch1;
+    int scratch1;
 
-	int SizeClass()          { return obj_sizeclass; }
+    int SizeClass() { return obj_sizeclass; }
 
-	void SetMark()           { obj_flags |= obj_marked; }
-	void ClearMark()         { obj_flags &= ~obj_marked; }
-	bool IsMarked() const    { return obj_flags & obj_marked; }
-	bool IsPermanent() const { return gc_color == obj_permanent; }
-	bool IsImmutable() const { return obj_flags & obj_immutable; }
-	bool IsMutable() const   { return !IsImmutable(); }
+    void SetMark() { obj_flags |= obj_marked; }
+    void ClearMark() { obj_flags &= ~obj_marked; }
+    bool IsMarked() const { return obj_flags & obj_marked; }
+    bool IsPermanent() const { return gc_color == obj_permanent; }
+    bool IsImmutable() const { return obj_flags & obj_immutable; }
+    bool IsMutable() const { return !IsImmutable(); }
 };
 
-struct PyrObject : public PyrObjectHdr {
-	PyrSlot slots[1];
+struct PyrObject : public PyrObjectHdr
+{
+    PyrSlot slots[1];
 };
 
 struct PyrList : public PyrObjectHdr
 {
-	PyrSlot array;
+    PyrSlot array;
 };
 
 struct PyrDoubleArray : public PyrObjectHdr
 {
-	double d[1];
+    double d[1];
 };
 
 struct PyrFloatArray : public PyrObjectHdr
 {
-	float f[1];
+    float f[1];
 };
 
 struct PyrInt32Array : public PyrObjectHdr
 {
-	uint32 i[1];
+    uint32 i[1];
 };
 
 struct PyrInt16Array : public PyrObjectHdr
 {
-	uint16 i[1];
+    uint16 i[1];
 };
 
 struct PyrInt8Array : public PyrObjectHdr
 {
-	uint8 b[1];
+    uint8 b[1];
 };
 
 struct PyrString : public PyrObjectHdr
 {
-	char s[1];
+    char s[1];
 };
 
 struct PyrSymbolArray : public PyrObjectHdr
 {
-	PyrSymbol* symbols[1];
+    PyrSymbol *symbols[1];
 };
 
 extern struct PyrClass *class_object;
@@ -235,59 +233,53 @@ void dumpObjectSlot(PyrSlot *slot);
 bool respondsTo(PyrSlot *slot, PyrSymbol *selector);
 bool isSubclassOf(struct PyrClass *classobj, struct PyrClass *testclass);
 
-extern struct PyrClass* gTagClassTable[16];
+extern struct PyrClass *gTagClassTable[16];
 
-inline struct PyrClass* classOfSlot(PyrSlot *slot)
+inline struct PyrClass *classOfSlot(PyrSlot *slot)
 {
-	PyrClass *classobj;
-	int tag;
-	if (IsFloat(slot)) classobj = class_float;
-	else if ((tag = GetTag(slot) & 0xF) == 1) classobj = slotRawObject(slot)->classptr;
-	else classobj = gTagClassTable[tag];
+    PyrClass *classobj;
+    int tag;
+    if (IsFloat(slot))
+        classobj = class_float;
+    else if ((tag = GetTag(slot) & 0xF) == 1)
+        classobj = slotRawObject(slot)->classptr;
+    else
+        classobj = gTagClassTable[tag];
 
-	return classobj;
+    return classobj;
 }
 
-typedef int (*ObjFuncPtr)(struct VMGlobals*, struct PyrObject*);
+typedef int (*ObjFuncPtr)(struct VMGlobals *, struct PyrObject *);
 
 void stringFromPyrString(PyrString *obj, char *str, int maxlength);
 void pstringFromPyrString(PyrString *obj, unsigned char *str, int maxlength);
 
 int instVarOffset(const char *classname, const char *instvarname);
-int classVarOffset(const char *classname, const char *classvarname, PyrClass** classobj);
+int classVarOffset(const char *classname, const char *classvarname, PyrClass **classobj);
 
-void fillSlots(PyrSlot* slot, int size, PyrSlot* fillslot);
-void nilSlots(PyrSlot* slot, int size);
-void zeroSlots(PyrSlot* slot, int size);
+void fillSlots(PyrSlot *slot, int size, PyrSlot *fillslot);
+void nilSlots(PyrSlot *slot, int size);
+void zeroSlots(PyrSlot *slot, int size);
 
 int calcHash(PyrSlot *a);
 int getIndexedFloat(struct PyrObject *obj, int index, float *value);
 int getIndexedDouble(struct PyrObject *obj, int index, double *value);
 
-inline int getIndexedVal(struct PyrObject *obj, int index, float *value)
-{
-	return getIndexedFloat(obj, index, value);
-}
+inline int getIndexedVal(struct PyrObject *obj, int index, float *value) { return getIndexedFloat(obj, index, value); }
 
 inline int getIndexedVal(struct PyrObject *obj, int index, double *value)
 {
-	return getIndexedDouble(obj, index, value);
+    return getIndexedDouble(obj, index, value);
 }
 
 void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index);
 int putIndexedSlot(struct VMGlobals *g, struct PyrObject *obj, PyrSlot *c, int index);
 int putIndexedFloat(PyrObject *obj, double val, int index);
 
-inline long ARRAYMAXINDEXSIZE(PyrObjectHdr* obj)
-{
-	return (1L << obj->obj_sizeclass);
-}
+inline long ARRAYMAXINDEXSIZE(PyrObjectHdr *obj) { return (1L << obj->obj_sizeclass); }
 
-inline long MAXINDEXSIZE(PyrObjectHdr* obj)
-{
-	return ((1L << obj->obj_sizeclass) * gFormatElemCapc[ obj->obj_format ]);
-}
+inline long MAXINDEXSIZE(PyrObjectHdr *obj) { return ((1L << obj->obj_sizeclass) * gFormatElemCapc[obj->obj_format]); }
 
-std::tuple<int,std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll);
+std::tuple<int, std::vector<std::string>> PyrCollToVectorStdString(PyrObject *coll);
 
-void InstallFinalizer(VMGlobals* g, PyrObject *inObj, int slotIndex, ObjFuncPtr inFunc);
+void InstallFinalizer(VMGlobals *g, PyrObject *inObj, int slotIndex, ObjFuncPtr inFunc);

@@ -34,16 +34,17 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 class ScIntrospectionParser;
 
-class ScProcess:
-    public QProcess
+class ScProcess : public QProcess
 {
     Q_OBJECT
 
 public:
-    ScProcess( Settings::Manager *, QObject * parent );
+    ScProcess(Settings::Manager *, QObject *parent);
 
     enum ActionRole {
         ToggleRunning = 0,
@@ -57,43 +58,37 @@ public:
         ActionCount
     };
 
-    const ScLanguage::Introspection & introspection() { return mIntrospection; }
+    const ScLanguage::Introspection &introspection() { return mIntrospection; }
 
-    void sendRequest( const QString &id, const QString &command, const QString &data )
+    void sendRequest(const QString &id, const QString &command, const QString &data)
     {
-        QString cmd = QStringLiteral("ScIDE.request(\"%1\",'%2',\"%3\")")
-            .arg(id)
-            .arg(command)
-            .arg(data);
+        QString cmd = QStringLiteral("ScIDE.request(\"%1\",'%2',\"%3\")").arg(id).arg(command).arg(data);
 
         evaluateCode(cmd, true);
     }
 
-    QAction *action(ActionRole role)
-    {
-        return mActions[role];
-    }
-    
+    QAction *action(ActionRole role) { return mActions[role]; }
+
     bool compiled() { return mCompiled; }
-    
-    void post(QString & text) { scPost(text); }
-    void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
-    void updateSelectionMirrorForDocument ( class Document * doc, int start, int range);
+
+    void post(QString &text) { scPost(text); }
+    void updateTextMirrorForDocument(class Document *doc, int position, int charsRemoved, int charsAdded);
+    void updateSelectionMirrorForDocument(class Document *doc, int start, int range);
 
 public slots:
     void toggleRunning();
-    void startLanguage (void);
-    void stopLanguage (void);
-    void restartLanguage (void);
-    void recompileClassLibrary (void);
+    void startLanguage(void);
+    void stopLanguage(void);
+    void restartLanguage(void);
+    void recompileClassLibrary(void);
     void stopMain(void);
     void showQuarks(void);
-    void evaluateCode(QString const & commandString, bool silent = false);
+    void evaluateCode(QString const &commandString, bool silent = false);
 
 signals:
     void scPost(QString const &);
     void statusMessage(const QString &);
-    void response(const QString & selector, const QString & data);
+    void response(const QString &selector, const QString &data);
     void classLibraryRecompiled();
     void introspectionChanged();
 
@@ -101,17 +96,17 @@ private slots:
     void onNewIpcConnection();
     void onIpcData();
     void finalizeConnection();
-    void onProcessStateChanged( QProcess::ProcessState state);
+    void onProcessStateChanged(QProcess::ProcessState state);
     void onReadyRead(void);
     void updateToggleRunningAction();
 
 private:
     void onStart();
-    void onResponse( const QString & selector, const QString & data );
+    void onResponse(const QString &selector, const QString &data);
 
-    void prepareActions(Settings::Manager * settings);
-    void postQuitNotification();    
-    QAction * mActions[ActionCount];
+    void prepareActions(Settings::Manager *settings);
+    void postQuitNotification();
+    QAction *mActions[ActionCount];
 
     ScLanguage::Introspection mIntrospection;
     ScIntrospectionParser *mIntrospectionParser;
@@ -131,18 +126,14 @@ class ScRequest : public QObject
 {
     Q_OBJECT
 public:
-    ScRequest( ScProcess *sc, QObject * parent = 0 ):
-        QObject(parent),
-        mSc(sc)
+    ScRequest(ScProcess *sc, QObject *parent = 0): QObject(parent), mSc(sc)
     {
-        connect(mSc, SIGNAL(response(QString,QString)),
-                this, SLOT(onResponse(QString,QString)));
+        connect(mSc, SIGNAL(response(QString, QString)), this, SLOT(onResponse(QString, QString)));
 
-        connect(mSc, SIGNAL(classLibraryRecompiled()),
-                this, SLOT(cancel()));
+        connect(mSc, SIGNAL(classLibraryRecompiled()), this, SLOT(cancel()));
     }
 
-    void send( const QString & command, const QString & data )
+    void send(const QString &command, const QString &data)
     {
         mId = QUuid::createUuid();
         mCommand = command;
@@ -157,11 +148,11 @@ public slots:
     }
 
 signals:
-    void response( const QString & command, const QString & data );
+    void response(const QString &command, const QString &data);
     void cancelled();
 
 private slots:
-    void onResponse( const QString & responseId, const QString & responseData )
+    void onResponse(const QString &responseId, const QString &responseData)
     {
         if (responseId == mId.toString())
             emit response(mCommand, responseData);

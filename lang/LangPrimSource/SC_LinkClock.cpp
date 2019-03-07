@@ -1,22 +1,21 @@
 #ifdef SC_ABLETON_LINK
 
-#include "SC_LinkClock.hpp"
+#    include "SC_LinkClock.hpp"
 
-inline std::chrono::microseconds hrToLinkTime(double secs) {
+inline std::chrono::microseconds hrToLinkTime(double secs)
+{
     auto time = std::chrono::duration<double>(secs);
     return std::chrono::duration_cast<std::chrono::microseconds>(time) + LinkClock::GetInitTime();
 }
 
-inline double linkToHrTime(std::chrono::microseconds micros) {
-    return DurToFloat(micros - LinkClock::GetInitTime());
-}
+inline double linkToHrTime(std::chrono::microseconds micros) { return DurToFloat(micros - LinkClock::GetInitTime()); }
 
 std::chrono::microseconds LinkClock::InitTime;
 
-LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                            double tempo, double baseBeats, double baseSeconds)
-    : TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
-    mLink(tempo * 60.)
+LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject *tempoClockObj, double tempo, double baseBeats,
+                     double baseSeconds):
+  TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
+  mLink(tempo * 60.)
 {
     // quantum = beatsPerBar
     int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
@@ -37,17 +36,14 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
     mLink.commitAppSessionState(sessionState);
 }
 
-void LinkClock::Init()
-{
-    InitTime = ableton::link::platform::Clock().micros();
-}
+void LinkClock::Init() { InitTime = ableton::link::platform::Clock().micros(); }
 
 void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
 {
     auto sessionState = mLink.captureAppSessionState();
     auto linkTime = hrToLinkTime(inSeconds);
     sessionState.setTempo(tempo * 60., linkTime);
-    sessionState.requestBeatAtTime(inBeats,linkTime, mQuantum);
+    sessionState.requestBeatAtTime(inBeats, linkTime, mQuantum);
     CommitTempo(sessionState, tempo);
 }
 
@@ -92,7 +88,7 @@ void LinkClock::OnTempoChanged(double bpm)
     mBeatDur = 1. / tempo;
     mCondition.notify_one();
 
-    //call sclang callback
+    // call sclang callback
     gLangMutex.lock();
     g->canCallOS = false;
     ++g->sp;
@@ -115,7 +111,7 @@ void LinkClock::OnTempoChanged(double bpm)
 int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    LinkClock *clock = (LinkClock *)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -130,7 +126,7 @@ int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    LinkClock *clock = (LinkClock *)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -149,7 +145,7 @@ int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
 int prLinkClock_GetLatency(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    LinkClock *clock = (LinkClock *)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -164,7 +160,7 @@ int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot *a = g->sp - 1;
     PyrSlot *b = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    LinkClock *clock = (LinkClock *)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;

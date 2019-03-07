@@ -2,16 +2,16 @@
 
 #ifdef SC_ABLETON_LINK
 
-#include "PyrKernel.h"
-#include "PyrSched.h"
-#include "GC.h"
-#include "PyrPrimitive.h"
-#include "PyrSymbol.h"
+#    include "PyrKernel.h"
+#    include "PyrSched.h"
+#    include "GC.h"
+#    include "PyrPrimitive.h"
+#    include "PyrSymbol.h"
 
-#include "SCBase.h"
-#include "SC_Clock.hpp"
+#    include "SCBase.h"
+#    include "SC_Clock.hpp"
 
-#include <ableton/Link.hpp>
+#    include <ableton/Link.hpp>
 
 /** TempoClock for use with Ableton Link.
  *
@@ -23,12 +23,12 @@ public:
     /// Called during PyrSched init.
     static void Init();
     static std::chrono::microseconds GetInitTime() { return LinkClock::InitTime; }
+
 private:
     static std::chrono::microseconds InitTime;
 
 public:
-    LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                double tempo, double baseBeats, double baseSeconds);
+    LinkClock(VMGlobals* vmGlobals, PyrObject* tempoClockObj, double tempo, double baseBeats, double baseSeconds);
     ~LinkClock() noexcept = default;
 
     void SetTempoAtBeat(double tempo, double inBeats);

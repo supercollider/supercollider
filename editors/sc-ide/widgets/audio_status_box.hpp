@@ -33,10 +33,9 @@ public:
     AudioStatusBox(ScServer *, QWidget *parent = 0);
 
 private slots:
-    void onServerRunningChanged( bool running, QString const & hostName, int port, bool unresponsive );
+    void onServerRunningChanged(bool running, QString const &hostName, int port, bool unresponsive);
 
-    void updateStatistics( int ugens, int synths, int groups, int synthDefs,
-                           float avgCPU, float peakCPU );
+    void updateStatistics(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
 
     void updateVolumeLabel(float volume);
     void updateMuteLabel(bool muted);

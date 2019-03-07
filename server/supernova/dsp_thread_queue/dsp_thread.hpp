@@ -36,20 +36,16 @@ using std::uint16_t;
 
 struct nop_thread_init
 {
-    nop_thread_init(void)
-    {}
+    nop_thread_init(void) {}
 
-    template <typename Arg>
-    nop_thread_init(Arg const &)
-    {}
+    template <typename Arg> nop_thread_init(Arg const &) {}
 
-    void operator()(int thread_index)
-    {}
+    void operator()(int thread_index) {}
 };
 
 
 #if _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
-#define SUPERNOVA_USE_PTHREAD
+#    define SUPERNOVA_USE_PTHREAD
 #endif
 
 /** dsp helper thread
@@ -57,19 +53,17 @@ struct nop_thread_init
  *  the dsp helper threads are running with a high real-time priority and are
  *  pinned to a specific cpu
  */
-template <typename runnable,
-          typename thread_init_functor = nop_thread_init,
-          typename Alloc = std::allocator<void*>
-         >
-class dsp_thread:
-    public thread_init_functor
+template <typename runnable, typename thread_init_functor = nop_thread_init, typename Alloc = std::allocator<void *>>
+class dsp_thread : public thread_init_functor
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
 
 public:
-    dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index,
-               thread_init_functor const & thread_init = thread_init_functor()):
-        thread_init_functor(thread_init), interpreter(interpreter), index(index)
+    dsp_thread(dsp_queue_interpreter &interpreter, uint16_t index,
+               thread_init_functor const &thread_init = thread_init_functor()):
+      thread_init_functor(thread_init),
+      interpreter(interpreter),
+      index(index)
     {
 #ifdef SUPERNOVA_USE_PTHREAD
         if (stack_size) {
@@ -84,8 +78,8 @@ public:
 #endif
     }
 
-    dsp_thread(dsp_thread const &)            = delete;
-    dsp_thread& operator=(dsp_thread const &) = delete;
+    dsp_thread(dsp_thread const &) = delete;
+    dsp_thread &operator=(dsp_thread const &) = delete;
 
     ~dsp_thread(void)
     {
@@ -106,23 +100,23 @@ public:
         if (err)
             throw std::logic_error("Cannot set stack of DSP helper thread");
 
-        err = pthread_create( &thread_id, &attr, run_static, this );
+        err = pthread_create(&thread_id, &attr, run_static, this);
         if (err)
             throw std::runtime_error("Cannot create DSP helper thread");
         pthread_attr_destroy(&attr);
 #else
-        thread = std::thread([this] {this->run();});
+        thread = std::thread([this] { this->run(); });
 #endif
     }
 
     void join()
     {
-        stop.store( true, std::memory_order_relaxed );
+        stop.store(true, std::memory_order_relaxed);
         wake_thread();
 
 #ifdef SUPERNOVA_USE_PTHREAD
-        void * ret;
-        int err = pthread_join( thread_id, &ret );
+        void *ret;
+        int err = pthread_join(thread_id, &ret);
         if (err)
             printf("Error when joining helper thread\n");
 #else
@@ -130,10 +124,7 @@ public:
 #endif
     }
 
-    void wake_thread(void)
-    {
-        cycle_sem.post();
-    }
+    void wake_thread(void) { cycle_sem.post(); }
 
 private:
     /** thread function
@@ -151,24 +142,24 @@ private:
         }
     }
 
-    static void * run_static(void* arg)
+    static void *run_static(void *arg)
     {
-        dsp_thread * self = static_cast<dsp_thread*>(arg);
+        dsp_thread *self = static_cast<dsp_thread *>(arg);
         self->run();
         return nullptr;
     }
 
 private:
     boost::sync::semaphore cycle_sem;
-    dsp_queue_interpreter & interpreter;
-    std::atomic<bool> stop = {false};
+    dsp_queue_interpreter &interpreter;
+    std::atomic<bool> stop = { false };
     uint16_t index;
 
 #ifdef SUPERNOVA_USE_PTHREAD
     pthread_t thread_id;
 
     static const size_t stack_size = 524288;
-    char * stack_                  = nullptr;
+    char *stack_ = nullptr;
 
 #else
     std::thread thread;
@@ -180,10 +171,7 @@ private:
  *  - no care is taken, that dsp_thread_pool::run is executed on a valid instance
  *
  * */
-template <typename runnable,
-          typename thread_init_functor = nop_thread_init,
-          typename Alloc = std::allocator<void*>
-         >
+template <typename runnable, typename thread_init_functor = nop_thread_init, typename Alloc = std::allocator<void *>>
 class dsp_thread_pool
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
@@ -193,11 +181,11 @@ public:
     typedef typename dsp_queue_interpreter::node_count_t node_count_t;
     typedef typename dsp_queue_interpreter::thread_count_t thread_count_t;
 
-    typedef std::unique_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
+    typedef std::unique_ptr<dsp_thread_queue<runnable, Alloc>> dsp_thread_queue_ptr;
 
-    dsp_thread_pool( thread_count_t count, bool yield_if_busy = false,
-                     thread_init_functor const & init_functor = thread_init_functor() ):
-        interpreter(std::min(count, (thread_count_t)std::thread::hardware_concurrency()), yield_if_busy)
+    dsp_thread_pool(thread_count_t count, bool yield_if_busy = false,
+                    thread_init_functor const &init_functor = thread_init_functor()):
+      interpreter(std::min(count, (thread_count_t)std::thread::hardware_concurrency()), yield_if_busy)
     {
         set_dsp_thread_count(interpreter.get_thread_count(), init_functor);
     }
@@ -205,7 +193,7 @@ public:
     void run(void)
     {
         const bool run_tick = interpreter.init_tick();
-        if( likely(run_tick) ) {
+        if (likely(run_tick)) {
             wake_threads();
             interpreter.tick_master();
         }
@@ -215,38 +203,35 @@ public:
      *
      *  don't call, if threads are currently accessing the queue
      * */
-    dsp_thread_queue_ptr reset_queue(dsp_thread_queue_ptr && new_queue)
+    dsp_thread_queue_ptr reset_queue(dsp_thread_queue_ptr &&new_queue)
     {
         dsp_thread_queue_ptr ret = interpreter.reset_queue(std::move(new_queue));
         return std::move(ret);
     }
 
-    dsp_thread_queue_ptr release_queue(void)
-    {
-        return interpreter.release_queue();
-    }
+    dsp_thread_queue_ptr release_queue(void) { return interpreter.release_queue(); }
 
 public:
     /** thread handling */
     /* @{ */
     void start_threads(void)
     {
-        for (auto & thread : threads)
+        for (auto &thread : threads)
             thread->start();
     }
 
     void terminate_threads(void)
     {
-        for (auto & thread : threads)
+        for (auto &thread : threads)
             thread->join();
     }
     /* @} */
 
 private:
-    void set_dsp_thread_count(thread_count_t count, thread_init_functor const & init_functor)
+    void set_dsp_thread_count(thread_count_t count, thread_init_functor const &init_functor)
     {
         for (thread_count_t i = 1; i != count; ++i)
-            threads.emplace_back( new dsp_thread( interpreter, i, init_functor ) );
+            threads.emplace_back(new dsp_thread(interpreter, i, init_functor));
     }
 
     /** wake dsp threads */

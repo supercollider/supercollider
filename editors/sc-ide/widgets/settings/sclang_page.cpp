@@ -35,24 +35,25 @@
 
 namespace ScIDE { namespace Settings {
 
-SclangPage::SclangPage(QWidget *parent) :
-    QWidget(parent),
-    ui( new Ui::SclangConfigPage )
+SclangPage::SclangPage(QWidget *parent): QWidget(parent), ui(new Ui::SclangConfigPage)
 {
     ui->setupUi(this);
 
-    ui->sclang_add_configfile->setIcon( QIcon::fromTheme("list-add") );
-    ui->sclang_remove_configfile->setIcon( QIcon::fromTheme("list-remove") );
+    ui->sclang_add_configfile->setIcon(QIcon::fromTheme("list-add"));
+    ui->sclang_remove_configfile->setIcon(QIcon::fromTheme("list-remove"));
 
-    ui->sclang_add_include->setIcon( QIcon::fromTheme("list-add") );
-    ui->sclang_remove_include->setIcon( QIcon::fromTheme("list-remove") );
+    ui->sclang_add_include->setIcon(QIcon::fromTheme("list-add"));
+    ui->sclang_remove_include->setIcon(QIcon::fromTheme("list-remove"));
 
-    ui->sclang_add_exclude->setIcon( QIcon::fromTheme("list-add") );
-    ui->sclang_remove_exclude->setIcon( QIcon::fromTheme("list-remove") );
+    ui->sclang_add_exclude->setIcon(QIcon::fromTheme("list-add"));
+    ui->sclang_remove_exclude->setIcon(QIcon::fromTheme("list-remove"));
 
     ui->runtimeDir->setFileMode(QFileDialog::Directory);
 
-    connect(ui->activeConfigFileComboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(changeSelectedLanguageConfig(const QString &)));
+    connect(ui->activeConfigFileComboBox,
+            SIGNAL(currentIndexChanged(const QString &)),
+            this,
+            SLOT(changeSelectedLanguageConfig(const QString &)));
     connect(ui->sclang_add_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
     connect(ui->sclang_remove_configfile, SIGNAL(clicked()), this, SLOT(dialogDeleteCurrentConfigFile()));
 
@@ -65,17 +66,14 @@ SclangPage::SclangPage(QWidget *parent) :
     connect(ui->sclang_post_inline_warnings, SIGNAL(stateChanged(int)), this, SLOT(markSclangConfigDirty()));
 }
 
-SclangPage::~SclangPage()
-{
-    delete ui;
-}
+SclangPage::~SclangPage() { delete ui; }
 
-void SclangPage::load( Manager *s )
+void SclangPage::load(Manager *s)
 {
     s->beginGroup("IDE/interpreter");
 
-    ui->autoStart->setChecked( s->value("autoStart").toBool() );
-    ui->runtimeDir->setText( s->value("runtimeDir").toString() );
+    ui->autoStart->setChecked(s->value("autoStart").toBool());
+    ui->runtimeDir->setText(s->value("runtimeDir").toString());
     ui->sclang_standalone_mode->setChecked(s->value("standalone").toBool());
 
     QStringList availConfigFiles = availableLanguageConfigFiles();
@@ -86,14 +84,15 @@ void SclangPage::load( Manager *s )
     int index = availConfigFiles.indexOf(configSelectedLanguageConfigFile);
     if (index != -1)
         ui->activeConfigFileComboBox->setCurrentIndex(index);
-    selectedLanguageConfigFile = configSelectedLanguageConfigFile; // Happens after setting the combobox entries, since the code triggers stateChanged event.
+    selectedLanguageConfigFile = configSelectedLanguageConfigFile; // Happens after setting the combobox entries, since
+                                                                   // the code triggers stateChanged event.
 
     s->endGroup();
 
     readLanguageConfig();
 }
 
-void SclangPage::store( Manager *s )
+void SclangPage::store(Manager *s)
 {
     s->beginGroup("IDE/interpreter");
     s->setValue("autoStart", ui->autoStart->isChecked());
@@ -115,7 +114,7 @@ void SclangPage::addIncludePath()
 
 void SclangPage::removeIncludePath()
 {
-    foreach (QListWidgetItem * item, ui->sclang_include_directories->selectedItems() ) {
+    foreach (QListWidgetItem *item, ui->sclang_include_directories->selectedItems()) {
         ui->sclang_include_directories->removeItemWidget(item);
         delete item;
     }
@@ -132,14 +131,15 @@ void SclangPage::addExcludePath()
 
 void SclangPage::removeExcludePath()
 {
-    foreach (QListWidgetItem * item, ui->sclang_exclude_directories->selectedItems() ) {
+    foreach (QListWidgetItem *item, ui->sclang_exclude_directories->selectedItems()) {
         ui->sclang_exclude_directories->removeItemWidget(item);
         delete item;
     }
     sclangConfigDirty = true;
 }
 
-void SclangPage::changeSelectedLanguageConfig(const QString & configPath) {
+void SclangPage::changeSelectedLanguageConfig(const QString &configPath)
+{
     selectedLanguageConfigFile = configPath;
     readLanguageConfig();
 }
@@ -159,38 +159,38 @@ void SclangPage::readLanguageConfig()
     using namespace YAML;
     try {
         std::ifstream fin(configFile.toStdString());
-        Node doc = YAML::Load( fin );
-        if( doc ) {
-            const Node & includePaths = doc[ "includePaths" ];
+        Node doc = YAML::Load(fin);
+        if (doc) {
+            const Node &includePaths = doc["includePaths"];
             if (includePaths && includePaths.IsSequence()) {
                 ui->sclang_include_directories->clear();
-                for( Node const & pathNode : includePaths ) {
+                for (Node const &pathNode : includePaths) {
                     if (!pathNode.IsScalar())
                         continue;
                     std::string path = pathNode.as<std::string>();
-                    if( !path.empty() )
+                    if (!path.empty())
                         ui->sclang_include_directories->addItem(QString(path.c_str()));
                 }
             }
 
-            const Node & excludePaths = doc[ "excludePaths" ];
+            const Node &excludePaths = doc["excludePaths"];
             if (excludePaths && excludePaths.IsSequence()) {
                 ui->sclang_exclude_directories->clear();
-                for( Node const & pathNode : excludePaths ) {
+                for (Node const &pathNode : excludePaths) {
                     if (!pathNode.IsScalar())
                         continue;
                     std::string path = pathNode.as<std::string>();
-                    if( !path.empty() )
+                    if (!path.empty())
                         ui->sclang_exclude_directories->addItem(QString(path.c_str()));
                 }
             }
 
-            const Node & inlineWarnings = doc[ "postInlineWarnings" ];
+            const Node &inlineWarnings = doc["postInlineWarnings"];
             if (inlineWarnings) {
                 try {
                     bool postInlineWarnings = inlineWarnings.as<bool>();
                     ui->sclang_post_inline_warnings->setChecked(postInlineWarnings);
-                } catch(...) {
+                } catch (...) {
                     qDebug() << "Warning: Cannot parse config file entry \"postInlineWarnings\"";
                 }
             }
@@ -206,7 +206,8 @@ void SclangPage::writeLanguageConfig()
     if (!sclangConfigDirty)
         return;
 
-    using namespace YAML; using std::ofstream;
+    using namespace YAML;
+    using std::ofstream;
     Emitter out;
     out.SetIndent(4);
     out.SetMapFormat(Block);
@@ -235,7 +236,8 @@ void SclangPage::writeLanguageConfig()
     ofstream fout(languageConfigFile().toStdString().c_str());
     fout << out.c_str();
 
-    QMessageBox::information(this, tr("Sclang configuration file updated"),
+    QMessageBox::information(this,
+                             tr("Sclang configuration file updated"),
                              tr("The SuperCollider language configuration has been updated. "
                                 "Reboot the interpreter to apply the changes."));
 
@@ -244,11 +246,8 @@ void SclangPage::writeLanguageConfig()
 
 QString SclangPage::languageConfigFile()
 {
-    if (selectedLanguageConfigFile.isEmpty())
-    {
-        selectedLanguageConfigFile =
-                standardDirectory(ScConfigUserDir)
-                + "/" + QStringLiteral("sclang_conf.yaml");
+    if (selectedLanguageConfigFile.isEmpty()) {
+        selectedLanguageConfigFile = standardDirectory(ScConfigUserDir) + "/" + QStringLiteral("sclang_conf.yaml");
     }
     return selectedLanguageConfigFile;
 }
@@ -260,7 +259,7 @@ QStringList SclangPage::availableLanguageConfigFiles()
     fileFilters << "sclang_conf*.yaml";
     QFileInfoList configFileList = qdir.entryInfoList(fileFilters);
     QStringList canonicalPaths;
-    foreach(QFileInfo aFile, configFileList){
+    foreach (QFileInfo aFile, configFileList) {
         canonicalPaths.append(aFile.canonicalFilePath());
     }
     return canonicalPaths;
@@ -269,23 +268,20 @@ QStringList SclangPage::availableLanguageConfigFiles()
 void SclangPage::dialogCreateNewConfigFile()
 {
     bool ok;
-    QString text = QInputDialog::getText
-        (this, tr("New Configuration File"),
-         tr("Create configuration file 'sclang_conf_*.yaml' with '*' replaced by:"), QLineEdit::Normal,
-         QDir::home().dirName(), &ok);
+    QString text = QInputDialog::getText(this,
+                                         tr("New Configuration File"),
+                                         tr("Create configuration file 'sclang_conf_*.yaml' with '*' replaced by:"),
+                                         QLineEdit::Normal,
+                                         QDir::home().dirName(),
+                                         &ok);
 
-   if (ok && !text.isEmpty())
-   {
-        QString proposedLanguageConfigFile =
-                standardDirectory(ScConfigUserDir)
-                + "/sclang_conf_" + text + ".yaml";
-        if(QFile(proposedLanguageConfigFile).exists()){
-            QMessageBox::information
-                (this,
-                 tr("File Already Exists"),
-                 tr("Configuration file already exists:\n%1")
-                 .arg(proposedLanguageConfigFile));
-        }else{
+    if (ok && !text.isEmpty()) {
+        QString proposedLanguageConfigFile = standardDirectory(ScConfigUserDir) + "/sclang_conf_" + text + ".yaml";
+        if (QFile(proposedLanguageConfigFile).exists()) {
+            QMessageBox::information(this,
+                                     tr("File Already Exists"),
+                                     tr("Configuration file already exists:\n%1").arg(proposedLanguageConfigFile));
+        } else {
             selectedLanguageConfigFile = proposedLanguageConfigFile;
             sclangConfigDirty = true;
             writeLanguageConfig();
@@ -293,26 +289,26 @@ void SclangPage::dialogCreateNewConfigFile()
             int index = ui->activeConfigFileComboBox->count();
             ui->activeConfigFileComboBox->addItem(selectedLanguageConfigFile);
             ui->activeConfigFileComboBox->setCurrentIndex(index);
-       }
-   }
+        }
+    }
 }
 
 void SclangPage::dialogDeleteCurrentConfigFile()
 {
-    int ret = QMessageBox::warning
-        (this,
-         tr("Delete Configuration File"),
-         tr("Are you sure you want to delete the following configuration file?\nThis action is immediate and cannot be undone.\n")
-         + selectedLanguageConfigFile,
-         QMessageBox::Ok | QMessageBox::Cancel,
-         QMessageBox::Cancel);
+    int ret = QMessageBox::warning(this,
+                                   tr("Delete Configuration File"),
+                                   tr("Are you sure you want to delete the following configuration file?\nThis action "
+                                      "is immediate and cannot be undone.\n")
+                                       + selectedLanguageConfigFile,
+                                   QMessageBox::Ok | QMessageBox::Cancel,
+                                   QMessageBox::Cancel);
 
-    if(ret == QMessageBox::Ok){
+    if (ret == QMessageBox::Ok) {
         QString pathBeingRemoved = selectedLanguageConfigFile;
         QFile::remove(pathBeingRemoved);
         ui->activeConfigFileComboBox->removeItem(ui->activeConfigFileComboBox->findText(pathBeingRemoved));
-        if(ui->activeConfigFileComboBox->count() != 0){
-          ui->activeConfigFileComboBox->setCurrentIndex(0);
+        if (ui->activeConfigFileComboBox->count() != 0) {
+            ui->activeConfigFileComboBox->setCurrentIndex(0);
         }
     }
 }
