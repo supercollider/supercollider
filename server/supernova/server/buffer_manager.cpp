@@ -23,8 +23,7 @@
 #include "../../common/SC_SndFileHelpers.hpp"
 
 
-namespace nova
-{
+namespace nova {
 
 void buffer_wrapper::allocate(size_t frames, uint channels)
 {
@@ -36,10 +35,9 @@ void buffer_wrapper::allocate(size_t frames, uint channels)
     channels_ = channels;
 }
 
-namespace
-{
+namespace {
 
-SndfileHandle open_file(const char * file, std::size_t start_frame)
+SndfileHandle open_file(const char* file, std::size_t start_frame)
 {
     auto sndfile = makeSndfileHandle(file);
     if (!sndfile)
@@ -54,7 +52,7 @@ SndfileHandle open_file(const char * file, std::size_t start_frame)
 
 } /* namespace */
 
-void buffer_wrapper::read_file(const char * file, size_t start_frame, size_t frames)
+void buffer_wrapper::read_file(const char* file, size_t start_frame, size_t frames)
 {
     free();
     SndfileHandle sndfile = open_file(file, start_frame);
@@ -73,8 +71,8 @@ void buffer_wrapper::read_file(const char * file, size_t start_frame, size_t fra
 }
 
 
-void buffer_wrapper::read_file_channels(const char * file, size_t start_frame, size_t frames,
-                                        uint channel_count, uint * channels)
+void buffer_wrapper::read_file_channels(const char* file, size_t start_frame, size_t frames, uint channel_count,
+                                        uint* channels)
 {
     free();
     SndfileHandle sndfile = open_file(file, start_frame);
@@ -98,14 +96,14 @@ void buffer_wrapper::read_file_channels(const char * file, size_t start_frame, s
         size_t read = sndfile.readf(tmp_array.c_array(), 1);
         if (read != 1)
             throw std::runtime_error(std::string("could not from read file: ") + std::string(file));
-        sample_t * data_frame = data + channel_count * i;
+        sample_t* data_frame = data + channel_count * i;
 
         for (uint c = 0; c != channel_count; ++c)
             data_frame[c] = tmp_array[channels[c]];
     }
 }
 
-void buffer_wrapper::write_file(const char * file, const char * header_format, const char * sample_format,
+void buffer_wrapper::write_file(const char* file, const char* header_format, const char* sample_format,
                                 size_t start_frame, size_t frames)
 {
     int format = headerFormatFromString(header_format);

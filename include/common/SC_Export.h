@@ -20,42 +20,42 @@
 #pragma once
 
 #if defined _WIN32 || defined __CYGWIN__
-#  define SC_API_IMPORT __declspec(dllimport)
-#  define SC_API_EXPORT __declspec(dllexport)
+#    define SC_API_IMPORT __declspec(dllimport)
+#    define SC_API_EXPORT __declspec(dllexport)
 #else
-#  if __GNUC__ >= 4
-#    define SC_API_IMPORT __attribute__ ((visibility("default")))
-#    define SC_API_EXPORT __attribute__ ((visibility("default")))
-#  else
-#    define SC_API_IMPORT
-#    define SC_API_EXPORT
-#  endif
+#    if __GNUC__ >= 4
+#        define SC_API_IMPORT __attribute__((visibility("default")))
+#        define SC_API_EXPORT __attribute__((visibility("default")))
+#    else
+#        define SC_API_IMPORT
+#        define SC_API_EXPORT
+#    endif
 #endif
 
 #ifdef __cplusplus
-#  define C_LINKAGE extern "C"
+#    define C_LINKAGE extern "C"
 #else
-#  define C_LINKAGE
+#    define C_LINKAGE
 #endif
 
 #ifdef BUILDING_SCSYNTH // if scsynth is being built, instead of used
-#  define SCSYNTH_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
-#  define SCSYNTH_DLLEXPORT SC_API_EXPORT
+#    define SCSYNTH_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
+#    define SCSYNTH_DLLEXPORT SC_API_EXPORT
 #elif defined(USING_SCSYNTH)
-#  define SCSYNTH_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
-#  define SCSYNTH_DLLEXPORT SC_API_IMPORT
+#    define SCSYNTH_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
+#    define SCSYNTH_DLLEXPORT SC_API_IMPORT
 #else
-#  define SCSYNTH_DLLEXPORT_C C_LINKAGE
-#  define SCSYNTH_DLLEXPORT /*SC_API_IMPORT*/
+#    define SCSYNTH_DLLEXPORT_C C_LINKAGE
+#    define SCSYNTH_DLLEXPORT /*SC_API_IMPORT*/
 #endif
 
 #ifdef BUILDING_SCLANG // if sclang is being built, instead of used
-#  define SCLANG_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
-#  define SCLANG_DLLEXPORT SC_API_EXPORT
+#    define SCLANG_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
+#    define SCLANG_DLLEXPORT SC_API_EXPORT
 #elif defined(USING_SCSYNTH)
-#  define SCLANG_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
-#  define SCLANG_DLLEXPORT SC_API_IMPORT
+#    define SCLANG_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
+#    define SCLANG_DLLEXPORT SC_API_IMPORT
 #else
-#  define SCLANG_DLLEXPORT_C C_LINKAGE
-#  define SCLANG_DLLEXPORT /*SC_API_IMPORT*/
+#    define SCLANG_DLLEXPORT_C C_LINKAGE
+#    define SCLANG_DLLEXPORT /*SC_API_IMPORT*/
 #endif

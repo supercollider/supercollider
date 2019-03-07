@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,26 +30,28 @@
 extern int charno, lineno, linepos;
 extern int *linestarts;
 
-struct ClassExtFile {
-	struct ClassExtFile *next;
-	PyrSymbol *fileSym;
-	int startPos, endPos, lineOffset;
+struct ClassExtFile
+{
+    struct ClassExtFile *next;
+    PyrSymbol *fileSym;
+    int startPos, endPos, lineOffset;
 };
 
-typedef struct classdep {
-	struct classdep *next;
-	struct classdep *superClassDep;
-	struct classdep *subclasses;
-	PyrSymbol *className;
-	PyrSymbol *superClassName;
-	PyrSymbol *fileSym;
-	int startPos, endPos, lineOffset;
+typedef struct classdep
+{
+    struct classdep *next;
+    struct classdep *superClassDep;
+    struct classdep *subclasses;
+    PyrSymbol *className;
+    PyrSymbol *superClassName;
+    PyrSymbol *fileSym;
+    int startPos, endPos, lineOffset;
 } ClassDependancy;
 
 extern PyrSymbol *gCompilingFileSym;
 
-ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName,
-	PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
+ClassDependancy *newClassDependancy(PyrSymbol *className, PyrSymbol *superClassName, PyrSymbol *fileSym, int startPos,
+                                    int endPos, int lineOffset);
 bool parseOneClass(PyrSymbol *fileSym);
 void initPassOne();
 void finiPassOne();
@@ -62,7 +64,7 @@ void traverseDepTree2(ClassDependancy *classdep, int level);
 void compileClassExtensions();
 void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
 
-SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol *selector);
 
 void interpretCmdLine(const char *textbuf, int textlen, char *methodname);
 
@@ -72,16 +74,16 @@ int input0();
 void unput(int c);
 void unput0(int c);
 
-void finiLexer() ;
-bool startLexer(char* filename) ;
+void finiLexer();
+bool startLexer(char *filename);
 void startLexerCmdLine(char *textbuf, int textbuflen);
-int yylex() ;
-void yyerror(const char *s) ;
-void fatal() ;
-bool isValidSourceFileName(const boost::filesystem::path& path);
-bool passOne_ProcessOneFile(const boost::filesystem::path& path);
+int yylex();
+void yyerror(const char *s);
+void fatal();
+bool isValidSourceFileName(const boost::filesystem::path &path);
+bool passOne_ProcessOneFile(const boost::filesystem::path &path);
 
-boost::filesystem::path relativeToCompileDir(const boost::filesystem::path&);
+boost::filesystem::path relativeToCompileDir(const boost::filesystem::path &);
 
 void initLexer();
 
@@ -137,5 +139,5 @@ extern int parseFailed;
 extern bool compiledOK;
 extern int radixcharpos, decptpos;
 
-int rtf2txt(char* txt);
-int html2txt(char* txt);
+int rtf2txt(char *txt);
+int html2txt(char *txt);

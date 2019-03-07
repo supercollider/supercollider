@@ -32,7 +32,7 @@
 
 namespace ScIDE { namespace Settings {
 
-int legacyTheme(Manager * settings)
+int legacyTheme(Manager *settings)
 {
     QString group = QStringLiteral("IDE/editor/colors/");
     QString newGroup = QStringLiteral("IDE/editor/themes/My old theme/");
@@ -45,11 +45,17 @@ int legacyTheme(Manager * settings)
     theme.save();
 
     QList<QString> keys;
-    keys << "evaluatedCode" << "lineNumbers" << "matchingBrackets"
-         << "searchResult" << "selection" << "text" << "currentLine"
-         << "matchingBrackets" << "postwindowtext";
+    keys << "evaluatedCode"
+         << "lineNumbers"
+         << "matchingBrackets"
+         << "searchResult"
+         << "selection"
+         << "text"
+         << "currentLine"
+         << "matchingBrackets"
+         << "postwindowtext";
 
-    foreach(QString key, keys) {
+    foreach (QString key, keys) {
         if (settings->contains(group + key)) {
             QTextCharFormat fm = settings->value(group + key).value<QTextCharFormat>();
             settings->setValue(newGroup + key, QVariant::fromValue<QTextCharFormat>(fm));
@@ -60,12 +66,23 @@ int legacyTheme(Manager * settings)
     group = QStringLiteral("IDE/editor/highlighting/");
     keys.clear();
 
-    keys << "keyword" << "built-in" << "env-var" << "class" << "number"
-         << "symbol" << "string" << "char" << "comment" << "primitive"
-         << "postwindowemphasis" << "postwindowerror" << "postwindowsuccess"
-         << "postwindowwarning" << "whitespace";
+    keys << "keyword"
+         << "built-in"
+         << "env-var"
+         << "class"
+         << "number"
+         << "symbol"
+         << "string"
+         << "char"
+         << "comment"
+         << "primitive"
+         << "postwindowemphasis"
+         << "postwindowerror"
+         << "postwindowsuccess"
+         << "postwindowwarning"
+         << "whitespace";
 
-    foreach(QString key, keys) {
+    foreach (QString key, keys) {
         if (settings->contains(group + key)) {
             QTextCharFormat fm = theme.format(key);
             fm.merge(settings->value(group + key).value<QTextCharFormat>());
@@ -79,13 +96,12 @@ int legacyTheme(Manager * settings)
     return 1;
 }
 
-void Theme::add(
-    const char *key,
-    const QColor & fg,
-    const QColor & bg, // = QColor(Qt::transparent)
-    bool bold, // = false
-    bool italic // = false
-) {
+void Theme::add(const char *key, const QColor &fg,
+                const QColor &bg, // = QColor(Qt::transparent)
+                bool bold, // = false
+                bool italic // = false
+)
+{
     QTextCharFormat *format = new QTextCharFormat();
 
     if (bg != QColor(Qt::transparent))
@@ -101,7 +117,7 @@ void Theme::add(
     mFormats.insert(key, format);
 }
 
-void Theme::fillUser(const QString & name, const Manager *settings)
+void Theme::fillUser(const QString &name, const Manager *settings)
 {
     QString group = QStringLiteral("IDE/editor/themes/%1/").arg(name);
 
@@ -111,21 +127,38 @@ void Theme::fillUser(const QString & name, const Manager *settings)
     }
 
     QList<QString> keys;
-    keys << "text" << "currentLine" << "searchResult" << "matchingBrackets"
-         << "mismatchedBrackets" << "evaluatedCode" << "whitespace" << "keyword"
-         << "built-in" << "env-var" << "class" << "number" << "symbol" << "string"
-         << "char" << "comment" << "primitive" << "lineNumbers" << "selection"
-         << "postwindowtext" << "postwindowerror" << "postwindowwarning"
-         << "postwindowsuccess" << "postwindowemphasis";
+    keys << "text"
+         << "currentLine"
+         << "searchResult"
+         << "matchingBrackets"
+         << "mismatchedBrackets"
+         << "evaluatedCode"
+         << "whitespace"
+         << "keyword"
+         << "built-in"
+         << "env-var"
+         << "class"
+         << "number"
+         << "symbol"
+         << "string"
+         << "char"
+         << "comment"
+         << "primitive"
+         << "lineNumbers"
+         << "selection"
+         << "postwindowtext"
+         << "postwindowerror"
+         << "postwindowwarning"
+         << "postwindowsuccess"
+         << "postwindowemphasis";
 
-    foreach(QString key, keys) {
-            QTextCharFormat *format =
-                new QTextCharFormat(settings->value(group + key).value<QTextCharFormat>());
-            mFormats.insert(key, format);
+    foreach (QString key, keys) {
+        QTextCharFormat *format = new QTextCharFormat(settings->value(group + key).value<QTextCharFormat>());
+        mFormats.insert(key, format);
     }
 }
 
-Theme::Theme(const QString & _name, Manager * settings)
+Theme::Theme(const QString &_name, Manager *settings)
 {
     if (!settings)
         settings = Main::settings();
@@ -156,8 +189,7 @@ Theme::Theme(const QString & _name, Manager * settings)
     }
 }
 
-Theme::Theme(const QString & _name, const QString & _source, Manager * settings):
-    mName(_name)
+Theme::Theme(const QString &_name, const QString &_source, Manager *settings): mName(_name)
 {
     if (!settings)
         settings = Main::settings();
@@ -182,22 +214,18 @@ Theme::Theme(const QString & _name, const QString & _source, Manager * settings)
     mLocked = false;
 }
 
-Theme::~Theme()
-{
-    qDeleteAll(mFormats);
-}
+Theme::~Theme() { qDeleteAll(mFormats); }
 
-void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
+void Theme::setFormat(const QString &key, const QTextCharFormat &newFormat)
 {
     QMap<QString, QTextCharFormat *>::iterator i = mFormats.find(key);
     bool fontWeight = (newFormat.fontWeight() == QFont::Bold) ? true : false;
-    QColor bg = (newFormat.background() == Qt::NoBrush) ?
-                    QColor(Qt::transparent): newFormat.background().color();
-    QColor fg = (newFormat.foreground() == Qt::NoBrush) ?
-                    QColor(Qt::transparent): newFormat.foreground().color();
+    QColor bg = (newFormat.background() == Qt::NoBrush) ? QColor(Qt::transparent) : newFormat.background().color();
+    QColor fg = (newFormat.foreground() == Qt::NoBrush) ? QColor(Qt::transparent) : newFormat.foreground().color();
 
     if (i == mFormats.end()) {
-        qDebug() <<  __FUNCTION__ << "Theme::setFormat" << "Failed to find key " << key;
+        qDebug() << __FUNCTION__ << "Theme::setFormat"
+                 << "Failed to find key " << key;
         return;
     }
 
@@ -205,7 +233,7 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
     add(key.toStdString().c_str(), fg, bg, fontWeight, newFormat.fontItalic());
 }
 
-const QTextCharFormat & Theme::format(const QString & key)
+const QTextCharFormat &Theme::format(const QString &key)
 {
     QMap<QString, QTextCharFormat *>::iterator i = mFormats.find(key);
 
@@ -215,10 +243,7 @@ const QTextCharFormat & Theme::format(const QString & key)
     return (*i.value());
 }
 
-bool Theme::locked()
-{
-    return mLocked;
-}
+bool Theme::locked() { return mLocked; }
 
 QList<QString> Theme::availableThemes()
 {
@@ -265,9 +290,6 @@ void Theme::remove()
     mSettings->remove(key);
 }
 
-QString & Theme::name()
-{
-    return mName;
-}
+QString &Theme::name() { return mName; }
 
 }} // namespace ScIDE::Settings

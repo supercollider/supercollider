@@ -34,17 +34,17 @@ class ToolBox : public QWidget
     Q_OBJECT
 
 public:
-    ToolBox( QWidget * parent = 0 ): QWidget(parent)
+    ToolBox(QWidget *parent = 0): QWidget(parent)
     {
         mCloseBtn = new QToolButton;
-        mCloseBtn->setIcon( style()->standardIcon(QStyle::SP_TitleBarCloseButton) );
+        mCloseBtn->setIcon(style()->standardIcon(QStyle::SP_TitleBarCloseButton));
         mCloseBtn->setText("X");
         mCloseBtn->setAutoRaise(true);
 
         mStack = new QtCollider::StackLayout;
 
         QHBoxLayout *layout = new QHBoxLayout;
-        layout->setContentsMargins(2,2,2,2);
+        layout->setContentsMargins(2, 2, 2, 2);
         layout->addWidget(mCloseBtn, 0, Qt::AlignTop | Qt::AlignLeft);
         layout->addLayout(mStack);
 
@@ -53,15 +53,15 @@ public:
 
     QAbstractButton *closeButton() { return mCloseBtn; }
 
-    void addWidget ( QWidget *w ) { mStack->addWidget(w); }
+    void addWidget(QWidget *w) { mStack->addWidget(w); }
 
-    int currentIndex () const { return mStack->currentIndex(); }
+    int currentIndex() const { return mStack->currentIndex(); }
 
-    QWidget * currentWidget() const { return mStack->currentWidget(); }
+    QWidget *currentWidget() const { return mStack->currentWidget(); }
 
-    void setCurrentWidget ( QWidget *w ) { mStack->setCurrentWidget(w); }
+    void setCurrentWidget(QWidget *w) { mStack->setCurrentWidget(w); }
 
-    void setCurrentIndex ( int i ) { mStack->setCurrentIndex(i); }
+    void setCurrentIndex(int i) { mStack->setCurrentIndex(i); }
 
 private:
     QtCollider::StackLayout *mStack;

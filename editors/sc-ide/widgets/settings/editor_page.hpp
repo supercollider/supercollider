@@ -30,7 +30,7 @@
 class QFontDatabase;
 
 namespace Ui {
-    class EditorConfigPage;
+class EditorConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
@@ -46,8 +46,8 @@ public:
     ~EditorPage();
 
 public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
+    void load(Manager *);
+    void store(Manager *);
 
 private Q_SLOTS:
     void onCurrentTabChanged(int);
@@ -64,25 +64,20 @@ private Q_SLOTS:
     void deleteTheme();
 
 private:
-    enum TextFormatListRole {
-        TextFormatConfigKeyRole = Qt::UserRole,
-        TextFormatRole,
-        DefaultTextFormatRole
-    };
+    enum TextFormatListRole { TextFormatConfigKeyRole = Qt::UserRole, TextFormatRole, DefaultTextFormatRole };
 
-    void loadThemeFormats(Theme & theme);
+    void loadThemeFormats(Theme &theme);
 
-    void populateFontList( bool onlyMonospaced = false );
-    void populateThemeList(const QString & sel = "");
+    void populateFontList(bool onlyMonospaced = false);
+    void populateThemeList(const QString &sel = "");
 
     QFont constructFont();
     QTextCharFormat constructTextFormat();
 
-    QTreeWidgetItem * addTextFormat
-    ( const QString & name, const QString &key,
-      const QTextCharFormat & format, const QTextCharFormat & defaultFormat = QTextCharFormat() );
+    QTreeWidgetItem *addTextFormat(const QString &name, const QString &key, const QTextCharFormat &format,
+                                   const QTextCharFormat &defaultFormat = QTextCharFormat());
 
-    void updateTextFormatDisplay( QTreeWidgetItem * );
+    void updateTextFormatDisplay(QTreeWidgetItem *);
 
     QFontDatabase *fontDatabase;
 

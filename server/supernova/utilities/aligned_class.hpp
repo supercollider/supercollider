@@ -24,15 +24,9 @@ namespace nova {
 
 struct aligned_class
 {
-    inline void * operator new(std::size_t size)
-    {
-        return malloc_aligned(size);
-    }
+    inline void* operator new(std::size_t size) { return malloc_aligned(size); }
 
-    inline void operator delete(void * p)
-    {
-        free_aligned(p);
-    }
+    inline void operator delete(void* p) { free_aligned(p); }
 };
 
 

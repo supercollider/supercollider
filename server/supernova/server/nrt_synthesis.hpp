@@ -37,10 +37,7 @@ namespace nova {
 
 struct non_rt_functor
 {
-    static inline void init_thread(void)
-    {
-        realtime_engine_functor::init_thread();
-    }
+    static inline void init_thread(void) { realtime_engine_functor::init_thread(); }
 
     static inline void run_tick(void)
     {
@@ -53,16 +50,17 @@ struct non_realtime_synthesis_engine
 {
     typedef std::string string;
 
-    non_realtime_synthesis_engine(server_arguments const & args)
+    non_realtime_synthesis_engine(server_arguments const& args)
     {
-        int format = headerFormatFromString(args.header_format.c_str())
-                   | sampleFormatFromString(args.sample_format.c_str());
+        int format =
+            headerFormatFromString(args.header_format.c_str()) | sampleFormatFromString(args.sample_format.c_str());
 
         string input_file = args.input_file;
         if (input_file == string("_"))
             input_file.clear();
 
-        backend.open_client(input_file, args.output_file, args.samplerate, format, args.output_channels, args.blocksize);
+        backend.open_client(
+            input_file, args.output_file, args.samplerate, format, args.output_channels, args.blocksize);
 
         command_stream.open(args.command_file.c_str(), std::fstream::in | std::fstream::binary);
 
@@ -91,7 +89,7 @@ struct non_realtime_synthesis_engine
         using namespace std::chrono;
 
         const int reserved_packed_size = 16384;
-        std::vector <char> packet_vector(reserved_packed_size, 0);
+        std::vector<char> packet_vector(reserved_packed_size, 0);
 
         printf("\nPerforming non-rt synthesis:\n");
         backend.activate_audio();
@@ -134,7 +132,7 @@ struct non_realtime_synthesis_engine
     done:
         backend.deactivate_audio();
         auto end_time = steady_clock::now();
-        std::string elapsed_string = format_duration ( end_time - start_time );
+        std::string elapsed_string = format_duration(end_time - start_time);
 
         printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
 
@@ -146,8 +144,7 @@ struct non_realtime_synthesis_engine
         }
     }
 
-    template <typename Duration>
-    static std::string format_duration(Duration const & duration)
+    template <typename Duration> static std::string format_duration(Duration const& duration)
     {
         using namespace boost;
         using namespace std::chrono;
@@ -160,11 +157,11 @@ struct non_realtime_synthesis_engine
         double seconds = elapsed_nanoseconds.count() * 1e-9;
 
         if (elapsed_hours.count())
-            return str( format("%|d|h %|d|m %|0.3f|s") % elapsed_hours.count() % elapsed_minutes.count() % seconds );
+            return str(format("%|d|h %|d|m %|0.3f|s") % elapsed_hours.count() % elapsed_minutes.count() % seconds);
         if (elapsed_minutes.count())
-            return str( format("%|d|m %|.3f|s")      % elapsed_minutes.count() % seconds );
+            return str(format("%|d|m %|.3f|s") % elapsed_minutes.count() % seconds);
         else
-            return str( format("%|.3f|s") % seconds );
+            return str(format("%|.3f|s") % seconds);
     }
 
 private:

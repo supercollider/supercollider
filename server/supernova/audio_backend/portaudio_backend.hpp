@@ -24,7 +24,7 @@
 
 #include "portaudio.h"
 #ifdef HAVE_PORTAUDIO_CONFIG_H
-#include "portaudio/portaudio_config.h"
+#    include "portaudio/portaudio_config.h"
 #endif /* HAVE_PORTAUDIO_CONFIG_H */
 
 #include "audio_backend_common.hpp"
@@ -36,13 +36,10 @@ namespace nova {
 /** \brief portaudio backend for supernova
  *
  *  */
-template <typename engine_functor,
-          typename sample_type = float,
-          bool blocking = false>
-class portaudio_backend:
-    public detail::audio_backend_base<sample_type, float, blocking, false>,
-    public detail::audio_settings_basic,
-    protected engine_functor
+template <typename engine_functor, typename sample_type = float, bool blocking = false>
+class portaudio_backend : public detail::audio_backend_base<sample_type, float, blocking, false>,
+                          public detail::audio_settings_basic,
+                          protected engine_functor
 {
     typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
 
@@ -70,21 +67,15 @@ public:
         report_error(err);
     }
 
-    uint32_t get_audio_blocksize(void) const
-    {
-        return blocksize_;
-    }
+    uint32_t get_audio_blocksize(void) const { return blocksize_; }
 
-	uint32_t get_latency(void) const
-	{
-		return latency_;
-	}
+    uint32_t get_latency(void) const { return latency_; }
 
 private:
     static void report_error(int err, bool throw_exception = false)
     {
         if (err < 0) {
-            engine_functor::log_printf_("PortAudio error: %s\n", Pa_GetErrorText( err ));
+            engine_functor::log_printf_("PortAudio error: %s\n", Pa_GetErrorText(err));
             if (throw_exception)
                 throw std::runtime_error("PortAudio error");
         }
@@ -99,16 +90,19 @@ public:
 
         printf("Available Audio Devices:\n");
         for (int i = 0; i != device_number; ++i) {
-            const PaDeviceInfo * device_info = Pa_GetDeviceInfo(i);
+            const PaDeviceInfo *device_info = Pa_GetDeviceInfo(i);
             if (device_info) {
-                printf("%d: %s (%d inputs, %d outputs)\n", i, device_info->name,
-                       device_info->maxInputChannels, device_info->maxOutputChannels);
+                printf("%d: %s (%d inputs, %d outputs)\n",
+                       i,
+                       device_info->name,
+                       device_info->maxInputChannels,
+                       device_info->maxOutputChannels);
             }
         }
         printf("\n");
     }
 
-    bool match_device (std::string const & device, int & r_device_index)
+    bool match_device(std::string const &device, int &r_device_index)
     {
         if (device.empty())
             return true;
@@ -131,15 +125,14 @@ public:
     void report_latency()
     {
         const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
-        if (psi){
-            fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
-            fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency);
+        if (psi) {
+            fprintf(stdout, "  Sample rate: %.3f\n", psi->sampleRate);
+            fprintf(stdout, "  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency);
         }
     }
 
-    bool open_stream(std::string const & input_device, unsigned int inchans,
-                     std::string const & output_device, unsigned int outchans,
-                     unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize)
+    bool open_stream(std::string const &input_device, unsigned int inchans, std::string const &output_device,
+                     unsigned int outchans, unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize)
     {
         int input_device_index, output_device_index;
         if (!match_device(input_device, input_device_index) || !match_device(output_device, output_device_index))
@@ -148,23 +141,23 @@ public:
         PaStreamParameters in_parameters, out_parameters;
         PaTime suggestedLatencyIn, suggestedLatencyOut;
 
-        if (h_blocksize == 0){
+        if (h_blocksize == 0) {
             if (inchans)
                 suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultHighInputLatency;
             if (outchans)
                 suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultHighOutputLatency;
-        }else{
-            if(h_blocksize < 0){
+        } else {
+            if (h_blocksize < 0) {
                 if (inchans)
                     suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultLowInputLatency;
                 if (outchans)
                     suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultLowOutputLatency;
-            }else
+            } else
                 suggestedLatencyIn = suggestedLatencyOut = (double)h_blocksize / (double)samplerate;
         }
 
         if (inchans) {
-            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(input_device_index);
+            const PaDeviceInfo *device_info = Pa_GetDeviceInfo(input_device_index);
 
             inchans = std::min(inchans, (unsigned int)device_info->maxInputChannels);
 
@@ -176,7 +169,7 @@ public:
         }
 
         if (outchans) {
-            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(output_device_index);
+            const PaDeviceInfo *device_info = Pa_GetDeviceInfo(output_device_index);
 
             outchans = std::min(outchans, (unsigned int)device_info->maxOutputChannels);
 
@@ -187,8 +180,8 @@ public:
             out_parameters.hostApiSpecificStreamInfo = nullptr;
         }
 
-        PaStreamParameters * in_stream_parameters  = inchans ? &in_parameters : nullptr;
-        PaStreamParameters * out_stream_parameters = outchans ? &out_parameters : nullptr;
+        PaStreamParameters *in_stream_parameters = inchans ? &in_parameters : nullptr;
+        PaStreamParameters *out_stream_parameters = outchans ? &out_parameters : nullptr;
 
         PaError supported = Pa_IsFormatSupported(in_stream_parameters, out_stream_parameters, samplerate);
         report_error(supported);
@@ -198,20 +191,25 @@ public:
         engine_initalised = false;
         blocksize_ = pa_blocksize;
 
-        PaError opened = Pa_OpenStream(&stream, in_stream_parameters, out_stream_parameters,
-                                       samplerate, pa_blocksize, paNoFlag,
-                                       &portaudio_backend::pa_process, this);
+        PaError opened = Pa_OpenStream(&stream,
+                                       in_stream_parameters,
+                                       out_stream_parameters,
+                                       samplerate,
+                                       pa_blocksize,
+                                       paNoFlag,
+                                       &portaudio_backend::pa_process,
+                                       this);
 
         report_error(opened);
 
         if (opened != paNoError)
             return false;
-		else {
-			const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
-			if (psi)
-				latency_ = (uint32_t) (psi->outputLatency * psi->sampleRate);
-            fprintf(stdout,"  latency: %d\n", latency_);
-		}
+        else {
+            const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
+            if (psi)
+                latency_ = (uint32_t)(psi->outputLatency * psi->sampleRate);
+            fprintf(stdout, "  latency: %d\n", latency_);
+        }
 
         input_channels = inchans;
         super::input_samples.resize(inchans);
@@ -219,7 +217,7 @@ public:
         super::output_samples.resize(outchans);
         samplerate_ = samplerate;
 
-        cpu_time_accumulator.resize( samplerate_, blocksize_, 1 );
+        cpu_time_accumulator.resize(samplerate_, blocksize_, 1);
 
         return true;
     }
@@ -263,15 +261,9 @@ public:
         }
     }
 
-    bool audiostream_ready(void)
-    {
-        return stream;
-    }
+    bool audiostream_ready(void) { return stream; }
 
-    void get_cpuload(float & peak, float & average) const
-    {
-        cpu_time_accumulator.get(peak, average);
-    }
+    void get_cpuload(float &peak, float &average) const { cpu_time_accumulator.get(peak, average); }
 
     std::pair<std::string, std::string> default_device_names()
     {
@@ -286,14 +278,14 @@ public:
 private:
     std::string device_name(PaDeviceIndex device_index)
     {
-        const PaDeviceInfo * device_info = Pa_GetDeviceInfo(device_index);
+        const PaDeviceInfo *device_info = Pa_GetDeviceInfo(device_index);
         return std::string(device_info->name);
     }
 
     int perform(const void *inputBuffer, void *outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags)
     {
-        if ( unlikely(!engine_initalised) ) {
+        if (unlikely(!engine_initalised)) {
             engine_functor::init_thread();
             engine_functor::sync_clock();
             engine_initalised = true;
@@ -302,12 +294,12 @@ private:
         if (statusFlags & (paInputOverflow | paInputUnderflow | paOutputOverflow | paOutputUnderflow))
             engine_functor::sync_clock();
 
-        const float * inputs[input_channels];
-        float * const *in = static_cast<float * const *>(inputBuffer);
+        const float *inputs[input_channels];
+        float *const *in = static_cast<float *const *>(inputBuffer);
         for (uint16_t i = 0; i != input_channels; ++i)
             inputs[i] = in[i];
 
-        float * outputs[output_channels];
+        float *outputs[output_channels];
         float **out = static_cast<float **>(outputBuffer);
         for (uint16_t i = 0; i != output_channels; ++i)
             outputs[i] = out[i];
@@ -325,18 +317,19 @@ private:
     }
 
     static int pa_process(const void *input, void *output, unsigned long frame_count,
-                          const PaStreamCallbackTimeInfo *time_info, PaStreamCallbackFlags status_flags, void * user_data)
+                          const PaStreamCallbackTimeInfo *time_info, PaStreamCallbackFlags status_flags,
+                          void *user_data)
     {
-        portaudio_backend * self = static_cast<portaudio_backend*>(user_data);
+        portaudio_backend *self = static_cast<portaudio_backend *>(user_data);
         return self->perform(input, output, frame_count, time_info, status_flags);
     }
 
-    PaStream *stream       = nullptr;
-    uint32_t blocksize_    = 0;
+    PaStream *stream = nullptr;
+    uint32_t blocksize_ = 0;
     bool engine_initalised = false;
     cpu_time_info cpu_time_accumulator;
 
-	uint32_t latency_      = 0;
+    uint32_t latency_ = 0;
 };
 
 } /* namespace nova */

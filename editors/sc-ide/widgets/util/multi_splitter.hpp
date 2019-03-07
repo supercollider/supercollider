@@ -30,15 +30,14 @@ class MultiEditor;
 class MultiSplitter : public QSplitter
 {
 public:
-    explicit MultiSplitter(MultiEditor *editor, QWidget *parent = 0):
-        QSplitter(parent), mEditor(editor)
+    explicit MultiSplitter(MultiEditor *editor, QWidget *parent = 0): QSplitter(parent), mEditor(editor)
     {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }
 
     MultiEditor *editor() { return mEditor; }
 
-    void insertWidget( QWidget *widget, QWidget *neighbour, Qt::Orientation direction )
+    void insertWidget(QWidget *widget, QWidget *neighbour, Qt::Orientation direction)
     {
         if (!neighbour || !widgetIsChild(neighbour)) {
             qWarning("MultiSplitter: neighbour widget invalid");
@@ -52,16 +51,13 @@ public:
 
         if (parentSplitter->orientation() == direction) {
             parentSplitter->insertWidget(posInParent + 1, widget);
-        }
-        else if (parentSplitter->count() < 2)
-        {
+        } else if (parentSplitter->count() < 2) {
             parentSplitter->setOrientation(direction);
             parentSplitter->addWidget(widget);
-        }
-        else {
+        } else {
             // store parent's current distribution:
             QList<int> parentsSizes = parentSplitter->sizes();
-            QSplitter * splitter = new QSplitter(direction);
+            QSplitter *splitter = new QSplitter(direction);
             // move the neighbour to the new splitter, and add the new widget:
             splitter->addWidget(neighbour);
             splitter->addWidget(widget);
@@ -76,7 +72,7 @@ public:
         setEqualSizes(parentSplitter);
     }
 
-    void removeWidget( QWidget *widget )
+    void removeWidget(QWidget *widget)
     {
         if (!widget || !widgetIsChild(widget)) {
             qWarning("MultiSplitter: widget invalid");
@@ -104,15 +100,14 @@ public:
                 grandParent->insertWidget(posInParent, neighbour);
                 delete parent;
                 grandParent->setSizes(grandParentsSizes);
-            }
-            else {
+            } else {
                 // replace child splitter with it's own children
-                QSplitter *splitter = qobject_cast<QSplitter*>(neighbour);
+                QSplitter *splitter = qobject_cast<QSplitter *>(neighbour);
                 if (splitter) {
                     QList<int> childSizes = splitter->sizes();
                     Qt::Orientation childOrientation = splitter->orientation();
                     int childCount = splitter->count();
-                    while(childCount--)
+                    while (childCount--)
                         parent->addWidget(splitter->widget(0)); // 0 is always another widget
                     delete splitter;
                     parent->setOrientation(childOrientation);
@@ -122,22 +117,20 @@ public:
         }
     }
 
-    template<typename T> T* findChild()
-    {
-        return MultiSplitter::findChild<T>(this);
-    }
+    template <typename T> T *findChild() { return MultiSplitter::findChild<T>(this); }
 
 private:
-    template<typename T> static T* findChild( QSplitter * splitter ) {
+    template <typename T> static T *findChild(QSplitter *splitter)
+    {
         int childCount = splitter->count();
         for (int idx = 0; idx < childCount; ++idx) {
             QWidget *child = splitter->widget(idx);
-            T* typedChild = qobject_cast<T*>(child);
+            T *typedChild = qobject_cast<T *>(child);
             if (typedChild)
                 return typedChild;
-            QSplitter *childSplitter = qobject_cast<QSplitter*>(child);
+            QSplitter *childSplitter = qobject_cast<QSplitter *>(child);
             if (childSplitter) {
-                typedChild = findChild<T>( childSplitter );
+                typedChild = findChild<T>(childSplitter);
                 if (typedChild)
                     return typedChild;
             }
@@ -145,24 +138,21 @@ private:
         return 0;
     }
 
-    QSplitter *parentSplitterOf( QWidget *widget )
-    {
-        return qobject_cast<QSplitter*>( widget->parent() );
-    }
+    QSplitter *parentSplitterOf(QWidget *widget) { return qobject_cast<QSplitter *>(widget->parent()); }
 
     void setEqualSizes(QSplitter *splitter)
     {
         int widgetCount = splitter->count();
-        int splitterSize = splitter->orientation() == Qt::Horizontal ?
-                    splitter->size().width() : splitter->size().height();
+        int splitterSize =
+            splitter->orientation() == Qt::Horizontal ? splitter->size().width() : splitter->size().height();
         QList<int> newWidgetSizes;
         int singleWidgetSize = splitterSize / widgetCount;
-        for( int idx = 0; idx < widgetCount; ++idx )
+        for (int idx = 0; idx < widgetCount; ++idx)
             newWidgetSizes << singleWidgetSize;
-        splitter->setSizes( newWidgetSizes );
+        splitter->setSizes(newWidgetSizes);
     }
 
-    bool widgetIsChild( QWidget *widget )
+    bool widgetIsChild(QWidget *widget)
     {
         QObject *object = widget->parent();
         while (object) {

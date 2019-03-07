@@ -35,16 +35,12 @@ class DocumentsDialog : public QDialog
     Q_OBJECT
 
 public:
-    enum Mode
-    {
-        ExternalChange,
-        Quit
-    };
+    enum Mode { ExternalChange, Quit };
 
     DocumentsDialog(Mode, QWidget *parent = 0);
-    DocumentsDialog(const QList<Document*> & docs, Mode, QWidget *parent = 0);
-    void setText( const QString &text ) { mLabel->setText(text); }
-    void addDocument( Document * );
+    DocumentsDialog(const QList<Document *> &docs, Mode, QWidget *parent = 0);
+    void setText(const QString &text) { mLabel->setText(text); }
+    void addDocument(Document *);
     int count() { return mDocTree->topLevelItemCount(); }
 
 public slots:
@@ -56,27 +52,27 @@ private slots:
     void reloadSelected();
     void ignoreSelected();
     void closeSelected();
-    void onDocumentChangedExternally( Document * );
+    void onDocumentChangedExternally(Document *);
 
 private:
-
     class Item : public QTreeWidgetItem
     {
     public:
         Item(Document *doc);
         Document *document() const { return mDoc; }
         bool isChecked() const { return checkState(0) == Qt::Checked; }
-        void setChecked( bool checked ) { setCheckState(0, checked ? Qt::Checked : Qt::Unchecked); }
+        void setChecked(bool checked) { setCheckState(0, checked ? Qt::Checked : Qt::Unchecked); }
         void update();
+
     private:
-        void setTitle( const QString &title ) { setText(0, title); }
-        void setPath( const QString &path ) { setText(1, path); }
-        void setStatus( const QString &status ) { setText(2, status); }
+        void setTitle(const QString &title) { setText(0, title); }
+        void setPath(const QString &path) { setText(1, path); }
+        void setStatus(const QString &status) { setText(2, status); }
         Document *mDoc;
     };
 
-    void init( Mode mode, const QList<Document*> & = QList<Document*>() );
-    Item *item( int idx ) { return static_cast<Item*>(mDocTree->topLevelItem(idx)); }
+    void init(Mode mode, const QList<Document *> & = QList<Document *>());
+    Item *item(int idx) { return static_cast<Item *>(mDocTree->topLevelItem(idx)); }
 
     Mode mMode;
     QLabel *mLabel;

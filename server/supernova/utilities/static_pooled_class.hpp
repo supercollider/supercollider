@@ -50,16 +50,13 @@ namespace nova {
  *         memory pool.
  *
  * */
-template <typename tag,
-          std::size_t pool_size,
-          bool pool_locking = false,
-          unsigned int recover_count = 0>
+template <typename tag, std::size_t pool_size, bool pool_locking = false, unsigned int recover_count = 0>
 class static_pooled_class
 {
 protected:
-    static_pooled_class(void)                            = default;
-    static_pooled_class(static_pooled_class const & rhs) = default;
-    ~static_pooled_class(void)                           = default;
+    static_pooled_class(void) = default;
+    static_pooled_class(static_pooled_class const& rhs) = default;
+    ~static_pooled_class(void) = default;
 
 private:
     /** free one object from freelist
@@ -69,7 +66,7 @@ private:
      * */
     static inline bool free_one_disposed_object(void)
     {
-        void * chunk = disposed_objects.pop();
+        void* chunk = disposed_objects.pop();
         if (chunk == nullptr)
             return true;
         object_pool.free(chunk);
@@ -78,7 +75,7 @@ private:
 
     struct disposing_allocator
     {
-        static void * allocate(std::size_t size)
+        static void* allocate(std::size_t size)
         {
             free_disposed_objects();
             return object_pool.malloc(size);
@@ -87,7 +84,7 @@ private:
 
     struct dispose_n_object_allocator
     {
-        static void * allocate(std::size_t size)
+        static void* allocate(std::size_t size)
         {
             for (unsigned int i = 0; i != recover_count; ++i) {
                 bool freelist_empty = free_one_disposed_object();
@@ -96,7 +93,7 @@ private:
             }
 
             for (;;) {
-                void * ret = object_pool.malloc(size);
+                void* ret = object_pool.malloc(size);
 
                 if (ret)
                     return ret;
@@ -106,36 +103,31 @@ private:
         }
     };
 
-    typedef typename boost::mpl::if_c<(recover_count > 0),
-                                     dispose_n_object_allocator,
-                                     disposing_allocator
-                                     >::type allocator;
+    typedef
+        typename boost::mpl::if_c<(recover_count > 0), dispose_n_object_allocator, disposing_allocator>::type allocator;
 
 public:
-    static inline void * allocate(std::size_t size)
+    static inline void* allocate(std::size_t size)
     {
 #ifndef NOVA_MEMORY_DEBUGGING
-        size = std::max(2*sizeof(void*), size); /* size requirement for lockfree freelist */
+        size = std::max(2 * sizeof(void*), size); /* size requirement for lockfree freelist */
         return allocator::allocate(size);
 #else
         return malloc(size);
 #endif
     }
 
-    inline void* operator new(std::size_t size)
-    {
-        return allocate(size);
-    }
+    inline void* operator new(std::size_t size) { return allocate(size); }
 
     static inline void free_disposed_objects(void)
     {
-        for(;;) {
+        for (;;) {
             if (free_one_disposed_object())
                 return;
         }
     }
 
-    static inline void deallocate(void * p)
+    static inline void deallocate(void* p)
     {
 #ifndef NOVA_MEMORY_DEBUGGING
         disposed_objects.push(p);
@@ -144,10 +136,7 @@ public:
 #endif
     }
 
-    inline void operator delete(void * p)
-    {
-        deallocate(p);
-    }
+    inline void operator delete(void* p) { deallocate(p); }
 
     typedef static_pool<pool_size, pool_locking> object_pool_type;
 
@@ -155,17 +144,11 @@ public:
     static freelist disposed_objects;
 };
 
-template <typename tag,
-          std::size_t pool_size,
-          bool pool_locking,
-          unsigned int recover_count>
+template <typename tag, std::size_t pool_size, bool pool_locking, unsigned int recover_count>
 typename static_pooled_class<tag, pool_size, pool_locking, recover_count>::object_pool_type
-static_pooled_class<tag, pool_size, pool_locking, recover_count>::object_pool(true);
+    static_pooled_class<tag, pool_size, pool_locking, recover_count>::object_pool(true);
 
-template <typename tag,
-          std::size_t pool_size,
-          bool pool_locking,
-          unsigned int recover_count>
+template <typename tag, std::size_t pool_size, bool pool_locking, unsigned int recover_count>
 freelist static_pooled_class<tag, pool_size, pool_locking, recover_count>::disposed_objects;
 
 

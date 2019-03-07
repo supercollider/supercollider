@@ -30,10 +30,10 @@
 namespace ScIDE { namespace Settings {
 
 // manages preferences
-Manager::Manager( const QString & filename, QObject * parent ):
-    QObject(parent),
-    mSettings( new QSettings(filename, serializationFormat(), this) ),
-    mDefaultCursorFlashTime(QApplication::cursorFlashTime())
+Manager::Manager(const QString &filename, QObject *parent):
+  QObject(parent),
+  mSettings(new QSettings(filename, serializationFormat(), this)),
+  mDefaultCursorFlashTime(QApplication::cursorFlashTime())
 {
     QString th;
 
@@ -88,58 +88,52 @@ void Manager::initDefaults()
     endGroup(); // IDE
 }
 
-bool Manager::contains ( const QString & key ) const
+bool Manager::contains(const QString &key) const
 {
-    if ( mSettings->contains(key) )
+    if (mSettings->contains(key))
         return true;
     else
-        return mDefaults.contains( resolvedKey(key) );
+        return mDefaults.contains(resolvedKey(key));
 }
 
-QVariant Manager::value ( const QString & key ) const
+QVariant Manager::value(const QString &key) const
 {
-    if ( mSettings->contains(key) )
+    if (mSettings->contains(key))
         return mSettings->value(key);
     else
         return mDefaults.value(resolvedKey(key));
 }
 
-void Manager::setValue ( const QString & key, const QVariant & value )
-{
-    mSettings->setValue(key, value);
-}
+void Manager::setValue(const QString &key, const QVariant &value) { mSettings->setValue(key, value); }
 
-QKeySequence Manager::shortcut( const QString & key )
-{
-    return QKeySequence( value(key).toString() );
-}
+QKeySequence Manager::shortcut(const QString &key) { return QKeySequence(value(key).toString()); }
 
-void Manager::addAction ( QAction *action, const QString &key, const QString &category )
+void Manager::addAction(QAction *action, const QString &key, const QString &category)
 {
     ActionData actionData;
     actionData.category = category;
     actionData.key = key;
 
     if (action->data().isValid()) {
-        qWarning( "Settings::Manager: action '%s' of class '%s' has data."
-                  " It will be overridden for settings purposes!",
-                  qPrintable(action->text()),
-                  action->parent()->metaObject()->className() );
+        qWarning("Settings::Manager: action '%s' of class '%s' has data."
+                 " It will be overridden for settings purposes!",
+                 qPrintable(action->text()),
+                 action->parent()->metaObject()->className());
     }
 
-    action->setData( QVariant::fromValue(actionData) );
+    action->setData(QVariant::fromValue(actionData));
 
     mActions.append(action);
 
     beginGroup("IDE/shortcuts");
 
-    setDefault( actionData.key, QVariant::fromValue(action->shortcut()) );
-    action->setShortcut( value(actionData.key).value<QKeySequence>() );
+    setDefault(actionData.key, QVariant::fromValue(action->shortcut()));
+    action->setShortcut(value(actionData.key).value<QKeySequence>());
 
     endGroup();
 }
 
-QString Manager::keyForAction ( QAction *action )
+QString Manager::keyForAction(QAction *action)
 {
     ActionData actionData = action->data().value<ActionData>();
     return actionData.key;
@@ -163,21 +157,15 @@ QFont Manager::codeFont()
     return font;
 }
 
-void Manager::setThemeVal(QString key, const QTextCharFormat &val)
-{
-    mTheme->setFormat(key, val);
-}
+void Manager::setThemeVal(QString key, const QTextCharFormat &val) { mTheme->setFormat(key, val); }
 
-const QTextCharFormat & Manager::getThemeVal(QString key)
-{
-    return mTheme->format(key);
-}
+const QTextCharFormat &Manager::getThemeVal(QString key) { return mTheme->format(key); }
 
 void Manager::updateTheme()
 {
     QString theme = value("IDE/editor/theme").toString();
 
-    delete(mTheme);
+    delete (mTheme);
     mTheme = new Theme(theme);
 }
 

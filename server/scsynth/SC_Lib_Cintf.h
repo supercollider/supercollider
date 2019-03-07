@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@ typedef SCErr (*SC_CommandFunc)(struct World *inWorld, int inSize, char *inData,
 class SC_LibCmd : public SC_NamedObj
 {
 public:
-	SC_LibCmd(SC_CommandFunc inFunc);
+    SC_LibCmd(SC_CommandFunc inFunc);
 
-	SCErr Perform(struct World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+    SCErr Perform(struct World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 
 private:
-	SC_CommandFunc mFunc;
+    SC_CommandFunc mFunc;
 };
 
 extern Malloc gMalloc;
@@ -45,4 +45,4 @@ void initialize_library(const char *mUGensPluginPath);
 void deinitialize_library();
 SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc);
 
-extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
+extern SC_LibCmd *gCmdArray[NUMBER_OF_COMMANDS];

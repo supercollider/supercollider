@@ -23,10 +23,10 @@
 #include <limits.h>
 #include <stdio.h>
 #ifdef _WIN32
-# include <stdlib.h>
-#ifndef PATH_MAX
-# define PATH_MAX _MAX_PATH
-#endif
+#    include <stdlib.h>
+#    ifndef PATH_MAX
+#        define PATH_MAX _MAX_PATH
+#    endif
 #endif
 
 #include "SC_BoundsMacros.h"
@@ -57,11 +57,11 @@ SCLANG_DLLEXPORT_C void schedStop();
 SCLANG_DLLEXPORT_C void schedClear();
 
 SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone);
-SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector);
+SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol *selector);
 SCLANG_DLLEXPORT_C void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
 
-SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals();
+SCLANG_DLLEXPORT_C struct VMGlobals *scGlobals();
 
-SCLANG_DLLEXPORT_C struct PyrSymbol* getsym(const char *inName);
-SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const char *name);
-SCLANG_DLLEXPORT_C struct PyrSymbol* findsym(const char *name);
+SCLANG_DLLEXPORT_C struct PyrSymbol *getsym(const char *inName);
+SCLANG_DLLEXPORT_C struct PyrSymbol *getmetasym(const char *name);
+SCLANG_DLLEXPORT_C struct PyrSymbol *findsym(const char *name);

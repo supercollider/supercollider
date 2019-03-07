@@ -33,7 +33,9 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 
 class HelpBrowserDocklet;
 class HelpBrowserFindBox;
@@ -43,7 +45,7 @@ class LoadProgressIndicator : public QLabel
 {
     Q_OBJECT
 public slots:
-    void start( const QString & msg = tr("Loading") )
+    void start(const QString &msg = tr("Loading"))
     {
         mMsg = msg;
         mDotCount = 0;
@@ -51,11 +53,12 @@ public slots:
     }
     void stop()
     {
-        mUpdateTimer.stop(); clear();
+        mUpdateTimer.stop();
+        clear();
     }
 
 protected:
-    virtual void timerEvent( QTimerEvent *event )
+    virtual void timerEvent(QTimerEvent *event)
     {
         if (event->timerId() != mUpdateTimer.timerId())
             return;
@@ -81,10 +84,10 @@ class HelpWebPage : public QtCollider::WebPage
     Q_OBJECT
 
 public:
-    HelpWebPage(HelpBrowser* browser);
+    HelpWebPage(HelpBrowser *browser);
 
 private:
-    HelpBrowser* mBrowser;
+    HelpBrowser *mBrowser;
 };
 
 class HelpBrowser : public QWidget
@@ -103,49 +106,49 @@ public:
         ActionCount
     };
 
-    HelpBrowser( QWidget * parent = 0 );
+    HelpBrowser(QWidget *parent = 0);
 
     QSize sizeHint() const { return mSizeHint; }
-    QSize minimumSizeHint() const { return QSize(50,50); }
+    QSize minimumSizeHint() const { return QSize(50, 50); }
 
-    void gotoHelpFor( const QString & );
-    void gotoHelpForMethod( const QString & className, const QString & methodName );
+    void gotoHelpFor(const QString &);
+    void gotoHelpForMethod(const QString &className, const QString &methodName);
     QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
 
     QUrl url() const { return mWebView->url(); }
-    
+
     bool helpBrowserHasFocus() const;
 
 public slots:
-    void applySettings( Settings::Manager * );
+    void applySettings(Settings::Manager *);
     void goHome();
     void closeDocument();
     void zoomIn();
     void zoomOut();
     void resetZoom();
-    void evaluateSelection(bool region = false );
-    void findText( const QString & text, bool backwards = false );
+    void evaluateSelection(bool region = false);
+    void findText(const QString &text, bool backwards = false);
     bool openDocumentation();
     void openDefinition();
     void openCommandLine();
     void findReferences();
-    void onLinkClicked( const QUrl &, QWebEnginePage::NavigationType type, bool isMainFrame );
+    void onLinkClicked(const QUrl &, QWebEnginePage::NavigationType type, bool isMainFrame);
 
 signals:
     void urlChanged();
 
 private slots:
-    void onContextMenuRequest( const QPoint & pos );
+    void onContextMenuRequest(const QPoint &pos);
     void onReload();
-    void onScResponse( const QString & command, const QString & data );
-    void onJsConsoleMsg(const QString &, int, const QString & );
+    void onScResponse(const QString &command, const QString &data);
+    void onJsConsoleMsg(const QString &, int, const QString &);
 
 private:
     friend class HelpBrowserDocklet;
 
     void createActions();
-    bool eventFilter( QObject * object, QEvent * event);
-    void sendRequest( const QString &code );
+    bool eventFilter(QObject *object, QEvent *event);
+    void sendRequest(const QString &code);
     QString symbolUnderCursor();
 
     QWebEngineView *mWebView;
@@ -161,13 +164,13 @@ class HelpBrowserFindBox : public QLineEdit
     Q_OBJECT
 
 public:
-    HelpBrowserFindBox( QWidget * parent = 0 );
+    HelpBrowserFindBox(QWidget *parent = 0);
 
 signals:
-    void query( const QString & text,  bool backwards = false );
+    void query(const QString &text, bool backwards = false);
 
 protected:
-    virtual bool event( QEvent * event );
+    virtual bool event(QEvent *event);
 };
 
 class HelpBrowserDocklet : public Docklet
@@ -175,11 +178,12 @@ class HelpBrowserDocklet : public Docklet
     Q_OBJECT
 
 public:
-    explicit HelpBrowserDocklet( QWidget *parent = 0 );
+    explicit HelpBrowserDocklet(QWidget *parent = 0);
     HelpBrowser *browser() { return mHelpBrowser; }
 
 private slots:
-    void onInterpreterStart() {
+    void onInterpreterStart()
+    {
         if (isVisible() && mHelpBrowser->url().isEmpty())
             mHelpBrowser->goHome();
     }

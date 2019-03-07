@@ -31,10 +31,7 @@ class SignalMultiplexer : public QObject
     Q_OBJECT
 
 public:
-    enum ConnectionMode {
-        ConnectionNecessary = 0,
-        ConnectionOptional = 1
-    };
+    enum ConnectionMode { ConnectionNecessary = 0, ConnectionOptional = 1 };
 
     SignalMultiplexer(QObject *parent = 0);
 
@@ -43,7 +40,7 @@ public:
     void connect(const char *signal, QObject *receiver, const char *slot, ConnectionMode = ConnectionNecessary);
     bool disconnect(const char *signal, QObject *receiver, const char *slot);
     bool disconnect(QObject *sender);
-    
+
     QObject *currentObject() const { return mObject; }
 
 public slots:

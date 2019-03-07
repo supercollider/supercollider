@@ -20,10 +20,10 @@
 
 #include "color.hpp"
 
-namespace ScIDE {
-namespace color {
+namespace ScIDE { namespace color {
 
-QColor lighten(const QColor& color, int amount) {
+QColor lighten(const QColor& color, int amount)
+{
     int value = color.value() + amount;
 
     if (value < 0) {
@@ -32,32 +32,19 @@ QColor lighten(const QColor& color, int amount) {
         value = 255;
     }
 
-    return QColor::fromHsv(
-        color.hue(),
-        color.saturation(),
-        value
-    );
+    return QColor::fromHsv(color.hue(), color.saturation(), value);
 }
 
-QColor darken(const QColor& color, int amount) {
-    return lighten(color, -amount);
+QColor darken(const QColor& color, int amount) { return lighten(color, -amount); }
+
+QColor interpolate(const QColor& color_1, const QColor& color_2, float amount)
+{
+    return QColor(color_1.red() * (1 - amount) + color_2.red() * amount,
+                  color_1.green() * (1 - amount) + color_2.green() * amount,
+                  color_1.blue() * (1 - amount) + color_2.blue() * amount);
 }
 
-QColor interpolate(const QColor& color_1, const QColor& color_2, float amount) {
-    return QColor(
-        color_1.red() * (1 - amount) + color_2.red() * amount,
-        color_1.green() * (1 - amount) + color_2.green() * amount,
-        color_1.blue() * (1 - amount) + color_2.blue() * amount
-    );
-}
-
-QColor setValue(const QColor& color, int value) {
-    return QColor::fromHsv(
-        color.hue(),
-        color.saturation(),
-        value
-    );
-}
+QColor setValue(const QColor& color, int value) { return QColor::fromHsv(color.hue(), color.saturation(), value); }
 
 } // namespace color
 } // namespace ScIDE

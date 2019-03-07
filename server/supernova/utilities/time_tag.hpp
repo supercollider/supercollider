@@ -32,8 +32,7 @@ class time_tag
     typedef std::uint32_t uint32;
     typedef std::uint64_t uint64;
 
-    typedef union
-    {
+    typedef union {
         uint64 packed;
         uint32 unpacked[2];
     } cast_union;
@@ -41,19 +40,13 @@ class time_tag
     static const uint32 ntp_offset = 2208988800UL; /* seconds between 01-01-1900 and 01-01-1970 */
 
 public:
-    static const uint64 fraction_steps = uint64(1)<<32;
+    static const uint64 fraction_steps = uint64(1) << 32;
 
-    time_tag(void):
-        data_(0)
-    {}
+    time_tag(void): data_(0) {}
 
-    time_tag(time_tag const & rhs):
-        data_(rhs.data_)
-    {}
+    time_tag(time_tag const& rhs): data_(rhs.data_) {}
 
-    time_tag(uint64 timetag):
-        data_(timetag)
-    {}
+    time_tag(uint64 timetag): data_(timetag) {}
 
     time_tag(uint32 secs, uint32 fraction)
     {
@@ -64,81 +57,55 @@ public:
         data_ = cu.packed;
     }
 
-    uint32 get_secs(void) const
-    {
-        return reinterpret_cast<const cast_union*>(&data_)->unpacked[1];
-    }
+    uint32 get_secs(void) const { return reinterpret_cast<const cast_union*>(&data_)->unpacked[1]; }
 
-    uint32 get_fraction(void) const
-    {
-        return reinterpret_cast<const cast_union*>(&data_)->unpacked[0];
-    }
+    uint32 get_fraction(void) const { return reinterpret_cast<const cast_union*>(&data_)->unpacked[0]; }
 
-    double get_nanoseconds(void) const
-    {
-        return get_fractional_seconds() * 1e9;
-    }
+    double get_nanoseconds(void) const { return get_fractional_seconds() * 1e9; }
 
-    double get_fractional_seconds(void) const
-    {
-        return get_fraction() / double(fraction_steps);
-    }
+    double get_fractional_seconds(void) const { return get_fraction() / double(fraction_steps); }
 
-    bool operator<(time_tag const & rhs) const
-    {
-        return data_ < rhs.data_;
-    }
+    bool operator<(time_tag const& rhs) const { return data_ < rhs.data_; }
 
-    bool operator<=(time_tag const & rhs) const
-    {
-        return data_ <= rhs.data_;
-    }
+    bool operator<=(time_tag const& rhs) const { return data_ <= rhs.data_; }
 
-    bool operator==(time_tag const & rhs) const
-    {
-        return data_ == rhs.data_;
-    }
+    bool operator==(time_tag const& rhs) const { return data_ == rhs.data_; }
 
-    bool operator!=(time_tag const & rhs) const
-    {
-        return !operator==(rhs);
-    }
+    bool operator!=(time_tag const& rhs) const { return !operator==(rhs); }
 
-    time_tag & operator+=(time_tag const & rhs)
+    time_tag& operator+=(time_tag const& rhs)
     {
         data_ += rhs.data_;
         return *this;
     }
 
-    time_tag operator+(time_tag const & rhs) const
+    time_tag operator+(time_tag const& rhs) const
     {
-        time_tag ret (*this);
+        time_tag ret(*this);
         ret += rhs;
         return ret;
     }
 
-    time_tag & operator-=(time_tag const & rhs)
+    time_tag& operator-=(time_tag const& rhs)
     {
         data_ -= rhs.data_;
         return *this;
     }
 
-    time_tag operator-(time_tag const & rhs) const
+    time_tag operator-(time_tag const& rhs) const
     {
-        time_tag ret (*this);
+        time_tag ret(*this);
         ret -= rhs;
         return ret;
     }
 
-    template <typename float_t>
-    static time_tag from_ns(float_t ns)
+    template <typename float_t> static time_tag from_ns(float_t ns)
     {
         const float_t units_per_ns = float_t(fraction_steps) / 1e9;
 
         if (ns < 1e9)
             return time_tag(0, ns * units_per_ns);
-        else
-        {
+        else {
             float_t secs = std::floor(ns / 1e9);
             ns = std::fmod(ns, 1e9);
             return time_tag(secs, ns * units_per_ns);
@@ -159,8 +126,7 @@ public:
 
         if (sample_count < samplerate)
             return from_samples_small(sample_count, samplerate);
-        else
-        {
+        else {
             float_t secs = std::floor(sample_count / samplerate);
             float_t samples = std::fmod(sample_count, samplerate);
             return time_tag(secs, samples * units_per_sample);
@@ -176,7 +142,7 @@ public:
             seconds += (float)secs;
         return seconds * samplerate;
     }
-    
+
     double to_seconds()
     {
         double seconds = get_fractional_seconds();
@@ -186,13 +152,10 @@ public:
             seconds += (double)secs;
         return seconds;
     }
-    
-    bool is_immediate()
-    {
-      return data_ == 1;
-    }
 
-    static time_tag from_ptime(boost::posix_time::ptime const & pt)
+    bool is_immediate() { return data_ == 1; }
+
+    static time_tag from_ptime(boost::posix_time::ptime const& pt)
     {
         using namespace boost::gregorian;
         using namespace boost::posix_time;
@@ -214,7 +177,7 @@ public:
         else
             assert(false);
 
-        assert (fraction < 1.0 && fraction >= 0);
+        assert(fraction < 1.0 && fraction >= 0);
 
         uint32 fraction_units = std::floor(fraction * double(std::numeric_limits<uint32>::max()));
         return time_tag(secs, fraction_units);
@@ -229,7 +192,7 @@ public:
 #ifdef BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
         time_duration offset = seconds(get_secs() - ntp_offset) + nanoseconds(get_nanoseconds());
 #else
-        time_duration offset = seconds(get_secs() - ntp_offset) + microseconds(get_nanoseconds()/1000);
+        time_duration offset = seconds(get_secs() - ntp_offset) + microseconds(get_nanoseconds() / 1000);
 #endif
         return ptime(base, offset);
     }

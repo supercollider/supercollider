@@ -62,7 +62,7 @@ class CodeEditorBox : public QWidget
     Q_OBJECT
 
 public:
-    typedef QList< GenericCodeEditor * > History;
+    typedef QList<GenericCodeEditor *> History;
 
     CodeEditorBox(MultiSplitter *splitter, QWidget *parent = 0);
 
@@ -71,9 +71,10 @@ public:
     GenericCodeEditor *currentEditor();
     Document *currentDocument();
 
-    const History & history() { return mHistory; }
+    const History &history() { return mHistory; }
 
-    void setActive() {
+    void setActive()
+    {
         if (isActive())
             return;
 
@@ -86,7 +87,7 @@ public:
         update();
 
         if (lastActiveBox)
-          emit lastActiveBox->activeChanged(false);
+            emit lastActiveBox->activeChanged(false);
         emit activated(this);
         emit activeChanged(true);
     }
@@ -96,29 +97,29 @@ public:
     QSize minimumSizeHint() const { return QSize(100, 100); }
     QSize sizeHint() const { return QSize(100, 100); }
 
-    void showComboBox( bool );
+    void showComboBox(bool);
 
 signals:
-    void currentChanged(GenericCodeEditor*);
-    void activated( CodeEditorBox *me );
+    void currentChanged(GenericCodeEditor *);
+    void activated(CodeEditorBox *me);
     void activeChanged(bool active);
 
 public slots:
-    void applySettings( Settings::Manager * );
+    void applySettings(Settings::Manager *);
     void comboBoxWhenSplitting();
     void tabsWhenRemovingSplits();
 
 private slots:
-    void onDocumentClosed(Document*);
-    void onDocumentSaved(Document*);
+    void onDocumentClosed(Document *);
+    void onDocumentSaved(Document *);
     void onComboSelectionChanged(int index);
 
 private:
-    int historyIndexOf(Document*);
-    GenericCodeEditor *editorForDocument(Document*);
-    bool eventFilter( QObject *, QEvent * );
-    void focusInEvent( QFocusEvent * );
-    void paintEvent( QPaintEvent * );
+    int historyIndexOf(Document *);
+    GenericCodeEditor *editorForDocument(Document *);
+    bool eventFilter(QObject *, QEvent *);
+    void focusInEvent(QFocusEvent *);
+    void paintEvent(QPaintEvent *);
 
     QStackedLayout *mLayout;
     History mHistory;

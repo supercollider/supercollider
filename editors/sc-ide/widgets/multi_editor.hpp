@@ -44,14 +44,16 @@ class MultiSplitter;
 struct Session;
 class SignalMultiplexer;
 
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 
 class EditorTabBar : public QTabBar
 {
     Q_OBJECT
 
 public:
-    explicit EditorTabBar(QWidget* parent = nullptr);
+    explicit EditorTabBar(QWidget *parent = nullptr);
 
 private slots:
     void onCloseTab();
@@ -59,10 +61,10 @@ private slots:
     void onCloseTabsToTheRight();
 
 private:
-    void mousePressEvent(QMouseEvent * event) override final;
-    void mouseDoubleClickEvent(QMouseEvent * event) override final;
+    void mousePressEvent(QMouseEvent *event) override final;
+    void mouseDoubleClickEvent(QMouseEvent *event) override final;
 
-    void showContextMenu(QMouseEvent * event);
+    void showContextMenu(QMouseEvent *event);
 
     int mTabUnderCursor;
 };
@@ -72,9 +74,7 @@ class MultiEditor : public QWidget
     Q_OBJECT
 
 public:
-
-    enum ActionRole
-    {
+    enum ActionRole {
         // Edit
         Undo,
         Redo,
@@ -91,7 +91,7 @@ public:
         CopyLineDown,
         MoveLineUp,
         MoveLineDown,
-	DeleteWord,
+        DeleteWord,
 
         GotoPreviousBlock,
         GotoNextBlock,
@@ -131,31 +131,30 @@ public:
         ActionRoleCount
     };
 
-    MultiEditor( Main *, QWidget * parent = 0 );
+    MultiEditor(Main *, QWidget *parent = 0);
 
     int tabCount() { return mTabs->count(); }
-    Document * documentForTab( int index );
-    int tabForDocument( Document * doc );
+    Document *documentForTab(int index);
+    int tabForDocument(Document *doc);
 
     GenericCodeEditor *currentEditor();
     CodeEditorBox *currentBox() { return mCurrentEditorBox; }
-    void split( Qt::Orientation direction );
+    void split(Qt::Orientation direction);
 
-    QAction * action( ActionRole role )
-        { return mActions[role]; }
+    QAction *action(ActionRole role) { return mActions[role]; }
 
-    void saveSession( Session * );
-    void switchSession( Session * );
+    void saveSession(Session *);
+    void switchSession(Session *);
 
 signals:
-    void currentDocumentChanged( Document * );
+    void currentDocumentChanged(Document *);
     void splitViewActivated();
     void splitViewDeactivated();
-    void updateDockletOrder( int, int );
+    void updateDockletOrder(int, int);
 
 public slots:
 
-    void setCurrent( Document * );
+    void setCurrent(Document *);
 
     void showNextDocument();
     void showPreviousDocument();
@@ -171,20 +170,20 @@ public slots:
 
     void setShowAutocompleteHelp(bool on);
 
-    void updateTabsOrder( QList<Document*> );
+    void updateTabsOrder(QList<Document *>);
 
 private slots:
-    void applySettings( Settings::Manager * );
-    void onOpen( Document *, int initialCursorPosition, int selectionLength );
-    void onClose( Document * );
-    void show( Document *, int cursorPosition = -1, int selectionLenght = 0 );
-    void update( Document * );
-    void onCloseRequest( int index );
-    void onCurrentTabChanged( int index );
-    void onCurrentEditorChanged( GenericCodeEditor * );
-    void onBoxActivated( CodeEditorBox * );
-    void onDocModified( QObject * );
-    void updateDocOrder( int, int);
+    void applySettings(Settings::Manager *);
+    void onOpen(Document *, int initialCursorPosition, int selectionLength);
+    void onClose(Document *);
+    void show(Document *, int cursorPosition = -1, int selectionLenght = 0);
+    void update(Document *);
+    void onCloseRequest(int index);
+    void onCurrentTabChanged(int index);
+    void onCurrentEditorChanged(GenericCodeEditor *);
+    void onBoxActivated(CodeEditorBox *);
+    void onDocModified(QObject *);
+    void updateDocOrder(int, int);
 
 private:
     void makeSignalConnections();
@@ -200,19 +199,19 @@ private:
      * @return The index of the tab.
      */
     int insertTab(Document *doc, int insertIndex = -1);
-    CodeEditorBox *newBox( MultiSplitter * );
-    void setCurrentBox( CodeEditorBox * );
-    void setCurrentEditor( GenericCodeEditor * );
-    void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
-    void loadSplitterState( MultiSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
-    void showEditorTabs( bool );
+    CodeEditorBox *newBox(MultiSplitter *);
+    void setCurrentBox(CodeEditorBox *);
+    void setCurrentEditor(GenericCodeEditor *);
+    void loadBoxState(CodeEditorBox *box, const QVariantList &data, const QList<Document *> &documentList);
+    void loadSplitterState(MultiSplitter *, const QVariantMap &data, const QList<Document *> &documentList);
+    void showEditorTabs(bool);
     void activateComboBoxWhenSplitting();
     void setMainComboBoxOption();
 
-    QAction *mActions[ActionRoleCount];                                                                                                                                                                                                                                             
+    QAction *mActions[ActionRoleCount];
 
-    SignalMultiplexer * mEditorSigMux;
-    SignalMultiplexer * mBoxSigMux;
+    SignalMultiplexer *mEditorSigMux;
+    SignalMultiplexer *mBoxSigMux;
     QSignalMapper mDocModifiedSigMap;
 
     // gui

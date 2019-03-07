@@ -33,26 +33,26 @@ class DockletToolButton : public QToolButton
     Q_OBJECT
 
 public:
-    explicit DockletToolButton(QWidget * parent = nullptr);
+    explicit DockletToolButton(QWidget *parent = nullptr);
 
 private:
     // overrides to hide unwanted effects
-    void mouseDoubleClickEvent(QMouseEvent * event) override final;
-    void mousePressEvent(QMouseEvent * event)       override final;
+    void mouseDoubleClickEvent(QMouseEvent *event) override final;
+    void mousePressEvent(QMouseEvent *event) override final;
 };
 
 class DockletToolBar : public QWidget
 {
     Q_OBJECT
 public:
-    DockletToolBar(const QString & title);
+    DockletToolBar(const QString &title);
 
-    void addAction (QAction *action);
-    void addWidget (QWidget *widget, int stretch = 0 );
-    QMenu *optionsMenu () { return mOptionsMenu; }
+    void addAction(QAction *action);
+    void addWidget(QWidget *widget, int stretch = 0);
+    QMenu *optionsMenu() { return mOptionsMenu; }
 
 protected:
-    virtual void paintEvent( QPaintEvent *event );
+    virtual void paintEvent(QPaintEvent *event);
     QMenu *mOptionsMenu;
 };
 
@@ -60,56 +60,44 @@ class Docklet : public QObject
 {
     Q_OBJECT
 public:
-    Docklet( const QString & title, QWidget * parent = 0 );
+    Docklet(const QString &title, QWidget *parent = 0);
 
     QDockWidget *dockWidget() { return mDockWidget; }
     QWidget *window() { return mWindow; }
-    QWidget *widget () { return mWidget; }
+    QWidget *widget() { return mWidget; }
     DockletToolBar *toolBar() { return mToolBar; }
     QAction *toggleViewAction() { return mVisibilityAction; }
 
-    bool isDetached() const
-    {
-        return const_cast<Docklet*>(this)->currentContainer() != mDockWidget;
-    }
+    bool isDetached() const { return const_cast<Docklet *>(this)->currentContainer() != mDockWidget; }
 
-    void setDetachedAndVisible( bool detached, bool visible );
+    void setDetachedAndVisible(bool detached, bool visible);
 
-    bool isVisible() const
-    {
-        return const_cast<Docklet*>(this)->currentContainer()->isVisible();
-    }
+    bool isVisible() const { return const_cast<Docklet *>(this)->currentContainer()->isVisible(); }
 
-    void setWidget( QWidget *widget )
+    void setWidget(QWidget *widget)
     {
         mWidget = widget;
         if (!isDetached())
             mDockWidget->setWidget(widget);
     }
 
-    void setAllowedAreas ( Qt::DockWidgetAreas areas )
-    {
-        mDockWidget->setAllowedAreas(areas);
-    }
+    void setAllowedAreas(Qt::DockWidgetAreas areas) { mDockWidget->setAllowedAreas(areas); }
 
-    void setFeatures ( QDockWidget::DockWidgetFeatures features )
-    {
-        mDockWidget->setFeatures(features);
-    }
+    void setFeatures(QDockWidget::DockWidgetFeatures features) { mDockWidget->setFeatures(features); }
 
-    void setObjectName( const QString & name )
+    void setObjectName(const QString &name)
     {
         QObject::setObjectName(name);
         mDockWidget->setObjectName(name);
     }
 
     QByteArray saveDetachedState() const;
-    void restoreDetachedState( const QByteArray & );
+    void restoreDetachedState(const QByteArray &);
 
 public slots:
     void toggleFloating();
     void toggleDetached();
-    void setVisible( bool visible )
+    void setVisible(bool visible)
     {
         QWidget *container = currentContainer();
         container->setVisible(visible);
@@ -129,21 +117,18 @@ public slots:
     }
 
 private slots:
-    void onFeaturesChanged ( QDockWidget::DockWidgetFeatures features );
+    void onFeaturesChanged(QDockWidget::DockWidgetFeatures features);
     void updateDockAction();
 
 protected:
-    virtual bool eventFilter(QObject *object, QEvent * event);
+    virtual bool eventFilter(QObject *object, QEvent *event);
 
 private:
-    enum ContainerType {
-        DockableContainer,
-        WindowContainer
-    };
+    enum ContainerType { DockableContainer, WindowContainer };
 
     QWidget *currentContainer() { return mToolBar->parentWidget(); }
 
-    void setCurrentContainer( ContainerType );
+    void setCurrentContainer(ContainerType);
 
     QDockWidget *mDockWidget;
     QWidget *mWindow;

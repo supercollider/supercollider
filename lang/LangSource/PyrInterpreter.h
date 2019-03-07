@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,6 +40,6 @@ void DumpBackTrace(VMGlobals *g);
 void DumpStack(VMGlobals *g, PyrSlot *sp);
 void DumpFrame(struct PyrFrame *frame);
 bool FrameSanity(PyrFrame *frame, const char *tagstr);
-struct PyrProcess* newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
+struct PyrProcess *newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
 void startProcess(VMGlobals *g, PyrSymbol *selector);
 SCLANG_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);

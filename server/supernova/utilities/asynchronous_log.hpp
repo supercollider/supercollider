@@ -32,8 +32,7 @@
 namespace nova {
 namespace asynchronous_log_impl {
 
-struct asynchronous_log:
-    boost::noncopyable
+struct asynchronous_log : boost::noncopyable
 {
     bool log_printf(const char *fmt, ...)
     {
@@ -56,13 +55,13 @@ struct asynchronous_log:
         return log(scratchpad.data(), print_result);
     }
 
-    bool log(const char * string)
+    bool log(const char *string)
     {
         size_t length = strlen(string);
         return log(string, length);
     }
 
-    bool log(const char * string, size_t length)
+    bool log(const char *string, size_t length)
     {
         size_t total_enqueued = buffer.push(string, length);
         if (total_enqueued == 0)
@@ -93,7 +92,7 @@ struct asynchronous_log:
         return true;
     }
 
-    size_t read_log(char * out_buffer, size_t size)
+    size_t read_log(char *out_buffer, size_t size)
     {
         if (sem.try_wait())
             return read(out_buffer, size);
@@ -101,34 +100,25 @@ struct asynchronous_log:
             return 0;
     }
 
-    size_t read_log_waiting(char * out_buffer, size_t size)
+    size_t read_log_waiting(char *out_buffer, size_t size)
     {
         sem.wait();
         return read(out_buffer, size);
     }
 
-    size_t read(char * out_buffer, size_t size)
-    {
-        return buffer.pop(out_buffer, size);
-    }
+    size_t read(char *out_buffer, size_t size) { return buffer.pop(out_buffer, size); }
 
-    void interrrupt(void)
-    {
-        sem.post();
-    }
+    void interrrupt(void) { sem.post(); }
 
 private:
-    boost::lockfree::spsc_queue<char, boost::lockfree::capacity<262144> > buffer;
+    boost::lockfree::spsc_queue<char, boost::lockfree::capacity<262144>> buffer;
     boost::sync::semaphore sem;
 };
 
-struct asynchronous_log_thread:
-    asynchronous_log
+struct asynchronous_log_thread : asynchronous_log
 {
 public:
-    asynchronous_log_thread(void):
-        running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this))
-    {}
+    asynchronous_log_thread(void): running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this)) {}
 
     ~asynchronous_log_thread(void)
     {

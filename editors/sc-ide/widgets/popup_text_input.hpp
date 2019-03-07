@@ -31,13 +31,13 @@ class PopupTextInput : public QInputDialog
     Q_OBJECT
 
 public:
-    PopupTextInput(QString const & labelText, QWidget * parent):
-        QInputDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
+    PopupTextInput(QString const& labelText, QWidget* parent):
+      QInputDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
     {
         setOption(QInputDialog::NoButtons);
         setInputMode(QInputDialog::TextInput);
         setLabelText(labelText);
-        
+
         if (parent) {
             QRect position = rect();
             position.moveCenter(parent->rect().center());
@@ -48,15 +48,15 @@ public:
     }
 
 private:
-    void paintEvent( QPaintEvent * )
+    void paintEvent(QPaintEvent*)
     {
         QPainter painter(this);
         painter.setBrush(Qt::NoBrush);
         painter.setPen(palette().color(QPalette::Dark));
-        painter.drawRect(rect().adjusted(0,0,-1,-1));
+        painter.drawRect(rect().adjusted(0, 0, -1, -1));
     }
 
-    virtual void keyPressEvent(QKeyEvent * event)
+    virtual void keyPressEvent(QKeyEvent* event)
     {
         switch (event->key()) {
         case Qt::Key_Enter:
@@ -70,7 +70,6 @@ private:
 
         QInputDialog::keyPressEvent(event);
     }
-
 };
 
 }

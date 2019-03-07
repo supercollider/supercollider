@@ -36,41 +36,37 @@ class freelist
     typedef boost::lockfree::detail::tagged_ptr<freelist_node> tagged_ptr;
 
 public:
-    freelist(void):
-        pool_(tagged_ptr(nullptr))
-    {}
+    freelist(void): pool_(tagged_ptr(nullptr)) {}
 
-    freelist( freelist const & rhs )             = delete;
-    freelist & operator=( freelist const & rhs ) = delete;
+    freelist(freelist const& rhs) = delete;
+    freelist& operator=(freelist const& rhs) = delete;
 
-    void * pop (void)
+    void* pop(void)
     {
-        for(;;)
-        {
+        for (;;) {
             tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
             if (!old_pool.get_ptr())
                 return nullptr;
 
-            freelist_node * new_pool_ptr = old_pool->next.get_ptr();
-            tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
+            freelist_node* new_pool_ptr = old_pool->next.get_ptr();
+            tagged_ptr new_pool(new_pool_ptr, old_pool.get_tag() + 1);
 
             if (pool_.compare_exchange_weak(old_pool, new_pool)) {
-                void * ptr = old_pool.get_ptr();
+                void* ptr = old_pool.get_ptr();
                 return reinterpret_cast<void*>(ptr);
             }
         }
     }
 
-    void push (void * n)
+    void push(void* n)
     {
-        void * node = n;
-        for(;;)
-        {
+        void* node = n;
+        for (;;) {
             tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
-            freelist_node * new_pool_ptr = reinterpret_cast<freelist_node*>(node);
-            tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
+            freelist_node* new_pool_ptr = reinterpret_cast<freelist_node*>(node);
+            tagged_ptr new_pool(new_pool_ptr, old_pool.get_tag() + 1);
 
             new_pool->next.set_ptr(old_pool.get_ptr());
 

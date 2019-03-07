@@ -38,9 +38,7 @@ class SessionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    SessionsDialog ( SessionManager *mng, QWidget *parent = 0 ):
-        QDialog(parent),
-        mSessionManager(mng)
+    SessionsDialog(SessionManager *mng, QWidget *parent = 0): QDialog(parent), mSessionManager(mng)
     {
         setWindowTitle("Sessions");
 
@@ -82,14 +80,12 @@ private slots:
 
         QString name = item->text();
 
-        if ( QMessageBox::warning (
-                this,
-                tr("Delete Session"),
-                tr("Are you sure you want to delete session '%1'?").arg(name),
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::Yes
-            ) == QMessageBox::Yes )
-        {
+        if (QMessageBox::warning(this,
+                                 tr("Delete Session"),
+                                 tr("Are you sure you want to delete session '%1'?").arg(name),
+                                 QMessageBox::Yes | QMessageBox::No,
+                                 QMessageBox::Yes)
+            == QMessageBox::Yes) {
             mSessionManager->removeSession(name);
             updateSessions();
         }
@@ -102,14 +98,9 @@ private slots:
             return;
 
         QString oldName = item->text();
-        QString newName = QInputDialog::getText (
-            this,
-            tr("Rename Session"),
-            tr("Enter a new name for the session:"),
-            QLineEdit::Normal,
-            oldName
-        );
-        if (newName.isEmpty() || newName == oldName )
+        QString newName = QInputDialog::getText(
+            this, tr("Rename Session"), tr("Enter a new name for the session:"), QLineEdit::Normal, oldName);
+        if (newName.isEmpty() || newName == oldName)
             return;
 
         mSessionManager->renameSession(oldName, newName);
@@ -123,11 +114,11 @@ private:
         QStringList sessions = mSessionManager->availableSessions();
         mList->addItems(sessions);
 
-        const Session * currentSession = mSessionManager->currentSession();
-        if(!currentSession)
+        const Session *currentSession = mSessionManager->currentSession();
+        if (!currentSession)
             return;
 
-        const int currentSessionIndex = sessions.indexOf( currentSession->name() );
+        const int currentSessionIndex = sessions.indexOf(currentSession->name());
         if (currentSessionIndex != -1)
             mList->setCurrentRow(currentSessionIndex);
     }

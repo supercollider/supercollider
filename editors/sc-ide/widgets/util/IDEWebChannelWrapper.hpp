@@ -26,23 +26,18 @@
 namespace ScIDE {
 
 /// Exposes IDE functionality to JS in help browser widget via WebChannel
-class IDEWebChannelWrapper : public QObject {
+class IDEWebChannelWrapper : public QObject
+{
     Q_OBJECT
 
 public:
-    IDEWebChannelWrapper(HelpBrowser* browser):
-        m_browser{browser}
-    {}
+    IDEWebChannelWrapper(HelpBrowser* browser): m_browser { browser } {}
 
 public slots:
-    void evaluateLine()
-    {
-        m_browser->evaluateSelection(false);
-    }
+    void evaluateLine() { m_browser->evaluateSelection(false); }
 
 private:
-    HelpBrowser * const m_browser;
+    HelpBrowser* const m_browser;
 };
 
 } // namespace ScIDE
-

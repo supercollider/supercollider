@@ -33,7 +33,8 @@ class LangStatusBox : public StatusBox
 public:
     LangStatusBox(ScProcess *, QWidget *parent = 0);
 private slots:
-    void onInterpreterStateChanged( QProcess::ProcessState );
+    void onInterpreterStateChanged(QProcess::ProcessState);
+
 private:
     StatusLabel *mLabel;
 };
