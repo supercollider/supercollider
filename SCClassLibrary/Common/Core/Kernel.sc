@@ -87,7 +87,7 @@ Class {
 	}
 
 	dumpClassSubtree {
-		 _DumpClassSubtree
+		_DumpClassSubtree
 		^this.primitiveFailed
 	}
 	dumpInterface {

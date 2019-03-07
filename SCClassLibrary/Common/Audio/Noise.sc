@@ -242,8 +242,8 @@ Hasher : UGen {
 		^this.multiNew('control', in).madd(mul, add)
 	}
 	checkInputs {
-    if(rate == \audio) { ^this.checkSameRateAsFirstInput; };
-    ^this.checkValidInputs;
+		if(rate == \audio) { ^this.checkSameRateAsFirstInput; };
+		^this.checkValidInputs;
 	}
 }
 

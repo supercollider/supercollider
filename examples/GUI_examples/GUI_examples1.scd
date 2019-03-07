@@ -367,7 +367,7 @@ f = { arg server;
 a.put(\serverRunning, f);
 w.onClose = {
 	if (isOn, { server.sendMsg("/n_free", 2001) });
- 	a.remove;
+	a.remove;
 };
 
 w.front;

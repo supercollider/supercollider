@@ -1,26 +1,26 @@
-/*
- ________________________________________
-/ HEY! If you make changes to SCDoc,     \
-| remember to increment SCDoc.version in |
-| SCDoc.sc so you force the docs to      |
-\ regenerate.                            /
- ----------------------------------------
-    \                                  ___-------___
-     \                             _-~~             ~~-_
-      \                         _-~                    /~-_
-             /^\__/^\         /~  \                   /    \
-           /|  O|| O|        /      \_______________/        \
-          | |___||__|      /       /                \          \
-          |          \    /      /                    \          \
-          |   (_______) /______/                        \_________ \
-          |         / /         \                      /            \
-           \         \^\\         \                  /               \     /
-             \         ||           \______________/      _-_       //\__//
-               \       ||------_-~~-_ ------------- \ --/~   ~\    || __/
-                 ~-----||====/~     |==================|       |/~~~~~
-                  (_(__/  ./     /                    \_\      \.
-                         (_(___/                         \_____)_)
-*/
+/*  ________________________________________
+ * / HEY! If you make changes to SCDoc,     \
+ * | remember to increment SCDoc.version in |
+ * | SCDoc.sc so you force the docs to      |
+ * \ regenerate.                            /
+ *  ----------------------------------------
+ *     \                                  ___-------___
+ *      \                             _-~~             ~~-_
+ *       \                         _-~                    /~-_
+ *              /^\__/^\         /~  \                   /    \
+ *            /|  O|| O|        /      \_______________/        \
+ *           | |___||__|      /       /                \          \
+ *           |          \    /      /                    \          \
+ *           |   (_______) /______/                        \_________ \
+ *           |         / /         \                      /            \
+ *            \         \^\\         \                  /               \     /
+ *              \         ||           \______________/      _-_       //\__//
+ *                \       ||------_-~~-_ ------------- \ --/~   ~\    || __/
+ *                  ~-----||====/~     |==================|       |/~~~~~
+ *                   (_(__/  ./     /                    \_\      \.
+ *                          (_(___/                         \_____)_)
+ */
+
 SCDocHTMLRenderer {
 	classvar <binaryOperatorCharacters = "!@%&*-+=|<>?/";
 	classvar currentClass, currentImplClass, currentMethod, currArg;
@@ -158,7 +158,7 @@ SCDocHTMLRenderer {
 			linkText = if(linkText.isEmpty) { link } { linkText };
 			linkTarget = this.prLinkTargetForExternalLink(linkBase, linkAnchor);
 		} {
-		    // Process a link that goes to a URL within the help system
+			// Process a link that goes to a URL within the help system
 			linkText = this.prLinkTextForInternalLink(linkBase, linkAnchor, linkText);
 			linkTarget = this.prLinkTargetForInternalLink(linkBase, linkAnchor, link);
 		};

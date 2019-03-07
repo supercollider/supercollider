@@ -41,24 +41,20 @@ TestEvent : UnitTest {
 // This shows the order of precedence in an event (higher is overriding lower)
 // the tests below make sure the above precedence is valid
 
-
-/*
-
-                                       +----  (4)  proto of the proto (propro)
-                                      /
-                   +-- proto  (6) ---+
-                  /                   \
-                 /                     +----  (3)  parent of the proto (propa)
-                /
-  event (7) ---+
-                \
-                 \                     +---- (2)  proto of the parent (papro)
-                  \                   /
-                   +-- parent  (5) --+
-                                      \
-                                       +---- (1)  parent of the parent (papa)
-*/
-
+/*                                      +----  (4)  proto of the proto (propro)
+ *                                     /
+ *                  +-- proto  (6) ---+
+ *                 /                   \
+ *                /                     +----  (3)  parent of the proto (propa)
+ *               /
+ * event (7) ---+
+ *               \
+ *                \                     +---- (2)  proto of the parent (papro)
+ *                 \                   /
+ *                  +-- parent  (5) --+
+ *                                     \
+ *                                      +---- (1)  parent of the parent (papa)
+ */
 
 		var papa = (x:1);
 		var papro = (x:2);

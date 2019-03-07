@@ -199,7 +199,7 @@ Platform {
 
 UnixPlatform : Platform {
 	pathSeparator { ^$/ }
-    pathDelimiter { ^$: }
+	pathDelimiter { ^$: }
 
 	isPathSeparator { |char|
 		^(char === this.pathSeparator)

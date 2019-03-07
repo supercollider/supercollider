@@ -11,8 +11,8 @@ Quarks.install("XML");
 (
 var p, a, l, d, doc;
 p = Pipe.new(
-  "curl http://search.twitter.com/search.atom?q=%23supercollider+play",
-  "r"
+	"curl http://search.twitter.com/search.atom?q=%23supercollider+play",
+	"r"
 );
 a = "";
 l = p.getLine;
@@ -23,15 +23,15 @@ d = DOMDocument.new;
 d.parseXML(a);
 t = d.getElementsByTagName("entry").collect { |e|
 
-  "// by " + e.getElementsByTagName("author").first
-          .getElementsByTagName("name").first.getText() + ":\n" +
+	"// by " + e.getElementsByTagName("author").first
+	.getElementsByTagName("name").first.getText() + ":\n" +
 
-  e.getElementsByTagName("title").first.getText()
+	e.getElementsByTagName("title").first.getText()
 
 };
 
 Document( "supercollider tweets", "// #supercollider tweets\n\n\n" +
-  t.join("\n\n\n\n")).syntaxColorize;
+	t.join("\n\n\n\n")).syntaxColorize;
 )
 
 
