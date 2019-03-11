@@ -97,7 +97,7 @@ argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: autoRun
-If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be executed on opening the file, if autorun is set to true.
+If a document begins with the comment, code::/*RUN*/::, then the code following it in the file will be executed on opening the file, if autorun is set to true.
 argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
