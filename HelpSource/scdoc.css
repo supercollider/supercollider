@@ -352,7 +352,6 @@ h4 {
 
 /* https://css-tricks.com/hash-tag-links-padding/ */
 .anchor::before {
-    display: block;
     content: " ";
     margin-top: -3em;
     height: 3em;
