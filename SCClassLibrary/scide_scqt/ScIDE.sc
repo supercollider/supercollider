@@ -642,7 +642,7 @@ Document {
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
 	}
 
-	getText { |action, start = 0, range -1|
+	getText { |start = 0, range -1|
 		^this.prGetTextFromMirror(quuid, start, range);
 	}
 
