@@ -20,7 +20,7 @@ method:: kr
 argument:: busindex
 [sk] Audio input to track, already analyzed into N features, passed in via a control bus number from which to retrieve consecutive streams.
 
-argument:: enum features
+argument:: numfeatures
 [s] How many features (ie how many control buses) are provided
 
 argument:: windowsize
