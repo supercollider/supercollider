@@ -12,7 +12,7 @@ The latency of the beat tracker with default settings is thus at least 2.5 secon
 
 This beat tracker is designed to be flexible for user needs; you can try out different window sizes, tempo weights, and combinations of features. However, there are no guarantees on stability and effectiveness, and you will need to explore such parameters for a particular situation.
 
-class methods::
+classmethods::
 private:: categories
 
 method:: kr
