@@ -5,7 +5,7 @@
 //		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
 			// look for startup files inside the app Contents directory
 		var filename = "startup.*";
-		^(String.scDir +/+ filename).pathMatch;
+		^(Platform.resourceDir +/+ filename).pathMatch;
 	}
 
 	startup {
@@ -39,8 +39,8 @@
 		interpreter.s = Server.default;
 
 			// some folder paths that should point inside the app's Contents folder
-		SynthDef.synthDefDir = String.scDir +/+ "synthdefs/";
-		Archive.archiveDir = String.scDir;
+		SynthDef.synthDefDir = Platform.resourceDir +/+ "synthdefs/";
+		Archive.archiveDir = Platform.resourceDir;
 
 		this.platform.startup;
 
@@ -57,7 +57,7 @@
 
 		Server.default.waitForBoot({
 			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
-//			(String.scDir.dirname ++ "/MFBSD.rtf").load;
+//			(Platform.resourceDir.dirname ++ "/MFBSD.rtf").load;
 		});
 		// close post window if user should not have it
 //		Document.listener.close
