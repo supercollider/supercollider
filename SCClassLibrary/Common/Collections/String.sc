@@ -63,10 +63,6 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
-	*scDir {
-		^Platform.resourceDir
-	}
-
 	compare { arg aString, ignoreCase=false;
 		_StringCompare
 		this.primitiveFailed;
