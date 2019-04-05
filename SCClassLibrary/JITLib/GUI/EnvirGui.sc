@@ -25,7 +25,7 @@ EnvirGui : JITGui {
 	}
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]|
-		^super.new(object, numItems, parent, bounds, makeSkip = true, options);
+		^super.new(object, numItems, parent, bounds, makeSkip, options);
 	}
 
 	setDefaults {
