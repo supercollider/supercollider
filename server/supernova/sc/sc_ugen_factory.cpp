@@ -128,8 +128,11 @@ bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func) {
 void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, struct sc_msg_iter* args) {
     unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
-    if (it != unitcmd_set.end())
+    if (it != unitcmd_set.end()){
         it->run(unit, args);
+    } else {
+        std::cout << "can't find unit command: " << cmd_name << std::endl;
+	}
 }
 
 sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, struct sc_msg_iter* args) {
@@ -164,10 +167,13 @@ sc_ugen_def* sc_plugin_container::find_ugen(symbol const& name) {
 }
 
 bool sc_plugin_container::register_ugen_command_function(const char* ugen_name, const char* cmd_name,
-                                                         UnitCmdFunc func) {
+                                                     UnitCmdFunc func)
+{
     sc_ugen_def* def = find_ugen(symbol(ugen_name));
-    if (def)
+    if (!def){
+        std::cout << "unable to register ugen command: ugen '" << ugen_name << "' doesn't exist" << std::endl;
         return false;
+    }
     return def->add_command(cmd_name, func);
 }
 
