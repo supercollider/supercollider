@@ -67,7 +67,7 @@ public:
         flags(inFlags),
         unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count)) {}
 
-    Unit* construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, World* world, linear_allocator& allocator);
+    Unit* construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, int index, World* world, linear_allocator& allocator);
 
     void initialize(Unit* unit) { (*ctor)(unit); }
 

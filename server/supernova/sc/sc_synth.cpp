@@ -103,7 +103,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     sc_factory->allocate_ugens(synthdef.graph.size());
     for (size_t i = 0; i != synthdef.graph.size(); ++i) {
         sc_synthdef::unit_spec_t const& spec = synthdef.graph[i];
-        units[i] = spec.prototype->construct(spec, this, &sc_factory->world, allocator);
+        units[i] = spec.prototype->construct(spec, this, i, &sc_factory->world, allocator);
     }
 
     for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i) {

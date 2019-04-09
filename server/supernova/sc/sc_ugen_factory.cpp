@@ -38,8 +38,7 @@ namespace nova {
 
 std::unique_ptr<sc_ugen_factory> sc_factory;
 
-Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, World* world,
-                             linear_allocator& allocator) {
+Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, int index, World* world, linear_allocator& allocator) {
     const int buffer_length = world->mBufLength;
 
     const size_t output_count = unit_spec.output_specs.size();
@@ -67,6 +66,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
 
     /* initialize members from synth */
     unit->mParent = static_cast<Graph*>(s);
+    unit->mParentIndex = index;
     if (unit_spec.rate == 2)
         unit->mRate = &world->mFullRate;
     else
