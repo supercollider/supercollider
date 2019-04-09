@@ -237,11 +237,16 @@ void sc_synth::map_control_buses_audio(unsigned int slot_index, int audio_bus_in
         map_control_bus_audio(slot_index + i, audio_bus_index + i);
 }
 
-void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args) {
-    Unit* unit = units[unit_index];
-    sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args)
+{
+    if (unit_index >= 0 && unit_index < unit_count) {
+        Unit* unit = units[unit_index];
+        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
-    def->run_unit_command(unit_cmd, unit, args);
+        def->run_unit_command(unit_cmd, unit, args);
+    } else {
+        log_printf("unit index %d out of range!\n", unit_index);
+    }
 }
 
 void sc_synth::run(void) { perform(); }
