@@ -2904,8 +2904,8 @@ void handle_p_new(ReceivedMessage const& msg) {
     }
 }
 
-void handle_u_cmd(ReceivedMessage const& msg, int size) {
-    sc_msg_iter args(size, msg.AddressPattern());
+void handle_u_cmd(ReceivedMessage const& msg, int size, int skip_bytes) {
+    sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     int node_id = args.geti();
 
@@ -2923,7 +2923,7 @@ void handle_u_cmd(ReceivedMessage const& msg, int size) {
 }
 
 void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr endpoint, int skip_bytes) {
-    sc_msg_iter args(size, msg.AddressPattern() + skip_bytes);
+    sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     const char* cmd = args.gets();
 
@@ -3074,7 +3074,7 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         break;
 
     case cmd_u_cmd:
-        handle_u_cmd(message, msg_size);
+        handle_u_cmd(message, msg_size, 4);
         break;
 
     case cmd_b_free:
@@ -3523,7 +3523,7 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
     }
 
     if (strcmp(address + 1, "u_cmd") == 0) {
-        handle_u_cmd(message, msg_size);
+        handle_u_cmd(message, msg_size, 8);
         return;
     }
 
