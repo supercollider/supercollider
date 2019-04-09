@@ -2620,15 +2620,14 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
-    movable_array<char> cmd(msg_size, msg.AddressPattern());
+template <bool realtime> 
+void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint, int skip_bytes)
+{
+    movable_array<char> cmd (msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
-    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(cmd)]() mutable {
-        const char* data = (char*)message.data();
-        const char* msg_data = OSCstrskip(data); // skip address
-        size_t diff = msg_data - data;
+    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(cmd)] () mutable {
 
-        sc_msg_iter msg(message.size() - diff, msg_data);
+        sc_msg_iter msg(message.size(), message.data());
 
         char nextTag = msg.nextTag();
         if (nextTag != 'i') {
@@ -3130,7 +3129,7 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         break;
 
     case cmd_b_gen:
-        handle_b_gen<realtime>(message, msg_size, endpoint);
+        handle_b_gen<realtime>(message, msg_size, endpoint, 4);
         break;
 
     case cmd_b_close:
@@ -3380,7 +3379,7 @@ void dispatch_buffer_commands(const char* address, ReceivedMessage const& messag
     }
 
     if (strcmp(address + 3, "gen") == 0) {
-        handle_b_gen<realtime>(message, msg_size, endpoint);
+        handle_b_gen<realtime>(message, msg_size, endpoint, 8);
         return;
     }
 
