@@ -3579,34 +3579,31 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 
 
 template <bool realtime>
-void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
-                                 AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
-                                 completion_message&& message, endpoint_ptr endpoint) {
-    cmd_dispatcher<realtime>::fire_system_callback(
-        [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-            if (stage2)
-                (stage2)(world, cmdData);
+void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
+                                  completion_message&& message, endpoint_ptr endpoint)
+{
+    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
+        if (stage2)
+            (stage2)(world, cmdData);
 
-            cmd_dispatcher<realtime>::fire_rt_callback(
-                [=, message = std::move(message), endpoint = std::move(endpoint)]() mutable {
-                    if (stage3) {
-                        bool success = (stage3)(world, cmdData);
-                        if (success)
-                            message.handle(endpoint);
-                    }
-                    consume(std::move(message));
+        cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
+            if (stage3) {
+                bool success = (stage3)(world, cmdData);
+                if (success)
+                    message.handle(endpoint);
+            }
+            consume( std::move( message ) );
 
-                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
-                        if (stage4)
-                            (stage4)(world, cmdData);
+            cmd_dispatcher<realtime>::fire_system_callback( [=, endpoint=std::move(endpoint)] {
+                if (stage4)
+                    (stage4)(world, cmdData);
 
-                        send_done_message(endpoint, cmdName);
+                if (cmdName)
+                    send_done_message(endpoint, cmdName);
 
-                        cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint = std::move(endpoint)] {
-                            if (cleanup)
-                                (cleanup)(world, cmdData);
-                        });
-                    });
+                cmd_dispatcher<realtime>::fire_rt_callback( [=, endpoint=std::move(endpoint)] {
+                    if (cleanup)
+                        (cleanup)(world, cmdData);
                 });
         });
 }
