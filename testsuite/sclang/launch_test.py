@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import fcntl
 import sys
 import os.path
@@ -18,12 +19,12 @@ def non_block_read(output):
         return ""
 
 def sc_output_print(output):
-	sys.stdout.write("\t|  " + output) 
+	sys.stdout.write("\t|  " + output)
 
 def sc_input(proc, input):
-	print "\t|" + ("_" * 60)
-	print "-> " + input
-	print "\t_" + ("_" * 60)
+	print("\t|" + ("_" * 60))
+	print("-> " + input)
+	print("\t_" + ("_" * 60))
 	proc.stdin.write(input + (" %s" % chr(0x1b)))
 
 timeout = 30
@@ -38,7 +39,7 @@ if sys.platform == 'linux2':
 	subprocess.Popen('sh -e /etc/init.d/xvfb start', shell=True, env=env)
 	subprocess.Popen("/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16", shell=True, env=env)
 
-proc = subprocess.Popen([sclang_path, '-i' 'python'], 
+proc = subprocess.Popen([sclang_path, '-i' 'python'],
 	stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
 	env=env)
 
@@ -52,7 +53,7 @@ while not(launched_string in output):
 	output = non_block_read(proc.stdout)
 	error = non_block_read(proc.stderr)
 	if error:
-		print "ERROR:\n" + error
+		print("ERROR:\n" + error)
 		sys.exit(error)
 	elif output:
 		sc_output_print(output)
@@ -72,12 +73,12 @@ while proc.poll() and time.time() < (start_time + timeout):
 	output = non_block_read(proc.stdout)
 	error = non_block_read(proc.stderr)
 
-	if error: 
+	if error:
 		# read the rest of the error
-		print "ERROR:\n" + error
+		print("ERROR:\n" + error)
 		sys.exit(error)
 	elif output:
-		sc_output_print(output) 
+		sc_output_print(output)
 
 	time.sleep(0.1)
 
