@@ -2744,6 +2744,60 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
 
     return !(parseFailed || compileErrors) ? errNone : errFailed;
 }
+
+int prParseString(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot *a, *b;
+    PyrString* string;
+
+    a = g->sp - 1;
+    b = g->sp;
+
+    // check b is a string
+    if (NotObj(b))
+        return errWrongType;
+    if (!isKindOf(slotRawObject(b), class_string))
+        return errWrongType;
+    string = slotRawString(b);
+
+    gRootParseNode = NULL;
+    initParserPool();
+    // assert(g->gc->SanityCheck());
+    startLexerCmdLine(string->s, string->size);
+    compileErrors = 0;
+    compilingCmdLine = true;
+    gCompilingVMGlobals = g;
+    compilingCmdLineErrorWindow = false;
+    // assert(g->gc->SanityCheck());
+    parseFailed = yyparse();
+    // assert(g->gc->SanityCheck());
+    if (!parseFailed && gRootParseNode) {
+        int rootNodeCount = countParseNodeSiblings(gRootParseNode);
+        PyrObject* rootParseNodes = newPyrArray(g->gc, rootNodeCount, 0, true);
+        ++g->sp;
+        SetObject(g->sp, rootParseNodes);
+        REFLECTNODE(g, gRootParseNode, rootParseNodes);
+        --g->sp;
+        SetObject(a, rootParseNodes);
+    } else {
+        if (parseFailed) {
+            compileErrors++;
+            error("Command line parse failed\n");
+        } else {
+            postfl("<nothing to do>\n");
+        }
+        SetNil(a);
+    }
+
+    assert(g->gc->SanityCheck());
+
+    finiLexer();
+    freeParserPool();
+
+    pyr_pool_compile->FreeAll();
+    compilingCmdLine = false;
+
+    return !(parseFailed || compileErrors) ? errNone : errFailed;
+}
 #endif
 
 char sCodeStringIn[8192];
@@ -2926,9 +2980,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         return;
     // postfl("->switchToThread %d %p -> %p\n", oldstate, oldthread, newthread);
     // post("->switchToThread from %s:%s\n", slotRawClass(&g->method->ownerclass)->name.us->name,
-    // g->slotRawSymbol(&method->name)->name); post("->stack %p  g->sp %p [%d]  g->top %p [%d]\n",
-    // g->gc->Stack()->slots,
-    // g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots); assert(g->gc->SanityCheck());
+    // g->slotRawSymbol(&method->name)->name); post("->stack %p  g->sp %p [%d]  g->top %p [%d]\n", 	g->gc->Stack()->slots,
+    //g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots); assert(g->gc->SanityCheck());
     // CallStackSanity(g, "switchToThreadA");
     // gcDumpInfo(g->gc);
     gc = g->gc;
@@ -4207,6 +4260,7 @@ void initPrimitives() {
 
 #if !SCPLAYER
     definePrimitive(base, index++, "_CompileExpression", prCompileString, 2, 0);
+    definePrimitive(base, index++, "_ParseExpression", prParseString, 2, 0);
 #endif
     definePrimitive(base, index++, "_GetBackTrace", prGetBackTrace, 1, 0);
     definePrimitive(base, index++, "_DumpBackTrace", prDumpBackTrace, 1, 0);
