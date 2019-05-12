@@ -689,4 +689,38 @@ Interpreter {
 			// a frame on the stack
 	}
 	shallowCopy { ^this }
+
+	// PRIVATE
+	prRawParse { |string|
+		_ParseExpression
+		^nil
+	}
+
+	prFlattenParse { |array|
+		var outputArray = Array.new;
+		array.do({ |item, index|
+			if (item.isArray, {
+				outputArray = outputArray.add(this.prFlattenParse(item));
+			}, {
+				outputArray = outputArray.add(item);
+			});
+		});
+
+		if ((outputArray.size > 0) and: { outputArray[0] === \parseNodeProperties }, {
+			var outputDict = IdentityDictionary.newFrom(outputArray[1..]);
+			^outputDict;
+		});
+
+		^outputArray;
+	}
+
+	parse { |string|
+		var rawParseArray = this.prRawParse(string);
+		if (rawParseArray.notNil, {
+			// Convert the Arrays starting with \parseNodeProperties into IdentityDictionaries.
+			var parseArray = this.prFlattenParse(rawParseArray);
+			^parseArray;
+		});
+		^nil;
+	}
 }

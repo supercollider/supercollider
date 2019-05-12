@@ -26,7 +26,6 @@
 #include "Opcodes.h"
 #include "AdvancingAllocPool.h"
 
-
 enum { rwPrivate=0, rwReadOnly=1, rwWriteOnly=2, rwReadWrite=3 };
 
 enum { varInst, varClass, varTemp, varConst, varPseudo, varLocal };
@@ -81,12 +80,14 @@ extern AdvancingAllocPool gParseNodePool;
 #define ALLOCSLOTNODE(type, classno)  (new (gParseNodePool.Alloc(sizeof(type))) type(classno))
 #define COMPILENODE(node, result, onTailBranch) (compileNode((node), (result), (onTailBranch)))
 #define DUMPNODE(node, level) do { if (node) (node)->dump(level); } while (false);
+#define REFLECTNODE(g, node, siblings) do { if (node) (node)->reflect(g, siblings); } while (false);
 
 struct PyrParseNode {
 	PyrParseNode(int classno);
 	virtual ~PyrParseNode() {}
 	virtual void compile(PyrSlot *result) = 0;
 	virtual void dump(int level) = 0;
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray) = 0;
 
 	struct PyrParseNode *mNext;
 	struct PyrParseNode *mTail;
@@ -95,6 +96,8 @@ struct PyrParseNode {
 	unsigned char mClassno;
 	unsigned char mParens;
 };
+
+int countParseNodeSiblings(PyrParseNode* node, int currentCount = 0);
 
 struct PyrSlotNode : public PyrParseNode {
 	PyrSlotNode() : PyrParseNode(pn_SlotNode) {}
@@ -107,6 +110,7 @@ struct PyrSlotNode : public PyrParseNode {
 	virtual void dump(int level);
 	virtual void dumpLiteral(int level);
 	virtual void dumpPushLit(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	PyrSlot mSlot;
 };
@@ -120,6 +124,7 @@ struct PyrCurryArgNode : public PyrParseNode {
 	virtual ~PyrCurryArgNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	int mArgNum;
 } ;
@@ -131,6 +136,7 @@ struct PyrClassExtNode : public PyrParseNode {
 	virtual ~PyrClassExtNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrSlotNode* mClassName;
 	struct PyrMethodNode *mMethods;
@@ -141,6 +147,7 @@ struct PyrClassNode : public PyrParseNode {
 	virtual ~PyrClassNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrSlotNode* mClassName;
 	struct PyrSlotNode* mSuperClassName;
@@ -156,6 +163,7 @@ struct PyrMethodNode : public PyrParseNode {
 	virtual ~PyrMethodNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrSlotNode* mMethodName;
 	struct PyrSlotNode* mPrimitiveName;
@@ -171,6 +179,7 @@ struct PyrVarListNode : public PyrParseNode {
 	virtual ~PyrVarListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrVarDefNode *mVarDefs;
 	int mFlags;
@@ -182,6 +191,7 @@ struct PyrVarDefNode : public PyrParseNode {
 	virtual void compile(PyrSlot *result);
 	virtual void compileArg(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 	bool hasExpr(PyrSlot *result);
 
 	struct PyrSlotNode* mVarName;
@@ -217,6 +227,7 @@ struct PyrCallNode : public PyrCallNodeBase2 {
 
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	virtual int isPartialApplication();
 } ;
@@ -227,6 +238,7 @@ struct PyrBinopCallNode : public PyrCallNodeBase2 {
 
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	virtual int isPartialApplication();
 } ;
@@ -236,6 +248,7 @@ struct PyrSetterNode : public PyrCallNodeBase {
 	virtual ~PyrSetterNode() {}
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	virtual int isPartialApplication();
 
@@ -250,6 +263,7 @@ struct PyrDynListNode : public PyrCallNodeBase {
 	virtual ~PyrDynListNode() {}
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	virtual int isPartialApplication();
 
@@ -262,6 +276,7 @@ struct PyrDynDictNode : public PyrCallNodeBase {
 	virtual ~PyrDynDictNode() {}
 	virtual void compileCall(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	virtual int isPartialApplication();
 
@@ -274,6 +289,7 @@ struct PyrDropNode : public PyrParseNode {
 	virtual ~PyrDropNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrParseNode *mExpr1;
 	struct PyrParseNode *mExpr2;
@@ -284,6 +300,7 @@ struct PyrPushKeyArgNode : public PyrParseNode {
 	virtual ~PyrPushKeyArgNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrSlotNode* mSelector;
 	struct PyrParseNode *mExpr;
@@ -294,6 +311,7 @@ struct PyrReturnNode : public PyrParseNode {
 	virtual ~PyrReturnNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrParseNode *mExpr; // if null, return self
 } ;
@@ -303,6 +321,7 @@ struct PyrBlockReturnNode : public PyrParseNode {
 	virtual ~PyrBlockReturnNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrParseNode *mExpr; // if null, return self
 } ;
@@ -312,6 +331,7 @@ struct PyrAssignNode : public PyrParseNode {
 	virtual ~PyrAssignNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrSlotNode* mVarName;
 	struct PyrParseNode *mExpr;
@@ -323,6 +343,7 @@ struct PyrMultiAssignNode : public PyrParseNode {
 	virtual ~PyrMultiAssignNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrMultiAssignVarListNode *mVarList;
 	struct PyrParseNode *mExpr;
@@ -334,6 +355,7 @@ struct PyrMultiAssignVarListNode : public PyrParseNode {
 	virtual ~PyrMultiAssignVarListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrSlotNode *mVarNames;
 	struct PyrSlotNode *mRest;
@@ -344,6 +366,7 @@ struct PyrBlockNode : public PyrParseNode {
 	virtual ~PyrBlockNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrArgListNode *mArglist;
 	struct PyrVarListNode *mVarlist;
@@ -357,6 +380,7 @@ struct PyrArgListNode : public PyrParseNode {
 	virtual ~PyrArgListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrVarDefNode *mVarDefs;
 	struct PyrSlotNode *mRest;
@@ -367,6 +391,7 @@ struct PyrLitListNode : public PyrParseNode {
 	virtual ~PyrLitListNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrParseNode *mClassname;
 	struct PyrParseNode *mElems;
@@ -377,6 +402,7 @@ struct PyrLitDictNode : public PyrParseNode {
 	virtual ~PyrLitDictNode() {}
 	virtual void compile(PyrSlot *result);
 	virtual void dump(int level);
+    virtual void reflect(VMGlobals* g, PyrObject* siblingsArray);
 
 	struct PyrParseNode *mElems;
 } ;
