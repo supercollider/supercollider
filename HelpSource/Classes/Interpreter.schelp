@@ -89,7 +89,7 @@ method::compileFile
 
 Reads the file at pathName, compiles it and returns a Function.
 The file must contain a valid SuperCollider expression, naturally.
-This will not compile class definitions, only expressions.O
+This will not compile class definitions, only expressions.
 
 method::executeFile
 

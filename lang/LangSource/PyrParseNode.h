@@ -101,6 +101,8 @@ struct PyrParseNode {
     struct PyrParseNode* mTail;
     int mLineno;
     int mCharno;
+    int mTextpos;
+    int mParselen;
     unsigned char mClassno;
     unsigned char mParens;
 };

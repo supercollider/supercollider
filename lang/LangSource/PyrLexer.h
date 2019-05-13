@@ -27,7 +27,7 @@
 #include "SCBase.h"
 #include <boost/filesystem/path.hpp>
 
-extern int charno, lineno, linepos;
+extern int charno, lineno, linepos, textpos, yylen;
 extern int* linestarts;
 
 struct ClassExtFile {

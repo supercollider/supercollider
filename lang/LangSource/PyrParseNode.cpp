@@ -103,7 +103,7 @@ void compileTail() {
     if (gGenerateTailCallByteCodes && gIsTailCodeBranch) {
         // if (gCompilingClass && gCompilingMethod) post("tail call %s:%s  ismethod %d\n",
         //	slotRawSymbol(&gCompilingClass->name)->name, slotRawSymbol(&gCompilingMethod->name)->name,
-        // gTailIsMethodReturn);
+        //gTailIsMethodReturn);
         if (gTailIsMethodReturn)
             compileByte(255);
         else
@@ -141,6 +141,8 @@ PyrParseNode::PyrParseNode(int inClassNo) {
     mTail = this;
     mCharno = ::charno;
     mLineno = ::lineno;
+    mTextpos = ::textpos;
+    mParselen = ::yylen;
     mParens = 0;
 }
 
