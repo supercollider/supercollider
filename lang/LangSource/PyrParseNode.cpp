@@ -179,6 +179,8 @@ PyrParseNode::PyrParseNode(int inClassNo)
 	mTail = this;
 	mCharno = ::charno;
 	mLineno = ::lineno;
+    mTextpos = ::textpos;
+    mParselen = ::yylen;
 	mParens = 0;
 }
 

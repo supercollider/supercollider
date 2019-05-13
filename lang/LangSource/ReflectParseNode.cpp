@@ -46,35 +46,35 @@ int countParseNodeSiblings(PyrParseNode* node, int currentCount) {
     return currentCount;
 }
 
-PyrObject* addDefaultReflectionProperties(VMGlobals* g, PyrObject* parentArray, int classNo, int lineNo, int charNo,
-    int additionalProperties = 0) {
-    PyrObject* properties = newPyrArray(g->gc, 1 + ((3 + additionalProperties) * 2), 0, true);
+PyrObject* addDefaultReflectionProperties(VMGlobals* g, PyrObject* parentArray, PyrParseNode* node,
+        int additionalProperties) {
+    PyrObject* properties = newPyrArray(g->gc, 1 + ((4 + additionalProperties) * 2), 0, true);
     SetObject(parentArray->slots + parentArray->size, properties);
     parentArray->size++;
     g->gc->GCWriteNew(parentArray, properties);
-
-    // postfl("reflect: %s\n", nodeNameLabels[classNo]);
 
     // Add properties dictionary signifier.
     SetSymbol(properties->slots, getsym("parseNodeProperties"));
     ++properties->size;
 
-    // Add nodeType pair.
-    SetSymbol(properties->slots + 1, getsym("nodeType"));
+    SetSymbol(properties->slots + properties->size, getsym("nodeType"));
     ++properties->size;
-    SetSymbol(properties->slots + 2, getsym(nodeNameLabels[classNo]));
-    ++properties->size;
-
-    // Add lineNumber pair.
-    SetSymbol(properties->slots + 3, getsym("lineNumber"));
-    ++properties->size;
-    SetInt(properties->slots + 4, lineNo);
+    SetSymbol(properties->slots + properties->size, getsym(nodeNameLabels[node->mClassno]));
     ++properties->size;
 
-    // Add characterNumber pair.
-    SetSymbol(properties->slots + 5, getsym("characterNumber"));
+    SetSymbol(properties->slots + properties->size, getsym("textPosition"));
     ++properties->size;
-    SetInt(properties->slots + 6, charNo);
+    SetInt(properties->slots + properties->size, node->mTextpos);
+    ++properties->size;
+
+    SetSymbol(properties->slots + properties->size, getsym("parseLength"));
+    ++properties->size;
+    SetInt(properties->slots + properties->size, node->mParselen);
+    ++properties->size;
+
+    SetSymbol(properties->slots + properties->size, getsym("isParenthesis"));
+    ++properties->size;
+    SetBool(properties->slots + properties->size, node->mParens != 0);
     ++properties->size;
 
     return properties;
@@ -143,7 +143,7 @@ void reflectLiteralNode(VMGlobals* g, PyrSlotNode* node, PyrObject* reflect) {
 }
 
 void PyrSlotNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 1);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 1);
 
     switch(mClassno) {
     case pn_PushLitNode:
@@ -167,7 +167,7 @@ void PyrSlotNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrCurryArgNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 1);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 1);
 
     SetSymbol(reflect->slots + reflect->size, getsym("argumentNumber"));
     ++reflect->size;
@@ -178,7 +178,7 @@ void PyrCurryArgNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrClassExtNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendSlotNodeAsSymbol(reflect, "name", mClassName);
     appendNodeProperty(g, reflect, "methods", mMethods);
@@ -187,7 +187,7 @@ void PyrClassExtNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrClassNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 4);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 4);
 
     appendSlotNodeAsSymbol(reflect, "name", mClassName);
     appendNodeProperty(g, reflect, "superClassName", mSuperClassName);
@@ -198,7 +198,7 @@ void PyrClassNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrMethodNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 6);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 7);
 
     appendSlotNodeAsSymbol(reflect, "name", mMethodName);
     appendSlotNodeAsSymbol(reflect, "primitiveName", mPrimitiveName);
@@ -218,7 +218,7 @@ void PyrMethodNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrVarListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 1);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 1);
 
     appendNodeProperty(g, reflect, "variableDefinitions", mVarDefs);
 
@@ -226,7 +226,7 @@ void PyrVarListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrVarDefNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendSlotNodeAsSymbol(reflect, "name", mVarName);
     appendNodeProperty(g, reflect, "definitionValue", mDefVal);
@@ -235,7 +235,7 @@ void PyrVarDefNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrCallNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 4);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 4);
 
     appendSlotNodeAsSymbol(reflect, "name", mSelector);
     appendNodeProperty(g, reflect, "arguments", mArglist);
@@ -249,7 +249,7 @@ void PyrCallNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrBinopCallNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendSlotNodeAsSymbol(reflect, "name", mSelector);
     appendNodeProperty(g, reflect, "arguments", mArglist);
@@ -258,7 +258,7 @@ void PyrBinopCallNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrSetterNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 3);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 4);
 
     appendSlotNodeAsSymbol(reflect, "name", mSelector);
     appendNodeProperty(g, reflect, "selector", mSelector);
@@ -269,7 +269,7 @@ void PyrSetterNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrDynListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "className", mClassname);
     appendNodeProperty(g, reflect, "elements", mElems);
@@ -278,7 +278,7 @@ void PyrDynListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrDynDictNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 1);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 1);
 
     appendNodeProperty(g, reflect, "elements", mElems);
 
@@ -286,7 +286,7 @@ void PyrDynDictNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrDropNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "firstExpression", mExpr1);
     appendNodeProperty(g, reflect, "secondExpression", mExpr2);
@@ -295,7 +295,7 @@ void PyrDropNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrPushKeyArgNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "selector", mSelector);
     appendNodeProperty(g, reflect, "expression", mExpr);
@@ -304,7 +304,7 @@ void PyrPushKeyArgNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrReturnNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 1);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 1);
 
     appendNodeProperty(g, reflect, "expression", mExpr);
 
@@ -312,7 +312,7 @@ void PyrReturnNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrBlockReturnNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 0);
 
     // mExpr may not necessarily be a valid pointer.
 
@@ -320,7 +320,7 @@ void PyrBlockReturnNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrAssignNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "variableName", mVarName);
     appendNodeProperty(g, reflect, "expression", mExpr);
@@ -329,7 +329,7 @@ void PyrAssignNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrMultiAssignNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "variables", mVarList);
     appendNodeProperty(g, reflect, "expression", mExpr);
@@ -338,7 +338,7 @@ void PyrMultiAssignNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrMultiAssignVarListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "variableNames", mVarNames);
     appendNodeProperty(g, reflect, "rest", mRest);
@@ -347,7 +347,7 @@ void PyrMultiAssignVarListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) 
 }
 
 void PyrBlockNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 5);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 5);
 
     appendNodeProperty(g, reflect, "arguments", mArglist);
     appendNodeProperty(g, reflect, "variables", mVarlist);
@@ -367,7 +367,7 @@ void PyrBlockNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrArgListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "variableDefinitions", mVarDefs);
     appendNodeProperty(g, reflect, "rest", mRest);
@@ -376,7 +376,7 @@ void PyrArgListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 }
 
 void PyrLitListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 2);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 2);
 
     appendNodeProperty(g, reflect, "classname", mClassname);
     appendNodeProperty(g, reflect, "elements", mElems);
@@ -386,11 +386,10 @@ void PyrLitListNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
 
 // this one is missing from DumpParseNode.cpp
 void PyrLitDictNode::reflect(VMGlobals* g, PyrObject* siblingsArray) {
-    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, mClassno, mLineno, mCharno, 1);
+    PyrObject* reflect = addDefaultReflectionProperties(g, siblingsArray, this, 1);
 
     appendNodeProperty(g, reflect, "elements", mElems);
 
     REFLECTNODE(g, mNext, siblingsArray);
 }
-
 
