@@ -115,6 +115,7 @@ intptr_t zzval;
 int lineno, charno, linepos;
 int *linestarts;
 int maxlinestarts;
+int nodeno;
 
 char *text;
 int textlen;
@@ -212,6 +213,7 @@ bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos
 	linepos = 0;
 	lineno = 1;
 	charno = 0;
+    nodeno = 0;
 
 	yylen = 0;
 	zzval = 0;
@@ -248,6 +250,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	linepos = 0;
 	lineno = 1;
 	charno = 0;
+    nodeno = 0;
 
 	yylen = 0;
 	zzval = 0;

@@ -2754,13 +2754,17 @@ int prParseString(struct VMGlobals *g, int numArgsPushed)
 	parseFailed = yyparse();
 		//assert(g->gc->SanityCheck());
 	if (!parseFailed && gRootParseNode) {
-        int rootNodeCount = countParseNodeSiblings(gRootParseNode);
-        PyrObject* rootParseNodes = newPyrArray(g->gc, rootNodeCount, 0, true);
+        int nodeCount = ::nodeno;
+        PyrObject* parseNodes = newPyrArray(g->gc, nodeCount, 0, true);
         ++g->sp;
-        SetObject(g->sp, rootParseNodes);
-        REFLECTNODE(g, gRootParseNode, rootParseNodes);
+        SetObject(g->sp, parseNodes);
+        for (auto i = 0; i < nodeCount; ++i) {
+            SetNil(parseNodes->slots + parseNodes->size);
+            ++parseNodes->size;
+        }
+        REFLECTNODE(g->gc, gRootParseNode, parseNodes, nullptr);
         --g->sp;
-        SetObject(a, rootParseNodes);
+        SetObject(a, parseNodes);
     } else {
 		if (parseFailed) {
 			compileErrors++;
