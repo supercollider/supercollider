@@ -564,8 +564,10 @@ Event : Environment {
 								);
 							}
 						} {
-
-							if (strum < 0) { bndl = bndl.reverse };
+							if (strum < 0) {
+								bndl = bndl.reverse;
+								ids = ids.reverse
+							};
 							strumOffset = offset + Array.series(bndl.size, 0, strum.abs);
 							~schedBundleArray.(
 								lag, strumOffset, server, bndl, ~latency
