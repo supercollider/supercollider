@@ -6,16 +6,22 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=true
+      env:
+          - QT=true
+          - DO_LINT=false
       group: edge
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=false
+      env:
+          - QT=false
+          - DO_LINT=true # only lint on fastest build
       group: edge
     - os: osx
       osx_image: xcode8.3
-      env: QT=true
+      env:
+          - QT=true
+          - DO_LINT=false
 
 # use ccache to speed up build times. on osx,
 # we install it during the the before_install step
