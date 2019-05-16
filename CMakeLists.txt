@@ -399,6 +399,7 @@ endif()
 
 #############################################
 # subdirectories
+add_subdirectory(tools)
 add_subdirectory(external_libraries)
 
 if(NOT YAMLCPP_FOUND)
