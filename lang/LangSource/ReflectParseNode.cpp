@@ -461,7 +461,7 @@ void PyrLitListNode::reflect(PyrGC* gc, PyrObject* nodeArray, PyrObject* idArray
     }
     if (IsNil(nodeArray->slots + mNodeId)) {
         PyrObject* reflect = addDefaultReflectionProperties(gc, nodeArray, this, 2);
-        appendNodeProperty(gc, nodeArray, reflect, "classname", mClassname);
+        appendNodeProperty(gc, nodeArray, reflect, "className", mClassname);
         appendNodeProperty(gc, nodeArray, reflect, "elements", mElems);
         REFLECTNODE(gc, mNext, nodeArray, idArray);
     }
