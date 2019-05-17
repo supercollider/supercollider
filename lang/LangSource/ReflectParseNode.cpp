@@ -12,13 +12,13 @@ const char* nodeNameLabels[] = { "class",
                                  "slot",
                                  "variableList",
                                  "variableDefinition",
-                                 "dictionary",
-                                 "dictionaryList",
+                                 "dynamicDictionary",
+                                 "dynamicList",
                                  "literalList",
                                  "literalDictionary",
-                                 "staticVariableList",
-                                 "instanceVariableList",
-                                 "poolVariableList",
+                                 "staticVariableList", // does not actually seem to ever be created
+                                 "instanceVariableList", // does not actually seem to ever be created
+                                 "poolVariableList", // does not actually seem to ever be created
                                  "argumentList",
                                  "slotDefinition",
                                  "literal",
