@@ -1,6 +1,7 @@
 Parser {
 	var <source;
 	var <parse;
+	var <rootId;
 
 	*newFromString{ |source|
 		var rawParse = Parser.prRawParse(source);
@@ -13,93 +14,56 @@ Parser {
 	}
 
 	init { |sourceString, rawParse|
-		var roots = IdentitySet.new;
-		var keys;
+		var active = IdentitySet.new;
+		var contained = IdentitySet.new;
+		var roots;
 
 		source = sourceString;
-		parse = IdentityDictionary.new;
+		parse = Array.newClear(rawParse.size);
 
-		// First pass: convert rawParse arrays to maps, and add active nodes only to the node map.
+		// First pass: convert rawParse arrays to IdentityDictionaries, and add active nodes only
+		// to the node array. Check for edges that would result in nodes being contained by two
+		// different owning nodes, and remove those edges. Well-formed node edges will only
+		// reference contained nodes with indices lower than their own.
 		rawParse.do({ |item, index|
 			if (item.notNil, {
 				var node = IdentityDictionary.newFrom(item);
-				node.put(\containedBy, IdentityDictionary.new);
-				parse.put(index, node);
-			});
-		});
+				var contains = OrderedIdentitySet.new;
 
-		// Second pass: populate the containedBy dictionary for each node, with key as the id of
-		// the containing node and the value as the parent container label.
-		parse.keysValuesDo({ |nodeId, node|
-			this.getContainerLabels(node.at(\nodeType)).do({ |containerLabel|
-				node.at(containerLabel).do({ |containedId|
-					parse.at(containedId).at(\containedBy).put(nodeId, containerLabel);
-				});
-			});
-		});
+				active.add(index);
 
-		keys = parse.keys;
-
-		// Third pass: remove some redundant nodes that make the parse directed graph violate the
-		// tree property by some contained nodes currently residing in multiple containers. Also
-		// identify root nodes as nodes that aren't currently contained in anything.
-		keys.do({ |nodeId|
-			var node = parse.at(nodeId);
-			if (node.notNil, {
-				if (node.at(\containedBy).size == 2, {
-					// The one case we currently know how to repair reliably is a \variableDefinition
-					// nodeType with two \variableList parents, each one of which has the same
-					// parent. One will typically have more than other children, and the other will
-					// only have this node as a child. We repair this situation by deleting the node
-					// with only one child from the tree.
-					if (node.at(\nodeType) === \variableDefinition, {
-						var redundantId, redundantNode, containerList, containerId, containerKey;
-						node.at(\containedBy).keysValuesDo({ |containerId, containerLabel|
-							var container = parse.at(containerId);
-							if (containerLabel !== \variableDefinitions, {
-								Error("unsupported 2-parent containerLabel" +
-									containerLabel.asString).throw;
+				// Build the set of all nodes this node contains.
+				this.getContainerLabels(node.at(\nodeType)).do({ |label|
+					node.at(label).do({ |containedId|
+						if (containedId < index, {
+							if (parse[containedId].at(\containedBy).notNil, {
+								Error("parser heuristic failed to restore tree shape!").throw;
 							});
-							if (container.at(\nodeType) !== \variableList, {
-								Error("unsupported 2-parent container type" +
-									container.at(\nodeType).asString).throw;
-							});
-							if (container.at(containerLabel).size == 1, {
-								// Break ties by choosing the lower number, since the parser
-								// typically builds from the leaves up a lower number may be
-								// closer to tokens in the parse tree.
-								if (redundantId.notNil, {
-									redundantId = min(redundantId, containerId);
-								}, {
-									redundantId = containerId;
-								});
-							});
+							contains.add(containedId);
+							parse[containedId].put(\containedBy, index);
+							contained.add(containedId);
+						}, {
+							"dropping edge from % containing %".format(index, containedId).postln;
 						});
-						// Alright, we've identified the redundant node, remove it from both its
-						// container and contained node.
-						redundantNode = parse.at(redundantId);
-						parse.put(redundantId, nil);
-						node.at(\containedBy).put(redundantId, nil);
-
-						containerList = Array.new;
-						containerId = redundantNode.at(\containedBy).keys[0];
-						containerKey = redundantNode.at(\containedBy).at(containerId);
-						node.at(containerId).at(containerKey).do({ |containedId|
-							if (containedId != redundantId, {
-								containerList = containerList.add(containedId);
-							});
-						});
-						node.at(containerId).put(containerKey, containerList);
-					}, {
-						Error("unsupported 2-parent nodeType" + node.at(\nodeType).asString).throw;
-					});
-				}, {
-					if (node.at(\containedBy).size == 0, {
-						roots.add(nodeId);
 					});
 				});
+
+				node.put(\contains, contains);
+				parse[index] = node;
+
+				// The highest-index valid node will always be the root.
+				rootId = index;
 			});
 		});
+
+		roots = active.difference(contained);
+		if (roots.size != 1 or: { roots.includes(rootId).not }, {
+			Error("single tree not detected.").throw;
+		});
+
+		// Second pass: there are some nodeTypes, such as \drop, that aid in compilation but don't
+		// add any clarity to the parse tree, so we elide them from the tree before finalizing.
+		this.prSimplifyTree(rootId);
 	}
 
 	// Given the nodeType label, return an in-order Array with all the labels within that node that
@@ -114,21 +78,21 @@ Parser {
 			\variableList, { [ \variableDefinitions ] },
 			\variableDefinition, { [ \definitionValue ] },
 			\dynamicDictionary, { [ \elements ] },
-			\dynamicList, { [ \classname, \elements ] },
-			\literalList, { [ \classname, \elements ] },
+			\dynamicList, { [ \className, \elements ] },
+			\literalList, { [ \className, \elements ] },
 			\literalDictionary, { [ \elements ] },
 			\staticVariableList, { Error("staticVariableList nodeType not supported").throw },
 			\instanceVariableList, { Error("instanceVariableList nodeType not supported").throw },
 			\poolVariableList, { Error("poolVariableList nodeType not supported").throw },
 			\argumentList, { [ \variableDefinitions, \rest ] },
 			\slotDefinition, { Error("\slotDefinition nodeType not supported").throw },
-			\literal, { [ ] },
-			\pushLiteral, { [ ] },
+			\literal, { [ \literal ] },
+			\pushLiteral, { [ \pushLiteral ] },
 			\pushName, { [ ] },
 			\pushKeyArgument, { [ \selector, \expression ] },
 			\call, { [ \arguments, \keyArguments ] },
 			\binaryOperationCall, { [ \arguments ] },
-			\drop, { [ \firstExpression, \secondExpresion ] },
+			\drop, { [ \firstExpression, \secondExpression ] },
 			\assignment, { [ \variableName, \expression ] },
 			\multiAssignment, { [ \variables, \expression ] },
 			\multiAssignmentVariableList, { [ \variableNames, \rest ] },
@@ -145,5 +109,30 @@ Parser {
 	*prRawParse { |string|
 		_ParseExpression
 		^nil
+	}
+
+	prSimplifyTree { |nodeId|
+		var add = IdentitySet.new;
+		var remove = IdentitySet.new;
+
+		parse[nodeId].at(\contains).do({ |containedId|
+			this.prSimplifyTree(containedId);
+
+			if (parse[containedId].at(\nodeType) === \drop, {
+				remove.add(containedId);
+				add = add.union(parse[containedId].at(\contains));
+				"% dropping % which has %, remove now is %, add is %".format(nodeId,
+					containedId, parse[containedId].at(\contains), remove, add).postln;
+			});
+		});
+
+		parse[nodeId].put(\contains, parse[nodeId].at(\contains).union(add).difference(remove));
+
+		remove.do({ |removeId|
+			parse[removeId] = nil;
+		});
+		add.do({ |addId|
+			parse[addId].put(\containedBy, nodeId);
+		});
 	}
 }
