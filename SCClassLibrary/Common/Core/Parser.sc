@@ -3,6 +3,8 @@ Parser {
 	var <parse;
 	var <rootId;
 
+	var <parseTree;
+
 	*newFromString{ |source|
 		var rawParse = Parser.prRawParse(source);
 		var result;
@@ -16,7 +18,7 @@ Parser {
 	init { |sourceString, rawParse|
 		var active = IdentitySet.new;
 		var contained = IdentitySet.new;
-		var roots;
+		var roots, parseNode, sourcePosition;
 
 		source = sourceString;
 		parse = Array.newClear(rawParse.size);
@@ -42,8 +44,6 @@ Parser {
 							contains.add(containedId);
 							parse[containedId].put(\containedBy, index);
 							contained.add(containedId);
-						}, {
-							"dropping edge from % containing %".format(index, containedId).postln;
 						});
 					});
 				});
@@ -64,6 +64,15 @@ Parser {
 		// Second pass: there are some nodeTypes, such as \drop, that aid in compilation but don't
 		// add any clarity to the parse tree, so we elide them from the tree before finalizing.
 		this.prSimplifyTree(rootId);
+
+		parseTree = Array.new(rawParse.size);
+		this.prAddNode(\metaRoot);
+		parseNode = rootId;
+		sourcePosition = 0;
+
+		while (sourcePosition < source.size, {
+
+		});
 	}
 
 	// Given the nodeType label, return an in-order Array with all the labels within that node that
@@ -85,7 +94,7 @@ Parser {
 			\instanceVariableList, { Error("instanceVariableList nodeType not supported").throw },
 			\poolVariableList, { Error("poolVariableList nodeType not supported").throw },
 			\argumentList, { [ \variableDefinitions, \rest ] },
-			\slotDefinition, { Error("\slotDefinition nodeType not supported").throw },
+			\slotDefinition, { Error("slotDefinition nodeType not supported").throw },
 			\literal, { [ \literal ] },
 			\pushLiteral, { [ \pushLiteral ] },
 			\pushName, { [ ] },
@@ -114,25 +123,80 @@ Parser {
 	prSimplifyTree { |nodeId|
 		var add = IdentitySet.new;
 		var remove = IdentitySet.new;
-
 		parse[nodeId].at(\contains).do({ |containedId|
 			this.prSimplifyTree(containedId);
 
 			if (parse[containedId].at(\nodeType) === \drop, {
-				remove.add(containedId);
 				add = add.union(parse[containedId].at(\contains));
-				"% dropping % which has %, remove now is %, add is %".format(nodeId,
-					containedId, parse[containedId].at(\contains), remove, add).postln;
+				remove.add(containedId);
+				parse[containedId] = nil;
 			});
 		});
 
 		parse[nodeId].put(\contains, parse[nodeId].at(\contains).union(add).difference(remove));
-
-		remove.do({ |removeId|
-			parse[removeId] = nil;
-		});
 		add.do({ |addId|
 			parse[addId].put(\containedBy, nodeId);
 		});
+	}
+
+	prAddNode { |type, containedBy=-1, substring=""|
+		var node = IdentityDictionary.new;
+		var id = parseTree.size;
+
+		node.add(\type, type);
+		node.add(\contains, OrderedIdentitySet.new);
+		if (containedBy >= 0, {
+			node.add(\containedBy, containedBy);
+			parseTree[containedBy].at(\contains).add(id);
+		});
+		if (substring.size > 0, {
+			node.add(\substring, string);
+		});
+		parseTree = parseTree.add(node);
+		^id;
+	}
+
+	prParseWhitespace { |sourcePosition, containerId|
+		var whitespaceFound = true;
+		while({ whitespaceFound }, {
+			var match;
+			whitespaceFound = false;
+			match = source.findRegexpAt("[ ]+", sourcePosition);
+			if (match.notNil, {
+				this.prAddNode(\spaces, containedBy, match[0]);
+				sourcePosition = startPosition + match[1];
+				whitespaceFound = true;
+			});
+
+			match = source.findRegexpAt("\n+", sourcePosition);
+			if (match.notNil, {
+				this.prAddNode(\newLines, containedBy, match[0]);
+				sourcePosition = sourcePosition + match[1];
+				whitespaceFound = true;
+			});
+
+			match = source.findRegexpAt("\t+", sourcePosition);
+			if (match.notNil, {
+				this.prAddNode(\tabs, containedBy, match[0]);
+				sourcePosition = sourcePosition + match[1];
+				whitespaceFound = true;
+			});
+
+			match = source.findRegexpAt("//[^\n]*\n", sourcePosition);
+			if (match.notNil, {
+				this.prAddNode(\lineComment, containedBy, match[0]);
+				sourcePosition = sourcePosition + match[1];
+				whitespaceFound = true;
+			});
+
+			match = source.findRegexpAt("/[*]([^*]|([*][^/]))*[*]/", sourcePosition);
+			if (match.notNil, {
+				this.prAddNode(\blockComment, containedBy, match[0]);
+				sourcePosition = sourcePosition + match[1];
+				whitespaceFound = true;
+			});
+		});
+
+		^sourcePosition;
 	}
 }
