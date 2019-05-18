@@ -825,6 +825,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 
 void sc_osc_handler::tcp_connection::send(const char *data, size_t length)
 {
+    std::lock_guard<std::mutex> lock(tcp_mutex);
     try {
         boost::endian::big_int32_t len(length);
 
