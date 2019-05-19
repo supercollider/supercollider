@@ -96,4 +96,63 @@ TestParser : UnitTest {
 			courtesyMessage.postln;
 		}
 	}
+
+	test_parseOnlyWhitepace {
+		var source =
+		"\n" ++
+		"  " ++ "/* a single-line block comment */" ++ " \n" ++
+		"// single-line comment\n" ++
+		"\t// comment after tab\n" ++
+		"  /* multi\n"++
+		"   * line\n" ++
+		"   * indented\n" ++
+		"   * block\n" ++
+		"   * comment */\n" ++
+		"\t\n";
+		var parser = Parser.newFromString(source);
+		var expectedTypes = [\meta, \newLines, \spaces, \blockComment, \spaces, \newLines,
+			\comment, \tabs, \comment, \spaces, \blockComment, \newLines, \tabs, \newLines];
+
+		this.assertEquals(parser.getSource, source);
+		this.assertEquals(parser.parseTree.size, expectedTypes.size);
+		expectedTypes.do({ |type, i|
+			this.assertEquals(parser.parseTree[i].at(\type), type);
+			if (i > 0, {
+				this.assertEquals(parser.parseTree[i].at(\containedBy), 0);
+			}, {
+				this.assertEquals(parser.parseTree[i].at(\containedBy), nil);
+			});
+		});
+	}
+
+	test_parseEmptyBlock {
+		var source = "()";
+		var parser = Parser.newFromString(source);
+		var expectedTypes = [\meta, \block, \blockReturn];
+		var expectedContainedBy = [nil, 0, 1];
+
+		this.assertEquals(parser.getSource, source);
+		this.assertEquals(parser.parseTree.size, expectedTypes.size);
+		expectedTypes.do({ |type, i|
+			this.assertEquals(parser.parseTree[i].at(\type), type);
+			this.assertEquals(parser.parseTree[i].at(\containedBy), expectedContainedBy[i]);
+		});
+	}
+
+	test_parseBlockWithVariables {
+		var source =
+		"\n" ++
+		"// whitespace before blocks should not be included in blocks\n" ++
+		"(\n" ++
+		"\tvar a;\n" ++
+		"\ta = 5;\n" ++
+		")\n" ++
+		"// whitespace after blocks should not be included in blocks\n" ++
+		"\n";
+		var parser = Parser.newFromString(source);
+		var expectedTypes = [\meta, \newLines, \comment, \block, \newLines, \tabs, \variables,
+			\variableList, \variableDefinition];
+
+		this.assertEquals(parser.getSource, source);
+	}
 }
