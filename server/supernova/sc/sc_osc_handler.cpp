@@ -2207,8 +2207,8 @@ void handle_b_alloc(ReceivedMessage const & msg, endpoint_ptr endpoint)
 
                 cmd_dispatcher<realtime>::fire_system_callback( [=]{
                     free_aligned(free_buf);
+                    send_done_message(endpoint, "/b_alloc", bufferIndex);
                 });
-                cmd_dispatcher<realtime>::fire_done_message( endpoint, "/b_alloc", bufferIndex );
             });
         } catch (std::exception const & error) {
             report_failure(endpoint, error, "/b_alloc", bufferIndex);
@@ -2240,8 +2240,8 @@ void handle_b_free(ReceivedMessage const & msg, endpoint_ptr endpoint)
 
             cmd_dispatcher<realtime>::fire_system_callback( [=] {
                 free_aligned(free_buf);
+                send_done_message(endpoint, "/b_free", index);
             });
-            cmd_dispatcher<realtime>::fire_done_message( endpoint, "/b_free", index );
         });
     });
 }
