@@ -1,7 +1,6 @@
 Parser {
-	var <source;
-	var <parse;
-	var <rootId;
+	var source;
+	var rawParse;
 
 	var <parseTree;
 
@@ -11,73 +10,33 @@ Parser {
 		if (rawParse.isNil, {
 			result = nil;
 		});
-		result = super.new.init(source, rawParse);
+		result = super.newCopyArgs(source, rawParse).init;
 		^result;
 	}
 
-	init { |sourceString, rawParse|
-		var active = IdentitySet.new;
-		var contained = IdentitySet.new;
-		var roots, parseNode, sourcePosition;
-
-		source = sourceString;
-		parse = Array.newClear(rawParse.size);
-
-		// First pass: convert rawParse arrays to IdentityDictionaries, and add active nodes only
-		// to the node array. Check for edges that would result in nodes being contained by two
-		// different owning nodes, and remove those edges. Well-formed node edges will only
-		// reference contained nodes with indices lower than their own.
-		rawParse.do({ |item, index|
-			if (item.notNil, {
-				var node = IdentityDictionary.newFrom(item);
-				var contains = OrderedIdentitySet.new;
-
-				active.add(index);
-
-				// Build the set of all nodes this node contains.
-				this.getContainerLabels(node.at(\nodeType)).do({ |label|
-					node.at(label).do({ |containedId|
-						if (containedId < index, {
-							if (parse[containedId].at(\containedBy).notNil, {
-								Error("parser heuristic failed to restore tree shape!").throw;
-							});
-							contains.add(containedId);
-							parse[containedId].put(\containedBy, index);
-							contained.add(containedId);
-						});
-					});
-				});
-
-				node.put(\contains, contains);
-				parse[index] = node;
-
-				// The highest-index valid node will always be the root.
-				rootId = index;
-			});
-		});
-
-		roots = active.difference(contained);
-		if (roots.size != 1 or: { roots.includes(rootId).not }, {
-			Error("single tree not detected.").throw;
-		});
-
-		// Second pass: there are some nodeTypes, such as \drop, that aid in compilation but don't
-		// add any clarity to the parse tree, so we elide them from the tree before finalizing.
-		this.prSimplifyTree(rootId);
+	init {
+		var pos = 0;
 
 		parseTree = Array.new(rawParse.size);
-		this.prAddNode(\metaRoot);
-		parseNode = rootId;
-		sourcePosition = 0;
+		this.prAddNode(\meta, -1, "");
 
-		while (sourcePosition < source.size, {
+		pos = this.prParseWhitespace(pos, 0);
+		pos = this.prBuild(rawParse.size - 1, pos, 0);
+		pos = this.prParseWhitespace(pos, 0);
 
+		if (pos < source.size, {
+			Error("didn't parse entire string!").throw;
 		});
 	}
 
+	getSource {
+		^this.prAppendString(0, "");
+	}
+
+	// TO BE DEPRECATED
 	// Given the nodeType label, return an in-order Array with all the labels within that node that
 	// might contain references to other nodes.
-	getContainerLabels { |nodeType|
+	getRawContainerLabels { |nodeType|
 		var labels = switch (nodeType,
 			\class, { [ \superClassName, \variables, \methods ] },
 			\classExtension, { [ \methods ] },
@@ -120,83 +79,214 @@ Parser {
 		^nil
 	}
 
-	prSimplifyTree { |nodeId|
-		var add = IdentitySet.new;
-		var remove = IdentitySet.new;
-		parse[nodeId].at(\contains).do({ |containedId|
-			this.prSimplifyTree(containedId);
+	prBuild { |raw, pos, addTo|
+		var rawNode;
 
-			if (parse[containedId].at(\nodeType) === \drop, {
-				add = add.union(parse[containedId].at(\contains));
-				remove.add(containedId);
-				parse[containedId] = nil;
-			});
+		// Lazily convert the raw parse nodes into dictionaries, for faster lookup of keys.
+		if (rawParse[raw].isArray, {
+			rawNode = IdentityDictionary.newFrom(rawParse[raw]);
+			rawParse[raw] = rawNode;
+		}, {
+			rawNode = rawParse[raw];
 		});
 
-		parse[nodeId].put(\contains, parse[nodeId].at(\contains).union(add).difference(remove));
-		add.do({ |addId|
-			parse[addId].put(\containedBy, nodeId);
-		});
+
+		// We should now be on a token that is represented in the raw parse tree.
+		switch (rawNode.at(\nodeType),
+			\block, {
+				if (pos < source.size, {
+					var block = this.prAddNode(\block, addTo, "(");
+					if (source[pos] != $(, {
+						Error("parse has block but source has '%'".format(source[pos])).throw;
+					});
+					pos = this.prParseWhitespace(pos + 1, block);
+					if (rawNode.at(\arguments).size > 0, {
+						var args = this.prAddNode(\arguments, block, "");
+						rawNode.at(\arguments).do({ |argId|
+							pos = this.prBuild(argId, pos, args);
+							pos = this.prParseWhitespace(pos, args);
+						});
+
+						// some kind of argument end token?
+						pos = this.prParseWhitespace(pos, block);
+					});
+					if (rawNode.at(\variables).size > 0, {
+						var vars = this.prAddNode(\variables, block, "");
+						rawNode.at(\variables).do({ |varId|
+							pos = this.prBuild(varId, pos, vars);
+							pos = this.prParseWhitespace(pos, vars);
+						});
+
+						// some kind of variable end token?
+						pos = this.prParseWhitespace(pos, block);
+					});
+
+					// Native parse should always have at least a single node within the body,
+					// which is the blockReturn node.
+					if (rawNode.at(\body).size == 0, {
+						Error("native parse has block with no blockReturn in body").throw;
+					}, {
+						var last = rawNode.at(\body).size - 1;
+						if (last > 0, {
+							var body = this.prAddNode(\body, block, "");
+							last.do({ |i|
+								pos = this.prBuild(rawNode.at(\body)[i], pos, body);
+								pos = this.prParseWhitespace(pos, body);
+							});
+						});
+						pos = this.prParseWhitespace(pos, block);
+						pos = this.prBuild(rawNode.at(\body)[last], pos, block);
+					});
+				}, {
+					// Native parser will build an empty block as root for empty strings.
+					if (raw < (rawParse.size - 1) or: { addTo != 0 }, {
+						Error("at end of source string but non-empty block in native parse").throw;
+					});
+					^pos;
+				});
+			},
+			\variableList, {
+				var list = this.prAddNode(\variableList, addTo, "var");
+				if (source[pos..pos + 2] != "var", {
+					Error("parse has variableList but source has '%'".format(
+						source[pos..pos + 2])).throw;
+				});
+				pos = this.prParseWhitespace(pos + 3, list);
+				rawNode.at(\variableDefinitions).do({ |def|
+					pos = this.prBuild(def, pos, list);
+					pos = this.prParseWhitespace(pos, list);
+				});
+				// Should now be on a semicolon for the end of the variable list.
+				if (source[pos] != $;, {
+					Error("finished parsing variableList, expecting ; but source has '%'".format(
+						source[pos])).throw;
+				});
+				this.prAddNode(\end, list, ";");
+				pos = pos + 1;
+			},
+			\variableDefinition, {
+				var varName = rawNode.at(\name).asString;
+				var def = this.prAddNode(\variableDefinition, addTo, varName);
+				if (source.containsStringAt(pos, varName).not, {
+					Error("parse has variableDefinition '%' but source has '%'".format(
+						varName, source[pos..(pos + varName.size)])).throw;
+				});
+				pos = pos + varName.size;
+				if (rawNode.at(\definitionValue).size > 0, {
+					var val = this.prAddNode(\value, def, "");
+					pos = this.prParseWhitespace(pos, def);
+					rawNode.at(\definitionValue).do({ |rawVal|
+						pos = this.prBuild(rawVal, pos, val);
+						pos = this.prParseWhitespace(pos, val);
+					});
+				});
+			},
+			\drop, {
+				// Drop nodes are useful for the compiler but are transparent to the parser.
+				rawNode.at(\firstExpression).do({ |drop|
+					pos = this.prBuild(drop, pos, addTo);
+				});
+				rawNode.at(\secondExpression).do({ |drop|
+					pos = this.prBuild(drop, pos, addTo);
+				});
+			},
+			\dynamicDictionary, {
+				// native parser can interpret some empty parenthesis as dynDicts with no
+				// elements, in which case we don't add any new parsing nodes.
+				if (rawNode.at(\elements).size > 0, {
+					Error("can't handly nonempty dyndicts yet").throw;
+				});
+			},
+			\blockReturn, {
+				if (source[pos] != $), {
+					Error("parse has blockReturn but source has '%'".format(source[pos])).throw;
+				});
+				if (parseTree[addTo].at(\type) !== \block, {
+					Error("parse has blockReturn but adding to '%'".format(
+						parseTree[addTo].at(\type).asString)).throw;
+				});
+				this.prAddNode(\blockReturn, addTo, ")");
+				pos = pos + 1;
+			},
+			{
+				Error("can't handle node %, source at '%'".format(rawNode,
+					source[pos..min(pos + 10, source.size - 1)])).throw;
+			}
+		);
+
+		^pos;
 	}
 
-	prAddNode { |type, containedBy=-1, substring=""|
+	prAddNode { |type, addTo, substr|
 		var node = IdentityDictionary.new;
 		var id = parseTree.size;
 
-		node.add(\type, type);
-		node.add(\contains, OrderedIdentitySet.new);
-		if (containedBy >= 0, {
-			node.add(\containedBy, containedBy);
-			parseTree[containedBy].at(\contains).add(id);
+		node.put(\type, type);
+		node.put(\contains, OrderedIdentitySet.new);
+		if (addTo >= 0, {
+			node.put(\containedBy, addTo);
+			parseTree[addTo].at(\contains).add(id);
 		});
-		if (substring.size > 0, {
-			node.add(\substring, string);
+		if (substr.size > 0, {
+			node.put(\substring, substr);
 		});
 		parseTree = parseTree.add(node);
+		"adding %: %".format(id, node).postln;
 		^id;
 	}
 
-	prParseWhitespace { |sourcePosition, containerId|
+	prParseWhitespace { |pos, addTo|
 		var whitespaceFound = true;
 		while({ whitespaceFound }, {
 			var match;
 			whitespaceFound = false;
-			match = source.findRegexpAt("[ ]+", sourcePosition);
+			match = source.findRegexpAt("[ ]+", pos);
 			if (match.notNil, {
-				this.prAddNode(\spaces, containedBy, match[0]);
-				sourcePosition = startPosition + match[1];
+				this.prAddNode(\spaces, addTo, match[0]);
+				pos = pos + match[1];
 				whitespaceFound = true;
 			});
 
-			match = source.findRegexpAt("\n+", sourcePosition);
+			match = source.findRegexpAt("[\n]+", pos);
 			if (match.notNil, {
-				this.prAddNode(\newLines, containedBy, match[0]);
-				sourcePosition = sourcePosition + match[1];
+				this.prAddNode(\newLines, addTo, match[0]);
+				pos = pos + match[1];
 				whitespaceFound = true;
 			});
 
-			match = source.findRegexpAt("\t+", sourcePosition);
+			match = source.findRegexpAt("[\t]+", pos);
 			if (match.notNil, {
-				this.prAddNode(\tabs, containedBy, match[0]);
-				sourcePosition = sourcePosition + match[1];
+				this.prAddNode(\tabs, addTo, match[0]);
+				pos = pos + match[1];
 				whitespaceFound = true;
 			});
 
-			match = source.findRegexpAt("//[^\n]*\n", sourcePosition);
+			match = source.findRegexpAt("//[^\n]*\n", pos);
 			if (match.notNil, {
-				this.prAddNode(\lineComment, containedBy, match[0]);
-				sourcePosition = sourcePosition + match[1];
+				this.prAddNode(\comment, addTo, match[0]);
+				pos = pos + match[1];
 				whitespaceFound = true;
 			});
 
-			match = source.findRegexpAt("/[*]([^*]|([*][^/]))*[*]/", sourcePosition);
+			match = source.findRegexpAt("/[*]([^*]|([*][^/]))*[*]/", pos);
 			if (match.notNil, {
-				this.prAddNode(\blockComment, containedBy, match[0]);
-				sourcePosition = sourcePosition + match[1];
+				this.prAddNode(\blockComment, addTo, match[0]);
+				pos = pos + match[1];
 				whitespaceFound = true;
 			});
 		});
 
-		^sourcePosition;
+		^pos;
+	}
+
+	prAppendString { |id, str|
+		var substring = "";
+		if (parseTree[id].at(\substring).notNil, {
+			substring = parseTree[id].at(\substring);
+		});
+		parseTree[id].at(\contains).do({ |cid|
+			substring = this.prAppendString(cid, substring);
+		});
+		^(str ++ substring);
 	}
 }
