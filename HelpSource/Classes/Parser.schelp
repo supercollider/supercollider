@@ -1,0 +1,9 @@
+class:: Parser
+summary:: Provides a parse tree of sclang source, constructed from the sclang compiler.
+categories:: Core
+related::Reference/Parse-Tree-Details
+
+description::
+Before source code can be compiled and executed it must first be emphasis::parsed::, which is a conversion of the source code string into a emphasis::parse tree::, a data structure that describes the kinds of symbols in the program source and their relationship to one another. For a detailed discussion of the parse tree data structure that the Parser produces see link::Reference/Parse-Tree-Details::.
+
+

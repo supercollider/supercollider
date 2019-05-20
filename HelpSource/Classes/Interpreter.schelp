@@ -145,15 +145,3 @@ Global variables ("interpreter variables") for interactive programming (see link
 method::functionCompileContext
 
 The compiler uses this method as a virtual context in which to compile code.
-
-method::parse
-
-Runs the provided link::Classes/String:: through the parsing stage of the Interpreter, but does not execute it. Rather it returns an link::Classes/Array:: of link::Classes/IdentityDictionary:: elements, where the link::Classes/IdentityDictionary:: elements represent individual emphasis::nodes:: in the parse tree. Each node dictionary will contain at minimum the following keys:
-
-table::
-## strong::key::    || strong::value type:: || strong::description::
-## \nodeType        || label                || One of the node type labels described in the node type label table below.
-## \lineNumber      || integer              || The line number in the provided string where this parse node begins.
-## \characterNumber || integer              || The character number in the line where this parse node begins.
-## \children        || array                || An array of any children of this parse node, in-order, with each child as another dictionary with the same structure as this.
-::
