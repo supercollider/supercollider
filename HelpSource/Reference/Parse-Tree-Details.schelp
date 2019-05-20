@@ -1,0 +1,23 @@
+title::Parse Tree Details
+summary:: Contents and usage of the parse tree data structure.
+categories:: Language
+related:: Classes/Parser
+
+description::
+The link::Classes/Parser:: class can produce a parse tree data structure for any valid sclang code string. This parse tree consists of an link::Classes/Array:: of tree emphasis::nodes::, which are link::Classes/IdentityDictionary:: containers with a certain number of always-present keys as well as some type-dependent keys, all of which are documented here, along with some notes about how these trees are constructed.
+
+section::Parse Tree Data Structure
+
+subsection::Overview
+
+
+section::Tree Construction
+
+subsection::Native Tree
+
+In order to minimize the chance of the parser producing trees different than what the SCLang compiler itself is producing the parser code is designed to re-use the same parser that the compiler uses during normal SCLang code compilation. The parse tree produced by this parser was not designed originally for use on its own and is more accurately thought of as a precompilation step. So, for instance, there are parse tree nodes that don't correspond to tokens inside the source code, such as code::drop:: nodes, which are used for the compiler to maintain the stack frame.
+
+Furthermore, the parse tree as provided to the compiler is not concerned with maintaining an ordered relationship with the input source. A useful property of a parse tree for programmatic manipulation of source code is that some sort of tree traversal through the tree should be able to reconstruct the input source code. But because the native parser is preparing this code for compilation the ordering relationship was not a design consideration for this parser and it maintains only a loose ordering.
+
+Lastly the native parse tree does not maintain a strict tree shape, in the sense that while it is a directed acyclic graph descendant nodes can have multiple ancestry, which means that a tree traversal algorithm will result in some parts of the tree being considered more than once, which again confounds the desired ordered traversal property of a parse tree useful for metaprogramming.
+
