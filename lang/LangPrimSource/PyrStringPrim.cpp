@@ -78,11 +78,55 @@ int prString_AsInteger(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 
-	char str[256];
-	int err = slotStrVal(a, str, 255);
+    const int kBufferSize = 256;
+
+	char str[kBufferSize];
+	int err = slotStrVal(a, str, kBufferSize - 1);
 	if (err) return err;
 
-	SetInt(a, atoi(str));
+    // An Integer consists of some potential preceding whitespace, an optional minus sign, a hexadecimal tag '0x' or a
+    // radix indicator r preceded by a number from 2-36 (e.g. 2r for binary), followed by the number body. First we
+    // remove any preceding whitespace.
+    auto startPos = 0;
+    for (; startPos < kBufferSize - 1; ++startPos) {
+        if (str[startPos] != ' ' && str[startPos] != '\t' && str[startPos] != '\n') break;
+    }
+
+    // Should be at least one printing character left to parse.
+    int value = 0;
+    if (startPos < kBufferSize - 2) {
+        int radix = 10;
+        bool isNegative = false;
+
+        // Look for optional negative sign.
+        if (str[startPos] == '-') {
+            ++startPos;
+            isNegative = true;
+        }
+
+        // Check for hexadecimal tag.
+        if (startPos < kBufferSize - 3) {
+            if (str[startPos] == '0' && str[startPos + 1] == 'x') {
+                startPos += 2;
+                radix = 16;
+            } else if (str[startPos + 1] == 'r') {
+                radix = static_cast<int>(str[startPos] - '0');
+                startPos += 2;
+            } else if (str[startPos + 2] == 'r') {
+                radix = atoi(str + startPos);
+                startPos += 3;
+            }
+        }
+
+        assert(startPos < kBufferSize - 1);
+        value = strtol(str + startPos, nullptr, radix);
+
+        if (isNegative) {
+            value *= -1;
+        }
+    }
+
+	SetInt(a, value);
 
 	return errNone;
 }

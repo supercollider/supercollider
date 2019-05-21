@@ -153,4 +153,102 @@ TestString : UnitTest {
 		this.assertEquals(result, Array.new, "Non-matching findRegexp should return empty array");
 	}
 
+
+	// ------- conversion to Integer -----------------------------------------------
+
+	test_asInteger_base10_conversions {
+		this.assertEquals("0".asInteger, 0);
+		this.assertEquals("-1".asInteger, -1);
+		this.assertEquals("847".asInteger, 847);
+		this.assertEquals("-2147483648".asInteger, -2147483648);
+		this.assertEquals("2147483647".asInteger, 2147483647);
+		this.assertEquals(" \t \n  42  ".asInteger, 42);
+		this.assertEquals("  -71".asInteger, -71);
+	}
+
+	test_asInteger_base16_conversions {
+		this.assertEquals("0x4ad".asInteger, 0x4ad);
+		this.assertEquals("-0x497".asInteger, -0x497);
+		this.assertEquals("  -0x29A".asInteger, -0x29A);
+		this.assertEquals("0xdeadBEEF  ".asInteger, 0xdeadBEEF);
+	}
+
+	test_asInteger_radix_conversions {
+		this.assertEquals("2r10100110  ".asInteger, 2r10100110);
+		this.assertEquals("\n  36rMaus".asInteger, 36rMaus);
+		this.assertEquals(" \t -14r10A  ".asInteger, -14r10A);
+		this.assertEquals("16rFeEd".asInteger, 16rFeEd);
+	}
+
+	test_asInteger_string_length_overflow {
+		// Eventually numStr should become so long that parsing will fail, returning 0 instead of
+		// the parsed number, but it should not crash or throw an exception.
+		var blowUp = { |numStr, targetVal|
+			var count = 0;
+			if (targetVal == 0, {
+				Error("blowUp argument of 0 will cause infinite loop").throw;
+			});
+			while ({ numStr.asInteger == targetVal }, {
+				numStr = " " ++ numStr;
+				count = count + 1;
+			});
+			this.assert(count > 0);
+		};
+
+		this.assertNoException({ blowUp.value("100", 100) });
+		this.assertNoException({ blowUp.value("-5", -5) });
+		this.assertNoException({ blowUp.value("0x416", 0x416) });
+		this.assertNoException({ blowUp.value("-0xda0", -0xda0) });
+		this.assertNoException({ blowUp.value("5r12340", 5r12340) });
+		this.assertNoException({ blowUp.value("-9r334", -9r334) });
+		this.assertNoException({ blowUp.value("34r10", 34r10) });
+		this.assertNoException({ blowUp.value("-18re1a", -18re1a) });
+	}
+
+	// ------- conversion to Float -----------------------------------------------
+
+	test_asFloat_standard_conversions {
+		this.assertEquals("0.0005".asFloat, 0.0005);
+		this.assertEquals("1.234".asFloat, 1.234);
+		this.assertEquals("-0.001".asFloat, -0.001);
+		this.assertEquals("  0.0  ".asFloat, 0.0);
+		this.assertEquals(" \t2147483649.0001".asFloat, 2147483649.0001);
+		this.assertEquals("\n   -2147483649.0001".asFloat, -2147483649.0001);
+	}
+
+	test_asFloat_keyword_conversions {
+		this.assertEquals("  inf  ".asFloat, inf);
+		this.assertEquals("-inf".asFloat, -inf);
+		this.assertEquals("pi".asFloat, pi);
+		this.assertEquals("-2pi".asFloat, -2pi);
+	}
+
+	test_asFloat_exponential_notation {
+		this.assertEquals("5.872e16".asFloat, 5.872e16);
+		this.assertEquals("-1E100".asFloat, -1E100);
+		this.assertEquals("4E-2".asFloat, 4E-2);
+		this.assertEquals("-19e-74".asFloat, -19e-74);
+	}
+
+	test_asFloat_radix_notation {
+//		this.assertEquals("12r4A.ABC".asFloat, 12r4A.ABC);
+//		this.assertEquals("-16rfe.0010".asFloat, -16rfe.001);
+		this.assertEquals("  2r101.00101".asFloat, 2r101.00101);
+//		this.assertEquals("\n\n\n-36rONE.WAY".asFloat, -36rONE.WAY);
+	}
+
+	test_asFloat_scale_degrees {
+		this.assertEquals("4b".asFloat, 4b);
+		this.assertEquals("-16s".asFloat, -16s);
+		this.assertEquals("  8ss".asFloat, 8ss);
+		this.assertEquals("  -42bb".asFloat, -42bb);
+		this.assertEquals("0bbb".asFloat, 0bbb);
+		this.assertEquals("1sss".asFloat, 1sss);
+		this.assertEquals("100ssss".asFloat, 100ssss);
+		this.assertEquals("-3bbbb".asFloat, -3bbbb);
+		this.assertEquals("-2b499".asFloat, -2b499);
+		this.assertEquals("7s499".asFloat, 7s499);
+		this.assertEquals("4s1".asFloat, 4s1);
+		this.assertEquals("-3b002".asFloat, -2b002);
+	}
 }
