@@ -34,6 +34,7 @@ Primitives for String.
 #include "PyrLexer.h"
 #include "SC_Filesystem.hpp"
 #include "SC_Codecvt.hpp" // path_to_utf8_str
+#include "SC_Constants.h" // pi
 #ifdef _WIN32
 #    include <direct.h>
 #    include "SC_Win32Utils.h"
@@ -84,7 +85,7 @@ int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    // An Integer consists of some potential preceding whitespace, an optional minus sign, a hexadecimal tag '0x' or a
+    // An Integer consists of some optional preceding whitespace, an optional minus sign, a hexadecimal tag '0x' or a
     // radix indicator r preceded by a number from 2-36 (e.g. 2r for binary), followed by the number body. First we
     // remove any preceding whitespace.
     auto startPos = 0;
@@ -97,7 +98,7 @@ int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     int value = 0;
     if (startPos < kBufferSize - 2) {
         int radix = 10;
-        bool isNegative = false;
+        auto isNegative = false;
 
         // Look for optional negative sign.
         if (str[startPos] == '-') {
@@ -120,10 +121,15 @@ int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
         }
 
         assert(startPos < kBufferSize - 1);
-        value = strtol(str + startPos, nullptr, radix);
+
+        if (radix <= 36 && radix > 1) {
+            value = strtol(str + startPos, nullptr, radix);
+        } else {
+            value = radix;
+        }
 
         if (isNegative) {
-            value *= -1;
+            value = -value;
         }
     }
 
@@ -136,12 +142,94 @@ int prString_AsFloat(struct VMGlobals* g, int numArgsPushed);
 int prString_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
-    char str[256];
-    int err = slotStrVal(a, str, 255);
+    const int kBufferSize = 256;
+
+    char str[kBufferSize];
+    int err = slotStrVal(a, str, kBufferSize - 1);
     if (err)
         return err;
 
-    SetFloat(a, atof(str));
+    // A Float consists of some optional preceding whitespace, an optional minus sign, an optional radix marker 'r'
+    // preceded by a radix number 2-36, one or more radix-appropriate decimals, zero or one decimal place, optionally
+    // more decimals, and (if base 10 only) an optional exponential notation marker 'e' or 'E', followed by an Integer
+    // providing the exponent, all followed by an optional "pi" string indicating the value is a multiple of pi.
+    //
+    // OR
+    //
+    // A Float consists of an Integer followed by 1-4 'b' or 's' characters, or a single 'b' or 's' character followed
+    // by a positive Integer from 0-499.
+    //
+    // OR
+    //
+    // A Float consists of an optional negative sign followed by the keyword "inf".
+
+    // Digest whitespace first.
+    auto startPos = 0;
+    for (; startPos < kBufferSize - 1; ++startPos) {
+        if (str[startPos] != ' ' && str[startPos] != '\t' && str[startPos] != '\n')
+            break;
+    }
+
+    auto isNegative = false;
+    double value = 0.0;
+    int radix = 10;
+
+    // Look for optional negative sign.
+    if (str[startPos] == '-') {
+        ++startPos;
+        isNegative = true;
+    }
+
+    if (strncmp("inf", str + startPos, kBufferSize - startPos) == 0) {
+        if (isNegative) {
+            SetFloat(a, -std::numeric_limits<double>::infinity());
+        } else {
+            SetFloat(a, std::numeric_limits<double>::infinity());
+        }
+
+        return errNone;
+    }
+
+    // Look for radix indicator.
+    if (str[startPos + 1] == 'r') {
+        radix = static_cast<int>(str[startPos] - '0');
+        startPos += 2;
+    } else if (str[startPos + 2] == 'r') {
+        radix = atoi(str + startPos);
+        startPos += 3;
+    }
+
+    if (radix == 10) {
+        char* endPtr = nullptr;
+        // ** possibly scan for decimal/eE, then scan for bbb/sss.
+        value = strtod(str + startPos, &endPtr);
+        // Check for "pi" suffix meaning this is a multiple of pi.
+        if (strcmp("pi", endPtr) == 0) {
+            // No numeric prefix before pi means this is the raw constant, not 0*pi.
+            if (str + startPos == endPtr) {
+                value = pi;
+            } else {
+                value *= pi;
+            }
+        }
+    } else if (radix > 1 && radix <= 36) {
+        // Parse numbers before and after decimal separately as long longs, then combine manually into a double.
+        char* endPtr = nullptr;
+        long long wholeNumber = strtoll(str + startPos, &endPtr, radix);
+        long long fraction = 0;
+        if (*endPtr == '.') {
+            fraction = strtoll(endPtr, nullptr, radix);
+        }
+        value = 666.0;
+    } else {
+        value = static_cast<double>(radix);
+    }
+
+    if (isNegative) {
+        value = -value;
+    }
+
+    SetFloat(a, value);
 
     return errNone;
 }

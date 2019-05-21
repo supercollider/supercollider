@@ -178,6 +178,8 @@ TestString : UnitTest {
 		this.assertEquals("\n  36rMaus".asInteger, 36rMaus);
 		this.assertEquals(" \t -14r10A  ".asInteger, -14r10A);
 		this.assertEquals("16rFeEd".asInteger, 16rFeEd);
+		this.assertEquals("-39r25".asInteger, -39, "radixes greater than 36 not supported");
+		this.assertEquals("1r0".asInteger, 1, "radixes less than 2 not supported");
 	}
 
 	test_asInteger_string_length_overflow {
@@ -221,6 +223,8 @@ TestString : UnitTest {
 		this.assertEquals("-inf".asFloat, -inf);
 		this.assertEquals("pi".asFloat, pi);
 		this.assertEquals("-2pi".asFloat, -2pi);
+		this.assertEquals("-2.5pi".asFloat, -2.5pi);
+		this.assertEquals("0pi".asFloat, 0.0);
 	}
 
 	test_asFloat_exponential_notation {
@@ -228,13 +232,17 @@ TestString : UnitTest {
 		this.assertEquals("-1E100".asFloat, -1E100);
 		this.assertEquals("4E-2".asFloat, 4E-2);
 		this.assertEquals("-19e-74".asFloat, -19e-74);
+		this.assertEquals("7.4e-2pi".asFloat, 7.4e-2pi);
+		this.assertEquals("  -18E2pi".asFloat, -18E2pi);
 	}
 
 	test_asFloat_radix_notation {
-//		this.assertEquals("12r4A.ABC".asFloat, 12r4A.ABC);
-//		this.assertEquals("-16rfe.0010".asFloat, -16rfe.001);
+		this.assertEquals("12r4A.ABA4".asFloat, 12r4A.ABA4);
+		this.assertEquals("-16rfe.0010".asFloat, -16rfe.001);
 		this.assertEquals("  2r101.00101".asFloat, 2r101.00101);
-//		this.assertEquals("\n\n\n-36rONE.WAY".asFloat, -36rONE.WAY);
+		this.assertEquals("-8r73.0742pi".asFloat, -8r73.0742pi);
+		this.assertEquals("\t4r3pi".asFloat, 4r3pi);
+		this.assertEquals("\n\n\n-36rONE.WAY".asFloat, -36rONE.WAY);
 	}
 
 	test_asFloat_scale_degrees {
