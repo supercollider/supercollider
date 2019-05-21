@@ -5,12 +5,11 @@ Parser {
 	var <parseTree;
 
 	*newFromString{ |source|
-		var rawParse = Parser.prRawParse(source);
 		var result;
-		if (rawParse.isNil, {
-			result = nil;
+		var rawParse = Parser.prRawParse(source);
+		if (rawParse.notNil, {
+			result = super.newCopyArgs(source, rawParse).init;
 		});
-		result = super.newCopyArgs(source, rawParse).init;
 		^result;
 	}
 
@@ -41,11 +40,11 @@ Parser {
 			\class, { [ \superClassName, \variables, \methods ] },
 			\classExtension, { [ \methods ] },
 			\method, { [ \argumentList, \variableList, \body ] },
-			\block, { [ \arguments, \variables, \body ] },
+			\block, { [ \arguments, \variables, \body ] }, // some testing
 			\slot, {  [ ] },
-			\variableList, { [ \variableDefinitions ] },
-			\variableDefinition, { [ \definitionValue ] },
-			\dynamicDictionary, { [ \elements ] },
+			\variableList, { [ \variableDefinitions ] },  // some testing
+			\variableDefinition, { [ \definitionValue ] },  // some testing
+			\dynamicDictionary, { [ \elements ] },  // some testing
 			\dynamicList, { [ \className, \elements ] },
 			\literalList, { [ \className, \elements ] },
 			\literalDictionary, { [ \elements ] },
@@ -60,14 +59,14 @@ Parser {
 			\pushKeyArgument, { [ \selector, \expression ] },
 			\call, { [ \arguments, \keyArguments ] },
 			\binaryOperationCall, { [ \arguments ] },
-			\drop, { [ \firstExpression, \secondExpression ] },
+			\drop, { [ \firstExpression, \secondExpression ] }, // some testing
 			\assignment, { [ \variableName, \expression ] },
 			\multiAssignment, { [ \variables, \expression ] },
 			\multiAssignmentVariableList, { [ \variableNames, \rest ] },
 			\setter, { [ \selector, \firstExpression, \secondExpression ] },
 			\curryArgument, { [ ] },
 			\return, { [ \expression ] },
-			\blockReturn, { [ ] },
+			\blockReturn, { [ ] },  // some testing
 			{ Error("unknown nodeType" + nodeType.asString).throw }
 		);
 		^labels;
@@ -101,6 +100,7 @@ Parser {
 					});
 					pos = this.prParseWhitespace(pos + 1, block);
 					if (rawNode.at(\arguments).size > 0, {
+						/*
 						var args = this.prAddNode(\arguments, block, "");
 						rawNode.at(\arguments).do({ |argId|
 							pos = this.prBuild(argId, pos, args);
@@ -109,6 +109,8 @@ Parser {
 
 						// some kind of argument end token?
 						pos = this.prParseWhitespace(pos, block);
+						*/
+						Error("argument part of block not supported!").throw;
 					});
 					if (rawNode.at(\variables).size > 0, {
 						var vars = this.prAddNode(\variables, block, "");
@@ -155,6 +157,11 @@ Parser {
 				rawNode.at(\variableDefinitions).do({ |def|
 					pos = this.prBuild(def, pos, list);
 					pos = this.prParseWhitespace(pos, list);
+					// Check for comma continuing additions to the list.
+					if (source[pos] == $,, {
+						this.prAddNode(\comma, list, ",");
+						pos = this.prParseWhitespace(pos + 1, list);
+					});
 				});
 				// Should now be on a semicolon for the end of the variable list.
 				if (source[pos] != $;, {
@@ -208,9 +215,19 @@ Parser {
 				this.prAddNode(\blockReturn, addTo, ")");
 				pos = pos + 1;
 			},
+			\pushLiteral, {
+				// Combines assignment and stack variable creation into one parse node. For the
+				// purposes of the parse tree we break these out again into separate nodes.
+				if (source[pos] != $=, {
+					Error("parse has pushLiteral but source has '%'".format(source[pos])).throw;
+				});
+				this.prAddNode(\assignment, addTo, "=");
+				pos = this.prParseWhitespace(pos + 1, addTo);
+				pos = this.prParseLiteral(pos, addTo, rawNode.at(\slot));
+			},
 			{
 				Error("can't handle node %, source at '%'".format(rawNode,
-					source[pos..min(pos + 10, source.size - 1)])).throw;
+					source[pos..pos + 10])).throw;
 			}
 		);
 
@@ -275,6 +292,32 @@ Parser {
 				whitespaceFound = true;
 			});
 		});
+
+		^pos;
+	}
+
+	prParseLiteral { |pos, addTo, literal|
+		// Determine type of literal, which will determine which type of symbol to parse. These
+		// regular expressions can be a bit loose because we have additional info in the terms of
+		// the already parsed literal value.
+		case (
+			{ literal.isInteger }, {
+				var node, reparse, match = source.findRegexpAt("[-]?[0-9A-Za-z]+", pos);
+				if (match.isNil, {
+					Error("parser expecting integer literal but found '%'".format(
+						source[pos..pos+10])).throw;
+				});
+				reparse = match[0].asInt;
+				if (reparse != literal, {
+					Error("reparse % of integer string % not equal to parsed %".format(
+						reparse, match[0], literal)).throw;
+				});
+				node = this.prAddNode(\literal, addTo, match[0]);
+				parseTree[node].put(\type, \integer);
+				parseTree[node].put(\value, literal);
+				pos = pos + match[1];
+			},
+		);
 
 		^pos;
 	}
