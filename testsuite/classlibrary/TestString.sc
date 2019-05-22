@@ -238,16 +238,17 @@ TestString : UnitTest {
 
 	test_asFloat_radix_notation {
 		this.assertEquals("12r4A.ABA4".asFloat, 12r4A.ABA4);
-		this.assertEquals("-16rfe.0010".asFloat, -16rfe.001);
+		this.assertEquals("-16rfe.0010".asFloat, -16rfe.0010);
 		this.assertEquals("  2r101.00101".asFloat, 2r101.00101);
 		this.assertEquals("-8r73.0742pi".asFloat, -8r73.0742pi);
 		this.assertEquals("\t4r3pi".asFloat, 4r3pi);
 		this.assertEquals("\n\n\n-36rONE.WAY".asFloat, -36rONE.WAY);
+		this.assertEquals("36r0.00000A".asFloat, 36r0.00000A);
 	}
 
 	test_asFloat_scale_degrees {
 		this.assertEquals("4b".asFloat, 4b);
-		this.assertEquals("-16s".asFloat, -16s);
+		this.assertEquals("-15s".asFloat, -15s);
 		this.assertEquals("  8ss".asFloat, 8ss);
 		this.assertEquals("  -42bb".asFloat, -42bb);
 		this.assertEquals("0bbb".asFloat, 0bbb);
@@ -257,6 +258,6 @@ TestString : UnitTest {
 		this.assertEquals("-2b499".asFloat, -2b499);
 		this.assertEquals("7s499".asFloat, 7s499);
 		this.assertEquals("4s1".asFloat, 4s1);
-		this.assertEquals("-3b002".asFloat, -2b002);
+		this.assertEquals("-3b002".asFloat, -3b002);
 	}
 }

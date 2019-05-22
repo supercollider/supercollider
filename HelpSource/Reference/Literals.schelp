@@ -87,8 +87,8 @@ code::36rA.bitNot:: might be a function call, or it might be
 code::36rA.BITNOT == 10.320080118934::.
 code::
 12r4a.abc // wrong
-12r4a.ABC // works
-12r4A.ABC // better
+12r4a.AB4 // works
+12r4A.AB4 // better
 ::
 
 Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
