@@ -155,8 +155,8 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
     //
     // OR
     //
-    // A Float consists of an Integer followed by 1-4 'b' or 's' characters, or a single 'b' or 's' character followed
-    // by a positive Integer from 0-499.
+    // A Float consists of a base-10 Integer followed by 1-4 'b' or 's' characters, or a single 'b' or 's' character
+    // followed by a positive base-10 Integer from 0-499.
     //
     // OR
     //
@@ -171,6 +171,8 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
     auto isNegative = false;
     double value = 0.0;
     int radix = 10;
+    bool piOK = true;
+    char* endPtr = nullptr;
 
     // Look for optional negative sign.
     if (str[startPos] == '-') {
@@ -178,6 +180,7 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
         isNegative = true;
     }
 
+    // Look for inf keyword.
     if (strncmp("inf", str + startPos, kBufferSize - startPos) == 0) {
         if (isNegative) {
             SetFloat(a, -std::numeric_limits<double>::infinity());
@@ -198,29 +201,83 @@ int prString_AsFloat(struct VMGlobals *g, int numArgsPushed)
     }
 
     if (radix == 10) {
-        char* endPtr = nullptr;
-        // ** possibly scan for decimal/eE, then scan for bbb/sss.
         value = strtod(str + startPos, &endPtr);
-        // Check for "pi" suffix meaning this is a multiple of pi.
-        if (strcmp("pi", endPtr) == 0) {
-            // No numeric prefix before pi means this is the raw constant, not 0*pi.
-            if (str + startPos == endPtr) {
-                value = pi;
-            } else {
-                value *= pi;
+        bool isInteger = true;
+        // Scan numeric content for decimal or exponential notation, which would disallow the sharp/flat notation.
+        for (char* c = str + startPos; c != endPtr; ++c) {
+            if (*c == '.' || *c == 'e' || *c == 'E') {
+                isInteger = false;
+                break;
             }
         }
-    } else if (radix > 1 && radix <= 36) {
-        // Parse numbers before and after decimal separately as long longs, then combine manually into a double.
-        char* endPtr = nullptr;
-        long long wholeNumber = strtoll(str + startPos, &endPtr, radix);
-        long long fraction = 0;
-        if (*endPtr == '.') {
-            fraction = strtoll(endPtr, nullptr, radix);
+
+        if (isInteger) {
+            // Look for 1-4 sharp indictators 's', 1-4 flat indicators 'b', or a single indicator followed by an
+            // Integer.
+            int cents = 0;
+            if (*endPtr == 'b') {
+                ++endPtr;
+                piOK = false;
+                if (*endPtr >= '0' && *endPtr <= '9') {
+                    cents = -atoi(endPtr);
+                } else {
+                    cents = -100;
+                    for (auto i = 1; i < 4; ++i) {
+                        if (*endPtr != 'b') {
+                            break;
+                        }
+                        ++endPtr;
+                        cents -= 100;
+                    }
+                }
+            } else if (*endPtr == 's') {
+                ++endPtr;
+                piOK = false;
+                if (*endPtr >= '0' && *endPtr <= '9') {
+                    cents = atoi(endPtr);
+                } else {
+                    cents = 100;
+                    for (auto i = 1; i < 4; ++i) {
+                        if (*endPtr != 's') {
+                            break;
+                        }
+                        ++endPtr;
+                        cents += 100;
+                    }
+                }
+            }
+
+            if (isNegative) {
+                cents = -cents;
+            }
+
+            value = value + (static_cast<double>(cents) / 1000.0);
         }
-        value = 666.0;
+    } else if (radix > 1 && radix <= 36) {
+        // Parse numbers before and after decimal separately then combine manually as wholeNumber + fraction;
+        double wholeNumber = static_cast<double>(strtoll(str + startPos, &endPtr, radix));
+        double fractionNum = 0;
+        double fractionDen = 1.0;
+        if (*endPtr == '.') {
+            ++endPtr;
+            char* fractionEnd = nullptr;
+            fractionNum = static_cast<double>(strtoll(endPtr, &fractionEnd, radix));
+            fractionDen = pow(static_cast<double>(radix), static_cast<double>(fractionEnd - endPtr));
+            endPtr = fractionEnd;
+        }
+        value = wholeNumber + (fractionNum / fractionDen);
     } else {
         value = static_cast<double>(radix);
+    }
+
+    // Check for "pi" suffix meaning this is a multiple of pi.
+    if (strcmp("pi", endPtr) == 0) {
+        // No numeric prefix before pi means this is the raw constant, not 0*pi.
+        if (str + startPos == endPtr) {
+            value = pi;
+        } else {
+            value *= pi;
+        }
     }
 
     if (isNegative) {
