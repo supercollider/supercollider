@@ -273,7 +273,7 @@ int prString_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     }
 
     // Check for "pi" suffix meaning this is a multiple of pi.
-    if (strcmp("pi", endPtr) == 0) {
+    if (piOK && strcmp("pi", endPtr) == 0) {
         // No numeric prefix before pi means this is the raw constant, not 0*pi.
         if (str + startPos == endPtr) {
             value = pi;
