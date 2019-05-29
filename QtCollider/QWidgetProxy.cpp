@@ -372,8 +372,9 @@ bool QWidgetProxy::interpretMouseWheelEvent(QObject* o, QEvent* e, QList<QVarian
     QWidget* w = widget();
     QPoint pt = _mouseEventWidget == w ? we->pos() : _mouseEventWidget->mapTo(w, we->pos());
 
-    QPointF delta = we->pixelDelta();
-    delta *= 0.25f; // This matches old scaling of delta
+    // only hi-res trackpads return pixelDelta everything else uses angleDelta..
+    QPointF delta = we->pixelDelta().isNull() ? we->angleDelta() / 8.f // scaled to return steps of 15
+                                              : we->pixelDelta() * 0.25f; // this matches old scaling of delta
 
     args << pt.x();
     args << pt.y();
