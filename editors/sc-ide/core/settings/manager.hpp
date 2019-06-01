@@ -32,66 +32,56 @@ namespace ScIDE { namespace Settings {
 
 class Theme;
 
-class Manager : public QObject
-{
+class Manager : public QObject {
     Q_OBJECT
 
 public:
-    explicit Manager( const QString & filename, QObject * parent = 0 );
+    explicit Manager(const QString& filename, QObject* parent = 0);
 
     // forwarded
-    void beginGroup ( const QString & prefix ) { mSettings->beginGroup(prefix); }
-    void endGroup () { mSettings->endGroup(); }
+    void beginGroup(const QString& prefix) { mSettings->beginGroup(prefix); }
+    void endGroup() { mSettings->endGroup(); }
 
     QString group() const { return mSettings->group(); }
-    QStringList childGroups () const { return mSettings->childGroups(); }
-    QStringList childKeys () const { return mSettings->childKeys(); }
+    QStringList childGroups() const { return mSettings->childGroups(); }
+    QStringList childKeys() const { return mSettings->childKeys(); }
     QStringList allKeys() const { return mSettings->allKeys(); }
 
     void sync() { mSettings->sync(); }
-    void remove ( const QString &key ) { mSettings->remove(key); }
+    void remove(const QString& key) { mSettings->remove(key); }
 
     // extended
-    bool contains ( const QString & key ) const;
-    bool isOverridden( const QString & key ) const
-    {
-        return mSettings->contains( key );
-    }
+    bool contains(const QString& key) const;
+    bool isOverridden(const QString& key) const { return mSettings->contains(key); }
 
-    QVariant value ( const QString & key ) const;
-    QVariant defaultValue ( const QString & key ) const
-    {
-        return mDefaults.value(resolvedKey(key));
-    }
+    QVariant value(const QString& key) const;
+    QVariant defaultValue(const QString& key) const { return mDefaults.value(resolvedKey(key)); }
 
-    void setValue ( const QString & key, const QVariant & value );
+    void setValue(const QString& key, const QVariant& value);
 
-    QKeySequence shortcut( const QString & key );
+    QKeySequence shortcut(const QString& key);
 
-    const QList<QAction*> & actions() { return mActions; }
-    void addAction ( QAction *action, const QString & key, const QString & category = QString() );
-    QString keyForAction ( QAction *action );
+    const QList<QAction*>& actions() { return mActions; }
+    void addAction(QAction* action, const QString& key, const QString& category = QString());
+    QString keyForAction(QAction* action);
 
     QFont codeFont();
 
     int defaultCursorFlashTime() const { return mDefaultCursorFlashTime; }
 
-    void setThemeVal(QString key, const QTextCharFormat &val);
-    const QTextCharFormat & getThemeVal(QString key);
+    void setThemeVal(QString key, const QTextCharFormat& val);
+    const QTextCharFormat& getThemeVal(QString key);
     void updateTheme();
 
 private:
-    void setDefault ( const QString & key, const QVariant & value )
-    {
-        mDefaults.insert(resolvedKey(key), value);
-    }
+    void setDefault(const QString& key, const QVariant& value) { mDefaults.insert(resolvedKey(key), value); }
 
     typedef QSettings::SettingsMap SettingsMap;
 
-    QString resolvedKey( const QString & key ) const
-    {
+    QString resolvedKey(const QString& key) const {
         QString fullKey = mSettings->group();
-        if(!fullKey.isEmpty()) fullKey.append("/");
+        if (!fullKey.isEmpty())
+            fullKey.append("/");
         fullKey.append(key);
         return fullKey;
     }
@@ -99,11 +89,11 @@ private:
     void initDefaults();
     void initHighlightingDefaults();
 
-    QSettings *mSettings;
+    QSettings* mSettings;
     SettingsMap mDefaults;
     QList<QAction*> mActions;
     const int mDefaultCursorFlashTime;
-    Theme *mTheme;
+    Theme* mTheme;
 };
 
 struct ActionData {
@@ -113,4 +103,4 @@ struct ActionData {
 
 }} // namespace ScIDE::Settings
 
-Q_DECLARE_METATYPE( ScIDE::Settings::ActionData );
+Q_DECLARE_METATYPE(ScIDE::Settings::ActionData);

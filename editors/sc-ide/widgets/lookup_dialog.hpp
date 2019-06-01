@@ -30,19 +30,21 @@
 
 namespace ScIDE {
 
-class GenericLookupDialog: public QDialog
-{
+class GenericLookupDialog : public QDialog {
     Q_OBJECT
 
 public:
-    static const int PathRole       = Qt::UserRole + 1;
-    static const int CharPosRole    = Qt::UserRole + 2;
-    static const int IsClassRole    = Qt::UserRole + 3;
-    static const int ClassNameRole  = Qt::UserRole + 4;
+    static const int PathRole = Qt::UserRole + 1;
+    static const int CharPosRole = Qt::UserRole + 2;
+    static const int IsClassRole = Qt::UserRole + 3;
+    static const int ClassNameRole = Qt::UserRole + 4;
     static const int MethodNameRole = Qt::UserRole + 5;
 
-    explicit GenericLookupDialog(QWidget *parent = 0);
-    void query( const QString & query ) { mQueryEdit->setText(query); this->performQuery(); }
+    explicit GenericLookupDialog(QWidget* parent = 0);
+    void query(const QString& query) {
+        mQueryEdit->setText(query);
+        this->performQuery();
+    }
     void clearQuery() { mQueryEdit->clear(); }
     void setModel(QStandardItemModel*);
 
@@ -51,83 +53,72 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     virtual void onAccepted(QModelIndex);
-    void currentChanged(const QModelIndex &, const QModelIndex &);
+    void currentChanged(const QModelIndex&, const QModelIndex&);
 
 private Q_SLOTS:
     virtual void performQuery() = 0;
 
 protected:
-    QStandardItem * firstItemInLine(QModelIndex);
-    virtual bool event( QEvent * );
-    bool eventFilter( QObject *, QEvent * );
+    QStandardItem* firstItemInLine(QModelIndex);
+    virtual bool event(QEvent*);
+    bool eventFilter(QObject*, QEvent*);
     void focusResults();
 
-    static QList<QStandardItem *> makeDialogItem(QString const & displayString, QString const & displayPath,
-                                                 QString const & path, int position,
-                                                 QString const & className, QString const & methodName,
-                                                 bool isClassItem);
+    static QList<QStandardItem*> makeDialogItem(QString const& displayString, QString const& displayPath,
+                                                QString const& path, int position, QString const& className,
+                                                QString const& methodName, bool isClassItem);
 
-    QTreeView *mResult;
-    QLineEdit *mQueryEdit;
-    Document *mPreviewDocument;
-    ScCodeEditor *mPreviewEditor;
+    QTreeView* mResult;
+    QLineEdit* mQueryEdit;
+    Document* mPreviewDocument;
+    ScCodeEditor* mPreviewEditor;
 };
 
-class LookupDialog : public GenericLookupDialog
-{
+class LookupDialog : public GenericLookupDialog {
     Q_OBJECT
 
 public:
-    explicit LookupDialog(QWidget *parent = 0);
+    explicit LookupDialog(QWidget* parent = 0);
 
 private slots:
     void performQuery();
     void onAccepted(QModelIndex);
 
 private:
-    QStandardItemModel * modelForClass(const QString & className, const QString & methodName = QString());
-    QStandardItemModel * modelForMethod(const QString & methodName);
-    QStandardItemModel * modelForPartialQuery(const QString & queryString);
-    bool performClassQuery(const QString & className);
-    bool performMethodQuery(const QString & methodName);
-    bool performPartialQuery(const QString & queryString);
+    QStandardItemModel* modelForClass(const QString& className, const QString& methodName = QString());
+    QStandardItemModel* modelForMethod(const QString& methodName);
+    QStandardItemModel* modelForPartialQuery(const QString& queryString);
+    bool performClassQuery(const QString& className);
+    bool performMethodQuery(const QString& methodName);
+    bool performPartialQuery(const QString& queryString);
 
     bool mIsPartialQuery;
 };
 
 // LATER: cache symbol references to avoid duplicate lookup
-class SymbolReferenceRequest:
-    public ScRequest
-{
+class SymbolReferenceRequest : public ScRequest {
     Q_OBJECT
 
 public:
-    SymbolReferenceRequest(ScProcess * process, QObject * parent = NULL):
-        ScRequest(process, parent)
-    {}
+    SymbolReferenceRequest(ScProcess* process, QObject* parent = NULL): ScRequest(process, parent) {}
 
-    void sendRequest(QString const & symbol)
-    {
-        send("findReferencesToSymbol", symbol);
-    }
+    void sendRequest(QString const& symbol) { send("findReferencesToSymbol", symbol); }
 };
 
-class ReferencesDialog:
-    public LookupDialog
-{
+class ReferencesDialog : public LookupDialog {
     Q_OBJECT
 
 public:
-    explicit ReferencesDialog(QWidget * parent = NULL);
+    explicit ReferencesDialog(QWidget* parent = NULL);
 
 private slots:
     void requestCancelled();
     void performQuery();
-    void onResposeFromLanguage(const QString &command, const QString &responseData);
-    QStandardItemModel * parse(QString const & responseData);
+    void onResposeFromLanguage(const QString& command, const QString& responseData);
+    QStandardItemModel* parse(QString const& responseData);
 
 private:
-    SymbolReferenceRequest *mRequest;
+    SymbolReferenceRequest* mRequest;
 };
 
 } // namespace ScIDE

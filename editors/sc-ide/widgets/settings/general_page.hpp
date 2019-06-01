@@ -23,30 +23,29 @@
 #include <QWidget>
 
 namespace Ui {
-    class GeneralConfigPage;
+class GeneralConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
 
 class Manager;
 
-class GeneralPage : public QWidget
-{
+class GeneralPage : public QWidget {
     Q_OBJECT
 
 public:
-    GeneralPage(QWidget *parent = 0);
+    GeneralPage(QWidget* parent = 0);
     ~GeneralPage();
 
 public slots:
-    void load( Manager * );
-    void store( Manager * );
+    void load(Manager*);
+    void store(Manager*);
 
 private slots:
-    void onStartSessionNameChanged( const QString & text );
+    void onStartSessionNameChanged(const QString& text);
 
 private:
-    Ui::GeneralConfigPage *ui;
+    Ui::GeneralConfigPage* ui;
 };
 
 }} // namespace ScIDE::Settings

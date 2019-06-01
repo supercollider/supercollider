@@ -30,17 +30,15 @@ namespace ScIDE {
 
 QPointer<CodeEditorBox> CodeEditorBox::gActiveBox;
 
-CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
-    QWidget(parent), mSplitter(splitter)
-{
+CodeEditorBox::CodeEditorBox(MultiSplitter* splitter, QWidget* parent): QWidget(parent), mSplitter(splitter) {
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mTopLayout = new QBoxLayout(QBoxLayout::BottomToTop);
     mTopLayout->setSpacing(1);
     mTopLayout->setContentsMargins(0, 0, 0, 0);
-    
-    mLayout = new QStackedLayout();     
+
+    mLayout = new QStackedLayout();
     mTopLayout->addLayout(mLayout);
     setLayout(mTopLayout);
 
@@ -51,37 +49,32 @@ CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
     mProxyModel = new QSortFilterProxyModel();
     mProxyModel->setSourceModel(Main::documentManager()->docModel());
     mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-    mProxyModel->sort( 0 );
+    mProxyModel->sort(0);
     mDocComboBox->setModel(mProxyModel);
-    
-    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)), Qt::QueuedConnection);
 
-    connect(Main::documentManager(), SIGNAL(closed(Document*)),
-            this, SLOT(onDocumentClosed(Document*)));
-    connect(Main::documentManager(), SIGNAL(saved(Document*)),
-            this, SLOT(onDocumentSaved(Document*)));
-    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
-            this, SLOT(applySettings(Settings::Manager*)));
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)),
+            Qt::QueuedConnection);
 
-    connect( mSplitter->editor(), SIGNAL(splitViewActivated()), 
-            this, SLOT(comboBoxWhenSplitting()) );
-    connect( mSplitter->editor(), SIGNAL(splitViewDeactivated()), 
-            this, SLOT(tabsWhenRemovingSplits()) );
+    connect(Main::documentManager(), SIGNAL(closed(Document*)), this, SLOT(onDocumentClosed(Document*)));
+    connect(Main::documentManager(), SIGNAL(saved(Document*)), this, SLOT(onDocumentSaved(Document*)));
+    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this,
+            SLOT(applySettings(Settings::Manager*)));
 
-    applySettings( Main::settings() );
+    connect(mSplitter->editor(), SIGNAL(splitViewActivated()), this, SLOT(comboBoxWhenSplitting()));
+    connect(mSplitter->editor(), SIGNAL(splitViewDeactivated()), this, SLOT(tabsWhenRemovingSplits()));
+
+    applySettings(Main::settings());
 }
 
-void CodeEditorBox::applySettings( Settings::Manager *settings )
-{
+void CodeEditorBox::applySettings(Settings::Manager* settings) {
     bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
     showComboBox(comboBoxActive);
 
     comboBoxWhenSplitting();
 }
 
-void CodeEditorBox::comboBoxWhenSplitting() 
-{
-    if ( mSplitter->count()>1 ) {
+void CodeEditorBox::comboBoxWhenSplitting() {
+    if (mSplitter->count() > 1) {
         bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
         if (!comboBoxInUse) {
             bool comboBoxIsInUse = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
@@ -90,53 +83,46 @@ void CodeEditorBox::comboBoxWhenSplitting()
     }
 }
 
-void CodeEditorBox::tabsWhenRemovingSplits() 
-{
-    if ( mSplitter->count()<2 ) {
+void CodeEditorBox::tabsWhenRemovingSplits() {
+    if (mSplitter->count() < 2) {
         bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
         showComboBox(comboBoxInUse);
     }
 }
 
-void CodeEditorBox::showComboBox( bool condition )
-{    
+void CodeEditorBox::showComboBox(bool condition) {
     if (condition)
         mDocComboBox->show();
     else
         mDocComboBox->hide();
 }
 
-void CodeEditorBox::onComboSelectionChanged(int index)
-{
+void CodeEditorBox::onComboSelectionChanged(int index) {
     QModelIndex proxyIndex = mProxyModel->index(index, 0);
     QModelIndex mRow = mProxyModel->mapToSource(proxyIndex);
     int mIndex = mRow.row();
 
-    if(mIndex >=0 && index>=0 && mDocComboBox) {
-        setDocument(Main::documentManager()->docModel()->item(mIndex)->data().value<Document *>(), -1, 0);
+    if (mIndex >= 0 && index >= 0 && mDocComboBox) {
+        setDocument(Main::documentManager()->docModel()->item(mIndex)->data().value<Document*>(), -1, 0);
     }
 }
 
-void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
-{
+void CodeEditorBox::setDocument(Document* doc, int pos, int selectionLength) {
     if (!doc)
         return;
 
-    GenericCodeEditor *editor = currentEditor();
+    GenericCodeEditor* editor = currentEditor();
     bool switchEditor = !editor || editor->document() != doc;
 
     if (switchEditor) {
         editor = editorForDocument(doc);
         if (!editor) {
-            editor = doc->isPlainText() ? new GenericCodeEditor(doc)
-                                        : new ScCodeEditor(doc);
+            editor = doc->isPlainText() ? new GenericCodeEditor(doc) : new ScCodeEditor(doc);
             editor->installEventFilter(this);
             mHistory.prepend(editor);
             mLayout->addWidget(editor);
-            connect(this, SIGNAL(activeChanged(bool)),
-                    editor, SLOT(setActiveAppearance(bool)));
-        }
-        else {
+            connect(this, SIGNAL(activeChanged(bool)), editor, SLOT(setActiveAppearance(bool)));
+        } else {
             mHistory.removeOne(editor);
             mHistory.prepend(editor);
         }
@@ -154,7 +140,6 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
             mDocComboBox->setCurrentText(doc->title());
             mDocComboBox->blockSignals(false);
         }
-
     }
 
     if (pos != -1)
@@ -164,9 +149,8 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
         emit currentChanged(editor);
 }
 
-void CodeEditorBox::onDocumentClosed(Document *doc)
-{
-    GenericCodeEditor * editor = editorForDocument(doc);
+void CodeEditorBox::onDocumentClosed(Document* doc) {
+    GenericCodeEditor* editor = editorForDocument(doc);
     if (editor) {
         bool wasCurrent = editor == currentEditor();
         mHistory.removeAll(editor);
@@ -181,8 +165,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
     }
 }
 
-void CodeEditorBox::onDocumentSaved(Document *doc)
-{
+void CodeEditorBox::onDocumentSaved(Document* doc) {
     // Check whether the document type still matches the editor type.
     // If not, replace the editor.
 
@@ -190,7 +173,7 @@ void CodeEditorBox::onDocumentSaved(Document *doc)
     if (history_idx == -1)
         return;
 
-    GenericCodeEditor * editor = mHistory[history_idx];
+    GenericCodeEditor* editor = mHistory[history_idx];
     if (doc->isPlainText() == (qobject_cast<ScCodeEditor*>(editor) == 0))
         return;
 
@@ -202,17 +185,16 @@ void CodeEditorBox::onDocumentSaved(Document *doc)
     mHistory.removeAt(history_idx);
     delete editor;
 
-    editor = doc->isPlainText() ? new GenericCodeEditor(doc)
-                                : new ScCodeEditor(doc);
+    editor = doc->isPlainText() ? new GenericCodeEditor(doc) : new ScCodeEditor(doc);
     editor->installEventFilter(this);
     mHistory.insert(history_idx, editor);
     mLayout->addWidget(editor);
 
-    QTextCursor cursor( editor->textDocument() );
+    QTextCursor cursor(editor->textDocument());
     cursor.setPosition(cursor_position);
     editor->setTextCursor(cursor);
 
-    editor->verticalScrollBar()->setValue( scroll_position );
+    editor->verticalScrollBar()->setValue(scroll_position);
 
     if (was_current) {
         mLayout->setCurrentWidget(editor);
@@ -225,34 +207,30 @@ void CodeEditorBox::onDocumentSaved(Document *doc)
     emit currentChanged(editor);
 }
 
-GenericCodeEditor *CodeEditorBox::currentEditor()
-{
+GenericCodeEditor* CodeEditorBox::currentEditor() {
     if (mHistory.count())
         return mHistory.first();
     else
         return 0;
 }
 
-int CodeEditorBox::historyIndexOf(Document *doc)
-{
+int CodeEditorBox::historyIndexOf(Document* doc) {
     int count = mHistory.count();
-    for(int idx = 0; idx < count; ++idx)
+    for (int idx = 0; idx < count; ++idx)
         if (mHistory[idx]->document() == doc)
             return idx;
     return -1;
 }
 
-GenericCodeEditor *CodeEditorBox::editorForDocument(Document* doc)
-{
-    foreach(GenericCodeEditor *editor, mHistory)
+GenericCodeEditor* CodeEditorBox::editorForDocument(Document* doc) {
+    foreach (GenericCodeEditor* editor, mHistory)
         if (editor->document() == doc)
             return editor;
     return 0;
 }
 
-bool CodeEditorBox::eventFilter( QObject *object, QEvent *event )
-{
-    switch(event->type()) {
+bool CodeEditorBox::eventFilter(QObject* object, QEvent* event) {
+    switch (event->type()) {
     case QEvent::FocusIn:
         setActive();
     default:;
@@ -261,26 +239,21 @@ bool CodeEditorBox::eventFilter( QObject *object, QEvent *event )
     return QWidget::eventFilter(object, event);
 }
 
-void CodeEditorBox::focusInEvent( QFocusEvent * )
-{
-    setActive();
-}
+void CodeEditorBox::focusInEvent(QFocusEvent*) { setActive(); }
 
-Document * CodeEditorBox::currentDocument()
-{
-    GenericCodeEditor *editor = currentEditor();
+Document* CodeEditorBox::currentDocument() {
+    GenericCodeEditor* editor = currentEditor();
     return editor ? editor->document() : 0;
 }
 
-void CodeEditorBox::paintEvent( QPaintEvent * )
-{
+void CodeEditorBox::paintEvent(QPaintEvent*) {
     if (mLayout->currentWidget() == 0) {
         QPainter painter(this);
-        painter.setRenderHint( QPainter::Antialiasing, true );
+        painter.setRenderHint(QPainter::Antialiasing, true);
         int colorRatio = isActive() ? 160 : 125;
-        painter.setBrush( palette().color(QPalette::Window).darker(colorRatio) );
-        painter.setPen( Qt::NoPen );
-        painter.drawRoundedRect( rect().adjusted(4, 4, -4, -4), 4, 4 );
+        painter.setBrush(palette().color(QPalette::Window).darker(colorRatio));
+        painter.setPen(Qt::NoPen);
+        painter.drawRoundedRect(rect().adjusted(4, 4, -4, -4), 4, 4);
     }
 }
 

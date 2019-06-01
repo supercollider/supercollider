@@ -10,8 +10,7 @@ IEEE Std 1003.1, 2004 Edition
 
 The timezone pointer arg is ignored.  Errors are ignored.
 */
-inline int gettimeofday(struct timeval* p, void* tz /* IGNORED */)
-{
+inline int gettimeofday(struct timeval* p, void* tz /* IGNORED */) {
     union {
         long long ns100; /*time since 1 Jan 1601 in 100ns units */
         FILETIME ft;

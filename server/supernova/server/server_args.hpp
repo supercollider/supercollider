@@ -25,30 +25,21 @@
 
 namespace nova {
 
-class server_arguments
-{
-    server_arguments(int argc, char * argv[]);
+class server_arguments {
+    server_arguments(int argc, char* argv[]);
 
 public:
-    static server_arguments const &initialize(int argc, char * argv[])
-    {
+    static server_arguments const& initialize(int argc, char* argv[]) {
         instance_.reset(new server_arguments(argc, argv));
         return instance();
     }
 
-    static server_arguments const & instance(void)
-    {
-        return *instance_;
-    }
+    static server_arguments const& instance(void) { return *instance_; }
 
     /** set the sample rate (from the audio backend) */
-    static void set_samplerate(uint32_t samplerate)
-    {
-        instance_->samplerate = samplerate;
-    }
+    static void set_samplerate(uint32_t samplerate) { instance_->samplerate = samplerate; }
 
-    uint32_t port(void) const
-    {
+    uint32_t port(void) const {
         if (udp_port)
             return udp_port;
         else

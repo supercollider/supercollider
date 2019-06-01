@@ -18,13 +18,12 @@
 
 #pragma once
 
-extern "C"
-{
+extern "C" {
 #include "tlsf.h"
 }
 
 #include <cstdlib>
-#include <cstring>              /* for std::memset */
+#include <cstring> /* for std::memset */
 
 #include "nova-tt/spin_lock.hpp"
 #include "nova-tt/dummy_mutex.hpp"
@@ -40,35 +39,25 @@ namespace nova {
  * its size has to be set at runtime before it can be used.
  *
  * */
-template <bool blocking = false>
-class simple_pool
-{
-    typedef typename boost::mpl::if_c<blocking,
-                                      spin_lock,
-                                      dummy_mutex>::type mutex_type;
+template <bool blocking = false> class simple_pool {
+    typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type mutex_type;
 
     typedef typename mutex_type::scoped_lock scoped_lock;
 
-    struct data:
-        mutex_type
-    {
-        data(void):
-            pool(nullptr)
-        {}
+    struct data : mutex_type {
+        data(void): pool(nullptr) {}
 
-        void init(std::size_t size, bool lock)
-        {
-            pool = (char*) operator new(size);
+        void init(std::size_t size, bool lock) {
+            pool = (char*)operator new(size);
             mlock(pool, size);
 
             std::memset(pool, 0, size);
             init_memory_pool(size, pool);
         }
 
-        ~data(void)
-        {
+        ~data(void) {
             scoped_lock lock(*this);
-            if(pool) {
+            if (pool) {
                 destroy_memory_pool(pool);
                 operator delete(pool);
             }
@@ -78,71 +67,47 @@ class simple_pool
     };
 
 public:
-    simple_pool(void)
-    {}
+    simple_pool(void) {}
 
-    simple_pool(simple_pool const & rhs) = delete;
-    simple_pool & operator=(simple_pool const & rhs) = delete;
+    simple_pool(simple_pool const& rhs) = delete;
+    simple_pool& operator=(simple_pool const& rhs) = delete;
 
-    simple_pool(std::size_t size, bool lock = false)
-    {
-        init(size, lock);
-    }
+    simple_pool(std::size_t size, bool lock = false) { init(size, lock); }
 
-    void init(std::size_t size, bool lock = false)
-    {
+    void init(std::size_t size, bool lock = false) {
 #ifndef NOVA_MEMORY_DEBUGGING
         assert(size % sizeof(long) == 0);
         data_.init(size, lock);
 #endif
     }
 
-    ~simple_pool() throw()
-    {}
+    ~simple_pool() throw() {}
 
 #ifdef NOVA_MEMORY_DEBUGGING
-    void * MALLOC malloc(std::size_t size)
-    {
-        return ::malloc(size);
-    }
+    void* MALLOC malloc(std::size_t size) { return ::malloc(size); }
 
-    void * MALLOC realloc(void * p, std::size_t size)
-    {
-        return ::realloc(p, size);
-    }
+    void* MALLOC realloc(void* p, std::size_t size) { return ::realloc(p, size); }
 
-    void free(void * p)
-    {
-        return ::free(p);
-    }
+    void free(void* p) { return ::free(p); }
 
-    std::size_t get_max_size(void)
-    {
-        return std::numeric_limits<std::size_t>::max();
-    }
+    std::size_t get_max_size(void) { return std::numeric_limits<std::size_t>::max(); }
 #else
-    void * MALLOC ASSUME_ALIGNED(32) malloc(std::size_t size)
-    {
+    void* MALLOC ASSUME_ALIGNED(32) malloc(std::size_t size) {
         scoped_lock lock(data_);
         return malloc_ex(size, data_.pool);
     }
 
-    void * MALLOC ASSUME_ALIGNED(32) realloc(void * p, std::size_t size)
-    {
+    void* MALLOC ASSUME_ALIGNED(32) realloc(void* p, std::size_t size) {
         scoped_lock lock(data_);
         return realloc_ex(p, size, data_.pool);
     }
 
-    void free(void * p)
-    {
+    void free(void* p) {
         scoped_lock lock(data_);
         free_ex(p, data_.pool);
     }
 
-    std::size_t get_max_size(void)
-    {
-        return ::get_max_size(data_.pool);
-    }
+    std::size_t get_max_size(void) { return ::get_max_size(data_.pool); }
 #endif
 private:
     data data_;

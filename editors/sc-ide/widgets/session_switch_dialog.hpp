@@ -25,23 +25,19 @@
 
 namespace ScIDE {
 
-class SessionSwitchDialog: public QDialog
-{
+class SessionSwitchDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SessionSwitchDialog(QWidget * parent = NULL);
+    explicit SessionSwitchDialog(QWidget* parent = NULL);
 
-    QString activeElement()
-    {
-        return mSessions->currentItem()->text();
-    }
+    QString activeElement() { return mSessions->currentItem()->text(); }
 
 public Q_SLOTS:
     void onItemActivated(QListWidgetItem*);
 
 private:
-    QListWidget * mSessions;
+    QListWidget* mSessions;
 };
 
 }

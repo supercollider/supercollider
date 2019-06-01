@@ -30,24 +30,21 @@ namespace nova {
 using boost::filesystem::path;
 
 /* read synthdefs from path pattern */
-std::vector<sc_synthdef> sc_read_synthdefs_file(path const & filename);
-std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir);
+std::vector<sc_synthdef> sc_read_synthdefs_file(path const& filename);
+std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir);
 
-class sc_synth_definition:
-    public synth_definition,
-    public sc_synthdef
-{
+class sc_synth_definition : public synth_definition, public sc_synthdef {
 public:
-    sc_synth_definition(sc_synthdef && sd);
+    sc_synth_definition(sc_synthdef&& sd);
 
 private:
     friend class sc_synth;
 
-    virtual abstract_synth * create_instance(int) override;
+    virtual abstract_synth* create_instance(int) override;
 };
 
 typedef boost::intrusive_ptr<sc_synth_definition> sc_synth_definition_ptr;
 
-void register_synthdefs(class synth_factory & factory, std::vector<sc_synthdef> &&);
+void register_synthdefs(class synth_factory& factory, std::vector<sc_synthdef>&&);
 
 } /* namespace nova */

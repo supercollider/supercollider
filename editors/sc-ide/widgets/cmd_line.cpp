@@ -31,111 +31,94 @@
 
 namespace ScIDE {
 
-QString CmdLineEdit::symbolUnderCursor()
-{
+QString CmdLineEdit::symbolUnderCursor() {
     if (hasSelectedText())
         return selectedText();
     else {
         int position = cursorPosition();
-        return tokenInStringAt( position, text() );
+        return tokenInStringAt(position, text());
     }
 }
 
-bool CmdLineEdit::openDocumentation()
-{
-    return Main::openDocumentation(symbolUnderCursor());
-}
+bool CmdLineEdit::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }
 
-void CmdLineEdit::openDefinition()
-{
-    return Main::openDefinition(symbolUnderCursor(), MainWindow::instance());
-}
+void CmdLineEdit::openDefinition() { return Main::openDefinition(symbolUnderCursor(), MainWindow::instance()); }
 
-void CmdLineEdit::openCommandLine()
-{
-    return Main::openCommandLine(symbolUnderCursor());
-}
+void CmdLineEdit::openCommandLine() { return Main::openCommandLine(symbolUnderCursor()); }
 
-void CmdLineEdit::findReferences()
-{
-    return Main::findReferences(symbolUnderCursor(), MainWindow::instance());
-}
+void CmdLineEdit::findReferences() { return Main::findReferences(symbolUnderCursor(), MainWindow::instance()); }
 
 
-CmdLine::CmdLine( const QString &text, int maxHist ) :
-    curHistory( -1 ),
-    maxHistory( qMax(1,maxHist) )
-{
-    QLabel *lbl = new QLabel(text);
+CmdLine::CmdLine(const QString& text, int maxHist): curHistory(-1), maxHistory(qMax(1, maxHist)) {
+    QLabel* lbl = new QLabel(text);
 
     expr = new CmdLineEdit;
 
-    QHBoxLayout *l = new QHBoxLayout;
-    l->setContentsMargins(0,0,0,0);
+    QHBoxLayout* l = new QHBoxLayout;
+    l->setContentsMargins(0, 0, 0, 0);
     l->addWidget(lbl);
     l->addWidget(expr);
-    setLayout( l );
+    setLayout(l);
 
-    expr->installEventFilter( this );
+    expr->installEventFilter(this);
     setFocusProxy(expr);
 
-    applySettings( Main::settings() );
+    applySettings(Main::settings());
 }
 
-void CmdLine::applySettings( Settings::Manager *settings )
-{
+void CmdLine::applySettings(Settings::Manager* settings) {
     QFont codeFont = settings->codeFont();
-    expr->setFont( codeFont );
+    expr->setFont(codeFont);
 }
 
-void CmdLine::setText(const QString &text)
-{
-    expr->setText(text);
-}
+void CmdLine::setText(const QString& text) { expr->setText(text); }
 
-bool CmdLine::eventFilter( QObject *, QEvent *e )
-{
+bool CmdLine::eventFilter(QObject*, QEvent* e) {
     int type = e->type();
-    if( type != QEvent::KeyPress ) return false;
+    if (type != QEvent::KeyPress)
+        return false;
 
-    QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+    QKeyEvent* ke = static_cast<QKeyEvent*>(e);
 
-    switch( ke->key() )
-    {
+    switch (ke->key()) {
     case Qt::Key_Return:
     case Qt::Key_Enter:
 
-        if( expr->text().isEmpty() ) return true;
+        if (expr->text().isEmpty())
+            return true;
 
-        emit invoked( expr->text(), false );
-        if( history.count() == 0 || history[0] != expr->text() )
-        {
-            if( history.count() >= maxHistory ) history.removeAt( history.count() - 1 );
-            history.prepend( expr->text() );
+        emit invoked(expr->text(), false);
+        if (history.count() == 0 || history[0] != expr->text()) {
+            if (history.count() >= maxHistory)
+                history.removeAt(history.count() - 1);
+            history.prepend(expr->text());
         }
         curHistory = -1;
         expr->clear();
         return true;
 
     case Qt::Key_Up:
-        if( curHistory < history.count() - 1 ) {
+        if (curHistory < history.count() - 1) {
             expr->blockSignals(true);
-            expr->setText( history[++curHistory] );
+            expr->setText(history[++curHistory]);
             expr->blockSignals(false);
         }
         return true;
 
     case Qt::Key_Down:
-        if( curHistory > -1 ) {
+        if (curHistory > -1) {
             --curHistory;
             expr->blockSignals(true);
-            if( curHistory == -1 ) expr->clear();
-            else expr->setText( history[curHistory] );
+            if (curHistory == -1)
+                expr->clear();
+            else
+                expr->setText(history[curHistory]);
             expr->blockSignals(false);
         }
         return true;
 
-        default: return false;
+    default:
+        return false;
     }
 }
 

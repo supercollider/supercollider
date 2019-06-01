@@ -23,36 +23,27 @@
 
 using namespace ScIDE;
 
-LineIndicator::LineIndicator( GenericCodeEditor *editor ):
-    QWidget( editor ), mEditor(editor)
-{
-    setLineCount(1);
-}
+LineIndicator::LineIndicator(GenericCodeEditor* editor): QWidget(editor), mEditor(editor) { setLineCount(1); }
 
-void LineIndicator::setLineCount( int count )
-{
+void LineIndicator::setLineCount(int count) {
     mLineCount = count;
-    setFixedWidth( widthForLineCount(count) );
-    Q_EMIT( widthChanged() );
+    setFixedWidth(widthForLineCount(count));
+    Q_EMIT(widthChanged());
 }
 
-void LineIndicator::changeEvent( QEvent *e )
-{
-    if( e->type() == QEvent::FontChange ) {
-        setFixedWidth( widthForLineCount(mLineCount) );
-        Q_EMIT( widthChanged() );
-    }
-    else
+void LineIndicator::changeEvent(QEvent* e) {
+    if (e->type() == QEvent::FontChange) {
+        setFixedWidth(widthForLineCount(mLineCount));
+        Q_EMIT(widthChanged());
+    } else
         QWidget::changeEvent(e);
 }
 
-void LineIndicator::paintEvent( QPaintEvent *e )
-{ mEditor->paintLineIndicator(e); }
+void LineIndicator::paintEvent(QPaintEvent* e) { mEditor->paintLineIndicator(e); }
 
-void LineIndicator::mousePressEvent( QMouseEvent *e )
-{
+void LineIndicator::mousePressEvent(QMouseEvent* e) {
     QTextCursor cursor = mEditor->cursorForPosition(QPoint(0, e->pos().y()));
-    if(cursor.isNull()) {
+    if (cursor.isNull()) {
         mLastCursorPos = -1;
         return;
     }
@@ -60,13 +51,12 @@ void LineIndicator::mousePressEvent( QMouseEvent *e )
     mLastCursorPos = cursor.position();
 }
 
-void LineIndicator::mouseMoveEvent( QMouseEvent *e )
-{
+void LineIndicator::mouseMoveEvent(QMouseEvent* e) {
     QTextCursor cursor = mEditor->cursorForPosition(QPoint(0, e->pos().y()));
-    if(cursor.isNull() || cursor.position() == mLastCursorPos)
+    if (cursor.isNull() || cursor.position() == mLastCursorPos)
         return;
     QTextCursor origCursor = mEditor->textCursor();
-    origCursor.setPosition( cursor.position(), QTextCursor::KeepAnchor );
+    origCursor.setPosition(cursor.position(), QTextCursor::KeepAnchor);
     mEditor->setTextCursor(origCursor);
     mLastCursorPos = cursor.position();
     // The selectionChanged() signal of the editor does not always fire here!
@@ -74,21 +64,19 @@ void LineIndicator::mouseMoveEvent( QMouseEvent *e )
     update();
 }
 
-void LineIndicator::mouseDoubleClickEvent( QMouseEvent *e )
-{
+void LineIndicator::mouseDoubleClickEvent(QMouseEvent* e) {
     QTextCursor cursor = mEditor->cursorForPosition(QPoint(0, e->pos().y()));
-    cursor.movePosition( QTextCursor::EndOfBlock, QTextCursor::KeepAnchor );
+    cursor.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
     mEditor->setTextCursor(cursor);
 }
 
-int LineIndicator::widthForLineCount( int lineCount )
-{
+int LineIndicator::widthForLineCount(int lineCount) {
     int digits = 2;
 
     if (hideLineIndicator)
         return 0;
 
-    while( lineCount >= 100 ) {
+    while (lineCount >= 100) {
         lineCount /= 10;
         ++digits;
     }
@@ -96,8 +84,4 @@ int LineIndicator::widthForLineCount( int lineCount )
     return 6 + fontMetrics().width('9') * digits;
 }
 
-void LineIndicator::setHideLineIndicator( bool hide )
-{
-        hideLineIndicator = hide;
-}
-
+void LineIndicator::setHideLineIndicator(bool hide) { hideLineIndicator = hide; }

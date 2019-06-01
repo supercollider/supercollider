@@ -42,82 +42,74 @@
 
 namespace ScIDE {
 
-ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
-    QProcess( parent ),
-    mIpcServer( new QLocalServer(this) ),
+ScProcess::ScProcess(Settings::Manager* settings, QObject* parent):
+    QProcess(parent),
+    mIpcServer(new QLocalServer(this)),
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
     mTerminationRequested(false),
-    mCompiled(false)
-{
+    mCompiled(false) {
     prepareActions(settings);
 
-    connect(this, SIGNAL( readyRead() ),
-            this, SLOT( onReadyRead() ));
+    connect(this, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
-    connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onProcessStateChanged(QProcess::ProcessState)));
+    connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this,
+            SLOT(onProcessStateChanged(QProcess::ProcessState)));
 }
 
-void ScProcess::prepareActions(Settings::Manager * settings)
-{
-    QAction * action;
+void ScProcess::prepareActions(Settings::Manager* settings) {
+    QAction* action;
 
     const QString interpreterCategory(tr("Interpreter"));
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or Quit Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()) );
-    //settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
+    connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
+    // settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
 
-    mActions[Start] = action =
-        new QAction(QIcon::fromTheme("system-run"), tr("Boot Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()) );
-    settings->addAction( action, "interpreter-start", interpreterCategory);
+    mActions[Start] = action = new QAction(QIcon::fromTheme("system-run"), tr("Boot Interpreter"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(startLanguage()));
+    settings->addAction(action, "interpreter-start", interpreterCategory);
 
-    mActions[Stop] = action =
-        new QAction(QIcon::fromTheme("system-shutdown"), tr("Quit Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()) );
-    settings->addAction( action, "interpreter-stop", interpreterCategory);
+    mActions[Stop] = action = new QAction(QIcon::fromTheme("system-shutdown"), tr("Quit Interpreter"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(stopLanguage()));
+    settings->addAction(action, "interpreter-stop", interpreterCategory);
 
-    mActions[Restart] = action = new QAction(
-        QIcon::fromTheme("system-reboot"), tr("Reboot Interpreter"), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()) );
-    settings->addAction( action, "interpreter-restart", interpreterCategory);
+    mActions[Restart] = action = new QAction(QIcon::fromTheme("system-reboot"), tr("Reboot Interpreter"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(restartLanguage()));
+    settings->addAction(action, "interpreter-restart", interpreterCategory);
 
-    mActions[RecompileClassLibrary] = action = new QAction(
-        QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
+    mActions[RecompileClassLibrary] = action =
+        new QAction(QIcon::fromTheme("system-reboot"), tr("Recompile Class Library"), this);
     action->setShortcut(tr("Ctrl+Shift+l", "Recompile Class Library)"));
-    connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()) );
-    settings->addAction( action, "interpreter-recompile-lib", interpreterCategory);
+    connect(action, SIGNAL(triggered()), this, SLOT(recompileClassLibrary()));
+    settings->addAction(action, "interpreter-recompile-lib", interpreterCategory);
 
-    mActions[StopMain] = action = new QAction(
-        QIcon::fromTheme("media-playback-stop"), tr("Stop"), this);
+    mActions[StopMain] = action = new QAction(QIcon::fromTheme("media-playback-stop"), tr("Stop"), this);
     action->setShortcut(tr("Ctrl+.", "Stop (a.k.a. cmd-period)"));
     action->setShortcutContext(Qt::ApplicationShortcut);
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
-    settings->addAction( action, "interpreter-main-stop", interpreterCategory);
-    
+    settings->addAction(action, "interpreter-main-stop", interpreterCategory);
+
     mActions[ShowQuarks] = action = new QAction(tr("Quarks"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showQuarks()));
-    settings->addAction( action, "interpreter-show-quarks-gui", interpreterCategory);
+    settings->addAction(action, "interpreter-show-quarks-gui", interpreterCategory);
 
-    connect( mActions[Start], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
-    connect( mActions[Stop], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
+    connect(mActions[Start], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()));
+    connect(mActions[Stop], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()));
 
     onProcessStateChanged(QProcess::NotRunning);
 }
 
-void ScProcess::updateToggleRunningAction()
-{
-    QAction *targetAction = state() == QProcess::NotRunning ? mActions[Start] : mActions[Stop];
+void ScProcess::updateToggleRunningAction() {
+    QAction* targetAction = state() == QProcess::NotRunning ? mActions[Start] : mActions[Stop];
 
-    mActions[ToggleRunning]->setText( targetAction->text() );
-    mActions[ToggleRunning]->setIcon( targetAction->icon() );
-    mActions[ToggleRunning]->setShortcut( targetAction->shortcut() );
+    mActions[ToggleRunning]->setText(targetAction->text());
+    mActions[ToggleRunning]->setIcon(targetAction->icon());
+    mActions[ToggleRunning]->setShortcut(targetAction->shortcut());
 }
 
-void ScProcess::toggleRunning()
-{
-    switch(state()) {
+void ScProcess::toggleRunning() {
+    switch (state()) {
     case NotRunning:
         startLanguage();
         break;
@@ -126,14 +118,13 @@ void ScProcess::toggleRunning()
     }
 }
 
-void ScProcess::startLanguage (void)
-{
+void ScProcess::startLanguage(void) {
     if (state() != QProcess::NotRunning) {
         statusMessage(tr("Interpreter is already running."));
         return;
     }
 
-    Settings::Manager *settings = Main::settings();
+    Settings::Manager* settings = Main::settings();
     settings->beginGroup("IDE/interpreter");
 
     QString workingDirectory = settings->value("runtimeDir").toString();
@@ -150,13 +141,14 @@ void ScProcess::startLanguage (void)
 #endif
 
     QStringList sclangArguments;
-    if(!configFile.isEmpty())
+    if (!configFile.isEmpty())
         sclangArguments << "-l" << configFile;
-    sclangArguments << "-i" << "scqt";
-    if(standalone)
+    sclangArguments << "-i"
+                    << "scqt";
+    if (standalone)
         sclangArguments << "-a";
 
-    if(!workingDirectory.isEmpty())
+    if (!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);
 
     QProcess::start(sclangCommand, sclangArguments);
@@ -165,9 +157,8 @@ void ScProcess::startLanguage (void)
         emit statusMessage(tr("Failed to start interpreter!"));
 }
 
-void ScProcess::recompileClassLibrary (void)
-{
-    if(state() != QProcess::Running) {
+void ScProcess::recompileClassLibrary(void) {
+    if (state() != QProcess::Running) {
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
@@ -176,20 +167,19 @@ void ScProcess::recompileClassLibrary (void)
 }
 
 
-void ScProcess::stopLanguage (void)
-{
-    if(state() != QProcess::Running) {
+void ScProcess::stopLanguage(void) {
+    if (state() != QProcess::Running) {
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
 
-    evaluateCode("0.exit", true);    
+    evaluateCode("0.exit", true);
     mCompiled = false;
-    mTerminationRequested   = true;
+    mTerminationRequested = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
 
     bool finished = waitForFinished(1000);
-    if ( !finished && (state() != QProcess::NotRunning) ) {
+    if (!finished && (state() != QProcess::NotRunning)) {
         terminate();
         bool reallyFinished = waitForFinished(200);
         if (!reallyFinished)
@@ -199,26 +189,18 @@ void ScProcess::stopLanguage (void)
     mTerminationRequested = false;
 }
 
-void ScProcess::restartLanguage()
-{
+void ScProcess::restartLanguage() {
     mCompiled = false;
     stopLanguage();
     startLanguage();
 }
 
-void ScProcess::stopMain(void)
-{
-    evaluateCode("thisProcess.stop", true);
-}
+void ScProcess::stopMain(void) { evaluateCode("thisProcess.stop", true); }
 
-void ScProcess::showQuarks(void)
-{
-    evaluateCode("Quarks.gui",true);
-}
+void ScProcess::showQuarks(void) { evaluateCode("Quarks.gui", true); }
 
 
-void ScProcess::onReadyRead(void)
-{
+void ScProcess::onReadyRead(void) {
     if (mTerminationRequested) {
         // when stopping the language, we don't want to post for longer than 200 ms to prevent the UI to freeze
         if (QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() - mTerminationRequestTime.toMSecsSinceEpoch() > 200)
@@ -230,9 +212,8 @@ void ScProcess::onReadyRead(void)
     emit scPost(postString);
 }
 
-void ScProcess::evaluateCode(QString const & commandString, bool silent)
-{
-    if(state() != QProcess::Running) {
+void ScProcess::evaluateCode(QString const& commandString, bool silent) {
+    if (state() != QProcess::Running) {
         emit statusMessage(tr("Interpreter is not running!"));
         return;
     }
@@ -246,11 +227,10 @@ void ScProcess::evaluateCode(QString const & commandString, bool silent)
 
     char commandChar = silent ? '\x1b' : '\x0c';
 
-    write( &commandChar, 1 );
+    write(&commandChar, 1);
 }
 
-void ScProcess::onNewIpcConnection()
-{
+void ScProcess::onNewIpcConnection() {
     if (mIpcSocket)
         // we can handle only one ipc connection at a time
         mIpcSocket->disconnect();
@@ -260,15 +240,13 @@ void ScProcess::onNewIpcConnection()
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
 }
 
-void ScProcess::finalizeConnection()
-{
+void ScProcess::finalizeConnection() {
     mIpcData.clear();
     mIpcSocket->deleteLater();
     mIpcSocket = NULL;
 }
 
-void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
-{
+void ScProcess::onProcessStateChanged(QProcess::ProcessState state) {
     switch (state) {
     case QProcess::Starting:
         mActions[Start]->setEnabled(false);
@@ -301,8 +279,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
     }
 }
 
-void ScProcess::postQuitNotification()
-{
+void ScProcess::postQuitNotification() {
     QString message;
     switch (exitStatus()) {
     case QProcess::CrashExit:
@@ -315,19 +292,18 @@ void ScProcess::postQuitNotification()
 }
 
 
-void ScProcess::onIpcData()
-{
+void ScProcess::onIpcData() {
     mIpcData.append(mIpcSocket->readAll());
-    // After we have put the data in the buffer, process it    
+    // After we have put the data in the buffer, process it
     int avail = mIpcData.length();
     do {
-        if (mReadSize == 0 && avail > 4){
+        if (mReadSize == 0 && avail > 4) {
             mReadSize = ArrayToInt(mIpcData.left(4));
             mIpcData.remove(0, 4);
             avail -= 4;
         }
 
-        if (mReadSize > 0 && avail >= mReadSize){
+        if (mReadSize > 0 && avail >= mReadSize) {
             QByteArray baReceived(mIpcData.left(mReadSize));
             mIpcData.remove(0, mReadSize);
             mReadSize = 0;
@@ -350,31 +326,29 @@ void ScProcess::onIpcData()
     } while ((mReadSize == 0 && avail > 4) || (mReadSize > 0 && avail > mReadSize));
 }
 
-void ScProcess::onResponse( const QString & selector, const QString & data )
-{
+void ScProcess::onResponse(const QString& selector, const QString& data) {
     if (selector == QStringLiteral("introspection")) {
         using ScLanguage::Introspection;
 
         auto watcher = new QFutureWatcher<Introspection>(this);
-        connect( watcher, &QFutureWatcher<Introspection>::finished, [=]{
+        connect(watcher, &QFutureWatcher<Introspection>::finished, [=] {
             try {
                 Introspection newIntrospection = watcher->result();
                 mIntrospection = std::move(newIntrospection);
                 emit introspectionChanged();
-            } catch (std::exception & e) {
+            } catch (std::exception& e) {
                 MainWindow::instance()->showStatusMessage(e.what());
             }
             watcher->deleteLater();
         });
 
         // Start the computation.
-        QFuture<Introspection> future = QtConcurrent::run( [] (QString data) {
-            return ScLanguage::Introspection(data);
-        }, data );
+        QFuture<Introspection> future =
+            QtConcurrent::run([](QString data) { return ScLanguage::Introspection(data); }, data);
         watcher->setFuture(future);
     }
 
-    else if (selector == QStringLiteral("classLibraryRecompiled")){
+    else if (selector == QStringLiteral("classLibraryRecompiled")) {
         mCompiled = true;
         emit classLibraryRecompiled();
     }
@@ -383,19 +357,17 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
         Main::documentManager()->sendActiveDocument();
 }
 
-void ScProcess::onStart()
-{
-    if(!mIpcServer->isListening()) // avoid a warning on stderr
+void ScProcess::onStart() {
+    if (!mIpcServer->isListening()) // avoid a warning on stderr
         mIpcServer->listen(mIpcServerName);
 
     QString command = QStringLiteral("ScIDE.connect(\"%1\")").arg(mIpcServerName);
-    evaluateCode ( command, true );
+    evaluateCode(command, true);
     Main::documentManager()->sendActiveDocument();
 }
 
-    
-void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
-{
+
+void ScProcess::updateTextMirrorForDocument(Document* doc, int position, int charsRemoved, int charsAdded) {
     if (!mIpcSocket)
         return;
 
@@ -414,13 +386,12 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
 
     try {
         sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocText"), argList);
-    } catch (std::exception const & e) {
+    } catch (std::exception const& e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
-    
-void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
-{
+
+void ScProcess::updateSelectionMirrorForDocument(Document* doc, int start, int range) {
     if (!mIpcSocket)
         return;
 
@@ -435,7 +406,7 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
 
     try {
         sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocSelection"), argList);
-    } catch (std::exception const & e) {
+    } catch (std::exception const& e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,15 +26,15 @@ void initSymbols();
 void initClasses();
 void buildClassTree();
 
-void freePyrSlot(PyrSlot *slot);
+void freePyrSlot(PyrSlot* slot);
 void freePyrObject(PyrObject* obj);
 
-bool objAddIndexedSlot(PyrObject *obj, PyrSlot *slot);
-bool objAddIndexedSymbol(PyrSymbolArray *obj, PyrSymbol *symbol);
-bool objAddIndexedObject(PyrObject *obj, PyrObject *obj2);
+bool objAddIndexedSlot(PyrObject* obj, PyrSlot* slot);
+bool objAddIndexedSymbol(PyrSymbolArray* obj, PyrSymbol* symbol);
+bool objAddIndexedObject(PyrObject* obj, PyrObject* obj2);
 
-void CallStackSanity(struct VMGlobals *g, const char * tagstr);
-bool FrameSanity(struct PyrFrame *frame, const char* tagstr);
+void CallStackSanity(struct VMGlobals* g, const char* tagstr);
+bool FrameSanity(struct PyrFrame* frame, const char* tagstr);
 
-void dumpBadObject(PyrObject *obj);
+void dumpBadObject(PyrObject* obj);
 void initRawRegistry();

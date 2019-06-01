@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,23 +22,21 @@
 
 #include "SC_Types.h"
 
-struct InputSpec
-{
-	// read from file:
-	int32 mFromUnitIndex; // changed from int16, ver 2
-	int32 mFromOutputIndex; // changed from int16, ver 2
-	// computed:
-	int32 mWireIndex; // changed from int16, ver 2
+struct InputSpec {
+    // read from file:
+    int32 mFromUnitIndex; // changed from int16, ver 2
+    int32 mFromOutputIndex; // changed from int16, ver 2
+    // computed:
+    int32 mWireIndex; // changed from int16, ver 2
 };
 typedef struct InputSpec InputSpec;
 
-struct OutputSpec
-{
-	// read from file:
-	int16 mCalcRate;
-	// computed:
-	int32 mWireIndex; // changed from uint16, ver 2
-	int64 mBufferIndex;
-	uint32 mNumConsumers;
+struct OutputSpec {
+    // read from file:
+    int16 mCalcRate;
+    // computed:
+    int32 mWireIndex; // changed from uint16, ver 2
+    int64 mBufferIndex;
+    uint32 mNumConsumers;
 };
 typedef struct OutputSpec OutputSpec;

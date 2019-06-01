@@ -17,24 +17,23 @@
 */
 
 /*
-** SC_sndfile_stub.h -- stub of libsndfile definitions, used to preserve binary compatibility when libsndfile unavailable
+** SC_sndfile_stub.h -- stub of libsndfile definitions, used to preserve binary compatibility when libsndfile
+*unavailable
 ** taken from sndfile.h
 **/
 
 
-
 /* A SNDFILE* pointer can be passed around much like stdio.h's FILE* pointer. */
 
-typedef struct SNDFILE_tag      SNDFILE ;
+typedef struct SNDFILE_tag SNDFILE;
 
 
-
-#if (defined (_MSCVER) || defined (_MSC_VER))
-typedef __int64_t       sf_count_t ;
-#define SF_COUNT_MAX            0x7fffffffffffffffi64
+#if (defined(_MSCVER) || defined(_MSC_VER))
+typedef __int64_t sf_count_t;
+#    define SF_COUNT_MAX 0x7fffffffffffffffi64
 #else
-typedef off_t   sf_count_t ;
-#define SF_COUNT_MAX            0x7FFFFFFFFFFFFFFFLL
+typedef off_t sf_count_t;
+#    define SF_COUNT_MAX 0x7FFFFFFFFFFFFFFFLL
 #endif
 
 
@@ -43,15 +42,13 @@ typedef off_t   sf_count_t ;
 ** sf_open_write ().
 */
 
-struct SF_INFO
-{       sf_count_t      frames ;                /* Used to be called samples.  Changed to avoid confusion. */
-        int                     samplerate ;
-        int                     channels ;
-        int                     format ;
-        int                     sections ;
-        int                     seekable ;
-} ;
+struct SF_INFO {
+    sf_count_t frames; /* Used to be called samples.  Changed to avoid confusion. */
+    int samplerate;
+    int channels;
+    int format;
+    int sections;
+    int seekable;
+};
 
-typedef struct SF_INFO SF_INFO ;
-
-
+typedef struct SF_INFO SF_INFO;

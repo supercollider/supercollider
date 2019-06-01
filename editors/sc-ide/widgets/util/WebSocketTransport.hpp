@@ -58,20 +58,19 @@ class QWebSocket;
 
 namespace ScIDE {
 
-class WebSocketTransport : public QWebChannelAbstractTransport
-{
+class WebSocketTransport : public QWebChannelAbstractTransport {
     Q_OBJECT
 
 public:
-    explicit WebSocketTransport(QWebSocket *socket);
+    explicit WebSocketTransport(QWebSocket* socket);
     virtual ~WebSocketTransport();
-    void sendMessage(const QJsonObject &message) override;
+    void sendMessage(const QJsonObject& message) override;
 
 private slots:
-    void textMessageReceived(const QString &message);
+    void textMessageReceived(const QString& message);
 
 private:
-    QWebSocket *m_socket;
+    QWebSocket* m_socket;
 };
 
 } // namespace ScIDE

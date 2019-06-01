@@ -35,12 +35,10 @@ namespace detail {
 using namespace boost::asio;
 using namespace boost::asio::ip;
 
-class network_thread
-{
+class network_thread {
 public:
-    void start_receive(void)
-    {
-        thread_ = std::thread( [this] {
+    void start_receive(void) {
+        thread_ = std::thread([this] {
 #ifdef NOVA_TT_PRIORITY_RT
             thread_set_priority_rt(thread_priority_interval_rt().first);
 #endif
@@ -49,25 +47,20 @@ public:
             sem.post();
             io_service::work work(io_service_);
             io_service_.run();
-        } );
+        });
         sem.wait();
     }
 
-    ~network_thread(void)
-    {
+    ~network_thread(void) {
         if (!thread_.joinable())
             return;
         io_service_.stop();
         thread_.join();
     }
 
-    io_service & get_io_service(void)
-    {
-        return io_service_;
-    }
+    io_service& get_io_service(void) { return io_service_; }
 
-    void send_udp(const char * data, unsigned int size, udp::endpoint const & receiver)
-    {
+    void send_udp(const char* data, unsigned int size, udp::endpoint const& receiver) {
         udp::socket socket(io_service_);
         socket.open(udp::v4());
         socket.send_to(boost::asio::buffer(data, size), receiver);

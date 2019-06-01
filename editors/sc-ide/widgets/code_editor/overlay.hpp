@@ -27,27 +27,25 @@ namespace ScIDE {
 
 class GenericCodeEditor;
 
-class OverlayAnimator : public QObject
-{
+class OverlayAnimator : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor );
+    Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor);
     QColor backgroundColor() const;
-    void setBackgroundColor( const QColor & color );
+    void setBackgroundColor(const QColor& color);
 
 public:
-    OverlayAnimator(GenericCodeEditor *editor, QObject *parent = 0);
+    OverlayAnimator(GenericCodeEditor* editor, QObject* parent = 0);
     void setActiveAppearance(bool active);
 
 private:
-    GenericCodeEditor *mEditor;
+    GenericCodeEditor* mEditor;
     QPropertyAnimation mBackgroundAnimation;
 };
 
-class CodeFragmentOverlay : public QObject, public QGraphicsPixmapItem
-{
+class CodeFragmentOverlay : public QObject, public QGraphicsPixmapItem {
     Q_OBJECT
     Q_PROPERTY(qreal opacity READ opacity WRITE setOpacity)
-    Q_PROPERTY(qreal scale READ scale WRITE setScale )
+    Q_PROPERTY(qreal scale READ scale WRITE setScale)
 };
 
 } // namespace ScIDE

@@ -1,23 +1,20 @@
 #ifdef SC_ABLETON_LINK
 
-#include "SC_LinkClock.hpp"
+#    include "SC_LinkClock.hpp"
 
 inline std::chrono::microseconds hrToLinkTime(double secs) {
     auto time = std::chrono::duration<double>(secs);
     return std::chrono::duration_cast<std::chrono::microseconds>(time) + LinkClock::GetInitTime();
 }
 
-inline double linkToHrTime(std::chrono::microseconds micros) {
-    return DurToFloat(micros - LinkClock::GetInitTime());
-}
+inline double linkToHrTime(std::chrono::microseconds micros) { return DurToFloat(micros - LinkClock::GetInitTime()); }
 
 std::chrono::microseconds LinkClock::InitTime;
 
-LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                            double tempo, double baseBeats, double baseSeconds)
-    : TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
-    mLink(tempo * 60.)
-{
+LinkClock::LinkClock(VMGlobals* vmGlobals, PyrObject* tempoClockObj, double tempo, double baseBeats,
+                     double baseSeconds):
+    TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
+    mLink(tempo * 60.) {
     // quantum = beatsPerBar
     int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
     if (err)
@@ -37,51 +34,42 @@ LinkClock::LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
     mLink.commitAppSessionState(sessionState);
 }
 
-void LinkClock::Init()
-{
-    InitTime = ableton::link::platform::Clock().micros();
-}
+void LinkClock::Init() { InitTime = ableton::link::platform::Clock().micros(); }
 
-void LinkClock::SetAll(double tempo, double inBeats, double inSeconds)
-{
+void LinkClock::SetAll(double tempo, double inBeats, double inSeconds) {
     auto sessionState = mLink.captureAppSessionState();
     auto linkTime = hrToLinkTime(inSeconds);
     sessionState.setTempo(tempo * 60., linkTime);
-    sessionState.requestBeatAtTime(inBeats,linkTime, mQuantum);
+    sessionState.requestBeatAtTime(inBeats, linkTime, mQuantum);
     CommitTempo(sessionState, tempo);
 }
 
-double LinkClock::BeatsToSecs(double beats) const
-{
+double LinkClock::BeatsToSecs(double beats) const {
     auto sessionState = mLink.captureAppSessionState();
     double secs = linkToHrTime(sessionState.timeAtBeat(beats, mQuantum)) - mLatency;
     return secs;
 }
 
-double LinkClock::SecsToBeats(double secs) const
-{
+double LinkClock::SecsToBeats(double secs) const {
     auto sessionState = mLink.captureAppSessionState();
     double beats = sessionState.beatAtTime(hrToLinkTime(secs + mLatency), mQuantum);
     return beats;
 }
 
-void LinkClock::SetTempoAtBeat(double tempo, double inBeats)
-{
+void LinkClock::SetTempoAtBeat(double tempo, double inBeats) {
     auto sessionState = mLink.captureAppSessionState();
     auto time = sessionState.timeAtBeat(inBeats, mQuantum);
     sessionState.setTempo(tempo * 60., time);
     CommitTempo(sessionState, tempo);
 }
 
-void LinkClock::SetTempoAtTime(double tempo, double inSeconds)
-{
+void LinkClock::SetTempoAtTime(double tempo, double inSeconds) {
     auto sessionState = mLink.captureAppSessionState();
     sessionState.setTempo(tempo * 60., hrToLinkTime(inSeconds));
     CommitTempo(sessionState, tempo);
 }
 
-void LinkClock::OnTempoChanged(double bpm)
-{
+void LinkClock::OnTempoChanged(double bpm) {
     double secs = elapsedTime();
     double tempo = bpm / 60.;
 
@@ -92,7 +80,7 @@ void LinkClock::OnTempoChanged(double bpm)
     mBeatDur = 1. / tempo;
     mCondition.notify_one();
 
-    //call sclang callback
+    // call sclang callback
     gLangMutex.lock();
     g->canCallOS = false;
     ++g->sp;
@@ -112,10 +100,9 @@ void LinkClock::OnTempoChanged(double bpm)
 
 // Primitives -------------------------------------------------------------------------------------
 
-int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+int prLinkClock_NumPeers(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -126,11 +113,10 @@ int prLinkClock_NumPeers(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 1;
-    PyrSlot *b = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+int prLinkClock_SetQuantum(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
+    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -146,10 +132,9 @@ int prLinkClock_SetQuantum(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int prLinkClock_GetLatency(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+int prLinkClock_GetLatency(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -160,11 +145,10 @@ int prLinkClock_GetLatency(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 1;
-    PyrSlot *b = g->sp;
-    LinkClock *clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+int prLinkClock_SetLatency(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
+    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -180,8 +164,7 @@ int prLinkClock_SetLatency(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
-void initLinkPrimitives()
-{
+void initLinkPrimitives() {
     int base, index = 0;
 
     base = nextPrimitiveIndex();

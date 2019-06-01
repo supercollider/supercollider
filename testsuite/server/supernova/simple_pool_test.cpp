@@ -7,42 +7,36 @@
 using namespace nova;
 using namespace std;
 
-namespace
-{
+namespace {
 
-struct foo
-{
-    foo(void)
-    {}
+struct foo {
+    foo(void) {}
     int data[4];
 };
 
-void run_simple_test(bool locked)
-{
-    simple_pool<> pool(16*1024, locked);
+void run_simple_test(bool locked) {
+    simple_pool<> pool(16 * 1024, locked);
 
     foo* f1 = static_cast<foo*>(pool.malloc(sizeof(foo)));
-    ::new(f1) foo();
+    ::new (f1) foo();
     f1->~foo();
     pool.free(f1);
 }
 
-void run_simple_test_2(bool locked)
-{
+void run_simple_test_2(bool locked) {
     simple_pool<> pool;
 
-    pool.init(16*1024, locked);
+    pool.init(16 * 1024, locked);
 
     foo* f1 = static_cast<foo*>(pool.malloc(sizeof(foo)));
-    ::new(f1) foo();
+    ::new (f1) foo();
     f1->~foo();
     pool.free(f1);
 }
 
 }
 
-BOOST_AUTO_TEST_CASE( simple_pool_tests )
-{
+BOOST_AUTO_TEST_CASE(simple_pool_tests) {
     run_simple_test(false);
     run_simple_test(true);
     run_simple_test_2(false);
