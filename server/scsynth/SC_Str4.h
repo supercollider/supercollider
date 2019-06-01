@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,64 +26,60 @@
 #include <stdio.h>
 #include <limits.h>
 
-void str4cpy(int32 *dst, const char *src);
-void mem4cpy(int32 *dst, const char *src, int charlen);
+void str4cpy(int32* dst, const char* src);
+void mem4cpy(int32* dst, const char* src, int charlen);
 
 // returns the number of pad bytes to add to a string of a given length
-inline int str4padbytes(int charlen)
-{
-    return 4 - (charlen & 3);
-}
+inline int str4padbytes(int charlen) { return 4 - (charlen & 3); }
 
 // converts length in bytes to length in words
-inline int str4len(int charlen)
-{
-	return (charlen + 4) >> 2;
-}
+inline int str4len(int charlen) { return (charlen + 4) >> 2; }
 
 // returns length in words of a char *
-inline int str4len(const char *src)
-{
-    const char *src0 = src;
-    while (*src) { src++; }
+inline int str4len(const char* src) {
+    const char* src0 = src;
+    while (*src) {
+        src++;
+    }
     return str4len(src - src0);
 }
 
 // returns length in words of a int32 *
-inline int str4len(const int32 *src)
-{
-    const int32 *src0 = src;
-    while (*src++ & kLASTCHAR) {}
+inline int str4len(const int32* src) {
+    const int32* src0 = src;
+    while (*src++ & kLASTCHAR) {
+    }
     int wordlen = src - src0;
     return wordlen;
 }
 
 // returns length in words of a int32 *
-inline bool str4eq(const int32 *a, const int32 *b)
-{
-	while(true) {
-		if (*a != *b) return false;
-		if ((*a & kLASTCHAR) == 0) return true;
-		a++; b++;
-	}
+inline bool str4eq(const int32* a, const int32* b) {
+    while (true) {
+        if (*a != *b)
+            return false;
+        if ((*a & kLASTCHAR) == 0)
+            return true;
+        a++;
+        b++;
+    }
 }
 
 // copy an int32 *
-inline void str4cpy(int32 *dst, const int32 *src)
-{
-	int32 c;
-	do {
-		*dst++ = c = *src++;
-	} while (c & kLASTCHAR);
+inline void str4cpy(int32* dst, const int32* src) {
+    int32 c;
+    do {
+        *dst++ = c = *src++;
+    } while (c & kLASTCHAR);
 }
 
-inline int sc_atoi(const char *string)
-{
-	int value = 0;
-	if (*string == 0) return -1;
-	uint32 c;
-	while ((c = *string++ - '0') <= 9) {
-		value = value * 10 + c;
-	}
-	return value;
+inline int sc_atoi(const char* string) {
+    int value = 0;
+    if (*string == 0)
+        return -1;
+    uint32 c;
+    while ((c = *string++ - '0') <= 9) {
+        value = value * 10 + c;
+    }
+    return value;
 }

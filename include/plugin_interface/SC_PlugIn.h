@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,19 +39,19 @@
 #ifdef _WIN32
 
 // temporarily override __attribute__ for (unused), later we'll remove it
-#ifndef __GNUC__
-#define __attribute__(x)
-#endif
+#    ifndef __GNUC__
+#        define __attribute__(x)
+#    endif
 
 
-#ifndef NAN  // NAN is c99
-#include <limits>
-#define NAN std::numeric_limits<float>::quiet_NaN()
-#endif
+#    ifndef NAN // NAN is c99
+#        include <limits>
+#        define NAN std::numeric_limits<float>::quiet_NaN()
+#    endif
 
 // windows.h defines min() and max() macros which break things such as
 // std::numeric_limits<int32>::max() - so let's undefine them
-#undef max
-#undef min
+#    undef max
+#    undef min
 
 #endif

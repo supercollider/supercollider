@@ -25,31 +25,28 @@
 
 namespace ScIDE {
 
-LangStatusBox::LangStatusBox(ScProcess *lang, QWidget *parent):
-    StatusBox(parent)
-{
+LangStatusBox::LangStatusBox(ScProcess* lang, QWidget* parent): StatusBox(parent) {
     mLabel = new StatusLabel;
-    QHBoxLayout *layout = new QHBoxLayout;
-    layout->setContentsMargins(0,0,0,0);
+    QHBoxLayout* layout = new QHBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(mLabel);
     setLayout(layout);
 
-    addAction( lang->action(ScProcess::ToggleRunning) );
-    addAction( lang->action(ScProcess::Restart) );
-    addAction( lang->action(ScProcess::RecompileClassLibrary) );
+    addAction(lang->action(ScProcess::ToggleRunning));
+    addAction(lang->action(ScProcess::Restart));
+    addAction(lang->action(ScProcess::RecompileClassLibrary));
 
-    connect( lang, SIGNAL( stateChanged(QProcess::ProcessState) ),
-             this, SLOT( onInterpreterStateChanged(QProcess::ProcessState) ) );
+    connect(lang, SIGNAL(stateChanged(QProcess::ProcessState)), this,
+            SLOT(onInterpreterStateChanged(QProcess::ProcessState)));
 
-    onInterpreterStateChanged( lang->state() );
+    onInterpreterStateChanged(lang->state());
 }
 
-void LangStatusBox::onInterpreterStateChanged( QProcess::ProcessState state )
-{
+void LangStatusBox::onInterpreterStateChanged(QProcess::ProcessState state) {
     QString text;
     QColor color;
 
-    switch(state) {
+    switch (state) {
     case QProcess::NotRunning:
         text = tr("Inactive");
         color = Qt::white;
@@ -57,7 +54,7 @@ void LangStatusBox::onInterpreterStateChanged( QProcess::ProcessState state )
 
     case QProcess::Starting:
         text = tr("Booting");
-        color = QColor(255,255,0);
+        color = QColor(255, 255, 0);
         break;
 
     case QProcess::Running:

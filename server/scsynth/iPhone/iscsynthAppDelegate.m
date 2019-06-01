@@ -13,12 +13,11 @@
 @synthesize window;
 
 
-- (void)applicationDidFinishLaunching:(UIApplication *)application {    
-
+- (void)applicationDidFinishLaunching:(UIApplication*)application {
     // Override point for customization after application launch
     [window addSubview:[tabBarController view]];
-	
-	[window makeKeyAndVisible];
+
+    [window makeKeyAndVisible];
 }
 
 

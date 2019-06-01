@@ -26,10 +26,8 @@
 
 namespace nova {
 
-sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
-    abstract_synth(node_id, prototype)
-{
-    World const & world = sc_factory->world;
+sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstract_synth(node_id, prototype) {
+    World const& world = sc_factory->world;
     const bool rt_synthesis = world.mRealTime;
 
     mNode.mWorld = &sc_factory->world;
@@ -47,7 +45,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
 
     mNode.mID = node_id;
 
-    sc_synthdef const & synthdef = *prototype;
+    sc_synthdef const& synthdef = *prototype;
 
     const size_t parameter_count = synthdef.parameter_count();
     const size_t constants_count = synthdef.constants.size();
@@ -56,13 +54,12 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     const size_t wire_buffer_alignment = 64 * 8; // align to cache line boundaries
     const size_t alloc_size = prototype->memory_requirement();
 
-    const size_t sample_alloc_size = world.mBufLength * synthdef.buffer_count
-        + wire_buffer_alignment /* for alignment */;
+    const size_t sample_alloc_size =
+        world.mBufLength * synthdef.buffer_count + wire_buffer_alignment /* for alignment */;
 
-    const size_t total_alloc_size = alloc_size + sample_alloc_size*sizeof(sample);
+    const size_t total_alloc_size = alloc_size + sample_alloc_size * sizeof(sample);
 
-    char * raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size)
-                                    : (char*)malloc(total_alloc_size);
+    char* raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size) : (char*)malloc(total_alloc_size);
 
     if (raw_chunk == nullptr)
         throw std::bad_alloc();
@@ -71,23 +68,23 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
 
     /* prepare controls */
     mNumControls = parameter_count;
-    mControls     = allocator.alloc<float>(parameter_count);
+    mControls = allocator.alloc<float>(parameter_count);
     mControlRates = allocator.alloc<int>(parameter_count);
     mAudioBusOffsets = allocator.alloc<int>(parameter_count);
-    mMapControls  = allocator.alloc<float*>(parameter_count);
+    mMapControls = allocator.alloc<float*>(parameter_count);
 
     /* initialize controls */
     for (size_t i = 0; i != parameter_count; ++i) {
         mControls[i] = synthdef.parameters[i]; /* initial parameters */
-        mMapControls[i] = &mControls[i];       /* map to control values */
-        mControlRates[i] = 0;                  /* init to 0*/
-        mAudioBusOffsets[i] = -1;              /* init to -1: not mapped to an audio bus yet */
+        mMapControls[i] = &mControls[i]; /* map to control values */
+        mControlRates[i] = 0; /* init to 0*/
+        mAudioBusOffsets[i] = -1; /* init to -1: not mapped to an audio bus yet */
     }
 
     /* allocate constant wires */
     mWire = allocator.alloc<Wire>(constants_count);
     for (size_t i = 0; i != synthdef.constants.size(); ++i) {
-        Wire * wire = mWire + i;
+        Wire* wire = mWire + i;
         wire->mFromUnit = nullptr;
         wire->mCalcRate = 0;
         wire->mBuffer = nullptr;
@@ -96,16 +93,16 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
 
     unit_count = prototype->unit_count();
     calc_unit_count = prototype->calc_unit_count();
-    units        = allocator.alloc<Unit*>(unit_count);
-    calc_units   = allocator.alloc<Unit*>(calc_unit_count + 1); // over-allocate to allow prefetching
+    units = allocator.alloc<Unit*>(unit_count);
+    calc_units = allocator.alloc<Unit*>(calc_unit_count + 1); // over-allocate to allow prefetching
     unit_buffers = allocator.alloc<sample>(sample_alloc_size);
 
-    unit_buffers = static_cast<sample*>( boost::alignment::align_up( unit_buffers, wire_buffer_alignment ) );
+    unit_buffers = static_cast<sample*>(boost::alignment::align_up(unit_buffers, wire_buffer_alignment));
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());
     for (size_t i = 0; i != synthdef.graph.size(); ++i) {
-        sc_synthdef::unit_spec_t const & spec = synthdef.graph[i];
+        sc_synthdef::unit_spec_t const& spec = synthdef.graph[i];
         units[i] = spec.prototype->construct(spec, this, &sc_factory->world, allocator);
     }
 
@@ -117,21 +114,17 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     assert((char*)mControls + alloc_size <= allocator.alloc<char>()); // ensure the memory boundaries
 }
 
-sc_synth::~sc_synth(void)
-{
-    assert(!initialized);
-}
+sc_synth::~sc_synth(void) { assert(!initialized); }
 
 // FIXME: for some reason, we cannot initialize multiple synths in parallel
 static spin_lock scsynth_preparation_lock;
 
-void sc_synth::prepare(void)
-{
+void sc_synth::prepare(void) {
     assert(!initialized);
 
     scsynth_preparation_lock.lock();
-    std::for_each(units, units + unit_count, [](Unit * unit) {
-        sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+    std::for_each(units, units + unit_count, [](Unit* unit) {
+        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
         def->initialize(unit);
     });
     scsynth_preparation_lock.unlock();
@@ -140,11 +133,10 @@ void sc_synth::prepare(void)
 }
 
 
-void sc_synth::finalize()
-{
+void sc_synth::finalize() {
     if (initialized) {
-        std::for_each(units, units + unit_count, [](Unit * unit) {
-            sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+        std::for_each(units, units + unit_count, [](Unit* unit) {
+            sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
             def->destruct(unit);
         });
     }
@@ -157,8 +149,7 @@ void sc_synth::finalize()
     initialized = false;
 }
 
-void sc_synth::set(slot_index_t slot_index, sample val)
-{
+void sc_synth::set(slot_index_t slot_index, sample val) {
     if (slot_index >= mNumControls) {
         log("argument number out of range\n");
         return;
@@ -169,23 +160,18 @@ void sc_synth::set(slot_index_t slot_index, sample val)
     mControls[slot_index] = val;
 }
 
-void sc_synth::set_control_array(slot_index_t slot_index, size_t count, sample * val)
-{
-    if (slot_index+count >= mNumControls)
+void sc_synth::set_control_array(slot_index_t slot_index, size_t count, sample* val) {
+    if (slot_index + count >= mNumControls)
         return;
     for (size_t i = 0; i != count; ++i)
-        set(slot_index+i, val[i]);
+        set(slot_index + i, val[i]);
 }
 
-float sc_synth::get(slot_index_t slot_index) const
-{
-    return mControls[slot_index];
-}
+float sc_synth::get(slot_index_t slot_index) const { return mControls[slot_index]; }
 
-bool sc_synth::getMappedSymbol(slot_index_t slot_index, char * str) const
-{
+bool sc_synth::getMappedSymbol(slot_index_t slot_index, char* str) const {
     // analogous place in scsynth: SC_Group.cpp: void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
-    bool isMapped = mMapControls[slot_index] != mControls+slot_index;
+    bool isMapped = mMapControls[slot_index] != mControls + slot_index;
     if (isMapped) {
         if (mControlRates[slot_index] == 2) {
             int bus = mMapControls[slot_index] - mNode.mWorld->mAudioBus;
@@ -199,39 +185,35 @@ bool sc_synth::getMappedSymbol(slot_index_t slot_index, char * str) const
     return isMapped;
 }
 
-void sc_synth::map_control_bus_control (unsigned int slot_index, int control_bus_index)
-{
+void sc_synth::map_control_bus_control(unsigned int slot_index, int control_bus_index) {
     if (slot_index >= mNumControls)
         return;
 
-    World *world = mNode.mWorld;
+    World* world = mNode.mWorld;
     if (control_bus_index < 0) {
         mControlRates[slot_index] = 0;
         mMapControls[slot_index] = mControls + slot_index;
-    }
-    else if (uint32(control_bus_index) < world->mNumControlBusChannels) {
+    } else if (uint32(control_bus_index) < world->mNumControlBusChannels) {
         mControlRates[slot_index] = 1;
         mMapControls[slot_index] = world->mControlBus + control_bus_index;
     }
 }
 
-void sc_synth::map_control_buses_control (unsigned int slot_index, int control_bus_index, int count)
-{
+void sc_synth::map_control_buses_control(unsigned int slot_index, int control_bus_index, int count) {
     if (slot_index >= mNumControls)
         return;
 
     int slots_to_set = std::min(count, int(mNumControls - slot_index));
 
     for (int i = 0; i != slots_to_set; ++i)
-        map_control_bus_control(slot_index+i, control_bus_index+i);
+        map_control_bus_control(slot_index + i, control_bus_index + i);
 }
 
-void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_index)
-{
+void sc_synth::map_control_bus_audio(unsigned int slot_index, int audio_bus_index) {
     if (slot_index >= mNumControls)
         return;
 
-    World *world = mNode.mWorld;
+    World* world = mNode.mWorld;
 
     if (audio_bus_index < 0) {
         mControlRates[slot_index] = 0;
@@ -245,34 +227,29 @@ void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_ind
     }
 }
 
-void sc_synth::map_control_buses_audio (unsigned int slot_index, int audio_bus_index, int count)
-{
+void sc_synth::map_control_buses_audio(unsigned int slot_index, int audio_bus_index, int count) {
     if (slot_index >= mNumControls)
         return;
 
     int slots_to_set = std::min(count, int(mNumControls - slot_index));
 
     for (int i = 0; i != slots_to_set; ++i)
-        map_control_bus_audio(slot_index+i, audio_bus_index+i);
+        map_control_bus_audio(slot_index + i, audio_bus_index + i);
 }
 
-void sc_synth::apply_unit_cmd(const char * unit_cmd, unsigned int unit_index, struct sc_msg_iter *args)
-{
-    Unit * unit = units[unit_index];
-    sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args) {
+    Unit* unit = units[unit_index];
+    sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
     def->run_unit_command(unit_cmd, unit, args);
 }
 
-void sc_synth::run(void)
-{
-    perform();
-}
+void sc_synth::run(void) { perform(); }
 
 extern spin_lock log_guard;
 
 #if defined(__GNUC__) && !defined(__APPLE__)
-#define thread_local __thread
+#    define thread_local __thread
 #endif
 
 #ifdef thread_local
@@ -281,54 +258,37 @@ static thread_local std::array<char, 262144> trace_scratchpad;
 static std::array<char, 262144> trace_scratchpad;
 #endif
 
-struct scratchpad_printer
-{
-    scratchpad_printer(char * str):
-        string(str), position(0)
-    {
-        clear();
-    }
+struct scratchpad_printer {
+    scratchpad_printer(char* str): string(str), position(0) { clear(); }
 
-    void printf(const char *fmt, ...)
-    {
+    void printf(const char* fmt, ...) {
         va_list vargs;
         va_start(vargs, fmt);
         printf(fmt, vargs);
         va_end(vargs);
     }
 
-    const char * data(void) const
-    {
-        return string;
-    }
+    const char* data(void) const { return string; }
 
-    bool shouldFlush(void) const
-    {
-        return position + 1024 > 32768;
-    }
+    bool shouldFlush(void) const { return position + 1024 > 32768; }
 
-    void clear(void)
-    {
+    void clear(void) {
         position = 0;
         string[0] = '\0'; // zero-terminated
     }
 
 private:
-    void printf(const char *fmt, va_list vargs)
-    {
-        position += vsprintf(string + position, fmt, vargs);
-    }
+    void printf(const char* fmt, va_list vargs) { position += vsprintf(string + position, fmt, vargs); }
 
-    char * string;
+    char* string;
     int position;
 };
 
-void sc_synth::run_traced(void)
-{
+void sc_synth::run_traced(void) {
     trace = 0;
 
 #ifndef thread_local
-    spin_lock::scoped_lock lock (log_guard);
+    spin_lock::scoped_lock lock(log_guard);
 #endif
 
     scratchpad_printer printer(trace_scratchpad.data());
@@ -336,15 +296,15 @@ void sc_synth::run_traced(void)
     printer.printf("\nTRACE %d  %s    #units: %d\n", id(), this->definition_name(), calc_unit_count);
 
     for (size_t calc_unit_index = 0; calc_unit_index != calc_unit_count; ++calc_unit_index) {
-        Unit * unit = calc_units[calc_unit_index];
+        Unit* unit = calc_units[calc_unit_index];
 
-        sc_ugen_def * def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
         printer.printf("  unit %zd %s\n    in ", calc_unit_index, def->name());
-        for (uint16_t j=0; j!=unit->mNumInputs; ++j) {
+        for (uint16_t j = 0; j != unit->mNumInputs; ++j) {
             printer.printf(" %g", unit->mInBuf[j][0]);
             if (printer.shouldFlush()) {
 #ifdef thread_local
-                spin_lock::scoped_lock lock (log_guard);
+                spin_lock::scoped_lock lock(log_guard);
 #endif
                 log(printer.data());
                 printer.clear();
@@ -356,11 +316,11 @@ void sc_synth::run_traced(void)
         (unit->mCalcFunc)(unit, unit->mBufLength);
 
         printer.printf("    out");
-        for (int j=0; j<unit->mNumOutputs; ++j) {
+        for (int j = 0; j < unit->mNumOutputs; ++j) {
             printer.printf(" %g", unit->mOutBuf[j][0]);
             if (printer.shouldFlush()) {
 #ifdef thread_local
-                spin_lock::scoped_lock lock (log_guard);
+                spin_lock::scoped_lock lock(log_guard);
 #endif
                 log(printer.data());
                 printer.clear();
@@ -371,7 +331,7 @@ void sc_synth::run_traced(void)
     printer.printf("\n");
 
 #ifdef thread_local
-    spin_lock::scoped_lock lock (log_guard);
+    spin_lock::scoped_lock lock(log_guard);
 #endif
     log(printer.data());
 }

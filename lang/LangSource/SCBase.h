@@ -23,10 +23,10 @@
 #include <limits.h>
 #include <stdio.h>
 #ifdef _WIN32
-# include <stdlib.h>
-#ifndef PATH_MAX
-# define PATH_MAX _MAX_PATH
-#endif
+#    include <stdlib.h>
+#    ifndef PATH_MAX
+#        define PATH_MAX _MAX_PATH
+#    endif
 #endif
 
 #include "SC_BoundsMacros.h"
@@ -35,16 +35,16 @@
 #include "AllocPools.h"
 #include "SC_Export.h"
 
-void postfl(const char *fmt, ...);
-void post(const char *fmt, ...);
-void error(const char *fmt, ...);
-void postText(const char *text, long length);
+void postfl(const char* fmt, ...);
+void post(const char* fmt, ...);
+void error(const char* fmt, ...);
+void postText(const char* text, long length);
 void postChar(char c);
 void flushPostBuf();
-void setPostFile(FILE *file); // If file is not NULL, causes all posted text to also be written to the file.
+void setPostFile(FILE* file); // If file is not NULL, causes all posted text to also be written to the file.
 
-void debugf(char *fmt, ...);
-void pprintf(unsigned char *str, char *fmt, ...);
+void debugf(char* fmt, ...);
+void pprintf(unsigned char* str, char* fmt, ...);
 
 SCLANG_DLLEXPORT_C void schedInit();
 SCLANG_DLLEXPORT_C void schedCleanup();
@@ -58,10 +58,10 @@ SCLANG_DLLEXPORT_C void schedClear();
 
 SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone);
 SCLANG_DLLEXPORT_C void runLibrary(struct PyrSymbol* selector);
-SCLANG_DLLEXPORT_C void runInterpreter(struct VMGlobals *g, struct PyrSymbol *selector, int numArgsPushed);
+SCLANG_DLLEXPORT_C void runInterpreter(struct VMGlobals* g, struct PyrSymbol* selector, int numArgsPushed);
 
 SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals();
 
-SCLANG_DLLEXPORT_C struct PyrSymbol* getsym(const char *inName);
-SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const char *name);
-SCLANG_DLLEXPORT_C struct PyrSymbol* findsym(const char *name);
+SCLANG_DLLEXPORT_C struct PyrSymbol* getsym(const char* inName);
+SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const char* name);
+SCLANG_DLLEXPORT_C struct PyrSymbol* findsym(const char* name);

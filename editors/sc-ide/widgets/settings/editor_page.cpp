@@ -35,72 +35,62 @@
 
 namespace ScIDE { namespace Settings {
 
-EditorPage::EditorPage(QWidget *parent) :
+EditorPage::EditorPage(QWidget* parent):
     QWidget(parent),
     fontDatabase(new QFontDatabase),
-    ui( new Ui::EditorConfigPage )
-{
+    ui(new Ui::EditorConfigPage) {
     ui->setupUi(this);
 
-    connect( ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)) );
+    connect(ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)));
 
-    connect( ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)) );
-    connect( ui->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateFontPreview()) );
-    connect( ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()) );
-    connect( ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()) );
+    connect(ui->onlyMonoFonts, SIGNAL(toggled(bool)), this, SLOT(onMonospaceToggle(bool)));
+    connect(ui->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateFontPreview()));
+    connect(ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()));
+    connect(ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()));
 
-    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)),
-             this, SLOT(updateTheme(QString)) );
+    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
     connect(ui->themeCopyBtn, SIGNAL(clicked()), this, SLOT(dialogCopyTheme()));
     connect(ui->themeDeleteBtn, SIGNAL(clicked()), this, SLOT(deleteTheme()));
-    connect( ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem*)),
-             this, SLOT(updateTextFormatEdit()) );
-    connect( ui->fgPicker, SIGNAL(colorPicked(QColor)),
-             this, SLOT(updateTextFormatDisplay()) );
-    connect( ui->bgPicker, SIGNAL(colorPicked(QColor)),
-             this, SLOT(updateTextFormatDisplay()) );
-    connect( ui->italicOption, SIGNAL(clicked()),
-             this, SLOT(updateTextFormatDisplay()) );
-    connect( ui->boldOption, SIGNAL(clicked()),
-             this, SLOT(updateTextFormatDisplay()) );
-    connect( ui->fgClearBtn, SIGNAL(clicked()), ui->fgPicker, SLOT(clear()) );
-    connect( ui->fgClearBtn, SIGNAL(clicked()),
-             this, SLOT(updateTextFormatDisplay()) );
-    connect( ui->bgClearBtn, SIGNAL(clicked()), ui->bgPicker, SLOT(clear()) );
-    connect( ui->bgClearBtn, SIGNAL(clicked()),
-             this, SLOT(updateTextFormatDisplay()) );
+    connect(ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), this,
+            SLOT(updateTextFormatEdit()));
+    connect(ui->fgPicker, SIGNAL(colorPicked(QColor)), this, SLOT(updateTextFormatDisplay()));
+    connect(ui->bgPicker, SIGNAL(colorPicked(QColor)), this, SLOT(updateTextFormatDisplay()));
+    connect(ui->italicOption, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
+    connect(ui->boldOption, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
+    connect(ui->fgClearBtn, SIGNAL(clicked()), ui->fgPicker, SLOT(clear()));
+    connect(ui->fgClearBtn, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
+    connect(ui->bgClearBtn, SIGNAL(clicked()), ui->bgPicker, SLOT(clear()));
+    connect(ui->bgClearBtn, SIGNAL(clicked()), this, SLOT(updateTextFormatDisplay()));
 
     updateTextFormatEdit();
 }
 
-EditorPage::~EditorPage()
-{
+EditorPage::~EditorPage() {
     delete ui;
     delete fontDatabase;
     qDeleteAll(mThemes);
 }
 
-void EditorPage::load( Manager *s )
-{
+void EditorPage::load(Manager* s) {
     s->beginGroup("IDE/editor");
 
-    ui->spaceIndent->setChecked( s->value("spaceIndent").toBool() );
-    ui->indentWidth->setValue( s->value("indentWidth").toInt() );
-    ui->stepForwardEvaluation->setChecked( s->value("stepForwardEvaluation").toBool() );
-    ui->editorLineWrap->setChecked( s->value("lineWrap").toBool() );
-    ui->disableBlinkingCursor->setChecked( s->value("disableBlinkingCursor").toBool() );
-    ui->insertMatchingTokens->setChecked( s->value("insertMatchingTokens").toBool() );
-    ui->blinkDuration->setValue( s->value("blinkDuration").toInt() );
-    ui->highlightCurrentLine->setChecked( s->value("highlightCurrentLine").toBool() );
-    ui->highlightBracketContents->setChecked( s->value("highlightBracketContents").toBool() );
-    ui->inactiveEditorFadeAlpha->setValue( s->value("inactiveEditorFadeAlpha").toInt() );
-    ui->useComboBox->setChecked( s->value("useComboBox").toBool() );
-    ui->useComboBoxWhenSplitting->setChecked( s->value("useComboBoxWhenSplitting").toBool() );
+    ui->spaceIndent->setChecked(s->value("spaceIndent").toBool());
+    ui->indentWidth->setValue(s->value("indentWidth").toInt());
+    ui->stepForwardEvaluation->setChecked(s->value("stepForwardEvaluation").toBool());
+    ui->editorLineWrap->setChecked(s->value("lineWrap").toBool());
+    ui->disableBlinkingCursor->setChecked(s->value("disableBlinkingCursor").toBool());
+    ui->insertMatchingTokens->setChecked(s->value("insertMatchingTokens").toBool());
+    ui->blinkDuration->setValue(s->value("blinkDuration").toInt());
+    ui->highlightCurrentLine->setChecked(s->value("highlightCurrentLine").toBool());
+    ui->highlightBracketContents->setChecked(s->value("highlightBracketContents").toBool());
+    ui->inactiveEditorFadeAlpha->setValue(s->value("inactiveEditorFadeAlpha").toInt());
+    ui->useComboBox->setChecked(s->value("useComboBox").toBool());
+    ui->useComboBoxWhenSplitting->setChecked(s->value("useComboBoxWhenSplitting").toBool());
 
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
     int fontSize = s->value("size").toInt();
-    ui->fontAntialias->setChecked( s->value("antialias").toBool() );
+    ui->fontAntialias->setChecked(s->value("antialias").toBool());
 
     s->endGroup();
 
@@ -109,17 +99,17 @@ void EditorPage::load( Manager *s )
     defaultFont.setFamily(fontFamily);
     if (fontSize > 0)
         defaultFont.setPointSize(fontSize);
-    defaultFont.setStyleHint( QFont::TypeWriter );
+    defaultFont.setStyleHint(QFont::TypeWriter);
 
-    QFontInfo fontInfo( defaultFont );
+    QFontInfo fontInfo(defaultFont);
     fontFamily = fontInfo.family();
     fontSize = fontInfo.pointSize();
 
-    populateFontList( ui->onlyMonoFonts->isChecked() );
-    int fontFamilyIndex = ui->fontCombo->findText( fontFamily, Qt::MatchFixedString );
-    ui->fontCombo->setCurrentIndex( fontFamilyIndex );
+    populateFontList(ui->onlyMonoFonts->isChecked());
+    int fontFamilyIndex = ui->fontCombo->findText(fontFamily, Qt::MatchFixedString);
+    ui->fontCombo->setCurrentIndex(fontFamilyIndex);
 
-    ui->fontSize->setValue( fontSize );
+    ui->fontSize->setValue(fontSize);
 
     ui->textFormats->clear();
 
@@ -130,8 +120,8 @@ void EditorPage::load( Manager *s )
     populateThemeList(themeName);
 
     s->beginGroup("IDE/postWindow");
-    ui->postWindowScrollback->setValue( s->value("scrollback").toInt() );
-    ui->postWindowLineWrap->setChecked( s->value("lineWrap").toBool() );
+    ui->postWindowScrollback->setValue(s->value("scrollback").toInt());
+    ui->postWindowLineWrap->setChecked(s->value("lineWrap").toBool());
     s->endGroup();
 
     updateFontPreview();
@@ -140,10 +130,9 @@ void EditorPage::load( Manager *s )
     ui->textFormats->expandAll();
 }
 
-void EditorPage::updateTheme(QString  name)
-{
-    Theme *theme;
-    QMap<QString, Theme *>::const_iterator i = mThemes.find(name);
+void EditorPage::updateTheme(QString name) {
+    Theme* theme;
+    QMap<QString, Theme*>::const_iterator i = mThemes.find(name);
 
     if (i == mThemes.end()) {
         theme = new Theme(name);
@@ -163,35 +152,47 @@ void EditorPage::updateTheme(QString  name)
     ui->boldOption->setDisabled(theme->locked());
 }
 
-void EditorPage::loadThemeFormats(Theme & theme)
-{
+void EditorPage::loadThemeFormats(Theme& theme) {
     ui->textFormats->clear();
 
     // common text format item is special - don't set foreground and background on the item!
     mCommonTextFormatItem = new QTreeWidgetItem(ui->textFormats);
-    mCommonTextFormatItem->setText( 0, tr("Text") );
-    mCommonTextFormatItem->setData( 0, TextFormatConfigKeyRole, "text" );
-    mCommonTextFormatItem->setData( 0, TextFormatRole, QVariant::fromValue(theme.format("text")) );
+    mCommonTextFormatItem->setText(0, tr("Text"));
+    mCommonTextFormatItem->setData(0, TextFormatConfigKeyRole, "text");
+    mCommonTextFormatItem->setData(0, TextFormatRole, QVariant::fromValue(theme.format("text")));
     updateTextFormatDisplayCommons();
 
-    static char const * const keys[] = {
-        "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets",
-        "evaluatedCode", "lineNumbers", "selection", "postwindowtext",
-        "whitespace", "keyword", "built-in", "env-var", "class", "number",
-        "symbol", "string", "char", "comment", "primitive",
-        "postwindowerror", "postwindowwarning", "postwindowsuccess", "postwindowemphasis"
-    };
+    static char const* const keys[] = { "currentLine",
+                                        "searchResult",
+                                        "matchingBrackets",
+                                        "mismatchedBrackets",
+                                        "evaluatedCode",
+                                        "lineNumbers",
+                                        "selection",
+                                        "postwindowtext",
+                                        "whitespace",
+                                        "keyword",
+                                        "built-in",
+                                        "env-var",
+                                        "class",
+                                        "number",
+                                        "symbol",
+                                        "string",
+                                        "char",
+                                        "comment",
+                                        "primitive",
+                                        "postwindowerror",
+                                        "postwindowwarning",
+                                        "postwindowsuccess",
+                                        "postwindowemphasis" };
 
     static QStringList strings = QStringList()
-            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
-            << tr("Mismatched Brackets") << tr("Evaluated Code")
-            << tr("Line Numbers") << tr("Selected Text") << tr("Post Window Text")
-            << tr("Whitespace")
-            << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
-            << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
-            << tr("Comment") << tr("Primitive")
-            << tr("Post Window Error") << tr("Post Window Warning") << tr("Post Window Success")
-            << tr("Post Window Emphasis");
+        << tr("Current Line") << tr("Search Result") << tr("Matching Brackets") << tr("Mismatched Brackets")
+        << tr("Evaluated Code") << tr("Line Numbers") << tr("Selected Text") << tr("Post Window Text")
+        << tr("Whitespace") << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable") << tr("Class")
+        << tr("Number") << tr("Symbol") << tr("String") << tr("Char") << tr("Comment") << tr("Primitive")
+        << tr("Post Window Error") << tr("Post Window Warning") << tr("Post Window Success")
+        << tr("Post Window Emphasis");
 
     static int count = strings.count();
 
@@ -201,12 +202,10 @@ void EditorPage::loadThemeFormats(Theme & theme)
     }
 }
 
-void EditorPage::populateFontList( bool onlyMonospaced )
-{
+void EditorPage::populateFontList(bool onlyMonospaced) {
     ui->fontCombo->clear();
     QStringList fontFamilies = fontDatabase->families();
-    foreach(QString family, fontFamilies)
-    {
+    foreach (QString family, fontFamilies) {
         if (onlyMonospaced && !fontDatabase->isFixedPitch(family))
             continue;
 
@@ -214,36 +213,32 @@ void EditorPage::populateFontList( bool onlyMonospaced )
     }
 }
 
-void EditorPage::populateThemeList(const QString & sel)
-{
+void EditorPage::populateThemeList(const QString& sel) {
     /* managing the combo box send parasite signals */
-    disconnect( ui->themeCombo, SIGNAL(currentIndexChanged(QString)),
-             this, SLOT(updateTheme(QString)) );
+    disconnect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
 
-    QMap<QString, Theme *>::const_iterator itr = mThemes.begin();
-    QList<QString> list =  itr.value()->availableThemes();
+    QMap<QString, Theme*>::const_iterator itr = mThemes.begin();
+    QList<QString> list = itr.value()->availableThemes();
     int i = 0;
 
-    foreach(QString th, mThemes.keys()) {
+    foreach (QString th, mThemes.keys()) {
         if (list.indexOf(th) < 0)
-                list.append(th);
+            list.append(th);
     }
 
     ui->themeCombo->clear();
-    foreach(QString themeName, list) {
+    foreach (QString themeName, list) {
         ui->themeCombo->addItem(themeName);
         if (sel == themeName)
-                ui->themeCombo->setCurrentIndex(i);
+            ui->themeCombo->setCurrentIndex(i);
         else
             i++;
     }
 
-    connect( ui->themeCombo, SIGNAL(currentIndexChanged(QString)),
-             this, SLOT(updateTheme(QString)) );
+    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(updateTheme(QString)));
 }
 
-void EditorPage::store( Manager *s )
-{
+void EditorPage::store(Manager* s) {
     s->beginGroup("IDE/editor");
 
     s->setValue("spaceIndent", ui->spaceIndent->isChecked());
@@ -277,7 +272,7 @@ void EditorPage::store( Manager *s )
     s->setValue("lineWrap", ui->postWindowLineWrap->isChecked());
     s->endGroup();
 
-    foreach(Theme *theme, mThemes) {
+    foreach (Theme* theme, mThemes) {
         if (ui->themeCombo->findText(theme->name()) > 0)
             theme->save();
         else
@@ -286,25 +281,23 @@ void EditorPage::store( Manager *s )
     s->updateTheme();
 }
 
-void EditorPage::onCurrentTabChanged(int)
-{
+void EditorPage::onCurrentTabChanged(int) {
     if (ui->tabs->currentWidget() == ui->colorsTab)
         updateFontPreview();
 }
 
-void EditorPage::onMonospaceToggle(bool onlyMonospaced)
-{
+void EditorPage::onMonospaceToggle(bool onlyMonospaced) {
     QString fontFamily = ui->fontCombo->currentText();
 
     bool signals_blocked = ui->fontCombo->blockSignals(true);
 
-    populateFontList( onlyMonospaced );
+    populateFontList(onlyMonospaced);
 
     if (!fontFamily.isEmpty()) {
-        int fontFamilyIndex = ui->fontCombo->findText( fontFamily, Qt::MatchFixedString );
+        int fontFamilyIndex = ui->fontCombo->findText(fontFamily, Qt::MatchFixedString);
         if (fontFamilyIndex == -1)
             fontFamilyIndex = 0;
-        ui->fontCombo->setCurrentIndex( fontFamilyIndex );
+        ui->fontCombo->setCurrentIndex(fontFamilyIndex);
     }
 
     ui->fontCombo->blockSignals(signals_blocked);
@@ -312,20 +305,18 @@ void EditorPage::onMonospaceToggle(bool onlyMonospaced)
     updateFontPreview();
 }
 
-void EditorPage::updateFontPreview()
-{
+void EditorPage::updateFontPreview() {
     if (ui->tabs->currentWidget() == ui->colorsTab)
-        ui->textFormats->setFont( constructFont() );
+        ui->textFormats->setFont(constructFont());
 }
 
-QFont EditorPage::constructFont()
-{
+QFont EditorPage::constructFont() {
     QString family = ui->fontCombo->currentText();
     int size = ui->fontSize->value();
     bool antialias = (ui->fontAntialias->checkState() == Qt::Checked);
 
     QFont font(family, size);
-    font.setStyleHint( QFont::TypeWriter );
+    font.setStyleHint(QFont::TypeWriter);
 
     if (!antialias)
         font.setStyleStrategy(QFont::StyleStrategy(font.styleStrategy() | QFont::NoAntialias));
@@ -333,48 +324,44 @@ QFont EditorPage::constructFont()
     return font;
 }
 
-QTreeWidgetItem * EditorPage::addTextFormat
-( const QString & name, const QString &key,
-  const QTextCharFormat & format, const QTextCharFormat &defaultFormat )
-{
-    QTreeWidgetItem *item = new QTreeWidgetItem(ui->textFormats);
-    item->setText( 0, name );
-    item->setData( 0, TextFormatConfigKeyRole, key );
-    item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
-    item->setData( 0, DefaultTextFormatRole, QVariant::fromValue(defaultFormat) );
-    updateTextFormatDisplay( item );
+QTreeWidgetItem* EditorPage::addTextFormat(const QString& name, const QString& key, const QTextCharFormat& format,
+                                           const QTextCharFormat& defaultFormat) {
+    QTreeWidgetItem* item = new QTreeWidgetItem(ui->textFormats);
+    item->setText(0, name);
+    item->setData(0, TextFormatConfigKeyRole, key);
+    item->setData(0, TextFormatRole, QVariant::fromValue(format));
+    item->setData(0, DefaultTextFormatRole, QVariant::fromValue(defaultFormat));
+    updateTextFormatDisplay(item);
 
     return item;
 }
 
-void EditorPage::updateTextFormatDisplay( QTreeWidgetItem *item )
-{
-    QTextCharFormat format = item->data( 0, DefaultTextFormatRole ).value<QTextCharFormat>();
-    format.merge( item->data( 0, TextFormatRole ).value<QTextCharFormat>() );
+void EditorPage::updateTextFormatDisplay(QTreeWidgetItem* item) {
+    QTextCharFormat format = item->data(0, DefaultTextFormatRole).value<QTextCharFormat>();
+    format.merge(item->data(0, TextFormatRole).value<QTextCharFormat>());
 
     QBrush fg = format.foreground();
-    if ( fg != Qt::NoBrush)
-        item->setForeground( 0, fg );
+    if (fg != Qt::NoBrush)
+        item->setForeground(0, fg);
     else
-        item->setData( 0, Qt::ForegroundRole, QVariant() );
+        item->setData(0, Qt::ForegroundRole, QVariant());
 
     QBrush bg = format.background();
-    if ( bg != Qt::NoBrush)
-        item->setBackground( 0, bg );
+    if (bg != Qt::NoBrush)
+        item->setBackground(0, bg);
     else
-        item->setData( 0, Qt::BackgroundRole, QVariant() );
+        item->setData(0, Qt::BackgroundRole, QVariant());
 
     QFont f;
     if (format.hasProperty(QTextFormat::FontItalic))
-        f.setItalic( format.fontItalic() );
+        f.setItalic(format.fontItalic());
     if (format.hasProperty(QTextFormat::FontWeight))
-        f.setWeight( format.fontWeight() );
+        f.setWeight(format.fontWeight());
 
-    item->setFont( 0, f );
+    item->setFont(0, f);
 }
 
-QTextCharFormat EditorPage::constructTextFormat()
-{
+QTextCharFormat EditorPage::constructTextFormat() {
     QTextCharFormat format;
 
     QBrush fg = ui->fgPicker->brush();
@@ -394,26 +381,24 @@ QTextCharFormat EditorPage::constructTextFormat()
     return format;
 }
 
-void EditorPage::updateTextFormatEdit()
-{
-    QTreeWidgetItem *item = ui->textFormats->currentItem();
+void EditorPage::updateTextFormatEdit() {
+    QTreeWidgetItem* item = ui->textFormats->currentItem();
     bool canEdit = item && item->data(0, TextFormatConfigKeyRole).isValid();
     ui->textFormatEdit->setEnabled(canEdit);
 
     if (!canEdit) {
-        ui->fgPicker->setBrush( QBrush() );
-        ui->bgPicker->setBrush( QBrush() );
+        ui->fgPicker->setBrush(QBrush());
+        ui->bgPicker->setBrush(QBrush());
         ui->italicOption->setChecked(false);
         ui->italicOption->setChecked(false);
-    }
-    else {
-        QTextCharFormat format = item->data( 0, TextFormatRole).value<QTextCharFormat>();
+    } else {
+        QTextCharFormat format = item->data(0, TextFormatRole).value<QTextCharFormat>();
         int enable = true;
 
-        ui->fgPicker->setBrush( format.foreground() );
-        ui->bgPicker->setBrush( format.background() );
-        ui->italicOption->setChecked( format.fontItalic() );
-        ui->boldOption->setChecked( format.fontWeight() == QFont::Bold );
+        ui->fgPicker->setBrush(format.foreground());
+        ui->bgPicker->setBrush(format.background());
+        ui->italicOption->setChecked(format.fontItalic());
+        ui->boldOption->setChecked(format.fontWeight() == QFont::Bold);
 
         if (item->data(0, TextFormatConfigKeyRole).toString() == "currentLine")
             enable = false;
@@ -425,62 +410,55 @@ void EditorPage::updateTextFormatEdit()
     }
 }
 
-void EditorPage::updateTextFormatDisplay()
-{
-    QTreeWidgetItem *item = ui->textFormats->currentItem();
+void EditorPage::updateTextFormatDisplay() {
+    QTreeWidgetItem* item = ui->textFormats->currentItem();
     bool canEdit = item && item->data(0, TextFormatConfigKeyRole).isValid();
     if (!canEdit)
         return;
 
     QTextCharFormat format = constructTextFormat();
-    item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
+    item->setData(0, TextFormatRole, QVariant::fromValue(format));
 
     if (item != mCommonTextFormatItem)
-        updateTextFormatDisplay( item );
+        updateTextFormatDisplay(item);
     else
         updateTextFormatDisplayCommons();
 
-    Theme *theme = mThemes.value(ui->themeCombo->currentText());
+    Theme* theme = mThemes.value(ui->themeCombo->currentText());
     theme->setFormat(item->data(0, TextFormatConfigKeyRole).toString(), format);
 }
 
-void EditorPage::updateTextFormatDisplayCommons()
-{
-    QTextCharFormat commonFormat =
-            mCommonTextFormatItem->data(0, TextFormatRole).value<QTextCharFormat>();
+void EditorPage::updateTextFormatDisplayCommons() {
+    QTextCharFormat commonFormat = mCommonTextFormatItem->data(0, TextFormatRole).value<QTextCharFormat>();
 
     QPalette palette;
 
     QBrush fg = commonFormat.foreground();
-    if ( fg != Qt::NoBrush)
-        palette.setBrush( QPalette::Text, fg );
+    if (fg != Qt::NoBrush)
+        palette.setBrush(QPalette::Text, fg);
 
     QBrush bg = commonFormat.background();
     if (bg != Qt::NoBrush)
-        palette.setBrush( QPalette::Base, bg );
+        palette.setBrush(QPalette::Base, bg);
 
     ui->textFormats->setPalette(palette);
 }
 
-void EditorPage::dialogCopyTheme()
-{
+void EditorPage::dialogCopyTheme() {
     bool ok;
     QString themeName = ui->themeCombo->currentText();
-    QString newThemeName = QInputDialog::getText
-        (this, tr("Copy theme"),
-         tr("copy the selected theme:"), QLineEdit::Normal,
-         themeName, &ok);
+    QString newThemeName = QInputDialog::getText(this, tr("Copy theme"), tr("copy the selected theme:"),
+                                                 QLineEdit::Normal, themeName, &ok);
 
-   if ( ok && !newThemeName.isEmpty() ) {
-        QMap<QString, Theme *>::const_iterator i = mThemes.begin();
+    if (ok && !newThemeName.isEmpty()) {
+        QMap<QString, Theme*>::const_iterator i = mThemes.begin();
         QList<QString> themes = i.value()->availableThemes();
 
-        if (themes.indexOf(newThemeName)  >= 0) {
-            QMessageBox::information (this,
-                 tr("Theme Already Existing"),
-                 tr("This theme already exists, pick another one\n"));
+        if (themes.indexOf(newThemeName) >= 0) {
+            QMessageBox::information(this, tr("Theme Already Existing"),
+                                     tr("This theme already exists, pick another one\n"));
         } else {
-            Theme * theme = new Theme(newThemeName, themeName);
+            Theme* theme = new Theme(newThemeName, themeName);
             mThemes.insert(newThemeName, theme);
             ui->themeCombo->addItem(newThemeName);
             ui->themeCombo->setCurrentIndex(ui->themeCombo->findText(newThemeName));
@@ -489,9 +467,6 @@ void EditorPage::dialogCopyTheme()
     }
 }
 
-void EditorPage::deleteTheme()
-{
-    ui->themeCombo->removeItem(ui->themeCombo->currentIndex());
-}
+void EditorPage::deleteTheme() { ui->themeCombo->removeItem(ui->themeCombo->currentIndex()); }
 
 }} // namespace ScIDE::Settings

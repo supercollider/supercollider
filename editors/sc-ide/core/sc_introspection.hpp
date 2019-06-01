@@ -34,18 +34,14 @@
 #include <boost/flyweight.hpp>
 
 
-static inline std::size_t hash_value(QString const& b)
-{
-    return qHash(b);
-}
+static inline std::size_t hash_value(QString const& b) { return qHash(b); }
 
-namespace ScIDE {
-namespace ScLanguage {
+namespace ScIDE { namespace ScLanguage {
 
 typedef boost::flyweight<QString> FlyweightString;
 
-typedef std::map<QString, QSharedPointer<struct Class> > ClassMap;
-typedef std::multimap<QString, QSharedPointer<struct Method> > MethodMap;
+typedef std::map<QString, QSharedPointer<struct Class>> ClassMap;
+typedef std::multimap<QString, QSharedPointer<struct Method>> MethodMap;
 typedef QVector<struct Argument> ArgumentVector;
 typedef QVector<struct Method*> MethodVector;
 
@@ -56,16 +52,15 @@ struct Argument {
 
 struct Class {
     FlyweightString name;
-    Class *metaClass;
-    Class *superClass;
+    Class* metaClass;
+    Class* superClass;
     MethodVector methods;
     struct {
         FlyweightString path;
         int position;
     } definition;
 
-    bool isSubclassOf(const Class * parentClass) const
-    {
+    bool isSubclassOf(const Class* parentClass) const {
         if (superClass == parentClass)
             return true;
 
@@ -77,16 +72,12 @@ struct Class {
 };
 
 struct Method {
-    enum SignatureStyle {
-        SignatureWithoutArguments,
-        SignatureWithArguments,
-        SignatureWithArgumentsAndDefaultValues
-    };
+    enum SignatureStyle { SignatureWithoutArguments, SignatureWithArguments, SignatureWithArgumentsAndDefaultValues };
 
-    QString   signature( SignatureStyle style ) const;
-    bool      matches(const QString& toMatch) const;
+    QString signature(SignatureStyle style) const;
+    bool matches(const QString& toMatch) const;
 
-    Class *ownerClass;
+    Class* ownerClass;
     FlyweightString name;
     ArgumentVector arguments;
     struct {
@@ -95,9 +86,8 @@ struct Method {
     } definition;
 };
 
-static inline QString makeFullMethodName(QString const & className, QString const & methodName)
-{
-    QString ret (className);
+static inline QString makeFullMethodName(QString const& className, QString const& methodName) {
+    QString ret(className);
     if (ret.startsWith("Meta_")) {
         ret.remove(0, 5);
         ret.append("-*");
@@ -107,57 +97,45 @@ static inline QString makeFullMethodName(QString const & className, QString cons
     return ret;
 }
 
-class Introspection
-{
+class Introspection {
 public:
     Introspection();
-    Introspection( Introspection const & rhs) = default;
-    explicit Introspection( QString const & yamlString );
+    Introspection(Introspection const& rhs) = default;
+    explicit Introspection(QString const& yamlString);
 
-    Introspection & operator=( Introspection const & rhs) = default;
-    Introspection & operator=( Introspection && rhs);
+    Introspection& operator=(Introspection const& rhs) = default;
+    Introspection& operator=(Introspection&& rhs);
 
-    typedef QMap< QString, QList<Method*> > ClassMethodMap; // maps Path to List of Methods
+    typedef QMap<QString, QList<Method*>> ClassMethodMap; // maps Path to List of Methods
 
-    const ClassMap & classMap() const { return mClassMap; }
-    const MethodMap & methodMap() const { return mMethodMap; }
+    const ClassMap& classMap() const { return mClassMap; }
+    const MethodMap& methodMap() const { return mMethodMap; }
 
-    const Class * findClass( QString const & className ) const;
-    std::vector<const Class *> findClassPartial(const QString &partialClassName) const;
-    std::vector<const Method *> findMethodPartial(const QString &partialMethodName) const;
+    const Class* findClass(QString const& className) const;
+    std::vector<const Class*> findClassPartial(const QString& partialClassName) const;
+    std::vector<const Method*> findMethodPartial(const QString& partialMethodName) const;
 
-    ClassMethodMap constructMethodMap( const Class * klass ) const;
-    ClassMethodMap constructMethodMap( QString const & className ) const
-    {
+    ClassMethodMap constructMethodMap(const Class* klass) const;
+    ClassMethodMap constructMethodMap(QString const& className) const {
         return constructMethodMap(findClass(className));
     }
 
-    QString const & classLibraryPath() const
-    {
-        return mClassLibraryPath;
-    }
+    QString const& classLibraryPath() const { return mClassLibraryPath; }
 
     // remove class library path, userExtensionDir and systemExtensionDir
-    QString compactLibraryPath(QString const & path) const;
+    QString compactLibraryPath(QString const& path) const;
 
-    bool isClassMethod (const Method * method) const
-    {
-        return (method->ownerClass->name.get().startsWith("Meta_"));
-    }
+    bool isClassMethod(const Method* method) const { return (method->ownerClass->name.get().startsWith("Meta_")); }
 
-    bool introspectionAvailable() const
-    {
-        return !mClassMap.empty();
-    }
+    bool introspectionAvailable() const { return !mClassMap.empty(); }
 
 private:
     void initPaths();
-    bool parse(const QString & yamlString );
+    bool parse(const QString& yamlString);
     void inferClassLibraryPath();
     bool ensureIntrospectionData() const;
 
-    void clear()
-    {
+    void clear() {
         mClassMap.clear();
         mMethodMap.clear();
         mClassLibraryPath.clear();

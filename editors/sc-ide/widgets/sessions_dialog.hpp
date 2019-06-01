@@ -33,34 +33,30 @@
 
 namespace ScIDE {
 
-class SessionsDialog : public QDialog
-{
+class SessionsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    SessionsDialog ( SessionManager *mng, QWidget *parent = 0 ):
-        QDialog(parent),
-        mSessionManager(mng)
-    {
+    SessionsDialog(SessionManager* mng, QWidget* parent = 0): QDialog(parent), mSessionManager(mng) {
         setWindowTitle("Sessions");
 
         mList = new QListWidget;
 
-        QPushButton *removeBtn = new QPushButton(tr("Delete"));
-        QPushButton *renameBtn = new QPushButton(tr("Rename..."));
+        QPushButton* removeBtn = new QPushButton(tr("Delete"));
+        QPushButton* renameBtn = new QPushButton(tr("Rename..."));
 
-        QDialogButtonBox *dialogBtns = new QDialogButtonBox(QDialogButtonBox::Ok);
+        QDialogButtonBox* dialogBtns = new QDialogButtonBox(QDialogButtonBox::Ok);
 
 
-        QHBoxLayout *contentBox = new QHBoxLayout;
-        QVBoxLayout *btnBox = new QVBoxLayout;
+        QHBoxLayout* contentBox = new QHBoxLayout;
+        QVBoxLayout* btnBox = new QVBoxLayout;
         btnBox->addWidget(renameBtn);
         btnBox->addWidget(removeBtn);
         btnBox->addStretch();
         contentBox->addWidget(mList);
         contentBox->addLayout(btnBox);
 
-        QVBoxLayout *layout = new QVBoxLayout;
+        QVBoxLayout* layout = new QVBoxLayout;
         layout->addLayout(contentBox);
         layout->addWidget(dialogBtns);
 
@@ -74,42 +70,31 @@ public:
     }
 
 private slots:
-    void removeCurrent()
-    {
-        QListWidgetItem *item = mList->currentItem();
+    void removeCurrent() {
+        QListWidgetItem* item = mList->currentItem();
         if (!item)
             return;
 
         QString name = item->text();
 
-        if ( QMessageBox::warning (
-                this,
-                tr("Delete Session"),
-                tr("Are you sure you want to delete session '%1'?").arg(name),
-                QMessageBox::Yes | QMessageBox::No,
-                QMessageBox::Yes
-            ) == QMessageBox::Yes )
-        {
+        if (QMessageBox::warning(this, tr("Delete Session"),
+                                 tr("Are you sure you want to delete session '%1'?").arg(name),
+                                 QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes)
+            == QMessageBox::Yes) {
             mSessionManager->removeSession(name);
             updateSessions();
         }
     }
 
-    void renameCurrent()
-    {
-        QListWidgetItem *item = mList->currentItem();
+    void renameCurrent() {
+        QListWidgetItem* item = mList->currentItem();
         if (!item)
             return;
 
         QString oldName = item->text();
-        QString newName = QInputDialog::getText (
-            this,
-            tr("Rename Session"),
-            tr("Enter a new name for the session:"),
-            QLineEdit::Normal,
-            oldName
-        );
-        if (newName.isEmpty() || newName == oldName )
+        QString newName = QInputDialog::getText(this, tr("Rename Session"), tr("Enter a new name for the session:"),
+                                                QLineEdit::Normal, oldName);
+        if (newName.isEmpty() || newName == oldName)
             return;
 
         mSessionManager->renameSession(oldName, newName);
@@ -117,23 +102,22 @@ private slots:
     }
 
 private:
-    void updateSessions()
-    {
+    void updateSessions() {
         mList->clear();
         QStringList sessions = mSessionManager->availableSessions();
         mList->addItems(sessions);
 
-        const Session * currentSession = mSessionManager->currentSession();
-        if(!currentSession)
+        const Session* currentSession = mSessionManager->currentSession();
+        if (!currentSession)
             return;
 
-        const int currentSessionIndex = sessions.indexOf( currentSession->name() );
+        const int currentSessionIndex = sessions.indexOf(currentSession->name());
         if (currentSessionIndex != -1)
             mList->setCurrentRow(currentSessionIndex);
     }
 
-    QListWidget *mList;
-    SessionManager *mSessionManager;
+    QListWidget* mList;
+    SessionManager* mSessionManager;
 };
 
 } // namespace ScIDE

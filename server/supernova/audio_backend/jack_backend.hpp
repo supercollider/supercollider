@@ -44,61 +44,49 @@ namespace nova {
  *  \todo later it may be interesting to directly map the io busses to the jack port regions
  *  \todo rethink the use of output port lock
  */
-template <typename engine_functor,
-          typename sample_type = float,
-          bool blocking = false
-         >
-class jack_backend:
-    public detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false>,
-    public detail::audio_settings_basic,
-    protected engine_functor
-{
+template <typename engine_functor, typename sample_type = float, bool blocking = false>
+class jack_backend : public detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false>,
+                     public detail::audio_settings_basic,
+                     protected engine_functor {
     typedef detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
     jack_backend(void) = default;
 
-    ~jack_backend(void)
-    {
+    ~jack_backend(void) {
         if (audio_is_active())
             deactivate_audio();
 
         close_client();
     }
 
-    uint32_t get_audio_blocksize(void) const
-    {
-        return blocksize_;
-    }
+    uint32_t get_audio_blocksize(void) const { return blocksize_; }
 
-    uint32_t get_latency(void) const
-    {
-        return latency_;
-    }
+    uint32_t get_latency(void) const { return latency_; }
 
 public:
-    void open_client(std::string const & server_name, std::string const & name, uint32_t input_port_count,
-                     uint32_t output_port_count, uint32_t blocksize)
-    {
+    void open_client(std::string const& server_name, std::string const& name, uint32_t input_port_count,
+                     uint32_t output_port_count, uint32_t blocksize) {
         blocksize_ = blocksize;
 
         /* open client */
-        client = server_name.empty() ? jack_client_open(name.c_str(), JackNoStartServer, &status)
-                                     : jack_client_open(name.c_str(), jack_options_t(JackNoStartServer | JackServerName),
-                                                        &status, server_name.c_str());
+        client = server_name.empty()
+            ? jack_client_open(name.c_str(), JackNoStartServer, &status)
+            : jack_client_open(name.c_str(), jack_options_t(JackNoStartServer | JackServerName), &status,
+                               server_name.c_str());
         std::atomic_thread_fence(std::memory_order_release); // ensure visibility on other threads
 
         if (status & JackServerFailed)
             throw std::runtime_error("Unable to connect to JACK server");
 
         if (status & JackNameNotUnique) {
-            const char * client_name = jack_get_client_name(client);
+            const char* client_name = jack_get_client_name(client);
             std::cout << "unique client name: " << client_name << std::endl;
         }
 
         /* initialize callbacks */
-        jack_set_thread_init_callback (client, jack_thread_init_callback, this);
-        jack_set_process_callback (client, jack_process_callback, this);
+        jack_set_thread_init_callback(client, jack_thread_init_callback, this);
+        jack_set_process_callback(client, jack_process_callback, this);
         jack_set_xrun_callback(client, jack_xrun_callback, this);
         jack_set_graph_order_callback(client, jack_graph_order_callback, this);
         jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, nullptr);
@@ -106,24 +94,23 @@ public:
         /* register ports */
         input_ports.clear();
         for (uint32_t i = 0; i != input_port_count; ++i) {
-            std::string portname ("input_");
-            portname += std::to_string(i+1);
-            jack_port_t * port =
+            std::string portname("input_");
+            portname += std::to_string(i + 1);
+            jack_port_t* port =
                 jack_port_register(client, portname.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
             input_ports.push_back(port);
 
 #ifdef SC_JACK_USE_METADATA_API
             jack_uuid_t uuid = jack_port_uuid(port);
-            if(!jack_uuid_empty(uuid)) {
-                std::string prettyname ("Input ");
-                prettyname += std::to_string(i+1);
-                jack_set_property(client, uuid,
-                    JACK_METADATA_PRETTY_NAME, prettyname.c_str(), "text/plain");
-                
-                std::string order ("");
+            if (!jack_uuid_empty(uuid)) {
+                std::string prettyname("Input ");
+                prettyname += std::to_string(i + 1);
+                jack_set_property(client, uuid, JACK_METADATA_PRETTY_NAME, prettyname.c_str(), "text/plain");
+
+                std::string order("");
                 order += std::to_string(i);
-                jack_set_property(client, uuid,
-                    JACKEY_ORDER, order.c_str(), "http://www.w3.org/2001/XMLSchema#integer");
+                jack_set_property(client, uuid, JACKEY_ORDER, order.c_str(),
+                                  "http://www.w3.org/2001/XMLSchema#integer");
             }
 #endif
         }
@@ -132,24 +119,23 @@ public:
 
         output_ports.clear();
         for (uint32_t i = 0; i != output_port_count; ++i) {
-            std::string portname ("output_");
-            portname += std::to_string(i+1);
-            jack_port_t * port =
+            std::string portname("output_");
+            portname += std::to_string(i + 1);
+            jack_port_t* port =
                 jack_port_register(client, portname.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
             output_ports.push_back(port);
 
 #ifdef SC_JACK_USE_METADATA_API
             jack_uuid_t uuid = jack_port_uuid(port);
-            if(!jack_uuid_empty(uuid)) {
-                std::string prettyname ("Output ");
-                prettyname += std::to_string(i+1);
-                jack_set_property(client, uuid, JACK_METADATA_PRETTY_NAME,
-                    prettyname.c_str(), "text/plain");
-                
-                std::string order ("");
+            if (!jack_uuid_empty(uuid)) {
+                std::string prettyname("Output ");
+                prettyname += std::to_string(i + 1);
+                jack_set_property(client, uuid, JACK_METADATA_PRETTY_NAME, prettyname.c_str(), "text/plain");
+
+                std::string order("");
                 order += std::to_string(input_port_count + i);
-                jack_set_property(client, uuid, JACKEY_ORDER,
-                    order.c_str(), "http://www.w3.org/2001/XMLSchema#integer");
+                jack_set_property(client, uuid, JACKEY_ORDER, order.c_str(),
+                                  "http://www.w3.org/2001/XMLSchema#integer");
             }
 #endif
         }
@@ -162,63 +148,48 @@ public:
         if (jack_frames % blocksize_)
             throw std::runtime_error("Jack buffer size is not a multiple of blocksize");
 
-        cpu_time_accumulator.resize( samplerate_, jack_frames, 1 );
+        cpu_time_accumulator.resize(samplerate_, jack_frames, 1);
     }
 
-    void close_client(void)
-    {
+    void close_client(void) {
         if (client) {
             jack_client_close(client);
             client = nullptr;
         }
     }
 
-    bool audio_is_opened(void)
-    {
-        return client != nullptr;
-    }
+    bool audio_is_opened(void) { return client != nullptr; }
 
-    bool audio_is_active(void)
-    {
-        return is_active;
-    }
+    bool audio_is_active(void) { return is_active; }
 
-    void activate_audio(void)
-    {
+    void activate_audio(void) {
         is_active = true;
         jack_activate(client);
     }
 
-    void deactivate_audio(void)
-    {
+    void deactivate_audio(void) {
         if (is_active) {
             jack_deactivate(client);
             is_active = false;
         }
     }
 
-    void get_cpuload(float & peak, float & average) const
-    {
-        cpu_time_accumulator.get(peak, average);
-    }
+    void get_cpuload(float& peak, float& average) const { cpu_time_accumulator.get(peak, average); }
 
-    int connect_input(size_t channel, const char * portname)
-    {
+    int connect_input(size_t channel, const char* portname) {
         if (channel >= input_ports.size())
             return -1;
         return jack_connect(client, portname, jack_port_name(input_ports[channel]));
     }
 
-    int connect_output(size_t channel, const char * portname)
-    {
+    int connect_output(size_t channel, const char* portname) {
         if (channel >= output_ports.size())
             return -1;
         return jack_connect(client, jack_port_name(output_ports[channel]), portname);
     }
 
-    int connect_all_inputs(const char * client_name)
-    {
-        const char **ports = jack_get_ports (client, client_name, nullptr, JackPortIsOutput);
+    int connect_all_inputs(const char* client_name) {
+        const char** ports = jack_get_ports(client, client_name, nullptr, JackPortIsOutput);
 
         if (!ports)
             return -1;
@@ -238,9 +209,8 @@ public:
         return 0;
     }
 
-    int connect_all_outputs(const char * client_name)
-    {
-        const char **ports = jack_get_ports (client, client_name, nullptr, JackPortIsInput);
+    int connect_all_outputs(const char* client_name) {
+        const char** ports = jack_get_ports(client, client_name, nullptr, JackPortIsInput);
 
         if (!ports)
             return -1;
@@ -260,71 +230,55 @@ public:
         return 0;
     }
 
-    int max_realtime_priority(void) const
-    {
-        return jack_client_max_real_time_priority(client);
-    }
+    int max_realtime_priority(void) const { return jack_client_max_real_time_priority(client); }
 
-    int realtime_priority(void) const
-    {
-        return jack_client_real_time_priority(client);
-    }
+    int realtime_priority(void) const { return jack_client_real_time_priority(client); }
 
 private:
-    static void jack_thread_init_callback(void * arg)
-    {
+    static void jack_thread_init_callback(void* arg) {
         std::atomic_thread_fence(std::memory_order_acquire);
-        jack_backend * self = static_cast<jack_backend*>(arg);
+        jack_backend* self = static_cast<jack_backend*>(arg);
         if (jack_client_thread_id(self->client) == pthread_self())
             engine_functor::init_thread();
         else
             name_thread("Jack Helper");
     }
 
-    static int jack_process_callback(jack_nframes_t frames, void * arg)
-    {
+    static int jack_process_callback(jack_nframes_t frames, void* arg) {
         return static_cast<jack_backend*>(arg)->perform(frames);
     }
 
-    static int jack_on_info_shutdown_callback(jack_status_t code, const char *reason, void *arg)
-    {
+    static int jack_on_info_shutdown_callback(jack_status_t code, const char* reason, void* arg) {
         std::cerr << "Jack server was shut down: " << reason << std::endl;
         std::cerr << "Exiting ..." << std::endl;
         exit(0); // TODO: later we may want to call a function
     }
 
-    static int jack_xrun_callback(void * arg)
-    {
-        return static_cast<jack_backend*>(arg)->handle_xrun();
-    }
+    static int jack_xrun_callback(void* arg) { return static_cast<jack_backend*>(arg)->handle_xrun(); }
 
-    static int jack_graph_order_callback(void* arg)
-    {
-        return static_cast<jack_backend*>(arg)->graph_order_changed();
-    }
+    static int jack_graph_order_callback(void* arg) { return static_cast<jack_backend*>(arg)->graph_order_changed(); }
 
-    int handle_xrun(void)
-    {
+    int handle_xrun(void) {
         time_is_synced = false;
         engine_functor::log_("Jack: xrun detected - resyncing clock\n");
         return 0;
     }
 
-    int graph_order_changed()
-    {
+    int graph_order_changed() {
         time_is_synced = false;
 
         jack_nframes_t lat = 0;
-        for(auto const& port: output_ports) {
+        for (auto const& port : output_ports) {
             jack_latency_range_t range;
-            jack_port_get_latency_range( port, JackPlaybackLatency, &range );
+            jack_port_get_latency_range(port, JackPlaybackLatency, &range);
             jack_nframes_t portLat = range.max;
-            if(portLat > lat) lat = portLat;
+            if (portLat > lat)
+                lat = portLat;
         }
 
-        uint32_t latency = (uint32_t) lat;
+        uint32_t latency = (uint32_t)lat;
 
-        if(latency != latency_) {
+        if (latency != latency_) {
             latency_ = latency;
             double latms = lat / samplerate_ * 1e3;
             engine_functor::log_printf_("JackDriver: max output latency %.1f ms\n", latms);
@@ -333,21 +287,22 @@ private:
         return true;
     }
 
-    int perform(jack_nframes_t frames)
-    {
+    int perform(jack_nframes_t frames) {
         if (unlikely(!time_is_synced)) {
             engine_functor::sync_clock();
             time_is_synced = true;
         }
 
         /* get port regions */
-        jack_default_audio_sample_t ** inputs   = (jack_default_audio_sample_t **)alloca(input_channels * sizeof(jack_default_audio_sample_t*));
-        jack_default_audio_sample_t ** outputs  = (jack_default_audio_sample_t **)alloca(output_channels * sizeof(jack_default_audio_sample_t*));
+        jack_default_audio_sample_t** inputs =
+            (jack_default_audio_sample_t**)alloca(input_channels * sizeof(jack_default_audio_sample_t*));
+        jack_default_audio_sample_t** outputs =
+            (jack_default_audio_sample_t**)alloca(output_channels * sizeof(jack_default_audio_sample_t*));
         for (uint16_t i = 0; i != input_channels; ++i)
-            inputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(input_ports[i], frames);
+            inputs[i] = (jack_default_audio_sample_t*)jack_port_get_buffer(input_ports[i], frames);
 
         for (uint16_t i = 0; i != output_channels; ++i)
-            outputs[i] = (jack_default_audio_sample_t*) jack_port_get_buffer(output_ports[i], frames);
+            outputs[i] = (jack_default_audio_sample_t*)jack_port_get_buffer(output_ports[i], frames);
 
         jack_nframes_t processed = 0;
         while (processed != frames) {
@@ -362,13 +317,11 @@ private:
         return 0;
     }
 
-    static int jack_buffersize_callback(jack_nframes_t frames, void * arg)
-    {
+    static int jack_buffersize_callback(jack_nframes_t frames, void* arg) {
         return static_cast<jack_backend*>(arg)->buffer_size_callback(frames);
     }
 
-    int buffer_size_callback(jack_nframes_t frames)
-    {
+    int buffer_size_callback(jack_nframes_t frames) {
         jack_frames = frames;
         if (jack_frames % blocksize_)
             /* we need a multiple of the blocksize */
@@ -376,10 +329,10 @@ private:
         return 0;
     }
 
-    jack_client_t * client = nullptr;
+    jack_client_t* client = nullptr;
     jack_status_t status;
 
-    bool is_active      = false;
+    bool is_active = false;
     bool time_is_synced = false;
     uint32_t blocksize_;
 

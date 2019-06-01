@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,50 +37,50 @@
 
 #include "../../common/server_shm.hpp"
 
-extern HashTable<struct UnitDef, Malloc> *gUnitDefLib;
+extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 
 
 struct TriggerMsg {
-	World *mWorld;
-	int32 mNodeID;
-	int32 mTriggerID;
-	float mValue;
+    World* mWorld;
+    int32 mNodeID;
+    int32 mTriggerID;
+    float mValue;
 
-	void Perform();
+    void Perform();
 };
 
 
 struct NodeReplyMsg {
-	World *mWorld;
-	int32 mNodeID;
-	int32 mID;
-	int32 mNumArgs;
-	float *mValues;
-	int32 mCmdNameSize;
-	char *mCmdName;
-	void *mRTMemory;
-	void Perform();
+    World* mWorld;
+    int32 mNodeID;
+    int32 mID;
+    int32 mNumArgs;
+    float* mValues;
+    int32 mCmdNameSize;
+    char* mCmdName;
+    void* mRTMemory;
+    void Perform();
 };
 
 
 struct NodeEndMsg {
-	World *mWorld;
-	int32 mNodeID;
-	int32 mGroupID;
-	int32 mPrevNodeID;
-	int32 mNextNodeID;
-	int32 mIsGroup;
-	int32 mHeadID;
-	int32 mTailID;
-	int32 mState;
+    World* mWorld;
+    int32 mNodeID;
+    int32 mGroupID;
+    int32 mPrevNodeID;
+    int32 mNextNodeID;
+    int32 mIsGroup;
+    int32 mHeadID;
+    int32 mTailID;
+    int32 mState;
 
-	void Perform();
+    void Perform();
 };
 
 struct DeleteGraphDefMsg {
-	struct GraphDef* mDef;
+    struct GraphDef* mDef;
 
-	void Perform();
+    void Perform();
 };
 
 
@@ -94,51 +94,47 @@ typedef std::map<struct ReplyAddress, uint32> ClientIDDict;
 typedef std::deque<int> ClientIDs;
 typedef std::set<ReplyAddress> Clients;
 
-struct HiddenWorld
-{
-	class AllocPool *mAllocPool;
-	IntHashTable<struct Node, AllocPool> *mNodeLib;
-	GrafDefTable *mGraphDefLib;
-	uint32 mMaxUsers;
-	Clients *mUsers;
-	ClientIDs *mAvailableClientIDs;
-	ClientIDDict *mClientIDdict;
+struct HiddenWorld {
+    class AllocPool* mAllocPool;
+    IntHashTable<struct Node, AllocPool>* mNodeLib;
+    GrafDefTable* mGraphDefLib;
+    uint32 mMaxUsers;
+    Clients* mUsers;
+    ClientIDs* mAvailableClientIDs;
+    ClientIDDict* mClientIDdict;
 
-	class SC_AudioDriver *mAudioDriver;
-	char mPassword[32];
+    class SC_AudioDriver* mAudioDriver;
+    char mPassword[32];
 
-	uint32 mMaxWireBufs;
-	float *mWireBufSpace;
+    uint32 mMaxWireBufs;
+    float* mWireBufSpace;
 
-	TriggersFifo mTriggers;
-	NodeReplyFifo mNodeMsgs;
-	NodeEndsFifo mNodeEnds;
-	DeleteGraphDefsFifo mDeleteGraphDefs;
+    TriggersFifo mTriggers;
+    NodeReplyFifo mNodeMsgs;
+    NodeEndsFifo mNodeEnds;
+    DeleteGraphDefsFifo mDeleteGraphDefs;
 
-	boost::sync::semaphore * mQuitProgram;
-	bool mTerminating;
+    boost::sync::semaphore* mQuitProgram;
+    bool mTerminating;
 
 #ifndef NO_LIBSNDFILE
-	SNDFILE *mNRTInputFile;
-	SNDFILE *mNRTOutputFile;
-	FILE *mNRTCmdFile;
+    SNDFILE* mNRTInputFile;
+    SNDFILE* mNRTOutputFile;
+    FILE* mNRTCmdFile;
 #endif
 
-	int32 mHiddenID;
-	int32 mRecentID;
+    int32 mHiddenID;
+    int32 mRecentID;
 
 #ifdef __APPLE__
-	const char* mInputStreamsEnabled;
-	const char* mOutputStreamsEnabled;
+    const char* mInputStreamsEnabled;
+    const char* mOutputStreamsEnabled;
 #endif
-	const char *mInDeviceName;
-	const char *mOutDeviceName;
-	class server_shared_memory_creator * mShmem;
+    const char* mInDeviceName;
+    const char* mOutDeviceName;
+    class server_shared_memory_creator* mShmem;
 };
 
 typedef struct HiddenWorld HiddenWorld;
 
-inline SC_AudioDriver *AudioDriver(World *inWorld)
-{
-	return inWorld->hw->mAudioDriver;
-}
+inline SC_AudioDriver* AudioDriver(World* inWorld) { return inWorld->hw->mAudioDriver; }

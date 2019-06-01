@@ -20,5 +20,5 @@
 
 #include <boost/config.hpp>
 
-#define likely(x)   BOOST_LIKELY(x)
+#define likely(x) BOOST_LIKELY(x)
 #define unlikely(x) BOOST_UNLIKELY(x)

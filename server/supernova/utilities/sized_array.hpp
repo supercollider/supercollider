@@ -20,7 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
-#include <memory>               /* std::allocator */
+#include <memory> /* std::allocator */
 #include <type_traits>
 
 #include <boost/mpl/if.hpp>
@@ -37,49 +37,41 @@ namespace nova {
  *  functions are called.
  *
  * */
-template<typename T,
-         class Alloc = std::allocator<T> >
-class sized_array:
-    private Alloc::template rebind<T>::other
-{
+template <typename T, class Alloc = std::allocator<T>> class sized_array : private Alloc::template rebind<T>::other {
     typedef typename Alloc::template rebind<T>::other Allocator;
 
 public:
     // types
-    typedef T                                     value_type;
-    typedef T*                                    iterator;
-    typedef const T*                              const_iterator;
-    typedef std::reverse_iterator<iterator>       reverse_iterator;
+    typedef T value_type;
+    typedef T* iterator;
+    typedef const T* const_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-    typedef T&                                    reference;
-    typedef const T&                              const_reference;
-    typedef std::size_t                           size_type;
-    typedef std::ptrdiff_t                        difference_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef std::size_t size_type;
+    typedef std::ptrdiff_t difference_type;
 
     // construct/copy/destruct
-    explicit sized_array(size_type size = 0, T const & def = T()):
-        data_( size ? Allocator::allocate(size) : nullptr), size_(size)
-    {
+    explicit sized_array(size_type size = 0, T const& def = T()):
+        data_(size ? Allocator::allocate(size) : nullptr),
+        size_(size) {
         for (size_type i = 0; i != size; ++i)
             Allocator::construct(data_ + i, def);
     }
 
-    sized_array(sized_array & arg) = delete;
-    sized_array & operator=(sized_array & arg) = delete;
+    sized_array(sized_array& arg) = delete;
+    sized_array& operator=(sized_array& arg) = delete;
 
 private:
-    template <typename int_type>
-    void init_from_int(int_type size)
-    {
+    template <typename int_type> void init_from_int(int_type size) {
         data_ = Allocator::allocate(size);
         size_ = size;
         for (size_type i = 0; i != size_; ++i)
             Alloc::construct(data_ + i, T());
     }
 
-    template <typename Container>
-    void init_from_container(Container const & container)
-    {
+    template <typename Container> void init_from_container(Container const& container) {
         data_ = Allocator::allocate(container.size());
         size_ = container.size();
 
@@ -90,36 +82,26 @@ private:
         assert(index == size());
     }
 
-    struct call_int_ctor
-    {
-        template <typename int_type>
-        static void init(sized_array & array, int_type const & i)
-        {
+    struct call_int_ctor {
+        template <typename int_type> static void init(sized_array& array, int_type const& i) {
             array.init_from_int<int_type>(i);
         }
     };
 
-    struct call_container_ctor
-    {
-        template <typename Container>
-        static void init(sized_array & array, Container const & c)
-        {
+    struct call_container_ctor {
+        template <typename Container> static void init(sized_array& array, Container const& c) {
             array.init_from_container<Container>(c);
         }
     };
 
 public:
-    template<typename Constructor_arg>
-    explicit sized_array(Constructor_arg const & arg)
-    {
-        typedef typename boost::mpl::if_<std::is_integral<Constructor_arg>,
-                                         call_int_ctor,
-                                         call_container_ctor>::type ctor;
+    template <typename Constructor_arg> explicit sized_array(Constructor_arg const& arg) {
+        typedef
+            typename boost::mpl::if_<std::is_integral<Constructor_arg>, call_int_ctor, call_container_ctor>::type ctor;
         ctor::init(*this, arg);
     }
 
-    explicit sized_array(sized_array && arg)
-    {
+    explicit sized_array(sized_array&& arg) {
         data_ = arg.data_;
         size_ = arg.size();
         arg.data_ = 0;
@@ -127,8 +109,7 @@ public:
     }
 
     /** move assignment */
-    sized_array & operator=(sized_array && arg)
-    {
+    sized_array& operator=(sized_array&& arg) {
         data_ = arg.data_;
         size_ = arg.size();
         arg.data_ = 0;
@@ -136,8 +117,7 @@ public:
         return *this;
     }
 
-    ~sized_array(void)
-    {
+    ~sized_array(void) {
         for (size_type i = 0; i != size(); ++i)
             Allocator::destroy(data_ + i);
         if (size())
@@ -145,145 +125,88 @@ public:
     }
 
     // iterator support
-    iterator begin()
-    {
-        return data_;
-    }
+    iterator begin() { return data_; }
 
-    const_iterator begin() const
-    {
-        return data_;
-    }
+    const_iterator begin() const { return data_; }
 
-    iterator end()
-    {
-        return data_ + size();
-    }
+    iterator end() { return data_ + size(); }
 
-    const_iterator end() const
-    {
-        return data_ + size();
-    }
+    const_iterator end() const { return data_ + size(); }
 
     // reverse iterator support
-    reverse_iterator rbegin()
-    {
-        return reverse_iterator(data_ + size());
-    }
+    reverse_iterator rbegin() { return reverse_iterator(data_ + size()); }
 
-    const_reverse_iterator rbegin() const
-    {
-        return const_reverse_iterator(data_ + size());
-    }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(data_ + size()); }
 
-    reverse_iterator rend()
-    {
-        return reverse_iterator(data_);
-    }
+    reverse_iterator rend() { return reverse_iterator(data_); }
 
-    const_reverse_iterator rend() const
-    {
-        return const_reverse_iterator(data_);
-    }
+    const_reverse_iterator rend() const { return const_reverse_iterator(data_); }
 
     // capacity
-    size_type size() const
-    {
-        return size_;
-    }
+    size_type size() const { return size_; }
 
-    bool empty() const
-    {
-        return size_ == 0;
-    }
+    bool empty() const { return size_ == 0; }
 
-    size_type max_size() const
-    {
-        return size_;
-    }
+    size_type max_size() const { return size_; }
 
     // element access
-    reference operator[](size_type i)
-    {
+    reference operator[](size_type i) {
         assert(i < size());
         return data_[i];
     }
 
-    const_reference operator[](size_type i) const
-    {
+    const_reference operator[](size_type i) const {
         assert(i < size());
         return data_[i];
     }
 
-    reference at(size_type i)
-    {
+    reference at(size_type i) {
         assert(i < size());
         return data_[i];
     }
 
-    const_reference at(size_type i) const
-    {
+    const_reference at(size_type i) const {
         assert(i < size());
         return data_[i];
     }
 
-    reference front()
-    {
-        return data_[0];
-    }
+    reference front() { return data_[0]; }
 
-    const_reference front() const
-    {
-        return data_[0];
-    }
+    const_reference front() const { return data_[0]; }
 
-    reference back()
-    {
-        return data_[size_ - 1];
-    }
+    reference back() { return data_[size_ - 1]; }
 
-    const_reference back() const
-    {
-        return data_[size_ - 1];
-    }
+    const_reference back() const { return data_[size_ - 1]; }
 
-    const T* data() const
-    {
-        return data_;
-    }
+    const T* data() const { return data_; }
 
-    T* c_array()
-    {
-        return data_;
-    }
+    T* c_array() { return data_; }
 
     // modifiers
-    void assign(const T& t)
-    {
+    void assign(const T& t) {
         for (size_type i = 0; i != size_; ++i)
             data_[i] = t;
     }
 
-    void resize(size_type new_size, T const & t = T())
-    {
-        T * new_data = Allocator::allocate(new_size);
+    void resize(size_type new_size, T const& t = T()) {
+        T* new_data = Allocator::allocate(new_size);
 
         for (size_type i = 0; i != new_size; ++i)
-            Allocator::construct(new_data+i, t);
+            Allocator::construct(new_data + i, t);
 
-        std::copy(data_, data_+(std::min)(new_size, size_), new_data);
+        std::copy(data_, data_ + (std::min)(new_size, size_), new_data);
 
-        T * old_data = data_;
+        T* old_data = data_;
         data_ = new_data;
         for (size_type i = 0; i != size_; ++i)
-            Allocator::destroy(old_data+i);
+            Allocator::destroy(old_data + i);
         if (size_)
             Allocator::deallocate(old_data, size_);
         size_ = new_size;
     }
 
 private:
-    T * data_;
+    T* data_;
     size_type size_;
 };
 

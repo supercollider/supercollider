@@ -55,22 +55,19 @@
 
 namespace ScIDE {
 
-WebSocketTransport::WebSocketTransport(QWebSocket *socket)
-        : QWebChannelAbstractTransport(socket), m_socket(socket) {
+WebSocketTransport::WebSocketTransport(QWebSocket* socket): QWebChannelAbstractTransport(socket), m_socket(socket) {
     connect(socket, &QWebSocket::textMessageReceived, this, &WebSocketTransport::textMessageReceived);
     connect(socket, &QWebSocket::disconnected, this, &WebSocketTransport::deleteLater);
 }
 
-WebSocketTransport::~WebSocketTransport() {
-    m_socket->deleteLater();
-}
+WebSocketTransport::~WebSocketTransport() { m_socket->deleteLater(); }
 
-void WebSocketTransport::sendMessage(const QJsonObject &message) {
+void WebSocketTransport::sendMessage(const QJsonObject& message) {
     QJsonDocument doc(message);
     m_socket->sendTextMessage(QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
 }
 
-void WebSocketTransport::textMessageReceived(const QString &messageData) {
+void WebSocketTransport::textMessageReceived(const QString& messageData) {
     QJsonParseError error;
     QJsonDocument message = QJsonDocument::fromJson(messageData.toUtf8(), &error);
     if (error.error) {

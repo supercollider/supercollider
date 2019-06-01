@@ -25,105 +25,86 @@
 #include <stdexcept>
 
 #ifdef _WIN32
-# define vsnprintf _vsnprintf
-# include <stdio.h>
-# include <stdarg.h>
+#    define vsnprintf _vsnprintf
+#    include <stdio.h>
+#    include <stdarg.h>
 #endif
 
 #include <string>
 
-SC_StringBuffer::SC_StringBuffer(size_t initialSize)
-	: mCapacity(0), mPtr(0), mData(0)
-{
-	growBy(initialSize);
+SC_StringBuffer::SC_StringBuffer(size_t initialSize): mCapacity(0), mPtr(0), mData(0) { growBy(initialSize); }
+
+SC_StringBuffer::SC_StringBuffer(const SC_StringBuffer& other): mCapacity(0), mPtr(0), mData(0) {
+    growBy(other.getSize());
+    append(other.getData(), other.getSize());
 }
 
-SC_StringBuffer::SC_StringBuffer(const SC_StringBuffer& other)
-	: mCapacity(0), mPtr(0), mData(0)
-{
-	growBy(other.getSize());
-	append(other.getData(), other.getSize());
+SC_StringBuffer::~SC_StringBuffer() { free(mData); }
+
+void SC_StringBuffer::append(const char* src, size_t size) {
+    if (size > 0) {
+        size_t remaining = getRemaining();
+        if (size > remaining) {
+            growBy(size - remaining);
+        }
+        memcpy(mPtr, src, size);
+        mPtr += size;
+    }
 }
 
-SC_StringBuffer::~SC_StringBuffer()
-{
-	free(mData);
-}
+void SC_StringBuffer::append(char c) { append(&c, sizeof(c)); }
 
-void SC_StringBuffer::append(const char* src, size_t size)
-{
-	if (size > 0) {
-		size_t remaining = getRemaining();
-		if (size > remaining) {
-			growBy(size - remaining);
-		}
-		memcpy(mPtr, src, size);
-		mPtr += size;
-	}
-}
+void SC_StringBuffer::append(const char* str) { append(str, strlen(str)); }
 
-void SC_StringBuffer::append(char c)
-{
-	append(&c, sizeof(c));
-}
+void SC_StringBuffer::vappendf(const char* fmt, va_list ap) {
+    va_list ap2;
+    size_t remaining = getRemaining();
 
-void SC_StringBuffer::append(const char* str)
-{
-	append(str, strlen(str));
-}
-
-void SC_StringBuffer::vappendf(const char* fmt, va_list ap)
-{
-	va_list ap2;
-	size_t remaining = getRemaining();
-
-	// Calling vsnprintf may invalidate vargs, so keep a copy
+    // Calling vsnprintf may invalidate vargs, so keep a copy
 #ifdef __va_copy
-	__va_copy(ap2, ap);
+    __va_copy(ap2, ap);
 #else
-	ap2 = ap;
+    ap2 = ap;
 #endif
 
-	// NOTE: This only works since glibc 2.0.6!
-	int size = vsnprintf(mPtr, remaining, fmt, ap);
-	va_end(ap);
+    // NOTE: This only works since glibc 2.0.6!
+    int size = vsnprintf(mPtr, remaining, fmt, ap);
+    va_end(ap);
 
-	// size returned excludes trailing \0
-	if (size++ > 0) {
-		if ((size_t)size > remaining) {
-			growBy(size - remaining);
-			vsnprintf(mPtr, size, fmt, ap2);
-		}
-		mPtr += size-1; // omit trailing \0
-	}
+    // size returned excludes trailing \0
+    if (size++ > 0) {
+        if ((size_t)size > remaining) {
+            growBy(size - remaining);
+            vsnprintf(mPtr, size, fmt, ap2);
+        }
+        mPtr += size - 1; // omit trailing \0
+    }
 
-	va_end(ap2);
+    va_end(ap2);
 }
 
-void SC_StringBuffer::appendf(const char* fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	vappendf(fmt, ap);
-	va_end(ap);
+void SC_StringBuffer::appendf(const char* fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vappendf(fmt, ap);
+    va_end(ap);
 }
 
-void SC_StringBuffer::growBy(size_t request)
-{
-	size_t oldSize = getSize();
-	size_t newCapacity = mCapacity + ((request + (size_t)kGrowAlign) & (size_t)~kGrowMask);
+void SC_StringBuffer::growBy(size_t request) {
+    size_t oldSize = getSize();
+    size_t newCapacity = mCapacity + ((request + (size_t)kGrowAlign) & (size_t)~kGrowMask);
 
-// 	fprintf(stderr, "%s: mCapacity %u, request %u, newCapacity %u\n",
-// 			__PRETTY_FUNCTION__, mCapacity, request, newCapacity);
-	assert((newCapacity >= (mCapacity + request)) && ((newCapacity & kGrowMask) == 0));
+    // 	fprintf(stderr, "%s: mCapacity %u, request %u, newCapacity %u\n",
+    // 			__PRETTY_FUNCTION__, mCapacity, request, newCapacity);
+    assert((newCapacity >= (mCapacity + request)) && ((newCapacity & kGrowMask) == 0));
 
-	char* newData = (char*)realloc(mData, newCapacity);
-	if (newData) {
-		mData = newData;
-		mCapacity = newCapacity;
-		mPtr = mData + oldSize;
-	} else
-		throw std::runtime_error(std::string("SC_StringBuffer: memory allocation failure"));
+    char* newData = (char*)realloc(mData, newCapacity);
+    if (newData) {
+        mData = newData;
+        mCapacity = newCapacity;
+        mPtr = mData + oldSize;
+    } else
+        throw std::runtime_error(std::string("SC_StringBuffer: memory allocation failure"));
 }
 
 // EOF

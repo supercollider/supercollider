@@ -1,6 +1,6 @@
 /*
  * QtDownload.h
- *  
+ *
  *
  * Copyright 2013 Scott Wilson.
  *
@@ -29,34 +29,34 @@
 
 class QtDownload : public QObject {
     Q_OBJECT
-	Q_PROPERTY( QString source READ source WRITE setSource );
-	Q_PROPERTY( QString destination READ destination WRITE setDestination );
+    Q_PROPERTY(QString source READ source WRITE setSource);
+    Q_PROPERTY(QString destination READ destination WRITE setDestination);
 
 public:
     explicit QtDownload();
     ~QtDownload();
-	
+
     void setSource(const QString& t);
-	void setDestination(const QString& l);
+    void setDestination(const QString& l);
     QString source() { return m_target; }
-    QString destination() {return m_local; }
-	Q_INVOKABLE void cancel();
-	Q_INVOKABLE void download();
-	
+    QString destination() { return m_local; }
+    Q_INVOKABLE void cancel();
+    Q_INVOKABLE void download();
+
 Q_SIGNALS:
-	void doFinished();
-	void doError();
-	void doProgress(int, int);
-	
+    void doFinished();
+    void doError();
+    void doProgress(int, int);
+
 private:
-	QNetworkAccessManager *m_manager;
-	QString m_target;
-	QString m_local;
-	QNetworkReply* m_reply;
-	bool started;
-	
+    QNetworkAccessManager* m_manager;
+    QString m_target;
+    QString m_local;
+    QNetworkReply* m_reply;
+    bool started;
+
 public Q_SLOTS:
-	void downloadFinished();
+    void downloadFinished();
     void downloadProgress(qint64 recieved, qint64 total);
-	void replyError(QNetworkReply::NetworkError errorCode);
+    void replyError(QNetworkReply::NetworkError errorCode);
 };

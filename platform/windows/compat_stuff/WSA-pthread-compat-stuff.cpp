@@ -2,17 +2,9 @@
 
 #include <Winsock2.h>
 
-extern "C" 
-{
+extern "C" {
 
-  int WSAGetLastError_Compat()
-  {
-    return WSAGetLastError( );
-  }
+int WSAGetLastError_Compat() { return WSAGetLastError(); }
 
-  void WSASetLastError_Compat(int a)
-  {
-    WSASetLastError(a);
-  }
-
+void WSASetLastError_Compat(int a) { WSASetLastError(a); }
 }
