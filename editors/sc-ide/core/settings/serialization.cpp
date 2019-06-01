@@ -34,28 +34,26 @@ namespace ScIDE { namespace Settings {
 typedef QSettings::SettingsMap::const_iterator SettingsIterator;
 
 struct IODeviceSource : boost::iostreams::source {
-
-    IODeviceSource ( QIODevice *dev ) : mDev(dev) {}
-    std::streamsize read(char* s, std::streamsize n)
-    {
+    IODeviceSource(QIODevice* dev): mDev(dev) {}
+    std::streamsize read(char* s, std::streamsize n) {
         // Read up to n characters from the input
         // sequence into the buffer s, returning
         // the number of characters read, or -1
         // to indicate end-of-sequence.
 
         qint64 ret = mDev->read(s, n);
-        if( ret == 0 ) ret = -1;
+        if (ret == 0)
+            ret = -1;
         return ret;
     }
 
-    QIODevice *mDev;
+    QIODevice* mDev;
 };
 
-static QVariant parseTextFormat( const YAML::Node & node )
-{
+static QVariant parseTextFormat(const YAML::Node& node) {
     using namespace YAML;
 
-    if(node.Type() != NodeType::Map) {
+    if (node.Type() != NodeType::Map) {
         qWarning("YAML parsing: a node tagged 'textFormat' has wrong type (not a map)");
         return QVariant();
     }
@@ -63,35 +61,35 @@ static QVariant parseTextFormat( const YAML::Node & node )
     std::string val;
     QTextCharFormat fm;
 
-    const Node ncolor = node[ "color" ];
-    if(ncolor && ncolor.IsScalar()) {
+    const Node ncolor = node["color"];
+    if (ncolor && ncolor.IsScalar()) {
         val = ncolor.as<std::string>();
         fm.setForeground(QColor(val.c_str()));
     }
 
-    const Node nbg = node[ "background" ];
-    if(nbg && nbg.IsScalar()) {
+    const Node nbg = node["background"];
+    if (nbg && nbg.IsScalar()) {
         val = nbg.as<std::string>();
         QColor color(val.c_str());
-        if(color.isValid())
+        if (color.isValid())
             fm.setBackground(color);
     }
 
-    const Node nbold = node[ "bold" ];
-    if(nbold && nbold.IsScalar()) {
+    const Node nbold = node["bold"];
+    if (nbold && nbold.IsScalar()) {
         bool bold = nbold.as<bool>();
-        if(bold)
-          fm.setFontWeight(QFont::Bold);
+        if (bold)
+            fm.setFontWeight(QFont::Bold);
     }
 
-    const Node nitalic = node[ "italic" ];
-    if(nitalic && nitalic.IsScalar()) {
+    const Node nitalic = node["italic"];
+    if (nitalic && nitalic.IsScalar()) {
         bool italic = nitalic.as<bool>();
         fm.setFontItalic(italic);
     }
 
-    const Node nunder = node[ "underline" ];
-    if(nunder && nunder.IsScalar()) {
+    const Node nunder = node["underline"];
+    if (nunder && nunder.IsScalar()) {
         bool underline = nunder.as<bool>();
         fm.setFontUnderline(underline);
     }
@@ -99,35 +97,30 @@ static QVariant parseTextFormat( const YAML::Node & node )
     return QVariant::fromValue<QTextCharFormat>(fm);
 }
 
-static QVariant parseScalar( const YAML::Node & node )
-{
+static QVariant parseScalar(const YAML::Node& node) {
     using namespace YAML;
 
     switch (node.Type()) {
-
-    case NodeType::Scalar:
-    {
+    case NodeType::Scalar: {
         std::string val = node.as<std::string>();
-        return QVariant( QString::fromUtf8(val.c_str()) );
+        return QVariant(QString::fromUtf8(val.c_str()));
     }
 
-    case NodeType::Sequence:
-    {
+    case NodeType::Sequence: {
         QVariantList list;
-        for( auto const & element : node )
-            list.append( parseScalar( element ) );
-        return QVariant::fromValue<QVariantList>( list );
+        for (auto const& element : node)
+            list.append(parseScalar(element));
+        return QVariant::fromValue<QVariantList>(list);
     }
 
-    case NodeType::Map:
-    {
+    case NodeType::Map: {
         QVariantMap map;
-        for( auto const & element : node ) {
+        for (auto const& element : node) {
             std::string key = element.first.as<std::string>();
-            QVariant value = parseScalar( element.second );
-            map.insert( QString(key.c_str()), value );
+            QVariant value = parseScalar(element.second);
+            map.insert(QString(key.c_str()), value);
         }
-        return QVariant::fromValue<QVariantMap>( map );
+        return QVariant::fromValue<QVariantMap>(map);
     }
 
     case NodeType::Null:
@@ -139,8 +132,7 @@ static QVariant parseScalar( const YAML::Node & node )
     }
 }
 
-static void parseNode( const YAML::Node &node, const QString &parentKey, QSettings::SettingsMap &map )
-{
+static void parseNode(const YAML::Node& node, const QString& parentKey, QSettings::SettingsMap& map) {
     using namespace YAML;
 
     static const std::string textFormatTag("!textFormat");
@@ -148,48 +140,46 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
     static const std::string qVariantMapTag("!QVariantMap");
 
     Q_ASSERT(node.Type() == NodeType::Map);
-    for( auto const & element : node) {
+    for (auto const& element : node) {
         std::string key = element.first.as<std::string>();
-        QString childKey( parentKey );
-        if (!childKey.isEmpty()) childKey += "/";
+        QString childKey(parentKey);
+        if (!childKey.isEmpty())
+            childKey += "/";
         childKey += key.c_str();
 
-        const YAML::Node & childNode = element.second;
-        const std::string & childTag = childNode.Tag();
+        const YAML::Node& childNode = element.second;
+        const std::string& childTag = childNode.Tag();
 
         if (childTag == textFormatTag)
-            map.insert( childKey, parseTextFormat(childNode) );
+            map.insert(childKey, parseTextFormat(childNode));
         else if (childTag == qVariantListTag || childTag == qVariantMapTag || childNode.Type() != NodeType::Map)
-            map.insert( childKey, parseScalar( childNode ) );
+            map.insert(childKey, parseScalar(childNode));
         else if (childNode.Type() == NodeType::Map)
-            parseNode( childNode, childKey, map );
+            parseNode(childNode, childKey, map);
     }
 }
 
-bool readSettings(QIODevice &device, QSettings::SettingsMap &map)
-{
+bool readSettings(QIODevice& device, QSettings::SettingsMap& map) {
     using namespace YAML;
 
     try {
-        boost::iostreams::stream<IODeviceSource> in( &device );
-        Node doc = Load( in );
-        if( doc ) {
-            if( doc.IsMap() ) {
+        boost::iostreams::stream<IODeviceSource> in(&device);
+        Node doc = Load(in);
+        if (doc) {
+            if (doc.IsMap()) {
                 QString key;
-                parseNode( doc, key, map );
+                parseNode(doc, key, map);
             }
         }
 
         return true;
-    }
-    catch (std::exception & e) {
+    } catch (std::exception& e) {
         qWarning() << "Exception when parsing YAML config file:" << e.what();
         return false;
     }
 }
 
-static void writeTextFormat( const QTextCharFormat &fm, YAML::Emitter &out )
-{
+static void writeTextFormat(const QTextCharFormat& fm, YAML::Emitter& out) {
     out << YAML::LocalTag("textFormat");
     out << YAML::BeginMap;
 
@@ -222,89 +212,77 @@ static void writeTextFormat( const QTextCharFormat &fm, YAML::Emitter &out )
     out << YAML::EndMap;
 }
 
-static void writeValue( const QVariant &var, YAML::Emitter &out )
-{
-    switch(var.type()) {
-    case QVariant::Invalid:
-    {
+static void writeValue(const QVariant& var, YAML::Emitter& out) {
+    switch (var.type()) {
+    case QVariant::Invalid: {
         out << YAML::Null;
         break;
     }
-    case QVariant::KeySequence:
-    {
+    case QVariant::KeySequence: {
         QKeySequence kseq = var.value<QKeySequence>();
 
-        out << kseq.toString( QKeySequence::PortableText ).toUtf8().constData();
+        out << kseq.toString(QKeySequence::PortableText).toUtf8().constData();
 
         break;
     }
-    case QVariant::List:
-    {
+    case QVariant::List: {
         out << YAML::LocalTag("QVariantList") << YAML::BeginSeq;
 
         QVariantList list = var.value<QVariantList>();
-        foreach (const QVariant & var, list)
-            writeValue( var, out );
+        foreach (const QVariant& var, list)
+            writeValue(var, out);
 
         out << YAML::EndSeq;
 
         break;
     }
-    case QVariant::Map:
-    {
+    case QVariant::Map: {
         out << YAML::LocalTag("QVariantMap") << YAML::BeginMap;
 
         QVariantMap map = var.value<QVariantMap>();
         QVariantMap::iterator it;
-        for (it = map.begin(); it != map.end(); ++it)
-        {
+        for (it = map.begin(); it != map.end(); ++it) {
             out << YAML::Key << it.key().toStdString();
             out << YAML::Value;
-            writeValue( it.value(), out );
+            writeValue(it.value(), out);
         }
 
         out << YAML::EndMap;
 
         break;
     }
-    case QVariant::UserType:
-    {
+    case QVariant::UserType: {
         int utype = var.userType();
 
-        if (utype == qMetaTypeId<QTextCharFormat>())
-        {
-            writeTextFormat( var.value<QTextCharFormat>(), out );
-        }
-        else
-        {
+        if (utype == qMetaTypeId<QTextCharFormat>()) {
+            writeTextFormat(var.value<QTextCharFormat>(), out);
+        } else {
             out << var.toString().toUtf8().constData();
         }
         break;
     }
-    default:
-    {
+    default: {
         out << var.toString().toUtf8().constData();
     }
     }
 }
 
-static void writeGroup( const QString &groupKey, YAML::Emitter &out,
-                        SettingsIterator &it, const QSettings::SettingsMap &map )
-{
+static void writeGroup(const QString& groupKey, YAML::Emitter& out, SettingsIterator& it,
+                       const QSettings::SettingsMap& map) {
     out << YAML::BeginMap;
 
     int groupKeyLen = groupKey.size();
 
-    while(it != map.end())
-    {
-        QString key( it.key() );
+    while (it != map.end()) {
+        QString key(it.key());
 
-        if (!key.startsWith(groupKey)) break;
+        if (!key.startsWith(groupKey))
+            break;
 
         int i_separ = key.indexOf("/", groupKeyLen);
         if (i_separ != -1) {
             // There is child nodes
-            key.truncate( i_separ + 1 );
+            key.truncate(i_separ + 1);
 
             QString yamlKey(key);
             yamlKey.remove(0, groupKeyLen);
@@ -313,17 +291,15 @@ static void writeGroup( const QString &groupKey, YAML::Emitter &out,
             out << YAML::Key << yamlKey.toStdString();
             out << YAML::Value;
 
-            writeGroup( key, out, it, map );
-        }
-        else
-        {
+            writeGroup(key, out, it, map);
+        } else {
             // There is no child nodes
             key.remove(0, groupKeyLen);
 
             out << YAML::Key << key.toStdString();
             out << YAML::Value;
 
-            writeValue( it.value(), out );
+            writeValue(it.value(), out);
 
             ++it;
         }
@@ -332,39 +308,35 @@ static void writeGroup( const QString &groupKey, YAML::Emitter &out,
     out << YAML::EndMap;
 }
 
-bool writeSettings(QIODevice &device, const QSettings::SettingsMap &map)
-{
+bool writeSettings(QIODevice& device, const QSettings::SettingsMap& map) {
     try {
         YAML::Emitter out;
         SettingsIterator it = map.begin();
-        writeGroup( "", out, it, map );
+        writeGroup("", out, it, map);
         device.write(out.c_str());
         return true;
-    }
-    catch (std::exception & e) {
+    } catch (std::exception& e) {
         qWarning() << "Exception when writing YAML config file:" << e.what();
         return false;
     }
 }
 
 QSettings::Format serializationFormat() {
-    static QSettings::Format format =
-        QSettings::registerFormat( "yaml", readSettings, writeSettings );
+    static QSettings::Format format = QSettings::registerFormat("yaml", readSettings, writeSettings);
 
-    if( format == QSettings::InvalidFormat )
+    if (format == QSettings::InvalidFormat)
         qWarning("Could not register settings format");
 
     return format;
 }
 
-void printSettings (const QSettings * settings)
-{
+void printSettings(const QSettings* settings) {
     using namespace std;
 
     cout << "config filename: " << settings->fileName().toStdString() << endl;
     QStringList keys = settings->allKeys();
     cout << "num keys: " << keys.count() << endl;
-    Q_FOREACH( QString key, keys ) {
+    Q_FOREACH (QString key, keys) {
         QVariant var = settings->value(key);
         if (var.type() == QVariant::Invalid)
             cout << key.toStdString() << ": <null>" << endl;

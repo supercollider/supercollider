@@ -32,11 +32,12 @@ namespace ScIDE {
 
 class ScProcess;
 class VolumeWidget;
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 
 
-class ScServer : public QObject
-{
+class ScServer : public QObject {
     Q_OBJECT
 
 public:
@@ -64,23 +65,23 @@ public:
         ActionCount
     };
 
-    ScServer(ScProcess *scLang, Settings::Manager * settings, QObject * parent);
+    ScServer(ScProcess* scLang, Settings::Manager* settings, QObject* parent);
 
     bool isRunning() { return mPort != 0; }
 
-    QAction *action(ActionRole role) { return mActions[role]; }
+    QAction* action(ActionRole role) { return mActions[role]; }
 
-    Q_PROPERTY( float volume READ volume WRITE setVolume NOTIFY volumeChanged )
+    Q_PROPERTY(float volume READ volume WRITE setVolume NOTIFY volumeChanged)
 
     float volume() const;
-    void setVolume( float volume );
-    void setVolumeRange( float min, float max );
+    void setVolume(float volume);
+    void setVolumeRange(float min, float max);
 
     bool isMuted() const;
-    void setMuted( bool muted );
+    void setMuted(bool muted);
 
     bool isDumpingOSC() const;
-    void setDumpingOSC( bool dumping );
+    void setDumpingOSC(bool dumping);
 
     bool isRecording() const;
     bool isPaused() const;
@@ -106,75 +107,70 @@ public slots:
     void restoreVolume();
     void mute() { setMuted(true); }
     void unmute() { setMuted(false); }
-    void sendRecording( bool active );
-    void setRecording( bool active );
-    void pauseRecording( bool flag );
+    void sendRecording(bool active);
+    void setRecording(bool active);
+    void pauseRecording(bool flag);
 
 signals:
-	void runningStateChanged( bool running, QString const & hostName, int port, bool unresponsive );
-	void updateServerStatus (int ugenCount, int synthCount,
-                             int groupCount, int defCount,
-                             float avgCPU, float peakCPU);
-    void volumeChanged( float volume );
-    void volumeRangeChanged( float min, float max);
-    void mutedChanged( bool muted );
-    void recordingChanged( bool recording );
-    void pauseChanged( bool paused );
+    void runningStateChanged(bool running, QString const& hostName, int port, bool unresponsive);
+    void updateServerStatus(int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
+    void volumeChanged(float volume);
+    void volumeRangeChanged(float min, float max);
+    void mutedChanged(bool muted);
+    void recordingChanged(bool recording);
+    void pauseChanged(bool paused);
 
 
 private slots:
-    void onScLangStateChanged( QProcess::ProcessState );
-    void onScLangReponse( const QString & selector, const QString & data );
+    void onScLangStateChanged(QProcess::ProcessState);
+    void onScLangReponse(const QString& selector, const QString& data);
     void onServerDataArrived();
     void updateToggleRunningAction();
     void updateRecordingAction();
     void updateEnabledActions();
-    void sendMuted( bool muted );
-    void sendVolume( float volume );
-    void sendDumpingOSC( bool dumping );
+    void sendMuted(bool muted);
+    void sendVolume(float volume);
+    void sendDumpingOSC(bool dumping);
 
 protected:
-    virtual void timerEvent(QTimerEvent * event);
+    virtual void timerEvent(QTimerEvent* event);
 
 private:
-    void createActions( Settings::Manager * );
-    void handleRuningStateChangedMsg( const QString & data );
-    void onRunningStateChanged( bool running, QString const & hostName, int port );
+    void createActions(Settings::Manager*);
+    void handleRuningStateChangedMsg(const QString& data);
+    void onRunningStateChanged(bool running, QString const& hostName, int port);
 
-    void processServerStatusMessage( const osc::ReceivedMessage & );
+    void processServerStatusMessage(const osc::ReceivedMessage&);
 
-    void processOscMessage( const osc::ReceivedMessage & );
+    void processOscMessage(const osc::ReceivedMessage&);
 
-    void processOscPacket( const osc::ReceivedPacket & packet )
-    {
+    void processOscPacket(const osc::ReceivedPacket& packet) {
         if (packet.IsMessage())
-            processOscMessage( osc::ReceivedMessage(packet) );
+            processOscMessage(osc::ReceivedMessage(packet));
         else
-            processOscBundle( osc::ReceivedBundle(packet) );
+            processOscBundle(osc::ReceivedBundle(packet));
     }
 
-    void processOscBundle( const osc::ReceivedBundle & bundle )
-    {
-        for (auto iter = bundle.ElementsBegin(); iter != bundle.ElementsEnd(); ++iter)
-        {
-            const osc::ReceivedBundleElement & element = *iter;
+    void processOscBundle(const osc::ReceivedBundle& bundle) {
+        for (auto iter = bundle.ElementsBegin(); iter != bundle.ElementsEnd(); ++iter) {
+            const osc::ReceivedBundleElement& element = *iter;
             if (element.IsMessage())
-                processOscMessage( osc::ReceivedMessage(element) );
+                processOscMessage(osc::ReceivedMessage(element));
             else
-                processOscBundle( osc::ReceivedBundle(element) );
+                processOscBundle(osc::ReceivedBundle(element));
         }
     }
 
-    ScProcess *mLang;
+    ScProcess* mLang;
 
-    QUdpSocket * mUdpSocket;
+    QUdpSocket* mUdpSocket;
     QHostAddress mServerAddress;
     int mPort;
 
-    QAction * mActions[ActionCount];
+    QAction* mActions[ActionCount];
 
     float mVolume = 0, mVolumeMin = -90, mVolumeMax = 6;
-    VolumeWidget *mVolumeWidget;
+    VolumeWidget* mVolumeWidget;
     int mRecordingSeconds;
     bool mIsRecording;
     bool mIsRecordingPaused;

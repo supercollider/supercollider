@@ -27,8 +27,7 @@
 namespace ScIDE {
 
 // match words, environment variable and symbols
-inline QString tokenInStringAt( int position, const QString & source )
-{
+inline QString tokenInStringAt(int position, const QString& source) {
     const QRegExp wordRegexp("(~?|\\\\?)\\w+");
 
     int offset = 0;
@@ -45,14 +44,13 @@ inline QString tokenInStringAt( int position, const QString & source )
     return QString();
 }
 
-inline void extendSelectionForEnvVar(QPlainTextEdit * textEdit, QTextCursor selection)
-{
+inline void extendSelectionForEnvVar(QPlainTextEdit* textEdit, QTextCursor selection) {
     if (selection.hasSelection()) {
         if (selection.selectedText() == QStringLiteral("~")) {
             QTextCursor wordAfter(selection);
             wordAfter.movePosition(QTextCursor::NextCharacter);
             wordAfter.select(QTextCursor::WordUnderCursor);
-            if ( wordAfter.hasSelection() && (selection.block() == wordAfter.block()) ) {
+            if (wordAfter.hasSelection() && (selection.block() == wordAfter.block())) {
                 selection.setPosition(selection.selectionStart());
                 selection.setPosition(wordAfter.selectionEnd(), QTextCursor::KeepAnchor);
                 textEdit->setTextCursor(selection);
@@ -72,6 +70,6 @@ inline void extendSelectionForEnvVar(QPlainTextEdit * textEdit, QTextCursor sele
     }
 }
 
-QRect fittedToScreen( const QRect & rect, QWidget * referenceWidget );
+QRect fittedToScreen(const QRect& rect, QWidget* referenceWidget);
 
 } // namespace ScIDE

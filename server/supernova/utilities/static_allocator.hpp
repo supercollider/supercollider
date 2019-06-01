@@ -18,8 +18,7 @@
 
 #pragma once
 
-extern "C"
-{
+extern "C" {
 #include "tlsf.h"
 }
 
@@ -30,8 +29,7 @@ extern "C"
 #include "nova-tt/spin_lock.hpp"
 #include "nova-tt/dummy_mutex.hpp"
 
-namespace nova
-{
+namespace nova {
 
 /** constant-sized, pooled memory allocator based on TLSF allocator
  *
@@ -40,27 +38,18 @@ namespace nova
  *        to allocate them.
  *
  *  */
-template <class T,
-          std::size_t count,
-          bool blocking = false>
-class static_allocator
-{
+template <class T, std::size_t count, bool blocking = false> class static_allocator {
     static const std::size_t bytes = 2 * count * sizeof(T) + 4096 * 2;
 
-    static_assert(bytes % sizeof(long) == 0,
-                   "static_allocator: bytes not an integer mutiple of sizeof(long)");
+    static_assert(bytes % sizeof(long) == 0, "static_allocator: bytes not an integer mutiple of sizeof(long)");
 
-    static const std::size_t poolsize = bytes/sizeof(long);
+    static const std::size_t poolsize = bytes / sizeof(long);
 
-    typedef typename boost::mpl::if_c<blocking,
-                                      spin_lock,
-                                      dummy_mutex>::type mutex_type;
+    typedef typename boost::mpl::if_c<blocking, spin_lock, dummy_mutex>::type mutex_type;
 
     typedef typename mutex_type::scoped_lock scoped_lock;
 
-    struct data:
-        mutex_type
-    {
+    struct data : mutex_type {
 #if 0
         data(void){}
 
@@ -76,24 +65,20 @@ class static_allocator
 public:
     typedef std::size_t size_type;
     typedef std::ptrdiff_t difference_type;
-    typedef T*        pointer;
-    typedef const T*  const_pointer;
-    typedef T&        reference;
-    typedef const T&  const_reference;
-    typedef T         value_type;
+    typedef T* pointer;
+    typedef const T* const_pointer;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef T value_type;
 
-    template <class U> struct rebind
-    {
-        typedef static_allocator<U, count, blocking> other;
-    };
+    template <class U> struct rebind { typedef static_allocator<U, count, blocking> other; };
 
-    static_allocator(void) throw()
-    {
+    static_allocator(void) throw() {
         data_.pool.assign(0);
         init_memory_pool(bytes, data_.pool.begin());
     }
 
-    static_allocator(static_allocator const & ) = delete;
+    static_allocator(static_allocator const&) = delete;
 
 #if 0
     template <class U, std::size_t bytes_, bool b>
@@ -104,24 +89,13 @@ public:
     }
 #endif
 
-    ~static_allocator() throw()
-    {
-        destroy_memory_pool(data_.pool.begin());
-    }
+    ~static_allocator() throw() { destroy_memory_pool(data_.pool.begin()); }
 
-    pointer address(reference x) const
-    {
-        return &x;
-    }
+    pointer address(reference x) const { return &x; }
 
-    const_pointer address(const_reference x) const
-    {
-        return &x;
-    }
+    const_pointer address(const_reference x) const { return &x; }
 
-    pointer allocate(size_type n,
-                     const_pointer hint = 0)
-    {
+    pointer allocate(size_type n, const_pointer hint = 0) {
         scoped_lock lock(data_);
         pointer ret = static_cast<pointer>(malloc_ex(n * sizeof(T), data_.pool.begin()));
 
@@ -131,41 +105,29 @@ public:
         return ret;
     }
 
-    void deallocate(pointer p, size_type n)
-    {
+    void deallocate(pointer p, size_type n) {
         scoped_lock lock(data_);
         free_ex(p, data_.pool.begin());
     }
 
-    size_type max_size() const throw()
-    {
-        return count;
-    }
+    size_type max_size() const throw() { return count; }
 
-    void construct(pointer p, const T& val)
-    {
-        ::new(p) T(val);
-    }
+    void construct(pointer p, const T& val) { ::new (p) T(val); }
 
-    void destroy(pointer p)
-    {
-        p->~T();
-    }
+    void destroy(pointer p) { p->~T(); }
 
 private:
     data data_;
 };
 
 
-template<typename T, std::size_t ts, bool tb, typename U, std::size_t us, bool ub>
-bool operator==( static_allocator<T, ts, tb> const& left, static_allocator<U, us, ub> const& right )
-{
+template <typename T, std::size_t ts, bool tb, typename U, std::size_t us, bool ub>
+bool operator==(static_allocator<T, ts, tb> const& left, static_allocator<U, us, ub> const& right) {
     return !(left != right);
 }
 
-template<typename T, std::size_t ts, bool tb, typename U, std::size_t us, bool ub>
-bool operator!=( static_allocator<T, ts, tb> const& left, static_allocator<U, us, ub> const& right )
-{
+template <typename T, std::size_t ts, bool tb, typename U, std::size_t us, bool ub>
+bool operator!=(static_allocator<T, ts, tb> const& left, static_allocator<U, us, ub> const& right) {
     return true;
 }
 

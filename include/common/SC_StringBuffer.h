@@ -27,38 +27,34 @@
 // SC_StringBuffer - Autogrowing string buffer.
 // =====================================================================
 
-class SC_StringBuffer
-{
+class SC_StringBuffer {
 public:
-	SC_StringBuffer(size_t initialSize=0);
-	SC_StringBuffer(const SC_StringBuffer& other);
-	~SC_StringBuffer();
+    SC_StringBuffer(size_t initialSize = 0);
+    SC_StringBuffer(const SC_StringBuffer& other);
+    ~SC_StringBuffer();
 
-	size_t getCapacity() const { return mCapacity; }
-	size_t getSize() const { return mPtr - mData; }
-	size_t getRemaining() const { return mCapacity - getSize(); }
-	char* getData() const { return mData; }
+    size_t getCapacity() const { return mCapacity; }
+    size_t getSize() const { return mPtr - mData; }
+    size_t getRemaining() const { return mCapacity - getSize(); }
+    char* getData() const { return mData; }
 
-	bool isEmpty() const { return getSize() == 0; }
+    bool isEmpty() const { return getSize() == 0; }
 
-	void finish() { append('\0'); }
-	void reset() { mPtr = mData; }
-	void append(const char* src, size_t len);
-	void append(char c);
-	void append(const char* str);
-	void vappendf(const char* fmt, va_list vargs);
-	void appendf(const char* fmt, ...);
+    void finish() { append('\0'); }
+    void reset() { mPtr = mData; }
+    void append(const char* src, size_t len);
+    void append(char c);
+    void append(const char* str);
+    void vappendf(const char* fmt, va_list vargs);
+    void appendf(const char* fmt, ...);
 
 protected:
-	enum {
-		kGrowAlign = 256,
-		kGrowMask = kGrowAlign - 1
-	};
+    enum { kGrowAlign = 256, kGrowMask = kGrowAlign - 1 };
 
-	void growBy(size_t request);
+    void growBy(size_t request);
 
 private:
-	size_t	mCapacity;
-	char*	mPtr;
-	char*	mData;
+    size_t mCapacity;
+    char* mPtr;
+    char* mData;
 };

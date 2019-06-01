@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,23 +28,19 @@
 #include "PyrSymbol.h"
 
 // heaps use an integer timestamp to ensure stable heap order
-struct PyrHeap:
-    PyrObjectHdr
-{
-    PyrSlot count;    // stability count
+struct PyrHeap : PyrObjectHdr {
+    PyrSlot count; // stability count
     PyrSlot slots[0]; // slots
 };
 
-class TempoClock
-{
+class TempoClock {
 public:
-    TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
-                double inTempo, double inBaseBeats, double inBaseSeconds);
+    TempoClock(VMGlobals* inVMGlobals, PyrObject* inTempoClockObj, double inTempo, double inBaseBeats,
+               double inBaseSeconds);
     virtual ~TempoClock() {}
     void StopReq();
     void Stop();
-    void StopAndDelete()
-    {
+    void StopAndDelete() {
         Stop();
         delete this;
     }
@@ -57,18 +53,16 @@ public:
     void SetAll(double inTempo, double inBeats, double inSeconds);
     double ElapsedBeats();
     void Clear();
-    //void Flush();
+    // void Flush();
     double GetTempo() const { return mTempo; }
     double GetBeatDur() const { return mBeatDur; }
-    virtual double BeatsToSecs(double beats) const
-        { return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
-    virtual double SecsToBeats(double secs) const
-        { return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
+    virtual double BeatsToSecs(double beats) const { return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
+    virtual double SecsToBeats(double secs) const { return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
     void Dump();
 
     static TempoClock* GetAll() { return sAll; }
     TempoClock* GetNext() const { return mNext; }
-    static void InitAll() { sAll = 0;}
+    static void InitAll() { sAll = 0; }
 
 protected:
     VMGlobals* g;
@@ -86,56 +80,54 @@ protected:
 
 private:
     TempoClock *mPrev, *mNext;
-    static TempoClock *sAll;
-
+    static TempoClock* sAll;
 };
 
 // Clock primitives
-template <typename Clock>
-int prClock_New(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 3;
-    PyrSlot *b = g->sp - 2;
-    PyrSlot *c = g->sp - 1;
-    PyrSlot *d = g->sp;
+template <typename Clock> int prClock_New(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 3;
+    PyrSlot* b = g->sp - 2;
+    PyrSlot* c = g->sp - 1;
+    PyrSlot* d = g->sp;
 
     double tempo;
     int err = slotDoubleVal(b, &tempo);
-    if (err) tempo = 1.;
+    if (err)
+        tempo = 1.;
     if (tempo <= 0.) {
         error("negative tempo %g is invalid\n", tempo);
-        SetPtr(slotRawObject(a)->slots+1, NULL);
+        SetPtr(slotRawObject(a)->slots + 1, NULL);
         return errFailed;
     }
 
     double beats;
     err = slotDoubleVal(c, &beats);
-    if (err) beats = 0.;
+    if (err)
+        beats = 0.;
 
     double seconds;
     err = slotDoubleVal(d, &seconds);
     if (err) {
         err = slotDoubleVal(&g->thread->seconds, &seconds);
-        if (err) return err;
+        if (err)
+            return err;
     }
 
     try {
         Clock* clock = new Clock(g, slotRawObject(a), tempo, beats, seconds);
-        SetPtr(slotRawObject(a)->slots+1, clock);
-    } catch(int err) {
+        SetPtr(slotRawObject(a)->slots + 1, clock);
+    } catch (int err) {
         return err;
     }
 
     return errNone;
 }
 
-template <typename Clock>
-int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 1;
-    PyrSlot *b = g->sp;
+template <typename Clock> int prClock_SetBeats(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
 
-    Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    Clock* clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -145,29 +137,29 @@ int prClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
     int err;
 
     err = slotDoubleVal(b, &beats);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     err = slotDoubleVal(&g->thread->seconds, &seconds);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     clock->SetAll(clock->GetTempo(), beats, seconds);
 
     return errNone;
 }
 
-template <typename Clock>
-int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 2;
-    PyrSlot *b = g->sp - 1;
-    PyrSlot *c = g->sp;
+template <typename Clock> int prClock_SetTempoAtBeat(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 2;
+    PyrSlot* b = g->sp - 1;
+    PyrSlot* c = g->sp;
 
-    Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    Clock* clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
     }
-    if(clock->GetTempo() <= 0.f) {
+    if (clock->GetTempo() <= 0.f) {
         error("cannot set negative tempo from this method. Use 'etempo_' instead.\n");
         // prTempoClock_SetTempoAtTime can be used.
         return errFailed;
@@ -175,7 +167,8 @@ int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 
     double tempo, beat;
     int err = slotDoubleVal(b, &tempo);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
     if (tempo <= 0.) {
         error("negative tempo %g is invalid. Use 'etempo_' instead.\n", tempo);
         // prTempoClock_SetTempoAtTime can be used.
@@ -183,22 +176,21 @@ int prClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
     }
 
     err = slotDoubleVal(c, &beat);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     clock->SetTempoAtBeat(tempo, beat);
 
     return errNone;
 }
 
-template <typename Clock>
-int prClock_SetAll(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 3;
-    PyrSlot *b = g->sp - 2;
-    PyrSlot *c = g->sp - 1;
-    PyrSlot *d = g->sp;
+template <typename Clock> int prClock_SetAll(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 3;
+    PyrSlot* b = g->sp - 2;
+    PyrSlot* c = g->sp - 1;
+    PyrSlot* d = g->sp;
 
-    Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    Clock* clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -206,27 +198,28 @@ int prClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 
     double tempo, beat, secs;
     int err = slotDoubleVal(b, &tempo);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     err = slotDoubleVal(c, &beat);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     err = slotDoubleVal(d, &secs);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     clock->SetAll(tempo, beat, secs);
 
     return errNone;
 }
 
-template <typename Clock>
-int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp - 2;
-    PyrSlot *b = g->sp - 1;
-    PyrSlot *c = g->sp;
+template <typename Clock> int prClock_SetTempoAtTime(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 2;
+    PyrSlot* b = g->sp - 1;
+    PyrSlot* c = g->sp;
 
-    Clock *clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    Clock* clock = (Clock*)slotRawPtr(&slotRawObject(a)->slots[1]);
     if (!clock) {
         error("clock is not running.\n");
         return errFailed;
@@ -234,10 +227,12 @@ int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 
     double tempo, sec;
     int err = slotDoubleVal(b, &tempo);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     err = slotDoubleVal(c, &sec);
-    if (err) return errWrongType;
+    if (err)
+        return errWrongType;
 
     clock->SetTempoAtTime(tempo, sec);
 
@@ -245,11 +240,9 @@ int prClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 }
 
 
-template <typename DurationType>
-inline double DurToFloat(DurationType dur)
-{
+template <typename DurationType> inline double DurToFloat(DurationType dur) {
     using namespace std::chrono;
-    seconds secs         = duration_cast<seconds>(dur);
+    seconds secs = duration_cast<seconds>(dur);
 
     return duration_cast<duration<double, std::ratio<1>>>(dur).count();
 }

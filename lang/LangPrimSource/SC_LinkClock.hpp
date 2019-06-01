@@ -2,33 +2,32 @@
 
 #ifdef SC_ABLETON_LINK
 
-#include "PyrKernel.h"
-#include "PyrSched.h"
-#include "GC.h"
-#include "PyrPrimitive.h"
-#include "PyrSymbol.h"
+#    include "PyrKernel.h"
+#    include "PyrSched.h"
+#    include "GC.h"
+#    include "PyrPrimitive.h"
+#    include "PyrSymbol.h"
 
-#include "SCBase.h"
-#include "SC_Clock.hpp"
+#    include "SCBase.h"
+#    include "SC_Clock.hpp"
 
-#include <ableton/Link.hpp>
+#    include <ableton/Link.hpp>
 
 /** TempoClock for use with Ableton Link.
  *
  * Represented in sclang as class LinkClock.
  */
-class LinkClock : public TempoClock
-{
+class LinkClock : public TempoClock {
 public:
     /// Called during PyrSched init.
     static void Init();
     static std::chrono::microseconds GetInitTime() { return LinkClock::InitTime; }
+
 private:
     static std::chrono::microseconds InitTime;
 
 public:
-    LinkClock(VMGlobals *vmGlobals, PyrObject* tempoClockObj,
-                double tempo, double baseBeats, double baseSeconds);
+    LinkClock(VMGlobals* vmGlobals, PyrObject* tempoClockObj, double tempo, double baseBeats, double baseSeconds);
     ~LinkClock() noexcept = default;
 
     void SetTempoAtBeat(double tempo, double inBeats);
@@ -38,8 +37,7 @@ public:
     double BeatsToSecs(double beats) const override;
     double SecsToBeats(double secs) const override;
 
-    void SetQuantum(double quantum)
-    {
+    void SetQuantum(double quantum) {
         mQuantum = quantum;
         mCondition.notify_one();
     }
@@ -49,8 +47,7 @@ public:
 
     void OnTempoChanged(double bpm);
 
-    void OnStartStop(bool isPlaying)
-    {
+    void OnStartStop(bool isPlaying) {
         gLangMutex.lock();
         g->canCallOS = false;
         ++g->sp;
@@ -62,8 +59,7 @@ public:
         gLangMutex.unlock();
     }
 
-    void OnNumPeersChanged(std::size_t numPeers)
-    {
+    void OnNumPeersChanged(std::size_t numPeers) {
         gLangMutex.lock();
         g->canCallOS = false;
         ++g->sp;
@@ -78,8 +74,7 @@ public:
     std::size_t NumPeers() const { return mLink.numPeers(); }
 
 private:
-    void CommitTempo(ableton::Link::SessionState sessionState, double tempo)
-    {
+    void CommitTempo(ableton::Link::SessionState sessionState, double tempo) {
         mTempo = tempo;
         mBeatDur = 1. / tempo;
 

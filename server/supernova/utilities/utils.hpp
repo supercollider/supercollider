@@ -40,35 +40,24 @@ namespace nova {
 using boost::intrusive_ptr;
 
 /* some basic math functions */
-inline bool ispoweroftwo(int i)
-{
-    return (i & (i - 1)) == 0;
-}
+inline bool ispoweroftwo(int i) { return (i & (i - 1)) == 0; }
 
 
-template <unsigned int n>
-struct is_power_of_two
-{
-    static const bool val = (n%2==0) && (is_power_of_two<(n>>1)>::val);
+template <unsigned int n> struct is_power_of_two {
+    static const bool val = (n % 2 == 0) && (is_power_of_two<(n >> 1)>::val);
 };
 
-template <>
-struct is_power_of_two<2>
-{
-    static const bool val = true;
-};
+template <> struct is_power_of_two<2> { static const bool val = true; };
 
-inline int log2(int n)
-{
+inline int log2(int n) {
     if (unlikely(n <= 0))
-        return(0);
+        return (0);
 
 #ifdef __GNUC__
-    return sizeof(int) * __CHAR_BIT__ - 1 - __builtin_clz( n );
+    return sizeof(int) * __CHAR_BIT__ - 1 - __builtin_clz(n);
 #else
     int r = -1;
-    while (n)
-    {
+    while (n) {
         r++;
         n >>= 1;
     }
@@ -76,8 +65,7 @@ inline int log2(int n)
 #endif
 }
 
-inline int nextpoweroftwo(int n)
-{
+inline int nextpoweroftwo(int n) {
     n = n - 1;
     const uint bitspace = sizeof(int) * 8 / 2;
     for (uint i = 1; i != bitspace; i *= 2)
@@ -89,9 +77,7 @@ inline int nextpoweroftwo(int n)
 using std::size_t;
 
 /** \brief base class for a callback function */
-template <typename t>
-class runnable
-{
+template <typename t> class runnable {
 public:
     virtual ~runnable(void) = default;
 
@@ -99,73 +85,43 @@ public:
 };
 
 
-template <class T>
-struct default_deleter
-{
-    void operator()(T * t)
-    {
-        delete t;
-    }
+template <class T> struct default_deleter {
+    void operator()(T* t) { delete t; }
 };
 
-struct delayed_deleter
-{
-    template <typename T>
-    inline void operator()(T *);
+struct delayed_deleter {
+    template <typename T> inline void operator()(T*);
 };
 
-struct checked_deleter
-{
-    template<class T>
-    void operator()(T * x) const
-    {
-        boost::checked_delete(x);
-    }
+struct checked_deleter {
+    template <class T> void operator()(T* x) const { boost::checked_delete(x); }
 };
 
 
-template <typename deleter = checked_deleter >
-struct intrusive_refcountable:
-    public deleter
-{
-    intrusive_refcountable(void):
-        use_count_(0)
-    {}
+template <typename deleter = checked_deleter> struct intrusive_refcountable : public deleter {
+    intrusive_refcountable(void): use_count_(0) {}
 
-    intrusive_refcountable(intrusive_refcountable const & rhs)             = delete;
-    intrusive_refcountable & operator=(intrusive_refcountable const & rhs) = delete;
+    intrusive_refcountable(intrusive_refcountable const& rhs) = delete;
+    intrusive_refcountable& operator=(intrusive_refcountable const& rhs) = delete;
 
-    virtual ~intrusive_refcountable(void)                                  = default;
+    virtual ~intrusive_refcountable(void) = default;
 
-    void add_ref(void)
-    {
-        ++use_count_;
-    }
+    void add_ref(void) { ++use_count_; }
 
-    void release(void)
-    {
-        if(--use_count_ == 0)
+    void release(void) {
+        if (--use_count_ == 0)
             deleter::operator()(this);
     }
 
-    inline friend void intrusive_ptr_add_ref(intrusive_refcountable * p)
-    {
-        p->add_ref();
-    }
+    inline friend void intrusive_ptr_add_ref(intrusive_refcountable* p) { p->add_ref(); }
 
-    inline friend void intrusive_ptr_release(intrusive_refcountable * p)
-    {
-        p->release();
-    }
+    inline friend void intrusive_ptr_release(intrusive_refcountable* p) { p->release(); }
 
     boost::detail::atomic_count use_count_;
 };
 
-template <class t, class compare = std::less<t> >
-struct compare_by_instance
-{
-    bool operator()(const t * lhs, const t * rhs)
-    {
+template <class t, class compare = std::less<t>> struct compare_by_instance {
+    bool operator()(const t* lhs, const t* rhs) {
         assert(lhs and rhs);
         compare cmp;
         return cmp(*lhs, *rhs);
@@ -173,8 +129,7 @@ struct compare_by_instance
 };
 
 
-PURE inline std::size_t string_hash(const char * str)
-{
+PURE inline std::size_t string_hash(const char* str) {
     std::size_t ret = 0;
 
     // sdbm hash ... later try another function!
@@ -185,22 +140,17 @@ PURE inline std::size_t string_hash(const char * str)
     return ret;
 }
 
-struct linear_allocator
-{
-    linear_allocator(char * chunk):
-        chunk(chunk)
-    {}
+struct linear_allocator {
+    linear_allocator(char* chunk): chunk(chunk) {}
 
-    template <typename T>
-    T * alloc(int count = 1)
-    {
-        T * ret = reinterpret_cast<T*>(chunk);
+    template <typename T> T* alloc(int count = 1) {
+        T* ret = reinterpret_cast<T*>(chunk);
         chunk += count * sizeof(T);
         return ret;
     }
 
 private:
-    char * chunk;
+    char* chunk;
 };
 
 } /* namespace nova */

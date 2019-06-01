@@ -26,13 +26,11 @@
 
 namespace ScIDE {
 
-QString standardDirectory( StandardDirectory type )
-{
+QString standardDirectory(StandardDirectory type) {
     using DirName = SC_Filesystem::DirName;
     DirName dn;
 
-    switch(type)
-    {
+    switch (type) {
     case ScResourceDir:
         dn = DirName::Resource;
         break;

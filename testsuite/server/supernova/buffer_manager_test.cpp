@@ -7,8 +7,7 @@
 using namespace nova;
 
 
-BOOST_AUTO_TEST_CASE( buffer_manager_test )
-{
+BOOST_AUTO_TEST_CASE(buffer_manager_test) {
     buffer_manager bm(1024);
     bm.allocate_buffer(0, 44100, 2);
     bm.zero_buffer(0);
