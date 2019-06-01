@@ -18,7 +18,6 @@
 
 #include "memory_pool.hpp"
 
-namespace nova
-{
+namespace nova {
 simple_pool<false> rt_pool;
 } /* namespace nova */

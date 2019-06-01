@@ -23,12 +23,9 @@
 
 namespace ScIDE {
 
-SignalMultiplexer::SignalMultiplexer(QObject *parent) :
-    QObject(parent)
-{}
+SignalMultiplexer::SignalMultiplexer(QObject* parent): QObject(parent) {}
 
-void SignalMultiplexer::connect(QObject *sender, const char *signal, const char *slot, ConnectionMode mode)
-{
+void SignalMultiplexer::connect(QObject* sender, const char* signal, const char* slot, ConnectionMode mode) {
     Q_ASSERT(strlen(signal) > 0);
     Q_ASSERT(strlen(slot) > 0);
 
@@ -41,9 +38,8 @@ void SignalMultiplexer::connect(QObject *sender, const char *signal, const char 
     mConnections << conn;
     connect(conn);
 }
-    
-bool SignalMultiplexer::disconnect(QObject *sender)
-{
+
+bool SignalMultiplexer::disconnect(QObject* sender) {
     bool result = false;
     QList<Connection>::Iterator it;
     for (it = mConnections.begin(); it != mConnections.end(); ++it) {
@@ -54,17 +50,15 @@ bool SignalMultiplexer::disconnect(QObject *sender)
             result = true;
         }
     }
-    
+
     return result;
 }
 
-bool SignalMultiplexer::disconnect(QObject *sender, const char *signal, const char *slot)
-{
+bool SignalMultiplexer::disconnect(QObject* sender, const char* signal, const char* slot) {
     QList<Connection>::Iterator it;
     for (it = mConnections.begin(); it != mConnections.end(); ++it) {
         Connection conn = *it;
-        if ((QObject*)conn.sender == sender &&
-                qstrcmp(conn.signal, signal) == 0 && qstrcmp(conn.slot, slot) == 0) {
+        if ((QObject*)conn.sender == sender && qstrcmp(conn.signal, signal) == 0 && qstrcmp(conn.slot, slot) == 0) {
             disconnect(conn);
             mConnections.erase(it);
             return true;
@@ -73,8 +67,7 @@ bool SignalMultiplexer::disconnect(QObject *sender, const char *signal, const ch
     return false;
 }
 
-void SignalMultiplexer::connect(const char *signal, QObject *receiver, const char *slot, ConnectionMode mode)
-{
+void SignalMultiplexer::connect(const char* signal, QObject* receiver, const char* slot, ConnectionMode mode) {
     Connection conn;
     conn.receiver = receiver;
     conn.signal = signal;
@@ -85,13 +78,11 @@ void SignalMultiplexer::connect(const char *signal, QObject *receiver, const cha
     connect(conn);
 }
 
-bool SignalMultiplexer::disconnect(const char *signal, QObject *receiver, const char *slot)
-{
+bool SignalMultiplexer::disconnect(const char* signal, QObject* receiver, const char* slot) {
     QList<Connection>::Iterator it;
     for (it = mConnections.begin(); it != mConnections.end(); ++it) {
         Connection conn = *it;
-        if ((QObject*)conn.receiver == receiver &&
-                qstrcmp(conn.signal, signal) == 0 && qstrcmp(conn.slot, slot) == 0) {
+        if ((QObject*)conn.receiver == receiver && qstrcmp(conn.signal, signal) == 0 && qstrcmp(conn.slot, slot) == 0) {
             disconnect(conn);
             mConnections.erase(it);
             return true;
@@ -100,8 +91,7 @@ bool SignalMultiplexer::disconnect(const char *signal, QObject *receiver, const 
     return false;
 }
 
-void SignalMultiplexer::connect(const Connection &conn)
-{
+void SignalMultiplexer::connect(const Connection& conn) {
     if (!mObject)
         return;
     if (!conn.sender && !conn.receiver)
@@ -113,18 +103,17 @@ void SignalMultiplexer::connect(const Connection &conn)
     // that's added by SLOT() and SIGNAL() macros
 
     if (conn.sender) {
-        if (optional && (mObject->metaObject()->indexOfSlot(conn.slot+1) == -1))
+        if (optional && (mObject->metaObject()->indexOfSlot(conn.slot + 1) == -1))
             return;
         QObject::connect((QObject*)conn.sender, conn.signal, (QObject*)mObject, conn.slot);
     } else {
-        if (optional && (mObject->metaObject()->indexOfSignal(conn.signal+1) == -1))
+        if (optional && (mObject->metaObject()->indexOfSignal(conn.signal + 1) == -1))
             return;
         QObject::connect((QObject*)mObject, conn.signal, (QObject*)conn.receiver, conn.slot);
     }
 }
 
-void SignalMultiplexer::disconnect(const Connection &conn)
-{
+void SignalMultiplexer::disconnect(const Connection& conn) {
     if (!mObject)
         return;
     if (!conn.sender && !conn.receiver)
@@ -136,19 +125,18 @@ void SignalMultiplexer::disconnect(const Connection &conn)
     // that's added by SLOT() and SIGNAL() macros
 
     if (conn.sender) {
-        if (optional && (mObject->metaObject()->indexOfSlot(conn.slot+1) == -1))
+        if (optional && (mObject->metaObject()->indexOfSlot(conn.slot + 1) == -1))
             return;
         QObject::disconnect((QObject*)conn.sender, conn.signal, (QObject*)mObject, conn.slot);
     } else {
-        if (optional && (mObject->metaObject()->indexOfSignal(conn.signal+1) == -1))
+        if (optional && (mObject->metaObject()->indexOfSignal(conn.signal + 1) == -1))
             return;
         QObject::disconnect((QObject*)mObject, conn.signal, (QObject*)conn.receiver, conn.slot);
     }
 }
 
 
-void SignalMultiplexer::setCurrentObject(QObject *newObject)
-{
+void SignalMultiplexer::setCurrentObject(QObject* newObject) {
     if (newObject == mObject)
         return;
 

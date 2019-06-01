@@ -20,52 +20,43 @@
 #include <string.h>
 #include <stdlib.h>
 
-SC_StringParser::SC_StringParser()
-	: mSpec(0), mStart(0), mEnd(0), mSep(0)
-{
+SC_StringParser::SC_StringParser(): mSpec(0), mStart(0), mEnd(0), mSep(0) {}
+
+SC_StringParser::SC_StringParser(const char* spec, char sep): mSpec(spec), mStart(0), mEnd(0), mSep(sep) {
+    if (mSpec) {
+        size_t len = strlen(mSpec);
+        if (len > 0) {
+            mStart = mSpec;
+            mEnd = mStart + len;
+        } else {
+            mSpec = 0;
+        }
+    }
 }
 
-SC_StringParser::SC_StringParser(const char *spec, char sep)
-	: mSpec(spec), mStart(0), mEnd(0), mSep(sep)
-{
-	if (mSpec) {
-		size_t len = strlen(mSpec);
-		if (len > 0) {
-			mStart = mSpec;
-			mEnd = mStart + len;
-		} else {
-			mSpec = 0;
-		}
-	}
-}
+bool SC_StringParser::AtEnd() const { return mSpec == 0; }
 
-bool SC_StringParser::AtEnd() const
-{
-	return mSpec == 0;
-}
+const char* SC_StringParser::NextToken() {
+    if (mSpec) {
+        const char* end = strchr(mStart, mSep);
+        if (end == 0) {
+            end = mEnd;
+        }
 
-const char *SC_StringParser::NextToken()
-{
-	if (mSpec) {
-		const char *end = strchr(mStart, mSep);
-		if (end == 0) {
-			end = mEnd;
-		}
+        size_t len = sc_min(SC_MAX_TOKEN_LENGTH - 1, end - mStart);
+        memcpy(mBuf, mStart, len);
+        mBuf[len] = '\0';
 
-		size_t len = sc_min(SC_MAX_TOKEN_LENGTH-1, end-mStart);
-		memcpy(mBuf, mStart, len);
-		mBuf[len] = '\0';
+        if (end == mEnd) {
+            mSpec = 0;
+        } else {
+            mStart = end + 1;
+        }
 
-		if (end == mEnd) {
-			mSpec = 0;
-		} else {
-			mStart = end+1;
-		}
+        return mBuf;
+    }
 
-		return mBuf;
-	}
-
-	return 0;
+    return 0;
 }
 
 // EOF

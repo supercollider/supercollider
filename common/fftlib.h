@@ -1,4 +1,4 @@
-long FFTInit(long *fftMptr, long fftN, float *Utbl);
+long FFTInit(long* fftMptr, long fftN, float* Utbl);
 /* Compute cosine table and check size for complex ffts	*/
 /* INPUTS */
 /* fftN = size of fft	*/
@@ -8,7 +8,7 @@ long FFTInit(long *fftMptr, long fftN, float *Utbl);
 /* RETURNS */
 /* 1 if fftN is invalid, 0 otherwise	*/
 
-long rFFTInit(long *fftMptr, long fftN, float *Utbl);
+long rFFTInit(long* fftMptr, long fftN, float* Utbl);
 /* Compute cosine table and check size for a real input fft	*/
 /* INPUTS */
 /* fftN = size of fft	*/
@@ -18,7 +18,7 @@ long rFFTInit(long *fftMptr, long fftN, float *Utbl);
 /* RETURNS */
 /* 1 if fftN is invalid, 0 otherwise	*/
 
-void ffts(float *ioptr, long M, long Rows, float *Utbl);
+void ffts(float* ioptr, long M, long Rows, float* Utbl);
 /* Compute in-place complex fft on the rows of the input array	*/
 /* INPUTS */
 /* M = log2 of fft size	*/
@@ -28,7 +28,7 @@ void ffts(float *ioptr, long M, long Rows, float *Utbl);
 /* OUTPUTS */
 /* *ioptr = output data array	*/
 
-void iffts(float *ioptr, long M, long Rows, float *Utbl);
+void iffts(float* ioptr, long M, long Rows, float* Utbl);
 /* Compute in-place inverse complex fft on the rows of the input array	*/
 /* INPUTS */
 /* M = log2 of fft size	*/
@@ -38,7 +38,7 @@ void iffts(float *ioptr, long M, long Rows, float *Utbl);
 /* OUTPUTS */
 /* *ioptr = output data array	*/
 
-void rffts(float *ioptr, long M, long Rows, float *Utbl);
+void rffts(float* ioptr, long M, long Rows, float* Utbl);
 /* Compute in-place real fft on the rows of the input array	*/
 /* INPUTS */
 /* M = log2 of fft size	*/
@@ -50,7 +50,7 @@ void rffts(float *ioptr, long M, long Rows, float *Utbl);
 /* Re(x[0]), Re(x[N/2]), Re(x[1]), Im(x[1]), Re(x[2]), Im(x[2]), ... Re(x[N/2-1]), Im(x[N/2-1]). */
 
 
-void riffts(float *ioptr, long M, long Rows, float *Utbl);
+void riffts(float* ioptr, long M, long Rows, float* Utbl);
 /* Compute in-place real ifft on the rows of the input array	*/
 /* INPUTS */
 /* M = log2 of fft size	*/

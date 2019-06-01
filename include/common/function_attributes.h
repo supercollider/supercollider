@@ -21,81 +21,81 @@
 
 #ifdef __GNUC__
 
-#ifdef _WIN32
-#undef PURE
-#endif
+#    ifdef _WIN32
+#        undef PURE
+#    endif
 
-#define CONST_FUNCTION __attribute__((const))
-#define PURE __attribute__((pure))
+#    define CONST_FUNCTION __attribute__((const))
+#    define PURE __attribute__((pure))
 
-#define MALLOC __attribute__((malloc))
-#define ASSUME_ALIGNED(Alignment) __attribute__((assume_aligned(Alignment)))
-#define HOT __attribute__((hot))
-#define COLD __attribute__((cold))
-#define FLATTEN __attribute__((flatten))
+#    define MALLOC __attribute__((malloc))
+#    define ASSUME_ALIGNED(Alignment) __attribute__((assume_aligned(Alignment)))
+#    define HOT __attribute__((hot))
+#    define COLD __attribute__((cold))
+#    define FLATTEN __attribute__((flatten))
 
 #endif
 
 #ifdef __clang__
-#undef HOT
-#undef FLATTEN
-#undef ASSUME_ALIGNED
+#    undef HOT
+#    undef FLATTEN
+#    undef ASSUME_ALIGNED
 #endif
 
 #ifdef __PATHCC__
-#undef HOT
-#undef FLATTEN
+#    undef HOT
+#    undef FLATTEN
 #endif
 
 
 #ifdef _MSC_VER
-#ifndef PURE
-#define PURE /*PURE*/
-#endif
+#    ifndef PURE
+#        define PURE /*PURE*/
+#    endif
 
-#ifndef CONST_FUNCTION
-#define CONST_FUNCTION /*CONST_FUNCTION*/
-#endif
+#    ifndef CONST_FUNCTION
+#        define CONST_FUNCTION /*CONST_FUNCTION*/
+#    endif
 #endif
 
 #ifndef MALLOC
-#define MALLOC /*MALLOC*/
+#    define MALLOC /*MALLOC*/
 #endif
 
 #ifndef HOT
-#define HOT /*HOT*/
+#    define HOT /*HOT*/
 #endif
 
 #ifndef COLD
-#define COLD /*COLD*/
+#    define COLD /*COLD*/
 #endif
 
 #ifndef FLATTEN
-#define FLATTEN /*FLATTEN*/
+#    define FLATTEN /*FLATTEN*/
 #endif
 
 #ifndef ASSUME_ALIGNED
-#define ASSUME_ALIGNED(Alignment) /* assume aligned Alignment */
+#    define ASSUME_ALIGNED(Alignment) /* assume aligned Alignment */
 #endif
 
 // provide c99-style __restrict__
 #if defined(__GNUC__) || defined(__CLANG__)
 // __restrict__ defined
 #else
-#define __restrict__ /* __restrict */
+#    define __restrict__ /* __restrict */
 #endif
 
 // force inlining in release mode
 #ifndef NDEBUG
-#define force_inline inline
+#    define force_inline inline
 #else
 
-#if defined(__GNUC__)
-#define force_inline inline  __attribute__((always_inline))
-#elif defined(_MSVER)
-#define force_inline __forceinline
-#else
-#define force_inline inline
-#endif
+#    if defined(__GNUC__)
+#        define force_inline inline __attribute__((always_inline))
+#    elif defined(_MSVER)
+#        define force_inline __forceinline
+#    else
+#        define force_inline inline
+#    endif
 
 #endif

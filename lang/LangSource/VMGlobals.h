@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,62 +36,56 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 typedef void (*FifoMsgFunc)(struct VMGlobals*, struct FifoMsg*);
 
 struct FifoMsg {
-	FifoMsg() : func(0), dataPtr(0) { dataWord[0] = dataWord[1] = 0; }
-	void Perform(struct VMGlobals* g);
-	void Free(struct VMGlobals* g);
+    FifoMsg(): func(0), dataPtr(0) { dataWord[0] = dataWord[1] = 0; }
+    void Perform(struct VMGlobals* g);
+    void Free(struct VMGlobals* g);
 
-	FifoMsgFunc func;
-	void* dataPtr;
-	long dataWord[2];
+    FifoMsgFunc func;
+    void* dataPtr;
+    long dataWord[2];
 };
 
 struct VMGlobals {
-	VMGlobals();
+    VMGlobals();
 
-	// global context
-	class AllocPool *allocPool;
-	struct PyrProcess *process;
-	class SymbolTable *symbolTable;
-	class PyrGC *gc;		// garbage collector for this process
-	PyrObject *classvars;
+    // global context
+    class AllocPool* allocPool;
+    struct PyrProcess* process;
+    class SymbolTable* symbolTable;
+    class PyrGC* gc; // garbage collector for this process
+    PyrObject* classvars;
 #if TAILCALLOPTIMIZE
-	int tailCall; // next byte code is a tail call.
+    int tailCall; // next byte code is a tail call.
 #endif
-	bool canCallOS;
+    bool canCallOS;
 
-	// thread context
-	struct PyrThread *thread;
-	struct PyrMethod *method;
-	struct PyrBlock *block;
-	struct PyrFrame *frame;
-	struct PyrMethod *primitiveMethod;
-	unsigned char *ip;		// current instruction pointer
-	PyrSlot *sp;	// current stack ptr
-	PyrSlot *args;
-	PyrSlot receiver;	// the receiver
-	PyrSlot result;
-	int numpop; // number of args to pop for primitive
-	long primitiveIndex;
-	RGen *rgen;
-	jmp_buf escapeInterpreter;
+    // thread context
+    struct PyrThread* thread;
+    struct PyrMethod* method;
+    struct PyrBlock* block;
+    struct PyrFrame* frame;
+    struct PyrMethod* primitiveMethod;
+    unsigned char* ip; // current instruction pointer
+    PyrSlot* sp; // current stack ptr
+    PyrSlot* args;
+    PyrSlot receiver; // the receiver
+    PyrSlot result;
+    int numpop; // number of args to pop for primitive
+    long primitiveIndex;
+    RGen* rgen;
+    jmp_buf escapeInterpreter;
 
-	// scratch context
-	long execMethod;
-	
-	// primitive exceptions
-	std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions;
-} ;
+    // scratch context
+    long execMethod;
 
-inline void FifoMsg::Perform(struct VMGlobals* g)
-	{
-		(func)(g, this);
-	}
+    // primitive exceptions
+    std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions;
+};
 
-inline void FifoMsg::Free(struct VMGlobals* g)
-	{
-		g->allocPool->Free(dataPtr);
-	}
+inline void FifoMsg::Perform(struct VMGlobals* g) { (func)(g, this); }
+
+inline void FifoMsg::Free(struct VMGlobals* g) { g->allocPool->Free(dataPtr); }
 
 extern VMGlobals gVMGlobals;
-extern VMGlobals *gMainVMGlobals;
-extern VMGlobals *gCompilingVMGlobals;
+extern VMGlobals* gMainVMGlobals;
+extern VMGlobals* gCompilingVMGlobals;

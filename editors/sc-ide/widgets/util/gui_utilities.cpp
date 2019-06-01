@@ -26,20 +26,18 @@
 
 namespace ScIDE {
 
-QRect fittedToScreen( const QRect & rect, QWidget * referenceWidget )
-{
+QRect fittedToScreen(const QRect& rect, QWidget* referenceWidget) {
     QRect fittedRect = rect;
     QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
-    if (!screen.contains(fittedRect))
-    {
+    if (!screen.contains(fittedRect)) {
         if (fittedRect.right() > screen.right())
-            fittedRect.moveRight( screen.right() );
+            fittedRect.moveRight(screen.right());
         if (fittedRect.left() < screen.left())
-            fittedRect.moveLeft( screen.left() );
+            fittedRect.moveLeft(screen.left());
         if (fittedRect.bottom() > screen.bottom())
-            fittedRect.moveBottom( screen.bottom() );
+            fittedRect.moveBottom(screen.bottom());
         if (fittedRect.top() < screen.top())
-            fittedRect.moveTop( screen.top() );
+            fittedRect.moveTop(screen.top());
     }
     return fittedRect;
 }

@@ -35,26 +35,26 @@
 #include "../utilities/utils.hpp"
 
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
-#include <wordexp.h>
-#include <sys/resource.h>
+#    include <wordexp.h>
+#    include <sys/resource.h>
 #endif
 
 #ifdef __APPLE__
-# include <ApplicationServices/ApplicationServices.h>
-# include <SC_Apple.hpp>
+#    include <ApplicationServices/ApplicationServices.h>
+#    include <SC_Apple.hpp>
 #endif
 
 
-#if (_POSIX_MEMLOCK - 0) >=  200112L
-# include <sys/resource.h>
-# include <sys/mman.h>
+#if (_POSIX_MEMLOCK - 0) >= 200112L
+#    include <sys/resource.h>
+#    include <sys/mman.h>
 #endif
 
 #include "SC_Filesystem.hpp"
 #ifndef _WIN32
-    const char pathSeparator[] = ":";
+const char pathSeparator[] = ":";
 #else
-    const char pathSeparator[] = ";";
+const char pathSeparator[] = ";";
 #endif
 
 using namespace nova;
@@ -64,25 +64,20 @@ using DirName = SC_Filesystem::DirName;
 namespace {
 
 /* signal handler */
-void terminate(int i)
-{
-    instance->terminate();
-}
+void terminate(int i) { instance->terminate(); }
 
-void register_signal_handler(void)
-{
+void register_signal_handler(void) {
     void (*prev_fn)(int);
 
-    prev_fn = ::signal (SIGINT, terminate);
+    prev_fn = ::signal(SIGINT, terminate);
 }
 
 #ifdef JACK_BACKEND
-void connect_jack_ports(void)
-{
+void connect_jack_ports(void) {
     using namespace boost;
     using namespace boost::algorithm;
 
-    const char * input_string = getenv("SC_JACK_DEFAULT_INPUTS");
+    const char* input_string = getenv("SC_JACK_DEFAULT_INPUTS");
     if (input_string) {
         string input_port(input_string);
 
@@ -96,7 +91,7 @@ void connect_jack_ports(void)
         }
     }
 
-    const char * output_string = getenv("SC_JACK_DEFAULT_OUTPUTS");
+    const char* output_string = getenv("SC_JACK_DEFAULT_OUTPUTS");
     if (output_string) {
         string output_port(output_string);
 
@@ -111,8 +106,7 @@ void connect_jack_ports(void)
     }
 }
 
-void get_jack_names(server_arguments const & args, string & server_name, string & client_name)
-{
+void get_jack_names(server_arguments const& args, string& server_name, string& client_name) {
     client_name = "supernova";
 
     if (!args.hw_name.empty() && !args.hw_name[0].empty()) {
@@ -130,8 +124,7 @@ void get_jack_names(server_arguments const & args, string & server_name, string 
     }
 }
 
-void start_audio_backend(server_arguments const & args)
-{
+void start_audio_backend(server_arguments const& args) {
     string server_name, client_name;
     get_jack_names(args, server_name, client_name);
 
@@ -154,8 +147,7 @@ void start_audio_backend(server_arguments const & args)
 
 #elif defined(PORTAUDIO_BACKEND)
 
-void start_audio_backend(server_arguments const & args)
-{
+void start_audio_backend(server_arguments const& args) {
     int input_channels = args.input_channels;
     int output_channels = args.output_channels;
 
@@ -186,8 +178,8 @@ void start_audio_backend(server_arguments const & args)
     cout << input_device << " / " << output_device << endl;
 
 
-    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels,
-        args.samplerate, args.blocksize, args.hardware_buffer_size);
+    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
+                                         args.blocksize, args.hardware_buffer_size);
 
     if (!success) {
         cout << "could not open portaudio device name: " << input_device << " / " << output_device << endl;
@@ -204,18 +196,16 @@ void start_audio_backend(server_arguments const & args)
 
 #else
 
-void start_audio_backend(server_arguments const & args)
-{}
+void start_audio_backend(server_arguments const& args) {}
 
 #endif
 
-void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * factory)
-{
+void set_plugin_paths(server_arguments const& args, nova::sc_ugen_factory* factory) {
     if (!args.ugen_paths.empty()) {
-        for(path const & path1 : args.ugen_paths){
+        for (path const& path1 : args.ugen_paths) {
             vector<std::string> directories;
             boost::split(directories, path1.string(), boost::is_any_of(pathSeparator));
-            for(string const & path : directories){
+            for (string const& path : directories) {
                 factory->load_plugin_folder(path);
             }
         }
@@ -226,11 +216,11 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME);
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension));
         factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension));
-        const char * env_plugin_path = getenv("SC_PLUGIN_PATH");
+        const char* env_plugin_path = getenv("SC_PLUGIN_PATH");
         if (env_plugin_path) {
             vector<std::string> directories;
             boost::split(directories, env_plugin_path, boost::is_any_of(pathSeparator));
-            for (string const & path : directories) {
+            for (string const& path : directories) {
                 factory->load_plugin_folder(path);
             }
         }
@@ -241,16 +231,14 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
 #endif
 }
 
-void load_synthdef_folder(nova_server & server, path const & folder, bool verbose)
-{
+void load_synthdef_folder(nova_server& server, path const& folder, bool verbose) {
     if (verbose)
         std::cout << "Loading synthdefs from path: " << folder.string() << std::endl;
 
     register_synthdefs(server, sc_read_synthdefs_dir(folder));
 }
 
-void load_synthdefs(nova_server & server, server_arguments const & args)
-{
+void load_synthdefs(nova_server& server, server_arguments const& args) {
     using namespace std;
 
 #ifndef NDEBUG
@@ -258,7 +246,7 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
 #endif
 
     if (args.load_synthdefs) {
-        const char * env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
+        const char* env_synthdef_path = getenv("SC_SYNTHDEF_PATH");
         vector<path> directories;
         if (env_synthdef_path) {
             boost::split(directories, env_synthdef_path, boost::is_any_of(pathSeparator));
@@ -267,36 +255,31 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
             directories.push_back(synthdef_path / "synthdefs");
         }
 
-        for(path const & directory : directories)
+        for (path const& directory : directories)
             load_synthdef_folder(server, directory, args.verbosity > 0);
     }
 #ifndef NDEBUG
     auto end_time = std::chrono::high_resolution_clock::now();
     cout << "SynthDefs loaded in "
-         << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count()
-         << " ms"
-         << endl;
+         << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count() << " ms" << endl;
 #endif
 }
 
-void drop_rt_scheduling()
-{
+void drop_rt_scheduling() {
     bool success = nova::thread_set_priority(0);
     if (!success)
         cout << "Warning: cannot drop rt priority" << endl;
 }
 
-void enable_core_dumps(void)
-{
+void enable_core_dumps(void) {
 #ifdef __LINUX__
     rlimit core_limit = { RLIM_INFINITY, RLIM_INFINITY };
-    assert( setrlimit( RLIMIT_CORE, &core_limit ) == 0 ); // enable core dumps for debug builds
+    assert(setrlimit(RLIMIT_CORE, &core_limit) == 0); // enable core dumps for debug builds
 #endif
 }
 
-void lock_memory(server_arguments const & args)
-{
-#if (_POSIX_MEMLOCK - 0) >=  200112L
+void lock_memory(server_arguments const& args) {
+#if (_POSIX_MEMLOCK - 0) >= 200112L
     if (args.memory_locking) {
         bool lock_memory = false;
 
@@ -306,8 +289,7 @@ void lock_memory(server_arguments const & args)
         if (failure)
             printf("getrlimit failure\n");
         else {
-            if (limit.rlim_cur == RLIM_INFINITY and
-                limit.rlim_max == RLIM_INFINITY)
+            if (limit.rlim_cur == RLIM_INFINITY and limit.rlim_max == RLIM_INFINITY)
                 lock_memory = true;
             else
                 printf("memory locking disabled due to resource limiting\n");
@@ -323,15 +305,15 @@ void lock_memory(server_arguments const & args)
 
 } /* namespace */
 
-int main(int argc, char * argv[])
-{
-    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want it!
+int main(int argc, char* argv[]) {
+    drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
+                          // it!
     enable_core_dumps();
 
     server_arguments::initialize(argc, argv);
-    server_arguments const & args = server_arguments::instance();
+    server_arguments const& args = server_arguments::instance();
 
-    if(args.dump_version){
+    if (args.dump_version) {
         cout << "supernova " << SC_VersionString() << " (" << SC_BuildString() << ")" << endl;
         return 0;
     }
@@ -364,7 +346,7 @@ int main(int argc, char * argv[])
         try {
             start_audio_backend(args);
             cout << "Supernova ready" << endl;
-        } catch (exception const & e) {
+        } catch (exception const& e) {
             cout << "Error: " << e.what() << endl;
             exit(1);
         }

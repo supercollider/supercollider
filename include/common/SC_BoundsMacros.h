@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,16 +20,14 @@
 
 #pragma once
 
-#include <cstdlib>              /* std::abs */
-#include <cmath>                /* std::abs */
+#include <cstdlib> /* std::abs */
+#include <cmath> /* std::abs */
 #include <algorithm>
 
 #define sc_abs(a) std::abs(a)
-#define sc_max(a,b) (((a) > (b)) ? (a) : (b))
-#define sc_min(a,b) (((a) < (b)) ? (a) : (b))
+#define sc_max(a, b) (((a) > (b)) ? (a) : (b))
+#define sc_min(a, b) (((a) < (b)) ? (a) : (b))
 
-template <typename T, typename U, typename V>
-inline T sc_clip(T x, U lo, V hi)
-{
+template <typename T, typename U, typename V> inline T sc_clip(T x, U lo, V hi) {
     return std::max(std::min(x, (T)hi), (T)lo);
 }

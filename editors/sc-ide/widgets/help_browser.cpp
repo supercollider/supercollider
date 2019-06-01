@@ -42,42 +42,38 @@
 #include <QKeyEvent>
 
 #ifdef Q_OS_MAC
-#  include <QStyleFactory> // QStyleFactory::create, see below
+#    include <QStyleFactory> // QStyleFactory::create, see below
 #endif
 
 namespace ScIDE {
 
-HelpWebPage::HelpWebPage(HelpBrowser* browser)
-    : WebPage(browser), mBrowser(browser)
-{
+HelpWebPage::HelpWebPage(HelpBrowser* browser): WebPage(browser), mBrowser(browser) {
     setDelegateNavigation(true);
-    connect( this, SIGNAL(navigationRequested(const QUrl &, QWebEnginePage::NavigationType, bool)),
-             browser, SLOT(onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool)) );
+    connect(this, SIGNAL(navigationRequested(const QUrl&, QWebEnginePage::NavigationType, bool)), browser,
+            SLOT(onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool)));
 }
 
-HelpBrowser::HelpBrowser( QWidget * parent ):
-    QWidget(parent)
-{
+HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
-    mSizeHint = QSize( availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7 );
+    mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
 
-    HelpWebPage *webPage = new HelpWebPage(this);
+    HelpWebPage* webPage = new HelpWebPage(this);
     webPage->setDelegateReload(true);
 
     mWebView = new QWebEngineView;
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
-    mWebView->setPage( webPage );
-    mWebView->settings()->setAttribute( QWebEngineSettings::LocalStorageEnabled, true );
-    mWebView->setContextMenuPolicy( Qt::CustomContextMenu );
+    mWebView->setPage(webPage);
+    mWebView->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
+    mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // Set the style's standard palette to avoid system's palette incoherencies
     // get in the way of rendering web pages
-    mWebView->setPalette( style()->standardPalette() );
+    mWebView->setPalette(style()->standardPalette());
 
 #ifdef Q_OS_MAC
     // On macOS, checkboxes unwantedly appear in the top left-hand corner.
     // See QTBUG-43366, 43070, and 42948. The workaround is to set style to fusion.
-    mWebView->setStyle( QStyleFactory::create("Fusion") );
+    mWebView->setStyle(QStyleFactory::create("Fusion"));
 #endif
 
     mWebView->installEventFilter(this);
@@ -85,51 +81,45 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     mLoadProgressIndicator = new LoadProgressIndicator;
     mLoadProgressIndicator->setIndent(10);
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->setContentsMargins(0,0,0,0);
+    QVBoxLayout* layout = new QVBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(mWebView);
     setLayout(layout);
 
-    connect( mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()) );
-    connect( mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()) );
-    connect( mWebView, SIGNAL(customContextMenuRequested(QPoint)),
-             this, SLOT(onContextMenuRequest(QPoint)) );
+    connect(mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()));
+    connect(mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()));
+    connect(mWebView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenuRequest(QPoint)));
 
-    connect( webPage->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()) );
-    connect( webPage, SIGNAL(jsConsoleMsg(QString,int,QString)),
-             this, SLOT(onJsConsoleMsg(QString,int,QString)) );
+    connect(webPage->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()));
+    connect(webPage, SIGNAL(jsConsoleMsg(QString, int, QString)), this, SLOT(onJsConsoleMsg(QString, int, QString)));
 
-    ScProcess * scProcess = Main::scProcess();
-    connect( scProcess, SIGNAL(response(QString,QString)),
-             this, SLOT(onScResponse(QString,QString)) );
-    connect( scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()) );
+    ScProcess* scProcess = Main::scProcess();
+    connect(scProcess, SIGNAL(response(QString, QString)), this, SLOT(onScResponse(QString, QString)));
+    connect(scProcess, SIGNAL(finished(int)), mLoadProgressIndicator, SLOT(stop()));
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
-    connect( scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()) );
+    connect(scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()));
 
     // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
     // Note that putting this in the destructor doesn't work.
-    connect( QApplication::instance(), &QApplication::aboutToQuit, [webPage]() {
-        delete webPage;
-    });
+    connect(QApplication::instance(), &QApplication::aboutToQuit, [webPage]() { delete webPage; });
 
     createActions();
 
-    applySettings( Main::settings() );
+    applySettings(Main::settings());
 
     setFocusProxy(mWebView);
 }
 
-void HelpBrowser::createActions()
-{
-    QAction * action;
-    OverridingAction *ovrAction;
+void HelpBrowser::createActions() {
+    QAction* action;
+    OverridingAction* ovrAction;
 
     mActions[GoHome] = action = new QAction(tr("Home"), this);
-    connect( action, SIGNAL(triggered()), this, SLOT(goHome()) );
+    connect(action, SIGNAL(triggered()), this, SLOT(goHome()));
 
     mActions[DocClose] = ovrAction = new OverridingAction(tr("Close"), this);
-    connect( ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()) );
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(closeDocument()));
     ovrAction->addToWidget(this);
 
     mActions[ZoomIn] = ovrAction = new OverridingAction(tr("Zoom In"), this);
@@ -149,125 +139,110 @@ void HelpBrowser::createActions()
     ovrAction->addToWidget(this);
 
     // For the sake of display:
-    mWebView->pageAction(QWebEnginePage::Copy)->setShortcut( QKeySequence::Copy );
-    mWebView->pageAction(QWebEnginePage::Paste)->setShortcut( QKeySequence::Paste );
+    mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
+    mWebView->pageAction(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
 }
 
-void HelpBrowser::applySettings( Settings::Manager *settings )
-{
+void HelpBrowser::applySettings(Settings::Manager* settings) {
     settings->beginGroup("IDE/shortcuts");
 
-    mWebView->pageAction(QWebEnginePage::Back)->setShortcut( QKeySequence::Back );
+    mWebView->pageAction(QWebEnginePage::Back)->setShortcut(QKeySequence::Back);
 
-    mWebView->pageAction(QWebEnginePage::Forward)->setShortcut( QKeySequence::Forward );
+    mWebView->pageAction(QWebEnginePage::Forward)->setShortcut(QKeySequence::Forward);
 
-    mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
+    mActions[DocClose]->setShortcut(settings->shortcut("ide-document-close"));
 
-    mActions[ZoomIn]->setShortcut( settings->shortcut("editor-enlarge-font") );
+    mActions[ZoomIn]->setShortcut(settings->shortcut("editor-enlarge-font"));
 
-    mActions[ZoomOut]->setShortcut( settings->shortcut("editor-shrink-font") );
+    mActions[ZoomOut]->setShortcut(settings->shortcut("editor-shrink-font"));
 
-    mActions[ResetZoom]->setShortcut( settings->shortcut("editor-reset-font-size") );
+    mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
 
     QList<QKeySequence> evalShortcuts;
-    evalShortcuts.append( settings->shortcut("editor-eval-smart") );
-    evalShortcuts.append( settings->shortcut("editor-eval-line") );
-    evalShortcuts.append( QKeySequence(Qt::Key_Enter) );
-    mActions[Evaluate]->setShortcuts( evalShortcuts );
+    evalShortcuts.append(settings->shortcut("editor-eval-smart"));
+    evalShortcuts.append(settings->shortcut("editor-eval-line"));
+    evalShortcuts.append(QKeySequence(Qt::Key_Enter));
+    mActions[Evaluate]->setShortcuts(evalShortcuts);
 
     settings->endGroup();
 
     QString codeFontFamily = settings->codeFont().family();
-    mWebView->settings()->setFontFamily( QWebEngineSettings::FixedFont, codeFontFamily );
+    mWebView->settings()->setFontFamily(QWebEngineSettings::FixedFont, codeFontFamily);
 }
 
-void HelpBrowser::goHome()
-{
-    static QString code( "HelpBrowser.goHome" );
+void HelpBrowser::goHome() {
+    static QString code("HelpBrowser.goHome");
     sendRequest(code);
 }
 
-void HelpBrowser::closeDocument()
-{
-    MainWindow::instance()->helpBrowserDocklet()->close();
-}
+void HelpBrowser::closeDocument() { MainWindow::instance()->helpBrowserDocklet()->close(); }
 
 /// Escapes double quotes; used for strings sent to interpreter.
-static inline QString escapeDoubleQuotes( const QString & s )
-{
-    return QString{s}.replace('\"', "\\\"");
-}
+static inline QString escapeDoubleQuotes(const QString& s) { return QString { s }.replace('\"', "\\\""); }
 
-void HelpBrowser::gotoHelpFor( const QString & symbol )
-{
+void HelpBrowser::gotoHelpFor(const QString& symbol) {
     QString escaped = escapeDoubleQuotes(symbol);
     QString code = QStringLiteral("HelpBrowser.openHelpFor(\"%1\")").arg(escaped);
     sendRequest(code);
 }
 
-void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & methodName )
-{
+void HelpBrowser::gotoHelpForMethod(const QString& className, const QString& methodName) {
     QString escapedClass = escapeDoubleQuotes(className);
     QString escapedMethod = escapeDoubleQuotes(methodName);
 
-    QString code = QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )")
-        .arg(escapedClass, escapedMethod);
+    QString code =
+        QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(escapedClass, escapedMethod);
     sendRequest(code);
 }
 
-void HelpBrowser::onLinkClicked( const QUrl & url, QWebEnginePage::NavigationType type, bool isMainFrame )
-{
+void HelpBrowser::onLinkClicked(const QUrl& url, QWebEnginePage::NavigationType type, bool isMainFrame) {
     qDebug() << "link clicked:" << url;
 
-    static const QStringList nonHelpFileExtensions = QStringList() << ".sc" << ".scd" << ".schelp" << ".txt" << ".rtf";
+    static const QStringList nonHelpFileExtensions = QStringList() << ".sc"
+                                                                   << ".scd"
+                                                                   << ".schelp"
+                                                                   << ".txt"
+                                                                   << ".rtf";
     static const QString fileScheme("file");
 
     QString urlString = escapeDoubleQuotes(url.toString());
 
-    foreach ( const QString & extension, nonHelpFileExtensions ) {
-        if (urlString.endsWith( extension )) {
-            if ( QURL_IS_LOCAL_FILE(url) ) {
-                Main::documentManager()->open(url.toLocalFile(), -1, 0, false );
+    foreach (const QString& extension, nonHelpFileExtensions) {
+        if (urlString.endsWith(extension)) {
+            if (QURL_IS_LOCAL_FILE(url)) {
+                Main::documentManager()->open(url.toLocalFile(), -1, 0, false);
                 return;
             }
             break;
         }
     }
 
-    sendRequest( QStringLiteral("HelpBrowser.goTo(\"%1\")").arg( urlString ) );
+    sendRequest(QStringLiteral("HelpBrowser.goTo(\"%1\")").arg(urlString));
 }
 
-void HelpBrowser::onReload()
-{
-    onLinkClicked( mWebView->url(), QWebEnginePage::NavigationTypeReload, true );
-}
+void HelpBrowser::onReload() { onLinkClicked(mWebView->url(), QWebEnginePage::NavigationTypeReload, true); }
 
-void HelpBrowser::zoomIn()
-{
+void HelpBrowser::zoomIn() {
     qreal zoomFactor = mWebView->zoomFactor();
-    zoomFactor = qMin( zoomFactor + 0.1, 2.0 );
+    zoomFactor = qMin(zoomFactor + 0.1, 2.0);
     mWebView->setZoomFactor(zoomFactor);
 }
 
-void HelpBrowser::zoomOut()
-{
+void HelpBrowser::zoomOut() {
     qreal zoomFactor = mWebView->zoomFactor();
-    zoomFactor = qMax( zoomFactor - 0.1, 0.1 );
+    zoomFactor = qMax(zoomFactor - 0.1, 0.1);
     mWebView->setZoomFactor(zoomFactor);
 }
 
-void HelpBrowser::resetZoom()
-{
-    mWebView->setZoomFactor(1.0);
-}
+void HelpBrowser::resetZoom() { mWebView->setZoomFactor(1.0); }
 
-void HelpBrowser::findText( const QString & text, bool backwards )
-{
+void HelpBrowser::findText(const QString& text, bool backwards) {
     QWebEnginePage::FindFlags flags;
-    if (backwards) flags |= QWebEnginePage::FindBackward;
-    mWebView->findText( text, flags );
+    if (backwards)
+        flags |= QWebEnginePage::FindBackward;
+    mWebView->findText(text, flags);
 }
-  
+
 bool HelpBrowser::helpBrowserHasFocus() const {
     QWidget* focused = QApplication::focusWidget();
 
@@ -281,12 +256,11 @@ bool HelpBrowser::helpBrowserHasFocus() const {
     return false;
 }
 
-bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
-{
+bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
     if (object == mWebView) {
         switch (event->type()) {
         case QEvent::MouseButtonPress: {
-            QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(event);
+            QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
             switch (mouseEvent->button()) {
             case Qt::XButton1:
                 mWebView->triggerPageAction(QWebEnginePage::Back);
@@ -302,10 +276,8 @@ bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
             break;
         }
         case QEvent::ShortcutOverride: {
-            QKeyEvent * kevent = static_cast<QKeyEvent*>(event);
-            if ( kevent == QKeySequence::Copy ||
-                 kevent == QKeySequence::Paste )
-            {
+            QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
+            if (kevent == QKeySequence::Copy || kevent == QKeySequence::Paste) {
                 kevent->accept();
                 return true;
             }
@@ -318,23 +290,20 @@ bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
     return false;
 }
 
-void HelpBrowser::sendRequest( const QString &code )
-{
-    ScProcess *scProcess = Main::scProcess();
+void HelpBrowser::sendRequest(const QString& code) {
+    ScProcess* scProcess = Main::scProcess();
     if (scProcess->state() == QProcess::NotRunning) {
         qDebug() << "HelpBrowser: aborting request - sclang not running.";
-        MainWindow::instance()->showStatusMessage(
-                    tr("Can not use help - interpreter not running!"));
+        MainWindow::instance()->showStatusMessage(tr("Can not use help - interpreter not running!"));
         return;
     }
 
     qDebug() << "sending request...";
     mLoadProgressIndicator->start(tr("Sending request"));
-    Main::scProcess()->evaluateCode( code, true );
+    Main::scProcess()->evaluateCode(code, true);
 }
 
-void HelpBrowser::onScResponse( const QString & command, const QString & data )
-{
+void HelpBrowser::onScResponse(const QString& command, const QString& data) {
     const QString openHelpUrlString = "openHelpUrl";
 
     if (command != openHelpUrlString)
@@ -346,26 +315,27 @@ void HelpBrowser::onScResponse( const QString & command, const QString & data )
 
     QString urlString = data;
     // undress YAML string:
-    urlString.remove(0,1).chop(1);
+    urlString.remove(0, 1).chop(1);
 
-    mWebView->load( urlString );
-  
-    HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
-    if (helpDock) helpDock->focus();
+    mWebView->load(urlString);
+
+    HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
+    if (helpDock)
+        helpDock->focus();
 
     emit urlChanged();
 }
 
-void HelpBrowser::evaluateSelection(bool evaluateRegion)
-{
+void HelpBrowser::evaluateSelection(bool evaluateRegion) {
     static const QString jsSelectLine("selectLine()");
     static const QString jsSelectRegion("selectRegion()");
-    
+
     QString selected = mWebView->selectedText();
     if (!selected.isEmpty()) {
         Main::scProcess()->evaluateCode(selected);
-    } {
-        mWebView->page()->runJavaScript( evaluateRegion ? jsSelectRegion : jsSelectLine, [this](QVariant res){
+    }
+    {
+        mWebView->page()->runJavaScript(evaluateRegion ? jsSelectRegion : jsSelectLine, [this](QVariant res) {
             QString selectionResult = res.toString();
             if (!selectionResult.isEmpty()) {
                 Main::scProcess()->evaluateCode(selectionResult);
@@ -374,94 +344,75 @@ void HelpBrowser::evaluateSelection(bool evaluateRegion)
     }
 }
 
-void HelpBrowser::onJsConsoleMsg(const QString &arg1, int arg2, const QString & arg3 )
-{
+void HelpBrowser::onJsConsoleMsg(const QString& arg1, int arg2, const QString& arg3) {
     qWarning() << "*** ERROR in JavaScript:" << arg1;
     qWarning() << "* line:" << arg2;
     qWarning() << "* source ID:" << arg3;
 }
 
-void HelpBrowser::onContextMenuRequest( const QPoint & pos )
-{
+void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
     QMenu menu;
-    
+
     const auto& contextData = mWebView->page()->contextMenuData();
-  
+
     if (!contextData.linkUrl().isEmpty()) {
-        menu.addAction( mWebView->pageAction(QWebEnginePage::CopyLinkToClipboard) );
+        menu.addAction(mWebView->pageAction(QWebEnginePage::CopyLinkToClipboard));
         menu.addSeparator();
     }
-    
+
     if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
-        menu.addAction( mWebView->pageAction(QWebEnginePage::Copy) );
+        menu.addAction(mWebView->pageAction(QWebEnginePage::Copy));
         if (contextData.isContentEditable())
-            menu.addAction( mWebView->pageAction(QWebEnginePage::Paste) );
+            menu.addAction(mWebView->pageAction(QWebEnginePage::Paste));
         menu.addSeparator();
     }
-    
-    menu.addAction( mWebView->pageAction(QWebEnginePage::Back) );
-    menu.addAction( mWebView->pageAction(QWebEnginePage::Forward) );
-    menu.addAction( mWebView->pageAction(QWebEnginePage::Reload) );
+
+    menu.addAction(mWebView->pageAction(QWebEnginePage::Back));
+    menu.addAction(mWebView->pageAction(QWebEnginePage::Forward));
+    menu.addAction(mWebView->pageAction(QWebEnginePage::Reload));
 
     if (!contextData.selectedText().isEmpty())
-        menu.addAction( mActions[Evaluate] );
+        menu.addAction(mActions[Evaluate]);
 
     menu.addSeparator();
 
-    menu.addAction( mWebView->pageAction(QWebEnginePage::Back) );
-    menu.addAction( mWebView->pageAction(QWebEnginePage::Forward) );
-    menu.addAction( mWebView->pageAction(QWebEnginePage::Reload) );
+    menu.addAction(mWebView->pageAction(QWebEnginePage::Back));
+    menu.addAction(mWebView->pageAction(QWebEnginePage::Forward));
+    menu.addAction(mWebView->pageAction(QWebEnginePage::Reload));
 
     menu.addSeparator();
 
-    menu.addAction( mActions[ZoomIn] );
-    menu.addAction( mActions[ZoomOut] );
-    menu.addAction( mActions[ResetZoom] );
+    menu.addAction(mActions[ZoomIn]);
+    menu.addAction(mActions[ZoomOut]);
+    menu.addAction(mActions[ResetZoom]);
 
-    menu.addAction( mActions[DocClose] );
+    menu.addAction(mActions[DocClose]);
 
-    menu.exec( mWebView->mapToGlobal(pos) );
+    menu.exec(mWebView->mapToGlobal(pos));
 }
 
-QString HelpBrowser::symbolUnderCursor()
-{
+QString HelpBrowser::symbolUnderCursor() {
     return mWebView->selectedText();
     // FIXME: should parse out word under cursor if no selection
 }
 
-bool HelpBrowser::openDocumentation()
-{
-    return Main::openDocumentation(symbolUnderCursor());
-}
+bool HelpBrowser::openDocumentation() { return Main::openDocumentation(symbolUnderCursor()); }
 
-void HelpBrowser::openDefinition()
-{
-    return Main::openDefinition(symbolUnderCursor(), window());
-}
+void HelpBrowser::openDefinition() { return Main::openDefinition(symbolUnderCursor(), window()); }
 
-void HelpBrowser::openCommandLine()
-{
-    return Main::openCommandLine(symbolUnderCursor());
-}
+void HelpBrowser::openCommandLine() { return Main::openCommandLine(symbolUnderCursor()); }
 
-void HelpBrowser::findReferences()
-{
-    return Main::findReferences(symbolUnderCursor(), window());
-}
+void HelpBrowser::findReferences() { return Main::findReferences(symbolUnderCursor(), window()); }
 
-HelpBrowserFindBox::HelpBrowserFindBox( QWidget * parent ):
-    QLineEdit(parent)
-{
+HelpBrowserFindBox::HelpBrowserFindBox(QWidget* parent): QLineEdit(parent) {
     setPlaceholderText(tr("Find in page..."));
-    connect( this, SIGNAL(textChanged(QString)), this, SIGNAL(query(QString)) );
+    connect(this, SIGNAL(textChanged(QString)), this, SIGNAL(query(QString)));
 }
 
-bool HelpBrowserFindBox::event( QEvent * event )
-{
-    switch(event->type()) {
-    case QEvent::ShortcutOverride:
-    {
-        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
+bool HelpBrowserFindBox::event(QEvent* event) {
+    switch (event->type()) {
+    case QEvent::ShortcutOverride: {
+        QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
         if (kevent->key() == Qt::Key_Escape) {
             event->accept();
             return true;
@@ -473,14 +424,13 @@ bool HelpBrowserFindBox::event( QEvent * event )
         }
         break;
     }
-    case QEvent::KeyPress:
-    {
-        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
+    case QEvent::KeyPress: {
+        QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
         switch (kevent->key()) {
         case Qt::Key_Return:
         case Qt::Key_Enter: {
             bool backwards = kevent->modifiers() & Qt::ShiftModifier;
-            emit query( text(), backwards );
+            emit query(text(), backwards);
             return true;
         }
         case Qt::Key_Escape:
@@ -496,9 +446,7 @@ bool HelpBrowserFindBox::event( QEvent * event )
     return QLineEdit::event(event);
 }
 
-HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
-    Docklet(tr("Help browser"), parent)
-{
+HelpBrowserDocklet::HelpBrowserDocklet(QWidget* parent): Docklet(tr("Help browser"), parent) {
     mHelpBrowser = new HelpBrowser;
 
     setAllowedAreas(Qt::AllDockWidgetAreas);
@@ -506,25 +454,24 @@ HelpBrowserDocklet::HelpBrowserDocklet( QWidget *parent ):
 
     mFindBox = new HelpBrowserFindBox();
 
-    toolBar()->addWidget( mHelpBrowser->loadProgressIndicator(), 1 );
-    toolBar()->addAction( mHelpBrowser->mActions[HelpBrowser::GoHome] );
-    toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebEnginePage::Back) );
-    toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebEnginePage::Forward) );
-    toolBar()->addAction( mHelpBrowser->mWebView->pageAction(QWebEnginePage::Reload) );
-    toolBar()->addWidget( mFindBox );
+    toolBar()->addWidget(mHelpBrowser->loadProgressIndicator(), 1);
+    toolBar()->addAction(mHelpBrowser->mActions[HelpBrowser::GoHome]);
+    toolBar()->addAction(mHelpBrowser->mWebView->pageAction(QWebEnginePage::Back));
+    toolBar()->addAction(mHelpBrowser->mWebView->pageAction(QWebEnginePage::Forward));
+    toolBar()->addAction(mHelpBrowser->mWebView->pageAction(QWebEnginePage::Reload));
+    toolBar()->addWidget(mFindBox);
 
-    connect( mFindBox, SIGNAL(query(QString, bool)),
-             mHelpBrowser, SLOT(findText(QString, bool)) );
+    connect(mFindBox, SIGNAL(query(QString, bool)), mHelpBrowser, SLOT(findText(QString, bool)));
 
     connect(Main::scProcess(), SIGNAL(started()), this, SLOT(onInterpreterStart()));
 
-    OverridingAction * action;
+    OverridingAction* action;
     action = new OverridingAction(this);
     action->setShortcut(QKeySequence::Find);
     action->addToWidget(mHelpBrowser);
     action->addToWidget(toolBar());
-    connect( action, SIGNAL(triggered(bool)), mFindBox, SLOT(setFocus()) );
-    connect( action, SIGNAL(triggered(bool)), mFindBox, SLOT(selectAll()) );
+    connect(action, SIGNAL(triggered(bool)), mFindBox, SLOT(setFocus()));
+    connect(action, SIGNAL(triggered(bool)), mFindBox, SLOT(selectAll()));
 }
 
 } // namespace ScIDE

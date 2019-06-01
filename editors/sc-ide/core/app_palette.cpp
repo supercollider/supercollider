@@ -26,7 +26,7 @@
 using namespace ScIDE;
 
 void Main::setAppPaletteFromSettings() {
-    const QTextCharFormat *format = &mSettings->getThemeVal("text");
+    const QTextCharFormat* format = &mSettings->getThemeVal("text");
 
     // QPalette::Window = general background color.
     QColor window = format->background().color();
@@ -60,14 +60,11 @@ void Main::setAppPaletteFromSettings() {
     if (abs(value_difference) < 32) {
         // If we are on the darker end of the spectrum we lighten the background.
         if (window.value() < 127) {
-            window = QColor::fromHsv(window.hue(),
-                                      window.saturation(),
-                                      window.value() + 32 - value_difference);
+            window = QColor::fromHsv(window.hue(), window.saturation(), window.value() + 32 - value_difference);
         } else {
             // Otherwise we can darken the foreground color.
-            window_text = QColor::fromHsv(window_text.hue(),
-                                      window_text.saturation(),
-                                      window_text.value() - (32 - value_difference));
+            window_text = QColor::fromHsv(window_text.hue(), window_text.saturation(),
+                                          window_text.value() - (32 - value_difference));
         }
     }
 
@@ -108,16 +105,15 @@ void Main::setAppPaletteFromSettings() {
         shadow = color::lighten(window, 20);
     }
 
-    QPalette palette = QPalette(
-        QBrush(window_text),      // windowText
-        QBrush(button),           // button
-        QBrush(disabled_shadow),  // light
-        QBrush(mid),              // dark
-        QBrush(mid),              // mid
-        QBrush(window_text),      // text
-        QBrush(window_text),      // bright_text
-        QBrush(window),           // base
-        QBrush(window)            // window
+    QPalette palette = QPalette(QBrush(window_text), // windowText
+                                QBrush(button), // button
+                                QBrush(disabled_shadow), // light
+                                QBrush(mid), // dark
+                                QBrush(mid), // mid
+                                QBrush(window_text), // text
+                                QBrush(window_text), // bright_text
+                                QBrush(window), // base
+                                QBrush(window) // window
     );
 
     palette.setBrush(QPalette::Disabled, QPalette::Text, QBrush(disabled_text));

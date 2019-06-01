@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,37 +29,36 @@
     static const int sc_api_version = x;
  value in SC_InterfaceTable.h file.
  */
-struct Graph
-{
-	Node mNode;
+struct Graph {
+    Node mNode;
 
-	uint32 mNumWires;
-	struct Wire *mWire;
+    uint32 mNumWires;
+    struct Wire* mWire;
 
-	uint32 mNumControls;
-	float *mControls;
-	float **mMapControls;
-	int32 *mAudioBusOffsets;
+    uint32 mNumControls;
+    float* mControls;
+    float** mMapControls;
+    int32* mAudioBusOffsets;
 
-	// try this for setting the rate of a control
-	int *mControlRates;
+    // try this for setting the rate of a control
+    int* mControlRates;
 
-	uint32 mNumUnits;
-	struct Unit **mUnits;
+    uint32 mNumUnits;
+    struct Unit** mUnits;
 
-	uint32 mNumCalcUnits;
-	struct Unit **mCalcUnits; // excludes i-rate units.
+    uint32 mNumCalcUnits;
+    struct Unit** mCalcUnits; // excludes i-rate units.
 
-	int mSampleOffset;
-	struct RGen* mRGen;
+    int mSampleOffset;
+    struct RGen* mRGen;
 
-	struct Unit *mLocalAudioBusUnit;
-	struct Unit *mLocalControlBusUnit;
+    struct Unit* mLocalAudioBusUnit;
+    struct Unit* mLocalControlBusUnit;
 
-	float mSubsampleOffset;
+    float mSubsampleOffset;
 
-	SndBuf *mLocalSndBufs;
-	int localBufNum;
-	int localMaxBufNum;
+    SndBuf* mLocalSndBufs;
+    int localBufNum;
+    int localMaxBufNum;
 };
 typedef struct Graph Graph;

@@ -34,25 +34,24 @@
 #include "../../common/server_shm.hpp"
 
 #ifdef PORTAUDIO_BACKEND
-#include "audio_backend/portaudio_backend.hpp"
+#    include "audio_backend/portaudio_backend.hpp"
 #elif defined(JACK_BACKEND)
-#include "audio_backend/jack_backend.hpp"
+#    include "audio_backend/jack_backend.hpp"
 #endif
 
 #include "../../scsynth/SC_TimeDLL.hpp"
 #include "../../scsynth/SC_Time.hpp"
 namespace nova {
 
-struct realtime_engine_functor
-{
+struct realtime_engine_functor {
     static inline void sync_clock(void);
     static void init_thread(void);
     static inline void run_tick(void);
-    static void log_(const char *);
-    static void log_printf_(const char *, ...);
+    static void log_(const char*);
+    static void log_printf_(const char*, ...);
 };
 
-extern class nova_server * instance;
+extern class nova_server* instance;
 
 /** callback class for audio-thread to system-thread communcation
  *
@@ -61,11 +60,8 @@ extern class nova_server * instance;
  *  the real-time thread.
  * */
 
-class system_callback:
-    public static_pooled_class<system_callback,
-                               1<<20,    /* 1mb pool of realtime memory */
-                               false, 5>
-{
+class system_callback : public static_pooled_class<system_callback, 1 << 20, /* 1mb pool of realtime memory */
+                                                   false, 5> {
 public:
     virtual ~system_callback(void) = default;
 
@@ -75,22 +71,14 @@ public:
 /** system_callback to delete object in the system thread. useful to avoid hitting the memory allocator
  *  from within the real-time threads
  */
-template <typename T>
-class delete_callback:
-    public system_callback
-{
+template <typename T> class delete_callback : public system_callback {
 public:
-    delete_callback (T * ptr):
-        ptr_(ptr)
-    {}
+    delete_callback(T* ptr): ptr_(ptr) {}
 
 private:
-    virtual void run(void) override
-    {
-        delete ptr_;
-    }
+    virtual void run(void) override { delete ptr_; }
 
-    const T * const ptr_;
+    const T* const ptr_;
 };
 
 
@@ -99,11 +87,8 @@ private:
  *  for the real-time use, it should acquire real-time scheduling and pin the thread to a certain CPU
  *
  * */
-struct thread_init_functor
-{
-    thread_init_functor(bool real_time):
-        rt(real_time)
-    {}
+struct thread_init_functor {
+    thread_init_functor(bool real_time): rt(real_time) {}
 
     void operator()(int thread_index);
 
@@ -111,8 +96,7 @@ private:
     const bool rt;
 };
 
-struct io_thread_init_functor
-{
+struct io_thread_init_functor {
     void operator()() const;
 };
 
@@ -122,21 +106,19 @@ typedef portaudio_backend<realtime_engine_functor, float, false> audio_backend;
 #elif defined(JACK_BACKEND)
 typedef jack_backend<realtime_engine_functor, float, false> audio_backend;
 #else
-#error "no audio backend selected"
+#    error "no audio backend selected"
 #endif
 
 } // detail
 
-class nova_server:
-    public asynchronous_log_thread,
-    public node_graph,
-    public server_shared_memory_creator,
-    public scheduler<thread_init_functor>,
-    public detail::audio_backend,
-    public synth_factory,
-    public buffer_manager,
-    public sc_osc_handler
-{
+class nova_server : public asynchronous_log_thread,
+                    public node_graph,
+                    public server_shared_memory_creator,
+                    public scheduler<thread_init_functor>,
+                    public detail::audio_backend,
+                    public synth_factory,
+                    public buffer_manager,
+                    public sc_osc_handler {
 public:
     SC_TimeDLL mDLL;
     bool use_system_clock;
@@ -145,7 +127,7 @@ public:
     typedef detail::audio_backend audio_backend;
 
     /* main nova_server function */
-    nova_server(server_arguments const & args);
+    nova_server(server_arguments const& args);
 
     ~nova_server(void);
 
@@ -153,97 +135,69 @@ public:
 
     /* @{ */
     /** io interpreter */
-    void add_io_callback(system_callback * cb)
-    {
-        io_interpreter.add_callback(cb);
-    }
+    void add_io_callback(system_callback* cb) { io_interpreter.add_callback(cb); }
     /* @} */
 
     /* @{ */
     /** system interpreter
-      * \note: should only be called from the main audio thread
-      */
-    void add_system_callback(system_callback * cb)
-    {
-        system_interpreter.add_callback(cb);
-    }
+     * \note: should only be called from the main audio thread
+     */
+    void add_system_callback(system_callback* cb) { system_interpreter.add_callback(cb); }
 
-    void run(void)
-    {
+    void run(void) {
         start_dsp_threads();
         system_interpreter.run();
     }
 
-    void prepare_to_terminate()
-    {
-        server_shared_memory_creator::disconnect();
-    }
+    void prepare_to_terminate() { server_shared_memory_creator::disconnect(); }
 
-    void terminate(void)
-    {
+    void terminate(void) {
         system_interpreter.terminate();
         quit_requested_ = true;
     }
     /* @} */
 
     /** non-rt synthesis */
-    void run_nonrt_synthesis(server_arguments const & arguments);
+    void run_nonrt_synthesis(server_arguments const& arguments);
 
 public:
     /* @{ */
     /** node control */
-    abstract_synth * add_synth(const char * name, int id, node_position_constraint const & constraints);
-    group * add_group(int id, node_position_constraint const & constraints);
-    parallel_group * add_parallel_group(int id, node_position_constraint const & constraints);
+    abstract_synth* add_synth(const char* name, int id, node_position_constraint const& constraints);
+    group* add_group(int id, node_position_constraint const& constraints);
+    parallel_group* add_parallel_group(int id, node_position_constraint const& constraints);
 
-    void free_node(server_node * node);
-    void group_free_all(abstract_group * group);
-    void group_free_deep(abstract_group * group);
+    void free_node(server_node* node);
+    void group_free_all(abstract_group* group);
+    void group_free_deep(abstract_group* group);
 
-    void node_pause(server_node * node)
-    {
+    void node_pause(server_node* node) {
         node->pause();
         notification_node_turned_off(node);
     }
 
-    void node_resume(server_node * node)
-    {
+    void node_resume(server_node* node) {
         node->resume();
         notification_node_turned_on(node);
     }
 
     void set_node_slot(int node_id, slot_index_t slot, float value);
-    void set_node_slot(int node_id, const char * slot, float value);
+    void set_node_slot(int node_id, const char* slot, float value);
     /* @} */
 
-    void cpu_load(float & peak, float & average) const
-    {
-        audio_backend::get_cpuload(peak, average);
-    }
+    void cpu_load(float& peak, float& average) const { audio_backend::get_cpuload(peak, average); }
 
-    void increment_logical_time(void)
-    {
-        sc_osc_handler::increment_logical_time(time_per_tick);
-    }
+    void increment_logical_time(void) { sc_osc_handler::increment_logical_time(time_per_tick); }
 
-    void set_last_now(time_tag const & lasts, time_tag const & nows)
-    {
-        sc_osc_handler::set_last_now(lasts, nows);
-    }
+    void set_last_now(time_tag const& lasts, time_tag const& nows) { sc_osc_handler::set_last_now(lasts, nows); }
 
-	void compensate_latency(void)
-	{
-		sc_osc_handler::add_last_now(
-				time_tag::from_samples(
-					audio_backend::get_latency(),
-					audio_backend::get_samplerate()
-				)
-			);
-	}
+    void compensate_latency(void) {
+        sc_osc_handler::add_last_now(
+            time_tag::from_samples(audio_backend::get_latency(), audio_backend::get_samplerate()));
+    }
 
 public:
-    HOT void tick()
-    {
+    HOT void tick() {
         sc_factory->apply_done_actions();
         run_callbacks();
         execute_scheduled_bundles();
@@ -256,28 +210,21 @@ public:
 
     void rebuild_dsp_queue(void);
 
-    void request_dsp_queue_update(void)
-    {
-        dsp_queue_dirty = true;
-    }
+    void request_dsp_queue_update(void) { dsp_queue_dirty = true; }
 
-    bool quit_requested()
-    {
-        return quit_requested_.load();
-    }
+    bool quit_requested() { return quit_requested_.load(); }
 
 private:
-    void perform_node_add(server_node * node, node_position_constraint const & constraints, bool update_dsp_queue);
-    void finalize_node(server_node & node);
-    std::atomic<bool> quit_requested_ = {false};
+    void perform_node_add(server_node* node, node_position_constraint const& constraints, bool update_dsp_queue);
+    void finalize_node(server_node& node);
+    std::atomic<bool> quit_requested_ = { false };
     bool dsp_queue_dirty = false;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
     threaded_callback_interpreter<system_callback, io_thread_init_functor> io_interpreter; // for network IO
 };
 
-inline void run_scheduler_tick(void)
-{
+inline void run_scheduler_tick(void) {
     const int blocksize = sc_factory->world.mBufLength;
     const int input_channels = sc_factory->world.mNumInputs;
     const int output_channels = sc_factory->world.mNumOutputs;
@@ -296,37 +243,29 @@ inline void run_scheduler_tick(void)
     }
 }
 
-inline bool log_printf(const char *fmt, ...)
-{
+inline bool log_printf(const char* fmt, ...) {
     va_list vargs;
     va_start(vargs, fmt);
     return instance->log_printf(fmt, vargs);
 }
 
 
-inline void realtime_engine_functor::sync_clock(void)
-{
-
-    if(instance->use_system_clock){
+inline void realtime_engine_functor::sync_clock(void) {
+    if (instance->use_system_clock) {
         double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
-        instance->mDLL.Reset(
-            sc_factory->world.mSampleRate,
-            sc_factory->world.mBufLength,
-            SC_TIME_DLL_BW,
-            nows);
+        instance->mDLL.Reset(sc_factory->world.mSampleRate, sc_factory->world.mBufLength, SC_TIME_DLL_BW, nows);
         time_tag oscTime = time_tag((uint64)((instance->mDLL.PeriodTime()) * kSecondsToOSCunits + .5));
         time_tag oscInc = time_tag((uint64)((instance->mDLL.Period()) * kSecondsToOSCunits + .5));
         instance->smooth_samplerate = instance->mDLL.SampleRate();
-        instance->set_last_now(oscTime,oscTime + oscInc);
-    }else
+        instance->set_last_now(oscTime, oscTime + oscInc);
+    } else
         instance->update_time_from_system();
 
-	instance->compensate_latency();
+    instance->compensate_latency();
 }
 
 
-inline void realtime_engine_functor::run_tick(void)
-{
+inline void realtime_engine_functor::run_tick(void) {
     /* // debug timedll
     static int count = 0;
     if(count >= 44100/64){
@@ -339,28 +278,22 @@ inline void realtime_engine_functor::run_tick(void)
     */
     run_scheduler_tick();
 
-    if(instance->use_system_clock){
-        //time_tag nows = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
+    if (instance->use_system_clock) {
+        // time_tag nows =
+        // time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
         double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Update(nows);
         time_tag oscTime = time_tag((uint64)((instance->mDLL.PeriodTime()) * kSecondsToOSCunits + .5));
         time_tag oscInc = time_tag((uint64)((instance->mDLL.Period()) * kSecondsToOSCunits + .5));
         instance->smooth_samplerate = instance->mDLL.SampleRate();
-        instance->set_last_now(oscTime,oscTime + oscInc);
-    }else
+        instance->set_last_now(oscTime, oscTime + oscInc);
+    } else
         instance->increment_logical_time();
 }
 
 
+inline bool log(const char* string) { return instance->log(string); }
 
-inline bool log(const char * string)
-{
-    return instance->log(string);
-}
-
-inline bool log(const char * string, size_t length)
-{
-    return instance->log(string, length);
-}
+inline bool log(const char* string, size_t length) { return instance->log(string, length); }
 
 } /* namespace nova */

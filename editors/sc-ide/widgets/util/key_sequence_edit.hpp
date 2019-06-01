@@ -26,29 +26,20 @@
 
 namespace ScIDE {
 
-class KeySequenceEdit : public QLineEdit
-{
+class KeySequenceEdit : public QLineEdit {
     Q_OBJECT
 
 private:
     QBasicTimer mEditingTimer;
 
 public:
-    KeySequenceEdit( QWidget *parent = 0 ):
-        QLineEdit(parent),
-        k1(0), k2(0), k3(0), k4(0),
-        mEditing(false)
-    {
+    KeySequenceEdit(QWidget* parent = 0): QLineEdit(parent), k1(0), k2(0), k3(0), k4(0), mEditing(false) {
         setReadOnly(true);
     }
 
-    QKeySequence sequence()
-    {
-        return QKeySequence(k1, k2, k3, k4);
-    }
+    QKeySequence sequence() { return QKeySequence(k1, k2, k3, k4); }
 
-    void setSequence( const QKeySequence &seq )
-    {
+    void setSequence(const QKeySequence& seq) {
         k1 = seq[0];
         k2 = seq[1];
         k3 = seq[2];
@@ -61,8 +52,7 @@ public:
     }
 
 public slots:
-    void reset()
-    {
+    void reset() {
         k1 = k2 = k3 = k4 = 0;
 
         if (mEditing)
@@ -71,8 +61,7 @@ public slots:
             updateText();
     }
 
-    void finishEditing()
-    {
+    void finishEditing() {
         if (mEditing) {
             mEditing = false;
             mEditingTimer.stop();
@@ -85,44 +74,42 @@ signals:
     void editingStarted();
 
 protected:
-//#if 0
-    void updateText()
-    {
+    //#if 0
+    void updateText() {
         QKeySequence seq = sequence();
         if (seq.isEmpty())
             clear();
         else {
             QString text = sequence().toString(QKeySequence::NativeText);
-            if (mEditing) text.append(", ...");
-            setText( text );
+            if (mEditing)
+                text.append(", ...");
+            setText(text);
         }
     }
 
-    bool event( QEvent *e )
-    {
+    bool event(QEvent* e) {
         if (e->type() != QEvent::KeyPress)
             return QLineEdit::event(e);
 
         e->accept();
 
-        QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+        QKeyEvent* ke = static_cast<QKeyEvent*>(e);
         int key = ke->key();
 
         if (isModifier(key))
             return true;
 
-        int *k;
+        int* k;
         if (!mEditing) {
             k1 = k2 = k3 = k4 = 0;
             mEditing = true;
             k = &k1;
-        }
-        else {
-            if(k1 == 0)
+        } else {
+            if (k1 == 0)
                 k = &k1;
-            else if(k2 == 0)
+            else if (k2 == 0)
                 k = &k2;
-            else if(k3 == 0)
+            else if (k3 == 0)
                 k = &k3;
             else
                 k = &k4;
@@ -142,23 +129,17 @@ protected:
         return true;
     }
 
-    virtual void timerEvent ( QTimerEvent * e )
-    {
+    virtual void timerEvent(QTimerEvent* e) {
         if (e->timerId() == mEditingTimer.timerId())
             finishEditing();
     }
 
-    void focusOutEvent( QFocusEvent * e )
-    {
-        finishEditing();
-    }
+    void focusOutEvent(QFocusEvent* e) { finishEditing(); }
 
-//#endif
+    //#endif
 private:
-    bool isModifier(int key)
-    {
-        switch (key)
-        {
+    bool isModifier(int key) {
+        switch (key) {
         case Qt::Key_Shift:
         case Qt::Key_Control:
         case Qt::Key_Meta:

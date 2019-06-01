@@ -32,27 +32,23 @@ namespace nova {
 
 using namespace std;
 
-void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
-{
-    for (sc_synthdef & def : defs) {
-        sc_synth_definition_ptr sp = new sc_synth_definition( std::move(def) );
-        factory.register_definition( std::move(sp) );
+void register_synthdefs(synth_factory& factory, std::vector<sc_synthdef>&& defs) {
+    for (sc_synthdef& def : defs) {
+        sc_synth_definition_ptr sp = new sc_synth_definition(std::move(def));
+        factory.register_definition(std::move(sp));
     }
 }
 
-std::vector<sc_synthdef> sc_read_synthdefs_file(path const & file)
-{
+std::vector<sc_synthdef> sc_read_synthdefs_file(path const& file) {
     try {
         return read_synthdef_file(file.string());
-    } catch(std::exception const & e)
-    {
+    } catch (std::exception const& e) {
         cout << "Exception when parsing synthdef file " << file.string() << ": " << e.what() << endl;
         return std::vector<sc_synthdef>();
     }
 }
 
-std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
-{
+std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir) {
     using namespace boost::filesystem;
     using namespace std;
 
@@ -63,42 +59,40 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
         return ret;
 
     // FIXME: some kind of threadpool would be nice!
-    auto launch_policy = thread::hardware_concurrency() > 1 ? launch::async
-                                                            : launch::deferred;
+    auto launch_policy = thread::hardware_concurrency() > 1 ? launch::async : launch::deferred;
 
-    vector<future<def_vector> > futures;
+    vector<future<def_vector>> futures;
 
-    for( auto const & entry : boost::make_iterator_range( recursive_directory_iterator(dir),
-                                                          recursive_directory_iterator()     )) {
-        if (!is_directory( entry.status() )) {
+    for (auto const& entry :
+         boost::make_iterator_range(recursive_directory_iterator(dir), recursive_directory_iterator())) {
+        if (!is_directory(entry.status())) {
             auto path_name = entry.path();
-            futures.emplace_back( async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} ) );
+            futures.emplace_back(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name); }));
         }
     }
 
-    for (future<def_vector> & synthdef_future : futures) {
-        for (sc_synthdef & definition : synthdef_future.get())
-            ret.emplace_back( std::move(definition) );
+    for (future<def_vector>& synthdef_future : futures) {
+        for (sc_synthdef& definition : synthdef_future.get())
+            ret.emplace_back(std::move(definition));
     }
 
     return ret;
 }
 
-sc_synth_definition::sc_synth_definition(sc_synthdef && sd):
-    synth_definition(sd.name()), sc_synthdef( std::forward<sc_synthdef>(sd) )
-{
+sc_synth_definition::sc_synth_definition(sc_synthdef&& sd):
+    synth_definition(sd.name()),
+    sc_synthdef(std::forward<sc_synthdef>(sd)) {
     std::map<int, symbol> reversed_parameter_map;
-    for( auto const & elem : parameter_map)
-        reversed_parameter_map.insert( std::make_pair(elem.second, elem.first));
+    for (auto const& elem : parameter_map)
+        reversed_parameter_map.insert(std::make_pair(elem.second, elem.first));
 
-    for (auto const & entry : parameter_map)
-    {
-        const symbol name           = entry.first;
+    for (auto const& entry : parameter_map) {
+        const symbol name = entry.first;
         const int32_t current_index = entry.second;
 
         int controls_per_parameter = 1;
 
-        for(int32_t next_index = current_index + 1; next_index != parameter_count(); ++next_index) {
+        for (int32_t next_index = current_index + 1; next_index != parameter_count(); ++next_index) {
             if (reversed_parameter_map.find(next_index) != reversed_parameter_map.end())
                 break;
             controls_per_parameter += 1;
@@ -109,9 +103,8 @@ sc_synth_definition::sc_synth_definition(sc_synthdef && sd):
 }
 
 
-abstract_synth * sc_synth_definition::create_instance(int node_id)
-{
-    sc_synth * synth = new sc_synth(node_id, this);
+abstract_synth* sc_synth_definition::create_instance(int node_id) {
+    sc_synth* synth = new sc_synth(node_id, this);
     return synth;
 }
 

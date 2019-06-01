@@ -50,11 +50,10 @@
 
 using namespace ScIDE;
 
-int main( int argc, char *argv[] )
-{
+int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
-    QStringList arguments (QApplication::arguments());
+    QStringList arguments(QApplication::arguments());
     arguments.pop_front(); // application path
 
     // Pass files to existing instance and quit
@@ -74,7 +73,7 @@ int main( int argc, char *argv[] )
 
     // Load fallback translator that only handles plural forms in English
     QTranslator fallbackTranslator;
-    translationLoaded = fallbackTranslator.load( "scide", ideTranslationPath );
+    translationLoaded = fallbackTranslator.load("scide", ideTranslationPath);
     app.installTranslator(&fallbackTranslator);
     if (!translationLoaded)
         qWarning("scide warning: Failed to load fallback translation file.");
@@ -82,25 +81,25 @@ int main( int argc, char *argv[] )
     // Load translator for locale
     QString ideTranslationFile = "scide_" + QLocale::system().name();
     QTranslator scideTranslator;
-    scideTranslator.load( ideTranslationFile, ideTranslationPath );
+    scideTranslator.load(ideTranslationFile, ideTranslationPath);
     app.installTranslator(&scideTranslator);
 
     // Force Fusion style to appear consistently on all platforms.
     app.setStyle(QStyleFactory::create("Fusion"));
 
     // Palette must be set before style, for consistent application.
-    Main *main = Main::instance();
+    Main* main = Main::instance();
     main->setAppPaletteFromSettings();
 
     // Install style proxy.
-    app.setStyle( new ScIDE::Style(app.style()) );
+    app.setStyle(new ScIDE::Style(app.style()));
 
     // Go...
-    MainWindow *win = new MainWindow(main);
+    MainWindow* win = new MainWindow(main);
 
     // NOTE: load session after GUI is created, so that GUI can respond
-    Settings::Manager *settings = main->settings();
-    SessionManager *sessions = main->sessionManager();
+    Settings::Manager* settings = main->settings();
+    SessionManager* sessions = main->sessionManager();
 
     // NOTE: window has to be shown before restoring its geometry,
     // or else restoring maximized state will fail, if it has ever before
@@ -113,8 +112,7 @@ int main( int argc, char *argv[] )
         if (!lastSession.isEmpty()) {
             sessions->openSession(lastSession);
         }
-    }
-    else if (!startSessionName.isEmpty()) {
+    } else if (!startSessionName.isEmpty()) {
         sessions->openSession(startSessionName);
     }
 
@@ -123,9 +121,7 @@ int main( int argc, char *argv[] )
         sessions->newSession();
     }
 
-    foreach (QString argument, arguments) {
-        main->documentManager()->open(argument);
-    }
+    foreach (QString argument, arguments) { main->documentManager()->open(argument); }
 
     win->restoreDocuments();
 
@@ -143,24 +139,22 @@ int main( int argc, char *argv[] )
     // setup comm channel
     WebSocketClientWrapper clientWrapper(&server);
     QWebChannel channel;
-    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected,
-                     &channel, &QWebChannel::connectTo);
+    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &channel, &QWebChannel::connectTo);
 
     // publish IDE interface
-    IDEWebChannelWrapper ideWrapper{win->helpBrowserDocklet()->browser()};
+    IDEWebChannelWrapper ideWrapper { win->helpBrowserDocklet()->browser() };
     channel.registerObject("IDE", &ideWrapper);
 
     return app.exec();
 }
 
 
-bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
-{
+bool SingleInstanceGuard::tryConnect(QStringList const& arguments) {
     const int maxNumberOfInstances = 128;
     if (!arguments.empty()) {
         for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
             QString serverName = QStringLiteral("SuperColliderIDE_Singleton_%1").arg(socketID);
-            QSharedPointer<QLocalSocket> socket (new QLocalSocket(this));
+            QSharedPointer<QLocalSocket> socket(new QLocalSocket(this));
             socket->connectToServer(serverName);
 
             QStringList canonicalArguments;
@@ -192,20 +186,19 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
     return false;
 }
 
-void SingleInstanceGuard::onIpcData()
-{
+void SingleInstanceGuard::onIpcData() {
     mIpcData.append(mIpcSocket->readAll());
 
     // After we have put the data in the buffer, process it
     int avail = mIpcData.length();
-    do{
-        if (mReadSize == 0 && avail > 4){
+    do {
+        if (mReadSize == 0 && avail > 4) {
             mReadSize = ArrayToInt(mIpcData.left(4));
             mIpcData.remove(0, 4);
             avail -= 4;
         }
 
-        if (mReadSize > 0 && avail >= mReadSize){
+        if (mReadSize > 0 && avail >= mReadSize) {
             QByteArray baReceived(mIpcData.left(mReadSize));
             mIpcData.remove(0, mReadSize);
             mReadSize = 0;
@@ -223,7 +216,7 @@ void SingleInstanceGuard::onIpcData()
                 return;
 
             if (selector == QStringLiteral("open")) {
-                foreach(QString path, message)
+                foreach (QString path, message)
                     Main::documentManager()->open(path);
             }
         }
@@ -231,29 +224,24 @@ void SingleInstanceGuard::onIpcData()
 }
 
 
-static inline QString getSettingsFile()
-{
-    return standardDirectory(ScConfigUserDir) + "/sc_ide_conf.yaml";
-}
+static inline QString getSettingsFile() { return standardDirectory(ScConfigUserDir) + "/sc_ide_conf.yaml"; }
 
 // NOTE: mSettings must be the first to initialize,
 // because other members use it!
 
-Main::Main(void) :
-    mSettings( new Settings::Manager( getSettingsFile(), this ) ),
-    mScProcess( new ScProcess(mSettings, this) ),
-    mScServer( new ScServer(mScProcess, mSettings, this) ),
-    mDocManager( new DocumentManager(this, mSettings) ),
-    mSessionManager( new SessionManager(mDocManager, this) )
-{
+Main::Main(void):
+    mSettings(new Settings::Manager(getSettingsFile(), this)),
+    mScProcess(new ScProcess(mSettings, this)),
+    mScServer(new ScServer(mScProcess, mSettings, this)),
+    mDocManager(new DocumentManager(this, mSettings)),
+    mSessionManager(new SessionManager(mDocManager, this)) {
     new SyntaxHighlighterGlobals(this, mSettings);
 
 #ifdef Q_OS_MAC
     QtCollider::Mac::DisableAutomaticWindowTabbing();
 #endif
 
-    connect(mScProcess, SIGNAL(response(QString,QString)),
-            mDocManager, SLOT(handleScLangMessage(QString,QString)));
+    connect(mScProcess, SIGNAL(response(QString, QString)), mDocManager, SLOT(handleScLangMessage(QString, QString)));
 
     qApp->installEventFilter(this);
     qApp->installNativeEventFilter(this);
@@ -266,13 +254,11 @@ void Main::quit() {
     QApplication::quit();
 }
 
-bool Main::eventFilter(QObject *object, QEvent *event)
-{
+bool Main::eventFilter(QObject* object, QEvent* event) {
     switch (event->type()) {
-    case QEvent::FileOpen:
-    {
+    case QEvent::FileOpen: {
         // open the file dragged onto the application icon on Mac
-        QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
+        QFileOpenEvent* openEvent = static_cast<QFileOpenEvent*>(event);
         mDocManager->open(openEvent->file());
         return true;
     }
@@ -288,20 +274,16 @@ bool Main::eventFilter(QObject *object, QEvent *event)
     return QObject::eventFilter(object, event);
 }
 
-bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
-{
+bool Main::nativeEventFilter(const QByteArray&, void* message, long*) {
     bool result = false;
 
 #ifdef Q_OS_MAC
-    if (QtCollider::Mac::IsCmdPeriodKeyDown(reinterpret_cast<void *>(message)))
-    {
-//        QKeyEvent event(QEvent::KeyPress, Qt::Key_Period, Qt::ControlModifier, ".");
-//        QApplication::sendEvent(this, &event);
+    if (QtCollider::Mac::IsCmdPeriodKeyDown(reinterpret_cast<void*>(message))) {
+        //        QKeyEvent event(QEvent::KeyPress, Qt::Key_Period, Qt::ControlModifier, ".");
+        //        QApplication::sendEvent(this, &event);
         mScProcess->stopMain(); // we completely bypass the shortcut handling
         result = true;
-    }
-    else if (QtCollider::Mac::IsCmdPeriodKeyUp(reinterpret_cast<void *>(message)))
-    {
+    } else if (QtCollider::Mac::IsCmdPeriodKeyUp(reinterpret_cast<void*>(message))) {
         result = true;
     }
 #endif
@@ -309,28 +291,25 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
     return result;
 }
 
-bool Main::openDocumentation(const QString & string)
-{
+bool Main::openDocumentation(const QString& string) {
     QString symbol = string.trimmed();
     if (symbol.isEmpty())
         return false;
 
-    HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
+    HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
     return true;
 }
 
-bool Main::openDocumentationForMethod(const QString & className, const QString & methodName)
-{
-    HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
+bool Main::openDocumentationForMethod(const QString& className, const QString& methodName) {
+    HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
     helpDock->focus();
     return true;
 }
 
-void Main::openDefinition(const QString &string, QWidget * parent)
-{
+void Main::openDefinition(const QString& string, QWidget* parent) {
     QString definitionString = string.trimmed();
 
     LookupDialog dialog(parent);
@@ -339,13 +318,9 @@ void Main::openDefinition(const QString &string, QWidget * parent)
     dialog.exec();
 }
 
-void Main::openCommandLine(const QString &string)
-{
-    MainWindow::instance()->showCmdLine(string);
-}
+void Main::openCommandLine(const QString& string) { MainWindow::instance()->showCmdLine(string); }
 
-void Main::findReferences(const QString &string, QWidget * parent)
-{
+void Main::findReferences(const QString& string, QWidget* parent) {
     QString definitionString = string.trimmed();
 
     ReferencesDialog dialog(parent);
@@ -353,4 +328,3 @@ void Main::findReferences(const QString &string, QWidget * parent)
         dialog.query(definitionString);
     dialog.exec();
 }
-

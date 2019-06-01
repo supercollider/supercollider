@@ -31,31 +31,30 @@
 #include "sc/sc_ugen_factory.hpp"
 
 #ifdef __APPLE__
-#include <AvailabilityMacros.h>
-#include <CoreAudio/HostTime.h>
-#include <CoreAudio/CoreAudioTypes.h>
+#    include <AvailabilityMacros.h>
+#    include <CoreAudio/HostTime.h>
+#    include <CoreAudio/CoreAudioTypes.h>
 #endif
 
-namespace nova
-{
+namespace nova {
 
-class nova_server * instance = nullptr;
+class nova_server* instance = nullptr;
 
-nova_server::nova_server(server_arguments const & args):
+nova_server::nova_server(server_arguments const& args):
     server_shared_memory_creator(args.port(), args.control_busses),
     scheduler<thread_init_functor>(args.threads, !args.non_rt),
-    buffer_manager(args.buffers), sc_osc_handler(args)
-{
+    buffer_manager(args.buffers),
+    sc_osc_handler(args) {
     assert(instance == 0);
     instance = this;
-    
+
     use_system_clock = (args.use_system_clock == 1);
     smooth_samplerate = args.samplerate;
-    
+
     if (!args.non_rt)
         io_interpreter.start_thread();
 
-    sc_factory.reset( new sc_ugen_factory );
+    sc_factory.reset(new sc_ugen_factory);
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
     /** first guess: needs to be updated, once the backend is started */
@@ -65,8 +64,7 @@ nova_server::nova_server(server_arguments const & args):
         start_receive_thread();
 }
 
-void nova_server::prepare_backend(void)
-{
+void nova_server::prepare_backend(void) {
     /* register audio backend ports */
     const int blocksize = get_audio_blocksize();
     const int input_channels = get_input_count();
@@ -86,10 +84,9 @@ void nova_server::prepare_backend(void)
     time_per_tick = time_tag::from_samples(blocksize, get_samplerate());
 }
 
-nova_server::~nova_server(void)
-{
-    //we should delete but get chrashes at the moment on linux and macosx
-    //delete sc_factory;
+nova_server::~nova_server(void) {
+    // we should delete but get chrashes at the moment on linux and macosx
+    // delete sc_factory;
 #if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
     deactivate_audio();
 #endif
@@ -103,11 +100,9 @@ nova_server::~nova_server(void)
     instance = nullptr;
 }
 
-void nova_server::perform_node_add(server_node *node, node_position_constraint const & constraints, bool update_dsp_queue)
-{
-    node_graph::add_node(node, constraints, [&](server_node & node) {
-        finalize_node(node);
-    });
+void nova_server::perform_node_add(server_node* node, node_position_constraint const& constraints,
+                                   bool update_dsp_queue) {
+    node_graph::add_node(node, constraints, [&](server_node& node) { finalize_node(node); });
 
     if (constraints.second == replace || update_dsp_queue)
         request_dsp_queue_update();
@@ -115,9 +110,8 @@ void nova_server::perform_node_add(server_node *node, node_position_constraint c
     notification_node_started(node);
 }
 
-abstract_synth * nova_server::add_synth(const char * name, int id, node_position_constraint const & constraints)
-{
-    abstract_synth * ret = synth_factory::create_instance(name, id);
+abstract_synth* nova_server::add_synth(const char* name, int id, node_position_constraint const& constraints) {
+    abstract_synth* ret = synth_factory::create_instance(name, id);
     if (ret == nullptr)
         return nullptr;
 
@@ -125,9 +119,8 @@ abstract_synth * nova_server::add_synth(const char * name, int id, node_position
     return ret;
 }
 
-group * nova_server::add_group(int id, node_position_constraint const & constraints)
-{
-    group * g = new group(id);
+group* nova_server::add_group(int id, node_position_constraint const& constraints) {
+    group* g = new group(id);
     if (g == nullptr)
         return nullptr;
 
@@ -135,9 +128,8 @@ group * nova_server::add_group(int id, node_position_constraint const & constrai
     return g;
 }
 
-parallel_group * nova_server::add_parallel_group(int id, node_position_constraint const & constraints)
-{
-    parallel_group * g = new parallel_group(id);
+parallel_group* nova_server::add_parallel_group(int id, node_position_constraint const& constraints) {
+    parallel_group* g = new parallel_group(id);
     if (g == nullptr)
         return nullptr;
 
@@ -146,89 +138,75 @@ parallel_group * nova_server::add_parallel_group(int id, node_position_constrain
 }
 
 
-void nova_server::set_node_slot(int node_id, slot_index_t slot, float value)
-{
-    server_node * node = find_node(node_id);
+void nova_server::set_node_slot(int node_id, slot_index_t slot, float value) {
+    server_node* node = find_node(node_id);
     if (node)
         node->set(slot, value);
 }
 
-void nova_server::set_node_slot(int node_id, const char * slot, float value)
-{
-    server_node * node = find_node(node_id);
+void nova_server::set_node_slot(int node_id, const char* slot, float value) {
+    server_node* node = find_node(node_id);
     if (node)
         node->set(slot, value);
 }
 
-void nova_server::finalize_node(server_node & node)
-{
+void nova_server::finalize_node(server_node& node) {
     if (node.is_synth()) {
-        sc_synth & synth = static_cast<sc_synth&>(node);
+        sc_synth& synth = static_cast<sc_synth&>(node);
         synth.finalize();
     }
     notification_node_ended(&node);
 }
 
 
-void nova_server::free_node(server_node * node)
-{
+void nova_server::free_node(server_node* node) {
     if (node->get_parent() == nullptr)
         return; // has already been freed by a different event
 
-    node_graph::remove_node(node, [&] (server_node & node) {
-        finalize_node(node);
-    });
+    node_graph::remove_node(node, [&](server_node& node) { finalize_node(node); });
     request_dsp_queue_update();
 }
 
-void nova_server::group_free_all(abstract_group * group)
-{
-    std::vector<server_node *, rt_pool_allocator<server_node*>> nodes_to_free;
+void nova_server::group_free_all(abstract_group* group) {
+    std::vector<server_node*, rt_pool_allocator<server_node*>> nodes_to_free;
 
-    group->apply_on_children( [&](server_node & node) {
-        nodes_to_free.push_back(&node);
-    });
+    group->apply_on_children([&](server_node& node) { nodes_to_free.push_back(&node); });
 
-    for (server_node * node: nodes_to_free)
+    for (server_node* node : nodes_to_free)
         free_node(node);
 }
 
-void nova_server::group_free_deep(abstract_group * group)
-{
-    std::vector<server_node *, rt_pool_allocator<server_node*>> nodes_to_free;
-    group->apply_deep_on_children( [&](server_node & node) {
+void nova_server::group_free_deep(abstract_group* group) {
+    std::vector<server_node*, rt_pool_allocator<server_node*>> nodes_to_free;
+    group->apply_deep_on_children([&](server_node& node) {
         if (node.is_synth())
             nodes_to_free.push_back(&node);
     });
-    for (server_node * node: nodes_to_free)
+    for (server_node* node : nodes_to_free)
         free_node(node);
 }
 
 
-void nova_server::run_nonrt_synthesis(server_arguments const & args)
-{
+void nova_server::run_nonrt_synthesis(server_arguments const& args) {
     start_dsp_threads();
     non_realtime_synthesis_engine engine(args);
     engine.run();
 }
 
-void nova_server::rebuild_dsp_queue(void)
-{
+void nova_server::rebuild_dsp_queue(void) {
     assert(dsp_queue_dirty);
     node_graph::dsp_thread_queue_ptr new_queue = node_graph::generate_dsp_queue();
     scheduler<thread_init_functor>::reset_queue_sync(std::move(new_queue));
     dsp_queue_dirty = false;
 }
 
-static void name_current_thread(int thread_index)
-{
+static void name_current_thread(int thread_index) {
     char buf[1024];
     sprintf(buf, "DSP Thread %d", thread_index);
     name_thread(buf);
 }
 
-static void set_daz_ftz(void)
-{
+static void set_daz_ftz(void) {
 #ifdef __SSE__
     /* denormal handling */
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
@@ -236,8 +214,7 @@ static void set_daz_ftz(void)
 #endif
 }
 
-static bool set_realtime_priority(int thread_index)
-{
+static bool set_realtime_priority(int thread_index) {
     bool success = false;
 
 #ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
@@ -246,18 +223,16 @@ static bool set_realtime_priority(int thread_index)
 
     double ns_per_block = 1e9 / samplerate * blocksize;
 
-#ifdef __APPLE__
+#    ifdef __APPLE__
 
-    success = thread_set_priority_rt( 0,
-                                     AudioConvertNanosToHostTime( ns_per_block - 5000 ),
-                                     AudioConvertNanosToHostTime( ns_per_block ),
-                                     true);
+    success = thread_set_priority_rt(0, AudioConvertNanosToHostTime(ns_per_block - 5000),
+                                     AudioConvertNanosToHostTime(ns_per_block), true);
 
-#else
+#    else
 
     success = thread_set_priority_rt(ns_per_block, ns_per_block - 2, ns_per_block - 1, false);
 
-#endif
+#    endif
 
     if (!success)
         std::cout << "Warning: initialize deadline scheduling" << std::endl;
@@ -265,22 +240,21 @@ static bool set_realtime_priority(int thread_index)
 #endif
 
     if (!success) {
-
 #ifdef NOVA_TT_PRIORITY_RT
 
-#ifdef JACK_BACKEND
+#    ifdef JACK_BACKEND
         int priority = instance->realtime_priority();
         if (priority >= 0)
             success = true;
 
-#elif _WIN32
+#    elif _WIN32
         int priority = thread_priority_interval_rt().second;
-#else
+#    else
         int min, max;
         boost::tie(min, max) = thread_priority_interval_rt();
         int priority = max - 3;
         priority = std::max(min, priority);
-#endif
+#    endif
 
         if (success)
             success = thread_set_priority_rt(priority);
@@ -294,8 +268,7 @@ static bool set_realtime_priority(int thread_index)
 }
 
 
-void thread_init_functor::operator()(int thread_index)
-{
+void thread_init_functor::operator()(int thread_index) {
     set_daz_ftz();
     name_current_thread(thread_index);
 
@@ -308,8 +281,7 @@ void thread_init_functor::operator()(int thread_index)
 #endif
 }
 
-void io_thread_init_functor::operator()() const
-{
+void io_thread_init_functor::operator()() const {
 #ifdef NOVA_TT_PRIORITY_RT
     int priority = thread_priority_interval_rt().first;
     thread_set_priority_rt(priority);
@@ -321,16 +293,14 @@ void io_thread_init_functor::operator()() const
     name_thread("Network Send");
 }
 
-void synth_definition_deleter::dispose(synth_definition * ptr)
-{
+void synth_definition_deleter::dispose(synth_definition* ptr) {
     if (instance) /// todo: hack to fix test suite
         instance->add_system_callback(new delete_callback<synth_definition>(ptr));
     else
         delete ptr;
 }
 
-void realtime_engine_functor::init_thread(void)
-{
+void realtime_engine_functor::init_thread(void) {
     set_daz_ftz();
 
 #ifndef __APPLE__
@@ -341,25 +311,17 @@ void realtime_engine_functor::init_thread(void)
 #ifdef JACK_BACKEND
     set_realtime_priority(0);
 #endif
-    if(instance->use_system_clock){
+    if (instance->use_system_clock) {
         double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
-        instance->mDLL.Reset(
-            sc_factory->world.mSampleRate,
-            sc_factory->world.mBufLength,
-            SC_TIME_DLL_BW,
-            nows);
+        instance->mDLL.Reset(sc_factory->world.mSampleRate, sc_factory->world.mBufLength, SC_TIME_DLL_BW, nows);
     }
 
     name_current_thread(0);
 }
 
-void realtime_engine_functor::log_(const char * str)
-{
-    instance->log_printf(str);
-}
+void realtime_engine_functor::log_(const char* str) { instance->log_printf(str); }
 
-void realtime_engine_functor::log_printf_(const char * fmt, ...)
-{
+void realtime_engine_functor::log_printf_(const char* fmt, ...) {
     va_list vargs;
     va_start(vargs, fmt);
     instance->log_printf(fmt, vargs);
