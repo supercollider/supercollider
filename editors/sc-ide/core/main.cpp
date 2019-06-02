@@ -43,12 +43,7 @@
 #include <QDebug>
 #include <QStyleFactory>
 
-#ifdef SC_USE_QTWEBENGINE
-#    include <QWebChannel>
-#    include "../widgets/util/WebSocketClientWrapper.hpp"
-#    include "../widgets/util/WebSocketTransport.hpp"
-#    include "../widgets/util/IDEWebChannelWrapper.hpp"
-#endif // SC_USE_QTWEBENGINE
+#include "util/HelpBrowserWebSocketServices.hpp"
 
 using namespace ScIDE;
 
@@ -132,26 +127,10 @@ int main(int argc, char* argv[]) {
         main->scProcess()->startLanguage();
 
 #ifdef SC_USE_QTWEBENGINE
-    // setup HelpBrowser server
-    QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
-    if (!server.listen(QHostAddress::LocalHost, 12344)) {
-        qFatal("Failed to open web socket server.");
-        return 1;
-    }
-
-    // setup comm channel
-    WebSocketClientWrapper clientWrapper(&server);
-    QWebChannel channel;
-    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &channel, &QWebChannel::connectTo);
-
-    // publish IDE interface
-    IDEWebChannelWrapper ideWrapper { win->helpBrowserDocklet()->browser() };
-    channel.registerObject("IDE", &ideWrapper);
-#endif // SC_USE_QTWEBENGINE
-
-    return app.exec();
+    HelpBrowserWebSocketServices hbServices(win->helpBrowserDocklet()->browser());
+#endif
+    app.exec();
 }
-
 
 bool SingleInstanceGuard::tryConnect(QStringList const& arguments) {
     const int maxNumberOfInstances = 128;
