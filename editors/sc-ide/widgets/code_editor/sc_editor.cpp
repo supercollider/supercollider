@@ -22,12 +22,15 @@
 #include "autocompleter.hpp"
 #include "line_indicator.hpp"
 #include "main_window.hpp"
-#include "help_browser.hpp"
 #include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/settings/theme.hpp"
+
+#ifdef SC_USE_WEBENGINE
+#    include "help_browser.hpp"
+#endif // SC_USE_WEBENGINE
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -35,7 +38,6 @@
 #include <QStack>
 #include <QMimeData>
 #include <QUrl>
-#include <QWebEngineView>
 
 namespace ScIDE {
 

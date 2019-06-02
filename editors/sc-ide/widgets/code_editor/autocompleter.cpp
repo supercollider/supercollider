@@ -28,7 +28,10 @@
 #include "../../core/main.hpp"
 #include "../../core/util/standard_dirs.hpp"
 #include "../main_window.hpp"
-#include "../help_browser.hpp"
+
+#ifdef SC_USE_WEBENGINE
+#    include "../help_browser.hpp"
+#endif // SC_USE_WEBENGINE
 
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>

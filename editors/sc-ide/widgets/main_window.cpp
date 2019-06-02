@@ -30,7 +30,6 @@
 #include "multi_editor.hpp"
 #include "popup_text_input.hpp"
 #include "post_window.hpp"
-#include "help_browser.hpp"
 #include "session_switch_dialog.hpp"
 #include "sessions_dialog.hpp"
 #include "tool_box.hpp"
@@ -43,6 +42,10 @@
 #include "../core/util/standard_dirs.hpp"
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
+
+#ifdef SC_USE_WEBENGINE
+#    include "help_browser.hpp"
+#endif // SC_USE_WEBENGINE
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 

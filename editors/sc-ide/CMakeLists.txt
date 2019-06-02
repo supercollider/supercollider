@@ -2,9 +2,7 @@
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-find_package(
-    Qt5 ${REQUIRED_QT_VERSION}
-    COMPONENTS
+set(QT_IDE_COMPONENTS
     Concurrent
     Core
     LinguistTools
@@ -13,12 +11,7 @@ find_package(
     Qml
     Quick
     Sql
-    WebChannel
-    WebEngine
-    WebEngineWidgets
-    WebSockets
     Widgets
-    REQUIRED
 )
 
 set(QT_IDE_LIBRARIES
@@ -29,9 +22,27 @@ set(QT_IDE_LIBRARIES
     Qt5::Qml
     Qt5::Quick
     Qt5::Sql
-    Qt5::WebChannel
-    Qt5::WebEngineWidgets
-    Qt5::WebSockets
+)
+
+if(SC_USE_WEBENGINE)
+    list(APPEND QT_IDE_COMPONENTS
+        WebChannel
+        WebEngine
+        WebEngineWidgets
+        WebSockets
+    )
+    list(APPEND QT_IDE_LIBRARIES
+        Qt5::WebChannel
+        Qt5::WebEngineWidgets
+        Qt5::WebSockets
+    )
+endif()
+
+find_package(
+    Qt5 ${REQUIRED_QT_VERSION}
+    COMPONENTS
+    ${QT_IDE_COMPONENTS}
+    REQUIRED
 )
 
 if(${CMAKE_COMPILER_IS_GNUCXX})

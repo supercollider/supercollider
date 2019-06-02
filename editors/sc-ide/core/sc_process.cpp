@@ -35,8 +35,6 @@
 #include "util/standard_dirs.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
-#include "../widgets/help_browser.hpp"
-
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
 

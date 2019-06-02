@@ -48,10 +48,12 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "WebSocketTransport.hpp"
+#ifdef SC_USE_WEBENGINE
 
-#include <QJsonDocument>
-#include <QWebSocket>
+#    include "WebSocketTransport.hpp"
+
+#    include <QJsonDocument>
+#    include <QWebSocket>
 
 namespace ScIDE {
 
@@ -82,3 +84,5 @@ void WebSocketTransport::textMessageReceived(const QString& messageData) {
 }
 
 } // namespace ScIDE
+
+#endif // SC_USE_WEBENGINE
