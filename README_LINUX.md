@@ -105,9 +105,6 @@ At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
-Obtaining the source code
---------
-
 SuperCollider is hosted on Github: https://github.com/SuperCollider/SuperCollider
 
 First, clone the repository with git:
@@ -118,6 +115,15 @@ First, clone the repository with git:
 
 Building
 --------
+
+SuperCollider is hosted on Github: https://github.com/SuperCollider/SuperCollider
+
+First, clone the repository with git:
+
+    git clone --recursive https://github.com/SuperCollider/SuperCollider.git
+
+`--recursive` specifies that it should also clone the git submodules.
+
 
 ### Step 1: Make a build directory
 
