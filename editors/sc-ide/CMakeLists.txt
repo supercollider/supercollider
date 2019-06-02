@@ -337,6 +337,10 @@ if(LTO)
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
+if(SC_USE_WEBENGINE)
+    message(STATUS "IDE: Building with QtWebEngine")
+    target_compile_definitions(SuperCollider PUBLIC SC_USE_WEBENGINE)
+endif()
 
 # Installation
 

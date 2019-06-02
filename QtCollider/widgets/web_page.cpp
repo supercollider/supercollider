@@ -19,10 +19,12 @@
  *
  ************************************************************************/
 
-#include "web_page.hpp"
+#ifdef SC_USE_WEBENGINE
 
-#include <QApplication>
-#include <QClipboard>
+#    include "web_page.hpp"
+
+#    include <QApplication>
+#    include <QClipboard>
 
 namespace QtCollider {
 
@@ -60,3 +62,5 @@ bool WebPage::acceptNavigationRequest(const QUrl& url, QWebEnginePage::Navigatio
 }
 
 } // namespace QtCollider
+
+#endif // SC_USE_WEBENGINE

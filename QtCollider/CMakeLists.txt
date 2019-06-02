@@ -125,6 +125,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcScope.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScopeShm.cpp
   ${QT_COLLIDER_DIR}/widgets/QcLevelIndicator.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
   ${QT_COLLIDER_DIR}/widgets/QcWindow.cpp
   ${QT_COLLIDER_DIR}/widgets/QcGraph.cpp
   ${QT_COLLIDER_DIR}/widgets/QcCanvas.cpp
@@ -133,6 +134,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/soundfileview/cachestream.cpp
   ${QT_COLLIDER_DIR}/widgets/QcFileDialog.cpp
   ${QT_COLLIDER_DIR}/widgets/QcPenPrinter.cpp
+  ${QT_COLLIDER_DIR}/widgets/web_page.cpp
   ${QT_COLLIDER_DIR}/layouts/layouts.cpp
   ${QT_COLLIDER_DIR}/layouts/stack_layout.cpp
   ${QT_COLLIDER_DIR}/style/ProxyStyle.cpp
@@ -151,10 +153,6 @@ set(QT_COLLIDER_WEBENGINE_HDRS
 
 if(SC_USE_WEBENGINE)
   list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_WEBENGINE_HDRS})
-  list(APPEND QT_COLLIDER_SRCS
-    ${QT_COLLIDER_DIR}/widgets/QcWebView.cpp
-    ${QT_COLLIDER_DIR}/widgets/web_page.cpp
-  )
 endif()
 
 ###############################################################################
