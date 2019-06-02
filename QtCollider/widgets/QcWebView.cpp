@@ -34,7 +34,6 @@
 #include <QWebEngineCallback>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
-QC_DECLARE_QOBJECT_FACTORY(QcCallback);
 
 namespace QtCollider {
 

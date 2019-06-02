@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "../QcCallback.hpp"
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineCallback>
@@ -35,41 +36,6 @@ Q_DECLARE_METATYPE(QUrl)
 namespace QtCollider {
 
 class WebPage;
-class QcCallback;
-
-class QcCallbackWeakFunctor {
-public:
-    QcCallbackWeakFunctor(QPointer<QcCallback> cb): _cb(cb) {}
-
-    template <typename RESULT> void operator()(RESULT r) const;
-
-private:
-    QPointer<QcCallback> _cb;
-};
-
-class QcCallback : public QObject {
-    Q_OBJECT
-
-public:
-    QcCallback() {}
-
-    template <typename CallbackT> void call(const CallbackT& result) { Q_EMIT(onCalled(result)); }
-
-    QcCallbackWeakFunctor asFunctor() { return QcCallbackWeakFunctor(QPointer<QcCallback>(this)); }
-
-Q_SIGNALS:
-    void onCalled(bool);
-    void onCalled(const QString&);
-    void onCalled(const QVariant&);
-    void onCalled(const QUrl&);
-};
-
-template <typename RESULT> void QcCallbackWeakFunctor::operator()(RESULT r) const {
-    if (_cb) {
-        _cb->call(r);
-    }
-}
-
 
 class WebView : public QWebEngineView {
     Q_OBJECT
@@ -190,6 +156,3 @@ private:
 };
 
 } // namespace QtCollider
-
-using namespace QtCollider;
-Q_DECLARE_METATYPE(QcCallback*);
