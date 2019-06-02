@@ -9,7 +9,7 @@ HelpBrowser is the GUI help browser that lets you browse the documentation of Su
 
 Note that this is not the same as the help browser built into the IDE.
 
-Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DQT_WEBENGINE=OFF :: at compile). If so, attempting to invoke this class will throw an error.
+Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_WEBENGINE=OFF :: at compile). If so, attempting to invoke this class will throw an error.
 
 classmethods::
 private:: getOldWrapUrl, initClass

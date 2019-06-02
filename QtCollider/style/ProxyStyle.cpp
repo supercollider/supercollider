@@ -6,7 +6,7 @@
 #include <QStyleOptionSlider>
 #include <QPainter>
 
-#ifdef QT_WEBENGINE
+#ifdef SC_USE_WEBENGINE
 #    include <QWebEngineView>
 #endif
 
@@ -33,7 +33,7 @@ static bool AlwaysShowScrollbars() {
 
 void ProxyStyle::drawComplexControl(ComplexControl ctrl, const QStyleOptionComplex* opt, QPainter* p,
                                     const QWidget* w) const {
-#ifdef QT_WEBENGINE
+#ifdef SC_USE_WEBENGINE
     // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
     if (ctrl == QStyle::CC_ScrollBar && qobject_cast<const QWebEngineView*>(w) != 0
         && opt->type == QStyleOption::SO_Slider) {
@@ -45,7 +45,7 @@ void ProxyStyle::drawComplexControl(ComplexControl ctrl, const QStyleOptionCompl
         QProxyStyle::drawComplexControl(ctrl, &opt2, p, w);
         return;
     }
-#endif // QT_WEBENGINE
+#endif // SC_USE_WEBENGINE
 
     if (ctrl == QStyle::CC_ScrollBar && AlwaysShowScrollbars()) {
         const QStyleOptionSlider* optSlider = static_cast<const QStyleOptionSlider*>(opt);
