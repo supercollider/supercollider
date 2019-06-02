@@ -1,5 +1,5 @@
 set(REQUIRED_QT_VERSION 5.7)
-set(QT_WEBENGINE TRUE)
+set(QT_WEBENGINE FALSE)
 
 set( QT_USE_QTWEBENGINE TRUE ) # TODO: figure out what to do with this
 

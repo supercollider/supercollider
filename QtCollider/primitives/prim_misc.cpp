@@ -25,8 +25,8 @@
 #include "../type_codec.hpp"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
-#include "../widgets/QcWebView.h"
 #include "../style/style.hpp"
+#include "../QcCallback.hpp"
 #include "QtCollider.h"
 
 #ifdef Q_OS_MAC
@@ -41,7 +41,6 @@
 #include <QFontMetrics>
 #include <QDesktopWidget>
 #include <QStyleFactory>
-#include <QWebEngineSettings>
 #include <QCursor>
 
 namespace QtCollider {

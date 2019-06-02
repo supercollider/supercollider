@@ -59,7 +59,6 @@ static void doLoadFactories() {
     QC_ADD_FACTORY(QcAction);
     QC_ADD_FACTORY(QcWidgetAction);
     QC_ADD_FACTORY(QcCallback);
-    QC_ADD_FACTORY(WebView);
     QC_ADD_FACTORY(QcWindow);
     QC_ADD_FACTORY(QcScrollWindow);
     QC_ADD_FACTORY(QcHBoxLayout);
@@ -67,6 +66,9 @@ static void doLoadFactories() {
     QC_ADD_FACTORY(QcGridLayout);
     QC_ADD_FACTORY(QcStackLayout);
     QC_ADD_FACTORY(QtDownload);
+#ifdef QT_WEBENGINE
+    QC_ADD_FACTORY(WebView);
+#endif
 #ifdef __APPLE__
     QC_ADD_FACTORY(QcQuartzComposerView);
 #endif
