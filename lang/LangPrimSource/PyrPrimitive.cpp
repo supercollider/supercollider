@@ -2984,8 +2984,9 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         return;
     // postfl("->switchToThread %d %p -> %p\n", oldstate, oldthread, newthread);
     // post("->switchToThread from %s:%s\n", slotRawClass(&g->method->ownerclass)->name.us->name,
-    // g->slotRawSymbol(&method->name)->name); post("->stack %p  g->sp %p [%d]  g->top %p [%d]\n", 	g->gc->Stack()->slots,
-    //g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots); assert(g->gc->SanityCheck());
+    // g->slotRawSymbol(&method->name)->name); post("->stack %p  g->sp %p [%d]  g->top %p [%d]\n",
+    // g->gc->Stack()->slots,
+    // g->sp, g->sp - g->gc->Stack()->slots, g->top, g->top - g->gc->Stack()->slots); assert(g->gc->SanityCheck());
     // CallStackSanity(g, "switchToThreadA");
     // gcDumpInfo(g->gc);
     gc = g->gc;
