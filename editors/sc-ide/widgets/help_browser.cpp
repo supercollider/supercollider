@@ -18,32 +18,34 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#define QT_NO_DEBUG_OUTPUT
+#ifdef SC_USE_WEBENGINE
 
-#include "help_browser.hpp"
-#include "main_window.hpp"
-#include "../core/sc_process.hpp"
-#include "../core/main.hpp"
-#include "../core/util/overriding_action.hpp"
-#include "QtCollider/widgets/web_page.hpp"
-#include "QtCollider/hacks/hacks_qt.hpp"
+#    define QT_NO_DEBUG_OUTPUT
 
-#include <QVBoxLayout>
-#include <QToolBar>
-#include <QWebEngineSettings>
-#include <QWebEngineContextMenuData>
-#include <QAction>
-#include <QMenu>
-#include <QStyle>
-#include <QShortcut>
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QDebug>
-#include <QKeyEvent>
+#    include "help_browser.hpp"
+#    include "main_window.hpp"
+#    include "../core/sc_process.hpp"
+#    include "../core/main.hpp"
+#    include "../core/util/overriding_action.hpp"
+#    include "QtCollider/widgets/web_page.hpp"
+#    include "QtCollider/hacks/hacks_qt.hpp"
 
-#ifdef Q_OS_MAC
-#    include <QStyleFactory> // QStyleFactory::create, see below
-#endif
+#    include <QVBoxLayout>
+#    include <QToolBar>
+#    include <QWebEngineSettings>
+#    include <QWebEngineContextMenuData>
+#    include <QAction>
+#    include <QMenu>
+#    include <QStyle>
+#    include <QShortcut>
+#    include <QApplication>
+#    include <QDesktopWidget>
+#    include <QDebug>
+#    include <QKeyEvent>
+
+#    ifdef Q_OS_MAC
+#        include <QStyleFactory> // QStyleFactory::create, see below
+#    endif
 
 namespace ScIDE {
 
@@ -70,11 +72,11 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     // get in the way of rendering web pages
     mWebView->setPalette(style()->standardPalette());
 
-#ifdef Q_OS_MAC
+#    ifdef Q_OS_MAC
     // On macOS, checkboxes unwantedly appear in the top left-hand corner.
     // See QTBUG-43366, 43070, and 42948. The workaround is to set style to fusion.
     mWebView->setStyle(QStyleFactory::create("Fusion"));
-#endif
+#    endif
 
     mWebView->installEventFilter(this);
 
@@ -475,3 +477,5 @@ HelpBrowserDocklet::HelpBrowserDocklet(QWidget* parent): Docklet(tr("Help browse
 }
 
 } // namespace ScIDE
+
+#endif // SC_USE_WEBENGINE
