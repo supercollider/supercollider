@@ -134,10 +134,12 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     addDockWidget(Qt::LeftDockWidgetArea, mDocumentsDocklet->dockWidget());
     mDocumentsDocklet->hide();
 
+#ifdef SC_USE_WEBENGINE
     mHelpBrowserDocklet = new HelpBrowserDocklet(this);
     mHelpBrowserDocklet->setObjectName("help-dock");
     addDockWidget(Qt::RightDockWidgetArea, mHelpBrowserDocklet->dockWidget());
     // mHelpBrowserDockable->hide();
+#endif // SC_USE_WEBENGINE
 
     mPostDocklet = new PostDocklet(this);
     mPostDocklet->setObjectName("post-dock");
@@ -457,10 +459,12 @@ void MainWindow::createActions() {
     action->setStatusTip(tr("Show/hide Documents docklet"));
     settings->addAction(mDocumentsDocklet->toggleViewAction(), "ide-docklet-documents", ideCategory);
 
+#ifdef SC_USE_WEBENGINE
     action = mHelpBrowserDocklet->toggleViewAction();
     action->setIcon(QIcon::fromTheme("system-help"));
     action->setStatusTip(tr("Show/hide Help browser docklet"));
     settings->addAction(mHelpBrowserDocklet->toggleViewAction(), "ide-docklet-help", ideCategory);
+#endif // SC_USE_WEBENGINE
 
     // In Mac OS, all menu item shortcuts need a modifier, so add the action with
     // the "Escape" default shortcut to the main window widget.
@@ -477,12 +481,14 @@ void MainWindow::createActions() {
     mPostDocklet->widget()->addAction(mActions[LookupReferences]);
     mPostDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
 
+#ifdef SC_USE_WEBENGINE
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentation]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementation]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferences]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
+#endif // SC_USE_WEBENGINE
 }
 
 void MainWindow::createMenus() {
@@ -560,7 +566,9 @@ void MainWindow::createMenus() {
     submenu = new QMenu(tr("&Docklets"), this);
     submenu->addAction(mPostDocklet->toggleViewAction());
     submenu->addAction(mDocumentsDocklet->toggleViewAction());
+#ifdef SC_USE_WEBENGINE
     submenu->addAction(mHelpBrowserDocklet->toggleViewAction());
+#endif // SC_USE_WEBENGINE
     menu->addMenu(submenu);
     menu->addSeparator();
     submenu = menu->addMenu(tr("&Tool Panels"));
@@ -637,10 +645,12 @@ void MainWindow::createMenus() {
     menu = new QMenu(tr("&Help"), this);
     menu->addAction(mActions[HelpAboutIDE]);
     menu->addAction(mActions[ReportABug]);
+#ifdef SC_USE_WEBENGINE
     menu->addSeparator();
     menu->addAction(mActions[Help]);
     menu->addAction(mActions[LookupDocumentationForCursor]);
     menu->addAction(mActions[LookupDocumentation]);
+#endif // SC_USE_WEBENGINE
     menu->addSeparator();
     menu->addAction(mActions[ShowAbout]);
     menu->addAction(mActions[ShowAboutQT]);
@@ -656,7 +666,9 @@ template <class T> void MainWindow::saveWindowState(T* settings) {
     QVariantMap detachedData;
     saveDetachedState(mPostDocklet, detachedData);
     saveDetachedState(mDocumentsDocklet, detachedData);
+#ifdef SC_USE_WEBENGINE
     saveDetachedState(mHelpBrowserDocklet, detachedData);
+#endif // SC_USE_WEBENGINE
 
     settings->beginGroup("mainWindow");
     settings->setValue("geometry", this->saveGeometry().toBase64());
@@ -699,7 +711,9 @@ template <class T> void MainWindow::restoreWindowState(T* settings) {
 
     restoreDetachedState(mPostDocklet, detachedData);
     restoreDetachedState(mDocumentsDocklet, detachedData);
+#ifdef SC_USE_WEBENGINE
     restoreDetachedState(mHelpBrowserDocklet, detachedData);
+#endif // SC_USE_WEBENGINE
 
     qDebug("restoring state");
 
@@ -1289,7 +1303,9 @@ void MainWindow::applySettings(Settings::Manager* settings) {
     applyCursorBlinkingSettings(settings);
 
     mPostDocklet->mPostWindow->applySettings(settings);
+#ifdef SC_USE_WEBENGINE
     mHelpBrowserDocklet->browser()->applySettings(settings);
+#endif // SC_USE_WEBENGINE
     mCmdLine->applySettings(settings);
 }
 
@@ -1448,14 +1464,18 @@ void MainWindow::lookupDocumentationForCursor() {
 }
 
 void MainWindow::openHelp() {
+#ifdef SC_USE_WEBENGINE
     if (mHelpBrowserDocklet->browser()->url().isEmpty())
         mHelpBrowserDocklet->browser()->goHome();
     mHelpBrowserDocklet->focus();
+#endif // SC_USE_WEBENGINE
 }
 
 void MainWindow::openHelpAboutIDE() {
+#ifdef SC_USE_WEBENGINE
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
     mHelpBrowserDocklet->focus();
+#endif // SC_USE_WEBENGINE
 }
 
 void MainWindow::doBugReport() {

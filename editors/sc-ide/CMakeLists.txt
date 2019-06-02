@@ -88,7 +88,6 @@ set ( ide_moc_hdr
     widgets/session_switch_dialog.hpp
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
-    widgets/help_browser.hpp
     widgets/audio_status_box.hpp
     widgets/lang_status_box.hpp
     widgets/code_editor/editor.hpp
@@ -110,9 +109,6 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
-    widgets/util/WebSocketTransport.hpp
-    widgets/util/WebSocketClientWrapper.hpp
-    widgets/util/IDEWebChannelWrapper.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)
@@ -164,7 +160,6 @@ set ( ide_src
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
-    widgets/util/WebSocketTransport.cpp
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
@@ -183,10 +178,14 @@ set ( ide_src
 
 set(ide_webengine_moc_hdrs
     widgets/help_browser.hpp
+    widgets/util/WebSocketTransport.hpp
+    widgets/util/WebSocketClientWrapper.hpp
+    widgets/util/IDEWebChannelWrapper.hpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
 set(ide_webengine_src
     widgets/help_browser.cpp
+    widgets/util/WebSocketTransport.cpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 )
 

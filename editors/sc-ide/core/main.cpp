@@ -129,6 +129,7 @@ int main(int argc, char* argv[]) {
     if (startInterpreter)
         main->scProcess()->startLanguage();
 
+#ifdef SC_USE_WEBENGINE
     // setup HelpBrowser server
     QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
     if (!server.listen(QHostAddress::LocalHost, 12344)) {
@@ -144,6 +145,7 @@ int main(int argc, char* argv[]) {
     // publish IDE interface
     IDEWebChannelWrapper ideWrapper { win->helpBrowserDocklet()->browser() };
     channel.registerObject("IDE", &ideWrapper);
+#endif // SC_USE_WEBENGINE
 
     return app.exec();
 }
@@ -292,6 +294,7 @@ bool Main::nativeEventFilter(const QByteArray&, void* message, long*) {
 }
 
 bool Main::openDocumentation(const QString& string) {
+#ifdef SC_USE_WEBENGINE
     QString symbol = string.trimmed();
     if (symbol.isEmpty())
         return false;
@@ -300,13 +303,20 @@ bool Main::openDocumentation(const QString& string) {
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
     return true;
+#else // SC_USE_WEBENGINE
+    return false;
+#endif // SC_USE_WEBENGINE
 }
 
 bool Main::openDocumentationForMethod(const QString& className, const QString& methodName) {
+#ifdef SC_USE_WEBENGINE
     HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
     helpDock->focus();
     return true;
+#else // SC_USE_WEBENGINE
+    return false;
+#endif // SC_USE_WEBENGINE
 }
 
 void Main::openDefinition(const QString& string, QWidget* parent) {

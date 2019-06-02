@@ -1213,9 +1213,11 @@ void AutoCompleter::parseClassNode(DocNode* node, QString* str) {
 }
 
 void AutoCompleter::gotoHelp(QString symbol) {
+#ifdef SC_USE_WEBENGINE
     HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
+#endif // SC_USE_WEBENGINE
 }
 
 } // namespace ScIDE

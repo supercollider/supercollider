@@ -1196,11 +1196,13 @@ void ScCodeEditor::findReferences() { Main::findReferences(symbolUnderCursor(), 
 void ScCodeEditor::evaluateLine() {
     QString text;
 
+#ifdef SC_USE_WEBENGINE
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
     if (help && help->browser()->helpBrowserHasFocus()) {
         help->browser()->evaluateSelection(false);
         return; // early return
     }
+#endif // SC_USE_WEBENGINE
 
     // Try current selection
     QTextCursor cursor = textCursor();
@@ -1234,11 +1236,13 @@ void ScCodeEditor::evaluateLine() {
 void ScCodeEditor::evaluateRegion() {
     QString text;
 
+#ifdef SC_USE_WEBENGINE
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
     if (help && help->browser()->helpBrowserHasFocus()) {
         help->browser()->evaluateSelection(true);
         return; // early return
     }
+#endif // SC_USE_WEBENGINE
 
     // Try current selection
     QTextCursor cursor = textCursor();
