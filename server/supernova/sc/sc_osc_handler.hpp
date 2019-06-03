@@ -244,6 +244,7 @@ public:
         sc_osc_handler* osc_handler;
         boost::endian::big_int32_t msg_size_;
         std::vector<char> msg_buffer_;
+        std::mutex tcp_mutex;
     };
 
 private:
