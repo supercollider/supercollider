@@ -503,6 +503,14 @@ def do_formatall(clang_format):
     for f in get_all_clang_formattable_files(repo):
         clang_format.format(f)
 
+def resolve_program_name(cmd_line_option, env_var_name, default_program_name):
+    if cmd_line_option != '':
+        return cmd_line_option
+    elif env_var_name in os.environ and os.environ[env_var_name] != '':
+        return os.environ[env_var_name]
+    else:
+        return default_program_name
+
 def main():
     parser = ArgumentParser(
             usage='''
@@ -539,13 +547,17 @@ proceed.
 This script will exit with 0 on success, 1 to indicate lint failure, and >1 if some other error
 occurs.
 ''')
-    parser.add_argument("-c", "--clang-format", dest="clang_format", default='clang-format',
-            help='Command to use for clang-format; will also be passed to clang-format-diff.py')
+    parser.add_argument("-c", "--clang-format", dest="clang_format", default='',
+            help='Command to use for clang-format; will also be passed to clang-format-diff.py.'
+            + ' Defaults to environment variable SC_CLANG_FORMAT if it is set and non-empty,'
+            + ' otherwise `clang-format`')
     parser.add_argument("-b", "--base", dest="base_branch", help='Tries to rebase on the tip of this'
             + ' branch given a base branch name (experimental). This should be the main branch the'
             + ' current branch is based on (3.10 or develop)')
-    parser.add_argument("-d", "--clang-format-diff", dest="clang_format_diff", default='clang-format-diff.py',
-            help='Command to use for clang-format-diff.py script')
+    parser.add_argument("-d", "--clang-format-diff", dest="clang_format_diff", default='',
+            help='Command to use for clang-format-diff.py script'
+            + ' Defaults to environment variable SC_CLANG_FORMAT_DIFF if it is set and non-empty,'
+            + ' otherwise `clang-format-diff.py`')
     parser.add_argument("command", help="command; one of lint, format, lintall, formatall, rebase")
     parser.add_argument("commit1", help="for lint and format: commit to compare against (default: HEAD);" +
             " for rebase: commit immediately prior to reformat", nargs='?', default='')
@@ -553,6 +565,9 @@ occurs.
     parser.add_argument("target", help="target branch name (likely 3.10 or develop)", nargs='?', default='')
 
     options = parser.parse_args()
+
+    options.clang_format = resolve_program_name(options.clang_format, 'SC_CLANG_FORMAT', 'clang-format')
+    options.clang_format_diff = resolve_program_name(options.clang_format_diff, 'SC_CLANG_FORMAT_DIFF', 'clang-format-diff.py')
 
     try:
         if options.command == 'lint' or options.command == 'format':
