@@ -296,11 +296,11 @@ Unary or binary random method produce a random value for each frame (not impleme
 
 code::
 { rrand(SinOsc.ar(0.1), SinOsc.ar(0.42)) * 0.1 }.play
-{ exprand(SinOsc.ar(0.1)) * 0.1 }.play
 { linrand(SinOsc.ar(0.1)) * 0.1 }.play
 { bilinrand(SinOsc.ar(0.1)) * 0.1 }.play
 { sum3rand(SinOsc.ar(0.1)) * 0.1 }.play
 { coin(SinOsc.ar(0.1)) * 0.1 }.play
+{ exprand(SinOsc.ar(0.1).range(0.1, 1), 0.1) - 1 * 0.1 }.play // exprand must not touch zero
 ::
 
 
