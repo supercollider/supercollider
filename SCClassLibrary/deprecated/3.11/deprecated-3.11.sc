@@ -11,3 +11,10 @@
 		^this.asInteger;
 	}
 }
+
++ String {
+    *scDir {
+        this.deprecated(thisMethod, Platform.class.findMethod(\resourceDir));
+        ^Platform.resourceDir
+    }
+}

@@ -49,11 +49,7 @@ method::readNew
 Read the entire contents of a link::Classes/File:: and return them as a new String.
 
 method::scDir
-Provided for backwards compatibility.
-returns::
-the value of code::Platform.resourceDir::, which is the base resource directory of SuperCollider.
-discussion::
-Please use link::Classes/Platform#*resourceDir:: instead.
+Deprecated alias for code::Platform.resourceDir::. Please use link::Classes/Platform#*resourceDir:: instead.
 
 INSTANCEMETHODS::
 
