@@ -2422,8 +2422,6 @@ static inline bool check_gate_ar(EnvGen* unit, int i, float& prevGate, float*& g
 }
 
 static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level) {
-    // if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with
-    // EnvGen_next_aa
     if (unit->m_stage == ENVGEN_NOT_STARTED) {
         counter = INT_MAX;
         return true;
