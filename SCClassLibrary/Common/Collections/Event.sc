@@ -968,6 +968,12 @@ Event : Environment {
 							server.sendBundle(server.latency, *~bundle);
 						};
 						~bundle = nil;
+					},
+
+					composite: { |server|
+						~types.do { |type|
+							~eventTypes[type].value(server);
+						};
 					}
 				)
 			)

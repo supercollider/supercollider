@@ -250,6 +250,16 @@ TestEvent : UnitTest {
 		this.cleanUpMessages;
 	}
 
+	test_composite_event_type_calls_all_listed_types {
+		var test1 = false, test2 = false;
+		Event.addEventType(\composite1, { test1 = true });
+		Event.addEventType(\composite2, { test2 = true });
+		(type: \composite, types: #[composite1, composite2]).play;
+		this.assert(test1 && test2, "Composite event type should call all listed event type functions");
+		Event.eventTypes.removeAt(\composite1);
+		Event.eventTypes.removeAt(\composite2);
+	}
+
 	cleanUpMessages {
 		prevMsg = nil;
 		prevLatency = nil;
