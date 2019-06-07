@@ -696,7 +696,7 @@ Buffer {
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		buffer = super.newCopyArgs(server, bufnum).cache;
-		File.openDialog("Select a file...", { arg path;
+		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
 				.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
 		});

@@ -8,7 +8,7 @@ WindowsPlatform : Platform {
 
 	initPlatform {
 		super.initPlatform;
-		recordingsDir = this.myDocumentsDir +/+ "SuperCollider" +/+ "Recordings";
+		recordingsDir = this.myDocumentsDir +/+ "Recordings";
 	}
 
 	startup {
