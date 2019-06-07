@@ -67,12 +67,14 @@ code::
 
 
 ## midi || send note parameters to midi device
-optional parameters:
+parameters:
 table::
-## ~id || node ID, or node object
-## ~group || outer group id or object
-## ~addAction / ~lag / ~timingOffset || determine how and when the group is created
+## ~midicmd || A Symbol, for the MIDI command to issue
+## ~midiout || A MIDIOut object
+## ~chan || The MIDI channel number (0-15)
 ::
+
+See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI output:: for details on available midicmds.
 
 ## on || play synth, ~id must be specified
 ## off || release synth (or free if no gate)
