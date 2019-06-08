@@ -18,7 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
 
 #    define QT_NO_DEBUG_OUTPUT
 
@@ -478,4 +478,4 @@ HelpBrowserDocklet::HelpBrowserDocklet(QWidget* parent): Docklet(tr("Help browse
 
 } // namespace ScIDE
 
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE

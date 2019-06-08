@@ -33,9 +33,9 @@
 #include <QLayout>
 #include <QDebug>
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
 #    include <QWebEngineView>
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE
 
 namespace ScIDE {
 
@@ -72,7 +72,7 @@ void Style::drawComplexControl(ComplexControl control, const QStyleOptionComplex
     }
 
     switch (control) {
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
     // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
     case QStyle::CC_ScrollBar: {
         if (qobject_cast<const QWebEngineView*>(widget) != 0 && option->type == QStyleOption::SO_Slider) {
@@ -85,7 +85,7 @@ void Style::drawComplexControl(ComplexControl control, const QStyleOptionComplex
             return;
         }
     }
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE
     case QStyle::CC_ToolButton: {
         // TODO: We only draw either text, or icon, or arrow
 

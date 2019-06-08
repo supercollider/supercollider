@@ -30,7 +30,7 @@
 #include <QEventLoop>
 #include <QDir>
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
 #    include <QWebEngineSettings>
 #endif
 
@@ -82,7 +82,7 @@ void QtCollider::init() {
 
         gSystemPalette = qcApp->palette();
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
         // Enable javascript localStorage for WebViews
         QWebEngineSettings::globalSettings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
 #endif

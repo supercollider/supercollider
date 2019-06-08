@@ -120,7 +120,7 @@ public:
     void focusCodeEditor();
     bool promptSaveDocs();
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* helpBrowserDocklet() { return mHelpBrowserDocklet; }
 #endif
     PostDocklet* postDocklet() { return mPostDocklet; }
@@ -239,7 +239,7 @@ private:
     // Docks
     PostDocklet* mPostDocklet;
     DocumentsDocklet* mDocumentsDocklet;
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* mHelpBrowserDocklet;
 #endif
 

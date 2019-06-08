@@ -48,7 +48,7 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
 
 #    include "WebSocketTransport.hpp"
 
@@ -85,4 +85,4 @@ void WebSocketTransport::textMessageReceived(const QString& messageData) {
 
 } // namespace ScIDE
 
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE

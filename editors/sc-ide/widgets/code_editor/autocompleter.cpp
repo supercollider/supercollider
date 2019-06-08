@@ -29,9 +29,9 @@
 #include "../../core/util/standard_dirs.hpp"
 #include "../main_window.hpp"
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
 #    include "../help_browser.hpp"
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE
 
 #include <yaml-cpp/node/node.h>
 #include <yaml-cpp/parser.h>
@@ -1216,11 +1216,11 @@ void AutoCompleter::parseClassNode(DocNode* node, QString* str) {
 }
 
 void AutoCompleter::gotoHelp(QString symbol) {
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE
 }
 
 } // namespace ScIDE

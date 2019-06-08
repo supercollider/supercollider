@@ -66,7 +66,7 @@ static void doLoadFactories() {
     QC_ADD_FACTORY(QcGridLayout);
     QC_ADD_FACTORY(QcStackLayout);
     QC_ADD_FACTORY(QtDownload);
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
     QC_ADD_FACTORY(WebView);
 #endif
 #ifdef __APPLE__

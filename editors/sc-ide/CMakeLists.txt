@@ -24,7 +24,7 @@ set(QT_IDE_LIBRARIES
     Qt5::Sql
 )
 
-if(SC_USE_WEBENGINE)
+if(SC_USE_QTWEBENGINE)
     list(APPEND QT_IDE_COMPONENTS
         WebChannel
         WebEngine
@@ -200,7 +200,7 @@ set(ide_webengine_src
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 )
 
-if(SC_USE_WEBENGINE)
+if(SC_USE_QTWEBENGINE)
     list(APPEND ide_moc_hdr ${ide_webengine_moc_hdrs})
     list(APPEND ide_src ${ide_webengine_src})
 endif()
@@ -354,9 +354,9 @@ if(LTO)
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-if(SC_USE_WEBENGINE)
+if(SC_USE_QTWEBENGINE)
     message(STATUS "IDE: Building with QtWebEngine")
-    target_compile_definitions(SuperCollider PUBLIC SC_USE_WEBENGINE)
+    target_compile_definitions(SuperCollider PUBLIC SC_USE_QTWEBENGINE)
 endif()
 
 # Installation

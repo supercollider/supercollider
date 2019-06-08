@@ -19,7 +19,7 @@
  *
  ************************************************************************/
 
-#ifdef SC_USE_WEBENGINE
+#ifdef SC_USE_QTWEBENGINE
 
 #    include "QcWebView.h"
 #    include "../widgets/web_page.hpp"
@@ -273,4 +273,4 @@ void WebView::onLinkClicked(const QUrl& url, QWebEnginePage::NavigationType type
 
 } // namespace QtCollider
 
-#endif // SC_USE_WEBENGINE
+#endif // SC_USE_QTWEBENGINE
