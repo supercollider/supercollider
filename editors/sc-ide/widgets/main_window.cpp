@@ -422,10 +422,12 @@ void MainWindow::createActions() {
     connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
     settings->addAction(action, "help-browser", helpCategory);
 
+#ifdef SC_USE_QTWEBENGINE
     mActions[HelpAboutIDE] = action =
         new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
     action->setStatusTip(tr("Open the SuperCollider IDE guide"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
+#endif // SC_USE_QTWEBENGINE
 
     mActions[ReportABug] = action = new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
     action->setStatusTip(tr("Report a bug"));
