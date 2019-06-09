@@ -88,12 +88,9 @@ TestTempoClock : UnitTest {
 	}
 
 	test_nextTimeOnGrid_negativePhaseWraps {
-		var cond = Condition.new;
-		{
-			0.5.wait;
-			cond.unhang;
-		}.fork(clock);
-		cond.hang;
+		// when running the whole suite, 'beats' might be later
+		// so, ensure the right test value
+		clock.beats = 0.5;
 		this.assertEquals(
 			clock.nextTimeOnGrid(1, -0.9), 1.1,
 			"nextTimeOnGrid(1, -0.9) at beat 0.5 should wrap up to 1.1"
