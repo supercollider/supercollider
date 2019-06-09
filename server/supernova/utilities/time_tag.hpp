@@ -179,7 +179,8 @@ public:
 #ifdef BOOST_DATE_TIME_POSIX_TIME_STD_CONFIG
         time_duration offset = seconds(get_secs() - ntp_offset) + nanoseconds(get_nanoseconds());
 #else
-        time_duration offset = seconds(get_secs() - ntp_offset) + microseconds(get_nanoseconds() / 1000);
+        time_duration offset =
+            seconds(get_secs() - ntp_offset) + microseconds(static_cast<long>(get_nanoseconds() / 1000));
 #endif
         return ptime(base, offset);
     }
