@@ -4267,7 +4267,6 @@ void initPrimitives() {
     void initListPrimitives();
     initListPrimitives();
 
-
     void initUnixPrimitives();
     initUnixPrimitives();
 
