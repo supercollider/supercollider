@@ -487,6 +487,8 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 
 method:: series
 return an arithmetic series from this over second to last.
+The last value may not be included in the result if the step size does not divide evenly into the range of the series.
+
 discussion::
 This is used in the shortcuts:
 code::
