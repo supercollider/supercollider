@@ -134,6 +134,25 @@ a.plotMode = \linear; a.refresh;
 a.plotMode = \bars; a.refresh;
 ::
 
+method:: plotModes
+Get/Set the style of data display. This can be an array of different styles for
+multichannel data. See link::#-plotMode:: for a list of possible modes.
+argument:: modes
+A link::Classes/Symbol:: or an link::Classes/Array:: of link::Classes/Symbol::s.
+If code::modes.size < numChannels::, the plots will strong::wrap:: around the
+array of modes.
+
+code::
+/* mixed modes */
+(
+c = [Color.red, Color.cyan, Color.green, Color.blue];
+d = 4.collect({ |i| 100.collect({|j| sinPi(1+i.squared*j * 50.reciprocal) })});
+p = d.plot;
+p.plotColors_(c).plotModes_([\steps, \linear, \plines, \points]).superpose_(true);
+{ p.refresh }.defer(0.4);
+)
+::
+
 method:: setProperties
 Set properties of all plot views. Defaults are taken from code::GUI.skin.at(\plot);::
 argument:: ... pairs
