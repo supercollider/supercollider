@@ -428,7 +428,7 @@ Plot {
 				resolution = plotter.resolution;
 
 				// domain is nil, so data fills full domain/view width
-				numSpecSteps = (plotBounds.width / resolution).floor.asInt;
+				numSpecSteps = (plotBounds.width / resolution).floor.asInteger;
 				specStep = numSpecSteps.reciprocal;
 				sizem1 = value.size - 1;
 
