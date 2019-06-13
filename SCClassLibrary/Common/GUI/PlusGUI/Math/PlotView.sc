@@ -116,11 +116,11 @@ Plot {
 		drawGrid.vertGrid = if(gridOnY,{spec.grid},{nil});
 	}
 
-	draw {
+	draw { |mode = \linear|
 		this.drawBackground;
 		drawGrid.draw;
 		this.drawLabels;
-		this.drawData;
+		this.drawData(mode);
 		plotter.drawFunc.value(this); // additional elements
 	}
 
@@ -174,10 +174,10 @@ Plot {
 		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
 
-	drawData {
-		var mode = plotter.plotMode;
+	drawData { |mode|
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
+		mode = (mode ?? plotter.plotMode).asArray;
 
 		Pen.use {
 			Pen.width = 1.0;
@@ -187,11 +187,12 @@ Plot {
 			Pen.addRect(plotBounds);
 			Pen.clip; // clip curve to bounds.
 
-			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
+			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion when superposed
 				ycoord.flop.do { |y, i|
+					var drawMode = mode.wrapAt(i);
 					Pen.beginPath;
-					this.perform(mode, xcoord, y);
-					if (this.needsPenFill(mode)) {
+					this.perform(drawMode, xcoord, y);
+					if (this.needsPenFill(drawMode)) {
 						Pen.fillColor = plotColor.wrapAt(i);
 						Pen.fill
 					} {
@@ -203,8 +204,8 @@ Plot {
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
 				Pen.fillColor= plotColor.at(0);
-				this.perform(mode, xcoord, ycoord);
-				if (this.needsPenFill(mode)) {
+				this.perform(mode.at(0), xcoord, ycoord);
+				if (this.needsPenFill(mode.at(0))) {
 					Pen.fill
 				} {
 					Pen.stroke
@@ -674,12 +675,17 @@ Plotter {
 
 	draw {
 		var b = this.interactionView.bounds;
+		var modes = plotMode.asArray;
 		if(b != bounds) {
 			bounds = b;
 			this.updatePlotBounds;
 		};
 		Pen.use {
-			plots.do { |plot| plot.draw };
+			if (superpose) {
+				plots.do { |plot, i| plot.draw(modes) };
+			} {
+				plots.do { |plot, i| plot.draw(modes.wrapAt(i)) };
+			};
 		}
 	}
 
@@ -776,6 +782,11 @@ Plotter {
 		}
 	}
 
+	plotModes_ { |modes|
+		plotMode = modes;
+	}
+	plotModes { ^plotMode }
+
 	// specs
 
 	specs_ { |argSpecs|
@@ -870,7 +881,7 @@ Plotter {
 			if(array.first.first.isSequenceableCollection) { ^array };
 			size = array.maxItem { |x| x.size }.size;
 			// for now, just extend data:
-			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble		};
+			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble };
 		^array
 	}
 }
