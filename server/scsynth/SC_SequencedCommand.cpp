@@ -1446,8 +1446,6 @@ AsyncPlugInCmd::AsyncPlugInCmd(
 
 AsyncPlugInCmd::~AsyncPlugInCmd() {
     (mCleanup)(mWorld, mCmdData);
-    if (mMsgData)
-        World_Free(mWorld, mMsgData);
 }
 
 void AsyncPlugInCmd::CallDestructor() { this->~AsyncPlugInCmd(); }
