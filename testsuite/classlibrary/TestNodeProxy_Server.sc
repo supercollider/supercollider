@@ -54,6 +54,19 @@ TestNodeProxy_Server : UnitTest {
 		this.assertEquals(build, false, "SynthDef should not be rebuilt when calling send");
 	}
 
+	test_synthDef_isReleased_afterFree {
+		var numBefore, numAfter;
+		numBefore = server.statusWatcher.numSynthDefs;
+		proxy.source = { Silent.ar };
+		server.sync;
+		proxy.source = nil;
+		server.sendStatusMsg.sync;
+		numAfter = server.statusWatcher.numSynthDefs;
+		this.assertEquals(numBefore, numAfter,
+			"Removing the  NodeProxy source function should remove SynthDef from server"
+		);
+	}
+
 	test_loaded_after_quit {
 		proxy.send;
 		server.quit;
