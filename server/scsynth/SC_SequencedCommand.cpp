@@ -1442,9 +1442,7 @@ AsyncPlugInCmd::AsyncPlugInCmd(
     }
 }
 
-AsyncPlugInCmd::~AsyncPlugInCmd() {
-    (mCleanup)(mWorld, mCmdData);
-}
+AsyncPlugInCmd::~AsyncPlugInCmd() { (mCleanup)(mWorld, mCmdData); }
 
 void AsyncPlugInCmd::CallDestructor() { this->~AsyncPlugInCmd(); }
 
