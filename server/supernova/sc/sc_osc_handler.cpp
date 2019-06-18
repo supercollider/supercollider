@@ -3581,31 +3581,45 @@ template <bool realtime>
 void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                  completion_message&& message, endpoint_ptr endpoint) {
-    cmd_dispatcher<realtime>::fire_system_callback([=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
-        if (stage2)
-            (stage2)(world, cmdData);
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), endpoint = std::move(endpoint)] () mutable {
+        // stage 2 (NRT thread)
+        bool result2 = !stage2 || (stage2)(world, cmdData);
 
-        cmd_dispatcher<realtime>::fire_rt_callback([=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
-            if (stage3) {
-                bool success = (stage3)(world, cmdData);
-                if (success)
-                    message.handle(endpoint);
-            }
-            consume(std::move(message));
+        if (result2) {
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message), endpoint = std::move(endpoint)] () mutable {
+                // stage 3 (RT thread)
+                bool result3 = !stage3 || (stage3)(world, cmdData);
 
-            cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = std::move(endpoint)] {
-                if (stage4)
-                    (stage4)(world, cmdData);
+                if (result3) {
+                    handle_completion_message(std::move(message), endpoint);
 
-                if (cmdName)
-                    send_done_message(endpoint, cmdName);
+                    cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = std::move(endpoint)] {
+                        // stage 4 (NRT thread)
+                        bool result4 = !stage4 || (stage4)(world, cmdData);
 
-                cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint = std::move(endpoint)] {
+                        if (result4 && cmdName)
+                            send_done_message(endpoint, cmdName);
+
+                        // free in RT thread!
+                        cmd_dispatcher<realtime>::fire_rt_callback([=] {
+                            if (cleanup)
+                                (cleanup)(world, cmdData);
+                        });
+                    });
+                } else {
                     if (cleanup)
                         (cleanup)(world, cmdData);
-                });
+                    consume(std::move(message));
+                }
             });
-        });
+        } else {
+            // free in RT thread!
+            cmd_dispatcher<realtime>::fire_rt_callback([=, message = std::move(message)] () mutable {
+                if (cleanup)
+                    (cleanup)(world, cmdData);
+                consume(std::move(message));
+            });
+        }
     });
 }
 
