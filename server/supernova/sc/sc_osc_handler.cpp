@@ -462,13 +462,15 @@ void fire_trigger(int32_t node_id, int32_t trigger_id, float value) {
 }
 
 void sc_notify_observers::send_trigger(int32_t node_id, int32_t trigger_id, float value) {
+    // called from rt helper threads, so we need to lock the memory pool (for system_callback allocation)
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
     cmd_dispatcher<true>::fire_io_callback([=]() { fire_trigger(node_id, trigger_id, value); });
 }
 
 void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const char* command_name, int argument_count,
                                           const float* values) {
-    spin_lock::scoped_lock lock(
-        system_callback_allocator_lock); // called from rt helper threads, so we need to lock the memory pool
+    // called from rt helper threads, so we need to lock the memory pool
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
     movable_string cmd(command_name);
     movable_array<float> value_array(argument_count, values);
 
@@ -3581,6 +3583,9 @@ template <bool realtime>
 void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                  completion_message&& message, endpoint_ptr endpoint) {
+    // *possibly* called from rt helper threads, so we need to lock the memory pool (for system_callback allocation)
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
+
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(message), endpoint = std::move(endpoint)] () mutable {
         // stage 2 (NRT thread)
         bool result2 = !stage2 || (stage2)(world, cmdData);
@@ -3644,17 +3649,18 @@ void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, cons
 
 // called from RT thread, perform in NRT thread, free in RT thread
 template <bool realtime>
-void handle_message_from_RT(World * world, FifoMsg & msg)
-{
-            cmd_dispatcher<realtime>::fire_system_callback([=]() mutable {
-                msg.Perform();
+void handle_message_from_RT(World* world, FifoMsg& msg) {
+    // possibly called from rt helper threads, so we need to lock the memory pool (for system_callback allocation)
+    spin_lock::scoped_lock lock(system_callback_allocator_lock);
 
-                cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable { msg.Free(); });
-            });
+    cmd_dispatcher<realtime>::fire_system_callback([=]() mutable {
+        msg.Perform();
+
+        cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable { msg.Free(); });
+    });
 }
 
-void sc_osc_handler::send_message_from_RT(World * world, FifoMsg & msg)
-{
+void sc_osc_handler::send_message_from_RT(World* world, FifoMsg& msg) {
             if (world->mRealTime)
                 handle_message_from_RT<true>(world, msg);
             else
@@ -3663,8 +3669,7 @@ void sc_osc_handler::send_message_from_RT(World * world, FifoMsg & msg)
 
 // called from NRT thread, perform in RT thread, free in NRT thread
 template <bool realtime>
-void handle_message_to_RT(World * world, FifoMsg & msg)
-{
+void handle_message_to_RT(World* world, FifoMsg& msg) {
             cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable {
                 msg.Perform();
 
@@ -3672,7 +3677,7 @@ void handle_message_to_RT(World * world, FifoMsg & msg)
             });
 }
 
-void sc_osc_handler::send_message_to_RT(World * world, FifoMsg & msg)
+void sc_osc_handler::send_message_to_RT(World* world, FifoMsg& msg)
 {
             if (world->mRealTime)
                 handle_message_to_RT<true>(world, msg);
