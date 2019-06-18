@@ -2621,13 +2621,11 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime> 
-void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint, int skip_bytes)
-{
-    movable_array<char> cmd (msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
+template <bool realtime>
+void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint, int skip_bytes) {
+    movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
-    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(cmd)] () mutable {
-
+    cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(cmd)]() mutable {
         sc_msg_iter msg(message.size(), message.data());
 
         char nextTag = msg.nextTag();
@@ -3580,94 +3578,92 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
 
 
 template <bool realtime>
-void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
-                                  completion_message&& message, endpoint_ptr endpoint)
-{
-    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
+void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
+                                 AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
+                                 completion_message&& message, endpoint_ptr endpoint) {
+    cmd_dispatcher<realtime>::fire_system_callback([=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
         if (stage2)
             (stage2)(world, cmdData);
 
-        cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
+        cmd_dispatcher<realtime>::fire_rt_callback([=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
             if (stage3) {
                 bool success = (stage3)(world, cmdData);
                 if (success)
                     message.handle(endpoint);
             }
-            consume( std::move( message ) );
+            consume(std::move(message));
 
-            cmd_dispatcher<realtime>::fire_system_callback( [=, endpoint=std::move(endpoint)] {
+            cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = std::move(endpoint)] {
                 if (stage4)
                     (stage4)(world, cmdData);
 
                 if (cmdName)
                     send_done_message(endpoint, cmdName);
 
-                cmd_dispatcher<realtime>::fire_rt_callback( [=, endpoint=std::move(endpoint)] {
+                cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint = std::move(endpoint)] {
                     if (cleanup)
                         (cleanup)(world, cmdData);
                 });
+            });
         });
+    });
 }
 
 void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData,
                                              AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4,
                                              AsyncFreeFn cleanup, int completionMsgSize, void* completionMsgData) {
-    completion_message msg(completionMsgSize, completionMsgData);
-    endpoint_ptr shared_endpoint;
+            completion_message msg(completionMsgSize, completionMsgData);
+            endpoint_ptr shared_endpoint;
 
-    nova_endpoint* endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr) : nullptr;
+            nova_endpoint* endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr) : nullptr;
 
-    if (endpoint)
-        shared_endpoint = endpoint->shared_from_this();
+            if (endpoint)
+                shared_endpoint = endpoint->shared_from_this();
 
-    if (world->mRealTime)
-        handle_asynchronous_command<true>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
-                                          shared_endpoint);
-    else
-        handle_asynchronous_command<false>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup, std::move(msg),
-                                           shared_endpoint);
+            if (world->mRealTime)
+                handle_asynchronous_command<true>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup,
+                                                  std::move(msg), shared_endpoint);
+            else
+                handle_asynchronous_command<false>(world, cmdName, cmdData, stage2, stage3, stage4, cleanup,
+                                                   std::move(msg), shared_endpoint);
 }
 
 // called from RT thread, perform in NRT thread, free in RT thread
 template <bool realtime>
 void handle_message_from_RT(World * world, FifoMsg & msg)
 {
-    cmd_dispatcher<realtime>::fire_system_callback( [=] () mutable {
-        msg.Perform();
+            cmd_dispatcher<realtime>::fire_system_callback([=]() mutable {
+                msg.Perform();
 
-        cmd_dispatcher<realtime>::fire_rt_callback( [=] () mutable {
-            msg.Free();
-        });
-    });
+                cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable { msg.Free(); });
+            });
 }
 
 void sc_osc_handler::send_message_from_RT(World * world, FifoMsg & msg)
 {
-    if (world->mRealTime)
-        handle_message_from_RT<true>(world, msg);
-    else
-        handle_message_from_RT<false>(world, msg);
+            if (world->mRealTime)
+                handle_message_from_RT<true>(world, msg);
+            else
+                handle_message_from_RT<false>(world, msg);
 }
 
 // called from NRT thread, perform in RT thread, free in NRT thread
 template <bool realtime>
 void handle_message_to_RT(World * world, FifoMsg & msg)
 {
-    cmd_dispatcher<realtime>::fire_rt_callback( [=] () mutable {
-        msg.Perform();
+            cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable {
+                msg.Perform();
 
-        cmd_dispatcher<realtime>::fire_system_callback( [=] () mutable {
-            msg.Free();
-        });
-    });
+                cmd_dispatcher<realtime>::fire_system_callback([=]() mutable { msg.Free(); });
+            });
 }
 
 void sc_osc_handler::send_message_to_RT(World * world, FifoMsg & msg)
 {
-    if (world->mRealTime)
-        handle_message_to_RT<true>(world, msg);
-    else
-        handle_message_to_RT<false>(world, msg);
+            if (world->mRealTime)
+                handle_message_to_RT<true>(world, msg);
+            else
+                handle_message_to_RT<false>(world, msg);
 }
 
 } /* namespace detail */

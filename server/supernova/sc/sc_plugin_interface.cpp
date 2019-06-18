@@ -563,14 +563,12 @@ int do_asynchronous_command(
     return 0;
 }
 
-bool send_message_from_RT(World *world, struct FifoMsg& msg)
-{
+bool send_message_from_RT(World* world, struct FifoMsg& msg) {
     nova::instance->send_message_from_RT(world, msg);
     return true;
 }
 
-bool send_message_to_RT(World *world, struct FifoMsg& msg)
-{
+bool send_message_to_RT(World* world, struct FifoMsg& msg) {
     nova::instance->send_message_to_RT(world, msg);
     return true;
 }
