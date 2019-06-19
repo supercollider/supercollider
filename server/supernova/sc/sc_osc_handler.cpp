@@ -209,16 +209,16 @@ template <typename T> static inline void consume(T&& object) {
 }
 
 void send_done_message(endpoint_ptr const& endpoint, const char* cmd) {
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
+    char buffer[1024];
+    osc::OutboundPacketStream p(buffer, 1024);
     p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
 
     endpoint->send(p.Data(), p.Size());
 }
 
 void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
-    char buffer[128];
-    osc::OutboundPacketStream p(buffer, 128);
+    char buffer[1024];
+    osc::OutboundPacketStream p(buffer, 1024);
     p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
 
     endpoint->send(p.Data(), p.Size());
