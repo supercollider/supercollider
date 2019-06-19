@@ -2166,13 +2166,23 @@ fire_callback:
             try {
                 sc_factory->buffer_write(bufnum, filenameString.c_str(), headerString.c_str(), sampleString.c_str(),
                                          start, frames, leave_open);
-                message.trigger_async(endpoint);
-                cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+
+                cmd_dispatcher<realtime>::fire_rt_callback(
+                    [=, message = std::move(message), filenameString = std::move(filenameString),
+                     headerString = std::move(headerString), sampleString = std::move(sampleString)]() mutable {
+                        handle_completion_message(std::move(message), endpoint);
+
+                        consume(std::move(filenameString));
+                        consume(std::move(headerString));
+                        consume(std::move(sampleString));
+
+                        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+                    });
             } catch (std::exception const& error) {
                 report_failure(endpoint, error, b_write, bufnum);
+                cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
+                                                            std::move(headerString), std::move(sampleString));
             }
-            cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
-                                                        std::move(headerString), std::move(sampleString));
         });
 }
 
