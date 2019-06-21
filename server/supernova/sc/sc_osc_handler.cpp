@@ -3583,7 +3583,11 @@ template <bool realtime>
 void handle_asynchronous_command(World* world, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                  completion_message&& message, endpoint_ptr endpoint) {
-    // *possibly* called from rt helper threads, so we need to lock the memory pool (for system_callback allocation)
+    // Usually, this API function is called in response to plugin/unit commands (handled *before* DSP computation).
+    // We lock the memory pool nevertheless, just in case it's called from RT helper threads.
+    // Actually, it's not a good idea to call it from within the perform routine because fire_system_callback()
+    // is not thread-safe (the system_interpreter is a SPSC FIFO). On the other hand, calling it in the constructor
+    // seems to be safe because constructors are protected by a global lock and therefore never run in parallel.
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
 
     cmd_dispatcher<realtime>::fire_system_callback(
@@ -3651,7 +3655,7 @@ void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, cons
 
 // called from RT thread, perform in NRT thread, free in RT thread
 template <bool realtime> void handle_message_from_RT(World* world, FifoMsg& msg) {
-    // possibly called from rt helper threads, so we need to lock the memory pool (for system_callback allocation)
+    // see handle_asynchronous_command()
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
 
     cmd_dispatcher<realtime>::fire_system_callback([=]() mutable {
