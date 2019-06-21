@@ -681,15 +681,8 @@ void DocumentManager::handleDocListScRequest() {
     QString command = QStringLiteral("Document.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document* doc = *it;
-        int start, range;
-        if (doc->lastActiveEditor()) { // we might have changed selection before sync happened
-            QTextCursor cursor = doc->lastActiveEditor()->textCursor();
-            start = cursor.selectionStart();
-            range = cursor.selectionEnd() - start;
-        } else {
-            start = doc->initialSelectionStart();
-            range = doc->initialSelectionRange();
-        }
+        int start = doc->initialSelectionStart();
+        int range = doc->initialSelectionRange();
         QString docData = QStringLiteral("[\'%1\', %2, %3, %4, %5, %6, %7],")
                               .arg(doc->id().constData())
                               .arg(doc->titleAsSCArrayOfCharCodes())
