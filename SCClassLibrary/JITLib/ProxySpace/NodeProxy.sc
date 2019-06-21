@@ -524,7 +524,7 @@ NodeProxy : BusPlug {
 		loaded = false;
 		awake = proxy.awake; paused = proxy.paused;
 		clock = proxy.clock; quant = proxy.quant;
-        this.fadeTime = proxy.fadeTime;
+		this.fadeTime = proxy.fadeTime;
 
 	}
 
