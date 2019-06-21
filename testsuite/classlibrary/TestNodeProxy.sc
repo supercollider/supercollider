@@ -40,10 +40,10 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.isPlaying, false, "Setting the proxy's source should not set isPlaying = true");
 	}
     
-    test_copy_fadeTimeIsCopied{
-        var oldProxy = proxy.fadeTime_(33);
-        var newProxy = oldProxy.copy;
+	test_copy_fadeTimeIsCopied {
+		var oldProxy = proxy.fadeTime_(33);
+		var newProxy = oldProxy.copy;
 
-        this.assertEquals(oldProxy.fadeTime, newProxy.fadeTime);
+		this.assertEquals(oldProxy.fadeTime, newProxy.fadeTime);
     }
 }
