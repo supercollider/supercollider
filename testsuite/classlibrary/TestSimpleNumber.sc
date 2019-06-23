@@ -181,5 +181,13 @@ TestSimpleNumber : UnitTest {
 		var last = 8;
 		var arr = first.series(step, last);
 		this.assert(arr.last <= last, "SimpleNumber:series should not produce an array whose last value is greater than the specified 'last' argument.");
+
+		first = 1;
+		arr = first.series(first, first);
+		this.assert(arr.size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
+
+		first = 1.1;
+		arr = first.series(first, first);
+		this.assert(arr.size == 1, "SimpleNumber:series Float types with first == last and step == 0 should return an array of [ first ]");
 	}
 }
