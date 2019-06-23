@@ -814,7 +814,7 @@ int prSimpleNumberSeries(struct VMGlobals* g, int numArgsPushed) {
 
         if ((size < 1) || ((step >= 0) && (last < first)) || ((step <= 0) && (last > first))) {
             post(
-                "prSimpleNumberSeries: arguments do not form an arithmetic progression: first: %i, step: %i, last %i\n",
+                "prSimpleNumberSeries: arguments do not form an arithmetic progression:\n \tfirst: %i, step: %i, last %i\n",
                 first, step, last);
             return errFailed;
         }
@@ -866,7 +866,7 @@ int prSimpleNumberSeries(struct VMGlobals* g, int numArgsPushed) {
 
         if ((size < 1) || ((step >= 0) && (last < first)) || ((step <= 0) && (last > first))) {
             post(
-                "prSimpleNumberSeries: arguments do not form an arithmetic progression: first: %f, step: %f, last %f\n",
+                "prSimpleNumberSeries: arguments do not form an arithmetic progression:\n \tfirst: %f, step: %f, last %f\n",
                 first, step, last);
             return errFailed;
         }
