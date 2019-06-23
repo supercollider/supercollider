@@ -971,8 +971,10 @@ Event : Environment {
 					},
 
 					composite: { |server|
-						~types.do { |type|
-							~eventTypes[type].value(server);
+						~resultEvents = ~types.collect { |type|
+							if(type != \composite) {
+								currentEnvironment.copy.put(\type, type).play;
+							};
 						};
 					}
 				)
