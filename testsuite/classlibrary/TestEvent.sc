@@ -260,6 +260,18 @@ TestEvent : UnitTest {
 		Event.eventTypes.removeAt(\composite2);
 	}
 
+	test_composite_event_type_ignores_composite {
+		var event = (type: \composite, types: #[note, composite]).play;
+		this.assert(event[\resultEvents][1].isNil, "Composite event type should not try to call itself")
+	}
+
+	test_composite_event_type_generates_unique_node_IDs {
+		var event = (type: \composite, types: #[note, note]).play;
+		this.assert(event[\resultEvents][0][\id] != event[\resultEvents][1][\id],
+			"Composite event subtypes should not have node ID clashes"
+		);
+	}
+
 	cleanUpMessages {
 		prevMsg = nil;
 		prevLatency = nil;
