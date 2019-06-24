@@ -7,7 +7,7 @@ DESCRIPTION::
 
 ScopeView is mainly intended to support the implementation of link::Classes/Stethoscope:: (an oscilloscope), link::Classes/FreqScopeView:: (a basic frequency spectrum plotting view) and link::Classes/FreqScope:: (a frequency spectrum analyzer tool).
 
-It is optimized to efficiently perform frequent plotting of the contents of a link::Classes/Buffer:: into which a link::Classes/ScopeOut:: UGen is writing. It will periodically poll the buffer for data and update the plot, as long as the ScopeOut UGen is writing into it; the buffer will not be plotted otherwise.
+It is optimized to efficiently perform frequent plotting of the contents of a link::Classes/Buffer:: into which a link::Classes/ScopeOut2:: UGen is writing. It will periodically poll the buffer for data and update the plot, as long as the ScopeOut2 UGen is writing into it; the buffer will not be plotted otherwise.
 
 
 CLASSMETHODS::
@@ -20,7 +20,7 @@ INSTANCEMETHODS::
 METHOD:: bufnum
     The number of the Buffer to plot.
 
-    As soon as a valid buffer number is set, a link::Classes/ScopeOut2:: UGen is writing into it, a link::Classes/Server:: object has been assigned to it and the start method has been called, the view starts periodically plotting the buffer. If the ScopeOut UGen stops writing, or an invalid buffer number is set, the plotting will pause.
+    As soon as a valid buffer number is set, a link::Classes/ScopeOut2:: UGen is writing into it, a link::Classes/Server:: object has been assigned to it and the start method has been called, the view starts periodically plotting the buffer. If the ScopeOut2 UGen stops writing, or an invalid buffer number is set, the plotting will pause.
 
     argument::
         An integer.
