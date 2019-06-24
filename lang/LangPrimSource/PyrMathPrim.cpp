@@ -867,7 +867,7 @@ int prSimpleNumberSeries(struct VMGlobals* g, int numArgsPushed) {
         } else {
             size = (int)((last - first) / step) + 1;
         }
-        
+
         if ((size < 1) || ((step >= 0) && (last < first)) || ((step <= 0) && (last > first))) {
             post("prSimpleNumberSeries: arguments do not form an arithmetic progression:\n\tfirst: %f, step: %f, last "
                  "%f\n",
