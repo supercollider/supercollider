@@ -106,7 +106,7 @@ c.server_(s); // Important: one must assign the ScopeView to a server
 a=SynthDef("monoscope", { arg bus, bufnum;
   var z;
   z = In.ar(bus, 2);
-  // ScopeOut2 writes the audio to the buffer (It only works with ScopeOut2 for some reason, not with ScopeOut, so this was corrected
+  // ScopeOut2 writes the audio to the buffer (It only works with ScopeOut2 for some reason, not with ScopeOut, so this was corrected)
   ScopeOut2.ar(z, bufnum);
   Out.ar(0, z);
 }).play(
