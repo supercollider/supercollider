@@ -20,7 +20,7 @@ INSTANCEMETHODS::
 METHOD:: bufnum
     The number of the Buffer to plot.
 
-    As soon as a valid buffer number is set, a link::Classes/ScopeOut2:: UGen is writing into it, a link::Classes/Server:: object has been assigned to the the view starts periodically plotting the buffer. If the ScopeOut UGen stops writing, or an invalid buffer number is set, the plotting will pause.
+    As soon as a valid buffer number is set, a link::Classes/ScopeOut2:: UGen is writing into it, a link::Classes/Server:: object has been assigned to it and the start method has been called, the view starts periodically plotting the buffer. If the ScopeOut UGen stops writing, or an invalid buffer number is set, the plotting will pause.
 
     argument::
         An integer.
