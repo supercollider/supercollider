@@ -74,4 +74,11 @@ TestNodeProxy : UnitTest {
 
 		this.assertEquals(oldProxy.paused, newProxy.paused);
 	}
+
+	test_copy_sourceIsCopied {		
+		var oldProxy = proxy.source_({ Silent.ar });
+		var newProxy = oldProxy.copy;
+		
+		this.assertEquals(oldProxy.source, newProxy.source);
+	}
 }
