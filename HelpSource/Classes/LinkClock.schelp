@@ -15,12 +15,10 @@ Link attempts, as much as possible, to allow applications to move in their own t
 list::
 ## Tempo: Any application can change the tempo at any time.
 ## Beat: Integer beats should sound at the same time in all applications.
-## Phase (in SuperCollider, link::Classes/TempoClock#-beatInBar::): A downbeat in one peer should correspond to a downbeat in other peers.
+## Phase (analogous to SuperCollider's link::Classes/TempoClock#-beatInBar::): A downbeat in one peer should correspond to a downbeat in other peers.
 ::
 
 Link does not synchronize exact beat numbers. Two SuperCollider peers joining the same Link session, in 4/4 time, may be respectively at beats 4 and 16 (which are both barlines), but they should not be at beats 4.0 and 19.0.
-
-For barline sync, peers should have the same "quantum" (in SuperCollider, link::Classes/TempoClock#-beatsPerBar::). Strong::IMPORTANT: :: Link emphasis::does not:: automatically synchronize the meter! It is up to each SC peer to set code::beatsPerBar:: appropriately.
 
 Many Link-enabled applications (DAWs) can start and stop the entire timeline. SuperCollider clocks do not stop. A DAW, when starting to play, should lock into SuperCollider's phase within the bar. You can register functions to respond to other peers starting or stopping. (SuperCollider does not know which other peer started or stopped.)
 
@@ -43,6 +41,25 @@ With a positive latency, if you examine code::t.beats::, it will appear to be la
 (Because the clock and server have separate latency settings, it is possible to adjust timing relative to other applications. If you find, for instance, that SuperCollider is sounding slightly late, you can increase the LinkClock's latency slightly, moving the clock earlier, without affecting messaging latency. Ideally, this should not be necessary, but inter-application coordination can be fiddly.)
 
 This does have an impact on tempo changes. SuperCollider receives tempo changes from other peers only after they are sent, which is probably slightly late for our clock. In practice, it means that events falling within the latency gap may be slightly out of sync, but sync should recover very quickly. (So, Link is not ideal for music involving frequent tempo or meter changes.)
+
+Subsection:: beatsPerBar and quantum
+
+For every moment in time, Ableton Link knows the beat, time in seconds, and emphasis::phase::. Phase is measured relative to a emphasis::quantum::. Link peers sharing the same quantum will synchronize barlines.
+
+For instance, assume quantum = 4. Peer A is currently at beat 33. Peer B joins the network. Peer A's last barline was beat 32, so phase = 1. Peer B's beat counter should arrange to have the same phase: in practice, it will start with -3.
+
+table::
+## strong::Phase:: || strong::Peer A beats:: || strong::Peer B beats:: || Notes
+## 0 || 32 || -- ||
+## 1 || 33 || -3 || Link calculates -3 for B
+## 2 || 34 || -2 ||
+## 3 || 35 || -1 ||
+## 0 || 36 || 0 || Barline (synced)
+::
+
+If you change the quantum, Link does not guarantee that beats will keep the same duration. Beats may be shorter or longer, to try to preserve phase sync.
+
+Therefore, you should emphasis::not:: change the quantum in the middle of a performance. Ableton recommends to set the quantum just before beginning. Then, you can change SuperCollider's code::beatsPerBar:: as needed, without changing the quantum, so that Link's phase reference remains consistent.
 
 Subsection:: Notifications
 
@@ -124,6 +141,10 @@ Gets the number of peers connected to the current Link session. When
 peers join or leave the session, the LinkClock broadcasts a
 code::\numPeers:: notification (see
 link::Classes/LinkClock#Notifications::).
+
+method:: quantum
+Gets or sets Link's internal quantum (see above, link::#beatsPerBar and quantum::). Normally this should be done at the beginning of a performance, or not at all. It is risky to change quantum during a performance. Changing meter locally is the same as in TempoClock: link::Classes/TempoClock#-beatsPerBar::.
+
 
 Examples::
 
