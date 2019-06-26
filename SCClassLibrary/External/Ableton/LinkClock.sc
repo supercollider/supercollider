@@ -32,11 +32,6 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	setMeterAtBeat { |newBeatsPerBar, beats|
-		this.quantum_(beatsPerBar);
-		super.setMeterAtBeat(newBeatsPerBar, beats);
-	}
-
 	latency {
 		_LinkClock_GetLatency
 		^this.primitiveFailed
