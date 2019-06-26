@@ -113,6 +113,19 @@ int prLinkClock_NumPeers(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+int prLinkClock_GetQuantum(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+    if (!clock) {
+        error("clock is not running.\n");
+        return errFailed;
+    }
+
+    double quantum = clock->GetQuantum();
+    SetFloat(g->sp, quantum);
+    return errNone;
+}
+
 int prLinkClock_SetQuantum(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -175,6 +188,7 @@ void initLinkPrimitives() {
     definePrimitive(base, index++, "_LinkClock_SetTempoAtTime", prClock_SetTempoAtTime<LinkClock>, 3, 0);
     definePrimitive(base, index++, "_LinkClock_SetAll", prClock_SetAll<LinkClock>, 4, 0);
     definePrimitive(base, index++, "_LinkClock_NumPeers", prLinkClock_NumPeers, 1, 0);
+    definePrimitive(base, index++, "_LinkClock_GetQuantum", prLinkClock_GetQuantum, 1, 0);
     definePrimitive(base, index++, "_LinkClock_SetQuantum", prLinkClock_SetQuantum, 2, 0);
     definePrimitive(base, index++, "_LinkClock_GetLatency", prLinkClock_GetLatency, 1, 0);
     definePrimitive(base, index++, "_LinkClock_SetLatency", prLinkClock_SetLatency, 2, 0);

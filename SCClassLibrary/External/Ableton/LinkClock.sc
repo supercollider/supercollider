@@ -33,7 +33,7 @@ LinkClock : TempoClock {
 	}
 
 	setMeterAtBeat { |newBeatsPerBar, beats|
-		this.prSetQuantum(beatsPerBar);
+		this.quantum_(beatsPerBar);
 		super.setMeterAtBeat(newBeatsPerBar, beats);
 	}
 
@@ -47,14 +47,19 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	// PRIVATE
-	prStart { |tempo, beats, seconds|
-		_LinkClock_New
+	quantum {
+		_LinkClock_GetQuantum;
 		^this.primitiveFailed
 	}
 
-	prSetQuantum { |quantum|
+	quantum_ { |quantum|
 		_LinkClock_SetQuantum;
+		^this.primitiveFailed
+	}
+
+	// PRIVATE
+	prStart { |tempo, beats, seconds|
+		_LinkClock_New
 		^this.primitiveFailed
 	}
 
