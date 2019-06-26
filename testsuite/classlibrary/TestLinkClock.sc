@@ -202,4 +202,64 @@ TestLinkClock : UnitTest {
 
 		semaphore.wait
 	}
+
+	test_LinkClock_meter_change_beats_keep_continuity {
+		// the issue may not reproduce at other tempi
+		// I suggest not changing this
+		var tempo = 7, beatDur = tempo.reciprocal,
+		clock1, clock2,
+		secList,
+		failedLists,
+		outerCond = Condition.new, innerCond = Condition.new;
+
+		// does not consistently fail under original conditions
+		// it will *probably* fail at least once under multiple trials
+		// but it should never fail -- so run multiple trials
+		"Enter 'test_LinkClock_meter_change_beats_keep_continuity'".postln;
+		{
+			5.do { |i|
+				clock1 = LinkClock(tempo).quantum_(4);
+				{
+					// issue reproduces only if clocks are started some time apart
+					2.5.wait;
+					clock2 = LinkClock(tempo).quantum_(4);
+					0.5.wait;
+
+					// now save beat durations
+					secList = List.new;
+					(7 - clock1.beats).wait;
+					clock2.schedAbs(clock2.nextBar, {
+						clock2.setMeterAtBeat(3, clock2.beats);
+					});
+					1.0.wait;
+					secList.add(clock1.seconds);  // now at barline
+					clock1.setMeterAtBeat(3, clock1.beats);
+					4.do { |i|
+						1.0.wait;
+						secList.add(clock1.seconds);  // now at barline
+					};
+					innerCond.unhang;
+				}.fork(clock1);
+				innerCond.hang;
+				secList = secList.differentiate.drop(1);
+				if(secList.any { |val| val absdif: beatDur > 0.00001 }) {
+					"Trial % failed: %\n".postf(i+1, secList);
+					failedLists = failedLists.add(secList);
+				} {
+					"Trial % passed\n".postf(i+1);
+				};
+				clock1.stop; clock2.stop;
+				0.1.wait;
+			};
+			outerCond.unhang;
+		}.fork;
+
+		outerCond.hang;
+
+		this.assert(
+			failedLists.size == 0,
+			"LinkClock's beats should be the same duration across meter changes (failed trials = %)"
+			.format(failedLists)
+		);
+	}
 }
