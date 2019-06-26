@@ -87,7 +87,8 @@ NodeProxy : BusPlug {
 	}
 
 	fadeTime {
-		^nodeMap.at(\fadeTime) ? 0.02;
+		if(nodeMap.at(\fadetime).isNil) { nodeMap.put(\fadeTime, 0.02) };
+		^nodeMap.at(\fadeTime)
 	}
 
 	asGroup { ^group.asGroup }
