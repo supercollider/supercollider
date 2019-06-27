@@ -135,6 +135,17 @@ code::
 "same" != "Same";
 ::
 
+subsection:: Fuzzy string comparison
+With fuzzy comparison, the strings don't need to match exactly - we can work out how similar they are, and make decisions based on that.
+This behaviour is inherited from the link::Classes/SequenceableCollection#-editDistance::, and is documented fully there, but to provide an example:
+code::
+"hello".editDistance("hallo"); // 1 (substitution)
+"hello".editDistance("hell"); // 1 (deletion)
+"hello".editDistance("helloo"); // 1 (addition)
+"hello".editDistance("hllo"); // 1 (removal)
+"hello".editDistance("haldo"); // 2 (substitutions)
+::
+
 subsection:: Posting strings
 
 method::post

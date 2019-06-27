@@ -631,10 +631,83 @@ method::hammingDistance
 Returns the count of array elements that are not equal in identical positions. http://en.wikipedia.org/wiki/Hamming_distance
 
 The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.
+
 code::
 [0, 0, 0, 1, 1, 1, 0, 1, 0, 0].hammingDistance([0, 0, 1, 1, 0, 0, 0, 0, 1, 1]);
 "SuperMan".hammingDistance("SuperCollider");
 ::
+
+subsection:: Fuzzy comparisons
+With fuzzy comparisons, the arrays do not need to match exactly. We can check how similar they are, and make decisions based on that. This is the magic behind autocorrection.
+
+method::editDistance
+Returns the mininum number of changes to modify this teletype::SequenceableCollection:: into the other teletype::SequenceableCollection::.
+A change can be: an addition, a deletion, or a substitution.
+This is known as the Levenshtein Distance and is implemented in SuperCollider using the Wagner–Fischer algorithm.
+
+The default comparison uses strong::identity:: - see link::Classes/Object#-==:: and link::Classes/Object#-===::
+
+Where both arrays are raw arrays (String, Int16Array, Int32Array, FloatArray etc., or any derived classes), like comparing two strings, a faster primitive will be used to calculate the distance.
+
+code::
+"hello".editDistance("hallo"); // 1 (substitution)
+"hello".editDistance("hell"); // 1 (deletion)
+"hello".editDistance("helloo"); // 1 (addition)
+"hello".editDistance("hllo"); // 1 (removal)
+"hello".editDistance("haldo"); // 2 (substitutions)
+::
+
+In cases where the arrays are of different types, it will fall back to a slower, non-primitive implementation.
+
+code::
+// String vs Array
+"hello".editDistance([$h, $e, $l, $l, $o]);
+::
+
+For cases that require comparisons other than identity, the optional teletype::compareFunc:: can be given to compare elements. This function will be passed two arguments, representing a single element from each array to compare, and this function must return a boolean as to whether or not the elements are equal.
+
+code::
+// Using compareFunc for case insensitive comparisons
+"HeLLO".editDistance("HELLO", { |a, b|
+	a.toLower == b.toLower;
+});
+::
+
+note::
+Specifying a teletype::compareFunc:: will bypass the primitive and may take significantly longer to execute for larger arrays.
+::
+
+argument::other
+The teletype::SequenceableCollection:: to compare against
+
+argument::compareFunc
+An optional comparison function to use for each element. It will be provided two arguments, and the function must return a boolean as to whether or not they are the same. Default value is teletype::nil::, which will use strong::identity:: (not equality) to compare elements.
+
+code::
+[1,2,3,4].editDistance([2,3,4,5], { | a, b |
+	a == b;
+});
+::
+
+method::similarity
+Returns a value between 0 and 1 representing the percentage similarity between this teletype::SequenceableCollection:: and the other teletype::SequenceableCollection::.
+
+A value of 1 means they are exactly the same, a value of 0 means they are completely different.
+This is calculated based on the link::#-editDistance::
+code::
+"hello".similarity("hello"); // 1
+"hello".similarity("asdf"); // 0
+"word".similarity("wodr"); // 0.5
+::
+
+argument::other
+The code::SequenceableCollection:: to compare against
+
+argument::compareFunc
+An optional compareFunc to be used to calculate the edit distance (see link::#-editDistance::)
+
+private::prEditDistance
+private::prLevenshteinDistance
 
 subsection::Math Support - Unary Messages
 
