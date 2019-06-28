@@ -29,6 +29,10 @@
 #include "portaudio.h"
 #define SC_PA_USE_DLL
 
+#ifdef __APPLE__
+#    include <pa_mac_core.h>
+#endif
+
 int32 server_timeseed() { return timeSeed(); }
 
 #ifdef SC_PA_USE_DLL
@@ -562,6 +566,11 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
             mOutputChannelCount = 0;
         }
 
+#ifdef __APPLE__
+        // use PortAudio setting tuned for pro audio apps
+        PaMacCoreStreamInfo macInfo;
+        PaMacCore_SetupStreamInfo(&macInfo, paMacCorePro);
+#endif
         PaStreamParameters* inStreamParams_p;
         PaStreamParameters inStreamParams;
         if (mDeviceInOut[0] != paNoDevice) {
@@ -569,7 +578,11 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
             inStreamParams.channelCount = mInputChannelCount;
             inStreamParams.sampleFormat = fmt;
             inStreamParams.suggestedLatency = suggestedLatencyIn;
-            inStreamParams.hostApiSpecificStreamInfo = NULL;
+#ifdef __APPLE__
+            inStreamParams.hostApiSpecificStreamInfo = &macInfo;
+#else
+            inStreamParams.hostApiSpecificStreamInfo = nullptr;
+#endif
             inStreamParams_p = &inStreamParams;
         } else {
             inStreamParams_p = NULL;
@@ -582,7 +595,11 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
             outStreamParams.channelCount = mOutputChannelCount;
             outStreamParams.sampleFormat = fmt;
             outStreamParams.suggestedLatency = suggestedLatencyOut;
-            outStreamParams.hostApiSpecificStreamInfo = NULL;
+#ifdef __APPLE__
+            outStreamParams.hostApiSpecificStreamInfo = &macInfo;
+#else
+            outStreamParams.hostApiSpecificStreamInfo = nullptr;
+#endif
             outStreamParams_p = &outStreamParams;
         } else {
             outStreamParams_p = NULL;
