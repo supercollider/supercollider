@@ -31,6 +31,10 @@
 #include "utilities/branch_hints.hpp"
 #include "cpu_time_info.hpp"
 
+#ifdef __APPLE__
+#    include <pa_mac_core.h>
+#endif
+
 namespace nova {
 
 /** \brief portaudio backend for supernova
@@ -345,6 +349,10 @@ public:
                 suggestedLatencyIn = suggestedLatencyOut = (double)h_blocksize / (double)samplerate;
         }
 
+#ifdef __APPLE__
+        PaMacCoreStreamInfo macInfo;
+        PaMacCore_SetupStreamInfo(&macInfo, paMacCorePro);
+#endif
         if (inchans) {
             const PaDeviceInfo* device_info = Pa_GetDeviceInfo(input_device_index);
 
@@ -354,7 +362,11 @@ public:
             in_parameters.channelCount = inchans;
             in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
             in_parameters.suggestedLatency = suggestedLatencyIn;
+#ifdef __APPLE__
+            in_parameters.hostApiSpecificStreamInfo = &macInfo;
+#else
             in_parameters.hostApiSpecificStreamInfo = nullptr;
+#endif
         }
 
         if (outchans) {
@@ -366,7 +378,11 @@ public:
             out_parameters.channelCount = outchans;
             out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
             out_parameters.suggestedLatency = suggestedLatencyOut;
+#ifdef __APPLE__
+            out_parameters.hostApiSpecificStreamInfo = &macInfo;
+#else
             out_parameters.hostApiSpecificStreamInfo = nullptr;
+#endif
         }
 
         PaStreamParameters* in_stream_parameters = inchans ? &in_parameters : nullptr;
