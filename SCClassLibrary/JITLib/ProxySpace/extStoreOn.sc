@@ -188,8 +188,15 @@
 					if (srcStr.notEmpty) { str = str ++ ".source_(" ++ srcStr ++ ")" };
 				} {
 					if (isInCurrent) { 	// ~out
-						if (srcStr.notEmpty) { str = str + "=" + srcStr };
-
+						if (srcStr.notEmpty) {
+							if (this.isKindOf(Ndef)) {
+								// basic Ndef
+								str = this.cs.drop(-1) ++ "," + srcStr ++ ")";
+							}{
+								// basic nodeproxy
+								str = str + "=" + srcStr
+							}
+						}
 					} { 					// Ndef('a') - put sourceString before closing paren.
 						if (srcStr.notEmpty) {
 							str = str.copy.drop(-1) ++ ", " ++ srcStr ++ nameStr.last
