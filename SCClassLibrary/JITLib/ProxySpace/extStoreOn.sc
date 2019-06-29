@@ -333,7 +333,11 @@
 			keys = this.monitors.collect { |item| item.key(envir) };
 		};
 		str = String.streamContents { |stream|
-			stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
+			if (Ndef.all.includes(this)) {
+				stream << ("// ( " + this.asCode + ") \n\n");
+			} {
+				stream << "// ( p = ProxySpace.new(s).push; ) \n\n";
+			};
 			this.storeOn(stream, keys, includeSettings);
 			//			this.do { |px| if(px.monitorGroup.isPlaying) {
 			//				stream << px.playEditString << ".play; \n"
