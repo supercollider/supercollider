@@ -28,7 +28,10 @@ Primitives for Arrays.
 #include "PyrPrimitive.h"
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
-#include <string.h>
+#include "SC_Levenshtein.h"
+
+#include <cstring>
+#include <algorithm>
 
 int basicSize(VMGlobals* g, int numArgsPushed);
 int basicMaxSize(VMGlobals* g, int numArgsPushed);
@@ -2474,6 +2477,70 @@ int prArrayUnlace(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+template <typename T>
+int levenshteinDistanceImpl(
+    PyrSlot* result, const PyrObject* a, const PyrObject* b,
+    std::function<bool(const T&, const T&)> compareFunc = [](const T& a, const T& b) { return a == b; }) {
+    size_t distance = levenshteinDistance<T>()(reinterpret_cast<const T*>(a->slots), a->size,
+                                               reinterpret_cast<const T*>(b->slots), b->size, compareFunc);
+    SetInt(result, static_cast<int>(distance));
+    return errNone;
+}
+
+int arrayLevenshteinDistance(PyrSlot* result, const PyrObject* thisArray, const PyrObject* thatArray) {
+    // if they're both the same format we can compare them..
+    if (thisArray->obj_format == thatArray->obj_format) {
+        switch (thisArray->obj_format) {
+        // if they're raw arrays, compare as such
+        case obj_char:
+            return levenshteinDistanceImpl<char>(result, thisArray, thatArray);
+        case obj_double:
+            return levenshteinDistanceImpl<double>(result, thisArray, thatArray);
+        case obj_float:
+            return levenshteinDistanceImpl<float>(result, thisArray, thatArray);
+        case obj_int16:
+            return levenshteinDistanceImpl<int16>(result, thisArray, thatArray);
+        case obj_int32:
+            return levenshteinDistanceImpl<int32>(result, thisArray, thatArray);
+        case obj_int8:
+            return levenshteinDistanceImpl<int8>(result, thisArray, thatArray);
+        case obj_symbol:
+            // pass them in as slots, compare as raw symbols
+            return levenshteinDistanceImpl<PyrSlot>(
+                result, thisArray, thatArray,
+                [](const PyrSlot& a, const PyrSlot& b) { return slotRawSymbol(&a) == slotRawSymbol(&b); });
+        case obj_slot:
+            // if it is slotted, compare identities
+            // this will handle polymorphic arrays in a predictable way
+            return levenshteinDistanceImpl<PyrSlot>(result, thisArray, thatArray,
+                                                    [](const PyrSlot& a, const PyrSlot& b) { return SlotEq(&a, &b); });
+        default:
+            return errWrongType;
+        }
+    } else {
+        return errWrongType;
+    }
+}
+
+int prArrayLevenshteinDistance(struct VMGlobals* g, int numArgsPushed) {
+    auto* slotThatArray = g->sp;
+    auto* slotThisArray = g->sp - 1;
+
+    if (NotObj(slotThisArray) || NotObj(slotThatArray))
+        return errWrongType;
+
+    auto* objThisArray = slotRawObject(slotThisArray);
+    auto* objThatArray = slotRawObject(slotThatArray);
+
+    if (!(slotRawInt(&objThisArray->classptr->classFlags) & classHasIndexableInstances))
+        return errNotAnIndexableObject;
+
+    if (!(slotRawInt(&objThatArray->classptr->classFlags) & classHasIndexableInstances))
+        return errNotAnIndexableObject;
+
+    return arrayLevenshteinDistance(slotThisArray, objThisArray, objThatArray);
+}
+
 void initArrayPrimitives() {
     int base, index;
 
@@ -2532,9 +2599,9 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
     definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
     definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
+
+    definePrimitive(base, index++, "_ArrayLevenshteinDistance", prArrayLevenshteinDistance, 2, 0);
 }
-
-
 #if _SC_PLUGINS_
 
 #    include "SCPlugin.h"
