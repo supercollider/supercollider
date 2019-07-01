@@ -114,6 +114,14 @@ are at:
 A build for a specific commit may not always be available: for instance, if the build was cancelled early or failed to
 complete.
 
+AppVeyor builds
+---------------
+Independently from Amazon S3 hosting service, AppVeyor stores its Windows builds temporarily for 6 months. In contrast to the Amazon S3 hosting, these builds are available for _all_ pull requests. The URL to these builds includes AppVeyor's job number and is unrelated to commit SHA, e.g.
+
+* https://ci.appveyor.com/api/buildjobs/76sh4cu20rh50bp1/artifacts/art_folder.zip
+
+In order to access these builds, go to the desired pull request page. At the bottom of the page, in the section `All checks have passed`, toggle `Show all checks` and choose `Details` next to the AppVeyor entry. On the page that opens, choose the desired job from the list, and then `artifacts` on the right. This will reveal a link to `art_folder.zip` which contains the build.
+
 Boost Update Script
 -------------------
 
