@@ -20,7 +20,9 @@ INSTANCEMETHODS::
 METHOD:: bufnum
     The number of the Buffer to plot.
 
-    As soon as a valid buffer number is set, a link::Classes/ScopeOut2:: UGen is writing into it, a link::Classes/Server:: object has been assigned to it and the start method has been called, the view starts periodically plotting the buffer. If the ScopeOut2 UGen stops writing, or an invalid buffer number is set, the plotting will pause.
+    To set up the ScopeView object for plotting, one needs to set a valid buffer number and tell a link::Classes/ScopeOut2:: UGen to write to it. Before the view starts periodically plotting the buffer, however, one needs to assign it a link::Classes/Server:: object and call the link::#-start:: method on it.
+
+If the ScopeOut2 UGen stops writing or an invalid buffer number is set, the plotting will pause.
 
     argument::
         An integer.
@@ -33,6 +35,7 @@ METHOD:: server
 
 METHOD:: start
     Tells the ScopeView object to start plotting.
+
 METHOD:: stop
     Tells the ScopeView object to stop plotting. Plotting can be resumed anytime with the link::#start:: method.
 
@@ -85,44 +88,46 @@ EXAMPLES::
 SUBSECTION:: A step-by-step example
 
 code::
-s.boot; // boot server (if not already booted), then execute the following two blocks in succession:
+// boot the server (if not already booted)
+s.boot;
 
+// execute the following two blocks in succession:
 (
 f = Buffer.alloc(s,1024,2);
 b = Bus.audio(s,1);
 
-w=Window.new.front;
+w = Window.new.front;
 w.onClose = { // free everything when finished
-  c.stop; a.free; d.free; f.free; b.free;
-  "SynthDefs, busses and buffers have all been freed.".postln;
+    c.stop; a.free; d.free; f.free; b.free;
+    "SynthDefs, busses and buffers have all been freed.".postln;
 };
 c = ScopeView(w.view,w.view.bounds.insetAll(10,10,10,10));
 c.bufnum = f.bufnum;
-c.server_(s); // Important: one must assign the ScopeView to a server
+c.server = s; // Important: one must assign the ScopeView to a server
 )
 
 (
 // listening to the bus, using ScopeOut2 to write it to the buffer
-a=SynthDef("monoscope", { arg bus, bufnum;
-  var z;
-  z = In.ar(bus, 2);
-  // ScopeOut2 writes the audio to the buffer (It only works with ScopeOut2 for some reason, not with ScopeOut, so this was corrected)
-  ScopeOut2.ar(z, bufnum);
-  Out.ar(0, z);
+a = SynthDef("monoscope", { arg bus, bufnum;
+    var z;
+    z = In.ar(bus, 2);
+
+    ScopeOut2.ar(z, bufnum);
+    Out.ar(0, z);
 }).play(
-  target: RootNode(s),
-  args: [\bus, b.index, \bufnum, f.bufnum],
-  addAction: \addToTail // make sure it goes after what you are scoping
+    target: RootNode(s),
+    args: [\bus, b.index, \bufnum, f.bufnum],
+    addAction: \addToTail // make sure it goes after what you are scoping
 );
 
 // making noise onto the buffer
-d=SynthDef("noise", { arg bus;
-  var z;
-  z = LFSaw.ar(SinOsc.kr(0.1).range(300,1000),[0,1]*pi) * 0.1;
-  Out.ar(bus, z);
+d = SynthDef("noise", { arg bus;
+    var z;
+    z = LFSaw.ar(SinOsc.kr(0.1).range(300,1000),[0,1]*pi) * 0.1;
+    Out.ar(bus, z);
 }).play(
-  s,
-  [\bus,b.index]
+    s,
+    [\bus,b.index]
 );
 c.start; // Tell the ScopeView to start
 CmdPeriod.doOnce({w.close});
@@ -142,62 +147,61 @@ This explains all the options:
 code::
 (
 s.waitForBoot(
-{
+    {
+        var func, sdef1, sdef2, syn1, syn2,startButton ;
+        f = Buffer.alloc(s,1024,2);
+        b = Bus.audio(s,1);
 
-    var func, sdef1, sdef2, syn1, syn2,startButton ;
-    f = Buffer.alloc(s,1024,2);
-    b = Bus.audio(s,1);
+        w = Window("Scope", Rect(150, Window.screenBounds.height-500,790,400)).front;
+        c = ScopeView(w,Rect(10,10,380,380)); // this is SCScope
+        c.bufnum = f.bufnum;
 
-    w=Window("Scope", Rect(150, Window.screenBounds.height-500,790,400)).front;
-    c = ScopeView(w,Rect(10,10,380,380)); // this is SCScope
-    c.bufnum = f.bufnum;
+        // IMPORTANT
+        c.server = s;
 
-	// IMPORTANT
-	c.server_(s);
+        v = CompositeView(w,Rect(400,10,380,380)).background_(Color.rand(0.7));
+        v.decorator = n = FlowLayout(v.bounds, margin: 0@0, gap: 5@5);
 
-    v=CompositeView(w,Rect(400,10,380,380)).background_(Color.rand(0.7));
-    v.decorator = n = FlowLayout(v.bounds, margin: 0@0, gap: 5@5);
+        a = StaticText(v, Rect(20, 70, 90, 20)).string_(" xZoom = 1").background_(Color.rand);
+        m = Slider(v, Rect(20, 60, 285, 20)).background_(a.background).action_({func.value}).value_(0.5);
+        d = StaticText(v, Rect(20, 70, 90, 20)).string_(" yZoom = 1").background_(Color.rand);
+        g = Slider(v, Rect(20, 60, 285, 20)).background_(d.background).action_({func.value}).value_(0.5);
 
-    a = StaticText(v, Rect(20, 70, 90, 20)).string_(" xZoom = 1").background_(Color.rand);
-    m = Slider(v, Rect(20, 60, 285, 20)).background_(a.background).action_({func.value}).value_(0.5);
-    d = StaticText(v, Rect(20, 70, 90, 20)).string_(" yZoom = 1").background_(Color.rand);
-    g = Slider(v, Rect(20, 60, 285, 20)).background_(d.background).action_({func.value}).value_(0.5);
+        h = StaticText(v, Rect(20, 70, 90, 20)).string_(" x = 0").background_(Color.rand);
+        i = Slider(v, Rect(20, 60, 285, 20)).background_(h.background).action_({func.value}).value_(0.5);
 
-    h = StaticText(v, Rect(20, 70, 90, 20)).string_(" x = 0").background_(Color.rand);
-    i = Slider(v, Rect(20, 60, 285, 20)).background_(h.background).action_({func.value}).value_(0.5);
-
-    Button(v, Rect(0,0,380, 20))
+        Button(v, Rect(0,0,380, 20))
         .states_([["waveColors = [ Color.rand, ... ]",Color.black,Color.rand]])
         .action_({c.waveColors = [Color.rand,Color.rand]});
 
-    Button(v, Rect(0,0,380, 20))
+        Button(v, Rect(0,0,380, 20))
         .states_([[" background = Color.rand(0.1,0.3) ",Color.black,Color.rand]])
         .action_({c.background = Color.rand(0.1,0.3) });
 
-    t= Button(v, Rect(0,0,380, 20))
+        t = Button(v, Rect(0,0,380, 20))
         .states_([["Current style is 0",Color.black,Color.rand],
             ["Current style is 1",Color.black,Color.rand],
             ["Current style is 2",Color.black,Color.rand]])
         .action_({func.value});
 
-    func={
-        c.xZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(m.value)); a.string = " xZoom = %".format(c.xZoom);
-        c.yZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(g.value)); d.string = " yZoom = %".format(c.yZoom);
-        c.x = ([ -1024,1024, \linear, 1/8, 1].asSpec.map(i.value)); h.string = " x = %".format(c.x);
-        c.style=t.value
+        func = {
+            c.xZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(m.value)); a.string = " xZoom = %".format(c.xZoom);
+            c.yZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(g.value)); d.string = " yZoom = %".format(c.yZoom);
+            c.x = ([ -1024,1024, \linear, 1/8, 1].asSpec.map(i.value)); h.string = " x = %".format(c.x);
+            c.style=t.value
         };
 
-    startButton = Button.new(v, Rect(0,0,380, 50))
+        startButton = Button.new(v, Rect(0,0,380, 50))
         .states_([["Start Sound",Color.black,Color.green],["Stop Sound",Color.black,Color.red]]).action_({});
 
 
-    startButton.action_{
-        (startButton.value==1).if{
-    syn1=SynthDef("test1", { arg bus, bufnum;
+        startButton.action_{
+            (startButton.value==1).if{
+                syn1 = SynthDef("test1", { arg bus, bufnum;
                     var z;
                     z = In.ar(bus,2);
-        // ScopeOut2 writes the audio to the buffer
-				// IMPORTANT - ScopeOut2, not ScopeOut
+                    // ScopeOut2 writes the audio to the buffer
+                    // IMPORTANT - ScopeOut2, not ScopeOut
                     ScopeOut2.ar(z, bufnum);
                     Out.ar(0,z);
                 }).play(
@@ -206,24 +210,21 @@ s.waitForBoot(
                     \addToTail // make sure it goes after what you are scoping
                 );
 
-    // making noise onto the buffer
-    syn2=SynthDef("test2", { arg bus;
+                // making noise onto the buffer
+                syn2 = SynthDef("test2", { arg bus;
                     var z;
                     z = PMOsc.ar([300,250],*SinOsc.ar([0.027,0.017])*pi) * 0.1;
                     Out.ar(bus, z);
                 }).play(s,[\bus,b.index]);
 
+            }{syn1.free; syn2.free};
+        };
 
+        // IMPORTANT
+        c.start;
 
-        }{syn1.free; syn2.free};
-
-    };
-
-	// IMPORTANT
-	c.start;
-
-    w.onClose={syn1.free; syn2.free; b.free; f.free};
-    CmdPeriod.doOnce({w.close});
+        w.onClose={syn1.free; syn2.free; b.free; f.free};
+        CmdPeriod.doOnce({w.close});
 })
 )
 ::
