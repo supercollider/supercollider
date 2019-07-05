@@ -534,10 +534,15 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
 
 
     if (mDeviceInOut[0] != paNoDevice || mDeviceInOut[1] != paNoDevice) {
-        if (mPreferredHardwareBufferFrameSize)
+        if (mPreferredHardwareBufferFrameSize > 0)
             // controls the suggested latency by hardwareBufferSize switch -Z
             suggestedLatencyIn = suggestedLatencyOut = mPreferredHardwareBufferFrameSize / (*outSampleRate);
-        else {
+        else if (mPreferredHardwareBufferFrameSize < 0) {
+            if (mDeviceInOut[0] != paNoDevice)
+                suggestedLatencyIn = Pa_GetDeviceInfo(mDeviceInOut[0])->defaultHighInputLatency;
+            if (mDeviceInOut[1] != paNoDevice)
+                suggestedLatencyOut = Pa_GetDeviceInfo(mDeviceInOut[1])->defaultHighInputLatency;
+        } else {
             if (mDeviceInOut[0] != paNoDevice)
                 suggestedLatencyIn = Pa_GetDeviceInfo(mDeviceInOut[0])->defaultLowInputLatency;
             if (mDeviceInOut[1] != paNoDevice)

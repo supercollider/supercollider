@@ -182,7 +182,9 @@ int main(int argc, char* argv[]) {
             break;
         case 'Z':
             checkNumArgs(2);
-            options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(atoi(argv[j + 1]));
+            options.mPreferredHardwareBufferFrameSize = atoi(argv[j + 1]);
+            if (options.mPreferredHardwareBufferFrameSize > 0)
+                options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(options.mPreferredHardwareBufferFrameSize);
             break;
         case 'b':
             checkNumArgs(2);

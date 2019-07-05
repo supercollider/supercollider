@@ -161,7 +161,7 @@ protected:
     uint32 mSafetyOffset;
     PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;
     int mNumSamplesPerCallback;
-    uint32 mPreferredHardwareBufferFrameSize;
+    int32 mPreferredHardwareBufferFrameSize;
     uint32 mPreferredSampleRate;
     boost::optional<uint32> mExplicitSampleRate;
     double mBuffersPerSecond;

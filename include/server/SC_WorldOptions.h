@@ -60,7 +60,7 @@ struct WorldOptions {
 
     uint32 mNumRGens = 64;
 
-    uint32 mPreferredHardwareBufferFrameSize = 0;
+    int32 mPreferredHardwareBufferFrameSize = 0;
 
     uint32 mLoadGraphDefs = 1;
 
