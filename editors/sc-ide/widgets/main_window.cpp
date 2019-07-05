@@ -417,21 +417,20 @@ void MainWindow::createActions() {
     settings->addAction(action, "ide-settings-dialog", ideCategory);
 
     // Help
+    mActions[ReportABug] = action = new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
+    action->setStatusTip(tr("Report a bug"));
+    connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
+
+#ifdef SC_USE_QTWEBENGINE
     mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
     action->setStatusTip(tr("Show and focus the Help Browser"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
     settings->addAction(action, "help-browser", helpCategory);
 
-#ifdef SC_USE_QTWEBENGINE
     mActions[HelpAboutIDE] = action =
         new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
     action->setStatusTip(tr("Open the SuperCollider IDE guide"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
-#endif // SC_USE_QTWEBENGINE
-
-    mActions[ReportABug] = action = new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
-    action->setStatusTip(tr("Report a bug"));
-    connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
 
     mActions[LookupDocumentationForCursor] = action = new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
@@ -444,6 +443,7 @@ void MainWindow::createActions() {
     action->setStatusTip(tr("Enter text to look up in documentation"));
     connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
     settings->addAction(action, "help-lookup", helpCategory);
+#endif // SC_USE_QTWEBENGINE
 
     mActions[ShowAbout] = action = new QAction(QIcon::fromTheme("help-about"), tr("&About SuperCollider"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -479,8 +479,10 @@ void MainWindow::createActions() {
 
     // Add actions to docklets, so shortcuts work when docklets detached:
 
+#ifdef SC_USE_QTWEBENGINE
     mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
     mPostDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
+#endif // SC_USE_QTWEBENGINE
     mPostDocklet->widget()->addAction(mActions[LookupImplementation]);
     mPostDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
     mPostDocklet->widget()->addAction(mActions[LookupReferences]);
@@ -648,7 +650,9 @@ void MainWindow::createMenus() {
     menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
+#ifdef SC_USE_QTWEBENGINE
     menu->addAction(mActions[HelpAboutIDE]);
+#endif
     menu->addAction(mActions[ReportABug]);
 #ifdef SC_USE_QTWEBENGINE
     menu->addSeparator();
