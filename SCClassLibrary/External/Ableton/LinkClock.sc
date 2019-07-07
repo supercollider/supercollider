@@ -31,39 +31,124 @@ LinkClock : TempoClock {
 
 	syncMeter_ { |bool|
 		syncMeter = bool;
-		// do sync now?
+		if(syncMeter) {
+			if(this.numPeers == 0) {
+				// maybe just started the clock; allow a beat for Link to hook up
+				this.sched(1, { this.resyncMeter });
+			} {
+				this.resyncMeter;
+			};
+			meterChangeResp = OSCFunc({ |msg|
+				// var beats, myPhase;
+				if(msg[1] != id) {  // ignore message that I sent
+					// msg.debug("received");
+					// // message may arrive any time
+					// // we want to set meter at a phase matching the remote phase
+					// beats = this.beats.floor.debug("real beats");  // this is wrong
+					// myPhase = ((beats - baseBarBeat) % beatsPerBar).debug("myPhase");
+					// (this.beats.round - myPhase + msg[3]).debug("adjusted beats");
+					// this.setMeterAtBeat(msg[2], this.beats.round - myPhase + msg[3], false);
+					this.resyncMeter;
+				};
+			}, '/LinkClock/changeMeter');
+		} {
+			meterChangeResp.free;
+		};
+	}
+
+	setMeterAtBeat { |newBeatsPerBar, beats, broadcast = true|
+		// phase relative to the old meter
+		// phase at the time of the meter change (new meter) is always 0, not useful
+		var oldPhase = (beats - baseBarBeat) % beatsPerBar;
+		if(broadcast) {
+			NetAddr.broadcastFlag = true;
+			(57120..57127).do { |port|
+				NetAddr("255.255.255.255", port).sendMsg(
+					'/LinkClock/changeMeter', id, newBeatsPerBar, oldPhase, this.beats, beats
+				);
+			};
+		};
+		super.setMeterAtBeat(newBeatsPerBar, beats);
 	}
 
 	queryMeter { |action|
 		var replies = IdentityDictionary.new,
 		peers = this.numPeers,
-		resp = OSCFunc({ |msg, time, addr|
-			if(msg[1] != id) {
-				replies.put(msg[1], (
-					id: msg[1],
-					trial: msg[2],
-					syncMeter: msg[3].asBoolean,
-					beats: msg[4],
-					beatsPerBar: msg[5],
-					baseBarBeat: msg[6],
-					beatInBar: msg[7]
-				));
-				if(replies.size == peers) {
-					routine.stop;
-					action.value(replies.values);
+		resp, routine;
+		if(peers > 0) {
+			resp = OSCFunc({ |msg, time, addr|
+				if(msg[1] != id) {
+					replies.put(msg[1], (
+						id: msg[1],
+						queriedAtBeat: msg[2],
+						syncMeter: msg[3].asBoolean,
+						beats: msg[4],
+						beatsPerBar: msg[5],
+						baseBarBeat: msg[6],
+						beatInBar: msg[7]
+					));
+					if(replies.size == peers) {
+						resp.free;
+						routine.stop;
+						action.value(replies.values);
+					};
 				};
-			};
-		}, '/LinkClock/meterReply'),
-		routine = {
-			NetAddr.broadcastFlag = true;
-			inf.do { |trial|
-				// maybe some peers had to take a different port
-				(57120 .. 57127).do { |port|
-					NetAddr("255.255.255.255", port).sendMsg('/LinkClock/queryMeter', trial);
+			}, '/LinkClock/meterReply');
+			routine = {
+				NetAddr.broadcastFlag = true;
+				inf.do {
+					// maybe some peers had to take a different port
+					(57120 .. 57127).do { |port|
+						NetAddr("255.255.255.255", port).sendMsg('/LinkClock/queryMeter', this.beats);
+					};
+					0.1.wait;
 				};
-				0.1.wait;
+			}.fork(this);
+		} {
+			action.value(Set.new)
+		};
+	}
+
+	adjustMeterBase { |localBeats, remoteBeats, round = 1|
+		baseBarBeat = baseBarBeat + ((localBeats - remoteBeats) % beatsPerBar).round(round);
+	}
+
+	// if there are peers with syncMeter = true, align my clock to their common barline
+	// ignore peers with syncMeter = false
+	resyncMeter { |round = 1|
+		var replies, cond = Condition.new, bpbs, bibs;
+		var myBeats, theirPhase, newBase;
+		fork {
+			this.queryMeter { |val|
+				replies = val;
+				cond.unhang;
 			};
-		}.fork(this);
+			cond.hang;
+			replies = replies.select { |reply| reply[\syncMeter] };
+			if(replies.size > 0) {
+				// verify beatsPerBar and beatInBar are common across peers
+				bpbs = Set.new;
+				bibs = Set.new;
+				replies.do { |reply|
+					bpbs.add(reply[\beatsPerBar]);
+					bibs.add(reply[\beatInBar].round(round));
+				};
+				if(bpbs.size > 1 or: { bibs.size > 1 }) {
+					"Discrepancy among 'syncMeter' Link peers; cannot sync barlines".warn;
+				} {
+					// do not change beats! do not ever change beats here!
+					// calculate baseBarBeat such that my local beatInBar will match theirs
+					// 'choose' = easy way to get one item from an unordered collection
+					myBeats = replies.choose[\queriedAtBeat].round(round);
+					theirPhase = bibs.choose;  // should be only one
+					newBase = myBeats - theirPhase;
+					"syncing meter to %, base = %\n".postf(bpbs.choose, newBase);
+					this.setMeterAtBeat(bpbs.choose, newBase, false);  // false = local only
+				};
+			} {
+				"Found no SC Link peers with syncMeter set to true; cannot resync".warn;
+			}
+		}
 	}
 
 	stop {
