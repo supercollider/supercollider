@@ -1,6 +1,8 @@
 // clock with Ableton Link synchronization
 
 LinkClock : TempoClock {
+	var <syncMeter = false, <id,
+	meterChangeResp, meterQueryResp;
 
 	*newFromTempoClock { |clock|
 		^super.new(
@@ -9,6 +11,65 @@ LinkClock : TempoClock {
 			clock.seconds,
 			clock.queue.maxSize
 		).prInitFromTempoClock(clock)
+	}
+
+	init { |tempo, beats, seconds, queueSize|
+		super.init(tempo, beats, seconds, queueSize);
+		id = 0x7FFFFFFF.rand;  // to ignore 'self' queries
+		// message includes a 'trial' counter
+		meterQueryResp = OSCFunc({ |msg|
+			NetAddr.broadcastFlag = true;
+			// maybe some peers had to take a different port
+			(57120 .. 57127).do { |port|
+				NetAddr("255.255.255.255", port).sendMsg(
+					'/LinkClock/meterReply', id, msg[1], syncMeter.asInteger,
+					this.beats, this.beatsPerBar, this.baseBarBeat, this.beatInBar
+				);
+			};
+		}, '/LinkClock/queryMeter');
+	}
+
+	syncMeter_ { |bool|
+		syncMeter = bool;
+		// do sync now?
+	}
+
+	queryMeter { |action|
+		var replies = IdentityDictionary.new,
+		peers = this.numPeers,
+		resp = OSCFunc({ |msg, time, addr|
+			if(msg[1] != id) {
+				replies.put(msg[1], (
+					id: msg[1],
+					trial: msg[2],
+					syncMeter: msg[3].asBoolean,
+					beats: msg[4],
+					beatsPerBar: msg[5],
+					baseBarBeat: msg[6],
+					beatInBar: msg[7]
+				));
+				if(replies.size == peers) {
+					routine.stop;
+					action.value(replies.values);
+				};
+			};
+		}, '/LinkClock/meterReply'),
+		routine = {
+			NetAddr.broadcastFlag = true;
+			inf.do { |trial|
+				// maybe some peers had to take a different port
+				(57120 .. 57127).do { |port|
+					NetAddr("255.255.255.255", port).sendMsg('/LinkClock/queryMeter', trial);
+				};
+				0.1.wait;
+			};
+		}.fork(this);
+	}
+
+	stop {
+		meterQueryResp.free;
+		meterChangeResp.free;
+		super.stop;
 	}
 
 	numPeers {
