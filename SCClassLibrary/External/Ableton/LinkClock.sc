@@ -103,7 +103,8 @@ LinkClock : TempoClock {
 				};
 			}.fork(this);
 		} {
-			action.value(Set.new)
+			// sched is needed to make sure Conditions waiting for this method still work
+			this.sched(0, { action.value(Set.new) });
 		};
 	}
 
