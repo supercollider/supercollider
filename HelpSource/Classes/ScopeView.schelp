@@ -22,7 +22,7 @@ METHOD:: bufnum
 
     To set up the ScopeView object for plotting, one needs to set a valid buffer number and tell a link::Classes/ScopeOut2:: UGen to write to it. Before the view starts periodically plotting the buffer, however, one needs to assign it a link::Classes/Server:: object and call the link::#-start:: method on it.
 
-If the ScopeOut2 UGen stops writing or an invalid buffer number is set, the plotting will pause.
+    If the ScopeOut2 UGen stops writing or an invalid buffer number is set, the plotting will pause.
 
     argument::
         An integer.
@@ -31,7 +31,7 @@ METHOD:: server
     An instance of ScopeView must be assigned to a particular server for it to work.
 
     argument::
-     A link::Classes/Server:: object
+        A link::Classes/Server:: object
 
 METHOD:: start
     Tells the ScopeView object to start plotting.
