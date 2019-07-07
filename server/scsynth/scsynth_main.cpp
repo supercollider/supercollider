@@ -42,6 +42,21 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 
 #endif
 
+#ifdef _WIN32
+// on windows, convert wide characters
+const char* convertArg(const std::wstring& s) {
+    if (s.empty()) {
+        return "";
+    }
+    int n = WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), NULL, 0, NULL, NULL);
+    std::string buf;
+    buf.resize(n);
+    WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), &buf[0], n, NULL, NULL);
+    return strdup(buf.c_str());
+}
+#else
+const char* convertArg(const char* s) { return s; }
+#endif
 
 void Usage();
 void Usage() {
@@ -120,12 +135,9 @@ void Usage() {
     }                                                                                                                  \
     i += n;
 
-
-int main(int argc, char* argv[]);
-int main(int argc, char* argv[]) {
-    setlinebuf(stdout);
-
 #ifdef _WIN32
+int wmain(int argc, wchar_t* argv[]);
+int wmain(int argc, wchar_t* argv[]) {
     // initialize winsock
     WSAData wsaData;
     int nCode;
@@ -133,7 +145,19 @@ int main(int argc, char* argv[]) {
         scprintf("WSAStartup() failed with error code %d.\n", nCode);
         return 1;
     }
+
+    // use wide-character versions of atoi and atof
+    auto _atoi = _wtoi;
+    auto _atof = _wtof;
+
+#else
+int main(int argc, char* argv[]);
+int main(int argc, char* argv[]) {
+    auto _atoi = atoi;
+    auto _atof = atof;
 #endif
+
+    setlinebuf(stdout);
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
@@ -142,7 +166,11 @@ int main(int argc, char* argv[]) {
     WorldOptions options;
 
     for (int i = 1; i < argc;) {
+#ifdef _WIN32
+        if (argv[i][0] != '-' || argv[i][1] == 0 || wcschr(L"utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+#else
         if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+#endif
             scprintf("ERROR: Invalid option %s\n", argv[i]);
             Usage();
         }
@@ -150,81 +178,81 @@ int main(int argc, char* argv[]) {
         switch (argv[j][1]) {
         case 'u':
             checkNumArgs(2);
-            udpPortNum = atoi(argv[j + 1]);
+            udpPortNum = _atoi(argv[j + 1]);
             break;
         case 't':
             checkNumArgs(2);
-            tcpPortNum = atoi(argv[j + 1]);
+            tcpPortNum = _atoi(argv[j + 1]);
             break;
         case 'B':
             checkNumArgs(2);
-            bindTo = argv[j + 1];
+            bindTo = convertArg(argv[j + 1]);
             break;
         case 'a':
             checkNumArgs(2);
-            options.mNumAudioBusChannels = atoi(argv[j + 1]);
+            options.mNumAudioBusChannels = _atoi(argv[j + 1]);
             break;
         case 'i':
             checkNumArgs(2);
-            options.mNumInputBusChannels = atoi(argv[j + 1]);
+            options.mNumInputBusChannels = _atoi(argv[j + 1]);
             break;
         case 'o':
             checkNumArgs(2);
-            options.mNumOutputBusChannels = atoi(argv[j + 1]);
+            options.mNumOutputBusChannels = _atoi(argv[j + 1]);
             break;
         case 'c':
             checkNumArgs(2);
-            options.mNumControlBusChannels = atoi(argv[j + 1]);
+            options.mNumControlBusChannels = _atoi(argv[j + 1]);
             break;
         case 'z':
             checkNumArgs(2);
-            options.mBufLength = NEXTPOWEROFTWO(atoi(argv[j + 1]));
+            options.mBufLength = NEXTPOWEROFTWO(_atoi(argv[j + 1]));
             break;
         case 'Z':
             checkNumArgs(2);
-            options.mPreferredHardwareBufferFrameSize = atoi(argv[j + 1]);
+            options.mPreferredHardwareBufferFrameSize = _atoi(argv[j + 1]);
             if (options.mPreferredHardwareBufferFrameSize > 0)
                 options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(options.mPreferredHardwareBufferFrameSize);
             break;
         case 'b':
             checkNumArgs(2);
-            options.mNumBuffers = NEXTPOWEROFTWO(atoi(argv[j + 1]));
+            options.mNumBuffers = NEXTPOWEROFTWO(_atoi(argv[j + 1]));
             break;
         case 'l':
             checkNumArgs(2);
-            options.mMaxLogins = NEXTPOWEROFTWO(atoi(argv[j + 1]));
+            options.mMaxLogins = NEXTPOWEROFTWO(_atoi(argv[j + 1]));
             break;
         case 'n':
             checkNumArgs(2);
-            options.mMaxNodes = NEXTPOWEROFTWO(atoi(argv[j + 1]));
+            options.mMaxNodes = NEXTPOWEROFTWO(_atoi(argv[j + 1]));
             break;
         case 'd':
             checkNumArgs(2);
-            options.mMaxGraphDefs = NEXTPOWEROFTWO(atoi(argv[j + 1]));
+            options.mMaxGraphDefs = NEXTPOWEROFTWO(_atoi(argv[j + 1]));
             break;
         case 'p':
             checkNumArgs(2);
-            options.mPassword = argv[j + 1];
+            options.mPassword = convertArg(argv[j + 1]);
             break;
         case 'm':
             checkNumArgs(2);
-            options.mRealTimeMemorySize = atoi(argv[j + 1]);
+            options.mRealTimeMemorySize = _atoi(argv[j + 1]);
             break;
         case 'w':
             checkNumArgs(2);
-            options.mMaxWireBufs = atoi(argv[j + 1]);
+            options.mMaxWireBufs = _atoi(argv[j + 1]);
             break;
         case 'r':
             checkNumArgs(2);
-            options.mNumRGens = atoi(argv[j + 1]);
+            options.mNumRGens = _atoi(argv[j + 1]);
             break;
         case 'S':
             checkNumArgs(2);
-            options.mPreferredSampleRate = (uint32)atof(argv[j + 1]);
+            options.mPreferredSampleRate = (uint32)_atof(argv[j + 1]);
             break;
         case 'D':
             checkNumArgs(2);
-            options.mLoadGraphDefs = atoi(argv[j + 1]);
+            options.mLoadGraphDefs = _atoi(argv[j + 1]);
             break;
         case 'N':
 #ifdef NO_LIBSNDFILE
@@ -234,32 +262,36 @@ int main(int argc, char* argv[]) {
             // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
             checkNumArgs(7);
             options.mRealTime = false;
-            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : 0;
-            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : 0;
-            options.mNonRealTimeOutputFilename = argv[j + 3];
-            options.mPreferredSampleRate = (uint32)atof(argv[j + 4]);
-            options.mNonRealTimeOutputHeaderFormat = argv[j + 5];
-            options.mNonRealTimeOutputSampleFormat = argv[j + 6];
+            options.mNonRealTimeCmdFilename = strcmp(convertArg(argv[j + 1]), "_") ? convertArg(argv[j + 1]) : 0;
+            options.mNonRealTimeInputFilename = strcmp(convertArg(argv[j + 2]), "_") ? convertArg(argv[j + 2]) : 0;
+            options.mNonRealTimeOutputFilename = convertArg(argv[j + 3]);
+            options.mPreferredSampleRate = (uint32)_atof(argv[j + 4]);
+            options.mNonRealTimeOutputHeaderFormat = convertArg(argv[j + 5]);
+            options.mNonRealTimeOutputSampleFormat = convertArg(argv[j + 6]);
             break;
 #ifdef __APPLE__
         case 'I':
             checkNumArgs(2);
-            options.mInputStreamsEnabled = argv[j + 1];
+            options.mInputStreamsEnabled = convertArg(argv[j + 1]);
             break;
         case 'O':
             checkNumArgs(2);
-            options.mOutputStreamsEnabled = argv[j + 1];
+            options.mOutputStreamsEnabled = convertArg(argv[j + 1]);
             break;
         case 'M':
 #endif
         case 'H':
             checkNumArgs(2);
-            options.mInDeviceName = argv[j + 1];
+            options.mInDeviceName = convertArg(argv[j + 1]);
+#ifdef _WIN32
+            if (i + 1 > argc || argv[j + 2][0] == L'-') {
+#else
             if (i + 1 > argc || argv[j + 2][0] == '-') {
+#endif
                 options.mOutDeviceName = options.mInDeviceName;
             } else {
                 // If there's a second argument then the user wants separate I/O devices
-                options.mOutDeviceName = argv[j + 2];
+                options.mOutDeviceName = convertArg(argv[j + 2]);
                 ++i;
             }
             break;
@@ -273,7 +305,7 @@ int main(int argc, char* argv[]) {
             break;
         case 'V':
             checkNumArgs(2);
-            options.mVerbosity = atoi(argv[j + 1]);
+            options.mVerbosity = _atoi(argv[j + 1]);
             break;
         case 'v':
             scprintf("scsynth %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
@@ -281,15 +313,15 @@ int main(int argc, char* argv[]) {
             break;
         case 'R':
             checkNumArgs(2);
-            options.mRendezvous = atoi(argv[j + 1]) > 0;
+            options.mRendezvous = _atoi(argv[j + 1]) > 0;
             break;
         case 'U':
             checkNumArgs(2);
-            options.mUGensPluginPath = argv[j + 1];
+            options.mUGensPluginPath = convertArg(argv[j + 1]);
             break;
         case 'P':
             checkNumArgs(2);
-            options.mRestrictedPath = argv[j + 1];
+            options.mRestrictedPath = convertArg(argv[j + 1]);
             break;
         case 'C':
             checkNumArgs(2);
