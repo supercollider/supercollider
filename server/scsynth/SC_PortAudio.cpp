@@ -283,7 +283,8 @@ void SC_PortAudioDriver::GetPaDeviceFromName(const char* device, int* mInOut, IO
         strcat(devString, " : ");
 #endif
         strcat(devString, pdi->name);
-        if (strstr(devString, device)) {
+        // compare strings, but if the string is not empty
+        if (strstr(devString, device) && device && device[0]) {
             if (ioType == IOType::Input) {
                 if (pdi->maxInputChannels > 0)
                     *mInOut = i;
