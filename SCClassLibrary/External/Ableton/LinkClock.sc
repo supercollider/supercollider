@@ -39,16 +39,14 @@ LinkClock : TempoClock {
 				this.resyncMeter;
 			};
 			meterChangeResp = OSCFunc({ |msg|
-				// var beats, myPhase;
 				if(msg[1] != id) {  // ignore message that I sent
-					// msg.debug("received");
-					// // message may arrive any time
-					// // we want to set meter at a phase matching the remote phase
-					// beats = this.beats.floor.debug("real beats");  // this is wrong
-					// myPhase = ((beats - baseBarBeat) % beatsPerBar).debug("myPhase");
-					// (this.beats.round - myPhase + msg[3]).debug("adjusted beats");
-					// this.setMeterAtBeat(msg[2], this.beats.round - myPhase + msg[3], false);
-					this.resyncMeter;
+					// [2] = beatsPerBar, [3] = remote clock's real time, [4] = remote clock's barline
+					// also, 5/8 means maybe setting the barline to a half-beat
+					// but we have to round the barline because OSC receipt time is inexact
+					this.setMeterAtBeat(msg[2],
+						(this.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal),
+						false  // responding to meter change should not retransmit
+					);
 				};
 			}, '/LinkClock/changeMeter');
 		} {
@@ -64,7 +62,7 @@ LinkClock : TempoClock {
 			NetAddr.broadcastFlag = true;
 			(57120..57127).do { |port|
 				NetAddr("255.255.255.255", port).sendMsg(
-					'/LinkClock/changeMeter', id, newBeatsPerBar, oldPhase, this.beats, beats
+					'/LinkClock/changeMeter', id, newBeatsPerBar, this.beats, beats
 				);
 			};
 		};
