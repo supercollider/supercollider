@@ -37,9 +37,12 @@ LinkClock : TempoClock {
 				// you would think it should go onto 'this'
 				// but the relationship between beats and seconds is unstable initially
 				// in practice it works much better to schedule the sync on a stable clock
-				SystemClock.sched(2.0, { this.resyncMeter });
+				SystemClock.sched(2.0, {
+					// this.numPeers: might have changed in the last 2 seconds
+					this.resyncMeter(verbose: this.numPeers > 0)
+				});
 			} {
-				this.resyncMeter/*(verbose: false)*/;
+				this.resyncMeter;
 			};
 			meterChangeResp = OSCFunc({ |msg|
 				if(msg[1] != id) {  // ignore message that I sent
@@ -139,11 +142,6 @@ LinkClock : TempoClock {
 					bpbs.add(reply[\beatsPerBar]);
 					bibs.add(reply[\beatInBar].round(round));
 				};
-				"\nsyncing local to remote".postln;
-				[this.beats, this.beatInBar, replies.choose[\beats], replies.choose[\baseBarBeat],
-					replies.choose[\beatInBar]].debug("my beats, my phase, their beats, their base, their phase");
-				// bpbs.debug("beatsPerBar");
-				// bibs.debug("beatInBar");
 				if(bpbs.size > 1 or: { bibs.size > 1 }) {
 					// this should not happen
 					Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
@@ -151,9 +149,9 @@ LinkClock : TempoClock {
 					// do not change beats! do not ever change beats here!
 					// calculate baseBarBeat such that my local beatInBar will match theirs
 					// 'choose' = easy way to get one item from an unordered collection
-					myBeats = replies.choose[\queriedAtBeat].debug("queried").round(round).debug("myBeats");
+					myBeats = replies.choose[\queriedAtBeat].round(round);
 					theirPhase = bibs.choose;  // should be only one
-					newBase = (myBeats - theirPhase).debug("newBase");
+					newBase = myBeats - theirPhase;
 					if(verbose) { "syncing meter to %, base = %\n".postf(bpbs.choose, newBase) };
 					this.setMeterAtBeat(bpbs.choose, newBase, false);  // false = local only
 				};
