@@ -16,7 +16,6 @@ LinkClock : TempoClock {
 	init { |tempo, beats, seconds, queueSize|
 		super.init(tempo, beats, seconds, queueSize);
 		id = 0x7FFFFFFF.rand;  // to ignore 'self' queries
-		// message includes a 'trial' counter
 		meterQueryResp = OSCFunc({ |msg|
 			NetAddr.broadcastFlag = true;
 			// maybe some peers had to take a different port
