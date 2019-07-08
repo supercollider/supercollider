@@ -34,9 +34,12 @@ LinkClock : TempoClock {
 		if(syncMeter) {
 			if(this.numPeers == 0) {
 				// maybe just started the clock; allow a beat for Link to hook up
-				this.sched(1, { this.resyncMeter });
+				// you would think it should go onto 'this'
+				// but the relationship between beats and seconds is unstable initially
+				// in practice it works much better to schedule the sync on a stable clock
+				SystemClock.sched(2.0, { this.resyncMeter });
 			} {
-				this.resyncMeter;
+				this.resyncMeter/*(verbose: false)*/;
 			};
 			meterChangeResp = OSCFunc({ |msg|
 				if(msg[1] != id) {  // ignore message that I sent
@@ -72,8 +75,9 @@ LinkClock : TempoClock {
 	queryMeter { |action|
 		var replies = IdentityDictionary.new,
 		peers = this.numPeers,
-		resp, routine;
+		resp, routine, now;
 		if(peers > 0) {
+			now = this.beats;
 			resp = OSCFunc({ |msg, time, addr|
 				if(msg[1] != id) {
 					replies.put(msg[1], (
@@ -93,6 +97,9 @@ LinkClock : TempoClock {
 				};
 			}, '/LinkClock/meterReply');
 			routine = {
+				if(this.beats absdif: now > 0.005) {
+					"Routine starts at a different time from 'now'".warn;
+				};
 				NetAddr.broadcastFlag = true;
 				inf.do {
 					// maybe some peers had to take a different port
@@ -114,7 +121,7 @@ LinkClock : TempoClock {
 
 	// if there are peers with syncMeter = true, align my clock to their common barline
 	// ignore peers with syncMeter = false
-	resyncMeter { |round = 1|
+	resyncMeter { |round = 1, verbose = true|
 		var replies, cond = Condition.new, bpbs, bibs;
 		var myBeats, theirPhase, newBase;
 		fork {
@@ -132,20 +139,28 @@ LinkClock : TempoClock {
 					bpbs.add(reply[\beatsPerBar]);
 					bibs.add(reply[\beatInBar].round(round));
 				};
+				"\nsyncing local to remote".postln;
+				[this.beats, this.beatInBar, replies.choose[\beats], replies.choose[\baseBarBeat],
+					replies.choose[\beatInBar]].debug("my beats, my phase, their beats, their base, their phase");
+				// bpbs.debug("beatsPerBar");
+				// bibs.debug("beatInBar");
 				if(bpbs.size > 1 or: { bibs.size > 1 }) {
-					"Discrepancy among 'syncMeter' Link peers; cannot sync barlines".warn;
+					// this should not happen
+					Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
 				} {
 					// do not change beats! do not ever change beats here!
 					// calculate baseBarBeat such that my local beatInBar will match theirs
 					// 'choose' = easy way to get one item from an unordered collection
-					myBeats = replies.choose[\queriedAtBeat].round(round);
+					myBeats = replies.choose[\queriedAtBeat].debug("queried").round(round).debug("myBeats");
 					theirPhase = bibs.choose;  // should be only one
-					newBase = myBeats - theirPhase;
-					"syncing meter to %, base = %\n".postf(bpbs.choose, newBase);
+					newBase = (myBeats - theirPhase).debug("newBase");
+					if(verbose) { "syncing meter to %, base = %\n".postf(bpbs.choose, newBase) };
 					this.setMeterAtBeat(bpbs.choose, newBase, false);  // false = local only
 				};
 			} {
-				"Found no SC Link peers with syncMeter set to true; cannot resync".warn;
+				if(verbose) {
+					"Found no SC Link peers with syncMeter set to true; cannot resync".warn;
+				};
 			}
 		}
 	}
