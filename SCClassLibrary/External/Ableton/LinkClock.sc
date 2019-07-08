@@ -124,8 +124,8 @@ LinkClock : TempoClock {
 
 	// if there are peers with syncMeter = true, align my clock to their common barline
 	// ignore peers with syncMeter = false
-	resyncMeter { |round = 1, verbose = true|
-		var replies, cond = Condition.new, bpbs, bibs;
+	resyncMeter { |round, verbose = true|
+		var replies, cond = Condition.new, bpbs, bibs, denom;
 		var myBeats, theirPhase, newBase;
 		fork {
 			this.queryMeter { |val|
@@ -136,12 +136,19 @@ LinkClock : TempoClock {
 			replies = replies.select { |reply| reply[\syncMeter] };
 			if(replies.size > 0) {
 				// verify beatsPerBar and beatInBar are common across peers
+				// also calculate baseBarBeat common denominator
 				bpbs = Set.new;
 				bibs = Set.new;
+				denom = 1;
 				replies.do { |reply|
+					denom = denom lcm: reply[\baseBarBeat].asFraction[1];
 					bpbs.add(reply[\beatsPerBar]);
-					bibs.add(reply[\beatInBar].round(round));
+					bibs.add(reply[\beatInBar]);
 				};
+				if(round.isNil) { round = denom.reciprocal };
+				// Sets, by definition, cannot hold multiple items of equivalent value
+				// so this automatically collapses to minimum size!
+				bibs = bibs.collect { |beatInBar| beatInBar.round(round) };
 				if(bpbs.size > 1 or: { bibs.size > 1 }) {
 					// this should not happen
 					Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
