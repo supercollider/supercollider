@@ -120,7 +120,9 @@ Independently from Amazon S3 hosting service, AppVeyor stores its Windows builds
 
 `https://ci.appveyor.com/api/buildjobs/76sh4cu20rh50bp1/artifacts/art_folder.zip`
 
-In order to access these builds, go to the desired pull request page. At the bottom of the page, in the section `All checks have passed`, toggle `Show all checks` and choose `Details` next to the AppVeyor entry. On the page that opens, choose the desired job from the list, and then `artifacts` on the right. This will reveal a link to `art_folder.zip` which contains the build.
+These builds may be accessed either from [AppVeyor's build history](https://ci.appveyor.com/project/supercollider/supercollider/history), or from individual pull request's page. For the latter, find section `All checks have passed` at the bottom of the page, toggle `Show all checks` and choose `Details` next to the AppVeyor entry.
+
+On the page with the selected build, choose the desired job from the list (32bit vs 64bit), and then `artifacts` on the right. This will reveal a link to `art_folder.zip` which contains the build.
 
 Boost Update Script
 -------------------
