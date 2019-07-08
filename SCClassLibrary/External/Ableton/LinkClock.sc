@@ -36,7 +36,7 @@ LinkClock : TempoClock {
 				// you would think it should go onto 'this'
 				// but the relationship between beats and seconds is unstable initially
 				// in practice it works much better to schedule the sync on a stable clock
-				SystemClock.sched(2.0, {
+				SystemClock.sched(1.0, {
 					// this.numPeers: might have changed in the last 2 seconds
 					this.resyncMeter(verbose: this.numPeers > 0)
 				});
