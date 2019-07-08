@@ -246,4 +246,53 @@ TestLinkClock : UnitTest {
 		clock1.stop;
 		clock2.stop;
 	}
+
+	test_LinkClock_sync_meter_aligns_barlines {
+		var refClock, testClock, list = List.new, resp,
+		cond = Condition.new, outerCond = Condition.new;
+		refClock = LinkClock(10);
+		1.0.wait;  // refClock's time is not stable yet
+		refClock.schedAbs(4, Routine {
+			if(refClock.numPeers > 0) {
+				this.assert(false, "Make sure no other LinkClocks are running while testing");
+			} {
+				refClock.beatsPerBar = 3;
+				refClock.syncMeter = true;
+				5.do { |i|
+					testClock = LinkClock.new;
+					// wait to pick up the peer
+					resp = SimpleController(testClock).put(\numPeers, {
+						resp.remove;
+						cond.unhang;
+					});
+					cond.hang;
+					testClock.syncMeter = true;
+					resp = SimpleController(testClock).put(\meter, {
+						resp.remove;
+						cond.unhang;
+					});
+					cond.hang;
+					testClock.queryMeter { |replies|
+						list.add(replies.every { |reply|
+							(reply[\queriedAtBeat] - testClock.baseBarBeat) % testClock.beatsPerBar
+							absdif: reply[\beatInBar] < 0.05
+						});
+						cond.unhang;
+					};
+					cond.hang;
+					testClock.stop;
+					rrand(0.2, 3.0).wait;
+				};
+				this.assertEquals(
+					list.count { |bool| bool },
+					list.size,
+					"Count of successful trials should = number of trials"
+				);
+			};
+			outerCond.unhang;
+		});
+		outerCond.hang;
+		1.0.wait;
+		refClock.stop;
+	}
 }
