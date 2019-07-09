@@ -48,9 +48,10 @@ LinkClock : TempoClock {
 					// [2] = beatsPerBar, [3] = remote clock's real time, [4] = remote clock's barline
 					// also, 5/8 means maybe setting the barline to a half-beat
 					// but we have to round the barline because OSC receipt time is inexact
-					this.setMeterAtBeat(msg[2],
-						(this.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal),
-						false  // responding to meter change should not retransmit
+					// -- get the rounding factor from baseBarBeat.asFraction
+					// *and* prSetMeterAtBeat because we do not want to broadcast here
+					this.prSetMeterAtBeat(msg[2],
+						(this.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal)
 					);
 				};
 			}, '/LinkClock/changeMeter');
@@ -59,11 +60,8 @@ LinkClock : TempoClock {
 		};
 	}
 
-	setMeterAtBeat { |newBeatsPerBar, beats, broadcast = true|
-		// phase relative to the old meter
-		// phase at the time of the meter change (new meter) is always 0, not useful
-		var oldPhase = (beats - baseBarBeat) % beatsPerBar;
-		if(broadcast) {
+	setMeterAtBeat { |newBeatsPerBar, beats|
+		if(syncMeter) {
 			NetAddr.broadcastFlag = true;
 			(57120..57127).do { |port|
 				NetAddr("255.255.255.255", port).sendMsg(
@@ -71,7 +69,7 @@ LinkClock : TempoClock {
 				);
 			};
 		};
-		super.setMeterAtBeat(newBeatsPerBar, beats);
+		this.prSetMeterAtBeat(newBeatsPerBar, beats);
 	}
 
 	queryMeter { |action|
@@ -165,7 +163,7 @@ LinkClock : TempoClock {
 						// theirPhase = bibs.choose;  // should be only one
 						newBase = baseBeats.choose;
 						if(verbose) { "syncing meter to %, base = %\n".postf(bpbs.choose, newBase) };
-						this.setMeterAtBeat(bpbs.choose, newBase, false);  // false = local only
+						this.prSetMeterAtBeat(bpbs.choose, newBase);  // local only
 					} {
 						// this should not happen
 						Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
@@ -232,6 +230,10 @@ LinkClock : TempoClock {
 	prStart { |tempo, beats, seconds|
 		_LinkClock_New
 		^this.primitiveFailed
+	}
+
+	prSetMeterAtBeat { |newBeatsPerBar, beats|
+		super.setMeterAtBeat(newBeatsPerBar, beats);
 	}
 
 	// run tempo changed callback
