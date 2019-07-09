@@ -248,7 +248,8 @@ TestLinkClock : UnitTest {
 	}
 
 	test_LinkClock_sync_meter_aligns_barlines {
-		var refClock, testClock, list = List.new, resp,
+		var numTrials = 5,
+		refClock, testClock, list = List.new, resp,
 		cond = Condition.new, outerCond = Condition.new;
 		refClock = LinkClock(10);
 		1.0.wait;  // refClock's time is not stable yet
@@ -257,8 +258,13 @@ TestLinkClock : UnitTest {
 				this.assert(false, "Make sure no other LinkClocks are running while testing");
 			} {
 				refClock.beatsPerBar = 3;
-				refClock.syncMeter = true;
-				5.do { |i|
+				// hacking: syncMeter_ will cause the refClock to sync 1 sec later
+				// we do not want that for this test!
+				refClock.slotPut(\syncMeter, true);
+				numTrials.do { |i|
+					if(i > 0) {  // don't wait first time
+						rrand(0.2, 3.0).wait;
+					};
 					testClock = LinkClock.new;
 					// wait to pick up the peer
 					resp = SimpleController(testClock).put(\numPeers, {
@@ -281,7 +287,6 @@ TestLinkClock : UnitTest {
 					};
 					cond.hang;
 					testClock.stop;
-					rrand(0.2, 3.0).wait;
 				};
 				this.assertEquals(
 					list.count { |bool| bool },

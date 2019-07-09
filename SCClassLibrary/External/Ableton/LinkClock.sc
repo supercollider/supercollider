@@ -72,12 +72,10 @@ LinkClock : TempoClock {
 		this.prSetMeterAtBeat(newBeatsPerBar, beats);
 	}
 
-	queryMeter { |action|
+	queryMeter { |action, timeout = 0.2|
 		var replies = IdentityDictionary.new,
-		peers = this.numPeers,
-		resp, routine, now;
-		if(peers > 0) {
-			now = this.beats;
+		resp;
+		if(this.numPeers > 0) {
 			resp = OSCFunc({ |msg, time, addr|
 				if(msg[1] != id) {
 					replies.put(msg[1], (
@@ -89,29 +87,22 @@ LinkClock : TempoClock {
 						baseBarBeat: msg[6],
 						beatInBar: msg[7]
 					));
-					if(replies.size == peers) {
-						resp.free;
-						routine.stop;
-						action.value(replies.values);
-					};
 				};
 			}, '/LinkClock/meterReply');
-			routine = {
-				if(this.beats absdif: now > 0.005) {
-					"Routine starts at a different time from 'now'".warn;
-				};
+			{
 				NetAddr.broadcastFlag = true;
-				inf.do {
-					// maybe some peers had to take a different port
-					(57120 .. 57127).do { |port|
-						NetAddr("255.255.255.255", port).sendMsg('/LinkClock/queryMeter', this.beats);
-					};
-					(0.1 * this.tempo).wait;  // 0.1 seconds, not beats
+				// maybe some peers had to take a different port
+				(57120 .. 57127).do { |port|
+					NetAddr("255.255.255.255", port).sendMsg('/LinkClock/queryMeter', this.beats);
 				};
+				(timeout * this.tempo).wait;  // seconds, not beats
+				resp.free;
+				action.value(replies.values);
 			}.fork(this);
 		} {
+			// no peers, don't bother asking
 			// sched is needed to make sure Conditions waiting for this method still work
-			this.sched(0, { action.value(Set.new) });
+			this.sched(0, { action.value(List.new) });
 		};
 	}
 
