@@ -295,4 +295,35 @@ TestLinkClock : UnitTest {
 		1.0.wait;
 		refClock.stop;
 	}
+
+	test_LinkClock_sync_meter_propagates_meter_changes {
+		var clock1 = LinkClock.new.syncMeter_(true),
+		clock2, resp, cond = Condition.new, result;
+		1.0.wait;  // allow time for clock1 to find others
+		if(clock1.numPeers == 0) {
+			clock2 = LinkClock.new.syncMeter_(true);
+			// wait for clock2 to sync meter
+			resp = SimpleController(clock2).put(\meter, {
+				resp.remove;
+				cond.unhang;
+			});
+			cond.hang;
+			clock1.setMeterAtBeat(3, clock1.nextBar);
+			// wait for clock2 to sync meter again
+			resp = SimpleController(clock2).put(\meter, {
+				resp.remove;
+				cond.unhang;
+			});
+			cond.hang;
+			result = clock2.beatsPerBar == clock1.beatsPerBar;
+			this.assertEquals(clock2.beatsPerBar, clock1.beatsPerBar,
+				"clock1 and clock2 should have the same beatsPerBar after one changes"
+			);
+		} {
+			result = false;
+			this.assert(false, "Make sure no other LinkClocks are running while testing");
+		};
+		1.0.wait;
+		clock1.stop; clock2.stop;
+	}
 }
