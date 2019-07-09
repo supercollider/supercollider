@@ -155,7 +155,7 @@ list::
 ## Future meter changes in one peer will be broadcast to other peers.
 ::
 
-Default behavior is code::syncMeter == false::, running on an independent meter. They will not be considered for meter/barline sync, will not broadcast meter changes, and will not respond to meter changes broadcast from others. (If code::beatsPerBar:: matches the Link quantum, then the default behavior depends on Link's phase synchronization, and this should be enough. But it is not recommended to set the Link quantum mid-performance -- hence code::syncMeter::.)
+Default behavior is code::syncMeter == false::, running on an independent meter. Non-syncMeter peers will not be considered for meter/barline sync, will not broadcast meter changes, and will not respond to meter changes broadcast from others. (If code::beatsPerBar:: matches the Link quantum, then the default behavior depends on Link's phase synchronization, and this should be enough. But it is not recommended to set the Link quantum mid-performance -- hence code::syncMeter::.)
 
 See link::Classes/LinkClock#-resyncMeter:: for details.
 
@@ -187,6 +187,8 @@ definitionlist::
 ## beatInBar || The remote clock's metrical phase
 ::
 
+argument:: timeout
+An optional Float number of seconds to wait for replies from other peers.
 
 Examples::
 
