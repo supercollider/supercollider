@@ -61,6 +61,8 @@ If you change the quantum, Link does not guarantee that beats will keep the same
 
 Therefore, you should emphasis::not:: change the quantum in the middle of a performance. Ableton recommends to set the quantum just before beginning. Then, you can change SuperCollider's code::beatsPerBar:: as needed, without changing the quantum, so that Link's phase reference remains consistent.
 
+SuperCollider peers may optionally synchronize barlines and all meter changes by setting link::Classes/LinkClock#-syncMeter:: to true. This is independent of Link's quantum, and is safe to use mid-performance.
+
 Subsection:: Notifications
 
 A LinkClock's state may be changed by other connected Link peers. LinkClock uses dependant notifications to relay the new state to other interested objects.
@@ -74,7 +76,7 @@ table::
 ## code::\numPeers:: || The number of connected peers changed
 ::
 
-(Note that Link does not synchronize meter across peers; this notification is inherited from TempoClock.)
+(Note that Link does not synchronize meter across peers; this notification is inherited from TempoClock. link::Classes/LinkClock#-syncMeter:: is a SuperCollider-specific way to synchronize meter; it is not part of the Link protocol.)
 
 The most convenient way to register to receive a notification is link::Classes/SimpleController::. See the examples below.
 
@@ -144,6 +146,46 @@ link::Classes/LinkClock#Notifications::).
 
 method:: quantum
 Gets or sets Link's internal quantum (see above, link::#beatsPerBar and quantum::). Normally this should be done at the beginning of a performance, or not at all. It is risky to change quantum during a performance. Changing meter locally is the same as in TempoClock: link::Classes/TempoClock#-beatsPerBar::.
+
+method:: syncMeter
+Gets or sets a Boolean flag, indicating whether this LinkClock instance will try to synchronize its meter (code::beatsPerBar::) and barline (code::baseBarBeat::) with other SuperCollider LinkClock peers whose code::syncMeter:: is also set to true. 
+
+list::
+## When set to true, this LinkClock instance will immediately adjust its meter and barline to match other peers that are syncing meter.
+## Future meter changes in one peer will be broadcast to other peers.
+::
+
+Default behavior is code::syncMeter == false::, running on an independent meter. They will not be considered for meter/barline sync, will not broadcast meter changes, and will not respond to meter changes broadcast from others. (If code::beatsPerBar:: matches the Link quantum, then the default behavior depends on Link's phase synchronization, and this should be enough. But it is not recommended to set the Link quantum mid-performance -- hence code::syncMeter::.)
+
+See link::Classes/LinkClock#-resyncMeter:: for details.
+
+argument:: bool
+If true, synchronize meter and barline. If false, this clock's meter is independent.
+
+method:: resyncMeter
+Immediately adjust the meter and barline to match other link::Classes/LinkClock#-syncMeter:: peers. This adjustment does not affect the flow of beats and does not change the behavior of currently playing tasks. It only sets code::beatsPerBar:: to match the other peers, and sets the local code::baseBarBeat:: so that future barline scheduling will be aligned with the other peers.
+
+argument:: round
+Optional. A Float giving the rounding factor for the new barline. If not provided, the rounding factor will be calculated from the incoming barlines. (For example, in 5/8 time, a code::baseBarBeat:: may occur on a half beat. In that case, code::round:: should be 0.5.)
+
+argument:: verbose
+An optional Boolean flag indicating whether to print status messages and warnings.
+
+method:: queryMeter
+Request information from all other SuperCollider LinkClock peers about their metrical alignment.
+
+argument:: action
+A function to evaluate after the query is complete. It takes a single argument with the results as a link::Classes/List::. Each list item is an link::Classes/Event:: containing the following items (one for each SuperCollider peer, not including this instance):
+
+definitionlist::
+## id || The remote clock's ID (internal use)
+## queriedAtBeat || The local clock's time at the moment of sending the query message
+## syncMeter || The remote clock's syncMeter status (Boolean)
+## beats || The remote clock's beats at the time of responding
+## beatsPerBar || The remote clock's meter
+## baseBarBeat || The remote clock's barline
+## beatInBar || The remote clock's metrical phase
+::
 
 
 Examples::
