@@ -108,7 +108,7 @@ LinkClock : TempoClock {
 					(57120 .. 57127).do { |port|
 						NetAddr("255.255.255.255", port).sendMsg('/LinkClock/queryMeter', this.beats);
 					};
-					0.1.wait;
+					(0.1 * this.tempo).wait;  // 0.1 seconds, not beats
 				};
 			}.fork(this);
 		} {
@@ -124,8 +124,8 @@ LinkClock : TempoClock {
 	// if there are peers with syncMeter = true, align my clock to their common barline
 	// ignore peers with syncMeter = false
 	resyncMeter { |round, verbose = true|
-		var replies, cond = Condition.new, bpbs, bibs, denom;
-		var myBeats, theirPhase, newBase;
+		var replies, cond = Condition.new, bpbs, baseBeats, denom;
+		var newBeatsPerBar, newBase;
 		fork {
 			this.queryMeter { |val|
 				replies = val;
@@ -134,32 +134,44 @@ LinkClock : TempoClock {
 			cond.hang;
 			replies = replies.select { |reply| reply[\syncMeter] };
 			if(replies.size > 0) {
-				// verify beatsPerBar and beatInBar are common across peers
+				// verify beatsPerBar, and myBeats - beatInBar, are common across peers
+				// (if the network is glitchy, we may have replies from different trials.
+				// but the difference between query time and remote beatInBar should be
+				// consistent.)
 				// also calculate baseBarBeat common denominator
 				bpbs = Set.new;
-				bibs = Set.new;
+				baseBeats = Set.new;
 				denom = 1;
-				replies.do { |reply|
+				replies.do { |reply, i|
 					denom = denom lcm: reply[\baseBarBeat].asFraction[1];
 					bpbs.add(reply[\beatsPerBar]);
-					bibs.add(reply[\beatInBar]);
+					baseBeats.add(reply[\queriedAtBeat] - reply[\beatInBar]);
 				};
 				if(round.isNil) { round = denom.reciprocal };
-				// Sets, by definition, cannot hold multiple items of equivalent value
-				// so this automatically collapses to minimum size!
-				bibs = bibs.collect { |beatInBar| beatInBar.round(round) };
-				if(bpbs.size > 1 or: { bibs.size > 1 }) {
-					// this should not happen
-					Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
-				} {
-					// do not change beats! do not ever change beats here!
-					// calculate baseBarBeat such that my local beatInBar will match theirs
+				// Now it gets tricky. We need to reduce baseBeats based on beatsPerBar.
+				// All 'syncMeter' peers should have the same beatsPerBar (size == 1).
+				// But, if something failed, maybe there are more.
+				// So we have to do a two-step check.
+				if(bpbs.size == 1) {
 					// 'choose' = easy way to get one item from an unordered collection
-					myBeats = replies.choose[\queriedAtBeat].round(round);
-					theirPhase = bibs.choose;  // should be only one
-					newBase = myBeats - theirPhase;
-					if(verbose) { "syncing meter to %, base = %\n".postf(bpbs.choose, newBase) };
-					this.setMeterAtBeat(bpbs.choose, newBase, false);  // false = local only
+					newBeatsPerBar = bpbs.choose;
+					// Sets, by definition, cannot hold multiple items of equivalent value
+					// so this automatically collapses to minimum size!
+					baseBeats = baseBeats.collect { |x| x.round(round) % newBeatsPerBar };
+					if(baseBeats.size == 1) {
+						// do not change beats! do not ever change beats here!
+						// calculate baseBarBeat such that my local beatInBar will match theirs
+						// myBeats = replies.choose[\queriedAtBeat].round(round);
+						// theirPhase = bibs.choose;  // should be only one
+						newBase = baseBeats.choose;
+						if(verbose) { "syncing meter to %, base = %\n".postf(bpbs.choose, newBase) };
+						this.setMeterAtBeat(bpbs.choose, newBase, false);  // false = local only
+					} {
+						// this should not happen
+						Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
+					};
+				} {
+					Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
 				};
 			} {
 				if(verbose) {
