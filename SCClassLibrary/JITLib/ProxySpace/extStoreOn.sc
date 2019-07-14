@@ -223,6 +223,7 @@
 			stream << str << if (str.keep(-2).includes($;)) { "\n" } { ";\n" };
 
 			// add settings to compile string
+			if (isAnon) { indexStr = "a"; };
 			if(includeSettings) {
 				stream << this.nodeMap.asCode(indexStr, true);
 			};
