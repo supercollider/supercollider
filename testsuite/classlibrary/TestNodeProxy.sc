@@ -40,4 +40,71 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.isPlaying, false, "Setting the proxy's source should not set isPlaying = true");
 	}
 
+	test_asCode_basic {
+		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n";
+
+		this.assertEquals(proxy.asCode.postcs, codeString,
+			"asCode-posting basic nodeproxy should post valid source code.",
+			false);
+	}
+
+	test_asCode_single {
+		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' )).source_({ DC.ar });\n";
+		proxy.source = { DC.ar };
+
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting single-source nodeproxy should post simple source form.",
+			false
+		);
+	}
+
+	test_asCode_multi {
+		var asCodeString =
+		"(
+a = NodeProxy.new;
+a[5] = { DC.ar };
+a[10] = { DC.ar(0.01) };
+
+);
+";
+		proxy[5] = { DC.ar };
+		proxy[10] = { DC.ar(0.01) };
+		this.assertEquals(proxy.asCode.postcs, asCodeString,
+			"asCode-posting multi-source nodeproxy asCode should post all its sources.",
+			false
+		);
+	}
+
+	test_asCode_settings {
+		var codeString =
+		"(\n"
+		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
+		"a.set('freq', 440);\n"
+		");\n";
+		proxy.set('freq', 440);
+
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting nodeproxy with settings should post these correctly."
+		);
+	}
+
+	// this one needs the server booted ...
+	test_asCode_playState {
+		var codeString =
+		"(\n"
+		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
+		"a.play(\n"
+		"	out: 8, \n"
+		"	vol: 0.25\n"
+		"\n"
+		");\n"
+		");\n";
+
+		this.bootServer(server);
+		proxy.play(8, 2, vol: 0.25);
+
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting nodeproxy with settings should post these correctly."
+		);
+	}
 }
