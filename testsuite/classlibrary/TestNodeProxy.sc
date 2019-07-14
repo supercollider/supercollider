@@ -107,4 +107,36 @@ a[10] = { DC.ar(0.01) };
 			"asCode-posting nodeproxy with settings should post these correctly."
 		);
 	}
+
+	test_asCode_single_ndef {
+		var codeString = "Ndef('x', { DC.ar });\n";
+		proxy = Ndef(\x, { DC.ar });
+
+		proxy.asCode.cs;
+		codeString.cs;
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting single-source Ndef should post correctly."
+		);
+
+		Ndef(\x).free.clear;
+	}
+
+	test_asCode_multi_ndef {
+		var codeString =
+		"(\n"
+		"Ndef('x')[5] = { DC.ar };\n"
+		"Ndef('x')[10] = { DC.ar(0.01) };\n"
+		"\n"
+		");\n";
+
+		proxy = Ndef(\x);
+		Ndef(\x)[5] = { DC.ar };
+		Ndef(\x)[10] = { DC.ar(0.01) };
+
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting single-source Ndef should post correctly."
+		);
+
+		Ndef(\x).free.clear;
+	}
 }
