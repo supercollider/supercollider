@@ -23,6 +23,7 @@
 
 #include <type_traits>
 
+#include <boost/checked_delete.hpp>
 #include <boost/intrusive_ptr.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/detail/atomic_count.hpp>
