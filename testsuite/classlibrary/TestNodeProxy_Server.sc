@@ -117,6 +117,20 @@ TestNodeProxy_Server : UnitTest {
 		this.assertEquals(proxy.numChannels, 8, "When reshaping is expanding, NodeProxy's number of channels should NOT be able to contract");
 	}
 
+	test_reshaping_freeOldBus_after_fadeTime {
+		var oldBus;
+		proxy.reshaping = \expanding;
+		proxy.source = { Silent.ar.dup(2) };
+		proxy.fadeTime = 0.1;
+		oldBus = proxy.bus;
+		proxy.source = { Silent.ar.dup(3) };
+		(proxy.fadeTime + server.latency).wait;
+		oldBus.postln;
+		this.assert(oldBus.index.isNil,
+			"When reshaping, the old bus should be free after fadeTime and server latency"
+		);
+	}
+
 	test_clear_fadeTime {
 		var clearTime = 0.1;
 
