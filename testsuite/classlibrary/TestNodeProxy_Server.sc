@@ -125,7 +125,6 @@ TestNodeProxy_Server : UnitTest {
 		oldBus = proxy.bus;
 		proxy.source = { Silent.ar.dup(3) };
 		(proxy.fadeTime + server.latency).wait;
-		oldBus.postln;
 		this.assert(oldBus.index.isNil,
 			"When reshaping, the old bus should be free after fadeTime and server latency"
 		);
