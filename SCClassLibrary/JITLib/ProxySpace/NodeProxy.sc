@@ -911,7 +911,7 @@ NodeProxy : BusPlug {
 			usedClock = (clock ? TempoClock.default);
 			delta = server.latency ? 0.01 + this.fadeTime;
 			if(quant.notNil) { delta = delta + quant.nextTimeOnGrid(usedClock) };
-			usedClock.schedAbs(delta, { CmdPeriod.remove(func); func.value; nil });
+			usedClock.schedAbs(delta, { func.value; func = nil });
 			CmdPeriod.doOnce { func.value; func = nil; };
 		}, func)
 	}
