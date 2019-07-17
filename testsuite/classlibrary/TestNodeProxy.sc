@@ -40,4 +40,38 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.isPlaying, false, "Setting the proxy's source should not set isPlaying = true");
 	}
 
+	test_schedAfterFade_notPlaying {
+		var ok = false;
+		proxy.fadeTime = 0.1;
+		proxy.schedAfterFade { ok = true };
+		this.assert(ok, "if not playing, schedAfterFade should happen immediately");
+	}
+	test_schedAfterFade_playing {
+		var ok = false;
+		proxy.fadeTime = 0.1;
+		proxy.source = { Silent.ar };
+		proxy.schedAfterFade { ok = true };
+		0.11.wait;
+		this.assert(ok, "if playing, schedAfterFade should have happened after fadeTime");
+	}
+	test_schedAfterFade_cmdPeriod {
+		var ok = false;
+		proxy.fadeTime = 0.1;
+		proxy.source = { Silent.ar };
+		proxy.schedAfterFade { ok = true };
+		CmdPeriod.run;
+		this.assert(ok, "scheduled function should be run at CmdPeriod");
+	}
+
+	test_schedAfterFade_cmdPeriod_removed {
+		var count = 0;
+		proxy.fadeTime = 0.1;
+		proxy.source = { Silent.ar };
+		proxy.schedAfterFade { count = count + 1 };
+		CmdPeriod.run;
+		0.11.wait;
+		this.assertEquals(count, 1, "scheduled function should be run at CmdPeriod, not twice");
+	}
+
+
 }
