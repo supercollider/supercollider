@@ -180,13 +180,13 @@ TestNodeProxy_Server : UnitTest {
 		proxy.source = { Silent.ar.dup(2) };
 		proxy.fadeTime = 0.1;
 		proxy.clock = TempoClock.new(10);
-		proxy.quant = [1, 0.5];
+		proxy.quant = [1.0, 0.5];
 		oldBus = proxy.bus;
 		0.01.wait;
 		proxy.source = { Silent.ar.dup(3) };
-		(proxy.fadeTime + server.latency + 0).wait;
+		(proxy.fadeTime + server.latency + 0.5).wait;
 		this.assert(oldBus.index.isNil,
-			"When reshaping, the old bus should be free after fadeTime and server latency"
+			"When reshaping, the old bus should be free after fadeTime, quant and server latency"
 		);
 	}
 
