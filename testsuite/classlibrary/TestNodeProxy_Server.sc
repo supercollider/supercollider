@@ -117,6 +117,50 @@ TestNodeProxy_Server : UnitTest {
 		this.assertEquals(proxy.numChannels, 8, "When reshaping is expanding, NodeProxy's number of channels should NOT be able to contract");
 	}
 
+	test_schedAfterFade_afterQuant {
+		var ok = false;
+		proxy.source = { Silent.ar };
+		1.wait;
+		proxy.fadeTime = 0.1;
+		proxy.clock = TempoClock.new(1);
+		proxy.quant = [1, 0.5];
+		0.2.wait;
+		proxy.schedAfterFade { ok = true };
+		(proxy.fadeTime + 1.5 + proxy.server.latency - 0.2).wait;
+		this.assert(ok, "schedAfterFade should have happened after quant and fadeTime");
+	}
+
+	test_schedAfterFade_notBeforeQuant {
+		var ok = true, earlierThan = 0.01;
+		proxy.source = { Silent.ar };
+		proxy.fadeTime = 0.1;
+		proxy.clock = TempoClock.new(1);
+		proxy.quant = 1.0;
+		0.2.wait;
+		proxy.schedAfterFade { ok = false };
+		(proxy.fadeTime + proxy.server.latency + 1.0 - 0.2 - earlierThan).wait;
+		this.assert(ok, "schedAfterFade should not happen before quant and fadeTime");
+	}
+
+	test_schedAfterFade_cmdPeriod {
+		var ok = false;
+		proxy.fadeTime = 0.1;
+		proxy.source = { Silent.ar };
+		proxy.schedAfterFade { ok = true };
+		CmdPeriod.run;
+		this.assert(ok, "scheduled function should be run at CmdPeriod");
+	}
+
+	test_schedAfterFade_cmdPeriod_removed {
+		var count = 0;
+		proxy.fadeTime = 0.1;
+		proxy.source = { Silent.ar };
+		proxy.schedAfterFade { count = count + 1 };
+		CmdPeriod.run;
+		0.11.wait;
+		this.assertEquals(count, 1, "scheduled function should be run at CmdPeriod, not twice");
+	}
+
 	test_reshaping_freeOldBus_after_fadeTime {
 		var oldBus;
 		proxy.reshaping = \expanding;
@@ -125,6 +169,22 @@ TestNodeProxy_Server : UnitTest {
 		oldBus = proxy.bus;
 		proxy.source = { Silent.ar.dup(3) };
 		(proxy.fadeTime + server.latency).wait;
+		this.assert(oldBus.index.isNil,
+			"When reshaping, the old bus should be free after fadeTime and server latency"
+		);
+	}
+
+	test_reshaping_freeOldBus_after_fadeTime_quant {
+		var oldBus;
+		proxy.reshaping = \expanding;
+		proxy.source = { Silent.ar.dup(2) };
+		proxy.fadeTime = 0.1;
+		proxy.clock = TempoClock.new(10);
+		proxy.quant = [1, 0.5];
+		oldBus = proxy.bus;
+		0.01.wait;
+		proxy.source = { Silent.ar.dup(3) };
+		(proxy.fadeTime + server.latency + 0).wait;
 		this.assert(oldBus.index.isNil,
 			"When reshaping, the old bus should be free after fadeTime and server latency"
 		);
