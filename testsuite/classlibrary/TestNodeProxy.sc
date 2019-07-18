@@ -95,11 +95,17 @@ TestNodeProxy : UnitTest {
 		");\n";
 
 		this.bootServer(server);
+
 		proxy.play(8, 2, vol: 0.25);
 
+		server.sync; // avoids "FAILURE IN SERVER /g_new Group 1 not found"
+
 		this.assertEquals(proxy.asCode, codeString,
-			"asCode-posting nodeproxy with settings should post these correctly."
+			"asCode-posting nodeproxy with settings should post these correctly.",
+			onFailure: { server.quit }
 		);
+
+		server.quit;
 	}
 
 	test_asCode_single_ndef {
