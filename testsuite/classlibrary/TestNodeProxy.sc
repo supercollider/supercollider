@@ -43,9 +43,8 @@ TestNodeProxy : UnitTest {
 	test_asCode_basic {
 		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n";
 
-		this.assertEquals(proxy.asCode.postcs, codeString,
-			"asCode-posting basic nodeproxy should post valid source code.",
-			false);
+		this.assertEquals(proxy.asCode, codeString,
+			"asCode-posting basic nodeproxy should post valid source code.");
 	}
 
 	test_asCode_single {
@@ -53,26 +52,21 @@ TestNodeProxy : UnitTest {
 		proxy.source = { DC.ar };
 
 		this.assertEquals(proxy.asCode, codeString,
-			"asCode-posting single-source nodeproxy should post simple source form.",
-			false
-		);
+			"asCode-posting single-source nodeproxy should post simple source form.");
 	}
 
 	test_asCode_multi {
 		var asCodeString =
-		"(
-a = NodeProxy.new;
-a[5] = { DC.ar };
-a[10] = { DC.ar(0.01) };
-
-);
-";
+		"(\n"
+		"a = NodeProxy.new;\n"
+		"a[5] = { DC.ar };\n"
+		"a[10] = { DC.ar(0.01) };\n"
+		"\n"
+		");\n";
 		proxy[5] = { DC.ar };
 		proxy[10] = { DC.ar(0.01) };
 		this.assertEquals(proxy.asCode.postcs, asCodeString,
-			"asCode-posting multi-source nodeproxy asCode should post all its sources.",
-			false
-		);
+			"asCode-posting multi-source nodeproxy asCode should post all its sources.");
 	}
 
 	test_asCode_settings {
@@ -112,8 +106,6 @@ a[10] = { DC.ar(0.01) };
 		var codeString = "Ndef('x', { DC.ar });\n";
 		proxy = Ndef(\x, { DC.ar });
 
-		proxy.asCode.cs;
-		codeString.cs;
 		this.assertEquals(proxy.asCode, codeString,
 			"asCode-posting single-source Ndef should post correctly."
 		);
