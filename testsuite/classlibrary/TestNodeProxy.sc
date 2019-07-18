@@ -137,4 +137,40 @@ TestNodeProxy : UnitTest {
 
 		Ndef(\x).free.clear;
 	}
+
+	test_asCode_single_inProxySpace {
+		var codeString = "~a = { DC.ar };\n";
+		var p = ProxySpace.push;
+		p[\a] = { DC.ar };
+		p[\a].asCode.cs;
+
+		this.assertEquals(p[\a].asCode(envir: p), codeString,
+			"asCode-posting single-source proxy should post by key in pushed proxyspace."
+		);
+
+		p[\a].free;
+		p.pop;
+	}
+
+	test_asCode_multi_inProxySpace {
+		var codeString =
+		"(\n"
+		"~a[5] = { DC.ar };\n"
+		"~a[10] = { DC.ar(0.01) };\n"
+		"\n"
+		");\n";
+
+		var p = ProxySpace.push;
+		p[\a][5] = { DC.ar };
+		p[\a][10] = { DC.ar(0.01) };
+		p[\a].asCode.postcs;
+
+		this.assertEquals(p[\a].asCode(envir: p), codeString,
+			"asCode-posting multi-source proxy should post by key in pushed proxyspace."
+		);
+
+		p[\a].free;
+		p.pop;
+	}
+
 }
