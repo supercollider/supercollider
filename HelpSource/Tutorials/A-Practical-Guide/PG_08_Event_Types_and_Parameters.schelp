@@ -428,7 +428,7 @@ Very important: Arrays normally multi-channel expand in patterns. So, you must w
 subsection::Miscellaneous
 
 definitionList::
-## composite || Perform any number of event types, given as ~types. Users should ensure that parameters are compatible. It is possible, using code::\composite::, to play a synth and send MIDI for the same pitches. It is not possible to use one frequency for the synth and a different one for MIDI, in the same event (you would need two different events for that case).
+## composite || Perform any number of event types, given as ~types. You should ensure that parameters are compatible. It is possible, using code::\composite::, to play a synth and send MIDI for the same pitches. It is not possible to use one frequency for the synth and a different one for MIDI, in the same event (you would need two different events for that case).
 
 definitionList::
 ## types || An array of Symbols, listing the Event types to be performed.
