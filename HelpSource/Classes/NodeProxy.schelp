@@ -510,6 +510,29 @@ Like send, just iterating separately over the objects.
 method::wakeUp
 Until the proxy is not used by any output ( either .play or .ar/.kr ) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
 
+subsection::Storing as code
+method::asCode
+stores the proxy as executable code.
+see also link::Tutorials/JITLib/jitlib_asCompileString:: for more examples.
+
+code::
+// Ndef
+Ndef(\a, { Saw.ar(12) }).asCode;
+
+// in a pushed proxy space
+p = ProxySpace.push(s.boot);
+~x = { Saw.ar(123, 0.1) };
+~x.play;
+~x.asCode;
+
+p.end.pop;
+
+// anonymous nodeproxy also posts instructions:
+x = NodeProxy.new.source = { DC.ar };
+x.asCode;
+
+x.free;
+
 subsection::GUI
 
 method::edit
