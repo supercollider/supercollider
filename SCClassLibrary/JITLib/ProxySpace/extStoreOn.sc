@@ -154,8 +154,10 @@
 		doc !? { doc.front.selectRange(startSel, 0); }
 	}
 
+	// asCode posts a proxy and its full state, so it can be recreated.
+	// needed because asCompileString only posts access code to proxy or Ndef.
 	asCode { | includeSettings = true, includeMonitor = true, envir |
-		var nameStr, srcStr, str, docStr, indexStr, key;
+		var nameStr, srcStr, str, docStr, accessStr = "a";
 		var space, spaceCS;
 
 		var isAnon, isSingle, isInCurrent, isOnDefault, isMultiline;
@@ -163,22 +165,22 @@
 		envir = envir ? currentEnvironment;
 
 		nameStr = envir.use { this.asCompileString };
-		indexStr = nameStr;
-
 		isAnon = nameStr.beginsWith("a = ");
+		if (isAnon.not) { accessStr = nameStr };
+
+		"nameStr: % - accessStr: %\n".postf(nameStr, accessStr);
+
 		isSingle = this.objects.isEmpty or: { this.objects.size == 1 and: { this.objects.indices.first == 0 } };
 		isInCurrent = envir.includes(this);
 		isOnDefault = server === Server.default;
 
-		//	[\isAnon, isAnon, \isSingle, isSingle, \isInCurrent, isInCurrent, \isOnDefault, isOnDefault].postln;
-
 		space = ProxySpace.findSpace(this);
 		spaceCS = try { space.asCode } {
-			postln("// <could not find a space for proxy: %!>".format(this.asCompileString));
-			""
+			"// anonymous proxy posted - please change code to make it accessible:".postln
 		};
 
 		docStr = String.streamContents { |stream|
+			// proxy has a single source
 			if(isSingle) {
 				str = nameStr;
 				srcStr = if (this.source.notNil) { this.source.envirCompileString } { "" };
@@ -187,27 +189,24 @@
 					if (isOnDefault.not) { str = str ++ "(" ++ this.server.asCompileString ++ ")" };
 					if (srcStr.notEmpty) { str = str ++ ".source_(" ++ srcStr ++ ")" };
 				} {
-					if (isInCurrent) { 	// ~out
-						if (srcStr.notEmpty) {
-							if (this.isKindOf(Ndef)) {
-								// basic Ndef
-								str = this.cs.drop(-1) ++ "," + srcStr ++ ")";
-							}{
-								// basic nodeproxy
+					// globally accessible, and we have a source to post
+					if (srcStr.notEmpty) {
+						if (this.isKindOf(Ndef)) {
+							// basic Ndef('a') - put sourceString before closing paren.
+							str = this.cs.drop(-1) ++ "," + srcStr ++ ")";
+						} {
+							// proxy must be in a pushed proxyspace:
+							if (isInCurrent) {
+								// basic nodeproxy: ~x = { ... }
 								str = str + "=" + srcStr
 							}
 						}
-					} { 					// Ndef('a') - put sourceString before closing paren.
-						if (srcStr.notEmpty) {
-							str = str.copy.drop(-1) ++ ", " ++ srcStr ++ nameStr.last
-						};
-					}
+					};
 				};
 			} {
-				// multiple sources
+				// proxy has multiple sources
 				if (isAnon) {
 					str = nameStr ++ ";\n";
-					indexStr = "a";
 				};
 
 				this.objects.keysValuesDo { |index, item|
@@ -215,7 +214,7 @@
 					srcStr = item.source.envirCompileString ? "";
 					isMultiline = srcStr.includes(Char.nl);
 					if (isMultiline) { srcStr = "(" ++ srcStr ++ ")" };
-					srcStr = indexStr ++ "[" ++ index ++ "] = " ++ srcStr ++ ";\n";
+					srcStr = accessStr ++ "[" ++ index ++ "] = " ++ srcStr ++ ";\n";
 					str = str ++ srcStr;
 				};
 			};
@@ -223,11 +222,10 @@
 			stream << str << if (str.keep(-2).includes($;)) { "\n" } { ";\n" };
 
 			// add settings to compile string
-			if (isAnon) { indexStr = "a"; };
 			if(includeSettings) {
-				stream << this.nodeMap.asCode(indexStr, true);
+				stream << this.nodeMap.asCode(accessStr, true);
 			};
-			// include play settings if playing ...
+			// includes play settings if playing only.
 			// hmmm - also keep them if not playing,
 			// but inited to something non-default?
 			if (this.rate == \audio and: includeMonitor) {
