@@ -82,6 +82,15 @@ See link::Tutorials/A-Practical-Guide/PG_08_Event_Types_and_Parameters#MIDI outp
 
 ## rest || do nothing for a specified amount of time
 
+## composite || perform any number of event types, given as ~types
+code::
+MIDIClient.init;
+m = MIDIOut(0);
+
+// should play a synth *and* an external MIDI note simultaneously
+(type: \composite, types: [\note, \midi], midiout: m, degree: 0, dur: 3).play;
+::
+
 ## bus || write ~array to control buses starting at ~out
 ## audioBus || allocate ~channels consecutive audio buses
 ## controlBus || allocate ~channels consecutive control buses
