@@ -53,7 +53,7 @@ TestNodeProxy : UnitTest {
 		proxy.source = { Silent.ar };
 		proxy.schedAfterFade { ok = true };
 		0.11.wait;
-		this.assert(ok, "if playing, schedAfterFade should have happened after fadeTime");
+		this.assert(ok, "if playing, schedAfterFade should happen right after fadeTime");
 	}
 
 

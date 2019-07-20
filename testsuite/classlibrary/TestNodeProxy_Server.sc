@@ -127,7 +127,7 @@ TestNodeProxy_Server : UnitTest {
 		0.2.wait;
 		proxy.schedAfterFade { ok = true };
 		(proxy.fadeTime + 1.5 + proxy.server.latency - 0.2).wait;
-		this.assert(ok, "schedAfterFade should have happened after quant and fadeTime");
+		this.assert(ok, "schedAfterFade should have happen right after quant and fadeTime");
 	}
 
 	test_schedAfterFade_notBeforeQuant {
@@ -170,7 +170,7 @@ TestNodeProxy_Server : UnitTest {
 		proxy.source = { Silent.ar.dup(3) };
 		(proxy.fadeTime + server.latency).wait;
 		this.assert(oldBus.index.isNil,
-			"When reshaping, the old bus should be free after fadeTime and server latency"
+			"When reshaping, the old bus should be free right after fadeTime and server latency"
 		);
 	}
 
@@ -186,7 +186,7 @@ TestNodeProxy_Server : UnitTest {
 		proxy.source = { Silent.ar.dup(3) };
 		(proxy.fadeTime + server.latency + 0.5).wait;
 		this.assert(oldBus.index.isNil,
-			"When reshaping, the old bus should be free after fadeTime, quant and server latency"
+			"When reshaping, the old bus should be free right after fadeTime, quant and server latency"
 		);
 	}
 
