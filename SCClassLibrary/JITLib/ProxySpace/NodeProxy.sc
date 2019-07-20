@@ -910,11 +910,7 @@ NodeProxy : BusPlug {
 		if(this.isPlaying, {
 			usedClock = (clock ? TempoClock.default);
 			delta = server.latency ? 0.01 + this.fadeTime;
-			delta = delta + if(quant.notNil) {
-				quant.nextTimeOnGrid(usedClock)
-			} {
-				usedClock.beats
-			};
+			delta = delta + (quant ? 0).nextTimeOnGrid(usedClock);
 			usedClock.schedAbs(delta, { func.value; func = nil });
 			CmdPeriod.doOnce { func.value; func = nil; };
 		}, func)
