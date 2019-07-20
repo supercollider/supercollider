@@ -4,10 +4,10 @@ related:: Classes/SimpleController, Classes/NodeWatcher
 categories:: Control
 
 description::
-One common OOP pattern is the Observer Pattern where one object (the controller) is a dependant of the model. Every time the model changes it notifies all of its dependants. In this case the model has a dictionary of dependants and iterates through those.  A limitation of this implementation is that all dependants always receive the same message "update" when the model changes.  If a depenant is required to perform different actions depending on the type of change that happens in the model, or on the dependant itself, then this must be coded in the update method.  The NotificationCenter overcomes this limitation by making it possible to register a function to be performed for each combination of model, notification message and dependant.  There are thus 4 objects involved in each connecetion between model and dependant in the NotificationCenter:
+One common OOP pattern is the Observer Pattern where one object (the controller or observer) is a dependant of a model or subject object ( https://en.wikipedia.org/wiki/Observer_pattern ). Every time the model changes it notifies all of its dependants. In the default implementation of this pattern in SuperCollider, the model has a dictionary of dependants and iterates through those.  A limitation of this implementation is that all dependants always receive the same message "update" when the model changes.  If a depenant is required to perform different actions depending on the type of change that happens in the model, or on the dependant itself, then this must be coded in the update method.  The NotificationCenter overcomes this limitation by making it possible to register a function to be performed for each combination of model, notification message and dependant.  There are thus 4 objects involved in each connecetion between model and dependant in the NotificationCenter:
 
 NUMBEREDLIST::
-## The model (can be any typo of object).
+## The model (can be any type of object).
 ## The notification message (usually a Symbol).
 ## The dependant (can be any type of object).
 ## The action to be performed (usually a Function).
@@ -15,18 +15,18 @@ NUMBEREDLIST::
 
 There are two basic steps in using notifications through the NotificationCenter:
 
-1. Register a function to be performed when a dependant receives a message from a model.
+1. Register a function to be performed when a dependant receives a message from a model:
 
 code::
 NotificationCenter.register(\model, \message, \dependant, {
     // Note: This example uses indicative code for clarity
-	// Your own objects and function code should be
-	// used according to your own needs.
+	// Your own objects and function code should be substituted
+	// depending on your own needs.
     "the dependant received message from the model".postln;
 })
 ::
 
-2. Issue a notification message from the model when needed
+2. Issue a notification message from the model when needed:
 
 code::
 NotificationCenter.notify(\model, \message);
