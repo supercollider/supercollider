@@ -127,7 +127,7 @@ TestNodeProxy_Server : UnitTest {
 		0.2.wait;
 		proxy.schedAfterFade { ok = true };
 		(proxy.fadeTime + 1.5 + proxy.server.latency - 0.2).wait;
-		this.assert(ok, "schedAfterFade should have happen right after quant and fadeTime");
+		this.assert(ok, "schedAfterFade should happen right after quant and fadeTime");
 	}
 
 	test_schedAfterFade_notBeforeQuant {
