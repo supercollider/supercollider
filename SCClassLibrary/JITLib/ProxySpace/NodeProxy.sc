@@ -16,6 +16,7 @@ NodeProxy : BusPlug {
 
 	init {
 		nodeMap = ProxyNodeMap.new;
+		nodeMap.put(\fadeTime, 0.02);
 		objects = Order.new;
 		loaded = false;
 		reshaping = defaultReshaping;
@@ -83,12 +84,11 @@ NodeProxy : BusPlug {
 	}
 
 	fadeTime_ { | dur |
-		if(dur.isNil) { this.unset(\fadeTime) } { this.set(\fadeTime, dur) };
+		this.set(\fadeTime, dur ? 0.02)
 	}
 
 	fadeTime {
-		if(nodeMap.at(\fadetime).isNil) { nodeMap.put(\fadeTime, 0.02) };
-		^nodeMap.at(\fadeTime)
+		^nodeMap.at(\fadeTime) ? 0.02
 	}
 
 	asGroup { ^group.asGroup }
