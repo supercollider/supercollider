@@ -33,6 +33,11 @@
 #else
 #    include <sys/wait.h>
 #endif
+#ifdef __APPLE__
+#include "SC_Apple.hpp"
+#include <thread>
+typedef std::thread SC_Thread;
+#endif
 
 #ifdef _WIN32
 
@@ -41,7 +46,6 @@
 inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0); }
 
 #endif
-
 
 void Usage();
 void Usage() {
@@ -80,6 +84,8 @@ void Usage() {
 #ifdef __APPLE__
              "   -I <input-streams-enabled>\n"
              "   -O <output-streams-enabled>\n"
+             "   -e <enable Cocoa event loop>\n"
+             "          This allows UGens to show native GUI windows.\n"
 #endif
 #if (_POSIX_MEMLOCK - 0) >= 200112L
              "   -L enable memory locking\n"
@@ -136,6 +142,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 #endif
+#ifdef __APPLE__
+    bool eventLoop = false;
+#endif
+
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
@@ -144,7 +154,7 @@ int main(int argc, char* argv[]) {
     WorldOptions options;
 
     for (int i = 1; i < argc;) {
-        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOeMHvVRUhPL", argv[i][1]) == 0) {
             scprintf("ERROR: Invalid option %s\n", argv[i]);
             Usage();
         }
@@ -250,6 +260,10 @@ int main(int argc, char* argv[]) {
             checkNumArgs(2);
             options.mOutputStreamsEnabled = argv[j + 1];
             break;
+        case 'e':
+            checkNumArgs(1);
+            eventLoop = true;
+            break;
         case 'M':
 #endif
         case 'H':
@@ -315,6 +329,11 @@ int main(int argc, char* argv[]) {
     } else
         options.mSharedMemoryID = 0;
 
+#ifdef __APPLE__
+    if (eventLoop) {
+        SC::Apple::EventLoop::setup();
+    }
+#endif
 
     struct World* world = World_New(&options);
     if (!world)
@@ -357,8 +376,24 @@ int main(int argc, char* argv[]) {
     }
     fflush(stdout);
 
+#ifdef __APPLE__
+    if (eventLoop) {
+        // this thread simply waits for the world to quit,
+        // after which it will ask the main loop to terminate.
+        auto thread = SC_Thread([&]() {
+            World_WaitForQuit(world, true);
+            scprintf("Quit event loop\n");
+            SC::Apple::EventLoop::quit();
+        });
+        thread.detach();
+        scprintf("Start event loop\n");
+        SC::Apple::EventLoop::run();
+    } else {
+        World_WaitForQuit(world, true);
+    }
+#else
     World_WaitForQuit(world, true);
-
+#endif
 
 #ifdef _WIN32
     // clean up winsock

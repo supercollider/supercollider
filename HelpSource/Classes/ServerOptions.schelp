@@ -140,6 +140,8 @@ A Boolean indicating whether the server should try to lock its memory into physi
 method:: maxLogins
 An Integer indicating the maximum number of clients which can simultaneously receive notifications from the server. When using TCP this is also the maximum number of simultaneous connections. This is also used by the language to split ranges of link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In multi-client situations you will need to set this to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. The default is 1.
 
+method:: eventLoop
+A Boolean indicating whether Scsynth should run a Cocoa event loop on its main thread to show native GUI windows on macOS (e.g. VST plugin editors). Default is code::false::.
 
 subsection:: Other Instance Methods
 method:: asOptionsString

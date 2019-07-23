@@ -55,6 +55,7 @@ ServerOptions {
 	var <>recBufSize;
 
 	var <>bindAddress;
+	var <>eventLoop; // for macOSC
 
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
@@ -98,6 +99,7 @@ ServerOptions {
 				recChannels: 2,
 				recBufSize: nil,
 				bindAddress: "127.0.0.1",
+				eventLoop: false, // run Cocoa event loop to show native GUI windows
 			)
 		)
 	}
@@ -221,6 +223,9 @@ ServerOptions {
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
+		});
+		if (eventLoop, {
+			o = o ++ " -e";
 		});
 		^o
 	}
