@@ -34,8 +34,8 @@
 #    include <sys/wait.h>
 #endif
 #ifdef __APPLE__
-#include "SC_Apple.hpp"
-#include <thread>
+#    include "SC_Apple.hpp"
+#    include <thread>
 typedef std::thread SC_Thread;
 #endif
 
