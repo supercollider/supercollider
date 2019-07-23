@@ -56,16 +56,16 @@ void run() {
     [NSApp run];
 #else
     // Kudos to https://www.cocoawithlove.com/2009/01/demystifying-nsapplication-by.html
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
     [NSApp finishLaunching];
     while (true) {
         [pool release];
         pool = [[NSAutoreleasePool alloc] init];
-        NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask
-                            untilDate:[NSDate distantFuture]
-                            inMode:NSDefaultRunLoopMode
-                            dequeue:YES];
+        NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+                                            untilDate:[NSDate distantFuture]
+                                               inMode:NSDefaultRunLoopMode
+                                              dequeue:YES];
         if (event) {
             [NSApp sendEvent:event];
             [NSApp updateWindows];
