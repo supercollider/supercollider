@@ -3,7 +3,7 @@ NodeProxy : BusPlug {
 	var <group, <objects, <nodeMap, <children;
 	var <loaded=false, <>awake=true, <paused=false;
 	var <>clock, <>quant;
-	classvar <>buildProxyControl, <>buildProxy;
+	classvar <>buildProxyControl, <>buildProxy, <defaultFadeTime=0.02;
 
 
 	*new { | server, rate, numChannels, inputs |
@@ -16,7 +16,7 @@ NodeProxy : BusPlug {
 
 	init {
 		nodeMap = ProxyNodeMap.new;
-		nodeMap.put(\fadeTime, 0.02);
+		nodeMap.put(\fadeTime, defaultFadeTime);
 		objects = Order.new;
 		loaded = false;
 		reshaping = defaultReshaping;
@@ -84,11 +84,11 @@ NodeProxy : BusPlug {
 	}
 
 	fadeTime_ { | dur |
-		this.set(\fadeTime, dur ? 0.02)
+		this.set(\fadeTime, dur ? defaultFadeTime)
 	}
 
 	fadeTime {
-		^nodeMap.at(\fadeTime) ? 0.02
+		^nodeMap.at(\fadeTime) ? defaultFadeTime
 	}
 
 	asGroup { ^group.asGroup }
