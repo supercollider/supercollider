@@ -84,7 +84,7 @@ NodeProxy : BusPlug {
 	}
 
 	fadeTime_ { | dur |
-		this.set(\fadeTime, dur ? defaultFadeTime)
+		this.set(\fadeTime, dur ? defaultFadeTime) // Use default if fadeTime set to nil 
 	}
 
 	fadeTime {
