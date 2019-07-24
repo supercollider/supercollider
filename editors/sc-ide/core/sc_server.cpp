@@ -61,6 +61,7 @@ void ScServer::createActions(Settings::Manager* settings) {
     QWidgetAction* widgetAction;
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
+    action->setMenuRole(QAction::NoRole); // to prevent the action from being fired with cmd+q on macosx
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
     // settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 

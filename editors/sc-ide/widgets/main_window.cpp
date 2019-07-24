@@ -237,6 +237,7 @@ void MainWindow::createActions() {
     mActions[Quit] = action = new QAction(QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
     action->setShortcut(tr("Ctrl+Q", "Quit application"));
     action->setStatusTip(tr("Quit SuperCollider IDE"));
+    action->setMenuRole(QAction::QuitRole); // needed for mac os x
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
     settings->addAction(action, "ide-quit", ideCategory);
 
