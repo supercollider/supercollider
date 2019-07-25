@@ -21,6 +21,7 @@
 
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
+#include "SC_EventLoop.hpp"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -32,11 +33,6 @@
 #    include <winsock2.h>
 #else
 #    include <sys/wait.h>
-#endif
-#ifdef __APPLE__
-#    include "SC_Apple.hpp"
-#    include <thread>
-typedef std::thread SC_Thread;
 #endif
 
 #ifdef _WIN32
@@ -141,6 +137,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 #endif
+    EventLoop::setup();
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
@@ -320,10 +317,6 @@ int main(int argc, char* argv[]) {
     } else
         options.mSharedMemoryID = 0;
 
-#ifdef __APPLE__
-    SC::Apple::EventLoop::setup();
-#endif
-
     struct World* world = World_New(&options);
     if (!world)
         return 1;
@@ -365,20 +358,9 @@ int main(int argc, char* argv[]) {
     }
     fflush(stdout);
 
-#ifdef __APPLE__
-    // this thread simply waits for the world to quit,
-    // after which it will ask the main loop to terminate.
-    auto thread = SC_Thread([&]() {
+    EventLoop::run([&]() {
         World_WaitForQuit(world, true);
-        // scprintf("Quit event loop\n");
-        SC::Apple::EventLoop::quit();
     });
-    thread.detach();
-    // scprintf("Start event loop\n");
-    SC::Apple::EventLoop::run();
-#else
-    World_WaitForQuit(world, true);
-#endif
 
 #ifdef _WIN32
     // clean up winsock
