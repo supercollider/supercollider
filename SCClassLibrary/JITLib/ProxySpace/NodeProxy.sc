@@ -908,8 +908,8 @@ NodeProxy : BusPlug {
 	schedAfterFade { |func|
 		var delta, usedClock;
 		if(this.isPlaying, {
-			usedClock = (clock ? TempoClock.default);
-			delta = server.latency ? 0.01 + this.fadeTime;
+			usedClock = clock ? TempoClock.default;
+			delta = server.latency ? 0.01 + this.fadeTime; // 0.01 is reasonable for a local server
 			delta = delta + (quant ? 0).nextTimeOnGrid(usedClock);
 			usedClock.schedAbs(delta, { func.value; func = nil });
 			CmdPeriod.doOnce { func.value; func = nil; };
