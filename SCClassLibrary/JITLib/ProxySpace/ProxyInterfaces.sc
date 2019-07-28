@@ -253,11 +253,17 @@ SynthControl : AbstractPlayControl {
 				// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;
-		}
+			this.cancelPrevBundle;
+		};
+	}
+
+	cancelPrevBundle {
+		prevBundle !? { prevBundle.cancel };
+		prevBundle = nil;
 	}
 
 	freeToBundle {
-		prevBundle !? { prevBundle.cancel };
+		this.cancelPrevBundle
 	}
 
 	set { | ... args |
@@ -371,7 +377,7 @@ SynthDefControl : SynthControl {
 		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) }; // "/d_free"
 		parents.do { |x| x.removeChild(proxy) };
 		bytes = parents = nil;
-		prevBundle !? { prevBundle.cancel };
+		this.cancelPrevBundle;
 	}
 
 	writeSynthDefFile { | path, bytes |
