@@ -65,7 +65,7 @@ TestNodeProxy : UnitTest {
 		");\n";
 		proxy[5] = { DC.ar };
 		proxy[10] = { DC.ar(0.01) };
-		this.assertEquals(proxy.asCode.postcs, asCodeString,
+		this.assertEquals(proxy.asCode, asCodeString,
 			"asCode-posting multi-source nodeproxy asCode should post all its sources.");
 	}
 
@@ -163,7 +163,6 @@ TestNodeProxy : UnitTest {
 		var p = ProxySpace.push;
 		p[\a][5] = { DC.ar };
 		p[\a][10] = { DC.ar(0.01) };
-		p[\a].asCode.postcs;
 
 		this.assertEquals(p[\a].asCode(envir: p), codeString,
 			"asCode-posting multi-source proxy should post by key in pushed proxyspace."
