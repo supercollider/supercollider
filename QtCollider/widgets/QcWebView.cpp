@@ -82,8 +82,7 @@ void WebView::connectPage(QtCollider::WebPage* page) {
 
     connect(page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onPageReload()));
 
-    connect(page, SIGNAL(renderProcessTerminated(RenderProcessTerminationStatus, int)), this,
-            SLOT(onRenderProcessTerminated(RenderProcessTerminationStatus, int)));
+    connect(page, &WebPage::renderProcessTerminated, this, &WebView::onRenderProcessTerminated);
 }
 
 void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code) {
