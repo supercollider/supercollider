@@ -134,7 +134,7 @@ If you are installing sclang with GUI features and the IDE, and you installed Qt
 The location of `/path/to/qt5` will depend on how you installed Qt:
 
 - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory, in a folder called `gcc`: `Qt/5.11.0/gcc_64/` (64-bit Linux) or `Qt/5.11.0/gcc/` (32-bit). By default, the Qt installer places `Qt/` in your home directory.
-- If you used the Trusty/Xenial PPA's described above, the path is `/opt/qt511` or `/opt/qt510` (depending on which version you installed).
+- If you used the Trusty/Xenial PPA's described above, the path is `/opt/qt511/gcc_64` (64-bit) or `/opt/qt511/gcc` (32-bit). (Replace `511` with `510` for Qt 5.10.)
 
 If you want to build without Qt entirely, run
 
