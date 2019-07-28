@@ -153,4 +153,12 @@ TestNodeProxy_Server : UnitTest {
 		this.assertEquals(result, proxy.source, "After the crossfade from a ugen function to a value, the bus should have the correct value");
 	}
 
+	test_stop_object_should_cancel_old_bundle {
+		var container;
+		proxy.source = { Silent.ar };
+		container = proxy.objects.first;
+		proxy.free;
+		this.assert(container.instVarAt(\prevBundle).isNil, "Pending OSC message should be canceled when proxy synth is freed");
+	}
+
 }
