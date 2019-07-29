@@ -31,16 +31,16 @@ subsection::by name
 You can (un)install a Quark by name:
 
 code::
-Quarks.install("UnitTesting");
-Quarks.uninstall("UnitTesting");
+Quarks.install("MathLib");
+Quarks.uninstall("MathLib");
 ::
 
 subsection::by git URL
 
 code::
-Quarks.install("https://github.com/supercollider-quarks/UnitTesting.git");
+Quarks.install("https://github.com/supercollider-quarks/MathLib.git");
 // uninstall it
-Quarks.uninstall("https://github.com/supercollider-quarks/UnitTesting.git");
+Quarks.uninstall("https://github.com/supercollider-quarks/MathLib.git");
 ::
 
 subsection::from a local folder
