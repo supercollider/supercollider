@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
-    std::string bindTo("0.0.0.0");
+    std::string bindTo("127.0.0.1");
 
     WorldOptions options;
 
