@@ -56,6 +56,10 @@ NetAddr {
 			}
 		}
 	}
+	
+	*connections {
+		^connections.copy;
+	}
 
 	hostname_ { arg inHostname;
 		hostname = inHostname;
