@@ -19,22 +19,23 @@
  *
  ************************************************************************/
 
-#include "QcWebView.h"
-#include "../widgets/web_page.hpp"
-#include "../QcWidgetFactory.h"
-#include <QWebEnginePage>
-#include <QWebEngineSettings>
-#include <QWebEngineContextMenuData>
-#include <QAction>
-#include <QMenu>
-#include <QShortcut>
-#include <QKeyEvent>
-#include <QApplication>
-#include <QStyle>
-#include <QWebEngineCallback>
+#ifdef SC_USE_QTWEBENGINE
+
+#    include "QcWebView.h"
+#    include "../widgets/web_page.hpp"
+#    include "../QcWidgetFactory.h"
+#    include <QWebEnginePage>
+#    include <QWebEngineSettings>
+#    include <QWebEngineContextMenuData>
+#    include <QAction>
+#    include <QMenu>
+#    include <QShortcut>
+#    include <QKeyEvent>
+#    include <QApplication>
+#    include <QStyle>
+#    include <QWebEngineCallback>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
-QC_DECLARE_QOBJECT_FACTORY(QcCallback);
 
 namespace QtCollider {
 
@@ -271,3 +272,5 @@ void WebView::onLinkClicked(const QUrl& url, QWebEnginePage::NavigationType type
 }
 
 } // namespace QtCollider
+
+#endif // SC_USE_QTWEBENGINE

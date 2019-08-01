@@ -5,7 +5,11 @@ summary:: Browse the SuperCollider help documentation
 
 description::
 
-HelpBrowser is the GUI help browser that lets you browse the documentation of SuperCollider. It is coupled with SCDoc to allow on-the-fly rendering of HTML help files.
+HelpBrowser is a GUI help browser that lets you browse the documentation of SuperCollider. It is coupled with SCDoc to allow on-the-fly rendering of HTML help files.
+
+There are two different help browsers in SuperCollider: the help browser built into SCIDE, and this HelpBrowser class implemented with sclang's GUI features. Both are implemented with the same underlying Qt WebEngine browser.
+
+Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile). If so, attempting to invoke this class will throw an error.
 
 classmethods::
 private:: getOldWrapUrl, initClass
