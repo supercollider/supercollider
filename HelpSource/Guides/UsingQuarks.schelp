@@ -250,7 +250,7 @@ list::
 ## organization
 ## country
 ## since
-## ext_dependancy - text describing external software like "PD" or "processing"
+## ext_dependency - text describing external software like "PD" or "processing"
 ::
 
 dependencies is a list of Quarks or git urls with optional an @refspec
