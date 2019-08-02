@@ -172,7 +172,7 @@ a boolean.
 
 method::asCode
 
-if proxyspace is globally accessible, this posts a code string that can access it.
+If proxyspace is globally accessible, this posts a code string that can access it.
 
 code::
 p = ProxySpace.push(s.boot);
