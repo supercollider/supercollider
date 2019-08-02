@@ -41,6 +41,9 @@ code::
 
 // or, algebraically
 (end - start).reciprocal * numBeats
+
+// which equals
+numBeats / (end - start)
 ::
 
 strong::Playback tempo: :: In principle, you can choose any tempo you like. The loop-segment player should provide a code::rate:: parameter, where the rate is code::desiredTempo / originalTempo::. If the original tempo is, as above, 86.289 bpm and you want to play at 72 bpm, you have to scale the sample's rate down by a factor of 72 / 86.289 = 0.83440531238049.
@@ -81,17 +84,21 @@ SynthDef(\bell, { |out, accent = 0, amp = 0.1, decayScale = 1|
 )
 
 (
-TempoClock.tempo = 1.4381474359988;
+var start = 0.404561, end = 3.185917,
+beatsInLoop = 4,
+originalTempo = beatsInLoop / (end - start);
+
+TempoClock.tempo = originalTempo;
 
 p = Ptpar([
 	0, Pbind(
 		\instrument, \oneLoop,
 		\bufnum, b,
 		\amp, 0.4,
-		\start, 17841,
+		\start, start * b.sampleRate,
 		\dur, 4,
 		\time, Pkey(\dur) / Pfunc { thisThread.clock.tempo },
-		\rate, Pfunc { thisThread.clock.tempo / 1.4381474359988 }
+		\rate, Pfunc { thisThread.clock.tempo / originalTempo }
 	),
 	0.5, Pn(
 		Pfindur(4,
@@ -125,16 +132,20 @@ The use of Ptpar above means that you could stop or start only the whole ball of
 
 code::
 (
-TempoClock.tempo = 1.4381474359988;
+var start = 0.404561, end = 3.185917,
+beatsInLoop = 4,
+originalTempo = beatsInLoop / (end - start);
+
+TempoClock.tempo = originalTempo;
 
 p = Pbind(
 	\instrument, \oneLoop,
 	\bufnum, b,
 	\amp, 0.4,
-	\start, 17841,
+	\start, start * b.sampleRate,
 	\dur, 4,
 	\time, Pkey(\dur) / Pfunc { thisThread.clock.tempo },
-	\rate, Pfunc { thisThread.clock.tempo / 1.4381474359988 }
+	\rate, Pfunc { thisThread.clock.tempo / originalTempo }
 ).play(quant: [4, 3.5]);
 
 q = Pn(
