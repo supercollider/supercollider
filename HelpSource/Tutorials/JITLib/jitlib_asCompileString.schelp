@@ -6,7 +6,7 @@ code::
 { 10 + 6 * ~harry }.asCompileString;
 ::
 
-Many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation. sometimes one wants to store a certain configuration of a proxy space, which can be done
+Many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation. Sometimes one wants to store a certain configuration of a proxy space, which can be done
 if all functions used are closed functions.
 
 code::

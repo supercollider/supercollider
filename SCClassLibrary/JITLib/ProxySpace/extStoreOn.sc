@@ -168,8 +168,6 @@
 		isAnon = nameStr.beginsWith("a = ");
 		if (isAnon.not) { accessStr = nameStr };
 
-		"nameStr: % - accessStr: %\n".postf(nameStr, accessStr);
-
 		isSingle = this.objects.isEmpty or: { this.objects.size == 1 and: { this.objects.indices.first == 0 } };
 		isInCurrent = envir.includes(this);
 		isOnDefault = server === Server.default;
