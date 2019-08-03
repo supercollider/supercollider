@@ -53,6 +53,7 @@ ServerOptions {
 	var <>recSampleFormat;
 	var <>recChannels;
 	var <>recBufSize;
+	var <>bindTo;
 
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
@@ -95,6 +96,7 @@ ServerOptions {
 				recSampleFormat: "float",
 				recChannels: 2,
 				recBufSize: nil,
+				bindTo: "127.0.0.1",
 			)
 		)
 	}
@@ -124,6 +126,8 @@ ServerOptions {
 		o = if(protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
+		o = o ++ " -B " ++ bindTo;
+		
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
 		o = o ++ " -i " ++ numInputBusChannels;
 		o = o ++ " -o " ++ numOutputBusChannels;
