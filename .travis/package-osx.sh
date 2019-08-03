@@ -2,7 +2,7 @@
 
 mkdir -p $HOME/artifacts
 
-cd $TRAVIS_BUILD_DIR/BUILD/Install/SuperColider
+cd $TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider
 xattr -cr SuperCollider.app
 codesign --deep --force --verify --verbose --sign "Mac Developer: josh@realizedsound.net" SuperCollider.app
 cd ..
