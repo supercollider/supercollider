@@ -97,7 +97,7 @@ p = Ptpar([
 		\bufnum, b,
 		\amp, 0.4,
 		\start, start * b.sampleRate,
-		\dur, 4,
+		\dur, beatsInLoop,
 		\time, Pkey(\dur) / Pfunc { thisThread.clock.tempo },
 		\rate, Pfunc { thisThread.clock.tempo / originalTempo }
 	),
@@ -144,7 +144,7 @@ p = Pbind(
 	\bufnum, b,
 	\amp, 0.4,
 	\start, start * b.sampleRate,
-	\dur, 4,
+	\dur, beatsInLoop,
 	\time, Pkey(\dur) / Pfunc { thisThread.clock.tempo },
 	\rate, Pfunc { thisThread.clock.tempo / originalTempo }
 ).play(quant: [4, 3.5]);
