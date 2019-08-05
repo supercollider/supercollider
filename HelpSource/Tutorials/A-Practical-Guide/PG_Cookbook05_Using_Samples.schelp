@@ -62,22 +62,23 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // one loop segment
 SynthDef(\oneLoop, { |out, bufnum, start, time, amp, rate = 1|
-	var	sig = PlayBuf.ar(1, bufnum,
+	var sig = PlayBuf.ar(1, bufnum,
 		rate: rate * BufRateScale.kr(bufnum),
 		startPos: start, loop: 0
 	),
-	env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp), doneAction: Done.freeSelf);
+	env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp),
+		doneAction: Done.freeSelf);
 	Out.ar(out, (sig * env).dup);
 }).add;
 
 SynthDef(\bell, { |out, accent = 0, amp = 0.1, decayScale = 1|
-	var	exc = PinkNoise.ar(amp)
-			* Decay2.kr(Impulse.kr(0), 0.01, 0.05),
-		sig = Klank.ar(`[
-			{ ExpRand(400, 1600) } ! 4,
-			1 ! 4,
-			{ ExpRand(0.1, 0.4) } ! 4
-		], exc, freqscale: accent + 1, decayscale: decayScale);
+	var exc = PinkNoise.ar(amp)
+	* Decay2.kr(Impulse.kr(0), 0.01, 0.05),
+	sig = Klank.ar(`[
+		{ ExpRand(400, 1600) } ! 4,
+		1 ! 4,
+		{ ExpRand(0.1, 0.4) } ! 4
+	], exc, freqscale: accent + 1, decayscale: decayScale);
 	DetectSilence.ar(sig, doneAction: Done.freeSelf);
 	Out.ar(out, sig.dup)
 }).add;
@@ -185,14 +186,14 @@ The first example makes a custom protoEvent that calculates rate, as code::\freq
 code::
 // make a sound sample
 (
-var	recorder;
+var recorder;
 fork {
 	b = Buffer.alloc(s, 44100 * 2, 1);
 	s.sync;
 	recorder = { |freq = 440|
-		var	initPulse = Impulse.kr(0),
-			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
-			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
+		var initPulse = Impulse.kr(0),
+		mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
+		car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
 		RecordBuf.ar(car, b, loop: 0, doneAction: Done.freeSelf);
 		car ! 2
 	}.play;
@@ -204,14 +205,14 @@ fork {
 	}, '/n_end', s.addr);
 };
 SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
-	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: Done.freeSelf) * amp;
+	var sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: Done.freeSelf) * amp;
 	Out.ar(out, sig ! 2)
 }).add;
 )
 
 (
 // WAIT for "done recording" message before doing this
-var	samplerEvent = Event.default.put(\freq, { ~midinote.midicps / ~sampleBaseFreq });
+var samplerEvent = Event.default.put(\freq, { ~midinote.midicps / ~sampleBaseFreq });
 
 TempoClock.default.tempo = 1;
 p = Pbind(
@@ -235,42 +236,42 @@ To extend the sampler's range using multiple samples and ensure smooth transitio
 MIDI note numbers are used for these calculations because it's a linear frequency scale and linear interpolation is easier than the exponential interpolation that would be required when using Hz. Assuming a sorted array, indexInBetween gives the fractional index using linear interpolation. If you need to use frequency in Hz, use this function in place of indexInBetween.
 
 code::
-	f = { |val, array|
-		var a, b, div;
-		var i = array.indexOfGreaterThan(val);
-		if(i.isNil) { array.size - 1 } {
-			if(i == 0) { i } {
-				a = array[i-1]; b = array[i];
-				div = b / a;
-				if(div == 1) { i } {
-						// log() / log() == log(val/a) at base (b/a)
-						// which is the inverse of exponential interpolation
-					log(val / a) / log(div) + i - 1
-				}
+f = { |val, array|
+	var a, b, div;
+	var i = array.indexOfGreaterThan(val);
+	if(i.isNil) { array.size - 1 } {
+		if(i == 0) { i } {
+			a = array[i-1]; b = array[i];
+			div = b / a;
+			if(div == 1) { i } {
+					// log() / log() == log(val/a) at base (b/a)
+					// which is the inverse of exponential interpolation
+				log(val / a) / log(div) + i - 1
 			}
-		};
+		}
 	};
+};
 ::
 
 But that function isn't needed for this example:
 
 code::
 (
-var	bufCount;
+var bufCount;
 ~midinotes = (39, 46 .. 88);
 bufCount = ~midinotes.size;
 
 fork {
-		// record the samples at different frequencies
+	// record the samples at different frequencies
 	b = Buffer.allocConsecutive(~midinotes.size, s, 44100 * 2, 1);
 	SynthDef(\sampleSource, { |freq = 440, bufnum|
-		var	initPulse = Impulse.kr(0),
-			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
-			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
+		var initPulse = Impulse.kr(0),
+		mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
+		car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
 		RecordBuf.ar(car, bufnum, loop: 0, doneAction: Done.freeSelf);
 	}).send(s);
 	s.sync;
-		// record all 8 buffers concurrently
+	// record all 8 buffers concurrently
 	b.do({ |buf, i|
 		Synth(\sampleSource, [freq: ~midinotes[i].midicps, bufnum: buf]);
 	});
@@ -284,12 +285,13 @@ o = OSCFunc({ |msg|
 }, '/n_end', s.addr);
 
 SynthDef(\multiSampler, { |out, bufnum, bufBase, baseFreqBuf, freq = 440, amp = 1|
-	var	buf1 = bufnum.floor,
-		buf2 = buf1 + 1,
-		xfade = (bufnum - buf1).madd(2, -1),
-		basefreqs = Index.kr(baseFreqBuf, [buf1, buf2]),
-		playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0, doneAction: Done.freeSelf),
-		sig = XFade2.ar(playbufs[0], playbufs[1], xfade, amp);
+	var buf1 = bufnum.floor,
+	buf2 = buf1 + 1,
+	xfade = (bufnum - buf1).madd(2, -1),
+	basefreqs = Index.kr(baseFreqBuf, [buf1, buf2]),
+	playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0,
+		doneAction: Done.freeSelf),
+	sig = XFade2.ar(playbufs[0], playbufs[1], xfade, amp);
 	Out.ar(out, sig ! 2)
 }).add;
 
@@ -305,11 +307,11 @@ p = Pbind(
 	\degree, Pseries(0, Prand(#[-2, -1, 1, 2], inf), inf).fold(-11, 11),
 	\dur, Pwrand([0.25, Pn(0.125, 2)], #[0.8, 0.2], inf),
 	\amp, Pexprand(0.1, 0.5, inf),
-		// some important conversions
-		// identify the buffer numbers to read
+	// some important conversions
+	// identify the buffer numbers to read
 	\freq, Pfunc { |ev| ev.use(ev[\freq]) },
 	\bufnum, Pfunc({ |ev| ~midinotes.indexInBetween(ev[\freq].cpsmidi) })
-		.clip(0, ~midinotes.size - 1.001)
+	.clip(0, ~midinotes.size - 1.001)
 ).play;
 )
 
