@@ -4,9 +4,12 @@ related:: Classes/SimpleController, Classes/NodeWatcher
 categories:: Control
 
 description::
-One common OOP pattern is the Observer Pattern, which provides a way for an object to flexibly broadcast messages to interested receiver objects.  This pattern defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.  (see: https://www.gofpatterns.com/behavioral-design-patterns/behavioral-patterns/observer-pattern.php and https://en.wikipedia.org/wiki/Observer_pattern ).  An object that  notifies its dependents is called the subject, and the dependents are called observers.
 
-In the original implementation of this pattern in SuperCollider involves three steps:
+In certain cases it may be useful to make an object perform a specific function when receiving a predefined message from another given object.  For example, a GUI element may want to update its state when the state of a server object changes.  Such cases are: Update the count of synthdefs when a new synthdef is loaded, update the enabled/disabled state of a control gui element when a Synth which it controls starts running or is freed, etc. NotificationCenter makes it possible to add such a custom function to any object called the observer, and to perform it whenever another object called the subject issues a notification identified by a symbol called the message.
+
+The implementation provided by NotificationPattern is a variant of a common OOP pattern called the Observer Pattern, which provides a way for an object to flexibly broadcast messages to interested receiver objects.  This pattern defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.  (see: https://www.gofpatterns.com/behavioral-design-patterns/behavioral-patterns/observer-pattern.php and https://en.wikipedia.org/wiki/Observer_pattern ).  An object that  notifies its dependents is called the subject, and the dependents are called observers.
+
+The original implementation of this pattern in SuperCollider involves three steps:
 
 NUMBEREDLIST::
 ## A subject adds a dependant with: ```subject.addDependant(observer)```
@@ -36,7 +39,7 @@ code::
 NotificationCenter.notify(subject, message, <optional arguments>...);
 ::
 
-Any object that has been registered as observer to the subject issuing the notification, will perform the action that is coupled to the message of the notification.  It is thus possible to make any observer object perform a specified action when receiving the corresponding message from the object with which it has been registered.
+Any object that has been registered as observer to the subject issuing the notification, will perform the action that is coupled to the message of the notification.  It is thus possible to make any observer object perform a specified action when receiving the corresponding message from the object with which it has been registered. 
 
 section:: Example
 
