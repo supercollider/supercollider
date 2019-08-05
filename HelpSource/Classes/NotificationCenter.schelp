@@ -4,52 +4,57 @@ related:: Classes/SimpleController, Classes/NodeWatcher
 categories:: Control
 
 description::
-One common OOP pattern is the Observer Pattern where one object (the controller or observer) is a dependant of a model or subject object ( https://en.wikipedia.org/wiki/Observer_pattern ). Every time the model changes it notifies all of its dependants. In the default implementation of this pattern in SuperCollider, the model has a dictionary of dependants and iterates through those.  A limitation of this implementation is that all dependants always receive the same message "update" when the model changes.  If a dependant is required to perform different actions depending on the type of change that happens in the model, or on the dependant itself, then this must be coded in the update method of the dependant.  The NotificationCenter overcomes this limitation by making it possible to register a function to be performed for each combination of model, notification message and dependant.  There are thus 4 objects involved in each connecetion between model and dependant in the NotificationCenter:
+One common OOP pattern is the Observer Pattern, which provides a way for an object to flexibly broadcast messages to interested receiver objects.  This pattern defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.  (see: https://www.gofpatterns.com/behavioral-design-patterns/behavioral-patterns/observer-pattern.php and https://en.wikipedia.org/wiki/Observer_pattern ).  An object that  notifies its dependents is called the subject, and the dependents are called observers.
+
+In the original implementation of this pattern in SuperCollider involves three steps:
 
 NUMBEREDLIST::
-## The model (can be any type of object).
-## The notification message (usually a Symbol).
-## The dependant (can be any type of object).
-## The action to be performed (usually a Function).
+## A subject adds a dependant with: ```subject.addDependant(observer)```
+## When a subject wants to inform its observers (dependants) that it has changed, it uses the method changed: ```subject.changed(<optional arguments>...)```
+## The method changed obtains the list of dependants of the subject and iterates over each observer sending it the message "update": ```observer.changed(subject, <optional arguments>...)```
+
+Each observer object can then decide how to react to the change broadcast by the subject, based on the code contained in the update method and the arguments received from the subject.
+
+The above implementation is simple to use, because it only requires to register each observer to the intended subject. However it is limited by the fact that the action to be performed by the observer is coded in the update method.  This makes it complicated to code the choice of different actions to be performed depending on the subject, the observer, and the messages sent as arguments with the ```changed``` message.  The NotificationCenter class provides a way to tell each observer what action to perform depending on the subject and on a symbol which is sent as argument together with the method broadcast by the subject.  Thus, to make an observer perform an action when it receives a message symbol from a subject, it is necessary to specify the following 4 objects:
+
+NUMBEREDLIST::
+## The subject (Any kind of object except nil)
+## The message (A symbol)
+## The observer (Any kind of object except nil)
+## The action to be performed (A Function)
 ::
 
-There are two basic steps in using notifications through the NotificationCenter:
-
-1. Register a function to be performed when a dependant receives a message from a model:
+Using the NotificationCenter class, a connection between a subject and an observer to perform an action in response to a message is created by the following code:
 
 code::
-NotificationCenter.register(\model, \message, \dependant, {
-    // Note: This example uses indicative code for clarity
-	// Your own objects and function code should be substituted
-	// depending on your own needs.
-    "the dependant received message from the model".postln;
-})
+NotificationCenter.register(subject, message, observer, action)
 ::
 
-2. Issue a notification message from the model when needed:
+To notify observers that a subject has changed, the NotificationCenter must call the method "notify":
 
 code::
-NotificationCenter.notify(\model, \message);
+NotificationCenter.notify(subject, message, <optional arguments>...);
 ::
+
+Any object that has been registered as observer to the subject issuing the notification, will perform the action that is coupled to the message of the notification.  It is thus possible to make any observer object perform a specified action when receiving the corresponding message from the object with which it has been registered.
 
 section:: Example
 
-A link::Classes/Server:: emits a \newAllocators notification when it creates new node and bus allocators which it does when it quits or boots.
+When a Server boots or quits, it notifies its observers sending them the message \newAllocators:
 
 code::
-NotificationCenter.notify(Server.default, \newAllocators);
+NotificationCenter.notify(server, \newAllocators)
 ::
 
-You can listen for this:
+Therefore any object that wants to perform an action when a server boots or quits, can use NotificationCenter to register the action using the following code:
 
 code::
+// using default server as subject and a symbol as observer:
 NotificationCenter.register(Server.default, \newAllocators, \yourself, {
-	// throw away all your node variables
-	// or stop the music
+    // Substitute anything more meaningful here:
+	"symbol yourself was notified newAllocators by defaul server".postln;
 });
 ::
-
-The link::Classes/Buffer:: class register a function to clear its info cache whenever a server restarts. The server is emitting changed messages quite often (every 0.4 secs for the status updates), and the Buffer class is only interested in boot/quit events, so this is a more lightweight system for this purpose.
 
 ClassMethods::
 
