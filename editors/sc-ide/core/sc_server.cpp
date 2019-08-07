@@ -61,7 +61,8 @@ void ScServer::createActions(Settings::Manager* settings) {
     QWidgetAction* widgetAction;
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or quit default server"), this);
-    action->setMenuRole(QAction::NoRole); // the default QAction::TextHeuristicRole incorrectly detects a quit role on macOS
+    action->setMenuRole(
+        QAction::NoRole); // the default QAction::TextHeuristicRole incorrectly detects a quit role on macOS
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
     // settings->addAction( action, "synth-server-toggle-running", synthServerCategory);
 
