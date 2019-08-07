@@ -6,6 +6,7 @@ cd $TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider
 echo "Removing Finder cruft..."
 xattr -cr SuperCollider.app
 echo "Attempting codesigning"
+security set-key-partition-list -S apple-tool:,apple: -s -k $SC_KEYCHAIN_PASSWORD supercollider.keychain
 codesign --deep --force --verify --verbose --sign "Developer ID Application: Joshua Parmenter" SuperCollider.app
 cd ..
 echo "Packaging..."
