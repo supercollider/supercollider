@@ -18,7 +18,7 @@ matrix:
           - DO_LINT=true # only lint on fastest build
       group: edge
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode10.2
       env:
           - QT=true
           - DO_LINT=false
