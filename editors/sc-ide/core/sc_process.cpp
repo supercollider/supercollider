@@ -63,7 +63,7 @@ void ScProcess::prepareActions(Settings::Manager* settings) {
     const QString interpreterCategory(tr("Interpreter"));
 
     mActions[ToggleRunning] = action = new QAction(tr("Boot or Quit Interpreter"), this);
-    action->setMenuRole(QAction::NoRole); // to prevent the action from being fired with cmd+q on macosx
+    action->setMenuRole(QAction::NoRole); // the default QAction::TextHeuristicRole incorrectly detects a quit role on macOS
     connect(action, SIGNAL(triggered()), this, SLOT(toggleRunning()));
     // settings->addAction( action, "interpreter-toggle-running", interpreterCategory);
 
