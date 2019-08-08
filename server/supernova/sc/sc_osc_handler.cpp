@@ -864,7 +864,7 @@ int first_arg_as_int(ReceivedMessage const& message) {
 
 template <bool realtime> void handle_quit(endpoint_ptr endpoint) {
     instance->quit_received = true;
-    cmd_dispatcher<realtime>::fire_system_callback([=]() {
+    cmd_dispatcher<realtime>::fire_io_callback([=]() {
         instance->prepare_to_terminate();
         send_done_message(endpoint, "/quit");
         instance->terminate();
@@ -874,7 +874,7 @@ template <bool realtime> void handle_quit(endpoint_ptr endpoint) {
 template <bool realtime> void handle_notify(ReceivedMessage const& message, endpoint_ptr const& endpoint) {
     int enable = first_arg_as_int(message);
 
-    cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = endpoint_ptr(endpoint)]() {
+    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint)]() {
         int observer = 0;
 
         if (enable) {
@@ -1950,7 +1950,7 @@ template <bool realtime> void handle_b_alloc(ReceivedMessage const& msg, endpoin
                 sc_factory->buffer_sync(bufferIndex);
                 handle_completion_message(std::move(message), endpoint);
 
-                cmd_dispatcher<realtime>::fire_system_callback([=] {
+                cmd_dispatcher<realtime>::fire_io_callback([=] {
                     free_aligned(free_buf);
                     send_done_message(endpoint, "/b_alloc", bufferIndex);
                 });
@@ -1981,7 +1981,7 @@ template <bool realtime> void handle_b_free(ReceivedMessage const& msg, endpoint
 
             handle_completion_message(std::move(message), endpoint);
 
-            cmd_dispatcher<realtime>::fire_system_callback([=] {
+            cmd_dispatcher<realtime>::fire_io_callback([=] {
                 free_aligned(free_buf);
                 send_done_message(endpoint, "/b_free", index);
             });
@@ -2024,7 +2024,7 @@ template <bool realtime> void handle_b_allocRead(ReceivedMessage const& msg, end
                         handle_completion_message(std::move(message), endpoint);
                         consume(std::move(filename));
 
-                        cmd_dispatcher<realtime>::fire_system_callback([=] {
+                        cmd_dispatcher<realtime>::fire_io_callback([=] {
                             free_aligned(free_buf);
                             send_done_message(endpoint, "/b_allocRead", bufferIndex);
                         });
@@ -2090,7 +2090,7 @@ template <bool realtime> void handle_b_allocReadChannel(ReceivedMessage const& m
                 consume(std::move(filename));
                 handle_completion_message(std::move(message), endpoint);
 
-                cmd_dispatcher<realtime>::fire_system_callback([=] {
+                cmd_dispatcher<realtime>::fire_io_callback([=] {
                     free_aligned(free_buf);
                     send_done_message(endpoint, "/b_allocReadChannel", bufnum);
                 });
@@ -2167,13 +2167,23 @@ fire_callback:
             try {
                 sc_factory->buffer_write(bufnum, filenameString.c_str(), headerString.c_str(), sampleString.c_str(),
                                          start, frames, leave_open);
-                message.trigger_async(endpoint);
-                cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+
+                cmd_dispatcher<realtime>::fire_rt_callback(
+                    [=, message = std::move(message), filenameString = std::move(filenameString),
+                     headerString = std::move(headerString), sampleString = std::move(sampleString)]() mutable {
+                        handle_completion_message(std::move(message), endpoint);
+
+                        consume(std::move(filenameString));
+                        consume(std::move(headerString));
+                        consume(std::move(sampleString));
+
+                        cmd_dispatcher<realtime>::fire_done_message(endpoint, b_write, bufnum);
+                    });
             } catch (std::exception const& error) {
                 report_failure(endpoint, error, b_write, bufnum);
+                cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
+                                                            std::move(headerString), std::move(sampleString));
             }
-            cmd_dispatcher<realtime>::free_in_rt_thread(std::move(message), std::move(filenameString),
-                                                        std::move(headerString), std::move(sampleString));
         });
 }
 
@@ -2636,7 +2646,7 @@ template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t ms
             consume(std::move(message));
             sc_factory->buffer_sync(index);
 
-            cmd_dispatcher<realtime>::fire_system_callback([=] {
+            cmd_dispatcher<realtime>::fire_io_callback([=] {
                 free_aligned(free_buf);
                 send_done_message(endpoint, "/b_gen", index);
             });
@@ -2778,7 +2788,7 @@ template <bool realtime> void handle_d_recv(ReceivedMessage const& msg, endpoint
             handle_completion_message(std::move(message), endpoint);
             consume(std::move(def));
 
-            cmd_dispatcher<realtime>::fire_system_callback([=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
+            cmd_dispatcher<realtime>::fire_io_callback([=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
                 consume(std::move(wrappedSynthdefs));
                 send_done_message(endpoint, "/d_recv");
             });
@@ -2809,7 +2819,7 @@ template <bool realtime> void handle_d_load(ReceivedMessage const& msg, endpoint
                 handle_completion_message(std::move(message), endpoint);
                 consume(std::move(path_string));
 
-                cmd_dispatcher<realtime>::fire_system_callback([=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
+                cmd_dispatcher<realtime>::fire_io_callback([=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
                     consume(std::move(wrappedSynthdefs));
                     send_done_message(endpoint, "/d_load");
                 });
@@ -2840,7 +2850,7 @@ template <bool realtime> void handle_d_loadDir(ReceivedMessage const& msg, endpo
                 handle_completion_message(std::move(message), endpoint);
                 consume(std::move(path_string));
 
-                cmd_dispatcher<realtime>::fire_system_callback([=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
+                cmd_dispatcher<realtime>::fire_io_callback([=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
                     consume(std::move(wrappedSynthdefs));
                     send_done_message(endpoint, "/d_loadDir");
                 });
@@ -3582,7 +3592,7 @@ void handle_asynchronous_command(World* world, const char* cmdName, void* cmdDat
                     }
                     consume(std::move(message));
 
-                    cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = std::move(endpoint)] {
+                    cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
                         if (stage4)
                             (stage4)(world, cmdData);
 

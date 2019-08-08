@@ -115,8 +115,8 @@ public:
 
     SndBuf* get_buffer_struct(uint32_t index) { return world.mSndBufs + index; }
 
-    int buffer_write(uint32_t index, const char* filename, const char* header_format, const char* sample_format,
-                     uint32_t start, uint32_t frames, bool leave_open);
+    void buffer_write(uint32_t index, const char* filename, const char* header_format, const char* sample_format,
+                      uint32_t start, uint32_t frames, bool leave_open);
 
     void buffer_zero(uint32_t index);
     void buffer_close(uint32_t index);

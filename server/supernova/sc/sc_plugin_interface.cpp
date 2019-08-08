@@ -934,15 +934,15 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char*
 }
 
 
-int sc_plugin_interface::buffer_write(uint32_t index, const char* filename, const char* header_format,
-                                      const char* sample_format, uint32_t start, uint32_t frames, bool leave_open) {
+void sc_plugin_interface::buffer_write(uint32_t index, const char* filename, const char* header_format,
+                                       const char* sample_format, uint32_t start, uint32_t frames, bool leave_open) {
     SndBuf* buf = World_GetNRTBuf(&world, index);
     int format = headerFormatFromString(header_format) | sampleFormatFromString(sample_format);
 
     auto sf = makeSndfileHandle(filename, SFM_WRITE, format, buf->channels, buf->samplerate);
 
-    if (!sf)
-        return -1;
+    if (sf.rawHandle() == nullptr)
+        throw std::runtime_error(sf.strError());
 
     if (frames == 0xffffffff)
         frames = buf->frames;
@@ -955,8 +955,6 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char* filename, cons
 
     if (leave_open && !buf->sndfile)
         buf->sndfile = sf.takeOwnership();
-
-    return 0;
 }
 
 static void buffer_read_verify(SndfileHandle& sf, size_t min_length, size_t samplerate, bool check_samplerate) {
