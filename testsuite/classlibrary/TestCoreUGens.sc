@@ -16,6 +16,20 @@ TestCoreUGens : UnitTest {
 		server.remove;
 	}
 
+	test_duty_first_sample {
+		var func;
+		var testComplete = false;
+
+		func = { var n = EnvGen.ar(Env.new([0.66, 0.8, -0.4, 0],[0, SampleDur.ir, SampleDur.ir])); (n - Duty.ar(SampleDur.ir, 0, n)) };
+
+		server.bootSync;
+		func.loadToFloatArray(server.sampleRate.reciprocal * 2, server, { |data|
+			this.assertArrayFloatEquals(data, 0, "Duty first sample should be properly initialized", within: 0.0, report: true);
+			testComplete = true;
+		});
+		this.wait{testComplete == true};
+	}
+
 	test_ugen_generator_equivalences {
 		var n, v;
 
