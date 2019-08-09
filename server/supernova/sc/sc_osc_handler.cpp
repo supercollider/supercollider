@@ -3604,7 +3604,7 @@ void handle_asynchronous_command(World* world, const char* cmdName, void* cmdDat
                         if (result3) {
                             handle_completion_message(std::move(message), endpoint);
 
-                            cmd_dispatcher<realtime>::fire_system_callback([=, endpoint = std::move(endpoint)] {
+                            cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = std::move(endpoint)] {
                                 // stage 4 (NRT thread)
                                 bool result4 = !stage4 || (stage4)(world, cmdData);
 
