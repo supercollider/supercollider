@@ -51,7 +51,9 @@ void Usage() {
              "   -v print the supercollider version and exit\n"
              "   -u <udp-port-number>    a port number 0-65535\n"
              "   -t <tcp-port-number>    a port number 0-65535\n"
-             "   -B <bind-to-address>    an IP address\n"
+             "   -B <bind-to-address>\n"
+             "          Bind the UDP or TCP socket to this address.\n"
+             "          Default 127.0.0.1. Set to 0.0.0.0 to listen on all interfaces.\n"
              "   -c <number-of-control-bus-channels> (default %d)\n"
              "   -a <number-of-audio-bus-channels>   (default %d)\n"
              "   -i <number-of-input-bus-channels>   (default %d)\n"
@@ -137,7 +139,7 @@ int main(int argc, char* argv[]) {
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
-    std::string bindTo("0.0.0.0");
+    std::string bindTo("127.0.0.1");
 
     WorldOptions options;
 

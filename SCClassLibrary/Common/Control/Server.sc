@@ -54,6 +54,8 @@ ServerOptions {
 	var <>recChannels;
 	var <>recBufSize;
 
+	var <>bindAddress;
+
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
@@ -95,6 +97,7 @@ ServerOptions {
 				recSampleFormat: "float",
 				recChannels: 2,
 				recBufSize: nil,
+				bindAddress: "127.0.0.1",
 			)
 		)
 	}
@@ -128,6 +131,9 @@ ServerOptions {
 		o = o ++ " -i " ++ numInputBusChannels;
 		o = o ++ " -o " ++ numOutputBusChannels;
 
+		if (bindAddress != defaultValues[\bindAddress], {
+			o = o ++ " -B " ++ bindAddress;
+		});
 		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
 			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
