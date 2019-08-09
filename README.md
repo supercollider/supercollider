@@ -63,9 +63,9 @@ Development of SuperCollider happens here on GitHub, and we are grateful to the 
 
 Please read our adopted [code of conduct](CODE_OF_CONDUCT.md) before contributing, so that you can understand what actions will and will not be tolerated.
 
-### [Contributing Guide](CONTRIBUTING.md)
+### [Contributing Guide](https://github.com/supercollider/supercollider/wiki)
 
-Read our [contributing guide](CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
+Read our [contributing guide](https://github.com/supercollider/supercollider/wiki) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
 
 
 ### Good First Issues
