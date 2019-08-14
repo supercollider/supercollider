@@ -83,10 +83,13 @@ void LangClient::customEvent(QEvent* e) {
 }
 
 void LangClient::tick() {
-    double secs;
-    lock();
-    bool haveNext = tickLocked(&secs);
-    unlock();
+    double secs = 0.0;
+    bool haveNext = false;
+
+    if (trylock()) {
+        haveNext = tickLocked(&secs);
+        unlock();
+    }
 
     flush();
 
