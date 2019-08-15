@@ -89,18 +89,18 @@ void LangClient::tick() {
     if (trylock()) {
         haveNext = tickLocked(&secs);
         unlock();
+
+        flush();
+
+        if (haveNext) {
+            secs -= elapsedTime();
+            secs *= 1000;
+            int ti = qMax(0, qCeil(secs));
+            qcDebugMsg(2, QStringLiteral("next at %1").arg(ti));
+            appClockTimer.start(ti, this);
+        } else
+            appClockTimer.stop();
     }
-
-    flush();
-
-    if (haveNext) {
-        secs -= elapsedTime();
-        secs *= 1000;
-        int ti = qMax(0, qCeil(secs));
-        qcDebugMsg(2, QStringLiteral("next at %1").arg(ti));
-        appClockTimer.start(ti, this);
-    } else
-        appClockTimer.stop();
 }
 
 void LangClient::timerEvent(QTimerEvent* e) {
