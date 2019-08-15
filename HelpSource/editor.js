@@ -1,5 +1,5 @@
-const init = () => {
-    /* based on editors/sc-ide/core/sc_lexer.cpp */
+function init () {
+    // Based on editors/sc-ide/core/sc_lexer.cpp
     CodeMirror.defineSimpleMode('scd', {
         start: [
             { regex: /^\s+/, token: 'whitespace' },
@@ -29,127 +29,129 @@ const init = () => {
         ]
     })
 
-    let textareas = Array.from(document.querySelectorAll('textarea'))
-    textareas.forEach(textarea => {
-        let code = textarea.value
-        textarea.editor = CodeMirror.fromTextArea(textarea, {
-            mode: 'scd',
-            value: code,
-            lineWrapping: true,
-            viewportMargin: Infinity,
-            extraKeys: {
-                'Shift-Enter': evalLine
-            }
-        })
+    const textareas = Array.from(document.querySelectorAll('textarea'))
+    for (let textarea of textareas) {
+      textarea.editor = CodeMirror.fromTextArea(textarea, {
+          mode: 'scd',
+          value: textarea.value,
+          lineWrapping: true,
+          viewportMargin: Infinity,
+          extraKeys: {
+              'Shift-Enter': evalLine
+          }
+      })
 
-        textarea.editor.on('dblclick', editor => {
-            let cursor = editor.getCursor()
-            let parenMatch = editor.getLine(cursor.line)
-                .slice(cursor.ch-1,cursor.ch).match(/[()]/)
-            if (parenMatch) {
-                editor.undoSelection()
-                selectRegion({ flash: false })
-            }
-        })
+      textarea.editor.on('dblclick', (editor) => {
+          const cursor = editor.getCursor()
+          const parenMatch = editor.getLine(cursor.line)
+              .slice(cursor.ch-1,cursor.ch).match(/[()]/)
+          if (parenMatch) {
+              editor.undoSelection()
+              selectRegion({ flash: false })
+          }
+      })
 
-        textarea.editor.on('blur', editor => {
-            editor.setSelection(editor.getCursor(), null, { scroll: false })
-        })
-    })
-
-}
-
-const evalLine = () => {
-    // If we are not running in the SC IDE, do nothing.
-    if (!window.IDE) {
-        return;
+      textarea.editor.on('blur', (editor) => {
+          editor.setSelection(editor.getCursor(), null, { scroll: false })
+      })
     }
-    // Ask IDE to eval line. Calls back to `selectLine()`
-    window.IDE.evaluateLine();
 }
 
-/* returns the code selection, line or region */
-const selectRegion = (options = { flash: true }) => {
-    let range = window.getSelection().getRangeAt(0)
-    let textarea = range.startContainer.parentNode.previousSibling
+function evalLine () {
+    if (window.IDE) {
+      // Ask IDE to eval line. Calls back to `selectLine()`
+        window.IDE.evaluateLine()
+    }
+}
+
+// Returns the code selection, line or region
+function selectRegion (options = { flash: true }) {
+    const range = window.getSelection().getRangeAt(0)
+    const textarea = range.startContainer.parentNode.previousSibling
     if (!textarea) return
-    let editor = textarea.editor
+    const editor = textarea.editor
+    const cursor = editor.getCursor()
 
     if (editor.somethingSelected())
         return selectLine(options)
 
-    const findLeftParen = cursor => {
-        let cursorLeft = editor.findPosH(cursor, -1, 'char')
-        if (cursorLeft.hitSide)
-            return cursorLeft
-        let ch = editor.getLine(cursorLeft.line)
-            .slice(cursorLeft.ch, cursorLeft.ch+1)
-        if (ch === ')')
-            return findLeftParen(findLeftParen(cursorLeft))
-        if (ch === '(')
-            return cursorLeft
-        return findLeftParen(cursorLeft)
+    function findLeftParen (cursor) {
+        const left = editor.findPosH(cursor, -1, 'char')
+        const char = editor.getLine(left.line).slice(left.ch, left.ch+1)
+        const token = editor.getTokenTypeAt(cursor) || ''
+        if (left.hitSide)
+            return left
+        if (token.startsWith('comment'))
+            return findLeftParen(left)
+        if (char === ')')
+            return findLeftParen(findLeftParen(left))
+        if (char === '(')
+            return left
+        return findLeftParen(left)
     }
 
-    const findRightParen = cursor => {
-        let cursorRight = editor.findPosH(cursor, 1, 'char')
-        if (cursorRight.hitSide)
-            return cursorRight
-        let ch = editor.getLine(cursorRight.line)
-            .slice(cursorRight.ch-1, cursorRight.ch)
-        if (ch === '(')
-            return findRightParen(findRightParen(cursorRight))
-        if (ch === ')')
-            return cursorRight
-        return findRightParen(cursorRight)
+    function findRightParen (cursor) {
+        const right = editor.findPosH(cursor, 1, 'char')
+        const char = editor.getLine(right.line).slice(right.ch-1, right.ch)
+        const token = editor.getTokenTypeAt(cursor) || ''
+        if (right.hitSide)
+            return right
+        if (token.startsWith('comment'))
+            return findRightParen(right)
+        if (char === '(')
+            return findRightParen(findRightParen(right))
+        if (char === ')')
+            return right
+        return findRightParen(right)
     }
 
-    let cursor = editor.getCursor()
+    // Adjust cursor before finding parens
     if (editor.getLine(cursor.line).slice(cursor.ch,cursor.ch+1) === '(')
         editor.setCursor(Object.assign(cursor, { ch: cursor.ch+1 }))
     if (editor.getLine(cursor.line).slice(cursor.ch-1,cursor.ch) === ')')
         editor.setCursor(Object.assign(cursor, { ch: cursor.ch-1 }))
 
-    let parenPairs = []
-    let leftCursor = findLeftParen(cursor)
-    let rightCursor = findRightParen(cursor)
+    const parenPairs = []
+    let left = findLeftParen(cursor)
+    let right = findRightParen(cursor)
 
-    while (!leftCursor.hitSide || !rightCursor.hitSide) {
-        parenPairs.push([leftCursor, rightCursor])
-        leftCursor = findLeftParen(leftCursor)
-        rightCursor = findRightParen(rightCursor)
+    while (!left.hitSide || !right.hitSide) {
+        parenPairs.push([left, right])
+        left = findLeftParen(left)
+        right = findRightParen(right)
     }
 
-    /* no parens found */
+    // No parens found
     if (parenPairs.length === 0)
         return selectLine(options)
 
-    let pair = parenPairs.pop()
-    leftCursor = pair[0]
-    rightCursor = pair[1]
+    const pair = parenPairs.pop()
+    left = pair[0]
+    right = pair[1]
 
-    /* parens are inline */
-    if (leftCursor.ch > 0)
+    // Parens are inline
+    if (left.ch > 0)
         return selectLine(options)
 
-    /* parens are a region */
-    if (options.flash === false) {
-        editor.addSelection(leftCursor, rightCursor)
-        return editor.getSelection()
-    } else {
-        let marker = editor.markText(leftCursor, rightCursor, { className: 'text-flash' })
+    // Parens are a region
+    if (options.flash) {
+        const marker = editor.markText(left, right, { className: 'text-flash' })
         setTimeout(() => marker.clear(), 300)
-        return editor.getRange(leftCursor, rightCursor)
+        return editor.getRange(left, right)
+    } else {
+        editor.addSelection(left, right)
+        return editor.getSelection()
     }
 }
 
 // Returns the code selection or line
-const selectLine = (options = { flash: true }) => {
-    let range = window.getSelection().getRangeAt(0)
-    let textarea = range.startContainer.parentNode.previousSibling
+function selectLine (options = { flash: true }) {
+    const range = window.getSelection().getRangeAt(0)
+    const textarea = range.startContainer.parentNode.previousSibling
     if (!textarea) return
-    let editor = textarea.editor
-    let cursor = editor.getCursor()
+    const editor = textarea.editor
+    const cursor = editor.getCursor()
+    let from, to
 
     if (editor.somethingSelected()) {
         from = editor.getCursor('start')
@@ -159,10 +161,10 @@ const selectLine = (options = { flash: true }) => {
         to = { line: cursor.line, ch: editor.getLine(cursor.line).length }
     }
 
-    if (!options.flash)
-        return editor.getRange(from, to)
-    let marker = editor.markText(from, to, { className: 'text-flash' })
-    setTimeout(() => marker.clear(), 300)
+    if (options.flash) {
+        let marker = editor.markText(from, to, { className: 'text-flash' })
+        setTimeout(() => marker.clear(), 300)
+    }
     return editor.getRange(from, to)
 }
 
