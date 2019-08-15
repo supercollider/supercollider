@@ -546,7 +546,7 @@ IdentityDictionary : Dictionary {
 				selector = selector.asGetter;
 				if(this.respondsTo(selector)) {
 					warn(selector.asCompileString
-						+ "exists a method name, so you can't use it as pseudo-method.")
+						+ "exists as a method name, so you can't use it as a pseudo-method.")
 				};
 				^this[selector] = args[0];
 			};
