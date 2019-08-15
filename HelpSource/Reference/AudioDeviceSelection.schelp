@@ -1,0 +1,182 @@
+title:: Audio device selection
+categories:: Server
+summary:: A reference for making audio device selection
+related:: Classes/Server, Classes/ServerOptions
+
+This reference provides information on audio device selection, including platform-specific details.
+
+Specific devices can be selected through an instance of link::Classes/ServerOptions::. To access code::ServerOptions:: instance of the default server, you can use code:: Server.default.options::. link::Classes/ServerOptions:: also allows you to specify other important parameters of the device - the sample rate and hardware buffer size.
+
+note::
+Device selection won't take effect until the server is (re)booted.
+::
+
+section:: macOS
+
+By default the server will boot to your system's default audio devices. If you want to explicitly tell the server to use the internal soundcard, you need to specify both input and output device. The following example comes from a MacBook Pro:
+code::
+Server.default.options.inDevice_("Built-in Microph");
+Server.default.options.outDevice_("Built-in Output");
+::
+
+In case of a dedicated audio interface, you might need to specify a single device, e.g.
+code::
+Server.default.options.device_("MOTU 828");
+::
+
+On macOS you can programmatically obtain a list of available audio devices without booting the server:
+code::
+ServerOptions.devices; //all devices
+ServerOptions.inDevices; //input devices
+ServerOptions.outDevices; //output devices
+::
+
+subsection:: Sample rate mismatch
+
+One possible reason why a server may fail to boot is a mismatch between input and output devices' sample rates, which may occur when using a different device for input and output (which is the case when using a Mac's internal soundcard). If the server fails to boot due to sample rate mismatch, an error will be posted accordingly.
+
+You should set both input and output devices' sample rate to the same value. You can do this in Audio MIDI Setup:
+code::
+"open -a 'Audio MIDI Setup'".unixCmd; // execute this to launch it
+::
+
+subsection:: Aggregate device
+
+Sometimes you might want to use multiple devices for input or output. macOS provides a way to combine multiple physical devices into a virtual emphasis::Aggregate Device::. To create one, you have to open the Audio MIDI Setup application (in teletype::/Applications/Utilities::). You should do this from an user account with administrator privileges.
+code::
+"open -a 'Audio MIDI Setup'".unixCmd; // execute this to launch it
+::
+LIST::
+## In the teletype::Audio Devices:: window click on the Plus button on the bottom left and choose teletype::Create Aggregate Device::.
+## You can change its name to something specific if desired, for example "InternalAndMOTU".
+## Check the teletype::Use:: column on the right for the devices you want to combine.
+::
+Now you need to tell SuperCollider to use your new aggregate device.
+code::
+Server.default.options.device = "Aggregate Device"; //or the name you have specified in the previous step
+::
+
+After rebooting the server (code::Server.default.reboot::) you should see in the post window that it now uses the Aggregate Device instead of system defaults:
+teletype::
+[...]
+"Aggregate Device" Input Device
+[...]
+"Aggregate Device" Output Device
+::
+
+Note that when you specify a sound device through SuperCollider's code::ServerOptions::, there is no need to use the aggregate device as the system's default device.
+
+
+section:: Linux
+
+By default, SuperCollider on Linux uses JACK, and the audio device selection is managed by the JACK server. teletype::ServerOptions:: cannot override JACK's selection of audio hardware.
+
+subsection:: Setup with JACK server
+note::The SuperCollider server is considered a JACK emphasis::client::. In the following section, the term emphasis::client:: will refer to the SuperCollider server, from the perspective of JACK. ::
+
+When the server is compiled to use JACK as the audio backend, the code::ServerOption::'s teletype::device:: can be used in two ways:
+list::
+## to set the client name to register with JACK:
+code::
+Server.default.options.device = "my_synth";
+::
+## to use a specific JACK server, as well as set the client name:
+code::
+Server.default.options.device = "JACKServerName:scsynthName";
+::
+::
+A code::nil:: device is equivalent to code::Server.default.options.device = "default:SuperCollider";::
+
+The JACK connections can be configured via the environment variables teletype::SC_JACK_DEFAULT_INPUTS:: and
+teletype::SC_JACK_DEFAULT_OUTPUTS::. The format is either a string that specifies another jack client or a comma-separated list of jack ports.
+
+code::
+// connect first to input channels with system
+"SC_JACK_DEFAULT_INPUTS".setenv("system:capture_1,system:capture_2");
+
+// connect all output channels with system
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+::
+
+section:: Windows
+
+By default the server will boot to your system's default audio devices using teletype::MME:: driver (which usually means higher latency).
+
+On Windows there are multiple audio driver APIs (e.g. teletype::MME::, teletype::WASAPI::, teletype::ASIO:: etc.) that can be used to communicate with audio devices. The API (listed before the device name) needs to match between the input and the output, for example:
+code::
+o = Server.default.options;
+o.inDevice_("Windows WASAPI : Microphone");
+o.outDevice_("Windows WASAPI : Speakers");
+Server.default.reboot;
+::
+On Windows you strong::cannot:: programmatically obtain the list of available audio devices in sclang. However, all the devices are listed in the post window when the server is booting: code::Server.default.boot::. Partial device name matching is supported in Windows (though not in macOS).
+
+subsection:: Choosing the device and the API
+list::
+##If you need to specify the device, you will need to do so for both input and output (setting both code::.inDevice::, as well as code::.outDevice::), unless you use ASIO
+##Both input and output device needs to use the same API (listed before the name, for example teletype::MME::, teletype::WDM-KS:: etc.).
+##Both input and output device should use the same sample rate (although some APIs might provide resampling). This can be set in Windows's Audio Control Panel.
+::
+The following list provides basic reference for different APIs. The most recommended APIs are listed first.
+
+subsection:: List of available APIs
+definitionlist::
+## ASIO
+||
+LIST::
+## strong::Maximum channel count: :: Supports an arbitrary number of input/output channels, if supported by the hardware
+## strong::Typical latency: :: Low
+## strong::Caveats: :: Dedicated ASIO driver needs to be provided by the audio device's manufacturer; this is common for most (semi-)professional interfaces, but not necessarily for internal soundcards
+## strong::More info: :: Designed for pro-audio devices; control over sampling rate and hardware buffer size is usually provided by the driver's control panel (i.e. not settable by SuperCollider); ASIO stands for Audio Stream Input/Output and was developed by Steinberg
+::
+## WASAPI
+||
+LIST::
+## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Typical latency: :: Low
+## strong::Caveats: :: If the requested sample rate is different than the device's sample rate, the server will not boot
+## strong::More info: :: WASAPI stands for Windows Audio Session API and is the most modern Windows audio API
+::
+## WDM-KS
+||
+LIST::
+## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Typical latency: :: Low
+## strong::Caveats: :: On some systems SuperCollider will prevent other applications from using the audio device when using this API
+## strong::More info: :: WDM-KS stands for Windows Driver Model Kernel Streaming. It was the first native Windows API providing reasonably low latency
+::
+## DirectSound
+||
+LIST::
+## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Typical latency: :: Moderate/high
+## strong::Caveats: :: It is an older API and typically provides worse performance than the newer ones
+## strong::More info: :: DirectSound is part of DirectX and was originally created with game audio in mind
+::
+## MME
+||
+LIST::
+## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Typical latency: :: High
+## strong::Caveats: :: It is the oldest API on this list; it is chosen by default if the user does not specify which device to use
+## strong::More info: :: This API might work out-of-the-box, but choosing a newer one instead will usually provide better performance; MME stands for Multimedia Extension (for Windows 3.0)
+::
+::
+
+
+If ASIO driver is available, it is probably the best choice to ensure low input/output latency. ASIO drivers usually provide both inputs and outputs through a single device.
+note::On Windows, ASIO driver is likely the only option for multichannel operation (allowing to use more than 2 inputs/outputs simultaneously).::
+
+code::
+o = Server.default.options;
+o.device = "ASIO : UMC ASIO Driver";
+Server.default.reboot;
+::
+
+subsection:: ASIO4ALL
+If you are using an internal soundcard or a device which does not come with an ASIO driver, an alternative is to use ASIO4ALL. It is a virtual ASIO driver, communicating with the soundcard using Windows' native APIs. It might provide better performance with built-in soundcards and it should allow for multichannel operation with such devices (if supported by the hardware). Use a web search engine to find a download link.
+note::ASIO4ALL will usually strong::not:: provide a better performance than a dedicated ASIO driver.::
+After installing ASIO4ALL, it can be selected as follows (confirm in the post window when the server boots):
+code::
+Server.default.options.device = "ASIO : ASIO4ALL v2";
+::

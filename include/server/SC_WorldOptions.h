@@ -56,11 +56,7 @@ struct WorldOptions {
     const char* mNonRealTimeOutputHeaderFormat = nullptr;
     const char* mNonRealTimeOutputSampleFormat = nullptr;
 
-#if defined(_WIN32)
-    uint32 mPreferredSampleRate = 44100;
-#else
     uint32 mPreferredSampleRate = 0;
-#endif
 
     uint32 mNumRGens = 64;
 
