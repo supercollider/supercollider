@@ -31,29 +31,29 @@ function init () {
 
     const textareas = Array.from(document.querySelectorAll('textarea'))
     for (let textarea of textareas) {
-      textarea.editor = CodeMirror.fromTextArea(textarea, {
-          mode: 'scd',
-          value: textarea.value,
-          lineWrapping: true,
-          viewportMargin: Infinity,
-          extraKeys: {
-              'Shift-Enter': evalLine
-          }
-      })
+        textarea.editor = CodeMirror.fromTextArea(textarea, {
+            mode: 'scd',
+            value: textarea.value,
+            lineWrapping: true,
+            viewportMargin: Infinity,
+            extraKeys: {
+                'Shift-Enter': evalLine
+            }
+        })
 
-      textarea.editor.on('dblclick', (editor) => {
-          const cursor = editor.getCursor()
-          const parenMatch = editor.getLine(cursor.line)
-              .slice(cursor.ch-1,cursor.ch).match(/[()]/)
-          if (parenMatch) {
-              editor.undoSelection()
-              selectRegion({ flash: false })
-          }
-      })
+        textarea.editor.on('dblclick', (editor) => {
+            const cursor = editor.getCursor()
+            const parenMatch = editor.getLine(cursor.line)
+                .slice(cursor.ch-1,cursor.ch).match(/[()]/)
+            if (parenMatch) {
+                editor.undoSelection()
+                selectRegion({ flash: false })
+            }
+        })
 
-      textarea.editor.on('blur', (editor) => {
-          editor.setSelection(editor.getCursor(), null, { scroll: false })
-      })
+        textarea.editor.on('blur', (editor) => {
+            editor.setSelection(editor.getCursor(), null, { scroll: false })
+        })
     }
 }
 
