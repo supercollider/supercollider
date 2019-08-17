@@ -13,6 +13,87 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
+3.10.3-rc1 (2019-08-17)
+=======================
+
+General: Fixed
+-----
+
+For people compiling with musl libc, some build errors have been fixed ([#4535](https://github.com/supercollider/supercollider/pull/4535)).
+
+scsynth and supernova: Changed
+-------
+
+**Breaking change:** scsynth had a security issue where it listens to 0.0.0.0 by default. For most users, this is undesirable behavior since it allows anyone on your local network to send messages to scsynth! This default has been changed to 127.0.0.1 ([#4516](https://github.com/supercollider/supercollider/pull/4516)). To change it back (e.g. for networked server/client setups), use `-B 0.0.0.0` at the command line or `server.options.bindAddress = "0.0.0.0"`.
+
+scsynth and supernova: Fixed
+-----
+
+On Windows, scsynth was not able to select separate input and output devices. Since many audio drivers present inputs and outputs as separate devices, this caused major blocking issues for anyone using Windows with an external sound card. This has been fixed ([#4475](https://github.com/supercollider/supercollider/pull/4475)).
+
+Fixed a supernova compilation issue on Boost 1.67 ([#4447](https://github.com/supercollider/supercollider/pull/4447)).
+
+Fixed server hangs happening in plugins employing SequencedCmd ([#4456](https://github.com/supercollider/supercollider/pull/4456)).
+
+UGens: Fixed
+-----
+
+Fixed an initialization issue for the `trig` input to `Convolution2` ([#4341](https://github.com/supercollider/supercollider/pull/4341)).
+
+sclang: Added
+-----
+
+sclang and the IDE can now be compiled without QtWebEngine -- just set `SC_USE_QTWEBENGINE=OFF` at the `cmake` stage ([#4328](https://github.com/supercollider/supercollider/pull/4328)).
+
+sclang: Fixed
+-----
+
+The `mouseWheelAction` of `View` erroneously reported `xDelta` and `yDelta` to be 0 in some cases. This is fixed ([#4423](https://github.com/supercollider/supercollider/pull/4423)).
+
+Fixed incorrect mathematics in `SimpleNumber:series` ([#4454](https://github.com/supercollider/supercollider/pull/4454)).
+
+Fixed a harmless but annoying warning in when running `HelpBrowser.instance` in sclang without the IDE ([#4488](https://github.com/supercollider/supercollider/pull/4488)).
+
+Class library: Added
+-----
+
+The `-B` command-line flag to scsynth was missing a frontend in `ServerOptions`. This has been fixed by introducing `ServerOptions:bindAddress` ([#4516](https://github.com/supercollider/supercollider/pull/4516)).
+
+Add `Platform.hasQtWebEngine` to query whether sclang was compiled with QtWebEngine support ([#4523](https://github.com/supercollider/supercollider/pull/4523)).
+
+Class library: Fixed
+-----
+
+Fix issues when using a regular `Buffer` (that is, not a `LocalBuf`) for FFT ([#4050](https://github.com/supercollider/supercollider/pull/4050)).
+
+Lots of small issues in `Plotter` were fixed, especially related to the `domain` and `domainSpec` arguments ([4082](https://github.com/supercollider/supercollider/pull/4082)).
+
+When changing the source of an input to a `NodeProxy`, discontinuities can happen even when smooth crossfading is requested. This has been fixed ([#4296](https://github.com/supercollider/supercollider/pull/4296)).
+
+`ProxyMixer` no longer assumes the `ProxySpace` it is using to be the current environment ([#4339](https://github.com/supercollider/supercollider/pull/4339)).
+
+The default recordings directory on Windows was the somewhat redundant `My Documents\SuperCollider\SuperCollider\Recordings`. The additional `SuperCollider` subdirectory has been removed ([#4420](https://github.com/supercollider/supercollider/pull/4420)).
+
+In Events where `strum` is set, the releases of notes was erroneously done in reverse order. This is fixed ([#4406](https://github.com/supercollider/supercollider/pull/4406)).
+
+Fix `EnvirGui` always creating a `SkipJack` due to incorrect logic concerning the `makeSkip` flag ([#4376](https://github.com/supercollider/supercollider/pull/4376)).
+
+`SkipJack` would not remove itself properly when stopped by its stopTest. This is fixed ([#4376](https://github.com/supercollider/supercollider/pull/4376)).
+
+Fixed class library compilation issues on Qt-less sclang installations ([#4219](https://github.com/supercollider/supercollider/pull/4219)).
+
+IDE & SCDoc: Fixed
+-----
+
+Fixed crashes trying to run multiple IDEs at once, and a related error when attempting to run `HelpBrowser:instance` in sclang while an IDE help browser is open ([#4267](https://github.com/supercollider/supercollider/pull/4267)).
+
+On macOS, Cmd+Q in the IDE would quit the interpeter but not the IDE. This is a regression from old behavior where the IDE was quit entirely. This has been fixed ([#4300](https://github.com/supercollider/supercollider/issues/4300)).
+
+Since 3.10, the help browser would execute code twice when selected. This has been fixed ([#4390](https://github.com/supercollider/supercollider/pull/4390)).
+
+Fix footnotes adding unwanted line breaks in SCDoc ([#4365](https://github.com/supercollider/supercollider/pull/4365)).
+
+
 3.10.2 (2019-02-08)
 ===================
 
