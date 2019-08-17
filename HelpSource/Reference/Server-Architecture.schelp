@@ -1,6 +1,7 @@
 title:: Server Architecture
 summary:: SuperCollider 3 Synth Server Architecture
 categories:: Server>Architecture
+related:: Classes/Server, Reference/Server-Command-Reference, Reference/AudioDeviceSelection
 
 copyright © 2002 James McCartney
 note:: Converted to new help system 2010 by Jonatan Liljedahl. Some stuff in this doc are outdated. ::
@@ -102,7 +103,7 @@ definitionlist::
 || When using TCP, the session password must be the first command sent. The default is no password. UDP ports never require passwords, so if password protection is desired, use TCP.
 
 ## -H device-name
-|| name of the hardware I/O device. If not provided, the default device is used.
+|| name of the hardware I/O device. If not provided, the default device is used. See link::Reference/AudioDeviceSelection:: for more details.
 
 ## -I input-streams-enable-string
 || Allows turning off input streams that you are not interested in on the device. If the string is 01100, for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load.

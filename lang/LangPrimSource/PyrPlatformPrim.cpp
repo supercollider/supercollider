@@ -97,6 +97,16 @@ int prPlatform_hasQt(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+int prPlatform_hasQtWebEngine(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+#ifdef SC_USE_QTWEBENGINE
+    SetBool(a, true);
+#else
+    SetBool(a, false);
+#endif
+    return errNone;
+}
+
 void initPlatformPrimitives();
 void initPlatformPrimitives() {
     int base, index = 0;
@@ -112,6 +122,7 @@ void initPlatformPrimitives() {
     definePrimitive(base, index++, "_Platform_resourceDir", prPlatform_resourceDir, 1, 0);
     definePrimitive(base, index++, "_Platform_ideName", prPlatform_ideName, 1, 0);
     definePrimitive(base, index++, "_Platform_hasQt", prPlatform_hasQt, 1, 0);
+    definePrimitive(base, index++, "_Platform_hasQtWebEngine", prPlatform_hasQtWebEngine, 1, 0);
 #ifdef _WIN32
     definePrimitive(base, index++, "_WinPlatform_myDocumentsDir", prWinPlatform_myDocumentsDir, 1, 0);
 #endif

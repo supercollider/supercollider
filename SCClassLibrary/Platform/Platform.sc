@@ -167,6 +167,12 @@ Platform {
 		^this.primitiveFailed
 	}
 
+	// Predicate to check if SuperCollider was built with QtWebEngine
+	*hasQtWebEngine {
+		_Platform_hasQtWebEngine
+		^this.primitiveFailed
+	}
+
 	isSleeping { ^false } // unless defined otherwise
 
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).
