@@ -80,10 +80,14 @@ const selectRegion = (options = { flash: true }) => {
 
     const findLeftParen = cursor => {
         let cursorLeft = editor.findPosH(cursor, -1, 'char')
+        let token = editor.getTokenTypeAt(cursor) || ''
         if (cursorLeft.hitSide)
             return cursorLeft
         let ch = editor.getLine(cursorLeft.line)
             .slice(cursorLeft.ch, cursorLeft.ch+1)
+        if (token.startsWith('comment') || token.startsWith('string') ||
+            token.startsWith('symbol') || token.startsWith('char'))
+            return findLeftParen(cursorLeft)
         if (ch === ')')
             return findLeftParen(findLeftParen(cursorLeft))
         if (ch === '(')
@@ -93,10 +97,14 @@ const selectRegion = (options = { flash: true }) => {
 
     const findRightParen = cursor => {
         let cursorRight = editor.findPosH(cursor, 1, 'char')
+        let token = editor.getTokenTypeAt(cursor) || ''
         if (cursorRight.hitSide)
             return cursorRight
         let ch = editor.getLine(cursorRight.line)
             .slice(cursorRight.ch-1, cursorRight.ch)
+        if (token.startsWith('comment') || token.startsWith('string') ||
+            token.startsWith('symbol') || token.startsWith('char'))
+            return findRightParen(cursorRight)
         if (ch === '(')
             return findRightParen(findRightParen(cursorRight))
         if (ch === ')')
