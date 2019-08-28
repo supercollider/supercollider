@@ -14,14 +14,14 @@ Plot {
 
 		StartUp.add {
 			GUI.skin.put(\plot, (
-				gridColorX: QtGUI.palette.highlight,
-				gridColorY: QtGUI.palette.highlight,
-				fontColor: QtGUI.palette.windowText,
-				plotColor: [QtGUI.palette.windowText, Color.blue.valueBlend(QtGUI.palette.windowText), Color.red.valueBlend(QtGUI.palette.windowText), Color.green(0.7).valueBlend(QtGUI.palette.windowText)],
-				// gridColorX: QtGUI.palette.highlight.sat_(0.8).alpha_(0.6),
-				// gridColorY: QtGUI.palette.highlight.sat_(0.8).alpha_(0.6),
-				// fontColor: Color(0.5 ! 3),
-				// plotColor: [ QtGUI.palette.highlight.val_(0.5) ],
+				// gridColorX: QtGUI.palette.highlight,
+				// gridColorY: QtGUI.palette.highlight,
+				// fontColor: QtGUI.palette.windowText,
+				// plotColor: [QtGUI.palette.windowText, Color.blue.valueBlend(QtGUI.palette.windowText), Color.red.valueBlend(QtGUI.palette.windowText), Color.green(0.7).valueBlend(QtGUI.palette.windowText)],
+				gridColorX: QtGUI.palette.highlight.sat_(0.8).alpha_(0.6),
+				gridColorY: QtGUI.palette.highlight.sat_(0.8).alpha_(0.6),
+				fontColor: Color(0.5 ! 3),
+				plotColor: [ QtGUI.palette.highlight.val_(0.5) ],
 				background: QtGUI.palette.base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
