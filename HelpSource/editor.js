@@ -60,6 +60,10 @@ const init = () => {
 }
 
 const evalLine = () => {
+    // If we are not running in the SC IDE, do nothing.
+    if (!window.IDE) {
+        return;
+    }
     // Ask IDE to eval line. Calls back to `selectLine()`
     window.IDE.evaluateLine();
 }

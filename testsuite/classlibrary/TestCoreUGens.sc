@@ -4,6 +4,18 @@ UnitTest.gui
 TestCoreUGens.run
 */
 TestCoreUGens : UnitTest {
+
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+	}
+
+	tearDown {
+		server.quit;
+		server.remove;
+	}
+
 	test_ugen_generator_equivalences {
 		var n, v;
 
@@ -262,9 +274,9 @@ TestCoreUGens : UnitTest {
 		};
 
 
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(1, Server.default, { |data|
+			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
 				testsIncomplete = testsIncomplete - 1;
 			});
@@ -286,9 +298,9 @@ TestCoreUGens : UnitTest {
 
 		];
 		var testsIncomplete = tests.size;
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(1, Server.default, { |data|
+			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
 				testsIncomplete = testsIncomplete - 1;
 			});
@@ -310,9 +322,9 @@ TestCoreUGens : UnitTest {
 		};
 
 		testsIncomplete = tests.size;
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|name, func|
-			func.loadToFloatArray(0.1, Server.default, { |data|
+			func.loadToFloatArray(0.1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
 				testsIncomplete = testsIncomplete - 1;
 			});
@@ -325,25 +337,25 @@ TestCoreUGens : UnitTest {
 	test_bufugens{
 		var d, b, c;
 		var testsIncomplete = 6;
-		this.bootServer;
+		server.bootSync;
 
 		// channel sizes for test:
 		[1,2, 8,16, 32,33].do{ |numchans|
 
 			// Random data for test
-			d = {1.0.rand}.dup((Server.default.sampleRate * 0.25).round * numchans);
+			d = {1.0.rand}.dup((server.sampleRate * 0.25).round * numchans);
 
 			// load data to server
-			b = Buffer.loadCollection(Server.default, d, numchans);
+			b = Buffer.loadCollection(server, d, numchans);
 			// a buffer for recording the results
-			c = Buffer.alloc(Server.default, d.size / numchans, numchans);
-			Server.default.sync;
+			c = Buffer.alloc(server, d.size / numchans, numchans);
+			server.sync;
 
 			// Copying data from b to c:
 			{
 				RecordBuf.ar(PlayBuf.ar(numchans, b, BufRateScale.ir(b), doneAction: 2), c, loop:0) * 0.1;
-			}.play;
-			Server.default.sync;
+			}.play(server);
+			server.sync;
 			1.0.wait;
 			c.loadToFloatArray(action: { |data|
 				// The data recorded to "c" should be exactly the same as the original data "d"
@@ -354,31 +366,31 @@ TestCoreUGens : UnitTest {
 				testsIncomplete = testsIncomplete - 1;
 			});
 			0.32.wait;
-			Server.default.sync;
+			server.sync;
 		};
 		this.wait{testsIncomplete==0};
 	}
 
 	test_demand {
-		var nodesToFree, tests, s = this.s, testNaN;
+		var nodesToFree, tests, testNaN;
 
-		this.bootServer;
+		server.bootSync;
 		nodesToFree = [];
 
 		OSCFunc({ |message|
 			if(nodesToFree.indexOf(message[1]).notNil) {
 				nodesToFree.removeAt(nodesToFree.indexOf(message[1]))
 			};
-		}, \n_end, s.addr).oneShot;
+		}, \n_end, server.addr).oneShot;
 
 		tests = [
 			{LPF.ar(LeakDC.ar(Duty.ar(0.1, 0, Dseq((1..8)), 2)))}
 		];
 
-		tests.do{|item| nodesToFree = nodesToFree.add(item.play.nodeID) };
+		tests.do{|item| nodesToFree = nodesToFree.add(item.play(server).nodeID) };
 
 		1.5.wait;
-		s.sync;
+		server.sync;
 
 		// The items should all have freed by now...
 		this.assert(nodesToFree.size == 0, "Duty should free itself after a limited sequence");
@@ -388,14 +400,14 @@ TestCoreUGens : UnitTest {
 
 		OSCFunc({ |message|
 			switch(message[2], 5453, { testNaN = message[3] <= 0.0 or: { message[3] >= 1.0 } });
-		}, \tr, s.addr).oneShot;
+		}, \tr, server.addr).oneShot;
 
 		{
 			Line.kr(1, 0, 1, 1, 0, 2);
 			SendTrig.kr(Impulse.kr(10, 0.5), 5453, LFTri.ar(Duty.ar(0.1, 0, Dseq(#[100], 1))))
-		}.play;
+		}.play(server);
 		1.5.wait;
-		s.sync;
+		server.sync;
 		this.assert(testNaN.not, "Duty+LFTri should not output NaN");
 	}
 
@@ -417,9 +429,9 @@ TestCoreUGens : UnitTest {
 				dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
 		];
 		var testsIncomplete = tests.size;
-		this.bootServer;
+		server.bootSync;
 		tests.keysValuesDo{|text, func|
-			func.loadToFloatArray(10, Server.default, { |data|
+			func.loadToFloatArray(10, server, { |data|
 				this.assertArrayFloatEquals(data, 0.0, text, within: 1.0);
 				testsIncomplete = testsIncomplete - 1;
 			});
@@ -494,7 +506,7 @@ TestCoreUGens : UnitTest {
 			fails and: works
 		};
 
-		this.bootServer;
+		server.bootSync;
 		this.assert(testAudioRate.value, report:true, onFailure:"test_out_ugens: failed with audio rate ugens");
 		this.assert(testControlRate.value, report:true, onFailure:"test_out_ugens: failed with control rate ugens");
 

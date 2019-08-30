@@ -1,7 +1,7 @@
 class:: Server
 summary:: Object representing a server application
 categories:: Server>Abstractions
-related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher
+related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection
 
 description::
 

@@ -20,51 +20,37 @@
 
 #include "server_scheduler.hpp"
 
-namespace nova
-{
+namespace nova {
 
-class set_cmd_index:
-    public audio_sync_callback
-{
+class set_cmd_index : public audio_sync_callback {
 public:
-    set_cmd_index(int node_id, slot_index_t const & slot_id, float value):
-        node_id(node_id), slot_id(slot_id), value(value)
-    {}
+    set_cmd_index(int node_id, slot_index_t const& slot_id, float value):
+        node_id(node_id),
+        slot_id(slot_id),
+        value(value) {}
 
 private:
-    virtual void run(void) override {
-        instance->set_node_slot(node_id, slot_id, value);
-    }
+    virtual void run(void) override { instance->set_node_slot(node_id, slot_id, value); }
 
     const int node_id;
     const slot_index_t slot_id;
     const float value;
 };
 
-class set_cmd_str:
-    public audio_sync_callback
-{
+class set_cmd_str : public audio_sync_callback {
 public:
-    set_cmd_str(int node_id, const char * name, float value):
-        node_id(node_id), value(value)
-    {
+    set_cmd_str(int node_id, const char* name, float value): node_id(node_id), value(value) {
         slot_id = (char*)allocate(strlen(name) * sizeof(char));
         strcpy(slot_id, name);
     }
 
-    ~set_cmd_str(void)
-    {
-        deallocate(slot_id);
-    }
+    ~set_cmd_str(void) { deallocate(slot_id); }
 
 private:
-    virtual void run(void) override
-    {
-        instance->set_node_slot(node_id, slot_id, value);
-    }
+    virtual void run(void) override { instance->set_node_slot(node_id, slot_id, value); }
 
     const int node_id;
-    char * slot_id;
+    char* slot_id;
     const float value;
 };
 

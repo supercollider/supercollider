@@ -54,6 +54,8 @@ ServerOptions {
 	var <>recChannels;
 	var <>recBufSize;
 
+	var <>bindAddress;
+
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
@@ -95,6 +97,7 @@ ServerOptions {
 				recSampleFormat: "float",
 				recChannels: 2,
 				recBufSize: nil,
+				bindAddress: "127.0.0.1",
 			)
 		)
 	}
@@ -125,18 +128,15 @@ ServerOptions {
 		o = o ++ port;
 
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -i " ++ numInputBusChannels;
+		o = o ++ " -o " ++ numOutputBusChannels;
 
+		if (bindAddress != defaultValues[\bindAddress], {
+			o = o ++ " -B " ++ bindAddress;
+		});
 		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
 			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
-		});
-		// scsynth and supernova default to 8 input channels
-		if (numInputBusChannels != 8, {
-			o = o ++ " -i " ++ numInputBusChannels;
-		});
-		// scsynth and supernova default to 8 output channels
-		if (numOutputBusChannels != 8, {
-			o = o ++ " -o " ++ numOutputBusChannels;
 		});
 		if (numBuffers !== defaultValues[\numBuffers], {
 			numBuffers = numBuffers.asInteger;
@@ -181,7 +181,7 @@ ServerOptions {
 		if (outputStreamsEnabled.notNil, {
 			o = o ++ " -O " ++ outputStreamsEnabled ;
 		});
-		if ((thisProcess.platform.name!=\osx) or: {inDevice == outDevice})
+		if (inDevice == outDevice)
 		{
 			if (inDevice.notNil,
 				{

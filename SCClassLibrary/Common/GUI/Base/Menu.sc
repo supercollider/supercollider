@@ -109,6 +109,8 @@ MainMenu {
 	*initClass {}
 
 	*initBuiltInMenus {
+		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
+
 		serversMenu = Menu().title_("Servers");
 
 		applicationMenu = Menu(
@@ -272,9 +274,10 @@ MainMenu {
 			var actionsList;
 			// var running, options, kill, default;
 			var startString, runningString, defaultString;
+			var actions, new;
 
 			actionsList = serversMenuActions[s] ?? {
-				var actions, new = ();
+				new = ();
 				serversMenuActions[s] = new;
 
 				new[\name] = MenuAction().font_(Font(italic:true)).action_({

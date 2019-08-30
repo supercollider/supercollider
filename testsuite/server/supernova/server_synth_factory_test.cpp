@@ -7,25 +7,16 @@
 using namespace nova;
 using namespace std;
 
-namespace
-{
-struct test_synth_definition:
-    public synth_definition
-{
-    test_synth_definition():
-        synth_definition(symbol("foo"))
-    {}
+namespace {
+struct test_synth_definition : public synth_definition {
+    test_synth_definition(): synth_definition(symbol("foo")) {}
 
-    abstract_synth * create_instance(int node_id)
-    {
-        return new test_synth(node_id, this);
-    }
+    abstract_synth* create_instance(int node_id) { return new test_synth(node_id, this); }
 };
 }
 
-BOOST_AUTO_TEST_CASE( synth_factory_test_1 )
-{
-    rt_pool.init(1<<20);
+BOOST_AUTO_TEST_CASE(synth_factory_test_1) {
+    rt_pool.init(1 << 20);
 
     synth_factory sf;
 

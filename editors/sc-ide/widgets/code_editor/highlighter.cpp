@@ -30,11 +30,9 @@
 
 namespace ScIDE {
 
-SyntaxHighlighterGlobals * SyntaxHighlighterGlobals::mInstance = 0;
+SyntaxHighlighterGlobals* SyntaxHighlighterGlobals::mInstance = 0;
 
-SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main, Settings::Manager * settings ):
-    QObject(main)
-{
+SyntaxHighlighterGlobals::SyntaxHighlighterGlobals(Main* main, Settings::Manager* settings): QObject(main) {
     Q_ASSERT(mInstance == 0);
     mInstance = this;
 
@@ -43,54 +41,47 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main, Settings::Manage
     // initialize formats from settings:
     applySettings(settings);
 
-    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)),
-            this, SLOT(applySettings(Settings::Manager*)));
+    connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)), this, SLOT(applySettings(Settings::Manager*)));
 }
 
-void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
-{
-    applySettings( s, "whitespace", WhitespaceFormat );
-    applySettings( s, "keyword", KeywordFormat );
-    applySettings( s, "built-in", BuiltinFormat );
-    applySettings( s, "primitive", PrimitiveFormat );
-    applySettings( s, "class", ClassFormat );
-    applySettings( s, "number", NumberFormat );
-    applySettings( s, "symbol", SymbolFormat );
-    applySettings( s, "env-var", EnvVarFormat );
-    applySettings( s, "string", StringFormat );
-    applySettings( s, "char", CharFormat );
-    applySettings( s, "comment", CommentFormat );
+void SyntaxHighlighterGlobals::applySettings(Settings::Manager* s) {
+    applySettings(s, "whitespace", WhitespaceFormat);
+    applySettings(s, "keyword", KeywordFormat);
+    applySettings(s, "built-in", BuiltinFormat);
+    applySettings(s, "primitive", PrimitiveFormat);
+    applySettings(s, "class", ClassFormat);
+    applySettings(s, "number", NumberFormat);
+    applySettings(s, "symbol", SymbolFormat);
+    applySettings(s, "env-var", EnvVarFormat);
+    applySettings(s, "string", StringFormat);
+    applySettings(s, "char", CharFormat);
+    applySettings(s, "comment", CommentFormat);
 
     Q_EMIT(syntaxFormatsChanged());
 }
 
-void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s, const QString &key, SyntaxFormat type )
-{
+void SyntaxHighlighterGlobals::applySettings(Settings::Manager* s, const QString& key, SyntaxFormat type) {
     mFormats[type] = s->getThemeVal(key);
 }
 
-SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):
-    QSyntaxHighlighter( parent )
-{
+SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(parent) {
     mGlobals = SyntaxHighlighterGlobals::instance();
 
     connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
 }
 
-void SyntaxHighlighter::highlightBlockInCode(ScLexer & lexer)
-{
-    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+void SyntaxHighlighter::highlightBlockInCode(ScLexer& lexer) {
+    TextBlockData* blockData = static_cast<TextBlockData*>(currentBlockUserData());
     Q_ASSERT(blockData);
 
-    const QTextCharFormat * formats = mGlobals->formats();
+    const QTextCharFormat* formats = mGlobals->formats();
 
     do {
         int tokenPosition = lexer.offset();
         int tokenLength;
         Token::Type tokenType = lexer.nextToken(tokenLength);
 
-        switch (tokenType)
-        {
+        switch (tokenType) {
         case Token::WhiteSpace:
             setFormat(tokenPosition, tokenLength, formats[WhitespaceFormat]);
             break;
@@ -117,7 +108,7 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer & lexer)
 
         case Token::SymbolArg:
             // Don't highlight the trailing ':'
-            setFormat(tokenPosition, tokenLength-1, formats[SymbolFormat]);
+            setFormat(tokenPosition, tokenLength - 1, formats[SymbolFormat]);
             break;
 
         case Token::EnvVar:
@@ -151,25 +142,21 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer & lexer)
             setFormat(tokenPosition, tokenLength, formats[SymbolFormat]);
             break;
 
-        default:
-            ;
+        default:;
         }
 
-        if ( (tokenType != Token::WhiteSpace) &&
-             (tokenType != Token::SingleLineComment) &&
-             (tokenType != Token::MultiLineCommentStart) )
-        {
+        if ((tokenType != Token::WhiteSpace) && (tokenType != Token::SingleLineComment)
+            && (tokenType != Token::MultiLineCommentStart)) {
             Token token(tokenType, tokenPosition, tokenLength);
             if (token.length == 1)
                 token.character = lexer.text()[tokenPosition].toLatin1();
-            blockData->tokens.push_back( token );
+            blockData->tokens.push_back(token);
         }
 
     } while (lexer.state() == ScLexer::InCode && lexer.offset() < lexer.text().size());
 }
 
-void SyntaxHighlighter::highlightBlockInString(ScLexer & lexer)
-{
+void SyntaxHighlighter::highlightBlockInString(ScLexer& lexer) {
     int originalOffset = lexer.offset();
     int tokenLength;
     Token::Type tokenType = lexer.nextToken(tokenLength);
@@ -183,13 +170,12 @@ void SyntaxHighlighter::highlightBlockInString(ScLexer & lexer)
     Token token(tokenType, lexer.offset() - 1, 1);
     token.character = '"';
 
-    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    TextBlockData* blockData = static_cast<TextBlockData*>(currentBlockUserData());
     Q_ASSERT(blockData);
-    blockData->tokens.push_back( token );
+    blockData->tokens.push_back(token);
 }
 
-void SyntaxHighlighter::highlightBlockInSymbol(ScLexer & lexer)
-{
+void SyntaxHighlighter::highlightBlockInSymbol(ScLexer& lexer) {
     int originalOffset = lexer.offset();
     int tokenLength;
     Token::Type tokenType = lexer.nextToken(tokenLength);
@@ -203,13 +189,12 @@ void SyntaxHighlighter::highlightBlockInSymbol(ScLexer & lexer)
     Token token(tokenType, lexer.offset() - 1, 1);
     token.character = '\'';
 
-    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    TextBlockData* blockData = static_cast<TextBlockData*>(currentBlockUserData());
     Q_ASSERT(blockData);
-    blockData->tokens.push_back( token );
+    blockData->tokens.push_back(token);
 }
 
-void SyntaxHighlighter::highlightBlockInComment(ScLexer & lexer)
-{
+void SyntaxHighlighter::highlightBlockInComment(ScLexer& lexer) {
     int originalOffset = lexer.offset();
     int tokenLength;
     lexer.nextToken(tokenLength);
@@ -217,15 +202,13 @@ void SyntaxHighlighter::highlightBlockInComment(ScLexer & lexer)
     setFormat(originalOffset, range, mGlobals->format(CommentFormat));
 }
 
-void SyntaxHighlighter::highlightBlock(const QString& text)
-{
-    TextBlockData *blockData = static_cast<TextBlockData*>(currentBlockUserData());
-    if(!blockData) {
+void SyntaxHighlighter::highlightBlock(const QString& text) {
+    TextBlockData* blockData = static_cast<TextBlockData*>(currentBlockUserData());
+    if (!blockData) {
         blockData = new TextBlockData;
         blockData->tokens.reserve(8);
         setCurrentBlockUserData(blockData);
-    }
-    else {
+    } else {
         blockData->tokens.clear();
     }
 
@@ -233,7 +216,7 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
     if (previousState == -1)
         previousState = ScLexer::InCode;
 
-    ScLexer lexer( text, 0, previousState );
+    ScLexer lexer(text, 0, previousState);
 
     while (lexer.offset() < text.size()) {
         switch (lexer.state()) {
@@ -250,12 +233,12 @@ void SyntaxHighlighter::highlightBlock(const QString& text)
             break;
 
         default:
-            if(lexer.state() >= ScLexer::InComment)
+            if (lexer.state() >= ScLexer::InComment)
                 highlightBlockInComment(lexer);
         }
     }
 
-    setCurrentBlockState( lexer.state() );
+    setCurrentBlockState(lexer.state());
 }
 
 }

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,73 +21,66 @@
 #pragma once
 
 #ifdef __APPLE__
-# include <libkern/OSAtomic.h>
+#    include <libkern/OSAtomic.h>
 #endif
 
 #ifdef _WIN32
-# include <winsock2.h>
-# include <windows.h>
+#    include <winsock2.h>
+#    include <windows.h>
 #endif
 
-template <class T, int N>
-class SC_FIFO
-{
+template <class T, int N> class SC_FIFO {
 public:
-	SC_FIFO()
-		: mMask(N - 1),
-		  mReadHead(0),
-		  mWriteHead(0)
-	{}
+    SC_FIFO(): mMask(N - 1), mReadHead(0), mWriteHead(0) {}
 
-	void MakeEmpty() { mReadHead = mWriteHead; }
-	bool IsEmpty() { return mReadHead == mWriteHead; }
-	bool HasData() { return mReadHead != mWriteHead; }
+    void MakeEmpty() { mReadHead = mWriteHead; }
+    bool IsEmpty() { return mReadHead == mWriteHead; }
+    bool HasData() { return mReadHead != mWriteHead; }
 
-	bool Put(T data)
-	{
-		long next = NextPos(mWriteHead);
-		if (next == mReadHead) return false; // fifo is full
-		mItems[next] = data;
+    bool Put(T data) {
+        long next = NextPos(mWriteHead);
+        if (next == mReadHead)
+            return false; // fifo is full
+        mItems[next] = data;
 #ifdef __APPLE__
-		// we don't really need a compare and swap, but this happens to call
-		// the PowerPC memory barrier instruction lwsync.
-		OSAtomicCompareAndSwap32Barrier(mWriteHead, next, &mWriteHead);
+        // we don't really need a compare and swap, but this happens to call
+        // the PowerPC memory barrier instruction lwsync.
+        OSAtomicCompareAndSwap32Barrier(mWriteHead, next, &mWriteHead);
 #elif defined(_WIN32)
-		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead),next);
+        InterlockedExchange(reinterpret_cast<volatile LONG*>(&mWriteHead), next);
 #else
-		mWriteHead = next;
+        mWriteHead = next;
 #endif
-		return true;
-	}
+        return true;
+    }
 
-	T Get()
-	{
-		//assert(HasData());
-		long next = NextPos(mReadHead);
-		T out = mItems[next];
+    T Get() {
+        // assert(HasData());
+        long next = NextPos(mReadHead);
+        T out = mItems[next];
 #ifdef __APPLE__
-		// we don't really need a compare and swap, but this happens to call
-		// the PowerPC memory barrier instruction lwsync.
-		OSAtomicCompareAndSwap32Barrier(mReadHead, next, &mReadHead);
-#elif  defined(_WIN32)
-		InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead),next);
+        // we don't really need a compare and swap, but this happens to call
+        // the PowerPC memory barrier instruction lwsync.
+        OSAtomicCompareAndSwap32Barrier(mReadHead, next, &mReadHead);
+#elif defined(_WIN32)
+        InterlockedExchange(reinterpret_cast<volatile LONG*>(&mReadHead), next);
 #else
-		mReadHead = next;
+        mReadHead = next;
 #endif
-		return out;
-	}
+        return out;
+    }
 
-	int Capacity() const { return N; }
+    int Capacity() const { return N; }
 
 private:
-	int NextPos(int inPos) { return (inPos + 1) & mMask; }
+    int NextPos(int inPos) { return (inPos + 1) & mMask; }
 
-	long mMask;
+    long mMask;
 
 #ifdef __APPLE__
-	int32_t mReadHead, mWriteHead;
+    int32_t mReadHead, mWriteHead;
 #else
-	volatile int mReadHead, mWriteHead;
+    volatile int mReadHead, mWriteHead;
 #endif
-	T mItems[N];
+    T mItems[N];
 };

@@ -30,24 +30,23 @@
 class QFontDatabase;
 
 namespace Ui {
-    class EditorConfigPage;
+class EditorConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
 
 class Manager;
 
-class EditorPage : public QWidget
-{
+class EditorPage : public QWidget {
     Q_OBJECT
 
 public:
-    EditorPage(QWidget *parent = 0);
+    EditorPage(QWidget* parent = 0);
     ~EditorPage();
 
 public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
+    void load(Manager*);
+    void store(Manager*);
 
 private Q_SLOTS:
     void onCurrentTabChanged(int);
@@ -64,33 +63,28 @@ private Q_SLOTS:
     void deleteTheme();
 
 private:
-    enum TextFormatListRole {
-        TextFormatConfigKeyRole = Qt::UserRole,
-        TextFormatRole,
-        DefaultTextFormatRole
-    };
+    enum TextFormatListRole { TextFormatConfigKeyRole = Qt::UserRole, TextFormatRole, DefaultTextFormatRole };
 
-    void loadThemeFormats(Theme & theme);
+    void loadThemeFormats(Theme& theme);
 
-    void populateFontList( bool onlyMonospaced = false );
-    void populateThemeList(const QString & sel = "");
+    void populateFontList(bool onlyMonospaced = false);
+    void populateThemeList(const QString& sel = "");
 
     QFont constructFont();
     QTextCharFormat constructTextFormat();
 
-    QTreeWidgetItem * addTextFormat
-    ( const QString & name, const QString &key,
-      const QTextCharFormat & format, const QTextCharFormat & defaultFormat = QTextCharFormat() );
+    QTreeWidgetItem* addTextFormat(const QString& name, const QString& key, const QTextCharFormat& format,
+                                   const QTextCharFormat& defaultFormat = QTextCharFormat());
 
-    void updateTextFormatDisplay( QTreeWidgetItem * );
+    void updateTextFormatDisplay(QTreeWidgetItem*);
 
-    QFontDatabase *fontDatabase;
+    QFontDatabase* fontDatabase;
 
-    Ui::EditorConfigPage *ui;
+    Ui::EditorConfigPage* ui;
 
     QStringList mFormatKeys;
-    QTreeWidgetItem *mCommonTextFormatItem;
-    QMap<QString, Theme *> mThemes;
+    QTreeWidgetItem* mCommonTextFormatItem;
+    QMap<QString, Theme*> mThemes;
 };
 
 }} // namespace ScIDE::Settings

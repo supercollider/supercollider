@@ -1,7 +1,7 @@
 class:: ServerOptions
 summary:: Encapsulates commandline and other options for a Server
 categories:: Server
-related:: Classes/Server, Reference/Server-Architecture, Reference/Server-Command-Reference
+related:: Classes/Server, Reference/Server-Architecture, Reference/Server-Command-Reference, Reference/AudioDeviceSelection
 
 description::
 
@@ -27,6 +27,8 @@ macOS only. Return an Array of Strings listing the audio devices currently avail
 method:: outDevices
 macOS only. Return an Array of Strings listing the audio devices currently available on the system which have output channels.
 
+note::All platforms: list of available devices is printed in the post window when the server is booting. Also see link::Reference/AudioDeviceSelection:: for more information on selecting audio device.::
+
 instancemethods::
 subsection:: The Options
 
@@ -34,31 +36,13 @@ method:: blockSize
 The number of samples in one control period. The default is 64.
 
 method:: device
-A String that allows you to choose a sound device to use as input and output. The default, nil will use the system's default input and output device(s) (more below in the examples).
-
-note::When the server is compiled for jack natively, the teletype::device:: can be used to connect to a named server and
-use a specific client name. The argument specifies either a server name or a server name and the requested client
-name. Passing code::nil:: is equivalent to to teletype::default:SuperCollider::.
-
-The jack connections can be configured via the environment variables teletype::SC_JACK_DEFAULT_INPUTS:: and
-teletype::SC_JACK_DEFAULT_OUTPUTS::. The format is either a string that specifies the another jack client or a
-comma-separate list of jack ports.
-
-code::
-// connect first to input channels with system
-"SC_JACK_DEFAULT_INPUTS".setenv("system:capture_1,system:capture_2");
-
-// connect all output channels with system
-"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
-::
-
-::
+A String that allows you to choose a sound device to use as input and output. The default, code::nil::, will use the system's default input and output device(s). See link::Reference/AudioDeviceSelection:: for more details.
 
 method:: inDevice
-A String that allows you to choose an input sound device. The default, nil will use the system's default input device (more below in the examples).
+A String that allows you to choose an input sound device. The default, code::nil::, will use the system's default input device. See link::Reference/AudioDeviceSelection:: for more details.
 
 method:: outDevice
-A String that allows you to choose an output sound device. The default, nil will use the system's default output device (more below in the examples).
+A String that allows you to choose an output sound device. The default, code::nil::, will use the system's default output device. See link::Reference/AudioDeviceSelection:: for more details.
 
 method:: hardwareBufferSize
 The preferred hardware buffer size. If non-nil the server app will attempt to set the hardware buffer frame size. Not all sizes are valid. See the documentation of your audio hardware for details. Default value is nil.
@@ -107,6 +91,15 @@ A String which allows turning off output streams that you are not interested in 
 
 method:: protocol
 A Symbol representing the communications protocol. Either code::\udp:: or code::\tcp::. The default is code::\udp::.
+
+method:: bindAddress
+scsynth only. The IP address that the server's TCP or UDP socket is listening on. The default value is code::"127.0.0.1"::, meaning only listen to OSC messages on the host.
+
+warning::
+Until SuperCollider 3.10.3, this was set to code::"0.0.0.0":: (listen on all network interfaces). However, this is a dangerous default configuration — for most users working on laptops connected to WiFi, this means that anyone on your local network can send OSC messages to the server. code::"0.0.0.0":: is only useful if you are running networked server/client, and only safe if your networking is properly configured.
+
+supernova always listens to all network interfaces, and ignores the code::bindAddress:: option. This cannot be configured. To avoid exposing yourself to security issues, you should switch to scsynth, or disable networking on your machine when running supernova.
+::
 
 method:: remoteControlVolume
 A Boolean indicating whether this server should allow its volume to be set remotely. The default value is code::false::.
@@ -161,11 +154,13 @@ method:: pingsBeforeConsideredDead
 Number of failed pings (attempts to contact server process) before server is considered dead.
 Default value is 5.
 
+
+
 Examples::
 code::
-// Get the local server's options
+// Get the default server's options
 
-o = Server.local.options;
+o = Server.default.options;
 
 // Post the number of output channels
 
@@ -180,17 +175,26 @@ o.numOutputBusChannels = 6; // The next time it boots, this will take effect
 o.device ="MOTU Traveler"; 	// use a specific soundcard
 o.device = nil;			// use the system default soundcard
 
-// Create a new instance of ServerOptions
+// finally, boot the server
 
-o = ServerOptions.new;
+Server.default.boot;
+// or, if the server was already running, reboot it
+Server.default.reboot;
+
+
+// ServerOptions and multiple servers
+
+// Create a new instance of ServerOptions for
+
+p = ServerOptions.new;
 
 // Set the memory size to twice the default
 
-o.memSize = 4096;
+p.memSize = 4096;
 
 // Create a new Server on the local machine using o for its options
 
-t = Server(\Local2, NetAddr("127.0.0.1", 57111), o);
+t = Server(\Local2, NetAddr("127.0.0.1", 57111), p);
 t.makeWindow;
 t.boot;
 t.quit;

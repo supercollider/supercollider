@@ -23,24 +23,23 @@
 #include <QWidget>
 
 namespace Ui {
-    class SclangConfigPage;
+class SclangConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
 
 class Manager;
 
-class SclangPage : public QWidget
-{
+class SclangPage : public QWidget {
     Q_OBJECT
 
 public:
-    SclangPage(QWidget *parent = 0);
+    SclangPage(QWidget* parent = 0);
     ~SclangPage();
 
 public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
+    void load(Manager*);
+    void store(Manager*);
 
 private Q_SLOTS:
     void addIncludePath();
@@ -49,7 +48,7 @@ private Q_SLOTS:
     void addExcludePath();
     void removeExcludePath();
     void markSclangConfigDirty() { sclangConfigDirty = true; }
-    void changeSelectedLanguageConfig(const QString & configPath);
+    void changeSelectedLanguageConfig(const QString& configPath);
     void dialogCreateNewConfigFile();
     void dialogDeleteCurrentConfigFile();
 
@@ -59,7 +58,7 @@ private:
     QString languageConfigFile();
     QStringList availableLanguageConfigFiles();
 
-    Ui::SclangConfigPage *ui;
+    Ui::SclangConfigPage* ui;
 
     bool sclangConfigDirty;
     QString selectedLanguageConfigFile;

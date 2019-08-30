@@ -27,12 +27,14 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; class Theme; }
+namespace Settings {
+class Manager;
+class Theme;
+}
 
 class Main;
 
-enum SyntaxFormat
-{
+enum SyntaxFormat {
     WhitespaceFormat,
     PlainFormat,
     ClassFormat,
@@ -49,27 +51,23 @@ enum SyntaxFormat
     FormatCount
 };
 
-class SyntaxHighlighterGlobals : public QObject
-{
+class SyntaxHighlighterGlobals : public QObject {
     Q_OBJECT
 
 public:
-    SyntaxHighlighterGlobals( Main *, Settings::Manager * settings );
+    SyntaxHighlighterGlobals(Main*, Settings::Manager* settings);
 
-    inline const QTextCharFormat * formats() const
-    {
-        return mFormats;
+    inline const QTextCharFormat* formats() const { return mFormats; }
+
+    inline const QTextCharFormat& format(SyntaxFormat type) const { return mFormats[type]; }
+
+    inline static const SyntaxHighlighterGlobals* instance() {
+        Q_ASSERT(mInstance);
+        return mInstance;
     }
-
-    inline const QTextCharFormat & format( SyntaxFormat type ) const
-    {
-        return mFormats[type];
-    }
-
-    inline static const SyntaxHighlighterGlobals * instance() { Q_ASSERT(mInstance); return mInstance; }
 
 public Q_SLOTS:
-    void applySettings( Settings::Manager * );
+    void applySettings(Settings::Manager*);
 
 Q_SIGNALS:
     void syntaxFormatsChanged();
@@ -77,29 +75,27 @@ Q_SIGNALS:
 private:
     friend class SyntaxHighlighter;
 
-    void applySettings( Settings::Manager *s, const QString &key, SyntaxFormat );
+    void applySettings(Settings::Manager* s, const QString& key, SyntaxFormat);
 
     QTextCharFormat mFormats[FormatCount];
 
-    static SyntaxHighlighterGlobals *mInstance;
+    static SyntaxHighlighterGlobals* mInstance;
 };
 
-class SyntaxHighlighter:
-    public QSyntaxHighlighter
-{
+class SyntaxHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
 
 public:
-    SyntaxHighlighter(QTextDocument *parent = 0);
+    SyntaxHighlighter(QTextDocument* parent = 0);
 
 private:
-    void highlightBlock(const QString &text);
-    void highlightBlockInCode(ScLexer & lexer);
-    void highlightBlockInString(ScLexer & lexer);
-    void highlightBlockInSymbol(ScLexer & lexer);
-    void highlightBlockInComment(ScLexer & lexer);
+    void highlightBlock(const QString& text);
+    void highlightBlockInCode(ScLexer& lexer);
+    void highlightBlockInString(ScLexer& lexer);
+    void highlightBlockInSymbol(ScLexer& lexer);
+    void highlightBlockInComment(ScLexer& lexer);
 
-    const SyntaxHighlighterGlobals *mGlobals;
+    const SyntaxHighlighterGlobals* mGlobals;
 };
 
 }

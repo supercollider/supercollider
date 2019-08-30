@@ -161,6 +161,18 @@ Platform {
 	// Prefer qt but fall back to swing if qt not installed.
 	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\swing} }
 
+	// Predicate to check if SuperCollider was built with Qt.
+	*hasQt {
+		_Platform_hasQt
+		^this.primitiveFailed
+	}
+
+	// Predicate to check if SuperCollider was built with QtWebEngine
+	*hasQtWebEngine {
+		_Platform_hasQtWebEngine
+		^this.primitiveFailed
+	}
+
 	isSleeping { ^false } // unless defined otherwise
 
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).

@@ -30,4 +30,4 @@ QSettings::Format serializationFormat();
 
 }} // namespace ScIDE::Settings
 
-Q_DECLARE_METATYPE( QTextCharFormat )
+Q_DECLARE_METATYPE(QTextCharFormat)

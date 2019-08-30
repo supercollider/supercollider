@@ -24,27 +24,28 @@
 
 namespace ScIDE {
 
-class LineIndicator : public QWidget
-{
+class LineIndicator : public QWidget {
     Q_OBJECT
 
 public:
-    LineIndicator( class GenericCodeEditor *editor );
-    void setHideLineIndicator( bool hide);
+    LineIndicator(class GenericCodeEditor* editor);
+    void setHideLineIndicator(bool hide);
 Q_SIGNALS:
     void widthChanged();
 public Q_SLOTS:
-    void setLineCount( int );
-protected:
-    virtual void paintEvent( QPaintEvent *e );
-    virtual void mousePressEvent( QMouseEvent * );
-    virtual void mouseMoveEvent( QMouseEvent * );
-    virtual void mouseDoubleClickEvent( QMouseEvent * );
-    virtual void changeEvent( QEvent * );
-private:
-    int widthForLineCount( int lineCount );
+    void setLineCount(int);
 
-    class GenericCodeEditor *mEditor;
+protected:
+    virtual void paintEvent(QPaintEvent* e);
+    virtual void mousePressEvent(QMouseEvent*);
+    virtual void mouseMoveEvent(QMouseEvent*);
+    virtual void mouseDoubleClickEvent(QMouseEvent*);
+    virtual void changeEvent(QEvent*);
+
+private:
+    int widthForLineCount(int lineCount);
+
+    class GenericCodeEditor* mEditor;
     int mLineCount;
     int mLastCursorPos;
     bool hideLineIndicator;

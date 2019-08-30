@@ -94,9 +94,7 @@ adding `[skip ci]` to the commit message so it does not waste CI resources.
 S3 Build Hosting
 ----------------
 
-Builds of all commits to branches on the main project repository are uploaded to Amazon's S3 hosting service. These
-builds are available for macOS, Windows x86, and Windows x86-64. To download the latest build of a branch named
-`topic/foo`, the URLs are of the form:
+Builds of all commits to branches on the main project repository are uploaded to Amazon's S3 hosting service. This means that commits in Pull Requests are often not uploaded, which is the case if they originate from other respositories (i.e. forks). These builds are available for macOS, Windows x86, and Windows x86-64. To download the latest build of a branch named `topic/foo`, the URLs are of the form:
 
 * http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/osx/topic/foo-latest.html
 * http://supercollider.s3.amazonaws.com/builds/supercollider/supercollider/win32/topicfoo-latest.html

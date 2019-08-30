@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@
 
 typedef std::mutex SC_Lock;
 typedef std::thread SC_Thread;
+using std::cv_status;
+using std::lock_guard;
 using std::mutex;
 using std::timed_mutex;
-using std::lock_guard;
 using std::unique_lock;
-using std::cv_status;
 typedef std::condition_variable_any condition_variable_any;
 
 typedef SC_Lock mutex;

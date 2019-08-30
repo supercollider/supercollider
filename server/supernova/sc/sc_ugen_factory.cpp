@@ -20,9 +20,9 @@
  */
 
 #ifdef DLOPEN
-#include <dlfcn.h>
+#    include <dlfcn.h>
 #elif defined(_WIN32)
-#include "Windows.h"
+#    include "Windows.h"
 #endif
 
 #include <boost/filesystem.hpp>
@@ -38,24 +38,24 @@ namespace nova {
 
 std::unique_ptr<sc_ugen_factory> sc_factory;
 
-Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, linear_allocator & allocator)
-{
+Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, World* world,
+                             linear_allocator& allocator) {
     const int buffer_length = world->mBufLength;
 
     const size_t output_count = unit_spec.output_specs.size();
 
     /* size for wires and buffers */
-    uint8_t * chunk  = allocator.alloc<uint8_t>(memory_requirement());
+    uint8_t* chunk = allocator.alloc<uint8_t>(memory_requirement());
     memset(chunk, 0, memory_requirement());
 
-    Unit * unit   = (Unit*) (std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
+    Unit* unit = (Unit*)(std::uintptr_t(chunk + 63) & (~63)); // align on 64 byte boundary
 
-    unit->mInBuf  = allocator.alloc<float*>(unit_spec.input_specs.size());
+    unit->mInBuf = allocator.alloc<float*>(unit_spec.input_specs.size());
     unit->mOutBuf = allocator.alloc<float*>(unit_spec.output_specs.size());
-    unit->mInput  = allocator.alloc<Wire*>(unit_spec.input_specs.size());
+    unit->mInput = allocator.alloc<Wire*>(unit_spec.input_specs.size());
     unit->mOutput = allocator.alloc<Wire*>(unit_spec.output_specs.size());
 
-    unit->mNumInputs  = unit_spec.input_specs.size();
+    unit->mNumInputs = unit_spec.input_specs.size();
     unit->mNumOutputs = unit_spec.output_specs.size();
 
     /* initialize members */
@@ -74,11 +74,11 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
 
     unit->mBufLength = unit->mRate->mBufLength;
 
-    float * buffer_base = s->unit_buffers;
+    float* buffer_base = s->unit_buffers;
 
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
-        Wire * w = allocator.alloc<Wire>();
+        Wire* w = allocator.alloc<Wire>();
 
         w->mFromUnit = unit;
         w->mCalcRate = unit->mCalcRate;
@@ -92,24 +92,21 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
             std::size_t buffer_id = unit_spec.buffer_mapping[i];
             unit->mOutBuf[i] = buffer_base + buffer_length * buffer_id;
             w->mBuffer = unit->mOutBuf[i];
-        }
-        else
+        } else
             unit->mOutBuf[i] = &w->mScalarValue;
 
         unit->mOutput[i] = w;
     }
 
     /* prepare inputs */
-    for (size_t i = 0; i != unit_spec.input_specs.size(); ++i)
-    {
+    for (size_t i = 0; i != unit_spec.input_specs.size(); ++i) {
         int source = unit_spec.input_specs[i].source;
         int index = unit_spec.input_specs[i].index;
 
         if (source == -1)
             unit->mInput[i] = &unit->mParent->mWire[index];
-        else
-        {
-            Unit * prev = s->units[source];
+        else {
+            Unit* prev = s->units[source];
             unit->mInput[i] = prev->mOutput[index];
         }
 
@@ -122,25 +119,22 @@ Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_syn
     return unit;
 }
 
-bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func)
-{
-    sc_unitcmd_def * def = new sc_unitcmd_def(cmd_name, func);
+bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func) {
+    sc_unitcmd_def* def = new sc_unitcmd_def(cmd_name, func);
     unitcmd_set.insert(*def);
     return true;
 }
 
-void sc_ugen_def::run_unit_command(const char * cmd_name, Unit * unit, struct sc_msg_iter *args)
-{
+void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, struct sc_msg_iter* args) {
     unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
     if (it != unitcmd_set.end())
         it->run(unit, args);
 }
 
-sample * sc_bufgen_def::run(World * world, uint32_t buffer_index, struct sc_msg_iter *args)
-{
-    SndBuf * buf = World_GetNRTBuf(world, buffer_index);
-    sample * data = buf->data;
+sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, struct sc_msg_iter* args) {
+    SndBuf* buf = World_GetNRTBuf(world, buffer_index);
+    sample* data = buf->data;
 
     (func)(world, buf, args);
 
@@ -150,21 +144,18 @@ sample * sc_bufgen_def::run(World * world, uint32_t buffer_index, struct sc_msg_
         return data;
 }
 
-void sc_plugin_container::register_ugen(const char *inUnitClassName, size_t inAllocSize,
-                                    UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags)
-{
-    sc_ugen_def * def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
+void sc_plugin_container::register_ugen(const char* inUnitClassName, size_t inAllocSize, UnitCtorFunc inCtor,
+                                        UnitDtorFunc inDtor, uint32 inFlags) {
+    sc_ugen_def* def = new sc_ugen_def(inUnitClassName, inAllocSize, inCtor, inDtor, inFlags);
     ugen_set.insert(*def);
 }
 
-void sc_plugin_container::register_bufgen(const char * name, BufGenFunc func)
-{
-    sc_bufgen_def * def = new sc_bufgen_def(name, func);
+void sc_plugin_container::register_bufgen(const char* name, BufGenFunc func) {
+    sc_bufgen_def* def = new sc_bufgen_def(name, func);
     bufgen_set.insert(*def);
 }
 
-sc_ugen_def * sc_plugin_container::find_ugen(symbol const & name)
-{
+sc_ugen_def* sc_plugin_container::find_ugen(symbol const& name) {
     ugen_set_type::iterator it = ugen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == ugen_set.end())
         return nullptr;
@@ -172,31 +163,29 @@ sc_ugen_def * sc_plugin_container::find_ugen(symbol const & name)
     return &*it;
 }
 
-bool sc_plugin_container::register_ugen_command_function(const char * ugen_name, const char * cmd_name,
-                                                     UnitCmdFunc func)
-{
-    sc_ugen_def * def = find_ugen(symbol(ugen_name));
+bool sc_plugin_container::register_ugen_command_function(const char* ugen_name, const char* cmd_name,
+                                                         UnitCmdFunc func) {
+    sc_ugen_def* def = find_ugen(symbol(ugen_name));
     if (def)
         return false;
     return def->add_command(cmd_name, func);
 }
 
-bool sc_plugin_container::register_cmd_plugin(const char * cmd_name, PlugInCmdFunc func, void * user_data)
-{
+bool sc_plugin_container::register_cmd_plugin(const char* cmd_name, PlugInCmdFunc func, void* user_data) {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(cmd_name, named_hash_hash(), named_hash_equal());
     if (it != cmdplugin_set.end()) {
         std::cout << "cmd plugin already registered: " << cmd_name << std::endl;
         return false;
     }
 
-    sc_cmdplugin_def * def = new sc_cmdplugin_def(cmd_name, func, user_data);
+    sc_cmdplugin_def* def = new sc_cmdplugin_def(cmd_name, func, user_data);
     cmdplugin_set.insert(*def);
 
     return true;
 }
 
-sample * sc_plugin_container::run_bufgen(World * world, const char * name, uint32_t buffer_index, struct sc_msg_iter *args)
-{
+sample* sc_plugin_container::run_bufgen(World* world, const char* name, uint32_t buffer_index,
+                                        struct sc_msg_iter* args) {
     bufgen_set_type::iterator it = bufgen_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == bufgen_set.end()) {
         std::cout << "unable to find buffer generator: " << name << std::endl;
@@ -207,8 +196,7 @@ sample * sc_plugin_container::run_bufgen(World * world, const char * name, uint3
 }
 
 
-bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struct sc_msg_iter *args, void *replyAddr)
-{
+bool sc_plugin_container::run_cmd_plugin(World* world, const char* name, struct sc_msg_iter* args, void* replyAddr) {
     cmdplugin_set_type::iterator it = cmdplugin_set.find(name, named_hash_hash(), named_hash_equal());
     if (it == cmdplugin_set.end()) {
         std::cout << "unable to find cmd plugin: " << name << std::endl;
@@ -221,8 +209,7 @@ bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struc
 }
 
 
-void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
-{
+void sc_ugen_factory::load_plugin_folder(boost::filesystem::path const& path) {
     using namespace boost::filesystem;
 
     directory_iterator end;
@@ -238,8 +225,7 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
     }
 }
 
-static bool check_api_version( int (*api_version)(), std::string const& filename )
-{
+static bool check_api_version(int (*api_version)(), std::string const& filename) {
     using namespace std;
     using namespace scsynth;
 
@@ -257,8 +243,7 @@ static bool check_api_version( int (*api_version)(), std::string const& filename
 }
 
 #ifdef DLOPEN
-void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
-{
+void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
     using namespace std;
 
     // Ignore files that don't have the extension of an SC plugin
@@ -266,7 +251,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         return;
     }
 
-    void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
+    void* handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
     if (handle == nullptr)
         return;
 
@@ -286,7 +271,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         return;
     }
 
-    void * load_symbol = dlsym(handle, "load");
+    void* load_symbol = dlsym(handle, "load");
     if (!load_symbol) {
         cout << "Problem when loading plugin: \"load\" function undefined" << path << endl;
         dlclose(handle);
@@ -301,44 +286,41 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     return;
 }
 
-void sc_ugen_factory::close_handles(void)
-{
-    for(void * handle : open_handles){
-        void *ptr = dlsym(handle, "unload");
-        if(ptr){
+void sc_ugen_factory::close_handles(void) {
+    for (void* handle : open_handles) {
+        void* ptr = dlsym(handle, "unload");
+        if (ptr) {
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
         dlclose(handle);
     }
-
 }
 
 #elif defined(_WIN32)
 
-void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
-{
+void sc_ugen_factory::load_plugin(boost::filesystem::path const& path) {
     // Ignore files that don't have the extension of an SC plugin
     if (path.extension() != SC_PLUGIN_EXT) {
         return;
     }
 
-    //std::cout << "try open plugin: " << path << std::endl;
-    const char * filename = path.string().c_str();
-    HINSTANCE hinstance = LoadLibrary( path.string().c_str() );
+    // std::cout << "try open plugin: " << path << std::endl;
+    const char* filename = path.string().c_str();
+    HINSTANCE hinstance = LoadLibrary(path.string().c_str());
     if (!hinstance) {
-        char *s;
+        char* s;
         DWORD lastErr = GetLastError();
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                      nullptr, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
 
         std::cout << "Cannot open plugin: " << path << s << std::endl;
-        LocalFree( s );
+        LocalFree(s);
         return;
     }
 
     typedef int (*info_function)();
-    info_function api_version = reinterpret_cast<info_function>(GetProcAddress( hinstance, "api_version" ));
+    info_function api_version = reinterpret_cast<info_function>(GetProcAddress(hinstance, "api_version"));
 
     if (!check_api_version(api_version, filename)) {
         FreeLibrary(hinstance);
@@ -346,7 +328,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     }
 
     typedef int (*info_function)();
-    info_function server_type = reinterpret_cast<info_function>(GetProcAddress( hinstance, "server_type" ));
+    info_function server_type = reinterpret_cast<info_function>(GetProcAddress(hinstance, "server_type"));
     if (!server_type) {
         FreeLibrary(hinstance);
         return;
@@ -357,14 +339,14 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         return;
     }
 
-    void *ptr = (void *)GetProcAddress( hinstance, "load" );
+    void* ptr = (void*)GetProcAddress(hinstance, "load");
     if (!ptr) {
-        char *s;
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
+        char* s;
+        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                      nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
 
         std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
-        LocalFree( s );
+        LocalFree(s);
 
         FreeLibrary(hinstance);
         return;
@@ -376,12 +358,11 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     return;
 }
 
-void sc_ugen_factory::close_handles(void)
-{
-    for(void * ptrhinstance : open_handles){
+void sc_ugen_factory::close_handles(void) {
+    for (void* ptrhinstance : open_handles) {
         HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
-        void *ptr = (void *)GetProcAddress( hinstance, "unload" );
-        if(ptr){
+        void* ptr = (void*)GetProcAddress(hinstance, "unload");
+        if (ptr) {
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
