@@ -70,7 +70,6 @@ deploy:
    upload-dir: $S3_BUILDS_LOCATION
    region: us-west-2
    skip_cleanup: true
-   endpoint: s3-us-west-2.amazonaws.com
    acl: public_read
    on:
      condition: $TRAVIS_OS_NAME = osx && ! -z $AWS_KEY && ! -z $AWS_SECRET
