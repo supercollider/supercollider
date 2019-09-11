@@ -263,7 +263,7 @@ void ScCodeEditor::insertFromMimeData(const QMimeData* data) {
             if (QURL_IS_LOCAL_FILE(url)) {
                 QString path = url.toLocalFile();
 #ifdef Q_OS_WIN
-                path.replace('/', "\\");
+                path.replace('/', "\\\\");
 #endif
                 cursor.insertText(path);
             } else
