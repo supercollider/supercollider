@@ -260,9 +260,13 @@ void ScCodeEditor::insertFromMimeData(const QMimeData* data) {
         for (int i = 0; i < urls.size(); ++i) {
             QUrl url = urls[i];
             cursor.insertText("\"");
-            if (QURL_IS_LOCAL_FILE(url))
-                cursor.insertText(url.toLocalFile());
-            else
+            if (QURL_IS_LOCAL_FILE(url)) {
+                QString path = url.toLocalFile();
+#ifdef Q_OS_WIN
+                path.replace('/', "\\");
+#endif
+                cursor.insertText(path);
+            } else
                 cursor.insertText(url.toString());
             cursor.insertText("\"");
             if (i < urls.size() - 1) {
