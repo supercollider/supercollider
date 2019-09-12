@@ -70,6 +70,10 @@ public:
     uint32_t get_latency(void) const { return latency_; }
 
 private:
+    // this will be clipped to the number of available hardware outs
+    uint16_t m_hwOutputChannels = 0;
+
+private:
     static void report_error(int err, bool throw_exception = false) {
         if (err < 0) {
             engine_functor::log_printf_("PortAudio error: %s\n", Pa_GetErrorText(err));
@@ -171,9 +175,9 @@ public:
         if (outchans) {
             const PaDeviceInfo* device_info = Pa_GetDeviceInfo(output_device_index);
 
-            outchans = std::min(outchans, (unsigned int)device_info->maxOutputChannels);
+            m_hwOutputChannels = std::min(outchans, (unsigned int)device_info->maxOutputChannels);
 
-            out_parameters = MakePaStreamParameters(output_device_index, outchans, suggestedLatencyOut);
+            out_parameters = MakePaStreamParameters(output_device_index, m_hwOutputChannels, suggestedLatencyOut);
         }
 
         PaStreamParameters* in_stream_parameters = inchans ? &in_parameters : nullptr;
@@ -202,10 +206,12 @@ public:
                 latency_ = (uint32_t)(psi->outputLatency * psi->sampleRate);
         }
 
+        // input_channels is clipped to the number of available audio inputs
+        // output_channels is equal to the requested number of outputs (not clipped)
         input_channels = inchans;
         super::input_samples.resize(inchans);
         output_channels = outchans;
-        super::output_samples.resize(outchans);
+        super::output_samples.resize(m_hwOutputChannels);
         samplerate_ = samplerate;
 
         cpu_time_accumulator.resize(samplerate_, blocksize_, 1);
@@ -269,16 +275,16 @@ private:
         for (uint16_t i = 0; i != input_channels; ++i)
             inputs[i] = in[i];
 
-        auto** outputs = static_cast<float**>(alloca(sizeof(float*) * output_channels));
+        auto** outputs = static_cast<float**>(alloca(sizeof(float*) * m_hwOutputChannels));
         float** out = static_cast<float**>(outputBuffer);
-        for (uint16_t i = 0; i != output_channels; ++i)
+        for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
             outputs[i] = out[i];
 
         unsigned long processed = 0;
         while (processed != frames) {
             super::fetch_inputs(inputs, blocksize_, input_channels);
             engine_functor::run_tick();
-            super::deliver_outputs(outputs, blocksize_, output_channels);
+            super::deliver_outputs(outputs, blocksize_, m_hwOutputChannels);
             processed += blocksize_;
         }
 
