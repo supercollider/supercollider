@@ -193,7 +193,7 @@ if (LIBSCSYNTH)
 	set_property(TARGET libscsynth PROPERTY SOVERSION   1)
 endif()
 
-if (FFTW3F_FOUND)
+if (FFTW3F_FOUND AND NOT APPLE)
 	target_include_directories(libscsynth PUBLIC ${FFTW3F_INCLUDE_DIR})
 	target_link_libraries(libscsynth ${FFTW3F_LIBRARY})
 endif()
@@ -231,6 +231,10 @@ else()
 endif()
 
 if(APPLE)
+	if (NOT FFT_GREEN)
+		add_definitions("-DSC_FFT_VDSP") # scsynth uses vDSP
+		remove_definitions("-DSC_FFT_FFTW")
+	endif()
 	add_custom_command(TARGET scsynth POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)

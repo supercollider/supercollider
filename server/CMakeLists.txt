@@ -16,7 +16,18 @@ include_directories(${boost_include_dirs})
 
 # here we choose who provides us with the FFT lib
 if (APPLE)
-	add_definitions("-DSC_FFT_VDSP")
+	# we will add definition SC_FFT_VDSP inside scsynth's CMakeLists
+	# current implementation of vDSP is not thread-safe, so we have to use FFTW with Supernova
+	# we will add definition SC_FFT_FFTW inside supernova's CMakeLists
+	if (FFT_GREEN)
+		message(STATUS "Using green fft")
+		add_definitions("-DSC_FFT_GREEN")
+	elseif(SUPERNOVA)
+		find_package(FFTW3f 3.3)
+		if (FFTW3F_FOUND)
+			message(STATUS "Found fftw3f: ${FFTW3F_LIBRARY}")
+		endif()
+	endif()
 else()
 	find_package(FFTW3f 3.3)
 

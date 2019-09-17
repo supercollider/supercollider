@@ -225,6 +225,15 @@ endif()
 if (APPLE)
     target_link_libraries(libsupernova "-framework Accelerate")
     target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation -framework ApplicationServices")
+    # FFT
+    if ((NOT FFT_GREEN) AND FFTW3F_FOUND)
+      message(STATUS "supernova using FFTW")
+  		add_definitions("-DSC_FFT_FFTW") # supernova uses FFTW
+  		remove_definitions("-DSC_FFT_VDSP") 
+    else()
+      message(STATUS "supernova using green fft")
+      add_definitions("-DSC_FFT_GREEN")
+    endif()
 endif()
 
 if(${JACK_USE_METADATA_API})
