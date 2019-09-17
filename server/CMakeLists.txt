@@ -16,7 +16,12 @@ include_directories(${boost_include_dirs})
 
 # here we choose who provides us with the FFT lib
 if (APPLE)
-	add_definitions("-DSC_FFT_VDSP")
+	if (FFT_GREEN)
+		message(STATUS "Using green fft")
+		add_definitions("-DSC_FFT_GREEN")
+	else()
+		add_definitions("-DSC_FFT_VDSP")
+	endif()
 else()
 	find_package(FFTW3f 3.3)
 
