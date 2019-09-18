@@ -217,6 +217,7 @@ static bool scfft_global_initialization(void) {
     }
     fftwf_free(buffer1);
     fftwf_free(buffer2);
+    // printf("SC FFT global init: FFTW initialised.\n");
 #endif
     return false;
 }
