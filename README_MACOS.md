@@ -50,8 +50,8 @@ Prerequisites:
   QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
   10.9 and the macOS SDK for 10.10 or later.
 
-- If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
-  `brew install portaudio`
+- If you want to build with the *supernova* server, you need **portaudio** and a custom version of **fftw** packages, which can also be installed via homebrew:
+  `brew install portaudio dyfer/fftw-sc/fftw-sc`
 
 Obtaining the source code
 -------------------------
@@ -72,7 +72,9 @@ Build instructions
     cd build
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
     # or, if you want to build with supernova:
+    export FFTW3_DIR=`brew --prefix fftw-sc` # indicate where our custom FFTW is
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSUPERNOVA=ON ..
+    # then start the build
     cmake --build . --target install --config RelWithDebInfo
 
 If successful this will build the application into `build/Install/SuperCollider/`
