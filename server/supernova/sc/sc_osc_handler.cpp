@@ -728,7 +728,7 @@ void sc_osc_handler::tcp_connection::handle_message() {
 
 
 void sc_osc_handler::start_tcp_accept(void) {
-    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
+    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_executor().context());
 
     tcp_acceptor_.async_accept(
         new_connection->socket(),
