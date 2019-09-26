@@ -105,26 +105,25 @@ QcApplication::~QcApplication() {
 }
 
 void QcApplication::createMenu() {
-    _mainMenu = QSharedPointer<QMenuBar>(new QMenuBar(0));
+    _mainMenu = QSharedPointer<QMenuBar>::create();
 
 #ifdef Q_OS_MAC
     // macOS registers cmd+q on menu bars by default. Here we register a handler for cmd+q that does nothing
     // and we disable the Quit menu by default
-    QMenu* menu;
-    QAction* action;
-    action = new QAction(tr("Catch CMD+Q on MacOS X"));
+    auto* action = new QAction("");
     action->setMenuRole(QAction::QuitRole);
+    action->setEnabled(false);
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
-    menu = new QMenu(tr("&File"));
+    auto* menu = new QMenu(tr("&File"));
     menu->addAction(action);
     _mainMenu->addMenu(menu);
-    action->setEnabled(false);
 #endif
 }
 
 void QcApplication::onQuit() {
-    printf("[QcApplication::onQuit] CMD+Q was caught by the interpreter. This is weird, it should not happen. \
-    Please file an issue at https://github.com/supercollider/supercollider/issues");
+    qWarning("[QcApplication::onQuit] CMD+Q was caught by the interpreter. "
+    "This is weird, it should not happen. "
+    "Please file an issue at https://github.com/supercollider/supercollider/issues");
 }
 
 bool QcApplication::compareThread() { return gMainVMGlobals->canCallOS; }
