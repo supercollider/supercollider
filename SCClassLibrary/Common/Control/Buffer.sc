@@ -336,10 +336,11 @@ Buffer {
 		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
-			[\b_write, bufnum, path,
+			this.writeMsg(path,
 				headerFormat, sampleFormat, numFrames, startFrame,
-				leaveOpen.binaryValue, completionMessage.value(this)]
+				leaveOpen, completionMessage
 			)
+		)
 	}
 
 	writeMsg { arg path, headerFormat = "aiff", sampleFormat = "int24", numFrames = -1,
