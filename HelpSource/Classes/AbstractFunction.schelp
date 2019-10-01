@@ -121,7 +121,33 @@ a = Pseries(220, 220, inf).cpsmidi; a.asStream.nextN(12); // overtone series as 
 method::midiratio
 method::ratiomidi
 method::ampdb
+Converts amp range (1.0 -> 0.0) to db range (ex. 0dB -> -90dB).
+code::
+(
+Window.closeAll;
+w = Window.new("ampdb");
+w.front;
+
+a = EZSlider(w, Rect(0, 0, 50, 250), "dB", layout: \vert );
+b = EZNumber(w, Rect(30, 100, 150, 20), "amp", \db, layout: \horz);
+
+a.action_({ |v| b.value = v.value.ampdb; });
+)
+::
 method::dbamp
+Converts dB range (ex. 0dB -> -90dB) to amp range (1.0 -> 0.0).
+code::
+(
+Window.closeAll;
+w = Window.new("ampdb");
+w.front;
+
+a = EZSlider(w, Rect(0, 0, 50, 250), "dB", \db, layout: \vert, initVal: -6 );
+b = EZNumber(w, Rect(0, 0, 50, 20));
+
+a.action_({ |v| b.value = v.value.dbamp; });
+)
+::
 method::octcps
 method::cpsoct
 method::log
