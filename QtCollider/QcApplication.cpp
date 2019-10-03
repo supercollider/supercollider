@@ -122,8 +122,8 @@ void QcApplication::createMenu() {
 
 void QcApplication::onQuit() {
     qWarning("[QcApplication::onQuit] CMD+Q was caught by the interpreter. "
-    "This is weird, it should not happen. "
-    "Please file an issue at https://github.com/supercollider/supercollider/issues");
+             "This is weird, it should not happen. "
+             "Please file an issue at https://github.com/supercollider/supercollider/issues");
 }
 
 bool QcApplication::compareThread() { return gMainVMGlobals->canCallOS; }
