@@ -8,6 +8,7 @@ When you schedule a function (as in the Scheduling Events tutorial), the functio
 Routines can be used for data processing, e.g.
 
 code::
+(
 r = Routine({
 	"abcde".yield;
 	"fghij".yield;
@@ -16,6 +17,7 @@ r = Routine({
 	"uvwxy".yield;
 	"z{|}~".yield;
 });
+)
 
 r.next;	// get the next value from the Routine
 6.do({ r.next.postln });
@@ -30,6 +32,7 @@ section::Scheduling routines
 Recall that, when you schedule a function on a clock, numbers returned by the function are treated as time values -- specifically, the amount of time until the function should execute again. The same thing happens with numbers yielded by a routine.
 
 code::
+(
 r = Routine({
 	var delta;
 	loop {
@@ -38,6 +41,7 @@ r = Routine({
 		delta.yield;
 	}
 });
+)
 
 r.next;
 
