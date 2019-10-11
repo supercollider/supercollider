@@ -1,3 +1,5 @@
+// helper functions for SuperCollider server's PortAudio backend
+
 #include "SC_PaUtils.hpp"
 #include <cstring>
 #include <cstdio>
