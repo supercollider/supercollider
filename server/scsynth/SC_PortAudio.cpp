@@ -325,7 +325,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
         }
 
         fprintf(stdout, "\nBooting with:\n");
-        PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+
         if (mDeviceInOut[0] != paNoDevice) {
             // avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
             mInputChannelCount =
@@ -345,26 +345,16 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
         }
 
         PaStreamParameters* inStreamParams_p;
-        PaStreamParameters inStreamParams;
         if (mDeviceInOut[0] != paNoDevice) {
-            inStreamParams.device = mDeviceInOut[0];
-            inStreamParams.channelCount = mInputChannelCount;
-            inStreamParams.sampleFormat = fmt;
-            inStreamParams.suggestedLatency = suggestedLatencyIn;
-            inStreamParams.hostApiSpecificStreamInfo = NULL;
+            auto inStreamParams = MakePaStreamParameters(mDeviceInOut[0], mInputChannelCount, suggestedLatencyIn);
             inStreamParams_p = &inStreamParams;
         } else {
             inStreamParams_p = NULL;
         }
 
         PaStreamParameters* outStreamParams_p;
-        PaStreamParameters outStreamParams;
         if (mDeviceInOut[1] != paNoDevice) {
-            outStreamParams.device = mDeviceInOut[1];
-            outStreamParams.channelCount = mOutputChannelCount;
-            outStreamParams.sampleFormat = fmt;
-            outStreamParams.suggestedLatency = suggestedLatencyOut;
-            outStreamParams.hostApiSpecificStreamInfo = NULL;
+            auto outStreamParams = MakePaStreamParameters(mDeviceInOut[1], mOutputChannelCount, suggestedLatencyOut);
             outStreamParams_p = &outStreamParams;
         } else {
             outStreamParams_p = NULL;
