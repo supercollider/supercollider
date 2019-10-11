@@ -354,7 +354,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
         }
 
         PaStreamParameters* outStreamParams_p;
-        PaStreamParameters outStreamParams; 
+        PaStreamParameters outStreamParams;
         if (mDeviceInOut[1] != paNoDevice) {
             outStreamParams = MakePaStreamParameters(mDeviceInOut[1], mOutputChannelCount, suggestedLatencyOut);
             outStreamParams_p = &outStreamParams;
