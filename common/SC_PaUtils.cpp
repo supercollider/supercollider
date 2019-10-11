@@ -34,36 +34,37 @@ PaDeviceIndex GetPaDeviceFromName(const char* device, IOType ioType) {
 }
 
 PaStreamParameters MakePaStreamParameters(int device, int channelCount, double suggestedLatency) {
-  PaStreamParameters streamParams;
-  PaSampleFormat fmt = paFloat32 | paNonInterleaved;
-  streamParams.device = device;
-  streamParams.channelCount = channelCount;
-  streamParams.sampleFormat = fmt;
-  streamParams.suggestedLatency = suggestedLatency;
-  streamParams.hostApiSpecificStreamInfo = nullptr;
-  return streamParams;
+    PaStreamParameters streamParams;
+    PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+    streamParams.device = device;
+    streamParams.channelCount = channelCount;
+    streamParams.sampleFormat = fmt;
+    streamParams.suggestedLatency = suggestedLatency;
+    streamParams.hostApiSpecificStreamInfo = nullptr;
+    return streamParams;
 }
 
 
 using PaSupportCheckFunc = PaError (*)(PaStreamParameters&, double);
-PaError CheckDeviceSampleRateOrGetDefault(int* device, double sampleRate, int maxChannels, int defaultDevice, const char* deviceType, PaSupportCheckFunc isSupportedFunc) {
-  if (*device != paNoDevice && sampleRate) {
-    // check if device can support requested SR
-    PaStreamParameters parameters = MakePaStreamParameters(*device, maxChannels, 0);
-    PaError err = isSupportedFunc(parameters, sampleRate);
-    if (err != paNoError) {
-      fprintf(stdout, "PortAudio error: %s\nRequested sample rate %f for device %s is not supported\n",
-      Pa_GetErrorText(err), sampleRate, Pa_GetDeviceInfo(*device)->name);
-      return err;
+PaError CheckDeviceSampleRateOrGetDefault(int* device, double sampleRate, int maxChannels, int defaultDevice,
+                                          const char* deviceType, PaSupportCheckFunc isSupportedFunc) {
+    if (*device != paNoDevice && sampleRate) {
+        // check if device can support requested SR
+        PaStreamParameters parameters = MakePaStreamParameters(*device, maxChannels, 0);
+        PaError err = isSupportedFunc(parameters, sampleRate);
+        if (err != paNoError) {
+            fprintf(stdout, "PortAudio error: %s\nRequested sample rate %f for device %s is not supported\n",
+                    Pa_GetErrorText(err), sampleRate, Pa_GetDeviceInfo(*device)->name);
+            return err;
+        }
     }
-  }
-  // in case we still don't have a proper device, use the default device
-  if (*device == paNoDevice) {
-    *device = defaultDevice;
-    if (*device != paNoDevice)
-    fprintf(stdout, "Selecting default system %s device\n", deviceType);
-  }
-  return paNoError;
+    // in case we still don't have a proper device, use the default device
+    if (*device == paNoDevice) {
+        *device = defaultDevice;
+        if (*device != paNoDevice)
+            fprintf(stdout, "Selecting default system %s device\n", deviceType);
+    }
+    return paNoError;
 }
 
 void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, IOType matchingDeviceType) {
