@@ -62,6 +62,7 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp
 )
 
 if(APPLE)
