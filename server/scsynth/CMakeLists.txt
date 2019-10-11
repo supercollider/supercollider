@@ -62,7 +62,6 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp
 )
 
 if(APPLE)
@@ -100,6 +99,7 @@ if (AUDIOAPI STREQUAL jack)
 	include_directories(${JACK_INCLUDE_DIRS})
 elseif (AUDIOAPI STREQUAL portaudio)
 	list(APPEND scsynth_sources SC_PortAudio.cpp)
+	list(APPEND scsynth_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
 endif()
