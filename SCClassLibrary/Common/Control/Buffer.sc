@@ -33,11 +33,13 @@ Buffer {
 	*allocConsecutive { arg numBufs = 1, server, numFrames, numChannels = 1, completionMessage, bufnum;
 		var	bufBase;
 		bufBase = bufnum ?? { server.nextBufferNumber(numBufs) };
+		numFrames = numFrames.asInteger;
+		numChannels = numChannels.asInteger;
 		^Array.fill(numBufs, { |i|
 			// note, cannot use alloc or allocMsg here
 			// because those methods don't pass a buffer index for completion message
-			var newBuf = Buffer.new(server, numFrames.asInteger, numChannels.asInteger, i + bufBase);
-			server.sendMsg(\b_alloc, i + bufBase, numFrames.asInteger, numChannels.asInteger,
+			var newBuf = Buffer.new(server, numFrames, numChannels, i + bufBase);
+			server.sendMsg(\b_alloc, i + bufBase, numFrames, numChannels,
 				completionMessage.value(newBuf, i));
 			newBuf.cache
 		})
