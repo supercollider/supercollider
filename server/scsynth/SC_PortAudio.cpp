@@ -294,7 +294,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
 
     fprintf(stdout, "\n");
     paerror = TryGetDefaultPaDevices(&mDeviceInOut[0], &mDeviceInOut[1], mWorld->mNumInputs, mWorld->mNumOutputs,
-                                   mPreferredSampleRate);
+                                     mPreferredSampleRate);
 
     // if we got an error from TryGetDefaultPaDevices, stop here
     if (paerror != paNoError) {
