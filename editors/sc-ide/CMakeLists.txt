@@ -376,8 +376,7 @@ add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp )
 #   "ScIDE::WebSocketTransport::~WebSocketTransport()", referenced from:
 #       vtable for ScIDE::WebSocketTransport in liblibscide.a(moc_WebSocketTransport.o)
 # ld: symbol(s) not found for architecture x86_64
-# clang: error: linker command failed with exit code 1 (use
-#  -v to see invocation)
+# clang: error: linker command failed with exit code 1 (use -v to see invocation)
 #
 
 if(APPLE)
