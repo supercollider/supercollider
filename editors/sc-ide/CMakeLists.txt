@@ -429,7 +429,7 @@ endif()
 
 if(SC_USE_QTWEBENGINE)
     message(STATUS "IDE: Building with QtWebEngine")
-    target_compile_definitions(SuperCollider PUBLIC SC_USE_QTWEBENGINE)
+    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE)
 endif()
 
 # Installation
