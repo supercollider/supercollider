@@ -19,28 +19,13 @@
 */
 
 #include "main.hpp"
-#include "settings/manager.hpp"
 #include "session_manager.hpp"
 #include "util/standard_dirs.hpp"
 #include "../widgets/main_window.hpp"
-#include "../widgets/lookup_dialog.hpp"
-#include "../widgets/code_editor/highlighter.hpp"
-#include "../widgets/style/style.hpp"
-#include "../../../QtCollider/hacks/hacks_mac.hpp"
-#include "../primitives/localsocket_utils.hpp"
 
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/parser.h>
-
-#include <QAction>
 #include <QApplication>
-#include <QBuffer>
-#include <QDataStream>
-#include <QDir>
-#include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
-#include <QDebug>
 #include <QStyleFactory>
 
 #include "util/HelpBrowserWebSocketServices.hpp"
