@@ -298,12 +298,12 @@ endif(WIN32)
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_library( libscide STATIC scide_final.cpp ${ide_rc_sources} ${RES_FILES})
+  add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
 else()
-  add_library( libscide STATIC ${ide_sources} ${ide_rc_sources} ${RES_FILES})
+  add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
 
-add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp  ${AdditionalBundleSources})
+add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources})
 
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
