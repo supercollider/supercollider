@@ -60,8 +60,10 @@ int main(int argc, char* argv[]) {
         return 0;
 
     // Set up translations
+    const QLocale locale;
+
     QTranslator qtTranslator;
-    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+    qtTranslator.load(locale, "qt", "_", QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qtTranslator);
 
     QString ideTranslationPath = standardDirectory(ScResourceDir) + "/translations";
@@ -76,9 +78,8 @@ int main(int argc, char* argv[]) {
         qWarning("scide warning: Failed to load fallback translation file.");
 
     // Load translator for locale
-    QString ideTranslationFile = "scide_" + QLocale::system().name();
     QTranslator scideTranslator;
-    scideTranslator.load(ideTranslationFile, ideTranslationPath);
+    scideTranslator.load(locale, "scide", "_", ideTranslationPath);
     app.installTranslator(&scideTranslator);
 
     // Force Fusion style to appear consistently on all platforms.
