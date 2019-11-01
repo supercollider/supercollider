@@ -303,6 +303,26 @@ else()
   add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
 
+# Enable targets that depend on libscide to find its headers and their contents.
+# The existing code uses a mix of paths, such as:
+#  "settings/manager.hpp"
+#  "util/standard_dirs.hpp"
+#  "../primitives/localsocket_utils.hpp"
+# So we need add all the sub-directories to the search path:
+target_include_directories(libscide PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/settings
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/util
+    ${CMAKE_CURRENT_SOURCE_DIR}/forms
+    ${CMAKE_CURRENT_SOURCE_DIR}/primitives
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/code_editor
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/settings
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/style
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
+)
+
 add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources})
 
 if(APPLE)
