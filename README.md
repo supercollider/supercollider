@@ -52,7 +52,7 @@ Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to 
 [sc-users archives]: https://www.listarc.bham.ac.uk/lists/sc-users/
 [sc-dev archives]: https://www.listarc.bham.ac.uk/lists/sc-dev/
 [Discourse]: https://scsynth.org/
-[Slack]: https://join.slack.com/t/scsynth/shared_invite/enQtMzk3OTY3MzE0MTAyLWY1ZGE1MTJjYmI5NTRkZjFmNjZmNmYxOWI0NDZkNjdkMzdkNjgxNTJhZGVlOTEwYjdjMDY5OWM0ZTA4NWFiOGY
+[Slack]: https://join.slack.com/t/scsynth/shared_invite/enQtMzk3OTY3MzE0MTAyLTFmMTliMmU0NjIwYzgyZGY1MjgxNGI2MGUxMTNlMWVhZWQzZjFmOTJhNzg2NDdmNzZmM2JiYTkyMjRiNDBiOTk
 
 Contribute
 ----------
