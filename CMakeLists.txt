@@ -253,8 +253,8 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
-  set(Boost_USE_MULTITHREADED      ON)
-  find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
+    set(Boost_USE_MULTITHREADED ON)
+    find_package(Boost 1.66.0 COMPONENTS thread system filesystem program_options regex test_exec_monitor)
 endif()
 
 if (Boost_FOUND)
