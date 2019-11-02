@@ -297,11 +297,13 @@
 				};
 
 				{ | out |
-					var e = EnvGate.new * Control.names(["wet"++(index ? 0)]).kr(1.0);
+					var env, ctl = Control.names(["wet"++(index ? 0)]).kr(1.0);
 					if(proxy.rate === 'audio') {
-						XOut.ar(out, e, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
+						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\sin);
+						XOut.ar(out, env, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
 					} {
-						XOut.kr(out, e, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))				};
+						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\lin);
+						XOut.kr(out, env, SynthDef.wrap(func, nil, [In.kr(out, proxy.numChannels)]))				};
 				}.buildForProxy( proxy, channelOffset, index )
 
 			},
@@ -355,26 +357,33 @@
 				};
 
 				{ | out |
-					var in;
-					var egate = EnvGate.new;
+					var in, env;
 					var wetamp = Control.names(["wet"++(index ? 0)]).kr(1.0);
 					var dryamp = 1 - wetamp;
+					var sig = { |in| SynthDef.wrap(func, nil, [in * wetamp]) + (dryamp * in) };
+
 					if(proxy.rate === 'audio') {
 						in = In.ar(out, proxy.numChannels);
-						XOut.ar(out, egate, SynthDef.wrap(func, nil,
-							[in * wetamp]) + (dryamp * in))
+						env = wetamp * EnvGate(i_level: 0, doneAction:2, curve:\sin);
+						XOut.ar(out, env, sig.(in))
 					} {
 						in = In.kr(out, proxy.numChannels);
-						XOut.kr(out, egate, SynthDef.wrap(func, nil,
-							[in * wetamp]) + (dryamp * in))
+						env = wetamp * EnvGate(i_level: 0, doneAction:2, curve:\lin);
+						XOut.kr(out, env, sig.(in))
 					};
 				}.buildForProxy( proxy, channelOffset, index )
 			},
 
 			mix: #{ | func, proxy, channelOffset = 0, index |
 
-				{ var e = EnvGate.new * Control.names(["mix"++(index ? 0)]).kr(1.0);
-					e * SynthDef.wrap(func);
+				{
+					var ctl = Control.names(["mix" ++ (index ? 0)]).kr(1.0);
+					var sig = SynthDef.wrap(func);
+					var curve = if(sig.rate === \audio) { \sin } { \lin };
+					var env = EnvGate(i_level: 0, doneAction:2, curve:curve);
+
+					ctl * sig * env
+
 				}.buildForProxy( proxy, channelOffset, index )
 			};
 
