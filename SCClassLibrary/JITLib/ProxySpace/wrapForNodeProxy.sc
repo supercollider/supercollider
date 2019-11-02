@@ -296,7 +296,6 @@
 				};
 
 				{ | out |
-
 					var env, ctl = Control.names(["wet"++(index ? 0)]).kr(1.0);
 					if(proxy.rate === 'audio') {
 						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\sin);
