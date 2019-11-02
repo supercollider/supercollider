@@ -343,26 +343,26 @@ target_link_libraries( libscide PUBLIC boost_system_lib boost_filesystem_lib)
 include_directories(${boost_include_dirs})
 
 if(APPLE)
-    target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    target_link_libraries( ${ide_name} "-framework Cocoa" )
+    target_link_libraries( libscide PUBLIC "-framework CoreServices -framework Foundation")
+    target_link_libraries( libscide PUBLIC "-framework Cocoa" )
 elseif(WIN32)
-    target_link_libraries( SuperCollider wsock32 )
+    target_link_libraries( libscide PUBLIC wsock32 )
     # The following prevents a Windows console from showing up
     # when the executable is started:
     set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    target_link_libraries(SuperCollider rt)
+    target_link_libraries(libscide PUBLIC rt)
 
     find_package(X11 REQUIRED)
 
     include_directories(${X11_INCLUDE_DIR})
-    target_link_libraries(SuperCollider ${X11_X11_LIB})
+    target_link_libraries(libscide PUBLIC ${X11_X11_LIB})
 endif()
 
 if(PTHREADS_FOUND)
-    target_link_libraries(SuperCollider ${PTHREADS_LIBRARIES})
+    target_link_libraries(libscide PUBLIC ${PTHREADS_LIBRARIES})
 endif()
 
 if(LTO)
