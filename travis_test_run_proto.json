@@ -93,12 +93,6 @@
     {
       "suite": "TestMixedBundleTester", "test": "test_defNames",
       "skip": true, "skipReason": "Unidentified UnitTest bug"
-    },
-    {
-      "test": "test_prepare", 
-      "suite": "TestOSCBundle", 
-      "skipReason": "No server support on travis", 
-      "skip": true
     }
   ]
 }
