@@ -325,6 +325,8 @@ target_include_directories(libscide PUBLIC
 
 add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources})
 
+set_target_properties(libscide PROPERTIES PREFIX "")
+
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
 else()
