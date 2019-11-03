@@ -18,6 +18,11 @@
 
 #include <iostream>
 
+// AppleClang workaround
+#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/bind.hpp>
