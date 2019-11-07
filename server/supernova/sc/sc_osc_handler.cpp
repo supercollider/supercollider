@@ -861,6 +861,8 @@ namespace {
 
 typedef osc::ReceivedMessage ReceivedMessage;
 
+int addr_pattern_size(ReceivedMessage const& msg) { return msg.TypeTags() - 1 - msg.AddressPattern(); }
+
 int first_arg_as_int(ReceivedMessage const& message) {
     osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
     osc::int32 val;
@@ -2624,7 +2626,7 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 
 
 template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
-    int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
+    int skip_bytes = addr_pattern_size(msg); // skip address pattern
     movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(cmd)]() mutable {
@@ -2905,7 +2907,7 @@ void handle_p_new(ReceivedMessage const& msg) {
 }
 
 void handle_u_cmd(ReceivedMessage const& msg, int size) {
-    int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
+    int skip_bytes = addr_pattern_size(msg); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     int node_id = args.geti();
@@ -2924,7 +2926,7 @@ void handle_u_cmd(ReceivedMessage const& msg, int size) {
 }
 
 void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr endpoint) {
-    int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
+    int skip_bytes = addr_pattern_size(msg); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     const char* cmd = args.gets();
