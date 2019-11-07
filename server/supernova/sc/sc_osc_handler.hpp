@@ -330,11 +330,11 @@ public:
 
     void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
-                                 void* completionMsgData);
+                                 void* completionMsgData) const;
 
-    void send_message_from_RT(World* world, FifoMsg& msg);
+    void send_message_from_RT(World* world, FifoMsg& msg) const;
 
-    void send_message_to_RT(World* world, FifoMsg& msg);
+    void send_message_to_RT(World* world, FifoMsg& msg) const;
 
     bool quit_received = false;
 

@@ -3635,7 +3635,7 @@ void handle_asynchronous_command(World* world, const char* cmdName, void* cmdDat
 
 void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData,
                                              AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4,
-                                             AsyncFreeFn cleanup, int completionMsgSize, void* completionMsgData) {
+                                             AsyncFreeFn cleanup, int completionMsgSize, void* completionMsgData) const {
     completion_message msg(completionMsgSize, completionMsgData);
     endpoint_ptr shared_endpoint;
 
@@ -3664,7 +3664,7 @@ template <bool realtime> void handle_message_from_RT(World* world, FifoMsg& msg)
     });
 }
 
-void sc_osc_handler::send_message_from_RT(World* world, FifoMsg& msg) {
+void sc_osc_handler::send_message_from_RT(World* world, FifoMsg& msg) const {
     if (world->mRealTime)
         handle_message_from_RT<true>(world, msg);
     else
@@ -3680,7 +3680,7 @@ template <bool realtime> void handle_message_to_RT(World* world, FifoMsg& msg) {
     });
 }
 
-void sc_osc_handler::send_message_to_RT(World* world, FifoMsg& msg) {
+void sc_osc_handler::send_message_to_RT(World* world, FifoMsg& msg) const {
     if (world->mRealTime)
         handle_message_to_RT<true>(world, msg);
     else
