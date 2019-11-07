@@ -3638,7 +3638,8 @@ void handle_asynchronous_command(World* world, const char* cmdName, void* cmdDat
 
 void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData,
                                              AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4,
-                                             AsyncFreeFn cleanup, int completionMsgSize, void* completionMsgData) const {
+                                             AsyncFreeFn cleanup, int completionMsgSize,
+                                             void* completionMsgData) const {
     completion_message msg(completionMsgSize, completionMsgData);
     endpoint_ptr shared_endpoint;
 
