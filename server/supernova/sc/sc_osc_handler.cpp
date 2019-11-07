@@ -3653,38 +3653,38 @@ void sc_osc_handler::do_asynchronous_command(World* world, void* replyAddr, cons
 }
 
 // called from RT thread, perform in NRT thread, free in RT thread
-template <bool realtime> void handle_message_from_RT(World* world, FifoMsg& msg) {
+template <bool realtime> void handle_message_from_RT(FifoMsg& msg) {
     // see handle_asynchronous_command()
     spin_lock::scoped_lock lock(system_callback_allocator_lock);
 
-    cmd_dispatcher<realtime>::fire_system_callback([=]() mutable {
+    cmd_dispatcher<realtime>::fire_system_callback([msg]() mutable {
         msg.Perform();
 
-        cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable { msg.Free(); });
+        cmd_dispatcher<realtime>::fire_rt_callback([msg]() mutable { msg.Free(); });
     });
 }
 
 void sc_osc_handler::send_message_from_RT(World* world, FifoMsg& msg) const {
     if (world->mRealTime)
-        handle_message_from_RT<true>(world, msg);
+        handle_message_from_RT<true>(msg);
     else
-        handle_message_from_RT<false>(world, msg);
+        handle_message_from_RT<false>(msg);
 }
 
 // called from NRT thread, perform in RT thread, free in NRT thread
-template <bool realtime> void handle_message_to_RT(World* world, FifoMsg& msg) {
-    cmd_dispatcher<realtime>::fire_rt_callback([=]() mutable {
+template <bool realtime> void handle_message_to_RT(FifoMsg& msg) {
+    cmd_dispatcher<realtime>::fire_rt_callback([msg]() mutable {
         msg.Perform();
 
-        cmd_dispatcher<realtime>::fire_system_callback([=]() mutable { msg.Free(); });
+        cmd_dispatcher<realtime>::fire_system_callback([msg]() mutable { msg.Free(); });
     });
 }
 
 void sc_osc_handler::send_message_to_RT(World* world, FifoMsg& msg) const {
     if (world->mRealTime)
-        handle_message_to_RT<true>(world, msg);
+        handle_message_to_RT<true>(msg);
     else
-        handle_message_to_RT<false>(world, msg);
+        handle_message_to_RT<false>(msg);
 }
 
 } /* namespace detail */
