@@ -2624,7 +2624,8 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 
 
 template <bool realtime>
-void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint, int skip_bytes) {
+void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
+    int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
     movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     cmd_dispatcher<realtime>::fire_system_callback([=, message = std::move(cmd)]() mutable {
@@ -2904,7 +2905,8 @@ void handle_p_new(ReceivedMessage const& msg) {
     }
 }
 
-void handle_u_cmd(ReceivedMessage const& msg, int size, int skip_bytes) {
+void handle_u_cmd(ReceivedMessage const& msg, int size) {
+    int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     int node_id = args.geti();
@@ -2922,7 +2924,8 @@ void handle_u_cmd(ReceivedMessage const& msg, int size, int skip_bytes) {
     synth->apply_unit_cmd(cmd_name, ugen_index, &args);
 }
 
-void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr endpoint, int skip_bytes) {
+void handle_cmd(ReceivedMessage const& msg, int size, endpoint_ptr endpoint) {
+    int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
     sc_msg_iter args(size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
     const char* cmd = args.gets();
@@ -3074,7 +3077,7 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         break;
 
     case cmd_u_cmd:
-        handle_u_cmd(message, msg_size, sizeof(int32));
+        handle_u_cmd(message, msg_size);
         break;
 
     case cmd_b_free:
@@ -3130,7 +3133,7 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         break;
 
     case cmd_b_gen:
-        handle_b_gen<realtime>(message, msg_size, endpoint, sizeof(int32));
+        handle_b_gen<realtime>(message, msg_size, endpoint);
         break;
 
     case cmd_b_close:
@@ -3178,7 +3181,7 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const& message, 
         break;
 
     case cmd_cmd:
-        handle_cmd(message, msg_size, endpoint, sizeof(int32));
+        handle_cmd(message, msg_size, endpoint);
         break;
 
     case cmd_version:
@@ -3380,7 +3383,7 @@ void dispatch_buffer_commands(const char* address, ReceivedMessage const& messag
     }
 
     if (strcmp(address + 3, "gen") == 0) {
-        handle_b_gen<realtime>(message, msg_size, endpoint, 8); // skip OSC address string
+        handle_b_gen<realtime>(message, msg_size, endpoint);
     }
 
     if (strcmp(address + 3, "close") == 0) {
@@ -3522,7 +3525,7 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
     }
 
     if (strcmp(address + 1, "u_cmd") == 0) {
-        handle_u_cmd(message, msg_size, 8); // skip OSC address string
+        handle_u_cmd(message, msg_size);
         return;
     }
 
@@ -3562,7 +3565,7 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const& message, 
     }
 
     if (strcmp(address + 1, "cmd") == 0) {
-        handle_cmd(message, msg_size, endpoint, 8); // skip OSC address string
+        handle_cmd(message, msg_size, endpoint);
         return;
     }
 
