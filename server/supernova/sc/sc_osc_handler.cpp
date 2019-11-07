@@ -2623,8 +2623,7 @@ template <bool realtime> void handle_b_getn(ReceivedMessage const& msg, endpoint
 }
 
 
-template <bool realtime>
-void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
+template <bool realtime> void handle_b_gen(ReceivedMessage const& msg, size_t msg_size, endpoint_ptr endpoint) {
     int skip_bytes = msg.TypeTags() - 1 - msg.AddressPattern(); // skip address pattern
     movable_array<char> cmd(msg_size - skip_bytes, msg.AddressPattern() + skip_bytes);
 
