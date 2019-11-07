@@ -3383,6 +3383,7 @@ void dispatch_buffer_commands(const char* address, ReceivedMessage const& messag
 
     if (strcmp(address + 3, "gen") == 0) {
         handle_b_gen<realtime>(message, msg_size, endpoint);
+        return;
     }
 
     if (strcmp(address + 3, "close") == 0) {
