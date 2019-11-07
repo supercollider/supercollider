@@ -38,7 +38,7 @@ namespace nova {
 
 std::unique_ptr<sc_ugen_factory> sc_factory;
 
-Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, int index, World* world,
+Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
                              linear_allocator& allocator) {
     const int buffer_length = world->mBufLength;
 
@@ -66,8 +66,8 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     unit->mWorld = world;
 
     /* initialize members from synth */
-    unit->mParent = static_cast<Graph*>(s);
-    unit->mParentIndex = index;
+    unit->mParent = static_cast<Graph*>(parent);
+    unit->mParentIndex = parentIndex;
     if (unit_spec.rate == 2)
         unit->mRate = &world->mFullRate;
     else
@@ -75,7 +75,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
 
     unit->mBufLength = unit->mRate->mBufLength;
 
-    float* buffer_base = s->unit_buffers;
+    float* buffer_base = parent->unit_buffers;
 
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
@@ -107,7 +107,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
         if (source == -1)
             unit->mInput[i] = &unit->mParent->mWire[index];
         else {
-            Unit* prev = s->units[source];
+            Unit* prev = parent->units[source];
             unit->mInput[i] = prev->mOutput[index];
         }
 
