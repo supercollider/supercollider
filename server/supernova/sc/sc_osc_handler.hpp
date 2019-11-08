@@ -332,9 +332,9 @@ public:
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
                                  void* completionMsgData) const;
 
-    void send_message_from_RT(World* world, FifoMsg& msg) const;
+    void send_message_from_RT(const World* world, FifoMsg& msg) const;
 
-    void send_message_to_RT(World* world, FifoMsg& msg) const;
+    void send_message_to_RT(const World* world, FifoMsg& msg) const;
 
     bool quit_received = false;
 

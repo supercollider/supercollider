@@ -3670,7 +3670,7 @@ template <bool realtime> void handle_message_from_RT(FifoMsg& msg) {
     });
 }
 
-void sc_osc_handler::send_message_from_RT(World* world, FifoMsg& msg) const {
+void sc_osc_handler::send_message_from_RT(const World* world, FifoMsg& msg) const {
     if (world->mRealTime)
         handle_message_from_RT<true>(msg);
     else
@@ -3686,7 +3686,7 @@ template <bool realtime> void handle_message_to_RT(FifoMsg& msg) {
     });
 }
 
-void sc_osc_handler::send_message_to_RT(World* world, FifoMsg& msg) const {
+void sc_osc_handler::send_message_to_RT(const World* world, FifoMsg& msg) const {
     if (world->mRealTime)
         handle_message_to_RT<true>(msg);
     else
