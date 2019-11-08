@@ -563,6 +563,16 @@ int do_asynchronous_command(
     return 0;
 }
 
+bool send_message_from_RT(World* world, struct FifoMsg& msg) {
+    nova::instance->send_message_from_RT(world, msg);
+    return true;
+}
+
+bool send_message_to_RT(World* world, struct FifoMsg& msg) {
+    nova::instance->send_message_to_RT(world, msg);
+    return true;
+}
+
 } /* extern "C" */
 
 namespace nova {
@@ -609,6 +619,8 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.fNodeRun = &node_set_run;
     sc_interface.fPrint = &print;
     sc_interface.fDoneAction = &done_action;
+    sc_interface.fSendMsgFromRT = &send_message_from_RT;
+    sc_interface.fSendMsgToRT = &send_message_to_RT;
 
     /* sndfile functions */
 #ifdef NO_LIBSNDFILE
