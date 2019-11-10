@@ -453,6 +453,9 @@ def is_wanted_diff(diff_text):
     # Extract file name
     match = DIFF_FILENAME_REGEX.search(diff_text)
     if not match:
+        if '+++ /dev/null' in diff_text:
+            # The file was deleted, so ignore it:
+            return False;
         raise ValueError("Could not extract filename from diff")
     return is_wanted_clang_formattable_file(match.group(1))
 
