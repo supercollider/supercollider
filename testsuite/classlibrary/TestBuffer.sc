@@ -285,45 +285,31 @@ TestBuffer : UnitTest {
 	}
 
 	test_bufferMsgMethodsConvertFloatToInt {
-		// note, no messages will be sent
+		// note, no messages will be sent and allocators aren't touched
 		// so 'Server' is irrelevant
 		var buf = Buffer(Server.default, 2048.0, 1.0, 0),
 		copyBuf = Buffer(Server.default, 2048.0, 1.0, 1),
-		msg,
-		failures = Array.new;
-
-		[
-			// [method: [args], indices that should be int]
-			[allocMsg: nil, [2, 3]],
-			[allocReadMsg: ["a", 0.0, 100.0], [3, 4]],
-			[allocReadChannelMsg: ["a", 0.0, 100.0, [0]], [3, 4]],
-			[readMsg: ["a", 0.0, -1.0, 0.0, 0], [3, 4, 5]],
-			[readChannelMsg: ["a", 0.0, -1.0, 0.0, 0, [0]], [3, 4, 5]],
-			[cueSoundFileMsg: ["a", 0.0], [3, 4]],
-			[writeMsg: ["a", "aiff", "int16", -1.0, 0.0, 0], [5, 6]],
-			[setMsg: [0.0, 1], [2]],
-			[setnMsg: [0.0, [1, 2]], [2]],
-			[getMsg: [0.0], [2]],
-			[getnMsg: [0.0, 10.0], [2, 3]],
-			[fillMsg: [0.0, 10.0, 1.0], [2, 3]],
-			[copyMsg: [copyBuf, 0.0, 0.0, 10.0], [3, 5, 6]]
-		].do { |row|
-			try {
-				msg = buf.performList(row[0], row[1]);
-				if(row[2].any { |index| msg[index].isInteger.not }) {
-					failures = failures.add(row[0]);
-					"Buffer '%' expected integers at indices %, produced %\n".postf(
-						row[0], row[2], msg[row[2]].asCompileString
-					);
-				};
-			} { |error|
-				failures = failures.add(row[0]);
-				"Buffer '%' method threw error %\n".postf(
-					row[0], error.errorString
-				);
-			};
+		checkMessage = { |msg, selector, indicesOfIntegers|
+			this.assert(
+				indicesOfIntegers.every { |index| msg[index].isInteger },
+				"Buffer '%' method should convert floats to int at positions %, actual message = %"
+				.format(selector, indicesOfIntegers, msg.asCompileString)
+			);
 		};
-		this.assert(failures.isEmpty, "Buffer *Msg methods should convert specific arguments to integer");
+
+		checkMessage.(buf.allocMsg, \allocMsg, [2, 3]);
+		checkMessage.(buf.allocReadMsg("a", 0.0, 100.0), \allocReadMsg, [3, 4]);
+		checkMessage.(buf.allocReadChannelMsg("a", 0.0, 100.0, [0]), \allocReadChannelMsg, [3, 4]);
+		checkMessage.(buf.readMsg("a", 0.0, -1.0, 0.0, 0), \readMsg, [3, 4, 5]);
+		checkMessage.(buf.readChannelMsg("a", 0.0, -1.0, 0.0, 0, [0]), \readChannelMsg, [3, 4, 5]);
+		checkMessage.(buf.cueSoundFileMsg("a", 0.0), \cueSoundFileMsg, [3, 4]);
+		checkMessage.(buf.writeMsg("a", "aiff", "int16", -1.0, 0.0, 0), \writeMsg, [5, 6]);
+		checkMessage.(buf.setMsg(0.0, 1), \setMsg, [2]);
+		checkMessage.(buf.setnMsg(0.0, [1, 2]), \setnMsg, [2]);
+		checkMessage.(buf.getMsg(0.0), \getMsg, [2]);
+		checkMessage.(buf.getnMsg(0.0, 10.0), \getnMsg, [2, 3]);
+		checkMessage.(buf.fillMsg(0.0, 10.0, 1.0), \fillMsg, [2, 3]);
+		checkMessage.(buf.copyMsg(copyBuf, 0.0, 0.0, 10.0), \copyMsg, [3, 5, 6]);
 	}
 
 }
