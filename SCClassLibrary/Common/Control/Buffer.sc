@@ -52,13 +52,13 @@ Buffer {
 	allocRead { arg argpath, startFrame = 0, numFrames = -1, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadMsg( argpath, startFrame.asInteger, numFrames, completionMessage))
+		server.listSendMsg(this.allocReadMsg( argpath, startFrame, numFrames, completionMessage))
 	}
 
 	allocReadChannel { arg argpath, startFrame = 0, numFrames = -1, channels, completionMessage;
 		path = argpath;
 		this.startFrame = startFrame;
-		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame.asInteger, numFrames, channels,
+		server.listSendMsg(this.allocReadChannelMsg( argpath, startFrame, numFrames, channels,
 			completionMessage))
 	}
 
