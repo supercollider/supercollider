@@ -54,7 +54,6 @@ public:
 
     Document* document() { return mDoc; }
     QTextDocument* textDocument() { return QPlainTextEdit::document(); }
-    void setDocument(Document*);
     bool showWhitespace();
     bool showLinenumber();
     bool find(const QRegExp& expr, QTextDocument::FindFlags options = 0);
