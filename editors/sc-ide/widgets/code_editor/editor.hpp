@@ -41,6 +41,7 @@ class GenericCodeEditor : public QPlainTextEdit {
 
 public:
     GenericCodeEditor(Document*, QWidget* parent = NULL);
+    ~GenericCodeEditor();
 
     Document* document() { return mDoc; }
     QTextDocument* textDocument() { return QPlainTextEdit::document(); }
