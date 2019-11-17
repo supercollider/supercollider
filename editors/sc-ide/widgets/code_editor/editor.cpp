@@ -105,6 +105,7 @@ GenericCodeEditor::GenericCodeEditor(Document* doc, QWidget* parent):
 }
 
 GenericCodeEditor::~GenericCodeEditor() {
+    // Prevent a dangling pointer.
     if (mDoc->lastActiveEditor() == this) {
         mDoc->setLastActiveEditor(nullptr);
     }
