@@ -483,7 +483,7 @@ def do_lint(clang_format, clang_format_diff, commit):
     diff_text = prepare_diff_for_lint_format(clang_format, commit)
     lint_out = callo_with_input(['python', clang_format_diff, '-p1', '-binary', clang_format], diff_text)
     print(lint_out, end='')
-    if lint_out != '\n':
+    if lint_out != '\n' and lint_out != '':
         sys.exit(1)
 
 def do_format(clang_format, clang_format_diff, commit):
