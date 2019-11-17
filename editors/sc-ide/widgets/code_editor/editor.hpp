@@ -130,7 +130,9 @@ protected:
     QWidget* mOverlayWidget;
     OverlayAnimator* mOverlayAnimator;
 
-    Document* mDoc;
+    // If this "const" is removed in the future, make sure to handle mDoc->lastActiveEditor()
+    // correctly (see source of dtor method for this class).
+    Document* const mDoc;
 
     bool mHighlightCurrentLine;
     bool mEditorBoxIsActive;
