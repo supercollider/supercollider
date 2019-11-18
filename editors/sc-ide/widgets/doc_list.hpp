@@ -24,7 +24,6 @@
 #include "../core/doc_manager.hpp"
 
 #include <QListWidget>
-#include <QSignalMapper>
 
 namespace ScIDE {
 
@@ -52,7 +51,7 @@ private Q_SLOTS:
     void onOpen(Document*, int, int);
     void onClose(Document*);
     void onSaved(Document*);
-    void onModificationChanged(QObject*);
+    void onModificationChanged(Document*);
     void onItemClicked(QListWidgetItem*);
 
 protected:
@@ -73,7 +72,6 @@ private:
     Item* addItemFor(Document*);
     Item* itemFor(Document*);
     Item* itemFor(QListWidgetItem*);
-    QSignalMapper mModificationMapper;
     QIcon mDocModifiedIcon;
     QList<Document*> dockletOrder;
 };
