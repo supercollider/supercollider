@@ -164,7 +164,6 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     connect(main->sessionManager(), SIGNAL(switchSessionRequest(Session*)), this, SLOT(switchSession(Session*)));
     connect(main->sessionManager(), SIGNAL(currentSessionNameChanged()), this, SLOT(updateWindowTitle()));
     // A system for easy evaluation of pre-defined code:
-    connect(&mCodeEvalMapper, SIGNAL(mapped(QString)), this, SIGNAL(evaluateCode(QString)));
     connect(this, SIGNAL(evaluateCode(QString, bool)), main->scProcess(), SLOT(evaluateCode(QString, bool)));
     // Interpreter: post output
     connect(main->scProcess(), SIGNAL(scPost(QString)), mPostDocklet->mPostWindow, SLOT(post(QString)));
