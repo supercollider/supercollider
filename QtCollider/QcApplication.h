@@ -60,6 +60,7 @@ public:
 
 public Q_SLOTS:
     void interpret(const QString& code, bool printResult = true);
+    void onQuit();
 
 protected:
     virtual bool event(QEvent*);
@@ -67,6 +68,7 @@ protected:
 
 private:
     QSharedPointer<QMenuBar> _mainMenu;
+    void createMenu();
 
     QtCollider::EventProcessor _eventProc;
 

@@ -118,7 +118,8 @@ except ImportError:  # Forced testing
 # Constants
 #
 
-CLANG_FORMAT_ACCEPTED_VERSION = "8.0.0"
+CLANG_FORMAT_ACCEPTED_VERSION_REGEX = re.compile("8\\.\\d+\\.\\d+")
+CLANG_FORMAT_ACCEPTED_VERSION_STRING = "8.y.z"
 
 # all the extensions we format with clang-format in SC (no JS!)
 CLANG_FORMAT_FILES_REGEX = re.compile('\\.(cpp|hpp|h|c|m|mm)$')
@@ -235,13 +236,13 @@ class ClangFormat(object):
     def _validate_version(self):
         cf_version = callo([self.cf_cmd, "--version"])
 
-        if CLANG_FORMAT_ACCEPTED_VERSION in cf_version:
+        if CLANG_FORMAT_ACCEPTED_VERSION_REGEX.search(cf_version):
             return
 
         # TODO add instructions to check docs when docs are written
         raise ValueError("clang-format found, but incorrect version at " +
-                self.cf_cmd + " with version: " + cf_version + "\nAccepted version: " +
-                CLANG_FORMAT_ACCEPTED_VERSION)
+                self.cf_cmd + " with version: " + cf_version + "\nAccepted versions: " +
+                CLANG_FORMAT_ACCEPTED_VERSION_STRING)
         sys.exit(5)
 
     def lint(self, file_name, print_diff):
@@ -482,7 +483,7 @@ def do_lint(clang_format, clang_format_diff, commit):
     diff_text = prepare_diff_for_lint_format(clang_format, commit)
     lint_out = callo_with_input(['python', clang_format_diff, '-p1', '-binary', clang_format], diff_text)
     print(lint_out, end='')
-    if lint_out != '\n':
+    if lint_out != '\n' and lint_out != '':
         sys.exit(1)
 
 def do_format(clang_format, clang_format_diff, commit):
