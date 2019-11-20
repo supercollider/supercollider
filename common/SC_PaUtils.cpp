@@ -35,57 +35,6 @@ PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput) {
     return paNoDevice;
 }
 
-PaStreamParameters MakePaStreamParameters(int device, int channelCount, double suggestedLatency) {
-    PaStreamParameters streamParams;
-    PaSampleFormat fmt = paFloat32 | paNonInterleaved;
-    streamParams.device = device;
-    streamParams.channelCount = channelCount;
-    streamParams.sampleFormat = fmt;
-    streamParams.suggestedLatency = suggestedLatency;
-    streamParams.hostApiSpecificStreamInfo = nullptr;
-    return streamParams;
-}
-
-
-using PaSupportCheckFunc = PaError (*)(PaStreamParameters&, double);
-PaError CheckDeviceSampleRateOrGetDefault(int* device, double sampleRate, int maxChannels, int defaultDevice,
-                                          const char* deviceType, PaSupportCheckFunc isSupportedFunc) {
-    if (*device != paNoDevice && sampleRate) {
-        // check if device can support requested SR
-        PaStreamParameters parameters = MakePaStreamParameters(*device, maxChannels, 0);
-        PaError err = isSupportedFunc(parameters, sampleRate);
-        if (err != paNoError) {
-            fprintf(stdout, "PortAudio error: %s\nRequested sample rate %f for device %s is not supported\n",
-                    Pa_GetErrorText(err), sampleRate, Pa_GetDeviceInfo(*device)->name);
-            return err;
-        }
-    }
-    // in case we still don't have a proper device, use the default device
-    if (*device == paNoDevice) {
-        *device = defaultDevice;
-        if (*device != paNoDevice)
-            fprintf(stdout, "Selecting default system %s device\n", deviceType);
-    }
-    return paNoError;
-}
-
-void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, bool isInput) {
-    if (*matchingDevice != paNoDevice || *knownDevice == paNoDevice)
-        return;
-
-    const auto* devInfo = Pa_GetDeviceInfo(*knownDevice);
-    const auto* apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
-    const auto maxChannels = isInput ? devInfo->maxInputChannels : devInfo->maxOutputChannels;
-    bool isAsioFullDuplex = apiInfo->type == paASIO && maxChannels > 0;
-    if (isAsioFullDuplex)
-        *matchingDevice = *knownDevice;
-    else {
-        *matchingDevice = isInput ? apiInfo->defaultInputDevice : apiInfo->defaultOutputDevice;
-        if (*matchingDevice != paNoDevice)
-            fprintf(stdout, "Selecting default %s %s device\n", apiInfo->name, (isInput ? "input" : "output"));
-    }
-}
-
 PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice, int numIns, int numOuts, double sampleRate) {
     if (numIns && !numOuts) {
         *outDevice = paNoDevice;
@@ -158,4 +107,54 @@ PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice
         *outDevice = paNoDevice;
     }
     return paNoError;
+}
+
+PaStreamParameters MakePaStreamParameters(int device, int channelCount, double suggestedLatency) {
+    PaStreamParameters streamParams;
+    PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+    streamParams.device = device;
+    streamParams.channelCount = channelCount;
+    streamParams.sampleFormat = fmt;
+    streamParams.suggestedLatency = suggestedLatency;
+    streamParams.hostApiSpecificStreamInfo = nullptr;
+    return streamParams;
+}
+
+using PaSupportCheckFunc = PaError (*)(PaStreamParameters&, double);
+PaError CheckDeviceSampleRateOrGetDefault(int* device, double sampleRate, int maxChannels, int defaultDevice,
+                                          const char* deviceType, PaSupportCheckFunc isSupportedFunc) {
+    if (*device != paNoDevice && sampleRate) {
+        // check if device can support requested SR
+        PaStreamParameters parameters = MakePaStreamParameters(*device, maxChannels, 0);
+        PaError err = isSupportedFunc(parameters, sampleRate);
+        if (err != paNoError) {
+            fprintf(stdout, "PortAudio error: %s\nRequested sample rate %f for device %s is not supported\n",
+                    Pa_GetErrorText(err), sampleRate, Pa_GetDeviceInfo(*device)->name);
+            return err;
+        }
+    }
+    // in case we still don't have a proper device, use the default device
+    if (*device == paNoDevice) {
+        *device = defaultDevice;
+        if (*device != paNoDevice)
+            fprintf(stdout, "Selecting default system %s device\n", deviceType);
+    }
+    return paNoError;
+}
+
+void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, bool isInput) {
+    if (*matchingDevice != paNoDevice || *knownDevice == paNoDevice)
+        return;
+
+    const auto* devInfo = Pa_GetDeviceInfo(*knownDevice);
+    const auto* apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
+    const auto maxChannels = isInput ? devInfo->maxInputChannels : devInfo->maxOutputChannels;
+    bool isAsioFullDuplex = apiInfo->type == paASIO && maxChannels > 0;
+    if (isAsioFullDuplex)
+        *matchingDevice = *knownDevice;
+    else {
+        *matchingDevice = isInput ? apiInfo->defaultInputDevice : apiInfo->defaultOutputDevice;
+        if (*matchingDevice != paNoDevice)
+            fprintf(stdout, "Selecting default %s %s device\n", apiInfo->name, (isInput ? "input" : "output"));
+    }
 }
