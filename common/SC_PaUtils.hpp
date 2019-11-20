@@ -5,13 +5,11 @@
 #include "portaudio.h"
 #include <string>
 
-enum class IOType { Input, Output };
-
 // get device name from PaDeviceIndex
 std::string GetPaDeviceName(PaDeviceIndex index);
 
 // get PaDeviceIndex from device name
-PaDeviceIndex GetPaDeviceFromName(const char* device, IOType ioType);
+PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput);
 
 // select default PA devices if they are not defined
 // it will also try to check for some configuration problems

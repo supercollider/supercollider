@@ -15,7 +15,7 @@ std::string GetPaDeviceName(PaDeviceIndex index) {
     return name;
 }
 
-PaDeviceIndex GetPaDeviceFromName(const char* device, IOType ioType) {
+PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput) {
     if (device == nullptr || device[0] == '\0')
         return paNoDevice;
 
@@ -24,9 +24,9 @@ PaDeviceIndex GetPaDeviceFromName(const char* device, IOType ioType) {
         auto* pdi = Pa_GetDeviceInfo(i);
         std::string devString = GetPaDeviceName(i);
         if (strstr(devString.c_str(), device)) {
-            if (ioType == IOType::Input && pdi->maxInputChannels > 0) {
+            if (isInput && pdi->maxInputChannels > 0) {
                 return i;
-            } else if (ioType == IOType::Output && pdi->maxOutputChannels > 0) {
+            } else if (!isInput && pdi->maxOutputChannels > 0) {
                 return i;
             }
         }
@@ -69,13 +69,12 @@ PaError CheckDeviceSampleRateOrGetDefault(int* device, double sampleRate, int ma
     return paNoError;
 }
 
-void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, IOType matchingDeviceType) {
+void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, bool isInput) {
     if (*matchingDevice != paNoDevice || *knownDevice == paNoDevice)
         return;
 
     const auto* devInfo = Pa_GetDeviceInfo(*knownDevice);
     const auto* apiInfo = Pa_GetHostApiInfo(devInfo->hostApi);
-    const bool isInput = matchingDeviceType == IOType::Input;
     const auto maxChannels = isInput ? devInfo->maxInputChannels : devInfo->maxOutputChannels;
     bool isAsioFullDuplex = apiInfo->type == paASIO && maxChannels > 0;
     if (isAsioFullDuplex)
@@ -102,8 +101,8 @@ PaError TryGetDefaultPaDevices(int* inDevice, int* outDevice, int numIns, int nu
             [](PaStreamParameters& params, double sr) { return Pa_IsFormatSupported(nullptr, &params, sr); });
     } else if (numIns && numOuts) {
         // if one device is specified, let's try to open another one on matching api
-        TryMatchDeviceSameAPI(inDevice, outDevice, IOType::Input);
-        TryMatchDeviceSameAPI(outDevice, inDevice, IOType::Output);
+        TryMatchDeviceSameAPI(inDevice, outDevice, true);
+        TryMatchDeviceSameAPI(outDevice, inDevice, false);
 
         bool apisAreDifferent = *inDevice != paNoDevice && *outDevice != paNoDevice
             && Pa_GetDeviceInfo(*inDevice)->hostApi != Pa_GetDeviceInfo(*outDevice)->hostApi;

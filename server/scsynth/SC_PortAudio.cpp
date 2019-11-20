@@ -278,8 +278,8 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
                 pdi->maxInputChannels, pdi->maxOutputChannels);
     }
 
-    mDeviceInOut[0] = GetPaDeviceFromName(mWorld->hw->mInDeviceName, IOType::Input);
-    mDeviceInOut[1] = GetPaDeviceFromName(mWorld->hw->mOutDeviceName, IOType::Output);
+    mDeviceInOut[0] = GetPaDeviceFromName(mWorld->hw->mInDeviceName, true);
+    mDeviceInOut[1] = GetPaDeviceFromName(mWorld->hw->mOutDeviceName, false);
 
     // report requested devices
     fprintf(stdout, "\nRequested devices:\n");
