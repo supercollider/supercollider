@@ -35,7 +35,8 @@ PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput) {
     return paNoDevice;
 }
 
-PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice, int numIns, int numOuts, double sampleRate) {
+PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice, int numIns, int numOuts,
+                               double sampleRate) {
     if (numIns && !numOuts) {
         *outDevice = paNoDevice;
         auto maxChannels = (*inDevice != paNoDevice) ? Pa_GetDeviceInfo(*inDevice)->maxInputChannels : 0;
