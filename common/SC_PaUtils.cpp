@@ -86,7 +86,7 @@ void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, bool isI
     }
 }
 
-PaError TryGetDefaultPaDevices(int* inDevice, int* outDevice, int numIns, int numOuts, double sampleRate) {
+PaError TryGetDefaultPaDevices(PaDeviceIndex* inDevice, PaDeviceIndex* outDevice, int numIns, int numOuts, double sampleRate) {
     if (numIns && !numOuts) {
         *outDevice = paNoDevice;
         auto maxChannels = (*inDevice != paNoDevice) ? Pa_GetDeviceInfo(*inDevice)->maxInputChannels : 0;
