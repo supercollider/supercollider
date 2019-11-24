@@ -11,6 +11,7 @@ TestNodeProxy_Server : UnitTest {
 
 	tearDown {
 		proxy.clear;
+		server.sync;
 		server.quit;
 		server.remove;
 	}
