@@ -25,6 +25,13 @@ TestUnitTest : UnitTest {
 		this.assertEquals(count, 3, "count should be on 3");
 	}
 
+	test_bootServer {
+		var server = Server(this.class.name);
+		server.bootSync;
+		this.assert(server.serverRunning, "The test's Server should be booted while we waited");
+		server.quit.remove;
+	}
+
 	test_assert {
 		this.assert(true, "assert(true) should certainly work");
 	}
