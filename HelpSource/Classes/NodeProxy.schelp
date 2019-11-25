@@ -368,7 +368,7 @@ if a fadeTime is given, first fade out, then clear.
 
 method::schedAfterFade
 
-Calls a function after the fadeTime and server latency has passed. If the proxy specifies a code::quant:: value, this is adjusted to it.
+Calls a function after the fadeTime and server latency have passed. If the proxy specifies a code::quant:: value, this call happens relative to the specified beat.
 
 argument::func
 a function to be called at the appropriate time
