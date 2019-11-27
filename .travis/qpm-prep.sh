@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd $TRAVIS_BUILD_DIR/BUILD
-sudo pip2 install git+https://github.com/brianlheim/qpm.git@pip-setup
+sudo pip2 install git+https://github.com/supercollider/qpm.git
 
 mkdir $HOME/Quarks && cd $HOME/Quarks
 git clone --depth=1 https://github.com/supercollider-quarks/API
