@@ -643,16 +643,18 @@ Pprotect : FilterPattern {
 	}
 	storeArgs { ^[ pattern, func ] }
 
-	embedInStream { arg inval;
-		var result = prTry { pattern.embedInStream(inval) };
-		if(result.isException) {
-			func.value(result, thisThread);
-			result.throw;  // to nested error handlers
-		} {
-			// here, `protect` calls the error handler
-			// but Pprotect has a slightly different meaning
-			^result
-		}
+	asStream {
+		var rout = Routine(pattern.embedInStream(_));
+		rout.exceptionHandler = { |error|
+			// 'func' might throw an error
+			// we must clear the exceptionHandler before that
+			// otherwise, infinite recursion is the result
+			rout.exceptionHandler = nil;
+			func.value(error, rout);
+			rout.exceptionHandler = thisFunction;
+			nil.handleError(error)
+		};
+		^rout
 	}
 }
 
