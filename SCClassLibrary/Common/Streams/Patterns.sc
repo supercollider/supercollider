@@ -650,6 +650,7 @@ Pprotect : FilterPattern {
 			// otherwise, infinite recursion is the result
 			rout.exceptionHandler = nil;
 			func.value(error, rout);
+			rout.exceptionHandler = thisFunction;
 			nil.handleError(error)
 		};
 		^rout
