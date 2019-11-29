@@ -1,7 +1,7 @@
 TestPprotect : UnitTest {
 
-	test_resetExceptionHandler_onError {
-		var routine, stream, success = false, condition = Condition.new;
+	test_reset_exceptionHandler_on_error {
+		var success, condition = Condition.new, stream,
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
 		// to check its exceptionHandler below.
@@ -22,33 +22,26 @@ TestPprotect : UnitTest {
 	}
 
 	test_stream_can_be_restarted_after_error {
-		var pat, stream;
-		var condition = Condition.new;
-
+		var pat, stream, hasRun = false;
 		pat = Pprotect(
 			Prout {
 				0.01.yield;
-				condition.test = true;
+				hasRun = true;
 				Error("dummy error").throw
 			},
 			{ stream.streamError }
 		);
-
 		stream = pat.play;
-		this.wait(condition, maxTime: 0.1);
-
-		condition.test = false;
+		0.02.wait;
+		hasRun = false;
 		stream.reset;
 		stream.play;
-		this.wait(condition, maxTime: 0.1);
-
-		this.assert(condition.test, "stream should be resettable after an error");
+		0.02.wait;
+		this.assert(hasRun, "stream should be resettable after an error");
 	}
 
 	test_task_proxy_play_after_error {
-		var proxy, redefine, hasRun;
-		var condition = Condition.new;
-
+		var proxy, redefine, condition = Condition.new;
 		proxy = TaskProxy.new;
 		proxy.quant = 0;
 		proxy.play;
