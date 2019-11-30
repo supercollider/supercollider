@@ -87,7 +87,7 @@ Install required libraries:
     # Use `nano ~/.jackdrc` to edit jack settings.
 
     # For GUI builds:
-    echo /usr/bin/jackd -P75 -dalsa -dhw:0 -r44100 -p1024 -n3 > ~/.jackdrc
+    echo /usr/bin/jackd -P75 -p16 -dalsa -dhw:0 -r44100 -p1024 -n3 > ~/.jackdrc
 
     # For GUI-less builds:
     echo /usr/local/bin/jackd -P75 -p16 -dalsa -dhw:0 -r44100 -p1024 -n3 > ~/.jackdrc
@@ -180,9 +180,6 @@ This applies to both GUI and GUI-less builds above:
   raspberrypi` to reset.
 * For lower latency, set a lower blocksize for jackd. Try, for example `-p512` or `-p128`. Tune downwards until you
   get dropouts and xruns (also watch cpu%).
-* Some USB soundcards include the cheap blue 3D sound (C-Media Electronics, Inc. Audio Adapter (Planet UP-100, Genius
-  G-Talk)) and the Aureon Dual USB (TerraTec Electronic GmbH Aureon Dual USB). There are also some [audio codec
-  modules](http://www.fredrikolofsson.com/f0blog/?q=node/656) that work.
 * To avoid SD card corruption one should always shut down the system properly and not just pull out the power. When
   running headless you can either ssh in and type `sudo halt -p`, use a GPIO pin with a button and Python script, or
   set up an OSC command from within SC that turns off the RPi. See

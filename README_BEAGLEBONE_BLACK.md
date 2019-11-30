@@ -22,7 +22,7 @@ Building
 
 ### Step 1: Hardware setup
 
-1. Connect an ethernet cable from the network router to the RPi
+1. Connect an ethernet cable from the network router to the BBB
 2. Insert the SD card and USB soundcard.
 3. Connect USB power from a 5V@1A power supply
 
@@ -57,9 +57,9 @@ ssh from your laptop by opening a terminal and typing:
     sudo sh -c "echo @audio - memlock 256000 >> /etc/security/limits.conf"
     sudo sh -c "echo @audio - rtprio 75 >> /etc/security/limits.conf"
 
-    # `-dhw:0` is the internal soundcard. Use `-dhw:1` for USB soundcards. `aplay -l` will list available devices.
+    # `-dhw:1` is normally the USB soundcard. `sudo aplay -l` will list available devices.
     # Use `nano ~/.jackdrc` to edit jack settings.
-    echo /usr/local/bin/jackd -P75 -p16 -dalsa -dhw:0 -r44100 -p1024 -n3 > ~/.jackdrc
+    echo /usr/local/bin/jackd -P75 -p16 -dalsa -dhw:1 -r44100 -p1024 -n3 > ~/.jackdrc
 
     exit # and ssh in again to make the limits.conf settings work
 
@@ -97,7 +97,7 @@ To automatically run SuperCollider code at system boot:
     #!/bin/bash
     export PATH=/usr/local/bin:$PATH
     export DISPLAY=:0.0
-    sleep 10 # can be lower (5) for rpi3
+    sleep 10
     sclang mycode.scd
     EOF
 
@@ -110,7 +110,7 @@ To automatically run SuperCollider code at system boot:
 
     sudo reboot # the sound should start after a few seconds
 
-Login with ssh and run `killall jackd sclang scsynth` to stop the sound.
+Login with ssh and run `pkill jackd; pkill sclang; pkill scsynth` to stop the sound.
 
 Benchmarks
 ----------
@@ -120,13 +120,9 @@ These are rough benchmark tests. The server should be booted and jackd running w
 Also make sure to power the bbb through the barrel jack (else the CPU is capped at 300mhz - check with
 `cpufreq-info`). Also for comparison it is important to set CPU scaling to 'performance' with:
 
-    sudo cpufreq-set --governor performance`
+    sudo cpufreq-set --governor performance
 
-Also for comparison it is important to set CPU scaling to 'performance', by running:
-
-    echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
-
-Start sclang or scide and run:
+Start sclang and run:
 
     s.boot
     {1000000.do{2.5.sqrt}}.bench // ~1.9 on a bb-black, ~2.6 with lxqt on a bb-black
@@ -140,20 +136,15 @@ in performance.
 Notes and Troubleshooting
 -------------------------
 
-This applies to both GUI and GUI-less builds above:
-
 * An easy way to burn the img.xy file (no need to unpack) to an SD card is to use [etcher](http://etcher.io).
-* The internal soundcard volume is by default set low (40). Type `alsamixer` in terminal and then F6. Adjust the mic
-  and speaker volume with the arrow keys. Press escape to exit.
+* Type `alsamixer` in terminal and then F6. Adjust the mic and speaker volume with the arrow keys. Press escape to
+  exit.
 * If compilation stops or returns an error the compiler might just have run out of memory. Try to reboot and
   run the make command again.
 * If you get `WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!` when trying to ssh in, type `ssh-keygen -R
   beaglebone` to reset.
 * For lower latency, set a lower blocksize for jackd. Try, for example `-p512` or `-p128`. Tune downwards until you
   get dropouts and xruns (also watch cpu%).
-* Some USB soundcards include the cheap blue 3D sound (C-Media Electronics, Inc. Audio Adapter (Planet UP-100, Genius
-  G-Talk)) and the Aureon Dual USB (TerraTec Electronic GmbH Aureon Dual USB). There are also some [audio codec
-  modules](http://www.fredrikolofsson.com/f0blog/?q=node/656) that work.
 * To avoid SD card corruption one should always shut down the system properly and not just pull out the 5V power. When
   running headless you can either ssh in and type `sudo halt -p`, use a GPIO pin with a button and Python script, or
   set up an OSC command from within SC that turns off the BBB. See
