@@ -62,30 +62,33 @@ TestPprotect : UnitTest {
 		this.assert(hasRun, "task proxy should play again after an error");
 	}
 
-	/*
+
 
 	// this stops the test run, calling test_nested_instances twice, works.
 	// keeping ths commented out for now
 
 	test_nested_instances {
 
-		var stream, innerHasBeenCalled = false, outerHasbeenCalled = false;
+		fork {
 
-		stream = Pprotect(
-			Pprotect(
-				Prout {
-					Error("dummy error").throw
-				}, {
-					innerHasBeenCalled = true
-				}
-			),
-			{ outerHasbeenCalled = true }
-		).asStream;
+			var stream, innerHasBeenCalled = false, outerHasbeenCalled = false;
 
-		stream.next;
+			stream = Pprotect(
+				Pprotect(
+					Prout {
+						Error("dummy error").throw
+					}, {
+						innerHasBeenCalled = true
+					}
+				),
+				{ outerHasbeenCalled = true }
+			).asStream;
 
-		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
-		this.assert(outerHasbeenCalled, "When nesting Pprotect, outer functions should be called");
+			stream.next;
+
+			this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
+			this.assert(outerHasbeenCalled, "When nesting Pprotect, outer functions should be called");
+		}
 	}
-	*/
+
 }
