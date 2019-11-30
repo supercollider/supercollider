@@ -57,11 +57,6 @@ TestPprotect : UnitTest {
 		condition.test = false;
 		redefine.value;
 		this.wait(condition, maxTime: 0.1);
-
-		condition.test = false;
-		redefine.value;
-		this.wait(condition, maxTime: 0.1);
-
 		this.assert(condition.test, "task proxy should play again after an error");
 	}
 
@@ -70,30 +65,24 @@ TestPprotect : UnitTest {
 		var condition = Condition.new;
 
 		fork {
-			var stream;
+			var stream, innerHasBeenCalled = false, outerHasbeenCalled = false;
+
 			stream = Pprotect(
 				Pprotect(
 					Prout {
 						Error("dummy error").throw
 					}, {
-						condition.test = true;
 						innerHasBeenCalled = true
 					}
 				),
-				{
-					condition.test = true;
-					outerHasBeenCalled = true
-				}
+				{ outerHasbeenCalled = true }
 			).asStream;
 
 			stream.next;
 
-		};
-
-		this.wait(condition, maxTime: 0.1);
-
-		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
-		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called");
+			this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
+			this.assert(outerHasbeenCalled, "When nesting Pprotect, outer functions should be called");
+		}
 	}
 
 }
