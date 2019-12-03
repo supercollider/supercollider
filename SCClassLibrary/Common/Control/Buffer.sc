@@ -546,7 +546,6 @@ Buffer {
 	}
 
 	copyData { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
-		// server.listSendMsg([\b_gen, buf.bufnum, "copy", dstStartAt, bufnum, srcStartAt, numSamples])
 		server.listSendMsg(this.copyMsg(buf, dstStartAt, srcStartAt, numSamples))
 	}
 
