@@ -61,27 +61,32 @@ TestPprotect : UnitTest {
 	}
 
 	test_nested_instances {
-		var innerHasBeenCalled = false, outerHasBeenCalled = false;
+		var innerHasBeenCalled = false, outerHasbeenCalled = false;
 		var condition = Condition.new;
-
 		fork {
-			var stream, innerHasBeenCalled = false, outerHasbeenCalled = false;
+			var stream;
 			stream = Pprotect(
 				Pprotect(
 					Prout {
 						Error("dummy error").throw
 					}, {
+						condition.unhang;
 						innerHasBeenCalled = true
 					}
 				),
-				{ outerHasbeenCalled = true }
+				{
+					condition.unhang;
+					outerHasbeenCalled = true
+				}
 			).asStream;
 
 			stream.next;
 
-			this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
-			this.assert(outerHasbeenCalled, "When nesting Pprotect, outer functions should be called");
-		}
+		};
+		condition.hang;
+
+		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
+		this.assert(outerHasbeenCalled, "When nesting Pprotect, outer functions should be called");
 	}
 
 }
