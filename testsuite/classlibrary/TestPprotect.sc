@@ -66,7 +66,6 @@ TestPprotect : UnitTest {
 
 		fork {
 			var stream, innerHasBeenCalled = false, outerHasbeenCalled = false;
-
 			stream = Pprotect(
 				Pprotect(
 					Prout {
