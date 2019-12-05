@@ -21,10 +21,7 @@ TestThrow : UnitTest {
 			var next = thisThread;
 			r.exceptionHandler = { call2 = true; next.handleError };
 			r.next;
-
-			this.assert(call1 & call2,
-				"When throwing an error in a thread, handleError should call parent thread"
-			);
+			this.assert(call1 && call2, "When throwing an error in a thread, handleError should call parent thread");
 		}
 
 	}
