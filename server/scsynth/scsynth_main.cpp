@@ -358,7 +358,7 @@ int main(int argc, char* argv[]) {
     }
     fflush(stdout);
 
-    EventLoop::run([&]() { World_WaitForQuit(world, true); });
+    EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
 #ifdef _WIN32
     // clean up winsock

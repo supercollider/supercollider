@@ -44,13 +44,12 @@ void disableAppNap() {
 namespace EventLoop {
 
 void setup() {
-#if 0
     // The following code would transform the process into a foreground application.
     // For now it's the plugin's responsibility to do this (early or lazily)
     // because we don't want to always show an icon in the docker.
-    ProcessSerialNumber psn = { 0, kCurrentProcess };
-    TransformProcessType(&psn, kProcessTransformToForegroundApplication);
-#endif
+    // ProcessSerialNumber psn = { 0, kCurrentProcess };
+    // TransformProcessType(&psn, kProcessTransformToForegroundApplication);
+
     // Create NSApplication
     [NSApplication sharedApplication];
 }

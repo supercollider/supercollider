@@ -23,17 +23,15 @@ public:
     }
     // Run the event loop until 'waitFunction' returns.
     static void run(std::function<void()> waitFunction) {
-        if (!waitFunction) {
-            throw std::runtime_error("EventLoop::run() called without wait function!");
-        }
 #ifdef __APPLE__
         // this thread simply waits for 'waitFunction' to return,
         // after which it will ask the event loop to terminate.
-        auto thread = std::thread([&]() {
+        auto thread = std::thread([waitFunction]() {
             waitFunction();
             SC::Apple::EventLoop::quit();
         });
         thread.detach();
+
         SC::Apple::EventLoop::run();
 #else
         waitFunction();
