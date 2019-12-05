@@ -1,7 +1,6 @@
-
 TestPprotect : UnitTest {
 
-	test_reset_exceptionHandler_on_error {
+	test_resetExceptionHandler_onError {
 		var success, cond = Condition.new,
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
@@ -62,15 +61,9 @@ TestPprotect : UnitTest {
 		this.assert(hasRun, "task proxy should play again after an error");
 	}
 
-
-
-	// this stops the test run, calling test_nested_instances twice, works.
-	// keeping ths commented out for now
-
 	test_nested_instances {
 
 		fork {
-
 			var stream, innerHasBeenCalled = false, outerHasbeenCalled = false;
 
 			stream = Pprotect(
@@ -92,3 +85,4 @@ TestPprotect : UnitTest {
 	}
 
 }
+
