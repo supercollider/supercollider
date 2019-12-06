@@ -4,6 +4,7 @@ TestThrow : UnitTest {
 	test_throw_nested_threads {
 		var condition = Condition.new;
 		var call1 = false, call2 = false;
+		defer { 0.1.wait; condition.unhang }; // unhang on failure
 
 		fork { // isolate from surrounding thread
 			var r = Routine {
@@ -13,8 +14,8 @@ TestThrow : UnitTest {
 					};
 					var next = thisThread;
 					r.exceptionHandler = {
-						condition.unhang;
 						call1 = true;
+						condition.unhang;
 						next.handleError
 					};
 					r.next;
@@ -25,8 +26,8 @@ TestThrow : UnitTest {
 			};
 			var next = thisThread;
 			r.exceptionHandler = {
-				condition.unhang;
 				call2 = true;
+				condition.unhang;
 				next.handleError
 			};
 			r.next;
