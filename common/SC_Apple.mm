@@ -44,7 +44,7 @@ void disableAppNap() {
 
 namespace EventLoop {
 
-std::atomic_bool bRunning;
+static std::atomic_bool g_running;
 
 void setup() {
     // The following code would transform the process into a foreground application.
@@ -66,9 +66,9 @@ void run() {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
     [NSApp finishLaunching];
-    bRunning = true;
+    g_running = true;
 
-    while (bRunning) {
+    while (g_running) {
         [pool release];
         pool = [[NSAutoreleasePool alloc] init];
         NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
@@ -86,7 +86,7 @@ void run() {
 
 void quit() {
     // break from event loop instead of [NSApp terminate:nil]
-    bRunning = false;
+    g_running = false;
     // send dummy event to wake up event loop
     NSEvent* event = [NSEvent otherEventWithType:NSApplicationDefined
                                         location:NSMakePoint(0, 0)
