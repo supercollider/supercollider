@@ -21,6 +21,7 @@
 
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
+#include "SC_EventLoop.hpp"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -136,6 +137,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 #endif
+    EventLoop::setup();
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
@@ -315,7 +317,6 @@ int main(int argc, char* argv[]) {
     } else
         options.mSharedMemoryID = 0;
 
-
     struct World* world = World_New(&options);
     if (!world)
         return 1;
@@ -357,8 +358,7 @@ int main(int argc, char* argv[]) {
     }
     fflush(stdout);
 
-    World_WaitForQuit(world, true);
-
+    EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
 #ifdef _WIN32
     // clean up winsock

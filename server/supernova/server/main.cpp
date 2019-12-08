@@ -29,6 +29,7 @@
 #include "server_args.hpp"
 
 #include "SC_Version.hpp"
+#include "SC_EventLoop.hpp"
 
 #include "../sc/sc_ugen_factory.hpp"
 #include "../sc/sc_synth_definition.hpp"
@@ -318,6 +319,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+    EventLoop::setup();
 #ifdef __APPLE__
     ProcessSerialNumber psn;
     if (GetCurrentProcess(&psn) == noErr) {
@@ -350,7 +352,7 @@ int main(int argc, char* argv[]) {
             cout << "Error: " << e.what() << endl;
             exit(1);
         }
-        server.run();
+        EventLoop::run([&server]() { server.run(); });
     } else
         server.run_nonrt_synthesis(args);
 
