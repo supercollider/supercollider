@@ -219,11 +219,11 @@ void SC_LanguageConfig::freeLibraryConfig() {
     }
 }
 
-inline const bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path) {
+bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path) {
     return std::find(vec.begin(), vec.end(), path) != vec.end();
 }
 
-inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
+bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
     if (!findPath(vec, path)) {
         vec.push_back(path);
         return true;
@@ -232,7 +232,7 @@ inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
     }
 }
 
-inline const bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path) {
+bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path) {
     const DirVector::iterator& end = std::remove(vec.begin(), vec.end(), path);
     const bool removed = end != vec.end();
     vec.erase(end, vec.end());
