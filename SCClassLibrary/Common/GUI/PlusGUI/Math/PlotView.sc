@@ -424,7 +424,7 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, <plotColors;
+	var <plots, <specs, <domainSpecs, <plotColor;
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
@@ -690,7 +690,7 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		plotColors !? { this.plotColors_(plotColors) };
+		plotColor !? { this.plotColor_(plotColor) };
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
 	}
@@ -744,11 +744,11 @@ Plotter {
 		}
 	}
 
-	plotColors_ { |argColors|
-		plotColors = argColors.as(Array);
+	plotColor_ { |colors|
+		plotColor = colors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
-			plt.plotColor_(plotColors.rotate(i.neg))
+			plt.plotColor_(plotColor.rotate(i.neg))
 		}
 	}
 
@@ -947,7 +947,7 @@ Plotter {
 			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
 		});
 	}
-	
+
 	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
 		^this.plot(duration, bounds, minval, maxval)
 	}

@@ -290,7 +290,7 @@ plot.domain_(domain);
 ::
 A more elaborate example can be found in the link::#examples::.
 
-method:: plotColors
+method:: plotColor
 Set or get the link::Classes/Color::(s) of your plot. An
 link::Classes/Array:: of colors will be mapped across multichannel plot
 data, including when link::#-superpose:: is code::true::.
@@ -333,6 +333,8 @@ a.editFunc = { |plotter, plotIndex, i, val|
 a.parent.onClose = { x.release };
 );
 ::
+
+private:: plotColors
 
 examples::
 
