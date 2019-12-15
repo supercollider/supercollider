@@ -71,7 +71,7 @@ TestPprotect : UnitTest {
 	}
 
 	test_nested_instances {
-		var innerHasBeenCalled = false, outerHasbeenCalled = false;
+		var innerHasBeenCalled = false, outerHasBeenCalled = false;
 		var condition = Condition.new;
 		defer { 0.1.wait; condition.unhang }; // unhang on failure
 
