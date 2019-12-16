@@ -6,6 +6,7 @@ TestCondition : UnitTest {
 		var lateTask = fork {
 			0.12.wait;
 			failed = true;
+			condition.unhang;
 		};
 		condition.hang(0.1);
 		lateTask.stop;
