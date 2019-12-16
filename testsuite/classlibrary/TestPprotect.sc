@@ -2,7 +2,7 @@ TestPprotect : UnitTest {
 
 	test_resetExceptionHandler_onError {
 		var routine, stream, success, condition = Condition.new;
-		var timeout = 0.1;
+		defer { 0.1.wait; condition.unhang(0.1) }; // unhang on failure
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
 		// to check its exceptionHandler below.
@@ -17,14 +17,14 @@ TestPprotect : UnitTest {
 		// Note that it is necessary to do this asynchronously!
 		// Otherwise "routine"'s error will halt the entire test suite.
 		stream.play;
-		condition.hang(timeout);
+		condition.hang;
 		this.assert(success, "Pprotect should clear the stream's exceptionHandler");
 	}
 
 	test_stream_can_be_restarted_after_error {
 		var pat, stream, hasRun = false;
 		var condition = Condition.new;
-		var timeout = 0.1;
+		defer { 0.1.wait; condition.unhang }; // unhang on failure
 
 		pat = Pprotect(
 			Prout {
@@ -36,18 +36,18 @@ TestPprotect : UnitTest {
 			{ stream.streamError }
 		);
 		stream = pat.play;
-		condition.hang(timeout);
+		condition.hang;
 		hasRun = false;
 		stream.reset;
 		stream.play;
-		condition.hang(timeout);
+		condition.hang;
 		this.assert(hasRun, "stream should be resettable after an error");
 	}
 
 	test_task_proxy_play_after_error {
 		var proxy, redefine, hasRun;
 		var condition = Condition.new;
-		var timeout = 0.1;
+		defer { 0.1.wait; condition.unhang }; // unhang on failure
 
 		proxy = TaskProxy.new;
 		proxy.quant = 0;
@@ -63,17 +63,17 @@ TestPprotect : UnitTest {
 		};
 		hasRun = false;
 		redefine.value;
-		condition.hang(timeout);
+		condition.hang;
 		hasRun = false;
 		redefine.value;
-		condition.hang(timeout);
+		condition.hang;
 		this.assert(hasRun, "task proxy should play again after an error");
 	}
 
 	test_nested_instances {
 		var innerHasBeenCalled = false, outerHasBeenCalled = false;
 		var condition = Condition.new;
-		var timeout = 0.1;
+		defer { 0.1.wait; condition.unhang }; // unhang on failure
 
 		fork {
 			var stream;
@@ -95,7 +95,7 @@ TestPprotect : UnitTest {
 			stream.next;
 
 		};
-		condition.hang(timeout);
+		condition.hang;
 
 		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
 		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called");
