@@ -10,14 +10,16 @@ TestDocument : UnitTest {
 			protect {
 				Document.initAction = { success = true };
 				doc = Document.new;
-				0.1.wait;
+				// failureMessage is deliberately nil
+				// we will assert below, we don't need `wait` to call `failed` itself
+				this.wait({ success }, failureMessage: nil, maxTime: 0.2);
 				doc.close;
 			} {
 				Document.initAction = save;
 			};
 			this.assert(success, "Document.new should fire Document.initAction function");
 		} {
-			this.assert(false, "Cannot test Document.new behavior in a non-ScIDE session");
+			// TODO: skip
 		};
 	}
 
@@ -47,7 +49,7 @@ TestDocument : UnitTest {
 				};
 			}
 		} {
-			this.assert(false, "Cannot test Document.open behavior in a non-ScIDE session");
+			// TODO: skip
 		};
 	}
 }
