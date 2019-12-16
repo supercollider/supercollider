@@ -2,7 +2,7 @@ TestPprotect : UnitTest {
 
 	test_resetExceptionHandler_onError {
 		var routine, stream, success, condition = Condition.new;
-		defer { 0.1.wait; condition.unhang }; // unhang on failure
+		defer { 0.1.wait; condition.unhang(0.1) }; // unhang on failure
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
 		// to check its exceptionHandler below.
@@ -88,7 +88,7 @@ TestPprotect : UnitTest {
 				),
 				{
 					condition.unhang;
-					outerHasbeenCalled = true
+					outerHasBeenCalled = true
 				}
 			).asStream;
 
@@ -98,7 +98,7 @@ TestPprotect : UnitTest {
 		condition.hang;
 
 		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
-		this.assert(outerHasbeenCalled, "When nesting Pprotect, outer functions should be called");
+		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called");
 	}
 
 }
