@@ -26,9 +26,14 @@ Sync {
 		});
 	}
 
-	prAddThread {
-		|thread|
-		waitingThreads = waitingThreads.add(thread.threadPlayer);
+	prAddThread { |thread|
+		waitingThreads = (waitingThreads ?? { IdentitySet() }).add(thread.threadPlayer);
+	}
+
+	prResumeThread { |thread|
+		if (waitingThreads.remove(thread.threadPlayer).notNil) {
+			thread.clock.sched(0, thread.threadPlayer);
+		}
 	}
 }
 
@@ -46,9 +51,17 @@ Condition : Sync {
 		^new
 	}
 
-	wait {
+	wait { |timeout, clock=(SystemClock)|
+		var waitingThread = thisThread;
+
 		if (test.value.not) {
-			this.hang();
+			timeout !? {
+				clock.schedAbs(clock.seconds + timeout, {
+					this.prResumeThread(waitingThread);
+				})
+			};
+
+			this.hang
 		};
 	}
 
