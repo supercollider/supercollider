@@ -12,7 +12,7 @@ Sync {
 	}
 
 	wait {
-		this.hang();
+		this.hang;
 	}
 
 	unhang {
@@ -43,7 +43,7 @@ Condition : Sync {
 		var time = (clock.seconds + seconds);
 		var new = Condition({ clock.seconds >= time });
 		clock.schedAbs(time, { new.unhang() });
-		^new;
+		^new
 	}
 
 	wait {
@@ -54,14 +54,14 @@ Condition : Sync {
 
 	signal {
 		if (test.value) {
-			this.unhang();
+			this.unhang
 		}
 	}
 
-	then { |func|
+	then { |function|
 		fork {
 			this.wait();
-			func.value(this);
+			function.value(this);
 		}
 	}
 
@@ -76,19 +76,6 @@ Condition : Sync {
 			this.unhang();
 		});
 		pollRoutine.play();
-	}
-
-	|| { |other|
-		var new = Condition({ this.test.value || other.test.value });
-		fork { this.wait(); new.signal(); };
-		fork { other.wait(); new.signal(); };
-		^new;
-	}
-
-	&& { |other|
-		var new = Condition({ this.test.value && other.test.value });
-		fork { this.wait(); other.wait(); new.signal(); };
-		^new;
 	}
 
 	whenAny {
@@ -115,6 +102,17 @@ Condition : Sync {
 				pair[0].prAddThread(thread);
 			};
 		};
+	|| { |other|
+		var new = Condition({ this.test.value or: { other.test.value } });
+		fork { this.wait(); new.signal(); };
+		fork { other.wait(); new.signal(); };
+		^new
+	}
+
+	&& { |other|
+		var new = Condition({ this.test.value and: { other.test.value } });
+		fork { this.wait(); other.wait(); new.signal(); };
+		^new
 	}
 }
 
