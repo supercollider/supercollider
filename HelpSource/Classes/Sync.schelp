@@ -4,7 +4,7 @@ summary:: Basic thread synchronization primitive.
 related:: Classes/Condition
 
 DESCRIPTION::
-Sync is a basic thread synchronization primitive. A call to link::#-wait:: will pause a thread until link::#-unhang:: is called elsewhere.
+Sync is a basic thread synchronization primitivee. A call to link::#-wait:: will pause a thread until link::#-unhang:: is called elsewhere.
 
 code::
 (
@@ -13,7 +13,7 @@ code::
 Routine({
 	"Starting...".postln;
 	~waitForIt.wait;
-	"Finished".postln;
+	"Continuing...".postln;
 }).play;
 
 { ~waitForIt.unhang }.defer(3);
