@@ -1,0 +1,39 @@
+TITLE:: Sync
+categories:: Scheduling
+summary:: Basic thread synchronization primitive.
+related:: Classes/Condition
+
+DESCRIPTION::
+Sync is a basic thread synchronization primitive. A call to link::#-wait:: will pause a thread until link::#-unhang:: is called elsewhere.
+
+code::
+(
+~waitForIt = Sync();
+
+Routine({
+	"Starting...".postln;
+	~waitForIt.wait;
+	"Finished".postln;
+}).play;
+
+{ ~waitForIt.unhang }.defer(3);
+)
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new Sync instancee
+
+INSTANCEMETHODS::
+
+METHOD:: wait
+Wait the current thread until link::#-unhang:: is called.
+
+METHOD:: hang
+Synonym of link::#-wait::.
+argument:: value
+When called, will yield strong::value:: back to the parent thread context.
+
+METHOD:: unhang
+Resume all threads waiting on this Sync.
