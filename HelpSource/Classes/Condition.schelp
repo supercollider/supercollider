@@ -5,39 +5,110 @@ summary::Block the execution of a thread
 CLASSMETHODS::
 
 method::new
-Create a new instance, set the strong::test:: variable.
+Create a new instance which will wait for strong::test::.
+argument::test
+A value or function determining when a waiting thread can continue.
+
+method::timeout
+Shortcut constructor for creating a Condition that will unhang after emphasis::seconds::.
+code::
+(
+fork {
+	c = Condition.timeout(3);
+	c.wait;
+	"Three seconds later...".postln;
+}
+)
+::
 
 INSTANCEMETHODS::
 
 method::test
-Answer whether the condition will block or not (boolean).
+Get / set the test value for a Condition. Changing the test value will not unhang waiting threads until link::#-unhang:: is called
 
 method::wait
-Wait until the condition is true and signalled. This only works in a Routine. This method yields a symbol (\hang), so that the clock doesn't reschedule the Routine.
-code::
-c = Condition(false); fork { 0.5.wait; "started ...".postln; c.wait;  "... and finished.".postln };
-c.test = true;
-c.signal;
-::
+Wait until the link::#-test:: is true and signalled. This only works in a Routine. This method yields a symbol (\hang), so that the clock doesn't reschedule the Routine.
+
+argument::timeout
+Optional timeout value. If specified, the Condition will unhang emphasis::timeout:: seconds in the future, regardless of link::#-test::.
+argument::clock
+A link::Classes/Clock:: (optional)
+
 
 method::hang
 Wait for strong::value:: time, regardless of test. This only works in a Routine. This method yields a symbol (\hang), so that the clock doesn't reschedule the Routine.
 code::
-c = Condition.new; fork { 0.5.wait; "started ...".postln; c.hang;  "... and finished.".postln };
+(
+c = Condition();
+
+fork {
+	0.5.wait;
+	"started ...".postln;
+	c.hang;
+	"... and finished.".postln
+};
+
 c.unhang;
+)
 ::
 
 method::signal
 If link::#-test:: is true, reschedule blocked threads.
 
-method::unhang
-Resume threads.
+method::&&
+Returns a new condition that will unhang only when strong::both sides of the operator have been signaled and have a true test value::.
+code::
+(
+a = Condition();
+b = Condition();
+
+fork {
+	(a && b).hang;
+	"Done".postln;
+};
+
+{ a.test_(true).signal }.defer(1);
+{ b.test_(true).signal }.defer(2);
+)
+::
+
+method::||
+Returns a new condition that will unhang only when strong::either side of the operator has been signaled and has a true test value::.
+code::
+(
+a = Condition();
+b = Condition();
+
+fork {
+	(a || b).hang;
+	"Done".postln;
+};
+
+{ [a, b].choose.test_(true).signal }.defer(1);
+)
+::
+
+method::then
+Schedule strong::function:: to be evaluated when the Condition has been signalled.
+
+code::
+(
+c = Condition().then({
+	"Condition c has been unhanged".postln;
+});
+
+{ c.unhang }.defer(1);
+)
+::
+
+method::poll
+Call link::#-signal:: when link::#-test:: becomes true, periodically re-checking the value every emphasis::delta:: seconds.
 
 EXAMPLES::
 
 code::
 (
-c = Condition.new(false);
+c = Condition(false);
 
 Routine {
 	1.wait;
@@ -65,7 +136,7 @@ c.signal;
 
 // a typical use is a routine that can pause under certain conditions:
 (
-c = Condition.new;
+c = Condition();
 fork { loop { 1.wait; "going".postln; c.wait } };
 )
 c.test = true; c.signal;
