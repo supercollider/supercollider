@@ -91,30 +91,6 @@ Condition : Sync {
 		pollRoutine.play();
 	}
 
-	whenAny {
-		|...args| // function, condition, function, condition
-		var thread, finished;
-
-		args = [this] ++ args;
-		args = args.clump(2);
-
-		finished = args.detect({ |pair| pair[0].test.value });
-
-		if (finished.notNil) {
-			finished[1].value()
-		} {
-			thread = fork({
-				var finished;
-				\hang.yield;
-				finished = args.detect({ |pair| pair[0].test.value });
-				finished !? { finished[1].value() };
-			});
-
-			args.do {
-				|pair|
-				pair[0].prAddThread(thread);
-			};
-		};
 	|| { |other|
 		var new = Condition({ this.test.value or: { other.test.value } });
 		fork { this.wait(); new.signal(); };
