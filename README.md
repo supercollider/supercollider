@@ -8,7 +8,7 @@
 - **sclang**, an interpreted programming language that controls the servers
 - **scide**, an editing environment for sclang with an integrated help system
 
-sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
+sclang comes with its package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
 
 SuperCollider is written in C++11 using several third-party libraries, including Qt and Boost.
 
@@ -57,7 +57,7 @@ Please read our adopted [code of conduct](CODE_OF_CONDUCT.md), which applies to 
 Contribute
 ----------
 
-Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving SuperCollider.
+Development of SuperCollider happens here on GitHub, and we are grateful to the community for contributing bug fixes and improvements. Read below to learn how you can take part in improving SuperCollider.
 
 ### [Code of Conduct](CODE_OF_CONDUCT.md)
 
@@ -69,11 +69,11 @@ Read our [contributing guide](https://github.com/supercollider/supercollider/wik
 
 ### Good First Issues
 
-To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or on the [forum][Discourse].
+To help you get your feet wet and get you familiar with our contribution process, we have a list of [good first issues](https://github.com/supercollider/supercollider/labels/good%20first%20issue) that contain bugs which have a relatively limited scope. This is a great place to get started. You can also ask on our developer's mailing list, on [Slack][Slack], or the [forum][Discourse].
 
 ### Requests for Comment
 
-SuperCollider uses a Requests for Comment (RFC) system to propose, design, and discuss 'big' changes. Submitting a new RFC or discussing an existing one is a great way to get involved, especially if you are looking for a way to contribute that doesn't involve writing code or using a terminal. You can learn more at the [RFC repository](https://github.com/supercollider/rfcs).
+SuperCollider uses Requests for Comment (RFC) system to propose, design, and discuss 'big' changes. Submitting a new RFC or discussing an existing one is a great way to get involved, especially if you are looking for a way to contribute that doesn't involve writing code or using a terminal. You can learn more at the [RFC repository](https://github.com/supercollider/rfcs).
 
 License
 -------
