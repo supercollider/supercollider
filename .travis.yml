@@ -31,9 +31,7 @@ cache:
  - ccache
 
 before_install:
-# Retry installation on OSX because Homebrew can be unreliable
- - if [[ $TRAVIS_OS_NAME == osx ]]; then travis_retry $TRAVIS_BUILD_DIR/.travis/before-install-osx.sh --qt=$QT
- - if [[ $TRAVIS_OS_NAME == linux ]]; then $TRAVIS_BUILD_DIR/.travis/before-install-linux.sh --qt=$QT
+ - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
  - mkdir BUILD && cd BUILD
