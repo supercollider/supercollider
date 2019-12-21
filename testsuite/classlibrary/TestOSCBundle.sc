@@ -1,29 +1,31 @@
-
 TestOSCBundle : UnitTest {
-	
-	test_prepare {
-		var sd, b,completed=false;
 
-		b = OSCBundle.new;
+	var server;
 
-		sd = Array.fill(100,{ |i|
-				var d;
-				d = SynthDef( "TestOSCBundle" ++ i,{
-					SinOsc.ar(400 + i,mul: 0.0001)
-				});
-				
-				b.addPrepare( ["/d_recv", d.asBytes] )
+	setUp {
+		server = Server(this.class.name);
+		server.bootSync;
+	}
 
-			});
-		
-		this.bootServer;
-		
-		b.doPrepare(Server.default,{ completed = true});
-		
-		this.wait( {completed},"waiting for prepare to send all");
-		
+	tearDown {
+		server.quit;
+		server.remove;
+	}
+
+	test_doPrepare {
+		var synthDef, bundle;
+		var completed = false;
+
+		bundle = OSCBundle.new;
+		synthDef = Array.fill(100, { |i|
+			var def = SynthDef("TestOSCBundle" ++ i, { Silent.ar });
+			bundle.addPrepare(["/d_recv", def.asBytes])
+		});
+		bundle.doPrepare(server, { completed = true });
+		this.wait({ completed }, "% timed out waiting for bundle to be sent".format(thisMethod));
+
+		this.assertEquals(completed, true, "'doPrepare' sent the prepare bundle to the server");
 	}
 
 }
-
 

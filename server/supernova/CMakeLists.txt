@@ -223,8 +223,8 @@ if(LTO)
 endif()
 
 if (APPLE)
-    target_link_libraries(libsupernova "-framework Accelerate")
-    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation -framework ApplicationServices")
+    target_link_libraries(libsupernova "-framework Accelerate -framework CoreAudio -framework CoreServices"
+                                        "-framework Foundation -framework ApplicationServices -framework AppKit")
 endif()
 
 if(${JACK_USE_METADATA_API})
