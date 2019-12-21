@@ -1444,11 +1444,7 @@ AsyncPlugInCmd::AsyncPlugInCmd(
     }
 }
 
-AsyncPlugInCmd::~AsyncPlugInCmd() {
-    (mCleanup)(mWorld, mCmdData);
-    if (mMsgData)
-        World_Free(mWorld, mMsgData);
-}
+AsyncPlugInCmd::~AsyncPlugInCmd() { (mCleanup)(mWorld, mCmdData); }
 
 void AsyncPlugInCmd::CallDestructor() { this->~AsyncPlugInCmd(); }
 

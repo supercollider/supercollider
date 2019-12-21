@@ -23,13 +23,9 @@
 #include "session_manager.hpp"
 #include "util/standard_dirs.hpp"
 #include "../widgets/main_window.hpp"
-#include "../widgets/help_browser.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
-#include "../widgets/util/WebSocketClientWrapper.hpp"
-#include "../widgets/util/WebSocketTransport.hpp"
-#include "../widgets/util/IDEWebChannelWrapper.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
@@ -45,8 +41,9 @@
 #include <QLibraryInfo>
 #include <QTranslator>
 #include <QDebug>
-#include <QWebChannel>
 #include <QStyleFactory>
+
+#include "util/HelpBrowserWebSocketServices.hpp"
 
 using namespace ScIDE;
 
@@ -129,25 +126,11 @@ int main(int argc, char* argv[]) {
     if (startInterpreter)
         main->scProcess()->startLanguage();
 
-    // setup HelpBrowser server
-    QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
-    if (!server.listen(QHostAddress::LocalHost, 12344)) {
-        qFatal("Failed to open web socket server.");
-        return 1;
-    }
-
-    // setup comm channel
-    WebSocketClientWrapper clientWrapper(&server);
-    QWebChannel channel;
-    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &channel, &QWebChannel::connectTo);
-
-    // publish IDE interface
-    IDEWebChannelWrapper ideWrapper { win->helpBrowserDocklet()->browser() };
-    channel.registerObject("IDE", &ideWrapper);
-
-    return app.exec();
+#ifdef SC_USE_QTWEBENGINE
+    HelpBrowserWebSocketServices hbServices(win->helpBrowserDocklet()->browser());
+#endif
+    app.exec();
 }
-
 
 bool SingleInstanceGuard::tryConnect(QStringList const& arguments) {
     const int maxNumberOfInstances = 128;
@@ -292,6 +275,7 @@ bool Main::nativeEventFilter(const QByteArray&, void* message, long*) {
 }
 
 bool Main::openDocumentation(const QString& string) {
+#ifdef SC_USE_QTWEBENGINE
     QString symbol = string.trimmed();
     if (symbol.isEmpty())
         return false;
@@ -300,13 +284,20 @@ bool Main::openDocumentation(const QString& string) {
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
     return true;
+#else // SC_USE_QTWEBENGINE
+    return false;
+#endif // SC_USE_QTWEBENGINE
 }
 
 bool Main::openDocumentationForMethod(const QString& className, const QString& methodName) {
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
     helpDock->focus();
     return true;
+#else // SC_USE_QTWEBENGINE
+    return false;
+#endif // SC_USE_QTWEBENGINE
 }
 
 void Main::openDefinition(const QString& string, QWidget* parent) {

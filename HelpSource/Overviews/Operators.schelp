@@ -306,8 +306,7 @@ method:: %
 Floating point modulo.
 
 method:: **
-Exponentiation. When used with UGens which produce a negative signal this function extends the usual definition of
-exponentiation and returns code::neg(neg(a) ** b)::. This allows exponentiation of negative signal values by noninteger exponents. For the normal behaviour use pow (see below).
+Exponentiation. Same as pow.
 
 method:: pow
 Exponentiation.
@@ -844,4 +843,3 @@ code::
 
 { FSinOsc.ar(1000).excess(Line.kr(0,1,8)) }.play;
 ::
-

@@ -108,7 +108,23 @@ Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyt
 Building
 --------
 
-### Step 1: Make a build directory
+### Step 1: Obtain the source code
+
+SuperCollider is hosted on Github: https://github.com/SuperCollider/SuperCollider
+
+Obtaining the SuperCollider source code can be done either by downloading a release tarball, or by cloning the repository.
+
+SuperCollider releases are available to download here: https://github.com/supercollider/supercollider/releases
+
+Cloning the repository can be done with the following command:
+
+    git clone --recurse-submodules https://github.com/SuperCollider/SuperCollider.git
+
+The `--recurse-submodules` option will clone the repository's submodules which are needed to build SuperCollider. The submodules can also be obtained by navigating to the root of your locally cloned SuperCollider repository and running the following command:
+
+    git submodule update --init --recursive
+
+### Step 2: Make a build directory
 
 First, `cd` into the root of the SuperCollider source directory (where this file resides).
 
@@ -119,7 +135,7 @@ Create a build directory and `cd` into it:
 
 You can actually name this whatever you want, allowing you to have multiple independent build directories. If your SuperCollider source is also a git repository, the `.gitignore` file is configured to ignore files of the form `build*`.
 
-### Step 2: Set CMake flags
+### Step 3: Set CMake flags
 
 Depending on what SuperCollider components you wish to install, you can set CMake flags. You can set CMake flags on the command line using `cmake -DKEY=value ..`. You can also use cmake frontends like ccmake or cmake-gui, or simply edit the `CMakeCache.txt` file. CMake flags are persistent and you only need to run these commands once each.
 
@@ -177,7 +193,7 @@ For example if you wish to install into `lib64`:
 
     cmake -DLIB_SUFFIX=64 ..
 
-### Step 3: Build
+### Step 4: Build
 
 If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flags.
 

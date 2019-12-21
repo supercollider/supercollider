@@ -61,11 +61,7 @@ void SC_StringBuffer::vappendf(const char* fmt, va_list ap) {
     size_t remaining = getRemaining();
 
     // Calling vsnprintf may invalidate vargs, so keep a copy
-#ifdef __va_copy
-    __va_copy(ap2, ap);
-#else
-    ap2 = ap;
-#endif
+    va_copy(ap2, ap);
 
     // NOTE: This only works since glibc 2.0.6!
     int size = vsnprintf(mPtr, remaining, fmt, ap);

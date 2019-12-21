@@ -2,9 +2,7 @@
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-find_package(
-    Qt5 ${REQUIRED_QT_VERSION}
-    COMPONENTS
+set(QT_IDE_COMPONENTS
     Concurrent
     Core
     LinguistTools
@@ -13,12 +11,7 @@ find_package(
     Qml
     Quick
     Sql
-    WebChannel
-    WebEngine
-    WebEngineWidgets
-    WebSockets
     Widgets
-    REQUIRED
 )
 
 set(QT_IDE_LIBRARIES
@@ -29,9 +22,27 @@ set(QT_IDE_LIBRARIES
     Qt5::Qml
     Qt5::Quick
     Qt5::Sql
-    Qt5::WebChannel
-    Qt5::WebEngineWidgets
-    Qt5::WebSockets
+)
+
+if(SC_USE_QTWEBENGINE)
+    list(APPEND QT_IDE_COMPONENTS
+        WebChannel
+        WebEngine
+        WebEngineWidgets
+        WebSockets
+    )
+    list(APPEND QT_IDE_LIBRARIES
+        Qt5::WebChannel
+        Qt5::WebEngineWidgets
+        Qt5::WebSockets
+    )
+endif()
+
+find_package(
+    Qt5 ${REQUIRED_QT_VERSION}
+    COMPONENTS
+    ${QT_IDE_COMPONENTS}
+    REQUIRED
 )
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
@@ -66,8 +77,6 @@ if(APPLE)
     set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
 
-
-
 set ( ide_moc_hdr
     core/main.hpp
     core/sig_mux.hpp
@@ -90,7 +99,6 @@ set ( ide_moc_hdr
     widgets/session_switch_dialog.hpp
     widgets/sessions_dialog.hpp
     widgets/tool_box.hpp
-    widgets/help_browser.hpp
     widgets/audio_status_box.hpp
     widgets/lang_status_box.hpp
     widgets/code_editor/editor.hpp
@@ -112,11 +120,6 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
-    widgets/util/WebSocketTransport.hpp
-    widgets/util/WebSocketClientWrapper.hpp
-    widgets/util/IDEWebChannelWrapper.hpp
-
-    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)
@@ -148,7 +151,6 @@ set ( ide_src
     widgets/multi_editor.cpp
     widgets/post_window.cpp
     widgets/session_switch_dialog.cpp
-    widgets/help_browser.cpp
     widgets/audio_status_box.cpp
     widgets/lang_status_box.cpp
     widgets/code_editor/editor.cpp
@@ -169,10 +171,7 @@ set ( ide_src
     widgets/util/docklet.cpp
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
-    widgets/util/WebSocketTransport.cpp
     widgets/style/style.cpp
-
-    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
@@ -187,6 +186,24 @@ set ( ide_src
     ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.tab.cpp
     ${CMAKE_SOURCE_DIR}/SCDoc/lex.scdoc.cpp
 )
+
+set(ide_webengine_moc_hdrs
+    widgets/help_browser.hpp
+    widgets/util/WebSocketTransport.hpp
+    widgets/util/WebSocketClientWrapper.hpp
+    widgets/util/IDEWebChannelWrapper.hpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
+)
+set(ide_webengine_src
+    widgets/help_browser.cpp
+    widgets/util/WebSocketTransport.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
+)
+
+if(SC_USE_QTWEBENGINE)
+    list(APPEND ide_moc_hdr ${ide_webengine_moc_hdrs})
+    list(APPEND ide_src ${ide_webengine_src})
+endif()
 
 set( ide_forms
     forms/settings_dialog.ui
@@ -332,6 +349,10 @@ if(LTO)
                  APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
+if(SC_USE_QTWEBENGINE)
+    message(STATUS "IDE: Building with QtWebEngine")
+    target_compile_definitions(SuperCollider PUBLIC SC_USE_QTWEBENGINE)
+endif()
 
 # Installation
 
