@@ -212,16 +212,18 @@ UnitTest {
 	// waits for condition with a maxTime limit
 	// if time expires, the test is a failure
 	wait { |condition, failureMessage, maxTime = 10.0|
-		var limit = maxTime / 0.05;
+
+		var limit = max(maxTime / 0.05, 1);
+		var dt = min(maxTime, 0.1);
 
 		while {
-			condition.value.not and:
-			{(limit = limit - 1) > 0}
+			limit = limit - 1;
+			condition.test.not and: { limit >= 0 }
 		} {
-			0.05.wait;
+			dt.wait;
 		};
 
-		if(limit == 0 and: failureMessage.notNil) {
+		if(limit < 0 and: failureMessage.notNil) {
 			this.failed(currentMethod,failureMessage)
 		}
 	}
