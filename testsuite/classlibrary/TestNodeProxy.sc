@@ -235,4 +235,14 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(oldProxy.nodeMap, newProxy.nodeMap);
 	}
 
+	test_copy_independent {
+		var copied;
+		proxy.source = 1967;
+		copied = proxy.copy;
+		copied.source = 1968;
+		this.assertEquals(proxy.source, 1967, "copying a proxy should return an independent object");
+	}
+
+
+
 }
