@@ -56,6 +56,10 @@ NetAddr {
 			}
 		}
 	}
+	
+	*connections {
+		^connections.copy;
+	}
 
 	hostname_ { arg inHostname;
 		hostname = inHostname;
@@ -140,7 +144,7 @@ NetAddr {
 	connect { | disconnectHandler |
 		if (this.isConnected.not) {
 			this.prConnect;
-			connections.put(this, disconnectHandler);
+			connections.put(this, disconnectHandler ? {});
 		}
 	}
 
