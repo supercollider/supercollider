@@ -57,7 +57,6 @@ option(NOVA_SIMD "Build plugins with nova-simd support." ON)
 ####################################################################################################
 # include libraries
 
-include_directories(${SC_PATH}/external_libraries/boost)
 if (NOVA_SIMD)
 	add_definitions(-DNOVA_SIMD)
 	include_directories(${SC_PATH}/external_libraries/nova-simd)
