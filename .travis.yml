@@ -49,7 +49,6 @@ script:
 
 before_deploy:
  # required for github releases
- - git fetch --tags
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
  - export S3_BUILDS_LOCATION=builds/$BUILD_PREFIX
  - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$TRAVIS_COMMIT.zip
