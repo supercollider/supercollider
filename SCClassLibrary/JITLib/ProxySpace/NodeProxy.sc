@@ -1051,7 +1051,7 @@ Ndef : NodeProxy {
 	}
 
 	copy { |toKey|
-		if(toKey.isNil or: { key == toKey }) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
 
