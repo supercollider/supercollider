@@ -173,6 +173,12 @@ Platform {
 		^this.primitiveFailed
 	}
 
+	// Architecture for which this version of SuperCollider was built.
+	*architecture {
+		_Platform_architecture
+		^this.primitiveFailed
+	}
+
 	isSleeping { ^false } // unless defined otherwise
 
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).
