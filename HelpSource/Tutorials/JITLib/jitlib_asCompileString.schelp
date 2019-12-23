@@ -67,7 +67,7 @@ Ndef('a').set('freq', 123);
 );
 "
 
-// anonymous nodeproxy - returns example code with globar var a = ...
+// anonymous nodeproxy - returns example code with interpreter variable "a = ..."
 z = NodeProxy.new.source = { DC.ar };
 z.asCode
 // returns:
