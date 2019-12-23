@@ -34,7 +34,6 @@ DocumentListWidget::DocumentListWidget(DocumentManager* manager, QWidget* parent
     connect(manager, SIGNAL(opened(Document*, int, int)), this, SLOT(onOpen(Document*, int, int)));
     connect(manager, SIGNAL(closed(Document*)), this, SLOT(onClose(Document*)));
     connect(manager, SIGNAL(saved(Document*)), this, SLOT(onSaved(Document*)));
-    connect(&mModificationMapper, SIGNAL(mapped(QObject*)), this, SLOT(onModificationChanged(QObject*)));
     connect(this, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(onItemClicked(QListWidgetItem*)));
 
     setDragDropMode(QAbstractItemView::InternalMove);
@@ -87,8 +86,7 @@ void DocumentListWidget::onSaved(Document* doc) {
         item->setText(doc->title());
 }
 
-void DocumentListWidget::onModificationChanged(QObject* obj) {
-    Document* doc = qobject_cast<Document*>(obj);
+void DocumentListWidget::onModificationChanged(Document* doc) {
     Item* item = itemFor(doc);
     if (item)
         item->setIcon(doc->textDocument()->isModified() ? mDocModifiedIcon : QIcon());
@@ -109,8 +107,7 @@ DocumentListWidget::Item* DocumentListWidget::addItemFor(Document* doc) {
     if (tdoc->isModified())
         item->setIcon(mDocModifiedIcon);
 
-    mModificationMapper.setMapping(tdoc, doc);
-    connect(tdoc, SIGNAL(modificationChanged(bool)), &mModificationMapper, SLOT(map()));
+    connect(tdoc, &QTextDocument::modificationChanged, [this, doc](bool) { onModificationChanged(doc); });
 
     return item;
 }

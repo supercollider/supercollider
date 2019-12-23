@@ -34,12 +34,23 @@ ClassMethods::
 
 private::initClass
 
+method::all
+A global link::Classes/IdentityDictionary:: with all proxies.
+
+
+
 subsection::Creation
 
 method::new
 Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdefn creates a link::Classes/Prout:: with this function, passing in the envir, if given(see below).
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
+
+argument::key
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+argument::item
+An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
 code::
 

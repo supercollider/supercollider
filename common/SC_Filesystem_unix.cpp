@@ -32,6 +32,11 @@
 // system
 #    include <glob.h> // ::glob, glob_t
 
+// workaround for musl not yet supporting GLOB_TILDE
+#    ifndef GLOB_TILDE
+#        define GLOB_TILDE 0
+#    endif
+
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;

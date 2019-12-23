@@ -98,7 +98,7 @@ if (AUDIOAPI STREQUAL jack)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK" ${JACK_DEFINITIONS})
 	include_directories(${JACK_INCLUDE_DIRS})
 elseif (AUDIOAPI STREQUAL portaudio)
-	list(APPEND scsynth_sources SC_PortAudio.cpp)
+	list(APPEND scsynth_sources SC_PortAudio.cpp ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
 endif()
@@ -199,7 +199,8 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices -framework Foundation")
+	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices"
+                                        "-framework Foundation -framework AppKit")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")

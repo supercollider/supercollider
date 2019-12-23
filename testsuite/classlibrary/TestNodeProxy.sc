@@ -171,5 +171,21 @@ TestNodeProxy : UnitTest {
 		p[\a].free;
 		p.pop;
 	}
+  
+	test_schedAfterFade_notPlaying {
+		var ok = false;
+		proxy.fadeTime = 0.1;
+		proxy.schedAfterFade { ok = true };
+		this.assert(ok, "if not playing, schedAfterFade should happen immediately");
+	}
+
+	test_schedAfterFade {
+		var ok = false;
+		proxy.fadeTime = 0.1;
+		proxy.source = { Silent.ar };
+		proxy.schedAfterFade { ok = true };
+		0.11.wait;
+		this.assert(ok, "if playing, schedAfterFade should happen right after fadeTime");
+	}
 
 }

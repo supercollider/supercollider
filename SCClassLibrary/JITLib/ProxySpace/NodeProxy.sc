@@ -896,17 +896,23 @@ NodeProxy : BusPlug {
 	// allocation
 
 	freeBus {
-		var oldBus = bus, c;
+		var oldBus = bus;
 		if(oldBus.isNil) { ^this };
-		if(this.isPlaying) {
-			c = (clock ? TempoClock.default);
-			c.sched(server.latency ? 0.01 + quant.nextTimeOnGrid(c) + this.fadeTime, { oldBus.free(true); nil });
-			CmdPeriod.doOnce { if(oldBus.index.notNil) { oldBus.free(true) } };
-		} {
-			oldBus.free(true)
-		};
+		this.schedAfterFade({
+			if(oldBus.index.notNil) { oldBus.free(true) }
+		});
 		busArg = bus = nil;
 		busLoaded = false;
+	}
+
+	schedAfterFade { |func|
+		var usedClock, time;
+		if(this.isPlaying, {
+			usedClock = clock ? TempoClock.default;
+			time = this.fadeTime + (server.latency ? 0.01) + (quant ? 0).nextTimeOnGrid(usedClock);
+			usedClock.schedAbs(time, { func.value; func = nil });
+			CmdPeriod.doOnce { func.value; func = nil };
+		}, func)
 	}
 
 	reallocBusIfNeeded { // bus is reallocated only if the server was not booted on creation.

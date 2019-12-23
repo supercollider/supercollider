@@ -28,6 +28,11 @@
 #    endif
 #endif
 
+// AppleClang workaround
+#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
 #include <boost/asio/ip/tcp.hpp>
 
 #include <boost/enable_shared_from_this.hpp>
@@ -45,6 +50,8 @@
 #include "../utilities/sized_array.hpp"
 #include "../utilities/static_pool.hpp"
 #include "../utilities/time_tag.hpp"
+
+struct FifoMsg;
 
 namespace nova {
 
@@ -244,6 +251,7 @@ public:
         sc_osc_handler* osc_handler;
         boost::endian::big_int32_t msg_size_;
         std::vector<char> msg_buffer_;
+        std::mutex socket_mutex_;
     };
 
 private:
@@ -322,7 +330,11 @@ public:
 
     void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
-                                 void* completionMsgData);
+                                 void* completionMsgData) const;
+
+    void send_message_from_RT(const World* world, FifoMsg& msg) const;
+
+    void send_message_to_RT(const World* world, FifoMsg& msg) const;
 
     bool quit_received = false;
 

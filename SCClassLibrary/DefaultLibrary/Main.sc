@@ -40,8 +40,13 @@ Main : Process {
 				"scel",  {"For help type C-c C-y."},
 				"sced",  {"For help type ctrl-U."},
 				"scapp", {"For help type cmd-d."},
-				"scqt", {"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))}
-			) ?? {
+				"scqt", {
+					if (Platform.hasQtWebEngine) {
+						"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))
+					} {
+						"For help visit http://doc.sccode.org" // Help browser is not available
+					}
+			}) ?? {
 				(
 					osx: "For help type cmd-d.",
 					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",

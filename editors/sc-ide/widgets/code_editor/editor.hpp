@@ -41,10 +41,19 @@ class GenericCodeEditor : public QPlainTextEdit {
 
 public:
     GenericCodeEditor(Document*, QWidget* parent = NULL);
+    ~GenericCodeEditor();
+
+    // Rule of 5 -- with an explicit dtor, make sure that copy ctor/assign and move
+    // ctor/assign are deleted.
+    // If these must be implemented in the future, make sure they take care of
+    // mDoc->lastActiveEditor() appropriately. See source of dtor method.
+    GenericCodeEditor(const GenericCodeEditor& other) = delete;
+    GenericCodeEditor& operator=(const GenericCodeEditor& other) = delete;
+    GenericCodeEditor(GenericCodeEditor&& other) = delete;
+    GenericCodeEditor& operator=(GenericCodeEditor&& other) = delete;
 
     Document* document() { return mDoc; }
     QTextDocument* textDocument() { return QPlainTextEdit::document(); }
-    void setDocument(Document*);
     bool showWhitespace();
     bool showLinenumber();
     bool find(const QRegExp& expr, QTextDocument::FindFlags options = 0);
@@ -120,7 +129,9 @@ protected:
     QWidget* mOverlayWidget;
     OverlayAnimator* mOverlayAnimator;
 
-    Document* mDoc;
+    // If this "const" is removed in the future, make sure to handle mDoc->lastActiveEditor()
+    // correctly (see source of dtor method for this class).
+    Document* const mDoc;
 
     bool mHighlightCurrentLine;
     bool mEditorBoxIsActive;
