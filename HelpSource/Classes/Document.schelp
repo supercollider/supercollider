@@ -239,6 +239,20 @@ Task({
 )
 ::
 
+method:: save
+Save this Document.
+argument:: path
+An optional instance of link::Classes/String:: indicating the path to save the Document. If a path is not provided, the current path (if it has been previously saved or read) is used. After a successful save, this Document's path will be updated if needed.
+code::
+d = Document.new("testSave", "foo");
+d.save(Platform.defaultTempDir ++ "foo.scd"); // saved in the temp dir
+d.string_("foobar", 0, 3);
+d.save; // save at previous path
+d.string_("save as now", 0, 6);
+d.save(Platform.defaultTempDir ++ "savedAs.scd");
+d.path;
+::
+
 method:: front
 Bring a document to the front.
 code::
