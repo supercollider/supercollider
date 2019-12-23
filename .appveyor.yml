@@ -143,6 +143,8 @@ deploy:
   artifact: art_folder
   unzip: true
   set_public: true
+  on:
+    appveyor_repo_name: supercollider/supercollider
 
 # github releases - only tags
 - provider: GitHub

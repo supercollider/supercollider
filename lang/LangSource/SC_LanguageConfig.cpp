@@ -41,7 +41,7 @@ static const char* INCLUDE_PATHS = "includePaths";
 static const char* EXCLUDE_PATHS = "excludePaths";
 static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
 static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
-static const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
+const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
 
 using DirName = SC_Filesystem::DirName;
 namespace bfs = boost::filesystem;

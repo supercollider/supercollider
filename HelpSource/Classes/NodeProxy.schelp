@@ -366,6 +366,14 @@ reset everything to nil, neutralizes rate/numChannels
 argument::fadeTime
 if a fadeTime is given, first fade out, then clear.
 
+method::schedAfterFade
+
+Calls a function after the fadeTime and server latency have passed. If the proxy specifies a code::quant:: value, the function is evaluated code::fadeTime + latency:: seconds after the next timepoint on the quant grid; otherwise, the fade delay begins immediately.
+
+argument::func
+a function to be called at the appropriate time
+
+
 subsection::Accessing Instance Variables
 
 method::sources

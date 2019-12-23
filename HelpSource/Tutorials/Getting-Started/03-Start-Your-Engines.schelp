@@ -28,15 +28,17 @@ s.boot;
 
 Try this out and then leave the server running. Many examples in the documentation have code::s.boot:: at the beginning, but in general you should make sure the server is running before using any examples that generate audio, or otherwise access the server. In general the examples in this tutorial assume that the server is running.
 
-You can also refer to the localhost server with the text code::Server.local::, for example:
+You can also refer to the default server with the text code::Server.default::, for example:
 
 code::
-Server.local.boot;
+Server.default.boot;
 ::
 
 For more information see:
 
 link::Classes/Server::
+
+link::Reference/AudioDeviceSelection::
 
 ____________________
 

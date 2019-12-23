@@ -152,7 +152,7 @@ x.free;
 
 section::Some Notes on Symbols, Strings, SynthDef and Arg Names
 
-SynthDef names and argument names can be either a String, as we've seen above, or another kind of literal called a Symbol. You write symbols in one of two ways, either enclosed in single quotes: code::'tutorial-SinOsc':: or preceded by a backslash: code::\tutorial-SinOsc::. Like Strings Symbols are made up of alpha-numeric sequences. The difference between Strings and Symbols is that all Symbols with the same text are guaranteed to be identical, i.e. the exact same object, whereas with Strings this might not be the case. You can test for this using '==='. Execute the following and watch the post window.
+SynthDef names and argument names can be either a String, as we've seen above, or another kind of literal called a Symbol. You write symbols in one of two ways, either enclosed in single quotes: code::'tutorial_SinOsc':: or preceded by a backslash: code::\tutorial_SinOsc::. Like Strings Symbols are made up of alpha-numeric sequences. The difference between Strings and Symbols is that all Symbols with the same text are guaranteed to be identical, i.e. the exact same object, whereas with Strings this might not be the case. You can test for this using '==='. Execute the following and watch the post window.
 
 code::
 "a String" === "a String"; 	// this will post false

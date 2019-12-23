@@ -25,8 +25,8 @@
 #include "../type_codec.hpp"
 #include "../QcApplication.h"
 #include "../QObjectProxy.h"
-#include "../widgets/QcWebView.h"
 #include "../style/style.hpp"
+#include "../QcCallback.hpp"
 #include "QtCollider.h"
 
 #ifdef Q_OS_MAC
@@ -41,8 +41,8 @@
 #include <QFontMetrics>
 #include <QDesktopWidget>
 #include <QStyleFactory>
-#include <QWebEngineSettings>
 #include <QCursor>
+#include <QScreen>
 
 namespace QtCollider {
 
@@ -60,7 +60,7 @@ QC_LANG_PRIMITIVE(QWindow_ScreenBounds, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g)
     if (!QcApplication::compareThread())
         return QtCollider::wrongThreadError();
 
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    QRect screenGeometry = QApplication::primaryScreen()->geometry();
     QtCollider::set(r, screenGeometry);
     return errNone;
 }
@@ -69,7 +69,7 @@ QC_LANG_PRIMITIVE(QWindow_AvailableGeometry, 0, PyrSlot* r, PyrSlot* a, VMGlobal
     if (!QcApplication::compareThread())
         return QtCollider::wrongThreadError();
 
-    QRect rect = QApplication::desktop()->availableGeometry();
+    QRect rect = QApplication::primaryScreen()->availableGeometry();
     QtCollider::set(r, rect);
     return errNone;
 }

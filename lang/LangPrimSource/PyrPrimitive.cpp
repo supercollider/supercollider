@@ -3643,9 +3643,11 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals* g, int numArgsPush
             return errWrongType;
 
         config_path = SC_Codecvt::utf8_str_to_path(path);
-        gLanguageConfig->writeLibraryConfigYAML(config_path);
     } else {
-        config_path = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig) / "sclang_conf.yaml";
+        config_path = SC_Codecvt::path_to_utf8_str(gLanguageConfig->getConfigPath());
+        if (config_path.empty())
+            config_path = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
+                / SCLANG_YAML_CONFIG_FILENAME;
     }
 
     if (!gLanguageConfig->writeLibraryConfigYAML(config_path))

@@ -183,7 +183,11 @@ if(SC_QT OR SC_IDE)
 	message(STATUS "Found Qt: " ${QtCore_location} )
     get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
-	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+    if(SC_USE_QTWEBENGINE)
+        message(STATUS "sclang: Building with QtWebEngine")
+        target_compile_definitions(libsclang PUBLIC SC_USE_QTWEBENGINE)
+    endif()
+    target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()
 
 if(FALSE) # libsclang is a shared library

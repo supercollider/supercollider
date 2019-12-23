@@ -428,6 +428,20 @@ Very important: Arrays normally multi-channel expand in patterns. So, you must w
 subsection::Miscellaneous
 
 definitionList::
+## composite || Perform any number of event types, given as ~types. You should ensure that parameters are compatible. It is possible, using code::\composite::, to play a synth and send MIDI for the same pitches. It is not possible to use one frequency for the synth and a different one for MIDI, in the same event (you would need two different events for that case).
+
+definitionList::
+## types || An array of Symbols, listing the Event types to be performed.
+::
+
+code::
+MIDIClient.init;
+m = MIDIOut(0);
+
+// should play a synth *and* an external MIDI note simultaneously
+(type: \composite, types: [\note, \midi], midiout: m, degree: 0, dur: 3).play;
+::
+
 ## phrase || See link::Tutorials/JITLib/recursive_phrasing::.
 
 ## setProperties || Set variables belonging to a given object. One possible use is to control a GUI using a pattern.

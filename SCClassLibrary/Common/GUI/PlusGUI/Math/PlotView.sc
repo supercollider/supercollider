@@ -159,7 +159,7 @@ Plot {
 				0.5.dup(size) // put the values in the middle of the plot
 			} {
 				domainSpec.unmap(
-					(domainSpec.minval, domainSpec.minval + (range / (size-1)) .. domainSpec.maxval)
+					Array.interpolation(size, domainSpec.minval, domainSpec.maxval)
 				);
 			}
 		};

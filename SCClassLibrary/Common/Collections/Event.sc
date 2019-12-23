@@ -25,14 +25,23 @@ Event : Environment {
 
 	// event types
 
-	*addEventType { arg type, func, parentEvent;
+	*addEventType { |type, func, parentEvent|
 		partialEvents.playerEvent.eventTypes.put(type, func);
 		this.addParentType(type, parentEvent)
 	}
 
-	*addParentType { arg type, parentEvent;
+	*addParentType { |type, parentEvent|
 		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
 		partialEvents.playerEvent.parentTypes.put(type, parentEvent)
+	}
+
+	*removeEventType { |type|
+		Event.removeParentType(type);
+		partialEvents.playerEvent.eventTypes.removeAt(type);
+	}
+
+	*removeParentType { |type|
+		partialEvents.playerEvent.parentTypes.removeAt(type)
 	}
 
 	*parentTypes {
@@ -968,6 +977,14 @@ Event : Environment {
 							server.sendBundle(server.latency, *~bundle);
 						};
 						~bundle = nil;
+					},
+
+					composite: { |server|
+						~resultEvents = ~types.collect { |type|
+							if(type != \composite) {
+								currentEnvironment.copy.put(\type, type).play;
+							};
+						};
 					}
 				)
 			)
