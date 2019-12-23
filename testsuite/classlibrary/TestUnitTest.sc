@@ -73,12 +73,5 @@ TestUnitTest : UnitTest {
 	test_assertNoException_nonThrowingFunction {
 		this.assertNoException({ try { 1789.monarchy } }, "assertNoThrow should return true for not an error")
 	}
-
-	/*** IF YOU ADD MORE TESTS, UPDATE THE numTestMethods var ***/
-	// test_findTestMethods {
-	// 	var numTestMethods = 7;
-	// 	this.assert( this.findTestMethods.size == numTestMethods, "should be " + numTestMethods + " test methods");
-	// }
-
 }
 
