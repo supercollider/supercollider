@@ -610,6 +610,7 @@ void DocumentManager::handleScLangMessage(const QString& selector, const QString
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString removeDocUndoSelector("removeDocUndo");
     static QString closeDocSelector("closeDocument");
+    static QString saveDocSelector("saveDocument");
     static QString setDocTitleSelector("setDocumentTitle");
     static QString enableGlobalKeyDownSelector("enableDocumentGlobalKeyDownAction");
     static QString enableGlobalKeyUpSelector("enableDocumentGlobalKeyUpAction");
@@ -652,6 +653,9 @@ void DocumentManager::handleScLangMessage(const QString& selector, const QString
 
     if (selector == closeDocSelector)
         handleCloseDocScRequest(data);
+
+    if (selector == saveDocSelector)
+        handleSaveDocScRequest(data);
 
     if (selector == setDocTitleSelector)
         handleSetDocTitleScRequest(data);
@@ -944,6 +948,26 @@ void DocumentManager::handleCloseDocScRequest(const QString& data) {
             Document* document = documentForId(id.c_str());
             if (document) {
                 close(document);
+            }
+        }
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
+        return;
+    }
+}
+
+void DocumentManager::handleSaveDocScRequest(const QString& data) {
+    try {
+        YAML::Node doc = YAML::Load(data.toStdString());
+        if (doc) {
+            if (!doc.IsSequence())
+                return;
+
+            std::string id = doc[0].as<std::string>();
+            std::string path = doc[1].as<std::string>();
+            Document* document = documentForId(id.c_str());
+            if (document) {
+                saveAs(document, QString::fromUtf8(path.c_str()));
             }
         }
     } catch (std::exception const& e) {
