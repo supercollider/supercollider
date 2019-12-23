@@ -280,7 +280,7 @@ Pdefn : PatternProxy {
 		^this.class.new(toKey).copyState(this)
 	}
 
-	dup { |n = 2| ^{ this }.dup(n) }
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -423,7 +423,7 @@ Tdef : TaskProxy {
 		^this.class.new(toKey).copyState(this)
 	}
 
-	dup { |n = 2| ^{ this }.dup(n) }
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 
 	prAdd { arg argKey;
@@ -618,7 +618,7 @@ Pdef : EventPatternProxy {
 		^this.class.new(toKey).copyState(this)
 	}
 
-	dup { |n = 2| ^{ this }.dup(n) }
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	*hasGlobalDictionary { ^true }
 

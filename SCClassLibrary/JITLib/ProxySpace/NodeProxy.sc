@@ -1055,7 +1055,7 @@ Ndef : NodeProxy {
 		^this.class.new(toKey).copyState(this)
 	}
 
-	dup { |n = 2| ^{ this }.dup(n) }
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	proxyspace {
 		^this.class.dictFor(this.server)
