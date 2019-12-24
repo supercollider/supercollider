@@ -307,7 +307,6 @@ void SC_JackDriver::ConnectClientOutputs(const char* pattern) {
 }
 
 
-
 bool SC_JackDriver::DriverStart() {
     if (!mClient)
         return false;
@@ -377,14 +376,14 @@ void SC_JackDriver::Run() {
     World* world = mWorld;
 
     mDLL.Update(jackOscTimeSeconds());
-#    if SC_JACK_DEBUG_DLL
+#if SC_JACK_DEBUG_DLL
     static int tick = 0;
     if (++tick >= 10) {
         tick = 0;
         scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f inc %.9f\n", mDLL.PeriodTime(), mDLL.Period(),
                  mDLL.SampleRate(), mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
     }
-#    endif
+#endif
 
 
     try {
