@@ -66,11 +66,12 @@ passing the code::inval:: argument as the return value of code::yield::.
 link::#-stop:: has been called).
 ::
 
-Since Routine inherits from link::Classes/Thread::, it will become the
+code::thisThread:: : Since Routine inherits from link::Classes/Thread::, it will become the
 emphasis::current thread:: when it is started or resumed; i.e.
 link::Classes/Thread#.thisThread#thisThread:: used in the Routine Function will return
-the Routine. It will inherit the parent thread's logical time and clock
-(see link::Classes/Thread#-parent::).
+the Routine.
+
+Time: Just before code::next:: is called, code::thisThread:: points either to another Routine, or the top-level Thread. During the code::next:: call, this becomes the parent thread (see link::Classes/Thread#-parent::). code::next:: then evaluates on the parent's clock, at the parent's logical time.
 
 Synonyms for code::next:: are link::#-value:: and link::#-resume::.
 
@@ -162,9 +163,7 @@ See also: link::Classes/Object#-yield::, link::Classes/Object#-alwaysYield::
 
 method::play
 
-In the SuperCollider application, a Routine can be played using a link::Classes/Clock::, as can any link::Classes/Stream::.
-every time the Routine yields, it should do so with a float, the clock will interpret that, usually
-pausing for that many seconds, and then resume the routine, passing it the clock's current time.
+Schedules the Routine on the given link::Classes/Clock::, at a time specified by code::quant::. At that time, the Routine will wake up (by calling link::Classes/Routine#-awake::), setting the clock and time and evaluating the Routine. If the Routine yields a number, this number of beats will be added to the current time and the Routine will be rescheduled. (This behavior is compatible with scheduling a link::Classes/Stream:: or a link::Classes/Function::.)
 
 argument::clock
 a Clock, TempoClock by default
