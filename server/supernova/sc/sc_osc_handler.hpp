@@ -228,9 +228,14 @@ private:
 public:
     class tcp_connection : public nova_endpoint {
     public:
-        typedef std::shared_ptr<tcp_connection> pointer;
+        using pointer = std::shared_ptr<tcp_connection>;
+#if BOOST_VERSION >= 107000
+        using executor = boost::asio::executor;
+#else
+        using executor = boost::asio::io_context::executor_type;
+#endif
 
-        static pointer create(boost::asio::io_service& io_service) { return pointer(new tcp_connection(io_service)); }
+        static pointer create(const executor& executor) { return pointer(new tcp_connection(executor)); }
 
         tcp::socket& socket() { return socket_; }
 
@@ -239,7 +244,11 @@ public:
         bool operator==(tcp_connection const& rhs) const { return &rhs == this; }
 
     private:
-        tcp_connection(boost::asio::io_service& io_service): socket_(io_service) {}
+#if BOOST_VERSION >= 107000
+        tcp_connection(const executor& executor): socket_(executor) {}
+#else
+        tcp_connection(const executor& executor): socket_(executor.context()) {}
+#endif
 
         void send(const char* data, size_t length) override final;
 

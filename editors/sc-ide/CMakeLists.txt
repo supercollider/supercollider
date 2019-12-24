@@ -389,6 +389,8 @@ if(APPLE)
 
     # set how it shows up in the Info.plist file
     SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
+    # ensure copyright in plist file always says current year as end date
+    string(TIMESTAMP CURRENT_YEAR "%Y")
 
     install(TARGETS SuperCollider
           DESTINATION ${scappbundlename})
