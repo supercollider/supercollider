@@ -16,7 +16,7 @@ Release dates of 3.x versions:
 3.10.4-rc2 (2019-12-24)
 =======================
 
-Fix copyrigth year ([#4694](https://github.com/supercollider/supercollider/pull/4694)).
+Fix copyright year ([#4694](https://github.com/supercollider/supercollider/pull/4694)).
 
 Bundle libsndfile to the release builds ([#4691, #4684](https://github.com/supercollider/supercollider/pull/4691)).
 
