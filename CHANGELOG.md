@@ -13,6 +13,13 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
+3.10.4-rc2 (2019-12-24)
+=======================
+
+Updateto boost 1.71 ([#4612](https://github.com/supercollider/supercollider/pull/4612)).
+
+Travis updates ([#4684](https://github.com/supercollider/supercollider/pull/4684)).
+
 3.10.4-rc1 (2019-12-15)
 =======================
 
