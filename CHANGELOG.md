@@ -18,7 +18,7 @@ Release dates of 3.x versions:
 
 Fix copyright year ([#4694](https://github.com/supercollider/supercollider/pull/4694)).
 
-Bundle libsndfile to the release builds ([#4691, #4684](https://github.com/supercollider/supercollider/pull/4691)).
+Bundle libsndfile to the release builds ([#4684](https://github.com/supercollider/supercollider/pull/4684)).
 
 Update to boost 1.71 ([#4612](https://github.com/supercollider/supercollider/pull/4612)).
 
