@@ -188,4 +188,9 @@ TestNodeProxy : UnitTest {
 		this.assert(ok, "if playing, schedAfterFade should happen right after fadeTime");
 	}
 
+	test_copy_fadeTimeIsCopied{
+        var oldProxy = proxy.fadeTime_(33);
+        var newProxy = oldProxy.copy;
+        this.assertEquals(oldProxy.fadeTime, newProxy.fadeTime);
+    }
 }
