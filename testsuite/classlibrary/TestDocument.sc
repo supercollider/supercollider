@@ -24,7 +24,7 @@ TestDocument : UnitTest {
 	}
 
 	test_open_autorun_document_runs_code {
-		var path = PathName.tmp +/+ "autoRunTest%.scd".format(UniqueID.next),
+		var path = Platform.defaultTempDir +/+ "autoRunTest%.scd".format(UniqueID.next),
 		file, doc;
 		if(Platform.ideName == "scqt") {
 			if(File.exists(path)) {
