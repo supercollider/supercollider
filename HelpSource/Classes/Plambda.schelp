@@ -3,6 +3,10 @@ summary:: create a scope (namespace) for enclosed streams
 related:: Classes/Penvir, Classes/Pkey
 categories:: Streams-Patterns-Events>Patterns>Data Sharing
 
+Plambda is used to create a namespace for patterns to share data among each other.
+
+Used in combination with link::Classes/Plet:: and link::Classes/Pget::, it allows you to get the output of a pattern from one stream and use it in another stream and as such create a dataspace for your patterns.
+
 ClassMethods::
 
 method::new
@@ -16,10 +20,39 @@ an event with default bindings (can be nil).
 Examples::
 
 code::
-// Plet, Pget and Plambda.
-// Plet(key, stream, return)
-// Pget(key, default, repeats)
+/*
 
+A simple example:
+Two patterns playing in parallel,
+sharing data between eachother
+
+*/
+(
+	// a melody playing random scale degrees
+	a = Pbind(
+		\dur, 0.125,
+		\octave, 4,
+		\degree, Plet(\melody, pattern: Pwhite(0,7))
+	);
+
+	// the bass, scale degrees sampled from the \melody variable defined above
+	b = Pbind(
+		\dur, 0.5,
+		\octave, 3,
+		\degree, Pget(\melody, default: 1, repeats: inf).trace
+	);
+
+	// Play the patterns in parallel
+	Plambda(
+		Ppar([a, b], inf)
+	).play;
+)
+/*
+
+A more complex example:
+Three patterns running in parallel
+
+*/
 (
 SynthDef(\sine,
 	{ arg out=0, freq=440, sustain=0.05, pan=0, amp=0.1;
@@ -42,11 +75,11 @@ a = Plambda(
 	Pbind(\note, Pget(\x, 0, 6) + [0, 5], \dur, Pstutter(inf, Prand([2/3, 1/6])))
 	], inf).trace(\eventScope) // internally, the values are shared via \eventScope
 );
+
 b = Pbindf(a, \instrument, \sine, \legato, 0.1);
 b.play
 )
 
-// this structure remains parallelizable
-
+// Play two copies of the complex pattern above in parallel, one of them transposed and playing with shorter durations
 Ppar([b, Pbindf(b, \ctranspose, 24, \dur, Pkey(\dur) * 0.25)]).play;
 ::

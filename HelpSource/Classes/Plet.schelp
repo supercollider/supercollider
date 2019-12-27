@@ -1,0 +1,73 @@
+TITLE:: Plet
+summary:: Define a value within the scope (namespace) of a Plambda
+categories:: Streams-Patterns-Events>Patterns>Data Sharing
+related:: Classes/Plambda, Classes/Pget
+
+DESCRIPTION::
+link::Classes/Plet::/link::Classes/Pget:: are used to share data between patterns inside of a link::Classes/Plambda::
+
+Plet defines a variable containing a pattern or data for sharing within the scope of a link::Classes/Plambda::. 
+
+Using the link::Classes/Pget:: class, the contents of this variable can then be accessed by key in other patterns within the link::Classes/Plambda::.
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: key
+The name of the variable
+
+ARGUMENT:: pattern
+The contents of the variable
+
+ARGUMENT:: return
+If return is nil, the pattern will be returned.
+If not nil, the contents of the return argument will be returned while the variable defined by the Plet will be set to the value of pattern
+
+INSTANCEMETHODS::
+
+METHOD:: storeArgs
+
+METHOD:: embedInStream
+
+ARGUMENT:: inval
+
+METHOD:: pattern
+
+METHOD:: silent
+
+METHOD:: key
+
+METHOD:: return
+
+EXAMPLES::
+
+code::
+(
+	/*
+
+	Two patterns playing in parallel, 
+	sharing data between eachother
+
+	*/
+
+	// a melody playing random scale degrees
+	a = Pbind(
+		\dur, 0.125, 
+		\octave, 4,
+		\degree, Plet(\melody, pattern: Pwhite(0,7))
+	);
+
+	// the bass, scale degrees sampled from the \melody variable defined above 
+	b = Pbind(
+		\dur, 0.5, 
+		\octave, 3,
+		\degree, Pget(\melody, default: 1, repeats: inf).trace
+	);
+
+	// Play the patterns in parallel
+	Plambda(
+		Ppar([a, b], inf)
+	).play;
+)
+::
