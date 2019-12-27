@@ -278,6 +278,8 @@ void EditorPage::store(Manager* s) {
         else
             theme->remove();
     }
+
+    ui->themeCopyBtn->setDisabled(false);
     s->updateTheme();
 }
 
@@ -462,6 +464,7 @@ void EditorPage::dialogCopyTheme() {
             mThemes.insert(newThemeName, theme);
             ui->themeCombo->addItem(newThemeName);
             ui->themeCombo->setCurrentIndex(ui->themeCombo->findText(newThemeName));
+            ui->themeCopyBtn->setDisabled(true);
             updateTheme(newThemeName);
         }
     }
