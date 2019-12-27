@@ -250,19 +250,6 @@ a.put(3, 1);
 [ nil, nil, nil, 1 ]
 ::
 
-section:: A common network error
-
-code::
-Exception in World_OpenUDP: unable to bind udp socket
-::
-This is because you have multiple servers running, left over from crashes, unexpected quits etc.
-One can't cause them to quit via OSC (the boot button).
-
-use this to remove them:
-code::
-Server.killAll
-::
-
 section:: A common warning
 code::
 WARNING: FunctionDef contains variable declarations and so will not be inlined.
