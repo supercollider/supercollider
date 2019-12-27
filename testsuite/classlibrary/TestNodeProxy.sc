@@ -188,4 +188,52 @@ TestNodeProxy : UnitTest {
 		this.assert(ok, "if playing, schedAfterFade should happen right after fadeTime");
 	}
 
+	test_copy_fadeTimeIsCopied {
+        var oldProxy = proxy.fadeTime_(33);
+        var newProxy = oldProxy.copy;
+        this.assertEquals(oldProxy.fadeTime, newProxy.fadeTime);
+    }
+
+	test_copy_awakeIsCopied {
+		var oldProxy = proxy.awake_(false);
+		var newProxy = oldProxy.copy;
+
+		this.assertEquals(oldProxy.awake, newProxy.awake);
+	}
+
+	test_copy_clockIsCopied {
+		var oldProxy = proxy.clock_(TempoClock.new(2.182));
+		var newProxy = oldProxy.copy;
+
+		this.assertEquals(oldProxy.clock, newProxy.clock);
+	}
+
+	test_copy_quantIsCopied {
+		var oldProxy = proxy.quant_(4);
+		var newProxy = oldProxy.copy;
+
+		this.assertEquals(oldProxy.quant, newProxy.quant);
+	}
+
+	test_copy_pauseIsCopied {
+		var oldProxy = proxy.paused_(true);
+		var newProxy = oldProxy.copy;
+
+		this.assertEquals(oldProxy.paused, newProxy.paused);
+	}
+
+	test_copy_sourceIsCopied {
+		var oldProxy = proxy.source_({ Silent.ar });
+		var newProxy = oldProxy.copy;
+
+		this.assertEquals(oldProxy.source, newProxy.source);
+	}
+
+	test_copy_nodeMapIsCopied {
+		var oldProxy = proxy.source_({ Silent.ar });
+		var newProxy = oldProxy.copy;
+
+		this.assertEquals(oldProxy.nodeMap, newProxy.nodeMap);
+	}
+
 }

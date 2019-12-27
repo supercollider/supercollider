@@ -80,6 +80,9 @@ subsection::Accessing Class Variables
 copymethod:: BusPlug *defaultNumAudio
 copymethod:: BusPlug *defaultNumControl
 
+method::defaultFadeTime
+The overlap time between successive source replacements which all instances have by default. Each instance has its own value which can be set via code::fadeTime_::.
+
 private::buildProxy, buildProxyControl, addChild, addNodeMapControlNames, asCode, cleanNodeMap, getBundle, getFamily, getStructure, internalKeys, loadToBundle, moveBeforeMsg, prepareOtherObjects, prepareToBundle, putNewObject, reallocBusIfNeeded, rebuildDeepToBundle, rebuildToBundle, removeToBundle, sendAllToBundle, sendEachToBundle, sendObjectToBundle, serverQuit, shouldAddObject, stopAllToBundle, supplementNodeMap, typeStr, unsetToBundle, wakeUpParentsToBundle, wakeUpToBundle
 
 InstanceMethods::
