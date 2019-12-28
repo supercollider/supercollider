@@ -1345,7 +1345,7 @@ SCErr meth_version(World* inWorld, int inSize, char* inData, ReplyAddress* inRep
     packet.addtag('i');
     packet.addi(SC_VersionMinor);
     packet.addtag('s');
-    packet.adds(SC_VersionPatch);
+    packet.adds(SC_VersionPostfix);
     packet.addtag('s');
     packet.adds(SC_Branch);
     packet.addtag('s');

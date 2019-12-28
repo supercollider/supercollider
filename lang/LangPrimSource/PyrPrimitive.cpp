@@ -3690,7 +3690,13 @@ static int prVersionMinor(struct VMGlobals* g, int numArgsPushed) {
 
 static int prVersionPatch(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* result = g->sp;
-    SetObject(result, newPyrString(g->gc, SC_VersionPatch, 0, 1));
+    SetInt(result, SC_VersionPatch);
+    return errNone;
+}
+
+static int prVersionTweak(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* result = g->sp;
+    SetObject(result, newPyrString(g->gc, SC_VersionTweak, 0, 1));
     return errNone;
 }
 
@@ -4258,6 +4264,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
     definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
     definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
+    definePrimitive(base, index++, "_SC_VersionTweak", prVersionTweak, 1, 0);
 
     // void initOscilPrimitives();
     // void initControllerPrimitives();

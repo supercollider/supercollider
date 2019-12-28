@@ -1,4 +1,7 @@
-project (SuperCollider)
+cmake_minimum_required(VERSION 3.5)
+include(SCVersion.txt)
+# CMake versions can only consist of digits and periods, so don't use _TWEAK
+project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
@@ -8,11 +11,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
     set(LINUX_OR_BSD 1)
 endif()
 
-cmake_minimum_required (VERSION 3.5)
-
-include("SCVersion.txt")
-set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
-message(STATUS "SuperCollider Version: ${PROJECT_VERSION}")
+message(STATUS "SuperCollider Version: ${SC_VERSION}")
 message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
@@ -593,16 +592,17 @@ endif()
 #############################################
 # CPack support
 
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_MAJOR ${SC_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${SC_VERSION_MINOR})
+# No restriction on version strings unlike for project()
+set(CPACK_PACKAGE_VERSION_PATCH ${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
 
 if(APPLE)
 	set(CPACK_GENERATOR "DragNDrop")
 	set(CPACK_DMG_FORMAT "UDBZ")
 	set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
 	set(CPACK_SYSTEM_NAME "OSX")
-#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
+#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${SC_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
     set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/sc_ide.icns")
