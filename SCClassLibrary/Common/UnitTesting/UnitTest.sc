@@ -24,30 +24,14 @@ UnitTest {
 
 	}
 
-	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
-	*runTest { | methodName |
-		var class, method, unitTest;
-		# class, method = methodName.split($:);
-		class = class.asSymbol.asClass;
-		method = class.findMethod(method.asSymbol);
-		if(method.isNil) {
-			Error("Test method not found " + methodName).throw
-		};
-		class.new.runTestMethod(method);
-	}
-
-
 	// called before each test
 	setUp {}
 
 	// called after each test
 	tearDown {}
 
-	*run { | reset = true, report = true |
-		if(reset) { this.reset };
-		this.forkIfNeeded {
-			this.prRunAllTestMethods(report);
-		};
+	*run { |reset = true, report = true, postHeader = true|
+		this.new.run(reset, report, postHeader)
 	}
 
 	// run all UnitTest subclasses
@@ -62,31 +46,80 @@ UnitTest {
 		}
 	}
 
+	// run a single test in the name format "TestPolyPlayerPool:test_prepareChildrenToBundle"
+	*runTest { |methodName|
+		var class, method, unitTest;
+		# class, method = methodName.split($:);
+		class = class.asSymbol.asClass;
+		method.asSymbol;
+		method = class.findMethod(method.asSymbol);
+		if(method.isNil) { Error("Test method not found "+methodName).throw };
+		class.new.runTestMethod(method);
+	}
+
 	// run a single test method of this class
-	runTestMethod { | method, report = true |
+	runTestMethod { |method|
+		var function;
+		("RUNNING UNIT TEST" + this.class.name ++ ":" ++ method.name).inform;
 		this.class.forkIfNeeded {
 			this.setUp;
 			currentMethod = method;
 			this.perform(method.name);
 			this.tearDown;
-			if(report) { this.class.report };
-		}
-	}
-
-
-	*prRunAllTestMethods { |report = true|
-		"RUNNING UNIT TEST '%'".format(this.name).inform;
-		this.forkIfNeeded {
-			this.findTestMethods.do { |method|
-				this.new.runTestMethod(method, false)
-			};
-			if(report) { this.report };
+			this.class.report;
+			nil
 		}
 	}
 
 	*gui {
+		// UnitTest GUI written by Dan Stowell 2009.
+		var window, classlist, methodlist, lookUp;
+
 		this.findTestClasses;
-		^UnitTestGUI.new(this.allTestClasses)
+
+		window = Window.new("[UnitTest GUI]", Rect(100, 100, 415, 615), resizable: false);
+		window.addFlowLayout;
+
+		StaticText(window, Rect(0,0, 400, 40))
+		.string_("Select a category, then a test method, and press Enter\nHit 'i' to jump to the code file")
+		.align_(\center);
+
+		classlist = ListView(window, Rect(0,0, 200, 600-40))
+		.items_(allTestClasses.asSortedArray.collect(_[0]))
+		.action_ { |widg|
+			methodlist.items_(
+				allTestClasses.asSortedArray[widg.value][1].asSortedArray.collect(_[0])
+			)
+		};
+
+		methodlist = ListView(window, Rect(200,40, 200, 600-40));
+		methodlist.enterKeyAction_ { |widg|
+			allTestClasses.asSortedArray[classlist.value][1].asSortedArray[widg.value][1].value
+		};
+
+		lookUp = { |widg, char, mod|
+			var class, selector, method;
+			class = ("Test" ++ classlist.items[classlist.value]).asSymbol.asClass;
+			class !? {
+				selector = methodlist.items[methodlist.value].asSymbol;
+				method = class.findMethod(selector);
+				if(char == $i) {
+					if(method.notNil) { method.openCodeFile } { class.openCodeFile };
+				}
+			};
+		};
+
+		methodlist.keyDownAction = lookUp;
+		classlist.keyDownAction = lookUp;
+
+		classlist.enterKeyAction_ { |widg|
+			// mimic behaviour of pressing enter in methodlist
+			methodlist.enterKey;
+		};
+
+		classlist.value_(0);
+		classlist.doAction; // fills in the right-hand column
+		^window.front;
 	}
 
 	///////////////////////////////////////////////////////////////////////
@@ -121,7 +154,11 @@ UnitTest {
 		a = a.asArray;
 
 		// Check whether all in array meet the condition.
-		results = (a - b).abs <= within;
+		results = if(b.isArray) {
+			a.collect {|item, index| (item - b[index]).abs <= within }
+		} {
+			a.collect {|item, index| (item - b).abs <= within }
+		};
 		someHaveFailed = results.includes(false);
 
 		if(someHaveFailed) {
@@ -309,7 +346,7 @@ UnitTest {
 
 	*report {
 		Post.nl;
-		"UNIT TESTS FOR '%' COMPLETED".format(this.name).inform;
+		"UNIT TEST.............".inform;
 		if(failures.size > 0) {
 			"There were failures:".inform;
 			failures.do { arg results;
@@ -322,8 +359,39 @@ UnitTest {
 
 	// private - use TestYourClass.run
 
+	run { | reset = true, report = true, postHeader = true|
+		var function;
+		if(reset) { this.class.reset };
+		if(postHeader or: report) {
+			("\n*** RUNNING UNIT TESTS of:" + this.class).inform;
+		};
+		this.class.forkIfNeeded {
+			this.findTestMethods.do { |method|
+				this.setUp;
+				currentMethod = method;
+				//{
+				this.perform(method.name);
+				// unfortunately this removes the interesting part of the call stack
+				//}.try({ |err|
+				//	("ERROR during test"+method).postln;
+				//	err.throw;
+				//});
+
+				this.tearDown;
+			};
+			if(report) { this.class.report };
+			nil
+		};
+
+	}
+
 	*forkIfNeeded { |function|
-		function.forkIfNeeded(AppClock)
+		^if(thisThread.isKindOf(Routine)) {
+			// we are inside the Routine already
+			function.value
+		} {
+			Routine(function).play(AppClock)
+		}
 	}
 
 	// returns the methods named test_
@@ -502,6 +570,7 @@ UnitTestScript : UnitTest {
 			currentMethod = this;
 			path.load.value(this);
 			this.class.report;
+			nil
 		}
 	}
 

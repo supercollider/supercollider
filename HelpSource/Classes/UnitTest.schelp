@@ -53,9 +53,10 @@ Should be code::UnitTest.full:: or code::UnitTest.brief::.
 
 METHOD:: run
 Run all methods whose names begin with code::test_::.
+Redirects to code::UnitTest.new.run(args)::.
 
 code::
-TestUnitTest.new.run;
+TestUnitTest.run;
 ::
 
 ARGUMENT:: reset
@@ -63,6 +64,10 @@ If code::true::, first runs link::#*reset:: on the class.
 
 ARGUMENT:: report
 If code::true::, outputs the test results.
+
+ARGUMENT:: postHeader
+If code::true::, posts a header line before test results.
+
 
 METHOD:: runTest
 Run a single test method.
@@ -87,6 +92,22 @@ UnitTest.runAll;
 
 
 INSTANCEMETHODS::
+
+METHOD:: run
+Run all methods whose names begin with code::test_::.
+
+code::
+TestUnitTest.new.run;
+::
+
+ARGUMENT:: reset
+If code::true::, first runs link::#*reset:: on the class.
+
+ARGUMENT:: report
+If code::true::, outputs the test results.
+
+ARGUMENT:: postHeader
+If code::true::, posts a header line before test results.
 
 METHOD:: runTestMethod
 Run a single test method of this class
