@@ -48,7 +48,7 @@ TestReadableNodeIDAllocator : UnitTest {
 			permIDs.add(nextPermID);
 		};
 		this.assert(
-			permIDs.size.postln == (alloc.lowestTempID - 2),
+			permIDs.size == (alloc.lowestTempID - 2),
 			"ReadableNodeIDAllocator should hand out all permanent IDs in mixed alloc/free use."
 		);
 
