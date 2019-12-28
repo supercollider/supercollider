@@ -7,7 +7,6 @@ set(simple_tests
     server_node_graph_test.cpp
     server_scheduler_test.cpp
     server_synth_factory_test.cpp
-    server_test.cpp
     simple_pool_test.cpp
     sized_array_test.cpp
     sndfile_backend_test.cpp
@@ -20,12 +19,6 @@ if(!APPLE)
         ${simple_tests}
         static_allocator_test.cpp
         tl_allocator_test.cpp
-    )
-endif()
-
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(simple_tests ${simple_tests}
-        perf_counter_test.cpp
     )
 endif()
 
