@@ -13,11 +13,13 @@ Plot {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
 
 		StartUp.add {
+			var hlHSV = QtGUI.palette.highlight.asHSV;
+
 			GUI.skin.put(\plot, (
-				gridColorX: QtGUI.palette.highlight.sat_(0.2).val_(0.9),
-				gridColorY: QtGUI.palette.highlight.sat_(0.2).val_(0.9),
+				gridColorX: Color.hsv(*hlHSV.put(1, 0.2).put(2, 0.9)),
+				gridColorY: Color.hsv(*hlHSV.put(1, 0.2).put(2, 0.9)),
 				fontColor: Color(*(0.3 ! 3)),
-				plotColor: [ QtGUI.palette.highlight.val_(0.4) ],
+				plotColor: [Color.hsv(*hlHSV.put(2, 0.4))],
 				background: QtGUI.palette.base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
