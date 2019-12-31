@@ -33,10 +33,10 @@ const double kNanosToOSCunits = 4.294967296; // pow(2,32)/1e9
 
 typedef std::chrono::system_clock::time_point HostTime;
 
-static inline std::chrono::system_clock::time_point getTime() { return std::chrono::system_clock::now(); }
+static inline HostTime getTime() { return std::chrono::system_clock::now(); }
 
 template <typename TimePoint> static inline double secondsSinceEpoch(TimePoint const& tp) {
-    return std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count() * 1e-9;
+    return std::chrono::duration_cast<std::chrono::duration<double>>(tp.time_since_epoch()).count();
 }
 
 template <typename TimePoint> static inline int64 OSCTime(TimePoint const& tp) {
