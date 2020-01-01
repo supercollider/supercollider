@@ -355,12 +355,15 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 	// meter should only be changed in the TempoClock's thread.
 	setMeterAtBeat { arg newBeatsPerBar, beats;
+		this.prSetMeterAtBeat(newBeatsPerBar, beats);
+		this.changed(\meter);
+	}
+	prSetMeterAtBeat { arg newBeatsPerBar, beats;
 		// bar must be integer valued when meter changes or confusion results later.
 		baseBar = round((beats - baseBarBeat) * barsPerBeat + baseBar, 1);
 		baseBarBeat = beats;
 		beatsPerBar = newBeatsPerBar;
 		barsPerBeat = beatsPerBar.reciprocal;
-		this.changed(\meter);
 	}
 
 	// these methods allow TempoClock to act as TempoClock.default
