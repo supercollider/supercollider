@@ -167,7 +167,9 @@ SCClockMeterSync {
 						// 'baseBeats.add()' above has calculated baseBarBeat
 						// such that my local beatInBar will match theirs
 						newBase = baseBeats.pop;
-						if(verbose) { "syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase) };
+						if(verbose and: { newBeatsPerBar != clock.beatsPerBar }) {
+							"syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase)
+						};
 						clock.setMeterAtBeat(newBeatsPerBar, newBase);  // local only
 					} {
 						// this should not happen
