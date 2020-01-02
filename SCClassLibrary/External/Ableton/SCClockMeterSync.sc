@@ -174,11 +174,9 @@ SCClockMeterSync {
 		}
 	}
 
-	// legit problem: setMeterAtBeat will broadcast meter change
-	// but we don't want that here
-	// I will do something naughty in this version and discuss later
 	adjustMeterBase { |localBeats, remoteBeats, round = 1|
-		clock.slotPut(\baseBarBeat,
+		// 'this.setMeterAtBeat' to avoid \meter notification
+		this.setMeterAtBeat(clock.beatsPerBar,
 			clock.baseBarBeat + ((localBeats - remoteBeats) % clock.beatsPerBar).round(round)
 		);
 	}
