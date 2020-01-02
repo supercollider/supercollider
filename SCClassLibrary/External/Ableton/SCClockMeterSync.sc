@@ -6,7 +6,7 @@
 
 SCClockMeterSync {
 	var <clock, <>id, <ports;
-	var addrs, meterChangeResp, meterQueryResp, meterWatcher;
+	var addrs, meterChangeResp, meterQueryResp;
 
 	// normally clock.setMeterAtBeat notifies \meter
 	// and this watcher should broadcast the change.
@@ -28,24 +28,12 @@ SCClockMeterSync {
 				clock.beats, clock.beatsPerBar, clock.baseBarBeat, clock.beatInBar
 			);
 		}, '/SC_LinkClock/queryMeter');
-		// if the 'model' clock's meter changed,
-		// this object must relay that over the network
-		meterWatcher = SimpleController(clock)
-		.put(\meter, {
-			if(broadcastMeter) {
-				this.prBroadcast(
-					'/SC_LinkClock/changeMeter',
-					id, clock.beatsPerBar, clock.beats, clock.baseBarBeat
-				);
-			};
-		})
-		// if the 'model' clock is stopped, no need to keep monitoring
-		.put(\stop, { this.free });
+		clock.addDependant(this);
 		this.enabled = true;  // assume enabled when creating
 	}
 
 	free {
-		meterWatcher.remove;
+		clock.removeDependant(this);
 		meterQueryResp.free;
 		meterChangeResp.free;
 	}
@@ -193,6 +181,21 @@ SCClockMeterSync {
 		clock.slotPut(\baseBarBeat,
 			clock.baseBarBeat + ((localBeats - remoteBeats) % clock.beatsPerBar).round(round)
 		);
+	}
+
+	update { |obj, what|
+		switch(what)
+		{ \meter } {
+			if(broadcastMeter) {
+				this.prBroadcast(
+					'/SC_LinkClock/changeMeter',
+					id, clock.beatsPerBar, clock.beats, clock.baseBarBeat
+				);
+			};
+		}
+		// if the 'model' clock is stopped, no need to keep monitoring
+		{ \stop } { this.free }
+		{ \disableMeterSync } { this.free };
 	}
 
 	prBroadcast { |... msg|
