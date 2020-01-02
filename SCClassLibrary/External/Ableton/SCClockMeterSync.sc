@@ -24,17 +24,17 @@ SCClockMeterSync {
 		this.ports = argPorts;  // see ports_ below
 		meterQueryResp = OSCFunc({ |msg|
 			this.prBroadcast(
-				'/LinkClock/meterReply', id, msg[1], this.enabled.asInteger,
+				'/SC_LinkClock/meterReply', id, msg[1], this.enabled.asInteger,
 				clock.beats, clock.beatsPerBar, clock.baseBarBeat, clock.beatInBar
 			);
-		}, '/LinkClock/queryMeter');
+		}, '/SC_LinkClock/queryMeter');
 		// if the 'model' clock's meter changed,
 		// this object must relay that over the network
 		meterWatcher = SimpleController(clock)
 		.put(\meter, {
 			if(broadcastMeter) {
 				this.prBroadcast(
-					'/LinkClock/changeMeter',
+					'/SC_LinkClock/changeMeter',
 					id, clock.beatsPerBar, clock.beats, clock.baseBarBeat
 				);
 			};
@@ -82,7 +82,7 @@ SCClockMeterSync {
 						(clock.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal)
 					);
 				};
-			}, '/LinkClock/changeMeter');
+			}, '/SC_LinkClock/changeMeter');
 		} {
 			meterChangeResp.free;
 			meterChangeResp = nil;
@@ -113,9 +113,9 @@ SCClockMeterSync {
 						beatInBar: msg[7]
 					));
 				};
-			}, '/LinkClock/meterReply');
+			}, '/SC_LinkClock/meterReply');
 			{
-				this.prBroadcast('/LinkClock/queryMeter', clock.beats);
+				this.prBroadcast('/SC_LinkClock/queryMeter', clock.beats);
 				timeout.wait;
 				resp.free;
 				action.value(replies.values);
