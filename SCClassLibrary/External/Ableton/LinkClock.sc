@@ -42,12 +42,12 @@ LinkClock : TempoClock {
 	}
 
 	quantum {
-		_LinkClock_GetQuantum;
+		_LinkClock_GetQuantum
 		^this.primitiveFailed
 	}
 
 	quantum_ { |quantum|
-		_LinkClock_SetQuantum;
+		_LinkClock_SetQuantum
 		^this.primitiveFailed
 	}
 
