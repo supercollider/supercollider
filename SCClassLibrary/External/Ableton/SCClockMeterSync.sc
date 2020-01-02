@@ -8,6 +8,12 @@ SCClockMeterSync {
 	var <clock, id, ports;
 	var addrs, meterChangeResp, meterQueryResp, meterWatcher;
 
+	// normally clock.setMeterAtBeat notifies \meter
+	// and this watcher should broadcast the change.
+	// but the watcher may need to change baseBarBeat internally.
+	// this should not broadcast. flag is off in that case
+	var broadcastMeter = true;
+
 	*new { |clock, id, ports|
 		^super.new.init(clock, id, ports)
 	}
@@ -26,7 +32,12 @@ SCClockMeterSync {
 		// this object must relay that over the network
 		meterWatcher = SimpleController(clock)
 		.put(\meter, {
-			this.prBroadcast('/LinkClock/changeMeter', id, clock.beatsPerBar, clock.beats, clock.baseBarBeat);
+			if(broadcastMeter) {
+				this.prBroadcast(
+					'/LinkClock/changeMeter',
+					id, clock.beatsPerBar, clock.beats, clock.baseBarBeat
+				);
+			};
 		})
 		// if the 'model' clock is stopped, no need to keep monitoring
 		.put(\stop, { this.free });
@@ -66,8 +77,8 @@ SCClockMeterSync {
 					// also, 5/8 means maybe setting the barline to a half-beat
 					// but we have to round the barline because OSC receipt time is inexact
 					// -- get the rounding factor from baseBarBeat.asFraction
-					// *and* prSetMeterAtBeat because we do not want to broadcast here
-					clock.prSetMeterAtBeat(msg[2],
+					// *and* use my utility method because we do not want to broadcast here
+					this.setMeterAtBeat(msg[2],
 						(clock.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal)
 					);
 				};
@@ -76,6 +87,14 @@ SCClockMeterSync {
 			meterChangeResp.free;
 			meterChangeResp = nil;
 		};
+	}
+
+	setMeterAtBeat { |newBeatsPerBar, beats|
+		var saveFlag = broadcastMeter;
+		protect {
+			broadcastMeter = false;
+			clock.setMeterAtBeat(newBeatsPerBar, beats);
+		} { broadcastMeter = saveFlag };
 	}
 
 	queryMeter { |action, timeout = 0.2|
