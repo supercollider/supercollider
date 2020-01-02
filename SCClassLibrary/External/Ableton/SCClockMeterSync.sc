@@ -5,7 +5,7 @@
 // TODO OSC message prefix with SC_
 
 SCClockMeterSync {
-	var <clock, id, ports;
+	var <clock, <>id, <ports;
 	var addrs, meterChangeResp, meterQueryResp, meterWatcher;
 
 	// normally clock.setMeterAtBeat notifies \meter
@@ -157,29 +157,28 @@ SCClockMeterSync {
 				// But, if something failed, maybe there are more.
 				// So we have to do a two-step check.
 				if(bpbs.size == 1) {
-					// 'choose' = easy way to get one item from an unordered collection
-					newBeatsPerBar = bpbs.choose;
+					// 'pop' = easy way to get one item from an unordered collection
+					newBeatsPerBar = bpbs.pop;
 					// Sets, by definition, cannot hold multiple items of equivalent value
 					// so this automatically collapses to minimum size!
 					baseBeats = baseBeats.collect { |x| x.round(round) % newBeatsPerBar };
 					if(baseBeats.size == 1) {
 						// do not change beats! do not ever change beats here!
-						// calculate baseBarBeat such that my local beatInBar will match theirs
-						// myBeats = replies.choose[\queriedAtBeat].round(round);
-						// theirPhase = bibs.choose;  // should be only one
-						newBase = baseBeats.choose;
-						if(verbose) { "syncing meter to %, base = %\n".postf(bpbs.choose, newBase) };
-						clock.setMeterAtBeat(bpbs.choose, newBase);  // local only
+						// 'baseBeats.add()' above has calculated baseBarBeat
+						// such that my local beatInBar will match theirs
+						newBase = baseBeats.pop;
+						if(verbose) { "syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase) };
+						clock.setMeterAtBeat(newBeatsPerBar, newBase);  // local only
 					} {
 						// this should not happen
-						Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
+						Error("LinkClock peers disagree on barline positions; cannot sync barlines").throw;
 					};
 				} {
-					Error("Discrepancy among 'syncMeter' Link peers; cannot sync barlines").throw;
+					Error("LinkClock peers disagree on beatsPerBar; cannot sync barlines").throw;
 				};
 			} {
 				if(verbose) {
-					"Found no SC Link peers with syncMeter set to true; cannot resync".warn;
+					"Found no SC Link peers synchronizing meter; cannot resync".warn;
 				};
 			}
 		}
