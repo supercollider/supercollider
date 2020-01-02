@@ -205,4 +205,6 @@ SCClockMeterSync {
 			};
 		} { NetAddr.broadcastFlag = saveFlag };
 	}
+
+	clock_ { ^this.shouldNotImplement(thisMethod) }
 }
