@@ -1,6 +1,8 @@
 // clock with Ableton Link synchronization
 
 LinkClock : TempoClock {
+	var <syncMeter = false;
+
 	*newFromTempoClock { |clock|
 		^super.new(
 			clock.tempo,
@@ -8,6 +10,20 @@ LinkClock : TempoClock {
 			clock.seconds,
 			clock.queue.maxSize
 		).prInitFromTempoClock(clock)
+	}
+
+	enableMeterSync { |id, ports|
+		if(syncMeter.not) {
+			syncMeter = true;
+			^SCClockMeterSync(this, id, ports)
+		} {
+			^this.dependants.detect(_.isKindOf(SCClockMeterSync))
+		}
+	}
+
+	disableMeterSync {
+		syncMeter = false;
+		this.changed(\disableMeterSync)
 	}
 
 	numPeers {
