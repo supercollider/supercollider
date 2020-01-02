@@ -41,14 +41,23 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_asCode_basic {
-		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n";
+		var codeString =
+		"(\n"
+		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
+		"a.set('fadeTime', 0.02);\n"
+		");\n";
 
 		this.assertEquals(proxy.asCode, codeString,
 			"asCode-posting basic nodeproxy should post valid source code.");
 	}
 
 	test_asCode_single {
-		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' )).source_({ DC.ar });\n";
+		var codeString =
+		"(\n"
+		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' )).source_({ DC.ar });\n"
+		"a.set('fadeTime', 0.02);\n"
+		");\n";
+
 		proxy.source = { DC.ar };
 
 		this.assertEquals(proxy.asCode, codeString,
@@ -62,6 +71,7 @@ TestNodeProxy : UnitTest {
 		"a[5] = { DC.ar };\n"
 		"a[10] = { DC.ar(0.01) };\n"
 		"\n"
+		"a.set('fadeTime', 0.02);\n"
 		");\n";
 		proxy[5] = { DC.ar };
 		proxy[10] = { DC.ar(0.01) };
@@ -73,7 +83,7 @@ TestNodeProxy : UnitTest {
 		var codeString =
 		"(\n"
 		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
-		"a.set('freq', 440);\n"
+		"a.set('fadeTime', 0.02, 'freq', 440);\n"
 		");\n";
 		proxy.set('freq', 440);
 
@@ -87,6 +97,7 @@ TestNodeProxy : UnitTest {
 		var codeString =
 		"(\n"
 		"a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n"
+		"a.set('fadeTime', 0.02);\n"
 		"a.play(\n"
 		"	out: 8, \n"
 		"	vol: 0.25\n"
@@ -109,7 +120,12 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_asCode_single_ndef {
-		var codeString = "Ndef('x', { DC.ar });\n";
+		var codeString =
+		"(\n"
+		"Ndef('x', { DC.ar });\n"
+		"Ndef('x').set('fadeTime', 0.02);\n"
+		");\n";
+
 		proxy = Ndef(\x, { DC.ar });
 
 		this.assertEquals(proxy.asCode, codeString,
@@ -125,6 +141,7 @@ TestNodeProxy : UnitTest {
 		"Ndef('x')[5] = { DC.ar };\n"
 		"Ndef('x')[10] = { DC.ar(0.01) };\n"
 		"\n"
+		"Ndef('x').set('fadeTime', 0.02);\n"
 		");\n";
 
 		proxy = Ndef(\x);
@@ -139,7 +156,12 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_asCode_single_inProxySpace {
-		var codeString = "~a = { DC.ar };\n";
+		var codeString =
+		"(\n"
+		"~a = { DC.ar };\n"
+		"~a.set('fadeTime', 0.02);\n"
+		");\n";
+
 		var p = ProxySpace.push;
 		p[\a] = { DC.ar };
 		p[\a].asCode.cs;
@@ -158,6 +180,7 @@ TestNodeProxy : UnitTest {
 		"~a[5] = { DC.ar };\n"
 		"~a[10] = { DC.ar(0.01) };\n"
 		"\n"
+		"~a.set('fadeTime', 0.02);\n"
 		");\n";
 
 		var p = ProxySpace.push;
@@ -216,7 +239,7 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_copy_pauseIsCopied {
-		var oldProxy = proxy.paused_(true);
+		var oldProxy = proxy.pause;
 		var newProxy = oldProxy.copy;
 
 		this.assertEquals(oldProxy.paused, newProxy.paused);
