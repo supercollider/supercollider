@@ -85,10 +85,16 @@ SCClockMeterSync {
 		} { broadcastMeter = saveFlag };
 	}
 
+	// must always call action after timeout!
+	// resyncMeter depends on this
 	queryMeter { |action, timeout = 0.2|
-		var replies = IdentityDictionary.new,
-		resp;
+		var replies, resp;
 		if(clock.numPeers > 0) {
+			if(timeout.isKindOf(SimpleNumber).not or: { timeout <= 0 }) {
+				"Invalid timeout '%' provided, substituting 0.2".format(timeout).warn;
+				timeout = 0.2;
+			};
+			replies = Dictionary.new;
 			resp = OSCFunc({ |msg, time, addr|
 				if(msg[1] != id) {
 					replies.put(msg[1], (
@@ -118,6 +124,7 @@ SCClockMeterSync {
 	resyncMeter { |round, verbose = true|
 		var replies, cond = Condition.new, newBeatsPerBar, newBase;
 		fork {
+			// queryMeter should never hang (based on default timeout)
 			this.queryMeter { |val|
 				replies = val;
 				cond.unhang;
