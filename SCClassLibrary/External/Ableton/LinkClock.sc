@@ -1,7 +1,7 @@
 // clock with Ableton Link synchronization
 
 LinkClock : TempoClock {
-	var <syncMeter = false;
+	var syncMeter;
 
 	*newFromTempoClock { |clock|
 		^super.new(
@@ -10,20 +10,6 @@ LinkClock : TempoClock {
 			clock.seconds,
 			clock.queue.maxSize
 		).prInitFromTempoClock(clock)
-	}
-
-	enableMeterSync { |id, ports|
-		if(syncMeter.not) {
-			syncMeter = true;
-			^SCClockMeterSync(this, id, ports)
-		} {
-			^this.dependants.detect(_.isKindOf(SCClockMeterSync))
-		}
-	}
-
-	disableMeterSync {
-		syncMeter = false;
-		this.changed(\disableMeterSync)
 	}
 
 	numPeers {
@@ -65,6 +51,23 @@ LinkClock : TempoClock {
 	quantum_ { |quantum|
 		_LinkClock_SetQuantum
 		^this.primitiveFailed
+	}
+
+	syncMeter { ^syncMeter.notNil }
+	getMeterSync { ^syncMeter }
+
+	enableMeterSync { |id, ports|
+		if(syncMeter.isNil) {
+			syncMeter = SCClockMeterSync(this, id, ports);
+		};
+	}
+
+	disableMeterSync {
+		// why not 'syncMeter.free'?
+		// you might have created additional instances
+		// you shouldn't do that! but we should clean them all up anyway
+		this.changed(\disableMeterSync);
+		syncMeter = nil;
 	}
 
 	// PRIVATE
