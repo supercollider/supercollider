@@ -101,8 +101,7 @@ TestNodeProxy : UnitTest {
 		server.sync; // avoids "FAILURE IN SERVER /g_new Group 1 not found"
 
 		this.assertEquals(proxy.asCode, codeString,
-			"asCode-posting nodeproxy with settings should post these correctly.",
-			onFailure: { server.quit }
+			"asCode-posting nodeproxy with settings should post these correctly."
 		);
 
 		server.quit;
