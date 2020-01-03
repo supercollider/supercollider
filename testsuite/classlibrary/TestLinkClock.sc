@@ -247,6 +247,9 @@ TestLinkClock : UnitTest {
 		clock2.stop;
 	}
 
+	// this test uses "magic number" wait statements
+	// because it takes a little time for a new LinkClock to stabilize
+	// and we have no signal to know when it's ready
 	test_LinkClock_sync_meter_aligns_barlines {
 		var numTrials = 5,
 		refClock, testClock, list = List.new, resp,
@@ -258,9 +261,13 @@ TestLinkClock : UnitTest {
 				this.assert(false, "Make sure no other LinkClocks are running while testing");
 			} {
 				refClock.beatsPerBar = 3;
-				// hacking: syncMeter_ will cause the refClock to sync 1 sec later
-				// we do not want that for this test!
-				refClock.slotPut(\syncMeter, true);
+				// we must wait until the reference clock finishes its initial sync attempt
+				resp = SimpleController(refClock).put(\resynced, {
+					resp.remove;
+					cond.unhang;
+				});
+				refClock.enableMeterSync;
+				cond.hang;
 				numTrials.do { |i|
 					if(i > 0) {  // don't wait first time
 						rrand(0.2, 3.0).wait;
@@ -272,13 +279,13 @@ TestLinkClock : UnitTest {
 						cond.unhang;
 					});
 					cond.hang;
-					testClock.syncMeter = true;
+					testClock.enableMeterSync;
 					resp = SimpleController(testClock).put(\meter, {
 						resp.remove;
 						cond.unhang;
 					});
 					cond.hang;
-					testClock.queryMeter { |replies|
+					testClock.getMeterSync.queryMeter { |replies|
 						list.add(replies.every { |reply|
 							(reply[\queriedAtBeat] - testClock.baseBarBeat) % testClock.beatsPerBar
 							absdif: reply[\beatInBar] < 0.05
@@ -302,11 +309,11 @@ TestLinkClock : UnitTest {
 	}
 
 	test_LinkClock_sync_meter_propagates_meter_changes {
-		var clock1 = LinkClock.new.syncMeter_(true),
+		var clock1 = LinkClock.new.enableMeterSync,
 		clock2, resp, cond = Condition.new, result;
 		1.0.wait;  // allow time for clock1 to find others
 		if(clock1.numPeers == 0) {
-			clock2 = LinkClock.new.syncMeter_(true);
+			clock2 = LinkClock.new.enableMeterSync;
 			// wait for clock2 to sync meter
 			resp = SimpleController(clock2).put(\meter, {
 				resp.remove;

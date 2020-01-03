@@ -137,10 +137,12 @@ SCClockMeterSync {
 					"syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase)
 				};
 				this.setMeterAtBeat(newBeatsPerBar, newBase);  // local only
+				clock.changed(\resynced, true);
 			} {
 				if(verbose) {
 					"Found no SC Link peers synchronizing meter; cannot resync".warn;
 				};
+				clock.changed(\resynced, false);  // esp. for unit test
 			}
 		}
 	}
