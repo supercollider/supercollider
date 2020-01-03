@@ -74,6 +74,7 @@ table::
 ## code::\linkStart:: || An external peer started playback
 ## code::\linkStop:: || An external peer stopped playback
 ## code::\numPeers:: || The number of connected peers changed
+## code::\resynced:: || After link::#-enableMeterSync::, a code::\resynced:: notification is sent whenever a link::Classes/SCClockMeterSync#-resyncMeter:: call finishes successfully. One Boolean argument is passed: code::true:: if other SuperCollider peers were found, code::false:: if not.
 ::
 
 (Note that Link does not synchronize meter across peers; this notification is inherited from TempoClock. link::Classes/LinkClock#-syncMeter:: is a SuperCollider-specific way to synchronize meter; it is not part of the Link protocol.)
