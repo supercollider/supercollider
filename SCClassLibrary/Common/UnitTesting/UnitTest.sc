@@ -52,14 +52,18 @@ UnitTest {
 
 	// run all UnitTest subclasses
 	*runAll {
-		^this.forkIfNeeded {
-			this.reset;
-			this.allSubclasses.do { |testClass|
-				testClass.run(false, false);
-				0.1.wait;
-			};
-			this.report
-		}
+		if(this === UnitTest, {
+			^this.forkIfNeeded {
+				this.reset;
+				this.allSubclasses.do { |testClass|
+					testClass.run(false, false);
+					0.1.wait;
+				};
+				this.report
+			}
+		}, {
+			^this.shouldNotImplement(thisMethod)
+		});
 	}
 
 	// run a single test method of this class
