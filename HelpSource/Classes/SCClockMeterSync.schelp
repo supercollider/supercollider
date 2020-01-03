@@ -150,7 +150,7 @@ Answers with the clock being controlled by this instance.
 note:: You cannot change the associated clock object. You should instead link::Classes/SCClockMeterSync#-free:: this instance, and create a new instance for the other clock. ::
 
 
-private:: prBroadcast, update, init, setMeterAtBeat
+private:: prBroadcast, update, init, setMeterAtBeat, prGetMeter
 
 EXAMPLES::
 

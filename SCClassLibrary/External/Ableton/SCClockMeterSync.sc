@@ -116,8 +116,7 @@ SCClockMeterSync {
 	}
 
 	resyncMeter { |round, verbose = true|
-		var replies, cond = Condition.new, bpbs, baseBeats, denom;
-		var newBeatsPerBar, newBase;
+		var replies, cond = Condition.new, newBeatsPerBar, newBase;
 		fork {
 			this.queryMeter { |val|
 				replies = val;
@@ -126,46 +125,11 @@ SCClockMeterSync {
 			cond.hang;
 			replies = replies.select { |reply| reply[\syncMeter] };
 			if(replies.size > 0) {
-				// verify beatsPerBar, and myBeats - beatInBar, are common across peers
-				// (if the network is glitchy, we may have replies from different trials.
-				// but the difference between query time and remote beatInBar should be
-				// consistent.)
-				// also calculate baseBarBeat common denominator
-				bpbs = Set.new;
-				baseBeats = Set.new;
-				denom = 1;
-				replies.do { |reply, i|
-					denom = denom lcm: reply[\baseBarBeat].asFraction[1];
-					bpbs.add(reply[\beatsPerBar]);
-					baseBeats.add(reply[\queriedAtBeat] - reply[\beatInBar]);
+				#newBeatsPerBar, newBase = this.prGetMeter(replies, round);
+				if(verbose and: { newBeatsPerBar != clock.beatsPerBar }) {
+					"syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase)
 				};
-				if(round.isNil) { round = denom.reciprocal };
-				// Now it gets tricky. We need to reduce baseBeats based on beatsPerBar.
-				// All 'syncMeter' peers should have the same beatsPerBar (size == 1).
-				// But, if something failed, maybe there are more.
-				// So we have to do a two-step check.
-				if(bpbs.size == 1) {
-					// 'pop' = easy way to get one item from an unordered collection
-					newBeatsPerBar = bpbs.pop;
-					// Sets, by definition, cannot hold multiple items of equivalent value
-					// so this automatically collapses to minimum size!
-					baseBeats = baseBeats.collect { |x| x.round(round) % newBeatsPerBar };
-					if(baseBeats.size == 1) {
-						// do not change beats! do not ever change beats here!
-						// 'baseBeats.add()' above has calculated baseBarBeat
-						// such that my local beatInBar will match theirs
-						newBase = baseBeats.pop;
-						if(verbose and: { newBeatsPerBar != clock.beatsPerBar }) {
-							"syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase)
-						};
-						clock.setMeterAtBeat(newBeatsPerBar, newBase);  // local only
-					} {
-						// this should not happen
-						Error("LinkClock peers disagree on barline positions; cannot sync barlines").throw;
-					};
-				} {
-					Error("LinkClock peers disagree on beatsPerBar; cannot sync barlines").throw;
-				};
+				this.setMeterAtBeat(newBeatsPerBar, newBase);  // local only
 			} {
 				if(verbose) {
 					"Found no SC Link peers synchronizing meter; cannot resync".warn;
@@ -204,6 +168,38 @@ SCClockMeterSync {
 				addr.sendMsg(*msg);
 			};
 		} { NetAddr.broadcastFlag = saveFlag };
+	}
+
+	prGetMeter { |replies, round|
+		var bpbs, baseBeats, denom, newBeatsPerBar, newBase;
+		bpbs = Set.new;
+		baseBeats = Set.new;
+		denom = 1;
+		replies.do { |reply|
+			denom = lcm(denom, reply[\baseBarBeat].asFraction[1]);
+			bpbs.add(reply[\beatsPerBar]);
+			baseBeats.add(reply[\queriedAtBeat] - reply[\beatInBar]);
+		};
+		if(round.isNil) { round = denom.reciprocal };
+		// All 'syncMeter' peers should have the same beatsPerBar (size == 1).
+		// But, if something failed, maybe there are more.
+		if(bpbs.size == 1) {
+			// 'pop' = easy way to get one item from an unordered collection
+			newBeatsPerBar = bpbs.pop;
+			// Collapse remote baseBeats to minimum size
+			baseBeats = baseBeats.collect { |x| x.round(round) % newBeatsPerBar };
+			if(baseBeats.size == 1) {
+				// 'baseBeats.add()' above has calculated baseBarBeat
+				// such that my local beatInBar will match theirs
+				newBase = baseBeats.pop;
+			} {
+				// this should not happen
+				Error("LinkClock peers disagree on barline positions; cannot sync barlines").throw;
+			};
+		} {
+			Error("LinkClock peers disagree on beatsPerBar; cannot sync barlines").throw;
+		};
+		^[newBeatsPerBar, newBase]
 	}
 
 	clock_ { ^this.shouldNotImplement(thisMethod) }
