@@ -216,7 +216,7 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_copy_pauseIsCopied {
-		var oldProxy = proxy.paused_(true);
+		var oldProxy = proxy.pause;
 		var newProxy = oldProxy.copy;
 
 		this.assertEquals(oldProxy.paused, newProxy.paused);
