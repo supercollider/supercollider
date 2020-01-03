@@ -155,19 +155,13 @@ private:: prBroadcast, update, init, setMeterAtBeat
 EXAMPLES::
 
 code::
-l = LinkClock.new.latency_(s.latency);
-m = SCClockMeterSync(l);
+l = LinkClock.new.latency_(s.latency).enableMeterSync;
 
 // If meter gets off, try to resync:
-m.resyncMeter;
+l.getMeterSync.resyncMeter;
 
 // What are other clocks' timebases?
-m.queryMeter({ |result|
+l.getMeterSync.queryMeter({ |result|
 	result.do { |row| row.postln };
 });
-
-// Alternately:
-l = LinkClock.new.latency_(s.latency);
-l.enableMeterSync;
-l.getMeterSync.resyncMeter;
 ::
