@@ -269,18 +269,22 @@ LPCTestUtils {
 		var diffs = [];
 		var areAlphabetsEqual = alph1 == alph2; // Can optimize if equal
 
+		var inputs, inputM, min;
+
 		// alphM.postln;
 
 		// Stop when the master alphabet has been exhausted.
 		while { hasNext } {
-			var inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
-			var inputM = alphM[ctrM];
+
+			inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
+			inputM = alphM[ctrM];
 
 			// Get each file's output for the current master input. If a file's alphabet doesn't
 			// include the string, use `nil`. Since alphabets are sorted in lexicographical order,
 			// component alphabets can only skip ahead of the master alphabet's order.
 			inputs.do({
 				arg input, i;
+				var line;
 
 				// postf("here: % %\n", input, inputM);
 				if(inputM == input) {
@@ -292,7 +296,7 @@ LPCTestUtils {
 					if(reps[i] > 0) {
 						reps[i] = reps[i]-1;
 					} {
-						var line = files[i].getLine(this.maxline);
+						line = files[i].getLine(this.maxline);
 
 						if(line.size >= (this.maxline-1)) {
 							this.debug("compareData: maxline characters read; increase maxline in LPCTestUtils.\n"
@@ -318,7 +322,7 @@ LPCTestUtils {
 				// "match".postln;
 				if(areAlphabetsEqual) {
 					// Eat up extra repetitions when possible.
-					var min = reps.minItem;
+					min = reps.minItem;
 					reps = reps - min;
 					min.do {
 						this.incrementAlphabetCount(ctrs[0], strlen, alphSizes[0]);
@@ -535,6 +539,7 @@ LPCTestUtils {
 
 	*doFloatOutputsMatch {
 		arg input, a, b; // assumed: a and b are hex strings of floats
+		var a_f, b_f;
 
 		// If both nan of some sort, return true. `endsWith` because some systems
 		// may print NaN as `-nan`.
@@ -575,8 +580,8 @@ LPCTestUtils {
 
 			^true;
 		} {
-			var a_f = this.stringFromHexString(a).asFloat;
-			var b_f = this.stringFromHexString(b).asFloat;
+			a_f = this.stringFromHexString(a).asFloat;
+			b_f = this.stringFromHexString(b).asFloat;
 
 			// Note: `equalWithPrecision` returns false when comparing infinities. Use
 			// relative precision because we're only trying to catch rounding errors.
