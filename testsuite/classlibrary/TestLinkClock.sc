@@ -314,8 +314,8 @@ TestLinkClock : UnitTest {
 		1.0.wait;  // allow time for clock1 to find others
 		if(clock1.numPeers == 0) {
 			clock2 = LinkClock.new.enableMeterSync;
-			// wait for clock2 to sync meter
-			resp = SimpleController(clock2).put(\meter, {
+			// wait for clock2 to finish initial sync
+			resp = SimpleController(clock2).put(\resynced, {
 				resp.remove;
 				cond.unhang;
 			});
