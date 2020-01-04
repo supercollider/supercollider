@@ -136,9 +136,9 @@ int prLinkClock_SetQuantum(struct VMGlobals* g, int numArgsPushed) {
         int err = slotDoubleVal(b, &quantum);
         if (err)
             return errWrongType;
-    
+
         clock->SetQuantum(quantum);
-    
+
         return errNone;
     } else {
         return errFailed;
@@ -163,9 +163,9 @@ int prLinkClock_SetLatency(struct VMGlobals* g, int numArgsPushed) {
         int err = slotDoubleVal(b, &latency);
         if (err)
             return errWrongType;
-    
+
         clock->SetLatency(latency);
-    
+
         return errNone;
     } else {
         return errFailed;
