@@ -56,15 +56,23 @@ TestNodeProxy_Server : UnitTest {
 
 	test_synthDef_isReleased_afterFree {
 		var numBefore, numAfter;
+
+		// here we have to make sure that the statusWatcher.numSynthDefs is correct
+		// before the experiment, so we force the otherwise regular update ...
 		server.sendStatusMsg;
 		server.sync;
 		numBefore = server.statusWatcher.numSynthDefs;
+
+		// ... then set the proxy source and remove it again ...
 		proxy.source = { Silent.ar };
 		server.sync;
 		proxy.source = nil;
+
+		// ... and also afterwards, we force an update
 		server.sendStatusMsg;
 		server.sync;
 		numAfter = server.statusWatcher.numSynthDefs;
+
 		this.assertEquals(numBefore, numAfter,
 			"Removing the  NodeProxy source function should remove SynthDef from server"
 		);
