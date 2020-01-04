@@ -6,6 +6,7 @@
 
 SCClockMeterSync {
 	var <clock, <>id, <ports;
+	var <repeats = 4, <delta = 0.01, lastReceived;
 	var addrs, meterChangeResp, meterQueryResp;
 
 	// normally clock.setMeterAtBeat notifies \meter
@@ -23,10 +24,15 @@ SCClockMeterSync {
 		id = argId ?? { 0x7FFFFFFF.rand };
 		this.ports = argPorts;  // see ports_ below
 		meterQueryResp = OSCFunc({ |msg|
-			this.prBroadcast(
-				'/SC_LinkClock/meterReply', id, msg[1], this.enabled.asInteger,
-				clock.beats, clock.beatsPerBar, clock.baseBarBeat, clock.beatInBar
-			);
+			// because of redundancy ('repeats'), we may receive this message
+			// multiple times. Respond only once.
+			if(msg != lastReceived) {
+				lastReceived = msg;
+				this.prBroadcast(
+					'/SC_LinkClock/meterReply', id, msg[1], this.enabled.asInteger,
+					clock.beats, clock.beatsPerBar, clock.baseBarBeat, clock.beatInBar
+				);
+			};
 		}, '/SC_LinkClock/queryMeter');
 		clock.addDependant(this);
 		this.enabled = true;  // assume enabled when creating
@@ -60,7 +66,8 @@ SCClockMeterSync {
 				this.resyncMeter;
 			};
 			meterChangeResp = OSCFunc({ |msg|
-				if(msg[1] != id) {  // ignore message that I sent
+				if(msg[1] != id and: { msg != lastReceived }) {  // ignore message that I sent
+					lastReceived = msg;
 					// [2] = beatsPerBar, [3] = remote clock's real time, [4] = remote clock's barline
 					// also, 5/8 means maybe setting the barline to a half-beat
 					// but we have to round the barline because OSC receipt time is inexact
@@ -75,6 +82,20 @@ SCClockMeterSync {
 			meterChangeResp.free;
 			meterChangeResp = nil;
 		};
+	}
+
+	repeats_ { |value|
+		if(value.isKindOf(SimpleNumber).not or: { value < 1 }) {
+			Error("Invalid number of repeats '%'".format(value)).throw;
+		};
+		repeats = value
+	}
+
+	delta_ { |value|
+		if(value.isKindOf(SimpleNumber).not or: { value <= 0 }) {
+			Error("Invalid messaging delta '%'".format(value)).throw;
+		};
+		delta = value
 	}
 
 	setMeterAtBeat { |newBeatsPerBar, beats|
@@ -94,6 +115,8 @@ SCClockMeterSync {
 		};
 		if(clock.numPeers > 0) {
 			replies = Dictionary.new;
+			// no need to check lastReceived here;
+			// Dictionary already collapses replies per id
 			resp = OSCFunc({ |msg, time, addr|
 				if(msg[1] != id) {
 					replies.put(msg[1], (
@@ -109,7 +132,7 @@ SCClockMeterSync {
 			}, '/SC_LinkClock/meterReply');
 			{
 				this.prBroadcast('/SC_LinkClock/queryMeter', clock.beats);
-				timeout.wait;
+				(timeout + (repeats * delta)).wait;
 				resp.free;
 				action.value(replies.values);
 			}.fork(SystemClock);
@@ -139,7 +162,7 @@ SCClockMeterSync {
 				clock.changed(\resynced, true);
 			} {
 				if(verbose) {
-					"Found no SC Link peers synchronizing meter; cannot resync".warn;
+					"(%) Found no SC Link peers synchronizing meter; cannot resync".format(id).warn;
 				};
 				clock.changed(\resynced, false);  // esp. for unit test
 			}
@@ -169,13 +192,22 @@ SCClockMeterSync {
 	}
 
 	prBroadcast { |... msg|
-		var saveFlag = NetAddr.broadcastFlag;
-		protect {
-			NetAddr.broadcastFlag = true;
-			addrs.do { |addr|
-				addr.sendMsg(*msg);
+		var saveFlag;
+		{
+			repeats.do {
+				// it is not safe to modify NetAddr.broadcastFlag
+				// for this entire loop because we can't block other threads
+				// from using it. So, do it atomically for each repeat.
+				saveFlag = NetAddr.broadcastFlag;
+				protect {
+					NetAddr.broadcastFlag = true;
+					addrs.do { |addr|
+						addr.sendMsg(*msg);
+					};
+				} { NetAddr.broadcastFlag = saveFlag };
+				delta.wait;
 			};
-		} { NetAddr.broadcastFlag = saveFlag };
+		}.fork(SystemClock);
 	}
 
 	prGetMeter { |replies, round|

@@ -72,8 +72,6 @@ returns:: The instance.
 METHOD:: queryMeter
 Query metrical information from other peers, and collect the results. Normally, you should not need to call this method. It is provided in case you want to verify sync, or implement a custom behavior.
 
-
-
 ARGUMENT:: action
 A function to evaluate, after the results have been obtained. Results are passed to this function as an argument: a List of Events containing:
 
@@ -149,6 +147,14 @@ Answers with the clock being controlled by this instance.
 
 note:: You cannot change the associated clock object. You should instead link::Classes/SCClockMeterSync#-free:: this instance, and create a new instance for the other clock. ::
 
+
+METHOD:: repeats
+Get or set the number of repeats for OSC messaging.
+
+UDP does not detect failure to deliver messages; therefore, messages may be lost. If that happens, LinkClock peers may fail to synchronize properly and link::#-resyncMeter:: may be unable to recover. To prevent this, sync messages are sent 'repeats' times. The default is 4.
+
+METHOD:: delta
+Get or set the number of seconds between OSC messaging repeats.
 
 private:: prBroadcast, update, init, setMeterAtBeat, prGetMeter
 
