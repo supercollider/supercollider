@@ -89,11 +89,10 @@ SCClockMeterSync {
 	// resyncMeter depends on this
 	queryMeter { |action, timeout = 0.2|
 		var replies, resp;
+		if(timeout.isKindOf(SimpleNumber).not or: { timeout <= 0 }) {
+			Error("Invalid timeout '%' provided".format(timeout)).throw;
+		};
 		if(clock.numPeers > 0) {
-			if(timeout.isKindOf(SimpleNumber).not or: { timeout <= 0 }) {
-				"Invalid timeout '%' provided, substituting 0.2".format(timeout).warn;
-				timeout = 0.2;
-			};
 			replies = Dictionary.new;
 			resp = OSCFunc({ |msg, time, addr|
 				if(msg[1] != id) {
