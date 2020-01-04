@@ -101,8 +101,7 @@ TestNodeProxy : UnitTest {
 		server.sync; // avoids "FAILURE IN SERVER /g_new Group 1 not found"
 
 		this.assertEquals(proxy.asCode, codeString,
-			"asCode-posting nodeproxy with settings should post these correctly.",
-			onFailure: { server.quit }
+			"asCode-posting nodeproxy with settings should post these correctly."
 		);
 
 		server.quit;
@@ -216,7 +215,7 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_copy_pauseIsCopied {
-		var oldProxy = proxy.paused_(true);
+		var oldProxy = proxy.pause;
 		var newProxy = oldProxy.copy;
 
 		this.assertEquals(oldProxy.paused, newProxy.paused);

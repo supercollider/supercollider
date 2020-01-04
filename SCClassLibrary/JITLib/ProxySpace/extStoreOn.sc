@@ -359,6 +359,10 @@
 				map.removeAt(\i_out);
 			} { map = this };
 
+			if (map[\fadeTime] == NodeProxy.defaultFadeTime) {
+				map.removeAt(\fadeTime)
+			};
+
 			if(map.notEmpty) {
 				stream << namestring << ".set(" <<<* map.asKeyValuePairs << ");" << Char.nl;
 			};
