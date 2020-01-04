@@ -235,6 +235,57 @@ TestArray : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
+	test_editDistance_rawIntArraysSameType {
+		var result = Int8Array[0, 1].editDistance(Int8Array[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_rawIntArraysDifferentTypes {
+		var result = Int8Array[0, 1].editDistance(Int16Array[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_rawIntArrayAndArray {
+		var result = Int8Array[0, 1].editDistance(Array[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_arrayAndLinkedList {
+		var result = Array[0, 1].editDistance(LinkedList[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_listAndLinkedList {
+		var result = List[0, 1].editDistance(LinkedList[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_rawArrayAndPolymorphicArray {
+		var result = Int8Array[0, 1].editDistance(Array[0, \x]);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_nilCompareFunc_testsIdentityForRawArrays {
+		this.assertEquals(Array["a", "b"].editDistance(Array["a", "b"]), 2);
+		this.assertEquals(Array[\a, \b].editDistance(Array[\a, \b]), 0);
+	}
+
+	test_editDistance_nilCompareFunc_testsIdentityForLists {
+		// we also want to check that non-raw arrays use identity comparison by default
+		this.assertEquals(List["a", "b"].editDistance(List["a", "b"]), 2);
+		this.assertEquals(List[\a, \b].editDistance(List[\a, \b]), 0);
+	}
+
+	test_editDistance_usesCompareFuncForRawArrays {
+		var result = Array["a", "b"].editDistance(Array["a", "c"], _ == _);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_usesCompareFuncForLists {
+		var result = List["a", "b"].editDistance(List["a", "c"], _ == _);
+		this.assertEquals(result, 1);
+	}
+
 	test_similarity_emptyThis_emptyThat_isOne {
 		var result = [].similarity([]);
 		var expected = 1; // they're the same, even though they're empty
