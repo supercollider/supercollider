@@ -648,9 +648,6 @@ int prInitMIDI(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* b = g->sp - 1;
     PyrSlot* c = g->sp;
 
-    gCoreAudioInitTime = AudioGetCurrentHostTime();
-    gLogicalInitTime = logicalTimeToNanos(g);
-
     int err, numIn, numOut;
     err = slotIntVal(b, &numIn);
     if (err)
@@ -660,7 +657,20 @@ int prInitMIDI(struct VMGlobals* g, int numArgsPushed) {
     if (err)
         return errWrongType;
 
-    return initMIDI(numIn, numOut);
+    err = initMIDI(numIn, numOut);
+
+    // capture initialization times to compute offsets
+    gLogicalInitTime = logicalTimeToNanos(g);
+    // do this last to minimize offset from logical
+
+#if SC_IPHONE
+    // TODO use logical time for IOS scheduling
+#else
+    gCoreAudioInitTime = AudioGetCurrentHostTime();
+#endif
+
+    return err;
+
 }
 int prDisposeMIDIClient(VMGlobals* g, int numArgsPushed);
 int prDisposeMIDIClient(VMGlobals* g, int numArgsPushed) { return midiCleanUp(); }
@@ -730,10 +740,13 @@ static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
 #else
 
 static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
-    // add the latency expressed in seconds, to the current host time base.
-    UInt64 latencyNanos = 1000000000 * latencySeconds; // secs to nano
+    UInt64 latencyNanos = 1000000000 * latencySeconds;
     UInt64 timeElapsed = time - gLogicalInitTime;
     UInt64 schedTime = AudioConvertNanosToHostTime(timeElapsed + gCoreAudioInitTime);
+    /* post("%lld, %lld, %lld, %lld, %lld, %lld, %lld \n",
+         gLogicalInitTime, gCoreAudioInitTime,
+         AudioGetCurrentHostTime(), AudioGetCurrentHostTime() - gCoreAudioInitTime,
+         time, timeElapsed, schedTime); */
     return (MIDITimeStamp) schedTime + AudioConvertNanosToHostTime(latencyNanos);
 }
 
