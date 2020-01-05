@@ -1024,7 +1024,10 @@ Server {
 				this.prOnServerProcessExit(exitCode);
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
-			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
+			// in case the server takes more time to boot
+			// we increase the number of attempts for tcp connection
+			// in order to minimize the chance of timing out
+			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete, nil, 20) }, onComplete);
 		}
 	}
 
