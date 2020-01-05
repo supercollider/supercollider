@@ -156,7 +156,7 @@ UDP does not detect failure to deliver messages; therefore, messages may be lost
 METHOD:: delta
 Get or set the number of seconds between OSC messaging repeats.
 
-private:: prBroadcast, update, init, setMeterAtBeat, prGetMeter
+private:: prBroadcast, update, init, prSetMeterAtBeat, prGetMeter
 
 EXAMPLES::
 

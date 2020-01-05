@@ -73,7 +73,7 @@ SCClockMeterSync {
 					// but we have to round the barline because OSC receipt time is inexact
 					// -- get the rounding factor from baseBarBeat.asFraction
 					// *and* use my utility method because we do not want to broadcast here
-					this.setMeterAtBeat(msg[2],
+					this.prSetMeterAtBeat(msg[2],
 						(clock.beats + msg[4] - msg[3]).round(msg[4].asFraction[1].reciprocal)
 					);
 				};
@@ -98,7 +98,7 @@ SCClockMeterSync {
 		delta = value
 	}
 
-	setMeterAtBeat { |newBeatsPerBar, beats|
+	prSetMeterAtBeat { |newBeatsPerBar, beats|
 		var saveFlag = broadcastMeter;
 		protect {
 			broadcastMeter = false;
@@ -158,7 +158,7 @@ SCClockMeterSync {
 				if(verbose and: { newBeatsPerBar != clock.beatsPerBar }) {
 					"syncing meter to %, base = %\n".postf(newBeatsPerBar, newBase)
 				};
-				this.setMeterAtBeat(newBeatsPerBar, newBase);  // local only
+				this.prSetMeterAtBeat(newBeatsPerBar, newBase);  // local only
 				clock.changed(\resynced, true);
 			} {
 				if(verbose) {
@@ -170,8 +170,8 @@ SCClockMeterSync {
 	}
 
 	adjustMeterBase { |localBeats, remoteBeats, round = 1|
-		// 'this.setMeterAtBeat' to avoid \meter notification
-		this.setMeterAtBeat(clock.beatsPerBar,
+		// 'this.prSetMeterAtBeat' to avoid \meter notification
+		this.prSetMeterAtBeat(clock.beatsPerBar,
 			clock.baseBarBeat + ((localBeats - remoteBeats) % clock.beatsPerBar).round(round)
 		);
 	}
