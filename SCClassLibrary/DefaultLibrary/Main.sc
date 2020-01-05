@@ -131,34 +131,35 @@ Main : Process {
 		(class ? Object).browse;
 	}
 
-	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
+	*version { ^"%.%.%%".format(this.scVersionMajor, this.scVersionMinor, this.scVersionPatch, this.scVersionTweak) }
 
-	*scVersionMajor   {
-		_SC_VersionMajor
-		^this.primitiveFailed
-	}
-	*scVersionMinor   {
-		_SC_VersionMinor
-		^this.primitiveFailed
-	}
-	*scVersionPostfix {
-		_SC_VersionPatch
-		^this.primitiveFailed
-	}
-	*versionAtLeast { |maj, min|
-		^if((maj==this.scVersionMajor) and:{min.notNil}){
-			this.scVersionMinor >= min
-		}{
+	*scVersionMajor { _SC_VersionMajor ^this.primitiveFailed }
+	*scVersionMinor { _SC_VersionMinor ^this.primitiveFailed }
+	*scVersionPatch { _SC_VersionPatch ^this.primitiveFailed }
+	*scVersionTweak { _SC_VersionTweak ^this.primitiveFailed }
+
+	*versionAtLeast { |maj, min, patch|
+		^if((maj == this.scVersionMajor) and: { min.notNil }) {
+			if((min == this.scVersionMinor) and: { patch.notNil }) {
+				this.scVersionPatch >= patch
+			} {
+				this.scVersionMinor >= min
+			}
+		} {
 			this.scVersionMajor >= maj
-		};
+		}
 	}
 
-	*versionAtMost { |maj, min|
-		^if((maj==this.scVersionMajor) and:{min.notNil}){
-			this.scVersionMinor <= min
-		}{
+	*versionAtMost { |maj, min, patch|
+		^if((maj == this.scVersionMajor) and: { min.notNil }) {
+			if((min == this.scVersionMinor) and: { patch.notNil }) {
+				this.scVersionPatch <= patch
+			} {
+				this.scVersionMinor <= min
+			}
+		} {
 			this.scVersionMajor <= maj
-		};
+		}
 	}
 
 	pid {
