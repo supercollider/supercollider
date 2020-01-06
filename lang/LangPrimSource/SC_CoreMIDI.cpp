@@ -784,7 +784,7 @@ int prSendMIDIOut(struct VMGlobals* g, int numArgsPushed) {
 
     int err, outputIndex, uid, length, hiStatus, loStatus, aval, bval;
     float late;
-    double time;
+    UInt64 time;
 
     err = slotIntVal(p, &outputIndex);
     if (err)
