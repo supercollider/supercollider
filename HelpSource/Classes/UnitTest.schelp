@@ -78,7 +78,7 @@ within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
 
 
 METHOD:: runAll
-runs all subclasses of UnitTest
+Run the entire test suite. As this method addresses the entire test suite, it should be called only on code::UnitTest::. Calling it on any of its subclasses will result in throwing an code::Error::.
 
 code::
 UnitTest.reset;
