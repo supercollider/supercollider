@@ -638,9 +638,7 @@ int prDisconnectMIDIIn(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-UInt64 logicalTimeToNanos(struct VMGlobals* g) {
-    return slotRawFloat(&g->thread->seconds) * 1000000000;
-}
+UInt64 logicalTimeToNanos(struct VMGlobals* g) { return slotRawFloat(&g->thread->seconds) * 1000000000; }
 
 int prInitMIDI(struct VMGlobals* g, int numArgsPushed);
 int prInitMIDI(struct VMGlobals* g, int numArgsPushed) {
@@ -670,7 +668,6 @@ int prInitMIDI(struct VMGlobals* g, int numArgsPushed) {
 #endif
 
     return err;
-
 }
 int prDisposeMIDIClient(VMGlobals* g, int numArgsPushed);
 int prDisposeMIDIClient(VMGlobals* g, int numArgsPushed) { return midiCleanUp(); }
@@ -747,13 +744,15 @@ static MIDITimeStamp midiTime(float latencySeconds, UInt64 time) {
          gLogicalInitTime, gCoreAudioInitTime,
          AudioGetCurrentHostTime(), AudioGetCurrentHostTime() - gCoreAudioInitTime,
          time, timeElapsed, schedTime); */
-    return (MIDITimeStamp) schedTime + AudioConvertNanosToHostTime(latencyNanos);
+    return (MIDITimeStamp)schedTime + AudioConvertNanosToHostTime(latencyNanos);
 }
 
 #endif
 
-void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late, UInt64 time);
-void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late, UInt64 time) {
+void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late,
+              UInt64 time);
+void sendmidi(int port, MIDIEndpointRef dest, int length, int hiStatus, int loStatus, int aval, int bval, float late,
+              UInt64 time) {
     MIDIPacketList mpktlist;
     MIDIPacketList* pktlist = &mpktlist;
     MIDIPacket* pk = MIDIPacketListInit(pktlist);
