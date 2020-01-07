@@ -2,10 +2,8 @@
 // but this may in theory apply to any clock that answers to
 // baseBarBeat_ (e.g. MIDISyncClocks, or BeaconClock)
 
-// TODO OSC message prefix with SC_
-
 SCClockMeterSync {
-	var <clock, <>id, <ports;
+	var <clock, <id, <ports;
 	var <repeats = 4, <delta = 0.01, lastReceived;
 	var addrs, meterChangeResp, meterQueryResp;
 
@@ -20,9 +18,12 @@ SCClockMeterSync {
 	}
 
 	init { |argClock, argId, argPorts|
+		// these should not be changed after the fact
+		// create a new object instead
 		clock = argClock;
 		id = argId ?? { 0x7FFFFFFF.rand };
-		this.ports = argPorts;  // see ports_ below
+		ports = (argPorts ?? { (57120 .. 57127) }).asArray;
+		addrs = ports.collect { |port| NetAddr("255.255.255.255", port) };
 		meterQueryResp = OSCFunc({ |msg|
 			// because of redundancy ('repeats'), we may receive this message
 			// multiple times. Respond only once.
@@ -42,11 +43,6 @@ SCClockMeterSync {
 		clock.removeDependant(this);
 		meterQueryResp.free;
 		meterChangeResp.free;
-	}
-
-	ports_ { |argPorts|
-		ports = (argPorts ?? { (57120 .. 57127) }).asArray;
-		addrs = ports.collect { |port| NetAddr("255.255.255.255", port) };
 	}
 
 	enabled { ^meterChangeResp.notNil }

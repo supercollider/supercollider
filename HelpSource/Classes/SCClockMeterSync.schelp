@@ -91,13 +91,10 @@ Float. A number of seconds to wait for replies. (It will always wait for the ent
 returns:: The instance. Replies are asynchronous; use the code::action:: function to respond.
 
 METHOD:: id
-Get or set an integer uniquely identifying this instance. Optional. If not provided, one will be chosen randomly.
+Get the integer ID uniquely identifying this instance. The ID is set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change it, free the current instance and create a new one.
 
 METHOD:: ports
-Get or set the array of ports to which sync messages will be sent.
-
-ARGUMENT:: argPorts
-An array of integer port numbers.
+Get the array of ports to which sync messages will be sent. The ports are set at initialization time (link::Classes/LinkClock#-enableMeterSync:: or link::#*new::). To change them, free the current instance and create a new one.
 
 returns:: An array of integer port numbers.
 
@@ -170,4 +167,8 @@ l.getMeterSync.resyncMeter;
 l.getMeterSync.queryMeter({ |result|
 	result.do { |row| row.postln };
 });
+
+// I want a different ID and/or ports: free, then recreate
+l.disableMeterSync;
+l.enableMeterSync(1000, (57120..57135));
 ::
