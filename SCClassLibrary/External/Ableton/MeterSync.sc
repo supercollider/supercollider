@@ -81,14 +81,14 @@ MeterSync {
 	}
 
 	repeats_ { |value|
-		if(value.isKindOf(SimpleNumber).not or: { value < 1 }) {
+		if(value < 1) {
 			Error("Invalid number of repeats '%'".format(value)).throw;
 		};
 		repeats = value
 	}
 
 	delta_ { |value|
-		if(value.isKindOf(SimpleNumber).not or: { value <= 0 }) {
+		if(value <= 0) {
 			Error("Invalid messaging delta '%'".format(value)).throw;
 		};
 		delta = value
