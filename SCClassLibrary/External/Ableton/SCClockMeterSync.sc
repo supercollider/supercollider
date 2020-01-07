@@ -127,9 +127,10 @@ SCClockMeterSync {
 				};
 			}, '/SC_LinkClock/meterReply');
 			{
-				this.prBroadcast('/SC_LinkClock/queryMeter', clock.beats);
-				(timeout + (repeats * delta)).wait;
-				resp.free;
+				protect {
+					this.prBroadcast('/SC_LinkClock/queryMeter', clock.beats);
+					(timeout + (repeats * delta)).wait;
+				} { resp.free };
 				action.value(replies.values);
 			}.fork(SystemClock);
 		} {
