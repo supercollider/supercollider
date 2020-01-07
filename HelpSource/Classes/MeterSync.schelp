@@ -1,4 +1,4 @@
-TITLE:: SCClockMeterSync
+TITLE:: MeterSync
 summary:: Synchronize barlines of SuperCollider LinkClock peers
 categories:: Scheduling>Clocks
 related:: Classes/LinkClock
@@ -11,7 +11,7 @@ This class, or the associated methods link::Classes/LinkClock#-enableMeterSync::
 
 If the meter will not change (typical use case being 4/4 time throughout), then it is necessary only to set code::myLinkClock.quantum = beatsPerBar:: on all peers. (See link::Classes/LinkClock#-quantum::.)
 
-In theory, SCClockMeterSync may be used with any SuperCollider clock that answers the methods code::beatsPerBar::, code::beatInBar:: and code::baseBarBeats::. It is currently tested only with link::Classes/LinkClock::. It is not meaningful to use with link::Classes/TempoClock::, because TempoClock does nothing to synchronize its beats with any other machines.
+In theory, MeterSync may be used with any SuperCollider clock that answers the methods code::beatsPerBar::, code::beatInBar:: and code::baseBarBeats::. It is currently tested only with link::Classes/LinkClock::. It is not meaningful to use with link::Classes/TempoClock::, because TempoClock does nothing to synchronize its beats with any other machines.
 
 note:: This class considers only the barline positions of SuperCollider LinkClock peers! Other Link-capable applications do not implement this protocol. ::
 
@@ -27,13 +27,13 @@ definitionlist::
 
 For example, if a clock runs four bars of 4/4 time, and then switches to 3/4 time, the barlines are emphasis::not:: multiples of 3. The meter changed at beat 16, so the new barlines will be code::16 + (3 * n):: (code::n:: is an integer). At this point, then, beatsPerBar = 3 and baseBarBeat = 16.
 
-Ableton Link maintains a emphasis::quantum::, which is analogous to link::Classes/TempoClock#-beatsPerBar::. If all peers are following the same meter and have the same quantum, then Link itself will synchronize the barlines. (Thus, in the normal use case of a consistent meter throughout, it is not necessary to use code::SCClockMeterSync:: at all.)
+Ableton Link maintains a emphasis::quantum::, which is analogous to link::Classes/TempoClock#-beatsPerBar::. If all peers are following the same meter and have the same quantum, then Link itself will synchronize the barlines. (Thus, in the normal use case of a consistent meter throughout, it is not necessary to use code::MeterSync:: at all.)
 
 However, when changing the Link quantum, Link does not guarantee that beat values will increment consistently. Setting the quantum is meant to be done before the performance begins, not during.
 
 SuperCollider can change its code::beatsPerBar:: independently of the Link quantum. But, in that case, barlines across peers may not be synchronized.
 
-code::SCClockMeterSync:: resolves this by querying other SuperCollider Link peers for their current metrical position. If the local machine differs from the other peers, then the local machine adjusts its code::baseBarBeat:: to be in metrical sync with the others. (Beats proceed as normal; only the barline position is adjusted.)
+code::MeterSync:: resolves this by querying other SuperCollider Link peers for their current metrical position. If the local machine differs from the other peers, then the local machine adjusts its code::baseBarBeat:: to be in metrical sync with the others. (Beats proceed as normal; only the barline position is adjusted.)
 
 
 CLASSMETHODS::
@@ -82,7 +82,7 @@ list::
 ## baseBarBeat: The remote clock's metrical base.
 ## beatInBar: The remote clock's metrical position within the bar.
 ## queriedAtBeat: The emphasis::querying:: clock's query time, in beats.
-## syncMeter: Boolean. If true, the remote clock is syncing barlines. If false, the remote clock has an answering SCClockMeterSync object, but it is disabled.
+## syncMeter: Boolean. If true, the remote clock is syncing barlines. If false, the remote clock has an answering MeterSync object, but it is disabled.
 ::
 
 ARGUMENT:: timeout
@@ -99,10 +99,10 @@ Get the array of ports to which sync messages will be sent. The ports are set at
 returns:: An array of integer port numbers.
 
 METHOD:: adjustMeterBase
-A convenience method to adjust the clock's baseBarBeat, given the local metrical position and the remote metrical position. Normally, you do not need to call this method. It is provided in case you do your own analysis of link::Classes/SCClockMeterSync#-queryMeter:: results and you want to adjust barlines in your own way.
+A convenience method to adjust the clock's baseBarBeat, given the local metrical position and the remote metrical position. Normally, you do not need to call this method. It is provided in case you do your own analysis of link::Classes/MeterSync#-queryMeter:: results and you want to adjust barlines in your own way.
 
 ARGUMENT:: localBeats
-The local clock's beats. Usually this should be derived from code::result[index][\queriedAtBeat]:: (where code::result:: comes from link::Classes/SCClockMeterSync#-queryMeter::). Strongly recommended to use this instead of code::clock.beats::, because the query time does not add the timeout.
+The local clock's beats. Usually this should be derived from code::result[index][\queriedAtBeat]:: (where code::result:: comes from link::Classes/MeterSync#-queryMeter::). Strongly recommended to use this instead of code::clock.beats::, because the query time does not add the timeout.
 
 ARGUMENT:: remoteBeats
 The local clock's beats. Usually this should be derived from code::result[index][\beats]::.
@@ -119,7 +119,7 @@ code::
 // and it's all done for you.
 
 l = LinkClock.new.latency_(s.latency);
-m = SCClockMeterSync(l);
+m = MeterSync(l);
 
 (
 m.queryMeter({ |result|
@@ -142,7 +142,7 @@ returns:: Boolean.
 METHOD:: clock
 Answers with the clock being controlled by this instance.
 
-note:: You cannot change the associated clock object. You should instead link::Classes/SCClockMeterSync#-free:: this instance, and create a new instance for the other clock. ::
+note:: You cannot change the associated clock object. You should instead link::Classes/MeterSync#-free:: this instance, and create a new instance for the other clock. ::
 
 
 METHOD:: repeats

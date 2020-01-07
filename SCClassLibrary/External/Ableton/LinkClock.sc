@@ -58,7 +58,7 @@ LinkClock : TempoClock {
 
 	enableMeterSync { |id, ports|
 		if(syncMeter.isNil) {
-			syncMeter = SCClockMeterSync(this, id, ports);
+			syncMeter = MeterSync(this, id, ports);
 		};
 	}
 

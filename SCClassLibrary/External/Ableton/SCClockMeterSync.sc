@@ -2,7 +2,7 @@
 // but this may in theory apply to any clock that answers to
 // baseBarBeat_ (e.g. MIDISyncClocks, or BeaconClock)
 
-SCClockMeterSync {
+MeterSync {
 	var <clock, <id, <ports;
 	var <repeats = 4, <delta = 0.01, lastReceived;
 	var addrs, meterChangeResp, meterQueryResp;
