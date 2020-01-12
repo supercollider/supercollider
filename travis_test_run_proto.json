@@ -1,104 +1,326 @@
 {
   "tests": [
     {
-      "test": "*", 
-      "suite": "TestPlotter"
-    }, 
+      "test": "*",
+      "suite": "TestAbstractFunction"
+    },
     {
-      "test": "*", 
-      "suite": "TestUnitTest",
-      "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestEnv"
-    }, 
-    {
-      "test": "*", 
+      "test": "*",
       "suite": "TestArray"
-    }, 
+    },
     {
-      "test": "*", 
-      "suite": "TestEvent"
-    }, 
+      "test": "*",
+      "suite": "TestBuffer"
+    },
     {
-      "test": "*", 
-      "suite": "TestOSCBundle"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestNoOps"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestMixedBundleTester",
+      "test": "*",
+      "suite": "TestBus",
       "skip": true,
-      "skipReason": "Unidentified UnitTest bug (FIXME)"
-    }, 
+      "skipReason": "Test leaves server running (FIXME)"
+    },
     {
-      "test": "*", 
-      "suite": "TestFloat"
-    }, 
+      "test": "*",
+      "suite": "TestClockScheduling"
+    },
     {
-      "test": "*", 
-      "suite": "TestNetAddr"
-    }, 
+      "test": "*",
+      "suite": "TestCollection"
+    },
     {
-      "test": "*", 
+      "test": "*",
+      "suite": "TestCollectionConversions"
+    },
+    {
+      "test": "*",
+      "suite": "TestCollectionEquality"
+    },
+    {
+      "test": "*",
+      "suite": "TestComplex"
+    },
+    {
+      "test": "*",
+      "suite": "TestContiguousBlockAllocator"
+    },
+    {
+      "test": "*",
+      "suite": "TestControlSpec"
+    },
+    {
+      "test": "*",
+      "suite": "TestCoreUGens"
+    },
+    {
+      "test": "test_ugen_generator_equivalences",
+      "suite": "TestCoreUGens",
+      "skip": true,
+      "skipReason": "Test has failures (FIXME)"
+    },
+    {
+      "test": "*",
       "suite": "TestCurveWarp"
-    }, 
+    },
     {
-      "test": "*", 
-      "suite": "UnitTestScript"
-    }, 
+      "test": "*",
+      "suite": "TestDictionary"
+    },
     {
-      "test": "*", 
+      "test": "*",
+      "suite": "TestDocumentEnvironment"
+    },
+    {
+      "test": "*",
+      "suite": "TestDoneActions"
+    },
+    {
+      "test": "*",
+      "suite": "TestEnv"
+    },
+    {
+      "test": "*",
+      "suite": "TestEnvGate"
+    },
+    {
+      "test": "*",
+      "suite": "TestEnvironmentDocument"
+    },
+    {
+      "test": "*",
+      "suite": "TestEvent"
+    },
+    {
+      "test": "*",
+      "suite": "TestFilterUGens"
+    },
+    {
+      "test": "*",
+      "suite": "TestFloat"
+    },
+    {
+      "test": "*",
+      "suite": "TestFunction"
+    },
+    {
+      "test": "*",
+      "suite": "TestIndexUGenRates"
+    },
+    {
+      "test": "*",
+      "suite": "TestInteger"
+    },
+    {
+      "test": "*",
+      "suite": "TestLcmGcd"
+    },
+    {
+      "test": "*",
+      "suite": "TestMethod"
+    },
+    {
+      "test": "*",
+      "suite": "TestMixedBundleTester"
+    },
+    {
+      "test": "*",
+      "suite": "TestMixedBundle_Server"
+    },
+    {
+      "test": "*",
+      "suite": "TestNamedControl"
+    },
+    {
+      "test": "*",
+      "suite": "TestNetAddr"
+    },
+    {
+      "test": "*",
+      "suite": "TestNoOps"
+    },
+    {
+      "test": "test_arithmetics",
+      "suite": "TestNoOps",
+      "skip": true,
+      "skipReason": "Too many asserts in test causes issues (FIXME)"
+    },
+    {
+      "test": "*",
+      "suite": "TestNode"
+    },
+    {
+      "test": "*",
+      "suite": "TestNodeProxy"
+    },
+    {
+      "test": "*",
+      "suite": "TestNodeProxyRoles"
+    },
+    {
+      "test": "*",
+      "suite": "TestNodeProxy_Server",
+      "skip": true,
+      "skipReason": "Test hangs for unknown reason (FIXME)"
+    },
+    {
+      "test": "*",
+      "suite": "TestNode_Server"
+    },
+    {
+      "test": "*",
+      "suite": "TestOSCBundle"
+    },
+    {
+      "test": "*",
+      "suite": "TestOSCFunc"
+    },
+    {
+      "test": "*",
+      "suite": "TestPV_ChainUGen",
+      "skip": true,
+      "skipReason": "Test leaves the server running (FIXME)"
+    },
+    {
+      "test": "*",
+      "suite": "TestParser"
+    },
+    {
+      "test": "*",
+      "suite": "TestPattern",
+      "skip": true,
+      "skipReason": "reason unknown (FIXME)"
+    },
+    {
+      "test": "*",
+      "suite": "TestPatternProxy",
+      "skip": true,
+      "skipReason": "reason unknown (FIXME)"
+    },
+    {
+      "test": "*",
+      "suite": "TestPlotter"
+    },
+    {
+      "test": "*",
+      "suite": "TestPprotect"
+    },
+    {
+      "test": "*",
+      "suite": "TestQuery"
+    },
+    {
+      "test": "*",
+      "suite": "TestRangeSlider"
+    },
+    {
+      "test": "*",
+      "suite": "TestReadableNodeIDAllocator"
+    },
+    {
+      "test": "*",
+      "suite": "TestRecorder"
+    },
+    {
+      "test": "*",
+      "suite": "TestSCDocHTMLRenderer"
+    },
+    {
+      "test": "*",
+      "suite": "TestSanitize"
+    },
+    {
+      "test": "*",
+      "suite": "TestScore"
+    },
+    {
+      "test": "*",
+      "suite": "TestSerialPort"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer"
+    },
+    {
+      "test": "*",
+      "suite": "TestServerOptions"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer_GUI"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer_ServerGUI"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer_SynthDefVersion1"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer_boot"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer_clientID"
+    },
+    {
+      "test": "*",
+      "suite": "TestServer_clientID_booted"
+    },
+    {
+      "test": "*",
       "suite": "TestSignal"
-    }, 
-    {
-      "suite": "TestUnitTest", "test": "test_toreDown", 
-      "skip": true, "skipReason": "UnitTest bug"
-    }, 
-    {
-      "suite": "TestUnitTest", "test": "test_setUp2", 
-      "skip": true, "skipReason": "UnitTest bug"
-    }, 
-    {
-      "suite": "TestUnitTest", "test": "test_findTestedClass",
-      "skip": true, "skipReason": "Unidentified UnitTest bug"
     },
     {
-      "suite": "TestUnitTest", "test": "test_bootServer", 
-      "skip": true, "skipReason": "No server support on travis"
-    }, 
-    {
-      "test": "test_sendBundle50", 
-      "suite": "TestNetAddr", 
-      "skipReason": "No server support on travis", 
-      "skip": true
-    }, 
-    {
-      "test": "test_send", 
-      "suite": "TestMixedBundleTester", 
-      "skipReason": "No server support on travis", 
-      "skip": true
-    }, 
-    {
-      "test": "test_findPreparationMessage", 
-      "suite": "TestMixedBundleTester", 
-      "skipReason": "No server support on travis", 
-      "skip": true
-    }, 
-    {
-      "suite": "TestMixedBundleTester", "test": "test_defNames",
-      "skip": true, "skipReason": "Unidentified UnitTest bug"
+      "test": "*",
+      "suite": "TestSimpleNumber"
     },
     {
-      "test": "test_prepare", 
-      "suite": "TestOSCBundle", 
-      "skipReason": "No server support on travis", 
-      "skip": true
+      "test": "*",
+      "suite": "TestSoundFile"
+    },
+    {
+      "test": "*",
+      "suite": "TestSoundFile_Normalize"
+    },
+    {
+      "test": "*",
+      "suite": "TestSoundFile_Server"
+    },
+    {
+      "test": "*",
+      "suite": "TestStream"
+    },
+    {
+      "test": "*",
+      "suite": "TestString"
+    },
+    {
+      "test": "*",
+      "suite": "TestSymbol"
+    },
+    {
+      "test": "*",
+      "suite": "TestSynthDefOptimizations"
+    },
+    {
+      "test": "*",
+      "suite": "TestTask"
+    },
+    {
+      "test": "*",
+      "suite": "TestTempoClock"
+    },
+    {
+      "test": "*",
+      "suite": "TestUGen_Duty"
+    },
+    {
+      "test": "*",
+      "suite": "TestUnitTest"
+    },
+    {
+      "test": "*",
+      "suite": "TestVolume"
     }
   ]
 }
