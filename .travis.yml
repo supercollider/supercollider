@@ -44,6 +44,7 @@ before_script:
 
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
+ - export PATH=$TRAVIS_BUILD_DIR/BUILD/Install/bin:$PATH
  - $TRAVIS_BUILD_DIR/.travis/test.sh
  - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
 
