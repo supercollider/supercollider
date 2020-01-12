@@ -28,3 +28,6 @@ if [[ -n "$1" && "$1" == "--qt=true" ]]; then
 fi
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
 sudo update-alternatives --auto gcc
+
+# start JACK
+jackd --no-realtime -d dummy &
