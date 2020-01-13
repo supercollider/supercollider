@@ -257,15 +257,18 @@ TestLinkClock : UnitTest {
 	// and we have no signal to know when it's ready
 	test_LinkClock_sync_meter_aligns_barlines {
 		var numTrials = 5,
-		refClock, testClock, list = List.new, resp,
+		refClock, testClock, successCount = 0, resp,
 		cond = Condition.new, outerCond = Condition.new;
 		// empirically, this tempo hits a number of different offset points
-		refClock = LinkClock(3);
+		// also for this test to be meaningful, the clocks' quantum values must differ
+		refClock = LinkClock(3).quantum_(5);
 		refClock.schedAbs(1, Routine {
 			if(refClock.numPeers > 0) {
 				this.assert(false, "Make sure no other LinkClocks are running while testing");
 			} {
-				refClock.beatsPerBar = 3;
+				// reset baseBarBeat, but keep same meter
+				// (so that testClock's sync attempts will not post)
+				refClock.beatsPerBar = 4;
 				// we must wait until the reference clock finishes its initial sync attempt
 				// unavoidable delay
 				resp = SimpleController(refClock).put(\resynced, {
@@ -282,20 +285,18 @@ TestLinkClock : UnitTest {
 					});
 					cond.hang;
 					testClock.getMeterSync.queryMeter { |replies|
-						list.add(replies.every { |reply|
+						if(replies.every { |reply|
 							(reply[\queriedAtBeat] - testClock.baseBarBeat) % testClock.beatsPerBar
 							absdif: reply[\beatInBar] < 0.05
-						});
+						}) {
+							successCount = successCount + 1;
+						};
 						cond.unhang;
 					};
 					cond.hang;
 					testClock.stop;
 				};
-				this.assertEquals(
-					list.count { |bool| bool },
-					list.size,
-					"Count of successful trials should = number of trials"
-				);
+				this.assertEquals(successCount, numTrials, "Count of successful trials should = number of trials");
 			};
 			outerCond.unhang;
 		});
@@ -305,7 +306,7 @@ TestLinkClock : UnitTest {
 
 	test_LinkClock_sync_meter_propagates_meter_changes {
 		var clock1 = LinkClock.new,
-		clock2, resp, cond = Condition.new, result;
+		clock2, resp, cond = Condition.new;
 		// we must wait until clock1 finishes its initial sync attempt
 		// unavoidable delay
 		resp = SimpleController(clock1).put(\resynced, {
@@ -329,14 +330,13 @@ TestLinkClock : UnitTest {
 				cond.unhang;
 			});
 			cond.hang;
-			result = clock2.beatsPerBar == clock1.beatsPerBar;
 			this.assertEquals(clock2.beatsPerBar, clock1.beatsPerBar,
 				"clock1 and clock2 should have the same beatsPerBar after one changes"
 			);
 		} {
-			result = false;
 			this.assert(false, "Make sure no other LinkClocks are running while testing");
 		};
-		clock1.stop; clock2.stop;
+		clock1.stop;
+		clock2.stop;
 	}
 }
