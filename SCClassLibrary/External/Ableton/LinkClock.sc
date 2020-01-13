@@ -53,7 +53,7 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	syncMeter { ^syncMeter.notNil }
+	isSyncingMeter { ^syncMeter.notNil }
 	getMeterSync { ^syncMeter }
 
 	enableMeterSync { |id, ports|

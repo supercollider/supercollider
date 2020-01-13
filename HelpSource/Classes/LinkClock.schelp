@@ -77,7 +77,7 @@ table::
 ## code::\resynced:: || After link::#-enableMeterSync::, a code::\resynced:: notification is sent whenever a link::Classes/SCClockMeterSync#-resyncMeter:: call finishes successfully. One Boolean argument is passed: code::true:: if other SuperCollider peers were found, code::false:: if not.
 ::
 
-(Note that Link does not synchronize meter across peers; this notification is inherited from TempoClock. link::Classes/LinkClock#-syncMeter:: is a SuperCollider-specific way to synchronize meter; it is not part of the Link protocol.)
+(Note that Link does not synchronize meter across peers; this notification is inherited from TempoClock. link::Classes/LinkClock#-isSyncingMeter:: is a SuperCollider-specific way to synchronize meter; it is not part of the Link protocol.)
 
 The most convenient way to register to receive a notification is link::Classes/SimpleController::. See the examples below.
 
@@ -165,7 +165,7 @@ returns:: The LinkClock instance (to support chaining configuration methods, e.g
 method:: disableMeterSync
 Remove all barline-sync objects.
 
-method:: syncMeter
+method:: isSyncingMeter
 returns:: A Boolean, code::true:: if barline sync is active, code::false:: if not. (If you create the barline sync object independently, this answer is likely to be incorrect.)
 
 method:: getMeterSync
