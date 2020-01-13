@@ -48,15 +48,24 @@ MeterSync {
 	enabled { ^meterChangeResp.notNil }
 
 	enabled_ { |bool|
+		var watcher, foundPeers = false;
 		if(bool) {
 			if(clock.numPeers == 0) {
-				// maybe just started the clock; allow a beat for Link to hook up
-				// you would think it should go onto 'this'
-				// but the relationship between beats and seconds is unstable initially
-				// in practice it works much better to schedule the sync on a stable clock
-				SystemClock.sched(1.0, {
-					// clock.numPeers: might have changed in the last 2 seconds
+				// if there are peers, then we get a \numPeers notification
+				watcher = SimpleController(clock)
+				.put(\numPeers, { |... args|
+					watcher.remove;
+					foundPeers = true;
 					this.resyncMeter(verbose: clock.numPeers > 0)
+				})
+				.put(\stop, { watcher.remove });
+				SystemClock.sched(1.0, {
+					if(foundPeers.not) {
+						watcher.remove;
+						// some clocks other than Link might not broadcast numPeers
+						// but they might have peers anyway. If not, this is a no-op
+						this.resyncMeter(verbose: clock.numPeers > 0);
+					};
 				});
 			} {
 				this.resyncMeter;
