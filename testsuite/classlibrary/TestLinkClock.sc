@@ -207,21 +207,26 @@ TestLinkClock : UnitTest {
 		var clock1, clock2,
 		tempo = 12, beatDurThresh = 0.4 / tempo,
 		secList1 = List.new, secList2 = List.new,
-		cond = Condition({ secList1.size == 20 and: { secList2.size == 20 } });
+		trials = 20,
+		cond = Condition({ secList1.size == trials and: { secList2.size == trials } });
 
 		clock1 = LinkClock(tempo);
 		{
-			2.5.wait;  // offset clock starts
+			// offset clock starts
+			// this is necessary because the issue manifests
+			// when clocks haven't started simultaneously
+			// 2.5 beats / 12 bps = 0.20833 sec
+			2.5.wait;
 			clock2 = LinkClock(tempo);
 			1.5.wait;
 			{
-				20.do {
+				trials.do {
 					secList2.add(clock2.seconds);
 					1.0.wait;
 				};
 				cond.signal;
 			}.fork(clock2);
-			20.do {
+			trials.do {
 				secList1.add(clock1.seconds);
 				clock1.setMeterAtBeat(rrand(2, 4), clock1.beats);
 				1.0.wait;
@@ -254,14 +259,15 @@ TestLinkClock : UnitTest {
 		var numTrials = 5,
 		refClock, testClock, list = List.new, resp,
 		cond = Condition.new, outerCond = Condition.new;
-		refClock = LinkClock(10);
-		1.0.wait;  // refClock's time is not stable yet
-		refClock.schedAbs(4, Routine {
+		// empirically, this tempo hits a number of different offset points
+		refClock = LinkClock(3);
+		refClock.schedAbs(1, Routine {
 			if(refClock.numPeers > 0) {
 				this.assert(false, "Make sure no other LinkClocks are running while testing");
 			} {
 				refClock.beatsPerBar = 3;
 				// we must wait until the reference clock finishes its initial sync attempt
+				// unavoidable delay
 				resp = SimpleController(refClock).put(\resynced, {
 					resp.remove;
 					cond.unhang;
@@ -269,17 +275,7 @@ TestLinkClock : UnitTest {
 				refClock.enableMeterSync;
 				cond.hang;
 				numTrials.do { |i|
-					if(i > 0) {  // don't wait first time
-						rrand(0.2, 3.0).wait;
-					};
-					testClock = LinkClock.new;
-					// wait to pick up the peer
-					resp = SimpleController(testClock).put(\numPeers, {
-						resp.remove;
-						cond.unhang;
-					});
-					cond.hang;
-					testClock.enableMeterSync;
+					testClock = LinkClock.new.enableMeterSync;
 					resp = SimpleController(testClock).put(\meter, {
 						resp.remove;
 						cond.unhang;
@@ -304,14 +300,20 @@ TestLinkClock : UnitTest {
 			outerCond.unhang;
 		});
 		outerCond.hang;
-		1.0.wait;
 		refClock.stop;
 	}
 
 	test_LinkClock_sync_meter_propagates_meter_changes {
-		var clock1 = LinkClock.new.enableMeterSync,
+		var clock1 = LinkClock.new,
 		clock2, resp, cond = Condition.new, result;
-		1.0.wait;  // allow time for clock1 to find others
+		// we must wait until clock1 finishes its initial sync attempt
+		// unavoidable delay
+		resp = SimpleController(clock1).put(\resynced, {
+			resp.remove;
+			cond.unhang;
+		});
+		clock1.enableMeterSync;
+		cond.hang;
 		if(clock1.numPeers == 0) {
 			clock2 = LinkClock.new.enableMeterSync;
 			// wait for clock2 to finish initial sync
@@ -335,7 +337,6 @@ TestLinkClock : UnitTest {
 			result = false;
 			this.assert(false, "Make sure no other LinkClocks are running while testing");
 		};
-		1.0.wait;
 		clock1.stop; clock2.stop;
 	}
 }

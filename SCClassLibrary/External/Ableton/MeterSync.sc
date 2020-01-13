@@ -59,7 +59,7 @@ MeterSync {
 					this.resyncMeter(verbose: clock.numPeers > 0)
 				})
 				.put(\stop, { watcher.remove });
-				SystemClock.sched(1.0, {
+				SystemClock.sched(0.25, {
 					if(foundPeers.not) {
 						watcher.remove;
 						// some clocks other than Link might not broadcast numPeers
