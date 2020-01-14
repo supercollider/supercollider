@@ -37,6 +37,7 @@ public:
     double BeatsToSecs(double beats) const override;
     double SecsToBeats(double secs) const override;
 
+    double GetQuantum() const { return mQuantum; }
     void SetQuantum(double quantum) {
         mQuantum = quantum;
         mCondition.notify_one();
