@@ -27,4 +27,19 @@ TestDictionary : UnitTest {
 
 	}
 
+	test_embedInStream_withNonEventArgument {
+		var dict = (a:9);
+		var argument = 0; // not an event
+		var res = dict.embedInStream(argument);
+		this.assertEquals(res, dict, "embedInStream should return the receiver if the argument is a number")
+	}
+
+	test_embedInStream_withEventArgument {
+		var dict = (a:9);
+		var argument = (b:10, a:11);
+		var res = dict.embedInStream(argument);
+		this.assertEquals(res, (b:10, a:9), "embedInStream should ovrwrite the keys in the argument")
+	}
+
+
 }
