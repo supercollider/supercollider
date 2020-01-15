@@ -38,7 +38,15 @@ TestDictionary : UnitTest {
 		var dict = (a:9);
 		var argument = (b:10, a:11);
 		var res = dict.embedInStream(argument);
-		this.assertEquals(res, (b:10, a:9), "embedInStream should ovrwrite the keys in the argument")
+		this.assertEquals(res, (b:10, a:9), "embedInStream should overwrite the keys in the argument")
+	}
+
+	test_overwritePairs {
+		var a = (x: 1871, y: 1920);
+		var b = (y: 1968, z: 2020);
+		var c = a.overwritePairs(b);
+
+		this.assertEquals(c, ( x: 1871, y: 1969, z: 2020 ), "in a.overwritePairs(b), b should overwrite keys of a");
 	}
 
 

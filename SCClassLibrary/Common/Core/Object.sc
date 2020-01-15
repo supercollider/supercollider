@@ -231,6 +231,7 @@ Object  {
 	removedFromScheduler { ^this }
 	isPlaying { ^false }
 	embedInStream { ^this.yield; }
+	overwritePairs { arg dict; ^dict.copy }
 	cyc { arg n = inf;
 		^r {|inval|
 			n.do {

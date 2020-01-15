@@ -329,7 +329,7 @@ method::embedInStream
 argument::event
 The inval, usually in an event stream. See also link::Classes/Event::.
 
-If the event is not nil, yields a copy, adding all the elements of the receiver event (this leaves the receiver unchanged). If it is nil, return the receiver.
+If the event is not nil, yields a copy, adding all the elements of the receiver event (this leaves the receiver unchanged). If it is not a dictionary (e.g. nil), return a copy of the receiver.
 
 code::
 a = (note: 2);
@@ -378,6 +378,25 @@ d = (
 d.rout.((z:999));
 d.rout.((z:1, a:0));
 d.rout.(());
+::
+
+method::overwritePairs
+Use the argument dictionary to partly overwrite a copy of the receiver.
+
+code::
+a = (x: 1871, y: 1920);
+b = (y: 1968, z: 2020);
+a.overwritePairs(b); // (x: 1871, y: 1969, z: 2020)
+
+// key value pairs
+a.overwritePairs([\y, -10]);  // (x: 1871, y: -10)
+
+// this interface works with any object, including nil
+nil.overwritePairs(b); // (y: 1969, z: 2020)
+
+// this is analogous to ".add"
+nil.add(5).add(7); // [5, 7]
+nil.overwritePairs(a).overwritePairs(b) // ( x: 1871, y: 1969, z: 2020 )
 ::
 
 SECTION::Overview

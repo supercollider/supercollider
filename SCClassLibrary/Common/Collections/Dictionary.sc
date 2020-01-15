@@ -272,10 +272,15 @@ Dictionary : Set {
 	transformEvent { arg event;
 		^event.putAll(this);
 	}
+
 	embedInStream { arg event;
 		var func = this.at(\embedInStream);
 		if(func.notNil) { ^func.value(this, event) };
-		^if(event.isNil) { this } { event.copy.putAll(this) }.yield
+		^event.overwritePairs(this).yield
+	}
+
+	overwritePairs { arg dict;
+		^this.copy.putPairs(dict)
 	}
 
 	asSortedArray {
