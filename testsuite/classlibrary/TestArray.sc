@@ -76,7 +76,7 @@ TestArray : UnitTest {
 		var deepArray = { |depth|
 			if(depth == 0) {
 				1000.rand
-		} {
+			} {
 				{ deepArray.value(depth - 1) } ! rrand(1, maxLength) }
 		};
 		20.do {
@@ -186,7 +186,16 @@ TestArray : UnitTest {
 		}
 	}
 
+	test_overwritePairs {
+		var pairs, newPairs;
+		pairs = [a:3, b:4];
+		newPairs = pairs.overwritePairs([a:9, c:10, d:11]);
+		this.assertEquals(newPairs, [a:9, b:4, c:10, d:11], "overwritePairs should replace key value pairs correctly");
+
+	}
+
 } // End class
+
 
 TestArrayLace : UnitTest {
 	test_empty_returns_empty {

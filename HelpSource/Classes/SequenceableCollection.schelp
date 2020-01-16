@@ -556,6 +556,14 @@ code::
 [1, 2, 3, 4, 5].doAdjacentPairs({ arg a, b; [a, b].postln; });
 ::
 
+method::overwritePairs
+Given a list of key value pairs, use the collection from the argument to replace values and add those that do not yet exist. This keeps the order intact, new keys are added to the end. This method always returns a copy and leaves receiver and argument unchanged.
+
+code::
+x = [a:3, b:4];
+x.overwritePairs([a:9, c:10]);
+::
+
 method::separate
 Separates the collection into sub-collections by calling the function for each adjacent pair of elements. If the function returns true, then a separation is made between the elements.
 code::

@@ -345,6 +345,21 @@ SequenceableCollection : Collection {
 			function.value(this.at(i), this.at(i+1), i);
 		})
 	}
+
+	overwritePairs { arg pairs;
+		var res = this.copy;
+		pairs = pairs.copy.asPairs;
+		forBy(0, this.size-1, 2, { |i|
+			var key = this[i];
+			var argIndex = pairs.detectIndex { |x| x == key };
+			if(argIndex.notNil) {
+				res[i+1] = pairs[argIndex+1];
+				2.do { pairs.removeAt(argIndex) };
+			}
+		});
+		^res ++ pairs
+	}
+
 	separate { arg function = true;
 		var list = Array.new;
 		var sublist = this.species.new;
