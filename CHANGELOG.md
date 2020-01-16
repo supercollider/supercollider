@@ -13,23 +13,12 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
-3.10.4-rc2 (2019-12-24)
-=======================
-
-Fix copyright year ([#4694](https://github.com/supercollider/supercollider/pull/4694)).
-
-Bundle libsndfile to the release builds ([#4684](https://github.com/supercollider/supercollider/pull/4684)).
-
-Update to boost 1.71 ([#4612](https://github.com/supercollider/supercollider/pull/4612)).
-
-Travis updates ([#4684](https://github.com/supercollider/supercollider/pull/4684)).
-
-3.10.4-rc1 (2019-12-15)
-=======================
+3.10.4 (2020-01-16)
+===================
 
 Xcode 11 is now supported ([#4611](https://github.com/supercollider/supercollider/pull/4611)).
 
-Minimum supported Boost version is now 1.66.0 ([#4611](https://github.com/supercollider/supercollider/pull/4611)).
+Minimum supported Boost version is now 1.66.0 ([#4611](https://github.com/supercollider/supercollider/pull/4611)). Boost 1.71 is also now supported ([#4612](https://github.com/supercollider/supercollider/pull/4612)).
 
 supernova would sometimes return malformed `/done` OSC messages over TCP due to a concurrency issue. This has been fixed ([#4435](https://github.com/supercollider/supercollider/pull/4435)).
 
