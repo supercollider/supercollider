@@ -18,6 +18,11 @@
 
 #include <iostream>
 
+// AppleClang workaround
+#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/read.hpp>
 #include <boost/bind.hpp>
@@ -669,6 +674,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler* self) {
 
 
 void sc_osc_handler::tcp_connection::send(const char* data, size_t length) {
+    std::lock_guard<std::mutex> lock(socket_mutex_);
     try {
         boost::endian::big_int32_t len(length);
 
@@ -728,7 +734,7 @@ void sc_osc_handler::tcp_connection::handle_message() {
 
 
 void sc_osc_handler::start_tcp_accept(void) {
-    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_io_service());
+    tcp_connection::pointer new_connection = tcp_connection::create(tcp_acceptor_.get_executor());
 
     tcp_acceptor_.async_accept(
         new_connection->socket(),

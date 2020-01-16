@@ -9,61 +9,68 @@ TestSimpleNumber : UnitTest {
 	test_asTimeString_zero {
 		var expected = "00:00:00.000";
 		var actual = 0.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "0.asTimeString");
 	}
 
 	test_asTimeString_zeroNotDroppingDays {
 		var expected = "000:00:00:00.000";
 		var actual = 0.asTimeString(dropDaysIfPossible: false);
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "0.asTimeString(dropDaysIfPossible: false)");
 	}
 
 	test_asTimeString_nearZeroRoundDown {
 		var expected = "00:00:00.000";
 		var actual = 0.0001.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "0.0001.asTimeString should round down");
 	}
 
 	test_asTimeString_nearZeroRoundUp {
 		var expected = "00:00:00.001";
 		var actual = 0.0009.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "0.0009.asTimeString should round up");
 	}
 
 	test_asTimeString_milliseconds {
 		var expected = "00:00:00.015";
 		var actual = 0.015.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "0.015.asTimeString");
 	}
 
 	test_asTimeString_millisecondPrecisionTenths {
 		var expected = "00:00:05.500";
 		var actual = 5.478.asTimeString(precision: 0.1);
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "5.478.asTimeString(precision: 0.1) should round the time appropriately");
 	}
 
 	test_asTimeString_millisecondPrecisionHundredths {
 		var expected = "00:00:05.480";
 		var actual = 5.478.asTimeString(precision: 0.01);
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "5.478.asTimeString(precision: 0.01) should round the time appropriately");
 	}
 
 	test_asTimeString_millisecondPrecisionFiftieths {
 		var expected = "00:00:05.480";
 		var actual = 5.471.asTimeString(precision: 0.02);
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "5.471.asTimeString(precision: 0.02) should round the time appropriately");
+	}
+
+	test_asTimeString_millisecondPrecisionRounding {
+		var expected = "00:00:01.000";
+		var actual = 0.9999.asTimeString(precision: 0.001);
+		this.assertEquals(actual, expected, "0.9999.asTimeString(precision: 0.001) (close to next integer second) should round up");
 	}
 
 	test_asTimeString_seconds {
 		var expected = "00:00:07.015";
 		var actual = 7.015.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "7.015.asTimeString");
 	}
 
 	test_asTimeString_minutes {
 		var expected = "00:02:07.015";
-		var actual = 127.015.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		var totalTime = 127.015;
+		var actual = totalTime.asTimeString;
+		this.assertEquals(actual, expected, "%.asTimeString (2+ minutes)".format(totalTime));
 	}
 
 	test_asTimeString_hours {
@@ -72,7 +79,7 @@ TestSimpleNumber : UnitTest {
 		var threeHoursInSeconds = 3600 * 3;
 		var totalTime = threeHoursInSeconds + 127.015;
 		var actual = totalTime.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "%.asTimeString (3+ hours)".format(totalTime));
 	}
 
 	test_asTimeString_days {
@@ -82,7 +89,7 @@ TestSimpleNumber : UnitTest {
 		var threeHoursInSeconds = 3600 * 3;
 		var totalTime = twoDaysInSeconds + threeHoursInSeconds + 127.015;
 		var actual = totalTime.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "%.asTimeString (2+ days)".format(totalTime));
 	}
 
 	test_asTimeString_maxDays {
@@ -90,7 +97,7 @@ TestSimpleNumber : UnitTest {
 
 		var numSecondsIn400Days = 400 * 24 * 3600;
 		var actual = numSecondsIn400Days.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "%.asTimeString (number of days > 365)".format(numSecondsIn400Days));
 	}
 
 	test_asTimeString_maxDaysWithExtraSeconds {
@@ -99,7 +106,7 @@ TestSimpleNumber : UnitTest {
 		var numSecondsIn400Days = 400 * 24 * 3600;
 		var totalTime = numSecondsIn400Days + 10;
 		var actual = totalTime.asTimeString;
-		this.assert(actual == expected, "expected %, got %".format(expected, actual));
+		this.assertEquals(actual, expected, "%.asTimeString (number of days > 365 and 10 seconds)".format(totalTime));
 	}
 
 	test_softRound {

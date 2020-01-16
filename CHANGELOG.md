@@ -13,6 +13,25 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
+3.10.4 (2020-01-16)
+===================
+
+Xcode 11 is now supported ([#4611](https://github.com/supercollider/supercollider/pull/4611)).
+
+Minimum supported Boost version is now 1.66.0 ([#4611](https://github.com/supercollider/supercollider/pull/4611)). Boost 1.71 is also now supported ([#4612](https://github.com/supercollider/supercollider/pull/4612)).
+
+supernova would sometimes return malformed `/done` OSC messages over TCP due to a concurrency issue. This has been fixed ([#4435](https://github.com/supercollider/supercollider/pull/4435)).
+
+On macOS, Cmd+Q causes a segmentation fault in sclang. This is a regression from old behavior, where Cmd+Q is simply ignored. This has been fixed ([#4533](https://github.com/supercollider/supercollider/pull/4533)).
+
+Fixed a mistake where `Recorder` would get its default file extension from `server.recHeaderFormat` rather than its own `recHeaderFormat` ([#4550](https://github.com/supercollider/supercollider/pull/4550)).
+
+The `NodeProxy` `filter` role now respects `fadeTime` ([#4278](https://github.com/supercollider/supercollider/pull/4278)).
+
+Some sequences of IDE actions involving editor splits (such as removing a split and then recompiling the class library) can lead to an eventual IDE crash. These have been fixed ([#4645](https://github.com/supercollider/supercollider/pull/4645)).
+
+On macOS, Cmd+Q used to quit both the IDE and interpreter, but it regressed and only the interpreter would quit. This has been fixed ([#4300](https://github.com/supercollider/supercollider/issues/4300)).
+
 3.10.3 (2019-08-30)
 ===================
 

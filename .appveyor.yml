@@ -110,7 +110,6 @@ after_build:
     If (Test-Path env:APPVEYOR_REPO_TAG_NAME) {
         # required for github releases
         # -q because otherwise PS reads output from stderr and thinks there's a problem
-        git fetch --tags -q
         $env:TAG_ESC=$env:APPVEYOR_REPO_TAG_NAME -replace '/', ''
         echo $env:FWD_HTML > $env:TAG_ESC.html
         cd ../build
@@ -143,6 +142,8 @@ deploy:
   artifact: art_folder
   unzip: true
   set_public: true
+  on:
+    appveyor_repo_name: supercollider/supercollider
 
 # github releases - only tags
 - provider: GitHub

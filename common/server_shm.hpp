@@ -95,10 +95,6 @@ public:
     server_shared_memory_creator(unsigned int port_number, unsigned int control_busses):
         shmem_name(detail_server_shm::make_shmem_name(port_number)),
         segment(bi::open_or_create, shmem_name.c_str(), 8192 * 1024) {
-#if (BOOST_VERSION < 105100)
-        segment.flush();
-#endif
-
         const int num_scope_buffers = 128;
         size_t scope_pool_size = num_scope_buffers * sizeof(float) * 8192; // pessimize, about 4 MB
         void* memory_for_scope_pool = segment.allocate(scope_pool_size);

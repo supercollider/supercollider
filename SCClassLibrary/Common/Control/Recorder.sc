@@ -173,7 +173,7 @@ Recorder {
 		var timestamp;
 		var dir = thisProcess.platform.recordingsDir;
 		timestamp = Date.localtime.stamp;
-		^dir +/+ filePrefix ++ timestamp ++ "." ++ server.recHeaderFormat;
+		^dir +/+ filePrefix ++ timestamp ++ "." ++ recHeaderFormat;
 	}
 
 	changedServer { | what ... moreArgs |

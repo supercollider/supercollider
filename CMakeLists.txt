@@ -253,8 +253,11 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
-  set(Boost_USE_MULTITHREADED      ON)
-  find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
+    # https://github.com/supercollider/supercollider/issues/4576#issuecomment-531499017
+    # Boost >= 1.71 ships with its own Boost config file, we ignore it for now.
+    set(Boost_NO_BOOST_CMAKE ON)
+    set(Boost_USE_MULTITHREADED ON)
+    find_package(Boost 1.66.0 COMPONENTS thread system filesystem program_options regex test_exec_monitor)
 endif()
 
 if (Boost_FOUND)
