@@ -5,8 +5,9 @@
 #include "portaudio.h"
 #include <string>
 
-// get device name from PaDeviceIndex
+// get device name from PaDeviceIndex or PaDeviceInfo
 std::string GetPaDeviceName(PaDeviceIndex index);
+std::string GetPaDeviceName(const PaDeviceInfo* pdi);
 
 // get PaDeviceIndex from device name
 PaDeviceIndex GetPaDeviceFromName(const char* device, bool isInput);

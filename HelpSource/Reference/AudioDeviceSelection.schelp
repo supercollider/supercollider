@@ -24,11 +24,11 @@ code::
 Server.default.options.device_("MOTU 828");
 ::
 
-On macOS you can programmatically obtain a list of available audio devices without booting the server:
+On Windows and macOS you can programmatically obtain a list of available audio devices without booting the server:
 code::
-ServerOptions.devices; //all devices
-ServerOptions.inDevices; //input devices
-ServerOptions.outDevices; //output devices
+ServerOptions.devices; // all devices
+ServerOptions.inDevices; // input devices
+ServerOptions.outDevices; // output devices
 ::
 
 subsection:: Sample rate mismatch
@@ -109,7 +109,13 @@ o.inDevice_("Windows WASAPI : Microphone");
 o.outDevice_("Windows WASAPI : Speakers");
 Server.default.reboot;
 ::
-On Windows you strong::cannot:: programmatically obtain the list of available audio devices in sclang. However, all the devices are listed in the post window when the server is booting: code::Server.default.boot::. Partial device name matching is supported in Windows (though not in macOS).
+You can programmatically obtain a list of available audio devices without booting the server:
+code::
+ServerOptions.devices; // all devices
+ServerOptions.inDevices; // input devices
+ServerOptions.outDevices; // output devices
+::
+Partial device name matching is supported in Windows (though not in macOS).
 
 subsection:: Choosing the device and the API
 list::

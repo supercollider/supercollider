@@ -45,6 +45,7 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
+#include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
@@ -4274,6 +4275,7 @@ void initPrimitives() {
     initMathPrimitives();
     initSignalPrimitives();
     initArrayPrimitives();
+    initAudioDevicePrimitives();
 
     void initSymbolPrimitives();
     initSymbolPrimitives();
@@ -4347,11 +4349,6 @@ void initPrimitives() {
 
     void initSerialPrimitives();
     initSerialPrimitives();
-
-#ifdef __APPLE__
-    void initCoreAudioPrimitives();
-    initCoreAudioPrimitives();
-#endif
 
 #ifdef SCOGL_COMPILE
     void initOpenGLPrimitives();
