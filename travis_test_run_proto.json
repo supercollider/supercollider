@@ -14,12 +14,6 @@
     },
     {
       "test": "*",
-      "suite": "TestBus",
-      "skip": true,
-      "skipReason": "Test leaves server running (FIXME)"
-    },
-    {
-      "test": "*",
       "suite": "TestClockScheduling"
     },
     {
@@ -45,16 +39,6 @@
     {
       "test": "*",
       "suite": "TestControlSpec"
-    },
-    {
-      "test": "*",
-      "suite": "TestCoreUGens"
-    },
-    {
-      "test": "test_ugen_generator_equivalences",
-      "suite": "TestCoreUGens",
-      "skip": true,
-      "skipReason": "Test has failures (FIXME)"
     },
     {
       "test": "*",
@@ -134,16 +118,6 @@
     },
     {
       "test": "*",
-      "suite": "TestNoOps"
-    },
-    {
-      "test": "test_arithmetics",
-      "suite": "TestNoOps",
-      "skip": true,
-      "skipReason": "Too many asserts in test causes issues (FIXME)"
-    },
-    {
-      "test": "*",
       "suite": "TestNode"
     },
     {
@@ -153,12 +127,6 @@
     {
       "test": "*",
       "suite": "TestNodeProxyRoles"
-    },
-    {
-      "test": "*",
-      "suite": "TestNodeProxy_Server",
-      "skip": true,
-      "skipReason": "Test hangs for unknown reason (FIXME)"
     },
     {
       "test": "*",
@@ -174,25 +142,7 @@
     },
     {
       "test": "*",
-      "suite": "TestPV_ChainUGen",
-      "skip": true,
-      "skipReason": "Test leaves the server running (FIXME)"
-    },
-    {
-      "test": "*",
       "suite": "TestParser"
-    },
-    {
-      "test": "*",
-      "suite": "TestPattern",
-      "skip": true,
-      "skipReason": "reason unknown (FIXME)"
-    },
-    {
-      "test": "*",
-      "suite": "TestPatternProxy",
-      "skip": true,
-      "skipReason": "reason unknown (FIXME)"
     },
     {
       "test": "*",
