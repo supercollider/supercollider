@@ -170,10 +170,6 @@
     },
     {
       "test": "*",
-      "suite": "TestSerialPort"
-    },
-    {
-      "test": "*",
       "suite": "TestServer"
     },
     {
