@@ -242,10 +242,6 @@
     },
     {
       "test": "*",
-      "suite": "TestTempoClock"
-    },
-    {
-      "test": "*",
       "suite": "TestUGen_Duty"
     },
     {
