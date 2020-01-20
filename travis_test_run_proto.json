@@ -247,10 +247,6 @@
     {
       "test": "*",
       "suite": "TestUnitTest"
-    },
-    {
-      "test": "*",
-      "suite": "TestVolume"
     }
   ]
 }
