@@ -10,10 +10,6 @@
     },
     {
       "test": "*",
-      "suite": "TestBuffer"
-    },
-    {
-      "test": "*",
       "suite": "TestClockScheduling"
     },
     {
