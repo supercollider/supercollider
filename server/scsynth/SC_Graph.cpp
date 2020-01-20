@@ -343,7 +343,7 @@ void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter*
         float* constants = inGraphDef->mConstants;
         Wire* wire = graphWires;
         for (int i = 0; i < numConstants; ++i, ++wire) {
-            wire->mFromUnit = 0;
+            wire->mFromUnit = nullptr;
             wire->mCalcRate = calc_ScalarRate;
             wire->mBuffer = &wire->mScalarValue;
             wire->mScalarValue = constants[i];
@@ -354,8 +354,8 @@ void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter*
     graph->mSubsampleOffset = inWorld->mSubsampleOffset;
     graph->mRGen = inWorld->mRGen; // defaults to rgen zero.
 
-    graph->mLocalAudioBusUnit = NULL;
-    graph->mLocalControlBusUnit = NULL;
+    graph->mLocalAudioBusUnit = nullptr;
+    graph->mLocalControlBusUnit = nullptr;
 
     graph->localBufNum = 0;
     graph->localMaxBufNum = 0; // this is set from synth

@@ -146,7 +146,7 @@ int main(int argc, char* argv[]) {
     WorldOptions options;
 
     for (int i = 1; i < argc;) {
-        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == nullptr) {
             scprintf("ERROR: Invalid option %s\n", argv[i]);
             Usage();
         }
@@ -236,8 +236,8 @@ int main(int argc, char* argv[]) {
             // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
             checkNumArgs(7);
             options.mRealTime = false;
-            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : 0;
-            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : 0;
+            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : nullptr;
+            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : nullptr;
             options.mNonRealTimeOutputFilename = argv[j + 3];
             options.mPreferredSampleRate = (uint32)atof(argv[j + 4]);
             options.mNonRealTimeOutputHeaderFormat = argv[j + 5];

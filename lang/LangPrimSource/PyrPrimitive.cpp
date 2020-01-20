@@ -930,7 +930,7 @@ HOT int blockValue(struct VMGlobals* g, int numArgsPushed) {
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
     caller = g->frame;
@@ -949,7 +949,7 @@ HOT int blockValue(struct VMGlobals* g, int numArgsPushed) {
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
 
     g->sp = args - 1;
@@ -1070,7 +1070,7 @@ int blockValueWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushed) {
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
 
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
@@ -1091,7 +1091,7 @@ int blockValueWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushed) {
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
     g->sp = args - 1;
     g->ip = slotRawInt8Array(&block->code)->b - 1;
@@ -1238,7 +1238,7 @@ int blockValueEnvir(struct VMGlobals* g, int numArgsPushed) {
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
 
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
@@ -1258,7 +1258,7 @@ int blockValueEnvir(struct VMGlobals* g, int numArgsPushed) {
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
 
     g->sp = args - 1;
@@ -1393,7 +1393,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
 
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
@@ -1414,7 +1414,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
 
     g->sp = args - 1;
@@ -2453,9 +2453,9 @@ int haltInterpreter(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *bottom = g->gc->Stack()->slots;
     // slotCopy(bottom,g->sp);
     // g->sp = bottom; // ??!! pop everybody
-    g->method = NULL;
-    g->block = NULL;
-    g->frame = NULL;
+    g->method = nullptr;
+    g->block = nullptr;
+    g->frame = nullptr;
     SetNil(g->sp);
     longjmp(g->escapeInterpreter, 3);
     // hmm need to fix this to work only on main thread. //!!!
@@ -2652,7 +2652,7 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
     classobj = classsym->u.classobj;
     if (!classobj) {
         error("There is no Interpreter class.\n");
-        return 0;
+        return nullptr;
     }
     // lookup functionCompileContext method
     contextsym = getsym("functionCompileContext");
@@ -2660,7 +2660,7 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
     meth = gRowTable[index];
     if (!meth || slotRawSymbol(&meth->name) != contextsym) {
         error("compile context method 'functionCompileContext' not found.\n");
-        return 0;
+        return nullptr;
     }
     gCompilingClass = classobj;
     gCompilingMethod = meth;
@@ -2684,7 +2684,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     string = slotRawString(b);
 
-    gRootParseNode = NULL;
+    gRootParseNode = nullptr;
     initParserPool();
     // assert(g->gc->SanityCheck());
     startLexerCmdLine(string->s, string->size);
@@ -2949,8 +2949,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetNil(&oldthread->block);
         SetNil(&oldthread->receiver);
         SetNil(&oldthread->frame);
-        SetRaw(&oldthread->ip, (void*)0);
-        SetRaw(&oldthread->sp, (void*)0);
+        SetRaw(&oldthread->ip, (void*)nullptr);
+        SetRaw(&oldthread->sp, (void*)nullptr);
         SetRaw(&oldthread->numArgsPushed, 0);
         SetRaw(&oldthread->numpop, 0);
         SetNil(&oldthread->parent);
@@ -2963,8 +2963,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetNil(&oldthread->block);
         SetNil(&oldthread->receiver);
         SetNil(&oldthread->frame);
-        SetRaw(&oldthread->ip, (void*)0);
-        SetRaw(&oldthread->sp, (void*)0);
+        SetRaw(&oldthread->ip, (void*)nullptr);
+        SetRaw(&oldthread->sp, (void*)nullptr);
         SetRaw(&oldthread->numArgsPushed, 0);
         SetRaw(&oldthread->numpop, 0);
         SetNil(&oldthread->parent);
@@ -3031,8 +3031,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     SetNil(&newthread->method);
     SetNil(&newthread->block);
     SetNil(&newthread->frame);
-    SetRaw(&newthread->ip, (void*)0);
-    SetRaw(&newthread->sp, (void*)0);
+    SetRaw(&newthread->ip, (void*)nullptr);
+    SetRaw(&newthread->sp, (void*)nullptr);
     SetNil(&newthread->receiver);
 
     SetRaw(&newthread->state, tRunning);
@@ -3071,8 +3071,8 @@ void initPyrThread(VMGlobals* g, PyrThread* thread, PyrSlot* func, int stacksize
 
     SetInt(&thread->state, tInit);
 
-    SetPtr(&thread->ip, 0);
-    SetPtr(&thread->sp, 0);
+    SetPtr(&thread->ip, nullptr);
+    SetPtr(&thread->sp, nullptr);
 
     SetObject(&thread->randData, rgenArray);
     gc->GCWrite(thread, rgenArray);
@@ -3406,8 +3406,8 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
         SetNil(&thread->block);
         SetNil(&thread->receiver);
         SetNil(&thread->frame);
-        SetRaw(&thread->ip, (void*)0);
-        SetRaw(&thread->sp, (void*)0);
+        SetRaw(&thread->ip, (void*)nullptr);
+        SetRaw(&thread->sp, (void*)nullptr);
         SetRaw(&thread->numArgsPushed, 0);
         SetRaw(&thread->numpop, 0);
         SetNil(&thread->parent);
@@ -3418,8 +3418,8 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
         SetNil(&thread->block);
         SetNil(&thread->receiver);
         SetNil(&thread->frame);
-        SetRaw(&thread->ip, (void*)0);
-        SetRaw(&thread->sp, (void*)0);
+        SetRaw(&thread->ip, (void*)nullptr);
+        SetRaw(&thread->sp, (void*)nullptr);
         SetRaw(&thread->numArgsPushed, 0);
         SetRaw(&thread->numpop, 0);
         SetNil(&thread->parent);

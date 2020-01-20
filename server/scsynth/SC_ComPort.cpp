@@ -490,7 +490,7 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World* inWorld, int inSize,
 }
 
 SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, char* inData, ReplyFunc inFunc) {
-    return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
+    return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, nullptr);
 }
 
 SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {

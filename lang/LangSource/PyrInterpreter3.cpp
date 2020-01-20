@@ -229,7 +229,7 @@ PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj) {
         SetObject(&frame->homeContext, frame);
         SetInt(&frame->caller, 0);
         SetNil(&frame->context);
-        SetPtr(&frame->ip, 0);
+        SetPtr(&frame->ip, nullptr);
         SetObject(&frame->vars[0], interpreter);
 
         SetObject(&interpreter->context, frame);
@@ -331,10 +331,10 @@ bool initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
     SetObject(&g->receiver, g->process);
 
     // these will be set up when the run method is called
-    g->method = NULL;
-    g->block = NULL;
-    g->frame = NULL;
-    g->ip = NULL;
+    g->method = nullptr;
+    g->block = nullptr;
+    g->frame = nullptr;
+    g->ip = nullptr;
 
     // initialize process random number generator
     g->rgen = (RGen*)(slotRawObject(&g->thread->randData)->slots);
@@ -366,10 +366,10 @@ static bool initAwakeMessage(VMGlobals* g) {
     g->thread = slotRawThread(&g->process->mainThread); //??
 
     // these will be set up when the run method is called
-    g->method = NULL;
-    g->block = NULL;
-    g->frame = NULL;
-    g->ip = NULL;
+    g->method = nullptr;
+    g->block = nullptr;
+    g->frame = nullptr;
+    g->ip = nullptr;
     g->execMethod = 0;
 
     // set process as the receiver
@@ -384,7 +384,7 @@ static bool initAwakeMessage(VMGlobals* g) {
     // start it
     sendMessage(g, s_awake, 4);
 
-    return g->method != NULL;
+    return g->method != nullptr;
 }
 
 bool initInterpreter(VMGlobals* g, PyrSymbol* selector, int numArgsPushed) {
@@ -395,10 +395,10 @@ bool initInterpreter(VMGlobals* g, PyrSymbol* selector, int numArgsPushed) {
 #if TAILCALLOPTIMIZE
     g->tailCall = 0;
 #endif
-    g->method = NULL;
-    g->block = NULL;
-    g->frame = NULL;
-    g->ip = NULL;
+    g->method = nullptr;
+    g->block = nullptr;
+    g->frame = nullptr;
+    g->ip = nullptr;
     g->execMethod = 0;
     double elapsed = elapsedTime();
     SetFloat(&g->thread->beats, elapsed);
@@ -413,7 +413,7 @@ bool initInterpreter(VMGlobals* g, PyrSymbol* selector, int numArgsPushed) {
     // start it
     sendMessage(g, selector, numArgsPushed);
 
-    return g->method != NULL;
+    return g->method != nullptr;
 }
 
 
@@ -2889,7 +2889,7 @@ HOT void Interpret(VMGlobals* g) {
             // message sends handled here:
         msg_lookup : {
             size_t index = slotRawInt(&classobj->classIndex) + selector->u.index;
-            PyrMethod* meth = NULL;
+            PyrMethod* meth = nullptr;
             if (UNLIKELY((selector->flags & sym_Class) != 0)) {
                 // You have sent a message which is a class name. This is a bad thing.
                 // There are two cases. It is either an illegitimate classname like
@@ -2897,13 +2897,13 @@ HOT void Interpret(VMGlobals* g) {
                 // in which case selector->u.index == 0 and you get a message or it is a real one like
                 // 1 Object: 2
                 // in which case selector->u.index isn't pointing to a method and you get a segfault. So...
-                meth = NULL;
+                meth = nullptr;
             } else {
                 meth = gRowTable[index];
             }
 
             // and now if meth is null, bail out just like if I don't understand it
-            if (UNLIKELY(meth == NULL || (slotRawSymbol(&meth->name) != selector))) {
+            if (UNLIKELY(meth == nullptr || (slotRawSymbol(&meth->name) != selector))) {
                 g->sp = sp;
                 g->ip = ip;
                 doesNotUnderstand(g, selector, numArgsPushed);

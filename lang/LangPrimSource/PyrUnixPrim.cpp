@@ -116,7 +116,7 @@ int prString_Dirname(struct VMGlobals* g, int numArgsPushed) {
 static void string_popen_thread_func(pid_t pid, FILE* stream, bool postOutput) {
     char buf[1024];
 
-    setvbuf(stream, 0, _IONBF, 0);
+    setvbuf(stream, nullptr, _IONBF, 0);
 
     while (postOutput) {
         char* string = fgets(buf, 1024, stream);

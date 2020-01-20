@@ -836,7 +836,7 @@ void initPatterns() {
     ivxIdentDict_know = instVarOffset("IdentityDictionary", "know");
 
     sym = getsym("IdentityDictionary");
-    class_identdict = sym ? sym->u.classobj : NULL;
+    class_identdict = sym ? sym->u.classobj : nullptr;
     class_identdict_index = slotRawInt(&class_identdict->classIndex);
     class_identdict_maxsubclassindex = slotRawInt(&class_identdict->maxSubclassIndex);
 
