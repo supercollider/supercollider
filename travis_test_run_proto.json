@@ -46,10 +46,6 @@
     },
     {
       "test": "*",
-      "suite": "TestDocumentEnvironment"
-    },
-    {
-      "test": "*",
       "suite": "TestDoneActions"
     },
     {
@@ -59,10 +55,6 @@
     {
       "test": "*",
       "suite": "TestEnvGate"
-    },
-    {
-      "test": "*",
-      "suite": "TestEnvironmentDocument"
     },
     {
       "test": "*",
