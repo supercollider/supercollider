@@ -59,12 +59,12 @@ extern PyrString* newPyrStringN(class PyrGC* gc, long length, long flags, long c
 // SC_LanguageClient
 // =====================================================================
 
-SC_LanguageClient* gInstance = 0;
+SC_LanguageClient* gInstance = nullptr;
 SC_Lock gInstanceMutex;
 
 class HiddenLanguageClient {
 public:
-    HiddenLanguageClient(): mPostFile(0), mScratch(0), mRunning(false) {}
+    HiddenLanguageClient(): mPostFile(nullptr), mScratch(0), mRunning(false) {}
 
     std::string mName;
     FILE* mPostFile;
@@ -215,7 +215,7 @@ void SC_LanguageClient::snprintMemArg(char* dst, size_t size, int arg) {
 
 bool SC_LanguageClient::parseMemArg(const char* arg, int* res) {
     long value, factor = 1;
-    char* endPtr = 0;
+    char* endPtr = nullptr;
 
     if (*arg == '\0')
         return false;

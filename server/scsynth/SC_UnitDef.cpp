@@ -48,7 +48,7 @@ bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor,
     unitDef->mUnitCtorFunc = inCtor;
     unitDef->mUnitDtorFunc = inDtor;
 
-    unitDef->mCmds = 0;
+    unitDef->mCmds = nullptr;
     unitDef->mFlags = inFlags;
 
     if (!AddUnitDef(unitDef)) {

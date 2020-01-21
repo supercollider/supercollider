@@ -52,9 +52,9 @@ int Node_New(World* inWorld, NodeDef* def, int32 inID, Node** outNode) {
 
     node->mWorld = inWorld;
     node->mDef = def;
-    node->mParent = 0;
-    node->mPrev = 0;
-    node->mNext = 0;
+    node->mParent = nullptr;
+    node->mPrev = nullptr;
+    node->mNext = nullptr;
     node->mIsGroup = false;
 
     node->mID = inID;
@@ -94,8 +94,8 @@ void Node_Remove(Node* s) {
     else if (group)
         group->mTail = s->mPrev;
 
-    s->mPrev = s->mNext = 0;
-    s->mParent = 0;
+    s->mPrev = s->mNext = nullptr;
+    s->mParent = nullptr;
 }
 
 void Node_RemoveID(Node* inNode) {
@@ -187,8 +187,8 @@ void Node_Replace(Node* s, Node* replaceThisOne) {
     else
         group->mTail = s;
 
-    replaceThisOne->mPrev = replaceThisOne->mNext = 0;
-    replaceThisOne->mParent = 0;
+    replaceThisOne->mPrev = replaceThisOne->mNext = nullptr;
+    replaceThisOne->mParent = nullptr;
 
     Node_Delete(replaceThisOne);
     // scprintf("<-Node_Replace\n");
@@ -320,7 +320,7 @@ void Node_SendReply(Node* inNode, int replyID, const char* cmdName, int numArgs,
 
     const int cmdNameSize = strlen(cmdName);
     void* mem = World_Alloc(world, cmdNameSize + numArgs * sizeof(float));
-    if (mem == 0)
+    if (mem == nullptr)
         return;
 
     NodeReplyMsg msg;

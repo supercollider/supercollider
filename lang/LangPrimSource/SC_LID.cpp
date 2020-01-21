@@ -63,11 +63,11 @@
 
 extern bool compiledOK;
 
-static PyrSymbol* s_inputDeviceClass = 0;
-static PyrSymbol* s_inputDeviceInfoClass = 0;
-static PyrSymbol* s_absInfoClass = 0;
-static PyrSymbol* s_handleEvent = 0;
-static PyrSymbol* s_readError = 0;
+static PyrSymbol* s_inputDeviceClass = nullptr;
+static PyrSymbol* s_inputDeviceInfoClass = nullptr;
+static PyrSymbol* s_absInfoClass = nullptr;
+static PyrSymbol* s_handleEvent = nullptr;
+static PyrSymbol* s_readError = nullptr;
 
 // =====================================================================
 // SC_LID
@@ -94,7 +94,7 @@ struct SC_LID {
     void readError(std::atomic<bool> const& shouldBeRunning);
 
     static PyrObject* getObject(PyrSlot* slot) {
-        return isKindOfSlot(slot, s_inputDeviceClass->u.classobj) ? slotRawObject(slot) : 0;
+        return isKindOfSlot(slot, s_inputDeviceClass->u.classobj) ? slotRawObject(slot) : nullptr;
     }
 
     static SC_LID* getDevice(PyrObject* obj) { return (SC_LID*)slotRawPtr(&obj->slots[0]); }
@@ -155,7 +155,9 @@ private:
 // =====================================================================
 // SC_LID
 
-SC_LID::SC_LID(PyrObject* obj): m_next(0), m_obj(obj), m_fd(-1), m_lastEventType(-1) { SetPtr(obj->slots + 0, this); }
+SC_LID::SC_LID(PyrObject* obj): m_next(nullptr), m_obj(obj), m_fd(-1), m_lastEventType(-1) {
+    SetPtr(obj->slots + 0, this);
+}
 
 SC_LID::~SC_LID() {
     if (m_fd != -1)
@@ -320,7 +322,7 @@ SC_LIDManager& SC_LIDManager::instance() {
     return instance;
 }
 
-SC_LIDManager::SC_LIDManager(): m_running(false), m_devices(0) {
+SC_LIDManager::SC_LIDManager(): m_running(false), m_devices(nullptr) {
     if (pipe(m_cmdFifo) == -1) {
         m_cmdFifo[0] = m_cmdFifo[1] = -1;
     }
@@ -334,7 +336,7 @@ SC_LIDManager::~SC_LIDManager() {
 
 int SC_LIDManager::start() {
     mShouldBeRunning = true;
-    int err = pthread_create(&m_thread, 0, &threadFunc, this);
+    int err = pthread_create(&m_thread, nullptr, &threadFunc, this);
     if (err != 0)
         return errFailed;
     return errNone;
@@ -352,7 +354,7 @@ int SC_LIDManager::stop() {
         return err;
 
     mShouldBeRunning = false;
-    err = pthread_join(m_thread, 0);
+    err = pthread_join(m_thread, nullptr);
     if (err != 0)
         return errFailed;
 
@@ -407,7 +409,7 @@ bool SC_LIDManager::asyncAddDevice(SC_LID* dev) {
 }
 
 bool SC_LIDManager::asyncRemoveDevice(SC_LID* dev) {
-    SC_LID *prev = 0, *cur = m_devices;
+    SC_LID *prev = nullptr, *cur = m_devices;
 
     while (cur) {
         if (cur == dev) {
@@ -415,7 +417,7 @@ bool SC_LIDManager::asyncRemoveDevice(SC_LID* dev) {
                 prev->m_next = dev->m_next;
             else
                 m_devices = dev->m_next;
-            dev->m_next = 0;
+            dev->m_next = nullptr;
             delete dev;
             devicesChanged();
             return true;
@@ -429,7 +431,7 @@ bool SC_LIDManager::asyncRemoveDevice(SC_LID* dev) {
 
 void* SC_LIDManager::threadFunc(void* arg) {
     ((SC_LIDManager*)arg)->loop();
-    return 0;
+    return nullptr;
 }
 
 void SC_LIDManager::loop() {
@@ -439,7 +441,7 @@ void SC_LIDManager::loop() {
     while (true) {
         fd_set fds;
         memcpy(&fds, &m_fds, sizeof(fd_set));
-        int n = select(m_nfds, &fds, 0, 0, 0);
+        int n = select(m_nfds, &fds, nullptr, nullptr, nullptr);
         if (n == -1) {
             if (errno == EINTR)
                 continue;

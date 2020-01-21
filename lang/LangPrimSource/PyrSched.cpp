@@ -295,7 +295,7 @@ void syncOSCOffsetWithTimeOfDay() {
     int64 newOffset = gHostOSCoffset;
     for (int i = 0; i < numberOfTries; ++i) {
         systemTimeBefore = high_resolution_clock::now().time_since_epoch();
-        gettimeofday(&tv, 0);
+        gettimeofday(&tv, nullptr);
         systemTimeAfter = high_resolution_clock::now().time_since_epoch();
 
         diff = (systemTimeAfter - systemTimeBefore).count();
@@ -620,7 +620,7 @@ new clock:
 */
 
 
-TempoClock* TempoClock::sAll = 0;
+TempoClock* TempoClock::sAll = nullptr;
 
 void TempoClock_stopAll(void) {
     // printf("->TempoClock_stopAll %p\n", TempoClock::sAll);
@@ -645,7 +645,7 @@ TempoClock::TempoClock(VMGlobals* inVMGlobals, PyrObject* inTempoClockObj, doubl
     mBaseSeconds(inBaseSeconds),
     mBaseBeats(inBaseBeats),
     mRun(true),
-    mPrev(0),
+    mPrev(nullptr),
     mNext(sAll) {
     if (sAll)
         sAll->mPrev = this;
@@ -813,7 +813,7 @@ void* TempoClock::Run() {
     }
 leave:
     // printf("<-TempoClock::Run\n");
-    return 0;
+    return nullptr;
 }
 
 /*

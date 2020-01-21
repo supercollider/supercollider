@@ -55,7 +55,7 @@ namespace bfs = boost::filesystem;
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
-    char str[1024], *strp = 0;
+    char str[1024], *strp = nullptr;
     int len;
 
     a = g->sp;
@@ -894,7 +894,7 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed) {
 static void yaml_traverse(struct VMGlobals* g, const YAML::Node& node, PyrObject* parent, PyrSlot* slot) {
     YAML::NodeType::value type = node.Type();
     string out;
-    PyrObject* result = NULL;
+    PyrObject* result = nullptr;
 
     switch (type) {
     case YAML::NodeType::Scalar:
@@ -967,7 +967,7 @@ int prString_ParseYAML(struct VMGlobals* g, int numArgsPushed) {
 
     std::istringstream fin(str);
     YAML::Node doc = YAML::Load(fin);
-    yaml_traverse(g, doc, NULL, arg);
+    yaml_traverse(g, doc, nullptr, arg);
 
     return errNone;
 }
@@ -983,7 +983,7 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
     const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
     bfs::ifstream fin(path);
     YAML::Node doc = YAML::Load(fin);
-    yaml_traverse(g, doc, NULL, arg);
+    yaml_traverse(g, doc, nullptr, arg);
 
     return errNone;
 }

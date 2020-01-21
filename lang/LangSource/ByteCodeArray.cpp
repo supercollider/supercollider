@@ -31,7 +31,7 @@ long totalByteCodes = 0;
 void initByteCodes() {
     if (gCompilingByteCodes) {
         freeByteCodes(gCompilingByteCodes);
-        gCompilingByteCodes = NULL;
+        gCompilingByteCodes = nullptr;
     }
 }
 
@@ -59,7 +59,7 @@ void compileJump(long opcode, long jumplen) {
 }
 
 void compileByte(long byte) {
-    if (gCompilingByteCodes == NULL) {
+    if (gCompilingByteCodes == nullptr) {
         gCompilingByteCodes = allocByteCodes();
     }
 
@@ -96,7 +96,7 @@ ByteCodes getByteCodes() {
     ByteCodes curByteCodes;
 
     curByteCodes = gCompilingByteCodes;
-    gCompilingByteCodes = NULL;
+    gCompilingByteCodes = nullptr;
 
     return curByteCodes;
 }
@@ -105,7 +105,7 @@ ByteCodes saveByteCodeArray() {
     ByteCodes curByteCodes;
 
     curByteCodes = gCompilingByteCodes;
-    gCompilingByteCodes = NULL;
+    gCompilingByteCodes = nullptr;
 
     return curByteCodes;
 }
@@ -128,7 +128,7 @@ void compileByteCodes(ByteCodes byteCodes) {
     Byte* ptr;
     int i;
 
-    if (byteCodes == NULL)
+    if (byteCodes == nullptr)
         return;
 
     // postfl("[%d]\n", byteCodes->ptr - byteCodes->bytes);
@@ -179,7 +179,7 @@ void reallocByteCodes(ByteCodes byteCodes) {
 
 void freeByteCodes(ByteCodes byteCodes) {
     // postfl("freeByteCodes %0X\n", byteCodes);
-    if (byteCodes != NULL) {
+    if (byteCodes != nullptr) {
         pyr_pool_compile->Free(byteCodes->bytes);
         pyr_pool_compile->Free(byteCodes);
     }

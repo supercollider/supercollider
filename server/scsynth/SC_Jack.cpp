@@ -123,8 +123,8 @@ SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_JackDri
 
 SC_JackPortList::SC_JackPortList(jack_client_t* client, int orderOffset, int numPorts, int type):
     mSize(numPorts),
-    mPorts(0),
-    mBuffers(0) {
+    mPorts(nullptr),
+    mBuffers(nullptr) {
     const char* fmt = (type == JackPortIsInput ? "in_%d" : "out_%d");
 #ifdef SC_JACK_USE_METADATA_API
     const char* prettyFmt = (type == JackPortIsInput ? "Input %d" : "Output %d");
@@ -137,7 +137,7 @@ SC_JackPortList::SC_JackPortList(jack_client_t* client, int orderOffset, int num
     for (int i = 0; i < mSize; i++) {
         snprintf(tempStr, 32, fmt, i + 1);
         mPorts[i] = jack_port_register(client, tempStr, JACK_DEFAULT_AUDIO_TYPE, type, 0);
-        mBuffers[i] = 0;
+        mBuffers[i] = nullptr;
 
 #ifdef SC_JACK_USE_METADATA_API
         jack_uuid_t uuid = jack_port_uuid(mPorts[i]);
@@ -189,9 +189,9 @@ void sc_jack_shutdown_cb(void* arg) {
 
 SC_JackDriver::SC_JackDriver(struct World* inWorld):
     SC_AudioDriver(inWorld),
-    mClient(0),
-    mInputList(0),
-    mOutputList(0),
+    mClient(nullptr),
+    mInputList(nullptr),
+    mOutputList(nullptr),
     mMaxOutputLatency(0.) {}
 
 SC_JackDriver::~SC_JackDriver() {
@@ -212,8 +212,8 @@ SC_JackDriver::~SC_JackDriver() {
 // ====================================================================
 
 bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
-    char* clientName = 0;
-    char* serverName = 0;
+    char* clientName = nullptr;
+    char* serverName = nullptr;
 
     if (mWorld->hw->mInDeviceName && (strlen(mWorld->hw->mInDeviceName) > 0)) {
         // parse string <serverName>:<clientName>
@@ -222,23 +222,23 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
             serverName = strdup(sp.NextToken());
         if (!sp.AtEnd())
             clientName = strdup(sp.NextToken());
-        if (clientName == 0) {
+        if (clientName == nullptr) {
             // no semicolon found
             clientName = serverName;
-            serverName = 0;
+            serverName = nullptr;
         } else if (strlen(clientName) == 0) {
             free(clientName);
-            clientName = 0;
+            clientName = nullptr;
         }
     }
 
     mClient = jack_client_open(clientName ? clientName : kJackDefaultClientName,
-                               serverName ? JackServerName : JackNullOption, NULL, serverName);
+                               serverName ? JackServerName : JackNullOption, nullptr, serverName);
     if (serverName)
         free(serverName);
     if (clientName)
         free(clientName);
-    if (mClient == 0)
+    if (mClient == nullptr)
         return false;
 
     scprintf("%s: client name is '%s'\n", kJackDriverIdent, jack_get_client_name(mClient));
@@ -262,7 +262,7 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
 }
 
 void SC_JackDriver::ConnectClientInputs(const char* pattern) {
-    const char** ports = jack_get_ports(mClient, pattern, NULL, JackPortIsOutput);
+    const char** ports = jack_get_ports(mClient, pattern, nullptr, JackPortIsOutput);
     jack_port_t** ourports = mInputList->mPorts;
 
     if (!ports)
@@ -284,7 +284,7 @@ void SC_JackDriver::ConnectClientInputs(const char* pattern) {
 }
 
 void SC_JackDriver::ConnectClientOutputs(const char* pattern) {
-    const char** ports = jack_get_ports(mClient, pattern, NULL, JackPortIsInput);
+    const char** ports = jack_get_ports(mClient, pattern, nullptr, JackPortIsInput);
     jack_port_t** ourports = mOutputList->mPorts;
 
     if (!ports)
@@ -328,7 +328,7 @@ bool SC_JackDriver::DriverStart() {
     for (int i = 0; !sp.AtEnd() && (i < numPorts); i++) {
         const char* thatPortName = sp.NextToken();
 
-        if (i == 0 && sp.AtEnd() && (strchr(thatPortName, ':') == 0)) {
+        if (i == 0 && sp.AtEnd() && (strchr(thatPortName, ':') == nullptr)) {
             ConnectClientInputs(thatPortName);
             break;
         }
@@ -345,7 +345,7 @@ bool SC_JackDriver::DriverStart() {
     for (int i = 0; !sp.AtEnd() && (i < numPorts); i++) {
         const char* thatPortName = sp.NextToken();
 
-        if (i == 0 && sp.AtEnd() && (strchr(thatPortName, ':') == 0)) {
+        if (i == 0 && sp.AtEnd() && (strchr(thatPortName, ':') == nullptr)) {
             ConnectClientOutputs(thatPortName);
             break;
         }

@@ -538,7 +538,7 @@ int initMIDI(int numIn, int numOut) {
 
     // initialize client handle
     if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
-        client->mHandle = 0;
+        client->mHandle = nullptr;
         post("MIDI (ALSA): could not open ALSA sequencer: %s\n", snd_strerror(errno));
         return errFailed;
     }
@@ -586,19 +586,19 @@ int initMIDI(int numIn, int numOut) {
 
     // initialize queue
     client->mQueue = snd_seq_alloc_queue(client->mHandle);
-    snd_seq_start_queue(client->mHandle, client->mQueue, 0);
+    snd_seq_start_queue(client->mHandle, client->mQueue, nullptr);
     snd_seq_drain_output(client->mHandle);
     // snd_seq_set_client_pool_output(seqHandle, ??);
 
     // initialize event en-/decoders
     if (snd_midi_event_new(32, &client->mEventToMidi) < 0) {
-        client->mEventToMidi = 0;
+        client->mEventToMidi = nullptr;
         post("MIDI (ALSA): could not create MIDI decoder\n");
         return errFailed;
     }
 
     if (snd_midi_event_new(32, &client->mMidiToEvent) < 0) {
-        client->mMidiToEvent = 0;
+        client->mMidiToEvent = nullptr;
         post("MIDI (ALSA): could not create MIDI encoder\n");
         return errFailed;
     }
@@ -618,7 +618,7 @@ int initMIDIClient() {
 
     // initialize client handle
     if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
-        client->mHandle = 0;
+        client->mHandle = nullptr;
         post("MIDI (ALSA): could not open ALSA sequencer: %s\n", snd_strerror(errno));
         return errFailed;
     }
@@ -629,19 +629,19 @@ int initMIDIClient() {
 
     // initialize queue
     client->mQueue = snd_seq_alloc_queue(client->mHandle);
-    snd_seq_start_queue(client->mHandle, client->mQueue, 0);
+    snd_seq_start_queue(client->mHandle, client->mQueue, nullptr);
     snd_seq_drain_output(client->mHandle);
     // snd_seq_set_client_pool_output(seqHandle, ??);
 
     // initialize event en-/decoders
     if (snd_midi_event_new(32, &client->mEventToMidi) < 0) {
-        client->mEventToMidi = 0;
+        client->mEventToMidi = nullptr;
         post("MIDI (ALSA): could not create MIDI decoder\n");
         return errFailed;
     }
 
     if (snd_midi_event_new(32, &client->mMidiToEvent) < 0) {
-        client->mMidiToEvent = 0;
+        client->mMidiToEvent = nullptr;
         post("MIDI (ALSA): could not create MIDI encoder\n");
         return errFailed;
     }
@@ -672,7 +672,7 @@ void cleanUpMIDI() {
         snd_seq_remove_events(client->mHandle, revt);
         snd_seq_remove_events_free(revt);
 
-        snd_seq_stop_queue(client->mHandle, client->mQueue, 0);
+        snd_seq_stop_queue(client->mHandle, client->mQueue, nullptr);
         snd_seq_free_queue(client->mHandle, client->mQueue);
 
         if (client->mEventToMidi) {
@@ -684,7 +684,7 @@ void cleanUpMIDI() {
         }
 
         snd_seq_close(client->mHandle);
-        client->mHandle = 0;
+        client->mHandle = nullptr;
     }
 }
 

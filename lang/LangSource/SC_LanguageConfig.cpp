@@ -215,7 +215,7 @@ bool SC_LanguageConfig::readLibraryConfig(bool standalone) {
 void SC_LanguageConfig::freeLibraryConfig() {
     if (gLanguageConfig) {
         delete gLanguageConfig;
-        gLanguageConfig = 0;
+        gLanguageConfig = nullptr;
     }
 }
 

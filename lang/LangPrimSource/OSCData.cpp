@@ -65,9 +65,9 @@ const int kNumDefaultSharedControls = 1024;
 float gDefaultSharedControls[kNumDefaultSharedControls];
 bool gUseDoubles = false;
 
-InternalSynthServerGlobals gInternalSynthServer = { 0, kNumDefaultSharedControls, gDefaultSharedControls };
+InternalSynthServerGlobals gInternalSynthServer = { nullptr, kNumDefaultSharedControls, gDefaultSharedControls };
 
-SC_UdpInPort* gUDPport = 0;
+SC_UdpInPort* gUDPport = nullptr;
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
@@ -312,7 +312,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         return errNone;
 
     } else {
-        if (gUDPport == 0)
+        if (gUDPport == nullptr)
             return errFailed;
 
 
@@ -407,7 +407,7 @@ static int prNetAddr_Disconnect(VMGlobals* g, int numArgsPushed) {
     SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
     if (comPort) {
         err = comPort->Close();
-        SetPtr(netAddrObj->slots + ivxNetAddr_Socket, NULL);
+        SetPtr(netAddrObj->slots + ivxNetAddr_Socket, nullptr);
     }
 
     return err;
@@ -465,7 +465,7 @@ static int prNetAddr_SendRaw(VMGlobals* g, int numArgsPushed) {
 }
 
 static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
-    if (gUDPport == 0)
+    if (gUDPport == nullptr)
         return errFailed;
 
     boost::system::error_code ec;
@@ -480,7 +480,7 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 }
 
 static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
-    if (gUDPport == 0)
+    if (gUDPport == nullptr)
         return errFailed;
 
     boost::system::error_code ec;
@@ -1043,7 +1043,7 @@ int prBootInProcessServer(VMGlobals* g, int numArgsPushed) {
 
         err = slotStrVal(optionsSlots + 17, mDeviceName, 512);
         if (err)
-            options.mInDeviceName = options.mOutDeviceName = NULL;
+            options.mInDeviceName = options.mOutDeviceName = nullptr;
         else
             options.mInDeviceName = options.mOutDeviceName = mDeviceName;
 
@@ -1081,7 +1081,7 @@ int prQuitInProcessServer(VMGlobals* g, int numArgsPushed) {
 
     if (gInternalSynthServer.mWorld) {
         World* world = gInternalSynthServer.mWorld;
-        gInternalSynthServer.mWorld = 0;
+        gInternalSynthServer.mWorld = nullptr;
 
         SC_Thread thread(std::bind(World_WaitForQuit, world, false));
 
