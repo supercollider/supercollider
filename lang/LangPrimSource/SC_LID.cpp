@@ -155,7 +155,9 @@ private:
 // =====================================================================
 // SC_LID
 
-SC_LID::SC_LID(PyrObject* obj): m_next(nullptr), m_obj(obj), m_fd(-1), m_lastEventType(-1) { SetPtr(obj->slots + 0, this); }
+SC_LID::SC_LID(PyrObject* obj): m_next(nullptr), m_obj(obj), m_fd(-1), m_lastEventType(-1) {
+    SetPtr(obj->slots + 0, this);
+}
 
 SC_LID::~SC_LID() {
     if (m_fd != -1)

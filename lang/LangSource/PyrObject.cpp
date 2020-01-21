@@ -786,7 +786,9 @@ public:
 
     const_pointer address(const_reference x) const { return &x; }
 
-    pointer allocate(size_type n, const void* hint = nullptr) { return (pointer)pyr_pool_compile->Alloc(n * sizeof(T)); }
+    pointer allocate(size_type n, const void* hint = nullptr) {
+        return (pointer)pyr_pool_compile->Alloc(n * sizeof(T));
+    }
 
     void deallocate(pointer p, size_type n) { pyr_pool_compile->Free(p); }
 
