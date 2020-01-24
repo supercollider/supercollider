@@ -49,6 +49,10 @@ void TryMatchDeviceSameAPI(int* matchingDevice, const int* knownDevice, bool isI
 
 std::string GetPaDeviceName(PaDeviceIndex index) {
     auto* pdi = Pa_GetDeviceInfo(index);
+    return GetPaDeviceName(pdi);
+}
+
+std::string GetPaDeviceName(const PaDeviceInfo* pdi) {
     std::string name;
 #ifndef __APPLE__
     name += Pa_GetHostApiInfo(pdi->hostApi)->name;
