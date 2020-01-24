@@ -425,7 +425,6 @@ Tdef : TaskProxy {
 
 	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
-
 	prAdd { arg argKey;
 		key = argKey;
 		all.put(argKey, this);
