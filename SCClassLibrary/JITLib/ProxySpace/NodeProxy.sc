@@ -1051,9 +1051,11 @@ Ndef : NodeProxy {
 	}
 
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	proxyspace {
 		^this.class.dictFor(this.server)
