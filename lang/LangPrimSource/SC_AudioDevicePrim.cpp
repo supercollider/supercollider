@@ -57,20 +57,13 @@ int listDevices(VMGlobals* g, IoType type) {
         }
 
         for (int i = 0; i < deviceIds.size(); i++) {
-            Boolean writeable;
             propertyAddress.mSelector = kAudioDevicePropertyStreams;
 
             err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, NULL, &count);
-
             if (err != kAudioHardwareNoError) {
                 return errFailed;
             }
 
-            err = AudioObjectIsPropertySettable(deviceIds[i], &propertyAddress, &writeable);
-
-            if (err != kAudioHardwareNoError) {
-                return errFailed;
-            }
             if (!count)
                 devicesIds[i] = 0;
         }
