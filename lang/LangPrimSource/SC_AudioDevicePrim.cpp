@@ -35,8 +35,6 @@ enum class IoType { Out, In, Both };
 
 #if defined(SC_AUDIO_API_COREAUDIO)
 int listDevices(VMGlobals* g, IoType type) {
-    int numDevices, num = 0;
-    PyrSlot* a = g->sp - 2;
     AudioObjectPropertyAddress propertyAddress;
     propertyAddress.mSelector = kAudioHardwarePropertyDevices;
     propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
@@ -44,16 +42,12 @@ int listDevices(VMGlobals* g, IoType type) {
 
     UInt32 count;
     OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count);
-    AudioDeviceID* devices = (AudioDeviceID*)malloc(count);
-    err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, devices);
+    std::vector<AudioDeviceID> deviceIds;
+    deviceIds.resize(count / sizeof(AudioDeviceID));
+    err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, &deviceIds[0]);
     if (err != kAudioHardwareNoError) {
-        free(devices);
         return errFailed;
     }
-
-    numDevices = count / sizeof(AudioDeviceID);
-
-    int i;
 
     if (type != IoType::Both) {
         if (type == IoType::Out) {
@@ -62,65 +56,55 @@ int listDevices(VMGlobals* g, IoType type) {
             propertyAddress.mScope = kAudioDevicePropertyScopeInput;
         }
 
-        for (i = 0; i < numDevices; i++) {
+        for (int i = 0; i < deviceIds.size(); i++) {
             Boolean writeable;
             propertyAddress.mSelector = kAudioDevicePropertyStreams;
 
-            err = AudioObjectGetPropertyDataSize(devices[i], &propertyAddress, 0, NULL, &count);
+            err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, NULL, &count);
 
             if (err != kAudioHardwareNoError) {
-                free(devices);
                 return errFailed;
             }
 
-            err = AudioObjectIsPropertySettable(devices[i], &propertyAddress, &writeable);
+            err = AudioObjectIsPropertySettable(deviceIds[i], &propertyAddress, &writeable);
 
             if (err != kAudioHardwareNoError) {
-                free(devices);
                 return errFailed;
             }
             if (!count)
-                devices[i] = 0;
-            else
-                num++;
+                devicesIds[i] = 0;
         }
-    } else
-        num = numDevices;
+    }
 
-    PyrObject* devArray = newPyrArray(g->gc, num * sizeof(PyrObject), 0, true);
-    SetObject(a, devArray); // this is okay here as we don't use the receiver below
+    deviceIds.erase(std::remove(deviceIds.begin(), deviceIds.end(), 0), deviceIds.end());
+    PyrObject* devArray = newPyrArray(g->gc, deviceIds.size() * sizeof(PyrObject), 0, true);
+    SetObject(g->sp - 2, devArray); // this is okay here as we don't use the receiver below
 
-    int j = 0;
-    for (i = 0; i < numDevices; i++) {
-        if (!devices[i])
-            continue;
-
+    for (int i = 0; i < deviceIds.size(); i++) {
         propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
         propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
 
-        err = AudioObjectGetPropertyDataSize(devices[i], &propertyAddress, 0, NULL, &count);
+        err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, NULL, &count);
 
         if (err != kAudioHardwareNoError) {
             break;
         }
 
         char* name = (char*)malloc(count);
-        err = AudioObjectGetPropertyData(devices[i], &propertyAddress, 0, NULL, &count, name);
+        err = AudioObjectGetPropertyData(deviceIds[i], &propertyAddress, 0, NULL, &count, name);
         if (err != kAudioHardwareNoError) {
             free(name);
             break;
         }
 
         PyrString* string = newPyrString(g->gc, name, 0, true);
-        SetObject(devArray->slots + j, string);
+        SetObject(devArray->slots + i, string);
         devArray->size++;
         g->gc->GCWriteNew(devArray, (PyrObject*)string); // we know array is white so we can use GCWriteNew
 
         free(name);
-        j++;
     }
 
-    free(devices);
     return errNone;
 }
 
