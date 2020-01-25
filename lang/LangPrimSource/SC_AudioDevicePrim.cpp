@@ -33,6 +33,21 @@
 
 enum class IoType { Out, In, Both };
 
+// Creates an array of PyrString objects in the `slot`, filled with the contents of `deviceNames`
+static void createDeviceNamesScArray(PyrSlot* slot, PyrGC* gc, const std::vector<std::string>& deviceNames)
+{
+    PyrObject* devArray = newPyrArray(gc, deviceNames.size() * sizeof(PyrObject), 0, true);
+    SetObject(slot, devArray); // this is okay here as we don't use the receiver
+    devArray->size = deviceNames.size();
+
+    for (size_t i = 0; i < deviceNames.size(); i++) {
+        PyrString* string = newPyrString(gc, deviceNames[i].c_str(), 0, true);
+        SetObject(devArray->slots + i, string);
+        // we know array is white so we can use GCWriteNew
+        gc->GCWriteNew(devArray, reinterpret_cast<PyrObject*>(string));
+    }
+}
+
 #if defined(SC_AUDIO_API_COREAUDIO)
 int listDevices(VMGlobals* g, IoType type) {
     AudioObjectPropertyAddress propertyAddress;
@@ -69,30 +84,28 @@ int listDevices(VMGlobals* g, IoType type) {
     }
 
     deviceIds.erase(std::remove(deviceIds.begin(), deviceIds.end(), 0), deviceIds.end());
-    PyrObject* devArray = newPyrArray(g->gc, deviceIds.size() * sizeof(PyrObject), 0, true);
-    SetObject(g->sp - 2, devArray); // this is okay here as we don't use the receiver below
 
-    for (int i = 0; i < deviceIds.size(); i++) {
+    std::vector<std::string> deviceNames;
+    for (auto deviceId : deviceIds) {
         propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
         propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
 
-        err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, NULL, &count);
+        err = AudioObjectGetPropertyDataSize(deviceId, &propertyAddress, 0, NULL, &count);
         if (err != kAudioHardwareNoError) {
-            break;
+            break; // use what we have so far
         }
 
         std::string name;
         name.resize(count);
-        err = AudioObjectGetPropertyData(deviceIds[i], &propertyAddress, 0, NULL, &count, &name[0]);
+        err = AudioObjectGetPropertyData(deviceId, &propertyAddress, 0, NULL, &count, &name[0]);
         if (err != kAudioHardwareNoError) {
-            break;
+            break; // use what we have so far
         }
 
-        PyrString* string = newPyrString(g->gc, name.c_str(), 0, true);
-        SetObject(devArray->slots + i, string);
-        devArray->size++;
-        g->gc->GCWriteNew(devArray, (PyrObject*)string); // we know array is white so we can use GCWriteNew
+        deviceNames.push_back(std::move(name));
     }
+
+    createDeviceNamesScArray(g->sp - 2, g->gc, deviceNames);
 
     return errNone;
 }
@@ -121,16 +134,11 @@ int listDevices(VMGlobals* g, IoType type) {
             deviceInfos.push_back(pdi);
     }
 
-    PyrObject* devArray = newPyrArray(g->gc, deviceInfos.size() * sizeof(PyrObject), 0, true);
-    SetObject(g->sp - 2, devArray); // this is okay here as we don't use the receiver below
-    devArray->size = deviceInfos.size();
+    std::vector<std::string> deviceNames;
+    for (auto* info : deviceInfos)
+        deviceNames.push_back(GetPaDeviceName(info));
 
-    for (int i = 0; i < deviceInfos.size(); i++) {
-        PyrString* string = newPyrString(g->gc, GetPaDeviceName(deviceInfos[i]).c_str(), 0, true);
-        SetObject(devArray->slots + i, string);
-        g->gc->GCWriteNew(devArray,
-                          reinterpret_cast<PyrObject*>(string)); // we know array is white so we can use GCWriteNew
-    }
+    createDeviceNamesScArray(g->sp - 2, g->gc, deviceNames);
 
     Pa_Terminate();
     return errNone;
