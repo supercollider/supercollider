@@ -31,10 +31,10 @@
 #include "PyrPrimitive.h"
 #include "GC.h"
 
-enum { OUT = 0, IN, BOTH };
+enum class IoType { Out, In, Both };
 
 #if defined(SC_AUDIO_API_COREAUDIO)
-int listDevices(VMGlobals* g, int type) {
+int listDevices(VMGlobals* g, IoType type) {
     int numDevices, num = 0;
     PyrSlot* a = g->sp - 2;
     AudioObjectPropertyAddress propertyAddress;
@@ -51,15 +51,15 @@ int listDevices(VMGlobals* g, int type) {
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, devices);
     if (err != kAudioHardwareNoError) {
         free(devices);
-        return 0;
+        return errFailed;
     }
 
     numDevices = count / sizeof(AudioDeviceID);
 
     int i;
 
-    if (type < BOTH) {
-        if (type < IN) {
+    if (type != IoType::Both) {
+        if (type == IoType::Out) {
             propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
         } else {
             propertyAddress.mScope = kAudioDevicePropertyScopeInput;
@@ -74,14 +74,14 @@ int listDevices(VMGlobals* g, int type) {
 
             if (err != kAudioHardwareNoError) {
                 free(devices);
-                return 0;
+                return errFailed;
             }
 
             err = AudioObjectIsPropertySettable(devices[i], &propertyAddress, &writeable);
 
             if (err != kAudioHardwareNoError) {
                 free(devices);
-                return 0;
+                return errFailed;
             }
             if (!count)
                 devices[i] = 0;
@@ -128,27 +128,27 @@ int listDevices(VMGlobals* g, int type) {
     }
 
     free(devices);
-    return 1;
+    return errNone;
 }
 
 #elif defined(SC_AUDIO_API_PORTAUDIO)
-int listDevices(VMGlobals* g, int type) {
+int listDevices(VMGlobals* g, IoType type) {
     if (Pa_Initialize() != paNoError)
-        return 0;
+        return errFailed;
 
     auto numDevices = Pa_GetDeviceCount();
     if (numDevices < 0) {
         Pa_Terminate();
-        return 0;
+        return errFailed;
     }
 
     std::vector<const PaDeviceInfo*> deviceInfos;
     for (PaDeviceIndex i = 0; i < numDevices; i++) {
         auto* pdi = Pa_GetDeviceInfo(i);
-        if (type == IN) {
+        if (type == IoType::In) {
             if (pdi->maxInputChannels > 0)
                 deviceInfos.push_back(pdi);
-        } else if (type == OUT) {
+        } else if (type == IoType::Out) {
             if (pdi->maxOutputChannels > 0)
                 deviceInfos.push_back(pdi);
         } else
@@ -167,15 +167,14 @@ int listDevices(VMGlobals* g, int type) {
     }
 
     Pa_Terminate();
-    return 1;
+    return errNone;
 }
 
 #else
-int listDevices(VMGlobals* g, int type) {
-    return 0; // listing devices fails when using neither CoreAudio nor PortAudio
+int listDevices(VMGlobals* g, IoType type) {
+    return errFailed; // listing devices fails when using neither CoreAudio nor PortAudio
 }
 #endif
-
 
 int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
     int in, out;
@@ -184,17 +183,14 @@ int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
     if (auto err = slotIntVal(g->sp - 1, &in))
         return err;
 
-    int type;
     if (in && out)
-        type = BOTH;
+        return listDevices(g, IoType::Both);
     else if (in)
-        type = IN;
+        return listDevices(g, IoType::In);
+    else if (out)
+        return listDevices(g, IoType::Out);
     else
-        type = OUT;
-
-    if (listDevices(g, type))
-        return errNone;
-    return errFailed;
+        return errFailed;
 }
 
 void initAudioDevicePrimitives() {
