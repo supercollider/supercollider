@@ -42,12 +42,9 @@ int listDevices(VMGlobals* g, IoType type) {
     propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
     propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-    //	unsigned long count;
     UInt32 count;
-    //    OSStatus err = AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDevices, &count, 0);
     OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count);
     AudioDeviceID* devices = (AudioDeviceID*)malloc(count);
-    // err = AudioHardwareGetProperty(kAudioHardwarePropertyDevices, &count, devices);
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, devices);
     if (err != kAudioHardwareNoError) {
         free(devices);
@@ -68,7 +65,6 @@ int listDevices(VMGlobals* g, IoType type) {
         for (i = 0; i < numDevices; i++) {
             Boolean writeable;
             propertyAddress.mSelector = kAudioDevicePropertyStreams;
-            // err = AudioDeviceGetPropertyInfo(devices[i], 0, type, kAudioDevicePropertyStreams, &count, &writeable);
 
             err = AudioObjectGetPropertyDataSize(devices[i], &propertyAddress, 0, NULL, &count);
 
@@ -102,8 +98,6 @@ int listDevices(VMGlobals* g, IoType type) {
         propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
         propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
 
-        // err = AudioDeviceGetPropertyInfo(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, 0);
-
         err = AudioObjectGetPropertyDataSize(devices[i], &propertyAddress, 0, NULL, &count);
 
         if (err != kAudioHardwareNoError) {
@@ -111,7 +105,6 @@ int listDevices(VMGlobals* g, IoType type) {
         }
 
         char* name = (char*)malloc(count);
-        // err = AudioDeviceGetProperty(devices[i], 0, false, kAudioDevicePropertyDeviceName, &count, name);
         err = AudioObjectGetPropertyData(devices[i], &propertyAddress, 0, NULL, &count, name);
         if (err != kAudioHardwareNoError) {
             free(name);
