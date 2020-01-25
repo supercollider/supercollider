@@ -49,7 +49,7 @@ static void createDeviceNamesScArray(PyrSlot* slot, PyrGC* gc, const std::vector
 }
 
 #if defined(SC_AUDIO_API_COREAUDIO)
-int listDevices(VMGlobals* g, IoType type) {
+static int listDevices(VMGlobals* g, IoType type) {
     AudioObjectPropertyAddress propertyAddress;
     propertyAddress.mSelector = kAudioHardwarePropertyDevices;
     propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
@@ -109,7 +109,7 @@ int listDevices(VMGlobals* g, IoType type) {
 }
 
 #elif defined(SC_AUDIO_API_PORTAUDIO)
-int listDevices(VMGlobals* g, IoType type) {
+static int listDevices(VMGlobals* g, IoType type) {
     if (Pa_Initialize() != paNoError)
         return errFailed;
 
@@ -143,12 +143,12 @@ int listDevices(VMGlobals* g, IoType type) {
 }
 
 #else
-int listDevices(VMGlobals* g, IoType type) {
+static int listDevices(VMGlobals* g, IoType type) {
     return errFailed; // listing devices fails when using neither CoreAudio nor PortAudio
 }
 #endif
 
-int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
+static int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
     int in, out;
     if (auto err = slotIntVal(g->sp, &out))
         return err;
