@@ -78,24 +78,21 @@ int listDevices(VMGlobals* g, IoType type) {
         propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
 
         err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, NULL, &count);
-
         if (err != kAudioHardwareNoError) {
             break;
         }
 
-        char* name = (char*)malloc(count);
-        err = AudioObjectGetPropertyData(deviceIds[i], &propertyAddress, 0, NULL, &count, name);
+        std::string name;
+        name.resize(count);
+        err = AudioObjectGetPropertyData(deviceIds[i], &propertyAddress, 0, NULL, &count, &name[0]);
         if (err != kAudioHardwareNoError) {
-            free(name);
             break;
         }
 
-        PyrString* string = newPyrString(g->gc, name, 0, true);
+        PyrString* string = newPyrString(g->gc, name.c_str(), 0, true);
         SetObject(devArray->slots + i, string);
         devArray->size++;
         g->gc->GCWriteNew(devArray, (PyrObject*)string); // we know array is white so we can use GCWriteNew
-
-        free(name);
     }
 
     return errNone;
