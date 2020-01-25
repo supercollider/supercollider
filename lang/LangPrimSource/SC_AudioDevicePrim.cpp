@@ -57,11 +57,13 @@ int listDevices(VMGlobals* g, IoType type) {
 
     UInt32 count;
     OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, nullptr, &count);
+    if (err != kAudioHardwareNoError)
+        return errFailed;
+
     std::vector<AudioDeviceID> deviceIds(count / sizeof(AudioDeviceID));
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, nullptr, &count, &deviceIds[0]);
-    if (err != kAudioHardwareNoError) {
+    if (err != kAudioHardwareNoError)
         return errFailed;
-    }
 
     if (type != IoType::Both) {
         if (type == IoType::Out) {
@@ -74,9 +76,8 @@ int listDevices(VMGlobals* g, IoType type) {
             propertyAddress.mSelector = kAudioDevicePropertyStreams;
 
             err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, nullptr, &count);
-            if (err != kAudioHardwareNoError) {
+            if (err != kAudioHardwareNoError)
                 return errFailed;
-            }
 
             if (!count)
                 devicesIds[i] = 0;
@@ -91,22 +92,19 @@ int listDevices(VMGlobals* g, IoType type) {
         propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
 
         err = AudioObjectGetPropertyDataSize(deviceId, &propertyAddress, 0, nullptr, &count);
-        if (err != kAudioHardwareNoError) {
+        if (err != kAudioHardwareNoError)
             break; // use what we have so far
-        }
 
         std::string name;
         name.resize(count);
         err = AudioObjectGetPropertyData(deviceId, &propertyAddress, 0, nullptr, &count, &name[0]);
-        if (err != kAudioHardwareNoError) {
+        if (err != kAudioHardwareNoError)
             break; // use what we have so far
-        }
 
         deviceNames.push_back(std::move(name));
     }
 
     createDeviceNamesScArray(g->sp - 2, g->gc, deviceNames);
-
     return errNone;
 }
 
