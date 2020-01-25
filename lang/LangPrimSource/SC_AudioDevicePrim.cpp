@@ -42,8 +42,7 @@ int listDevices(VMGlobals* g, IoType type) {
 
     UInt32 count;
     OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count);
-    std::vector<AudioDeviceID> deviceIds;
-    deviceIds.resize(count / sizeof(AudioDeviceID));
+    std::vector<AudioDeviceID> deviceIds(count / sizeof(AudioDeviceID));
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, &deviceIds[0]);
     if (err != kAudioHardwareNoError) {
         return errFailed;
