@@ -178,10 +178,11 @@ int listDevices(VMGlobals* g, int type) {
 
 
 int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
-    int in = 0;
-    int out = 0;
-    slotIntVal(g->sp, &out);
-    slotIntVal(g->sp - 1, &in);
+    int in, out;
+    if (auto err = slotIntVal(g->sp, &out))
+        return err;
+    if (auto err = slotIntVal(g->sp - 1, &in))
+        return err;
 
     int type;
     if (in && out)
