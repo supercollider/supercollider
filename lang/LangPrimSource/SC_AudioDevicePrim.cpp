@@ -56,9 +56,9 @@ int listDevices(VMGlobals* g, IoType type) {
     propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
     UInt32 count;
-    OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count);
+    OSStatus err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject, &propertyAddress, 0, nullptr, &count);
     std::vector<AudioDeviceID> deviceIds(count / sizeof(AudioDeviceID));
-    err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL, &count, &deviceIds[0]);
+    err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, nullptr, &count, &deviceIds[0]);
     if (err != kAudioHardwareNoError) {
         return errFailed;
     }
@@ -73,7 +73,7 @@ int listDevices(VMGlobals* g, IoType type) {
         for (int i = 0; i < deviceIds.size(); i++) {
             propertyAddress.mSelector = kAudioDevicePropertyStreams;
 
-            err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, NULL, &count);
+            err = AudioObjectGetPropertyDataSize(deviceIds[i], &propertyAddress, 0, nullptr, &count);
             if (err != kAudioHardwareNoError) {
                 return errFailed;
             }
@@ -90,14 +90,14 @@ int listDevices(VMGlobals* g, IoType type) {
         propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
         propertyAddress.mSelector = kAudioDevicePropertyDeviceName;
 
-        err = AudioObjectGetPropertyDataSize(deviceId, &propertyAddress, 0, NULL, &count);
+        err = AudioObjectGetPropertyDataSize(deviceId, &propertyAddress, 0, nullptr, &count);
         if (err != kAudioHardwareNoError) {
             break; // use what we have so far
         }
 
         std::string name;
         name.resize(count);
-        err = AudioObjectGetPropertyData(deviceId, &propertyAddress, 0, NULL, &count, &name[0]);
+        err = AudioObjectGetPropertyData(deviceId, &propertyAddress, 0, nullptr, &count, &name[0]);
         if (err != kAudioHardwareNoError) {
             break; // use what we have so far
         }
