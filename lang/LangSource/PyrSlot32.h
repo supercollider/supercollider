@@ -210,7 +210,7 @@ inline bool NotNil(const PyrSlot* slot) { return ((slot)->utag != tagNil); }
 inline bool IsFalse(const PyrSlot* slot) { return ((slot)->utag == tagFalse); }
 inline bool IsTrue(const PyrSlot* slot) { return ((slot)->utag == tagTrue); }
 
-inline bool SlotEq(PyrSlot* a, PyrSlot* b) { return ((a)->ui == (b)->ui && (a)->utag == (b)->utag); }
+inline bool SlotEq(const PyrSlot* a, const PyrSlot* b) { return ((a)->ui == (b)->ui && (a)->utag == (b)->utag); }
 
 inline bool IsSym(const PyrSlot* slot) { return ((slot)->utag == tagSym); }
 inline bool NotSym(const PyrSlot* slot) { return ((slot)->utag != tagSym); }
