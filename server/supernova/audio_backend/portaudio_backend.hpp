@@ -270,12 +270,12 @@ private:
         if (statusFlags & (paInputOverflow | paInputUnderflow | paOutputOverflow | paOutputUnderflow))
             engine_functor::sync_clock();
 
-        const float* inputs[input_channels];
+        auto** inputs = static_cast<const float**>(alloca(sizeof(float*) * input_channels));
         float* const* in = static_cast<float* const*>(inputBuffer);
         for (uint16_t i = 0; i != input_channels; ++i)
             inputs[i] = in[i];
 
-        float* outputs[output_channels];
+        auto** outputs = static_cast<float**>(alloca(sizeof(float*) * output_channels));
         float** out = static_cast<float**>(outputBuffer);
         for (uint16_t i = 0; i != output_channels; ++i)
             outputs[i] = out[i];

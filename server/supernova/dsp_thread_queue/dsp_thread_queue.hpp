@@ -425,7 +425,7 @@ private:
         const int backoff_iterations = 100;
 
         vector<nanoseconds> measured_values;
-        generate_n(back_inserter(measured_values), 16, [] {
+        generate_n(back_inserter(measured_values), 16, [backoff_iterations] {
             backoff b(max_backup_loops, max_backup_loops);
             auto start = high_resolution_clock::now();
 
