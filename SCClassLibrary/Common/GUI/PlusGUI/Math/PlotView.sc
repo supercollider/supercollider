@@ -4,7 +4,7 @@ Plot {
 	var <bounds, <plotBounds,<>drawGrid;
 
 	var <spec, <domainSpec;
-	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
+	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
 
 	var valueCache, resolution;
@@ -85,6 +85,9 @@ Plot {
 			drawGrid.horzGrid = nil
 		})
 	}
+	plotColor_ { |c|
+		plotColor = c.asArray;
+	}
 	gridColorX_ { |c|
 		drawGrid.x.gridColor = c;
 		gridColorX = c;
@@ -92,6 +95,9 @@ Plot {
 	gridColorY_ { |c|
 		drawGrid.y.gridColor = c;
 		gridColorY = c;
+	}
+	plotMode_ { |m|
+		plotMode = m.asArray
 	}
 	font_ { |f|
 		font = f;
@@ -116,11 +122,11 @@ Plot {
 		drawGrid.vertGrid = if(gridOnY,{spec.grid},{nil});
 	}
 
-	draw { |mode = \linear|
+	draw {
 		this.drawBackground;
 		drawGrid.draw;
 		this.drawLabels;
-		this.drawData(mode);
+		this.drawData;
 		plotter.drawFunc.value(this); // additional elements
 	}
 
@@ -151,7 +157,7 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var range, step, vals, resamps;
+		var range, vals;
 
 		vals = if (plotter.domain.notNil) {
 			domainSpec.unmap(plotter.domain);
@@ -174,25 +180,22 @@ Plot {
 		^plotBounds.bottom - (val * plotBounds.height); // measures from top left (may be arrays)
 	}
 
-	drawData { |mode|
+	drawData {
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
-		mode = (mode ?? plotter.plotMode).asArray;
 
 		Pen.use {
 			Pen.width = 1.0;
 			Pen.joinStyle = 1;
-			plotColor = plotColor.as(Array);
-
 			Pen.addRect(plotBounds);
 			Pen.clip; // clip curve to bounds.
 
 			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion when superposed
 				ycoord.flop.do { |y, i|
-					var drawMode = mode.wrapAt(i);
+					var mode = plotMode.wrapAt(i);
 					Pen.beginPath;
-					this.perform(drawMode, xcoord, y);
-					if (this.needsPenFill(drawMode)) {
+					this.perform(mode, xcoord, y);
+					if (this.needsPenFill(mode)) {
 						Pen.fillColor = plotColor.wrapAt(i);
 						Pen.fill
 					} {
@@ -204,8 +207,8 @@ Plot {
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
 				Pen.fillColor= plotColor.at(0);
-				this.perform(mode.at(0), xcoord, ycoord);
-				if (this.needsPenFill(mode.at(0))) {
+				this.perform(plotMode.at(0), xcoord, ycoord);
+				if (this.needsPenFill(plotMode.at(0))) {
 					Pen.fill
 				} {
 					Pen.stroke
@@ -213,7 +216,6 @@ Plot {
 			};
 			Pen.joinStyle = 0;
 		};
-
 	}
 
 	// modes
@@ -363,11 +365,11 @@ Plot {
 	}
 
 	hasSteplikeDisplay {
-		^#[\levels, \steps, \bars].includes(plotter.plotMode)
+		^#[\levels, \steps, \bars].includesAny(plotMode)
 	}
 
-	needsPenFill {
-		^#[\bars].includes(plotter.plotMode)
+	needsPenFill { |pMode|
+		^#[\bars].includes(pMode)
 	}
 
 	getIndex { |x|
@@ -449,8 +451,8 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, <plotColor;
-	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
+	var <plots, <specs, <domainSpecs, plotColor;
+	var <cursorPos, plotMode, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
 	var <editPlotIndex, <editPos;
@@ -481,6 +483,8 @@ Plotter {
 			interactionView.drawFunc = { this.draw };
 		};
 		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
+		this.plotMode = \linear;
+		this.plotColor = Color.black;
 
 		interactionView
 		.background_(Color.clear)
@@ -675,17 +679,12 @@ Plotter {
 
 	draw {
 		var b = this.interactionView.bounds;
-		var modes = plotMode.asArray;
 		if(b != bounds) {
 			bounds = b;
 			this.updatePlotBounds;
 		};
 		Pen.use {
-			if (superpose) {
-				plots.do { |plot, i| plot.draw(modes) };
-			} {
-				plots.do { |plot, i| plot.draw(modes.wrapAt(i)) };
-			};
+			plots.do { |plot| plot.draw };
 		}
 	}
 
@@ -720,7 +719,8 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		plotColor !? { this.plotColor_(plotColor) };
+		this.plotColor_(plotColor);
+		this.plotMode_(plotMode);
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
 	}
@@ -782,10 +782,23 @@ Plotter {
 		}
 	}
 
-	plotModes_ { |modes|
-		plotMode = modes;
+	plotColor {
+		var first = plotColor.first;
+		^if (plotColor.every(_ == first)) { first } { plotColor };
 	}
-	plotModes { ^plotMode }
+
+	plotMode_ { |modes|
+		plotMode = modes.asArray;
+		plots.do { |plt, i|
+			// rotate modes to ensure proper behavior with superpose
+			plt.plotMode_(plotMode.rotate(i.neg))
+		}
+	}
+
+	plotMode {
+		var first = plotMode.first;
+		^if (plotMode.every(_ == first)) { first } { plotMode };
+	}
 
 	// specs
 
@@ -833,7 +846,7 @@ Plotter {
 	calcDomainSpecs {
 		// for now, a simple version
 		domainSpecs = data.collect { |val|
-			[0, val.size - 1, \lin, 1].asSpec
+			[0, val.size - 1, \lin].asSpec
 		}
 	}
 
