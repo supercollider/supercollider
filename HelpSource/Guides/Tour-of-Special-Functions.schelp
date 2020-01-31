@@ -59,12 +59,17 @@ getPlotLay = { |plot, text|
 		bundle.collect(func.applyTo(*_)).select(_.notNil)
 	});
 
-	pltr = res.plot( txt, minval: min, maxval: max).superpose_(true);
+	pltr = res.plot( txt, minval: min, maxval: max)
+	.superpose_(true)
+	.domainSpecs_([samps.minItem, samps.maxItem].asSpec)
+	.plotColor_(
+		genCol.(params !? params.size ?? 1, rrand(0,1.0))
+	)
+	;
 
 	pltr.plots[0]
-	.plotColor_(genCol.(params !? params.size ?? 1, rrand(0,1.0)))
-	.domainSpec_([samps.minItem, samps.maxItem].asSpec)
-	.gridColorX_(gridcol).gridColorY_(gridcol)
+	.gridColorX_(gridcol)
+	.gridColorY_(gridcol)
 	;
 
 	pltr
