@@ -15,7 +15,7 @@ TestPlotter : UnitTest {
 			cols,
 			format(
 				"The color of the superposed plot:\n\t[%]\n"
-				"\tshould match Plotter's plotColor (in order) when superpose = true.:\n\t[%]\n",
+				"\tshould match Plotter's plotColor(s) (in order) when superpose = true.:\n\t[%]\n",
 				plot.plots[0].plotColor,
 				cols,
 			), report: false
@@ -29,7 +29,7 @@ TestPlotter : UnitTest {
 			cols,
 			format(
 				"The first color of each individual plot:\n\t[%]\n"
-				"\tshould match Plotter's plotColor (in order) when superpose = false.:\n\t[%]\n",
+				"\tshould match Plotter's plotColor(s) (in order) when superpose = false.:\n\t[%]\n",
 				plot.plots.collect({|plt, i| plt.plotColor[0]}),
 				cols,
 			), report: false
