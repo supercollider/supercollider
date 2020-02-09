@@ -222,13 +222,13 @@ void dumpPyrSlot(PyrSlot* slot) {
 
 void slotString(PyrSlot* slot, char* str) {
     switch (GetTag(slot)) {
-    case tagInt:
+    case PyrTag::tagInt:
         sprintf(str, "Integer %d", slotRawInt(slot));
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         sprintf(str, "Character %d '%c'", static_cast<int>(slotRawChar(slot)), static_cast<int>(slotRawChar(slot)));
         break;
-    case tagSym:
+    case PyrTag::tagSym:
         if (strlen(slotRawSymbol(slot)->name) > 240) {
             char str2[256];
             memcpy(str2, slotRawSymbol(slot)->name, 240);
@@ -238,7 +238,7 @@ void slotString(PyrSlot* slot, char* str) {
             snprintf(str, 256, "Symbol '%s'", slotRawSymbol(slot)->name);
         }
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (slotRawObject(slot)) {
             PyrClass* classptr = slotRawObject(slot)->classptr;
             if (classptr == class_class) {
@@ -301,16 +301,16 @@ void slotString(PyrSlot* slot, char* str) {
             sprintf(str, "NULL Object Pointer");
         }
         break;
-    case tagNil:
+    case PyrTag::tagNil:
         sprintf(str, "nil");
         break;
-    case tagFalse:
+    case PyrTag::tagFalse:
         sprintf(str, "false");
         break;
-    case tagTrue:
+    case PyrTag::tagTrue:
         sprintf(str, "true");
         break;
-    case tagPtr:
+    case PyrTag::tagPtr:
         sprintf(str, "RawPointer %p", slotRawPtr(slot));
         break;
     default: {
@@ -404,13 +404,13 @@ static void prettyFormatFloat(char* str, double d) {
 void slotOneWord(PyrSlot* slot, char* str) {
     str[0] = 0;
     switch (GetTag(slot)) {
-    case tagInt:
+    case PyrTag::tagInt:
         sprintf(str, "%d", slotRawInt(slot));
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         sprintf(str, "$%c", static_cast<int>(slotRawChar(slot)));
         break;
-    case tagSym:
+    case PyrTag::tagSym:
         if (strlen(slotRawSymbol(slot)->name) > 240) {
             char str2[256];
             memcpy(str2, slotRawSymbol(slot)->name, 240);
@@ -420,7 +420,7 @@ void slotOneWord(PyrSlot* slot, char* str) {
             snprintf(str, 256, "'%s'", slotRawSymbol(slot)->name);
         }
         break;
-    case tagObj: {
+    case PyrTag::tagObj: {
         PyrObject* slotObj = slotRawObject(slot);
         if (slotObj)
             printObject(slot, slotObj, str);
@@ -428,16 +428,16 @@ void slotOneWord(PyrSlot* slot, char* str) {
             sprintf(str, "NULL Object Pointer");
         break;
     }
-    case tagNil:
+    case PyrTag::tagNil:
         sprintf(str, "nil");
         break;
-    case tagFalse:
+    case PyrTag::tagFalse:
         sprintf(str, "false");
         break;
-    case tagTrue:
+    case PyrTag::tagTrue:
         sprintf(str, "true");
         break;
-    case tagPtr:
+    case PyrTag::tagPtr:
         sprintf(str, "ptr%p", slotRawPtr(slot));
         break;
     default:
@@ -449,17 +449,17 @@ void slotOneWord(PyrSlot* slot, char* str) {
 bool postString(PyrSlot* slot, char* str) {
     bool res = true;
     switch (GetTag(slot)) {
-    case tagInt:
+    case PyrTag::tagInt:
         sprintf(str, "%d", slotRawInt(slot));
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         sprintf(str, "%c", slotRawChar(slot));
         break;
-    case tagSym:
+    case PyrTag::tagSym:
         str[0] = 0;
         res = false;
         break;
-    case tagObj: {
+    case PyrTag::tagObj: {
         PyrObject* slotObj = slotRawObject(slot);
         if (slotObj) {
             PyrClass* classptr = slotRawObject(slot)->classptr;
@@ -474,16 +474,16 @@ bool postString(PyrSlot* slot, char* str) {
             sprintf(str, "NULL Object Pointer");
         break;
     }
-    case tagNil:
+    case PyrTag::tagNil:
         sprintf(str, "nil");
         break;
-    case tagFalse:
+    case PyrTag::tagFalse:
         sprintf(str, "false");
         break;
-    case tagTrue:
+    case PyrTag::tagTrue:
         sprintf(str, "true");
         break;
-    case tagPtr:
+    case PyrTag::tagPtr:
         sprintf(str, "%p", slotRawPtr(slot));
         break;
     default:
@@ -496,10 +496,10 @@ bool postString(PyrSlot* slot, char* str) {
 
 int asCompileString(PyrSlot* slot, char* str) {
     switch (GetTag(slot)) {
-    case tagInt:
+    case PyrTag::tagInt:
         sprintf(str, "%d", slotRawInt(slot));
         break;
-    case tagChar: {
+    case PyrTag::tagChar: {
         int c = slotRawChar(slot);
         if (isprint(c)) {
             sprintf(str, "$%c", c);
@@ -526,20 +526,20 @@ int asCompileString(PyrSlot* slot, char* str) {
         }
         break;
     }
-    case tagSym:
+    case PyrTag::tagSym:
         return errFailed;
-    case tagObj:
+    case PyrTag::tagObj:
         return errFailed;
-    case tagNil:
+    case PyrTag::tagNil:
         sprintf(str, "nil");
         break;
-    case tagFalse:
+    case PyrTag::tagFalse:
         sprintf(str, "false");
         break;
-    case tagTrue:
+    case PyrTag::tagTrue:
         sprintf(str, "true");
         break;
-    case tagPtr:
+    case PyrTag::tagPtr:
         strcpy(str, "/*Ptr*/ nil");
         break;
     default:

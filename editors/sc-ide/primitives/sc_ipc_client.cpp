@@ -227,27 +227,27 @@ private:
         }
 
         switch (GetTag(slot)) {
-        case tagNil:
+        case PyrTag::tagNil:
             emitter << YAML::Null;
             return;
 
-        case tagInt:
+        case PyrTag::tagInt:
             emitter << slotRawInt(slot);
             return;
 
-        case tagFalse:
+        case PyrTag::tagFalse:
             emitter << false;
             return;
 
-        case tagTrue:
+        case PyrTag::tagTrue:
             emitter << true;
             return;
 
-        case tagObj:
+        case PyrTag::tagObj:
             serialize(slotRawObject(slot));
             return;
 
-        case tagSym:
+        case PyrTag::tagSym:
             emitter << YAML::DoubleQuoted << slotRawSymbol(slot)->name;
             return;
 

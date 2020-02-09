@@ -37,6 +37,7 @@
 #include "PredefinedSymbols.h"
 #include "SimpleStack.h"
 #include "PyrPrimitive.h"
+#include "DebugTable.h"
 #include "SC_Win32Utils.h"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Codecvt.hpp"
@@ -139,10 +140,14 @@ PyrParseNode::PyrParseNode(int inClassNo) {
     mClassno = inClassNo;
     mNext = nullptr;
     mTail = this;
-    mCharno = ::charno;
     mLineno = ::lineno;
+    mCharno = ::charno;
+    mLinepos = ::linepos;
+    mErrLineOffset = ::errLineOffset;
     mParens = 0;
 }
+
+void PyrParseNode::recordDebugPosition() { DebugTable::updatePosition(mLineno + mErrLineOffset, mCharno); }
 
 void compileNodeList(PyrParseNode* node, bool onTailBranch) {
     PyrSlot dummy;
@@ -1114,8 +1119,9 @@ int compareCallArgs(PyrMethodNode* node, PyrCallNode* cnode, int* varIndex, PyrC
 void installByteCodes(PyrBlock* block) {
     PyrInt8Array* byteArray;
     long length, flags;
-    ByteCodes byteCodes;
-    byteCodes = getByteCodes();
+
+    ByteCodes byteCodes = getByteCodes(); // deleted at end of scope
+
     if (byteCodes) {
         length = byteCodeLength(byteCodes);
         if (length) {
@@ -1123,8 +1129,15 @@ void installByteCodes(PyrBlock* block) {
             byteArray = newPyrInt8Array(compileGC(), length, flags, false);
             copyByteCodes(byteArray->b, byteCodes);
             byteArray->size = length;
-            freeByteCodes(byteCodes);
             SetObject(&block->code, byteArray);
+
+            std::size_t tableSize = length * DebugTable::kEntrySize;
+            PyrInt32Array* debugPositionTable = newPyrInt32Array(compileGC(), tableSize, flags, false);
+            debugPositionTable->size = tableSize;
+
+            byteCodes->copyDebugTo(*debugPositionTable);
+
+            SetObject(&block->debugTable, debugPositionTable);
         } else {
             error("installByteCodes: zero length byte codes\n");
         }
@@ -1665,7 +1678,7 @@ void PyrVarDefNode::compileArg(PyrSlot* result) {
         compileByte(26);
         compileByte((jumplen >> 8) & 0xFF);
         compileByte(jumplen & 0xFF);
-        compileAndFreeByteCodes(trueByteCodes);
+        compileAndFreeByteCodes(std::move(trueByteCodes));
         compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
     }
 
@@ -1781,7 +1794,7 @@ void PyrCallNodeBase::compilePartialApplication(int numCurryArgs, PyrSlot* resul
     gCompilingBlock = prevBlock;
     gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
 
-    restoreByteCodeArray(savedBytes);
+    restoreByteCodeArray(std::move(savedBytes));
     int index = conjureLiteralSlotIndex(this, gCompilingBlock, &blockSlot);
     compileOpcode(opExtended, opPushLiteral);
     compileByte(index);
@@ -2157,7 +2170,7 @@ ByteCodes compileBodyWithGoto(PyrParseNode* body, int branchLen, bool onTailBran
     }
 
     subExprByteCodes = getByteCodes();
-    restoreByteCodeArray(currentByteCodes);
+    restoreByteCodeArray(std::move(currentByteCodes));
 
     gPartiallyAppliedFunction = prevPartiallyAppliedFunction;
 
@@ -2278,7 +2291,7 @@ void compileAndMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
         trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
 
         compileJump(opcJumpIfFalsePushFalse, byteCodeLength(trueByteCodes));
-        compileAndFreeByteCodes(trueByteCodes);
+        compileAndFreeByteCodes(std::move(trueByteCodes));
     } else {
         COMPILENODE(arg2, &dummy, false);
         compileTail();
@@ -2296,7 +2309,7 @@ void compileOrMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
         falseByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
 
         compileJump(opcJumpIfTruePushTrue, byteCodeLength(falseByteCodes));
-        compileAndFreeByteCodes(falseByteCodes);
+        compileAndFreeByteCodes(std::move(falseByteCodes));
     } else {
         COMPILENODE(arg2, &dummy, false);
         compileTail();
@@ -2329,7 +2342,7 @@ void compileQQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
         compileByte(23); // ??
         compileByte((jumplen >> 8) & 0xFF);
         compileByte(jumplen & 0xFF);
-        compileAndFreeByteCodes(nilByteCodes);
+        compileAndFreeByteCodes(std::move(nilByteCodes));
     } else {
         COMPILENODE(arg2, &dummy, false);
         compileTail();
@@ -2352,7 +2365,7 @@ void compileXQMsg(PyrParseNode* arg1, PyrParseNode* arg2) {
         compileByte(27); // !?
         compileByte((jumplen >> 8) & 0xFF);
         compileByte(jumplen & 0xFF);
-        compileAndFreeByteCodes(nilByteCodes);
+        compileAndFreeByteCodes(std::move(nilByteCodes));
     } else {
         COMPILENODE(arg2, &dummy, false);
         compileTail();
@@ -2398,7 +2411,7 @@ void compileIfMsg(PyrCallNodeBase2* node) {
             trueByteCodes = compileSubExpression((PyrPushLitNode*)arg2, true);
             if (byteCodeLength(trueByteCodes)) {
                 compileJump(opcJumpIfFalsePushNil, byteCodeLength(trueByteCodes));
-                compileAndFreeByteCodes(trueByteCodes);
+                compileAndFreeByteCodes(std::move(trueByteCodes));
             } else {
                 compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
                 compileOpcode(opPushSpecialValue, opsvNil); // push nil
@@ -2414,11 +2427,11 @@ void compileIfMsg(PyrCallNodeBase2* node) {
             trueByteCodes = compileSubExpressionWithGoto((PyrPushLitNode*)arg2, byteCodeLength(falseByteCodes), true);
             if (byteCodeLength(falseByteCodes)) {
                 compileJump(opcJumpIfFalse, byteCodeLength(trueByteCodes));
-                compileAndFreeByteCodes(trueByteCodes);
-                compileAndFreeByteCodes(falseByteCodes);
+                compileAndFreeByteCodes(std::move(trueByteCodes));
+                compileAndFreeByteCodes(std::move(falseByteCodes));
             } else if (byteCodeLength(trueByteCodes)) {
                 compileJump(opcJumpIfFalsePushNil, byteCodeLength(trueByteCodes));
-                compileAndFreeByteCodes(trueByteCodes);
+                compileAndFreeByteCodes(std::move(trueByteCodes));
             } else {
                 compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
                 compileOpcode(opPushSpecialValue, opsvNil); // push nil
@@ -2462,7 +2475,7 @@ void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
                 compileByte(flag ? 26 : 27);
                 compileByte((jumplen >> 8) & 0xFF);
                 compileByte(jumplen & 0xFF);
-                compileAndFreeByteCodes(trueByteCodes);
+                compileAndFreeByteCodes(std::move(trueByteCodes));
             } else {
                 compileOpcode(opSpecialOpcode, opcDrop); // drop the value
                 compileOpcode(opPushSpecialValue, opsvNil); // push nil
@@ -2490,14 +2503,14 @@ void compileIfNilMsg(PyrCallNodeBase2* node, bool flag) {
                 compileByte(flag ? 24 : 25);
                 compileByte((trueLen >> 8) & 0xFF);
                 compileByte(trueLen & 0xFF);
-                compileAndFreeByteCodes(trueByteCodes);
-                compileAndFreeByteCodes(falseByteCodes);
+                compileAndFreeByteCodes(std::move(trueByteCodes));
+                compileAndFreeByteCodes(std::move(falseByteCodes));
             } else if (trueLen) {
                 compileByte(143); // special opcodes
                 compileByte(flag ? 26 : 27);
                 compileByte((trueLen >> 8) & 0xFF);
                 compileByte(trueLen & 0xFF);
-                compileAndFreeByteCodes(trueByteCodes);
+                compileAndFreeByteCodes(std::move(trueByteCodes));
             } else {
                 compileOpcode(opSpecialOpcode, opcDrop); // drop the boolean
                 compileOpcode(opPushSpecialValue, opsvNil); // push nil
@@ -2713,7 +2726,7 @@ void compileSwitchMsg(PyrCallNode* node) {
 
                 if (byteCodes) {
                     offset += byteCodeLength(byteCodes);
-                    compileAndFreeByteCodes(byteCodes);
+                    compileAndFreeByteCodes(std::move(byteCodes));
                 } else {
                     compileOpcode(opPushSpecialValue, opsvNil);
                     offset += 1;
@@ -2731,7 +2744,7 @@ void compileSwitchMsg(PyrCallNode* node) {
                 lastOffset = offset;
                 if (byteCodes) {
                     offset += byteCodeLength(byteCodes);
-                    compileAndFreeByteCodes(byteCodes);
+                    compileAndFreeByteCodes(std::move(byteCodes));
                 } else {
                     compileOpcode(opPushSpecialValue, opsvNil);
                     lastOffset = offset;
@@ -2740,12 +2753,11 @@ void compileSwitchMsg(PyrCallNode* node) {
             }
         }
 
-        Byte* bytes = gCompilingByteCodes->bytes + absoluteOffset;
         PyrSlot* slots = array->slots;
         {
             int jumplen = offset - lastOffset;
-            bytes[lastOffset - 2] = (jumplen >> 8) & 255;
-            bytes[lastOffset - 1] = jumplen & 255;
+            gCompilingByteCodes->setByte(absoluteOffset + lastOffset - 2, (jumplen >> 8) & 255);
+            gCompilingByteCodes->setByte(absoluteOffset + lastOffset - 1, jumplen & 255);
         }
         for (int i = 0; i < arraySize; i += 2) {
             PyrSlot* key = slots + i;
@@ -2757,8 +2769,8 @@ void compileSwitchMsg(PyrCallNode* node) {
                 int offsetToHere = slotRawInt(value);
                 if (offsetToHere) {
                     int jumplen = offset - offsetToHere;
-                    bytes[offsetToHere - 2] = (jumplen >> 8) & 255;
-                    bytes[offsetToHere - 1] = jumplen & 255;
+                    gCompilingByteCodes->setByte(absoluteOffset + offsetToHere - 2, (jumplen >> 8) & 255);
+                    gCompilingByteCodes->setByte(absoluteOffset + offsetToHere - 1, jumplen & 255);
                 }
             }
         }
@@ -2786,7 +2798,7 @@ void compileWhileMsg(PyrCallNodeBase2* node) {
         whileByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
 
         whileByteCodeLen = byteCodeLength(whileByteCodes);
-        compileAndFreeByteCodes(whileByteCodes);
+        compileAndFreeByteCodes(std::move(whileByteCodes));
 
         exprByteCodeLen = 1;
         compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
@@ -2800,7 +2812,7 @@ void compileWhileMsg(PyrCallNodeBase2* node) {
         exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist->mNext, false);
 
         exprByteCodeLen = byteCodeLength(exprByteCodes);
-        compileAndFreeByteCodes(exprByteCodes);
+        compileAndFreeByteCodes(std::move(exprByteCodes));
 
         compileJump(opcJumpBak, exprByteCodeLen + 1);
 
@@ -2809,12 +2821,12 @@ void compileWhileMsg(PyrCallNodeBase2* node) {
         exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist->mNext, false);
 
         whileByteCodeLen = byteCodeLength(whileByteCodes);
-        compileAndFreeByteCodes(whileByteCodes);
+        compileAndFreeByteCodes(std::move(whileByteCodes));
 
         if (exprByteCodes) {
             exprByteCodeLen = byteCodeLength(exprByteCodes);
             compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
-            compileAndFreeByteCodes(exprByteCodes);
+            compileAndFreeByteCodes(std::move(exprByteCodes));
         } else {
             exprByteCodeLen = 1;
             compileJump(opcJumpIfFalsePushNil, exprByteCodeLen + 3);
@@ -2847,7 +2859,7 @@ void compileLoopMsg(PyrCallNodeBase2* node) {
         exprByteCodes = compileSubExpression((PyrPushLitNode*)node->mArglist, false);
 
         exprByteCodeLen = byteCodeLength(exprByteCodes);
-        compileAndFreeByteCodes(exprByteCodes);
+        compileAndFreeByteCodes(std::move(exprByteCodes));
 
         compileJump(opcJumpBak, exprByteCodeLen + 1);
 
@@ -3142,7 +3154,7 @@ void PyrSlotNode::compilePushLit(PyrSlot* result) {
         if (literalObj->mClassno == pn_BlockNode) {
             savedBytes = saveByteCodeArray();
             COMPILENODE(literalObj, &slot, false);
-            restoreByteCodeArray(savedBytes);
+            restoreByteCodeArray(std::move(savedBytes));
             index = conjureLiteralSlotIndex(literalObj, gCompilingBlock, &slot);
             compileOpcode(opExtended, opPushLiteral);
             compileByte(index);
@@ -3215,7 +3227,7 @@ void PyrSlotNode::compileLiteral(PyrSlot* result) {
         if (literalObj->mClassno == pn_BlockNode) {
             savedBytes = saveByteCodeArray();
             COMPILENODE(literalObj, result, false);
-            restoreByteCodeArray(savedBytes);
+            restoreByteCodeArray(std::move(savedBytes));
 
             PyrBlock* block = slotRawBlock(result);
             if (NotNil(&block->contextDef)) {

@@ -56,6 +56,7 @@ set(sclang_sources
 	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
 	LangSource/ByteCodeArray.cpp
+	LangSource/DebugTable.cpp
 	LangSource/DumpParseNode.cpp
 	LangSource/GC.cpp
 	LangSource/InitAlloc.cpp
@@ -87,6 +88,7 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Assert.cpp
 	${LOCALSOCK_UTIL_FILE}
 
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp

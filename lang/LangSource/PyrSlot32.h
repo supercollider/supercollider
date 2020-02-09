@@ -146,49 +146,49 @@ inline int GetTag(const PyrSlot* slot) { return slot->utag; }
 
 /* some macros for setting values of slots */
 inline void SetInt(PyrSlot* slot, int val) {
-    (slot)->utag = tagInt;
+    (slot)->utag = PyrTag::tagInt;
     (slot)->ui = (val);
 }
 inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val) {
-    (slot)->utag = tagObj;
+    (slot)->utag = PyrTag::tagObj;
     (slot)->uo = (PyrObject*)(val);
 }
 inline void SetSymbol(PyrSlot* slot, PyrSymbol* val) {
-    (slot)->utag = tagSym;
+    (slot)->utag = PyrTag::tagSym;
     (slot)->us = (val);
 }
 inline void SetChar(PyrSlot* slot, char val) {
-    (slot)->utag = tagChar;
+    (slot)->utag = PyrTag::tagChar;
     (slot)->uc = (val);
 }
 inline void SetPtr(PyrSlot* slot, void* val) {
-    (slot)->utag = tagPtr;
+    (slot)->utag = PyrTag::tagPtr;
     (slot)->uptr = (void*)(val);
 }
 inline void SetObjectOrNil(PyrSlot* slot, PyrObject* val) {
     if (val) {
-        (slot)->utag = tagObj;
+        (slot)->utag = PyrTag::tagObj;
         (slot)->uo = (val);
     } else {
-        (slot)->utag = tagNil;
+        (slot)->utag = PyrTag::tagNil;
         (slot)->ui = 0;
     }
 }
 
 inline void SetTrue(PyrSlot* slot) {
-    (slot)->utag = tagTrue;
+    (slot)->utag = PyrTag::tagTrue;
     (slot)->ui = 0;
 }
 inline void SetFalse(PyrSlot* slot) {
-    (slot)->utag = tagFalse;
+    (slot)->utag = PyrTag::tagFalse;
     (slot)->ui = 0;
 }
 inline void SetBool(PyrSlot* slot, bool test) {
-    (slot)->utag = ((test) ? tagTrue : tagFalse);
+    (slot)->utag = ((test) ? PyrTag::tagTrue : PyrTag::tagFalse);
     (slot)->ui = 0;
 }
 inline void SetNil(PyrSlot* slot) {
-    (slot)->utag = tagNil;
+    (slot)->utag = PyrTag::tagNil;
     (slot)->ui = 0;
 }
 
@@ -201,32 +201,33 @@ inline void SetFloat(PyrSlot* slot, double val) {
 }
 #endif
 
-inline bool IsObj(const PyrSlot* slot) { return ((slot)->utag == tagObj); }
-inline bool NotObj(const PyrSlot* slot) { return ((slot)->utag != tagObj); }
 
-inline bool IsNil(const PyrSlot* slot) { return ((slot)->utag == tagNil); }
-inline bool NotNil(const PyrSlot* slot) { return ((slot)->utag != tagNil); }
+inline bool IsObj(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagObj); }
+inline bool NotObj(const PyrSlot* slot) { return ((slot)->utag != PyrTag::tagObj); }
 
-inline bool IsFalse(const PyrSlot* slot) { return ((slot)->utag == tagFalse); }
-inline bool IsTrue(const PyrSlot* slot) { return ((slot)->utag == tagTrue); }
+inline bool IsNil(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagNil); }
+inline bool NotNil(const PyrSlot* slot) { return ((slot)->utag != PyrTag::tagNil); }
+
+inline bool IsFalse(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagFalse); }
+inline bool IsTrue(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagTrue); }
 
 inline bool SlotEq(PyrSlot* a, PyrSlot* b) { return ((a)->ui == (b)->ui && (a)->utag == (b)->utag); }
 
-inline bool IsSym(const PyrSlot* slot) { return ((slot)->utag == tagSym); }
-inline bool NotSym(const PyrSlot* slot) { return ((slot)->utag != tagSym); }
+inline bool IsSym(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagSym); }
+inline bool NotSym(const PyrSlot* slot) { return ((slot)->utag != PyrTag::tagSym); }
 
-inline bool IsChar(const PyrSlot* slot) { return ((slot)->utag == tagChar); }
-inline bool NotChar(const PyrSlot* slot) { return ((slot)->utag != tagChar); }
+inline bool IsChar(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagChar); }
+inline bool NotChar(const PyrSlot* slot) { return ((slot)->utag != PyrTag::tagChar); }
 
-inline bool IsInt(const PyrSlot* slot) { return ((slot)->utag == tagInt); }
-inline bool NotInt(const PyrSlot* slot) { return ((slot)->utag != tagInt); }
+inline bool IsInt(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagInt); }
+inline bool NotInt(const PyrSlot* slot) { return ((slot)->utag != PyrTag::tagInt); }
 
 inline bool IsFloatTag(int tag) { return ((tag & 0xFFFFFFF0) != 0x7FF90000); }
 inline bool IsFloat(const PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) != 0x7FF90000); }
 inline bool NotFloat(const PyrSlot* slot) { return (((slot)->utag & 0xFFFFFFF0) == 0x7FF90000); }
 
-inline bool IsPtr(const PyrSlot* slot) { return ((slot)->utag == tagPtr); }
-inline bool NotPtr(const PyrSlot* slot) { return ((slot)->utag != tagPtr); }
+inline bool IsPtr(const PyrSlot* slot) { return ((slot)->utag == PyrTag::tagPtr); }
+inline bool NotPtr(const PyrSlot* slot) { return ((slot)->utag != PyrTag::tagPtr); }
 
 inline void SetRawChar(PyrSlot* slot, int val) {
     assert(IsChar(slot));

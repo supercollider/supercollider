@@ -21,19 +21,58 @@
 #include <stdlib.h>
 #include <string.h>
 #include "SCBase.h"
-#include "InitAlloc.h"
 #include "ByteCodeArray.h"
 #include "Opcodes.h"
+#include "DebugTable.h"
 
 ByteCodes gCompilingByteCodes;
 long totalByteCodes = 0;
 
-void initByteCodes() {
-    if (gCompilingByteCodes) {
-        freeByteCodes(gCompilingByteCodes);
-        gCompilingByteCodes = nullptr;
+void ByteCodesBase::append(const Byte& byte, const DebugTableEntry& dbEntry) {
+    mDebugTable.addEntry(dbEntry);
+    mByteCodes.push_back(byte);
+}
+
+void ByteCodesBase::append(const Byte& byte) { append(byte, DebugTable::getPosition()); }
+
+void ByteCodesBase::append(ByteCodesRef inByteCodes) {
+    SC_ASSERT(inByteCodes->mDebugTable.size() == inByteCodes->mByteCodes.size());
+
+    auto bytecodeIt = inByteCodes->mByteCodes.begin();
+    auto debugIt = inByteCodes->mDebugTable.entries().begin();
+
+    for (; bytecodeIt < inByteCodes->mByteCodes.end(); ++bytecodeIt, ++debugIt) {
+        append(*bytecodeIt, *debugIt);
     }
 }
+
+void ByteCodesBase::setByte(size_t index, const Byte& byte) {
+    if (SC_COND_ASSERT(index < mByteCodes.size())) {
+        mByteCodes[index] = byte;
+        mDebugTable.setEntry(index, DebugTable::getPosition());
+    }
+}
+
+size_t ByteCodesBase::length() const { return mByteCodes.size(); }
+
+void ByteCodesBase::copyTo(Byte* byteArray) const {
+    Byte* iterPtr = byteArray;
+    for (auto& byte : mByteCodes) {
+        *iterPtr = byte;
+        iterPtr++;
+    }
+}
+
+void ByteCodesBase::copyDebugTo(PyrInt32Array& array, int lineOffset, int charOffset) const {
+    SC_ASSERT(array.size == mDebugTable.size() * mDebugTable.kEntrySize);
+    int tableI = 0;
+    for (auto entry : mDebugTable.entries()) {
+        array.i[tableI++] = entry.getLine() + lineOffset;
+        array.i[tableI++] = entry.getCharacter() + charOffset;
+    }
+}
+
+void initByteCodes() { gCompilingByteCodes.reset(new ByteCodesBase); }
 
 int compileOpcode(long opcode, long operand1) {
     int retc;
@@ -59,15 +98,12 @@ void compileJump(long opcode, long jumplen) {
 }
 
 void compileByte(long byte) {
-    if (gCompilingByteCodes == nullptr) {
-        gCompilingByteCodes = allocByteCodes();
+    if (gCompilingByteCodes == NULL) {
+        gCompilingByteCodes.reset(new ByteCodesBase);
     }
 
-    if ((gCompilingByteCodes->ptr - gCompilingByteCodes->bytes) >= gCompilingByteCodes->size) {
-        reallocByteCodes(gCompilingByteCodes);
-    }
     totalByteCodes++;
-    *gCompilingByteCodes->ptr++ = byte;
+    gCompilingByteCodes->append(byte);
 }
 
 int compileNumber(unsigned long value) {
@@ -87,16 +123,16 @@ int compileNumber24(unsigned long value) {
 
 void compileAndFreeByteCodes(ByteCodes byteCodes) {
     compileByteCodes(byteCodes);
-    freeByteCodes(byteCodes);
+    freeByteCodes(std::move(byteCodes));
 }
 
-void copyByteCodes(Byte* dest, ByteCodes byteCodes) { memcpy(dest, byteCodes->bytes, byteCodeLength(byteCodes)); }
+void copyByteCodes(Byte* dest, ByteCodesRef byteCodes) { byteCodes->copyTo(dest); }
 
 ByteCodes getByteCodes() {
     ByteCodes curByteCodes;
 
-    curByteCodes = gCompilingByteCodes;
-    gCompilingByteCodes = nullptr;
+    curByteCodes = std::move(gCompilingByteCodes);
+    SC_ASSERT(gCompilingByteCodes == NULL);
 
     return curByteCodes;
 }
@@ -104,18 +140,23 @@ ByteCodes getByteCodes() {
 ByteCodes saveByteCodeArray() {
     ByteCodes curByteCodes;
 
-    curByteCodes = gCompilingByteCodes;
-    gCompilingByteCodes = nullptr;
+    curByteCodes = std::move(gCompilingByteCodes);
+    SC_ASSERT(gCompilingByteCodes == NULL);
 
     return curByteCodes;
 }
 
-void restoreByteCodeArray(ByteCodes byteCodes) { gCompilingByteCodes = byteCodes; }
+void restoreByteCodeArray(ByteCodes byteCodes) {
+    SC_ASSERT(!gCompilingByteCodes);
+    gCompilingByteCodes = std::move(byteCodes);
+}
 
-size_t byteCodeLength(ByteCodes byteCodes) {
-    if (!byteCodes)
+size_t byteCodeLength(ByteCodesRef byteCodes) {
+    if (!byteCodes) {
         return 0;
-    return (byteCodes->ptr - byteCodes->bytes);
+    } else {
+        return byteCodes->length();
+    }
 }
 
 /***********************************************************************
@@ -124,63 +165,23 @@ size_t byteCodeLength(ByteCodes byteCodes) {
  *
  ***********************************************************************/
 
-void compileByteCodes(ByteCodes byteCodes) {
-    Byte* ptr;
-    int i;
+void compileByteCodes(ByteCodesRef byteCodes) {
+    SC_ASSERT(byteCodes != NULL);
 
-    if (byteCodes == nullptr)
-        return;
-
-    // postfl("[%d]\n", byteCodes->ptr - byteCodes->bytes);
-    for (i = 0, ptr = byteCodes->bytes; ptr < byteCodes->ptr; ptr++, ++i) {
-        compileByte(*ptr);
-
-        // postfl("%02X ", *ptr);
-        // if ((i & 15) == 15) postfl("\n");
+    if (gCompilingByteCodes == NULL) {
+        gCompilingByteCodes.reset(new ByteCodesBase);
     }
-    // postfl("\n\n");
+
+    totalByteCodes += byteCodes->length();
+    gCompilingByteCodes->append(byteCodes);
 }
 
 ByteCodes allocByteCodes() {
-    ByteCodes newByteCodes;
-
-    // pyrmalloc: I think that all bytecodes are copied to objects
-    // lifetime: kill after compile
-    newByteCodes = (ByteCodes)pyr_pool_compile->Alloc(sizeof(ByteCodeArray));
-    MEMFAIL(newByteCodes);
-    newByteCodes->bytes = (Byte*)pyr_pool_compile->Alloc(BYTE_CODE_CHUNK_SIZE);
-    MEMFAIL(newByteCodes->bytes);
-    newByteCodes->ptr = newByteCodes->bytes;
-    newByteCodes->size = BYTE_CODE_CHUNK_SIZE;
-    // postfl("allocByteCodes %0X\n", newByteCodes);
+    ByteCodes newByteCodes(new ByteCodesBase);
     return newByteCodes;
 }
 
-void reallocByteCodes(ByteCodes byteCodes) {
-    Byte* newBytes;
-
-    if (byteCodes->size != (byteCodes->ptr - byteCodes->bytes)) {
-        error("reallocByteCodes called with size != byteCode len");
-    }
-
-    size_t newLen = byteCodes->size << 1;
-    // pyrmalloc: I think that all bytecodes are copied to objects
-    // lifetime: kill after compile
-    newBytes = (Byte*)pyr_pool_compile->Alloc(newLen);
-    MEMFAIL(newBytes);
-    memcpy(newBytes, byteCodes->bytes, byteCodes->size);
-    pyr_pool_compile->Free(byteCodes->bytes);
-
-    byteCodes->bytes = newBytes;
-    byteCodes->ptr = newBytes + byteCodes->size;
-    byteCodes->size = newLen;
-}
-
-
 void freeByteCodes(ByteCodes byteCodes) {
-    // postfl("freeByteCodes %0X\n", byteCodes);
-    if (byteCodes != nullptr) {
-        pyr_pool_compile->Free(byteCodes->bytes);
-        pyr_pool_compile->Free(byteCodes);
-    }
+    SC_ASSERT(byteCodes != NULL);
+    byteCodes.reset(); // memory is free'd here
 }

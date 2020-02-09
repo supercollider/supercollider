@@ -429,24 +429,24 @@ int prFileWrite(struct VMGlobals* g, int numArgsPushed) {
     if (file == nullptr)
         return errFailed;
     switch (GetTag(b)) {
-    case tagInt: {
+    case PyrTag::tagInt: {
         SC_IOStream<FILE*> scio(file);
         scio.writeInt32_be(slotRawInt(b));
         break;
     }
-    case tagSym:
+    case PyrTag::tagSym:
         fwrite(slotRawSymbol(b)->name, sizeof(char), slotRawSymbol(b)->length, file);
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         chr = slotRawChar(b);
         fwrite(&chr, sizeof(char), 1, file);
         break;
-    case tagNil:
-    case tagFalse:
-    case tagTrue:
-    case tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
+    case PyrTag::tagPtr:
         return errWrongType;
-    case tagObj: {
+    case PyrTag::tagObj: {
         // writes the indexable part of any non obj_slot format object
         obj = slotRawObject(b);
         if (!isKindOf(obj, class_rawarray) || isKindOf(obj, class_symbolarray))
@@ -527,24 +527,24 @@ int prFileWriteLE(struct VMGlobals* g, int numArgsPushed) {
     if (file == nullptr)
         return errFailed;
     switch (GetTag(b)) {
-    case tagInt: {
+    case PyrTag::tagInt: {
         SC_IOStream<FILE*> scio(file);
         scio.writeInt32_le(slotRawInt(b));
         break;
     }
-    case tagSym:
+    case PyrTag::tagSym:
         fwrite(slotRawSymbol(b)->name, sizeof(char), slotRawSymbol(b)->length, file);
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         chr = slotRawInt(b);
         fwrite(&chr, sizeof(char), 1, file);
         break;
-    case tagNil:
-    case tagFalse:
-    case tagTrue:
-    case tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
+    case PyrTag::tagPtr:
         return errWrongType;
-    case tagObj: {
+    case PyrTag::tagObj: {
         // writes the indexable part of any non obj_slot format object
         obj = slotRawObject(b);
         if (!isKindOf(obj, class_rawarray) || isKindOf(obj, class_symbolarray))

@@ -1067,9 +1067,8 @@ bool PyrGC::SanityMarkObj(PyrObject* objA, PyrObject* fromObj, int level) {
         if (size > 0) {
             PyrSlot* slot = objA->slots;
             for (int j = size; j--; ++slot) {
-                PyrObject* objB = nullptr;
-                int tag = GetTag(slot);
-                if (tag == tagObj && slotRawObject(slot))
+                PyrObject* objB = NULL;
+                if (IsObj(slot) && slotRawObject(slot))
                     objB = slotRawObject(slot);
 
                 if (objB) {

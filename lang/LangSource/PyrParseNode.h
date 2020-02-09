@@ -89,6 +89,7 @@ extern AdvancingAllocPool gParseNodePool;
 struct PyrParseNode {
     PyrParseNode(int classno);
     virtual ~PyrParseNode() {}
+    virtual void recordDebugPosition();
     virtual void compile(PyrSlot* result) = 0;
     virtual void dump(int level) = 0;
 
@@ -96,6 +97,8 @@ struct PyrParseNode {
     struct PyrParseNode* mTail;
     int mLineno;
     int mCharno;
+    int mLinepos;
+    int mErrLineOffset;
     unsigned char mClassno;
     unsigned char mParens;
 };
@@ -422,6 +425,7 @@ inline void compileNode(PyrParseNode* node, PyrSlot* result, bool onTailBranch) 
     /*if (compilingCmdLine) {
         printf("stb  %14s %d %d\n", nodename[node->mClassno], onTailBranch, gIsTailCodeBranch);
     }*/
+    node->recordDebugPosition();
     node->compile(result);
 }
 

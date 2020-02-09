@@ -33,8 +33,9 @@ void numBlockTemps(PyrBlock* block, long level, long* numArgNames, long* numVarN
     *numVarNames = slotRawSymbolArray(&block->varNames) ? slotRawSymbolArray(&block->varNames)->size : 0;
 }
 
-unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip);
-unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip) {
+unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip, int line = 0,
+                               int character = 0);
+unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip, int line, int character) {
     PyrClass* classobj;
     PyrBlock* block;
     PyrSlot* slot;
@@ -68,7 +69,11 @@ unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned 
     ipbeg = slotRawInt8Array(&theBlock->code)->b;
     n = ip - ipbeg;
     op1 = *ip++;
-    post("%3d   %02X", n, op1);
+    post("%3d ", n);
+    int numChars;
+    post("(%d:%d)%n", line, character, &numChars);
+    post("%*s   %02X", std::abs(9 - numChars), " ", op1);
+
     switch (op1) {
     case 0: //	push class
         op2 = *ip++; // get literal index
@@ -1216,9 +1221,18 @@ void dumpByteCodes(PyrBlock* theBlock) {
     ip = ipbeg = slotRawInt8Array(&theBlock->code)->b;
     size = slotRawInt8Array(&theBlock->code)->size;
     ipend = ip + size;
+
+    const PyrObject* dbEntryListRaw = slotRawObject(&theBlock->debugTable);
+    const PyrInt32Array* dbEntryList = reinterpret_cast<const PyrInt32Array*>(dbEntryListRaw);
+    auto* dbEntry = &dbEntryList->i[0];
+    SC_ASSERT(dbEntryList->size == (size * DebugTable::kEntrySize));
+
     post("BYTECODES: (%d)\n", size);
     while (ip < ipend) {
-        ip = dumpOneByteCode(theBlock, theClass, ip);
+        int offset = (ip - ipbeg) * DebugTable::kEntrySize;
+        int line = dbEntry[offset];
+        int character = dbEntry[offset + 1];
+        ip = dumpOneByteCode(theBlock, theClass, ip, line, character);
     }
 }
 

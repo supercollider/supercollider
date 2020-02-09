@@ -159,7 +159,7 @@ template <> struct TypeCodec<QChar> {
     static QChar read(PyrSlot* slot) { return QChar(slotRawChar(slot)); }
 
     static QChar safeRead(PyrSlot* slot) {
-        if (GetTag(slot) == tagChar)
+        if (GetTag(slot) == PyrTag::tagChar)
             return QChar(slotRawChar(slot));
         else
             return QChar();

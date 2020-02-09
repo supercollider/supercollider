@@ -88,7 +88,8 @@ void debugf(char* fmt, ...);
 int gMaxStackDepth = 0;
 #endif
 
-unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip);
+unsigned char* dumpOneByteCode(PyrBlock* theBlock, PyrClass* theClass, unsigned char* ip, int line = 0,
+                               int character = 0);
 void dumpSlotOneWord(const char* tagstr, PyrSlot* slot);
 // bool checkAllObjChecksum(PyrObject* obj);
 
@@ -1751,9 +1752,7 @@ HOT void Interpret(VMGlobals* g) {
             // Integer-for : 143 5, 143 6, 143 16
             case 5: {
                 PyrSlot* vars = g->frame->vars;
-                int tag = GetTag(&vars[1]);
-
-                if (tag != tagInt) {
+                if (NotInt(&vars[1])) {
                     if (IsFloat(&vars[1])) {
                         // coerce to int
                         SetInt(&vars[1], (int32)(slotRawFloat(&vars[1])));
@@ -1829,8 +1828,7 @@ HOT void Interpret(VMGlobals* g) {
                     }
                     SetFloat(&vars[4], (double)(slotRawInt(&g->receiver)));
                 } else {
-                    int tag = GetTag(&vars[1]);
-                    if ((tag != tagInt) || NotInt(&vars[2])) {
+                    if (NotInt(&vars[1]) || NotInt(&vars[2])) {
                         error("Integer-forBy : endval or stepval not an Integer or Float.\n");
 
                         slotCopy(++sp, &g->receiver);
@@ -2207,8 +2205,8 @@ HOT void Interpret(VMGlobals* g) {
             }
             case 30: {
                 PyrSlot* vars = g->frame->vars;
-                int tag = GetTag(&vars[1]);
-                if (tag == tagInt) {
+
+                if (IsInt(&vars[1])) {
                     if ((slotRawInt(&vars[1]) >= 0 && slotRawInt(&vars[4]) <= slotRawInt(&vars[2]))
                         || (slotRawInt(&vars[1]) < 0 && slotRawInt(&vars[4]) >= slotRawInt(&vars[2]))) {
                         slotCopy(++sp, &vars[3]); // push function
@@ -2255,8 +2253,7 @@ HOT void Interpret(VMGlobals* g) {
                 --sp; // Drop
                 PyrSlot* vars = g->frame->vars;
 
-                int tag = GetTag(&vars[1]);
-                if (tag == tagInt) {
+                if (IsInt(&vars[1])) {
                     SetRaw(&vars[4], slotRawInt(&vars[4]) + slotRawInt(&vars[1])); // inc i
                 } else {
                     SetRaw(&vars[4], slotRawFloat(&vars[4]) + slotRawFloat(&vars[1])); // inc i
@@ -2496,12 +2493,12 @@ HOT void Interpret(VMGlobals* g) {
         case 209: // opNot
         handle_op_209:
             if (IsTrue(sp)) {
-                SetTagRaw(sp, tagFalse);
+                SetTagRaw(sp, PyrTag::tagFalse);
 #if TAILCALLOPTIMIZE
                 g->tailCall = 0;
 #endif
             } else if (IsFalse(sp)) {
-                SetTagRaw(sp, tagTrue);
+                SetTagRaw(sp, PyrTag::tagTrue);
 #if TAILCALLOPTIMIZE
                 g->tailCall = 0;
 #endif
@@ -2511,7 +2508,7 @@ HOT void Interpret(VMGlobals* g) {
         case 210: // opIsNil
         handle_op_210:
             if (IsNil(sp)) {
-                SetTagRaw(sp, tagTrue);
+                SetTagRaw(sp, PyrTag::tagTrue);
             } else {
                 slotCopy(sp, &gSpecialValues[svFalse]);
             }
@@ -2524,7 +2521,7 @@ HOT void Interpret(VMGlobals* g) {
             if (NotNil(sp)) {
                 slotCopy(sp, &gSpecialValues[svTrue]);
             } else {
-                SetTagRaw(sp, tagFalse);
+                SetTagRaw(sp, PyrTag::tagFalse);
             }
 #if TAILCALLOPTIMIZE
             g->tailCall = 0;

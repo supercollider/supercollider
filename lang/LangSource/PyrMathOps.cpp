@@ -52,7 +52,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
     a = g->sp;
 
     switch (GetTag(a)) {
-    case tagInt:
+    case PyrTag::tagInt:
         switch (opcode) {
         case opNeg:
             SetRaw(a, -slotRawInt(a));
@@ -217,7 +217,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             goto send_normal_1;
         }
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         switch (opcode) {
         // case opNot : goto send_normal_1;
         case opIsNil:
@@ -227,7 +227,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             SetTrue(a);
             break;
         case opAsInteger:
-            SetTagRaw(a, tagInt);
+            SetTagRaw(a, PyrTag::tagInt);
             break;
         case opDigitValue:
             if (slotRawInt(a) >= '0' && slotRawInt(a) <= '9')
@@ -243,7 +243,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             goto send_normal_1;
         }
         break;
-    case tagPtr:
+    case PyrTag::tagPtr:
         switch (opcode) {
         case opIsNil:
             SetFalse(a);
@@ -255,7 +255,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             goto send_normal_1;
         }
         break;
-    case tagNil:
+    case PyrTag::tagNil:
         switch (opcode) {
         case opIsNil:
             SetTrue(a);
@@ -267,7 +267,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             goto send_normal_1;
         }
         break;
-    case tagFalse:
+    case PyrTag::tagFalse:
         switch (opcode) {
         case opNot:
             SetTrue(a);
@@ -281,7 +281,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             goto send_normal_1;
         }
         break;
-    case tagTrue:
+    case PyrTag::tagTrue:
         switch (opcode) {
         case opNot:
             SetFalse(a);
@@ -295,7 +295,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             goto send_normal_1;
         }
         break;
-    case tagSym:
+    case PyrTag::tagSym:
         switch (opcode) {
         case opAsFloat:
         case opAsInteger:
@@ -310,7 +310,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
             break;
         }
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (isKindOf(slotRawObject(a), class_signal)) {
             switch (opcode) {
             case opNeg:
@@ -590,9 +590,9 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
     b = a + 1;
 
     switch (GetTag(a)) {
-    case tagInt: {
+    case PyrTag::tagInt: {
         switch (GetTag(b)) {
-        case tagInt:
+        case PyrTag::tagInt:
             switch (opcode) {
             case opAdd:
                 SetRaw(a, slotRawInt(a) + slotRawInt(b));
@@ -765,19 +765,19 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 goto send_normal_2;
             }
             break;
-        case tagChar:
-        case tagPtr:
-        case tagNil:
-        case tagFalse:
-        case tagTrue:
+        case PyrTag::tagChar:
+        case PyrTag::tagPtr:
+        case PyrTag::tagNil:
+        case PyrTag::tagFalse:
+        case PyrTag::tagTrue:
             goto send_normal_2;
-        case tagSym:
+        case PyrTag::tagSym:
             if (IS_BINARY_BOOL_OP(opcode))
                 SetBool(a, opcode == opNE);
             else
                 SetSymbol(a, slotRawSymbol(b));
             break;
-        case tagObj:
+        case PyrTag::tagObj:
             if (isKindOf(slotRawObject(b), class_signal)) {
                 switch (opcode) {
                 case opAdd:
@@ -995,7 +995,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
             break;
         }
     } break;
-    case tagChar: {
+    case PyrTag::tagChar: {
         if (IsChar(b)) {
             switch (opcode) {
             case opEQ:
@@ -1031,12 +1031,12 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
             goto send_normal_2;
         }
     } break;
-    case tagPtr:
-    case tagNil:
-    case tagFalse:
-    case tagTrue:
+    case PyrTag::tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
         goto send_normal_2;
-    case tagSym:
+    case PyrTag::tagSym:
         if (IsSym(b)) {
             switch (opcode) {
             case opEQ:
@@ -1064,10 +1064,10 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 SetBool(a, opcode == opNE);
         }
         break;
-    case tagObj: {
+    case PyrTag::tagObj: {
         if (isKindOf(slotRawObject(a), class_signal)) {
             switch (GetTag(b)) {
-            case tagInt:
+            case PyrTag::tagInt:
                 switch (opcode) {
                 case opAdd:
                     SetRaw(a, signal_add_xf(g, slotRawObject(a), slotRawInt(b)));
@@ -1154,19 +1154,19 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                     goto send_normal_2;
                 }
                 break;
-            case tagChar:
-            case tagPtr:
-            case tagNil:
-            case tagFalse:
-            case tagTrue:
+            case PyrTag::tagChar:
+            case PyrTag::tagPtr:
+            case PyrTag::tagNil:
+            case PyrTag::tagFalse:
+            case PyrTag::tagTrue:
                 goto send_normal_2;
-            case tagSym:
+            case PyrTag::tagSym:
                 if (IS_BINARY_BOOL_OP(opcode))
                     SetBool(a, opcode == opNE);
                 else
                     SetSymbol(a, slotRawSymbol(b));
                 break;
-            case tagObj:
+            case PyrTag::tagObj:
                 if (isKindOf(slotRawObject(b), class_signal)) {
                     switch (opcode) {
                     case opAdd:
@@ -1347,7 +1347,7 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
     } break;
     default: { // double
         switch (GetTag(b)) {
-        case tagInt:
+        case PyrTag::tagInt:
             switch (opcode) {
             case opAdd:
                 SetRaw(a, slotRawFloat(a) + slotRawInt(b));
@@ -1475,19 +1475,19 @@ int doSpecialBinaryArithMsg(VMGlobals* g, int numArgsPushed, bool isPrimitive) {
                 goto send_normal_2;
             }
             break;
-        case tagChar:
-        case tagPtr:
-        case tagNil:
-        case tagFalse:
-        case tagTrue:
+        case PyrTag::tagChar:
+        case PyrTag::tagPtr:
+        case PyrTag::tagNil:
+        case PyrTag::tagFalse:
+        case PyrTag::tagTrue:
             goto send_normal_2;
-        case tagSym:
+        case PyrTag::tagSym:
             if (IS_BINARY_BOOL_OP(opcode))
                 SetBool(a, opcode == opNE);
             else
                 SetSymbol(a, slotRawSymbol(b));
             break;
-        case tagObj:
+        case PyrTag::tagObj:
             if (isKindOf(slotRawObject(b), class_signal)) {
                 switch (opcode) {
                 case opAdd:

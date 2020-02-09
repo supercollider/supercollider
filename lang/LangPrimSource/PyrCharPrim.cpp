@@ -185,7 +185,7 @@ int prAsciiValue(struct VMGlobals* g, int numArgsPushed) {
 
     a = g->sp;
 
-    SetTagRaw(a, tagInt);
+    SetTagRaw(a, PyrTag::tagInt);
 
     return errNone;
 }

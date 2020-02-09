@@ -230,7 +230,7 @@ inline struct PyrClass* classOfSlot(PyrSlot* slot) {
     int tag;
     if (IsFloat(slot))
         classobj = class_float;
-    else if ((tag = GetTag(slot) & 0xF) == 1)
+    else if ((tag = static_cast<int>(GetTag(slot)) & 0xF) == 1)
         classobj = slotRawObject(slot)->classptr;
     else
         classobj = gTagClassTable[tag];

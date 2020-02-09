@@ -86,18 +86,18 @@ void MetaType::initAll() {
 
 MetaType* MetaType::find(PyrSlot* slot) {
     switch (GetTag(slot)) {
-    case tagNil:
+    case PyrTag::tagNil:
         return 0;
-    case tagInt:
+    case PyrTag::tagInt:
         return metaType<int>();
-    case tagSym:
+    case PyrTag::tagSym:
         return metaType<QString>();
-    case tagChar:
+    case PyrTag::tagChar:
         return metaType<QChar>();
-    case tagFalse:
-    case tagTrue:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
         return metaType<bool>();
-    case tagObj: {
+    case PyrTag::tagObj: {
         PyrObject* obj = slotRawObject(slot);
         PyrClass* klass = obj->classptr;
         unsigned char format = obj->obj_format;

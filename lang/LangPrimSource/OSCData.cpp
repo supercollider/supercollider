@@ -94,13 +94,13 @@ int makeSynthBundle(big_scpacket* packet, PyrSlot* slots, int size, bool useElap
 
 static int addMsgSlot(big_scpacket* packet, PyrSlot* slot) {
     switch (GetTag(slot)) {
-    case tagInt:
+    case PyrTag::tagInt:
         packet->addi(slotRawInt(slot));
         break;
-    case tagSym:
+    case PyrTag::tagSym:
         packet->adds(slotRawSymbol(slot)->name);
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (isKindOf(slotRawObject(slot), class_string)) {
             PyrString* stringObj = slotRawString(slot);
             packet->adds(stringObj->s, stringObj->size);
@@ -120,11 +120,11 @@ static int addMsgSlot(big_scpacket* packet, PyrSlot* slot) {
             packet->addb((uint8*)packet2.data(), packet2.size());
         }
         break;
-    case tagNil:
-    case tagTrue:
-    case tagFalse:
-    case tagChar:
-    case tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagTrue:
+    case PyrTag::tagFalse:
+    case PyrTag::tagChar:
+    case PyrTag::tagPtr:
         break;
     default:
         if (gUseDoubles)
@@ -138,15 +138,15 @@ static int addMsgSlot(big_scpacket* packet, PyrSlot* slot) {
 
 static int addMsgSlotWithTags(big_scpacket* packet, PyrSlot* slot) {
     switch (GetTag(slot)) {
-    case tagInt:
+    case PyrTag::tagInt:
         packet->addtag('i');
         packet->addi(slotRawInt(slot));
         break;
-    case tagSym:
+    case PyrTag::tagSym:
         packet->addtag('s');
         packet->adds(slotRawSymbol(slot)->name);
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (isKindOf(slotRawObject(slot), class_string)) {
             PyrString* stringObj = slotRawString(slot);
             packet->addtag('s');
@@ -174,16 +174,16 @@ static int addMsgSlotWithTags(big_scpacket* packet, PyrSlot* slot) {
             }
         }
         break;
-    case tagTrue:
+    case PyrTag::tagTrue:
         packet->addtag('i');
         packet->addi(1);
         break;
-    case tagChar:
+    case PyrTag::tagChar:
         packet->addtag(slotRawChar(slot));
         break;
-    case tagFalse:
-    case tagNil:
-    case tagPtr:
+    case PyrTag::tagFalse:
+    case PyrTag::tagNil:
+    case PyrTag::tagPtr:
         packet->addtag('i');
         packet->addi(0);
         break;
@@ -206,7 +206,7 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
     // First component: OSC Address Pattern.
     // For convenience, we allow the user to omit the initial '/', when
     //  expressing it as a symbol (e.g. \g_new) - we add it back on here, for OSC compliance.
-    if (GetTag(slots) == tagSym && slotRawSymbol(slots)->name[0] != '/') {
+    if (IsSym(slots) && slotRawSymbol(slots)->name[0] != '/') {
         packet->adds_slpre(slotRawSymbol(slots)->name);
     } else {
         int error = addMsgSlot(packet, slots);

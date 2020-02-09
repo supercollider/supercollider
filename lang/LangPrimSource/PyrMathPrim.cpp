@@ -87,21 +87,21 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
     b = g->sp;
 
     switch (GetTag(a)) {
-    case tagInt:
+    case PyrTag::tagInt:
         switch (GetTag(b)) {
-        case tagInt:
+        case PyrTag::tagInt:
             SetRaw(a, Functor::run(slotRawInt(a), slotRawInt(b)));
             break;
-        case tagChar:
-        case tagPtr:
-        case tagNil:
-        case tagFalse:
-        case tagTrue:
+        case PyrTag::tagChar:
+        case PyrTag::tagPtr:
+        case PyrTag::tagNil:
+        case PyrTag::tagFalse:
+        case PyrTag::tagTrue:
             goto send_normal_2;
-        case tagSym:
+        case PyrTag::tagSym:
             SetSymbol(a, slotRawSymbol(b));
             break;
-        case tagObj:
+        case PyrTag::tagObj:
             if (isKindOf(slotRawObject(b), class_signal))
                 SetObject(a, Functor::signal_fx(g, slotRawInt(a), slotRawObject(b)));
             else
@@ -112,31 +112,31 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
             break;
         }
         break;
-    case tagChar:
-    case tagPtr:
-    case tagNil:
-    case tagFalse:
-    case tagTrue:
+    case PyrTag::tagChar:
+    case PyrTag::tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
         goto send_normal_2;
-    case tagSym:
+    case PyrTag::tagSym:
         // leave self in 'a'
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (isKindOf(slotRawObject(a), class_signal)) {
             switch (GetTag(b)) {
-            case tagInt:
+            case PyrTag::tagInt:
                 SetRaw(a, Functor::signal_xf(g, slotRawObject(a), slotRawInt(b)));
                 break;
-            case tagChar:
-            case tagPtr:
-            case tagNil:
-            case tagFalse:
-            case tagTrue:
+            case PyrTag::tagChar:
+            case PyrTag::tagPtr:
+            case PyrTag::tagNil:
+            case PyrTag::tagFalse:
+            case PyrTag::tagTrue:
                 goto send_normal_2;
-            case tagSym:
+            case PyrTag::tagSym:
                 SetSymbol(a, slotRawSymbol(b));
                 break;
-            case tagObj:
+            case PyrTag::tagObj:
                 if (isKindOf(slotRawObject(b), class_signal)) {
                     SetRaw(a, Functor::signal_xx(g, slotRawObject(a), slotRawObject(b)));
                 } else
@@ -151,19 +151,19 @@ template <typename Functor> inline int prOpNum(VMGlobals* g, int numArgsPushed) 
         break;
     default: // double
         switch (GetTag(b)) {
-        case tagInt:
+        case PyrTag::tagInt:
             SetRaw(a, Functor::run(slotRawFloat(a), (double)slotRawInt(b)));
             break;
-        case tagChar:
-        case tagPtr:
-        case tagNil:
-        case tagFalse:
-        case tagTrue:
+        case PyrTag::tagChar:
+        case PyrTag::tagPtr:
+        case PyrTag::tagNil:
+        case PyrTag::tagFalse:
+        case PyrTag::tagTrue:
             goto send_normal_2;
-        case tagSym:
+        case PyrTag::tagSym:
             SetSymbol(a, slotRawSymbol(b));
             break;
-        case tagObj:
+        case PyrTag::tagObj:
             if (isKindOf(slotRawObject(b), class_signal))
                 SetObject(a, Functor::signal_fx(g, slotRawFloat(a), slotRawObject(b)));
             else
@@ -199,19 +199,19 @@ template <typename Functor> inline int prOpInt(VMGlobals* g, int numArgsPushed) 
     b = g->sp;
 
     switch (GetTag(b)) {
-    case tagInt:
+    case PyrTag::tagInt:
         SetRaw(a, Functor::run(slotRawInt(a), slotRawInt(b)));
         break;
-    case tagChar:
-    case tagPtr:
-    case tagNil:
-    case tagFalse:
-    case tagTrue:
+    case PyrTag::tagChar:
+    case PyrTag::tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
         goto send_normal_2;
-    case tagSym:
+    case PyrTag::tagSym:
         SetSymbol(a, slotRawSymbol(b));
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (isKindOf(slotRawObject(b), class_signal))
             SetObject(a, Functor::signal_fx(g, slotRawInt(a), slotRawObject(b)));
         else
@@ -245,19 +245,19 @@ template <typename Functor> inline int prOpFloat(VMGlobals* g, int numArgsPushed
     b = g->sp;
 
     switch (GetTag(b)) {
-    case tagInt:
+    case PyrTag::tagInt:
         SetRaw(a, Functor::run(slotRawFloat(a), (double)slotRawInt(b)));
         break;
-    case tagChar:
-    case tagPtr:
-    case tagNil:
-    case tagFalse:
-    case tagTrue:
+    case PyrTag::tagChar:
+    case PyrTag::tagPtr:
+    case PyrTag::tagNil:
+    case PyrTag::tagFalse:
+    case PyrTag::tagTrue:
         goto send_normal_2;
-    case tagSym:
+    case PyrTag::tagSym:
         SetSymbol(a, slotRawSymbol(b));
         break;
-    case tagObj:
+    case PyrTag::tagObj:
         if (isKindOf(slotRawObject(b), class_signal))
             SetObject(a, Functor::signal_fx(g, slotRawFloat(a), slotRawObject(b)));
         else

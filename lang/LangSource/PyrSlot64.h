@@ -34,8 +34,8 @@
 
 struct PyrSymbol;
 
-enum {
-    tagNotInitialized, // uninitialized slots have a tag of 0
+enum class PyrTag : long {
+    tagNotInitialized = 0, // uninitialized slots have a tag of 0
     tagObj,
     tagInt,
     tagSym,
@@ -50,7 +50,7 @@ enum {
 };
 
 typedef struct pyrslot {
-    long tag;
+    PyrTag tag;
 
     union {
         int64 c; /* char */
@@ -76,84 +76,84 @@ typedef struct pyrslot {
 
 
 /* tag setter function */
-inline int GetTag(const PyrSlot* slot) { return slot->tag; }
+inline PyrTag GetTag(const PyrSlot* slot) { return slot->tag; }
 
 /* tag checking functions */
-inline bool IsObj(const PyrSlot* slot) { return slot->tag == tagObj; }
-inline bool NotObj(const PyrSlot* slot) { return slot->tag != tagObj; }
+inline bool IsObj(const PyrSlot* slot) { return slot->tag == PyrTag::tagObj; }
+inline bool NotObj(const PyrSlot* slot) { return slot->tag != PyrTag::tagObj; }
 
-inline bool IsNil(const PyrSlot* slot) { return slot->tag == tagNil; }
-inline bool NotNil(const PyrSlot* slot) { return slot->tag != tagNil; }
+inline bool IsNil(const PyrSlot* slot) { return slot->tag == PyrTag::tagNil; }
+inline bool NotNil(const PyrSlot* slot) { return slot->tag != PyrTag::tagNil; }
 
-inline bool IsFalse(const PyrSlot* slot) { return slot->tag == tagFalse; }
-inline bool IsTrue(const PyrSlot* slot) { return slot->tag == tagTrue; }
+inline bool IsFalse(const PyrSlot* slot) { return slot->tag == PyrTag::tagFalse; }
+inline bool IsTrue(const PyrSlot* slot) { return slot->tag == PyrTag::tagTrue; }
 
-inline bool IsSym(const PyrSlot* slot) { return slot->tag == tagSym; }
-inline bool NotSym(const PyrSlot* slot) { return slot->tag != tagSym; }
+inline bool IsSym(const PyrSlot* slot) { return slot->tag == PyrTag::tagSym; }
+inline bool NotSym(const PyrSlot* slot) { return slot->tag != PyrTag::tagSym; }
 
-inline bool IsChar(const PyrSlot* slot) { return slot->tag == tagChar; }
-inline bool NotChar(const PyrSlot* slot) { return slot->tag != tagChar; }
+inline bool IsChar(const PyrSlot* slot) { return slot->tag == PyrTag::tagChar; }
+inline bool NotChar(const PyrSlot* slot) { return slot->tag != PyrTag::tagChar; }
 
-inline bool IsInt(const PyrSlot* slot) { return slot->tag == tagInt; }
-inline bool NotInt(const PyrSlot* slot) { return slot->tag != tagInt; }
+inline bool IsInt(const PyrSlot* slot) { return slot->tag == PyrTag::tagInt; }
+inline bool NotInt(const PyrSlot* slot) { return slot->tag != PyrTag::tagInt; }
 
-inline bool IsFloat(const PyrSlot* slot) { return slot->tag == tagFloat; }
-inline bool NotFloat(const PyrSlot* slot) { return slot->tag != tagFloat; }
+inline bool IsFloat(const PyrSlot* slot) { return slot->tag == PyrTag::tagFloat; }
+inline bool NotFloat(const PyrSlot* slot) { return slot->tag != PyrTag::tagFloat; }
 
-inline bool IsPtr(const PyrSlot* slot) { return slot->tag == tagPtr; }
-inline bool NotPtr(const PyrSlot* slot) { return slot->tag != tagPtr; }
+inline bool IsPtr(const PyrSlot* slot) { return slot->tag == PyrTag::tagPtr; }
+inline bool NotPtr(const PyrSlot* slot) { return slot->tag != PyrTag::tagPtr; }
 
 
 /* setter functions */
 inline void SetInt(PyrSlot* slot, int val) {
-    slot->tag = tagInt;
+    slot->tag = PyrTag::tagInt;
     slot->u.i = val;
 }
 inline void SetObject(PyrSlot* slot, struct PyrObjectHdr* val) {
-    slot->tag = tagObj;
+    slot->tag = PyrTag::tagObj;
     slot->u.o = (struct PyrObject*)(val);
 }
 inline void SetSymbol(PyrSlot* slot, PyrSymbol* val) {
-    slot->tag = tagSym;
+    slot->tag = PyrTag::tagSym;
     slot->u.s = val;
 }
 inline void SetChar(PyrSlot* slot, char val) {
-    slot->tag = tagChar;
+    slot->tag = PyrTag::tagChar;
     slot->u.c = val;
 }
 inline void SetPtr(PyrSlot* slot, void* val) {
-    slot->tag = tagPtr;
+    slot->tag = PyrTag::tagPtr;
     slot->u.ptr = (void*)val;
 }
 
 inline void SetObjectOrNil(PyrSlot* slot, struct PyrObject* val) {
     if (val) {
-        slot->tag = tagObj;
+        slot->tag = PyrTag::tagObj;
         slot->u.o = val;
     } else {
-        slot->tag = tagNil;
+        slot->tag = PyrTag::tagNil;
         slot->u.i = 0;
     }
 }
 
 inline void SetTrue(PyrSlot* slot) {
-    slot->tag = tagTrue;
+    slot->tag = PyrTag::tagTrue;
     slot->u.i = 0;
 }
 inline void SetFalse(PyrSlot* slot) {
-    slot->tag = tagFalse;
+    slot->tag = PyrTag::tagFalse;
     slot->u.i = 0;
 }
 inline void SetBool(PyrSlot* slot, bool test) {
-    slot->tag = (test ? tagTrue : tagFalse);
+    slot->tag = (test ? PyrTag::tagTrue : PyrTag::tagFalse);
     slot->u.i = 0;
 }
 inline void SetNil(PyrSlot* slot) {
-    slot->tag = tagNil;
+    slot->tag = PyrTag::tagNil;
     slot->u.i = 0;
 }
 inline void SetFloat(PyrSlot* slot, double val) {
-    slot->tag = tagFloat;
+    slot->tag = PyrTag::tagFloat;
     slot->u.f = val;
 }
 
@@ -186,7 +186,7 @@ inline void SetRaw(PyrSlot* slot, double val) {
     assert(IsFloat(slot));
     slot->u.f = val;
 }
-inline void SetTagRaw(PyrSlot* slot, int tag) { slot->tag = tag; }
+inline void SetTagRaw(PyrSlot* slot, PyrTag tag) { slot->tag = static_cast<PyrTag>(tag); }
 
 /* slot comparison */
 inline bool SlotEq(PyrSlot* a, PyrSlot* b) { return (a->tag == b->tag) && (a->u.i == b->u.i); }
