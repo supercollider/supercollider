@@ -1,0 +1,24 @@
+class:: Pdrop
+summary:: skips (drops) the first n events from a pattern
+related:: Classes/Pclutch
+categories:: Streams-Patterns-Events>Patterns
+
+description::
+
+Skips an initial (count) number of events from a pattern.
+
+ClassMethods::
+
+method::new
+drops strong::count:: elements of the strong::pattern:: from the stream.
+
+Examples::
+
+code::
+
+(
+p = Pdrop(2, Pseq([1,2,3,4],6));
+q = p.asStream.nextN(20).postln;
+)
+
+::
