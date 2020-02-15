@@ -602,4 +602,29 @@ OutputProxy : UGen {
 	dumpName {
 		^this.source.dumpName ++ "[" ++ outputIndex ++ "]"
 	}
+
+	controlName {
+		var counter = 0, index = 0;
+
+		this.synthDef.children.do({
+			arg ugen;
+			if(this.source.synthIndex == ugen.synthIndex,
+				{ index = counter + this.outputIndex; });
+			if(ugen.isKindOf(Control),
+				{ counter = counter + ugen.channels.size; });
+		});
+
+		^synthDef.controlNames.detect({ |c| c.index == index });
+	}
+
+	spec_{ arg spec;
+		var controlName, name;
+		controlName = this.controlName;
+		if (this.controlName.notNil) {
+			controlName.spec = spec;
+		} {
+			"Cannot set spec on a non-Control".error;
+		}
+	}
+
 }

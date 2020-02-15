@@ -231,20 +231,20 @@ Symbol {
 
 	archiveAsCompileString { ^true }
 
-	kr { | val, lag, fixedLag = false |
-		^NamedControl.kr(this, val, lag, fixedLag)
+	kr { | val, lag, fixedLag = false, spec |
+		^NamedControl.kr(this, val, lag, fixedLag, spec)
 	}
 
-	ir { | val |
-		^NamedControl.ir(this, val)
+	ir { | val, spec |
+		^NamedControl.ir(this, val, spec:spec)
 	}
 
-	tr { | val |
-		^NamedControl.tr(this, val)
+	tr { | val, spec |
+		^NamedControl.tr(this, val, spec:spec)
 	}
 
-	ar { | val, lag |
-		^NamedControl.ar(this, val, lag)
+	ar { | val, lag, spec |
+		^NamedControl.ar(this, val, lag, spec)
 	}
 
 	matchOSCAddressPattern { arg addressPattern;
