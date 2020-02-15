@@ -55,6 +55,12 @@
 
 #include "malloc_aligned.hpp"
 
+#include <boost/predef/hardware.h>
+
+#ifdef BOOST_HW_SIMD_AVAILABLE >= BOOST_HW_SIMD_X86_SSE_VERSION
+#    include <xmmintrin.h>
+#endif
+
 // undefine the shadowed scfft functions
 #undef scfft_create
 #undef scfft_dofft
@@ -148,26 +154,12 @@ void zfree(void* ptr) { return free_alig(ptr); }
 ////////////////////////////////////////////////////////////////////////////////
 
 // Set denormal FTZ mode on CPUs that need/support it.
-void sc_SetDenormalFlags();
-
-#ifdef __SSE2__
-#    include <xmmintrin.h>
-
 void sc_SetDenormalFlags() {
+#if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
     _mm_setcsr(_mm_getcsr() | 0x40); // DAZ
-}
-
-#elif defined(__SSE__)
-#    include <xmmintrin.h>
-
-void sc_SetDenormalFlags() { _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON); }
-
-#else
-
-void sc_SetDenormalFlags() {}
-
 #endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
