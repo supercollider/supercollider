@@ -121,11 +121,11 @@ NamedControl {
 	}
 
 	init {
-		var prefix, ctlName, ctl, selector;
+		var prefix, str;
 
 		name !? {
-			name = name.asString;
-			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
+			str = name.asString;
+			if(str[1] == $_) { prefix = str[0] };
 		};
 
 		if(fixedLag && lags.notNil && prefix.isNil) {
