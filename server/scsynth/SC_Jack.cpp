@@ -54,6 +54,7 @@ int32 server_timeseed() { return timeSeed(); }
 
 int64 oscTimeNow() { return OSCTime(getTime()); }
 
+static double jackOscTimeSeconds() { return OSCTime(getTime()) * kOSCtoSecs; }
 
 void initializeScheduler() {}
 
@@ -305,6 +306,7 @@ void SC_JackDriver::ConnectClientOutputs(const char* pattern) {
     free(ports);
 }
 
+
 bool SC_JackDriver::DriverStart() {
     if (!mClient)
         return false;
@@ -354,6 +356,7 @@ bool SC_JackDriver::DriverStart() {
         if (thisPortName && thatPortName)
             ConnectPorts(thisPortName, thatPortName);
     }
+    mDLL.Reset(mSampleRate, mNumSamplesPerCallback, SC_TIME_DLL_BW, jackOscTimeSeconds());
 
     return true;
 }
@@ -364,50 +367,24 @@ bool SC_JackDriver::DriverStop() {
         err = jack_deactivate(mClient);
     return err == 0;
 }
+
+
 void sc_SetDenormalFlags();
 void SC_JackDriver::Run() {
     sc_SetDenormalFlags();
     jack_client_t* client = mClient;
     World* world = mWorld;
 
-#ifdef SC_JACK_USE_DLL
-    mDLL.Update(secondsSinceEpoch(getTime()));
-#    if SC_JACK_DEBUG_DLL
+    mDLL.Update(jackOscTimeSeconds());
+#if SC_JACK_DEBUG_DLL
     static int tick = 0;
     if (++tick >= 10) {
         tick = 0;
         scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f inc %.9f\n", mDLL.PeriodTime(), mDLL.Period(),
                  mDLL.SampleRate(), mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
     }
-#    endif
-#else
-    HostTime hostTime = getTime();
-
-    double hostSecs = secondsSinceEpoch(hostTime);
-    double sampleTime = (double)(jack_frame_time(client) + jack_frames_since_cycle_start(client));
-
-    if (mStartHostSecs == 0) {
-        mStartHostSecs = hostSecs;
-        mStartSampleTime = sampleTime;
-    } else {
-        double instSampleRate = (sampleTime - mPrevSampleTime) / (hostSecs - mPrevHostSecs);
-        double smoothSampleRate = mSmoothSampleRate;
-        smoothSampleRate = smoothSampleRate + 0.002 * (instSampleRate - smoothSampleRate);
-        if (fabs(smoothSampleRate - mSampleRate) > 10.) {
-            smoothSampleRate = mSampleRate;
-        }
-        mOSCincrement = (int64)(mOSCincrementNumerator / smoothSampleRate);
-        mSmoothSampleRate = smoothSampleRate;
-#    if 0
-		double avgSampleRate = (sampleTime - mStartSampleTime)/(hostSecs - mStartHostSecs);
-		double jitter = (smoothSampleRate * (hostSecs - mPrevHostSecs)) - (sampleTime - mPrevSampleTime);
-		double drift = (smoothSampleRate - mSampleRate) * (hostSecs - mStartHostSecs);
-#    endif
-    }
-
-    mPrevHostSecs = hostSecs;
-    mPrevSampleTime = sampleTime;
 #endif
+
 
     try {
         mFromEngine.Free();
@@ -445,17 +422,10 @@ void SC_JackDriver::Run() {
         }
 
         // main loop
-#ifdef SC_JACK_USE_DLL
-        int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + .5);
-        // 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
-        int64 oscInc = mOSCincrement = (int64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
+        int64 oscTime = mOSCbuftime = (mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + .5;
+        int64 oscInc = mOSCincrement = (mDLL.Period() / numBufs) * kSecondsToOSCunits + .5;
         mSmoothSampleRate = mDLL.SampleRate();
         double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs /* 1/pow(2,32) */;
-#else
-        int64 oscTime = mOSCbuftime = OSCTime(hostTime) + (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
-        int64 oscInc = mOSCincrement;
-        double oscToSamples = mOSCtoSamples;
-#endif
 
         for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
             int32 bufCounter = mWorld->mBufCounter;
@@ -539,9 +509,7 @@ void SC_JackDriver::Reset(double sampleRate, int bufferSize) {
     mMaxPeakCounter = (int)mBuffersPerSecond;
     mOSCincrement = (int64)(mOSCincrementNumerator / mSampleRate);
 
-#ifdef SC_JACK_USE_DLL
-    mDLL.Reset(mSampleRate, mNumSamplesPerCallback, SC_TIME_DLL_BW, secondsSinceEpoch(getTime()));
-#endif
+    mDLL.Reset(mSampleRate, mNumSamplesPerCallback, SC_TIME_DLL_BW, jackOscTimeSeconds());
 }
 
 bool SC_JackDriver::BufferSizeChanged(int numSamples) {
