@@ -481,7 +481,11 @@ EventPatternProxy : TaskProxy {
 				// constrainStream may add some values to it so *it must be yielded*
 				stream = this.constrainStream(stream, pattern.streamArg(embed), inval, cleanup);
 			};
-			outval = stream.next(inval) ? default;
+			outval = stream.next(inval);
+			if(outval.isNil) {
+				stream = nil;
+				outval = default
+			};
 			count = count + 1;
 			outval.notNil
 		}{
@@ -519,15 +523,20 @@ EventPatternProxy : TaskProxy {
 					newStream
 				} {
 					Pseq([
-						EmbedOnce(
-							Pfindur(delta, stream, tolerance).asStream,
-							cleanup
-						),
+						if(stream.isNil) { // fill in the gap with silence
+							Event.silent(delta)
+						} {
+							EmbedOnce( // play until replaced at the next quant
+								Pfindur(delta, stream, tolerance).asStream,
+								cleanup
+							)
+						},
 						newStream
 					]).asStream
+
 				}
 			}{
-				Ppar([
+				Ppar([ // this is parallel, no gap to be filled
 					EmbedOnce(
 						PfadeOut(stream, fadeTime, delta, tolerance),
 						cleanup
