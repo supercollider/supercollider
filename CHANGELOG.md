@@ -13,6 +13,20 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
+3.11.0 beta 1 (2020-02-18)
+
+New feature: Ableton Link!
+
+Bugfixes and updates (some highlights):
+
+SC_JACK Repair - ([#4599](https://github.com/supercollider/supercollider/pull/4599)).
+sclang: Improve access to SynthDef specs  ([#3814](https://github.com/supercollider/supercollider/pull/3814)).
+fix-windows-denormals  ([#4504](https://github.com/supercollider/supercollider/pull/4504)).
+SCDoc: use vector for recursive function  ([#4713](https://github.com/supercollider/supercollider/pull/4713)).
+fix-NamedControl-name string conversions  ([#4761](https://github.com/supercollider/supercollider/pull/4761)).
+sclang: add PortAudio bindings for listing audio devices  ([#4742](https://github.com/supercollider/supercollider/pull/4742)).
+ 
+
 3.10.4 (2020-01-16)
 ===================
 
