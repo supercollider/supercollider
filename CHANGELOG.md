@@ -13,7 +13,7 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
-3.11.0 beta 1 (2020-02-18)
+3.11.0-beta1 (2020-02-18)
 
 New feature: Ableton Link!
 
