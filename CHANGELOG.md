@@ -148,11 +148,9 @@ Fixed an issue where changing the number of channels or rate of a `NodeProxy` wo
 
 Fixed an issue with `Plotter` resampling of domain given fixed `Array:series` method ([#4510](https://github.com/supercollider/supercollider/pull/4510))
 
-
 Fixed a UnitTest for `TestTempoClock` ([#4334](https://github.com/supercollider/supercollider/pull/4334))
 
 Fixed an issue where `typeView` wasn't updated in NdefGUI ([#4056](https://github.com/supercollider/supercollider/pull/4056))
-
 
 Fixed an issue where `findRegexp` would return incorrectly when given an empty string  ([#4241](https://github.com/supercollider/supercollider/pull/4241))
 
