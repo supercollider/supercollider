@@ -67,10 +67,10 @@ server_arguments::server_arguments(int argc, char* argv[]) {
                                                             "-2 suppresses informational and many error messages, as well as\n"
                                                             "messages from Poll.")
 #ifdef _WIN32
-        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths seperated by `;`.\n"
+        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths separated by `;`.\n"
                                                             "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
 #else
-        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths seperated by `:`.\n"
+        ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "A list of paths separated by `:`.\n"
                                                             "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
 #endif
         ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")

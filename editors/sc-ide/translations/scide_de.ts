@@ -1024,7 +1024,7 @@ Apply desired actions to selected documents, until the list is empty.</source>
     </message>
     <message>
         <location filename="../widgets/main_window.cpp" line="1090"/>
-        <source>Extenstion &quot;.scd&quot; was automatically added to the selected file name, but the file &quot;%1&quot; already exists.
+        <source>Extension &quot;.scd&quot; was automatically added to the selected file name, but the file &quot;%1&quot; already exists.
 
 Do you wish to overwrite it?</source>
         <translation type="unfinished"></translation>

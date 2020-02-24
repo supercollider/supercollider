@@ -94,10 +94,10 @@ void Usage() {
              "          The default is 0.\n"
 #ifdef _WIN32
              "   -U <ugen-plugins-path>\n"
-             "          A list of paths seperated by `;`.\n"
+             "          A list of paths separated by `;`.\n"
 #else
              "   -U <ugen-plugins-path>\n"
-             "          A list of paths seperated by `:`.\n"
+             "          A list of paths separated by `:`.\n"
 #endif
              "          If specified, standard paths are NOT searched for plugins.\n"
              "   -P <restricted-path>    \n"
