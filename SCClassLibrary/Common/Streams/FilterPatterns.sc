@@ -414,9 +414,9 @@ Pfinval : Pfin {
 }
 
 Pfindur : FilterPattern {
-	var <>dur, <>tolerance;
-	*new { arg dur, pattern, tolerance = 0.001;
-		^super.new(pattern).dur_(dur).tolerance_(tolerance)
+	var <>dur, <>tolerance, <>filling;
+	*new { arg dur, pattern, tolerance = 0.001, filling;
+		^super.new(pattern).dur_(dur).tolerance_(tolerance).filling_(filling)
 	}
 	storeArgs { ^[dur,pattern,tolerance] }
 
@@ -426,7 +426,12 @@ Pfindur : FilterPattern {
 		var stream = pattern.asStream;
 		var cleanup = EventStreamCleanup.new;
 		loop {
-			inevent = stream.next(event).asEvent ?? { ^event };
+			inevent = stream.next(event).asEvent ?? {
+				if(filling.notNil) {
+					filling.value(event).put(\delta, localdur - elapsed).yield
+				};
+				^event
+			};
 			cleanup.update(inevent);
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
