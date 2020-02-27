@@ -174,7 +174,8 @@ PatternProxy : Pattern {
 	}
 
 	*clear {
-		this.all.do { arg pat; pat.clear }
+		this.all.do { arg pat; pat.clear };
+		this.all.clear;
 	}
 
 	clear {
