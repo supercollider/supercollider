@@ -128,6 +128,27 @@ TestPattern : UnitTest {
 		);
 	}
 
+
+	test_Pfindur_endsInTime {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries());
+		q = Pfindur(3.5, p);
+		x = Pevent(q).asStream.all;
+		this.assert(x.last[\count] == 3, "Pfindur should end inner pattern after dur");
+		this.assert(x.sum { |x| x.delta } == 3.5, "Pfindur with filler should end no sooner than after dur");
+	}
+
+	test_Pfindur_fillsRemainingTime {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries(0, 1, 3));
+		q = Pfindur(4.5, p, filling: (test:true));
+		x = Pevent(q).asStream.all;
+		this.assert(x.last[\test] == true, "Pfindur with filler should extend short pattern using filler");
+		this.assert(x.sum { |x| x.delta } == 4.5, "Pfindur with filler should end no earlier than after dur");
+	}
+
+
+
 /*
 	test_storeArgs {
 		Pattern.allSubclasses.do({ |class|
