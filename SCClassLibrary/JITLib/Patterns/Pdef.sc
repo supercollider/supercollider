@@ -524,7 +524,7 @@ EventPatternProxy : TaskProxy {
 				} {
 					Pseq([
 						EmbedOnce(
-							Pfindur(delta, stream, tolerance).asStream,
+							Pfindur(delta, stream, tolerance, Event.silent).asStream,
 							cleanup
 						),
 						newStream
