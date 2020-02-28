@@ -418,7 +418,8 @@ Pfindur : FilterPattern {
 	*new { arg dur, pattern, tolerance = 0.001, filling;
 		^super.new(pattern).dur_(dur).tolerance_(tolerance).filling_(filling)
 	}
-	storeArgs { ^[dur,pattern,tolerance] }
+
+	storeArgs { ^[dur, pattern, tolerance, filling] }
 
 	embedInStream { arg event;
 		var item, delta, elapsed = 0.0, nextElapsed, inevent;
