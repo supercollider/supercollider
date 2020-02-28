@@ -41,15 +41,14 @@ x = a.asStream;
 )
 
 
-//Pfindur used as a sequence of pitches
+// Pfindur used as a sequence of pitches
 
 (
-SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
-		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
-		Out.ar(out, SinOsc.ar(freq, 0, env))
-	}).add;
+SynthDef(\help_sinegrain, { | out=0, freq=440, sustain=0.05 |
+	var env;
+	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
+	Out.ar(out, SinOsc.ar(freq, 0, env))
+}).add;
 )
 
 (
@@ -63,6 +62,21 @@ c = Pbind(
 
 Pn(
 	Pfindur(1, c)
+).play;
+)
+
+// using a filling:
+(
+var c;
+c = Pbind(
+	\dur, Prand([1, 0.02, 0.2], 3),
+	\instrument, \help_sinegrain,
+	\degree, Pseries(0, 1, inf),
+	\octave, 6
+);
+
+Pn(
+	Pfindur(1.5, c, filling: Event.silent)
 ).play;
 )
 ::
