@@ -290,5 +290,3 @@ TestNodeProxy : UnitTest {
 	}
 
 }
-
-}
