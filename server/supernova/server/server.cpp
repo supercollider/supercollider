@@ -209,7 +209,7 @@ static void name_current_thread(int thread_index) {
 }
 
 static void set_daz_ftz(void) {
-#if BOOST_HW_SIMD_X86 >= BOOST_X86_SSE_VERSION
+#if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
     /* denormal handling */
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
     _mm_setcsr(_mm_getcsr() | 0x40);
