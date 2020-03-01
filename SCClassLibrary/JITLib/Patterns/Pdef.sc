@@ -525,7 +525,7 @@ EventPatternProxy : TaskProxy {
 				} {
 					Pseq([
 						EmbedOnce(
-							Psync(stream, delta, delta, tolerance).asStream,
+							Psync(stream, delta, delta, tolerance, delta).asStream,
 							cleanup
 						),
 						newStream
