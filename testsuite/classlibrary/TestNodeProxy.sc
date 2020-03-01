@@ -243,5 +243,50 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.source, 1967, "copying a proxy should return an independent object");
 	}
 
+	test_control_fade {
+		var server = Server(this.class.name);
+		var result, proxy, timeout;
+		var cond = Condition.new;
+		var fadeTime = 0.1;
+		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
+		var resp;
+
+		server.bootSync;
+
+		proxy = NodeProxy(server);
+		proxy.source = { DC.kr(2000) };
+		proxy.fadeTime = fadeTime;
+
+		proxy.source = 440;
+		waitTime.wait;
+
+		resp = OSCFunc({ cond.unhang; resp.free; }, '/c_set');
+		timeout = fork { 1.wait; cond.unhang };
+		proxy.bus.get({ |val| result = val });
+		cond.hang;
+		timeout.stop;
+		resp.free;
+
+		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
+
+		server.quit;
+		server.remove;
+	}
+
+	test_map_rates {
+
+		var p = ProxySpace.new.use {
+
+			~out = { \in.ar(0 ! 2) };
+			~osc = { |freq = 440| Saw.ar(freq).dup };
+			~osc <>> ~out;
+			this.assertEquals(~out.controlNames.detect { |cn| cn.name == \in }.rate, \audio,
+				"report the correct controlNames rates for audio rate proxies"
+			);
+		};
+
+		p.clear;
+
+	}
 
 }
