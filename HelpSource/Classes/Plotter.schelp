@@ -112,8 +112,18 @@ argument:: argBounds
 The window bounds (a link::Classes/Rect::).
 
 method:: plotMode
-Set the style of data display.
-argument:: symbol
+Get/Set the style of data display. This can be an array of different modes for
+multi-channel data.
+argument:: modes
+A link::Classes/Symbol:: or an link::Classes/Array:: of link::Classes/Symbol::s.
+
+If code::modes.size < numChannels::, the plots will emphasis::wrap:: around the
+array of modes.
+returns::
+An link::Classes/Array:: of link::Classes/Symbol::s,
+unless there is only one mode specified or if all modes of a multi-channel plot
+are the same, in which case a link::Classes/Symbol:: is returned.
+
 Available modes:
 table::
 ## code::\linear:: || connecting data points with linear interpolation
@@ -132,6 +142,17 @@ a.plotMode = \levels; a.refresh;
 a.plotMode = \steps; a.refresh;
 a.plotMode = \linear; a.refresh;
 a.plotMode = \bars; a.refresh;
+
+/* mixed modes */
+(
+c = [Color.red, Color.cyan, Color.green, Color.blue];
+d = 4.collect({ |i| 100.collect({ |j| sinPi(1+i.squared*j * 50.reciprocal) })});
+p = d.plot;
+p.plotColor_(c);
+p.plotMode_([\steps, \linear, \plines, \points]);
+// superpose will trigger a refresh to update colors/modes
+p.superpose_(true);
+)
 ::
 
 method:: setProperties
@@ -296,9 +317,18 @@ plot.domain_(domain);
 A more elaborate example can be found in the link::#examples::.
 
 method:: plotColor
-Set or get the link::Classes/Color::(s) of your plot. An
-link::Classes/Array:: of colors will be mapped across multichannel plot
-data, including when link::#-superpose:: is code::true::.
+Set or get the colors of your data plot.
+
+argument:: colors
+This can be an link::Classes/Array:: of link::Classes/Color::s for
+multichannel data, or a single link::Classes/Color:: to map to all channels.
+
+If code::colors.size < numChannels::, the plots will emphasis::wrap:: around the
+array of colors.
+returns::
+An link::Classes/Array:: of link::Classes/Color::s, unless there is only one
+color specified or if all colors of a multi-channel plot are the same, in which
+case a link::Classes/Color:: is returned.
 
 method:: editFunc
 Supply a function which is evaluated when editing data. The function is called with the arguments: code::plotter::, code::plotIndex::, code::index::, code::val::, code::x::, code::y::.
