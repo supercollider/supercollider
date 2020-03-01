@@ -109,11 +109,15 @@ UGen : AbstractFunction {
 		}
 	}
 
-	// pi over 180
-	degrad { ^this * 0.017453292519943 }
+	degrad {
+		// degree * (pi/180)
+		^this * 0.01745329251994329547
+	}
 
-	// 180 over pi
-	raddeg { ^this * 57.295779513082 }
+	raddeg {
+		// radian * (180/pi)
+		^this * 57.29577951308232286465
+	}
 
 	blend { arg that, blendFrac = 0.5;
 		var pan;

@@ -134,10 +134,15 @@ SimpleNumber : Number {
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }
 
-	// pi over 180
-	degrad { ^this * 0.017453292519943 }
-	// 180 over pi
-	raddeg { ^this * 57.295779513082 }
+	degrad {
+		// degree * (pi/180)
+		^this * 0.01745329251994329547
+	}
+
+	raddeg {
+		// radian * (180/pi)
+		^this * 57.29577951308232286465
+	}
 
 	performBinaryOpOnSimpleNumber { |aSelector, aNumber, adverb|
 		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
