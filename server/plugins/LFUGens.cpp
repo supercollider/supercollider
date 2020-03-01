@@ -2422,10 +2422,6 @@ static inline bool check_gate_ar(EnvGen* unit, int i, float& prevGate, float*& g
 }
 
 static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level) {
-    if (unit->m_stage == ENVGEN_NOT_STARTED) {
-        counter = INT_MAX;
-        return true;
-    }
     // Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
     int numstages = (int)ZIN0(kEnvGen_numStages);
 
@@ -2438,6 +2434,9 @@ static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level)
         unit->mDone = true;
         int doneAction = (int)ZIN0(kEnvGen_doneAction);
         DoneAction(doneAction, unit);
+    } else if (unit->m_stage == ENVGEN_NOT_STARTED) {
+        counter = INT_MAX;
+        return true;
     } else if (unit->m_stage + 1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
         int loopNode = (int)ZIN0(kEnvGen_loopNode);
         if (loopNode >= 0 && loopNode < numstages) {
