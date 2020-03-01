@@ -75,6 +75,7 @@ PmonoStream : Stream {
 							schedBundle: schedBundle).play
 						};
 						currentCleanupFunc = nil;
+						id = nil;
 					});
 				};
 			};
@@ -122,7 +123,7 @@ PmonoArticStream : PmonoStream {
 
 		loop {
 			if(this.prDoStreams) {
-				if(rearticulating and: { event.isRest.not }) {
+				if(rearticulating or: { event[\id].isNil } and: { event.isRest.not }) {
 					event[\id] = nil;
 					this.prInitNode;
 					rearticulating = false;
