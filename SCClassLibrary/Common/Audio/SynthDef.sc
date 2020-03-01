@@ -651,12 +651,8 @@ SynthDef {
 	}
 
 	specs {
-		^(metadata[\specs] ?? {
-			var d;
-			d = ();
-			metadata[\specs] = d;
-			d
-		})
+		if(metadata[\specs].isNil) { metadata[\specs] = () };
+		^metadata[\specs]
 	}
 
 	// this method warns and does not halt
