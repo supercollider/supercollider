@@ -1011,7 +1011,7 @@ bool MainWindow::save(Document* doc, bool forceChoose, bool saveInExtensionFolde
                 save_path.append(".scd");
                 QFileInfo save_path_info(save_path);
                 if (save_path_info.exists()) {
-                    QString msg = tr("Extenstion \".scd\" was automatically added to the "
+                    QString msg = tr("Extension \".scd\" was automatically added to the "
                                      "selected file name, but the file \"%1\" already exists.\n\n"
                                      "Do you wish to overwrite it?")
                                       .arg(save_path_info.fileName());
