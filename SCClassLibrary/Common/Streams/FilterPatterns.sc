@@ -449,7 +449,7 @@ Psync : FilterPattern {
 	*new { arg pattern, quant, maxdur, tolerance = 0.001, mindur = 0;
 		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance).mindur_(mindur)
 	}
-	storeArgs { ^[pattern,quant,maxdur,tolerance,mindur] }
+	storeArgs { ^[pattern, quant, maxdur, tolerance, mindur] }
 
 	embedInStream { arg event;
 		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
