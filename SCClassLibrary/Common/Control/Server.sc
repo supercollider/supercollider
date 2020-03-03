@@ -1024,6 +1024,19 @@ Server {
 				this.prOnServerProcessExit(exitCode);
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
+
+			// Windows Defender sometimes delays scsynth boot by 60+ seconds
+			// (see github issue #4368)
+			// We should warn users.
+			Platform.case(
+				\windows, {
+					"Warning : on some Windows-based machines, Windows Defender".postln;
+					"sometimes delays server boot by one minute.".postln;
+					"You can add scsynth.exe process to Windows Defender".postln;
+					"exclusion list to disable this check.".postln;
+				}
+			);
+
 			// in case the server takes more time to boot
 			// we increase the number of attempts for tcp connection
 			// in order to minimize the chance of timing out
