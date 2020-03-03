@@ -19,7 +19,7 @@ Frequency in Hertz.
 
 argument::iphase
 
-Initial phase offset.
+Initial phase offset. For efficiency reasons this is a value ranging from 0 to 2.
 
 
 argument::mul
