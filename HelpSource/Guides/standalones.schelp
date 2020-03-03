@@ -93,9 +93,7 @@ code::
 
 // --- nothing to be changed below this line --- \\
 // some helper functions
-~readText = { |path|
-	var f = File(path, "r"); var t = f.readAllString; f.close; t;
-};
+~readText = { |path| File.readAllString(path); };
 ~writeText = { |path, string| File(path, "w").write(string).close; };
 ~copyFolder = { |orig, dest|
 	var str = "cp -ir" + quote(orig) + quote(dest);
