@@ -1030,11 +1030,12 @@ Server {
 			// We should warn users.
 			Platform.case(
 				\windows, {
-					"Warning : on some Windows-based machines, Windows Defender".postln;
-					"sometimes delays server boot by one minute.".postln;
-					"You can add scsynth.exe process to Windows Defender".postln;
-					"exclusion list to disable this check.".postln;
-				}
+					if (this.serverRunning.not) {
+						"Server: possible boot delay.".warn;
+						"On some Windows-based machines, Windows Defender sometimes delays server boot by one minute.".postln;
+						"You can add scsynth.exe process to Windows Defender exclusion list to disable this check. It's safe.".postln;						
+					}
+				}.defer(7);
 			);
 
 			// in case the server takes more time to boot
