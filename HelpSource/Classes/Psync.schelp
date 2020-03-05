@@ -36,7 +36,10 @@ argument::maxdur
 maximum duration
 
 argument::tolerance
-difference threshhold that a pattern must exceed max to be ended.
+threshhold that the stream must exceed maxdur to be ended.
+
+argument::mindur
+guarantees that the total duration is no less than a given limit, independent of the quant value.
 
 Examples::
 
