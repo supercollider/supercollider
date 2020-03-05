@@ -472,7 +472,7 @@ Psync : FilterPattern {
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 
-			if (localmaxdur.notNil and: { nextElapsed.round(tolerance) >= localmaxdur }) {
+			if (localmaxdur.notNil and: { nextElapsed.roundUp(tolerance) >= localmaxdur }) {
 				inevent = inevent.copy;
 				inevent.put(\delta, localmaxdur - elapsed);
 				event = inevent.yield;
