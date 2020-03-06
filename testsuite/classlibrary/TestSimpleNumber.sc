@@ -115,6 +115,12 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(actual, expected, "-1.asTimeString (negative value)");
 	}
 
+	test_asTimeString_negativeOneDontDropDays {
+		var expected = "-000:00:00:01.000";
+		var actual = -1.asTimeString(dropDaysIfPossible: false);
+		this.assertEquals(actual, expected, "-1.asTimeString(dropDaysIfPossible: false) (negative value)");
+	}
+
 	test_softRound {
 		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};
