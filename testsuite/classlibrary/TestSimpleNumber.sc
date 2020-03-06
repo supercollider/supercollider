@@ -109,6 +109,12 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(actual, expected, "%.asTimeString (number of days > 365 and 10 seconds)".format(totalTime));
 	}
 
+	test_asTimeString_negativeOne {
+		var expected = "-00:00:01.000";
+		var actual = -1.asTimeString;
+		this.assertEquals(actual, expected, "-1.asTimeString (negative value)");
+	}
+
 	test_softRound {
 		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};
