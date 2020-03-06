@@ -452,7 +452,7 @@ Psync : FilterPattern {
 	storeArgs { ^[pattern, quant, maxdur, tolerance, mindur] }
 
 	embedInStream { arg event;
-		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+		var item, stream, delta, elapsed = 0.0, nextElapsed, inevent;
 		var	localquant = quant.value(event), localmaxdur = maxdur.value(event);
 		var cleanup = EventStreamCleanup.new;
 
