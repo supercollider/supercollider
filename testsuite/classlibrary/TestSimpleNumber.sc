@@ -109,10 +109,16 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(actual, expected, "%.asTimeString (number of days > 365 and 10 seconds)".format(totalTime));
 	}
 
+	test_asTimeString_negativeZero {
+		var expected = "-00:00:00.000";
+		var actual = -0.0.asTimeString;
+		this.assertEquals(actual, expected, "-0.0.asTimeString (negative zero)");
+	}
+
 	test_asTimeString_negativeOne {
 		var expected = "-00:00:01.000";
 		var actual = -1.asTimeString;
-		this.assertEquals(actual, expected, "-1.asTimeString (negative value)");
+		this.assertEquals(actual, expected, "-1.asTimeString (negative one)");
 	}
 
 	test_asTimeString_negativeOneDontDropDays {
