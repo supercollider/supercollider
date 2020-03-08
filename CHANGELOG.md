@@ -66,7 +66,7 @@ Fixed issues with clock jitter when using JACK ([#4599](https://github.com/super
 
 Fixed a bug where Windows would not guard against denormals, which would cause large CPU utilisation ([#4504](https://github.com/supercollider/supercollider/pull/4504))
 
-Fixed an issue where sample rate might change on booting server if using portaudio ([#4477](https://github.com/supercollider/supercollider/pull/4477))
+Prevented coreaudio from resampling audio stream when using portaudio on macOS ([#4477](https://github.com/supercollider/supercollider/pull/4477))
 
 Fixed an erroneous include  that stopped supernova from compiling in some cases ([#4018](https://github.com/supercollider/supercollider/pull/4018))
 
