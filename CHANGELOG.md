@@ -13,7 +13,7 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 
-3.11 (2020-02-22)
+3.11 (2020-03-08)
 ===================
 
 __New feature__ - Ableton Link support. See _sclang: added_
@@ -59,16 +59,22 @@ Replaced a magic number used by the clock ([#4714](https://github.com/supercolli
 supernova now has more deterministic ordering of OSC messages in asynchronous requests ([#4460](https://github.com/supercollider/supercollider/pull/4460))
 
 ### scsynth and supernova: Fixed
+
+Fixed an issue with scsynth and supernova pre-processor directives (fixes issue raised in ([#4504](https://github.com/supercollider/supercollider/pull/4504))) ([#4784](https://github.com/supercollider/supercollider/pull/4784))
+
 Fixed issues with clock jitter when using JACK ([#4599](https://github.com/supercollider/supercollider/pull/4599))
 
 Fixed a bug where Windows would not guard against denormals, which would cause large CPU utilisation ([#4504](https://github.com/supercollider/supercollider/pull/4504))
 
-Fixed an issue where sample rate might change on booting server if using portaudio ([#4477](https://github.com/supercollider/supercollider/pull/4477))
+Prevented coreaudio from resampling audio stream when using portaudio on macOS ([#4477](https://github.com/supercollider/supercollider/pull/4477))
 
 Fixed an erroneous include  that stopped supernova from compiling in some cases ([#4018](https://github.com/supercollider/supercollider/pull/4018))
 
 ### Ugens: Fixed
-Fixed an issue with EnvGen gating non-gated envelopes  ([#4436](https://github.com/supercollider/supercollider/pull/4436))
+
+Fixed an issue with the Done flags on EnvGen ([#4789](https://github.com/supercollider/supercollider/pull/4789))
+
+Fixed an issue with EnvGen gating non-gated envelopes ([#4436](https://github.com/supercollider/supercollider/pull/4436))
 
 ### sclang: Added
 Ableton Link support is here! Check the LinkClock class for more information.
