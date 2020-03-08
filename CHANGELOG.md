@@ -60,7 +60,7 @@ supernova now has more deterministic ordering of OSC messages in asynchronous re
 
 ### scsynth and supernova: Fixed
 
-Fixed an issue with scsynth and supernova preproceeor directives ([#4784](https://github.com/supercollider/supercollider/pull/4784))
+Fixed an issue with scsynth and supernova pre-processor directives (fixes issue raised in ([#4504](https://github.com/supercollider/supercollider/pull/4504))) ([#4784](https://github.com/supercollider/supercollider/pull/4784))
 
 Fixed issues with clock jitter when using JACK ([#4599](https://github.com/supercollider/supercollider/pull/4599))
 
