@@ -125,7 +125,7 @@ Pfset : FuncFilterPattern {
 			inevent.putAll(envir);
 			event = stream.next(inevent);
 			if(once) {
-				cleanup.addFunction(event, { |flag|
+				cleanup.addFunction(event ? inevent, { |flag|
 					envir.use({ cleanupFunc.value(flag) });
 				});
 				once = false;
