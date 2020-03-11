@@ -122,7 +122,9 @@ NamedControl {
 			}
 		};
 
-		res.spec = spec; // Set after we've finished without error.
+		if(spec.notNil) {
+			res.spec = spec; // Set after we've finished without error.
+		};
 
 		^if(lags.notNil) {
 			res.control.lag(lags).unbubble
