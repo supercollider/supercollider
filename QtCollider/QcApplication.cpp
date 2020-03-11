@@ -161,6 +161,10 @@ bool QcApplication::event(QEvent* event) {
 }
 
 bool QcApplication::notify(QObject* object, QEvent* event) {
+#ifdef Q_OS_MAC
+    bool isCloseEvent = false;
+    bool isKeyEvent = false;
+#endif
     switch (event->type()) {
     case QEvent::KeyPress: {
         QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
@@ -168,6 +172,14 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
             static QString cmdPeriodCommand("CmdPeriod.run");
             interpret(cmdPeriodCommand, false);
         }
+#ifdef Q_OS_MAC
+        if ((kevent->key() != Qt::Key_unknown)) {
+            isKeyEvent = true; // true for regular keys pressed, but not modifiers alone
+        }
+        if ((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier)) {
+            isCloseEvent = true;
+        }
+#endif
         break;
     }
     case QEvent::Wheel: {
@@ -185,8 +197,12 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
     // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
     // native window if they aren't accepted here. This caused issue #4058. Accepting them here
     // seems to solve the problem, but might cause other issues since it is a heavy-handed way
-    // of doing this. TODO - solve more elegantly
-    if (result)
+    // of doing this.
+    // In order to still allow closing GUI windows with "cmd-w", we do not accept modifier keys
+    // alone, as well as the "cmd-w" combination itself, so that they propagate further
+    // (see isKeyEvent and isCloseEvent above).
+    // TODO - solve more elegantly
+    if (result && isKeyEvent && (!isCloseEvent))
         event->accept();
 #endif
     return result;
