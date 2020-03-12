@@ -4,7 +4,7 @@
 set(SC_VERSION_MAJOR 3)
 set(SC_VERSION_MINOR 11)
 set(SC_VERSION_PATCH 0)
-set(SC_VERSION_TWEAK "-RC1")
+set(SC_VERSION_TWEAK "")
 set(SC_VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
 
 # Note: these are provided for backwards compatibility only. In the main project, PROJECT_VERSION_PATCH
