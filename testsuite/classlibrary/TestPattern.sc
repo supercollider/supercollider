@@ -156,8 +156,8 @@ TestPattern : UnitTest {
 	}
 
 	test_Pfset_evaluates_init_and_cleanup_on_empty_stream {
-		var x = 0, y = 0, outEvent = (), inEvent = (), cleanup = EventStreamCleanup.new;
-		outEvent = Pfset({ x = 1 }, p{}, { y = 2 }).asStream.next(inEvent);
+		var x = 0, y = 0, inEvent = (), cleanup = EventStreamCleanup.new;
+		var outEvent = Pfset({ x = 1 }, p{}, { y = 2 }).asStream.next(inEvent);
 		this.assert(x == 1, "Pfset on nil stream should still call the initializer function");
 		this.assert(y == 2, "Pfset on nil stream should still call the cleanup function");
 		this.assert(outEvent.isNil, "Pfset on nil stream should return nil");
