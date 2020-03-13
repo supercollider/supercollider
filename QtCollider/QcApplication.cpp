@@ -198,8 +198,8 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
     // seems to solve the problem, but might cause other issues since it is a heavy-handed way
     // of doing this.
     // In order to still allow closing GUI windows with "cmd-w", we need to let this combination
-    // through, as well as modifier keys alone, since the "cmd" needs to passed through by itself
-    // first for the "cmd-w" to work (see isKeyEvent and isCloseEvent above).
+    // through, as well as modifier keys alone, since the "cmd" needs to be passed through
+    // by itself first for the "cmd-w" to work (see isKeyEvent and isCloseEvent above).
     // TODO - solve more elegantly
     if (result && isKeyEvent && (!isCloseEvent))
         event->accept();
