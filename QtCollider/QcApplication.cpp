@@ -161,10 +161,6 @@ bool QcApplication::event(QEvent* event) {
 }
 
 bool QcApplication::notify(QObject* object, QEvent* event) {
-#ifdef Q_OS_MAC
-    bool isCloseEvent = false;
-    bool isKeyEvent = false;
-#endif
     switch (event->type()) {
     case QEvent::KeyPress: {
         QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
@@ -172,14 +168,6 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
             static QString cmdPeriodCommand("CmdPeriod.run");
             interpret(cmdPeriodCommand, false);
         }
-#ifdef Q_OS_MAC
-        if ((kevent->key() != Qt::Key_unknown)) {
-            isKeyEvent = true; // true for regular keys pressed, but not modifiers alone
-        }
-        if ((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier)) {
-            isCloseEvent = true;
-        }
-#endif
         break;
     }
     case QEvent::Wheel: {
@@ -193,6 +181,17 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
     bool result = QApplication::notify(object, event);
 
 #ifdef Q_OS_MAC
+    bool isCloseEvent = false;
+    bool isKeyEvent = false;
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
+        if ((kevent->key() != Qt::Key_unknown)) {
+            isKeyEvent = true; // true for regular keys pressed, but not modifiers alone
+        }
+        if ((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier)) {
+            isCloseEvent = true;
+        }
+    }
     // XXX Explicitly accept all handled events so they don't propagate outside the application.
     // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
     // native window if they aren't accepted here. This caused issue #4058. Accepting them here
