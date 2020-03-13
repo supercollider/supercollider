@@ -1261,7 +1261,7 @@ software publicly and freely available.
 [cmake]: http://www.cmake.org/download/
 [conemu]: https://conemu.github.io/ (free console emulator)
 [dependency walker]: http://www.dependencywalker.com/ (inspect missing library errors)
-[dx9sdk]: http://www.microsoft.com/en-us/download/details.aspx?id=6812 (MS DirectX 9 SDK (June 2010\) for VS build)
+[dx9sdk]: http://www.microsoft.com/en-us/download/details.aspx?id=6812 (MS DirectX 9 SDK, June 2010)
 [fftw]: http://www.fftw.org/install/windows.html
 [Git]: http://git-scm.com/download/win (Git for Windows)
 [libsndfile]: http://www.mega-nerd.com/libsndfile/

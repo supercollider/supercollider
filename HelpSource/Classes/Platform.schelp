@@ -68,7 +68,7 @@ platform specific path separator
 method:: resourceDir
 platform specific resource directory
 
-method:: recordingsDir 
+method:: recordingsDir
 platform recordings directory
 
 method:: defaultTempDir
@@ -79,6 +79,11 @@ true if the Qt library is available, false otherwise
 
 method:: hasQtWebEngine
 true if the QtWebEngine library is available, false otherwise
+
+method:: architecture
+A link::Symbol:: naming the architecture for which this version of SuperCollider was built.
+Returns one of 'AArch32' (32-bit ARM), 'AArch64' (64-bit ARM, introduced in ARMv8), 'Itanium64', 'i386', 'x86_64',
+'PowerPC', or 'unknown' if the architecture is unidentifiable.
 
 subsection:: Features
 

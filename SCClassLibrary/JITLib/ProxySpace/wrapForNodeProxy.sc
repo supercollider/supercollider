@@ -24,7 +24,7 @@
 
 
 	// this method is called from within the Control
-	buildForProxy { | proxy, channelOffset = 0, index |
+	buildForProxy { | proxy, channelOffset = 0 |
 		var channelConstraint, rateConstraint;
 		var argNames = this.argNames;
 		if(proxy.fixedBus) {
@@ -32,7 +32,7 @@
 			rateConstraint = proxy.rate;
 		};
 		^ProxySynthDef(
-			SystemSynthDefs.tempNamePrefix ++ proxy.generateUniqueName ++ index,
+			SystemSynthDefs.tempNamePrefix ++ proxy.generateUniqueName ++ UniqueID.next,
 			this.prepareForProxySynthDef(proxy, channelOffset),
 			proxy.nodeMap.ratesFor(argNames),
 			nil,
@@ -46,6 +46,8 @@
 
 	defaultArgs { ^nil }
 	argNames { ^nil }
+
+	nodeMapMapsToControl { ^false }
 
 	// support for unop / binop proxy
 	isNeutral { ^true }
@@ -121,6 +123,8 @@
 		proxy.initBus(this.rate, this.numChannels);
 		^{ this.value(proxy) }
 	}
+
+	nodeMapMapsToControl { ^true }
 
 }
 

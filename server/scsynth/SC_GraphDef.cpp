@@ -52,6 +52,8 @@ namespace bfs = boost::filesystem;
 
 extern Malloc gMalloc;
 
+const size_t ERR_BUF_SIZE(256);
+
 int32 GetHash(ParamSpec* inParamSpec) { return inParamSpec->mHash; }
 
 int32* GetKey(ParamSpec* inParamSpec) { return inParamSpec->mName; }
@@ -127,8 +129,8 @@ void UnitSpec_Read(UnitSpec* inUnitSpec, char*& buffer) {
 
     inUnitSpec->mUnitDef = GetUnitDef(name);
     if (!inUnitSpec->mUnitDef) {
-        char str[256];
-        sprintf(str, "UGen '%s' not installed.", (char*)name);
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
         throw std::runtime_error(str);
         return;
     }
@@ -156,8 +158,8 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer) {
 
     inUnitSpec->mUnitDef = GetUnitDef(name);
     if (!inUnitSpec->mUnitDef) {
-        char str[256];
-        sprintf(str, "UGen '%s' not installed.", (char*)name);
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
         throw std::runtime_error(str);
         return;
     }
@@ -223,7 +225,7 @@ void GraphDef_ReadVariant(World* inWorld, char*& buffer, GraphDef* inGraphDef, G
     memcpy(inVariant, inGraphDef, sizeof(GraphDef));
 
     inVariant->mNumVariants = 0;
-    inVariant->mVariants = 0;
+    inVariant->mVariants = nullptr;
 
     ReadName(buffer, inVariant->mNodeDef.mName);
     inVariant->mNodeDef.mHash = Hash(inVariant->mNodeDef.mName);
@@ -280,7 +282,7 @@ inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer) {
     } else {
         // empty table to eliminate test in Graph_SetControl
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
-        graphDef->mParamSpecs = 0;
+        graphDef->mParamSpecs = nullptr;
     }
 }
 
@@ -323,7 +325,7 @@ inline static void calcParamSpecs1(GraphDef* graphDef, char*& buffer) {
     } else {
         // empty table to eliminate test in Graph_SetControl
         graphDef->mParamSpecTable = new ParamSpecTable(&gMalloc, 4, false);
-        graphDef->mParamSpecs = 0;
+        graphDef->mParamSpecs = nullptr;
     }
 }
 
@@ -527,7 +529,7 @@ void GraphDef_Define(World* inWorld, GraphDef* inList) {
             }
         }
         World_AddGraphDef(inWorld, graphDef);
-        graphDef->mNext = 0;
+        graphDef->mNext = nullptr;
         graphDef = next;
     }
 }
@@ -786,9 +788,9 @@ inline uint32 BufColorAllocator::alloc(uint32 count) {
     }
     if (outIndex >= refsMaxSize) {
         int16* tmprefs = (int16*)realloc(refs, refsMaxSize * 2 * sizeof(int16));
-        if (tmprefs == NULL) {
+        if (tmprefs == nullptr) {
             free(refs);
-            refs = NULL;
+            refs = nullptr;
             throw std::runtime_error("buffer coloring error: reallocation failed.");
         } else {
             refs = tmprefs;
@@ -806,9 +808,9 @@ inline bool BufColorAllocator::release(int inIndex) {
     if (--refs[inIndex] == 0) {
         if (stackPtr >= stackMaxSize) {
             int16* tmpstack = (int16*)realloc(stack, stackMaxSize * 2 * sizeof(int16));
-            if (tmpstack == NULL) {
+            if (tmpstack == nullptr) {
                 free(stack);
-                stack = NULL;
+                stack = nullptr;
                 throw std::runtime_error("buffer coloring error: reallocation during release failed.");
             } else {
                 stack = tmpstack;

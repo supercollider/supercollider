@@ -35,6 +35,8 @@ else ()
 endif ()
 
 set(sclang_sources
+    LangPrimSource/SC_LinkClock.cpp
+    LangPrimSource/SC_AudioDevicePrim.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
@@ -103,11 +105,39 @@ list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator hap
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
+# audio API for listing devices, selected the same way as in the server
+if(AUDIOAPI STREQUAL "default")
+    if(APPLE)
+        set(AUDIOAPI coreaudio)
+    elseif(WIN32)
+        set(AUDIOAPI portaudio)
+    else()
+        set(AUDIOAPI jack)
+    endif(APPLE)
+endif()
+
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
+    message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
+endif()
+
+if (AUDIOAPI STREQUAL coreaudio)
+    add_definitions("-DSC_AUDIO_API_COREAUDIO")
+elseif (AUDIOAPI STREQUAL portaudio)
+    if ((NOT WIN32) OR MSYS)
+        find_package(Portaudio)
+        if(NOT PORTAUDIO_FOUND)
+            message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
+        endif() #NOT PORTAUDIO_FOUND
+    endif() #(NOT WIN32) OR MSYS
+    add_definitions("-DSC_AUDIO_API_PORTAUDIO")
+    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
+    include_directories(${PORTAUDIO_INCLUDE_DIRS})
+endif()
+
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
 			LangPrimSource/SC_CoreMIDI.cpp
-			LangPrimSource/SC_CoreAudioPrim.cpp
 			)
 	else(APPLE)
 		if(ALSA_FOUND)
@@ -206,14 +236,8 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-if (Boost_FOUND)
-	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
-	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-else()
-	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-	target_link_libraries(libsclang boost_regex boost_thread boost_system boost_filesystem)
-endif()
-
+target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
+target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
@@ -224,6 +248,14 @@ endif()
 if (NOT WIN32)
 	set_property(TARGET libsclang
 		PROPERTY OUTPUT_NAME sclang)
+endif()
+
+if (SC_ABLETON_LINK)
+	message(STATUS "Compiling with Ableton Link support")
+	include(../external_libraries/link/AbletonLinkConfig.cmake)
+	target_link_libraries(libsclang Ableton::Link)
+
+	add_definitions(-DSC_ABLETON_LINK)
 endif()
 
 ## external libraries
@@ -249,6 +281,14 @@ if(ALSA_FOUND)
 	target_compile_definitions(libsclang PUBLIC HAVE_ALSA=1)
 	target_link_libraries(libsclang ${ALSA_LIBRARY})
 endif(ALSA_FOUND)
+
+if (AUDIOAPI STREQUAL portaudio)
+    if(WIN32 AND NOT MSYS)
+        target_link_libraries(libsclang portaudio)
+    else()
+        target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
+    endif()
+endif()
 
 if(SNDFILE_FOUND)
 	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})

@@ -447,7 +447,7 @@ int prListMIDIEndpoints(struct VMGlobals* g, int numArgsPushed) {
     int numDst = MIDIGetNumberOfDestinations();
 
     PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0, true);
-    SetObject(a, idarray);
+    SetObject(a, idarray); // this is okay here as we don't use the receiver
 
     PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(SInt32), 0, true);
     SetObject(idarray->slots + idarray->size++, idarraySo);

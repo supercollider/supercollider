@@ -563,6 +563,16 @@ int do_asynchronous_command(
     return 0;
 }
 
+bool send_message_from_RT(World* world, struct FifoMsg& msg) {
+    nova::instance->send_message_from_RT(world, msg);
+    return true;
+}
+
+bool send_message_to_RT(World* world, struct FifoMsg& msg) {
+    nova::instance->send_message_to_RT(world, msg);
+    return true;
+}
+
 } /* extern "C" */
 
 namespace nova {
@@ -609,6 +619,8 @@ void sc_plugin_interface::initialize(server_arguments const& args, float* contro
     sc_interface.fNodeRun = &node_set_run;
     sc_interface.fPrint = &print;
     sc_interface.fDoneAction = &done_action;
+    sc_interface.fSendMsgFromRT = &send_message_from_RT;
+    sc_interface.fSendMsgToRT = &send_message_to_RT;
 
     /* sndfile functions */
 #ifdef NO_LIBSNDFILE
@@ -934,15 +946,15 @@ void sc_plugin_interface::buffer_alloc_read_channels(uint32_t index, const char*
 }
 
 
-int sc_plugin_interface::buffer_write(uint32_t index, const char* filename, const char* header_format,
-                                      const char* sample_format, uint32_t start, uint32_t frames, bool leave_open) {
+void sc_plugin_interface::buffer_write(uint32_t index, const char* filename, const char* header_format,
+                                       const char* sample_format, uint32_t start, uint32_t frames, bool leave_open) {
     SndBuf* buf = World_GetNRTBuf(&world, index);
     int format = headerFormatFromString(header_format) | sampleFormatFromString(sample_format);
 
     auto sf = makeSndfileHandle(filename, SFM_WRITE, format, buf->channels, buf->samplerate);
 
-    if (!sf)
-        return -1;
+    if (sf.rawHandle() == nullptr)
+        throw std::runtime_error(sf.strError());
 
     if (frames == 0xffffffff)
         frames = buf->frames;
@@ -955,8 +967,6 @@ int sc_plugin_interface::buffer_write(uint32_t index, const char* filename, cons
 
     if (leave_open && !buf->sndfile)
         buf->sndfile = sf.takeOwnership();
-
-    return 0;
 }
 
 static void buffer_read_verify(SndfileHandle& sf, size_t min_length, size_t samplerate, bool check_samplerate) {

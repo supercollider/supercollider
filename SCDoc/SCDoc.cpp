@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <vector>
 
 #ifdef _WIN32
 #    include "SC_Codecvt.hpp" // utf8_cstr_to_utf16_wstring
@@ -36,10 +37,6 @@ const char* scdoc_current_file = NULL;
 
 const char* NODE_TEXT = "TEXT";
 const char* NODE_NL = "NL";
-
-static int doc_node_dump_level_done[32] = {
-    0,
-};
 
 // merge a+b and free b
 char* strmerge(char* a, char* b) {
@@ -157,31 +154,37 @@ void doc_node_fixup_tree(DocNode* n) {
     }
 }
 
-static void doc_node_dump_recursive(DocNode* n, int level, int last) {
-    int i;
-    for (i = 0; i < level; i++) {
-        if (doc_node_dump_level_done[i])
-            printf("    ");
-        else
-            printf("|   ");
+/**
+ * Recursive tree printing.
+ *
+ * \param n node to print
+ * \param levelStatuses vector whose size indicates the current recursion depth and whose elements indicate
+ *     for each level, whether or not it is the last child. `True` means it is.
+ */
+static void doc_node_dump_recursive(DocNode* n, std::vector<bool>& levelStatuses) {
+    if (!levelStatuses.empty()) {
+        for (size_t i = 0; i < levelStatuses.size() - 1; ++i) {
+            printf(levelStatuses[i] ? "    " : "|   ");
+        }
+        printf(levelStatuses.back() ? "`-- " : "|-- ");
     }
-    if (last) {
-        printf("`-- ");
-        doc_node_dump_level_done[level] = 1;
-    } else {
-        printf("|-- ");
-    }
+
     printf("%s", n->id);
     if (n->text)
         printf(" \"%s\"", n->text);
     printf("\n");
-    for (i = 0; i < n->n_childs; i++) {
-        doc_node_dump_recursive(n->children[i], level + 1, i == n->n_childs - 1);
+
+    for (int i = 0; i < n->n_childs; i++) {
+        levelStatuses.push_back(i == n->n_childs - 1);
+        doc_node_dump_recursive(n->children[i], levelStatuses);
+        levelStatuses.pop_back();
     }
-    doc_node_dump_level_done[level] = 0;
 }
 
-void doc_node_dump(DocNode* n) { doc_node_dump_recursive(n, 0, 1); }
+void doc_node_dump(DocNode* n) {
+    std::vector<bool> statuses;
+    doc_node_dump_recursive(n, statuses);
+}
 
 DocNode* scdoc_parse_file(const std::string& fn, int mode) {
     FILE* fp;

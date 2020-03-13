@@ -167,6 +167,9 @@ Return an Event containing this def's variants.
 method:: allControlNames
 An array of link::Classes/ControlName::'s for the controls.
 
+method:: specs
+A link::Classes/Dictionary:: of link::Classes/ControlSpec::s for a SynthDef. Equivalent to: code::d.metadata[\specs]::
+
 subsection:: Special purpose methods
 (for most purposes, the method add is recommended)
 
@@ -480,3 +483,34 @@ Pbind(
 )
 ::
 
+
+subsection:: Inline ControlSpec definitions
+Sometimes, it can be clearer to specify a link::Classes/ControlSpec:: for a parameter at the point of its usage in a SynthDef, rather than elsewhere.
+Specs can be set either when contructing a link::Classes/NamedControl:: or as a property of a SynthDef argument.
+code::
+(
+~def = SynthDef(\argumentExample, { |freq, amp|
+	var sig;
+	freq.spec = ControlSpec(20, 20000, \exp);
+	amp.spec = ControlSpec(0, 1);
+	sig = SinOsc.ar(freq, 0, amp);
+	Out.ar(0, sig);
+});
+~def.specs.freq.postln;
+~def.specs.amp.postln;
+)
+
+(
+~def = SynthDef(\argumentExample, {
+	var sig;
+	sig = SinOsc.ar(
+		\freq.kr(spec:ControlSpec(20, 20000)),
+		0,
+		\amp.kr(spec:ControlSpec(0, 1));
+	);
+	Out.ar(0, sig);
+});
+~def.specs.freq.postln;
+~def.specs.amp.postln;
+)
+::

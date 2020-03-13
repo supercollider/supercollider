@@ -1,28 +1,32 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Broken link</title>
     <link rel='stylesheet' href='./scdoc.css' type='text/css' />
     <link rel='stylesheet' href='./custom.css' type='text/css' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-<noscript>
-<p>Sorry, that link was broken..
-</noscript>
-<script type="text/javascript">
-function didLoad() {
-    document.getElementById("link").innerHTML = window.location.hash.slice(1);
-}
-</script>
+    <noscript>
+        <p>Sorry, that link was broken..
+    </noscript>
+    <script type="text/javascript">
+        function didLoad() {
+            document.getElementById("link").innerHTML = window.location.hash.slice(1);
+        }
+    </script>
 </head>
-<body onload="didLoad()">
-<div class='contents'>
-<div class='header'>
-    <h1>Broken link!</h1>
-</div>
-<p><span class="soft">Could not find:</span>
-<div id="link"></div>
-</div>
-</body>
-</html>
 
+<body onload="didLoad()">
+    <div class='contents'>
+        <div class='header'>
+            <h1>Broken link!</h1>
+        </div>
+        <p>
+            <span class="soft">Could not find:</span>
+            <div id="link"></div>
+        </p>
+    </div>
+</body>
+
+</html>

@@ -210,7 +210,7 @@ int PerformOSCMessage(World* inWorld, int inSize, char* inData, ReplyAddress* in
         cmdNameLen = 4;
         uint32 index = inData[3];
         if (index >= NUMBER_OF_COMMANDS)
-            cmdObj = 0;
+            cmdObj = nullptr;
         else
             cmdObj = gCmdArray[index];
     } else {
@@ -292,8 +292,8 @@ void Perform_ToEngine_Msg(FifoMsg* inMsg) {
     PacketStatus status = PerformOSCPacket(world, packet, SC_ScheduledEvent::FreeInNRT);
     if (status == PacketScheduled) {
         // Transfer ownership
-        inMsg->mData = 0;
-        inMsg->mFreeFunc = 0;
+        inMsg->mData = nullptr;
+        inMsg->mFreeFunc = nullptr;
     }
 }
 
@@ -311,7 +311,7 @@ PacketStatus PerformCompletionMsg(World* inWorld, const OSC_Packet& inPacket) {
 void FreeOSCPacket(FifoMsg* inMsg) {
     OSC_Packet* packet = (OSC_Packet*)inMsg->mData;
     if (packet) {
-        inMsg->mData = 0;
+        inMsg->mData = nullptr;
 #if _MSC_VER == 1310
 #    pragma message("$$$todo fixme hack for the 'uninitialized packet->mData ptr when using MSVC 7.1 debug")
         if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
@@ -401,7 +401,7 @@ void SC_ScheduledEvent::FreeInRT(struct World* world, OSC_Packet* packet) {
 
 void SC_ScheduledEvent::FreeInNRT(struct World* world, OSC_Packet* packet) {
     FifoMsg msg;
-    msg.Set(world, FreeOSCPacket, 0, (void*)packet);
+    msg.Set(world, FreeOSCPacket, nullptr, (void*)packet);
     world->hw->mAudioDriver->SendMsgFromEngine(msg);
 }
 

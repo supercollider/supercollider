@@ -10,7 +10,7 @@
 
 sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
 
-SuperCollider is written in C++11 using several third-party libraries, including Qt and Boost.
+SuperCollider is written in C++11 using several third-party libraries, including Qt and Boost. It can be used on Windows, macOS, a variety of Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
 
 Install
 -------
@@ -18,6 +18,8 @@ Install
 macOS and Windows builds for stable releases are provided at our [downloads page][downloads page]. See the [macOS README](README_MACOS.md) and [Windows README](README_WINDOWS.md) for instructions on usage, and how to build SC yourself.
 
 To get the latest stable version, Linux users will need to build SuperCollider themselves. See the [Linux README](README_LINUX.md) for instructions.
+
+See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEAGLEBONE_BLACK.md) READMEs for instructions on building on those platforms.
 
 [downloads page]: https://supercollider.github.io/download
 
@@ -63,9 +65,9 @@ Development of SuperCollider happens here on GitHub, and we are grateful to the 
 
 Please read our adopted [code of conduct](CODE_OF_CONDUCT.md) before contributing, so that you can understand what actions will and will not be tolerated.
 
-### [Contributing Guide](CONTRIBUTING.md)
+### [Contributing Guide](https://github.com/supercollider/supercollider/wiki)
 
-Read our [contributing guide](CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
+Read our [contributing guide](https://github.com/supercollider/supercollider/wiki) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
 
 ### Good First Issues
 

@@ -170,6 +170,21 @@ a boolean.
 argument::includeSettings
 a boolean.
 
+method::asCode
+
+If proxyspace is globally accessible, this posts a code string that can access it.
+
+code::
+p = ProxySpace.push(s.boot);
+p.reshaping = \elastic;
+p.asCode;
+p.pop;
+
+Ndef(\x); // initializes an Ndef proxyspace for default server
+Ndef.all[\localhost]; // access that proxyspace
+Ndef.all[\localhost].asCode; // posts as valid code
+::
+
 Examples::
 
 code::

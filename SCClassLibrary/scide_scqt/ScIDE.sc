@@ -496,7 +496,7 @@ Document {
 		};
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
-			allDocuments = allDocuments.add(doc);
+			doc.prAdd;
 		}, {doc.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize)});
 	}
 

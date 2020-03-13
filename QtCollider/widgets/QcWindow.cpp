@@ -26,6 +26,7 @@
 #include <QShortcut>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QScreen>
 
 class QcWindowFactory : public QcObjectFactory<QcWindow> {
     // NOTE: use basic object contruction, but return widget proxy
@@ -57,7 +58,7 @@ static void qcInitWindow(QWidget* window, const QString& title, const QRectF& ge
     QRect geom(geom_.toRect());
 
     if (geom.isEmpty()) {
-        geom = QApplication::desktop()->availableGeometry();
+        geom = QApplication::primaryScreen()->availableGeometry();
         geom.setSize(window->sizeHint());
     }
 

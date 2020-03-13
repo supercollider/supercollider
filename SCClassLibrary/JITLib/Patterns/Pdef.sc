@@ -274,10 +274,13 @@ Pdefn : PatternProxy {
 	}
 
 	storeArgs { ^[key] } // assume it was created globally
+
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -416,9 +419,11 @@ Tdef : TaskProxy {
 	storeArgs { ^[key] }
 
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -608,9 +613,11 @@ Pdef : EventPatternProxy {
 	}
 
 	copy { |toKey|
-		if(key == toKey) { Error("cannot copy to identical key").throw };
+		if(toKey.isNil or: { key == toKey }) { Error("can only copy to new key (key is %)".format(toKey)).throw };
 		^this.class.new(toKey).copyState(this)
 	}
+
+	dup { |n = 2| ^{ this }.dup(n) } // avoid copy in Object::dup
 
 	*hasGlobalDictionary { ^true }
 

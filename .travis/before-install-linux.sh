@@ -5,7 +5,7 @@ if $DO_LINT; then
     cd ..
     echo "Downloading and extracting Clang 8.0.0"
     RELEASE_NAME=clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04
-    curl -sSo clang.tar.xz releases.llvm.org/8.0.0/$RELEASE_NAME.tar.xz
+    curl -o clang.tar.xz https://releases.llvm.org/8.0.0/$RELEASE_NAME.tar.xz
     tar xf clang.tar.xz
     cd $RELEASE_NAME/bin
     export PATH=$(pwd):$PATH

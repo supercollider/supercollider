@@ -640,7 +640,7 @@ subsection::Math Support - Unary Messages
 
 All of the following messages send the message link::#-performUnaryOp:: to the receiver with the unary message selector as an argument.
 
-method::neg, reciprocal, bitNot, abs, asFloat, asInt, ceil, floor, frac, sign, squared, cubed, sqrt, exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand, sum3rand, distort, softclip, coin, even, odd, isPositive, isNegative, isStrictlyPositive, real, imag, magnitude, magnitudeApx, phase, angle, rho, theta, asFloat, asInteger
+method::neg, reciprocal, bitNot, abs, asFloat, ceil, floor, frac, sign, squared, cubed, sqrt, exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand, sum3rand, distort, softclip, coin, even, odd, isPositive, isNegative, isStrictlyPositive, real, imag, magnitude, magnitudeApx, phase, angle, rho, theta, asFloat, asInteger
 
 method::performUnaryOp
 Creates a new collection of the results of applying the selector to all elements in the receiver.
@@ -855,6 +855,31 @@ code::
 
 // sound example
 Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].convertRhythm)).play;
+::
+
+subsection:: Starting UNIX processes
+
+private::prUnixCmd
+
+method::unixCmd
+Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+argument:: action
+A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+argument:: postOutput
+A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
+returns::
+An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+discussion::
+Example:
+code::
+["ls","/"].unixCmd;
+::
+
+method::unixCmdGetStdOut
+Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+code::
+~listing = ["ls","/"].unixCmdGetStdOut; // Grab
+~listing.reverse.as(Array).stutter.join.postln; // Mangle
 ::
 
 private:: acosh, airyAi, airyAiPrime, airyAiZero, acosh, airyAi, airyAiPrime, airyAiZero, airyBi, airyBiPrime, airyBiZero, asinh, atanh, bernouliB2n, beta, betaFull, betaFullC, binomialCoefficient, cbrt, chebyshevT, chebyshevTPrime, chebyshevTZeros, chebyshevU, cosPi, cylBesselI, cylBesselIPrime, cylBesselJ, cylBesselJPrime, cylBesselJZero, cylBesselK, cylBesselKPrime, cylHankel1, cylHankel2, cylNeumann, cylNeumannPrime, cylNeumannZero, digamma, doubleFactorial, ellint1, ellint1C, ellint2, ellint2C, ellint3, ellint3C, ellintD, ellintDC, ellintRc, ellintRd, ellintRf, ellintRg, ellintRj, erf, erfC, erfCInv, erfInv, expintEi, expintEn, expm1, factorial, fallingFactorial, gammaP, gammaPDerivative, gammaPInv, gammaPInvA, gammaQ, gammaQDerivative, gammaQInv, gammaQInvA, hermite, heumanLambda, ibeta, ibetaC, ibetaCInv, ibetaCInvA, ibetaCInvB, ibetaDerivative, ibetaInv, ibetaInvA, ibetaInvB, jacobiCd, jacobiCn, jacobiCs, jacobiDc, jacobiDn, jacobiDs, jacobiNc, jacobiNd, jacobiNs, jacobiSc, jacobiSd, jacobiSn, jacobiZeta, laguerre, laguerreAssoc, legendreP, legendrePAssoc, legendrePPrime, legendrePZeros, legendreQ, lgamma, log1p, owensT, polygamma, pow, powm1, prHermite, prLaguerreAssoc, prLegendreQ, risingFactorial, sinPi, sincPi, sinhcPi, sphBessel, sphBesselPrime, sphHankel1, sphHankel2, sphNeumann, sphNeumannPrime, sphericalHarmonic, sphericalHarmonicI, sphericalHarmonicR, sqrt1pm1, tangentT2n, tgamma, tgamma1pm1, tgammaDeltaRatio, tgammaLower, tgammaRatio, tgammaUpper, trigamma, zeta

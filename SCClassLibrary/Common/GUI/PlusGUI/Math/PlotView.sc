@@ -7,7 +7,7 @@ Plot {
 	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
 
-	var valueCache;
+	var valueCache, resolution;
 
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
@@ -53,6 +53,8 @@ Plot {
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
+
+		resolution =  plotter.resolution;
 	}
 
 	bounds_ { |rect|
@@ -409,11 +411,33 @@ Plot {
 	copy {
 		^super.copy.drawGrid_(drawGrid.copy)
 	}
+
 	prResampValues {
-		^if(value.size <= (plotBounds.width / plotter.resolution)) {
+		var dataRes, numSpecSteps, specStep, sizem1;
+
+		dataRes = plotBounds.width / max((value.size - 1), 1);
+
+		^if (
+			(dataRes >= plotter.resolution) or:
+			{ plotter.domain.notNil } // don't resample if domain is specified
+		) {
 			value
 		} {
-			valueCache ?? { valueCache = value.resamp1(plotBounds.width / plotter.resolution) }
+			// resample
+			if (valueCache.isNil or: { resolution != plotter.resolution }) {
+				resolution = plotter.resolution;
+
+				// domain is nil, so data fills full domain/view width
+				numSpecSteps = (plotBounds.width / resolution).floor.asInteger;
+				specStep = numSpecSteps.reciprocal;
+				sizem1 = value.size - 1;
+
+				valueCache = (numSpecSteps + 1).collect{ |i|
+					value.blendAt((specStep * i) * sizem1)  // float index of new value
+				}
+			} {
+				valueCache
+			}
 		}
 	}
 }
@@ -424,7 +448,7 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, <plotColors;
+	var <plots, <specs, <domainSpecs, <plotColor;
 	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
@@ -690,7 +714,7 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		plotColors !? { this.plotColors_(plotColors) };
+		plotColor !? { this.plotColor_(plotColor) };
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
 	}
@@ -744,11 +768,11 @@ Plotter {
 		}
 	}
 
-	plotColors_ { |argColors|
-		plotColors = argColors.as(Array);
+	plotColor_ { |colors|
+		plotColor = colors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
-			plt.plotColor_(plotColors.rotate(i.neg))
+			plt.plotColor_(plotColor.rotate(i.neg))
 		}
 	}
 
@@ -947,7 +971,7 @@ Plotter {
 			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
 		});
 	}
-	
+
 	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
 		^this.plot(duration, bounds, minval, maxval)
 	}

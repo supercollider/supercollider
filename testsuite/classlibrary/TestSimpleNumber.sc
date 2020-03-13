@@ -181,4 +181,20 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(testF.(val,1,0,1), val, "Test 10 (edge case): snap(1, 0, 1)");
 		this.assertEquals(testF.(val,1,2,1), [ -1, 0, 0, 1, 1, 1 ] , "Test 11 (edge case): snap(1, 2, 1)");
 	}
+
+	test_series {
+		var first = 0;
+		var step = 2.0001;
+		var last = 8;
+		var arr = first.series(step, last);
+		this.assert(arr.last <= last, "SimpleNumber:series should not produce an array whose last value is greater than the specified 'last' argument.");
+
+		first = 1;
+		arr = first.series(first, first);
+		this.assert(arr.size == 1, "SimpleNumber:series Int types with first == last and step == 0 should return an array of [ first ]");
+
+		first = 1.1;
+		arr = first.series(first, first);
+		this.assert(arr.size == 1, "SimpleNumber:series Float types with first == last and step == 0 should return an array of [ first ]");
+	}
 }

@@ -91,3 +91,9 @@ SharedIn : AbstractIn {
 		^false
 	}
 }
+
++ UnitTest {
+	run { | reset = true, report = true|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\run))
+	}
+}

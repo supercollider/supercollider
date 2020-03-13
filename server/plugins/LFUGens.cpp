@@ -140,7 +140,7 @@ struct InRect : public Unit {
 
 // struct Trapezoid : public Unit
 //{
-//	float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
+//  float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
 //};
 
 struct A2K : public Unit {};
@@ -2422,9 +2422,6 @@ static inline bool check_gate_ar(EnvGen* unit, int i, float& prevGate, float*& g
 }
 
 static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level) {
-    // if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with
-    // EnvGen_next_aa
-
     // Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
     int numstages = (int)ZIN0(kEnvGen_numStages);
 
@@ -2437,6 +2434,9 @@ static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level)
         unit->mDone = true;
         int doneAction = (int)ZIN0(kEnvGen_doneAction);
         DoneAction(doneAction, unit);
+    } else if (unit->m_stage == ENVGEN_NOT_STARTED) {
+        counter = INT_MAX;
+        return true;
     } else if (unit->m_stage + 1 == (int)ZIN0(kEnvGen_releaseNode) && !unit->m_released) { // sustain stage
         int loopNode = (int)ZIN0(kEnvGen_loopNode);
         if (loopNode >= 0 && loopNode < numstages) {
@@ -3106,14 +3106,14 @@ void IEnvGen_Ctor(IEnvGen* unit) {
     unit->m_envvals = (float*)RTAlloc(unit->mWorld, (int)(numvals + 1.) * sizeof(float));
 
     unit->m_envvals[0] = IN0(2);
-    //	Print("offset of and initial  values %3,3f, %3.3f\n", offset, unit->m_envvals[0]);
+    //  Print("offset of and initial  values %3,3f, %3.3f\n", offset, unit->m_envvals[0]);
     // fill m_envvals with the values;
     for (int i = 1; i <= numvals; i++) {
         unit->m_envvals[i] = IN0(4 + i);
-        //	    Print("val for: %d, %3.3f\n", i, unit->m_envvals[i]);
+        //      Print("val for: %d, %3.3f\n", i, unit->m_envvals[i]);
     }
 
-    //	float out = OUT0(0);
+    //  float out = OUT0(0);
     float totalDur = IN0(4);
     float level = 0.f;
     float newtime = 0.f;

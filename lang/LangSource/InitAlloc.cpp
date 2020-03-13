@@ -23,8 +23,8 @@
 
 #include "malloc_aligned.hpp"
 
-AllocPool* pyr_pool_compile = 0;
-AllocPool* pyr_pool_runtime = 0;
+AllocPool* pyr_pool_compile = nullptr;
+AllocPool* pyr_pool_runtime = nullptr;
 
 #define AREASIZE 65536L
 

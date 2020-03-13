@@ -19,15 +19,15 @@ method:: new
 Create and return a new instance of ServerOptions.
 
 method:: devices
-macOS only. Return an Array of Strings listing the audio devices currently available on the system.
+Return an Array of Strings listing the audio devices currently available on the system.
 
 method:: inDevices
-macOS only. Return an Array of Strings listing the audio devices currently available on the system which have input channels.
+Return an Array of Strings listing the audio devices currently available on the system which have input channels.
 
 method:: outDevices
-macOS only. Return an Array of Strings listing the audio devices currently available on the system which have output channels.
+Return an Array of Strings listing the audio devices currently available on the system which have output channels.
 
-note::All platforms: list of available devices is printed in the post window when the server is booting. Also see link::Reference/AudioDeviceSelection:: for more information on selecting audio device.::
+note:: The above three methods are not available if SuperCollider is built with JACK backend (by default on Linux). Also see link::Reference/AudioDeviceSelection:: for more information on selecting audio device.::
 
 instancemethods::
 subsection:: The Options
@@ -199,4 +199,3 @@ t.makeWindow;
 t.boot;
 t.quit;
 ::
-

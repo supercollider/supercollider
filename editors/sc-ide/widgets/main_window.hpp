@@ -23,7 +23,6 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QProcess>
-#include <QSignalMapper>
 #include <QStatusBar>
 
 #include "util/status_box.hpp"
@@ -249,8 +248,6 @@ private:
 #ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* mHelpBrowserDocklet;
 #endif
-
-    QSignalMapper mCodeEvalMapper;
     DocumentsDialog* mDocDialog;
 
     QString mLastDocumentSavePath;

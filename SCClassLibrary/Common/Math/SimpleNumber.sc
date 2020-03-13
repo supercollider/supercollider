@@ -129,7 +129,7 @@ SimpleNumber : Number {
 
 	hash { _ObjectHash; ^this.primitiveFailed }
 
-	asInteger { _AsInt; ^this.primitiveFailed }
+	asInteger { _AsInteger; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asRect { ^Rect(this, this, this, this) }

@@ -62,9 +62,9 @@ An Int8Array of data bytes to be sent.
 private::send, prSysex
 
 method::latency
-This sets the latency with which a midi event is sent out. Per default this is set to 0.2, in order to be equal to the Server.latency.
+This sets the latency with which a midi event is sent out. Per default, this is set to 0.2, in order to be equal to the Server.latency.
 note::
-On Linux there seems to be an ALSA or kernel bug if the latency is larger than 0, for some Linux kernels. If MIDIOut does not seem to work, set the latency to 0.
+On Linux, there seems to be an ALSA or kernel bug if the latency is larger than 0, for some Linux kernels. If MIDIOut does not seem to work, set the latency to 0.
 ::
 
 Examples::
@@ -163,7 +163,7 @@ MIDIClient.init(numIns,numOuts)
 
 The IAC Bus will now appear in MIDIClient.destinations. It will appear first, which means that any code that you have written that addresses the first physical bus as 0 will now have to be changed.
 
-For this reason it is always safer to find the port by name :
+For this reason, it is always safer to find the port by name :
 code::
 MIDIOut.newByName("RemoteSL IN","Port 1");
 ::

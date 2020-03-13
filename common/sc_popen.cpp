@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sc_popen.h"
+
 #include <cerrno>
+#include <tuple>
 
 #ifndef _WIN32
 
@@ -22,28 +24,30 @@
 #    include <array>
 #    include <string>
 
-FILE* sc_popen(const char* command, pid_t* pidp, const char* type) {
-    std::array<char*, 4> argv;
-    std::string str0 = "/bin/sh";
-    std::vector<char> v0(str0.begin(), str0.end());
-    v0.push_back('\0');
-    argv[0] = v0.data();
-    std::string str1 = "-c";
-    std::vector<char> v1(str1.begin(), str1.end());
-    v1.push_back('\0');
-    argv[1] = v1.data();
-    std::string str2 = command;
-    std::vector<char> v2(str2.begin(), str2.end());
-    v2.push_back('\0');
-    argv[2] = v2.data();
-    argv[3] = nullptr;
-
-    return sc_popen_argv(v0.data(), argv.data(), pidp, type);
+std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+    std::vector<std::string> argv;
+    argv.emplace_back("/bin/sh");
+    argv.emplace_back("-c");
+    argv.push_back(std::move(command));
+    return sc_popen_argv(argv, type);
 }
 
-FILE* sc_popen_argv(const char* filename, char* const argv[], pid_t* pidp, const char* type) {
+std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
+    std::vector<char*> argv(strings.size() + 1);
+    for (int i = 0; i < strings.size(); ++i) {
+        // execv wants argv as char *const argv[]
+        // need to make the pointer const
+        argv[i] = const_cast<char*>(strings[i].data());
+    }
+    argv[strings.size()] = nullptr;
+    return sc_popen_c_argv(argv[0], argv.data(), type.c_str());
+}
+
+std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[], const char* type) {
+    const std::tuple<int, FILE*> error_result = std::make_tuple(-1, nullptr);
     FILE* iop;
-    int pdes[2], pid, twoway;
+    pid_t pid;
+    int pdes[2], twoway;
     /*
      * Lite2 introduced two-way popen() pipes using _socketpair().
      * FreeBSD's pipe() is bidirectional, so we use that.
@@ -54,16 +58,16 @@ FILE* sc_popen_argv(const char* filename, char* const argv[], pid_t* pidp, const
     } else {
         twoway = 0;
         if ((*type != 'r' && *type != 'w') || type[1])
-            return (nullptr);
+            return error_result;
     }
     if (pipe(pdes) < 0)
-        return (nullptr);
+        return error_result;
 
     switch (pid = fork()) {
     case -1: /* Error. */
         (void)close(pdes[0]);
         (void)close(pdes[1]);
-        return (nullptr);
+        return error_result;
         /* NOTREACHED */
     case 0: /* Child. */
         if (*type == 'r') {
@@ -105,8 +109,7 @@ FILE* sc_popen_argv(const char* filename, char* const argv[], pid_t* pidp, const
         (void)close(pdes[0]);
     }
 
-    *pidp = pid;
-    return iop;
+    return std::make_tuple(pid, iop);
 }
 
 /*
@@ -128,6 +131,7 @@ int sc_pclose(FILE* iop, pid_t mPid) {
 }
 
 #else
+#    include <numeric>
 
 #    include <windows.h>
 #    include <fcntl.h>
@@ -152,7 +156,21 @@ static SC_Lock processlist_mutex;
 #    define THREAD_LOCK() processlist_mutex.lock()
 #    define THREAD_UNLOCK() processlist_mutex.unlock()
 
-FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
+
+std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
+    // joins strings using space as delimeter
+    std::string commandLine = std::accumulate(
+        strings.begin(), strings.end(), std::string(),
+        [](const std::string& a, const std::string& b) -> std::string { return a + (a.length() > 0 ? " " : "") + b; });
+
+    return sc_popen(std::move(commandLine), type);
+}
+
+std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+    return sc_popen_c(command.data(), type.data());
+}
+
+std::tuple<pid_t, FILE*> sc_popen_c(const char* utf8_cmd, const char* mode) {
     PROCESS_INFORMATION pi;
     FILE* f = NULL;
     int fno;
@@ -163,9 +181,10 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
     int binary_mode;
     struct process* cur;
     BOOL read_mode, write_mode;
+    const std::tuple<int, FILE*> error_result = std::make_tuple(-1, nullptr);
 
     if (utf8_cmd == NULL) {
-        return NULL;
+        return error_result;
     }
 
     std::wstring cmd = L"cmd /c " + SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
@@ -193,13 +212,13 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
         binary_mode |= _O_WRONLY;
         if (CreatePipe(&child_in, &father_out, NULL, 0) == FALSE) {
             fprintf(stderr, "popen: error CreatePipe\n");
-            return NULL;
+            return error_result;
         }
 
         if (DuplicateHandle(current_pid, child_in, current_pid, &father_in_dup, 0, TRUE, DUPLICATE_SAME_ACCESS)
             == FALSE) {
             fprintf(stderr, "popen: error DuplicateHandle father_out\n");
-            return NULL;
+            return error_result;
         }
         si.hStdInput = father_in_dup;
 
@@ -212,12 +231,12 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
         binary_mode |= _O_RDONLY;
         if (CreatePipe(&father_in, &child_out, NULL, 0) == FALSE) {
             fprintf(stderr, "popen: error CreatePipe\n");
-            return NULL;
+            return error_result;
         }
         if (DuplicateHandle(current_pid, child_out, current_pid, &father_out_dup, 0, TRUE, DUPLICATE_SAME_ACCESS)
             == FALSE) {
             fprintf(stderr, "popen: error DuplicateHandle father_in\n");
-            return NULL;
+            return error_result;
         }
         CloseHandle(child_out);
         si.hStdOutput = father_out_dup;
@@ -225,7 +244,7 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
         f = _fdopen(fno, mode);
     } else {
         fprintf(stderr, "popen: invalid mode %s\n", mode);
-        return NULL;
+        return error_result;
     }
 
     // creating child process
@@ -243,7 +262,7 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
         == FALSE) {
         fprintf(stderr, "popen: CreateProcess %x\n", GetLastError());
         fclose(f);
-        return NULL;
+        return error_result;
     }
 
     // Only the process handle is needed, ignore errors
@@ -258,7 +277,7 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
     if ((cur = (struct process*)malloc(sizeof(struct process))) == NULL) {
         fclose(f);
         CloseHandle(pi.hProcess);
-        return NULL;
+        return error_result;
     }
 
     cur->fp = f;
@@ -268,9 +287,7 @@ FILE* sc_popen(const char* utf8_cmd, pid_t* pid, const char* mode) {
     processlist = cur;
     THREAD_UNLOCK();
 
-    *pid = pi.dwProcessId;
-
-    return f;
+    return std::make_tuple(pi.dwProcessId, f);
 }
 
 int sc_pclose(FILE* f, pid_t pid) {
@@ -315,10 +332,4 @@ int sc_pclose(FILE* f, pid_t pid) {
 
     return exit_code;
 }
-
-FILE* sc_popen_argv(const char* filename, char* const argv[], pid_t* pidp, const char* type) {
-    printf("sc_popen_argv: not implemented\n");
-    return nullptr;
-}
-
 #endif

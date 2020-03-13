@@ -38,7 +38,7 @@ namespace nova {
 
 std::unique_ptr<sc_ugen_factory> sc_factory;
 
-Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* s, World* world,
+Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
                              linear_allocator& allocator) {
     const int buffer_length = world->mBufLength;
 
@@ -66,7 +66,8 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
     unit->mWorld = world;
 
     /* initialize members from synth */
-    unit->mParent = static_cast<Graph*>(s);
+    unit->mParent = static_cast<Graph*>(parent);
+    unit->mParentIndex = parentIndex;
     if (unit_spec.rate == 2)
         unit->mRate = &world->mFullRate;
     else
@@ -74,7 +75,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
 
     unit->mBufLength = unit->mRate->mBufLength;
 
-    float* buffer_base = s->unit_buffers;
+    float* buffer_base = parent->unit_buffers;
 
     /* allocate buffers */
     for (size_t i = 0; i != output_count; ++i) {
@@ -106,7 +107,7 @@ Unit* sc_ugen_def::construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth
         if (source == -1)
             unit->mInput[i] = &unit->mParent->mWire[index];
         else {
-            Unit* prev = s->units[source];
+            Unit* prev = parent->units[source];
             unit->mInput[i] = prev->mOutput[index];
         }
 
@@ -128,8 +129,11 @@ bool sc_ugen_def::add_command(const char* cmd_name, UnitCmdFunc func) {
 void sc_ugen_def::run_unit_command(const char* cmd_name, Unit* unit, struct sc_msg_iter* args) {
     unitcmd_set_type::iterator it = unitcmd_set.find(cmd_name, named_hash_hash(), named_hash_equal());
 
-    if (it != unitcmd_set.end())
+    if (it != unitcmd_set.end()) {
         it->run(unit, args);
+    } else {
+        std::cout << "can't find unit command: " << cmd_name << std::endl;
+    }
 }
 
 sample* sc_bufgen_def::run(World* world, uint32_t buffer_index, struct sc_msg_iter* args) {
@@ -166,8 +170,10 @@ sc_ugen_def* sc_plugin_container::find_ugen(symbol const& name) {
 bool sc_plugin_container::register_ugen_command_function(const char* ugen_name, const char* cmd_name,
                                                          UnitCmdFunc func) {
     sc_ugen_def* def = find_ugen(symbol(ugen_name));
-    if (def)
+    if (!def) {
+        std::cout << "unable to register ugen command: ugen '" << ugen_name << "' doesn't exist" << std::endl;
         return false;
+    }
     return def->add_command(cmd_name, func);
 }
 

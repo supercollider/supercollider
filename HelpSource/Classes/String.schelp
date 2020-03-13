@@ -49,11 +49,7 @@ method::readNew
 Read the entire contents of a link::Classes/File:: and return them as a new String.
 
 method::scDir
-Provided for backwards compatibility.
-returns::
-the value of code::Platform.resourceDir::, which is the base resource directory of SuperCollider.
-discussion::
-Please use link::Classes/Platform#*resourceDir:: instead.
+Deprecated alias for code::Platform.resourceDir::. Please use link::Classes/Platform#*resourceDir:: instead.
 
 INSTANCEMETHODS::
 
@@ -337,7 +333,9 @@ code::
 
 subsection:: Regular expressions
 
-Note the inversion of the arguments:
+The String class provides access to the boost library's regular expression functions. Boost's default uses Perl settings. (Currently, there is no hook to override the regex style.) Syntax details may be found at link::https://www.boost.org/doc/libs/1_69_0/libs/regex/doc/html/boost_regex/syntax/perl_syntax.html::.
+
+Note carefully the argument order:
 
 List::
 ## Code::regexp.matchRegexp(stringToSearch)::
@@ -347,7 +345,7 @@ List::
 Code::findRegexp:: follows the pattern established by link::Classes/String#-find::, where the receiver is the string to be searched. Code::matchRegexp:: follows the pattern of link::Reference/matchItem::, where the receiver is the pattern to match and the first argument is the object to be tested. This is a common source of confusion, but it is based on this precedent.
 
 method::matchRegexp
-POSIX regular expression matching. Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
+Perl regular expression matching (see link::Classes/String#Regular expressions::). Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
 
 note::This is code::regexp.matchRegexp(stringToSearch):: and not the other way around! See above: link::Classes/String#Regular expressions::.::
 
@@ -372,16 +370,31 @@ code::
 ::
 
 method::findRegexp
-POSIX regular expression search.
+Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
+
+"Leftmost largest match": As in most flavors of regular expressions, code::*:: and code::+:: are greedy; if it is possible to have more than one overlapping match for a part of the regular expression, the match list will include only the leftmost and largest of them. In code::"foobar".findRegexp("o+")::, code::"o+":: may potentially have three matches: code::"o":: at index 1 (second character), code::"o":: at index 2, and code::"oo":: at index 1. code::findRegexp:: will return only the last of these (code::"oo"::), because it begins in the leftmost-possible matching position, and it is the longest possible match at that position.
+
+Note, though, that parentheses for grouping (a "marked sub-expression" or "capturing group") will produce a separate result: code::"aaa".findRegexp("(a+)");:: appears to produce duplicated results code::[ [ 0, aaa ], [ 0, aaa ] ]::, but this is because the first match is for the parentheses and the second is for code::a+::.
+
+To see the marked sub-expression results more clearly, consider:
+
+code::
+"foobar".findRegexp("(o*)(bar)");
+-> [ [ 1, oobar ], [ 1, oo ], [ 3, bar ] ]
+::
+
+code::"oobar":: matches the entire regular expression. code::"oo":: and code::"bar":: match the first and second parenthesized sub-expressions, respectively.
+
 code::
 "foobar".findRegexp("o*bar");
 "32424 334 /**aaaaaa*/".findRegexp("/\\*\\*a*\\*/");
-"foobar".findRegexp("(o*)(bar)");
-"aaaabaaa".findAllRegexp("a+");
+"aaaabaaa".findRegexp("a+");
 ::
 
+Returns:: A nested array, where each sub-array is a pair, code::[character index, matching string]::. If there are no matches, an empty array.
+
 method::findAllRegexp
-Like link::#-findAll::, but use regular expressions. So unlike findRegexp, it will just return the indices of the
+Like link::#-findAll::, but use regular expressions (see link::Classes/String#Regular expressions::). Unlike findRegexp, it returns only the indices of the matches: code::string.findAllRegexp(regexp):: returns the same as code::string.findRegexp(regexp).flop.at(0)::.
 
 code::
 "foobar".findAllRegexp("o*bar");
@@ -390,8 +403,10 @@ code::
 "aaaabaaa".findAllRegexp("a+");
 ::
 
+Returns:: An array of integer character indices pointing to all the possible matches.
+
 method::findRegexpAt
-Match a regular expression at the given offset, returning the match and the length of the match in an Array, or nil if it doesn't match.
+Match a regular expression (see link::Classes/String#Regular expressions::) at the given offset, returning the match and the length of the match in an Array, or nil if it doesn't match.
 The match must begin right at the offset.
 
 code::
@@ -404,6 +419,8 @@ code::
 "foobaroob".findRegexpAt("o*b+", 6); // [ oob, 3 ]
 "foobaroob".findRegexpAt("o*b+", 7); // [ ob,  2 ]
 ::
+
+Returns:: An array code::[matching string, length]:: if a match is found at the specified offset; code::nil:: if the offset doesn't match.
 
 subsection:: Searching strings
 
@@ -799,6 +816,19 @@ A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dict
 
 method::parseYAMLFile
 Same as code::parseYAML:: but parse a file directly instead of a string. This is faster than reading a file into a string and then parse it.
+
+method::parseJSON
+This method is currently just an alias for link::#-parseYAML::, in the future it will only accept valid JSON.
+returns::
+A nested structure of link::Classes/Array::s (for sequences), link::Classes/Dictionary##Dictionaries:: (for maps) and link::Classes/String::s (for scalars).
+
+code::
+"{\"a\": 1}".parseYAML;
+"{\"a\": 1}".parseJSON;
+::
+
+method::parseJSONFile
+This method is currently just an alias for link::#-parseYAMLFile::, in the future it will only accept valid JSON files.
 
 subsection::Document Support
 

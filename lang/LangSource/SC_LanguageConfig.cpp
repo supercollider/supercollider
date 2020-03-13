@@ -41,7 +41,7 @@ static const char* INCLUDE_PATHS = "includePaths";
 static const char* EXCLUDE_PATHS = "excludePaths";
 static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
 static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
-static const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
+const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
 
 using DirName = SC_Filesystem::DirName;
 namespace bfs = boost::filesystem;
@@ -215,15 +215,15 @@ bool SC_LanguageConfig::readLibraryConfig(bool standalone) {
 void SC_LanguageConfig::freeLibraryConfig() {
     if (gLanguageConfig) {
         delete gLanguageConfig;
-        gLanguageConfig = 0;
+        gLanguageConfig = nullptr;
     }
 }
 
-inline const bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path) {
+bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path) {
     return std::find(vec.begin(), vec.end(), path) != vec.end();
 }
 
-inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
+bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
     if (!findPath(vec, path)) {
         vec.push_back(path);
         return true;
@@ -232,7 +232,7 @@ inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
     }
 }
 
-inline const bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path) {
+bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path) {
     const DirVector::iterator& end = std::remove(vec.begin(), vec.end(), path);
     const bool removed = end != vec.end();
     vec.erase(end, vec.end());

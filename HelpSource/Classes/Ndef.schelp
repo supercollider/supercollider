@@ -33,6 +33,7 @@ Ndef(\b, { Impulse.ar([5, 7]/2, [0, 0.5], 0.15) });
 Ndef.clear(3); // clear all after 3 seconds
 ::
 
+
 ClassMethods::
 
 private::initClass
@@ -134,6 +135,25 @@ Ndef(\sound).map(\numHarm, Ndef(\lfo));
 Ndef(\sound).set(\numHarm, nil); // unmap.
 Ndef(\sound).stop;
 ::
+
+
+subsection::Reserved parameters
+Three parameters are automatically specified if they don't exist in a given UGen function. You can override their use: code::[\out, \gate, \fadeTime]::
+
+subsection::Specifying your own envelope
+
+If a UGen function that is passed to the proxy has its own envelope, and if this envelope can free the synth, the node proxy uses this envelope instead of making its own. If you provide a code::fadeTime:: argument, the proxy's fadeTime will be used.
+
+code::
+Ndef(\sound).fadeTime = 3;
+(
+Ndef(\sound, { |fadeTime = 1, gate = 1|
+	var e = Env.adsr(fadeTime, 0.01, 0.4, fadeTime).ar(2, gate);
+	SinOsc.ar(100 + (e * 700), SinOsc.ar(208) * (1 - e) * 6) * e * 0.1
+}).play
+)
+::
+
 
 
 subsection::Simple audio routing with the <<> operator

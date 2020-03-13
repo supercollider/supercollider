@@ -197,7 +197,7 @@ QC_LANG_PRIMITIVE(QImage_NewFromWindow, 2, PyrSlot* r, PyrSlot* a, VMGlobals* g)
     else if (NotNil(a + 1))
         return errWrongType;
 
-    QPixmap pixmap = QPixmap::grabWidget(widget, rect);
+    QPixmap pixmap = widget->grab(rect);
     if (pixmap.isNull())
         return errFailed;
 

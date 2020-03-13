@@ -36,6 +36,8 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #    error "no PyrSlot imlementation for this platform"
 #endif
 
+#include <string>
+
 extern PyrSlot o_nil, o_true, o_false, o_inf;
 extern PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo;
 extern PyrSlot o_negone, o_zero, o_one, o_two;
@@ -56,6 +58,8 @@ int slotIntVal(PyrSlot* slot, int* value);
 int slotFloatVal(PyrSlot* slot, float* value);
 int slotDoubleVal(PyrSlot* slot, double* value);
 int slotStrVal(PyrSlot* slot, char* str, int maxlen);
+std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot);
+std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot);
 int slotStrLen(PyrSlot* slot);
 int slotPStrVal(PyrSlot* slot, unsigned char* str);
 int slotSymbolVal(PyrSlot* slot, PyrSymbol** symbol);

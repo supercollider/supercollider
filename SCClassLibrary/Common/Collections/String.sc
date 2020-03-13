@@ -63,10 +63,6 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
-	*scDir {
-		^Platform.resourceDir
-	}
-
 	compare { arg aString, ignoreCase=false;
 		_StringCompare
 		this.primitiveFailed;
@@ -88,6 +84,7 @@ String[char] : RawArray {
 		^this.compare(aString, false) >= 0
 	}
 	== { arg aString;
+		if (this === aString) { ^true };
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) == 0
 	}
@@ -549,4 +546,11 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
+	parseJSON {
+		^this.parseYAML
+	}
+
+	parseJSONFile {
+		^this.parseYAMLFile
+	}
 }

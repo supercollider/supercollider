@@ -103,7 +103,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
     sc_factory->allocate_ugens(synthdef.graph.size());
     for (size_t i = 0; i != synthdef.graph.size(); ++i) {
         sc_synthdef::unit_spec_t const& spec = synthdef.graph[i];
-        units[i] = spec.prototype->construct(spec, this, &sc_factory->world, allocator);
+        units[i] = spec.prototype->construct(spec, this, i, &sc_factory->world, allocator);
     }
 
     for (size_t i = 0; i != synthdef.calc_unit_indices.size(); ++i) {
@@ -238,10 +238,14 @@ void sc_synth::map_control_buses_audio(unsigned int slot_index, int audio_bus_in
 }
 
 void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args) {
-    Unit* unit = units[unit_index];
-    sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
+    if (unit_index >= 0 && unit_index < unit_count) {
+        Unit* unit = units[unit_index];
+        sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
-    def->run_unit_command(unit_cmd, unit, args);
+        def->run_unit_command(unit_cmd, unit, args);
+    } else {
+        log_printf("unit index %d out of range!\n", unit_index);
+    }
 }
 
 void sc_synth::run(void) { perform(); }

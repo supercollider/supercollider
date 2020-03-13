@@ -29,6 +29,10 @@ Tdef(\x).clear;
 
 ClassMethods::
 
+method::all
+A global link::Classes/IdentityDictionary:: with all proxies.
+
+
 private::initClass
 
 subsection::Creation
@@ -37,6 +41,12 @@ method::new
 Store the task in a global dictionary under key, replacing its routine function with the new one.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default task is created)
+
+argument::key
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+argument::item
+An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
 method::default
 Default source, if none is given. The default task has a function that waits in 1.0 beat steps and does nothing.

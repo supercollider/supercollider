@@ -110,6 +110,8 @@ TestEvent : UnitTest {
 		// must play to attach parent event
 		event = (type: \testType).play;
 		this.assert(event[\calculated] == 1, "parentType values should be accessible during event play");
+		// cleanup eventTypes:
+		Event.addEventType(\testType, nil);
 	}
 
 	test_server_message_head_type_grain {
@@ -246,6 +248,28 @@ TestEvent : UnitTest {
 		this.assert(prevLatency == 0,
 			"latency specified in the event should override server latency");
 		this.cleanUpMessages;
+	}
+
+	test_composite_event_type_calls_all_listed_types {
+		var test1 = false, test2 = false;
+		Event.addEventType(\composite1, { test1 = true });
+		Event.addEventType(\composite2, { test2 = true });
+		(type: \composite, types: #[composite1, composite2]).play;
+		this.assert(test1 && test2, "Composite event type should call all listed event type functions");
+		Event.removeEventType(\composite1);
+		Event.removeEventType(\composite2);
+	}
+
+	test_composite_event_type_ignores_composite {
+		var event = (type: \composite, types: #[note, composite]).play;
+		this.assert(event[\resultEvents][1].isNil, "Composite event type should not try to call itself")
+	}
+
+	test_composite_event_type_generates_unique_node_IDs {
+		var event = (type: \composite, types: #[note, note]).play;
+		this.assert(event[\resultEvents][0][\id] != event[\resultEvents][1][\id],
+			"Composite event subtypes should not have node ID clashes"
+		);
 	}
 
 	cleanUpMessages {

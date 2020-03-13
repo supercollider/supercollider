@@ -76,10 +76,16 @@ section::c) custom fade envelope
 code::
 // when a gate arg is provided, and the env can free the synth, this envelope
 // is supposed to be the fade envelope for the synth: no extra fade env is created.
-(
+
 ~out = { arg gate=1; EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf) * 0.2 * SinOsc.ar([1,1]*Rand(440,550)) };
-)
+
+
+// if you want to use the proxy's fadeTime, you should provide a fadeTime argument:
+
+~out = { arg gate=1, fadeTime = 0.1; EnvGen.kr(Env.asr(fadeTime, 1, fadeTime), gate, doneAction: Done.freeSelf) * 0.2 * SinOsc.ar([1,1] * Rand(440, 550)) };
 ::
+
+
 
 section::d) SynthDef name assignment
 
@@ -97,7 +103,7 @@ SynthDef("test", { arg gate=1, out;
 }).send(s);
 )
 
-// you can also provide a fadeTime arg, whic is set by the proxy:
+// you can also provide a fadeTime arg, which is set by the proxy:
 (
 SynthDef("test", { arg gate=1, out, fadeTime=1;
 	Out.ar(out,
@@ -116,8 +122,7 @@ the strong::number of channels:: is your own responsibility when using symbols, 
 ::
 
 code::
-// if the synthdef has a fixed duration envelope, there is a FAILURE /n_set Node not found message.
-// with no further significance
+// if the synthdef has a fixed duration envelope, it won't use the proxy's fadeTime
 (
 SynthDef("test", { arg gate=1, out;
 	Out.ar(out,

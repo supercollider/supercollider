@@ -212,7 +212,6 @@ TestServer_boot : UnitTest {
 		};
 
 		100.do {
-			".".post;
 			nodeID = s.nextNodeID;
 			if(nodeID <= prevNodeID) {
 				failed = true;
@@ -221,8 +220,6 @@ TestServer_boot : UnitTest {
 			};
 			prevNodeID = nodeID;
 		};
-
-		"Done.".postln;
 
 		this.assert(failed.not,
 			"allocating nodeIDs while booting should not produce duplicate nodeIDs."

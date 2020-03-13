@@ -81,7 +81,11 @@ int LineIndicator::widthForLineCount(int lineCount) {
         ++digits;
     }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+    return 6 + fontMetrics().horizontalAdvance('9') * digits;
+#else
     return 6 + fontMetrics().width('9') * digits;
+#endif
 }
 
 void LineIndicator::setHideLineIndicator(bool hide) { hideLineIndicator = hide; }

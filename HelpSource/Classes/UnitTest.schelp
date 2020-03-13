@@ -8,6 +8,8 @@ In order to make sure a method works correctly, a test can be implemented that a
 
 It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run. A test is always a subclass of code::UnitTest::, implementing at least one method starting with code::test_::.
 
+When running all tests of one class (see link::#run::), each test method is called in a seperate instance of this class. Test methods therefore do not interefere with each other.
+
 note::
 UnitTests for the Common library classes are kept in the code::testsuite/classlibrary:: directory of the SuperCollider sources.
 
@@ -76,7 +78,7 @@ within it, e.g. code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::.
 
 
 METHOD:: runAll
-runs all subclasses of UnitTest
+Run the entire test suite. As this method addresses the entire test suite, it should be called only on code::UnitTest::. Calling it on any of its subclasses will result in throwing an code::Error::.
 
 code::
 UnitTest.reset;
@@ -291,6 +293,35 @@ code::
 	UnitTest.new.bootServer(s);
 }.fork
 )
+::
+
+METHOD:: debug
+Supply some debugging information relevant to the currently running
+test case.  This will be displayed immediately preceding any details
+which may be displayed through use of the code::details:: argument of
+link::#-passed:: and link::#-failed::.
+
+ARGUMENT:: text
+The debugging text.
+
+DISCUSSION::
+code::
+test_myMethod {
+    var obj = MyClass.new;
+    this.debug("obj has color" + obj.color);
+    this.assert(2 + 2, 5);
+}
+::
+
+will result in:
+
+code::
+FAIL: a TestMyClass: test_myMethod
+obj has color red
+Is:
+         4
+Should be:
+         5
 ::
 
 METHOD:: passed

@@ -21,6 +21,7 @@
 
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
+#include "SC_EventLoop.hpp"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -136,6 +137,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 #endif
+    EventLoop::setup();
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
@@ -144,7 +146,7 @@ int main(int argc, char* argv[]) {
     WorldOptions options;
 
     for (int i = 1; i < argc;) {
-        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == nullptr) {
             scprintf("ERROR: Invalid option %s\n", argv[i]);
             Usage();
         }
@@ -234,8 +236,8 @@ int main(int argc, char* argv[]) {
             // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
             checkNumArgs(7);
             options.mRealTime = false;
-            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : 0;
-            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : 0;
+            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : nullptr;
+            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : nullptr;
             options.mNonRealTimeOutputFilename = argv[j + 3];
             options.mPreferredSampleRate = (uint32)atof(argv[j + 4]);
             options.mNonRealTimeOutputHeaderFormat = argv[j + 5];
@@ -315,7 +317,6 @@ int main(int argc, char* argv[]) {
     } else
         options.mSharedMemoryID = 0;
 
-
     struct World* world = World_New(&options);
     if (!world)
         return 1;
@@ -357,8 +358,7 @@ int main(int argc, char* argv[]) {
     }
     fflush(stdout);
 
-    World_WaitForQuit(world, true);
-
+    EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
 #ifdef _WIN32
     // clean up winsock

@@ -55,6 +55,12 @@
 
 #include "malloc_aligned.hpp"
 
+#include <boost/predef/hardware.h>
+
+#if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
+#    include <xmmintrin.h>
+#endif
+
 // undefine the shadowed scfft functions
 #undef scfft_create
 #undef scfft_dofft
@@ -73,7 +79,7 @@
 namespace bfs = boost::filesystem;
 
 InterfaceTable gInterfaceTable;
-PrintFunc gPrint = 0;
+PrintFunc gPrint = nullptr;
 
 extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 extern HashTable<struct BufGen, Malloc>* gBufGenLib;
@@ -121,7 +127,7 @@ inline void* sc_zalloc(size_t n, size_t size) {
             return ptr;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line) {
@@ -148,26 +154,12 @@ void zfree(void* ptr) { return free_alig(ptr); }
 ////////////////////////////////////////////////////////////////////////////////
 
 // Set denormal FTZ mode on CPUs that need/support it.
-void sc_SetDenormalFlags();
-
-#ifdef __SSE2__
-#    include <xmmintrin.h>
-
 void sc_SetDenormalFlags() {
+#if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
     _mm_setcsr(_mm_getcsr() | 0x40); // DAZ
-}
-
-#elif defined(__SSE__)
-#    include <xmmintrin.h>
-
-void sc_SetDenormalFlags() { _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON); }
-
-#else
-
-void sc_SetDenormalFlags() {}
-
 #endif
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -245,7 +237,7 @@ void initializeScheduler();
 
 static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world) {
-    GraphDef* list = 0;
+    GraphDef* list = nullptr;
     using DirName = SC_Filesystem::DirName;
 
     if (getenv("SC_SYNTHDEF_PATH")) {
@@ -253,7 +245,7 @@ void World_LoadGraphDefs(World* world) {
             scprintf("Loading synthdefs from path: %s\n", getenv("SC_SYNTHDEF_PATH"));
         SC_StringParser sp(getenv("SC_SYNTHDEF_PATH"), SC_STRPARSE_PATHDELIMITER);
         while (!sp.AtEnd()) {
-            GraphDef* list = 0;
+            GraphDef* list = nullptr;
             char* path = const_cast<char*>(sp.NextToken());
             list = GraphDef_LoadDir(world, path, list);
             GraphDef_Define(world, list);
@@ -298,7 +290,7 @@ World* World_New(WorldOptions* inOptions) {
     }
 #endif
 
-    World* world = 0;
+    World* world = nullptr;
 
     try {
         static bool gLibInitted = false;
@@ -354,7 +346,7 @@ World* World_New(WorldOptions* inOptions) {
                 new server_shared_memory_creator(inOptions->mSharedMemoryID, inOptions->mNumControlBusChannels);
             world->mControlBus = hw->mShmem->get_control_busses();
         } else {
-            hw->mShmem = 0;
+            hw->mShmem = nullptr;
             world->mControlBus = (float*)zalloc(world->mNumControlBusChannels, sizeof(float));
         }
 
@@ -405,7 +397,7 @@ World* World_New(WorldOptions* inOptions) {
         world->hw->mInDeviceName = inOptions->mInDeviceName;
         world->hw->mOutDeviceName = inOptions->mOutDeviceName;
         hw->mMaxWireBufs = inOptions->mMaxWireBufs;
-        hw->mWireBufSpace = 0;
+        hw->mWireBufSpace = nullptr;
 
         world->mRendezvous = inOptions->mRendezvous;
 
@@ -424,11 +416,11 @@ World* World_New(WorldOptions* inOptions) {
 
             if (!hw->mAudioDriver->Setup()) {
                 scprintf("could not initialize audio.\n");
-                return 0;
+                return nullptr;
             }
             if (!hw->mAudioDriver->Start()) {
                 scprintf("start audio failed.\n");
-                return 0;
+                return nullptr;
             }
 
 #ifdef __APPLE__
@@ -437,7 +429,7 @@ World* World_New(WorldOptions* inOptions) {
 
 
         } else {
-            hw->mAudioDriver = 0;
+            hw->mAudioDriver = nullptr;
         }
 
         if (!scsynth::asioThreadStarted()) {
@@ -447,7 +439,7 @@ World* World_New(WorldOptions* inOptions) {
     } catch (std::exception& exc) {
         scprintf("Exception in World_New: %s\n", exc.what());
         World_Cleanup(world, true);
-        return 0;
+        return nullptr;
     } catch (...) {
     }
     return world;
@@ -479,7 +471,7 @@ int World_CopySndBuf(World* world, uint32 index, SndBuf* outBuf, bool onlyIfChan
             outBuf->mask1 = buf->mask1;
         } else {
             free_alig(outBuf->data);
-            outBuf->data = 0;
+            outBuf->data = nullptr;
             outBuf->channels = 0;
             outBuf->samples = 0;
             outBuf->frames = 0;
@@ -490,7 +482,7 @@ int World_CopySndBuf(World* world, uint32 index, SndBuf* outBuf, bool onlyIfChan
         outBuf->samplerate = buf->samplerate;
         outBuf->sampledur = buf->sampledur;
         outBuf->coord = buf->coord;
-        outBuf->sndfile = 0;
+        outBuf->sndfile = nullptr;
 
         updates->reads = updates->writes;
 
@@ -548,8 +540,8 @@ void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
         throw std::runtime_error("Non real time output filename is NULL.\n");
 
     SF_INFO inputFileInfo, outputFileInfo;
-    float* inputFileBuf = 0;
-    float* outputFileBuf = 0;
+    float* inputFileBuf = nullptr;
+    float* outputFileBuf = nullptr;
     int numInputChannels = 0;
     int numOutputChannels;
 
@@ -559,7 +551,7 @@ void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
                                  inOptions->mNonRealTimeOutputSampleFormat);
 
     world->hw->mNRTOutputFile = sndfileOpenFromCStr(inOptions->mNonRealTimeOutputFilename, SFM_WRITE, &outputFileInfo);
-    sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, NULL, SF_TRUE);
+    sf_command(world->hw->mNRTOutputFile, SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
     if (!world->hw->mNRTOutputFile)
         throw std::runtime_error("Couldn't open non real time output file.\n");
@@ -582,7 +574,7 @@ void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
             scprintf("WARNING: input file sample rate does not equal output sample rate.\n");
 
     } else {
-        world->hw->mNRTInputFile = 0;
+        world->hw->mNRTInputFile = nullptr;
     }
 
     FILE* cmdFile;
@@ -720,11 +712,11 @@ void World_NonRealTimeSynthesis(struct World* world, WorldOptions* inOptions) {
     if (cmdFile != stdin)
         fclose(cmdFile);
     sf_close(world->hw->mNRTOutputFile);
-    world->hw->mNRTOutputFile = 0;
+    world->hw->mNRTOutputFile = nullptr;
 
     if (world->hw->mNRTInputFile) {
         sf_close(world->hw->mNRTInputFile);
-        world->hw->mNRTInputFile = 0;
+        world->hw->mNRTInputFile = nullptr;
     }
 
     free(packet.mData);
@@ -862,15 +854,15 @@ Graph* World_GetGraph(World* inWorld, int32 inID) {
         inID = inWorld->hw->mRecentID;
     Node* node = World_GetNode(inWorld, inID);
     if (!node)
-        return 0;
-    return node->mIsGroup ? 0 : (Graph*)node;
+        return nullptr;
+    return node->mIsGroup ? nullptr : (Graph*)node;
 }
 
 Group* World_GetGroup(World* inWorld, int32 inID) {
     Node* node = World_GetNode(inWorld, inID);
     if (!node)
-        return 0;
-    return node->mIsGroup ? (Group*)node : 0;
+        return nullptr;
+    return node->mIsGroup ? (Group*)node : nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -921,7 +913,7 @@ void World_Cleanup(World* world, bool unload_plugins) {
     if (hw) {
         sc_free(hw->mWireBufSpace);
         delete hw->mAudioDriver;
-        hw->mAudioDriver = 0;
+        hw->mAudioDriver = nullptr;
     }
     delete reinterpret_cast<SC_Lock*>(world->mNRTLock);
     reinterpret_cast<SC_Lock*>(world->mDriverLock)->unlock();
@@ -996,7 +988,7 @@ bool getScopeBuffer(World* inWorld, int index, int channels, int maxFrames, Scop
         hnd.maxFrames = maxFrames;
         return true;
     } else {
-        hnd.internalData = 0;
+        hnd.internalData = nullptr;
         return false;
     }
 }
@@ -1079,7 +1071,7 @@ void NodeReplyMsg::Perform() {
 
     // Free memory in realtime thread
     FifoMsg msg;
-    msg.Set(mWorld, NodeReplyMsg_RTFree, 0, mRTMemory);
+    msg.Set(mWorld, NodeReplyMsg_RTFree, nullptr, mRTMemory);
     AudioDriver(mWorld)->SendMsgToEngine(msg);
 }
 

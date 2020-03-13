@@ -386,7 +386,7 @@ NdefGui : JITGui {
 
 		if (typeView.notNil) {
 			if (newState[\type] != prevState[\type]) {
-				// typeView.string_(newState[\type].asString)
+				typeView.string_(newState[\type].asString)
 			}
 		};
 

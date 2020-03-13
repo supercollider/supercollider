@@ -120,6 +120,7 @@ SequenceableCollection : Collection {
 	}
 
 	== { | aCollection |
+		if (this === aCollection) { ^true };
 		if (aCollection.class != this.class) { ^false };
 		if (this.size != aCollection.size) { ^false };
 		this.do { | item, i |
@@ -907,7 +908,7 @@ SequenceableCollection : Collection {
 	//  "https://en.wikipedia.org/wiki/Chebyshev_polynomials#Roots_and_extrema"
 	//  "http://mathworld.wolfram.com/ChebyshevPolynomialoftheFirstKind.html"
 	chebyshevTZeros {
-		var n = this.asInt;
+		var n = this.asInteger;
 		^(1..n).collect({ arg k;
 			cos(pi* ((2*k) - 1) / (2*n))
 		});
@@ -1539,6 +1540,21 @@ SequenceableCollection : Collection {
 				String.unixCmdActions.put(pid, action);
 			};
 			^pid
+		} {
+			Error("Collection should have at least the filepath of the program to run.").throw
+		}
+	}
+
+	unixCmdGetStdOut { arg maxLineLength=1024;
+		var pipe, lines, line, pid;
+
+		if(this.notEmpty) {
+			pipe = Pipe.argv(this, "r");
+			lines = "";
+			line = pipe.getLine(maxLineLength);
+			while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
+			pipe.close;
+			^lines
 		} {
 			Error("Collection should have at least the filepath of the program to run.").throw
 		}

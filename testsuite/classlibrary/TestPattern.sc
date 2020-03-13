@@ -33,7 +33,7 @@ TestPattern : UnitTest {
 			Pbind(\x, 7).collect { |event| event.put(\y, 8) },
 		];
 
-		[identical, identical].allTuples.postln.do { |pair|
+		[identical, identical].allTuples.do { |pair|
 			assertUnfolded.(*pair)
 		};
 

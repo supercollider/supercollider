@@ -162,6 +162,30 @@ TestArray : UnitTest {
 
 	} // End test_arraystats
 
+	// FIXME/TODO Consider whether this test should be moved into a separate file of GC tests (or superceded by one)
+	test_flop_noGC_regression {
+		var a, b, arraySize;
+		arraySize = 32; // this causes flop to fail
+
+		1000.do { |i|
+			var indices;
+			indices = (0..arraySize);
+
+			// run identical processing on idx:
+			a = [indices].flop.collect {|lm| lm[0] }; // << .lm called in the loop
+			b = [indices].flop.collect {|lm| lm[0] }; // << .lm called in the loop
+
+			// are results equal? >> NO
+			if(a!=b, {
+				this.assertEquals(a, b, "flop: identical flops should match", onFailure: {
+					format("\nWARNING: mismatch on iter: %", i).postln;
+					a.join(" ").postln;
+					b.join(" ").postln;
+				});
+			});
+		}
+	}
+
 } // End class
 
 TestArrayLace : UnitTest {

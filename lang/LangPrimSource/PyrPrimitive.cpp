@@ -45,6 +45,7 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
+#include "SC_AudioDevicePrim.hpp"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
@@ -119,6 +120,32 @@ int slotStrVal(PyrSlot* slot, char* str, int maxlen) {
         return errNone;
     }
     return errWrongType;
+}
+
+/**
+ * \brief Convert an sclang string or symbol into an std:string
+ * \param slot the sclang string or symbol
+ * \return a tuple containing an int, an error code, and an std:string.
+ *  In case of an error the string will be empty.
+ */
+std::tuple<int, std::string> slotStdStrVal(PyrSlot* slot) {
+    return IsSym(slot)
+        ? std::make_tuple(errNone, std::string(slotRawSymbol(slot)->name, (size_t)slotRawSymbol(slot)->length))
+        : (isKindOfSlot(slot, class_string)
+               ? std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+               : std::make_tuple(errWrongType, std::string()));
+}
+
+/**
+ * \brief Convert an sclang string into an std:string
+ * \param slot the sclang string
+ * \return a tuple containing an int, an error code, and an std:string.
+ *  In case of an error the string will be empty.
+ */
+std::tuple<int, std::string> slotStrStdStrVal(PyrSlot* slot) {
+    return isKindOfSlot(slot, class_string)
+        ? std::make_tuple(errNone, std::string(slotRawString(slot)->s, slotRawObject(slot)->size))
+        : std::make_tuple(errWrongType, std::string());
 }
 
 int slotPStrVal(PyrSlot* slot, unsigned char* str) {
@@ -904,7 +931,7 @@ HOT int blockValue(struct VMGlobals* g, int numArgsPushed) {
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
     caller = g->frame;
@@ -923,7 +950,7 @@ HOT int blockValue(struct VMGlobals* g, int numArgsPushed) {
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
 
     g->sp = args - 1;
@@ -1044,7 +1071,7 @@ int blockValueWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushed) {
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
 
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
@@ -1065,7 +1092,7 @@ int blockValueWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushed) {
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
     g->sp = args - 1;
     g->ip = slotRawInt8Array(&block->code)->b - 1;
@@ -1212,7 +1239,7 @@ int blockValueEnvir(struct VMGlobals* g, int numArgsPushed) {
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
 
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
@@ -1232,7 +1259,7 @@ int blockValueEnvir(struct VMGlobals* g, int numArgsPushed) {
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
 
     g->sp = args - 1;
@@ -1367,7 +1394,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     block = slotRawBlock(&closure->block);
     context = slotRawFrame(&closure->context);
 
-    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
+    proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : nullptr;
 
     methraw = METHRAW(block);
     numtemps = methraw->numtemps;
@@ -1388,7 +1415,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     } else {
         SetInt(&frame->caller, 0);
     }
-    SetPtr(&frame->ip, 0);
+    SetPtr(&frame->ip, nullptr);
 
 
     g->sp = args - 1;
@@ -2427,9 +2454,9 @@ int haltInterpreter(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *bottom = g->gc->Stack()->slots;
     // slotCopy(bottom,g->sp);
     // g->sp = bottom; // ??!! pop everybody
-    g->method = NULL;
-    g->block = NULL;
-    g->frame = NULL;
+    g->method = nullptr;
+    g->block = nullptr;
+    g->frame = nullptr;
     SetNil(g->sp);
     longjmp(g->escapeInterpreter, 3);
     // hmm need to fix this to work only on main thread. //!!!
@@ -2626,7 +2653,7 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
     classobj = classsym->u.classobj;
     if (!classobj) {
         error("There is no Interpreter class.\n");
-        return 0;
+        return nullptr;
     }
     // lookup functionCompileContext method
     contextsym = getsym("functionCompileContext");
@@ -2634,7 +2661,7 @@ PyrMethod* GetFunctionCompileContext(VMGlobals* g) {
     meth = gRowTable[index];
     if (!meth || slotRawSymbol(&meth->name) != contextsym) {
         error("compile context method 'functionCompileContext' not found.\n");
-        return 0;
+        return nullptr;
     }
     gCompilingClass = classobj;
     gCompilingMethod = meth;
@@ -2658,7 +2685,7 @@ int prCompileString(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     string = slotRawString(b);
 
-    gRootParseNode = NULL;
+    gRootParseNode = nullptr;
     initParserPool();
     // assert(g->gc->SanityCheck());
     startLexerCmdLine(string->s, string->size);
@@ -2923,8 +2950,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetNil(&oldthread->block);
         SetNil(&oldthread->receiver);
         SetNil(&oldthread->frame);
-        SetRaw(&oldthread->ip, (void*)0);
-        SetRaw(&oldthread->sp, (void*)0);
+        SetRaw(&oldthread->ip, (void*)nullptr);
+        SetRaw(&oldthread->sp, (void*)nullptr);
         SetRaw(&oldthread->numArgsPushed, 0);
         SetRaw(&oldthread->numpop, 0);
         SetNil(&oldthread->parent);
@@ -2937,8 +2964,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
         SetNil(&oldthread->block);
         SetNil(&oldthread->receiver);
         SetNil(&oldthread->frame);
-        SetRaw(&oldthread->ip, (void*)0);
-        SetRaw(&oldthread->sp, (void*)0);
+        SetRaw(&oldthread->ip, (void*)nullptr);
+        SetRaw(&oldthread->sp, (void*)nullptr);
         SetRaw(&oldthread->numArgsPushed, 0);
         SetRaw(&oldthread->numpop, 0);
         SetNil(&oldthread->parent);
@@ -3005,8 +3032,8 @@ void switchToThread(VMGlobals* g, PyrThread* newthread, int oldstate, int* numAr
     SetNil(&newthread->method);
     SetNil(&newthread->block);
     SetNil(&newthread->frame);
-    SetRaw(&newthread->ip, (void*)0);
-    SetRaw(&newthread->sp, (void*)0);
+    SetRaw(&newthread->ip, (void*)nullptr);
+    SetRaw(&newthread->sp, (void*)nullptr);
     SetNil(&newthread->receiver);
 
     SetRaw(&newthread->state, tRunning);
@@ -3045,8 +3072,8 @@ void initPyrThread(VMGlobals* g, PyrThread* thread, PyrSlot* func, int stacksize
 
     SetInt(&thread->state, tInit);
 
-    SetPtr(&thread->ip, 0);
-    SetPtr(&thread->sp, 0);
+    SetPtr(&thread->ip, nullptr);
+    SetPtr(&thread->sp, nullptr);
 
     SetObject(&thread->randData, rgenArray);
     gc->GCWrite(thread, rgenArray);
@@ -3380,8 +3407,8 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
         SetNil(&thread->block);
         SetNil(&thread->receiver);
         SetNil(&thread->frame);
-        SetRaw(&thread->ip, (void*)0);
-        SetRaw(&thread->sp, (void*)0);
+        SetRaw(&thread->ip, (void*)nullptr);
+        SetRaw(&thread->sp, (void*)nullptr);
         SetRaw(&thread->numArgsPushed, 0);
         SetRaw(&thread->numpop, 0);
         SetNil(&thread->parent);
@@ -3392,8 +3419,8 @@ int prRoutineReset(struct VMGlobals* g, int numArgsPushed) {
         SetNil(&thread->block);
         SetNil(&thread->receiver);
         SetNil(&thread->frame);
-        SetRaw(&thread->ip, (void*)0);
-        SetRaw(&thread->sp, (void*)0);
+        SetRaw(&thread->ip, (void*)nullptr);
+        SetRaw(&thread->sp, (void*)nullptr);
         SetRaw(&thread->numArgsPushed, 0);
         SetRaw(&thread->numpop, 0);
         SetNil(&thread->parent);
@@ -3525,7 +3552,7 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals* g, int numArgsPush
 
     size_t numberOfPaths = dirVector.size();
     PyrObject* resultArray = newPyrArray(g->gc, numberOfPaths, 0, true);
-    SetObject(result, resultArray);
+    SetObject(result, resultArray); // this is okay here as we don't use the receiver
 
     for (size_t i = 0; i != numberOfPaths; ++i) {
         const std::string& utf8_path = SC_Codecvt::path_to_utf8_str(dirVector[i]);
@@ -3617,9 +3644,11 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals* g, int numArgsPush
             return errWrongType;
 
         config_path = SC_Codecvt::utf8_str_to_path(path);
-        gLanguageConfig->writeLibraryConfigYAML(config_path);
     } else {
-        config_path = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig) / "sclang_conf.yaml";
+        config_path = SC_Codecvt::path_to_utf8_str(gLanguageConfig->getConfigPath());
+        if (config_path.empty())
+            config_path = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
+                / SCLANG_YAML_CONFIG_FILENAME;
     }
 
     if (!gLanguageConfig->writeLibraryConfigYAML(config_path))
@@ -3662,7 +3691,13 @@ static int prVersionMinor(struct VMGlobals* g, int numArgsPushed) {
 
 static int prVersionPatch(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* result = g->sp;
-    SetObject(result, newPyrString(g->gc, SC_VersionPatch, 0, 1));
+    SetInt(result, SC_VersionPatch);
+    return errNone;
+}
+
+static int prVersionTweak(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* result = g->sp;
+    SetObject(result, newPyrString(g->gc, SC_VersionTweak, 0, 1));
     return errNone;
 }
 
@@ -3982,7 +4017,7 @@ void initPrimitives() {
     definePrimitive(base, opBitNot, "_BitNot", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opAbs, "_Abs", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opAsFloat, "_AsFloat", doSpecialUnaryArithMsg, 1, 0);
-    definePrimitive(base, opAsInt, "_AsInt", doSpecialUnaryArithMsg, 1, 0);
+    definePrimitive(base, opAsInteger, "_AsInteger", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opCeil, "_Ceil", doSpecialUnaryArithMsg, 1, 0); // 5
     definePrimitive(base, opFloor, "_Floor", doSpecialUnaryArithMsg, 1, 0);
     definePrimitive(base, opFrac, "_Frac", doSpecialUnaryArithMsg, 1, 0);
@@ -4230,6 +4265,7 @@ void initPrimitives() {
     definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);
     definePrimitive(base, index++, "_SC_VersionMinor", prVersionMinor, 1, 0);
     definePrimitive(base, index++, "_SC_VersionPatch", prVersionPatch, 1, 0);
+    definePrimitive(base, index++, "_SC_VersionTweak", prVersionTweak, 1, 0);
 
     // void initOscilPrimitives();
     // void initControllerPrimitives();
@@ -4239,6 +4275,7 @@ void initPrimitives() {
     initMathPrimitives();
     initSignalPrimitives();
     initArrayPrimitives();
+    initAudioDevicePrimitives();
 
     void initSymbolPrimitives();
     initSymbolPrimitives();
@@ -4290,6 +4327,11 @@ void initPrimitives() {
     void initSchedPrimitives();
     initSchedPrimitives();
 
+#ifdef SC_ABLETON_LINK
+    void initLinkPrimitives();
+    initLinkPrimitives();
+#endif
+
 #ifdef SC_HIDAPI
     void initHIDAPIPrimitives();
     initHIDAPIPrimitives();
@@ -4307,11 +4349,6 @@ void initPrimitives() {
 
     void initSerialPrimitives();
     initSerialPrimitives();
-
-#ifdef __APPLE__
-    void initCoreAudioPrimitives();
-    initCoreAudioPrimitives();
-#endif
 
 #ifdef SCOGL_COMPILE
     void initOpenGLPrimitives();

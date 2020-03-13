@@ -28,6 +28,7 @@ struct PyrFile : public PyrObjectHdr {
 void initFilePrimitives();
 
 long prFileDelete(VMGlobals* g, long numArgsPushed);
+long prFileDeleteAll(VMGlobals* g, long numArgsPushed);
 long prFileOpen(VMGlobals* g, long numArgsPushed);
 long prFileClose(VMGlobals* g, long numArgsPushed);
 long prFileSeek(VMGlobals* g, long numArgsPushed);

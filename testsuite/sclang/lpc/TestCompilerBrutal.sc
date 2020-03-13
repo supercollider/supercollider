@@ -24,7 +24,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"bitNot",
 			"abs",
 			"asFloat",
-			"asInt",
+			"asInteger",
 			"ceil",
 			"floor",
 			"frac",

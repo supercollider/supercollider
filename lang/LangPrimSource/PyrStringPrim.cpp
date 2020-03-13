@@ -55,7 +55,7 @@ namespace bfs = boost::filesystem;
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
-    char str[1024], *strp = 0;
+    char str[1024], *strp = nullptr;
     int len;
 
     a = g->sp;
@@ -386,10 +386,8 @@ static int prString_FindRegexp(struct VMGlobals* g, int numArgsPushed) {
     int match_count = matches.size();
 
     PyrObject* result_array = newPyrArray(g->gc, match_count, 0, true);
-    SetObject(a, result_array);
-
-    if (!match_count)
-        return errNone;
+    ++g->sp; // advance the stack to avoid overwriting receiver
+    SetObject(g->sp, result_array); // push result to make reachable
 
     for (int i = 0; i < match_count; ++i) {
         int pos = matches[i].pos;
@@ -406,8 +404,11 @@ static int prString_FindRegexp(struct VMGlobals* g, int numArgsPushed) {
         array->size = 2;
         SetInt(array->slots, pos + offset);
         SetObject(array->slots + 1, matched_string);
-        g->gc->GCWrite(array, matched_string); // we know matched_string is white so we can use GCWriteNew
+        g->gc->GCWriteNew(array, matched_string); // we know matched_string is white so we can use GCWriteNew
     };
+
+    --g->sp; // pop the stack back to the receiver slot since we stored result_array there above
+    SetObject(a, result_array); // now we can set the result in a
 
     return errNone;
 }
@@ -455,7 +456,8 @@ static int prString_FindRegexpAt(struct VMGlobals* g, int numArgsPushed) {
     }
 
     PyrObject* array = newPyrArray(g->gc, 2, 0, true);
-    SetObject(a, array);
+    ++g->sp;
+    SetObject(g->sp, array); // push on stack to make reachable
 
     PyrString* matched_string = newPyrStringN(g->gc, matched_len, 0, true);
     memcpy(matched_string->s, stringBegin, (size_t)matched_len);
@@ -464,6 +466,8 @@ static int prString_FindRegexpAt(struct VMGlobals* g, int numArgsPushed) {
     SetInt(array->slots + 1, matched_len);
     SetObject(array->slots, matched_string);
     g->gc->GCWriteNew(array, matched_string); // we know matched_string is white so we can use GCWriteNew
+    --g->sp; // pop the stack back to the receiver slot since we stored array there above
+    SetObject(a, array); // now we can set the result in a
 
     return errNone;
 }
@@ -543,7 +547,7 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
 
     // create array with appropriate reserved size
     PyrObject* array = newPyrArray(g->gc, paths.size(), 0, true);
-    SetObject(a, array);
+    SetObject(a, array); // this is okay here as we don't use the receiver below
 
     // convert paths and copy into sclang array.
     for (int i = 0; i < paths.size(); ++i) {
@@ -890,7 +894,7 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed) {
 static void yaml_traverse(struct VMGlobals* g, const YAML::Node& node, PyrObject* parent, PyrSlot* slot) {
     YAML::NodeType::value type = node.Type();
     string out;
-    PyrObject* result = NULL;
+    PyrObject* result = nullptr;
 
     switch (type) {
     case YAML::NodeType::Scalar:
@@ -963,7 +967,7 @@ int prString_ParseYAML(struct VMGlobals* g, int numArgsPushed) {
 
     std::istringstream fin(str);
     YAML::Node doc = YAML::Load(fin);
-    yaml_traverse(g, doc, NULL, arg);
+    yaml_traverse(g, doc, nullptr, arg);
 
     return errNone;
 }
@@ -979,7 +983,7 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
     const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
     bfs::ifstream fin(path);
     YAML::Node doc = YAML::Load(fin);
-    yaml_traverse(g, doc, NULL, arg);
+    yaml_traverse(g, doc, nullptr, arg);
 
     return errNone;
 }

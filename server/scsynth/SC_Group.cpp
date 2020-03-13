@@ -54,8 +54,8 @@ int Group_New(World* inWorld, int32 inID, Group** outGroup) {
 
     group->mNode.mCalcFunc = (NodeCalcFunc)&Group_Calc;
     group->mNode.mIsGroup = true;
-    group->mHead = 0;
-    group->mTail = 0;
+    group->mHead = nullptr;
+    group->mTail = nullptr;
     inWorld->mNumGroups++;
     *outGroup = group;
 
@@ -134,7 +134,7 @@ void Group_DumpNodeTreeAndControls(Group* inGroup) {
                 names = new char*[numControls];
 
                 for (i = 0; i < numControls; i++) {
-                    names[i] = NULL;
+                    names[i] = nullptr;
                 }
 
                 // check the number of named controls and stash their names at the correct index
@@ -310,7 +310,7 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket* packet) {
             names = new char*[numControls];
             int i;
             for (i = 0; i < numControls; i++) {
-                names[i] = NULL;
+                names[i] = nullptr;
             }
 
             // check the number of named controls and stash their names
@@ -336,14 +336,15 @@ void Group_QueryTreeAndControls(Group* inGroup, big_scpacket* packet) {
                 if ((childGraph->mMapControls[i]) != ptr) {
                     // it's mapped
                     int bus;
-                    char buf[10]; // should be long enough
+                    const size_t BUF_SIZE(10);
+                    char buf[BUF_SIZE];
                     if (childGraph->mControlRates[i] == 2) {
                         bus = (childGraph->mMapControls[i]) - (child->mWorld->mAudioBus);
                         bus = (int)((float)bus / child->mWorld->mBufLength);
-                        sprintf(buf, "%c%d", 'a', bus);
+                        snprintf(buf, BUF_SIZE, "%c%d", 'a', bus);
                     } else {
                         bus = (childGraph->mMapControls[i]) - (child->mWorld->mControlBus);
-                        sprintf(buf, "%c%d", 'c', bus);
+                        snprintf(buf, BUF_SIZE, "%c%d", 'c', bus);
                     }
                     // scprintf("bus: %d\n", bus);
                     packet->addtag('s');
@@ -365,12 +366,12 @@ void Group_DeleteAll(Group* inGroup) {
     Node* child = inGroup->mHead;
     while (child) {
         Node* next = child->mNext;
-        child->mPrev = child->mNext = 0;
-        child->mParent = 0;
+        child->mPrev = child->mNext = nullptr;
+        child->mParent = nullptr;
         Node_Delete(child);
         child = next;
     }
-    inGroup->mHead = inGroup->mTail = 0;
+    inGroup->mHead = inGroup->mTail = nullptr;
 }
 
 void Group_DeepFreeGraphs(Group* inGroup) {
@@ -390,7 +391,7 @@ void Group_DeepFreeGraphs(Group* inGroup) {
 void Group_AddHead(Group* s, Node* child) {
     if (child->mID == 0)
         return; // failed
-    child->mPrev = 0;
+    child->mPrev = nullptr;
     child->mNext = s->mHead;
     if (s->mHead) {
         s->mHead->mPrev = child;
@@ -404,7 +405,7 @@ void Group_AddTail(Group* s, Node* child) {
     if (child->mID == 0)
         return; // failed
     child->mPrev = s->mTail;
-    child->mNext = 0;
+    child->mNext = nullptr;
     if (s->mTail) {
         s->mTail->mNext = child;
         s->mTail = child;

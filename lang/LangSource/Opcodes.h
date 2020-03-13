@@ -85,7 +85,7 @@ enum {
     opBitNot,
     opAbs,
     opAsFloat,
-    opAsInt,
+    opAsInteger,
     opCeil, // 5
     opFloor,
     opFrac,

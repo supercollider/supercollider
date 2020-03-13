@@ -6,7 +6,7 @@ code::
 { 10 + 6 * ~harry }.asCompileString;
 ::
 
-many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation. sometimes one wants to store a certain configuration of a proxy space, which can be done
+Many objects understand strong::.storeOn::, which a way to post their string that is needed to reproduce them by compilation. Sometimes one wants to store a certain configuration of a proxy space, which can be done
 if all functions used are closed functions.
 
 code::
@@ -46,4 +46,44 @@ p.asCompileString;
 p.document;		// document everything
 p.document([\out]); 	// document all dependants of ~out
 p.document([\ctl1]);	// document all dependants of ~ctl1
+::
+
+Ndefs and NodeProxies can also store their full state as a code string:
+code::
+// Ndef with source
+Ndef(\x, { Saw.ar(\freq.kr(234), 0.1) });
+Ndef(\x).asCode;
+// returns:
+"Ndef('x', { Saw.ar(\freq.kr(234), 0.1) });
+"
+
+// Ndef with source and settings
+Ndef(\a,  { Saw.ar(\freq.kr, 0.1) }).set(\freq, 123);
+Ndef(\a).asCode;
+// returns:
+"(
+Ndef('a', { Saw.ar(\freq.kr, 0.1) });
+Ndef('a').set('freq', 123);
+);
+"
+
+// anonymous nodeproxy - returns example code with interpreter variable "a = ..."
+z = NodeProxy.new.source = { DC.ar };
+z.asCode
+// returns:
+"a = NodeProxy.new.source_({ DC.ar });"
+
+// nodeproxy  in a pushed proxyspace, which is also playing
+p = ProxySpace.push(s);
+~x = { Saw.ar(\freq.kr(234), 0.1) };
+~x.play;
+~x.asCode;
+// returns code that assumes there is a pushed proxyspace:
+"(
+~x = { Saw.ar(\freq.kr(234), 0.1) };
+~x.play;
+);
+"
+~x.end.clear;
+p.pop; p.clear;
 ::

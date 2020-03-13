@@ -589,7 +589,7 @@ occurs.
                             "Could not find clang-format-diff.py. "
                             "Please ensure that clang %s is installed and that "
                             "clang-format-diff.py is in your PATH."
-                            % CLANG_FORMAT_ACCEPTED_VERSION)
+                            % CLANG_FORMAT_ACCEPTED_VERSION_STRING)
                 else:
                     raise ValueError("Could not find clang-format-diff.py at %s." % options.clang_format_diff)
             if options.command == 'lint':

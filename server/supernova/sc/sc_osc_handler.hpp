@@ -51,6 +51,8 @@
 #include "../utilities/static_pool.hpp"
 #include "../utilities/time_tag.hpp"
 
+struct FifoMsg;
+
 namespace nova {
 
 typedef bool (*AsyncStageFn)(World* inWorld, void* cmdData);
@@ -337,7 +339,11 @@ public:
 
     void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
-                                 void* completionMsgData);
+                                 void* completionMsgData) const;
+
+    void send_message_from_RT(const World* world, FifoMsg& msg) const;
+
+    void send_message_to_RT(const World* world, FifoMsg& msg) const;
 
     bool quit_received = false;
 

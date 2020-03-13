@@ -44,7 +44,7 @@ static const char* SCRendezvousProtocolString(SCRendezvousProtocol proto) {
     case kSCRendezvous_TCP:
         return "_osc._tcp.";
     default:
-        return 0;
+        return nullptr;
     };
 }
 #endif
@@ -119,7 +119,7 @@ struct AvahiSession {
 };
 
 struct AvahiSessionInstance {
-    AvahiSessionInstance(): mSession(0) {}
+    AvahiSessionInstance(): mSession(nullptr) {}
     ~AvahiSessionInstance() {
         if (mSession) {
             delete mSession;
@@ -138,7 +138,12 @@ private:
 
 static AvahiSessionInstance gAvahiSession;
 
-AvahiSession::AvahiSession(): mPoll(0), mClient(0), mGroup(0), mEntries(0), mServiceName(0) {
+AvahiSession::AvahiSession():
+    mPoll(nullptr),
+    mClient(nullptr),
+    mGroup(nullptr),
+    mEntries(nullptr),
+    mServiceName(nullptr) {
     int err;
 
     mServiceName = avahi_strdup(kSCRendezvousServiceName);
@@ -153,7 +158,7 @@ AvahiSession::AvahiSession(): mPoll(0), mClient(0), mGroup(0), mEntries(0), mSer
     if (!mClient) {
         scprintf("Zeroconf: failed to create client: %s\n", avahi_strerror(err));
         avahi_threaded_poll_free(mPoll);
-        mPoll = 0;
+        mPoll = nullptr;
         return;
     }
 
@@ -258,13 +263,13 @@ void AvahiSession::CreateServices(AvahiClient* client) {
     while (entry) {
         const char* type = SCRendezvousProtocolString(entry->mProto);
         err = avahi_entry_group_add_service(mGroup, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, (AvahiPublishFlags)0,
-                                            mServiceName, type, NULL, NULL, entry->mPort, NULL);
+                                            mServiceName, type, nullptr, nullptr, entry->mPort, NULL);
         if (err == AVAHI_ERR_COLLISION) {
             // BUG: shouldn't this actually be triggered in the entry
             //      group callback?
             RenameService();
             err = avahi_entry_group_add_service(mGroup, AVAHI_IF_UNSPEC, AVAHI_PROTO_UNSPEC, (AvahiPublishFlags)0,
-                                                mServiceName, type, NULL, NULL, entry->mPort, NULL);
+                                                mServiceName, type, nullptr, nullptr, entry->mPort, NULL);
         }
         if (err < 0) {
             scprintf("Zeroconf: failed to register service '%s': %s\n", mServiceName, avahi_strerror(err));

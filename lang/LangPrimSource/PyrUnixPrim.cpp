@@ -27,10 +27,15 @@ Primitives for Unix.
 #include <errno.h>
 #include <signal.h>
 
+#include <tuple>
+#include <vector>
+
+#include "PyrObject.h"
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
 #include "PyrKernel.h"
 #include "PyrSched.h"
+#include "PyrFilePrim.h"
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
@@ -40,7 +45,6 @@ Primitives for Unix.
 
 #include "SC_Lock.h"
 
-#include <vector>
 #include <boost/filesystem.hpp>
 
 #ifdef _WIN32
@@ -109,18 +113,12 @@ int prString_Dirname(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-struct sc_process {
-    pid_t pid;
-    FILE* stream;
-    bool postOutput;
-};
-
-static void string_popen_thread_func(struct sc_process* process) {
-    FILE* stream = process->stream;
-    pid_t pid = process->pid;
+static void string_popen_thread_func(pid_t pid, FILE* stream, bool postOutput) {
     char buf[1024];
 
-    while (process->postOutput) {
+    setvbuf(stream, nullptr, _IONBF, 0);
+
+    while (postOutput) {
         char* string = fgets(buf, 1024, stream);
         if (!string)
             break;
@@ -130,8 +128,6 @@ static void string_popen_thread_func(struct sc_process* process) {
     int res;
     res = sc_pclose(stream, pid);
     res = WEXITSTATUS(res);
-
-    delete process;
 
     gLangMutex.lock();
     if (compiledOK) {
@@ -149,116 +145,71 @@ static void string_popen_thread_func(struct sc_process* process) {
 
 int prString_POpen(struct VMGlobals* g, int numArgsPushed);
 int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp - 1;
-    PyrSlot* b = g->sp;
+    PyrSlot* callerSlot = g->sp - 1;
+    PyrSlot* postOutputSlot = g->sp;
 
-    if (!isKindOfSlot(a, class_string))
-        return errWrongType;
-
-    char* cmdline = new char[slotRawObject(a)->size + 1];
-    slotStrVal(a, cmdline, slotRawObject(a)->size + 1);
+    int error;
+    std::string cmdline;
+    std::tie(error, cmdline) = slotStrStdStrVal(callerSlot);
+    if (error != errNone)
+        return error;
 
 #ifdef SC_IPHONE
     SetInt(a, 0);
     return errNone;
 #endif
 
-    sc_process* process = new sc_process;
-    process->stream = sc_popen(cmdline, &process->pid, "r");
-    setvbuf(process->stream, 0, _IONBF, 0);
-    pid_t pid = process->pid;
-
-    process->postOutput = IsTrue(b);
-
-    delete[] cmdline;
-
-    if (process->stream == NULL) {
-        delete process;
+    pid_t pid;
+    FILE* stream;
+    std::tie(pid, stream) = sc_popen(std::move(cmdline), "r");
+    if (stream != nullptr) {
+        SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
+        thread.detach();
+        SetInt(callerSlot, pid);
+        return errNone;
+    } else
         return errFailed;
-    }
-
-    SC_Thread thread(std::bind(string_popen_thread_func, process));
-    thread.detach();
-
-    SetInt(a, pid);
-    return errNone;
 }
 
 int prArrayPOpen(struct VMGlobals* g, int numArgsPushed);
 int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
-    PyrObject* obj;
-
-    PyrSlot* a = g->sp - 1;
-    PyrSlot* b = g->sp;
+    PyrSlot* callerSlot = g->sp - 1;
+    PyrSlot* postOutputSlot = g->sp;
 
 #ifdef SC_IPHONE
     SetInt(a, 0);
     return errNone;
 #endif
 
-    if (NotObj(a))
+    if (NotObj(callerSlot))
         return errWrongType;
 
-    obj = slotRawObject(a);
-    if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
+    PyrObject* argsColl = slotRawObject(callerSlot);
+    // argsColl must be a collection
+    if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
         return errNotAnIndexableObject;
 
-    if (obj->size < 1)
+    // collection must contain at least one string: the path of executable to run
+    if (argsColl->size < 1)
         return errFailed;
 
-    PyrSlot filenameSlot;
-    getIndexedSlot(obj, &filenameSlot, 0);
-    if (!isKindOfSlot(&filenameSlot, class_string))
-        return errWrongType;
-    char filename[PATH_MAX];
-    if (slotRawObject(&filenameSlot)->size > PATH_MAX - 1)
-        return errFailed;
-    slotStrVal(&filenameSlot, filename, slotRawObject(&filenameSlot)->size + 1);
+    int error;
+    std::vector<std::string> strings;
+    std::tie(error, strings) = PyrCollToVectorStdString(argsColl);
+    if (error != errNone)
+        return error;
 
-    std::vector<char*> argv(obj->size + 1);
-
-    bfs::path p;
-    p /= filename;
-    std::string filenameOnly = p.filename().string();
-    std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());
-    vfilenameOnly.push_back('\0');
-
-    argv[0] = vfilenameOnly.data();
-    argv[obj->size] = NULL;
-
-    if (obj->size > 1) {
-        for (int i = 1; i < obj->size; ++i) {
-            PyrSlot argSlot;
-            getIndexedSlot(obj, &argSlot, i);
-            if (!isKindOfSlot(&argSlot, class_string))
-                return errWrongType;
-            char* arg = new char[slotRawObject(&argSlot)->size + 1];
-            slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
-            argv[i] = arg;
-        }
-    }
-
-    sc_process* process = new sc_process;
-    process->stream = sc_popen_argv(filename, argv.data(), &process->pid, "r");
-    setvbuf(process->stream, 0, _IONBF, 0);
-    pid_t pid = process->pid;
-
-    process->postOutput = IsTrue(b);
-
-    if (process->stream == NULL) {
-        delete process;
+    pid_t pid;
+    FILE* stream;
+    std::tie(pid, stream) = sc_popen_argv(strings, "r");
+    if (stream != nullptr) {
+        SC_Thread thread(std::bind(string_popen_thread_func, pid, stream, IsTrue(postOutputSlot)));
+        thread.detach();
+        SetInt(callerSlot, pid);
+        return errNone;
+    } else {
         return errFailed;
     }
-
-    SC_Thread thread(std::bind(string_popen_thread_func, process));
-    thread.detach();
-
-    for (int i = 1; i < obj->size; ++i) {
-        delete[] argv[i];
-    }
-
-    SetInt(a, pid);
-    return errNone;
 }
 
 int prPidRunning(VMGlobals* g, int numArgsPushed);

@@ -42,6 +42,7 @@
 #include <QDesktopWidget>
 #include <QStyleFactory>
 #include <QCursor>
+#include <QScreen>
 
 namespace QtCollider {
 
@@ -59,7 +60,7 @@ QC_LANG_PRIMITIVE(QWindow_ScreenBounds, 0, PyrSlot* r, PyrSlot* a, VMGlobals* g)
     if (!QcApplication::compareThread())
         return QtCollider::wrongThreadError();
 
-    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    QRect screenGeometry = QApplication::primaryScreen()->geometry();
     QtCollider::set(r, screenGeometry);
     return errNone;
 }
@@ -68,7 +69,7 @@ QC_LANG_PRIMITIVE(QWindow_AvailableGeometry, 0, PyrSlot* r, PyrSlot* a, VMGlobal
     if (!QcApplication::compareThread())
         return QtCollider::wrongThreadError();
 
-    QRect rect = QApplication::desktop()->availableGeometry();
+    QRect rect = QApplication::primaryScreen()->availableGeometry();
     QtCollider::set(r, rect);
     return errNone;
 }

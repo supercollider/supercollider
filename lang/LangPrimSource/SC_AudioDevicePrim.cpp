@@ -18,7 +18,12 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <CoreAudio/AudioHardware.h>
+#if defined(SC_AUDIO_API_COREAUDIO)
+#    include <CoreAudio/AudioHardware.h>
+#elif defined(SC_AUDIO_API_PORTAUDIO)
+#    include "portaudio.h"
+#    include "SC_PaUtils.hpp"
+#endif
 
 #include "SCBase.h"
 #include "VMGlobals.h"
@@ -28,7 +33,8 @@
 
 enum { OUT = 0, IN, BOTH };
 
-int listDevices(struct VMGlobals* g, int type) {
+#if defined(SC_AUDIO_API_COREAUDIO)
+int listDevices(VMGlobals* g, int type) {
     int numDevices, num = 0;
     PyrSlot* a = g->sp - 2;
     AudioObjectPropertyAddress propertyAddress;
@@ -86,7 +92,7 @@ int listDevices(struct VMGlobals* g, int type) {
         num = numDevices;
 
     PyrObject* devArray = newPyrArray(g->gc, num * sizeof(PyrObject), 0, true);
-    SetObject(a, devArray);
+    SetObject(a, devArray); // this is okay here as we don't use the receiver below
 
     int j = 0;
     for (i = 0; i < numDevices; i++) {
@@ -125,7 +131,53 @@ int listDevices(struct VMGlobals* g, int type) {
     return 1;
 }
 
-int prListAudioDevices(struct VMGlobals* g, int numArgsPushed) {
+#elif defined(SC_AUDIO_API_PORTAUDIO)
+int listDevices(VMGlobals* g, int type) {
+    if (Pa_Initialize() != paNoError)
+        return 0;
+
+    auto numDevices = Pa_GetDeviceCount();
+    if (numDevices < 0) {
+        Pa_Terminate();
+        return 0;
+    }
+
+    std::vector<const PaDeviceInfo*> deviceInfos;
+    for (PaDeviceIndex i = 0; i < numDevices; i++) {
+        auto* pdi = Pa_GetDeviceInfo(i);
+        if (type == IN) {
+            if (pdi->maxInputChannels > 0)
+                deviceInfos.push_back(pdi);
+        } else if (type == OUT) {
+            if (pdi->maxOutputChannels > 0)
+                deviceInfos.push_back(pdi);
+        } else
+            deviceInfos.push_back(pdi);
+    }
+
+    PyrObject* devArray = newPyrArray(g->gc, deviceInfos.size() * sizeof(PyrObject), 0, true);
+    SetObject(g->sp - 2, devArray); // this is okay here as we don't use the receiver below
+    devArray->size = deviceInfos.size();
+
+    for (int i = 0; i < deviceInfos.size(); i++) {
+        PyrString* string = newPyrString(g->gc, GetPaDeviceName(deviceInfos[i]).c_str(), 0, true);
+        SetObject(devArray->slots + i, string);
+        g->gc->GCWriteNew(devArray,
+                          reinterpret_cast<PyrObject*>(string)); // we know array is white so we can use GCWriteNew
+    }
+
+    Pa_Terminate();
+    return 1;
+}
+
+#else
+int listDevices(VMGlobals* g, int type) {
+    return 0; // listing devices fails when using neither CoreAudio nor PortAudio
+}
+#endif
+
+
+int prListAudioDevices(VMGlobals* g, int numArgsPushed) {
     int in = 0;
     int out = 0;
     slotIntVal(g->sp, &out);
@@ -144,6 +196,6 @@ int prListAudioDevices(struct VMGlobals* g, int numArgsPushed) {
     return errFailed;
 }
 
-void initCoreAudioPrimitives() {
+void initAudioDevicePrimitives() {
     definePrimitive(nextPrimitiveIndex(), 0, "_ListAudioDevices", prListAudioDevices, 3, 0);
 }

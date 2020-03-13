@@ -32,7 +32,6 @@ set(SC_PATH "${SC_PATH}" CACHE PATH
     "Path to SuperCollider source. Relative paths are treated as relative to this script" FORCE)
 
 include("${SC_PATH}/SCVersion.txt")
-set(SC_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
 message(STATUS "Building plugins for SuperCollider version: ${SC_VERSION}")
 
 # set project here to avoid SCVersion.txt clobbering our version info
@@ -52,3 +51,12 @@ option(SUPERNOVA "Build plugins for supernova" ON)
 option(SCSYNTH "Build plugins for scsynth" ON)
 option(NATIVE "Optimize for native architecture" OFF)
 option(STRICT "Use strict warning flags" OFF)
+option(NOVA_SIMD "Build plugins with nova-simd support." ON)
+
+####################################################################################################
+# include libraries
+
+if (NOVA_SIMD)
+	add_definitions(-DNOVA_SIMD)
+	include_directories(${SC_PATH}/external_libraries/nova-simd)
+endif()

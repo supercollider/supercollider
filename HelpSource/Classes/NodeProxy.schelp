@@ -80,6 +80,9 @@ subsection::Accessing Class Variables
 copymethod:: BusPlug *defaultNumAudio
 copymethod:: BusPlug *defaultNumControl
 
+method::defaultFadeTime
+The overlap time between successive source replacements which all instances have by default. Each instance has its own value which can be set via code::fadeTime_::.
+
 private::buildProxy, buildProxyControl, addChild, addNodeMapControlNames, asCode, cleanNodeMap, getBundle, getFamily, getStructure, internalKeys, loadToBundle, moveBeforeMsg, prepareOtherObjects, prepareToBundle, putNewObject, reallocBusIfNeeded, rebuildDeepToBundle, rebuildToBundle, removeToBundle, sendAllToBundle, sendEachToBundle, sendObjectToBundle, serverQuit, shouldAddObject, stopAllToBundle, supplementNodeMap, typeStr, unsetToBundle, wakeUpParentsToBundle, wakeUpToBundle
 
 InstanceMethods::
@@ -189,6 +192,23 @@ Ndef(\maus, { LFNoise0.kr(1 ! 8) + 1 }); // now 8 parallel channels of audio are
 
 
 
+subsection::Reserved parameters
+Three parameters are automatically specified if they don't exist in a given UGen function. You can override their use: code::[\out, \gate, \fadeTime]::
+
+subsection::Specifying your own envelope
+
+If a UGen function that is passed to the proxy has its own envelope, and if this envelope can free the synth, the node proxy uses this envelope instead of making its own. If you provide a code::fadeTime:: argument, the proxy's fadeTime will be used.
+
+code::
+Ndef(\sound).fadeTime = 3;
+(
+Ndef(\sound, { |fadeTime = 1, gate = 1|
+	var e = Env.adsr(fadeTime, 0.01, 0.4, fadeTime).ar(2, gate);
+	SinOsc.ar(100 + (e * 700), SinOsc.ar(208) * (1 - e) * 6) * e * 0.1
+}).play
+)
+::
+
 
 subsection::Making copies
 
@@ -206,7 +226,7 @@ b.set(\freq, 222);
 ::
 
 note::
-If needed, you can also copy parts of a proxy, such as the link::Classes/Monitor:: (which usually routs the output back onto hardware busses) and the link::Classes/NodeMap::, which keeps a mapping and setting scope.
+If needed, you can also copy parts of a proxy, such as the link::Classes/Monitor:: (which usually routes the output back onto hardware busses) and the link::Classes/NodeMap::, which keeps a mapping and setting scope.
 ::
 
 code::
@@ -349,6 +369,14 @@ reset everything to nil, neutralizes rate/numChannels
 argument::fadeTime
 if a fadeTime is given, first fade out, then clear.
 
+method::schedAfterFade
+
+Calls a function after the fadeTime and server latency have passed. If the proxy specifies a code::quant:: value, the function is evaluated code::fadeTime + latency:: seconds after the next timepoint on the quant grid; otherwise, the fade delay begins immediately.
+
+argument::func
+a function to be called at the appropriate time
+
+
 subsection::Accessing Instance Variables
 
 method::sources
@@ -361,7 +389,7 @@ method::server
 The node proxy's server (a link::Classes/Server::).
 
 method::bus
-The node proxy's private bus (a link::Classes/Bus::). Because it has a private bus, it is not audible directly - monitoring it by (.play or playN) routs it to the hardware output channels.
+The node proxy's private bus (a link::Classes/Bus::). Because it has a private bus, it is not audible directly - monitoring it by (.play or playN) routes it to the hardware output channels.
 
 method::rate
 The bus rate (default: nil) The rate and number of channels is determined either when the instance is created (.control/.audio) or by lazy initialisation from the first source (see link::Tutorials/JITLib/the_lazy_proxy::)
@@ -462,6 +490,15 @@ Get all key value pairs from both link::Classes/NodeMap:: (the settings) and def
 method::controlKeysValues
 Get all key value pairs from default arguments.
 
+method::specs
+Get the specs array from SynthDef metadata. Note that, for a NodeProxy with multiple sources, result will be a dictionary containing specs of ALL source SynthDefs.
+code::
+~p = NodeProxy.audio(Server.default, 2);
+~p.put(0, { SinOsc.ar(\freq.kr(100, spec:[50, 400])) });
+~p.put(1, { WhiteNoise.ar(\noiseAmp.kr(0.1, spec:[0, 1])) });
+~p.specs.postln;
+::
+
 subsection::Sending synths to server explicitly
 
 Normally, processes (usually synths) are started when their respective source is added to the proxy. The processes can also be restarted, however, or the proxy can be used while asleep and the processes can then be started explicitly.
@@ -492,6 +529,29 @@ Like send, just iterating separately over the objects.
 
 method::wakeUp
 Until the proxy is not used by any output ( either .play or .ar/.kr ) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
+
+subsection::Storing as code
+method::asCode
+stores the proxy as executable code.
+see also link::Tutorials/JITLib/jitlib_asCompileString:: for more examples.
+
+code::
+// Ndef
+Ndef(\a, { Saw.ar(12) }).asCode;
+
+// in a pushed proxy space
+p = ProxySpace.push(s.boot);
+~x = { Saw.ar(123, 0.1) };
+~x.play;
+~x.asCode;
+
+p.end.pop;
+
+// anonymous nodeproxy also posts instructions:
+x = NodeProxy.new.source = { DC.ar };
+x.asCode;
+
+x.free;
 
 subsection::GUI
 

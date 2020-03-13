@@ -293,8 +293,6 @@ MultiEditor::MultiEditor(Main* main, QWidget* parent):
 
     makeSignalConnections();
 
-    connect(&mDocModifiedSigMap, SIGNAL(mapped(QObject*)), this, SLOT(onDocModified(QObject*)));
-
     connect(main, SIGNAL(applySettingsRequest(Settings::Manager*)), this, SLOT(applySettings(Settings::Manager*)));
 
     createActions();
@@ -950,8 +948,7 @@ int MultiEditor::insertTab(Document* doc, int insertIndex) {
     tabIdx = mTabs->insertTab(insertIndex, icon, doc->title());
     mTabs->setTabData(tabIdx, QVariant::fromValue<Document*>(doc));
 
-    mDocModifiedSigMap.setMapping(tdoc, doc);
-    connect(tdoc, SIGNAL(modificationChanged(bool)), &mDocModifiedSigMap, SLOT(map()));
+    connect(tdoc, &QTextDocument::modificationChanged, [this, doc](bool) { onDocModified(doc); });
 
     return tabIdx;
 }
@@ -1014,8 +1011,7 @@ void MultiEditor::onClose(Document* doc) {
     // TODO: each box should switch document according to their own history
 }
 
-void MultiEditor::onDocModified(QObject* object) {
-    Document* doc = qobject_cast<Document*>(object);
+void MultiEditor::onDocModified(Document* doc) {
     if (!doc)
         return;
 

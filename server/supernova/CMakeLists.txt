@@ -70,7 +70,7 @@ if(NOT WIN32)
                PROPERTY OUTPUT_NAME supernova)
 endif()
 
-target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} boost_thread)
+target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} boost_thread_lib)
 
 target_compile_definitions(libsupernova PUBLIC SUPERNOVA)
 target_include_directories(libsupernova PUBLIC
@@ -146,14 +146,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     target_link_libraries(libsupernova rt)
 endif()
 
-
-if(Boost_FOUND)
-    target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
-    target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
-else()
-    target_include_directories(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
-endif()
+target_link_libraries(libsupernova boost_system_lib boost_filesystem_lib boost_program_options_lib)
+target_include_directories(libsupernova PUBLIC ${boost_include_dirs})
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     if( ${_gcc_version} VERSION_GREATER 5 )
@@ -229,8 +223,8 @@ if(LTO)
 endif()
 
 if (APPLE)
-    target_link_libraries(libsupernova "-framework Accelerate")
-    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation -framework ApplicationServices")
+    target_link_libraries(libsupernova "-framework Accelerate -framework CoreAudio -framework CoreServices"
+                                        "-framework Foundation -framework ApplicationServices -framework AppKit")
 endif()
 
 if(${JACK_USE_METADATA_API})

@@ -73,7 +73,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
         case opAsFloat:
             SetFloat(a, (double)slotRawInt(a));
             break;
-        case opAsInt:
+        case opAsInteger:
             SetRaw(a, (int)slotRawInt(a));
             break;
         case opCeil:
@@ -226,7 +226,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
         case opNotNil:
             SetTrue(a);
             break;
-        case opAsInt:
+        case opAsInteger:
             SetTagRaw(a, tagInt);
             break;
         case opDigitValue:
@@ -298,7 +298,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
     case tagSym:
         switch (opcode) {
         case opAsFloat:
-        case opAsInt:
+        case opAsInteger:
             goto send_normal_1;
         case opIsNil:
             SetFalse(a);
@@ -413,7 +413,7 @@ int doSpecialUnaryArithMsg(VMGlobals* g, int numArgsPushed) {
         case opAsFloat:
             SetRaw(a, (double)slotRawFloat(a));
             break;
-        case opAsInt: {
+        case opAsInteger: {
             double val = slotRawFloat(a);
             if (val == std::numeric_limits<double>::infinity())
                 SetInt(a, std::numeric_limits<int>::max());

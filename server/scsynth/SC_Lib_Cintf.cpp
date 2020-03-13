@@ -59,9 +59,9 @@ namespace bfs = boost::filesystem;
 
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc>* gCmdLib;
-HashTable<struct UnitDef, Malloc>* gUnitDefLib = 0;
-HashTable<struct BufGen, Malloc>* gBufGenLib = 0;
-HashTable<struct PlugInCmd, Malloc>* gPlugInCmds = 0;
+HashTable<struct UnitDef, Malloc>* gUnitDefLib = nullptr;
+HashTable<struct BufGen, Malloc>* gBufGenLib = nullptr;
+HashTable<struct PlugInCmd, Malloc>* gPlugInCmds = nullptr;
 extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 

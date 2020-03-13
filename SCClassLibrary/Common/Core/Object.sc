@@ -611,8 +611,6 @@ Object  {
 	+>> { arg that; ^unsignedRightShift(this, that) }
 	<! { arg that; ^firstArg(this, that) }
 
-	asInt { ^this.asInteger }
-
 	blend { arg that, blendFrac = 0.5;
 		// blendFrac should be from zero to one
 		^this + (blendFrac * (that - this));

@@ -415,7 +415,7 @@ PauseStream : Stream {
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
-		stream.beats = beats;
+		clock = inClock;
 		^this.next(beats)
 	}
 	threadPlayer { ^this }
@@ -507,7 +507,7 @@ EventStreamPlayer : PauseStream {
 
 		clock.play({
 			if(isWaiting and: { nextBeat.isNil }) {
-				clock.sched(0, this );
+				thisThread.clock.sched(0, this );
 				isWaiting = false;
 				this.changed(\playing)
 			};

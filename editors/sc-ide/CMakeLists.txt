@@ -236,7 +236,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 include_directories(${YAMLCPP_INCLUDE_DIR})
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -299,10 +298,34 @@ endif(WIN32)
 # final builds of the IDE seem to be broken atm
 if(0 AND FINAL_BUILD)
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( SuperCollider MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+  add_library( libscide STATIC scide_final.cpp ${ide_rc_sources})
 else()
-  add_executable( SuperCollider MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+  add_library( libscide STATIC ${ide_sources} ${ide_rc_sources})
 endif()
+
+# Enable targets that depend on libscide to find its headers and their contents.
+# The existing code uses a mix of paths, such as:
+#  "settings/manager.hpp"
+#  "util/standard_dirs.hpp"
+#  "../primitives/localsocket_utils.hpp"
+# So we need add all the sub-directories to the search path:
+target_include_directories(libscide PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/core
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/settings
+    ${CMAKE_CURRENT_SOURCE_DIR}/core/util
+    ${CMAKE_CURRENT_SOURCE_DIR}/forms
+    ${CMAKE_CURRENT_SOURCE_DIR}/primitives
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/code_editor
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/settings
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/style
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
+)
+
+add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources})
+
+set_target_properties(libscide PROPERTIES PREFIX "")
 
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
@@ -310,40 +333,38 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries( SuperCollider
+target_link_libraries( libscide PUBLIC
     ${QT_IDE_LIBRARIES}
     ${YAMLCPP_LIBRARY}
     oscpack
 )
 
-if(Boost_FOUND)
-    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
-else()
-    # in-house-built boost system
-    target_link_libraries( SuperCollider boost_system boost_filesystem )
-endif()
+target_link_libraries( SuperCollider libscide)
+
+target_link_libraries( libscide PUBLIC boost_system_lib boost_filesystem_lib)
+include_directories(${boost_include_dirs})
 
 if(APPLE)
-    target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    target_link_libraries( ${ide_name} "-framework Cocoa" )
+    target_link_libraries( libscide PUBLIC "-framework CoreServices -framework Foundation")
+    target_link_libraries( libscide PUBLIC "-framework Cocoa" )
 elseif(WIN32)
-    target_link_libraries( SuperCollider wsock32 )
+    target_link_libraries( libscide PUBLIC wsock32 )
     # The following prevents a Windows console from showing up
     # when the executable is started:
     set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    target_link_libraries(SuperCollider rt)
+    target_link_libraries(libscide PUBLIC rt)
 
     find_package(X11 REQUIRED)
 
     include_directories(${X11_INCLUDE_DIR})
-    target_link_libraries(SuperCollider ${X11_X11_LIB})
+    target_link_libraries(libscide PUBLIC ${X11_X11_LIB})
 endif()
 
 if(PTHREADS_FOUND)
-    target_link_libraries(SuperCollider ${PTHREADS_LIBRARIES})
+    target_link_libraries(libscide PUBLIC ${PTHREADS_LIBRARIES})
 endif()
 
 if(LTO)
@@ -356,7 +377,7 @@ endif()
 
 if(SC_USE_QTWEBENGINE)
     message(STATUS "IDE: Building with QtWebEngine")
-    target_compile_definitions(SuperCollider PUBLIC SC_USE_QTWEBENGINE)
+    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE)
 endif()
 
 # Installation

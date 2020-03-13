@@ -40,6 +40,10 @@ A link::Classes/String:: to test containing an IP number in dot decimal notation
 
 returns::A link::Classes/Boolean:: indicating whether a match was found.
 
+method::connections
+
+returns::A copy of the link::Classes/IdentityDictionary:: with all open TCP connections.
+
 InstanceMethods::
 
 private::prConnect, prDisconnect, prConnectionClosed, recover

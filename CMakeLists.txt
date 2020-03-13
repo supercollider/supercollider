@@ -1,4 +1,7 @@
-project (SuperCollider)
+cmake_minimum_required(VERSION 3.5)
+include(SCVersion.txt)
+# CMake versions can only consist of digits and periods, so don't use _TWEAK
+project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
@@ -8,11 +11,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
     set(LINUX_OR_BSD 1)
 endif()
 
-cmake_minimum_required (VERSION 3.5)
-
-include("SCVersion.txt")
-set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
-message(STATUS "SuperCollider Version: ${PROJECT_VERSION}")
+message(STATUS "SuperCollider Version: ${SC_VERSION}")
 message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
@@ -240,6 +239,8 @@ else()
     option(SC_HIDAPI "Build with HID support" ON)
 endif()
 
+option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
+
 #############################################
 # some default libraries
 
@@ -257,19 +258,40 @@ if(SYSTEM_BOOST)
     # Boost >= 1.71 ships with its own Boost config file, we ignore it for now.
     set(Boost_NO_BOOST_CMAKE ON)
     set(Boost_USE_MULTITHREADED ON)
-    find_package(Boost 1.66.0 COMPONENTS thread system filesystem program_options regex test_exec_monitor)
-endif()
-
-if (Boost_FOUND)
-	link_directories(${Boost_LIBRARY_DIRS})
+    find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
+    if (Boost_FOUND)
+        # we're specifically setting up the boost libraries here, so we can
+        # name them
+        add_library(boost_thread_lib SHARED IMPORTED)
+        set_property(TARGET boost_thread_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_THREAD_LIBRARY})
+        add_library(boost_system_lib SHARED IMPORTED)
+        set_property(TARGET boost_system_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_SYSTEM_LIBRARY})
+        add_library(boost_filesystem_lib SHARED IMPORTED)
+        set_property(TARGET boost_filesystem_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_FILESYSTEM_LIBRARY})
+        add_library(boost_program_options_lib SHARED IMPORTED)
+        set_property(TARGET boost_program_options_lib PROPERTY
+          IMPORTED_LOCATION ${Boost_PROGRAM_OPTIONS_LIBRARY})
+        add_library(boost_regex_lib SHARED IMPORTED)
+        set_property(TARGET boost_regex_lib PROPERTY IMPORTED_LOCATION
+          ${Boost_REGEX_LIBRARY})
+        add_library(boost_test_exec_monitor_lib SHARED IMPORTED)
+        set_property(TARGET boost_test_exec_monitor_lib PROPERTY
+          IMPORTED_LOCATION ${Boost_TEST_EXEC_MONITOR_LIBRARY})
+        set(boost_include_dirs ${Boost_INCLUDE_DIRS})
+    else()
+        message(FATAL_ERROR "Not able to use system boost because none was found.")
+    endif()
 else()
-	message(STATUS "building boost libraries manually")
+    set(boost_include_dirs ${CMAKE_SOURCE_DIR}/external_libraries/boost)
 endif()
 
 if(SYSTEM_YAMLCPP)
   find_package(YamlCpp)
 else()
-  set(YAMLCPP_FOUND OFF)
+  set(SYSTEM_YAMLCPP OFF)
 endif()
 
 #############################################
@@ -436,6 +458,10 @@ if(WIN32)
 	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
 endif()
 
+if(NOT SC_ABLETON_LINK)
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|Ableton")
+endif()
+
 if(APPLE)
 	if(SC_SYMLINK_CLASSLIB)
 		#if there are folders inside SCCLassLibrary abort cmake.
@@ -566,16 +592,17 @@ endif()
 #############################################
 # CPack support
 
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_MAJOR ${SC_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${SC_VERSION_MINOR})
+# No restriction on version strings unlike for project()
+set(CPACK_PACKAGE_VERSION_PATCH ${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
 
 if(APPLE)
 	set(CPACK_GENERATOR "DragNDrop")
 	set(CPACK_DMG_FORMAT "UDBZ")
 	set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
 	set(CPACK_SYSTEM_NAME "OSX")
-#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
+#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${SC_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
     set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/sc_ide.icns")

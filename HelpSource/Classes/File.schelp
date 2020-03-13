@@ -101,6 +101,17 @@ list::
 ## code::false:: -- The file could not be deleted (probably a permissions error). Your code should assume that the path still exists.
 ::
 
+method::deleteAll
+Deletes the file and all children at that path. Use only for good, never for evil.
+
+returns:: a link::Classes/Boolean::, as follows:
+list::
+## code::true:: -- At least one file was deleted.
+## code::false:: -- No files were deleted.
+::
+
+If deletion fails, a PrimitiveFailedError object will be thrown.
+
 method::realpath
 Follow symbolic links (and aliases on macOS) and any parent directory references (like "..") and return the true absolute path.
 

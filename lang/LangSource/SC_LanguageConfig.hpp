@@ -29,6 +29,7 @@
 
 class SC_LanguageConfig;
 extern SC_LanguageConfig* gLanguageConfig;
+extern const char* SCLANG_YAML_CONFIG_FILENAME;
 
 /**
  * \brief Language configuration settings.
@@ -68,15 +69,15 @@ public:
     static bool defaultLibraryConfig(bool standalone);
     static bool readLibraryConfig(bool standalone);
 
-    static const bool getPostInlineWarnings() { return gPostInlineWarnings; }
-    static const void setPostInlineWarnings(bool b) { gPostInlineWarnings = b; }
+    static bool getPostInlineWarnings() { return gPostInlineWarnings; }
+    static void setPostInlineWarnings(bool b) { gPostInlineWarnings = b; }
     static const Path& getConfigPath() { return gConfigFile; }
-    static const void setConfigPath(const Path& p) { gConfigFile = p; }
+    static void setConfigPath(const Path& p) { gConfigFile = p; }
 
 private:
-    static const bool findPath(const DirVector&, const Path&);
-    static const bool addPath(DirVector&, const Path&);
-    static const bool removePath(DirVector&, const Path&);
+    static bool findPath(const DirVector&, const Path&);
+    static bool addPath(DirVector&, const Path&);
+    static bool removePath(DirVector&, const Path&);
 
     DirVector mIncludedDirectories;
     DirVector mExcludedDirectories;

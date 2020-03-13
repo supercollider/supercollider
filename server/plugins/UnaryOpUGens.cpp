@@ -120,7 +120,7 @@ enum {
     opBitNot,
     opAbs,
     opAsFloat,
-    opAsInt,
+    opAsInteger,
     opCeil,
     opFloor,
     opFrac,

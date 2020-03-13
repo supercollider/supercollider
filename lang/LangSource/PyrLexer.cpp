@@ -87,8 +87,8 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 namespace bfs = boost::filesystem;
 using DirName = SC_Filesystem::DirName;
 
-PyrSymbol* gCompilingFileSym = 0;
-VMGlobals* gCompilingVMGlobals = 0;
+PyrSymbol* gCompilingFileSym = nullptr;
+VMGlobals* gCompilingVMGlobals = nullptr;
 static bfs::path gCompileDir;
 
 //#define DEBUGLEX 1
@@ -1588,7 +1588,7 @@ ClassExtFile* newClassExtFile(PyrSymbol* fileSym, int startPos, int endPos) {
     ClassExtFile* classext;
     classext = (ClassExtFile*)pyr_pool_compile->Alloc(sizeof(ClassExtFile));
     classext->fileSym = fileSym;
-    classext->next = 0;
+    classext->next = nullptr;
     classext->startPos = startPos;
     classext->endPos = endPos;
     if (!sClassExtFiles)
@@ -1620,9 +1620,9 @@ ClassDependancy* newClassDependancy(PyrSymbol* className, PyrSymbol* superClassN
     classdep->className = className;
     classdep->superClassName = superClassName;
     classdep->fileSym = fileSym;
-    classdep->superClassDep = NULL;
-    classdep->next = NULL;
-    classdep->subclasses = NULL;
+    classdep->superClassDep = nullptr;
+    classdep->next = nullptr;
+    classdep->subclasses = nullptr;
 
     classdep->startPos = startPos;
     classdep->endPos = endPos;
@@ -1714,8 +1714,8 @@ void compileClass(PyrSymbol* fileSym, int startPos, int endPos, int lineOffset) 
     // fprintf(stderr, "compileClass: %d\n", fileSym->u.index);
 
     gCompilingFileSym = fileSym;
-    gCompilingVMGlobals = 0;
-    gRootParseNode = NULL;
+    gCompilingVMGlobals = nullptr;
+    gRootParseNode = nullptr;
     initParserPool();
     if (startLexer(fileSym, bfs::path(), startPos, endPos, lineOffset)) {
         // postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
@@ -1904,7 +1904,7 @@ void initPassOne() {
     pyr_pool_runtime->FreeAllInternal();
     // dump_pool_histo(pyr_pool_runtime);
     // gPermanentObjPool.Init(pyr_pool_runtime, PERMOBJCHUNK);
-    sClassExtFiles = 0;
+    sClassExtFiles = nullptr;
 
     void* ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
     gMainVMGlobals->symbolTable = new (ptr) SymbolTable(pyr_pool_runtime, 65536);
@@ -2118,7 +2118,7 @@ bool passOne_ProcessOneFile(const bfs::path& path) {
     if (isValidSourceFileName(path)) {
         gNumCompiledFiles++;
         PyrSymbol* fileSym = getsym(path_c_str);
-        fileSym->u.source = NULL;
+        fileSym->u.source = nullptr;
         if (startLexer(fileSym, path, -1, -1, -1)) {
             while (parseOneClass(fileSym)) {
             };
