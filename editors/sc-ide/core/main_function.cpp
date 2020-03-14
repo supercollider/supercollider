@@ -61,9 +61,9 @@ int main(int argc, char* argv[]) {
         qWarning("scide warning: Failed to load fallback translation file.");
 
     // Load translator for locale
-    QString ideTranslationFile = "scide_" + QLocale::system().name();
+    const QLocale locale;
     QTranslator scideTranslator;
-    scideTranslator.load(ideTranslationFile, ideTranslationPath);
+    scideTranslator.load(locale, "scide", "_", ideTranslationPath);
     app.installTranslator(&scideTranslator);
 
     // Force Fusion style to appear consistently on all platforms.
