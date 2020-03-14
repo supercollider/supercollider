@@ -277,7 +277,7 @@ qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
-set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
+set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc})
 
 if(APPLE)
     foreach(file ${translations})
@@ -323,7 +323,7 @@ target_include_directories(libscide PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
 )
 
-add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources})
+add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources} ${translations})
 
 set_target_properties(libscide PROPERTIES PREFIX "")
 
