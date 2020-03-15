@@ -41,6 +41,8 @@
 // setlinebuf is equivalent to the setvbuf call below.
 inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0); }
 
+static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
+
 #endif
 
 
@@ -124,11 +126,23 @@ void Usage() {
     i += n;
 
 
-int main(int argc, char* argv[]);
-int main(int argc, char* argv[]) {
-    setlinebuf(stdout);
-
 #ifdef _WIN32
+
+int wmain(int argc, wchar_t* wargv[]);
+int wmain(int argc, wchar_t* wargv[]) {
+    // convert args to utf-8
+    char** argv = new char*[argc * sizeof(char*)];
+    for (int i = 0; i < argc; i++) {
+        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
+        argv[i] = static_cast<char*>(malloc(argSize));
+        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    }
+
+    // set codepage to UTF-8
+    gOldCodePage = GetConsoleOutputCP();
+    if (!SetConsoleOutputCP(65001))
+        scprintf("WARNING: could not set codepage to UTF-8\n");
+
     // initialize winsock
     WSAData wsaData;
     int nCode;
@@ -136,7 +150,16 @@ int main(int argc, char* argv[]) {
         scprintf("WSAStartup() failed with error code %d.\n", nCode);
         return 1;
     }
-#endif
+
+#else
+
+int main(int argc, char* argv[]);
+int main(int argc, char* argv[]) {
+
+#endif //_WIN32
+
+    setlinebuf(stdout);
+
     EventLoop::setup();
 
     int udpPortNum = -1;
@@ -363,6 +386,8 @@ int main(int argc, char* argv[]) {
 #ifdef _WIN32
     // clean up winsock
     WSACleanup();
+    // reset codepage from UTF-8
+    SetConsoleOutputCP(gOldCodePage);
 
 #endif // _WIN32
 
