@@ -110,7 +110,7 @@ TestSimpleNumber : UnitTest {
 	}
 
 	test_asTimeString_negativeZero {
-		var expected = "-00:00:00.000";
+		var expected = "00:00:00.000";
 		var actual = -0.0.asTimeString;
 		this.assertEquals(actual, expected, "-0.0.asTimeString (negative zero)");
 	}
