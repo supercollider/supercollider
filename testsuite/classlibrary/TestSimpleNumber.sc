@@ -121,6 +121,12 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(actual, expected, "-1.asTimeString (negative one)");
 	}
 
+	test_asTimeString_negativeFraction {
+		var expected = "00:00:00.000";
+		var actual = -0.001.asTimeString(precision: 0.1);
+		this.assertEquals(actual, expected, "-0.001.asTimeString(precision: 0.1) (negative number smaller than precision)");
+	}
+
 	test_asTimeString_negativeOneDontDropDays {
 		var expected = "-000:00:00:01.000";
 		var actual = -1.asTimeString(dropDaysIfPossible: false);
