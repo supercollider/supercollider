@@ -31,6 +31,7 @@
 #include <stdexcept>
 #ifdef _WIN32
 #    include <winsock2.h>
+#    include <vector>
 #else
 #    include <sys/wait.h>
 #endif
@@ -40,8 +41,6 @@
 // according to this page: http://www.mkssoftware.com/docs/man3/setlinebuf.3.asp
 // setlinebuf is equivalent to the setvbuf call below.
 inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0); }
-
-static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
 
 #endif
 
@@ -126,38 +125,9 @@ void Usage() {
     i += n;
 
 
-#ifdef _WIN32
-
-int wmain(int argc, wchar_t* wargv[]);
-int wmain(int argc, wchar_t* wargv[]) {
-    // convert args to utf-8
-    char** argv = new char*[argc * sizeof(char*)];
-    for (int i = 0; i < argc; i++) {
-        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
-        argv[i] = static_cast<char*>(malloc(argSize));
-        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
-    }
-
-    // set codepage to UTF-8
-    gOldCodePage = GetConsoleOutputCP();
-    if (!SetConsoleOutputCP(65001))
-        scprintf("WARNING: could not set codepage to UTF-8\n");
-
-    // initialize winsock
-    WSAData wsaData;
-    int nCode;
-    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-        scprintf("WSAStartup() failed with error code %d.\n", nCode);
-        return 1;
-    }
-
-#else
-
-int main(int argc, char* argv[]);
-int main(int argc, char* argv[]) {
-
-#endif //_WIN32
-
+// int main(int argc, char* argv[]);
+// int scsynth_main(int argc, char* argv[]) {
+int scsynth_main(int argc, char** argv) {
     setlinebuf(stdout);
 
     EventLoop::setup();
@@ -383,13 +353,50 @@ int main(int argc, char* argv[]) {
 
     EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
+    return 0;
+}
+
 #ifdef _WIN32
+
+int wmain(int argc, wchar_t** wargv) {
+    // convert args to utf-8
+    std::vector<char*> argv;
+    for (int i = 0; i < argc; i++) {
+        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
+        argv.push_back(new char[argSize]);
+        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    }
+
+    // set codepage to UTF-8
+    static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
+    gOldCodePage = GetConsoleOutputCP();
+    if (!SetConsoleOutputCP(65001))
+        scprintf("WARNING: could not set codepage to UTF-8\n");
+
+    // initialize winsock
+    WSAData wsaData;
+    int nCode;
+    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+        scprintf("WSAStartup() failed with error code %d.\n", nCode);
+        return 1;
+    }
+
+    // run main
+    int result = scsynth_main(argv.size(), argv.data());
+
     // clean up winsock
     WSACleanup();
     // reset codepage from UTF-8
     SetConsoleOutputCP(gOldCodePage);
+    // clear vector with converted args
+    argv.clear();
 
-#endif // _WIN32
-
-    return 0;
+    return result;
 }
+
+#else
+
+// int main(int argc, char* argv[]) { return scsynth_main(argc, argv) };
+int main(int argc, char** argv) { return scsynth_main(argc, argv); };
+
+#endif //_WIN32
