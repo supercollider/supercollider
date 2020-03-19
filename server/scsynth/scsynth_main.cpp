@@ -125,8 +125,6 @@ void Usage() {
     i += n;
 
 
-// int main(int argc, char* argv[]);
-// int scsynth_main(int argc, char* argv[]) {
 int scsynth_main(int argc, char** argv) {
     setlinebuf(stdout);
 
@@ -396,7 +394,6 @@ int wmain(int argc, wchar_t** wargv) {
 
 #else
 
-// int main(int argc, char* argv[]) { return scsynth_main(argc, argv) };
 int main(int argc, char** argv) { return scsynth_main(argc, argv); };
 
 #endif //_WIN32
