@@ -695,13 +695,15 @@ SimpleNumber : Number {
 	// see String:asSecs for complement
 
 	asTimeString { |precision = 0.001, maxDays = 365, dropDaysIfPossible = true|
-		var number, decimal, days, hours, minutes, seconds, mseconds, isNegative = this < 0;
+		var number, decimal, days, hours, minutes, seconds, mseconds, isNegative;
 
 		// min value of precision is 0.001; this ensures that we stick to 3 decimal places in the
 		// formatted string.
 		precision = max(precision, 0.001);
 
-		number = this.abs.round(precision);
+		number = this.round(precision);
+		isNegative = number < 0;
+		number = number.abs;
 		decimal = number.asInteger;
 		days = decimal.div(86400).min(maxDays);
 		days = if(dropDaysIfPossible and: { days == 0 }) {
