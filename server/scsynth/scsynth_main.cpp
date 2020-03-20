@@ -357,6 +357,14 @@ int scsynth_main(int argc, char** argv) {
 #ifdef _WIN32
 
 int wmain(int argc, wchar_t** wargv) {
+    // initialize winsock
+    WSAData wsaData;
+    int nCode;
+    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+        scprintf("WSAStartup() failed with error code %d.\n", nCode);
+        return 1;
+    }
+
     // convert args to utf-8
     std::vector<char*> argv;
     for (int i = 0; i < argc; i++) {
@@ -370,14 +378,6 @@ int wmain(int argc, wchar_t** wargv) {
     gOldCodePage = GetConsoleOutputCP();
     if (!SetConsoleOutputCP(65001))
         scprintf("WARNING: could not set codepage to UTF-8\n");
-
-    // initialize winsock
-    WSAData wsaData;
-    int nCode;
-    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-        scprintf("WSAStartup() failed with error code %d.\n", nCode);
-        return 1;
-    }
 
     // run main
     int result = scsynth_main(argv.size(), argv.data());
