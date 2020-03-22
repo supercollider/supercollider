@@ -16,6 +16,10 @@ common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
 
+# source tarball
+package/*.bz2
+package/*.asc
+
 # CLion files
 .idea
 cmake-build-*
