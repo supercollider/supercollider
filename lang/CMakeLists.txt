@@ -252,7 +252,12 @@ endif()
 
 if (SC_ABLETON_LINK)
 	message(STATUS "Compiling with Ableton Link support")
-	include(../external_libraries/link/AbletonLinkConfig.cmake)
+	if(SYSTEM_ABLETON_LINK)
+		find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)
+	else()
+		include(../external_libraries/link/AbletonLinkConfig.cmake)
+	endif()
+
 	target_link_libraries(libsclang Ableton::Link)
 
 	add_definitions(-DSC_ABLETON_LINK)
