@@ -110,3 +110,27 @@ METHOD:: isNull
 	Whether the item is invalid. After an item is removed, all related TreeViewItem instances become invalid.
 
 	RETURNS:: A Boolean.
+
+
+EXAMPLES::
+
+CODE::
+
+(
+t = TreeView().front;
+t.columns_(["one", "two", "three"]);
+t.addItem(["Alice", "Anna", "Anders"]);
+t.addItem(["Bob", "Beatrice", "Benny"]);
+t.addItem(["Cleo", "Conrad", "Cecilia"]);
+)
+
+i = t.itemAt(1);  //get an item
+
+i.setString(1, "Hans");
+i.setColor(1, Color.red);
+i.setTextColor(1, Color.white);
+
+i.addChild(["Bengt", "Bodil", "Ben"]);
+i.strings;
+i.childAt(0).strings;
+::
