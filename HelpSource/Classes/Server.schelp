@@ -659,7 +659,7 @@ You must call this when finished recording or the output file will be unusable. 
 
 
 method:: recChannels
-Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
+Get/set the number of channels (int) to record. By default this is set to 2 (stereo) but can be increased to record soundfiles with many more channels. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
