@@ -155,6 +155,21 @@ TestPattern : UnitTest {
 		this.assert(x.sum { |x| x.delta } == 4.5, "Psync with maxdur = quant should end no earlier than after dur");
 	}
 
+	test_Pfset_evaluates_init_and_cleanup_on_empty_stream {
+		var x = 0, y = 0, inEvent = (), cleanup = EventStreamCleanup.new;
+		var outEvent = Pfset({ x = 1 }, p{}, { y = 2 }).asStream.next(inEvent);
+		this.assert(x == 1, "Pfset on nil stream should still call the initializer function");
+		this.assert(y == 2, "Pfset on nil stream should still call the cleanup function");
+		this.assert(outEvent.isNil, "Pfset on nil stream should return nil");
+		// inEvent.size is 2 if Pfset adds 'addToCleanup' and 'removeFromCleanup' in sequence (presently);
+		// inEvente.size could be 0 if this add-remove pair is "optimized out" in the future.
+		this.assert(inEvent.size.even, "Pfset on nil stream should add an even number of items to the input event");
+		// The present implementation of EventStreamCleanup.update first does the add(s) then the remove(s),
+		// so it "cancels out" matched add-remove pairs in the same event. But let's check that too...
+		cleanup.update(inEvent);
+		this.assert(cleanup.functions.size == 0, "Pfset on nil stream should have no effect on a cleanup-functions set");
+	}
+
 
 /*
 	test_storeArgs {
