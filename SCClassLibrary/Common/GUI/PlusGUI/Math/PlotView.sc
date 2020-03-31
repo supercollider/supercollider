@@ -1067,6 +1067,6 @@ Plotter {
 		numChannels, minval, maxval, separately = true;
 		var array = Array.interpolation(n, from, to);
 		var res = array.collect { |x| this.value(x) };
-		res.plot(name, bounds, discrete, numChannels, minval, maxval, separately)
+		^res.plot(name, bounds, discrete, numChannels, minval, maxval, separately)
 	}
 }
