@@ -126,8 +126,11 @@ after_build:
 - ps: cd ..
 
 # XXX vvv TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
-- echo "Pushing artifact to S3"
-- ps: aws s3 cp --region us-west-2 --recursive --include "*" $env:APPVEYOR_BUILD_FOLDER/artifacts/ s3://supercollider/$env:S3_BUILDS_LOCATION
+- ps: >-
+    If ($env:APPVEYOR_REPO_NAME -eq "supercollider/supercollider") {
+        echo "Pushing artifact to S3"
+        aws s3 cp --region us-west-2 --recursive --include "*" $env:APPVEYOR_BUILD_FOLDER/artifacts/ s3://supercollider/$env:S3_BUILDS_LOCATION
+    }
 # XXX ^^^ TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
 
 after_deploy:
