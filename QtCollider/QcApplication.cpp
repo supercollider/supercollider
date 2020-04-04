@@ -185,9 +185,18 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
     // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
     // native window if they aren't accepted here. This caused issue #4058. Accepting them here
     // seems to solve the problem, but might cause other issues since it is a heavy-handed way
-    // of doing this. TODO - solve more elegantly
-    if (result)
-        event->accept();
+    // of doing this.
+    // In order to still allow closing GUI windows with "cmd-w", we need to let through both
+    // this key combination, as well as modifier keys alone, since the "cmd" needs to be passed
+    // through by itself first for the "cmd-w" to work.
+    // TODO - solve more elegantly
+    if (result && event->type() == QEvent::KeyPress) {
+        auto kevent = static_cast<QKeyEvent*>(event);
+        if (!((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier))
+            && (kevent->key() != Qt::Key_unknown)) {
+            event->accept();
+        }
+    }
 #endif
     return result;
 }

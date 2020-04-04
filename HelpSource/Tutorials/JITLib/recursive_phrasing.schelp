@@ -8,7 +8,7 @@ Pdef can be used as a global storage for event patterns. Here a way is provided 
 When the event type code::\phrase:: is passed in, the event looks for a pattern in code::Pdef.all:: if it can find a definition.
 list::
 ## if it finds one it plays this pattern in the context of the outer pattern's event.
-## f there is no definition to be found there, it uses a link::Classes/SynthDef:: with this name, if present.
+## if there is no definition to be found there, it uses a link::Classes/SynthDef:: with this name, if present.
 ::
 
 When passing a emphasis::function:: to Pdef it creates a PlazyEnvirN internally. Its function is evaluated in the context of the input event (see link::Classes/PlazyEnvirN::) which should return a pattern or a stream. Note that this doesn't allow the usual access of the outer environment from within the function.

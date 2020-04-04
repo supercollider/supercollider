@@ -18,6 +18,12 @@ environment:
     CMAKE_CONFIGURATION: Release
     ASIO_URL: "http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip"
     ASIO_ZIP: asiosdk2.3.zip
+    # XXX vvv TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
+    AWS_ACCESS_KEY_ID:
+        secure: cUwCIb/EtpG3uAP48WylcMNxAh3yEbPNcQGPZDnh6go=
+    AWS_SECRET_ACCESS_KEY:
+        secure: 9n0lOPh/3hpwSEf1l0QySYngrgWYqplZozQ9ZJMxtDARIV5DIBn/NXttTfkh1Z3k
+    # XXX ^^^ TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
 
     matrix:
         - QT_DIR: "C:/Qt/5.9/msvc2015"
@@ -119,38 +125,50 @@ after_build:
     }
 - ps: cd ..
 
-after_deploy:
-- ps: echo "S3 Build Location = $env:S3_URL"
+# XXX vvv TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
+- ps: >-
+    If ($env:APPVEYOR_REPO_NAME -eq "supercollider/supercollider") {
+        echo "Pushing artifact to S3"
+        aws s3 cp --region us-west-2 --recursive --include "*" $env:APPVEYOR_BUILD_FOLDER/artifacts/ s3://supercollider/$env:S3_BUILDS_LOCATION
+        echo "S3 Build Location = $env:S3_URL"
+    }
+# XXX ^^^ TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
 
-artifacts:
-    - path: artifacts
-      name: art_folder
-    - path: build\Install\*.exe
-      name: installer
-      type: File
 
-deploy:
-# s3 upload - every commit
-- provider: S3
-  access_key_id:
-    secure: cUwCIb/EtpG3uAP48WylcMNxAh3yEbPNcQGPZDnh6go=
-  secret_access_key:
-    secure: 9n0lOPh/3hpwSEf1l0QySYngrgWYqplZozQ9ZJMxtDARIV5DIBn/NXttTfkh1Z3k
-  bucket: supercollider
-  region: us-west-2
-  folder: $(S3_BUILDS_LOCATION)
-  artifact: art_folder
-  unzip: true
-  set_public: true
-  on:
-    appveyor_repo_name: supercollider/supercollider
-
-# github releases - only tags
-- provider: GitHub
-  description: appveyor_$(APPVEYOR_REPO_TAG_NAME)
-  artifact: installer
-  auth_token:
-    secure: 6m5+IiGj/pLhiUJvZPqs7yOlSe0ttH3pklaM7w1i8ca4YRUrIKddsGTZAZo86qLx
-  prerelease: true
-  on:
-    appveyor_repo_tag: true
+# XXX vvv TEMPORARILY DISABLED DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
+#after_deploy:
+#- ps: echo "S3 Build Location = $env:S3_URL"
+#
+#artifacts:
+#    - path: artifacts
+#      name: art_folder
+#    - path: build\Install\*.exe
+#      name: installer
+#      type: File
+#
+#deploy:
+## s3 upload - every commit
+#- provider: S3
+#  access_key_id:
+#    secure: cUwCIb/EtpG3uAP48WylcMNxAh3yEbPNcQGPZDnh6go=
+#  secret_access_key:
+#    secure: 9n0lOPh/3hpwSEf1l0QySYngrgWYqplZozQ9ZJMxtDARIV5DIBn/NXttTfkh1Z3k
+#  bucket: supercollider
+#  region: us-west-2
+#  folder: $(S3_BUILDS_LOCATION)
+#  artifact: art_folder
+#  unzip: true
+#  set_public: true
+#  on:
+#    appveyor_repo_name: supercollider/supercollider
+#
+## github releases - only tags
+#- provider: GitHub
+#  description: appveyor_$(APPVEYOR_REPO_TAG_NAME)
+#  artifact: installer
+#  auth_token:
+#    secure: 6m5+IiGj/pLhiUJvZPqs7yOlSe0ttH3pklaM7w1i8ca4YRUrIKddsGTZAZo86qLx
+#  prerelease: true
+#  on:
+#    appveyor_repo_tag: true
+# XXX ^^^ TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT

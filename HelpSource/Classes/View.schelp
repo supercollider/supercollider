@@ -38,7 +38,7 @@ METHOD:: globalKeyDownAction
 
 	A settable class variable containing an object (e.g. an instance of Function or FunctionList) which is evaluated (i.e. link::Classes/Object#-value#value:: method is called on it) whenever a key is pressed, independently of keyboard focus. See also link::#-addAction::.
 
-	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode.
+	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode, key.
 
 METHOD:: globalKeyUpAction
 

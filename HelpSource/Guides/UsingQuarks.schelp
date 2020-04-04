@@ -228,7 +228,7 @@ code::
   summary: "Widgets, gadgets and arcane devices for summoning demons.",
   version: "1.0.0",
   schelp: "DemonWidgets",
-  dependencies: ["Bjorkland", "Canvas3D", "cruciallib@tags/4.1.4"],
+  dependencies: ["Bjorklund", "Canvas3D", "cruciallib@tags/4.1.4"],
   license: "GPL",
   copyright: "Frank Furter, Dr.-Ing. 2015"
 )
@@ -256,7 +256,7 @@ list::
 dependencies is a list of Quarks or git urls with optional an @refspec
 
 code::
-Bjorkland
+Bjorklund
 cruciallib@tags/4.1.4
 ::
 
