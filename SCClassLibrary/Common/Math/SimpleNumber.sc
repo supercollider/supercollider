@@ -702,13 +702,15 @@ SimpleNumber : Number {
 	// see String:asSecs for complement
 
 	asTimeString { |precision = 0.001, maxDays = 365, dropDaysIfPossible = true|
-		var number, decimal, days, hours, minutes, seconds, mseconds;
+		var number, decimal, days, hours, minutes, seconds, mseconds, isNegative;
 
 		// min value of precision is 0.001; this ensures that we stick to 3 decimal places in the
 		// formatted string.
 		precision = max(precision, 0.001);
 
 		number = this.round(precision);
+		isNegative = number < 0;
+		number = number.abs;
 		decimal = number.asInteger;
 		days = decimal.div(86400).min(maxDays);
 		days = if(dropDaysIfPossible and: { days == 0 }) {
@@ -716,6 +718,7 @@ SimpleNumber : Number {
 		} {
 			days.asString.padLeft(3, "0").add($:);
 		};
+		if(isNegative) {days = "-" ++ days};
 		hours = (decimal.div(3600) % 24).asString.padLeft(2, "0").add($:);
 		minutes = (decimal.div(60) % 60).asString.padLeft(2, "0").add($:);
 		seconds = (decimal % 60).asString.padLeft(2, "0").add($.);
