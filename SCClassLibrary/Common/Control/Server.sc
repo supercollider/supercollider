@@ -1085,9 +1085,10 @@ Server {
 
 		addr.sendMsg("/quit");
 
-		if(watchShutDown and: { this.unresponsive }) {
+		if(this.unresponsive) {
 			"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
-			watchShutDown = false;
+			pid !? {thisProcess.platform.killProcessByID(pid)};
+			if(watchShutDown) {watchShutDown = false};
 		};
 
 		if(options.protocol == \tcp) {
