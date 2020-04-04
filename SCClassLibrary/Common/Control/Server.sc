@@ -1085,8 +1085,13 @@ Server {
 
 		addr.sendMsg("/quit");
 
-		if(watchShutDown and: { this.unresponsive }) {
-			"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+		if(this.unresponsive) {
+			if(pid.notNil) {
+				"Server '%' was unresponsive. Killing forcefully.".format(name).postln;
+				thisProcess.platform.killProcessByID(pid);
+			} {
+				"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+			};
 			watchShutDown = false;
 		};
 
@@ -1103,8 +1108,6 @@ Server {
 			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
-		// let server process reset pid to nil!
-		// pid = nil;
 		sendQuit = nil;
 		maxNumClients = nil;
 
