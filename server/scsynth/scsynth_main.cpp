@@ -374,8 +374,8 @@ int wmain(int argc, wchar_t** wargv) {
     }
 
     // set codepage to UTF-8
-    static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
-    gOldCodePage = GetConsoleOutputCP();
+    static UINT oldCodePage; // for remembering the old codepage when we switch to UTF-8
+    oldCodePage = GetConsoleOutputCP();
     if (!SetConsoleOutputCP(65001))
         scprintf("WARNING: could not set codepage to UTF-8\n");
 
@@ -385,7 +385,7 @@ int wmain(int argc, wchar_t** wargv) {
     // clean up winsock
     WSACleanup();
     // reset codepage from UTF-8
-    SetConsoleOutputCP(gOldCodePage);
+    SetConsoleOutputCP(oldCodePage);
     // clear vector with converted args
     argv.clear();
 
