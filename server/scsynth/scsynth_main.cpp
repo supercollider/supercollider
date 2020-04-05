@@ -387,7 +387,9 @@ int wmain(int argc, wchar_t** wargv) {
     // reset codepage from UTF-8
     SetConsoleOutputCP(oldCodePage);
     // clear vector with converted args
-    argv.clear();
+    for (int i = 0; i < argv.size(); i++) {
+        delete[] argv[i];
+    }
 
     return result;
 }
