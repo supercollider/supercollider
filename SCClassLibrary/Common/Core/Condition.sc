@@ -1,41 +1,107 @@
-Condition {
-	var <>test, waitingThreads;
+// Basic synchronization object
+Sync {
+	var waitingThreads;
 
-	*new { arg test=false;
-		^super.newCopyArgs(test, Array(8))
+	*new {
+		^super.newCopyArgs(Array(8));
 	}
-	wait {
-		if (test.value.not, {
-			waitingThreads = waitingThreads.add(thisThread.threadPlayer);
-			\hang.yield;
-		});
-	}
-	hang { arg value = \hang;
-		// ignore the test, just wait
-		waitingThreads = waitingThreads.add(thisThread.threadPlayer);
+
+	hang { |value = \hang|
+		this.prAddThread(thisThread);
 		value.yield;
 	}
 
-	signal {
-		var tempWaitingThreads, time;
-		if (test.value, {
-			time = thisThread.seconds;
-			tempWaitingThreads = waitingThreads;
-			waitingThreads = nil;
-			tempWaitingThreads.do({ arg thread;
-				thread.clock.sched(0, thread);
-			});
-		});
+	wait {
+		this.hang;
 	}
+
 	unhang {
-		var tempWaitingThreads, time;
-		// ignore the test, just resume all waiting threads
-		time = thisThread.seconds;
+		var tempWaitingThreads;
+
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
+
 		tempWaitingThreads.do({ arg thread;
 			thread.clock.sched(0, thread);
 		});
+	}
+
+	prAddThread { |thread|
+		waitingThreads = (waitingThreads ?? { IdentitySet() }).add(thread.threadPlayer);
+	}
+
+	prResumeThread { |thread|
+		if (waitingThreads.remove(thread.threadPlayer).notNil) {
+			thread.clock.sched(0, thread.threadPlayer);
+		}
+	}
+}
+
+Condition : Sync {
+	var <>test, pollRoutine;
+
+	*new { arg test=false;
+		^super.new.test_(test)
+	}
+
+	*timeout { |seconds=1, clock=(SystemClock)|
+		var time = (clock.seconds + seconds);
+		var new = Condition({ clock.seconds >= time });
+		clock.schedAbs(time, { new.unhang() });
+		^new
+	}
+
+	wait { |timeout, clock=(SystemClock)|
+		var waitingThread = thisThread;
+
+		if (test.value.not) {
+			timeout !? {
+				clock.schedAbs(clock.seconds + timeout, {
+					this.prResumeThread(waitingThread);
+				})
+			};
+
+			this.hang
+		};
+	}
+
+	signal {
+		if (test.value) {
+			this.unhang
+		}
+	}
+
+	then { |function|
+		fork {
+			this.wait();
+			function.value(this);
+		}
+	}
+
+	update { this.signal() }
+
+	poll { |delta=1|
+		pollRoutine.stop();
+		pollRoutine = Routine({
+			while { test.value.not } {
+				delta.wait;
+			};
+			this.unhang();
+		});
+		pollRoutine.play();
+	}
+
+	|| { |other|
+		var new = Condition({ this.test.value or: { other.test.value } });
+		fork { this.wait(); new.signal(); };
+		fork { other.wait(); new.signal(); };
+		^new
+	}
+
+	&& { |other|
+		var new = Condition({ this.test.value and: { other.test.value } });
+		fork { this.wait(); other.wait(); new.signal(); };
+		^new
 	}
 }
 
