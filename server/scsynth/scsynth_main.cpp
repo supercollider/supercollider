@@ -373,9 +373,8 @@ int wmain(int argc, wchar_t** wargv) {
         WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
     }
 
-    // set codepage to UTF-8
-    static UINT oldCodePage; // for remembering the old codepage when we switch to UTF-8
-    oldCodePage = GetConsoleOutputCP();
+    // set codepage to UTF-8 and remember the old codepage
+    auto oldCodePage = GetConsoleOutputCP();
     if (!SetConsoleOutputCP(65001))
         scprintf("WARNING: could not set codepage to UTF-8\n");
 
@@ -387,9 +386,8 @@ int wmain(int argc, wchar_t** wargv) {
     // reset codepage from UTF-8
     SetConsoleOutputCP(oldCodePage);
     // clear vector with converted args
-    for (int i = 0; i < argv.size(); i++) {
-        delete[] argv[i];
-    }
+    for (auto* arg : argv)
+        delete[] arg;
 
     return result;
 }
