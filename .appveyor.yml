@@ -129,7 +129,7 @@ after_build:
 - ps: >-
     If ($env:APPVEYOR_REPO_NAME -eq "supercollider/supercollider") {
         echo "Pushing artifact to S3"
-        aws s3 cp --region us-west-2 --recursive --include "*" $env:APPVEYOR_BUILD_FOLDER/artifacts/ s3://supercollider/$env:S3_BUILDS_LOCATION
+        aws s3 cp --region us-west-2 --acl public-read --recursive --include "*" $env:APPVEYOR_BUILD_FOLDER/artifacts/ s3://supercollider/$env:S3_BUILDS_LOCATION
         echo "S3 Build Location = $env:S3_URL"
     }
 # XXX ^^^ TEMPORARY WORKAROUND DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
