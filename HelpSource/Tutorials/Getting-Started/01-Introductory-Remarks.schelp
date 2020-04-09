@@ -21,7 +21,7 @@ For example: "Ctrl-Enter" is a key combination of the "Ctrl" key and the "Enter"
 
 "Ctrl" is a key found on most Windows and Linux computers. Mac computers have a "Ctrl" key, but when more than one key combination is given for the same instruction, the one that starts with "Cmd" is intended for Mac users. "Cmd" is short for "command" and is the key with "⌘" on it. 
 
-For key combinations with 3 or more keys, hold down all keys except the last key and then press the last key. For example, "Cmd-Shift-P" means: press and hold down the "Cmd" and "Shift" keys first, then press the "P" key while still holding "Cmd" and "Shift".
+For key combinations with 3 or more keys, hold down all keys except the last key and then press the last key. For example, "Ctrl-Shift-P" means: press and hold down the "Ctrl" and "Shift" keys first, then press the "P" key while still holding "Ctrl" and "Shift".
 
 section::Links
 
