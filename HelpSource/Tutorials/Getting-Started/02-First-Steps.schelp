@@ -96,8 +96,6 @@ line 3 char 10:
 
 Usually the problem actually occurs a little before that, so that's where you should look.  In this case, it's the lack of a semi-colon at the end of the previous line.  Note that each line of code ends normally with a semi-colon.  This is how you separate lines of code in SC. Since we didn't have a semi-colon between the two lines we have gotten an error. 
 
-Using semi-colons, it's possible to have more than one code statement on the same line of text. This can be handy if you don't want to have to select multiple lines to execute related code statements.
-
 code::
 "Call me ".post; "Ishmael?".postln;
 ::
