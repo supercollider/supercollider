@@ -34,7 +34,7 @@ code::
 "Hello World!".postln;
 ::
 
-To execute it, simply click to place the cursor somewhere on the same line as the code and then press Shift-Enter (Shift-Return on the Mac). Try this now.
+To execute it, simply click to place the cursor somewhere on the same line as the code and then press Shift-Enter (Shift-Return on macOS). Try this now.
 
 If all went well, you should see this in the post window.
 
@@ -43,7 +43,7 @@ Hello World!
 -> Hello World!
 ::
 
-Alternatively you can also first select the code you wish to execute (by clicking and dragging over the text until it is highlighted) and then press Ctrl-Enter (or Cmd-Return if you're on a Mac). Try this now.
+Alternatively you can also first select the code you wish to execute (by clicking and dragging over the text until it is highlighted) and then press Ctrl-Enter (Cmd-Return on macOS). Try this now.
 
 Now let's take a closer look at the code. The first bit, code::"Hello World!"::, is a kind of emphasis::Object::, called a String. An object is basically just a way of representing something in the computer, for instance a bit of text, or an oscillator, that allows you to control it and send messages to it. More about that later, but for now just understand that a String is a way of representing a bit of text.
 
@@ -51,7 +51,7 @@ The second bit, code::.postln;::, says 'print me (or a meaningful description of
 
 Why did it print twice? Well, when you execute code in SC, it always posts the result of the last bit of code (the last statement). So it first prints because we explicitly told it to print, and then it prints the result of this operation, which happens to be the same in this case.
 
-So in this case we didn't really need the code::postln:: bit. But in the following example we would. Select both lines of text by clicking and dragging over them, and then execute, i.e. press Ctrl-Enter (Cmd-Return on Mac).
+So in this case we didn't really need the code::postln:: bit. But in the following example we would. Select both lines of text by clicking and dragging over them, and then execute, i.e. press Ctrl-Enter (Cmd-Return on macOS).
 
 code::
 "Hello there, I'm SuperCollider!".postln;
@@ -60,7 +60,7 @@ code::
 
 The first line, 'Hello there, I'm SuperCollider!' would not have printed if we didn't have the explicit postln.
 
-In general, when you are meant to execute several lines of code at the same time they will be surrounded by parentheses, as in the example below. You can have your cursor anywhere in this region (or on the line of the parentheses on the Mac), then double-click and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on Mac) - this selects the whole region and executes it. Try it out on the example below.
+In general, when you are meant to execute several lines of code at the same time they will be surrounded by parentheses, as in the example below. You can have your cursor anywhere in this region (or on the line of the parentheses on macOS), then double-click and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on macOS) - this selects the whole region and executes it. Try it out on the example below.
 
 code::
 (
@@ -69,9 +69,9 @@ code::
 )
 ::
 
-Double clicking inside a pair of enclosing parentheses may not select the entire region on all systems, notably not on modern Macs. On some it may only select the double clicked word. Thus it may be good, to make it a habit to stick to a particular technique. E.g. to first always check you have selected all of the intended code, regardless of the selection technique, before pressing either Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Enter on Mac). Then stick to the technique that works best for you. Experiment with this to learn how your system behaves.
+Double clicking inside a pair of enclosing parentheses may not select the entire region on all systems, notably not on modern Macs. On some it may only select the double clicked word. Thus it may be good, to make it a habit to stick to a particular technique. E.g. to first always check you have selected all of the intended code, regardless of the selection technique, before pressing either Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Enter on macOS). Then stick to the technique that works best for you. Experiment with this to learn how your system behaves.
 
-When code is not surrounded by parentheses it is generally intended to be executed one line at a time. You can have your cursor anywhere in a line of code and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on Mac) - this selects the whole line and executes it.
+When code is not surrounded by parentheses it is generally intended to be executed one line at a time. You can have your cursor anywhere in a line of code and press Ctrl-Enter or Shift-Enter (Cmd-Return or Shift-Return on macOS) - this selects the whole line and executes it.
 
 Note that each of the lines within the block of code ends with a semi-colon. This is very important when executing multiple lines of code. Try what happens when you execute following variant of the almost identical code.
 
@@ -130,7 +130,7 @@ link::Guides/How-to-Use-the-Interpreter::, link::Reference/Literals::, link::Cla
 
 section::Suggested Exercise
 
-Open a new tab or window by pressing Ctrl-N (Cmd-N on Mac) or choose 'New' from the File menu. Save the document by giving it a name like 'My first SC code.scd'. Note, you should always use extension '.scd' for files containing SC code. Copy some of above code examples and paste them into the new document using Ctrl-C and Ctrl-V (Cmd-C and Cmd-V on Mac) or use the copy and paste Edit menu items.
+Open a new tab or window by pressing Ctrl-N (Cmd-N on macOS) or choose 'New' from the File menu. Save the document by giving it a name like 'My first SC code.scd'. Note, you should always use extension '.scd' for files containing SC code. Copy some of above code examples and paste them into the new document using Ctrl-C and Ctrl-V (Cmd-C and Cmd-V on macOS) or use the copy and paste Edit menu items.
 
 SC will let you edit the help files and documentation, so it's always a good idea to copy text over before changing it to avoid accidentally saving altered help files!
 
