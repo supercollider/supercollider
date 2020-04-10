@@ -33,7 +33,7 @@ environment:
           CMAKE_ARCH: "Win32"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
           # https://www.appveyor.com/docs/lang/cpp/
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars32.bat"
+          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars32.bat"
 
         - QT_DIR: "C:/Qt/5.14/msvc2017_64"
           CMAKE_GENERATOR: "Visual Studio 16 2019"
@@ -41,7 +41,7 @@ environment:
           ARCH: "x64"
           CMAKE_ARCH: "x64"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
-          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars64.bat"
+          VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Auxiliary/Build/vcvars64.bat"
 
 install:
 - ps: echo "Install phase start"
@@ -49,7 +49,7 @@ install:
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 # Load command-line tools (lib.exe)
-# - cmd: call "%VCVARS_SCRIPT%"
+- cmd: call "%VCVARS_SCRIPT%"
 
 - cmd: echo "Get submodules"
 - cmd: git submodule update --init --recursive
