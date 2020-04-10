@@ -9,7 +9,7 @@ version: '{build}' # incremented with each build
 clone_depth: 10
 
 # https://www.appveyor.com/docs/build-environment/#build-worker-images
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 # disable automatic tests
 test: off
@@ -27,17 +27,19 @@ environment:
 
     matrix:
         - QT_DIR: "C:/Qt/5.9/msvc2015"
-          CMAKE_GENERATOR: "Visual Studio 15 2017"
+          CMAKE_GENERATOR: "Visual Studio 16 2019"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip
           ARCH: "x86"
+          CMAKE_ARCH: "Win32"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win32"
           # https://www.appveyor.com/docs/lang/cpp/
           VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars32.bat"
 
         - QT_DIR: "C:/Qt/5.14/msvc2017_64"
-          CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
+          CMAKE_GENERATOR: "Visual Studio 16 2019"
           FFTW_URL: ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip
           ARCH: "x64"
+          CMAKE_ARCH: "x64"
           S3_BUILDS_LOCATION: "builds/supercollider/supercollider/win64"
           VCVARS_SCRIPT: "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars64.bat"
 
@@ -47,7 +49,7 @@ install:
 - ps: $env:PROGFILES = if ($env:ARCH -eq "x64") { 'Program Files' } else { 'Program Files (x86)' }
 
 # Load command-line tools (lib.exe)
-- cmd: call "%VCVARS_SCRIPT%"
+# - cmd: call "%VCVARS_SCRIPT%"
 
 - cmd: echo "Get submodules"
 - cmd: git submodule update --init --recursive
@@ -94,7 +96,7 @@ before_build:
 - cd build
 
 build_script:
-- cmake -G "%CMAKE_GENERATOR%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
+- cmake -G "%CMAKE_GENERATOR%" -A "%CMAKE_ARCH%" -D CMAKE_PREFIX_PATH=%QT_DIR% ..
 - cmake --build . --target install --config %CMAKE_CONFIGURATION%
 
 # after_build instead of before_deploy so artifacts are collected at the right time
