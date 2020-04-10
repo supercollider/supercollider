@@ -100,7 +100,7 @@ Note also, having an extra semi-colon at the very end of the last piece of code 
 
 A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by pressing Cmd-\.
 
-Other times, the post window becomes full of text and hard to read. You can clear it at any time by pressing Cmd-Shift-P.
+Other times, the post window becomes full of text and hard to read. You can clear it at any time by pressing Ctrl-Shift-P (Cmd-Shift-P on macOS).
 
 section::The World According to SuperCollider
 
