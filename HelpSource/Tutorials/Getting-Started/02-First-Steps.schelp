@@ -96,10 +96,6 @@ line 3 char 10:
 
 Usually the problem actually occurs a little before that, so that's where you should look.  In this case, it's the lack of a semi-colon at the end of the previous line.  Note that each line of code ends normally with a semi-colon.  This is how you separate lines of code in SC. Since we didn't have a semi-colon between the two lines we have gotten an error. 
 
-code::
-"Call me ".post; "Ishmael?".postln;
-::
-
 Note also, having an extra semi-colon at the very end of the last piece of code does not hurt and is tolerated by SC for reasons of convenience. 
 
 A couple of more notes about the post window. It's very useful to be able to see it, but sometimes it can get hidden behind other windows. You can bring it to the front at any time by pressing Cmd-\.
