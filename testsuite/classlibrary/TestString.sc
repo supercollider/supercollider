@@ -152,5 +152,4 @@ TestString : UnitTest {
 		var result = "the quick brown fox".findRegexp("moo");
 		this.assertEquals(result, Array.new, "Non-matching findRegexp should return empty array");
 	}
-
 }
