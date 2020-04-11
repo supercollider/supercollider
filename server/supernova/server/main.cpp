@@ -337,24 +337,33 @@ int main(int argc, char* argv[]) {
     cout << "compiled for debugging" << endl;
 #endif
 
-    server_shared_memory_creator::cleanup(args.port());
-    nova_server server(args);
-    register_signal_handler();
+    // FIXME should have more granular error handling
+    try {
+        server_shared_memory_creator::cleanup(args.port());
+        nova_server server(args);
+        register_signal_handler();
 
-    set_plugin_paths(args, sc_factory.get());
-    load_synthdefs(server, args);
+        set_plugin_paths(args, sc_factory.get());
+        load_synthdefs(server, args);
 
-    if (!args.non_rt) {
-        try {
-            start_audio_backend(args);
-            cout << "Supernova ready" << endl;
-        } catch (exception const& e) {
-            cout << "Error: " << e.what() << endl;
-            exit(1);
-        }
-        EventLoop::run([&server]() { server.run(); });
-    } else
-        server.run_nonrt_synthesis(args);
+        if (!args.non_rt) {
+            try {
+                start_audio_backend(args);
+                cout << "Supernova ready" << endl;
+            } catch (exception const& e) {
+                cout << "\n*** ERROR: could not start audio backend: " << e.what() << endl;
+                exit(1);
+            }
+            EventLoop::run([&server]() { server.run(); });
+        } else
+            server.run_nonrt_synthesis(args);
+    } catch (const std::exception& exc) {
+        cout << "\n*** ERROR: in main(): " << exc.what() << endl;
+        exit(1);
+    } catch (...) {
+        cout << "\n*** ERROR: unknown error in main()" << endl;
+        exit(1);
+    }
 
     return 0;
 }

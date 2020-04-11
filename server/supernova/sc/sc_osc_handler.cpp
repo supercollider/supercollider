@@ -589,30 +589,47 @@ void sc_osc_handler::open_udp_socket(udp const& protocol, unsigned int port) {
 }
 
 bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned int port) {
-    if (protocol == IPPROTO_TCP) {
-        if (type != SOCK_STREAM)
-            return false;
+    try {
+        if (protocol == IPPROTO_TCP) {
+            if (type != SOCK_STREAM)
+                return false;
 
-        if (family == AF_INET)
-            open_tcp_acceptor(tcp::v4(), port);
-        else if (family == AF_INET6)
-            open_tcp_acceptor(tcp::v6(), port);
-        else
-            return false;
-        return true;
-    } else if (protocol == IPPROTO_UDP) {
-        if (type != SOCK_DGRAM)
-            return false;
+            if (family == AF_INET)
+                open_tcp_acceptor(tcp::v4(), port);
+            else if (family == AF_INET6)
+                open_tcp_acceptor(tcp::v6(), port);
+            else
+                return false;
+            return true;
+        } else if (protocol == IPPROTO_UDP) {
+            if (type != SOCK_DGRAM)
+                return false;
 
-        if (family == AF_INET)
-            open_udp_socket(udp::v4(), port);
-        else if (family == AF_INET6)
-            open_udp_socket(udp::v6(), port);
-        else
-            return false;
-        start_receive_udp();
-        return true;
+            if (family == AF_INET)
+                open_udp_socket(udp::v4(), port);
+            else if (family == AF_INET6)
+                open_udp_socket(udp::v6(), port);
+            else
+                return false;
+            start_receive_udp();
+            return true;
+        }
+    } catch (const boost::system::system_error& exc) {
+        // Special verbose message to help with common issue. Issue #3969
+        if (exc.code() == boost::system::errc::address_in_use) {
+            std::cout << "\n*** ERROR: failed to open " << (protocol == IPPROTO_TCP ? "TCP" : "UDP")
+                      << " socket: address in use.\n"
+                         "This could be because another instance of supernova is already using it.\n"
+                         "You can use SuperCollider (sclang) to kill all running servers by running `Server.killAll`.\n"
+                         "You can also kill supernova using a terminal or your operating system's task manager."
+                      << std::endl;
+            std::exit(1);
+        }
+
+        // Allow other exceptions to propagate upward so they can be caught and printed in main.
+        throw;
     }
+
     return false;
 }
 

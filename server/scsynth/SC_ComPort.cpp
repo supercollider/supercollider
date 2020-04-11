@@ -493,27 +493,36 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacket(World* inWorld, int inSize, char* inDa
     return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, nullptr);
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {
+template <typename T, typename... Args> static bool protectedOpenPort(const char* socketType, Args&&... args) noexcept {
     try {
-        new SC_UdpInPort(inWorld, bindTo, inPort);
+        new T(std::forward<Args>(args)...);
         return true;
-    } catch (std::exception& exc) {
-        scprintf("Exception in World_OpenUDP: %s\n", exc.what());
+    } catch (const boost::system::system_error& exc) {
+        // Special verbose message to help with common issue. Issue #3969
+        if (exc.code() == boost::system::errc::address_in_use) {
+            scprintf("\n*** ERROR: failed to open %s socket: address in use.\n"
+                     "This could be because another instance of scsynth is already using it.\n"
+                     "You can use SuperCollider (sclang) to kill all running servers by running `Server.killAll`.\n"
+                     "You can also kill scsynth using a terminal or your operating system's task manager.\n",
+                     socketType);
+        } else {
+            scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
+        }
+    } catch (const std::exception& exc) {
+        scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
     } catch (...) {
+        scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType);
     }
     return false;
 }
 
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {
+    return protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort);
+}
+
 SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
                                       int inBacklog) {
-    try {
-        new SC_TcpInPort(inWorld, bindTo, inPort, inMaxConnections, inBacklog);
-        return true;
-    } catch (std::exception& exc) {
-        scprintf("Exception in World_OpenTCP: %s\n", exc.what());
-    } catch (...) {
-    }
-    return false;
+    return protectedOpenPort<SC_TcpInPort>("TCP", inWorld, bindTo, inPort, inMaxConnections, inBacklog);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
