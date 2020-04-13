@@ -896,7 +896,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
             && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
             scprintf("ERROR: Input sample rate is %g, but output is %g. "
                      "Mismatched sample rates are not supported. "
-                     "To disable input, set the number of input channels to 0.\n",
+                     "To disable input, set the number of input channels to 0.\n"
+                     "For Example:\n"
+                     "  s.options.numInputBusChannels = 0\n",
                      inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
             return false;
         }
