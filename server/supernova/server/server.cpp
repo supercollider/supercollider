@@ -18,6 +18,8 @@
 
 #include <stdexcept>
 
+#include "SC_Win32Utils.h"
+
 #include "nova-tt/thread_affinity.hpp"
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"

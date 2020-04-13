@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "SC_Win32Utils.h"
+
 #include <boost/filesystem/path.hpp>
 #include <boost/algorithm/string.hpp>
 

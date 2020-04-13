@@ -19,6 +19,8 @@
 #include <cstdarg>
 #include <random>
 
+#include "SC_Win32Utils.h"
+
 #include "SC_SndFileHelpers.hpp"
 
 #include "sc_plugin_interface.hpp"
