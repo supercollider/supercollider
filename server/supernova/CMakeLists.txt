@@ -140,7 +140,7 @@ endif()
 
 if(AUDIOAPI STREQUAL "coreaudio")
     set(AUDIOAPI portaudio)
-    message(STATUS "supernova: coreaudio API not implemented, using ${AUDIOAPI} instead")
+    message(FATAL_ERROR "supernova: coreaudio API not implemented yet, use 'default' or 'portaudio' instead")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
