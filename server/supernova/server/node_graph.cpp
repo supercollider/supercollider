@@ -93,13 +93,13 @@ abstract_group::~abstract_group(void) {
 }
 
 void abstract_group::pause(void) {
-    for (server_node& node : child_nodes)
-        node.pause();
+    for (server_node& child_node : child_nodes)
+        child_node.pause();
 }
 
 void abstract_group::resume(void) {
-    for (server_node& node : child_nodes)
-        node.resume();
+    for (server_node& child_node : child_nodes)
+        child_node.resume();
 }
 
 void abstract_group::add_child(server_node* node) {
