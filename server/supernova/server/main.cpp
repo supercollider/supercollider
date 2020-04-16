@@ -308,7 +308,7 @@ void lock_memory(server_arguments const& args) {
 
 } /* namespace */
 
-int main(int argc, char* argv[]) {
+int supernova_main(int argc, char* argv[]) {
     drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
                           // it!
     enable_core_dumps();
@@ -360,3 +360,37 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+#ifdef _WIN32
+
+int wmain(int argc, wchar_t** wargv) {
+    // convert args to utf-8
+    std::vector<char*> argv;
+    for (int i = 0; i < argc; i++) {
+        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
+        argv.push_back(new char[argSize]);
+        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    }
+
+    // set codepage to UTF-8 and remember the old codepage
+    auto oldCodePage = GetConsoleOutputCP();
+    if (!SetConsoleOutputCP(65001))
+        cout << "WARNING: could not set codepage to UTF-8" << endl;
+
+    // run main
+    int result = supernova_main(argv.size(), argv.data());
+
+    // reset codepage from UTF-8
+    SetConsoleOutputCP(oldCodePage);
+    // clear vector with converted args
+    for (auto* arg : argv)
+        delete[] arg;
+
+    return result;
+}
+
+#else
+
+int main(int argc, char** argv) { return supernova_main(argc, argv); };
+
+#endif
