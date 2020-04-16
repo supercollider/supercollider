@@ -380,6 +380,8 @@ int wmain(int argc, wchar_t** wargv) {
     // run main
     int result = supernova_main(argv.size(), argv.data());
 
+    // reset codepage from UTF-8
+    SetConsoleOutputCP(oldCodePage);
     // clear vector with converted args
     for (auto* arg : argv)
         delete[] arg;
