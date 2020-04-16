@@ -375,7 +375,7 @@ int wmain(int argc, wchar_t** wargv) {
     // set codepage to UTF-8 and remember the old codepage
     auto oldCodePage = GetConsoleOutputCP();
     if (!SetConsoleOutputCP(65001))
-        scprintf("WARNING: could not set codepage to UTF-8\n");
+        cout << "WARNING: could not set codepage to UTF-8" << endl;
 
     // run main
     int result = supernova_main(argv.size(), argv.data());
