@@ -12,9 +12,10 @@
 		file = File(fpath, "w");
 
 		if(file.isOpen.not) {"String:runInTerminal was unable to create the script file".error} {
+			fpath = fpath.shellQuote;
 			file.write("#!"++shell++"\n"
 					++this++"\n"
-					++"rm"+fpath.quote+"\n");
+					++"rm"+fpath+"\n");
 			file.close;
 			("/bin/chmod +x" + fpath).systemCmd;
 			("/usr/bin/open -a Terminal" + fpath).systemCmd;
