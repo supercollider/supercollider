@@ -49,22 +49,13 @@
 
 namespace ScIDE {
 
-HelpWebPage::HelpWebPage(HelpBrowser* browser): WebPage(browser), mBrowser(browser) {
-    setDelegateNavigation(true);
-    connect(this, SIGNAL(navigationRequested(const QUrl&, QWebEnginePage::NavigationType, bool)), browser,
-            SLOT(onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool)));
-}
-
 HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.7);
 
-    HelpWebPage* webPage = new HelpWebPage(this);
-    webPage->setDelegateReload(true);
-
-    mWebView = new QWebEngineView;
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
-    mWebView->setPage(webPage);
+    mWebView = new QtCollider::WebView(this);
+
     mWebView->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
     mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -78,23 +69,26 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     mWebView->setStyle(QStyleFactory::create("Fusion"));
 #    endif
 
-    mWebView->installEventFilter(this);
-
-    mLoadProgressIndicator = new LoadProgressIndicator;
-    mLoadProgressIndicator->setIndent(10);
-
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(mWebView);
     setLayout(layout);
 
+    mLoadProgressIndicator = new LoadProgressIndicator;
+    mLoadProgressIndicator->setIndent(10);
     connect(mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()));
     connect(mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()));
+    connect(mWebView, SIGNAL(loadFinished(bool)), this, SLOT(onPageLoad()));
+
     connect(mWebView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenuRequest(QPoint)));
 
-    connect(webPage->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()));
-    connect(webPage, SIGNAL(jsConsoleMsg(QString, int, QString)), this, SLOT(onJsConsoleMsg(QString, int, QString)));
+    mWebView->setOverrideNavigation(true);
+    connect(mWebView->page(), SIGNAL(navigationRequested(const QUrl&, QWebEnginePage::NavigationType, bool)), this,
+            SLOT(onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool)));
+    mWebView->setDelegateReload(true);
+    connect(mWebView->page()->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onReload()));
+    connect(mWebView, SIGNAL(jsConsoleMsg(QString, int, QString)), this, SLOT(onJsConsoleMsg(QString, int, QString)));
 
     ScProcess* scProcess = Main::scProcess();
     connect(scProcess, SIGNAL(response(QString, QString)), this, SLOT(onScResponse(QString, QString)));
@@ -102,18 +96,25 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect(scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()));
 
-    // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
-    // Note that putting this in the destructor doesn't work.
-    connect(QApplication::instance(), &QApplication::aboutToQuit, [webPage]() { delete webPage; });
-
     createActions();
+
+    mWebView->installEventFilter(this);
 
     applySettings(Main::settings());
 
     setFocusProxy(mWebView);
+
+    // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
+    // Note that putting this in the destructor doesn't work.
+    connect(QApplication::instance(), &QApplication::aboutToQuit, [=]() { delete mWebView->page(); });
 }
 
 void HelpBrowser::onPageLoad() {
+    // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed chortcuts
+    ((OverridingAction*)mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
+    ((OverridingAction*)mActions[Evaluate])->addToWidget(mWebView->focusProxy());
+
+    // unused: see HelpSource/scdoc.js and HelpSource/editor.js
     if (mServerPort) {
         mWebView->page()->runJavaScript(QString("setUpWebChannel(%1)").arg(mServerPort));
     }
@@ -142,9 +143,11 @@ void HelpBrowser::createActions() {
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
     ovrAction->addToWidget(this);
 
+    // eval actions <re added to mWebView->focusProxy() in onPageLoad()
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
-    ovrAction->addToWidget(this);
+    mActions[EvaluateRegion] = ovrAction = new OverridingAction(tr("Evaluate as Code Region"), this);
+    connect(mActions[EvaluateRegion], &OverridingAction::triggered, this, [=]() { this->evaluateSelection(true); });
 
     // For the sake of display:
     mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
@@ -167,10 +170,10 @@ void HelpBrowser::applySettings(Settings::Manager* settings) {
     mActions[ResetZoom]->setShortcut(settings->shortcut("editor-reset-font-size"));
 
     QList<QKeySequence> evalShortcuts;
-    evalShortcuts.append(settings->shortcut("editor-eval-smart"));
     evalShortcuts.append(settings->shortcut("editor-eval-line"));
     evalShortcuts.append(QKeySequence(Qt::Key_Enter));
     mActions[Evaluate]->setShortcuts(evalShortcuts);
+    mActions[EvaluateRegion]->setShortcut(settings->shortcut("editor-eval-smart"));
 
     settings->endGroup();
 
@@ -248,7 +251,7 @@ void HelpBrowser::findText(const QString& text, bool backwards) {
     QWebEnginePage::FindFlags flags;
     if (backwards)
         flags |= QWebEnginePage::FindBackward;
-    mWebView->findText(text, flags);
+    mWebView->findText(text, backwards);
 }
 
 bool HelpBrowser::helpBrowserHasFocus() const {
@@ -284,12 +287,8 @@ bool HelpBrowser::eventFilter(QObject* object, QEvent* event) {
             break;
         }
         case QEvent::ShortcutOverride: {
-            QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
-            if (kevent == QKeySequence::Copy || kevent == QKeySequence::Paste) {
-                kevent->accept();
-                return true;
-            }
-            break;
+            event->accept();
+            return true;
         }
         default:
             break;
@@ -352,7 +351,7 @@ void HelpBrowser::evaluateSelection(bool evaluateRegion) {
 }
 
 void HelpBrowser::onJsConsoleMsg(const QString& arg1, int arg2, const QString& arg3) {
-    qWarning() << "*** ERROR in JavaScript:" << arg1;
+    qWarning() << "*** JavaScript Message:" << arg1;
     qWarning() << "* line:" << arg2;
     qWarning() << "* source ID:" << arg3;
 }
@@ -380,6 +379,8 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
 
     if (!contextData.selectedText().isEmpty())
         menu.addAction(mActions[Evaluate]);
+    else
+        menu.addAction(mActions[EvaluateRegion]);
 
     menu.addSeparator();
 

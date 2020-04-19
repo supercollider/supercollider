@@ -193,11 +193,14 @@ set(ide_webengine_moc_hdrs
     widgets/util/WebSocketClientWrapper.hpp
     widgets/util/IDEWebChannelWrapper.hpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.h
+    ${CMAKE_SOURCE_DIR}/QtCollider/QcCallback.hpp
 )
 set(ide_webengine_src
     widgets/help_browser.cpp
     widgets/util/WebSocketTransport.cpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.cpp
 )
 
 if(SC_USE_QTWEBENGINE)
@@ -377,7 +380,7 @@ endif()
 
 if(SC_USE_QTWEBENGINE)
     message(STATUS "IDE: Building with QtWebEngine")
-    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE)
+    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE SCIDE_NO_QWIDGETFACTORY)
 endif()
 
 # Installation

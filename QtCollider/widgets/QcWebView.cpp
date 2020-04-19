@@ -23,7 +23,6 @@
 
 #    include "QcWebView.h"
 #    include "../widgets/web_page.hpp"
-#    include "../QcWidgetFactory.h"
 #    include <QWebEnginePage>
 #    include <QWebEngineSettings>
 #    include <QWebEngineContextMenuData>
@@ -35,7 +34,10 @@
 #    include <QStyle>
 #    include <QWebEngineCallback>
 
+#    ifndef SCIDE_NO_QWIDGETFACTORY
+#        include "../QcWidgetFactory.h"
 QC_DECLARE_QWIDGET_FACTORY(WebView);
+#    endif
 
 namespace QtCollider {
 
