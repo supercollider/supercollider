@@ -42,7 +42,7 @@ class WebView : public QWebEngineView {
 
 public:
     Q_INVOKABLE void setFontFamily(int genericFontFamily, const QString& fontFamily);
-    Q_INVOKABLE void triggerPageAction(int action, bool checked);
+    Q_INVOKABLE void triggerPageAction(int action, bool checked = false);
     Q_INVOKABLE QAction* pageAction(QWebEnginePage::WebAction) const;
 
     // QWebEnginePage forwards
@@ -58,13 +58,12 @@ public:
     Q_INVOKABLE void navigate(const QString& url);
 
 public Q_SLOTS:
-    void findText(const QString& searchText, bool reversed, QtCollider::QcCallback* cb);
+    void findText(const QString& searchText, bool reversed, QcCallback* cb = nullptr);
 
 Q_SIGNALS:
     void linkActivated(const QString&, int, bool);
     void jsConsoleMsg(const QString&, int, const QString&);
     void reloadTriggered(const QString&);
-    void interpret(const QString& code);
 
     // QWebEnginePage forwards
     void linkHovered(const QString& url);
@@ -99,15 +98,11 @@ public:
     bool delegateReload() const;
     void setDelegateReload(bool);
 
-    Q_PROPERTY(bool enterInterpretsSelection READ interpretSelection WRITE setInterpretSelection);
-    bool interpretSelection() const { return _interpretSelection; }
-    void setInterpretSelection(bool b) { _interpretSelection = b; }
-
     Q_PROPERTY(bool editable READ editable WRITE setEditable);
     bool editable() const { return _editable; }
     void setEditable(bool b) {
         _editable = b;
-        updateEditable(true);
+        updateEditable();
     }
 
     // QWebEnginePage properties
@@ -140,19 +135,20 @@ public:
     inline static QUrl urlFromString(const QString& str) { return QUrl::fromUserInput(str); }
 
 protected:
-    virtual void keyPressEvent(QKeyEvent*);
     virtual void contextMenuEvent(QContextMenuEvent*);
+    virtual bool event(QEvent* ev);
+    virtual bool eventFilter(QObject* obj, QEvent* event);
 
 public Q_SLOTS:
     void onPageReload();
     void onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus, int);
     void onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool);
-    void updateEditable(bool);
+    void updateEditable();
+    void pageLoaded(bool);
 
 private:
     void connectPage(QtCollider::WebPage* page);
 
-    bool _interpretSelection;
     bool _editable;
 };
 

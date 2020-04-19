@@ -38,7 +38,8 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: {
-                'Shift-Enter': evalLine
+                'Shift-Enter': ()=>false,
+                'Ctrl-D': false
             }
         })
 
@@ -59,6 +60,7 @@ const init = () => {
 
 }
 
+// UNUSED
 const evalLine = () => {
     // If we are not running in the SC IDE, do nothing.
     if (!window.IDE) {
