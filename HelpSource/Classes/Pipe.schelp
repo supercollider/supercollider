@@ -53,11 +53,6 @@ returns:: The exit status of the command (an Integer).
 
 Examples::
 
-note::
-For anyone still using macOS 10.3, UNIX commands like pipe do not work when the server is booted; quit the server, otherwise SuperCollider crashes. More recent macOS is not affected.
-
-::
-
 code::
 // this pipes in stdout from ls
 (
