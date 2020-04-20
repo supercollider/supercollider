@@ -125,7 +125,7 @@ Pfset : FuncFilterPattern {
 			inevent.putAll(envir);
 			event = stream.next(inevent);
 			if(once) {
-				cleanup.addFunction(event, { |flag|
+				cleanup.addFunction(event ? inevent, { |flag|
 					envir.use({ cleanupFunc.value(flag) });
 				});
 				once = false;
@@ -445,11 +445,11 @@ Pfindur : FilterPattern {
 }
 
 Psync : FilterPattern {
-	var <>quant, <>maxdur, <>tolerance;
-	*new { arg pattern, quant, maxdur, tolerance = 0.001;
-		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance)
+	var <>quant, <>maxdur, <>tolerance, <>mindur;
+	*new { arg pattern, quant, maxdur, tolerance = 0.001, mindur = 0;
+		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance).mindur_(mindur)
 	}
-	storeArgs { ^[pattern,quant,maxdur,tolerance] }
+	storeArgs { ^[pattern, quant, maxdur, tolerance, mindur] }
 
 	embedInStream { arg event;
 		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
@@ -462,7 +462,7 @@ Psync : FilterPattern {
 			inevent = stream.next(event).asEvent;
 			if(inevent.isNil) {
 				if(localquant.notNil) {
-					delta = elapsed.roundUp(localquant) - elapsed;
+					delta = elapsed.max(mindur.value(event)).roundUp(localquant) - elapsed;
 					if(delta > 0) { Event.silent(delta, event).yield };
 					^cleanup.exit(event);
 				};

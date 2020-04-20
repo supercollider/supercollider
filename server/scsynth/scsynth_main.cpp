@@ -31,6 +31,7 @@
 #include <stdexcept>
 #ifdef _WIN32
 #    include <winsock2.h>
+#    include <vector>
 #else
 #    include <sys/wait.h>
 #endif
@@ -124,19 +125,9 @@ void Usage() {
     i += n;
 
 
-int main(int argc, char* argv[]);
-int main(int argc, char* argv[]) {
+int scsynth_main(int argc, char** argv) {
     setlinebuf(stdout);
 
-#ifdef _WIN32
-    // initialize winsock
-    WSAData wsaData;
-    int nCode;
-    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-        scprintf("WSAStartup() failed with error code %d.\n", nCode);
-        return 1;
-    }
-#endif
     EventLoop::setup();
 
     int udpPortNum = -1;
@@ -360,11 +351,49 @@ int main(int argc, char* argv[]) {
 
     EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
-#ifdef _WIN32
-    // clean up winsock
-    WSACleanup();
-
-#endif // _WIN32
-
     return 0;
 }
+
+#ifdef _WIN32
+
+int wmain(int argc, wchar_t** wargv) {
+    // initialize winsock
+    WSAData wsaData;
+    int nCode;
+    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+        scprintf("WSAStartup() failed with error code %d.\n", nCode);
+        return 1;
+    }
+
+    // convert args to utf-8
+    std::vector<char*> argv;
+    for (int i = 0; i < argc; i++) {
+        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
+        argv.push_back(new char[argSize]);
+        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    }
+
+    // set codepage to UTF-8 and remember the old codepage
+    auto oldCodePage = GetConsoleOutputCP();
+    if (!SetConsoleOutputCP(65001))
+        scprintf("WARNING: could not set codepage to UTF-8\n");
+
+    // run main
+    int result = scsynth_main(argv.size(), argv.data());
+
+    // clean up winsock
+    WSACleanup();
+    // reset codepage from UTF-8
+    SetConsoleOutputCP(oldCodePage);
+    // clear vector with converted args
+    for (auto* arg : argv)
+        delete[] arg;
+
+    return result;
+}
+
+#else
+
+int main(int argc, char** argv) { return scsynth_main(argc, argv); };
+
+#endif //_WIN32

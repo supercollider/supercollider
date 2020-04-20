@@ -277,7 +277,7 @@ qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
-set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
+set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc})
 
 if(APPLE)
     foreach(file ${translations})
@@ -323,7 +323,7 @@ target_include_directories(libscide PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/util
 )
 
-add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources})
+add_executable( SuperCollider MACOSX_BUNDLE core/main_function.cpp ${RES_FILES} ${AdditionalBundleSources} ${translations})
 
 set_target_properties(libscide PROPERTIES PREFIX "")
 
@@ -476,20 +476,33 @@ if(APPLE OR WIN32)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
+        set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/scsynth
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/supernova
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens.scx
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/DiskIO_UGens_supernova.scx
-                -executable=${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+                -executable=${CONTENTS_DIR}/MacOS/sclang
+                -executable=${CONTENTS_DIR}/Resources/scsynth
+                -executable=${CONTENTS_DIR}/Resources/supernova
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
+                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
+                -executable=${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
             ")
-        set(VERIFY_CMD "include(BundleUtilities)
+        set(VERIFY_CMD "include(BundleUtilities)")
+        if(SUPERNOVA)
+            get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
+            if(LINK_FFTW)
+                message(STATUS "macdeployqt: will fix linking FFTW for supernova")
+                # For supernova, libfftw3f.3.dylib has a further dependency (libgcc_s) which is copied in,
+                # but libfftw3f is not fixed up automatically when supernova is deployed.
+                string(APPEND VERIFY_CMD "
+                message(STATUS \"Fixing up bad path in libfftw3f.3.dylib manually due to faulty logic in macdeployqt\")
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/9/libgcc_s.1.dylib
+                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)")
+            endif()
+        endif()
+        string(APPEND VERIFY_CMD "
             message(STATUS \"Verifying app\")
-            verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
-            ")
+            verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"

@@ -174,7 +174,8 @@ PatternProxy : Pattern {
 	}
 
 	*clear {
-		this.all.do { arg pat; pat.clear }
+		this.all.do { arg pat; pat.clear };
+		this.all.clear;
 	}
 
 	clear {
@@ -524,7 +525,7 @@ EventPatternProxy : TaskProxy {
 				} {
 					Pseq([
 						EmbedOnce(
-							Pfindur(delta, stream, tolerance).asStream,
+							Psync(stream, delta, delta, tolerance, delta).asStream,
 							cleanup
 						),
 						newStream

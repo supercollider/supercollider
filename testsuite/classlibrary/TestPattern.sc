@@ -128,6 +128,49 @@ TestPattern : UnitTest {
 		);
 	}
 
+
+	test_Pfindur_endsInTime {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries());
+		q = Pfindur(3.5, p);
+		x = Pevent(q).asStream.all;
+		this.assert(x.last[\count] == 3, "Pfindur should end inner pattern after dur");
+		this.assert(x.sum { |x| x.delta } == 3.5, "Pfindur with filler should end no sooner than after dur");
+	}
+
+	test_Psync_endsInTime {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries());
+		q = Psync(p, 3.5, 3.5);
+		x = Pevent(q).asStream.all;
+		this.assert(x.last[\count] == 3, "Pfindur should end inner pattern after maxdur");
+		this.assert(x.sum { |x| x.delta } == 3.5, "Pfindur  with maxdur = quant should end no sooner than after dur");
+	}
+
+	test_Psync_fillsRemainingTimeWithSilence {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries(0, 1, 3));
+		q = Psync(p, 4.5, 4.5);
+		x = Pevent(q).asStream.all;
+		this.assert(x.sum { |x| x.delta } == 4.5, "Psync with maxdur = quant should end no earlier than after dur");
+	}
+
+	test_Pfset_evaluates_init_and_cleanup_on_empty_stream {
+		var x = 0, y = 0, inEvent = (), cleanup = EventStreamCleanup.new;
+		var outEvent = Pfset({ x = 1 }, p{}, { y = 2 }).asStream.next(inEvent);
+		this.assert(x == 1, "Pfset on nil stream should still call the initializer function");
+		this.assert(y == 2, "Pfset on nil stream should still call the cleanup function");
+		this.assert(outEvent.isNil, "Pfset on nil stream should return nil");
+		// inEvent.size is 2 if Pfset adds 'addToCleanup' and 'removeFromCleanup' in sequence (presently);
+		// inEvente.size could be 0 if this add-remove pair is "optimized out" in the future.
+		this.assert(inEvent.size.even, "Pfset on nil stream should add an even number of items to the input event");
+		// The present implementation of EventStreamCleanup.update first does the add(s) then the remove(s),
+		// so it "cancels out" matched add-remove pairs in the same event. But let's check that too...
+		cleanup.update(inEvent);
+		this.assert(cleanup.functions.size == 0, "Pfset on nil stream should have no effect on a cleanup-functions set");
+	}
+
+
 /*
 	test_storeArgs {
 		Pattern.allSubclasses.do({ |class|

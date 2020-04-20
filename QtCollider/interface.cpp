@@ -74,6 +74,14 @@ void QtCollider::init() {
         static char qcArg0[] = "SuperCollider";
         static char* qcArgv[1] = { qcArg0 };
 
+        QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+        // In order to scale the UI properly on Windows with display scaling like 125% or 150%
+        // we need to disable scale factor rounding
+        // This is only available in Qt >= 5.14
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+        QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
+#endif // QT_VERSION
+
         QcApplication* qcApp = new QcApplication(qcArgc, qcArgv);
 
         qcApp->setQuitOnLastWindowClosed(false);
