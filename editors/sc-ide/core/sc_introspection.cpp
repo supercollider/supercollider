@@ -200,13 +200,15 @@ bool Introspection::ensureIntrospectionData() const {
         return true;
 }
 
-const Class* Introspection::findClass(const QString& className) const {
+const Class* Introspection::findClass(const QString& className, bool silent) const {
     if (!ensureIntrospectionData())
         return NULL;
 
     ClassMap::const_iterator klass_it = mClassMap.find(className);
     if (klass_it == mClassMap.end()) {
-        MainWindow::instance()->showStatusMessage(QObject::tr("Class not defined!"));
+        if (!silent) {
+            MainWindow::instance()->showStatusMessage(QObject::tr("Class not defined!"));
+        }
         return NULL;
     }
     return klass_it->second.data();

@@ -111,7 +111,7 @@ public:
     const ClassMap& classMap() const { return mClassMap; }
     const MethodMap& methodMap() const { return mMethodMap; }
 
-    const Class* findClass(QString const& className) const;
+    const Class* findClass(QString const& className, bool silent = false) const;
     std::vector<const Class*> findClassPartial(const QString& partialClassName) const;
     std::vector<const Method*> findMethodPartial(const QString& partialMethodName) const;
 
