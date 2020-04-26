@@ -774,9 +774,6 @@ ARGUMENT::crop
 the crop region to finally use. This may be required for extending bounds since some SCImageFilter / CoreImageFilters require to set a wider region (to be applied correctly) or may create a huge image. Setting crop to nil sets no crop region. In case the current maximum size of a filtered SCImage is 4096 / 4096. Any larger size will be clipped. by default crop is constrained to the receiver bounds.
 
 ARGUMENT::region
-NOTE::
-supported only in macOS 10.5 and later.
-::
 option to constrain the filter to a specific region IN the SCImage.
 
 METHOD::filteredWith

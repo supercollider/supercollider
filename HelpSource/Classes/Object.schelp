@@ -479,8 +479,8 @@ Like 'perform', but tryPerform passes the method to the receiver only if the rec
 code::
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
-// Array does not understand keysValuesDo -- result is nil
-[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
+// Set does not understand keysValuesDo -- result is nil
+Set[1, 2, 3].tryPerform(\keysValuesDo, { |key, value| [key, value].postln });
 
 // Error occurs within keysValuesDo -- error is thrown back to halt execution
 (a: 1, b: 2, c: 3).tryPerform(\keysValuesDo, { |key, value| [key, value].flippityblargh });
