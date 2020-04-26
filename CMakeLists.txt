@@ -254,6 +254,31 @@ if (NOT WIN32)
     include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
 
+# bodge'd this in
+find_package(UDev REQUIRED)
+if(NOT UDEV_FOUND)
+    message(FATAL_ERROR "udev library not found")
+endif()
+include_directories(${UDEV_INCLUDE_DIR})
+
+message(STATUS "\n\n\n\n\n\n")
+message(STATUS ${UDEV_LIBRARIES})
+message(STATUS "\n\n\n\n\n\n")
+message(STATUS ${UDEV_INCLUDE_DIR})
+
+#    set(WINDOW_EXT_LIBS ${WINDOW_EXT_LIBS} ${X11_X11_LIB} ${X11_Xrandr_LIB} ${UDEV_LIBRARIES})
+
+# bodge'd in searches for UDEV_LIBRARIES as well
+#elseif(SFML_OS_LINUX OR SFML_OS_FREEBSD)
+#    set(WINDOW_EXT_LIBS ${WINDOW_EXT_LIBS} ${X11_X11_LIB} ${X11_Xrandr_LIB} ${UDEV_LIBRARIES})
+#    if(SFML_OS_FREEBSD)
+#        set(WINDOW_EXT_LIBS ${WINDOW_EXT_LIBS} usbhid)
+#    endif()
+#elseif(SFML_OS_MACOSX)
+#    set(WINDOW_EXT_LIBS ${WINDOW_EXT_LIBS} "-framework Foundation -framework AppKit -framework IOKit -framework Carbon")
+#endif()
+
+
 if(SYSTEM_BOOST)
     # https://github.com/supercollider/supercollider/issues/4576#issuecomment-531499017
     # Boost >= 1.71 ships with its own Boost config file, we ignore it for now.
