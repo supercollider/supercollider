@@ -261,11 +261,6 @@ if(NOT UDEV_FOUND)
 endif()
 include_directories(${UDEV_INCLUDE_DIR})
 
-message(STATUS "\n\n\n\n\n\n")
-message(STATUS ${UDEV_LIBRARIES})
-message(STATUS "\n\n\n\n\n\n")
-message(STATUS ${UDEV_INCLUDE_DIR})
-
 #    set(WINDOW_EXT_LIBS ${WINDOW_EXT_LIBS} ${X11_X11_LIB} ${X11_Xrandr_LIB} ${UDEV_LIBRARIES})
 
 # bodge'd in searches for UDEV_LIBRARIES as well
