@@ -260,10 +260,18 @@ endif()
 
 ## external libraries
 if(READLINE_FOUND)
-	message(STATUS "Compiling with Readline support")
-	target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
-	target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
-	target_link_libraries(libsclang ${READLINE_LIBRARY})
+    message(STATUS "Compiling with Readline support")
+    # Some Linuxes require linking against ncurses as well as libreadline, because libtermcap provides
+    # the same API and so could be used instead. Since ncurses is widely available and usually installed
+    # already, we simply require it on all Linuxes. See #4899.
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set(CURSES_NEED_NCURSES 1)
+        find_package(Curses REQUIRED)
+        target_link_libraries(libsclang ${CURSES_LIBRARIES})
+    endif()
+    target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
+    target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
+    target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
