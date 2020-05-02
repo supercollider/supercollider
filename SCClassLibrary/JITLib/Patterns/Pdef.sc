@@ -301,6 +301,13 @@ TaskProxy : PatternProxy {
 
 	storeArgs { ^[source] }
 
+	clock_ { arg newClock;
+		clock = newClock;
+		if (this.isPlaying) {
+			this.player.clock = clock
+		}
+	}
+
 	source_ { arg obj;
 		pattern = if(obj.isKindOf(Function)) { this.convertFunction(obj) }{ obj };
 		if (obj.isNil) { pattern = this.class.default; source = obj; };

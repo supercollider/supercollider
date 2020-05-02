@@ -327,7 +327,7 @@ CleanupStream : Stream {
 // PauseStream is a stream wrapper that can be started and stopped.
 
 PauseStream : Stream {
-	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
+	var <stream, <originalStream, <>clock, <nextBeat, <>streamHasEnded=false;
 	var isWaiting = false, era=0;
 
 	*new { arg argStream, clock;
@@ -415,8 +415,14 @@ PauseStream : Stream {
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
-		clock = inClock;
-		^this.next(beats)
+		if(this.clock == inClock){
+			clock = inClock; // is this needed at all?
+			^this.next(beats)
+		}{
+			this.clock.sched(0, this);
+    	^nil
+		}
+
 	}
 	threadPlayer { ^this }
 }
