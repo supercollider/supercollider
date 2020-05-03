@@ -112,7 +112,7 @@ method:: quitAll
 quit all registered servers
 
 method:: killAll
-query the system for any sc-server apps and hard quit them
+kill all the processes called "scsynth" and "supernova" in the system
 
 method:: freeAll
 free all nodes in all registered servers
