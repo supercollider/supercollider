@@ -1090,7 +1090,9 @@ Server {
 				"Server '%' was unresponsive. Killing forcefully.".format(name).postln;
 				thisProcess.platform.killProcessByID(pid);
 			} {
-				"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+				if(watchShutDown) {
+					"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+				};
 			};
 			watchShutDown = false;
 		};
