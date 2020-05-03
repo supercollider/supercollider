@@ -230,6 +230,8 @@ You cannot boot a server app on a remote machine, but you can initialize the all
 method:: quit
 quit the server application
 
+note:: If the server is unresponsive at the time of calling this method, it will be forced to quit immediately.::
+
 argument::onComplete
 A function that is called when quit has completed.
 
