@@ -2379,6 +2379,104 @@ void EnvGen_Ctor(EnvGen* unit) {
     EnvGen_next_k(unit, 1);
 }
 
+// called by nextSegment and check_gate:
+// - counter: num samples to next segment
+// - level: current envelope value
+// - dur: if supplied and >= 0, stretch segment to last dur seconds (used in forced release)
+static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double dur = -1) {
+    // Print("stage %d\n", unit->m_stage);
+    // Print("initSegment\n");
+    // out = unit->m_level;
+    int stageOffset = (unit->m_stage << 2) + kEnvGen_nodeOffset;
+
+    if (stageOffset + 4 > unit->mNumInputs) {
+        // oops.
+        Print("envelope went past end of inputs.\n");
+        ClearUnitOutputs(unit, 1);
+        NodeEnd(&unit->mParent->mNode);
+        return false;
+    }
+
+    float previousEndLevel = unit->m_endLevel;
+    float** envPtr = unit->mInBuf + stageOffset;
+    double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
+    if (dur >= 0)
+        dur = *envPtr[1] * ZIN0(kEnvGen_timeScale);
+    unit->m_shape = (int32)*envPtr[2];
+    double curve = *envPtr[3];
+    unit->m_endLevel = endLevel;
+
+    counter = (int32)(dur * SAMPLERATE);
+    counter = sc_max(1, counter);
+    // Print("counter %d stageOffset %d   level %g   endLevel %g   dur %g   shape %d   curve %g\n", counter,
+    // stageOffset, level, endLevel, dur, unit->m_shape, curve); Print("SAMPLERATE %g\n", SAMPLERATE);
+    if (counter == 1)
+        unit->m_shape = 1; // shape_Linear
+    // Print("new counter = %d  shape = %d\n", counter, unit->m_shape);
+    switch (unit->m_shape) {
+    case shape_Step: {
+        level = endLevel;
+    } break;
+    case shape_Hold: {
+        level = previousEndLevel;
+    } break;
+    case shape_Linear: {
+        unit->m_grow = (endLevel - level) / counter;
+        // Print("grow %g\n", unit->m_grow);
+    } break;
+    case shape_Exponential: {
+        unit->m_grow = pow(endLevel / level, 1.0 / counter);
+    } break;
+    case shape_Sine: {
+        double w = pi / counter;
+
+        unit->m_a2 = (endLevel + level) * 0.5;
+        unit->m_b1 = 2. * cos(w);
+        unit->m_y1 = (endLevel - level) * 0.5;
+        unit->m_y2 = unit->m_y1 * sin(pi * 0.5 - w);
+        level = unit->m_a2 - unit->m_y1;
+    } break;
+    case shape_Welch: {
+        double w = (pi * 0.5) / counter;
+
+        unit->m_b1 = 2. * cos(w);
+
+        if (endLevel >= level) {
+            unit->m_a2 = level;
+            unit->m_y1 = 0.;
+            unit->m_y2 = -sin(w) * (endLevel - level);
+        } else {
+            unit->m_a2 = endLevel;
+            unit->m_y1 = level - endLevel;
+            unit->m_y2 = cos(w) * (level - endLevel);
+        }
+        level = unit->m_a2 + unit->m_y1;
+    } break;
+    case shape_Curve: {
+        if (fabs(curve) < 0.001) {
+            unit->m_shape = 1; // shape_Linear
+            unit->m_grow = (endLevel - level) / counter;
+        } else {
+            double a1 = (endLevel - level) / (1.0 - exp(curve));
+            unit->m_a2 = level + a1;
+            unit->m_b1 = a1;
+            unit->m_grow = exp(curve / counter);
+        }
+    } break;
+    case shape_Squared: {
+        unit->m_y1 = sqrt(level);
+        unit->m_y2 = sqrt(endLevel);
+        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+    } break;
+    case shape_Cubed: {
+        unit->m_y1 = pow(level, 1.0 / 3.0); // 0.33333333);
+        unit->m_y2 = pow(endLevel, 1.0 / 3.0);
+        unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
+    } break;
+    };
+    return true;
+}
+
 static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, double level, int counterOffset = 0) {
     if (prevGate <= 0.f && gate > 0.f) {
         unit->m_stage = -1;
@@ -2386,18 +2484,14 @@ static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, d
         unit->mDone = false;
         counter = counterOffset;
         return false;
-    } else if (gate <= -1.f && prevGate > -1.f && !unit->m_released) {
-        // cutoff
-        int numstages = (int)ZIN0(kEnvGen_numStages);
-        float dur = -gate - 1.f;
+    } else if (gate <= -1.f && prevGate > -1.f) {
+        // forced release: jump to last segment overriding its duration
+        double dur = -gate - 1.f;
         counter = (int32)(dur * SAMPLERATE);
         counter = sc_max(1, counter) + counterOffset;
-        unit->m_stage = numstages;
-        unit->m_shape = shape_Linear;
-        // first ZIN0 gets the last envelope node's level, then apply levelScale and levelBias
-        unit->m_endLevel = ZIN0(unit->mNumInputs - 4) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
-        unit->m_grow = (unit->m_endLevel - level) / counter;
+        unit->m_stage = static_cast<int>(ZIN0(kEnvGen_numStages) - 1);
         unit->m_released = true;
+        EnvGen_initSegment(unit, counter, level, dur);
         return false;
     } else if (prevGate > 0.f && gate <= 0.f && unit->m_releaseNode >= 0 && !unit->m_released) {
         counter = counterOffset;
@@ -2405,7 +2499,6 @@ static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, d
         unit->m_released = true;
         return false;
     }
-
     return true;
 }
 
@@ -2441,7 +2534,7 @@ static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level)
         int loopNode = (int)ZIN0(kEnvGen_loopNode);
         if (loopNode >= 0 && loopNode < numstages) {
             unit->m_stage = loopNode;
-            goto initSegment;
+            return EnvGen_initSegment(unit, counter, level);
         } else {
             counter = INT_MAX;
             unit->m_shape = shape_Sustain;
@@ -2450,96 +2543,7 @@ static inline bool EnvGen_nextSegment(EnvGen* unit, int& counter, double& level)
         // Print("sustain\n");
     } else {
         unit->m_stage++;
-    initSegment:
-        // Print("stage %d\n", unit->m_stage);
-        // Print("initSegment\n");
-        // out = unit->m_level;
-        int stageOffset = (unit->m_stage << 2) + kEnvGen_nodeOffset;
-
-        if (stageOffset + 4 > unit->mNumInputs) {
-            // oops.
-            Print("envelope went past end of inputs.\n");
-            ClearUnitOutputs(unit, 1);
-            NodeEnd(&unit->mParent->mNode);
-            return false;
-        }
-
-        float previousEndLevel = unit->m_endLevel;
-        float** envPtr = unit->mInBuf + stageOffset;
-        double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
-        double dur = *envPtr[1] * ZIN0(kEnvGen_timeScale);
-        unit->m_shape = (int32)*envPtr[2];
-        double curve = *envPtr[3];
-        unit->m_endLevel = endLevel;
-
-        counter = (int32)(dur * SAMPLERATE);
-        counter = sc_max(1, counter);
-        // Print("stageOffset %d   level %g   endLevel %g   dur %g   shape %d   curve %g\n", stageOffset, level,
-        // endLevel, dur, unit->m_shape, curve); Print("SAMPLERATE %g\n", SAMPLERATE);
-        if (counter == 1)
-            unit->m_shape = 1; // shape_Linear
-        // Print("new counter = %d  shape = %d\n", counter, unit->m_shape);
-        switch (unit->m_shape) {
-        case shape_Step: {
-            level = endLevel;
-        } break;
-        case shape_Hold: {
-            level = previousEndLevel;
-        } break;
-        case shape_Linear: {
-            unit->m_grow = (endLevel - level) / counter;
-            // Print("grow %g\n", unit->m_grow);
-        } break;
-        case shape_Exponential: {
-            unit->m_grow = pow(endLevel / level, 1.0 / counter);
-        } break;
-        case shape_Sine: {
-            double w = pi / counter;
-
-            unit->m_a2 = (endLevel + level) * 0.5;
-            unit->m_b1 = 2. * cos(w);
-            unit->m_y1 = (endLevel - level) * 0.5;
-            unit->m_y2 = unit->m_y1 * sin(pi * 0.5 - w);
-            level = unit->m_a2 - unit->m_y1;
-        } break;
-        case shape_Welch: {
-            double w = (pi * 0.5) / counter;
-
-            unit->m_b1 = 2. * cos(w);
-
-            if (endLevel >= level) {
-                unit->m_a2 = level;
-                unit->m_y1 = 0.;
-                unit->m_y2 = -sin(w) * (endLevel - level);
-            } else {
-                unit->m_a2 = endLevel;
-                unit->m_y1 = level - endLevel;
-                unit->m_y2 = cos(w) * (level - endLevel);
-            }
-            level = unit->m_a2 + unit->m_y1;
-        } break;
-        case shape_Curve: {
-            if (fabs(curve) < 0.001) {
-                unit->m_shape = 1; // shape_Linear
-                unit->m_grow = (endLevel - level) / counter;
-            } else {
-                double a1 = (endLevel - level) / (1.0 - exp(curve));
-                unit->m_a2 = level + a1;
-                unit->m_b1 = a1;
-                unit->m_grow = exp(curve / counter);
-            }
-        } break;
-        case shape_Squared: {
-            unit->m_y1 = sqrt(level);
-            unit->m_y2 = sqrt(endLevel);
-            unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
-        } break;
-        case shape_Cubed: {
-            unit->m_y1 = pow(level, 1.0 / 3.0); // 0.33333333);
-            unit->m_y2 = pow(endLevel, 1.0 / 3.0);
-            unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
-        } break;
-        }
+        return EnvGen_initSegment(unit, counter, level);
     }
 
     return true;

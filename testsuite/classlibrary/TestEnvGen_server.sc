@@ -96,5 +96,75 @@ TestEnvGen_server : UnitTest {
 		};
 	}
 
-}
+	// forced release tests
+	test_neg_gate_ignores_multinode_release {
+		var synth, n_failed_resp, n_end_resp, passed;
+		var cond = Condition.new;
+		var cleanup = {
+			n_failed_resp.free;
+			n_end_resp.free;
+		};
 
+		server.bootSync;
+		synth = {|gate=1|
+			var env = EnvGen.kr(Env([0,0.1,1,0], [0.1], releaseNode:1), gate, doneAction: 2);
+			SendReply.kr(env>0.1, '/failed')
+		}.play(server);
+
+		n_failed_resp = OSCFunc({
+			cleanup.value;
+			passed = false;
+			cond.unhang;
+		}, '/failed', server.addr, argTemplate: [synth.nodeID]);
+
+		// responsible for cleaning up this test
+		// n_failed_resp should NOT fire! so we need this to unhang the condition
+		n_end_resp = OSCFunc({
+			cleanup.value;
+			passed = true;
+			cond.unhang;
+		}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
+
+		server.sync;
+		synth.release(0.1);
+
+		cond.hang;
+		this.assert(passed, "gate < 0 should ignore multi-node release");
+	}
+
+	test_forced_release_respects_env_curve {
+		var synth, n_failed_resp, n_end_resp, passed;
+		var cond = Condition.new;
+		var cleanup = {
+			n_failed_resp.free;
+			n_end_resp.free;
+		};
+
+		server.bootSync;
+		synth = {|gate=1|
+			var env = EnvGen.kr(Env([0,1,0], [0.1], \step, releaseNode: 1), gate, doneAction: 2);
+			SendReply.kr((env > 0.1) * (env < 0.9), '/failed')
+		}.play(server);
+
+		n_failed_resp = OSCFunc({
+			cleanup.value;
+			passed = false;
+			cond.unhang;
+		}, '/failed', server.addr, argTemplate: [synth.nodeID]);
+
+		// responsible for cleaning up this test
+		// n_failed_resp should NOT fire! so we need this to unhang the condition
+		n_end_resp = OSCFunc({
+			cleanup.value;
+			passed = true;
+			cond.unhang;
+		}, '/n_end', server.addr, argTemplate: [synth.nodeID]);
+
+		server.sync;
+		synth.release(0.1);
+
+		cond.hang;
+		this.assert(passed, "gate < 0 should respect env's last node curve");
+	}
+
+}
