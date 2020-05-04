@@ -39,7 +39,7 @@ Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
-  Xcode >= 8 is recommended; use earlier versions at your own risk.
+  Xcode >= 10 is recommended; use earlier versions at your own risk.
 - If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
