@@ -9,6 +9,11 @@ brew upgrade qt5 || exit 4
 brew link qt5 --force || exit 5
 brew install fftw --verbose # temp allow
 
+if $USE_SYSLIBS; then
+    # boost is already installed
+    brew install yaml-cpp || exit 7
+fi
+
 # according to https://docs.travis-ci.com/user/caching#ccache-cache
 export PATH="/usr/local/opt/ccache/libexec:$PATH"
 
