@@ -189,7 +189,7 @@ ServerOptions {
 			});
 		}
 		{
-			o = o ++ " -H % %".format(inDevice.asString.quote, outDevice.asString.quote);
+			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote);
 		};
 		if (verbosity != defaultValues[\verbosity], {
 			o = o ++ " -V " ++ verbosity;
