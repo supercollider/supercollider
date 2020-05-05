@@ -29,6 +29,9 @@ INSTANCEMETHODS::
 
 subsection:: info
 
+METHOD:: branch
+returns:: current branch name.
+
 METHOD:: remote, url
 returns:: url of the first remote that it finds.
 

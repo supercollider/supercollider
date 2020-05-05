@@ -1,6 +1,6 @@
 
 Quark {
-	var <name, url, >refspec, data, <localPath;
+	var <name, url, >refspec, data, <localPath, branch;
 	var <changed = false, <git;
 
 	*new { |name, refspec, url, localPath|
@@ -53,6 +53,9 @@ Quark {
 	}
 	tags {
 		^git !? { git.tags }
+	}
+	branch {
+		^git !? { git.branch }
 	}
 	isDownloaded {
 		^File.exists(this.localPath)
