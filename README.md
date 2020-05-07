@@ -23,10 +23,32 @@ See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEA
 
 [downloads page]: https://supercollider.github.io/download
 
-### Platform requirements
+### Platform support
 
-The minimum supported version of macOS is 10.10 Yosemite; the minimum supported version of Windows
-is Windows Vista.
+SuperCollider is tested with:
+- Windows 10 (32- and 64-bit) and MSVC 2017
+- macOS 10.13 and Xcode 9.4
+- Ubuntu 14.04 and gcc 4.9
+
+SuperCollider is known to support these platforms:
+- Windows Vista, 7, 8, and 10
+- macOS 10.13-10.15
+- Ubuntu 14.04-18.04
+
+SuperCollider has guaranteed support for:
+- Windows 10
+- MSVC 2017, 2019
+- macOS 10.14-10.15
+- Xcode 10, 11
+- Debian >= 9.0
+- Ubuntu 16.04, 18.04
+- Fedora 31
+- Arch Linux
+- gcc >= 4.9
+- Qt >= 5.11
+
+For more information on platform support guarantees, see the [project
+Wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support).
 
 Learn
 -----
