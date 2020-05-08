@@ -278,18 +278,28 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
                 pdi->maxInputChannels, pdi->maxOutputChannels);
     }
 
-    mDeviceInOut[0] = GetPaDeviceFromName(mWorld->hw->mInDeviceName, true);
-    mDeviceInOut[1] = GetPaDeviceFromName(mWorld->hw->mOutDeviceName, false);
+    auto m_inDeviceName = mWorld->hw->mInDeviceName;
+    auto m_outDeviceName = mWorld->hw->mOutDeviceName;
+    mDeviceInOut[0] = GetPaDeviceFromName(m_inDeviceName, true);
+    mDeviceInOut[1] = GetPaDeviceFromName(m_outDeviceName, false);
 
     // report requested devices
     fprintf(stdout, "\nRequested devices:\n");
     if (mWorld->mNumInputs) {
-        fprintf(stdout, "  In (matching device %sfound):\n  - %s\n", (mDeviceInOut[0] == paNoDevice ? "NOT " : ""),
-                mWorld->hw->mInDeviceName);
+        auto nameIsEmpty = (m_inDeviceName && !m_inDeviceName[0]) || (m_inDeviceName == nullptr);
+        fprintf(stdout, "  In%s:\n  - %s\n",
+                nameIsEmpty
+                    ? ""
+                    : (mDeviceInOut[0] == paNoDevice ? " (matching device NOT found)" : " (matching device found)"),
+                (nameIsEmpty ? "(default)" : m_inDeviceName));
     }
     if (mWorld->mNumOutputs) {
-        fprintf(stdout, "  Out (matching device %sfound):\n  - %s\n", (mDeviceInOut[1] == paNoDevice ? "NOT " : ""),
-                mWorld->hw->mOutDeviceName);
+        auto nameIsEmpty = (m_outDeviceName && !m_outDeviceName[0]) || (m_outDeviceName == nullptr);
+        fprintf(stdout, "  Out%s:\n  - %s\n",
+                nameIsEmpty
+                    ? ""
+                    : (mDeviceInOut[1] == paNoDevice ? " (matching device NOT found)" : " (matching device found)"),
+                (nameIsEmpty ? "(default)" : m_outDeviceName));
     }
 
     fprintf(stdout, "\n");

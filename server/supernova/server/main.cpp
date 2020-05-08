@@ -172,9 +172,11 @@ void start_audio_backend(server_arguments const& args) {
     if (output_channels == 0)
         output_device.clear();
 
-    std::cout << "Requested audio devices:\n";
-    std::cout << "  In: " << input_device << "\n";
-    std::cout << "  Out: " << output_device << std::endl;
+    std::cout << "Requested audio devices:" << std::endl;
+    if (input_channels)
+        std::cout << "  In: " << (input_device.empty() ? "(default)" : input_device) << std::endl;
+    if (output_channels)
+        std::cout << "  Out: " << (output_device.empty() ? "(default)" : output_device) << std::endl;
 
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
                                          args.blocksize, args.hardware_buffer_size);
