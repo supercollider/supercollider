@@ -67,7 +67,8 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir) {
          boost::make_iterator_range(recursive_directory_iterator(dir), recursive_directory_iterator())) {
         if (!is_directory(entry.status())) {
             auto path_name = entry.path();
-            futures.emplace_back(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name); }));
+            if (path_name.extension() == ".scsyndef")
+                futures.emplace_back(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name); }));
         }
     }
 
