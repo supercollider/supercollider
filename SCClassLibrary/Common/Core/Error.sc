@@ -147,33 +147,36 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <suggestedCorrection, suggestion;
+	var <>selector, <>args, <suggestedCorrection, suggestion = "";
 	*new { arg receiver, selector, args;
 		^super.new(nil, receiver).selector_(selector).args_(args).init
 	}
+
 	init {
 		var methods, methodNames, editDistances, minIndex, lowerCaseSelector;
-		methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
-		methodNames = methods.collect { |x| x.name.asString.toLower };
-		// we compare lower-case versions to prioritize capitalization mistakes
-		lowerCaseSelector = selector.asString.toLower;
-		editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
-		minIndex = editDistances.minIndex;
-		// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
-		// to avoid unhelpful suggestions.
-		if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
-			suggestedCorrection = methods[minIndex];
-			suggestion = " Did you mean '%'?".format(suggestedCorrection.name);
-		} {
-			suggestedCorrection = nil;
-			suggestion = "";
+
+		if(receiver.notNil) {
+			methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
+			methodNames = methods.collect { |x| x.name.asString.toLower };
+			// we compare lower-case versions to prioritize capitalization mistakes
+			lowerCaseSelector = selector.asString.toLower;
+			editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
+			minIndex = editDistances.minIndex;
+			// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
+			// to avoid unhelpful suggestions.
+			if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
+				suggestedCorrection = methods[minIndex];
+				suggestion = "Did you mean '%'? Or should '%' have been called on another receiver?"
+				.format(suggestedCorrection.name, selector);
+			}
 		}
 	}
 	errorString {
-		^"ERROR: Message '" ++ selector ++ "' not understood." ++ suggestion
+		^"ERROR: Message '%' not understood by '%'".format(selector, receiver)
 	}
 	reportError {
 		this.errorString.postln;
+		suggestion.postln;
 		"RECEIVER:\n".post;
 		receiver.dump;
 		"ARGS:\n".post;
