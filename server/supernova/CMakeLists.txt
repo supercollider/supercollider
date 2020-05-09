@@ -99,8 +99,6 @@ target_include_directories(libsupernova PUBLIC
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/server/scsynth
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     .
                     )

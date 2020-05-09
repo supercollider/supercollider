@@ -28,7 +28,7 @@
 
 #include <boost/align/aligned_allocator.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
-#include <boost/sync/semaphore.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 #include "SC_SndFileHelpers.hpp"
 
@@ -298,7 +298,7 @@ private:
 
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue<sample_type> read_frames, write_frames;
-    boost::sync::semaphore read_semaphore, write_semaphore;
+    boost::interprocess::interprocess_semaphore read_semaphore { 0 }, write_semaphore { 0 };
     std::atomic<bool> running = { false }, reader_running = { false }, writer_running = { false };
     std::vector<sample_type> max_peaks;
 };

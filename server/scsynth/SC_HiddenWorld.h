@@ -33,7 +33,7 @@
 #include <deque>
 #include <set>
 
-#include "boost/sync/semaphore.hpp"
+#include "boost/interprocess/sync/interprocess_semaphore.hpp"
 
 #include "../../common/server_shm.hpp"
 
@@ -114,7 +114,7 @@ struct HiddenWorld {
     NodeEndsFifo mNodeEnds;
     DeleteGraphDefsFifo mDeleteGraphDefs;
 
-    boost::sync::semaphore* mQuitProgram;
+    boost::interprocess::interprocess_semaphore* mQuitProgram;
     bool mTerminating;
 
 #ifndef NO_LIBSNDFILE

@@ -14,12 +14,8 @@ bcp --boost=${BOOST_ROOT} \
 	--scan server/plugins/*pp \
 	--scan editors/sc-ide/*/*pp \
 	--scan editors/sc-ide/*/*/*pp \
-	--scan external_libraries/boost*/*/*pp \
-	--scan external_libraries/boost*/*/*/*pp \
-	--scan external_libraries/boost*/*/*/*/*pp \
-	--scan external_libraries/boost_sync/*/*/*/*pp \
-	--scan external_libraries/boost_sync/*/*/*/*/*pp \
-	--scan testsuite/supernova/*pp \
+	--scan testsuite/server/*pp \
+	--scan testsuite/server/*/*pp \
 	external_libraries/boost
 
 # nor do we need tests and the bjam build files

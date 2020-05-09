@@ -113,8 +113,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     .
 )
 
-include_directories (${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include)
-
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK" ${JACK_DEFINITIONS})

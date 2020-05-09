@@ -24,7 +24,7 @@
 #include <thread>
 #include <vector>
 
-#include <boost/sync/semaphore.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 #include "dsp_thread_queue.hpp"
 #include "malloc_aligned.hpp"
@@ -142,7 +142,7 @@ private:
     }
 
 private:
-    boost::sync::semaphore cycle_sem;
+    boost::interprocess::interprocess_semaphore cycle_sem { 0 };
     dsp_queue_interpreter& interpreter;
     std::atomic<bool> stop = { false };
     uint16_t index;

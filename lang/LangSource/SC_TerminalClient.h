@@ -32,7 +32,7 @@
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
-#include <boost/sync/semaphore.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -176,5 +176,5 @@ private:
 
     // command input
     bool mUseReadline;
-    boost::sync::semaphore mReadlineSem;
+    boost::interprocess::interprocess_semaphore mReadlineSem { 0 };
 };

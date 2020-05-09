@@ -306,7 +306,7 @@ World* World_New(WorldOptions* inOptions) {
         world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
         world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
-        world->hw->mQuitProgram = new boost::sync::semaphore(0);
+        world->hw->mQuitProgram = new boost::interprocess::interprocess_semaphore(0);
         world->hw->mTerminating = false;
 
         HiddenWorld* hw = world->hw;

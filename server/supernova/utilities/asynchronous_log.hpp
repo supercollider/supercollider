@@ -27,7 +27,7 @@
 
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/sync/semaphore.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 namespace nova {
 namespace asynchronous_log_impl {
@@ -105,7 +105,7 @@ struct asynchronous_log : boost::noncopyable {
 
 private:
     boost::lockfree::spsc_queue<char, boost::lockfree::capacity<262144>> buffer;
-    boost::sync::semaphore sem;
+    boost::interprocess::interprocess_semaphore sem { 0 };
 };
 
 struct asynchronous_log_thread : asynchronous_log {

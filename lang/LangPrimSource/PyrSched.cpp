@@ -43,8 +43,7 @@
 #include "SC_Clock.hpp"
 #include "SC_LinkClock.hpp"
 
-#include <boost/sync/semaphore.hpp>
-#include <boost/sync/support/std_chrono.hpp>
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
 
 // FIXME: These includes needs to be last on Windows, otherwise Ableton build breaks
 // (Windows header include ordering dependencies)
@@ -210,7 +209,7 @@ void dumpheap(PyrObject* heapArg) {
 bool gRunSched = false;
 static std::thread gSchedThread;
 static std::thread gResyncThread;
-static boost::sync::semaphore gResyncThreadSemaphore;
+static boost::interprocess::interprocess_semaphore gResyncThreadSemaphore { 0 };
 
 std::condition_variable_any gSchedCond;
 std::timed_mutex gLangMutex;
@@ -369,7 +368,8 @@ void post(const char* fmt, ...);
 
 void resyncThread() {
     while (true) {
-        if (gResyncThreadSemaphore.wait_for(std::chrono::seconds(20)))
+        auto now = boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time();
+        if (gResyncThreadSemaphore.timed_wait(now + boost::posix_time::seconds(20)))
             return;
 
         syncOSCOffsetWithTimeOfDay();
