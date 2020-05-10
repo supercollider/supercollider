@@ -2400,7 +2400,7 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     float previousEndLevel = unit->m_endLevel;
     float** envPtr = unit->mInBuf + stageOffset;
     double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
-    if (dur >= 0)
+    if (dur < 0)
         dur = *envPtr[1] * ZIN0(kEnvGen_timeScale);
     unit->m_shape = (int32)*envPtr[2];
     double curve = *envPtr[3];
