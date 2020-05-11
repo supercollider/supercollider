@@ -86,6 +86,8 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
+    # disable PortAudio install target
+    set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install")
     if(NOT MSYS)
       set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
       add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
