@@ -84,8 +84,11 @@ if(WIN32)
         SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
     endif()
 
-    # might work with "SHARED" as well.
-    set(PA_LIBRARY_TYPE "STATIC")
+    # PortAudio: use static library
+    set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library")
+    set(PA_BUILD_SHARED OFF CACHE BOOL "PortAudio shared library")
+    # Call static library "portaudio_static" since this will also cause the inclusion of the required architecture suffix
+    set(PA_LIBNAME_ADD_SUFFIX ON CACHE BOOL "PortAudio static library suffix")
     # disable PortAudio install target
     set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install")
     if(NOT MSYS)
