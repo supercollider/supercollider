@@ -19,3 +19,6 @@
 [submodule "external_libraries/link"]
 	path = external_libraries/link
 	url = https://github.com/Ableton/link
+[submodule "external_libraries/portaudio"]
+	path = external_libraries/portaudio
+	url = https://git.assembla.com/portaudio.git
