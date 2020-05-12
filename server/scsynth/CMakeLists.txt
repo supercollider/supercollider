@@ -259,6 +259,7 @@ if(APPLE)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
 elseif(WIN32)
     if(NOT MSVC)
+      target_link_libraries(scsynth "-municode")
       set_target_properties(scsynth libscsynth PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 
