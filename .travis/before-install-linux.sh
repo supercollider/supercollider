@@ -3,10 +3,20 @@
 if $DO_LINT; then
     pushd . >/dev/null
     cd ..
-    echo "Downloading and extracting Clang 8.0.0"
+    if ! [[ -d "downloads" ]]
+    then
+       mkdir downloads
+    fi
+    cd downloads
     RELEASE_NAME=clang+llvm-8.0.0-x86_64-linux-gnu-ubuntu-14.04
-    curl -o clang.tar.xz https://releases.llvm.org/8.0.0/$RELEASE_NAME.tar.xz
-    tar xf clang.tar.xz
+    if ! [[ -d "$RELEASE_NAME" ]]
+    then
+       echo "Downloading and extracting Clang 8.0.0"
+       curl -o clang.tar.xz https://releases.llvm.org/8.0.0/$RELEASE_NAME.tar.xz
+       tar xf clang.tar.xz
+    else
+       echo "Using Clang 8.0.0 from cache"
+    fi
     cd $RELEASE_NAME/bin
     export PATH=$(pwd):$PATH
     echo "Added clang-format in $(pwd) to PATH"
