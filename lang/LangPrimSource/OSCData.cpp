@@ -911,24 +911,22 @@ int prMatchLangIP(VMGlobals* g, int numArgsPushed) {
 #else
 
     struct ifaddrs *ifap, *ifa;
-    struct sockaddr_in* sa;
-    char* addr;
-
-    int result = getifaddrs(&ifap);
-    if (result) {
+    if (getifaddrs(&ifap) != 0) {
         error(strerror(errno));
         return errFailed;
     }
 
     for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-        int family = ifa->ifa_addr->sa_family;
-        if (family == AF_INET || family == AF_INET6) {
-            sa = (struct sockaddr_in*)ifa->ifa_addr;
-            addr = inet_ntoa(sa->sin_addr);
-            if (strcmp(ipstring, addr) == 0) {
-                SetTrue(g->sp - 1);
-                freeifaddrs(ifap);
-                return errNone;
+        if (ifa->ifa_addr) {
+            int family = ifa->ifa_addr->sa_family;
+            if (family == AF_INET || family == AF_INET6) {
+                struct sockaddr_in* sa = (struct sockaddr_in*)ifa->ifa_addr;
+                char *addr = inet_ntoa(sa->sin_addr);
+                if (strcmp(ipstring, addr) == 0) {
+                    SetTrue(g->sp - 1);
+                    freeifaddrs(ifap);
+                    return errNone;
+                }
             }
         }
     }
