@@ -921,7 +921,7 @@ int prMatchLangIP(VMGlobals* g, int numArgsPushed) {
             int family = ifa->ifa_addr->sa_family;
             if (family == AF_INET || family == AF_INET6) {
                 struct sockaddr_in* sa = (struct sockaddr_in*)ifa->ifa_addr;
-                char *addr = inet_ntoa(sa->sin_addr);
+                char* addr = inet_ntoa(sa->sin_addr);
                 if (strcmp(ipstring, addr) == 0) {
                     SetTrue(g->sp - 1);
                     freeifaddrs(ifap);
