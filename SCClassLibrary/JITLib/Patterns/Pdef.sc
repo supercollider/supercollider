@@ -376,7 +376,7 @@ TaskProxy : PatternProxy {
 	}
 
 	asProtected {
-		// will be deprecated
+		// let's deprecate this method in 3.12
 		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } })
 	}
 
