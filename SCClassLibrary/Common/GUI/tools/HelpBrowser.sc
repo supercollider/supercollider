@@ -278,7 +278,7 @@ HelpBrowser {
 			};
 		};
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			if( ((key == 70) && mods.isCtrl) || (char == $f && mods.isCmd) ) {
+			if( ((key == 70) && (mods.isCtrl || mods.isCmd)) ) {
 				toggleFind.value;
 			};
 			if(char.ascii==27) {
