@@ -283,7 +283,16 @@ HelpBrowser {
 			};
 			if(char.ascii==27) {
 				if(findView.visible) {toggleFind.value};
-			}
+			};
+			if(((key == 61) && (mods.isCtrl || mods.isCmd)) || (key == 43 && mods.isCtrl)) {
+				webView.zoom = min(webView.zoom + 0.1, 2.0);
+			};
+			if(key == 45 && (mods.isCtrl || mods.isCmd)) {
+				webView.zoom = max(webView.zoom - 0.1, 0.1);
+			};
+			if(key == 48 && (mods.isCtrl || mods.isCmd)) {
+				webView.zoom = 1.0;
+			};
 		};
 
 		toolbar[\Back].action = { this.goBack };
