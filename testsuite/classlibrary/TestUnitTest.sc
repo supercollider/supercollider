@@ -55,11 +55,6 @@ TestUnitTest : UnitTest {
 		this.assert(condition.test, "UnitTest.wait should continue when test is true");
 	}
 
-	/*** IF YOU ADD MORE TESTS, UPDATE THE numTestMethods var ***/
-	// test_findTestMethods {
-	// 	var numTestMethods = 7;
-	// 	this.assert( this.findTestMethods.size == numTestMethods, "should be " + numTestMethods + " test methods");
-	// }
 
 
 }
