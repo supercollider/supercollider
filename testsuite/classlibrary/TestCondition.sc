@@ -8,7 +8,7 @@ TestCondition : UnitTest {
 			failed = true;
 			condition.unhang;
 		};
-		condition.hang(0.1);
+		condition.hang(1e-6);
 		lateTask.stop;
 		this.assert(failed.not, "condition has timed out")
 	}
