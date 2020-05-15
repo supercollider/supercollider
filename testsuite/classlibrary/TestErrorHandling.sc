@@ -34,7 +34,8 @@ TestThrow : UnitTest {
 		};
 
 		condition.hang;
-		this.assert(call1 && call2, "When throwing an error in a thread, handleError should call parent thread");
+		this.assert(call1, "When throwing an error in a thread, handleError should call parent thread in inner thread");
+		this.assert(call2, "When throwing an error in a thread, handleError should call parent thread");
 	}
 
 }
