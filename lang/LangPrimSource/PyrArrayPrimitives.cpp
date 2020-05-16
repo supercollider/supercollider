@@ -1650,12 +1650,10 @@ int prArrayMirror1(struct VMGlobals* g, int numArgsPushed) {
 
     obj1 = slotRawObject(a);
     slots = obj1->slots;
-    size = std::max(obj1->size * 2 - 2, 0);
+    size = std::max(obj1->size * 2 - 2, obj1->size);
     obj2 = instantiateObject(g->gc, obj1->classptr, size, false, true);
     obj2->size = size;
-    // Special-case length-1 arrays
-    auto memcpySize = obj1->size == 1 ? 0 : obj1->size;
-    memcpy(obj2->slots, slots, memcpySize * sizeof(PyrSlot));
+    memcpy(obj2->slots, slots, obj1->size * sizeof(PyrSlot));
     // copy second part
     k = size / 2;
     for (i = 1, j = size - 1; i < k; ++i, --j) {
