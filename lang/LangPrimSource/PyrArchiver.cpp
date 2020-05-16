@@ -30,7 +30,6 @@ An object archiving system for SuperCollider.
 #include "GC.h"
 #include "ReadWriteMacros.h"
 
-int prAsArchive(struct VMGlobals* g, int numArgsPushed);
 int prAsArchive(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -55,7 +54,6 @@ int prAsArchive(struct VMGlobals* g, int numArgsPushed) {
     return err;
 }
 
-int prUnarchive(struct VMGlobals* g, int numArgsPushed);
 int prUnarchive(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -69,7 +67,6 @@ int prUnarchive(struct VMGlobals* g, int numArgsPushed) {
     return err;
 }
 
-int prWriteArchive(struct VMGlobals* g, int numArgsPushed);
 int prWriteArchive(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -98,7 +95,6 @@ int prWriteArchive(struct VMGlobals* g, int numArgsPushed) {
     return err;
 }
 
-int prReadArchive(struct VMGlobals* g, int numArgsPushed);
 int prReadArchive(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -125,7 +121,6 @@ int prReadArchive(struct VMGlobals* g, int numArgsPushed) {
     return err;
 }
 
-void initArchiverPrimitives();
 void initArchiverPrimitives() {
     int base, index;
 

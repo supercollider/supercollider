@@ -27,8 +27,6 @@ Primitives for Char.
 #include "PyrPrimitive.h"
 #include "VMGlobals.h"
 
-
-int prToLower(struct VMGlobals* g, int numArgsPushed);
 int prToLower(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -39,7 +37,6 @@ int prToLower(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prToUpper(struct VMGlobals* g, int numArgsPushed);
 int prToUpper(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -74,7 +71,6 @@ int prIsUpper(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsAlpha(struct VMGlobals* g, int numArgsPushed);
 int prIsAlpha(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -89,7 +85,6 @@ int prIsAlpha(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsAlphaNum(struct VMGlobals* g, int numArgsPushed);
 int prIsAlphaNum(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -104,7 +99,6 @@ int prIsAlphaNum(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsControl(struct VMGlobals* g, int numArgsPushed);
 int prIsControl(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -119,7 +113,6 @@ int prIsControl(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsDigit(struct VMGlobals* g, int numArgsPushed);
 int prIsDigit(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -134,7 +127,6 @@ int prIsDigit(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsPrint(struct VMGlobals* g, int numArgsPushed);
 int prIsPrint(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -149,7 +141,6 @@ int prIsPrint(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsPunct(struct VMGlobals* g, int numArgsPushed);
 int prIsPunct(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -164,7 +155,6 @@ int prIsPunct(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsSpace(struct VMGlobals* g, int numArgsPushed);
 int prIsSpace(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -179,7 +169,6 @@ int prIsSpace(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prAsciiValue(struct VMGlobals* g, int numArgsPushed);
 int prAsciiValue(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -190,7 +179,6 @@ int prAsciiValue(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prDigitValue(struct VMGlobals* g, int numArgsPushed);
 int prDigitValue(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char c;
@@ -212,7 +200,6 @@ int prDigitValue(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prAsAscii(struct VMGlobals* g, int numArgsPushed);
 int prAsAscii(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -222,7 +209,6 @@ int prAsAscii(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prAsDigit(struct VMGlobals* g, int numArgsPushed);
 int prAsDigit(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int c;
@@ -241,7 +227,6 @@ int prAsDigit(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void initCharPrimitives();
 void initCharPrimitives() {
     int base, index = 0;
 

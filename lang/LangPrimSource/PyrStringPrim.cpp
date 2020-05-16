@@ -52,7 +52,6 @@ Primitives for String.
 using namespace std;
 namespace bfs = boost::filesystem;
 
-int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char str[1024], *strp = nullptr;
@@ -73,7 +72,6 @@ int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_AsInteger(struct VMGlobals* g, int numArgsPushed);
 int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -87,7 +85,6 @@ int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_AsFloat(struct VMGlobals* g, int numArgsPushed);
 int prString_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -484,7 +481,6 @@ int memcmpi(char* a, char* b, int len) {
     return 0;
 }
 
-int prStringCompare(struct VMGlobals* g, int numArgsPushed);
 int prStringCompare(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
     int cmp, length;
@@ -511,7 +507,6 @@ int prStringCompare(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prStringHash(struct VMGlobals* g, int numArgsPushed);
 int prStringHash(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     int hash = Hash(slotRawString(a)->s, slotRawString(a)->size);
@@ -519,7 +514,6 @@ int prStringHash(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_PathMatch(struct VMGlobals* g, int numArgsPushed);
 int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     char pattern[PATH_MAX];
@@ -562,7 +556,6 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* arg = g->sp;
     char key[256];
@@ -596,7 +589,6 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     return errNone;
 }
 
-int prString_Setenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* args = g->sp - 1;
     char key[256];
@@ -627,7 +619,6 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
     return errNone;
 }
 
-int prStripRtf(struct VMGlobals* g, int numArgsPushed);
 int prStripRtf(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     int len = slotRawObject(a)->size;
@@ -643,7 +634,6 @@ int prStripRtf(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prStripHtml(struct VMGlobals* g, int numArgsPushed);
 int prStripHtml(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     int len = slotRawObject(a)->size;
@@ -659,7 +649,6 @@ int prStripHtml(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_Find(struct VMGlobals* g, int numArgsPushed);
 int prString_Find(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 3; // source string
     PyrSlot* b = g->sp - 2; // search string
@@ -743,7 +732,6 @@ int prString_Find(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
 }
 
-int prString_FindBackwards(struct VMGlobals* g, int numArgsPushed);
 int prString_FindBackwards(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 3; // source string
     PyrSlot* b = g->sp - 2; // search string
@@ -830,7 +818,6 @@ int prString_FindBackwards(struct VMGlobals* g, int numArgsPushed) {
  *
  * Prints an error message if alias resolution failed.
  */
-int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* arg = g->sp;
     char ipath[PATH_MAX];
@@ -988,7 +975,6 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void initStringPrimitives();
 void initStringPrimitives() {
     int base, index = 0;
 

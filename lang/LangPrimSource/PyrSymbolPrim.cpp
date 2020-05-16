@@ -31,22 +31,6 @@ Primitives for Symbol.
 #include "PyrKernel.h"
 #include "SCBase.h"
 
-/*
-int prSymbolString(struct VMGlobals *g, int numArgsPushed);
-int prSymbolString(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a;
-    PyrString *string;
-
-    a = g->sp;
-    if (NotSym(a)) return errWrongType;
-    string = newPyrString(g->gc, slotRawSymbol(a)->name, 0, true);
-    SetObject(a, string);
-    return errNone;
-}
-*/
-
-int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     int length;
@@ -66,7 +50,6 @@ int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolClass(struct VMGlobals* g, int numArgsPushed);
 int prSymbolClass(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrClass* classobj;
@@ -88,7 +71,6 @@ int prSymbolClass(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -101,7 +83,6 @@ int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed);
 int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char str[256];
@@ -128,7 +109,6 @@ int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed);
 int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char str[256];
@@ -147,7 +127,6 @@ int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -160,7 +139,6 @@ int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -174,7 +152,6 @@ int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
     static const char* binary_op_characters = "!@%&*-+=|<>?/";
     PyrSlot* a = g->sp;
@@ -212,7 +189,6 @@ int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     const char* str = slotRawSymbol(a)->name;
@@ -240,7 +216,6 @@ int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -250,7 +225,6 @@ int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -259,7 +233,6 @@ int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -269,7 +242,6 @@ int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -524,7 +496,6 @@ inline int lo_pattern_match(const char* str, const char* p) {
 // end: following function lifted from liblo
 
 
-int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
 
@@ -543,7 +514,6 @@ int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -556,15 +526,12 @@ int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-
-void initSymbolPrimitives();
 void initSymbolPrimitives() {
     int base, index = 0;
 
     base = nextPrimitiveIndex();
 
     definePrimitive(base, index++, "_SymbolIsPrefix", prSymbolIsPrefix, 2, 0);
-    // definePrimitive(base, index++, "_SymbolString", prSymbolString, 1, 0);
     definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);
     definePrimitive(base, index++, "_SymbolIsClassName", prSymbolIsClassName, 1, 0);
     definePrimitive(base, index++, "_SymbolIsMetaClassName", prSymbolIsMetaClassName, 1, 0);

@@ -27,36 +27,30 @@ Primitives for some bit operations.
 #include "VMGlobals.h"
 #include "clz.h"
 
-
-int prNumBits(VMGlobals* g, int numArgsPushed);
 int prNumBits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, NUMBITS(slotRawInt(a)));
     return errNone;
 }
 
-int prLog2Ceil(VMGlobals* g, int numArgsPushed);
 int prLog2Ceil(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, LOG2CEIL(slotRawInt(a)));
     return errNone;
 }
 
-int prCLZ(VMGlobals* g, int numArgsPushed);
 int prCLZ(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, CLZ(slotRawInt(a)));
     return errNone;
 }
 
-int prCTZ(VMGlobals* g, int numArgsPushed);
 int prCTZ(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, CTZ(slotRawInt(a)));
     return errNone;
 }
 
-int prNextPowerOfTwo(VMGlobals* g, int numArgsPushed);
 int prNextPowerOfTwo(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -66,14 +60,12 @@ int prNextPowerOfTwo(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsPowerOfTwo(VMGlobals* g, int numArgsPushed);
 int prIsPowerOfTwo(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetBool(a, ISPOWEROFTWO(slotRawInt(a)));
     return errNone;
 }
 
-int prBinaryGrayCode(VMGlobals* g, int numArgsPushed);
 int prBinaryGrayCode(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -82,7 +74,6 @@ int prBinaryGrayCode(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSetBit(VMGlobals* g, int numArgsPushed);
 int prSetBit(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 2;
     PyrSlot* b = g->sp - 1;
@@ -102,7 +93,6 @@ int prSetBit(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prHammingDistance(VMGlobals* g, int numArgsPushed);
 int prHammingDistance(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -124,7 +114,6 @@ int prHammingDistance(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void initBitPrimitives();
 void initBitPrimitives() {
     int base, index = 0;
 
