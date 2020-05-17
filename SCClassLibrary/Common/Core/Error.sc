@@ -166,18 +166,18 @@ DoesNotUnderstandError : MethodError {
 			// to avoid unhelpful suggestions.
 			if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
 				suggestedCorrection = methods[minIndex];
-				suggestion = "Did you mean '%'? Or should '%' have been called on another receiver?"
+				suggestion = "\nPerhaps you misspelled '%', or meant to call '%' on another receiver?"
 				.format(suggestedCorrection.name, selector);
 			}
 		}
 	}
 	errorString {
-		^"ERROR: Message '%' not understood by '%'".format(selector, receiver)
+		^"ERROR: Message '" ++ selector ++ "' not understood." ++ suggestion
 	}
 	reportError {
+		"\n".post;
 		this.errorString.postln;
-		suggestion.postln;
-		"RECEIVER:\n".post;
+		"\nRECEIVER:\n".post;
 		receiver.dump;
 		"ARGS:\n".post;
 		args.dumpAll;
@@ -185,7 +185,7 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"^^ The preceding error dump is for %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
+		"\n^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
