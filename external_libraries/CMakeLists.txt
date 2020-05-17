@@ -6,6 +6,39 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
 			" https://github.com/supercollider/supercollider/wiki/git-cheat-sheet#working-with-submodules")
 endif()
 
+if(BUILD_PORTAUDIO)
+  set(_cached_c_flags "${CMAKE_C_FLAGS}")
+  set(_cached_cxx_flags "${CMAKE_CXX_FLAGS}")
+  unset(CMAKE_C_FLAGS)
+  unset(CMAKE_CXX_FLAGS)
+  if(WIN32) #temporarily remove previous added definitions
+    remove_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
+  endif()
+  
+  message(STATUS "PortAudio: building static library")
+  set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library" FORCE)
+  set(PA_BUILD_SHARED OFF CACHE BOOL "PortAudio shared library" FORCE)
+
+  # disable platform suffix
+  set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE)
+  # disable install target
+  set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install" FORCE)
+
+  add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
+
+  # FindPortaudio.cmake script defines PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES when using instaled library
+  # when building PA ourselves, we need to specify these
+  set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
+
+  set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
+  
+  set(CMAKE_C_FLAGS "${_cached_c_flags}")
+  set(CMAKE_CXX_FLAGS "${_cached_cxx_flags}")
+  if(WIN32) #re-add definitions
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
+  endif()
+endif()
+
 if(NOT SYSTEM_BOOST) # we compile boost ourselves
 	message(STATUS "Using bundled boost")
 	# boost thread

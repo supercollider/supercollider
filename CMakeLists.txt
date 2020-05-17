@@ -68,8 +68,7 @@ endif()
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-# identify target architecture, build portaudio before any SC specific
-# definitions break the pa-build
+# identify target architecture
 if(WIN32)
     SET(SC_WIN_BUNDLE_NAME "SuperCollider" CACHE STRING "Folder name of SC install")
 
@@ -84,17 +83,6 @@ if(WIN32)
         SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
     endif()
 
-    # PortAudio: use static library
-    set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library")
-    set(PA_BUILD_SHARED OFF CACHE BOOL "PortAudio shared library")
-    # Call static library "portaudio_static" since this will also cause the inclusion of the required architecture suffix
-    set(PA_LIBNAME_ADD_SUFFIX ON CACHE BOOL "PortAudio static library suffix")
-    # disable PortAudio install target
-    set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install")
-    if(NOT MSYS)
-      set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
-      add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
-    endif(NOT MSYS)
 endif(WIN32)
 
 #############################################
@@ -236,6 +224,11 @@ option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying
 option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
+option(BUILD_PORTAUDIO "Build bundled PortAudio library" ON)
+if(NOT WIN32)
+		set(BUILD_PORTAUDIO OFF)
+		mark_as_advanced(BUILD_PORTAUDIO)
+endif()
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
@@ -246,6 +239,13 @@ else()
 endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
+
+# if(WIN32)
+# 	  # build bundled PortAudio on Windows
+# 	  set(BUILD_PORTAUDIO OFF)
+# elseif(NOT ((UNIX AND NOT APPLE) AND (NOT (AUDIOAPI STREQUAL "portaudio")) OR APPLE))
+# 		mark_as_advanced(BUILD_PORTAUDIO)
+# endif()
 
 #############################################
 # some default libraries
