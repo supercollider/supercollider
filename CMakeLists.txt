@@ -240,12 +240,6 @@ endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
-# if(WIN32)
-# 	  # build bundled PortAudio on Windows
-# 	  set(BUILD_PORTAUDIO OFF)
-# elseif(NOT ((UNIX AND NOT APPLE) AND (NOT (AUDIOAPI STREQUAL "portaudio")) OR APPLE))
-# 		mark_as_advanced(BUILD_PORTAUDIO)
-# endif()
 
 #############################################
 # some default libraries
