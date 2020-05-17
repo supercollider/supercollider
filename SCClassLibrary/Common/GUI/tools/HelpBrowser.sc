@@ -278,20 +278,25 @@ HelpBrowser {
 			};
 		};
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			if( ((key == 70) && (mods.isCtrl || mods.isCmd)) ) {
-				toggleFind.value;
-			};
-			if(char.ascii==27) {
-				if(findView.visible) {toggleFind.value};
-			};
-			if(((key == 61) && (mods.isCtrl || mods.isCmd)) || (key == 43 && mods.isCtrl)) {
+			var keyPlus, keyZero, keyMinus, keyEquals, keyF;
+			var modifier = Platform.case(\osx, { mods.isCmd }, { mods.isCtrl });
+			#keyPlus, keyZero, keyMinus, keyEquals, keyF = [43, 48, 45, 61, 70];
+
+			// +/= has the same value when pressed with <Cmd>
+			if (((key == keyEquals) || (key == keyPlus)) && modifier) {
 				webView.zoom = min(webView.zoom + 0.1, 2.0);
 			};
-			if(key == 45 && (mods.isCtrl || mods.isCmd)) {
+			if ((key == keyMinus) && modifier) {
 				webView.zoom = max(webView.zoom - 0.1, 0.1);
 			};
-			if(key == 48 && (mods.isCtrl || mods.isCmd)) {
+			if ((key == keyZero) && modifier) {
 				webView.zoom = 1.0;
+			};
+			if ((key == keyF) && modifier) {
+				toggleFind.value;
+			};
+			if (char.ascii == 27) { // Esc
+				if (findView.visible) { toggleFind.value };
 			};
 		};
 
