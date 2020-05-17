@@ -297,11 +297,14 @@ Buffer {
 	}
 
 	// risky without wait
-	getToFloatArray { arg index = 0, count, wait = 0.01, timeout = 3, action;
+	getToFloatArray { arg index = 0, count = -1, wait = 0.01, timeout = 3, action;
 		var refcount, array, pos, getsize, resp, done = false;
 
 		pos = index = index.asInteger;
-		count = (count ??  { numFrames * numChannels }).asInteger;
+		// treat -1 and nil the same
+		if(count == -1 || count.isNil) {
+			count = (numFrames * numChannels).asInteger - index;
+		};
 		array = FloatArray.newClear(count);
 		refcount = (count / 1633).roundUp;
 		count = count + pos;

@@ -243,4 +243,38 @@ TestBuffer_Server : UnitTest {
 		this.assertArrayFloatEquals(floats, collection, "Buffer:getToFloatArray should get the buffer's values");
 	}
 
+	test_getToFloatArray_index_count {
+		var collection = Array.iota(8).asFloat;
+		var buffer = Buffer.sendCollection(server, collection);
+		var ranges = [
+			[0, nil],
+			[0, -1],
+			[2, nil],
+			[2, -1],
+			[2, 2],
+		];
+
+		ranges.do { |range|
+			var floats;
+			var slice = if(range[1] == -1 || range[1].isNil) {
+				collection.copyToEnd(range[0]);
+			} {
+				collection.copyRange(range[0], (range[0] + range[1]) - 1);
+			};
+
+			buffer.getToFloatArray(
+				index: range[0],
+				count: range[1],
+				action: { |array| floats = array }
+			);
+			server.sync;
+
+			this.assertArrayFloatEquals(
+				floats,
+				slice,
+				"getToFloatArray should get count number of values starting at index"
+			);
+		};
+	}
+
 }
