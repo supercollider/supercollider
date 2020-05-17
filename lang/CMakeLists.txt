@@ -296,11 +296,7 @@ if(ALSA_FOUND)
 endif(ALSA_FOUND)
 
 if (AUDIOAPI STREQUAL portaudio)
-    if(WIN32 AND NOT MSYS)
-        target_link_libraries(libsclang portaudio_static)
-    else()
-        target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
-    endif()
+    target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
 endif()
 
 if(SNDFILE_FOUND)
