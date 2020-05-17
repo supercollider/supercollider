@@ -5,7 +5,9 @@ related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 Warning! If you are using headphones or external speakers, it is recommended to set your volume low before playing the following example and then bring it up to a comfortable level. Raw synthesized tones can sometimes seem louder than music and the other forms of audio we usually listen to.
 
-The easiest way to get sound from SC is to use a Function. Below is a simple example of this. Execute this (after making sure the server is booted), and when you're sick of it, press Cmd-. (i.e hold down the command key and press the period or fullstop key) to stop the sound. This will always stop all sound in SC. You'll be using it a lot, so commit it to memory.
+The easiest way to get sound from SC is to use the code::play:: Function. After making sure the server is booted, run the simple example below.
+
+When you've had enough, strong:: stop the sound by pressing Ctrl-. (Cmd-. on macOS).:: This will always stop all running processes and sound in SC. You'll be using it a lot, so learn it by heart.
 
 code::
 { [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)] }.play;
