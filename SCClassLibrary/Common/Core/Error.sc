@@ -147,26 +147,28 @@ ShouldNotImplementError : MethodError {
 }
 
 DoesNotUnderstandError : MethodError {
-	var <>selector, <>args, <suggestedCorrection, suggestion;
+	var <>selector, <>args, <suggestedCorrection, suggestion = "";
 	*new { arg receiver, selector, args;
 		^super.new(nil, receiver).selector_(selector).args_(args).init
 	}
+
 	init {
 		var methods, methodNames, editDistances, minIndex, lowerCaseSelector;
-		methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
-		methodNames = methods.collect { |x| x.name.asString.toLower };
-		// we compare lower-case versions to prioritize capitalization mistakes
-		lowerCaseSelector = selector.asString.toLower;
-		editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
-		minIndex = editDistances.minIndex;
-		// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
-		// to avoid unhelpful suggestions.
-		if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
-			suggestedCorrection = methods[minIndex];
-			suggestion = " Did you mean '%'?".format(suggestedCorrection.name);
-		} {
-			suggestedCorrection = nil;
-			suggestion = "";
+
+		if(receiver.notNil) {
+			methods = receiver.class.superclasses.add(receiver.class).collect(_.methods).reduce('++');
+			methodNames = methods.collect { |x| x.name.asString.toLower };
+			// we compare lower-case versions to prioritize capitalization mistakes
+			lowerCaseSelector = selector.asString.toLower;
+			editDistances = methodNames.collect(_.editDistance(lowerCaseSelector));
+			minIndex = editDistances.minIndex;
+			// Edit distance of 3 chosen arbitrarily; also, filter out completely dissimilar matches
+			// to avoid unhelpful suggestions.
+			if(editDistances[minIndex] <= 3 and: { methodNames[minIndex].similarity(lowerCaseSelector) > 0 }) {
+				suggestedCorrection = methods[minIndex];
+				suggestion = "\nPerhaps you misspelled '%', or meant to call '%' on another receiver?"
+				.format(suggestedCorrection.name, selector);
+			}
 		}
 	}
 	errorString {
@@ -182,7 +184,7 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"^^ The preceding error dump is for %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
+		"^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
