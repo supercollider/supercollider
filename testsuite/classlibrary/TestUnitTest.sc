@@ -1,13 +1,44 @@
 TestUnitTest : UnitTest {
 
-	var someVar;
+	var setUpHappened = false;
+	classvar <>classSetUpHappened = false;
+	classvar <>classTearDownHappened = false;
+
+	*setUpClass {
+		this.classSetUpHappened = true;
+	}
+
+	*tearDownClass {
+		this.classTearDownHappened = true;
+	}
 
 	setUp {
-		someVar = \setUp;
+		setUpHappened = true;
+	}
+
+	test_setUpClass_already_happened {
+		this.assert(this.class.classSetUpHappened, "setUpClass should have happened");
+	}
+
+	test_setUpClass {
+		this.class.classSetUpHappened = false;
+		this.class.prRunWithinSetUpClass {
+			this.assert(this.class.classSetUpHappened,
+				"setUpClass should have happened before prRunWithinSetUpClass function is called"
+			);
+		}
+	}
+
+	test_tearDownClass {
+		this.class.classTearDownHappened = false;
+		this.class.prRunWithinSetUpClass;
+		this.assert(this.class.classTearDownHappened,
+			"tearDownClass should have happened after prRunWithinSetUpClass function is called"
+		);
 	}
 
 	test_setUp {
-		this.assertEquals(someVar, \setUp, "someVar be set in setUp");
+		this.assert(setUpHappened, "setUp should have happened")
 	}
 
 	test_bootServer {
@@ -18,7 +49,7 @@ TestUnitTest : UnitTest {
 	}
 
 	test_assert {
-		this.assert(true, "assert(true) should certainly work");
+		this.assert(true, "assert(true) should certainly work")
 	}
 
 	test_findTestedClass {
