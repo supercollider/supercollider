@@ -240,7 +240,6 @@ endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
-
 #############################################
 # some default libraries
 
