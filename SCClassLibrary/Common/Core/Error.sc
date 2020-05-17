@@ -175,9 +175,8 @@ DoesNotUnderstandError : MethodError {
 		^"ERROR: Message '" ++ selector ++ "' not understood." ++ suggestion
 	}
 	reportError {
-		"\n".post;
 		this.errorString.postln;
-		"\nRECEIVER:\n".post;
+		"RECEIVER:\n".post;
 		receiver.dump;
 		"ARGS:\n".post;
 		args.dumpAll;
@@ -185,7 +184,7 @@ DoesNotUnderstandError : MethodError {
 		if(protectedBacktrace.notNil, { this.postProtectedBacktrace });
 		this.dumpBackTrace;
 		// this.adviceLink.postln;
-		"\n^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
+		"^^ %\nRECEIVER: %\n\n\n".postf(this.errorString, receiver);
 	}
 	adviceLinkPage {
 		^"%#%".format(this.class.name, selector)
