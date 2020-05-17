@@ -7,12 +7,13 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
 endif()
 
 if(BUILD_PORTAUDIO)
+  #temporarily remove previous flags and definitions
   set(_cached_c_flags "${CMAKE_C_FLAGS}")
   set(_cached_cxx_flags "${CMAKE_CXX_FLAGS}")
   unset(CMAKE_C_FLAGS)
   unset(CMAKE_CXX_FLAGS)
-  if(WIN32) #temporarily remove previous added definitions
-    remove_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
+  if(WIN32)
+    remove_definitions(-DWIN32_LEAN_AND_MEAN)
   endif()
   
   message(STATUS "PortAudio: building static library")
@@ -32,10 +33,11 @@ if(BUILD_PORTAUDIO)
 
   set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
   
+  #reset flags and definitions
   set(CMAKE_C_FLAGS "${_cached_c_flags}")
   set(CMAKE_CXX_FLAGS "${_cached_cxx_flags}")
-  if(WIN32) #re-add definitions
-    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
+  if(WIN32) 
+    add_definitions(-DWIN32_LEAN_AND_MEAN)
   endif()
 endif()
 
