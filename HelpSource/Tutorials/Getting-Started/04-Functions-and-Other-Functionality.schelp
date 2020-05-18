@@ -20,7 +20,7 @@ Before we get to doing that though, let's learn a little about Functions in gene
 A Function is just a reusable bit of code. You define a Function by enclosing code in curly brackets: { }. Here's an example:
 
 code::
-f = { "Function evaluated".postln; };
+f = { "Function evaluated".postln };
 ::
 
 The stuff within the curly brackets is what will get executed each time you reuse, or "evaluate" the Function. Note that this is written like an equation, i.e. code::f = {...}::. This is not an equation in the mathematical sense, it's what's called an "assignment". Basically it allows me to name the Function I've created, by storing it in a variable called code::f::. A variable is just a name representing a slot in which we can store things, such as a Function, a number, a list, etc. Execute the following lines one at a time and watch the post window:
