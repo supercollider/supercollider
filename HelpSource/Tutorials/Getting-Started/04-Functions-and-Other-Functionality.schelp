@@ -185,7 +185,7 @@ code::
 f = {
 	var foo;
 	foo = 3;
-	foo;
+	foo
 };
 f.value;
 foo;			// this will cause an error as "foo" is only valid within f.
