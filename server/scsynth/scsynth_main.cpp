@@ -66,7 +66,8 @@ void displayWarningIfScsynthHasNotBooted() {
     if (!bScsynthHasBooted) {
         std::cout << "Server: possible boot delay.\n";
         std::cout << "On some Windows-based machines, Windows Defender sometimes delays server boot by one minute.\n";
-        std::cout << "You can add scsynth.exe process to Windows Defender exclusion list to disable this check. It's safe.\n";
+        std::cout << "You can add scsynth.exe process to Windows Defender exclusion list ";
+        std::cout << "to disable this check. It's safe.\n";
     }
 }
 // end of additions for Windows Defender delay warning
