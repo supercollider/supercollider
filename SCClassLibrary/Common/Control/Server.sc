@@ -765,6 +765,8 @@ Server {
 		OSCFunc({
 			routine.resume(true)
 		}, responseName, addr).oneShot;
+
+		nil.yield
 	}
 
 	waitForBoot { |onComplete, limit = 100, onFailure|
