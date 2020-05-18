@@ -47,10 +47,10 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 #ifdef _WIN32
 // Add a warning when Windows Defender delays scsynth boot by 60+ seconds
 // cf. github issue #4368
-#include <iostream>
-#include <thread>
-#include <mutex>
-#include <chrono>
+#   include <iostream>
+#   include <thread>
+#   include <mutex>
+#   include <chrono>
 bool bScsynthHasBooted = false;
 std::mutex bScsynthHasBootedMutex;
 
