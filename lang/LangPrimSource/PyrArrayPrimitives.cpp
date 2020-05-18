@@ -1663,6 +1663,11 @@ int prArrayMirror(struct VMGlobals* g, int numArgsPushed) {
     a = g->sp;
 
     obj1 = slotRawObject(a);
+
+    if (obj1->size == 0) {
+        return errNone;
+    }
+
     slots = obj1->slots;
     size = obj1->size * 2 - 1;
     obj2 = instantiateObject(g->gc, obj1->classptr, size, false, true);
@@ -1686,6 +1691,11 @@ int prArrayMirror1(struct VMGlobals* g, int numArgsPushed) {
     a = g->sp;
 
     obj1 = slotRawObject(a);
+
+    if (obj1->size < 2) {
+        return errNone;
+    }
+
     slots = obj1->slots;
     size = obj1->size * 2 - 2;
     obj2 = instantiateObject(g->gc, obj1->classptr, size, false, true);
