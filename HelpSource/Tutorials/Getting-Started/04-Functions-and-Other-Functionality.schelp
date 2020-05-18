@@ -76,14 +76,14 @@ f.value;
 Often methods simply return the object itself. This is the case with most objects and the message "value". The example below demonstrates this. (Everything to the right of the code:://:: is a "comment", which means that SC just ignores it. Comments are often used to leave notes on complicated or confusing pieces of code for future readers)
 
 code::
-f = 3;			// Create a variable and assign it a number as a value
-f.value;		// Post window says: 3, i.e the number returns itself
-f.value;		// f hasn't changed, so the post window says 3 again
+f = 3;              // Create a variable and assign it a number as a value
+f.value;            // Post window says: 3, i.e the number returns itself
+f.value;            // f hasn't changed, so the post window says 3 again
 
-f = { 3.0.rand; };	// Assign the variable a Function as a value
-f.value;		// 3.0.rand returns a random value from 0.0 to 3.0 (exclusive).
-f.value;		// Another random value
-f.value;		// Yet another random value
+f = { 3.0.rand; };  // Assign the variable a Function as a value
+f.value;            // 3.0.rand returns a random value from 0.0 to 3.0 (exclusive).
+f.value;            // Another random value
+f.value;            // Yet another random value
 ::
 
 By using the "value" method Functions and other objects can be interchangeable in your code. This is an example of emphasis::polymorphism::, which is one of the powerful features of what's called Object Oriented Programming (OOP). Polymorphism means that different objects are interchangeable if they respond to the same message. More on this later.
@@ -107,11 +107,11 @@ You can specify different orders by using what are called keyword arguments:
 code::
 (
 f = {
-	arg a, b;
-	a / b;			// '/' means divide
+    arg a, b;
+    a / b;              // '/' means divide
 };
-f.value(10, 2);			// regular style
-f.value(b: 2, a: 10);		// keyword style
+f.value(10, 2);         // regular style
+f.value(b: 2, a: 10);   // keyword style
 )
 ::
 
@@ -213,13 +213,13 @@ code::
 (
 f = {
   arg a;
-  a.value + 3;			// call "value" on a; polymorphism awaits!
+  a.value + 3;       // call "value" on a; polymorphism awaits!
 };
 )
-f.value(3);			// a.value is 3, so this returns 3 + 3 = 6
+f.value(3);          // a.value is 3, so this returns 3 + 3 = 6
 g = { 3.0.rand; };
-f.value(g);			// here the arg is a Function. a.value evaluates 3.0.rand
-f.value(g);			// try it again, different result
+f.value(g);          // here the arg is a Function. a.value evaluates 3.0.rand
+f.value(g);          // try it again, different result
 ::
 
 Start to see how this could be useful?
