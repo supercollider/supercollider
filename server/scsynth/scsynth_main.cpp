@@ -44,6 +44,33 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 
 #endif
 
+#ifdef _WIN32
+// Add a warning when Windows Defender delays scsynth boot by 60+ seconds
+// cf. github issue #4368
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <chrono>
+bool bScsynthHasBooted = false;
+std::mutex bScsynthHasBootedMutex;
+
+void scsynthHasBooted() {
+    const std::lock_guard<std::mutex> lock(bScsynthHasBootedMutex);
+    bScsynthHasBooted = true;
+}
+
+void displayWarningIfScsynthHasNotBooted() {
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+
+    const std::lock_guard<std::mutex> lock(bScsynthHasBootedMutex);
+    if (!bScsynthHasBooted) {
+        std::cout << "Server: possible boot delay.\n";
+        std::cout << "On some Windows-based machines, Windows Defender sometimes delays server boot by one minute.\n";
+        std::cout << "You can add scsynth.exe process to Windows Defender exclusion list to disable this check. It's safe.\n";
+    }
+}
+// end of additions for Windows Defender delay warning
+#endif // _WIN32
 
 void Usage();
 void Usage() {
@@ -126,6 +153,11 @@ void Usage() {
 
 
 int scsynth_main(int argc, char** argv) {
+#ifdef _WIN32
+    std::thread displayWarningIfScsynthHasNotBootedThread(displayWarningIfScsynthHasNotBooted);
+    displayWarningIfScsynthHasNotBootedThread.detach();
+#endif //_WIN32
+
     setlinebuf(stdout);
 
     EventLoop::setup();
@@ -339,6 +371,10 @@ int scsynth_main(int argc, char** argv) {
             return 1;
         }
     }
+
+#ifdef _WIN32
+    scsynthHasBooted();
+#endif // _WIN32
 
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG
