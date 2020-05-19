@@ -761,12 +761,13 @@ Server {
 	/* scheduling */
 
 	wait { |responseName|
-		var routine = thisThread;
+		var condition = Condition.new;
 		OSCFunc({
-			routine.resume(true)
+			condition.test = true;
+			condition.signal
 		}, responseName, addr).oneShot;
 
-		nil.yield
+		condition.wait
 	}
 
 	waitForBoot { |onComplete, limit = 100, onFailure|
