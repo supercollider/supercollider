@@ -1,6 +1,6 @@
 + String {
 	runInTerminal {
-		"String:runInTerminal - sorry this method has not yet been implemented for windows.".error;
+		format("start \"SuperCollider runInTerminal\" cmd.exe /k %", this.quote).unixCmd;
 	}
 
 	openOS {|aPath|
