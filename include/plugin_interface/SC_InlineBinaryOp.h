@@ -495,13 +495,13 @@ template <typename T> inline T sc_scaleneg(T a, T b) {
 }
 
 template <> inline float sc_scaleneg<float>(float a, float b) {
-    b = 0.5f * b + 0.5f;
-    return (std::abs(a) - a) * b + a;
+    float absValue = std::abs(a);
+    return 0.5 * ((a - absValue) * b + a + absValue);
 }
 
 template <> inline double sc_scaleneg<double>(double a, double b) {
-    b = 0.5 * b + 0.5;
-    return (std::abs(a) - a) * b + a;
+    double absValue = std::abs(a);
+    return 0.5 * ((a - absValue) * b + a + absValue);
 }
 
 template <typename T> inline T sc_amclip(T a, T b) {
