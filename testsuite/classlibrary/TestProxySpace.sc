@@ -3,7 +3,7 @@ TestProxySpace : UnitTest {
 
 	test_storeOn_recoversState {
 		var psA, psB, stream, bValue, bNodeMap, aMapString, bMapString;
-		var server = Server(\test, NetAddr("127.0.0.1", 57111));
+		var server = Server(this.class.name, NetAddr("127.0.0.1", 57111));
 
 		this.bootServer(server);
 		server.initTree;
@@ -22,7 +22,7 @@ TestProxySpace : UnitTest {
 		};
 
 		psB = ProxySpace(server).make {
-			stream.collection.debug("\n\n\n\nSTREAM:\n\n").interpret;
+			stream.collection.interpret;
 		};
 
 		psA.keysValuesDo { |key, value|
