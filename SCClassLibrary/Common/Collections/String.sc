@@ -429,11 +429,16 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 	splitext {
+		var sep = thisProcess.platform.pathSeparator;
 		this.reverseDo({ arg char, i;
+			// Return early after the first path separator
+			if ((char == sep), {^[this, nil]});
+
 			if (char == $\., {
 				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]
 			});
 		});
+
 		^[this, nil]
 	}
 
