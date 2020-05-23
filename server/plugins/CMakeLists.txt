@@ -82,12 +82,6 @@ if(NOT NO_X11)
 	list(APPEND plugins UIUGens)
 endif()
 
-if (WIN32)
-	if(MSVC)
-		include_directories (../../platform/windows/compat_stuff) # for stdbool.h
-	endif()
-endif()
-
 add_library(FFT_UGens MODULE
 	FFTInterfaceTable.cpp
 	FFT_UGens.cpp
