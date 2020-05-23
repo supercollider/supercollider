@@ -130,6 +130,4 @@ server_arguments::server_arguments(int argc, char* argv[]) {
         hw_name = vm["hardware-device-name"].as<std::vector<std::string>>();
 }
 
-std::unique_ptr<server_arguments> server_arguments::instance_;
-
 } /* namespace nova */

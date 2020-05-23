@@ -21,24 +21,14 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace nova {
 
 class server_arguments {
+public:
     server_arguments(int argc, char* argv[]);
 
-public:
-    static server_arguments const& initialize(int argc, char* argv[]) {
-        instance_.reset(new server_arguments(argc, argv));
-        return instance();
-    }
-
-    static server_arguments const& instance(void) { return *instance_; }
-
     /** set the sample rate (from the audio backend) */
-    static void set_samplerate(uint32_t samplerate) { instance_->samplerate = samplerate; }
-
     uint32_t port(void) const {
         if (udp_port)
             return udp_port;
@@ -71,9 +61,6 @@ public:
     /* for non-rt synthesis */
     bool non_rt;
     std::string command_file, input_file, output_file, header_format, sample_format;
-
-private:
-    static std::unique_ptr<server_arguments> instance_;
 };
 
 } /* namespace nova */

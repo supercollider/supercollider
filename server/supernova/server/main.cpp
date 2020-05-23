@@ -127,7 +127,7 @@ void get_jack_names(server_arguments const& args, string& server_name, string& c
     }
 }
 
-void start_audio_backend(server_arguments const& args) {
+void start_audio_backend(server_arguments& args) {
     string server_name, client_name;
     get_jack_names(args, server_name, client_name);
 
@@ -143,7 +143,7 @@ void start_audio_backend(server_arguments const& args) {
             cout << "Forcing samplerate of " << real_sampling_rate << "Hz" << endl;
         }
 
-        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
+        args.samplerate = real_sampling_rate;
         sc_factory->reset_sampling_rate(real_sampling_rate);
     }
 
@@ -152,7 +152,7 @@ void start_audio_backend(server_arguments const& args) {
 
 #elif defined(PORTAUDIO_BACKEND)
 
-void start_audio_backend(server_arguments const& args) {
+void start_audio_backend(server_arguments& args) {
     int input_channels = args.input_channels;
     int output_channels = args.output_channels;
 
@@ -189,7 +189,7 @@ void start_audio_backend(server_arguments const& args) {
     unsigned int real_sampling_rate = instance->get_samplerate();
 
     if (args.samplerate != real_sampling_rate) {
-        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
+        args.samplerate = real_sampling_rate;
         sc_factory->reset_sampling_rate(real_sampling_rate);
     }
 
@@ -203,7 +203,7 @@ void start_audio_backend(server_arguments const& args) {
 
 #else
 
-void start_audio_backend(server_arguments const& args) {}
+void start_audio_backend(server_arguments& args) {}
 
 #endif
 
@@ -317,8 +317,7 @@ int supernova_main(int argc, char* argv[]) {
                           // it!
     enable_core_dumps();
 
-    server_arguments::initialize(argc, argv);
-    server_arguments const& args = server_arguments::instance();
+    server_arguments args(argc, argv);
 
     if (args.dump_version) {
         cout << "supernova " << SC_VersionString() << " (" << SC_BuildString() << ")" << endl;
@@ -354,6 +353,7 @@ int supernova_main(int argc, char* argv[]) {
 
         if (!args.non_rt) {
             try {
+                // May mutate sample rate in args
                 start_audio_backend(args);
                 cout << "Supernova ready" << endl;
             } catch (exception const& e) {
