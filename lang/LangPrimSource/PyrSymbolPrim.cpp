@@ -17,6 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
+
 /*
 
 Primitives for Symbol.
@@ -31,22 +32,6 @@ Primitives for Symbol.
 #include "PyrKernel.h"
 #include "SCBase.h"
 
-/*
-int prSymbolString(struct VMGlobals *g, int numArgsPushed);
-int prSymbolString(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a;
-    PyrString *string;
-
-    a = g->sp;
-    if (NotSym(a)) return errWrongType;
-    string = newPyrString(g->gc, slotRawSymbol(a)->name, 0, true);
-    SetObject(a, string);
-    return errNone;
-}
-*/
-
-int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     int length;
@@ -66,7 +51,6 @@ int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolClass(struct VMGlobals* g, int numArgsPushed);
 int prSymbolClass(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     PyrClass* classobj;
@@ -88,7 +72,6 @@ int prSymbolClass(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -101,7 +84,6 @@ int prSymbolIsSetter(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed);
 int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char str[256];
@@ -128,7 +110,6 @@ int prSymbolAsSetter(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed);
 int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char str[256];
@@ -147,7 +128,6 @@ int prSymbolAsGetter(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -160,7 +140,6 @@ int prSymbolIsClassName(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed);
 int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -174,7 +153,6 @@ int prSymbolIsMetaClassName(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
     static const char* binary_op_characters = "!@%&*-+=|<>?/";
     PyrSlot* a = g->sp;
@@ -212,7 +190,6 @@ int prSymbol_IsBinaryOp(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     const char* str = slotRawSymbol(a)->name;
@@ -240,7 +217,6 @@ int prSymbol_IsIdentifier(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -250,7 +226,6 @@ int prSymbol_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -259,7 +234,6 @@ int prSymbol_PrimitiveIndex(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -269,7 +243,6 @@ int prSymbol_SpecialIndex(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -524,7 +497,6 @@ inline int lo_pattern_match(const char* str, const char* p) {
 // end: following function lifted from liblo
 
 
-int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
 
@@ -543,7 +515,6 @@ int prSymbol_matchOSCPattern(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -556,15 +527,12 @@ int prSymbol_isMap(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-
-void initSymbolPrimitives();
 void initSymbolPrimitives() {
     int base, index = 0;
 
     base = nextPrimitiveIndex();
 
     definePrimitive(base, index++, "_SymbolIsPrefix", prSymbolIsPrefix, 2, 0);
-    // definePrimitive(base, index++, "_SymbolString", prSymbolString, 1, 0);
     definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);
     definePrimitive(base, index++, "_SymbolIsClassName", prSymbolIsClassName, 1, 0);
     definePrimitive(base, index++, "_SymbolIsMetaClassName", prSymbolIsMetaClassName, 1, 0);
@@ -580,44 +548,3 @@ void initSymbolPrimitives() {
     definePrimitive(base, index++, "_Symbol_matchOSCPattern", prSymbol_matchOSCPattern, 2, 0);
     definePrimitive(base, index++, "_Symbol_IsMap", prSymbol_isMap, 1, 0);
 }
-
-
-#if _SC_PLUGINS_
-
-#    include "SCPlugin.h"
-
-// export the function that SC will call to load the plug in.
-#    pragma export on
-extern "C" {
-SCPlugIn* loadPlugIn(void);
-}
-#    pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn {
-public:
-    APlugIn();
-    virtual ~APlugIn();
-
-    virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn() {
-    // constructor for plug in
-}
-
-APlugIn::~APlugIn() {
-    // destructor for plug in
-}
-
-void APlugIn::AboutToCompile() {
-    // this is called each time the class library is compiled.
-    initSymbolPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn() { return new APlugIn(); }
-
-#endif

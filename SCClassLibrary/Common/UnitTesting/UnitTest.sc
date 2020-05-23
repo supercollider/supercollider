@@ -139,8 +139,7 @@ UnitTest {
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-		var details =
-		"Is:\n\t % \nShould equal (within range" + within ++ "):\n\t %".format(a, b);
+		var details = ("Is:\n\t % \nShould equal (within range " ++ within ++ "):\n\t %").format(a, b);
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
