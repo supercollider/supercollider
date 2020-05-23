@@ -53,17 +53,21 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 #    include <chrono>
 bool bScsynthHasBooted = false;
 std::mutex bScsynthHasBootedMutex;
+std::condition_variable bScsynthHasBootedConditionVariable;
 
 void scsynthHasBooted() {
-    const std::lock_guard<std::mutex> lock(bScsynthHasBootedMutex);
-    bScsynthHasBooted = true;
+    {
+        const std::lock_guard<std::mutex> lock(bScsynthHasBootedMutex);
+        bScsynthHasBooted = true;
+    }
+    bScsynthHasBootedConditionVariable.notify_all();
 }
 
 void displayWarningIfScsynthHasNotBooted() {
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::unique_lock<std::mutex> lock(bScsynthHasBootedMutex);
 
-    const std::lock_guard<std::mutex> lock(bScsynthHasBootedMutex);
-    if (!bScsynthHasBooted) {
+    if (!bScsynthHasBootedConditionVariable.wait_for(lock, std::chrono::seconds(10),
+                                                     [] { return bScsynthHasBooted == true; })) {
         std::cout << "Server: possible boot delay.\n";
         std::cout << "On some Windows-based machines, Windows Defender sometimes delays server boot by one minute.\n";
         std::cout << "You can add scsynth.exe process to Windows Defender exclusion list ";
@@ -156,7 +160,6 @@ void Usage() {
 int scsynth_main(int argc, char** argv) {
 #ifdef _WIN32
     std::thread displayWarningIfScsynthHasNotBootedThread(displayWarningIfScsynthHasNotBooted);
-    displayWarningIfScsynthHasNotBootedThread.detach();
 #endif //_WIN32
 
     setlinebuf(stdout);
