@@ -30,44 +30,7 @@ Primitives for Arrays.
 #include "SC_Constants.h"
 #include <string.h>
 
-int basicSize(VMGlobals* g, int numArgsPushed);
-int basicMaxSize(VMGlobals* g, int numArgsPushed);
-
-int basicSwap(struct VMGlobals* g, int numArgsPushed);
-int basicAt(VMGlobals* g, int numArgsPushed);
-int basicRemoveAt(VMGlobals* g, int numArgsPushed);
-int basicClipAt(VMGlobals* g, int numArgsPushed);
-int basicWrapAt(VMGlobals* g, int numArgsPushed);
-int basicFoldAt(VMGlobals* g, int numArgsPushed);
-int basicPut(VMGlobals* g, int numArgsPushed);
-int basicClipPut(VMGlobals* g, int numArgsPushed);
-int basicWrapPut(VMGlobals* g, int numArgsPushed);
-int basicFoldPut(VMGlobals* g, int numArgsPushed);
-
-int prArrayAdd(VMGlobals* g, int numArgsPushed);
-int prArrayFill(VMGlobals* g, int numArgsPushed);
-int prArrayPop(VMGlobals* g, int numArgsPushed);
-int prArrayGrow(VMGlobals* g, int numArgsPushed);
-int prArrayCat(VMGlobals* g, int numArgsPushed);
-
-int prArrayReverse(VMGlobals* g, int numArgsPushed);
-int prArrayScramble(VMGlobals* g, int numArgsPushed);
-int prArrayRotate(VMGlobals* g, int numArgsPushed);
-int prArrayStutter(VMGlobals* g, int numArgsPushed);
-int prArrayMirror(VMGlobals* g, int numArgsPushed);
-int prArrayMirror1(VMGlobals* g, int numArgsPushed);
-int prArrayMirror2(VMGlobals* g, int numArgsPushed);
-int prArrayExtendWrap(VMGlobals* g, int numArgsPushed);
-int prArrayExtendFold(VMGlobals* g, int numArgsPushed);
-int prArrayPermute(VMGlobals* g, int numArgsPushed);
-int prArrayPyramid(VMGlobals* g, int numArgsPushed);
-int prArraySlide(VMGlobals* g, int numArgsPushed);
-int prArrayLace(VMGlobals* g, int numArgsPushed);
-int prArrayContainsSeqColl(VMGlobals* g, int numArgsPushed);
-int prArrayWIndex(VMGlobals* g, int numArgsPushed);
-int prArrayNormalizeSum(VMGlobals* g, int numArgsPushed);
-int prArrayIndexOfGreaterThan(VMGlobals* g, int numArgsPushed);
-
+// Primitives that work with Arrays. Most of these are used in ArrayedCollection and Array.
 
 int basicSize(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
@@ -2533,43 +2496,3 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
     definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
 }
-
-
-#if _SC_PLUGINS_
-
-#    include "SCPlugin.h"
-
-#    pragma export on
-extern "C" {
-SCPlugIn* loadPlugIn(void);
-}
-#    pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn {
-public:
-    APlugIn();
-    virtual ~APlugIn();
-
-    virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn() {
-    // constructor for plug in
-}
-
-APlugIn::~APlugIn() {
-    // destructor for plug in
-}
-
-void APlugIn::AboutToCompile() {
-    // this is called each time the class library is compiled.
-    initArrayPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn() { return new APlugIn(); }
-
-#endif

@@ -303,7 +303,6 @@ int prSubInt(VMGlobals* g, int numArgsPushed) { return prOpInt<subNum>(g, numArg
 int prMulInt(VMGlobals* g, int numArgsPushed) { return prOpInt<mulNum>(g, numArgsPushed); }
 
 
-int prNthPrime(VMGlobals* g, int numArgsPushed);
 int prNthPrime(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int n, p;
@@ -319,7 +318,6 @@ int prNthPrime(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prPrevPrime(VMGlobals* g, int numArgsPushed);
 int prPrevPrime(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int n, p, i;
@@ -336,7 +334,6 @@ int prPrevPrime(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prNextPrime(VMGlobals* g, int numArgsPushed);
 int prNextPrime(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int n, p, i;
@@ -354,7 +351,6 @@ int prNextPrime(VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prIsPrime(VMGlobals* g, int numArgsPushed);
 int prIsPrime(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int n, p, sqrtn, i;
@@ -397,7 +393,6 @@ int prIsPrime(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIndexOfPrime(VMGlobals* g, int numArgsPushed);
 int prIndexOfPrime(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int n, p;
@@ -424,7 +419,6 @@ int prIndexOfPrime(VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prAs32Bits(VMGlobals* g, int numArgsPushed);
 int prAs32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     // return an integer that is a bit pattern for the 32 bit float representation
@@ -437,7 +431,6 @@ int prAs32Bits(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prHigh32Bits(VMGlobals* g, int numArgsPushed);
 int prHigh32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -462,7 +455,6 @@ int prHigh32Bits(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prLow32Bits(VMGlobals* g, int numArgsPushed);
 int prLow32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -487,7 +479,6 @@ int prLow32Bits(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prFrom32Bits(VMGlobals* g, int numArgsPushed);
 int prFrom32Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -507,7 +498,6 @@ int prFrom32Bits(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prFrom64Bits(VMGlobals* g, int numArgsPushed);
 int prFrom64Bits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 2;
     PyrSlot* b = g->sp - 1;

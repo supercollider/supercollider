@@ -1433,7 +1433,6 @@ int prPipeClose(struct VMGlobals* g, int numArgsPushed) {
 
 #ifndef NO_LIBSNDFILE
 
-int sampleFormatToString(struct SF_INFO* info, const char** string);
 int sampleFormatToString(struct SF_INFO* info, const char** string) {
     unsigned int format = info->format & SF_FORMAT_SUBMASK;
     switch (format) {
@@ -1473,7 +1472,6 @@ int sampleFormatToString(struct SF_INFO* info, const char** string) {
 }
 
 
-int headerFormatToString(struct SF_INFO* info, const char** string);
 int headerFormatToString(struct SF_INFO* info, const char** string) {
     switch (info->format & SF_FORMAT_TYPEMASK) {
     case SF_FORMAT_WAV:
@@ -1551,7 +1549,6 @@ int headerFormatToString(struct SF_INFO* info, const char** string) {
     return errNone;
 }
 
-int sndfileFormatInfoToStrings(struct SF_INFO* info, const char** stringHead, const char** stringSample);
 int sndfileFormatInfoToStrings(struct SF_INFO* info, const char** stringHead, const char** stringSample) {
     int error = 0;
     error = headerFormatToString(info, stringHead);
@@ -1559,7 +1556,6 @@ int sndfileFormatInfoToStrings(struct SF_INFO* info, const char** stringHead, co
     return error;
 }
 
-int prSFOpenRead(struct VMGlobals* g, int numArgsPushed);
 int prSFOpenRead(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     char filename[PATH_MAX];
@@ -1606,7 +1602,6 @@ int prSFOpenRead(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed);
 int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     char filename[PATH_MAX];
@@ -1683,7 +1678,6 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFClose(struct VMGlobals* g, int numArgsPushed);
 int prSFClose(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -1698,7 +1692,6 @@ int prSFClose(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFRead(struct VMGlobals* g, int numArgsPushed);
 int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
 
@@ -1731,7 +1724,6 @@ int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFWrite(struct VMGlobals* g, int numArgsPushed);
 int prSFWrite(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
 
@@ -1764,7 +1756,6 @@ int prSFWrite(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFSeek(struct VMGlobals* g, int numArgsPushed);
 int prSFSeek(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
 
@@ -1788,7 +1779,6 @@ int prSFSeek(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFHeaderInfoString(struct VMGlobals* g, int numArgsPushed);
 int prSFHeaderInfoString(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     a = g->sp;

@@ -17,6 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
+
 /*
 
 Primitives for some bit operations.
@@ -27,36 +28,30 @@ Primitives for some bit operations.
 #include "VMGlobals.h"
 #include "clz.h"
 
-
-int prNumBits(VMGlobals* g, int numArgsPushed);
 int prNumBits(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, NUMBITS(slotRawInt(a)));
     return errNone;
 }
 
-int prLog2Ceil(VMGlobals* g, int numArgsPushed);
 int prLog2Ceil(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, LOG2CEIL(slotRawInt(a)));
     return errNone;
 }
 
-int prCLZ(VMGlobals* g, int numArgsPushed);
 int prCLZ(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, CLZ(slotRawInt(a)));
     return errNone;
 }
 
-int prCTZ(VMGlobals* g, int numArgsPushed);
 int prCTZ(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetRaw(a, CTZ(slotRawInt(a)));
     return errNone;
 }
 
-int prNextPowerOfTwo(VMGlobals* g, int numArgsPushed);
 int prNextPowerOfTwo(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -66,14 +61,12 @@ int prNextPowerOfTwo(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsPowerOfTwo(VMGlobals* g, int numArgsPushed);
 int prIsPowerOfTwo(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetBool(a, ISPOWEROFTWO(slotRawInt(a)));
     return errNone;
 }
 
-int prBinaryGrayCode(VMGlobals* g, int numArgsPushed);
 int prBinaryGrayCode(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -82,7 +75,6 @@ int prBinaryGrayCode(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSetBit(VMGlobals* g, int numArgsPushed);
 int prSetBit(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 2;
     PyrSlot* b = g->sp - 1;
@@ -102,7 +94,6 @@ int prSetBit(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prHammingDistance(VMGlobals* g, int numArgsPushed);
 int prHammingDistance(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -124,7 +115,6 @@ int prHammingDistance(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void initBitPrimitives();
 void initBitPrimitives() {
     int base, index = 0;
 
@@ -140,44 +130,3 @@ void initBitPrimitives() {
     definePrimitive(base, index++, "_BinaryGrayCode", prBinaryGrayCode, 1, 0);
     definePrimitive(base, index++, "_HammingDistance", prHammingDistance, 2, 0);
 }
-
-
-#if _SC_PLUGINS_
-
-#    include "SCPlugin.h"
-
-// export the function that SC will call to load the plug in.
-#    pragma export on
-extern "C" {
-SCPlugIn* loadPlugIn(void);
-}
-#    pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn {
-public:
-    APlugIn();
-    virtual ~APlugIn();
-
-    virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn() {
-    // constructor for plug in
-}
-
-APlugIn::~APlugIn() {
-    // destructor for plug in
-}
-
-void APlugIn::AboutToCompile() {
-    // this is called each time the class library is compiled.
-    initBitPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn() { return new APlugIn(); }
-
-#endif

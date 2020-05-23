@@ -315,7 +315,6 @@ void syncOSCOffsetWithTimeOfDay() {
 }
 
 
-void schedAdd(VMGlobals* g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask);
 void schedAdd(VMGlobals* g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask) {
     // gLangMutex must be locked
     double prevTime = inQueue->size > 1 ? slotRawFloat(inQueue->slots + 1) : -1e10;
@@ -875,7 +874,6 @@ void TempoClock::Dump() {
 }
 
 
-int prTempoClock_Free(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_Free(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     TempoClock* clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -888,7 +886,6 @@ int prTempoClock_Free(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_Clear(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_Clear(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     TempoClock* clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -898,7 +895,6 @@ int prTempoClock_Clear(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_Dump(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_Dump(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     TempoClock* clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -909,7 +905,6 @@ int prTempoClock_Dump(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prTempoClock_Tempo(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_Tempo(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     TempoClock* clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -923,7 +918,6 @@ int prTempoClock_Tempo(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_BeatDur(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_BeatDur(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     TempoClock* clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -937,7 +931,6 @@ int prTempoClock_BeatDur(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_ElapsedBeats(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_ElapsedBeats(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     TempoClock* clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
@@ -951,7 +944,6 @@ int prTempoClock_ElapsedBeats(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_Beats(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_Beats(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     double beats, seconds;
@@ -977,7 +969,6 @@ int prTempoClock_Beats(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_Sched(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_Sched(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 2;
     PyrSlot* b = g->sp - 1;
@@ -1015,7 +1006,6 @@ int prTempoClock_Sched(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_SchedAbs(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_SchedAbs(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 2;
     PyrSlot* b = g->sp - 1;
@@ -1037,7 +1027,6 @@ int prTempoClock_SchedAbs(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_BeatsToSecs(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_BeatsToSecs(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -1058,7 +1047,6 @@ int prTempoClock_BeatsToSecs(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prTempoClock_SecsToBeats(struct VMGlobals* g, int numArgsPushed);
 int prTempoClock_SecsToBeats(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -1079,7 +1067,6 @@ int prTempoClock_SecsToBeats(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSystemClock_Clear(struct VMGlobals* g, int numArgsPushed);
 int prSystemClock_Clear(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp;
 
@@ -1088,7 +1075,6 @@ int prSystemClock_Clear(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSystemClock_Sched(struct VMGlobals* g, int numArgsPushed);
 int prSystemClock_Sched(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp - 2;
     PyrSlot* b = g->sp - 1;
@@ -1111,7 +1097,6 @@ int prSystemClock_Sched(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSystemClock_SchedAbs(struct VMGlobals* g, int numArgsPushed);
 int prSystemClock_SchedAbs(struct VMGlobals* g, int numArgsPushed) {
     // PyrSlot *a = g->sp - 2;
     PyrSlot* b = g->sp - 1;

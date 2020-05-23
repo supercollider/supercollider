@@ -130,7 +130,6 @@ int prPlatform_architecture(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void initPlatformPrimitives();
 void initPlatformPrimitives() {
     int base, index = 0;
 

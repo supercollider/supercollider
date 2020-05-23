@@ -338,7 +338,6 @@ int prSignalAddHarmonic(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSignalAddChebyshev(struct VMGlobals* g, int numArgsPushed);
 int prSignalAddChebyshev(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
     int err;
@@ -440,7 +439,6 @@ int prWavetableAsSignal(struct VMGlobals* g, int numArgsPushed) {
 // class_signal
 
 #if 1
-int prSignal_FFT(struct VMGlobals* g, int numArgsPushed);
 int prSignal_FFT(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
 
@@ -533,7 +531,6 @@ int prSignal_FFT(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSignal_IFFT(struct VMGlobals* g, int numArgsPushed);
 int prSignal_IFFT(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
 
