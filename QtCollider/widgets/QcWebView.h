@@ -46,18 +46,19 @@ public:
     Q_INVOKABLE QAction* pageAction(QWebEnginePage::WebAction) const;
 
     // QWebEnginePage forwards
+    // Note: need to use QtCollider:: namespace here due to limitations of Qt metatype system
     Q_INVOKABLE void setHtml(const QString& html, const QString& baseUrl);
     Q_INVOKABLE void setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl);
-    Q_INVOKABLE void toHtml(QcCallback* cb) const;
-    Q_INVOKABLE void toPlainText(QcCallback* cb) const;
-    Q_INVOKABLE void runJavaScript(const QString& script, QcCallback* cb);
+    Q_INVOKABLE void toHtml(QtCollider::QcCallback* cb) const;
+    Q_INVOKABLE void toPlainText(QtCollider::QcCallback* cb) const;
+    Q_INVOKABLE void runJavaScript(const QString& script, QtCollider::QcCallback* cb);
     Q_INVOKABLE void setWebAttribute(int attr, bool on);
     Q_INVOKABLE bool testWebAttribute(int attr);
     Q_INVOKABLE void resetWebAttribute(int attr);
     Q_INVOKABLE void navigate(const QString& url);
 
 public Q_SLOTS:
-    void findText(const QString& searchText, bool reversed, QcCallback* cb);
+    void findText(const QString& searchText, bool reversed, QtCollider::QcCallback* cb);
 
 Q_SIGNALS:
     void linkActivated(const QString&, int, bool);

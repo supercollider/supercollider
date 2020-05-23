@@ -17,6 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
+
 /*
 
 Primitives for Char.
@@ -27,8 +28,6 @@ Primitives for Char.
 #include "PyrPrimitive.h"
 #include "VMGlobals.h"
 
-
-int prToLower(struct VMGlobals* g, int numArgsPushed);
 int prToLower(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -39,7 +38,6 @@ int prToLower(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prToUpper(struct VMGlobals* g, int numArgsPushed);
 int prToUpper(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -74,7 +72,6 @@ int prIsUpper(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsAlpha(struct VMGlobals* g, int numArgsPushed);
 int prIsAlpha(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -89,7 +86,6 @@ int prIsAlpha(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsAlphaNum(struct VMGlobals* g, int numArgsPushed);
 int prIsAlphaNum(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -104,7 +100,6 @@ int prIsAlphaNum(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsControl(struct VMGlobals* g, int numArgsPushed);
 int prIsControl(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -119,7 +114,6 @@ int prIsControl(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsDigit(struct VMGlobals* g, int numArgsPushed);
 int prIsDigit(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -134,7 +128,6 @@ int prIsDigit(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsPrint(struct VMGlobals* g, int numArgsPushed);
 int prIsPrint(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -149,7 +142,6 @@ int prIsPrint(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsPunct(struct VMGlobals* g, int numArgsPushed);
 int prIsPunct(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -164,7 +156,6 @@ int prIsPunct(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prIsSpace(struct VMGlobals* g, int numArgsPushed);
 int prIsSpace(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -179,7 +170,6 @@ int prIsSpace(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prAsciiValue(struct VMGlobals* g, int numArgsPushed);
 int prAsciiValue(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -190,7 +180,6 @@ int prAsciiValue(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prDigitValue(struct VMGlobals* g, int numArgsPushed);
 int prDigitValue(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     char c;
@@ -212,7 +201,6 @@ int prDigitValue(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prAsAscii(struct VMGlobals* g, int numArgsPushed);
 int prAsAscii(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -222,7 +210,6 @@ int prAsAscii(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prAsDigit(struct VMGlobals* g, int numArgsPushed);
 int prAsDigit(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     int c;
@@ -241,7 +228,6 @@ int prAsDigit(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void initCharPrimitives();
 void initCharPrimitives() {
     int base, index = 0;
 
@@ -263,45 +249,3 @@ void initCharPrimitives() {
     definePrimitive(base, index++, "_IsSpace", prIsSpace, 1, 0);
     definePrimitive(base, index++, "_IsDecDigit", prIsDigit, 1, 0);
 }
-
-
-#if _SC_PLUGINS_
-
-
-#    include "SCPlugin.h"
-
-// export the function that SC will call to load the plug in.
-#    pragma export on
-extern "C" {
-SCPlugIn* loadPlugIn(void);
-}
-#    pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn {
-public:
-    APlugIn();
-    virtual ~APlugIn();
-
-    virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn() {
-    // constructor for plug in
-}
-
-APlugIn::~APlugIn() {
-    // destructor for plug in
-}
-
-void APlugIn::AboutToCompile() {
-    // this is called each time the class library is compiled.
-    initCharPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn() { return new APlugIn(); }
-
-#endif
