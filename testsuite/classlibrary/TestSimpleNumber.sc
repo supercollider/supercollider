@@ -221,4 +221,79 @@ TestSimpleNumber : UnitTest {
 		arr = first.series(first, first);
 		this.assert(arr.size == 1, "SimpleNumber:series Float types with first == last and step == 0 should return an array of [ first ]");
 	}
+
+	//////////////////////
+	// scaleneg tests
+	//////////////////////	
+	test_scaleneg {
+		var a, b, result;
+
+		// ////////// Test Integers
+		// Test scaleneg(a, b) with Integer a, b >= 0.
+		a = 2;
+		b = 3;
+		result = a;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Integer arguments a >= 0, b >= 0 returns a.");
+
+		// Test scaleneg(a, b) with Integer a >= 0, b < 0.
+		a = 2;
+		b = -3;
+		result = a;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Integer  arguments a >= 0, b < 0 returns a.");
+
+		// Test scaleneg(a, b) with Integer a < 0, b >= 0.
+		a = -2;
+		b = 3;
+		result = a * b;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Integer  arguments a < 0, b >= 0 returns a * b.");
+
+		// Test scaleneg(a, b) with Integer a < 0, b < 0.
+		a = -2;
+		b = -3;
+		result = a * b;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Integer  arguments a < 0, b < 0 returns a * b.");
+
+		// ////////// Test Floats
+		// Test scaleneg(a, b) with Float a, b >= 0.
+		a = 2.0;
+		b = 3.0;
+		result = a;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Float arguments a >= 0, b >= 0 returns a.");
+
+		// Test scaleneg(a, b) with Float a >= 0, b < 0.
+		a = 2.0;
+		b = -3.0;
+		result = a;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Float  arguments a >= 0, b < 0 returns a.");
+
+		// Test scaleneg(a, b) with Float a < 0, b >= 0.
+		a = -2.0;
+		b = 3.0;
+		result = a * b;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Float  arguments a < 0, b >= 0 returns a * b.");
+
+		// Test scaleneg(a, b) with Float a < 0, b < 0.
+		a = -2.0;
+		b = -3.0;
+		result = a * b;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with Float  arguments a < 0, b < 0 returns a * b.");
+
+		// ////////// Test inf as argument
+		a = inf;
+		b = 3;
+		this.assert(scaleneg(a, b).isNaN, "SimpleNumber:scaleneg with a = inf, returns nan.");
+
+		a = -2.0;
+		b = inf;
+		result = a * b;
+		this.assertEquals(scaleneg(a, b), result, "SimpleNumber:scaleneg with b = inf, returns a * b.");
+
+		a = inf;
+		b = inf;
+		this.assert(scaleneg(a, b).isNaN, "SimpleNumber:scaleneg with a = inf, b = inf, returns nan.");
+
+		a = 0;
+		b = inf;
+		this.assert(scaleneg(a, b).isNaN, "SimpleNumber:scaleneg with a = 0, b = inf, returns nan.");
+	}
 }
