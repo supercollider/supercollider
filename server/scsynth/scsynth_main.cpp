@@ -32,6 +32,11 @@
 #ifdef _WIN32
 #    include <winsock2.h>
 #    include <vector>
+#    include <iostream>
+#    include <thread>
+#    include <mutex>
+#    include <chrono>
+#    include <condition_variable>
 #else
 #    include <sys/wait.h>
 #endif
@@ -47,27 +52,23 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 #ifdef _WIN32
 // Add a warning when Windows Defender delays scsynth boot by 60+ seconds
 // cf. github issue #4368
-#    include <iostream>
-#    include <thread>
-#    include <mutex>
-#    include <chrono>
-bool bScsynthHasBooted = false;
-std::mutex bScsynthHasBootedMutex;
-std::condition_variable bScsynthHasBootedConditionVariable;
+static bool g_isScsynthBooted = false;
+static std::mutex g_scsynthBootWarningMutex;
+static std::condition_variable g_scsynthBootWarningConditionVariable;
 
-void scsynthHasBooted() {
+static void scsynthHasBooted() {
     {
-        const std::lock_guard<std::mutex> lock(bScsynthHasBootedMutex);
-        bScsynthHasBooted = true;
+        const std::lock_guard<std::mutex> lock(g_scsynthBootWarningMutex);
+        g_isScsynthBooted = true;
     }
-    bScsynthHasBootedConditionVariable.notify_all();
+    g_scsynthBootWarningConditionVariable.notify_all();
 }
 
-void displayWarningIfScsynthHasNotBooted() {
-    std::unique_lock<std::mutex> lock(bScsynthHasBootedMutex);
+static void displayWarningIfScsynthHasNotBooted() {
+    std::unique_lock<std::mutex> lock(g_scsynthBootWarningMutex);
 
-    if (!bScsynthHasBootedConditionVariable.wait_for(lock, std::chrono::seconds(10),
-                                                     [] { return bScsynthHasBooted == true; })) {
+    if (!g_scsynthBootWarningConditionVariable.wait_for(lock, std::chrono::seconds(10),
+                                                        [] { return g_isScsynthBooted; })) {
         std::cout << "Server: possible boot delay.\n";
         std::cout << "On some Windows-based machines, Windows Defender sometimes delays server boot by one minute.\n";
         std::cout << "You can add scsynth.exe process to Windows Defender exclusion list ";
@@ -159,7 +160,7 @@ void Usage() {
 
 int scsynth_main(int argc, char** argv) {
 #ifdef _WIN32
-    std::thread displayWarningIfScsynthHasNotBootedThread(displayWarningIfScsynthHasNotBooted);
+    std::thread bootWarningThread(displayWarningIfScsynthHasNotBooted);
 #endif //_WIN32
 
     setlinebuf(stdout);
@@ -378,6 +379,7 @@ int scsynth_main(int argc, char** argv) {
 
 #ifdef _WIN32
     scsynthHasBooted();
+    bootWarningThread.join();
 #endif // _WIN32
 
     if (options.mVerbosity >= 0) {
