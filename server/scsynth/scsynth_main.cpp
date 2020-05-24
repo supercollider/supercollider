@@ -22,6 +22,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
 #include "SC_EventLoop.hpp"
+#include <cstdint>
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -36,6 +37,10 @@
 #    include <sys/wait.h>
 #endif
 
+#include <boost/program_options.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/join.hpp>
+
 #ifdef _WIN32
 
 // according to this page: http://www.mkssoftware.com/docs/man3/setlinebuf.3.asp
@@ -44,267 +49,236 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 
 #endif
 
+namespace bpo = boost::program_options;
 
-void Usage();
-void Usage() {
-    WorldOptions defaultOptions;
+namespace {
 
-    scprintf("supercollider_synth  options:\n"
-             "   -v print the supercollider version and exit\n"
-             "   -u <udp-port-number>    a port number 0-65535\n"
-             "   -t <tcp-port-number>    a port number 0-65535\n"
-             "   -B <bind-to-address>\n"
-             "          Bind the UDP or TCP socket to this address.\n"
-             "          Default 127.0.0.1. Set to 0.0.0.0 to listen on all interfaces.\n"
-             "   -c <number-of-control-bus-channels> (default %d)\n"
-             "   -a <number-of-audio-bus-channels>   (default %d)\n"
-             "   -i <number-of-input-bus-channels>   (default %d)\n"
-             "   -o <number-of-output-bus-channels>  (default %d)\n"
-             "   -z <block-size>                     (default %d)\n"
-             "   -Z <hardware-buffer-size>           (default %d)\n"
-             "   -S <hardware-sample-rate>           (default %d)\n"
-             "   -b <number-of-sample-buffers>       (default %d)\n"
-             "   -n <max-number-of-nodes>            (default %d)\n"
-             "   -d <max-number-of-synth-defs>       (default %d)\n"
-             "   -m <real-time-memory-size>          (default %d)\n"
-             "   -w <number-of-wire-buffers>         (default %d)\n"
-             "   -r <number-of-random-seeds>         (default %d)\n"
-             "   -D <load synthdefs? 1 or 0>         (default %d)\n"
-             "   -R <publish to Rendezvous? 1 or 0>  (default %d)\n"
-             "   -l <max-logins>                     (default %d)\n"
-             "          maximum number of named return addresses stored\n"
-             "          also maximum number of tcp connections accepted\n"
-             "   -p <session-password>\n"
-             "          When using TCP, the session password must be the first command sent.\n"
-             "          The default is no password.\n"
-             "          UDP ports never require passwords, so for security use TCP.\n"
-             "   -N <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>\n"
-#ifdef __APPLE__
-             "   -I <input-streams-enabled>\n"
-             "   -O <output-streams-enabled>\n"
-#endif
-#if (_POSIX_MEMLOCK - 0) >= 200112L
-             "   -L enable memory locking\n"
-#endif
-             "   -H <hardware-device-name>\n"
-             "   -V <verbosity>\n"
-             "          0 is normal behaviour.\n"
-             "          -1 suppresses informational messages.\n"
-             "          -2 suppresses informational and many error messages, as well as\n"
-             "             messages from Poll.\n"
-             "          The default is 0.\n"
+// std::string versions of WorldOptions fields to ease integration with boost::program_options
+struct WorldOptionsStrings {
+    std::string mPassword;
+    std::string mNonRealTimeCmdFilename;
+    std::string mNonRealTimeInputFilename;
+    std::string mNonRealTimeOutputFilename;
+    std::string mNonRealTimeOutputHeaderFormat;
+    std::string mNonRealTimeOutputSampleFormat;
+    std::string mInputStreamsEnabled;
+    std::string mOutputStreamsEnabled;
+    std::string mInDeviceName;
+    std::string mUGensPluginPath;
+    std::string mOutDeviceName;
+    std::string mRestrictedPath;
+};
+
+struct ScsynthOptions : WorldOptions {
+    uint32_t mUdpPort = 0;
+    uint32_t mTcpPort = 0;
+    std::string mSocketAddress = "127.0.0.1";
+
+    WorldOptionsStrings stringOpts;
+};
+
+} // anonymous namespace
+
+static bpo::options_description makeScsynthOptionsDesc(ScsynthOptions& opts) {
+    ScsynthOptions defaultOpts;
+    bpo::options_description result("scsynth options");
+
+    // clang-format off
+    result.add_options()
+        ("help,h", "show this help message")
+        ("udp-port,u", bpo::value<uint32_t>(&opts.mUdpPort)->default_value(defaultOpts.mUdpPort), "UDP port")
+        ("tcp-port,t", bpo::value<uint32_t>(&opts.mTcpPort)->default_value(defaultOpts.mTcpPort), "TCP port")
+        ("control-busses,c", bpo::value<uint32_t>(&opts.mNumControlBusChannels)->default_value(defaultOpts.mNumControlBusChannels), "number of control busses")
+        ("audio-busses,a", bpo::value<uint32_t>(&opts.mNumAudioBusChannels)->default_value(defaultOpts.mNumAudioBusChannels), "number of audio busses")
+        ("block-size,z", bpo::value<uint32_t>(&opts.mBufLength)->default_value(defaultOpts.mBufLength), "audio block size")
+        ("hardware-buffer-size,Z", bpo::value<uint32_t>(&opts.mPreferredHardwareBufferFrameSize)->default_value(defaultOpts.mPreferredHardwareBufferFrameSize), "hardware buffer size")
+        ("use-system-clock,C", bpo::value<uint16_t>(), "unused")
+        ("samplerate,S", bpo::value<uint32_t>(&opts.mPreferredSampleRate)->default_value(defaultOpts.mPreferredSampleRate), "hardware sample rate")
+        ("buffers,b", bpo::value<uint32_t>(&opts.mNumBuffers)->default_value(defaultOpts.mNumBuffers), "number of sample buffers")
+        ("max-nodes,n", bpo::value<uint32_t>(&opts.mMaxNodes)->default_value(defaultOpts.mMaxNodes), "maximum number of server nodes")
+        ("max-synthdefs,d", bpo::value<uint32_t>(&opts.mMaxGraphDefs)->default_value(defaultOpts.mMaxGraphDefs), "maximum number of synthdefs")
+        ("rt-memory,m", bpo::value<uint32_t>(&opts.mRealTimeMemorySize)->default_value(defaultOpts.mRealTimeMemorySize), "size of real-time memory pool in kb")
+        ("wires,w", bpo::value<uint32_t>(&opts.mMaxWireBufs)->default_value(defaultOpts.mMaxWireBufs), "number of wire buffers")
+        ("randomseeds,r", bpo::value<uint32_t>(&opts.mNumRGens)->default_value(defaultOpts.mNumRGens), "number of random number generators")
+        ("load-synthdefs,D", bpo::value<uint32_t>(&opts.mLoadGraphDefs)->default_value(defaultOpts.mLoadGraphDefs), "load synthdefs? (1 or 0)")
+        ("rendezvous,R", bpo::value<uint16_t>()->default_value(1), "publish to Rendezvous? (1 or 0)")
+        ("max-logins,l", bpo::value<uint32_t>(&opts.mMaxLogins)->default_value(defaultOpts.mMaxLogins), "maximum number of named return addresses")
+        ("password,p", bpo::value<std::string>(&opts.stringOpts.mPassword),
+                                                            "When using TCP, the session password must be the first command sent.\n"
+                                                            "The default is no password.\n"
+                                                            "UDP ports never require passwords, so for security use TCP.")
+        ("nrt,N", bpo::value<std::vector<std::string>>()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
+        ("memory-locking,L", "enable memory locking")
+        ("version,v", "print version information and exit")
+        ("hardware-device-name,H", bpo::value<std::vector<std::string>>()->multitoken(), "hardware device name")
+        ("verbose,V", bpo::value<int>(&opts.mVerbosity)->default_value(defaultOpts.mVerbosity),
+             "0 is normal behaviour.\n"
+             "-1 suppresses informational messages.\n"
+             "-2 suppresses informational and many error messages, as well as messages from Poll.\n")
 #ifdef _WIN32
-             "   -U <ugen-plugins-path>\n"
-             "          A list of paths separated by `;`.\n"
+        ("ugen-search-path,U", bpo::value<std::vector<std::string>>(), "A list of paths separated by `;`.\n"
+                                                            "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
 #else
-             "   -U <ugen-plugins-path>\n"
-             "          A list of paths separated by `:`.\n"
+        ("ugen-search-path,U", bpo::value<std::vector<std::string>>(), "A list of paths separated by `:`.\n"
+                                                            "If specified, standard paths are NOT searched for plugins.\nMay be specified several times.")
 #endif
-             "          If specified, standard paths are NOT searched for plugins.\n"
-             "   -P <restricted-path>    \n"
-             "          if specified, prevents file-accessing OSC commands from\n"
-             "          accessing files outside <restricted-path>.\n"
-             "\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n",
-             defaultOptions.mNumControlBusChannels, defaultOptions.mNumAudioBusChannels,
-             defaultOptions.mNumInputBusChannels, defaultOptions.mNumOutputBusChannels, defaultOptions.mBufLength,
-             defaultOptions.mPreferredHardwareBufferFrameSize, defaultOptions.mPreferredSampleRate,
-             defaultOptions.mNumBuffers, defaultOptions.mMaxNodes, defaultOptions.mMaxGraphDefs,
-             defaultOptions.mRealTimeMemorySize, defaultOptions.mMaxWireBufs, defaultOptions.mNumRGens,
-             defaultOptions.mRendezvous, defaultOptions.mLoadGraphDefs, defaultOptions.mMaxLogins);
-    exit(1);
+        ("restricted-path,P", bpo::value<std::string>(&opts.stringOpts.mRestrictedPath), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
+        ("socket-address,B", bpo::value<std::string>()->default_value("127.0.0.1"),
+             "Bind the UDP or TCP socket to this address. Set to 0.0.0.0 to listen on all interfaces.")
+        ("inchannels,i", bpo::value<uint32_t>(&opts.mNumInputBusChannels)->default_value(defaultOpts.mNumInputBusChannels), "number of input channels")
+        ("outchannels,o", bpo::value<uint32_t>(&opts.mNumOutputBusChannels)->default_value(defaultOpts.mNumOutputBusChannels), "number of output channels")
+#ifdef __APPLE__
+        ("input-streams-enabled,I", bpo::value<std::string>(&opts.stringOpts.mInputStreamsEnabled), "input streams enabled")
+        ("output-streams-enabled,O", bpo::value<std::string>(&opts.stringOpts.mOutputStreamsEnabled), "output streams enabled")
+#endif // __APPLE__
+        ;
+    // clang-format on
+
+    return result;
 }
 
-#define checkNumArgs(n)                                                                                                \
-    if (i + n > argc) {                                                                                                \
-        if (n == 2)                                                                                                    \
-            scprintf("ERROR: Argument expected after option %s\n", argv[j]);                                           \
-        else                                                                                                           \
-            scprintf("ERROR: More arguments expected after option %s\n", argv[j]);                                     \
-        Usage();                                                                                                       \
-    }                                                                                                                  \
-    i += n;
+static void printUsage() {
+    ScsynthOptions scsynthOpts;
+    auto opts = makeScsynthOptionsDesc(scsynthOpts);
+    std::ostringstream oss;
+    opts.print(oss);
+    scprintf("%s\nTo quit, send a 'quit' command via UDP or TCP, or press ctrl-C.\n\n", oss.str().c_str());
+}
 
+// Options are parsed both to a new ScsynthOptions but also stored in `vm`. `vm` must be destroyed after the return
+// value.
+static ScsynthOptions parseScsynthArgs(int argc, char** argv) {
+    ScsynthOptions options;
+    auto optionsDesc = makeScsynthOptionsDesc(options);
+
+    auto fatalError = [](const char* msg) {
+        scprintf("ERROR: Could not parse command line: %s\n", msg);
+        printUsage();
+        std::exit(1);
+    };
+
+    bpo::variables_map vm;
+    try {
+        // If successful, populates `options`
+        store(bpo::command_line_parser(argc, argv).options(optionsDesc).run(), vm);
+    } catch (bpo::error const& e) {
+        fatalError(e.what());
+    }
+
+    if (vm.count("help")) {
+        printUsage();
+        std::exit(0);
+    }
+
+    if (vm.count("version")) {
+        scprintf("scsynth %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
+        std::exit(0);
+    }
+
+    // Manually parse NRT arguments
+    if (vm.count("nrt")) {
+        auto&& nrtOptions = vm["nrt"].as<std::vector<std::string>>();
+        if (nrtOptions.size() != 6)
+            fatalError("nrt option requires 6 arguments <cmd-filename> <input-filename> <output-filename> "
+                       "<sample-rate> <header-format> <sample-format>");
+
+        options.mRealTime = false;
+        options.stringOpts.mNonRealTimeCmdFilename = nrtOptions[0];
+        options.stringOpts.mNonRealTimeInputFilename = nrtOptions[1];
+        options.stringOpts.mNonRealTimeOutputFilename = nrtOptions[2];
+        try {
+            options.mPreferredSampleRate = boost::lexical_cast<uint32_t>(nrtOptions[3]);
+        } catch (boost::bad_lexical_cast const& e) {
+            fatalError("third argument to nrt option must be an integer");
+        }
+        options.stringOpts.mNonRealTimeOutputHeaderFormat = nrtOptions[4];
+        options.stringOpts.mNonRealTimeOutputSampleFormat = nrtOptions[5];
+    }
+
+    // 2 args: assign to in and out respectively
+    // 1 arg: assign to both in and out
+    if (vm.count("hardware-device-name")) {
+        auto&& hwName = vm["hardware-device-name"].as<std::vector<std::string>>();
+        if (hwName.size() != 1 && hwName.size() != 2)
+            fatalError("hardware-device-name option requires 1 or 2 arguments");
+
+        options.stringOpts.mInDeviceName = hwName[0];
+        options.stringOpts.mOutDeviceName = hwName.back();
+    }
+
+    // Join together all ugen search paths with platform specific separator
+    if (vm.count("ugen-search-path")) {
+        auto&& ugen = vm["hardware-device-name"].as<std::vector<std::string>>();
+#ifdef _WIN32
+        options.stringOpts.mUGensPluginPath = boost::algorithm::join(ugen, ";");
+#else
+        options.stringOpts.mUGensPluginPath = boost::algorithm::join(ugen, ":");
+#endif // _WIN32
+    }
+
+    // Round some args up to the nearest power of 2
+    options.mBufLength = NEXTPOWEROFTWO(options.mBufLength);
+    options.mPreferredSampleRate = NEXTPOWEROFTWO(options.mPreferredSampleRate);
+    options.mNumBuffers = NEXTPOWEROFTWO(options.mNumBuffers);
+    options.mMaxNodes = NEXTPOWEROFTWO(options.mMaxNodes);
+    options.mMaxGraphDefs = NEXTPOWEROFTWO(options.mMaxGraphDefs);
+    options.mMaxLogins = NEXTPOWEROFTWO(options.mMaxLogins);
+
+    // Set boolean options manually
+    options.mRendezvous = vm["rendezvous"].as<uint16_t>() > 0;
+    options.mMemoryLocking = vm.count("memory-locking") > 0;
+
+    // Manually populate const char* fields from the corresponding string option
+    // Use a macro to avoid typos and for readability
+#define POPULATE_STRING_FIELD(_field_) options._field_ = options.stringOpts._field_.c_str()
+
+    POPULATE_STRING_FIELD(mPassword);
+    POPULATE_STRING_FIELD(mNonRealTimeCmdFilename);
+    POPULATE_STRING_FIELD(mNonRealTimeInputFilename);
+    POPULATE_STRING_FIELD(mNonRealTimeOutputFilename);
+    POPULATE_STRING_FIELD(mNonRealTimeOutputHeaderFormat);
+    POPULATE_STRING_FIELD(mNonRealTimeOutputSampleFormat);
+    POPULATE_STRING_FIELD(mInputStreamsEnabled);
+    POPULATE_STRING_FIELD(mOutputStreamsEnabled);
+    POPULATE_STRING_FIELD(mInDeviceName);
+    POPULATE_STRING_FIELD(mUGensPluginPath);
+    POPULATE_STRING_FIELD(mOutDeviceName);
+    POPULATE_STRING_FIELD(mRestrictedPath);
+
+#undef POPULATE_STRING_FIELD
+
+    return options;
+}
 
 int scsynth_main(int argc, char** argv) {
     setlinebuf(stdout);
 
     EventLoop::setup();
 
-    int udpPortNum = -1;
-    int tcpPortNum = -1;
-    std::string bindTo("127.0.0.1");
+    auto options = parseScsynthArgs(argc, argv);
 
-    WorldOptions options;
+    // parseScsynthArgs takes care of syntax/grammar errors, now we check semantic errors
 
-    for (int i = 1; i < argc;) {
-        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == nullptr) {
-            scprintf("ERROR: Invalid option %s\n", argv[i]);
-            Usage();
-        }
-        int j = i;
-        switch (argv[j][1]) {
-        case 'u':
-            checkNumArgs(2);
-            udpPortNum = atoi(argv[j + 1]);
-            break;
-        case 't':
-            checkNumArgs(2);
-            tcpPortNum = atoi(argv[j + 1]);
-            break;
-        case 'B':
-            checkNumArgs(2);
-            bindTo = argv[j + 1];
-            break;
-        case 'a':
-            checkNumArgs(2);
-            options.mNumAudioBusChannels = atoi(argv[j + 1]);
-            break;
-        case 'i':
-            checkNumArgs(2);
-            options.mNumInputBusChannels = atoi(argv[j + 1]);
-            break;
-        case 'o':
-            checkNumArgs(2);
-            options.mNumOutputBusChannels = atoi(argv[j + 1]);
-            break;
-        case 'c':
-            checkNumArgs(2);
-            options.mNumControlBusChannels = atoi(argv[j + 1]);
-            break;
-        case 'z':
-            checkNumArgs(2);
-            options.mBufLength = NEXTPOWEROFTWO(atoi(argv[j + 1]));
-            break;
-        case 'Z':
-            checkNumArgs(2);
-            options.mPreferredHardwareBufferFrameSize = NEXTPOWEROFTWO(atoi(argv[j + 1]));
-            break;
-        case 'b':
-            checkNumArgs(2);
-            options.mNumBuffers = NEXTPOWEROFTWO(atoi(argv[j + 1]));
-            break;
-        case 'l':
-            checkNumArgs(2);
-            options.mMaxLogins = NEXTPOWEROFTWO(atoi(argv[j + 1]));
-            break;
-        case 'n':
-            checkNumArgs(2);
-            options.mMaxNodes = NEXTPOWEROFTWO(atoi(argv[j + 1]));
-            break;
-        case 'd':
-            checkNumArgs(2);
-            options.mMaxGraphDefs = NEXTPOWEROFTWO(atoi(argv[j + 1]));
-            break;
-        case 'p':
-            checkNumArgs(2);
-            options.mPassword = argv[j + 1];
-            break;
-        case 'm':
-            checkNumArgs(2);
-            options.mRealTimeMemorySize = atoi(argv[j + 1]);
-            break;
-        case 'w':
-            checkNumArgs(2);
-            options.mMaxWireBufs = atoi(argv[j + 1]);
-            break;
-        case 'r':
-            checkNumArgs(2);
-            options.mNumRGens = atoi(argv[j + 1]);
-            break;
-        case 'S':
-            checkNumArgs(2);
-            options.mPreferredSampleRate = (uint32)atof(argv[j + 1]);
-            break;
-        case 'D':
-            checkNumArgs(2);
-            options.mLoadGraphDefs = atoi(argv[j + 1]);
-            break;
-        case 'N':
-#ifdef NO_LIBSNDFILE
-            scprintf("NRT mode not supported: scsynth compiled without libsndfile\n");
-            exit(0);
+    auto fatalError = [](const char* msg) {
+        scprintf("ERROR: %s\n", msg);
+        printUsage();
+        std::exit(1);
+    };
+
+#if (_POSIX_MEMLOCK - 0) < 200112L
+    if (options.mMemoryLocking)
+        fatalError("memory locking not available");
 #endif
-            // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
-            checkNumArgs(7);
-            options.mRealTime = false;
-            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : nullptr;
-            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : nullptr;
-            options.mNonRealTimeOutputFilename = argv[j + 3];
-            options.mPreferredSampleRate = (uint32)atof(argv[j + 4]);
-            options.mNonRealTimeOutputHeaderFormat = argv[j + 5];
-            options.mNonRealTimeOutputSampleFormat = argv[j + 6];
-            break;
-#ifdef __APPLE__
-        case 'I':
-            checkNumArgs(2);
-            options.mInputStreamsEnabled = argv[j + 1];
-            break;
-        case 'O':
-            checkNumArgs(2);
-            options.mOutputStreamsEnabled = argv[j + 1];
-            break;
-        case 'M':
-#endif
-        case 'H':
-            checkNumArgs(2);
-            options.mInDeviceName = argv[j + 1];
-            if (i + 1 > argc || argv[j + 2][0] == '-') {
-                options.mOutDeviceName = options.mInDeviceName;
-            } else {
-                // If there's a second argument then the user wants separate I/O devices
-                options.mOutDeviceName = argv[j + 2];
-                ++i;
-            }
-            break;
-        case 'L':
-            checkNumArgs(1);
-#if (_POSIX_MEMLOCK - 0) >= 200112L
-            options.mMemoryLocking = true;
-#else
-            options.mMemoryLocking = false;
-#endif
-            break;
-        case 'V':
-            checkNumArgs(2);
-            options.mVerbosity = atoi(argv[j + 1]);
-            break;
-        case 'v':
-            scprintf("scsynth %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
-            exit(0);
-            break;
-        case 'R':
-            checkNumArgs(2);
-            options.mRendezvous = atoi(argv[j + 1]) > 0;
-            break;
-        case 'U':
-            checkNumArgs(2);
-            options.mUGensPluginPath = argv[j + 1];
-            break;
-        case 'P':
-            checkNumArgs(2);
-            options.mRestrictedPath = argv[j + 1];
-            break;
-        case 'C':
-            checkNumArgs(2);
-            break;
-        case 'h':
-        default:
-            Usage();
-        }
-    }
-    if (udpPortNum == -1 && tcpPortNum == -1 && options.mRealTime) {
-        scprintf("ERROR: There must be a -u and/or a -t options, or -N for nonrealtime.\n");
-        Usage();
+
+    if (options.mUdpPort == 0 && options.mTcpPort == 0 && options.mRealTime) {
+        fatalError("there must be a -u and/or a -t options, or -N for nonrealtime");
     }
     if (options.mNumInputBusChannels + options.mNumOutputBusChannels > options.mNumAudioBusChannels) {
-        scprintf("ERROR: number of audio bus channels < inputs + outputs.\n");
-        Usage();
+        fatalError("number of audio bus channels < inputs + outputs");
     }
 
     if (options.mRealTime) {
-        int port = (udpPortNum > 0) ? udpPortNum : tcpPortNum;
-
-        options.mSharedMemoryID = port;
+        options.mSharedMemoryID = options.mUdpPort > 0 ? options.mUdpPort : options.mTcpPort;
     } else
         options.mSharedMemoryID = 0;
 
@@ -314,7 +288,7 @@ int scsynth_main(int argc, char** argv) {
 
     if (!options.mRealTime) {
 #ifdef NO_LIBSNDFILE
-        return 1;
+        fatalError("scsynth built without libsndfile support");
 #else
         int exitCode = 0;
         try {
@@ -327,14 +301,14 @@ int scsynth_main(int argc, char** argv) {
 #endif
     }
 
-    if (udpPortNum >= 0) {
-        if (!World_OpenUDP(world, bindTo.c_str(), udpPortNum)) {
+    if (options.mUdpPort > 0) {
+        if (!World_OpenUDP(world, options.mSocketAddress.c_str(), options.mUdpPort)) {
             World_Cleanup(world, true);
             return 1;
         }
     }
-    if (tcpPortNum >= 0) {
-        if (!World_OpenTCP(world, bindTo.c_str(), tcpPortNum, options.mMaxLogins, 8)) {
+    if (options.mTcpPort > 0) {
+        if (!World_OpenTCP(world, options.mSocketAddress.c_str(), options.mTcpPort, options.mMaxLogins, 8)) {
             World_Cleanup(world, true);
             return 1;
         }

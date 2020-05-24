@@ -230,7 +230,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 add_executable(scsynth scsynth_main.cpp)
-target_link_libraries(scsynth libscsynth)
+target_link_libraries(scsynth libscsynth boost_program_options_lib)
 
 if (PTHREADS_FOUND)
     target_link_libraries(scsynth ${PTHREADS_LIBRARIES})
