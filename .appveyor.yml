@@ -140,7 +140,7 @@ after_build:
 # XXX vvv TEMPORARILY DISABLED DUE TO APPVEYOR ARTIFACT STORAGE LIMIT
 #after_deploy:
 #- ps: echo "S3 Build Location = $env:S3_URL"
-
+#
 #artifacts:
 #    - path: artifacts
 #      name: art_folder
