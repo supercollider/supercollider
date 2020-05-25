@@ -153,11 +153,6 @@ endif(UNIX)
 if(WIN32)
         list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 	include_directories (../platform/windows/compat_stuff)
-        if(NOT MINGW)
-                # mingw-w64 provides getopt
-                list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
-                include_directories(../platform/windows/compat_stuff/getopt)
-        endif()
 
         list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 endif()
