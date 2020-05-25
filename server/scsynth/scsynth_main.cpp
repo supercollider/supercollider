@@ -161,6 +161,7 @@ static ScsynthOptions parseScsynthArgs(int argc, char** argv) {
     try {
         // If successful, populates `options`
         store(bpo::command_line_parser(argc, argv).options(optionsDesc).run(), vm);
+        notify(vm);
     } catch (bpo::error const& e) {
         fatalError(e.what());
     }
