@@ -108,7 +108,7 @@ static bpo::options_description makeScsynthOptionsDesc(ScsynthOptions& opts) {
                                                             "The default is no password.\n"
                                                             "UDP ports never require passwords, so for security use TCP.")
         ("nrt,N", bpo::value<std::vector<std::string>>()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
-        ("memory-locking,L", "enable memory locking")
+        ("memory-locking,L", bpo::bool_switch(&opts.mMemoryLocking), "enable memory locking")
         ("version,v", "print version information and exit")
         ("hardware-device-name,H", bpo::value<std::vector<std::string>>()->multitoken(), "hardware device name")
         ("verbose,V", bpo::value<int>(&opts.mVerbosity)->default_value(defaultOpts.mVerbosity),
@@ -224,9 +224,8 @@ static ScsynthOptions parseScsynthArgs(int argc, char** argv) {
     options.mMaxGraphDefs = NEXTPOWEROFTWO(options.mMaxGraphDefs);
     options.mMaxLogins = NEXTPOWEROFTWO(options.mMaxLogins);
 
-    // Set boolean options manually
+    // Do int->boolean conversion manually
     options.mRendezvous = vm["rendezvous"].as<uint16_t>() > 0;
-    options.mMemoryLocking = vm.count("memory-locking") > 0;
 
     // Manually populate const char* fields from the corresponding string option
     // Use a macro to avoid typos and for readability
