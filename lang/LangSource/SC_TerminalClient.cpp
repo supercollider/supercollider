@@ -32,13 +32,10 @@
 #include <boost/bind.hpp>
 
 #ifdef _WIN32
-#    define __GNU_LIBRARY__
-#    include "getopt.h"
 #    include "SC_Win32Utils.h"
 #    include <io.h>
 #    include <windows.h>
 #    include <ioapiset.h>
-#    include <iostream> // for cerr
 #endif
 
 #ifdef __APPLE__
@@ -62,6 +59,11 @@
 #include "SC_Version.hpp"
 
 #include <boost/filesystem/operations.hpp>
+#include <boost/program_options.hpp>
+
+#include <iostream>
+
+namespace bpo = boost::program_options;
 
 static FILE* gPostDest = stdout;
 
@@ -99,128 +101,117 @@ void SC_TerminalClient::postError(const char* str, size_t len) {
 
 void SC_TerminalClient::flush() { fflush(gPostDest); }
 
-void SC_TerminalClient::printUsage() {
-    Options opt;
-
-    const size_t bufSize = 128;
-    char memGrowBuf[bufSize];
-    char memSpaceBuf[bufSize];
-
-    snprintMemArg(memGrowBuf, bufSize, opt.mMemGrow);
-    snprintMemArg(memSpaceBuf, bufSize, opt.mMemSpace);
-
-    fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
-    fprintf(
-        stdout,
-        "Options:\n"
-        "   -v                             Print supercollider version and exit\n"
-        "   -d <path>                      Set runtime directory\n"
-        "   -D                             Enter daemon mode (no input)\n"
-        "   -g <memory-growth>[km]         Set heap growth (default %s)\n"
-        "   -h                             Display this message and exit\n"
-        "   -l <path>                      Set library configuration file\n"
-        "   -m <memory-space>[km]          Set initial heap size (default %s)\n"
-        "   -r                             Call Main.run on startup\n"
-        "   -s                             Call Main.stop on shutdown\n"
-        "   -u <network-port-number>       Set UDP listening port (default %d)\n"
-        "   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-        "   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions "
-        "folders from search path)\n",
-        memGrowBuf, memSpaceBuf, opt.mPort, SC_Filesystem::instance().getIdeName().c_str());
+static std::string memArgValueToString(int value) {
+    constexpr size_t bufSize = 128;
+    char buf[bufSize];
+    SC_LanguageClient::snprintMemArg(buf, bufSize, value);
+    return buf;
 }
 
-bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt) {
-    const char* optstr = ":d:Dg:hl:m:rsu:i:av";
-    int c;
+static bpo::options_description makeSclangOptionsDesc(SC_TerminalClient::Options& opts) {
+    SC_TerminalClient::Options defaultOpts;
+    bpo::options_description result("Options");
 
-    // inhibit error reporting
-    opterr = 0;
+    // clang-format off
+    result.add_options()
+        ("version,v", "Print version information and exit")
+        ("help,h", "Display this message and exit")
+        ("runtime-dir,d", bpo::value<std::string>(&opts.mRuntimeDirStdString), "Set runtime directory")
+        ("daemon,D", bpo::bool_switch(&opts.mDaemon), "Enter daemon mode (no input)")
+        ("heap-growth,g", bpo::value<std::string>()->default_value(memArgValueToString(defaultOpts.mMemGrow)), "Set heap growth in bytes. You can use 'k' and 'm' suffixes to mean kilobytes and megabytes respectively.")
+        ("config,l", bpo::value<std::string>(&opts.mLibraryConfigFile), "Library configuration file")
+        ("heap-size,m", bpo::value<std::string>()->default_value(memArgValueToString(defaultOpts.mMemSpace)), "Set initial heap size. You can use 'k' and 'm' suffixes to mean kilobytes and megabytes respectively.")
+        ("call-main-run,r", bpo::bool_switch(&opts.mCallRun), "Call Main.run on startup")
+        ("call-main-stop,s", bpo::bool_switch(&opts.mCallStop), "Call Main.stop on shutdown")
+        ("udp-port,u", bpo::value<std::string>()->default_value(std::to_string(defaultOpts.mPort)), "Set UDP listening port (0-65535)")
+        ("ide-name,i", bpo::value<std::string>(&opts.mIdeName)->default_value(SC_Filesystem::instance().getIdeName()), "Specify IDE name (for enabling IDE-specific class code)")
+        ("standalone,a", bpo::bool_switch(&opts.mStandalone), "Standalone mode (exclude SCClassLibrary and user and system Extension folders from compilation paths)")
+        ;
+    // clang-format on
 
-    while ((c = getopt(argc, argv, optstr)) != -1) {
-        switch (c) {
-        case 'd':
-            opt.mRuntimeDir = optarg;
-            break;
-        case 'D':
-            opt.mDaemon = true;
-            break;
-        case 'g':
-            if (!parseMemArg(optarg, &opt.mMemGrow)) {
-                optopt = c;
-                goto optArgInvalid;
-            }
-            break;
-        case 'h':
-            goto help;
-        case 'l':
-            opt.mLibraryConfigFile = optarg;
-            break;
-        case 'm':
-            if (!parseMemArg(optarg, &opt.mMemSpace)) {
-                optopt = c;
-                goto optArgInvalid;
-            }
-            break;
-        case 'r':
-            opt.mCallRun = true;
-            break;
-        case 'v':
-            fprintf(stdout, "sclang %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
-            quit(0);
-            return false;
-            break;
-        case 's':
-            opt.mCallStop = true;
-            break;
-        case 'u':
-            if (!parsePortArg(optarg, &opt.mPort)) {
-                optopt = c;
-                goto optArgInvalid;
-            }
-            break;
-        case '?':
-            goto optInvalid;
-            break;
-        case ':':
-            goto optArgExpected;
-            break;
-        case 'i':
-            SC_Filesystem::instance().setIdeName(optarg);
-            break;
-        case 'a':
-            opt.mStandalone = true;
-            break;
-        default:
-            ::post("%s: unknown error (getopt)\n", getName());
-            quit(255);
-            return false;
-        }
+    return result;
+}
+
+void SC_TerminalClient::printUsage() const {
+    Options opts;
+    auto optionsDesc = makeSclangOptionsDesc(opts);
+    std::cout
+        << "Usage:\n    " << getName() << " [options] [file [args...]]\n\n"
+        << optionsDesc
+        << "\nIf [file] is provided, it is run as SuperCollider code.\n"
+           "Additional arguments are available in `thisProcess.argv`; otherwise they have no effect"
+        << std::endl;
+}
+
+void SC_TerminalClient::printVersion() const {
+    fprintf(stdout, "sclang %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
+}
+
+bool SC_TerminalClient::parseOptions(int argc, char** argv, Options& opts) {
+    auto optionsDesc = makeSclangOptionsDesc(opts);
+
+    bpo::positional_options_description positionalOpts;
+    positionalOpts.add("file", 1);
+    positionalOpts.add("additional-args", -1);
+
+    // These are kept in a separate options_description to hide them from the usage message
+    bpo::options_description positionalOptsDesc;
+    // clang-format off
+    positionalOptsDesc.add_options()
+        ("file", bpo::value<std::string>(&opts.mCodeFile), "")
+        ("additional-args", bpo::value<std::vector<std::string>>(&opts.mAdditionalArgs), "")
+        ;
+    // clang-format on
+    optionsDesc.add(positionalOptsDesc);
+
+    auto&& quitEarly = [this](int returnCode) {
+        quit(returnCode);
+        return false;
+    };
+
+    auto&& fatalError = [this, &quitEarly](const char* msg) {
+        ::post("Error while parsing command line: %s\nUse -h to see usage.\n", msg);
+        return quitEarly(1);
+    };
+
+    bpo::variables_map vm;
+    try {
+        // If successful, populates `opts`
+        store(bpo::command_line_parser(argc, argv).options(optionsDesc).positional(positionalOpts).run(), vm);
+        notify(vm);
+    } catch (bpo::error const& e) {
+        return fatalError(e.what());
     }
 
-    argv += optind;
-    argc -= optind;
+    // Semantic conditions that could cause us to terminate the program early
+    if (vm.count("help")) {
+        printUsage();
+        return quitEarly(0);
+    }
+
+    if (vm.count("version")) {
+        printVersion();
+        return quitEarly(0);
+    }
+
+    if (!parseMemArg(vm["heap-size"].as<std::string>().c_str(), &opts.mMemSpace)) {
+        return fatalError("could not parse heap-size (-m) option");
+    }
+
+    if (!parseMemArg(vm["heap-growth"].as<std::string>().c_str(), &opts.mMemGrow)) {
+        return fatalError("could not parse heap-growth (-g) option");
+    }
+
+    if (!parsePortArg(vm["udp-port"].as<std::string>().c_str(), &opts.mPort)) {
+        return fatalError("could not parse udp-port (-u) option");
+    }
+
+    // Cannot change type of mRuntimeDir; it's in the public API.
+    // mRuntimeDir is never modified, so the const_cast is safe.
+    if (!opts.mRuntimeDirStdString.empty())
+        opts.mRuntimeDir = const_cast<char*>(opts.mRuntimeDirStdString.c_str());
 
     return true;
-
-help:
-    printUsage();
-    quit(0);
-    return false;
-
-optInvalid:
-    ::post("%s: invalid option -%c\n", getName(), optopt);
-    quit(1);
-    return false;
-
-optArgExpected:
-    ::post("%s: missing argument for option -%c\n", getName(), optopt);
-    quit(1);
-    return false;
-
-optArgInvalid:
-    ::post("%s: invalid argument for option -%c -- %s\n", getName(), optopt, optarg);
-    quit(1);
-    return false;
 }
 
 int SC_TerminalClient::run(int argc, char** argv) {
@@ -230,29 +221,18 @@ int SC_TerminalClient::run(int argc, char** argv) {
         return mReturnCode;
     }
 
-    // finish argv processing
-    const char* codeFile = nullptr;
-
-    if (argc > 0) {
-        codeFile = argv[0];
-        opt.mDaemon = true;
-        argv++;
-        argc--;
-    }
-
-    opt.mArgc = argc;
-    opt.mArgv = argv;
+    SC_Filesystem::instance().setIdeName(opt.mIdeName);
 
     // read library configuration file
-    if (opt.mLibraryConfigFile)
-        SC_LanguageConfig::setConfigPath(opt.mLibraryConfigFile);
+    if (!opt.mLibraryConfigFile.empty())
+        SC_LanguageConfig::setConfigPath(opt.mLibraryConfigFile.c_str());
     SC_LanguageConfig::readLibraryConfig(opt.mStandalone);
 
     // initialize runtime
     initRuntime(opt);
 
     // Create config directory so that it can be used by Quarks, etc. See #2919.
-    if (!opt.mStandalone && !opt.mLibraryConfigFile)
+    if (!opt.mStandalone && opt.mLibraryConfigFile.empty())
         boost::filesystem::create_directories(
             SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig));
 
@@ -260,8 +240,8 @@ int SC_TerminalClient::run(int argc, char** argv) {
     compileLibrary(opt.mStandalone);
 
     // enter main loop
-    if (codeFile)
-        executeFile(codeFile);
+    if (!opt.mCodeFile.empty())
+        executeFile(opt.mCodeFile.c_str());
     if (opt.mCallRun)
         runMain();
 
@@ -670,16 +650,15 @@ void SC_TerminalClient::cleanupInput() {
 }
 
 int SC_TerminalClient::prArgv(struct VMGlobals* g, int) {
-    int argc = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgc;
-    char** argv = ((SC_TerminalClient*)SC_TerminalClient::instance())->options().mArgv;
+    auto args = static_cast<const SC_TerminalClient*>(SC_TerminalClient::instance())->options().mAdditionalArgs;
 
     PyrSlot* argvSlot = g->sp;
 
-    PyrObject* argvObj = newPyrArray(g->gc, argc * sizeof(PyrObject), 0, true);
+    PyrObject* argvObj = newPyrArray(g->gc, args.size() * sizeof(PyrObject), 0, true);
     SetObject(argvSlot, argvObj); // this is okay here as we don't use the receiver
 
-    for (int i = 0; i < argc; i++) {
-        PyrString* str = newPyrString(g->gc, argv[i], 0, true);
+    for (size_t i = 0; i < args.size(); i++) {
+        PyrString* str = newPyrString(g->gc, args[i].c_str(), 0, true);
         SetObject(argvObj->slots + i, str);
         argvObj->size++;
         g->gc->GCWriteNew(argvObj, (PyrObject*)str); // we know str is white so we can use GCWriteNew

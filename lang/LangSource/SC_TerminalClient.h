@@ -27,12 +27,16 @@
 #pragma once
 
 #include "SC_LanguageClient.h"
+#include "SC_Filesystem.hpp" // for getIdeName
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/sync/semaphore.hpp>
+
+#include <string>
+#include <vector>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -56,21 +60,24 @@ public:
 
     struct Options : public SC_LanguageClient::Options {
         Options():
-            mLibraryConfigFile(0),
+            mIdeName(SC_Filesystem::instance().getIdeName()),
             mDaemon(false),
             mCallRun(false),
             mCallStop(false),
-            mStandalone(false),
-            mArgc(0),
-            mArgv(0) {}
+            mStandalone(false) {}
 
-        const char* mLibraryConfigFile;
+        std::string mLibraryConfigFile;
+        std::string mRuntimeDirStdString; // only used to set super's mRuntimeDir
+        std::string mIdeName;
         bool mDaemon;
         bool mCallRun;
         bool mCallStop;
         bool mStandalone;
-        int mArgc;
-        char** mArgv;
+
+        // first positional option
+        std::string mCodeFile;
+        // any additional positional options, made available in sclang in _Argv primitive
+        std::vector<std::string> mAdditionalArgs;
     };
 
     SC_TerminalClient(const char* name);
@@ -94,8 +101,9 @@ public:
     void stop() { mIoService.stop(); }
 
 protected:
-    bool parseOptions(int& argc, char**& argv, Options& opt);
-    void printUsage();
+    bool parseOptions(int argc, char** argv, Options& opt);
+    void printUsage() const;
+    void printVersion() const;
 
     void interpretCmdLine(const char* cmdLine, bool silent);
     void interpretCmdLine(const char* buf, size_t size, bool silent);
