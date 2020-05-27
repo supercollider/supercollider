@@ -303,6 +303,43 @@ TestArray : UnitTest {
 		this.assertEquals(result, 0);
 	}
 
+	// ----- mirror, mirror1, mirror2 --------------------------------------------
+
+	test_mirror_onEmptyArray_sizeIsZero { this.assertEquals([].mirror.size, 0); }
+	test_mirror1_onEmptyArray_sizeIsZero { this.assertEquals([].mirror1.size, 0); }
+	test_mirror2_onEmptyArray_sizeIsZero { this.assertEquals([].mirror2.size, 0); }
+
+	test_mirror_onEmptyArray_newArray {
+		var input = [];
+		this.assert(input.mirror !== input);
+	}
+
+	test_mirror1_onEmptyArray_newArray {
+		var input = [];
+		this.assert(input.mirror1 !== input);
+	}
+
+	test_mirror2_onEmptyArray_newArray {
+		var input = [];
+		this.assert(input.mirror2 !== input);
+	}
+
+	test_mirror_oneElementArray_result { this.assertEquals([1].mirror, [1]); }
+	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, []); }
+	test_mirror2_oneElementArray_result { this.assertEquals([1].mirror2, [1, 1]); }
+
+	test_mirror_oneElementArray_size { this.assertEquals([1].mirror.size, 1); }
+	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 0); }
+	test_mirror2_oneElementArray_size { this.assertEquals([1].mirror2.size, 2); }
+
+	test_mirror_twoElementArray_result { this.assertEquals([1, 2].mirror, [1, 2, 1]); }
+	test_mirror1_twoElementArray_result { this.assertEquals([1, 2].mirror1, [1, 2]); }
+	test_mirror2_twoElementArray_result { this.assertEquals([1, 2].mirror2, [1, 2, 2, 1]); }
+
+	test_mirror_twoElementArray_size { this.assertEquals([1, 2].mirror.size, 3); }
+	test_mirror1_twoElementArray_size { this.assertEquals([1, 2].mirror1.size, 2); }
+	test_mirror2_twoElementArray_size { this.assertEquals([1, 2].mirror2.size, 4); }
+
 } // End class
 
 TestArrayLace : UnitTest {
