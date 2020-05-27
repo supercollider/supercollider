@@ -325,11 +325,11 @@ TestArray : UnitTest {
 	}
 
 	test_mirror_oneElementArray_result { this.assertEquals([1].mirror, [1]); }
-	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, []); }
+	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, [1]); }
 	test_mirror2_oneElementArray_result { this.assertEquals([1].mirror2, [1, 1]); }
 
 	test_mirror_oneElementArray_size { this.assertEquals([1].mirror.size, 1); }
-	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 0); }
+	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 1); }
 	test_mirror2_oneElementArray_size { this.assertEquals([1].mirror2.size, 2); }
 
 	test_mirror_twoElementArray_result { this.assertEquals([1, 2].mirror, [1, 2, 1]); }

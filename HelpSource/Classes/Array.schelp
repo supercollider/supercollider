@@ -153,6 +153,7 @@ method::mirror1
 Return a new Array which is the receiver made into a palindrome with the last element removed.
 This is useful if the list will be repeated cyclically, the first element will not get played twice.
 The receiver is unchanged.
+If the receiver is a single-element array, a copy is returned.
 code::
 [1, 2, 3, 4].mirror1.postln;
 ::
