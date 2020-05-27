@@ -349,7 +349,7 @@ int ScIDE_GetDocTextMirror(struct VMGlobals* g, int numArgsPushed) {
 
     QString docText = gIpcClient->getTextMirrorForDocument(key, pos, range);
 
-    PyrString* pyrString = newPyrString(g->gc, docText.toLatin1().constData(), 0, true);
+    PyrString* pyrString = newPyrString(g->gc, docText.toUtf8().constData(), 0, true);
     SetObject(returnSlot, pyrString);
 
     return errNone;
