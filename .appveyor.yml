@@ -141,12 +141,12 @@ after_build:
 #after_deploy:
 #- ps: echo "S3 Build Location = $env:S3_URL"
 #
-#artifacts:
-#    - path: artifacts
-#      name: art_folder
-#    - path: build\Install\*.exe
-#      name: installer
-#      type: File
+artifacts:
+   - path: artifacts
+     name: art_folder
+   - path: build\Install\*.exe
+     name: installer
+     type: File
 #
 #deploy:
 ## s3 upload - every commit
