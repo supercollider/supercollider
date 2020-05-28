@@ -22,6 +22,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
 #include "SC_EventLoop.hpp"
+#include "SC_ServerBootDelayWarning.h"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -32,11 +33,6 @@
 #ifdef _WIN32
 #    include <winsock2.h>
 #    include <vector>
-#    include <iostream>
-#    include <thread>
-#    include <mutex>
-#    include <chrono>
-#    include <condition_variable>
 #else
 #    include <sys/wait.h>
 #endif
@@ -48,35 +44,6 @@
 inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0); }
 
 #endif
-
-#ifdef _WIN32
-// Add a warning when Windows Defender delays scsynth boot by 60+ seconds
-// cf. github issue #4368
-static bool g_isScsynthBooted = false;
-static std::mutex g_scsynthBootWarningMutex;
-static std::condition_variable g_scsynthBootWarningConditionVariable;
-
-static void scsynthHasBooted() {
-    {
-        const std::lock_guard<std::mutex> lock(g_scsynthBootWarningMutex);
-        g_isScsynthBooted = true;
-    }
-    g_scsynthBootWarningConditionVariable.notify_all();
-}
-
-static void displayWarningIfScsynthHasNotBooted() {
-    std::unique_lock<std::mutex> lock(g_scsynthBootWarningMutex);
-
-    if (!g_scsynthBootWarningConditionVariable.wait_for(lock, std::chrono::seconds(10),
-                                                        [] { return g_isScsynthBooted; })) {
-        std::cout << "Server: possible boot delay.\n";
-        std::cout << "On some Windows-based machines, Windows Defender sometimes delays server boot by one minute.\n";
-        std::cout << "You can add scsynth.exe process to Windows Defender exclusion list ";
-        std::cout << "to disable this check. It's safe.\n";
-    }
-}
-// end of additions for Windows Defender delay warning
-#endif // _WIN32
 
 void Usage();
 void Usage() {
@@ -159,9 +126,7 @@ void Usage() {
 
 
 int scsynth_main(int argc, char** argv) {
-#ifdef _WIN32
-    std::thread bootWarningThread(displayWarningIfScsynthHasNotBooted);
-#endif //_WIN32
+    startServerBootDelayWarningTimer();
 
     setlinebuf(stdout);
 
@@ -377,10 +342,7 @@ int scsynth_main(int argc, char** argv) {
         }
     }
 
-#ifdef _WIN32
-    scsynthHasBooted();
-    bootWarningThread.join();
-#endif // _WIN32
+    stopServerBootDelayWarningTimer();
 
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG
