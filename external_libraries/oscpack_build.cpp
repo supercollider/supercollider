@@ -1,4 +1,4 @@
-#include <boost/detail/endian.hpp>
+#include <boost/endian/endian.hpp>
 
 #ifdef BOOST_LITTLE_ENDIAN
 #define OSC_HOST_LITTLE_ENDIAN
