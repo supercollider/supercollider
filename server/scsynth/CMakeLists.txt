@@ -42,7 +42,7 @@ if(AUDIOAPI STREQUAL jack)
   if(NOT JACK_FOUND)
     message(FATAL_ERROR "Jack selected as audio API, but development files not found")
   endif()
-elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
+elseif(AUDIOAPI STREQUAL portaudio AND (NOT BUILD_PORTAUDIO))
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
