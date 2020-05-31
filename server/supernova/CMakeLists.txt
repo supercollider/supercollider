@@ -145,7 +145,7 @@ endif()
 
 if(AUDIOAPI STREQUAL jack)
     find_package(Jack REQUIRED)
-elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
+elseif(AUDIOAPI STREQUAL portaudio AND (NOT BUILD_PORTAUDIO))
     find_package(Portaudio REQUIRED)
 endif()
 message(STATUS "Audio API (supernova): ${AUDIOAPI}")
