@@ -224,9 +224,10 @@ option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying
 option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
-option(BUILD_PORTAUDIO "Build bundled PortAudio library" ON)
-if(NOT WIN32)
-    set(BUILD_PORTAUDIO OFF)
+option(BUILD_PORTAUDIO "Build bundled PortAudio library" OFF)
+if(WIN32)
+    set(BUILD_PORTAUDIO ON)
+else()
     mark_as_advanced(BUILD_PORTAUDIO)
 endif()
 
