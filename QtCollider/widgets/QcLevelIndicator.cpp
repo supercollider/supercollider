@@ -23,6 +23,7 @@
 #include "../QcWidgetFactory.h"
 
 #include <QPainter>
+#include <QPainterPath>
 
 QC_DECLARE_QWIDGET_FACTORY(QcLevelIndicator);
 

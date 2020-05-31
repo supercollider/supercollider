@@ -24,6 +24,7 @@
 #include "../style/routines.hpp"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QMouseEvent>
 #include <QApplication>
 #include <QtCore/qmath.h>
