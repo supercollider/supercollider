@@ -1,8 +1,8 @@
-#include <boost/endian/endian.hpp>
+#include <boost/predef.h>
 
-#ifdef BOOST_LITTLE_ENDIAN
+#ifdef BOOST_ENDIAN_LITTLE_BYTE
 #define OSC_HOST_LITTLE_ENDIAN
-#elif defined(BOOST_BIG_ENDIAN)
+#elif defined(BOOST_ENDIAN_BIG_BYTE)
 #define OSC_HOST_BIG_ENDIAN
 #else
 #error please define endianness
