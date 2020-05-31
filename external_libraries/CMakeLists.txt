@@ -7,9 +7,7 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
 endif()
 
 if(BUILD_PORTAUDIO)
-  #temporarily remove previous flags and definitions
-  set(_cached_c_flags "${CMAKE_C_FLAGS}")
-  set(_cached_cxx_flags "${CMAKE_CXX_FLAGS}")
+  # remove previous flags and definitions
   unset(CMAKE_C_FLAGS)
   unset(CMAKE_CXX_FLAGS)
   if(WIN32)
@@ -27,15 +25,12 @@ if(BUILD_PORTAUDIO)
 
   add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
 
-  # FindPortaudio.cmake script defines PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES when using instaled library
-  # when building PA ourselves, we need to specify these
+  # when building PA ourselves, we need to specify PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES
   set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
 
   set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
   
-  #reset flags and definitions
-  set(CMAKE_C_FLAGS "${_cached_c_flags}")
-  set(CMAKE_CXX_FLAGS "${_cached_cxx_flags}")
+  # reset definitions
   if(WIN32) 
     add_definitions(-DWIN32_LEAN_AND_MEAN)
   endif()
