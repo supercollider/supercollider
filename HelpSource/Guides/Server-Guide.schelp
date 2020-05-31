@@ -1,7 +1,7 @@
 title:: Server Guide
-summary:: Using Server objecs in different situations
+summary:: Using Server objects in different situations
 categories:: Server>Abstractions
-related:: Classes/Server, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference
+related:: Classes/Server, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Guides/MultiClient_Setups
 
 description::
 
@@ -55,18 +55,32 @@ There is always a default Server, which is stored in the class variable code::de
 
 subsection:: Local vs. Remote Servers, Multi-client Configurations
 
-Most of the time users work with a server app running on the same machine as the SC language client. It is possible to use a server running on a different machine via a network, providing you know the IP address and port of that server. The link::#*remote:: method provides a convenient way to do this.
+Most of the time users work with a server app running on the same machine as the SC language client. It is possible to use a server running on a different machine via a network, providing you know the IP address and port of that server. The link::#*remote:: method provides a convenient way to do this. note::To enable remote connections you will need to change link::Classes/ServerOptions#-bindAddress:: in the server's link::Classes/ServerOptions:: as the default value only allows connections from the local machine. code::s.options.bindAddress = "0.0.0.0":: will allow connections from any address.::
 
-One common variant of this approach is multiple clients using the same server. If you wish to do this you will need to set the server's link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow.  When a client registers for link::#-notify#notifications:: the server will supply a client ID. This also configures the allocators to avoid conflicts when allocating link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::.
+One common variant of this approach is multiple clients using the same server. If you wish to do this you will need to set the server's link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow.  When a client registers for link::#-notify#notifications:: the server will supply a client ID. This also configures the allocators to avoid conflicts when allocating link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. For more info see link::Guides/MultiClient_Setups::.
 
-In order to use a remote server with tcp one should first boot the remote server using the code::-t:: option and then run the following code:
+In order to use a remote server with tcp one should first boot the remote server using the code::-t:: option e.g. as follows:
+code::
+// on machine running the server
+(
+s.options.protocol = \tcp; // set to use tcp
+s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+s.options.maxLogins = 2; // set to correct number of clients
+s.boot;
+)
+::
+
+then run the following code:
 
 code::
+// on remote machine connecting to server
 (
-s.options.protocol_(\tcp);
-s.addr.connect;
-s.startAliveThread( 0 );
-s.doWhenBooted({ "remote tcp server started".postln; s.notify; s.initTree });
+o = ServerOptions.new;
+o.protocol_(\tcp);
+t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correct address and port
+t.addr.connect;
+t.startAliveThread( 0 );
+t.doWhenBooted({ "remote tcp server started".postln; t.notify; t.initTree });
 )
 ::
 
