@@ -22,6 +22,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
 #include "SC_EventLoop.hpp"
+#include "SC_ServerBootDelayWarning.h"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -43,7 +44,6 @@
 inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0); }
 
 #endif
-
 
 void Usage();
 void Usage() {
@@ -126,6 +126,8 @@ void Usage() {
 
 
 int scsynth_main(int argc, char** argv) {
+    startServerBootDelayWarningTimer();
+
     setlinebuf(stdout);
 
     EventLoop::setup();
@@ -339,6 +341,8 @@ int scsynth_main(int argc, char** argv) {
             return 1;
         }
     }
+
+    stopServerBootDelayWarningTimer();
 
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG
