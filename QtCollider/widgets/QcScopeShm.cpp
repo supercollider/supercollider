@@ -25,6 +25,7 @@
 #include "../debug.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QTimer>
 #include <QResizeEvent>
 #include <QWindow>

@@ -27,6 +27,7 @@
 #include "PyrKernel.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QVector2D>
 #include <QVector3D>
 #include <cmath>

@@ -24,6 +24,7 @@
 
 #include <QGridLayout>
 #include <QPainter>
+#include <QPainterPath>
 #include <QApplication>
 #include <QPaintEvent>
 #include <QCursor>
