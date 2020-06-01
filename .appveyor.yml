@@ -83,7 +83,7 @@ install:
 - cmd: mkdir asio_sdk && cd asio_sdk
 - appveyor DownloadFile %ASIO_URL%
 - ps: 7z x $env:ASIO_ZIP -y
-- cmd: move ASIOSDK2.3 "%APPVEYOR_BUILD_FOLDER%\external_libraries\asiosdk"
+- cmd: move ASIOSDK2.3 "%APPVEYOR_BUILD_FOLDER%\external_libraries\portaudio\asiosdk"
 - cmd: cd .. && echo "Done installing asio_sdk"
 
 - cmd: cd .. && echo "Done installing 3rd-party tools"
