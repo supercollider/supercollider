@@ -279,22 +279,39 @@ HelpBrowser {
 		};
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
 			var keyPlus, keyZero, keyMinus, keyEquals, keyF;
-			var modifier = Platform.case(\osx, { mods.isCmd }, { mods.isCtrl });
+			var modifier, zoomIn;
+
+			modifier = Platform.case(\osx, {
+				mods.isCmd && mods.isCtrl.not && mods.isAlt.not;
+			}, {
+				mods.isCtrl && mods.isCmd.not && mods.isAlt.not;
+			});
+
 			#keyPlus, keyZero, keyMinus, keyEquals, keyF = [43, 48, 45, 61, 70];
 
-			// +/= has the same value when pressed with <Cmd>
-			if (((key == keyEquals) || (key == keyPlus)) && modifier) {
+			// +/= has the same value on macOS when pressed with <Cmd>
+			zoomIn = Platform.case(\osx, {
+				(key == keyEquals) && modifier;
+			}, {
+				(key == keyPlus) && modifier;
+			});
+
+			if (zoomIn) {
 				webView.zoom = min(webView.zoom + 0.1, 2.0);
 			};
+
 			if ((key == keyMinus) && modifier) {
 				webView.zoom = max(webView.zoom - 0.1, 0.1);
 			};
+
 			if ((key == keyZero) && modifier) {
 				webView.zoom = 1.0;
 			};
+
 			if ((key == keyF) && modifier) {
 				toggleFind.value;
 			};
+
 			if (char.ascii == 27) { // Esc
 				if (findView.visible) { toggleFind.value };
 			};
