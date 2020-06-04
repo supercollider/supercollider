@@ -675,7 +675,8 @@ Execute the String in a new terminal window (strong::asynchronously::).
 argument::shell
 The shell used to execute the string.
 discussion::
-note:: On macOS, the string is incorporated into a temporary script file and executed using the shell. ::
+note:: On macOS and Linux, the string is incorporated into a temporary script file and executed using the shell. ::
+note:: On Linux, it is possible to choose a specific terminal emulator to be used, otherwise sclang tries to find one by itself. See link::Classes/LinuxPlatform#*runInTerminalCmd::. ::
 Example:
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;
