@@ -18,61 +18,193 @@ Syntax
 code::
 if (expr, trueFunc, falseFunc);
 ::
---or--
+--or, by pulling the functions out of the parentheses--
+code::
+if (expr) {trueFuncBody} {falseFuncBody};
+::
+--or, as an explicit message sent to the condition object code::expr::--
 code::
 expr.if (trueFunc, falseFunc);
 ::
 
-Examples
+note::
+The functions can be pulled out of the parentheses, leaving parentheses only around the condition, allowing one to write code more reminiscent of the C-style programming languages. However, this is valid syntax in SuperCollider only if the functions are given "inline" as function literals, i.e. surrounded by braces. This rule applies to all other control structures discussed within this document. It is a result of the general mechanism of how "extra" function literals, appearing after parentheses, are passed as additional arguments to method calls (messages).
+::
+
+As in functional programming languages, the if-expression itself has a value. The value of the if-expression is the value of the branch-function executed. The second-branch function can be omitted, in which case it evaluates as code::nil::. (This is relevant if the condition is false.)
+
+Syntax examples:
 code::
+(
 if ( [false, true].choose,				// Boolean expression (chooses one at random)
 	{ "expression was true".postln },	// true function
 	{ "expression was false".postln }	// false function
 )
+)
+::
+The same control logic as above, but "pulling out" the functions and thus closer to C-language style:
+code::
+(
+if ( [false, true].choose ) {
+	"expression was true".postln
+} {
+	"expression was false".postln
+}
+)
+::
+As noted earlier, pulling out functions works only for function literals:
+code::
+(
+var f = { "expression was true".postln };
+var g = { "expression was false".postln };
 
+if ( [false, true].choose, f, g );		// is a valid expression
+[false, true].choose.if( f, g );		// ibid.
+)
+::
+In contrast, attempting to pass expressions that are not function literals after the parentheses results in a syntax error:
+code::
+if ( [false, true].choose ) f g;		// is a syntax error
+if ( [false, true].choose ) f;			// ibid.
+::
+
+If-expression value examples:
+code::
 (
 var a = 1, z;
 z = if (a < 5, { 100 },{ 200 });
-z.postln;
+z.postln; // 100
 )
-
+::
+Omitting the second branch-function has no effect if the condition-expression is true.
+code::
 (
 var x;
 if (x.isNil, { x = 99 });
-x.postln;
+x.postln; // 99
+)
+::
+However, if the 2nd branch-function is omitted and the condition-expression is false, then the if-expression evaluates to nil.
+code::
+(
+var x = 11, z;
+z = if (x > 99, { x = \guess });
+z.postln; // z is nil because there was no 2nd branch and expr was false
+)
+::
+Omitting both branches is syntactically valid, the condition is still evaluated, but the if-expression evaluates to nil
+code::
+(
+var z = if (true.postln);
+z.postln;
 )
 ::
 
 
-
 method:: while
 
-The while message implements conditional execution of a loop. If the testFunc answers true when evaluated, then the bodyFunc is evaluated and the process is repeated. Once the testFunc returns false, the loop terminates.
+The code::while:: message implements conditional execution of a loop. If the code::testFunc:: answers true when evaluated, then the code::bodyFunc:: is evaluated and the process is repeated. Once the code::testFunc:: returns false, the loop terminates.
+
+The value of the while-expression itself depends whether the code::while:: is optimized (inlined) by the compiler or not. If it is inlined/optimized, the while-expression evaluates to nil. Otherwise it evaluates to the receiver code::testFunc::.
 
 discussion::
 Syntax
 code::
 while ( testFunc, bodyFunc );
 ::
+--or (pulling out both functions from parentheses)--
+code::
+while { testFuncBody } { bodyFuncBody };
+::
 --or--
 code::
 testFunc.while( bodyFunc );
 ::
 
-Example
+Examples
 code::
 (
-i = 0;
+var i = 0;
 while ( { i < 5 }, { i = i + 1; "boing".postln });
 )
 ::
+The same, but omitting parentheses around the functions:
+code::
+(
+var i = 0;
+while { i < 5 } { i = i + 1; "boing".postln };
+)
+::
+As with code::if::, only the former syntax, with functions inside parentheses can be used for non-literal functions
+code::
+(
+var i = 0;
+var c = { i < 5 };
+var b = { i = i + 1; "boing".postln };
+z = while (c, b);   // valid
+z = c.while(b);	    // valid
+)
+::
+In contrast, these are syntax errors:
+code::
+while c b;			// syntax error
+while { i < 5 } b;	// ibid.
+c.while b;	        // ibid.
+::
 
-while expressions are also optimized by the compiler if they do not contain variable declarations in the testFunc and the bodyFunc.
+Since code::while:: only takes one additional argument besides its receiver, it can be written as an infix binary operator too:
+code::.
+(
+var i = 0;
+var c = { i < 5 };
+var b = { i = i + 1; "boing".postln };
+c while: b;	        // valid.
+
+{ i < 5 } while: { i = i + 1; "boing".postln };
+)
+::
+
+
+The value of an optimized/inlined while expressions is always nil.
+
+code::
+(
+var i = 0, z;
+z = while ( { i < 5 }, { i = i + 1; "boing".postln });
+z.postln; // nil
+)
+::
+However an unoptimized while-expression evaluates to its code::testFunc:: object and not to its code::value::, even though it is the code::value:: of the latter that controls the iteration process.
+code::
+(
+var i = 0;
+var c = { i < 5 };
+z = while (c, { i = i + 1; "boing".postln });
+z === c; // true
+)
+::
+This is still true even if just the second function is not a function literal.
+code::
+(
+var i = 0;
+var b = { i = i + 1; "boing".postln };
+z = while ({ i < 5 }, b);
+z.postln // a Function
+)
+::
+
+While expressions are optimized by the compiler if both of the following are met:
+list::
+## code::testFunc:: and the code::bodyFunc:: are passed as function literals to code::while::, and
+## the bodies of these two functions do not contain variable declarations.
+::
 
 
 method:: for
 
 The for message implements iteration over an integer series from a starting value to an end value stepping by one each time. A function is evaluated each iteration and is passed the iterated numeric value as an argument.
+
+The value of the for-expression itself is the (receiver) code::startValue::.
 
 discussion::
 Syntax
@@ -81,13 +213,38 @@ for ( startValue, endValue, function )
 ::
 --or--
 code::
+for ( startValue, endValue ) { functionBody }
+::
+--or--
+code::
 startValue.for ( endValue, function )
 ::
 
-Example
+Example:
 code::
 for (3, 7, { arg i; i.postln }); // prints values 3 through 7
 ::
+The same example, but pulling out the function from the parentheses:
+code::
+for (3, 7) { arg i; i.postln };
+::
+If the function is not a function literal, only the former syntax is valid:
+code::
+(
+var b = { arg i; i.postln };
+for (3, 7, b); // valid
+)
+// whereas
+for (3, 7) b; // syntax error
+::
+
+The receiver-based syntax is also a valid for code::for::, but probably rather confusing in this application:
+
+code::
+3.for(7, { arg i; i.postln });
+3.for(7) { arg i; i.postln };
+::
+
 
 method:: forBy
 
@@ -100,12 +257,18 @@ forBy ( startValue, endValue, stepValue, function );
 ::
 --or--
 code::
+forBy ( startValue, endValue, stepValue ) { functionBody };
+::
+--or--
+code::
 startValue.forBy ( endValue, stepValue, function );
 ::
 
-Example
+Examples
 code::
 forBy (0, 8, 2, { arg i; i.postln }); // prints values 0 through 8 by 2's
+
+forBy (0, 8, 2) { arg i; i.postln };  // ibid
 ::
 
 
@@ -120,14 +283,47 @@ do ( collection, function )
 ::
 --or--
 code::
+do ( collection ) { functionBody }
+::
+--or--
+code::
 collection.do(function)
 ::
+--or--
+code::
+collection.do { functionBody }
+::
 
-Example
+Basic syntax examples:
+code::
+do(5, { arg item; item.postln }); // iterates from zero to four
+do(5) { arg item; item.postln };  // ibid, no parentheses around the function
+5.do({ arg item; item.postln });  // making the receiver more explicit
+5.do { arg item; item.postln };   // ibid, and also no parentheses at all
+::
+
+Omitting parentheses is not possible if the function is not a literal
+
+code::
+(
+var f = { arg item; item.postln };
+5.do(f) // valid
+)
+// but
+5.do f  // syntax error
+::
+
+However, since code::do:: only takes one argument besides its (collection) receiver, the example immediately above can also be written using code::do::: as a binary operator:
+code::
+(
+var f = { arg item; item.postln };
+5 do: f // valid
+)
+::
+
+Additional examples:
 code::
 [ 1, 2, "abc", (3@4) ].do({ arg item, i; [i, item].postln; });
-
-5.do({ arg item; item.postln }); // iterates from zero to four
 
 "you".do({ arg item; item.postln }); // a String is a collection of characters
 
@@ -219,13 +415,30 @@ x.postln;
 )
 ::
 
+section:: Breaking from Iterative Control Structures
+
+A general technique for breaking from iterative control structures relies on the caret (code::^::) return from method because it can exit any number of nested non-method scopes. Using this approach in functions (which are not methods) is possible with the help of link::Classes/Function#block::. For example:
+
+code::
+(
+var z = block {|break|
+    100.do {|i|
+        i.postln;
+        if (i == 7) { break.value(999) }
+    };
+};
+z.postln;
+)
+::
+
+
 section:: Other Control Structures
 
 Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#iteration:: there are many more messages defined for iterating over Collections.
 
-section:: Inline optimization
+section:: Inline Optimization
 
-code::if::, code::while::, code::switch:: and code::case:: expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the functions. The optimization plucks the code from the functions and uses a more efficient jump statement:
+code::if::, code::while::, code::switch:: and code::case:: expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the functions and if the receiver (e.g. for code::while:: and code::case::) is a literal function. The optimization plucks the code from the functions and uses a more efficient jump statement:
 code::
 (
 {
@@ -293,4 +506,50 @@ LanguageConfig.postInlineWarnings_(true) // warn
 LanguageConfig.postInlineWarnings_(false) // ignore it.
 ::
 
+An inlined code::while::
 
+code::
+(
+{
+	var i = 0;
+	while ( { i < 5 }, { i = i + 1; "boing".postln });
+}.def.dumpByteCodes
+)
+
+BYTECODES: (18)
+  0   30		 PushTempZeroVar 'i'
+  1   2C 05    PushInt 5
+  3   E8       SendSpecialBinaryArithMsg '<'
+  4   F9 00 0A JumpIfFalsePushNil 10  (17)
+  7   30		 PushTempZeroVar 'i'
+  8   6B       PushOneAndAdd
+  9   80 00    StoreTempVar 'i'
+ 11   40       PushLiteral "boing"
+ 12   C1 3A    SendSpecialMsg 'postln'
+ 14   FD 00 0F JumpBak 15  (0)
+ 17   F2       BlockReturn
+-> < closed FunctionDef >
+::
+
+And one that is not inlined:
+
+code::
+(
+{
+	var i = 0, c = { i < 5 };
+	while (c, { i = i + 1; "boing".postln });
+}.def.dumpByteCodes
+)
+
+BYTECODES: (11)
+  0   04 00    PushLiteralX instance of FunctionDef in closed FunctionDef
+  2   80 01    StoreTempVar 'c'
+  4   31		 PushTempZeroVar 'c'
+  5   04 01    PushLiteralX instance of FunctionDef in closed FunctionDef
+  7   B0       TailCallReturnFromFunction
+  8   C2 0C    SendSpecialMsg 'while'
+ 10   F2       BlockReturn
+-> < closed FunctionDef >
+::
+
+There is presently no compiler warning flag for this latter kind of inlining-failure problem.
