@@ -11,27 +11,27 @@ Because of the multiple syntax equivalences, some expressions can be written in 
 code::
 // new argument syntax
 
-(1..10).collect({|n| n.squared }); // receiver syntax
+(1..10).collect({|n| n.squared });  // receiver syntax
 collect((1..10), {|n| n.squared }); // function call syntax
-(1..10).collect {|n| n.squared }; // receiver syntax with trailing block argument
+(1..10).collect {|n| n.squared };   // receiver syntax with trailing block argument
 collect ((1..10)) {|n| n.squared }; // function call syntax with trailing block argument
-(1..10) collect: {|n| n.squared }; // binary operator syntax
+(1..10) collect: {|n| n.squared };  // binary operator syntax
 
 
 // old argument syntax
 
-(1..10).collect({ arg n; n.squared }); // receiver syntax
+(1..10).collect({ arg n; n.squared });  // receiver syntax
 collect((1..10), { arg n; n.squared }); // function call syntax
-(1..10).collect { arg n; n.squared }; // receiver syntax with trailing block arg
+(1..10).collect { arg n; n.squared };   // receiver syntax with trailing block arg
 collect ((1..10)) { arg n; n.squared }; // function call syntax with trailing block arg
-(1..10) collect: { arg n; n.squared }; // binary operator syntax
+(1..10) collect: { arg n; n.squared };  // binary operator syntax
 
 
 // partial application syntax
 
 (1..10).collect( _.squared ); // receiver syntax
 collect((1..10), _.squared ); // function call syntax
-(1..10) collect: _.squared ; // binary operator syntax
+(1..10) collect: _.squared ;  // binary operator syntax
 ::
 
 You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::. This could also be written code:: 1.series(nil,10) ::. This adds another 26 variations to the 13 variations above.
@@ -58,7 +58,9 @@ table::
 ## code:: {|x| [a, b, x] } :: || code:: [a, b, _] ::
 ## code:: {|x| (a: x) } :: || code:: (a: _) ::
 ::
-
+warning::
+There are some limtations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
+::
 
 subsection:: defining instance variable accessor methods
 table::
@@ -68,7 +70,9 @@ Thing { var x;
     x { ^x }
     x_ { arg z; x = z; }
 }
-:: || code:: Thing { var <>x; } ::
+:: || code::
+Thing { var <>x; }
+::
 ::
 
 
@@ -117,7 +121,7 @@ table::
 ::
 
 note::
-Such trailing function arguments (i.e. outside of parentheses) need be blocks though (Function constructor calls), for both receiver- and function-call syntax (but not for the binary operator syntax). Functions (previously) assigned to variables or any other expressions that evaluate to functions cannot be used in place of blocks in such shortcuts.
+Such trailing function arguments (i.e. outside of parentheses) need be blocks though (Function constructor calls), for both receiver and functional syntax (but not for the binary operator syntax). Functions (previously) assigned to variables or any other expressions that evaluate to functions cannot be used in place of blocks in such shortcuts.
 code::
 (
 var f = { |n| (2**n) + (3**n) };
