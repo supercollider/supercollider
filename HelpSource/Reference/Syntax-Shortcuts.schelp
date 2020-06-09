@@ -140,7 +140,8 @@ warning::
 A caveat when switching between various forms of call syntax is that a selector as a binary operator has lower precedence than the receiver dot notation (code::.::). (Dot has higher precedence than most other binary operators as well.) Therefore, replacing a receiver syntax (dot) with a selector written as a binary operator can change the meaning of some expressions, as illustrated below:
 
 code::
-1 + 2.neg // -1 (because dot has higher precedence than "+")
+4 + 5.div(2) // -> 6
+4 + 5 div: 2 // -> 4
 
 // This is a left-to-right application of two dots,
 // the first of which has a trailing block argument.
