@@ -24,4 +24,10 @@ TestComplex : UnitTest {
 
 	}
 
+	// regression test for #5000: UGen:performBinaryOpOnUGen should return even if operand's isValidUGenInput is false
+	test_performBinaryOpOnUGen {
+		var complex = Complex(1,1), ugen = DC.kr(1);
+		this.assertEquals( (ugen * complex).class, (complex * ugen).class, "(UGen * Complex) should return same class as (Complex * UGen)")
+	}
+
 }
