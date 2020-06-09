@@ -137,7 +137,7 @@ table::
 ::
 
 warning::
-A caveat when switching between various forms of call syntax is that a selector as a binary operator has lower precedence than the receiver dot notation (code::.::). (Dot has higher precedence than most other binary operators as well.) Therefore, replacing a receiver syntax (dot) with a selector written as a binary operator can change the meaning of some expressions, as illustrated below:
+When switching between various forms of call syntax, one has to be mindful that a selector as a binary operator has equal precedence with most other binary operators, but has lower precedence than the receiver dot notation (code::.::). Therefore, replacing a receiver syntax (dot) with a selector written as a binary operator can change the result of some expressions, as illustrated below:
 
 code::
 4 + 5.div(2) // -> 6
@@ -225,6 +225,7 @@ table::
 ## instead of writing: || you can write:
 ## code:: seriesIter(1,3,11) :: || code:: (:1,3..11) ::
 ::
+note:: SuperCollider also supports list comprehensions.::
 
 subsection:: accessing subranges of Arrays
 table::
