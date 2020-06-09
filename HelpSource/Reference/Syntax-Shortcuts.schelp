@@ -202,16 +202,12 @@ table::
 ## code:: z.put(i, y) :: || code:: z[i] = y ::
 ::
 
-subsection:: creating Events
+subsection:: accessing subranges of Arrays
 table::
 ## instead of writing: || you can write:
-## code:: Event[\a -> 1, \b -> 2] :: || code:: (a: 1, b: 2) ::
-::
-
-subsection:: creating Arrays with key-value pairs
-table::
-## instead of writing: || you can write:
-## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
+## code:: a.copyRange(4,8) :: || code:: a[4..8] ::
+## code:: a.copyToEnd(4) :: || code:: a[4..] ::
+## code:: a.copyFromStart(4) :: || code:: a[..4] ::
 ::
 
 subsection:: creating arithmetic series
@@ -225,14 +221,27 @@ table::
 ## instead of writing: || you can write:
 ## code:: seriesIter(1,3,11) :: || code:: (:1,3..11) ::
 ::
-note:: SuperCollider also supports list comprehensions.::
+note::
+SuperCollider also supports link::Guides/ListComprehensions:: (actually their generator Routines).
+::
 
-subsection:: accessing subranges of Arrays
+As a simple (non-combinatorial) example, the following are equivalent ways of listing the first 10 primes:
+
+code::
+(:1..) select: _.isPrime nextN: 10;
+{: x, x <- (1..), x.isPrime }.nextN(10);
+::
+
+subsection:: creating Events
 table::
 ## instead of writing: || you can write:
-## code:: a.copyRange(4,8) :: || code:: a[4..8] ::
-## code:: a.copyToEnd(4) :: || code:: a[4..] ::
-## code:: a.copyFromStart(4) :: || code:: a[..4] ::
+## code:: Event[\a -> 1, \b -> 2] :: || code:: (a: 1, b: 2) ::
+::
+
+subsection:: creating Arrays with key-value pairs
+table::
+## instead of writing: || you can write:
+## code:: [\a, 1, \b, 2] :: || code:: [a: 1, b: 2] ::
 ::
 
 section:: Other shortcuts
