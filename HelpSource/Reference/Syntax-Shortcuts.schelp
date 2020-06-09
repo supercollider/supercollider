@@ -264,6 +264,13 @@ table::
 ## instead of writing: || you can write:
 ## code:: 'mySymbol' :: || code:: \mySymbol ::
 ::
+note::
+The shorthand cannot be used with symbols from operators:
+code::
+'+' // valid
+\+  // syntax error
+::
+::
 
 subsection:: creating a Ref
 table::
