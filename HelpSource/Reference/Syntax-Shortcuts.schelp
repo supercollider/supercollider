@@ -13,8 +13,8 @@ code::
 
 (1..10).collect({|n| n.squared }); // receiver syntax
 collect((1..10), {|n| n.squared }); // function call syntax
-(1..10).collect {|n| n.squared }; // receiver syntax with trailing function arg
-collect ((1..10)) {|n| n.squared }; // function call syntax with trailing function arg
+(1..10).collect {|n| n.squared }; // receiver syntax with trailing block argument
+collect ((1..10)) {|n| n.squared }; // function call syntax with trailing block argument
 (1..10) collect: {|n| n.squared }; // binary operator syntax
 
 
@@ -22,8 +22,8 @@ collect ((1..10)) {|n| n.squared }; // function call syntax with trailing functi
 
 (1..10).collect({ arg n; n.squared }); // receiver syntax
 collect((1..10), { arg n; n.squared }); // function call syntax
-(1..10).collect { arg n; n.squared }; // receiver syntax with trailing function arg
-collect ((1..10)) { arg n; n.squared }; // function call syntax with trailing function arg
+(1..10).collect { arg n; n.squared }; // receiver syntax with trailing block arg
+collect ((1..10)) { arg n; n.squared }; // function call syntax with trailing block arg
 (1..10) collect: { arg n; n.squared }; // binary operator syntax
 
 
@@ -36,53 +36,9 @@ collect((1..10), _.squared ); // function call syntax
 
 You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::. This could also be written code:: 1.series(nil,10) ::. This adds another 26 variations to the 13 variations above.
 
-section:: Objects, functions, messages and arguments
+section:: Defining functions and classes
 
-subsection:: functional and receiver notation
-table::
-## instead of writing: || you can write:
-## code:: f(x, y) :: || code:: x.f(y) ::
-## code:: f(g(x)) :: || code:: x.g.f ::
-::
-
-subsection:: defining instance variable accessor methods
-table::
-## instead of writing: || you can write:
-## code::
-Thing { var x;
-    x { ^x }
-    x_ { arg z; x = z; }
-}
-:: || code:: Thing { var <>x; } ::
-::
-
-subsection:: calling an instance variable setter method
-table::
-## instead of writing: || you can write:
-## code:: p.x_(y) :: || code:: p.x = y :: or code:: x(p) = y ::
-::
-
-subsection:: use a selector as binary operator
-table::
-## instead of writing: || you can write:
-## code:: min(x, y) :: || code:: x min: y ::
-::
-
-subsection:: instantiate object
-table::
-## instead of writing: || you can write:
-## code:: Point.new(3, 4); :: || code:: Point(3, 4) ::
-::
-
-subsection:: moving blocks out of argument lists
-table::
-## instead of writing: || you can write:
-## code:: if (x<3, {\abc}, {\def}); :: || code:: if (x<3) {\abc} {\def} ::
-## code:: z.do({|x| x.play }); :: || code:: z.do {|x| x.play }; ::
-## code:: while({ a < b },{ a = a * 2 }); :: || code:: while { a < b } { a = a * 2 }; ::
-::
-
-subsection:: shorter argument lists
+subsection:: shorter argument lists in definitions
 table::
 ## instead of writing: || you can write:
 ## code:: { arg x; x < 2 } :: || code:: {|x| x < 2 } ::
@@ -91,18 +47,6 @@ table::
 ::
 note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
-::
-
-subsection:: calling the 'value' method
-table::
-## instead of writing: || you can write:
-## code:: f.value(x) :: || code:: f.(x) ::
-::
-
-subsection:: calling performList
-table::
-## instead of writing: || you can write:
-## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
 ::
 
 subsection:: partial application
@@ -116,20 +60,145 @@ table::
 ::
 
 
+subsection:: defining instance variable accessor methods
+table::
+## instead of writing: || you can write:
+## code::
+Thing { var x;
+    x { ^x }
+    x_ { arg z; x = z; }
+}
+:: || code:: Thing { var <>x; } ::
+::
+
+
+section:: Sending messages, calling functions, and instantiating objects
+
+subsection:: functional and receiver notation equivalence
+table::
+## instead of writing: || you can write:
+## code:: f(x, y) :: || code:: x.f(y) ::
+## code:: f(g(x)) :: || code:: x.g.f ::
+::
+
+subsection:: calling the 'value' method
+table::
+## instead of writing: || you can write:
+## code:: f.value(x) :: || code:: f.(x) ::
+::
+
+subsection:: instantiate object
+table::
+## instead of writing: || you can write:
+## code:: Point.new(3, 4) :: || code:: Point(3, 4) ::
+::
+
+subsection:: calling an instance variable setter method
+table::
+## instead of writing: || you can write:
+## code:: p.x_(y) :: || code:: p.x = y :: or code:: x(p) = y ::
+::
+
+subsection:: calling performList
+table::
+## instead of writing: || you can write:
+## code:: object.performList(\method, a, b, array) :: || code:: object.method(a, b, *array) ::
+::
+
+
+
+subsection:: moving blocks out of argument lists (trailing-block arguments)
+table::
+## instead of writing: || you can write:
+## code:: if (x<3, {\abc}, {\def}) :: || code:: if (x<3) {\abc} {\def} ::
+## code:: z.do({|x| x.play }) :: || code:: z.do {|x| x.play } ::
+## code:: while({ a < b },{ a = a * 2 }) :: || code:: while { a < b } { a = a * 2 } ::
+## code:: Pfunc({ rrand(3,6) }) :: || code:: Pfunc { rrand(3,6) } ::
+::
+
+note::
+Such trailing function arguments (i.e. outside of parentheses) need be blocks though (Function constructor calls), for both receiver- and function-call syntax (but not for the binary operator syntax). Functions (previously) assigned to variables or any other expressions that evaluate to functions cannot be used in place of blocks in such shortcuts.
+code::
+(
+var f = { |n| (2**n) + (3**n) };
+(1..5).collect(f);  // valid
+collect((1..5), f); // valid
+(1..5) collect: f;  // valid
+)
+(1..5).collect f;   // syntax error
+collect((1..5)) f;  // syntax error
+::
+::
+
+subsection:: use a selector (method name) as a binary operator
+table::
+## instead of writing: || you can write:
+## code:: div(x, y) :: || code:: x div: y ::
+::
+
+warning::
+A caveat when switching between various forms of call syntax is that a selector as a binary operator has lower precedence than the receiver dot notation (code::.::). (Dot has higher precedence than most other binary operators as well.) Therefore, replacing a receiver syntax (dot) with a selector written as a binary operator can change the meaning of some expressions, as illustrated below:
+
+code::
+1 + 2.neg // -1 (because dot has higher precedence than "+")
+
+// This is a left-to-right application of two dots,
+// the first of which has a trailing block argument.
+(1..3).collect { |x| x + 1 }.bubble
+// -> [ [ 2, 3, 4 ] ]
+
+// This is a selector binary operator ("collect:") applied
+// to two arguments, the second of which is the result
+// of applying "bubble" (via dot syntax) to a function.
+(1..3) collect: { |x| x + 1 }.bubble
+// -> [ [ a Function ], [ a Function ], [ a Function ] ]
+
+// Changing precedence in the above with explicit parentheses
+((1..3) collect: { |x| x + 1 }).bubble
+// -> [ [ 2, 3, 4 ] ]
+
+// Or by uniform use of selectors as binary operators
+(1..3) collect: { |x| x + 1 } bubble: 0
+::
+::
+
+
+Native infix operators like code::+:: can also be written in (longer) functional form, e.g.:
+
+table::
+## infix: || functional:
+## code:: 1 + 2 :: || code:: (+)(1, 2) ::
+::
+
+The latter form is usually not a shortcut, except when one wants to dynamically change the adverb of an operator, for instance that of code::+++::, because adverbs in the infix notation are interpreted as literals.
+
+code::
+(
+var a = (_+_) ! [3, 3]; // -> [ [ 0, 1, 2 ], [ 1, 2, 3 ], [ 2, 3, 4 ] ]
+(0..2) collect: (+++)(a, 99, _) flatten: 3; // iterated adverb
+)
+(0..2) collect: (a +++._ 99) flatten: 3;    // syntax error
+(
+var a = (_+_) ! [3, 3];
+(0..2) collect: {|v| a +++.v 99} flatten: 3 // the literal adverb \v is used
+)
+::
+
+
 section:: Collections
 
 subsection:: create a collection
 table::
 ## instead of writing: || you can write:
-## code:: Set.new.add(3).add(4).add(5); :: || code:: Set[3, 4, 5] ::
-## code:: Array[3, 4, 5]; :: || code:: [3, 4, 5] ::
+## code:: Set.new.add(3).add(4).add(5) :: || code:: Set[3, 4, 5] ::
+## code:: Array[3, 4, 5] :: || code:: [3, 4, 5] ::
 ::
 
 subsection:: indexing elements
 table::
 ## instead of writing: || you can write:
 ## code:: z.at(i) :: || code:: z[i] ::
-## code:: z.put(i, y); :: || code:: z[i] = y; ::
+## code:: z.put(i, y) :: || code:: z[i] = y ::
 ::
 
 subsection:: creating Events
@@ -150,7 +219,7 @@ table::
 ## code:: Array.series(16,1,1) :: or code:: series(1,nil,16) :: || code:: (1..16) ::
 ## code:: Array.series(6,1,2) :: or code:: series(1,3,11) :: || code:: (1,3..11) ::
 ::
-There is also the similar syntax for creating an iterating link::Classes/Routine:: :
+There is also the similar syntax for creating an iterating link::Classes/Routine:::
 table::
 ## instead of writing: || you can write:
 ## code:: seriesIter(1,3,11) :: || code:: (:1,3..11) ::
