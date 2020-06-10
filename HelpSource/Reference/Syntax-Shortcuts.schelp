@@ -59,7 +59,7 @@ table::
 ## code:: {|x| (a: x) } :: || code:: (a: _) ::
 ::
 warning::
-There are some limtations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
+There are some limitations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
 ::
 
 subsection:: defining instance variable accessor methods
