@@ -543,7 +543,7 @@ TestCoreUGens : UnitTest {
 
 		cond.hang;
 
-		this.assert(success.debug("assert"), "TWindex.ar should output only for nonzero probabilities");
+		this.assert(success, "TWindex.ar should output only for nonzero probabilities");
 	}
 
 
