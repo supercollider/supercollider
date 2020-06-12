@@ -83,5 +83,3 @@ p.trace.play;
 p = Pbind(\freq, nil, \degree, 6) <> q;
 p.trace.play; // silent because it outputs no events
 ::
-
-
