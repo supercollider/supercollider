@@ -50,6 +50,12 @@ a.next.postln;
 a.next.postln;
 ::
 
+The Function class provides its own shortcut method code::r:: that calls code::Routine.new::, thus one can also write:
+
+code::
+a = r { 1.yield; 2.yield };
+::
+
 instanceMethods::
 
 method::next
@@ -230,6 +236,71 @@ The scheduling time in seconds. This is equal to the current logical time
 argument:: inClock
 The clock which awoke the Routine.
 
+
+method:: p
+
+Convert the routine to a (subclass of) link::Classes/Pattern::.
+
+returns::
+
+A link::Classes/Prout:: that (in response to code::asStream::) acts as a generator of independent copies of the original routine (the receiver of code::p::).
+
+
+discussion::
+
+Any subclass of Pattern returns a Stream in response to code::asStream::. However, the exact subclass of Stream returned depends on the class of the Pattern. In particular, a Prout returns a Routine in response to code::asStream::. Thus, a way to make an independent copy of a Routine is to make a Prout from it with the method code::p::, and then create a new Routine from this Prout. In the example immediately below, this second step is done explicitly by calling code::asStream::, but in the context of passing arguments to other Patterns, this latter step usually happens automatically, as shown in later examples.
+
+code::
+(
+r = Routine { "hi".yield; "bye".yield };
+r.next.postln;    // "hi" posted
+
+q = r.p.asStream; // or just: r.p.iter
+q.next.postln;    // "hi" again
+
+r.next.postln;    // "bye" because r kept its own state, separate from q
+)
+::
+
+note::
+New routines produced by code::.p.asStream:: run the original routine's function from the beginning. There is no copy of the internal state of the original routine, only its function is copied. On a related note, code::Routine.copy:: (inherited from code::Thread::) does not create a new, separate Routine; it just returns the receiver.
+::
+
+The Routine method code::p:: is mostly useful in the context of using the result of Routine-returning expressions as arguments to Patterns, when the intent is to use the Routine's result as a pattern, i.e. multiple occurrences acting independently of each other.
+
+code::
+(
+r = (:2..5); // a seriesIter Routine
+Ptuple([r, r]).asStream.all.postln; // posts [ [ 2, 3 ], [ 4, 5 ] ]
+r.next.postln; // nil
+
+p = r.p; // make a Pattern from r; it doesn't matter that r has ended
+Ptuple([p, p]).asStream.all.postln;
+// posts [ [ 2, 2 ], [ 3, 3 ], [ 4, 4 ], [ 5, 5 ] ]
+
+// Obviously, explicitly writing the same Routine-valued subexpression twice
+// also creates separate Routines.
+Ptuple([(:2..5), (:2..5)]).asStream.all.postln;
+// posts [ [ 2, 2 ], [ 3, 3 ], [ 4, 4 ], [ 5, 5 ] ]
+)
+::
+
+In the following example, directly reusing the same Routine object twice in a code::Pseq:: fails to duplicate its output, because the first embedding fully consumes the routine's (non-nil) output.
+
+code::
+(
+r = (:2..6);
+Pseq([r, r]).asStream.all.postln;
+// [ 2, 3, 4, 5, 6 ]
+
+p = r.p;
+Pseq([p, p]).asStream.all.postln;
+// [ 2, 3, 4, 5, 6, 2, 3, 4, 5, 6 ]
+
+Pseq([(:2..6), (:2..6)]).asStream.all.postln;
+// [ 2, 3, 4, 5, 6, 2, 3, 4, 5, 6 ]
+)
+::
 
 
 subsection::Accessible instance variables
