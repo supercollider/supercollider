@@ -25,6 +25,9 @@ set the source (a pattern). If a quantization is given, schedule this change to 
 method::clear
 set the source to nil and stop playing
 
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
+
 method::quant
 get or set the quantization value. can be an array [quant, phase, offset, outset]
 
@@ -66,7 +69,7 @@ method::play
 starts the EventPatternProxy and creates a player. if you want to play multiple instances, use link::#-fork::.
 
 argument::argClock
-play on a certain clock, e.g. a link::Classes/TempoClock::.
+play on a certain clock, e.g. a link::Classes/TempoClock::. If nil uses this instance's link::#-clock::, which in turn defaults to TempoClock.default.
 
 argument::protoEvent
 an event to be used as a first input to the chain

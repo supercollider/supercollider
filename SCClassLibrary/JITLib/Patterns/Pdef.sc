@@ -356,6 +356,7 @@ TaskProxy : PatternProxy {
 	}
 
 	play { arg argClock, doReset=false, quant;
+		argClock = argClock ? this.clock;
 		playQuant = quant ? this.quant;
 		if(player.isNil) {
 			player = this.playOnce(argClock, doReset, playQuant);
@@ -572,6 +573,7 @@ EventPatternProxy : TaskProxy {
 	////////// playing interface //////////
 
 	play { arg argClock, protoEvent, quant, doReset=false;
+		argClock = argClock ? this.clock;
 		playQuant = quant ? this.quant;
 		if(player.isNil) {
 			player = EventStreamPlayer(this.asProtected.asStream, protoEvent);

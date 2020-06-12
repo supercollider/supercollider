@@ -25,6 +25,9 @@ set the source. If a quantization is given, schedule this change to the next bea
 method::clear
 set the source to nil
 
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
+
 method::quant
 get or set the quantization value. can be a pair [quant, offset]
 
@@ -57,7 +60,7 @@ method::play
 starts the TaskProxy and creates a player. if you want to play multiple instances, use strong::.playOnce(clock, protoEvent, quant)::
 
 argument::argClock
-which clock to use. if nil then the TempoClock.default is used.
+which clock to use. if nil then use this instance's link::#-clock::, which in turn defaults to TempoClock.default.
 
 argument::doReset
 A link::Classes/Boolean::
