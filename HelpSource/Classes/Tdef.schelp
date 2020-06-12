@@ -72,6 +72,9 @@ One Tdef may have many tasks in different places. A change in the task definitio
 method::quant
 Set the quantisation time for beat accurate scheduling.
 
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
+
 argument::val
 can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
 
@@ -126,7 +129,7 @@ method::play
 Starts the Tdef and creates a player.
 
 argument::argClock
-a clock on which to play the Tdef
+a clock on which to play the Tdef. If nil, uses the instance's link::#-clock::, which in turn defaults to TempoClock.default.
 argument::doReset
 a flag whether to reset the task if already playing
 argument::quant

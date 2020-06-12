@@ -105,6 +105,9 @@ subsection::Changing the definition / setting the source
 
 One pattern may have many streams in different places. A change in the pattern definition Pdef propagates through all streams. The change does not have to be immediate - there is a scheme to schedule when the change becomes effective: a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
 
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
+
 method::quant
 Set the quantisation time for beat accurate scheduling.
 
