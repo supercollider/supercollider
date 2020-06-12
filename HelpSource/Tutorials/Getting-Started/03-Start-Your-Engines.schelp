@@ -3,23 +3,37 @@ summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
-Before we can make any sound, we need to start or 'boot' a server application. The easiest way to do this is to use the shortcut Ctrl-B (Cmd-B on the mac). There is also a Menu entry for "Boot Server".
+Before we can make any sound, we need to start or 'boot' a server application. The easiest way to do this is to use the shortcut Ctrl-B (Cmd-B on macOS). There is also a Server menu entry for "Boot Server".
 
 Notice that the white font on the black view on the bottom of the window has changed to green. This indicates that the server is running. The view also provides you with some information about CPU usage, and some other things which probably aren't too clear yet. More about them soon.
 
-Also take a look at the post window, where SC has given you some info, and let you know that it booted okay:
+Also take a look at the post window, where SC has given you some info, and let you know that it booted okay. For example:
 
 code::
-booting 57110
-<list-of-devices>
+Booting server 'localhost' on address 127.0.0.1:57110.
+Number of Devices: 2
+   0 : "Built-in Microph"
+   1 : "Built-in Output"
+
+"Built-in Microph" Input Device
+   Streams: 1
+      0  channels 2
+
+"Built-in Output" Output Device
+   Streams: 1
+      0  channels 2
+
 SC_AudioDriver: sample rate = 44100.000000, driver's block size = 512
 SuperCollider 3 server ready.
-Receiving notification messages from server localhost
+Requested notification messages from server 'localhost'
+localhost: server process's maxLogins (1) matches with my options.
+localhost: keeping clientID (0) as confirmed by server process.
+Shared memory server interface initialized
 ::
 
-If for some reason it had failed to boot, there would be some information indicating that.
+If for some reason it failed to boot, there should be information printed about the error that occurred. If this happens, please reach out to the community for help: https://supercollider.github.io#community
 
-By default you can refer to the localhost server in your code by using the letter code::s::. You can thus send messages to start and stop it like so:
+By default you can refer to the localhost server in your code by using the letter code::s::. You can send messages to start and stop it like so:
 
 code::
 s.quit;
