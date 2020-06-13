@@ -298,11 +298,12 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.primitiveFailed
 	}
 
-	nextTimeOnGrid { arg quant = 1, phase = 0;
-		if (quant == 0) { ^this.beats + phase };
-		if (quant < 0) { quant = beatsPerBar * quant.neg };
-		if (phase < 0) { phase = phase % quant };
-		^roundUp(this.beats - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
+	nextTimeOnGrid { arg quant = 1, phase = 0, referenceBeat;
+		if(referenceBeat.isNil) { referenceBeat = this.beats };
+		if(quant == 0) { ^referenceBeat + phase };
+		if(quant < 0) { quant = beatsPerBar * quant.neg };
+		if(phase < 0) { phase = phase % quant };
+		^roundUp(referenceBeat - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
 	}
 
 	timeToNextBeat { arg quant=1.0; // logical time to next beat
