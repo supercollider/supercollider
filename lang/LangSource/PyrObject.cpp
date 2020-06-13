@@ -1710,6 +1710,8 @@ void initClasses() {
     addIntrinsicVar(class_thread, "executingPath", &o_nil);
     addIntrinsicVar(class_thread, "oldExecutingPath", &o_nil);
 
+    addIntrinsicVar(class_thread, "rescheduledTime", &o_nil);
+
     class_finalizer = makeIntrinsicClass(s_finalizer, s_object, 2, 0);
     addIntrinsicVar(class_finalizer, "cFunction", &o_nil);
     addIntrinsicVar(class_finalizer, "object", &o_nil);
