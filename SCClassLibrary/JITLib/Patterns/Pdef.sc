@@ -506,7 +506,7 @@ EventPatternProxy : TaskProxy {
 	}
 
 	constrainStream { arg stream, newStream, inval, cleanup;
-		var delta, tolerance;
+		var delta, tolerance, fadeOutCleanup;
 		var quantBeat, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 
 		^if(this.quant.isNil) {
@@ -539,10 +539,12 @@ EventPatternProxy : TaskProxy {
 					]).asStream
 				}
 			}{
+				fadeOutCleanup = cleanup.copy;
+				cleanup.clear; // change need be seen by caller function, i.e. embedInStream
 				Ppar([
 					EmbedOnce(
 						PfadeOut(stream, fadeTime, delta, tolerance),
-						cleanup
+						fadeOutCleanup
 					),
 					PfadeIn(newStream, fadeTime, delta, tolerance)
 				]).asStream
