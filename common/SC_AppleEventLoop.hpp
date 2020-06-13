@@ -1,6 +1,6 @@
 /************************************************************************
  *
- * Copyright 2013 Seth Nickell <snickell@gmail.com>
+ * Copyright 2019 Christof Ressi <info@christofressi.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,16 @@
 
 #pragma once
 
-namespace SC { namespace Apple {
+namespace SC { namespace Apple { namespace EventLoop {
 
-void disableAppNap();
+// Setup the main application. This function must be called in the
+// main thread and before any other calls to Cocoa methods.
+void setup();
+// Run the event loop. This function must be called in the main thread.
+// It blocks until the event loop finishes.
+void run();
+// Ask the event loop to stop and terminate the program.
+// This function can be called from any thread.
+void quit();
 
-} // namespace Apple
-} // namespace SC
+}}} // namespace SC::Apple::EventLoop
