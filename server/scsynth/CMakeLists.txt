@@ -229,7 +229,13 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-add_executable(scsynth scsynth_main.cpp ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp)
+add_executable(scsynth
+    scsynth_main.cpp
+
+    # these files contain code only used in main()
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+    $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
+    )
 target_link_libraries(scsynth libscsynth)
 
 if (PTHREADS_FOUND)
