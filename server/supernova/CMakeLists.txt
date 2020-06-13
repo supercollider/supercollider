@@ -51,7 +51,6 @@ set(libsupernova_src
     ${CMAKE_SOURCE_DIR}/common/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
-    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
     server/buffer_manager.cpp
     server/memory_pool.cpp
     server/node_graph.cpp
@@ -202,7 +201,7 @@ if(WIN32)
 endif()
 
 
-add_executable(supernova server/main.cpp ${supernova_headers})
+add_executable(supernova server/main.cpp ${supernova_headers} ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp)
 target_link_libraries(supernova libsupernova)
 
 if(WIN32)
