@@ -84,7 +84,6 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
 )
 
 if(APPLE)
@@ -230,7 +229,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-add_executable(scsynth scsynth_main.cpp)
+add_executable(scsynth scsynth_main.cpp ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp)
 target_link_libraries(scsynth libscsynth)
 
 if (PTHREADS_FOUND)
