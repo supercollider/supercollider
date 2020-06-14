@@ -306,8 +306,8 @@ void ScProcess::onIpcData() {
         if (mReadSize > 0 && avail >= mReadSize) {
             QByteArray baReceived(mIpcData.left(mReadSize));
             mIpcData.remove(0, mReadSize);
-            mReadSize = 0;
             avail -= mReadSize;
+            mReadSize = 0;
 
             QDataStream in(baReceived);
             in.setVersion(QDataStream::Qt_4_6);
