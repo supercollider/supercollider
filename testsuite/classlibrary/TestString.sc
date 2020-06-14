@@ -113,6 +113,58 @@ TestString : UnitTest {
 		this.assertEquals(result, expected);
 	}
 
+	test_splitext {
+		var result = "/foo/bar/baz.xyz".splitext;
+		var expected = ["/foo/bar/baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo" ++ p ++ "bar" ++ p ++ "baz.xyz").splitext;
+		var expected = ["/foo/bar/baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension {
+		var result = "/foo/bar/baz".splitext;
+		var expected = ["/foo/bar/baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo" ++ p ++ "bar" ++ p ++ "baz").splitext;
+		var expected = ["/foo/bar/baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_early_return {
+		var result = "/foo.bar/baz.xyz".splitext;
+		var expected = ["/foo.bar/baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_early_return_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo.bar" ++ p ++ "baz.xyz").splitext;
+		var expected = ["/foo.bar/baz", "xyz"];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension_early_return {
+		var result = "/foo.bar/baz".splitext;
+		var expected = ["/foo.bar/baz", nil];
+		this.assertEquals(result, expected);
+	}
+
+	test_splitext_no_extension_early_return_platform_path {
+		var p = Platform.pathSeparator;
+		var result = (p ++ "foo.bar" ++ p ++ "baz").splitext;
+		var expected = ["/foo.bar/baz", nil];
+		this.assertEquals(result, expected);
+	}
+
 	// ------- time-related operations -----------------------------------------------
 
 	test_asSecs_stringDddHhMmSsSss_convertsToSeconds {
