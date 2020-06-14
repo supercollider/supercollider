@@ -122,7 +122,7 @@ TestString : UnitTest {
 	test_splitext_platform_path {
 		var p = Platform.pathSeparator;
 		var result = (p ++ "foo" ++ p ++ "bar" ++ p ++ "baz.xyz").splitext;
-		var expected = ["/foo/bar/baz", "xyz"];
+		var expected = [p ++ "foo" ++ p ++ "bar" ++ p ++ "baz", "xyz"];
 		this.assertEquals(result, expected);
 	}
 
@@ -135,7 +135,7 @@ TestString : UnitTest {
 	test_splitext_no_extension_platform_path {
 		var p = Platform.pathSeparator;
 		var result = (p ++ "foo" ++ p ++ "bar" ++ p ++ "baz").splitext;
-		var expected = ["/foo/bar/baz", nil];
+		var expected = [p ++ "foo" ++ p ++ "bar" ++ p ++ "baz", nil];
 		this.assertEquals(result, expected);
 	}
 
@@ -148,7 +148,7 @@ TestString : UnitTest {
 	test_splitext_early_return_platform_path {
 		var p = Platform.pathSeparator;
 		var result = (p ++ "foo.bar" ++ p ++ "baz.xyz").splitext;
-		var expected = ["/foo.bar/baz", "xyz"];
+		var expected = [p ++ "foo.bar" ++ p ++ "baz", "xyz"];
 		this.assertEquals(result, expected);
 	}
 
@@ -161,7 +161,7 @@ TestString : UnitTest {
 	test_splitext_no_extension_early_return_platform_path {
 		var p = Platform.pathSeparator;
 		var result = (p ++ "foo.bar" ++ p ++ "baz").splitext;
-		var expected = ["/foo.bar/baz", nil];
+		var expected = [p ++ "foo.bar" ++ p ++ "baz", nil];
 		this.assertEquals(result, expected);
 	}
 
