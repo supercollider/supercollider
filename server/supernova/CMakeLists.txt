@@ -201,7 +201,14 @@ if(WIN32)
 endif()
 
 
-add_executable(supernova server/main.cpp ${supernova_headers} ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp)
+add_executable(supernova
+    server/main.cpp
+    ${supernova_headers}
+
+    # these files contain code only used in main()
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+    $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
+    )
 target_link_libraries(supernova libsupernova)
 
 if(WIN32)
