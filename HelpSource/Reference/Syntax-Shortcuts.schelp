@@ -12,25 +12,25 @@ code::
 // new argument syntax
 
 (1..10).collect({ |n| n.squared });  // receiver syntax
-collect((1..10), { |n| n.squared }); // functional syntax
+collect((1..10), { |n| n.squared }); // function call syntax
 (1..10).collect { |n| n.squared };   // receiver syntax with trailing-block argument
-collect ((1..10)) { |n| n.squared }; // functional syntax with trailing-block argument
+collect ((1..10)) { |n| n.squared }; // function call syntax with trailing-block argument
 (1..10) collect: { |n| n.squared };  // binary operator syntax
 
 
 // old argument syntax
 
 (1..10).collect({ arg n; n.squared });  // receiver syntax
-collect((1..10), { arg n; n.squared }); // functional syntax
+collect((1..10), { arg n; n.squared }); // function call syntax
 (1..10).collect { arg n; n.squared };   // receiver syntax with trailing-block argument
-collect ((1..10)) { arg n; n.squared }; // functional syntax with trailing-block argument
+collect ((1..10)) { arg n; n.squared }; // function call syntax with trailing-block argument
 (1..10) collect: { arg n; n.squared };  // binary operator syntax
 
 
 // partial application syntax
 
 (1..10).collect(_.squared);   // receiver syntax
-collect((1..10), _.squared);  // functional syntax
+collect((1..10), _.squared);  // function call syntax
 (1..10) collect: _.squared;   // binary operator syntax
 ::
 
@@ -78,7 +78,7 @@ Thing { var <>x; }
 
 section:: Sending messages, calling functions, and instantiating objects
 
-subsection:: functional and receiver notation equivalence
+subsection:: function-call and receiver notations
 table::
 ## instead of writing: || you can write:
 ## code:: f(x, y) :: || code:: x.f(y) ::
@@ -170,10 +170,10 @@ code::
 ::
 
 
-Native infix operators like code::+:: can also be written in (longer) functional form, e.g.:
+Native infix operators like code::+:: can also be written in (longer) function-call form, e.g.:
 
 table::
-## infix: || functional:
+## infix: || function call:
 ## code:: 1 + 2 :: || code:: (+)(1, 2) ::
 ::
 
