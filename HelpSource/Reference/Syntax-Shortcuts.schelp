@@ -11,27 +11,27 @@ Because of the multiple syntax equivalences, some expressions can be written in 
 code::
 // new argument syntax
 
-(1..10).collect({|n| n.squared });  // receiver syntax
-collect((1..10), {|n| n.squared }); // function call syntax
-(1..10).collect {|n| n.squared };   // receiver syntax with trailing block argument
-collect ((1..10)) {|n| n.squared }; // function call syntax with trailing block argument
-(1..10) collect: {|n| n.squared };  // binary operator syntax
+(1..10).collect({ |n| n.squared });  // receiver syntax
+collect((1..10), { |n| n.squared }); // functional syntax
+(1..10).collect { |n| n.squared };   // receiver syntax with trailing-block argument
+collect ((1..10)) { |n| n.squared }; // functional syntax with trailing-block argument
+(1..10) collect: { |n| n.squared };  // binary operator syntax
 
 
 // old argument syntax
 
 (1..10).collect({ arg n; n.squared });  // receiver syntax
-collect((1..10), { arg n; n.squared }); // function call syntax
-(1..10).collect { arg n; n.squared };   // receiver syntax with trailing block arg
-collect ((1..10)) { arg n; n.squared }; // function call syntax with trailing block arg
+collect((1..10), { arg n; n.squared }); // functional syntax
+(1..10).collect { arg n; n.squared };   // receiver syntax with trailing-block argument
+collect ((1..10)) { arg n; n.squared }; // functional syntax with trailing-block argument
 (1..10) collect: { arg n; n.squared };  // binary operator syntax
 
 
 // partial application syntax
 
-(1..10).collect( _.squared ); // receiver syntax
-collect((1..10), _.squared ); // function call syntax
-(1..10) collect: _.squared ;  // binary operator syntax
+(1..10).collect(_.squared);   // receiver syntax
+collect((1..10), _.squared);  // functional syntax
+(1..10) collect: _.squared;   // binary operator syntax
 ::
 
 You could even start expanding out the equivalent of (1..10) which is really a shortcut for code:: series(1, nil, 10) ::. This could also be written code:: 1.series(nil,10) ::. This adds another 26 variations to the 13 variations above.
@@ -41,9 +41,9 @@ section:: Defining functions and classes
 subsection:: shorter argument lists in definitions
 table::
 ## instead of writing: || you can write:
-## code:: { arg x; x < 2 } :: || code:: {|x| x < 2 } ::
-## code:: { arg x = 123; x < 2 } :: || code:: {|x = 123| x < 2 } ::
-## code:: { arg x = 10.rand; x < 2 } :: || code:: {|x = (10.rand)| x < 2 } :: or code:: {|x(10.rand)| x < 2 } ::
+## code:: { arg x; x < 2 } :: || code:: { |x| x < 2 } ::
+## code:: { arg x = 123; x < 2 } :: || code:: { |x = 123| x < 2 } ::
+## code:: { arg x = 10.rand; x < 2 } :: || code:: { |x = (10.rand)| x < 2 } :: or code:: {|x(10.rand)| x < 2 } ::
 ::
 note::
 When using the new code::||:: syntax, the default value needs to be enclosed in parenthesis if it's not a literal.
@@ -52,13 +52,13 @@ When using the new code::||:: syntax, the default value needs to be enclosed in 
 subsection:: partial application
 table::
 ## instead of writing: || you can write:
-## code:: {|x| object.msg(a, x, b) } :: || code:: object.msg(a, _, b) ::
-## code:: {|x,y| object.msg(a, x, y) } :: || code:: object.msg(a, _, _) ::
-## code:: {|x| a + x } :: || code:: a + _ ::
-## code:: {|x| [a, b, x] } :: || code:: [a, b, _] ::
-## code:: {|x| (a: x) } :: || code:: (a: _) ::
+## code:: { |x| object.msg(a, x, b) } :: || code:: object.msg(a, _, b) ::
+## code:: { |x,y| object.msg(a, x, y) } :: || code:: object.msg(a, _, _) ::
+## code:: { |x| a + x } :: || code:: a + _ ::
+## code:: { |x| [a, b, x] } :: || code:: [a, b, _] ::
+## code:: { |x| (a: x) } :: || code:: (a: _) ::
 ::
-warning::
+note::
 There are some limitations to the extent of the surrounding expression that code::_:: can capture. See link::Reference/Partial-Application:: for details.
 ::
 
@@ -114,23 +114,25 @@ table::
 subsection:: moving blocks out of argument lists (trailing-block arguments)
 table::
 ## instead of writing: || you can write:
-## code:: if (x<3, {\abc}, {\def}) :: || code:: if (x<3) {\abc} {\def} ::
-## code:: z.do({|x| x.play }) :: || code:: z.do {|x| x.play } ::
-## code:: while({ a < b },{ a = a * 2 }) :: || code:: while { a < b } { a = a * 2 } ::
-## code:: Pfunc({ rrand(3,6) }) :: || code:: Pfunc { rrand(3,6) } ::
+## code:: if (x < 3, { \abc }, { \def }) :: || code:: if (x < 3) { \abc } { \def } ::
+## code:: z.do({ |x| x.play }) :: || code:: z.do { |x| x.play } ::
+## code:: while({ a < b }, { a = a * 2 }) :: || code:: while { a < b } { a = a * 2 } ::
+## code:: Pfunc({ rrand(3, 6) }) :: || code:: Pfunc { rrand(3, 6) } ::
 ::
 
 note::
-Such trailing function arguments (i.e. outside of parentheses) need be blocks though (Function constructor calls), for both receiver and functional syntax (but not for the binary operator syntax). Functions (previously) assigned to variables or any other expressions that evaluate to functions cannot be used in place of blocks in such shortcuts.
+Trailing arguments must be literal blocks. No other expression may be used as a trailing argument, even if it evaluates to a Function. For example, you cannot use a variable name as a trailing argument, even if this variable was assigned a Function.
+
+Using a selector as an infix binary operator (discussed in the next section) enables a visually similar construct that does allow arbitrary expressions as operands, but these binary-operator constructs technically do not have trailing arguments.
 code::
 (
 var f = { |n| (2**n) + (3**n) };
-(1..5).collect(f);  // valid
 collect((1..5), f); // valid
-(1..5) collect: f;  // valid
+(1..5).collect(f);  // valid
+(1..5) collect: f;  // valid (selector as binary operator)
 )
-(1..5).collect f;   // syntax error
-collect((1..5)) f;  // syntax error
+(1..5).collect f;   // syntax error (non-block as a trailing argument)
+collect((1..5)) f;  // syntax error (ibid.)
 ::
 ::
 
@@ -209,7 +211,7 @@ table::
 subsection:: accessing subranges of Arrays
 table::
 ## instead of writing: || you can write:
-## code:: a.copyRange(4,8) :: || code:: a[4..8] ::
+## code:: a.copyRange(4, 8) :: || code:: a[4..8] ::
 ## code:: a.copyToEnd(4) :: || code:: a[4..] ::
 ## code:: a.copyFromStart(4) :: || code:: a[..4] ::
 ::
@@ -217,16 +219,16 @@ table::
 subsection:: creating arithmetic series
 table::
 ## instead of writing: || you can write:
-## code:: Array.series(16,1,1) :: or code:: series(1,nil,16) :: || code:: (1..16) ::
-## code:: Array.series(6,1,2) :: or code:: series(1,3,11) :: || code:: (1,3..11) ::
+## code:: Array.series(16, 1, 1) :: or code:: series(1, nil, 16) :: || code:: (1..16) ::
+## code:: Array.series(6, 1, 2) :: or code:: series(1, 3, 11) :: || code:: (1, 3..11) ::
 ::
 There is also the similar syntax for creating an iterating link::Classes/Routine:::
 table::
 ## instead of writing: || you can write:
-## code:: seriesIter(1,3,11) :: || code:: (:1,3..11) ::
+## code:: seriesIter(1, 3, 11) :: || code:: (:1, 3..11) ::
 ::
 note::
-SuperCollider also supports link::Guides/ListComprehensions:: (actually their generator Routines).
+SuperCollider also supports link::Guides/ListComprehensions::.
 ::
 
 As a simple (non-combinatorial) example, the following are equivalent ways of listing the first 10 primes:
@@ -260,7 +262,7 @@ subsection:: accessing environment variables
 table::
 ## instead of writing: || you can write:
 ## code:: 'myName'.envirGet :: || code:: ~myName ::
-## code:: 'myName'.envirPut(9); :: || code:: ~myName = 9; ::
+## code:: 'myName'.envirPut(9) :: || code:: ~myName = 9 ::
 ::
 
 subsection:: shorthand for Symbols
@@ -269,11 +271,7 @@ table::
 ## code:: 'mySymbol' :: || code:: \mySymbol ::
 ::
 note::
-The shorthand cannot be used with symbols from operators:
-code::
-'+' // valid
-\+  // syntax error
-::
+The shorthand only admits a subset of the symbols that may be enclosed in single quotes. See link::Reference/Literals#Symbols:: for details.
 ::
 
 subsection:: creating a Ref
