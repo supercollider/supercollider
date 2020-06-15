@@ -310,6 +310,7 @@ Exponentiation. Same as pow.
 
 method:: pow
 Exponentiation.
+NOTE:: When used with UGens which produce a negative signal this function extends the usual definition of exponentiation and returns code::neg(neg(a) ** b)::. This allows exponentiation of negative signal values by noninteger exponents.::
 
 method:: lcm
 Least common multiple. This definition extends the usual definition and returns a negative number if strong::any of the operands:: is negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
