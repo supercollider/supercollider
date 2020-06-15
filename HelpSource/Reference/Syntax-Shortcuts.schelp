@@ -134,6 +134,14 @@ collect((1..5), f); // valid
 (1..5).collect f;   // syntax error (non-block as a trailing argument)
 collect((1..5)) f;  // syntax error (ibid.)
 ::
+A fairly common case when this syntactic restriction matters: a partial application using the code::_:: syntax is an expression evaluating to a Function, but it is not a literal block. Therefore:
+code::
+do(6) _.postln  // syntax error
+6.do _.postln   // syntax error
+do(6, _.postln) // valid
+6.do(_.postln)  // valid
+6 do: _.postln  // valid
+::
 ::
 
 subsection:: use a selector (method name) as a binary operator
