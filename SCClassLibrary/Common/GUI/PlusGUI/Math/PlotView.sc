@@ -1,4 +1,5 @@
 Plot {
+	classvar <initGuiSkin;
 
 	var <>plotter, <value;
 	var <bounds, <plotBounds,<>drawGrid;
@@ -12,15 +13,21 @@ Plot {
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
 
-		StartUp.add {
-			var hlHSV = QtGUI.palette.highlight.asHSV;
+		// prevent accumulating in StartUp by multiple calls to *initClass
+		initGuiSkin !? { StartUp.remove(initGuiSkin) };
+
+		initGuiSkin = {
+			var palette = QtGUI.palette;
+			var hlHSV = palette.highlight.asHSV;
+			var bg = palette.base;
+			var gridCol = Color.hsv(*hlHSV.copy.put(1, 0.4).put(2, 0.5)).blend(bg, 0.7);
 
 			GUI.skin.put(\plot, (
-				gridColorX: Color.hsv(*hlHSV.put(1, 0.2).put(2, 0.9)),
-				gridColorY: Color.hsv(*hlHSV.put(1, 0.2).put(2, 0.9)),
-				fontColor: Color(*(0.3 ! 3)),
-				plotColor: [Color.hsv(*hlHSV.put(2, 0.4))],
-				background: QtGUI.palette.base,
+				gridColorX: gridCol,
+				gridColorY: gridCol,
+				fontColor: Color.hsv(*hlHSV.copy.put(1, 0.2).put(2, 0.6)),
+				plotColor: [Color.hsv(*hlHSV.copy).blend(palette.baseText, 0.4)],
+				background: bg,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
 				labelX: "",
@@ -28,7 +35,9 @@ Plot {
 				expertMode: false,
 				gridFont: Font( Font.defaultSansFace, 9 )
 			));
-		}
+		};
+		initGuiSkin.value;
+		StartUp.add(initGuiSkin);
 	}
 
 	*new { |plotter|
@@ -37,7 +46,6 @@ Plot {
 
 	init {
 		var fontName;
-		var gui = plotter.gui;
 		var skin = GUI.skin.at(\plot);
 
 		drawGrid = DrawGrid(bounds ? Rect(0,0,1,1),nil,nil);
@@ -460,7 +468,6 @@ Plotter {
 	var <editPlotIndex, <editPos;
 
 	var <>drawFunc, <>editFunc;
-	var <gui;
 
 	*new { |name, bounds, parent|
 		^super.newCopyArgs(name).makeWindow(parent, bounds)
