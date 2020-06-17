@@ -1326,4 +1326,15 @@ TestServer : UnitTest {
 
 	}
 
+	// regression: recorder.recHeaderFormat didn't update after first time it's set
+	test_recorder_usesRecHeaderFormatFromServer {
+		var origFormat = server.recHeaderFormat,
+		    newFormat = if(origFormat == "wav"){ "aiff" }{ "wav" };
+		server.prepareForRecord();
+		server.recHeaderFormat = newFormat;
+		server.prepareForRecord();
+		this.assertEquals(server.recorder.recHeaderFormat, newFormat, "server.recorder should always use latest server.recHeaderFormat");
+		server.recHeaderFormat = origFormat;
+	}
+
 }
