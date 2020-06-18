@@ -69,7 +69,7 @@ PmonoStream : Stream {
 					~type = \monoNote;
 					~instrument = pattern.synthName;
 					cleanup.addFunction(event, currentCleanupFunc = { | flag |
-						if (flag) { (id: id, server: server, type: \off,
+						if (flag && id.notNil) { (id: id, server: server, type: \off,
 							hasGate: hasGate,
 							schedBundleArray: schedBundleArray,
 							schedBundle: schedBundle).play
