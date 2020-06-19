@@ -98,7 +98,7 @@ code::
 { var steps = LFNoise0.kr; steps.poll(Changed.kr(steps); }.play;
 ::
 
-You can also use a seperate trigger. This is useful for having the most control over when a poll occurs.
+You can also use a separate trigger. This is useful for having the most control over when a poll occurs.
 
 code::
 ~synth={ arg t_trig; [LFNoise1.kr, LFNoise1.kr].poll(t_trig); }.play;
