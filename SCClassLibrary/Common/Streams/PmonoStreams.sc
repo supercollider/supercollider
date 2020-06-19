@@ -68,7 +68,7 @@ PmonoStream : Stream {
 				if(event.isRest.not) {
 					~type = \monoNote;
 					~instrument = pattern.synthName;
-					cleanup.addFunction(event, currentCleanupFunc = { | flag |
+					currentCleanupFunc = cleanup.addFunction(event, { | flag |
 						if (flag and: { id.notNil }) { (id: id, server: server, type: \off,
 							hasGate: hasGate,
 							schedBundleArray: schedBundleArray,
@@ -130,7 +130,7 @@ PmonoArticStream : PmonoStream {
 				};
 				sustain = event.use { ~sustain.value };
 				if(sustain.notNil and: { sustain < event.delta }) {
-					event[\removeFromCleanup] = event[\removeFromCleanup].add(currentCleanupFunc);
+					// no removal from cleanup now: faster stop behavior
 					thisThread.clock.sched(sustain, {
 						currentCleanupFunc.value(true);
 						rearticulating = true;
