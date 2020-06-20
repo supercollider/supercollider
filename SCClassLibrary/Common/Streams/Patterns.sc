@@ -93,10 +93,13 @@ Pattern : AbstractFunction {
 	// dur: if nil, record until pattern stops or is stopped externally
 	// fadeTime: allow extra time after last Event for nodes to become silent
 
-	record { |path, headerFormat = "AIFF", sampleFormat = "float", numChannels = 2, dur = nil, fadeTime = 0.2, clock(TempoClock.default), protoEvent(Event.default), server(Server.default), out = 0, outNumChannels|
+	record { |path, headerFormat, sampleFormat, numChannels = 2, dur = nil, fadeTime = 0.2, clock(TempoClock.default), protoEvent(Event.default), server(Server.default), out = 0, outNumChannels|
 
 		var recorder = Recorder(server);
 		var pattern = if(dur.notNil) { Pfindur(dur, this) } { this };
+
+		recorder.recHeaderFormat = headerFormat;
+		recorder.recSampleFormat = sampleFormat;
 
 		server.waitForBoot {
 			var group, bus, startTime, free, monitor;
