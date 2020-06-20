@@ -28,7 +28,7 @@ a function that typically executes some cleanup and may return a desired value. 
 INSTANCEMETHODS::
 
 METHOD:: clear
-Cancels the CleanupThunk, meaning that subsequent calls to code::value:: will have not execute the wrapped function at all.
+Cancels the CleanupThunk, meaning that subsequent calls to code::value:: will not execute the wrapped function at all.
 returns:: the CleanupThunk.
 
 METHOD:: didEvaluate
@@ -39,7 +39,7 @@ METHOD:: value
 If code::clear:: was called previously, the code::value:: call has no side-effect. Otherwise, on the first call to code::value:: the function wrapped by the CleanupThunk is evaluated with the arguments provided to code::value:: and the result of this evaluation is stored as the CleanupThunk's result, used to answer all subsequent calls to code::value::.
 
 argument::  ... args
-Arguments to use in the call to the wrapped function, if it happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::) then the current code::args:: are irrelevant.
+Arguments to use in the call to the wrapped function, if the call happens. If code::didEvaluate:: already returns code::true:: (before the current call to code::value::) then the current code::args:: are irrelevant because the wrapped function is not called anymore.
 
 returns::
 list::
