@@ -44,6 +44,13 @@ Stop playing now. (Pause and stop have the same implementation.)
 method::reset
 Set the stream to restart from the beginning the next time it's played.
 
+method::reschedule
+
+Switch the Task to a different clock, or a different time, without stopping. See link::Classes/Routine#-reschedule:: for complete documentation.
+
+NOTE:: If you want to reschedule a Task from within the Task itself, code::thisThread.reschedule(...):: will not work (as it does in a Routine). You must write code::thisThread.threadPlayer.reschedule(...):: instead.
+::
+
 subsection::Notifications
 
 Other objects might need to be aware of changes in the state of a task. The following notifications are broadcast to dependents registered with the Task object.
