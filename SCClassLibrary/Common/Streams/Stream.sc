@@ -392,16 +392,23 @@ PauseStream : Stream {
 		^this.play(clock ? argClock, false, quant)
 	}
 	reschedule { arg argClock, quant;
-		if(this.isPlaying.not) {
-			Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+		var doResched = {
+			if(this.isPlaying.not) {
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+			};
+			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
+			if(argClock.isNil) { argClock = clock };
+			if(argClock !== clock) {
+				// convert to new clock's time
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+			};
+			clock = argClock;
 		};
-		rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
-		if(argClock.isNil) { argClock = clock };
-		if(argClock !== clock) {
-			// convert to new clock's time
-			rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
-		};
-		clock = argClock;
+		if(thisThread === this.stream) {
+			doResched.defer
+		} {
+			doResched.value
+		}
 	}
 
 	refresh {

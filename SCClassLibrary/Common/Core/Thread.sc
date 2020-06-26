@@ -112,18 +112,25 @@ Routine : Thread {
 		^this.primitiveFailed
 	}
 	reschedule { arg argClock, quant;
-		// Thread:isPlaying only answers if the thread is waiting
-		// It *doesn't* confirm that it is actually scheduled on a clock
-		if(this.nextBeat.isNil) {
-			Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+		var doResched = {
+			// Thread:isPlaying only answers if the thread is waiting
+			// It *doesn't* confirm that it is actually scheduled on a clock
+			if(this.nextBeat.isNil) {
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+			};
+			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
+			if(argClock.isNil) { argClock = clock };
+			if(argClock !== clock) {
+				// convert to new clock's time
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+			};
+			clock = argClock;
 		};
-		rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
-		if(argClock.isNil) { argClock = clock };
-		if(argClock !== clock) {
-			// convert to new clock's time
-			rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
-		};
-		clock = argClock;
+		if(this === thisThread) {
+			doResched.defer
+		} {
+			doResched.value
+		}
 	}
 	run { arg inval;
 		_RoutineResume
