@@ -6,12 +6,7 @@ related::Classes/Routine
 DESCRIPTION::
 Task is a pauseable process. It is implemented by wrapping a link::Classes/PauseStream:: around a link::Classes/Routine::. Most of its methods (start, stop, reset) are inherited from PauseStream.
 
-Tasks are not 100% interchangeable with Routines.
-
-list::
-## Condition does not work properly inside of a Task.
-## Stopping a task and restarting it quickly may yield surprising results (see example below), but this is necessary to prevent tasks from becoming unstable if they are started and/or stopped in rapid succession.
-::
+Stopping a task and restarting it quickly may yield surprising results (see example below), but this is necessary to prevent tasks from becoming unstable if they are started and/or stopped in rapid succession.
 
 CLASSMETHODS::
 
