@@ -452,7 +452,7 @@ endif()
 set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 
 if(NOT SC_QT)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|GUI")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|/GUI$")
 endif()
 
 if(WIN32)
@@ -460,7 +460,7 @@ if(WIN32)
 endif()
 
 if(NOT SC_ABLETON_LINK)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|Ableton")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|/Ableton$")
 endif()
 
 if(APPLE)
@@ -481,10 +481,8 @@ if(APPLE)
 		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
 		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
-			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
-				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
-			endif()
+			install( CODE
+				"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 		endforeach(onedirectory)
 	endif()
 else()
@@ -542,7 +540,6 @@ if(INSTALL_HELP)
 	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
 			PATTERN "*~" EXCLUDE
 			PATTERN "*#" EXCLUDE
 		)
