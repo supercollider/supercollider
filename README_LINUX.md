@@ -318,6 +318,14 @@ names are separated by ':' as in the Unix PATH variable:
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
 
+Choosing an audio backend
+-------------------------
+
+There are 2 audio backends available in Linux: jack and PulseAudio. **The recommended audio backend on Linux is jack, which is the one that will be built by default.**
+
+On systems where it is difficult to make jack work, then it is possible to use the PulseAudio backend. For this, set the `AUDIOAPI` variable to `pulseaudio` in cmake (see "Step 3: Set CMake flags" above), and build normally. Also, make sure that the development libraries for PulseAudio and RtAudio are available before the build. On debian systems this might be done:
+
+    sudo apt-get install libpulse-dev librtaudio-dev
 
 Contributors to this document
 -----------------------------
@@ -331,3 +339,4 @@ Contributors to this document
 - nescivi (marije baalman)
 - dan stowell
 - tim blechmann
+- luis lloret

@@ -116,7 +116,7 @@ if(AUDIOAPI STREQUAL "default")
     endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|pulseaudio)$")
     message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
