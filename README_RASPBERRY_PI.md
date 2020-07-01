@@ -41,11 +41,11 @@ Install required libraries:
 
     # For GUI builds:
     sudo apt-get install libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev \
-        libreadline-dev libfftw3-dev libxt-dev libudev-dev cmake qttools5-dev qttools5-dev-tools \
+        libreadline-dev libfftw3-dev libxt-dev libudev-dev libncurses5-dev cmake git qttools5-dev qttools5-dev-tools \
         qtdeclarative5-dev libqt5svg5-dev qjackctl
     # For GUI-less builds:
     sudo apt-get install libsamplerate0-dev libsndfile1-dev libasound2-dev libavahi-client-dev \
-        libreadline-dev libfftw3-dev libudev-dev cmake git
+        libreadline-dev libfftw3-dev libudev-dev libncurses5-dev cmake git
 
 ### Step 3: GUI-less builds only: compile and install jackd (no d-bus)
 
