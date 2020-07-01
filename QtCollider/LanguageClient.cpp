@@ -84,7 +84,11 @@ void LangClient::customEvent(QEvent* e) {
 
 void LangClient::tick() {
     double secs;
+
     lock();
+    // deadlock here indicates behaviour which likely should be avoided.
+    // e.g. calling qt event loop from primitive.
+
     bool haveNext = tickLocked(&secs);
     unlock();
 
