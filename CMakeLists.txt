@@ -481,8 +481,8 @@ if(APPLE)
 		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
 		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
-				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+			install( CODE
+				"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 		endforeach(onedirectory)
 	endif()
 else()
