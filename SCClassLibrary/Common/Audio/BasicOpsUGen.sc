@@ -245,7 +245,8 @@ BinaryOpUGen : BasicOpUGen {
 			and: { a.descendants.size == 1 }}) {
 			buildSynthDef.removeUGen(a);
 			if(a === b) {
-				replacement = Sum4(a.inputs[0], a.inputs[0], a.inputs[1], a.inputs[1]);
+				replacement = Sum4(a.inputs[0], a.inputs[0], a.inputs[1], a.inputs[1])
+				.descendants_(descendants);
 			} {
 				replacement = Sum3(a.inputs[0], a.inputs[1], b).descendants_(descendants);
 			};
