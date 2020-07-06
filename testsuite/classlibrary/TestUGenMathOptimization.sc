@@ -89,6 +89,8 @@ TestUGenMathOptimization : UnitTest {
 		this.verifyTestCases([
 			"a + b.neg should optimize to a - b",
 			{ SinOsc.kr(0.1) + Rand(0, 1).neg } -> [SinOsc, Rand, '-', Out],
+			"a.neg + b should optimize to b - a",
+			{ SinOsc.kr(0.1).neg + Rand(0, 1) } -> [SinOsc, Rand, '-', Out],
 			"a + b.neg should not optimize if neg has multiple descendants",
 			{
 				var a = SinOsc.kr(0.1);
