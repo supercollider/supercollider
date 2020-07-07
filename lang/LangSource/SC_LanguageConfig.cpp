@@ -27,6 +27,7 @@
 #include "SCBase.h" // postfl
 
 #include <algorithm> // std::find
+#include <functional> // std::function
 
 #include <boost/filesystem/operations.hpp> // exists (, canonical?)
 #include <boost/filesystem/fstream.hpp> // ofstream
@@ -42,22 +43,31 @@ static const char* EXCLUDE_PATHS = "excludePaths";
 static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
 static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
 const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
+static const char* EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
 
 using DirName = SC_Filesystem::DirName;
 namespace bfs = boost::filesystem;
 
-SC_LanguageConfig::SC_LanguageConfig(bool optStandalone) {
-    if (!optStandalone) {
-        const Path& classLibraryDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / CLASS_LIB_DIR_NAME;
-        addPath(mDefaultClassLibraryDirectories, classLibraryDir);
+void SC_LanguageConfig::setExcludeDefaultPaths(bool value) {
+    if (mExcludeDefaultPaths != value) {
+        if (value) {
+            mDefaultClassLibraryDirectories.clear();
+        } else {
+            const Path& classLibraryDir =
+                SC_Filesystem::instance().getDirectory(DirName::Resource) / CLASS_LIB_DIR_NAME;
+            addPath(mDefaultClassLibraryDirectories, classLibraryDir);
 
-        const Path& systemExtensionDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
-        addPath(mDefaultClassLibraryDirectories, systemExtensionDir);
+            const Path& systemExtensionDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
+            addPath(mDefaultClassLibraryDirectories, systemExtensionDir);
 
-        const Path& userExtensionDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
-        addPath(mDefaultClassLibraryDirectories, userExtensionDir);
+            const Path& userExtensionDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
+            addPath(mDefaultClassLibraryDirectories, userExtensionDir);
+        }
     }
+
+    mExcludeDefaultPaths = value;
 }
+
 
 void SC_LanguageConfig::postExcludedDirectories(void) const {
     for (auto it : mExcludedDirectories) {
@@ -93,47 +103,53 @@ bool SC_LanguageConfig::removeIncludedDirectory(const Path& path) { return remov
 
 bool SC_LanguageConfig::removeExcludedDirectory(const Path& path) { return removePath(mExcludedDirectories, path); }
 
+static void processPathList(const char* nodeName, YAML::Node& doc,
+                            const std::function<void(const boost::filesystem::path&)>& func) {
+    const YAML::Node& items = doc[nodeName];
+    if (items && items.IsSequence()) {
+        for (auto const& item : items) {
+            const std::string& path = item.as<std::string>("");
+            if (!path.empty()) {
+                const boost::filesystem::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+                func(native_path);
+            }
+        }
+    }
+}
+
+static void processBool(const char* nodeName, YAML::Node& doc, const std::function<void(bool)>& successFunc,
+                        const std::function<void()>& failFunc) {
+    const YAML::Node& item = doc[nodeName];
+    if (item) {
+        try {
+            successFunc(item.as<bool>());
+        } catch (...) {
+            postfl("WARNING: Cannot parse config file entry \"%s\"\n", nodeName);
+            failFunc();
+        }
+    } else {
+        failFunc(); // call failFunc if item is not found
+    }
+}
+
 bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standalone) {
     freeLibraryConfig();
-    gLanguageConfig = new SC_LanguageConfig(standalone);
-
-    std::string emptyString;
+    gLanguageConfig = new SC_LanguageConfig();
 
     using namespace YAML;
     try {
         bfs::ifstream fin(fileName);
         Node doc = Load(fin);
         if (doc) {
-            const Node& includePaths = doc[INCLUDE_PATHS];
-            if (includePaths && includePaths.IsSequence()) {
-                for (auto const& pathNode : includePaths) {
-                    const std::string& path = pathNode.as<std::string>(emptyString);
-                    if (!path.empty()) {
-                        const Path& native_path = SC_Codecvt::utf8_str_to_path(path);
-                        gLanguageConfig->addIncludedDirectory(native_path);
-                    }
-                }
-            }
+            processBool(
+                POST_INLINE_WARNINGS, doc, [](bool b) { gPostInlineWarnings = b; }, []() {});
+            processBool(
+                EXCLUDE_DEFAULT_PATHS, doc,
+                [standalone](bool b) { gLanguageConfig->setExcludeDefaultPaths(standalone || b); },
+                [standalone] { gLanguageConfig->setExcludeDefaultPaths(standalone); });
 
-            const Node& excludePaths = doc[EXCLUDE_PATHS];
-            if (excludePaths && excludePaths.IsSequence()) {
-                for (auto const& pathNode : excludePaths) {
-                    const std::string& path = pathNode.as<std::string>(emptyString);
-                    if (!path.empty()) {
-                        const Path& native_path = SC_Codecvt::utf8_str_to_path(path);
-                        gLanguageConfig->addExcludedDirectory(native_path);
-                    }
-                }
-            }
-
-            const Node& inlineWarnings = doc[POST_INLINE_WARNINGS];
-            if (inlineWarnings) {
-                try {
-                    gPostInlineWarnings = inlineWarnings.as<bool>();
-                } catch (...) {
-                    postfl("WARNING: Cannot parse config file entry \"%s\"\n", POST_INLINE_WARNINGS);
-                }
-            }
+            processPathList(INCLUDE_PATHS, doc, [](const Path& p) { gLanguageConfig->addIncludedDirectory(p); });
+            processPathList(EXCLUDE_PATHS, doc, [](const Path& p) { gLanguageConfig->addExcludedDirectory(p); });
         }
         return true;
     } catch (std::exception& e) {
@@ -171,6 +187,9 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
     out << Key << POST_INLINE_WARNINGS;
     out << Value << gPostInlineWarnings;
 
+    out << Key << EXCLUDE_DEFAULT_PATHS;
+    out << Value << gLanguageConfig->mExcludeDefaultPaths;
+
     out << EndMap;
 
     bfs::ofstream fout(fileName);
@@ -180,8 +199,8 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName) {
 
 bool SC_LanguageConfig::defaultLibraryConfig(bool standalone) {
     freeLibraryConfig();
-    gLanguageConfig = new SC_LanguageConfig(standalone);
-
+    gLanguageConfig = new SC_LanguageConfig();
+    gLanguageConfig->setExcludeDefaultPaths(standalone);
     return true;
 }
 

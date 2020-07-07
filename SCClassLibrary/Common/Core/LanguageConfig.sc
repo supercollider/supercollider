@@ -43,4 +43,12 @@ LanguageConfig {
 		_LanguageConfig_setPostInlineWarnings
 		^this.primitiveFailed
 	}
+	*excludeDefaultPaths {
+		_LanguageConfig_getExcludeDefaultPaths
+		^this.primitiveFailed
+	}
+	*excludeDefaultPaths_ {|aBoolean|
+		_LanguageConfig_setExcludeDefaultPaths
+		^this.primitiveFailed
+	}
 }
