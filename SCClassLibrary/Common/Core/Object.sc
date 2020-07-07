@@ -688,7 +688,7 @@ Object  {
 		StartUp.defer { // make sure the synth defs are written to the right path
 			var file;
 			dir = dir ? SynthDef.synthDefDir;
-			if (name.isNil) { Error("missing SynthDef file name").throw } {
+			if (name.isNil or: { name.asString.isEmpty }) { Error("missing SynthDef file name").throw } {
 				name = dir +/+ name ++ ".scsyndef";
 				if(overwrite or: { pathMatch(name).isEmpty })
 					{
