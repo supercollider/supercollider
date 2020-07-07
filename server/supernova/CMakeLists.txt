@@ -186,6 +186,7 @@ target_link_libraries(supernova libsupernova)
 
 if(WIN32)
     if(NOT MSVC)
+      target_link_libraries(supernova "-municode")
       set_target_properties(supernova libsupernova PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 
