@@ -61,6 +61,7 @@ SclangPage::SclangPage(QWidget* parent): QWidget(parent), ui(new Ui::SclangConfi
     connect(ui->sclang_remove_exclude, SIGNAL(clicked()), this, SLOT(removeExcludePath()));
 
     connect(ui->sclang_post_inline_warnings, SIGNAL(stateChanged(int)), this, SLOT(markSclangConfigDirty()));
+    connect(ui->sclang_exclude_default_paths, SIGNAL(stateChanged(int)), this, SLOT(markSclangConfigDirty()));
 }
 
 SclangPage::~SclangPage() { delete ui; }
@@ -70,7 +71,6 @@ void SclangPage::load(Manager* s) {
 
     ui->autoStart->setChecked(s->value("autoStart").toBool());
     ui->runtimeDir->setText(s->value("runtimeDir").toString());
-    ui->sclang_standalone_mode->setChecked(s->value("standalone").toBool());
 
     QStringList availConfigFiles = availableLanguageConfigFiles();
     QString configSelectedLanguageConfigFile = s->value("configFile").toString();
@@ -93,7 +93,6 @@ void SclangPage::store(Manager* s) {
     s->setValue("autoStart", ui->autoStart->isChecked());
     s->setValue("runtimeDir", ui->runtimeDir->text());
     s->setValue("configFile", ui->activeConfigFileComboBox->currentText());
-    s->setValue("standalone", ui->sclang_standalone_mode->isChecked());
     s->endGroup();
 
     writeLanguageConfig();
@@ -183,6 +182,16 @@ void SclangPage::readLanguageConfig() {
                     qDebug() << "Warning: Cannot parse config file entry \"postInlineWarnings\"";
                 }
             }
+
+            const Node& excludeDefaultPaths = doc["excludeDefaultPaths"];
+            if (excludeDefaultPaths) {
+                try {
+                    bool excludeDefaultPathsBool = excludeDefaultPaths.as<bool>();
+                    ui->sclang_exclude_default_paths->setChecked(excludeDefaultPathsBool);
+                } catch (...) {
+                    qDebug() << "Warning: Cannot parse config file entry \"excludeDefaultPaths\"";
+                }
+            }
         }
     } catch (std::exception&) {
     }
@@ -219,6 +228,9 @@ void SclangPage::writeLanguageConfig() {
 
     out << Key << "postInlineWarnings";
     out << Value << (ui->sclang_post_inline_warnings->checkState() == Qt::Checked);
+
+    out << Key << "excludeDefaultPaths";
+    out << Value << (ui->sclang_exclude_default_paths->checkState() == Qt::Checked);
 
     out << EndMap;
     ofstream fout(languageConfigFile().toStdString().c_str());

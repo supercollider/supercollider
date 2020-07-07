@@ -567,7 +567,7 @@ if(SC_DOC_RENDER)
 
 	add_custom_target(doc ALL
 		COMMAND sclang
-			-a -l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+			-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
 			platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		DEPENDS sclang ${SCDocSources} ${SCDocClasses})
