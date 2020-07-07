@@ -354,6 +354,7 @@ TaskProxy : PatternProxy {
 	}
 
 	play { arg argClock, doReset=false, quant;
+		argClock = argClock ? this.clock;
 		playQuant = quant ? this.quant;
 		if(player.isNil) {
 			player = this.playOnce(argClock, doReset, playQuant);
@@ -499,7 +500,7 @@ EventPatternProxy : TaskProxy {
 	}
 
 	constrainStream { arg stream, newStream, inval, cleanup;
-		var delta, tolerance;
+		var delta, tolerance, fadeOutCleanup;
 		var quantBeat, catchUp, deltaTillCatchUp, forwardTime, quant = this.quant;
 
 		^if(this.quant.isNil) {
@@ -532,10 +533,12 @@ EventPatternProxy : TaskProxy {
 					]).asStream
 				}
 			}{
+				fadeOutCleanup = cleanup.copy;
+				cleanup.clear; // change need be seen by caller function, i.e. embedInStream
 				Ppar([
 					EmbedOnce(
 						PfadeOut(stream, fadeTime, delta, tolerance),
-						cleanup
+						fadeOutCleanup
 					),
 					PfadeIn(newStream, fadeTime, delta, tolerance)
 				]).asStream
@@ -566,6 +569,7 @@ EventPatternProxy : TaskProxy {
 	////////// playing interface //////////
 
 	play { arg argClock, protoEvent, quant, doReset=false;
+		argClock = argClock ? this.clock;
 		playQuant = quant ? this.quant;
 		if(player.isNil) {
 			player = EventStreamPlayer(this.asProtected.asStream, protoEvent);
