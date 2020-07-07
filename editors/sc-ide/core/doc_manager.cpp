@@ -769,8 +769,9 @@ void DocumentManager::handleGetDocTextScRequest(const QString& data) {
             if (document) {
                 QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
-                QString command =
-                    QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
+                QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.collect({|x| "
+                                                 "{x.asInteger.asAscii}.try ? \"\" }).join)")
+                                      .arg(funcID.c_str(), docText);
                 Main::evaluateCode(command, true);
             }
         }
