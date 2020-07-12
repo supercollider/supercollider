@@ -22,6 +22,9 @@
 #include <string>
 #include <vector>
 
+#include "SC_Win32Utils.h"
+#include "SC_ServerBootDelayWarning.h"
+
 #include <boost/filesystem/path.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -337,6 +340,8 @@ int main(int argc, char* argv[]) {
     cout << "compiled for debugging" << endl;
 #endif
 
+    startServerBootDelayWarningTimer();
+
     // FIXME should have more granular error handling
     try {
         server_shared_memory_creator::cleanup(args.port());
@@ -345,6 +350,8 @@ int main(int argc, char* argv[]) {
 
         set_plugin_paths(args, sc_factory.get());
         load_synthdefs(server, args);
+
+        stopServerBootDelayWarningTimer();
 
         if (!args.non_rt) {
             try {
