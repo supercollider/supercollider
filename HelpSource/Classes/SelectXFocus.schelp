@@ -10,11 +10,11 @@ classmethods::
 method:: ar, kr
 
 argument:: which
-Index of the selected input, which is also the center of the selection for a focus < 1.
+Index of the selected input, which is also the center of the selection for a focus > 0.
 argument:: array
 A collection of inputs.
 argument:: focus
-The "fuzziness" of the selection: the larger the focus, the more adjacent inputs are mixed in.
+The "fuzziness" of the selection: the larger the focus, the less adjacent inputs are mixed in.
 argument:: wrap
 If set to true, index will wrap around the array of inputs (see also: link::Classes/Array#-wrapAt::).
 
