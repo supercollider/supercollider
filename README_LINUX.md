@@ -36,21 +36,23 @@ For sclang and scide:
 - [libudev][libudev]: Device manager library, required for HID support.
 - [Linux kernel][Linux kernel] >= 2.6: Required for LID support.
 - [libreadline][libreadline] >= 5: Required for sclang's CLI interface.
+- [ncurses][ncurses]: Required for sclang's CLI interface.
 
 [Qt]: http://qt-project.org
 [ALSA]: http://www.alsa-project.org
 [libudev]: http://www.freedesktop.org/software/systemd/man/libudev.html
 [libreadline]: http://savannah.gnu.org/projects/readline
+[ncurses]: https://invisible-island.net/ncurses/
 [Linux kernel]: http://www.kernel.org
 [git]: https://git-scm.com/
 
 Installing requirements on Debian
 ---------------------------------
 
-There are dedicated web pages for building on particular embedded Linux platforms:
+There are dedicated READMEs in this repository for building on particular embedded Linux platforms:
 
-- [Raspberry Pi](http://supercollider.github.io/development/building-raspberrypi)
-- [BeagleBone Black](https://supercollider.github.io/development/building-beagleboneblack)
+- Raspberry Pi: README_RASPBERRY_PI.md
+- BeagleBone Black: README_BEAGLEBONE_BLACK.md
 
 On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
@@ -60,7 +62,7 @@ If you need to use JACK1 replace libjack-jackd2-dev by libjack-dev.
 
 The following command installs all the recommended dependencies for sclang except for Qt:
 
-    sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config
+    sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev
 
 Installing Qt
 -------------
