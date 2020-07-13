@@ -1087,7 +1087,7 @@ Server {
 
 		if(this.unresponsive) {
 			if(pid.notNil) {
-				"Server '%' was unresponsive. Killing forcefully.".format(name).postln;
+				"Server '%' is currently unresponsive. Forcing process to stop via system command.".format(name).postln;
 				thisProcess.platform.killProcessByID(pid);
 			} {
 				if(watchShutDown) {
