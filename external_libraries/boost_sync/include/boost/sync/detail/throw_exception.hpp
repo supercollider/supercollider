@@ -164,11 +164,7 @@ BOOST_NOINLINE BOOST_NORETURN void throw_exception(const char* func, const char*
 
 #endif // !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
-#if !defined(BOOST_EXCEPTION_DISABLE)
-#define BOOST_SYNC_DETAIL_HERE BOOST_THROW_EXCEPTION_CURRENT_FUNCTION, __FILE__, __LINE__
-#else
 #define BOOST_SYNC_DETAIL_HERE BOOST_CURRENT_FUNCTION, __FILE__, __LINE__
-#endif
 
 #define BOOST_SYNC_DETAIL_THROW_DEFAULT(ex)\
     boost::sync::detail::throw_exception< ex >(BOOST_SYNC_DETAIL_HERE)
