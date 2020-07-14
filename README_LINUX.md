@@ -296,7 +296,7 @@ environment variables:
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by default.
+ * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by defaul>t.
 
    ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
@@ -318,14 +318,20 @@ names are separated by ':' as in the Unix PATH variable:
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
 
-Choosing an audio backend
--------------------------
+The PulseAudio backend
+----------------------
 
-There are 2 audio backends available in Linux: jack and PulseAudio. **The recommended audio backend on Linux is jack, which is the one that will be built by default.**
+There are 2 audio backends that SuperCollider can use on Linux: jack and PulseAudio. **The recommended audio backend on Linux is jack, which is the one that will be built by default.**
 
-On systems where it is difficult to make jack work, then it is possible to use the PulseAudio backend. For this, set the `AUDIOAPI` variable to `pulseaudio` in cmake (see "Step 3: Set CMake flags" above), and build normally. Also, make sure that the development libraries for PulseAudio and RtAudio are available before the build. On debian systems this might be done:
+On systems where it is difficult to make jack work, then it is possible to use the PulseAudio backend. For this, set the `AUDIOAPI` variable to `pulseaudio` in cmake (see "Step 3: Set CMake flags" above). Then, make sure that the development libraries for PulseAudio and RtAudio are available before the build. On debian systems this might be done:
 
     sudo apt-get install libpulse-dev librtaudio-dev
+
+Then build normally.
+
+The PulseAudio backend is implemented using [RtAudio](https://www.music.mcgill.ca/~gary/rtaudio/).
+
+The current PulseAudio backend implementation does not allow selection of the audio device from within SuperCollider (it can be selected using the audio configuration panel in the Linux distribution itself). It will present a default device using 2 channels of input and 2 channels of output.
 
 Contributors to this document
 -----------------------------
