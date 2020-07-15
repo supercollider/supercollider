@@ -98,6 +98,7 @@ void sc_SetDenormalFlags();
 // Since PulseAudio uses interleaved samples, that's what we use here
 int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsigned int nFrames, double streamTime,
                                     RtAudioStreamStatus status) {
+    auto systemTimeBefore = getTime();                                        
     sc_SetDenormalFlags();
     World* world = mWorld;
 
@@ -192,15 +193,19 @@ int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsig
     } catch (...) {
         scprintf("SC_PulseAudioDriver: unknown exception in real time\n");
     }
-#if 0
-    double cpuUsage = Pa_GetStreamCpuLoad(mStream) * 100.0;
+
+    // calculate CPU load
+    auto systemTimeAfter = getTime();
+    auto duration = systemTimeAfter - systemTimeBefore;
+    //double calcTime = (double)(systemTimeAfter - systemTimeBefore) * 1e-6;
+    double calcTime = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() * 1e-9;
+    double cpuUsage = calcTime * mBuffersPerSecond * 100.;
     mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
     if (cpuUsage > mPeakCPU || --mPeakCounter <= 0) {
         mPeakCPU = cpuUsage;
         mPeakCounter = mMaxPeakCounter;
     }
 
-#endif
     mAudioSync.Signal();
     return 0;
 }
@@ -254,10 +259,10 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
             *outSampleRate = mPreferredSampleRate;
         } else {
             scprintf("Requested sample rate NOT supported. Setting to 44.1 kHz\n");
-            *outSampleRate = 44100;
+            *outSampleRate = infos[outputDevice].preferredSampleRate;
         }
     } else {
-        *outSampleRate = 44100;
+        *outSampleRate = infos[outputDevice].preferredSampleRate;
     }
 
     // Configure the stream parameters
@@ -289,6 +294,8 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
             scprintf("*outNumSamples != bufferFrames (%d != %d)\n", *outNumSamples, bufferFrames);
         }
         *outNumSamples = bufferFrames;
+        scprintf("Sample rate: %.3f\n", *outSampleRate);
+        scprintf("Block size: %d\n", bufferFrames);
     } catch (RtAudioError& e) {
         e.printMessage();
         return false;
