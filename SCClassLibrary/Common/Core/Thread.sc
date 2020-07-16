@@ -45,6 +45,14 @@ Thread : Stream {
 		}
 	}
 
+	deferAwayFrom { |func, delta = 0|
+		if(this === thisThread or: { delta > 0 }) {
+			func.defer(delta)
+		} {
+			func.value
+		}
+	}
+
 	randSeed_ { arg seed;
 		// You supply an integer seed.
 		// This method creates a new state vector and stores it in randData.
@@ -112,7 +120,7 @@ Routine : Thread {
 		^this.primitiveFailed
 	}
 	reschedule { arg argClock, quant;
-		var doResched = {
+		deferAwayFrom(this) {
 			// Thread:isPlaying only answers if the thread is waiting
 			// It *doesn't* confirm that it is actually scheduled on a clock
 			if(this.nextBeat.isNil) {
@@ -125,11 +133,6 @@ Routine : Thread {
 				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
 			};
 			clock = argClock;
-		};
-		if(this === thisThread) {
-			doResched.defer
-		} {
-			doResched.value
 		}
 	}
 	run { arg inval;

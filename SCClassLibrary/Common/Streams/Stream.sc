@@ -392,7 +392,7 @@ PauseStream : Stream {
 		^this.play(clock ? argClock, false, quant)
 	}
 	reschedule { arg argClock, quant;
-		var doResched = {
+		deferAwayFrom(this.stream) {
 			if(this.isPlaying.not) {
 				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
 			};
@@ -404,11 +404,6 @@ PauseStream : Stream {
 			};
 			clock = argClock;
 		};
-		if(thisThread === this.stream) {
-			doResched.defer
-		} {
-			doResched.value
-		}
 	}
 
 	refresh {
