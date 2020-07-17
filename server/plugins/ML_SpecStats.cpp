@@ -215,6 +215,7 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
 
     // Percentile value as a fraction. eg: 0.5 == 50-percentile (median).
     float fraction = ZIN0(1);
+    bool binout = ZIN0(3); // if true, output the bin number instead of freq
     bool interpolate = unit->m_interpolate;
 
     // The magnitudes in *p will be converted to cumulative sum values and stored in *q temporarily
@@ -242,12 +243,21 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
     for (int i = 0; i < numbins; ++i) {
         // Print("Testing %g, at position %i", q->bin[i].real, i);
         if (!(q[i] < target)) { // this is a ">=" comparison, done more efficiently as "!(<)"
-            if (interpolate && i != 0) {
-                binpos = ((float)i) + 1.f - (q[i] - target) / (q[i] - q[i - 1]);
+            // output the bin number instead of freq
+            if (binout) {
+                if (interpolate && i != 0) {
+                    bestposition = ((float)i) + (q[i] - target) / (q[i] - q[i - 1]);
+                } else {
+                    bestposition = i; // output bin directly
+                }
             } else {
-                binpos = ((float)i) + 1.f;
+                if (interpolate && i != 0) {
+                    binpos = ((float)i) + 1.f - (q[i] - target) / (q[i] - q[i - 1]);
+                } else {
+                    binpos = ((float)i) + 1.f;
+                }
+                bestposition = binpos * unit->m_halfnyq_over_numbinsp2;
             }
-            bestposition = binpos * unit->m_halfnyq_over_numbinsp2;
             // Print("Target %g beaten by %g (at position %i), equating to freq %g\n",
             //				target, p->bin[i].real, i, bestposition);
             break;

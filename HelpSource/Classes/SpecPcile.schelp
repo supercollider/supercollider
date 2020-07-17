@@ -10,6 +10,8 @@ For example, to find the frequency at which 90% of the spectral energy lies belo
 
 The optional third argument strong::interpolate:: specifies whether interpolation should be used to try and make the percentile frequency estimate more accurate, at the cost of a little higher CPU usage. Set it to 1 to enable this.
 
+Optional fourth argument is strong::binout:: specifies whether to output the bin number instead of the frequency (set to 1). If interpolate is enabled, parabolic interpolation on the bin number is performed.
+
 classmethods::
 method:: kr
 
@@ -17,6 +19,7 @@ argument:: buffer
 an link::Classes/FFT:: chain.
 argument:: fraction
 argument:: interpolate
+argument:: binout
 
 examples::
 
