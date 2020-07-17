@@ -571,7 +571,9 @@ IdentityDictionary : Dictionary {
 		if(this[\nextTimeOnGrid].notNil) {
 			^this[\nextTimeOnGrid].value(this, clock)
 		} {
-			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0))
+			// if this[\referenceBeat] is nil, it's handled in 'clock.nextTimeOnGrid'
+			// so no '?' default is required here
+			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0), this[\referenceBeat])
 		}
 	}
 	asQuant { ^this.copy }
