@@ -114,10 +114,6 @@ int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsig
         int bufFrames = mWorld->mBufLength;
         int numBufs = numSamples / bufFrames;
 
-        if (nFrames != bufFrames) {
-            scprintf("warning: nFrames in callback != mWorld->mBufLength\n");
-        }
-
         float* inBuses = mWorld->mAudioBus + mWorld->mNumOutputs * bufFrames;
         float* outBuses = mWorld->mAudioBus;
         int32* inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
@@ -139,10 +135,10 @@ int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsig
             for (int k = 0; k < m_inputChannelCount; ++k) {
                 *tch++ = bufCounter;
                 float* dst = inBuses + k * bufFrames;
-                const float* src = (float*)inputBuffer + k + bufFramePos;
+                const float* src = (float*)inputBuffer + k + (bufFramePos * m_inputChannelCount);
                 for (int n = 0; n < bufFrames; n++) {
                     *dst = *src;
-                    src += m_outputChannelCount;
+                    src += m_inputChannelCount;
                     dst++;
                 }
             }
@@ -172,7 +168,7 @@ int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsig
             // Process outputs (considering which ones have been touched)
             tch = outTouched;
             for (int k = 0; k < m_outputChannelCount; ++k) {
-                float* dst = (float*)outputBuffer + k + bufFramePos;
+                float* dst = (float*)outputBuffer + k + (bufFramePos * m_outputChannelCount);
                 if (tch[k] == bufCounter) {
                     const float* src = outBuses + k * bufFrames;
                     for (int n = 0; n < bufFrames; n++) {
@@ -250,8 +246,9 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
     m_outputChannelCount = std::min<size_t>(mWorld->mNumOutputs, infos[outputDevice].duplexChannels);
     m_inputChannelCount = std::min<size_t>(mWorld->mNumInputs, infos[inputDevice].duplexChannels);
 
+    // What HW buffer size to use?
+    *outNumSamples = mPreferredHardwareBufferFrameSize ? mPreferredHardwareBufferFrameSize : 512;
     // What sample rate to use? If we get one, make sure it is supported, and fall back to the default if not
-    *outNumSamples = mWorld->mBufLength;
     if (mPreferredSampleRate) {
         std::vector<unsigned int> supportedSampleRates { infos[outputDevice].sampleRates };
         if (std::find(supportedSampleRates.begin(), supportedSampleRates.end(), (unsigned int)mPreferredSampleRate)
@@ -272,9 +269,6 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
     RtAudio::StreamParameters inParameters;
     inParameters.deviceId = inputDevice;
     inParameters.nChannels = m_inputChannelCount;
-    // use a separate variable for the number of frames, so that we can compare with the actual given value
-    // and warn if they are different
-    unsigned int bufferFrames = *outNumSamples;
     RtAudio::StreamOptions options;
     options.flags = RTAUDIO_MINIMIZE_LATENCY | RTAUDIO_SCHEDULE_REALTIME;
     options.streamName = "SuperCollider";
@@ -283,19 +277,17 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
                  inParameters.nChannels);
         // Depending on whether we are using inputs, we open the stream with the appropriate parameters
         if (m_inputChannelCount > 0) {
-            m_audio->openStream(&outParameters, &inParameters, RTAUDIO_FLOAT32, *outSampleRate, &bufferFrames,
+            m_audio->openStream(&outParameters, &inParameters, RTAUDIO_FLOAT32, *outSampleRate, (unsigned int *)outNumSamples,
                                 &SC_PulseAudioDriver::rtCallbackStatic, this, &options);
         } else {
-            m_audio->openStream(&outParameters, NULL, RTAUDIO_FLOAT32, *outSampleRate, &bufferFrames,
+            m_audio->openStream(&outParameters, NULL, RTAUDIO_FLOAT32, *outSampleRate, (unsigned int *)outNumSamples,
                                 &SC_PulseAudioDriver::rtCallbackStatic, this, &options);
         }
-        // Check that the requested number of frames matches what SC asked for and issue a warning if not
-        if (*outNumSamples != bufferFrames) {
-            scprintf("*outNumSamples != bufferFrames (%d != %d)\n", *outNumSamples, bufferFrames);
-        }
-        *outNumSamples = bufferFrames;
+
+        m_maxOutputLatency = 1.0 * *outNumSamples / *outSampleRate;
         scprintf("Sample rate: %.3f\n", *outSampleRate);
-        scprintf("Block size: %d\n", bufferFrames);
+        scprintf("Block size: %d\n", *outNumSamples);
+        scprintf("Output latency: %.3f sec\n", m_maxOutputLatency);
     } catch (RtAudioError& e) {
         e.printMessage();
         return false;
