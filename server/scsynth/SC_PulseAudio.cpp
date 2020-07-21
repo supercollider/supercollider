@@ -98,7 +98,7 @@ void sc_SetDenormalFlags();
 // Since PulseAudio uses interleaved samples, that's what we use here
 int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsigned int nFrames, double streamTime,
                                     RtAudioStreamStatus status) {
-    auto systemTimeBefore = getTime();                                        
+    auto systemTimeBefore = getTime();
     sc_SetDenormalFlags();
     World* world = mWorld;
 
@@ -195,7 +195,7 @@ int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsig
     // calculate CPU load
     auto systemTimeAfter = getTime();
     auto duration = systemTimeAfter - systemTimeBefore;
-    //double calcTime = (double)(systemTimeAfter - systemTimeBefore) * 1e-6;
+    // double calcTime = (double)(systemTimeAfter - systemTimeBefore) * 1e-6;
     double calcTime = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count() * 1e-9;
     double cpuUsage = calcTime * mBuffersPerSecond * 100.;
     mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
@@ -279,10 +279,10 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
                  inParameters.nChannels);
         // Depending on whether we are using inputs, we open the stream with the appropriate parameters
         if (m_inputChannelCount > 0) {
-            m_audio->openStream(&outParameters, &inParameters, RTAUDIO_FLOAT32, *outSampleRate, (unsigned int *)outNumSamples,
-                                &SC_PulseAudioDriver::rtCallbackStatic, this, &options);
+            m_audio->openStream(&outParameters, &inParameters, RTAUDIO_FLOAT32, *outSampleRate,
+                                (unsigned int*)outNumSamples, &SC_PulseAudioDriver::rtCallbackStatic, this, &options);
         } else {
-            m_audio->openStream(&outParameters, NULL, RTAUDIO_FLOAT32, *outSampleRate, (unsigned int *)outNumSamples,
+            m_audio->openStream(&outParameters, NULL, RTAUDIO_FLOAT32, *outSampleRate, (unsigned int*)outNumSamples,
                                 &SC_PulseAudioDriver::rtCallbackStatic, this, &options);
         }
 
