@@ -296,7 +296,7 @@ environment variables:
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by defaul>t.
+ * SC_JACK_DEFAULT_OUTPUTS comma-separated list of jack ports that the server's outputs should be connected to by default.
 
    ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"
