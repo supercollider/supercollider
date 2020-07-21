@@ -245,8 +245,8 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
     unsigned int inputDevice = m_audio->getDefaultInputDevice();
 
     // Number of input and output channels to use
-    m_outputChannelCount = std::min<size_t>(mWorld->mNumOutputs, infos[outputDevice].duplexChannels);
-    m_inputChannelCount = std::min<size_t>(mWorld->mNumInputs, infos[inputDevice].duplexChannels);
+    m_outputChannelCount = std::min<size_t>(mWorld->mNumOutputs, infos[outputDevice].outputChannels);
+    m_inputChannelCount = std::min<size_t>(mWorld->mNumInputs, infos[inputDevice].inputChannels);
 
     // What HW buffer size to use?
     *outNumSamples = mPreferredHardwareBufferFrameSize ? mPreferredHardwareBufferFrameSize : 512;
