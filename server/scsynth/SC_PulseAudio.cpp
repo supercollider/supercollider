@@ -288,7 +288,7 @@ bool SC_PulseAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 
         m_maxOutputLatency = 1.0 * *outNumSamples / *outSampleRate;
         scprintf("Sample rate: %.3f\n", *outSampleRate);
-        scprintf("Block size: %d\n", *outNumSamples);
+        scprintf("Buffer size: %d\n", *outNumSamples);
         scprintf("Output latency: %.3f sec\n", m_maxOutputLatency);
     } catch (RtAudioError& e) {
         e.printMessage();
