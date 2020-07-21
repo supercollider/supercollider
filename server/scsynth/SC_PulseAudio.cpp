@@ -177,8 +177,10 @@ int SC_PulseAudioDriver::rtCallback(void* outputBuffer, void* inputBuffer, unsig
                         dst += m_outputChannelCount;
                     }
                 } else {
-                    *dst = 0;
-                    dst += m_outputChannelCount;
+                    for (int n = 0; n < bufFrames; n++) {
+                        *dst = 0;
+                        dst += m_outputChannelCount;
+                    }
                 }
             }
             // update buffer time
