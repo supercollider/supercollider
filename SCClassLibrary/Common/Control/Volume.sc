@@ -2,12 +2,12 @@ Volume {
 
 	var <server, <startBus, numChannels, <min, <max, <persist;
 
-	var <volume = 0.0, <lag = 0.1, <isMuted = false;
+	var <volume = 0.0, <lag = 0.1, <isMuted = false, <limited = 1.0;
 
 	var <ampSynth, <numOutputChannels, defName, updateFunc, initFunc;
 	var <>window;
 
-	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
+	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false, limit = 0.0 |
 		^super.newCopyArgs(server ?? { Server.default }, startBus, numChannels, min, max, persist).init;
 	}
 
@@ -34,10 +34,11 @@ Volume {
 			fork {
 				numOutputChannels = this.numChannels;
 				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
-				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
+				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus, limit = 0.0 |
+					var sig = In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag);
 					XOut.ar(bus,
 						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-						In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
+						Select.ar(limit>0.0, [sig, Clip.ar(in: sig, lo: limit*(-1), hi: limit)])
 					);
 				}).send(server);
 
@@ -63,14 +64,15 @@ Volume {
 
 	updateSynth {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
-		var active = amp != 1.0;
+		var active = (amp != 1.0 || (limited > 0.0));
+		// only add to nodetree if we actually modify the audio
 		if(active) {
 			if(server.hasBooted) {
 				if(ampSynth.isNil) {
 					ampSynth = Synth.after(server.defaultGroup, defName,
-						[\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
+						[\volumeAmp, amp, \volumeLag, lag, \bus, startBus, \limit, limited])
 				} {
-					ampSynth.set(\volumeAmp, amp);
+					ampSynth.set(\volumeAmp, amp, \limit, limited);
 				}
 			}
 		} {
@@ -92,6 +94,18 @@ Volume {
 			this.changed(\mute, false);
 			this.updateSynth;
 		}
+	}
+
+	limit { | aLimit=1.0 |
+		limited = aLimit;
+		this.changed(\limit, limited);
+		this.updateSynth;
+	}
+
+	unlimit {
+		limited = 0.0;
+		this.changed(\limit, limited);
+		this.updateSynth;
 	}
 
 	freeSynth {

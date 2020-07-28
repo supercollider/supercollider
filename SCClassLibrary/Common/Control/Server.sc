@@ -397,7 +397,7 @@ Server {
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
 
-		volume = Volume(server: this, persist: true);
+		volume = Volume(server: this, persist: true, limit: 1.0);
 		recorder = Recorder(server: this);
 		recorder.notifyServer = true;
 
@@ -1209,6 +1209,14 @@ Server {
 
 	unmute {
 		volume.unmute
+	}
+
+	limit {| aLimit=1.0 |
+		volume.limit(aLimit);
+	}
+
+	unlimit {
+		volume.unlimit
 	}
 
 	/* recording output */
