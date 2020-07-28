@@ -1,7 +1,7 @@
 class:: Server
 summary:: Object representing a server application
 categories:: Server>Abstractions
-related:: Guides/Server-Guide, Guides/MultiClient_Setups, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection
+related:: Guides/Server-Guide, Guides/MultiClient_Setups, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection, Classes/Volume, Classes/Recorder
 
 description::
 
@@ -16,6 +16,12 @@ A server also holds an instance of a link::Classes/Recorder:: (for recording out
 note::
 By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::
 ::
+
+note::
+By default, the limiter of link::Classes/Volume:: is active which by default clips every sample to code::-1.0:: and code::1.0::.
+This is a measurement to avoid unexpected exceeding output volumes which may damage ears or gear but may introduce unexpected harsh clipping because link::Classes/Clip:: is used.
+To deactivate this you can call e.g. code::s.unlimit::.
+:: 
 
 code::
 s.boot;
@@ -301,6 +307,12 @@ mute the server's output. This can also be toggled from the Server window with t
 
 method:: unmute
 unmute the server. This can also be toggled from the Server window with the 'm' key.
+
+method:: limit
+Sets the limiter for the server.
+
+method:: unlimit
+Disables the limiter for the server output.
 
 method:: reorder
 Move the nodes in code::nodeList:: to the location specified by code::target:: and code::addAction::, placing them there in the order indicated by nodeList.

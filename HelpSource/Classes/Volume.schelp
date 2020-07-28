@@ -1,9 +1,15 @@
 class:: Volume
 summary:: Model for the global volume of the synthesis server
 categories:: Server
+related:: Classes/Server
 
 description::
-Internally used by Server. When volume value != 0 dB or muted, a server's volume object will create a synth for controlling the volume on the main outputs for the number of channels given.
+Internally used by Server. When volume value != 0 dB, muted or the limiter is active, a server's volume object will create a synth for controlling the volume on the main outputs for the number of channels given.
+
+note::
+If initiated by link::Classes/Server:: a link::Classes/Clip:: will be active, which by default clamps any output samples to code::-1.0:: and code::1.0::.
+Because link::Classes/Clip:: is quite harsh in clipping you can deactivate this by calling e.g. code::Server.default.unlimit::
+::
 
 classmethods::
 method:: new
@@ -21,6 +27,8 @@ argument:: max
 minimum volume in decibel
 argument:: persist
 whether to persist a reset
+argument:: limit
+if set above 0.0 it will clip any samples via link::Classes/Clip:: to code::-aLimit:: and code::aLimit::.
 
 instancemethods::
 
@@ -35,6 +43,12 @@ set the volume (in db)
 
 method:: lag
 set the lag time that dampens volume changes
+
+method:: limit
+limits the output via link::Classes/Clip:: - can be set to a floating value, default is 1.0
+
+method:: unlimit
+removes the limiter from output (equal to code::limit(0.0)::)
 
 method:: setVolumeRange
 set the volume range
@@ -52,6 +66,8 @@ v.volume = rrand(-50, 5);
 v.setVolumeRange(-90, 8);
 v.mute;
 v.unmute;
+v.unlimit;
+v.limit;
 
 // separate window
 v.gui;
