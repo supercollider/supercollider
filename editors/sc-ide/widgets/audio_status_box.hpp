@@ -39,6 +39,7 @@ private slots:
     void updateVolumeLabel(float volume);
     void updateMuteLabel(bool muted);
     void updateRecordLabel(bool recording);
+    void updateLimiterLabel(bool limiterActive);
 
 signals:
     void increaseVolume();
@@ -51,6 +52,7 @@ private:
     StatusLabel* mVolumeLabel;
     StatusLabel* mMuteLabel;
     StatusLabel* mRecordLabel;
+    StatusLabel* mLimiterLabel;
 };
 
 } // namespace ScIDE

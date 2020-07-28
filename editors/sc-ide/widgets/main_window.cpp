@@ -648,6 +648,7 @@ void MainWindow::createMenus() {
     menu->addAction(mMain->scServer()->action(ScServer::VolumeUp));
     menu->addAction(mMain->scServer()->action(ScServer::VolumeDown));
     menu->addAction(mMain->scServer()->action(ScServer::VolumeRestore));
+    menu->addAction(mMain->scServer()->action(ScServer::Limiter));
     menu->addAction(mMain->scServer()->action(ScServer::Mute));
 
     menuBar->addMenu(menu);

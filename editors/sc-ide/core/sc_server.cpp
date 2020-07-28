@@ -118,6 +118,12 @@ void ScServer::createActions(Settings::Manager* settings) {
     connect(action, SIGNAL(triggered(bool)), this, SLOT(sendDumpingOSC(bool)));
     settings->addAction(action, "synth-server-dumpOSC", synthServerCategory);
 
+    mActions[Limiter] = action = new QAction(tr("Limiter"), this);
+    action->setCheckable(true);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(sendLimiter(bool)));
+    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(limiterChanged(bool)));
+    settings->addAction(action, "synth-server-limit", synthServerCategory);
+
     mActions[Mute] = action = new QAction(tr("Mute"), this);
     action->setShortcut(tr("Ctrl+Alt+End", "Mute sound output."));
     action->setCheckable(true);
@@ -231,6 +237,13 @@ void ScServer::setMuted(bool muted) {
     sendMuted(muted);
 }
 
+bool ScServer::isLimiterActive() const { return mActions[Limiter]->isChecked(); }
+
+void ScServer::setLimiter(bool limiterActive) {
+    mActions[Limiter]->setChecked(limiterActive);
+    sendLimiter(limiterActive);
+}
+
 bool ScServer::isDumpingOSC() const { return mActions[DumpOSC]->isChecked(); }
 
 void ScServer::setDumpingOSC(bool dumping) {
@@ -273,6 +286,13 @@ void ScServer::sendMuted(bool muted) {
     static const QString unmuteCommand("ScIDE.defaultServer.unmute");
 
     mLang->evaluateCode(muted ? muteCommand : unmuteCommand, true);
+}
+
+void ScServer::sendLimiter(bool limiterActive) {
+    static const QString limitCommand("ScIDE.defaultServer.limit(1.0)");
+    static const QString unlimitCommand("ScIDE.defaultServer.unlimit");
+
+    mLang->evaluateCode(limiterActive ? limitCommand : unlimitCommand, true);
 }
 
 void ScServer::sendDumpingOSC(bool dumping) {
@@ -349,6 +369,8 @@ void ScServer::onScLangReponse(const QString& selector, const QString& data) {
     static QString defaultServerRunningChangedSelector("defaultServerRunningChanged");
     static QString mutedSelector("serverMuted");
     static QString unmutedSelector("serverUnmuted");
+    static QString limitedSelector("serverLimited");
+    static QString unlimitedSelector("serverUnlimited");
     static QString ampSelector("serverAmp");
     static QString ampRangeSelector("serverAmpRange");
     static QString startDumpOSCSelector("dumpOSCStarted");
@@ -364,6 +386,10 @@ void ScServer::onScLangReponse(const QString& selector, const QString& data) {
         mActions[Mute]->setChecked(true);
     } else if (selector == unmutedSelector) {
         mActions[Mute]->setChecked(false);
+    } else if (selector == limitedSelector) {
+        mActions[Limiter]->setChecked(true);
+    } else if (selector == unlimitedSelector) {
+        mActions[Limiter]->setChecked(false);
     } else if (selector == startDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(true);
     } else if (selector == stopDumpOSCSelector) {
@@ -519,6 +545,7 @@ void ScServer::updateEnabledActions() {
     mActions[DumpNodeTree]->setEnabled(langAndServerRunning);
     mActions[DumpNodeTreeWithControls]->setEnabled(langAndServerRunning);
     mActions[PlotTree]->setEnabled(langAndServerRunning);
+    mActions[Limiter]->setEnabled(langAndServerRunning);
     mActions[Mute]->setEnabled(langAndServerRunning);
     mActions[VolumeUp]->setEnabled(langAndServerRunning);
     mActions[VolumeDown]->setEnabled(langAndServerRunning);

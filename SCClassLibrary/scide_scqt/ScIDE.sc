@@ -74,6 +74,9 @@ ScIDE {
 		})
 		.put(\ampRange, { |volume, what, min, max|
 			this.send( \serverAmpRange, "%,%".format(min, max) );
+		})
+		.put(\limit, { | volume, what, limited |
+			this.send( if(limited>0.0, \serverLimited, \serverUnlimited) );
 		});
 
 		defaultServer = server;
@@ -81,6 +84,7 @@ ScIDE {
 		this.send(\defaultServerRunningChanged, [
 			server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		this.send( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
+		this.send( if(server.volume.limited > 0.0, \serverLimited, \serverUnlimited) );
 		this.send( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		this.send( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
 		this.send( \serverAmp, server.volume.volume.asString );

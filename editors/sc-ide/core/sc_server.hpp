@@ -50,6 +50,7 @@ public:
         ShowMeters,
         ShowScope,
         ShowFreqScope,
+        Limiter,
         DumpNodeTree,
         DumpNodeTreeWithControls,
         PlotTree,
@@ -86,6 +87,9 @@ public:
     bool isRecording() const;
     bool isPaused() const;
 
+    bool isLimiterActive() const;
+    void setLimiter(bool limiterActive);
+
     int recordingTime() const;
 
 public slots:
@@ -107,6 +111,8 @@ public slots:
     void restoreVolume();
     void mute() { setMuted(true); }
     void unmute() { setMuted(false); }
+    void limit() { setLimiter(true); }
+    void unlimit() { setLimiter(false); }
     void sendRecording(bool active);
     void setRecording(bool active);
     void pauseRecording(bool flag);
@@ -117,6 +123,7 @@ signals:
     void volumeChanged(float volume);
     void volumeRangeChanged(float min, float max);
     void mutedChanged(bool muted);
+    void limiterChanged(bool limiterActive);
     void recordingChanged(bool recording);
     void pauseChanged(bool paused);
 
@@ -129,6 +136,7 @@ private slots:
     void updateRecordingAction();
     void updateEnabledActions();
     void sendMuted(bool muted);
+    void sendLimiter(bool limiterActive);
     void sendVolume(float volume);
     void sendDumpingOSC(bool dumping);
 

@@ -33,6 +33,8 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     mMuteLabel->setText("M");
     mRecordLabel = new StatusLabel;
     mRecordLabel->setText("R");
+    mLimiterLabel = new StatusLabel;
+    mLimiterLabel->setText("L");
 
     QHBoxLayout* layout = new QHBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
@@ -41,6 +43,7 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     layout->addWidget(mVolumeLabel);
     layout->addWidget(mMuteLabel);
     layout->addWidget(mRecordLabel);
+    layout->addWidget(mLimiterLabel);
 
     setLayout(layout);
 
@@ -48,6 +51,7 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     server->action(ScServer::PauseRecord)->setProperty("keep_menu_open", true);
     server->action(ScServer::VolumeRestore)->setProperty("keep_menu_open", true);
     server->action(ScServer::Mute)->setProperty("keep_menu_open", true);
+    server->action(ScServer::Limiter)->setProperty("keep_menu_open", true);
     server->action(ScServer::DumpOSC)->setProperty("keep_menu_open", true);
 
     addAction(server->action(ScServer::ToggleRunning));
@@ -67,6 +71,7 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
     addActionSeparator();
     addAction(server->action(ScServer::VolumeRestore));
     addAction(server->action(ScServer::Mute));
+    addAction(server->action(ScServer::Limiter));
     addAction(server->action(ScServer::Volume));
 
     // server -> box
@@ -76,12 +81,14 @@ AudioStatusBox::AudioStatusBox(ScServer* server, QWidget* parent): StatusBox(par
             SLOT(updateStatistics(int, int, int, int, float, float)));
     connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
     connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
+    connect(server, SIGNAL(limiterChanged(bool)), this, SLOT(updateLimiterLabel(bool)));
     connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
 
     onServerRunningChanged(false, "", 0, false);
     updateVolumeLabel(server->volume());
     updateMuteLabel(server->isMuted());
     updateRecordLabel(server->isRecording());
+    updateLimiterLabel(server->isLimiterActive());
 
     // box to server
     connect(this, &AudioStatusBox::decreaseVolume, [=]() { server->changeVolume(-0.5); });
@@ -138,5 +145,8 @@ void AudioStatusBox::updateRecordLabel(bool recording) {
     mRecordLabel->setTextColor(recording ? Qt::red : QColor(30, 30, 30));
 }
 
+void AudioStatusBox::updateLimiterLabel(bool limiterActive) {
+    mLimiterLabel->setTextColor(limiterActive ? Qt::red : QColor(30, 30, 30));
+}
 
 } // namespace ScIDE
