@@ -190,7 +190,7 @@ Returns:: The operating system's pid (process ID) for the process.
 
 method::recompile
 
-Recompiles the class library. This is equivalent to restarting SC. Currently macOS (SuperCollider.app) only.
+Recompiles the class library.
 
 method::platform
 Get the current link::Classes/Platform::
