@@ -56,6 +56,8 @@ ServerOptions {
 
 	var <>bindAddress;
 
+	var <>safetyClipThreshold;
+
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
@@ -98,6 +100,7 @@ ServerOptions {
 				recChannels: 2,
 				recBufSize: nil,
 				bindAddress: "127.0.0.1",
+				safetyClipThreshold: 2.0,
 			)
 		)
 	}
@@ -223,6 +226,9 @@ ServerOptions {
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
+		});
+		if (safetyClipThreshold.notNil, {
+			o = o ++ " -s " ++ safetyClipThreshold;
 		});
 		^o
 	}

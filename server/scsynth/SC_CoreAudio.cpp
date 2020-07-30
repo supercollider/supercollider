@@ -28,6 +28,7 @@
 #include "SC_Lib_Cintf.h"
 #include "SC_Lock.h"
 #include "SC_Time.hpp"
+#include "SC_InlineBinaryOp.h"
 #include <stdlib.h>
 #include <algorithm>
 
@@ -332,9 +333,8 @@ void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mDat
 SC_AudioDriver::SC_AudioDriver(struct World* inWorld):
     mWorld(inWorld),
     mSampleTime(0),
-    mNumSamplesPerCallback(0)
-
-{}
+    mNumSamplesPerCallback(0),
+    mSafetyClipThreshold(2.f) {}
 
 SC_AudioDriver::~SC_AudioDriver() {
     mRunThreadFlag = false;
@@ -1375,7 +1375,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
                     if (nchan == 1) {
                         if (outputTouched[b] == bufCounter) {
                             for (int k = 0; k < bufFrames; ++k) {
-                                bufdata[k] = busdata[k];
+                                bufdata[k] = sc_clip2(busdata[k], mSafetyClipThreshold);
                             }
                         }
                     } else {
@@ -1383,7 +1383,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
                         for (int j = 0; j < minchan; ++j, busdata += bufFrames) {
                             if (outputTouched[b + j] == bufCounter) {
                                 for (int k = 0, m = j; k < bufFrames; ++k, m += nchan) {
-                                    bufdata[m] = busdata[k];
+                                    bufdata[m] = sc_clip2(busdata[k], mSafetyClipThreshold);
                                 }
                             }
                         }

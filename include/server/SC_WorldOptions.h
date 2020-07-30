@@ -49,6 +49,7 @@ struct WorldOptions {
 
     bool mRealTime = true;
     bool mMemoryLocking = false;
+    float mSafetyClipThreshold = 2.0;
 
     const char* mNonRealTimeCmdFilename = nullptr;
     const char* mNonRealTimeInputFilename = nullptr;
