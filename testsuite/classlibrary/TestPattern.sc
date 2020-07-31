@@ -187,6 +187,12 @@ TestPattern : UnitTest {
 		this.assert(cleanup.functions.size == 0, "Pfset on nil stream should have no effect on a cleanup-functions set");
 	}
 
+	test_Pfindur_maintains_final_rest {
+		var stream = Pfindur(4, Pbind(\delta, Rest(4))).asStream;
+		var event = stream.next(Event.new);
+		this.assert(event.isRest, "The final event of a Pfindur, if it was originally a rest, should still be a rest");
+	}
+
 
 /*
 	test_storeArgs {
