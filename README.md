@@ -41,8 +41,8 @@ SuperCollider has guaranteed support for:
 - macOS 10.14-10.15
 - Xcode 10, 11
 - Debian >= 9.0
-- Ubuntu 16.04, 18.04
-- Fedora 31
+- Ubuntu 16.04, 18.04, 20.04
+- Fedora 31, 32
 - Arch Linux
 - gcc >= 4.9
 - Qt >= 5.11
