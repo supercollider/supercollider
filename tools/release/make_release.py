@@ -43,7 +43,7 @@ def main():
         "If this is a minor release, have you made the release branch?",
         "Is the repo on the current release branch?",
         "Have all the discussions in the 'x.y.z discussions' ticket been resolved?",
-        "If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?"
+        "If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?",
         "Have all the deprecations been either removed or deferred to a later release?\n      Deprecations are removed on a case-by-case basis with each minor (3.x) release.\n      Corresponding UGen and primitive code should also be removed.\n      Be careful when deprecating UGens and be considerate of alternate clients!",
         "Have all the removed deprecations been documented in the changelog?",
         "Have you reviewed the platform support information in the main README.md for accuracy?",
