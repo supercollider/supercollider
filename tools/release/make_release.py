@@ -63,6 +63,8 @@ def main():
         "Have you optionally run the script with -s <email-or-keyid> (where email-or-keyid is a valid PGP key id of the release manager) to also create a detached PGP signature for the source tarball?",
         "Have you uploaded source tarball (and optionally detached PGP signature)?",
         "Are builds for macOS, Linux, and Windows uploaded from CI?",
+        "Have you codesigned and notarized a macOS app bundle?",
+        "Have you uploaded the signed macOS app bundle?",
         "Have you made sure to note known-to-work platform versions and any changes in platform support on the Github release page?",
         "If it is a full release, did you update the website download page?",
 
