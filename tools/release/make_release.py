@@ -55,9 +55,11 @@ def main():
         "If this is a minor release, have you made the release branch?",
         "Is the repo on the current release branch?",
         ["Have all the discussions in the pinned 'x.y.z discussions' ticket been resolved?", "https://github.com/supercollider/supercollider/issues"],
-        "If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?",
+        ["If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?", "https://github.com/supercollider/supercollider/projects/"],
         "Have all the deprecations been either removed or deferred to a later release?\n      Deprecations are removed on a case-by-case basis with each minor (3.x) release.\n      Corresponding UGen and primitive code should also be removed.\n      Be careful when deprecating UGens and be considerate of alternate clients!",
         "Have all the removed deprecations been documented in the changelog?",
+        # depends on branch name
+        # https://github.com/supercollider/supercollider/blob/Version-3.11.1-rc1/README.md#platform-support
         "Have you reviewed the platform support information in the main README.md for accuracy?",
 
         "Have you updated SCVersion.txt?",
@@ -70,33 +72,46 @@ def main():
         "If this is a proper release, have you merged the current release branch into master with git merge --no-ff?",
         "Have you tagged the release?",
         "Did you create the release announcement text?",
-        "Have you created a release on GitHub?",
+        ["Have you created a release on GitHub?", "https://github.com/supercollider/supercollider/releases/new"],
         "Have you run ./package/create_source_tarball.sh -v <version> (where version is the version tag, e.g. Version-3.11.0) to create a source tarball (including submodules)?",
         "Have you optionally run the script with -s <email-or-keyid> (where email-or-keyid is a valid PGP key id of the release manager) to also create a detached PGP signature for the source tarball?",
+        # depends on release tag
+        # https://github.com/supercollider/supercollider/releases/edit/Version-3.11.1-rc1
         "Have you uploaded source tarball (and optionally detached PGP signature)?",
+        # depends on release tag
+        # https://github.com/supercollider/supercollider/releases/tag/Version-3.11.1-rc1
         "Are builds for macOS, Linux, and Windows uploaded from CI?",
         "Have you codesigned and notarized a macOS app bundle?",
+        # depends on release tag
+        # https://github.com/supercollider/supercollider/releases/edit/Version-3.11.1-rc1
         "Have you uploaded the signed macOS app bundle?",
+        # depends on release tag
+        # https://github.com/supercollider/supercollider/releases/tag/Version-3.11.1-rc1
         "Have you made sure to note known-to-work platform versions and any changes in platform support on the Github release page?",
-        "If it is a full release, did you update the website download page?",
+        ["If it is a full release, did you update the website download page?", "https://supercollider.github.io/download"],
 
         "Did you do the same for sc3-plugins?", # XXX review what does this mean
 
-        "Did you update the sc3-plugins page (the one at https://github.com/supercollider/sc3-plugins/tree/master/website)?",
-        "If it's a proper release, did you update the Wikipedia page?",
+        ["Did you update the sc3-plugins page?", "https://github.com/supercollider/sc3-plugins/tree/master/website"],
+        ["If it's a proper release, did you update the Wikipedia page?", "https://en.wikipedia.org/wiki/SuperCollider"],
 
         "Have you created the text with an abbreviated changelog for announcing?", # XXX review what does this mean
-        "Did you announce on GitHub website?",
+        ["If this is a proper release, did you announce on GitHub website?", "https://supercollider.github.io/archive"],
         "Did you announce on sc-users mailing list?",
         "Did you announce on sc-dev mailing list?",
-        "Did you announce on scsynth.org?",
+        ["Did you announce on scsynth.org?", "https://scsynth.org"],
+        # open slack client?
         "Did you announce on Slack #general?",
+        # maybe remove? or indicate optional?
         "Did you announce on Facebook group?",
+        # maybe remove? or indicate optional?
         "Did you announce on Reddit (/r/supercollider)?",
 
+        # depends on current branch
+        # https://github.com/supercollider/supercollider/compare/develop...3.11
         "If it's a beta release, did you merge the current release branch into develop? Do not merge the release branch into master yet!",
-        "If it's a proper release, did you merge master into develop?",
-            ];
+        ["If it's a proper release, did you merge master into develop?", "https://github.com/supercollider/supercollider/compare/develop...master"]
+            ]
 
     stack = deque()
     for prompt in prompts:
