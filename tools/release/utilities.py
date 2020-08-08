@@ -22,6 +22,10 @@ def read_file(file_name: str) -> str:
     return text
 
 
+def open_url(url: str) -> None:
+    run(['open', url])
+
+
 def read_url(url: str) -> str:
     file = urllib.request.urlopen(url)
     text = ''

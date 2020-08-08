@@ -4,6 +4,8 @@
 
 from collections import deque
 
+import utilities
+
 def check_step(step: str) -> bool:
     print("\nCHECK: ", step)
     response = input("  Press Y OR y to continue; Anything else to Quit: ")
@@ -37,12 +39,22 @@ class YesNoStage(Stage):
         print("UNDOING:", self.prompt)
 
 
+class YesNoStageWithUrl(YesNoStage):
+    def __init__(self, prompt, url):
+        super().__init__(prompt)
+        self.url = url
+
+    def do(self) -> bool:
+        utilities.open_url(self.url)
+        return super().do()
+
+
 def main():
     prompts = [
         "Is the repo clean?",
         "If this is a minor release, have you made the release branch?",
         "Is the repo on the current release branch?",
-        "Have all the discussions in the 'x.y.z discussions' ticket been resolved?",
+        ["https://github.com/supercollider/supercollider/issues", "Have all the discussions in the 'x.y.z discussions' ticket been resolved?"],
         "If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?",
         "Have all the deprecations been either removed or deferred to a later release?\n      Deprecations are removed on a case-by-case basis with each minor (3.x) release.\n      Corresponding UGen and primitive code should also be removed.\n      Be careful when deprecating UGens and be considerate of alternate clients!",
         "Have all the removed deprecations been documented in the changelog?",
@@ -88,7 +100,11 @@ def main():
 
     stack = deque()
     for prompt in prompts:
-        stage = YesNoStage(prompt)
+        if type(prompt) == str:
+            stage = YesNoStage(prompt)
+        else:
+            stage = YesNoStageWithUrl(prompt[1], prompt[0])
+
         if stage.do():
             stack.append(stage)
         else:
