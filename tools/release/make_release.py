@@ -54,7 +54,7 @@ def main():
         "Is the repo clean?",
         "If this is a minor release, have you made the release branch?",
         "Is the repo on the current release branch?",
-        ["https://github.com/supercollider/supercollider/issues", "Have all the discussions in the pinned 'x.y.z discussions' ticket been resolved?"],
+        ["Have all the discussions in the pinned 'x.y.z discussions' ticket been resolved?", "https://github.com/supercollider/supercollider/issues"],
         "If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?",
         "Have all the deprecations been either removed or deferred to a later release?\n      Deprecations are removed on a case-by-case basis with each minor (3.x) release.\n      Corresponding UGen and primitive code should also be removed.\n      Be careful when deprecating UGens and be considerate of alternate clients!",
         "Have all the removed deprecations been documented in the changelog?",
@@ -103,7 +103,7 @@ def main():
         if type(prompt) == str:
             stage = YesNoStage(prompt)
         else:
-            stage = YesNoStageWithUrl(prompt[1], prompt[0])
+            stage = YesNoStageWithUrl(prompt[0], prompt[1])
 
         if stage.do():
             stack.append(stage)
