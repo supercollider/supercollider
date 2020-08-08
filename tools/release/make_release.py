@@ -4,6 +4,8 @@
 
 from collections import deque
 import sys
+import semantic_version
+from semantic_version import Version
 
 import utilities
 
@@ -50,7 +52,7 @@ class YesNoStageWithUrl(YesNoStage):
         return super().do()
 
 
-def main(version: str):
+def main(version: Version):
     prompts = [
         "Is the repo clean?",
         "If this is a minor release, have you made the release branch?",
@@ -128,4 +130,8 @@ if __name__ == "__main__":
         print("Usage: make_release.py <version>")
         sys.exit(1)
 
-    main(sys.argv[1])
+    if not semantic_version.validate(sys.argv[1]):
+        print("The supplied version does not comply with SemVer rules. It should be in the form x.y.z[-prerelease]")
+        sys.exit(2)
+
+    main(Version(sys.argv[1]))
