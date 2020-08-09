@@ -13,7 +13,7 @@ private::initSet, putCheck, fullCheck, grow, noCheckAdd
 subsection::Adding and Removing
 
 method::add
-Add anObject to the Set. An object which is equal to an object already in the Set will not be added.
+Add an Object to the Set. An object which is equal to an object already in the Set will not be added.
 code::
 Set[1, 2, 3].add(4).postln;
 Set[1, 2, 3].add(3).postln;
@@ -22,7 +22,7 @@ Set["abc", "def", "ghi"].add("def").postln;
 ::
 
 method::remove
-Remove anObject from the Set.
+Remove an Object from the Set. Checks for equality (not identity).
 code::
 Set[1, 2, 3].remove(3).postln;
 ::
@@ -41,7 +41,7 @@ Returns the object at the internal strong::index::. This index is not determinis
 subsection::Set specific operations
 
 method::sect, &
-Return the set theoretical intersection of this and strong::that::.
+Return the set theoretical intersection of this and strong::that::. The function will search for strong::equal:: objects occurring in both sets and return a new set containing those.
 code::
 a = Set[1, 2, 3]; b = Set[2, 3, 4, 5];
 sect(a, b);
@@ -49,7 +49,7 @@ a & b // shorter syntax
 ::
 
 method::union, |
-Return the set theoretical union of this and strong::that::.
+Return the set theoretical union of this and strong::that::. The function combines the two sets into one. If an equal object is already contained in the set, it will not be added a second time.
 code::
 a = Set[1, 2, 3]; b = Set[2, 3, 4, 5];
 union(a, b);
@@ -57,7 +57,7 @@ a | b // shorter syntax
 ::
 
 method::difference, -
-Return the set of all items which are elements of this, but not of strong::that::.
+Return the set of all items which are elements of this, but not of strong::that::. Checks for equality of elements (not identity).
 code::
 a = Set[1, 2, 3]; b = Set[2, 3, 4, 5];
 difference(a, b);
@@ -66,6 +66,7 @@ a - b // shorter syntax
 
 method::symmetricDifference, --
 Return the set of all items which are not elements of both this and strong::that::.
+Checks for equality of elements (not identity).
 code::
 a = Set[1, 2, 3]; b = Set[2, 3, 4, 5];
 symmetricDifference(a, b);
@@ -74,6 +75,7 @@ a -- b // shorter syntax
 
 method::isSubsetOf
 Returns true if all elements of this are also elements of strong::that::.
+Checks for equal elements regardless of the order inside the set.
 code::
 a = Set[1, 2, 3, 4];
 Set[1, 2].isSubsetOf(a); // true
