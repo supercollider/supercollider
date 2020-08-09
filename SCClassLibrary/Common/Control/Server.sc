@@ -86,7 +86,7 @@ ServerOptions {
 				remoteControlVolume: false,
 				memoryLocking: false,
 				threads: nil,
-				useSystemClock: false,
+				useSystemClock: true,
 				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
 				reservedNumAudioBusChannels: 0,
 				reservedNumControlBusChannels: 0,
@@ -218,6 +218,8 @@ ServerOptions {
 		});
 		if (useSystemClock, {
 			o = o ++ " -C 1"
+		}, {
+			o = o ++ " -C 0"
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
