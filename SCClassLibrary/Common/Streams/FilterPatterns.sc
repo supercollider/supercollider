@@ -435,7 +435,7 @@ Pfindur : FilterPattern {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
 				remaining = localdur - elapsed;
-				if(inevent.isRest) { remaining = Rest(remaining) };
+				if(inevent[\delta].isRest) { remaining = Rest(remaining) };
 				inevent = inevent.copy.put(\delta, remaining).yield;
 				^cleanup.exit(inevent);
 			};
