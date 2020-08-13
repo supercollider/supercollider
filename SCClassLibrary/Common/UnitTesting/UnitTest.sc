@@ -82,10 +82,18 @@ UnitTest {
 	// and that tearDownClass is called afterwards
 	runTestMethod { | method, report = true |
 		this.class.forkIfNeeded {
-			this.setUp;
-			currentMethod = method;
-			this.perform(method.name);
-			this.tearDown;
+			try {
+				currentMethod = method;
+				this.setUp;
+				this.perform(method.name);
+			} { |error|
+				this.failed(currentMethod, "Error thrown during test: '%'".format(error.errorString), report);
+			};
+			try {
+				this.tearDown;
+			} { |error|
+				this.failed(currentMethod, "Error thrown during test cleanup: '%'".format(error.errorString), report);
+			};
 			if(report) { this.class.report };
 		}
 	}
@@ -106,9 +114,27 @@ UnitTest {
 	// call a function in the context of this test class
 	*prRunWithinSetUpClass { |func|
 		this.forkIfNeeded {
-			this.setUpClass;
-			func.value(this);
-			this.tearDownClass;
+			try {
+				this.setUpClass;
+				func.value(this);
+			} { |error|
+				if(error.notNil) {
+					this.new.failed(nil, "Error during test class %: '%'".format(
+						this.name, error.errorString
+					));
+				};
+			};
+			// should try to tear down even if there was an error
+			// (maybe files were written to disk)
+			try {
+				this.tearDownClass;
+			} { |error|
+				if(error.notNil) {
+					this.new.failed(nil, "Error during test class % tear-down: '%'".format(
+						this.name, error.errorString
+					));
+				};
+			};
 		}
 	}
 
