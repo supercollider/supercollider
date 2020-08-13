@@ -4,8 +4,8 @@ TestSynthDescMetadata : UnitTest {
 
 	setUp {
 		dir = PathName.tmp;
-		path = dir +/+ "test_md.scsyndef";
-		mdPath = dir +/+ "test_md.txarcmeta";
+		path = dir +/+ defname ++ ".scsyndef";
+		mdPath = dir +/+ defname ++ ".txarcmeta";
 		metadata = (a: 1);
 		original = SynthDef(defname, {
 			Out.ar(0, DC.ar(0))
