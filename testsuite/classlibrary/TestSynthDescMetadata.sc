@@ -1,5 +1,5 @@
 TestSynthDescMetadata : UnitTest {
-	var dir, path, mdPath, metadata, original, oldMdPlugin, error;
+	var dir, path, mdPath, metadata, original, oldMdPlugin;
 	var defname = \test_md;
 
 	setUp {
@@ -14,11 +14,7 @@ TestSynthDescMetadata : UnitTest {
 		oldMdPlugin = SynthDesc.mdPlugin;
 		SynthDesc.mdPlugin = TextArchiveMDPlugin;
 
-		try {
-			original.writeDefFile(dir);
-		} { |err|
-			error = err
-		};
+		original.writeDefFile(dir);
 		SynthDescLib.global.removeAt(defname);
 	}
 
@@ -30,34 +26,14 @@ TestSynthDescMetadata : UnitTest {
 
 	test_SynthDesc_read_restores_metadata_in_desc_and_def {
 		var synthdesc;
-
-		// currently we can't report this in setUp
-		// because UnitTest 'currentMethod' is set AFTER setUp
-		if(error.notNil) {
-			^this.failed(thisMethod, "Error writing SynthDef: '%'".format(error.errorString));
-		};
-
 		synthdesc = SynthDesc.read(path, keepDefs: true)[\test_md];
-		if(synthdesc.isNil) {
-			^this.failed(thisMethod, "SynthDesc was not read from disk");
-		};
-
 		this.checkMetadata(synthdesc, metadata, SynthDesc);
 	}
 
 	test_SynthDescLib_read_restores_metadata_in_desc_and_def {
 		var synthdesc;
-
-		if(error.notNil) {
-			^this.failed(thisMethod, "Error writing SynthDef: '%'".format(error.errorString));
-		};
-
 		synthdesc = SynthDescLib.read(dir +/+ "*.scsyndef").global;
 		synthdesc = synthdesc[\test_md];
-		if(synthdesc.isNil) {
-			^this.failed(thisMethod, "SynthDesc was not read from disk");
-		};
-
 		this.checkMetadata(synthdesc, metadata, SynthDescLib);
 	}
 
