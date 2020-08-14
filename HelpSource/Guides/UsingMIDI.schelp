@@ -34,7 +34,7 @@ subsection:: MIDIFunc and MIDIdef: Filtering based on device or message data
 
 MIDIFunc and MIDIdef can filter incoming messages, responding to specific devices, MIDI channels or data values. For example, you may want one MIDIFunc to handle controller 1, while a different MIDIFunc handles controller 7.
 
-Filters are set by the argument immediately following the response function: code::MIDIFunc.incomingType({ ... function ... }, msgNum, chan, srcID):: where the meaning of msgNum depends on the message type.
+Filters are set by the argument immediately following the response function: code::MIDIFunc.incomingType({ /* function */ }, msgNum, chan, srcID):: where the meaning of msgNum depends on the message type.
 
 definitionlist::
 ## msgNum || The first data byte of the message. Note on/off messages send code::note_number velocity::; code::msgNum:: is the note number. Continuous controllers send code::cc_number value::; code::msgNum:: is the CC number. Check the specific message type for details.
