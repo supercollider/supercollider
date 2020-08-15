@@ -32,10 +32,12 @@ code::
 { SinOsc.ar(440, 0, 0.2) }.play;
 
 // now here's an equivalent SynthDef
-SynthDef.new("tutorial-SinOsc", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).play;
+SynthDef.new("tutorial-SinOsc", { |out| Out.ar(out, SinOsc.ar(440, 0, 0.2)) }).play;
 ::
 
 SynthDef-new takes a number of arguments. The first is a name, usually in the form of a String as above. The second is in fact a Function. This argument is called a UGen Graph Function, as it tells the server how to connect together its various UGens.
+
+note:: Within the function braces, the code::|out|:: argument defines a SynthDef emphasis::control input::, which is then used as the first input to code::Out.ar::. It is a good habit to provide an code::out:: control in every SynthDef. Review link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: for more about function arguments. ::
 
 section::SynthDefs vs. Functions
 
@@ -43,13 +45,14 @@ This UGen Graph Function we used in the second example above is similar to the F
 
 Out takes two arguments: The first is the index number of the bus to write out on. These start from 0, which on a stereo setup is usually the left output channel. The second is either a UGen or an Array of UGens. If you provide an array (i.e. a multichannel output) then the first channel will be played out on the bus with the indicated index, the second channel on the bus with the indicated index + 1, and so on.
 
-Here's a stereo example to make clear how this works. The SinOsc with the frequency argument of 440 Hz will be played out on bus 0 (the left channel), and the SinOsc with the frequency argument of 442 Hz will be played out on bus 1 (the right channel).
+Here's a stereo example to make clear how this works. The SinOsc with the frequency argument of 440 Hz will be played out on the first output bus (the left channel), and the SinOsc with the frequency argument of 442 Hz will be played out on the second bus (the right channel). By default, code::out:: assumes bus 0 as the first channel, so the two will play on buses 0 and 1 respectively.
 
 code::
 (
-SynthDef.new("tutorial-SinOsc-stereo", { var outArray;
+SynthDef.new("tutorial-SinOsc-stereo", { |out|
+	var outArray;
 	outArray = [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)];
-	Out.ar(0, outArray)
+	Out.ar(out, outArray)
 }).play;
 )
 ::
@@ -60,7 +63,7 @@ Both Function-play and SynthDef-play return another type of object, a Synth, whi
 
 code::
 x = { SinOsc.ar(660, 0, 0.2) }.play;
-y = SynthDef.new("tutorial-SinOsc", { Out.ar(0, SinOsc.ar(440, 0, 0.2)) }).play;
+y = SynthDef.new("tutorial-SinOsc", { |out| Out.ar(out, SinOsc.ar(440, 0, 0.2)) }).play;
 x.free;	// free just x
 y.free;	// free just y
 ::
@@ -71,7 +74,7 @@ More often, you will want to send the corresponding byte code to the server app 
 
 code::
 // execute first, by itself
-SynthDef.new("tutorial-PinkNoise", { Out.ar(0, PinkNoise.ar(0.3)) }).add;
+SynthDef.new("tutorial-PinkNoise", { |out| Out.ar(out, PinkNoise.ar(0.3)) }).add;
 
 // then:
 x = Synth.new("tutorial-PinkNoise");
@@ -92,7 +95,7 @@ z = f.play;
 x.free; y.free; z.free;
 
 // Now with a SynthDef. No randomness!
-SynthDef("tutorial-NoRand", { Out.ar(0, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).add;
+SynthDef("tutorial-NoRand", { |out| Out.ar(out, SinOsc.ar(440 + 200.rand, 0, 0.2)) }).add;
 x = Synth("tutorial-NoRand");
 y = Synth("tutorial-NoRand");
 z = Synth("tutorial-NoRand");
@@ -107,7 +110,7 @@ There are numerous ways of getting variety out of SynthDefs, however. Some thing
 
 code::
 // With Rand, it works!
-SynthDef("tutorial-Rand", { Out.ar(0, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).add;
+SynthDef("tutorial-Rand", { |out| Out.ar(out, SinOsc.ar(Rand(440, 660), 0, 0.2)) }).add;
 x = Synth("tutorial-Rand");
 y = Synth("tutorial-Rand");
 z = Synth("tutorial-Rand");
