@@ -9,7 +9,7 @@ An onset detector for musical audio signals - detects the beginning of notes/dru
 For more details of all the processes involved, the different onset detection functions, and their evaluation, see:
 
 D. Stowell and M. D. Plumbley. Adaptive whitening for improved real-time audio onset detection. emphasis::Proceedings of the International Computer Music Conference (ICMC2007)::, Copenhagen, Denmark, August 2007. See
-http://www.elec.qmul.ac.uk/digitalmusic/papers/2007/StowellPlumbley07-icmc.pdf.
+http://c4dm.eecs.qmul.ac.uk/papers/2007/StowellPlumbley07-icmc.pdf
 
 classmethods::
 private:: categories
@@ -122,4 +122,3 @@ x = {
 x.free; // Free the synth
 [b, d].do(_.free); // Free the buffers
 ::
-
