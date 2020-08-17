@@ -30,6 +30,20 @@ link::Classes/MIDIFunc:: has a number of convenience methods allowing you to reg
 
 See link::#Playing notes on your MIDI keyboard:: below for a simple example using the note-on and note-off MIDIFuncs.
 
+subsection:: MIDIFunc and MIDIdef: Filtering based on device or message data
+
+MIDIFunc and MIDIdef can filter incoming messages, responding to specific devices, MIDI channels or data values. For example, you may want one MIDIFunc to handle controller 1, while a different MIDIFunc handles controller 7.
+
+Filters are set by the argument immediately following the response function: code::MIDIFunc.incomingType({ /* function */ }, msgNum, chan, srcID):: where the meaning of msgNum depends on the message type.
+
+definitionlist::
+## msgNum || The first data byte of the message. Note on/off messages send code::note_number velocity::; code::msgNum:: is the note number. Continuous controllers send code::cc_number value::; code::msgNum:: is the CC number. Check the specific message type for details.
+## chan || The channel number. Most MIDI devices and software refer to channels 1-16. SuperCollider uses channels 0-15. In SuperCollider, you usually have to subtract 1 from the channel number set in the sending device.
+## srcID || The UID (unique identifier) of the MIDI port. This is set by the system, and is available through the link::Classes/MIDIEndPoint:: objects in the array code::MIDIClient.sources::. (For MIDI input, use code::MIDIClient.sources::, not code::destinations::.) If you know the device's array index, you can set code::srcID: MIDIClient.sources[index].uid::. If you know the device's name, you can search the array for a matching MIDIEndPoint first: code::srcID: MIDIClient.sources.detect { |e| e.device.containsi("searchstring") }.uid::.
+::
+
+Any filters that are omitted will match all values -- e.g., for an omni-channel responder, simply leave out a code::chan:: filter.
+
 subsection:: MIDIIn
 
 MIDIIn has a number of class variables holding functions to be evaluated when a MIDI event comes in. Technical details on each function can be found in the link::Classes/MIDIIn:: help file.

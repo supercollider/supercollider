@@ -33,7 +33,7 @@ argument:: msgType
 A link::Classes/Symbol:: indicating which kind of MIDI message this MIDIFunc should respond to. One of code::\noteOn::, code::\noteOff::, code::\control::, code::\touch::, code::\polytouch::, code::\bend::, code::\program::, code::\sysex::, code::\mtcQF::, code::\smpte::, code::\songPosition::, code::\songSelect::, code::\tuneRequest::, code::\midiClock::, code::\sysrt::, code::\tick::, code::\start::, code::\continue::, code::\stop::, code::\activeSense::, or code::\reset::.
 
 argument:: srcID
-An link::Classes/Integer:: corresponding to the uid of the MIDI input. (See link::Classes/MIDIClient::.) If nil, the MIDIFunc will respond to messages received from all sources.
+An link::Classes/Integer:: corresponding to the uid of the MIDI input. (See link::Guides/UsingMIDI#MIDIFunc and MIDIdef: Filtering based on device or message data::.) If nil, the MIDIFunc will respond to messages received from all sources.
 
 argument:: argTemplate
 An optional link::Classes/Integer:: or link::Classes/Function:: (or object which responds to the method link::Overviews/Methods#matchItem::) used to match the value of an incoming MIDI message. (e.g. velocity, control value, program number, etc.). If a Function, it will be evaluated with the message value as an argument, and should return a link::Classes/Boolean:: indicating whether the message matches and this MIDIFunc should respond.
