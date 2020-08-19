@@ -4,26 +4,61 @@ related:: Classes/SimpleController, Classes/NodeWatcher
 categories:: Control
 
 description::
-One common OOP pattern is Model-View-Controller where one object (the controller) is a dependant of the model. Every time the model changes it notifies all of its dependants. In this case the model has a dictionary of dependants and iterates through those.
 
-Another common pattern is NotificationCenter wherein an object emits a notification and clients can register functions that will be executed when that notification happens.
+In certain cases it may be useful to make an object perform a specific function when receiving a predefined message from another given object.  For example, a GUI element may want to update its state when the state of a server object changes.  Such cases are: Update the count of synthdefs when a new synthdef is loaded, update the enabled/disabled state of a control gui element when a Synth which it controls starts running or is freed, etc. NotificationCenter makes it possible to add such a custom function to any object called the observer, and to perform it whenever another object called the subject issues a notification identified by a symbol called the message.
 
-A link::Classes/Server:: emits a \newAllocators notification when it creates new node and bus allocators which it does when it quits or boots.
+The implementation provided by NotificationPattern is a variant of a common OOP pattern called the Observer Pattern, which provides a way for an object to flexibly broadcast messages to interested receiver objects.  This pattern defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.  (see: https://www.gofpatterns.com/behavioral-design-patterns/behavioral-patterns/observer-pattern.php and https://en.wikipedia.org/wiki/Observer_pattern ).  An object that  notifies its dependents is called the subject, and the dependents are called observers.
 
-code::
-NotificationCenter.notify(Server.default, \newAllocators);
+The original implementation of this pattern in SuperCollider involves three steps:
+
+NUMBEREDLIST::
+## A subject adds a dependant with: code:: subject.addDependant(observer) ::
+## When a subject wants to inform its observers (dependants) that it has changed, it uses the method changed: code:: subject.changed(<optional arguments>...) ::
+## The method changed obtains the list of dependants of the subject and iterates over each observer sending it the message code:: update :: : code:: observer.changed(subject, <optional arguments>...) ::
 ::
 
-You can listen for this:
+Each observer object can then decide how to react to the change broadcast by the subject, based on the code contained in the update method and the arguments received from the subject.
+
+The above implementation is simple to use, because it only requires to register each observer to the intended subject. However it is limited by the fact that the action to be performed by the observer is coded in the update method.  This makes it complicated to code the choice of different actions to be performed depending on the subject, the observer, and the messages sent as arguments with the code:: changed :: message.  The NotificationCenter class provides a way to tell each observer what action to perform depending on the subject and on a symbol which is sent as argument together with the method broadcast by the subject.  Thus, to make an observer perform an action when it receives a message symbol from a subject, it is necessary to specify the following 4 objects:
+
+NUMBEREDLIST::
+## The subject (Any kind of object except nil)
+## The message (A symbol)
+## The observer (Any kind of object except nil)
+## The action to be performed (A Function)
+::
+
+Using the NotificationCenter class, a connection between a subject and an observer to perform an action in response to a message is created by the following code:
 
 code::
-NotificationCenter.register(Server.default, \newAllocators, yourself, {
-	// throw away all your node variables
-	// or stop the music
+NotificationCenter.register(subject, message, observer, action)
+::
+
+To notify observers that a subject has changed, the NotificationCenter must call the method code:: notify :: :
+
+code::
+NotificationCenter.notify(subject, message, <optional arguments>...);
+::
+
+Any object that has been registered as observer to the subject issuing the notification, will perform the action that is coupled to the message of the notification.  It is thus possible to make any observer object perform a specified action when receiving the corresponding message from the object with which it has been registered. 
+
+section:: Example
+
+When a Server boots or quits, it notifies its observers sending them the message \newAllocators:
+
+code::
+NotificationCenter.notify(server, \newAllocators)
+::
+
+Therefore any object that wants to perform an action when a server boots or quits, can use NotificationCenter to register the action using the following code:
+
+code::
+// using default server as subject and a symbol as observer:
+NotificationCenter.register(Server.default, \newAllocators, \yourself, {
+	// Substitute anything more meaningful here:
+	"symbol yourself was notified newAllocators by defaul server".postln;
 });
 ::
-
-The link::Classes/Buffer:: class register a function to clear its info cache whenever a server restarts. The server is emitting changed messages quite often (every 0.4 secs for the status updates), and the Buffer class is only interested in boot/quit events, so this is a more lightweight system for this purpose.
 
 ClassMethods::
 
@@ -43,3 +78,4 @@ After the notification has been emitted and handled, automatically unregister.
 
 method::registrationExists
 Simply confirms if a registration is already in place.
+
