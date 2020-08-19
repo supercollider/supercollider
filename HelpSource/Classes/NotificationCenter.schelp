@@ -15,6 +15,7 @@ NUMBEREDLIST::
 ## A subject adds a dependant with: code:: subject.addDependant(observer) ::
 ## When a subject wants to inform its observers (dependants) that it has changed, it uses the method changed: code:: subject.changed(<optional arguments>...) ::
 ## The method changed obtains the list of dependants of the subject and iterates over each observer sending it the message code:: update :: : code:: observer.changed(subject, <optional arguments>...) ::
+::
 
 Each observer object can then decide how to react to the change broadcast by the subject, based on the code contained in the update method and the arguments received from the subject.
 
