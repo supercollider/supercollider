@@ -14,8 +14,8 @@ Release dates of 3.x versions:
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
 
-3.11.1 (TBA)
-============
+3.11.1 (2020-08-19)
+===================
 
 This version of SuperCollider now supports Fedora 32 and Ubuntu 20.04. See README.md or
 [the wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support) for more information on the full set of
