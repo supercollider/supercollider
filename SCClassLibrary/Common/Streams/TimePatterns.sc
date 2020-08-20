@@ -75,7 +75,8 @@ Pseg : Pstep {
 					}
 				}
 			}
-		}
+		};
+		^inval
 	}
 	storeArgs {
 		^[list, durs, curves, repeats]
