@@ -15,6 +15,26 @@ if(APPLE)
     include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
 endif()
 
+# here we choose who provides us with the FFT lib
+# this is done independently for scsynth and supernova
+# scsynth uses vDSP implementation for FFT on macOS
+# however current implementation of vDSP is not thread-safe
+# so we use FFTW with supernova on macOS
+# once vDSP implementation becomes thread-safe
+# this logic can be reworked to use vDSP on macOS
+
+find_package(FFTW3f 3.3)
+
+if (NOT FFTW3F_FOUND OR FFT_GREEN)
+    message(STATUS "FFT library (supernova): Green")
+    set(FFT_GREEN 1)
+    add_definitions("-DSC_FFT_GREEN")
+else()
+    message(STATUS "Found fftw3f: ${FFTW3F_LIBRARY}")
+    message(STATUS "FFT library (supernova): FFTW")
+    add_definitions("-DSC_FFT_FFTW")
+endif()
+
 set(libsupernova_src
     sc/sc_synth_definition.cpp
     sc/sc_osc_handler.cpp
@@ -31,6 +51,7 @@ set(libsupernova_src
     ${CMAKE_SOURCE_DIR}/common/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
     server/buffer_manager.cpp
     server/memory_pool.cpp
     server/node_graph.cpp
@@ -140,6 +161,7 @@ endif()
 if (FFTW3F_FOUND)
     target_include_directories(libsupernova PUBLIC ${FFTW3F_INCLUDE_DIR})
     target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
+    set_property(TARGET libsupernova PROPERTY SUPERNOVA_FFTW ON) # for fixing linking in macdeployqt
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -165,6 +187,7 @@ target_link_libraries(supernova libsupernova)
 
 if(WIN32)
     if(NOT MSVC)
+      target_link_libraries(supernova "-municode")
       set_target_properties(supernova libsupernova PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 

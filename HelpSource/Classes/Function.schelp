@@ -19,7 +19,7 @@ c.value.postln;	// evaluate c and print the result
 )
 ::
 
-See AbstractFunction for function composition examples.
+See link::Classes/AbstractFunction#Function Composition:: for function composition examples.
 
 Because Functions are such an important concept, here some examples from related programming languages with functions as first class objects:
 

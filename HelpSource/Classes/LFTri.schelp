@@ -14,7 +14,7 @@ classmethods::
 method::ar, kr
 
 argument::freq
-Frequency in Hertz.
+Frequency in Hertz. For efficiency reasons, only positive values result in correct behavior.
 
 argument::iphase
 

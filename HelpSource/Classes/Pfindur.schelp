@@ -8,12 +8,32 @@ ClassMethods::
 method::new
 Embeds elements of the strong::pattern:: into the stream until the duration comes close enough to strong::dur::.
 
+argument::dur
+The duration in beats after which the straem should end, derived from the event keys code::dur:: or code::delta::. The delta of the last event is adjusted so that the total duration fits this value. If the stream is shorter than dur, a code::filler:: (see below) can be used to fill the gap.
+
+argument::pattern
+The pattern to cut short. This should be an event pattern (returning a stream of events).
+
+argument::tolerance
+measuring tolerance for the total duration to avoid jitter
+
+
+
+
 Examples::
 
 code::
 (
 var a, b;
 a = Pfindur(5, Pbind(\dur, Prand([1, 2, 0.5, 0.1], inf)));
+x = a.asStream;
+9.do({ x.next(Event.default).postln; });
+)
+
+
+(
+var a, b;
+a = Pfindur(5, Pbind(\dur, Prand([1, 2, 0.5, 0.1], 4)), filling: (note: 1920));
 x = a.asStream;
 9.do({ x.next(Event.default).postln; });
 )

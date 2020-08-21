@@ -48,10 +48,46 @@ TestNamedControl : UnitTest {
 				defaultValues = a.source.values;
 			});
 		}, Error)
-
-
 	}
 
+	test_NamedControl_uses_constructor_spec {
+		var def;
+		var argSpec = [0, 2].asSpec, mdSpec = [0, 5].asSpec;
+		def = SynthDef(\test, {
+			var control = \name.kr(0, spec: argSpec);
+		}, metadata: (
+			specs: (
+				name: mdSpec
+			)
+		));
+		this.assertEquals(
+			def.metadata[\specs][\name].maxval,
+			argSpec.maxval,
+			"Spec passed into NamedControl.kr should override metadata (testing maxval)"
+		)
+	}
+
+	test_NamedControl_uses_metadata_spec {
+		var def;
+		var mdSpec = [0, 5].asSpec;
+		def = SynthDef(\test, {
+			var control = \name.kr(0);
+		}, metadata: (
+			specs: (
+				// old logic did not replace the ControlSpec object
+				// but actually corrupted the object given here!
+				// so, without copying, assertEquals passes but with
+				// the wrong value
+				// copy is necessary for a valid test
+				name: mdSpec.copy
+			)
+		));
+		this.assertEquals(
+			def.metadata[\specs][\name].maxval,
+			mdSpec.maxval,
+			"Nil spec in NamedControl.kr should not override metadata (testing maxval)"
+		)
+	}
 
 }
 

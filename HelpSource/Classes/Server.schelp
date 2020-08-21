@@ -1,7 +1,7 @@
 class:: Server
 summary:: Object representing a server application
 categories:: Server>Abstractions
-related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection
+related:: Guides/Server-Guide, Guides/MultiClient_Setups, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection
 
 description::
 
@@ -49,7 +49,7 @@ argument:: clientID
 an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage, the server will supply an ID automatically when a client registers for the link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations, you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
 
 method:: remote
-Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted and starts listening immediately. You should not call link::#-boot:: on an instance created using this method.
+Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted and starts listening immediately. You should not call link::#-boot:: on an instance created using this method. link::Guides/Server-Guide:: and link::Guides/MultiClient_Setups:: contain further information on this and multiclient usage.
 
 argument:: name
 a symbol;  each Server object is stored in one global classvariable under its name.
@@ -58,10 +58,29 @@ argument:: addr
 an optional instance of link::Classes/NetAddr::, providing IP address of the remote machine and port the app is listening on.
 
 argument:: options
-an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
+an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values. note::To enable remote connections you will need to change the option link::Classes/ServerOptions#-bindAddress:: as the default value only allows connections from the local machine. code::s.options.bindAddress = "0.0.0.0":: will allow connections from any address.::
 
 argument:: clientID
 an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage, the server will supply an ID automatically when a client registers for the link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations, you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
+
+code::
+// example usage:
+// on machine running the server
+(
+s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+s.options.maxLogins = 2; // set to correct number of clients
+s.boot;
+)
+
+// on remote machine connecting to server
+(
+o = ServerOptions.new;
+o.options.maxLogins = 2;
+t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correct address and port
+// info about returned client ID should be posted in the post window
+t.makeWindow; // make a window for monitoring
+)
+::
 
 
 method:: local
@@ -659,7 +678,7 @@ You must call this when finished recording or the output file will be unusable. 
 
 
 method:: recChannels
-Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
+Get/set the number of channels (int) to record. By default this is set to 2 (stereo) but can be increased to record soundfiles with many more channels. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.

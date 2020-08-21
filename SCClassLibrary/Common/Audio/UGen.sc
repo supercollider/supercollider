@@ -413,7 +413,7 @@ UGen : AbstractFunction {
 		if (anInput.isValidUGenInput, {
 			^BinaryOpUGen.new(aSelector, this, anInput)
 		},{
-			anInput.performBinaryOpOnUGen(aSelector, this);
+			^anInput.performBinaryOpOnUGen(aSelector, this);
 		});
 	}
 	reverseComposeBinaryOp { arg aSelector, aUGen;

@@ -321,9 +321,17 @@ void realtime_engine_functor::init_thread(void) {
     name_current_thread(0);
 }
 
-void realtime_engine_functor::log_(const char* str) { instance->log_printf(str); }
+void realtime_engine_functor::log_(const char* str) {
+    // Silently drop messages; if instance is null it means something failed while constructing nova_server
+    if (instance)
+        instance->log_printf(str);
+}
 
 void realtime_engine_functor::log_printf_(const char* fmt, ...) {
+    // Silently drop messages; if instance is null it means something failed while constructing nova_server
+    if (instance == nullptr)
+        return;
+
     va_list vargs;
     va_start(vargs, fmt);
     instance->log_printf(fmt, vargs);

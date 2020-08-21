@@ -61,7 +61,7 @@ If you change the quantum, Link does not guarantee that beats will keep the same
 
 Therefore, you should emphasis::not:: change the quantum in the middle of a performance. Ableton recommends to set the quantum just before beginning. Then, you can change SuperCollider's code::beatsPerBar:: as needed, without changing the quantum, so that Link's phase reference remains consistent.
 
-SuperCollider peers may optionally synchronize barlines and all meter changes by using link::Classes/LinkClock#-enableMeterSync::. This is independent of Link's quantum, and is safe to use mid-performance. See link::Classes/SCClockMeterSync::.
+SuperCollider peers may optionally synchronize barlines and all meter changes by using link::Classes/LinkClock#-enableMeterSync::. This is independent of Link's quantum, and is safe to use mid-performance. See link::Classes/MeterSync::.
 
 Subsection:: Notifications
 
@@ -74,7 +74,7 @@ table::
 ## code::\linkStart:: || An external peer started playback
 ## code::\linkStop:: || An external peer stopped playback
 ## code::\numPeers:: || The number of connected peers changed
-## code::\resynced:: || After link::#-enableMeterSync::, a code::\resynced:: notification is sent whenever a link::Classes/SCClockMeterSync#-resyncMeter:: call finishes successfully. One Boolean argument is passed: code::true:: if other SuperCollider peers were found, code::false:: if not.
+## code::\resynced:: || After link::#-enableMeterSync::, a code::\resynced:: notification is sent whenever a link::Classes/MeterSync#-resyncMeter:: call finishes successfully. One Boolean argument is passed: code::true:: if other SuperCollider peers were found, code::false:: if not.
 ::
 
 (Note that Link does not synchronize meter across peers; this notification is inherited from TempoClock. link::Classes/LinkClock#-isSyncingMeter:: is a SuperCollider-specific way to synchronize meter; it is not part of the Link protocol.)
@@ -152,7 +152,7 @@ argument:: quantum
 An Integer or Float.
 
 method:: enableMeterSync
-Activates SuperCollider-barline sync by creating a link::Classes/SCClockMeterSync:: object internally. (If already enabled, no new object will be created.)
+Activates SuperCollider-barline sync by creating a link::Classes/MeterSync:: object internally. (If already enabled, no new object will be created.)
 
 argument:: id
 Optional: An integer ID, uniquely identifying this instance. If not provided, one will be chosen randomly.
@@ -160,7 +160,7 @@ Optional: An integer ID, uniquely identifying this instance. If not provided, on
 argument:: ports
 Optional: An array of port numbers, to which barline-sync messages will be sent.
 
-returns:: The LinkClock instance (to support chaining configuration methods, e.g. code::l = LinkClock.new.latency_(s.latency).enableMeterSync::, in which case you want code::l:: to be the clock object). To get access to the SCClockMeterSync object, use link::#-getMeterSync::.
+returns:: The LinkClock instance (to support chaining configuration methods, e.g. code::l = LinkClock.new.latency_(s.latency).enableMeterSync::, in which case you want code::l:: to be the clock object). To get access to the MeterSync object, use link::#-getMeterSync::.
 
 method:: disableMeterSync
 Remove all barline-sync objects.
@@ -169,7 +169,7 @@ method:: isSyncingMeter
 returns:: A Boolean, code::true:: if barline sync is active, code::false:: if not. (If you create the barline sync object independently, this answer is likely to be incorrect.)
 
 method:: getMeterSync
-returns:: The SCClockMeterSync object previously created by link::#-enableMeterSync::.
+returns:: The MeterSync object previously created by link::#-enableMeterSync::.
 
 note:: It is possible, though redundant and not recommended, to create multiple barline-sync objects by doing code::clock.enableMeterSync:: and code::m = SCClockMeterSync(clock)::. code::getMeterSync:: has access emphasis::only:: to the object created by code::clock.enableMeterSync::. Therefore, it is recommended to use code::clock.enableMeterSync:: in all cases. ::
 

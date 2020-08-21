@@ -41,7 +41,7 @@ ssh from your laptop by opening a terminal and typing:
     sudo apt-get upgrade
     sudo apt-get dist-upgrade
     sudo apt-get install libsamplerate0-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline-dev \
-        libfftw3-dev libudev-dev cmake git build-essential python-dev alsa-utils cpufrequtils
+        libncurses5-dev libfftw3-dev libudev-dev cmake git build-essential python-dev alsa-utils cpufrequtils
 
 ### Step 3: Compile, install and configure jackd (no d-bus)
 

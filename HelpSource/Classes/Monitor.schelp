@@ -38,7 +38,7 @@ argument::target
 where to send the synths to (default: server default group)
 
 argument::multi
-keep old links and add new one: this allows you to add layer after layer, otherwise free ther previous mapping (false by default).
+keep old links and add new one: this allows you to add layer after layer, otherwise free the previous mapping (false by default).
 
 argument::volume
 volume at which to monitor

@@ -101,12 +101,12 @@ const selectRegion = (options = { flash: true }) => {
             return cursorRight
         let ch = editor.getLine(cursorRight.line)
             .slice(cursorRight.ch-1, cursorRight.ch)
-        if (token.match(/^(comment|string|symbol|char)/))
-            return findRightParen(cursorRight)
         if (ch === '(')
             return findRightParen(findRightParen(cursorRight))
         if (ch === ')')
             return cursorRight
+        if (token.match(/^(comment|string|symbol|char)/))
+            return findRightParen(cursorRight)
         return findRightParen(cursorRight)
     }
 

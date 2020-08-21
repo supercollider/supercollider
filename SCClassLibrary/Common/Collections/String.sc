@@ -430,10 +430,14 @@ String[char] : RawArray {
 	}
 	splitext {
 		this.reverseDo({ arg char, i;
+			// Return early after the first path separator
+			if (Platform.isPathSeparator(char), {^[this, nil]});
+
 			if (char == $\., {
 				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]
 			});
 		});
+
 		^[this, nil]
 	}
 

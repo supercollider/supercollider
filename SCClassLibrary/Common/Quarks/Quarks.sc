@@ -325,7 +325,12 @@ Quarks {
 			if(fetch, { this.prFetchDirectory });
 			this.prReadDirectoryFile(dirTxtPath);
 		}.try({ arg err;
-			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
+			// 'err' should, by definition, be an Exception
+			// and all Exceptions should respond to 'errorString'
+			// but "throw during error handling" is really really bad,
+			// so, be doubly sure it won't happen
+			var text = err.tryPerform(\errorString) ?? { text = err.asString };
+			("Failed to read quarks directory listing: %\n%".format(if(fetch, directoryUrl, dirTxtPath), text)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
 				if(File.exists(dirTxtPath), {
