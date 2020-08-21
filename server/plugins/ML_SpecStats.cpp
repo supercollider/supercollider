@@ -197,6 +197,7 @@ void SpecPcile_Ctor(SpecPcile* unit) {
     SETCALC(SpecPcile_next);
 
     unit->m_interpolate = ZIN0(2) > 0.f;
+    unit->m_binouot = ZIN0(3) > 0.f;
 
     ZOUT0(0) = unit->outval = 0.;
     unit->m_tempbuf = 0;
@@ -215,7 +216,7 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
 
     // Percentile value as a fraction. eg: 0.5 == 50-percentile (median).
     float fraction = ZIN0(1);
-    bool binout = ZIN0(3); // if true, output the bin number instead of freq
+    bool binout = unit->m_binouot; // if true, output the bin number instead of freq
     bool interpolate = unit->m_interpolate;
 
     // The magnitudes in *p will be converted to cumulative sum values and stored in *q temporarily

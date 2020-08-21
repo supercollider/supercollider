@@ -118,6 +118,7 @@ struct SpecFlatness : FFTAnalyser_Unit {
 
 struct SpecPcile : FFTAnalyser_OutOfPlace {
     bool m_interpolate;
+    bool m_binout;
 };
 
 struct SpecCentroid : FFTAnalyser_Unit {};
