@@ -88,7 +88,6 @@ public:
      * \pre The mutex is shared locked by the current thread.
      */
     void unlock_shared() noexcept;
-
 };
 
 } // namespace sync

@@ -20,17 +20,18 @@
 #include <limits.h>
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/detail/winapi/get_last_error.hpp>
-#include <boost/detail/winapi/semaphore.hpp>
-#include <boost/detail/winapi/wait.hpp>
-#include <boost/detail/winapi/waitable_timer.hpp>
+#include <boost/memory_order.hpp>
+#include <boost/atomic/atomic.hpp>
+#include <boost/winapi/get_last_error.hpp>
+#include <boost/winapi/semaphore.hpp>
+#include <boost/winapi/wait.hpp>
+#include <boost/winapi/waitable_timer.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/exceptions/wait_error.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
 #include <boost/sync/detail/time_traits.hpp>
 #include <boost/sync/detail/time_units.hpp>
-#include <boost/sync/detail/interlocked.hpp>
 #include <boost/sync/detail/waitable_timer.hpp>
 #include <boost/sync/locks/unique_lock_fwd.hpp>
 #include <boost/sync/locks/lock_guard.hpp>
@@ -77,25 +78,25 @@ private:
         // Pointers to the adjacent nodes in the list
         waiter_state* m_prev, *m_next;
         // Semaphore to block on
-        boost::detail::winapi::HANDLE_ m_semaphore;
+        boost::winapi::HANDLE_ m_semaphore;
         // The number of blocked threads on this semaphore and the number of threads that are in the process of being woken
-        long m_waiter_count, m_notify_count;
+        unsigned long m_waiter_count, m_notify_count;
 
         waiter_state()
         {
             m_prev = m_next = this;
-            m_semaphore = boost::detail::winapi::create_anonymous_semaphore(NULL, 0, LONG_MAX);
+            m_semaphore = boost::winapi::create_anonymous_semaphore(NULL, 0, LONG_MAX);
             if (!m_semaphore)
             {
-                const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                 BOOST_SYNC_DETAIL_THROW(resource_error, (err)("condition_variable failed to create a semaphore"));
             }
-            m_waiter_count = m_notify_count = 0;
+            m_waiter_count = m_notify_count = 0u;
         }
 
         ~waiter_state()
         {
-            BOOST_VERIFY(boost::detail::winapi::CloseHandle(m_semaphore) != 0);
+            BOOST_VERIFY(boost::winapi::CloseHandle(m_semaphore) != 0);
         }
 
         BOOST_DELETED_FUNCTION(waiter_state(waiter_state const&))
@@ -138,17 +139,17 @@ private:
     // Points to the waiter state that will be used to block threads
     waiter_state* m_wait_state;
     // Total number of blocked threads, in all waiter states
-    long m_total_waiter_count;
+    boost::atomic< std::size_t > m_total_waiter_count;
 
 public:
     BOOST_SYNC_DETAIL_CONSTEXPR_WITH_NON_LITERAL_BASE basic_condition_variable() BOOST_NOEXCEPT :
-        m_notify_state(NULL), m_wait_state(NULL), m_total_waiter_count(0)
+        m_notify_state(NULL), m_wait_state(NULL), m_total_waiter_count(0u)
     {
     }
 
     ~basic_condition_variable()
     {
-        BOOST_ASSERT(m_total_waiter_count == 0);
+        BOOST_ASSERT(m_total_waiter_count.load(boost::memory_order_relaxed) == 0u);
 
         if (m_notify_state)
         {
@@ -168,25 +169,26 @@ public:
 
     void notify_one() BOOST_NOEXCEPT
     {
-        if (interlocked_read_acquire(&m_total_waiter_count))
+        if (m_total_waiter_count.load(boost::memory_order_acquire) > 0u)
         {
             boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
-            if (m_total_waiter_count == 0)
+            if (m_total_waiter_count.load(boost::memory_order_relaxed) == 0u)
                 return;
 
-            wake_waiters(1);
+            wake_waiters(1u);
         }
     }
 
     void notify_all() BOOST_NOEXCEPT
     {
-        if (interlocked_read_acquire(&m_total_waiter_count))
+        if (m_total_waiter_count.load(boost::memory_order_acquire) > 0u)
         {
             boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
-            if (m_total_waiter_count == 0)
+            const std::size_t count = m_total_waiter_count.load(boost::memory_order_relaxed);
+            if (count == 0u)
                 return;
 
-            wake_waiters(m_total_waiter_count);
+            wake_waiters(count);
         }
     }
 
@@ -219,11 +221,11 @@ public:
     {
         relocker< Lockable > unlocker(lock);
 
-        const boost::detail::winapi::HANDLE_ waitable_timer = sync::detail::windows::get_waitable_timer();
+        const boost::winapi::HANDLE_ waitable_timer = sync::detail::windows::get_waitable_timer();
 
-        if (!boost::detail::winapi::SetWaitableTimer(waitable_timer, reinterpret_cast< const boost::detail::winapi::LARGE_INTEGER_* >(&t.get()), 0, NULL, NULL, false))
+        if (BOOST_UNLIKELY(!boost::winapi::SetWaitableTimer(waitable_timer, reinterpret_cast< const boost::winapi::LARGE_INTEGER_* >(&t.get()), 0, NULL, NULL, false)))
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(wait_error, (err)("condition_variable timed_wait failed to set a timeout"));
         }
 
@@ -254,23 +256,24 @@ public:
     BOOST_DELETED_FUNCTION(basic_condition_variable& operator= (basic_condition_variable const&))
 
 private:
-    void wake_waiters(long count_to_wake) BOOST_NOEXCEPT
+    void wake_waiters(std::size_t count_to_wake) BOOST_NOEXCEPT
     {
-        interlocked_write_release(&m_total_waiter_count, m_total_waiter_count - count_to_wake);
-        if (count_to_wake > 0)
+        m_total_waiter_count.opaque_sub(count_to_wake, boost::memory_order_relaxed);
+        if (count_to_wake > 0u)
         {
             while (true)
             {
-                long n = m_notify_state->m_waiter_count - m_notify_state->m_notify_count;
-                if (n > 0)
+                unsigned long n = m_notify_state->m_waiter_count - m_notify_state->m_notify_count;
+                if (n > 0u)
                 {
-                    n = n > count_to_wake ? count_to_wake : n;
+                    if (n > count_to_wake)
+                        n = static_cast< unsigned long >(count_to_wake);
                     m_notify_state->m_notify_count += n;
-                    boost::detail::winapi::ReleaseSemaphore(m_notify_state->m_semaphore, n, NULL);
                     count_to_wake -= n;
+                    boost::winapi::ReleaseSemaphore(m_notify_state->m_semaphore, static_cast< long >(n), NULL);
                 }
 
-                if (count_to_wake > 0)
+                if (count_to_wake > 0u)
                     m_notify_state = m_notify_state->m_next;
                 else
                     break;
@@ -287,8 +290,8 @@ private:
             // It's the first waiter
             waiter_state* p = new waiter_state();
             m_notify_state = m_wait_state = p;
-            p->m_waiter_count = 1;
-            interlocked_write_release(&m_total_waiter_count, 1);
+            p->m_waiter_count = 1u;
+            m_total_waiter_count.store(1u, boost::memory_order_relaxed);
             return p;
         }
 
@@ -296,10 +299,10 @@ private:
         waiter_state* const end = m_wait_state;
         do
         {
-            if (m_wait_state->m_notify_count == 0)
+            if (m_wait_state->m_notify_count == 0u && m_wait_state->m_waiter_count < static_cast< unsigned long >(LONG_MAX))
             {
                 ++m_wait_state->m_waiter_count;
-                interlocked_write_release(&m_total_waiter_count, m_total_waiter_count + 1);
+                m_total_waiter_count.opaque_add(1u, boost::memory_order_relaxed);
                 return m_wait_state;
             }
 
@@ -315,8 +318,8 @@ private:
         m_wait_state->m_next = next;
         next->m_prev = end->m_next = m_wait_state;
 
-        m_wait_state->m_waiter_count = 1;
-        interlocked_write_release(&m_total_waiter_count, m_total_waiter_count + 1);
+        m_wait_state->m_waiter_count = 1u;
+        m_total_waiter_count.opaque_add(1u, boost::memory_order_relaxed);
 
         return m_wait_state;
     }
@@ -325,23 +328,23 @@ private:
     {
         while (true)
         {
-            const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForSingleObject(state->m_semaphore, boost::detail::winapi::infinite);
-            if (BOOST_UNLIKELY(res != boost::detail::winapi::wait_object_0))
+            const boost::winapi::DWORD_ res = boost::winapi::WaitForSingleObject(state->m_semaphore, boost::winapi::infinite);
+            if (BOOST_UNLIKELY(res != boost::winapi::wait_object_0))
             {
-                const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                 {
                     boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
                     --state->m_waiter_count;
-                    if (state->m_notify_count > 0)
+                    if (state->m_notify_count > 0u)
                         --state->m_notify_count;
                     else
-                        interlocked_write_release(&m_total_waiter_count, m_total_waiter_count - 1);
+                        m_total_waiter_count.opaque_sub(1u, boost::memory_order_relaxed);
                 }
                 BOOST_SYNC_DETAIL_THROW(wait_error, (err)("condition_variable wait failed in WaitForSingleObject"));
             }
 
             boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
-            if (state->m_notify_count > 0)
+            if (state->m_notify_count > 0u)
             {
                 // Total waiter count is already actual here (see wake_waiters)
                 --state->m_notify_count;
@@ -356,15 +359,15 @@ private:
         sync::detail::system_duration::native_type time_left = t.get();
         while (time_left > 0)
         {
-            const boost::detail::winapi::DWORD_ dur = time_left > boost::detail::winapi::max_non_infinite_wait ?
-                boost::detail::winapi::max_non_infinite_wait : static_cast< boost::detail::winapi::DWORD_ >(time_left);
-            const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForSingleObject(state->m_semaphore, dur);
+            const boost::winapi::DWORD_ dur = time_left > boost::winapi::max_non_infinite_wait ?
+                boost::winapi::max_non_infinite_wait : static_cast< boost::winapi::DWORD_ >(time_left);
+            const boost::winapi::DWORD_ res = boost::winapi::WaitForSingleObject(state->m_semaphore, dur);
             switch (res)
             {
-            case boost::detail::winapi::wait_object_0: // condition variable was signalled
+            case boost::winapi::wait_object_0: // condition variable was signalled
                 {
                     boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
-                    if (state->m_notify_count > 0)
+                    if (state->m_notify_count > 0u)
                     {
                         // Total waiter count is already actual here (see wake_waiters)
                         --state->m_notify_count;
@@ -374,20 +377,20 @@ private:
                 }
                 break;
 
-            case boost::detail::winapi::wait_timeout: // timeout expired
+            case boost::winapi::wait_timeout: // timeout expired
                 time_left -= dur;
                 break;
 
             default: // error occurred
                 {
-                    const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                    const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                     {
                         boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
                         --state->m_waiter_count;
-                        if (state->m_notify_count > 0)
+                        if (state->m_notify_count > 0u)
                             --state->m_notify_count;
                         else
-                            interlocked_write_release(&m_total_waiter_count, m_total_waiter_count - 1);
+                            m_total_waiter_count.opaque_sub(1u, boost::memory_order_relaxed);
                     }
                     BOOST_SYNC_DETAIL_THROW(wait_error, (err)("condition_variable timed_wait failed in WaitForSingleObject"));
                 }
@@ -396,45 +399,45 @@ private:
 
         boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
         --state->m_waiter_count;
-        if (state->m_notify_count > 0)
+        if (state->m_notify_count > 0u)
         {
             // Total waiter count is already actual here (see wake_waiters)
             --state->m_notify_count;
             return sync::cv_status::no_timeout;
         }
-        interlocked_write_release(&m_total_waiter_count, m_total_waiter_count - 1);
+        m_total_waiter_count.opaque_sub(1u, boost::memory_order_relaxed);
         return sync::cv_status::timeout;
     }
 
-    sync::cv_status priv_timed_wait(waiter_state* state, boost::detail::winapi::HANDLE_ waitable_timer)
+    sync::cv_status priv_timed_wait(waiter_state* state, boost::winapi::HANDLE_ waitable_timer)
     {
-        boost::detail::winapi::HANDLE_ handles[2];
+        boost::winapi::HANDLE_ handles[2];
         handles[0] = state->m_semaphore;
         handles[1] = waitable_timer;
 
         while (true)
         {
-            const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForMultipleObjects(sizeof(handles) / sizeof(*handles), handles, false, boost::detail::winapi::infinite);
-            if (BOOST_UNLIKELY(res == boost::detail::winapi::wait_failed))
+            const boost::winapi::DWORD_ res = boost::winapi::WaitForMultipleObjects(sizeof(handles) / sizeof(*handles), handles, false, boost::winapi::infinite);
+            if (BOOST_UNLIKELY(res == boost::winapi::wait_failed))
             {
-                const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                 {
                     boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
                     --state->m_waiter_count;
-                    if (state->m_notify_count > 0)
+                    if (state->m_notify_count > 0u)
                         --state->m_notify_count;
                     else
-                        interlocked_write_release(&m_total_waiter_count, m_total_waiter_count - 1);
+                        m_total_waiter_count.opaque_sub(1u, boost::memory_order_relaxed);
                 }
                 BOOST_SYNC_DETAIL_THROW(wait_error, (err)("condition_variable timed_wait failed in WaitForMultipleObjects"));
             }
 
             switch (res)
             {
-            case boost::detail::winapi::wait_object_0: // condition variable was signalled
+            case boost::winapi::wait_object_0: // condition variable was signalled
                 {
                     boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
-                    if (state->m_notify_count > 0)
+                    if (state->m_notify_count > 0u)
                     {
                         // Total waiter count is already actual here (see wake_waiters)
                         --state->m_notify_count;
@@ -444,23 +447,23 @@ private:
                 }
                 break;
 
-            case boost::detail::winapi::wait_object_0 + 1: // timeout has expired
+            case boost::winapi::wait_object_0 + 1: // timeout has expired
                 {
                     boost::sync::lock_guard< mutex_type > internal_lock(m_internal_mutex);
                     --state->m_waiter_count;
-                    if (state->m_notify_count > 0)
+                    if (state->m_notify_count > 0u)
                     {
                         // Total waiter count is already actual here (see wake_waiters)
                         --state->m_notify_count;
                         return sync::cv_status::no_timeout;
                     }
-                    interlocked_write_release(&m_total_waiter_count, m_total_waiter_count - 1);
+                    m_total_waiter_count.opaque_sub(1u, boost::memory_order_relaxed);
                     return sync::cv_status::timeout;
                 }
                 break;
 
             default:
-                BOOST_ASSERT(false);
+                BOOST_UNREACHABLE_RETURN(sync::cv_status::no_timeout);
             }
         }
     }

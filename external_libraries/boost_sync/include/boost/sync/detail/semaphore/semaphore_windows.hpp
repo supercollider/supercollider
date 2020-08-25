@@ -13,12 +13,12 @@
 #include <limits.h>
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/detail/winapi/get_last_error.hpp>
-#include <boost/detail/winapi/semaphore.hpp>
-#include <boost/detail/winapi/wait.hpp>
-#include <boost/detail/winapi/waitable_timer.hpp>
-#include <boost/detail/winapi/handles.hpp>
+#include <boost/core/enable_if.hpp>
+#include <boost/winapi/get_last_error.hpp>
+#include <boost/winapi/semaphore.hpp>
+#include <boost/winapi/wait.hpp>
+#include <boost/winapi/waitable_timer.hpp>
+#include <boost/winapi/handles.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
 #include <boost/sync/exceptions/lock_error.hpp>
@@ -48,34 +48,34 @@ class semaphore
 public:
     explicit semaphore(unsigned int i = 0)
     {
-        m_sem = boost::detail::winapi::create_anonymous_semaphore(NULL, i, LONG_MAX);
+        m_sem = boost::winapi::create_anonymous_semaphore(NULL, i, LONG_MAX);
         if (!m_sem)
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(resource_error, (err)("semaphore constructor failed in CreateSemaphore"));
         }
     }
 
     ~semaphore() BOOST_NOEXCEPT
     {
-        BOOST_VERIFY(boost::detail::winapi::CloseHandle(m_sem) != 0);
+        BOOST_VERIFY(boost::winapi::CloseHandle(m_sem) != 0);
     }
 
     void post()
     {
-        const boost::detail::winapi::BOOL_ status = boost::detail::winapi::ReleaseSemaphore(m_sem, 1, NULL);
+        const boost::winapi::BOOL_ status = boost::winapi::ReleaseSemaphore(m_sem, 1, NULL);
         if (status == 0)
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(overflow_error, (err)("semaphore::post failed in ReleaseSemaphore"));
         }
     }
 
     void wait()
     {
-        if (boost::detail::winapi::WaitForSingleObject(m_sem, boost::detail::winapi::infinite) != boost::detail::winapi::wait_object_0)
+        if (boost::winapi::WaitForSingleObject(m_sem, boost::winapi::infinite) != boost::winapi::wait_object_0)
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(wait_error, (err)("semaphore::wait failed in WaitForSingleObject"));
         }
     }
@@ -83,14 +83,14 @@ public:
 
     bool try_wait()
     {
-        const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForSingleObject(m_sem, 0);
-        if (res == boost::detail::winapi::wait_failed)
+        const boost::winapi::DWORD_ res = boost::winapi::WaitForSingleObject(m_sem, 0);
+        if (res == boost::winapi::wait_failed)
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(wait_error, (err)("semaphore::try_wait failed in WaitForSingleObject"));
         }
 
-        return res == boost::detail::winapi::wait_object_0;
+        return res == boost::winapi::wait_object_0;
     }
 
     template< typename Time >
@@ -120,21 +120,21 @@ private:
 
         do
         {
-            const boost::detail::winapi::DWORD_ dur = time_left > boost::detail::winapi::max_non_infinite_wait ?
-                boost::detail::winapi::max_non_infinite_wait : static_cast< boost::detail::winapi::DWORD_ >(time_left);
-            const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForSingleObject(m_sem, dur);
+            const boost::winapi::DWORD_ dur = time_left > boost::winapi::max_non_infinite_wait ?
+                boost::winapi::max_non_infinite_wait : static_cast< boost::winapi::DWORD_ >(time_left);
+            const boost::winapi::DWORD_ res = boost::winapi::WaitForSingleObject(m_sem, dur);
             switch (res)
             {
-            case boost::detail::winapi::wait_object_0:
+            case boost::winapi::wait_object_0:
                 return true;
 
-            case boost::detail::winapi::wait_timeout:
+            case boost::winapi::wait_timeout:
                 time_left -= dur;
                 break;
 
             default:
                 {
-                    const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                    const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                     BOOST_SYNC_DETAIL_THROW(wait_error, (err)("semaphore::timed_wait failed in WaitForSingleObject"));
                 }
             }
@@ -146,31 +146,31 @@ private:
 
     bool priv_timed_wait(sync::detail::system_time_point const& t)
     {
-        boost::detail::winapi::HANDLE_ handles[2];
+        boost::winapi::HANDLE_ handles[2];
         handles[0] = m_sem;
         handles[1] = sync::detail::windows::get_waitable_timer();
 
-        if (!boost::detail::winapi::SetWaitableTimer(handles[1], reinterpret_cast< const boost::detail::winapi::LARGE_INTEGER_* >(&t.get()), 0, NULL, NULL, false))
+        if (!boost::winapi::SetWaitableTimer(handles[1], reinterpret_cast< const boost::winapi::LARGE_INTEGER_* >(&t.get()), 0, NULL, NULL, false))
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(wait_error, (err)("semaphore::timed_wait failed to set a timeout"));
         }
 
-        const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForMultipleObjects(sizeof(handles) / sizeof(*handles), handles, false, boost::detail::winapi::infinite);
+        const boost::winapi::DWORD_ res = boost::winapi::WaitForMultipleObjects(sizeof(handles) / sizeof(*handles), handles, false, boost::winapi::infinite);
         switch (res)
         {
-        case boost::detail::winapi::wait_object_0: // semaphore was signalled
+        case boost::winapi::wait_object_0: // semaphore was signalled
             return true;
 
         default:
             BOOST_ASSERT(false);
 
-        case boost::detail::winapi::wait_object_0 + 1: // timeout has expired
+        case boost::winapi::wait_object_0 + 1: // timeout has expired
             return false;
 
-        case boost::detail::winapi::wait_failed:
+        case boost::winapi::wait_failed:
             {
-                const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                 BOOST_SYNC_DETAIL_THROW(lock_error, (err)("semaphore::timed_wait failed in WaitForMultipleObjects"));
             }
         }
@@ -195,7 +195,7 @@ private:
     }
 
 private:
-    boost::detail::winapi::HANDLE_ m_sem;
+    boost::winapi::HANDLE_ m_sem;
 };
 
 } // namespace winnt

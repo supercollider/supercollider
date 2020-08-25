@@ -19,8 +19,8 @@
 #include <cstddef>
 #include <boost/move/core.hpp>
 #include <boost/move/utility.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/utility/explicit_operator_bool.hpp>
+#include <boost/core/enable_if.hpp>
+#include <boost/core/explicit_operator_bool.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/time_traits.hpp>
 #include <boost/sync/detail/throw_exception.hpp>

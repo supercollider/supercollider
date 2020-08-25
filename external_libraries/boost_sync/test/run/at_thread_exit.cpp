@@ -10,7 +10,7 @@
  * \brief  This test checks that \c at_thread_exit works
  */
 
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/sync/thread_specific/at_thread_exit.hpp>
 
@@ -37,9 +37,11 @@ void my_thread_routine()
 }
 
 
-BOOST_AUTO_TEST_CASE(test_at_thread_exit)
+int main()
 {
     boost::thread t(&my_thread_routine);
     t.join();
-    BOOST_CHECK_EQUAL(called, 1);
+    BOOST_TEST_EQ(called, 1u);
+
+    return boost::report_errors();
 }

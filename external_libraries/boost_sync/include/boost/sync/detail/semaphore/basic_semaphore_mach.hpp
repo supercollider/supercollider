@@ -68,21 +68,28 @@ public:
 
     void wait()
     {
-        kern_return_t result = semaphore_wait(m_sem);
-        if (BOOST_UNLIKELY(result != KERN_SUCCESS))
+        for(;;)
         {
-            switch (result)
+            kern_return_t result = semaphore_wait(m_sem);
+            if (BOOST_UNLIKELY(result != KERN_SUCCESS))
             {
-            case KERN_INVALID_ARGUMENT:
-                BOOST_SYNC_DETAIL_THROW(wait_error, (sync::detail::system_ns::errc::invalid_argument)("semaphore::wait failed: the specified semaphore is invalid."));
+                switch (result)
+                {
+                case KERN_INVALID_ARGUMENT:
+                    BOOST_SYNC_DETAIL_THROW(wait_error, (sync::detail::system_ns::errc::invalid_argument)("semaphore::wait failed: the specified semaphore is invalid."));
 
-            case KERN_TERMINATED:
-                BOOST_SYNC_DETAIL_THROW(wait_error, (sync::detail::system_ns::errc::invalid_argument)("semaphore::wait failed: the specified semaphore has been destroyed"));
+                case KERN_TERMINATED:
+                    BOOST_SYNC_DETAIL_THROW(wait_error, (sync::detail::system_ns::errc::invalid_argument)("semaphore::wait failed: the specified semaphore has been destroyed"));
 
-            case KERN_ABORTED:
-            default:
-                BOOST_SYNC_DETAIL_THROW(wait_error, (sync::detail::system_ns::errc::operation_canceled)("semaphore::wait failed: the wait operation has been aborted"));
+                case KERN_ABORTED:
+                    // KERN_ABORTED can happen on spurious wakeups, e.g. when running inside a debugger
+                    continue;
+
+                default:
+                    BOOST_SYNC_DETAIL_THROW(wait_error, (sync::detail::system_ns::errc::operation_canceled)("semaphore::wait failed: unknown error"));
+                }
             }
+            return;
         }
     }
 

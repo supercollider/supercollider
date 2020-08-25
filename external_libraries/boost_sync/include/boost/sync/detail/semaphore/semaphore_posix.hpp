@@ -15,7 +15,7 @@
 #include <semaphore.h>
 
 #include <boost/assert.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
 #include <boost/sync/exceptions/overflow_error.hpp>
@@ -173,12 +173,12 @@ private:
         typedef typename time_point::clock clock;
         typedef typename time_point::duration duration;
         time_point now = clock::now();
-        while (now < t.get())
+        do
         {
             if (priv_timed_wait(sync::detail::time_traits< duration >::to_sync_unit(t.get() - now)))
                 return true;
             now = clock::now();
-        }
+        } while (now < t.get());
         return false;
     }
 
