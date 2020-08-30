@@ -614,7 +614,7 @@ Set a contiguous range of values in the buffer starting at the index startAt to 
 discussion::
 Note that multichannel buffers interleave their sample data, therefore the actual number of available values is equal to code::numFrames * numChannels::. You are responsible for interleaving the data in values if needed. Multi-dimensional arrays will not work. Indices start at 0.
 
-N.B. The maximum number of values that you can set with a single setn message is 1633 when the server is using UDP as its communication protocol. Use link::#-loadCollection:: and link::#-sendCollection:: to set larger ranges of values.
+N.B. The maximum number of values that you can set with a single setn message is 13098 when the server is using UDP as its communication protocol. Use link::#-loadCollection:: and link::#-sendCollection:: to set larger ranges of values.
 code::
 s.boot;
 b = Buffer.alloc(s,16);
@@ -705,7 +705,7 @@ b.free;
 method:: getn, getnMsg
 Send a message requesting the a contiguous range of values of size count starting from index. action is a Function which will be passed the values in an Array as an argument and evaluated when a reply is received. (Floating-point values for index and count are truncated to integer.)
 discussion::
-N.B. The maximum number of values that you can get with a single getn message is 1633 when the server is using UDP as its communication protocol. Use link::#-loadToFloatArray:: and link::#-getToFloatArray:: to get larger ranges of values.
+N.B. The maximum number of values that you can get with a single getn message is 13095 when the server is using UDP as its communication protocol. (For an unknown reason, the SuperCollider language can send a code::/b_setn:: message containing 13098 values, while the server can send 13095 values.) Use link::#-loadToFloatArray:: and link::#-getToFloatArray:: to get larger ranges of values.
 
 method:: loadToFloatArray
 Write the buffer to a file and then load it into a FloatArray.

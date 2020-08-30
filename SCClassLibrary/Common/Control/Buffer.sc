@@ -299,6 +299,8 @@ Buffer {
 	// risky without wait
 	getToFloatArray { arg index = 0, count = -1, wait = 0.01, timeout = 3, action;
 		var refcount, array, pos, getsize, resp, done = false;
+		// empirically determined: largest b_setn that scsynth/supernova can send back
+		var chunkSize = 13095;
 
 		pos = index = index.asInteger;
 		// treat -1 and nil the same
@@ -306,7 +308,7 @@ Buffer {
 			count = (numFrames * numChannels).asInteger - index;
 		};
 		array = FloatArray.newClear(count);
-		refcount = (count / 1633).roundUp;
+		refcount = (count / chunkSize).roundUp;
 		count = count + pos;
 
 		resp = OSCFunc({ arg msg;
@@ -319,8 +321,7 @@ Buffer {
 
 		{
 			while { pos < count } {
-				// 1633 max size for getn under udp
-				getsize = min(1633, count - pos);
+				getsize = min(chunkSize, count - pos);
 				server.listSendMsg(this.getnMsg(pos, getsize));
 				pos = pos + getsize;
 				if(wait >= 0) { wait.wait } { server.sync };

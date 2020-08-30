@@ -180,7 +180,7 @@ b.getn(0, b.numFrames, {|msg| msg.postln});	// get them
 b.free;
 ::
 
-There is an upper limit on the number of values you can get or set at a time (usually 1633 when using UDP, the default). This is because of a limit on network packet size. To overcome this Buffer has two methods, 'loadCollection' and 'loadToFloatArray' which allow you to set or get large amounts of data by writing it to disk and then loading to client or server as appropriate.
+There is an upper limit on the number of values you can get or set at a time (13095 to get and 13098 to set when using UDP, the default). This is because of a limit on network packet size. To overcome this Buffer has two methods, 'loadCollection' and 'loadToFloatArray' which allow you to set or get large amounts of data by writing it to disk and then loading to client or server as appropriate.
 
 code::
 (
