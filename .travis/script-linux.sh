@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo make install
+sudo make install -j2
