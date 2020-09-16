@@ -14,20 +14,24 @@ Plot {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
 
 		// prevent accumulating in StartUp by multiple calls to *initClass
-		initGuiSkin !? { StartUp.remove(initGuiSkin) };
+		// TODO: review removing this
+		// initGuiSkin !? { StartUp.remove(initGuiSkin) };
 
 		initGuiSkin = {
 			var palette = QtGUI.palette;
-			var hlHSV = palette.highlight.asHSV;
-			var bg = palette.base;
-			var gridCol = Color.hsv(*hlHSV.copy.put(1, 0.4).put(2, 0.5)).blend(bg, 0.7);
+			var hl = palette.highlight;
+			var base = palette.base;
+			var baseText = palette.baseText;
+			var butt = palette.button;
+			var gridCol = butt.blend(baseText, 0.2);
+			var labelCol = butt.blend(baseText, 0.7);
 
 			GUI.skin.put(\plot, (
 				gridColorX: gridCol,
 				gridColorY: gridCol,
-				fontColor: Color.hsv(*hlHSV.copy.put(1, 0.2).put(2, 0.6)),
-				plotColor: [Color.hsv(*hlHSV.copy).blend(palette.baseText, 0.4)],
-				background: bg,
+				fontColor: labelCol,
+				plotColor: [baseText.blend(hl, 0.5)], // should be an array for multichannel support
+				background: base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
 				labelX: "",
@@ -37,7 +41,11 @@ Plot {
 			));
 		};
 		initGuiSkin.value;
-		StartUp.add(initGuiSkin);
+		StartUp.add(this);
+	}
+
+	*doOnStartUp {
+		initGuiSkin.value;
 	}
 
 	*new { |plotter|
@@ -63,8 +71,7 @@ Plot {
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
-
-		resolution =  plotter.resolution;
+		resolution = plotter.resolution;
 	}
 
 	bounds_ { |rect|
@@ -493,7 +500,7 @@ Plotter {
 		};
 		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
 		this.plotMode = \linear;
-		this.plotColor = Color.black;
+		// this.plotColor = Color.black;
 
 		interactionView
 		.background_(Color.clear)
@@ -728,7 +735,7 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		this.plotColor_(plotColor);
+		// this.plotColor_(plotColor);
 		this.plotMode_(plotMode);
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
@@ -787,6 +794,7 @@ Plotter {
 		plotColor = colors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
+			// (so this Plot's color is first in its color array)
 			plt.plotColor_(plotColor.rotate(i.neg))
 		}
 	}
