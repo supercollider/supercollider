@@ -309,11 +309,12 @@ In order to get support for ASIO drivers, follow this directory structure:
 
     supercollider
         external_libraries
-            portaudio_sc_org
-            asiosdk
-                asio
-                common
-                ...
+            portaudio
+                portaudio_library
+                asiosdk
+                    asio
+                    common
+                    ...
             ...
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
@@ -453,10 +454,11 @@ of extension/Quark groups easier.
 
 ### PortAudio
 
-You can study the file `external_libraries\portaudio_sc_org\CMakeLists.txt` to
+You can study the files `external_libraries\portaudio\portaudio_library\CMakeLists.txt`
+and `external_libraries\portaudio\CMakeLists.txt` to
 learn about the options that the build provides. With default settings, all APIs
 that *work out of the box* are enabled and only the library for static linking
-is built. In the VS-build all APIs are enabled. For MinGW, WASAPI is ommitted
+is built. In the VS-build all APIs are enabled. For MinGW, WASAPI is omitted
 and some features of DSound's full duplex mode are unavailable.  If you would
 like to tweak the PortAudio build you can single it out from the SC build with:
 
