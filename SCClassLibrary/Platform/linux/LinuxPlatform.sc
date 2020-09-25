@@ -1,4 +1,7 @@
 LinuxPlatform : UnixPlatform {
+
+	classvar <>runInTerminalCmd;
+
 	name { ^\linux }
 	startupFiles {
 		var deprecated = #["~/.sclang.sc"];
@@ -30,5 +33,26 @@ LinuxPlatform : UnixPlatform {
 	initPlatform {
 		super.initPlatform;
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
+	}
+
+	*getTerminalEmulatorCmd {
+		"LinuxPlatform: searching for a supported terminal emulator".postln;
+		[
+			"urxvt -T % -e %",
+			"termite --title % -e %",
+			"rxvt -T % -e %",
+			"terminator -T % -e %",
+			"xterm -T % -e %",
+			// DE-specific terminals last: avoid problems if not on GNOME or KDE but term installed
+			"xfce4-terminal -T % -e %",
+			"mate-terminal -t % -e %",
+			"gnome-terminal -t % -- %",
+			"konsole --title % -e %",
+		].do{ |cmd|
+			if("command -v % > /dev/null".format(cmd.split($ ).first).systemCmd == 0) {
+				^cmd
+			};
+		};
+		^nil
 	}
 }
