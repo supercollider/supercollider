@@ -8,7 +8,7 @@ A Dictionary is an associative collection mapping keys to values.
 Two keys match if they are strong::equal::. (i.e. == returns true.)
 
 The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
-You must only rely on equality for the keys. For identity matching see: link::Classes/IdentityDictionary:: and link::Classes/Event::.
+You must only rely on equality for the keys. E.g. symbols and strings can both be used as keys because the matching is done by equality (==) and not by identity (===). For identity matching, where strings can not be used as keys, see: link::Classes/IdentityDictionary:: and link::Classes/Event::.
 
 CLASSMETHODS::
 
@@ -18,7 +18,7 @@ Creates a Dictionary with an initial capacity for strong::n:: key value mappings
 method::newFrom
 Creates a new Dictionary from another collection.
 code::
-d= Dictionary.newFrom(List[\a, 1, \b, 2, \c, 4]);
+d= Dictionary.newFrom([\a, 1, \b, 2, \c, 4]);
 ::
 argument::aCollection
 any Object that responds to keysValuesDo (usually a List or an Array).
@@ -103,21 +103,21 @@ Access the value associated with the key. If the key does not exist, return the 
 method::keys
 Return a link::Classes/Set:: of all keys.
 code::
-d = Dictionary.newFrom(List[\hello, 9, \whello, "world"]);
+d = Dictionary.newFrom([\hello, 9, \whello, "world"]);
 d.keys;
 ::
 
 method::values
 Return a link::Classes/List:: of all values.
 code::
-d = Dictionary.newFrom(List[\hello, 9, \whello, "world"]);
+d = Dictionary.newFrom([\hello, 9, \whello, "world"]);
 d.values;
 ::
 
 method::atAll
 Return an link::Classes/Array:: of all values for the given keys.
 code::
-d = Dictionary.newFrom(List[\hello, 9, \whello, "world", \z, 99, \c, 0.33]);
+d = Dictionary.newFrom([\hello, 9, \whello, "world", \z, 99, \c, 0.33]);
 d.atAll([\hello, \z, \hello, \c, \whello]);
 ::
 
@@ -127,7 +127,7 @@ Return an link::Classes/Array:: with all keys and values pairwise.
 discussion::
 
 code::
-d = Dictionary.newFrom(List[\hello, 9, \whello, 77, \z, 99]);
+d = Dictionary.newFrom([\hello, 9, \whello, 77, \z, 99]);
 d.getPairs;
 ::
 
@@ -148,7 +148,7 @@ d.associationAt("robot");	// Get the value associated with key
 method::findKeyForValue
 Try to find a given value and return its key. Element is checked for equality (not identity).
 code::
-d = Dictionary.newFrom(List[\hello, 1, \whello, 77]);
+d = Dictionary.newFrom([\hello, 1, \whello, 77]);
 d.findKeyForValue(1);
 ::
 
@@ -165,7 +165,7 @@ list::
 ::
 code::
 (
-d = Dictionary.newFrom(List[
+d = Dictionary.newFrom([
 	0, \zero,
     \abc, \alpha,
     [1, 2, 3, 5, 8, 13, 21], \fibonacci,
@@ -190,14 +190,14 @@ subsection::Testing
 method::includes
 Returns true if the specified item is stored in the Dictionary as a value. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
 code::
-var d = Dictionary.newFrom(List[\a, "hey", \b, "hello"]);
+var d = Dictionary.newFrom([\a, "hey", \b, "hello"]);
 d.includes("hey").postln; // -> true
 ::
 
 method::includesKey
 Returns true if the specified item is stored in the Dictionary as a key. Element is checked for equality (not for identity). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
 code::
-var d = Dictionary.newFrom(List["hey", 1, "hello", 2]);
+var d = Dictionary.newFrom(["hey", 1, "hello", 2]);
 d.includesKey("hey").postln; // -> true
 ::
 
