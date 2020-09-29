@@ -159,7 +159,7 @@ note::
 if an item matches multiple criteria, the value returned is arbitrary. This is because a dictionary is an unordered collection. It's the user's responsibility to make sure that criteria are mutually exclusive.
 ::
 list::
-## If the key is an object, the item will be matched by equality (if key == item, the value will be returned). For identity matching see subclasses: link::Classes/IdentityDictionary:: or link::Classes/Event::.
+## If the key is an object, the item will be matched by identity (if key === item, the value will be returned).
 ## If the key is a collection, the item is matched if it's contained in the collection.
 ## If the key is a function, the function is evaluated with the item as an argument and the item is matched if the function returns true.
 ::
