@@ -217,7 +217,11 @@ code::
 
 method::!=
 
-Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
+Answer whether the receiver does not equal anotherObject. The default implementation in Object is to determine '==' for the two operands and negate this result. (see below).
+
+method::!==
+
+Answer whether the receiver is not identical to anotherObject.
 
 method::fuzzyEqual
 
