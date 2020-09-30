@@ -283,6 +283,16 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
+	// |==| for other AbstractFunctions should compose the |==| operator itself
+	// |==| is not supported in scsynth, so, compose it to == which is supported
+	|==| { |that|
+		^this.composeBinaryOp('==', that)
+	}
+	prReverseLazyEquals { |that|
+		// commutative, so it's OK to flip the operands
+		^this.composeBinaryOp('==', that)
+	}
+
 	sanitize {
 		^Sanitize.perform(this.methodSelectorForRate, this);
 	}
