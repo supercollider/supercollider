@@ -168,5 +168,24 @@ TestAbstractFunction : UnitTest {
 
 	}
 
+	test_lazy_equals_operator_returns_right_class {
+		[
+			Pwhite(1, 10, inf) -> Pbinop,
+			// 1 |==| Pwhite(1, 10, inf) -> Pbinop,
+			SinOsc.ar -> BinaryOpUGen
+			// 1 |==| SinOsc.ar -> BinaryOpUGen
+		].do { |assn|
+			this.assertEquals(
+				(assn.key |==| 1).class,
+				assn.value,
+				"'% |==| 1' should return a composed operator".format(assn.key.asCompileString)
+			);
+			this.assertEquals(
+				(1 |==| assn.key).class,
+				assn.value,
+				"'1 |==| %' should return a composed operator".format(assn.key.asCompileString)
+			)
+		};
+	}
 }
 
