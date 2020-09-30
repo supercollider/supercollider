@@ -428,6 +428,9 @@ Equal.
 method:: !=
 Not equal.
 
+method:: |==|
+"Lazy equality." See link::Classes/Object#-|==|::.
+
 subsection:: Other
 
 method:: <!

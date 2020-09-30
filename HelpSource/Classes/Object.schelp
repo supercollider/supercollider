@@ -223,6 +223,18 @@ method::!==
 
 Answer whether the receiver is not identical to anotherObject.
 
+method::|==|
+
+A "lazy equality" operator. For typical object types, code::|==|:: behaves the same as link::Classes/Object#-==::. For link::Classes/AbstractFunction:: and its subclasses (including link::Classes/Pattern:: and link::Classes/UGen::), it does not perform the equality check immediately, but rather "composes" an equality operation to be performed at the time of evaluating the resulting function or stream.
+
+code::
+1 |==| 2  // false
+
+Pwhite(1, 3, inf) == 1  // false
+
+Pwhite(1, 3, inf) |==| 1  // a Pbinop
+::
+
 method::fuzzyEqual
 
 Returns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, substraction, and division.
