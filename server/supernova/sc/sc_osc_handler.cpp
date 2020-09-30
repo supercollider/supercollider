@@ -1833,9 +1833,9 @@ template <bool realtime> void handle_s_getn(ReceivedMessage const& msg, size_t m
         ++local; /* skip control */
         if (local == msg.ArgumentsEnd())
             break;
-        if (!it->IsInt32())
+        if (!local->IsInt32())
             throw std::runtime_error("invalid count");
-        argument_count += it->AsInt32Unchecked();
+        argument_count += local->AsInt32Unchecked();
     }
 
     size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;
