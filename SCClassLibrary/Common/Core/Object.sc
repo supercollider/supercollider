@@ -222,6 +222,9 @@ Object  {
 	|==| { |that|
 		^that.prReverseLazyEquals(this)
 	}
+	|!=| { |that|
+		^not(this |==| that)
+	}
 	// a user might write `something |==| aPattern`
 	// so we need to support reverse dispatch
 	prReverseLazyEquals { |that|
