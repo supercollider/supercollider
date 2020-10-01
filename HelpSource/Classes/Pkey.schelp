@@ -35,7 +35,7 @@ p.next(())	// for Pbind, must pass in a default event even if empty
 // note: to check if a Pkey's result /equals/ another value,
 // be sure to use |==|
 p = Pbind(
-	\a, Pwhite(1, 3, inf),
+	\a, Pseries(1, 1, inf),
 	\b, Pif(
 		Pkey(\a) == 2,
 		"equals 2",
@@ -46,7 +46,7 @@ p = Pbind(
 p.next(());  // 'b' is always "nope"
 
 p = Pbind(
-	\a, Pwhite(1, 3, inf),
+	\a, Pseries(1, 1, inf),
 	\b, Pif(
 		Pkey(\a) |==| 2,
 		"equals 2",

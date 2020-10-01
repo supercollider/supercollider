@@ -225,7 +225,7 @@ Answer whether the receiver is not identical to anotherObject.
 
 method::|==|
 
-A "lazy equality" operator. For typical object types, code::|==|:: behaves the same as link::Classes/Object#-==::. For link::Classes/AbstractFunction:: and its subclasses (including link::Classes/Pattern:: and link::Classes/UGen::), it does not perform the equality check immediately, but rather "composes" an equality operation to be performed at the time of evaluating the resulting function or stream.
+A lazy equality operator. For typical object types, code::|==|:: behaves the same as link::Classes/Object#-==::. For link::Classes/AbstractFunction:: and its subclasses (including link::Classes/Pattern:: and link::Classes/UGen::), it does not perform the equality check immediately, but rather composes an equality operation to be performed at the time of evaluating the resulting function or stream.
 
 code::
 1 |==| 2  // false
