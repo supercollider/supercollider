@@ -283,8 +283,12 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
-	// |==| for other AbstractFunctions should compose the |==| operator itself
-	// |==| is not supported in scsynth, so, compose it to == which is supported
+	// Note that this differs from |==| for other AbstractFunctions
+	// Other AbstractFunctions write '|==|' into the compound function
+	// for the sake of their 'storeOn' (compile string) representation.
+	// For UGens, scsynth does not support |==| (same handling --> error).
+	// So here, we use '==' which scsynth does understand.
+	// Also, BinaryOpUGen doesn't write a compile string.
 	|==| { |that|
 		^this.composeBinaryOp('==', that)
 	}
