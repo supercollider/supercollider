@@ -10,6 +10,7 @@ cmake --build $TRAVIS_BUILD_DIR/BUILD --config Release --target install | tee $B
 CMAKE_EXIT=$?
 set +o pipefail
 
+pushd $TRAVIS_BUILD_DIR/BUILD/Install
 # Manually codesign. Without this, there will be present but invalid code signatures on SuperCollider.app and
 # SuperCollider.app/Contents/MacOS/SuperCollider.
 CODESIGN='/usr/bin/codesign --sign - --force --verbose=4'
@@ -22,6 +23,7 @@ $CODESIGN SuperCollider.app
 
 # If any signing fails, then we will be unable to sign SuperCollider.app
 /usr/bin/codesign --verify --verbose=4 SuperCollider.app || exit 1
+popd
 
 if [[ $CMAKE_EXIT != 0 ]]; then
     echo "Build failed. Log:"
