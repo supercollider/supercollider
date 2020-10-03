@@ -9,10 +9,59 @@ matrix:
     #    clang {4, 5, 6, 7, 8, 9, 10}
     # gcc 6, clang 4 are on xenial, all others on bionic
     #
-    # macOS jobs: xcode 10.3, xcode 11.3, xcode 11.3-using-syslibs, xcode 11.3-shared-libscsynth
-    # both on Mojave 10.14
+    # macOS jobs: xcode 10.1, xcode 11.3, xcode 11.3-using-syslibs, xcode 11.3-shared-libscsynth
+    # xcode 10 is on High Sierra 10.13, xcode 11 are on Mojave 10.14
     #
     # macOS is deployed from the plain xcode 11.3 job
+    # macOS jobs (taking longer time to finish) run first to decrease overall build time
+
+    # macOS 10.13 xcode10 legacy build with qt 5.9
+    - os: osx
+      osx_image: xcode10.1
+      env:
+        - JOB_NAME="macos xcode10.1 legacy build with qt 5.9"
+        - IS_LEGACY_BUILD=true
+        - QT=true
+        - DO_LINT=false
+        - USE_SYSLIBS=false
+        - SHARED_LIBSCSYNTH=false
+        - S3_DEPLOY_PREFIX="SC-legacy-" # turn on S3 deployment
+        - GITHUB_DEPLOY_SUFFIX="-macOS-legacy" # turn on Github deployment
+
+    # macOS 10.14 xcode11
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - JOB_NAME="macos xcode11.3"
+        - IS_LEGACY_BUILD=false
+        - QT=true
+        - DO_LINT=false
+        - USE_SYSLIBS=false
+        - SHARED_LIBSCSYNTH=false
+        - S3_DEPLOY_PREFIX="SC-" # turn on S3 deployment
+        - GITHUB_DEPLOY_SUFFIX="-macOS" # turn on Github deployment
+
+    # macOS 10.14 xcode11 use_syslibs
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - JOB_NAME="macos xcode11.3 with syslibs"
+        - IS_LEGACY_BUILD=false
+        - QT=true
+        - DO_LINT=false
+        - USE_SYSLIBS=true
+        - SHARED_LIBSCSYNTH=false
+
+    # macOS 10.14 xcode11 shared_scsynth (LIBSCSYNTH)
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - JOB_NAME="macos xcode11.3 with shared libscsynth"
+        - IS_LEGACY_BUILD=false
+        - QT=true
+        - DO_LINT=false
+        - USE_SYSLIBS=false
+        - SHARED_LIBSCSYNTH=true
 
     # Ubuntu 16.04 gcc6
     - os: linux
@@ -235,47 +284,6 @@ matrix:
         - USE_SYSLIBS=false
         - SHARED_LIBSCSYNTH=false
 
-    # macOS 10.14 xcode10
-    - os: osx
-      osx_image: xcode10.3
-      env:
-        - JOB_NAME="macos xcode10.3"
-        - QT=true
-        - DO_LINT=false
-        - USE_SYSLIBS=false
-        - SHARED_LIBSCSYNTH=false
-
-    # macOS 10.14 xcode11
-    - os: osx
-      osx_image: xcode11.3
-      env:
-        - JOB_NAME="macos xcode11.3"
-        - QT=true
-        - DO_LINT=false
-        - USE_SYSLIBS=false
-        - SHARED_LIBSCSYNTH=false
-        - DO_DEPLOY=YES # presence option
-
-    # macOS 10.14 xcode11 use_syslibs
-    - os: osx
-      osx_image: xcode11.3
-      env:
-        - JOB_NAME="macos xcode11.3 with syslibs"
-        - QT=true
-        - DO_LINT=false
-        - USE_SYSLIBS=true
-        - SHARED_LIBSCSYNTH=false
-
-    # macOS 10.14 xcode11 shared_scsynth (LIBSCSYNTH)
-    - os: osx
-      osx_image: xcode11.3
-      env:
-        - JOB_NAME="macos xcode11.3 with shared libscsynth"
-        - QT=true
-        - DO_LINT=false
-        - USE_SYSLIBS=false
-        - SHARED_LIBSCSYNTH=true
-
 # use ccache to speed up build times. on osx,
 # we install it during the the before_install step
 # with xcode, this requires an additional flag passed during the configuration phase.
@@ -302,17 +310,16 @@ before_script:
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
  - $TRAVIS_BUILD_DIR/.travis/test.sh
+ - export S3_ARTIFACT_NAME=${S3_DEPLOY_PREFIX}${TRAVIS_COMMIT}
+ - export GITHUB_ARTIFACT_NAME=SuperCollider-${VERSION_TO_BUILD}${GITHUB_DEPLOY_SUFFIX}
 # only on osx for now
- - echo $DO_DEPLOY
- - if [[ ! -z "$DO_DEPLOY" ]]; then echo hi; fi
- - if [[ -z "$DO_DEPLOY" ]]; then echo hi; fi
- - if [[ ! -z "$DO_DEPLOY" ]]; then $TRAVIS_BUILD_DIR/.travis/package-$TRAVIS_OS_NAME.sh; fi
+ - if [[ -n "$S3_DEPLOY_PREFIX" || -n "$GITHUB_DEPLOY_SUFFIX" ]]; then $TRAVIS_BUILD_DIR/.travis/package-$TRAVIS_OS_NAME.sh; fi
 
 before_deploy:
  # required for github releases
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
  - export S3_BUILDS_LOCATION=builds/$BUILD_PREFIX
- - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$TRAVIS_COMMIT.zip
+ - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/$S3_ARTIFACT_NAME.zip
  - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_URL'" /></head></html>'
  # put everything to be archived in artifacts/
  - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
@@ -333,21 +340,21 @@ deploy:
    endpoint: s3-us-west-2.amazonaws.com
    acl: public_read
    on:
-     condition: $TRAVIS_OS_NAME = osx && ! -z $AWS_KEY && ! -z $AWS_SECRET && ! -z $DO_DEPLOY
+     condition: $TRAVIS_OS_NAME = osx && -n $AWS_KEY && -n $AWS_SECRET && -n $S3_DEPLOY_PREFIX
      all_branches: true
  # github releases - only tags
  - provider: releases
    api_key: $GITHUB_KEY
-   file: $HOME/SuperCollider-$VERSION_TO_BUILD-macOS.zip
+   file: $HOME/$GITHUB_ARTIFACT_NAME.zip
    prerelease: true
    skip_cleanup: true
    on:
-     condition: $TRAVIS_OS_NAME = osx && ! -z $GITHUB_KEY && ! -z $DO_DEPLOY
+     condition: $TRAVIS_OS_NAME = osx && -n $GITHUB_KEY && -n $GITHUB_DEPLOY_SUFFIX
      tags: true
      all_branches: true
 
 after_deploy:
- - "echo S3 Build Location: $S3_URL"
+ - 'if [[ -n "$S3_DEPLOY_PREFIX" ]]; then echo S3 Build Location: $S3_URL; fi;'
 
 notifications:
   on_success: change
