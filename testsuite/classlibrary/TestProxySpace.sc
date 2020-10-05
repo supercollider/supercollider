@@ -1,9 +1,17 @@
 TestProxySpace : UnitTest {
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+	}
+
+	tearDown {
+		server.remove;
+	}
 
 
 	test_storeOn_recoversState {
 		var psA, psB, stream, bValue, bNodeMap, aMapString, bMapString;
-		var server = Server(this.class.name, NetAddr("127.0.0.1", 57111));
 
 		this.bootServer(server);
 		server.initTree;
@@ -52,4 +60,42 @@ TestProxySpace : UnitTest {
 		server.quit;
 		server.remove;
 	}
+
+	test_copy_as_currentEnvironment {
+
+		var environment = currentEnvironment;
+		var proxySpace = ProxySpace(server);
+		var copySpace;
+		var family = IdentitySet.new;
+		var commonProxies;
+
+		this.bootServer(server);
+
+		proxySpace.push;
+
+		~freq = 80;
+		~hpf = { HPF.ar(WhiteNoise.ar(0.1), ~freq.kr) };
+
+		0.1.wait;
+
+		copySpace = proxySpace.copy;
+
+		proxySpace.pop;
+		proxySpace.end;
+
+
+		copySpace[\hpf].getFamily(family);
+		this.assert(family.size == 2, "there should be one parent in this case", report: true); // sanity check
+
+		commonProxies = proxySpace.envir.values.as(IdentitySet) sect: family;
+		this.assert(commonProxies.isEmpty, "proxyspace copying should refresh local environment crossreferences");
+
+		proxySpace.clear;
+		copySpace.clear;
+
+		currentEnvironment = environment;
+
+	}
+
+
 }
