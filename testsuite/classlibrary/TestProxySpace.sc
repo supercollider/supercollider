@@ -3,18 +3,16 @@ TestProxySpace : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
+		this.bootServer(server);
 	}
 
 	tearDown {
+		server.quit;
 		server.remove;
 	}
 
-
 	test_storeOn_recoversState {
 		var psA, psB, stream, bValue, bNodeMap, aMapString, bMapString;
-
-		this.bootServer(server);
-		server.initTree;
 
 		psA = ProxySpace(server).make {
 			~out = { \in.ar(0!2) };
@@ -57,8 +55,8 @@ TestProxySpace : UnitTest {
 
 		psA.clear;
 		psB.clear;
-		server.quit;
-		server.remove;
+
+		server.sync; // we quit only after clear, avoiding unnecessary warnings
 	}
 
 	test_copy_as_currentEnvironment {
