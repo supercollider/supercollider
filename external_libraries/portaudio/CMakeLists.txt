@@ -15,6 +15,10 @@ set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install" FORCE)
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/portaudio_library")
 
+if(WIN32)
+    message(STATUS "PortAudio support for ASIO: ${PA_USE_ASIO}")
+endif()
+
 # when building PA ourselves, we need to specify PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES
 set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/portaudio_library/include" CACHE PATH "Portaudio include directory" FORCE)
 set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
