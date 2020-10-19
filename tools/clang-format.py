@@ -137,6 +137,11 @@ def callo(args):
     """
     return subprocess.check_output(args).decode('utf-8')
 
+def callo_as_bytes(args):
+    """Call a program, and capture its output as bytes without decoding
+    """
+    return subprocess.check_output(args)
+
 def callo_with_input(args, inputdata):
     """Call a program, pipe input into it, and capture its output
     """
@@ -167,6 +172,12 @@ class Repo(object):
         # and what the current directory is
         return callo(['git', '--git-dir', os.path.join(self.path, ".git"),
                             '--work-tree', self.path] + args)
+
+    def _callgito_as_bytes(self, args):
+        """Same as _callgito, but returns bytes instead of str, to prevent binary files from being decoded as utf8
+        """
+        return callo_as_bytes(['git', '--git-dir', os.path.join(self.path, ".git"),
+            '--work-tree', self.path] + args)
 
     def _callgit(self, args, stdout=None):
         """Call git for this repository without capturing output
@@ -220,8 +231,10 @@ class Repo(object):
     def log(self, command):       return self._callgito(["log"] + command)
     def rev_parse(self, command): return self._callgito(["rev-parse"] + command).rstrip()
     def rm(self, command):        return self._callgito(["rm"] + command)
-    def show(self, command):      return self._callgito(["show"] + command)
     def lsfiles(self):            return self._callgito(["ls-files"])
+
+    # uses bytes instead of decoding to protect binary files with non-utf8-decodable contents
+    def show_as_bytes(self, command): return self._callgito_as_bytes(["show"] + command)
 
 class ClangFormat(object):
     """Class encapsulates finding a suitable copy of clang-format,
@@ -424,13 +437,14 @@ def rebase_branch(clang_format, commit_before_reformat, commit_after_reformat, t
                 continue
 
             # The file has been added or modified, continue as normal
-            file_contents = repo.show(["%s:%s" % (previous_commit, diff_file)])
+            # Get file as bytes to prevent utf8-decoding of binary files
+            file_contents = repo.show_as_bytes(["%s:%s" % (previous_commit, diff_file)])
 
             root_dir = os.path.dirname(diff_file)
             if root_dir and not os.path.exists(root_dir):
                 os.makedirs(root_dir)
 
-            with open(diff_file, "w+") as new_file:
+            with open(diff_file, "bw+") as new_file:
                 new_file.write(file_contents)
 
             repo.add([diff_file])
