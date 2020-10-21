@@ -1,7 +1,7 @@
 // manual_reset_event_futex.hpp, futex-based event
 //
 // Copyright (C) 2013 Tim Blechmann
-// Copyright (C) 2013 Andrey Semashev
+// Copyright (C) 2013, 2019 Andrey Semashev
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
@@ -15,10 +15,10 @@
 
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/memory_order.hpp>
+#include <boost/atomic/atomic.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/sync/detail/config.hpp>
-#include <boost/sync/detail/atomic.hpp>
-#include <boost/sync/detail/pause.hpp>
 #include <boost/sync/detail/futex.hpp>
 #include <boost/sync/detail/time_traits.hpp>
 #include <boost/sync/detail/time_units.hpp>
@@ -39,46 +39,51 @@ class manual_reset_event
     BOOST_DELETED_FUNCTION(manual_reset_event(manual_reset_event const&));
     BOOST_DELETED_FUNCTION(manual_reset_event& operator= (manual_reset_event const&));
 
+private:
+    // State bits are divided into signalled bit and waiter count.
+    enum
+    {
+        post_bit = 1u,
+        wait_count_one = 2u,
+        wait_count_mask = ~static_cast< unsigned int >(post_bit)
+    };
+
 public:
-    manual_reset_event() BOOST_NOEXCEPT : m_state(0)
+    manual_reset_event() BOOST_NOEXCEPT : m_state(0u)
     {
     }
 
     void set() BOOST_NOEXCEPT
     {
-        int old_state = m_state.exchange(1, detail::atomic_ns::memory_order_release); // set state
-        if (old_state == 0)
-            sync::detail::linux_::futex_broadcast(reinterpret_cast< int* >(&m_state)); // wake all threads
+        unsigned int old_state = m_state.fetch_or(post_bit, boost::memory_order_release); // set state
+        if ((old_state & post_bit) == 0u && (old_state & wait_count_mask) != 0u)
+            sync::detail::linux_::futex_broadcast(reinterpret_cast< int* >(&m_state.value())); // wake all threads
     }
 
     void reset() BOOST_NOEXCEPT
     {
-        m_state.store(0, detail::atomic_ns::memory_order_release);
+        m_state.opaque_and(wait_count_mask, boost::memory_order_relaxed);
     }
 
     void wait() BOOST_NOEXCEPT
     {
-        while (m_state.load(detail::atomic_ns::memory_order_acquire) == 0)
+        // Try the fast path first
+        if (this->try_wait())
+            return;
+
+        unsigned int old_state = m_state.add(wait_count_one, boost::memory_order_relaxed);
+        while ((old_state & post_bit) == 0u)
         {
-            const int status = sync::detail::linux_::futex_wait(reinterpret_cast< int* >(&m_state), 0);
-            if (status == 0)
-                break;
-
-            switch (errno)
-            {
-            case EINTR:       // signal received
-            case EWOULDBLOCK: // another thread has reset the event
-                continue;
-
-            default:
-                BOOST_ASSERT(false);
-            }
+            sync::detail::linux_::futex_wait(reinterpret_cast< int* >(&m_state.value()), old_state);
+            old_state = m_state.load(boost::memory_order_relaxed);
         }
+
+        m_state.opaque_sub(wait_count_one, boost::memory_order_acquire);
     }
 
     bool try_wait()
     {
-        return m_state.load(detail::atomic_ns::memory_order_acquire) == 1;
+        return (m_state.load(boost::memory_order_acquire) & post_bit) != 0u;
     }
 
     template< typename Time >
@@ -102,67 +107,79 @@ public:
 private:
     bool priv_timed_wait(sync::detail::system_time_point const& abs_timeout)
     {
-        while (m_state.load(detail::atomic_ns::memory_order_acquire) == 0)
+        // Try the fast path first
+        if (this->try_wait())
+            return true;
+
+        unsigned int old_state = m_state.add(wait_count_one, boost::memory_order_relaxed);
+        while ((old_state & post_bit) == 0u)
         {
             sync::detail::system_duration::native_type time_left = (abs_timeout - sync::detail::system_time_point::now()).get();
             if (time_left <= 0)
+            {
+                m_state.opaque_sub(wait_count_one, boost::memory_order_relaxed);
                 return false;
+            }
 
             // Check that system time resolution is nanoseconds
             BOOST_STATIC_ASSERT(sync::detail::system_duration::subsecond_fraction == 1000000000u);
 
-            const int status = sync::detail::linux_::futex_timedwait(reinterpret_cast< int* >(&m_state), 0, time_left);
-            if (status == 0)
-                break;
-
-            switch (errno)
+            const int status = sync::detail::linux_::futex_timedwait(reinterpret_cast< int* >(&m_state.value()), old_state, time_left);
+            if (status != 0)
             {
-            case ETIMEDOUT:
-                return false;
-
-            case EINTR:       // signal received
-            case EWOULDBLOCK: // another thread has reset the event
-                continue;
-
-            default:
-                BOOST_ASSERT(false);
+                const int err = errno;
+                if (BOOST_LIKELY(err == ETIMEDOUT))
+                {
+                    m_state.opaque_sub(wait_count_one, boost::memory_order_relaxed);
+                    return false;
+                }
             }
+
+            old_state = m_state.load(boost::memory_order_relaxed);
         }
+
+        m_state.opaque_sub(wait_count_one, boost::memory_order_acquire);
 
         return true;
     }
 
     bool priv_timed_wait(sync::detail::system_duration dur)
     {
-        if (m_state.load(detail::atomic_ns::memory_order_acquire) == 0)
+        // Try the fast path first
+        if (this->try_wait())
+            return true;
+
+        unsigned int old_state = m_state.add(wait_count_one, boost::memory_order_relaxed);
+        while ((old_state & post_bit) == 0u)
         {
             sync::detail::system_duration::native_type time_left = dur.get();
             if (time_left <= 0)
+            {
+                m_state.opaque_sub(wait_count_one, boost::memory_order_relaxed);
                 return false;
+            }
 
             // Check that system time resolution is nanoseconds
             BOOST_STATIC_ASSERT(sync::detail::system_duration::subsecond_fraction == 1000000000u);
             do
             {
-                const int status = sync::detail::linux_::futex_timedwait(reinterpret_cast< int* >(&m_state), 0, time_left);
-                if (status == 0)
-                    break;
-
-                switch (errno)
+                const int status = sync::detail::linux_::futex_timedwait(reinterpret_cast< int* >(&m_state.value()), old_state, time_left);
+                if (status != 0)
                 {
-                case ETIMEDOUT:
-                    return false;
-
-                case EINTR:       // signal received
-                case EWOULDBLOCK: // another thread has reset the event
-                    continue;
-
-                default:
-                    BOOST_ASSERT(false);
+                    const int err = errno;
+                    if (BOOST_LIKELY(err == ETIMEDOUT))
+                    {
+                        m_state.opaque_sub(wait_count_one, boost::memory_order_relaxed);
+                        return false;
+                    }
                 }
+
+                old_state = m_state.load(boost::memory_order_relaxed);
             }
-            while (m_state.load(detail::atomic_ns::memory_order_acquire) == 0);
+            while ((old_state & post_bit) == 0u);
         }
+
+        m_state.opaque_sub(wait_count_one, boost::memory_order_acquire);
 
         return true;
     }
@@ -186,8 +203,7 @@ private:
     }
 
 private:
-    BOOST_STATIC_ASSERT_MSG(sizeof(detail::atomic_ns::atomic< int >) == sizeof(int), "Boost.Sync: unexpected size of atomic< int >");
-    detail::atomic_ns::atomic< int > m_state;
+    boost::atomic< unsigned int > m_state;
 };
 
 } // namespace abi

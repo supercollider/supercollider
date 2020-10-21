@@ -19,7 +19,7 @@
 
 #include <cstddef>
 #include <cstdlib>
-#include <boost/sync/detail/interlocked.hpp>
+#include <boost/detail/interlocked.hpp>
 #include <boost/sync/detail/tss.hpp>
 #include <boost/sync/condition_variables/notify_all_at_thread_exit.hpp>
 #include "tss_manager.hpp"
@@ -88,7 +88,7 @@ BOOST_FORCEINLINE void init_tss_once() BOOST_NOEXCEPT
     {
         while (true)
         {
-            long old_val = BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE(&init_tss_once_flag, 1, 0);
+            long old_val = BOOST_INTERLOCKED_COMPARE_EXCHANGE(&init_tss_once_flag, 1, 0);
             if (old_val == 2)
                 break;
             else if (old_val == 1)
@@ -96,7 +96,7 @@ BOOST_FORCEINLINE void init_tss_once() BOOST_NOEXCEPT
             else
             {
                 init_tss(NULL, NULL, NULL);
-                BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&init_tss_once_flag, 2);
+                BOOST_INTERLOCKED_EXCHANGE(&init_tss_once_flag, 2);
                 break;
             }
         }

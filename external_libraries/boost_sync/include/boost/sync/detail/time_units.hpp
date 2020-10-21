@@ -19,7 +19,7 @@
 #include <boost/sync/detail/config.hpp>
 
 #if defined(BOOST_SYNC_DETAIL_PLATFORM_WINAPI)
-#include <boost/detail/winapi/time.hpp>
+#include <boost/winapi/time.hpp>
 #elif defined(BOOST_SYNC_DETAIL_PLATFORM_MACH)
 #include <sys/time.h> // gettimeofday, timeval
 #endif
@@ -116,7 +116,7 @@ public:
     static system_time_point now() BOOST_NOEXCEPT
     {
         system_time_point res;
-        boost::detail::winapi::GetSystemTimeAsFileTime(reinterpret_cast< boost::detail::winapi::FILETIME_* >(&res.m_value));
+        boost::winapi::GetSystemTimeAsFileTime(reinterpret_cast< boost::winapi::FILETIME_* >(&res.m_value));
         return res;
     }
 

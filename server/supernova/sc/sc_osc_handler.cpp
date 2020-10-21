@@ -30,7 +30,7 @@
 
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/read.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 
 #include "osc/OscOutboundPacketStream.h"

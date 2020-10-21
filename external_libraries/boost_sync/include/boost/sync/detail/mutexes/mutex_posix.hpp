@@ -52,27 +52,29 @@ private:
 public:
 #if defined(PTHREAD_MUTEX_INITIALIZER)
 #if !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
-#if !defined(BOOST_NO_CXX11_CONSTEXPR)
+// On Cygwin, as of 2019-01-03, PTHREAD_MUTEX_INITIALIZER is defined as a cast of an integer constant to a pointer,
+// which is equivalent to a reinterpret_cast in C++ and is not a valid constant expression.
+#if !defined(BOOST_NO_CXX11_CONSTEXPR) && !defined(__CYGWIN__)
 #define BOOST_SYNC_DEFINES_MUTEX_CONSTEXPR_CONSTRUCTOR
+    constexpr
 #endif
-
-    BOOST_CONSTEXPR mutex() BOOST_NOEXCEPT : m_mutex(PTHREAD_MUTEX_INITIALIZER)
+    mutex() BOOST_NOEXCEPT : m_mutex(PTHREAD_MUTEX_INITIALIZER)
     {
     }
-#else
+#else // !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
     mutex() BOOST_NOEXCEPT
     {
         BOOST_CONSTEXPR_OR_CONST pthread_mutex_t temp = PTHREAD_MUTEX_INITIALIZER;
         m_mutex = temp;
     }
-#endif
+#endif // !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
 #else // defined(PTHREAD_MUTEX_INITIALIZER)
     mutex()
     {
         int const res = pthread_mutex_init(&m_mutex, NULL);
-        if (res)
+        if (BOOST_UNLIKELY(res != 0))
         {
-            BOOST_SYNC_DETAIL_THROW(resource_error, (res)("boost:: mutex constructor failed in pthread_mutex_init"));
+            BOOST_SYNC_DETAIL_THROW(resource_error, (res)("mutex constructor failed in pthread_mutex_init"));
         }
     }
 #endif // defined(PTHREAD_MUTEX_INITIALIZER)
@@ -85,9 +87,9 @@ public:
     void lock()
     {
         int const res = sync::detail::posix::pthread_mutex_lock(&m_mutex);
-        if (res)
+        if (BOOST_UNLIKELY(res != 0))
         {
-            BOOST_SYNC_DETAIL_THROW(lock_error, (res)("boost: mutex lock failed in pthread_mutex_lock"));
+            BOOST_SYNC_DETAIL_THROW(lock_error, (res)("mutex lock failed in pthread_mutex_lock"));
         }
     }
 
@@ -100,10 +102,10 @@ public:
     {
         int const res = sync::detail::posix::pthread_mutex_trylock(&m_mutex);
 
-        if (res == 0)
+        if (BOOST_LIKELY(res == 0))
             return true;
-        else if (res != EBUSY)
-            BOOST_SYNC_DETAIL_THROW(lock_error, (res)("boost: mutex trylock failed in pthread_mutex_trylock"));
+        else if (BOOST_UNLIKELY(res != EBUSY))
+            BOOST_SYNC_DETAIL_THROW(lock_error, (res)("mutex trylock failed in pthread_mutex_trylock"));
         return false;
     }
 

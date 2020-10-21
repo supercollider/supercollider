@@ -36,13 +36,21 @@ public:
     {
     }
 
-    template <typename ErrorCode>
-    explicit resource_error(ErrorCode sys_err) : runtime_exception(static_cast<int>(sys_err), "boost::sync::resource_error")
+    explicit resource_error(int sys_err) : runtime_exception(sys_err, "boost::sync::resource_error")
     {
     }
 
-    template <typename ErrorCode, typename ArgString>
-    resource_error(ErrorCode sys_err, ArgString const& what) : runtime_exception(static_cast<int>(sys_err), what)
+    explicit resource_error(sync::detail::errc_t sys_err) : runtime_exception(static_cast<int>(sys_err), "boost::sync::resource_error")
+    {
+    }
+
+    template <typename ArgString>
+    resource_error(int sys_err, ArgString const& what) : runtime_exception(sys_err, what)
+    {
+    }
+
+    template <typename ArgString>
+    resource_error(sync::detail::errc_t sys_err, ArgString const& what) : runtime_exception(static_cast<int>(sys_err), what)
     {
     }
 

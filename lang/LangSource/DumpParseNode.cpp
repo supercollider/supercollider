@@ -30,7 +30,6 @@
 #include <ctype.h>
 
 #ifdef _WIN32
-#    define snprintf _snprintf
 #    define PATH_MAX _MAX_PATH
 #endif
 
