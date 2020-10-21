@@ -1,4 +1,4 @@
-# we put portaudio_library in a subdirectory in order to disable flags and definitions
+# we put portaudio_submodule in a subdirectory in order to disable flags and definitions
 unset(CMAKE_C_FLAGS)
 unset(CMAKE_CXX_FLAGS)
 if(WIN32)
@@ -13,12 +13,12 @@ set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE
 # disable install target
 set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install" FORCE)
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/portaudio_library")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/portaudio_submodule")
 
 if(WIN32 AND NOT PA_USE_ASIO)
     message(STATUS "Building Portaudio without support for ASIO")
 endif()
 
 # when building PA ourselves, we need to specify PORTAUDIO_INCLUDE_DIRS and PORTAUDIO_LIBRARIES
-set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/portaudio_library/include" CACHE PATH "Portaudio include directory" FORCE)
+set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/portaudio_submodule/include" CACHE PATH "Portaudio include directory" FORCE)
 set(PORTAUDIO_LIBRARIES portaudio_static CACHE PATH "PORTAUDIO_LIBRARIES" FORCE)
