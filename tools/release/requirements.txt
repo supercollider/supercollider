@@ -1,0 +1,3 @@
+GitPython
+PyGithub
+semantic_version

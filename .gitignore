@@ -24,6 +24,10 @@ package/*.asc
 .idea
 cmake-build-*
 
+# Python/PyCharm files
+venv
+__pycache__
+
 #build directories
 /build*
 
