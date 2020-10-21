@@ -20,5 +20,5 @@
 	path = external_libraries/link
 	url = https://github.com/Ableton/link
 [submodule "external_libraries/portaudio"]
-	path = external_libraries/portaudio/portaudio_library
+	path = external_libraries/portaudio/portaudio_submodule
 	url = https://github.com/PortAudio/portaudio.git
