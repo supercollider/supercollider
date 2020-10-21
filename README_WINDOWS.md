@@ -310,7 +310,7 @@ In order to get support for ASIO drivers, follow this directory structure:
     supercollider
         external_libraries
             portaudio
-                portaudio_library
+                portaudio_submodule
                 asiosdk
                     asio
                     common
@@ -454,7 +454,7 @@ of extension/Quark groups easier.
 
 ### PortAudio
 
-You can study the files `external_libraries\portaudio\portaudio_library\CMakeLists.txt`
+You can study the files `external_libraries\portaudio\portaudio_submodule\CMakeLists.txt`
 and `external_libraries\portaudio\CMakeLists.txt` to
 learn about the options that the build provides. With default settings, all APIs
 that *work out of the box* are enabled and only the library for static linking
