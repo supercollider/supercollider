@@ -145,7 +145,7 @@ endif()
 
 if(AUDIOAPI STREQUAL jack)
     find_package(Jack REQUIRED)
-elseif(AUDIOAPI STREQUAL portaudio AND (SYSTEM_PORTAUDIO))
+elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
     find_package(Portaudio REQUIRED)
 endif()
 message(STATUS "Audio API (supernova): ${AUDIOAPI}")
