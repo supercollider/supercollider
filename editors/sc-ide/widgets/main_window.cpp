@@ -1097,8 +1097,8 @@ void MainWindow::restoreDocuments() {
     if (docMng->needRestore()) {
         QString msg = tr("Supercollider didn't quit properly last time\n"
                          "Do you want to restore files saved as temporary backups?");
-        QMessageBox::StandardButton restore =
-            QMessageBox::warning(mInstance, tr("Restore files?"), msg, QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::StandardButton restore = QMessageBox::warning(
+            mInstance, tr("Restore files?"), msg, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if (restore == QMessageBox::Yes)
             docMng->restore();
         else
