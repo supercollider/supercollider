@@ -127,8 +127,8 @@ elseif (AUDIOAPI STREQUAL portaudio)
         find_package(Portaudio)
         if(NOT PORTAUDIO_FOUND)
             message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-        endif() #NOT PORTAUDIO_FOUND
-    endif() #(NOT WIN32) OR MSYS
+        endif()
+    endif()
     add_definitions("-DSC_AUDIO_API_PORTAUDIO")
     list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
     include_directories(${PORTAUDIO_INCLUDE_DIRS})
