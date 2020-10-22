@@ -6,6 +6,11 @@ if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
 			" https://github.com/supercollider/supercollider/wiki/git-cheat-sheet#working-with-submodules")
 endif()
 
+if(NOT SYSTEM_PORTAUDIO)
+    message(STATUS "PortAudio: building static library")
+    add_subdirectory(portaudio)
+endif()
+
 if(NOT SYSTEM_BOOST) # we compile boost ourselves
 	message(STATUS "Using bundled boost")
 	# boost thread
