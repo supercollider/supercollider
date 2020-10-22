@@ -34,11 +34,6 @@
 #    include <QStyle>
 #    include <QWebEngineCallback>
 
-#    ifndef SCIDE_NO_QWIDGETFACTORY
-#        include "../QcWidgetFactory.h"
-QC_DECLARE_QWIDGET_FACTORY(WebView);
-#    endif
-
 namespace QtCollider {
 
 WebView::WebView(QWidget* parent): QWebEngineView(parent), _editable(false) {

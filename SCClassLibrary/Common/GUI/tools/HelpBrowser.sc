@@ -240,7 +240,7 @@ HelpBrowser {
 					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
 
-				if(newPath!=oldPath && openNewWin) {
+				if(newPath != oldPath && openNewWin) {
 						HelpBrowser.new(newWin:openNewWin).goTo(url);
 				} {
 					this.goTo(url);

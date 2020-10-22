@@ -55,7 +55,6 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
     mWebView = new QtCollider::WebView(this);
-
     mWebView->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
     mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -69,18 +68,20 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     mWebView->setStyle(QStyleFactory::create("Fusion"));
 #    endif
 
+    mWebView->installEventFilter(this);
+
+    mLoadProgressIndicator = new LoadProgressIndicator;
+    mLoadProgressIndicator->setIndent(10);
+
     QVBoxLayout* layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
     layout->addWidget(mWebView);
     setLayout(layout);
 
-    mLoadProgressIndicator = new LoadProgressIndicator;
-    mLoadProgressIndicator->setIndent(10);
     connect(mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()));
     connect(mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()));
     connect(mWebView, SIGNAL(loadFinished(bool)), this, SLOT(onPageLoad()));
-
     connect(mWebView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenuRequest(QPoint)));
 
     mWebView->setOverrideNavigation(true);
@@ -96,21 +97,19 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect(scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()));
 
-    createActions();
+    // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
+    // Note that putting this in the destructor doesn't work.
+    connect(QApplication::instance(), &QApplication::aboutToQuit, [=]() { delete mWebView->page(); });
 
-    mWebView->installEventFilter(this);
+    createActions();
 
     applySettings(Main::settings());
 
     setFocusProxy(mWebView);
-
-    // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
-    // Note that putting this in the destructor doesn't work.
-    connect(QApplication::instance(), &QApplication::aboutToQuit, [=]() { delete mWebView->page(); });
 }
 
 void HelpBrowser::onPageLoad() {
-    // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed chortcuts
+    // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
     ((OverridingAction*)mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
     ((OverridingAction*)mActions[Evaluate])->addToWidget(mWebView->focusProxy());
 
@@ -143,7 +142,7 @@ void HelpBrowser::createActions() {
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(resetZoom()));
     ovrAction->addToWidget(this);
 
-    // eval actions <re added to mWebView->focusProxy() in onPageLoad()
+    // eval actions are added to mWebView->focusProxy() in onPageLoad()
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
     mActions[EvaluateRegion] = ovrAction = new OverridingAction(tr("Evaluate as Code Region"), this);

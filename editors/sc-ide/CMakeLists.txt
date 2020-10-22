@@ -380,7 +380,7 @@ endif()
 
 if(SC_USE_QTWEBENGINE)
     message(STATUS "IDE: Building with QtWebEngine")
-    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE SCIDE_NO_QWIDGETFACTORY)
+    target_compile_definitions(libscide PUBLIC SC_USE_QTWEBENGINE)
 endif()
 
 # Installation

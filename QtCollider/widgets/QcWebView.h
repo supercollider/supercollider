@@ -58,7 +58,7 @@ public:
     Q_INVOKABLE void navigate(const QString& url);
 
 public Q_SLOTS:
-    void findText(const QString& searchText, bool reversed, QcCallback* cb = nullptr);
+    void findText(const QString& searchText, bool reversed, QtCollider::QcCallback* cb = nullptr);
 
 Q_SIGNALS:
     void linkActivated(const QString&, int, bool);
