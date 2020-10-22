@@ -51,6 +51,7 @@
 #    include <direct.h>
 #else
 #    include <sys/param.h>
+#    include <unistd.h> // for _POSIX_MEMLOCK
 #endif
 
 #include "malloc_aligned.hpp"

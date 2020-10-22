@@ -34,6 +34,7 @@
 #    include <winsock2.h>
 #    include <vector>
 #else
+#    include <unistd.h> // for _POSIX_MEMLOCK
 #    include <sys/wait.h>
 #endif
 
