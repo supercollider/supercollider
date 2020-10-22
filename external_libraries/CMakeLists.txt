@@ -8,7 +8,7 @@ endif()
 
 if(NOT SYSTEM_PORTAUDIO)
     message(STATUS "PortAudio: building static library")
-    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
+    add_subdirectory(portaudio)
 endif()
 
 if(NOT SYSTEM_BOOST) # we compile boost ourselves
