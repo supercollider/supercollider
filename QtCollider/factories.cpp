@@ -27,8 +27,8 @@
 QC_DECLARE_QWIDGET_FACTORY(QLabel);
 
 #ifdef SC_USE_QTWEBENGINE
-#   include "widgets/QcWebView.h"   
-    QC_DECLARE_QWIDGET_FACTORY(WebView);
+#    include "widgets/QcWebView.h"
+QC_DECLARE_QWIDGET_FACTORY(WebView);
 #endif
 
 static void doLoadFactories() {

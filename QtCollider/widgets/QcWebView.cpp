@@ -227,11 +227,8 @@ void WebView::contextMenuEvent(QContextMenuEvent* event) {
 // duplicate them
 bool WebView::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        QKeyEvent* newEvent =
-            new QKeyEvent(QEvent::KeyPress, keyEvent->key(), keyEvent->modifiers(), keyEvent->nativeScanCode(),
-                          keyEvent->nativeVirtualKey(), keyEvent->nativeModifiers(), keyEvent->text());
-        QApplication::postEvent(this, newEvent);
+        // takes ownership of newEvent
+        QApplication::postEvent(this, new QKeyEvent(*static_cast<QKeyEvent*>(event)));
     }
 
     event->ignore();
@@ -248,7 +245,8 @@ bool WebView::event(QEvent* ev) {
 
 void WebView::pageLoaded(bool ok) { this->focusProxy()->installEventFilter(this); }
 
-void WebView::updateEditable() {
+void WebView::setEditable(bool b) {
+    _editable = b;
     if (_editable) {
         page()->runJavaScript("document.documentElement.contentEditable = true");
     } else {

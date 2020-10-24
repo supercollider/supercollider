@@ -100,10 +100,7 @@ public:
 
     Q_PROPERTY(bool editable READ editable WRITE setEditable);
     bool editable() const { return _editable; }
-    void setEditable(bool b) {
-        _editable = b;
-        updateEditable();
-    }
+    void setEditable(bool b);
 
     // QWebEnginePage properties
     Q_PROPERTY(QString requestedUrl READ requestedUrl)
@@ -135,15 +132,14 @@ public:
     inline static QUrl urlFromString(const QString& str) { return QUrl::fromUserInput(str); }
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent*);
-    virtual bool event(QEvent* ev);
-    virtual bool eventFilter(QObject* obj, QEvent* event);
+    void contextMenuEvent(QContextMenuEvent*) override;
+    bool event(QEvent* ev) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
 public Q_SLOTS:
     void onPageReload();
     void onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus, int);
     void onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool);
-    void updateEditable();
     void pageLoaded(bool);
 
 private:

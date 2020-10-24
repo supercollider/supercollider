@@ -80,7 +80,6 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     setLayout(layout);
 
     connect(mWebView, SIGNAL(loadStarted()), mLoadProgressIndicator, SLOT(start()));
-    connect(mWebView, SIGNAL(loadFinished(bool)), mLoadProgressIndicator, SLOT(stop()));
     connect(mWebView, SIGNAL(loadFinished(bool)), this, SLOT(onPageLoad()));
     connect(mWebView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(onContextMenuRequest(QPoint)));
 
@@ -99,7 +98,7 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
     // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
     // Note that putting this in the destructor doesn't work.
-    connect(QApplication::instance(), &QApplication::aboutToQuit, [=]() { delete mWebView->page(); });
+    connect(QApplication::instance(), &QApplication::aboutToQuit, [this]() { delete mWebView->page(); });
 
     createActions();
 
@@ -109,14 +108,10 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 }
 
 void HelpBrowser::onPageLoad() {
+    mLoadProgressIndicator->stop();
     // add these actions to weview's renderer, to capture shift+enter and possibly other swallowed shortcuts
-    ((OverridingAction*)mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
-    ((OverridingAction*)mActions[Evaluate])->addToWidget(mWebView->focusProxy());
-
-    // unused: see HelpSource/scdoc.js and HelpSource/editor.js
-    if (mServerPort) {
-        mWebView->page()->runJavaScript(QString("setUpWebChannel(%1)").arg(mServerPort));
-    }
+    static_cast<OverridingAction*>(mActions[EvaluateRegion])->addToWidget(mWebView->focusProxy());
+    static_cast<OverridingAction*>(mActions[Evaluate])->addToWidget(mWebView->focusProxy());
 }
 
 void HelpBrowser::createActions() {
@@ -145,9 +140,8 @@ void HelpBrowser::createActions() {
     // eval actions are added to mWebView->focusProxy() in onPageLoad()
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
     connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
-    mActions[EvaluateRegion] = ovrAction = new OverridingAction(tr("Evaluate as Code Region"), this);
+    mActions[EvaluateRegion] = new OverridingAction(tr("Evaluate as Code Region"), this);
     connect(mActions[EvaluateRegion], &OverridingAction::triggered, this, [=]() { this->evaluateSelection(true); });
-
     // For the sake of display:
     mWebView->pageAction(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
     mWebView->pageAction(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
@@ -376,10 +370,10 @@ void HelpBrowser::onContextMenuRequest(const QPoint& pos) {
     menu.addAction(mWebView->pageAction(QWebEnginePage::Forward));
     menu.addAction(mWebView->pageAction(QWebEnginePage::Reload));
 
-    if (!contextData.selectedText().isEmpty())
-        menu.addAction(mActions[Evaluate]);
-    else
+    if (contextData.selectedText().isEmpty())
         menu.addAction(mActions[EvaluateRegion]);
+    else
+        menu.addAction(mActions[Evaluate]);
 
     menu.addSeparator();
 
