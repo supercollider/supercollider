@@ -38,6 +38,9 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: {
+                // noop: prevent both codemirror and the browser to handle Shift-Enter
+                'Shift-Enter': ()=>{}, 
+                // prevent only codemirror to handle Ctrl+D
                 'Ctrl-D': false
             }
         })
