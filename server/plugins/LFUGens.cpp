@@ -2398,6 +2398,8 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     }
 
     float previousEndLevel = unit->m_endLevel;
+    if (unit->m_shape == shape_Hold)
+        level = previousEndLevel;
     float** envPtr = unit->mInBuf + stageOffset;
     double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
     if (dur < 0)
