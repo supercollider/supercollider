@@ -3,7 +3,7 @@ WebView : View {
 
 	var <onLoadFinished, <onLoadFailed, <onLoadProgress, <onLoadStarted, <onLinkActivated, <onLinkHovered, <onReloadTriggered, <onJavaScriptMsg,
 		<onSelectionChanged, <onTitleChanged, <onUrlChanged, <onScrollPositionChanged, <onContentsSizeChanged, <onAudioMutedChanged,
-		<onRecentlyAudibleChanged;
+		<onRecentlyAudibleChanged, <enterInterpretsSelection = false;
 
 	*qtClass { ^'QtCollider::WebView'; }
 
@@ -107,6 +107,7 @@ WebView : View {
 		onReloadTriggered = func;
 	}
 
+	// this function is called by a javascript callback: see enterInterpretsSelection below
 	onInterpret {
 		|code|
 		code.interpret();
@@ -223,8 +224,25 @@ WebView : View {
 	url { ^this.getProperty('url') }
 	url_ { |url| this.setProperty('url', url) }
 
-	enterInterpretsSelection { ^this.getProperty('enterInterpretsSelection') }
-	enterInterpretsSelection_ { |b| this.setProperty('enterInterpretsSelection', b) }
+	enterInterpretsSelection_ { |b|
+		enterInterpretsSelection = b;
+		if(enterInterpretsSelection) {
+			this.keyDownAction = { |view, char, mods, u, keycode, key|
+				// 01000004 is Qt's keycode for Enter, needed on Mac
+				if((char == Char.ret).or(key == 0x01000004)){
+					case
+					{ mods.isShift } {
+						view.runJavaScript("selectLine()", this.onInterpret(_));
+					}
+					{ mods.isCtrl || mods.isCmd }{
+						view.runJavaScript("selectRegion()", this.onInterpret(_));
+					}
+				}
+			};
+		}{
+			this.keyDownAction = {}
+		}
+	}
 
 	editable { ^this.getProperty('editable') }
 	editable_ { |b| this.setProperty('editable', b) }

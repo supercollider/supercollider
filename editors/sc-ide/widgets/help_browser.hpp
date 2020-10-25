@@ -22,6 +22,7 @@
 
 #include "util/docklet.hpp"
 #include "QtCollider/widgets/web_page.hpp"
+#include "QtCollider/widgets/QcWebView.h"
 
 #include <QWebEngineView>
 #include <QLabel>
@@ -75,15 +76,6 @@ private:
     int mDotCount;
 };
 
-class HelpWebPage : public QtCollider::WebPage {
-    Q_OBJECT
-
-public:
-    HelpWebPage(HelpBrowser* browser);
-
-private:
-    HelpBrowser* mBrowser;
-};
 
 class HelpBrowser : public QWidget {
     Q_OBJECT
@@ -96,6 +88,7 @@ public:
         ZoomOut,
         ResetZoom,
         Evaluate,
+        EvaluateRegion,
 
         ActionCount
     };
@@ -148,7 +141,7 @@ private:
     void sendRequest(const QString& code);
     QString symbolUnderCursor();
 
-    QWebEngineView* mWebView;
+    QtCollider::WebView* mWebView;
     LoadProgressIndicator* mLoadProgressIndicator;
 
     QSize mSizeHint;
