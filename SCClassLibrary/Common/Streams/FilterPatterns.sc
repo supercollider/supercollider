@@ -425,6 +425,7 @@ Pfindur : FilterPattern {
 		var localdur = dur.value(event);
 		var stream = pattern.asStream;
 		var cleanup = EventStreamCleanup.new;
+		var remaining;
 		loop {
 			inevent = stream.next(event).asEvent ?? { ^event };
 			cleanup.update(inevent);
@@ -433,7 +434,9 @@ Pfindur : FilterPattern {
 			if (nextElapsed.roundUp(tolerance) >= localdur) {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
-				inevent = inevent.copy.put(\delta, localdur - elapsed).yield;
+				remaining = localdur - elapsed;
+				if(inevent[\delta].isRest) { remaining = Rest(remaining) };
+				inevent = inevent.copy.put(\delta, remaining).yield;
 				^cleanup.exit(inevent);
 			};
 

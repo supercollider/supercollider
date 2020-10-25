@@ -1,7 +1,7 @@
 Recorder {
 
 	var <server, <>numChannels;
-	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
+	var >recHeaderFormat, >recSampleFormat, >recBufSize;
 	var recordBuf, recordNode, synthDef;
 	var <paused = false, <duration = 0, <>notifyServer = false;
 	var <>filePrefix = "SC_";
@@ -98,12 +98,13 @@ Recorder {
 		}
 	}
 
+	recHeaderFormat { ^recHeaderFormat ? server.recHeaderFormat }
+	recSampleFormat { ^recSampleFormat ? server.recSampleFormat }
+	recBufSize { ^recBufSize ?? { server.recBufSize } ?? { server.sampleRate.nextPowerOfTwo } }
+
 	prepareForRecord { | path, numChannels |
-		var bufSize = recBufSize ? server.recBufSize ?? { server.sampleRate.nextPowerOfTwo };
 		var dir;
 
-		recHeaderFormat = recHeaderFormat ? server.recHeaderFormat;
-		recSampleFormat = recSampleFormat ? server.recSampleFormat;
 		numChannels = numChannels ? server.recChannels;
 
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
@@ -111,10 +112,10 @@ Recorder {
 		if(File.exists(dir).not) { dir.mkdir };
 
 		recordBuf = Buffer.alloc(server,
-			bufSize,
+			this.recBufSize,
 			numChannels,
 			{| buf |
-				buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true)
+				buf.writeMsg(path, this.recHeaderFormat, this.recSampleFormat, 0, 0, true)
 			}
 		);
 		if(recordBuf.isNil) { Error("could not allocate buffer").throw };
@@ -173,7 +174,7 @@ Recorder {
 		var timestamp;
 		var dir = thisProcess.platform.recordingsDir;
 		timestamp = Date.localtime.stamp;
-		^dir +/+ filePrefix ++ timestamp ++ "." ++ recHeaderFormat;
+		^dir +/+ filePrefix ++ timestamp ++ "." ++ this.recHeaderFormat;
 	}
 
 	changedServer { | what ... moreArgs |

@@ -1,5 +1,52 @@
 
 TestPattern : UnitTest {
+	var zeroLength;
+
+	setUp {
+		zeroLength = [
+			Pfuncn({ 2 }, 0),
+			Pseries(length:0),
+			Pgeom(length:0),
+			Pbrown(length:0),
+			Pgbrown(length:0),
+			Pwhite(length:0),
+			Pmeanrand(length:0),
+			Plprand(length:0),
+			Phprand(length:0),
+			Pexprand(length:0),
+			Ppoisson(length:0),
+			Pcauchy(length:0),
+			Pbeta(length:0),
+			Pgauss(length:0),
+			Pprob([1, 2, 3], length:0),
+			Ptime(repeats:0),
+			Pkey(repeats:0),
+			Pseq([20, 30], repeats:0),
+			Pseg([20, 30], repeats:0),
+			Pstep([20, 30], repeats:0),
+			Pser([20, 30], repeats:0),
+			Pshuf([20, 30], repeats:0),
+			Prand([20, 30], repeats:0),
+			Pxrand([20, 30], repeats:0),
+			Pwrand([20, 30], repeats:0),
+			Pfsm([20, 30], repeats:0),
+			Pdfsm([20, 30], repeats:0),
+			Ptuple([20, 30], repeats:0),
+			Place([20, 30], repeats:0),
+			Ppatlace([20, 30], repeats:0),
+			Pslide([20, 30], repeats:0),
+			Pindex(repeats:0),
+			Pevent(Pget(\a, 20, repeats:0), (eventScope: ())),
+			Pgate(repeats:0),
+			Pn(repeats:0),
+			Pdict((a: 20), Pn(\a), repeats:0),
+			Peventmod({ ~a = ~a + 1 }, (a: 20), repeats:0),
+			Ppar([Pbind.new], repeats:0),
+			Pgpar([Pbind.new], repeats:0),
+			Ptpar([0.0, Pbind.new], repeats:0),
+			Pfpar([Pbind.new], repeats:0),
+		];
+	}
 
 	test_patternAsEventFilters {
 		var n = 8;
@@ -42,7 +89,7 @@ TestPattern : UnitTest {
 
 
 	test_pattern_zero_length {
-		var func, patterns;
+		var func;
 
 		func = { |pat|
 			var val = Pseq([pat, 1]).asStream.next(());
@@ -50,53 +97,23 @@ TestPattern : UnitTest {
 				"% : a pattern of length zero should return nothing but pass control (returned %)".format(pat, val)
 			)
 		};
-		patterns = [
-			Pfuncn({ 2 }, 0),
-			Pseries(length:0),
-			Pgeom(length:0),
-			Pbrown(length:0),
-			Pgbrown(length:0),
-			Pwhite(length:0),
-			Pmeanrand(length:0),
-			Plprand(length:0),
-			Phprand(length:0),
-			Pexprand(length:0),
-			Ppoisson(length:0),
-			Pcauchy(length:0),
-			Pbeta(length:0),
-			Pgauss(length:0),
-			Pprob([1, 2, 3], length:0),
-			Ptime(repeats:0),
-			Pkey(repeats:0),
-			Pseq([20, 30], repeats:0),
-			Pseg([20, 30], repeats:0),
-			Pstep([20, 30], repeats:0),
-			Pser([20, 30], repeats:0),
-			Pshuf([20, 30], repeats:0),
-			Prand([20, 30], repeats:0),
-			Pxrand([20, 30], repeats:0),
-			Pwrand([20, 30], repeats:0),
-			Pfsm([20, 30], repeats:0),
-			Pdfsm([20, 30], repeats:0),
-			Ptuple([20, 30], repeats:0),
-			Place([20, 30], repeats:0),
-			Ppatlace([20, 30], repeats:0),
-			Pslide([20, 30], repeats:0),
-			Pindex(repeats:0),
-			Pevent(Pget(\a, 20, repeats:0), (eventScope: ())),
-			Pgate(repeats:0),
-			Pn(repeats:0),
-			Pdict((a: 20), Pn(\a), repeats:0),
-			Peventmod({ ~a = ~a + 1 }, (a: 20), repeats:0),
-			Ppar([Pbind.new], repeats:0),
-			Pgpar([Pbind.new], repeats:0),
-			Ptpar([0.0, Pbind.new], repeats:0),
-			Pfpar([Pbind.new], repeats:0),
 
-		];
+		zeroLength.do(func)
+	}
 
-		patterns.do(func)
+	test_pattern_embedInStream_returns_inval {
+		var stream, proto = Event.new;
 
+		zeroLength.do { |pat|
+			stream = Routine { |inval|
+				// yield the return value from embedInStream
+				// for checking outside the Routine
+				pat.embedInStream(inval).yield;
+			};
+			this.assert(stream.next(proto.copy) == proto,
+				"Zero length % should return inval from embedInStream".format(pat.class.name)
+			);
+		};
 	}
 
 	// test bug #3851: Pstretch applied to Ppar should operate on deltas, not only dur
@@ -168,6 +185,12 @@ TestPattern : UnitTest {
 		// so it "cancels out" matched add-remove pairs in the same event. But let's check that too...
 		cleanup.update(inEvent);
 		this.assert(cleanup.functions.size == 0, "Pfset on nil stream should have no effect on a cleanup-functions set");
+	}
+
+	test_Pfindur_maintains_final_rest {
+		var stream = Pfindur(4, Pbind(\delta, Rest(4))).asStream;
+		var event = stream.next(Event.new);
+		this.assert(event.isRest, "The final event of a Pfindur, if it was originally a rest, should still be a rest");
 	}
 
 
