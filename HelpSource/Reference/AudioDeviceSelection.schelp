@@ -130,7 +130,7 @@ definitionlist::
 ## ASIO
 ||
 LIST::
-## strong::Maximum channel count: :: Supports an arbitrary number of input/output channels, if supported by the hardware
+## strong::Maximum channel count: :: Supports an arbitrary number of input/output channels, as provided by the hardware
 ## strong::Typical latency: :: Low
 ## strong::Caveats: :: Dedicated ASIO driver needs to be provided by the audio device's manufacturer; this is common for most (semi-)professional interfaces, but not necessarily for internal soundcards
 ## strong::More info: :: Designed for pro-audio devices; control over sampling rate and hardware buffer size is usually provided by the driver's control panel (i.e. not settable by SuperCollider); ASIO stands for Audio Stream Input/Output and was developed by Steinberg
@@ -138,7 +138,7 @@ LIST::
 ## WASAPI
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Low
 ## strong::Caveats: :: If the requested sample rate is different than the device's sample rate, the server will not boot
 ## strong::More info: :: WASAPI stands for Windows Audio Session API and is the most modern Windows audio API
@@ -146,7 +146,7 @@ LIST::
 ## WDM-KS
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Low
 ## strong::Caveats: :: On some systems SuperCollider will prevent other applications from using the audio device when using this API
 ## strong::More info: :: WDM-KS stands for Windows Driver Model Kernel Streaming. It was the first native Windows API providing reasonably low latency
@@ -154,7 +154,7 @@ LIST::
 ## DirectSound
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Moderate/high
 ## strong::Caveats: :: It is an older API and typically provides worse performance than the newer ones
 ## strong::More info: :: DirectSound is part of DirectX and was originally created with game audio in mind
@@ -162,7 +162,7 @@ LIST::
 ## MME
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: High
 ## strong::Caveats: :: It is the oldest API on this list; it is chosen by default if the user does not specify which device to use
 ## strong::More info: :: This API might work out-of-the-box, but choosing a newer one instead will usually provide better performance; MME stands for Multimedia Extension (for Windows 3.0)
