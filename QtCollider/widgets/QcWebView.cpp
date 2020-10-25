@@ -153,8 +153,7 @@ void WebView::toPlainText(QcCallback* cb) const {
 void WebView::runJavaScript(const QString& script, QcCallback* cb) {
     if (page()) {
         if (cb) {
-            // convert QVariant to string until we deal with QVariants
-            page()->runJavaScript(script, [cb](const QVariant& t) { cb->call(t.toString()); });
+            page()->runJavaScript(script, cb->asFunctor());
         } else {
             page()->runJavaScript(script, [](const QVariant&) {});
         }
