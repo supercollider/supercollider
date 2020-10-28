@@ -38,7 +38,10 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: {
-                'Shift-Enter': evalLine
+                // noop: prevent both codemirror and the browser to handle Shift-Enter
+                'Shift-Enter': ()=>{}, 
+                // prevent only codemirror to handle Ctrl+D
+                'Ctrl-D': false
             }
         })
 
@@ -57,15 +60,6 @@ const init = () => {
         })
     })
 
-}
-
-const evalLine = () => {
-    // If we are not running in the SC IDE, do nothing.
-    if (!window.IDE) {
-        return;
-    }
-    // Ask IDE to eval line. Calls back to `selectLine()`
-    window.IDE.evaluateLine();
 }
 
 /* returns the code selection, line or region */
