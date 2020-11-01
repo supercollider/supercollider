@@ -6,7 +6,7 @@ XCPRETTY='xcpretty --simple --no-utf --no-color'
 
 # Make cmake failure an overall failure
 set -o pipefail
-cmake --build $TRAVIS_BUILD_DIR/BUILD --config Debug --target install | tee $BUILD_LOG | $XCPRETTY
+cmake --build $TRAVIS_BUILD_DIR/BUILD --config Release --target install | tee $BUILD_LOG | $XCPRETTY
 CMAKE_EXIT=$?
 set +o pipefail
 
