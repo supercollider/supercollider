@@ -98,7 +98,7 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
 
     // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
     // Note that putting this in the destructor doesn't work.
-    // connect(QApplication::instance(), &QApplication::aboutToQuit, [this]() { delete mWebView->page(); });
+    connect(QApplication::instance(), &QApplication::aboutToQuit, [this]() { delete mWebView->page(); });
 
     createActions();
 
