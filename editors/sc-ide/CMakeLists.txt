@@ -480,8 +480,9 @@ if(APPLE OR WIN32)
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
         set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
-        set(QT_WEBENGINE_PROCESS
-            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess")
+        set(QT_WEBENGINE_APP
+            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
+        set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
@@ -538,9 +539,13 @@ if(APPLE OR WIN32)
                 execute_process(COMMAND \"${CMAKE_COMMAND}\" -E remove_directory \"${QT_WEBENGINECORE_COPY_TO}\")
                 execute_process(COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${QT_WEBENGINECORE_COPY_FROM}\"
                     \"${QT_WEBENGINECORE_COPY_TO}\")
-                # copied process is not writable at first. Other copied files in the bundle also are not writable
-                # (plist file for example), but this doesn't seem to create an issue.
+                # Mark all copied files +w. The actual process so we can run install_name_tool on it, and then the other
+                # copied files mainly to avoid having to run xattr with sudo.
                 execute_process(COMMAND chmod +w ${QT_WEBENGINE_PROCESS})
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Info.plist)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/PkgInfo)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/empty.lproj)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/QtWebEngineProcess.entitlements)
                 execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
                 ")
         endif()
