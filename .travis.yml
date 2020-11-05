@@ -324,7 +324,7 @@ before_deploy:
  # put everything to be archived in artifacts/
  - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
  - mkdir -p "$HOME/artifacts/${TRAVIS_TAG%/*}"
- - echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html
+ - 'if [[ ! $IS_LEGACY_BUILD ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html; fi;'
  - 'if [[ $TRAVIS_TAG != "head" ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_TAG.html; fi;'
 
 deploy:
