@@ -19,6 +19,7 @@ SynthDef {
 	var <>desc, <>metadata;
 
 	classvar <synthDefDir;
+	classvar <>warnAboutLargeSynthDefs = false;
 
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
@@ -590,7 +591,9 @@ SynthDef {
 			server.sendMsg("/d_recv", bytes, completionMsg)
 		} {
 			if (server.isLocal) {
-				"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
+				if(warnAboutLargeSynthDefs) {
+					"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
+				};
 				this.writeDefFile(synthDefDir);
 				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
 			} {
