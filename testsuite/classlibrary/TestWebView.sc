@@ -55,4 +55,32 @@ TestWebView : UnitTest {
 			this.assert(wasFound.not, "findText should not find");
 		}
 	}
+
+	test_runJavaScript_returnTypes {
+		(
+			"1 + 1": 2 -> Integer,
+			"1 + 0.1": 1.1 -> Float,
+			"'hello'": "hello" -> String,
+			"[1, 2, 'hello']": [1, 2, "hello"] -> Array
+		).keysValuesDo { |jsCode, expected|
+			var expectedClass = expected.value, expectedResult = expected.key;
+			var condition = Condition(), returnedResult;
+
+			WebView().runJavaScript(jsCode){ |res|
+				returnedResult = res;
+				condition.test_(true).signal
+			};
+
+			this.wait(condition, "runJavaScript() callback was not called before timeout", 0.5);
+			this.assertEquals(returnedResult, expectedResult,
+				"runJavaScript(\"%\") should return the expected result %"
+				.format(jsCode, expectedResult)
+			);
+			this.assert(returnedResult.class == expectedClass,
+				"runJavaScript(\"%\") should return an instance of %. Returned: %"
+				.format(jsCode, expectedClass, returnedResult.class)
+			);
+			condition.test = false;
+		};
+	}
 }

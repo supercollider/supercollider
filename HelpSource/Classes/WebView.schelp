@@ -235,6 +235,11 @@ METHOD:: runJavaScript
         A String.
     Argument::
         A function to be called when execution is complete, with the result as first argument.
+        NOTE:: javascript code can correctly return Numbers, Strings and Arrays, but it can't currently pass javascript Objects to sclang. It is possible however to use JSON serialization to acheive this: ::
+        CODE::
+// passing a nested object from javascript to sclang:
+WebView().runJavaScript("JSON.stringify({a: [1,2,3], b: {ba: 1, bb: 'yeah'}})"){ |res| res.parseJSON.postln }
+::
 
 EXAMPLES::
 CODE::
