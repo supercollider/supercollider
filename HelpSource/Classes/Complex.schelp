@@ -97,8 +97,7 @@ discussion::
 returns the principal root
 code::
 Complex(4, 1.neg).sqrt
-::
-code::
+
 // compare...
 Complex(4, 1.neg).pow(2.reciprocal)
 ::
