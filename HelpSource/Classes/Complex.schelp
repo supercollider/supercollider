@@ -91,6 +91,17 @@ code::
 cubed(Complex(2, 1))
 ::
 
+method:: sqrt
+Complex square root
+discussion::
+returns the principal root
+code::
+Complex(4, 1.neg).sqrt
+
+// compare...
+Complex(4, 1.neg).pow(2.reciprocal)
+::
+
 method:: **
 method:: pow
 Complex exponentiation
