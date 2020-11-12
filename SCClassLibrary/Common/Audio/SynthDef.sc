@@ -587,8 +587,19 @@ SynthDef {
 
 	doSend { |server, completionMsg|
 		var bytes = this.asBytes;
+		var path;
+		var resp, syncID;
 		if (bytes.size < (65535 div: 4)) {
-			server.sendMsg("/d_recv", bytes, completionMsg)
+			path = synthDefDir +/+ name ++ ".scsyndef";
+			syncID = UniqueID.next;
+			resp = OSCFunc({
+				resp.remove;
+				File.delete(path);
+			}, '/synced', srcID: server.addr, argTemplate: [syncID]);
+			server.sendBundle(nil,
+				["/d_load", path, completionMsg],
+				["/sync", syncID]
+			);
 		} {
 			if (server.isLocal) {
 				if(warnAboutLargeSynthDefs) {
