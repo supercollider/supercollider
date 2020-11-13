@@ -96,9 +96,12 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     // FIXME: should actually respond to class library shutdown, but we don't have that signal
     connect(scProcess, SIGNAL(classLibraryRecompiled()), mLoadProgressIndicator, SLOT(stop()));
 
+    // Legacy mac build support -- with Qt 5.9.3 this causes a segfault on application exit.
+#    if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
     // Delete the help browser's page to avoid an assert/crash during shutdown. See QTBUG-56441, QTBUG-50160.
     // Note that putting this in the destructor doesn't work.
     connect(QApplication::instance(), &QApplication::aboutToQuit, [this]() { delete mWebView->page(); });
+#    endif
 
     createActions();
 
