@@ -589,24 +589,25 @@ SynthDef {
 		var bytes = this.asBytes;
 		var path;
 		var resp, syncID;
+
 		if (bytes.size < (65535 div: 4)) {
-			path = synthDefDir +/+ name ++ ".scsyndef";
-			syncID = UniqueID.next;
-			resp = OSCFunc({
-				resp.remove;
-				File.delete(path);
-			}, '/synced', srcID: server.addr, argTemplate: [syncID]);
-			server.sendBundle(nil,
-				["/d_load", path, completionMsg],
-				["/sync", syncID]
-			);
-		} {
+ 			server.sendMsg("/d_recv", bytes, completionMsg)
+ 		} {
 			if (server.isLocal) {
 				if(warnAboutLargeSynthDefs) {
 					"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
 				};
 				this.writeDefFile(synthDefDir);
-				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
+				path = synthDefDir +/+ name ++ ".scsyndef";
+				syncID = UniqueID.next;
+				resp = OSCFunc({
+					resp.remove;
+					File.delete(path);
+				}, '/synced', srcID: server.addr, argTemplate: [syncID]);
+				server.sendBundle(nil,
+					["/d_load", path, completionMsg],
+					["/sync", syncID]
+				);
 			} {
 				"SynthDef % too big for sending.".format(name).warn;
 			}
