@@ -153,10 +153,10 @@ argument::path
 Disk location for the recorded file. If not given, a filename is generated for you and placed in the default recording directory: code::thisProcess.platform.recordingsDir::.
 
 argument::headerFormat
-File format, default "AIFF" - see link::Classes/SoundFile:: for supported header and sample formats.
+File format, defaults to link::Classes/Server#-recHeaderFormat##server.recHeaderFormat:: - see link::Classes/SoundFile:: for supported header and sample formats.
 
 argument::sampleFormat
-Sample format, default "float".
+Sample format, defaults to link::Classes/Server#-recSampleFormat##server.recSampleFormat::.
 
 argument::numChannels
 Number of channels to record, default 2.

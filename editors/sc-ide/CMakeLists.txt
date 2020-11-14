@@ -193,11 +193,14 @@ set(ide_webengine_moc_hdrs
     widgets/util/WebSocketClientWrapper.hpp
     widgets/util/IDEWebChannelWrapper.hpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.h
+    ${CMAKE_SOURCE_DIR}/QtCollider/QcCallback.hpp
 )
 set(ide_webengine_src
     widgets/help_browser.cpp
     widgets/util/WebSocketTransport.cpp
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/QcWebView.cpp
 )
 
 if(SC_USE_QTWEBENGINE)
@@ -477,6 +480,9 @@ if(APPLE OR WIN32)
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
         set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
+        set(QT_WEBENGINE_APP
+            "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
+        set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
@@ -485,7 +491,7 @@ if(APPLE OR WIN32)
                 -executable=${CONTENTS_DIR}/Resources/supernova
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
-                -executable=${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+                -executable=${QT_WEBENGINE_PROCESS}
             ")
         set(VERIFY_CMD "include(BundleUtilities)")
         if(SUPERNOVA)
@@ -496,13 +502,54 @@ if(APPLE OR WIN32)
                 # but libfftw3f is not fixed up automatically when supernova is deployed.
                 string(APPEND VERIFY_CMD "
                 message(STATUS \"Fixing up bad path in libfftw3f.3.dylib manually due to faulty logic in macdeployqt\")
-                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/0/libgcc_s.1.dylib
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/9/libgcc_s.1.dylib
                     @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
                 execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/10/libgcc_s.1.dylib
                     @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
                     ")
             endif()
         endif()
+
+        if(SC_USE_QTWEBENGINE AND ${Qt5_VERSION} VERSION_EQUAL 5.15.1)
+            # QTBUG-86759 / #5175 -- macdeployqt fails to copy part of QtWebEngineCore that contains QtWebEngineProcess.app.
+            message(STATUS "macdeployqt: will fix deploying QtWebEngineProcess.app for Qt 5.15.1")
+
+            # Assume that QtWebEngine and QtWebEngineCore frameworks live in the same directory. Using
+            # Qt5::WebEngineCore doesn't work here; even requesting that component explicitly above doesn't fix it.
+            get_target_property(QT_WEBENGINE_LOCATION Qt5::WebEngine LOCATION)
+            get_filename_component(QT_WEBENGINE_DIR "${QT_WEBENGINE_LOCATION}" DIRECTORY)
+            get_filename_component(QT_WEBENGINECORE_COPY_FROM ../QtWebEngineCore.framework/Versions/5/Helpers ABSOLUTE BASE_DIR "${QT_WEBENGINE_DIR}")
+            set(QT_WEBENGINECORE_COPY_TO "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers")
+
+            # Construct a call to install_name_tool that fixes up Qt lib dependencies. We can't use fixup_bundle for
+            # this because it copies all the dependencies (~200MB) into this nested bundle.
+            set(QT_WEBENGINE_FIXUP_COMMAND "install_name_tool ${QT_WEBENGINE_PROCESS}")
+            foreach(component Gui Core WebEngineCore Quick QmlModels WebChannel Qml Network Positioning)
+                get_target_property(component_location Qt5::${component} LOCATION)
+                get_filename_component(component_location "${component_location}" DIRECTORY)
+                get_filename_component(component_location Versions/5/Qt${component} REALPATH BASE_DIR "${component_location}")
+                # If qt is installed through homebrew, `component_location` will look like
+                # /usr/local/Cellar/qt/5.15.1/lib/QtFoo.framework/Versions/5/QtFoo
+                set(component_load_path "@loader_path/../../../../../../../Qt${component}.framework/Versions/5/Qt${component}")
+                string(APPEND QT_WEBENGINE_FIXUP_COMMAND " -change \"${component_location}\" ${component_load_path}")
+            endforeach()
+
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Fixing up bad deployment of QtWebEngineProcess with Qt 5.15.1\")
+                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E remove_directory \"${QT_WEBENGINECORE_COPY_TO}\")
+                execute_process(COMMAND \"${CMAKE_COMMAND}\" -E copy_directory \"${QT_WEBENGINECORE_COPY_FROM}\"
+                    \"${QT_WEBENGINECORE_COPY_TO}\")
+                # Mark all copied files +w. The actual process so we can run install_name_tool on it, and then the other
+                # copied files mainly to avoid having to run xattr with sudo.
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_PROCESS})
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Info.plist)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/PkgInfo)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/empty.lproj)
+                execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/QtWebEngineProcess.entitlements)
+                execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
+                ")
+        endif()
+
         string(APPEND VERIFY_CMD "
             message(STATUS \"Verifying app\")
             verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")

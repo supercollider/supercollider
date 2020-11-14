@@ -14,6 +14,56 @@ Release dates of 3.x versions:
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
 
+3.11.2 (2020-11-15)
+===================
+
+We are now providing a "legacy macOS" binary that supports macOS 10.10 and above. It can be found where you normally
+download SuperCollider ([#5190](https://github.com/supercollider/supercollider/pull/5190), [#5242](https://github.com/supercollider/supercollider/pull/5242)).
+
+### General: Fixed
+
+In the help browser, Shift-Enter now evaluates code again! ([#4883](https://github.com/supercollider/supercollider/pull/4883))
+
+Fixed faulty deployment of macOS app bundle due to bug in Qt utility
+([#5187](https://github.com/supercollider/supercollider/pull/5187), [#5230](https://github.com/supercollider/supercollider/pull/5230)).
+
+Fixed support for Portaudio in build system with CMake 3.18
+([#5206](https://github.com/supercollider/supercollider/pull/5206)).
+
+Fixed support for building shared libscsynth on macOS and Linux
+([#5215](https://github.com/supercollider/supercollider/pull/5215)).
+
+General documentation improvements ([#5131](https://github.com/supercollider/supercollider/pull/5131), [#5136](https://github.com/supercollider/supercollider/pull/5136), [#5137](https://github.com/supercollider/supercollider/pull/5137), [#5141](https://github.com/supercollider/supercollider/pull/5141), [#5142](https://github.com/supercollider/supercollider/pull/5142), [#5173](https://github.com/supercollider/supercollider/pull/5173), [#5203](https://github.com/supercollider/supercollider/pull/5203)).
+
+### General: Removed
+
+Removed some unused code for old Android support ([#4975](https://github.com/supercollider/supercollider/pull/4975)).
+
+### Class library: Fixed
+
+Fixed a bug in Pfindur where the last event of the pattern could become "Rest-less"
+([#5113](https://github.com/supercollider/supercollider/pull/5113)).
+
+SynthDesc and SynthDescLib now restore metadata for SynthDefs
+([#5122](https://github.com/supercollider/supercollider/pull/5122)).
+
+Fixed an issue in output formatting for UnitTest:assertFloatEquals
+([#5135](https://github.com/supercollider/supercollider/pull/5135)).
+
+Pattern:record no longer ignores header and sample formats provided as arguments
+([#5031](https://github.com/supercollider/supercollider/pull/5031)).
+
+Pseg:embedInStream now returns 'inval' to match other patterns
+([#5145](https://github.com/supercollider/supercollider/pull/5145)).
+
+ProxySpace:copy also rebuilds the ProxySpace to copy referenced objects
+([#5192](https://github.com/supercollider/supercollider/pull/5192)).
+
+### Servers: Fixed
+
+Supernova now correctly handles `/s_getn` with a control name instead of index
+([#5182](https://github.com/supercollider/supercollider/pull/5182)).
+
 3.11.1 (2020-08-19)
 ===================
 
