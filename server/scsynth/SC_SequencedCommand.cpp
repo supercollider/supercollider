@@ -30,6 +30,9 @@
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "SC_WorldOptions.h"
 
+/* boost headers */
+#include <boost/filesystem.hpp>
+
 const size_t ERR_BUF_SIZE(512);
 
 #define GET_COMPLETION_MSG(msg)                                                                                        \
@@ -1328,7 +1331,16 @@ void LoadSynthDefCmd::CallDestructor() { this->~LoadSynthDefCmd(); }
 bool LoadSynthDefCmd::Stage2() {
     char* fname = mFilename;
     mDefs = GraphDef_LoadGlob(mWorld, fname, mDefs);
-    return true;
+    if (mDefs) {
+        return true;
+    }
+    {
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "File '%s' could not be opened\n", mFilename);
+        SendFailure(&mReplyAddress, "/d_load", mFilename);
+        scprintf(str);
+        return false;
+    }
 }
 
 bool LoadSynthDefCmd::Stage3() {
@@ -1370,9 +1382,24 @@ LoadSynthDefDirCmd::~LoadSynthDefDirCmd() { World_Free(mWorld, mFilename); }
 void LoadSynthDefDirCmd::CallDestructor() { this->~LoadSynthDefDirCmd(); }
 
 bool LoadSynthDefDirCmd::Stage2() {
+    if (!boost::filesystem::exists(mFilename)) {
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "Could not load synthdefs. Directory '%s' does not exist\n", mFilename);
+        SendFailure(&mReplyAddress, "/d_loadDir", mFilename);
+        scprintf(str);
+        return false;
+    }
     mDefs = GraphDef_LoadDir(mWorld, mFilename, mDefs);
-
-    return true;
+    if (mDefs) {
+        return true;
+    }
+    {
+        char str[ERR_BUF_SIZE];
+        snprintf(str, ERR_BUF_SIZE, "No synthdefs found in directory: '%s'\n", mFilename);
+        SendFailure(&mReplyAddress, "/d_loadDir", mFilename);
+        scprintf(str);
+        return false;
+    }
 }
 
 bool LoadSynthDefDirCmd::Stage3() {
