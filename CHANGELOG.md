@@ -14,18 +14,18 @@ Release dates of 3.x versions:
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
 
-3.11.2 (TBD)
-============
+3.11.2 (2020-11-15)
+===================
 
 We are now providing a "legacy macOS" binary that supports macOS 10.10 and above. It can be found where you normally
-download SuperCollider ([#5190](https://github.com/supercollider/supercollider/pull/5190)).
+download SuperCollider ([#5190](https://github.com/supercollider/supercollider/pull/5190), [#5242](https://github.com/supercollider/supercollider/pull/5242)).
 
 ### General: Fixed
 
 In the help browser, Shift-Enter now evaluates code again! ([#4883](https://github.com/supercollider/supercollider/pull/4883))
 
 Fixed faulty deployment of macOS app bundle due to bug in Qt utility
-([#5187](https://github.com/supercollider/supercollider/pull/5187)).
+([#5187](https://github.com/supercollider/supercollider/pull/5187), [#5230](https://github.com/supercollider/supercollider/pull/5230)).
 
 Fixed support for Portaudio in build system with CMake 3.18
 ([#5206](https://github.com/supercollider/supercollider/pull/5206)).
