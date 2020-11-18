@@ -37,8 +37,10 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+/// Checks whether x is NaN. This is a legacy function, use std::isnan instead.
 inline bool sc_isnan(float x) { return std::isnan(x); }
 
+/// Checks whether x is finite. This is a legacy function, use std::isfinite instead.
 inline bool sc_isnan(double x) { return std::isnan(x); }
 
 inline bool sc_isfinite(float x) { return std::isfinite(x); }
@@ -53,8 +55,12 @@ inline bool sc_isfinite(double x) { return std::isfinite(x); }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-// this is a function for preventing pathological math operations in ugens.
-// can be used at the end of a block to fix any recirculating filter values.
+
+/*
+ * Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero. 
+ * Prevents pathological math operations in ugens and can be used at the end of a 
+ * block to fix any recirculating filter values.
+ */
 inline float32 zapgremlins(float32 x) {
     float32 absx = std::abs(x);
     // very small numbers fail the first test, eliminating denormalized numbers
@@ -68,45 +74,62 @@ inline float32 sc_log2(float32 x) { return std::log2(x); }
 
 inline float32 sc_log10(float32 x) { return std::log10(std::abs(x)); }
 
+/// Convert MIDI note to cycles per second
 inline float32 sc_midicps(float32 note) {
     return (float32)440. * std::pow((float32)2., (note - (float32)69.) * (float32)0.083333333333);
 }
 
+/// Convert cycles per second to MIDI note. 
 inline float32 sc_cpsmidi(float32 freq) {
     return sc_log2(freq * (float32)0.0022727272727) * (float32)12. + (float32)69.;
 }
 
+/// Convert an interval in MIDI notes into a frequency ratio.
 inline float32 sc_midiratio(float32 midi) { return std::pow((float32)2., midi * (float32)0.083333333333); }
 
+/// Convert a frequency ratio to an interval in MIDI notes.
 inline float32 sc_ratiomidi(float32 ratio) { return (float32)12. * sc_log2(ratio); }
 
+/// Convert decimal octaves to cycles per second.
 inline float32 sc_octcps(float32 note) { return (float32)440. * std::pow((float32)2., note - (float32)4.75); }
 
+/// Convert cycles per second to decimal octaves. 
 inline float32 sc_cpsoct(float32 freq) { return sc_log2(freq * (float32)0.0022727272727) + (float32)4.75; }
 
+/// Convert linear amplitude to decibels.
 inline float32 sc_ampdb(float32 amp) { return std::log10(amp) * (float32)20.; }
 
+/// Convert decibels to linear amplitude. 
 inline float32 sc_dbamp(float32 db) { return std::pow((float32)10., db * (float32).05); }
 
+/// Squared value
 inline float32 sc_squared(float32 x) { return x * x; }
 
+/// Cubed value
 inline float32 sc_cubed(float32 x) { return x * x * x; }
 
+/*
+ * Square root
+ * The definition of square root is extended for signals so that sqrt(a) when a<0 returns -sqrt(-a).
+ */
 inline float32 sc_sqrt(float32 x) { return x < (float32)0. ? -sqrt(-x) : sqrt(x); }
 
 
+/// A value for a hanning window function between 0 and 1.
 inline float32 sc_hanwindow(float32 x) {
     if (x < (float32)0. || x > (float32)1.)
         return (float32)0.;
     return (float32)0.5 - (float32)0.5 * static_cast<float32>(cos(x * (float32)twopi));
 }
 
+/// A value for a welsh window function between 0 and 1.
 inline float32 sc_welwindow(float32 x) {
     if (x < (float32)0. || x > (float32)1.)
         return (float32)0.;
     return static_cast<float32>(sin(x * pi));
 }
 
+/// a value for a triangle window function between 0 and 1.
 inline float32 sc_triwindow(float32 x) {
     if (x < (float32)0. || x > (float32)1.)
         return (float32)0.;
@@ -116,6 +139,7 @@ inline float32 sc_triwindow(float32 x) {
         return (float32)-2. * x + (float32)2.;
 }
 
+/// a bilateral value for a triangle window function
 inline float32 sc_bitriwindow(float32 x) {
     float32 ax = (float32)1. - std::abs(x);
     if (ax <= (float32)0.)
@@ -123,12 +147,14 @@ inline float32 sc_bitriwindow(float32 x) {
     return ax;
 }
 
+/// a value for a rectangular window function between 0 and 1. 
 inline float32 sc_rectwindow(float32 x) {
     if (x < (float32)0. || x > (float32)1.)
         return (float32)0.;
     return (float32)1.;
 }
 
+/// Map x onto an S-curve.
 inline float32 sc_scurve(float32 x) {
     if (x <= (float32)0.)
         return (float32)0.;
@@ -137,11 +163,15 @@ inline float32 sc_scurve(float32 x) {
     return x * x * ((float32)3. - (float32)2. * x);
 }
 
+/*
+ * Map x onto an S-curve.
+ * Assumes that x is in range 
+ */
 inline float32 sc_scurve0(float32 x) {
-    // assumes that x is in range
     return x * x * ((float32)3. - (float32)2. * x);
 }
 
+/// Map x onto a ramp starting at 0.
 inline float32 sc_ramp(float32 x) {
     if (x <= (float32)0.)
         return (float32)0.;
@@ -150,10 +180,12 @@ inline float32 sc_ramp(float32 x) {
     return x;
 }
 
+/// Answer -1 if negative, +1 if positive or 0 if zero
 inline float32 sc_sign(float32 x) {
     return x < (float32)0. ? (float32)-1. : (x > (float32)0. ? (float32)1.f : (float32)0.f);
 }
 
+/// A nonlinear distortion function.
 inline float32 sc_distort(float32 x) { return x / ((float32)1. + std::abs(x)); }
 
 inline float32 sc_distortneg(float32 x) {
@@ -163,6 +195,7 @@ inline float32 sc_distortneg(float32 x) {
         return x;
 }
 
+/// Distortion with a perfectly linear region from -0.5 to +0.5
 inline float32 sc_softclip(float32 x) {
     float32 absx = std::abs(x);
     if (absx <= (float32)0.5)
@@ -171,8 +204,7 @@ inline float32 sc_softclip(float32 x) {
         return (absx - (float32)0.25) / x;
 }
 
-// Taylor expansion out to x**9/9! factored  into multiply-adds
-// from Phil Burk.
+/// Taylor expansion out to x**9/9! factored  into multiply-adds from Phil Burk.
 inline float32 taylorsin(float32 x) {
     // valid range from -pi/2 to +3pi/2
     x = static_cast<float32>((float32)pi2 - std::abs(pi2 - x));
@@ -181,8 +213,8 @@ inline float32 taylorsin(float32 x) {
         x * (x2 * (x2 * (x2 * (x2 * (1.0 / 362880.0) - (1.0 / 5040.0)) + (1.0 / 120.0)) - (1.0 / 6.0)) + 1.0));
 }
 
+/// Truncate to multiple of x (e.g. it rounds numbers down to a multiple of x).
 inline float32 sc_trunc(float32 x) { return std::trunc(x); }
-
 
 inline float32 sc_ceil(float32 x) {
 #ifdef __SSE4_1__
@@ -204,6 +236,7 @@ inline float32 sc_floor(float32 x) {
 #endif
 }
 
+/// 1 divided by x
 inline float32 sc_reciprocal(float32 x) {
 #ifdef __SSE__
     // adapted from AP-803 Newton-Raphson Method with Streaming SIMD Extensions
@@ -219,15 +252,16 @@ inline float32 sc_reciprocal(float32 x) {
 #endif
 }
 
+/// Return fractional part
 inline float32 sc_frac(float32 x) { return x - sc_floor(x); }
-
 
 ////////////////////////////////
 
+/// Returns ones complement
 inline float32 sc_bitNot(float32 x) { return (float32) ~(int)x; }
 
+/// Cubic lagrange interpolator
 inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32 d) {
-    // cubic lagrange interpolator
     float32 x0 = x1 + 1.f;
     float32 x2 = x1 - 1.f;
     float32 x3 = x1 - 2.f;
@@ -238,6 +272,7 @@ inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32
     return x12 * (d * x0 - a * x3) + x03 * (b * x2 - c * x1);
 }
 
+/// Determines the feedback coefficient for a feedback comb filter with the given delay and decay times.
 inline float32 sc_CalcFeedback(float32 delaytime, float32 decaytime) {
     if (delaytime == 0.f || decaytime == 0.f)
         return 0.f;
@@ -247,6 +282,7 @@ inline float32 sc_CalcFeedback(float32 delaytime, float32 decaytime) {
     return ret;
 }
 
+/// Wrap x around ±1, wrapping only once. 
 inline float32 sc_wrap1(float32 x) {
     if (x >= (float32)1.)
         return x + (float32)-2.;
@@ -255,6 +291,7 @@ inline float32 sc_wrap1(float32 x) {
     return x;
 }
 
+/// Fold x around ±1, folding only once.
 inline float32 sc_fold1(float32 x) {
     if (x >= (float32)1.)
         return (float32)2. - x;
@@ -263,9 +300,13 @@ inline float32 sc_fold1(float32 x) {
     return x;
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////
 
+/*
+ * Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero. 
+ * Prevents pathological math operations in ugens and can be used at the end of a 
+ * block to fix any recirculating filter values.
+ */
 inline float64 zapgremlins(float64 x) {
     float64 absx = std::abs(x);
     // very small numbers fail the first test, eliminating denormalized numbers
@@ -279,44 +320,61 @@ inline float64 sc_log2(float64 x) { return std::log2(std::abs(x)); }
 
 inline float64 sc_log10(float64 x) { return std::log10(std::abs(x)); }
 
+/// Convert MIDI note to cycles per second
 inline float64 sc_midicps(float64 note) {
     return (float64)440. * std::pow((float64)2., (note - (float64)69.) * (float64)0.08333333333333333333333333);
 }
 
+/// Convert cycles per second to MIDI note. 
 inline float64 sc_cpsmidi(float64 freq) {
     return sc_log2(freq * (float64)0.002272727272727272727272727) * (float64)12. + (float64)69.;
 }
 
+/// Convert an interval in MIDI notes into a frequency ratio.
 inline float64 sc_midiratio(float64 midi) { return std::pow((float64)2., midi * (float64)0.083333333333); }
 
+/// Convert a frequency ratio to an interval in MIDI notes.
 inline float64 sc_ratiomidi(float64 ratio) { return (float64)12. * sc_log2(ratio); }
 
+/// Convert decimal octaves to cycles per second.
 inline float64 sc_octcps(float64 note) { return (float64)440. * std::pow((float64)2., note - (float64)4.75); }
 
+/// Convert cycles per second to decimal octaves. 
 inline float64 sc_cpsoct(float64 freq) { return sc_log2(freq * (float64)0.0022727272727) + (float64)4.75; }
 
+/// Convert linear amplitude to decibels.
 inline float64 sc_ampdb(float64 amp) { return std::log10(amp) * (float64)20.; }
 
+/// Convert decibels to linear amplitude. 
 inline float64 sc_dbamp(float64 db) { return std::pow((float64)10., db * (float64).05); }
 
+/// Squared value
 inline float64 sc_squared(float64 x) { return x * x; }
 
+/// Cubed value
 inline float64 sc_cubed(float64 x) { return x * x * x; }
 
+/*
+ * Square root
+ * The definition of square root is extended for signals so that sqrt(a) when a<0 returns -sqrt(-a).
+ */
 inline float64 sc_sqrt(float64 x) { return x < (float64)0. ? -sqrt(-x) : sqrt(x); }
 
+/// A value for a hanning window function between 0 and 1.
 inline float64 sc_hanwindow(float64 x) {
     if (x < (float64)0. || x > (float64)1.)
         return (float64)0.;
     return (float64)0.5 - (float64)0.5 * cos(x * twopi);
 }
 
+/// A value for a welsh window function between 0 and 1.
 inline float64 sc_welwindow(float64 x) {
     if (x < (float64)0. || x > (float64)1.)
         return (float64)0.;
     return sin(x * pi);
 }
 
+/// a value for a triangle window function between 0 and 1.
 inline float64 sc_triwindow(float64 x) {
     if (x < (float64)0. || x > (float64)1.)
         return (float64)0.;
@@ -326,6 +384,7 @@ inline float64 sc_triwindow(float64 x) {
         return (float64)-2. * x + (float64)2.;
 }
 
+/// a bilateral value for a triangle window function
 inline float64 sc_bitriwindow(float64 x) {
     float64 ax = std::abs(x);
     if (ax > (float64)1.)
@@ -333,12 +392,14 @@ inline float64 sc_bitriwindow(float64 x) {
     return (float64)1. - ax;
 }
 
+/// a value for a rectangular window function between 0 and 1. 
 inline float64 sc_rectwindow(float64 x) {
     if (x < (float64)0. || x > (float64)1.)
         return (float64)0.;
     return (float64)1.;
 }
 
+/// Map x onto an S-curve.
 inline float64 sc_scurve(float64 x) {
     if (x <= (float64)0.)
         return (float64)0.;
@@ -347,11 +408,16 @@ inline float64 sc_scurve(float64 x) {
     return x * x * ((float64)3. - (float64)2. * x);
 }
 
+/*
+ * Map x onto an S-curve.
+ * Assumes that x is in range 
+ */
 inline float64 sc_scurve0(float64 x) {
     // assumes that x is in range
     return x * x * ((float64)3. - (float64)2. * x);
 }
 
+/// Map x onto a ramp starting at 0.
 inline float64 sc_ramp(float64 x) {
     if (x <= (float64)0.)
         return (float64)0.;
@@ -360,10 +426,12 @@ inline float64 sc_ramp(float64 x) {
     return x;
 }
 
+/// Answer -1 if negative, +1 if positive or 0 if zero
 inline float64 sc_sign(float64 x) {
     return x < (float64)0. ? (float64)-1. : (x > (float64)0. ? (float64)1.f : (float64)0.f);
 }
 
+/// A nonlinear distortion function.
 inline float64 sc_distort(float64 x) { return x / ((float64)1. + std::abs(x)); }
 
 inline float64 sc_distortneg(float64 x) {
@@ -373,7 +441,7 @@ inline float64 sc_distortneg(float64 x) {
         return x;
 }
 
-
+/// Distortion with a perfectly linear region from -0.5 to +0.5
 inline float64 sc_softclip(float64 x) {
     float64 absx = std::abs(x);
     if (absx <= (float64)0.5)
@@ -382,14 +450,14 @@ inline float64 sc_softclip(float64 x) {
         return (absx - (float64)0.25) / x;
 }
 
-// Taylor expansion out to x**9/9! factored  into multiply-adds
-// from Phil Burk.
+/// Taylor expansion out to x**9/9! factored into multiply-adds from Phil Burk.
 inline float64 taylorsin(float64 x) {
     x = pi2 - std::abs(pi2 - x);
     float64 x2 = x * x;
     return x * (x2 * (x2 * (x2 * (x2 * (1.0 / 362880.0) - (1.0 / 5040.0)) + (1.0 / 120.0)) - (1.0 / 6.0)) + 1.0);
 }
 
+/// Truncate to multiple of x (e.g. it rounds numbers down to a multiple of x).
 inline float64 sc_trunc(float64 x) { return std::trunc(x); }
 
 inline float64 sc_ceil(float64 x) {
@@ -414,11 +482,13 @@ inline float64 sc_floor(float64 x) {
 #endif
 }
 
+/// 1 divided by x
 inline float64 sc_reciprocal(float64 x) { return 1. / x; }
 
-
+/// Return fractional part
 inline float64 sc_frac(float64 x) { return x - sc_floor(x); }
 
+/// Wrap x around ±1, wrapping only once. 
 inline float64 sc_wrap1(float64 x) {
     if (x >= (float64)1.)
         return x + (float64)-2.;
@@ -427,6 +497,7 @@ inline float64 sc_wrap1(float64 x) {
     return x;
 }
 
+/// Fold x around ±1, folding only once.
 inline float64 sc_fold1(float64 x) {
     if (x >= (float64)1.)
         return (float64)2. - x;
@@ -435,4 +506,5 @@ inline float64 sc_fold1(float64 x) {
     return x;
 }
 
+/// Convert binary to Gray code.
 inline int32 sc_grayCode(int32 x) { return x ^ (x >> 1); }
