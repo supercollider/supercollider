@@ -107,10 +107,6 @@ inline void RGen::init(uint32 seed) {
  * be postponed until the end of the loop.
  */
 inline uint32 trand(uint32& s1, uint32& s2, uint32& s3) {
-    // This function is provided for speed in inner loops where the
-    // state variables are loaded into registers.
-    // Thus updating the instance variables can
-    // be postponed until the end of the loop.
     s1 = ((s1 & (uint32)-2) << 12) ^ (((s1 << 13) ^ s1) >> 19);
     s2 = ((s2 & (uint32)-8) << 4) ^ (((s2 << 2) ^ s2) >> 25);
     s3 = ((s3 & (uint32)-16) << 17) ^ (((s3 << 3) ^ s3) >> 11);
