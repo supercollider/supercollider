@@ -107,6 +107,8 @@ A Boolean indicating whether this server should allow its volume to be set remot
 method:: sampleRate
 The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.
 
+note:: On Windows, leaving the code::sampleRate:: as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
+
 method:: verbosity
 Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
 

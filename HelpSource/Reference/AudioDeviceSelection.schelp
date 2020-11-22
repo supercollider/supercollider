@@ -117,6 +117,8 @@ ServerOptions.outDevices; // output devices
 ::
 Partial device name matching is supported in Windows (though not in macOS).
 
+note:: Leaving the code::sampleRate:: (e.g. code::Server.default.options.sampleRate::) as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
+
 subsection:: Choosing the device and the API
 list::
 ##If you need to specify the device, you will need to do so for both input and output (setting both code::.inDevice::, as well as code::.outDevice::), unless you use ASIO
