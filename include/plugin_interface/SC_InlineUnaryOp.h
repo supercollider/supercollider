@@ -57,8 +57,8 @@ inline bool sc_isfinite(double x) { return std::isfinite(x); }
 
 
 /*
- * Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero. 
- * Prevents pathological math operations in ugens and can be used at the end of a 
+ * Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero.
+ * Prevents pathological math operations in ugens and can be used at the end of a
  * block to fix any recirculating filter values.
  */
 inline float32 zapgremlins(float32 x) {
@@ -79,7 +79,7 @@ inline float32 sc_midicps(float32 note) {
     return (float32)440. * std::pow((float32)2., (note - (float32)69.) * (float32)0.083333333333);
 }
 
-/// Convert cycles per second to MIDI note. 
+/// Convert cycles per second to MIDI note.
 inline float32 sc_cpsmidi(float32 freq) {
     return sc_log2(freq * (float32)0.0022727272727) * (float32)12. + (float32)69.;
 }
@@ -93,13 +93,13 @@ inline float32 sc_ratiomidi(float32 ratio) { return (float32)12. * sc_log2(ratio
 /// Convert decimal octaves to cycles per second.
 inline float32 sc_octcps(float32 note) { return (float32)440. * std::pow((float32)2., note - (float32)4.75); }
 
-/// Convert cycles per second to decimal octaves. 
+/// Convert cycles per second to decimal octaves.
 inline float32 sc_cpsoct(float32 freq) { return sc_log2(freq * (float32)0.0022727272727) + (float32)4.75; }
 
 /// Convert linear amplitude to decibels.
 inline float32 sc_ampdb(float32 amp) { return std::log10(amp) * (float32)20.; }
 
-/// Convert decibels to linear amplitude. 
+/// Convert decibels to linear amplitude.
 inline float32 sc_dbamp(float32 db) { return std::pow((float32)10., db * (float32).05); }
 
 /// Squared value
@@ -147,7 +147,7 @@ inline float32 sc_bitriwindow(float32 x) {
     return ax;
 }
 
-/// a value for a rectangular window function between 0 and 1. 
+/// a value for a rectangular window function between 0 and 1.
 inline float32 sc_rectwindow(float32 x) {
     if (x < (float32)0. || x > (float32)1.)
         return (float32)0.;
@@ -165,7 +165,7 @@ inline float32 sc_scurve(float32 x) {
 
 /*
  * Map x onto an S-curve.
- * Assumes that x is in range 
+ * Assumes that x is in range
  */
 inline float32 sc_scurve0(float32 x) {
     return x * x * ((float32)3. - (float32)2. * x);
@@ -282,7 +282,7 @@ inline float32 sc_CalcFeedback(float32 delaytime, float32 decaytime) {
     return ret;
 }
 
-/// Wrap x around ±1, wrapping only once. 
+/// Wrap x around ±1, wrapping only once.
 inline float32 sc_wrap1(float32 x) {
     if (x >= (float32)1.)
         return x + (float32)-2.;
@@ -303,8 +303,8 @@ inline float32 sc_fold1(float32 x) {
 ///////////////////////////////////////////////////////////////////////////////////////
 
 /*
- * Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero. 
- * Prevents pathological math operations in ugens and can be used at the end of a 
+ * Zap dangerous values (subnormals, infinities, nans) in feedback loops to zero.
+ * Prevents pathological math operations in ugens and can be used at the end of a
  * block to fix any recirculating filter values.
  */
 inline float64 zapgremlins(float64 x) {
@@ -325,7 +325,7 @@ inline float64 sc_midicps(float64 note) {
     return (float64)440. * std::pow((float64)2., (note - (float64)69.) * (float64)0.08333333333333333333333333);
 }
 
-/// Convert cycles per second to MIDI note. 
+/// Convert cycles per second to MIDI note.
 inline float64 sc_cpsmidi(float64 freq) {
     return sc_log2(freq * (float64)0.002272727272727272727272727) * (float64)12. + (float64)69.;
 }
@@ -339,13 +339,13 @@ inline float64 sc_ratiomidi(float64 ratio) { return (float64)12. * sc_log2(ratio
 /// Convert decimal octaves to cycles per second.
 inline float64 sc_octcps(float64 note) { return (float64)440. * std::pow((float64)2., note - (float64)4.75); }
 
-/// Convert cycles per second to decimal octaves. 
+/// Convert cycles per second to decimal octaves.
 inline float64 sc_cpsoct(float64 freq) { return sc_log2(freq * (float64)0.0022727272727) + (float64)4.75; }
 
 /// Convert linear amplitude to decibels.
 inline float64 sc_ampdb(float64 amp) { return std::log10(amp) * (float64)20.; }
 
-/// Convert decibels to linear amplitude. 
+/// Convert decibels to linear amplitude.
 inline float64 sc_dbamp(float64 db) { return std::pow((float64)10., db * (float64).05); }
 
 /// Squared value
@@ -392,7 +392,7 @@ inline float64 sc_bitriwindow(float64 x) {
     return (float64)1. - ax;
 }
 
-/// a value for a rectangular window function between 0 and 1. 
+/// a value for a rectangular window function between 0 and 1.
 inline float64 sc_rectwindow(float64 x) {
     if (x < (float64)0. || x > (float64)1.)
         return (float64)0.;
@@ -410,7 +410,7 @@ inline float64 sc_scurve(float64 x) {
 
 /*
  * Map x onto an S-curve.
- * Assumes that x is in range 
+ * Assumes that x is in range
  */
 inline float64 sc_scurve0(float64 x) {
     // assumes that x is in range
@@ -488,7 +488,7 @@ inline float64 sc_reciprocal(float64 x) { return 1. / x; }
 /// Return fractional part
 inline float64 sc_frac(float64 x) { return x - sc_floor(x); }
 
-/// Wrap x around ±1, wrapping only once. 
+/// Wrap x around ±1, wrapping only once.
 inline float64 sc_wrap1(float64 x) {
     if (x >= (float64)1.)
         return x + (float64)-2.;

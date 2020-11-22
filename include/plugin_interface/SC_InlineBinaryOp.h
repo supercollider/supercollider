@@ -260,10 +260,10 @@ inline float sc_pow(float a, float b) { return a >= 0.f ? std::pow(a, b) : -std:
 /// Exponentiation
 inline double sc_pow(double a, double b) { return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b); }
 
-/// Quantization by rounding. Rounds x to the nearest multiple of quant 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline float sc_round(float x, float quant) { return quant == 0. ? x : sc_floor(x / quant + .5f) * quant; }
 
-/// Quantization by rounding. Rounds x to the nearest multiple of quant 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline double sc_round(double x, double quant) { return quant == 0. ? x : sc_floor(x / quant + .5) * quant; }
 
 /// Round x up to multiple of quant
@@ -297,7 +297,7 @@ inline float sc_hypotx(float x, float y) {
 }
 
 /**
- * Compute abs(x) + abs(y) - (min(abs(x), abs(y)) * (sqrt(2) - 1)), 
+ * Compute abs(x) + abs(y) - (min(abs(x), abs(y)) * (sqrt(2) - 1)),
  * the minimum distance one will have to travel from the origin to (x,y)
  * using only orthogonal and diagonal movements.
  */
@@ -469,7 +469,7 @@ inline long sc_lcm(long a, long b) {
         return (a * b) / sc_gcd(a, b);
 }
 
-/// Greatest common divisor 
+/// Greatest common divisor
 inline float sc_gcd(float u, float v) { return (float)sc_gcd((long)std::trunc(u), (long)std::trunc(v)); }
 
 /// Least common multiple
@@ -490,7 +490,7 @@ inline int sc_rightShift(int a, int b) { return a >> b; }
 /// Recast a as an unsigned integer and then perform a binary rightshift with the number b
 inline int sc_unsignedRightShift(int a, int b) { return (int)((uint32)a >> b); }
 
-/// Quantization by rounding. Rounds x to the nearest multiple of quant 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline int sc_round(int x, int quant) { return quant == 0 ? x : sc_div(x + quant / 2, quant) * quant; }
 
 /// Round x up to multiple of quant
@@ -514,14 +514,14 @@ template <typename F> inline F sc_powi(F x, unsigned int n) {
 }
 
 /**
- * Thresholding: 
+ * Thresholding:
  * 0 when a < b, otherwise a
  */
 template <typename T, typename U> inline T sc_thresh(T a, U b) { return a < b ? (T)0 : a; }
 
 /**
  * Bilateral clipping.
- * clips input wave a to +/- b 
+ * clips input wave a to +/- b
  */
 template <typename T> inline T sc_clip2(T a, T b) { return sc_clip(a, -b, b); }
 
@@ -574,7 +574,7 @@ template <> inline double sc_scaleneg<double>(double a, double b) {
 
 /*
  * Two quadrant multiply.
- * 0 when b <= 0, a*b when b > 0 
+ * 0 when b <= 0, a*b when b > 0
  */
 template <typename T> inline T sc_amclip(T a, T b) {
     if (b < 0)
@@ -585,13 +585,13 @@ template <typename T> inline T sc_amclip(T a, T b) {
 
 /*
  * Two quadrant multiply.
- * 0 when b <= 0, a*b when b > 0 
+ * 0 when b <= 0, a*b when b > 0
  */
 template <> inline float sc_amclip<float>(float a, float b) { return a * 0.5f * (b + std::abs(b)); }
 
 /*
  * Two quadrant multiply.
- * 0 when b <= 0, a*b when b > 0 
+ * 0 when b <= 0, a*b when b > 0
  */
 template <> inline double sc_amclip<double>(double a, double b) { return a * 0.5 * (b + std::abs(b)); }
 
@@ -615,7 +615,7 @@ template <typename T> inline T sc_ring3(T a, T b) { return a * a * b; }
 
 /*
  * Ring modulation variant.
- * Returns the value of (a * a * b) - (a * b * b) 
+ * Returns the value of (a * a * b) - (a * b * b)
  * */
 template <typename T> inline T sc_ring4(T a, T b) { return a * a * b - a * b * b; }
 
@@ -627,7 +627,7 @@ template <typename T> inline T sc_difsqr(T a, T b) { return a * a - b * b; }
 
 /*
  * Sum of squares.
- * Return the value of a*a + b*b 
+ * Return the value of a*a + b*b
  */
 template <typename T> inline T sc_sumsqr(T a, T b) { return a * a + b * b; }
 
@@ -707,7 +707,7 @@ inline long sc_unsignedRightShift(long a, long b)
 	return (unsigned long)a >> b;
 }
 
-/// Quantization by rounding. Rounds x to the nearest multiple of quant 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline long sc_round(long x, long quant)
 {
 	return quant==0 ? x : sc_div(x + quant/2, quant) * quant;

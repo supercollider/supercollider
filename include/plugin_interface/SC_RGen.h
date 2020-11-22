@@ -100,7 +100,7 @@ inline void RGen::init(uint32 seed) {
     if (s3 < 16)
         s3 = 1821928721U;
 }
-/** 
+/**
  * This function is provided for speed in inner loops where the
  * state variables are loaded into registers.
  * Thus updating the instance variables can
@@ -205,10 +205,10 @@ inline float RGen::fbilinrand() {
 }
 
 /**
- * Generates a random float that is the 
- * result of summing three uniform random generators to yield a 
+ * Generates a random float that is the
+ * result of summing three uniform random generators to yield a
  * bell-like distribution.
- * 
+ *
  * Also known as Larry Polansky's poor man's gaussian generator.
  */
 inline float RGen::fsum3rand() {
@@ -253,7 +253,7 @@ inline double RGen::bilinrand(double scale) {
     return (a - b) * scale;
 }
 
-/// Generates a single random double value in an exponential distributions from lo to hi 
+/// Generates a single random double value in an exponential distributions from lo to hi
 inline double RGen::exprandrng(double lo, double hi) { return lo * exp(log(hi / lo) * drand()); }
 
 inline double RGen::exprand(double scale) {
@@ -276,10 +276,10 @@ inline double RGen::biexprand(double scale) {
 }
 
 /**
- * Generates a random double from -scale to +scale that is the 
- * result of summing three uniform random generators to yield a 
+ * Generates a random double from -scale to +scale that is the
+ * result of summing three uniform random generators to yield a
  * bell-like distribution.
- * 
+ *
  * Also known as Larry Polansky's poor man's gaussian generator.
  */
 inline double RGen::sum3rand(double scale) {

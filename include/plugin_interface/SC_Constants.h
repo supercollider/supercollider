@@ -82,4 +82,4 @@ const float truncFloat = (float)(3. * std::pow(2.0, 22));
 const double truncDouble = 3. * std::pow(2.0, 51);
 
 /// used in the secant table for values very close to 1/0
-const float kBadValue = 1e20f; 
+const float kBadValue = 1e20f;
