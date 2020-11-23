@@ -114,9 +114,7 @@ inline uint32 trand(uint32& s1, uint32& s2, uint32& s3) {
 }
 
 /// Generate a random 32 bit number
-inline uint32 RGen::trand() {
-    return ::trand(s1, s2, s3);
-}
+inline uint32 RGen::trand() { return ::trand(s1, s2, s3); }
 
 /// Generate a double from 0.0 to 0.999...
 inline double RGen::drand() {
@@ -211,19 +209,13 @@ inline float RGen::fbilinrand() {
  *
  * Also known as Larry Polansky's poor man's gaussian generator.
  */
-inline float RGen::fsum3rand() {
-    return (float)((frand() + frand() + frand() - 1.5) * 0.666666667);
-}
+inline float RGen::fsum3rand() { return (float)((frand() + frand() + frand() - 1.5) * 0.666666667); }
 
 /// Generate 32 bit integer from 0 to scale - 1
-inline int32 RGen::irand(int32 scale) {
-    return (int32)floor(scale * drand());
-}
+inline int32 RGen::irand(int32 scale) { return (int32)floor(scale * drand()); }
 
 /// Generate a 32 bit integer from -scale to +scale
-inline int32 RGen::irand2(int32 scale) {
-    return (int32)floor((2. * scale + 1.) * drand() - scale);
-}
+inline int32 RGen::irand2(int32 scale) { return (int32)floor((2. * scale + 1.) * drand() - scale); }
 
 /// Generates a single random 32 bit integer value in linear distribution from 0 to +scale
 inline int32 RGen::ilinrand(int32 scale) {
@@ -282,9 +274,7 @@ inline double RGen::biexprand(double scale) {
  *
  * Also known as Larry Polansky's poor man's gaussian generator.
  */
-inline double RGen::sum3rand(double scale) {
-    return (drand() + drand() + drand() - 1.5) * 0.666666667 * scale;
-}
+inline double RGen::sum3rand(double scale) { return (drand() + drand() + drand() - 1.5) * 0.666666667 * scale; }
 
 /// Generate a double from 0.0 to 0.999...
 inline double drand(uint32& s1, uint32& s2, uint32& s3) {

@@ -167,9 +167,7 @@ inline float32 sc_scurve(float32 x) {
  * Map x onto an S-curve.
  * Assumes that x is in range
  */
-inline float32 sc_scurve0(float32 x) {
-    return x * x * ((float32)3. - (float32)2. * x);
-}
+inline float32 sc_scurve0(float32 x) { return x * x * ((float32)3. - (float32)2. * x); }
 
 /// Map x onto a ramp starting at 0.
 inline float32 sc_ramp(float32 x) {
