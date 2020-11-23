@@ -591,8 +591,8 @@ SynthDef {
 		var resp, syncID;
 
 		if (bytes.size < (65535 div: 4)) {
- 			server.sendMsg("/d_recv", bytes, completionMsg)
- 		} {
+			server.sendMsg("/d_recv", bytes, completionMsg)
+		} {
 			if (server.isLocal) {
 				if(warnAboutLargeSynthDefs) {
 					"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
