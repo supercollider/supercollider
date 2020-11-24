@@ -239,6 +239,7 @@ class SC_CoreAudioDriver : public SC_AudioDriver {
     AudioStreamBasicDescription inputStreamDesc; // info about the default device
     AudioStreamBasicDescription outputStreamDesc; // info about the default device
 
+    template <bool IsClipping>
     friend OSStatus appIOProc(AudioDeviceID inDevice, const AudioTimeStamp* inNow, const AudioBufferList* inInputData,
                               const AudioTimeStamp* inInputTime, AudioBufferList* outOutputData,
                               const AudioTimeStamp* inOutputTime, void* defptr);
@@ -247,6 +248,8 @@ class SC_CoreAudioDriver : public SC_AudioDriver {
                                         const AudioBufferList* inInputData, const AudioTimeStamp* inInputTime,
                                         AudioBufferList* outOutputData, const AudioTimeStamp* inOutputTime,
                                         void* defptr);
+
+    bool isClippingEnabled() const { return mSafetyClipThreshold > 0 && mSafetyClipThreshold < INFINITY; }
 
 protected:
     // Driver interface methods
@@ -265,6 +268,7 @@ public:
 
     bool StopStart();
 
+    template <bool IsClipping>
     void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
     bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }

@@ -18,6 +18,10 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+// PLEASE NOTE:
+// libscsynth API might change across minor versions.
+// Always make sure, when using libscsynth as a shared library, that binary and headers come from the same minor
+// version.
 
 #pragma once
 
@@ -49,7 +53,7 @@ struct WorldOptions {
 
     bool mRealTime = true;
     bool mMemoryLocking = false;
-    float mSafetyClipThreshold = 2.0;
+    float mSafetyClipThreshold = 1.26; // ca. 2 dB
 
     const char* mNonRealTimeCmdFilename = nullptr;
     const char* mNonRealTimeInputFilename = nullptr;

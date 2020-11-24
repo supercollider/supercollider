@@ -82,6 +82,8 @@ void Usage() {
              "   -N <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>\n"
 #ifdef __APPLE__
              "   -s <safety-clip-threshold>          (default %d)\n"
+             "          absolute amplitude value output signals will be clipped to.\n"
+             "          Set to <= 0 or inf to completely disable output clipping.\n"
              "   -I <input-streams-enabled>\n"
              "   -O <output-streams-enabled>\n"
 #endif

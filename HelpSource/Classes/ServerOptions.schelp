@@ -144,7 +144,8 @@ An Integer indicating the maximum number of clients which can simultaneously rec
 
 method:: safetyClipThreshold
 note:: MacOS only::
-A Float indicating a safety threshold for output values to be clipped. This is necessary on MacOSX because setting a low system volume doesn't prevent output values greater than +- 1 (which can happen by mistake, e.g. when sending a negative coefficient to a filter) to sound absolutely loud, since CoreAudio applies only a relative attenuation. Defaults to a threshold of 2.0, to save some ears and still allow some headroom. Values are clipped only before being written to hardware output busses, so although this affects inter-app routing as well (since it would use those same busses), it doesn't affect recording, which still benefits from the full 32bit float range without any clipping.
+A Float indicating a safety threshold for output values to be clipped to. This is necessary on macOS because setting a low system volume doesn't prevent output values greater than +/- 1 from sounding extremely loud, which can happen by mistake, e.g. when sending a negative coefficient to a filter. With this threshold, values are clipped just before being written to hardware output busses, which does not affect the recording. However, the signal will be affected if it's above the threshold and the sound is routed to other apps using 3rd-party software.
+Defaults to a threshold of 1.26 (ca. 2 dB), to save some ears and still allow some headroom. Setting safetyClipThreshold to code::inf::, code::0::, or a negative value, disables clipping altogether.
 
 subsection:: Other Instance Methods
 method:: asOptionsString
