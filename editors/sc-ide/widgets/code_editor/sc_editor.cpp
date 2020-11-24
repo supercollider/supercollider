@@ -917,8 +917,6 @@ void ScCodeEditor::toggleCommentSelection() {
         QString selectionText = cursor.selectedText();
         QTextCursor selectionCursor(cursor);
         if (isSelectionComment(selectionText)) {
-            selectionText = selectionText.trimmed().remove(0, 2);
-            selectionText.chop(2);
             selectionCursor.insertText(selectionText);
         } else {
             selectionText = QStringLiteral("/*") + selectionText + QStringLiteral("*/");
