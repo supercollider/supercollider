@@ -6,16 +6,9 @@ description::
 This class is available only on Linux, and implements Linux platform-specific methods.
 
 subsection:: Environment variables for Jack
-It is possible to set some environment variables in your operating system to automate connecting the Jack Audio Server on startup.
+Among other things, this class makes it possible to set some environment variables in your Linux operating system to automate connecting the Jack Audio Server on startup.
 
-If these are not set, SuperCollider will default to connecting SuperCollider's inputs and outputs to your system's inputs and outputs.
-
-This may be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell.
-
-code::
-export SC_JACK_DEFAULT_INPUTS = "system"
-export SC_JACK_DEFAULT_OUTPUTS = "system"
-::
+See link::Reference/AudioDeviceSelection#Linux:: for more information on this.
 
 classmethods::
 
