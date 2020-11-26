@@ -221,7 +221,7 @@ x.postln;
 
 method:: try
 
-Function implements a code::try:: method which allows catching exceptions thrown by code. For more information see link::Class/Exception::
+Function implements a code::try:: method which allows catching exceptions thrown by code and run the exception handler. For more information see link::Classes/Exception::.
 discussion::
 Example
 code::
@@ -237,7 +237,7 @@ method:: protect
 Function implements a code::protect:: method which allows protecting code from exceptions thrown by code.
 The difference with code::try:: is the exception handler code is always run, even if there is no exception.
 If an exception occurs, it is rethrown after the exception handler block is run.
-For more information see link::Class/Exception::
+For more information see link::Classes/Exception::.
 
 discussion::
 Example
