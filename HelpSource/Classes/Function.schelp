@@ -359,7 +359,7 @@ subsection::Exception Handling
 
 
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.
-
+See link::Class/Exception:: for more information on how to handle exceptions.
 
 method::try
 
