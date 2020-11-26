@@ -1,6 +1,7 @@
 class::Exception
 categories::Core
 summary::root error class
+keyword:: try protect catch
 
 description::
 The root of SuperCollider's error handling mechanism.
