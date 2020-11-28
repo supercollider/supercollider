@@ -56,6 +56,8 @@ ServerOptions {
 
 	var <>bindAddress;
 
+	var <>safetyClipThreshold;
+
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
@@ -98,6 +100,7 @@ ServerOptions {
 				recChannels: 2,
 				recBufSize: nil,
 				bindAddress: "127.0.0.1",
+				safetyClipThreshold: 1.26 // ca. 2 dB
 			)
 		)
 	}
@@ -223,6 +226,9 @@ ServerOptions {
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
+		});
+		if (thisProcess.platform.name === \osx && Server.program.asString.endsWith("supernova").not && safetyClipThreshold.notNil, {
+			o = o ++ " -s " ++ safetyClipThreshold;
 		});
 		^o
 	}

@@ -410,6 +410,9 @@ World* World_New(WorldOptions* inOptions) {
             hw->mAudioDriver = SC_NewAudioDriver(world);
             hw->mAudioDriver->SetPreferredHardwareBufferFrameSize(inOptions->mPreferredHardwareBufferFrameSize);
             hw->mAudioDriver->SetPreferredSampleRate(inOptions->mPreferredSampleRate);
+#ifdef __APPLE__
+            hw->mAudioDriver->SetSafetyClipThreshold(inOptions->mSafetyClipThreshold);
+#endif
 
             if (inOptions->mLoadGraphDefs) {
                 World_LoadGraphDefs(world);
