@@ -1,5 +1,5 @@
 name: check, build, test
-on: [push]
+on: [push, pull_request]
 jobs:
   linter:
     runs-on: ubuntu-18.04
