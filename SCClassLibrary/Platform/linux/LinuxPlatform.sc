@@ -19,8 +19,14 @@ LinuxPlatform : UnixPlatform {
 		Score.program = Server.program;
 
 		// default jack port hookup
-		"SC_JACK_DEFAULT_INPUTS".setenv("system");
-		"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+		// use "system" as default when env vars haven't been set by user
+		if("SC_JACK_DEFAULT_INPUTS".getenv.isNil, {
+			"SC_JACK_DEFAULT_INPUTS".setenv("system")
+		});
+
+		if("SC_JACK_DEFAULT_OUTPUTS".getenv.isNil, {
+			"SC_JACK_DEFAULT_OUTPUTS".setenv("system")
+		});
 
 		// automatically start jack when booting the server
 		// can still be overridden with JACK_NO_START_SERVER
