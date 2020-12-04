@@ -92,16 +92,7 @@ teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system 
 
 These variables are written as a string that specifies another jack client or a comma-separated list of jack ports formatted as a string.
 
-If these are not set, SuperCollider will default to connecting SuperCollider's inputs and outputs to your system's inputs and outputs.
-
-This may be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell:
-
-code::
-export SC_JACK_DEFAULT_INPUTS = "system"
-export SC_JACK_DEFAULT_OUTPUTS = "system"
-::
-
-Alternatively, you can also set these from SuperCollider:
+If these are not set, SuperCollider will default to connecting SuperCollider's inputs and outputs to your system's inputs and outputs. This is the recommended way of changing the Jack environment variables for SuperCollider from within a SuperCollider script:
 
 code::
 // connect first to input channels with system
@@ -111,6 +102,12 @@ code::
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
 ::
 
+As an alternative, these may be also be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell:
+
+code::
+export SC_JACK_DEFAULT_INPUTS = "system"
+export SC_JACK_DEFAULT_OUTPUTS = "system"
+::
 
 section:: Windows
 
