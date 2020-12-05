@@ -17,8 +17,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('root', nargs = '?', help = "Root project directory, where CMakeLists.txt will be written. Defaults to current working directory", default = '.')
 parser.add_argument('-p', '--plugins', nargs = '+', help = "Plugin subproject directories, for example -p Sin Saw Square")
 parser.add_argument('-P', '--project-name', help = "Name of the project. Defaults to the name of the root project directory")
-parser.add_argument('-c', '--min-cmake-version', help = "Mininum CMake version to require.  Defaults to 3.5, must be >= 3.5", default = '3.5')
-parser.add_argument('-s', '--cpp-standard', help = "C++ standard to use. Defaults to C++11.  Valid arguments are 11, 14, 17.", type = int, default = 11)
+parser.add_argument('-c', '--min-cmake-version', help = "Mininum CMake version to require.  Defaults to 3.12, must be >= 3.12", default = '3.12')
+parser.add_argument('-s', '--cpp-standard', help = "C++ standard to use. Defaults to C++17.  Valid arguments are 11, 14, 17.", type = int, default = 17)
 parser.add_argument('-v', '--verbose', help = "Verbose output. Can be specified up to 2 times for more verbosity", action = 'count', default = 0)
 parser.add_argument('-a', '--author', help = "Project author name.")
 parser.add_argument('-D', '--date', help = "Project date. Defaults to now.")
@@ -134,8 +134,8 @@ class Generator:
             out('Root project directory does not exist: {}'.format(self.root_dir), ERROR)
             exit(1)
 
-        if not int(self.args.min_cmake_version[0:1]) == 3 or not float(self.args.min_cmake_version[2:]) >= 5.0:
-            out('CMake version must be >= 3.5, got {}'.format(self.args.min_cmake_version))
+        if not int(self.args.min_cmake_version[0:1]) == 3 or not float(self.args.min_cmake_version[2:]) >= 12.0:
+            out('CMake version must be >= 3.12, got {}'.format(self.args.min_cmake_version))
             exit(1)
         if not self.args.author:
             user = Generator.get_username()

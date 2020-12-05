@@ -41,7 +41,6 @@ Table of contents
     - Using Qt Creator
     - More `cmake`: building supernova, qt-less, verbosity and more
     - Recalling environment- and build settings on the command line
-- Description of SC 3.9 release build
 - Known issues
 - Outro
 
@@ -242,12 +241,11 @@ version of each library as appropriate.
 Required components:
 
 - **[Git][Git]** for Windows
-- **[CMake][cmake]** >= 3.7.2. You will need at least this version to generate project files for
-  VS2017. 3.5 is the absolute supported minimum.
-- **[Visual Studio 15 2017][VS2017]** with C++ core features. VS2015 is also supported.
-- **[Qt][Qt]** >= 5.7 or later. We recommend using the latest version. Use the package `msvc2017_64`
-  (or `msvc2015_64`) for a 64-bit build, `msvc2015` for 32-bit (VS2015 and 2017 are both compatible
-  with this 32-bit distribution).
+- **[CMake][cmake]** >= 3.12.
+- **[Visual Studio 15 2017][VS2017]** or later.
+- **[Qt][Qt]** >= 5.7. We recommend using the latest version. Make sure that the
+  version you select matches the architecture (32-bit or 64-bit) and compiler ABI
+  you are building with. This varies per Qt version.
 - **[libsndfile][libsndfile]** >= 1.0.25.
 - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 
@@ -318,7 +316,7 @@ In order to get support for ASIO drivers, follow this directory structure:
             ...
 
 FFTW does not provide build files for Visual Studio. In the **Developer Command
-Prompt for VS2017** (note that this is not `cmd.exe`), `cd` to the
+Prompt for VS2019** (or VS2017; note that this is not `cmd.exe`), `cd` to the
 directory where FFTW is installed and, for a **64-bit** build:
 
     lib /machine:x64 /def:libfftw3f-3.def
@@ -1208,22 +1206,6 @@ CMake:
 Another way of storing CMake command line arguments is creating a "toolchain"
 file. This is the CMake suggested method. Please look up the CMake documentation
 if you require an advanced configuration, and are interested in this approach.
-
-Description of the SC 3.9 release build
----------------------------------------
-
-The following libraries and tools were used to build the Windows installers
-"Windows-x86-VS" and "Windows-x64-VS":
-
-- Visual Studio 12.0 2013, compiler version 18.00.40629
-- Qt5.5.1
-  - for Windows-x86-VS: distribution `msvc2013`
-  - for Windows-x64-VS: distribution `msvc2013_64`
-- libsndfile 1.0.28
-- FFTW 3.3.5
-- ASIO SDK 2.3
-- DirectX v9 (June 2010)
-- NSIS 3.02.1
 
 Known issues
 ============
