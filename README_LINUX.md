@@ -6,8 +6,8 @@ Build requirements
 
 These are strict requirements for scsynth and supernova:
 
-- A C++ compiler. SuperCollider guarantees support for [gcc][gcc] >= 6 and [clang][clang] >= 4.
-- [cmake][cmake] >= 3.5: Cross-platform build system.
+- A C++ compiler with C++17 support. SuperCollider guarantees support for [gcc][gcc] >= 7 and [clang][clang] >= 4.
+- [cmake][cmake] >= 3.12: Cross-platform build system.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [fftw][fftw] >= 3.0: FFT library.
@@ -31,7 +31,7 @@ Recommended packages
 
 For sclang and scide:
 
-- [Qt][Qt] >= 5.7 with QtWebEngine and QtWebSockets: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit. It's best to get the latest Qt 5.x version.
+- [Qt][Qt] >= 5.11 with QtWebEngine and QtWebSockets: Cross-platform GUI library, required for the IDE and for sclang's Qt GUI kit. It's best to get the latest Qt 5.x version.
 - [git][git]: Required for sclang's Quarks system.
 - [ALSA][ALSA]: Linux sound library, required for sclang MIDI support.
 - [libudev][libudev]: Device manager library, required for HID support.
@@ -68,7 +68,7 @@ The following command installs all the recommended dependencies for sclang excep
 Installing Qt
 -------------
 
-**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system. This may be a little complicated since some versions of some Linux distributions are stuck with old Qt versions.
+**Qt 5.11 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system. This may be a little complicated since some versions of some Linux distributions are stuck with old Qt versions.
 
 ### Installing Qt on recent Debian-like operating systems
 
@@ -76,7 +76,7 @@ Depending on your Debian flavor and version, your distribution's PPA may be stuc
 
     apt-cache policy qt5-default
 
-If this displays version 5.7 or later, installing Qt is easy:
+If this displays version 5.11 or later, installing Qt is easy:
 
     sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
 
@@ -92,19 +92,13 @@ On Xenial:
     sudo apt-get update
     sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine qt511websockets
 
-On Trusty, only Qt 5.10 and below are available:
-
-    sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
-    sudo apt-get update
-    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine qt510websockets
-
 [Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
 
 ### Installing Qt using the official installer
 
 Worst case scenario, you can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
 
-At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
+At the "Select Components" step, pop open Qt, select the latest version, and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 

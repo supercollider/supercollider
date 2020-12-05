@@ -44,7 +44,7 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
+- **git, cmake >= 3.12, libsndfile, readline, and qt5 >= 5.11**, installed via homebrew:
   `brew install git cmake libsndfile readline qt5`
 - If you are building with Qt libraries, you will also need the [requirements for
   QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
@@ -136,10 +136,9 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5(.5.x), libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version
-information. A build using v5.6 and above will fail at the time of this writing because Qt5WebKit is missing in its binary distribution.
+**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
 
-`brew upgrade ____` will update the dependency to a newer version (avoid this for Qt5 or handle different Qt5 versions with `brew switch`).
+`brew upgrade ____` will update the dependency to a newer version.
 
 Other common homebrew problems can be fixed using `brew doctor`.
 
