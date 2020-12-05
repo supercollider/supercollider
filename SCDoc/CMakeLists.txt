@@ -12,7 +12,7 @@ set(SCDOC_SRCS
 if(CMAKE_COMPILER_IS_CLANG)
   set_source_files_properties(
     ${SCDOC_DIR}/lex.scdoc.cpp
-    PROPERTIES COMPILE_FLAGS "-Wno-deprecated-register -Wno-null-conversion")
+    PROPERTIES COMPILE_FLAGS "-Wno-null-conversion")
 endif()
 
 include_directories(
