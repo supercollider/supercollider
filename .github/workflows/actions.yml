@@ -129,11 +129,15 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "::set-output name=date::$(date '+%Y-%m-%d')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.date }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -245,11 +249,15 @@ jobs:
             SC_VERSION=$GITHUB_SHA
           fi
           echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "::set-output name=date::$(date '+%Y-%m-%d')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.date }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
