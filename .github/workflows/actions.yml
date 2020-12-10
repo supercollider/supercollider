@@ -117,19 +117,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set artifact filename
-        if: matrix.artifact-suffix
-        run: |
-          # set SC_VERSION to tag (if present) or to commit SHA
-          SC_VERSION=
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
-            FULL_TAG=${GITHUB_REF#refs/tags/}
-            TAG=${FULL_TAG##Version-}
-            SC_VERSION=$TAG
-          else
-            SC_VERSION=$GITHUB_SHA
-          fi
-          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
       - name: prepare daily timestamp for cache
         id: current-date
         run: echo "::set-output name=date::$(date '+%Y-%m-%d')"
@@ -178,6 +165,19 @@ jobs:
         run: |
           cd $BUILD_PATH
           make install -j2
+      - name: set artifact filename
+        if: matrix.artifact-suffix
+        run: |
+          # set SC_VERSION to tag (if present) or to commit SHA
+          SC_VERSION=
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            TAG=${FULL_TAG##Version-}
+            SC_VERSION=$TAG
+          else
+            SC_VERSION=$GITHUB_SHA
+          fi
+          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
@@ -238,19 +238,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set artifact filename
-        if: matrix.artifact-suffix
-        run: |
-          # set SC_VERSION to tag (if present) or to commit SHA
-          SC_VERSION=
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
-            FULL_TAG=${GITHUB_REF#refs/tags/}
-            TAG=${FULL_TAG##Version-}
-            SC_VERSION=$TAG
-          else
-            SC_VERSION=$GITHUB_SHA
-          fi
-          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
       - name: prepare daily timestamp for cache
         id: current-date
         run: echo "::set-output name=date::$(date '+%Y-%m-%d')"
@@ -305,6 +292,19 @@ jobs:
           cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
+      - name: set artifact filename
+        if: matrix.artifact-suffix
+        run: |
+          # set SC_VERSION to tag (if present) or to commit SHA
+          SC_VERSION=
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            TAG=${FULL_TAG##Version-}
+            SC_VERSION=$TAG
+          else
+            SC_VERSION=$GITHUB_SHA
+          fi
+          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
