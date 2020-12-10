@@ -119,12 +119,12 @@ jobs:
           submodules: recursive
       - name: prepare daily timestamp for cache
         id: current-date
-        run: echo "::set-output name=date::$(date '+%Y-%m-%d')"
+        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.date }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
       - name: cache qt
         id: cache-qt
@@ -240,13 +240,22 @@ jobs:
           submodules: recursive
       - name: prepare daily timestamp for cache
         id: current-date
-        run: echo "::set-output name=date::$(date '+%Y-%m-%d')"
+        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+      - name: prepare monthly timestamp for cache
+        id: current-month
+        run: echo "::set-output name=stamp::$(date '+%Y-%m')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.date }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-
+      - name: cache homebrew downloads
+        uses: actions/cache@v2
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
