@@ -117,7 +117,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set sc version and artifact filename
+      - name: set artifact filename
+        if: matrix.artifact-suffix
         run: |
           # set SC_VERSION to tag (if present) or to commit SHA
           SC_VERSION=
@@ -237,7 +238,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set sc version and artifact filename
+      - name: set artifact filename
+        if: matrix.artifact-suffix
         run: |
           # set SC_VERSION to tag (if present) or to commit SHA
           SC_VERSION=
