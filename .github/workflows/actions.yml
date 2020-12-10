@@ -25,14 +25,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # - job-name: 'xenial gcc5' # disabled because of  https://github.com/jurplel/install-qt-action/issues/65
-          #   os-version: '16.04'
-          #   c-compiler: 'gcc-5'
-          #   cxx-compiler: 'g++-5'
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   qt-version: '5.9.3' # manually install requested version of qt
-          #   # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+          - job-name: 'xenial gcc5'
+            os-version: '16.04'
+            c-compiler: 'gcc-5'
+            cxx-compiler: 'g++-5'
+            use-syslibs: false
+            shared-libscsynth: false
+            qt-version: '5.9.3' # manually install requested version of qt
+            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
 
           - job-name: 'bionic gcc7'
             os-version: '18.04'
@@ -70,7 +70,7 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
-          # - job-name: 'focal gcc10 use syslibs' # disabled - boost version incompatible
+          # - job-name: 'focal gcc10 use system libraries' # disabled - boost version incompatible
           #   os-version: '20.04'
           #   c-compiler: 'gcc-10'
           #   cxx-compiler: 'g++-10'
@@ -105,6 +105,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
+    name: Linux ${{ matrix.job-name }}
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
@@ -133,6 +134,13 @@ jobs:
         with:
           path: ~/.ccache
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+      - name: cache qt
+        id: cache-qt
+        uses: actions/cache@v1
+        if: matrix.qt-version
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
       - name: install dependencies
         run: |
           sudo apt-get update
@@ -143,13 +151,13 @@ jobs:
       - name: install qt from apt
         if: '!matrix.qt-version'
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
-      # custon Qt version doesn't work in ubuntu 16.04 - see https://github.com/jurplel/install-qt-action/issues/65
-      - name: install qt - specific version
+      - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
         with:
           modules: qtwebengine
           version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
@@ -184,14 +192,14 @@ jobs:
       matrix:
         include:
 
-          - job-name: 'macOS'
+          - job-name: ''
             os-version: '10.15'
             xcode-version: '11.7'
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
-          # - job-name: 'macOS legacy'
+          # - job-name: 'legacy'
           #   os-version: '10.15'
           #   xcode-version: '10.3'
           #   qt-version: '5.9' # will use qt not from homebrew
@@ -199,18 +207,19 @@ jobs:
           #   shared-libscsynth: false
           #   artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
-          - job-name: 'macOS use syslibs'
+          - job-name: 'use system libraries'
             os-version: '10.15'
             xcode-version: '11.7'
             use-syslibs: true
             shared-libscsynth: false
 
-          - job-name: 'macOS shared libscsynth'
+          - job-name: 'shared libscsynth'
             os-version: '10.15'
             xcode-version: '11.7'
             use-syslibs: false
             shared-libscsynth: true
 
+    name: macOS ${{ matrix.job-name }}
     env: 
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
@@ -248,7 +257,7 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
-      - name: install qt - specific version
+      - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
         with:
@@ -260,9 +269,7 @@ jobs:
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
-          # To get less noise in xcode output
-          gem install xcpretty
-      - name: install syslibs
+      - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
