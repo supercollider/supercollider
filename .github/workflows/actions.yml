@@ -3,6 +3,8 @@ on: [push, pull_request]
 jobs:
   linter:
     runs-on: ubuntu-18.04
+    outputs: 
+      sc-version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -11,12 +13,21 @@ jobs:
         run: |
           sudo npm install -g lintspaces-cli
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
-
       - name: lint cpp files
         run: |
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
           echo "Lint successful"
+      - name: set version string for artifacts
+        id: set-version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            SC_VERSION=${FULL_TAG##Version-}
+          else
+            SC_VERSION=$GITHUB_SHA
+          fi
+          echo "::set-output name=version::$SC_VERSION"
 
   Linux:
     needs: linter
@@ -113,6 +124,7 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -165,19 +177,6 @@ jobs:
         run: |
           cd $BUILD_PATH
           make install -j2
-      - name: set artifact filename
-        if: matrix.artifact-suffix
-        run: |
-          # set SC_VERSION to tag (if present) or to commit SHA
-          SC_VERSION=
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
-            FULL_TAG=${GITHUB_REF#refs/tags/}
-            TAG=${FULL_TAG##Version-}
-            SC_VERSION=$TAG
-          else
-            SC_VERSION=$GITHUB_SHA
-          fi
-          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
@@ -234,6 +233,7 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -304,19 +304,6 @@ jobs:
           cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
-      - name: set artifact filename
-        if: matrix.artifact-suffix
-        run: |
-          # set SC_VERSION to tag (if present) or to commit SHA
-          SC_VERSION=
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
-            FULL_TAG=${GITHUB_REF#refs/tags/}
-            TAG=${FULL_TAG##Version-}
-            SC_VERSION=$TAG
-          else
-            SC_VERSION=$GITHUB_SHA
-          fi
-          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
       - name: create archive
         if: matrix.artifact-suffix
         run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
