@@ -3,6 +3,8 @@ on: [push, pull_request]
 jobs:
   linter:
     runs-on: ubuntu-18.04
+    outputs: 
+      sc-version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -11,12 +13,21 @@ jobs:
         run: |
           sudo npm install -g lintspaces-cli
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
-
       - name: lint cpp files
         run: |
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
           echo "Lint successful"
+      - name: set version string for artifacts
+        id: set-version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            SC_VERSION=${FULL_TAG##Version-}
+          else
+            SC_VERSION=$GITHUB_SHA
+          fi
+          echo "::set-output name=version::$SC_VERSION"
 
   Linux:
     needs: linter
@@ -113,27 +124,20 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set sc version and artifact filename
-        run: |
-          # set SC_VERSION to tag (if present) or to commit SHA
-          SC_VERSION=
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
-            FULL_TAG=${GITHUB_REF#refs/tags/}
-            TAG=${FULL_TAG##Version-}
-            SC_VERSION=$TAG
-          else
-            SC_VERSION=$GITHUB_SHA
-          fi
-          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -229,27 +233,29 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: set sc version and artifact filename
-        run: |
-          # set SC_VERSION to tag (if present) or to commit SHA
-          SC_VERSION=
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
-            FULL_TAG=${GITHUB_REF#refs/tags/}
-            TAG=${FULL_TAG##Version-}
-            SC_VERSION=$TAG
-          else
-            SC_VERSION=$GITHUB_SHA
-          fi
-          echo "ARTIFACT_FILE=SuperCollider-$SC_VERSION-${{ matrix.artifact-suffix }}.zip" >> $GITHUB_ENV
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+      - name: prepare monthly timestamp for cache
+        id: current-month
+        run: echo "::set-output name=stamp::$(date '+%Y-%m')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }} # -v2- etc can be used for "clearing" the cache, it's not functionally connected to the version of the script
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-
+      - name: cache homebrew downloads
+        uses: actions/cache@v2
+        id: cache-homebrew
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -264,6 +270,9 @@ jobs:
           modules: 'qtwebengine'
           version: ${{ matrix.qt-version }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
+        if: '!steps.cache-homebrew.outputs.cache-hit'
+        run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
           brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
