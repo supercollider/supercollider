@@ -164,7 +164,7 @@ else() # ARM platforms do not have SSE
     set(SSE2 OFF)
 endif()
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,openal})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
@@ -246,7 +246,7 @@ option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 #############################################
 # some default libraries
 
-if (NOT WIN32)
+if ((NOT WIN32) AND (NOT EMSCRIPTEN))
     find_package(Pthreads)
 
     if (NOT PTHREADS_FOUND)
