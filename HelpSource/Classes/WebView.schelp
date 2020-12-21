@@ -135,7 +135,7 @@ METHOD:: audioMuted
 METHOD:: contentsSize
     Get the size of the current content.
     Returns::
-        A Point
+        A Size
 
 METHOD:: scrollPosition
     Get or sets the scroll position of the current page.
