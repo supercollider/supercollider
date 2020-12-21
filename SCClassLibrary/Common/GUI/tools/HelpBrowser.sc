@@ -119,6 +119,10 @@ HelpBrowser {
 
 	goForward { webView.forward; }
 
+    goDown { webView.scrollDown(40); }
+
+    goUp { webView.scrollUp(40); }
+
 /* ------------------------------ private ------------------------------ */
 
 	init { arg aHomeUrl, aNewWin;
@@ -273,7 +277,7 @@ HelpBrowser {
 		webView.enterInterpretsSelection = true;
 
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			var keyPlus, keyZero, keyMinus, keyEquals, keyF;
+			var keyPlus, keyZero, keyMinus, keyEquals, keySlash, keyF, keyG, keyH, keyJ, keyK, keyL;
 			var modifier, zoomIn;
 
 			modifier = Platform.case(\osx, {
@@ -282,20 +286,22 @@ HelpBrowser {
 				mods.isCtrl && mods.isCmd.not && mods.isAlt.not;
 			});
 
-			#keyPlus, keyZero, keyMinus, keyEquals, keyF = [43, 48, 45, 61, 70];
+			#keyPlus, keyZero, keyMinus, keyEquals, keyF, keyG, keyH, keyJ, keyK, keyL, keySlash = [43, 48, 45, 61, 70, 71, 72, 74, 75, 76, 47];
 
 			// +/= has the same value on macOS when pressed with <Cmd>
-			zoomIn = Platform.case(\osx, {
-				(key == keyEquals) && modifier;
+            zoomIn = Platform.case(\osx, {
+				( (key == keyEquals) && modifier)
 			}, {
-				(key == keyPlus) && modifier;
+				( (key == keyPlus) && modifier)
+                ||
+                ( (key == keyK) && mods.isShift );
 			});
 
 			if (zoomIn) {
 				webView.zoom = min(webView.zoom + 0.1, 2.0);
 			};
 
-			if ((key == keyMinus) && modifier) {
+			if ( ((key == keyMinus) && modifier) || ( (key == keyJ) && mods.isShift ) )   {
 				webView.zoom = max(webView.zoom - 0.1, 0.1);
 			};
 
@@ -306,6 +312,42 @@ HelpBrowser {
 			if ((key == keyF) && modifier) {
 				toggleFind.value;
 			};
+
+            if (key == keySlash ) {
+				toggleFind.value;
+			};
+
+			if (key == keyG) {
+                webView.scrollPosition_(0@0)
+            };
+
+			if ((key == keyG) && mods.isShift) {
+                webView.scrollPosition_(0@(webView.contentsSize.height- webView.bounds.height))
+            };
+
+            if (key == keyH) {
+                this.goBack
+            };
+
+            if (key == keyL) {
+                this.goForward
+            };
+
+            if ( (key == keyJ) && mods.asBoolean.not) {
+                this.goDown
+            };
+
+            if ( (key == keyK) && mods.asBoolean.not) {
+                this.goUp;
+            };
+
+            if ( (kcode == 65361) && mods.isAlt)  {
+                this.goBack
+            };
+
+            if ( (kcode == 65363) && mods.isAlt)  {
+                this.goForward
+            };
 
 			if (char.ascii == 27) { // Esc
 				if (findView.visible) { toggleFind.value };
