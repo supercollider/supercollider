@@ -166,7 +166,7 @@ else() # ARM platforms do not have SSE
     set(SSE2 OFF)
 endif()
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela|openal})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
@@ -255,7 +255,7 @@ endif()
 #############################################
 # some default libraries
 
-if (NOT WIN32)
+if ((NOT WIN32) AND (NOT EMSCRIPTEN))
     find_package(Pthreads)
 
     if (NOT PTHREADS_FOUND)
