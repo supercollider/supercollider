@@ -3,7 +3,8 @@
 	url = git://github.com/timblechmann/nova-simd.git
 [submodule "external_libraries/nova-tt"]
 	path = external_libraries/nova-tt
-	url = git://github.com/timblechmann/nova-tt.git
+	url = git://github.com/Sciss/nova-tt.git
+	branch = wasm
 [submodule "external_libraries/hidapi"]
 	path = external_libraries/hidapi
 	url = git://github.com/supercollider/hidapi.git
