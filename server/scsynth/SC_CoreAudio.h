@@ -34,7 +34,7 @@
 #define SC_AUDIO_API_PORTAUDIO 3
 #define SC_AUDIO_API_AUDIOUNITS 4
 #define SC_AUDIO_API_COREAUDIOIPHONE 5
-#define SC_AUDIO_API_OPENAL 6
+#define SC_AUDIO_API_WEBAUDIO 6
 
 #ifdef SC_IPHONE
 #    define SC_AUDIO_API SC_AUDIO_API_COREAUDIOIPHONE
@@ -46,7 +46,7 @@
 #    elif defined(__APPLE__)
 #        define SC_AUDIO_API SC_AUDIO_API_COREAUDIO
 #    elif defined(__EMSCRIPTEN__)
-#        define SC_AUDIO_API SC_AUDIO_API_OPENAL
+#        define SC_AUDIO_API SC_AUDIO_API_WEBAUDIO
 #    else
 #        error SC_AUDIO_API undefined, cannot determine audio backend
 #    endif

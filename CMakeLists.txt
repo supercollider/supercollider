@@ -164,7 +164,7 @@ else() # ARM platforms do not have SSE
     set(SSE2 OFF)
 endif()
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,openal})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,webaudio})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
