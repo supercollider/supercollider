@@ -30,3 +30,17 @@ Currently make finishes with errors relating to the following missing symbols:
  - `sched_get_priority_max` ; defined in `<sched.h>`, used in `external_libraries` > `nova-tt` > `nova-tt` > `thread_priority_pthread.hpp`
  - `sched_get_priority_min` ; dito.
 
+-----
+
+## Deliberations on the Audio API
+
+There are currently three options for Audio API on wasm: plain Web Audio API, OpenAL which has a back-end provided by emscripten, and SDL2, which apparently has a port that works with emscripten.
+Currently the API string is `openal`, but it would have to be changed to `webaudio` or `sdl2` if we decide on one of these. Since Jack and PortAudio already cover a variety of platforms, I see
+no big benefit in going through an extra indirection with OpenAL or SDL2 -- these are basically options if you want to port an existing C application to wasm, but since we have to write the
+driver from scratch, it seems natural to skip this indirection and go for Web Audio API direct support instead.
+
+The emscripten docs already show how to use the `EM_ASM` macros to invoke JavaScript calls from C. This would probably be the glue needed to set up the audio worklet processor.
+
+Similar to `SC_PortAudio.cpp` and `SC_Jack.cpp`, we would add another file `SC_WebAudio.cpp` to `server/scsynth/` and register it in `server/scsynth/CMakeList.txt`.
+In this file, the sub-class of `SC_AudioDriver` will be implemented.
+
