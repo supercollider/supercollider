@@ -26,16 +26,15 @@ Currently make finishes with errors relating to the following missing symbols:
  - `server_timeseed` ; dito.
  - `initializeScheduler` ; dito.
  - `SC_NewAudioDriver(struct World*)` ; dito.
- - `pthread_setschedparam` ; defined in `<pthread.h>`, used in  `external_libraries` > `nova-tt` > `nova-tt` > `thread_priority_mach.hpp`
- - `sched_get_priority_max` ; defined in `<sched.h>`, used in `external_libraries` > `nova-tt` > `nova-tt` > `thread_priority_pthread.hpp`
- - `sched_get_priority_min` ; dito.
+
+There are `ifdef`s in nova-tt `thread_priority_mach.hpp` and `thread_priority_pthread.hpp` to bypass unsupported API.
 
 -----
 
 ## Deliberations on the Audio API
 
 There are currently three options for Audio API on wasm: plain Web Audio API, OpenAL which has a back-end provided by emscripten, and SDL2, which apparently has a port that works with emscripten.
-Currently the API string is `openal`, but it would have to be changed to `webaudio` or `sdl2` if we decide on one of these. Since Jack and PortAudio already cover a variety of platforms, I see
+Currently the API string is `webaudio` -- since Jack and PortAudio already cover a variety of platforms, I see
 no big benefit in going through an extra indirection with OpenAL or SDL2 -- these are basically options if you want to port an existing C application to wasm, but since we have to write the
 driver from scratch, it seems natural to skip this indirection and go for Web Audio API direct support instead.
 
