@@ -17,14 +17,16 @@ I.e.
 
     $ mkdir build
     $ cd build
-    $ ../em-test.sh
+    $ ../wasm/configure.sh
     $ make scsynth
+
+(Or as a shortcut `../wasm/build.sh`).
 
 This builds `server/scsynth/scsynth.*` with a runtime library `*.js`, the actual binary `*.wasm` and a wrapping HTML `*.html`. Start a local webserver:
 
     $ python -m SimpleHTTPServer
 
-Open `0.0.0.0:8000` and click on `scsynth.html`. Currently, this just prints the command line options. In a next step, we ought to put default arguments for the HTML test.
+Open `0.0.0.0:8000` and click on `scsynth.html`. Currently, this fails at `SC_AudioDriver::Setup()`.
 
 ## Modifications
 
@@ -45,4 +47,17 @@ The emscripten docs already show how to use the `EM_ASM` macros to invoke JavaSc
 
 Similar to `SC_PortAudio.cpp` and `SC_Jack.cpp`, we added another file `SC_WebAudio.cpp` to `server/scsynth/` and registered it in `server/scsynth/CMakeList.txt`.
 In this file, the sub-class of `SC_AudioDriver` will be implemented.
+
+## Notes
+
+There is a problem with pthreads and shared memory:
+
+```
+wasm-ld: error: --shared-memory is disallowed by SC_ComPort.cpp.o because it was not compiled with 'atomics' or 'bulk-memory' features.
+```
+
+See https://github.com/emscripten-core/emscripten/issues/8503
+
+Although the linked issues say they are all fixed; perhaps this is a problem a library that was already compiled? Not sure what is going on.
+We have now a workaround in `CMakeList.txt`: `-Wl,--shared-memory,--no-check-features` ; this is considered dangerous.
 
