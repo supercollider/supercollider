@@ -22,6 +22,7 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	elseif(EMSCRIPTEN)
 		message(WARNING "Currently unclear how to use pthreads on emscripten")
+		aux_source_directory(boost/libs/thread/src/pthread/ boost_thread_platform )
 	else()
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
