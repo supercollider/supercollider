@@ -286,6 +286,11 @@ if(AUDIOAPI STREQUAL bela)
     target_link_libraries(scsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 endif()
 
+if (EMSCRIPTEN)
+	set_target_properties(scsynth PROPERTIES LINK_FLAGS 
+		"--pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js -s USE_PTHREADS=1 -s WASM=1 -s INITIAL_MEMORY=33554432 -Wl,--shared-memory,--no-check-features")
+endif()
+
 if (PTHREADS_FOUND)
     target_link_libraries(scsynth ${PTHREADS_LIBRARIES})
 endif()
