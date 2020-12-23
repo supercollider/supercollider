@@ -38,6 +38,8 @@ int64 oscTimeNow() { return 0; } // TODO
 
 void initializeScheduler() {}
 
+// TODO: currently a no-op implementation
+
 class SC_WebAudioDriver : public SC_AudioDriver {
 
 protected:
