@@ -247,8 +247,8 @@ add_executable(scsynth
 target_link_libraries(scsynth libscsynth)
 
 if (EMSCRIPTEN)
-	set_target_properties(scsynth PROPERTIES LINK_FLAGS 
-		"--pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js -s USE_PTHREADS=1 -s WASM=1 -s INITIAL_MEMORY=33554432 -Wl,--shared-memory,--no-check-features")
+	set_target_properties(scsynth libscsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1")
+	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s INITIAL_MEMORY=33554432 --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
 endif()
 
 if (PTHREADS_FOUND)

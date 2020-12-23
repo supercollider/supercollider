@@ -50,7 +50,7 @@ In this file, the sub-class of `SC_AudioDriver` will be implemented.
 
 ## Notes
 
-There is a problem with pthreads and shared memory:
+There was a problem with pthreads and shared memory:
 
 ```
 wasm-ld: error: --shared-memory is disallowed by SC_ComPort.cpp.o because it was not compiled with 'atomics' or 'bulk-memory' features.
@@ -61,3 +61,4 @@ See https://github.com/emscripten-core/emscripten/issues/8503
 Although the linked issues say they are all fixed; perhaps this is a problem a library that was already compiled? Not sure what is going on.
 We have now a workaround in `CMakeList.txt`: `-Wl,--shared-memory,--no-check-features` ; this is considered dangerous.
 
+__Fixed:__ I think this was due to missing linker flags for `libscsynth`; it seems gone now, we no longer need the `--no-check-features`
