@@ -20,6 +20,14 @@ I.e.
     $ ../em-test.sh
     $ make scsynth
 
+This builds `server/scsynth/scsynth.*` with a runtime library `*.js`, the actual binary `*.wasm` and a wrapping HTML `*.html`. Start a local webserver:
+
+    $ python -m SimpleHTTPServer
+
+Open `0.0.0.0:8000` and click on `scsynth.html`. Currently, this just prints the command line options. In a next step, we ought to put default arguments for the HTML test.
+
+## Modifications
+
 There are `ifdef`s in nova-tt `thread_priority_mach.hpp` and `thread_priority_pthread.hpp` to bypass unsupported API.
 
 There is a dummy no-op implementation of `SC_WebAudio.cpp` now.
