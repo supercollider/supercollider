@@ -11,23 +11,18 @@ What worked for me is the installation described there:
 
 Then you prefix `cmake` by `emcmake`, e.g.:
 
-    $ emcmake cmake -DSC_WII=no -DSC_EL=no -DSUPERNOVA=no -DSC_HIDAPI=no -DNO_LIBSNDFILE=yes -DSC_QT=no -DNO_AVAHI=yes -DSC_ABLETON_LINK=no -DCMAKE_BUILD_TYPE="Debug" -Wno-dev -s USE_PTHREADS=1 -s WASM=1 -DPTHREADS_LIBRARY=ignore -DSSE=no -DSSE2=no -DNO_X11=yes --target scsynth ..
+    $ emcmake cmake -DSC_EL=no -DSUPERNOVA=no -DSC_HIDAPI=no -DNO_LIBSNDFILE=yes -DSC_QT=no -DNO_AVAHI=yes -DSC_ABLETON_LINK=no -DCMAKE_BUILD_TYPE="Debug" -Wno-dev -s USE_PTHREADS=1 -s WASM=1 -DPTHREADS_LIBRARY=ignore -DSSE=no -DSSE2=no -DNO_X11=yes --target scsynth ..
 
 I.e.
 
     $ mkdir build
     $ cd build
     $ ../em-test.sh
-    $ make
-
-Currently make finishes with errors relating to the following missing symbols:
-
- - `oscTimeNow` ; declared in `SC_CoreAudio.h` ("Functions to be implemented by the driver backend")
- - `server_timeseed` ; dito.
- - `initializeScheduler` ; dito.
- - `SC_NewAudioDriver(struct World*)` ; dito.
+    $ make scsynth
 
 There are `ifdef`s in nova-tt `thread_priority_mach.hpp` and `thread_priority_pthread.hpp` to bypass unsupported API.
+
+There is a dummy no-op implementation of `SC_WebAudio.cpp` now.
 
 -----
 
@@ -40,6 +35,6 @@ driver from scratch, it seems natural to skip this indirection and go for Web Au
 
 The emscripten docs already show how to use the `EM_ASM` macros to invoke JavaScript calls from C. This would probably be the glue needed to set up the audio worklet processor.
 
-Similar to `SC_PortAudio.cpp` and `SC_Jack.cpp`, we would add another file `SC_WebAudio.cpp` to `server/scsynth/` and register it in `server/scsynth/CMakeList.txt`.
+Similar to `SC_PortAudio.cpp` and `SC_Jack.cpp`, we added another file `SC_WebAudio.cpp` to `server/scsynth/` and registered it in `server/scsynth/CMakeList.txt`.
 In this file, the sub-class of `SC_AudioDriver` will be implemented.
 
