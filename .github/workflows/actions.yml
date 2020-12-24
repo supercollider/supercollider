@@ -275,7 +275,7 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install libsndfile portaudio ccache fftw ninja # ninja added temporarily
+          brew install libsndfile portaudio ccache fftw
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
       - name: install system libraries
@@ -299,9 +299,7 @@ jobs:
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          # cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS $EXTRA_CMAKE_FLAGS .. # --debug-output
-
-          cmake -G"Ninja" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
