@@ -260,7 +260,7 @@ WebView : View {
         this.scrollPosition_(
             Point(
                 position.x,
-                (position.y -  value ).max(0)
+                (position.y - value).max(0)
             )
         );
     }
