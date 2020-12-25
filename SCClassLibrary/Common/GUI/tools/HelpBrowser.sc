@@ -119,9 +119,9 @@ HelpBrowser {
 
 	goForward { webView.forward; }
 
-    goDown { webView.scrollDown(40); }
+	goDown { webView.scrollDown(40); }
 
-    goUp { webView.scrollUp(40); }
+	goUp { webView.scrollUp(40); }
 
 /* ------------------------------ private ------------------------------ */
 
