@@ -253,27 +253,27 @@ WebView : View {
 	contentsSize { ^this.getProperty('contentsSize') }
 
 	scrollPosition { ^this.getProperty('scrollPosition') }
-    scrollPosition_ { |point| ^this.setProperty('scrollPosition', (point / this.zoom)) }
+	scrollPosition_ { |point| ^this.setProperty('scrollPosition', (point / this.zoom)) }
 
-    scrollUp { |value|
-        var position = this.scrollPosition;
-        this.scrollPosition_(
-            Point(
-                position.x,
-                (position.y - value).max(0)
-            )
-        );
-    }
+	scrollUp { |value|
+		var position = this.scrollPosition;
+		this.scrollPosition_(
+			Point(
+				position.x,
+				(position.y - value).max(0)
+			)
+		);
+	}
 
-    scrollDown { |value|
-        var position = this.scrollPosition;
-        this.scrollPosition_(
-            Point(
-                position.x,
-                (position.y + value).min(this.contentsSize.height - this.bounds.height)
-            )
-        );
-    }
+	scrollDown { |value|
+		var position = this.scrollPosition;
+		this.scrollPosition_(
+			Point(
+				position.x,
+				(position.y + value).min(this.contentsSize.height - this.bounds.height)
+			)
+		);
+	}
 
 	audioMuted { ^this.getProperty('audioMuted') }
 	audioMuted_ { |muted| this.setProperty('audioMuted', muted) }

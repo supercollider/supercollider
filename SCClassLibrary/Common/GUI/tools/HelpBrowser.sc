@@ -289,56 +289,55 @@ HelpBrowser {
 			#keyPlus, keyZero, keyMinus, keyEquals, keyF, keyG, keyH, keyJ, keyK, keyL, keySlash = [43, 48, 45, 61, 70, 71, 72, 74, 75, 76, 47];
 
 			// +/= has the same value on macOS when pressed with <Cmd>
-            case(
-                { (key == keyEquals) && (thisProcess.platform.name === \osx) && modifier }, {
-                            webView.zoom = min(webView.zoom + 0.1, 2.0);
-                },
-                { (key == keyPlus) && ((thisProcess.platform.name === \linux) || (thisProcess.platform.name === \windows)) && modifier }, {
-                        webView.zoom = min(webView.zoom + 0.1, 2.0);
-                },
-                { (key == keyMinus) && modifier }, {
-                        webView.zoom = max(webView.zoom - 0.1, 0.1)
-                },
-                { (key == keyZero) && modifier }, {
-                        webView.zoom = 1.0
-                },
-                { (key == keyF && modifier) || (key == keySlash) }, {
-                        toggleFind.value
-                },
-                { key == keyG }, {
-                    mods.isShift.if{
-                        webView.scrollPosition_(0@(webView.contentsSize.height - webView.bounds.height))
-                    }{
-                        webView.scrollPosition_(0@0)
-                    }
-                },
-                { (key == keyH) || ((kcode == 65361) && mods.isAlt) }, {
-                    this.goBack
-                },
-                { (key == keyL) || ((kcode == 65363) && mods.isAlt) }, {
-                    this.goForward
-                },
-                { key == keyJ }, {
-                    mods.asBoolean.not.if{
-                        this.goDown
-                    };
-                    mods.isShift.if{
-                        webView.zoom = max(webView.zoom - 0.1, 0.1)
-                    };
-
-                },
-                { key == keyK }, {
-                    mods.asBoolean.not.if{
-                        this.goUp
-                    };
-                    mods.isShift.if{
-                        webView.zoom = min(webView.zoom + 0.1, 2.0);
-                    };
-                },
-                { (char.ascii == 27) && findView.visible }, {
-                    toggleFind.value
-                }
-            );
+			case(
+				{ (key == keyEquals) && (thisProcess.platform.name === \osx) && modifier }, {
+					webView.zoom = min(webView.zoom + 0.1, 2.0);
+				},
+				{ (key == keyPlus) && ((thisProcess.platform.name === \linux) || (thisProcess.platform.name === \windows)) && modifier }, {
+					webView.zoom = min(webView.zoom + 0.1, 2.0);
+				},
+				{ (key == keyMinus) && modifier }, {
+					webView.zoom = max(webView.zoom - 0.1, 0.1)
+				},
+				{ (key == keyZero) && modifier }, {
+					webView.zoom = 1.0
+				},
+				{ (key == keyF && modifier) || (key == keySlash) }, {
+					toggleFind.value
+				},
+				{ key == keyG }, {
+					mods.isShift.if{
+						webView.scrollPosition_(0@(webView.contentsSize.height - webView.bounds.height))
+					}{
+						webView.scrollPosition_(0@0)
+					}
+				},
+				{ (key == keyH) || ((kcode == 65361) && mods.isAlt) }, {
+					this.goBack
+				},
+				{ (key == keyL) || ((kcode == 65363) && mods.isAlt) }, {
+					this.goForward
+				},
+				{ key == keyJ }, {
+					mods.asBoolean.not.if{
+						this.goDown
+					};
+					mods.isShift.if{
+						webView.zoom = max(webView.zoom - 0.1, 0.1)
+					};
+				},
+				{ key == keyK }, {
+					mods.asBoolean.not.if{
+						this.goUp
+					};
+					mods.isShift.if{
+						webView.zoom = min(webView.zoom + 0.1, 2.0);
+					};
+				},
+				{ (char.ascii == 27) && findView.visible }, {
+					toggleFind.value
+				}
+			);
 		};
 
 		toolbar[\Back].action = { this.goBack };
