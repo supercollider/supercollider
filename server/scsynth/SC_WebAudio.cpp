@@ -38,13 +38,12 @@ using namespace emscripten;
 
 int32 server_timeseed() { return 0; } // TODO
 
-int64 oscTimeNow() { return 0; } // TODO
+int64 oscTimeNow() { return OSCTime(getTime()); } // TODO
 
 void initializeScheduler() {}
 
-// TODO: currently a no-op implementation
-
 class SC_WebAudioDriver : public SC_AudioDriver {
+    val mContext = val::undefined();
 
 protected:
     virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
@@ -99,6 +98,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     }
 
     val context = AudioContext.new_();
+    mContext    = context;
     double sr   = context["sampleRate"].as<double>();
     // is there a better way to obtain the default buffer size?
     val proc    = context.call<val>("createScriptProcessor", 0, 0, 2);
