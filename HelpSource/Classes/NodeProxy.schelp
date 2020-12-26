@@ -491,7 +491,7 @@ method::controlKeysValues
 Get all key value pairs from default arguments.
 
 method::findControlName
-Search the source objects for a given control name symbol
+Search the source objects for a given control name symbol and return the link::Classes/ControlName::.
 
 method::specs
 Get the specs array from SynthDef metadata. Note that, for a NodeProxy with multiple sources, result will be a dictionary containing specs of ALL source SynthDefs.
