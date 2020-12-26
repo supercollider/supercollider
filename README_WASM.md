@@ -34,6 +34,39 @@ There are `ifdef`s in nova-tt `thread_priority_mach.hpp` and `thread_priority_pt
 
 There is a dummy no-op implementation of `SC_WebAudio.cpp` now.
 
+## Status
+
+```
+SC FFT global init: cosTable initialised.
+SC_WebAudio: constructor.
+SC_AudioDriver::Setup(): thread
+SC_AudioDriver::Setup(): DriverSetup
+SC_WebAudio: DriverSetup.
+SC_AudioDriver: sample rate = 0.000000, driver's block size = 0
+SC_WebAudio: DriverStart.
+```
+
+Uncaught exception `30895544`, no stack trace.
+
+We should probably set the sampling rate next.
+
+## Temporary stuff
+
+`-s DISABLE_EXCEPTION_CATCHING=0` -- this allegedly causes performance issues, so should eventually be removed again.
+
+We were back to this:
+
+```
+scsynth.html:1246 Assertion failed: priv_end_block() == end_block, at: /home/hhrutz/Documents/devel/supercollider/external_libraries/boost/boost/interprocess/mem_algo/rbtree_best_fit.hpp,410,priv_add_segment
+printErr	@	scsynth.html:1246
+abort	@	scsynth.js:1475
+___assert_fail	@	scsynth.js:2082
+boost::interprocess::rbtree_best_fit<boost::interprocess::mutex_family, boost::interprocess::offset_ptr<void, long, unsigned long, 0ul>, 0ul>::priv_add_segment(void*, unsigned long)	@	scsynth.wasm:1
+...
+```
+
+Without anyone with proper CMake knowledge, I'm giving up for now. The assertion is disabled in `rbtree_best_fit.hpp`, line 410 now.
+
 -----
 
 ## Deliberations on the Audio API

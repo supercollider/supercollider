@@ -51,6 +51,11 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
+	if(EMSCRIPTEN)
+		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
+					 APPEND PROPERTY COMPILE_FLAGS "-pthread -s USE_PTHREADS=1 -s WASM=1")
+	endif()
+
 	add_library(boost_thread_lib STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
 	target_link_libraries(boost_thread_lib boost_system_lib)
 #	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
