@@ -409,7 +409,6 @@ void SC_ScheduledEvent::Perform() {
 
 bool SC_AudioDriver::Setup() {
     mRunThreadFlag = true;
-    scprintf("SC_AudioDriver::Setup(): thread\n");
     SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
     mThread = std::move(thread);
 
