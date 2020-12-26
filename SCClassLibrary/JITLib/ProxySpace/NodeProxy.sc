@@ -424,13 +424,12 @@ NodeProxy : BusPlug {
 			}
 		};
 		numChannels = ctl !? { ctl.defaultValue.asArray.size };
-		canBeMapped = proxy.initBus(rate, numChannels); // warning: proxy should still have a fixed bus
-		if(canBeMapped) {
-			if(this.isNeutral) { this.defineBus(rate, numChannels) };
-			this.xmap(key, proxy);
-		} {
-			"Could not link node proxies, no matching input found.".warn
-		};
+
+		if(proxy.isNeutral) { proxy.defineBus(rate, numChannels) };
+		if(this.isNeutral) { this.defineBus(rate, numChannels) };
+
+		this.xmap(key, proxy);
+
 		^proxy // returns first argument for further chaining
 	}
 
