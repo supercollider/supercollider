@@ -418,7 +418,6 @@ bool SC_AudioDriver::Setup() {
     int numSamples;
     double sampleRate;
 
-    scprintf("SC_AudioDriver::Setup(): DriverSetup\n");
     if (!DriverSetup(&numSamples, &sampleRate))
         return false;
 
