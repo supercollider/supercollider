@@ -290,3 +290,60 @@ TestNodeProxy : UnitTest {
 	}
 
 }
+
+
+TestNodeProxyBusMapping : UnitTest {
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+		this.bootServer(server);
+		server.sync;
+	}
+
+
+	tearDown {
+		server.quit.remove;
+	}
+
+	test_audiorate_mapping {
+		var proxy, controlProxy;
+		var synthValues, controlValues, defaultValues;
+
+		defaultValues = [-1.0, -2.0];
+		controlValues = [162.0, 54.0];
+
+		proxy = NodeProxy(server, \audio);
+		proxy.reshaping = \elastic;
+		proxy.fadeTime = 0;
+
+		proxy.source = {
+			var in = \in.ar(defaultValues);
+			A2K.kr(in);
+		};
+
+		controlProxy = NodeProxy(server, \control);
+		controlProxy.source = {
+			DC.ar(controlValues)
+		};
+
+		0.2.wait;
+
+		this.assert(proxy.rate == \control, "proxy should have initialized itself to a control rate proxy");
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, defaultValues, "before mapping, synth values should be default values");
+
+		proxy <<>.in controlProxy;
+
+		0.3.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, controlValues, "after mapping, synth should return mapped values");
+
+
+	}
+
+}
