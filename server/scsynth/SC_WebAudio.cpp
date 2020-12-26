@@ -31,6 +31,10 @@
 #include "SC_Time.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include <emscripten.h>
+#include <emscripten/val.h>
+
+using namespace emscripten;
 
 int32 server_timeseed() { return 0; } // TODO
 
@@ -56,14 +60,9 @@ public:
 
 SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_WebAudioDriver(inWorld); }
 
-SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld):
-    SC_AudioDriver(inWorld)
-{
-    scprintf("SC_WebAudio: constructor.\n");
-}
+SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld) {}
 
 SC_WebAudioDriver::~SC_WebAudioDriver() {
-    scprintf("SC_WebAudio: destructor.\n");
 }
 
 static int SC_WebAudioStreamCallback(const void* input, void* output, unsigned long frameCount,
@@ -87,6 +86,26 @@ int SC_WebAudioDriver::WebAudioCallback(const void* input, void* output, unsigne
 
 bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     scprintf("SC_WebAudio: DriverSetup.\n");
+
+    // this uses the experimental emscripten Embind 'val' transliteration,
+    // see https://emscripten.org/docs/api_reference/val.h.html
+    val AudioContext = val::global("AudioContext");
+    if (!AudioContext.as<bool>()) {
+        AudioContext = val::global("webkitAudioContext");
+        if (!AudioContext.as<bool>()) {
+            scprintf("SC_WebAudioDriver: could not get hold of AudioContext\n");
+            return false;
+        }
+    }
+
+    val context = AudioContext.new_();
+    double sr   = context["sampleRate"].as<double>();
+    // is there a better way to obtain the default buffer size?
+    val proc    = context.call<val>("createScriptProcessor", 0, 0, 2);
+    int bufSize = proc["bufferSize"].as<int>();
+
+    *outNumSamples = bufSize;
+    *outSampleRate = sr;
     return true;
 }
 
