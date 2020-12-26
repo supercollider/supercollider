@@ -410,13 +410,8 @@ void SC_ScheduledEvent::Perform() {
 bool SC_AudioDriver::Setup() {
     mRunThreadFlag = true;
     scprintf("SC_AudioDriver::Setup(): thread\n");
-    try {
-        SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
-        scprintf("SC_AudioDriver::Setup(): move\n");
-        mThread = std::move(thread);
-    } catch(const std::exception& e) {
-        scprintf("Caught system_error with message %s\n", e.what());
-    }
+    SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
+    mThread = std::move(thread);
 
     int numSamples;
     double sampleRate;
