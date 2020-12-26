@@ -277,8 +277,8 @@ HelpBrowser {
 		webView.enterInterpretsSelection = true;
 
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			var keyPlus, keyZero, keyMinus, keyEquals, keySlash, keyF, keyG, keyH, keyJ, keyK, keyL;
-			var modifier;
+			var keyPlus, keyZero, keyMinus, keyEquals, keySlash, keyF, keyG, keyH, keyJ, keyK, keyL, keyLeftArrow, keyRightArrow;
+			var modifier, zoomIn;
 
 			modifier = Platform.case(\osx, {
 				mods.isCmd && mods.isCtrl.not && mods.isAlt.not;
@@ -286,14 +286,19 @@ HelpBrowser {
 				mods.isCtrl && mods.isCmd.not && mods.isAlt.not;
 			});
 
-			#keyPlus, keyZero, keyMinus, keyEquals, keyF, keyG, keyH, keyJ, keyK, keyL, keySlash = [43, 48, 45, 61, 70, 71, 72, 74, 75, 76, 47];
+			#keyPlus, keyZero, keyMinus, keyEquals, keySlash = [43, 48, 45, 61, 47];
+			#keyF, keyG, keyH, keyJ, keyK, keyL = [ 70, 71, 72, 74, 75, 76];
+			#keyLeftArrow, keyRightArrow = [65361, 65363];
 
 			// +/= has the same value on macOS when pressed with <Cmd>
+			zoomIn = Platform.case(\osx, {
+				(key == keyEquals) && modifier;
+			}, {
+				((key == keyPlus) && modifier) || ((key == keyK) && mods.isShift);
+			});
+
 			case(
-				{ (key == keyEquals) && (thisProcess.platform.name === \osx) && modifier }, {
-					webView.zoom = min(webView.zoom + 0.1, 2.0);
-				},
-				{ (key == keyPlus) && ((thisProcess.platform.name === \linux) || (thisProcess.platform.name === \windows)) && modifier }, {
+				{ zoomIn }, {
 					webView.zoom = min(webView.zoom + 0.1, 2.0);
 				},
 				{ (key == keyMinus) && modifier }, {
@@ -306,32 +311,29 @@ HelpBrowser {
 					toggleFind.value
 				},
 				{ key == keyG }, {
-					mods.isShift.if{
+					if (mods.isShift) {
 						webView.scrollPosition_(0@(webView.contentsSize.height - webView.bounds.height))
-					}{
+					} {
 						webView.scrollPosition_(0@0)
 					}
 				},
-				{ (key == keyH) || ((kcode == 65361) && mods.isAlt) }, {
+				{ (key == keyH) || ((kcode == keyLeftArrow) && mods.isAlt) }, {
 					this.goBack
 				},
-				{ (key == keyL) || ((kcode == 65363) && mods.isAlt) }, {
+				{ (key == keyL) || ((kcode == keyRightArrow) && mods.isAlt) }, {
 					this.goForward
 				},
 				{ key == keyJ }, {
-					mods.asBoolean.not.if{
+					if (mods.asBoolean.not) {
 						this.goDown
 					};
-					mods.isShift.if{
+					if (mods.isShift) {
 						webView.zoom = max(webView.zoom - 0.1, 0.1)
 					};
 				},
 				{ key == keyK }, {
-					mods.asBoolean.not.if{
+					if (mods.asBoolean.not) {
 						this.goUp
-					};
-					mods.isShift.if{
-						webView.zoom = min(webView.zoom + 0.1, 2.0);
 					};
 				},
 				{ (char.ascii == 27) && findView.visible }, {
