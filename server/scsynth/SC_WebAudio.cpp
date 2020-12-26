@@ -57,12 +57,13 @@ public:
 SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_WebAudioDriver(inWorld); }
 
 SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld):
-    SC_AudioDriver(inWorld) //,
-    // mStream(0)
+    SC_AudioDriver(inWorld)
 {
+    scprintf("SC_WebAudio: constructor.\n");
 }
 
 SC_WebAudioDriver::~SC_WebAudioDriver() {
+    scprintf("SC_WebAudio: destructor.\n");
 }
 
 static int SC_WebAudioStreamCallback(const void* input, void* output, unsigned long frameCount,
@@ -85,13 +86,16 @@ int SC_WebAudioDriver::WebAudioCallback(const void* input, void* output, unsigne
 }
 
 bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
+    scprintf("SC_WebAudio: DriverSetup.\n");
     return true;
 }
 
 bool SC_WebAudioDriver::DriverStart() {
+    scprintf("SC_WebAudio: DriverStart.\n");
     return true;
 }
 
 bool SC_WebAudioDriver::DriverStop() {
+    scprintf("SC_WebAudio: DriverStop.\n");
     return true;
 }

@@ -272,8 +272,10 @@ if(AUDIOAPI STREQUAL bela)
 endif()
 
 if (EMSCRIPTEN)
-	set_target_properties(scsynth libscsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1")
-	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s INITIAL_MEMORY=33554432 --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
+	# TODO: set_property seems to do the wrong thing; set_target_properties works, but overwrites (?) previous settings
+	set_target_properties(libscsynth boost_system_lib boost_filesystem_lib PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s NO_FILESYSTEM=1 -s WASM=1 -pthread")
+	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -s NO_FILESYSTEM=1 -pthread -s INITIAL_MEMORY=33554432 --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -s USE_PTHREADS=1 -s WASM=1 -s NO_FILESYSTEM=1")
 endif()
 
 if (PTHREADS_FOUND)
