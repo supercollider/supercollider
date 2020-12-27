@@ -68,6 +68,9 @@ public:
     uint16_t input_channels, output_channels;
     std::string server_password;
 
+#ifdef __APPLE__
+    float safety_clip_threshold;
+#endif
     /* for non-rt synthesis */
     bool non_rt;
     std::string command_file, input_file, output_file, header_format, sample_format;
