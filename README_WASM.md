@@ -20,13 +20,16 @@ I.e.
     $ ../wasm/configure.sh
     $ make scsynth
 
-(Or as a shortcut `../wasm/build.sh`).
+Copy the .js and .wasm files from `server/scsynth/` to `../wasm/`.
+
+__Or as a shortcut `../wasm/build.sh` which in turn is a shortcut for `../wasm/configure.sh` followed by `../wasm/make.sh`.__
 
 This builds `server/scsynth/scsynth.*` with a runtime library `*.js`, the actual binary `*.wasm` and a wrapping HTML `*.html`. Start a local webserver:
 
+    $ cd ../wasm/
     $ python -m SimpleHTTPServer
 
-Open `0.0.0.0:8000` and click on `scsynth.html`. Currently, this fails at `SC_AudioDriver::Setup()`.
+Open `0.0.0.0:8000`.
 
 ## Modifications
 

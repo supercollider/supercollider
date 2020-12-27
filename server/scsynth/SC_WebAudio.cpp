@@ -43,7 +43,8 @@ int64 oscTimeNow() { return OSCTime(getTime()); } // TODO
 void initializeScheduler() {}
 
 class SC_WebAudioDriver : public SC_AudioDriver {
-    val mContext = val::undefined();
+    val mContext    = val::undefined();
+    val mProcessor  = val::undefined();
 
 protected:
     virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
@@ -103,6 +104,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     double sr   = context["sampleRate"].as<double>();
     // is there a better way to obtain the default buffer size?
     val proc    = context.call<val>("createScriptProcessor", 0, 0, 2);
+    mProcessor  = proc;
     int bufSize = proc["bufferSize"].as<int>();
 
     *outNumSamples = bufSize;
@@ -112,10 +114,15 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
 
 bool SC_WebAudioDriver::DriverStart() {
     scprintf("SC_WebAudio: DriverStart.\n");
+
+    mProcessor.call<void>("connect", mContext["destination"]);
     return true;
 }
 
 bool SC_WebAudioDriver::DriverStop() {
     scprintf("SC_WebAudio: DriverStop.\n");
+
+    mProcessor.call<void>("disconnect", mContext["destination"]);
+    mContext.call<void>("close");
     return true;
 }
