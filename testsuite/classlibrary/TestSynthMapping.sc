@@ -110,4 +110,23 @@ TestSynthAudioMapping : UnitTest {
 		};
 	}
 
+	test_map_with_control_rate {
+		var controlSynth, value, ctlNumChannels, synthNumChannels, krBus;
+		ctlNumChannels = 2;
+		synthNumChannels = 5;
+		this.sendSynthDef(synthNumChannels, ctlNumChannels);
+		krBus = Bus.control(server, ctlNumChannels);
+		value = { 6561.0.rand.trunc } ! ctlNumChannels;
+		krBus.setn(value);
+		server.sync;
+		synth = Synth(\testNode);
+		synth.set(\input, ctlNumChannels.collect { |i| "c" ++ (krBus.index + i) });
+		server.latency.wait;
+		synth.set(\trig, 1);
+		this.waitForOSCReply { |args|
+			var synthVal = args;
+			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
+		};
+	}
+
 }
