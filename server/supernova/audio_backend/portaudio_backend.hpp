@@ -32,6 +32,10 @@
 #include "cpu_time_info.hpp"
 #include "SC_PaUtils.hpp"
 
+#ifdef __APPLE__
+#    include "SC_InlineBinaryOp.h"
+#endif
+
 namespace nova {
 
 /** \brief portaudio backend for supernova
@@ -111,7 +115,8 @@ public:
     // inchans and outchans are numbers of requested hardware input/output channels
     // setting inchans/outchans to 0 disables input/output respctively
     bool open_stream(std::string const& input_device, unsigned int inchans, std::string const& output_device,
-                     unsigned int outchans, unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize) {
+                     unsigned int outchans, unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize,
+                     float safety_clip_threshold) {
         int input_device_index, output_device_index;
 
         input_device_index = GetPaDeviceFromName(input_device.c_str(), true);
@@ -193,8 +198,12 @@ public:
         engine_initalised = false;
         blocksize_ = pa_blocksize;
 
+        safety_clip_threshold_ = safety_clip_threshold;
+        auto process_func = (safety_clip_threshold > 0 && safety_clip_threshold < INFINITY)
+            ? &portaudio_backend::pa_process<true>
+            : &portaudio_backend::pa_process<false>;
         PaError opened = Pa_OpenStream(&stream, in_stream_parameters, out_stream_parameters, samplerate, pa_blocksize,
-                                       paNoFlag, &portaudio_backend::pa_process, this);
+                                       paNoFlag, process_func, this);
 
         report_error(opened);
 
@@ -259,6 +268,7 @@ public:
     void get_cpuload(float& peak, float& average) const { cpu_time_accumulator.get(peak, average); }
 
 private:
+    template <bool IsClipping>
     int perform(const void* inputBuffer, void* outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
         if (unlikely(!engine_initalised)) {
@@ -277,6 +287,12 @@ private:
 
         auto** outputs = static_cast<float**>(alloca(sizeof(float*) * m_hwOutputChannels));
         float** out = static_cast<float**>(outputBuffer);
+        
+        if (IsClipping)
+             for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+                 for (uint16_t j = 0; j != blocksize_; ++j)
+                    out[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
+
         for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
             outputs[i] = out[i];
 
@@ -292,11 +308,12 @@ private:
         return paContinue;
     }
 
+    template <bool IsClipping>
     static int pa_process(const void* input, void* output, unsigned long frame_count,
                           const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags,
                           void* user_data) {
         portaudio_backend* self = static_cast<portaudio_backend*>(user_data);
-        return self->perform(input, output, frame_count, time_info, status_flags);
+        return self->perform<IsClipping>(input, output, frame_count, time_info, status_flags);
     }
 
     PaStream* stream = nullptr;
@@ -305,6 +322,7 @@ private:
     cpu_time_info cpu_time_accumulator;
 
     uint32_t latency_ = 0;
+    float safety_clip_threshold_ = 0;
 };
 
 } /* namespace nova */

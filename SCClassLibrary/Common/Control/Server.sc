@@ -227,7 +227,7 @@ ServerOptions {
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
 		});
-		if (thisProcess.platform.name === \osx && Server.program.asString.endsWith("supernova").not && safetyClipThreshold.notNil, {
+		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil, {
 			o = o ++ " -s " ++ safetyClipThreshold;
 		});
 		^o

@@ -183,7 +183,7 @@ void start_audio_backend(server_arguments const& args) {
         std::cout << "  Out: " << (output_device.empty() ? "(default)" : output_device) << std::endl;
 
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
-                                         args.blocksize, args.hardware_buffer_size);
+                                         args.blocksize, args.hardware_buffer_size, args.safety_clip_threshold);
 
     if (!success) {
         std::cout << "*** ERROR: could not open audio devices." << std::endl;
