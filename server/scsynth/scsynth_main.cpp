@@ -378,7 +378,7 @@ int scsynth_main(int argc, char** argv) {
     fflush(stdout);
 
 #ifdef __EMSCRIPTEN__
-    scprintf("DEBUG. here[3]\n");
+    scprintf("emscripten_set_main_loop\n");
     emscripten_set_main_loop(em_loop, 0, 0);
     return 0;
 
