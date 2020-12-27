@@ -36,7 +36,7 @@
 
 using namespace emscripten;
 
-int32 server_timeseed() { return 0; } // TODO
+int32 server_timeseed() { return timeSeed(); } // TODO
 
 int64 oscTimeNow() { return OSCTime(getTime()); } // TODO
 
@@ -83,6 +83,7 @@ int SC_WebAudioDriver::WebAudioCallback(const void* input, void* output, unsigne
     return 0;
 }
 
+// TODO: check mPreferredHardwareBufferFrameSize, mPreferredSampleRate
 bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     scprintf("SC_WebAudio: DriverSetup.\n");
 
