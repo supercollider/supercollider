@@ -24,6 +24,12 @@ Copy the .js and .wasm files from `server/scsynth/` to `../wasm/`.
 
 __Or as a shortcut `../wasm/build.sh` which in turn is a shortcut for `../wasm/configure.sh` followed by `../wasm/make.sh`.__
 
+Sometimes, when running `make.sh` for a while, there appears an error:
+
+> System LLVM compiler cannot be used to build with Emscripten! Check
+
+I don't know what the reason is. Removing and recreating the `build` directory and running the full build again "solves" this.
+
 This builds `server/scsynth/scsynth.*` with a runtime library `*.js`, the actual binary `*.wasm` and a wrapping HTML `*.html`. Start a local webserver:
 
     $ cd ../wasm/

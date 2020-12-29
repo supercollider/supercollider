@@ -42,6 +42,12 @@ int64 oscTimeNow() { return OSCTime(getTime()); } // TODO
 
 void initializeScheduler() {}
 
+// to be able to see runtime exception text in the browser
+extern "C" void EMSCRIPTEN_KEEPALIVE print_error_to_console(intptr_t pointer) {
+  auto error = reinterpret_cast<std::runtime_error *>(pointer);
+  scprintf("%s\n", error->what());
+}
+
 class SC_WebAudioDriver : public SC_AudioDriver {
     val mContext    = val::undefined();
     val mProcessor  = val::undefined();
@@ -58,7 +64,17 @@ public:
     int WebAudioCallback(const void* input, void* output, unsigned long frameCount);
 };
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_WebAudioDriver(inWorld); }
+SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { 
+    // set up exception error printing function
+    EM_ASM({
+        window.onerror = function(message, url, line, column, e) {
+            if (typeof e != 'number') return;
+            var pointer = e;
+            Module.ccall('print_error_to_console', 'number', ['number'], [pointer]);
+        }
+    });
+    return new SC_WebAudioDriver(inWorld); 
+}
 
 SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld) {}
 
