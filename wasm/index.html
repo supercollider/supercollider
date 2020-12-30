@@ -3,6 +3,18 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script src="osc.min.js" type="text/javascript"></script>
+    <script type='text/javascript'>
+      var sendOSC = function(m) {
+        var data  = osc.writePacket(m, { metadata: true });
+        var tgt   = { ip: "127.0.01", port: 57110 };
+        Module.oscDriver.send(tgt, data);
+      };
+      var dumpOSC = function(code) {
+        code = code ? code : 1;
+        sendOSC({ address: "/dumpOSC", args: [{ type: "i", value: code }]});
+      }
+    </script>
     <title>scsynth</title>
     <style>
       body {
@@ -80,10 +92,10 @@
   <body>
     <div class="emscripten" id="status">Downloading...</div>
 
-<span id='controls'>
-  <span><input type="button" id="boot" disabled="disabled" value="Boot" onclick="Module.callMain(Module['arguments']);">
-  </span>
-</span>
+    <span id='controls'>
+      <span><input type="button" id="boot" disabled="disabled" value="Boot" onclick="Module.callMain(Module['arguments']);">
+      </span>
+    </span>
 
     <div class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>
