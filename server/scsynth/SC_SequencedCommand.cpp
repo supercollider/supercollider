@@ -172,6 +172,8 @@ void SC_SequencedCommand::CallNextStage() {
     bool sendAgain = false;
     FifoMsg msg;
 
+    scprintf("SC_SequencedCommand::CallNextStage [0] %d\n", mNextStage);
+
     int isRealTime = mNextStage & 1;
     switch (mNextStage) {
     case 1:
@@ -187,6 +189,7 @@ void SC_SequencedCommand::CallNextStage() {
         Stage4(); // NRT
         break;
     }
+    scprintf("SC_SequencedCommand::CallNextStage [1]\n");
     mNextStage++;
     SC_AudioDriver* driver = AudioDriver(mWorld);
     if (sendAgain) {
@@ -208,6 +211,7 @@ void SC_SequencedCommand::CallNextStage() {
             driver->SendMsgToEngine(msg);
         }
     }
+    scprintf("SC_SequencedCommand::CallNextStage [2]\n");
 }
 
 void SC_SequencedCommand::Delete() {
@@ -1282,7 +1286,9 @@ RecvSynthDefCmd::~RecvSynthDefCmd() { World_Free(mWorld, mBuffer); }
 void RecvSynthDefCmd::CallDestructor() { this->~RecvSynthDefCmd(); }
 
 bool RecvSynthDefCmd::Stage2() {
+    scprintf("RecvSynthDefCmd::Stage2 [0]\n");
     mDefs = GraphDef_Recv(mWorld, mBuffer, mDefs);
+    scprintf("RecvSynthDefCmd::Stage2 [1]\n");
 
     return true;
 }
