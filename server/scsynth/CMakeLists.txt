@@ -126,6 +126,30 @@ if(AUDIOAPI STREQUAL bela)
     list(APPEND scsynth_sources ../../common/XenomaiLock.cpp)
 endif()
 
+if (EMSCRIPTEN)
+	# the plugins are linked statically, their sources must be included
+	set(plugin_sources_abs "")
+	set(plugin_sources_rel ${plugin_sources}
+		FFTInterfaceTable.cpp
+		FFT_UGens.cpp
+		PV_UGens.cpp
+		PartitionedConvolution.cpp
+
+		Convolution.cpp
+		FFT2InterfaceTable.cpp
+		FeatureDetection.cpp
+		PV_ThirdParty.cpp
+	)
+	foreach(plugin ${plugin_sources_rel})
+		string(CONCAT plugin_abs ${CMAKE_SOURCE_DIR}/server/plugins/ ${plugin} )
+		list(APPEND plugin_sources_abs ${plugin_abs})
+	endforeach(plugin)
+
+	# message(STATUS "plugin_sources_abs = ${plugin_sources_abs}")
+
+	list(APPEND scsynth_sources ${plugin_sources_abs})
+endif()
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
                     ${CMAKE_SOURCE_DIR}/include/server
@@ -276,7 +300,7 @@ if (EMSCRIPTEN)
 	set_target_properties(libscsynth boost_system_lib boost_filesystem_lib PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread -s DISABLE_EXCEPTION_CATCHING=0")
 	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread --bind -s DISABLE_EXCEPTION_CATCHING=0 -s INITIAL_MEMORY=33554432 -s EXTRA_EXPORTED_RUNTIME_METHODS=[\"ccall\",\"callMain\"] --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
 	set_property(TARGET scsynth libscsynth
-							 APPEND PROPERTY COMPILE_FLAGS "-pthread")
+							 APPEND PROPERTY COMPILE_FLAGS "-pthread -DSTATIC_PLUGINS")
 	# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -s USE_PTHREADS=1 -s WASM=1")
 endif()
 
