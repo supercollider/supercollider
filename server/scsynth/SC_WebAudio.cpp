@@ -55,8 +55,13 @@ extern "C" void EMSCRIPTEN_KEEPALIVE print_error_to_console(intptr_t pointer) {
 }
 
 class SC_WebAudioDriver : public SC_AudioDriver {
-    int mInputChannelCount, mOutputChannelCount, mBufSize;
-    double mSampleRate;    
+    // the number of input and output channels connect to/from Web Audio
+    int mNumInChannels, mNumOutChannels;
+    // the number of frames per processing step in Web Audio.
+    // i.e. what is returned as outNumSamplesPerCallback
+    int mBufSize;
+    double mSampleRate;
+    // the Float32Array pointers for Web Audio
     float *mBufInPtr, *mBufOutPtr;
     double mMaxOutputLatency;
     SC_TimeDLL mDLL;
@@ -70,19 +75,24 @@ public:
     SC_WebAudioDriver(struct World* inWorld);
     virtual ~SC_WebAudioDriver();
 
+    // passes the Float32Array buffers allocated from JS to this instance,
+    // where they are stored in mBufInPtr, mBufOutPtr, etc.
+    // this is called from JS during driver setup.
     virtual void WaInitBuffers(
-        uintptr_t bufInPtr  , int inputChannelCount, 
-        uintptr_t bufOutPtr , int outputChannelCount, int bufSize, double sampleRate, double outputLatency);
+        uintptr_t bufInPtr  , int numInChannels, 
+        uintptr_t bufOutPtr , int numOutChannels, int bufSize, double sampleRate, double outputLatency);
 
+    // the main processing callback.
+    // this is called from JS during the script processor node's `onaudioprocess`.
     virtual void Run();
 
-    int WaCallback(const void* input, void* output, unsigned long frameCount);
-
+    // access to singleton instance which is needed from JS
     static SC_WebAudioDriver* instance;
 };
 
 SC_WebAudioDriver* SC_WebAudioDriver::instance = NULL;
 
+// function callable from JS to obtain the singleton instance
 extern "C" SC_WebAudioDriver* audio_driver() {
     if (SC_WebAudioDriver::instance == NULL) {
         throw std::runtime_error("SC_WebAudio: instance has not yet been created\n");
@@ -141,15 +151,15 @@ SC_WebAudioDriver::~SC_WebAudioDriver() {
 }
 
 void SC_WebAudioDriver::WaInitBuffers(
-    uintptr_t bufInPtr  , int inputChannelCount, 
-    uintptr_t bufOutPtr , int outputChannelCount, int bufSize, double sampleRate, double outputLatency) {
+    uintptr_t bufInPtr  , int numInChannels, 
+    uintptr_t bufOutPtr , int numOutChannels, int bufSize, double sampleRate, double outputLatency) {
 
     scprintf("%s: WaInitBuffers.\n", kWebAudioIdent);
     // cf. https://stackoverflow.com/questions/20355880/#27364643
     this->mBufInPtr             = reinterpret_cast<float*>(bufInPtr );
     this->mBufOutPtr            = reinterpret_cast<float*>(bufOutPtr);
-    this->mInputChannelCount    = inputChannelCount;
-    this->mOutputChannelCount   = outputChannelCount;
+    this->mNumInChannels        = numInChannels;
+    this->mNumOutChannels       = numOutChannels;
     this->mBufSize              = bufSize;
     this->mSampleRate           = sampleRate;
     this->mMaxOutputLatency     = outputLatency;
@@ -167,39 +177,46 @@ void SC_WebAudioDriver::Run() {
         mToEngine           .Perform();
         mOscPacketsToEngine .Perform();
 
-        int numSamples      = NumSamplesPerCallback();
-        int bufFrames       = mWorld->mBufLength;
-        int numBufs         = numSamples / bufFrames;
+        float* bufIn        = mBufInPtr;
+        float* bufOut       = mBufOutPtr;
+        int bufSizeWA       = mBufSize;
+        int numFrames       = NumSamplesPerCallback();  // should be the same as bufSizeWA; redundant? assert?
+        int stepSize        = mWorld->mBufLength;
+        int numSteps        = numFrames / stepSize;
 
-        float* inBuses      = mWorld->mAudioBus + mWorld->mNumOutputs * bufFrames;
+        float* inBuses      = mWorld->mAudioBus + mWorld->mNumOutputs * stepSize;
         float* outBuses     = mWorld->mAudioBus;
         int32* inTouched    = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
         int32* outTouched   = mWorld->mAudioBusTouched;
 
-        int minInputs       = sc_min(mInputChannelCount , (int) mWorld->mNumInputs  );
-        int minOutputs      = sc_min(mOutputChannelCount, (int) mWorld->mNumOutputs );
+        int minInputs       = sc_min(mNumInChannels , (int) mWorld->mNumInputs  );
+        int minOutputs      = sc_min(mNumOutChannels, (int) mWorld->mNumOutputs );
 
-        int bufFramePos     = 0;
+        int offStep         = 0;
 
         // main loop
         int64 oscTime       = mOSCbuftime   = (mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + 0.5;
-        int64 oscInc        = mOSCincrement = (mDLL.Period() / numBufs)               * kSecondsToOSCunits + 0.5;
+        int64 oscInc        = mOSCincrement = (mDLL.Period() / numSteps)              * kSecondsToOSCunits + 0.5;
         mSmoothSampleRate   = mDLL.SampleRate();
         double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs;
 
-        for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
+        // we step through `numFrames` aka `bufSizeWA` in SC's internal
+        // block size aka `stepSize`, making `numSteps` steps.
+        for (int i = 0; i < numSteps; i++, mWorld->mBufCounter++, offStep += stepSize) {
             int32 bufCounter = mWorld->mBufCounter;
             int32* tch;
 
-            // copy+touch inputs
+            // copy and touch inputs
             tch = inTouched;
-            for (int k = 0; k < minInputs; ++k) {
-                // auto src = inBuffers[k] + bufFramePos;
-                // float* dst = inBuses + k * bufFrames;
-                // for (int n = 0; n < bufFrames; ++n) {
-                //     *dst++ = *src++;
-                // }
-                // *tch++ = bufCounter;
+            for (int k = 0, bOffWA = offStep, bOffSC = 0; k < minInputs;
+                k++, bOffWA += bufSizeWA, bOffSC += stepSize) {
+
+                float* src = bufIn   + bOffWA;
+                float* dst = inBuses + bOffSC;
+                for (int n = 0; n < stepSize; n++) {
+                    *dst++ = *src++;
+                }
+                *tch++ = bufCounter;
             }
 
             // run engine
@@ -228,18 +245,20 @@ void SC_WebAudioDriver::Run() {
 
             // copy touched outputs
             tch = outTouched;
-            for (int k = 0; k < minOutputs; ++k) {
-                // auto dst = outBuffers[k] + bufFramePos;
-                // if (*tch++ == bufCounter) {
-                //     float* src = outBuses + k * bufFrames;
-                //     for (int n = 0; n < bufFrames; ++n) {
-                //         *dst++ = *src++;
-                //     }
-                // } else {
-                //     for (int n = 0; n < bufFrames; ++n) {
-                //         *dst++ = 0.0f;
-                //     }
-                // }
+            for (int k = 0, bOffWA = offStep, bOffSC = 0; k < minOutputs;
+                k++, bOffWA += bufSizeWA, bOffSC += stepSize) {
+
+                float* dst = bufOut + bOffWA;
+                if (*tch++ == bufCounter) {
+                    float* src = outBuses + bOffSC;
+                    for (int n = 0; n < stepSize; n++) {
+                        *dst++ = *src++;
+                    }
+                } else {
+                    for (int n = 0; n < stepSize; n++) {
+                        *dst++ = 0.0f;
+                    }
+                }
             }
 
             // advance OSC time
@@ -252,7 +271,9 @@ void SC_WebAudioDriver::Run() {
         scprintf("%s: unknown exception in real time\n", kWebAudioIdent);
     }
 
-    // double cpuUsage = ???
+    // TODO: how to measure CPU usage?
+
+    // double cpuUsage = ...
     // mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);
     // if (cpuUsage > mPeakCPU || --mPeakCounter <= 0) {
     //     mPeakCPU = cpuUsage;
@@ -297,7 +318,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
         var self            = Module.audio_driver();
         var latency         = ad.context.baseLatency || 0.0;
         self.WaInitBuffers(ad.bufInPtr, ad.inChanCount, ad.bufOutPtr, ad.outChanCount, 
-            ad.bufSize, ad.sampleRate, ad.context.outputLatency);
+            ad.bufSize, ad.sampleRate, latency);
         ad.proc.onaudioprocess = function(e) {
             self.process();
             var bOut    = e.outputBuffer;
