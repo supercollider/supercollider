@@ -39,6 +39,8 @@ using namespace emscripten;
 
 static const char* kWebAudioIdent = "SC_WebAudio";
 
+// #define SC_WEB_AUDIO_DRIVER_DEBUG
+
 int32 server_timeseed() { return timeSeed(); }
 
 int64 oscTimeNow() { return OSCTime(getTime()); }
@@ -154,7 +156,9 @@ void SC_WebAudioDriver::WaInitBuffers(
     uintptr_t bufInPtr  , int numInChannels, 
     uintptr_t bufOutPtr , int numOutChannels, int bufSize, double sampleRate, double outputLatency) {
 
+#ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: WaInitBuffers.\n", kWebAudioIdent);
+#endif
     // cf. https://stackoverflow.com/questions/20355880/#27364643
     this->mBufInPtr             = reinterpret_cast<float*>(bufInPtr );
     this->mBufOutPtr            = reinterpret_cast<float*>(bufOutPtr);
@@ -286,7 +290,10 @@ void SC_WebAudioDriver::WaRun() {
 }
 
 bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
+
+#ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: DriverSetup.\n", kWebAudioIdent);
+#endif
 
     int res = EM_ASM_INT({
         var AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -344,8 +351,11 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
 }
 
 bool SC_WebAudioDriver::DriverStart() {
+
+#ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: DriverStart.\n", kWebAudioIdent);
-    
+#endif
+
     int res = EM_ASM_INT({
         var ad = Module.audioDriver;
         if (!ad) return -1;
@@ -360,7 +370,10 @@ bool SC_WebAudioDriver::DriverStart() {
 }
 
 bool SC_WebAudioDriver::DriverStop() {
+
+#ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: DriverStop.\n", kWebAudioIdent);
+#endif
 
     int res = EM_ASM_INT({
         var ad = Module.audioDriver;

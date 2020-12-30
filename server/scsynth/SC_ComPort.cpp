@@ -451,7 +451,7 @@ SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
 
 #ifdef __EMSCRIPTEN__
 
-#define SC_WEBINPORT_DEBUG
+// #define SC_WEB_IN_PORT_DEBUG
 
 static const char* kWebInPortIdent = "SC_WebInPort";
 
@@ -467,7 +467,7 @@ public:
         mPortNum(inPortNum),
         mBindTo(bindTo) {
 
-#ifdef SC_WEBINPORT_DEBUG
+#ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: new ip %s port %d.\n", kWebInPortIdent, bindTo.c_str(), inPortNum);
 #endif
 
@@ -520,7 +520,7 @@ public:
     }
 
     void InitBuffer(uintptr_t bufPtr) {
-#ifdef SC_WEBINPORT_DEBUG
+#ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: InitBuffer.\n", kWebInPortIdent);
 #endif
         // cf. https://stackoverflow.com/questions/20355880/#27364643
@@ -528,7 +528,7 @@ public:
     }
 
     void Receive(int remotePort, int bytes_transferred) {
-#ifdef SC_WEBINPORT_DEBUG
+#ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: Receive(%d, %d).\n", kWebInPortIdent, remotePort, bytes_transferred);
 #endif
 
@@ -548,7 +548,7 @@ public:
 
         bool ok = UnrollOSCPacket(mWorld, bytes_transferred, mBufPtr, packet);
 
-#ifdef SC_WEBINPORT_DEBUG
+#ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: Receive result %d.\n", kWebInPortIdent, ok);
 #endif
 
