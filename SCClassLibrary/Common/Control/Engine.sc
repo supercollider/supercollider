@@ -220,7 +220,7 @@ ContiguousBlockAllocator {
 	}
 
 	reserve { |address, size = 1, warn = true|
-		var block = array[address] ?? { this.findNext(address) };
+		var block = array[address] ?? { this.prFindNext(address) };
 		var new;
 		if(block.notNil and:
 			{ block.used and:
@@ -235,7 +235,7 @@ ContiguousBlockAllocator {
 				new = this.prReserve(address, size, block);
 				^new
 			} {
-				block = this.findPrevious(address);
+				block = this.prFindPrevious(address);
 				if(block.notNil and:
 					{ block.used and:
 						{ block.start + block.size > address }
@@ -261,7 +261,7 @@ ContiguousBlockAllocator {
 		if(block.notNil and: { block.used }) {
 			block.used = false;
 			this.addToFreed(block);
-			prev = this.findPrevious(address);
+			prev = this.prFindPrevious(address);
 			if(prev.notNil and: { prev.used.not }) {
 				temp = prev.join(block);
 				if(temp.notNil) {
@@ -274,7 +274,7 @@ ContiguousBlockAllocator {
 					block = temp;
 				};
 			};
-			next = this.findNext(block.start);
+			next = this.prFindNext(block.start);
 			if(next.notNil and: { next.used.not }) {
 				temp = next.join(block);
 				if(temp.notNil) {
@@ -317,14 +317,14 @@ ContiguousBlockAllocator {
 		if(freed[block.size].size == 0) { freed.removeAt(block.size) };
 	}
 
-	findPrevious { |address|
+	prFindPrevious { |address|
 		forBy(address-1, pos, -1, { |i|
 			if(array[i - addrOffset].notNil) { ^array[i - addrOffset] };
 		});
 		^nil
 	}
 
-	findNext { |address|
+	prFindNext { |address|
 		var temp = array[address - addrOffset];
 		if(temp.notNil) {
 			^array[temp.start + temp.size - addrOffset]
@@ -339,7 +339,7 @@ ContiguousBlockAllocator {
 	prReserve { |address, size, availBlock, prevBlock|
 		var new, leftover;
 		if(availBlock.isNil and: { prevBlock.isNil }) {
-			prevBlock = this.findPrevious(address);
+			prevBlock = this.prFindPrevious(address);
 		};
 		availBlock = availBlock ? prevBlock;
 		if(availBlock.start < address) {
