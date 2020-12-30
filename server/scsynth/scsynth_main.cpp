@@ -318,10 +318,8 @@ int scsynth_main(int argc, char** argv) {
         }
     }
     if (udpPortNum == -1 && tcpPortNum == -1 && options.mRealTime) {
-#ifndef __EMSCRIPTEN__
         scprintf("ERROR: There must be a -u and/or a -t options, or -N for nonrealtime.\n");
         Usage();
-#endif
     }
     if (options.mNumInputBusChannels + options.mNumOutputBusChannels > options.mNumAudioBusChannels) {
         scprintf("ERROR: number of audio bus channels < inputs + outputs.\n");
