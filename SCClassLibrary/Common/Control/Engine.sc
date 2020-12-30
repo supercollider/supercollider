@@ -50,7 +50,6 @@ PowerOfTwoBlock {
 }
 
 PowerOfTwoAllocator {
-	// THIS IS THE RECOMMENDED ALLOCATOR FOR BUSES AND BUFFERS
 	var size, array, freeLists, pos=0;
 
 	*new { arg size, pos=0;
@@ -174,23 +173,23 @@ ContiguousBlock {
 
 	join { |block|
 		var newstart;
-		this.adjoins(block).if({
+		if(this.adjoins(block)) {
 			^this.class.new(newstart = min(start, block.start),
 				max(start + size, block.start + block.size) - newstart)
-		}, {
+		} {
 			^nil
-		});
+		};
 	}
 
 	split { |span|
-		(span < size).if({
+		if(span < size) {
 			^[this.class.new(start, span),
 				this.class.new(start + span, size - span)]
-		}, {
-			(span == size).if({
+		} {
+			if(span == size) {
 				^[this, nil]
-			}, { ^nil });
-		});
+			} { ^nil }
+		};
 	}
 
 	storeArgs { ^[start, size, used] }
@@ -199,6 +198,7 @@ ContiguousBlock {
 
 // pos is offset for reserved numbers,
 // addrOffset is offset for clientID * size
+// THIS IS THE RECOMMENDED ALLOCATOR FOR BUSES AND BUFFERS
 ContiguousBlockAllocator {
 	var <size, array, freed, <pos, <top, <addrOffset;
 	// pos is offset for reserved numbers,
@@ -213,35 +213,43 @@ ContiguousBlockAllocator {
 	}
 
 	alloc { |n = 1|
-		var block;
-		(block = this.findAvailable(n)).notNil.if({
+		var block = this.findAvailable(n);
+		if(block.notNil) {
 			^this.prReserve(block.start, n, block).start
-		}, { ^nil });
+		} { ^nil };
 	}
 
 	reserve { |address, size = 1, warn = true|
-		var block, new;
-		((block = array[address] ?? { this.findNext(address) }).notNil and:
+		var block = array[address] ?? { this.findNext(address) };
+		var new;
+		if(block.notNil and:
 			{ block.used and:
-				{ address + size > block.start } }).if({
-			warn.if({ "The block at (%, %) is already in use and cannot be reserved."
-				.format(address, size).warn; });
-		}, {
-			(block.start == address).if({
+				{ address + size > block.start }
+		}) {
+			if(warn) {
+				"The block at (%, %) is already in use and cannot be reserved."
+				.format(address, size).warn;
+			};
+		} {
+			if(block.start == address) {
 				new = this.prReserve(address, size, block);
-				^new;
-			}, {
-				((block = this.findPrevious(address)).notNil and:
+				^new
+			} {
+				block = this.findPrevious(address);
+				if(block.notNil and:
 					{ block.used and:
-						{ block.start + block.size > address } }).if({
-					warn.if({ "The block at (%, %) is already in use and cannot be reserved."
-						.format(address, size).warn; });
-				}, {
+						{ block.start + block.size > address }
+				}) {
+					if(warn) {
+						"The block at (%, %) is already in use and cannot be reserved."
+						.format(address, size).warn;
+					};
+				} {
 					new = this.prReserve(address, size, nil, block);
-					^new;
-				});
-			});
-		});
+					^new
+				};
+			};
+		};
 		^nil
 	}
 
@@ -249,31 +257,36 @@ ContiguousBlockAllocator {
 		var block, prev, next, temp;
 		// this 'if' prevents an error if a Buffer object is freed twice
 		if(address.isNil) { ^this };
-		((block = array[address - addrOffset]).notNil and: { block.used }).if({
+		block = array[address - addrOffset];
+		if(block.notNil and: { block.used }) {
 			block.used = false;
 			this.addToFreed(block);
-			((prev = this.findPrevious(address)).notNil and: { prev.used.not }).if({
-				(temp = prev.join(block)).notNil.if({
+			prev = this.findPrevious(address);
+			if(prev.notNil and: { prev.used.not }) {
+				temp = prev.join(block);
+				if(temp.notNil) {
 					// if block is the last one, reduce the top
-					(block.start == top).if({ top = temp.start });
+					if(block.start == top) { top = temp.start };
 					array[temp.start - addrOffset] = temp;
 					array[block.start - addrOffset] = nil;
 					this.removeFromFreed(prev).removeFromFreed(block);
-					(top > temp.start).if({ this.addToFreed(temp); });
+					if(top > temp.start) { this.addToFreed(temp) };
 					block = temp;
-				});
-			});
-			((next = this.findNext(block.start)).notNil and: { next.used.not }).if({
-				(temp = next.join(block)).notNil.if({
+				};
+			};
+			next = this.findNext(block.start);
+			if(next.notNil and: { next.used.not }) {
+				temp = next.join(block);
+				if(temp.notNil) {
 					// if next is the last one, reduce the top
-					(next.start == top).if({ top = temp.start });
+					if(next.start == top) { top = temp.start };
 					array[temp.start - addrOffset] = temp;
 					array[next.start - addrOffset] = nil;
 					this.removeFromFreed(next).removeFromFreed(block);
-					(top > temp.start).if({ this.addToFreed(temp); });
-				});
-			});
-		});
+					if(top > temp.start) { this.addToFreed(temp) };
+				};
+			};
+		};
 	}
 
 	blocks {
@@ -281,7 +294,7 @@ ContiguousBlockAllocator {
 	}
 
 	findAvailable { |n|
-		(freed[n].size > 0).if({ ^freed[n].choose });
+		if(freed[n].size > 0) { ^freed[n].choose };
 
 		freed.keysValuesDo({ |size, set|
 			(size >= n and: { set.size > 0 }).if({
@@ -289,35 +302,35 @@ ContiguousBlockAllocator {
 			});
 		});
 
-		(top + n - addrOffset > size or: { array[top - addrOffset].used }).if({ ^nil });
+		if(top + n - addrOffset > size or: { array[top - addrOffset].used }) { ^nil };
 		^array[top - addrOffset]
 	}
 
 	addToFreed { |block|
-		freed[block.size].isNil.if({ freed[block.size] = IdentitySet.new });
+		if(freed[block.size].isNil) { freed[block.size] = IdentitySet.new };
 		freed[block.size].add(block);
 	}
 
 	removeFromFreed { |block|
 		freed[block.size].tryPerform(\remove, block);
 		// I tested without gc; performance is about half as efficient without it
-		(freed[block.size].size == 0).if({ freed.removeAt(block.size) });
+		if(freed[block.size].size == 0) { freed.removeAt(block.size) };
 	}
 
 	findPrevious { |address|
 		forBy(address-1, pos, -1, { |i|
-			array[i - addrOffset].notNil.if({ ^array[i - addrOffset] });
+			if(array[i - addrOffset].notNil) { ^array[i - addrOffset] };
 		});
 		^nil
 	}
 
 	findNext { |address|
 		var temp = array[address - addrOffset];
-		if (temp.notNil) {
+		if(temp.notNil) {
 			^array[temp.start + temp.size - addrOffset]
 		} {
 			for(address+1, top, { |i|
-				array[i - addrOffset].notNil.if({ ^array[i - addrOffset] });
+				if(array[i - addrOffset].notNil) { ^array[i - addrOffset] };
 			});
 		};
 		^nil
@@ -325,14 +338,14 @@ ContiguousBlockAllocator {
 
 	prReserve { |address, size, availBlock, prevBlock|
 		var new, leftover;
-		(availBlock.isNil and: { prevBlock.isNil }).if({
+		if(availBlock.isNil and: { prevBlock.isNil }) {
 			prevBlock = this.findPrevious(address);
-		});
+		};
 		availBlock = availBlock ? prevBlock;
-		(availBlock.start < address).if({
+		if(availBlock.start < address) {
 			#leftover, availBlock = this.prSplit(availBlock,
 				address - availBlock.start, false);
-		});
+		};
 		^this.prSplit(availBlock, size, true)[0];
 	}
 
@@ -341,13 +354,13 @@ ContiguousBlockAllocator {
 		#new, leftover = availBlock.split(n);
 		new.used = used;
 		this.removeFromFreed(availBlock);
-		used.not.if({ this.addToFreed(new) });
+		if(used.not) { this.addToFreed(new) };
 		array[new.start - addrOffset] = new;
-		leftover.notNil.if({
+		if(leftover.notNil) {
 			array[leftover.start - addrOffset] = leftover;
 			top = max(top, leftover.start);
-			(top > leftover.start).if({ this.addToFreed(leftover); });
-		});
+			if(top > leftover.start) { this.addToFreed(leftover) };
+		};
 		^[new, leftover]
 	}
 
