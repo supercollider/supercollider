@@ -289,7 +289,7 @@ endif()
 if (EMSCRIPTEN)
 	# TODO: set_property seems to do the wrong thing; set_target_properties works, but overwrites (?) previous settings
 	set_target_properties(libscsynth boost_system_lib boost_filesystem_lib PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread -s DISABLE_EXCEPTION_CATCHING=0")
-	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread --bind -s DISABLE_EXCEPTION_CATCHING=0 -s INITIAL_MEMORY=33554432 -s EXTRA_EXPORTED_RUNTIME_METHODS=[\"callMain\"] --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
+	set_target_properties(scsynth PROPERTIES LINK_FLAGS "-s USE_PTHREADS=1 -s WASM=1 -pthread --bind -s DISABLE_EXCEPTION_CATCHING=0 -s INITIAL_MEMORY=33554432 -s EXTRA_EXPORTED_RUNTIME_METHODS=[\"ccall\",\"callMain\"] --pre-js ${CMAKE_SOURCE_DIR}/wasm/pre.js")
 	set_property(TARGET scsynth libscsynth
 							 APPEND PROPERTY COMPILE_FLAGS "-pthread")
 	# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -s USE_PTHREADS=1 -s WASM=1")

@@ -328,7 +328,9 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
             var numCh   = Math.min(bOut.numberOfChannels, ad.outChanCount);
             var bufSize = ad.bufSize;
             for (var ch = 0; ch < numCh; ch++) {
-                bOut.copyToChannel(bProc[ch], ch, 0);
+                // bOut.copyToChannel(bProc[ch], ch, 0);
+                var aBuf = bOut.getChannelData(ch);
+                aBuf.set(bProc[ch]);
             }
         };
         return 0;
