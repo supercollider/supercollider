@@ -177,7 +177,7 @@ struct IsBundle {
 IsBundle gIsBundle;
 
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket) {
-    scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
+    // scprintf("ProcessOSCPacket %d, '%s'\n", inPacket->mSize, inPacket->mData);
     if (!inPacket)
         return false;
     bool result;
@@ -198,7 +198,7 @@ bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket) {
 }
 
 int PerformOSCMessage(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
-    scprintf("->PerformOSCMessage (inSize %d) %d\n", inSize, inData[0]);
+    // scprintf("->PerformOSCMessage %d\n", inData[0]);
     SC_LibCmd* cmdObj;
     int cmdNameLen;
     if (inData[0] == 0) {
@@ -219,7 +219,7 @@ int PerformOSCMessage(World* inWorld, int inSize, char* inData, ReplyAddress* in
     }
 
     int err = cmdObj->Perform(inWorld, inSize - cmdNameLen, inData + cmdNameLen, inReply);
-    scprintf("<-PerformOSCMessage %d\n", inData[0]);
+    // scprintf("<-PerformOSCMessage %d\n", inData[0]);
     return err;
 }
 

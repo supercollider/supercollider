@@ -156,9 +156,7 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer) {
     int32 name[kSCNameLen];
     ReadName(buffer, name);
 
-    scprintf("UnitSpec_ReadVer1 [0] '%s'\n", (char*) name);
     inUnitSpec->mUnitDef = GetUnitDef(name);
-    scprintf("UnitSpec_ReadVer1 [1] installed? %d\n", inUnitSpec->mUnitDef ? 1 : 0);
     if (!inUnitSpec->mUnitDef) {
         char str[ERR_BUF_SIZE];
         snprintf(str, ERR_BUF_SIZE, "UGen '%s' not installed.", (char*)name);
@@ -172,9 +170,6 @@ void UnitSpec_ReadVer1(UnitSpec* inUnitSpec, char*& buffer) {
     inUnitSpec->mSpecialIndex = readInt16_be(buffer);
     inUnitSpec->mInputSpec = (InputSpec*)malloc(sizeof(InputSpec) * inUnitSpec->mNumInputs);
     inUnitSpec->mOutputSpec = (OutputSpec*)malloc(sizeof(OutputSpec) * inUnitSpec->mNumOutputs);
-
-    scprintf("UnitSpec_ReadVer1 [2] numInputs = %d, numOutputs = %d\n", inUnitSpec->mNumInputs, inUnitSpec->mNumOutputs);
-
     for (uint32 i = 0; i < inUnitSpec->mNumInputs; ++i) {
         InputSpec_ReadVer1(inUnitSpec->mInputSpec + i, buffer);
     }
@@ -190,7 +185,6 @@ GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int
 
 GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList);
 GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList) {
-    scprintf("GraphDefLib_Read [0]\n");
     int32 magic = readInt32_be(buffer);
     if (magic != (('S' << 24) | ('C' << 16) | ('g' << 8) | 'f') /*'SCgf'*/)
         return inList;
@@ -210,7 +204,6 @@ GraphDef* GraphDefLib_Read(World* inWorld, char* buffer, GraphDef* inList) {
     case 1:
     case 0:
         numDefs = readInt16_be(buffer);
-        scprintf("GraphDefLib_Read [1] numDefs = %d\n", numDefs);
 
         for (i = 0; i < numDefs; ++i) {
             inList = GraphDef_ReadVer1(inWorld, buffer, inList, version); // handles 1 and 0
@@ -449,7 +442,6 @@ GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int
     ReadNodeDefName(buffer, name);
 
     GraphDef* graphDef = (GraphDef*)calloc(1, sizeof(GraphDef));
-    scprintf("GraphDef_ReadVer1 [0]\n");
 
     graphDef->mOriginal = graphDef;
 
@@ -478,7 +470,6 @@ GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int
     graphDef->mNumUnitSpecs = readInt16_be(buffer);
     graphDef->mUnitSpecs = (UnitSpec*)malloc(sizeof(UnitSpec) * graphDef->mNumUnitSpecs);
     graphDef->mNumCalcUnits = 0;
-    scprintf("GraphDef_ReadVer1 [1] numUnitSpecs = %d\n", graphDef->mNumUnitSpecs);
     for (uint32 i = 0; i < graphDef->mNumUnitSpecs; ++i) {
         UnitSpec* unitSpec = graphDef->mUnitSpecs + i;
         UnitSpec_ReadVer1(unitSpec, buffer);
@@ -503,7 +494,6 @@ GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int
         graphDef->mNodeDef.mAllocSize += unitSpec->mAllocSize;
         graphDef->mNumWires += unitSpec->mNumOutputs;
     }
-    scprintf("GraphDef_ReadVer1 [2]\n");
 
     DoBufferColoring(inWorld, graphDef);
 
@@ -511,8 +501,6 @@ GraphDef* GraphDef_ReadVer1(World* inWorld, char*& buffer, GraphDef* inList, int
 
     graphDef->mNext = inList;
     graphDef->mRefCount = 1;
-
-    scprintf("GraphDef_ReadVer1 [3]\n");
 
     if (inVersion >= 1) {
         graphDef->mNumVariants = readInt16_be(buffer);
