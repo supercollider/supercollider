@@ -47,6 +47,10 @@
 #    include "Rendezvous.h"
 #endif
 
+#ifdef __EMSCRIPTEN__
+#   include <emscripten.h>
+#endif
+
 
 bool ProcessOSCPacket(World* inWorld, OSC_Packet* inPacket);
 
@@ -189,6 +193,16 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
         printf("%s\n", errc.message().c_str());
 }
 
+#ifdef __EMSCRIPTEN__
+
+static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+    MAIN_THREAD_ASYNC_EM_ASM({
+        console.log("todo: OSC reply");
+    });
+    // (addr->mReplyData);
+    // (addr->mAddress, addr->mPort);
+}
+#endif
 
 class SC_UdpInPort {
     struct World* mWorld;
@@ -434,6 +448,30 @@ public:
 SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
 
 
+#ifdef __EMSCRIPTEN__
+class SC_WebInPort {
+    struct World* mWorld;
+    int mPortNum;
+    std::string mbindTo;
+    boost::array<char, kTextBufSize> recvBuffer;
+
+    void handleReceivedWeb() {
+    }
+
+    void startReceiveWeb() {
+    }
+
+public:
+    SC_WebInPort(struct World* world, std::string bindTo, int inPortNum):
+        mWorld(world),
+        mPortNum(inPortNum),
+        mbindTo(bindTo) {
+
+        startReceiveWeb();
+    }
+};
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void asioFunction() {
@@ -517,7 +555,13 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
 }
 
 SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort) {
+#ifdef __EMSCRIPTEN__
+    // when running in the browser, a special 'web' protocol is used in place of 'udp'.
+    // that way scsynth can be started as usual with the '-u' switch
+    return protectedOpenPort<SC_WebInPort>("Web", inWorld, bindTo, inPort);
+#else
     return protectedOpenPort<SC_UdpInPort>("UDP", inWorld, bindTo, inPort);
+#endif
 }
 
 SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World* inWorld, const char* bindTo, int inPort, int inMaxConnections,

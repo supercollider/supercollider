@@ -195,6 +195,11 @@ static void dumpOSC(int mode, int size, char* inData) {
 static void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	scprintf("mAddress %s\n", inReplyAddress->mAddress.to_string().c_str());
+#ifdef __EMSCRIPTEN__
+	if (inReplyAddress->mProtocol == kWeb)
+		scprintf("mProtocol Web\n");
+    else
+#endif
 	if (inReplyAddress->mProtocol == kUDP)
 		scprintf("mProtocol UDP\n");
 	else
