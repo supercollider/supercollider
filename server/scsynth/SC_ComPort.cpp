@@ -49,6 +49,7 @@
 
 #ifdef __EMSCRIPTEN__
 #   include <emscripten.h>
+#   include <emscripten/bind.h>
 #endif
 
 
@@ -449,27 +450,133 @@ SC_TcpConnection::~SC_TcpConnection() { mParent->connectionDestroyed(); }
 
 
 #ifdef __EMSCRIPTEN__
+
+#define SC_WEBINPORT_DEBUG
+
+static const char* kWebInPortIdent = "SC_WebInPort";
+
 class SC_WebInPort {
     struct World* mWorld;
     int mPortNum;
-    std::string mbindTo;
-    boost::array<char, kTextBufSize> recvBuffer;
-
-    void handleReceivedWeb() {
-    }
-
-    void startReceiveWeb() {
-    }
+    std::string mBindTo;
+    char *mBufPtr;
 
 public:
     SC_WebInPort(struct World* world, std::string bindTo, int inPortNum):
         mWorld(world),
         mPortNum(inPortNum),
-        mbindTo(bindTo) {
+        mBindTo(bindTo) {
 
-        startReceiveWeb();
+#ifdef SC_WEBINPORT_DEBUG
+        scprintf("%s: new ip %s port %d.\n", kWebInPortIdent, bindTo.c_str(), inPortNum);
+#endif
+
+        if (SC_WebInPort::current != NULL) {
+            throw std::runtime_error("SC_WebInPort: concurrent modification\n");
+        }
+        SC_WebInPort::current = this;
+
+        EM_ASM({
+            if (!Module.oscDriver) Module.oscDriver = {};
+            var self            = Module.web_in_port();
+            var od              = Module.oscDriver;
+            var addr            = {};
+            addr.ip             = UTF8ToString($0);
+            addr.port           = $1;
+            var endPoint        = {};
+            od[addr]            = endPoint;
+            endPoint.instance   = self;
+            var maxNumBytes     = $2;
+            endPoint.bufPtr     = Module._malloc(maxNumBytes);
+            endPoint.byteBuf    = new Uint8Array(Module.HEAPU8.buffer, endPoint.bufPtr, maxNumBytes);
+            self.InitBuffer(endPoint.bufPtr);
+
+            if (!od.send) {
+                od.send = function(tgt, data) {
+                    var _od     = Module.oscDriver;
+                    var _ep     = _od ? _od[tgt] : undefined;
+                    if (_ep) {
+                        var sz = data.byteLength;
+                        if (sz < maxNumBytes) {
+                            _ep.byteBuf.set(data);
+                            _ep.instance.Receive(tgt.port, sz);
+                        } else {
+                            throw new Error('oscDriver.send: message size exceeded: ' + sz);
+                        }
+                    } else {
+                        throw new Error('oscDriver.send: unknown target ' + tgt);
+                    }
+                };
+            }
+
+        }, bindTo.c_str(), inPortNum, kTextBufSize);
+
+        SC_WebInPort::current = NULL;
     }
+
+    ~SC_WebInPort() {
+        mBufPtr = NULL;
+        // TODO: clean-up: EM_ASM to free buffer and remove end-point
+    }
+
+    void InitBuffer(uintptr_t bufPtr) {
+#ifdef SC_WEBINPORT_DEBUG
+        scprintf("%s: InitBuffer.\n", kWebInPortIdent);
+#endif
+        // cf. https://stackoverflow.com/questions/20355880/#27364643
+        this->mBufPtr = reinterpret_cast<char*>(bufPtr);
+    }
+
+    void Receive(int remotePort, int bytes_transferred) {
+#ifdef SC_WEBINPORT_DEBUG
+        scprintf("%s: Receive(%d, %d).\n", kWebInPortIdent, remotePort, bytes_transferred);
+#endif
+
+        if (mWorld->mDumpOSC)
+            dumpOSC(mWorld->mDumpOSC, bytes_transferred, mBufPtr);
+
+        OSC_Packet* packet = (OSC_Packet*) malloc(sizeof(OSC_Packet));
+
+        packet->mReplyAddr.mProtocol    = kWeb;
+        packet->mReplyAddr.mAddress     = boost::asio::ip::make_address("127.0.0.1");   // TODO
+        packet->mReplyAddr.mPort        = remotePort; // remoteEndpoint.port();
+        packet->mReplyAddr.mSocket      = 0; // native_handle();
+        packet->mReplyAddr.mReplyFunc   = web_reply_func;
+        packet->mReplyAddr.mReplyData   = NULL;
+
+        packet->mSize = bytes_transferred;
+
+        bool ok = UnrollOSCPacket(mWorld, bytes_transferred, mBufPtr, packet);
+
+#ifdef SC_WEBINPORT_DEBUG
+        scprintf("%s: Receive result %d.\n", kWebInPortIdent, ok);
+#endif
+
+        if (!ok) free(packet);
+    }
+
+    // access to instances via temporary singleton which is needed from JS.
+    static SC_WebInPort* current;
 };
+
+SC_WebInPort* SC_WebInPort::current = NULL;
+
+// function callable from JS to obtain the singleton instance
+extern "C" SC_WebInPort* web_in_port() {
+    if (SC_WebInPort::current == NULL) {
+        throw std::runtime_error("SC_WebInPort: instance currently not set\n");
+    }
+    return SC_WebInPort::current;
+}
+
+EMSCRIPTEN_BINDINGS(Web_Audio) {
+    emscripten::class_<SC_WebInPort>("SC_WebInPort")
+        .function("Receive"     , &SC_WebInPort::Receive    , emscripten::allow_raw_pointers())
+        .function("InitBuffer"  , &SC_WebInPort::InitBuffer , emscripten::allow_raw_pointers())
+        ;
+    emscripten::function("web_in_port", &web_in_port, emscripten::allow_raw_pointers());
+}
+
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////

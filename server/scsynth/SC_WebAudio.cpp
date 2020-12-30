@@ -33,16 +33,15 @@
 #include <math.h>
 #include <stdlib.h>
 #include <emscripten.h>
-#include <emscripten/val.h>
 #include <emscripten/bind.h>
 
 using namespace emscripten;
 
 static const char* kWebAudioIdent = "SC_WebAudio";
 
-int32 server_timeseed() { return timeSeed(); } // TODO
+int32 server_timeseed() { return timeSeed(); }
 
-int64 oscTimeNow() { return OSCTime(getTime()); } // TODO
+int64 oscTimeNow() { return OSCTime(getTime()); }
 
 static double waOscTimeSeconds() { return OSCTime(getTime()) * kOSCtoSecs; }
 
@@ -84,7 +83,7 @@ public:
 
     // the main processing callback.
     // this is called from JS during the script processor node's `onaudioprocess`.
-    virtual void Run();
+    virtual void WaRun();
 
     // access to singleton instance which is needed from JS
     static SC_WebAudioDriver* instance;
@@ -100,10 +99,10 @@ extern "C" SC_WebAudioDriver* audio_driver() {
     return SC_WebAudioDriver::instance;
 }
 
-EMSCRIPTEN_BINDINGS(Audio_Driver) {
+EMSCRIPTEN_BINDINGS(Web_Audio) {
     emscripten::class_<SC_WebAudioDriver>("SC_WebAudioDriver")
-        .function("Run"     , &SC_WebAudioDriver::Run)
-        .function("WaInitBuffers" , &SC_WebAudioDriver::WaInitBuffers, emscripten::allow_raw_pointers())
+        .function("WaRun"           , &SC_WebAudioDriver::WaRun)
+        .function("WaInitBuffers"   , &SC_WebAudioDriver::WaInitBuffers, emscripten::allow_raw_pointers())
         ;
     emscripten::function("audio_driver", &audio_driver, emscripten::allow_raw_pointers());
 }
@@ -135,18 +134,19 @@ SC_WebAudioDriver::~SC_WebAudioDriver() {
     mBufOutPtr  = NULL;
     SC_WebAudioDriver::instance = NULL;
     EM_ASM({
-      if (Module.audioDriver) {
-        if (ad.context) {
-          ad.context.close();
+        var ad = Module.audioDriver; 
+        if (ad) {
+            if (ad.context) {
+                ad.context.close();
+            }
+            if (ad.bufInPtr) {
+                Module._free(ad.bufInPtr);
+            }
+            if (ad.bufOutPtr) {
+                Module._free(ad.bufOutPtr);
+            }
+            Module.audioDriver = undefined;
         }
-        if (ad.bufInPtr) {
-          Module._free(ad.bufInPtr);
-        }
-        if (ad.bufOutPtr) {
-          Module._free(ad.bufOutPtr);
-        }
-        Module.audioDriver = undefined;
-      }
     });
 }
 
@@ -167,7 +167,7 @@ void SC_WebAudioDriver::WaInitBuffers(
 
 void sc_SetDenormalFlags();
 
-void SC_WebAudioDriver::Run() {
+void SC_WebAudioDriver::WaRun() {
     sc_SetDenormalFlags();
     World* world = mWorld;
     mDLL.Update(waOscTimeSeconds());
@@ -175,7 +175,9 @@ void SC_WebAudioDriver::Run() {
     try {
         mFromEngine         .Free();
         mToEngine           .Perform();
+        // scprintf("%s: --> mOscPacketsToEngine\n", kWebAudioIdent);
         mOscPacketsToEngine .Perform();
+        // scprintf("%s: <-- mOscPacketsToEngine\n", kWebAudioIdent);
 
         float* bufIn        = mBufInPtr;
         float* bufOut       = mBufOutPtr;
@@ -320,7 +322,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
         self.WaInitBuffers(ad.bufInPtr, ad.inChanCount, ad.bufOutPtr, ad.outChanCount, 
             ad.bufSize, ad.sampleRate, latency);
         ad.proc.onaudioprocess = function(e) {
-            self.process();
+            self.WaRun();
             var bOut    = e.outputBuffer;
             var bProc   = ad.floatBufOut;
             var numCh   = Math.min(bOut.numberOfChannels, ad.outChanCount);
@@ -341,11 +343,31 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
 
 bool SC_WebAudioDriver::DriverStart() {
     scprintf("%s: DriverStart.\n", kWebAudioIdent);
+    
+    int res = EM_ASM_INT({
+        var ad = Module.audioDriver;
+        if (!ad) return -1;
+      
+        ad.proc.connect(ad.context.destination);
+
+        return 0;
+    });
+
     mDLL.Reset(mSampleRate, mNumSamplesPerCallback, SC_TIME_DLL_BW, waOscTimeSeconds());
-    return true;
+    return res == 0;
 }
 
 bool SC_WebAudioDriver::DriverStop() {
     scprintf("%s: DriverStop.\n", kWebAudioIdent);
-    return true;
+
+    int res = EM_ASM_INT({
+        var ad = Module.audioDriver;
+        if (!ad) return -1;
+
+        ad.proc.disconnect(ad.context.destination);
+
+        return 0;
+     });
+
+    return res == 0;
 }
