@@ -204,6 +204,26 @@ ContiguousBlockAllocator {
 	// pos is offset for reserved numbers,
 	// addrOffset is offset for clientID * size
 
+	// Array structure is sparse.
+	// If you allocate 3 size-2 blocks, it should be:
+	// array[0]: ContiguousBlock(0, 2, true)
+	// array[1]: nil
+	// array[2]: ContiguousBlock(2, 2, true)
+	// array[3]: nil
+	// array[4]: ContiguousBlock(4, 2, true)
+	// array[5]: nil
+	// array[6]: ContiguousBlock(6, ...a big number..., false)
+
+	// For every ContiguousBlock in the array,
+	// there should ALWAYS be the next ContiguousBlock at
+	// block.start + block.size.
+	// E.g. block at 0 above --> 0+2 --> 2 and there's a block at index 2.
+	// If this is not true, the allocator is in an inconsistent state.
+	// This should never happen by following the public interface:
+	// alloc(), reserve(), free()
+
+	// Array indices are always adjusted by the `addrOffset` (usually 0).
+
 	*new { |size, pos = 0, addrOffset = 0|
 		var shiftedPos = pos + addrOffset;
 		^super.newCopyArgs(size,
@@ -262,6 +282,11 @@ ContiguousBlockAllocator {
 			block.used = false;
 			this.addToFreed(block);
 			prev = this.prFindPrevious(address);
+			// We are freeing block B.
+			// If block A (immediately before it) is unused,
+			// then join A and B into a new, single block
+			// spanning the entire width of A and B together.
+			// (On-the-fly defragmentation of the address space.)
 			if(prev.notNil and: { prev.used.not }) {
 				temp = prev.join(block);
 				if(temp.notNil) {
@@ -274,6 +299,7 @@ ContiguousBlockAllocator {
 					block = temp;
 				};
 			};
+			// and if this also touches the next block, join them
 			next = this.prFindNext(block.start);
 			if(next.notNil and: { next.used.not }) {
 				temp = next.join(block);
@@ -293,6 +319,8 @@ ContiguousBlockAllocator {
 		^array.select({ arg b; b.notNil and: { b.used } })
 	}
 
+	// Returns an available index for the given number of channels
+	// or nil if none is found.
 	findAvailable { |n|
 		if(freed[n].size > 0) { ^freed[n].choose };
 
@@ -317,6 +345,8 @@ ContiguousBlockAllocator {
 		if(freed[block.size].size == 0) { freed.removeAt(block.size) };
 	}
 
+	// At any address, look backward for the immediately preceding block.
+	// If `address` is the first block, this will correctly be nil.
 	prFindPrevious { |address|
 		forBy(address-1, pos, -1, { |i|
 			if(array[i - addrOffset].notNil) { ^array[i - addrOffset] };
@@ -324,8 +354,17 @@ ContiguousBlockAllocator {
 		^nil
 	}
 
+	// At any address, look forward for the immediately following block.
+	// If `address` is within the last block, this will correctly be nil.
 	prFindNext { |address|
 		var temp = array[address - addrOffset];
+		// The next if() block is an optimization.
+		// If `address` corresponds to a block beginning, then
+		// (see comments at the top of the class)
+		// the next block is expected to be at temp.start + temp.size.
+		// temp.start + temp.size - addrOffset may be past the array's upper bound.
+		// THIS IS OK.
+		// If there is no next block, it is correct and expected to return nil!
 		if(temp.notNil) {
 			^array[temp.start + temp.size - addrOffset]
 		} {
