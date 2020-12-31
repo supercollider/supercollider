@@ -52,8 +52,6 @@ The following limitations are currently in place:
 
 ## TODO
 
-- [ ] OSC return/reply messages are not yet implemented. The main question is how to allocate the memory,
-      as probably an asynchronous invocation `MAIN_THREAD_ASYNC_EM_ASM` should be used.
 - [ ] I/O is currently hard-coded for 0 input channels and 2 output channels. This is easy to fix.
 
 ## Building
@@ -198,9 +196,12 @@ allows to receive OSC replies from the server. To do so, an OSC end-point functi
 
 The OSC data is always a plain `Uint8Array` which must be properly encoded and decoded, for example in JavaScript using the
 [osc.js](https://github.com/colinbdclark/osc.js/) library mentioned above (`osc.writePacket()`, `osc.readPacket()`). You can
-look at the definition of `sendOSC_t` in `index.html` to see how package encoding works.
+look at the definition of `sendOSC_t` in `index.html` to see how package encoding works. For example:
 
-__Note:__ Reply messages are currently unimplemented (TODO)!
+    od[57120] = function(addr, data) {
+      var msg = osc.readPacket(data, {});
+      console.log("REPLY from " + addr + ": " + JSON.stringify(msg, null, 4));
+    };
 
 ## Source Code
 
