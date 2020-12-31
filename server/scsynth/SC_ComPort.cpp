@@ -199,24 +199,29 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 // std::thread::id main_thread_id = std::this_thread::get_id();
 
 // this is always called on the same thread, although different
-// from the main thread. If we can call directly into JS via
-// EM_ASM (on the same thread), that would make it very easy, as
-// we could just copy `msg` onto a fixed size stack `struct`.
-// If not, we would either have to call a blocking function
-// `MAIN_THREAD_SYNC_EM_ASM`, or allocate on the heap something
-// to be freed from JS. What is the best solution?
+// from the main thread. In order to access `Module` and do
+// anything useful on the JS side, execution has to be deferred
+// to the main thread. The blocking function `MAIN_THREAD_EM_ASM`
+// is used so that the `msg` can be safely used without copying.
 static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
     // auto thread_id = std::this_thread::get_id();
     // scprintf("web_reply_func called from %d, main is %d\n", thread_id, main_thread_id);
-    MAIN_THREAD_ASYNC_EM_ASM({
-        var serverPort  = $0;
-        var clientPort  = $1;
+    MAIN_THREAD_EM_ASM({
+        var clientPort  = $0;
         var od          = Module.oscDriver;
         var ep          = od ? od[clientPort] : undefined;
         if (typeof ep == 'function') {
-            ep(serverPort, null);   // TODO
+            var serverPort  = $1;
+            var ptr         = $2;
+            var dataSize    = $3;
+            var data        = new Uint8Array(Module.HEAPU8.buffer, ptr, dataSize);
+            try {
+                ep(serverPort, data);
+            } catch (e) {
+                console.log("Error in OSC reply handler: ", e.message);
+            }
         }
-    }, addr->mSocket, addr->mPort);
+    }, addr->mPort, addr->mSocket, msg, size);
 }
 #endif
 
