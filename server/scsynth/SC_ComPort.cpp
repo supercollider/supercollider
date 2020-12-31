@@ -198,10 +198,14 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 
 static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
     MAIN_THREAD_ASYNC_EM_ASM({
-        console.log("todo: OSC reply");
-    });
-    // (addr->mReplyData);
-    // (addr->mAddress, addr->mPort);
+        var serverPort  = $0;
+        var clientPort  = $1;
+        var od          = Module.oscDriver;
+        var ep          = od ? od[clientPort] : undefined;
+        if (typeof ep == 'function') {
+            ep(serverPort, null);   // TODO
+        }
+    }, addr->mSocket, addr->mPort);
 }
 #endif
 
@@ -477,39 +481,38 @@ public:
         SC_WebInPort::current = this;
 
         EM_ASM({
+            var serverPort      = $0;
+            var maxNumBytes     = $1;
             if (!Module.oscDriver) Module.oscDriver = {};
             var self            = Module.web_in_port();
             var od              = Module.oscDriver;
-            var addr            = {};
-            addr.ip             = UTF8ToString($0);
-            addr.port           = $1;
             var endPoint        = {};
-            od[addr]            = endPoint;
+            od[serverPort]      = endPoint;
             endPoint.instance   = self;
-            var maxNumBytes     = $2;
             endPoint.bufPtr     = Module._malloc(maxNumBytes);
             endPoint.byteBuf    = new Uint8Array(Module.HEAPU8.buffer, endPoint.bufPtr, maxNumBytes);
             self.InitBuffer(endPoint.bufPtr);
 
             if (!od.send) {
-                od.send = function(tgt, data) {
+                od.send = function(client, server, data) {
+                    if (!client) client = 0;
                     var _od     = Module.oscDriver;
-                    var _ep     = _od ? _od[tgt] : undefined;
+                    var _ep     = _od ? _od[server] : undefined;
                     if (_ep) {
                         var sz = data.byteLength;
                         if (sz < maxNumBytes) {
                             _ep.byteBuf.set(data);
-                            _ep.instance.Receive(tgt.port, sz);
+                            _ep.instance.Receive(client, sz);
                         } else {
                             throw new Error('oscDriver.send: message size exceeded: ' + sz);
                         }
                     } else {
-                        throw new Error('oscDriver.send: unknown target ' + tgt);
+                        throw new Error('oscDriver.send: unknown target ' + server);
                     }
                 };
             }
 
-        }, bindTo.c_str(), inPortNum, kTextBufSize);
+        }, inPortNum, kTextBufSize);
 
         SC_WebInPort::current = NULL;
     }
@@ -539,8 +542,8 @@ public:
 
         packet->mReplyAddr.mProtocol    = kWeb;
         packet->mReplyAddr.mAddress     = boost::asio::ip::make_address("127.0.0.1");   // TODO
-        packet->mReplyAddr.mPort        = remotePort; // remoteEndpoint.port();
-        packet->mReplyAddr.mSocket      = 0; // native_handle();
+        packet->mReplyAddr.mPort        = remotePort;   // remoteEndpoint.port();
+        packet->mReplyAddr.mSocket      = mPortNum;     // native_handle();
         packet->mReplyAddr.mReplyFunc   = web_reply_func;
         packet->mReplyAddr.mReplyData   = NULL;
 
