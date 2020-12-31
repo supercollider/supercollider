@@ -196,7 +196,18 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 
 #ifdef __EMSCRIPTEN__
 
+// std::thread::id main_thread_id = std::this_thread::get_id();
+
+// this is always called on the same thread, although different
+// from the main thread. If we can call directly into JS via
+// EM_ASM (on the same thread), that would make it very easy, as
+// we could just copy `msg` onto a fixed size stack `struct`.
+// If not, we would either have to call a blocking function
+// `MAIN_THREAD_SYNC_EM_ASM`, or allocate on the heap something
+// to be freed from JS. What is the best solution?
 static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
+    // auto thread_id = std::this_thread::get_id();
+    // scprintf("web_reply_func called from %d, main is %d\n", thread_id, main_thread_id);
     MAIN_THREAD_ASYNC_EM_ASM({
         var serverPort  = $0;
         var clientPort  = $1;
