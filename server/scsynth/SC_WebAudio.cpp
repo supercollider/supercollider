@@ -51,8 +51,8 @@ void initializeScheduler() {}
 
 // to be able to see runtime exception text in the browser
 extern "C" void EMSCRIPTEN_KEEPALIVE print_error_to_console(intptr_t pointer) {
-  auto error = reinterpret_cast<std::runtime_error *>(pointer);
-  scprintf("%s\n", error->what());
+    auto error = reinterpret_cast<std::runtime_error*>(pointer);
+    scprintf("%s\n", error->what());
 }
 
 class SC_WebAudioDriver : public SC_AudioDriver {
@@ -79,9 +79,8 @@ public:
     // passes the Float32Array buffers allocated from JS to this instance,
     // where they are stored in mBufInPtr, mBufOutPtr, etc.
     // this is called from JS during driver setup.
-    virtual void WaInitBuffers(
-        uintptr_t bufInPtr  , int numInChannels, 
-        uintptr_t bufOutPtr , int numOutChannels, int bufSize, double sampleRate, double outputLatency);
+    virtual void WaInitBuffers(uintptr_t bufInPtr, int numInChannels, uintptr_t bufOutPtr, int numOutChannels,
+                               int bufSize, double sampleRate, double outputLatency);
 
     // the main processing callback.
     // this is called from JS during the script processor node's `onaudioprocess`.
@@ -103,13 +102,12 @@ extern "C" SC_WebAudioDriver* audio_driver() {
 
 EMSCRIPTEN_BINDINGS(Web_Audio) {
     emscripten::class_<SC_WebAudioDriver>("SC_WebAudioDriver")
-        .function("WaRun"           , &SC_WebAudioDriver::WaRun)
-        .function("WaInitBuffers"   , &SC_WebAudioDriver::WaInitBuffers, emscripten::allow_raw_pointers())
-        ;
+        .function("WaRun", &SC_WebAudioDriver::WaRun)
+        .function("WaInitBuffers", &SC_WebAudioDriver::WaInitBuffers, emscripten::allow_raw_pointers());
     emscripten::function("audio_driver", &audio_driver, emscripten::allow_raw_pointers());
 }
 
-SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { 
+SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) {
     // set up exception error printing function
     // clang-format off
     EM_ASM({
@@ -119,14 +117,11 @@ SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) {
             }
         }
     });
-    // clang-format on
-    return new SC_WebAudioDriver(inWorld); 
+// clang-format on
+return new SC_WebAudioDriver(inWorld);
 }
 
-SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld): 
-    SC_AudioDriver(inWorld), 
-    mMaxOutputLatency(0.0) {
-
+SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld), mMaxOutputLatency(0.0) {
     if (SC_WebAudioDriver::instance != NULL) {
         throw std::runtime_error("SC_WebAudio: can only have one instance\n");
     }
@@ -134,8 +129,8 @@ SC_WebAudioDriver::SC_WebAudioDriver(struct World* inWorld):
 }
 
 SC_WebAudioDriver::~SC_WebAudioDriver() {
-    mBufInPtr   = NULL;
-    mBufOutPtr  = NULL;
+    mBufInPtr = NULL;
+    mBufOutPtr = NULL;
     SC_WebAudioDriver::instance = NULL;
     // clang-format off
     EM_ASM({
@@ -156,21 +151,19 @@ SC_WebAudioDriver::~SC_WebAudioDriver() {
     // clang-format on
 }
 
-void SC_WebAudioDriver::WaInitBuffers(
-    uintptr_t bufInPtr  , int numInChannels, 
-    uintptr_t bufOutPtr , int numOutChannels, int bufSize, double sampleRate, double outputLatency) {
-
+void SC_WebAudioDriver::WaInitBuffers(uintptr_t bufInPtr, int numInChannels, uintptr_t bufOutPtr, int numOutChannels,
+                                      int bufSize, double sampleRate, double outputLatency) {
 #ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: WaInitBuffers.\n", kWebAudioIdent);
 #endif
     // cf. https://stackoverflow.com/questions/20355880/#27364643
-    this->mBufInPtr             = reinterpret_cast<float*>(bufInPtr );
-    this->mBufOutPtr            = reinterpret_cast<float*>(bufOutPtr);
-    this->mNumInChannels        = numInChannels;
-    this->mNumOutChannels       = numOutChannels;
-    this->mBufSize              = bufSize;
-    this->mSampleRate           = sampleRate;
-    this->mMaxOutputLatency     = outputLatency;
+    this->mBufInPtr = reinterpret_cast<float*>(bufInPtr);
+    this->mBufOutPtr = reinterpret_cast<float*>(bufOutPtr);
+    this->mNumInChannels = numInChannels;
+    this->mNumOutChannels = numOutChannels;
+    this->mBufSize = bufSize;
+    this->mSampleRate = sampleRate;
+    this->mMaxOutputLatency = outputLatency;
 }
 
 void sc_SetDenormalFlags();
@@ -181,33 +174,33 @@ void SC_WebAudioDriver::WaRun() {
     mDLL.Update(waOscTimeSeconds());
 
     try {
-        mFromEngine         .Free();
-        mToEngine           .Perform();
+        mFromEngine.Free();
+        mToEngine.Perform();
         // scprintf("%s: --> mOscPacketsToEngine\n", kWebAudioIdent);
-        mOscPacketsToEngine .Perform();
+        mOscPacketsToEngine.Perform();
         // scprintf("%s: <-- mOscPacketsToEngine\n", kWebAudioIdent);
 
-        float* bufIn        = mBufInPtr;
-        float* bufOut       = mBufOutPtr;
-        int bufSizeWA       = mBufSize;
-        int numFrames       = NumSamplesPerCallback();  // should be the same as bufSizeWA; redundant? assert?
-        int stepSize        = mWorld->mBufLength;
-        int numSteps        = numFrames / stepSize;
+        float* bufIn = mBufInPtr;
+        float* bufOut = mBufOutPtr;
+        int bufSizeWA = mBufSize;
+        int numFrames = NumSamplesPerCallback(); // should be the same as bufSizeWA; redundant? assert?
+        int stepSize = mWorld->mBufLength;
+        int numSteps = numFrames / stepSize;
 
-        float* inBuses      = mWorld->mAudioBus + mWorld->mNumOutputs * stepSize;
-        float* outBuses     = mWorld->mAudioBus;
-        int32* inTouched    = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
-        int32* outTouched   = mWorld->mAudioBusTouched;
+        float* inBuses = mWorld->mAudioBus + mWorld->mNumOutputs * stepSize;
+        float* outBuses = mWorld->mAudioBus;
+        int32* inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
+        int32* outTouched = mWorld->mAudioBusTouched;
 
-        int minInputs       = sc_min(mNumInChannels , (int) mWorld->mNumInputs  );
-        int minOutputs      = sc_min(mNumOutChannels, (int) mWorld->mNumOutputs );
+        int minInputs = sc_min(mNumInChannels, (int)mWorld->mNumInputs);
+        int minOutputs = sc_min(mNumOutChannels, (int)mWorld->mNumOutputs);
 
-        int offStep         = 0;
+        int offStep = 0;
 
         // main loop
-        int64 oscTime       = mOSCbuftime   = (mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + 0.5;
-        int64 oscInc        = mOSCincrement = (mDLL.Period() / numSteps)              * kSecondsToOSCunits + 0.5;
-        mSmoothSampleRate   = mDLL.SampleRate();
+        int64 oscTime = mOSCbuftime = (mDLL.PeriodTime() + mMaxOutputLatency) * kSecondsToOSCunits + 0.5;
+        int64 oscInc = mOSCincrement = (mDLL.Period() / numSteps) * kSecondsToOSCunits + 0.5;
+        mSmoothSampleRate = mDLL.SampleRate();
         double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs;
 
         // we step through `numFrames` aka `bufSizeWA` in SC's internal
@@ -218,10 +211,8 @@ void SC_WebAudioDriver::WaRun() {
 
             // copy and touch inputs
             tch = inTouched;
-            for (int k = 0, bOffWA = offStep, bOffSC = 0; k < minInputs;
-                k++, bOffWA += bufSizeWA, bOffSC += stepSize) {
-
-                float* src = bufIn   + bOffWA;
+            for (int k = 0, bOffWA = offStep, bOffSC = 0; k < minInputs; k++, bOffWA += bufSizeWA, bOffSC += stepSize) {
+                float* src = bufIn + bOffWA;
                 float* dst = inBuses + bOffSC;
                 for (int n = 0; n < stepSize; n++) {
                     *dst++ = *src++;
@@ -234,9 +225,9 @@ void SC_WebAudioDriver::WaRun() {
             int64 nextTime = oscTime + oscInc;
 
             while ((schedTime = mScheduler.NextTime()) <= nextTime) {
-                float diffTime          = (float) (schedTime - oscTime) * oscToSamples + 0.5;
-                float diffTimeFloor     = floor(diffTime);
-                world->mSampleOffset    = (int) diffTimeFloor;
+                float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
+                float diffTimeFloor = floor(diffTime);
+                world->mSampleOffset = (int)diffTimeFloor;
                 world->mSubsampleOffset = diffTime - diffTimeFloor;
 
                 if (world->mSampleOffset < 0) {
@@ -249,15 +240,14 @@ void SC_WebAudioDriver::WaRun() {
                 event.Perform();
             }
 
-            world->mSampleOffset    = 0;
+            world->mSampleOffset = 0;
             world->mSubsampleOffset = 0.0f;
             World_Run(world);
 
             // copy touched outputs
             tch = outTouched;
             for (int k = 0, bOffWA = offStep, bOffSC = 0; k < minOutputs;
-                k++, bOffWA += bufSizeWA, bOffSC += stepSize) {
-
+                 k++, bOffWA += bufSizeWA, bOffSC += stepSize) {
                 float* dst = bufOut + bOffWA;
                 if (*tch++ == bufCounter) {
                     float* src = outBuses + bOffSC;
@@ -294,7 +284,6 @@ void SC_WebAudioDriver::WaRun() {
 }
 
 bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
-
 #ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: DriverSetup.\n", kWebAudioIdent);
 #endif
@@ -384,7 +373,8 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     }, mPreferredHardwareBufferFrameSize, mPreferredSampleRate, mWorld->mNumInputs, mWorld->mNumOutputs);
     // clang-format on
 
-    if (res != 0) return false;
+    if (res != 0)
+        return false;
 
     *outNumSamples = mBufSize;
     *outSampleRate = mSampleRate;
@@ -392,7 +382,6 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
 }
 
 bool SC_WebAudioDriver::DriverStart() {
-
 #ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: DriverStart.\n", kWebAudioIdent);
 #endif
@@ -417,7 +406,6 @@ bool SC_WebAudioDriver::DriverStart() {
 }
 
 bool SC_WebAudioDriver::DriverStop() {
-
 #ifdef SC_WEB_AUDIO_DRIVER_DEBUG
     scprintf("%s: DriverStop.\n", kWebAudioIdent);
 #endif
