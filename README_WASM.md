@@ -50,9 +50,23 @@ The following limitations are currently in place:
   has been _user interaction_, in order to avoid that malicious websites bombard the user with sound without prior
   permission. This is solved by requiring the user to press a 'boot' button first, for example.
 
-## TODO
+## Known Issues
 
-- [ ] I/O is currently hard-coded for 0 input channels and 2 output channels. This is easy to fix.
+Some UGens seem broken, for example `NumOutputBuses` (and consequently the `SoundIn` pseudo-UGen). Using it causes a
+runtime error:
+
+```
+Uncaught RuntimeError: function signature mismatch
+    at Graph_FirstCalc(Graph*) (http://127.0.0.1:8000/scsynth.wasm:wasm-function[2686]:0x70b98)
+    at Group_Calc (http://127.0.0.1:8000/scsynth.wasm:wasm-function[2367]:0x59ef2)
+    at World_Run(World*) (http://127.0.0.1:8000/scsynth.wasm:wasm-function[3855]:0xb821f)
+    at SC_WebAudioDriver::WaRun() (http://127.0.0.1:8000/scsynth.wasm:wasm-function[11158]:0x43f0df)
+    at emscripten::internal::MethodInvoker<void (SC_WebAudioDriver::*)(), void, SC_WebAudioDriver*>::invoke(void (SC_WebAudioDriver::* const&)(), SC_WebAudioDriver*) (http://127.0.0.1:8000/scsynth.wasm:wasm-function[11185]:0x440979)
+    at SC_WebAudioDriver$WaRun [as WaRun] (eval at new_ (http://127.0.0.1:8000/scsynth.js:7673:27), <anonymous>:8:1)
+    at ScriptProcessorNode.ad.proc.onaudioprocess (http://127.0.0.1:8000/scsynth.js:1699:1707)
+```
+
+which corresponds to a segfault on the desktop. The reason might be a 32-bit incompatibility.
 
 ## Building
 
@@ -101,7 +115,8 @@ To use this index, start a local webserver inside the `wasm` directory, for exam
     $ cd ../wasm/
     $ python -m SimpleHTTPServer
 
-Then open the server's address, e.g. `0.0.0.0:8000`. in the browser.
+Then open the server's address, e.g. `127.0.0.1:8000`. in the browser (note: if you use `0.0.0.0`, Chromium will
+not allow microphone access).
 
 Emscripten uses a JavaScript object named `Module` to contain all information on the wasm binary. For example,
 `Module.arguments` can be used to specify the command line arguments for scsynth. By default, we set

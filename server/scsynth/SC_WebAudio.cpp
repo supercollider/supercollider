@@ -298,17 +298,25 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     int res = EM_ASM_INT({
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return -1;
+        var bufSizePref     = $0;   // mPreferredHardwareBufferFrameSize
+        var sr              = $1;   // mPreferredSampleRate
+        var numInSC         = $2;   // mWorld->mNumInputs
+        var numOutSC        = $3;   // mWorld->mNumOutputs
         if (!Module.audioDriver) Module.audioDriver = {};
         var ad              = Module.audioDriver;
         var opt             = {};
-        // $1 is mPreferredSampleRate;
-        if ($1) opt.sampleRate = $1;
+        if (sr) opt.sampleRate = sr;
         ad.context          = new AudioContext(opt);
-        ad.inChanCount      = 0;
-        ad.outChanCount     = 2;
-        // $0 is mPreferredHardwareBufferFrameSize;
+        ad.inChanCount      = numInSC;
+        // note: Firefox and Chrome behave differently. In Firefox,
+        // input can be captured without requiring a connection
+        // to AudioContext; but in Chrome, a connection
+        // to audioContext.destination must always be made.
+        // Therefore, ensure there is at least one output channel
+        // on the script processor, even if it stays silent.
+        ad.outChanCount     = Math.max(1, numOutSC);
         // note: using zero buffer size gives us default buffer size;
-        ad.proc             = ad.context.createScriptProcessor($0, ad.inChanCount, ad.outChanCount);
+        ad.proc             = ad.context.createScriptProcessor(bufSizePref, ad.inChanCount, ad.outChanCount);
         ad.bufSize          = ad.proc.bufferSize;
         ad.sampleRate       = ad.context.sampleRate;
         var bytesPerChan    = ad.bufSize * Float32Array.BYTES_PER_ELEMENT;
@@ -318,6 +326,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
         ad.bufOutPtr        = Module._malloc(numOutBytes);
         ad.floatBufIn       = [];
         ad.floatBufOut      = [];
+        ad.connected        = false;
         for (var ch = 0; ch < ad.inChanCount; ch++) {
             ad.floatBufIn [ch] = new Float32Array(Module.HEAPU8.buffer, ad.bufInPtr  + (ch * bytesPerChan), ad.bufSize);
         }
@@ -328,20 +337,46 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
         var latency         = ad.context.baseLatency || 0.0;
         self.WaInitBuffers(ad.bufInPtr, ad.inChanCount, ad.bufOutPtr, ad.outChanCount, 
             ad.bufSize, ad.sampleRate, latency);
-        ad.proc.onaudioprocess = function(e) {
-            self.WaRun();
-            var bOut    = e.outputBuffer;
-            var bProc   = ad.floatBufOut;
-            var numCh   = Math.min(bOut.numberOfChannels, ad.outChanCount);
+        ad.proc.onaudioprocess = function(ev) {
             var bufSize = ad.bufSize;
-            for (var ch = 0; ch < numCh; ch++) {
-                // bOut.copyToChannel(bProc[ch], ch, 0);
+            var bIn     = ev.inputBuffer;
+            if (bIn) { // inputBuffer is null when inChanCount is zero!
+                var bInSC   = ad.floatBufIn;
+                var numIn   = Math.min(bIn.numberOfChannels, ad.inChanCount);
+                for (var ch = 0; ch < numIn; ch++) {
+                    // note: cannot use `copyFromChannel` because running under `SharedArrayBuffer` 
+                    // bIn.copyFromChannel(bInSC[ch], ch, 0);
+                    var aBuf = bIn.getChannelData(ch);
+                    bInSC[ch].set(aBuf);
+                }
+            }
+            self.WaRun();
+            var bOut    = ev.outputBuffer;
+            var bOutSC  = ad.floatBufOut;
+            var numOut  = Math.min(bOut.numberOfChannels, ad.outChanCount);
+            for (var ch = 0; ch < numOut; ch++) {
+                // note: cannot use `copyToChannel` because running under `SharedArrayBuffer` 
+                // bOut.copyToChannel(bOutSC[ch], ch, 0);
                 var aBuf = bOut.getChannelData(ch);
-                aBuf.set(bProc[ch]);
+                aBuf.set(bOutSC[ch]);
             }
         };
+        // connect input (asynchronous)
+        if (ad.inChanCount > 0) {
+            var md      = window.navigator.mediaDevices;
+            var req     = md.getUserMedia({ audio: true });
+            req.then(function(ms) {
+                ad.input = ad.context.createMediaStreamSource(ms);
+                if (ad.connected) { // if already running, connect immediately
+                    ad.input.connect(ad.proc);
+                }
+            }).catch(function(err) {
+                console.log("Error: could not obtain audio input device - " + err.name + "; " + err.message);
+            });
+        }
+
         return 0;
-    }, mPreferredHardwareBufferFrameSize, mPreferredSampleRate);
+    }, mPreferredHardwareBufferFrameSize, mPreferredSampleRate, mWorld->mNumInputs, mWorld->mNumOutputs);
 
     if (res != 0) return false;
 
@@ -360,6 +395,10 @@ bool SC_WebAudioDriver::DriverStart() {
         var ad = Module.audioDriver;
         if (!ad) return -1;
       
+        ad.connected = true;
+        if (ad.input) {
+            ad.input.connect(ad.proc);
+        }
         ad.proc.connect(ad.context.destination);
 
         return 0;
@@ -379,7 +418,11 @@ bool SC_WebAudioDriver::DriverStop() {
         var ad = Module.audioDriver;
         if (!ad) return -1;
 
+        ad.connected = false;
         ad.proc.disconnect(ad.context.destination);
+        if (ad.input) {
+            ad.input.disconnect(ad.proc);
+        }
 
         return 0;
      });
