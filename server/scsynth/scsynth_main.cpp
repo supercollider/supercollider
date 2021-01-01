@@ -157,9 +157,9 @@ void Usage() {
     i += n;
 
 #ifdef __EMSCRIPTEN__
-    void em_loop() {
-        // scprintf("<loop>\n");
-    }
+void em_loop() {
+    // scprintf("<loop>\n");
+}
 #endif
 
 int scsynth_main(int argc, char** argv) {

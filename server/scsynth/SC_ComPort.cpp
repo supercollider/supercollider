@@ -48,8 +48,8 @@
 #endif
 
 #ifdef __EMSCRIPTEN__
-#   include <emscripten.h>
-#   include <emscripten/bind.h>
+#    include <emscripten.h>
+#    include <emscripten/bind.h>
 #endif
 
 
@@ -487,17 +487,14 @@ class SC_WebInPort {
     struct World* mWorld;
     int mPortNum;
     std::string mBindTo;
-    char *mBufPtr;
+    char* mBufPtr;
 
 public:
     SC_WebInPort(struct World* world, std::string bindTo, int inPortNum):
-        mWorld(world),
-        mPortNum(inPortNum),
-        mBindTo(bindTo) {
-
-#ifdef SC_WEB_IN_PORT_DEBUG
+        mWorld(world), mPortNum(inPortNum), mBindTo(bindTo) {
+#    ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: new ip %s port %d.\n", kWebInPortIdent, bindTo.c_str(), inPortNum);
-#endif
+#    endif
 
         if (SC_WebInPort::current != NULL) {
             throw std::runtime_error("SC_WebInPort: concurrent modification\n");
@@ -561,39 +558,40 @@ public:
     }
 
     void InitBuffer(uintptr_t bufPtr) {
-#ifdef SC_WEB_IN_PORT_DEBUG
+#    ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: InitBuffer.\n", kWebInPortIdent);
-#endif
+#    endif
         // cf. https://stackoverflow.com/questions/20355880/#27364643
         this->mBufPtr = reinterpret_cast<char*>(bufPtr);
     }
 
     void Receive(int remotePort, int bytes_transferred) {
-#ifdef SC_WEB_IN_PORT_DEBUG
+#    ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: Receive(%d, %d).\n", kWebInPortIdent, remotePort, bytes_transferred);
-#endif
+#    endif
 
         if (mWorld->mDumpOSC)
             dumpOSC(mWorld->mDumpOSC, bytes_transferred, mBufPtr);
 
-        OSC_Packet* packet = (OSC_Packet*) malloc(sizeof(OSC_Packet));
+        OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 
-        packet->mReplyAddr.mProtocol    = kWeb;
-        packet->mReplyAddr.mAddress     = boost::asio::ip::make_address("127.0.0.1");   // TODO
-        packet->mReplyAddr.mPort        = remotePort;   // remoteEndpoint.port();
-        packet->mReplyAddr.mSocket      = mPortNum;     // native_handle();
-        packet->mReplyAddr.mReplyFunc   = web_reply_func;
-        packet->mReplyAddr.mReplyData   = NULL;
+        packet->mReplyAddr.mProtocol = kWeb;
+        packet->mReplyAddr.mAddress = boost::asio::ip::make_address("127.0.0.1"); // TODO
+        packet->mReplyAddr.mPort = remotePort; // remoteEndpoint.port();
+        packet->mReplyAddr.mSocket = mPortNum; // native_handle();
+        packet->mReplyAddr.mReplyFunc = web_reply_func;
+        packet->mReplyAddr.mReplyData = NULL;
 
         packet->mSize = bytes_transferred;
 
         bool ok = UnrollOSCPacket(mWorld, bytes_transferred, mBufPtr, packet);
 
-#ifdef SC_WEB_IN_PORT_DEBUG
+#    ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: Receive result %d.\n", kWebInPortIdent, ok);
-#endif
+#    endif
 
-        if (!ok) free(packet);
+        if (!ok)
+            free(packet);
     }
 
     // access to instances via temporary singleton which is needed from JS.
@@ -612,9 +610,8 @@ extern "C" SC_WebInPort* web_in_port() {
 
 EMSCRIPTEN_BINDINGS(Web_Audio) {
     emscripten::class_<SC_WebInPort>("SC_WebInPort")
-        .function("Receive"     , &SC_WebInPort::Receive    , emscripten::allow_raw_pointers())
-        .function("InitBuffer"  , &SC_WebInPort::InitBuffer , emscripten::allow_raw_pointers())
-        ;
+        .function("Receive", &SC_WebInPort::Receive, emscripten::allow_raw_pointers())
+        .function("InitBuffer", &SC_WebInPort::InitBuffer, emscripten::allow_raw_pointers());
     emscripten::function("web_in_port", &web_in_port, emscripten::allow_raw_pointers());
 }
 

@@ -25,8 +25,9 @@
 
 #include <boost/asio.hpp>
 
-enum Protocol { 
-    kUDP, kTCP
+enum Protocol {
+    kUDP,
+    kTCP
 #ifdef __EMSCRIPTEN__
     ,
     kWeb
