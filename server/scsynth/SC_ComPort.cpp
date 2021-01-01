@@ -491,7 +491,9 @@ class SC_WebInPort {
 
 public:
     SC_WebInPort(struct World* world, std::string bindTo, int inPortNum):
-        mWorld(world), mPortNum(inPortNum), mBindTo(bindTo) {
+        mWorld(world),
+        mPortNum(inPortNum),
+        mBindTo(bindTo) {
 #    ifdef SC_WEB_IN_PORT_DEBUG
         scprintf("%s: new ip %s port %d.\n", kWebInPortIdent, bindTo.c_str(), inPortNum);
 #    endif
