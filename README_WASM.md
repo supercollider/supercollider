@@ -207,21 +207,6 @@ and `SC_WebInPort` (in file `server/scsynth/SC_ComPort.cpp`), implementing the W
 respectively. Throughout, conditional compilation is done by preprocessor `#ifdef` and `#ifndef` statements using the symbol
 `__EMSCRIPTEN__`. In the file `server/scsynth/CMakeList.txt`, the symbol to look out for is `EMSCRIPTEN`.
 
-### Modifications to Libraries
-
-__boost__: An assertion error was found in boost:
-
-```
-scsynth.html:1246 Assertion failed: priv_end_block() == end_block, at: /home/hhrutz/Documents/devel/supercollider/external_libraries/boost/boost/interprocess/mem_algo/rbtree_best_fit.hpp,410,priv_add_segment
-printErr	@	scsynth.html:1246
-abort	@	scsynth.js:1475
-___assert_fail	@	scsynth.js:2082
-boost::interprocess::rbtree_best_fit<boost::interprocess::mutex_family, boost::interprocess::offset_ptr<void, long, unsigned long, 0ul>, 0ul>::priv_add_segment(void*, unsigned long)	@	scsynth.wasm:1
-...
-```
-
-Without further investigation, the assertion is now disabled in `rbtree_best_fit.hpp`, line 410.
-
 ## Performance Considerations
 
 The current build is not optimised for speed or code size. This is a task for the future.

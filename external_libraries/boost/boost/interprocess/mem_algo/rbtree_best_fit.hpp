@@ -407,10 +407,7 @@ void rbtree_best_fit<MutexFamily, VoidPointer, MemAlignment>::
    BOOST_ASSERT(priv_next_block(first_big_block) == end_block);
    BOOST_ASSERT(priv_prev_block(end_block) == first_big_block);
    BOOST_ASSERT(priv_first_block() == first_big_block);
-   #ifndef __EMSCRIPTEN__
-      // TODO: fails in emscripten
-      BOOST_ASSERT(priv_end_block() == end_block);
-   #endif
+   BOOST_ASSERT(priv_end_block() == end_block);
 
    //Some check to validate the algorithm, since it makes some assumptions
    //to optimize the space wasted in bookkeeping:
