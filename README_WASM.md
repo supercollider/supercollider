@@ -209,9 +209,6 @@ respectively. Throughout, conditional compilation is done by preprocessor `#ifde
 
 ### Modifications to Libraries
 
-__nova-tt__: There are `ifdef`s in nova-tt `thread_priority_mach.hpp` and `thread_priority_pthread.hpp` to bypass unsupported API.
-For this reason, a fork of nova-tt is used in git-modules. It may be that these changes are no longer necessary (TODO: check).
-
 __boost__: An assertion error was found in boost:
 
 ```
