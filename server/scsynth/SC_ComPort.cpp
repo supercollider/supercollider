@@ -578,9 +578,9 @@ public:
         OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
 
         packet->mReplyAddr.mProtocol = kWeb;
-        packet->mReplyAddr.mAddress = boost::asio::ip::make_address("127.0.0.1"); // TODO
-        packet->mReplyAddr.mPort = remotePort; // remoteEndpoint.port();
-        packet->mReplyAddr.mSocket = mPortNum; // native_handle();
+        packet->mReplyAddr.mAddress = boost::asio::ip::make_address("127.0.0.1"); // not used
+        packet->mReplyAddr.mPort = remotePort;
+        packet->mReplyAddr.mSocket = mPortNum;
         packet->mReplyAddr.mReplyFunc = web_reply_func;
         packet->mReplyAddr.mReplyData = NULL;
 
