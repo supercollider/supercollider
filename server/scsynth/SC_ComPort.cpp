@@ -196,16 +196,13 @@ static void tcp_reply_func(struct ReplyAddress* addr, char* msg, int size) {
 
 #ifdef __EMSCRIPTEN__
 
-// std::thread::id main_thread_id = std::this_thread::get_id();
-
 // this is always called on the same thread, although different
 // from the main thread. In order to access `Module` and do
 // anything useful on the JS side, execution has to be deferred
 // to the main thread. The blocking function `MAIN_THREAD_EM_ASM`
 // is used so that the `msg` can be safely used without copying.
 static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
-    // auto thread_id = std::this_thread::get_id();
-    // scprintf("web_reply_func called from %d, main is %d\n", thread_id, main_thread_id);
+    // clang-format off
     MAIN_THREAD_EM_ASM({
         var clientPort  = $0;
         var od          = Module.oscDriver;
@@ -222,6 +219,7 @@ static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
             }
         }
     }, addr->mPort, addr->mSocket, msg, size);
+    // clang-format on
 }
 #endif
 
@@ -496,18 +494,19 @@ public:
         }
         SC_WebInPort::current = this;
 
+        // clang-format off
         EM_ASM({
             var serverPort      = $0;
             var maxNumBytes     = $1;
             if (!Module.oscDriver) Module.oscDriver = {};
             var self            = Module.web_in_port();
             var od              = Module.oscDriver;
-            var endPoint        = {};
-            od[serverPort]      = endPoint;
-            endPoint.instance   = self;
-            endPoint.bufPtr     = Module._malloc(maxNumBytes);
-            endPoint.byteBuf    = new Uint8Array(Module.HEAPU8.buffer, endPoint.bufPtr, maxNumBytes);
-            self.InitBuffer(endPoint.bufPtr);
+            var ep              = {};
+            od[serverPort]      = ep;
+            ep.instance         = self;
+            ep.bufPtr           = Module._malloc(maxNumBytes);
+            ep.byteBuf          = new Uint8Array(Module.HEAPU8.buffer, ep.bufPtr, maxNumBytes);
+            self.InitBuffer(ep.bufPtr);
 
             if (!od.send) {
                 od.send = function(client, server, data) {
@@ -529,13 +528,26 @@ public:
             }
 
         }, inPortNum, kTextBufSize);
+        // clang-format on
 
         SC_WebInPort::current = NULL;
     }
 
     ~SC_WebInPort() {
         mBufPtr = NULL;
-        // TODO: clean-up: EM_ASM to free buffer and remove end-point
+        // clang-format off
+        EM_ASM({
+            var serverPort  = $0;
+            var od          = Module.oscDriver;
+            var ep          = od ? od[server] : undefined;
+            if (ep) {
+                if (ep.bufPtr) {
+                    Module._free(ep.bufPtr);
+                }
+                od[serverPort] = undefined;
+            }
+        }, mPortNum);
+        // clang-format on
     }
 
     void InitBuffer(uintptr_t bufPtr) {
