@@ -111,6 +111,7 @@ EMSCRIPTEN_BINDINGS(Web_Audio) {
 
 SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { 
     // set up exception error printing function
+    // clang-format off
     EM_ASM({
         window.onerror = function(message, url, line, column, e) {
             if (typeof e == 'number') { // e is a pointer to std:runtime_error
@@ -118,6 +119,7 @@ SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) {
             }
         }
     });
+    // clang-format on
     return new SC_WebAudioDriver(inWorld); 
 }
 
@@ -135,6 +137,7 @@ SC_WebAudioDriver::~SC_WebAudioDriver() {
     mBufInPtr   = NULL;
     mBufOutPtr  = NULL;
     SC_WebAudioDriver::instance = NULL;
+    // clang-format off
     EM_ASM({
         var ad = Module.audioDriver; 
         if (ad) {
@@ -150,6 +153,7 @@ SC_WebAudioDriver::~SC_WebAudioDriver() {
             Module.audioDriver = undefined;
         }
     });
+    // clang-format on
 }
 
 void SC_WebAudioDriver::WaInitBuffers(
@@ -295,6 +299,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
     scprintf("%s: DriverSetup.\n", kWebAudioIdent);
 #endif
 
+    // clang-format off
     int res = EM_ASM_INT({
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return -1;
@@ -377,6 +382,7 @@ bool SC_WebAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) {
 
         return 0;
     }, mPreferredHardwareBufferFrameSize, mPreferredSampleRate, mWorld->mNumInputs, mWorld->mNumOutputs);
+    // clang-format on
 
     if (res != 0) return false;
 
@@ -391,6 +397,7 @@ bool SC_WebAudioDriver::DriverStart() {
     scprintf("%s: DriverStart.\n", kWebAudioIdent);
 #endif
 
+    // clang-format off
     int res = EM_ASM_INT({
         var ad = Module.audioDriver;
         if (!ad) return -1;
@@ -403,6 +410,7 @@ bool SC_WebAudioDriver::DriverStart() {
 
         return 0;
     });
+    // clang-format on
 
     mDLL.Reset(mSampleRate, mNumSamplesPerCallback, SC_TIME_DLL_BW, waOscTimeSeconds());
     return res == 0;
@@ -414,6 +422,7 @@ bool SC_WebAudioDriver::DriverStop() {
     scprintf("%s: DriverStop.\n", kWebAudioIdent);
 #endif
 
+    // clang-format off
     int res = EM_ASM_INT({
         var ad = Module.audioDriver;
         if (!ad) return -1;
@@ -425,7 +434,8 @@ bool SC_WebAudioDriver::DriverStop() {
         }
 
         return 0;
-     });
+    });
+    // clang-format on
 
     return res == 0;
 }
