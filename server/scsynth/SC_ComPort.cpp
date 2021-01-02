@@ -207,13 +207,14 @@ static void web_reply_func(struct ReplyAddress* addr, char* msg, int size) {
         var clientPort  = $0;
         var od          = Module.oscDriver;
         var ep          = od ? od[clientPort] : undefined;
-        if (typeof ep == 'function') {
+        var rcv         = ep ? ep['receive' ] : undefined;
+        if (typeof rcv == 'function') {
             var serverPort  = $1;
             var ptr         = $2;
             var dataSize    = $3;
             var data        = new Uint8Array(Module.HEAPU8.buffer, ptr, dataSize);
             try {
-                ep(serverPort, data);
+                rcv(serverPort, data);
             } catch (e) {
                 console.log("Error in OSC reply handler: ", e.message);
             }
@@ -511,30 +512,21 @@ public:
             var self            = Module.web_in_port();
             var od              = Module.oscDriver;
             var ep              = {};
-            od[serverPort]      = ep;
             ep.instance         = self;
             ep.bufPtr           = Module._malloc(maxNumBytes);
             ep.byteBuf          = new Uint8Array(Module.HEAPU8.buffer, ep.bufPtr, maxNumBytes);
+            ep.receive = function(addr, data) {
+                if (!addr) addr = 0;
+                var sz = data.byteLength;
+                if (sz < maxNumBytes) {
+                    ep.byteBuf.set(data);
+                    ep.instance.Receive(addr, sz);
+                } else {
+                    throw new Error('oscDriver.send: message size exceeded: ' + sz);
+                }
+            };
+            od[serverPort]      = ep;
             self.InitBuffer(ep.bufPtr);
-
-            if (!od.send) {
-                od.send = function(client, server, data) {
-                    if (!client) client = 0;
-                    var _od     = Module.oscDriver;
-                    var _ep     = _od ? _od[server] : undefined;
-                    if (_ep) {
-                        var sz = data.byteLength;
-                        if (sz < maxNumBytes) {
-                            _ep.byteBuf.set(data);
-                            _ep.instance.Receive(client, sz);
-                        } else {
-                            throw new Error('oscDriver.send: message size exceeded: ' + sz);
-                        }
-                    } else {
-                        throw new Error('oscDriver.send: unknown target ' + server);
-                    }
-                };
-            }
 
         }, inPortNum, kTextBufSize);
         // clang-format on

@@ -10,15 +10,18 @@
       // controls named "freq1" and "freq2").
       var sendOSC = function(name, ...args) {
         var data  = osc.writePacket({ address: name, args: args });
-        var tgt   = { ip: "127.0.01", port: 57110 };
-        Module.oscDriver.send(57120, 57110, data);
+        var ep    = Module.oscDriver[57110];
+        var rcv   = ep ? ep['receive'] : undefined;
+        if (typeof rcv == 'function') rcv(57120, data);
       };
       var sendOSC_t = function(name, tags, ...args) {
         for (i = 0; i < args.length; i++) {
           args[i] = { type: tags[i], value: args[i] };
         }
         var data  = osc.writePacket({ address: name, args: args }, { metadata: true });
-        Module.oscDriver.send(57120, 57110, data);
+        var ep    = Module.oscDriver[57110];
+        var rcv   = ep ? ep['receive'] : undefined;
+        if (typeof rcv == 'function') rcv(57120, data);
       };
       // the binary SynthDef blob
       var bubblesDef = Uint8Array.from(
