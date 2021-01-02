@@ -184,21 +184,21 @@ scsynth.wasm is started with a port number (defaults to 57110) for OSC communica
 The interface is available through `Module.oscDriver`:
 
     var od = Module.oscDriver;
-    od.send(client, server, data);
+    od[server].receive(client, data);
 
 Where `client` and `server` are virtual port numbers, for example `57120` and `57110` respectively. The client or source port number
 allows to receive OSC replies from the server. To do so, an OSC end-point function must be registered:
 
-    od[57120] = function(server, data) { console.log("Received data from " + server) };
+    od[57120] = { receive: function(server, data) { console.log("Received data from " + server) }};
 
 The OSC data is always a plain `Uint8Array` which must be properly encoded and decoded, for example in JavaScript using the
 [osc.js](https://github.com/colinbdclark/osc.js/) library mentioned above (`osc.writePacket()`, `osc.readPacket()`). You can
 look at the definition of `sendOSC_t` in `index.html` to see how package encoding works. For example:
 
-    od[57120] = function(addr, data) {
+    od[57120] = { receive: function(addr, data) {
       var msg = osc.readPacket(data, {});
       console.log("REPLY from " + addr + ": " + JSON.stringify(msg, null, 4));
-    };
+    }};
 
 ## Source Code
 
