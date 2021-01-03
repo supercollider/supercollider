@@ -92,7 +92,7 @@ ProxyMonitorGui(~test);
 	// switches the button next to it to show a different output shape:
 	// ("-<" is multiple outs, "-=" is directly adjacent outs.
 	// clicking on that button opens an editing dialog:
-~test.playNDialog;		// needs testing with SwingOSC.
+~test.playNDialog;
 
 ~test.out_(0);
 
@@ -112,15 +112,5 @@ ProxyMonitorGui(~test);
 
 ProxyMonitorGui(skin: <your look here>)
 
-
-// 	Quick SwingOsc tests.
-
-g = SwingOSC.default;
-g.boot;
-GUI.swing;
-
-y = ProxyMonitorGui(~test);
-
-GUI.cocoa;
 y = ProxyMonitorGui(~test);
 ::

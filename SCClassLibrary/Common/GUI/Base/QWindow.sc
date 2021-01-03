@@ -96,14 +96,12 @@ Window {
 	}
 
 	/* NOTE:
-	- 'server' is only for compatibility with SwingOSC
 	- all args have to be of correct type for Widget constructor to match!
 	*/
 	*new { arg name="",
 		bounds,
 		resizable = true,
 		border = true,
-		server,
 		scroll = false;
 
 		if( bounds.isNil ) {

@@ -22,7 +22,7 @@ s.boot; // this boots the default Server. Watch the post window and server windo
 
 In the help files all executable fragments are written in the Monaco font.
 
-If an expression has multiple lines you can select all of the lines before typing 'Enter'. Note that this example uses link::Classes/GUI:: objects that are standard in macOS. Windows and Linux platforms can run this using SwingOSC. SwingOSC is installed as part of the Windows package. Linux users might need to download SwingOSC for themselves. http://www.sciss.de/swingOSC/
+If an expression has multiple lines you can select all of the lines before typing 'Enter'.
 
 code::
 // Select all 9 of the following lines and press 'Enter':

@@ -138,7 +138,7 @@
 
 	playNDialog { | bounds, usePlayN |
 		var doc = this.playEditString(usePlayN).newTextWindow("edit outs:");
-		try { doc.bounds_(bounds) };	// swingosc safe
+		try { doc.bounds_(bounds) };
 	}
 
 	findInOpenDocuments { |index = 0|

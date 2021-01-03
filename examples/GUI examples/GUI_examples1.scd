@@ -162,14 +162,13 @@ w.refresh;
 )
 
 // properties you can set in the window above.
-w.view.background = Color.blue;	// fallback on SwingOSC
 w.view.background = HiliteGradient(Color.blue, Color.red, \v, 128, 0.2);
 r.background = Color.gray; r.hi = 0.2;
 
 z.visible = false;
 z.visible = true;
 
-z.enabled = false;	// NO EFFECT WITH SWINGOSC!
+z.enabled = false;
 z.enabled = true;
 
 b.visible = false;
