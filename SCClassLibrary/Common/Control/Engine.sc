@@ -358,21 +358,30 @@ ContiguousBlockAllocator {
 	// If `address` is within the last block, this will correctly be nil.
 	prFindNext { |address|
 		var temp = array[address - addrOffset];
-		// The next if() block is an optimization.
-		// If `address` corresponds to a block beginning, then
-		// (see comments at the top of the class)
-		// the next block is expected to be at temp.start + temp.size.
-		// temp.start + temp.size - addrOffset may be past the array's upper bound.
-		// THIS IS OK.
-		// If there is no next block, it is correct and expected to return nil!
+		var indexOfNextBlock;
+		// Is there already a block at 'address'?
 		if(temp.notNil) {
-			^array[temp.start + temp.size - addrOffset]
+			// Yes.
+			// In that case (see comments at the top of the class),
+			// the next block is expected to be at temp.start + temp.size.
+			// So the 'else' block's search is redundant.
+			indexOfNextBlock = temp.start + temp.size;
 		} {
-			for(address+1, top, { |i|
-				if(array[i - addrOffset].notNil) { ^array[i - addrOffset] };
-			});
+			// No.
+			// We know there is no block at 'address',
+			// so start searching in the next slot.
+			indexOfNextBlock = address + 1;
+			// 'top' points to the last ContiguousBlock.
+			// Indices > top must be nil. So, no need to search them.
+			while { indexOfNextBlock <= top and: { array[indexOfNextBlock - addrOffset].isNil } } {
+				indexOfNextBlock = indexOfNextBlock + 1;
+			};
 		};
-		^nil
+		// At this point, indexOfNextBlock points either to the next block, or to nil.
+		// It may be past the array's upper bound. THIS IS OK.
+		// SC returns nil for array indices out of bounds.
+		// If there is no next block, it is correct and expected to return nil!
+		^array[indexOfNextBlock - addrOffset]
 	}
 
 	prReserve { |address, size, availBlock, prevBlock|
