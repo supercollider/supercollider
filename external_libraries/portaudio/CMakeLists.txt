@@ -13,6 +13,10 @@ set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE
 # disable install target
 set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install" FORCE)
 
+if(MINGW)
+    remove_definitions(-DNOMINMAX)
+endif(MINGW)
+
 add_subdirectory(portaudio_submodule)
 
 if(WIN32 AND NOT PA_USE_ASIO)
