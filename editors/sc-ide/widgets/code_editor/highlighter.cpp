@@ -88,9 +88,9 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer& lexer) {
 
         case Token::Class: {
             auto className = QString(lexer.text().begin() + tokenPosition, tokenLength);
-            auto* classNameInst = Main::scProcess()->introspection().findClass(className, true);
+            auto* classInstance = Main::scProcess()->introspection().findClass(className);
 
-            if (classNameInst != nullptr)
+            if (classInstance != nullptr)
                 setFormat(tokenPosition, tokenLength, formats[ClassFormat]);
 
             break;
