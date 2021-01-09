@@ -249,23 +249,6 @@ std::vector<const Method*> Introspection::findMethodPartial(const QString& parti
     return matchingMethods;
 }
 
-Introspection::ClassMethodMap Introspection::constructMethodMap(const Class* klass) const {
-    ClassMethodMap methodMap;
-    if (!klass)
-        return methodMap;
-
-    foreach (Method* method, klass->metaClass->methods) {
-        QList<Method*>& list = methodMap[method->definition.path];
-        list.append(method);
-    }
-
-    foreach (Method* method, klass->methods) {
-        QList<Method*>& list = methodMap[method->definition.path];
-        list.append(method);
-    }
-    return methodMap;
-}
-
 bool Method::matches(const QString& toMatch) const {
     return toMatch.isEmpty() ? true : name.get().startsWith(toMatch, Qt::CaseInsensitive);
 }

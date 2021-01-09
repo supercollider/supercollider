@@ -115,11 +115,6 @@ public:
     std::vector<const Class*> findClassPartial(const QString& partialClassName) const;
     std::vector<const Method*> findMethodPartial(const QString& partialMethodName) const;
 
-    ClassMethodMap constructMethodMap(const Class* klass) const;
-    ClassMethodMap constructMethodMap(QString const& className) const {
-        return constructMethodMap(findClass(className));
-    }
-
     QString const& classLibraryPath() const { return mClassLibraryPath; }
 
     // remove class library path, userExtensionDir and systemExtensionDir
