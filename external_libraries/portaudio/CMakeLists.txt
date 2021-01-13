@@ -2,7 +2,7 @@
 unset(CMAKE_C_FLAGS)
 unset(CMAKE_CXX_FLAGS)
 if(WIN32)
-    remove_definitions(-DWIN32_LEAN_AND_MEAN)
+    remove_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
 endif()
 
 set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library" FORCE)
