@@ -2,7 +2,7 @@
 unset(CMAKE_C_FLAGS)
 unset(CMAKE_CXX_FLAGS)
 if(WIN32)
-    remove_definitions(-DWIN32_LEAN_AND_MEAN)
+    remove_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX)
 endif()
 
 set(PA_BUILD_STATIC ON CACHE BOOL "PortAudio static library" FORCE)
@@ -12,10 +12,6 @@ set(PA_BUILD_SHARED OFF CACHE BOOL "PortAudio shared library" FORCE)
 set(PA_LIBNAME_ADD_SUFFIX OFF CACHE BOOL "PortAudio static library suffix" FORCE)
 # disable install target
 set(PA_DISABLE_INSTALL ON CACHE BOOL "Disable PortAudio install" FORCE)
-
-if(MINGW)
-    remove_definitions(-DNOMINMAX)
-endif(MINGW)
 
 add_subdirectory(portaudio_submodule)
 
