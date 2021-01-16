@@ -277,7 +277,7 @@ HelpBrowser {
 		webView.enterInterpretsSelection = true;
 
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			var keyPlus, keyZero, keyMinus, keyEquals, keySlash, keyF, keyG, keyH, keyJ, keyK, keyL, keyLeftArrow, keyRightArrow;
+			var keyPlus, keyZero, keyMinus, keyEquals, keySlash, keyF, keyG, keyH, keyJ, keyK, keyL, keyF5, keyLeftArrow, keyRightArrow;
 			var modifier, zoomIn;
 
 			modifier = Platform.case(\osx, {
@@ -287,7 +287,7 @@ HelpBrowser {
 			});
 
 			#keyPlus, keyZero, keyMinus, keyEquals, keySlash = [43, 48, 45, 61, 47];
-			#keyF, keyG, keyH, keyJ, keyK, keyL = [ 70, 71, 72, 74, 75, 76];
+			#keyF, keyG, keyH, keyJ, keyK, keyL, keyF5 = [ 70, 71, 72, 74, 75, 76,  65474];
 			#keyLeftArrow, keyRightArrow = [65361, 65363];
 
 			// +/= has the same value on macOS when pressed with <Cmd>
@@ -335,6 +335,9 @@ HelpBrowser {
 					if (mods.asBoolean.not) {
 						this.goUp
 					};
+				},
+                { kcode == keyF5 }, {
+					this.goTo(webView.url)
 				},
 				{ (char.ascii == 27) && findView.visible }, {
 					toggleFind.value
