@@ -256,13 +256,7 @@ WebView : View {
 	scrollPosition_ { |point| ^this.setProperty('scrollPosition', (point / this.zoom)) }
 
 	scrollUp { |value|
-		var position = this.scrollPosition;
-		this.scrollPosition_(
-			Point(
-				position.x,
-				(position.y - value).max(0)
-			)
-		);
+		this.scrollDown(value.neg)
 	}
 
 	scrollDown { |value|
@@ -270,7 +264,7 @@ WebView : View {
 		this.scrollPosition_(
 			Point(
 				position.x,
-				(position.y + value).min(this.contentsSize.height - this.bounds.height)
+				(position.y + value).clip(0, this.contentsSize.height - this.bounds.height)
 			)
 		);
 	}
