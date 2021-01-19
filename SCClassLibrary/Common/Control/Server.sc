@@ -388,7 +388,11 @@ Server {
 	*remote { |name, addr, options, clientID|
 		var result;
 		result = this.new(name, addr, options, clientID);
-		result.startAliveThread;
+		if(options.protocol == \tcp) {
+			addr.tryConnectTCP({ result.startAliveThread }, nil, 20)
+		} {
+			result.startAliveThread;
+		};
 		^result;
 	}
 
