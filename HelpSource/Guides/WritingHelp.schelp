@@ -6,64 +6,9 @@ related:: Reference/SCDocSyntax, Classes/SCDoc
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
-note:: The help files should use UTF-8 encoding! ::
-
-subsection:: News in SC 3.5.2
-SCDoc has been rewritten and the parser is now implemented in C++ for speed and stability.
-The syntax has gotten stricter, and it will throw errors or warnings if there are faults in the documentation.
-
-Some important changes to keep in mind:
-list::
-## Linking to sections does no longer use lower_case_and_underscored anchors, but the exact section title as it is. Example: teletype::link\::#Language-side news\:::: renders: link::#Language-side news::
-## Run code::SCDoc.indexAllDocuments:: if you add a new document or other file and want to see the change reflected in the help. If you just changed a document and want to see the changes, just press Reload in the browser and SCDoc will detect and re-index automatically.
-## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
-## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
-::
-
-subsection:: Documenting new classes
-When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
-
-section:: Converting old helpfiles
-There is no automated process for this, but for most help files it's really simple to do it manually:
-
-numberedlist::
-## open the old helpfile in your web browser
-## copy the text and insert it in a new textfile: FileName.schelp
-## add the appropriate tags, like title, sections, etc.. (see below)
-## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#Directory layout:: below)
-## strong:: check that it rendered OK ::.
-You can run code::SCDoc.indexAllDocuments:: (link to method documentation: link::Classes/SCDoc#*indexAllDocuments::) to make SCDoc detect the new file and add it to the document index.
-
-If the file already existed and you want to see the changes, just press Reload in the help browser and SCDoc will re-render it.
-::
-
-A list of all undocumented classes can be seen here: link::Browse#Undocumented classes:: (auto-generated).
-
-section:: Directory layout
-The help system uses different folders under HelpSource depending on document kind:
-definitionlist::
-## HelpSource ||
-definitionlist::
-## Classes || class reference, file must be named as the class.
-## Reference || other reference documentation.
-## Tutorials || yes, tutorials.
-## Guides || guides that explain stuff but without being a real tutorial.
-## Overviews || overviews of other documents, these are mostly auto-generated.
-## Other || stuff that don't fit in any other directory.
-::
-::
-
-note:: It's important that the document is put in the right folder. For Classes, it's a must! ::
-
-All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files, like images or ready-made HTML files, will just be copied.
-
-section:: Document header
-
 All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. See link::Reference/SCDocSyntax#Header tags::
 
-note:: You should always specify title, summary and categories. ::
-
-section:: Normal documents
+In the header, you should must specify the title, summary and categories parts of the header.
 
 Example header:
 teletype::
@@ -85,6 +30,32 @@ subsection:: Details
 
 Some details..
 ::
+
+
+
+subsection:: Documenting new classes
+When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
+
+
+A list of all undocumented classes can be seen here: link::Browse#Undocumented classes:: (auto-generated).
+
+section:: Directory layout
+The help system uses different folders under HelpSource depending on document kind:
+definitionlist::
+## HelpSource ||
+definitionlist::
+## Classes || class reference, file must be named as the class.
+## Reference || other reference documentation.
+## Tutorials || yes, tutorials.
+## Guides || guides that explain stuff but without being a real tutorial.
+## Overviews || overviews of other documents, these are mostly auto-generated.
+## Other || stuff that don't fit in any other directory.
+::
+::
+
+note:: It's important that the document is put in the right folder. For Classes, it's a must! ::
+
+All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files, like images or ready-made HTML files, will just be copied.
 
 section:: Class reference
 Class reference has some special tags and a more strict structure. Normal text should be written inside the special top-level sections DESCRIPTION, CLASSMETHODS, INSTANCEMETHODS and EXAMPLES.
@@ -321,11 +292,12 @@ For more filters, see link::Browse#UGens>Filters::
 ::
 Renders as: For more filters, see link::Browse#UGens>Filters::
 
-section:: Contributing with the documentation
+section:: Contributing with documentation
 
 The easiest way to contribute to the documentation is:
 
     1. Fork the SuperCollider repository https://github.com/supercollider/supercollider
+
     2. Clone your repository
     code::
     git clone --recursive git://github.com/{your_username}/supercollider.git
@@ -338,4 +310,40 @@ The easiest way to contribute to the documentation is:
     code::
     git push origin -u doc_updates
     ::
+<<<<<<< HEAD
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
+=======
+    5. Submit your pull request through github, from your branch doc_updates to SuperCollider master
+
+section::Working with legacy documentation
+
+Here is some information for working with documentation that is written in legacy format or syntax.
+
+subsection:: News in SC 3.5.2
+SCDoc was rewritten and the parser implemented in C++ for speed and stability in 3.5.2.
+The syntax got more strict, and the parser now throws errors or warnings if there are faults in the documentation.
+
+Some important changes to keep in mind:
+
+list::
+## Linking to sections does no longer use lower_case_and_underscored anchors, but the exact section title as it is. Example: teletype::link\::#Language-side news\:::: renders: link::#Language-side news::
+## Run code::SCDoc.indexAllDocuments:: if you add a new document or other file and want to see the change reflected in the help. If you just changed a document and want to see the changes, just press Reload in the browser and SCDoc will detect and re-index automatically.
+## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
+## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
+::
+
+subsection:: Converting old helpfiles
+There is no automated process for this, but for most help files it's really simple to do it manually:
+
+numberedlist::
+## open the old helpfile in your web browser
+## copy the text and insert it in a new textfile: FileName.schelp
+## add the appropriate tags, like title, sections, etc.. (see below)
+## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#Directory layout:: below)
+## strong:: check that it rendered OK ::.
+You can run code::SCDoc.indexAllDocuments:: (link to method documentation: link::Classes/SCDoc#*indexAllDocuments::) to make SCDoc detect the new file and add it to the document index.
+
+If the file already existed and you want to see the changes, just press Reload in the help browser and SCDoc will re-render it.
+::
+
+>>>>>>> 3e9cac82c (Restructure Writing Help guide)
