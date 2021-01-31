@@ -138,7 +138,7 @@ TestAbstractFunction : UnitTest {
 
 		this.assertEquals((dur: Rest(1)).isRest, true, "event with dur = Rest(1) should return true for isRest");
 
-		this.assertEquals((type: \rest).isRest, true, "event with dur = \rest should return true for isRest");
+		this.assertEquals((type: \rest).isRest, true, "event with dur = \\rest should return true for isRest");
 
 		this.assertEquals((degree: \).isRest, true, "event with an empty symbol as dur should return true for isRest");
 
