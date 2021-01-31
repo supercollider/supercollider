@@ -1,9 +1,9 @@
 name: check, build, test
 on: [push, pull_request]
 jobs:
-  linter:
+  lint:
     runs-on: ubuntu-18.04
-    outputs: 
+    outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       - name: set version string for artifacts
         id: set-version
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             FULL_TAG=${GITHUB_REF#refs/tags/}
             SC_VERSION=${FULL_TAG##Version-}
           else
@@ -30,8 +30,8 @@ jobs:
           echo "::set-output name=version::$SC_VERSION"
 
   Linux:
-    needs: linter
-    runs-on: ubuntu-${{ matrix.os-version }} 
+    needs: lint
+    runs-on: ubuntu-${{ matrix.os-version }}
     strategy:
       fail-fast: false
       matrix:
@@ -117,14 +117,14 @@ jobs:
             shared-libscsynth: false
 
     name: Linux ${{ matrix.job-name }}
-    env: 
+    env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -165,7 +165,7 @@ jobs:
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
-          
+
           EXTRA_CMAKE_FLAGS=
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
@@ -189,8 +189,8 @@ jobs:
           retention-days: 7 # quickly remove test artifacts
 
   macOS:
-    needs: linter
-    runs-on: macos-${{ matrix.os-version }} 
+    needs: lint
+    runs-on: macos-${{ matrix.os-version }}
     strategy:
       fail-fast: false
       matrix:
@@ -224,7 +224,7 @@ jobs:
             shared-libscsynth: true
 
     name: macOS ${{ matrix.job-name }}
-    env: 
+    env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       HOMEBREW_NO_ANALYTICS: 1
@@ -232,17 +232,16 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: prepare daily timestamp for cache
+      - name: prepare timestamp for cache
         id: current-date
-        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
-      - name: prepare monthly timestamp for cache
-        id: current-month
-        run: echo "::set-output name=stamp::$(date '+%Y-%m')"
+        run: |
+          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+          echo "::set-output name=week::$(date '+%V')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
@@ -254,7 +253,7 @@ jobs:
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-date.outputs.week }}
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -283,19 +282,19 @@ jobs:
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
-  
+
       - name: configure
         env:
           DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
-          
+
           EXTRA_CMAKE_FLAGS=
-          
+
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
-          
+
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
-          
+
           if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
