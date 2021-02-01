@@ -338,4 +338,4 @@ The easiest way to contribute to the documentation is:
     code::
     git push origin -u doc_updates
     ::
-    5. Submit your pull request through github, from your branch doc_updates to SuperCollider master
+    5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
