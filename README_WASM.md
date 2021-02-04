@@ -207,6 +207,11 @@ and `SC_WebInPort` (in file `server/scsynth/SC_ComPort.cpp`), implementing the W
 respectively. Throughout, conditional compilation is done by preprocessor `#ifdef` and `#ifndef` statements using the symbol
 `__EMSCRIPTEN__`. In the file `server/scsynth/CMakeList.txt`, the symbol to look out for is `EMSCRIPTEN`.
 
+Currently, dynamic heap growth is disabled, as it implies a couple of problems with sharing memory between WASM and JavaScript
+(address pointers may change). That is, the total heap size is specified at build time. This is done in the `CMakeList.txt` with 
+flag `-s INITIAL_MEMORY=<size>`. With default settings, scsynth runs at 32 MB heap memory. Currently 64 MB are specified to allow 
+for non-trivial allocation of buffers. If scsynth runs out of heap memory at runtime, an `OOM` exception is thrown.
+
 ## Performance Considerations
 
 The current build is not optimised for speed or code size. This is a task for the future.
