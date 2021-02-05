@@ -328,6 +328,20 @@ names are separated by ':' as in the Unix PATH variable:
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
 
+The PulseAudio backend
+----------------------
+
+There are 2 audio backends that SuperCollider can use on Linux: jack and PulseAudio. **The recommended audio backend on Linux is jack, which is the one that will be built by default.**
+
+On systems where it is difficult to make jack work, then it is possible to use the PulseAudio backend. For this, set the `AUDIOAPI` variable to `pulseaudio` in cmake (see "Step 3: Set CMake flags" above). Then, make sure that the development libraries for PulseAudio and RtAudio are available before the build. On debian systems this might be done:
+
+    sudo apt-get install libpulse-dev librtaudio-dev
+
+Then build normally.
+
+The PulseAudio backend is implemented using [RtAudio](https://www.music.mcgill.ca/~gary/rtaudio/).
+
+The current PulseAudio backend implementation does not allow selection of the audio device from within SuperCollider (it can be selected using the audio configuration panel in the Linux distribution itself). It will present a default device using 2 channels of input and 2 channels of output.
 
 Contributors to this document
 -----------------------------
@@ -341,3 +355,4 @@ Contributors to this document
 - nescivi (marije baalman)
 - dan stowell
 - tim blechmann
+- luis lloret
