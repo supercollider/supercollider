@@ -493,12 +493,14 @@ void TRand_next_aa(TRand* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float outval = unit->m_value;
     float next;
-	float loval = ZXP(lo);
-	float range = ZXP(hi) - loval;
+	
 	
     LOOP1(
-        inNumSamples, next = ZXP(trig); if (next > 0.f && prev <= 0.f) {
-
+        inNumSamples, next = ZXP(trig);
+		  float loval = ZXP(lo);
+		  float range = ZXP(hi) - loval;
+		  
+		  if (next > 0.f && prev <= 0.f) {
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = rgen.frand() * range + loval;
         } else { ZXP(out) = outval; };
@@ -571,11 +573,14 @@ void TExpRand_next_aa(TExpRand* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float outval = unit->m_value;
     float next;
-	float loval = ZXP(lo);
-	float ratio = ZXP(hi) / loval;
+
 
     LOOP1(
-        inNumSamples, next = ZXP(trig); if (next > 0.f && prev <= 0.f) {
+        inNumSamples, next = ZXP(trig);
+		  float loval = ZXP(lo);
+		  float ratio = ZXP(hi) / loval;
+		  
+		  if (next > 0.f && prev <= 0.f) {
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = pow(ratio, rgen.frand()) * loval;
         } else { ZXP(out) = outval; })
