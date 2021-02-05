@@ -661,7 +661,8 @@ void TIRand_next_aa(TIRand* unit, int inNumSamples) {
     LOOP1(
         inNumSamples, next = ZXP(trig); if (next > 0.f && prev <= 0.f) {
             int loval = (int)ZXP(lo);
-            int range = (int)ZXP(hi) - loval + 1;
+			int hival = (int)ZXP(hi);
+            int range = hival - loval + 1;
 
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = (float)(rgen.irand(range) + loval);
