@@ -207,7 +207,7 @@ inline float RGen::fbilinrand() {
  * result of summing three uniform random generators to yield a
  * bell-like distribution.
  *
- * Also known as Larry Polansky's poor man's gaussian generator.
+ * Larry Polansky's loose approximation of a gaussian generator.
  */
 inline float RGen::fsum3rand() { return (float)((frand() + frand() + frand() - 1.5) * 0.666666667); }
 
@@ -272,7 +272,7 @@ inline double RGen::biexprand(double scale) {
  * result of summing three uniform random generators to yield a
  * bell-like distribution.
  *
- * Also known as Larry Polansky's poor man's gaussian generator.
+ * Larry Polansky's loose approximation of a gaussian generator.
  */
 inline double RGen::sum3rand(double scale) { return (drand() + drand() + drand() - 1.5) * 0.666666667 * scale; }
 

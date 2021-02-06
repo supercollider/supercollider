@@ -11,7 +11,7 @@ The server application represented by a Server object might be running on the sa
 
 Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
-A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
+A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (main output level).
 
 note::
 By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::

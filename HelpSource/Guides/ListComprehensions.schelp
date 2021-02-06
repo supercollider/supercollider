@@ -224,7 +224,7 @@ z.next; // nil.  only one solution
 
 combinatorial problems can take a lot of time to run.
 you can reorder the above tests to make it run faster. generally you want to search the most constrained variables first.
-the most constrained person above is fletcher, so he should be searched first, then cooper, etc.
+the most constrained person above is fletcher, so they should be searched first, then cooper, etc.
 
 
 section:: Grammar

@@ -947,7 +947,7 @@ method:: bilinrand
 returns:: Bilateral linearly distributed random number from -this to +this.
 
 method:: sum3rand
-This was suggested by Larry Polansky as a poor man's gaussian.
+This was suggested by Larry Polansky as a loose approximation of gaussian.
 returns:: A random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
 
 method:: exprand
