@@ -474,8 +474,7 @@ void TRand_next_a(TRand* unit, int inNumSamples) {
     float next;
 
     LOOP1(
-        inNumSamples, next = ZXP(trig);
-        if (next > 0.f && prev <= 0.f) {
+        inNumSamples, next = ZXP(trig); if (next > 0.f && prev <= 0.f) {
             float range = hi - lo;
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = rgen.frand() * range + lo;
@@ -494,12 +493,9 @@ void TRand_next_aa(TRand* unit, int inNumSamples) {
     float prev = unit->m_trig;
     float outval = unit->m_value;
     float next;
-    
+
     LOOP1(
-        inNumSamples, next = ZXP(trig);
-          float loval = ZXP(lo);
-          float hival = ZXP(hi);
-          if (next > 0.f && prev <= 0.f) {
+        inNumSamples, next = ZXP(trig); float loval = ZXP(lo); float hival = ZXP(hi); if (next > 0.f && prev <= 0.f) {
             RGen& rgen = *unit->mParent->mRGen;
             float range = hival - loval;
             ZXP(out) = outval = rgen.frand() * range + loval;
@@ -555,8 +551,7 @@ void TExpRand_next_a(TExpRand* unit, int inNumSamples) {
     float next;
 
     LOOP1(
-        inNumSamples, next = ZXP(trig);
-        if (next > 0.f && prev <= 0.f) {
+        inNumSamples, next = ZXP(trig); if (next > 0.f && prev <= 0.f) {
             float ratio = hi / lo;
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = pow(ratio, rgen.frand()) * lo;
@@ -576,10 +571,7 @@ void TExpRand_next_aa(TExpRand* unit, int inNumSamples) {
     float next;
 
     LOOP1(
-        inNumSamples, next = ZXP(trig);
-          float loval = ZXP(lo);
-          float hival = ZXP(hi);
-          if (next > 0.f && prev <= 0.f) {
+        inNumSamples, next = ZXP(trig); float loval = ZXP(lo); float hival = ZXP(hi); if (next > 0.f && prev <= 0.f) {
             float ratio = hival / loval;
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = pow(ratio, rgen.frand()) * loval;
@@ -665,10 +657,8 @@ void TIRand_next_aa(TIRand* unit, int inNumSamples) {
     float next;
 
     LOOP1(
-          inNumSamples, next = ZXP(trig);
-          int loval = (int)ZXP(lo);
-          int hival = (int)ZXP(hi);
-            if (next > 0.f && prev <= 0.f) {
+        inNumSamples, next = ZXP(trig); int loval = (int)ZXP(lo); int hival = (int)ZXP(hi);
+        if (next > 0.f && prev <= 0.f) {
             int range = hival - loval + 1;
             RGen& rgen = *unit->mParent->mRGen;
             ZXP(out) = outval = (float)(rgen.irand(range) + loval);
@@ -731,8 +721,7 @@ void CoinGate_next(CoinGate* unit, int inNumSamples) {
     float probability = ZIN0(0);
     RGen& rgen = *unit->mParent->mRGen;
     LOOP1(
-        inNumSamples, float curtrig = ZXP(trig); float level = 0.f;
-        if (prevtrig <= 0.f && curtrig > 0.f) {
+        inNumSamples, float curtrig = ZXP(trig); float level = 0.f; if (prevtrig <= 0.f && curtrig > 0.f) {
             if (rgen.frand() < probability) {
                 level = curtrig;
             } else {
