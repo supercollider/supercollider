@@ -612,6 +612,29 @@ code::
 Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
+subsection:: Bela
+
+method:: belaScope
+Like link::Classes/Function#-scope::, plays and scopes this Function, but using Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+This Function's output bus is monitored right after the generated Synth.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: target
+A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+note:: this Function's play target needs to be on a Server that supports BelaScope::
+
+argument:: numChannels
+Number of channels to scope, from this Function's output channels. Defaults to this Function's output channels.
+
+argument:: outbus
+argument:: fadeTime
+argument:: addAction
+argument:: args
+See link::Classes/Function#-scope::
+
+returns:: Like link::Classes/Function#-play::, a Synth playing this function. When that synth is freed, so will be its monitor.
 
 examples::
 

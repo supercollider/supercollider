@@ -137,6 +137,8 @@ if(AUDIOAPI STREQUAL "default")
     else()
         set(AUDIOAPI jack)
     endif(APPLE)
+elseif(AUDIOAPI STREQUAL bela)
+    message(FATAL_ERROR "supernova is not supported on Bela")
 endif()
 
 if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")

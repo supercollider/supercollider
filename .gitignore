@@ -33,3 +33,5 @@ __pycache__
 
 *~
 *.orig
+#vim swap files
+.*.sw?

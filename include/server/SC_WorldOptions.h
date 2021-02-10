@@ -84,6 +84,21 @@ struct WorldOptions {
     const char* mRestrictedPath = nullptr;
 
     int mSharedMemoryID = 0;
+
+#ifdef SC_BELA
+    uint32 mBelaAnalogInputChannels;
+    uint32 mBelaAnalogOutputChannels;
+    uint32 mBelaDigitalChannels;
+    float mBelaHeadphoneLevel;
+    float mBelaPgaGainLeft;
+    float mBelaPgaGainRight;
+    bool mBelaSpeakerMuted;
+    float mBelaDacLevel;
+    float mBelaAdcLevel;
+    uint32 mBelaNumMuxChannels;
+    uint32 mBelaPru;
+    uint32 mBelaMaxScopeChannels;
+#endif // SC_BELA
 };
 
 struct SndBuf;

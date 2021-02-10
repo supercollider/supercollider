@@ -21,6 +21,11 @@
 
 #pragma once
 
+#ifdef SC_BELA
+#    include "Bela.h"
+#    include "SC_BelaScope.h"
+#endif // SC_BELA
+
 #include "SC_Types.h"
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
@@ -103,6 +108,12 @@ struct World {
     nova::padded_rw_spinlock* mAudioBusLocks;
     nova::spin_lock* mControlBusLock;
 #endif
+
+#ifdef SC_BELA
+    BelaContext* mBelaContext;
+    BelaScope* mBelaScope;
+    uint32 mBelaMaxScopeChannels;
+#endif // SC_BELA
 };
 
 inline SndBuf* World_GetBuf(struct World* inWorld, uint32 index) {
