@@ -311,9 +311,13 @@ The easiest way to contribute to the documentation is:
     git push origin -u doc_updates
     ::
 <<<<<<< HEAD
+<<<<<<< HEAD
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
 =======
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider master
+=======
+    5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
+>>>>>>> a1efea155 (mege conflict)
 
 section::Working with legacy documentation
 
