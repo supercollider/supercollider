@@ -441,6 +441,10 @@ String[char] : RawArray {
 		^[this, nil]
 	}
 
+	prFlat { | list | // avoid breaking string up into characters
+		^list add: this
+	}
+
 	// path concatenate
 	+/+ { arg path;
 		var sep = thisProcess.platform.pathSeparator;
