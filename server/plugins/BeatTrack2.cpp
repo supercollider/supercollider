@@ -465,7 +465,7 @@ void finaldecision(BeatTrack2* unit) {
     int bestpreviousmatchsum = 0; //(-1);  //should be 0, but allowing different for now
     float excess; //, consistency;
                   // int exactmatches, closematches;  //can be out by a few indices on period; could match on tempo but
-                  // not phase etc combine these four factors in one master score?
+                  // not phase etc combine these four factors in one overall score?
 
     for (int i = 0; i < unit->m_numfeatures; ++i) {
         int matchsum = 0;

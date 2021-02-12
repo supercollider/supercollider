@@ -39,7 +39,7 @@ p.stop;
 
 subsection::A related approach
 
-A related approach is to instantiate a Synth yourself and then set its values by using an link::Classes/Event:: whose "type" is code::\set::, as illustrated here. The user is responsible for ensuring proper synchronization between between link::Classes/Synth:: creation and pattern execution.
+A related approach is to instantiate a Synth yourself and then set its values by using an link::Classes/Event:: whose "type" is code::\set::, as illustrated here. The user is responsible for ensuring proper synchronization between link::Classes/Synth:: creation and pattern execution.
 
 code::
 // First we create something to control

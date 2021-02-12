@@ -13,6 +13,6 @@
 
 [heading 1.0, Boost 1.55]
 
-This is the first release of the library since extraction from __boost_thread__.
+This is the initial version of the library since extraction from __boost_thread__.
 
 [endsect]

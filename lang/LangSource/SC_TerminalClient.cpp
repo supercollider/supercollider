@@ -29,7 +29,7 @@
 #    include "../../QtCollider/LanguageClient.h"
 #endif
 
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 #ifdef _WIN32
 #    define __GNU_LIBRARY__
@@ -62,6 +62,8 @@
 #include "SC_Version.hpp"
 
 #include <boost/filesystem/operations.hpp>
+
+using namespace boost::placeholders;
 
 static FILE* gPostDest = stdout;
 

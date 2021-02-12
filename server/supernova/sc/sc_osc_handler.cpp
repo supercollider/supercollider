@@ -19,13 +19,18 @@
 #include <iostream>
 
 // AppleClang workaround
-#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#if defined(__apple_build_version__) && __apple_build_version__ > 10000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
+// libc++ workaround
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 7000 && _LIBCPP_VERSION < 9000
 #    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
 #endif
 
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/read.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 
 
 #include "osc/OscOutboundPacketStream.h"
@@ -1833,9 +1838,9 @@ template <bool realtime> void handle_s_getn(ReceivedMessage const& msg, size_t m
         ++local; /* skip control */
         if (local == msg.ArgumentsEnd())
             break;
-        if (!it->IsInt32())
+        if (!local->IsInt32())
             throw std::runtime_error("invalid count");
-        argument_count += it->AsInt32Unchecked();
+        argument_count += local->AsInt32Unchecked();
     }
 
     size_t alloc_size = msg_size + sizeof(float) * (argument_count) + 128;

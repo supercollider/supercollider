@@ -96,7 +96,7 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4,4),Point(4,2));
 
 	n = StaticText(w, Rect(0, 0, 72, height+2));
 	if (i == 0, {
-		n.string = "Master";
+		n.string = "Main";
 		n.stringColor = Color.yellow;
 		n.font = Font("Helvetica", 13).boldVariant;
 	},{

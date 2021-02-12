@@ -5,7 +5,7 @@ categories::Collections>Ordered
 CLASSMETHODS::
 
 method::new
-Creates a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::.
+Creates a SortedList with the initial capacity given by strong::size:: and a comparison strong::function::. The SortedList can contain equal / identical elements more than once.
 
 INSTANCEMETHODS::
 

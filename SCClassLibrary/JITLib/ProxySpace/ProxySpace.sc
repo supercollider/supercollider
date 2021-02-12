@@ -151,6 +151,17 @@ ProxySpace : LazyEnvir {
 		});
 	}
 
+	rebuild {
+		var bundle = MixedBundle.new;
+		var checkedAlready = IdentitySet.new;
+		this.use {
+			envir.do { arg proxy;
+				proxy.rebuildDeepToBundle(bundle, false, checkedAlready)
+			}
+		};
+		bundle.schedSend(server, clock ? TempoClock.default, quant);
+	}
+
 	// maintaining bus state
 
 
@@ -249,7 +260,7 @@ ProxySpace : LazyEnvir {
 	// making copies
 
 	copy {
-		^super.copy.copyState(this)
+		^super.copy.copyState(this).rebuild
 	}
 
 	copyState { |proxySpace|

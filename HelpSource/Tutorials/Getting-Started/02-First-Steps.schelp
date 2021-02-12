@@ -114,7 +114,7 @@ The sclang part is a sophisticated programming language with nice features for b
 
 They communicate by a protocol called OSC (Open Sound Control), over either UDP (User Datagram Protocol) or TCP (Transmission Control Protocol), which are network protocols also used on the internet. Because the client and server communicate this way, more advanced projects might run them on separate computers for performance reasons. In fact, it's even possible that they could be running in different parts of the world! However, just because these two applications communicate using common internet protocols does not mean they must be connected to the internet or on different computers. Most of the time they will be running on the same computer, and the "networking" aspect of things will be relatively transparent for you. Especially while you're still getting started.
 
-You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly. Understanding how exactly that works is crucial to mastering SC, so we'll be talking about that in some depth.
+You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly. Understanding how exactly that works is crucial to effectively working in SC, so we'll be talking about that in some depth.
 
 But first let's have a little fun, and make some sound!
 

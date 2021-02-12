@@ -52,4 +52,27 @@ TestDocument : UnitTest {
 			// TODO: skip
 		};
 	}
+
+	test_document_getText_retrievesText {
+		var doc, str;
+		this.assert(Platform.ideName == "scqt", "Document tests are valid only when run in the IDE");
+		doc = Document(string: "abc");
+		str = doc.getText;
+		doc.close;
+		this.assertEquals(str, "abc", "getText contents retrieved from document should match input contents");
+	}
+
+	test_document_getTextAsync_retrievesText {
+		var doc, str,
+		cond = Condition.new;
+		this.assert(Platform.ideName == "scqt", "Document tests are valid only when run in the IDE");
+		doc = Document(string: "abc");
+		doc.getTextAsync({ |text|
+			str = text;
+			cond.unhang;
+		}, 0, -1);
+		cond.hang;
+		doc.close;
+		this.assertEquals(str, "abc", "getTextAsync contents retrieved from document should match input contents");
+	}
 }

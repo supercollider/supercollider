@@ -26,6 +26,11 @@
 
 QC_DECLARE_QWIDGET_FACTORY(QLabel);
 
+#ifdef SC_USE_QTWEBENGINE
+#    include "widgets/QcWebView.h"
+QC_DECLARE_QWIDGET_FACTORY(WebView);
+#endif
+
 static void doLoadFactories() {
     QC_ADD_FACTORY(QcDefaultWidget);
     QC_ADD_FACTORY(QcHLayoutWidget);

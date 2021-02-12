@@ -36,8 +36,10 @@ namespace detail {
 
 #if defined(BOOST_SYNC_USE_STD_SYSTEM_ERROR)
 namespace system_ns = std;
+typedef std::errc errc_t;
 #else
 namespace system_ns = boost::system;
+typedef boost::system::errc::errc_t errc_t;
 #endif
 
 } // namespace detail

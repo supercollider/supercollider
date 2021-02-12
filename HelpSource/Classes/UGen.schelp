@@ -423,3 +423,14 @@ method:: init
 By default, this method stores the inputs (e.g. the arguments to code::*ar:: and code::*kr::) in the UGen.
 discussion::
 This may be overridden to do other initialisations, as long as the inputs are set correctly.
+
+subsection:: Bela
+
+method:: belaScope
+Send this UGen's output to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup)
+argument:: channelOffset
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: server
+The server on which BelaScope is running. If not specified, it looks for the first server for which BelaScope was already initialized. If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Server#*default::.
+returns:: This UGen.

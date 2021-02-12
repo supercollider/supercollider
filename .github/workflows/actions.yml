@@ -1,0 +1,315 @@
+name: check, build, test
+on: [push, pull_request]
+jobs:
+  linter:
+    runs-on: ubuntu-18.04
+    outputs: 
+      sc-version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: lint class library
+        run: |
+          sudo npm install -g lintspaces-cli
+          lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
+      - name: lint cpp files
+        run: |
+          echo "Running tools/clang-format.py lintall"
+          tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
+          echo "Lint successful"
+      - name: set version string for artifacts
+        id: set-version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            SC_VERSION=${FULL_TAG##Version-}
+          else
+            SC_VERSION=$GITHUB_SHA
+          fi
+          echo "::set-output name=version::$SC_VERSION"
+
+  Linux:
+    needs: linter
+    runs-on: ubuntu-${{ matrix.os-version }} 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - job-name: 'xenial gcc5'
+            os-version: '16.04'
+            c-compiler: 'gcc-5'
+            cxx-compiler: 'g++-5'
+            use-syslibs: false
+            shared-libscsynth: false
+            qt-version: '5.9.3' # manually install requested version of qt
+            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
+
+          - job-name: 'bionic gcc7'
+            os-version: '18.04'
+            c-compiler: 'gcc-7'
+            cxx-compiler: 'g++-7'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'bionic gcc8'
+            os-version: '18.04'
+            c-compiler: 'gcc-8'
+            cxx-compiler: 'g++-8'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'bionic gcc9'
+            os-version: '18.04'
+            c-compiler: 'gcc-9'
+            cxx-compiler: 'g++-9'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'bionic gcc9 shared libscsynth'
+            os-version: '18.04'
+            c-compiler: 'gcc-9'
+            cxx-compiler: 'g++-9'
+            use-syslibs: false
+            shared-libscsynth: true
+
+          - job-name: 'bionic gcc10'
+            os-version: '18.04'
+            c-compiler: 'gcc-10'
+            cxx-compiler: 'g++-10'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+
+          # - job-name: 'focal gcc10 use system libraries' # disabled - boost version incompatible
+          #   os-version: '20.04'
+          #   c-compiler: 'gcc-10'
+          #   cxx-compiler: 'g++-10'
+          #   use-syslibs: true
+          #   shared-libscsynth: false
+
+          - job-name: 'bionic clang6.0'
+            os-version: '18.04'
+            c-compiler: 'clang-6.0'
+            cxx-compiler: 'clang++-6.0'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'bionic clang8'
+            os-version: '18.04'
+            c-compiler: 'clang-8'
+            cxx-compiler: 'clang++-8'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'bionic clang9'
+            os-version: '18.04'
+            c-compiler: 'clang-9'
+            cxx-compiler: 'clang++-9'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'focal clang10'
+            os-version: '20.04'
+            c-compiler: 'clang-10'
+            cxx-compiler: 'clang++-10'
+            use-syslibs: false
+            shared-libscsynth: false
+
+    name: Linux ${{ matrix.job-name }}
+    env: 
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      CC: ${{ matrix.c-compiler }}
+      CXX: ${{ matrix.cxx-compiler }}
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+      - name: cache ccache
+        uses: actions/cache@v2
+        with:
+          path: ~/.ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
+      - name: cache qt
+        id: cache-qt
+        uses: actions/cache@v1
+        if: matrix.qt-version
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
+      - name: install system libraries
+        if: env.USE_SYSLIBS == 'true'
+        run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
+      - name: install qt from apt
+        if: '!matrix.qt-version'
+        run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        with:
+          modules: qtwebengine
+          version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: configure
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+          
+          EXTRA_CMAKE_FLAGS=
+
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
+
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
+      - name: build
+        run: |
+          cd $BUILD_PATH
+          make install -j2
+      - name: create archive
+        if: matrix.artifact-suffix
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE .
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          retention-days: 7 # quickly remove test artifacts
+
+  macOS:
+    needs: linter
+    runs-on: macos-${{ matrix.os-version }} 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - job-name: ''
+            os-version: '10.15'
+            xcode-version: '11.7'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+
+          # - job-name: 'legacy'
+          #   os-version: '10.15'
+          #   xcode-version: '10.3'
+          #   qt-version: '5.9' # will use qt not from homebrew
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+
+          - job-name: 'use system libraries'
+            os-version: '10.15'
+            xcode-version: '11.7'
+            use-syslibs: true
+            shared-libscsynth: false
+
+          - job-name: 'shared libscsynth'
+            os-version: '10.15'
+            xcode-version: '11.7'
+            use-syslibs: false
+            shared-libscsynth: true
+
+    name: macOS ${{ matrix.job-name }}
+    env: 
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: prepare daily timestamp for cache
+        id: current-date
+        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+      - name: prepare monthly timestamp for cache
+        id: current-month
+        run: echo "::set-output name=stamp::$(date '+%Y-%m')"
+      - name: cache ccache
+        uses: actions/cache@v2
+        with:
+          path: ~/Library/Caches/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-
+      - name: cache homebrew downloads
+        uses: actions/cache@v2
+        id: cache-homebrew
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
+      - name: cache qt
+        id: cache-qt
+        uses: actions/cache@v1
+        if: matrix.qt-version
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        with:
+          modules: 'qtwebengine'
+          version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
+        if: '!steps.cache-homebrew.outputs.cache-hit'
+        run: rm -rf $(brew --cache)
+      - name: install dependencies
+        run: |
+          brew install libsndfile portaudio ccache fftw
+          # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
+          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+      - name: install system libraries
+        if: env.USE_SYSLIBS == 'true'
+        run: brew install yaml-cpp boost
+      - name: install qt from homebrew
+        if: '!matrix.qt-version'
+        run: brew install qt
+  
+      - name: configure
+        env:
+          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+          
+          EXTRA_CMAKE_FLAGS=
+          
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
+          
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+          
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+
+          echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
+
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" .. --debug-output
+      - name: build
+        run: cmake --build $BUILD_PATH --config Release --target install
+      - name: create archive
+        if: matrix.artifact-suffix
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          retention-days: 7 # quickly remove test artifacts

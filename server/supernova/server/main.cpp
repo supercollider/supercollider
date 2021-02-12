@@ -48,6 +48,9 @@
 #    include <SC_Apple.hpp>
 #endif
 
+#ifndef _WIN32
+#    include <unistd.h> // for _POSIX_MEMLOCK
+#endif
 
 #if (_POSIX_MEMLOCK - 0) >= 200112L
 #    include <sys/resource.h>
