@@ -331,6 +331,10 @@ String[char] : RawArray {
 	}
 	prCat { arg aString; _ArrayCat; ^this.primitiveFailed; }
 
+	prFlat { | list | // avoid breaking string up into characters
+		^list add: this
+	}
+
 	printOn { arg stream;
 		stream.putAll(this);
 	}
