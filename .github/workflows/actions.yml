@@ -1,9 +1,9 @@
 name: check, build, test
 on: [push, pull_request]
 jobs:
-  linter:
+  lint:
     runs-on: ubuntu-18.04
-    outputs: 
+    outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       - name: set version string for artifacts
         id: set-version
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then 
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
             FULL_TAG=${GITHUB_REF#refs/tags/}
             SC_VERSION=${FULL_TAG##Version-}
           else
@@ -30,8 +30,8 @@ jobs:
           echo "::set-output name=version::$SC_VERSION"
 
   Linux:
-    needs: linter
-    runs-on: ubuntu-${{ matrix.os-version }} 
+    needs: lint
+    runs-on: ubuntu-${{ matrix.os-version }}
     strategy:
       fail-fast: false
       matrix:
@@ -117,14 +117,14 @@ jobs:
             shared-libscsynth: false
 
     name: Linux ${{ matrix.job-name }}
-    env: 
+    env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       CC: ${{ matrix.c-compiler }}
       CXX: ${{ matrix.cxx-compiler }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -165,7 +165,7 @@ jobs:
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
-          
+
           EXTRA_CMAKE_FLAGS=
 
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON"; fi
@@ -189,8 +189,8 @@ jobs:
           retention-days: 7 # quickly remove test artifacts
 
   macOS:
-    needs: linter
-    runs-on: macos-${{ matrix.os-version }} 
+    needs: lint
+    runs-on: macos-${{ matrix.os-version }}
     strategy:
       fail-fast: false
       matrix:
@@ -224,7 +224,7 @@ jobs:
             shared-libscsynth: true
 
     name: macOS ${{ matrix.job-name }}
-    env: 
+    env:
       BUILD_PATH: ${{ github.workspace }}/build
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       HOMEBREW_NO_ANALYTICS: 1
@@ -232,17 +232,16 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.linter.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: recursive
-      - name: prepare daily timestamp for cache
+      - name: prepare timestamp for cache
         id: current-date
-        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
-      - name: prepare monthly timestamp for cache
-        id: current-month
-        run: echo "::set-output name=stamp::$(date '+%Y-%m')"
+        run: |
+          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+          echo "::set-output name=week::$(date '+%V')"
       - name: cache ccache
         uses: actions/cache@v2
         with:
@@ -254,7 +253,7 @@ jobs:
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-month.outputs.stamp }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-date.outputs.week }}
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -283,19 +282,19 @@ jobs:
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt
-  
+
       - name: configure
         env:
           DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
-          
+
           EXTRA_CMAKE_FLAGS=
-          
+
           if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
-          
+
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
-          
+
           if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
@@ -313,3 +312,87 @@ jobs:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
+
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - name: macOS
+            runs-on: macos-10.15
+            sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
+            artifact-suffix: macOS
+
+          - name: Linux
+            runs-on: ubuntu-18.04
+            sclang: 'build/Install/bin/sclang'
+            artifact-suffix: linux-bionic-gcc10
+
+    needs: [lint, Linux, macOS] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
+    runs-on: '${{ matrix.runs-on }}'
+    name: 'test on ${{ matrix.name }}'
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      QUARKS_PATH: ${{ github.workspace }}/build/Quarks
+      TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
+      SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
+      SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
+      SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
+      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/xvfb-off
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false # don't need submodules for testing
+      - name: download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+      - name: extract artifact
+        run: |
+          cd $INSTALL_PATH
+          echo `pwd`
+          echo `ls -s`
+          unzip $ARTIFACT_FILE
+      - name: setup Linux environment
+        if: runner.os == 'Linux'
+        run: |
+          # install dependencies
+          sudo apt-get update
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt5-default qtwebengine5-dev jackd1
+
+          # add bin to PATH so qpm can find scsynth
+          echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
+
+          # start jack
+          jackd --no-realtime -d dummy &
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '2.x'
+      - name: prepare tests
+        run: |
+          echo `python --version` # check version
+          sudo pip install $QPM_URL
+
+          # install API quark
+          mkdir $QUARKS_PATH && cd $QUARKS_PATH
+          git clone --depth=1 https://github.com/supercollider-quarks/API
+
+          # make working copy of the script
+          cp $SCRIPT_PROTO $SCRIPT_RUN
+      - name: run tests on Linux
+        if: runner.os == 'Linux'
+        env:
+          PYCHARM_HOSTED: 1 # enable color output
+          QPM_DEBUG: 1
+          QT_PLATFORM_PLUGIN: 'offscreen'
+        run: xvfb-run --server-args="-screen 0, 1280x720x24" -a qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+      - name: run tests on macOS
+        if: runner.os == 'macOS'
+        env:
+          PYCHARM_HOSTED: 1 # enable color output
+          QPM_DEBUG: 1
+        run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH

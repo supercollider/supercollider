@@ -14,17 +14,17 @@ TestOSCBundle : UnitTest {
 
 	test_doPrepare {
 		var synthDef, bundle;
-		var completed = false;
+		var completed = Condition(false);
 
 		bundle = OSCBundle.new;
 		synthDef = Array.fill(100, { |i|
 			var def = SynthDef("TestOSCBundle" ++ i, { Silent.ar });
 			bundle.addPrepare(["/d_recv", def.asBytes])
 		});
-		bundle.doPrepare(server, { completed = true });
-		this.wait({ completed }, "% timed out waiting for bundle to be sent".format(thisMethod));
+		bundle.doPrepare(server, { completed.test = true });
+		this.wait(completed, "% timed out waiting for bundle to be sent".format(thisMethod));
 
-		this.assertEquals(completed, true, "'doPrepare' sent the prepare bundle to the server");
+		this.assertEquals(completed.test, true, "'doPrepare' sent the prepare bundle to the server");
 	}
 
 }
