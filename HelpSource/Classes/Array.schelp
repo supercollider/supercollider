@@ -367,10 +367,9 @@ Routine {
 )
 ::
 
-method::poll(trig, label, trigid)
+method::poll
 apply an array of Poll units to an array of UGens (see those helpfiles for more details).
 code::
-s.boot;
 (
 x = {
 	SinOsc.ar([0.1, 0.2], 0).poll * 0.1
