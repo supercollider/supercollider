@@ -366,11 +366,11 @@ Routine {
 	a.fork; \doneAll.postln;
 }.play;
 )
+::
 
-poll(trig, label, trigid)
+method::poll
 apply an array of Poll units to an array of UGens (see those helpfiles for more details).
-
-s.boot;
+code::
 (
 x = {
 	SinOsc.ar([0.1, 0.2], 0).poll * 0.1
