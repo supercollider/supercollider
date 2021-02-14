@@ -1053,7 +1053,15 @@ void Integrator_Ctor(Integrator* unit) {
         SETCALC(Integrator_next);
     unit->m_b1 = ZIN0(1);
     unit->m_y1 = 0.f;
-    Integrator_next(unit, 1);
+    // Note: Here, we deliberately do NOT want to call Integrator_next(unit, 1).
+    // That would initialize the presample AND update m_y1.
+    // Then this initial value will be added in *again* by the normal calc loop.
+    // So the integral would be corrupted for its lifetime.
+    // The formula is input + (coef * output[-1]).
+    // But output[-1] is 0 initially, so we just drop that term.
+    float* out = ZOUT(0);
+    float* in = ZIN(0);
+    ZXP(out) = ZXP(in);
 }
 
 void Integrator_next_i(Integrator* unit, int inNumSamples) {
