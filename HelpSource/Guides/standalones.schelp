@@ -104,7 +104,7 @@ code::
 };
 
 // make some needed paths and folders
-~pathToThisApp = String.scDir.dirname.dirname;
+~pathToThisApp = Platform.resourceDir.dirname.dirname;
 ~thisAppName = ~pathToThisApp.basename.splitext.first;
 ~pathToNewApp = ~newAppLocation +/+ ~newAppName ++ ".app";
 ~newAppResDir = ~pathToNewApp +/+ "Contents/Resources";
@@ -185,13 +185,13 @@ list::
 code::
 (
 // 4. write a class extension file to look for the startupFile
-// in the app, in String.scDir for self-containment.
+// in the app, in Platform.resourceDir for self-containment.
 ~overDir = ~newAppResDir +/+ "SCClassLibrary/SystemOverwrites";
 File.mkdir(~overDir);
 ~writeText.value(~overDir +/+ "extModStartupFile.sc",
 	"+ OSXPlatform {
 	startupFiles {
-		^[String.scDir +/+ \"startup.scd\"];
+		^[Platform.resourceDir +/+ \"startup.scd\"];
 	}
 }
 "
@@ -314,7 +314,7 @@ unixCmd("open" + ~pathToNewApp);
 // AND IN THE NEW APP, run this to create a self-contained startup config file:
 (
 // use the internal extensions - repeat this when you move the app!
-LanguageConfig.addIncludePath(String.scDir +/+ "InternalExtensions");
+LanguageConfig.addIncludePath(Platform.resourceDir +/+ "InternalExtensions");
 // exclude the default
 LanguageConfig.addExcludePath(Platform.userExtensionDir);
 LanguageConfig.addExcludePath(Platform.systemExtensionDir);

@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "../QcCallback.hpp"
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineCallback>
@@ -35,69 +36,34 @@ Q_DECLARE_METATYPE(QUrl)
 namespace QtCollider {
 
 class WebPage;
-class QcCallback;
-
-class QcCallbackWeakFunctor {
-public:
-    QcCallbackWeakFunctor(QPointer<QcCallback> cb): _cb(cb) {}
-
-    template <typename RESULT> void operator()(RESULT r) const;
-
-private:
-    QPointer<QcCallback> _cb;
-};
-
-class QcCallback : public QObject {
-    Q_OBJECT
-
-public:
-    QcCallback() {}
-
-    template <typename CallbackT> void call(const CallbackT& result) { Q_EMIT(onCalled(result)); }
-
-    QcCallbackWeakFunctor asFunctor() { return QcCallbackWeakFunctor(QPointer<QcCallback>(this)); }
-
-Q_SIGNALS:
-    void onCalled(bool);
-    void onCalled(const QString&);
-    void onCalled(const QVariant&);
-    void onCalled(const QUrl&);
-};
-
-template <typename RESULT> void QcCallbackWeakFunctor::operator()(RESULT r) const {
-    if (_cb) {
-        _cb->call(r);
-    }
-}
-
 
 class WebView : public QWebEngineView {
     Q_OBJECT
 
 public:
     Q_INVOKABLE void setFontFamily(int genericFontFamily, const QString& fontFamily);
-    Q_INVOKABLE void triggerPageAction(int action, bool checked);
+    Q_INVOKABLE void triggerPageAction(int action, bool checked = false);
     Q_INVOKABLE QAction* pageAction(QWebEnginePage::WebAction) const;
 
     // QWebEnginePage forwards
+    // Note: need to use QtCollider:: namespace here due to limitations of Qt metatype system
     Q_INVOKABLE void setHtml(const QString& html, const QString& baseUrl);
     Q_INVOKABLE void setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl);
-    Q_INVOKABLE void toHtml(QcCallback* cb) const;
-    Q_INVOKABLE void toPlainText(QcCallback* cb) const;
-    Q_INVOKABLE void runJavaScript(const QString& script, QcCallback* cb);
+    Q_INVOKABLE void toHtml(QtCollider::QcCallback* cb) const;
+    Q_INVOKABLE void toPlainText(QtCollider::QcCallback* cb) const;
+    Q_INVOKABLE void runJavaScript(const QString& script, QtCollider::QcCallback* cb);
     Q_INVOKABLE void setWebAttribute(int attr, bool on);
     Q_INVOKABLE bool testWebAttribute(int attr);
     Q_INVOKABLE void resetWebAttribute(int attr);
     Q_INVOKABLE void navigate(const QString& url);
 
 public Q_SLOTS:
-    void findText(const QString& searchText, bool reversed, QcCallback* cb);
+    void findText(const QString& searchText, bool reversed, QtCollider::QcCallback* cb = nullptr);
 
 Q_SIGNALS:
     void linkActivated(const QString&, int, bool);
     void jsConsoleMsg(const QString&, int, const QString&);
     void reloadTriggered(const QString&);
-    void interpret(const QString& code);
 
     // QWebEnginePage forwards
     void linkHovered(const QString& url);
@@ -132,16 +98,9 @@ public:
     bool delegateReload() const;
     void setDelegateReload(bool);
 
-    Q_PROPERTY(bool enterInterpretsSelection READ interpretSelection WRITE setInterpretSelection);
-    bool interpretSelection() const { return _interpretSelection; }
-    void setInterpretSelection(bool b) { _interpretSelection = b; }
-
     Q_PROPERTY(bool editable READ editable WRITE setEditable);
     bool editable() const { return _editable; }
-    void setEditable(bool b) {
-        _editable = b;
-        updateEditable(true);
-    }
+    void setEditable(bool b);
 
     // QWebEnginePage properties
     Q_PROPERTY(QString requestedUrl READ requestedUrl)
@@ -173,23 +132,20 @@ public:
     inline static QUrl urlFromString(const QString& str) { return QUrl::fromUserInput(str); }
 
 protected:
-    virtual void keyPressEvent(QKeyEvent*);
-    virtual void contextMenuEvent(QContextMenuEvent*);
+    void contextMenuEvent(QContextMenuEvent*) override;
+    bool event(QEvent* ev) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
 public Q_SLOTS:
     void onPageReload();
     void onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus, int);
     void onLinkClicked(const QUrl&, QWebEnginePage::NavigationType, bool);
-    void updateEditable(bool);
+    void pageLoaded(bool);
 
 private:
     void connectPage(QtCollider::WebPage* page);
 
-    bool _interpretSelection;
     bool _editable;
 };
 
 } // namespace QtCollider
-
-using namespace QtCollider;
-Q_DECLARE_METATYPE(QcCallback*);

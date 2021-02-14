@@ -87,7 +87,7 @@ QcApplication::QcApplication(int& argc, char** argv): QApplication(argc, argv, Q
         icon.addFile(":/icons/sc-cube-32");
         icon.addFile(":/icons/sc-cube-16");
         setWindowIcon(icon);
-        _mainMenu = QSharedPointer<QMenuBar>(new QMenuBar(0));
+        createMenu();
     }
 
 #ifdef Q_OS_MAC
@@ -102,6 +102,28 @@ QcApplication::~QcApplication() {
     _mutex.lock();
     _instance = 0;
     _mutex.unlock();
+}
+
+void QcApplication::createMenu() {
+    _mainMenu = QSharedPointer<QMenuBar>::create();
+
+#ifdef Q_OS_MAC
+    // macOS registers cmd+q on menu bars by default. Here we register a handler for cmd+q that does nothing
+    // and we disable the Quit menu by default
+    auto* action = new QAction("");
+    action->setMenuRole(QAction::QuitRole);
+    action->setEnabled(false);
+    QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
+    auto* menu = new QMenu(tr("&File"));
+    menu->addAction(action);
+    _mainMenu->addMenu(menu);
+#endif
+}
+
+void QcApplication::onQuit() {
+    qWarning("[QcApplication::onQuit] CMD+Q was caught by the interpreter. "
+             "This is weird, it should not happen. "
+             "Please file an issue at https://github.com/supercollider/supercollider/issues");
 }
 
 bool QcApplication::compareThread() { return gMainVMGlobals->canCallOS; }
@@ -163,9 +185,18 @@ bool QcApplication::notify(QObject* object, QEvent* event) {
     // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
     // native window if they aren't accepted here. This caused issue #4058. Accepting them here
     // seems to solve the problem, but might cause other issues since it is a heavy-handed way
-    // of doing this. TODO - solve more elegantly
-    if (result)
-        event->accept();
+    // of doing this.
+    // In order to still allow closing GUI windows with "cmd-w", we need to let through both
+    // this key combination, as well as modifier keys alone, since the "cmd" needs to be passed
+    // through by itself first for the "cmd-w" to work.
+    // TODO - solve more elegantly
+    if (result && event->type() == QEvent::KeyPress) {
+        auto kevent = static_cast<QKeyEvent*>(event);
+        if (!((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier))
+            && (kevent->key() != Qt::Key_unknown)) {
+            event->accept();
+        }
+    }
 #endif
     return result;
 }

@@ -6,6 +6,8 @@ DESCRIPTION::
 
 WebView displays web pages and provides all the standard browsing functionality.
 
+Since the Qt WebEngine dependency is hefty and difficult to install on some systems, it is possible for sclang to have been built without WebView support (using the CMake flag code:: -DSC_USE_QTWEBENGINE=OFF :: at compile). If so, attempting to invoke this class will throw an error.
+
 CLASSMETHODS::
 
 PRIVATE:: key
@@ -49,7 +51,7 @@ METHOD:: findText
     Argument::
         Whether to search in reverse direction; a Boolean.
     Argument::
-        A function to be called with the find result when the operation is finished.
+        A function, called when the operation is finished. If the text was found this function is passed code::true::, otherwise code::false::.
 
 METHOD:: triggerPageAction
     Trigger an action on the current page. Possible actions include: reload, select all, copy, undo, redo (see link::Classes/QWebPageAction::)

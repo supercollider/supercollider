@@ -1,4 +1,7 @@
-project (SuperCollider)
+cmake_minimum_required(VERSION 3.5)
+include(SCVersion.txt)
+# CMake versions can only consist of digits and periods, so don't use _TWEAK
+project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
@@ -8,11 +11,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
     set(LINUX_OR_BSD 1)
 endif()
 
-cmake_minimum_required (VERSION 3.5)
-
-include("SCVersion.txt")
-set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
-message(STATUS "SuperCollider Version: ${PROJECT_VERSION}")
+message(STATUS "SuperCollider Version: ${SC_VERSION}")
 message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
@@ -144,7 +143,7 @@ if(WIN32)
 
 endif()
 
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
 
 #############################################
@@ -164,7 +163,7 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
+if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm|aarch64")
     option(SSE "Compile with support for SSE instructions." ON)
     option(SSE2 "Compile with support for SSE2 instructions." ON)
 else() # ARM platforms do not have SSE
@@ -255,6 +254,9 @@ if (NOT WIN32)
 endif()
 
 if(SYSTEM_BOOST)
+    # https://github.com/supercollider/supercollider/issues/4576#issuecomment-531499017
+    # Boost >= 1.71 ships with its own Boost config file, we ignore it for now.
+    set(Boost_NO_BOOST_CMAKE ON)
     set(Boost_USE_MULTITHREADED ON)
     find_package( Boost 1.50.0 COMPONENTS  thread system filesystem program_options regex test_exec_monitor )
     if (Boost_FOUND)
@@ -449,7 +451,7 @@ endif()
 set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 
 if(NOT SC_QT)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|GUI")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|/GUI$")
 endif()
 
 if(WIN32)
@@ -457,7 +459,7 @@ if(WIN32)
 endif()
 
 if(NOT SC_ABLETON_LINK)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|Ableton")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|/Ableton$")
 endif()
 
 if(APPLE)
@@ -478,10 +480,8 @@ if(APPLE)
 		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
 		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
-			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
-				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
-			endif()
+			install( CODE
+				"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 		endforeach(onedirectory)
 	endif()
 else()
@@ -539,7 +539,6 @@ if(INSTALL_HELP)
 	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
 			PATTERN "*~" EXCLUDE
 			PATTERN "*#" EXCLUDE
 		)
@@ -590,16 +589,17 @@ endif()
 #############################################
 # CPack support
 
-set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+set(CPACK_PACKAGE_VERSION_MAJOR ${SC_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${SC_VERSION_MINOR})
+# No restriction on version strings unlike for project()
+set(CPACK_PACKAGE_VERSION_PATCH ${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
 
 if(APPLE)
 	set(CPACK_GENERATOR "DragNDrop")
 	set(CPACK_DMG_FORMAT "UDBZ")
 	set(CPACK_DMG_VOLUME_NAME "${scappbundlename}")
 	set(CPACK_SYSTEM_NAME "OSX")
-#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${PROJECT_VERSION}")
+#	set(CPACK_PACKAGE_FILE_NAME "${scappbundlename}-${SC_VERSION}")
 	set(CPACK_DMG_DS_STORE "${CMAKE_SOURCE_DIR}/package/ds_store")
 	set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/package/background.png")
     set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/icons/sc_ide.icns")

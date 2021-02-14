@@ -168,6 +168,8 @@ Inside SynthDefs and UGen functions, symbols can be used to conveniently specify
 method::kr
 
 Return a control rate NamedControl input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
+A link::Classes/ControlSpec:: provided to the code::spec:: parameter will be written into the spec metadata for the current synth.
+
 discussion::
 code::
 a = { SinOsc.ar(\freq.kr(440, 1.2)) }.play;

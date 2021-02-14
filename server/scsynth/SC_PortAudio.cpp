@@ -25,6 +25,7 @@
 #include "SC_Time.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include "SC_PaUtils.hpp"
 
 #include "portaudio.h"
 #define SC_PA_USE_DLL
@@ -64,7 +65,6 @@ void initializeScheduler() { gOSCoffset = GetCurrentOSCTime(); }
 
 #endif // SC_PA_USE_DLL
 
-
 class SC_PortAudioDriver : public SC_AudioDriver {
     int mInputChannelCount, mOutputChannelCount;
     PaStream* mStream;
@@ -86,9 +86,6 @@ public:
 
     int PortAudioCallback(const void* input, void* output, unsigned long frameCount,
                           const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags);
-
-private:
-    void GetPaDeviceFromName(const char* device, int* mInOut);
 };
 
 SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_PortAudioDriver(inWorld); }
@@ -262,31 +259,6 @@ int SC_PortAudioDriver::PortAudioCallback(const void* input, void* output, unsig
     return paContinue;
 }
 
-void SC_PortAudioDriver::GetPaDeviceFromName(const char* device, int* mInOut) {
-    const PaDeviceInfo* pdi;
-    const PaHostApiInfo* apiInfo;
-    char devString[256];
-    PaDeviceIndex numDevices = Pa_GetDeviceCount();
-    mInOut[0] = paNoDevice;
-    mInOut[1] = paNoDevice;
-
-    // This tries to find one or two devices that match the given name (substring)
-    // might cause problems for some names...
-    for (int i = 0; i < numDevices; i++) {
-        pdi = Pa_GetDeviceInfo(i);
-        apiInfo = Pa_GetHostApiInfo(pdi->hostApi);
-        strcpy(devString, apiInfo->name);
-        strcat(devString, " : ");
-        strcat(devString, pdi->name);
-        if (strstr(devString, device)) {
-            if (pdi->maxInputChannels > 0)
-                mInOut[0] = i;
-            if (pdi->maxOutputChannels > 0)
-                mInOut[1] = i;
-        }
-    }
-}
-
 // ====================================================================
 //
 //
@@ -294,7 +266,6 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
     int mDeviceInOut[2];
     PaError paerror;
     const PaDeviceInfo* pdi;
-    const PaHostApiInfo* apiInfo;
     const PaStreamInfo* psi;
     PaTime suggestedLatencyIn, suggestedLatencyOut;
     PaDeviceIndex numDevices = Pa_GetDeviceCount();
@@ -303,23 +274,41 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
     fprintf(stdout, "\nDevice options:\n");
     for (int i = 0; i < numDevices; i++) {
         pdi = Pa_GetDeviceInfo(i);
-        apiInfo = Pa_GetHostApiInfo(pdi->hostApi);
-        fprintf(stdout, "  - %s : %s   (device #%d with %d ins %d outs)\n", apiInfo->name, pdi->name, i,
+        fprintf(stdout, "  - %s   (device #%d with %d ins %d outs)\n", GetPaDeviceName(i).c_str(), i,
                 pdi->maxInputChannels, pdi->maxOutputChannels);
     }
 
-    mDeviceInOut[0] = paNoDevice;
-    mDeviceInOut[1] = paNoDevice;
-    if (mWorld->hw->mInDeviceName)
-        GetPaDeviceFromName(mWorld->hw->mInDeviceName, mDeviceInOut);
-    if (mDeviceInOut[0] == paNoDevice)
-        mDeviceInOut[0] = Pa_GetDefaultInputDevice();
-    if (mDeviceInOut[1] == paNoDevice)
-        mDeviceInOut[1] = Pa_GetDefaultOutputDevice();
+    mDeviceInOut[0] = GetPaDeviceFromName(mWorld->hw->mInDeviceName, true);
+    mDeviceInOut[1] = GetPaDeviceFromName(mWorld->hw->mOutDeviceName, false);
+
+    // report requested devices
+    fprintf(stdout, "\nRequested devices:\n");
+    if (mWorld->mNumInputs) {
+        fprintf(stdout, "  In (matching device %sfound):\n  - %s\n", (mDeviceInOut[0] == paNoDevice ? "NOT " : ""),
+                mWorld->hw->mInDeviceName);
+    }
+    if (mWorld->mNumOutputs) {
+        fprintf(stdout, "  Out (matching device %sfound):\n  - %s\n", (mDeviceInOut[1] == paNoDevice ? "NOT " : ""),
+                mWorld->hw->mOutDeviceName);
+    }
+
+    fprintf(stdout, "\n");
+    paerror = TryGetDefaultPaDevices(&mDeviceInOut[0], &mDeviceInOut[1], mWorld->mNumInputs, mWorld->mNumOutputs,
+                                     mPreferredSampleRate);
+
+    // if we got an error from TryGetDefaultPaDevices, stop here
+    if (paerror != paNoError) {
+        PRINT_PORTAUDIO_ERROR(Pa_OpenStream, paerror);
+        return false;
+    }
 
     *outNumSamples = mWorld->mBufLength;
     if (mPreferredSampleRate)
         *outSampleRate = mPreferredSampleRate;
+    else if (mDeviceInOut[1] != paNoDevice)
+        *outSampleRate = Pa_GetDeviceInfo(mDeviceInOut[1])->defaultSampleRate;
+    else if (mDeviceInOut[0] != paNoDevice)
+        *outSampleRate = Pa_GetDeviceInfo(mDeviceInOut[0])->defaultSampleRate;
     else
         *outSampleRate = 44100.;
 
@@ -336,13 +325,12 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
         }
 
         fprintf(stdout, "\nBooting with:\n");
-        PaSampleFormat fmt = paFloat32 | paNonInterleaved;
+
         if (mDeviceInOut[0] != paNoDevice) {
             // avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
             mInputChannelCount =
                 std::min<size_t>(mWorld->mNumInputs, Pa_GetDeviceInfo(mDeviceInOut[0])->maxInputChannels);
-            fprintf(stdout, "  In: %s : %s\n", Pa_GetHostApiInfo(Pa_GetDeviceInfo(mDeviceInOut[0])->hostApi)->name,
-                    Pa_GetDeviceInfo(mDeviceInOut[0])->name);
+            fprintf(stdout, "  In: %s\n", GetPaDeviceName(mDeviceInOut[0]).c_str());
         } else {
             mInputChannelCount = 0;
         }
@@ -351,8 +339,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
             // avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
             mOutputChannelCount =
                 std::min<size_t>(mWorld->mNumOutputs, Pa_GetDeviceInfo(mDeviceInOut[1])->maxOutputChannels);
-            fprintf(stdout, "  Out: %s : %s\n", Pa_GetHostApiInfo(Pa_GetDeviceInfo(mDeviceInOut[1])->hostApi)->name,
-                    Pa_GetDeviceInfo(mDeviceInOut[1])->name);
+            fprintf(stdout, "  Out: %s\n", GetPaDeviceName(mDeviceInOut[1]).c_str());
         } else {
             mOutputChannelCount = 0;
         }
@@ -360,11 +347,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
         PaStreamParameters* inStreamParams_p;
         PaStreamParameters inStreamParams;
         if (mDeviceInOut[0] != paNoDevice) {
-            inStreamParams.device = mDeviceInOut[0];
-            inStreamParams.channelCount = mInputChannelCount;
-            inStreamParams.sampleFormat = fmt;
-            inStreamParams.suggestedLatency = suggestedLatencyIn;
-            inStreamParams.hostApiSpecificStreamInfo = NULL;
+            inStreamParams = MakePaStreamParameters(mDeviceInOut[0], mInputChannelCount, suggestedLatencyIn);
             inStreamParams_p = &inStreamParams;
         } else {
             inStreamParams_p = NULL;
@@ -373,14 +356,18 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate) 
         PaStreamParameters* outStreamParams_p;
         PaStreamParameters outStreamParams;
         if (mDeviceInOut[1] != paNoDevice) {
-            outStreamParams.device = mDeviceInOut[1];
-            outStreamParams.channelCount = mOutputChannelCount;
-            outStreamParams.sampleFormat = fmt;
-            outStreamParams.suggestedLatency = suggestedLatencyOut;
-            outStreamParams.hostApiSpecificStreamInfo = NULL;
+            outStreamParams = MakePaStreamParameters(mDeviceInOut[1], mOutputChannelCount, suggestedLatencyOut);
             outStreamParams_p = &outStreamParams;
         } else {
             outStreamParams_p = NULL;
+        }
+
+        // check if format is supported
+        // this sometimes gives a more accurate error information than Pa_OpenStream's error
+        paerror = Pa_IsFormatSupported(inStreamParams_p, outStreamParams_p, *outSampleRate);
+        if (paerror != paNoError) {
+            PRINT_PORTAUDIO_ERROR(Pa_OpenStream, paerror);
+            return false;
         }
 
         paerror = Pa_OpenStream(&mStream, inStreamParams_p, outStreamParams_p, *outSampleRate, *outNumSamples, paNoFlag,

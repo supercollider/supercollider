@@ -1,6 +1,7 @@
 // clock with Ableton Link synchronization
 
 LinkClock : TempoClock {
+	var syncMeter;
 
 	*newFromTempoClock { |clock|
 		^super.new(
@@ -32,11 +33,6 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	setMeterAtBeat { |newBeatsPerBar, beats|
-		this.prSetQuantum(beatsPerBar);
-		super.setMeterAtBeat(newBeatsPerBar, beats);
-	}
-
 	latency {
 		_LinkClock_GetLatency
 		^this.primitiveFailed
@@ -47,14 +43,36 @@ LinkClock : TempoClock {
 		^this.primitiveFailed
 	}
 
-	// PRIVATE
-	prStart { |tempo, beats, seconds|
-		_LinkClock_New
+	quantum {
+		_LinkClock_GetQuantum
 		^this.primitiveFailed
 	}
 
-	prSetQuantum { |quantum|
-		_LinkClock_SetQuantum;
+	quantum_ { |quantum|
+		_LinkClock_SetQuantum
+		^this.primitiveFailed
+	}
+
+	isSyncingMeter { ^syncMeter.notNil }
+	getMeterSync { ^syncMeter }
+
+	enableMeterSync { |id, ports|
+		if(syncMeter.isNil) {
+			syncMeter = MeterSync(this, id, ports);
+		};
+	}
+
+	disableMeterSync {
+		// why not 'syncMeter.free'?
+		// you might have created additional instances
+		// you shouldn't do that! but we should clean them all up anyway
+		this.changed(\disableMeterSync);
+		syncMeter = nil;
+	}
+
+	// PRIVATE
+	prStart { |tempo, beats, seconds|
+		_LinkClock_New
 		^this.primitiveFailed
 	}
 

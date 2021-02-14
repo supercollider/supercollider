@@ -42,6 +42,8 @@ w.front;
 
 instancemethods::
 
+private::prDoAction
+
 method:: states
 An array of labels and colors defining the states of the button.
 argument:: stateArray

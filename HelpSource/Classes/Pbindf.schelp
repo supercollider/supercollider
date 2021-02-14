@@ -1,5 +1,5 @@
 class:: Pbindf
-summary:: bind several value patterns to one existing event stream by binding keys to valueskeys to values
+summary:: bind several value patterns to one existing event stream by binding keys to values
 related:: Classes/Pattern, Classes/Event, Classes/Pbind, Classes/Pchain
 categories:: Streams-Patterns-Events>Patterns>Composition
 

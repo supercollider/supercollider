@@ -28,7 +28,7 @@
 void initLongStack(LongStack* self) {
     // dbg("initLongStack");
     self->maxsize = 0;
-    self->stak = NULL;
+    self->stak = nullptr;
     self->num = 0;
 }
 
@@ -38,7 +38,7 @@ void freeLongStack(LongStack* self) {
     self->num = 0;
     if (self->stak) {
         pyr_pool_compile->Free((void*)self->stak);
-        self->stak = NULL;
+        self->stak = nullptr;
     }
 }
 

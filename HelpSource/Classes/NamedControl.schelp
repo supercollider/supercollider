@@ -9,10 +9,10 @@ A NamedControl directly combines a ControlName and a Control UGen conveniently. 
 
 There are syntax shortcuts that generate NamedControls from the name:
 code::
-\name.ar(values, lags)
-\name.kr(values, lags, fixedLag)
-\name.ir(values, lags)
-\name.tr(values, lags)
+\name.ar(values, lags, spec)
+\name.kr(values, lags, fixedLag, spec)
+\name.ir(values, lags, spec)
+\name.tr(values, lags, spec)
 ::
 
 ClassMethods::
@@ -20,26 +20,26 @@ method:: ar
 add a new instance of link::Classes/AudioControl:: with given name and default values.
 If lags are given, apply a Lag UGen to it.
 discussion::
-code::\symbol.ar(values, lags):: is a synonym.
+code::\symbol.ar(values, lags, spec):: is a synonym.
 
 method:: kr
 add a new instance of link::Classes/Control:: (kr) with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
 (lags cannot be modulated then, but fewer UGens are required).
 discussion::
-code::\symbol.kr(values, lags, fixedLag):: is a synonym.
+code::\symbol.kr(values, lags, fixedLag, spec):: is a synonym.
 
 method:: ir
 add a new instance of link::Classes/Control:: (ir) with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it.
 discussion::
-code::\symbol.ir(values, lags):: is a synonym.
+code::\symbol.ir(values, lags, spec):: is a synonym.
 
 method:: tr
 add a new instance of link::Classes/TrigControl:: with given name and default values.
 If lags are given, apply a link::Classes/Lag:: UGen to it.
 discussion::
-code::\symbol.tr(values, lags):: is a synonym.
+code::\symbol.tr(values, lags, spec):: is a synonym.
 
 method:: new
 add a new instance with the given rate, name and default values.

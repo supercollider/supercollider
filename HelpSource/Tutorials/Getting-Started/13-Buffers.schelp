@@ -36,7 +36,7 @@ Buffer's 'free' method frees the memory on the server, and returns the Buffer's 
 
 section::Using Buffers with Sound Files
 
-Buffer has another class method called 'read', which reads a sound file into memory, and returns a Buffer object. Using the UGen PlayBuf, we can play the file.
+Buffer has another class method called 'read', which reads a sound file from disk into memory, and returns a Buffer object. Using the UGen PlayBuf, we can play the file.
 
 code::
 // read a soundfile
@@ -252,5 +252,7 @@ link::Classes/Buffer::, link::Classes/PlayBuf::, link::Classes/RecordBuf::, link
 ____________________
 
 This document is part of the tutorial strong::Getting Started With SuperCollider::.
+
+Click here to go on to the next section: link::Tutorials/Getting-Started/14-Scheduling-Events::
 
 Click here to return to the table of Contents: link::Tutorials/Getting-Started/00-Getting-Started-With-SC::

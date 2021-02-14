@@ -36,7 +36,9 @@
 namespace ScIDE {
 
 GenericLookupDialog::GenericLookupDialog(QWidget* parent): QDialog(parent) {
+#ifdef SC_USE_QTWEBENGINE
     addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
+#endif // SC_USE_WEBENGINE
 
     mQueryEdit = new QLineEdit(this);
 

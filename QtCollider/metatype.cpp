@@ -24,7 +24,7 @@
 #include "Common.h" // Make sure PyrObject* is declared to QMetaType
 #include <PyrKernel.h>
 
-#include "widgets/QcWebView.h"
+#include "QcCallback.hpp"
 
 namespace QtCollider {
 

@@ -174,7 +174,7 @@ teletype::recordNRT:: allows you optionally to specify the path to the binary OS
 If you do not give a path, teletype::recordNRT:: will generate one for you in the system's temporary file location. These files are not automatically deleted after rendering. Some systems may automatically clean up old temporary files after some time. Otherwise, you can take it into your own hands:
 
 code::
-var oscPath = Platform.tmp +/+ "mytempscore";
+var oscPath = PathName.tmp +/+ "mytempscore";
 
 x = Score([ ... ]);
 

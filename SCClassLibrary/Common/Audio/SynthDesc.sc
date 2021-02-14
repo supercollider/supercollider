@@ -79,6 +79,9 @@ SynthDesc {
 			this.populateMetadataFunc.value(desc);
 			if(desc.def.notNil and: { stream.isKindOf(CollStream).not }) {
 				desc.def.metadata ?? { desc.def.metadata = () };
+				if(desc.metadata.notNil) {
+					desc.def.metadata.putAll(desc.metadata);
+				};
 				desc.def.metadata.put(\shouldNotSend, true)
 					.put(\loadPath, path);
 			};
@@ -460,7 +463,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 	}
 
 	writeMetadata { arg path, mdPlugin;
-		if(metadata.isNil) { AbstractMDPlugin.clearMetadata(path); ^this };
+		if (metadata.size == 0) { AbstractMDPlugin.clearMetadata(path); ^this };
 		(mdPlugin ?? { this.class.mdPlugin }).writeMetadata(metadata, def, path);
 	}
 
@@ -488,7 +491,11 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		}
 	}
 
-
+	specs {
+		metadata ?? { metadata = () };
+		metadata[\specs] ?? { metadata[\specs] = () };
+		^metadata[\specs]
+	}
 }
 
 SynthDescLib {
@@ -623,6 +630,9 @@ SynthDescLib {
 			SynthDesc.populateMetadataFunc.value(desc);
 			if(desc.def.notNil and: { stream.isKindOf(CollStream).not }) {
 				desc.def.metadata ?? { desc.def.metadata = () };
+				if(desc.metadata.notNil) {
+					desc.def.metadata.putAll(desc.metadata);
+				};
 				desc.def.metadata.put(\shouldNotSend, true)
 					.put(\loadPath, path);
 			};

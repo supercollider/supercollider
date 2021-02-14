@@ -244,9 +244,9 @@ template <class UGenClass> void destroyClass(Unit* unit) { static_cast<UGenClass
 
 }
 
-template <class Unit> void registerUnit(InterfaceTable* ft, const char* name) {
+template <class Unit> void registerUnit(InterfaceTable* ft, const char* name, bool disableBufferAliasing = false) {
     UnitCtorFunc ctor = detail::constructClass<Unit>;
     UnitDtorFunc dtor = std::is_trivially_destructible<Unit>::value ? nullptr : detail::destroyClass<Unit>;
 
-    (*ft->fDefineUnit)(name, sizeof(Unit), ctor, dtor, 0);
+    (*ft->fDefineUnit)(name, sizeof(Unit), ctor, dtor, uint32(disableBufferAliasing ? 1 : 0));
 }

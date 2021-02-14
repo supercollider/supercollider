@@ -1,32 +1,28 @@
-
 TestUnitTest : UnitTest {
 
-	var someVar, setUp = false;
+	var someVar;
 
 	setUp {
-		setUp = true;
+		someVar = \setUp;
 	}
 
 	test_setUp {
-		this.assert( setUp, "setUp should have happened" )
+		this.assertEquals(someVar, \setUp, "someVar be set in setUp");
+	}
+
+	test_bootServer {
+		var server = Server(this.class.name);
+		server.bootSync;
+		this.assert(server.serverRunning, "The test's Server should be booted while we waited");
+		server.quit.remove;
 	}
 
 	test_assert {
 		this.assert(true, "assert(true) should certainly work");
 	}
 
-	test_isolation_first {
-		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
-		someVar = 2;
-	}
-
-	test_isolation_second {
-		this.assertEquals(someVar, nil, "methods in UnitTests should be isolated");
-		someVar = 2;
-	}
-
 	test_findTestedClass {
-		this.assertEquals( TestMixedBundleTester.findTestedClass, MixedBundleTester)
+		this.assertEquals(TestMixedBundleTester.findTestedClass, MixedBundleTester)
 	}
 
 	test_assertException_implicitThrow {
@@ -47,12 +43,4 @@ TestUnitTest : UnitTest {
 	test_assertNoException_nonThrowingFunction {
 		this.assertNoException({ try { 1789.monarchy } }, "assertNoThrow should return true for not an error")
 	}
-
-	/*** IF YOU ADD MORE TESTS, UPDATE THE numTestMethods var ***/
-	// test_findTestMethods {
-	// 	var numTestMethods = 7;
-	// 	this.assert( this.findTestMethods.size == numTestMethods, "should be " + numTestMethods + " test methods");
-	// }
-
 }
-

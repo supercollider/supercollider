@@ -25,6 +25,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include <cassert>
+#include <algorithm> // std::sort
 
 #include <QDebug>
 #include <QHash>
@@ -153,8 +154,8 @@ bool Introspection::parse(const QString& yamlString) {
             mMethodMap.insert(make_pair(method->name, QSharedPointer<Method>(method)));
         }
 
-        qSort(klass->methods.begin(), klass->methods.end(),
-              [](Method* lhs, Method* rhs) { return lhs->name.get() < rhs->name.get(); });
+        std::sort(klass->methods.begin(), klass->methods.end(),
+                  [](Method* lhs, Method* rhs) { return lhs->name.get() < rhs->name.get(); });
     }
 
     inferClassLibraryPath();

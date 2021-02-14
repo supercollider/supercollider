@@ -18,17 +18,32 @@ matrix:
           - DO_LINT=true # only lint on fastest build
       group: edge
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode10.1
       env:
+          - JOB_NAME="macos legacy"
+          - IS_LEGACY_BUILD=true
           - QT=true
           - DO_LINT=false
+          - S3_DEPLOY_PREFIX="SC-legacy-" # turn on S3 deployment
+          - GITHUB_DEPLOY_SUFFIX="-macOS-legacy" # turn on Github deployment
+    - os: osx
+      osx_image: xcode9.4
+      env:
+          - JOB_NAME="macos"
+          - IS_LEGACY_BUILD=false
+          - QT=true
+          - DO_LINT=false
+          - S3_DEPLOY_PREFIX="SC-" # turn on S3 deployment
+          - GITHUB_DEPLOY_SUFFIX="-macOS" # turn on Github deployment
 
 # use ccache to speed up build times. on osx,
 # we install it during the the before_install step
 # with xcode, this requires an additional flag passed during the configuration phase.
 # see README_MACOS.md for details.
 cache:
- - ccache
+ ccache: true
+ directories:
+   - ../downloads
 
 before_install:
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
@@ -45,19 +60,20 @@ before_script:
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
  - $TRAVIS_BUILD_DIR/.travis/test.sh
+ - export S3_ARTIFACT_NAME=${S3_DEPLOY_PREFIX}${TRAVIS_COMMIT}
+ - export GITHUB_ARTIFACT_NAME=SuperCollider-${VERSION_TO_BUILD}${GITHUB_DEPLOY_SUFFIX}
  - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
 
 before_deploy:
  # required for github releases
- - git fetch --tags
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
  - export S3_BUILDS_LOCATION=builds/$BUILD_PREFIX
- - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$TRAVIS_COMMIT.zip
+ - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/$S3_ARTIFACT_NAME.zip
  - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_URL'" /></head></html>'
  # put everything to be archived in artifacts/
  - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
  - mkdir -p "$HOME/artifacts/${TRAVIS_TAG%/*}"
- - echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html
+ - 'if [[ ! $IS_LEGACY_BUILD ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html; fi;'
  - 'if [[ $TRAVIS_TAG != "head" ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_TAG.html; fi;'
 
 deploy:
@@ -78,7 +94,7 @@ deploy:
  # github releases - only tags
  - provider: releases
    api_key: $GITHUB_KEY
-   file: $HOME/SuperCollider-$VERSION_TO_BUILD-macOS.zip
+   file: $HOME/$GITHUB_ARTIFACT_NAME.zip
    prerelease: true
    skip_cleanup: true
    on:

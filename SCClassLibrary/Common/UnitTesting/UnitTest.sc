@@ -1,6 +1,6 @@
 UnitTest {
 
-	var currentMethod;
+	var currentMethod, debug = "";
 	const <brief = 1, <full = 2;
 	classvar <failures, <passes, routine, <>reportPasses = true, <>passVerbosity;
 	classvar <allTestClasses;
@@ -52,14 +52,18 @@ UnitTest {
 
 	// run all UnitTest subclasses
 	*runAll {
-		^this.forkIfNeeded {
-			this.reset;
-			this.allSubclasses.do { |testClass|
-				testClass.run(false, false);
-				0.1.wait;
-			};
-			this.report
-		}
+		if(this === UnitTest, {
+			^this.forkIfNeeded {
+				this.reset;
+				this.allSubclasses.do { |testClass|
+					testClass.run(false, false);
+					0.1.wait;
+				};
+				this.report
+			}
+		}, {
+			^this.shouldNotImplement(thisMethod)
+		});
 	}
 
 	// run a single test method of this class
@@ -111,8 +115,7 @@ UnitTest {
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-		var details =
-		"Is:\n\t % \nShould equal (within range" + within ++ "):\n\t %".format(a, b);
+		var details = ("Is:\n\t % \nShould equal (within range %):\n\t %").format(a, within, b);
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
@@ -253,10 +256,13 @@ UnitTest {
 		server.newAllocators; // new nodes, busses regardless
 	}
 
+	debug { |text|
+		debug = debug ++ text;
+	}
+
 	// call failure directly
 	failed { | method, message, report = true, details |
-
-		var r = UnitTestResult(this, method, message, details);
+		var r = UnitTestResult(this, method, message, details, debug);
 		failures = failures.add(r);
 
 		if(report) {
@@ -268,7 +274,7 @@ UnitTest {
 
 	// call pass directly
 	passed { | method, message, report = true, details |
-		var r = UnitTestResult(this, method, message, details);
+		var r = UnitTestResult(this, method, message, details, debug);
 		passes = passes.add(r);
 
 		if(report and: { reportPasses }) {
@@ -393,10 +399,10 @@ UnitTest {
 
 UnitTestResult {
 
-	var <testClass, <testMethod, <message, <details;
+	var <testClass, <testMethod, <message, <details, <debug;
 
-	*new { |testClass, testMethod, message = "", details|
-		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message, details)
+	*new { |testClass, testMethod, message = "", details, debug|
+		^super.newCopyArgs(testClass ? this, testMethod ? thisMethod, message, details, debug)
 	}
 
 	report { |brief=false|
@@ -405,8 +411,13 @@ UnitTestResult {
 		if (message.size > 0) {
 			Post << " - " << message;
 		};
-		if (brief.not && details.notNil) {
-			Post << Char.nl << details;
+		if (brief.not) {
+			if (debug.size > 0) {
+				Post << Char.nl << debug;
+			};
+			if (details.notNil) {
+				Post << Char.nl << details;
+			};
 		};
 		Post << Char.nl;
 	}

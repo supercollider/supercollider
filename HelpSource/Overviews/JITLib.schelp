@@ -31,7 +31,7 @@ For some recent changes, see: link::Other/JITLibChanges3.7::
 
 For additional functionality, see also strong::JITLib extensions Quark::. To install it, run the following:
 code::
-"JITLib extensions".include;
+"JITLibExtensions".include;
 ::
 
 
@@ -130,11 +130,6 @@ definitionList::
 ## link::Classes/EnvGate:: || (singleton fade envelope)
 ::
 
-
-section::Feedback
-
-for suggestions / comments contact me
-Julian Rohrhuber, julian.rohrhuber@musikundmedien.net
 
 History and GUI classes written by Alberto de Campo.
 

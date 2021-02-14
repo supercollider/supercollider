@@ -36,21 +36,23 @@ For sclang and scide:
 - [libudev][libudev]: Device manager library, required for HID support.
 - [Linux kernel][Linux kernel] >= 2.6: Required for LID support.
 - [libreadline][libreadline] >= 5: Required for sclang's CLI interface.
+- [ncurses][ncurses]: Required for sclang's CLI interface.
 
 [Qt]: http://qt-project.org
 [ALSA]: http://www.alsa-project.org
 [libudev]: http://www.freedesktop.org/software/systemd/man/libudev.html
 [libreadline]: http://savannah.gnu.org/projects/readline
+[ncurses]: https://invisible-island.net/ncurses/
 [Linux kernel]: http://www.kernel.org
 [git]: https://git-scm.com/
 
 Installing requirements on Debian
 ---------------------------------
 
-There are dedicated web pages for building on particular embedded Linux platforms:
+There are dedicated READMEs in this repository for building on particular embedded Linux platforms:
 
-- [Raspberry Pi](http://supercollider.github.io/development/building-raspberrypi)
-- [BeagleBone Black](https://supercollider.github.io/development/building-beagleboneblack)
+- Raspberry Pi: README_RASPBERRY_PI.md
+- BeagleBone Black: README_BEAGLEBONE_BLACK.md
 
 On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
@@ -60,7 +62,7 @@ If you need to use JACK1 replace libjack-jackd2-dev by libjack-dev.
 
 The following command installs all the recommended dependencies for sclang except for Qt:
 
-    sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config
+    sudo apt-get install git libasound2-dev libicu-dev libreadline6-dev libudev-dev pkg-config libncurses5-dev
 
 Installing Qt
 -------------
@@ -108,7 +110,23 @@ Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyt
 Building
 --------
 
-### Step 1: Make a build directory
+### Step 1: Obtain the source code
+
+SuperCollider is hosted on Github: https://github.com/SuperCollider/SuperCollider
+
+Obtaining the SuperCollider source code can be done either by downloading a release tarball, or by cloning the repository.
+
+SuperCollider releases are available to download here: https://github.com/supercollider/supercollider/releases
+
+Cloning the repository can be done with the following command:
+
+    git clone --recurse-submodules https://github.com/SuperCollider/SuperCollider.git
+
+The `--recurse-submodules` option will clone the repository's submodules which are needed to build SuperCollider. The submodules can also be obtained by navigating to the root of your locally cloned SuperCollider repository and running the following command:
+
+    git submodule update --init --recursive
+
+### Step 2: Make a build directory
 
 First, `cd` into the root of the SuperCollider source directory (where this file resides).
 
@@ -119,7 +137,7 @@ Create a build directory and `cd` into it:
 
 You can actually name this whatever you want, allowing you to have multiple independent build directories. If your SuperCollider source is also a git repository, the `.gitignore` file is configured to ignore files of the form `build*`.
 
-### Step 2: Set CMake flags
+### Step 3: Set CMake flags
 
 Depending on what SuperCollider components you wish to install, you can set CMake flags. You can set CMake flags on the command line using `cmake -DKEY=value ..`. You can also use cmake frontends like ccmake or cmake-gui, or simply edit the `CMakeCache.txt` file. CMake flags are persistent and you only need to run these commands once each.
 
@@ -177,7 +195,7 @@ For example if you wish to install into `lib64`:
 
     cmake -DLIB_SUFFIX=64 ..
 
-### Step 3: Build
+### Step 4: Build
 
 If CMake ran successfully without errors, you are ready to move on to building. You can freely alternate between building and setting CMake flags.
 
@@ -209,7 +227,7 @@ Building a Debian package
 The most up-to-date Debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
-http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
+https://salsa.debian.org/multimedia-team/supercollider
 
 
 Running scsynth or supernova (standalone)

@@ -28,6 +28,11 @@
 #    endif
 #endif
 
+// AppleClang workaround
+#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
 #include <boost/asio/ip/tcp.hpp>
 
 #include <boost/enable_shared_from_this.hpp>
@@ -45,6 +50,8 @@
 #include "../utilities/sized_array.hpp"
 #include "../utilities/static_pool.hpp"
 #include "../utilities/time_tag.hpp"
+
+struct FifoMsg;
 
 namespace nova {
 
@@ -221,9 +228,14 @@ private:
 public:
     class tcp_connection : public nova_endpoint {
     public:
-        typedef std::shared_ptr<tcp_connection> pointer;
+        using pointer = std::shared_ptr<tcp_connection>;
+#if BOOST_VERSION >= 107000
+        using executor = boost::asio::executor;
+#else
+        using executor = boost::asio::io_context::executor_type;
+#endif
 
-        static pointer create(boost::asio::io_service& io_service) { return pointer(new tcp_connection(io_service)); }
+        static pointer create(const executor& executor) { return pointer(new tcp_connection(executor)); }
 
         tcp::socket& socket() { return socket_; }
 
@@ -232,7 +244,11 @@ public:
         bool operator==(tcp_connection const& rhs) const { return &rhs == this; }
 
     private:
-        tcp_connection(boost::asio::io_service& io_service): socket_(io_service) {}
+#if BOOST_VERSION >= 107000
+        tcp_connection(const executor& executor): socket_(executor) {}
+#else
+        tcp_connection(const executor& executor): socket_(executor.context()) {}
+#endif
 
         void send(const char* data, size_t length) override final;
 
@@ -244,6 +260,7 @@ public:
         sc_osc_handler* osc_handler;
         boost::endian::big_int32_t msg_size_;
         std::vector<char> msg_buffer_;
+        std::mutex socket_mutex_;
     };
 
 private:
@@ -322,7 +339,11 @@ public:
 
     void do_asynchronous_command(World* world, void* replyAddr, const char* cmdName, void* cmdData, AsyncStageFn stage2,
                                  AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup, int completionMsgSize,
-                                 void* completionMsgData);
+                                 void* completionMsgData) const;
+
+    void send_message_from_RT(const World* world, FifoMsg& msg) const;
+
+    void send_message_to_RT(const World* world, FifoMsg& msg) const;
 
     bool quit_received = false;
 

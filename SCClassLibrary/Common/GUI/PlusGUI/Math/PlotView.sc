@@ -4,10 +4,10 @@ Plot {
 	var <bounds, <plotBounds,<>drawGrid;
 
 	var <spec, <domainSpec;
-	var <font, <fontColor, <gridColorX, <gridColorY, <>plotColor, <>backgroundColor;
+	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
 
-	var valueCache;
+	var valueCache, resolution;
 
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
@@ -53,6 +53,8 @@ Plot {
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
+
+		resolution =  plotter.resolution;
 	}
 
 	bounds_ { |rect|
@@ -83,6 +85,9 @@ Plot {
 			drawGrid.horzGrid = nil
 		})
 	}
+	plotColor_ { |c|
+		plotColor = c.asArray;
+	}
 	gridColorX_ { |c|
 		drawGrid.x.gridColor = c;
 		gridColorX = c;
@@ -90,6 +95,9 @@ Plot {
 	gridColorY_ { |c|
 		drawGrid.y.gridColor = c;
 		gridColorY = c;
+	}
+	plotMode_ { |m|
+		plotMode = m.asArray
 	}
 	font_ { |f|
 		font = f;
@@ -149,7 +157,7 @@ Plot {
 	}
 
 	domainCoordinates { |size|
-		var range, step, vals, resamps;
+		var range, vals;
 
 		vals = if (plotter.domain.notNil) {
 			domainSpec.unmap(plotter.domain);
@@ -159,7 +167,7 @@ Plot {
 				0.5.dup(size) // put the values in the middle of the plot
 			} {
 				domainSpec.unmap(
-					(domainSpec.minval, domainSpec.minval + (range / (size-1)) .. domainSpec.maxval)
+					Array.interpolation(size, domainSpec.minval, domainSpec.maxval)
 				);
 			}
 		};
@@ -173,20 +181,18 @@ Plot {
 	}
 
 	drawData {
-		var mode = plotter.plotMode;
 		var ycoord = this.dataCoordinates;
 		var xcoord = this.domainCoordinates(ycoord.size);
 
 		Pen.use {
 			Pen.width = 1.0;
 			Pen.joinStyle = 1;
-			plotColor = plotColor.as(Array);
-
 			Pen.addRect(plotBounds);
 			Pen.clip; // clip curve to bounds.
 
-			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion
+			if(ycoord.at(0).isSequenceableCollection) { // multi channel expansion when superposed
 				ycoord.flop.do { |y, i|
+					var mode = plotMode.wrapAt(i);
 					Pen.beginPath;
 					this.perform(mode, xcoord, y);
 					if (this.needsPenFill(mode)) {
@@ -201,8 +207,8 @@ Plot {
 				Pen.beginPath;
 				Pen.strokeColor = plotColor.at(0);
 				Pen.fillColor= plotColor.at(0);
-				this.perform(mode, xcoord, ycoord);
-				if (this.needsPenFill(mode)) {
+				this.perform(plotMode.at(0), xcoord, ycoord);
+				if (this.needsPenFill(plotMode.at(0))) {
 					Pen.fill
 				} {
 					Pen.stroke
@@ -210,7 +216,6 @@ Plot {
 			};
 			Pen.joinStyle = 0;
 		};
-
 	}
 
 	// modes
@@ -360,11 +365,11 @@ Plot {
 	}
 
 	hasSteplikeDisplay {
-		^#[\levels, \steps, \bars].includes(plotter.plotMode)
+		^#[\levels, \steps, \bars].includesAny(plotMode)
 	}
 
-	needsPenFill {
-		^#[\bars].includes(plotter.plotMode)
+	needsPenFill { |pMode|
+		^#[\bars].includes(pMode)
 	}
 
 	getIndex { |x|
@@ -409,11 +414,33 @@ Plot {
 	copy {
 		^super.copy.drawGrid_(drawGrid.copy)
 	}
+
 	prResampValues {
-		^if(value.size <= (plotBounds.width / plotter.resolution)) {
+		var dataRes, numSpecSteps, specStep, sizem1;
+
+		dataRes = plotBounds.width / max((value.size - 1), 1);
+
+		^if (
+			(dataRes >= plotter.resolution) or:
+			{ plotter.domain.notNil } // don't resample if domain is specified
+		) {
 			value
 		} {
-			valueCache ?? { valueCache = value.resamp1(plotBounds.width / plotter.resolution) }
+			// resample
+			if (valueCache.isNil or: { resolution != plotter.resolution }) {
+				resolution = plotter.resolution;
+
+				// domain is nil, so data fills full domain/view width
+				numSpecSteps = (plotBounds.width / resolution).floor.asInteger;
+				specStep = numSpecSteps.reciprocal;
+				sizem1 = value.size - 1;
+
+				valueCache = (numSpecSteps + 1).collect{ |i|
+					value.blendAt((specStep * i) * sizem1)  // float index of new value
+				}
+			} {
+				valueCache
+			}
 		}
 	}
 }
@@ -424,8 +451,8 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, <plotColors;
-	var <cursorPos, <>plotMode = \linear, <>editMode = false, <>normalized = false;
+	var <plots, <specs, <domainSpecs, plotColor;
+	var <cursorPos, plotMode, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
 	var <editPlotIndex, <editPos;
@@ -456,6 +483,8 @@ Plotter {
 			interactionView.drawFunc = { this.draw };
 		};
 		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
+		this.plotMode = \linear;
+		this.plotColor = Color.black;
 
 		interactionView
 		.background_(Color.clear)
@@ -690,7 +719,8 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		plotColors !? { this.plotColors_(plotColors) };
+		this.plotColor_(plotColor);
+		this.plotMode_(plotMode);
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
 	}
@@ -744,12 +774,30 @@ Plotter {
 		}
 	}
 
-	plotColors_ { |argColors|
-		plotColors = argColors.as(Array);
+	plotColor_ { |colors|
+		plotColor = colors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
-			plt.plotColor_(plotColors.rotate(i.neg))
+			plt.plotColor_(plotColor.rotate(i.neg))
 		}
+	}
+
+	plotColor {
+		var first = plotColor.first;
+		^if (plotColor.every(_ == first)) { first } { plotColor };
+	}
+
+	plotMode_ { |modes|
+		plotMode = modes.asArray;
+		plots.do { |plt, i|
+			// rotate modes to ensure proper behavior with superpose
+			plt.plotMode_(plotMode.rotate(i.neg))
+		}
+	}
+
+	plotMode {
+		var first = plotMode.first;
+		^if (plotMode.every(_ == first)) { first } { plotMode };
 	}
 
 	// specs
@@ -798,7 +846,7 @@ Plotter {
 	calcDomainSpecs {
 		// for now, a simple version
 		domainSpecs = data.collect { |val|
-			[0, val.size - 1, \lin, 1].asSpec
+			[0, val.size - 1, \lin].asSpec
 		}
 	}
 
@@ -846,7 +894,7 @@ Plotter {
 			if(array.first.first.isSequenceableCollection) { ^array };
 			size = array.maxItem { |x| x.size }.size;
 			// for now, just extend data:
-			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble		};
+			^array.collect { |x| x.asArray.clipExtend(size) }.flop.bubble };
 		^array
 	}
 }
@@ -947,7 +995,7 @@ Plotter {
 			^{ In.kr(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately);
 		});
 	}
-	
+
 	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
 		^this.plot(duration, bounds, minval, maxval)
 	}

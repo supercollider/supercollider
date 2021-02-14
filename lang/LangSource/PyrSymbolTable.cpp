@@ -73,7 +73,7 @@ PyrSymbol* SymbolSpace::NewSymbol(const char* inName, int inHash, int inLength) 
     if (inLength > 1 && inName[inLength - 1] == '_')
         sym->flags |= sym_Setter;
     sym->u.index = 0;
-    sym->classdep = NULL;
+    sym->classdep = nullptr;
     return sym;
 }
 

@@ -55,28 +55,37 @@ NamedControl {
 	var <name, <values, <lags, <rate, <fixedLag;
 	var <control;
 
-	*ar { arg  name, values, lags;
-		^this.new(name, values, \audio, lags, false)
+	*ar { arg  name, values, lags, spec;
+		^this.new(name, values, \audio, lags, false, spec)
 	}
 
-	*kr { arg  name, values, lags, fixedLag = false;
-		^this.new(name, values, \control, lags, fixedLag)
+	*kr { arg  name, values, lags, fixedLag = false, spec;
+		^this.new(name, values, \control, lags, fixedLag, spec)
 	}
 
-	*ir { arg  name, values, lags;
-		^this.new(name, values, \scalar, lags, false)
+	*ir { arg  name, values, lags, spec;
+		^this.new(name, values, \scalar, lags, false, spec)
 	}
 
-	*tr { arg  name, values, lags;
-		^this.new(name, values, \trigger, lags, false)
+	*tr { arg  name, values, lags, spec;
+		^this.new(name, values, \trigger, lags, false, spec)
 	}
 
-	*new { arg name, values, rate, lags, fixedLag = false;
+	*new { arg name, values, rate, lags, fixedLag = false, spec;
 		var res;
+
+		this.initDict;
 
 		name = name.asSymbol;
 
-		this.initDict;
+		if (spec.notNil) {
+			spec = spec.asSpec;
+
+			if (values.isNil) {
+				values = spec.default;
+			};
+		};
+
 		res = currentControls.at(name);
 
 		lags = lags.deepCollect(inf, {|elem|
@@ -113,6 +122,10 @@ NamedControl {
 			}
 		};
 
+		if(spec.notNil) {
+			res.spec = spec; // Set after we've finished without error.
+		};
+
 		^if(lags.notNil) {
 			res.control.lag(lags).unbubble
 		} {
@@ -121,11 +134,11 @@ NamedControl {
 	}
 
 	init {
-		var prefix, ctlName, ctl, selector;
+		var prefix, str;
 
 		name !? {
-			name = name.asString;
-			if(name[1] == $_) { prefix = name[0]; ctlName = name[2..] } { ctlName = name };
+			str = name.asString;
+			if(str[1] == $_) { prefix = str[0] };
 		};
 
 		if(fixedLag && lags.notNil && prefix.isNil) {
@@ -163,6 +176,18 @@ NamedControl {
 		if(UGen.buildSynthDef !== buildSynthDef or: currentControls.isNil) {
 			buildSynthDef = UGen.buildSynthDef;
 			currentControls = IdentityDictionary.new;
+		};
+	}
+
+	spec {
+		^UGen.buildSynthDef.specs[name]
+	}
+
+	spec_{
+		|spec|
+		spec = spec.asSpec;
+		this.spec !? _.setFrom(spec) ?? {
+			UGen.buildSynthDef.specs[name] = spec
 		};
 	}
 }

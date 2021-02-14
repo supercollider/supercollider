@@ -163,6 +163,15 @@ code::
 List[1, 2, 3, 4].includes(3);
 ::
 
+method::includesEqual
+Answer whether anObject is contained in the receiver. In contrast to link::#-includes:: this tests for equality - not identity.
+code::
+List["a", "b", "c"].includesEqual("c");  //true
+List["a", "b", "c"].includes("c");       //false
+List[ List[1, 2], List[3, 4] ].includesEqual(List[3, 4]);  //true
+List[ List[1, 2], List[3, 4] ].includes(List[3, 4]);       //false
+::
+
 method::includesAny
 Answer whether any item in aCollection is contained in the receiver.
 code::

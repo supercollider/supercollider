@@ -40,8 +40,13 @@ Main : Process {
 				"scel",  {"For help type C-c C-y."},
 				"sced",  {"For help type ctrl-U."},
 				"scapp", {"For help type cmd-d."},
-				"scqt", {"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))}
-			) ?? {
+				"scqt", {
+					if (Platform.hasQtWebEngine) {
+						"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))
+					} {
+						"For help visit http://doc.sccode.org" // Help browser is not available
+					}
+			}) ?? {
 				(
 					osx: "For help type cmd-d.",
 					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",
@@ -126,34 +131,35 @@ Main : Process {
 		(class ? Object).browse;
 	}
 
-	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
+	*version { ^"%.%.%%".format(this.scVersionMajor, this.scVersionMinor, this.scVersionPatch, this.scVersionTweak) }
 
-	*scVersionMajor   {
-		_SC_VersionMajor
-		^this.primitiveFailed
-	}
-	*scVersionMinor   {
-		_SC_VersionMinor
-		^this.primitiveFailed
-	}
-	*scVersionPostfix {
-		_SC_VersionPatch
-		^this.primitiveFailed
-	}
-	*versionAtLeast { |maj, min|
-		^if((maj==this.scVersionMajor) and:{min.notNil}){
-			this.scVersionMinor >= min
-		}{
+	*scVersionMajor { _SC_VersionMajor ^this.primitiveFailed }
+	*scVersionMinor { _SC_VersionMinor ^this.primitiveFailed }
+	*scVersionPatch { _SC_VersionPatch ^this.primitiveFailed }
+	*scVersionTweak { _SC_VersionTweak ^this.primitiveFailed }
+
+	*versionAtLeast { |maj, min, patch|
+		^if((maj == this.scVersionMajor) and: { min.notNil }) {
+			if((min == this.scVersionMinor) and: { patch.notNil }) {
+				this.scVersionPatch >= patch
+			} {
+				this.scVersionMinor >= min
+			}
+		} {
 			this.scVersionMajor >= maj
-		};
+		}
 	}
 
-	*versionAtMost { |maj, min|
-		^if((maj==this.scVersionMajor) and:{min.notNil}){
-			this.scVersionMinor <= min
-		}{
+	*versionAtMost { |maj, min, patch|
+		^if((maj == this.scVersionMajor) and: { min.notNil }) {
+			if((min == this.scVersionMinor) and: { patch.notNil }) {
+				this.scVersionPatch <= patch
+			} {
+				this.scVersionMinor <= min
+			}
+		} {
 			this.scVersionMajor <= maj
-		};
+		}
 	}
 
 	pid {

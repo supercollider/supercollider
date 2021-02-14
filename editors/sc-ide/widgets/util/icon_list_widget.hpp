@@ -39,7 +39,11 @@ public:
             QString text = index.data(Qt::DisplayRole).toString();
             QFontMetrics fm(option.font);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+            int fontWidth = fm.horizontalAdvance(text);
+#else
             int fontWidth = fm.width(text);
+#endif
 
             QSize requiredSize(qMax(fontWidth, iconSize.width()), fm.height() + iconSize.height());
 

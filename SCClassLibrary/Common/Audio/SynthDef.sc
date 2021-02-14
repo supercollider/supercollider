@@ -33,7 +33,7 @@ SynthDef {
 	}
 
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata).children_(Array.new(64))
+		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata ?? {()}).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
 	}
 
@@ -648,6 +648,11 @@ SynthDef {
 		lib = SynthDescLib.getLib(libname);
 		desc = lib.readDescFromDef(stream, keepDef, this, metadata);
 		^desc
+	}
+
+	specs {
+		if(metadata[\specs].isNil) { metadata[\specs] = () };
+		^metadata[\specs]
 	}
 
 	// this method warns and does not halt

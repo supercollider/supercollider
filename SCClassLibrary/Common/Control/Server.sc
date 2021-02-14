@@ -54,6 +54,8 @@ ServerOptions {
 	var <>recChannels;
 	var <>recBufSize;
 
+	var <>bindAddress;
+
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
@@ -95,6 +97,7 @@ ServerOptions {
 				recSampleFormat: "float",
 				recChannels: 2,
 				recBufSize: nil,
+				bindAddress: "127.0.0.1",
 			)
 		)
 	}
@@ -128,6 +131,9 @@ ServerOptions {
 		o = o ++ " -i " ++ numInputBusChannels;
 		o = o ++ " -o " ++ numOutputBusChannels;
 
+		if (bindAddress != defaultValues[\bindAddress], {
+			o = o ++ " -B " ++ bindAddress;
+		});
 		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
 			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
@@ -175,7 +181,7 @@ ServerOptions {
 		if (outputStreamsEnabled.notNil, {
 			o = o ++ " -O " ++ outputStreamsEnabled ;
 		});
-		if ((thisProcess.platform.name!=\osx) or: {inDevice == outDevice})
+		if (inDevice == outDevice)
 		{
 			if (inDevice.notNil,
 				{
@@ -1018,7 +1024,10 @@ Server {
 				this.prOnServerProcessExit(exitCode);
 			});
 			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
-			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
+			// in case the server takes more time to boot
+			// we increase the number of attempts for tcp connection
+			// in order to minimize the chance of timing out
+			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete, nil, 20) }, onComplete);
 		}
 	}
 

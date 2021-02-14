@@ -141,7 +141,9 @@ Color {
 		if (blue == max, {hue = (red - green) / delta + 4});
 		hue = hue/6;
 		if (hue < 0, {hue = hue + 1});
+		if (hue.isNaN, {hue = 0.0});
 		sat = delta / max;
+		if (sat.isNaN, {sat = 0.0});
 		val = max;
 		^[hue, sat, val, alpha]
 	}

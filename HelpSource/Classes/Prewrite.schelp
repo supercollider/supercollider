@@ -1,5 +1,5 @@
 class:: Prewrite
-summary:: rewriting system
+summary:: L-system pattern for selfsimilar structures
 related:: Classes/Pfsm
 categories:: Streams-Patterns-Events>Patterns>List>Indexing
 
@@ -33,39 +33,40 @@ Examples::
 The examples use the code::():: shortcut for link::Classes/Event::.
 
 code::
+
+// A generative song
+(
+// Scale degrees going up
+Pdef(\a, Pbind(\dur, 0.25, \degree, Pseq((0..3))));
+
+// Scale degrees going down
+Pdef(\b, Pbind(\dur, 0.25, \degree, Pseq((3..0))));
+
+// Random scale degrees
+Pdef(\c, Pbind(\dur, 0.125, \degree, Pwhite(0,10, 8)));
+
+// Use the L-system to put together a sequence of keys
+// Psym will then retrieve the patterns from the global Pdef dictionary
+// See the post window for info about which of these are playing
+Psym(
+	Prewrite(\a, // start with pattern \a
+		(
+			\a: #[\a, \b],
+			\b: #[\c, \a],
+			\c: #[\a, \b]
+	), 4).trace
+).play
+)
+
+// Inspect the L-system to see what data it produces
 (
 a = Prewrite(0, // start with 0
-		(	0: #[2,0],
-			1: #[0,0,1],
-			2: #[1,0,1]
-		), 4);
+	(
+		0: #[2,0],
+		1: #[0,0,1],
+		2: #[1,0,1]
+), 4);
 x = a.asStream;
 30.do({ x.next.postln });
-)
-
-
-//Prewrite used as a sequence of pitches:
-
-(
-SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
-		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
-		Out.ar(out, SinOsc.ar(freq, 0, env))
-	}).add;
-)
-
-(
-a = Prewrite(0,	(
-	0: #[2,0],
-	1: #[0,0,1],
-	2: #[1,0,1]
-), 4).asStream;
-Routine({
-	loop({
-		Synth(\help_sinegrain, [\freq, (a.next * 5 + 70).midicps]);
-		0.1.wait;
-	})
-}).play;
 )
 ::

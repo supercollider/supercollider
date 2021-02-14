@@ -58,7 +58,6 @@ namespace bfs = boost::filesystem;
 extern bool compiledOK;
 PyrSymbol* s_unixCmdAction;
 
-int prString_System(struct VMGlobals* g, int numArgsPushed);
 int prString_System(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -73,7 +72,6 @@ int prString_System(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_Basename(struct VMGlobals* g, int numArgsPushed);
 int prString_Basename(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -93,7 +91,6 @@ int prString_Basename(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_Dirname(struct VMGlobals* g, int numArgsPushed);
 int prString_Dirname(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -116,7 +113,7 @@ int prString_Dirname(struct VMGlobals* g, int numArgsPushed) {
 static void string_popen_thread_func(pid_t pid, FILE* stream, bool postOutput) {
     char buf[1024];
 
-    setvbuf(stream, 0, _IONBF, 0);
+    setvbuf(stream, nullptr, _IONBF, 0);
 
     while (postOutput) {
         char* string = fgets(buf, 1024, stream);
@@ -143,7 +140,6 @@ static void string_popen_thread_func(pid_t pid, FILE* stream, bool postOutput) {
     gLangMutex.unlock();
 }
 
-int prString_POpen(struct VMGlobals* g, int numArgsPushed);
 int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* callerSlot = g->sp - 1;
     PyrSlot* postOutputSlot = g->sp;
@@ -171,7 +167,6 @@ int prString_POpen(struct VMGlobals* g, int numArgsPushed) {
         return errFailed;
 }
 
-int prArrayPOpen(struct VMGlobals* g, int numArgsPushed);
 int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* callerSlot = g->sp - 1;
     PyrSlot* postOutputSlot = g->sp;
@@ -212,7 +207,6 @@ int prArrayPOpen(struct VMGlobals* g, int numArgsPushed) {
     }
 }
 
-int prPidRunning(VMGlobals* g, int numArgsPushed);
 int prPidRunning(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -243,7 +237,6 @@ int prPidRunning(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prUnix_Errno(struct VMGlobals* g, int numArgsPushed);
 int prUnix_Errno(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -288,7 +281,6 @@ int prGMTime(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prAscTime(struct VMGlobals* g, int numArgsPushed);
 int prAscTime(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     PyrSlot* slots = slotRawObject(a)->slots;
@@ -328,7 +320,6 @@ int prAscTime(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prStrFTime(struct VMGlobals* g, int numArgsPushed);
 int prStrFTime(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
@@ -379,14 +370,12 @@ int prStrFTime(struct VMGlobals* g, int numArgsPushed) {
 
 int32 timeseed();
 
-int prTimeSeed(struct VMGlobals* g, int numArgsPushed);
 int prTimeSeed(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetInt(a, timeseed());
     return errNone;
 }
 
-int prGetPid(VMGlobals* g, int numArgsPushed);
 int prGetPid(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     SetInt(a,
@@ -399,8 +388,6 @@ int prGetPid(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-
-void initUnixPrimitives();
 void initUnixPrimitives() {
     int base, index = 0;
 

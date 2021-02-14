@@ -19,28 +19,25 @@
  *
  ************************************************************************/
 
-#include "QcWebView.h"
-#include "../widgets/web_page.hpp"
-#include "../QcWidgetFactory.h"
-#include <QWebEnginePage>
-#include <QWebEngineSettings>
-#include <QWebEngineContextMenuData>
-#include <QAction>
-#include <QMenu>
-#include <QShortcut>
-#include <QKeyEvent>
-#include <QApplication>
-#include <QStyle>
-#include <QWebEngineCallback>
+#ifdef SC_USE_QTWEBENGINE
 
-QC_DECLARE_QWIDGET_FACTORY(WebView);
-QC_DECLARE_QOBJECT_FACTORY(QcCallback);
+#    include "QcWebView.h"
+#    include "../widgets/web_page.hpp"
+#    include <QWebEnginePage>
+#    include <QWebEngineSettings>
+#    include <QWebEngineContextMenuData>
+#    include <QAction>
+#    include <QMenu>
+#    include <QShortcut>
+#    include <QKeyEvent>
+#    include <QApplication>
+#    include <QStyle>
+#    include <QWebEngineCallback>
 
 namespace QtCollider {
 
-WebView::WebView(QWidget* parent): QWebEngineView(parent), _interpretSelection(false), _editable(false) {
+WebView::WebView(QWidget* parent): QWebEngineView(parent), _editable(false) {
     QtCollider::WebPage* page = new WebPage(this);
-    page->setDelegateReload(true);
     setPage(page);
     connectPage(page);
 
@@ -54,9 +51,7 @@ WebView::WebView(QWidget* parent): QWebEngineView(parent), _interpretSelection(f
     page->action(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
     page->action(QWebEnginePage::Reload)->setShortcut(QKeySequence::Refresh);
 
-    connect(this, SIGNAL(interpret(QString)), qApp, SLOT(interpret(QString)), Qt::QueuedConnection);
-
-    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)));
+    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
 }
 
 void WebView::connectPage(QtCollider::WebPage* page) {
@@ -82,8 +77,7 @@ void WebView::connectPage(QtCollider::WebPage* page) {
 
     connect(page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onPageReload()));
 
-    connect(page, SIGNAL(renderProcessTerminated(RenderProcessTerminationStatus, int)), this,
-            SLOT(onRenderProcessTerminated(RenderProcessTerminationStatus, int)));
+    connect(page, &WebPage::renderProcessTerminated, this, &WebView::onRenderProcessTerminated);
 }
 
 void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code) {
@@ -159,7 +153,8 @@ void WebView::toPlainText(QcCallback* cb) const {
 void WebView::runJavaScript(const QString& script, QcCallback* cb) {
     if (page()) {
         if (cb) {
-            page()->runJavaScript(script, cb->asFunctor());
+            // convert QVariant to string until we deal with QVariants
+            page()->runJavaScript(script, [cb](const QVariant& t) { cb->call(t.toString()); });
         } else {
             page()->runJavaScript(script, [](const QVariant&) {});
         }
@@ -228,29 +223,34 @@ void WebView::contextMenuEvent(QContextMenuEvent* event) {
     menu.exec(event->globalPos());
 }
 
-void WebView::keyPressEvent(QKeyEvent* e) {
-    int key = e->key();
-    int mods = e->modifiers();
-
-    if (_interpretSelection
-        && (key == Qt::Key_Enter || (key == Qt::Key_Return && mods & (Qt::ControlModifier | Qt::ShiftModifier)))) {
-        QString selection = selectedText();
-        if (!selection.isEmpty()) {
-            Q_EMIT(interpret(selection));
-            return;
-        }
+// webView's renderer keypresses don't arrive to webView
+// duplicate them
+bool WebView::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::KeyPress) {
+        // takes ownership of newEvent
+        QApplication::postEvent(this, new QKeyEvent(*static_cast<QKeyEvent*>(event)));
     }
 
-    QWebEngineView::keyPressEvent(e);
+    event->ignore();
+    return false;
 }
 
-void WebView::updateEditable(bool ok) {
-    if (ok) {
-        if (_editable) {
-            page()->runJavaScript("document.documentElement.contentEditable = true");
-        } else {
-            page()->runJavaScript("document.documentElement.contentEditable = false");
-        }
+// stop keypresses here to avoid duplicates in parents
+bool WebView::event(QEvent* ev) {
+    if (ev->type() == QEvent::KeyPress)
+        return true;
+
+    return QWebEngineView::event(ev);
+}
+
+void WebView::pageLoaded(bool ok) { this->focusProxy()->installEventFilter(this); }
+
+void WebView::setEditable(bool b) {
+    _editable = b;
+    if (_editable) {
+        page()->runJavaScript("document.documentElement.contentEditable = true");
+    } else {
+        page()->runJavaScript("document.documentElement.contentEditable = false");
     }
 }
 
@@ -271,3 +271,5 @@ void WebView::onLinkClicked(const QUrl& url, QWebEnginePage::NavigationType type
 }
 
 } // namespace QtCollider
+
+#endif // SC_USE_QTWEBENGINE

@@ -29,6 +29,10 @@ Tdef(\x).clear;
 
 ClassMethods::
 
+method::all
+A global link::Classes/IdentityDictionary:: with all proxies.
+
+
 private::initClass
 
 subsection::Creation
@@ -37,6 +41,12 @@ method::new
 Store the task in a global dictionary under key, replacing its routine function with the new one.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default task is created)
+
+argument::key
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+argument::item
+An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
 method::default
 Default source, if none is given. The default task has a function that waits in 1.0 beat steps and does nothing.
@@ -61,6 +71,9 @@ One Tdef may have many tasks in different places. A change in the task definitio
 
 method::quant
 Set the quantisation time for beat accurate scheduling.
+
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
 
 argument::val
 can be an array strong::[quant, phase, timingOffset, outset] ::, or just strong::[quant, phase]:: etc.
@@ -116,7 +129,7 @@ method::play
 Starts the Tdef and creates a player.
 
 argument::argClock
-a clock on which to play the Tdef
+a clock on which to play the Tdef. If nil, uses the instance's link::#-clock::, which in turn defaults to TempoClock.default.
 argument::doReset
 a flag whether to reset the task if already playing
 argument::quant

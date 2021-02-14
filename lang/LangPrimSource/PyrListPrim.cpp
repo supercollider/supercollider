@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-int objectPerform(VMGlobals* g, int numArgsPushed);
 
 int ivxIdentDict_array, ivxIdentDict_size, ivxIdentDict_parent, ivxIdentDict_proto, ivxIdentDict_know;
 
@@ -142,7 +141,6 @@ int arrayAtIdentityHash(PyrObject* array, PyrSlot* key) {
 }
 
 
-int prArray_AtIdentityHash(struct VMGlobals* g, int numArgsPushed);
 int prArray_AtIdentityHash(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     PyrObject* array;
@@ -207,7 +205,6 @@ int arrayAtIdentityHashInPairsWithHash(PyrObject* array, PyrSlot* key, int hash)
 }
 
 
-int identDictPut(struct VMGlobals* g, PyrObject* dict, PyrSlot* key, PyrSlot* value);
 int identDictPut(struct VMGlobals* g, PyrObject* dict, PyrSlot* key, PyrSlot* value) {
     PyrSlot *slot, *newslot;
     int i, index, size;
@@ -262,7 +259,6 @@ int identDictPut(struct VMGlobals* g, PyrObject* dict, PyrSlot* key, PyrSlot* va
     return errNone;
 }
 
-int prIdentDict_Put(struct VMGlobals* g, int numArgsPushed);
 int prIdentDict_Put(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
 
@@ -276,7 +272,6 @@ int prIdentDict_Put(struct VMGlobals* g, int numArgsPushed) {
     return identDictPut(g, slotRawObject(a), b, c);
 }
 
-int prIdentDict_PutGet(struct VMGlobals* g, int numArgsPushed);
 int prIdentDict_PutGet(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c, *d, *slot, *newslot;
     int i, index, size;
@@ -330,7 +325,6 @@ int prIdentDict_PutGet(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prArray_AtIdentityHashInPairs(struct VMGlobals* g, int numArgsPushed);
 int prArray_AtIdentityHashInPairs(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     unsigned int i;
@@ -346,7 +340,6 @@ int prArray_AtIdentityHashInPairs(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-bool identDict_lookupNonNil(PyrObject* dict, PyrSlot* key, int hash, PyrSlot* result);
 bool identDict_lookupNonNil(PyrObject* dict, PyrSlot* key, int hash, PyrSlot* result) {
 again:
     PyrSlot* dictslots = dict->slots;
@@ -383,7 +376,6 @@ again:
     return false;
 }
 
-bool identDict_lookup(PyrObject* dict, PyrSlot* key, int hash, PyrSlot* result);
 bool identDict_lookup(PyrObject* dict, PyrSlot* key, int hash, PyrSlot* result) {
 again:
     PyrSlot* dictslots = dict->slots;
@@ -421,7 +413,6 @@ again:
     return false;
 }
 
-int prIdentDict_At(struct VMGlobals* g, int numArgsPushed);
 int prIdentDict_At(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1; // dict
     PyrSlot* key = g->sp; // key
@@ -443,7 +434,6 @@ int prIdentDict_At(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSymbol_envirGet(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_envirGet(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, result;
     int objClassIndex;
@@ -466,7 +456,6 @@ int prSymbol_envirGet(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prSymbol_envirPut(struct VMGlobals* g, int numArgsPushed);
 int prSymbol_envirPut(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     int objClassIndex;
@@ -493,7 +482,6 @@ int prSymbol_envirPut(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-int prEvent_Delta(struct VMGlobals* g, int numArgsPushed);
 int prEvent_Delta(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, key, dur, stretch, delta;
     double fdur, fstretch;
@@ -589,7 +577,6 @@ static bool dictHasRestlikeValue(PyrObject* array) {
     return false;
 }
 
-int prEvent_IsRest(struct VMGlobals* g, int numArgsPushed);
 int prEvent_IsRest(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* dictslots = slotRawObject(g->sp)->slots;
     PyrSlot* arraySlot = dictslots + ivxIdentDict_array;
@@ -627,7 +614,6 @@ int prEvent_IsRest(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void PriorityQueueAdd(struct VMGlobals* g, PyrObject* queueobj, PyrSlot* item, double time);
 void PriorityQueueAdd(struct VMGlobals* g, PyrObject* queueobj, PyrSlot* item, double time) {
     PyrObject *schedq, *newschedq;
     int size, maxsize;
@@ -661,7 +647,6 @@ void PriorityQueueAdd(struct VMGlobals* g, PyrObject* queueobj, PyrSlot* item, d
     addheap(g, schedq, time, item);
 }
 
-int prPriorityQueueAdd(struct VMGlobals* g, int numArgsPushed);
 int prPriorityQueueAdd(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 2; // priority queue
     PyrSlot* b = g->sp - 1; // time
@@ -677,7 +662,6 @@ int prPriorityQueueAdd(struct VMGlobals* g, int numArgsPushed) {
 }
 
 
-void PriorityQueuePop(VMGlobals* g, PyrObject* queueobj, PyrSlot* result);
 void PriorityQueuePop(VMGlobals* g, PyrObject* queueobj, PyrSlot* result) {
     PyrSlot* schedqSlot = queueobj->slots;
 
@@ -692,7 +676,6 @@ void PriorityQueuePop(VMGlobals* g, PyrObject* queueobj, PyrSlot* result) {
     }
 }
 
-void PriorityQueueTop(PyrObject* queueobj, PyrSlot* result);
 void PriorityQueueTop(PyrObject* queueobj, PyrSlot* result) {
     PyrSlot* schedqSlot = queueobj->slots;
 
@@ -708,7 +691,6 @@ void PriorityQueueTop(PyrObject* queueobj, PyrSlot* result) {
     }
 }
 
-void PriorityQueueClear(PyrObject* queueobj);
 void PriorityQueueClear(PyrObject* queueobj) {
     PyrSlot* schedqSlot = queueobj->slots;
 
@@ -719,7 +701,6 @@ void PriorityQueueClear(PyrObject* queueobj) {
     }
 }
 
-bool PriorityQueueEmpty(PyrObject* queueobj);
 bool PriorityQueueEmpty(PyrObject* queueobj) {
     PyrSlot* schedqSlot = queueobj->slots;
 
@@ -732,7 +713,6 @@ bool PriorityQueueEmpty(PyrObject* queueobj) {
     return true;
 }
 
-int prPriorityQueuePop(struct VMGlobals* g, int numArgsPushed);
 int prPriorityQueuePop(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp; // priority queue
 
@@ -740,7 +720,6 @@ int prPriorityQueuePop(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prPriorityQueueTop(struct VMGlobals* g, int numArgsPushed);
 int prPriorityQueueTop(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp; // priority queue
 
@@ -748,7 +727,6 @@ int prPriorityQueueTop(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prPriorityQueueClear(struct VMGlobals* g, int numArgsPushed);
 int prPriorityQueueClear(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp; // priority queue
 
@@ -756,7 +734,6 @@ int prPriorityQueueClear(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prPriorityQueueEmpty(struct VMGlobals* g, int numArgsPushed);
 int prPriorityQueueEmpty(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -770,7 +747,6 @@ int prPriorityQueueEmpty(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-void PriorityQueuePostpone(PyrObject* queueobj, double time);
 void PriorityQueuePostpone(PyrObject* queueobj, double time) {
     PyrSlot* schedqSlot = queueobj->slots;
 
@@ -783,7 +759,6 @@ void PriorityQueuePostpone(PyrObject* queueobj, double time) {
     }
 }
 
-int prPriorityQueuePostpone(struct VMGlobals* g, int numArgsPushed);
 int prPriorityQueuePostpone(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1; // priority queue
     PyrSlot* b = g->sp; // time
@@ -798,8 +773,6 @@ int prPriorityQueuePostpone(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-
-void initListPrimitives();
 void initListPrimitives() {
     int base, index;
 
@@ -825,7 +798,6 @@ void initListPrimitives() {
     definePrimitive(base, index++, "_Event_IsRest", prEvent_IsRest, 1, 0);
 }
 
-void initPatterns();
 void initPatterns() {
     PyrSymbol* sym;
 
@@ -836,7 +808,7 @@ void initPatterns() {
     ivxIdentDict_know = instVarOffset("IdentityDictionary", "know");
 
     sym = getsym("IdentityDictionary");
-    class_identdict = sym ? sym->u.classobj : NULL;
+    class_identdict = sym ? sym->u.classobj : nullptr;
     class_identdict_index = slotRawInt(&class_identdict->classIndex);
     class_identdict_maxsubclassindex = slotRawInt(&class_identdict->maxSubclassIndex);
 

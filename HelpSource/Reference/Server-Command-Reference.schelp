@@ -124,7 +124,7 @@ definitionlist::
 ## string || Program name. May be "scsynth" or "supernova".
 ## int || Major version number. Equivalent to sclang's code::Main.scVersionMajor::.
 ## int || Minor version number. Equivalent to sclang's code::Main.scVersionMinor::.
-## string || Patch version name. Equivalent to sclang's code::Main.scVersionPostfix::.
+## string || Patch version name. Equivalent to the sclang code code::"." ++ Main.scVersionPatch ++ Main.scVersionTweak::.
 ## string || Git branch name.
 ## string || First seven hex digits of the commit hash.
 ::

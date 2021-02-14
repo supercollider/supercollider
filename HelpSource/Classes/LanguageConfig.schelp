@@ -23,7 +23,7 @@ Store the current configuration to file. Throws an error if the config file cann
 writing fails.
 
 argument:: file
-Path to the configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+Path to the configuration file to store. If the value is code::nil:: it defaults to currently used configuration file, as specified in the IDE preferences, or by the code::sclang -l "/path/to/sclang_conf.yaml":: argument. By default this is code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
 
 subsection:: Library Path Handling
 

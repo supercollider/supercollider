@@ -36,6 +36,10 @@ Pdef(\x, Pbind(\freq, Pseq([1000, 1923, 245.2, 1718] / 1.2 + 0.1, inf)));
 
 ClassMethods::
 
+method::all
+A global link::Classes/IdentityDictionary:: with all proxies.
+
+
 private::initClass
 
 subsection::Creation
@@ -44,6 +48,12 @@ method::new
 Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdef creates a link::Classes/PlazyEnvir:: internally that dynamically creates the pattern returned from the function, applying the arguments from the inevent.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
+
+argument::key
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+argument::item
+An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
 code::
 
@@ -94,6 +104,9 @@ InstanceMethods::
 subsection::Changing the definition / setting the source
 
 One pattern may have many streams in different places. A change in the pattern definition Pdef propagates through all streams. The change does not have to be immediate - there is a scheme to schedule when the change becomes effective: a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
+
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
 
 method::quant
 Set the quantisation time for beat accurate scheduling.

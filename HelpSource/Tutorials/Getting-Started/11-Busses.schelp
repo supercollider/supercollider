@@ -32,10 +32,10 @@ In and Out also have 'kr' methods, which will read and write control rate signal
 
 code::
 // This throws an error. Can't write a control rate signal to an audio rate bus
-{Out.ar(0, SinOsc.kr)}.play;
+{ |out| Out.ar(out, SinOsc.kr) }.play;
 
 // This will work as the audio rate signal is downsampled to control rate
-{Out.kr(0, SinOsc.ar)}.scope;
+{ |out| Out.kr(out, SinOsc.ar) }.scope;
 ::
 
 (This limitation is not universal amongst audio rate UGens, however, and most will accept control rate signals for some or all of their arguments. Some will even convert control rate inputs to audio rate if needed, filling in the extra values through a process called interpolation.)
@@ -68,9 +68,10 @@ You may be wondering what a 'two channel' bus is, since we haven't mentioned the
 
 code::
 (
-SynthDef.new("tutorial-SinOsc-stereo", { var outArray;
+SynthDef.new("tutorial-SinOsc-stereo", { |out|
+	var outArray;
 	outArray = [SinOsc.ar(440, 0, 0.2), SinOsc.ar(442, 0, 0.2)];
-	Out.ar(0, outArray); // writes to busses 0 and 1
+	Out.ar(out, outArray); // writes to busses 0 and 1
 }).play;
 )
 ::
@@ -111,9 +112,9 @@ So here are two examples using busses. The first is with a control rate bus.
 
 code::
 (
-SynthDef("tutorial-Infreq", { arg bus, freqOffset = 0;
+SynthDef("tutorial-Infreq", { arg bus, freqOffset = 0, out;
 	// this will add freqOffset to whatever is read in from the bus
-	Out.ar(0, SinOsc.ar(In.kr(bus) + freqOffset, 0, 0.5));
+	Out.ar(out, SinOsc.ar(In.kr(bus) + freqOffset, 0, 0.5));
 }).add;
 
 SynthDef("tutorial-Outfreq", { arg freq = 400, bus;
@@ -202,8 +203,8 @@ code::
 b = Bus.control(s, 1); b.set(880);
 c = Bus.control(s, 1); c.set(884);
 // and make a synth with two frequency arguments
-x = SynthDef("tutorial-map", { arg freq1 = 440, freq2 = 440;
-	Out.ar(0, SinOsc.ar([freq1, freq2], 0, 0.1));
+x = SynthDef("tutorial-map", { arg freq1 = 440, freq2 = 440, out;
+	Out.ar(out, SinOsc.ar([freq1, freq2], 0, 0.1));
 }).play(s);
 )
 // Now map freq1 and freq2 to read from the two busses

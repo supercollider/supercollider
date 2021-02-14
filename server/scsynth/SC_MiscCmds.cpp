@@ -49,16 +49,16 @@ Node* Msg_GetNode(World* inWorld, sc_msg_iter& msg) {
         node = World_GetNode(inWorld, nodeID);
         while (*loc) {
             if (!node)
-                return 0;
+                return nullptr;
             switch (*loc) {
             case 'h':
                 if (!node->mIsGroup)
-                    return 0;
+                    return nullptr;
                 node = ((Group*)node)->mHead;
                 break;
             case 't':
                 if (!node->mIsGroup)
-                    return 0;
+                    return nullptr;
                 node = ((Group*)node)->mTail;
                 break;
             case 'u':
@@ -83,12 +83,12 @@ Node* Msg_GetNode(World* inWorld, sc_msg_iter& msg) {
 
 Group* Msg_GetGroup(World* inWorld, sc_msg_iter& msg) {
     Node* node = Msg_GetNode(inWorld, msg);
-    return node && node->mIsGroup ? (Group*)node : 0;
+    return node && node->mIsGroup ? (Group*)node : nullptr;
 }
 
 Graph* Msg_GetGraph(World* inWorld, sc_msg_iter& msg) {
     Node* node = Msg_GetNode(inWorld, msg);
-    return !node || node->mIsGroup ? 0 : (Graph*)node;
+    return !node || node->mIsGroup ? nullptr : (Graph*)node;
 }
 
 SCErr meth_none(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
@@ -764,7 +764,7 @@ SCErr meth_s_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         return kSCErr_SynthDefNotFound;
     }
 
-    Graph* graph = 0;
+    Graph* graph = nullptr;
     switch (addAction) {
     case 0: {
         Group* group = Msg_GetGroup(inWorld, msg);
@@ -839,7 +839,7 @@ SCErr meth_s_newargs(World* inWorld, int inSize, char* inData, ReplyAddress* /*i
         return kSCErr_SynthDefNotFound;
     }
 
-    Graph* graph = 0;
+    Graph* graph = nullptr;
     switch (addAction) {
     case 0: {
         Group* group = Msg_GetGroup(inWorld, msg);
@@ -904,7 +904,7 @@ SCErr meth_g_new(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRep
         int32 newGroupID = msg.geti();
         int32 addAction = msg.geti();
 
-        Group* newGroup = 0;
+        Group* newGroup = nullptr;
         switch (addAction) {
         case 0: {
             Group* group = Msg_GetGroup(inWorld, msg);
@@ -1020,8 +1020,8 @@ SCErr meth_n_before(World* inWorld, int inSize, char* inData, ReplyAddress* inRe
 SCErr meth_n_before(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
     sc_msg_iter msg(inSize, inData);
 
-    Node* prevNode = 0;
-    Node* prevTarget = 0;
+    Node* prevNode = nullptr;
+    Node* prevTarget = nullptr;
     while (msg.remain()) {
         Node* node = Msg_GetNode(inWorld, msg);
         Node* target = Msg_GetNode(inWorld, msg);
@@ -1053,8 +1053,8 @@ SCErr meth_n_after(World* inWorld, int inSize, char* inData, ReplyAddress* inRep
 SCErr meth_n_after(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
     sc_msg_iter msg(inSize, inData);
 
-    Node* prevNode = 0;
-    Node* prevTarget = 0;
+    Node* prevNode = nullptr;
+    Node* prevTarget = nullptr;
     while (msg.remain()) {
         Node* node = Msg_GetNode(inWorld, msg);
         Node* target = Msg_GetNode(inWorld, msg);
@@ -1084,8 +1084,8 @@ SCErr meth_n_after(World* inWorld, int inSize, char* inData, ReplyAddress* /*inR
 
 SCErr meth_n_order(World* inWorld, int inSize, char* inData, ReplyAddress* inReply);
 SCErr meth_n_order(World* inWorld, int inSize, char* inData, ReplyAddress* /*inReply*/) {
-    Node* prevNode = 0;
-    Node* node = 0;
+    Node* prevNode = nullptr;
+    Node* node = nullptr;
 
     sc_msg_iter msg(inSize, inData);
     int32 addAction = msg.geti();
@@ -1345,7 +1345,7 @@ SCErr meth_version(World* inWorld, int inSize, char* inData, ReplyAddress* inRep
     packet.addtag('i');
     packet.addi(SC_VersionMinor);
     packet.addtag('s');
-    packet.adds(SC_VersionPatch);
+    packet.adds(SC_VersionPostfix);
     packet.addtag('s');
     packet.adds(SC_Branch);
     packet.addtag('s');

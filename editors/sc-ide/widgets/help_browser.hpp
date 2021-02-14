@@ -22,6 +22,7 @@
 
 #include "util/docklet.hpp"
 #include "QtCollider/widgets/web_page.hpp"
+#include "QtCollider/widgets/QcWebView.h"
 
 #include <QWebEngineView>
 #include <QLabel>
@@ -75,15 +76,6 @@ private:
     int mDotCount;
 };
 
-class HelpWebPage : public QtCollider::WebPage {
-    Q_OBJECT
-
-public:
-    HelpWebPage(HelpBrowser* browser);
-
-private:
-    HelpBrowser* mBrowser;
-};
 
 class HelpBrowser : public QWidget {
     Q_OBJECT
@@ -96,6 +88,7 @@ public:
         ZoomOut,
         ResetZoom,
         Evaluate,
+        EvaluateRegion,
 
         ActionCount
     };
@@ -113,6 +106,8 @@ public:
 
     bool helpBrowserHasFocus() const;
 
+    void setServerPort(int serverPort) { mServerPort = serverPort; };
+
 public slots:
     void applySettings(Settings::Manager*);
     void goHome();
@@ -127,6 +122,7 @@ public slots:
     void openCommandLine();
     void findReferences();
     void onLinkClicked(const QUrl&, QWebEnginePage::NavigationType type, bool isMainFrame);
+    void onPageLoad();
 
 signals:
     void urlChanged();
@@ -145,12 +141,14 @@ private:
     void sendRequest(const QString& code);
     QString symbolUnderCursor();
 
-    QWebEngineView* mWebView;
+    QtCollider::WebView* mWebView;
     LoadProgressIndicator* mLoadProgressIndicator;
 
     QSize mSizeHint;
 
     QAction* mActions[ActionCount];
+
+    int mServerPort = 0; // if 0, server is not running
 };
 
 class HelpBrowserFindBox : public QLineEdit {

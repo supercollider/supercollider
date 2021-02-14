@@ -22,12 +22,15 @@
 #include "autocompleter.hpp"
 #include "line_indicator.hpp"
 #include "main_window.hpp"
-#include "help_browser.hpp"
 #include "../util/gui_utilities.hpp"
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
 #include "../../core/settings/theme.hpp"
+
+#ifdef SC_USE_QTWEBENGINE
+#    include "help_browser.hpp"
+#endif // SC_USE_QTWEBENGINE
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -35,7 +38,6 @@
 #include <QStack>
 #include <QMimeData>
 #include <QUrl>
-#include <QWebEngineView>
 
 namespace ScIDE {
 
@@ -1196,11 +1198,13 @@ void ScCodeEditor::findReferences() { Main::findReferences(symbolUnderCursor(), 
 void ScCodeEditor::evaluateLine() {
     QString text;
 
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
     if (help && help->browser()->helpBrowserHasFocus()) {
         help->browser()->evaluateSelection(false);
         return; // early return
     }
+#endif // SC_USE_QTWEBENGINE
 
     // Try current selection
     QTextCursor cursor = textCursor();
@@ -1234,11 +1238,13 @@ void ScCodeEditor::evaluateLine() {
 void ScCodeEditor::evaluateRegion() {
     QString text;
 
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* help = MainWindow::instance()->helpBrowserDocklet();
     if (help && help->browser()->helpBrowserHasFocus()) {
         help->browser()->evaluateSelection(true);
         return; // early return
     }
+#endif // SC_USE_QTWEBENGINE
 
     // Try current selection
     QTextCursor cursor = textCursor();

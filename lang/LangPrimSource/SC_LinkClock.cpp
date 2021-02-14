@@ -100,68 +100,76 @@ void LinkClock::OnTempoChanged(double bpm) {
 
 // Primitives -------------------------------------------------------------------------------------
 
-int prLinkClock_NumPeers(struct VMGlobals* g, int numArgsPushed) {
-    PyrSlot* a = g->sp;
-    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
+LinkClock* getLinkClock(PyrSlot* clockSlot) {
+    auto* clock = static_cast<LinkClock*>(slotRawPtr(slotRawObject(clockSlot)->slots + 1));
     if (!clock) {
         error("clock is not running.\n");
+    }
+    return clock;
+}
+
+int prLinkClock_NumPeers(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    if (auto* clock = getLinkClock(a)) {
+        SetInt(a, clock->NumPeers());
+        return errNone;
+    } else {
         return errFailed;
     }
+}
 
-    SetInt(a, clock->NumPeers());
-
-    return errNone;
+int prLinkClock_GetQuantum(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    if (auto* clock = getLinkClock(a)) {
+        SetFloat(a, clock->GetQuantum());
+        return errNone;
+    } else {
+        return errFailed;
+    }
 }
 
 int prLinkClock_SetQuantum(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
-    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
-    if (!clock) {
-        error("clock is not running.\n");
+    if (auto* clock = getLinkClock(a)) {
+        double quantum;
+        int err = slotDoubleVal(b, &quantum);
+        if (err)
+            return errWrongType;
+
+        clock->SetQuantum(quantum);
+
+        return errNone;
+    } else {
         return errFailed;
     }
-
-    double quantum;
-    int err = slotDoubleVal(b, &quantum);
-    if (err)
-        return errWrongType;
-
-    clock->SetQuantum(quantum);
-
-    return errNone;
 }
 
 int prLinkClock_GetLatency(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
-    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
-    if (!clock) {
-        error("clock is not running.\n");
+    if (auto* clock = getLinkClock(a)) {
+        SetFloat(a, clock->GetLatency());
+        return errNone;
+    } else {
         return errFailed;
     }
-
-    double latency = clock->GetLatency();
-    SetFloat(g->sp, latency);
-    return errNone;
 }
 
 int prLinkClock_SetLatency(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
-    LinkClock* clock = (LinkClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
-    if (!clock) {
-        error("clock is not running.\n");
+    if (auto* clock = getLinkClock(a)) {
+        double latency;
+        int err = slotDoubleVal(b, &latency);
+        if (err)
+            return errWrongType;
+
+        clock->SetLatency(latency);
+
+        return errNone;
+    } else {
         return errFailed;
     }
-
-    double latency;
-    int err = slotDoubleVal(b, &latency);
-    if (err)
-        return errWrongType;
-
-    clock->SetLatency(latency);
-
-    return errNone;
 }
 
 void initLinkPrimitives() {
@@ -175,6 +183,7 @@ void initLinkPrimitives() {
     definePrimitive(base, index++, "_LinkClock_SetTempoAtTime", prClock_SetTempoAtTime<LinkClock>, 3, 0);
     definePrimitive(base, index++, "_LinkClock_SetAll", prClock_SetAll<LinkClock>, 4, 0);
     definePrimitive(base, index++, "_LinkClock_NumPeers", prLinkClock_NumPeers, 1, 0);
+    definePrimitive(base, index++, "_LinkClock_GetQuantum", prLinkClock_GetQuantum, 1, 0);
     definePrimitive(base, index++, "_LinkClock_SetQuantum", prLinkClock_SetQuantum, 2, 0);
     definePrimitive(base, index++, "_LinkClock_GetLatency", prLinkClock_GetLatency, 1, 0);
     definePrimitive(base, index++, "_LinkClock_SetLatency", prLinkClock_SetLatency, 2, 0);

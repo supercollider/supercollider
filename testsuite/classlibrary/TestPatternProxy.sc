@@ -89,7 +89,7 @@ TestPatternProxy : UnitTest {
 			//{ |x| Pselect({ |event| event[\zz].notNil }, x) },
 			{ |x| Pcollect({ |event| event[\zz] = 100 }, x) },
 			{ |x| Pfset({ ~gg = 8; ~zz = 9; }, x) },
-			{ |x| Psetpre({ ~gg = 8; ~zz = 9; }, x) },
+			{ |x| Psetpre(\gg, 8, x) },
 			{ |x| Ppar([x, x]) },
 			{ |x| Pfin(3, x) },
 			{ |x| Pfin(6, x) },

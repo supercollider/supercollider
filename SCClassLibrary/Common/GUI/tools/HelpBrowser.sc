@@ -184,7 +184,7 @@ HelpBrowser {
 				.resize_(1)
 				.string_(str)
 				.value_(openNewWin)
-				.action_({ |b| openNewWin = b.value; webView.overrideNavigation = openNewWin; });
+				.action_({ |b| openNewWin = b.value; });
 		} {
 			str = "Open links in same window";
 			w = str.bounds.width + 5;
@@ -192,7 +192,7 @@ HelpBrowser {
 				.resize_(1)
 				.states_([[str],["Open links in new window"]])
 				.value_(openNewWin.asInteger)
-				.action_({ |b| openNewWin = b.value.asBoolean; webView.overrideNavigation = openNewWin; });
+				.action_({ |b| openNewWin = b.value.asBoolean; });
 		};
 
 		x = 0;
@@ -223,6 +223,8 @@ HelpBrowser {
 			{ "Monospace" }
 		));
 
+		webView.overrideNavigation = true;
+
 		webView.onLoadFinished = {
 			this.stopAnim;
 			window.name = "SuperCollider Help: %".format(webView.title);
@@ -233,16 +235,13 @@ HelpBrowser {
 		webView.onLinkActivated = {|wv, url|
 			var redirected, newPath, oldPath;
 			redirected = this.redirectTextFile(url);
-
 			if (not(redirected)) {
-				if(openNewWin) {
-					#newPath, oldPath = [url,webView.url].collect {|x|
-						if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
-					};
-
+				#newPath, oldPath = [url,webView.url].collect {|x|
+					if(x.notEmpty) {x.findRegexp("(^\\w+://)?([^#]+)(#.*)?")[1..].flop[1][1]}
 				};
-				if(newPath!=oldPath) {
-					HelpBrowser.new(newWin:true).goTo(url);
+
+				if(newPath != oldPath && openNewWin) {
+						HelpBrowser.new(newWin:openNewWin).goTo(url);
 				} {
 					this.goTo(url);
 				};
@@ -272,18 +271,45 @@ HelpBrowser {
 		};
 
 		webView.enterInterpretsSelection = true;
-		webView.keyDownAction = { arg view, char, mods;
-			if( (char.ascii == 13) && (mods.isCtrl || mods.isCmd || mods.isShift) ) {
-				view.tryPerform(\evaluateJavaScript,"selectLine()");
-			};
-		};
+
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			if( ((key == 70) && mods.isCtrl) || (char == $f && mods.isCmd) ) {
+			var keyPlus, keyZero, keyMinus, keyEquals, keyF;
+			var modifier, zoomIn;
+
+			modifier = Platform.case(\osx, {
+				mods.isCmd && mods.isCtrl.not && mods.isAlt.not;
+			}, {
+				mods.isCtrl && mods.isCmd.not && mods.isAlt.not;
+			});
+
+			#keyPlus, keyZero, keyMinus, keyEquals, keyF = [43, 48, 45, 61, 70];
+
+			// +/= has the same value on macOS when pressed with <Cmd>
+			zoomIn = Platform.case(\osx, {
+				(key == keyEquals) && modifier;
+			}, {
+				(key == keyPlus) && modifier;
+			});
+
+			if (zoomIn) {
+				webView.zoom = min(webView.zoom + 0.1, 2.0);
+			};
+
+			if ((key == keyMinus) && modifier) {
+				webView.zoom = max(webView.zoom - 0.1, 0.1);
+			};
+
+			if ((key == keyZero) && modifier) {
+				webView.zoom = 1.0;
+			};
+
+			if ((key == keyF) && modifier) {
 				toggleFind.value;
 			};
-			if(char.ascii==27) {
-				if(findView.visible) {toggleFind.value};
-			}
+
+			if (char.ascii == 27) { // Esc
+				if (findView.visible) { toggleFind.value };
+			};
 		};
 
 		toolbar[\Back].action = { this.goBack };

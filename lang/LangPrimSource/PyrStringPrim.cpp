@@ -17,6 +17,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
+
 /*
 
 Primitives for String.
@@ -52,10 +53,9 @@ Primitives for String.
 using namespace std;
 namespace bfs = boost::filesystem;
 
-int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
-    char str[1024], *strp = 0;
+    char str[1024], *strp = nullptr;
     int len;
 
     a = g->sp;
@@ -73,7 +73,6 @@ int prStringAsSymbol(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_AsInteger(struct VMGlobals* g, int numArgsPushed);
 int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -87,7 +86,6 @@ int prString_AsInteger(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_AsFloat(struct VMGlobals* g, int numArgsPushed);
 int prString_AsFloat(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
 
@@ -484,7 +482,6 @@ int memcmpi(char* a, char* b, int len) {
     return 0;
 }
 
-int prStringCompare(struct VMGlobals* g, int numArgsPushed);
 int prStringCompare(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
     int cmp, length;
@@ -511,7 +508,6 @@ int prStringCompare(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prStringHash(struct VMGlobals* g, int numArgsPushed);
 int prStringHash(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     int hash = Hash(slotRawString(a)->s, slotRawString(a)->size);
@@ -519,7 +515,6 @@ int prStringHash(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_PathMatch(struct VMGlobals* g, int numArgsPushed);
 int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     char pattern[PATH_MAX];
@@ -562,7 +557,6 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* arg = g->sp;
     char key[256];
@@ -596,7 +590,6 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     return errNone;
 }
 
-int prString_Setenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* args = g->sp - 1;
     char key[256];
@@ -627,7 +620,6 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
     return errNone;
 }
 
-int prStripRtf(struct VMGlobals* g, int numArgsPushed);
 int prStripRtf(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     int len = slotRawObject(a)->size;
@@ -643,7 +635,6 @@ int prStripRtf(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prStripHtml(struct VMGlobals* g, int numArgsPushed);
 int prStripHtml(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     int len = slotRawObject(a)->size;
@@ -659,7 +650,6 @@ int prStripHtml(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prString_Find(struct VMGlobals* g, int numArgsPushed);
 int prString_Find(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 3; // source string
     PyrSlot* b = g->sp - 2; // search string
@@ -743,7 +733,6 @@ int prString_Find(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
 }
 
-int prString_FindBackwards(struct VMGlobals* g, int numArgsPushed);
 int prString_FindBackwards(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 3; // source string
     PyrSlot* b = g->sp - 2; // search string
@@ -830,7 +819,6 @@ int prString_FindBackwards(struct VMGlobals* g, int numArgsPushed) {
  *
  * Prints an error message if alias resolution failed.
  */
-int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* arg = g->sp;
     char ipath[PATH_MAX];
@@ -894,7 +882,7 @@ int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed) {
 static void yaml_traverse(struct VMGlobals* g, const YAML::Node& node, PyrObject* parent, PyrSlot* slot) {
     YAML::NodeType::value type = node.Type();
     string out;
-    PyrObject* result = NULL;
+    PyrObject* result = nullptr;
 
     switch (type) {
     case YAML::NodeType::Scalar:
@@ -967,7 +955,7 @@ int prString_ParseYAML(struct VMGlobals* g, int numArgsPushed) {
 
     std::istringstream fin(str);
     YAML::Node doc = YAML::Load(fin);
-    yaml_traverse(g, doc, NULL, arg);
+    yaml_traverse(g, doc, nullptr, arg);
 
     return errNone;
 }
@@ -983,12 +971,11 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed) {
     const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
     bfs::ifstream fin(path);
     YAML::Node doc = YAML::Load(fin);
-    yaml_traverse(g, doc, NULL, arg);
+    yaml_traverse(g, doc, nullptr, arg);
 
     return errNone;
 }
 
-void initStringPrimitives();
 void initStringPrimitives() {
     int base, index = 0;
 
@@ -1016,44 +1003,3 @@ void initStringPrimitives() {
     definePrimitive(base, index++, "_String_ParseYAML", prString_ParseYAML, 1, 0);
     definePrimitive(base, index++, "_String_ParseYAMLFile", prString_ParseYAMLFile, 1, 0);
 }
-
-#if _SC_PLUGINS_
-
-
-#    include "SCPlugin.h"
-
-// export the function that SC will call to load the plug in.
-#    pragma export on
-extern "C" {
-SCPlugIn* loadPlugIn(void);
-}
-#    pragma export off
-
-
-// define plug in object
-class APlugIn : public SCPlugIn {
-public:
-    APlugIn();
-    virtual ~APlugIn();
-
-    virtual void AboutToCompile();
-};
-
-APlugIn::APlugIn() {
-    // constructor for plug in
-}
-
-APlugIn::~APlugIn() {
-    // destructor for plug in
-}
-
-void APlugIn::AboutToCompile() {
-    // this is called each time the class library is compiled.
-    initStringPrimitives();
-}
-
-// This function is called when the plug in is loaded into SC.
-// It returns an instance of APlugIn.
-SCPlugIn* loadPlugIn() { return new APlugIn(); }
-
-#endif

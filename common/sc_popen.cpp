@@ -15,7 +15,6 @@
     (maintaining a global linked list of fds to pids and locking
     it is no longer necessary). */
 
-#    include <sys/cdefs.h>
 #    include <sys/param.h>
 #    include <sys/wait.h>
 #    include <signal.h>

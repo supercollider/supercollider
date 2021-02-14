@@ -10,9 +10,11 @@ Patterns greatly simplify the use of data streams. A pattern is essentially a fa
 For example, we used this routine to output MIDI note numbers to play a couple of phrases from 'Over the Rainbow.'
 
 code::
+(
 r = Routine({
 	[60, 72, 71, 67, 69, 71, 72, 60, 69, 67].do({ |midi| midi.yield });
 });
+)
 
 while { (m = r.next).notNil } { m.postln };
 ::
@@ -153,8 +155,8 @@ code::
 (
 SynthDef(\bass, { |out, freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,
 		detune = 1.005, preamp = 4|
-	var	sig,
-		env = Env.adsr(0.01, 0.3, 0.4, 0.1);
+	var sig, env;
+	env = Env.adsr(0.01, 0.3, 0.4, 0.1);
 	freq = Lag.kr(freq, slideTime);
 	sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort * amp
 		* EnvGen.kr(env, gate, doneAction: Done.freeSelf);
@@ -193,7 +195,7 @@ p = Pxrand([
 // totally cheesy, but who could resist?
 (
 SynthDef(\kik, { |out, preamp = 1, amp = 1|
-	var	freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
+	var freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
 		sig = SinOsc.ar(freq, 0.5pi, preamp).distort * amp
 			* EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: Done.freeSelf);
 	Out.ar(out, sig ! 2);

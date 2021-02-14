@@ -154,7 +154,7 @@ void QcCanvas::paintEvent(QPaintEvent* e) {
         _bkg_image.paint(&painter, rect());
 
     if (_paint) {
-        qreal pixelRatio = round(backingStore()->window()->devicePixelRatio());
+        qreal pixelRatio = backingStore()->window()->devicePixelRatio();
         auto sourceRect = e->rect().intersected(QRect(0, 0, size().width(), size().height()));
         sourceRect = QRect(sourceRect.topLeft() * pixelRatio, sourceRect.size() * pixelRatio);
         painter.drawPixmap(e->rect(), _pixmap, sourceRect);

@@ -118,7 +118,8 @@ except ImportError:  # Forced testing
 # Constants
 #
 
-CLANG_FORMAT_ACCEPTED_VERSION = "8.0.0"
+CLANG_FORMAT_ACCEPTED_VERSION_REGEX = re.compile("8\\.\\d+\\.\\d+")
+CLANG_FORMAT_ACCEPTED_VERSION_STRING = "8.y.z"
 
 # all the extensions we format with clang-format in SC (no JS!)
 CLANG_FORMAT_FILES_REGEX = re.compile('\\.(cpp|hpp|h|c|m|mm)$')
@@ -235,13 +236,13 @@ class ClangFormat(object):
     def _validate_version(self):
         cf_version = callo([self.cf_cmd, "--version"])
 
-        if CLANG_FORMAT_ACCEPTED_VERSION in cf_version:
+        if CLANG_FORMAT_ACCEPTED_VERSION_REGEX.search(cf_version):
             return
 
         # TODO add instructions to check docs when docs are written
         raise ValueError("clang-format found, but incorrect version at " +
-                self.cf_cmd + " with version: " + cf_version + "\nAccepted version: " +
-                CLANG_FORMAT_ACCEPTED_VERSION)
+                self.cf_cmd + " with version: " + cf_version + "\nAccepted versions: " +
+                CLANG_FORMAT_ACCEPTED_VERSION_STRING)
         sys.exit(5)
 
     def lint(self, file_name, print_diff):
@@ -452,6 +453,9 @@ def is_wanted_diff(diff_text):
     # Extract file name
     match = DIFF_FILENAME_REGEX.search(diff_text)
     if not match:
+        if '+++ /dev/null' in diff_text:
+            # The file was deleted, so ignore it:
+            return False;
         raise ValueError("Could not extract filename from diff")
     return is_wanted_clang_formattable_file(match.group(1))
 
@@ -479,7 +483,7 @@ def do_lint(clang_format, clang_format_diff, commit):
     diff_text = prepare_diff_for_lint_format(clang_format, commit)
     lint_out = callo_with_input(['python', clang_format_diff, '-p1', '-binary', clang_format], diff_text)
     print(lint_out, end='')
-    if lint_out != '\n':
+    if lint_out != '\n' and lint_out != '':
         sys.exit(1)
 
 def do_format(clang_format, clang_format_diff, commit):
@@ -502,6 +506,14 @@ def do_formatall(clang_format):
     clang_format = ClangFormat(clang_format)
     for f in get_all_clang_formattable_files(repo):
         clang_format.format(f)
+
+def resolve_program_name(cmd_line_option, env_var_name, default_program_name):
+    if cmd_line_option != '':
+        return cmd_line_option
+    elif env_var_name in os.environ and os.environ[env_var_name] != '':
+        return os.environ[env_var_name]
+    else:
+        return default_program_name
 
 def main():
     parser = ArgumentParser(
@@ -539,13 +551,17 @@ proceed.
 This script will exit with 0 on success, 1 to indicate lint failure, and >1 if some other error
 occurs.
 ''')
-    parser.add_argument("-c", "--clang-format", dest="clang_format", default='clang-format',
-            help='Command to use for clang-format; will also be passed to clang-format-diff.py')
+    parser.add_argument("-c", "--clang-format", dest="clang_format", default='',
+            help='Command to use for clang-format; will also be passed to clang-format-diff.py.'
+            + ' Defaults to environment variable SC_CLANG_FORMAT if it is set and non-empty,'
+            + ' otherwise `clang-format`')
     parser.add_argument("-b", "--base", dest="base_branch", help='Tries to rebase on the tip of this'
             + ' branch given a base branch name (experimental). This should be the main branch the'
             + ' current branch is based on (3.10 or develop)')
-    parser.add_argument("-d", "--clang-format-diff", dest="clang_format_diff", default='clang-format-diff.py',
-            help='Command to use for clang-format-diff.py script')
+    parser.add_argument("-d", "--clang-format-diff", dest="clang_format_diff", default='',
+            help='Command to use for clang-format-diff.py script'
+            + ' Defaults to environment variable SC_CLANG_FORMAT_DIFF if it is set and non-empty,'
+            + ' otherwise `clang-format-diff.py`')
     parser.add_argument("command", help="command; one of lint, format, lintall, formatall, rebase")
     parser.add_argument("commit1", help="for lint and format: commit to compare against (default: HEAD);" +
             " for rebase: commit immediately prior to reformat", nargs='?', default='')
@@ -553,6 +569,9 @@ occurs.
     parser.add_argument("target", help="target branch name (likely 3.10 or develop)", nargs='?', default='')
 
     options = parser.parse_args()
+
+    options.clang_format = resolve_program_name(options.clang_format, 'SC_CLANG_FORMAT', 'clang-format')
+    options.clang_format_diff = resolve_program_name(options.clang_format_diff, 'SC_CLANG_FORMAT_DIFF', 'clang-format-diff.py')
 
     try:
         if options.command == 'lint' or options.command == 'format':
@@ -570,7 +589,7 @@ occurs.
                             "Could not find clang-format-diff.py. "
                             "Please ensure that clang %s is installed and that "
                             "clang-format-diff.py is in your PATH."
-                            % CLANG_FORMAT_ACCEPTED_VERSION)
+                            % CLANG_FORMAT_ACCEPTED_VERSION_STRING)
                 else:
                     raise ValueError("Could not find clang-format-diff.py at %s." % options.clang_format_diff)
             if options.command == 'lint':

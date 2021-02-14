@@ -35,6 +35,7 @@ void doc_node_free_tree(DocNode* n);
  */
 DocNode* scdoc_parse_file(const std::string& fn, int mode);
 
+/// Dumps a DocNode to stdout as a human-readable tree.
 void doc_node_dump(DocNode* n);
 
 extern const char* scdoc_current_file;

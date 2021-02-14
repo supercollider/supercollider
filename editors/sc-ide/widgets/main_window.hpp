@@ -23,7 +23,6 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QProcess>
-#include <QSignalMapper>
 #include <QStatusBar>
 
 #include "util/status_box.hpp"
@@ -101,8 +100,15 @@ public:
         Help,
         HelpAboutIDE,
         ReportABug,
+
+#ifdef SC_USE_QTWEBENGINE
+        // These QtWebEngine-only actions are branched at the preprocessor
+        // level so that accidental invocations of these actions in other code
+        // are caught at compile time.
         LookupDocumentationForCursor,
         LookupDocumentation,
+#endif // SC_USE_QTWEBENGINE
+
         ShowAbout,
         ShowAboutQT,
 
@@ -120,7 +126,9 @@ public:
     void focusCodeEditor();
     bool promptSaveDocs();
 
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* helpBrowserDocklet() { return mHelpBrowserDocklet; }
+#endif
     PostDocklet* postDocklet() { return mPostDocklet; }
 
     static MainWindow* instance() { return mInstance; }
@@ -237,9 +245,9 @@ private:
     // Docks
     PostDocklet* mPostDocklet;
     DocumentsDocklet* mDocumentsDocklet;
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* mHelpBrowserDocklet;
-
-    QSignalMapper mCodeEvalMapper;
+#endif
     DocumentsDialog* mDocDialog;
 
     QString mLastDocumentSavePath;

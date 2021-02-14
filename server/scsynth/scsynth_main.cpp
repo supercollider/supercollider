@@ -21,6 +21,8 @@
 
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
+#include "SC_EventLoop.hpp"
+#include "SC_ServerBootDelayWarning.h"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -30,6 +32,7 @@
 #include <stdexcept>
 #ifdef _WIN32
 #    include <winsock2.h>
+#    include <vector>
 #else
 #    include <sys/wait.h>
 #endif
@@ -42,7 +45,6 @@ inline int setlinebuf(FILE* stream) { return setvbuf(stream, (char*)0, _IONBF, 0
 
 #endif
 
-
 void Usage();
 void Usage() {
     WorldOptions defaultOptions;
@@ -51,7 +53,9 @@ void Usage() {
              "   -v print the supercollider version and exit\n"
              "   -u <udp-port-number>    a port number 0-65535\n"
              "   -t <tcp-port-number>    a port number 0-65535\n"
-             "   -B <bind-to-address>    an IP address\n"
+             "   -B <bind-to-address>\n"
+             "          Bind the UDP or TCP socket to this address.\n"
+             "          Default 127.0.0.1. Set to 0.0.0.0 to listen on all interfaces.\n"
              "   -c <number-of-control-bus-channels> (default %d)\n"
              "   -a <number-of-audio-bus-channels>   (default %d)\n"
              "   -i <number-of-input-bus-channels>   (default %d)\n"
@@ -121,28 +125,21 @@ void Usage() {
     i += n;
 
 
-int main(int argc, char* argv[]);
-int main(int argc, char* argv[]) {
+int scsynth_main(int argc, char** argv) {
+    startServerBootDelayWarningTimer();
+
     setlinebuf(stdout);
 
-#ifdef _WIN32
-    // initialize winsock
-    WSAData wsaData;
-    int nCode;
-    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
-        scprintf("WSAStartup() failed with error code %d.\n", nCode);
-        return 1;
-    }
-#endif
+    EventLoop::setup();
 
     int udpPortNum = -1;
     int tcpPortNum = -1;
-    std::string bindTo("0.0.0.0");
+    std::string bindTo("127.0.0.1");
 
     WorldOptions options;
 
     for (int i = 1; i < argc;) {
-        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+        if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == nullptr) {
             scprintf("ERROR: Invalid option %s\n", argv[i]);
             Usage();
         }
@@ -232,8 +229,8 @@ int main(int argc, char* argv[]) {
             // -N cmd-filename input-filename output-filename sample-rate header-format sample-format
             checkNumArgs(7);
             options.mRealTime = false;
-            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : 0;
-            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : 0;
+            options.mNonRealTimeCmdFilename = strcmp(argv[j + 1], "_") ? argv[j + 1] : nullptr;
+            options.mNonRealTimeInputFilename = strcmp(argv[j + 2], "_") ? argv[j + 2] : nullptr;
             options.mNonRealTimeOutputFilename = argv[j + 3];
             options.mPreferredSampleRate = (uint32)atof(argv[j + 4]);
             options.mNonRealTimeOutputHeaderFormat = argv[j + 5];
@@ -253,7 +250,6 @@ int main(int argc, char* argv[]) {
         case 'H':
             checkNumArgs(2);
             options.mInDeviceName = argv[j + 1];
-#ifdef __APPLE__
             if (i + 1 > argc || argv[j + 2][0] == '-') {
                 options.mOutDeviceName = options.mInDeviceName;
             } else {
@@ -261,9 +257,6 @@ int main(int argc, char* argv[]) {
                 options.mOutDeviceName = argv[j + 2];
                 ++i;
             }
-#else
-            options.mOutDeviceName = options.mInDeviceName; // Non-Mac platforms always use same device
-#endif
             break;
         case 'L':
             checkNumArgs(1);
@@ -317,7 +310,6 @@ int main(int argc, char* argv[]) {
     } else
         options.mSharedMemoryID = 0;
 
-
     struct World* world = World_New(&options);
     if (!world)
         return 1;
@@ -350,6 +342,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    stopServerBootDelayWarningTimer();
+
     if (options.mVerbosity >= 0) {
 #ifdef NDEBUG
         scprintf("SuperCollider 3 server ready.\n");
@@ -359,14 +353,51 @@ int main(int argc, char* argv[]) {
     }
     fflush(stdout);
 
-    World_WaitForQuit(world, true);
-
-
-#ifdef _WIN32
-    // clean up winsock
-    WSACleanup();
-
-#endif // _WIN32
+    EventLoop::run([world]() { World_WaitForQuit(world, true); });
 
     return 0;
 }
+
+#ifdef _WIN32
+
+int wmain(int argc, wchar_t** wargv) {
+    // initialize winsock
+    WSAData wsaData;
+    int nCode;
+    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+        scprintf("WSAStartup() failed with error code %d.\n", nCode);
+        return 1;
+    }
+
+    // convert args to utf-8
+    std::vector<char*> argv;
+    for (int i = 0; i < argc; i++) {
+        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
+        argv.push_back(new char[argSize]);
+        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    }
+
+    // set codepage to UTF-8 and remember the old codepage
+    auto oldCodePage = GetConsoleOutputCP();
+    if (!SetConsoleOutputCP(65001))
+        scprintf("WARNING: could not set codepage to UTF-8\n");
+
+    // run main
+    int result = scsynth_main(argv.size(), argv.data());
+
+    // clean up winsock
+    WSACleanup();
+    // reset codepage from UTF-8
+    SetConsoleOutputCP(oldCodePage);
+    // clear vector with converted args
+    for (auto* arg : argv)
+        delete[] arg;
+
+    return result;
+}
+
+#else
+
+int main(int argc, char** argv) { return scsynth_main(argc, argv); };
+
+#endif //_WIN32

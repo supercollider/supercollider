@@ -36,6 +36,8 @@
 #    include <CoreAudio/CoreAudioTypes.h>
 #endif
 
+#include <boost/predef/hardware.h>
+
 namespace nova {
 
 class nova_server* instance = nullptr;
@@ -207,7 +209,7 @@ static void name_current_thread(int thread_index) {
 }
 
 static void set_daz_ftz(void) {
-#ifdef __SSE__
+#if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
     /* denormal handling */
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
     _mm_setcsr(_mm_getcsr() | 0x40);
@@ -319,9 +321,17 @@ void realtime_engine_functor::init_thread(void) {
     name_current_thread(0);
 }
 
-void realtime_engine_functor::log_(const char* str) { instance->log_printf(str); }
+void realtime_engine_functor::log_(const char* str) {
+    // Silently drop messages; if instance is null it means something failed while constructing nova_server
+    if (instance)
+        instance->log_printf(str);
+}
 
 void realtime_engine_functor::log_printf_(const char* fmt, ...) {
+    // Silently drop messages; if instance is null it means something failed while constructing nova_server
+    if (instance == nullptr)
+        return;
+
     va_list vargs;
     va_start(vargs, fmt);
     instance->log_printf(fmt, vargs);

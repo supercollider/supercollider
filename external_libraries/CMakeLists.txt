@@ -1,5 +1,5 @@
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
-	message(FATAL_ERROR "nova-simd submodule is missing: please run `git submodule init && git submodule update' from the toplevel of your git working tree")
+    message(FATAL_ERROR "It appears you haven't cloned this project's git submodules: please run `git submodule update --init --recursive` from the root level of the repository")
 endif()
 
 if(NOT SYSTEM_BOOST) # we compile boost ourselves
@@ -54,6 +54,7 @@ if(NOT SYSTEM_BOOST) # we compile boost ourselves
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		target_compile_options(boost_filesystem_lib PRIVATE -fPIC)
 		target_compile_options(boost_thread_lib PRIVATE -fPIC)
 		target_link_libraries(boost_thread_lib rt)
 	endif()

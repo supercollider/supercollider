@@ -169,7 +169,7 @@ public:
     int free_devicelist();
 
     int open_device_path(const char* path, int vendor, int product);
-    int open_device(int vendor, int product, char* serial_number = NULL);
+    int open_device(int vendor, int product, char* serial_number = nullptr);
     int close_device(int joy_idx);
     void close_all_devices();
 
@@ -264,12 +264,12 @@ int SC_HID_APIManager::open_device_path(const char* path, int vendor, int produc
 
 int SC_HID_APIManager::open_device(int vendor, int product, char* serial_number) { //
     struct hid_dev_desc* newdevdesc;
-    if (serial_number != NULL) {
+    if (serial_number != nullptr) {
         wchar_t* serialW = char_to_wchar(serial_number);
         newdevdesc = hid_open_device(vendor, product, serialW);
         free(serialW);
     } else {
-        newdevdesc = hid_open_device(vendor, product, NULL);
+        newdevdesc = hid_open_device(vendor, product, nullptr);
     }
     if (!newdevdesc) {
         post("HIDAPI: Unable to open device %d, %d %s\n", vendor, product, serial_number);
@@ -292,7 +292,7 @@ int SC_HID_APIManager::open_device(int vendor, int product, char* serial_number)
 
 int SC_HID_APIManager::close_device(int joy_idx) {
     struct hid_dev_desc* hidtoclose = get_device(joy_idx);
-    if (hidtoclose == NULL) {
+    if (hidtoclose == nullptr) {
         post("HIDAPI: could not find device to close %d\n", joy_idx);
         return 1; // not a fatal error
     } else {
@@ -307,7 +307,7 @@ struct hid_dev_desc* SC_HID_APIManager::get_device(int joy_idx) {
     auto iterator = hiddevices.find(joy_idx);
     if (iterator == hiddevices.end()) {
         post("HIDAPI : device was not open %d\n", joy_idx);
-        return NULL;
+        return nullptr;
     }
 
     return hiddevices.find(joy_idx)->second;
@@ -365,7 +365,7 @@ int SC_HID_APIManager::build_devicelist() {
 
 int SC_HID_APIManager::free_devicelist() {
     hid_free_enumeration(devinfos);
-    devinfos = NULL;
+    devinfos = nullptr;
     return errNone;
 }
 
@@ -494,7 +494,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed) {
             g->gc->GCWriteNew(devInfo, dev_path_name); // we know dev_path_name is white so we can use GCWriteNew
 
             const char* mystring;
-            if (cur_dev->serial_number != NULL)
+            if (cur_dev->serial_number != nullptr)
                 mystring = wchar_to_char(cur_dev->serial_number);
             else
                 mystring = emptyString;
@@ -505,7 +505,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed) {
 
             if (mystring != emptyString)
                 free((void*)mystring);
-            if (cur_dev->manufacturer_string != NULL)
+            if (cur_dev->manufacturer_string != nullptr)
                 mystring = wchar_to_char(cur_dev->manufacturer_string);
             else
                 mystring = emptyString;
@@ -517,7 +517,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed) {
             if (mystring != emptyString)
                 free((void*)mystring);
 
-            if (cur_dev->product_string != NULL)
+            if (cur_dev->product_string != nullptr)
                 mystring = wchar_to_char(cur_dev->product_string);
             else
                 mystring = emptyString;
@@ -627,7 +627,7 @@ int prHID_API_GetInfo(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_info* cur_dev = devdesc->info;
 
-    if (cur_dev != NULL) {
+    if (cur_dev != nullptr) {
         PyrObject* devInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0, true);
         SetObject(self, devInfo);
 
@@ -639,7 +639,7 @@ int prHID_API_GetInfo(VMGlobals* g, int numArgsPushed) {
         g->gc->GCWriteNew(devInfo, dev_path_name); // we know dev_path_name is white so we can use GCWriteNew
 
         const char* mystring;
-        if (cur_dev->serial_number != NULL) {
+        if (cur_dev->serial_number != nullptr) {
             mystring = wchar_to_char(cur_dev->serial_number);
         } else {
             mystring = emptyString;
@@ -652,7 +652,7 @@ int prHID_API_GetInfo(VMGlobals* g, int numArgsPushed) {
         if (mystring != emptyString)
             free((void*)mystring);
 
-        if (cur_dev->manufacturer_string != NULL) {
+        if (cur_dev->manufacturer_string != nullptr) {
             mystring = wchar_to_char(cur_dev->manufacturer_string);
         } else {
             mystring = emptyString;
@@ -664,7 +664,7 @@ int prHID_API_GetInfo(VMGlobals* g, int numArgsPushed) {
             free((void*)mystring);
 
 
-        if (cur_dev->product_string != NULL) {
+        if (cur_dev->product_string != nullptr) {
             mystring = wchar_to_char(cur_dev->product_string);
         } else {
             mystring = emptyString;
@@ -698,7 +698,7 @@ int prHID_API_GetNumberOfCollections(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_collection* cur_dev = devdesc->device_collection;
 
-    if (cur_dev != NULL) {
+    if (cur_dev != nullptr) {
         SetInt(self, cur_dev->num_collections);
     } else {
         SetInt(self, 0);
@@ -727,13 +727,13 @@ int prHID_API_GetCollectionInfo(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_collection* curdev = devdesc->device_collection;
     struct hid_device_collection* curcollection = curdev->first_collection;
-    struct hid_device_collection* thiscollection = NULL;
+    struct hid_device_collection* thiscollection = nullptr;
 
     bool found = curcollection->index == collectionid;
     if (found) {
         thiscollection = curcollection;
     }
-    while (curcollection != NULL && !found) {
+    while (curcollection != nullptr && !found) {
         found = curcollection->index == collectionid;
         if (found) {
             thiscollection = curcollection;
@@ -741,7 +741,7 @@ int prHID_API_GetCollectionInfo(VMGlobals* g, int numArgsPushed) {
         curcollection = curcollection->next_collection;
     }
 
-    if (thiscollection != NULL) {
+    if (thiscollection != nullptr) {
         PyrObject* elInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0, true);
         SetObject(self, elInfo);
 
@@ -750,7 +750,7 @@ int prHID_API_GetCollectionInfo(VMGlobals* g, int numArgsPushed) {
         SetInt(elInfo->slots + elInfo->size++, thiscollection->usage_page);
         SetInt(elInfo->slots + elInfo->size++, thiscollection->usage_index);
 
-        if (thiscollection->parent_collection != NULL) {
+        if (thiscollection->parent_collection != nullptr) {
             SetInt(elInfo->slots + elInfo->size++, thiscollection->parent_collection->index);
         } else {
             SetInt(elInfo->slots + elInfo->size++, -2);
@@ -758,7 +758,7 @@ int prHID_API_GetCollectionInfo(VMGlobals* g, int numArgsPushed) {
 
         SetInt(elInfo->slots + elInfo->size++, thiscollection->num_collections);
 
-        if (thiscollection->first_collection != NULL) {
+        if (thiscollection->first_collection != nullptr) {
             SetInt(elInfo->slots + elInfo->size++, thiscollection->first_collection->index);
         } else {
             SetInt(elInfo->slots + elInfo->size++, -1);
@@ -766,7 +766,7 @@ int prHID_API_GetCollectionInfo(VMGlobals* g, int numArgsPushed) {
 
         SetInt(elInfo->slots + elInfo->size++, thiscollection->num_elements);
 
-        if (thiscollection->first_element != NULL) {
+        if (thiscollection->first_element != nullptr) {
             SetInt(elInfo->slots + elInfo->size++, thiscollection->first_element->index);
         } else {
             SetInt(elInfo->slots + elInfo->size++, -1);
@@ -793,7 +793,7 @@ int prHID_API_GetNumberOfElements(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_collection* cur_dev = devdesc->device_collection;
 
-    if (cur_dev != NULL) {
+    if (cur_dev != nullptr) {
         SetInt(self, cur_dev->num_elements);
     } else {
         SetInt(self, 0);
@@ -822,13 +822,13 @@ int prHID_API_GetElementInfo(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_collection* curdev = devdesc->device_collection;
     struct hid_device_element* curelement = curdev->first_element;
-    struct hid_device_element* thiselement = NULL;
+    struct hid_device_element* thiselement = nullptr;
 
     bool found = curelement->index == elementid;
     if (found) {
         thiselement = curelement;
     }
-    while (curelement != NULL && !found) {
+    while (curelement != nullptr && !found) {
         found = curelement->index == elementid;
         if (found) {
             thiselement = curelement;
@@ -836,7 +836,7 @@ int prHID_API_GetElementInfo(VMGlobals* g, int numArgsPushed) {
         curelement = curelement->next;
     }
 
-    if (thiselement != NULL) {
+    if (thiselement != nullptr) {
         PyrObject* elInfo = newPyrArray(g->gc, 18 * sizeof(PyrObject), 0, true);
         SetObject(self, elInfo);
 
@@ -895,18 +895,18 @@ int prHID_API_SetElementOutput(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_collection* curdev = devdesc->device_collection;
     struct hid_device_element* curelement = curdev->first_element;
-    struct hid_device_element* thiselement = NULL;
+    struct hid_device_element* thiselement = nullptr;
 
-    if (devdesc != NULL) {
+    if (devdesc != nullptr) {
         bool found = false;
-        while (curelement != NULL && !found) {
+        while (curelement != nullptr && !found) {
             found = (curelement->index == elementid) && (curelement->io_type == 2);
             if (found) {
                 thiselement = curelement;
             }
             curelement = hid_get_next_output_element(curelement);
         }
-        if (thiselement != NULL) {
+        if (thiselement != nullptr) {
             thiselement->value = value;
             hid_send_output_report(devdesc, thiselement->report_id);
         }
@@ -940,18 +940,18 @@ int prHID_API_SetElementRepeat(VMGlobals* g, int numArgsPushed) {
     struct hid_dev_desc* devdesc = SC_HID_APIManager::instance().get_device(joyid);
     struct hid_device_collection* curdev = devdesc->device_collection;
     struct hid_device_element* curelement = curdev->first_element;
-    struct hid_device_element* thiselement = NULL;
+    struct hid_device_element* thiselement = nullptr;
 
-    if (devdesc != NULL) {
+    if (devdesc != nullptr) {
         bool found = false;
-        while (curelement != NULL && !found) {
+        while (curelement != nullptr && !found) {
             found = (curelement->index == elementid) && (curelement->io_type == 1);
             if (found) {
                 thiselement = curelement;
             }
             curelement = hid_get_next_input_element(curelement);
         }
-        if (thiselement != NULL) {
+        if (thiselement != nullptr) {
             thiselement->repeat = value;
         }
     }

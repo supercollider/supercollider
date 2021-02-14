@@ -323,9 +323,9 @@ int prFileClose(struct VMGlobals* g, int numArgsPushed) {
     a = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errNone;
-    SetPtr(&pfile->fileptr, NULL);
+    SetPtr(&pfile->fileptr, nullptr);
     if (fclose(file))
         return errFailed;
     return errNone;
@@ -339,7 +339,7 @@ int prFileFlush(struct VMGlobals* g, int numArgsPushed) {
     a = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file != NULL)
+    if (file != nullptr)
         fflush(file);
     return errNone;
 }
@@ -353,7 +353,7 @@ int prFilePos(struct VMGlobals* g, int numArgsPushed) {
     a = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
     if ((length = ftell(file)) == -1)
         return errFailed;
@@ -367,7 +367,7 @@ int prFileLength(struct VMGlobals* g, int numArgsPushed) {
     PyrFile* pfile = (PyrFile*)slotRawObject(a);
     FILE* file = (FILE*)slotRawPtr(&pfile->fileptr);
 
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     // preserve file position
@@ -402,7 +402,7 @@ int prFileSeek(struct VMGlobals* g, int numArgsPushed) {
         return errWrongType;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
     offset = slotRawInt(b);
     origin = slotRawInt(c);
@@ -426,7 +426,7 @@ int prFileWrite(struct VMGlobals* g, int numArgsPushed) {
     b = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
     switch (GetTag(b)) {
     case tagInt: {
@@ -524,7 +524,7 @@ int prFileWriteLE(struct VMGlobals* g, int numArgsPushed) {
     b = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
     switch (GetTag(b)) {
     case tagInt: {
@@ -620,7 +620,7 @@ int prFileReadLine(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     char* result = fgets(slotRawString(b)->s, MAXINDEXSIZE(slotRawObject(b)) - 1, file);
@@ -645,7 +645,7 @@ int prFilePutInt32(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int val;
@@ -669,7 +669,7 @@ int prFilePutInt16(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int val;
@@ -695,7 +695,7 @@ int prFilePutInt32LE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int val;
@@ -719,7 +719,7 @@ int prFilePutInt16LE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int val;
@@ -744,7 +744,7 @@ int prFilePutInt8(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int val;
@@ -770,7 +770,7 @@ int prFilePutChar(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
     if (NotChar(b))
         return errWrongType;
@@ -793,7 +793,7 @@ int prFilePutFloat(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL) {
+    if (file == nullptr) {
         dumpObjectSlot(a);
         return errFailed;
     }
@@ -819,7 +819,7 @@ int prFilePutDouble(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
 
@@ -845,7 +845,7 @@ int prFilePutFloatLE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL) {
+    if (file == nullptr) {
         dumpObjectSlot(a);
         return errFailed;
     }
@@ -871,7 +871,7 @@ int prFilePutDoubleLE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
 
@@ -896,7 +896,7 @@ int prFilePutString(struct VMGlobals* g, int numArgsPushed) {
     b = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
     if (NotObj(b) || slotRawObject(b)->classptr != class_string)
         return errWrongType;
@@ -917,7 +917,7 @@ int prFileGetDouble(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -938,7 +938,7 @@ int prFileGetFloat(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -960,7 +960,7 @@ int prFileGetDoubleLE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -981,7 +981,7 @@ int prFileGetFloatLE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -1003,7 +1003,7 @@ int prFileGetChar(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int count = fread(&z, sizeof(char), 1, file);
@@ -1024,7 +1024,7 @@ int prFileGetInt8(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int count = fread(&z, sizeof(int8), 1, file);
@@ -1044,7 +1044,7 @@ int prFileGetInt16(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -1065,7 +1065,7 @@ int prFileGetInt32(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -1087,7 +1087,7 @@ int prFileGetInt16LE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -1108,7 +1108,7 @@ int prFileGetInt32LE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     if (feof(file))
@@ -1132,7 +1132,7 @@ int prFileReadRaw(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int elemSize = gFormatElemSize[slotRawObject(b)->obj_format];
@@ -1212,7 +1212,7 @@ int prFileReadRawLE(struct VMGlobals* g, int numArgsPushed) {
 
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errFailed;
 
     int elemSize = gFormatElemSize[slotRawObject(b)->obj_format];
@@ -1300,7 +1300,7 @@ int prFileGetcwd(struct VMGlobals* g, int numArgsPushed) {
 #else
     char buf[PATH_MAX];
     const char* cwd = getcwd(buf, PATH_MAX);
-    if (cwd == NULL) {
+    if (cwd == nullptr) {
         error(strerror(errno));
         return errFailed;
     }
@@ -1415,11 +1415,11 @@ int prPipeClose(struct VMGlobals* g, int numArgsPushed) {
     b = g->sp;
     pfile = (PyrFile*)slotRawObject(a);
     file = (FILE*)slotRawPtr(&pfile->fileptr);
-    if (file == NULL)
+    if (file == nullptr)
         return errNone;
     pid = (pid_t)slotRawInt(b);
 
-    SetPtr(&pfile->fileptr, NULL);
+    SetPtr(&pfile->fileptr, nullptr);
     int perr = sc_pclose(file, pid);
     SetInt(a, perr);
     if (perr == -1)
@@ -1433,7 +1433,6 @@ int prPipeClose(struct VMGlobals* g, int numArgsPushed) {
 
 #ifndef NO_LIBSNDFILE
 
-int sampleFormatToString(struct SF_INFO* info, const char** string);
 int sampleFormatToString(struct SF_INFO* info, const char** string) {
     unsigned int format = info->format & SF_FORMAT_SUBMASK;
     switch (format) {
@@ -1473,7 +1472,6 @@ int sampleFormatToString(struct SF_INFO* info, const char** string) {
 }
 
 
-int headerFormatToString(struct SF_INFO* info, const char** string);
 int headerFormatToString(struct SF_INFO* info, const char** string) {
     switch (info->format & SF_FORMAT_TYPEMASK) {
     case SF_FORMAT_WAV:
@@ -1551,7 +1549,6 @@ int headerFormatToString(struct SF_INFO* info, const char** string) {
     return errNone;
 }
 
-int sndfileFormatInfoToStrings(struct SF_INFO* info, const char** stringHead, const char** stringSample);
 int sndfileFormatInfoToStrings(struct SF_INFO* info, const char** stringHead, const char** stringSample) {
     int error = 0;
     error = headerFormatToString(info, stringHead);
@@ -1559,7 +1556,6 @@ int sndfileFormatInfoToStrings(struct SF_INFO* info, const char** stringHead, co
     return error;
 }
 
-int prSFOpenRead(struct VMGlobals* g, int numArgsPushed);
 int prSFOpenRead(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     char filename[PATH_MAX];
@@ -1606,7 +1602,6 @@ int prSFOpenRead(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed);
 int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
     char filename[PATH_MAX];
@@ -1670,7 +1665,7 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
 
     file = sndfileOpenFromCStr(filename, SFM_WRITE, &info);
 
-    sf_command(file, SFC_SET_CLIPPING, NULL, SF_TRUE);
+    sf_command(file, SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
     if (file) {
         SetPtr(slotRawObject(a)->slots + 0, file);
@@ -1683,7 +1678,6 @@ int prSFOpenWrite(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFClose(struct VMGlobals* g, int numArgsPushed);
 int prSFClose(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
 
@@ -1698,7 +1692,6 @@ int prSFClose(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFRead(struct VMGlobals* g, int numArgsPushed);
 int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
 
@@ -1731,7 +1724,6 @@ int prSFRead(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFWrite(struct VMGlobals* g, int numArgsPushed);
 int prSFWrite(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b;
 
@@ -1764,7 +1756,6 @@ int prSFWrite(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFSeek(struct VMGlobals* g, int numArgsPushed);
 int prSFSeek(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *c;
 
@@ -1788,7 +1779,6 @@ int prSFSeek(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prSFHeaderInfoString(struct VMGlobals* g, int numArgsPushed);
 int prSFHeaderInfoString(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a;
     a = g->sp;

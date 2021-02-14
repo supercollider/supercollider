@@ -1,56 +1,9 @@
 
 TestPattern : UnitTest {
+	var zeroLength;
 
-	test_patternAsEventFilters {
-		var n = 8;
-		var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
-		var unfold = { |pat|
-			Pevent(pat).asStream.nextN(n).collect(removeCleanup)
-		};
-
-		var assertUnfolded = { |x, y|
-			var xa, ya;
-			xa = unfold.(x);
-			ya = unfold.(y);
-			this.assert(xa == ya,
-				"the following patterns should return the same events:\n%\n%\n"
-				"They returned:\n%\n%"
-				.format(x.cs, y.cs, xa, ya),
-				false
-
-			)
-		};
-		var identical = [
-			Pbind(\x, 7) <> (y:  8),
-			Pbind(\y, 8) <> (x:  7),
-			Pbind(\x, 7, \y, 8),
-			Pn((x: 7, y: 8)),
-			Pbindf((y:  8), \x, 7),
-			Pbindf((y:  8), \x, Pn(7, 1)).loop,
-			Pseq([(x: 7, y: 8)], inf),
-			Pfset({ ~x = 7 }, Pbind(\y, 8)),
-			Pfset({ ~y = 8 }, Pbind(\x, 7)),
-			Pbind(\x, 7).collect { |event| event.put(\y, 8) },
-		];
-
-		[identical, identical].allTuples.postln.do { |pair|
-			assertUnfolded.(*pair)
-		};
-
-
-	}
-
-
-	test_pattern_zero_length {
-		var func, patterns;
-
-		func = { |pat|
-			var val = Pseq([pat, 1]).asStream.next(());
-			this.assert(val == 1,
-				"% : a pattern of length zero should return nothing but pass control (returned %)".format(pat, val)
-			)
-		};
-		patterns = [
+	setUp {
+		zeroLength = [
 			Pfuncn({ 2 }, 0),
 			Pseries(length:0),
 			Pgeom(length:0),
@@ -92,11 +45,75 @@ TestPattern : UnitTest {
 			Pgpar([Pbind.new], repeats:0),
 			Ptpar([0.0, Pbind.new], repeats:0),
 			Pfpar([Pbind.new], repeats:0),
+		];
+	}
 
+	test_patternAsEventFilters {
+		var n = 8;
+		var removeCleanup = { |event| event !? { event.removeAt(\addToCleanup) }; event };
+		var unfold = { |pat|
+			Pevent(pat).asStream.nextN(n).collect(removeCleanup)
+		};
+
+		var assertUnfolded = { |x, y|
+			var xa, ya;
+			xa = unfold.(x);
+			ya = unfold.(y);
+			this.assert(xa == ya,
+				"the following patterns should return the same events:\n%\n%\n"
+				"They returned:\n%\n%"
+				.format(x.cs, y.cs, xa, ya),
+				false
+
+			)
+		};
+		var identical = [
+			Pbind(\x, 7) <> (y:  8),
+			Pbind(\y, 8) <> (x:  7),
+			Pbind(\x, 7, \y, 8),
+			Pn((x: 7, y: 8)),
+			Pbindf((y:  8), \x, 7),
+			Pbindf((y:  8), \x, Pn(7, 1)).loop,
+			Pseq([(x: 7, y: 8)], inf),
+			Pfset({ ~x = 7 }, Pbind(\y, 8)),
+			Pfset({ ~y = 8 }, Pbind(\x, 7)),
+			Pbind(\x, 7).collect { |event| event.put(\y, 8) },
 		];
 
-		patterns.do(func)
+		[identical, identical].allTuples.do { |pair|
+			assertUnfolded.(*pair)
+		};
 
+
+	}
+
+
+	test_pattern_zero_length {
+		var func;
+
+		func = { |pat|
+			var val = Pseq([pat, 1]).asStream.next(());
+			this.assert(val == 1,
+				"% : a pattern of length zero should return nothing but pass control (returned %)".format(pat, val)
+			)
+		};
+
+		zeroLength.do(func)
+	}
+
+	test_pattern_embedInStream_returns_inval {
+		var stream, proto = Event.new;
+
+		zeroLength.do { |pat|
+			stream = Routine { |inval|
+				// yield the return value from embedInStream
+				// for checking outside the Routine
+				pat.embedInStream(inval).yield;
+			};
+			this.assert(stream.next(proto.copy) == proto,
+				"Zero length % should return inval from embedInStream".format(pat.class.name)
+			);
+		};
 	}
 
 	// test bug #3851: Pstretch applied to Ppar should operate on deltas, not only dur
@@ -127,6 +144,55 @@ TestPattern : UnitTest {
 			"Pstretchp should stretch deltas of Ppar"
 		);
 	}
+
+
+	test_Pfindur_endsInTime {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries());
+		q = Pfindur(3.5, p);
+		x = Pevent(q).asStream.all;
+		this.assert(x.last[\count] == 3, "Pfindur should end inner pattern after dur");
+		this.assert(x.sum { |x| x.delta } == 3.5, "Pfindur with filler should end no sooner than after dur");
+	}
+
+	test_Psync_endsInTime {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries());
+		q = Psync(p, 3.5, 3.5);
+		x = Pevent(q).asStream.all;
+		this.assert(x.last[\count] == 3, "Pfindur should end inner pattern after maxdur");
+		this.assert(x.sum { |x| x.delta } == 3.5, "Pfindur  with maxdur = quant should end no sooner than after dur");
+	}
+
+	test_Psync_fillsRemainingTimeWithSilence {
+		var p, q, x;
+		p = Pbind(\dur, 1, \count, Pseries(0, 1, 3));
+		q = Psync(p, 4.5, 4.5);
+		x = Pevent(q).asStream.all;
+		this.assert(x.sum { |x| x.delta } == 4.5, "Psync with maxdur = quant should end no earlier than after dur");
+	}
+
+	test_Pfset_evaluates_init_and_cleanup_on_empty_stream {
+		var x = 0, y = 0, inEvent = (), cleanup = EventStreamCleanup.new;
+		var outEvent = Pfset({ x = 1 }, p{}, { y = 2 }).asStream.next(inEvent);
+		this.assert(x == 1, "Pfset on nil stream should still call the initializer function");
+		this.assert(y == 2, "Pfset on nil stream should still call the cleanup function");
+		this.assert(outEvent.isNil, "Pfset on nil stream should return nil");
+		// inEvent.size is 2 if Pfset adds 'addToCleanup' and 'removeFromCleanup' in sequence (presently);
+		// inEvente.size could be 0 if this add-remove pair is "optimized out" in the future.
+		this.assert(inEvent.size.even, "Pfset on nil stream should add an even number of items to the input event");
+		// The present implementation of EventStreamCleanup.update first does the add(s) then the remove(s),
+		// so it "cancels out" matched add-remove pairs in the same event. But let's check that too...
+		cleanup.update(inEvent);
+		this.assert(cleanup.functions.size == 0, "Pfset on nil stream should have no effect on a cleanup-functions set");
+	}
+
+	test_Pfindur_maintains_final_rest {
+		var stream = Pfindur(4, Pbind(\delta, Rest(4))).asStream;
+		var event = stream.next(Event.new);
+		this.assert(event.isRest, "The final event of a Pfindur, if it was originally a rest, should still be a rest");
+	}
+
 
 /*
 	test_storeArgs {

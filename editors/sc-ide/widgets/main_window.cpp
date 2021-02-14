@@ -30,7 +30,6 @@
 #include "multi_editor.hpp"
 #include "popup_text_input.hpp"
 #include "post_window.hpp"
-#include "help_browser.hpp"
 #include "session_switch_dialog.hpp"
 #include "sessions_dialog.hpp"
 #include "tool_box.hpp"
@@ -43,6 +42,10 @@
 #include "../core/util/standard_dirs.hpp"
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
+
+#ifdef SC_USE_QTWEBENGINE
+#    include "help_browser.hpp"
+#endif // SC_USE_QTWEBENGINE
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -134,10 +137,12 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     addDockWidget(Qt::LeftDockWidgetArea, mDocumentsDocklet->dockWidget());
     mDocumentsDocklet->hide();
 
+#ifdef SC_USE_QTWEBENGINE
     mHelpBrowserDocklet = new HelpBrowserDocklet(this);
     mHelpBrowserDocklet->setObjectName("help-dock");
     addDockWidget(Qt::RightDockWidgetArea, mHelpBrowserDocklet->dockWidget());
     // mHelpBrowserDockable->hide();
+#endif // SC_USE_QTWEBENGINE
 
     mPostDocklet = new PostDocklet(this);
     mPostDocklet->setObjectName("post-dock");
@@ -159,7 +164,6 @@ MainWindow::MainWindow(Main* main): mMain(main), mClockLabel(0), mDocDialog(0) {
     connect(main->sessionManager(), SIGNAL(switchSessionRequest(Session*)), this, SLOT(switchSession(Session*)));
     connect(main->sessionManager(), SIGNAL(currentSessionNameChanged()), this, SLOT(updateWindowTitle()));
     // A system for easy evaluation of pre-defined code:
-    connect(&mCodeEvalMapper, SIGNAL(mapped(QString)), this, SIGNAL(evaluateCode(QString)));
     connect(this, SIGNAL(evaluateCode(QString, bool)), main->scProcess(), SLOT(evaluateCode(QString, bool)));
     // Interpreter: post output
     connect(main->scProcess(), SIGNAL(scPost(QString)), mPostDocklet->mPostWindow, SLOT(post(QString)));
@@ -237,6 +241,10 @@ void MainWindow::createActions() {
     mActions[Quit] = action = new QAction(QIcon::fromTheme("application-exit"), tr("&Quit..."), this);
     action->setShortcut(tr("Ctrl+Q", "Quit application"));
     action->setStatusTip(tr("Quit SuperCollider IDE"));
+    // explicitly states that this action can be triggered by macOS QUIT events
+    // (such as cmd+q or window closing)
+    action->setMenuRole(QAction::QuitRole);
+
     QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
     settings->addAction(action, "ide-quit", ideCategory);
 
@@ -412,6 +420,11 @@ void MainWindow::createActions() {
     settings->addAction(action, "ide-settings-dialog", ideCategory);
 
     // Help
+    mActions[ReportABug] = action = new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
+    action->setStatusTip(tr("Report a bug"));
+    connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
+
+#ifdef SC_USE_QTWEBENGINE
     mActions[Help] = action = new QAction(tr("Show &Help Browser"), this);
     action->setStatusTip(tr("Show and focus the Help Browser"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelp()));
@@ -421,10 +434,6 @@ void MainWindow::createActions() {
         new QAction(QIcon::fromTheme("system-help"), tr("How to Use SuperCollider IDE"), this);
     action->setStatusTip(tr("Open the SuperCollider IDE guide"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
-
-    mActions[ReportABug] = action = new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
-    action->setStatusTip(tr("Report a bug"));
-    connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
 
     mActions[LookupDocumentationForCursor] = action = new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
@@ -437,6 +446,7 @@ void MainWindow::createActions() {
     action->setStatusTip(tr("Enter text to look up in documentation"));
     connect(action, SIGNAL(triggered()), this, SLOT(lookupDocumentation()));
     settings->addAction(action, "help-lookup", helpCategory);
+#endif // SC_USE_QTWEBENGINE
 
     mActions[ShowAbout] = action = new QAction(QIcon::fromTheme("help-about"), tr("&About SuperCollider"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -457,10 +467,12 @@ void MainWindow::createActions() {
     action->setStatusTip(tr("Show/hide Documents docklet"));
     settings->addAction(mDocumentsDocklet->toggleViewAction(), "ide-docklet-documents", ideCategory);
 
+#ifdef SC_USE_QTWEBENGINE
     action = mHelpBrowserDocklet->toggleViewAction();
     action->setIcon(QIcon::fromTheme("system-help"));
     action->setStatusTip(tr("Show/hide Help browser docklet"));
     settings->addAction(mHelpBrowserDocklet->toggleViewAction(), "ide-docklet-help", ideCategory);
+#endif // SC_USE_QTWEBENGINE
 
     // In Mac OS, all menu item shortcuts need a modifier, so add the action with
     // the "Escape" default shortcut to the main window widget.
@@ -470,19 +482,23 @@ void MainWindow::createActions() {
 
     // Add actions to docklets, so shortcuts work when docklets detached:
 
+#ifdef SC_USE_QTWEBENGINE
     mPostDocklet->widget()->addAction(mActions[LookupDocumentation]);
     mPostDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
+#endif // SC_USE_QTWEBENGINE
     mPostDocklet->widget()->addAction(mActions[LookupImplementation]);
     mPostDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
     mPostDocklet->widget()->addAction(mActions[LookupReferences]);
     mPostDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
 
+#ifdef SC_USE_QTWEBENGINE
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentation]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupDocumentationForCursor]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementation]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupImplementationForCursor]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferences]);
     mHelpBrowserDocklet->widget()->addAction(mActions[LookupReferencesForCursor]);
+#endif // SC_USE_QTWEBENGINE
 }
 
 void MainWindow::createMenus() {
@@ -560,7 +576,9 @@ void MainWindow::createMenus() {
     submenu = new QMenu(tr("&Docklets"), this);
     submenu->addAction(mPostDocklet->toggleViewAction());
     submenu->addAction(mDocumentsDocklet->toggleViewAction());
+#ifdef SC_USE_QTWEBENGINE
     submenu->addAction(mHelpBrowserDocklet->toggleViewAction());
+#endif // SC_USE_QTWEBENGINE
     menu->addMenu(submenu);
     menu->addSeparator();
     submenu = menu->addMenu(tr("&Tool Panels"));
@@ -635,12 +653,16 @@ void MainWindow::createMenus() {
     menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Help"), this);
+#ifdef SC_USE_QTWEBENGINE
     menu->addAction(mActions[HelpAboutIDE]);
+#endif
     menu->addAction(mActions[ReportABug]);
+#ifdef SC_USE_QTWEBENGINE
     menu->addSeparator();
     menu->addAction(mActions[Help]);
     menu->addAction(mActions[LookupDocumentationForCursor]);
     menu->addAction(mActions[LookupDocumentation]);
+#endif // SC_USE_QTWEBENGINE
     menu->addSeparator();
     menu->addAction(mActions[ShowAbout]);
     menu->addAction(mActions[ShowAboutQT]);
@@ -656,7 +678,9 @@ template <class T> void MainWindow::saveWindowState(T* settings) {
     QVariantMap detachedData;
     saveDetachedState(mPostDocklet, detachedData);
     saveDetachedState(mDocumentsDocklet, detachedData);
+#ifdef SC_USE_QTWEBENGINE
     saveDetachedState(mHelpBrowserDocklet, detachedData);
+#endif // SC_USE_QTWEBENGINE
 
     settings->beginGroup("mainWindow");
     settings->setValue("geometry", this->saveGeometry().toBase64());
@@ -699,7 +723,9 @@ template <class T> void MainWindow::restoreWindowState(T* settings) {
 
     restoreDetachedState(mPostDocklet, detachedData);
     restoreDetachedState(mDocumentsDocklet, detachedData);
+#ifdef SC_USE_QTWEBENGINE
     restoreDetachedState(mHelpBrowserDocklet, detachedData);
+#endif // SC_USE_QTWEBENGINE
 
     qDebug("restoring state");
 
@@ -1289,7 +1315,9 @@ void MainWindow::applySettings(Settings::Manager* settings) {
     applyCursorBlinkingSettings(settings);
 
     mPostDocklet->mPostWindow->applySettings(settings);
+#ifdef SC_USE_QTWEBENGINE
     mHelpBrowserDocklet->browser()->applySettings(settings);
+#endif // SC_USE_QTWEBENGINE
     mCmdLine->applySettings(settings);
 }
 
@@ -1448,14 +1476,18 @@ void MainWindow::lookupDocumentationForCursor() {
 }
 
 void MainWindow::openHelp() {
+#ifdef SC_USE_QTWEBENGINE
     if (mHelpBrowserDocklet->browser()->url().isEmpty())
         mHelpBrowserDocklet->browser()->goHome();
     mHelpBrowserDocklet->focus();
+#endif // SC_USE_QTWEBENGINE
 }
 
 void MainWindow::openHelpAboutIDE() {
+#ifdef SC_USE_QTWEBENGINE
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
     mHelpBrowserDocklet->focus();
+#endif // SC_USE_QTWEBENGINE
 }
 
 void MainWindow::doBugReport() {

@@ -11,12 +11,15 @@ classmethods::
 
 method:: new
 argument:: nextFunc
-Stream function. In an event stream receives the current link::Classes/Event:: as argument.
+Stream function. In an event stream code::nextFunc:: receives the current link::Classes/Event:: as argument, and more generally the argument passed to the stream's code::next:: call.
 argument:: resetFunc
-Function that is called when the stream is reset. In an event stream receives the current link::Classes/Event:: as argument.
+Function that is called when the stream is reset. code::resetFunc:: receives no arguments.
 
 
 examples::
+
+Numeric stream examples
+
 code::
 (
 var a, x;
@@ -25,9 +28,17 @@ x = a.asStream;
 x.nextN(20).postln;
 x.reset;
 )
+
+// with argument passed to nextFunc
+(
+x = Pfunc({ |inval| (10 ** inval.value) * rrand(1, 9) }).asStream;
+[2, 3, 2].do { |i| x.next(i).postln };
+x.nextN(5, (:0..)).postln;
+)
 ::
 
-Sound example
+Event stream (sound) examples:
+
 code::
 (
 SynthDef(\help_sinegrain,
@@ -48,4 +59,27 @@ a = Pfunc({ exprand(0.1, 0.3) + #[1, 2, 3, 6, 7].choose }).asStream;
 	}
 }.fork;
 )
+::
+
+When an Event is played, if code::\freq:: is set then code::\degree:: is ignored (due to the code::Event.default:: machinery). In a chain of Patterns, a code::Pfunc:: can be used to delete a key from the Event stream; this can even be done inside a Pbind.
+
+code::
+q = Pbind(\freq, 300, \dur, Pn(0.3, 2));
+q.trace.play;
+
+// Sound-wise ineffective modification of the incoming stream
+p = Pbind(\degree, 6) <> q;
+p.trace.play;
+
+// Instead
+p = Pbind(\degree, 6) <> Pfunc { |ev| ev.freq = nil } <> q;
+p.trace.play;
+
+// Alternatively
+p = Pbind(\degree, Pfunc { |ev| ev.freq = nil; 6 } ) <> q;
+p.trace.play;
+
+// Just setting a key to nil from a Pbind pair will end the stream
+p = Pbind(\freq, nil, \degree, 6) <> q;
+p.trace.play; // silent because it outputs no events
 ::

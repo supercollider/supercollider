@@ -23,13 +23,9 @@
 #include "session_manager.hpp"
 #include "util/standard_dirs.hpp"
 #include "../widgets/main_window.hpp"
-#include "../widgets/help_browser.hpp"
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
-#include "../widgets/util/WebSocketClientWrapper.hpp"
-#include "../widgets/util/WebSocketTransport.hpp"
-#include "../widgets/util/IDEWebChannelWrapper.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
@@ -45,108 +41,11 @@
 #include <QLibraryInfo>
 #include <QTranslator>
 #include <QDebug>
-#include <QWebChannel>
 #include <QStyleFactory>
 
+#include "util/HelpBrowserWebSocketServices.hpp"
+
 using namespace ScIDE;
-
-int main(int argc, char* argv[]) {
-    QApplication app(argc, argv);
-
-    QStringList arguments(QApplication::arguments());
-    arguments.pop_front(); // application path
-
-    // Pass files to existing instance and quit
-
-    SingleInstanceGuard guard;
-    if (guard.tryConnect(arguments))
-        return 0;
-
-    // Set up translations
-    QTranslator qtTranslator;
-    qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-    app.installTranslator(&qtTranslator);
-
-    QString ideTranslationPath = standardDirectory(ScResourceDir) + "/translations";
-
-    bool translationLoaded;
-
-    // Load fallback translator that only handles plural forms in English
-    QTranslator fallbackTranslator;
-    translationLoaded = fallbackTranslator.load("scide", ideTranslationPath);
-    app.installTranslator(&fallbackTranslator);
-    if (!translationLoaded)
-        qWarning("scide warning: Failed to load fallback translation file.");
-
-    // Load translator for locale
-    QString ideTranslationFile = "scide_" + QLocale::system().name();
-    QTranslator scideTranslator;
-    scideTranslator.load(ideTranslationFile, ideTranslationPath);
-    app.installTranslator(&scideTranslator);
-
-    // Force Fusion style to appear consistently on all platforms.
-    app.setStyle(QStyleFactory::create("Fusion"));
-
-    // Palette must be set before style, for consistent application.
-    Main* main = Main::instance();
-    main->setAppPaletteFromSettings();
-
-    // Install style proxy.
-    app.setStyle(new ScIDE::Style(app.style()));
-
-    // Go...
-    MainWindow* win = new MainWindow(main);
-
-    // NOTE: load session after GUI is created, so that GUI can respond
-    Settings::Manager* settings = main->settings();
-    SessionManager* sessions = main->sessionManager();
-
-    // NOTE: window has to be shown before restoring its geometry,
-    // or else restoring maximized state will fail, if it has ever before
-    // been saved un-maximized.
-    win->show();
-
-    QString startSessionName = settings->value("IDE/startWithSession").toString();
-    if (startSessionName == "last") {
-        QString lastSession = sessions->lastSession();
-        if (!lastSession.isEmpty()) {
-            sessions->openSession(lastSession);
-        }
-    } else if (!startSessionName.isEmpty()) {
-        sessions->openSession(startSessionName);
-    }
-
-    if (!sessions->currentSession()) {
-        win->restoreWindowState();
-        sessions->newSession();
-    }
-
-    foreach (QString argument, arguments) { main->documentManager()->open(argument); }
-
-    win->restoreDocuments();
-
-    bool startInterpreter = settings->value("IDE/interpreter/autoStart").toBool();
-    if (startInterpreter)
-        main->scProcess()->startLanguage();
-
-    // setup HelpBrowser server
-    QWebSocketServer server("SCIDE HelpBrowser Server", QWebSocketServer::NonSecureMode);
-    if (!server.listen(QHostAddress::LocalHost, 12344)) {
-        qFatal("Failed to open web socket server.");
-        return 1;
-    }
-
-    // setup comm channel
-    WebSocketClientWrapper clientWrapper(&server);
-    QWebChannel channel;
-    QObject::connect(&clientWrapper, &WebSocketClientWrapper::clientConnected, &channel, &QWebChannel::connectTo);
-
-    // publish IDE interface
-    IDEWebChannelWrapper ideWrapper { win->helpBrowserDocklet()->browser() };
-    channel.registerObject("IDE", &ideWrapper);
-
-    return app.exec();
-}
 
 
 bool SingleInstanceGuard::tryConnect(QStringList const& arguments) {
@@ -292,6 +191,7 @@ bool Main::nativeEventFilter(const QByteArray&, void* message, long*) {
 }
 
 bool Main::openDocumentation(const QString& string) {
+#ifdef SC_USE_QTWEBENGINE
     QString symbol = string.trimmed();
     if (symbol.isEmpty())
         return false;
@@ -300,13 +200,20 @@ bool Main::openDocumentation(const QString& string) {
     helpDock->browser()->gotoHelpFor(symbol);
     helpDock->focus();
     return true;
+#else // SC_USE_QTWEBENGINE
+    return false;
+#endif // SC_USE_QTWEBENGINE
 }
 
 bool Main::openDocumentationForMethod(const QString& className, const QString& methodName) {
+#ifdef SC_USE_QTWEBENGINE
     HelpBrowserDocklet* helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpForMethod(className, methodName);
     helpDock->focus();
     return true;
+#else // SC_USE_QTWEBENGINE
+    return false;
+#endif // SC_USE_QTWEBENGINE
 }
 
 void Main::openDefinition(const QString& string, QWidget* parent) {

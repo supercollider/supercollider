@@ -20,6 +20,11 @@
 
 #include <thread>
 
+// AppleClang workaround
+#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
 

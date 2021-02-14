@@ -129,7 +129,13 @@ void Document::setIndentWidth(int numSpaces) {
     qreal tabStop = fontMetrics.width(' ') * numSpaces;
 
     QTextOption options = mDoc->defaultTextOption();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+    options.setTabStopDistance(tabStop);
+#else
     options.setTabStop(tabStop);
+#endif
+
     mDoc->setDefaultTextOption(options);
 }
 
@@ -763,8 +769,9 @@ void DocumentManager::handleGetDocTextScRequest(const QString& data) {
             if (document) {
                 QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
-                QString command =
-                    QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
+                QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.collect({|x| "
+                                                 "{x.asInteger.asAscii}.try ? \"\" }).join)")
+                                      .arg(funcID.c_str(), docText);
                 Main::evaluateCode(command, true);
             }
         }

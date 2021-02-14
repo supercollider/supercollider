@@ -6,9 +6,8 @@ categories::  UGens>Generators>Stochastic
 
 Description::
 
-Like  link::Classes/LFNoise1:: , it generates linearly interpolated
-random values at a rate given by the  code::freq::
-argument, with two differences:
+Like link::Classes/LFNoise1::, it generates linearly interpolated random
+values at a rate given by the code::freq:: argument, with two differences:
 list::
 ## no time quantization
 ## fast recovery from low freq values footnote::

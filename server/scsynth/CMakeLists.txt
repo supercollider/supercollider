@@ -1,5 +1,27 @@
 find_package(Sndfile)
 
+# here we choose who provides us with the FFT lib
+# this is done independently for scsynth and supernova
+# on macOS scsynth uses vDSP implementation for FFT
+# which is not thread-safe
+
+if (APPLE)
+    add_definitions("-DSC_FFT_VDSP")
+    message(STATUS "FFT library (scsynth): vDSP")
+else()
+    find_package(FFTW3f 3.3)
+
+    if (NOT FFTW3F_FOUND OR FFT_GREEN)
+        message(STATUS "FFT library (scsynth): Green")
+        set(FFT_GREEN 1)
+        add_definitions("-DSC_FFT_GREEN")
+    else()
+        message(STATUS "Found fftw3f: ${FFTW3F_LIBRARY}")
+        message(STATUS "FFT library (scsynth): FFTW")
+        add_definitions("-DSC_FFT_FFTW")
+    endif()
+endif()
+
 # Here we work out which audio API to use, from system type and/or user option.
 if(AUDIOAPI STREQUAL "default")
 	if(APPLE)
@@ -62,6 +84,7 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
 )
 
 if(APPLE)
@@ -98,7 +121,7 @@ if (AUDIOAPI STREQUAL jack)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK" ${JACK_DEFINITIONS})
 	include_directories(${JACK_INCLUDE_DIRS})
 elseif (AUDIOAPI STREQUAL portaudio)
-	list(APPEND scsynth_sources SC_PortAudio.cpp)
+	list(APPEND scsynth_sources SC_PortAudio.cpp ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
 endif()
@@ -199,7 +222,8 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices -framework Foundation")
+	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices"
+                                        "-framework Foundation -framework AppKit")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -236,6 +260,7 @@ if(APPLE)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
 elseif(WIN32)
     if(NOT MSVC)
+      target_link_libraries(scsynth "-municode")
       set_target_properties(scsynth libscsynth PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 
