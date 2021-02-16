@@ -189,19 +189,19 @@ x.free; // stop the synths
 
 code::
 // set location to your home folder (change user with your username)
-thisProcess.platform.recordingsDir="/home/user/";
+thisProcess.platform.recordingsDir = "/home/user/";
 
 // instantiate the Recorder
 r = Recorder.new(s);
 
 // record into a flac file
-r.recHeaderFormat="flac";
+r.recHeaderFormat = "flac";
 
 // default 'float' is incompatible with flac. set to 24bit:
-r.recSampleFormat="int24";
+r.recSampleFormat = "int24";
 
 // set very obvious prefix for files
-r.filePrefix="SuperCollider_";
+r.filePrefix = "SuperCollider_";
 
 // start recording:
 r.record;
