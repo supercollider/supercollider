@@ -1,0 +1,134 @@
+name: check, build, test
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-18.04
+    outputs:
+      sc-version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: lint class library
+        run: |
+          sudo npm install -g lintspaces-cli
+          lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
+      - name: lint cpp files
+        run: |
+          echo "Running tools/clang-format.py lintall"
+          tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
+          echo "Lint successful"
+      - name: set version string for artifacts
+        id: set-version
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            FULL_TAG=${GITHUB_REF#refs/tags/}
+            SC_VERSION=${FULL_TAG##Version-}
+          else
+            SC_VERSION=$GITHUB_SHA
+          fi
+          echo "::set-output name=version::$SC_VERSION"
+
+  macOS:
+    needs: lint
+    runs-on: macos-${{ matrix.os-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - job-name: ''
+            os-version: '10.15'
+            xcode-version: '12.4'
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'macOS-XCode12.4' # set if needed - will trigger artifact upload
+
+    name: macOS ${{ matrix.job-name }}
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+      USE_SYSLIBS: ${{ matrix.use-syslibs }}
+      SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: prepare timestamp for cache
+        id: current-date
+        run: |
+          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+          echo "::set-output name=week::$(date '+%V')"
+      - name: cache ccache
+        uses: actions/cache@v2
+        with:
+          path: ~/Library/Caches/ccache
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-
+      - name: cache homebrew downloads
+        uses: actions/cache@v2
+        id: cache-homebrew
+        with:
+          path: ~/Library/Caches/Homebrew/downloads
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-date.outputs.week }}
+      - name: cache qt
+        id: cache-qt
+        uses: actions/cache@v1
+        if: matrix.qt-version
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        with:
+          modules: 'qtwebengine'
+          version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
+        if: '!steps.cache-homebrew.outputs.cache-hit'
+        run: rm -rf $(brew --cache)
+      - name: install dependencies
+        run: |
+          brew install libsndfile portaudio ccache fftw
+          # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
+          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+      - name: install system libraries
+        if: env.USE_SYSLIBS == 'true'
+        run: brew install yaml-cpp boost
+      - name: install qt from homebrew
+        if: '!matrix.qt-version'
+        run: brew install qt
+
+      - name: configure
+        env:
+          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+        run: |
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+
+          EXTRA_CMAKE_FLAGS=
+
+          if $USE_SYSLIBS; then EXTRA_CMAKE_FLAGS="-DSYSTEM_BOOST=ON -DSYSTEM_YAMLCPP=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+
+          echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
+
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" .. --debug-output
+      - name: build
+        run: cmake --build $BUILD_PATH --config Release --target install
+      - name: create archive
+        if: matrix.artifact-suffix
+        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
