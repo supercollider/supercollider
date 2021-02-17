@@ -155,8 +155,6 @@ section::Examples
 
 
 code::
-s.boot; // start the server
-
 // something to record
 (
 SynthDef("bubbles", { |out|
@@ -187,4 +185,27 @@ s.stopRecording; // this closes the file and deallocates the buffer recording no
 x.free; // stop the synths
 
 // look in your recordings folder and you'll find a file named for this date and time
+::
+
+code::
+// set location to your home folder (change user with your username)
+thisProcess.platform.recordingsDir = "/home/user/";
+
+// instantiate the Recorder
+r = Recorder.new(s);
+
+// record into a flac file
+r.recHeaderFormat = "flac";
+
+// default 'float' is incompatible with flac. set to 24bit:
+r.recSampleFormat = "int24";
+
+// set very obvious prefix for files
+r.filePrefix = "SuperCollider_";
+
+// start recording:
+r.record;
+
+// stop recording
+r.stopRecording;
 ::
