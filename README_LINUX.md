@@ -112,7 +112,7 @@ Using clang
 -----------
 
 SuperCollider can be compiled with clang, with the following limitations:
-- for clang 4, pass `-DSC_ALBETON_LINK=OFF` when configuring the project
+- for clang 4, pass `-DSC_ABLETON_LINK=OFF` when configuring the project
 - by default clang will use libc++; you can pass `-DSC_CLANG_USES_LIBSTDCPP=ON` to use libstdc++ instead
 
 Building
