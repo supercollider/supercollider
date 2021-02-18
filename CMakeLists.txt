@@ -243,6 +243,11 @@ endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
+if(APPLE)
+    # codesigning breaks increamental builds in Xcode 11+
+    option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" ON)
+endif()
+
 #############################################
 # some default libraries
 
@@ -390,6 +395,11 @@ endif()
 
 if (NO_GPL3)
 	add_definitions(-DNO_GPL3)
+endif()
+
+if(SC_DISABLE_XCODE_CODESIGNING)
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
 endif()
 
 #############################################
