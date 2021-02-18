@@ -1,7 +1,7 @@
 TestPprotect : UnitTest {
 
 	test_resetExceptionHandler_onError {
-		var routine, stream, success = false, condition = Condition.new;
+		var routine, stream, success = false, condition = false;
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
 		// to check its exceptionHandler below.
@@ -10,7 +10,7 @@ TestPprotect : UnitTest {
 			routine,
 			{
 				success = routine.exceptionHandler.isNil;
-				condition.test = true;
+				condition = true;
 			}
 		).asStream;
 		// Note that it is necessary to do this asynchronously!
@@ -23,12 +23,12 @@ TestPprotect : UnitTest {
 
 	test_stream_can_be_restarted_after_error {
 		var pat, stream;
-		var condition = Condition.new;
+		var condition = false;
 
 		pat = Pprotect(
 			Prout {
 				0.01.yield;
-				condition.test = true;
+				condition = true;
 				Error("dummy error").throw
 			},
 			{ stream.streamError }
@@ -37,17 +37,17 @@ TestPprotect : UnitTest {
 		stream = pat.play;
 		this.wait(condition, maxTime: 0.1);
 
-		condition.test = false;
+		condition = false;
 		stream.reset;
 		stream.play;
 		this.wait(condition, maxTime: 0.1);
 
-		this.assert(condition.test, "stream should be resettable after an error");
+		this.assert(condition, "stream should be resettable after an error");
 	}
 
 	test_task_proxy_play_after_error {
 		var proxy, redefine, hasRun;
-		var condition = Condition.new;
+		var condition = false;
 
 		proxy = TaskProxy.new;
 		proxy.quant = 0;
@@ -56,25 +56,25 @@ TestPprotect : UnitTest {
 		redefine = {
 			proxy.source = {
 				0.01.wait;
-				condition.test = true;
+				condition = true;
 				Error("dummy error").throw
 			}
 		};
 
-		condition.test = false;
+		condition = false;
 		redefine.value;
 		this.wait(condition, maxTime: 0.1);
 
-		condition.test = false;
+		condition = false;
 		redefine.value;
 		this.wait(condition, maxTime: 0.1);
 
-		this.assert(condition.test, "task proxy should play again after an error");
+		this.assert(condition, "task proxy should play again after an error");
 	}
 
 	test_nested_instances {
 		var innerHasBeenCalled = false, outerHasBeenCalled = false;
-		var condition = Condition.new;
+		var condition = false;
 
 		fork {
 			var stream;
@@ -83,12 +83,12 @@ TestPprotect : UnitTest {
 					Prout {
 						Error("dummy error").throw
 					}, {
-						condition.test = true;
+						condition = true;
 						innerHasBeenCalled = true
 					}
 				),
 				{
-					condition.test = true;
+					condition = true;
 					outerHasBeenCalled = true
 				}
 			).asStream;

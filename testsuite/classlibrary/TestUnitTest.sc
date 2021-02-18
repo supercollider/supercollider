@@ -76,16 +76,13 @@ TestUnitTest : UnitTest {
 	}
 
 	test_wait {
-		var condition = Condition.new;
-		var r = Routine {
+		var condition = false;
+		Routine({
 			0.01.yield;
-			condition.test = true;
-		};
-		r.play;
-		this.wait(condition, maxTime:0.02);
-		this.assert(condition.test, "UnitTest.wait should continue when test is true");
+			condition = true;
+		}).play;
+		this.wait(condition, maxTime: 0.02);
+		this.assert(condition, "UnitTest.wait should proceed when its condition becomes true");
 	}
-
-
 
 }
