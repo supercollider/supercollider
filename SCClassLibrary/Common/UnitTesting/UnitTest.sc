@@ -239,7 +239,7 @@ UnitTest {
 		var limit = max(1, maxTime / dt);
 
 		while {
-			condition.test.not and: { limit >= 0 }
+			condition.value.not and: { limit >= 0 }
 		} {
 			limit = limit - 1;
 			dt.wait;
