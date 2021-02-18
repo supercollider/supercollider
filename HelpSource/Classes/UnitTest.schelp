@@ -274,7 +274,7 @@ method::wait
 Wait for a condition, consider failed after maxTime. Only valid within a test (or a routine).
 
 argument:: condition
-A Boolean or a Function that returns a Boolean.
+A Function that returns a Boolean.
 
 argument:: failureMessage
 A message that will be posted if waiting fails due to timeout.

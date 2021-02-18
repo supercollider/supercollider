@@ -233,7 +233,7 @@ UnitTest {
 	}
 
 	// waits for condition with a maxTime limit
-	// condition is a Boolean or a Function that returns a Boolean
+	// condition is a Function that returns a Boolean
 	// if time expires, the test is a failure
 	wait { |condition, failureMessage, maxTime = 10.0|
 		var dt = 0.05;
