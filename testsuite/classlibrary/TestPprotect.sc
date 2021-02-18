@@ -16,7 +16,7 @@ TestPprotect : UnitTest {
 		// Note that it is necessary to do this asynchronously!
 		// Otherwise "routine"'s error will halt the entire test suite.
 		stream.play;
-		this.wait(condition, maxTime: 0.1);
+		this.wait({ condition }, maxTime: 0.1);
 
 		this.assert(success, "Pprotect should clear the stream's exceptionHandler");
 	}
@@ -35,12 +35,12 @@ TestPprotect : UnitTest {
 		);
 
 		stream = pat.play;
-		this.wait(condition, maxTime: 0.1);
+		this.wait({ condition }, maxTime: 0.1);
 
 		condition = false;
 		stream.reset;
 		stream.play;
-		this.wait(condition, maxTime: 0.1);
+		this.wait({ condition }, maxTime: 0.1);
 
 		this.assert(condition, "stream should be resettable after an error");
 	}
@@ -63,11 +63,11 @@ TestPprotect : UnitTest {
 
 		condition = false;
 		redefine.value;
-		this.wait(condition, maxTime: 0.1);
+		this.wait({ condition }, maxTime: 0.1);
 
 		condition = false;
 		redefine.value;
-		this.wait(condition, maxTime: 0.1);
+		this.wait({ condition }, maxTime: 0.1);
 
 		this.assert(condition, "task proxy should play again after an error");
 	}
@@ -97,7 +97,7 @@ TestPprotect : UnitTest {
 
 		};
 
-		this.wait(condition, maxTime: 0.1);
+		this.wait({ condition }, maxTime: 0.1);
 
 		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
 		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called");

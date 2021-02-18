@@ -170,14 +170,14 @@ TestEnvGen_server : UnitTest {
 	// issue #5104
 	test_shapeHold_setEndValue {
 		var env = Env(curves: [\hold, \lin]);
-		var condition = Condition();
+		var condition = false;
 		var result = [];
 		server.bootSync;
 		{ EnvGen.kr(env, timeScale: 0.01, doneAction:2) }.loadToFloatArray(0.01, server){ |values|
 			result = values;
-			condition.test_(true).signal;
+			condition = true;
 		};
-		this.wait(condition, "timeout when waiting for EnvGen results from server", 0.1);
+		this.wait({ condition }, "timeout when waiting for EnvGen results from server", 0.1);
 		this.assert(result.any { |v| v > 0 }, "Env(curves: [\hold, \lin]) should not be rendered as silent");
 	}
 

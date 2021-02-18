@@ -81,7 +81,7 @@ TestUnitTest : UnitTest {
 			0.01.yield;
 			condition = true;
 		}).play;
-		this.wait(condition, maxTime: 0.02);
+		this.wait({ condition }, maxTime: 0.02);
 		this.assert(condition, "UnitTest.wait should proceed when its condition becomes true");
 	}
 

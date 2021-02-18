@@ -14,7 +14,7 @@ TestSanitize : UnitTest {
 
 	test_sanitize {
 		var duration, expected;
-		var tests, testsIncomplete, testCond = Condition(false);
+		var tests, testsIncomplete;
 		duration = 256 / server.sampleRate;
 		expected = 8888.0;
 
@@ -40,11 +40,10 @@ TestSanitize : UnitTest {
 			ugenGraphFunc.loadToFloatArray(duration, server, { |samples|
 				this.assertArrayFloatEquals(samples, expected, text);
 				testsIncomplete = testsIncomplete - 1;
-				if(testsIncomplete == 0) { testCond.test = true };
 			});
 		};
 
-		this.wait(testCond);
+		this.wait({ testsIncomplete == 0 });
 	}
 
 }
