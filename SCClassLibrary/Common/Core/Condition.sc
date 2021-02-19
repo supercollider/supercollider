@@ -1,5 +1,5 @@
 Condition {
-	var <>test, waitingThreads;
+	var <>test, waitingThreads, waitingTimeouts;
 
 	*new { arg test=false;
 		^super.newCopyArgs(test, Array(8))
@@ -16,9 +16,25 @@ Condition {
 		value.yield;
 	}
 
+	setTimeout { |timeout|
+		var waitingThread = thisThread.threadPlayer;
+		var timeoutThread = Routine {
+			timeout.wait;
+			waitingThreads.remove(waitingThread);
+			waitingTimeouts.remove(timeoutThread);
+			waitingThread.clock.sched(0, waitingThread);
+		};
+		waitingTimeouts = waitingTimeouts.add(timeoutThread);
+		timeoutThread.play(thisThread.clock);
+	}
+
 	signal {
 		var tempWaitingThreads, time;
 		if (test.value, {
+			waitingTimeouts.do { |thread|
+				thread.stop;
+			};
+			waitingTimeouts = nil;
 			time = thisThread.seconds;
 			tempWaitingThreads = waitingThreads;
 			waitingThreads = nil;
@@ -30,6 +46,10 @@ Condition {
 	unhang {
 		var tempWaitingThreads, time;
 		// ignore the test, just resume all waiting threads
+		waitingTimeouts.do { |thread|
+			thread.stop;
+		};
+		waitingTimeouts = nil;
 		time = thisThread.seconds;
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
