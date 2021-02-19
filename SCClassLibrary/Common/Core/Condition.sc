@@ -34,13 +34,12 @@ Condition {
 		};
 	}
 	unhang {
-		var tempWaitingThreads, time;
+		var tempWaitingThreads;
 		// ignore the test, just resume all waiting threads
 		waitingTimeouts.do { |thread|
 			thread.stop;
 		};
 		waitingTimeouts = nil;
-		time = thisThread.seconds;
 		tempWaitingThreads = waitingThreads;
 		waitingThreads = nil;
 		tempWaitingThreads.do({ arg thread;
