@@ -396,3 +396,95 @@ jobs:
           PYCHARM_HOSTED: 1 # enable color output
           QPM_DEBUG: 1
         run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+        
+  deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - artifact-suffix: macOS
+            upload-to-github: true
+            upload-to-s3: true
+            s3-os-name: osx
+            s3-artifact-suffx: ''
+            s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
+
+    if: github.repository_owner == 'supercollider' || startsWith(github.ref, 'refs/tags/') # run in the main repo and everywhere on tagged commits
+    needs: [lint, macOS]
+    runs-on: ubuntu-18.04
+    name: 'deploy ${{ matrix.artifact-suffix }} build'
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.zip'
+      UPLOAD_TO_GH_RELEASE: ${{ matrix.upload-to-github && startsWith(github.ref, 'refs/tags/') }}
+      UPLOAD_TO_S3: ${{ matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
+      S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
+      S3_ARTIFACT_PATH: ${{ github.workspace }}/build/s3-upload
+      S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.zip
+      S3_BUILD_LOCATION: builds/supercollider/supercollider/${{ matrix.s3-os-name }}
+      S3_ROOT_URL: 'https://supercollider.s3.amazonaws.com'
+    steps:
+      - name: download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+      - name: upload to the release page
+        uses: softprops/action-gh-release@v1
+        if: env.UPLOAD_TO_GH_RELEASE == 'true'
+        with:
+          files: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: preapre s3 upload
+        if: env.UPLOAD_TO_S3 == 'true'
+        run: |
+          mkdir $S3_ARTIFACT_PATH
+          cp $INSTALL_PATH/$ARTIFACT_FILE $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
+          
+          # set S3_BUILD_LOCATION 
+          echo 'S3_BUILD_URL<<EOF' >> $GITHUB_ENV
+          echo ${{ env.S3_ROOT_URL }}/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }} >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+          
+          if [[ $S3_CREATE_LATEST_LINK == true ]]; then
+            # set LATEST_HTML_PATH and LATEST_HTML_URL
+            echo 'LATEST_HTML_PATH<<EOF' >> $GITHUB_ENV
+            echo ${{ env.S3_ARTIFACT_PATH }}/${GITHUB_REF#refs/heads/}-latest.html >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+            echo 'LATEST_HTML_URL<<EOF' >> $GITHUB_ENV
+            echo ${{ env.S3_ROOT_URL }}/${{ env.S3_BUILD_LOCATION }}/${GITHUB_REF#refs/heads/}-latest.html >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+          fi
+      - name: create latest link
+        if: env.S3_CREATE_LATEST_LINK == 'true'
+        env:
+          FWD_HTML: '<html><head><meta http-equiv="refresh" content="0; url=''${{ env.S3_BUILD_URL }}''" /></head></html>'
+        run: |
+          mkdir -p "${LATEST_HTML_PATH%/*}"
+          echo writing $FWD_HTML to $LATEST_HTML_PATH
+          echo $FWD_HTML > $LATEST_HTML_PATH
+          echo html file contents:
+          cat $LATEST_HTML_PATH
+      - name: upload to S3
+        uses: jakejarvis/s3-sync-action@master
+        if: env.UPLOAD_TO_S3 == 'true'
+        with:
+          args: --acl public-read
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: supercollider
+          AWS_S3_ENDPOINT: https://s3-us-west-2.amazonaws.com
+          AWS_REGION: 'us-west-2'
+          SOURCE_DIR: ${{ env.S3_ARTIFACT_PATH }}
+          DEST_DIR: ${{ env.S3_BUILD_LOCATION }}
+      - name: post S3 build location
+        if: env.UPLOAD_TO_S3 == 'true'
+        run: |
+          echo "::group::S3 build location"
+          echo $S3_BUILD_URL
+          if [[ -n "$LATEST_HTML_URL" ]]; then echo $LATEST_HTML_URL; fi
+          echo "::endgroup::"
