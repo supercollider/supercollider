@@ -27,6 +27,17 @@ c = Condition.new; fork { 0.5.wait; "started ...".postln; c.hang;  "... and fini
 c.unhang;
 ::
 
+method::setTimeout
+Prepares a time limit for this thread to be re-awakened after waiting or hanging on a Condition. If a timeout is set, there are two possible outcomes: A. The condition will signal successfully (or unhang) emphasis::before:: the timeout expires, and the thread will resume (without firing a timeout action); or B. The timeout will expire, and the thread will resume after that number of beats. The code::action:: function can set a flag so that the calling thread knows it's resuming due to a timeout. (If no timeout is set, then the thread may hang indefinitely if the condition fails to be met.)
+
+Call code::setTimeout:: immediately before calling code::wait:: or code::hang::.
+
+argument::timeout
+Number of clock beats to wait before timing out.
+
+argument::action
+A function to execute only in case the timeout expires. The function will not execute for a successful signal or unhang.
+
 method::signal
 If link::#-test:: is true, reschedule blocked threads.
 
@@ -97,12 +108,41 @@ Routine {
 c.unhang;
 ::
 
+Timeout limits: About half the time, the synth will run longer than 1.0 second and the condition will time out.
+
+code::
+(
+s.waitForBoot {
+	var cond = Condition.new;
+	
+	var node = {
+		var freq = XLine.kr(1, 2, rrand(0.5, 1.5), doneAction: 2);
+		SinOsc.ar(freq, 0, 0.1).dup
+	}.play;
+	
+	var endResp = OSCFunc({ |msg|
+		"Synth ended on time".postln;
+		endResp.free;
+		cond.unhang;
+	}, '/n_end', s.addr, argTemplate: [node.nodeID]);
+
+	// here: cond.setTimeout().hang (or wait)
+	cond.setTimeout(1.0, {
+		endResp.free;
+		"Reached timeout; synth hasn't ended".postln;
+	}).hang;
+	
+	"Resumed thread".postln;
+};
+)
+::
+
 Waiting for Synths to end (waitForFree) uses a Condition implicitly:
 code::
 (
 SynthDef(\help, { |out|
 	var mod = LFNoise2.kr(ExpRand(0.5, 2)) * 0.5;
-	var snd =  mod * Blip.ar(Rand(200, 800) * (mod + 1));
+	var snd = mod * Blip.ar(Rand(200, 800) * (mod + 1));
 	Out.ar(out, snd);
 	FreeSelf.kr(mod < 0); // free the synth when amplitude goes below 0.
 }).add;
