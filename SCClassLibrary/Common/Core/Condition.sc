@@ -16,12 +16,13 @@ Condition {
 		value.yield;
 	}
 
-	setTimeout { |timeout|
+	setTimeout { |timeout, action|
 		var waitingThread = thisThread.threadPlayer;
 		var timeoutThread = Routine {
 			timeout.wait;
 			waitingThreads.remove(waitingThread);
 			waitingTimeouts.remove(timeoutThread);
+			action.value;
 			waitingThread.clock.sched(0, waitingThread);
 		};
 		waitingTimeouts = waitingTimeouts.add(timeoutThread);
