@@ -29,19 +29,9 @@ Condition {
 	}
 
 	signal {
-		var tempWaitingThreads, time;
-		if (test.value, {
-			waitingTimeouts.do { |thread|
-				thread.stop;
-			};
-			waitingTimeouts = nil;
-			time = thisThread.seconds;
-			tempWaitingThreads = waitingThreads;
-			waitingThreads = nil;
-			tempWaitingThreads.do({ arg thread;
-				thread.clock.sched(0, thread);
-			});
-		});
+		if(test.value) {
+			this.unhang;
+		};
 	}
 	unhang {
 		var tempWaitingThreads, time;
