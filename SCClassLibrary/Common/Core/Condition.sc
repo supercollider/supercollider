@@ -30,9 +30,7 @@ Condition {
 	}
 
 	signal {
-		if(test.value) {
-			this.unhang;
-		};
+		if(test.value) { this.unhang }
 	}
 	unhang {
 		var tempWaitingThreads;
