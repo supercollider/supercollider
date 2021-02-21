@@ -33,7 +33,7 @@ TestCondition : UnitTest {
 			failed = true;
 			condition.unhang;
 		};
-		condition.setTimeout(1e-6).hang;
+		condition.timeoutAfter(1e-6).hang;
 		lateTask.stop;
 		this.assert(failed.not, "condition has timed out")
 	}
@@ -44,7 +44,7 @@ TestCondition : UnitTest {
 		cond = Condition({ value }),
 		thread = Routine {
 			var clock = thisThread.clock;
-			cond.setTimeout(0.001, { result = false }).wait;
+			cond.timeoutAfter(0.001, { result = false }).wait;
 		};
 		thread.play(thisThread.clock);
 		0.0005.wait;  // no, there is not any other way to do this
@@ -59,7 +59,7 @@ TestCondition : UnitTest {
 		cond = Condition.new,
 		thread = Routine {
 			var clock = thisThread.clock;
-			cond.setTimeout(0.001, { result = false }).hang;
+			cond.timeoutAfter(0.001, { result = false }).hang;
 		};
 		thread.play(thisThread.clock);
 		0.0005.wait;
