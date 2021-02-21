@@ -210,7 +210,7 @@ TestCoreUGens : UnitTest {
 			},
 
 		];
-		var testsIncomplete = tests.size;
+		var testsIncomplete;
 		var condition = Condition { testsIncomplete == 0 };
 
 		//////////////////////////////////////////
@@ -273,6 +273,7 @@ TestCoreUGens : UnitTest {
 			);
 		};
 
+		testsIncomplete = tests.size;
 
 		server.bootSync;
 		tests.keysValuesDo{|name, func|
@@ -334,7 +335,7 @@ TestCoreUGens : UnitTest {
 			});
 			rrand(0.06, 0.15).wait;
 		};
-		this.wait(condition, "timed out")
+		this.wait(condition, "timed out", 30)
 	}
 
 
