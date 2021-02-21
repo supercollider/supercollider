@@ -27,10 +27,10 @@ c = Condition.new; fork { 0.5.wait; "started ...".postln; c.hang;  "... and fini
 c.unhang;
 ::
 
-method::setTimeout
+method::timeoutAfter
 Prepares a time limit for this thread to be re-awakened after waiting or hanging on a Condition. If a timeout is set, there are two possible outcomes: A. The condition will signal successfully (or unhang) emphasis::before:: the timeout expires, and the thread will resume (without firing a timeout action); or B. The timeout will expire, and the thread will resume after that number of beats. The code::action:: function can set a flag so that the calling thread knows it's resuming due to a timeout. (If no timeout is set, then the thread may hang indefinitely if the condition fails to be met.)
 
-Call code::setTimeout:: immediately before calling code::wait:: or code::hang::.
+Call code::timeoutAfter:: immediately before calling code::wait:: or code::hang::. The timeout period begins at the moment of calling code::timeoutAfter::.
 
 argument::timeout
 Number of clock beats to wait before timing out.
@@ -126,8 +126,8 @@ s.waitForBoot {
 		cond.unhang;
 	}, '/n_end', s.addr, argTemplate: [node.nodeID]);
 
-	// here: cond.setTimeout().hang (or wait)
-	cond.setTimeout(1.0, {
+	// here: cond.timeoutAfter().hang (or wait)
+	cond.timeoutAfter(1.0, {
 		endResp.free;
 		"Reached timeout; synth hasn't ended".postln;
 	}).hang;

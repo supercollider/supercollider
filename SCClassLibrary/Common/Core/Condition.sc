@@ -16,14 +16,17 @@ Condition {
 		value.yield;
 	}
 
-	setTimeout { |timeout, action|
+	timeoutAfter { |timeout, action|
 		var waitingThread = thisThread.threadPlayer;
 		var timeoutThread = Routine {
+			var resume;
 			timeout.wait;
-			waitingThreads.remove(waitingThread);
+			// sleight-of-hand: if waitingThreads does not contain my thread,
+			// then resume will be nil
+			resume = waitingThreads.remove(waitingThread);
 			waitingTimeouts.remove(timeoutThread);
 			action.value;
-			waitingThread.clock.sched(0, waitingThread);
+			waitingThread.clock.sched(0, resume);
 		};
 		waitingTimeouts = waitingTimeouts.add(timeoutThread);
 		timeoutThread.play(thisThread.clock);
