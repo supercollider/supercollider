@@ -76,6 +76,7 @@ TestFilterUGens : UnitTest {
 		var delay_times = [1,64]; // in samples
 
 		var testsIncomplete = delay_times.size * filters.size;
+		var condition = Condition({ testsIncomplete == 0 });
 
 		this.bootServer;
 		filters.do {
@@ -95,13 +96,14 @@ TestFilterUGens : UnitTest {
 					arg data;
 					this.assertArrayFloatEquals(data, 0, message, within:1e-10, report:true);
 					testsIncomplete = testsIncomplete - 1;
+					condition.signal;
 				});
 
 				rrand(0.012,0.035).wait;
 			}
 		};
 
-		this.wait(testsIncomplete == 0);
+		this.wait(condition);
 
 		"".postln;
 		postln("Please note: the following subclasses of Filter are not included in TestFilterUgens.");

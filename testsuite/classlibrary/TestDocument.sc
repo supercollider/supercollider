@@ -5,14 +5,15 @@ TestDocument : UnitTest {
 
 	test_new_document_runs_initAction {
 		var success = false, doc, save;
+		var condition = Condition.new;
 		if(Platform.ideName == "scqt") {
 			save = Document.initAction;
 			protect {
-				Document.initAction = { success = true };
+				Document.initAction = { condition.test_(true).signal };
 				doc = Document.new;
 				// failureMessage is deliberately nil
 				// we will assert below, we don't need `wait` to call `failed` itself
-				this.wait({ success }, failureMessage: nil, maxTime: 0.2);
+				this.wait(condition, failureMessage: nil, maxTime: 0.2);
 				doc.close;
 			} {
 				Document.initAction = save;

@@ -211,7 +211,7 @@ TestCoreUGens : UnitTest {
 
 		];
 		var testsIncomplete = tests.size;
-
+		var condition = Condition { testsIncomplete == 0 };
 
 		//////////////////////////////////////////
 		// reversible unary ops:
@@ -279,12 +279,13 @@ TestCoreUGens : UnitTest {
 			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
 				testsIncomplete = testsIncomplete - 1;
+				condition.signal
 			});
 			rrand(0.12, 0.35).wait;
 		};
 
 
-		this.wait{testsIncomplete==0};
+		this.wait(condition, "timed out");
 	}
 
 	test_exact_convergence {
@@ -298,20 +299,23 @@ TestCoreUGens : UnitTest {
 
 		];
 		var testsIncomplete = tests.size;
+		var condition = Condition { testsIncomplete == 0 };
 		server.bootSync;
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
 				testsIncomplete = testsIncomplete - 1;
+				condition.signal
 			});
 			rrand(0.05, 0.1).wait;
 		};
-		this.wait{testsIncomplete==0};
+		this.wait(condition, "timed out")
 	}
 
 	test_muladd {
 		var n, v;
 		var testsIncomplete;
+		var condition = Condition { testsIncomplete == 0 };
 
 		var tests = Dictionary[
 		];
@@ -330,13 +334,14 @@ TestCoreUGens : UnitTest {
 			});
 			rrand(0.06, 0.15).wait;
 		};
-		this.wait{testsIncomplete==0};
+		this.wait(condition, "timed out")
 	}
 
 
 	test_bufugens{
 		var d, b, c;
 		var testsIncomplete = 6;
+		var condition = Condition { testsIncomplete == 0 };
 		server.bootSync;
 
 		// channel sizes for test:
@@ -364,11 +369,12 @@ TestCoreUGens : UnitTest {
 				b.free;
 				c.free;
 				testsIncomplete = testsIncomplete - 1;
+				condition.signal
 			});
 			0.32.wait;
 			server.sync;
 		};
-		this.wait{testsIncomplete==0};
+		this.wait(condition, "timed out")
 	}
 
 	test_demand {
@@ -429,6 +435,7 @@ TestCoreUGens : UnitTest {
 				dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
 		];
 		var testsIncomplete = tests.size;
+		var condition = Condition { testsIncomplete == 0 };
 		server.bootSync;
 		tests.keysValuesDo{|text, func|
 			func.loadToFloatArray(10, server, { |data|
@@ -439,7 +446,7 @@ TestCoreUGens : UnitTest {
 		};
 
 		// Wait for async tests
-		this.wait{testsIncomplete==0};
+		this.wait(condition, "timed out")
 	} // test_pitchtrackers
 
 	test_out_ugens {

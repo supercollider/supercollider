@@ -50,10 +50,10 @@ TestNode_Server : UnitTest {
 		getnValues = 0;
 		node.getn(0, 3, { |values|
 			getnValues = values;
-			condition.test = true;
+			condition.test_(true).signal;
 		});
 
-		this.wait({ condition.test }, "getn response timed out after % seconds.".format(timeout), timeout);
+		this.wait(condition, "getn response timed out after % seconds.".format(timeout), timeout);
 
 		this.assertArrayFloatEquals(getnValues, setnValues, "Node:getn works", 0.001);
 		node.free;

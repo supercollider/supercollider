@@ -10,7 +10,7 @@ TestPprotect : UnitTest {
 			routine,
 			{
 				success = routine.exceptionHandler.isNil;
-				condition.test = true;
+				condition.test_(true).signal;
 			}
 		).asStream;
 		// Note that it is necessary to do this asynchronously!
@@ -28,7 +28,7 @@ TestPprotect : UnitTest {
 		pat = Pprotect(
 			Prout {
 				0.01.yield;
-				condition.test = true;
+				{ condition.test_(true).signal }.defer(0.001);
 				Error("dummy error").throw
 			},
 			{ stream.streamError }
@@ -56,7 +56,7 @@ TestPprotect : UnitTest {
 		redefine = {
 			proxy.source = {
 				0.01.wait;
-				condition.test = true;
+				{ condition.test_(true).signal }.defer(0.001);
 				Error("dummy error").throw
 			}
 		};
@@ -83,12 +83,12 @@ TestPprotect : UnitTest {
 					Prout {
 						Error("dummy error").throw
 					}, {
-						condition.test = true;
+						{ condition.test_(true).signal }.defer(0.001);
 						innerHasBeenCalled = true
 					}
 				),
 				{
-					condition.test = true;
+					{ condition.test_(true).signal }.defer(0.001);
 					outerHasBeenCalled = true
 				}
 			).asStream;

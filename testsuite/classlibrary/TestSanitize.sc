@@ -40,7 +40,7 @@ TestSanitize : UnitTest {
 			ugenGraphFunc.loadToFloatArray(duration, server, { |samples|
 				this.assertArrayFloatEquals(samples, expected, text);
 				testsIncomplete = testsIncomplete - 1;
-				if(testsIncomplete == 0) { testCond.test = true };
+				if(testsIncomplete == 0) { testCond.test_(true).signal };
 			});
 		};
 

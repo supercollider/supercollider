@@ -79,7 +79,7 @@ TestUnitTest : UnitTest {
 		var condition = Condition.new;
 		var r = Routine {
 			0.01.yield;
-			condition.test = true;
+			condition.test_(true).signal
 		};
 		r.play;
 		this.wait(condition, maxTime:0.02);

@@ -53,13 +53,13 @@ TestMixedBundleTester : UnitTest {
 	test_send {
 		var sent;
 		var numDefs = 100;
-		var functionFired = false;
+		var condition = Condition.new;
 
 		this.makeDefs(numDefs);
-		tester.addFunction({ functionFired = true });
+		tester.addFunction({ condition.test_(true).signal });
 
 		tester.send(server);
-		this.wait({ functionFired }, "% timed out while waiting".format(thisMethod));
+		this.wait(condition, "% timed out while waiting".format(thisMethod));
 
 		// should be 100 in preparationMessages
 		this.assertEquals(MixedBundleTester.bundlesSent.size, 1, "should be 1 bundle sent");

@@ -68,9 +68,14 @@ TestServer_boot : UnitTest {
 	}
 
 	test_rebootOffServer {
-		s.reboot;
-		this.wait({ s.serverRunning }, "server reboot failed.", 5);
+		var condition = Condition({ s.serverRunning });
+		var bootWatcher;
 
+		s.reboot;
+		bootWatcher = SimpleController(s)
+		.put(\serverRunning, { condition.signal });
+		this.wait(condition, "server reboot failed.", 5);
+		bootWatcher.remove;
 		this.assert(s.serverRunning,
 			"A turned-off server should be running after reboot."
 		);
@@ -78,20 +83,20 @@ TestServer_boot : UnitTest {
 	}
 
 	test_rebootRunningServer {
-		var rebooted = false;
+		var condition = Condition.new;
 
 		s.quit;
 		s.doWhenBooted {
 			// first boot OK, starting reboot from here
 			s.reboot {
 				s.doWhenBooted {
-					rebooted = true
+					condition.test_(true).signal
 				}
 			};
 		};
 		s.boot;
 
-		this.wait({ rebooted }, "server reboot failed.", 5);
+		this.wait(condition, "server reboot failed.", 5);
 
 		this.assert(s.serverRunning,
 			"A running server should be running again after reboot."

@@ -21,7 +21,7 @@ TestOSCBundle : UnitTest {
 			var def = SynthDef("TestOSCBundle" ++ i, { Silent.ar });
 			bundle.addPrepare(["/d_recv", def.asBytes])
 		});
-		bundle.doPrepare(server, { completed.test = true });
+		bundle.doPrepare(server, { completed.test_(true).signal });
 		this.wait(completed, "% timed out waiting for bundle to be sent".format(thisMethod));
 
 		this.assertEquals(completed.test, true, "'doPrepare' sent the prepare bundle to the server");
