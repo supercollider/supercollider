@@ -4,7 +4,7 @@ TestDocument : UnitTest {
 	classvar <>success;
 
 	test_new_document_runs_initAction {
-		var success = false, doc, save;
+		var doc, save;
 		var condition = Condition.new;
 		if(Platform.ideName == "scqt") {
 			save = Document.initAction;
@@ -18,7 +18,7 @@ TestDocument : UnitTest {
 			} {
 				Document.initAction = save;
 			};
-			this.assert(success, "Document.new should fire Document.initAction function");
+			this.assert(condition.test, "Document.new should fire Document.initAction function");
 		} {
 			// TODO: skip
 		};
