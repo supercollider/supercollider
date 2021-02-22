@@ -16,6 +16,17 @@ Condition {
 		value.yield;
 	}
 
+	waitWithTimeout { |timeout, action|
+		if(test.value.not) {
+			this.timeoutAfter(timeout, action);
+			this.wait
+		}
+	}
+	hangWithTimeout { |timeout, action|
+		this.timeoutAfter(timeout, action);
+		this.hang
+	}
+
 	timeoutAfter { |timeout, action|
 		var waitingThread = thisThread.threadPlayer;
 		var timeoutThread = Routine {
