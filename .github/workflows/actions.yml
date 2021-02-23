@@ -313,6 +313,175 @@ jobs:
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
+  Windows:
+    needs: lint
+    runs-on: windows-${{ matrix.os-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - job-name: '32-bit'
+            fftw-arch: 'x32'
+            cmake-arch: 'Win32'
+            os-version: '2019'
+            qt-version: '5.15.2'
+            qt-arch: 'win32_msvc2019'
+            fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll32.zip'
+            cmake-generator: 'Visual Studio 16 2019'
+            msvc-year: '2019'
+            vcvars-script: 'vcvars32.bat'
+            chocolatey-options: '--forcex86' # '--forcex86' for 32-bit build
+            use-qtwebengine: 'ON' # might need to be turned off for MinGW
+            ableton-link: 'ON' # might need to be turned off for MinGW
+            artifact-suffix: 'win32' # set if needed - will trigger artifact upload
+            create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            installer-suffix: 'win32-installer'
+
+          - job-name: '64-bit'
+            fftw-arch: 'x64'
+            cmake-arch: 'x64'
+            os-version: '2019'
+            qt-version: '5.15.2'
+            qt-arch: 'win64_msvc2019_64'
+            fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
+            cmake-generator: 'Visual Studio 16 2019'
+            msvc-year: '2019'
+            vcvars-script: 'vcvars64.bat'
+            chocolatey-options: '' # '--forcex86' for 32-bit build
+            use-qtwebengine: 'ON' # might need to be turned off for MinGW
+            ableton-link: 'ON' # might need to be turned off for MinGW
+            artifact-suffix: 'win64' # set if needed - will trigger artifact upload
+            create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
+            installer-suffix: 'win64-installer'
+
+          - job-name: '64-bit MinGW'
+            fftw-arch: 'x64'
+            os-version: '2019'
+            qt-version: '5.15.2'
+            qt-arch: 'win64_mingw81'
+            fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
+            cmake-generator: 'MinGW Makefiles'
+            chocolatey-options: '' # '--forcex86' for 32-bit build
+            use-qtwebengine: 'OFF' # might need to be turned off for MinGW
+            ableton-link: 'OFF' # might need to be turned off for MinGW
+            artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
+
+    name: Windows ${{ matrix.job-name }}
+    env:
+      BUILD_PATH: ${{ github.workspace }}/build
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
+      ASIO_URL: 'http://www.steinberg.net/sdk_downloads/asiosdk2.3.zip'
+      ASIO_FOLDER_NAME: ASIOSDK2.3
+      VCVARS_SCRIPT: ${{ matrix.vcvars-script }}
+      VCVARS_SCRIPT_PATH: 'C:/Program Files (x86)/Microsoft Visual Studio/${{ matrix.msvc-year }}/Enterprise/VC/Auxiliary/Build/${{ matrix.vcvars-script }}'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
+      INSTALLER_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.installer-suffix }}'
+      CREATE_INSTALLER: ${{ matrix.create-installer }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: prepare timestamp for cache
+        id: current-date
+        run: |
+          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+          echo "::set-output name=week::$(date '+%V')"
+      - name: cache qt
+        id: cache-qt
+        uses: actions/cache@v1
+        with:
+          path: ../Qt
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v2
+        with:
+          modules: 'qtwebengine'
+          version: ${{ matrix.qt-version }}
+          arch: ${{ matrix.qt-arch }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+      - name: install libsndfile
+        run: choco install libsndfile ${{ matrix.chocolatey-options }}
+      - name: download fftw
+        shell: bash
+        env:
+          FFTW_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/fftw
+        run: |
+          mkdir -p $FFTW_PATH && cd $FFTW_PATH
+          curl -L ${{ matrix.fftw-url }} -o fftw.zip
+          7z x fftw.zip -y
+          # add env var for subsequent steps
+          echo 'FFTW_PATH<<EOF' >> $GITHUB_ENV
+          echo $FFTW_PATH >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - name: create fftw msvc library
+        if: env.VCVARS_SCRIPT
+        shell: cmd
+        env:
+          FFTW_ARCH: ${{ matrix.fftw-arch }}
+        run: |
+          call "%VCVARS_SCRIPT_PATH%"
+          cd "%FFTW_PATH%"
+          lib.exe /machine:%FFTW_ARCH% /def:libfftw3f-3.def
+      - name: move fftw
+        shell: bash
+        run: |
+          mv $FFTW_PATH "C:/Program Files/fftw"
+          echo "Done installing fftw"
+      - name: install asio sdk
+        shell: bash
+        env:
+          ASIO_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/asio_sdk
+        run: |
+          mkdir -p $ASIO_PATH && cd $ASIO_PATH
+          curl -L $ASIO_URL -o asio.zip
+          7z x asio.zip -y
+          mv $ASIO_FOLDER_NAME $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+          echo "Done installing asio sdk"
+      - name: configure
+        shell: bash
+        env:
+          CMAKE_GENERATOR: ${{ matrix.cmake-generator }}
+          CMAKE_ARCH: ${{ matrix.cmake-arch }}
+          USE_WEBENGINE: ${{ matrix.use-qtwebengine }}
+          ABLETON_LINK: ${{ matrix.ableton-link }}
+        run: |
+          export PATH=$Qt5_DIR/bin:$PATH
+
+          mkdir $BUILD_PATH && cd $BUILD_PATH
+
+          cmake -G "$CMAKE_GENERATOR" -A "$CMAKE_ARCH" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=$USE_WEBENGINE -D SC_ABLETON_LINK=$ABLETON_LINK -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
+
+      - name: build
+        shell: bash
+        run: |
+          cmake --build $BUILD_PATH --config Release --target install
+      - name: create archive
+        if: matrix.artifact-suffix
+        shell: bash
+        run: cd $INSTALL_PATH && 7z a $ARTIFACT_FILE.zip -tzip SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        if: matrix.artifact-suffix
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+          retention-days: 7 # quickly remove test artifacts
+      - name: create installer
+        if: env.CREATE_INSTALLER == 'true'
+        shell: bash
+        run: |
+          export PATH="C:\Program Files (x86)\NSIS":$PATH
+          cmake --build $BUILD_PATH --config Release --target installer
+      - name: upload installer
+        uses: actions/upload-artifact@v2
+        if: env.CREATE_INSTALLER == 'true'
+        with:
+          name: ${{ env.INSTALLER_FILE }}
+          path: ${{ env.INSTALL_PATH }}/*.exe
+          retention-days: 7 # quickly remove test artifacts
+
   test:
     strategy:
       fail-fast: false
@@ -410,8 +579,30 @@ jobs:
             s3-artifact-suffx: ''
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
+          - artifact-suffix: win32
+            upload-to-github: true
+            upload-to-s3: true
+            s3-os-name: win32
+            s3-artifact-suffx: ''
+            s3-create-latest-link: true # create link to pointing to the "latest" build
+
+          - artifact-suffix: win32-installer
+            upload-to-github: true
+            upload-to-s3: false
+
+          - artifact-suffix: win64
+            upload-to-github: true
+            upload-to-s3: true
+            s3-os-name: win64
+            s3-artifact-suffx: ''
+            s3-create-latest-link: true # create link to pointing to the "latest" build
+
+          - artifact-suffix: win64-installer
+            upload-to-github: true
+            upload-to-s3: false
+
     if: github.repository_owner == 'supercollider' || startsWith(github.ref, 'refs/tags/') # run in the main repo and everywhere on tagged commits
-    needs: [lint, macOS]
+    needs: [lint, macOS, Windows]
     runs-on: ubuntu-18.04
     name: 'deploy ${{ matrix.artifact-suffix }} build'
     env:
@@ -427,6 +618,7 @@ jobs:
     steps:
       - name: download artifacts
         uses: actions/download-artifact@v2
+        if: (env.UPLOAD_TO_GH_RELEASE == 'true') || (env.UPLOAD_TO_S3 == 'true')
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
