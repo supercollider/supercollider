@@ -1554,7 +1554,7 @@ void LocalOut_next_a(IOUnit* unit, int inNumSamples) {
         return;
 
     float* out = localIn->m_bus;
-    if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
         return;
 
     int32* touched = localIn->m_busTouched;
@@ -1584,7 +1584,7 @@ FLATTEN void LocalOut_next_a_nova(IOUnit* unit, int inNumSamples) {
         return;
 
     float* out = localIn->m_bus;
-    if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
         return;
 
     int32* touched = localIn->m_busTouched;
@@ -1613,7 +1613,7 @@ FLATTEN void LocalOut_next_a_nova_64(IOUnit* unit, int inNumSamples) {
         return;
 
     float* out = localIn->m_bus;
-    if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
         return;
 
     int32* touched = localIn->m_busTouched;
@@ -1641,7 +1641,7 @@ void LocalOut_next_k(IOUnit* unit, int inNumSamples) {
         return;
 
     float* out = localIn->m_bus;
-    if ((out == NULL) || (numChannels != localIn->mNumOutputs))
+    if ((out == nullptr) || (numChannels != localIn->mNumOutputs))
         return;
 
     int32* touched = localIn->m_busTouched;
@@ -1688,16 +1688,16 @@ PluginLoad(IO) {
     DefineSimpleUnit(XOut);
     DefineDtorUnit(LagControl);
     DefineDtorUnit(AudioControl);
-    DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, 0, 0);
-    DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, 0, 0);
-    DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, 0, 0);
-    DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, 0, 0);
-    DefineUnit("LocalOut", sizeof(IOUnit), (UnitCtorFunc)&LocalOut_Ctor, 0, 0);
-    DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, 0, 0);
-    DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, 0, 0);
-    DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, 0, 0);
-    DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, 0, 0);
+    DefineUnit("Control", sizeof(Unit), (UnitCtorFunc)&Control_Ctor, nullptr, 0);
+    DefineUnit("TrigControl", sizeof(Unit), (UnitCtorFunc)&TrigControl_Ctor, nullptr, 0);
+    DefineUnit("ReplaceOut", sizeof(IOUnit), (UnitCtorFunc)&ReplaceOut_Ctor, nullptr, 0);
+    DefineUnit("Out", sizeof(IOUnit), (UnitCtorFunc)&Out_Ctor, nullptr, 0);
+    DefineUnit("LocalOut", sizeof(IOUnit), (UnitCtorFunc)&LocalOut_Ctor, nullptr, 0);
+    DefineUnit("In", sizeof(IOUnit), (UnitCtorFunc)&In_Ctor, nullptr, 0);
+    DefineUnit("LagIn", sizeof(IOUnit), (UnitCtorFunc)&LagIn_Ctor, nullptr, 0);
+    DefineUnit("InFeedback", sizeof(IOUnit), (UnitCtorFunc)&InFeedback_Ctor, nullptr, 0);
+    DefineUnit("InTrig", sizeof(IOUnit), (UnitCtorFunc)&InTrig_Ctor, nullptr, 0);
 
-    DefineUnit("SharedOut", sizeof(IOUnit), (UnitCtorFunc)&SharedOut_Ctor, 0, 0);
-    DefineUnit("SharedIn", sizeof(IOUnit), (UnitCtorFunc)&SharedIn_Ctor, 0, 0);
+    DefineUnit("SharedOut", sizeof(IOUnit), (UnitCtorFunc)&SharedOut_Ctor, nullptr, 0);
+    DefineUnit("SharedIn", sizeof(IOUnit), (UnitCtorFunc)&SharedIn_Ctor, nullptr, 0);
 }
