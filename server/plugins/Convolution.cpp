@@ -257,7 +257,7 @@ static SndBuf* ConvGetBuffer(Unit* unit, uint32 bufnum, const char* ugenName, in
         buf = world->mSndBufs + bufnum;
     }
 
-    if (buf->data == NULL) {
+    if (buf->data == nullptr) {
         if (unit->mWorld->mVerbosity > -1)
             Print("%s: uninitialized buffer (%i).\n", ugenName, bufnum);
         goto handle_failure;
@@ -269,7 +269,7 @@ handle_failure:
     SETCALC(*ClearUnitOutputs);
     ClearUnitOutputs(unit, inNumSamples);
     unit->mDone = true;
-    return NULL;
+    return nullptr;
 }
 
 void Convolution2_Ctor(Convolution2* unit) {
@@ -345,7 +345,7 @@ void Convolution2_Ctor(Convolution2* unit) {
             unit->mDone = true;
         }
     } else {
-        unit->m_scfft2 = unit->m_scfft1 = unit->m_scfftR = NULL;
+        unit->m_scfft2 = unit->m_scfft1 = unit->m_scfftR = nullptr;
         printf("Convolution2_Ctor: can't get kernel buffer, giving up.\n");
         SETCALC(*ClearUnitOutputs);
     }
@@ -502,7 +502,7 @@ void Convolution2L_Ctor(Convolution2L* unit) {
         // initialize output
         OUT0(0) = IN0(0);
     } else {
-        unit->m_scfft1 = unit->m_scfft2 = unit->m_scfft3 = unit->m_scfftR = unit->m_scfftR2 = NULL;
+        unit->m_scfft1 = unit->m_scfft2 = unit->m_scfft3 = unit->m_scfftR = unit->m_scfftR2 = nullptr;
     }
 }
 
