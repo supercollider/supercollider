@@ -75,7 +75,7 @@ else()
   )
   # used by Windows only
   find_path(SNDFILE_LIBRARY_DIR
-    NAMES libsndfile.dll libsndfile-1.dll
+    NAMES libsndfile.dll libsndfile-1.dll sndfile.dll
     HINTS
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
