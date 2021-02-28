@@ -358,6 +358,7 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4800") # forcing value to bool 'true' or 'false' (performance warning)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
+  add_compile_options("/Zc:__cplusplus")
 
 # _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
 # see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
