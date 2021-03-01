@@ -600,10 +600,12 @@ jobs:
     steps:
       - name: download artifacts
         uses: actions/download-artifact@v2
+        if: env.UPLOAD_TO_S3 == 'true'
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
       - name: preapre s3 upload
+        if: env.UPLOAD_TO_S3 == 'true'
         run: |
           mkdir $S3_ARTIFACT_PATH
           mv $INSTALL_PATH/*.* $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
@@ -634,6 +636,7 @@ jobs:
           cat $LATEST_HTML_PATH
       - name: upload to S3
         uses: jakejarvis/s3-sync-action@master
+        if: env.UPLOAD_TO_S3 == 'true'
         with:
           args: --acl public-read
         env:
