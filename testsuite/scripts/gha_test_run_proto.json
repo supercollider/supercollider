@@ -144,7 +144,7 @@
         },
         {
             "suite":"TestProxyNodeMap",
-            "test":"*",
+            "test":"test_nodeMap_controlNamesConvertsObjectToControlInput",
             "skip":true,
             "skipReason":"UnitTest has bugs (FIXME)"
         },
