@@ -565,8 +565,8 @@ jobs:
           PYCHARM_HOSTED: 1 # enable color output
           QPM_DEBUG: 1
         run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
-        
-  deploy-s3:
+
+  deploy_s3:
     strategy:
       fail-fast: false
       matrix:
@@ -613,12 +613,12 @@ jobs:
         run: |
           mkdir $S3_ARTIFACT_PATH
           mv $INSTALL_PATH/*.* $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
-          
-          # set S3_BUILD_LOCATION 
+
+          # set S3_BUILD_LOCATION
           echo 'S3_BUILD_URL<<EOF' >> $GITHUB_ENV
           echo ${{ env.S3_ROOT_URL }}/${{ env.S3_BUILD_LOCATION }}/${{ env.S3_ARTIFACT_NAME }} >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          
+
           if [[ $S3_CREATE_LATEST_LINK == true ]]; then
             # set LATEST_HTML_PATH and LATEST_HTML_URL
             echo 'LATEST_HTML_PATH<<EOF' >> $GITHUB_ENV
@@ -659,7 +659,7 @@ jobs:
           echo "::endgroup::"
 
   # release - list of files uploaded to GH release is specified in the *upload* step
-  deploy-gh:
+  deploy_gh:
     if: startsWith(github.ref, 'refs/tags/') # run on tagged commits
     needs: [lint, macOS, Windows]
     runs-on: ubuntu-18.04
