@@ -566,54 +566,39 @@ jobs:
           QPM_DEBUG: 1
         run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
         
-  deploy:
+  deploy-s3:
     strategy:
       fail-fast: false
       matrix:
         include:
 
           - artifact-suffix: macOS
-            upload-to-github: true
-            upload-to-s3: true
             s3-os-name: osx
             s3-artifact-suffx: ''
             artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
           - artifact-suffix: win32
-            upload-to-github: true
-            upload-to-s3: true
             s3-os-name: win32
             s3-artifact-suffx: ''
             artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
-          - artifact-suffix: win32-installer
-            upload-to-github: true
-            upload-to-s3: false
-
           - artifact-suffix: win64
-            upload-to-github: true
-            upload-to-s3: true
             s3-os-name: win64
             s3-artifact-suffx: ''
             artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
-          - artifact-suffix: win64-installer
-            upload-to-github: true
-            upload-to-s3: false
-
-    if: github.repository_owner == 'supercollider' || startsWith(github.ref, 'refs/tags/') # run in the main repo and everywhere on tagged commits
+    if: github.repository_owner == 'supercollider' # run in the main repo
     needs: [lint, macOS, Windows]
     runs-on: ubuntu-18.04
-    name: 'deploy ${{ matrix.artifact-suffix }} build'
+    name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
-      UPLOAD_TO_GH_RELEASE: ${{ matrix.upload-to-github && startsWith(github.ref, 'refs/tags/') }}
-      UPLOAD_TO_S3: ${{ matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
-      S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && matrix.upload-to-s3 && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
+      UPLOAD_TO_S3: ${{ (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
+      S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
       S3_ARTIFACT_PATH: ${{ github.workspace }}/build/s3-upload
       S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.${{ matrix.artifact-extension }}
       S3_BUILD_LOCATION: builds/supercollider/supercollider/${{ matrix.s3-os-name }}
@@ -621,20 +606,10 @@ jobs:
     steps:
       - name: download artifacts
         uses: actions/download-artifact@v2
-        if: (env.UPLOAD_TO_GH_RELEASE == 'true') || (env.UPLOAD_TO_S3 == 'true')
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
-      - name: upload to the release page
-        uses: softprops/action-gh-release@v1
-        if: env.UPLOAD_TO_GH_RELEASE == 'true'
-        with:
-          files: ${{ env.INSTALL_PATH }}/*.*
-          draft: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: preapre s3 upload
-        if: env.UPLOAD_TO_S3 == 'true'
         run: |
           mkdir $S3_ARTIFACT_PATH
           mv $INSTALL_PATH/*.* $S3_ARTIFACT_PATH/$S3_ARTIFACT_NAME
@@ -665,7 +640,6 @@ jobs:
           cat $LATEST_HTML_PATH
       - name: upload to S3
         uses: jakejarvis/s3-sync-action@master
-        if: env.UPLOAD_TO_S3 == 'true'
         with:
           args: --acl public-read
         env:
@@ -683,3 +657,31 @@ jobs:
           echo $S3_BUILD_URL
           if [[ -n "$LATEST_HTML_URL" ]]; then echo $LATEST_HTML_URL; fi
           echo "::endgroup::"
+
+  # release - list of files uploaded to GH release is specified in the *upload* step
+  deploy-gh:
+    if: startsWith(github.ref, 'refs/tags/') # run on tagged commits
+    needs: [lint, macOS, Windows]
+    runs-on: ubuntu-18.04
+    name: 'deploy release'
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/Install
+      ARTIFACT_FILE_PREFIX: 'SuperCollider-${{ needs.lint.outputs.sc-version }}'
+    steps:
+      - name: download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: ${{ env.INSTALL_PATH }} # no "name" paramter - download all artifacts
+      - name: upload to the release page
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS/*
+            # ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64/*
+          draft: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
