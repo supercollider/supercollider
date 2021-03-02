@@ -451,12 +451,12 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "$CMAKE_GENERATOR" -A "$CMAKE_ARCH" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=$USE_WEBENGINE -D SC_ABLETON_LINK=$ABLETON_LINK -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
+          cmake -G "$CMAKE_GENERATOR" -A "$CMAKE_ARCH" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=$USE_WEBENGINE -D SC_ABLETON_LINK=1 -D CMAKE_BUILD_TYPE=Release .. --log-level=VERBOSE # build type is specified here for MinGW build
 
       - name: build
         shell: bash
         run: |
-          cmake --build $BUILD_PATH --config Release --target install
+          VERBOSE=1 cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
         if: matrix.artifact-suffix
         shell: bash
