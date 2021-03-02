@@ -358,6 +358,10 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4800") # forcing value to bool 'true' or 'false' (performance warning)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
+
+# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error 
+# caused by some versions of libsndfile's C++ header redefining nullptr as NULL. 
+# See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
   add_compile_options("/Zc:__cplusplus")
 
 # _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
