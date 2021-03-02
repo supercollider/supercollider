@@ -359,6 +359,11 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
 
+# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error 
+# caused by some versions of libsndfile's C++ header redefining nullptr as NULL. 
+# See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+  add_compile_options("/Zc:__cplusplus")
+
 # _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
 # see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_ENABLE_ATOMIC_ALIGNMENT_FIX)
