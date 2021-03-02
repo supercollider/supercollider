@@ -435,22 +435,19 @@ jobs:
           mv ASIOSDK2.3 $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
       - name: configure
         shell: bash
-        env:
-          CMAKE_GENERATOR: ${{ matrix.cmake-generator }}
-          CMAKE_ARCH: ${{ matrix.cmake-arch }}
-          USE_WEBENGINE: ${{ matrix.use-qtwebengine }}
-          ABLETON_LINK: ${{ matrix.ableton-link }}
         run: |
           export PATH=$Qt5_DIR/bin:$PATH
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "$CMAKE_GENERATOR" -A "$CMAKE_ARCH" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=$USE_WEBENGINE -D SC_ABLETON_LINK=$ABLETON_LINK -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
 
       - name: build
         shell: bash
         run: |
-          cmake --build $BUILD_PATH --config Release --target install
+          BUILD_PARALLELISM=
+          if [[ ${{ startsWith(matrix.cmake-generator, 'MinGW') }} == true ]]; then BUILD_PARALLELISM="-- -j2"; fi
+          cmake --build $BUILD_PATH --config Release --target install $BUILD_PARALLELISM
       - name: create archive
         if: matrix.artifact-suffix
         shell: bash
