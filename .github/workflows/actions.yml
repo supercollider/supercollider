@@ -581,7 +581,7 @@ jobs:
             artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
-    if: github.repository_owner == 'supercollider' # run in the main repo
+    if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
     needs: [lint, macOS, Windows]
     runs-on: ubuntu-18.04
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
