@@ -28,8 +28,6 @@ CleanupThunk : Thunk {
 			value
 		}
 	}
-	didEvaluate { ^function.isNil }
-	clear { function = nil }
 }
 
 
