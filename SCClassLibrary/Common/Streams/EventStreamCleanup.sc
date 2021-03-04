@@ -14,7 +14,7 @@
 // that was skipped/excluded by "flag: false".
 // CleanupThunk is not a general-purpose function memoization class for
 // functions with arguments.
-CleanupThunk : Thunk {
+CallOnce : Thunk {
 
 	value { |... args| ^this.prEvaluate(\valueArray, args) }
 	valueArray { |... args| ^this.prEvaluate(\valueArray, *args) }
@@ -49,7 +49,7 @@ EventStreamCleanup {
 
 	addFunction { |event, function |
 		if(event.isKindOf(Dictionary)) {
-			function = CleanupThunk(function);
+			function = CallOnce(function);
 			functions.add(function);
 			event[\addToCleanup] = event[\addToCleanup].add(function);
 		};
@@ -58,7 +58,7 @@ EventStreamCleanup {
 
 	addNodeCleanup { |event, function |
 		if(event.isKindOf(Dictionary)) {
-			function = CleanupThunk(function);
+			function = CallOnce(function);
 			functions.add(function);
 			event[\addToNodeCleanup] = event[\addToNodeCleanup].add(function);
 		};
