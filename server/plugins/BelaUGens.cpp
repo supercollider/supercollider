@@ -505,7 +505,7 @@ void DigitalIn_next_k(DigitalIn* unit, int inNumSamples) {
 void DigitalIn_Ctor(DigitalIn* unit) {
     BelaContext* context = unit->mWorld->mBelaContext;
 
-    unit->mDigitalPin = static_cast<int>(IN0(1)); // digital in pin -- cannot change after construction
+    unit->mDigitalPin = static_cast<int>(IN0(0)); // digital in pin -- cannot change after construction
     if ((unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels)) {
         rt_fprintf(stderr, "DigitalIn error: digital pin must be between %i and %i, it is %i\n", 0,
                    context->digitalChannels, unit->mDigitalPin);
