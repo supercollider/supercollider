@@ -172,7 +172,7 @@ Building a Debian package for Bela
 
 - create a debian package to be installed on the board:
 ```
-cpack -G DEB -D CPACK_PACKAGE_CONTACT="Your Name <your.name@domain.com>" -D CPACK_DEBIAN_PACKAGE_ARCHITECTURE="armhf" -D CPACK_CMAKE_GENERATOR=Ninja
+cpack -G DEB -D CPACK_PACKAGE_CONTACT="Your Name <your.name@domain.com>" -D CPACK_DEBIAN_PACKAGE_ARCHITECTURE="armhf" -D CPACK_CMAKE_GENERATOR=Ninja -D CPACK_STRIP_FILES=true
 ```
 (the `CPACK_CMAKE_GENERATOR=Ninja` is a trick to prevent the `preinstall` target from rebuilding the whole thing slower (see [here](https://stackoverflow.com/a/57530945/2958741)).
 
