@@ -295,7 +295,7 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
