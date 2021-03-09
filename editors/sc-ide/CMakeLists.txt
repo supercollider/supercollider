@@ -553,6 +553,10 @@ if(APPLE OR WIN32)
         string(APPEND VERIFY_CMD "
             message(STATUS \"Verifying app\")
             verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+
+        if(NOT SC_VERIFY_APP)
+            set(VERIFY_CMD "")
+        endif()
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"

@@ -246,6 +246,8 @@ option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 if(APPLE)
     # codesigning breaks increamental builds in Xcode 11+
     option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" ON)
+    # verify_app fails with official Qt; we'll still use it for Qt from homebrew
+    option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
 endif()
 
 #############################################
