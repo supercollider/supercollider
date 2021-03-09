@@ -1,6 +1,3 @@
-# This makes sclang/scide work with a Qt installation at a fixed location.
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
@@ -219,6 +216,12 @@ if(SC_QT OR SC_IDE)
         target_compile_definitions(libsclang PUBLIC SC_USE_QTWEBENGINE)
     endif()
     target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+
+    # This makes sclang/scide work with a Qt installation at a fixed location.
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set_property(TARGET libsclang PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    endif()
+    set_property(TARGET libsclang PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
 if(FALSE) # libsclang is a shared library
