@@ -203,13 +203,13 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
-          # - job-name: 'legacy'
-          #   os-version: '10.15'
-          #   xcode-version: '10.3'
-          #   qt-version: '5.9' # will use qt not from homebrew
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+          - job-name: 'legacy'
+            os-version: '10.15'
+            xcode-version: '10.3'
+            qt-version: '5.9.9' # will use qt from aqtinstall
+            use-syslibs: false
+            shared-libscsynth: false
+            artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
             os-version: '10.15'
@@ -261,13 +261,6 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
-      - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v2
-        if: matrix.qt-version
-        with:
-          modules: 'qtwebengine'
-          version: ${{ matrix.qt-version }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
         if: '!steps.cache-homebrew.outputs.cache-hit'
         run: rm -rf $(brew --cache)
@@ -282,6 +275,13 @@ jobs:
       - name: install qt from homebrew
         if: '!matrix.qt-version'
         run: brew install qt5
+      - name: install qt using aqtinstall
+        uses: jurplel/install-qt-action@v2
+        if: matrix.qt-version
+        with:
+          modules: 'qtwebengine'
+          version: ${{ matrix.qt-version }}
+          cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: configure
         env:
@@ -671,7 +671,7 @@ jobs:
         with:
           files: |
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS/*
-            # ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
