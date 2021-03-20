@@ -37,15 +37,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'xenial gcc5'
-            os-version: '16.04'
-            c-compiler: 'gcc-5'
-            cxx-compiler: 'g++-5'
-            use-syslibs: false
-            shared-libscsynth: false
-            qt-version: '5.9.3' # manually install requested version of qt
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
-
           - job-name: 'bionic gcc7'
             os-version: '18.04'
             c-compiler: 'gcc-7'
@@ -139,13 +130,6 @@ jobs:
           path: ~/.ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
-      - name: cache qt
-        id: cache-qt
-        uses: actions/cache@v1
-        if: matrix.qt-version
-        with:
-          path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
       - name: install dependencies
         run: |
           sudo apt-get update
@@ -160,15 +144,7 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
-        if: '!matrix.qt-version'
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
-      - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v2
-        if: matrix.qt-version
-        with:
-          modules: qtwebengine
-          version: ${{ matrix.qt-version }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
