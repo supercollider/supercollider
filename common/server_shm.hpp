@@ -25,13 +25,17 @@
 #include <boost/foreach.hpp>
 #include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
+#ifdef _WIN32
+#    include "SC_Filesystem.hpp"
+#    define BOOST_INTERPROCESS_SHARED_DIR_FUNC
+#endif
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
 
 #ifdef _WIN32
-#    include "SC_Filesystem.hpp"
-#    define BOOST_INTERPROCESS_SHARED_DIR_FUNC                                                                         \
-        void get_shared_dir(std::string& shared_dir) { shared_dir = SC_Filesystem::defaultResourceDirectory + "/shm" }
+namespace boost { namespace interprocess { namespace ipcdetail {
+inline void get_shared_dir(std::string& shared_dir) { shared_dir = SC_Filesystem::defaultResourceDirectory + "/shm" }
+}}}
 #endif
 
 namespace detail_server_shm {
