@@ -34,7 +34,10 @@
 
 #ifdef _WIN32
 namespace boost { namespace interprocess { namespace ipcdetail {
-inline void get_shared_dir(std::string& shared_dir) { shared_dir = SC_Filesystem::defaultResourceDirectory + "/shm" }
+inline void get_shared_dir(std::string& shared_dir) {
+    shared_dir = SC_Filesystem::defaultResourceDirectory;
+    shared_dir /= "shm";
+}
 }}}
 #endif
 
