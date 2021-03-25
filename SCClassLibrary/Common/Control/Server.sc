@@ -1,5 +1,5 @@
 ServerOptions {
-	classvar defaultValues;
+	classvar <defaultValues;
 
 	// order of variables is important here. Only add new instance variables to the end.
 	var <numAudioBusChannels;
@@ -336,6 +336,7 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
+	classvar <>defaultOptionsClass;
 
 	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -365,13 +366,15 @@ Server {
 		bufferAllocClass = ContiguousBlockAllocator;
 		busAllocClass = ContiguousBlockAllocator;
 
+		defaultOptionsClass = if(Platform.hasBelaSupport, BelaServerOptions, ServerOptions);
+
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
 	}
 
 	*fromName { |name|
 		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
+			Server(name, NetAddr.new("127.0.0.1", 57110))
 		}
 	}
 
@@ -388,13 +391,17 @@ Server {
 	*remote { |name, addr, options, clientID|
 		var result;
 		result = this.new(name, addr, options, clientID);
-		result.startAliveThread;
+		if(options.protocol == \tcp) {
+			addr.tryConnectTCP({ result.startAliveThread }, nil, 20)
+		} {
+			result.startAliveThread;
+		};
 		^result;
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
-		options = argOptions ?? { ServerOptions.new };
+		options = argOptions ?? { defaultOptionsClass.new };
 
 		// set name to get readable posts from clientID set
 		name = argName.asSymbol;

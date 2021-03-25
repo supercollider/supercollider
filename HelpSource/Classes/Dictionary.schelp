@@ -10,6 +10,18 @@ Two keys match if they are strong::equal::. (i.e. == returns true.)
 The contents of a Dictionary are strong::unordered::. You must not depend on the order of items in a Dictionary.
 You must only rely on equality for the keys. E.g. symbols and strings can both be used as keys because the matching is done by equality (==) and not by identity (===). For identity matching, where strings can not be used as keys, see: link::Classes/IdentityDictionary:: and link::Classes/Event::.
 
+note::
+Setting code::nil:: as a value erases the key from the Dictionary. This means that code::nil:: itself can't be used as a Dictionary value.
+::
+
+code::
+d = Dictionary();
+d.put(\a, 440);
+d.keys; // Set[\a]
+d.put(\a, nil); // removes the value 440
+d.keys; // Set[]
+::
+
 CLASSMETHODS::
 
 method::new
@@ -429,5 +441,3 @@ Dictionary["hello" -> 0, "hello" -> 1]; // Dictionary[ (hello -> 1) ]
 Dictionary[\hello -> 1, \hello -> 0]; // Dictionary[ (hello -> 0) ]
 ( \hello: 1, \hello: 0 ); // ( 'hello': 0 )
 ::
-
-

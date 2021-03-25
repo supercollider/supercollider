@@ -317,7 +317,7 @@ QList<QStandardItem*> GenericLookupDialog::makeDialogItem(QString const& display
 
 QStandardItemModel* LookupDialog::modelForClass(const QString& className, const QString& methodName) {
     const Introspection& introspection = Main::scProcess()->introspection();
-    const Class* klass = introspection.findClass(className);
+    const Class* klass = introspection.findClassOrWarn(className);
 
     if (!klass)
         return NULL;

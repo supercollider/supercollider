@@ -12,7 +12,7 @@ TestServer : UnitTest {
 		server.sync(condition, f, server.latency);
 
 		// 60 seconds
-		this.wait({condition.test}, "waiting for server to finish sync", 60);
+		this.wait(condition, "waiting for server to finish sync", 60);
 		this.assert(true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
 	}
 

@@ -51,6 +51,8 @@ else()
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/include"
       "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
+      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/include"
+      "$ENV{ProgramFiles}/libsndfile/include"
     PATHS /usr/local/include
       /usr/include
   )
@@ -64,12 +66,16 @@ else()
       "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
+      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/lib"
+      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
+      "$ENV{ProgramFiles}/libsndfile/lib"
+      "$ENV{ProgramFiles}/libsndfile/bin"
     PATHS /usr/local/
       /usr/lib
   )
   # used by Windows only
   find_path(SNDFILE_LIBRARY_DIR
-    NAMES libsndfile.dll libsndfile-1.dll
+    NAMES libsndfile.dll libsndfile-1.dll sndfile.dll
     HINTS
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
@@ -77,6 +83,10 @@ else()
       "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
+      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/lib"
+      "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
+      "$ENV{ProgramFiles}/libsndfile/lib"
+      "$ENV{ProgramFiles}/libsndfile/bin"
   )
 
   # Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if

@@ -11,7 +11,7 @@ The server application represented by a Server object might be running on the sa
 
 Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
-A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
+A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (main output level).
 
 note::
 By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::
@@ -754,4 +754,19 @@ Routine.run {
 )
 ::
 
+subsection:: Bela
 
+method:: belaScope
+Scope a number of channels from a Bus on this Server, to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+It is required that this Server is running on a Bela, and that it is thus capable of using BelaScope.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: index
+This server's bus index to scope. Defaults to 0.
+
+argument:: numChannels
+Number of channels to send to BelaScope, starting from the index supplied. Defaults to 2, or to link::Classes/ServerOptions#-numOutputBusChannels:: if index is 0.
+
+returns:: A link::Classes/Synth::, linking this Server's desired bus channels to BelaScope's bus.

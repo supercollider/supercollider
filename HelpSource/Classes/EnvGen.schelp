@@ -9,7 +9,8 @@ Description::
 Plays back break point envelopes. The envelopes are instances of the
 link::Classes/Env:: class. The envelope and the arguments for  code::levelScale::,
 code::levelBias::, and  code::timeScale:: are polled when the EnvGen is
-triggered and remain constant for the duration of the envelope.
+triggered, and at the start of a new envelope segment. All values remain constant
+for the duration of each segment.
 
 code::
 { PinkNoise.ar(EnvGen.kr(Env.perc, doneAction: Done.freeSelf)) }.play
@@ -27,7 +28,7 @@ An link::Classes/Env:: instance, or an Array of Controls.
 (See link::Classes/Control::  and the example below for how to use
 this.)
 
-The envelope is polled when the EnvGen is triggered. The Env inputs can be other UGens.
+The envelope is polled when the EnvGen is triggered, and at the start of a new envelope segment. The Env inputs can be other UGens.
 
 
 argument::gate

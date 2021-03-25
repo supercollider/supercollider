@@ -130,6 +130,16 @@ int prPlatform_architecture(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+int prPlatform_hasBelaSupport(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+#ifdef SC_AUDIO_API_BELA
+    SetBool(a, true);
+#else
+    SetBool(a, false);
+#endif
+    return errNone;
+}
+
 void initPlatformPrimitives() {
     int base, index = 0;
 
@@ -146,6 +156,7 @@ void initPlatformPrimitives() {
     definePrimitive(base, index++, "_Platform_hasQt", prPlatform_hasQt, 1, 0);
     definePrimitive(base, index++, "_Platform_hasQtWebEngine", prPlatform_hasQtWebEngine, 1, 0);
     definePrimitive(base, index++, "_Platform_architecture", prPlatform_architecture, 1, 0);
+    definePrimitive(base, index++, "_Platform_hasBelaSupport", prPlatform_hasBelaSupport, 1, 0);
 #ifdef _WIN32
     definePrimitive(base, index++, "_WinPlatform_myDocumentsDir", prWinPlatform_myDocumentsDir, 1, 0);
 #endif

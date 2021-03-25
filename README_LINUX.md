@@ -54,6 +54,7 @@ There are dedicated READMEs in this repository for building on particular embedd
 
 - Raspberry Pi: README_RASPBERRY_PI.md
 - BeagleBone Black: README_BEAGLEBONE_BLACK.md
+- Bela: README_BELA.md
 
 On Debian-like systems, the following command installs the minimal recommended dependencies for compiling scsynth and supernova:
 
@@ -112,7 +113,7 @@ Using clang
 -----------
 
 SuperCollider can be compiled with clang, with the following limitations:
-- for clang 4, pass `-DSC_ALBETON_LINK=OFF` when configuring the project
+- for clang 4, pass `-DSC_ABLETON_LINK=OFF` when configuring the project
 - by default clang will use libc++; you can pass `-DSC_CLANG_USES_LIBSTDCPP=ON` to use libstdc++ instead
 
 Building

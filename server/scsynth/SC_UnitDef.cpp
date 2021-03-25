@@ -32,6 +32,7 @@
 #include "SC_World.h"
 #include "sc_msg_iter.h"
 
+extern int gMissingNodeID;
 
 bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags) {
     if (strlen(inName) >= kSCNameByteLen)
@@ -106,6 +107,7 @@ bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserD
 int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
     sc_msg_iter msg(inSize, inData);
     int nodeID = msg.geti();
+    gMissingNodeID = nodeID;
     Graph* graph = World_GetGraph(inWorld, nodeID);
     if (!graph)
         return kSCErr_NodeNotFound;

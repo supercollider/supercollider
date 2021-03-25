@@ -1,6 +1,3 @@
-# This makes sclang/scide work with a Qt installation at a fixed location.
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
@@ -116,7 +113,7 @@ if(AUDIOAPI STREQUAL "default")
     endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
     message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -132,6 +129,8 @@ elseif (AUDIOAPI STREQUAL portaudio)
     add_definitions("-DSC_AUDIO_API_PORTAUDIO")
     list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
     include_directories(${PORTAUDIO_INCLUDE_DIRS})
+elseif(AUDIOAPI STREQUAL bela)
+    add_definitions("-DSC_AUDIO_API_BELA")
 endif()
 
 if(UNIX)
@@ -217,6 +216,12 @@ if(SC_QT OR SC_IDE)
         target_compile_definitions(libsclang PUBLIC SC_USE_QTWEBENGINE)
     endif()
     target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+
+    # This makes sclang/scide work with a Qt installation at a fixed location.
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set_property(TARGET libsclang PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    endif()
+    set_property(TARGET libsclang PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
 if(FALSE) # libsclang is a shared library

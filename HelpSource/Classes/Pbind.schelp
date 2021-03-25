@@ -67,7 +67,12 @@ Pbind(
 )
 ::
 
-It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. Arrays treat identifiers ending with a colon as link::Classes/Symbol::s, making the syntax of the Pbind specification a bit more concise:
+It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. This takes advantage of a special
+syntactic shortcut in SC where using * expands an Array into a list of method arguments. You can see more information
+about this and other syntactic shortcuts in link::Reference/Syntax-Shortcuts:: and
+link::Overviews/SymbolicNotations::.  Another useful shortcut is that Arrays treat identifiers ending with a colon as
+link::Classes/Symbol::s. Both of these shortcuts together help make the syntax of the Pbind specification a bit more
+concise:
 
 code::
 (

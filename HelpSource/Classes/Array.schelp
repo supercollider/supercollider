@@ -366,11 +366,11 @@ Routine {
 	a.fork; \doneAll.postln;
 }.play;
 )
+::
 
-poll(trig, label, trigid)
+method::poll
 apply an array of Poll units to an array of UGens (see those helpfiles for more details).
-
-s.boot;
+code::
 (
 x = {
 	SinOsc.ar([0.1, 0.2], 0).poll * 0.1
@@ -404,3 +404,13 @@ code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
 ::
 
+subsection:: Bela
+
+method:: belaScope
+Send this Array's content to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup)
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: server
+The server on which BelaScope is running. If not specified, it looks for the first server for which BelaScope was already initialized. If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Server#*default::.
+returns:: This Array.

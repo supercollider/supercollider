@@ -164,7 +164,7 @@ else() # ARM platforms do not have SSE
     set(SSE2 OFF)
 endif()
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
@@ -242,6 +242,13 @@ else()
 endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
+
+if(APPLE)
+    # codesigning breaks increamental builds in Xcode 11+
+    option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" ON)
+    # verify_app fails with official Qt; we'll still use it for Qt from homebrew
+    option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
+endif()
 
 #############################################
 # some default libraries
@@ -354,6 +361,11 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
 
+# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error 
+# caused by some versions of libsndfile's C++ header redefining nullptr as NULL. 
+# See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+  add_compile_options("/Zc:__cplusplus")
+
 # _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
 # see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_ENABLE_ATOMIC_ALIGNMENT_FIX)
@@ -390,6 +402,11 @@ endif()
 
 if (NO_GPL3)
 	add_definitions(-DNO_GPL3)
+endif()
+
+if(SC_DISABLE_XCODE_CODESIGNING)
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
 endif()
 
 #############################################

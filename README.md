@@ -1,4 +1,4 @@
-[SuperCollider](https://supercollider.github.io/) [![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=develop)](https://travis-ci.org/supercollider/supercollider) [![Appveyor](https://ci.appveyor.com/api/projects/status/github/supercollider/supercollider?branch=develop&svg=true)](https://ci.appveyor.com/project/supercollider/supercollider)
+[SuperCollider](https://supercollider.github.io/) [![Build Status](https://github.com/supercollider/supercollider/actions/workflows/actions.yml/badge.svg?branch=develop)](https://github.com/supercollider/supercollider/actions/workflows/actions.yml)
 =========================
 
 **SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
@@ -26,9 +26,9 @@ See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEA
 ### Platform support
 
 SuperCollider is tested with:
-- Windows 10 (32- and 64-bit) and MSVC 2017
-- macOS 10.13 with Xcode 9.4 and Xcode 10.1
-- Ubuntu 14.04 and gcc 4.9
+- Windows 10 (32- and 64-bit) and MSVC 2019
+- macOS 10.15 and Xcode 11.7
+- Ubuntu 18.04 and gcc 10
 
 SuperCollider is known to support these platforms:
 - Windows Vista, 7, 8, and 10

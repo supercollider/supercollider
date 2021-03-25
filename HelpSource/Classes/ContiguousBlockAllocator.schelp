@@ -14,26 +14,71 @@ Create a new allocator with emphasis::size:: slots. You may block off the first 
 
 InstanceMethods::
 
-private::prReserve, prSplit, addToFreed, blocks, findAvailable, findNext, findPrevious, removeFromFreed
+private::prReserve, prSplit, addToFreed, blocks, findNext, findPrevious, prFindNext, prFindPrevious, removeFromFreed
 
-method::size
-	the number of id numbers it can allocate
-
-method::pos
-	the allocator's offset for a reserved block (e.g. for hardware input and output buses).
-
-method::addrOffset
-	the offset of the allocator's address range, which is used to accomodate multiple clientIDs.
+subsection:: Public interface
 
 method::alloc
 Return the starting index of a free block that is emphasis::n:: slots wide. The default is 1 slot.
+
+Note that the returned address is not guaranteed to be the lowest possible address that can satisfy the requested size. It should be adjacent to a previously allocated block, however (to minimize fragmentation of the address space).
 
 method::free
 Free a previously allocated block starting at emphasis::address::.
 
 method::reserve
-Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range.
+Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range. 
+
+method::findAvailable
+Given an integer width of a desired block, find and return a code::ContiguousBlock:: object whose code::start:: is the beginning address of the block and whose code::size:: is the width. This method only queries the allocator; it does not change the state. If you obtain an address using code::findAvailable::, there is no guarantee that a later call will not return the same address. So, in general, use link::#-alloc:: to request an address. (code::alloc:: calls code::findAvailable:: and then code::reserve::.)
+
+This method could be considered "half-private": It may be useful for queries, but in general, you can get everything you need from link::#-alloc::, link::#-free:: and link::#-reserve::.
+
+subsection:: Status and debugging
+
+You may query these state variables, but it is not recommended to change them outside of the public interface.
 
 method::debug
-	post internal state of allocator for debugging.
+	Post internal state of allocator for debugging.
 
+method::size
+	The number of id numbers it can allocate.
+
+method::pos
+	The allocator's offset for a reserved block (e.g. for hardware input and output buses).
+
+method::addrOffset
+	The offset of the allocator's address range, which is used to accomodate multiple clientIDs.
+
+method::top
+	The address of the last empty block.
+
+EXAMPLES::
+
+code::
+c = ContiguousBlockAllocator(10);
+c.alloc(5);  // 0 = first available
+c.alloc(2);  // 5
+c.alloc(4);  // nil -- no block of 4 available
+
+c.free(1);  // no-op: nothing at 1 to free
+
+c.free(0);
+
+c.alloc(3);  // 0: tries to reuse previously-freed space first
+
+c.alloc(3);  // 7
+
+
+// Adjacency
+c = ContiguousBlockAllocator(24);
+
+// reserve every 4th
+(0, 4 .. 23).do { |i| c.reserve(i) };
+
+10.do { c.findAvailable(1).postln };
+::
+
+In the last line of the second example, code::findAvailable:: may locate any of indices 1, 5, 9, 13, or 17. (21 would not be used until a suitable block could not be found in the other empty spaces.) If you were to allocate a single address, then the empty block of three would always be reduced to an empty block of two (instead of dividing the empty space in half and having two empty single-address blocks).
+
+It may be surprising that the algorithm does not favor lower-index blocks, but if two addresses A and B have been previously used and freed, there is no inherent reason to prefer A if A < B.
