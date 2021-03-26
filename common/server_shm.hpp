@@ -37,7 +37,7 @@
 #ifdef _WIN32
 namespace boost { namespace interprocess { namespace ipcdetail {
 inline void get_shared_dir(std::string& shared_dir) {
-    shared_dir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::Resource).string() + "/shm";
+    shared_dir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::Resource).string();
 }
 }}}
 #endif
