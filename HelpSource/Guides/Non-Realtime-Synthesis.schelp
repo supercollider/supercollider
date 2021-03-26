@@ -317,7 +317,7 @@ x = Score([
 		SynthDef(\fft, {
 			var in = SoundIn.ar([0]),
 			fft = FFT(LocalBuf(1024, 1), in);
-			fft = PV_Freeze(fft, ToggleFF.kr(Dust.kr(12)));
+			fft = PV_MagFreeze(fft, ToggleFF.kr(Dust.kr(12)));
 			Out.ar(0, IFFT(fft).dup)
 		}).asBytes
 	]],
