@@ -32,6 +32,7 @@
 // this overrides the location of boost's shared memory, fixing an issue where missing logs
 // prevented the server from booting, see https://github.com/supercollider/supercollider/issues/2409
 #    include "SC_Filesystem.hpp"
+#    include <boost/filesystem/operations.hpp>
 namespace boost { namespace interprocess { namespace ipcdetail {
 inline void get_shared_dir(std::string& shared_dir) {
     shared_dir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig).string()
