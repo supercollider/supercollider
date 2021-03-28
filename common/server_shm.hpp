@@ -25,19 +25,21 @@
 #include <boost/foreach.hpp>
 #include <boost/ref.hpp>
 #include <boost/lexical_cast.hpp>
-#ifdef _WIN32
-// this overrides the location of boost's shared memory, fixing an issue where missing logs
-// prevented the server from booting, see https://github.com/supercollider/supercollider/issues/2409
-#    include "SC_Filesystem.hpp"
-#    define BOOST_INTERPROCESS_SHARED_DIR_FUNC
-#endif
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
 
-#ifdef _WIN32
+#ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
+// this overrides the location of boost's shared memory, fixing an issue where missing logs
+// prevented the server from booting, see https://github.com/supercollider/supercollider/issues/2409
+#    include "SC_Filesystem.hpp"
 namespace boost { namespace interprocess { namespace ipcdetail {
 inline void get_shared_dir(std::string& shared_dir) {
-    shared_dir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::Resource).string();
+    shared_dir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig).string()
+        + "/boost_interprocess_shared_memory";
+    auto result = boost::filesystem::create_directories(shared_dir);
+    if (!result) {
+        throw std::runtime_error("Cannot create a directory for shared memory at" + shared_dir);
+    }
 }
 }}}
 #endif
