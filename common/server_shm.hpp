@@ -33,14 +33,31 @@
 #ifdef BOOST_INTERPROCESS_SHARED_DIR_FUNC
 #    include "SC_Filesystem.hpp"
 #    include <boost/filesystem/operations.hpp>
+#    include <iostream>
+#    include "SC_Codecvt.hpp"
 namespace boost { namespace interprocess { namespace ipcdetail {
 inline void get_shared_dir(std::string& shared_dir) {
-    shared_dir =
-        (SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig) / "BoostInterprocessSharedMemory")
-            .string();
-    bool result = boost::filesystem::create_directories(shared_dir);
-    if (!result) {
-        throw std::runtime_error("Cannot create a directory for shared memory at " + shared_dir);
+    // this solution still fails if the shm file already exists and sc has no permissions to overwrite it - e.g. if it
+    // was created by another user
+    // the shm file is deleted after scsynth exits when run from scide, but NOT when
+    // run in the command prompt and stopped with ctrl+c
+    // I don't know what's the reason for not cleaning up that file in
+    // the latter situation
+    get_shared_dir_root(shared_dir); // this is C:\ProgramData\boost_interprocess
+    shared_dir += "/SuperCollider";
+
+    // user location alternative - doesn't work for users with non-ascii characters
+    // auto dir = (SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig) /
+    // "BoostInterprocessSharedMemory"); shared_dir = SC_Codecvt::path_to_utf8_str(dir);
+    // boost::filesystem::create_directories(dir); // note boost path here - this works for non-ascii path
+    // however, shared_dir is still incorrect and while directory creation succeedes, shm creations fails later on
+
+    std::cout << shared_dir << std::endl; // debug
+    try {
+        boost::filesystem::create_directories(shared_dir);
+    } catch (const boost::filesystem::filesystem_error& error) {
+        throw std::runtime_error("Cannot create a directory for shared memory at " + shared_dir
+                                 + "\nReason: " + error.what());
     }
 }
 }}}
