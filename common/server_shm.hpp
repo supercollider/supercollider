@@ -35,8 +35,7 @@
 #    include <boost/filesystem/operations.hpp>
 namespace boost { namespace interprocess { namespace ipcdetail {
 inline void get_shared_dir(std::string& shared_dir) {
-    shared_dir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig).string()
-        + "/boost_interprocess_shared_memory";
+    shared_dir = (SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig) / "boost_interprocess_shared_memory").string();
     bool result = boost::filesystem::create_directories(shared_dir);
     if (!result) {
         throw std::runtime_error("Cannot create a directory for shared memory at " + shared_dir);
