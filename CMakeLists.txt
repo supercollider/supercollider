@@ -134,7 +134,7 @@ if(WIN32)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
-    # use session manager to set shared memory locaation, see issue 2409
+    # use session manager to set shared memory location, see issue 2409
     add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
 endif()
 
