@@ -134,8 +134,8 @@ if(WIN32)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
-    # define the location of shared memory ourselves, see issue 2409
-    add_definitions(-DBOOST_INTERPROCESS_SHARED_DIR_FUNC)
+    # use session manager to set shared memory locaation, see issue 2409
+    add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
 endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
