@@ -130,7 +130,7 @@ subsection:: Synchronous Control Bus Methods
 
 Synchronous access to control busses only works for servers with a shared memory interface. You can check with link::Classes/Server#-hasShmInterface#hasShmInterface:: if the server provides these methods.
 
-note:: Before 3.5 the the internal server could be controlled via shared control busses and link::Classes/SharedIn:: and
+note:: Before 3.5 the internal server could be controlled via shared control busses and link::Classes/SharedIn:: and
 link::Classes/SharedOut::. These classes have been deprecated and will be removed.  ::
 
 method:: getSynchronous

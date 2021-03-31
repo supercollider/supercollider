@@ -20,7 +20,7 @@ method::nowExecutingPath
 
 Usage: code::thisProcess.nowExecutingPath::
 
-Returns the full path to the file containing the code that is currently executing emphasis::interactively:: in the interpreter. Usually this is the current document. If the code block executes another file on disk, using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::nowExecutingPath:: will be the location of the the executed file.
+Returns the full path to the file containing the code that is currently executing emphasis::interactively:: in the interpreter. Usually this is the current document. If the code block executes another file on disk, using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::nowExecutingPath:: will be the location of the executed file.
 
 teletype::nowExecutingPath:: is valid only for interactive code, i.e., code files with a teletype::.scd:: extension. It does not apply to class definitions (teletype::.sc::). For that, use code::thisMethod.filenameSymbol:: or code::this.class.filenameSymbol::.
 
