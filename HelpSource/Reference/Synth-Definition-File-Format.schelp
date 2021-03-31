@@ -151,7 +151,7 @@ section:: Original SynthDef format
 
 The original SynthDef format differs in that the following items are teletype::int16:: instead of teletype::int32::.
 
-note:: The following list describes what has changed between SynthDef and SynthDef2. It is not a complete description of the the original SynthDef file format. ::
+note:: The following list describes what has changed between SynthDef and SynthDef2. It is not a complete description of the original SynthDef file format. ::
 
 list::
 ## int32 - file version, currently 1. (This is emphasis::2:: for the new format.)
@@ -198,7 +198,7 @@ Outputs have their own calculation rate. This allows MultiOutUGens to have outpu
 
 ## parameter || a value that can be externally controlled using server commands /s.new, /n.set, /n.setn, /n.fill, /n.map .
 
-## parameter name || a string naming an index in the the parameter array. This allows one to refer to the same semantic value such as 'freq' or 'pan' in different synths  even though they exist at different offsets in their respective parameter arrays.
+## parameter name || a string naming an index in the parameter array. This allows one to refer to the same semantic value such as 'freq' or 'pan' in different synths  even though they exist at different offsets in their respective parameter arrays.
 
 ## special index || this value is used by some unit generators for a special purpose. For example, UnaryOpUGen and BinaryOpUGen use it to indicate which operator to perform. If not used it should be set to zero.
 
