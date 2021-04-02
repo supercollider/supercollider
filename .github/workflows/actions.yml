@@ -239,7 +239,7 @@ jobs:
       HOMEBREW_NO_INSTALL_CLEANUP: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -311,13 +311,13 @@ jobs:
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
         if: matrix.artifact-suffix
-        run: cd $INSTALL_PATH && zip --symlinks -r $ARTIFACT_FILE.zip SuperCollider # this assumes that we end up with the build in the folder SuperCollider
+        run: cd $INSTALL_PATH && hdiutil create -srcfolder SuperCollider -format UDBZ $ARTIFACT_FILE # this assumes that we end up with the build in the folder SuperCollider
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
-          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
+          path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
           retention-days: 7 # quickly remove test artifacts
 
   Windows:
@@ -490,6 +490,7 @@ jobs:
             runs-on: macos-10.15
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact-suffix: macOS
+            artifact-extension: '.dmg'
 
           - name: Linux
             runs-on: ubuntu-18.04
@@ -501,7 +502,7 @@ jobs:
     name: 'test on ${{ matrix.name }}'
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
+      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}'
       QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
@@ -520,9 +521,16 @@ jobs:
       - name: extract artifact
         run: |
           cd $INSTALL_PATH
-          echo `pwd`
-          echo `ls -s`
-          unzip $ARTIFACT_FILE.zip
+          echo Contents of `pwd`:
+          ls
+          if [[ ${{ runner.os }} == "macOS" ]]; then
+            hdiutil attach $ARTIFACT_FILE
+            echo "mkdir SuperCollider"
+            mkdir SuperCollider
+            cp -R /Volumes/SuperCollider/* SuperCollider/
+          else
+            unzip $ARTIFACT_FILE.zip
+          fi
       - name: setup Linux environment
         if: runner.os == 'Linux'
         run: |
@@ -574,7 +582,7 @@ jobs:
           - artifact-suffix: macOS
             s3-os-name: osx
             s3-artifact-suffx: ''
-            artifact-extension: 'zip'
+            artifact-extension: 'dmg'
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
           - artifact-suffix: win32
