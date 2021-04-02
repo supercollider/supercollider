@@ -15,6 +15,7 @@ jobs:
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
       - name: lint cpp files
         run: |
+          sudo apt-get install -y clang-format-8
           echo "Running tools/clang-format.py lintall"
           tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
           echo "Lint successful"
@@ -149,6 +150,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
+          # clang and gcc compilers < 9.x are no longer on ubuntu images; install them manually
+          if [[ "$CC" =~ clang-[1-8] ]]; then
+            sudo apt-get install -y $CC # package names are clang-X
+          elif [[ "$CC" =~ gcc-[1-8] ]]; then
+            sudo apt-get install -y $CXX # package names are g++-X
+          fi
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
@@ -535,6 +542,7 @@ jobs:
       - name: prepare tests
         run: |
           echo `python --version` # check version
+          sudo pip install -U pip setuptools
           sudo pip install $QPM_URL
 
           # install API quark
