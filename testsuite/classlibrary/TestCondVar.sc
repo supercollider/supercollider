@@ -294,14 +294,17 @@ TestCondVar : UnitTest {
 		var c = CondVar();
 		var counter = 0;
 		var waitResult;
-		fork { c.signalOne };
+		fork { "before signalOne".postln; c.signalOne; "after signalOne".postln;};
 
 		// This wait has to be a bit longer because we need to ensure there's enough time for the spurious wakeup before
 		// timing out.
-		waitResult = c.waitFor(0.1) {
+		"before waitFor".postln;
+		waitResult = c.waitFor(0.5) {
+			"in waitFor".postln;
 			counter = counter + 1;
 			false
 		};
+		"after waitFor".postln;
 		this.assertEquals(waitResult, false, "waitResult");
 		// Evaluated 3 times -- when blocked, when signalled, when timed out
 		this.assertEquals(counter, 3, "counter");
