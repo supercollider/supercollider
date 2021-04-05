@@ -28,6 +28,16 @@ code::
 s.serverRunning // returns true if it is true
 ::
 
+note::
+If you get the message code::"Mismatched sample rates are not supported.":: it may be helpful to follow these steps:
+code::
+1. set your device to the sample rate you want
+2. check the device name in the boot posting of the server
+3. set both sample rate and device (s.options.sampleRate = …; s.options.device = "…")
+4. reboot the server: "s.reboot"
+::
+::
+
 
 ClassMethods::
 private:: initClass
