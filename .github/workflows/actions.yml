@@ -567,7 +567,6 @@ jobs:
         env:
           PYCHARM_HOSTED: 1 # enable color output
           QPM_DEBUG: 1
-          QT_PLATFORM_PLUGIN: 'offscreen'
         run: xvfb-run --server-args="-screen 0, 1280x720x24" -a qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
       - name: run tests on macOS
         if: runner.os == 'macOS'
