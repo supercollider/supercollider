@@ -140,18 +140,18 @@ Plot {
 		var sbounds;
 		if(gridOnX and: { labelX.notNil }) {
 			sbounds = try { labelX.bounds(font) } ? 0;
-			Pen.font = font;
-			Pen.strokeColor = fontColor;
 			Pen.stringAtPoint(labelX,
-				plotBounds.right - sbounds.width @ plotBounds.bottom
+				plotBounds.right - sbounds.width @ plotBounds.bottom,
+				font,
+				fontColor
 			)
 		};
 		if(gridOnY and: { labelY.notNil }) {
 			sbounds = try { labelY.bounds(font) } ? 0;
-			Pen.font = font;
-			Pen.strokeColor = fontColor;
 			Pen.stringAtPoint(labelY,
-				plotBounds.left - sbounds.width - 3 @ plotBounds.top
+				plotBounds.left - sbounds.width - 3 @ plotBounds.top,
+				font,
+				fontColor
 			)
 		};
 	}
