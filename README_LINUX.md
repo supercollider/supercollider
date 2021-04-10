@@ -6,8 +6,8 @@ Build requirements
 
 These are strict requirements for scsynth and supernova:
 
-- A C++ compiler. SuperCollider guarantees support for [gcc][gcc] >= 6 and [clang][clang] >= 4.
-- [cmake][cmake] >= 3.5: Cross-platform build system.
+- A C++ compiler with C++17 support. SuperCollider guarantees support for [gcc][gcc] >= 6.3 and [clang][clang] >= 3.9.
+- [cmake][cmake] >= 3.12: Cross-platform build system.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [fftw][fftw] >= 3.0: FFT library.
@@ -105,7 +105,7 @@ On Trusty, only Qt 5.10 and below are available:
 
 Worst case scenario, you can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
 
-At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
+At the "Select Components" step, pop open Qt, select the latest version, and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 

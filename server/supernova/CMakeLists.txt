@@ -83,9 +83,6 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-set_property(TARGET libsupernova PROPERTY CXX_STANDARD 14)
-
-
 if(CMAKE_COMPILER_IS_CLANG AND CMAKE_CXX_COMPILER_VERSION MATCHES "^[456]\\.")
     message(STATUS "clang version is 4, 5, or 6, linking to libatomic")
     target_link_libraries(libsupernova atomic)
