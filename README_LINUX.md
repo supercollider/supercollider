@@ -288,6 +288,13 @@ to put Extensions to the class library, in a folder called Extensions.
 The runtime directory is either the current working directory or the
 path specified with the `-d` option.
 
+#### Headless operation
+
+Even though the standard distribution of SuperCollider is built with the Qt framework, `sclang` can still be run in terminal without the X server. In order to do that, the `QT_QPA_PLATFORM` environment variable needs to be set to `offscreen`:
+```shell
+$> export QT_QPA_PLATFORM=offscreen
+$> sclang
+```
 
 Environment
 -----------
