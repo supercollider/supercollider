@@ -215,7 +215,7 @@ class Repo(object):
 
     def get_branch_name(self):
         """Get the current branch name, short form
-           This returns "master", not "refs/head/master"
+           This returns "main", not "refs/head/main"
            Will not work if the current branch is detached
         """
         branch = self.rev_parse(["--abbrev-ref", "HEAD"])
@@ -341,7 +341,7 @@ def validate_repo_state_for_rebase(commit_before_reformat, commit_after_reformat
             " before running this script.\n\nTo interactively rebase, use `git rebase -i %s`") %
             (merge_base, commit_before_reformat, commit_before_reformat))
 
-    # We assume the target branch is master, it could be a different branch if needed for testing
+    # We assume the target branch is main, it could be a different branch if needed for testing
     merge_base = repo.get_merge_base(target_branch)
 
     if not merge_base == repo.rev_parse([commit_before_reformat]):

@@ -75,7 +75,7 @@ def main(version: Version):
         f"Have you made sure the schelp file '{schelp_news_page_title}' is up to date with the changelog by running the conversion script?", # XXX where is the script?
         f"Have you made sure HelpSource/Help.schelp points to the latest '{schelp_news_page_title}' schelp file?",
         ["If this is a proper release, have you updated the release history in CHANGELOG.md?", f"https://github.com/supercollider/supercollider/blob/{release_branch_name}/CHANGELOG.md#change-log"],
-        "If this is a proper release, have you merged the current release branch into master with git merge --no-ff?",
+        "If this is a proper release, have you merged the current release branch into main with git merge --no-ff?",
         "Have you tagged the release?",
         "Did you create the release announcement text?",
         ["Have you created a release on GitHub?", "https://github.com/supercollider/supercollider/releases/new"],
@@ -105,8 +105,8 @@ def main(version: Version):
         # maybe remove? or indicate optional?
         "Did you announce on Reddit (/r/supercollider)?",
 
-        ["If it's a beta release, did you merge the current release branch into develop? Do not merge the release branch into master yet!", f"https://github.com/supercollider/supercollider/compare/develop...{release_branch_name}"],
-        ["If it's a proper release, did you merge master into develop?", "https://github.com/supercollider/supercollider/compare/develop...master"]
+        ["If it's a beta release, did you merge the current release branch into develop? Do not merge the release branch into main yet!", f"https://github.com/supercollider/supercollider/compare/develop...{release_branch_name}"],
+        ["If it's a proper release, did you merge main into develop?", "https://github.com/supercollider/supercollider/compare/develop...main"]
             ]
 
     stack = deque()

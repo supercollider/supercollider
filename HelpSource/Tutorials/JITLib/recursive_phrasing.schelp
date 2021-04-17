@@ -339,7 +339,7 @@ Pdef(\sweep, { arg sustain=1, n=8, degree=0, ratio=1;
 )
 
 
-// drunken master
+// woozy
 (
 Pbind(
 	\type, \phrase,
