@@ -109,7 +109,7 @@ code::
 ::
 
 method::indexOf
-Return the index of an strong::item:: in the collection, or nil if not found.
+Return the index of an strong::item:: in the collection, or nil if not found. Elements are checked for identity (not for equality).
 code::
 [3, 4, 100, 5].indexOf(100);
 [3, 4, \foo, \bar].indexOf(\foo);
@@ -175,7 +175,7 @@ copymethod:: Collection -minIndex
 
 
 method::find
-If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index.
+If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index. The type of the sublist needs to match the type of the list to search in. Elements are checked for equality (not for identity).
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.find([7, 6, 5]);
@@ -229,10 +229,11 @@ Return a new SequenceableCollection which is a copy of the indexed slots of the 
 code::x.copyFromStart(a):: can also be written as code::x[..a]::
 
 method::remove
-Remove strong::item:: from collection.
+Remove strong::item:: from collection. Elements are checked for identity (not for equality).
 
 method::take
-Remove and return strong::item:: from collection. The last item in the collection will move to occupy the vacated slot (and the collection size decreases by one). See also takeAt, defined for link::Classes/ArrayedCollection#-takeAt::.
+Remove and return strong::item:: from collection. The last item in the collection will move to occupy the vacated slot (and the collection size decreases by one). See also takeAt, defined for link::Classes/ArrayedCollection#-takeAt::. Elements are checked for identity (not for equality).
+warning:: code::take(item):: works on Arrays but not on Lists, because the internally called method code::takeAt(item):: is not defined for Lists. ::
 code::
 a = [11, 12, 13, 14, 15];
 a.take(12);
