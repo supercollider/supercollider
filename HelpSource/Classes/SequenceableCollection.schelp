@@ -175,7 +175,8 @@ copymethod:: Collection -minIndex
 
 
 method::find
-If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index. The type of the sublist needs to match the type of the list to search in. Elements are checked for equality (not for identity).
+If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index.  The sublist must be of the same kind (class) as the list to search in.
+Elements are checked for equality (not for identity).
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.find([7, 6, 5]);
