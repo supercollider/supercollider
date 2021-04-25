@@ -243,10 +243,6 @@ returns:: the stripped string
 The contents are inserted into the right spot (section, subsection, etc).
 It works for all kind of sections, for example one can add a subsection to code::DESCRIPTION\:::: with additional information, or add another top-level section, etc.
 
-
-
-
-
 section:: Links
 
 URL's are automagically converted to links.
@@ -310,18 +306,7 @@ The easiest way to contribute to the documentation is:
     code::
     git push origin -u doc_updates
     ::
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
-=======
-    5. Submit your pull request through github, from your branch doc_updates to SuperCollider master
-=======
-    5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
->>>>>>> a1efea155 (mege conflict)
-=======
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider main
->>>>>>> 728dbfd13 (main)
 
 section::Working with legacy documentation
 
@@ -353,5 +338,3 @@ You can run code::SCDoc.indexAllDocuments:: (link to method documentation: link:
 
 If the file already existed and you want to see the changes, just press Reload in the help browser and SCDoc will re-render it.
 ::
-
->>>>>>> 3e9cac82c (Restructure Writing Help guide)
