@@ -73,7 +73,7 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern) {
 
     // expand to home directory, if path starts with tilde
     path = SC_Filesystem::instance().expandTilde(path);
-    
+
     glob->mHandle = ::FindFirstFileW(path.wstring().c_str(), &glob->mEntry);
     if (glob->mHandle == INVALID_HANDLE_VALUE) {
         delete glob;
