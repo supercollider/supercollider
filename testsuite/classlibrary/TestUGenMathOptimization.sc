@@ -62,11 +62,11 @@ TestUGenMathOptimization : UnitTest {
 				var bcd = b + c + d;
 				(a + bcd) * (a / bcd);
 			} -> [SinOsc, LFNoise0, DC, Impulse, Sum3, '+', '/', '*', Out],
-			"a + b when a === b",
+			"a + b when a === b should not optimize",
 			{
 				var x = SinOsc.ar([100, 200, 300]).sum();
 				x + x
-			} -> [SinOsc, SinOsc, SinOsc, Sum3, Sum4, Out],
+			} -> [SinOsc, SinOsc, SinOsc, Sum3, '+', Out],
 		]);
 	}
 
@@ -87,11 +87,11 @@ TestUGenMathOptimization : UnitTest {
 				// max is contrived to avoid Sum3 or other optimizations
 				max(ab + c, ab / c)
 			} -> [SinOsc, LFNoise0, '*', DC, '+', '/', 'max', Out],
-			"a + b when a === b",
+			"a + b when a === b should not optimize",
 			{
 				var x = SinOsc.ar(100) * 0.1;
 				x + x
-			} -> [SinOsc, '*', MulAdd, Out],
+			} -> [SinOsc, '*', '+', Out],
 		])
 	}
 
@@ -107,11 +107,11 @@ TestUGenMathOptimization : UnitTest {
 				var b = Rand(0, 1).neg;
 				(a + b) * b
 			} -> [SinOsc, Rand, 'neg', '+', '*', Out],
-			"a + b when a === b",
+			"a + b when a === b should not optimize",
 			{
 				var x = SinOsc.ar(100).neg;
 				x + x
-			} -> [SinOsc, 'neg', '-', Out],
+			} -> [SinOsc, 'neg', '+', Out],
 		])
 	}
 
@@ -125,7 +125,7 @@ TestUGenMathOptimization : UnitTest {
 				var b = Rand(0, 1).neg;
 				(a - b) * b
 			} -> [SinOsc, Rand, 'neg', '-', '*', Out],
-			"a - b when a === b",
+			"a - b when a === b results in a - a",
 			{
 				var x = SinOsc.ar(100).neg;
 				x - x

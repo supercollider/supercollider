@@ -171,7 +171,8 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
 			// a + b.neg -> a - b
-			if(b !== a) { buildSynthDef.removeUGen(b) };
+			if(b === a) { ^nil };  // non optimizable edge case.
+			buildSynthDef.removeUGen(b);
 			replacement = BinaryOpUGen('-', a, b.inputs[0]);
 			// this is the first time the dependants logic appears. It's repeated below.
 			// We will remove 'this' from the synthdef, and replace it with 'replacement'.
@@ -202,14 +203,16 @@ BinaryOpUGen : BasicOpUGen {
 			and: { a.descendants.size == 1 }})
 		{
 			if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b)) {
-				if(a !== b) { buildSynthDef.removeUGen(a) };
+				if(a === b) { ^nil };
+				buildSynthDef.removeUGen(a);
 				replacement = MulAdd.new(a.inputs[0], a.inputs[1], b).descendants_(descendants);
 				this.optimizeUpdateDescendants(replacement, a);
 				^replacement
 			};
 
 			if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b)) {
-				if(a !== b) { buildSynthDef.removeUGen(a) };
+				if(a === b) { ^nil };
+				buildSynthDef.removeUGen(a);
 				replacement = MulAdd.new(a.inputs[1], a.inputs[0], b).descendants_(descendants);
 				this.optimizeUpdateDescendants(replacement, a);
 				^replacement
@@ -272,7 +275,8 @@ BinaryOpUGen : BasicOpUGen {
 		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
 		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {
-			if(a !== b) { buildSynthDef.removeUGen(a) };
+			if(a === b) { ^nil };
+			buildSynthDef.removeUGen(a);
 			replacement = Sum4(a.inputs[0], a.inputs[1], a.inputs[2], b).descendants_(descendants);
 			this.optimizeUpdateDescendants(replacement, a);
 			^replacement;
@@ -293,7 +297,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
 			// a - b.neg -> a + b
-			if(b !== a) { buildSynthDef.removeUGen(b) };
+			buildSynthDef.removeUGen(b);
 
 			replacement = BinaryOpUGen('+', a, b.inputs[0]);
 			replacement.descendants = descendants;
