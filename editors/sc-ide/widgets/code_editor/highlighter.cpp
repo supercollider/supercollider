@@ -68,6 +68,8 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(
     mGlobals = SyntaxHighlighterGlobals::instance();
 
     connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
+
+    connect(Main::scProcess(), &ScProcess::introspectionChanged, this, &SyntaxHighlighter::rehighlight);
 }
 
 void SyntaxHighlighter::highlightBlockInCode(ScLexer& lexer) {
@@ -88,6 +90,7 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer& lexer) {
 
         case Token::Class: {
             auto className = QString(lexer.text().begin() + tokenPosition, tokenLength);
+
             auto* classInstance = Main::scProcess()->introspection().findClass(className);
 
             if (classInstance != nullptr)
