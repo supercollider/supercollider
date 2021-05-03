@@ -208,6 +208,10 @@ void SyntaxHighlighter::highlightBlockInComment(ScLexer& lexer) {
 }
 
 void SyntaxHighlighter::highlightBlock(const QString& text) {
+    // if we don't have introspection yet don't format anything
+    if (!Main::scProcess()->introspection().introspectionAvailable())
+        return;
+
     TextBlockData* blockData = static_cast<TextBlockData*>(currentBlockUserData());
     if (!blockData) {
         blockData = new TextBlockData;
