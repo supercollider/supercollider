@@ -298,7 +298,7 @@ TestCondVar : UnitTest {
 
 		// This wait has to be a bit longer because we need to ensure there's enough time for the spurious wakeup before
 		// timing out.
-		waitResult = c.waitFor(0.1) {
+		waitResult = c.waitFor(0.5) {
 			counter = counter + 1;
 			false
 		};
