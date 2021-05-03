@@ -89,7 +89,7 @@ public:
     SyntaxHighlighter(QTextDocument* parent = 0);
 
 private:
-    void highlightBlock(const QString& text);
+    void highlightBlock(const QString& text) override;
     void highlightBlockInCode(ScLexer& lexer);
     void highlightBlockInString(ScLexer& lexer);
     void highlightBlockInSymbol(ScLexer& lexer);
