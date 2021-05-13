@@ -1,7 +1,7 @@
 CondVar {
 	var waitingThreads;
 
-	*new { ^super.newCopyArgs(Array.new, Array.new) }
+	*new { ^super.newCopyArgs(Array.new) }
 
 	wait { |predicate|
 		if(predicate.isNil) {
