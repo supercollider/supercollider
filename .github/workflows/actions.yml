@@ -1,5 +1,17 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
 jobs:
   lint:
     runs-on: ubuntu-18.04
