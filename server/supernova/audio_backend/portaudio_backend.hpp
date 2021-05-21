@@ -287,10 +287,10 @@ private:
 
         auto** outputs = static_cast<float**>(alloca(sizeof(float*) * m_hwOutputChannels));
         float** out = static_cast<float**>(outputBuffer);
-        
+
         if (IsClipping)
-             for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
-                 for (uint16_t j = 0; j != blocksize_; ++j)
+            for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+                for (uint16_t j = 0; j != blocksize_; ++j)
                     out[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
 
         for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
