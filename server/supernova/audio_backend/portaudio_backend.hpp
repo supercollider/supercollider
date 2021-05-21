@@ -32,9 +32,7 @@
 #include "cpu_time_info.hpp"
 #include "SC_PaUtils.hpp"
 
-#ifdef __APPLE__
-#    include "SC_InlineBinaryOp.h"
-#endif
+#include "simd_binary_arithmetic.hpp"
 
 namespace nova {
 
@@ -287,12 +285,6 @@ private:
 
         auto** outputs = static_cast<float**>(alloca(sizeof(float*) * m_hwOutputChannels));
         float** out = static_cast<float**>(outputBuffer);
-
-        if (IsClipping)
-            for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
-                for (uint16_t j = 0; j != blocksize_; ++j)
-                    out[i][j] = sc_clip2(out[i][j], safety_clip_threshold_);
-
         for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
             outputs[i] = out[i];
 
@@ -301,6 +293,12 @@ private:
             super::fetch_inputs(inputs, blocksize_, input_channels);
             engine_functor::run_tick();
             super::deliver_outputs(outputs, blocksize_, m_hwOutputChannels);
+            if (IsClipping)
+                for (uint16_t i = 0; i != m_hwOutputChannels; ++i)
+                    if (super::is_aligned(out[i]))
+                        clip2_vec_simd(out[i], out[i], safety_clip_threshold_, blocksize_);
+                    else
+                        clip2_vec(out[i], out[i], safety_clip_threshold_, blocksize_);
             processed += blocksize_;
         }
 
