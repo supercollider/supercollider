@@ -79,11 +79,14 @@ CondVar {
 
 			didNotTimeout = false;
 
-			// wokenThread must be non-nil. If our waiting thread is signaled before
-			// this timeout fires, the timeout routine will be stopped after prWait
-			// below and we won't get here.
+			// If our waiting thread is signaled before this timeout fires
+			// the timeout routine will be stopped after prWait below
+			// and we won't get here.
 			wokenThread = this.prRemoveWaitingThread(waitingThread);
-			this.prWakeThread(wokenThread);
+			// if wokenThread is nil, we asssume a signal happened
+			// immediately prior to timeout and the thread is already awake
+			// no call to prWakeThread happens in this case
+			if(wokenThread.notNil) { this.prWakeThread(wokenThread) };
 		};
 
 		timeoutThread.play(thisThread.clock);
