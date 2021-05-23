@@ -64,14 +64,16 @@ TestWebView : UnitTest {
 			"[1, 2, 'hello']": [1, 2, "hello"] -> Array
 		).keysValuesDo { |jsCode, expected|
 			var expectedClass = expected.value, expectedResult = expected.key;
-			var condition = Condition(), returnedResult;
+			var returnedResult;
+			var condvar = CondVar();
 
 			WebView().runJavaScript(jsCode){ |res|
 				returnedResult = res;
-				condition.test_(true).signal
+				condvar.signalOne;
 			};
 
-			this.wait(condition, "runJavaScript() callback was not called before timeout", 0.5);
+			condvar.waitFor(0.5);
+
 			this.assertEquals(returnedResult, expectedResult,
 				"runJavaScript(\"%\") should return the expected result %"
 				.format(jsCode, expectedResult)
@@ -80,7 +82,6 @@ TestWebView : UnitTest {
 				"runJavaScript(\"%\") should return an instance of %. Returned: %"
 				.format(jsCode, expectedClass, returnedResult.class)
 			);
-			condition.test = false;
-		};
+		}
 	}
 }
