@@ -86,7 +86,7 @@ CondVar {
 			// if wokenThread is nil, we asssume a signal happened
 			// immediately prior to timeout and the thread is already awake
 			// no call to prWakeThread happens in this case
-			wokenThread !? { this.prWakeThread(wokenThread) };
+			if(wokenThread.notNil) { this.prWakeThread(wokenThread) };
 		};
 
 		timeoutThread.play(thisThread.clock);
