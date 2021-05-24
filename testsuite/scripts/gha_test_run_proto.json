@@ -143,12 +143,6 @@
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
-            "suite":"TestUnitTest",
-            "test":"test_setUpClass_already_happened",
-            "skip":true,
-            "skipReason":"test fails when run the first time after interpreter boot"
-        },
-        {
             "suite":"TestWebView",
             "test":"test_findText_found",
             "skip":true,
