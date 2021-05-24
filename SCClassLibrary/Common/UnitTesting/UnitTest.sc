@@ -232,21 +232,22 @@ UnitTest {
 		^boolean
 	}
 
-	// waits for condition with a maxTime limit
-	// if time expires, the test is a failure
-	wait { |condition, failureMessage, maxTime = 10.0|
-		var dt = 0.05;
-		var limit = max(1, maxTime / dt);
+	// this method should be avoided if at all possible
+	// it's better to use CondVar directly in tests instead
+	wait { |predicate, failureMessage = "", maxTime = 10.0|
+		var condvar = CondVar();
+		var waitDur = 0.1;
+		var limit = max(1.0, maxTime / waitDur);
 
 		while {
-			condition.test.not and: { limit >= 0 }
+			(limit >= 0) and: { condvar.waitFor(waitDur, predicate).not }
 		} {
 			limit = limit - 1;
-			dt.wait;
 		};
 
-		if(limit < 0 and: failureMessage.notNil) {
-			this.failed(currentMethod,failureMessage)
+		// consider test failed if limit is surpassed
+		if(limit < 0) {
+			this.failed(currentMethod, failureMessage)
 		}
 	}
 

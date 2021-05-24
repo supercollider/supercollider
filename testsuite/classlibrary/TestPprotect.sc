@@ -1,7 +1,10 @@
 TestPprotect : UnitTest {
 
 	test_resetExceptionHandler_onError {
-		var routine, stream, success = false, condition = Condition.new;
+		var routine, stream;
+		var condvar = CondVar();
+		var success = false;
+
 		// Note that this must be a Stream, not a Pattern (x.asStream --> x).
 		// If it's a pattern, then we don't have access to the routine
 		// to check its exceptionHandler below.
@@ -10,44 +13,47 @@ TestPprotect : UnitTest {
 			routine,
 			{
 				success = routine.exceptionHandler.isNil;
-				condition.test = true;
+				condvar.signalOne;
 			}
 		).asStream;
 		// Note that it is necessary to do this asynchronously!
 		// Otherwise "routine"'s error will halt the entire test suite.
 		stream.play;
-		this.wait(condition, maxTime: 0.1);
+		condvar.waitFor(0.1);
 
-		this.assert(success, "Pprotect should clear the stream's exceptionHandler");
+		this.assertEquals(success, true, "Pprotect should clear the stream's exceptionHandler");
 	}
 
 	test_stream_can_be_restarted_after_error {
 		var pat, stream;
-		var condition = Condition.new;
+		var condvar = CondVar();
+		var wasReset = false;
 
 		pat = Pprotect(
 			Prout {
 				0.01.yield;
-				condition.test = true;
+				wasReset = true;
+				condvar.signalOne;
 				Error("dummy error").throw
 			},
 			{ stream.streamError }
 		);
 
 		stream = pat.play;
-		this.wait(condition, maxTime: 0.1);
+		condvar.waitFor(0.1);
 
-		condition.test = false;
+		wasReset = false;
 		stream.reset;
 		stream.play;
-		this.wait(condition, maxTime: 0.1);
+		condvar.waitFor(0.1);
 
-		this.assert(condition.test, "stream should be resettable after an error");
+		this.assertEquals(wasReset, true, "stream should be resettable after an error");
 	}
 
 	test_task_proxy_play_after_error {
 		var proxy, redefine, hasRun;
-		var condition = Condition.new;
+		var condvar = CondVar();
+		var didPlay = false;
 
 		proxy = TaskProxy.new;
 		proxy.quant = 0;
@@ -56,25 +62,25 @@ TestPprotect : UnitTest {
 		redefine = {
 			proxy.source = {
 				0.01.wait;
-				condition.test = true;
+				didPlay = true;
+				condvar.signalOne;
 				Error("dummy error").throw
 			}
 		};
 
-		condition.test = false;
 		redefine.value;
-		this.wait(condition, maxTime: 0.1);
+		condvar.waitFor(0.1);
 
-		condition.test = false;
+		didPlay = false;
 		redefine.value;
-		this.wait(condition, maxTime: 0.1);
+		condvar.waitFor(0.1);
 
-		this.assert(condition.test, "task proxy should play again after an error");
+		this.assertEquals(didPlay, true, "task proxy should play again after an error");
 	}
 
 	test_nested_instances {
+		var condvar = CondVar();
 		var innerHasBeenCalled = false, outerHasBeenCalled = false;
-		var condition = Condition.new;
 
 		fork {
 			var stream;
@@ -83,13 +89,13 @@ TestPprotect : UnitTest {
 					Prout {
 						Error("dummy error").throw
 					}, {
-						condition.test = true;
-						innerHasBeenCalled = true
+						innerHasBeenCalled = true;
+						condvar.signalOne;
 					}
 				),
 				{
-					condition.test = true;
-					outerHasBeenCalled = true
+					outerHasBeenCalled = true;
+					condvar.signalOne;
 				}
 			).asStream;
 
@@ -97,7 +103,7 @@ TestPprotect : UnitTest {
 
 		};
 
-		this.wait(condition, maxTime: 0.1);
+		condvar.waitFor(0.1, { innerHasBeenCalled && outerHasBeenCalled });
 
 		this.assert(innerHasBeenCalled, "When nesting Pprotect, inner functions should be called");
 		this.assert(outerHasBeenCalled, "When nesting Pprotect, outer functions should be called");
