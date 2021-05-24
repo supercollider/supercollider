@@ -182,6 +182,7 @@ jobs:
           - job-name: ''
             os-version: '10.15'
             xcode-version: '11.7'
+            deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
@@ -190,6 +191,7 @@ jobs:
             os-version: '10.15'
             xcode-version: '10.3'
             qt-version: '5.9.9' # will use qt from aqtinstall
+            deployment-target: '10.10'
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
@@ -197,12 +199,14 @@ jobs:
           - job-name: 'use system libraries'
             os-version: '10.15'
             xcode-version: '11.7'
+            deployment-target: '10.13'
             use-syslibs: true
             shared-libscsynth: false
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
             xcode-version: '11.7'
+            deployment-target: '10.13'
             use-syslibs: false
             shared-libscsynth: true
 
@@ -282,7 +286,7 @@ jobs:
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
