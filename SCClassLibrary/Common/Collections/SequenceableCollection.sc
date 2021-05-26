@@ -1636,4 +1636,9 @@ SequenceableCollection : Collection {
 	sanitize { arg ... args;
 		^this.multiChannelPerform(\sanitize, *args);
 	}
+
+	tidy {
+		^this.multiChannelPerform(\tidy)
+	}
+
 }

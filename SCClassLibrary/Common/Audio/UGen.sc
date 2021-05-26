@@ -298,7 +298,11 @@ UGen : AbstractFunction {
 	}
 
 	sanitize {
-		^Sanitize.perform(this.methodSelectorForRate, this);
+		^Sanitize.perform(this.methodSelectorForRate, this)
+	}
+
+	tidy {
+		^this.sanitize
 	}
 
 	signalRange { ^\bipolar }

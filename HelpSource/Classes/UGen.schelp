@@ -330,6 +330,10 @@ Limits the receiver range to one of the four clip modes, see code::linlin:: abov
 method:: checkBadValues
 Wraps the receiver in a link::Classes/CheckBadValues:: UGen with the corresponding code::id:: and code::post:: flag.
 
+method:: tidy
+Remove any non-standdard output from the signal, such as nan or inf. Wraps the receiver in a link::Classes/Sanitize:: UGen.
+
+
 method:: if
 Outputs trueUGen when the receiver outputs 1, falseUGen when the receiver outputs 0. If the receiver outputs a value between 0 and 1, a mixture of both will be played.
 discussion::
