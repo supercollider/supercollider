@@ -222,6 +222,27 @@ TestBuffer_Server : UnitTest {
 		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer");
 	}
 
+	test_regression_getn_float {
+		var timeout, condition = Condition.new;
+		var buffer, collection;
+		var getn_values;
+
+		collection = [88.88, 8, 888.8, 8.88];
+		buffer = Buffer.sendCollection(server, collection);
+		server.sync;
+
+		// Using a float as the index should still work
+		buffer.getn(2.0, 2, { |values|
+			getn_values = values;
+		});
+
+		timeout = fork { 3.wait; condition.unhang };
+		condition.hang;
+		timeout.stop;
+
+		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer");
+	}
+
 	test_getToFloatArray {
 		var timeout, condition = Condition.new;
 		var buffer, collection;
