@@ -14,8 +14,8 @@ UnitTest {
 			var classkey = class.asString[4..]; // drop Meta_
 			var methtests = class.findTestMethods.collectAs({ | method |
 				method.name.asString -> {
-					this.prRunWithinSetUpClass {
-						class.new.runTestMethod(method)
+					class.prRunWithinSetUpClass {
+						class.new.runTestMethod(method);
 					}
 				}
 			}, Dictionary);
@@ -37,8 +37,8 @@ UnitTest {
 		if(method.isNil) {
 			Error("Test method not found " + methodName).throw
 		};
-		this.prRunWithinSetUpClass {
-			class.new.runTestMethod(method)
+		class.prRunWithinSetUpClass {
+			class.new.runTestMethod(method);
 		}
 	}
 

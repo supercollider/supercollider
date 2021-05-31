@@ -496,7 +496,7 @@ jobs:
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
       SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
-      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/xvfb-off
+      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/testclass-setup-teardown
     steps:
       - uses: actions/checkout@v2
         with:
