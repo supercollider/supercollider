@@ -298,8 +298,9 @@ jobs:
           cp ../../package/background_2_arrow.png SuperCollider/.background/background_2_arrow.png
           cp ../../package/ds_store SuperCollider/.DS_Store
           # the following assumes that we end up with the build in the folder SuperCollider
-          # we ignore the occasional hdiutil failure when unmounting the volume
-          hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE || true
+          # hdiutil sometimes fails with "create failed - Resource busy"
+          # when that happens, we run it again
+          hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: matrix.artifact-suffix
