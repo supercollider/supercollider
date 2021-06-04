@@ -83,6 +83,10 @@ server_arguments::server_arguments(int argc, char* argv[]) {
     audio_options.add_options()
         ("inchannels,i", value<uint16_t>(&input_channels)->default_value(8), "number of input channels")
         ("outchannels,o", value<uint16_t>(&output_channels)->default_value(8), "number of output channels")
+#ifdef __APPLE__
+        ("safety-clip-threshold,s", value<float>(&safety_clip_threshold)->default_value(1.26), "absolute amplitude value outputs will be clipped to.\n"
+                                                            "Set to <= 0 or inf to completely disable clipping.")
+#endif
         ;
     // clang-format on
 

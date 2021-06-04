@@ -181,10 +181,13 @@ void start_audio_backend(server_arguments const& args) {
         std::cout << "  In: " << (input_device.empty() ? "(default)" : input_device) << std::endl;
     if (output_channels)
         std::cout << "  Out: " << (output_device.empty() ? "(default)" : output_device) << std::endl;
-
+#    ifdef __APPLE__
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
-                                         args.blocksize, args.hardware_buffer_size);
-
+                                         args.blocksize, args.hardware_buffer_size, args.safety_clip_threshold);
+#    else
+    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
+                                         args.blocksize, args.hardware_buffer_size, 0);
+#    endif
     if (!success) {
         std::cout << "*** ERROR: could not open audio devices." << std::endl;
         exit(1);
