@@ -66,8 +66,8 @@ Pdefn(\x, { Pseq({ 10.rand } ! 8) });
 Pn(Pdefn(\x)).asStream.nextN(16);
 
 // the function is called in the incoming event as current environment, so parameters can be passed:
-Pdef(\stut, { Pstutter(~stutter ? 1, ~pattern) }); // we use here a Pdef (not a Pdefn!)
-Pdefn(\y, Pdef(\stut) <> (pattern: Pdefn(\x), stutter: Pseq([2, 2, 4, 3], inf))).asStream.nextN(16);
+Pdef(\stut, { Pdup(~dup ? 1, ~pattern) }); // we use here a Pdef (not a Pdefn!)
+Pdefn(\y, Pdef(\stut) <> (pattern: Pdefn(\x), dup: Pseq([2, 2, 4, 3], inf))).asStream.nextN(16);
 
 ::
 

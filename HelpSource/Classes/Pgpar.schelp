@@ -99,7 +99,7 @@ x = Pbind(
 );
 y = Pbind(
 	\instrument, \gap,
-	\dur, Prand([0.25, 0.5, 1.0], inf) * Pstutter(inf, Prand([0.25, 1, 2],1)),
+	\dur, Prand([0.25, 0.5, 1.0], inf) * Pdup(inf, Prand([0.25, 1, 2],1)),
 	\legato, Prand([0.25, 0.5, 1.0], inf),
 	\leak, 0.25
 );
