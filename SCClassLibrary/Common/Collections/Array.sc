@@ -26,7 +26,11 @@ Array[slot] : ArrayedCollection {
 		^this.primitiveFailed
 	}
 	stutter { arg n=2;
-		_ArrayStutter
+		"The use of .stutter is not recommended. Please use .dupEach instead.".warn;
+		^this.dupEach(n);
+	}
+	dupEach { | n=2 |
+		_ArrayDupEach
 		^this.primitiveFailed
 	}
 	rotate { arg n=1;

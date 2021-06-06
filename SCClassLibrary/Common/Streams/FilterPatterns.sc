@@ -591,6 +591,14 @@ Pbindf : FilterPattern {
 Pstutter : FilterPattern {
 	var <>n;
 	*new { arg n, pattern;
+		"The use of Pstutter is not recommended. Please use Pdup instead.".warn;
+		^Pdup(n, pattern);
+	}
+}
+
+Pdup : FilterPattern {
+	var <>n;
+	*new { arg n, pattern;
 		^super.new(pattern).n_(n)
 	}
 	storeArgs { ^[n,pattern] }
@@ -613,9 +621,14 @@ Pstutter : FilterPattern {
 	}
 }
 
+PdurStutter : Pdup { // float streams
+	*new { |n, pattern|
+		"The use of PdurStutter is not  recommended. Please use Psubdivide instead.".warn;
+		^Psubdivide(n, pattern);
+	}
+}
 
-PdurStutter : Pstutter { // float streams
-
+Psubdivide : Pdup { // float streams
 	embedInStream { arg event;
 		var dur, stut;
 		var durs = pattern.asStream;

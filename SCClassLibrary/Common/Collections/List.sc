@@ -78,7 +78,11 @@ List : SequenceableCollection {
 		^this.class.newUsing(array.rotate(n));
 	}
 	stutter { arg n=2;
-		^this.class.newUsing(array.stutter(n));
+		"The use of .stutter is not recommended. Please use .dupEach instead.".warn;
+		^this.dupEach(n);
+	}
+	dupEach { |n=2|
+		^this.class.newUsing(array.dupEach(n));
 	}
 	mirror {
 		^this.class.newUsing(array.mirror);

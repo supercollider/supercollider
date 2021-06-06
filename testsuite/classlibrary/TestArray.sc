@@ -29,6 +29,7 @@ TestArray : UnitTest {
 			\mirror1,
 			\mirror2,
 			\stutter,
+			\dupEach,
 			\rotate,
 			\pyramid,
 			\pyramidg,

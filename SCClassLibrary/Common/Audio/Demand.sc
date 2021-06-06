@@ -150,6 +150,13 @@ Dibrown : Dbrown {}
 
 Dstutter : DUGen {
 	*new { arg n, in;
+		"The use of Dstutter is not recommended. Please use Ddup instead.".warn;
+		^Ddup(n,in)
+	}
+}
+
+Ddup : DUGen {
+	*new { |n, in|
 		^this.multiNew('demand', n, in)
 	}
 }
