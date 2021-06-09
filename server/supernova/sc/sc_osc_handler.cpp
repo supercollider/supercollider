@@ -581,7 +581,7 @@ void sc_scheduled_bundles::execute_bundles(time_tag const& last, time_tag const&
 
 
 void sc_osc_handler::open_tcp_acceptor(ip::address address, unsigned int port) {
-    if(address.is_v6())
+    if (address.is_v6())
         tcp_acceptor_.open(tcp::v6());
     else
         tcp_acceptor_.open(tcp::v4());
@@ -592,7 +592,7 @@ void sc_osc_handler::open_tcp_acceptor(ip::address address, unsigned int port) {
 }
 
 void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
-    if(address.is_v6())
+    if (address.is_v6())
         sc_notify_observers::udp_socket.open(udp::v6());
     else
         sc_notify_observers::udp_socket.open(udp::v4());
