@@ -580,29 +580,29 @@ void sc_scheduled_bundles::execute_bundles(time_tag const& last, time_tag const&
 }
 
 
-void sc_osc_handler::open_tcp_acceptor(tcp const& protocol, unsigned int port) {
+void sc_osc_handler::open_tcp_acceptor(tcp const& protocol, string host, unsigned int port) {
     tcp_acceptor_.open(protocol);
 
-    tcp_acceptor_.bind(tcp::endpoint(protocol, port));
+    tcp_acceptor_.bind(tcp::endpoint(address::from_string(host), port));
     tcp_acceptor_.listen();
     start_tcp_accept();
 }
 
-void sc_osc_handler::open_udp_socket(udp const& protocol, unsigned int port) {
+void sc_osc_handler::open_udp_socket(udp const& protocol, string host, unsigned int port) {
     sc_notify_observers::udp_socket.open(protocol);
-    sc_notify_observers::udp_socket.bind(udp::endpoint(protocol, port));
+    sc_notify_observers::udp_socket.bind(udp::endpoint(address::from_string(host), port));
 }
 
-bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned int port) {
+bool sc_osc_handler::open_socket(int family, int type, int protocol, string host, unsigned int port) {
     try {
         if (protocol == IPPROTO_TCP) {
             if (type != SOCK_STREAM)
                 return false;
 
             if (family == AF_INET)
-                open_tcp_acceptor(tcp::v4(), port);
+                open_tcp_acceptor(tcp::v4(), host, port);
             else if (family == AF_INET6)
-                open_tcp_acceptor(tcp::v6(), port);
+                open_tcp_acceptor(tcp::v6(), host, port);
             else
                 return false;
             return true;
@@ -611,9 +611,9 @@ bool sc_osc_handler::open_socket(int family, int type, int protocol, unsigned in
                 return false;
 
             if (family == AF_INET)
-                open_udp_socket(udp::v4(), port);
+                open_udp_socket(udp::v4(), host, port);
             else if (family == AF_INET6)
-                open_udp_socket(udp::v6(), port);
+                open_udp_socket(udp::v6(), host, port);
             else
                 return false;
             start_receive_udp();

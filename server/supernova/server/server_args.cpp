@@ -75,7 +75,8 @@ server_arguments::server_arguments(int argc, char* argv[]) {
 #endif
         ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
         ("threads,T", value<uint16_t>(&threads)->default_value(boost::thread::physical_concurrency()), "number of audio threads")
-        ("socket-address,B", value<string>()->default_value("127.0.0.1"), "reserved (not used)")
+        ("socket-address,B", value<string>(&socket_address)->default_value("127.0.0.1"), "Bind the UDP or TCP socket to this address.\n"
+                                                            "Set to 0.0.0.0 to listen on all interfaces.")
         ;
 
     options_description audio_options("audio options");
