@@ -98,7 +98,7 @@ The IP address that the server's TCP or UDP socket is listening on. The default 
 warning::
 Until SuperCollider 3.10.3, this was set to code::"0.0.0.0":: (listen on all network interfaces). However, this is a dangerous default configuration — for most users working on laptops connected to WiFi, this means that anyone on your local network can send OSC messages to the server. code::"0.0.0.0":: is only useful if you are running networked server/client, and only safe if your networking is properly configured.
 
-Until SuperCollider 3.12.x supernova listened to all network interfaces and ignored the code::bindAddress:: option. In later versions the behavior is identical to scsynth. 
+Before SuperCollider 3.12 supernova listened to all network interfaces and ignored the code::bindAddress:: option. In later versions the behavior is identical to scsynth. 
 ::
 
 method:: remoteControlVolume
