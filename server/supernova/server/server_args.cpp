@@ -75,7 +75,7 @@ server_arguments::server_arguments(int argc, char* argv[]) {
 #endif
         ("restricted-path,P", value<vector<string> >(&restrict_paths), "if specified, prevents file-accessing OSC commands from accessing files outside <restricted-path>")
         ("threads,T", value<uint16_t>(&threads)->default_value(boost::thread::physical_concurrency()), "number of audio threads")
-        ("socket-address,B", value<string>(&socket_address)->default_value("127.0.0.1"), "Bind the UDP or TCP socket to this address.\n"
+        ("socket-address,B", value<string>(&socket_address_str)->default_value("127.0.0.1"), "Bind the UDP or TCP socket to this address.\n"
                                                             "Set to 0.0.0.0 to listen on all interfaces.")
         ;
 
@@ -133,6 +133,13 @@ server_arguments::server_arguments(int argc, char* argv[]) {
 
     if (vm.count("hardware-device-name"))
         hw_name = vm["hardware-device-name"].as<std::vector<std::string>>();
+
+    try {
+        socket_address = boost::asio::ip::make_address(vm["socket-address"].as<std::string>());
+    } catch (boost::exception const& e) {
+        cout << "Cannot parse `" << vm["socket-address"].as<std::string>() << "` as a valid IP address. Exiting." << endl;
+        std::exit(EXIT_FAILURE);
+    };
 }
 
 std::unique_ptr<server_arguments> server_arguments::instance_;

@@ -580,42 +580,33 @@ void sc_scheduled_bundles::execute_bundles(time_tag const& last, time_tag const&
 }
 
 
-void sc_osc_handler::open_tcp_acceptor(tcp const& protocol, string host, unsigned int port) {
-    tcp_acceptor_.open(protocol);
+void sc_osc_handler::open_tcp_acceptor(ip::address address, unsigned int port) {
+    if(address.is_v6())
+        tcp_acceptor_.open(tcp::v6());
+    else
+        tcp_acceptor_.open(tcp::v4());
 
-    tcp_acceptor_.bind(tcp::endpoint(address::from_string(host), port));
+    tcp_acceptor_.bind(tcp::endpoint(address, port));
     tcp_acceptor_.listen();
     start_tcp_accept();
 }
 
-void sc_osc_handler::open_udp_socket(udp const& protocol, string host, unsigned int port) {
-    sc_notify_observers::udp_socket.open(protocol);
-    sc_notify_observers::udp_socket.bind(udp::endpoint(address::from_string(host), port));
+void sc_osc_handler::open_udp_socket(ip::address address, unsigned int port) {
+    if(address.is_v6())
+        sc_notify_observers::udp_socket.open(udp::v6());
+    else
+        sc_notify_observers::udp_socket.open(udp::v4());
+
+    sc_notify_observers::udp_socket.bind(udp::endpoint(address, port));
 }
 
-bool sc_osc_handler::open_socket(int family, int type, int protocol, string host, unsigned int port) {
+bool sc_osc_handler::open_socket(int protocol, ip::address address, unsigned int port) {
     try {
         if (protocol == IPPROTO_TCP) {
-            if (type != SOCK_STREAM)
-                return false;
-
-            if (family == AF_INET)
-                open_tcp_acceptor(tcp::v4(), host, port);
-            else if (family == AF_INET6)
-                open_tcp_acceptor(tcp::v6(), host, port);
-            else
-                return false;
+            open_tcp_acceptor(address, port);
             return true;
         } else if (protocol == IPPROTO_UDP) {
-            if (type != SOCK_DGRAM)
-                return false;
-
-            if (family == AF_INET)
-                open_udp_socket(udp::v4(), host, port);
-            else if (family == AF_INET6)
-                open_udp_socket(udp::v6(), host, port);
-            else
-                return false;
+            open_udp_socket(address, port);
             start_receive_udp();
             return true;
         }

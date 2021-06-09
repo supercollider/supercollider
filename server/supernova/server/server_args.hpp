@@ -23,6 +23,8 @@
 #include <vector>
 #include <memory>
 
+#include <boost/asio.hpp>
+
 namespace nova {
 
 class server_arguments {
@@ -47,7 +49,8 @@ public:
     }
 
     uint32_t udp_port, tcp_port;
-    std::string socket_address;
+    std::string socket_address_str;
+    boost::asio::ip::address socket_address;
 
     uint32_t control_busses, audio_busses;
     uint32_t blocksize, samplerate;
