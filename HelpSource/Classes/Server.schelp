@@ -386,6 +386,10 @@ method:: hasShmInterface
 Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
 The shared memory interface is initialized after first server boot.
 
+warning::
+Currently, the shared memory interface treats server port as an unique identifier. In the rare case when there are multiple servers running on the same machine and listening on the same port, this leads to the shared memory interface of one of the servers being overwritten by the other.
+::
+
 method:: serverBooting
 code::true:: if the server is booting, code::false:: otherwise.
 
