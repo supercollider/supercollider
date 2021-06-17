@@ -75,7 +75,7 @@ s.boot;
 // on remote machine connecting to server
 (
 o = ServerOptions.new;
-o.options.maxLogins = 2;
+o.maxLogins = 2;
 t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correct address and port
 // info about returned client ID should be posted in the post window
 t.makeWindow; // make a window for monitoring
