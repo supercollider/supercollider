@@ -253,7 +253,7 @@ WebView : View {
 	contentsSize { ^this.getProperty('contentsSize') }
 
 	scrollPosition { ^this.getProperty('scrollPosition') }
-	scrollPosition_ { |point| ^this.setProperty('scrollPosition', point) }
+	scrollPosition_ { |point| ^this.setProperty('scrollPosition', point / this.zoom) }
 
 	audioMuted { ^this.getProperty('audioMuted') }
 	audioMuted_ { |muted| this.setProperty('audioMuted', muted) }
