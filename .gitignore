@@ -35,3 +35,6 @@ __pycache__
 *.orig
 #vim swap files
 .*.sw?
+
+# css maps
+*.css.map
