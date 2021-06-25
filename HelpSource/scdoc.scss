@@ -1,46 +1,3 @@
-$background-color: #fff !default;
-$primary-color: #000;
-$table-border-color: #ddd;
-$inheritedmets-color: #555;
-$inheritedmets-toggle-color: #558;
-$inheritedmets-link-color: #333;
-$link-color: #449;
-$topdoctitle-color: #444;
-$submenu-link-color: #447;
-$menubar-background: #f9f9f9;
-$note-background-color: #f7f7d7;
-$menu-link-color: #666;
-$method-prefix-color: #777;
-$menu-link-hover-color: #999;
-$extension-color: #601c8b;
-$soft-color: #777;
-$footnote-border-color: #aaa;
-$extension-border-color: #39174F;
-$pre-border-color: #e0e0e0;
-$box-shadow-color: rgba(128, 128, 128, 0.5);
-$lighten-background-color: rgba(255, 255, 255, 0.2);
-$warning-color: #f00;
-$doclink-color: #888;
-$sidetoc-border-color: #bbb;
-$toc-list-hover-color: #eee;
-$searchlink-color: #eed;
-$undoc-color: #88b;
-
-// cm mapping
-$cm-border-color: #e1e1e1;
-$cm-selection-color: rgb(248, 162, 0);
-$cm-keyword-color: #CC3626;
-$cm-built-in-color: #AF33A6;
-$cm-number-color: #AF33A6;
-$cm-symbol-color: #3F831E;
-$cm-class-color: #3478BC;
-$cm-primitive-color: #C07F00;
-$cm-char-color: #AF33A6;
-$cm-env-var-color: #C07F00;
-$cm-comment-color: #848484;
-$cm-string-color: #3F39C9;
-$cm-text-color: #000;
-
 *,
 *::before,
 *::after {
@@ -140,7 +97,7 @@ a {
     }
 
     &.menu-link {
-        color: #666;
+        color: $menu-link-color;
         padding: 0 0.75em 0 0.75em;
         /* This ensures that the logo isn't cut off. */
         min-height: 1.5em;
@@ -412,7 +369,7 @@ ul.inheritedmets {
 }
 
 .soft {
-    color: $soft-color;
+    color: $method-prefix-color;
 }
 
 h1 {
@@ -440,7 +397,7 @@ h4 {
     margin-top: 1em;
     margin-bottom: 0em;
     margin-left: 0em;
-    color: $soft-color;
+    color: $method-prefix-color;
 }
 
 h1,
@@ -662,7 +619,7 @@ ul.toc {
     font-weight: normal;
 
     a {
-        color: #444;
+        color: $menu-link-color;
     }
 }
 
@@ -720,6 +677,7 @@ ul.tree {
 }
 
 #search_input {
+    color: $primary-color;
     border: 1px solid $footnote-border-color;
     background: $toc-list-hover-color;
     margin-left: 0.5em;
@@ -818,7 +776,7 @@ table#search_settings {
 
 .met_subclasses {
     font-size: 9pt;
-    color: $soft-color;
+    color: $method-prefix-color;
     margin-left: 3em;
     text-align: left;
 
@@ -839,7 +797,7 @@ table#search_settings {
 
 #method_note {
     font-size: 9pt;
-    color: $soft-color;
+    color: $method-prefix-color;
     border-top: 1px solid $table-border-color;
     text-align: center;
     margin-top: 2em;
@@ -870,5 +828,5 @@ table#search_settings {
 
 #total_count {
     font-size: 9pt;
-    color: $soft-color;
+    color: $method-prefix-color;
 }

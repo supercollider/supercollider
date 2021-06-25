@@ -1,3 +1,51 @@
+@use "sass:color";
+
+/* editor colors */
+$cm-background-color: #fff !default;
+$cm-border-color: #e1e1e1 !default;
+$cm-selection-color: rgb(248, 162, 0) !default;
+$cm-keyword-color: #CC3626 !default;
+$cm-built-in-color: #AF33A6 !default;
+$cm-number-color: #AF33A6 !default;
+$cm-symbol-color: #3F831E !default;
+$cm-class-color: #3478BC !default;
+$cm-primitive-color: #C07F00 !default;
+$cm-char-color: #AF33A6 !default;
+$cm-env-var-color: #C07F00 !default;
+$cm-comment-color: #848484 !default;
+$cm-string-color: #3F39C9 !default;
+$cm-text-color: #000 !default;
+
+$background-color: $cm-background-color !default;
+$primary-color: $cm-text-color !default;
+$table-border-color: color.mix($background-color, $primary-color, 90%) !default;
+$inheritedmets-color: color.mix($background-color, $primary-color, 30%) !default;
+$inheritedmets-link-color: color.mix($background-color, $primary-color, 20%);
+$topdoctitle-color: color.mix($background-color, $primary-color, 25%) !default;
+$menubar-background: color.scale($background-color, $blackness: 2%) !default;
+$menu-link-color: color.mix($background-color, $primary-color, 40%) !default;
+$method-prefix-color: color.mix($background-color, $primary-color, 50%) !default;
+$menu-link-hover-color: color.mix($background-color, $primary-color, 60%) !default;
+$footnote-border-color: color.mix($background-color, $primary-color, 70%) !default;
+$pre-border-color: color.mix($background-color, $primary-color, 80%) !default;
+$box-shadow-color: color.adjust(color.mix($background-color, $primary-color, 50%), $alpha: 0.5) !default;
+$lighten-background-color: color.adjust($background-color, $alpha: 0.2) !default;
+
+// derived colors
+$doclink-color: $method-prefix-color !default;
+$sidetoc-border-color: $footnote-border-color !default;
+$toc-list-hover-color: $table-border-color !default;
+$searchlink-color: color.mix($background-color, $cm-selection-color, 10%) !default;
+$note-background-color: color.adjust($cm-selection-color, $alpha: -0.8) !default;
+$warning-color: $cm-keyword-color !default;
+$extension-color: $cm-number-color !default;
+$extension-border-color: color.scale($extension-color, $blackness: 20%) !default;
+$link-color: $cm-string-color !default;
+$submenu-link-color: color.scale($cm-string-color, $lightness: 10%) !default;
+$inheritedmets-toggle-color: color.scale($cm-string-color, $lightness: 20%) !default;
+$undoc-color: color.scale($cm-string-color, $lightness: 30%) !default; 
+
+
 @import "../scdoc";
 
 /*

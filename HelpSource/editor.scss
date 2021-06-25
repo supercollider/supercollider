@@ -9,6 +9,7 @@ textarea.editor {
     border-left: 2px solid $cm-border-color;
     font-size: 1em;
     line-height: normal;
+    background-color: $background-color;
 }
 
 .CodeMirror-cursors,
@@ -49,7 +50,7 @@ textarea.editor {
         font-weight: bold;
     }
     
-    .cm-bulit-in {
+    .cm-built-in {
         color: $cm-built-in-color;
     }
     
