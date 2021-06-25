@@ -1,0 +1,25 @@
+@use "sass:color";
+
+/* editor colors */
+$cm-background-color: #282a36;
+$cm-border-color: #e1e1e1;
+$cm-selection-color: #e0eeff;
+$cm-keyword-color: #ff76c7;
+$cm-built-in-color: #e2e37a;
+$cm-number-color: #be90fc;
+$cm-symbol-color: #45fc75;
+$cm-class-color: #65e5ff;
+$cm-primitive-color: #aaff7f;
+$cm-char-color: #ff55ff;
+$cm-env-var-color: #ffb965;
+$cm-comment-color: #5df884;
+$cm-string-color: #5df884;
+$cm-text-color: #f7fdff;
+
+$cm-string-color: $cm-char-color;
+$method-prefix-color: $cm-comment-color;
+$topdoctitle-color: $cm-class-color;
+$menu-link-color: color.scale($cm-text-color, $lightness: -20%);
+$note-background-color: color.scale($cm-background-color, $lightness: 30%);
+
+@import "default";
