@@ -77,8 +77,7 @@ List : SequenceableCollection {
 	rotate { arg n=1;
 		^this.class.newUsing(array.rotate(n));
 	}
-	stutter { arg n=2;
-		"The use of .stutter is not recommended. Please use .dupEach instead.".warn;
+	stutter { |n=2|
 		^this.dupEach(n);
 	}
 	dupEach { |n=2|

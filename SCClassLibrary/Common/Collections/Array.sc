@@ -25,8 +25,7 @@ Array[slot] : ArrayedCollection {
 		_ArrayMirror2
 		^this.primitiveFailed
 	}
-	stutter { arg n=2;
-		"The use of .stutter is not recommended. Please use .dupEach instead.".warn;
+	stutter { |n=2|
 		^this.dupEach(n);
 	}
 	dupEach { | n=2 |
