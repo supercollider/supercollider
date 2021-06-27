@@ -648,17 +648,17 @@ PdurStutter : Pdup { // float streams
 
 Psubdivide : Pdup { // float streams
 	embedInStream { arg event;
-		var dur, stut;
+		var dur, subdivision;
 		var durs = pattern.asStream;
-		var stutts = n.asStream;
+		var subdivisions = n.asStream;
 		while({
 			(dur = durs.next(event)).notNil
-			and: {(stut = stutts.next(event)).notNil}
+			and: {(subdivision = subdivisions.next(event)).notNil}
 		},{
-			if(stut > 0,{ // 0 skips it
-				if(stut > 1,{
-					dur = dur / stut;
-					stut.do({
+			if(subdivision > 0,{ // 0 skips it
+				if(subdivision > 1,{
+					dur = dur / subdivision;
+					subdivision.do({
 						event = dur.yield;
 					})
 				},{
