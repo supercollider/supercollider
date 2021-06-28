@@ -159,16 +159,16 @@ void Theme::fillUser(const QString& name, const Manager* settings) {
 }
 
 void Theme::copyCSS(const QString& _name) {
-
     QString scDocCssFilePath = standardDirectory(StandardDirectory::ScAppDataUserDir) + "/Help/scdoc.css";
-    QString themeCssFilePath = standardDirectory(StandardDirectory::ScResourceDir) + "/HelpSource/themes/" + _name + ".css";
+    QString themeCssFilePath =
+        standardDirectory(StandardDirectory::ScResourceDir) + "/HelpSource/themes/" + _name + ".css";
 
-    if(!QFile::exists(themeCssFilePath)) {
+    if (!QFile::exists(themeCssFilePath)) {
         qDebug() << "Did not find CSS theme file " << themeCssFilePath;
         qDebug() << "Apply default CSS theme";
         themeCssFilePath = standardDirectory(StandardDirectory::ScResourceDir) + "/HelpSource/themes/default.css";
     }
-    if(QFile::exists(scDocCssFilePath)) {
+    if (QFile::exists(scDocCssFilePath)) {
         QFile::remove(scDocCssFilePath);
     }
     QFile::copy(themeCssFilePath, scDocCssFilePath);
