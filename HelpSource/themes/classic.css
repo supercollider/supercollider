@@ -1,5 +1,12 @@
 /* editor colors */
 /* editor colors */
+/*
+
+THE CSS FILE IS GENERATED AUTOMATICALLY.
+ONLY MODIFY THE SCSS FILE AND GENEREATE THE
+CSS FILE OUT OF THIS, SEE themes/README.md
+
+*/
 *,
 *::before,
 *::after {
@@ -69,7 +76,6 @@ a.inheritedmets_toggle {
   font-size: 9pt;
   color: #7f7f7f;
   font-weight: normal;
-  /*    margin-left: 2em;*/
 }
 a.inheritedmets_toggle:hover {
   text-decoration: none;
@@ -213,7 +219,6 @@ ul.inheritedmets li {
 #topdoctitle {
   /*    font-weight: bold;*/
   font-style: italic;
-  /*    color: #fff;*/
   color: #0000d2;
   cursor: pointer;
 }
@@ -513,7 +518,6 @@ td.argumentdesc {
   padding: 10px;
   height: 100%;
   overflow: auto;
-  /*    background: #eee;*/
   background: #fff;
   border-right: 1px solid #b3b3b3;
 }
@@ -777,9 +781,97 @@ table#search_settings {
   color: #0000d2;
 }
 
+/* from editor.css */
+.browser {
+  margin: 0em;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+.browser td {
+  vertical-align: top;
+  border: none;
+}
+
+.result {
+  padding: 2px;
+}
+
+.result_doc {
+  border-bottom: 1px solid #e6e6e6;
+  margin-top: 0.5em;
+}
+
+.result_summary {
+  color: #0000d2;
+  font-size: 9pt;
+  max-width: 18em;
+  margin-bottom: 0.6em;
+}
+
+.category, .cat_selected {
+  margin-bottom: 0.25em;
+  border-bottom: 1px solid transparent;
+}
+
+.cat_selected {
+  border-bottom: 1px solid #0000d2;
+}
+
+.cat_header {
+  border-bottom: 2px solid #999999;
+  color: black;
+  margin-bottom: 0.25em;
+  padding: 2px;
+}
+
+.category a {
+  color: #4d4d4d;
+  font-weight: bold;
+}
+
+.cat_selected a {
+  color: #000;
+  font-weight: bold;
+}
+
+.cat_arrow {
+  float: right;
+  padding-left: 1ex;
+  color: #4d4d4d;
+}
+
+#search_checks {
+  font-size: 9pt;
+  color: #4d4d4d;
+  border-bottom: 1px solid #e6e6e6;
+  margin-top: 1em;
+  padding-bottom: 1em;
+}
+
+.cat_count, #total_count {
+  color: #0000d2;
+  font-size: 9pt;
+}
+
+.doc_kind {
+  color: black;
+  float: right;
+  font-size: 8pt;
+  padding: 0 2px;
+  margin-left: 0.5ex;
+  font-weight: bold;
+}
+
 /*
 
 EDITOR
+
+*/
+/*
+
+THE CSS FILE IS GENERATED AUTOMATICALLY.
+ONLY MODIFY THE SCSS FILE AND GENEREATE THE
+CSS FILE OUT OF THIS, SEE themes/README.md
 
 */
 textarea.editor {
@@ -867,46 +959,36 @@ textarea.editor {
     color: #0000e6;
     font-weight: bold;
   }
-
   .cm-s-default .cm-built-in {
     color: #3333bf;
     font-weight: bold;
   }
-
-  .cm-s-default .cm-number {
-    color: #980099;
-  }
-
-  .cm-s-default .cm-symbol {
+  .cm-s-default .cm-s-default .cm-symbol {
     color: #007300;
   }
-
+  .cm-s-default .cm-s-default .cm-number {
+    color: #980099;
+  }
   .cm-s-default .cm-class {
     color: #0000d2;
     font-weight: bold;
   }
-
   .cm-s-default .cm-primitive {
     color: #0000d2;
   }
-
   .cm-s-default .cm-char {
     color: #007300;
   }
-
   .cm-s-default .cm-env-var {
     color: #8c4614;
   }
-
   .cm-s-default .cm-comment {
     color: #bf0000;
     font-style: italic;
   }
-
   .cm-s-default .cm-string {
     color: #5f5f5f;
   }
-
   .cm-s-default .cm-text {
     color: #000000;
   }

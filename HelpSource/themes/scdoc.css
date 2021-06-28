@@ -1,5 +1,4 @@
 /* editor colors */
-/* editor colors */
 *,
 *::before,
 *::after {
@@ -18,8 +17,8 @@ body {
 body {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 10pt;
-  color: #839496;
-  background: #002b36;
+  color: #000;
+  background: #fff;
 }
 
 .contents {
@@ -34,7 +33,7 @@ table {
   margin-left: 2em;
 }
 table td {
-  border: 1px solid #0d3640;
+  border: 1px solid #e6e6e6;
   padding: 0.3em;
 }
 table td.argumentname {
@@ -60,31 +59,31 @@ p {
 
 a:link, a:visited, a:link:hover {
   text-decoration: none;
-  color: #586e75;
+  color: #3F39C9;
 }
 a:link:hover {
   text-decoration: underline;
 }
 a.inheritedmets_toggle {
   font-size: 9pt;
-  color: #748e96;
+  color: #6561d4;
   font-weight: normal;
   /*    margin-left: 2em;*/
 }
 a.inheritedmets_toggle:hover {
   text-decoration: none;
-  color: #839496;
+  color: #000;
 }
 a.subclass_toggle {
-  color: #5c7579;
+  color: #4d4d4d;
   font-weight: normal;
 }
 a.subclass_toggle:hover {
   text-decoration: none;
-  color: #839496;
+  color: #000;
 }
 a.menu-link {
-  color: #67787a;
+  color: #666666;
   padding: 0 0.75em 0 0.75em;
   /* This ensures that the logo isn't cut off. */
   min-height: 1.5em;
@@ -93,18 +92,18 @@ a.menu-link {
 }
 a.menu-link:hover {
   text-decoration: none;
-  color: #34555c;
+  color: #999999;
 }
 a.footnote {
   font-size: 9pt;
   top: -0.1em;
 }
 a.method-name {
-  color: #839496;
+  color: #000;
   font-weight: bold;
 }
 a.undoc {
-  color: #859ca3;
+  color: #7974d9;
   text-decoration: line-through;
 }
 a.method-name::before {
@@ -127,12 +126,12 @@ input {
 
 .inheritedmets_class {
   font-weight: bold;
-  color: #5c7579;
+  color: #4d4d4d;
   margin-top: 0.5em;
   margin-bottom: 0.25em;
 }
 .inheritedmets_class a {
-  color: #697f83;
+  color: #333333;
 }
 
 ul.inheritedmets {
@@ -152,14 +151,14 @@ ul.inheritedmets li {
   width: 100%;
   height: 33px;
   padding: 0.5em 0;
-  background-color: #002a35;
-  box-shadow: 0em 0em 0.25em #426066;
+  background-color: #fafafa;
+  box-shadow: 0em 0em 0.25em gray;
   z-index: 2;
 }
 #menubar .menuitem {
   padding: 0;
   margin: 0;
-  border-right: 1px solid #0d3640;
+  border-right: 1px solid #e6e6e6;
   font-size: 10pt;
   display: inline-block;
 }
@@ -178,7 +177,7 @@ ul.inheritedmets li {
 }
 #menubar .menuitem:first-child a:hover {
   /* Lighten the background image by adding a translucent white layer over it. */
-  background-color: #002b36;
+  background-color: white;
 }
 #menubar .menuitem:first-child a.home span {
   display: none;
@@ -214,7 +213,7 @@ ul.inheritedmets li {
   /*    font-weight: bold;*/
   font-style: italic;
   /*    color: #fff;*/
-  color: #268bd2;
+  color: #404040;
   cursor: pointer;
 }
 
@@ -224,8 +223,8 @@ ul.inheritedmets li {
   top: 33px;
   padding: 0.5em;
   display: none;
-  background-color: #002a35;
-  border: thin solid #002b36;
+  background-color: #fafafa;
+  border: thin solid #fff;
 }
 
 .submenu a {
@@ -238,17 +237,17 @@ ul.inheritedmets li {
   white-space: nowrap;
   text-align: left;
   /*      text-decoration: none;*/
-  color: #657e86;
+  color: #524dce;
   font-weight: bold;
 }
 
 .toc_search {
   margin-left: 10px;
-  color: #34555c;
+  color: #999999;
   font-size: 9pt;
 }
 .toc_search input {
-  border: 1px solid #0d3640;
+  border: 1px solid #e6e6e6;
 }
 
 .header {
@@ -256,7 +255,7 @@ ul.inheritedmets li {
 }
 
 #label {
-  color: #67787a;
+  color: #666666;
   font-size: 0.9em;
 }
 
@@ -264,7 +263,7 @@ ul.inheritedmets li {
   font-weight: normal;
   font-size: 1.1em;
   font-style: italic;
-  color: #268bd2;
+  color: #404040;
 }
 
 #related {
@@ -283,7 +282,7 @@ ul.inheritedmets li {
 
 #superclasses {
   font-size: 9pt;
-  color: #268bd2;
+  color: #404040;
   font-weight: normal;
 }
 
@@ -291,10 +290,10 @@ ul.inheritedmets li {
   float: right;
   font-size: 12pt;
   padding: 0.4em 0.4em 0.2em 0.4em;
-  background-color: #6c71c4;
-  color: #002b36;
+  background-color: #AF33A6;
+  color: #fff;
   border-radius: 3px;
-  border-bottom: 2px solid #6c6f9d;
+  border-bottom: 2px solid #8c3386;
 }
 
 .extension-indicator-icon {
@@ -308,14 +307,14 @@ ul.inheritedmets li {
 
 .subheader {
   font-size: 9pt;
-  color: #268bd2;
+  color: #404040;
   margin-top: 1em;
 }
 
 .jump {
   text-align: right;
   font-size: 9pt;
-  color: #5c7579;
+  color: #4d4d4d;
 }
 .jump a {
   font-weight: bold;
@@ -324,7 +323,7 @@ ul.inheritedmets li {
 }
 
 .footnotes {
-  border-top: 1px solid #274b53;
+  border-top: 1px solid #b3b3b3;
   margin-left: 2em;
   margin-top: 3em;
   margin-right: 2em;
@@ -337,7 +336,7 @@ ul.inheritedmets li {
 }
 
 .soft {
-  color: #268bd2;
+  color: gray;
 }
 
 h1 {
@@ -347,7 +346,7 @@ h1 {
 }
 
 h2 {
-  border-bottom: 1px solid #0d3640;
+  border-bottom: 1px solid #e6e6e6;
   margin-top: 1em;
   text-align: left;
   margin-bottom: 2px;
@@ -365,7 +364,7 @@ h4 {
   margin-top: 1em;
   margin-bottom: 0em;
   margin-left: 0em;
-  color: #268bd2;
+  color: gray;
 }
 
 h1,
@@ -400,7 +399,7 @@ pre {
 }
 
 pre {
-  border-left: 2px solid #1a4049;
+  border-left: 2px solid #cccccc;
   padding-left: 1em;
 }
 
@@ -416,7 +415,7 @@ pre {
 
 .methprefix {
   font-weight: normal;
-  color: #268bd2;
+  color: gray;
   padding-right: 0.5em;
   margin-left: -1em;
 }
@@ -444,13 +443,13 @@ pre {
 
 .extmethod {
   font-size: 9pt;
-  color: #268bd2;
+  color: #404040;
   padding-left: 0.2em;
 }
 
 .supmethod {
   font-size: 9pt;
-  color: #268bd2;
+  color: #404040;
   padding-left: 0.2em;
 }
 
@@ -469,7 +468,7 @@ td.argumentdesc {
 .note,
 .warning {
   /*    border-left: 4px solid #eea;*/
-  background: #0098bf;
+  background: rgba(248, 162, 0, 0.2);
   padding: 0.5em;
   margin-top: 1em;
   margin-bottom: 1em;
@@ -481,7 +480,7 @@ td.argumentdesc {
 }
 
 .warninglabel {
-  color: #dc322f;
+  color: #CC3626;
 }
 
 /*.version {
@@ -493,14 +492,14 @@ td.argumentdesc {
 }*/
 .doclink {
   font-size: 9pt;
-  color: #268bd2;
+  color: gray;
   text-align: right;
   margin-top: 2em;
   margin-bottom: 2em;
-  border-top: 1px solid #0d3640;
+  border-top: 1px solid #e6e6e6;
 }
 .doclink a {
-  color: #268bd2;
+  color: #404040;
   word-wrap: break-word;
 }
 
@@ -514,12 +513,12 @@ td.argumentdesc {
   height: 100%;
   overflow: auto;
   /*    background: #eee;*/
-  background: #002b36;
-  border-right: 1px solid #274b53;
+  background: #fff;
+  border-right: 1px solid #b3b3b3;
 }
 #sidetoc a:hover {
   text-decoration: none;
-  color: #839496;
+  color: #000;
 }
 
 #toc-container {
@@ -540,7 +539,7 @@ td.argumentdesc {
   font-weight: bold;
   font-size: 120%;
   margin: 0.7em 0.5em;
-  color: #697f83;
+  color: #333333;
 }
 
 li {
@@ -564,21 +563,21 @@ ul.toc li a {
   padding: 0 8px;
 }
 ul.toc li a:hover {
-  background: #0d3640;
+  background: #e6e6e6;
 }
 
 .toc1 {
   font-weight: bold;
 }
 .toc1 a {
-  color: #268bd2;
+  color: #404040;
 }
 
 .toc2 {
   font-weight: normal;
 }
 .toc2 a {
-  color: #67787a;
+  color: #666666;
 }
 
 .toc3 {
@@ -587,7 +586,7 @@ ul.toc li a:hover {
   /*    font-size: 9.5pt;*/
 }
 .toc3 a {
-  color: #5c7579;
+  color: #4d4d4d;
 }
 
 ul.tree,
@@ -611,7 +610,7 @@ ul.tree li {
   font-weight: bold;*/
 }
 ul.tree li:last-child {
-  background: #002b36 url(images/lastnode.png) no-repeat;
+  background: #fff url(images/lastnode.png) no-repeat;
 }
 
 :target {
@@ -627,19 +626,19 @@ ul.tree li:last-child {
 }
 
 #search_input {
-  color: #839496;
-  border: 1px solid #274b53;
-  background: #0d3640;
+  color: #000;
+  border: 1px solid #b3b3b3;
+  background: #e6e6e6;
   margin-left: 0.5em;
 }
 
 #search_count {
-  border-bottom: 2px solid #274b53;
-  color: #697f83;
+  border-bottom: 2px solid #b3b3b3;
+  color: #333333;
 }
 
 .result_category {
-  color: #5c7579;
+  color: #4d4d4d;
   margin-top: 1em;
   margin-bottom: 0.5em;
   /*    font-size: 9.5pt;
@@ -655,17 +654,17 @@ ul.tree li:last-child {
 
 .met_subclasses {
   font-size: 9pt;
-  color: #268bd2;
+  color: gray;
   margin-left: 3em;
   text-align: left;
 }
 .met_subclasses a {
-  color: #268bd2;
+  color: #404040;
 }
 
 .met_subclasses a.seemore {
   margin-left: 0.2em;
-  color: #748e96;
+  color: #6561d4;
 }
 
 #search_checks {
@@ -673,21 +672,21 @@ ul.tree li:last-child {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
   font-size: 9pt;
-  color: #5c7579;
-  background: #0d3640;
+  color: #4d4d4d;
+  background: #e6e6e6;
 }
 
 #search_checks0 {
   font-size: 9pt;
-  color: #5c7579;
-  border-bottom: 1px solid #0d3640;
+  color: #4d4d4d;
+  border-bottom: 1px solid #e6e6e6;
   margin-top: 1em;
   padding-bottom: 1em;
 }
 
 table#search_settings {
   font-size: 9pt;
-  color: #5c7579;
+  color: #4d4d4d;
   width: 100%;
   margin-left: 0px;
   margin-right: 0px;
@@ -709,7 +708,7 @@ table#search_settings {
 #js_error {
   font-family: Andale Mono, monospace;
   font-size: 9pt;
-  color: #dc322f;
+  color: #CC3626;
 }
 
 /* from Methods.html in HelpSource/Overview/ */
@@ -724,16 +723,16 @@ table#search_settings {
 
 .met_subclasses {
   font-size: 9pt;
-  color: #268bd2;
+  color: gray;
   margin-left: 3em;
   text-align: left;
 }
 .met_subclasses a {
-  color: #268bd2;
+  color: #404040;
 }
 .met_subclasses a.seemore {
   margin-left: 0.2em;
-  color: #748e96;
+  color: #6561d4;
 }
 
 .method_name {
@@ -743,19 +742,19 @@ table#search_settings {
 
 #method_note {
   font-size: 9pt;
-  color: #268bd2;
-  border-top: 1px solid #0d3640;
+  color: gray;
+  border-top: 1px solid #e6e6e6;
   text-align: center;
   margin-top: 2em;
 }
 
 #total_count {
   font-size: 9pt;
-  color: #268bd2;
+  color: gray;
 }
 
 .searchlink {
-  background: #b9ccd3;
+  background: #f9ab1a;
   text-align: center;
   font-size: 9pt;
   padding: 0.25em;
@@ -774,7 +773,7 @@ table#search_settings {
 
 #total_count {
   font-size: 9pt;
-  color: #268bd2;
+  color: gray;
 }
 
 /*
@@ -793,7 +792,7 @@ textarea.editor {
   border-left: 2px solid #e1e1e1;
   font-size: 1em;
   line-height: normal;
-  background-color: #002b36;
+  background-color: #fff;
 }
 
 .CodeMirror-cursors,
@@ -805,21 +804,21 @@ textarea.editor {
 .CodeMirror-line::selection,
 .CodeMirror-line > span::selection,
 .CodeMirror-line > span > span::selection {
-  background: rgba(206, 222, 228, 0.5) !important;
+  background: rgba(248, 162, 0, 0.5) !important;
 }
 
 @keyframes text-flash {
   0% {
-    background: #cedee4;
-    color: #839496;
+    background: #f8a200;
+    color: #000;
   }
   40% {
-    background: rgba(206, 222, 228, 0);
-    color: #839496;
+    background: rgba(248, 162, 0, 0);
+    color: #000;
   }
   100% {
-    background: #cedee4;
-    color: #839496;
+    background: #f8a200;
+    color: #000;
   }
 }
 .CodeMirror .text-flash {
@@ -828,38 +827,38 @@ textarea.editor {
 
 /* syntax hightlighting */
 .cm-s-default .cm-keyword {
-  color: #dc322f;
+  color: #CC3626;
   font-weight: bold;
 }
 .cm-s-default .cm-built-in {
-  color: #b58900;
+  color: #AF33A6;
 }
 .cm-s-default .cm-number {
-  color: #6c71c4;
+  color: #AF33A6;
 }
 .cm-s-default .cm-symbol {
-  color: #b58900;
+  color: #3F831E;
 }
 .cm-s-default .cm-class {
-  color: #268bd2;
+  color: #3478BC;
 }
 .cm-s-default .cm-primitive {
-  color: #2aa198;
+  color: #C07F00;
 }
 .cm-s-default .cm-char {
-  color: #cb4b16;
+  color: #AF33A6;
 }
 .cm-s-default .cm-env-var {
-  color: #d33682;
+  color: #C07F00;
 }
 .cm-s-default .cm-comment {
-  color: #93a1a1;
+  color: #848484;
 }
 .cm-s-default .cm-string {
-  color: #586e75;
+  color: #3F39C9;
 }
 .cm-s-default .cm-text {
-  color: #839496;
+  color: #000;
 }
 
 @media print {
