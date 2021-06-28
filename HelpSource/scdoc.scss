@@ -828,3 +828,89 @@ table#search_settings {
     color: $method-prefix-color;
 }
 
+/* from editor.css */
+
+.browser {
+    margin: 0em;
+    border-collapse: collapse;
+    margin-top: 1em;
+
+    td {
+        vertical-align: top;
+        border: none;
+    }
+}
+
+.result {
+    padding: 2px;
+}
+
+.result_doc {
+    border-bottom: 1px solid $table-border-color;
+    margin-top: 0.5em;
+}
+
+.result_summary {
+    color: $topdoctitle-color;
+    font-size: 9pt;
+    max-width: 18em;
+    margin-bottom: 0.6em;
+}
+
+.category, .cat_selected {
+    margin-bottom: 0.25em;
+    border-bottom: 1px solid transparent;
+}
+
+.cat_selected {
+    border-bottom: 1px solid $method-prefix-color;
+}
+
+.cat_header {
+    border-bottom: 2px solid $menu-link-hover-color;
+    color: $menu-link-color;
+    margin-bottom: 0.25em;
+    padding: 2px;
+}
+
+.category {
+    a {
+        color: $inheritedmets-color;
+        font-weight: bold;
+    }
+}
+
+.cat_selected {
+    a {
+        color: $primary-color;
+        font-weight: bold;
+    }
+}
+
+.cat_arrow {
+    float: right;
+    padding-left: 1ex;
+    color: $inheritedmets-color;
+}
+
+#search_checks {
+    font-size: 9pt;
+    color: $inheritedmets-color;
+    border-bottom: 1px solid $table-border-color;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+
+.cat_count, #total_count {
+    color: $method-prefix-color;
+    font-size: 9pt;
+}
+
+.doc_kind {
+    color: $menu-link-color;
+    float: right;
+    font-size: 8pt;
+    padding: 0 2px;
+    margin-left: 0.5ex;
+    font-weight: bold;
+}
