@@ -55,6 +55,8 @@ private:
     void fillSolarizedLight();
     void fillSolarizedDark();
 
+    void copyCSS(const QString& _name);
+
     void add(const char* key, const QColor& fg, const QColor& bg = QColor(Qt::transparent), bool bold = false,
              bool italic = false);
 

@@ -25,6 +25,8 @@
 #include <QApplication>
 #include <QPalette>
 #include <QDebug>
+#include <fstream>
+#include <standard_dirs.hpp>
 
 #include "../main.hpp"
 #include "theme.hpp"
@@ -156,6 +158,22 @@ void Theme::fillUser(const QString& name, const Manager* settings) {
     }
 }
 
+void Theme::copyCSS(const QString& _name) {
+
+    QString scDocCssFilePath = standardDirectory(StandardDirectory::ScAppDataUserDir) + "/Help/scdoc.css";
+    QString themeCssFilePath = standardDirectory(StandardDirectory::ScResourceDir) + "/HelpSource/themes/" + _name + ".css";
+
+    if(!QFile::exists(themeCssFilePath)) {
+        qDebug() << "Did not find CSS theme file " << themeCssFilePath;
+        qDebug() << "Apply default CSS theme";
+        themeCssFilePath = standardDirectory(StandardDirectory::ScResourceDir) + "/HelpSource/themes/default.css";
+    }
+    if(QFile::exists(scDocCssFilePath)) {
+        QFile::remove(scDocCssFilePath);
+    }
+    QFile::copy(themeCssFilePath, scDocCssFilePath);
+}
+
 Theme::Theme(const QString& _name, Manager* settings) {
     if (!settings)
         settings = Main::settings();
@@ -184,6 +202,7 @@ Theme::Theme(const QString& _name, Manager* settings) {
         fillUser(mName, settings);
         mLocked = false;
     }
+    copyCSS(mName);
 }
 
 Theme::Theme(const QString& _name, const QString& _source, Manager* settings): mName(_name) {
@@ -206,7 +225,7 @@ Theme::Theme(const QString& _name, const QString& _source, Manager* settings): m
     } else {
         fillUser(_source, settings);
     }
-
+    copyCSS(mName);
     mLocked = false;
 }
 
