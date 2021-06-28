@@ -78,7 +78,6 @@ a {
         font-size: 9pt;
         color: $inheritedmets-toggle-color;
         font-weight: normal;
-        /*    margin-left: 2em;*/
     }
 
     &.inheritedmets_toggle:hover {
@@ -243,7 +242,6 @@ ul.inheritedmets {
 #topdoctitle {
     /*    font-weight: bold;*/
     font-style: italic;
-    /*    color: #fff;*/
     color: $topdoctitle-color;
     cursor: pointer;
 }
@@ -548,7 +546,6 @@ td.argumentdesc {
     padding: 10px;
     height: 100%;
     overflow: auto;
-    /*    background: #eee;*/
     background: $background-color;
     border-right: 1px solid $sidetoc-border-color;
 
@@ -830,3 +827,4 @@ table#search_settings {
     font-size: 9pt;
     color: $method-prefix-color;
 }
+
