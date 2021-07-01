@@ -102,7 +102,13 @@ Window {
 		bounds,
 		resizable = true,
 		border = true,
+		deprecatedServerArgument,
 		scroll = false;
+
+		if(deprecatedServerArgument.notNil) {
+			// see https://github.com/supercollider/supercollider/pull/5312#discussion_r553546303
+			"this argument is deprecated, it was kept for SwingOSC compatibility, but will be removed".warn;
+		};
 
 		if( bounds.isNil ) {
 			bounds = Rect(0,0,400,400).center_( Window.availableBounds.center );
