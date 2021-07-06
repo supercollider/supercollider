@@ -77,15 +77,15 @@ Routine {
 
 
 // Voss algorithm for pink noise
-// note that pattern.stutter(n) is a synonym for Pdup(n, pattern)
+// note that pattern.dupEach(n) is a synonym for Pdup(n, pattern)
 a = Pwhite();
-c = (2 ** (0..10)).sum { |n| a.stutter(n) };
+c = (2 ** (0..10)).sum { |n| a.dupEach(n) };
 c.asStream.nextN(1000).plot
 
 
 // Voss-McCartney algorithm: balance calculation for realtime use
 a = Pwhite();
-c = (2 ** (0..10)).sum { |n| a.stutter(n.div(2).fin(1)) ++ a.stutter(n) };
+c = (2 ** (0..10)).sum { |n| a.dupEach(n.div(2).fin(1)) ++ a.dupEach(n) };
 c.asStream.nextN(1000).plot
 
 ::
