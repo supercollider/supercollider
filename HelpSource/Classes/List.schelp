@@ -227,7 +227,7 @@ code::
 List[1, 2, 3].dupEach(2).postln;
 ::
 
-rotate
+method::rotate
 Return a new List whose elements are in rotated order. Negative strong::n:: values rotate left, positive strong::n:: values rotate right. The receiver is unchanged.
 code::
 List[1, 2, 3, 4, 5].rotate(1).postln;
