@@ -662,7 +662,7 @@ method::unixCmdGetStdOut
 Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window.
 code::
 ~listing = "ls Help".unixCmdGetStdOut; // Grab
-~listing.reverse.as(Array).stutter.join.postln; // Mangle
+~listing.reverse.as(Array).dupEach.join.postln; // Mangle
 ::
 
 method::systemCmd

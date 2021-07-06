@@ -1,18 +1,16 @@
-class:: Pstutter
+class:: Pdup
 summary:: repeat input stream values
-related:: Classes/Pdup, Classes/Pn, Classes/Pattern#-dup
+related:: Classes/Pn, Classes/Pattern#-dup
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
-note::It is recommended to use link::Classes/Pdup:: instead. This class is retained for backwards compatibility.::
-warning::Pstutter will return link::Classes/Pdup::::
-
 description::
+
 repeat each element n times.
 
 code::
 (
 var a, b;
-a = Pstutter(2, Pwhite(-1.0, 1.0));
+a = Pdup(2, Pwhite(-1.0, 1.0));
 x = a.asStream;
 8.do { x.next.postln };
 )
@@ -24,12 +22,12 @@ This is also a response to link::Classes/Pattern#-dup::
 ClassMethods::
 
 method::new
+
 argument::n
 The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
 
 argument::pattern
 the pattern to repeat.
-returns:: link::Classes/Pdup::
 
 Examples::
 
@@ -38,7 +36,7 @@ code::
 // the first argument can be a pattern, too:
 (
 var a, b;
-a = Pstutter(Prand([1, 2, 5], inf), Pwhite(-1.0, 1.0)); // repeat either once, twice, or five times
+a = Pdup(Prand([1, 2, 5], inf), Pwhite(-1.0, 1.0)); // repeat either once, twice, or five times
 x = a.asStream;
 20.do { x.next.postln };
 )
@@ -48,9 +46,9 @@ x = a.asStream;
 SynthDef(\help_sinegrain,
 	{ | out=0, freq=440, sustain=0.05 |
 		var env;
-        env = Env.perc(0.01, sustain, 0.2).kr(doneAction: Done.freeSelf);
+		        env = Env.perc(0.01, sustain, 0.2).kr(doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0.5pi, env))
-	}).add;
+}).add;
 )
 
 (
@@ -60,14 +58,14 @@ a = Pbind(
 	\dur, 0.05,
 	\sustain, 0.1
 );
-Pstutter(Pseq([1, 2, 3, 4], inf), a).trace.play;
+Pdup(Pseq([1, 2, 3, 4], inf), a).trace.play;
 )
 
 
-// Pstutter used as a sequence of pitches
+// Pdup used as a sequence of pitches
 
 (
-c = Pstutter(3, Pxrand([1, 2, 3], inf) * 4 + 65);
+c = Pdup(3, Pxrand([1, 2, 3], inf) * 4 + 65);
 x = c.asStream;
 Routine {
 	loop {
@@ -79,15 +77,15 @@ Routine {
 
 
 // Voss algorithm for pink noise
-// note that pattern.stutter(n) is a synonym for Pstutter(n, pattern)
+// note that pattern.dupEach(n) is a synonym for Pdup(n, pattern)
 a = Pwhite();
-c = (2 ** (0..10)).sum { |n| a.stutter(n) };
+c = (2 ** (0..10)).sum { |n| a.dupEach(n) };
 c.asStream.nextN(1000).plot
 
 
 // Voss-McCartney algorithm: balance calculation for realtime use
 a = Pwhite();
-c = (2 ** (0..10)).sum { |n| a.stutter(n.div(2).fin(1)) ++ a.stutter(n) };
+c = (2 ** (0..10)).sum { |n| a.dupEach(n.div(2).fin(1)) ++ a.dupEach(n) };
 c.asStream.nextN(1000).plot
 
 ::

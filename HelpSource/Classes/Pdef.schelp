@@ -76,9 +76,9 @@ Pdef(\x, { Pbind(\note, Pseries(10.rand, 5.rand, 8.rand + 1), \dur, 1 / (8.rand 
 Pn(Pdef(\x)).play;
 
 // the function is called in the incoming event as current environment, so parameters can be passed:
-Pdef(\stut, { Pstutter(~stutter ? 1, ~pattern) });
+Pdef(\stut, { Pdup(~dup ? 1, ~pattern) });
 Pdef(\x, Pbind(\instrument, \Pdefhelp, \note, Pseq([0, 4, 7, 3, 0, 1, 0], inf)));
-Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), stutter: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
+Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), dup: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
 
 ::
 
@@ -232,10 +232,10 @@ Pdef(\metronom).stop;
 (
 x = Ppar([
 	Pbindf(Pn(Pdef(\a), inf),
-		\gtranspose, Pstutter(8, Pseq(#[0, 2, 0, 3],inf))
+		\gtranspose, Pdup(8, Pseq(#[0, 2, 0, 3],inf))
 	),
 	Pbindf(Pn(Pdef(\a), inf),
-		\gtranspose, Pstutter(8, Pseq(#[7, 4, 0, 3],inf)),
+		\gtranspose, Pdup(8, Pseq(#[7, 4, 0, 3],inf)),
 		\dur, 0.6
 	),
 	Pbindf(Pn(Pdef(\a), inf),

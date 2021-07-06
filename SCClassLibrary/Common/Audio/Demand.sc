@@ -149,7 +149,23 @@ Dbrown : DUGen {
 Dibrown : Dbrown {}
 
 Dstutter : DUGen {
-	*new { arg n, in;
+	classvar suggestNew;
+
+	*initClass {
+		suggestNew = { |n, in|
+			"The use of Dstutter is not recommended. Please use Ddup instead.".warn;
+			suggestNew = {|n,in| Ddup(n, in)};
+			suggestNew.(n, in);
+		};
+	}
+
+	*new { |n, in|
+		^suggestNew.(n, in);
+	}
+}
+
+Ddup : DUGen {
+	*new { |n, in|
 		^this.multiNew('demand', n, in)
 	}
 }

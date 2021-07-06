@@ -77,7 +77,10 @@ Pattern : AbstractFunction {
 	repeat { arg n=inf; ^Pn(this, n) }
 	keep { arg n; ^Pfin(n, this) }
 	drop { arg n; ^Pdrop(n, this) }
-	stutter { arg n; ^Pstutter(n, this) }
+	stutter { |n|
+		^this.dupEach(n);
+	}
+	dupEach { arg n; ^Pdup(n, this) }
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
 	fin { arg n = 1; ^Pfin(n, this) }
 

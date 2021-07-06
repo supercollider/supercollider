@@ -166,9 +166,18 @@ code::
 ::
 
 method::stutter
+note::It is recommended to use code::dupEach:: instead. This method is retained for backwards compatibility.::
 Return a new Array whose elements are repeated n times. The receiver is unchanged.
 code::
 [1, 2, 3].stutter(2).postln;
+::
+argument::n
+Number of repeats.
+
+method::dupEach
+Return a new Array whose elements are repeated n times. The receiver is unchanged.
+code::
+[1, 2, 3].dupEach(2).postln;
 ::
 argument::n
 Number of repeats.
