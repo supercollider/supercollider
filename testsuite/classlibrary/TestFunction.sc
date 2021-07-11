@@ -150,12 +150,26 @@ TestFunction : UnitTest {
 
 	}
 
+	test_makeFlopFunc_severalArgs {
+		var function = { |a, b| [a, b] }.makeFlopFunc;
+		var result = function.([1, 2, 3], [100, 200]);
+		var directResult = [ [ 1, 100 ], [ 2, 200 ], [ 3, 100 ] ];
+		this.assertEquals(result, directResult, "makeFlopFunc should work with default arguments")
+	}
 
-	test_envirFlop_ellipsis {
-		var function = { |a, b ... c| [a, b, c] }.envirFlop;
+
+	test_makeFlopFunc_defaultArg {
+		var function = { |a, b = #[100, 200]| [a, b] }.makeFlopFunc;
+		var result = function.([1, 2, 3]);
+		var directResult = [ [ 1, 100 ], [ 2, 200 ], [ 3, 100 ] ];
+		this.assertEquals(result, directResult, "makeFlopFunc should work with default arguments")
+	}
+
+	test_makeFlopFunc_ellipsis {
+		var function = { |a, b ... c| [a, b, c] }.makeFlopFunc;
 		var result = function.(1, [2, 3], [4, 5], [6, 7]);
 		var directResult = [ [ 1, 2, 4, 6 ], [ 1, 3, 5, 7 ] ];
-		this.assertEquals(result, directResult, "envirFlop should work with ellipsis arguments")
+		this.assertEquals(result, directResult, "makeFlopFunc should work with ellipsis arguments")
 	}
 
 
