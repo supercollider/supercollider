@@ -248,13 +248,33 @@ Function : AbstractFunction {
 		}
 	}
 
-	makeFlopFunc {
+	makeFlopFuncString {
+		var ellipsisArgName, valueBlock, i, argBlock;
 		if(def.argNames.isNil) { ^this };
 
-		^interpret(
-			"#{ arg " ++ " " ++ def.argumentString(true) ++ "; "
-			++ "[ " ++ def.argumentString(false) ++ " ].flop };"
-		)
+		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
+		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
+
+		if(def.varArgs) { // ellipsis arguments
+			i = valueBlock.findBackwards(" ");
+			if(i.isNil) { // just one argument, no space
+				ellipsisArgName = valueBlock;
+				valueBlock = ""
+			} {
+				ellipsisArgName = valueBlock[i + 1..];
+				valueBlock = valueBlock[..i];
+			};
+			valueBlock = "([%] ++ %).flop".format(valueBlock, ellipsisArgName)
+		} {
+
+			valueBlock = "[%].flop".format(valueBlock)
+		};
+
+		^"#{ arg %; % }".format(argBlock, valueBlock);
+	}
+
+	makeFlopFunc {
+		^this.makeFlopFuncString.interpret
 	}
 
 	// attach the function to a specific environment
