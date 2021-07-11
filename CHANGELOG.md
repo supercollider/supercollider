@@ -1,3 +1,31 @@
+<!-- 
+Changelog entry template:
+
+3.xx.x (202x-xx-xx)
+===================
+
+### General: Added
+### General: Changed
+### General: Fixed
+### sclang: Added
+### sclang: Changed
+### sclang: Fixed
+### Class library: Added
+### Class library: Changed
+### Class library: Deprecated
+### Class library: Fixed
+### scsynth and supernova: Added
+### scsynth and supernova: Changed
+### scsynth and supernova: Fixed
+### UGens: Added
+### UGens: Changed
+### UGens: Deprecated
+### UGens: Fixed
+### IDE: Added
+### IDE: Changed
+### IDE: Fixed
+-->
+
 # Change Log
 
 Release dates of 3.x versions:
