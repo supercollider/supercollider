@@ -472,25 +472,30 @@ FunctionDef {
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
 
-	argumentString { arg withDefaultValues=true;
+	argumentString { arg withDefaultValues=true, withEllipsis=false;
 		var res = "", pairs = this.keyValuePairsFromArgs;
-		var last, noVarArgs;
+		var lastIndex, noVarArgs, varArgName;
 		if(pairs.isEmpty) { ^nil };
-		last = pairs.lastIndex;
-		noVarArgs = this.varArgs.not;
+		if(this.varArgs) {
+			varArgName = pairs.keep(-2).first;
+			pairs = pairs.drop(-2);
+		};
+
+		lastIndex = pairs.lastIndex;
 		pairs.pairsDo { |name, defaultValue, i|
-			var value, notLast;
-			notLast = i + 1 != last;
-			if(notLast or: noVarArgs) {
-				res = res ++ name;
-				if(withDefaultValues and: { defaultValue.notNil }) {
-					res = res ++ " = " ++ defaultValue.asCompileString;
-				};
-			} {
-				res = res ++ "... " ++ name;
+			res = res ++ name;
+			if(withDefaultValues and: { defaultValue.notNil }) {
+				res = res ++ " = " ++ defaultValue.asCompileString;
 			};
-			if(notLast) { res = res ++ ", " };
-		}
+			if(i + 1 < lastIndex) { res = res ++ ", " };
+		};
+		if(varArgName.notNil) {
+			if(withEllipsis) {
+				res = res ++ " ... " ++ varArgName
+			} {
+				res = res ++ ", " ++ varArgName
+			}
+		};
 		^res
 	}
 
