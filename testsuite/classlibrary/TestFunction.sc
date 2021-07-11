@@ -168,7 +168,7 @@ TestFunction : UnitTest {
 	test_makeFlopFunc_ellipsis {
 		var function = { |a, b ... c| [a, b, c] }.makeFlopFunc;
 		var result = function.(1, [2, 3], [4, 5], [6, 7]);
-		var directResult = [ [ 1, 2, 4, 6 ], [ 1, 3, 5, 7 ] ];
+		var directResult = [ [ 1, 2, [ 4, 6 ] ], [ 1, 3, [ 5, 7 ] ] ];
 		this.assertEquals(result, directResult, "makeFlopFunc should work with ellipsis arguments")
 	}
 
