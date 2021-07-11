@@ -45,6 +45,72 @@ TestFunction : UnitTest {
 		})
 	}
 
+	test_argumentString_without_defaultArguments {
+		var function = { |a, b, c| };
+		var arguments = [[true, true], [true, false], [false, true], [false, false]];
+		var strings = arguments.collect { |pair|
+			function.def.argumentString(withDefaultValues: pair[0], withEllipsis: pair[1])
+		};
+		var results = [
+			"a, b, c",
+			"a, b, c",
+			"a, b, c",
+			"a, b, c"
+		];
+		strings.do { |x, i|
+			this.assertEquals(x, results[i], "argument string should match")
+		}
+	}
+	test_argumentString_with_defaultArguments {
+		var function = { |a = 1, b = 2, c| };
+		var arguments = [[true, true], [true, false], [false, true], [false, false]];
+		var strings = arguments.collect { |pair|
+			function.def.argumentString(withDefaultValues: pair[0], withEllipsis: pair[1])
+		};
+		var results = [
+			"a = 1, b = 2, c",
+			"a = 1, b = 2, c",
+			"a, b, c",
+			"a, b, c"
+		];
+		strings.do { |x, i|
+			this.assertEquals(x, results[i], "argument string should match")
+		}
+	}
+
+	test_argumentString_with_ellipsisArguments {
+		var function = { |a, b ... c| };
+		var arguments = [[true, true], [true, false], [false, true], [false, false]];
+		var strings = arguments.collect { |pair|
+			function.def.argumentString(withDefaultValues: pair[0], withEllipsis: pair[1])
+		};
+		var results = [
+			"a, b ... c",
+			"a, b, c",
+			"a, b ... c",
+			"a, b, c"
+		];
+		strings.do { |x, i|
+			this.assertEquals(x, results[i], "argument string should match")
+		}
+	}
+	test_argumentString_with_ellipsis_andDefaultArguments {
+		var function = { |a = 1, b ... c| };
+		var arguments = [[true, true], [true, false], [false, true], [false, false]];
+		var strings = arguments.collect { |pair|
+			function.def.argumentString(withDefaultValues: pair[0], withEllipsis: pair[1])
+		};
+		var results = [
+			"a = 1, b ... c",
+			"a = 1, b, c",
+			"a, b ... c",
+			"a, b, c"
+		];
+		strings.do { |x, i|
+			this.assertEquals(x, results[i], "argument string should match")
+		}
+	}
+
 
 }
 
