@@ -480,7 +480,6 @@ FunctionDef {
 			varArgName = pairs.keep(-2).first;
 			pairs = pairs.drop(-2);
 		};
-
 		lastIndex = pairs.lastIndex;
 		pairs.pairsDo { |name, defaultValue, i|
 			res = res ++ name;
@@ -493,7 +492,11 @@ FunctionDef {
 			if(withEllipsis) {
 				res = res ++ " ... " ++ varArgName
 			} {
-				res = res ++ ", " ++ varArgName
+				if(res == "") {
+					res = res ++ varArgName
+				} {
+					res = res ++ ", " ++ varArgName
+				}
 			}
 		};
 		^res
