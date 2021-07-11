@@ -94,6 +94,26 @@ TestFunction : UnitTest {
 			this.assertEquals(x, results[i], "argument string should match")
 		}
 	}
+
+	test_argumentString_with_single_ellipsisArguments {
+		var function = { | ... a| };
+		var arguments = [[true, true], [true, false], [false, true], [false, false]];
+		var strings = arguments.collect { |pair|
+			function.def.argumentString(withDefaultValues: pair[0], withEllipsis: pair[1])
+		};
+		var results = [
+			" ... a",
+			"a",
+			" ... a",
+			"a"
+		];
+		strings.do { |x, i|
+			x.postcs;
+			this.assertEquals(x, results[i], "argument string should match")
+		}
+	}
+
+
 	test_argumentString_with_ellipsis_andDefaultArguments {
 		var function = { |a = 1, b ... c| };
 		var arguments = [[true, true], [true, false], [false, true], [false, false]];
@@ -109,6 +129,33 @@ TestFunction : UnitTest {
 		strings.do { |x, i|
 			this.assertEquals(x, results[i], "argument string should match")
 		}
+	}
+
+	test_envirFlop {
+		var envir = Environment.new;
+		var function, flopFunction, result, directResult;
+		envir.use {
+			~x = [1, 2];
+			~y = [10, 100, 1000];
+		};
+		function = { |x, y ... z|
+			if(x > 1) { x * y } { 0 }
+		};
+		flopFunction = function.envirFlop;
+		envir.use {
+			result = flopFunction.valueEnvir;
+		};
+		directResult = [ 0, 200, 0 ];
+		this.assertEquals(result, directResult, "envirFlop should work in environment")
+
+	}
+
+
+	test_envirFlop_ellipsis {
+		var function = { |a, b ... c| [a, b, c] }.envirFlop;
+		var result = function.(1, [2, 3], [4, 5], [6, 7]);
+		var directResult = [ [ 1, 2, 4, 6 ], [ 1, 3, 5, 7 ] ];
+		this.assertEquals(result, directResult, "envirFlop should work with ellipsis arguments")
 	}
 
 
