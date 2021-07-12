@@ -518,3 +518,6 @@ code::
 ~def.specs.amp.postln;
 )
 ::
+
+subsection:: SynthDef issues
+Some insights about common SynthDef issues can be found on the WIKI link::https://github.com/supercollider/supercollider/wiki/Errors-FAQ#synthdef-issues::

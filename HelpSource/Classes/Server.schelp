@@ -774,3 +774,6 @@ argument:: numChannels
 Number of channels to send to BelaScope, starting from the index supplied. Defaults to 2, or to link::Classes/ServerOptions#-numOutputBusChannels:: if index is 0.
 
 returns:: A link::Classes/Synth::, linking this Server's desired bus channels to BelaScope's bus.
+
+subsection:: Server issues
+Some insights about common Server issues can be found on the WIKI link::https://github.com/supercollider/supercollider/wiki/Errors-FAQ#server-issues::

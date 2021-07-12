@@ -391,3 +391,6 @@ Routine{
 ::
 
 As mentioned above, using the GUI system is also not allowed in code performed directly in response to OSC messages (this includes functions given to all kinds of OSC responder classes). The same solutions as above apply:
+
+subsection:: GUI issues
+Some insights about common GUI issues can be found on the WIKI link::https://github.com/supercollider/supercollider/wiki/Errors-FAQ#calling-gui-primitives-from-a-systemclock-routine::
