@@ -72,7 +72,7 @@ def main(version: Version):
         "Have you updated CHANGELOG.md with information about merged PRs?",
         "Have you updated CHANGELOG.md with information about platform support changes?",
 
-        f"Have you made sure the schelp file '{schelp_news_page_title}' is up to date with the changelog by running the conversion script?", # XXX where is the script?
+        f"Have you made sure the schelp file '{schelp_news_page_title}' is up to date with the changelog by running the conversion script (`package/changelog_to_schelp.sh`)?",
         f"Have you made sure HelpSource/Help.schelp points to the latest '{schelp_news_page_title}' schelp file?",
         ["If this is a proper release, have you updated the release history in CHANGELOG.md?", f"https://github.com/supercollider/supercollider/blob/{release_branch_name}/CHANGELOG.md#change-log"],
         "If this is a proper release, have you merged the current release branch into main with git merge --no-ff?",
