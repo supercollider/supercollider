@@ -240,16 +240,19 @@ Function : AbstractFunction {
 		^{ |... args| args.flop.collect(this.valueArray(_)) }
 	}
 
-
-	envirFlop {
-		var func = this.makeFlopFunc;
-		^{ |... args|
-			func.valueArrayEnvir(args).collect(this.valueArray(_))
-		}
+	flopInterpret {
+		var code = this.makeFlopFuncString({ |str|
+			"%.collect { |item| func.valueArray(item) }".format(str)
+		});
+		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
-	makeFlopFuncString {
-		var functionBlock, valueBlock, i, callBlock, argBlock, singleArgument;
+	envirFlop {
+		^this.flopInterpret
+	}
+
+	makeFlopFuncString { |modifier|
+		var functionBlock, valueBlock, callBlock, argBlock, singleArgument, i;
 		if(def.argNames.isNil) { ^this };
 
 		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
@@ -269,8 +272,9 @@ Function : AbstractFunction {
 		} {
 			functionBlock = "[%].flop".format(valueBlock)
 		};
+		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
 
-		^"#{ arg %; % }".format(argBlock, functionBlock);
+		^"{ arg %; % }".format(argBlock, functionBlock);
 	}
 
 	makeFlopFunc {
