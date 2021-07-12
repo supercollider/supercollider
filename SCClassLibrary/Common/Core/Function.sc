@@ -249,29 +249,28 @@ Function : AbstractFunction {
 	}
 
 	makeFlopFuncString {
-		var ellipsisArgName, valueBlock, i, argBlock, singleArgument;
+		var functionBlock, valueBlock, i, callBlock, argBlock, singleArgument;
 		if(def.argNames.isNil) { ^this };
 
 		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
 		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
 
 		if(def.varArgs) { // ellipsis arguments
-			i = valueBlock.findBackwards(" ");
-			singleArgument = i.isNil; // just one argument, no space
-			if(singleArgument) {
-				ellipsisArgName = valueBlock;
-				valueBlock = "%.flop".format(valueBlock)
+			if(def.argNames.size == 1) { // single ellipsis like { |...args| }
+				functionBlock = "%.flop".format(valueBlock)
 			} {
-				ellipsisArgName = valueBlock[i + 1..];
-				valueBlock = valueBlock[..i];
-				valueBlock = "([% %.flop]).flop".format(valueBlock, ellipsisArgName)
-			};
-
+				i = valueBlock.findBackwards(" ");
+				callBlock =
+				"\nvar res = [%], ell = %;\n"
+				"if(ell.notNil) { res = res.add(ell.flop) };\n"
+				"res.flop\n";
+				functionBlock = callBlock.format(valueBlock[..i], valueBlock[i + 1..])
+			}
 		} {
-			valueBlock = "[%].flop".format(valueBlock)
+			functionBlock = "[%].flop".format(valueBlock)
 		};
 
-		^"#{ arg %; % }".format(argBlock, valueBlock);
+		^"#{ arg %; % }".format(argBlock, functionBlock);
 	}
 
 	makeFlopFunc {

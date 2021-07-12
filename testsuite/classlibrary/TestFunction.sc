@@ -131,21 +131,19 @@ TestFunction : UnitTest {
 		}
 	}
 
-	test_envirFlop {
+	test_makeFlopFunc_inEnvir {
 		var envir = Environment.new;
 		var function, flopFunction, result, directResult;
 		envir.use {
-			~x = [1, 2];
-			~y = [10, 100, 1000];
+			~x = [1, 10];
+			~y = [2, 20, 200];
 		};
-		function = { |x, y ... z|
-			if(x > 1) { x * y } { 0 }
-		};
+		function = { |x, y| x + y };
 		flopFunction = function.envirFlop;
 		envir.use {
 			result = flopFunction.valueEnvir;
 		};
-		directResult = [ 0, 200, 0 ];
+		directResult = [ 3, 30, 201 ];
 		this.assertEquals(result, directResult, "envirFlop should work in environment")
 
 	}
@@ -170,6 +168,13 @@ TestFunction : UnitTest {
 		var result = function.(1, [2, 3], [4, 5], [6, 7]);
 		var directResult = [ [ 1, 2, [ 4, 6 ] ], [ 1, 3, [ 5, 7 ] ] ];
 		this.assertEquals(result, directResult, "makeFlopFunc should work with ellipsis arguments")
+	}
+
+	test_makeFlopFunc_ellipsis_nothingPassed {
+		var function = { |a, b ... c| [a, b, c] }.makeFlopFunc;
+		var result = function.(1, [2, 3]);
+		var directResult = [ [ 1, 2, [ ]], [ 1, 3, [ ]]];
+		this.assertEquals(result, directResult, "makeFlopFunc should work with ellipsis when nothing has been passed to it")
 	}
 
 
