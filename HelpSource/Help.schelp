@@ -19,9 +19,10 @@ These are useful starting points for getting help on SuperCollider:
 definitionlist::
 ## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series:: || Get started with SuperCollider
 ## link::Guides/Glossary:: || Glossary
-## link::Guides/ClientVsServer:: || Explaining the client vs server architecture.
+## link::Guides/ClientVsServer:: || Explaining the client vs server architecture
 ## link::Guides/More-On-Getting-Help:: || How to find more help
-## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials."
+## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
+## link::Guides/UserFAQ:: || Common Errors and FAQ
 ::
 
 SECTION::Documentation indexes

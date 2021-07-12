@@ -11,6 +11,8 @@ The SynthDef class encapsulates the client-side representation of a given def, a
 
 SynthDef is one of the more complicated classes in SC and an exhaustive explanation of it is beyond the scope of this document. As such, the examples at the bottom of this document and those found in the various tutorials accessible from link::Help:: may be necessary to make some aspects of its use clear.
 
+Some insights about common SynthDef issues can be found on the FAQ link::Guides/UserFAQ#SynthDef Issues#SynthDef Issues::
+
 subsection:: UGen Graph Functions and Special Argument Forms
 
 The core of a def is its link::Classes/UGen##unit generator:: graph function.
