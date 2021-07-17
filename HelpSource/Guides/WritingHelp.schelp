@@ -6,6 +6,8 @@ related:: Reference/SCDocSyntax, Classes/SCDoc
 section:: Writing new help
 The simplest way is to look at an existing help file or class document, and read this document and link::Reference/SCDocSyntax::
 
+note:: The help files should use UTF-8 encoding! ::
+
 All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. See link::Reference/SCDocSyntax#Header tags::
 
 In the header, you should must specify the title, summary and categories parts of the header.
