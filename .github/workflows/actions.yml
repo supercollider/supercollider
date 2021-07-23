@@ -155,7 +155,7 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          cmake $EXTRA_CMAKE_FLAGS -DSC_EL=ON -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
+          cmake $EXTRA_CMAKE_FLAGS -DSC_VIM=ON -DSC_ED=ON -DSC_QT=ON -DSC_IDE=ON  -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_PATH -DCMAKE_BUILD_TYPE=Release .. # --debug-output
       - name: build
         run: |
           cd $BUILD_PATH
