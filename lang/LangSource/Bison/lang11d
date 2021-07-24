@@ -129,8 +129,16 @@ funcbody	: funretval
 				{ $$ = (intptr_t)newPyrDropNode((PyrParseNode*)$1, (PyrParseNode*)$2); }
 			;
 
-cmdlinecode	: '(' funcvardecls1 funcbody ')'
+cmdlinecode	: '(' argdecls1 funcvardecls1 funcbody ')'
+				{ $$ = (intptr_t)newPyrBlockNode((PyrArgListNode*)$2, (PyrVarListNode*)$3, (PyrParseNode*)$4, false); }
+			| '(' argdecls1 funcbody ')'
+				{ $$ = (intptr_t)newPyrBlockNode((PyrArgListNode*)$2, NULL, (PyrParseNode*)$3, false); }
+			| '(' funcvardecls1 funcbody ')'
 				{ $$ = (intptr_t)newPyrBlockNode(NULL, (PyrVarListNode*)$2, (PyrParseNode*)$3, false); }
+			| argdecls1 funcvardecls1 funcbody
+				{ $$ = (intptr_t)newPyrBlockNode((PyrArgListNode*)$1, (PyrVarListNode*)$2, (PyrParseNode*)$3, false); }
+			| argdecls1 funcbody
+				{ $$ = (intptr_t)newPyrBlockNode((PyrArgListNode*)$1, NULL, (PyrParseNode*)$2, false); }
 			| funcvardecls1 funcbody
 				{ $$ = (intptr_t)newPyrBlockNode(NULL, (PyrVarListNode*)$1, (PyrParseNode*)$2, false); }
 			| funcbody
@@ -1338,6 +1346,25 @@ argdecls	: { $$ = 0; }
 					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
 				}
 			;
+
+argdecls1	: ARG vardeflist ';'
+				{
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL);
+				}
+			| ARG vardeflist0 ELLIPSIS name ';'
+				{
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
+				}
+			| '|' slotdeflist '|'
+				{
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, NULL);
+				}
+			| '|' slotdeflist0 ELLIPSIS name '|'
+				{
+					$$ = (intptr_t)newPyrArgListNode((PyrVarDefNode*)$2, (PyrSlotNode*)$4);
+				}
+			;
+
 
 constdeflist	: constdef
 				| constdeflist optcomma constdef
