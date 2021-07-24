@@ -33,7 +33,7 @@ extern LongStack generatorStack;
 
 
 %}
-%error-verbose
+%define parse.error verbose
 %%
 
 root	: classes
