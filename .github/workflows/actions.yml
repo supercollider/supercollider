@@ -1,5 +1,17 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
 jobs:
   lint:
     runs-on: ubuntu-18.04
@@ -469,14 +481,14 @@ jobs:
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
           retention-days: 7 # quickly remove test artifacts
       - name: create installer
-        if: matrix.create-installer == 'true'
+        if: matrix.create-installer == true
         shell: bash
         run: |
           export PATH="C:\Program Files (x86)\NSIS":$PATH
           cmake --build $BUILD_PATH --config Release --target installer
       - name: upload installer
         uses: actions/upload-artifact@v2
-        if: matrix.create-installer == 'true'
+        if: matrix.create-installer == true
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
@@ -688,8 +700,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
