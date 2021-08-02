@@ -41,9 +41,9 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
-- 3.12: 2020-07-25
+- 3.12: 2020-08-02
 
-3.12.0-rc2 (2021-07-25)
+3.12.0 (2021-08-02)
 ===================
 
 The 3.12.0 release brings new features, countless bugfixes, as well as project and documentation updates. See the [repository](https://github.com/supercollider/supercollider) for all the changes. A big thank you to all developers for your contributions!
