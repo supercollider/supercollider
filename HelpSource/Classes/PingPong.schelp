@@ -31,7 +31,7 @@ argument::rotate
 
 Which rotates the inputArray by one step. (left → right, right →
 left). Rotation of 0 (or 2) would result in no rotation to the
-inputArray.
+inputArray. You cannot modulate this number by assigning it to a control in a SynthDef.
 
 
 Examples::
