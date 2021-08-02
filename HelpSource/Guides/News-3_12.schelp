@@ -57,6 +57,8 @@ Supernova on macOS: avoid resampling when talking to audio hardware  (#4477)
 section::  scsynth and supernova: Fixed
 Servers not booting on Windows if some system logs are missing (#5393)
 
+macOS builds include a custom build of libsndfile to support older macOS versions (#5518) 
+
 section::  UGens: Fixed
 PanAz: initialize amps in Ctor (#4973)
 EnvGen fixes (#5217, #4921, #4793)
