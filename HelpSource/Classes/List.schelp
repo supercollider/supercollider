@@ -216,11 +216,18 @@ List[1, 2, 3, 4].mirror2.postln;
 
 method::stutter
 Return a new List whose elements are repeated strong::n:: times. The receiver is unchanged.
+note::It is recommended to use code::dupEach:: instead. This method is retained for backwards compatibility.::
 code::
 List[1, 2, 3].stutter(2).postln;
 ::
 
-rotate
+method::dupEach
+Return a new List whose elements are repeated strong::n:: times. The receiver is unchanged.
+code::
+List[1, 2, 3].dupEach(2).postln;
+::
+
+method::rotate
 Return a new List whose elements are in rotated order. Negative strong::n:: values rotate left, positive strong::n:: values rotate right. The receiver is unchanged.
 code::
 List[1, 2, 3, 4, 5].rotate(1).postln;

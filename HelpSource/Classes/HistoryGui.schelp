@@ -26,7 +26,7 @@ code::
 h = History([
 	[0, \me, "1+2"],
 	[1, \me, "3+5"], [1.234, \you, "q = q ? ();"],
-	[3, \her, "\"Herstory\".speak"]
+	[3, \they, "\"The story\".speak"]
 ]);
 // make a gui for it
 g = h.makeWin(0@20);
@@ -140,7 +140,7 @@ code::
 h = History([
 	[0, \me, "1+2"],
 	[1, \me, "3+5"], [1.234, \you, "q = q ? ();"],
-	[3, \her, "\"Herstory\".speak"]
+	[3, \they, "\"The story\".speak"]
 ]);
 // make a gui for it
 g = h.makeWin(0@20);

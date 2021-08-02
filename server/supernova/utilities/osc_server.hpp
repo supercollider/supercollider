@@ -21,7 +21,12 @@
 #include <thread>
 
 // AppleClang workaround
-#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#if defined(__apple_build_version__) && __apple_build_version__ > 10000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
+// libc++ workaround
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 7000 && _LIBCPP_VERSION < 9000
 #    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
 #endif
 

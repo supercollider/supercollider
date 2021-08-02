@@ -1011,7 +1011,7 @@ bool MainWindow::save(Document* doc, bool forceChoose, bool saveInExtensionFolde
                 save_path.append(".scd");
                 QFileInfo save_path_info(save_path);
                 if (save_path_info.exists()) {
-                    QString msg = tr("Extenstion \".scd\" was automatically added to the "
+                    QString msg = tr("Extension \".scd\" was automatically added to the "
                                      "selected file name, but the file \"%1\" already exists.\n\n"
                                      "Do you wish to overwrite it?")
                                       .arg(save_path_info.fileName());
@@ -1097,8 +1097,8 @@ void MainWindow::restoreDocuments() {
     if (docMng->needRestore()) {
         QString msg = tr("Supercollider didn't quit properly last time\n"
                          "Do you want to restore files saved as temporary backups?");
-        QMessageBox::StandardButton restore =
-            QMessageBox::warning(mInstance, tr("Restore files?"), msg, QMessageBox::Yes | QMessageBox::No);
+        QMessageBox::StandardButton restore = QMessageBox::warning(
+            mInstance, tr("Restore files?"), msg, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
         if (restore == QMessageBox::Yes)
             docMng->restore();
         else

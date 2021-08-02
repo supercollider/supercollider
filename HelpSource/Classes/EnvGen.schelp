@@ -9,7 +9,8 @@ Description::
 Plays back break point envelopes. The envelopes are instances of the
 link::Classes/Env:: class. The envelope and the arguments for  code::levelScale::,
 code::levelBias::, and  code::timeScale:: are polled when the EnvGen is
-triggered and remain constant for the duration of the envelope.
+triggered, and at the start of a new envelope segment. All values remain constant
+for the duration of each segment.
 
 code::
 { PinkNoise.ar(EnvGen.kr(Env.perc, doneAction: Done.freeSelf)) }.play
@@ -27,7 +28,7 @@ An link::Classes/Env:: instance, or an Array of Controls.
 (See link::Classes/Control::  and the example below for how to use
 this.)
 
-The envelope is polled when the EnvGen is triggered. The Env inputs can be other UGens.
+The envelope is polled when the EnvGen is triggered, and at the start of a new envelope segment. The Env inputs can be other UGens.
 
 
 argument::gate
@@ -199,7 +200,7 @@ Synth(\help_Env_newClear, [\gate, 1, \env, Env({ rrand(60, 70).midicps } ! 4, [1
 subsection:: Forced release
 If the gate of an EnvGen is set to -1 or below, then the envelope will cutoff immediately.
 The time for it to cutoff is the amount less than -1, with -1 being as fast as possible, -1.5 being a cutoff in 0.5 seconds, etc.
-The cutoff shape is linear.
+The cutoff shape and final value are read from the Env's last node.
 code::
 (
 SynthDef(\stealMe, { |out, gate = 1|
@@ -219,6 +220,25 @@ If the synthDef has an arg named "gate", the convenience method of Node can be u
 code::
 d = { arg gate=1; {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf) }.play;
 d.release(3);
+::
+
+Forced release ignores multi-node release stages, always performing a one-node release,
+reading curve and end value from the Env's last node, and overwriting its duration.
+
+code::
+(
+// a Synth with a multi-node release stage
+d = { arg gate=1;
+	var env = Env([0,1,0,0.5,0],0.5,-4,releaseNode:1);
+	{BrownNoise.ar}.dup * EnvGen.kr(env, gate, doneAction: Done.freeSelf)
+}.play;
+)
+// forced release in 2 seconds:
+// end value (0) and shape (-4) are read from the env's last node, nodes 2 and 3 are skipped
+d.release(2);
+
+// without releaseTime: normal release stage, as defined in env (3 nodes)
+d.release();
 ::
 
 subsection:: Fast triggering tests

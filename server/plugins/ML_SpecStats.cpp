@@ -199,7 +199,7 @@ void SpecPcile_Ctor(SpecPcile* unit) {
     unit->m_interpolate = ZIN0(2) > 0.f;
 
     ZOUT0(0) = unit->outval = 0.;
-    unit->m_tempbuf = 0;
+    unit->m_tempbuf = nullptr;
 }
 
 void SpecPcile_next(SpecPcile* unit, int inNumSamples) {

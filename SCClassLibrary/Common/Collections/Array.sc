@@ -25,8 +25,11 @@ Array[slot] : ArrayedCollection {
 		_ArrayMirror2
 		^this.primitiveFailed
 	}
-	stutter { arg n=2;
-		_ArrayStutter
+	stutter { |n=2|
+		^this.dupEach(n);
+	}
+	dupEach { | n=2 |
+		_ArrayDupEach
 		^this.primitiveFailed
 	}
 	rotate { arg n=1;

@@ -146,8 +146,8 @@ void FFT_Ctor(FFT* unit) {
     if (!FFTBase_Ctor(unit, 5)) {
         SETCALC(FFT_ClearUnitOutputs);
         // These zeroes are to prevent the dtor freeing things that don't exist:
-        unit->m_inbuf = 0;
-        unit->m_scfft = 0;
+        unit->m_inbuf = nullptr;
+        unit->m_scfft = nullptr;
         return;
     }
     int audiosize = unit->m_audiosize * sizeof(float);
@@ -244,7 +244,7 @@ void IFFT_Ctor(IFFT* unit) {
     if (!FFTBase_Ctor(unit, 2)) {
         SETCALC(*ClearUnitOutputs);
         // These zeroes are to prevent the dtor freeing things that don't exist:
-        unit->m_olabuf = 0;
+        unit->m_olabuf = nullptr;
         return;
     }
 
@@ -258,7 +258,7 @@ void IFFT_Ctor(IFFT* unit) {
 
     if (!unit->m_scfft) {
         SETCALC(*ClearUnitOutputs);
-        unit->m_olabuf = 0;
+        unit->m_olabuf = nullptr;
         return;
     }
 

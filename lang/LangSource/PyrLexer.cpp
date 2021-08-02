@@ -2206,8 +2206,6 @@ void shutdownLibrary() {
 
     gLangMutex.unlock();
     deinitPrimitives();
-
-    SC_LanguageConfig::freeLibraryConfig();
 }
 
 SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
@@ -2218,7 +2216,9 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
     gNumCompiledFiles = 0;
     compiledOK = false;
 
-    SC_LanguageConfig::readLibraryConfig(standalone);
+    if (!gLanguageConfig) {
+        SC_LanguageConfig::readLibraryConfig(standalone);
+    }
 
     compileStartTime = elapsedTime();
 

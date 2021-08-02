@@ -271,13 +271,15 @@ For arguments, see link::#-assertException::.
 
 
 method::wait
-Wait for a condition, consider failed after maxTime. Only valid within a test (or a routine).
+Wait for a predicate function to return code::true::. Considers the test failed after code::maxTime::. Only valid within a test (or a routine).
+
+note:: It's best to avoid using this method in tests. See link::Classes/CondVar#-waitFor:: for a better option.::
 
 code::
 (
 {
 	s.reboot;
-	UnitTest.new.wait(s.serverRunning, "server failed to boot in time", 2);
+	UnitTest.new.wait({ s.serverRunning }, "server failed to boot in time", 2);
 }.fork
 )
 ::

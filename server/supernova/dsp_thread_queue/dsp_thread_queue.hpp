@@ -425,7 +425,7 @@ private:
         const int backoff_iterations = 100;
 
         vector<nanoseconds> measured_values;
-        generate_n(back_inserter(measured_values), 16, [] {
+        generate_n(back_inserter(measured_values), 16, [backoff_iterations] {
             backoff b(max_backup_loops, max_backup_loops);
             auto start = high_resolution_clock::now();
 
@@ -490,15 +490,15 @@ private:
     }
 
 public:
-    void tick_master(void) {
+    void tick_main(void) {
         if (yield_if_busy)
-            run_item_master<true>();
+            run_item_main<true>();
         else
-            run_item_master<false>();
+            run_item_main<false>();
     }
 
 private:
-    template <bool YieldBackoff> void run_item_master(void) {
+    template <bool YieldBackoff> void run_item_main(void) {
         run_item<YieldBackoff>(0);
         wait_for_end<YieldBackoff>();
         assert(runnable_items.empty());

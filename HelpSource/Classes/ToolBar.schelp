@@ -1,7 +1,7 @@
 TITLE:: ToolBar
 summary:: An inline button bar populated by MenuActions
 categories:: GUI
-related:: Classes/Menu, Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
+related:: Classes/Menu, Classes/MenuAction, Classes/MainMenu
 
 DESCRIPTION::
 A ToolBar is similar to a link::Classes/Menu::, with several key differences:

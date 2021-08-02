@@ -107,7 +107,7 @@ z.deepCollect(0, f);
 z.deepCollect(1, f);
 z.deepCollect(2, f);
 
-f = {|item| item.stutter };
+f = {|item| item.dupEach };
 z.deepCollect(0, f);
 z.deepCollect(1, f);
 z.deepCollect(2, f);

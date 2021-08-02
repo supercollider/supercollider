@@ -138,7 +138,7 @@ TestAbstractFunction : UnitTest {
 
 		this.assertEquals((dur: Rest(1)).isRest, true, "event with dur = Rest(1) should return true for isRest");
 
-		this.assertEquals((type: \rest).isRest, true, "event with dur = \rest should return true for isRest");
+		this.assertEquals((type: \rest).isRest, true, "event with dur = \\rest should return true for isRest");
 
 		this.assertEquals((degree: \).isRest, true, "event with an empty symbol as dur should return true for isRest");
 
@@ -168,5 +168,22 @@ TestAbstractFunction : UnitTest {
 
 	}
 
+	test_lazy_equals_operator_returns_right_class {
+		[
+			Pwhite(1, 10, inf) -> Pbinop,
+			SinOsc.ar -> BinaryOpUGen
+		].do { |assn|
+			this.assertEquals(
+				(assn.key |==| 1).class,
+				assn.value,
+				"'% |==| 1' should return a composed operator".format(assn.key.asCompileString)
+			);
+			this.assertEquals(
+				(1 |==| assn.key).class,
+				assn.value,
+				"'1 |==| %' should return a composed operator".format(assn.key.asCompileString)
+			)
+		};
+	}
 }
 

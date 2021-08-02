@@ -110,6 +110,10 @@ returns:: this
 METHOD:: version
 returns:: String
 
+METHOD:: branch
+returns the current branch name.
+returns:: String or nil, if failed
+
 METHOD:: tags
 returns:: Array of Strings
 

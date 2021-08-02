@@ -1,3 +1,31 @@
+<!-- 
+Changelog entry template:
+
+3.xx.x (202x-xx-xx)
+===================
+
+### General: Added
+### General: Changed
+### General: Fixed
+### sclang: Added
+### sclang: Changed
+### sclang: Fixed
+### Class library: Added
+### Class library: Changed
+### Class library: Deprecated
+### Class library: Fixed
+### scsynth and supernova: Added
+### scsynth and supernova: Changed
+### scsynth and supernova: Fixed
+### UGens: Added
+### UGens: Changed
+### UGens: Deprecated
+### UGens: Fixed
+### IDE: Added
+### IDE: Changed
+### IDE: Fixed
+-->
+
 # Change Log
 
 Release dates of 3.x versions:
@@ -13,6 +41,75 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
+- 3.12: 2020-08-02
+
+3.12.0 (2021-08-02)
+===================
+
+The 3.12.0 release brings new features, countless bugfixes, as well as project and documentation updates. See the [repository](https://github.com/supercollider/supercollider) for all the changes. A big thank you to all developers for your contributions!
+
+Change log highlights:
+
+### General: Added
+Supernova on Windows ([#4763](https://github.com/supercollider/supercollider/pull/4763))
+
+Bela support ([#5295](https://github.com/supercollider/supercollider/pull/5295))
+
+macOS Big Sur support ([#5298](https://github.com/supercollider/supercollider/pull/5298), [#5356](https://github.com/supercollider/supercollider/pull/5356))
+
+### General: Changed
+Bigger build matrix add CI jobs to implement platform support RFC ([#4906](https://github.com/supercollider/supercollider/pull/4906))
+ 
+Updated portaudio submodule ([#4925](https://github.com/supercollider/supercollider/pull/4925))
+
+Implement [RFC 10](https://github.com/supercollider/rfcs/pull/10): Replace oppressive terminology with more accurate alternatives ([#5251](https://github.com/supercollider/supercollider/issues/5251), [#5424](https://github.com/supercollider/supercollider/pull/5424), [#5470](https://github.com/supercollider/supercollider/pull/5470))
+
+Increase required C++ standard to C++17 ([#5396](https://github.com/supercollider/supercollider/pull/5396))
+
+Move CI from Travis/AppVeyor to GitHub Actions ([#5261](https://github.com/supercollider/supercollider/issues/5261), [#5273](https://github.com/supercollider/supercollider/pull/5273) [#5371](https://github.com/supercollider/supercollider/pull/5371), [#5377](https://github.com/supercollider/supercollider/pull/5377))
+
+Run TestSuite in CI ([#5332](https://github.com/supercollider/supercollider/pull/5332))
+
+### sclang: Changed
+Exclude default paths: change from command line parameter to language file flag ([#3733](https://github.com/supercollider/supercollider/pull/3733))
+
+### sclang: Fixed
+MIDI realtime messages: Push correct number of values onto the stack ([#5200](https://github.com/supercollider/supercollider/pull/5200))
+
+### Class library: Added
+Fuzzy equals add fuzzy array comparisons ([#4468](https://github.com/supercollider/supercollider/pull/4468))
+
+`String -runInTerminal` on Windows ([#4882](https://github.com/supercollider/supercollider/pull/4882))
+
+Provide suggestions on `method not found`: ([#4866](https://github.com/supercollider/supercollider/pull/4929))
+
+Add "lazy equality" |==| operator ([#5183](https://github.com/supercollider/supercollider/pull/5183))
+
+New class: CondVar ([#5436](https://github.com/supercollider/supercollider/pull/5436), [#5448](https://github.com/supercollider/supercollider/pull/5448), [#5456](https://github.com/supercollider/supercollider/pull/5456))
+
+### Class library: Fixed
+Various UnitTest fixes ([#5461](https://github.com/supercollider/supercollider/pull/5461), [#5457](https://github.com/supercollider/supercollider/pull/5457))
+
+### scsynth and supernova: Added
+Clip values on hardware out busses (macOS) ([5110](https://github.com/supercollider/supercollider/pull/5110), [#5454](https://github.com/supercollider/supercollider/pull/5454))
+
+### scsynth and supernova: Changed
+Supernova bind to the specified address ([#5474](https://github.com/supercollider/supercollider/pull/5474))
+
+Supernova on macOS: avoid resampling when talking to audio hardware  ([#4477](https://github.com/supercollider/supercollider/pull/4477))
+
+### scsynth and supernova: Fixed
+Servers not booting on Windows if some system logs are missing ([#5393](https://github.com/supercollider/supercollider/pull/5393))
+
+macOS builds include a custom build of libsndfile to support older macOS versions ([#5518](https://github.com/supercollider/supercollider/pull/5518)) 
+
+### UGens: Fixed
+PanAz: initialize amps in Ctor ([#4973](https://github.com/supercollider/supercollider/pull/4973))
+EnvGen fixes ([#5217](https://github.com/supercollider/supercollider/pull/5217), [#4921](https://github.com/supercollider/supercollider/pull/4921), [#4793](https://github.com/supercollider/supercollider/pull/4793))
+
+### IDE: Fixed
+Classname highlighting before introspection is available ([#5438](https://github.com/supercollider/supercollider/pull/5438))
+
 
 3.11.2 (2020-11-15)
 ===================

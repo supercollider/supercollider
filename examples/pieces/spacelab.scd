@@ -121,8 +121,8 @@ s.boot;
 (
 	~numChannels = 9;
 
-	~master = Bus.audio(s, 2);
-	~masterAmp = Bus.control(s, 1);
+	~main = Bus.audio(s, 2);
+	~mainAmp = Bus.control(s, 1);
 
 	~numChannels.do { | i |
 		("ch" ++ i).asSymbol.envirPut(Bus.audio(s, 2));
@@ -141,9 +141,9 @@ s.boot;
 	~fxGroup = Group.new;
 	~synthGroup = Group.new;
 
-	~masterFader = Synth(\fader, [\out, 0, \in, ~master], ~mixGroup);
+	~mainFader = Synth(\fader, [\out, 0, \in, ~main], ~mixGroup);
 	~numChannels.do { | i |
-		("fader" ++ i).asSymbol.envirPut(Synth(\fader, [\out, ~master, \in, ("ch" ++ i).asSymbol.envirGet], ~mixGroup));
+		("fader" ++ i).asSymbol.envirPut(Synth(\fader, [\out, ~main, \in, ("ch" ++ i).asSymbol.envirGet], ~mixGroup));
 	};
 
 	~ch3ins01 = Synth(\delay, [\bus, ~ch3, \mix, -0.8], ~fxGroup);
@@ -153,10 +153,10 @@ s.boot;
 	~ch7ins01 = Synth(\delay, [\bus, ~ch7, \mix, -0.8], ~fxGroup);
 	~ch8ins01 = Synth(\delay, [\bus, ~ch8, \mix, -0.5], ~fxGroup);
 
-	~masterFader.map(\amp, ~masterAmp);
+	~mainFader.map(\amp, ~mainAmp);
 	~numChannels.do { | i | ("fader" ++ i).asSymbol.envirGet.map(\amp, ("chAmp" ++ i).asSymbol.envirGet) };
 
-	~masterAmp.value = 1;
+	~mainAmp.value = 1;
 	~chAmp0.value = 0.7;
 	~chAmp1.value = 0.3;
 	~chAmp2.value = 0.15;
@@ -494,9 +494,9 @@ s.boot;
 		\group, ~mixGroup.nodeID
 	);
 
-	~masterFaderAuto = Pbind(
+	~mainFaderAuto = Pbind(
 		\instrument, \sinenv,
-		\bus, ~masterAmp,
+		\bus, ~mainAmp,
 		[\freq, \dur, \val, \time], Pseq([[\, 560, 0, 0], [0, 1, 0, 16]]),
 		\group, ~mixGroup.nodeID
 	);
@@ -536,13 +536,13 @@ s.boot;
 				~vamp2,
 				~vamp2
 			]),
-			Ppar([~fader8auto, ~masterFaderAuto])
+			Ppar([~fader8auto, ~mainFaderAuto])
 		]).play;
 	});
 )
 
-~masterFader.set(\mute, 0);
-~masterFader.set(\mute, 1);
+~mainFader.set(\mute, 0);
+~mainFader.set(\mute, 1);
 
 
 // Clean up //

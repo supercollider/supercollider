@@ -29,6 +29,7 @@ TestArray : UnitTest {
 			\mirror1,
 			\mirror2,
 			\stutter,
+			\dupEach,
 			\rotate,
 			\pyramid,
 			\pyramidg,
@@ -186,6 +187,123 @@ TestArray : UnitTest {
 		}
 	}
 
+	// ----- editDistance and similarity --------------------------------------------
+
+	test_editDistance_emptyThis_isSizeThat {
+		var result = [].editDistance([0,1,2,3]);
+		this.assertEquals(result, 4);
+	}
+
+	test_editDistance_emptyThat_isSizeThis {
+		var result = [0,1,2,3].editDistance([]);
+		this.assertEquals(result, 4);
+	}
+
+	test_editDistance_emptyThis_emptyThat_isZero {
+		var result = [].editDistance([]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_differentTypes_isOk {
+		var result = [0,1,2,3].editDistance([\a,\b,\c,\d]);
+		this.assertEquals(result, 4);
+	}
+
+	test_editDistance_mixedTypes_isOk {
+		var result = [0,1,2,3].editDistance([0,"hello",2,3]);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_countsSubstitution {
+		var result = [0,1,2,3].editDistance([0,1,0,3]);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_countsAddition {
+		var result = [0,1,2,3].editDistance([0,1,2,3,4]);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_countsRemoval {
+		var result = [0,1,2,3].editDistance([0,1,2]);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_countsChanges {
+		var result = [0,1,2,3].editDistance([4,5,6,7,8]);
+		var expected = 5; // 0:4, 1:5, 2:6, 3:8, addition:8
+
+		this.assertEquals(result, expected);
+	}
+
+	test_editDistance_rawIntArraysSameType {
+		var result = Int8Array[0, 1].editDistance(Int8Array[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_rawIntArraysDifferentTypes {
+		var result = Int8Array[0, 1].editDistance(Int16Array[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_rawIntArrayAndArray {
+		var result = Int8Array[0, 1].editDistance(Array[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_arrayAndLinkedList {
+		var result = Array[0, 1].editDistance(LinkedList[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_listAndLinkedList {
+		var result = List[0, 1].editDistance(LinkedList[0, 1]);
+		this.assertEquals(result, 0);
+	}
+
+	test_editDistance_rawArrayAndPolymorphicArray {
+		var result = Int8Array[0, 1].editDistance(Array[0, \x]);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_nilCompareFunc_testsIdentityForRawArrays {
+		this.assertEquals(Array["a", "b"].editDistance(Array["a", "b"]), 2);
+		this.assertEquals(Array[\a, \b].editDistance(Array[\a, \b]), 0);
+	}
+
+	test_editDistance_nilCompareFunc_testsIdentityForLists {
+		// we also want to check that non-raw arrays use identity comparison by default
+		this.assertEquals(List["a", "b"].editDistance(List["a", "b"]), 2);
+		this.assertEquals(List[\a, \b].editDistance(List[\a, \b]), 0);
+	}
+
+	test_editDistance_usesCompareFuncForRawArrays {
+		var result = Array["a", "b"].editDistance(Array["a", "c"], _ == _);
+		this.assertEquals(result, 1);
+	}
+
+	test_editDistance_usesCompareFuncForLists {
+		var result = List["a", "b"].editDistance(List["a", "c"], _ == _);
+		this.assertEquals(result, 1);
+	}
+
+	test_similarity_emptyThis_emptyThat_isOne {
+		var result = [].similarity([]);
+		var expected = 1; // they're the same, even though they're empty
+
+		this.assertEquals(result, expected);
+	}
+
+	test_similarity_same_isOne {
+		var result = [0,1,2,3].similarity([0,1,2,3]);
+		this.assertEquals(result, 1);
+	}
+
+	test_similarity_different_isZero {
+		var result = [0,1,2,3].similarity([4,5,6,7]);
+		this.assertEquals(result, 0);
+	}
+
 	// ----- mirror, mirror1, mirror2 --------------------------------------------
 
 	test_mirror_onEmptyArray_sizeIsZero { this.assertEquals([].mirror.size, 0); }
@@ -208,11 +326,11 @@ TestArray : UnitTest {
 	}
 
 	test_mirror_oneElementArray_result { this.assertEquals([1].mirror, [1]); }
-	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, []); }
+	test_mirror1_oneElementArray_result { this.assertEquals([1].mirror1, [1]); }
 	test_mirror2_oneElementArray_result { this.assertEquals([1].mirror2, [1, 1]); }
 
 	test_mirror_oneElementArray_size { this.assertEquals([1].mirror.size, 1); }
-	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 0); }
+	test_mirror1_oneElementArray_size { this.assertEquals([1].mirror1.size, 1); }
 	test_mirror2_oneElementArray_size { this.assertEquals([1].mirror2.size, 2); }
 
 	test_mirror_twoElementArray_result { this.assertEquals([1, 2].mirror, [1, 2, 1]); }
@@ -392,6 +510,4 @@ TestArrayLace : UnitTest {
 		this.assertEquals(result, [1, 4, 7, 2, 5, 8, 3, 6, 9],
 			"lace: sublists should lace just like arrays do");
 	}
-
-
 } // End class

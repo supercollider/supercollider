@@ -83,9 +83,10 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-set_property(TARGET libsupernova PROPERTY CXX_STANDARD 14)
-
-
+if(CMAKE_COMPILER_IS_CLANG AND CMAKE_CXX_COMPILER_VERSION MATCHES "^[456]\\.")
+    message(STATUS "clang version is 4, 5, or 6, linking to libatomic")
+    target_link_libraries(libsupernova atomic)
+endif()
 if(NOT WIN32)
   set_property(TARGET libsupernova
                PROPERTY OUTPUT_NAME supernova)
@@ -125,29 +126,46 @@ else()
   endif()
 endif()
 
-if(APPLE OR MSYS)
-    find_package(Portaudio)
-    if(NOT PORTAUDIO_FOUND)
-        message(FATAL_ERROR "Portaudio missing")
-    endif()
-    target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
-    target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
-    target_link_libraries(libsupernova ${PORTAUDIO_LIBRARIES})
-elseif (WIN32)
-    target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND -DPORTAUDIO_BACKEND)
-    target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
-    if(MSYS)
-        target_link_libraries(libsupernova ${PORTAUDIO_LIBRARIES})
+if(AUDIOAPI STREQUAL "default")
+    if(APPLE)
+        set(AUDIOAPI portaudio)
+    elseif(WIN32)
+        set(AUDIOAPI portaudio)
     else()
-        target_link_libraries(libsupernova portaudio)
-    endif()
-else()
+        set(AUDIOAPI jack)
+    endif(APPLE)
+elseif(AUDIOAPI STREQUAL bela)
+    message(FATAL_ERROR "supernova is not supported on Bela")
+endif()
+
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
+    message(FATAL_ERROR "Unrecognized audio API: ${AUDIOAPI}")
+endif()
+
+if(AUDIOAPI STREQUAL "coreaudio")
+    set(AUDIOAPI portaudio)
+    message(FATAL_ERROR "supernova: coreaudio API not implemented yet, use 'default' or 'portaudio' instead")
+endif()
+
+if(AUDIOAPI STREQUAL jack)
+    find_package(Jack REQUIRED)
+elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
+    find_package(Portaudio REQUIRED)
+endif()
+message(STATUS "Audio API (supernova): ${AUDIOAPI}")
+
+if(AUDIOAPI STREQUAL jack)
     find_library(JACK NAMES jack)
-    if (JACK)
+    if(JACK)
         target_compile_definitions(libsupernova PUBLIC JACK_BACKEND)
         target_link_libraries(libsupernova ${JACK})
         target_include_directories(libsupernova PUBLIC ${JACK_INCLUDE_DIRS})
     endif()
+elseif(AUDIOAPI STREQUAL portaudio)
+    target_sources(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
+    target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
+    target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
+    target_link_libraries(libsupernova ${PORTAUDIO_LIBRARIES})
 endif()
 
 find_package(Sndfile)
@@ -182,7 +200,14 @@ if(WIN32)
 endif()
 
 
-add_executable(supernova server/main.cpp ${supernova_headers})
+add_executable(supernova
+    server/main.cpp
+    ${supernova_headers}
+
+    # these files contain code only used in main()
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+    $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
+    )
 target_link_libraries(supernova libsupernova)
 
 if(WIN32)

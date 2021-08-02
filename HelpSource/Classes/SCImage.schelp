@@ -788,7 +788,7 @@ filters is the instance variable that holds the array of SCImageFilter attached 
 see link::Classes/SCImageFilter:: for an example on how to use the strong::filters:: array.
 
 METHOD::addFilter
-you can also attach filters to the receiver for real-time changing operations. In this case the receiver will create a cache before each rendering to maintain his previous state, and allowing you to use filters without applying them in place. The cache is managed directly by the receiver. you can add several filters to the receiver, the first filter in the array is the first applied in the rendering chain.
+you can also attach filters to the receiver for real-time changing operations. In this case the receiver will create a cache before each rendering to maintain its previous state, and allowing you to use filters without applying them in place. The cache is managed directly by the receiver. you can add several filters to the receiver, the first filter in the array is the first applied in the rendering chain.
 
 see link::Classes/SCImageFilter:: for an example on how to use strong::addFilter::.
 

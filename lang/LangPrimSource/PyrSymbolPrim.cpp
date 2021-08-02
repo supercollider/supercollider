@@ -298,7 +298,7 @@ int prSymbol_AsFloat(struct VMGlobals* g, int numArgsPushed) {
  *  [set]   matches any character in the set
  *  [^set]  matches any character NOT in the set
  *      where a set is a group of characters or ranges. a range
- *      is written as two characters seperated with a hyphen: a-z denotes
+ *      is written as two characters separated with a hyphen: a-z denotes
  *      all characters between a to z inclusive.
  *  [-set]  set matches a literal hypen and any character in the set
  *  []set]  matches a literal close bracket and any character in the set

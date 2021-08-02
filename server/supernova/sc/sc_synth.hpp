@@ -117,10 +117,13 @@ public:
 
         static const size_t cacheline_size = 64;
 
-        for (; ptr < end; ptr += cacheline_size)
+        for (; ptr < end; ptr += cacheline_size) {
 #ifdef __GNUC__
             __builtin_prefetch(ptr, 0, 0);
+#elif defined(_MSC_VER)
+            _mm_prefetch(ptr, 0);
 #endif
+        }
     }
 
     void run(void) override;

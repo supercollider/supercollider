@@ -207,15 +207,8 @@ boostbook sync
         <format>pdf:<xsl:param>img.src.path=$(images_location)/
     ;
 
-alias boostdoc : sync
-    : : : <implicit-dependency>sync ;
-
 ###############################################################################
-alias boostdoc
-    : sync
-    :
-    :
-    : ;
+alias boostdoc ;
 explicit boostdoc ;
-alias boostrelease ;
+alias boostrelease : sync ;
 explicit boostrelease ;

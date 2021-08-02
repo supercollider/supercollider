@@ -1,0 +1,45 @@
+title:: DoesNotUnderstandError
+summary:: Error thrown when calling an unknown method name
+categories::Core
+related:: Classes/Error
+
+description::
+
+This error is typically generated when a method that doesn't exist on the receiver is called. Users typically do not
+construct this object themselves. The object has a few getters to learn more about the call that caused the error.
+
+This method reports a backtrace as well as a best-guess suggested replacement based on edit distance.
+
+classmethods::
+
+method:: new
+Construct a new DoesNotUnderstandError, and choose a possible suggested replacement based on the class of the
+receiver and contents of the selector.
+
+argument:: receiver
+The object on which the method was called.
+
+argument:: selector
+The method name that was not understood.
+
+argument:: args
+Arguments passed to the unknown method.
+
+instancemethods::
+
+method:: selector
+returns:: The selector passed to new. Typically, the method name that was not understood.
+
+method:: args
+returns:: The args passed to new. Typically, an array of arguments passed to the unknown method.
+
+method:: suggestedCorrection
+returns:: If there is a method that the receiver would understand that looks similar to the unknown method name, the
+the link::Classes/Method:: object that corresponds to it. Otherwise, code::nil::.
+
+method:: errorString
+returns:: Short-form representation of the error as a link::Classes/String::, with a suggested replacement if one was
+found.
+
+method:: reportError
+Print a long-form explanation of the error including backtrace and suggested replacement if one was found.

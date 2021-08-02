@@ -56,6 +56,8 @@ public:
     /**
      * Resets the event to the non-signaled state. Resetting a non-signalled event has no effect.
      *
+     * \b Memory Ordering: relaxed
+     *
      * \b Throws: if an error occurs.
      */
     void reset();
@@ -146,14 +148,6 @@ public:
 #include <boost/sync/detail/events/manual_reset_event_windows.hpp>
 #elif defined(BOOST_SYNC_DETAIL_PLATFORM_LINUX)
 #include <boost/sync/detail/events/manual_reset_event_futex.hpp>
-#elif defined(BOOST_SYNC_DETAIL_PLATFORM_MACH)
-// Check to see that there's support for native semaphores
-#include <boost/sync/detail/semaphore_config.hpp>
-#if defined(BOOST_SYNC_DETAIL_USE_POSIX_SEMAPHORES) || defined(BOOST_SYNC_DETAIL_USE_DISPATCH_SEMAPHORES)
-#include <boost/sync/detail/events/manual_reset_event_mach.hpp>
-#else
-#include <boost/sync/detail/events/manual_reset_event_emulation.hpp>
-#endif
 #else
 #include <boost/sync/detail/events/manual_reset_event_emulation.hpp>
 #endif

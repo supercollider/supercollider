@@ -69,6 +69,31 @@ foreach(plugin ${plugin_sources})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
+if(AUDIOAPI STREQUAL bela)
+    # The Bela lib will have its own set of libraries and includes
+    # However, the Bela audio backend for SC has some direct calls to Xenomai
+    # Therefore we need to get flags for those as well
+    find_package(Xenomai REQUIRED)
+    find_package(Bela REQUIRED)
+    message(STATUS "Found Bela libraries: ${BELA_LIBRARIES}")
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+        # recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BELA_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BELA_CXX_FLAGS}")
+    endif()
+endif()
+
+if(BELA_FOUND)
+    add_library(BelaUGens MODULE
+        BelaUGens.cpp
+    )
+    add_definitions("-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
+    include_directories(${XENOMAI_INCLUDE_DIRS} ${BELA_INCLUDE_DIRS})
+    target_link_libraries(BelaUGens ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
+
+    list(APPEND plugins BelaUGens)
+endif()
+
 if(NOT NO_X11)
 	if (APPLE)
 		add_library(UIUGens MODULE UIUGens.mm)
@@ -80,12 +105,6 @@ if(NOT NO_X11)
 	set(uiugens UIUGens)
 
 	list(APPEND plugins UIUGens)
-endif()
-
-if (WIN32)
-	if(MSVC)
-		include_directories (../../platform/windows/compat_stuff) # for stdbool.h
-	endif()
 endif()
 
 add_library(FFT_UGens MODULE
@@ -125,6 +144,9 @@ add_library(ML_UGens MODULE
 if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
 
+	if (XENOMAI_FOUND)
+		list(APPEND diskio_sources ../../common/XenomaiLock.cpp)
+	endif()
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)

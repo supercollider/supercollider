@@ -14,6 +14,7 @@ TestOSCBundle : UnitTest {
 
 	test_doPrepare {
 		var synthDef, bundle;
+		var condvar = CondVar();
 		var completed = false;
 
 		bundle = OSCBundle.new;
@@ -21,8 +22,12 @@ TestOSCBundle : UnitTest {
 			var def = SynthDef("TestOSCBundle" ++ i, { Silent.ar });
 			bundle.addPrepare(["/d_recv", def.asBytes])
 		});
-		bundle.doPrepare(server, { completed = true });
-		this.wait({ completed }, "% timed out waiting for bundle to be sent".format(thisMethod));
+		bundle.doPrepare(server, {
+			completed = true;
+			condvar.signalOne;
+		});
+
+		condvar.waitFor(5);
 
 		this.assertEquals(completed, true, "'doPrepare' sent the prepare bundle to the server");
 	}

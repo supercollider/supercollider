@@ -21,7 +21,7 @@ Once the server has a synth definition, it can very efficiently use it to make a
 
 This relationship between synth definitions and synths is something like that between classes and instances, in that the former is a template for the latter. But remember that the server app knows nothing about OOP.
 
-Luckily for us there are classes in the language such as SynthDef, which make is easy to create the necessary byte code and send it to the server, and to deal with synth definitions in an object oriented way.
+Luckily for us there are classes in the language such as SynthDef, which make it easy to create the necessary byte code and send it to the server, and to deal with synth definitions in an object oriented way.
 
 Whenever you use any of Function's audio creating methods what happens is that a corresponding instance of SynthDef is created 'behind the scenes', so to speak, and the necessary byte code is generated and sent to the server, where a synth is created to play the desired audio. So Function's audio methods provide a kind of convenience for you, so that you don't have to take care of this.
 

@@ -52,6 +52,13 @@ Remove path from class library exclude paths.
 METHOD:: currentPath
 Return the current config file path.
 
+METHOD:: excludeDefaultPaths
+Get or set whether default class library paths are included.
+
+note::
+If sclang is started with -a the class library paths are excluded and this value is ignored. The default class library paths are Platform.classLibraryDir, and the system and user extensions directories.
+::
+
 subsection:: Compiler Warnings
 
 METHOD:: postInlineWarnings

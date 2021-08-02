@@ -57,6 +57,6 @@ private:
 
 public Q_SLOTS:
     void downloadFinished();
-    void downloadProgress(qint64 recieved, qint64 total);
+    void downloadProgress(qint64 received, qint64 total);
     void replyError(QNetworkReply::NetworkError errorCode);
 };

@@ -12,31 +12,25 @@ project
         <threading>multi
         <hardcode-dll-paths>true
         <library>/boost/sync//boost_sync
-        <library>/boost/system//boost_system
         <library>/boost/thread//boost_thread
         <library>/boost/date_time//boost_date_time
-        <library>/boost/test//boost_unit_test_framework
     ;
 
 
 rule test_all
 {
-   local all_rules = ;
+    local all_rules ;
 
-   for local fileb in [ glob run/*.cpp ]
-   {
-      local test_id = [ MATCH "(.+)\.cpp" : [ path.basename $(fileb) ] ] ;
-      # ECHO $(test_id) ;
-
-      all_rules += [ run $(fileb)
-      : # additional args
-      : # test-files
-      : # requirements
-          <define>BOOST_TEST_MODULE=$(test_id)
-      ] ;
-   }
+    for local file in [ glob run/*.cpp ]
+    {
+        all_rules += [ run $(file)
+            : # additional args
+            : # test-files
+            : # requirements
+        ] ;
+    }
 
     return $(all_rules) ;
 }
 
-test-suite sync : [ test_all r ] : <threading>multi ;
+test-suite sync : [ test_all ] : <threading>multi ;

@@ -217,7 +217,29 @@ code::
 
 method::!=
 
-Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
+Answer whether the receiver does not equal anotherObject. The default implementation in Object is to determine '==' for the two operands and negate this result. (see below).
+
+method::!==
+
+Answer whether the receiver is not identical to anotherObject.
+
+method::|==|
+
+A lazy equality operator. For typical object types, code::|==|:: behaves the same as link::Classes/Object#-==::. For link::Classes/AbstractFunction:: and its subclasses (including link::Classes/Pattern:: and link::Classes/UGen::), it does not perform the equality check immediately, but rather composes an equality operation to be performed at the time of evaluating the resulting function or stream.
+
+code::
+1 |==| 1  // true
+
+Pseq([1], inf) == 1  // false (because "a Pseq" is not 1)
+
+Pseq([1], inf) |==| 1  // a Pbinop
+
+(Pseq([1], inf) |==| 1).asStream.next  // Pbinop evaluates to true
+::
+
+method::|!=|
+
+A lazy inequality operator, defined as code::not(this |==| that)::. See link::Classes/Object#-|==|::.
 
 method::fuzzyEqual
 

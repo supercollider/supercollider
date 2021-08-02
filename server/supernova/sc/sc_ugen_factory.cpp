@@ -22,7 +22,7 @@
 #ifdef DLOPEN
 #    include <dlfcn.h>
 #elif defined(_WIN32)
-#    include "Windows.h"
+#    include "SC_Win32Utils.h"
 #endif
 
 #include <boost/filesystem.hpp>

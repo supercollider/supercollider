@@ -10,16 +10,20 @@ UnitTest {
 	}
 
 	*findTestClasses {
-		allTestClasses = UnitTest.allSubclasses.collectAs({ |c|
-			var classkey = c.asString[4..]; // drop Meta_
-			var methtests = c.findTestMethods.collectAs({|m|
-				m.name.asString -> { c.new.runTestMethod(m) }
+		allTestClasses = UnitTest.allSubclasses.collectAs({ |class|
+			var classkey = class.asString[4..]; // drop Meta_
+			var methtests = class.findTestMethods.collectAs({ | method |
+				method.name.asString -> {
+					class.prRunWithinSetUpClass {
+						class.new.runTestMethod(method);
+					}
+				}
 			}, Dictionary);
-			methtests.add(" run all in this class" -> { c.run });
+			methtests.add(" run all in this class" -> { class.run });
 			classkey -> methtests;
 		}, Dictionary);
 		// err there may be some empty classes hanging around
-		allTestClasses = allTestClasses.reject {|d| d.size == 1 };
+		allTestClasses = allTestClasses.reject { | class | class.size == 1 };
 		allTestClasses.add("...All..." -> Dictionary["Run all" -> { UnitTest.runAll }]);
 
 	}
@@ -33,9 +37,16 @@ UnitTest {
 		if(method.isNil) {
 			Error("Test method not found " + methodName).throw
 		};
-		class.new.runTestMethod(method);
+		class.prRunWithinSetUpClass {
+			class.new.runTestMethod(method);
+		}
 	}
 
+	// called before running tests in a unit test class
+	*setUpClass {}
+
+	// called after running tests in a unit test class
+	*tearDownClass {}
 
 	// called before each test
 	setUp {}
@@ -43,14 +54,14 @@ UnitTest {
 	// called after each test
 	tearDown {}
 
+	// run all tests of this UnitTest
 	*run { | reset = true, report = true |
 		if(reset) { this.reset };
-		this.forkIfNeeded {
-			this.prRunAllTestMethods(report);
-		};
+		this.prRunAllTestMethods(report)
 	}
 
-	// run all UnitTest subclasses
+
+	// run all tests of all subclasses of this UnitTest
 	*runAll {
 		if(this === UnitTest, {
 			^this.forkIfNeeded {
@@ -67,6 +78,8 @@ UnitTest {
 	}
 
 	// run a single test method of this class
+	// this assumes that setUpClass has been called
+	// and that tearDownClass is called afterwards
 	runTestMethod { | method, report = true |
 		this.class.forkIfNeeded {
 			this.setUp;
@@ -81,10 +94,21 @@ UnitTest {
 	*prRunAllTestMethods { |report = true|
 		"RUNNING UNIT TEST '%'".format(this.name).inform;
 		this.forkIfNeeded {
-			this.findTestMethods.do { |method|
-				this.new.runTestMethod(method, false)
-			};
-			if(report) { this.report };
+			this.prRunWithinSetUpClass {
+				this.findTestMethods.do { |method|
+					this.new.runTestMethod(method, false)
+				};
+				if(report) { this.report };
+			}
+		}
+	}
+
+	// call a function in the context of this test class
+	*prRunWithinSetUpClass { |func|
+		this.forkIfNeeded {
+			this.setUpClass;
+			func.value(this);
+			this.tearDownClass;
 		}
 	}
 
@@ -208,20 +232,22 @@ UnitTest {
 		^boolean
 	}
 
-	// waits for condition with a maxTime limit
-	// if time expires, the test is a failure
-	wait { |condition, failureMessage, maxTime = 10.0|
-		var limit = maxTime / 0.05;
+	// this method should be avoided if at all possible
+	// it's better to use CondVar directly in tests instead
+	wait { |predicate, failureMessage = "", maxTime = 10.0|
+		var condvar = CondVar();
+		var waitDur = 0.1;
+		var limit = max(1.0, maxTime / waitDur);
 
 		while {
-			condition.value.not and:
-			{(limit = limit - 1) > 0}
+			(limit >= 0) and: { condvar.waitFor(waitDur, predicate).not }
 		} {
-			0.05.wait;
+			limit = limit - 1;
 		};
 
-		if(limit == 0 and: failureMessage.notNil) {
-			this.failed(currentMethod,failureMessage)
+		// consider test failed if limit is surpassed
+		if(limit < 0) {
+			this.failed(currentMethod, failureMessage)
 		}
 	}
 

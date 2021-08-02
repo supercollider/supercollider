@@ -29,7 +29,12 @@
 #endif
 
 // AppleClang workaround
-#if defined(__apple_build_version__) && __apple_build_version__ > 11000000
+#if defined(__apple_build_version__) && __apple_build_version__ > 10000000
+#    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
+#endif
+
+// libc++ workaround
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 7000 && _LIBCPP_VERSION < 9000
 #    define BOOST_ASIO_HAS_STD_STRING_VIEW 1
 #endif
 
@@ -174,9 +179,9 @@ private:
 class sc_osc_handler : private detail::network_thread, public sc_notify_observers {
     /* @{ */
     /** constructor helpers */
-    void open_tcp_acceptor(tcp const& protocol, unsigned int port);
-    void open_udp_socket(udp const& protocol, unsigned int port);
-    bool open_socket(int family, int type, int protocol, unsigned int port);
+    void open_tcp_acceptor(ip::address address, unsigned int port);
+    void open_udp_socket(ip::address address, unsigned int port);
+    bool open_socket(int protocol, ip::address address, unsigned int port);
     /* @} */
 
 public:
@@ -185,9 +190,9 @@ public:
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr) {
         if (!args.non_rt) {
-            if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
+            if (args.tcp_port && !open_socket(IPPROTO_TCP, args.socket_address, args.tcp_port))
                 throw std::runtime_error("cannot open socket");
-            if (args.udp_port && !open_socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, args.udp_port))
+            if (args.udp_port && !open_socket(IPPROTO_UDP, args.socket_address, args.udp_port))
                 throw std::runtime_error("cannot open socket");
         }
     }
@@ -229,11 +234,7 @@ public:
     class tcp_connection : public nova_endpoint {
     public:
         using pointer = std::shared_ptr<tcp_connection>;
-#if BOOST_VERSION >= 107000
-        using executor = boost::asio::executor;
-#else
-        using executor = boost::asio::io_context::executor_type;
-#endif
+        using executor = tcp::socket::executor_type;
 
         static pointer create(const executor& executor) { return pointer(new tcp_connection(executor)); }
 
@@ -244,11 +245,7 @@ public:
         bool operator==(tcp_connection const& rhs) const { return &rhs == this; }
 
     private:
-#if BOOST_VERSION >= 107000
         tcp_connection(const executor& executor): socket_(executor) {}
-#else
-        tcp_connection(const executor& executor): socket_(executor.context()) {}
-#endif
 
         void send(const char* data, size_t length) override final;
 

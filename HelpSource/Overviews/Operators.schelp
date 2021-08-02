@@ -159,7 +159,7 @@ code::
 
 method::sum3rand
 Returns a value from a gaussian-like random distribution between this and zero.
-Larry Polansky's poor man's gaussian generator, follows the formula:
+This was suggested by Larry Polansky as a loose approximation of gaussian. Follows the formula:
 
 code::
 { 1.0.rand }.dup(3).sum - 1.5 * (2/3)
@@ -427,6 +427,9 @@ Equal.
 
 method:: !=
 Not equal.
+
+method:: |==|
+"Lazy equality." See link::Classes/Object#-|==|::.
 
 subsection:: Other
 

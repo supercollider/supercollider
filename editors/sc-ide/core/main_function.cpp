@@ -30,9 +30,27 @@
 
 #include "util/HelpBrowserWebSocketServices.hpp"
 
+#include <iostream>
+#include <string>
+
 using namespace ScIDE;
 
+static void show_usage(std::string name) {
+    std::cerr << "Usage: " << name << " <option(s)> [file1.scd file2.scd ...]\n"
+              << "Options:\n"
+              << "\t-h, --help\tShow this help message\n"
+              << std::endl;
+}
+
 int main(int argc, char* argv[]) {
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if ((arg == "-h") || (arg == "--help")) {
+            show_usage(argv[0]);
+            return 0;
+        }
+    }
+
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     // In order to scale the UI properly on Windows with display scaling like 125% or 150%
     // we need to disable scale factor rounding

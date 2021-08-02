@@ -271,7 +271,7 @@ Function : AbstractFunction {
 
 		name = this.hash.asString;
 		def = SynthDef(name, { |bufnum|
-			var	val = this.value;
+			var	val = SynthDef.wrap(this);
 			if(val.isValidUGenInput.not) {
 				val.dump;
 				Error("reading signal failed: % is no valid UGen input".format(val)).throw

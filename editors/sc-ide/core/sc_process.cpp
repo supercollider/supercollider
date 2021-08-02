@@ -129,7 +129,6 @@ void ScProcess::startLanguage(void) {
 
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
-    bool standalone = settings->value("standalone").toBool();
 
     settings->endGroup();
 
@@ -145,8 +144,6 @@ void ScProcess::startLanguage(void) {
         sclangArguments << "-l" << configFile;
     sclangArguments << "-i"
                     << "scqt";
-    if (standalone)
-        sclangArguments << "-a";
 
     if (!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);

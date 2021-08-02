@@ -153,6 +153,7 @@ method::mirror1
 Return a new Array which is the receiver made into a palindrome with the last element removed.
 This is useful if the list will be repeated cyclically, the first element will not get played twice.
 The receiver is unchanged.
+If the receiver is a single-element array, a copy is returned.
 code::
 [1, 2, 3, 4].mirror1.postln;
 ::
@@ -165,9 +166,18 @@ code::
 ::
 
 method::stutter
+note::It is recommended to use code::dupEach:: instead. This method is retained for backwards compatibility.::
 Return a new Array whose elements are repeated n times. The receiver is unchanged.
 code::
 [1, 2, 3].stutter(2).postln;
+::
+argument::n
+Number of repeats.
+
+method::dupEach
+Return a new Array whose elements are repeated n times. The receiver is unchanged.
+code::
+[1, 2, 3].dupEach(2).postln;
 ::
 argument::n
 Number of repeats.
@@ -365,11 +375,11 @@ Routine {
 	a.fork; \doneAll.postln;
 }.play;
 )
+::
 
-poll(trig, label, trigid)
+method::poll
 apply an array of Poll units to an array of UGens (see those helpfiles for more details).
-
-s.boot;
+code::
 (
 x = {
 	SinOsc.ar([0.1, 0.2], 0).poll * 0.1
@@ -403,3 +413,13 @@ code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
 ::
 
+subsection:: Bela
+
+method:: belaScope
+Send this Array's content to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup)
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: server
+The server on which BelaScope is running. If not specified, it looks for the first server for which BelaScope was already initialized. If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Server#*default::.
+returns:: This Array.

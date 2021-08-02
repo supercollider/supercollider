@@ -128,6 +128,14 @@ EnvironmentRedirect {
 
 	clear { envir.clear }
 
+	keys { arg species(Set);
+		^envir.keys(species)
+	}
+
+	values {
+		^envir.values
+	}
+
 	know_ { arg flag; envir.know = flag }
 	know { ^envir.know }
 

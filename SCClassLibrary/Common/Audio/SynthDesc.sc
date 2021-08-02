@@ -272,7 +272,7 @@ SynthDesc {
 			ugenInputs = ugenInputs.add(input);
 		};
 
-		rate = #[\scalar,\control,\audio][rateIndex];
+		rate = #[\scalar, \control, \audio, \demand][rateIndex];
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 
@@ -346,7 +346,7 @@ SynthDesc {
 			ugenInputs = ugenInputs.add(input);
 		};
 
-		rate = #[\scalar,\control,\audio][rateIndex];
+		rate = #[\scalar, \control, \audio, \demand][rateIndex];
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 

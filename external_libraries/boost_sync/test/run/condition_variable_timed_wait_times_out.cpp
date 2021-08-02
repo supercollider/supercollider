@@ -12,7 +12,7 @@
 #include <boost/sync/condition_variables/condition_variable.hpp>
 #include <boost/sync/condition_variables/condition_variable_any.hpp>
 #include <boost/sync/support/boost_date_time.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "utils.hpp"
 
 bool fake_predicate()
@@ -37,10 +37,10 @@ void do_test_timed_wait_times_out()
     while(cond.timed_wait(lock,timeout)) {}
 
     boost::system_time const end = boost::get_system_time();
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_timed_wait_times_out)
+void test_timed_wait_times_out()
 {
     timed_test(&do_test_timed_wait_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -58,11 +58,11 @@ void do_test_timed_wait_with_predicate_times_out()
     bool const res=cond.timed_wait(lock,timeout,fake_predicate);
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK(!res);
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST(!res);
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_timed_wait_with_predicate_times_out)
+void test_timed_wait_with_predicate_times_out()
 {
     timed_test(&do_test_timed_wait_with_predicate_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -79,11 +79,11 @@ void do_test_relative_timed_wait_with_predicate_times_out()
     bool const res=cond.timed_wait(lock,delay,fake_predicate);
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK(!res);
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST(!res);
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_relative_timed_wait_with_predicate_times_out)
+void test_relative_timed_wait_with_predicate_times_out()
 {
     timed_test(&do_test_relative_timed_wait_with_predicate_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -100,10 +100,10 @@ void do_test_timed_wait_relative_times_out()
     while(cond.timed_wait(lock,delay)) {}
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_timed_wait_relative_times_out)
+void test_timed_wait_relative_times_out()
 {
     timed_test(&do_test_timed_wait_relative_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -121,10 +121,10 @@ void do_test_cv_any_timed_wait_times_out()
     while(cond.timed_wait(lock,timeout)) {}
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_cv_any_timed_wait_times_out)
+void test_cv_any_timed_wait_times_out()
 {
     timed_test(&do_test_cv_any_timed_wait_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -142,11 +142,11 @@ void do_test_cv_any_timed_wait_with_predicate_times_out()
     bool const res=cond.timed_wait(lock,timeout,fake_predicate);
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK(!res);
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST(!res);
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_cv_any_timed_wait_with_predicate_times_out)
+void test_cv_any_timed_wait_with_predicate_times_out()
 {
     timed_test(&do_test_cv_any_timed_wait_with_predicate_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -163,11 +163,11 @@ void do_test_cv_any_relative_timed_wait_with_predicate_times_out()
     bool const res=cond.timed_wait(lock,delay,fake_predicate);
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK(!res);
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST(!res);
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_cv_any_relative_timed_wait_with_predicate_times_out)
+void test_cv_any_relative_timed_wait_with_predicate_times_out()
 {
     timed_test(&do_test_cv_any_relative_timed_wait_with_predicate_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
 }
@@ -184,10 +184,24 @@ void do_test_cv_any_timed_wait_relative_times_out()
     while(cond.timed_wait(lock,delay)) {}
 
     boost::system_time const end=boost::get_system_time();
-    BOOST_CHECK((delay-timeout_resolution)<=(end-start));
+    BOOST_TEST((delay-timeout_resolution)<=(end-start));
 }
 
-BOOST_AUTO_TEST_CASE(test_cv_any_timed_wait_relative_times_out)
+void test_cv_any_timed_wait_relative_times_out()
 {
     timed_test(&do_test_cv_any_timed_wait_relative_times_out, timeout_seconds+timeout_grace, execution_monitor::use_mutex);
+}
+
+int main()
+{
+    test_timed_wait_times_out();
+    test_timed_wait_with_predicate_times_out();
+    test_relative_timed_wait_with_predicate_times_out();
+    test_timed_wait_relative_times_out();
+    test_cv_any_timed_wait_times_out();
+    test_cv_any_timed_wait_with_predicate_times_out();
+    test_cv_any_relative_timed_wait_with_predicate_times_out();
+    test_cv_any_timed_wait_relative_times_out();
+
+    return boost::report_errors();
 }

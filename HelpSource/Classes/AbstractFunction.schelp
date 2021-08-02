@@ -516,6 +516,44 @@ g.plotGraph(from:0,to:1);
 { 200.collect{ g.(rand(0.0,1.0)) } }.bench;
 ::
 
+method::plotGraph
+Sample the function with n points, in the range [from, to], and plot it in a Plotter.
+Returns a link::Classes/Plotter::.
+
+argument:: n
+Number of values displayed in the plot window (500 by default).
+argument:: from
+Minimum value passed to the function.
+argument:: to
+Maximum value passed to the function.
+
+argument:: name
+See link::Reference/plot::
+argument:: bounds
+See link::Reference/plot::
+argument:: discrete
+See link::Reference/plot::
+argument:: numChannels
+See link::Reference/plot::
+argument:: minval
+See link::Reference/plot::
+argument:: maxval
+See link::Reference/plot::
+argument:: separately
+See link::Reference/plot::
+
+returns:: a link::Classes/Plotter::
+
+discussion::
+code::
+// plot x.squared transfer function with x between -1 and 1.
+// here the x-axis shows n, the number of points 
+{ |x| x.squared }.plotGraph(n: 200, from: -1, to: 1);
+
+// as plotGraph returns a Plotter, you can apply a domain spec to show x value on the x-axis
+{ |x| x.squared }.plotGraph(n: 200, from: -1, to: 1).domainSpecs_([-1, 1, \lin].asSpec).refresh;
+::
+
 subsection::Function Composition
 
 When unary, binary or n-ary operators are applied to an abstract function, it returns an object that represents
@@ -529,8 +567,32 @@ a.value;
 // compose a function from a that selects only odd values
 b = { |x| x.select(_.odd) } <> a;
 b.value;
+
+// operator composition
+// compose a function that multiplies a random integer by 2
+{ rrand(1, 5) } * 2
 ::
 
+note::
+The comparison operators code::<::, code::<=::, code::>:: and code::>=:: automatically perform function composition, as does code::*:: in the example above.
+
+Equality comparisons have two possible meanings: to compare the objects as they exist right now, or a composite operator that will evaluate the operands in the future and check the equality of those results. Both are needed at different times, and are supported by different operators: code::==:: for an immediate equality check (which always returns a Boolean result), or code::|==|:: for a "lazy" equality operator to be performed later.
+::
+
+code::
+f = { 2.rand };  // a function
+
+// eager (immediate) equality
+// false: the function as itself is not the same as '1'
+g = (f == 1);
+
+g.value;  // still false
+
+// lazy equality
+g = (f |==| 1);  // a BinaryOpFunction
+
+g.value;  // true or false, depending on f's result
+::
 
 examples::
 
@@ -582,4 +644,3 @@ a.value(0.5);
 
 a.value((0, 0.06..1)); // creates a range of values..
 ::
-

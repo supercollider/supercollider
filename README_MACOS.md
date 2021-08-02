@@ -39,12 +39,12 @@ Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
-  Xcode >= 8 is recommended; use earlier versions at your own risk.
+  Xcode >= 10 is recommended; use earlier versions at your own risk.
 - If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake >= 3.5, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
+- **git, cmake >= 3.12, libsndfile, readline, and qt5 >= 5.7**, installed via homebrew:
   `brew install git cmake libsndfile readline qt5`
 - If you are building with Qt libraries, you will also need the [requirements for
   QtWebEngine](https://doc.qt.io/qt-5/qtwebengine-platform-notes.html#macos), specifically macOS
@@ -136,10 +136,9 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5(.5.x), libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version
-information. A build using v5.6 and above will fail at the time of this writing because Qt5WebKit is missing in its binary distribution.
+**cmake, qt, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
 
-`brew upgrade ____` will update the dependency to a newer version (avoid this for Qt5 or handle different Qt5 versions with `brew switch`).
+`brew upgrade ____` will update the dependency to a newer version.
 
 Other common homebrew problems can be fixed using `brew doctor`.
 
@@ -296,6 +295,55 @@ This should be fixed at some point (its a build tool configuration issue). Until
 
 They do however work on Linux and Windows.
 
+Building with native JACK backend
+------------------------------
+
+If you want to use `scsynth` or `supernova` on macOS with JACK, but _without_ the JackRouter driver, you can build them with the native JACK backend. **In that case you will not be able to boot `scsynth`/`supernova` without booting JACK first.** JackRouter allows any macOS application to stream audio to/from JACK, but at the time of writing this (early 2019) it is outdated and the development has stalled.
+
+First you need to install JACK, either through `homebrew`:
+
+```
+brew install jack qjackctl
+```
+
+or by installing the `JackOSX` package. Please note, JACK from `homebrew` is `jack1` and does _not_ include JackRouter. `JackOSX` is `jack2` and it does include JackRouter. `jack1` and `jack2` implement the same API, but you should have only one of them installed at a time.
+
+In order to build with JACK, you need to add the `-DAUDIOAPI=jack` flag to cmake.
+
+After running cmake configuration proceed with the build process as usual.
+
+### Running SuperCollider with JACK
+
+When `jack` is installed via `homebrew`, you need to add jack's path to the `$PATH` environment variable in `sclang`:
+
+```supercollider
+"PATH".setenv("echo $PATH".unixCmdGetStdOut ++ ":/usr/local/bin");
+```
+Please note, this is not needed when using the JackOSX package.
+
+Optionally, you can have `scsynth`/`supernova` automatically connect to system inputs/outputs by setting appropriate environment variables (refer to the Linux section of the "Audio device selection" reference in SuperCollider help):
+
+```supercollider
+// connect all input channels with system
+"SC_JACK_DEFAULT_INPUTS".setenv("system");
+// connect all output channels with system
+"SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+```
+
+Now you can start JACK, either using `JackPilot` app (from JackOSX package), `qjackctl` (from `homebrew`) or from command line:
+
+
+```
+jackd -d coreaudio
+# or
+jackd -d coreaudio -r48000 -p512 # specifying sample rate and buffer size
+```
+
+Then start `scsynth`/`supernova` as usual.
+
+### Caveats
+
+JACK installed with `homebrew` can only use a single device for both input and output. In order to use it with the internal soundcard on macOS, one needs to create an aggregate device that includes both input and output. JACK from `JackOSX` does not have this limitation.
 
 sclang and scynth executables
 -----------------------------

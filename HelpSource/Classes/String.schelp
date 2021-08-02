@@ -135,6 +135,17 @@ code::
 "same" != "Same";
 ::
 
+subsection:: Fuzzy string comparison
+With fuzzy comparison, the strings don't need to match exactly - we can work out how similar they are, and make decisions based on that.
+This behaviour is inherited from the link::Classes/SequenceableCollection#-editDistance::, and is documented fully there, but to provide an example:
+code::
+"hello".editDistance("hallo"); // 1 (substitution)
+"hello".editDistance("hell"); // 1 (deletion)
+"hello".editDistance("helloo"); // 1 (addition)
+"hello".editDistance("hllo"); // 1 (removal)
+"hello".editDistance("haldo"); // 2 (substitutions)
+::
+
 subsection:: Posting strings
 
 method::post
@@ -651,7 +662,7 @@ method::unixCmdGetStdOut
 Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window.
 code::
 ~listing = "ls Help".unixCmdGetStdOut; // Grab
-~listing.reverse.as(Array).stutter.join.postln; // Mangle
+~listing.reverse.as(Array).dupEach.join.postln; // Mangle
 ::
 
 method::systemCmd
@@ -664,7 +675,8 @@ Execute the String in a new terminal window (strong::asynchronously::).
 argument::shell
 The shell used to execute the string.
 discussion::
-note:: On macOS, the string is incorporated into a temporary script file and executed using the shell. ::
+note:: On macOS and Linux, the string is incorporated into a temporary script file and executed using the shell. ::
+note:: On Linux, it is possible to choose a specific terminal emulator to be used, otherwise sclang tries to find one by itself. See link::Classes/LinuxPlatform#*runInTerminalCmd::. ::
 Example:
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;

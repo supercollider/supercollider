@@ -129,6 +129,74 @@ SequenceableCollection : Collection {
 		^true
 	}
 
+	editDistance { |other, compareFunc|
+		// comparison matrix is other.size
+		// reduce the memory footprint by ensuring
+		// other is the smaller array
+
+		if(this.size < other.size) {
+			^other.editDistance(this, compareFunc);
+		};
+
+		if(compareFunc.isNil) {
+			// call the primitive
+			^this.prEditDistance(other, compareFunc);
+		} {
+			// call the sclang implementation
+			^this.prLevenshteinDistance(other, compareFunc);
+		};
+	}
+
+	prEditDistance { |other, compareFunc|
+		_ArrayLevenshteinDistance
+		// primitive only fails if types cannot be compared
+		^this.prLevenshteinDistance(other, compareFunc);
+	}
+
+	prLevenshteinDistance { |other, compareFunc|
+		// This is the same algorithm as the primitive, just in
+		// sclang to allow equality
+		var matrix = Array.iota(other.size + 1);
+		var upper, corner;
+
+		if(this.isEmpty || other.isEmpty) {
+			^this.size;
+		};
+
+		// use identity if not given another way to compare
+		compareFunc = compareFunc ? { |a, b| a === b; };
+
+		this.size.do { |indX|
+			corner = indX;
+			matrix[0] = indX + 1;
+
+			other.size.do { |indY|
+				upper = matrix[indY + 1];
+
+				matrix[indY + 1] = if(compareFunc.value(this.at(indX), other.at(indY))) {
+					corner;
+				} {
+					[upper, corner, matrix[indY]].minItem + 1;
+				};
+
+				corner = upper;
+			};
+		};
+
+		^matrix[other.size];
+	}
+
+	similarity { |other, compareFunc|
+		var maxDistance = max(this.size, other.size);
+		var simVal = 1; // assume they're the same
+
+		if(maxDistance > 0) { // prevent div-by-zero
+			simVal = 1 - (this.editDistance(other, compareFunc) / maxDistance);
+		};
+
+		^simVal;
+	}
+
 	hash {
 		var hash = this.class.hash;
 		this.do { | item |

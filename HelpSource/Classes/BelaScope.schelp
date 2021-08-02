@@ -1,0 +1,100 @@
+class:: BelaScope
+summary:: Bela's Oscilloscope interface
+categories::  UGens>Bela
+
+Description::
+note::
+This UGen only works on Bela
+::
+Allows to scope signals on Bela's built-in Oscilloscope, which can be accessed from Bela's web interface.
+It is not needed to interact directly with this class, as UGens, Arrays, Busses, Functions and Servers can be scoped via their .belaScope() method.
+
+subsection:: Setup
+
+Using BelaScope requires:
+list::
+## an instance of Server running on a Bela (either locally or remotely).
+
+## ServerOptions.belaMaxScopeChannels should be set > 0 for Bela's server.
+It represents the maximum number of channels that is possible to scope on that server, and affects resources allocation.
+If set <= 0, the server won't instantiate any Scope object, and any attempt to instantiate a BelaScope from sclang will throw an error.
+::
+
+subsection:: Usage
+Once a Bela server is started with options.belaMaxScopeChannels > 0, it is possible to scope UGens and Busses using their .belaScope() methods. See examples below.
+
+classmethods::
+
+method::scope
+Send an array of UGen data to Bela's oscilloscope.
+
+argument::channelOffset
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument::signals
+Array of UGens to scope
+
+returns:: the array of code::signals:: passed in as an argument. This allows for transparent usage of code::.belaScope():: in processing chains
+
+code::
+{ BelaScope.scope(0, SinOsc.ar) }.play;
+// same using UGen::belaScope() shortcut method:
+{ SinOsc.ar().belaScope(0) }.play
+
+// transparent usage in chains:
+// scoping LFNoise0 before and after .range, while still using it to modulate SinOsc
+{ SinOsc.ar(LFNoise0.kr(10).belaScope(0).range(20,100).belaScope(1)) }.play
+::
+
+method::monitorBus
+Scope a Bus on Bela's oscilloscope
+argument::channelOffset
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument::busindex
+Index of the audio bus to scope
+
+argument::numChannels
+Number of bus channels to scope
+
+argument::target
+Bela's SuperCollider server, or any node on that server. The bus is monitored strong::after:: this target, or after this server's link::Classes/RootNode:: if a server is provided as target.
+
+returns:: A link::Class/Synth:: used to monitor the bus.
+
+code::
+// scope 2 channels from audio bus 4 on Bela Oscilloscope's channel 3
+BelaScope.monitorBus(3, 4, 2, ~belaServer)
+// same using Server::belaScope() shortcut method:
+~belaServer.belaScope(3, 4, 2)
+// same using Bus::belaScope() shortcut method
+Bus(\audio, 4, 2, ~belaServer).belaScope(3)
+::
+
+Examples::
+
+code::
+~belaServer = Server.remote(\Bela, NetAddr("192.168.6.2", 57110));
+
+// UGens: usage like .poll
+// scope the LFNoise0, and still use it to modulate a SinOsc
+{ var freq = LFNoise0.kr.range(20,2000); SinOsc.ar(freq.belaScope(0)) }.play(~belaServer)
+
+// scope an Array of UGens:
+{ var freq = LFNoise0.kr.range(20,2000) ! 4; SinOsc.ar(freq.belaScope(0)) }.play(~belaServer)
+
+// Bus: scope 3 channels from bus number 10 on Bela Oscilloscope's channel 4
+b = Bus(\audio, 10, 6, ~belaServer);
+{ SinOsc.ar }.play(~belaServer, outbus:b);
+b.belaScope(4);
+
+// Server: usage like .scope
+// scope busses 10 and 11 on Bela's Oscilloscope channel 2
+~belaServer.belaScope(2, 10, 2)
+// scope main output busses on Bela's Oscilloscope channel 0
+~belaServer.belaScope
+
+// Function: usage like .scope
+// play and scope a multi-output function; scope starting on BelaScope channel 4
+{ SinOsc.ar(LFNoise0.ar([1,2,3]).exprange(20,20000)) * LFNoise1.ar([1,2,3]).exprange(0.001, 0.1) }.belaScope(4, ~belaServer)
+::

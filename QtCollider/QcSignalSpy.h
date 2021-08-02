@@ -91,7 +91,12 @@ public:
 
             for (int i = 0; i < _argTypes.count(); ++i) {
                 QMetaType::Type type = static_cast<QMetaType::Type>(_argTypes.at(i));
-                args << QVariant(type, argData[i + 1]);
+                if (type == QMetaType::QVariant) {
+                    // avoid creating a QVariant<QVariant>
+                    args << QVariant(type, argData[i + 1]).value<QVariant>();
+                } else {
+                    args << QVariant(type, argData[i + 1]);
+                }
             }
 
             react(args);

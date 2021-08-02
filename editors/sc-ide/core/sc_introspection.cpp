@@ -202,14 +202,25 @@ bool Introspection::ensureIntrospectionData() const {
 
 const Class* Introspection::findClass(const QString& className) const {
     if (!ensureIntrospectionData())
-        return NULL;
+        return nullptr;
 
-    ClassMap::const_iterator klass_it = mClassMap.find(className);
-    if (klass_it == mClassMap.end()) {
-        MainWindow::instance()->showStatusMessage(QObject::tr("Class not defined!"));
-        return NULL;
+    auto classIterator = mClassMap.find(className);
+
+    if (classIterator == mClassMap.end()) {
+        return nullptr;
     }
-    return klass_it->second.data();
+
+    return classIterator->second.data();
+}
+
+const Class* Introspection::findClassOrWarn(const QString& className) const {
+    auto* classInstance = findClass(className);
+
+    if (classInstance == nullptr) {
+        MainWindow::instance()->showStatusMessage(QObject::tr("Class not defined!"));
+    }
+
+    return classInstance;
 }
 
 std::vector<const Class*> Introspection::findClassPartial(const QString& partialClassName) const {
@@ -245,23 +256,6 @@ std::vector<const Method*> Introspection::findMethodPartial(const QString& parti
     }
 
     return matchingMethods;
-}
-
-Introspection::ClassMethodMap Introspection::constructMethodMap(const Class* klass) const {
-    ClassMethodMap methodMap;
-    if (!klass)
-        return methodMap;
-
-    foreach (Method* method, klass->metaClass->methods) {
-        QList<Method*>& list = methodMap[method->definition.path];
-        list.append(method);
-    }
-
-    foreach (Method* method, klass->methods) {
-        QList<Method*>& list = methodMap[method->definition.path];
-        list.append(method);
-    }
-    return methodMap;
 }
 
 bool Method::matches(const QString& toMatch) const {

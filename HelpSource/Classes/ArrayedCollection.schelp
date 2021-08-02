@@ -117,14 +117,14 @@ y.putEach([2, 3, 5, 6], \wotsits);
 ::
 
 method::indexOf
-Return the first index containing an item which matches strong::item::.
+Return the first index containing an item which matches strong::item::. Elements are checked for identity (not for equality).
 code::
 y = [ \the, \symbol, \collection, \contains, \my, \symbol ];
 y.indexOf(\symbol);
 ::
 
 method::includes
-Return a boolean indicating whether the collection contains anything matching strong::item::.
+Return a boolean indicating whether the collection contains anything matching strong::item::. Elements are checked for identity (not for equality).
 code::
 y = [ \the, \symbol, \collection, \contains, \my, \symbol ];
 y.includes(\symbol);
@@ -465,14 +465,15 @@ a.reshape(2,3);
 ::
 
 method::find
-Finds the starting index of a number of elements contained in the array.
+Finds the starting index of a number of elements contained in the array. This method expects a collection as an argument. So for finding only one element, have a look at link::Classes/SequenceableCollection#-indexOfEqual::.
+Elements are checked for equality (not for identity).
 code::
 a = (0..10);
 a.find([4, 5, 6]);
 ::
 
 method::replace
-Return a new array in which a number of elements have been replaced by another.
+Return a new array in which a number of elements have been replaced by another. Elements are checked for equality (not for identity).
 code::
 a = (0..10) ++ (0..10);
 a.replace([4, 5, 6], 100);

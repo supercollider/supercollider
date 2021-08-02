@@ -1,7 +1,10 @@
 class:: PdurStutter
 summary:: partition a value into n equal subdivisions
-related:: Classes/Pstutter
+related:: Classes/Psubdivide, Classes/Pdup
 categories:: Streams-Patterns-Events>Patterns>Repetition
+
+note::It is recommended to use link::Classes/Psubdivide:: instead. This class is retained for backwards compatibility.::
+warning::PdurStutter will return link::Classes/Psubdivide::::
 
 description::
 

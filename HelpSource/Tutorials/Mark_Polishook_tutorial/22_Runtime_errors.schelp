@@ -57,7 +57,7 @@ CALL STACK:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-The ERROR section explains what went wrong. The RECEIVER section names the the class of the object to which the message was sent. The ARGS section says how many arguments were included in the message. Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from
+The ERROR section explains what went wrong. The RECEIVER section names the class of the object to which the message was sent. The ARGS section says how many arguments were included in the message. Read the CALL STACK from the bottom to the top to see where the error happened. Reading from bottom to top means going from
 
 code::
 Process-interpretPrintCmdLine

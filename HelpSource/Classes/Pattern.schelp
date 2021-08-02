@@ -369,9 +369,9 @@ Pn(p, 2).play;
 
 Pfin(12, Pn(p, inf)).play;
 
-// Pstutter( eventRepetitions, pattern ) - repeat each event from the pattern n times
+// Pdup( eventRepetitions, pattern ) - repeat each event from the pattern n times
 
-Pstutter(4, q).play
+Pdup(4, q).play
 
 //Pwhile(function, pattern)
 
@@ -477,8 +477,8 @@ Pbind(\degree,
 	) + Pn(Env([4, 0, 1, 4, 3, 4], [6.4, 6.4, 6.4, 6.4, 6.4], 'step')),
 	\dur, 0.2).play
 
-// PdurStutter( repetitionPattern, patternOfDurations ) -
-Pbindf(Pn(q), \dur, PdurStutter(
+// Psubdivide( repetitionPattern, patternOfDurations ) -
+Pbindf(Pn(q), \dur, Psubdivide(
 	Pseq(#[1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4, 5, 7, 15], inf),
 	Pseq(#[0.5], inf)
 	)
