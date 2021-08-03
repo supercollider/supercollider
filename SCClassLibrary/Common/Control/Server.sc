@@ -1,5 +1,5 @@
 ServerOptions {
-	classvar defaultValues;
+	classvar <defaultValues;
 
 	// order of variables is important here. Only add new instance variables to the end.
 	var <numAudioBusChannels;
@@ -56,6 +56,8 @@ ServerOptions {
 
 	var <>bindAddress;
 
+	var <>safetyClipThreshold;
+
 	*initClass {
 		defaultValues = IdentityDictionary.newFrom(
 			(
@@ -86,7 +88,7 @@ ServerOptions {
 				remoteControlVolume: false,
 				memoryLocking: false,
 				threads: nil,
-				useSystemClock: false,
+				useSystemClock: true,
 				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
 				reservedNumAudioBusChannels: 0,
 				reservedNumControlBusChannels: 0,
@@ -98,6 +100,7 @@ ServerOptions {
 				recChannels: 2,
 				recBufSize: nil,
 				bindAddress: "127.0.0.1",
+				safetyClipThreshold: 1.26 // ca. 2 dB
 			)
 		)
 	}
@@ -189,7 +192,7 @@ ServerOptions {
 			});
 		}
 		{
-			o = o ++ " -H % %".format(inDevice.asString.quote, outDevice.asString.quote);
+			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote);
 		};
 		if (verbosity != defaultValues[\verbosity], {
 			o = o ++ " -V " ++ verbosity;
@@ -218,9 +221,14 @@ ServerOptions {
 		});
 		if (useSystemClock, {
 			o = o ++ " -C 1"
+		}, {
+			o = o ++ " -C 0"
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
+		});
+		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil, {
+			o = o ++ " -s " ++ safetyClipThreshold;
 		});
 		^o
 	}
@@ -328,6 +336,7 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
+	classvar <>defaultOptionsClass;
 
 	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -357,13 +366,15 @@ Server {
 		bufferAllocClass = ContiguousBlockAllocator;
 		busAllocClass = ContiguousBlockAllocator;
 
+		defaultOptionsClass = if(Platform.hasBelaSupport, BelaServerOptions, ServerOptions);
+
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
 	}
 
 	*fromName { |name|
 		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
+			Server(name, NetAddr.new("127.0.0.1", 57110))
 		}
 	}
 
@@ -380,13 +391,17 @@ Server {
 	*remote { |name, addr, options, clientID|
 		var result;
 		result = this.new(name, addr, options, clientID);
-		result.startAliveThread;
+		if(options.protocol == \tcp) {
+			addr.tryConnectTCP({ result.startAliveThread }, nil, 20)
+		} {
+			result.startAliveThread;
+		};
 		^result;
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
-		options = argOptions ?? { ServerOptions.new };
+		options = argOptions ?? { defaultOptionsClass.new };
 
 		// set name to get readable posts from clientID set
 		name = argName.asSymbol;
@@ -761,10 +776,13 @@ Server {
 	/* scheduling */
 
 	wait { |responseName|
-		var routine = thisThread;
+		var condition = Condition.new;
 		OSCFunc({
-			routine.resume(true)
+			condition.test = true;
+			condition.signal
 		}, responseName, addr).oneShot;
+
+		condition.wait
 	}
 
 	waitForBoot { |onComplete, limit = 100, onFailure|
@@ -1085,8 +1103,15 @@ Server {
 
 		addr.sendMsg("/quit");
 
-		if(watchShutDown and: { this.unresponsive }) {
-			"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+		if(this.unresponsive) {
+			if(pid.notNil) {
+				"Server '%' is currently unresponsive. Forcing process to stop via system command.".format(name).postln;
+				thisProcess.platform.killProcessByID(pid);
+			} {
+				if(watchShutDown) {
+					"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+				};
+			};
 			watchShutDown = false;
 		};
 
@@ -1103,8 +1128,6 @@ Server {
 			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
-		// let server process reset pid to nil!
-		// pid = nil;
 		sendQuit = nil;
 		maxNumClients = nil;
 
@@ -1129,7 +1152,15 @@ Server {
 		// you can't cause them to quit via OSC (the boot button)
 
 		// this brutally kills them all off
-		thisProcess.platform.killAll(this.program.basename);
+		thisProcess.platform.name.switch(
+			\windows, {
+				thisProcess.platform.killAll("scsynth.exe");
+				thisProcess.platform.killAll("supernova.exe");
+			}, {
+				thisProcess.platform.killAll("scsynth");
+				thisProcess.platform.killAll("supernova");
+			}
+		);
 		this.quitAll(watchShutDown: false);
 	}
 

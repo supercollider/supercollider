@@ -153,7 +153,7 @@ private:: prGetBackgroundColor, prGetBounds, prIsEditable, propen, prGetTitle, p
 subsection:: General Document Properties
 
 method:: path
-Get / set the the Document's path.
+Get / set the Document's path.
 argument:: apath
 An instance of link::Classes/String::. A files system path.
 discussion::
@@ -178,7 +178,7 @@ Document.current == Document.listener; // presumably returns false
 ::
 
 method:: editable
-Get / set the the document is editable.
+Get / set the document is editable.
 argument:: bool
 An instance of link::Classes/Boolean::.
 
@@ -320,7 +320,7 @@ Document.current.keyUpAction = { arg ...args; args.postln };
 Document.current.keyUpAction = nil;
 ::
 
-subsection:: Editing Content
+subsection:: Accessing and Editing Content
 
 method:: selectLine
 Select a line of the document by number.
@@ -418,6 +418,28 @@ Document.current.string_(": test test test test test ",
 )
 // Watch me change content
 ::
+
+method:: getText
+Get a range of text from the document. Synchronous. The text is directly returned.
+argument:: start
+An link::Classes/Integer:: for the starting position to access.
+argument:: range
+An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieves to the end of the document.
+
+method:: getTextAsync
+Get a range of text from the document. Asynchronous. The text is passed to the code::action:: function as an argument.
+
+note:: Currently, in Windows, link::Classes/Document#-getText:: and link::Classes/Document#-string:: may be unreliable. Windows users are recommended to use link::Classes/Document#-getTextAsync:: for the time being.
+::
+
+argument:: action
+A function to evaluate after the request is complete. It is passed one argument, a link::Classes/String::, for the retrieved contents.
+argument:: start
+An link::Classes/Integer:: for the starting position to access.
+argument:: range
+An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieves to the end of the document.
+
+
 
 subsection:: Subclassing and Internal Methods
 

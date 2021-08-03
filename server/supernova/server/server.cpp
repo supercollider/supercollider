@@ -18,6 +18,8 @@
 
 #include <stdexcept>
 
+#include "SC_Win32Utils.h"
+
 #include "nova-tt/thread_affinity.hpp"
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"
@@ -43,7 +45,10 @@ namespace nova {
 class nova_server* instance = nullptr;
 
 nova_server::nova_server(server_arguments const& args):
+    // FIXME: In case of multiple supernova instances on the same port (e.g. when running on
+    // different interfaces), they can end up using the same shmem location.
     server_shared_memory_creator(args.port(), args.control_busses),
+
     scheduler<thread_init_functor>(args.threads, !args.non_rt),
     buffer_manager(args.buffers),
     sc_osc_handler(args) {
@@ -60,7 +65,7 @@ nova_server::nova_server(server_arguments const& args):
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
     /** first guess: needs to be updated, once the backend is started */
-    time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);
+    time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate ? args.samplerate : 44100);
 
     if (!args.non_rt)
         start_receive_thread();
@@ -221,7 +226,7 @@ static bool set_realtime_priority(int thread_index) {
 
 #ifdef NOVA_TT_PRIORITY_PERIOD_COMPUTATION_CONSTRAINT
     double blocksize = server_arguments::instance().blocksize;
-    double samplerate = server_arguments::instance().samplerate;
+    double samplerate = server_arguments::instance().samplerate ? server_arguments::instance().samplerate : 44100;
 
     double ns_per_block = 1e9 / samplerate * blocksize;
 

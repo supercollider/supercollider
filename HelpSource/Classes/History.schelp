@@ -383,23 +383,23 @@ History.showLogFile; // current logfile...
 // filtering lines, to get subsets of all lines by key and/or searchstring:
 
 // get indices for specific keys
-h = History([[0, \me, "a=1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \her, "\"Herstory ==== \".postln"]]);
+h = History([[0, \me, "a=1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \they, "\"The-story ==== \".postln"]]);
 h.keys;
 h.matchKeys(\me);
 h.matchKeys(\you);
-h.matchKeys(\her);
+h.matchKeys(\they);
 h.matchKeys;        // nil if no test
 h.matchKeys(\all);  // all keys match
-h.matchKeys([\me, \her])
+h.matchKeys([\me, \they])
 h.matchKeys(\isidor) // empty array if no line found for this key
 
-h.matchString("Herst");
+h.matchString("The-s");
 h.matchString("q");
 h.matchString("1+");
-h.matchString("herStory", false); // ignoreCase is false by default
-h.matchString("herStory", true); // ignoreCase
+h.matchString("the-Story", false); // ignoreCase is false by default
+h.matchString("the-Story", true); // ignoreCase
 
-h.indicesFor([\me, \her], "=");	// indices for line written by \me or \her AND containing "=";
+h.indicesFor([\me, \they], "=");	// indices for line written by \me or \her AND containing "=";
 
 // searching is only an interface/access feature,
 // so please read on at HistoryGui help ...

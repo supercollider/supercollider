@@ -24,6 +24,7 @@
 #include "SC_InlineUnaryOp.h"
 #include <cmath>
 
+/// Modulo
 inline float sc_mod(float in, float hi) {
     // avoid the divide if possible
     const float lo = (float)0.;
@@ -43,6 +44,7 @@ inline float sc_mod(float in, float hi) {
     return in - hi * sc_floor(in / hi);
 }
 
+/// Modulo
 inline double sc_mod(double in, double hi) {
     // avoid the divide if possible
     const double lo = (double)0.;
@@ -62,6 +64,8 @@ inline double sc_mod(double in, double hi) {
     return in - hi * sc_floor(in / hi);
 }
 
+
+/// Wrap in between lo and hi
 inline float sc_wrap(float in, float lo, float hi) {
     float range;
     // avoid the divide if possible
@@ -83,6 +87,7 @@ inline float sc_wrap(float in, float lo, float hi) {
     return in - range * sc_floor((in - lo) / range);
 }
 
+/// Wrap in between lo and hi
 inline double sc_wrap(double in, double lo, double hi) {
     double range;
     // avoid the divide if possible
@@ -104,6 +109,7 @@ inline double sc_wrap(double in, double lo, double hi) {
     return in - range * sc_floor((in - lo) / range);
 }
 
+/// Wrap in between lo and hi to range
 inline double sc_wrap(double in, double lo, double hi, double range) {
     // avoid the divide if possible
     if (in >= hi) {
@@ -122,6 +128,7 @@ inline double sc_wrap(double in, double lo, double hi, double range) {
     return in - range * sc_floor((in - lo) / range);
 }
 
+/// Wrap in between lo and hi to range
 inline double sc_wrap(float in, float lo, float hi, float range) {
     // avoid the divide if possible
     if (in >= hi) {
@@ -140,6 +147,7 @@ inline double sc_wrap(float in, float lo, float hi, float range) {
     return in - range * sc_floor((in - lo) / range);
 }
 
+/// Folds in to value between lo and hi
 inline float sc_fold(float in, float lo, float hi) {
     float x, c, range, range2;
     x = in - lo;
@@ -167,6 +175,7 @@ inline float sc_fold(float in, float lo, float hi) {
     return c + lo;
 }
 
+/// Folds in to value between lo and hi
 inline double sc_fold(double in, double lo, double hi) {
     double x, c, range, range2;
     x = in - lo;
@@ -194,6 +203,7 @@ inline double sc_fold(double in, double lo, double hi) {
     return c + lo;
 }
 
+/// Folds in to value between lo and hi
 inline double sc_fold(float in, float lo, float hi, float range, float range2) {
     float x, c;
     x = in - lo;
@@ -244,27 +254,37 @@ inline double sc_fold(double in, double lo, double hi, double range, double rang
     return c + lo;
 }
 
+/// Exponentiation
 inline float sc_pow(float a, float b) { return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b); }
 
+/// Exponentiation
 inline double sc_pow(double a, double b) { return a >= 0.f ? std::pow(a, b) : -std::pow(-a, b); }
 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline float sc_round(float x, float quant) { return quant == 0. ? x : sc_floor(x / quant + .5f) * quant; }
 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline double sc_round(double x, double quant) { return quant == 0. ? x : sc_floor(x / quant + .5) * quant; }
 
+/// Round x up to multiple of quant
 inline float sc_roundUp(float x, float quant) { return quant == 0. ? x : sc_ceil(x / quant) * quant; }
 
+/// Round x up to multiple of quant
 inline double sc_roundUp(double x, double quant) { return quant == 0. ? x : sc_ceil(x / quant) * quant; }
 
+/// Truncate to multiple of quant (e.g. it rounds numbers down to a multiple of quant)
 inline float sc_trunc(float x, float quant) { return quant == 0. ? x : sc_floor(x / quant) * quant; }
 
+/// Truncate to multiple of quant (e.g. it rounds numbers down to a multiple of quant)
 inline double sc_trunc(double x, double quant) { return quant == 0. ? x : sc_floor(x / quant) * quant; }
 
+/// Computes the arc tangent of a/b using the signs of arguments to determine the correct quadrant.
 inline float sc_atan2(float a, float b) { return std::atan2(a, b); }
 
 const float kFSQRT2M1 = static_cast<float32>(sqrt(2.) - 1.);
 const double kDSQRT2M1 = sqrt(2.) - 1.;
 
+///  Returns the hypotenuse of a right-angled triangle whose legs are x and y.
 inline float sc_hypotx(float x, float y) {
     float minxy;
 
@@ -276,6 +296,11 @@ inline float sc_hypotx(float x, float y) {
     return x + y - kFSQRT2M1 * minxy;
 }
 
+/**
+ * Compute abs(x) + abs(y) - (min(abs(x), abs(y)) * (sqrt(2) - 1)),
+ * the minimum distance one will have to travel from the origin to (x,y)
+ * using only orthogonal and diagonal movements.
+ */
 inline double sc_hypotx(double x, double y) {
     double minxy;
 
@@ -309,6 +334,7 @@ inline int sc_mod(int a, int b)
 }
 */
 
+/// Modulo
 inline int sc_mod(int in, int hi) {
     // avoid the divide if possible
     const int lo = 0;
@@ -333,8 +359,10 @@ inline int sc_mod(int in, int hi) {
     return c;
 }
 
+/// Wrap in between lo and hi
 inline int sc_wrap(int in, int lo, int hi) { return sc_mod(in - lo, hi - lo + 1) + lo; }
 
+/// Folds in to value between lo and hi
 inline int sc_fold(int in, int lo, int hi) {
     int b = hi - lo;
     int b2 = b + b;
@@ -344,7 +372,7 @@ inline int sc_fold(int in, int lo, int hi) {
     return c + lo;
 }
 
-
+/// Greatest common divisor
 inline int sc_gcd(int a, int b) {
     if (a == 0)
         return b;
@@ -384,7 +412,7 @@ inline int sc_gcd(int a, int b) {
     return a;
 }
 
-
+/// Least common multiple
 inline int sc_lcm(int a, int b) {
     if (a == 0 || b == 0)
         return 0;
@@ -393,6 +421,7 @@ inline int sc_lcm(int a, int b) {
 }
 
 
+/// Greatest common divisor
 inline long sc_gcd(long a, long b) {
     if (a == 0)
         return b;
@@ -432,7 +461,7 @@ inline long sc_gcd(long a, long b) {
     return a;
 }
 
-
+/// Least common multiple
 inline long sc_lcm(long a, long b) {
     if (a == 0 || b == 0)
         return (long)0;
@@ -440,30 +469,37 @@ inline long sc_lcm(long a, long b) {
         return (a * b) / sc_gcd(a, b);
 }
 
-
+/// Greatest common divisor
 inline float sc_gcd(float u, float v) { return (float)sc_gcd((long)std::trunc(u), (long)std::trunc(v)); }
 
-
+/// Least common multiple
 inline float sc_lcm(float u, float v) { return (float)sc_lcm((long)std::trunc(u), (long)std::trunc(v)); }
 
-
+/// Performs a bitwise and with the number b
 inline int sc_bitAnd(int a, int b) { return a & b; }
 
+/// Performs a bitwise or with the number b
 inline int sc_bitOr(int a, int b) { return a | b; }
 
+/// Performs a binary leftshift with the number b
 inline int sc_leftShift(int a, int b) { return a << b; }
 
+/// Performs a binary rightshift with the number b
 inline int sc_rightShift(int a, int b) { return a >> b; }
 
+/// Recast a as an unsigned integer and then perform a binary rightshift with the number b
 inline int sc_unsignedRightShift(int a, int b) { return (int)((uint32)a >> b); }
 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline int sc_round(int x, int quant) { return quant == 0 ? x : sc_div(x + quant / 2, quant) * quant; }
 
-
+/// Round x up to multiple of quant
 inline int sc_roundUp(int x, int quant) { return quant == 0 ? x : sc_div(x + quant - 1, quant) * quant; }
 
+/// Truncate to multiple of quant (e.g. it rounds numbers down to a multiple of quant)
 inline int sc_trunc(int x, int quant) { return quant == 0 ? x : sc_div(x, quant) * quant; }
 
+/// Exponentiation: x to the power of an integer
 template <typename F> inline F sc_powi(F x, unsigned int n) {
     F z = 1;
     while (n != 0) {
@@ -477,16 +513,40 @@ template <typename F> inline F sc_powi(F x, unsigned int n) {
     return z;
 }
 
+/**
+ * Thresholding:
+ * 0 when a < b, otherwise a
+ */
 template <typename T, typename U> inline T sc_thresh(T a, U b) { return a < b ? (T)0 : a; }
 
+/**
+ * Bilateral clipping.
+ * clips input wave a to +/- b
+ */
 template <typename T> inline T sc_clip2(T a, T b) { return sc_clip(a, -b, b); }
 
+/**
+ * Bilateral wrapping.
+ * Wraps input a to +/- b
+ */
 template <typename T> inline T sc_wrap2(T a, T b) { return sc_wrap(a, -b, b); }
 
+/**
+ * Bilateral folding.
+ * Folds input a to +/- b
+ */
 template <typename T> inline T sc_fold2(T a, T b) { return sc_fold(a, -b, b); }
 
+/*
+ * Excess.
+ * Residual of clipping a between -/+b
+ */
 template <typename T> inline T sc_excess(T a, T b) { return a - sc_clip(a, -b, b); }
 
+/*
+ * Scale negative part of input:
+ * a*b when a < 0, otherwise a.
+ */
 template <typename T> inline T sc_scaleneg(T a, T b) {
     if (a < 0)
         return a * b;
@@ -494,16 +554,28 @@ template <typename T> inline T sc_scaleneg(T a, T b) {
         return a;
 }
 
+/*
+ * Scale negative part of input:
+ * a*b when a < 0, otherwise a.
+ */
 template <> inline float sc_scaleneg<float>(float a, float b) {
     b = 0.5f * b + 0.5f;
     return (std::abs(a) - a) * b + a;
 }
 
+/*
+ * Scale negative part of input:
+ * a*b when a < 0, otherwise a.
+ */
 template <> inline double sc_scaleneg<double>(double a, double b) {
     b = 0.5 * b + 0.5;
     return (std::abs(a) - a) * b + a;
 }
 
+/*
+ * Two quadrant multiply.
+ * 0 when b <= 0, a*b when b > 0
+ */
 template <typename T> inline T sc_amclip(T a, T b) {
     if (b < 0)
         return 0;
@@ -511,27 +583,67 @@ template <typename T> inline T sc_amclip(T a, T b) {
         return a * b;
 }
 
+/*
+ * Two quadrant multiply.
+ * 0 when b <= 0, a*b when b > 0
+ */
 template <> inline float sc_amclip<float>(float a, float b) { return a * 0.5f * (b + std::abs(b)); }
 
+/*
+ * Two quadrant multiply.
+ * 0 when b <= 0, a*b when b > 0
+ */
 template <> inline double sc_amclip<double>(double a, double b) { return a * 0.5 * (b + std::abs(b)); }
 
+/*
+ * Ring modulation plus first source.
+ * Return the value of ((a*b) + a).
+ */
 template <typename T> inline T sc_ring1(T a, T b) { return a * b + a; }
 
+/*
+ * Ring modulation plus both sources.
+ * Return the value of (a*b) + a + b
+ */
 template <typename T> inline T sc_ring2(T a, T b) { return a * b + a + b; }
 
+/*
+ * Ring modulation variant.
+ * Returns the value of a*a*b
+ */
 template <typename T> inline T sc_ring3(T a, T b) { return a * a * b; }
 
+/*
+ * Ring modulation variant.
+ * Returns the value of (a * a * b) - (a * b * b)
+ * */
 template <typename T> inline T sc_ring4(T a, T b) { return a * a * b - a * b * b; }
 
+/*
+ * Difference of squares.
+ * Return the value of (a*a) - (b*b)
+ */
 template <typename T> inline T sc_difsqr(T a, T b) { return a * a - b * b; }
 
+/*
+ * Sum of squares.
+ * Return the value of a*a + b*b
+ */
 template <typename T> inline T sc_sumsqr(T a, T b) { return a * a + b * b; }
 
+/*
+ * Square of the sum.
+ * Return the value of (a + b)**2
+ */
 template <typename T> inline T sc_sqrsum(T a, T b) {
     T z = a + b;
     return z * z;
 }
 
+/*
+ * Square of the difference.
+ * Return the value of (a - b)**2
+ */
 template <typename T> inline T sc_sqrdif(T a, T b) {
     T z = a - b;
     return z * z;
@@ -555,6 +667,7 @@ inline long sc_wrap(long in, long lo, long hi)
 	return sc_mod(in - lo, hi - lo + 1) + lo;
 }
 
+/// Folds in to value between lo and hi
 inline long sc_fold(long in, long lo, long hi)
 {
 	long b = hi - lo;
@@ -564,31 +677,37 @@ inline long sc_fold(long in, long lo, long hi)
 	return c + lo;
 }
 
+/// Performs a bitwise and with the number b
 inline long sc_bitAnd(long a, long b)
 {
 	return a & b;
 }
 
+/// Performs a bitwise or with the number b
 inline long sc_bitOr(long a, long b)
 {
 	return a | b;
 }
 
+/// Performs a binary leftshift with the number b
 inline long sc_leftShift(long a, long b)
 {
 	return a << b;
 }
 
+/// Performs a binary rightshift with the number b
 inline long sc_rightShift(long a, long b)
 {
 	return a >> b;
 }
 
+/// Recasts a as unsigned and performs a binary rightshift with the number b
 inline long sc_unsignedRightShift(long a, long b)
 {
 	return (unsigned long)a >> b;
 }
 
+/// Quantization by rounding. Rounds x to the nearest multiple of quant
 inline long sc_round(long x, long quant)
 {
 	return quant==0 ? x : sc_div(x + quant/2, quant) * quant;

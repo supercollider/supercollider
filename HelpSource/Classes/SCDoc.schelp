@@ -35,9 +35,10 @@ method:: helpSourceDir
 get/set the system-wide directory of help sourcefiles. Defaults to code::Platform.classLibraryDir.dirname +/+ "HelpSource":: and should typically not be changed by the user.
 
 method:: helpSourceDirs
-get the list of HelpSource folders, including extensions and quarks.
+get the list of HelpSource folders, including extensions and quarks (unless they are excluded from library compilation, e.g. by link::Classes/LanguageConfig#*excludeDefaultPaths::)
 discussion::
-This searches recursively for all folders named "HelpSource" under code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir:: as well as including the system-wide code::helpSourceDir::
+This searches recursively for all folders named "HelpSource" under link::Classes/LanguageConfig#*includePaths::, as well as including the system-wide code::helpSourceDir::.
+Unless link::Classes/LanguageConfig#*excludeDefaultPaths:: is on, code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir:: are searched too.
 
 method:: findHelpFile
 Find help for a given string. Tries to be smart.
@@ -233,4 +234,3 @@ tree::
         ::
     ::
 ::
-

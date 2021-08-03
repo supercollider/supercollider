@@ -1,0 +1,125 @@
+# Copyright 2018-2019 Andrey Semashev
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at http://boost.org/LICENSE_1_0.txt)
+
+version: 1.0.{build}-{branch}
+
+shallow_clone: true
+
+branches:
+  only:
+    - master
+    - develop
+
+environment:
+  matrix:
+# AppVeyor doesn't provide 64-bit compilers for these MSVC versions
+#    - TOOLSET: msvc-9.0
+#      ADDRESS_MODEL: 64
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#    - TOOLSET: msvc-10.0
+#      ADDRESS_MODEL: 64
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#    - TOOLSET: msvc-11.0
+#      ADDRESS_MODEL: 64
+#      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-12.0
+      ADDRESS_MODEL: 64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.0
+      ADDRESS_MODEL: 64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.1
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.2
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: clang-win
+      ADDRESS_MODEL: 64
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,03-gnu,11-gnu
+      ADDPATH: C:\cygwin64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14,03-gnu,11-gnu,14-gnu
+      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 64
+      CXXSTD: 03,11,14,17,03-gnu,11-gnu,14-gnu,17-gnu
+      ADDPATH: C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+    - TOOLSET: msvc-9.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-10.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-11.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-12.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.0
+      ADDRESS_MODEL: 32
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: msvc-14.1
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: msvc-14.2
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    - TOOLSET: clang-win
+      ADDRESS_MODEL: 32
+      CXXSTD: 14,17
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,03-gnu,11-gnu
+      ADDPATH: C:\cygwin\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,03-gnu,11-gnu
+      ADDPATH: C:\mingw\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    - TOOLSET: gcc
+      ADDRESS_MODEL: 32
+      CXXSTD: 03,11,14,03-gnu,11-gnu,14-gnu
+      ADDPATH: C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+install:
+  - set GIT_FETCH_JOBS=8
+  - cd ..
+  - git clone -b %APPVEYOR_REPO_BRANCH% https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - git submodule init tools/boostdep
+  - git submodule init tools/build
+  - git submodule init tools/boost_install
+  - git submodule init libs/headers
+  - git submodule init libs/config
+  - git submodule update --jobs %GIT_FETCH_JOBS%
+  - if not exist libs\sync\ mkdir libs\sync
+  - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\sync
+  - python tools/boostdep/depinst/depinst.py --git_args "--jobs %GIT_FETCH_JOBS%" sync
+  - cmd /c bootstrap
+  - b2 headers
+
+build: off
+
+test_script:
+  - PATH=%ADDPATH%;%PATH%
+  - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
+  - b2 -j %NUMBER_OF_PROCESSORS% libs/sync/test variant=release toolset=%TOOLSET% address-model=%ADDRESS_MODEL% %CXXSTD% %B2_ARGS%

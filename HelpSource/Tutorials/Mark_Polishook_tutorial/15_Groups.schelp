@@ -206,7 +206,7 @@ s.queryAllNodes;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Or, use .head and .tail messages to attach the the nodes to the default_group).
+Or, use .head and .tail messages to attach the nodes to the default_group).
 
 code::
 (

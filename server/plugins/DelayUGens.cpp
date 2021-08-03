@@ -1232,7 +1232,7 @@ void BufWr_next(BufWr* unit, int inNumSamples) {
 void RecordBuf_Ctor(RecordBuf* unit) {
     uint32 numInputs = unit->mNumInputs - 8;
     unit->m_fbufnum = -1e9f;
-    unit->mIn = 0;
+    unit->mIn = nullptr;
     unit->m_writepos = (int32)ZIN0(1) * numInputs;
     unit->m_recLevel = ZIN0(2);
     unit->m_preLevel = ZIN0(3);
@@ -3457,7 +3457,7 @@ static bool DelayUnit_AllocDelayLine(DelayUnit* unit, const char* className) {
 	std::fill_n(unit->m_dlybuf, delaybufsize, std::numeric_limits<float>::signaling_NaN());
 #endif
 
-    if (unit->m_dlybuf == NULL) {
+    if (unit->m_dlybuf == nullptr) {
         SETCALC(ft->fClearUnitOutputs);
         ClearUnitOutputs(unit, 1);
 
@@ -3466,7 +3466,7 @@ static bool DelayUnit_AllocDelayLine(DelayUnit* unit, const char* className) {
     }
 
     unit->m_mask = delaybufsize - 1;
-    return (unit->m_dlybuf != NULL);
+    return (unit->m_dlybuf != nullptr);
 }
 
 template <typename Unit> static float CalcDelay(Unit* unit, float delaytime) {
@@ -3478,7 +3478,7 @@ template <typename Unit> static float CalcDelay(Unit* unit, float delaytime) {
 template <typename Unit> static bool DelayUnit_Reset(Unit* unit, const char* className) {
     unit->m_maxdelaytime = ZIN0(1);
     unit->m_delaytime = ZIN0(2);
-    unit->m_dlybuf = 0;
+    unit->m_dlybuf = nullptr;
 
     if (!DelayUnit_AllocDelayLine(unit, className))
         return false;
@@ -4489,7 +4489,7 @@ void ScopeOut_Ctor(ScopeOut* unit) {
     unit->m_fbufnum = -1e9;
     unit->m_framepos = 0;
     unit->m_framecount = 0;
-    unit->mIn = 0;
+    unit->mIn = nullptr;
     SETCALC(ScopeOut_next);
 }
 
@@ -5107,7 +5107,7 @@ void GrainTap_next(GrainTap* unit, int inNumSamples) {
     LOOP1(inNumSamples, ZXP(out) = 0.f;);
 
     // do all current grains
-    prevGrain = NULL;
+    prevGrain = nullptr;
     grain = unit->firstActive;
     while (grain) {
         dsamp = grain->pos;
@@ -5269,9 +5269,9 @@ void GrainTap_Ctor(GrainTap* unit) {
     for (int i = 0; i < MAXDGRAINS - 1; ++i) {
         unit->grains[i].next = unit->grains + (i + 1);
     }
-    unit->grains[MAXDGRAINS - 1].next = NULL;
+    unit->grains[MAXDGRAINS - 1].next = nullptr;
     unit->firstFree = unit->grains;
-    unit->firstActive = NULL;
+    unit->firstActive = nullptr;
 }
 
 
@@ -5586,7 +5586,7 @@ void Pluck_Ctor(Pluck* unit) {
     unit->m_maxdelaytime = IN0(2);
     unit->m_delaytime = IN0(3);
     unit->m_decaytime = IN0(4);
-    unit->m_dlybuf = 0;
+    unit->m_dlybuf = nullptr;
     bool allocationSucessful = DelayUnit_AllocDelayLine(unit, "Pluck");
     if (!allocationSucessful)
         return;

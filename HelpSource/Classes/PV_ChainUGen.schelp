@@ -231,7 +231,7 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 		//[mag, phase].sqrt;
 		//[mag, 3.14.rand];
 		//[mag, LFNoise0.kr.range(0, 3.14)];
-		//[mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].stutter(8), 999999999999)]; // Can even use Demand ugens! One val demanded each frame
+		//[mag * Dseq([1, 0, 0, 1, 1, 0, 1, 0].dupEach(8), 999999999999)]; // Can even use Demand ugens! One val demanded each frame
 		//[mag.sqrt, 3.14.rand];
 		//if(index % 7 == 0, mag, 0); // Comb filter
 		//if(LFNoise0.kr(10) > 0.5, mag, 0);

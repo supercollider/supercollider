@@ -20,7 +20,7 @@
 #include <errno.h>
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/sync/exceptions/lock_error.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
 #include <boost/sync/detail/config.hpp>
@@ -67,11 +67,13 @@ private:
 public:
 #if defined(PTHREAD_MUTEX_INITIALIZER) && (defined(BOOST_SYNC_DETAIL_PTHREAD_HAS_TIMEDLOCK) || defined(PTHREAD_COND_INITIALIZER))
 #if !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
-#if !defined(BOOST_NO_CXX11_CONSTEXPR)
+// On Cygwin, as of 2019-01-03, PTHREAD_MUTEX_INITIALIZER and PTHREAD_COND_INITIALIZER are defined as a cast of an integer constant
+// to a pointer, which is equivalent to a reinterpret_cast in C++ and is not a valid constant expression.
+#if !defined(BOOST_NO_CXX11_CONSTEXPR) && !defined(__CYGWIN__)
 #define BOOST_SYNC_DEFINES_TIMED_MUTEX_CONSTEXPR_CONSTRUCTOR
+    constexpr
 #endif
-
-    BOOST_CONSTEXPR timed_mutex() BOOST_NOEXCEPT :
+    timed_mutex() BOOST_NOEXCEPT :
         m_mutex(PTHREAD_MUTEX_INITIALIZER)
 #if !defined(BOOST_SYNC_DETAIL_PTHREAD_HAS_TIMEDLOCK)
         , m_cond(PTHREAD_COND_INITIALIZER),
@@ -79,7 +81,7 @@ public:
 #endif
     {
     }
-#else
+#else // !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
     timed_mutex() BOOST_NOEXCEPT
     {
         BOOST_CONSTEXPR_OR_CONST pthread_mutex_t temp = PTHREAD_MUTEX_INITIALIZER;
@@ -91,18 +93,18 @@ public:
         m_is_locked = false;
 #endif
     }
-#endif
+#endif // !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
 #else // defined(PTHREAD_MUTEX_INITIALIZER)
     timed_mutex()
     {
-        int const res = pthread_mutex_init(&m_mutex, NULL);
-        if (res)
+        int res = pthread_mutex_init(&m_mutex, NULL);
+        if (BOOST_UNLIKELY(res != 0))
             BOOST_SYNC_DETAIL_THROW(resource_error, (res)("timed_mutex constructor failed in pthread_mutex_init"));
 
 #if !defined(BOOST_SYNC_DETAIL_PTHREAD_HAS_TIMEDLOCK)
-        int const res2 = pthread_cond_init(&m_cond, NULL);
-        if (res2)
-            BOOST_SYNC_DETAIL_THROW(resource_error, (res2)("timed_mutex constructor failed in pthread_cond_init"));
+        res = pthread_cond_init(&m_cond, NULL);
+        if (BOOST_UNLIKELY(res != 0))
+            BOOST_SYNC_DETAIL_THROW(resource_error, (res)("timed_mutex constructor failed in pthread_cond_init"));
         m_is_locked = false;
 #endif
     }
@@ -121,7 +123,7 @@ public:
     void lock()
     {
         int const res = sync::detail::posix::pthread_mutex_lock(&m_mutex);
-        if (res)
+        if (BOOST_UNLIKELY(res != 0))
             BOOST_SYNC_DETAIL_THROW(lock_error, (res)("timed_mutex lock failed in pthread_mutex_lock"));
     }
 
@@ -134,9 +136,9 @@ public:
     {
         int const res = sync::detail::posix::pthread_mutex_trylock(&m_mutex);
 
-        if (res == 0)
+        if (BOOST_LIKELY(res == 0))
             return true;
-        else if (res != EBUSY)
+        else if (BOOST_UNLIKELY(res != EBUSY))
             BOOST_SYNC_DETAIL_THROW(lock_error, (res)("timed_mutex try_lock failed in pthread_mutex_trylock"));
         return false;
     }
@@ -211,9 +213,9 @@ private:
 
         int const res = sync::detail::posix::pthread_mutex_timedlock(&m_mutex, &t.get());
 
-        if (res == 0)
+        if (BOOST_LIKELY(res == 0))
             return true;
-        else if (res != ETIMEDOUT)
+        else if (BOOST_UNLIKELY(res != ETIMEDOUT))
             BOOST_SYNC_DETAIL_THROW(lock_error, (res)("timed_mutex timed_lock failed in pthread_mutex_timedlock"));
         return false;
 
@@ -230,7 +232,7 @@ private:
                 else
                     return false;
             }
-            else if (cond_res != 0)
+            else if (BOOST_UNLIKELY(cond_res != 0))
             {
                 BOOST_SYNC_DETAIL_THROW(lock_error, (cond_res)("timed_mutex timed_lock failed in pthread_cond_timedwait"));
             }

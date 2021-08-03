@@ -158,10 +158,10 @@ void QcTextEdit::keyPressEvent(QKeyEvent* e) {
         QTextCursor c(textCursor());
         QString code;
 
-        if (c.hasSelection()) {
+        if (c.hasSelection())
             code = c.selectedText();
-        }
-        { code = c.block().text(); }
+        else
+            code = c.block().text();
 
         Q_EMIT(interpret(prepareText(code)));
 

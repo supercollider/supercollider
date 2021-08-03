@@ -8,7 +8,7 @@ Specs specify what kind of input is required or permissible, and what the range 
 
 ControlSpec is used by GUI sliders and knobs to specify the range and curve of the controls. Input datatypes are of interest to functions, to gui interface objects (sliders etc.) and can also be used for introspection.
 
-The class Spec itself holds a master link::Classes/IdentityDictionary:: of common specifications. The name that the spec was stored as can then be used as a shorthand to refer to specs:
+The class Spec itself holds a global link::Classes/IdentityDictionary:: of common specifications. The name that the spec was stored as can then be used as a shorthand to refer to specs:
 code::
 \freq.asSpec
 ::

@@ -179,6 +179,11 @@ Platform {
 		^this.primitiveFailed
 	}
 
+	*hasBelaSupport {
+		_Platform_hasBelaSupport
+		^this.primitiveFailed
+	}
+
 	isSleeping { ^false } // unless defined otherwise
 
 	// used on systems to deduce a svn directory path, if system wide location is used for installed version. (tested on Linux).

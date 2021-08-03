@@ -72,23 +72,27 @@ section:: Linux
 By default, SuperCollider on Linux uses JACK, and the audio device selection is managed by the JACK server. teletype::ServerOptions:: cannot override JACK's selection of audio hardware.
 
 subsection:: Setup with JACK server
-note::The SuperCollider server is considered a JACK emphasis::client::. In the following section, the term emphasis::client:: will refer to the SuperCollider server, from the perspective of JACK. ::
+The SuperCollider server is considered a JACK emphasis::client::. In the following section, the term emphasis::client:: will refer to the SuperCollider server, from the perspective of JACK.
 
 When the server is compiled to use JACK as the audio backend, the code::ServerOption::'s teletype::device:: can be used in two ways:
-list::
-## to set the client name to register with JACK:
+to set the client name to register with JACK:
 code::
 Server.default.options.device = "my_synth";
 ::
-## to use a specific JACK server, as well as set the client name:
+to use a specific JACK server, as well as set the client name:
 code::
 Server.default.options.device = "JACKServerName:scsynthName";
 ::
-::
 A code::nil:: device is equivalent to code::Server.default.options.device = "default:SuperCollider";::
 
+subsection:: Jack Environment variables
+
 The JACK connections can be configured via the environment variables teletype::SC_JACK_DEFAULT_INPUTS:: and
-teletype::SC_JACK_DEFAULT_OUTPUTS::. The format is either a string that specifies another jack client or a comma-separated list of jack ports.
+teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system preferences for Jack inputs and outputs to/from the scsynth server. 
+
+These variables are written as a string that specifies another jack client or a comma-separated list of jack ports formatted as a string.
+
+If these are not set, SuperCollider will default to connecting SuperCollider's inputs and outputs to your system's inputs and outputs. This is the recommended way of changing the Jack environment variables for SuperCollider from within a SuperCollider script:
 
 code::
 // connect first to input channels with system
@@ -96,6 +100,13 @@ code::
 
 // connect all output channels with system
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+::
+
+As an alternative, these may be also be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell:
+
+code::
+export SC_JACK_DEFAULT_INPUTS = "system"
+export SC_JACK_DEFAULT_OUTPUTS = "system"
 ::
 
 section:: Windows
@@ -116,6 +127,8 @@ ServerOptions.inDevices; // input devices
 ServerOptions.outDevices; // output devices
 ::
 Partial device name matching is supported in Windows (though not in macOS).
+
+note:: Leaving the code::sampleRate:: (e.g. code::Server.default.options.sampleRate::) as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
 
 subsection:: Choosing the device and the API
 list::

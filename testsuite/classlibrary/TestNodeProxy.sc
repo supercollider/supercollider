@@ -243,5 +243,150 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.source, 1967, "copying a proxy should return an independent object");
 	}
 
+	test_control_fade {
+		var server = Server(this.class.name);
+		var result, proxy, timeout;
+		var cond = Condition.new;
+		var fadeTime = 0.1;
+		var waitTime = (fadeTime + (server.latency * 2) + 1e-2);
+		var resp;
+
+		server.bootSync;
+
+		proxy = NodeProxy(server);
+		proxy.source = { DC.kr(2000) };
+		proxy.fadeTime = fadeTime;
+
+		proxy.source = 440;
+		waitTime.wait;
+
+		resp = OSCFunc({ cond.unhang; resp.free; }, '/c_set');
+		timeout = fork { 1.wait; cond.unhang };
+		proxy.bus.get({ |val| result = val });
+		cond.hang;
+		timeout.stop;
+		resp.free;
+
+		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
+
+		server.quit;
+		server.remove;
+	}
+
+	test_map_rates {
+
+		var p = ProxySpace.new.use {
+
+			~out = { \in.ar(0 ! 2) };
+			~osc = { |freq = 440| Saw.ar(freq).dup };
+			~osc <>> ~out;
+			this.assertEquals(~out.controlNames.detect { |cn| cn.name == \in }.rate, \audio,
+				"report the correct controlNames rates for audio rate proxies"
+			);
+		};
+
+		p.clear;
+
+	}
+
+}
+
+
+TestNodeProxyBusMapping : UnitTest {
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+		this.bootServer(server);
+		server.sync;
+	}
+
+
+	tearDown {
+		server.quit.remove;
+	}
+
+	test_audiorate_mapping {
+		var proxy, controlProxy;
+		var synthValues, controlValues, defaultValues;
+
+		defaultValues = [-1.0, -2.0];
+		controlValues = [162.0, 54.0];
+
+		proxy = NodeProxy(server, \audio);
+		proxy.reshaping = \elastic;
+		proxy.fadeTime = 0;
+
+		proxy.source = {
+			var in = \in.ar(defaultValues);
+			A2K.kr(in);
+		};
+
+		controlProxy = NodeProxy(server, \control);
+		controlProxy.source = {
+			DC.ar(controlValues)
+		};
+
+		0.2.wait;
+
+		this.assert(proxy.rate == \control, "proxy should have initialized itself to control rate");
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, defaultValues, "before mapping, synth values should be default values");
+
+		proxy <<>.in controlProxy;
+
+		0.3.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, controlValues, "after mapping, synth should return mapped values");
+
+
+	}
+
+	test_audiorate_mapping_elasticity {
+		var proxy, controlProxy;
+		var synthValues, controlValues, defaultValues;
+
+		defaultValues = [-1.0, -2.0, -3.0];
+		controlValues = [162.0, 54.0, 45.0, 87.0];
+
+		proxy = NodeProxy(server, \audio, 7);
+		proxy.reshaping = \elastic;
+		proxy.fadeTime = 0.001;
+
+		proxy.source = {
+			var in = \in.ar(defaultValues);
+			A2K.kr(in);
+		};
+
+		controlProxy = NodeProxy(server, \audio, 2);
+		controlProxy.reshaping = \elastic;
+		controlProxy.fadeTime = 0.001;
+		controlProxy.source = {
+			DC.ar(controlValues)
+		};
+
+		0.2.wait;
+
+		this.assertEquals(proxy.rate, \control, "proxy should have initialized itself to control rate");
+		this.assertEquals(proxy.numChannels, defaultValues.size, "proxy should have initialized itself to the correct number of channels");
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues.round, defaultValues.round, "before mapping, synth values should be default values");
+
+		proxy <<>.in controlProxy;
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues.round, controlValues.keep(synthValues.size).round, "after mapping, synth should return mapped values");
+
+
+	}
 
 }

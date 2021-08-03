@@ -10,8 +10,10 @@
 #include <windows.h>
 #include "tss_windows_hooks.hpp"
 
-#if defined(__BORLANDC__)
+#if defined(BOOST_BORLANDC)
 extern "C" BOOL WINAPI DllEntryPoint(HINSTANCE /*hInstance*/, DWORD dwReason, LPVOID /*lpReserved*/)
+#elif defined(BOOST_EMBTC)
+extern "C" int _libmain(DWORD dwReason)
 #elif defined(_WIN32_WCE)
 extern "C" BOOL WINAPI DllMain(HANDLE /*hInstance*/, DWORD dwReason, LPVOID /*lpReserved*/)
 #else

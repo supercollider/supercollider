@@ -103,7 +103,11 @@ definitionlist::
 || When using TCP, the session password must be the first command sent. The default is no password. UDP ports never require passwords, so if password protection is desired, use TCP.
 
 ## -H device-name
+## -H input-device-name output-device-name
 || name of the hardware I/O device. If not provided, the default device is used. See link::Reference/AudioDeviceSelection:: for more details.
+note::
+To specify only input device and use default output, or only output device and use default input, use an empty string: code::'-H "" output-device-name':: or code::'-H input-device-name ""'::
+::
 
 ## -I input-streams-enable-string
 || Allows turning off input streams that you are not interested in on the device. If the string is 01100, for example, then only the second and third input streams on the device will be enabled. Turning off streams can reduce CPU load.

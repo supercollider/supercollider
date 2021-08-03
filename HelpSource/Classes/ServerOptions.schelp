@@ -93,12 +93,12 @@ method:: protocol
 A Symbol representing the communications protocol. Either code::\udp:: or code::\tcp::. The default is code::\udp::.
 
 method:: bindAddress
-scsynth only. The IP address that the server's TCP or UDP socket is listening on. The default value is code::"127.0.0.1"::, meaning only listen to OSC messages on the host.
+The IP address that the server's TCP or UDP socket is listening on. The default value is code::"127.0.0.1"::, meaning only listen to OSC messages on the host.
 
 warning::
 Until SuperCollider 3.10.3, this was set to code::"0.0.0.0":: (listen on all network interfaces). However, this is a dangerous default configuration — for most users working on laptops connected to WiFi, this means that anyone on your local network can send OSC messages to the server. code::"0.0.0.0":: is only useful if you are running networked server/client, and only safe if your networking is properly configured.
 
-supernova always listens to all network interfaces, and ignores the code::bindAddress:: option. This cannot be configured. To avoid exposing yourself to security issues, you should switch to scsynth, or disable networking on your machine when running supernova.
+Before SuperCollider 3.12 supernova listened to all network interfaces and ignored the code::bindAddress:: option. In later versions the behavior is identical to scsynth. 
 ::
 
 method:: remoteControlVolume
@@ -106,6 +106,8 @@ A Boolean indicating whether this server should allow its volume to be set remot
 
 method:: sampleRate
 The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.
+
+note:: On Windows, leaving the code::sampleRate:: as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
 
 method:: verbosity
 Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
@@ -125,13 +127,13 @@ uses the one thread per CPU. Default is code::nil::.
 
 method:: useSystemClock
 Tells supernova whether to sync to the driver's sample clock, or to the system clock.
-For scsynth this value is ignored.
+note:: scsynth always uses system clock and this value is ignored.::
 list::
-## code::false:: (default) -- Use the sample clock. This helps to
+## code::true:: (default) -- Use the system clock. Timestamped messages will maintain consistent
+latency over long sessions, but may not be perfectly sample-accurate.
+## code::false:: -- Use the sample clock. This helps to
 support sample-accurate scheduling; however, messaging latency from
 the SuperCollider language will drift over long periods of time.
-## code::true:: -- Use the system clock. Timestamped messages will maintain consistent
-latency over long sessions, but may not be perfectly sample-accurate.
 ::
 
 method:: memoryLocking
@@ -140,6 +142,10 @@ A Boolean indicating whether the server should try to lock its memory into physi
 method:: maxLogins
 An Integer indicating the maximum number of clients which can simultaneously receive notifications from the server. When using TCP this is also the maximum number of simultaneous connections. This is also used by the language to split ranges of link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In multi-client situations you will need to set this to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. The default is 1.
 
+method:: safetyClipThreshold
+note:: MacOS only::
+A Float indicating a safety threshold for output values to be clipped to. This is necessary on macOS because setting a low system volume doesn't prevent output values greater than +/- 1 from sounding extremely loud, which can happen by mistake, e.g. when sending a negative coefficient to a filter. With this threshold, values are clipped just before being written to hardware output busses, which does not affect the recording. However, the signal will be affected if it's above the threshold and the sound is routed to other apps using 3rd-party software.
+Defaults to a threshold of 1.26 (ca. 2 dB), to save some ears and still allow some headroom. Setting safetyClipThreshold to code::inf::, code::0::, or a negative value, disables clipping altogether.
 
 subsection:: Other Instance Methods
 method:: asOptionsString

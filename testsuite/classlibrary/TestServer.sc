@@ -5,6 +5,8 @@ TestServer : UnitTest {
 	// helper method, not a test
 	sync { |size|
 		var f, condition, bundleSize;
+		var condvar = CondVar();
+
 		f = big.copyRange(0, (size ? big.size)-1);
 		bundleSize = f.bundleSize;
 
@@ -12,8 +14,8 @@ TestServer : UnitTest {
 		server.sync(condition, f, server.latency);
 
 		// 60 seconds
-		this.wait({condition.test}, "waiting for server to finish sync", 60);
-		this.assert(true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
+		condvar.waitFor(60, condition.test);
+		this.assertEquals(condition.test, true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
 	}
 
 	test_sync5 {

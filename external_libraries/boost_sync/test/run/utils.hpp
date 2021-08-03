@@ -8,6 +8,7 @@
 #ifndef BOOST_SYNC_LIBS_TEST_UTILS_HPP_INCLUDED_
 #define BOOST_SYNC_LIBS_TEST_UTILS_HPP_INCLUDED_
 
+#include <boost/core/lightweight_test.hpp>
 #include <boost/config.hpp>
 #include <boost/sync/condition_variables/condition_variable.hpp>
 #include <boost/sync/mutexes/mutex.hpp>
@@ -161,8 +162,10 @@ void timed_test(F func, int secs,
     thread_detail_anon::indirect_adapter<F> ifunc(func, monitor);
     monitor.start();
     boost::thread thrd(ifunc);
-    BOOST_REQUIRE_MESSAGE(monitor.wait(),
-        "Timed test didn't complete in time, possible deadlock.");
+    if (!monitor.wait())
+    {
+        BOOST_ERROR("Timed test didn't complete in time, possible deadlock.");
+    }
 }
 
 }
@@ -194,7 +197,7 @@ private:
 namespace
 {
 template <typename F, typename T>
-inline thread_detail_anon::thread_binder<F, T> bind(const F& func, const T& param)
+inline thread_detail_anon::thread_binder<F, T> bind_thread_func(const F& func, const T& param)
 {
     return thread_detail_anon::thread_binder<F, T>(func, param);
 }
@@ -229,7 +232,7 @@ private:
 namespace
 {
 template <typename R, typename T>
-inline thread_detail_anon::thread_member_binder<R, T> bind(R (T::*func)(), T& param)
+inline thread_detail_anon::thread_member_binder<R, T> bind_thread_func(R (T::*func)(), T& param)
 {
     return thread_detail_anon::thread_member_binder<R, T>(func, param);
 }

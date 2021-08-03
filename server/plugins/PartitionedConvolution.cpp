@@ -97,7 +97,7 @@ void PartConv_Ctor(PartConv* unit) {
     unit->m_pos = 0;
 
     // get passed in buffer
-    unit->m_fd_accumulate = NULL;
+    unit->m_fd_accumulate = nullptr;
 
     uint32 bufnum = (uint32)ZIN0(2);
     SndBuf* buf;

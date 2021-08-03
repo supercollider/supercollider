@@ -95,6 +95,20 @@ Complex : Number {
 		^Complex(real * denom, imag.neg * denom)
 	}
 
+	sqrt {
+		var mag, sign;
+
+		mag = this.magnitude;
+		sign = if(imag.isPositive) { 1 } { -1 };  // +1 >= 0, -1 < 0
+
+		^(
+			2.sqrt.reciprocal * Complex(
+				(mag + real).sqrt,
+				(mag - real).sqrt * sign
+			)
+		)
+	}
+
 	pow { arg aNumber; // return(this ** aNumber)
 
 		// Notation below:

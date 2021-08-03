@@ -34,6 +34,7 @@
 #define SC_AUDIO_API_PORTAUDIO 3
 #define SC_AUDIO_API_AUDIOUNITS 4
 #define SC_AUDIO_API_COREAUDIOIPHONE 5
+#define SC_AUDIO_API_BELA 6
 
 #ifdef SC_IPHONE
 #    define SC_AUDIO_API SC_AUDIO_API_COREAUDIOIPHONE
@@ -145,6 +146,7 @@ protected:
     struct World* mWorld;
     double mOSCtoSamples;
     int mSampleTime;
+    float mSafetyClipThreshold;
 
     // Common members
     uint32 mHardwareBufferSize; // bufferSize returned by kAudioDevicePropertyBufferSize
@@ -210,6 +212,7 @@ public:
     int NumSamplesPerCallback() const { return mNumSamplesPerCallback; }
     void SetPreferredHardwareBufferFrameSize(int inSize) { mPreferredHardwareBufferFrameSize = inSize; }
     void SetPreferredSampleRate(int inRate) { mPreferredSampleRate = inRate; }
+    void SetSafetyClipThreshold(float thr) { mSafetyClipThreshold = thr; }
 
     bool SendMsgToEngine(FifoMsg& inMsg); // called by NRT thread
     bool SendMsgFromEngine(FifoMsg& inMsg);
@@ -237,6 +240,7 @@ class SC_CoreAudioDriver : public SC_AudioDriver {
     AudioStreamBasicDescription inputStreamDesc; // info about the default device
     AudioStreamBasicDescription outputStreamDesc; // info about the default device
 
+    template <bool IsClipping>
     friend OSStatus appIOProc(AudioDeviceID inDevice, const AudioTimeStamp* inNow, const AudioBufferList* inInputData,
                               const AudioTimeStamp* inInputTime, AudioBufferList* outOutputData,
                               const AudioTimeStamp* inOutputTime, void* defptr);
@@ -245,6 +249,8 @@ class SC_CoreAudioDriver : public SC_AudioDriver {
                                         const AudioBufferList* inInputData, const AudioTimeStamp* inInputTime,
                                         AudioBufferList* outOutputData, const AudioTimeStamp* inOutputTime,
                                         void* defptr);
+
+    bool isClippingEnabled() const { return mSafetyClipThreshold > 0 && mSafetyClipThreshold < INFINITY; }
 
 protected:
     // Driver interface methods
@@ -263,6 +269,7 @@ public:
 
     bool StopStart();
 
+    template <bool IsClipping>
     void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
     bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }

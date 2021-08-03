@@ -84,7 +84,7 @@ NodeProxy : BusPlug {
 	}
 
 	fadeTime_ { | dur |
-		this.set(\fadeTime, dur ? defaultFadeTime) // Use default if fadeTime set to nil 
+		this.set(\fadeTime, dur ? defaultFadeTime) // Use default if fadeTime set to nil
 	}
 
 	fadeTime {
@@ -415,7 +415,7 @@ NodeProxy : BusPlug {
 	<<> { | proxy, key = \in |
 		var ctl, rate, numChannels, canBeMapped;
 		if(proxy.isNil) { ^this.unmap(key) };
-		ctl = this.controlNames.detect { |x| x.name == key };
+		ctl = this.findControlName(key);
 		rate = ctl.rate ?? {
 			if(proxy.isNeutral) {
 				if(this.isNeutral) { \audio } { this.rate }
@@ -424,13 +424,12 @@ NodeProxy : BusPlug {
 			}
 		};
 		numChannels = ctl !? { ctl.defaultValue.asArray.size };
-		canBeMapped = proxy.initBus(rate, numChannels); // warning: proxy should still have a fixed bus
-		if(canBeMapped) {
-			if(this.isNeutral) { this.defineBus(rate, numChannels) };
-			this.xmap(key, proxy);
-		} {
-			"Could not link node proxies, no matching input found.".warn
-		};
+
+		if(proxy.isNeutral) { proxy.defineBus(rate, numChannels) };
+		if(this.isNeutral) { this.defineBus(rate, numChannels) };
+
+		this.xmap(key, proxy);
+
 		^proxy // returns first argument for further chaining
 	}
 
@@ -647,6 +646,16 @@ NodeProxy : BusPlug {
 			}
 		};
 		^objCtlNames
+	}
+
+
+	findControlName { | key |
+		objects.do { |el|
+			el.controlNames.do { |item|
+				if(key == item.name) { ^item }
+			};
+		};
+		^nil
 	}
 
 	resetNodeMap {

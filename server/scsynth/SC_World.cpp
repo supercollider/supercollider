@@ -51,6 +51,7 @@
 #    include <direct.h>
 #else
 #    include <sys/param.h>
+#    include <unistd.h> // for _POSIX_MEMLOCK
 #endif
 
 #include "malloc_aligned.hpp"
@@ -158,6 +159,25 @@ void sc_SetDenormalFlags() {
 #if BOOST_HW_SIMD_X86 >= BOOST_HW_SIMD_X86_SSE_VERSION
     _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
     _mm_setcsr(_mm_getcsr() | 0x40); // DAZ
+#elif defined(__VFP_FP__)
+    // the Cortex A8, along with the SIMD Neon unit.
+    // This function turns on "fast mode" by enabling
+    // flushing denormals to zero on the VFP.
+    // The NEON already flushe to zero, so it requires
+    // no specific settings.
+    /* This code is from math-neon/math_runfast.c
+    Copyright (c) 2015 Lachlan Tychsen-Smith (lachlan.ts@gmail.com)
+    MIT License
+     */
+    static const unsigned int x = 0x04086060;
+    static const unsigned int y = 0x03000000;
+    int r;
+    asm volatile("fmrx	%0, fpscr			\n\t" // r0 = FPSCR
+                 "and	%0, %0, %1			\n\t" // r0 = r0 & 0x04086060
+                 "orr	%0, %0, %2			\n\t" // r0 = r0 | 0x03000000
+                 "fmxr	fpscr, %0			\n\t" // FPSCR = r0
+                 : "=r"(r)
+                 : "r"(x), "r"(y));
 #endif
 }
 
@@ -389,6 +409,20 @@ World* World_New(WorldOptions* inOptions) {
         } else {
             world->hw->mPassword[0] = 0;
         }
+#ifdef SC_BELA
+        world->hw->mBelaAnalogInputChannels = inOptions->mBelaAnalogInputChannels;
+        world->hw->mBelaAnalogOutputChannels = inOptions->mBelaAnalogOutputChannels;
+        world->hw->mBelaDigitalChannels = inOptions->mBelaDigitalChannels;
+        world->hw->mBelaHeadphoneLevel = inOptions->mBelaHeadphoneLevel;
+        world->hw->mBelaPgaGainLeft = inOptions->mBelaPgaGainLeft;
+        world->hw->mBelaPgaGainRight = inOptions->mBelaPgaGainRight;
+        world->hw->mBelaSpeakerMuted = inOptions->mBelaSpeakerMuted;
+        world->hw->mBelaDacLevel = inOptions->mBelaDacLevel;
+        world->hw->mBelaAdcLevel = inOptions->mBelaAdcLevel;
+        world->hw->mBelaNumMuxChannels = inOptions->mBelaNumMuxChannels;
+        world->hw->mBelaPru = inOptions->mBelaPru;
+        world->mBelaMaxScopeChannels = inOptions->mBelaMaxScopeChannels;
+#endif // SC_BELA
 
 #ifdef __APPLE__
         world->hw->mInputStreamsEnabled = inOptions->mInputStreamsEnabled;
@@ -409,6 +443,9 @@ World* World_New(WorldOptions* inOptions) {
             hw->mAudioDriver = SC_NewAudioDriver(world);
             hw->mAudioDriver->SetPreferredHardwareBufferFrameSize(inOptions->mPreferredHardwareBufferFrameSize);
             hw->mAudioDriver->SetPreferredSampleRate(inOptions->mPreferredSampleRate);
+#ifdef __APPLE__
+            hw->mAudioDriver->SetSafetyClipThreshold(inOptions->mSafetyClipThreshold);
+#endif
 
             if (inOptions->mLoadGraphDefs) {
                 World_LoadGraphDefs(world);

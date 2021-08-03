@@ -36,6 +36,15 @@ TestFunction : UnitTest {
 		this.assert(obj.b == 42, "function should be able to set instance variable that has no setter");
 	}
 
+	test_plot {
+		{ |x| DC.ar(x) }.asBuffer(duration: 0.01, action: { |b|
+			b.get(3, { |val|
+				this.assertEquals(val, 0, "unspecified function arguments should pass as 0 when function is written to a buffer");
+				b.free;
+			})
+		})
+	}
+
 
 }
 

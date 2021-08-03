@@ -631,7 +631,7 @@ const ScLanguage::Class* AutoCompleter::classForToken(Token::Type tokenType, con
 
     switch (tokenType) {
     case Token::Class: {
-        const Class* klass = introspection.findClass(tokenString);
+        const Class* klass = introspection.findClassOrWarn(tokenString);
         if (klass)
             klass = klass->metaClass;
         return klass;

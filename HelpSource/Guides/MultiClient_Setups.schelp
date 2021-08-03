@@ -261,7 +261,7 @@ s.tree = nil;
 s.freeAll; // <- by default, frees other client's defaultGroups too.
 ::
 
-strong::Remote-friendly local master setup::
+strong::Remote-friendly local parent setup::
 
 Now, all sounds on the server are gone, as desired.
 But the other clients cannot start new synths now,

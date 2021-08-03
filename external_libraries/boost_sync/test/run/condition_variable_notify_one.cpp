@@ -4,9 +4,8 @@
 //  Distributed under the Boost Software License, Version 1.0. (See accompanying
 //  file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include "utils.hpp"
 #include "condition_test_common.hpp"
 
@@ -14,7 +13,7 @@ void do_test_condition_notify_one_wakes_from_wait()
 {
     wait_for_flag data;
 
-    boost::thread thread(bind(&wait_for_flag::wait_without_predicate, data));
+    boost::thread thread(bind_thread_func(&wait_for_flag::wait_without_predicate, data));
 
     {
         boost::sync::unique_lock<boost::sync::mutex> lock(data.mutex);
@@ -23,10 +22,10 @@ void do_test_condition_notify_one_wakes_from_wait()
     }
 
     thread.join();
-    BOOST_CHECK(data.woken);
+    BOOST_TEST(data.woken);
 }
 
-BOOST_AUTO_TEST_CASE(test_condition_notify_one_wakes_from_wait)
+void test_condition_notify_one_wakes_from_wait()
 {
     timed_test(&do_test_condition_notify_one_wakes_from_wait, timeout_seconds, execution_monitor::use_mutex);
 }
@@ -35,7 +34,7 @@ void do_test_condition_notify_one_wakes_from_wait_with_predicate()
 {
     wait_for_flag data;
 
-    boost::thread thread(bind(&wait_for_flag::wait_with_predicate, data));
+    boost::thread thread(bind_thread_func(&wait_for_flag::wait_with_predicate, data));
 
     {
         boost::sync::unique_lock<boost::sync::mutex> lock(data.mutex);
@@ -44,10 +43,10 @@ void do_test_condition_notify_one_wakes_from_wait_with_predicate()
     }
 
     thread.join();
-    BOOST_CHECK(data.woken);
+    BOOST_TEST(data.woken);
 }
 
-BOOST_AUTO_TEST_CASE(test_condition_notify_one_wakes_from_wait_with_predicate)
+void test_condition_notify_one_wakes_from_wait_with_predicate()
 {
     timed_test(&do_test_condition_notify_one_wakes_from_wait_with_predicate, timeout_seconds, execution_monitor::use_mutex);
 }
@@ -56,7 +55,7 @@ void do_test_condition_notify_one_wakes_from_timed_wait()
 {
     wait_for_flag data;
 
-    boost::thread thread(bind(&wait_for_flag::timed_wait_without_predicate, data));
+    boost::thread thread(bind_thread_func(&wait_for_flag::timed_wait_without_predicate, data));
 
     {
         boost::sync::unique_lock<boost::sync::mutex> lock(data.mutex);
@@ -65,10 +64,10 @@ void do_test_condition_notify_one_wakes_from_timed_wait()
     }
 
     thread.join();
-    BOOST_CHECK(data.woken);
+    BOOST_TEST(data.woken);
 }
 
-BOOST_AUTO_TEST_CASE(test_condition_notify_one_wakes_from_timed_wait)
+void test_condition_notify_one_wakes_from_timed_wait()
 {
     timed_test(&do_test_condition_notify_one_wakes_from_timed_wait, timeout_seconds, execution_monitor::use_mutex);
 }
@@ -77,7 +76,7 @@ void do_test_condition_notify_one_wakes_from_timed_wait_with_predicate()
 {
     wait_for_flag data;
 
-    boost::thread thread(bind(&wait_for_flag::timed_wait_with_predicate, data));
+    boost::thread thread(bind_thread_func(&wait_for_flag::timed_wait_with_predicate, data));
 
     {
         boost::sync::unique_lock<boost::sync::mutex> lock(data.mutex);
@@ -86,10 +85,10 @@ void do_test_condition_notify_one_wakes_from_timed_wait_with_predicate()
     }
 
     thread.join();
-    BOOST_CHECK(data.woken);
+    BOOST_TEST(data.woken);
 }
 
-BOOST_AUTO_TEST_CASE(test_condition_notify_one_wakes_from_timed_wait_with_predicate)
+void test_condition_notify_one_wakes_from_timed_wait_with_predicate()
 {
     timed_test(&do_test_condition_notify_one_wakes_from_timed_wait_with_predicate, timeout_seconds, execution_monitor::use_mutex);
 }
@@ -98,7 +97,7 @@ void do_test_condition_notify_one_wakes_from_relative_timed_wait_with_predicate(
 {
     wait_for_flag data;
 
-    boost::thread thread(bind(&wait_for_flag::relative_timed_wait_with_predicate, data));
+    boost::thread thread(bind_thread_func(&wait_for_flag::relative_timed_wait_with_predicate, data));
 
     {
         boost::sync::unique_lock<boost::sync::mutex> lock(data.mutex);
@@ -107,10 +106,10 @@ void do_test_condition_notify_one_wakes_from_relative_timed_wait_with_predicate(
     }
 
     thread.join();
-    BOOST_CHECK(data.woken);
+    BOOST_TEST(data.woken);
 }
 
-BOOST_AUTO_TEST_CASE(test_condition_notify_one_wakes_from_relative_timed_wait_with_predicate)
+void test_condition_notify_one_wakes_from_relative_timed_wait_with_predicate()
 {
     timed_test(&do_test_condition_notify_one_wakes_from_relative_timed_wait_with_predicate, timeout_seconds, execution_monitor::use_mutex);
 }
@@ -147,7 +146,7 @@ void do_test_multiple_notify_one_calls_wakes_multiple_threads()
 
     {
         boost::sync::unique_lock<boost::sync::mutex> lk(multiple_wake_mutex);
-        BOOST_CHECK(multiple_wake_count==3);
+        BOOST_TEST_EQ(multiple_wake_count, 3u);
     }
 
     thread1.join();
@@ -155,7 +154,19 @@ void do_test_multiple_notify_one_calls_wakes_multiple_threads()
     thread3.join();
 }
 
-BOOST_AUTO_TEST_CASE(test_multiple_notify_one_calls_wakes_multiple_threads)
+void test_multiple_notify_one_calls_wakes_multiple_threads()
 {
     timed_test(&do_test_multiple_notify_one_calls_wakes_multiple_threads, timeout_seconds, execution_monitor::use_mutex);
+}
+
+int main()
+{
+    test_condition_notify_one_wakes_from_wait();
+    test_condition_notify_one_wakes_from_wait_with_predicate();
+    test_condition_notify_one_wakes_from_timed_wait();
+    test_condition_notify_one_wakes_from_timed_wait_with_predicate();
+    test_condition_notify_one_wakes_from_relative_timed_wait_with_predicate();
+    test_multiple_notify_one_calls_wakes_multiple_threads();
+
+    return boost::report_errors();
 }

@@ -630,17 +630,20 @@ Document {
 
 	close { ScIDE.close(quuid); }
 
-	/*	// asynchronous get
+	// asynchronous get
 	// range -1 means to the end of the Document
-	getText {|action, start = 0, range -1|
+	// 'getText' tried to replace this approach,
+	// but text mirroring is unstable in Windows.
+	// so we need to keep a backup approach.
+	getTextAsync { |action, start = 0, range -1|
 		var funcID;
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
-	}*/
+	}
 
-	getText {|action, start = 0, range -1|
-		^prGetTextFromMirror(quuid, start, range);
+	getText { |start = 0, range -1|
+		^this.prGetTextFromMirror(quuid, start, range);
 	}
 
 	prGetTextFromMirror {|id, start=0, range = -1|

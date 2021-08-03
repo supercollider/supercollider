@@ -1,7 +1,3 @@
-# This makes sclang/scide work with a Qt installation at a fixed, non-system location.
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
 set(QT_IDE_COMPONENTS
     Concurrent
     Core
@@ -347,6 +343,9 @@ target_link_libraries( SuperCollider libscide)
 target_link_libraries( libscide PUBLIC boost_system_lib boost_filesystem_lib)
 include_directories(${boost_include_dirs})
 
+# This makes sclang/scide work with a Qt installation at a fixed location.
+set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 if(APPLE)
     target_link_libraries( libscide PUBLIC "-framework CoreServices -framework Foundation")
     target_link_libraries( libscide PUBLIC "-framework Cocoa" )
@@ -364,6 +363,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     include_directories(${X11_INCLUDE_DIR})
     target_link_libraries(libscide PUBLIC ${X11_X11_LIB})
+
+    # This makes sclang/scide work with a Qt installation at a fixed location.
+    set_property(TARGET libscide SuperCollider PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif()
 
 if(PTHREADS_FOUND)
@@ -506,6 +508,8 @@ if(APPLE OR WIN32)
                     @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
                 execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/10/libgcc_s.1.dylib
                     @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
+                execute_process(COMMAND install_name_tool -change /usr/local/lib/gcc/11/libgcc_s.1.dylib
+                    @loader_path/libgcc_s.1.dylib ${CONTENTS_DIR}/Frameworks/libfftw3f.3.dylib)
                     ")
             endif()
         endif()
@@ -550,9 +554,11 @@ if(APPLE OR WIN32)
                 ")
         endif()
 
-        string(APPEND VERIFY_CMD "
-            message(STATUS \"Verifying app\")
-            verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+        if(SC_VERIFY_APP)
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Verifying app\")
+                verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+        endif()
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
         set(DEPLOY_CMD "\"${DEPLOY_PROG}\"

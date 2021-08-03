@@ -217,6 +217,20 @@ Object  {
 	hash { _ObjectHash; ^this.primitiveFailed }
 	identityHash { _ObjectHash; ^this.primitiveFailed }
 
+	// lazy equality: same as == for objects
+	// "composed" for lazy operands (patterns, UGens)
+	|==| { |that|
+		^that.prReverseLazyEquals(this)
+	}
+	|!=| { |that|
+		^not(this |==| that)
+	}
+	// a user might write `something |==| aPattern`
+	// so we need to support reverse dispatch
+	prReverseLazyEquals { |that|
+		^(this == that)
+	}
+
 	// create an association
 	-> { arg obj; ^Association.new(this, obj) }
 

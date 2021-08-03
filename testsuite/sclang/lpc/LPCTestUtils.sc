@@ -257,7 +257,7 @@ LPCTestUtils {
 		var prevOutputs = nil!2;
 		var reps = 0!2; // repetition counters
 
-		// Master state (suffix `M` = `master`)
+		// Main state (suffix `M` = `main`)
 		// Necessary for the case when alphabets differ in size.
 		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray
 		              .collect(_.asString).sort;
@@ -273,15 +273,15 @@ LPCTestUtils {
 
 		// alphM.postln;
 
-		// Stop when the master alphabet has been exhausted.
+		// Stop when the main alphabet has been exhausted.
 		while { hasNext } {
 
 			inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
 			inputM = alphM[ctrM];
 
-			// Get each file's output for the current master input. If a file's alphabet doesn't
+			// Get each file's output for the current main input. If a file's alphabet doesn't
 			// include the string, use `nil`. Since alphabets are sorted in lexicographical order,
-			// component alphabets can only skip ahead of the master alphabet's order.
+			// component alphabets can only skip ahead of the main alphabet's order.
 			inputs.do({
 				arg input, i;
 				var line;

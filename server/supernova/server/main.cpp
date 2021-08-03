@@ -48,6 +48,9 @@
 #    include <SC_Apple.hpp>
 #endif
 
+#ifndef _WIN32
+#    include <unistd.h> // for _POSIX_MEMLOCK
+#endif
 
 #if (_POSIX_MEMLOCK - 0) >= 200112L
 #    include <sys/resource.h>
@@ -138,9 +141,11 @@ void start_audio_backend(server_arguments const& args) {
 
     unsigned int real_sampling_rate = instance->get_samplerate();
 
-    if (args.samplerate && args.samplerate != real_sampling_rate) {
-        cout << "samplerate mismatch between command line argument and jack" << endl;
-        cout << "forcing samplerate of " << real_sampling_rate << "Hz" << endl;
+    if (args.samplerate != real_sampling_rate) {
+        if (args.samplerate) {
+            cout << "Samplerate mismatch between command line argument and jack" << endl;
+            cout << "Forcing samplerate of " << real_sampling_rate << "Hz" << endl;
+        }
 
         server_arguments::set_samplerate((uint32_t)real_sampling_rate);
         sc_factory->reset_sampling_rate(real_sampling_rate);
@@ -156,46 +161,51 @@ void start_audio_backend(server_arguments const& args) {
     int output_channels = args.output_channels;
 
     std::string input_device, output_device;
-    if (args.hw_name.empty()) {
-        boost::tie(input_device, output_device) = instance->default_device_names();
-    } else if (args.hw_name.size() == 1) {
-        input_device = output_device = args.hw_name[0];
-    } else {
-        input_device = args.hw_name[0];
-        output_device = args.hw_name[1];
+    // if input_device/output_device are empty, default audio device will be chosen
+    if (!args.hw_name.empty()) {
+        if (args.hw_name.size() == 1) {
+            input_device = output_device = args.hw_name[0];
+        } else {
+            input_device = args.hw_name[0];
+            output_device = args.hw_name[1];
+        }
     }
 
-    cout << "opening portaudio device name: ";
-    cout << input_device << " / " << output_device << endl;
-
-    if (input_device == "nil") {
+    if (input_channels == 0)
         input_device.clear();
-        input_channels = 0;
-    }
-
-    if (output_device == "nil") {
+    if (output_channels == 0)
         output_device.clear();
-        output_channels = 0;
-    }
 
-    cout << "opening portaudio device name: ";
-    cout << input_device << " / " << output_device << endl;
-
-
+    std::cout << "Requested audio devices:" << std::endl;
+    if (input_channels)
+        std::cout << "  In: " << (input_device.empty() ? "(default)" : input_device) << std::endl;
+    if (output_channels)
+        std::cout << "  Out: " << (output_device.empty() ? "(default)" : output_device) << std::endl;
+#    ifdef __APPLE__
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
-                                         args.blocksize, args.hardware_buffer_size);
-
+                                         args.blocksize, args.hardware_buffer_size, args.safety_clip_threshold);
+#    else
+    bool success = instance->open_stream(input_device, input_channels, output_device, output_channels, args.samplerate,
+                                         args.blocksize, args.hardware_buffer_size, 0);
+#    endif
     if (!success) {
-        cout << "could not open portaudio device name: " << input_device << " / " << output_device << endl;
+        std::cout << "*** ERROR: could not open audio devices." << std::endl;
         exit(1);
     }
-    cout << "opened portaudio device name: ";
-    cout << input_device << " / " << output_device << endl;
+
+    unsigned int real_sampling_rate = instance->get_samplerate();
+
+    if (args.samplerate != real_sampling_rate) {
+        server_arguments::set_samplerate((uint32_t)real_sampling_rate);
+        sc_factory->reset_sampling_rate(real_sampling_rate);
+    }
 
     instance->report_latency();
 
     instance->prepare_backend();
     instance->activate_audio();
+
+    std::cout << "Audio devices opened successfully" << std::endl;
 }
 
 #else
@@ -309,7 +319,7 @@ void lock_memory(server_arguments const& args) {
 
 } /* namespace */
 
-int main(int argc, char* argv[]) {
+int supernova_main(int argc, char* argv[]) {
     drop_rt_scheduling(); // when being called from sclang, we inherit a low rt-scheduling priority. but we don't want
                           // it!
     enable_core_dumps();
@@ -374,3 +384,37 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+#ifdef _WIN32
+
+int wmain(int argc, wchar_t** wargv) {
+    // convert args to utf-8
+    std::vector<char*> argv;
+    for (int i = 0; i < argc; i++) {
+        auto argSize = WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, nullptr, 0, nullptr, nullptr);
+        argv.push_back(new char[argSize]);
+        WideCharToMultiByte(CP_UTF8, 0, wargv[i], -1, argv[i], argSize, nullptr, nullptr);
+    }
+
+    // set codepage to UTF-8 and remember the old codepage
+    auto oldCodePage = GetConsoleOutputCP();
+    if (!SetConsoleOutputCP(65001))
+        cout << "WARNING: could not set codepage to UTF-8" << endl;
+
+    // run main
+    int result = supernova_main(argv.size(), argv.data());
+
+    // reset codepage from UTF-8
+    SetConsoleOutputCP(oldCodePage);
+    // clear vector with converted args
+    for (auto* arg : argv)
+        delete[] arg;
+
+    return result;
+}
+
+#else
+
+int main(int argc, char** argv) { return supernova_main(argc, argv); };
+
+#endif

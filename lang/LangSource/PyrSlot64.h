@@ -189,7 +189,7 @@ inline void SetRaw(PyrSlot* slot, double val) {
 inline void SetTagRaw(PyrSlot* slot, int tag) { slot->tag = tag; }
 
 /* slot comparison */
-inline bool SlotEq(PyrSlot* a, PyrSlot* b) { return (a->tag == b->tag) && (a->u.i == b->u.i); }
+inline bool SlotEq(const PyrSlot* a, const PyrSlot* b) { return (a->tag == b->tag) && (a->u.i == b->u.i); }
 
 /* extract numeric value */
 template <typename numeric_type> inline int slotVal(PyrSlot* slot, numeric_type* value) {

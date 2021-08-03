@@ -22,18 +22,18 @@
 #include <stdexcept>
 #include <boost/cstdint.hpp>
 #include <boost/version.hpp>
-#include <boost/detail/winapi/dll.hpp>
-#include <boost/detail/winapi/tls.hpp>
-#include <boost/detail/winapi/handles.hpp>
-#include <boost/detail/winapi/thread.hpp>
-#include <boost/detail/winapi/thread_pool.hpp>
-#include <boost/detail/winapi/get_current_process.hpp>
-#include <boost/detail/winapi/get_current_process_id.hpp>
-#include <boost/detail/winapi/waitable_timer.hpp>
-#include <boost/detail/winapi/semaphore.hpp>
-#include <boost/detail/winapi/get_last_error.hpp>
+#include <boost/winapi/dll.hpp>
+#include <boost/winapi/tls.hpp>
+#include <boost/winapi/handles.hpp>
+#include <boost/winapi/thread.hpp>
+#include <boost/winapi/thread_pool.hpp>
+#include <boost/winapi/get_current_process.hpp>
+#include <boost/winapi/get_current_process_id.hpp>
+#include <boost/winapi/waitable_timer.hpp>
+#include <boost/winapi/semaphore.hpp>
+#include <boost/winapi/get_last_error.hpp>
+#include <boost/detail/interlocked.hpp>
 #include <boost/sync/detail/config.hpp>
-#include <boost/sync/detail/interlocked.hpp>
 #include <boost/sync/detail/weak_linkage.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
@@ -74,16 +74,17 @@ struct waitable_timer_state
         st_initialized
     };
 
+    // Note: Not using atomic<> for `initialized` to keep this class POD. This guarantees static initialization in C++03.
     long initialized;
-    boost::detail::winapi::DWORD_ tls_key;
-    boost::detail::winapi::HANDLE_ tls_key_holder;
+    boost::winapi::DWORD_ tls_key;
+    boost::winapi::HANDLE_ tls_key_holder;
 
     struct thread_local_context
     {
         const uint32_t boost_version; // for ABI compatibility control
-        boost::detail::winapi::HANDLE_ waitable_timer;
-        boost::detail::winapi::HANDLE_ current_thread;
-        boost::detail::winapi::HANDLE_ wait_handle;
+        boost::winapi::HANDLE_ waitable_timer;
+        boost::winapi::HANDLE_ current_thread;
+        boost::winapi::HANDLE_ wait_handle;
 
         BOOST_CONSTEXPR thread_local_context() BOOST_NOEXCEPT :
             boost_version(BOOST_VERSION),
@@ -96,14 +97,14 @@ struct waitable_timer_state
         ~thread_local_context()
         {
             if (wait_handle)
-                boost::detail::winapi::UnregisterWait(wait_handle);
+                boost::winapi::UnregisterWait(wait_handle);
             if (current_thread)
-                boost::detail::winapi::CloseHandle(current_thread);
+                boost::winapi::CloseHandle(current_thread);
             if (waitable_timer)
-                boost::detail::winapi::CloseHandle(waitable_timer);
+                boost::winapi::CloseHandle(waitable_timer);
         }
 
-        static void NTAPI destroy(boost::detail::winapi::PVOID_ p, boost::detail::winapi::BOOLEAN_ /*timed_out*/)
+        static void BOOST_WINAPI_NTAPI_CC destroy(boost::winapi::PVOID_ p, boost::winapi::BOOLEAN_ /*timed_out*/)
         {
             delete static_cast< thread_local_context* >(p);
         }
@@ -114,8 +115,8 @@ struct waitable_timer_state
 
     struct semaphore_basic_information
     {
-        boost::detail::winapi::ULONG_ current_count; // current semaphore count
-        boost::detail::winapi::ULONG_ maximum_count; // max semaphore count
+        boost::winapi::ULONG_ current_count; // current semaphore count
+        boost::winapi::ULONG_ maximum_count; // max semaphore count
     };
 
     //! Initializes the process-wide TLS slot
@@ -123,11 +124,11 @@ struct waitable_timer_state
     {
         while (true)
         {
-            long old_val = BOOST_ATOMIC_INTERLOCKED_COMPARE_EXCHANGE(&initialized, st_in_progress, st_uninitialized);
+            long old_val = BOOST_INTERLOCKED_COMPARE_EXCHANGE(&initialized, st_in_progress, st_uninitialized);
             if (old_val == st_in_progress)
             {
                 // Wait for another thread
-                boost::detail::winapi::SwitchToThread();
+                boost::winapi::SwitchToThread();
             }
             else if (old_val == st_initialized)
             {
@@ -143,7 +144,7 @@ struct waitable_timer_state
         {
             L'b', L'o', L'o', L's', L't', L'_', L's', L'y', L'n', L'c', L'_', L't', L'l', L's', L'_'
         };
-        boost::detail::winapi::DWORD_ process_id = boost::detail::winapi::GetCurrentProcessId();
+        boost::winapi::DWORD_ process_id = boost::winapi::GetCurrentProcessId();
         for (unsigned int i = 0; i < 4; ++i)
         {
             uint8_t b = static_cast< uint8_t >(process_id >> ((3u - i) * 8u));
@@ -162,9 +163,9 @@ struct waitable_timer_state
         sem_name[23] = L'\0';
 
         // First try if the semaphore has already been created
-        tls_key_holder = boost::detail::winapi::OpenSemaphoreW
+        tls_key_holder = boost::winapi::OpenSemaphoreW
         (
-            boost::detail::winapi::semaphore_all_access,
+            boost::winapi::semaphore_all_access,
             false,
             sem_name
         );
@@ -172,37 +173,37 @@ struct waitable_timer_state
         if (!tls_key_holder)
         {
             // The semaphore is not created yet
-            boost::detail::winapi::DWORD_ key = boost::detail::winapi::TlsAlloc();
-            if (key == boost::detail::winapi::tls_out_of_indexes)
+            boost::winapi::DWORD_ key = boost::winapi::TlsAlloc();
+            if (BOOST_UNLIKELY(key == boost::winapi::tls_out_of_indexes))
             {
-                boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
-                BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&initialized, st_uninitialized);
+                boost::winapi::DWORD_ err = boost::winapi::GetLastError();
+                BOOST_INTERLOCKED_EXCHANGE(&initialized, st_uninitialized);
                 BOOST_SYNC_DETAIL_THROW(resource_error, (err)("Boost.Sync: unable to allocate a TLS slot"));
             }
 
-            tls_key_holder = boost::detail::winapi::CreateSemaphoreW
+            tls_key_holder = boost::winapi::CreateSemaphoreW
             (
                 NULL, key, LONG_MAX, sem_name
             );
 
-            boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
-            if (!tls_key_holder)
+            boost::winapi::DWORD_ err = boost::winapi::GetLastError();
+            if (BOOST_UNLIKELY(!tls_key_holder))
             {
                 // Cannot create a semaphore. Too bad, this will cause TLS slots to be allocated for every module.
                 tls_key = key;
-                BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
+                BOOST_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
                 return;
             }
             else if (err == ERROR_ALREADY_EXISTS)
             {
                 // Some other thread managed to create the semaphore
-                boost::detail::winapi::TlsFree(key);
+                boost::winapi::TlsFree(key);
             }
             else
             {
                 tls_key = key;
                 std::atexit(&waitable_timer_state::destroy);
-                BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
+                BOOST_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
                 return;
             }
         }
@@ -210,76 +211,75 @@ struct waitable_timer_state
         // Release the semaphore on process exit
         std::atexit(&waitable_timer_state::destroy);
 
-        typedef boost::detail::winapi::DWORD_ NTSTATUS_;
-        typedef NTSTATUS_ (__stdcall *NtQuerySemaphore_t)(boost::detail::winapi::HANDLE_ h, unsigned int info_class, semaphore_basic_information* pinfo, boost::detail::winapi::ULONG_ info_size, boost::detail::winapi::ULONG_* ret_len);
+        typedef boost::winapi::NTSTATUS_ (BOOST_WINAPI_NTAPI_CC *NtQuerySemaphore_t)(boost::winapi::HANDLE_ h, unsigned int info_class, semaphore_basic_information* pinfo, boost::winapi::ULONG_ info_size, boost::winapi::ULONG_* ret_len);
 
         // Retrieve the TLS key from the semaphore
-        const boost::detail::winapi::HMODULE_ ntdll = boost::detail::winapi::GetModuleHandleW(L"ntdll.dll");
-        NtQuerySemaphore_t nt_query_semaphore = (NtQuerySemaphore_t)boost::detail::winapi::get_proc_address(ntdll, "NtQuerySemaphore");
+        const boost::winapi::HMODULE_ ntdll = boost::winapi::GetModuleHandleW(L"ntdll.dll");
+        NtQuerySemaphore_t nt_query_semaphore = (NtQuerySemaphore_t)boost::winapi::get_proc_address(ntdll, "NtQuerySemaphore");
         if (nt_query_semaphore)
         {
             semaphore_basic_information info = {};
-            NTSTATUS_ err = nt_query_semaphore(tls_key_holder, 0 /* SemaphoreBasicInformation */, &info, sizeof(info), NULL);
+            boost::winapi::NTSTATUS_ err = nt_query_semaphore(tls_key_holder, 0 /* SemaphoreBasicInformation */, &info, sizeof(info), NULL);
             if (err == 0)
             {
-                tls_key = static_cast< boost::detail::winapi::DWORD_ >(info.current_count);
-                BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
+                tls_key = static_cast< boost::winapi::DWORD_ >(info.current_count);
+                BOOST_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
                 return;
             }
         }
 
         // We failed to obtain the TLS key from the semaphore. Just allocate one already.
-        boost::detail::winapi::DWORD_ key = boost::detail::winapi::TlsAlloc();
-        if (key == boost::detail::winapi::tls_out_of_indexes)
+        boost::winapi::DWORD_ key = boost::winapi::TlsAlloc();
+        if (key == boost::winapi::tls_out_of_indexes)
         {
-            boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
-            BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&initialized, st_uninitialized);
+            boost::winapi::DWORD_ err = boost::winapi::GetLastError();
+            BOOST_INTERLOCKED_EXCHANGE(&initialized, st_uninitialized);
             BOOST_SYNC_DETAIL_THROW(resource_error, (err)("Boost.Sync: unable to allocate a TLS slot"));
         }
 
         tls_key = key;
-        BOOST_ATOMIC_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
+        BOOST_INTERLOCKED_EXCHANGE(&initialized, st_initialized);
     }
 
     //! Initializes the thread-specific context
     thread_local_context* create_thread_local_context()
     {
         thread_local_context* ctx = new thread_local_context();
-        const boost::detail::winapi::HANDLE_ current_process = boost::detail::winapi::GetCurrentProcess();
-        boost::detail::winapi::BOOL_ res = boost::detail::winapi::DuplicateHandle
+        const boost::winapi::HANDLE_ current_process = boost::winapi::GetCurrentProcess();
+        boost::winapi::BOOL_ res = boost::winapi::DuplicateHandle
         (
             current_process,
-            boost::detail::winapi::GetCurrentThread(),
+            boost::winapi::GetCurrentThread(),
             current_process,
             &ctx->current_thread,
             0,
             false,
-            boost::detail::winapi::duplicate_same_access
+            boost::winapi::duplicate_same_access
         );
         if (res)
         {
-            res = boost::detail::winapi::RegisterWaitForSingleObject
+            res = boost::winapi::RegisterWaitForSingleObject
             (
                 &ctx->wait_handle,
                 ctx->current_thread,
                 &thread_local_context::destroy,
                 ctx,
-                boost::detail::winapi::infinite,
-                boost::detail::winapi::wt_execute_in_wait_thread | boost::detail::winapi::wt_execute_only_once
+                boost::winapi::infinite,
+                boost::winapi::wt_execute_in_wait_thread | boost::winapi::wt_execute_only_once
             );
             if (res)
             {
-                ctx->waitable_timer = boost::detail::winapi::create_anonymous_waitable_timer(NULL, false);
+                ctx->waitable_timer = boost::winapi::create_anonymous_waitable_timer(NULL, false);
                 if (ctx->waitable_timer)
                 {
-                    res = boost::detail::winapi::TlsSetValue(tls_key, ctx);
+                    res = boost::winapi::TlsSetValue(tls_key, ctx);
                     if (res)
                         return ctx;
                 }
             }
         }
 
-        boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+        boost::winapi::DWORD_ err = boost::winapi::GetLastError();
         delete ctx;
         BOOST_SYNC_DETAIL_THROW(resource_error, (err)("Boost.Sync: failed to initialize a waitable timer"));
         return NULL; // unreachable; to avoid warnings about missing return statement
@@ -291,14 +291,14 @@ struct waitable_timer_state
         waitable_timer_state& state = weak_linkage< waitable_timer_state >::value;
         if (state.tls_key_holder)
         {
-            boost::detail::winapi::CloseHandle(state.tls_key_holder);
+            boost::winapi::CloseHandle(state.tls_key_holder);
             state.tls_key_holder = NULL;
         }
     }
 };
 
 //! Returns a thread-specific handle for a waitable timer for fixed time point waits
-inline boost::detail::winapi::HANDLE_ get_waitable_timer()
+inline boost::winapi::HANDLE_ get_waitable_timer()
 {
     waitable_timer_state& state = weak_linkage< waitable_timer_state >::value;
 
@@ -306,12 +306,12 @@ inline boost::detail::winapi::HANDLE_ get_waitable_timer()
         state.init();
 
     waitable_timer_state::thread_local_context* p =
-        static_cast< waitable_timer_state::thread_local_context* >(boost::detail::winapi::TlsGetValue(state.tls_key));
+        static_cast< waitable_timer_state::thread_local_context* >(boost::winapi::TlsGetValue(state.tls_key));
     if (!p)
         p = state.create_thread_local_context();
 
     // Check that the thread local context is ABI-compatible
-    if (p->boost_version != BOOST_VERSION)
+    if (BOOST_UNLIKELY(p->boost_version != BOOST_VERSION))
         BOOST_SYNC_DETAIL_THROW(std::logic_error, ("Boost.Sync: different Boost versions are used in the application"));
 
     return p->waitable_timer;

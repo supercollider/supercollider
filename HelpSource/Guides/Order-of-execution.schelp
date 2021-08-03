@@ -71,14 +71,14 @@ definitionlist::
 For each addAction there is also a corresponding convenience method of class Synth:
 
 definitionlist::
-## code:: Synth.head(aGroup, defName, args) :: || add the new synth to the the head of the group specified by aGroup
+## code:: Synth.head(aGroup, defName, args) :: || add the new synth to the head of the group specified by aGroup
 list::
 ## if aGroup is a synth node, the new synth will be added to the head of that node's group
 ## if target is a Server it will resolve to that Server's default group
 ## if target is nil it will resolve to the default group of the default Server
 ::
 
-## code:: Synth.tail(aGroup, defName, args) :: || add the new synth to the the tail of the group specified by aGroup
+## code:: Synth.tail(aGroup, defName, args) :: || add the new synth to the tail of the group specified by aGroup
 list::
 ## if aGroup is a synth node, the new synth will be added to the tail of that node's group
 ## if target is a Server it will resolve to that Server's default group

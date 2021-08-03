@@ -76,7 +76,7 @@ function(sc_add_server_plugin dest_dir name cpp sc schelp)
         install(FILES ${sc} DESTINATION ${dest_dir}/Classes)
     endif()
     if(schelp)
-        install(FILES ${schelp} DESTINATION ${dest_dir}/Help)
+        install(FILES ${schelp} DESTINATION ${dest_dir}/HelpSource/Classes)
     endif()
 endfunction()
 

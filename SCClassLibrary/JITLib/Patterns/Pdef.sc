@@ -349,8 +349,10 @@ TaskProxy : PatternProxy {
 	////////// playing interface //////////
 
 	playOnce { arg argClock, doReset = (false), quant;
-		var clock = argClock ? this.clock;
-		^PauseStream.new(this.asProtected.asStream).play(clock, doReset, quant ? this.quant)
+		var pauseStream = PauseStream(
+			Pprotect(this, { pauseStream.streamError }).asStream
+		);
+		^pauseStream.play(argClock ? this.clock, doReset, quant ? this.quant)
 	}
 
 	play { arg argClock, doReset=false, quant;
@@ -359,7 +361,7 @@ TaskProxy : PatternProxy {
 		if(player.isNil) {
 			player = this.playOnce(argClock, doReset, playQuant);
 		} {
-			// resets  when stream has ended or after pause/cmd-period:
+			// resets when stream has ended or after pause/cmd-period:
 			if (player.streamHasEnded or: { player.wasStopped }) { doReset = true };
 
 			if(player.isPlaying.not) {
@@ -369,9 +371,13 @@ TaskProxy : PatternProxy {
 			}
 		}
 	}
+
 	wakeUp {
-		if(this.isPlaying) { this.play(quant:playQuant) }	}
+		if(this.isPlaying) { this.play(quant:playQuant) }
+	}
+
 	asProtected {
+		// let's deprecate this method in 3.12
 		^Pprotect(this, { if(this.player.notNil) { this.player.streamError } })
 	}
 

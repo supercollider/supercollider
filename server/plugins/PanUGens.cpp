@@ -1268,9 +1268,10 @@ void PanAz_next_ak_nova(PanAz* unit, int inNumSamples);
 #endif
 
 void PanAz_Ctor(PanAz* unit) {
+    unit->m_chanamp = nullptr;
     if (INRATE(1) == calc_FullRate) {
-        unit->m_chanamp = NULL;
         SETCALC(PanAz_next_aa);
+        PanAz_next_aa(unit, 1);
     } else {
         int numOutputs = unit->mNumOutputs;
         for (int i = 0; i < numOutputs; ++i)
@@ -1293,6 +1294,7 @@ void PanAz_Ctor(PanAz* unit) {
 #else
         SETCALC(PanAz_next_ak);
 #endif
+        PanAz_next_ak(unit, 1);
     }
 }
 

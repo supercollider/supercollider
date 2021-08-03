@@ -53,7 +53,7 @@ public:
             lock_memory();
 
         data_.pool.fill(0);
-        std::size_t status = init_memory_pool(bytes, data_.pool.begin());
+        std::size_t status = init_memory_pool(bytes, data_.pool.data());
         assert(status > 0);
     }
 
@@ -61,17 +61,17 @@ public:
 
     ~static_pool() throw() {
         scoped_lock lock(data_);
-        destroy_memory_pool(data_.pool.begin());
+        destroy_memory_pool(data_.pool.data());
     }
 
     void* malloc(std::size_t size) {
         scoped_lock lock(data_);
-        return malloc_ex(size, data_.pool.begin());
+        return malloc_ex(size, data_.pool.data());
     }
 
     void free(void* p) {
         scoped_lock lock(data_);
-        free_ex(p, data_.pool.begin());
+        free_ex(p, data_.pool.data());
     }
 
     std::size_t get_max_size(void) { return ::get_max_size(data_.pool.begin()); }

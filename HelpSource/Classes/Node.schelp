@@ -164,7 +164,7 @@ x.free; b.free; c.free;
 
 // same as above with a multichannel Bus and Control
 (
-b = Bus.control(s, 2); 
+b = Bus.control(s, 2);
 b.set(880, 884);
 x = SynthDef("help-Node-map2", { |out, freqs = #[440, 440]|
 	Out.ar(out, SinOsc.ar(freqs, 0, 0.1));
@@ -183,14 +183,18 @@ This is similar to map above, but you specify the number of sequential Controls 
 method:: release, releaseMsg
 This method causes the receiver to be freed after the specified amount of time. This is a convenience method which assumes that the synth contains an envelope generator (an EnvGen, Linen, or similar UGen) running a sustaining envelope (see link::Classes/Env#Sustained Envelope Creation Methods::) and that this envelope's gate argument is set to a control called code::\gate::.
 argument:: releaseTime
-The amount of time in seconds during which the node will release. If set to a value code::<= 0::, the synth will release immediately. A code::nil:: value will cause the synth to release using its enveloppe's normal release stage(s).
+The amount of time in seconds during which the node will release. If set to a value code::<= 0::, the synth will release immediately. A code::nil:: value will cause the synth to release using its envelope's normal release stage(s).
+
+note::
+Providing a releaseTime != nil doesn't trigger a normal release, but a different behavior called forced release. This difference is particularly important for envelopes with a multi-node release stage, i.e. whose releaseNode is not their last node. See link::Classes/EnvGen#Forced release#::.
+::
+
 discussion::
 If the receiver is a Group, all nodes within the group will be released.
 code::
 x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction: Done.freeSelf) }.play;
 x.release(5); // override the Env's specified 1 second release time
 ::
-
 method:: query
 Sends an n_query message to the server, which will reply with a message containing information about this node and its place in the server's node tree.
 argument:: action
@@ -318,4 +322,3 @@ fork {
 }
 );
 ::
-

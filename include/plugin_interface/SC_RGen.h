@@ -100,25 +100,24 @@ inline void RGen::init(uint32 seed) {
     if (s3 < 16)
         s3 = 1821928721U;
 }
-
+/**
+ * This function is provided for speed in inner loops where the
+ * state variables are loaded into registers.
+ * Thus updating the instance variables can
+ * be postponed until the end of the loop.
+ */
 inline uint32 trand(uint32& s1, uint32& s2, uint32& s3) {
-    // This function is provided for speed in inner loops where the
-    // state variables are loaded into registers.
-    // Thus updating the instance variables can
-    // be postponed until the end of the loop.
     s1 = ((s1 & (uint32)-2) << 12) ^ (((s1 << 13) ^ s1) >> 19);
     s2 = ((s2 & (uint32)-8) << 4) ^ (((s2 << 2) ^ s2) >> 25);
     s3 = ((s3 & (uint32)-16) << 17) ^ (((s3 << 3) ^ s3) >> 11);
     return s1 ^ s2 ^ s3;
 }
 
-inline uint32 RGen::trand() {
-    // generate a random 32 bit number
-    return ::trand(s1, s2, s3);
-}
+/// Generate a random 32 bit number
+inline uint32 RGen::trand() { return ::trand(s1, s2, s3); }
 
+/// Generate a double from 0.0 to 0.999...
 inline double RGen::drand() {
-    // return a double from 0.0 to 0.999...
 #if BYTE_ORDER == BIG_ENDIAN
     union {
         struct {
@@ -139,8 +138,8 @@ inline double RGen::drand() {
     return du.f - 1048576.;
 }
 
+/// Generate a float from 0.0 to 0.999...
 inline float RGen::frand() {
-    // return a float from 0.0 to 0.999...
     union {
         uint32 i;
         float f;
@@ -149,8 +148,8 @@ inline float RGen::frand() {
     return u.f - 1.f;
 }
 
+/// Generate a float from +1.0 to +1.999...
 inline float RGen::frand0() {
-    // return a float from +1.0 to +1.999...
     union {
         uint32 i;
         float f;
@@ -159,8 +158,8 @@ inline float RGen::frand0() {
     return u.f;
 }
 
+/// Generate a float from -1.0 to +0.999...
 inline float RGen::frand2() {
-    // return a float from -1.0 to +0.999...
     union {
         uint32 i;
         float f;
@@ -169,8 +168,8 @@ inline float RGen::frand2() {
     return u.f - 3.f;
 }
 
+/// Generate a float from -0.125 to +0.124999...
 inline float RGen::frand8() {
-    // return a float from -0.125 to +0.124999...
     union {
         uint32 i;
         float f;
@@ -179,8 +178,8 @@ inline float RGen::frand8() {
     return u.f - 0.375f;
 }
 
+/// Generate one of the two float values -1.0 or +1.0
 inline float RGen::fcoin() {
-    // only return one of the two values -1.0 or +1.0
     union {
         uint32 i;
         float f;
@@ -189,58 +188,64 @@ inline float RGen::fcoin() {
     return u.f;
 }
 
+/// Generates a single random float value in linear distribution from 0.0 to 0.999
 inline float RGen::flinrand() {
     float a = frand();
     float b = frand();
     return sc_min(a, b);
 }
 
+/// Bilateral linearly distributed random float from -0.999 to +0.999.
 inline float RGen::fbilinrand() {
     float a = frand();
     float b = frand();
     return a - b;
 }
 
-inline float RGen::fsum3rand() {
-    // larry polansky's poor man's gaussian generator
-    return (float)((frand() + frand() + frand() - 1.5) * 0.666666667);
-}
+/**
+ * Generates a random float that is the
+ * result of summing three uniform random generators to yield a
+ * bell-like distribution.
+ *
+ * Larry Polansky's loose approximation of a gaussian generator.
+ */
+inline float RGen::fsum3rand() { return (float)((frand() + frand() + frand() - 1.5) * 0.666666667); }
 
+/// Generate 32 bit integer from 0 to scale - 1
+inline int32 RGen::irand(int32 scale) { return (int32)floor(scale * drand()); }
 
-inline int32 RGen::irand(int32 scale) {
-    // return an int from 0 to scale - 1
-    return (int32)floor(scale * drand());
-}
+/// Generate a 32 bit integer from -scale to +scale
+inline int32 RGen::irand2(int32 scale) { return (int32)floor((2. * scale + 1.) * drand() - scale); }
 
-inline int32 RGen::irand2(int32 scale) {
-    // return a int from -scale to +scale
-    return (int32)floor((2. * scale + 1.) * drand() - scale);
-}
-
+/// Generates a single random 32 bit integer value in linear distribution from 0 to +scale
 inline int32 RGen::ilinrand(int32 scale) {
     int32 a = irand(scale);
     int32 b = irand(scale);
     return sc_min(a, b);
 }
 
+/// Generates a single random double value in linear distribution from 0.0 to +scale
 inline double RGen::linrand(double scale) {
     double a = drand();
     double b = drand();
     return sc_min(a, b) * scale;
 }
 
+/// Bilateral linearly distributed random 32 bit integer from -scale to +scale.
 inline int32 RGen::ibilinrand(int32 scale) {
     int32 a = irand(scale);
     int32 b = irand(scale);
     return a - b;
 }
 
+/// Bilateral linearly distributed random double from -scale to +scale.
 inline double RGen::bilinrand(double scale) {
     double a = drand();
     double b = drand();
     return (a - b) * scale;
 }
 
+/// Generates a single random double value in an exponential distributions from lo to hi
 inline double RGen::exprandrng(double lo, double hi) { return lo * exp(log(hi / lo) * drand()); }
 
 inline double RGen::exprand(double scale) {
@@ -250,6 +255,7 @@ inline double RGen::exprand(double scale) {
     return -log(z) * scale;
 }
 
+/// Bilateral exponentially distributed random double from -scale to +scale.
 inline double RGen::biexprand(double scale) {
     double z;
     while ((z = drand2(1.)) == 0.0 || z == -1.0) {
@@ -261,11 +267,16 @@ inline double RGen::biexprand(double scale) {
     return z * scale;
 }
 
-inline double RGen::sum3rand(double scale) {
-    // larry polansky's poor man's gaussian generator
-    return (drand() + drand() + drand() - 1.5) * 0.666666667 * scale;
-}
+/**
+ * Generates a random double from -scale to +scale that is the
+ * result of summing three uniform random generators to yield a
+ * bell-like distribution.
+ *
+ * Larry Polansky's loose approximation of a gaussian generator.
+ */
+inline double RGen::sum3rand(double scale) { return (drand() + drand() + drand() - 1.5) * 0.666666667 * scale; }
 
+/// Generate a double from 0.0 to 0.999...
 inline double drand(uint32& s1, uint32& s2, uint32& s3) {
     union {
         struct {
@@ -278,8 +289,8 @@ inline double drand(uint32& s1, uint32& s2, uint32& s3) {
     return u.f - 1048576.;
 }
 
+/// Generate a float from 0.0 to 0.999...
 inline float frand(uint32& s1, uint32& s2, uint32& s3) {
-    // return a float from 0.0 to 0.999...
     union {
         uint32 i;
         float f;
@@ -288,8 +299,8 @@ inline float frand(uint32& s1, uint32& s2, uint32& s3) {
     return u.f - 1.f;
 }
 
+/// Generate a float from +1.0 to +1.999...
 inline float frand0(uint32& s1, uint32& s2, uint32& s3) {
-    // return a float from +1.0 to +1.999...
     union {
         uint32 i;
         float f;
@@ -298,8 +309,8 @@ inline float frand0(uint32& s1, uint32& s2, uint32& s3) {
     return u.f;
 }
 
+/// Generate a float from -1.0 to +0.999...
 inline float frand2(uint32& s1, uint32& s2, uint32& s3) {
-    // return a float from -1.0 to +0.999...
     union {
         uint32 i;
         float f;
@@ -308,8 +319,8 @@ inline float frand2(uint32& s1, uint32& s2, uint32& s3) {
     return u.f - 3.f;
 }
 
+/// Generate a float from -0.125 to +0.124999...
 inline float frand8(uint32& s1, uint32& s2, uint32& s3) {
-    // return a float from -0.125 to +0.124999...
     union {
         uint32 i;
         float f;
@@ -318,8 +329,8 @@ inline float frand8(uint32& s1, uint32& s2, uint32& s3) {
     return u.f - 0.375f;
 }
 
+/// Returns one of the two float values -1.0 or +1.0
 inline float fcoin(uint32& s1, uint32& s2, uint32& s3) {
-    // only return one of the two values -1.0 or +1.0
     union {
         uint32 i;
         float f;

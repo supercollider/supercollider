@@ -39,6 +39,8 @@ namespace bi = boost::interprocess;
 using bi::managed_shared_memory;
 using bi::shared_memory_object;
 
+// FIXME: In case of multiple supernova instances on the same port (e.g. when running on
+// different interfaces), they can end up using the same shmem location.
 static inline string make_shmem_name(unsigned int port_number) {
     return string("SuperColliderServer_") + boost::lexical_cast<string>(port_number);
 }

@@ -17,7 +17,7 @@
 #ifndef BOOST_SYNC_DETAIL_CONDITION_VARIABLES_CONDITION_VARIABLE_ANY_WINDOWS_HPP_INCLUDED_
 #define BOOST_SYNC_DETAIL_CONDITION_VARIABLES_CONDITION_VARIABLE_ANY_WINDOWS_HPP_INCLUDED_
 
-#include <boost/utility/enable_if.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/time_traits.hpp>
 #include <boost/sync/detail/time_units.hpp>

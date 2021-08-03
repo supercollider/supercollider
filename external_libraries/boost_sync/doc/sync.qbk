@@ -2,15 +2,16 @@
     [quickbook 1.5]
     [version v1]
     [authors [Botet Escriba, Vicente J.], [Semashev, Andrey], [Blechmann, Tim]]
-    [copyright 2013 Vicente J. Botet Escriba, Andrey Semashev, Tim Blechmann]
+    [copyright 2013 Vicente J. Botet Escriba, Tim Blechmann]
+    [copyright 2013-2019 Andrey Semashev]
     [license
         Distributed under the Boost Software License, Version 1.0.
         (See accompanying file LICENSE_1_0.txt or copy at
         [@http://www.boost.org/LICENSE_1_0.txt]).
     ]
+    [purpose C++ Library for thread synchronization primitives]
     [id sync]
     [source-mode c++]
-    [last-revision $Date: 2013-05-18 00:11:22 +0400 (Sat, 18 May 2013) $]
 ]
 
 [c++]
@@ -21,10 +22,10 @@
 [def __boost_function__ [@http://www.boost.org/doc/libs/release/doc/html/function.html Boost.Function]]
 [def __boost_system__ [@http://www.boost.org/doc/libs/release/libs/system/doc/index.html Boost.System]]
 [def __boost_date_time__ [@http://www.boost.org/doc/libs/release/doc/html/date_time.html Boost.DateTime]]
+[def __boost_chrono__ [@http://www.boost.org/doc/libs/release/doc/html/chrono.html Boost.Chrono]]
 [def __boost_thread__ [@http://www.boost.org/doc/libs/release/doc/html/thread.html Boost.Thread]]
 [def __boost_preprocessor__ [@http://www.boost.org/doc/libs/release/libs/preprocessor/doc/index.html Boost.Preprocessor]]
 [def __boost_bind__ [@http://www.boost.org/doc/libs/release/libs/bind/bind.html Boost.Bind]]
-[def __boost_lambda__ [@http://www.boost.org/doc/libs/release/doc/html/lambda.html Boost.Lambda]]
 [def __boost_phoenix__ [@http://www.boost.org/doc/libs/release/libs/phoenix/doc/html/index.html Boost.Phoenix]]
 [def __boost_optional__ [@http://www.boost.org/doc/libs/release/libs/optional/index.html Boost.Optional]]
 [def __boost_mpl__ [@http://www.boost.org/doc/libs/release/libs/mpl/doc/index.html Boost.MPL]]
@@ -34,19 +35,29 @@
 [def __boost_utility__ [@http://www.boost.org/doc/libs/release/libs/utility/utility.htm Boost.Utility]]
 [def __boost_quickbook__ [@http://www.boost.org/doc/libs/release/doc/html/quickbook.html Boost.Quickbook]]
 
-[template ticket[key] '''<ulink url="https://svn.boost.org/trac/boost/ticket/'''[key]'''">#'''[key]'''</ulink>''']
+[template github_issue[key] '''<ulink url="https://github.com/boostorg/sync/issues/'''[key]'''">GH#'''[key]'''</ulink>''']
+[template pull_request[key] '''<ulink url="https://github.com/boostorg/sync/pull/'''[key]'''">PR#'''[key]'''</ulink>''']
 
 [/ Auto-generated macros that refer to Reference sections /]
 [include top_level_reference.qbk]
 [include locks_reference.qbk]
-[/ [include support_reference.qbk] /]
+[include support_reference.qbk]
 
+[section:overview Overview]
+
+Boost.Sync is a collection of thread synchronization primitives. It provides components like mutexes, conditional variables, locks and more, with interfaces compatible with C++11 standard library and __boost_thread__ components, with some extensions and refinements. In particular, Boost.Sync is not tied to a single time units library and instead contains an abstraction layer, which allows different time unit libraries, like C++11 `std::chrono`, __boost_chrono__ and __boost_date_time__, to be used interchangeably. In addition, Boost.Sync offers thread synchronization components that are not available in C++11 standard library or __boost_thread__, which can be useful in more specialized cases.
+
+Boost.Sync focuses on performance and reduced dependencies. Unlike __boost_thread__, Boost.Sync does not support thread interruption and therefore does not impose the associated performance overhead. Most components do not require linking with other libraries, including Boost.Sync itself.
+
+Boost.Sync is compatible with C++03 compilers, and will use features available in newer C++ revisions, as detected.
+
+[endsect]
 
 [section:installation Installation and compatibility]
 
 [section:supported_compilers Supported compilers and platforms]
 
-The library should build and work with a reasonably compliant compiler. The library was successfully built and tested on the following platforms:
+The library should build and work with a reasonably compliant C++03 compiler. The library was successfully built and tested on the following platforms:
 
 * Windows XP, Windows Vista, Windows 7. MSVC 8.0 SP1, MSVC 9.0 and newer.
 * Linux. GCC 4.5 and newer. Older versions may work too, but it was not tested.
@@ -67,11 +78,68 @@ Boost.Sync should be compatible with all hardware architectures supported by Boo
 
 [section:config Configuring and building the library]
 
-[endsect]
+Most of the components provided by the library are header-only and do not require linking with Boost.Sync. Currently `at_thread_exit`, `notify_all_at_thread_exit` and `thread_specific_ptr` require linking with prebuilt library. In order to build Boost.Sync, follow the common [@https://www.boost.org/doc/libs/release/more/getting_started/ Getting Started] guide for your platform.
+
+Boost.Sync supports a number of macros to configure its implementation and behavior. These macros are given in the following table. These macros should be defined similarly when building Boost and your code using Boost.Sync.
+
+[table Configuration macros
+    [[Macro name]                               [Effect]]
+    [[`BOOST_USE_WINAPI_VERSION`]               [This macro is Windows-specific. Selects the target Windows version for various Boost libraries, including Boost.Sync. Code compiled for a particular Windows version will likely fail to run on the older Windows versions, but may improve performance because of using newer OS features. The macro is expected to have an integer value equivalent to [@https://msdn.microsoft.com/en-us/library/6sehtctf.aspx `_WIN32_WINNT`].]]
+    [[`BOOST_SYNC_USE_COMPILER_TLS`]            [This macro enables support for compiler intrinsics for thread-local storage. Defining it may improve performance of Boost.Sync if certain usage limitations are acceptable. See [link sync.installation.config.compiler_tls below] for more comments.]]
+    [[`BOOST_SYNC_USE_PTHREAD`]                 [This macro forces using pthreads API on Windows. See [link sync.installation.config.pthreads_win32 below] for more details.]]
+    [[`BOOST_SYNC_USE_STD_SYSTEM_ERROR`]        [When defined, instructs Boost.Sync to use `std::system_error` and `std::error_code` instead of __boost_system__.]]
+]
+
+You can define configuration macros in the `b2` command line, like this:
+
+[pre
+b2 -j8 --with-sync variant=release define=BOOST_SYNC_USE_COMPILER_TLS define=BOOST_USE_WINAPI_VERSION=0x0601 stage
+]
+
+[section:compiler_tls Notes about compiler-supplied intrinsics for TLS]
+
+Many widely used compilers support builtin intrinsics for managing thread-local storage, which is used in the components of the library which require TLS. This feature is also included in the C++11 standard. Generally, these intrinsics allow for a much more efficient access to the storage than any surrogate implementation, including native operating system API. However, this feature has several caveats:
+
+* Some operating systems don't support the use of these intrinsics in case if the TLS is defined in a shared library that is dynamically loaded during the application run time. These systems include Linux and Windows prior to Vista. Windows Vista and later do not have this issue.
+* The TLS may not be reliably accessed from global constructors and destructors. At least MSVC 8.0 on Windows is known to have this problem.
+
+The library provides the `BOOST_SYNC_USE_COMPILER_TLS` configuration macro that allows to enable the use of this feature, which will improve the library performance at the cost of these limitations:
+
+* The application executable must be linked with the Boost.Log library. It should not be loaded dynamically during run time.
+* The application must not use TLS in global constructors or destructors.
+
+Note that enabling builtin compiler support for TLS does not remove the dependency on lower level OS threading primitives implementing TLS. The purpose of using compiler intrinsics for TLS is better performance rather than reducing dependencies.
 
 [endsect]
 
-[include:sync notes_for_maintainers.qbk]
+[section:pthreads_win32 Selecting threading API on Windows]
+
+Boost.Sync supports building against one of the following underlying APIs: pthreads or Windows API. On most platforms pthreads are the only option. On Windows, Windows API is used by default, but pthreads can be enabled. One implementation of pthreads on Windows is [@http://sourceware.org/pthreads-win32 pthreads-win32].
+
+[note Cygwin is considered a POSIX-compatible platform, which provides pthreads API.]
+
+To select pthreads on Windows, do the following:
+
+* Set `PTW32_INCLUDE` variable to the path to pthread-win32 headers and `PTW32_LIB` to the path to pthread-win32 library. These variables can be set in the environment, `user-config.jam` or `site-config.jam`. For example, add the following lines to your `user-config.jam` (delimiting spaces are significant):
+
+[pre
+PTW32_INCLUDE = "C:\\Program Files\\ptw32\\Pre-built2\\include" ;
+PTW32_LIB = "C:\\Program Files\\ptw32\\Pre-built2\\lib" ;
+]
+
+* Add `threadapi=pthread` to `b2` command line, for example:
+
+[pre
+b2 -j8 --with-sync variant=release threadapi=pthread stage
+]
+
+* When building your code that uses Boost.Sync, define `BOOST_SYNC_USE_PTHREAD` macro. Make sure paths to pthread-win32 headers and libraries are also configured in your project and you're linking with pthread-win32 pre-built library.
+
+[endsect]
+
+[endsect]
+
+[endsect]
 
 [section:reference Reference]
 
@@ -80,11 +148,13 @@ Boost.Sync should be compatible with all hardware architectures supported by Boo
 [xinclude mutex_reference.xml]
 [xinclude condition_variables_reference.xml]
 [xinclude event_reference.xml]
-[/ [xinclude support_reference.xml] /]
+[xinclude support_reference.xml]
 
 [endsect]
 
 [include:sync changelog.qbk]
+
+[include:sync notes_for_maintainers.qbk]
 
 [section:acknowledgments Acknowledgments]
 

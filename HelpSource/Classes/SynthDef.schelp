@@ -133,6 +133,10 @@ warning:: code::SynthDef.writeOnce:: is a legacy method. Its main use was to imp
 
 The exception is very large SynthDefs, where you have a choice between link::#-writeDefFile:: and this method. Even then, the efficiency savings of code::writeOnce:: are only in disk I/O -- both methods build the SynthDef every time they run. ::
 
+
+method::warnAboutLargeSynthDefs
+When a SynthDef is too large to be sent to a local server in a standard OSC message, it is written to disk and the server loads it from there instead. If code::warnAboutLargeSynthDefs:: is set to true, it will warn that this is happening. There will always be a warning for remote servers.
+
 InstanceMethods::
 
 method:: add
@@ -245,7 +249,7 @@ y.set(\t_trig, 1, \freq, 220); // hear how the freq lags
 y.free;
 
 // Pbind with the default \note event type, and Pmono, use an automatically-generated
-// function to look up argument values. This function translates \trig in the 
+// function to look up argument values. This function translates \trig in the
 // event to \t_trig in the synth.
 (
 Pmono(\trigTest1, *[
@@ -255,7 +259,7 @@ Pmono(\trigTest1, *[
 ]).play;
 )
 
-// Note that With event type \set, there is no automatic translation so you 
+// Note that With event type \set, there is no automatic translation so you
 // should use t_trig in that case.
 y = Synth(\trigTest1);
 (
@@ -267,7 +271,7 @@ Pbind(*[
 ]).play;
 )
 y.free;
-	
+
 // This second version makes trig a \tr arg by specifying it in the rates array.
 (
 SynthDef(\trigTest2, { |out, trig=0, freq=440|

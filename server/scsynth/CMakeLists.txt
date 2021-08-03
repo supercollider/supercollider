@@ -33,7 +33,7 @@ if(AUDIOAPI STREQUAL "default")
 	endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
 	message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
@@ -42,13 +42,25 @@ if(AUDIOAPI STREQUAL jack)
   if(NOT JACK_FOUND)
     message(FATAL_ERROR "Jack selected as audio API, but development files not found")
   endif()
-elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
+elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
     endif()
+elseif(AUDIOAPI STREQUAL bela)
+    # The Bela lib will have its own set of libraries and includes
+    # However, the Bela audio backend for SC has some direct calls to Xenomai
+    # Therefore we need to get flags for those as well
+    find_package(Xenomai REQUIRED)
+    find_package(Bela REQUIRED)
+    message(STATUS "Found Bela libraries: ${BELA_LIBRARIES}")
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+        # recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BELA_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BELA_CXX_FLAGS}")
+    endif()
 endif()
-message(STATUS "Audio API: ${AUDIOAPI}")
+message(STATUS "Audio API (scsynth): ${AUDIOAPI}")
 
 set(scsynth_sources
 	SC_BufGen.cpp
@@ -106,6 +118,9 @@ if (FFT_GREEN)
 	list(APPEND scsynth_sources ../../common/fftlib.c)
 endif()
 
+if(AUDIOAPI STREQUAL bela)
+    list(APPEND scsynth_sources ../../common/XenomaiLock.cpp)
+endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
@@ -124,6 +139,10 @@ elseif (AUDIOAPI STREQUAL portaudio)
 	list(APPEND scsynth_sources SC_PortAudio.cpp ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
+elseif (AUDIOAPI STREQUAL bela)
+    list(APPEND scsynth_sources SC_Bela.cpp)
+    add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_BELA" "-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
+    include_directories(${XENOMAI_INCLUDE_DIRS} ${BELA_INCLUDE_DIRS})
 endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
@@ -190,11 +209,9 @@ endif()
 if (AUDIOAPI STREQUAL jack)
 	target_link_libraries(libscsynth ${JACK_LIBRARIES})
 elseif(AUDIOAPI STREQUAL portaudio)
-	if(WIN32 AND NOT MSYS)
-		target_link_libraries(libscsynth portaudio)
-	else()
-		target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
-	endif()
+	target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+elseif(AUDIOAPI STREQUAL bela)
+    target_link_libraries(libscsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
@@ -230,8 +247,18 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-add_executable(scsynth scsynth_main.cpp)
+add_executable(scsynth
+    scsynth_main.cpp
+
+    # these files contain code only used in main()
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+    $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
+    )
 target_link_libraries(scsynth libscsynth)
+
+if(AUDIOAPI STREQUAL bela)
+    target_link_libraries(scsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
+endif()
 
 if (PTHREADS_FOUND)
     target_link_libraries(scsynth ${PTHREADS_LIBRARIES})

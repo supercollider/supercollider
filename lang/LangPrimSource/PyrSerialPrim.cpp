@@ -42,7 +42,7 @@
 
 #include <boost/asio/use_future.hpp>
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 

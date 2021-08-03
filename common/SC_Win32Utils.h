@@ -51,7 +51,6 @@
 
 #    if _MSC_VER
 typedef int pid_t;
-#        define snprintf _snprintf
 #    endif
 
 void win32_ReplaceCharInString(char* string, int len, char src, char dst);

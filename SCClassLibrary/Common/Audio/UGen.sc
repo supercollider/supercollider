@@ -109,9 +109,15 @@ UGen : AbstractFunction {
 		}
 	}
 
-	degrad { ^this * (pi/180) }
+	degrad {
+		// degree * (pi/180)
+		^this * 0.01745329251994329547
+	}
 
-	raddeg { ^this * (180/pi) }
+	raddeg {
+		// radian * (180/pi)
+		^this * 57.29577951308232286465
+	}
 
 	blend { arg that, blendFrac = 0.5;
 		var pan;
@@ -275,6 +281,20 @@ UGen : AbstractFunction {
 
 	moddif { |that = 0.0, mod = 1.0|
 		^ModDif.multiNew(this.rate, this, that, mod)
+	}
+
+	// Note that this differs from |==| for other AbstractFunctions
+	// Other AbstractFunctions write '|==|' into the compound function
+	// for the sake of their 'storeOn' (compile string) representation.
+	// For UGens, scsynth does not support |==| (same handling --> error).
+	// So here, we use '==' which scsynth does understand.
+	// Also, BinaryOpUGen doesn't write a compile string.
+	|==| { |that|
+		^this.composeBinaryOp('==', that)
+	}
+	prReverseLazyEquals { |that|
+		// commutative, so it's OK to flip the operands
+		^this.composeBinaryOp('==', that)
 	}
 
 	sanitize {

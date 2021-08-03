@@ -140,7 +140,7 @@ EnvirGui : JITGui {
 	}
 
 	accepts { |obj|
-		^(obj.isNil or: { obj.isKindOf(Dictionary) })
+		^(obj.isNil or: { obj.isKindOf(Dictionary) or: {obj.isKindOf(EnvironmentRedirect)} })
 	}
 
 		// backwards compatibility

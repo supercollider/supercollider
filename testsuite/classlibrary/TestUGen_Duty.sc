@@ -26,7 +26,7 @@ TestUGen_Duty : UnitTest {
 		action = { |ugenOutput|
 			this.assertArrayFloatEquals(
 				ugenOutput,
-				values.stutter(numFrames),
+				values.dupEach(numFrames),
 				"Duty should output exact values at audio rate. Tested with % frames per value".format(numFrames)
 			);
 			cond.test_(true).signal;

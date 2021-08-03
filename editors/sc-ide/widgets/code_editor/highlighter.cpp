@@ -68,6 +68,8 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent): QSyntaxHighlighter(
     mGlobals = SyntaxHighlighterGlobals::instance();
 
     connect(mGlobals, SIGNAL(syntaxFormatsChanged()), this, SLOT(rehighlight()));
+
+    connect(Main::scProcess(), &ScProcess::introspectionChanged, this, &SyntaxHighlighter::rehighlight);
 }
 
 void SyntaxHighlighter::highlightBlockInCode(ScLexer& lexer) {
@@ -86,10 +88,16 @@ void SyntaxHighlighter::highlightBlockInCode(ScLexer& lexer) {
             setFormat(tokenPosition, tokenLength, formats[WhitespaceFormat]);
             break;
 
-        case Token::Class:
-            setFormat(tokenPosition, tokenLength, formats[ClassFormat]);
-            break;
+        case Token::Class: {
+            auto className = QString(lexer.text().begin() + tokenPosition, tokenLength);
 
+            auto* classInstance = Main::scProcess()->introspection().findClass(className);
+
+            if (classInstance != nullptr)
+                setFormat(tokenPosition, tokenLength, formats[ClassFormat]);
+
+            break;
+        }
         case Token::Builtin:
             setFormat(tokenPosition, tokenLength, formats[BuiltinFormat]);
             break;
@@ -203,6 +211,10 @@ void SyntaxHighlighter::highlightBlockInComment(ScLexer& lexer) {
 }
 
 void SyntaxHighlighter::highlightBlock(const QString& text) {
+    // if we don't have introspection yet don't format anything
+    if (!Main::scProcess()->introspection().introspectionAvailable())
+        return;
+
     TextBlockData* blockData = static_cast<TextBlockData*>(currentBlockUserData());
     if (!blockData) {
         blockData = new TextBlockData;

@@ -462,8 +462,7 @@ SCDoc {
 		this.checkVersion(clearCache);
 		this.postMsg("Indexing help-files...",0);
 		documents = Dictionary(); // or use IdDict and symbols as keys?
-		helpSourceDirs = nil; // force re-scan of HelpSource folders
-		this.helpSourceDirs.do {|dir|
+		this.prRescanHelpSourceDirs.do {|dir|
 			PathName(dir).filesDo {|f|
 				case
 				{f.fullPath.endsWith(".ext.schelp")} {
@@ -535,6 +534,11 @@ SCDoc {
 		^documents;
 	}
 
+	*prRescanHelpSourceDirs {
+		helpSourceDirs = nil;
+		^this.helpSourceDirs;
+	}
+
 	*helpSourceDirs {
 		var find, rootPaths;
 		if(helpSourceDirs.isNil) {
@@ -549,7 +553,11 @@ SCDoc {
 					};
 				}
 			};
-			rootPaths = [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir];
+			rootPaths = if(LanguageConfig.excludeDefaultPaths) {
+				[]
+			} {
+				[thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir]
+			};
 			rootPaths = rootPaths.addAll(LanguageConfig.includePaths);
 			rootPaths.do {|dir|
 				find.(PathName(dir));
