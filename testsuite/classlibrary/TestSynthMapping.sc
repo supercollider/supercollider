@@ -46,14 +46,14 @@ TestSynthAudioMapping : UnitTest {
 		var controlSynth, value;
 		this.sendSynthDef(1, 1);
 		server.sync;
-		value = 6561.0;
+		value = 6561;
 		synth = Synth(\testNode);
 		controlSynth = Synth.before(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, "a" ++ mapBus);
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var val = args.first;
+			var val = args.first.asInteger;
 			this.assertEquals(val, value, "value of synth after mapping should match");
 		};
 	}
@@ -62,14 +62,14 @@ TestSynthAudioMapping : UnitTest {
 		var controlSynth, value;
 		this.sendSynthDef(1, 1);
 		server.sync;
-		value = 6561.0;
+		value = 6561;
 		synth = Synth(\testNode);
 		controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, "a" ++ mapBus);
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var val = args.first;
+			var val = args.first.asInteger;
 			this.assertEquals(val, value, "value of synth after mapping should match");
 		};
 	}
@@ -80,14 +80,14 @@ TestSynthAudioMapping : UnitTest {
 		synthNumChannels = 2;
 		this.sendSynthDef(synthNumChannels, ctlNumChannels);
 		server.sync;
-		value = { 6561.0.rand.trunc } ! ctlNumChannels;
+		value = { 6561.rand } ! ctlNumChannels;
 		synth = Synth(\testNode);
 		controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, ctlNumChannels.collect { |i| "a" ++ (mapBus + i) });
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var synthVal = args;
+			var synthVal = args.asInteger;
 			this.assertEquals(synthVal, value.keep(synthNumChannels), "more channels than available should be still mapped");
 		};
 	}
@@ -98,14 +98,14 @@ TestSynthAudioMapping : UnitTest {
 		synthNumChannels = 5;
 		this.sendSynthDef(synthNumChannels, ctlNumChannels);
 		server.sync;
-		value = { 6561.0.rand.trunc } ! ctlNumChannels;
+		value = { 6561.rand } ! ctlNumChannels;
 		synth = Synth(\testNode);
 		controlSynth = Synth.after(synth, \valueNode, [\out, mapBus, \input, value]);
 		synth.set(\input, ctlNumChannels.collect { |i| "a" ++ (mapBus + i) });
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var synthVal = args;
+			var synthVal = args.asInteger;
 			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
 		};
 	}
@@ -116,7 +116,7 @@ TestSynthAudioMapping : UnitTest {
 		synthNumChannels = 5;
 		this.sendSynthDef(synthNumChannels, ctlNumChannels);
 		krBus = Bus.control(server, ctlNumChannels);
-		value = { 6561.0.rand.trunc } ! ctlNumChannels;
+		value = { 6561.rand } ! ctlNumChannels;
 		krBus.setn(value);
 		server.sync;
 		synth = Synth(\testNode);
@@ -124,7 +124,7 @@ TestSynthAudioMapping : UnitTest {
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var synthVal = args;
+			var synthVal = args.asInteger;
 			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
 		};
 	}
