@@ -41,9 +41,9 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
-- 3.12: 2020-07-11
+- 3.12: 2020-08-02
 
-3.12.0-rc1 (2021-07-11)
+3.12.0 (2021-08-02)
 ===================
 
 The 3.12.0 release brings new features, countless bugfixes, as well as project and documentation updates. See the [repository](https://github.com/supercollider/supercollider) for all the changes. A big thank you to all developers for your contributions!
@@ -100,6 +100,8 @@ Supernova on macOS: avoid resampling when talking to audio hardware  ([#4477](ht
 
 ### scsynth and supernova: Fixed
 Servers not booting on Windows if some system logs are missing ([#5393](https://github.com/supercollider/supercollider/pull/5393))
+
+macOS builds include a custom build of libsndfile to support older macOS versions ([#5518](https://github.com/supercollider/supercollider/pull/5518)) 
 
 ### UGens: Fixed
 PanAz: initialize amps in Ctor ([#4973](https://github.com/supercollider/supercollider/pull/4973))

@@ -1,5 +1,17 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
 jobs:
   lint:
     runs-on: ubuntu-18.04
@@ -185,6 +197,7 @@ jobs:
             deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
             use-syslibs: false
             shared-libscsynth: false
+            build-libsndfile: true
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
           - job-name: 'legacy'
@@ -194,6 +207,7 @@ jobs:
             deployment-target: '10.10'
             use-syslibs: false
             shared-libscsynth: false
+            build-libsndfile: true
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
@@ -220,6 +234,7 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -253,9 +268,21 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install libsndfile portaudio ccache fftw
+          brew install portaudio ccache fftw
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+      - name: build libsndfile # to make it compatible with older OSes (lower deployment target)
+        if: matrix.build-libsndfile == true
+        run: |
+          brew uninstall --ignore-dependencies libsndfile
+          brew install automake mpg123
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
+          tar xfvz libsndfile.tar.bz2
+          cd libsndfile*/
+          mkdir build && cd build
+          cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
@@ -271,8 +298,6 @@ jobs:
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: configure
-        env:
-          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
@@ -456,14 +481,14 @@ jobs:
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
           retention-days: 7 # quickly remove test artifacts
       - name: create installer
-        if: matrix.create-installer == 'true'
+        if: matrix.create-installer == true
         shell: bash
         run: |
           export PATH="C:\Program Files (x86)\NSIS":$PATH
           cmake --build $BUILD_PATH --config Release --target installer
       - name: upload installer
         uses: actions/upload-artifact@v2
-        if: matrix.create-installer == 'true'
+        if: matrix.create-installer == true
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
@@ -675,8 +700,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
