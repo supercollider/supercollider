@@ -294,8 +294,9 @@ jobs:
           cmake -G"Xcode" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --config Release --target install
           cd $GITHUB_WORKSPACE/..
-          git clone https://github.com/xiph/opus.git # using git repo since https://github.com/xiph/opus/issues/129 seems not fixed in the release tarball
-          cd opus/
+          curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
+          tar xfvz opus.tar.gz
+          cd opus*/
           echo "*** building opus ***"
           mkdir build && cd build
           cmake -G"Xcode" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
