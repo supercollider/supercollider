@@ -53,7 +53,7 @@ TestSynthAudioMapping : UnitTest {
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var val = args.first.asInteger;
+			var val = args.first.round.asInteger;
 			this.assertEquals(val, value, "value of synth after mapping should match");
 		};
 	}
@@ -69,7 +69,7 @@ TestSynthAudioMapping : UnitTest {
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var val = args.first.asInteger;
+			var val = args.first.round.asInteger;
 			this.assertEquals(val, value, "value of synth after mapping should match");
 		};
 	}
@@ -87,7 +87,7 @@ TestSynthAudioMapping : UnitTest {
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var synthVal = args.asInteger;
+			var synthVal = args.round.asInteger;
 			this.assertEquals(synthVal, value.keep(synthNumChannels), "more channels than available should be still mapped");
 		};
 	}
@@ -105,7 +105,7 @@ TestSynthAudioMapping : UnitTest {
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var synthVal = args.asInteger;
+			var synthVal = args.round.asInteger;
 			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
 		};
 	}
@@ -124,7 +124,7 @@ TestSynthAudioMapping : UnitTest {
 		server.latency.wait;
 		synth.set(\trig, 1);
 		this.waitForOSCReply { |args|
-			var synthVal = args.asInteger;
+			var synthVal = args.round.asInteger;
 			this.assertEquals(synthVal.keep(ctlNumChannels), value, "fewer channels than available should be still mapped");
 		};
 	}
