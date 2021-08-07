@@ -325,7 +325,7 @@ jobs:
           # the following assumes that we end up with the build in the folder SuperCollider
           # hdiutil sometimes fails with "create failed - Resource busy"
           # when that happens, we run it again
-          hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE
+          hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: matrix.artifact-suffix
