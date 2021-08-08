@@ -283,7 +283,7 @@ jobs:
           cd ogg*/
           echo "*** building libogg ***"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/flac/archive/refs/tags/1.3.3.tar.gz --output flac.tar.xz
@@ -291,7 +291,7 @@ jobs:
           cd flac*/
           echo "*** building flac ***"
           cd build # build directory already exists
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
@@ -299,7 +299,7 @@ jobs:
           cd opus*/
           echo "*** building opus ***"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz --output libvorbis.tar.gz
@@ -307,7 +307,7 @@ jobs:
           cd libvorbis*/
           echo "building *** libvorbis ***"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
@@ -315,7 +315,7 @@ jobs:
           cd libsndfile*/
           echo "building libsndfile"
           mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
