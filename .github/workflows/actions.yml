@@ -235,6 +235,7 @@ jobs:
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -274,14 +275,47 @@ jobs:
       - name: build libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true
         run: |
-          brew uninstall --ignore-dependencies libsndfile
-          brew install automake mpg123
+          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
+          brew install automake
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://gitlab.xiph.org/xiph/ogg/-/archive/v1.3.5/ogg-v1.3.5.tar.bz2 --output ogg.tar.bz2
+          tar xfz ogg.tar.bz2
+          cd ogg*/
+          echo "*** building libogg ***"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/xiph/flac/archive/refs/tags/1.3.3.tar.gz --output flac.tar.xz
+          tar xfz flac.tar.xz
+          cd flac*/
+          echo "*** building flac ***"
+          cd build # build directory already exists
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
+          tar xfz opus.tar.gz
+          cd opus*/
+          echo "*** building opus ***"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz --output libvorbis.tar.gz
+          tar xfz libvorbis.tar.gz
+          cd libvorbis*/
+          echo "building *** libvorbis ***"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
           cd $GITHUB_WORKSPACE/..
           curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
-          tar xfvz libsndfile.tar.bz2
+          tar xfz libsndfile.tar.bz2
           cd libsndfile*/
+          echo "building libsndfile"
           mkdir build && cd build
-          cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
           cmake --build . --target install
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
@@ -311,7 +345,7 @@ jobs:
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ matrix.deployment-target }} -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
@@ -325,7 +359,7 @@ jobs:
           # the following assumes that we end up with the build in the folder SuperCollider
           # hdiutil sometimes fails with "create failed - Resource busy"
           # when that happens, we run it again
-          hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO $ARTIFACT_FILE
+          hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: matrix.artifact-suffix
