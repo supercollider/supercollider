@@ -159,6 +159,33 @@ Routine {
 ::
 
 Note:: The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter). The return value of code:: (8..20).do { |item| item.postln } :: is 8, the starting value.
+
+However, if code::do:: is written as an infix binary operator, as in code::(8..20) do: { |item| item.postln }::, then it will generate the series as an array first, before calling Array:do. One side effect of this is that it is valid to code::do:: over an infinite series within a routine only if code::do:: is written as a method call. If it is written as a binary operator, you will get a "wrong type" error because the array must be finite.
+
+code::
+// OK: 'do' is a method call
+r = Routine {
+	(8 .. ).do { |i|
+		i.yield;
+	};
+};
+
+r.next;
+-> 8
+-> 9 etc.
+
+// ERROR: 'do' is an operator
+r = Routine {
+	(8 .. ) do: { |i|
+		i.yield;
+	};
+};
+
+r.next;
+
+ERROR: Primitive '_SimpleNumberSeries' failed.
+Wrong type.
+::
 ::
 
 method:: switch
