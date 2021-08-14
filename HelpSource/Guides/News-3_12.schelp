@@ -2,7 +2,7 @@ title:: News in 3.12
 summary:: A summary of news in SC 3.12
 categories:: News
 
-The 3.12.0 release brings new features, countless bugfixes, as well as project and documentation updates. See the repository for all the changes. A big thank you to all developers for your contributions!
+The 3.12 release brings new features, countless bugfixes, as well as project and documentation updates. See the repository for all the changes. A big thank you to all developers for your contributions!
 
 Change log highlights:
 
@@ -25,6 +25,9 @@ Increase required C++ standard to C++17 (#5396)
 Move CI from Travis/AppVeyor to GitHub Actions (#5261, #5273 #5371, #5377)
 
 Run TestSuite in CI (#5332)
+
+section::  General: Fixed
+Builds for older macOS systems (#5537)
 
 section::  sclang: Changed
 Exclude default paths: change from command line parameter to language file flag (#3733)
@@ -61,6 +64,7 @@ macOS builds include a custom build of libsndfile to support older macOS version
 
 section::  UGens: Fixed
 PanAz: initialize amps in Ctor (#4973)
+
 EnvGen fixes (#5217, #4921, #4793)
 
 section::  IDE: Fixed
