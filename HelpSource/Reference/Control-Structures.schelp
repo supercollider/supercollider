@@ -59,10 +59,10 @@ code::
 while { testFunc body } { loopFunc body };
 
 // alternate
-while (testFunc, bodyFunc);
+while({ testFunc body }, { loopFunc body });
 
 // possible but harder to read, so, not preferred
-testFunc.while( bodyFunc );
+{ testFunc body }.while({ loopFunc body });
 ::
 
 Example
@@ -194,7 +194,7 @@ Object implements a switch method which allows for conditional evaluation with m
 
 The switch statement will be inlined if the test objects are all Floats, Integers, Symbols, Chars, nil, false, true and if the functions have no variable or argument declarations. The inlined switch uses a hash lookup (which is faster than nested if statements), so it should be very fast and scale to any number of clauses.
 
-note::Hash lookup by definition implies testing emphasis::identity:: rather than equality: a code::switch:: construction that is not inlined will test code::==::, while one that is inlined will test code::===::. See the examples.::
+note::Hash lookup by definition implies testing emphasis::identity:: rather than equality: a code::switch:: construction that is not inlined will test code::==::, while one that is inlined will test code::===::. See the examples. One implication is that strings should be avoided: code::switch(text) { "abc" } { ... }:: may not match, even if code::text == "abc"::. Symbols are preferred.::
 
 note::Floating point numbers may sometimes appear to be equal while differing slightly in their binary representation: code::(2/3) == (1 - (1/3)):: is false. Therefore floats should be avoided in code::switch:: constructions.::
 
