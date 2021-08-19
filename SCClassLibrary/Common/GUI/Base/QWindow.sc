@@ -104,7 +104,16 @@ Window {
 		resizable = true,
 		border = true,
 		server,
-		scroll = false;
+		scroll = false,
+		forceCreate = false;
+
+		if( forceCreate.not, {
+			var existingWindows = Window.allWindows.select({|w| w.name == name});
+			if( existingWindows.size > 0 ) {
+				"Window \"%\" already exists".format(name).warn;
+				^existingWindows[0].front;
+			}
+		});
 
 		if( bounds.isNil ) {
 			bounds = Rect(0,0,400,400).center_( Window.availableBounds.center );
