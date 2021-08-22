@@ -55,7 +55,7 @@ LinuxPlatform : UnixPlatform {
 			"xfce4-terminal -T % -e %",
 			"mate-terminal -t % -e %",
 			"gnome-terminal -t % -- %",
-			"konsole --title % -e %"
+			"konsole --title % -e %",
 		].do{ |cmd|
 			if("command -v % > /dev/null".format(cmd.split($ ).first).systemCmd == 0) {
 				^cmd
