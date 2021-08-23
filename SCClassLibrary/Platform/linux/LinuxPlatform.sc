@@ -48,8 +48,8 @@ LinuxPlatform : UnixPlatform {
 			"termite --title % -e %",
 			"rxvt -T % -e %",
 			"terminator -T % -e %",
-			"xterm -T % -e %", 
-			"kitty -T % -e %", 
+			"xterm -T % -e %",
+			"kitty -T % -e %",
 			"alacritty -t % -e %",
 			// DE-specific terminals last: avoid problems if not on GNOME or KDE but term installed
 			"xfce4-terminal -T % -e %",
