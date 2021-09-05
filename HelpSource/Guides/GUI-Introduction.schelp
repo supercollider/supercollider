@@ -390,4 +390,6 @@ Routine{
 }.play(SystemClock)
 ::
 
-As mentioned above, using the GUI system is also not allowed in code performed directly in response to OSC messages (this includes functions given to all kinds of OSC responder classes). The same solutions as above apply:
+As mentioned above, using the GUI system is also not allowed in code performed directly in response to OSC messages (this includes functions given to all kinds of OSC responder classes). The same solutions as above apply.
+
+Another example for addressing this issue can be found in the FAQ link::Guides/UserFAQ#Language (client) Issues#Language (client) Issues::

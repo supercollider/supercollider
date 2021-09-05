@@ -41,7 +41,15 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
-- 3.12: 2020-08-02
+- 3.12: 2021-08-02
+
+3.12.1 (2021-09-05)
+===================
+
+The 3.12.1 release fixes compatibility with older macOS systems (10.13 and below)
+
+### General: Fixed
+Builds for older macOS systems ([#5537](https://github.com/supercollider/supercollider/pull/5537))
 
 3.12.0 (2021-08-02)
 ===================
@@ -105,6 +113,7 @@ macOS builds include a custom build of libsndfile to support older macOS version
 
 ### UGens: Fixed
 PanAz: initialize amps in Ctor ([#4973](https://github.com/supercollider/supercollider/pull/4973))
+
 EnvGen fixes ([#5217](https://github.com/supercollider/supercollider/pull/5217), [#4921](https://github.com/supercollider/supercollider/pull/4921), [#4793](https://github.com/supercollider/supercollider/pull/4793))
 
 ### IDE: Fixed
