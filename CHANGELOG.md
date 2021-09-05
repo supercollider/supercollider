@@ -43,7 +43,7 @@ Release dates of 3.x versions:
 - 3.11: 2020-03-08
 - 3.12: 2021-08-02
 
-3.12.1-rc1 (2021-08-14)
+3.12.1 (2021-09-05)
 ===================
 
 The 3.12.1 release fixes compatibility with older macOS systems (10.13 and below)
