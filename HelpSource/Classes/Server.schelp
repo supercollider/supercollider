@@ -28,6 +28,8 @@ code::
 s.serverRunning // returns true if it is true
 ::
 
+Some insights about common Server issues can be found on the FAQ link::Guides/UserFAQ#Server Issues#Server Issues::
+
 
 ClassMethods::
 private:: initClass

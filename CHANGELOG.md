@@ -41,9 +41,9 @@ Release dates of 3.x versions:
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
-- 3.12: 2020-08-02
+- 3.12: 2021-08-02
 
-3.12.1-rc1 (2021-08-14)
+3.12.1 (2021-09-05)
 ===================
 
 The 3.12.1 release fixes compatibility with older macOS systems (10.13 and below)

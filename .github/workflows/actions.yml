@@ -474,9 +474,9 @@ jobs:
           ASIO_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/asio_sdk
         run: |
           mkdir -p $ASIO_PATH && cd $ASIO_PATH
-          curl -L https://www.steinberg.net/sdk_downloads/asiosdk2.3.zip -o asio.zip
+          curl -L https://www.steinberg.net/asiosdk -o asio.zip
           7z x asio.zip -y
-          mv ASIOSDK2.3 $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+          mv asiosdk_* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
       - name: configure
         shell: bash
         run: |
