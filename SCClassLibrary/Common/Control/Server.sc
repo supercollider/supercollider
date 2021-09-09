@@ -389,14 +389,7 @@ Server {
 	}
 
 	*remote { |name, addr, options, clientID|
-		var result;
-		result = this.new(name, addr, options, clientID);
-		if(options.protocol == \tcp) {
-			addr.tryConnectTCP({ result.startAliveThread }, nil, 20)
-		} {
-			result.startAliveThread;
-		};
-		^result;
+		^this.new(name, addr, options, clientID).connectToServerAddr({ this.startAliveThread })
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
@@ -1045,8 +1038,14 @@ Server {
 			// in case the server takes more time to boot
 			// we increase the number of attempts for tcp connection
 			// in order to minimize the chance of timing out
-			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete, nil, 20) }, onComplete);
+			this.connectToServerAddr(onComplete, maxAttempts: 20);
 		}
+	}
+
+	connectToServerAddr { |onComplete, maxAttempts = 10|
+		if(options.protocol == \tcp, {
+			addr.tryConnectTCP(onComplete, nil, maxAttempts)
+		}, onComplete)
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
