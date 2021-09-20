@@ -34,8 +34,6 @@ METHOD:: new
 		A Boolean indicating whether this window is resizable by the user. The default is code::true::.
 	argument:: border
 		A Boolean indicating whether this window has a border. Borderless windows have no title bar and thus can only be closed in code. The default is code::true::.
-	argument:: server
-		This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect.
 	argument:: scroll
 		A Boolean indicating whether this window will add scrollbars if its contents exceed its bounds. If this is set to code::true::, then link::Classes/View#-resize:: settings will be ignored for contained views. The default is false.
 

@@ -7,7 +7,7 @@ related:: Overviews/GUI-Classes, Guides/GUI-Introduction
 description::
 SuperCollider currently supports three operating system platforms: macOS, UNIX (Linux and FreeBSD) and Windows (with some limitations).
 
-Warning::The redirect system has been deprecated, please use the view classes directly. If you find old code that uses prefixes for the old GUI Kits (e.g. SCWindow for CocoaGUI, JSCWindow for SwingOSC), try dropping the prefixes to Window, Button etc. The Qt prefix Q, as e.g. in QWindow, is converted to Window automatically; still it is better style to simply write Window.::
+Warning::The redirect system has been deprecated, please use the view classes directly. If you find old code that uses prefixes for the old GUI Kits (e.g. SCWindow for CocoaGUI), try dropping the prefixes to Window, Button etc. The Qt prefix Q, as e.g. in QWindow, is converted to Window automatically; still it is better style to simply write Window.::
 
 Switching between GUI schemes is not needed anymore, as Qt runs well on all platforms.
 Still, you can get the available schemes with:
@@ -40,9 +40,6 @@ method:: add
 
 method:: qt
 Makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to Qt. Returns the current (Qt) scheme.
-
-method:: swing
-If SwingOSC is installed, makes SwingGUI (Java GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.
 
 method:: fromID
 Changes the current scheme and returns the new scheme.

@@ -72,8 +72,6 @@ SUBSECTION:: Animation
 METHOD:: animate
 	Whether the view shall redraw itself internally at a regular time interval (frame rate). See link::#-frameRate:: for the way to adjust that interval.
 
-	note:: This method is strong::not:: available in strong:: SwingOSC GUI ::. ::
-
 	The default value is code::false::.
 
 	argument::
