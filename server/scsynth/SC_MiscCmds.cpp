@@ -1213,15 +1213,14 @@ SCErr meth_g_head(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
         if (!node)
             return kSCErr_NodeNotFound;
 
-        Group* prevGroup = node->mParent;
+        // Group* prevGroup = node->mParent;
 
         Node_Remove(node);
-
         Group_AddHead(group, node);
 
-        if (group != prevGroup) {
-            Node_StateMsg(node, kNode_Move);
-        }
+        // if (group != prevGroup) {
+        Node_StateMsg(node, kNode_Move);
+        // }
     }
     return kSCErr_None;
 }
@@ -1245,7 +1244,7 @@ SCErr meth_g_tail(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
 
         // if (group != prevGroup) {
         Node_StateMsg(node, kNode_Move);
-        //}
+        // }
     }
     return kSCErr_None;
 }
