@@ -45,7 +45,7 @@ public:
 
     QcRangeSlider();
     Qt::Orientation orientation() const { return _ort; }
-    void setOrientation(Qt::Orientation o);
+    void setOrientation(int);
     double loValue() const { return _lo; }
     void setLoValue(double);
     double hiValue() const { return _hi; }
