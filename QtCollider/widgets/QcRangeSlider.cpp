@@ -390,10 +390,9 @@ void QcRangeSlider::paintEvent(QPaintEvent* e) {
     }
 }
 
-template <Qt::Orientation defaultOrientation> 
-Qt::Orientation asOrientationWithDefault(int orientationValue) {
+template <Qt::Orientation defaultOrientation> Qt::Orientation asOrientationWithDefault(int orientationValue) {
     if (orientationValue == Qt::Horizontal || orientationValue == Qt::Vertical)
-        return static_cast<Qt::Orientation> (orientationValue);
+        return static_cast<Qt::Orientation>(orientationValue);
 
     return defaultOrientation;
 }
