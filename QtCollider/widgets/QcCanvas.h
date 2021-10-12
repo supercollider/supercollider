@@ -28,9 +28,7 @@
 #include <QBasicTimer>
 #include <QTime>
 #include <QPalette>
-#include <QGLWidget>
 
-// using QcCanvasBase = QGLWidget;
 using QcCanvasBase = QWidget;
 
 class QcCanvas : public QcCanvasBase {
