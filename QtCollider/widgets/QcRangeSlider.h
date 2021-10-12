@@ -82,6 +82,8 @@ private:
     void mouseReleaseEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
     void paintEvent(QPaintEvent*);
+    template <Qt::Orientation> 
+    Qt::Orientation asOrientationWithDefault(int);
 
     Qt::Orientation _ort;
     double _lo;
