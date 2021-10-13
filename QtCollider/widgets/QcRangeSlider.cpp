@@ -34,12 +34,12 @@ QC_DECLARE_QWIDGET_FACTORY(QcRangeSlider);
 
 QcRangeSlider::QcRangeSlider(): QtCollider::Style::Client(this), _lo(0.0), _hi(1.0), _step(0.01f), mouseMode(None) {
     setFocusPolicy(Qt::StrongFocus);
-    setOrientation(Qt::Vertical);
+    setOrientation(static_cast<int>(Qt::Vertical));
     setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 void QcRangeSlider::setOrientation(int orientation) {
-    _ort = asOrientationWithDefault<Qt::Vertical>(orientation);
+    _ort = asOrientationWithDefault(orientation, Qt::Vertical);
 
     if (_ort == Qt::Horizontal) {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -390,7 +390,7 @@ void QcRangeSlider::paintEvent(QPaintEvent* e) {
     }
 }
 
-template <Qt::Orientation defaultOrientation> Qt::Orientation asOrientationWithDefault(int orientationValue) {
+Qt::Orientation QcRangeSlider::asOrientationWithDefault(int orientationValue, Qt::Orientation defaultOrientation) {
     if (orientationValue == Qt::Horizontal || orientationValue == Qt::Vertical)
         return static_cast<Qt::Orientation>(orientationValue);
 
