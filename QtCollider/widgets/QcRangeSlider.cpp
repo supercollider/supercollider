@@ -34,7 +34,7 @@ QC_DECLARE_QWIDGET_FACTORY(QcRangeSlider);
 
 QcRangeSlider::QcRangeSlider(): QtCollider::Style::Client(this), _lo(0.0), _hi(1.0), _step(0.01f), mouseMode(None) {
     setFocusPolicy(Qt::StrongFocus);
-    setOrientation(static_cast<int>(Qt::Vertical));
+    setOrientation(Qt::Vertical);
     setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
