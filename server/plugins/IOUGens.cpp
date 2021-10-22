@@ -187,8 +187,7 @@ void AudioControl_next_k(AudioControl* unit, int inNumSamples) {
     int32* touched = world->mAudioBusTouched;
     int32* channelOffsets = unit->mParent->mAudioBusOffsets;
 
-    if(*mapin != unit->m_prevBus)
-    {
+    if (*mapin != unit->m_prevBus) {
         unit->m_busUsedInPrevCycle = false;
         unit->m_prevBus = *mapin;
     }
@@ -233,19 +232,16 @@ void AudioControl_next_k(AudioControl* unit, int inNumSamples) {
             if (validOffset && diff == 0) {
                 Copy(inNumSamples, out, *mapin);
                 unit->m_busUsedInPrevCycle = true;
-            }
-            else if(validOffset && diff == 1) {
-                if(unit->m_busUsedInPrevCycle) {
+            } else if (validOffset && diff == 1) {
+                if (unit->m_busUsedInPrevCycle) {
                     Fill(inNumSamples, out, 0.f);
                     unit->m_busUsedInPrevCycle = false;
-                }
-                else
+                } else
                     Copy(inNumSamples, out, *mapin);
-            }
-            else {
+            } else {
                 Fill(inNumSamples, out, 0.f);
                 unit->m_busUsedInPrevCycle = false;
-            } 
+            }
         } break;
         }
     }
@@ -267,8 +263,7 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
     int32 bufCounter = world->mBufCounter;
     int32* channelOffsets = unit->mParent->mAudioBusOffsets;
 
-    if(*mapin != unit->m_prevBus)
-    {
+    if (*mapin != unit->m_prevBus) {
         unit->m_busUsedInPrevCycle = false;
         unit->m_prevBus = *mapin;
     }
@@ -298,16 +293,13 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
         if (validOffset && diff == 0) {
             Copy(inNumSamples, out, *mapin);
             unit->m_busUsedInPrevCycle = true;
-        }
-        else if(validOffset && diff == 1) {
-            if(unit->m_busUsedInPrevCycle) {
+        } else if (validOffset && diff == 1) {
+            if (unit->m_busUsedInPrevCycle) {
                 Fill(inNumSamples, out, 0.f);
                 unit->m_busUsedInPrevCycle = false;
-            }
-            else
+            } else
                 Copy(inNumSamples, out, *mapin);
-        }
-        else {
+        } else {
             Fill(inNumSamples, out, 0.f);
             unit->m_busUsedInPrevCycle = false;
         }
@@ -701,7 +693,7 @@ void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
     int numChannels = unit->mNumOutputs;
 
     float fbusChannel = ZIN0(0);
-    if(fbusChannel != unit->m_fbusChannel)
+    if (fbusChannel != unit->m_fbusChannel)
         unit->m_busUsedInPrevCycle = false;
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
@@ -716,19 +708,16 @@ void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
         float* out = OUT(i);
         int diff = bufCounter - touched[i];
 
-        if(guard.isValid && diff == 0) {
+        if (guard.isValid && diff == 0) {
             Copy(inNumSamples, out, in);
             unit->m_busUsedInPrevCycle = true;
-        }
-        else if(guard.isValid && diff == 1) {
-            if(unit->m_busUsedInPrevCycle) {
+        } else if (guard.isValid && diff == 1) {
+            if (unit->m_busUsedInPrevCycle) {
                 Fill(inNumSamples, out, 0.f);
                 unit->m_busUsedInPrevCycle = false;
-            }
-            else
+            } else
                 Copy(inNumSamples, out, in);
-        }
-        else {
+        } else {
             Fill(inNumSamples, out, 0.f);
             unit->m_busUsedInPrevCycle = false;
         }
