@@ -126,7 +126,7 @@ void Document::setIndentWidth(int numSpaces) {
     mIndentWidth = numSpaces;
 
     QFontMetricsF fontMetrics(mDoc->defaultFont());
-    qreal tabStop = fontMetrics.width(' ') * numSpaces;
+    qreal tabStop = fontMetrics.horizontalAdvance(' ') * numSpaces;
 
     QTextOption options = mDoc->defaultTextOption();
 
