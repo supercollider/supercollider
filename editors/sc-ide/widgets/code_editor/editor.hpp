@@ -56,10 +56,10 @@ public:
     QTextDocument* textDocument() { return QPlainTextEdit::document(); }
     bool showWhitespace();
     bool showLinenumber();
-    bool find(const QRegExp& expr, QTextDocument::FindFlags options = 0);
-    bool replace(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options = 0);
-    int findAll(const QRegExp& expr, QTextDocument::FindFlags options = 0);
-    int replaceAll(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options = 0);
+    bool find(const QRegExp& expr, QTextDocument::FindFlags options);
+    bool replace(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options);
+    int findAll(const QRegExp& expr, QTextDocument::FindFlags options);
+    int replaceAll(const QRegExp& expr, const QString& replacement, QTextDocument::FindFlags options);
 
     void showPosition(int charPosition, int selectionLength = 0);
     QString symbolUnderCursor();
