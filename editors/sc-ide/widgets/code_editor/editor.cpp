@@ -645,7 +645,7 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent* e) {
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
@@ -674,7 +674,7 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent* e) {
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
@@ -703,7 +703,7 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent* e) {
         case Qt::RightButton:
             button = 1;
             break;
-        case Qt::MidButton:
+        case Qt::MiddleButton:
             button = 2;
             break;
         default:
