@@ -730,8 +730,9 @@ void GenericCodeEditor::wheelEvent(QWheelEvent* e) {
 
     // So rather just forward the event without modifiers.
 
-    QWheelEvent modifiedEvent(e->pos(), e->globalPos(), e->delta(), e->buttons(), 0, e->orientation());
-    QPlainTextEdit::wheelEvent(&modifiedEvent);
+    e->setModifiers(Qt::NoModifier);
+
+    QPlainTextEdit::wheelEvent(e);
     return;
 
 #if 0
