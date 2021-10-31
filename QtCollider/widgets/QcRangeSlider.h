@@ -45,7 +45,7 @@ public:
 
     QcRangeSlider();
     Qt::Orientation orientation() const { return _ort; }
-    void setOrientation(Qt::Orientation o);
+    void setOrientation(int);
     double loValue() const { return _lo; }
     void setLoValue(double);
     double hiValue() const { return _hi; }
@@ -82,6 +82,7 @@ private:
     void mouseReleaseEvent(QMouseEvent*);
     void keyPressEvent(QKeyEvent*);
     void paintEvent(QPaintEvent*);
+    Qt::Orientation asOrientationWithDefault(int, Qt::Orientation);
 
     Qt::Orientation _ort;
     double _lo;
