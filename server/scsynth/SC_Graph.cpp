@@ -37,6 +37,12 @@
 
 void Unit_ChooseMulAddFunc(Unit* unit);
 
+struct QueuedCmd {
+    struct QueuedCmd* mNext;
+    int mSize;
+    char mData[1];
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void Graph_FirstCalc(Graph* inGraph);
@@ -54,6 +60,15 @@ void Graph_Dtor(Graph* inGraph) {
             if (dtor)
                 (dtor)(unit);
         }
+    }
+    // free queued Unit commands
+    // AFAICT this can only happen if a Graph is created, Unit commands are sent and the Graph
+    // is deleted all at the same time stamp.
+    QueuedCmd* cmd = (QueuedCmd*)inGraph->mPrivate;
+    while (cmd) {
+        QueuedCmd* next = cmd->mNext;
+        World_Free(inGraph->mNode.mWorld, cmd);
+        cmd = next;
     }
     world->mNumUnits -= numUnits;
     world->mNumGraphs--;
@@ -360,6 +375,10 @@ void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter*
     graph->localBufNum = 0;
     graph->localMaxBufNum = 0; // this is set from synth
 
+    // so far mPrivate is only used for queued unit commands,
+    // i.e. it just points to the head of the list.
+    graph->mPrivate = nullptr;
+
     // initialize units
     // scprintf("initialize units\n");
     Unit** calcUnits = graph->mCalcUnits;
@@ -430,6 +449,52 @@ void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter*
     inGraphDef->mRefCount++;
 }
 
+void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData) {
+    // put the unit command on a queue and dispatch it right after the first
+    // calc function, i.e. after calling the unit constructors.
+    // scprintf("->Graph_QueueUnitCmd\n");
+    QueuedCmd* cmd = (QueuedCmd*)World_Alloc(inGraph->mNode.mWorld, sizeof(QueuedCmd) + inSize);
+    cmd->mNext = nullptr;
+    cmd->mSize = inSize;
+    memcpy(cmd->mData, inData, inSize);
+    if (inGraph->mPrivate) {
+        // add to tail
+        QueuedCmd* ptr = (QueuedCmd*)inGraph->mPrivate;
+        while (ptr->mNext)
+            ptr = ptr->mNext;
+        ptr->mNext = cmd;
+    } else {
+        inGraph->mPrivate = cmd;
+    }
+}
+
+static void Graph_DispatchUnitCmds(Graph* inGraph) {
+    QueuedCmd* item = (QueuedCmd*)inGraph->mPrivate;
+    while (item) {
+        QueuedCmd* next = item->mNext;
+
+        sc_msg_iter msg(item->mSize, item->mData);
+
+        // error checking has already be done in Unit_DoCmd()
+        int nodeID = msg.geti();
+        assert(nodeID == inGraph->mNode.mID);
+
+        uint32 unitID = msg.geti();
+        Unit* unit = inGraph->mUnits[unitID];
+        UnitDef* unitDef = unit->mUnitDef;
+
+        int32* cmdName = msg.gets4();
+        UnitCmd* cmd = unitDef->mCmds->Get(cmdName);
+
+        (cmd->mFunc)(unit, &msg);
+
+        World_Free(inGraph->mNode.mWorld, item);
+
+        item = next;
+    }
+    inGraph->mPrivate = nullptr;
+}
+
 void Graph_FirstCalc(Graph* inGraph) {
     // scprintf("->Graph_FirstCalc\n");
     uint32 numUnits = inGraph->mNumUnits;
@@ -442,6 +507,8 @@ void Graph_FirstCalc(Graph* inGraph) {
     // scprintf("<-Graph_FirstCalc\n");
 
     inGraph->mNode.mCalcFunc = (NodeCalcFunc)&Graph_Calc;
+    // after setting the calc function!
+    Graph_DispatchUnitCmds(inGraph);
     // now do actual graph calculation
     Graph_Calc(inGraph);
 }
@@ -460,6 +527,8 @@ void Graph_NullFirstCalc(Graph* inGraph) {
     // scprintf("<-Graph_FirstCalc\n");
 
     inGraph->mNode.mCalcFunc = &Node_NullCalc;
+    // after setting the calc function!
+    Graph_DispatchUnitCmds(inGraph);
 }
 
 inline void Graph_Calc_unit(Unit* unit) { (unit->mCalcFunc)(unit, unit->mBufLength); }

@@ -22,6 +22,7 @@
 
 #include <boost/align/align_up.hpp>
 
+#include "sc_msg_iter.h"
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
 #include "../server/server.hpp"
@@ -44,6 +45,10 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 
     localBufNum = 0;
     localMaxBufNum = 0;
+
+    // so far mPrivate is only used for queued unit commands,
+    // i.e. it just points to the head of the list.
+    mPrivate = nullptr;
 
     mNode.mID = node_id;
 
@@ -118,6 +123,11 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const& prototype): abstr
 
 sc_synth::~sc_synth(void) { assert(!initialized); }
 
+extern "C" {
+void* rt_alloc(World* dummy, size_t size);
+void* rt_free(World* dummy, void* ptr);
+}
+
 // FIXME: for some reason, we cannot initialize multiple synths in parallel
 static spin_lock scsynth_preparation_lock;
 
@@ -132,6 +142,28 @@ void sc_synth::prepare(void) {
     scsynth_preparation_lock.unlock();
 
     initialized = true;
+
+    // *finally* dispatch queued unit commands
+    auto cmd = (sc_unit_cmd*)mPrivate;
+    while (cmd) {
+        auto next = cmd->next;
+
+        sc_msg_iter args(cmd->size, cmd->data);
+        // error checking has already be done in Unit_DoCmd()
+        int node_id = args.geti();
+        assert(node_id == mNode.mID);
+        int ugen_index = args.geti();
+        const char* cmd_name = args.gets();
+
+        apply_unit_cmd(cmd_name, ugen_index, &args);
+
+        // NOTE: we can't just do rt_pool.free() because other synths might be
+        // calling rt_alloc()/rt_free() concurrently in their calc function!
+        rt_free(nullptr, cmd);
+
+        cmd = next;
+    }
+    mPrivate = nullptr;
 }
 
 
@@ -149,6 +181,16 @@ void sc_synth::finalize() {
     else
         free(mControls);
     initialized = false;
+
+    // free queued unit commands
+    // AFAICT this can only happen if a Graph is created, Unit commands are sent and the Graph
+    // is deleted all at the same time stamp.
+    auto* cmd = (sc_unit_cmd*)mPrivate;
+    while (cmd) {
+        auto next = cmd->next;
+        rt_pool.free(cmd);
+        cmd = next;
+    }
 }
 
 void sc_synth::set(slot_index_t slot_index, sample val) {
@@ -241,6 +283,27 @@ void sc_synth::map_control_buses_audio(unsigned int slot_index, int audio_bus_in
 
 void sc_synth::apply_unit_cmd(const char* unit_cmd, unsigned int unit_index, struct sc_msg_iter* args) {
     if (unit_index >= 0 && unit_index < unit_count) {
+        if (!initialized) {
+            // don't run the unit command if the unit constructor hasn't been called yet!
+            // instead we put it on a queue and run it after the graph has been prepared.
+            // NOTE: we can't just use rt_pool.malloc() because other synths might be
+            // calling rt_alloc()/rt_free() concurrently in their calc function!
+            // log_printf("queue unit command\n");
+            auto cmd = (sc_unit_cmd*)rt_alloc(nullptr, sizeof(sc_unit_cmd) + args->size);
+            cmd->next = nullptr;
+            cmd->size = args->size;
+            memcpy(cmd->data, args->data, args->size);
+            if (mPrivate) {
+                // add to tail
+                auto ptr = (sc_unit_cmd*)mPrivate;
+                while (ptr->next)
+                    ptr = ptr->next;
+                ptr->next = cmd;
+            } else {
+                mPrivate = cmd;
+            }
+            return;
+        }
         Unit* unit = units[unit_index];
         sc_ugen_def* def = reinterpret_cast<sc_ugen_def*>(unit->mUnitDef);
 
