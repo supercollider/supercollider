@@ -46,13 +46,15 @@ struct QueuedCmd {
 ////////////////////////////////////////////////////////////////////////////////
 
 void Graph_FirstCalc(Graph* inGraph);
+void Graph_NullFirstCalc(Graph* inGraph);
 
 void Graph_Dtor(Graph* inGraph) {
     // scprintf("->Graph_Dtor %d\n", inGraph->mNode.mID);
     World* world = inGraph->mNode.mWorld;
     uint32 numUnits = inGraph->mNumUnits;
     Unit** graphUnits = inGraph->mUnits;
-    if (inGraph->mNode.mCalcFunc != (NodeCalcFunc)Graph_FirstCalc) {
+    if (inGraph->mNode.mCalcFunc != (NodeCalcFunc)Graph_FirstCalc
+        && inGraph->mNode.mCalcFunc != (NodeCalcFunc)(Graph_NullFirstCalc)) {
         // the above test insures that dtors are not called if ctors have not been called.
         for (uint32 i = 0; i < numUnits; ++i) {
             Unit* unit = graphUnits[i];
@@ -98,7 +100,6 @@ int Graph_New(struct World* inWorld, struct GraphDef* inGraphDef, int32 inID, st
     *outGraph = graph;
     return err;
 }
-
 
 void Graph_Ctor(World* inWorld, GraphDef* inGraphDef, Graph* graph, sc_msg_iter* msg,
                 bool argtype) // true for normal args , false for setn type args
