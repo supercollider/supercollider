@@ -1,9 +1,9 @@
 FileReader : Stream {
 	// a class to read text files automatically
 	classvar <delim = $ ;	// space separated by default
-	var <stream, skipEmptyLines=false, skipBlanks=false, <delimiter;
+	var <stream, skipEmptyLines = false, skipBlanks = false, <delimiter;
 
-	*new { | pathOrFile, skipEmptyLines=false, skipBlanks=false, delimiter |
+	*new { |pathOrFile, skipEmptyLines = false, skipBlanks = false, delimiter|
 		var stream;
 		if(pathOrFile.respondsTo(\getChar) ) {
 			stream = pathOrFile
