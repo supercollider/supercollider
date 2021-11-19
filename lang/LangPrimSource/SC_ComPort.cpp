@@ -62,6 +62,22 @@ void stopAsioThread() {
     gAsioThread.join();
 }
 
+void handleMessageOSC(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress, int replyPort,
+                      char* data, size_t dataSize, int localPort) {
+    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+
+    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+
+    packet->mReplyAddr.mProtocol = protocol;
+    packet->mReplyAddr.mSocket = replySocket;
+    packet->mReplyAddr.mAddress = replyAddress;
+    packet->mReplyAddr.mPort = replyPort;
+    packet->mData = data;
+    packet->mSize = dataSize;
+
+    ProcessOSCPacket(packet, localPort, timeReceived);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioService) {
@@ -97,7 +113,6 @@ void SC_UdpInPort::startReceiveUDP() {
 }
 
 void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std::size_t bytesTransferred) {
-    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
     if (error == boost::asio::error::operation_aborted)
         return; /* we're done */
 
@@ -113,19 +128,12 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std
         return;
     }
 
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-    packet->mReplyAddr.mProtocol = kUDP;
-    packet->mReplyAddr.mAddress = mRemoteEndpoint.address();
-    packet->mReplyAddr.mPort = mRemoteEndpoint.port();
-    packet->mReplyAddr.mSocket = mUdpSocket.native_handle();
-
     char* data = (char*)malloc(bytesTransferred);
-    packet->mSize = bytesTransferred;
-    packet->mData = data;
     memcpy(data, mRecvBuffer.data(), bytesTransferred);
 
-    ProcessOSCPacket(packet, mPortNum, timeReceived);
+    handleMessageOSC(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(), data,
+                     bytesTransferred, mPortNum);
+
     startReceiveUDP();
 }
 
@@ -181,7 +189,6 @@ void SC_TcpConnection::handleLengthReceived(const boost::system::error_code& err
 }
 
 void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
     if (error) {
         mData.reset();
         return;
@@ -189,14 +196,9 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error,
 
     assert(bytes_transferred == mOSCMsgLength);
 
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-    packet->mReplyAddr.mProtocol = kTCP;
-    packet->mReplyAddr.mSocket = mSocket.native_handle();
-    packet->mSize = mOSCMsgLength;
-    packet->mData = mData.release();
-
-    ProcessOSCPacket(packet, mPortNum, timeReceived);
+    const int replyPort = 0;
+    const boost::asio::ip::address replyAddress;
+    handleMessageOSC(kTCP, mSocket.native_handle(), replyAddress, replyPort, mData.release(), mOSCMsgLength, mPortNum);
 
     start();
 }
@@ -257,17 +259,8 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error,
 
     assert(bytes_transferred == mOSCMsgLength);
 
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
-
-    packet->mReplyAddr.mProtocol = kTCP;
-    packet->mReplyAddr.mSocket = mSocket.native_handle();
-    packet->mReplyAddr.mAddress = mSocket.remote_endpoint().address();
-    packet->mReplyAddr.mPort = mSocket.remote_endpoint().port();
-
-    packet->mSize = mOSCMsgLength;
-    packet->mData = mData.release();
-
-    ProcessOSCPacket(packet, mSocket.local_endpoint().port(), timeReceived);
+    handleMessageOSC(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
+                     mSocket.remote_endpoint().port(), mData.release(), mOSCMsgLength, mSocket.local_endpoint().port());
 
     startReceive();
 }
