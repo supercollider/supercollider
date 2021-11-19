@@ -90,9 +90,10 @@ struct non_realtime_synthesis_engine {
 
         auto start_time = steady_clock::now();
 
-        while (!command_stream.eof()) {
+        for (;;) {
             boost::endian::big_int32_t packet_size;
-            command_stream.read((char*)&packet_size, sizeof(packet_size));
+            if (!command_stream.read((char*)&packet_size, sizeof(packet_size)))
+                break; // done
 
             assert(packet_size > 0);
 
@@ -101,7 +102,10 @@ struct non_realtime_synthesis_engine {
             if (huge_packet)
                 packet_vector.resize(packet_size);
 
-            command_stream.read(packet_vector.data(), packet_size);
+            if (!command_stream.read(packet_vector.data(), packet_size)) {
+                printf("ERROR: missing bundle data\n");
+                break;
+            }
 
             time_tag bundle_time = instance->handle_bundle_nrt(packet_vector.data(), packet_size);
 
