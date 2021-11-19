@@ -102,6 +102,12 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum)
     boost::asio::socket_base::send_buffer_size option(65536);
     mUdpSocket.set_option(option);
 
+    mHandleFunc = [this](auto data, auto dataSize) {
+        handleMessageOSC(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
+                         std::move(data), dataSize, mPortNum);
+    };
+
+
     startReceiveUDP();
 }
 
@@ -132,8 +138,7 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std
     std::unique_ptr<char[]> data(new char[bytesTransferred]);
     memcpy(data.get(), mRecvBuffer.data(), bytesTransferred);
 
-    handleMessageOSC(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(), std::move(data),
-                     bytesTransferred, mPortNum);
+    mHandleFunc(std::move(data), bytesTransferred);
 
     startReceiveUDP();
 }
@@ -163,6 +168,15 @@ void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const b
     if (!error)
         newConnection->start();
     startAccept();
+}
+
+SC_TcpConnection::SC_TcpConnection(boost::asio::io_service& ioService, int portNum):
+    mSocket(ioService), mPortNum(portNum) {
+    mHandleFunc = [this](auto data, auto dataSize) {
+        const int replyPort = 0;
+        const boost::asio::ip::address replyAddress;
+        handleMessageOSC(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(data), dataSize, mPortNum);
+    };
 }
 
 void SC_TcpConnection::start() {
@@ -197,9 +211,7 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error,
 
     assert(bytes_transferred == mOSCMsgLength);
 
-    const int replyPort = 0;
-    const boost::asio::ip::address replyAddress;
-    handleMessageOSC(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(mData), mOSCMsgLength, mPortNum);
+    mHandleFunc(std::move(mData), mOSCMsgLength);
 
     start();
 }
@@ -218,6 +230,11 @@ SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNo
     mSocket.set_option(noDelayOption, error);
 
     mSocket.connect(mEndpoint);
+
+    mHandleFunc = [this](auto data, auto dataSize) {
+        handleMessageOSC(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
+                         mSocket.remote_endpoint().port(), std::move(data), dataSize, mSocket.local_endpoint().port());
+    };
 
     startReceive();
 }
@@ -260,8 +277,7 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error,
 
     assert(bytes_transferred == mOSCMsgLength);
 
-    handleMessageOSC(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
-                     mSocket.remote_endpoint().port(), std::move(mData), mOSCMsgLength, mSocket.local_endpoint().port());
+    mHandleFunc(std::move(mData), mOSCMsgLength);
 
     startReceive();
 }

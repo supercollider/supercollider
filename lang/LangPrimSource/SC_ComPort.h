@@ -30,6 +30,8 @@
 
 const int kTextBufSize = 65536;
 
+using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
+
 class SC_UdpInPort {
 public:
     SC_UdpInPort(int inPortNum, int portsToCheck = 10);
@@ -43,6 +45,7 @@ private:
     void startReceiveUDP();
 
     int mPortNum;
+    HandleDataFunc mHandleFunc;
     boost::array<char, kTextBufSize> mRecvBuffer;
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
     boost::asio::ip::udp::socket mUdpSocket;
@@ -61,7 +64,7 @@ class SC_TcpConnection : public std::enable_shared_from_this<SC_TcpConnection> {
 public:
     using pointer = std::shared_ptr<SC_TcpConnection>;
 
-    SC_TcpConnection(boost::asio::io_service& ioService, int portNum): mSocket(ioService), mPortNum(portNum) { }
+    SC_TcpConnection(boost::asio::io_service& ioService, int portNum);
 
     void start();
     auto& getSocket() { return mSocket; }
@@ -70,6 +73,7 @@ private:
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred);
     void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
 
+    HandleDataFunc mHandleFunc;
     boost::asio::ip::tcp::socket mSocket;
     int32 mOSCMsgLength;
     std::unique_ptr<char[]> mData;
@@ -84,6 +88,7 @@ public:
     void handleAccept(SC_TcpConnection::pointer new_connection, const boost::system::error_code& error);
 
 private:
+    HandleDataFunc mHandleFunc;
     const int mPortNum;
     boost::asio::ip::tcp::acceptor mAcceptor;
 };
@@ -108,6 +113,7 @@ private:
 
     void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
 
+    HandleDataFunc mHandleFunc;
     int32 mOSCMsgLength;
     std::unique_ptr<char[]> mData;
     boost::asio::ip::tcp::socket mSocket;
