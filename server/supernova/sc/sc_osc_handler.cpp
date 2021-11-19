@@ -927,6 +927,8 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
     });
 }
 
+template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
+
 template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
     cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
         if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
@@ -954,6 +956,8 @@ template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
     });
 }
 
+template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) {}
+
 void handle_dumpOSC(ReceivedMessage const& message) {
     int val = first_arg_as_int(message);
     val = min(1, val); /* we just support one way of dumping osc messages */
@@ -978,6 +982,8 @@ template <bool realtime> void handle_sync(ReceivedMessage const& message, endpoi
     });
 }
 
+template <> void handle_sync<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
+
 void handle_clearSched(void) { instance->clear_scheduled_bundles(); }
 
 void handle_error(ReceivedMessage const& message) {
@@ -1000,6 +1006,8 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
         endpoint->send(p.Data(), p.Size());
     });
 }
+
+template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
