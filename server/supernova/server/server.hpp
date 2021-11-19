@@ -249,7 +249,9 @@ inline void run_scheduler_tick(void) {
 inline bool log_printf(const char* fmt, ...) {
     va_list vargs;
     va_start(vargs, fmt);
-    return instance->log_printf(fmt, vargs);
+    auto result = instance->log_printf(fmt, vargs);
+    va_end(vargs);
+    return result;
 }
 
 

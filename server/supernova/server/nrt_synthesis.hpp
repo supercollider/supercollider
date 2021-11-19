@@ -85,7 +85,7 @@ struct non_realtime_synthesis_engine {
         const int reserved_packet_size = 16384;
         std::vector<char> packet_vector(reserved_packet_size, 0);
 
-        printf("\nPerforming non-rt synthesis:\n");
+        log_printf("\nPerforming non-rt synthesis:\n");
         backend.activate_audio();
 
         auto start_time = steady_clock::now();
@@ -102,7 +102,7 @@ struct non_realtime_synthesis_engine {
             }
 
             if (!command_stream.read(packet_vector.data(), packet_size)) {
-                printf("ERROR: missing bundle data\n");
+                log_printf("ERROR: missing bundle data\n");
                 break;
             }
 
@@ -110,7 +110,7 @@ struct non_realtime_synthesis_engine {
 
             size_t seconds = bundle_time.get_secs();
             size_t nano_seconds = bundle_time.get_nanoseconds();
-            printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
+            log_printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
 
             while (instance->current_time() < bundle_time) {
                 if (instance->quit_requested())
@@ -128,13 +128,13 @@ struct non_realtime_synthesis_engine {
         auto end_time = steady_clock::now();
         std::string elapsed_string = format_duration(end_time - start_time);
 
-        printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
+        log_printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
 
         auto peaks = backend.get_peaks();
-        printf("Peak summary:\n");
+        log_printf("Peak summary:\n");
         for (size_t channel = 0; channel != peaks.size(); ++channel) {
             auto amplitude = peaks[channel];
-            printf("  Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
+            log_printf("  Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
         }
     }
 
