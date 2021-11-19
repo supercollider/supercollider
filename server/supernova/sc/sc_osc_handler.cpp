@@ -842,7 +842,7 @@ void sc_osc_handler::handle_bundle(ReceivedBundle const& bundle, endpoint_ptr co
     typedef osc::ReceivedBundleElementIterator bundle_iterator;
     typedef osc::ReceivedBundleElement bundle_element;
 
-    if (bundle_time <= now) {
+    if (bundle_time < now) {
         if (!bundle_time.is_immediate()) {
             time_tag late = now - bundle_time;
             log_printf("late: %f\n", late.to_seconds());
