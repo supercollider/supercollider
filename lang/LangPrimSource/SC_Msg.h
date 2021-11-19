@@ -39,11 +39,9 @@ enum { // Handler IDs
 int32 Hash(ReplyAddress* inReplyAddress);
 
 struct OSC_Packet {
-    char* mData;
+    std::unique_ptr<char[]> mData;
     int32 mSize;
     bool mIsBundle;
 
     ReplyAddress mReplyAddr;
 };
-
-void FreeOSCPacket(OSC_Packet* inPacket);

@@ -713,33 +713,23 @@ void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPort
     runInterpreter(g, s_recvoscmsg, 5);
 }
 
-void FreeOSCPacket(OSC_Packet* inPacket) {
-    // post("->FreeOSCPacket %p\n", inPacket);
-    if (inPacket) {
-        free(inPacket->mData);
-        free(inPacket);
-    }
-}
-
 // takes ownership of inPacket
-void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum, double time) {
+void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time) {
     // post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
-    inPacket->mIsBundle = IsBundle(inPacket->mData);
+    inPacket->mIsBundle = IsBundle(inPacket->mData.get());
 
     gLangMutex.lock();
     if (compiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
         if (compiledOK) {
             if (inPacket->mIsBundle) {
-                PerformOSCBundle(inPacket->mSize, inPacket->mData, replyObj, inPortNum);
+                PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
             } else {
-                PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj, inPortNum, time);
+                PerformOSCMessage(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum, time);
             }
         }
     }
     gLangMutex.unlock();
-
-    FreeOSCPacket(inPacket);
 }
 
 void startAsioThread();

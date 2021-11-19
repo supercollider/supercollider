@@ -39,7 +39,7 @@
 #include "SC_OscUtils.hpp"
 #undef scprintf
 
-void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum, double time);
+void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -63,19 +63,20 @@ void stopAsioThread() {
 }
 
 void handleMessageOSC(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress, int replyPort,
-                      char* data, size_t dataSize, int localPort) {
-    double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+                      std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
 
-    OSC_Packet* packet = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+    const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+
+    auto packet = std::unique_ptr<OSC_Packet>();
 
     packet->mReplyAddr.mProtocol = protocol;
     packet->mReplyAddr.mSocket = replySocket;
     packet->mReplyAddr.mAddress = replyAddress;
     packet->mReplyAddr.mPort = replyPort;
-    packet->mData = data;
+    packet->mData = std::move(data);
     packet->mSize = dataSize;
 
-    ProcessOSCPacket(packet, localPort, timeReceived);
+    ProcessOSCPacket(std::move(packet), localPort, timeReceived);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,10 +129,10 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std
         return;
     }
 
-    char* data = (char*)malloc(bytesTransferred);
-    memcpy(data, mRecvBuffer.data(), bytesTransferred);
+    std::unique_ptr<char[]> data(new char[bytesTransferred]);
+    memcpy(data.get(), mRecvBuffer.data(), bytesTransferred);
 
-    handleMessageOSC(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(), data,
+    handleMessageOSC(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(), std::move(data),
                      bytesTransferred, mPortNum);
 
     startReceiveUDP();
@@ -198,7 +199,7 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error,
 
     const int replyPort = 0;
     const boost::asio::ip::address replyAddress;
-    handleMessageOSC(kTCP, mSocket.native_handle(), replyAddress, replyPort, mData.release(), mOSCMsgLength, mPortNum);
+    handleMessageOSC(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(mData), mOSCMsgLength, mPortNum);
 
     start();
 }
@@ -260,7 +261,7 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error,
     assert(bytes_transferred == mOSCMsgLength);
 
     handleMessageOSC(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
-                     mSocket.remote_endpoint().port(), mData.release(), mOSCMsgLength, mSocket.local_endpoint().port());
+                     mSocket.remote_endpoint().port(), std::move(mData), mOSCMsgLength, mSocket.local_endpoint().port());
 
     startReceive();
 }
