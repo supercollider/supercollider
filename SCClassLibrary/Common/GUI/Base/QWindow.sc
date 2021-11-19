@@ -105,9 +105,9 @@ Window {
 		border = true,
 		server,
 		scroll = false,
-		forceCreate = false;
+		checkForExistingWindow = false;
 
-		if( forceCreate.not, {
+		if( checkForExistingWindow, {
 			var existingWindows = Window.allWindows.select({|w| w.name == name});
 			if( existingWindows.size > 0 ) {
 				"Window \"%\" already exists".format(name).warn;
