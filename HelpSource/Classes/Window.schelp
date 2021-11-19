@@ -38,6 +38,8 @@ METHOD:: new
 		This is a dummy argument which is here to provide compatibility with SwingOSC and has no effect.
 	argument:: scroll
 		A Boolean indicating whether this window will add scrollbars if its contents exceed its bounds. If this is set to code::true::, then link::Classes/View#-resize:: settings will be ignored for contained views. The default is false.
+	argument:: checkForExistingWindow
+		A Boolean for checking if a window with the same name already exists. If such a window exsits no new window will be created, the existing window with the same name will be taken to the front and a warning will be displayed.
 
 METHOD:: allWindows
 
