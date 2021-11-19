@@ -341,7 +341,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         using namespace boost::asio;
         ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
-        gUDPport->Socket().send_to(buffer(bufptr, msglen), address);
+        gUDPport->getSocket().send_to(buffer(bufptr, msglen), address);
     }
 
     return errNone;
@@ -470,7 +470,7 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option;
-    gUDPport->udpSocket.get_option(option, ec);
+    gUDPport->getSocket().get_option(option, ec);
 
     if (ec)
         return errFailed;
@@ -485,7 +485,7 @@ static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option(IsTrue(g->sp));
-    gUDPport->udpSocket.set_option(option, ec);
+    gUDPport->getSocket().set_option(option, ec);
 
     if (ec)
         return errFailed;
