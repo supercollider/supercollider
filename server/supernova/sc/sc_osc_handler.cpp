@@ -214,35 +214,43 @@ template <typename T> static inline void consume(T&& object) {
 }
 
 void send_done_message(endpoint_ptr const& endpoint, const char* cmd) {
-    char buffer[1024];
-    osc::OutboundPacketStream p(buffer, 1024);
-    p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
+    if (endpoint) {
+        char buffer[1024];
+        osc::OutboundPacketStream p(buffer, 1024);
+        p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
-    char buffer[1024];
-    osc::OutboundPacketStream p(buffer, 1024);
-    p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
+    if (endpoint) {
+        char buffer[1024];
+        osc::OutboundPacketStream p(buffer, 1024);
+        p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content) {
-    char buffer[8192];
-    osc::OutboundPacketStream p(buffer, 8192);
-    p << osc::BeginMessage("/fail") << cmd << content << osc::EndMessage;
+    if (endpoint) {
+        char buffer[8192];
+        osc::OutboundPacketStream p(buffer, 8192);
+        p << osc::BeginMessage("/fail") << cmd << content << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content, int id) {
-    char buffer[8192];
-    osc::OutboundPacketStream p(buffer, 8192);
-    p << osc::BeginMessage("/fail") << cmd << content << (osc::int32)id << osc::EndMessage;
+    if (endpoint) {
+        char buffer[8192];
+        osc::OutboundPacketStream p(buffer, 8192);
+        p << osc::BeginMessage("/fail") << cmd << content << (osc::int32)id << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 
@@ -889,7 +897,8 @@ template <bool realtime> void handle_quit(endpoint_ptr endpoint) {
     instance->quit_received = true;
     cmd_dispatcher<realtime>::fire_io_callback([=]() {
         instance->prepare_to_terminate();
-        send_done_message(endpoint, "/quit");
+        if (endpoint)
+            send_done_message(endpoint, "/quit");
         instance->terminate();
     });
 }
