@@ -33,7 +33,6 @@
 #include "SC_ReplyImpl.hpp"
 
 #include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
 #include <boost/typeof/typeof.hpp>
 
 #define scprintf printf
@@ -92,9 +91,9 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum)
 
 void SC_UdpInPort::startReceiveUDP() {
     using namespace boost;
-    mUdpSocket.async_receive_from(asio::buffer(mRecvBuffer), mRemoteEndpoint,
-                                  boost::bind(&SC_UdpInPort::handleReceivedUDP, this, asio::placeholders::error,
-                                              asio::placeholders::bytes_transferred));
+    mUdpSocket.async_receive_from(
+        asio::buffer(mRecvBuffer), mRemoteEndpoint,
+        [this](auto error, auto bytesTransferred) { handleReceivedUDP(error, bytesTransferred); });
 }
 
 void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std::size_t bytesTransferred) {
@@ -147,9 +146,8 @@ SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog):
 void SC_TcpInPort::startAccept() {
     SC_TcpConnection::pointer newConnection(new SC_TcpConnection(ioService, mPortNum));
 
-    mAcceptor.async_accept(
-        newConnection->getSocket(),
-        boost::bind(&SC_TcpInPort::handleAccept, this, newConnection, boost::asio::placeholders::error));
+    mAcceptor.async_accept(newConnection->getSocket(),
+                          [this, newConnection](auto error) { handleAccept(newConnection, error); });
 }
 
 void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const boost::system::error_code& error) {
@@ -161,8 +159,9 @@ void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const b
 void SC_TcpConnection::start() {
     namespace ba = boost::asio;
     ba::async_read(mSocket, ba::buffer(&mOSCMsgLength, sizeof(mOSCMsgLength)),
-                   boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(), ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+                   [receiver = shared_from_this()](auto error, auto bytesTransferred) {
+                       receiver->handleLengthReceived(error, bytesTransferred);
+                   });
 }
 
 void SC_TcpConnection::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
@@ -176,8 +175,9 @@ void SC_TcpConnection::handleLengthReceived(const boost::system::error_code& err
     mData = (char*)malloc(mOSCMsgLength);
 
     ba::async_read(mSocket, ba::buffer(mData, mOSCMsgLength),
-                   boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(), ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+                   [receiver = shared_from_this()](auto error, auto bytesReceived) {
+                       receiver->handleMsgReceived(error, bytesReceived);
+                   });
 }
 
 void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
@@ -222,8 +222,7 @@ SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNo
 void SC_TcpClientPort::startReceive() {
     namespace ba = boost::asio;
     ba::async_read(mSocket, ba::buffer(&mOSCMsgLength, sizeof(mOSCMsgLength)),
-                   boost::bind(&SC_TcpClientPort::handleLengthReceived, this, ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+                   [this](auto error, auto bytesTransferred) { handleLengthReceived(error, bytesTransferred); });
 }
 
 void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
@@ -241,8 +240,7 @@ void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code& err
 
     namespace ba = boost::asio;
     ba::async_read(mSocket, ba::buffer(mData, mOSCMsgLength),
-                   boost::bind(&SC_TcpClientPort::handleMsgReceived, this, ba::placeholders::error,
-                               ba::placeholders::bytes_transferred));
+                   [this](auto error, auto bytesTransferred) { handleMsgReceived(error, bytesTransferred); });
 }
 
 void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
