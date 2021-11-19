@@ -96,14 +96,13 @@ Window {
 	}
 
 	/* NOTE:
-	- 'server' is only for compatibility with SwingOSC
 	- all args have to be of correct type for Widget constructor to match!
 	*/
 	*new { arg name="",
 		bounds,
 		resizable = true,
 		border = true,
-		server,
+		deprecatedServerArgument,
 		scroll = false,
 		checkForExistingWindow = false;
 
@@ -114,6 +113,11 @@ Window {
 				^existingWindows[0].front;
 			}
 		});
+
+		if(deprecatedServerArgument.notNil) {
+			// see https://github.com/supercollider/supercollider/pull/5312#discussion_r553546303
+			"this argument is deprecated, it was kept for SwingOSC compatibility, but will be removed".warn;
+		};
 
 		if( bounds.isNil ) {
 			bounds = Rect(0,0,400,400).center_( Window.availableBounds.center );

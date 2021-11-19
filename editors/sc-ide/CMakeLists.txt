@@ -2,22 +2,15 @@ set(QT_IDE_COMPONENTS
     Concurrent
     Core
     LinguistTools
-    # OpenGL
-    PrintSupport
-    Qml
-    Quick
-    Sql
+    Network
     Widgets
 )
 
 set(QT_IDE_LIBRARIES
     Qt5::Concurrent
     Qt5::Core
-    # Qt5::OpenGL
-    Qt5::PrintSupport
-    Qt5::Qml
-    Qt5::Quick
-    Qt5::Sql
+    Qt5::Network
+    Qt5::Widgets
 )
 
 if(SC_USE_QTWEBENGINE)
