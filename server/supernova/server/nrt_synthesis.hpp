@@ -82,8 +82,8 @@ struct non_realtime_synthesis_engine {
         using namespace std;
         using namespace std::chrono;
 
-        const int reserved_packed_size = 16384;
-        std::vector<char> packet_vector(reserved_packed_size, 0);
+        const int reserved_packet_size = 16384;
+        std::vector<char> packet_vector(reserved_packet_size, 0);
 
         printf("\nPerforming non-rt synthesis:\n");
         backend.activate_audio();
@@ -97,10 +97,9 @@ struct non_realtime_synthesis_engine {
 
             assert(packet_size > 0);
 
-            const bool huge_packet = (packet_size >= reserved_packed_size);
-
-            if (huge_packet)
+            if (packet_size > (int32_t)packet_vector.size()) {
                 packet_vector.resize(packet_size);
+            }
 
             if (!command_stream.read(packet_vector.data(), packet_size)) {
                 printf("ERROR: missing bundle data\n");
@@ -122,9 +121,6 @@ struct non_realtime_synthesis_engine {
                 else
                     backend.audio_fn_noinput(samples_per_block);
             }
-
-            if (huge_packet)
-                packet_vector.resize(16384);
         }
 
     done:
