@@ -72,7 +72,7 @@ private:
 
     boost::asio::ip::tcp::socket mSocket;
     int32 mOSCMsgLength;
-    char* mData { nullptr };
+    std::unique_ptr<char[]> mData;
     const int mPortNum;
 };
 
@@ -109,7 +109,7 @@ private:
     void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
 
     int32 mOSCMsgLength;
-    char* mData;
+    std::unique_ptr<char[]> mData;
     boost::asio::ip::tcp::socket mSocket;
     boost::asio::ip::tcp::endpoint mEndpoint;
     ClientNotifyFunc mClientNotifyFunc;

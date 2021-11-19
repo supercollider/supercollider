@@ -172,9 +172,9 @@ void SC_TcpConnection::handleLengthReceived(const boost::system::error_code& err
     // msglen is in network byte order
     mOSCMsgLength = sc_ntohl(mOSCMsgLength);
 
-    mData = (char*)malloc(mOSCMsgLength);
+    mData.reset(new char[mOSCMsgLength]);
 
-    ba::async_read(mSocket, ba::buffer(mData, mOSCMsgLength),
+    ba::async_read(mSocket, ba::buffer(mData.get(), mOSCMsgLength),
                    [receiver = shared_from_this()](auto error, auto bytesReceived) {
                        receiver->handleMsgReceived(error, bytesReceived);
                    });
@@ -183,7 +183,7 @@ void SC_TcpConnection::handleLengthReceived(const boost::system::error_code& err
 void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred) {
     double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
     if (error) {
-        free(mData);
+        mData.reset();
         return;
     }
 
@@ -194,7 +194,7 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error,
     packet->mReplyAddr.mProtocol = kTCP;
     packet->mReplyAddr.mSocket = mSocket.native_handle();
     packet->mSize = mOSCMsgLength;
-    packet->mData = mData;
+    packet->mData = mData.release();
 
     ProcessOSCPacket(packet, mPortNum, timeReceived);
 
@@ -236,10 +236,10 @@ void SC_TcpClientPort::handleLengthReceived(const boost::system::error_code& err
 
     // msglen is in network byte order
     mOSCMsgLength = sc_ntohl(mOSCMsgLength);
-    mData = (char*)malloc(mOSCMsgLength);
+    mData.reset(new char[mOSCMsgLength]);
 
     namespace ba = boost::asio;
-    ba::async_read(mSocket, ba::buffer(mData, mOSCMsgLength),
+    ba::async_read(mSocket, ba::buffer(mData.get(), mOSCMsgLength),
                    [this](auto error, auto bytesTransferred) { handleMsgReceived(error, bytesTransferred); });
 }
 
@@ -251,7 +251,7 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error,
     }
 
     if (error) {
-        free(mData);
+        mData.reset();
         return;
     }
 
@@ -265,7 +265,7 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code& error,
     packet->mReplyAddr.mPort = mSocket.remote_endpoint().port();
 
     packet->mSize = mOSCMsgLength;
-    packet->mData = mData;
+    packet->mData = mData.release();
 
     ProcessOSCPacket(packet, mSocket.local_endpoint().port(), timeReceived);
 
