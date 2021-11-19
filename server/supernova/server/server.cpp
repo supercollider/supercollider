@@ -56,6 +56,7 @@ nova_server::nova_server(server_arguments const& args):
     instance = this;
 
     use_system_clock = (args.use_system_clock == 1);
+    non_rt = args.non_rt;
     smooth_samplerate = args.samplerate;
 
     if (!args.non_rt)

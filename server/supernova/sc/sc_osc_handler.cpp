@@ -536,10 +536,16 @@ void sc_scheduled_bundles::bundle_node::run(void) {
 
     if (element.IsBundle()) {
         received_bundle bundle(element);
-        instance->handle_bundle<true>(bundle, endpoint_);
+        if (instance->non_rt)
+            instance->handle_bundle<false>(bundle, endpoint_);
+        else
+            instance->handle_bundle<true>(bundle, endpoint_);
     } else {
         ReceivedMessage message(element);
-        instance->handle_message<true>(message, element.Size(), endpoint_);
+        if (instance->non_rt)
+            instance->handle_message<false>(message, element.Size(), endpoint_);
+        else
+            instance->handle_message<true>(message, element.Size(), endpoint_);
     }
 }
 

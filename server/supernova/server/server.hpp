@@ -122,6 +122,7 @@ class nova_server : public asynchronous_log_thread,
 public:
     SC_TimeDLL mDLL;
     bool use_system_clock;
+    bool non_rt;
     double smooth_samplerate;
 
     typedef detail::audio_backend audio_backend;
