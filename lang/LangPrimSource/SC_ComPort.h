@@ -31,23 +31,44 @@
 
 const int kTextBufSize = 65536;
 
-using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
-
 enum class HandlerType { OSC };
 
-// One MessageHandler<> class for each HandlerType.
-// The signature of handleMessage can differ between handler types, so templatizing the class
-// allows us to specify a message handler func using e.g. MessageHandler<HandlerType::OSC>::handleMessage
-template <HandlerType H> struct MessageHandler { };
-template <> struct MessageHandler<HandlerType::OSC> {
-    static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
-                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort);
-};
+using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
 
-class SC_UdpInPort {
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace Detail {
+
+class TCPConnection : public std::enable_shared_from_this<TCPConnection> {
 public:
-    SC_UdpInPort(int inPortNum, HandlerType, int portsToCheck = 10);
-    ~SC_UdpInPort() = default;
+    using pointer = std::shared_ptr<TCPConnection>;
+
+    TCPConnection(boost::asio::io_service& ioService, int portNum, HandlerType);
+
+    void start();
+    auto& getSocket() { return mSocket; }
+
+private:
+    void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred);
+    void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
+    void initHandler(HandlerType);
+
+    HandleDataFunc mHandleFunc;
+    boost::asio::ip::tcp::socket mSocket;
+    int32 mOSCMsgLength;
+    std::unique_ptr<char[]> mData;
+    const int mPortNum;
+};
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+namespace InPort {
+
+class UDP {
+public:
+    UDP(int inPortNum, HandlerType, int portsToCheck = 10);
+    ~UDP() = default;
 
     auto RealPortNum() const { return mPortNum; }
     auto& getSocket() { return mUdpSocket; }
@@ -65,61 +86,38 @@ private:
     boost::asio::ip::udp::socket mUdpSocket;
 };
 
-class SC_UdpCustomInPort : public SC_UdpInPort {
+class UDPCustom : public UDP {
 public:
-    SC_UdpCustomInPort(int inPortNum, HandlerType);
-    ~SC_UdpCustomInPort() = default;
+    UDPCustom(int inPortNum, HandlerType);
+    ~UDPCustom() = default;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-class SC_TcpConnection : public std::enable_shared_from_this<SC_TcpConnection> {
+class TCP {
 public:
-    using pointer = std::shared_ptr<SC_TcpConnection>;
-
-    SC_TcpConnection(boost::asio::io_service& ioService, int portNum, HandlerType);
-
-    void start();
-    auto& getSocket() { return mSocket; }
+    TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType);
 
 private:
-    void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred);
-    void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
-    void initHandler(HandlerType);
-
-    HandleDataFunc mHandleFunc;
-    boost::asio::ip::tcp::socket mSocket;
-    int32 mOSCMsgLength;
-    std::unique_ptr<char[]> mData;
-    const int mPortNum;
-};
-
-class SC_TcpInPort {
-public:
-    SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog, HandlerType);
-
     void startAccept();
-    void handleAccept(SC_TcpConnection::pointer new_connection, const boost::system::error_code& error);
+    void handleAccept(Detail::TCPConnection::pointer new_connection, const boost::system::error_code& error);
 
-private:
     HandleDataFunc mHandleFunc;
     const HandlerType mHandlerType;
     const int mPortNum;
     boost::asio::ip::tcp::acceptor mAcceptor;
 };
 
+} // namespace InPort
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+namespace OutPort {
 
-class SC_TcpClientPort {
+class TCP {
 public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-    SC_TcpClientPort(unsigned long inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0,
-                     void* clientData = 0);
+    TCP(unsigned long inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
     int Close();
 
     boost::asio::ip::tcp::socket& Socket() { return mSocket; }
@@ -138,3 +136,5 @@ private:
     ClientNotifyFunc mClientNotifyFunc;
     void* mClientData;
 };
+
+} // namespace OutPort

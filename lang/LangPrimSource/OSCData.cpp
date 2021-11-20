@@ -67,14 +67,14 @@ bool gUseDoubles = false;
 
 InternalSynthServerGlobals gInternalSynthServer = { nullptr, kNumDefaultSharedControls, gDefaultSharedControls };
 
-SC_UdpInPort* gUDPport = nullptr;
+InPort::UDP* gUDPport = nullptr;
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
 extern bool compiledOK;
 
-std::vector<SC_UdpCustomInPort*> gCustomUdpPorts;
+std::vector<InPort::UDPCustom*> gCustomUdpPorts;
 
 
 ///////////
@@ -288,7 +288,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
     using namespace boost::asio;
 
     if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
-        SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
+        OutPort::TCP* comPort = (OutPort::TCP*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
 
         // send TCP
         ip::tcp::socket& socket = comPort->Socket();
@@ -388,7 +388,8 @@ static int prNetAddr_Connect(VMGlobals* g, int numArgsPushed) {
     unsigned long ulAddress = (unsigned int)addr;
 
     try {
-        SC_TcpClientPort* comPort = new SC_TcpClientPort(ulAddress, port, HandlerType::OSC, netAddrTcpClientNotifyFunc, netAddrObj);
+        OutPort::TCP* comPort =
+            new OutPort::TCP(ulAddress, port, HandlerType::OSC, netAddrTcpClientNotifyFunc, netAddrObj);
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
     } catch (std::exception const& e) {
         printf("NetAddr-Connect failed with exception: %s\n", e.what());
@@ -404,7 +405,7 @@ static int prNetAddr_Disconnect(VMGlobals* g, int numArgsPushed) {
     PyrSlot* netAddrSlot = g->sp;
     PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
-    SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
+    OutPort::TCP* comPort = (OutPort::TCP*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
     if (comPort) {
         err = comPort->Close();
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, nullptr);
@@ -747,7 +748,7 @@ void init_OSC(int port) {
     startAsioThread();
 
     try {
-        gUDPport = new SC_UdpInPort(port, HandlerType::OSC);
+        gUDPport = new InPort::UDP(port, HandlerType::OSC);
     } catch (std::exception const& e) {
         postfl("No networking: %s", e.what());
     }
@@ -762,11 +763,11 @@ int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    SC_UdpCustomInPort* newUDPport;
+    InPort::UDPCustom* newUDPport;
 
     try {
         SetTrue(a);
-        newUDPport = new SC_UdpCustomInPort(port, HandlerType::OSC);
+        newUDPport = new InPort::UDPCustom(port, HandlerType::OSC);
         gCustomUdpPorts.push_back(newUDPport);
     } catch (...) {
         SetFalse(a);
