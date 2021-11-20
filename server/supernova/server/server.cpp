@@ -213,7 +213,13 @@ void nova_server::rebuild_dsp_queue(void) {
 static void name_current_thread(int thread_index) {
     char buf[1024];
     sprintf(buf, "DSP Thread %d", thread_index);
+#if defined(__linux__)
     name_thread(buf);
+#elif defined(__APPLE__)
+    // TODO
+#elif defined(_WIN32)
+    win32_name_thread(buf);
+#endif
 }
 
 static void set_daz_ftz(void) {

@@ -30,7 +30,6 @@
 #    include <windows.h>
 #    include <shlobj.h>
 
-
 void win32_ReplaceCharInString(char* string, int len, char src, char dst) {
     for (int i = 0; i < len; i++)
         if (string[i] == src)
@@ -170,6 +169,48 @@ int win32_pipewrite(int s, char* buf, int len) {
         /* EOF on the pipe! (win32 socket based implementation) */
         ret = 0;
     return ret;
+}
+
+using SetThreadDescriptionType = HRESULT(WINAPI*)(HANDLE, PCWSTR);
+
+int win32_name_thread(const char* name) {
+    // SetThreadDescription is only available on Windows 10 and above.
+#    if _WIN32_WINNT >= 0x0A00
+    auto fn = &SetThreadDescription;
+#    else
+    // To support older systems, we try to lazily load the function at
+    // runtime from Kernel32.dll.
+    static auto fn = []() -> SetThreadDescriptionType {
+        auto lib = GetModuleHandleA("kernel32");
+        if (lib) {
+            auto fn = (void*)GetProcAddress(lib, "SetThreadDescription");
+            if (fn) {
+                return reinterpret_cast<SetThreadDescriptionType>(fn);
+            }
+        }
+        return nullptr;
+    }();
+#    endif
+    if (fn) {
+        auto size = MultiByteToWideChar(CP_UTF8, 0, name, -1, nullptr, 0);
+        if (size == 0) {
+            return GetLastError();
+        }
+        auto buffer = (WCHAR*)alloca(size * sizeof(WCHAR));
+        auto count = MultiByteToWideChar(CP_UTF8, 0, name, -1, buffer, size);
+        if (count == 0) {
+            return GetLastError();
+        }
+
+        HRESULT result = fn(GetCurrentThread(), buffer);
+        if (result == S_OK) {
+            return ERROR_SUCCESS;
+        } else {
+            return GetLastError();
+        }
+    } else {
+        return ERROR_CALL_NOT_IMPLEMENTED;
+    }
 }
 
 #endif
