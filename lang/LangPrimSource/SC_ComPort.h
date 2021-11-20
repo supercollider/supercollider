@@ -26,6 +26,7 @@
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/core/noncopyable.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +40,7 @@ using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
 
 namespace Detail {
 
-class TCPConnection : public std::enable_shared_from_this<TCPConnection> {
+class TCPConnection : public std::enable_shared_from_this<TCPConnection>, private boost::noncopyable {
 public:
     using pointer = std::shared_ptr<TCPConnection>;
 
@@ -65,7 +66,7 @@ private:
 
 namespace InPort {
 
-class UDP {
+class UDP : private boost::noncopyable {
 public:
     UDP(int inPortNum, HandlerType, int portsToCheck = 10);
     ~UDP() = default;
@@ -92,7 +93,7 @@ public:
     ~UDPCustom() = default;
 };
 
-class TCP {
+class TCP : private boost::noncopyable {
 public:
     TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType);
 
@@ -112,7 +113,7 @@ private:
 
 namespace OutPort {
 
-class TCP {
+class TCP : private boost::noncopyable {
 public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
