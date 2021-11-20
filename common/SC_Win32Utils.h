@@ -65,6 +65,7 @@ int win32_piperead(int s, char* buf, int len);
 int win32_pipewrite(int s, char* buf, int len);
 
 // missing Windows implementations in nova_tt
+bool win32_thread_set_affinity(int i);
 int win32_name_thread(const char* name);
 
 // alloca
