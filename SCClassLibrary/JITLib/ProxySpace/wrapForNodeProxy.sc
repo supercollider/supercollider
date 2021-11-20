@@ -285,6 +285,7 @@
 			xset: StreamControl,
 			pset: StreamControl,
 			set: StreamControl,
+			seti: StreamControl,
 			stream: PatternControl,
 			setbus: StreamControl,
 			setsrc: StreamControl
@@ -390,8 +391,23 @@
 					ctl * sig * env
 
 				}.buildForProxy( proxy, channelOffset, index )
-			};
+			},
 
+			// seti role: set controls for a specific channel in a multi channel NodeProxy
+			seti: #{ |pattern, proxy, channelOffset = 0, index|
+				var args = proxy.controlNames.collect(_.name);
+				Pchain(
+					(type: \set, id: { proxy.group.nodeID }, args: args),
+					Pbindf(
+						pattern,
+						\play, Pfunc { |e| args.do { |n|
+							e[n] !? {
+								proxy.seti(n, e.channelOffset, e[n])
+							}
+						}}
+					)
+				).buildForProxy(proxy, channelOffset, index)
+			}
 		)
 	}
 }
