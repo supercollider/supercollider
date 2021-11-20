@@ -62,9 +62,9 @@ void stopAsioThread() {
     gAsioThread.join();
 }
 
-void handleMessageOSC(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress, int replyPort,
-                      std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
-
+void MessageHandler<HandlerType::OSC>::handleMessage(Protocol protocol, int replySocket,
+                                                     const boost::asio::ip::address& replyAddress, int replyPort,
+                                                     std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
     const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
 
     auto packet = std::unique_ptr<OSC_Packet>();
@@ -81,7 +81,8 @@ void handleMessageOSC(Protocol protocol, int replySocket, const boost::asio::ip:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum), mUdpSocket(ioService) {
+SC_UdpInPort::SC_UdpInPort(int inPortNum, HandlerType handlerType, int portsToCheck):
+    mPortNum(inPortNum), mUdpSocket(ioService) {
     using namespace boost::asio;
 
     BOOST_AUTO(protocol, ip::udp::v4());
@@ -102,15 +103,22 @@ SC_UdpInPort::SC_UdpInPort(int inPortNum, int portsToCheck): mPortNum(inPortNum)
     boost::asio::socket_base::send_buffer_size option(65536);
     mUdpSocket.set_option(option);
 
-    mHandleFunc = [this](auto data, auto dataSize) {
-        handleMessageOSC(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
-                         std::move(data), dataSize, mPortNum);
-    };
-
+    initHandler(handlerType);
 
     startReceiveUDP();
 }
 
+void SC_UdpInPort::initHandler(HandlerType handlerType) {
+    switch (handlerType) {
+    case HandlerType::OSC:
+        using Handler = MessageHandler<HandlerType::OSC>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            Handler::handleMessage(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
+                                   std::move(data), dataSize, mPortNum);
+        };
+        return;
+    }
+}
 
 void SC_UdpInPort::startReceiveUDP() {
     using namespace boost;
@@ -145,12 +153,15 @@ void SC_UdpInPort::handleReceivedUDP(const boost::system::error_code& error, std
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum): SC_UdpInPort(inPortNum, 1) { }
+SC_UdpCustomInPort::SC_UdpCustomInPort(int inPortNum, HandlerType handlerType):
+    SC_UdpInPort(inPortNum, handlerType, 1) { }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog):
-    mAcceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)), mPortNum(inPortNum) {
+SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handlerType):
+    mAcceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+    mPortNum(inPortNum),
+    mHandlerType(handlerType) {
     // FIXME: handle max connections
     // FIXME: backlog???
 
@@ -158,10 +169,10 @@ SC_TcpInPort::SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog):
 }
 
 void SC_TcpInPort::startAccept() {
-    SC_TcpConnection::pointer newConnection(new SC_TcpConnection(ioService, mPortNum));
+    SC_TcpConnection::pointer newConnection(new SC_TcpConnection(ioService, mPortNum, mHandlerType));
 
     mAcceptor.async_accept(newConnection->getSocket(),
-                          [this, newConnection](auto error) { handleAccept(newConnection, error); });
+                           [this, newConnection](auto error) { handleAccept(newConnection, error); });
 }
 
 void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const boost::system::error_code& error) {
@@ -170,13 +181,23 @@ void SC_TcpInPort::handleAccept(SC_TcpConnection::pointer newConnection, const b
     startAccept();
 }
 
-SC_TcpConnection::SC_TcpConnection(boost::asio::io_service& ioService, int portNum):
+SC_TcpConnection::SC_TcpConnection(boost::asio::io_service& ioService, int portNum, HandlerType handlerType):
     mSocket(ioService), mPortNum(portNum) {
-    mHandleFunc = [this](auto data, auto dataSize) {
-        const int replyPort = 0;
-        const boost::asio::ip::address replyAddress;
-        handleMessageOSC(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(data), dataSize, mPortNum);
-    };
+    initHandler(handlerType);
+}
+
+void SC_TcpConnection::initHandler(HandlerType handlerType) {
+    switch (handlerType) {
+    case HandlerType::OSC:
+        using Handler = MessageHandler<HandlerType::OSC>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            const int replyPort = 0;
+            const boost::asio::ip::address replyAddress;
+            Handler::handleMessage(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(data), dataSize,
+                                   mPortNum);
+        };
+        return;
+    }
 }
 
 void SC_TcpConnection::start() {
@@ -218,7 +239,8 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code& error,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNotifyFunc notifyFunc, void* clientData):
+SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, HandlerType handlerType,
+                                   ClientNotifyFunc notifyFunc, void* clientData):
     mSocket(ioService),
     mEndpoint(boost::asio::ip::address_v4(inAddress), inPort),
     mClientNotifyFunc(notifyFunc),
@@ -231,12 +253,21 @@ SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNo
 
     mSocket.connect(mEndpoint);
 
-    mHandleFunc = [this](auto data, auto dataSize) {
-        handleMessageOSC(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
-                         mSocket.remote_endpoint().port(), std::move(data), dataSize, mSocket.local_endpoint().port());
-    };
+    initHandler(handlerType);
 
     startReceive();
+}
+
+void SC_TcpClientPort::initHandler(HandlerType handlerType) {
+    switch (handlerType) {
+    case HandlerType::OSC:
+        using Handler = MessageHandler<HandlerType::OSC>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            Handler::handleMessage(kTCP, mSocket.native_handle(), mSocket.remote_endpoint().address(),
+                                   mSocket.remote_endpoint().port(), std::move(data), dataSize,
+                                   mSocket.local_endpoint().port());
+        };
+    }
 }
 
 void SC_TcpClientPort::startReceive() {

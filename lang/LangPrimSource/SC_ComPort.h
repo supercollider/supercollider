@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "SC_ReplyImpl.hpp"
 #include "SC_Types.h"
 
 #include <boost/array.hpp>
@@ -32,15 +33,28 @@ const int kTextBufSize = 65536;
 
 using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
 
+enum class HandlerType { OSC };
+
+// One MessageHandler<> class for each HandlerType.
+// The signature of handleMessage can differ between handler types, so templatizing the class
+// allows us to specify a message handler func using e.g. MessageHandler<HandlerType::OSC>::handleMessage
+template <HandlerType H> struct MessageHandler { };
+template <> struct MessageHandler<HandlerType::OSC> {
+    static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
+                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort);
+};
+
 class SC_UdpInPort {
 public:
-    SC_UdpInPort(int inPortNum, int portsToCheck = 10);
+    SC_UdpInPort(int inPortNum, HandlerType, int portsToCheck = 10);
     ~SC_UdpInPort() = default;
 
     auto RealPortNum() const { return mPortNum; }
     auto& getSocket() { return mUdpSocket; }
 
 private:
+    void initHandler(HandlerType type);
+
     void handleReceivedUDP(const boost::system::error_code& error, std::size_t bytes_transferred);
     void startReceiveUDP();
 
@@ -53,7 +67,7 @@ private:
 
 class SC_UdpCustomInPort : public SC_UdpInPort {
 public:
-    SC_UdpCustomInPort(int inPortNum);
+    SC_UdpCustomInPort(int inPortNum, HandlerType);
     ~SC_UdpCustomInPort() = default;
 };
 
@@ -64,7 +78,7 @@ class SC_TcpConnection : public std::enable_shared_from_this<SC_TcpConnection> {
 public:
     using pointer = std::shared_ptr<SC_TcpConnection>;
 
-    SC_TcpConnection(boost::asio::io_service& ioService, int portNum);
+    SC_TcpConnection(boost::asio::io_service& ioService, int portNum, HandlerType);
 
     void start();
     auto& getSocket() { return mSocket; }
@@ -72,6 +86,7 @@ public:
 private:
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred);
     void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
+    void initHandler(HandlerType);
 
     HandleDataFunc mHandleFunc;
     boost::asio::ip::tcp::socket mSocket;
@@ -82,13 +97,14 @@ private:
 
 class SC_TcpInPort {
 public:
-    SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog);
+    SC_TcpInPort(int inPortNum, int inMaxConnections, int inBacklog, HandlerType);
 
     void startAccept();
     void handleAccept(SC_TcpConnection::pointer new_connection, const boost::system::error_code& error);
 
 private:
     HandleDataFunc mHandleFunc;
+    const HandlerType mHandlerType;
     const int mPortNum;
     boost::asio::ip::tcp::acceptor mAcceptor;
 };
@@ -102,7 +118,8 @@ public:
     typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-    SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNotifyFunc notifyFunc = 0, void* clientData = 0);
+    SC_TcpClientPort(unsigned long inAddress, int inPort, HandlerType, ClientNotifyFunc notifyFunc = 0,
+                     void* clientData = 0);
     int Close();
 
     boost::asio::ip::tcp::socket& Socket() { return mSocket; }
@@ -110,8 +127,8 @@ public:
 private:
     void startReceive();
     void handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred);
-
     void handleMsgReceived(const boost::system::error_code& error, size_t bytes_transferred);
+    void initHandler(HandlerType);
 
     HandleDataFunc mHandleFunc;
     int32 mOSCMsgLength;

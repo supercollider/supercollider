@@ -388,7 +388,7 @@ static int prNetAddr_Connect(VMGlobals* g, int numArgsPushed) {
     unsigned long ulAddress = (unsigned int)addr;
 
     try {
-        SC_TcpClientPort* comPort = new SC_TcpClientPort(ulAddress, port, netAddrTcpClientNotifyFunc, netAddrObj);
+        SC_TcpClientPort* comPort = new SC_TcpClientPort(ulAddress, port, HandlerType::OSC, netAddrTcpClientNotifyFunc, netAddrObj);
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
     } catch (std::exception const& e) {
         printf("NetAddr-Connect failed with exception: %s\n", e.what());
@@ -747,7 +747,7 @@ void init_OSC(int port) {
     startAsioThread();
 
     try {
-        gUDPport = new SC_UdpInPort(port);
+        gUDPport = new SC_UdpInPort(port, HandlerType::OSC);
     } catch (std::exception const& e) {
         postfl("No networking: %s", e.what());
     }
@@ -766,7 +766,7 @@ int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
 
     try {
         SetTrue(a);
-        newUDPport = new SC_UdpCustomInPort(port);
+        newUDPport = new SC_UdpCustomInPort(port, HandlerType::OSC);
         gCustomUdpPorts.push_back(newUDPport);
     } catch (...) {
         SetFalse(a);
