@@ -49,7 +49,7 @@ nova_server::nova_server(server_arguments const& args):
     // different interfaces), they can end up using the same shmem location.
     server_shared_memory_creator(args.port(), args.control_busses),
 
-    scheduler<thread_init_functor>(args.threads, !args.non_rt),
+    scheduler<thread_init_functor>(args.threads, !args.non_rt, args.thread_pinning),
     buffer_manager(args.buffers),
     sc_osc_handler(args) {
     assert(instance == 0);
@@ -57,6 +57,7 @@ nova_server::nova_server(server_arguments const& args):
 
     use_system_clock = (args.use_system_clock == 1);
     non_rt = args.non_rt;
+    pin_threads = args.thread_pinning;
     smooth_samplerate = args.samplerate;
 
     if (!args.non_rt) {
@@ -291,10 +292,16 @@ void thread_init_functor::operator()(int thread_index) {
     if (rt)
         set_realtime_priority(thread_index);
 
-#ifndef __APPLE__
-    if (!thread_set_affinity(thread_index))
-        std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+    if (pin) {
+#ifdef _WIN32
+        // nova::thread_set_affinity() is not implemented for Windows
+        bool result = win32_thread_set_affinity(thread_index);
+#else
+        bool result = thread_set_affinity(thread_index);
 #endif
+        if (!result)
+            std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+    }
 }
 
 void io_thread_init_functor::operator()() const {
@@ -317,11 +324,16 @@ void synth_definition_deleter::dispose(synth_definition* ptr) {
 void realtime_engine_functor::init_thread(void) {
     set_daz_ftz();
 
-#ifndef __APPLE__
-    if (!thread_set_affinity(0))
-        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+    if (instance->pin_threads) {
+#ifdef _WIN32
+        // nova::thread_set_affinity() is not implemented for Windows
+        bool result = win32_thread_set_affinity(0);
+#else
+        bool result = thread_set_affinity(0);
 #endif
-
+        if (!result)
+            std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+    }
 #ifdef JACK_BACKEND
     set_realtime_priority(0);
 #endif
