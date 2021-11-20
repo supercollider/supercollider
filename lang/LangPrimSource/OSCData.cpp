@@ -67,14 +67,14 @@ bool gUseDoubles = false;
 
 InternalSynthServerGlobals gInternalSynthServer = { nullptr, kNumDefaultSharedControls, gDefaultSharedControls };
 
-InPort::UDP* gUDPport = nullptr;
+std::unique_ptr<InPort::UDP> gUDPport {};
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
 extern bool compiledOK;
 
-std::vector<InPort::UDPCustom*> gCustomUdpPorts;
+std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
 
 
 ///////////
@@ -748,7 +748,7 @@ void init_OSC(int port) {
     startAsioThread();
 
     try {
-        gUDPport = new InPort::UDP(port, HandlerType::OSC);
+        gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
     } catch (std::exception const& e) {
         postfl("No networking: %s", e.what());
     }
@@ -763,12 +763,12 @@ int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    InPort::UDPCustom* newUDPport;
+    std::unique_ptr<InPort::UDPCustom> newUDPport;
 
     try {
         SetTrue(a);
-        newUDPport = new InPort::UDPCustom(port, HandlerType::OSC);
-        gCustomUdpPorts.push_back(newUDPport);
+        newUDPport.reset(new InPort::UDPCustom(port, HandlerType::OSC));
+        gCustomUdpPorts.push_back(std::move(newUDPport));
     } catch (...) {
         SetFalse(a);
         postfl("Could not bind to requested port. This may mean it is in use already by another application.\n");
@@ -778,10 +778,6 @@ int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
 
 void closeAllCustomPorts();
 void closeAllCustomPorts() {
-    // close all custom sockets
-    for (int i = 0; i < gCustomUdpPorts.size(); i++) {
-        delete gCustomUdpPorts[i];
-    }
     gCustomUdpPorts.clear();
 }
 
