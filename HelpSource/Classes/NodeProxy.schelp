@@ -460,6 +460,59 @@ definitionList::
 ## node proxy || map subsequent control channels to the corresponding proxy output channel
 ::
 
+method:: seti
+Set part of an arrayed control, analog to link::Classes/Synth#-seti::.
+argument:: ... args
+A sequence of strong:: name, index, value :: triplets.
+
+definitionlist::
+## name || The name of the arrayed control
+## index || The index into the array
+## value || The new value to set, can be an array to set a range of elements.
+::
+
+Discussion::
+code::
+// 5 channel NodeProxy, for convenience initialized in an Ndef
+(
+Ndef(\sin).mold(5, \audio, \elastic);
+Ndef(\sin)[0] = {
+	SinOsc.ar(
+		\freq.kr([200, 201, 202, 204, 205]),
+		SinOsc.kr(\phase.kr([0, 0, 0, 0, 0])).range(0, 2pi)
+	)
+}
+)
+
+// out mixer: mix down to 2 channels and spread channels across panorama
+(
+Ndef(\out).mold(2, \audio, \elastic);
+Ndef(\out)[0] = {
+	// 5 channel input
+	Splay.ar(\in.ar(0!5), level: \amp.kr(0.3))
+}
+)
+
+// route Ndef(\sin) through Ndef(\out)
+(
+Ndef(\out) <<> Ndef(\sin);
+Ndef(\out).play;
+)
+
+// change frequency and phase in 4th channel
+Ndef(\sin).seti(\freq, 3, 137, \phase, 1, 11)
+
+// 1st channel 310hz, 3rd 207hz
+Ndef(\sin).seti(\freq, [0, 2], [310, 207])
+
+// exceeding indices, argument arrays of different length
+// 34 % 5 => 4, 12 % 5 => 2, 56 % 5 => 1
+Ndef(\sin).seti(\freq, [34, 12, 56], [376, 199])
+Ndef(\sin).getKeysValues // -> [ [ freq, [ 310, 376, 199, 137, 376 ] ] ]
+
+Ndef.clear(10)
+::
+
 method::unset, unmap
 Remove specified settings and unmap or unset the synths.
 
