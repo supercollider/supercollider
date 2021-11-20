@@ -252,12 +252,12 @@ static bool set_realtime_priority(int thread_index) {
     if (!success) {
 #ifdef NOVA_TT_PRIORITY_RT
 
-#    ifdef JACK_BACKEND
+#    if defined(JACK_BACKEND)
         int priority = instance->realtime_priority();
         if (priority >= 0)
             success = true;
 
-#    elif _WIN32
+#    elif defined(_WIN32)
         int priority = thread_priority_interval_rt().second;
 #    else
         int min, max;
@@ -266,7 +266,7 @@ static bool set_realtime_priority(int thread_index) {
         priority = std::max(min, priority);
 #    endif
 
-        if (success)
+        if (!success)
             success = thread_set_priority_rt(priority);
 #endif
     }
