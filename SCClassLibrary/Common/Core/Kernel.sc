@@ -37,11 +37,12 @@ Class {
 		// start the process: Class.initClassTree(Object)
 		if(classesInited.isNil, { classesInited = IdentitySet.new });
 		if(classesInited.includes(aClass).not, {
+			classesInited.add(aClass);
+
 			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
 					aClass.initClass;
 			});
 
-			classesInited.add(aClass);
 			if(aClass.subclasses.notNil,{
 				aClass.subclasses.do({ arg class; this.initClassTree(class); });
 			});

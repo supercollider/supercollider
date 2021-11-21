@@ -337,7 +337,7 @@ b.free;
 ::
 
 method:: loadDialog
-As link::#*read:: above, but gives you a load dialog window to browse for a file. Cocoa and SwingOSC compatible.
+As link::#*read:: above, but gives you a load dialog window to browse for a file. Cocoa compatible.
 argument:: server
 The server on which to allocate the buffer.
 argument:: startFrame

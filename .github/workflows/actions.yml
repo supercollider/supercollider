@@ -377,7 +377,7 @@ jobs:
         include:
 
           - job-name: '32-bit'
-            fftw-arch: 'x32'
+            fftw-arch: 'x86'
             cmake-arch: 'Win32'
             os-version: '2019'
             qt-version: '5.15.2'
@@ -428,6 +428,7 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
       VCVARS_SCRIPT_PATH: 'C:/Program Files (x86)/Microsoft Visual Studio/${{ matrix.msvc-year }}/Enterprise/VC/Auxiliary/Build/${{ matrix.vcvars-script }}'
+      FFTW_INSTALL_DIR: "C:/Program Files/fftw"
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
       INSTALLER_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.installer-suffix }}'
     steps:
@@ -456,38 +457,26 @@ jobs:
         run: choco install libsndfile ${{ matrix.chocolatey-options }}
       - name: download fftw
         shell: bash
-        env:
-          FFTW_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/fftw
         run: |
-          mkdir -p $FFTW_PATH && cd $FFTW_PATH
+          mkdir -p "$FFTW_INSTALL_DIR" && cd "$FFTW_INSTALL_DIR"
           curl -L ${{ matrix.fftw-url }} -o fftw.zip
           7z x fftw.zip -y
-          # add env var for subsequent steps
-          echo 'FFTW_PATH<<EOF' >> $GITHUB_ENV
-          echo $FFTW_PATH >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
       - name: create fftw msvc library
         if: matrix.vcvars-script
         shell: cmd
-        env:
-          FFTW_ARCH: ${{ matrix.fftw-arch }}
+        working-directory: ${{ env.FFTW_INSTALL_DIR }}
         run: |
           call "%VCVARS_SCRIPT_PATH%"
-          cd "%FFTW_PATH%"
-          lib.exe /machine:%FFTW_ARCH% /def:libfftw3f-3.def
-      - name: move fftw
-        shell: bash
-        run: |
-          mv $FFTW_PATH "C:/Program Files/fftw"
+          lib.exe /machine:${{ matrix.fftw-arch }} /def:libfftw3f-3.def
       - name: install asio sdk
         shell: bash
         env:
           ASIO_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/asio_sdk
         run: |
           mkdir -p $ASIO_PATH && cd $ASIO_PATH
-          curl -L https://www.steinberg.net/sdk_downloads/asiosdk2.3.zip -o asio.zip
+          curl -L https://www.steinberg.net/asiosdk -o asio.zip
           7z x asio.zip -y
-          mv ASIOSDK2.3 $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+          mv asiosdk_* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
       - name: configure
         shell: bash
         run: |

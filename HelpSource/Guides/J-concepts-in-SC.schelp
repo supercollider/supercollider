@@ -2,7 +2,7 @@ title:: J concepts in SC
 summary:: An overview of concepts borrowed from J
 categories:: Language
 
-The J programming language is a successor of APL (http://www.jsoftware.com). These languages are made for processing arrays of data and are able to express
+The J programming language is a successor of APL (see link::http://www.jsoftware.com::). These languages are made for processing arrays of data and are able to express
 complex notions of iteration implicitly.
 
 The following are some concepts borrowed from or inspired by J.
