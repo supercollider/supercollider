@@ -46,16 +46,7 @@ class portaudio_backend : public detail::audio_backend_base<sample_type, float, 
     typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
 
 public:
-    portaudio_backend(void) {
-        int err = Pa_Initialize();
-        report_error(err, true);
-
-        list_devices();
-
-#ifdef PA_HAVE_JACK
-        PaJack_SetClientName("SuperNova");
-#endif
-    }
+    portaudio_backend(void) = default;
 
     ~portaudio_backend(void) {
         if (audio_is_active())
@@ -65,6 +56,17 @@ public:
 
         int err = Pa_Terminate();
         report_error(err);
+    }
+
+    void initialize(void) {
+        int err = Pa_Initialize();
+        report_error(err, true);
+
+        list_devices();
+
+#ifdef PA_HAVE_JACK
+        PaJack_SetClientName("SuperNova");
+#endif
     }
 
     uint32_t get_audio_blocksize(void) const { return blocksize_; }
