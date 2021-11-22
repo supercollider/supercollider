@@ -193,7 +193,7 @@ public:
         }
 
 
-        engine_initalised = false;
+        engine_initialized = false;
         blocksize_ = pa_blocksize;
 
         safety_clip_threshold_ = safety_clip_threshold;
@@ -269,10 +269,10 @@ private:
     template <bool IsClipping>
     int perform(const void* inputBuffer, void* outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
-        if (unlikely(!engine_initalised)) {
+        if (unlikely(!engine_initialized)) {
             engine_functor::init_thread();
             engine_functor::sync_clock();
-            engine_initalised = true;
+            engine_initialized = true;
         }
 
         if (statusFlags & (paInputOverflow | paInputUnderflow | paOutputOverflow | paOutputUnderflow))
@@ -316,7 +316,7 @@ private:
 
     PaStream* stream = nullptr;
     uint32_t blocksize_ = 0;
-    bool engine_initalised = false;
+    bool engine_initialized = false;
     cpu_time_info cpu_time_accumulator;
 
     uint32_t latency_ = 0;
