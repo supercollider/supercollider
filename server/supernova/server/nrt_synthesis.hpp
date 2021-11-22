@@ -112,7 +112,7 @@ struct non_realtime_synthesis_engine {
             size_t nano_seconds = bundle_time.get_nanoseconds();
             log_printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
 
-            while (instance->current_time() < bundle_time) {
+            while (instance->next_time() < bundle_time) {
                 if (instance->quit_requested())
                     goto done;
 

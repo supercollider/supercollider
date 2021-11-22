@@ -328,6 +328,7 @@ public:
     }
 
     time_tag const& current_time(void) const { return now; }
+    time_tag next_time(void) const { return now + time_per_tick; }
 
     sc_scheduled_bundles scheduled_bundles;
     time_tag now, last;
