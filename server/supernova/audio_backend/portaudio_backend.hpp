@@ -244,6 +244,9 @@ public:
     }
 
     bool audio_is_active(void) {
+        if (stream == nullptr)
+            return false;
+
         int is_active = Pa_IsStreamActive(stream);
         if (is_active == 1)
             return true;
