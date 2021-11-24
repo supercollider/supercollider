@@ -483,7 +483,11 @@ EventStreamPlayer : PauseStream {
 			this.removedFromScheduler;
 			^nil
 		}{
-			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
+			protect {
+				nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
+			} { |err|
+				if (err.notNil) { this.streamError };
+			};
 			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
 			^nextTime

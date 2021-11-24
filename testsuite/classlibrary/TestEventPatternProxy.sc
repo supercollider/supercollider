@@ -38,4 +38,13 @@ TestEventPatternProxy : UnitTest{
 	// without any changes to that method. test_update_withEvents
 	// from (the same) TestPatternProxy would need more refactoring though
 	// to separate global JITlib lookups (Pdef, Pdefn) from source updating.
+
+	test_EventPatternProxy_playNewSource_afterInternalError {
+		var newSourceCalledAfterError = false, t = EventPatternProxy(''), c = CondVar();
+		t.play(quant:0);
+		t.source = { newSourceCalledAfterError = true; c.signalAll; nil };
+		c.waitFor(1) { newSourceCalledAfterError };
+		this.assert(newSourceCalledAfterError,
+			"EventPatternProxy should resume playing after an error, when a new source is provided.");
+	}
 }

@@ -366,4 +366,23 @@ TestPatternProxy : UnitTest {
 
 
 	}
+
+	test_PatternProxy_playNewSource_afterInternalError {
+		var newSourceCalledAfterError = false, t = PatternProxy(''), c = CondVar();
+		t.play(quant:0);
+		t.source = { newSourceCalledAfterError = true; c.signalAll; nil };
+		c.waitFor(1) { newSourceCalledAfterError };
+		this.assert(newSourceCalledAfterError,
+			"PatternProxy should resume playing after an error, when a new source is provided.");
+	}
+
+	test_Pdef_playNewSource_afterInternalError {
+		var newSourceCalledAfterError = false, c = CondVar();
+		Pdef(\test, '').play(quant:0);
+		Pdef(\test).source = { newSourceCalledAfterError = true; c.signalAll; nil };
+		c.waitFor(1) { newSourceCalledAfterError };
+		Pdef(\test).clear;
+		this.assert(newSourceCalledAfterError,
+			"Pdef should resume playing after an error, when a new source is provided.");
+	}
 }
