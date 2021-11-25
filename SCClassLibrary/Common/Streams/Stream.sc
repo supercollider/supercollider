@@ -346,15 +346,21 @@ PauseStream : Stream {
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;
-		clock.play({
-			if(isWaiting and: { nextBeat.isNil }) {
-				clock.sched(0, this);
-				isWaiting = false;
-				this.changed(\playing)
-			};
-			nil
-		}, quant.asQuant);
-		this.changed(\userPlayed);
+		protect {
+			clock.play({
+				if(isWaiting and: { nextBeat.isNil }) {
+					clock.sched(0, this);
+					isWaiting = false;
+					this.changed(\playing)
+				};
+				nil
+			}, quant.asQuant);
+			this.changed(\userPlayed);
+		} { |result|
+			if(result.isException) {
+				this.streamError
+			}
+		};
 		^this
 	}
 	reset { originalStream.reset }
@@ -444,7 +450,15 @@ EventStreamPlayer : PauseStream {
 
 	init {
 		cleanup = EventStreamCleanup.new;
-		routine = Routine{ | inTime | loop { inTime = this.prNext(inTime).yield } };
+		routine = Routine{ | inTime |
+			protect {
+				loop { inTime = this.prNext(inTime).yield }
+			} { |result|
+				if(result.isException) {
+					this.streamError
+				}
+			}
+		};
 	}
 
 	// freeNodes is passed as false from

@@ -366,4 +366,28 @@ TestPatternProxy : UnitTest {
 
 
 	}
+
+	test_Pdef_error_recovery {
+		var test = false;
+		Pdef.clear;
+		Pdef(\x).quant_(0).play(quant: 0);
+		Pdef(\x, (play: {  SinOsc.foo }, dur: 0.001)); // correctly throws an error
+		0.1.wait;
+		Pdef(\x, (play: {  "----".postln; test = true })).play(quant:0);
+		0.1.wait;
+		this.assert(test, "an error shouldn't block a playing Pdef");
+	}
+
+	test_Tdef_error_recovery {
+		var test = false;
+		Tdef.clear;
+		Tdef(\x).quant_(0).play(quant: 0);
+		Tdef(\x, { 0.01.wait; SinOsc.foo }); // correctly throws an error
+		0.1.wait;
+		Tdef(\x, { "----".postln; test = true }).play(quant:0);
+		0.1.wait;
+		this.assert(test, "an error shouldn't block a playing Tdef");
+	}
+
+
 }
