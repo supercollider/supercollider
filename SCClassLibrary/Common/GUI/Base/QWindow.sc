@@ -107,10 +107,10 @@ Window {
 		reuseExisting = false;
 
 		if( reuseExisting, {
-			var existingWindows = Window.allWindows.select({|w| w.name == name});
-			if( existingWindows.size > 0 ) {
+			var existingWindow = Window.allWindows.detect({|w| w.name == name});
+			if( existingWindow.notNil ) {
 				"Window \"%\" already exists".format(name).warn;
-				^existingWindows[0].front;
+				^existingWindow.front;
 			}
 		});
 
