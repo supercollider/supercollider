@@ -326,6 +326,8 @@ jobs:
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
+        env:
+          DEVELOPER_DIR: '' # remove developer dir which causes installation to fail
         with:
           modules: 'qtwebengine'
           version: ${{ matrix.qt-version }}
