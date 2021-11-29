@@ -106,8 +106,12 @@ Window {
 		scroll = false,
 		reuseExisting = false;
 
+		// declare variable here for performance reasons, see
+		// https://github.com/supercollider/supercollider/pull/5549#issuecomment-980518930
+		var existingWindow;
+
 		if( reuseExisting, {
-			var existingWindow = Window.allWindows.detect({|w| w.name == name});
+			existingWindow = Window.allWindows.detect({|w| w.name == name});
 			if( existingWindow.notNil ) {
 				"Window \"%\" already exists".format(name).warn;
 				^existingWindow.front;
