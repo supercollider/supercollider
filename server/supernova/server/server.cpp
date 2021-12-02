@@ -56,10 +56,13 @@ nova_server::nova_server(server_arguments const& args):
     instance = this;
 
     use_system_clock = (args.use_system_clock == 1);
+    non_rt = args.non_rt;
     smooth_samplerate = args.samplerate;
 
-    if (!args.non_rt)
+    if (!args.non_rt) {
+        audio_backend::initialize();
         io_interpreter.start_thread();
+    }
 
     sc_factory.reset(new sc_ugen_factory);
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
