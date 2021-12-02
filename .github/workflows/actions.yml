@@ -181,7 +181,6 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
-          retention-days: 7 # quickly remove test artifacts
 
   macOS:
     needs: lint
@@ -368,7 +367,6 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
-          retention-days: 7 # quickly remove test artifacts
 
   Windows:
     needs: lint
@@ -504,7 +502,6 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
-          retention-days: 7 # quickly remove test artifacts
       - name: create installer
         if: matrix.create-installer == true
         shell: bash
@@ -517,7 +514,6 @@ jobs:
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
-          retention-days: 7 # quickly remove test artifacts
 
   test:
     strategy:
