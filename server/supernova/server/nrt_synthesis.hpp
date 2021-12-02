@@ -59,6 +59,9 @@ struct non_realtime_synthesis_engine {
                             args.blocksize);
 
         command_stream.open(args.command_file.c_str(), std::fstream::in | std::fstream::binary);
+        if (!command_stream) {
+            throw std::runtime_error("cannot open OSC command file");
+        }
 
         has_inputs = !input_file.empty();
         samples_per_block = args.blocksize;
