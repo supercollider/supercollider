@@ -442,13 +442,15 @@ Task : PauseStream {
 	// optimization:
 	// Task builds its own Routine, so 'protect' here
 	*new { arg func, clock;
-		var new = super.new(Routine({ |inval|
-			protect {
-				func.value(inval)
-			} {
-				new.streamError
-			};
-		}), clock);
+		var new = super.new(
+			Routine({ |inval|
+				protect {
+					func.value(inval)
+				} {
+					new.streamError
+				};
+			}
+		), clock);
 		^new
 	}
 	// then there is no need to let PauseStream wrap it in another Routine
