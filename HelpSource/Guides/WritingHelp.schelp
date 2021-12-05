@@ -10,7 +10,7 @@ note:: The help files should use UTF-8 encoding! ::
 
 All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. See link::Reference/SCDocSyntax#Header tags::
 
-In the header, you should must specify the title, summary and categories parts of the header.
+In the header, you must specify the title, summary and categories parts of the header.
 
 Example header:
 teletype::
@@ -20,7 +20,7 @@ categories:: Language>Conditionals, SomeOtherCategory
 related:: Reference/FooBar
 ::
 
-Then use normal text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
+Use regular text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
 
 teletype::
 section:: Introduction
@@ -33,11 +33,8 @@ subsection:: Details
 Some details..
 ::
 
-
-
 subsection:: Documenting new classes
 When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
-
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes:: (auto-generated).
 
@@ -113,7 +110,6 @@ Anchors for these methods get prefixed with a dot (.) instead of * or -.
 
 When multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
 
-
 SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a teletype::private\:::: tag, which works just like the method tag but without a section body.
 
 Extensions can add methods to existing class docs, see the link::#Extensions:: section below.
@@ -122,7 +118,6 @@ subsection:: Copy methods from other class
 You can use teletype:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
 
 teletype::methodName:: must be prefixed with teletype::*:: (asterix) for class methods and teletype::-:: (dash) for instance methods.
-
 
 subsection:: Redirect classes
 Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
@@ -169,7 +164,6 @@ code:: { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1); ::
 50 Hz wave:
 code:: { LFPulse.ar(50) * 0.1 }.play; ::
 ::
-
 
 section:: Categories
 Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See the link::Browse##Document Browser:: (auto-generated) for existing categories.
