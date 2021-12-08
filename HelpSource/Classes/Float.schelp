@@ -114,7 +114,7 @@ f.(18.0) / f.(17.0) == 18 // true
 Here is a classical example for an algorithm:
 
 code::
-// eucidean algorithm
+// euclidean algorithm
 (
 g = { |a, b|
 	if(b == 0) {
@@ -157,8 +157,3 @@ f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
 {:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
 
 ::
-
-
-
-
-
