@@ -93,7 +93,7 @@ a.clear(3);
 || Set the proxy controls for each channel in a multi-channel proxy with an event pattern of type code::\set::. Contrary to other roles it must be applied separately to each channel of the proxy.
 
 CODE::
-// NodeProxies
+// 5-channel NodeProxy
 a = NodeProxy.audio(s).mold(5);
 // output will be stereo
 b = NodeProxy.audio(s).play;
@@ -123,13 +123,14 @@ a.numChannels.do { |i|
 		\freq, Prand(#[62, 64, 67, 70, 72].midicps, inf),
 		\harms, Pexprand(50, 1000),
 		\dur, Prand(#[0.1, 0.2, 0.4], inf),
-		// important: address the right channel
+		// channelOffset is an offset, not a channel index
 		\channelOffset, i
 	)
 }
 )
 
 // remove roles again
+// either all at once or one by one
 a.numChannels.do { |i| a[i+1] = nil };
 
 a.clear; b.clear;
