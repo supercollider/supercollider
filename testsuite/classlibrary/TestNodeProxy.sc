@@ -394,6 +394,7 @@ TestNodeProxySeti : UnitTest {
 		server = Server.default;
 		proxy = NodeProxy.audio(server, 5);
 		proxy.source = { SinOsc.ar(\freq.kr(200!5), \phase.kr(0!5)) };
+
 	}
 
 	tearDown {
@@ -420,5 +421,15 @@ TestNodeProxySeti : UnitTest {
 		proxy.seti(\freq, [1, 23, 57], [345, 145]);
 		keysValues = proxy.getKeysValues;
 		this.assertEquals(keysValues[0][1], [200, 345, 345, 145, 200], "the 'freq' arg array should have been set to [200, 345, 345, 145, 200] in NodeProxy 'proxy'.");
+	}
+
+	test_seti_nodeMap {
+		var controlProxy, keysValues;
+		controlProxy = NodeProxy.control(server, 1);
+		controlProxy.source = { DC.kr };
+		proxy.seti(\freq, 2, controlProxy);
+		keysValues = proxy.getKeysValues;
+		this.assertEquals(keysValues[0][1], [200, 200, controlProxy, 200, 200], "the third slot in the 'freq' arg array should have been set to NodeProxy.control(server, 1)");
+		controlProxy.clear;
 	}
 }
