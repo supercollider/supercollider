@@ -8,9 +8,7 @@ MIDIFunc (and its subclass link::Classes/MIDIdef::) registers one or more functi
 
 subsection:: Important note on persistence
 
-MIDIFunc (and its subclass link::Classes/MIDIdef::) are by default removed when the user presses Cmd/ctrl-. to stop SuperCollider.
-
-This behaviour may be overridden using link::Classes/AbstractResponderFunc#-permanent#permanent:: or link::Classes/AbstractResponderFunc#-fix#fix:: methods inherited from the link::Classes/AbstractResponderFunc:: superclass.
+MIDIFunc (and its subclass link::Classes/MIDIdef:: like all other AbstractResponderFuncs) are removed on pressing Cmd/ctrl-. To fix them, call link::Classes/AbstractResponderFunc#-fix#fix::.
 
 CLASSMETHODS::
 private:: initClass, cmdPeriod
@@ -205,7 +203,6 @@ Train this MIDIFunc to respond to the next message of its type. Arguments passed
 
 argument:: learnVal
 A link::Classes/Boolean:: indicating whether the responder should learn the specific value. For example, if used with a control change MIDIFunc, the object would learn to match the next specific control change value. If used with a note on MIDIFunc, it would match only a specific velocity. The default is false.
-
 
 EXAMPLES::
 

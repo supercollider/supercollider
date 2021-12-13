@@ -6,12 +6,9 @@ related:: Guides/MIDI, Classes/MIDIFunc
 DESCRIPTION::
 MIDIdef provides a global reference to the functionality of its superclass link::Classes/MIDIFunc::. Essentially it stores itself at a key within a global dictionary, allowing replacement at any time. Most methods are inherited from its superclass.
 
-
 subsection:: Important note on persistence
 
-MIDIFunc (and its subclass link::Classes/MIDIdef::) are by default removed when the user presses Cmd/ctrl-. to stop SuperCollider.
-
-This behaviour may be overridden using link::Classes/AbstractResponderFunc#-permanent#permanent:: or link::Classes/AbstractResponderFunc#-fix#fix:: methods inherited from the link::Classes/AbstractResponderFunc:: superclass.
+MIDIFunc (and its subclass link::Classes/MIDIdef:: like all other AbstractResponderFuncs) are removed on pressing Cmd/ctrl-. To fix them, call link::Classes/AbstractResponderFunc#-fix#fix::.
 
 CLASSMETHODS::
 private:: initClass
@@ -145,7 +142,6 @@ table::
 ## Reset || 15
 ::
 
-
 returns:: A new instance of MIDIdef which responds to MIDI System Realtime messages.
 
 METHOD:: tick
@@ -188,7 +184,6 @@ returns:: Usually a link::Classes/Symbol::.
 
 METHOD:: free
 Clears this MIDIdef from the global collection and deactivates it.
-
 
 EXAMPLES::
 
