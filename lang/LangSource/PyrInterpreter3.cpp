@@ -326,6 +326,7 @@ bool initRuntime(VMGlobals* g, int poolSize, AllocPool* inPool) {
     // create GC environment, process
     g->allocPool = inPool;
     g->gc = (PyrGC*)g->allocPool->Alloc(sizeof(PyrGC));
+    MEMFAIL(g->gc);
     new (g->gc) PyrGC(g, g->allocPool, class_main, poolSize);
     g->thread = slotRawThread(&g->process->mainThread);
     SetObject(&g->receiver, g->process);

@@ -547,6 +547,8 @@ SCErr GraphDef_Remove(World* inWorld, int32* inName) {
 
 SCErr SendReplyCmd_d_removed(World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     void* space = World_Alloc(inWorld, sizeof(SendReplyCmd));
+    if (!space)
+        return kSCErr_OutOfRealTimeMemory;
     SendReplyCmd* cmd = new (space) SendReplyCmd(inWorld, inReply);
     if (!cmd)
         return kSCErr_Failed;
