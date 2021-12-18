@@ -121,7 +121,6 @@ BusPlug : AbstractFunction {
 		} {
 			this.kr(n)
 		}
-		
 	}
 
 	composeUnaryOp { | aSelector |
