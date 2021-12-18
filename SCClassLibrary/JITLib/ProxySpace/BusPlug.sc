@@ -107,13 +107,21 @@ BusPlug : AbstractFunction {
 	value { | something |
 		var n;
 		if(UGen.buildSynthDef.isNil) { ^this }; // only return when in ugen graph.
-		something !? { n = something.numChannels };
+		if(something.notNil) {
+			if(something.isKindOf(UGen.class) or: { something.isKindOf(UGen) }) {
+				// UGen.numChannels always 1, so let InBus.new1 ultimately auto-size them
+				// by keeping n=nil for the call to this.ar/.kr below.
+				// Also: CombN.isUGen == false while CombN.ar.isUGen == true
+			} {
+				n = something.numChannels
+			}
+		};
 		^if(something.respondsTo(\rate) and: { something.rate == 'audio'} or: { this.rate == \audio }) {
 			this.ar(n)
 		} {
 			this.kr(n)
 		}
-
+		
 	}
 
 	composeUnaryOp { | aSelector |
