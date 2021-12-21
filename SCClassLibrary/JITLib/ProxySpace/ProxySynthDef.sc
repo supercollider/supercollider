@@ -124,7 +124,7 @@ ProxySynthDef : SynthDef {
 						}
 					}
 				};
-				outCtl = Control.names(\out).ir(0) + channelOffset;
+				outCtl = \out.ir(0) + channelOffset; // todo: maybe let user specify the intial value by calling just .ir here
 				(if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out }).multiNewList([rate, outCtl] ++ output)
 			})
 		});
