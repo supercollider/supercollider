@@ -547,6 +547,20 @@ if(APPLE OR WIN32)
                 ")
         endif()
 
+        if(SC_CODESIGN_AFTER_DEPLOY)
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Running ad hoc code signing\")
+                execute_process(COMMAND 
+                    sh -c \
+                    \"find ${CONTENTS_DIR} \
+                    \\\\( -name \\\"*.dylib\\\" -o -name \\\"*.framework\\\" \
+                    -o -name \\\"SuperCollider\\\" -o -name \\\"sclang\\\" \
+                    -o -name \\\"scsynth\\\" -o -name \\\"supernova\\\" -maxdepth 2 \
+                    \\\\) -exec codesign --force --deep --sign - {} \\\;\"
+                )
+            ")
+        endif()
+
         if(SC_VERIFY_APP)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Verifying app\")

@@ -248,6 +248,9 @@ option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 if(APPLE)
     # codesigning breaks increamental builds in Xcode 11+
     option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" ON)
+    # however, codesigning is needed on arm64 to run the app locally at all
+    # but it is being broken by macdeployqt, hence we sign after deploying the app
+    option(SC_CODESIGN_AFTER_DEPLOY "Run ad hoc codesigning after creating the app bundle" ON)
     # verify_app fails with official Qt; we'll still use it for Qt from homebrew
     option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
 endif()
