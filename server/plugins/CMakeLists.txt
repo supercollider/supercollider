@@ -328,11 +328,13 @@ if (WIN32)
 	)
 
 elseif(APPLE)
-	foreach(plugin ${plugins} ${supernova_plugins})
-		add_custom_command(TARGET ${plugin} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-	endforeach()
+	if(scappauxresourcesdir)
+		foreach(plugin ${plugins} ${supernova_plugins})
+			add_custom_command(TARGET ${plugin} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}/plugins
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}/plugins)
+		endforeach()
+	endif()
 
 else()
 	install(TARGETS ${plugins} ${supernova_plugins}
