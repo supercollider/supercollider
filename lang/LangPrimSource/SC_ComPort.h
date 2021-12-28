@@ -32,7 +32,7 @@
 
 const int kTextBufSize = 65536;
 
-enum class HandlerType { OSC };
+enum class HandlerType { OSC, Raw };
 
 using HandleDataFunc = std::function<void(std::unique_ptr<char[]>, size_t)>;
 

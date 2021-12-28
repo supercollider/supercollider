@@ -1,6 +1,7 @@
 Main : Process {
 	var <platform, argv;
 	var recvOSCfunc, prRecvOSCFunc;
+	var >recvRawfunc, >prRecvRawFunc;
 	var openPorts;
 
 		// proof-of-concept: the interpreter can set this variable when executing code in a file
@@ -83,6 +84,12 @@ Main : Process {
 		OSCresponder.respond(time, replyAddr, msg);
 	}
 
+	recvRawMessage { arg time, replyAddr, recvPort, msg;
+		// this method is called when an raw message is received.
+		recvRawfunc.value(time, replyAddr, msg);
+		prRecvRawFunc.value(msg, time, replyAddr, recvPort);
+	}
+
 	addOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.addFunc(func) }
 
 	removeOSCRecvFunc { |func| prRecvOSCFunc = prRecvOSCFunc.removeFunc(func) }
@@ -103,6 +110,20 @@ Main : Process {
 		_OpenUDPPort
 		^this.primitiveFailed;
 	}
+
+	openTCPPort {|portNum|
+		var result;
+		if(openPorts.includes(portNum), {^true});
+		result = this.prOpenTCPPort(portNum);
+		if(result, { openPorts = openPorts.add(portNum); });
+		^result;
+	}
+
+	prOpenTCPPort {|portNum|
+		_OpenTCPPort
+		^this.primitiveFailed;
+	}
+
 
 //	override in platform specific extension
 //

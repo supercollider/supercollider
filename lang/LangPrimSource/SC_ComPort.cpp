@@ -40,6 +40,8 @@
 #undef scprintf
 
 void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time);
+void ProcessRawMessage(int inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
+                       double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,25 +73,37 @@ template <HandlerType H> struct MessageHandler { };
 
 template <> struct MessageHandler<HandlerType::OSC> {
     static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
-                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort);
+                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
+        const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+
+        auto packet = std::unique_ptr<OSC_Packet>();
+
+        packet->mReplyAddr.mProtocol = protocol;
+        packet->mReplyAddr.mSocket = replySocket;
+        packet->mReplyAddr.mAddress = replyAddress;
+        packet->mReplyAddr.mPort = replyPort;
+        packet->mData = std::move(data);
+        packet->mSize = dataSize;
+
+        ProcessOSCPacket(std::move(packet), localPort, timeReceived);
+    }
 };
 
-void MessageHandler<HandlerType::OSC>::handleMessage(Protocol protocol, int replySocket,
-                                                     const boost::asio::ip::address& replyAddress, int replyPort,
-                                                     std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
-    const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
+template <> struct MessageHandler<HandlerType::Raw> {
+    static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
+                              int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
+        const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
 
-    auto packet = std::unique_ptr<OSC_Packet>();
+        ReplyAddress addrObject;
+        addrObject.mProtocol = protocol;
+        addrObject.mAddress = replyAddress;
+        addrObject.mSocket = replySocket;
+        addrObject.mPort = replyPort;
 
-    packet->mReplyAddr.mProtocol = protocol;
-    packet->mReplyAddr.mSocket = replySocket;
-    packet->mReplyAddr.mAddress = replyAddress;
-    packet->mReplyAddr.mPort = replyPort;
-    packet->mData = std::move(data);
-    packet->mSize = dataSize;
+        ProcessRawMessage(dataSize, std::move(data), addrObject, replyPort, timeReceived);
+    }
+};
 
-    ProcessOSCPacket(std::move(packet), localPort, timeReceived);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,7 +116,7 @@ TCPConnection::TCPConnection(boost::asio::io_service& ioService, int portNum, Ha
 
 void TCPConnection::initHandler(HandlerType handlerType) {
     switch (handlerType) {
-    case HandlerType::OSC:
+    case HandlerType::OSC: {
         using Handler = MessageHandler<HandlerType::OSC>;
         mHandleFunc = [this](auto data, auto dataSize) {
             const int replyPort = 0;
@@ -111,6 +125,17 @@ void TCPConnection::initHandler(HandlerType handlerType) {
                                    mPortNum);
         };
         return;
+    }
+    case HandlerType::Raw: {
+        using Handler = MessageHandler<HandlerType::Raw>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            const int replyPort = 0;
+            const boost::asio::ip::address replyAddress;
+            Handler::handleMessage(kTCP, mSocket.native_handle(), replyAddress, replyPort, std::move(data), dataSize,
+                                   mPortNum);
+        };
+        return;
+    }
     }
 }
 
@@ -185,13 +210,22 @@ UDP::UDP(int inPortNum, HandlerType handlerType, int portsToCheck): mPortNum(inP
 
 void UDP::initHandler(HandlerType handlerType) {
     switch (handlerType) {
-    case HandlerType::OSC:
+    case HandlerType::OSC: {
         using Handler = MessageHandler<HandlerType::OSC>;
         mHandleFunc = [this](auto data, auto dataSize) {
             Handler::handleMessage(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
                                    std::move(data), dataSize, mPortNum);
         };
         return;
+    }
+    case HandlerType::Raw: {
+        using Handler = MessageHandler<HandlerType::Raw>;
+        mHandleFunc = [this](auto data, auto dataSize) {
+            Handler::handleMessage(kUDP, mUdpSocket.native_handle(), mRemoteEndpoint.address(), mRemoteEndpoint.port(),
+                                   std::move(data), dataSize, mPortNum);
+        };
+        return;
+    }
     }
 }
 
