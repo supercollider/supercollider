@@ -63,8 +63,14 @@ CondVar {
 	deepCopy { this.shouldNotImplement(thisMethod) }
 
 	prWait {
+		var tp = thisThread.threadPlayer;
 		this.prSleepThread(thisThread);
-		\wait.yield
+		\wait.yield;
+		waitingThreads.remove(tp);
+		// ^^ Sadly, prRemoveWaitingThread takes the wrong argument for what we
+		// need to ensure corectness here if the threadPlayer of thisThread
+		// changes while this method has yielded control to one that does
+		// something like that at the yield above.
 	}
 
 	// Returns true iff we were woken via signal (and not timeout)
