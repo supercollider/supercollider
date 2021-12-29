@@ -59,7 +59,8 @@ TestBuffer_Server : UnitTest {
 
 	// Note that the "expected values" used in this test depend precisely on the samples in a11wlk01.wav, so will need updating if that changes.
 	test_allocAndQuery {
-		var timeout, condition = Condition.new;
+		var timeout, doTimeout = { fork { 3.wait; condition.unhang } };
+		var condition = Condition.new;
 		var buffer_number = 9, num_frames = 512, num_channels = 1, buffer_sampleRate = 44100;
 		var frame_value = -0.001617431640625;
 		var query, get;
@@ -78,14 +79,14 @@ TestBuffer_Server : UnitTest {
 		);
 		server.sync;
 
-		timeout = fork { 3.wait; condition.unhang };
+		timeout = doTimeout.value;
 		server.sendMsg('/b_query', buffer_number);
 		condition.hang;
-		timeout.stop.reset;
+		timeout.stop;
 
 		this.assertEquals(query, query_reply, "/b_info data returned from a /b_query message should be as expected");
 
-		timeout.play;
+		timeout = doTimeout.value;
 		server.sendMsg('/b_get', buffer_number, (num_frames / 2));
 		condition.hang;
 		timeout.stop;
@@ -94,7 +95,8 @@ TestBuffer_Server : UnitTest {
 	}
 
 	test_cheby {
-		var timeout, condition = Condition.new;
+		var timeout, doTimeout = fork { "cheby dotimeout".debug; 3.wait; condition.unhang };
+		var condition = Condition.new;
 		var buffer, size = 512;
 		var fromBuffer;
 		var calcVal;
@@ -103,14 +105,16 @@ TestBuffer_Server : UnitTest {
 		buffer = Buffer.alloc(server, size, completionMessage: { |buf| buf.chebyMsg([0, 1], normalize: false, asWavetable: false) });
 		server.sync;
 
-		buffer.loadToFloatArray(action: { |array|
-			fromBuffer = array;
-			condition.unhang;
-		});
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				fromBuffer = array;
+				condition.unhang;
+			});
+		};
 
-		timeout = fork { 1.wait; condition.unhang };
+		timeout = doTimeout.value;
 		condition.hang;
-		timeout.stop.reset;
+		timeout.stop;
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(2) &&
@@ -123,14 +127,16 @@ TestBuffer_Server : UnitTest {
 		buffer.cheby([1], asWavetable: false);
 		server.sync;
 
-		buffer.loadToFloatArray(action: { |array|
-			fromBuffer = array;
-			condition.unhang;
-		});
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				fromBuffer = array;
+				condition.unhang;
+			});
+		};
 
-		timeout.play;
+		timeout = doTimeout.value;
 		condition.hang;
-		timeout.stop.reset;
+		timeout.stop;
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(-1) &&
@@ -143,14 +149,16 @@ TestBuffer_Server : UnitTest {
 		buffer.cheby([0, 1], normalize: true, asWavetable: false);
 		server.sync;
 
-		buffer.loadToFloatArray(action: { |array|
-			fromBuffer = array;
-			condition.unhang;
-		});
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				fromBuffer = array;
+				condition.unhang;
+			});
+		};
 
-		timeout.play;
+		timeout = doTimeout.value;
 		condition.hang;
-		timeout.stop.reset;
+		timeout.stop;
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(1) &&
@@ -162,10 +170,12 @@ TestBuffer_Server : UnitTest {
 		buffer.cheby([0, 1, 0.5, -0.25], normalize: false, asWavetable: false);
 		server.sync;
 
-		buffer.loadToFloatArray(action: { |array|
-			fromBuffer = array;
-			condition.unhang;
-		});
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				fromBuffer = array;
+				condition.unhang;
+			});
+		};
 
 		timeout.play;
 		condition.hang;
