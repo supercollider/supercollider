@@ -48,17 +48,18 @@ FlowVar {
 	}
 	init { arg inVal;
 		value = inVal;
-		condition = Condition { value != \unbound };
+		condition = CondVar.new;
 	}
 	value_ { arg inVal;
 		if (value != \unbound) {
 			Error("cannot rebind a FlowVar").throw
 		};
 		value = inVal;
-		condition.signal;
+		condition.signalAll;
 	}
 	value {
-		condition.wait
+		condition.wait { value != \unbound };
 		^value
 	}
+	reset { value = \unbound }
 }
