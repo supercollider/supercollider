@@ -229,10 +229,10 @@ TestNodeProxy : UnitTest {
 	}
 
 	test_copy_nodeMapIsCopied {
-		var oldProxy = proxy.source_({ Silent.ar });
+		var oldProxy = proxy.source_({ Silent.ar }).set(\freq, 7817);
 		var newProxy = oldProxy.copy;
 
-		this.assertEquals(oldProxy.nodeMap, newProxy.nodeMap);
+		this.assertEquals(oldProxy.nodeMap.at(\freq), newProxy.nodeMap.at(\freq));
 	}
 
 	test_copy_independent {
@@ -267,7 +267,7 @@ TestNodeProxy : UnitTest {
 		timeout.stop;
 		resp.free;
 
-		this.assertEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
+		this.assertFloatEquals(result, proxy.source, "after the crossfade from a ugen function to a value the bus should have this value");
 
 		server.quit;
 		server.remove;
