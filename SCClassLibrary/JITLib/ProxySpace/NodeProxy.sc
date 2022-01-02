@@ -1031,6 +1031,20 @@ NodeProxy : BusPlug {
 		^SynthDef(name, func);
 	}
 
+	// return the first spec, ignore multiples
+	findSpec { |name|
+		var spec;
+		this.objects.do { |obj|
+			if (obj.respondsTo(\findSpec)) {
+				spec = obj.findSpec(name);
+				if (spec.notNil) {
+					^spec
+				}
+			}
+		};
+		^nil
+	}
+
 	specs {
 		var specs = ();
 		this.objects.do {

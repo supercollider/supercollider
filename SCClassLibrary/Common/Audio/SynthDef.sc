@@ -666,6 +666,14 @@ SynthDef {
 		^desc
 	}
 
+	findSpec { |name|
+		^if(metadata[\specs].isNil) {
+			nil
+		} {
+			metadata[\specs][name]
+		}
+	}
+
 	specs {
 		if(metadata[\specs].isNil) { metadata[\specs] = () };
 		^metadata[\specs]
