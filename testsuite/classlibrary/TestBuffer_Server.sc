@@ -27,48 +27,62 @@ TestBuffer_Server : UnitTest {
 	}
 
 	test_serverlang_dataexchange {
-		var data = Array.fill(512, { 1.0.rand });
+		var condition = CondVar.new;
+		var data = Array.fill(512, { 1.0.rand }), data2;
 		var buffer;
 
 		// send then load
 		buffer = Buffer.sendCollection(server, data);
 		server.sync;
-		buffer.loadToFloatArray(action: { |array|
-			this.assertArrayFloatEquals(array, data, "sendCollection->loadToFloatArray gave back similar data")
-		});
-		server.sync;
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				data2 = array;
+				condition.signalOne;
+			});
+		};
+		condition.waitFor(3);
 		buffer.free;
+		this.assertArrayFloatEquals(data2, data, "sendCollection->loadToFloatArray gave back similar data");
 
 		// load then load
 		buffer = Buffer.loadCollection(server, data);
 		server.sync;
-		buffer.loadToFloatArray(action: { |array|
-			this.assertArrayFloatEquals(array, data, "loadCollection->loadToFloatArray gave back similar data")
-		});
-		server.sync;
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				data2 = array;
+				condition.signalOne;
+			});
+		};
+		condition.waitFor(3);
+
+		this.assertArrayFloatEquals(data2, data, "loadCollection->loadToFloatArray gave back similar data");
 
 		// zero the Buffer and check that it worked
 		buffer.zero;
 		server.sync;
-		buffer.loadToFloatArray(action: { |array|
-			this.assertArrayFloatEquals(array, 0, "Buffer:zero should give a buffer containing zeroes")
-		});
-		server.sync;
+		fork {
+			buffer.loadToFloatArray(action: { |array|
+				data2 = array;
+				condition.signalOne;
+			});
+		};
+		condition.waitFor(3);
+
+		this.assertArrayFloatEquals(data2, 0, "Buffer:zero should give a buffer containing zeroes")
 	}
 
 
 	// Note that the "expected values" used in this test depend precisely on the samples in a11wlk01.wav, so will need updating if that changes.
 	test_allocAndQuery {
-		var timeout, doTimeout = { fork { 3.wait; condition.unhang } };
-		var condition = Condition.new;
+		var condition = CondVar.new;
 		var buffer_number = 9, num_frames = 512, num_channels = 1, buffer_sampleRate = 44100;
 		var frame_value = -0.001617431640625;
 		var query, get;
 		var query_reply = ['/b_info', buffer_number, num_frames, num_channels, buffer_sampleRate];
 		var get_reply = ['/b_set', buffer_number, (num_frames / 2), frame_value];
 
-		OSCFunc({ |msg| query = msg; condition.unhang }, '/b_info', server.addr).oneShot;
-		OSCFunc({ |msg| get = msg; condition.unhang }, '/b_set', server.addr).oneShot;
+		OSCFunc({ |msg| query = msg; condition.signalOne }, '/b_info', server.addr).oneShot;
+		OSCFunc({ |msg| get = msg; condition.signalOne }, '/b_set', server.addr).oneShot;
 
 		server.sendMsg(
 			'/b_allocRead',
@@ -79,24 +93,19 @@ TestBuffer_Server : UnitTest {
 		);
 		server.sync;
 
-		timeout = doTimeout.value;
 		server.sendMsg('/b_query', buffer_number);
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assertEquals(query, query_reply, "/b_info data returned from a /b_query message should be as expected");
 
-		timeout = doTimeout.value;
 		server.sendMsg('/b_get', buffer_number, (num_frames / 2));
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assertEquals(get, get_reply, "/b_set data returned from a /b_get message should be as expected");
 	}
 
 	test_cheby {
-		var timeout, doTimeout = fork { "cheby dotimeout".debug; 3.wait; condition.unhang };
-		var condition = Condition.new;
+		var condition = CondVar.new;
 		var buffer, size = 512;
 		var fromBuffer;
 		var calcVal;
@@ -108,13 +117,10 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.unhang;
+				condition.signalOne;
 			});
 		};
-
-		timeout = doTimeout.value;
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(2) &&
@@ -130,13 +136,10 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.unhang;
+				condition.signalOne;
 			});
 		};
-
-		timeout = doTimeout.value;
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(-1) &&
@@ -152,13 +155,10 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.unhang;
+				condition.signalOne;
 			});
 		};
-
-		timeout = doTimeout.value;
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assert(
 			fromBuffer.first.equalWithPrecision(1) &&
@@ -173,13 +173,10 @@ TestBuffer_Server : UnitTest {
 		fork {
 			buffer.loadToFloatArray(action: { |array|
 				fromBuffer = array;
-				condition.unhang;
+				condition.signalOne;
 			});
 		};
-
-		timeout.play;
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assert(
 			this.getSignalMidValue(fromBuffer).equalWithPrecision(0),
@@ -193,7 +190,7 @@ TestBuffer_Server : UnitTest {
 	}
 
 	test_get {
-		var timeout, condition = Condition.new;
+		var condition = CondVar.new;
 		var buffer, collection;
 		var get_value;
 
@@ -203,17 +200,15 @@ TestBuffer_Server : UnitTest {
 
 		buffer.get(2, { |value|
 			get_value = value;
+			condition.signalOne;
 		});
-
-		timeout = fork { 3.wait; condition.unhang };
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assertFloatEquals(get_value, collection[2], "Buffer:get should get the requested value from the buffer");
 	}
 
 	test_getn {
-		var timeout, condition = Condition.new;
+		var condition = CondVar.new;
 		var buffer, collection;
 		var getn_values;
 
@@ -223,17 +218,15 @@ TestBuffer_Server : UnitTest {
 
 		buffer.getn(2, 2, { |values|
 			getn_values = values;
+			condition.signalOne;
 		});
-
-		timeout = fork { 3.wait; condition.unhang };
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer");
 	}
 
 	test_regression_getn_float {
-		var timeout, condition = Condition.new;
+		var condition = CondVar.new;
 		var buffer, collection;
 		var getn_values;
 
@@ -244,17 +237,15 @@ TestBuffer_Server : UnitTest {
 		// Using a float as the index should still work
 		buffer.getn(2.0, 2, { |values|
 			getn_values = values;
+			condition.signalOne;
 		});
-
-		timeout = fork { 3.wait; condition.unhang };
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn should get the requested values from the buffer");
 	}
 
 	test_getToFloatArray {
-		var timeout, condition = Condition.new;
+		var condition = CondVar.new;
 		var buffer, collection;
 		var floats;
 
@@ -264,12 +255,9 @@ TestBuffer_Server : UnitTest {
 
 		buffer.getToFloatArray(action: { |array|
 			floats = array;
-			condition.unhang;
+			condition.signalOne;
 		});
-
-		timeout = fork { 3.wait; condition.unhang };
-		condition.hang;
-		timeout.stop;
+		condition.waitFor(3);
 
 		this.assertArrayFloatEquals(floats, collection, "Buffer:getToFloatArray should get the buffer's values");
 	}
