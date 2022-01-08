@@ -89,6 +89,52 @@ a[0] = { |freq = 440, dt=0.1, rate=2| Ringz.ar(Dust.ar(rate * 10.dup), freq, dt)
 a.clear(3);
 ::
 
+## \seti -> event pattern
+|| Set the proxy controls for each channel in a multi-channel proxy with an event pattern of type code::\set::. Contrary to other roles it must be applied separately to each channel of the proxy.
+
+CODE::
+// 5-channel NodeProxy
+a = NodeProxy.audio(s).mold(5);
+// output will be stereo
+b = NodeProxy.audio(s).play;
+
+(
+a[0] = {
+	Blip.ar(
+		\freq.kr([200, 201, 202, 204, 205]),
+		\harms.kr([100, 100, 100, 100, 100])
+	)
+};
+
+b[0] = {
+    // mix 5 channel input to stereo panorama
+	Splay.ar(\in.ar([0, 0, 0, 0, 0]), level: \amp.kr(0.7))
+};
+)
+
+// route a out to b in
+b <<> a;
+
+// apply the role(s)
+(
+a.numChannels.do { |i|
+	// a[0] holds the source!
+	a[i+1] = \seti -> Pbind(
+		\freq, Prand(#[62, 64, 67, 70, 72].midicps, inf),
+		\harms, Pexprand(50, 1000),
+		\dur, Prand(#[0.1, 0.2, 0.4], inf),
+		// channelOffset is an offset, not a channel index
+		\channelOffset, i
+	)
+}
+)
+
+// remove roles again
+// either all at once or one by one
+a.numChannels.do { |i| a[i+1] = nil };
+
+a.clear; b.clear;
+::
 
 ## \setbus -> event pattern
 || Set the proxy bus with an event pattern of type code::\c_set::
