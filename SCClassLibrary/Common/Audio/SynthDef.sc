@@ -667,11 +667,8 @@ SynthDef {
 	}
 
 	findSpecFor { |controlName|
-		^if(metadata[\specs].isNil) {
-			nil
-		} {
-			metadata[\specs][controlName]
-		}
+		var specs = metadata[\specs];
+		^specs !? { specs[controlName] }
 	}
 
 	specs {
