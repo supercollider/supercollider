@@ -666,11 +666,11 @@ SynthDef {
 		^desc
 	}
 
-	findSpec { |name|
+	findSpecFor { |controlName|
 		^if(metadata[\specs].isNil) {
 			nil
 		} {
-			metadata[\specs][name]
+			metadata[\specs][controlName]
 		}
 	}
 

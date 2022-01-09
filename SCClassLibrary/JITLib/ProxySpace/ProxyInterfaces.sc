@@ -413,8 +413,8 @@ SynthDefControl : SynthControl {
 		bytes = control.bytes; // copy cached data
 	}
 
-	findSpec { |name|
-		^synthDef.findSpec(name)
+	findSpecFor { |controlName|
+		^synthDef.findSpecFor(controlName)
 	}
 	specs {
 		^synthDef.specs

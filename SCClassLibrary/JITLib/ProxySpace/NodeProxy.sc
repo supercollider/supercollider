@@ -1031,12 +1031,13 @@ NodeProxy : BusPlug {
 		^SynthDef(name, func);
 	}
 
-	// return the first spec, ignore multiples
-	findSpec { |name|
+	// for lookup speed, always return first spec found in objects,
+	// ignore when the same controlName sets specs in multiple objects.
+	findFirstSpecFor { |controlName|
 		var spec;
 		this.objects.do { |obj|
-			if (obj.respondsTo(\findSpec)) {
-				spec = obj.findSpec(name);
+			if (obj.respondsTo(\findSpecFor)) {
+				spec = obj.findSpecFor(controlName);
 				if (spec.notNil) {
 					^spec
 				}
