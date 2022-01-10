@@ -154,11 +154,11 @@
             "skip":true,
             "skipReason":"UnitTest sometimes fails when run in qpm"
         },
-	{
-	    "suite":"TestNodeProxySeti",
-	    "test":"test_seti_nodeMap",
-	    "skip":true,
-	    "skipReason":"test passes on local machine but fails in GHA for unknown reasons"
-	}
+        {
+            "suite":"TestNodeProxySeti",
+            "test":"test_seti_nodeMap",
+            "skip":true,
+            "skipReason":"test passes on local machine but fails in GHA for unknown reasons"
+        }
     ]
 }
