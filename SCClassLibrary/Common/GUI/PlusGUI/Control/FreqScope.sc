@@ -23,7 +23,7 @@ FreqScopeView {
 		// linear
 		SynthDef("system_freqScope0", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, numSamples, mul, add;
+			var signal, chain, phasor, numSamples, mul;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
 			numSamples = (BufSamples.ir(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
@@ -37,7 +37,7 @@ FreqScopeView {
 		}, [\kr, \ir, \ir, \ir, \kr]).add;
 		SynthDef("system_freqScope0_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, numSamples, mul, add;
+			var signal, chain, phasor, numSamples, mul;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
 			numSamples = (BufSamples.ir(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
@@ -53,7 +53,7 @@ FreqScopeView {
 		// logarithmic
 		SynthDef("system_freqScope1", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, halfSamples, mul, add;
+			var signal, chain, phasor, halfSamples, mul;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
 			halfSamples = BufSamples.ir(fftbufnum) * 0.5;
@@ -67,7 +67,7 @@ FreqScopeView {
 
 		SynthDef("system_freqScope1_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, halfSamples, mul, add;
+			var signal, chain, phasor, halfSamples, mul;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
 			halfSamples = BufSamples.ir(fftbufnum) * 0.5;
@@ -83,7 +83,7 @@ FreqScopeView {
 		// to calculate the frequency response between two channels
 		SynthDef("system_freqScope0_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, numSamples, mul, add;
+			var signal, chain, phasor, numSamples, mul;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
@@ -104,7 +104,7 @@ FreqScopeView {
 
 		SynthDef("system_freqScope0_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, numSamples, mul, add;
+			var signal, chain, phasor, numSamples, mul;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
@@ -125,7 +125,7 @@ FreqScopeView {
 
 		SynthDef("system_freqScope1_magresponse", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, halfSamples, mul, add;
+			var signal, chain, phasor, halfSamples, mul;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
@@ -145,7 +145,7 @@ FreqScopeView {
 
 		SynthDef("system_freqScope1_magresponse_shm", { arg in=0, fftBufSize = 2048, scopebufnum=1, rate=4, dbFactor = 0.02, in2=1;
 			var phase = 1 - (rate * fftBufSize.reciprocal);
-			var signal, chain, result, phasor, halfSamples, mul, add;
+			var signal, chain, phasor, halfSamples, mul;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
 			mul = 0.00285;
