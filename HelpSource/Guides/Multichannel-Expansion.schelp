@@ -113,7 +113,7 @@ fork {
 )
 ::
 
-Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
+Similarly, link::Classes/Function#-flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
 code::
 (
 SynthDef("blip", { |out, freq|
