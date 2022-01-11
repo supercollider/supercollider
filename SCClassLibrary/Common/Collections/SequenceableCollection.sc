@@ -1281,7 +1281,7 @@ SequenceableCollection : Collection {
 		// returns an array of indices that would sort the collection into order.
 		if(this.isEmpty) { ^[] };
 		if (function.isNil) { function = { arg a, b; a <= b }; };
-		array = [this, (0..this.lastIndex)].flop;
+		array = [this.asArray, (0..this.lastIndex)].flop;
 		orderFunc = {|a,b| function.value(a[0], b[0]) };
 		^array.mergeSort(orderFunc).flop[1]
 	}
