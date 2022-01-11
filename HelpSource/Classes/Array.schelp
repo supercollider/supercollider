@@ -421,5 +421,5 @@ argument:: scopeChannel
 Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
 
 argument:: server
-The server on which BelaScope is running. If not specified, it looks for the first server for which BelaScope was already initialized. If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Server#*default::.
+The server on which BelaScope is running. If not specified, it looks for the first server for which BelaScope was already initialized. If none is found, it attempts to initialize a link::Classes/BelaScope:: instance on link::Classes/Server#*default::.
 returns:: This Array.

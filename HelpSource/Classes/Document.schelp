@@ -111,7 +111,7 @@ subsection:: Path Utilities
 Utilities and settings for dealing with documents such as SuperCollider code files. By default the document directory is SuperCollider's application directory.
 
 method:: dir
-Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
+Get/set the default document directory. The default is dependent on link::#*implementationClass::.
 argument:: path
 The file system path to the directory. An instance of link::Classes/String::.
 discussion::
@@ -183,7 +183,7 @@ argument:: bool
 An instance of link::Classes/Boolean::.
 
 method:: name
-Get / set the title (same as link::Classes/Document#title::).
+Get / set the title (same as link::#-title::).
 argument:: aname
 An instance of link::Classes/String::.
 discussion::
@@ -192,7 +192,7 @@ Document.current.name.postln;
 ::
 
 method:: title
-Get / set the title (same as link::Classes/Document#name::).
+Get / set the title (same as link::#-name::).
 argument:: newTitle
 An instance of link::Classes/String::.
 
@@ -214,10 +214,10 @@ method:: isFront
 Returns code::true:: if the document is in front.
 
 method:: didBecomeKey
-Saves the current link::Classes/Environment::, makes the document current, and performs its link::Classes/Document#toFrontAction::.
+Saves the current link::Classes/Environment::, makes the document current, and performs its link::#-toFrontAction::.
 
 method:: didResignKey
-Performs the Document's link::Classes/Document#endFrontAction:: and restores the current link::Classes/Environment::.
+Performs the Document's link::#-endFrontAction:: and restores the current link::Classes/Environment::.
 
 
 
@@ -261,14 +261,14 @@ argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: mouseDownAction
-Get/set the action to be performed on link::Classes/Document#mouseDown::.
+Get/set the action to be performed on link::#-mouseDown::.
 
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::.
 
 
 method:: mouseUpAction
-Get/set the action to be performed on link::Classes/Document#mouseUp::.
+Get/set the action to be performed on link::#-mouseUp::.
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::.
 discussion::
@@ -294,12 +294,12 @@ s.waitForBoot({
 ::
 Test here and click in front of the numbers: 17 and 23.
 code::
-Document.current.mouseUpAction = nil; // clear mouseUpActiont
+Document.current.mouseUpAction = nil; // clear mouseUpAction
 ::
 
 
 method:: keyDownAction
-Get/set the action to be performed on link::Classes/Document#keyDown::.
+Get/set the action to be performed on link::#-keyDown::.
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
@@ -310,7 +310,7 @@ Document.current.keyDownAction = nil;
 ::
 
 method:: keyUpAction
-Get/set the action to be performed on link::Classes/Document#keyUp::.
+Get/set the action to be performed on link::#-keyUp::.
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
@@ -429,7 +429,7 @@ An link::Classes/Integer:: for the number of characters to retrieve. -1 retrieve
 method:: getTextAsync
 Get a range of text from the document. Asynchronous. The text is passed to the code::action:: function as an argument.
 
-note:: Currently, in Windows, link::Classes/Document#-getText:: and link::Classes/Document#-string:: may be unreliable. Windows users are recommended to use link::Classes/Document#-getTextAsync:: for the time being.
+note:: Currently, in Windows, link::#-getText:: and link::#-string:: may be unreliable. Windows users are recommended to use link::#-getTextAsync:: for the time being.
 ::
 
 argument:: action

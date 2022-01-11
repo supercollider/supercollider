@@ -8,7 +8,7 @@ In order to make sure a method works correctly, a test can be implemented that a
 
 It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run. A test is always a subclass of code::UnitTest::, implementing at least one method starting with code::test_::.
 
-When running all tests of one class (see link::#run::), each test method is called in a seperate instance of this class. Test methods therefore do not interefere with each other.
+When running all tests of one class (see link::#run::), each test method is called in a separate instance of this class. Test methods, therefore, do not interfere with each other.
 
 note::
 UnitTests for the Common library classes are kept in the code::testsuite/classlibrary:: directory of the SuperCollider sources.

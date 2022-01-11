@@ -385,7 +385,7 @@ The getter returns the client ID of this client on the remote process. code::nil
 The setter attempts to set the client ID of this client for the remote server process. Fails on invalid input or if the server is running. Valid inputs are in the range code::[0..(this.maxNumClients-1)]::.
 
 method:: hasShmInterface
-Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous Control Bus Methods::.
 The shared memory interface is initialized after first server boot.
 
 warning::
@@ -667,7 +667,7 @@ this is optional, and is passed to code::prepareForRecord:: (above).
 argument:: bus
 the bus to record - defaults to 0
 argument:: numChannels
-the number of channels to record - defaults to server numChannels
+the number of channels to record - defaults to 2
 argument:: node
 the node to record - defaults to server rootnode
 argument:: duration
@@ -722,7 +722,7 @@ one or more OSC messages which will be bundled before the sync message (thus ens
 allows for the message to be evaluated at a specific point in the future.
 
 discussion::
-This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
+This may be slightly less safe than sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
 code::
 (
 Routine.run {

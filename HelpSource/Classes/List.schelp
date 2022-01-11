@@ -116,7 +116,7 @@ y.postln;
 ::
 
 method::fill
-Inserts the item into the contents of the receiver, possibly returning a new collection. note::the difference between this and link::Classes/Collection#fill#Collection's *fill::.::
+Inserts the item into the contents of the receiver, possibly returning a new collection. note::the difference between this and link::Classes/Collection#*fill#Collection's *fill::.::
 code::
 (
 var z;

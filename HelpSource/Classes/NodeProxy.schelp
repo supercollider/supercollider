@@ -157,13 +157,13 @@ argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
 
 note::
-When reshaping is set, e.g. to \elastic, setting the source can change the number of channels of the proxy. This means that its bus changes, and that child proxies, which read signals from it, may also change. See the example in link::#routing::.
+When reshaping is set, e.g. to \elastic, setting the source can change the number of channels of the proxy. This means that its bus changes, and that child proxies, which read signals from it, may also change. See the example in link::#Routing::.
 ::
 
 subsection::Routing
 Signals can be routed between any number of node proxies.
 
-See also: link::Classes/BusPlug#ar::, link::Classes/BusPlug#value::, link::#reshaping::.
+See also: link::Classes/BusPlug#-ar::, link::Classes/BusPlug#-value::, link::#Reshaping::.
 
 Here is a simple example, using Ndef (NodeProxy works similarly):
 
