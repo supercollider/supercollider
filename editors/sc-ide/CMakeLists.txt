@@ -321,6 +321,10 @@ set_target_properties(libscide PROPERTIES PREFIX "")
 
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
+    if(NOT SC_DISABLE_XCODE_CODESIGNING)
+        # codesign --deep seems to be needed for the SuperCollider binary to allow incremental builds
+        set_target_properties(SuperCollider PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
+    endif()
 else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
