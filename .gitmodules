@@ -1,12 +1,12 @@
 [submodule "external_libraries/nova-simd"]
 	path = external_libraries/nova-simd
-	url = git://github.com/timblechmann/nova-simd.git
+	url = https://github.com/timblechmann/nova-simd.git
 [submodule "external_libraries/nova-tt"]
 	path = external_libraries/nova-tt
-	url = git://github.com/timblechmann/nova-tt.git
+	url = https://github.com/timblechmann/nova-tt.git
 [submodule "external_libraries/hidapi"]
 	path = external_libraries/hidapi
-	url = git://github.com/supercollider/hidapi.git
+	url = https://github.com/supercollider/hidapi.git
 [submodule "editors/scvim"]
 	path = editors/scvim
 	url = https://github.com/supercollider/scvim.git
