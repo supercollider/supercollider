@@ -33,7 +33,7 @@ CLASSMETHODS::
 METHOD:: new
 
 argument:: spec
-The ControlSpec that defines the mininum and maximum values, warn and step.
+The ControlSpec that defines the minimum and maximum values, warn and step.
 
 returns:: a GridLines
 

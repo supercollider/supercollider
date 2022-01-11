@@ -6,7 +6,7 @@ related:: Classes/Synth, Reference/Synth-Definition-File-Format, Classes/SynthDe
 description::
 
 The server application uses synth definitions as templates for creating link::Classes/Synth:: nodes.
-(Methods such as link::Classes/Function#play#Function-play::, etc. are simply conveniences which automatically create such a def.)
+(Methods such as link::Classes/Function#-play::, etc. are simply conveniences which automatically create such a def.)
 The SynthDef class encapsulates the client-side representation of a given def, and provides methods for creating new defs, writing them to disk, and streaming them to a server.
 
 SynthDef is one of the more complicated classes in SC and an exhaustive explanation of it is beyond the scope of this document. As such, the examples at the bottom of this document and those found in the various tutorials accessible from link::Help:: may be necessary to make some aspects of its use clear.
@@ -19,7 +19,7 @@ The core of a def is its link::Classes/UGen##unit generator:: graph function.
 This is an instance of link::Classes/Function:: which details how the def's unit generators are interconnected, its inputs and outputs, and what parameters are available for external control.
 In a synth based on the def, arguments to the function will become instances of link::Classes/Control::.
 These can have default values, or can be set at the time the synth is created.
-After creation they will be controllable through link::Classes/Node::'s code::set:: and code::setn:: methods, or the n_set and n_setn link::Browse#OpenSoundControl#OSC:: messages.
+After creation they will be controllable through link::Classes/Node::'s code::set:: and code::setn:: methods, or the n_set and n_setn link::Guides/NodeMessaging##OSC:: messages.
 
 There are four special types of arguments, which are treated differently:
 definitionlist::
@@ -30,7 +30,7 @@ definitionlist::
 ## trigger rate
 || Arguments that begin with "t_" (e.g. code::t_trig::), or that are specified as code::\tr:: in the def's rates argument (see below), will be made as a link::Classes/TrigControl::. Setting the argument will create a control-rate impulse at the set value. This is useful for triggers.
 ## literal arrays
-|| Arguments which have literal arrays as default values (see link::Reference/Literals::) result in multichannel controls, which can be set as a group with link::Classes/Node#setn#Node-setn:: or code::/n_setn::.
+|| Arguments which have literal arrays as default values (see link::Reference/Literals::) result in multichannel controls, which can be set as a group with link::Classes/Node#-setn:: or code::/n_setn::.
 ::
 
 See the examples below for more detail on how this works.

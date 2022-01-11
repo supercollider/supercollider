@@ -62,7 +62,7 @@ METHOD:: register
 			## Help
 		::
 
-		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::Classes/MainMenu#registerQuarkMenu:: method.
+		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::#*registerQuarkMenu:: method.
 
 METHOD:: registerQuarkMenu
 	Convenience method for registering a menu of functionality related to a Quark.
