@@ -555,12 +555,22 @@ if(APPLE OR WIN32)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Running ad hoc code signing\")
                 execute_process(COMMAND 
+                    codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/SuperCollider
+                )
+                execute_process(COMMAND 
                     sh -c \
-                    \"find ${CONTENTS_DIR} \
-                    \\\\( -name \\\"*.dylib\\\" -o -name \\\"*.framework\\\" \
-                    -o -name \\\"SuperCollider\\\" -o -name \\\"sclang\\\" \
-                    -o -name \\\"scsynth\\\" -o -name \\\"supernova\\\" -maxdepth 2 \
-                    \\\\) -exec codesign --force --deep --sign - {} \\\;\"
+                    \"find ${CONTENTS_DIR}/MacOS ${CONTENTS_DIR}/Frameworks \
+                    ${CONTENTS_DIR}/Resources ${CONTENTS_DIR}/Resources/plugins \
+                    \\\\( \
+                        -name \\\"*.dylib\\\" \
+                        -o -name \\\"*.framework\\\" \
+                        -o -name \\\"sclang\\\" \
+                        -o -name \\\"scsynth\\\" \
+                        -o -name \\\"supernova\\\" \
+                        -o -name \\\"DiskIO_UGens*\\\" \
+                        -maxdepth 1 \
+                    \\\\) \
+                    -exec codesign --force --sign - {} \\\;\"
                 )
             ")
         endif()
