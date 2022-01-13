@@ -572,6 +572,9 @@ if(APPLE OR WIN32)
                     \\\\) \
                     -exec codesign --force --sign - {} \\\;\"
                 )
+                execute_process(COMMAND 
+                    codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app
+                )
             ")
         endif()
 
