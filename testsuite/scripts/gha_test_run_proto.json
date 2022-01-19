@@ -71,12 +71,6 @@
             "skipReason":"UnitTest has unknown issues when run in qpm (FIXME)"
         },
         {
-            "suite":"TestNodeProxy",
-            "test":"test_copy_nodeMapIsCopied",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
             "suite":"TestNodeProxyBusMapping",
             "test":"test_audiorate_mapping",
             "skip":true,
@@ -93,12 +87,6 @@
             "test":"test_proxyroles_xfade_smoothly",
             "skip":true,
             "skipReason":"UnitTest fails in qpm (FIXME)"
-        },
-        {
-            "suite":"TestNodeProxy_Server",
-            "test":"test_synthDef_isReleased_afterFree",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
         },
         {
             "suite":"TestNodeProxy_Server",
