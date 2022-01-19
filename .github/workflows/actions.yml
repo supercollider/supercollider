@@ -590,7 +590,7 @@ jobs:
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
-          git clone --depth=1 https://github.com/supercollider-quarks/API
+          git clone --depth=1 https://github.com/crucialfelix/API
 
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
