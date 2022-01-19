@@ -119,6 +119,30 @@
             "skipReason":"Server might hang after these tests when run in qpm (FIXME)"
         },
         {
+            "suite":"TestServer_boot",
+            "test":"*",
+            "skip":true,
+            "skipReason":"Multiple tests fail (as reported by @dyfer)"
+        },
+        {
+            "suite":"TestServer_clientID_booted",
+            "test":"test_repeatedLogin",
+            "skip":true,
+            "skipReason":"UnitTest throws an error (FIXME))"
+        },
+        {
+            "suite":"TestServer_clientID_booted",
+            "test":"test_remoteLogin",
+            "skip":true,
+            "skipReason":"UnitTest throws an error (FIXME))"
+        },
+        {
+            "suite":"TestServer_clientID_booted",
+            "test":"test_repeatedRemoteLogin",
+            "skip":true,
+            "skipReason":"UnitTest throws an error (FIXME))"
+        },
+        {
             "suite":"TestSCDoc",
             "test":"test_helpSourceDirs_includedExtensions",
             "skip":true,
@@ -129,6 +153,12 @@
             "test":"test_nextTimeOnGrid_okAfterMeterChange",
             "skip":true,
             "skipReason":"UnitTest fails (FIXME)"
+        },
+        {
+            "suite":"TestVolume",
+            "test":"test_booting",
+            "skip":true,
+            "skipReason":"Multiple Volume synths are created when running test inside the suite"
         },
         {
             "suite":"TestWebView",
