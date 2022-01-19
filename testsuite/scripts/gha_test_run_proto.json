@@ -41,12 +41,6 @@
             "skipReason":"UnitTest fails when run in qpm (FIXME)"
         },
         {
-            "suite":"TestDoneActions",
-            "test":"test_freeSelfAndResumeNext",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestEnvGen_server",
             "test":"test_zero_gate_n_off_not_sent",
             "skip":true,
