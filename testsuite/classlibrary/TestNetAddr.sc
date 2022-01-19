@@ -9,7 +9,7 @@ TestNetAddr : UnitTest {
 		f = big.copyRange(0, (size ? big.size)-1);
 		bundleSize = f.bundleSize;
 
-		this.bootServer;
+		this.bootServer(server);
 
 		("Sending bundle with " + f.size + "messages " + "bundleSize: " + bundleSize).debug;
 
@@ -41,10 +41,11 @@ TestNetAddr : UnitTest {
 
 	tearDown {
 		server.quit;
+		server.remove;
 	}
 
 	setUp {
-		server = Server.default; 
+		server = Server(this.class.name);
 		addr = server.addr;
 
 		// mmmmmmm.   fixtures.
