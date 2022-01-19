@@ -391,7 +391,7 @@ TestNodeProxyBusMapping : UnitTest {
 TestNodeProxySeti : UnitTest {
 	var proxy, server;
 	setUp {
-		server = Server.default;
+		server = Server(this.class.name);
 		proxy = NodeProxy.audio(server, 5);
 		proxy.source = { SinOsc.ar(\freq.kr(200!5), \phase.kr(0!5)) };
 
@@ -399,6 +399,7 @@ TestNodeProxySeti : UnitTest {
 
 	tearDown {
 		proxy.clear;
+		server.remove;
 	}
 
 	test_seti {
