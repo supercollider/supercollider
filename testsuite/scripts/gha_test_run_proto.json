@@ -23,6 +23,12 @@
             "skipReason":"UnitTest fails when run in qpm (FIXME)"
         },
         {
+            "suite":"TestCondVar",
+            "test":"test_waitFor_withPredicate_signaledButFalseSoTimedOut",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in qpm (FIXME)"
+        },
+        {
             "suite":"TestCoreUGens",
             "test":"test_ugen_generator_equivalences",
             "skip":true,
