@@ -107,12 +107,6 @@
             "skipReason":"UnitTest has bugs (FIXME)"
         },
         {
-            "suite":"TestPV_ChainUGen",
-            "test":"*",
-            "skip":true,
-            "skipReason":"Server might hang after these tests when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestServer_boot",
             "test":"*",
             "skip":true,
