@@ -5,18 +5,6 @@
             "test":"*"
         },
         {
-            "suite":"TestBus",
-            "test":"test_get",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
-            "suite":"TestBus",
-            "test":"test_getn",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestCondition",
             "test":"*",
             "skip":true,
