@@ -8,7 +8,9 @@ MIDIdef provides a global reference to the functionality of its superclass link:
 
 subsection:: Important note on persistence
 
-MIDIFunc (and its subclass link::Classes/MIDIdef:: like all other AbstractResponderFuncs) are removed on pressing Cmd/ctrl-. To fix them, call link::Classes/AbstractResponderFunc#-fix#fix::.
+MIDIFunc (and its subclass link::Classes/MIDIdef:: like all other
+AbstractResponderFuncs) are removed on pressing Cmd/ctrl-. To override this
+behavior, use the link::Classes/AbstractResponderFunc#-permanent:: method.
 
 CLASSMETHODS::
 private:: initClass
