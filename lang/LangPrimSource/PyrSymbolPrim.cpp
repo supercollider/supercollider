@@ -43,7 +43,7 @@ int prSymbolIsPrefix(struct VMGlobals* g, int numArgsPushed) {
     int32 alen = slotRawSymbol(a)->length;
     int32 blen = slotRawSymbol(b)->length;
     length = sc_min(alen, blen);
-    if (memcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name, length) == 0) {
+    if (memcmp(slotRawSymbol(a)->name, slotRawSymbol(b)->name, length) == 0 && length > 0) {
         SetTrue(a);
     } else {
         SetFalse(a);
