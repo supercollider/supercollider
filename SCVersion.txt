@@ -20,9 +20,21 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
   execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_VARIABLE GIT_BRANCH_OR_TAG
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
+  
+  set(GIT_REF_TYPE "branch")
+  
+  if(GIT_BRANCH_OR_TAG STREQUAL "HEAD")
+    set(GIT_REF_TYPE "tag")
+    execute_process(
+      COMMAND git describe --tags
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_BRANCH_OR_TAG
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  endif()
 
   execute_process(
     COMMAND git log -1 --format=%h

@@ -1008,7 +1008,7 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 
         osc::OutboundPacketStream p(buffer, 4096);
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
-          << SC_VersionPostfix << SC_Branch << SC_CommitHash << osc::EndMessage;
+          << SC_VersionPostfix << SC_BranchOrTag << SC_CommitHash << osc::EndMessage;
         endpoint->send(p.Data(), p.Size());
     });
 }

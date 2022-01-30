@@ -12,7 +12,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
 endif()
 
 message(STATUS "SuperCollider Version: ${SC_VERSION}")
-message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
+message(STATUS "Building from ${GIT_REF_TYPE} ${GIT_BRANCH_OR_TAG}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
 
