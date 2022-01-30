@@ -187,7 +187,11 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 
     unit->m_phaseaccuracy = ZIN0(3); // 0.02; //20 msec resolution; could be argument of UGen
 
+    unit->m_pastfeatures = nullptr;
+    unit->m_scores = unit->bestscore = nullptr;
+    unit->bestphase = unit->besttempo = unit->bestgroove = nullptr;
     unit->m_numphases = (int*)RTAlloc(unit->mWorld, g_numtempi * sizeof(int));
+    ClearUnitIfMemFailed(unit->m_numphases);
     // unit->m_phases = (float**)RTAlloc(unit->mWorld, g_numtempi * sizeof(float*));
 
     for (int j = 0; j < g_numtempi; ++j) {
@@ -213,6 +217,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 
     // for efficiency
     unit->m_scores = (float*)RTAlloc(unit->mWorld, (2 * unit->m_numfeatures) * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_scores);
 
     unit->m_temporalwindowsize =
         ZIN0(2); // typically small, 2 seconds for fast reactions compared to 6 secs for BeatTrack
@@ -230,9 +235,11 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
 
     // float ** m_pastfeatures;  //for each feature, a trail of last m_workingmemorysize values
     unit->m_pastfeatures = (float**)RTAlloc(unit->mWorld, unit->m_numfeatures * sizeof(float*));
-
+    ClearUnitIfMemFailed(unit->m_pastfeatures);
+    memset(unit->m_pastfeatures, 0, unit->m_numfeatures * sizeof(float*));
     for (int j = 0; j < unit->m_numfeatures; ++j) {
         unit->m_pastfeatures[j] = (float*)RTAlloc(unit->mWorld, unit->m_buffersize * sizeof(float));
+        ClearUnitIfMemFailed(unit->m_pastfeatures[j]);
 
         Clear(unit->m_buffersize, unit->m_pastfeatures[j]); // set all to zero at first
 
@@ -250,6 +257,7 @@ void BeatTrack2_Ctor(BeatTrack2* unit) {
     unit->bestphase = (int*)RTAlloc(unit->mWorld, 4 * unit->m_numfeatures * sizeof(int));
     unit->besttempo = (int*)RTAlloc(unit->mWorld, 4 * unit->m_numfeatures * sizeof(int));
     unit->bestgroove = (int*)RTAlloc(unit->mWorld, 4 * unit->m_numfeatures * sizeof(int));
+    ClearUnitIfMemFailed(unit->bestscore && unit->bestphase && unit->besttempo && unit->bestgroove);
 
     for (int i = 0; i < 4; ++i) {
         int basepos = i * unit->m_numfeatures;
@@ -326,11 +334,14 @@ void BeatTrack2_Dtor(BeatTrack2* unit) {
     RTFree(unit->mWorld, unit->bestscore);
     RTFree(unit->mWorld, unit->bestphase);
     RTFree(unit->mWorld, unit->besttempo);
+    RTFree(unit->mWorld, unit->bestgroove);
 
-    for (int j = 0; j < unit->m_numfeatures; ++j)
-        RTFree(unit->mWorld, unit->m_pastfeatures[j]);
-
-    RTFree(unit->mWorld, unit->m_pastfeatures);
+    if (unit->m_pastfeatures) {
+        for (int j = 0; j < unit->m_numfeatures; ++j) {
+            RTFree(unit->mWorld, unit->m_pastfeatures[j]);
+        }
+        RTFree(unit->mWorld, unit->m_pastfeatures);
+    }
 }
 
 

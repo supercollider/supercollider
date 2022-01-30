@@ -80,9 +80,7 @@ void cmdCleanup(World* world, void* inUserData) {
     Print("cmdCleanup a %g  b %g  x %g  y %g  name %s\n", myCmdData->myPlugin->a, myCmdData->myPlugin->b, myCmdData->x,
           myCmdData->y, myCmdData->name);
 
-    if (myCmdData->name)
-        RTFree(world, myCmdData->name); // free the string
-
+    RTFree(world, myCmdData->name); // free the string
     RTFree(world, myCmdData); // free command data
     // scsynth will delete the completion message for you.
 }
@@ -95,6 +93,10 @@ void cmdDemoFunc(World* inWorld, void* inUserData, struct sc_msg_iter* args, voi
 
     // allocate command data, free it in cmdCleanup.
     MyCmdData* myCmdData = (MyCmdData*)RTAlloc(inWorld, sizeof(MyCmdData));
+    if (!myCmdData) {
+        Print("cmdDemoFunc: memory allocation failed!\n");
+        return;
+    }
     myCmdData->myPlugin = thePlugInData;
 
     // ..get data from args..
@@ -110,6 +112,10 @@ void cmdDemoFunc(World* inWorld, void* inUserData, struct sc_msg_iter* args, voi
     const char* name = args->gets(); // get the string argument
     if (name) {
         myCmdData->name = (char*)RTAlloc(inWorld, strlen(name) + 1); // allocate space, free it in cmdCleanup.
+        if (!myCmdData->name) {
+            Print("cmdDemoFunc: memory allocation failed!\n");
+            return;
+        }
         strcpy(myCmdData->name, name); // copy the string
     }
 
@@ -120,6 +126,10 @@ void cmdDemoFunc(World* inWorld, void* inUserData, struct sc_msg_iter* args, voi
         // allocate space for completion message
         // scsynth will delete the completion message for you.
         msgData = (char*)RTAlloc(inWorld, msgSize);
+        if (!msgData) {
+            Print("cmdDemoFunc: memory allocation failed!\n");
+            return;
+        }
         args->getb(msgData, msgSize); // copy completion message.
     }
 

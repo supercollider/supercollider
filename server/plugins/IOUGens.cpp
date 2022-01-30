@@ -310,6 +310,7 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
 void AudioControl_Ctor(AudioControl* unit) {
     unit->prevVal = (float*)RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
     unit->m_prevBus = NULL;
+    ClearUnitIfMemFailed(unit->prevVal);
     for (int i = 0; i < unit->mNumOutputs; i++) {
         unit->prevVal[i] = 0.0;
     }
@@ -402,6 +403,7 @@ void LagControl_Ctor(LagControl* unit) {
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
 
     char* chunk = (char*)RTAlloc(unit->mWorld, numChannels * 2 * sizeof(float));
+    ClearUnitIfMemFailed(chunk);
     unit->m_y1 = (float*)chunk;
     unit->m_b1 = unit->m_y1 + numChannels;
 
@@ -1327,6 +1329,7 @@ void OffsetOut_Ctor(OffsetOut* unit) {
     int numChannels = unit->mNumInputs - 1;
 
     unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_saved);
     unit->m_empty = true;
     // Print("<-Out_Ctor\n");
 }
@@ -1542,6 +1545,7 @@ void LocalIn_Ctor(LocalIn* unit) {
     // align the buffer to 256 bytes so that we can use avx instructions
     unit->m_realData =
         (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32) + 32 * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_realData);
     size_t alignment = (size_t)unit->m_realData & 31;
 
     unit->m_bus = alignment ? (float*)(size_t(unit->m_realData + 32) & ~31) : unit->m_realData;
