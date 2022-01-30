@@ -567,7 +567,7 @@ if(APPLE OR WIN32)
                         -o -name \\\"sclang\\\" \
                         -o -name \\\"scsynth\\\" \
                         -o -name \\\"supernova\\\" \
-                        -o -name \\\"DiskIO_UGens*\\\" \
+                        -o -name \\\"*.scx\\\" \
                         -maxdepth 1 \
                     \\\\) \
                     -exec codesign --force --sign - {} \\\;\"
