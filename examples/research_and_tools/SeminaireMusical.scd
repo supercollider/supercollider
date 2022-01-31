@@ -45,7 +45,10 @@ chords = IdentityDictionary[
 	'sus9' -> #[0, 1, 4],
 	'7 sus4' -> #[0, 3, 4, 6b],
 	'7 sus9' -> #[0, 1, 4, 6b],
-	'fifth' -> #[0, 4]
+	'fifth intv' -> #[0, 4],
+	'min9 intv' -> #[0, 13],
+	'aug9 intv' -> #[0, 15]
+
 ];
 chordKeys = chords.keys.asArray;
 
