@@ -464,6 +464,10 @@ static void sc_rl_signalhandler(int sig) {
     // ensure ctrl-C clears line rather than quitting (ctrl-D will quit nicely)
     rl_replace_line("", 0);
     sc_rl_cleanlf();
+#    ifdef _WIN32
+    // need to re-instate the handler on windows
+    signal(SIGINT, &sc_rl_signalhandler);
+#    endif
 }
 
 static int sc_rl_mainstop(int i1, int i2) {
@@ -518,16 +522,17 @@ void SC_TerminalClient::readlineInit() {
     rl_bind_key(CTRL('x'), &readlineRecompile);
     rl_callback_handler_install("sc3> ", &readlineCmdLine);
 
-    // FIXME: Implement the code below on Windows
-#    ifndef _WIN32
     // Set our handler for SIGINT that will clear the line instead of terminating.
     // NOTE: We prevent readline from setting its own signal handlers,
     // to not override ours.
     rl_catch_signals = 0;
+#    ifndef _WIN32
     struct sigaction sact;
     memset(&sact, 0, sizeof(struct sigaction));
     sact.sa_handler = &sc_rl_signalhandler;
     sigaction(SIGINT, &sact, nullptr);
+#    else
+    signal(SIGINT, &sc_rl_signalhandler);
 #    endif
 }
 
