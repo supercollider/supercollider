@@ -473,13 +473,14 @@ SynthDef("sm_bell", { arg freq=440, amp=0.5;
 
 (
 SynthDef("sm_string", { arg freq=440, amp=0.5;
-	var u, exc, sustain, detuneStrings;
+	var u, exc, sustain, detuneStrings, attackPeriod;
 	amp = AmpComp.kr(freq) * amp * 2;
-	exc = LFNoise2.ar(3000, Decay2.ar(Impulse.ar(0.0001, 0, 0.5), 0.006, 0.02));
+	attackPeriod = freq.linlin(440, 15000, 0.006, 0.00001);
+	exc = LFDNoise3.ar(min(freq*6, 20000), Decay2.ar(Impulse.ar(0, 0, 0.5), attackPeriod, attackPeriod * 3));
 	sustain = ExpRand(1.3, 2.1);
 	detuneStrings = [0, Rand(-0.1, 0.1)];
 	u = LPF.ar(
-		CombN.ar(exc, 0.04, (freq + detuneStrings).reciprocal, sustain).sum,
+		CombC.ar(exc, 0.04, (freq + detuneStrings).reciprocal, sustain).sum,
 		min(20000, freq * Rand(1.3, 3))
 	);
 
@@ -488,7 +489,6 @@ SynthDef("sm_string", { arg freq=440, amp=0.5;
 	Out.ar(0,
 		Pan2.ar(u * amp, freq.cpsmidi % 12 / 6 - 1)
 	);
-
 }).add;
 );
 
