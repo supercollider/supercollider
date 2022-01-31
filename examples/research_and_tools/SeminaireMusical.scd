@@ -336,14 +336,14 @@ f_play = { |i|
 				}
 			},
 			4, { // rates
-				Synth("sm_click", [\freq, freq0, \rate, rates[i], \amp, amp])
+				Synth("sm_click", [\freq, freqs[i], \rate, rates[i], \amp, amp])
 			},
 			5, { // beatings
 				if(spiel == "sm_string") {
 					Synth("sm_string", [\freq, freq0,  \amp, amp]);
 					Synth("sm_string", [\freq, freq0 + rates[i], \amp, amp])
 				} {
-					Synth("sm_beatings", [\freq, freq0, \rate, rates[i], \amp, amp])
+					Synth("sm_beatings", [\freq, freqs[i], \rate, rates[i], \amp, amp])
 				}
 			},
 			6, { // akkorde
