@@ -232,7 +232,8 @@ f_neu = {
 					freq0 = freqs[0];
 					nameList = eurNotes;
 				}
-			)
+			);
+			v_klang.enabled = true;
 		},
 
 		// frequencies
@@ -240,6 +241,7 @@ f_neu = {
 			nameList = { exprand(minFreq, 15000).round(1) } ! 13;
 			freqs = nameList;
 			freq0 = 440;
+			v_klang.enabled = true;
 		},
 		// notes + octaves
 		2, {
@@ -262,6 +264,7 @@ f_neu = {
 				freq0 = freqs[0];
 				freqs = freqs * ({ octaves.choose } ! 12);
 			};
+			v_klang.enabled = true;
 		},
 		// intervals
 		3, {
@@ -288,6 +291,7 @@ f_neu = {
 				#["16/15", "9/8", "6/5", "5/4", "4/3", "17/12", "3/2", "8/5", "5/3", "7/4",
 					"16/9", "15/8", "2/1"];
 			};
+			v_klang.enabled = true;
 		},
 		// times
 		4, {
@@ -296,6 +300,8 @@ f_neu = {
 			freqs = rrand(1600, 8000)  ! 13;
 			rates = { exprand(0.9, 19) } ! 13;
 			nameList = rates.round(0.01);
+
+			v_klang.enabled = false;
 
 		},
 		// beatings
@@ -306,6 +312,8 @@ f_neu = {
 			rates = { exprand(0.9, 40) } ! 13;
 			nameList = rates.round(0.01);
 
+			v_klang.enabled = false;
+
 		},
 		// chords
 		6, {
@@ -313,7 +321,7 @@ f_neu = {
 			freq0 = (note0 + 60).midicps;
 			freqs = freq0 ! 13;
 			nameList = chordKeys[ (0..chordKeys.size-1).scramble.keep(13)].sort;
-
+			v_klang.enabled = true;
 		}
 	);
 	numChoices = freqs.size;
