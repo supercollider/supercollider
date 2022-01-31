@@ -1207,10 +1207,21 @@ Another way of storing CMake command line arguments is creating a "toolchain"
 file. This is the CMake suggested method. Please look up the CMake documentation
 if you require an advanced configuration, and are interested in this approach.
 
+### Readline support
+
+Previously Windows builds of SuperCollider did not support command line mode for sclang due to unavailability of the `readline` library. Currently it is possible to install `readline` using [vcpkg](https://github.com/microsoft/vcpkg). Here are steps to build SC with `readline` library (the following commands assume using MSVC):
+- install `vcpkg`, if not installed already
+- install the library using `vcpkg`:  
+`vcpkg install readline --triplet=x64-windows`
+- include `vcpkg` path in `CMAKE_PREFIX_PATH` (in addition to the Qt path defined already):  
+`SET CMAKE_PREFIX_PATH=<qt_path>;<vcpkg_root>\installed\x64-windows`
+
+Note: 
+- For 32-bit builds use `x86-windows` instead of `x64-windows` triplet, both when installing `readline` as well as specifying `CMAKE_PREFIX_PATH`
+- At the time of writing this, `readline` would not build using a triplet for MinGW
+
 Known issues
 ============
-
-- READLINE/Command line-mode for sclang is not available.
 
 - using shell commands from SC only works in a quite limited way (and always did).
   .unixCmd expects a unix shell, only for essential requirements workarounds
