@@ -473,14 +473,15 @@ SynthDef("sm_bell", { arg freq=440, amp=0.5;
 
 (
 SynthDef("sm_string", { arg freq=440, amp=0.5;
-	var u, exc, sustain;
-	amp = AmpComp.kr(freq) * amp;
+	var u, exc, sustain, detuneStrings;
+	amp = AmpComp.kr(freq) * amp * 2;
 	exc = LFNoise2.ar(3000, Decay2.ar(Impulse.ar(0.0001, 0, 0.5), 0.006, 0.02));
-	sustain = Rand(1, 1.5);
+	sustain = ExpRand(1.3, 2.1);
+	detuneStrings = [0, Rand(-0.1, 0.1)];
 	u = LPF.ar(
-		CombN.ar(exc, 0.04, (freq * (1+[0, 0.001])).reciprocal, sustain).sum,
-		min(20000, freq * Rand(3, 2.3) ! 2)
-	).sum;
+		CombN.ar(exc, 0.04, (freq + detuneStrings).reciprocal, sustain).sum,
+		min(20000, freq * Rand(1.3, 3))
+	);
 
 	//DetectSilence.ar(u, doneAction:2);
 	amp = amp * EnvGen.kr(Env.linen(0, sustain, 0.1), doneAction:2);
