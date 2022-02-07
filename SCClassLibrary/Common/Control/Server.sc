@@ -389,7 +389,8 @@ Server {
 	}
 
 	*remote { |name, addr, options, clientID|
-		^this.new(name, addr, options, clientID).connectToServerAddr({ this.startAliveThread })
+		var remoteServer = this.new(name, addr, options, clientID);
+		^remoteServer.connectToServerAddr({ remoteServer.startAliveThread })
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
