@@ -297,6 +297,7 @@ TestNodeProxyBusMapping : UnitTest {
 
 	setUp {
 		server = Server(this.class.name);
+		server.latency = 0.1;
 		this.bootServer(server);
 		server.sync;
 	}
@@ -307,7 +308,7 @@ TestNodeProxyBusMapping : UnitTest {
 	}
 
 	test_audiorate_mapping {
-		var proxy, controlProxy;
+		var proxy, inputProxy;
 		var synthValues, controlValues, defaultValues;
 
 		defaultValues = [-1.0, -2.0];
@@ -322,8 +323,8 @@ TestNodeProxyBusMapping : UnitTest {
 			A2K.kr(in);
 		};
 
-		controlProxy = NodeProxy(server, \control);
-		controlProxy.source = {
+		inputProxy = NodeProxy(server, \audio);
+		inputProxy.source = {
 			DC.ar(controlValues)
 		};
 
@@ -335,9 +336,9 @@ TestNodeProxyBusMapping : UnitTest {
 
 		this.assertEquals(synthValues, defaultValues, "before mapping, synth values should be default values");
 
-		proxy <<>.in controlProxy;
+		proxy <<>.in inputProxy;
 
-		0.3.wait;
+		0.2.wait;
 
 		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
 
@@ -347,7 +348,7 @@ TestNodeProxyBusMapping : UnitTest {
 	}
 
 	test_audiorate_mapping_elasticity {
-		var proxy, controlProxy;
+		var proxy, inputProxy;
 		var synthValues, controlValues, defaultValues;
 
 		defaultValues = [-1.0, -2.0, -3.0];
@@ -362,10 +363,10 @@ TestNodeProxyBusMapping : UnitTest {
 			A2K.kr(in);
 		};
 
-		controlProxy = NodeProxy(server, \audio, 2);
-		controlProxy.reshaping = \elastic;
-		controlProxy.fadeTime = 0.001;
-		controlProxy.source = {
+		inputProxy = NodeProxy(server, \audio, 2);
+		inputProxy.reshaping = \elastic;
+		inputProxy.fadeTime = 0.001;
+		inputProxy.source = {
 			DC.ar(controlValues)
 		};
 
@@ -378,7 +379,7 @@ TestNodeProxyBusMapping : UnitTest {
 
 		this.assertEquals(synthValues.round, defaultValues.round, "before mapping, synth values should be default values");
 
-		proxy <<>.in controlProxy;
+		proxy <<>.in inputProxy;
 
 		0.2.wait;
 
