@@ -113,12 +113,6 @@
             "skipReason":"UnitTest fails when run in qpm on Linux (FIXME)"
         },
         {
-            "suite":"TestPanAz",
-            "test":"*",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
             "suite":"TestProxyNodeMap",
             "test":"test_nodeMap_controlNamesConvertsObjectToControlInput",
             "skip":true,
