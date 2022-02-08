@@ -77,18 +77,6 @@
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
-            "suite":"TestNodeProxyBusMapping",
-            "test":"test_audiorate_mapping",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
-            "suite":"TestNodeProxyBusMapping",
-            "test":"test_audiorate_mapping_elasticity",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
             "suite":"TestNodeProxyRoles",
             "test":"test_proxyroles_xfade_smoothly",
             "skip":true,
