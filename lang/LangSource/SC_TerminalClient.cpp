@@ -600,13 +600,16 @@ void SC_TerminalClient::inputThreadFn() {
 #endif
 
 #ifdef _WIN32
-    // make sure there's nothing on stdin before we launch the service
-    // this fixes #4214
-    DWORD bytesRead = 0;
-    auto success = ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytesRead, NULL);
+    if (!mUseReadline) {
+        // make sure there's nothing on stdin before we launch the service
+        // this fixes #4214
+        DWORD bytesRead = 0;
+        auto success =
+            ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytesRead, NULL);
 
-    if (success) {
-        pushCmdLine(inputBuffer.data(), bytesRead);
+        if (success) {
+            pushCmdLine(inputBuffer.data(), bytesRead);
+        }
     }
 #endif
 
