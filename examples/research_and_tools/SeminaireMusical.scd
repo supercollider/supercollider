@@ -307,12 +307,11 @@ f_neu = {
 		// beatings
 		5, {
 			referenceToneIsPlaying = false;
-			freq0 = nil; // no base tone
-			freqs = ((0..11).choose + 60).midicps * octaves.choose ! 13;
+			freq0 = ((0..12).choose + 60).midicps * octaves.choose;
 			rates = { exprand(0.9, 40) } ! 13;
 			nameList = rates.round(0.01);
 
-			v_klang.enabled = false;
+			v_klang.enabled = true;
 
 		},
 		// chords
@@ -347,12 +346,8 @@ f_play = { |i|
 				Synth("sm_click", [\freq, freqs[i], \rate, rates[i], \amp, amp])
 			},
 			5, { // beatings
-				if(spiel == "sm_string") {
-					Synth("sm_string", [\freq, freq0,  \amp, amp]);
-					Synth("sm_string", [\freq, freq0 + rates[i], \amp, amp])
-				} {
-					Synth("sm_beatings", [\freq, freqs[i], \rate, rates[i], \amp, amp])
-				}
+					Synth(spiel, [\freq, freq0,  \amp, amp]);
+					Synth(spiel, [\freq, freq0 + rates[i], \amp, amp])
 			},
 			6, { // akkorde
 				fork {
