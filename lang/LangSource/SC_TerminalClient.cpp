@@ -550,12 +550,14 @@ void SC_TerminalClient::startInputRead() {
         if (error)
             onInputRead(error, 0);
         else {
-            DWORD bytes_transferred;
-
-            ::ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytes_transferred,
-                       nullptr);
-
-            onInputRead(error, bytes_transferred);
+            if (!mUseReadline || WaitForSingleObject(GetStdHandle(STD_INPUT_HANDLE), 0)) {
+                DWORD bytes_transferred;
+                ::ReadFile(GetStdHandle(STD_INPUT_HANDLE), inputBuffer.data(), inputBuffer.size(), &bytes_transferred,
+                           nullptr);
+                onInputRead(error, bytes_transferred);
+            } else {
+                onInputRead(error, 0);
+            }
         }
     });
 #endif
