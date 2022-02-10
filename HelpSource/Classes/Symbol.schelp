@@ -68,6 +68,15 @@ code::
 '_SymbolIsClassName'.isPrimitiveName;
 ::
 
+method::isPrefix
+
+Answer whether the symbol is a prefix of another one
+
+code::
+'a'.isPrefix('all'); // true
+'z'.isPrefix('all');  // false
+::
+
 method::isIdentifier
 
 Return true if the symbol is a valid variable name, or equivalently a valid method name in the two
