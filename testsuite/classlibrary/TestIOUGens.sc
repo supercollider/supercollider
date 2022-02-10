@@ -37,17 +37,17 @@ TestIOUGens : UnitTest {
 
         var writer = {
             Out.ar(bus.index, SinOsc.ar(1));
-            Silence.ar;
+            Silent.ar;
         };
 
         var in = {
             Out.ar(sumBus.index, In.ar(bus.index));
-            Silence.ar;
+            Silent.ar;
         };
 
         var audioControl = {
             Out.ar(sumBus.index, -1 * (\in.ar)); //Invert to perform difference at sumBus
-            Silence.ar;
+            Silent.ar;
         };
 
         var sum = {
@@ -94,18 +94,18 @@ TestIOUGens : UnitTest {
 
         var writer = {
             Out.ar(bus.index, SinOsc.ar(1));
-            Silence.ar;
+            Silent.ar;
         };
 
         var delayedIn = {
             var blockSizeMs = BlockSize.ir / SampleRate.ir;
             Out.ar(sumBus.index, DelayN.ar(In.ar(bus.index), blockSizeMs, blockSizeMs));
-            Silence.ar;
+            Silent.ar;
         };
 
         var audioControl = {
             Out.ar(sumBus.index, -1 * (\in.ar)); //Invert to perform difference at sumBus
-            Silence.ar;
+            Silent.ar;
         };
 
         var sum = {
