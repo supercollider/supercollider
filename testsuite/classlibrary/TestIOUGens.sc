@@ -22,7 +22,7 @@ TestIOUGens : UnitTest {
             var inFeedback = InFeedback.ar(bus.index);
             inFeedback - in;
         }.loadToFloatArray(0.5, server, { | data |
-            this.assertFloatEquals(data.sum, 0.0, "InFeedback is not equal to In", report:true);
+            this.assertFloatEquals(data.sum, 0.0, "InFeedback should be equal to In when no other signal has been written to its bus", report:true);
             condition.unhang;
         });
 
@@ -30,7 +30,7 @@ TestIOUGens : UnitTest {
     }
 
     //Test that AudioControl is equal to In when write / read are in the right order
-    test_AudioControl_equals_In {
+    test_AudioControl_equals_In_for_read_after_write {
         var condition = Condition();
         var bus = Bus.audio(server);
         var sumBus = Bus.audio(server);
@@ -56,7 +56,7 @@ TestIOUGens : UnitTest {
 
         server.bind({
             sum.loadToFloatArray(0.5, server, { | data |
-                this.assertFloatEquals(data.sum, 0.0, "AudioControl is not equal to In", report:true);
+                this.assertFloatEquals(data.sum, 0.0, "AudioControl should be equal to In for read after write", report:true);
                 condition.unhang;
             });
 			in.play(server);
@@ -68,7 +68,7 @@ TestIOUGens : UnitTest {
     }
 
     //Test that InFeedback is equal to In + a delay of BlockSize when write/read are one cycle apart
-    test_InFeedback_equals_delayed_In {
+    test_InFeedback_equals_In_for_write_after_read {
         var condition = Condition();
         var bus = Bus.audio(server);
 
@@ -79,7 +79,7 @@ TestIOUGens : UnitTest {
             var delayedIn = DelayN.ar(In.ar(bus.index), blockSizeMs, blockSizeMs);
             inFeedback - delayedIn;
         }.loadToFloatArray(0.5, server, { | data |
-            this.assertFloatEquals(data.sum, 0.0, "InFeedback is not equal to delayed In", report:true);
+            this.assertFloatEquals(data.sum, 0.0, "InFeedback should be equal to In + a delay of BlockSize when write/read are one cycle apart", report:true);
             condition.unhang;
         });
 
@@ -87,7 +87,7 @@ TestIOUGens : UnitTest {
     }
 
     //Test that AudioControl is equal to In + a delay of BlockSize when write/read are one cycle apart
-    test_AudioControl_equals_delayed_In {
+    test_AudioControl_equals_In_for_write_after_read {
         var condition = Condition();
         var bus = Bus.audio(server);
         var sumBus = Bus.audio(server);
@@ -114,7 +114,7 @@ TestIOUGens : UnitTest {
 
         server.bind({
             sum.loadToFloatArray(0.5, server, { | data |
-                this.assertFloatEquals(data.sum, 0.0, "AudioControl is not equal to delayed In", report:true);
+                this.assertFloatEquals(data.sum, 0.0, "AudioControl should be equal to In + a delay of BlockSize when write/read are one cycle apart", report:true);
                 condition.unhang;
             });
 			delayedIn.play(server);
