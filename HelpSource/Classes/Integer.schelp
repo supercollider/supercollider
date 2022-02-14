@@ -214,6 +214,30 @@ code::
 ::
 
 
+subsection:: Signal Processing
+
+method:: clip
+Return this if lo <= this <= hi, otherwise return the nearest boundary: lo if this < lo, hi if this > hi.
+argument:: lo
+The low threshold of clipping.
+argument:: hi
+The high threshold of clipping.
+
+method:: fold
+Fold this to [lo, hi].
+argument:: lo
+The low threshold of folding.
+argument:: hi
+The high threshold of folding.
+
+method:: wrap
+Wrap this around [lo, hi) such that it falls in range. Equivalent to (this % (hi - lo)) + lo.
+argument:: lo
+The low threshold (inclusive) of wrapping.
+argument:: hi
+The high threshold (exclusive) of wrapping.
+
+
 subsection:: Misc
 
 method:: pidRunning
