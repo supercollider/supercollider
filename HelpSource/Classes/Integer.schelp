@@ -214,6 +214,13 @@ code::
 ::
 
 
+subsection:: Signal Processing
+
+copymethod:: Float -clip
+copymethod:: Float -fold
+copymethod:: Float -wrap
+
+
 subsection:: Misc
 
 method:: pidRunning
