@@ -214,12 +214,18 @@ code::
 ::
 
 
-subsection:: Signal Processing
+subsection:: Range Limiting
 
 copymethod:: Float -clip
 copymethod:: Float -fold
-copymethod:: Float -wrap
 
+method:: wrap
+
+Wrap this around [lo, hi] such that it falls in range. Equivalent to (this % (hi - lo + 1)) + lo. Note that this behavior is different from link::Classes/Float#-wrap::.
+argument:: lo
+The low threshold (inclusive) of wrapping.
+argument:: hi
+The high threshold (inclusive) of wrapping.
 
 subsection:: Misc
 
