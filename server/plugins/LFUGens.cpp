@@ -2323,7 +2323,7 @@ void LinLin_next(LinLin* unit, int inNumSamples) {
     float dstlo = unit->m_dstlo;
     float dsthi = unit->m_dsthi;
 
-    LOOP1(inNumSamples, ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo);
+    LOOP1(inNumSamples, ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo;);
 }
 
 #ifdef NOVA_SIMD
@@ -2376,7 +2376,7 @@ void LinLin_next_kk(LinLin* unit, int inNumSamples) {
     float dstlo = ZIN0(3);
     float dsthi = ZIN0(4);
 
-    LOOP1(inNumSamples, ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo);
+    LOOP1(inNumSamples, ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo;);
 }
 
 void LinLin_next_aa(LinLin* unit, int inNumSamples) {
@@ -2389,7 +2389,7 @@ void LinLin_next_aa(LinLin* unit, int inNumSamples) {
 
     LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo); float zsrchi = ZXP(srchi);
           float zsrclo = ZXP(srclo);
-          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (zdsthi - zdstlo) + zsrclo);
+          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (zdsthi - zdstlo) + zsrclo;);
 }
 
 void LinLin_next_ak(LinLin* unit, int inNumSamples) {
@@ -2401,7 +2401,7 @@ void LinLin_next_ak(LinLin* unit, int inNumSamples) {
     float dsthi = ZIN0(4);
 
     LOOP1(inNumSamples, float zsrchi = ZXP(srchi); float zsrclo = ZXP(srclo);
-          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (dsthi - dstlo) + zsrclo);
+          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (dsthi - dstlo) + zsrclo;);
 }
 
 void LinLin_next_ka(LinLin* unit, int inNumSamples) {
@@ -2413,7 +2413,7 @@ void LinLin_next_ka(LinLin* unit, int inNumSamples) {
     float* dsthi = ZIN(4);
 
     LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo);
-          ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (zdsthi - zdstlo) + srclo);
+          ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (zdsthi - zdstlo) + srclo;);
 }
 
 
