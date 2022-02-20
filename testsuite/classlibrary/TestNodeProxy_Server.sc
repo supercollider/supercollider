@@ -69,8 +69,8 @@ TestNodeProxy_Server : UnitTest {
 		proxy.source = nil;
 
 		// ... and also afterwards, we force an update
-		server.sendStatusMsg;
 		server.sync;
+		server.sendStatusMsg;
 		numAfter = server.statusWatcher.numSynthDefs;
 
 		this.assertEquals(numBefore, numAfter,

@@ -1,7 +1,7 @@
 class:: IndexInBetween
 summary:: Finds the (lowest) point in the Buffer at which the input signal lies in-between the two values
 categories:: UGens>Buffer
-related:: Classes/Index, Classes/IndexL, Classes/SequenceableCollection#indexInBetween
+related:: Classes/Index, Classes/IndexL, Classes/SequenceableCollection#-indexInBetween
 
 description::
 Finds the (lowest) point in the link::Classes/Buffer:: at which the input signal lies in-between the two values, and returns the index. The fractional part of the index is suitable for linearly interpolating between the buffer slot values.
