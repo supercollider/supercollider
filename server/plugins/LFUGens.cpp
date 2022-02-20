@@ -102,6 +102,10 @@ struct LinExp : public Unit {
     float m_dstratio, m_rsrcrange, m_rrminuslo, m_dstlo;
 };
 
+struct LinLin : public Unit {
+    float m_srclo, m_srchi, m_dstlo, m_dsthi;
+};
+
 struct Clip : public Unit {
     float m_lo, m_hi;
 };
@@ -272,6 +276,12 @@ void LinExp_next_kk(LinExp* unit, int inNumSamples);
 void LinExp_next_ak(LinExp* unit, int inNumSamples);
 void LinExp_next_ka(LinExp* unit, int inNumSamples);
 void LinExp_Ctor(LinExp* unit);
+
+void LinLin_next(LinLin* unit, int inNumSamples);
+void LinLin_next_kk(LinLin* unit, int inNumSamples);
+void LinLin_next_ak(LinLin* unit, int inNumSamples);
+void LinLin_next_ka(LinLin* unit, int inNumSamples);
+void LinLin_Ctor(LinLin* unit);
 
 void EnvGen_next_k(EnvGen* unit, int inNumSamples);
 void EnvGen_next_aa(EnvGen* unit, int inNumSamples);
@@ -2301,6 +2311,169 @@ void LinExp_Ctor(LinExp* unit) {
     unit->m_rsrcrange = 1. / (srchi - srclo);
     unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
     LinExp_next(unit, 1);
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void LinLin_next(LinLin* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* in = ZIN(0);
+    float srclo = unit->m_srclo;
+    float srchi = unit->m_srchi;
+    float dstlo = unit->m_dstlo;
+    float dsthi = unit->m_dsthi;
+
+    LOOP1(inNumSamples, ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo);
+}
+
+#ifdef NOVA_SIMD
+static inline void LinLin_next_nova_loop(float* out, const float* in, int inNumSamples, nova::vec<float> dstlo) {
+    const int vecSize = nova::vec<float>::size;
+    int unroll = inNumSamples / (2 * vecSize);
+
+    do {
+        nova::vec<float> val0, val1;
+        val0.load_aligned(in);
+        val1.load_aligned(in + vecSize);
+
+        val0 = (val0 - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo;
+        val1 = (val1 - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo;
+
+        val0.store_aligned(out);
+        val1.store_aligned(out + vecSize);
+
+        in += 2 * vecSize;
+        out += 2 * vecSize;
+    } while (--unroll);
+}
+
+FLATTEN static void LinLin_next_nova(LinLin* unit, int inNumSamples) {
+    float* out = OUT(0);
+    float* in = IN(0);
+
+    LinLin_next_nova_loop(out, in, inNumSamples, unit->m_dstlo);
+}
+
+FLATTEN static void LinLin_next_nova_kk(LinLin* unit, int inNumSamples) {
+    float* out = OUT(0);
+    float* in = IN(0);
+
+    float srclo = ZIN0(1);
+    float srchi = ZIN0(2);
+    float dstlo = ZIN0(3);
+    float dsthi = ZIN0(4);
+
+    LinLin_next_nova_loop(out, in, inNumSamples, dstlo);
+}
+
+#endif
+
+void LinLin_next_kk(LinLin* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* in = ZIN(0);
+    float srclo = ZIN0(1);
+    float srchi = ZIN0(2);
+    float dstlo = ZIN0(3);
+    float dsthi = ZIN0(4);
+
+    LOOP1(inNumSamples, ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (dsthi - dstlo) + srclo);
+}
+
+void LinLin_next_aa(LinLin* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* in = ZIN(0);
+    float* srclo = ZIN(1);
+    float* srchi = ZIN(2);
+    float* dstlo = ZIN(3);
+    float* dsthi = ZIN(4);
+
+    LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo); float zsrchi = ZXP(srchi);
+          float zsrclo = ZXP(srclo);
+          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (zdsthi - zdstlo) + zsrclo);
+}
+
+void LinLin_next_ak(LinLin* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* in = ZIN(0);
+    float* srclo = ZIN(1);
+    float* srchi = ZIN(2);
+    float dstlo = ZIN0(3);
+    float dsthi = ZIN0(4);
+
+    LOOP1(inNumSamples, float zsrchi = ZXP(srchi); float zsrclo = ZXP(srclo);
+          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (dsthi - dstlo) + zsrclo);
+}
+
+void LinLin_next_ka(LinLin* unit, int inNumSamples) {
+    float* out = ZOUT(0);
+    float* in = ZIN(0);
+    float srclo = ZIN0(1);
+    float srchi = ZIN0(2);
+    float* dstlo = ZIN(3);
+    float* dsthi = ZIN(4);
+
+    LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo);
+          ZXP(out) = (ZXP(in) - srclo) / (srchi - srclo) * (zdsthi - zdstlo) + srclo);
+}
+
+
+static void LinLin_SetCalc(LinLin* unit) {
+    if (INRATE(1) == calc_FullRate || INRATE(2) == calc_FullRate) {
+        if (INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+            SETCALC(LinLin_next_aa);
+            return;
+        } else {
+            SETCALC(LinLin_next_ak);
+            return;
+        }
+    } else {
+        if (INRATE(3) == calc_FullRate || INRATE(4) == calc_FullRate) {
+            SETCALC(LinLin_next_ka);
+            return;
+        }
+    }
+
+    bool allScalar = true;
+    for (int i = 1; i < 5; i++) {
+        if (INRATE(i) != calc_ScalarRate) {
+            allScalar = false;
+            break;
+        }
+    };
+
+#ifdef NOVA_SIMD
+    if ((BUFLENGTH % (2 * nova::vec<float>::size)) == 0)
+        if (allScalar)
+            SETCALC(LinLin_next_nova);
+        else
+            SETCALC(LinLin_next_nova_kk);
+    else
+#endif
+        if (allScalar)
+        SETCALC(LinLin_next);
+    else
+        SETCALC(LinLin_next_kk);
+
+    if (!allScalar)
+        return;
+
+    float srclo = ZIN0(1);
+    float srchi = ZIN0(2);
+    float dstlo = ZIN0(3);
+    float dsthi = ZIN0(4);
+}
+
+void LinLin_Ctor(LinLin* unit) {
+    LinLin_SetCalc(unit);
+    float srclo = ZIN0(1);
+    float srchi = ZIN0(2);
+    float dstlo = ZIN0(3);
+    float dsthi = ZIN0(4);
+    unit->m_srclo = srclo;
+    unit->m_srchi = srchi;
+    unit->m_dstlo = dstlo;
+    unit->m_dsthi = dsthi;
+    LinLin_next(unit, 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

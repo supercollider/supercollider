@@ -26,18 +26,13 @@ LinExp : PureUGen {
 	}
 }
 
-LinLin {
+LinLin : PureUGen {
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	*ar { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
-		var scale  = (dsthi - dstlo) / (srchi - srclo);
-		var offset = dstlo - (scale * srclo);
-
-		^MulAdd(in, scale, offset)
+		^this.multiNew('audio', in, srclo, srchi, dstlo, dsthi)
 	}
 	*kr { arg in=0.0, srclo = 0.0, srchi = 1.0, dstlo = 1.0, dsthi = 2.0;
-		var scale  = (dsthi - dstlo) / (srchi - srclo);
-		var offset = dstlo - (scale * srclo);
-
-		^(in * scale + offset)
+		^this.multiNew('control',  in, srclo, srchi, dstlo, dsthi)
 	}
 }
 
