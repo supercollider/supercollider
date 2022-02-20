@@ -2327,7 +2327,8 @@ void LinLin_next(LinLin* unit, int inNumSamples) {
 }
 
 #ifdef NOVA_SIMD
-static inline void LinLin_next_nova_loop(float* out, const float* in, int inNumSamples, nova::vec<float> dstlo) {
+static inline void LinLin_next_nova_loop(float* out, const float* in, int inNumSamples, nova::vec<float> srchi,
+    nova::vec<float> srclo, nova::vec<float> dsthi, nova::vec<float> dstlo) {
     const int vecSize = nova::vec<float>::size;
     int unroll = inNumSamples / (2 * vecSize);
 
@@ -2351,7 +2352,7 @@ FLATTEN static void LinLin_next_nova(LinLin* unit, int inNumSamples) {
     float* out = OUT(0);
     float* in = IN(0);
 
-    LinLin_next_nova_loop(out, in, inNumSamples, unit->m_dstlo);
+    LinLin_next_nova_loop(out, in, inNumSamples, unit->m_srchi, unit->m_srclo, unit->m_dsthi, unit->m_dstlo);
 }
 
 FLATTEN static void LinLin_next_nova_kk(LinLin* unit, int inNumSamples) {
