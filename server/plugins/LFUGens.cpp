@@ -2328,7 +2328,7 @@ void LinLin_next(LinLin* unit, int inNumSamples) {
 
 #ifdef NOVA_SIMD
 static inline void LinLin_next_nova_loop(float* out, const float* in, int inNumSamples, nova::vec<float> srchi,
-    nova::vec<float> srclo, nova::vec<float> dsthi, nova::vec<float> dstlo) {
+                                         nova::vec<float> srclo, nova::vec<float> dsthi, nova::vec<float> dstlo) {
     const int vecSize = nova::vec<float>::size;
     int unroll = inNumSamples / (2 * vecSize);
 
@@ -2389,8 +2389,7 @@ void LinLin_next_aa(LinLin* unit, int inNumSamples) {
     float* dsthi = ZIN(4);
 
     LOOP1(inNumSamples, float zdsthi = ZXP(dsthi); float zdstlo = ZXP(dstlo); float zsrchi = ZXP(srchi);
-          float zsrclo = ZXP(srclo);
-          ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (zdsthi - zdstlo) + zsrclo;);
+          float zsrclo = ZXP(srclo); ZXP(out) = (ZXP(in) - zsrclo) / (zsrchi - zsrclo) * (zdsthi - zdstlo) + zsrclo;);
 }
 
 void LinLin_next_ak(LinLin* unit, int inNumSamples) {
