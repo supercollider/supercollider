@@ -46,7 +46,7 @@ SynthDef {
 			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
 			this.finishBuild;
 			func = ugenGraphFunc;
-			this.class.changed(\synthDefBuilt, this);
+			this.class.changed(\synthDefReady, this);
 		} {
 			UGen.buildSynthDef = nil;
 		}
