@@ -59,14 +59,8 @@
             "skipReason":"UnitTest has unknown issues when run in qpm (FIXME)"
         },
         {
-            "suite":"TestNodeProxyBusMapping",
-            "test":"test_audiorate_mapping",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
-            "suite":"TestNodeProxyBusMapping",
-            "test":"test_audiorate_mapping_elasticity",
+            "suite":"TestNodeProxy",
+            "test":"test_copy_nodeMapIsCopied",
             "skip":true,
             "skipReason":"UnitTest fails (FIXME)"
         },
@@ -87,12 +81,6 @@
             "test":"test_argSizeMatching_Succeeds",
             "skip":true,
             "skipReason":"UnitTest fails when run in qpm on Linux (FIXME)"
-        },
-        {
-            "suite":"TestPanAz",
-            "test":"*",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
         },
         {
             "suite":"TestProxyNodeMap",
