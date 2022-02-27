@@ -1,5 +1,17 @@
 name: CI
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'HelpSource/**'
+      - 'sounds/**'
+      - '*.md'
 jobs:
   lint:
     runs-on: ubuntu-18.04
@@ -37,15 +49,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'xenial gcc5'
-            os-version: '16.04'
-            c-compiler: 'gcc-5'
-            cxx-compiler: 'g++-5'
-            use-syslibs: false
-            shared-libscsynth: false
-            qt-version: '5.9.3' # manually install requested version of qt
-            # artifact-suffix: 'linux-bionic-gcc9' # set if needed - will trigger artifact upload
-
           - job-name: 'bionic gcc7'
             os-version: '18.04'
             c-compiler: 'gcc-7'
@@ -139,13 +142,6 @@ jobs:
           path: ~/.ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-
-      - name: cache qt
-        id: cache-qt
-        uses: actions/cache@v1
-        if: matrix.qt-version
-        with:
-          path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
       - name: install dependencies
         run: |
           sudo apt-get update
@@ -160,15 +156,7 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
-        if: '!matrix.qt-version'
         run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
-      - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v2
-        if: matrix.qt-version
-        with:
-          modules: qtwebengine
-          version: ${{ matrix.qt-version }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
@@ -193,7 +181,6 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
-          retention-days: 7 # quickly remove test artifacts
 
   macOS:
     needs: lint
@@ -206,27 +193,33 @@ jobs:
           - job-name: ''
             os-version: '10.15'
             xcode-version: '11.7'
+            deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
             use-syslibs: false
             shared-libscsynth: false
+            build-libsndfile: true
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
 
           - job-name: 'legacy'
             os-version: '10.15'
             xcode-version: '10.3'
             qt-version: '5.9.9' # will use qt from aqtinstall
+            deployment-target: '10.10'
             use-syslibs: false
             shared-libscsynth: false
+            build-libsndfile: true
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
             os-version: '10.15'
             xcode-version: '11.7'
+            deployment-target: '10.15'
             use-syslibs: true
             shared-libscsynth: false
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
             xcode-version: '11.7'
+            deployment-target: '10.13'
             use-syslibs: false
             shared-libscsynth: true
 
@@ -240,6 +233,8 @@ jobs:
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
+      MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -273,9 +268,54 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install libsndfile portaudio ccache fftw
+          brew install portaudio ccache fftw
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+      - name: build libsndfile # to make it compatible with older OSes (lower deployment target)
+        if: matrix.build-libsndfile == true
+        run: |
+          brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
+          brew install automake
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://gitlab.xiph.org/xiph/ogg/-/archive/v1.3.5/ogg-v1.3.5.tar.bz2 --output ogg.tar.bz2
+          tar xfz ogg.tar.bz2
+          cd ogg*/
+          echo "*** building libogg ***"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/xiph/flac/archive/refs/tags/1.3.3.tar.gz --output flac.tar.xz
+          tar xfz flac.tar.xz
+          cd flac*/
+          echo "*** building flac ***"
+          cd build # build directory already exists
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
+          tar xfz opus.tar.gz
+          cd opus*/
+          echo "*** building opus ***"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz --output libvorbis.tar.gz
+          tar xfz libvorbis.tar.gz
+          cd libvorbis*/
+          echo "building *** libvorbis ***"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
+          cd $GITHUB_WORKSPACE/..
+          curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
+          tar xfz libsndfile.tar.bz2
+          cd libsndfile*/
+          echo "building libsndfile"
+          mkdir build && cd build
+          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
+          cmake --build . --target install
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
@@ -285,14 +325,14 @@ jobs:
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
+        env:
+          DEVELOPER_DIR: '' # remove developer dir which causes installation to fail
         with:
           modules: 'qtwebengine'
           version: ${{ matrix.qt-version }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
 
       - name: configure
-        env:
-          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
@@ -306,7 +346,7 @@ jobs:
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DCMAKE_OSX_DEPLOYMENT_TARGET=10.10 -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
@@ -314,14 +354,19 @@ jobs:
         run: |
           cd $INSTALL_PATH
           ln -s /Applications SuperCollider/Applications
-          hdiutil create -srcfolder SuperCollider -format UDBZ $ARTIFACT_FILE # this assumes that we end up with the build in the folder SuperCollider
+          mkdir -p SuperCollider/.background
+          cp ../../package/background_2_arrow.png SuperCollider/.background/background_2_arrow.png
+          cp ../../package/ds_store SuperCollider/.DS_Store
+          # the following assumes that we end up with the build in the folder SuperCollider
+          # hdiutil sometimes fails with "create failed - Resource busy"
+          # when that happens, we run it again
+          hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE || hdiutil create -srcfolder SuperCollider -format UDZO -fs HFS+ $ARTIFACT_FILE
       - name: upload artifacts
         uses: actions/upload-artifact@v2
         if: matrix.artifact-suffix
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}
-          retention-days: 7 # quickly remove test artifacts
 
   Windows:
     needs: lint
@@ -332,7 +377,7 @@ jobs:
         include:
 
           - job-name: '32-bit'
-            fftw-arch: 'x32'
+            fftw-arch: 'x86'
             cmake-arch: 'Win32'
             os-version: '2019'
             qt-version: '5.15.2'
@@ -383,6 +428,7 @@ jobs:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       LIBS_DOWNLOAD_PATH: ${{ github.workspace }}/../3rd-party
       VCVARS_SCRIPT_PATH: 'C:/Program Files (x86)/Microsoft Visual Studio/${{ matrix.msvc-year }}/Enterprise/VC/Auxiliary/Build/${{ matrix.vcvars-script }}'
+      FFTW_INSTALL_DIR: "C:/Program Files/fftw"
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
       INSTALLER_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.installer-suffix }}'
     steps:
@@ -411,38 +457,26 @@ jobs:
         run: choco install libsndfile ${{ matrix.chocolatey-options }}
       - name: download fftw
         shell: bash
-        env:
-          FFTW_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/fftw
         run: |
-          mkdir -p $FFTW_PATH && cd $FFTW_PATH
+          mkdir -p "$FFTW_INSTALL_DIR" && cd "$FFTW_INSTALL_DIR"
           curl -L ${{ matrix.fftw-url }} -o fftw.zip
           7z x fftw.zip -y
-          # add env var for subsequent steps
-          echo 'FFTW_PATH<<EOF' >> $GITHUB_ENV
-          echo $FFTW_PATH >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
       - name: create fftw msvc library
         if: matrix.vcvars-script
         shell: cmd
-        env:
-          FFTW_ARCH: ${{ matrix.fftw-arch }}
+        working-directory: ${{ env.FFTW_INSTALL_DIR }}
         run: |
           call "%VCVARS_SCRIPT_PATH%"
-          cd "%FFTW_PATH%"
-          lib.exe /machine:%FFTW_ARCH% /def:libfftw3f-3.def
-      - name: move fftw
-        shell: bash
-        run: |
-          mv $FFTW_PATH "C:/Program Files/fftw"
+          lib.exe /machine:${{ matrix.fftw-arch }} /def:libfftw3f-3.def
       - name: install asio sdk
         shell: bash
         env:
           ASIO_PATH: ${{ env.LIBS_DOWNLOAD_PATH }}/asio_sdk
         run: |
           mkdir -p $ASIO_PATH && cd $ASIO_PATH
-          curl -L https://www.steinberg.net/sdk_downloads/asiosdk2.3.zip -o asio.zip
+          curl -L https://www.steinberg.net/asiosdk -o asio.zip
           7z x asio.zip -y
-          mv ASIOSDK2.3 $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+          mv asiosdk_* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
       - name: configure
         shell: bash
         run: |
@@ -468,20 +502,18 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE }}.zip
-          retention-days: 7 # quickly remove test artifacts
       - name: create installer
-        if: matrix.create-installer == 'true'
+        if: matrix.create-installer == true
         shell: bash
         run: |
           export PATH="C:\Program Files (x86)\NSIS":$PATH
           cmake --build $BUILD_PATH --config Release --target installer
       - name: upload installer
         uses: actions/upload-artifact@v2
-        if: matrix.create-installer == 'true'
+        if: matrix.create-installer == true
         with:
           name: ${{ env.INSTALLER_FILE }}
           path: ${{ env.INSTALL_PATH }}/*.exe
-          retention-days: 7 # quickly remove test artifacts
 
   test:
     strategy:
@@ -511,7 +543,7 @@ jobs:
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
       SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
-      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/xvfb-off
+      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/ignore-persistent-ui-error
     steps:
       - uses: actions/checkout@v2
         with:
@@ -558,7 +590,7 @@ jobs:
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
-          git clone --depth=1 https://github.com/supercollider-quarks/API
+          git clone --depth=1 https://github.com/crucialfelix/API
 
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
@@ -567,7 +599,6 @@ jobs:
         env:
           PYCHARM_HOSTED: 1 # enable color output
           QPM_DEBUG: 1
-          QT_PLATFORM_PLUGIN: 'offscreen'
         run: xvfb-run --server-args="-screen 0, 1280x720x24" -a qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
       - name: run tests on macOS
         if: runner.os == 'macOS'
@@ -585,19 +616,20 @@ jobs:
           - artifact-suffix: macOS
             s3-os-name: osx
             s3-artifact-suffx: ''
-            artifact-extension: 'dmg'
+            s3-artifact-extension: 'dmg'
+            artifact-extension: '.dmg' # for download-artifacts action, for non-zip only, should include `.`
             s3-create-latest-link: true # create link to pointing to the "latest" build; activate only one per branch per s3-os-name
 
           - artifact-suffix: win32
             s3-os-name: win32
             s3-artifact-suffx: ''
-            artifact-extension: 'zip'
+            s3-artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
           - artifact-suffix: win64
             s3-os-name: win64
             s3-artifact-suffx: ''
-            artifact-extension: 'zip'
+            s3-artifact-extension: 'zip'
             s3-create-latest-link: true # create link to pointing to the "latest" build
 
     if: github.repository_owner == 'supercollider' && github.event_name != 'pull_request' # run in the main repo, but not on pull requests
@@ -606,11 +638,11 @@ jobs:
     name: 'deploy ${{ matrix.artifact-suffix }} to s3'
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
-      ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}'
+      ARTIFACT_FILE: SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}
       UPLOAD_TO_S3: ${{ (secrets.S3_ACCESS_KEY_ID != 0) && !startsWith(github.ref, 'refs/tags/') }}
       S3_CREATE_LATEST_LINK: ${{ matrix.s3-create-latest-link && (secrets.S3_ACCESS_KEY_ID != 0) && startsWith(github.ref, 'refs/heads/') }}
       S3_ARTIFACT_PATH: ${{ github.workspace }}/build/s3-upload
-      S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.${{ matrix.artifact-extension }}
+      S3_ARTIFACT_NAME: SC-${{ github.sha }}${{ matrix.s3-artifact-suffx }}.${{ matrix.s3-artifact-extension }}
       S3_BUILD_LOCATION: builds/supercollider/supercollider/${{ matrix.s3-os-name }}
       S3_ROOT_URL: 'https://supercollider.s3.amazonaws.com'
     steps:
@@ -689,8 +721,8 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*

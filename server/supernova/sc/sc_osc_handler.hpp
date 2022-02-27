@@ -179,9 +179,9 @@ private:
 class sc_osc_handler : private detail::network_thread, public sc_notify_observers {
     /* @{ */
     /** constructor helpers */
-    void open_tcp_acceptor(tcp const& protocol, unsigned int port);
-    void open_udp_socket(udp const& protocol, unsigned int port);
-    bool open_socket(int family, int type, int protocol, unsigned int port);
+    void open_tcp_acceptor(ip::address address, unsigned int port);
+    void open_udp_socket(ip::address address, unsigned int port);
+    bool open_socket(int protocol, ip::address address, unsigned int port);
     /* @} */
 
 public:
@@ -190,9 +190,9 @@ public:
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr) {
         if (!args.non_rt) {
-            if (args.tcp_port && !open_socket(AF_INET, SOCK_STREAM, IPPROTO_TCP, args.tcp_port))
+            if (args.tcp_port && !open_socket(IPPROTO_TCP, args.socket_address, args.tcp_port))
                 throw std::runtime_error("cannot open socket");
-            if (args.udp_port && !open_socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, args.udp_port))
+            if (args.udp_port && !open_socket(IPPROTO_UDP, args.socket_address, args.udp_port))
                 throw std::runtime_error("cannot open socket");
         }
     }
@@ -328,6 +328,7 @@ public:
     }
 
     time_tag const& current_time(void) const { return now; }
+    time_tag next_time(void) const { return now + time_per_tick; }
 
     sc_scheduled_bundles scheduled_bundles;
     time_tag now, last;

@@ -1,6 +1,7 @@
 class:: TGrains
 summary:: Buffer granulator.
 categories::  UGens>Buffer, UGens>Generators>Granular
+related:: Classes/GrainBuf
 
 Description::
 Triggers generate grains from a buffer. Each grain has a Hanning envelope

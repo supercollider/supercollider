@@ -13,10 +13,12 @@ TestSanitize : UnitTest {
 	}
 
 	test_sanitize {
-		var duration, expected;
-		var tests, testsIncomplete, testCond = Condition(false);
-		duration = 256 / server.sampleRate;
-		expected = 8888.0;
+		var tests;
+		var duration = 256 / server.sampleRate;
+		var expected = 8888.0;
+		var condvar = CondVar();
+		var completed = 0;
+
 
 		// Not using a Dictionary here to retain order
 		tests = [
@@ -31,20 +33,18 @@ TestSanitize : UnitTest {
 			"Sanitize.ar(nan)" -> { Sanitize.ar(DC.ar(0) / 0, expected) }
 		];
 
-		testsIncomplete = tests.size;
-
 		tests.do { |test|
 			var text, ugenGraphFunc;
 			text = test.key;
 			ugenGraphFunc = test.value;
 			ugenGraphFunc.loadToFloatArray(duration, server, { |samples|
 				this.assertArrayFloatEquals(samples, expected, text);
-				testsIncomplete = testsIncomplete - 1;
-				if(testsIncomplete == 0) { testCond.test = true };
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 		};
 
-		this.wait(testCond);
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 }

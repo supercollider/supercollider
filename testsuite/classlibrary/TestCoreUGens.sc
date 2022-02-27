@@ -18,6 +18,8 @@ TestCoreUGens : UnitTest {
 
 	test_ugen_generator_equivalences {
 		var n, v;
+		var condvar = CondVar();
+		var completed = 0;
 
 		// These pairs should generate the same shapes, so subtracting should give zero.
 		// Of course there's some rounding error due to floating-point accuracy.
@@ -210,8 +212,6 @@ TestCoreUGens : UnitTest {
 			},
 
 		];
-		var testsIncomplete = tests.size;
-
 
 		//////////////////////////////////////////
 		// reversible unary ops:
@@ -278,17 +278,19 @@ TestCoreUGens : UnitTest {
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.001, report: true);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.12, 0.35).wait;
 		};
 
-
-		this.wait{testsIncomplete==0};
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 	test_exact_convergence {
 		var n, v;
+		var condvar = CondVar();
+		var completed = 0;
 
 		// Tests for things that should converge exactly to zero
 		var tests = Dictionary[
@@ -297,21 +299,23 @@ TestCoreUGens : UnitTest {
 			"Pan2.ar(ar, , kr) should converge properly to zero when amp set to zero" -> {(Line.ar(1,0,0.2)<=0)*Pan2.ar(BrownNoise.ar, 0, Line.kr(1,0, 0.1)>0).mean},
 
 		];
-		var testsIncomplete = tests.size;
 		server.bootSync;
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, within: 0.0, report: true);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.05, 0.1).wait;
 		};
-		this.wait{testsIncomplete==0};
+
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 	test_muladd {
 		var n, v;
-		var testsIncomplete;
+		var condvar = CondVar();
+		var completed = 0;
 
 		var tests = Dictionary[
 		];
@@ -321,26 +325,30 @@ TestCoreUGens : UnitTest {
 			"{DC.%(%).madd(DC.%(%), DC.%(%)) - (% * % + %)}".format(*(tup ++ tup[1,3..])).interpret;
 		};
 
-		testsIncomplete = tests.size;
 		server.bootSync;
 		tests.keysValuesDo{|name, func|
 			func.loadToFloatArray(0.1, server, { |data|
 				this.assertArrayFloatEquals(data, 0, name.quote, report: true);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.06, 0.15).wait;
 		};
-		this.wait{testsIncomplete==0};
+
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 
 	test_bufugens{
 		var d, b, c;
-		var testsIncomplete = 6;
+		var tests = [1, 2, 8, 16, 32, 33];
+		var condvar = CondVar();
+		var completed = 0;
+
 		server.bootSync;
 
 		// channel sizes for test:
-		[1,2, 8,16, 32,33].do{ |numchans|
+		tests.do{ |numchans|
 
 			// Random data for test
 			d = {1.0.rand}.dup((server.sampleRate * 0.25).round * numchans);
@@ -363,12 +371,14 @@ TestCoreUGens : UnitTest {
 					"data->loadCollection->PlayBuf->RecordBuf->loadToFloatArray->data (% channels)".format(numchans), report: true);
 				b.free;
 				c.free;
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			0.32.wait;
 			server.sync;
 		};
-		this.wait{testsIncomplete==0};
+
+		condvar.waitFor(1, { completed == tests.size });
 	}
 
 	test_demand {
@@ -412,7 +422,11 @@ TestCoreUGens : UnitTest {
 	}
 
 	test_pitchtrackers {
-		var tests = Dictionary[
+		var tests;
+		var condvar = CondVar();
+		var completed = 0;
+
+		tests = Dictionary[
 			"ZCR.ar() tracking a SinOsc"
 			-> { var freq = XLine.kr(100, 1000, 10);
 				var son = SinOsc.ar(freq);
@@ -428,19 +442,20 @@ TestCoreUGens : UnitTest {
 				Out.ar(0, (son * 0.1).dup);
 				dev * 0.1 /* rescaled cos Pitch more variable than ZCR */ },
 		];
-		var testsIncomplete = tests.size;
+
 		server.bootSync;
+
 		tests.keysValuesDo{|text, func|
 			func.loadToFloatArray(10, server, { |data|
 				this.assertArrayFloatEquals(data, 0.0, text, within: 1.0);
-				testsIncomplete = testsIncomplete - 1;
+				completed = completed + 1;
+				condvar.signalOne;
 			});
 			rrand(0.12, 0.35).wait;
 		};
 
-		// Wait for async tests
-		this.wait{testsIncomplete==0};
-	} // test_pitchtrackers
+		condvar.waitFor(1, { completed == tests.size });
+	}
 
 	test_out_ugens {
 		var testAudioRate, testControlRate;

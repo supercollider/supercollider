@@ -35,7 +35,7 @@ METHOD:: size
 
 	When setting -size, if the new amount is larger then the current, new sliders will be added with the value of 0. In the opposite case, the value of sliders up to the new amount will be preserved, and the rest of the sliders will be removed.
 
-	note:: strong:: In Cocoa and SwingOSC GUIs: ::
+	note:: strong:: In Cocoa GUI: ::
 
 	Changing -size after the view has been drawn or after the link::#-value:: array has been set will lead to unexpected results. Instead, you should change the link::#-value::, if you need to change the contents of the view.
 

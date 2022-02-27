@@ -430,7 +430,7 @@ int print(const char* fmt, ...) {
     va_start(vargs, fmt);
 
     nova::log_guard.lock();
-    bool status = nova::instance->log_printf(fmt, vargs);
+    bool status = nova::log_printf(fmt, vargs);
     nova::log_guard.unlock();
 
     va_end(vargs);

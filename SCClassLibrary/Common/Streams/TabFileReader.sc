@@ -1,18 +1,27 @@
 FileReader : Stream {
 	// a class to read text files automatically
 	classvar <delim = $ ;	// space separated by default
-	var <stream, skipEmptyLines=false, skipBlanks=false, <delimiter;
+	var <stream, skipEmptyLines = false, skipBlanks = false, <delimiter;
 
-	*new { | pathOrFile, skipEmptyLines=false, skipBlanks=false,  delimiter |
+	*new { |pathOrFile, skipEmptyLines = false, skipBlanks = false, delimiter|
 		var stream;
-		if (pathOrFile.isKindOf(File) ) { stream = pathOrFile }  { stream =  File(pathOrFile, "r") };
-		if (stream.isOpen.not) { warn(this.name ++ ": file" + pathOrFile + "not found.") ^nil };
+		if(pathOrFile.respondsTo(\getChar) ) {
+			stream = pathOrFile
+		} {
+			stream = File(pathOrFile, "r");
+			if(stream.isOpen.not) {
+				warn(this.name ++ ": file" + pathOrFile + "not found.");
+				^nil
+			};
+		};
 		^super.newCopyArgs(stream, skipEmptyLines, skipBlanks,  delimiter ? this.delim)
 	}
 
 	reset { stream.reset }
 
-	close { stream.close }
+	// CollStream doesn't implement 'close'
+	// but is legal to use with readers otherwise
+	close { stream.tryPerform(\close) }
 
 	next {
 		var c, record, string = String.new;

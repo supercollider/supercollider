@@ -61,6 +61,7 @@ def main(version: Version):
     prompts = [
         "Is the repo clean?",
         "If this is a minor release, have you made the release branch?",
+        "If you made the release branch, did you update SCVersion.txt on the develop branch to the next minor release?",
         "Is the repo on the current release branch?",
         [f"Have all the discussions in the pinned '{discussions_issue_title}' ticket been resolved?", "https://github.com/supercollider/supercollider/issues"],
         ["If this is a patch release, have all the PRs in the cherry-pick GitHub project been added to the release branch?", "https://github.com/supercollider/supercollider/projects/"],
@@ -72,10 +73,10 @@ def main(version: Version):
         "Have you updated CHANGELOG.md with information about merged PRs?",
         "Have you updated CHANGELOG.md with information about platform support changes?",
 
-        f"Have you made sure the schelp file '{schelp_news_page_title}' is up to date with the changelog by running the conversion script?", # XXX where is the script?
+        f"Have you made sure the schelp file '{schelp_news_page_title}' is up to date with the changelog by running the conversion script (`package/changelog_to_schelp.sh`)?",
         f"Have you made sure HelpSource/Help.schelp points to the latest '{schelp_news_page_title}' schelp file?",
         ["If this is a proper release, have you updated the release history in CHANGELOG.md?", f"https://github.com/supercollider/supercollider/blob/{release_branch_name}/CHANGELOG.md#change-log"],
-        "If this is a proper release, have you merged the current release branch into master with git merge --no-ff?",
+        "If this is a proper release, have you merged the current release branch into main with git merge --no-ff?",
         "Have you tagged the release?",
         "Did you create the release announcement text?",
         ["Have you created a release on GitHub?", "https://github.com/supercollider/supercollider/releases/new"],
@@ -105,8 +106,8 @@ def main(version: Version):
         # maybe remove? or indicate optional?
         "Did you announce on Reddit (/r/supercollider)?",
 
-        ["If it's a beta release, did you merge the current release branch into develop? Do not merge the release branch into master yet!", f"https://github.com/supercollider/supercollider/compare/develop...{release_branch_name}"],
-        ["If it's a proper release, did you merge master into develop?", "https://github.com/supercollider/supercollider/compare/develop...master"]
+        ["If it's a beta release, did you merge the current release branch into develop, resolving possible conflict in SCVersion.txt? Do not merge the release branch into main yet!", f"https://github.com/supercollider/supercollider/compare/develop...{release_branch_name}"],
+        ["If it's a proper release, did you merge main into develop?", "https://github.com/supercollider/supercollider/compare/develop...main"]
             ]
 
     stack = deque()

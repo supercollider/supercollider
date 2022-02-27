@@ -9,8 +9,8 @@ UnitTestGUI {
 		w = Window.new("[UnitTest GUI]", Rect(100, 100, 415, 615), resizable: false);
 		w.addFlowLayout;
 
-		StaticText(w, Rect(0,0, 400, 40))
-		.string_("Select a category, then a test method, and press Enter\nHit 'i' to jump to the code file")
+		StaticText(w, Rect(0,0, 400, 50))
+		.string_("Select a category, then a test method, and press Enter\nHit 'i' to jump to the code file.\nHit 'p' to post a shortcut.")
 		.align_(\center);
 
 		classlist = ListView(w, Rect(0,0, 200, 600-40))
@@ -34,6 +34,9 @@ UnitTestGUI {
 				method = class.findMethod(selector);
 				if(char == $i) {
 					if(method.notNil) { method.openCodeFile } { class.openCodeFile };
+				};
+				if(char == $p) {
+					"UnitTest.runTest(\"%:%\")".format(class, selector).postln;
 				}
 			};
 

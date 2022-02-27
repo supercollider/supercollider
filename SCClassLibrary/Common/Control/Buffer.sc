@@ -455,7 +455,7 @@ Buffer {
 			// [/b_setn, bufnum, starting index, length, ...sample values].
 			// We want the sample values, which start at index 4.
 			action.value(message[4..]);
-		}, \b_setn, server.addr, argTemplate: [bufnum, index]).oneShot;
+		}, \b_setn, server.addr, argTemplate: [bufnum, index.asInteger]).oneShot;
 		server.listSendMsg(msg)
 	}
 

@@ -4,6 +4,7 @@ if (NOT APPLE AND NOT WIN32)
 endif()
 
 if(UNIX AND NOT APPLE)
+	set(LIB_SUFFIX "" CACHE STRING "Install plugins to suffixed lib directory: eg. `64` for `lib64`")
 	set(LINUX_SC_PLUGIN_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/SuperCollider/plugins)
 endif()
 

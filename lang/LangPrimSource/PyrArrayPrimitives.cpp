@@ -1591,7 +1591,7 @@ int prArrayRotate(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prArrayStutter(struct VMGlobals* g, int numArgsPushed) {
+int prArrayDupEach(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot *a, *b, *slots1, *slots2;
     PyrObject *obj1, *obj2;
     int i, j, k, m, n, size;
@@ -2554,7 +2554,7 @@ void initArrayPrimitives() {
     definePrimitive(base, index++, "_ArrayExtendFold", prArrayExtendFold, 2, 0);
     definePrimitive(base, index++, "_ArrayExtendLast", prArrayExtendLast, 2, 0);
     definePrimitive(base, index++, "_ArrayLace", prArrayLace, 2, 0);
-    definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
+    definePrimitive(base, index++, "_ArrayDupEach", prArrayDupEach, 2, 0);
     definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);
     definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
 

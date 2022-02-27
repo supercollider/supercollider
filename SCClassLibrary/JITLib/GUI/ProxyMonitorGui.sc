@@ -228,7 +228,7 @@ ProxyMonitorGui {
 			if (isAudio != oldState[2]) {
 				[ampSl, playBut, setOutBox, playNDialogBut].reject(_.isNil).do(_.enabled_(isAudio));
 			};
-				// dont update if typing into numberbox - should be tested with SwingOSC!
+				// dont update if typing into numberbox
 			if (setOutBox.numberView.hasFocus.not) {
 				setOutBox.value_(try { outs[0] } ? 0);
 				if (usesPlayN) {

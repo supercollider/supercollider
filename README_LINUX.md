@@ -6,8 +6,8 @@ Build requirements
 
 These are strict requirements for scsynth and supernova:
 
-- A C++ compiler. SuperCollider guarantees support for [gcc][gcc] >= 6 and [clang][clang] >= 4.
-- [cmake][cmake] >= 3.5: Cross-platform build system.
+- A C++ compiler with C++17 support. SuperCollider guarantees support for [gcc][gcc] >= 6.3 and [clang][clang] >= 3.9.
+- [cmake][cmake] >= 3.12: Cross-platform build system.
 - [libsndfile][libsndfile] >= 1.0: Soundfile I/O.
 - [libjack][libjack]: Development headers for the JACK Audio Connection Kit.
 - [fftw][fftw] >= 3.0: FFT library.
@@ -79,7 +79,7 @@ Depending on your Debian flavor and version, your distribution's PPA may be stuc
 
 If this displays version 5.7 or later, installing Qt is easy:
 
-    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
+    sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
 
 If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), check the next section. Otherwise, you will have to use the official Qt installer. Sorry.
 
@@ -91,13 +91,13 @@ On Xenial:
 
     sudo apt-add-repository ppa:beineri/opt-qt-5.11.0-xenial
     sudo apt-get update
-    sudo apt-get install qt511base qt511location qt511declarative qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine qt511websockets
+    sudo apt-get install qt511base qt511location qt511tools qt511webchannel qt511xmlpatterns qt511svg qt511webengine qt511websockets
 
 On Trusty, only Qt 5.10 and below are available:
 
     sudo apt-add-repository ppa:beineri/opt-qt-5.10.1-trusty
     sudo apt-get update
-    sudo apt-get install qt510base qt510location qt510declarative qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine qt510websockets
+    sudo apt-get install qt510base qt510location qt510tools qt510webchannel qt510xmlpatterns qt510svg qt510webengine qt510websockets
 
 [Stephan Binner's Launchpad PPAs]: https://launchpad.net/~beineri
 
@@ -105,7 +105,7 @@ On Trusty, only Qt 5.10 and below are available:
 
 Worst case scenario, you can grab Qt off the [Qt official website](https://www.qt.io/). It's best to get the latest version. Click "Download," select the open source license, and download the Qt installer. The Qt installer has a step that prompts for you to log in to a Qt Account, but you don't actually need to authenticate and you can safely click "Skip" at that step.
 
-At the "Select Components" step, pop open Qt → Qt 5.11 (or whatever the latest version is) and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
+At the "Select Components" step, pop open Qt, select the latest version, and check the "Desktop" option. If you are building the IDE, also select "QWebEngine."
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
@@ -288,6 +288,13 @@ to put Extensions to the class library, in a folder called Extensions.
 The runtime directory is either the current working directory or the
 path specified with the `-d` option.
 
+#### Headless operation
+
+Even though the standard distribution of SuperCollider is built with the Qt framework, `sclang` can still be run in terminal without the X server. In order to do that, the `QT_QPA_PLATFORM` environment variable needs to be set to `offscreen`:
+```shell
+$> export QT_QPA_PLATFORM=offscreen
+$> sclang
+```
 
 Environment
 -----------

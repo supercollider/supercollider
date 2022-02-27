@@ -1,6 +1,6 @@
 class:: Pclutch
 summary:: sample and hold a pattern
-related:: Classes/StreamClutch, Classes/Pstutter, Classes/Latch
+related:: Classes/StreamClutch, Classes/Pdup, Classes/Latch
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
 ClassMethods::

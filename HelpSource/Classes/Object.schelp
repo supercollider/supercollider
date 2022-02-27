@@ -243,7 +243,7 @@ A lazy inequality operator, defined as code::not(this |==| that)::. See link::Cl
 
 method::fuzzyEqual
 
-Returns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, substraction, and division.
+Returns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, subtraction, and division.
 
 code::
 5.0.fuzzyEqual(5.0, 0.5); // 1 - full equality
@@ -801,7 +801,7 @@ Yields the receiver
 
 method::idle
 
-within a routine, return values (the receiver) until this time is over. (see also link::Classes/Routine#play::)
+within a routine, return values (the receiver) until this time is over. (see also link::Classes/Routine#-play::)
 Time is measured relative to the thread's clock.
 code::
 a = Routine { 1.yield; 0.idle(3); 400.yield };

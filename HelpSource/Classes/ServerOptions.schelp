@@ -93,12 +93,12 @@ method:: protocol
 A Symbol representing the communications protocol. Either code::\udp:: or code::\tcp::. The default is code::\udp::.
 
 method:: bindAddress
-scsynth only. The IP address that the server's TCP or UDP socket is listening on. The default value is code::"127.0.0.1"::, meaning only listen to OSC messages on the host.
+The IP address that the server's TCP or UDP socket is listening on. The default value is code::"127.0.0.1"::, meaning only listen to OSC messages on the host.
 
 warning::
 Until SuperCollider 3.10.3, this was set to code::"0.0.0.0":: (listen on all network interfaces). However, this is a dangerous default configuration — for most users working on laptops connected to WiFi, this means that anyone on your local network can send OSC messages to the server. code::"0.0.0.0":: is only useful if you are running networked server/client, and only safe if your networking is properly configured.
 
-supernova always listens to all network interfaces, and ignores the code::bindAddress:: option. This cannot be configured. To avoid exposing yourself to security issues, you should switch to scsynth, or disable networking on your machine when running supernova.
+Before SuperCollider 3.12 supernova listened to all network interfaces and ignored the code::bindAddress:: option. In later versions the behavior is identical to scsynth. 
 ::
 
 method:: remoteControlVolume

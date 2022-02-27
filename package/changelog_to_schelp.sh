@@ -38,6 +38,7 @@ categories:: News
 
 # Section headers
 LOG=`echo "$LOG" | perl -0777 -pe "s/([^\n]*)\n---*/section:: \1/igs"`
+LOG=`echo "$LOG" | sed "s/\#\#\#\([^\*]*\)/section:: \1/g"` # for '### name' notation
 
 # `name` -> code::name::
 LOG=`echo "$LOG" | sed "s/\\\`\([^\\\`]*\)\\\`/code:: \1 ::/g"`

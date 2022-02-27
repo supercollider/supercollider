@@ -72,7 +72,7 @@ a = Plambda(
 			Pbind(\note, Pseq([Pget(\x), Pget(\y)], inf) + 12, \pan, 0, \dur, 2/3)
 		])
 	),
-	Pbind(\note, Pget(\x, 0, 6) + [0, 5], \dur, Pstutter(inf, Prand([2/3, 1/6])))
+	Pbind(\note, Pget(\x, 0, 6) + [0, 5], \dur, Pdup(inf, Prand([2/3, 1/6])))
 	], inf).trace(\eventScope) // internally, the values are shared via \eventScope
 );
 

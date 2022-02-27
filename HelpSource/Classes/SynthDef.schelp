@@ -6,10 +6,12 @@ related:: Classes/Synth, Reference/Synth-Definition-File-Format, Classes/SynthDe
 description::
 
 The server application uses synth definitions as templates for creating link::Classes/Synth:: nodes.
-(Methods such as link::Classes/Function#play#Function-play::, etc. are simply conveniences which automatically create such a def.)
+(Methods such as link::Classes/Function#-play::, etc. are simply conveniences which automatically create such a def.)
 The SynthDef class encapsulates the client-side representation of a given def, and provides methods for creating new defs, writing them to disk, and streaming them to a server.
 
 SynthDef is one of the more complicated classes in SC and an exhaustive explanation of it is beyond the scope of this document. As such, the examples at the bottom of this document and those found in the various tutorials accessible from link::Help:: may be necessary to make some aspects of its use clear.
+
+Some insights about common SynthDef issues can be found on the FAQ link::Guides/UserFAQ#SynthDef Issues#SynthDef Issues::
 
 subsection:: UGen Graph Functions and Special Argument Forms
 
@@ -17,7 +19,7 @@ The core of a def is its link::Classes/UGen##unit generator:: graph function.
 This is an instance of link::Classes/Function:: which details how the def's unit generators are interconnected, its inputs and outputs, and what parameters are available for external control.
 In a synth based on the def, arguments to the function will become instances of link::Classes/Control::.
 These can have default values, or can be set at the time the synth is created.
-After creation they will be controllable through link::Classes/Node::'s code::set:: and code::setn:: methods, or the n_set and n_setn link::Browse#OpenSoundControl#OSC:: messages.
+After creation they will be controllable through link::Classes/Node::'s code::set:: and code::setn:: methods, or the n_set and n_setn link::Guides/NodeMessaging##OSC:: messages.
 
 There are four special types of arguments, which are treated differently:
 definitionlist::
@@ -28,13 +30,32 @@ definitionlist::
 ## trigger rate
 || Arguments that begin with "t_" (e.g. code::t_trig::), or that are specified as code::\tr:: in the def's rates argument (see below), will be made as a link::Classes/TrigControl::. Setting the argument will create a control-rate impulse at the set value. This is useful for triggers.
 ## literal arrays
-|| Arguments which have literal arrays as default values (see link::Reference/Literals::) result in multichannel controls, which can be set as a group with link::Classes/Node#setn#Node-setn:: or code::/n_setn::. When setting such controls no bounds checking is done, so you are responsible for making sure that you set the correct number of arguments.
+|| Arguments which have literal arrays as default values (see link::Reference/Literals::) result in multichannel controls, which can be set as a group with link::Classes/Node#-setn:: or code::/n_setn::.
 ::
 
 See the examples below for more detail on how this works.
 
 Certain argument names (such as 'out' to specify an out bus) are in such common use that adopting them might be said to constitute 'good style'.
 One of these, 'gate' when used to control the gate input of an link::Classes/EnvGen::, deserves special mention, as it allows one to use Node's release method. See link::Classes/Node:: for an example and more detail.
+
+subsection:: Arrayed controls
+
+In some cases, it is useful to send a group of values to a single control name, for instance, code::aSynth.set(\freqs, [300, 400, 500])::, or for passing envelopes at Synth instantiation. This requires an emphasis::arrayed control:: to be defined in the SynthDef.
+
+There are two ways to define arrayed controls:
+
+numberedlist::
+## link::Classes/NamedControl:: -- recommended for flexibility and clarity.
+## Literal arrays (as noted above).
+::
+
+NamedControl can accept default values determined in code. For example, passing an envelope requires four values per breakpoint. It is easy to create a template for the arrayed control by writing code::NamedControl.kr(\env, Env.newClear(numSegments: 8).asArray)::.
+
+Literal arrays may be more convenient for very small arrays where all of the default values are known in advance.
+
+In general, it is likely to be simpler in most cases to use NamedControl for arrayed controls.
+
+See the example under link::#Array Arguments::.
 
 subsection:: Static versus Dynamic Elements
 
@@ -329,12 +350,13 @@ Synth('vartest.gamma');
 Synth('vartest.alpha', [\release, 3, \freq, 660]);
 ::
 
-subsection:: Literal Array Arguments
+subsection:: Array Arguments
 code::
-// freqs has a literal array of defaults. This makes a multichannel Control of the same size.
+// freqs is defined as an arrayed control. This makes a multichannel Control of the same size.
 (
-SynthDef(\arrayarg, { |out, amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1|
+SynthDef(\arrayarg, { |out, amp = 0.1, gate = 1|
 	var env, sines;
+	var freqs = NamedControl.kr(\freqs, [300, 400, 500, 600]);
 	env = Linen.kr(gate, 0.1, 1, 1, 2) * amp;
 	sines = SinOsc.ar(freqs +.t [0,0.5]).cubed.sum; // A mix of 4 oscillators
 	Out.ar(out, sines * env);
@@ -344,9 +366,11 @@ SynthDef(\arrayarg, { |out, amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1|
 x = Synth(\arrayarg);
 x.setn(\freqs, [440, 441, 442, 443]);
 
-// Don't accidentally set too many values, or you may have unexpected side effects
-// The code below inadvertently sets the gate arg, and frees the synth
+// Values outside of the array bounds are ignored --
+// 0 is dropped
 x.setn(\freqs, [300, 400, 500, 600, 0]);
+
+x.release;
 
 // Mr. McCartney's more complex example
 (

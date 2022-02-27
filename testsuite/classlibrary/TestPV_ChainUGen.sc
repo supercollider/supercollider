@@ -70,27 +70,23 @@ test_whiteframe_zeroing {
 
 // The main engine that is used to push a fake fft frame through a ugen:
 pv_equivalencetests_common { |fakeframe, tests, equaltothis, message|
-	var s = this.s, b;
-	this.bootServer;
+	var s = Server(this.class.name), b, c = CondVar(), synth;
+	this.bootServer(s);
 	tests.keysValuesDo{|name, func|
 		b = Buffer.sendCollection(s, fakeframe);
-		0.05.wait;
 		s.sync;
-		
-		{var f; f = FFTTrigger(b); func.value(f); Line.ar(0, 0, 0.05, doneAction:2)}.play;
-		s.sync;
-		0.2.wait;
+		synth = {var f; f = FFTTrigger(b); func.value(f); Line.ar(0, 0, 0.05, doneAction: Done.freeSelf)}.play(s);
+		synth.waitForFree;
 		b.loadToFloatArray(action: { |data|
-			this.assertArrayFloatEquals(data, equaltothis, message.format(name), within: 0.001, report: true)
+			this.assertArrayFloatEquals(data, equaltothis, message.format(name), within: 0.001, report: true);
+			c.signalOne;
 		});
-		s.sync;
-		rrand(0.12, 0.15).wait;
-		
+		c.waitFor(3);
 		b.free;
-		0.05.wait;
-		s.sync;
 	};
-	0.8.wait; // enough time for units to report back
+	s.sync;
+	s.quit;
+	s.remove;
 }
 
 

@@ -1,7 +1,7 @@
 {
   "name": "supercollider",
   "version": "1.0.0",
-  "description": "[![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider)",
+  "description": "",
   "main": "changelog.js",
   "directories": {
     "example": "examples"

@@ -369,6 +369,35 @@ method::protect
 
 Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
 
+subsection:: Scheduling
+
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the function was
+scheduled when its scheduling time is up. It calls link::#-value::, passing
+on the scheduling time in beats as an argument. 
+
+argument:: beats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: seconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: clock
+The clock on which the object was scheduled.
+
+returns::
+The value returned by the function's link::#-value::. A caller clock uses
+this value to reschedule the function.
+
+code::
+// Runs every 2 seconds
+AppClock.play({ "And again".postln; 2 });
+::
+
 subsection::Audio
 
 method::play

@@ -38,7 +38,7 @@ ProxySynthDef : SynthDef {
 
 			// determine rate and numChannels of ugen func
 			numChannels = output.numChannels;
-			rate = output.rate;
+			rate = output.rate; // for an array, this will always result in the highest rate
 			isScalar = rate === 'scalar';
 
 			// check for out key. this is used by internal control.
@@ -115,16 +115,25 @@ ProxySynthDef : SynthDef {
 					if(rate === 'audio') {
 						output = A2K.kr(output);
 						rate = 'control';
-						postf("%: adopted proxy input to control rate\n", NodeProxy.buildProxy);
+						postf("%: adopted proxy output signal to control rate\n", NodeProxy.buildProxy);
 					} {
 						if(rateConstraint === 'audio') {
 							output = K2A.ar(output);
 							rate = 'audio';
-							postf("%: adopted proxy input to audio rate\n", NodeProxy.buildProxy);
+							postf("%: adopted proxy output signal to audio rate\n", NodeProxy.buildProxy);
 						}
 					}
 				};
-				outCtl = Control.names(\out).ir(0) + channelOffset;
+				// because Out.ar will not accept a control rate ugen, we adapt any other rates
+				if(rate == 'audio') {
+					output.do { |x, i|
+						if(x.rate != rate) {
+							postf("%: adopted proxy output signal at index % to audio rate:\n%\n",  NodeProxy.buildProxy, i, x);
+							output[i] = K2A.ar(x) // for efficiency in large outputs, we modify in place
+						};
+					};
+				};
+				outCtl = NamedControl.ir(\out, 0) + channelOffset;
 				(if(rate === \audio and: { sampleAccurate }) { OffsetOut } { Out }).multiNewList([rate, outCtl] ++ output)
 			})
 		});

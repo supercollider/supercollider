@@ -42,6 +42,27 @@ iterates function from this-1 to 0
 argument:: function
 The function to iterate.
 
+method:: clip
+Return this if lo <= this <= hi, otherwise return the nearest boundary: lo if this < lo, hi if this > hi.
+argument:: lo
+The low threshold of clipping.
+argument:: hi
+The high threshold of clipping.
+
+method:: fold
+Fold this to [lo, hi].
+argument:: lo
+The low threshold of folding.
+argument:: hi
+The high threshold of folding.
+
+method:: wrap
+Wrap this around [lo, hi) such that it falls in range. Equivalent to (this % (hi - lo)) + lo.
+argument:: lo
+The low threshold (inclusive) of wrapping.
+argument:: hi
+The high threshold (exclusive) of wrapping.
+
 method:: coin
 Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
 
@@ -114,7 +135,7 @@ f.(18.0) / f.(17.0) == 18 // true
 Here is a classical example for an algorithm:
 
 code::
-// eucidean algorithm
+// euclidean algorithm
 (
 g = { |a, b|
 	if(b == 0) {
@@ -157,8 +178,3 @@ f = { |x| if(x < 2) { x } { x * f.(x - 1) } };
 {:x, x<-(1.0..180), f.(x) / f.(x - 1) == x }.all.last
 
 ::
-
-
-
-
-

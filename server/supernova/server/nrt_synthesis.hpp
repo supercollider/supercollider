@@ -59,6 +59,9 @@ struct non_realtime_synthesis_engine {
                             args.blocksize);
 
         command_stream.open(args.command_file.c_str(), std::fstream::in | std::fstream::binary);
+        if (!command_stream) {
+            throw std::runtime_error("cannot open OSC command file");
+        }
 
         has_inputs = !input_file.empty();
         samples_per_block = args.blocksize;
@@ -82,34 +85,37 @@ struct non_realtime_synthesis_engine {
         using namespace std;
         using namespace std::chrono;
 
-        const int reserved_packed_size = 16384;
-        std::vector<char> packet_vector(reserved_packed_size, 0);
+        const int reserved_packet_size = 16384;
+        std::vector<char> packet_vector(reserved_packet_size, 0);
 
-        printf("\nPerforming non-rt synthesis:\n");
+        log_printf("\nPerforming non-rt synthesis:\n");
         backend.activate_audio();
 
         auto start_time = steady_clock::now();
 
-        while (!command_stream.eof()) {
+        for (;;) {
             boost::endian::big_int32_t packet_size;
-            command_stream.read((char*)&packet_size, sizeof(packet_size));
+            if (!command_stream.read((char*)&packet_size, sizeof(packet_size)))
+                break; // done
 
             assert(packet_size > 0);
 
-            const bool huge_packet = (packet_size >= reserved_packed_size);
-
-            if (huge_packet)
+            if (packet_size > (int32_t)packet_vector.size()) {
                 packet_vector.resize(packet_size);
+            }
 
-            command_stream.read(packet_vector.data(), packet_size);
+            if (!command_stream.read(packet_vector.data(), packet_size)) {
+                log_printf("ERROR: missing bundle data\n");
+                break;
+            }
 
             time_tag bundle_time = instance->handle_bundle_nrt(packet_vector.data(), packet_size);
 
             size_t seconds = bundle_time.get_secs();
             size_t nano_seconds = bundle_time.get_nanoseconds();
-            printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
+            log_printf("  Next OSC bundle: %zu.%09zu\n", seconds, nano_seconds);
 
-            while (instance->current_time() < bundle_time) {
+            while (instance->next_time() < bundle_time) {
                 if (instance->quit_requested())
                     goto done;
 
@@ -118,9 +124,6 @@ struct non_realtime_synthesis_engine {
                 else
                     backend.audio_fn_noinput(samples_per_block);
             }
-
-            if (huge_packet)
-                packet_vector.resize(16384);
         }
 
     done:
@@ -128,13 +131,13 @@ struct non_realtime_synthesis_engine {
         auto end_time = steady_clock::now();
         std::string elapsed_string = format_duration(end_time - start_time);
 
-        printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
+        log_printf("\nNon-rt synthesis finished in %s\n", elapsed_string.c_str());
 
         auto peaks = backend.get_peaks();
-        printf("Peak summary:\n");
+        log_printf("Peak summary:\n");
         for (size_t channel = 0; channel != peaks.size(); ++channel) {
             auto amplitude = peaks[channel];
-            printf("  Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
+            log_printf("  Channel %zu: %gdB\n", channel, sc_ampdb(amplitude));
         }
     }
 

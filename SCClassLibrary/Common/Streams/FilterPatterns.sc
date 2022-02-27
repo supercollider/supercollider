@@ -590,6 +590,23 @@ Pbindf : FilterPattern {
 
 Pstutter : FilterPattern {
 	var <>n;
+	classvar suggestNew;
+
+	*initClass {
+		suggestNew = { |n,pattern|
+			"The use of Pstutter is not recommended. Please use Pdup instead.".warn;
+			suggestNew = {|n,pattern| Pdup(n,pattern)};
+			suggestNew.(n,pattern);
+		};
+	}
+
+	*new { |n, pattern|
+		^suggestNew.(n, pattern);
+	}
+}
+
+Pdup : FilterPattern {
+	var <>n;
 	*new { arg n, pattern;
 		^super.new(pattern).n_(n)
 	}
@@ -613,27 +630,41 @@ Pstutter : FilterPattern {
 	}
 }
 
+PdurStutter : Pdup { // float streams
+	classvar suggestNew;
 
-PdurStutter : Pstutter { // float streams
+	*initClass {
+		suggestNew = { |n,pattern|
+			"The use of PdurStutter is not recommended. Please use Psubdivide instead.".warn;
+			suggestNew = {|n,pattern| Psubdivide(n,pattern)};
+			suggestNew.(n,pattern);
+		};
+	}
 
+	*new { |n, pattern|
+		^suggestNew.(n, pattern);
+	}
+}
+
+Psubdivide : Pdup { // float streams
 	embedInStream { arg event;
-		var dur, stut;
+		var dur, subdivision;
 		var durs = pattern.asStream;
-		var stutts = n.asStream;
+		var subdivisions = n.asStream;
 		while({
 			(dur = durs.next(event)).notNil
-			and: {(stut = stutts.next(event)).notNil}
-			},{
-				if(stut > 0,{ // 0 skips it
-					if(stut > 1,{
-						dur = dur / stut;
-						stut.do({
-							event = dur.yield;
-						})
-						},{
-							event = dur.yield
+			and: {(subdivision = subdivisions.next(event)).notNil}
+		},{
+			if(subdivision > 0,{ // 0 skips it
+				if(subdivision > 1,{
+					dur = dur / subdivision;
+					subdivision.do({
+						event = dur.yield;
 					})
+				},{
+					event = dur.yield
 				})
+			})
 		})
 		^event;
 	}

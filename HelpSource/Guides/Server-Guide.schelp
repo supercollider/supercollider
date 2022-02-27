@@ -39,11 +39,11 @@ If a Server has been booted from the command line you must call code::initTree::
 
 subsection:: Local vs. Internal
 
-In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables link::#*local:: and link::#*internal::. In SuperCollider.app (OSX), two GUI windows are created to control these. Use link::#-makeGui:: to create a GUI window manually.
+In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables link::Classes/Server#*local#*local:: and link::Classes/Server#*internal#*internal::. In SuperCollider.app (OSX), two GUI windows are created to control these. Use link::Classes/Server#-makeGui#-makeGui:: to create a GUI window manually.
 
 The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app.
 
-Both local and internal server supports link::#-scope#scoping:: and link::Classes/Bus#Synchronous control bus methods#synchronous bus access::.
+Both local and internal server supports link::Classes/Server#-scope#scoping:: and link::Classes/Bus#Synchronous Control Bus Methods#synchronous bus access::.
 
 The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement. But note that even if the synths on the server continue to run, any language-side sequencing and control will terminate if the language app crashes.
 
@@ -55,9 +55,9 @@ There is always a default Server, which is stored in the class variable code::de
 
 subsection:: Local vs. Remote Servers, Multi-client Configurations
 
-Most of the time users work with a server app running on the same machine as the SC language client. It is possible to use a server running on a different machine via a network, providing you know the IP address and port of that server. The link::#*remote:: method provides a convenient way to do this. note::To enable remote connections you will need to change link::Classes/ServerOptions#-bindAddress:: in the server's link::Classes/ServerOptions:: as the default value only allows connections from the local machine. code::s.options.bindAddress = "0.0.0.0":: will allow connections from any address.::
+Most of the time users work with a server app running on the same machine as the SC language client. It is possible to use a server running on a different machine via a network, providing you know the IP address and port of that server. The link::Classes/Server#*remote#*remote:: method provides a convenient way to do this. note::To enable remote connections you will need to change link::Classes/ServerOptions#-bindAddress:: in the server's link::Classes/ServerOptions:: as the default value only allows connections from the local machine. code::s.options.bindAddress = "0.0.0.0":: will allow connections from any address.::
 
-One common variant of this approach is multiple clients using the same server. If you wish to do this you will need to set the server's link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow.  When a client registers for link::#-notify#notifications:: the server will supply a client ID. This also configures the allocators to avoid conflicts when allocating link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. For more info see link::Guides/MultiClient_Setups::.
+One common variant of this approach is multiple clients using the same server. If you wish to do this you will need to set the server's link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow.  When a client registers for link::Classes/Server#-notify#notifications:: the server will supply a client ID. This also configures the allocators to avoid conflicts when allocating link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. For more info see link::Guides/MultiClient_Setups::.
 
 In order to use a remote server with tcp one should first boot the remote server using the code::-t:: option e.g. as follows:
 code::

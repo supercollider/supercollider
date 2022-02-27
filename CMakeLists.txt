@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
 include(SCVersion.txt)
 # CMake versions can only consist of digits and periods, so don't use _TWEAK
 project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
@@ -12,7 +12,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
 endif()
 
 message(STATUS "SuperCollider Version: ${SC_VERSION}")
-message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
+message(STATUS "Building from ${GIT_REF_TYPE} ${GIT_BRANCH_OR_TAG}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
 
@@ -138,7 +138,7 @@ if(WIN32)
     add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
 endif()
 
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
 
 #############################################
@@ -246,8 +246,11 @@ endif()
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
 if(APPLE)
-    # codesigning breaks increamental builds in Xcode 11+
-    option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" ON)
+    # codesigning used to break increamental builds in Xcode 11+, but it's now fixed
+    option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" OFF)
+    # codesigning is also being broken by macdeployqt, but it is needed on arm64
+    # to run the app locally at all, hence we sign after deploying the app
+    option(SC_CODESIGN_AFTER_DEPLOY "Run ad hoc codesigning after creating the app bundle" ON)
     # verify_app fails with official Qt; we'll still use it for Qt from homebrew
     option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
 endif()
@@ -305,6 +308,8 @@ else()
   set(SYSTEM_YAMLCPP OFF)
 endif()
 
+set(CMAKE_CXX_STANDARD 17)
+
 #############################################
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
@@ -324,8 +329,6 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=native")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
-
-    set(CMAKE_CXX_STANDARD 11)
 
     if(CMAKE_COMPILER_IS_CLANG AND NOT SC_CLANG_USES_LIBSTDCPP)
         # the default

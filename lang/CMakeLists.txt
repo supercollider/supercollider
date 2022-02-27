@@ -339,10 +339,14 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-  target_compile_definitions(libsclang PUBLIC -flto -flto-report)
-
   set_property(TARGET sclang libsclang
+        APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+  set_property(TARGET sclang
         APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+
+  set_property(TARGET libsclang
+        APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
 if(APPLE)
