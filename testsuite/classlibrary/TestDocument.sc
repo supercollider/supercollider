@@ -59,7 +59,6 @@ TestDocument : UnitTest {
 
 	test_document_getText_retrievesText {
 		var doc, str;
-		this.assert(Platform.ideName == "scqt", "Document tests are valid only when run in the IDE");
 		if (Platform.ideName == "scqt") {
 			doc = Document(string: "abc");
 			str = doc.getText;
@@ -73,7 +72,6 @@ TestDocument : UnitTest {
 	test_document_getTextAsync_retrievesText {
 		var doc, str,
 		cond = Condition.new;
-		this.assert(Platform.ideName == "scqt", "Document tests are valid only when run in the IDE");
 		if (Platform.ideName == "scqt") {
 			doc = Document(string: "abc");
 			doc.getTextAsync({ |text|
