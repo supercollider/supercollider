@@ -249,7 +249,7 @@ TestServer_boot : UnitTest {
 			}.play(s);
 
 			s.sync;
-			1.wait;
+			(s.latency + 0.2).wait;
 
 			// clean up
 			pbindPlayer.stop;
