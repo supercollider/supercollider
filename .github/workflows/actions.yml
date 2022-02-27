@@ -212,7 +212,7 @@ jobs:
           - job-name: 'use system libraries'
             os-version: '10.15'
             xcode-version: '11.7'
-            deployment-target: '10.13'
+            deployment-target: '10.15'
             use-syslibs: true
             shared-libscsynth: false
 
