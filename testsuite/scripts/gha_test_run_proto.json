@@ -5,20 +5,14 @@
             "test":"*"
         },
         {
-            "suite":"TestBus",
-            "test":"test_get",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
-            "suite":"TestBus",
-            "test":"test_getn",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestCondition",
             "test":"*",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in qpm (FIXME)"
+        },
+        {
+            "suite":"TestCondVar",
+            "test":"test_waitFor_withPredicate_signaledButFalseSoTimedOut",
             "skip":true,
             "skipReason":"UnitTest fails when run in qpm (FIXME)"
         },
@@ -43,12 +37,6 @@
         {
             "suite":"TestEnvironmentDocument",
             "test":"*",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
-            "suite":"TestDoneActions",
-            "test":"test_freeSelfAndResumeNext",
             "skip":true,
             "skipReason":"UnitTest fails when run in qpm (FIXME)"
         },
@@ -84,12 +72,6 @@
         },
         {
             "suite":"TestNodeProxy_Server",
-            "test":"test_synthDef_isReleased_afterFree",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
-            "suite":"TestNodeProxy_Server",
             "test":"test_schedAfterFade_notBeforeQuant",
             "skip":true,
             "skipReason":"UnitTest fails (FIXME)"
@@ -107,12 +89,6 @@
             "skipReason":"UnitTest has bugs (FIXME)"
         },
         {
-            "suite":"TestPV_ChainUGen",
-            "test":"*",
-            "skip":true,
-            "skipReason":"Server might hang after these tests when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestSCDoc",
             "test":"test_helpSourceDirs_includedExtensions",
             "skip":true,
@@ -125,6 +101,12 @@
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
+            "suite":"TestVolume",
+            "test":"test_booting",
+            "skip":true,
+            "skipReason":"Multiple Volume synths are created when running test inside the suite"
+        },
+        {
             "suite":"TestWebView",
             "test":"test_findText_found",
             "skip":true,
@@ -135,12 +117,6 @@
             "test":"test_findText_notFound",
             "skip":true,
             "skipReason":"UnitTest sometimes fails when run in qpm"
-        },
-        {
-            "suite":"TestNodeProxySeti",
-            "test":"test_seti_nodeMap",
-            "skip":true,
-            "skipReason":"test passes on local machine but fails in GHA for unknown reasons"
         }
     ]
 }

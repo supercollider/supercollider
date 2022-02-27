@@ -543,7 +543,7 @@ jobs:
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
       SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
       SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
-      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/testclass-setup-teardown
+      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/ignore-persistent-ui-error
     steps:
       - uses: actions/checkout@v2
         with:
@@ -590,7 +590,7 @@ jobs:
 
           # install API quark
           mkdir $QUARKS_PATH && cd $QUARKS_PATH
-          git clone --depth=1 https://github.com/supercollider-quarks/API
+          git clone --depth=1 https://github.com/crucialfelix/API
 
           # make working copy of the script
           cp $SCRIPT_PROTO $SCRIPT_RUN
