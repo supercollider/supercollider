@@ -349,6 +349,9 @@ Thunk : AbstractFunction {
 	valueArray { ^this.value }
 	valueEnvir { ^this.value }
 	valueArrayEnvir { ^this.value }
+
+	didEvaluate { ^function.isNil }
+	clear { function = nil }
 }
 
 UGenThunk : Thunk {
