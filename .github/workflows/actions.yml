@@ -488,13 +488,11 @@ jobs:
         shell: bash
         run: |
           export PATH=$Qt5_DIR/bin:$PATH
+          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          EXTRA_CMAKE_FLAGS=
-          if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then EXTRA_CMAKE_FLAGS="-D CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake $EXTRA_CMAKE_FLAGS"; fi
-
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH=$Qt5_DIR -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS .. # build type is specified here for MinGW build
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
 
       - name: build
         shell: bash

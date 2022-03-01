@@ -1209,15 +1209,16 @@ if you require an advanced configuration, and are interested in this approach.
 
 ### Readline support
 
-Previously Windows builds of SuperCollider did not support command line mode for sclang due to unavailability of the `readline` library. Currently it is possible to install `readline` using [vcpkg](https://github.com/microsoft/vcpkg). Here are steps to build SC with `readline` library (the following commands assume using MSVC):
+Previously Windows builds of SuperCollider did not support command line mode for sclang due to unavailability of the `readline` library. Currently it is possible to install `readline` using [vcpkg](https://github.com/microsoft/vcpkg). Follow these steps to build SC with the `readline` library (note that the following commands assume using MSVC):
 - install `vcpkg`, if not installed already
 - install the library using `vcpkg`:  
 `vcpkg install readline --triplet=x64-windows`
-- include `vcpkg` path in `CMAKE_PREFIX_PATH` (in addition to the Qt path defined already):  
-`SET CMAKE_PREFIX_PATH=<qt_path>;<vcpkg_root>\installed\x64-windows`
+- set `VCPKG_ROOT` environment variable to point to the root `vcpkg` directory:  
+`SET VCPKG_ROOT=c:\path\to\vcpkg`
+- readline should be picked up by CMake during the configuration stage
 
 Note: 
-- For 32-bit builds use `x86-windows` instead of `x64-windows` triplet, both when installing `readline` as well as specifying `CMAKE_PREFIX_PATH`
+- For 32-bit builds use `x86-windows` instead of `x64-windows` triplet when installing `readline`
 - At the time of writing this, `readline` would not build using a triplet for MinGW
 
 Known issues
