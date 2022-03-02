@@ -28,10 +28,11 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
   
   if(GIT_BRANCH_OR_TAG STREQUAL "HEAD")
     execute_process(
-      COMMAND git describe --tags 2>/dev/null
+      COMMAND git describe --tags
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
       OUTPUT_VARIABLE GIT_BRANCH_OR_TAG
       OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
     )
     if(GIT_BRANCH_OR_TAG STREQUAL "")
       set(GIT_REF_TYPE "detached")
