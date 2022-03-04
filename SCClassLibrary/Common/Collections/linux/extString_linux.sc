@@ -23,6 +23,6 @@
 	}
 
 	openOS {
-		("xdg-open " ++ this.escapeChar($ )).systemCmd
+		["xdg-open", this].unixCmd;
 	}
 }
