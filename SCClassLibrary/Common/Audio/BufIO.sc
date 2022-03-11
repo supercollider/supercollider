@@ -190,6 +190,7 @@ MaxLocalBufs : UGen {
 
 SetBuf : WidthFirstUGen {
 	*new { arg buf, values, offset = 0;
+		values = values.asArray;
 		^this.multiNewList(['scalar', buf, offset, values.size] ++ values)
 	}
 }
