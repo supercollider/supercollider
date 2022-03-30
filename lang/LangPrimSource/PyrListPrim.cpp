@@ -471,6 +471,9 @@ int prSymbol_envirPut(struct VMGlobals* g, int numArgsPushed) {
 
     if (!ISKINDOF(dict, class_identdict_index, class_identdict_maxsubclassindex))
         return errFailed;
+    
+    if (IsNil(b))
+        return errFailed; // will call removeAt
 
     int err = identDictPut(g, dict, a, b);
     if (err)
