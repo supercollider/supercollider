@@ -717,13 +717,13 @@ void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPort
 // takes ownership of inPacket
 void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time) {
     // post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
-    inPacket->mIsBundle = IsBundle(inPacket->mData.get());
+    const auto isBundle = IsBundle(inPacket->mData.get());
 
     gLangMutex.lock();
     if (compiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
         if (compiledOK) {
-            if (inPacket->mIsBundle) {
+            if (isBundle) {
                 PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
             } else {
                 PerformOSCMessage(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum, time);
@@ -733,7 +733,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
     gLangMutex.unlock();
 }
 
-void ProcessRawMessage(int inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
+void ProcessRawMessage(size_t inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
                        double time) {
     gLangMutex.lock();
     if (compiledOK) {

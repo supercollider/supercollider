@@ -40,8 +40,6 @@ int32 Hash(ReplyAddress* inReplyAddress);
 
 struct OSC_Packet {
     std::unique_ptr<char[]> mData;
-    int32 mSize;
-    bool mIsBundle;
-
+    size_t mSize;
     ReplyAddress mReplyAddr;
 };

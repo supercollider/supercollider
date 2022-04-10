@@ -40,7 +40,7 @@
 #undef scprintf
 
 void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time);
-void ProcessRawMessage(int inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
+void ProcessRawMessage(size_t inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
                        double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,14 +76,13 @@ template <> struct MessageHandler<HandlerType::OSC> {
                               int replyPort, std::unique_ptr<char[]> data, size_t dataSize, int localPort) {
         const double timeReceived = elapsedTime(); // get time now to minimize jitter due to lang load
 
-        auto packet = std::unique_ptr<OSC_Packet>();
-
-        packet->mReplyAddr.mProtocol = protocol;
-        packet->mReplyAddr.mSocket = replySocket;
-        packet->mReplyAddr.mAddress = replyAddress;
-        packet->mReplyAddr.mPort = replyPort;
-        packet->mData = std::move(data);
-        packet->mSize = dataSize;
+        auto packet = std::make_unique<OSC_Packet>(OSC_Packet { std::move(data),
+                                                                dataSize,
+                                                                {
+                                                                    replyAddress, protocol, replyPort, replySocket,
+                                                                    nullptr, // mReplyFunc
+                                                                    nullptr // mReplyData
+                                                                } });
 
         ProcessOSCPacket(std::move(packet), localPort, timeReceived);
     }
@@ -99,6 +98,8 @@ template <> struct MessageHandler<HandlerType::Raw> {
         addrObject.mAddress = replyAddress;
         addrObject.mSocket = replySocket;
         addrObject.mPort = replyPort;
+        addrObject.mReplyFunc = nullptr;
+        addrObject.mReplyData = nullptr;
 
         ProcessRawMessage(dataSize, std::move(data), addrObject, replyPort, timeReceived);
     }
@@ -111,6 +112,7 @@ namespace Detail {
 
 TCPConnection::TCPConnection(boost::asio::io_service& ioService, int portNum, HandlerType handlerType):
     mSocket(ioService),
+    mOSCMsgLength(0),
     mPortNum(portNum) {
     initHandler(handlerType);
 }
@@ -149,8 +151,9 @@ void TCPConnection::start() {
 }
 
 void TCPConnection::handleLengthReceived(const boost::system::error_code& error, size_t bytes_transferred) {
-    if (error)
+    if (error) {
         return;
+    }
 
     namespace ba = boost::asio;
     // msglen is in network byte order
