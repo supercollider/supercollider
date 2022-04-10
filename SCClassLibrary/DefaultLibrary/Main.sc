@@ -98,32 +98,38 @@ Main : Process {
 
 	openPorts { ^openPorts.copy } // don't allow the Set to be modified from the outside
 
-	openUDPPort {|portNum|
+	openUDPPort {
+		|portNum, type=\osc|
+
 		var result;
 		if(openPorts.includes(portNum), {^true});
-		result = this.prOpenUDPPort(portNum);
+
+		switch (type,
+			\osc, {
+				result = this.prOpenOSCUDPPort(portNum)
+
+			},
+			\raw, {
+				result = this.prOpenRawUDPPort(portNum)
+			},
+			{
+				Exception("Cannot open UDP port with type '%' because it doesn't exist (types are \\osc, \\raw).".format(type)).throw
+			}
+		);
+
 		if(result, { openPorts = openPorts.add(portNum); });
 		^result;
 	}
 
-	prOpenUDPPort {|portNum|
-		_OpenUDPPort
+	prOpenOSCUDPPort {|portNum|
+		_OpenOSCUDPPort
 		^this.primitiveFailed;
 	}
 
-	openTCPPort {|portNum|
-		var result;
-		if(openPorts.includes(portNum), {^true});
-		result = this.prOpenTCPPort(portNum);
-		if(result, { openPorts = openPorts.add(portNum); });
-		^result;
-	}
-
-	prOpenTCPPort {|portNum|
-		_OpenTCPPort
+	prOpenRawUDPPort {|portNum|
+		_OpenRawUDPPort
 		^this.primitiveFailed;
 	}
-
 
 //	override in platform specific extension
 //

@@ -782,8 +782,8 @@ void init_OSC(int port) {
     }
 }
 
-int prOpenUDPPort(VMGlobals* g, int numArgsPushed);
-int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
+int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed);
+int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
     int port;
@@ -804,8 +804,8 @@ int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prOpenTCPPort(VMGlobals* g, int numArgsPushed);
-int prOpenTCPPort(VMGlobals* g, int numArgsPushed) {
+int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed);
+int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
     int port;
@@ -1418,8 +1418,8 @@ void init_OSC_primitives() {
     definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);
     definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
     definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
-    definePrimitive(base, index++, "_OpenUDPPort", prOpenUDPPort, 2, 0);
-    definePrimitive(base, index++, "_OpenTCPPort", prOpenTCPPort, 2, 0);
+    definePrimitive(base, index++, "_OpenOSCUDPPort", prOpenOSCUDPPort, 2, 0);
+    definePrimitive(base, index++, "_OpenRawUDPPort", prOpenRawUDPPort, 2, 0);
 
     // server shared memory interface
     definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
