@@ -287,6 +287,10 @@ Env {
 		^Routine({ arg inval; this.embedInStream(inval) })
 	}
 
+	streamArg {
+		^this.asStream
+	}
+
 	asPseg {
 		var c = if(curves.isSequenceableCollection.not) { curves } { Pseq(curves, inf) };
 		^Pseg(Pseq(levels), Pseq(times ++ [1.0]), c) // last time is a dummy

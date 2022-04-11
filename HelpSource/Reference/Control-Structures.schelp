@@ -310,7 +310,7 @@ x.postln;
 
 section:: Other Control Structures
 
-Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#iteration:: there are many more messages defined for iterating over Collections.
+Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#Iteration:: there are many more messages defined for iterating over Collections.
 
 section:: Inline optimization
 

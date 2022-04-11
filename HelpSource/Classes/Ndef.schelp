@@ -59,10 +59,10 @@ Ndef(\x, { Dust.ar }); // returns the proxy and set the source object.
 ::
 
 method::ar
-equivalent to code::*new(key).ar(numChannels, offset):: (see link::Classes/BusPlug#ar::)
+equivalent to code::*new(key).ar(numChannels, offset):: (see link::Classes/BusPlug#-ar::)
 
 method::kr
-equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#kr::)
+equivalent to code::*new(key).kr(numChannels, offset):: (see link::Classes/BusPlug#-kr::)
 
 method::clear
 clear all proxies

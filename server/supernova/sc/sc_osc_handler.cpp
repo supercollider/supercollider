@@ -1008,7 +1008,7 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 
         osc::OutboundPacketStream p(buffer, 4096);
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
-          << SC_VersionPostfix << SC_Branch << SC_CommitHash << osc::EndMessage;
+          << SC_VersionPostfix << SC_BranchOrTag << SC_CommitHash << osc::EndMessage;
         endpoint->send(p.Data(), p.Size());
     });
 }
@@ -1079,7 +1079,14 @@ inline void verify_argument(osc::ReceivedMessageArgumentIterator const& it,
 }
 
 template <bool IsAudio, typename slot_type>
-static void apply_control_bus_mapping(server_node& node, slot_type slot, int bus_index);
+void apply_control_bus_mapping(server_node& node, slot_type slot, size_t index, int bus) {
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_bus<IsAudio>(slot, index, bus);
+    else {
+        static_cast<abstract_group&>(node).apply_on_children(
+            [&](server_node& node) { apply_control_bus_mapping<IsAudio, slot_type>(node, slot, index, bus); });
+    }
+}
 
 template <typename control_id_type>
 void set_control_array(server_node* node, control_id_type control, osc::ReceivedMessageArgumentIterator& it) {
@@ -1101,12 +1108,12 @@ void set_control_array(server_node* node, control_id_type control, osc::Received
                 switch (name[0]) {
                 case 'c':
                     bus_id = atoi(name + 1);
-                    static_cast<sc_synth*>(node)->map_control_bus<false>(control, i, bus_id);
+                    apply_control_bus_mapping<false>(*node, control, i, bus_id);
                     break;
 
                 case 'a':
                     bus_id = atoi(name + 1);
-                    static_cast<sc_synth*>(node)->map_control_bus<true>(control, i, bus_id);
+                    apply_control_bus_mapping<true>(*node, control, i, bus_id);
                     break;
 
                 default:
@@ -1123,6 +1130,8 @@ void set_control_array(server_node* node, control_id_type control, osc::Received
         throw runtime_error("missing array end tag");
     ++it; // skip array end
 }
+
+template <bool IsAudio, typename slot_type> void apply_control_bus_mapping(server_node& node, slot_type slot, int bus);
 
 template <typename ControlSpecifier>
 void set_control(server_node* node, ControlSpecifier const& control, osc::ReceivedMessageArgumentIterator& it) {

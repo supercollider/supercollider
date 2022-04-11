@@ -43,6 +43,12 @@ Release dates of 3.x versions:
 - 3.11: 2020-03-08
 - 3.12: 2021-08-02
 
+3.12.2 (2022-01-08)
+===================
+
+### sclang: Fixed
+Revert the use of logical time for MIDI messages on macOS, which introduced other issues ([#5631](https://github.com/supercollider/supercollider/pull/5631))
+
 3.12.1 (2021-09-05)
 ===================
 

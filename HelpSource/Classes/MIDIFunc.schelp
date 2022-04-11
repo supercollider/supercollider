@@ -6,8 +6,11 @@ related:: Guides/MIDI, Classes/MIDIdef
 DESCRIPTION::
 MIDIFunc (and its subclass link::Classes/MIDIdef::) registers one or more functions to respond to an incoming MIDI message. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::.
 
-note:: MIDIFunc and link::Classes/MIDIdef:: aim to improve upon the MIDIresponder classes by being faster, easier to use, and providing support for all MIDI message types. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. Note that unlike the older classes, MIDIFuncs are removed on Cmd-. by default. This can be overridden using either of the fix or permanent methods.::
+subsection:: Important note on persistence
 
+MIDIFunc (and its subclass link::Classes/MIDIdef:: like all other
+AbstractResponderFuncs) are removed on pressing Cmd/ctrl-. To override this
+behavior, use the link::Classes/AbstractResponderFunc#-permanent:: method.
 
 CLASSMETHODS::
 private:: initClass, cmdPeriod
@@ -202,7 +205,6 @@ Train this MIDIFunc to respond to the next message of its type. Arguments passed
 
 argument:: learnVal
 A link::Classes/Boolean:: indicating whether the responder should learn the specific value. For example, if used with a control change MIDIFunc, the object would learn to match the next specific control change value. If used with a note on MIDIFunc, it would match only a specific velocity. The default is false.
-
 
 EXAMPLES::
 

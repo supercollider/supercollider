@@ -72,7 +72,7 @@ TestWebView : UnitTest {
 				condvar.signalOne;
 			};
 
-			condvar.waitFor(0.5);
+			condvar.waitFor(2);
 
 			this.assertEquals(returnedResult, expectedResult,
 				"runJavaScript(\"%\") should return the expected result %"
