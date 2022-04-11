@@ -96,6 +96,12 @@ Main : Process {
 
 	replaceOSCRecvFunc { |func, newFunc| prRecvOSCFunc = prRecvOSCFunc.replaceFunc(func, newFunc) }
 
+	addRawRecvFunc { |func| prRecvRawFunc = prRecvRawFunc.addFunc(func) }
+
+	removeRawRecvFunc { |func| prRecvRawFunc = prRecvRawFunc.removeFunc(func) }
+
+	replaceRawRecvFunc { |func, newFunc| prRecvRawFunc = prRecvRawFunc.replaceFunc(func, newFunc) }
+
 	openPorts { ^openPorts.copy } // don't allow the Set to be modified from the outside
 
 	openUDPPort {

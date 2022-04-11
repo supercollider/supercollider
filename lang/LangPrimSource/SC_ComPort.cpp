@@ -101,7 +101,7 @@ template <> struct MessageHandler<HandlerType::Raw> {
         addrObject.mReplyFunc = nullptr;
         addrObject.mReplyData = nullptr;
 
-        ProcessRawMessage(dataSize, std::move(data), addrObject, replyPort, timeReceived);
+        ProcessRawMessage(dataSize, std::move(data), addrObject, localPort, timeReceived);
     }
 };
 
