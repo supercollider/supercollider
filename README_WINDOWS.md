@@ -1216,8 +1216,6 @@ Known issues
   .unixCmd expects a unix shell, only for essential requirements workarounds
   are in place on Windows.
 
-- Serial port communication is not available.
-
 Outro
 =====
 
