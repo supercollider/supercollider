@@ -375,7 +375,7 @@ bool BufFreeCmd::Stage2() {
     mFreeData = buf->data;
 #ifndef NO_LIBSNDFILE
     if (buf->sndfile)
-        sf_close(buf->sndfile);
+        sf_close(GETSNDFILE(buf));
 #endif
     SndBuf_Init(buf);
     return true;
@@ -600,7 +600,7 @@ bool BufReadCmd::Stage2() {
     }
 
     if (buf->sndfile)
-        sf_close(buf->sndfile);
+        sf_close(GETSNDFILE(buf));
 
     if (mLeaveFileOpen) {
         buf->sndfile = sf;
@@ -903,7 +903,7 @@ bool BufReadChannelCmd::Stage2() {
 
 leave:
     if (buf->sndfile)
-        sf_close(buf->sndfile);
+        sf_close(GETSNDFILE(buf));
 
     if (mLeaveFileOpen) {
         buf->sndfile = sf;
@@ -1014,7 +1014,7 @@ bool BufWriteCmd::Stage2() {
     }
 
     if (buf->sndfile)
-        sf_close(buf->sndfile);
+        sf_close(GETSNDFILE(buf));
 
     if (mLeaveFileOpen) {
         buf->sndfile = sf;
@@ -1057,7 +1057,7 @@ bool BufCloseCmd::Stage2() {
 #else
     SndBuf* buf = World_GetNRTBuf(mWorld, mBufIndex);
     if (buf->sndfile) {
-        sf_close(buf->sndfile);
+        sf_close(GETSNDFILE(buf));
         buf->sndfile = nullptr;
     }
     return true;
