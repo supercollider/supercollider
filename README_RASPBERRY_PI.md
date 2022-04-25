@@ -50,7 +50,7 @@ Install required libraries:
 ### Step 3: GUI-less builds only: compile and install jackd (no d-bus)
 
     cd ~ # or cd into the directory where you'd like to build jack2
-    git clone git://github.com/jackaudio/jack2 --depth 1
+    git clone https://github.com/jackaudio/jack2 --depth 1
     cd jack2
     ./waf configure --alsa --libdir=/usr/lib/arm-linux-gnueabihf/
     ./waf build
