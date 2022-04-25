@@ -37,6 +37,10 @@
 
 #include "../../common/server_shm.hpp"
 
+#ifndef NO_LIBSNDFILE
+#    include <SC_SndFileHelpers.hpp> // includes sndfile.h with appropriate configuration
+#endif
+
 extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 
 
