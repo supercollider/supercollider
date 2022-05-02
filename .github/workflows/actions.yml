@@ -387,6 +387,7 @@ jobs:
             msvc-year: '2019'
             vcvars-script: 'vcvars32.bat'
             chocolatey-options: '--forcex86' # '--forcex86' for 32-bit build
+            vcpkg-triplet: x86-windows # for readline
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win32' # set if needed - will trigger artifact upload
@@ -404,6 +405,7 @@ jobs:
             msvc-year: '2019'
             vcvars-script: 'vcvars64.bat'
             chocolatey-options: '' # '--forcex86' for 32-bit build
+            vcpkg-triplet: x64-windows # for readline
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
@@ -477,10 +479,16 @@ jobs:
           curl -L https://www.steinberg.net/asiosdk -o asio.zip
           7z x asio.zip -y
           mv asiosdk_* $GITHUB_WORKSPACE/external_libraries/portaudio/asiosdk
+      - name: install readline
+        if: matrix.vcpkg-triplet
+        shell: bash
+        run: |
+          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}"
       - name: configure
         shell: bash
         run: |
           export PATH=$Qt5_DIR/bin:$PATH
+          export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
