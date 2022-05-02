@@ -281,9 +281,9 @@ x = Score([
 };
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,
 	duration: x.endTime + 1
@@ -325,10 +325,10 @@ x = Score([
 ]);
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	inputFilePath: inputFile.path,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,
 	duration: inputFile.duration
@@ -356,9 +356,9 @@ x.add([0.0, [\d_recv, SynthDescLib.global[\default].def.asBytes]]);
 x.sort;
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: ServerOptions.new.numOutputBusChannels_(2),
 	duration: 10
@@ -401,9 +401,9 @@ x.add([0.0, buf.allocReadMsg(Platform.resourceDir +/+ "sounds/a11wlk01.wav")]);
 x.sort;
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,
 	duration: 20
@@ -443,7 +443,7 @@ fork {
 	dur = sf.duration;
 	sf.close;
 
-	resultpath = PathName.tmp +/+ UniqueID.next ++ ".aiff";
+	resultpath = PathName.tmp +/+ UniqueID.next ++ ".wav";
 	oscpath = PathName.tmp +/+ UniqueID.next ++ ".osc";
 
 	score = Score([
@@ -461,7 +461,7 @@ fork {
 			BufWr.kr(i, resultbuf, DC.kr(0), 0);  // # of points in index 0
 		}).asBytes]],
 		[0, Synth.basicNew(\onsets, server, 1000).newMsg],
-		[dur, resultbuf.writeMsg(resultpath, headerFormat: "AIFF", sampleFormat: "float")]
+		[dur, resultbuf.writeMsg(resultpath, headerFormat: "wav", sampleFormat: "float")]
 	]);
 
 	cond = Condition.new;
