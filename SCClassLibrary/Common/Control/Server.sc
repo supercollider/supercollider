@@ -95,7 +95,7 @@ ServerOptions {
 				reservedNumBuffers: 0,
 				pingsBeforeConsideredDead: 5,
 				maxLogins: 1,
-				recHeaderFormat: "aiff",
+				recHeaderFormat: "wav",
 				recSampleFormat: "float",
 				recChannels: 2,
 				recBufSize: nil,
