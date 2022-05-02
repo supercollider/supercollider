@@ -40,8 +40,8 @@ Git {
 	}
 	remote {
 		// detect origin of repo or nil
-		// origin	git://github.com/supercollider-quarks/MathLib (fetch)
-		// origin	git://github.com/supercollider-quarks/MathLib (push)
+		// origin	https://github.com/supercollider-quarks/MathLib (fetch)
+		// origin	https://github.com/supercollider-quarks/MathLib (push)
 		// problem: if more than one remote then this will just detect the first
 		// should favor 'origin' if more than one
 		var out = this.git(["remote -v"]),
