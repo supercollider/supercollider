@@ -33,7 +33,8 @@ TestDocument : UnitTest {
 				};
 			}
 		} {
-			// TODO: skip
+			// TODO: decide what to do if the test is run outside of the scide
+			"test_save_method_writes_file did not complete as it was run outside the IDE".warn;
 		};
 	}
 
