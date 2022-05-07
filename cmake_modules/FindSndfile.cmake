@@ -23,7 +23,7 @@ elseif (APPLE)
     HINTS /usr/local/opt/libsndfile/include
   )
 
-  find_library(SNDFILE_LIBRARY NAMES libsndfile.dylib
+  find_library(SNDFILE_LIBRARY NAMES libsndfile.dylib libsndfile.a
     HINTS /usr/local/opt/libsndfile/lib
   )
 
@@ -32,10 +32,10 @@ elseif (APPLE)
     set(SNDFILE_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/../platform/mac/lib/scUBlibsndfile.a)
     set(SNDFILE_FOUND TRUE)
     add_definitions("-isystem ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile")
-    message(STATUS "Could not find homebrew install of libsndfile, using old bundled version instead")
+    message(STATUS "Could not find install of libsndfile, using old bundled version instead")
   else()
     set(SNDFILE_FOUND TRUE)
-    message(STATUS "Found homebrew install of libsndfile")
+    message(STATUS "Found install of libsndfile in ${SNDFILE_LIBRARY}")
     set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
   endif()
 
