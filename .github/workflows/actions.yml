@@ -268,6 +268,13 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: cache vcpkg
+        if: matrix.vcpkg-triplet
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
       - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
         if: '!steps.cache-homebrew.outputs.cache-hit'
         run: rm -rf $(brew --cache)
