@@ -313,7 +313,7 @@ jobs:
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS ..
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
