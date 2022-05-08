@@ -199,6 +199,7 @@ jobs:
             build-libsndfile: true
             vcpkg-triplet: x64-osx-dynamic # required for build-libsndfile
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+            verify-app: true
 
           - job-name: 'legacy'
             os-version: '10.15'
@@ -217,6 +218,7 @@ jobs:
             deployment-target: '10.15'
             use-syslibs: true
             shared-libscsynth: false
+            verify-app: true
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
@@ -224,6 +226,7 @@ jobs:
             deployment-target: '10.13'
             use-syslibs: false
             shared-libscsynth: true
+            verify-app: true
 
     name: macOS ${{ matrix.job-name }}
     env:
@@ -304,7 +307,9 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+
+          if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
