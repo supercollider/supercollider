@@ -421,6 +421,13 @@ jobs:
         run: |
           echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
           echo "::set-output name=week::$(date '+%V')"
+      - name: cache vcpkg
+        if: matrix.vcpkg-triplet
+        uses: actions/cache@v2
+        with:
+          path: ~/AppData/Local/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
