@@ -143,7 +143,7 @@ WARNING:: The teletype::port:: argument to link::Classes/MIDIOut#*new:: has an e
 
 link::Classes/MIDIOut#*new:: optionally takes a second argument, for the uid of the MIDI destination device. If the uid is non-zero, then: 1/ all connections in the ALSA MIDI patchbay are ignored, and 2/ individual messages will be sent directly to the specified device.
 
-link::Classes/MIDIOut#*newByName:: locates a device by name and populates the uid in the new MIDIOut object. Thus uid should be non-zero for all MIDIOut objects created using this method.
+link::Classes/MIDIOut#*newByName:: locates a device by name and populates the uid in the new MIDIOut object. After successful completion, a MIDIOut object created using this method will have a non-zero uid.
 
 note::
 A non-zero uid (whether specified in teletype::MIDIOut.new::, found by teletype::MIDIOut.newByName::, or set manually later) does not create or use any ALSA MIDI connections. It is not a "connection" at all; rather, it is a parameter that causes outgoing MIDI messages to bypass ALSA MIDI connections and go directly to one specific device. Because it is not a connection, there is nothing to show in MIDI patchbay interfaces; users should not expect to see connections for these MIDIOut objects.
