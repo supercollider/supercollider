@@ -87,6 +87,7 @@ else()
       "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
       "$ENV{ProgramFiles}/libsndfile/lib"
       "$ENV{ProgramFiles}/libsndfile/bin"
+    PATH_SUFFIXES "bin"
   )
 
   # Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if

@@ -365,7 +365,6 @@ jobs:
             cmake-generator: 'Visual Studio 16 2019'
             msvc-year: '2019'
             vcvars-script: 'vcvars32.bat'
-            chocolatey-options: '--forcex86' # '--forcex86' for 32-bit build
             vcpkg-triplet: x86-windows # for readline
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
@@ -383,7 +382,6 @@ jobs:
             cmake-generator: 'Visual Studio 16 2019'
             msvc-year: '2019'
             vcvars-script: 'vcvars64.bat'
-            chocolatey-options: '' # '--forcex86' for 32-bit build
             vcpkg-triplet: x64-windows # for readline
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
@@ -398,7 +396,6 @@ jobs:
             qt-arch: 'win64_mingw81'
             fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
             cmake-generator: 'MinGW Makefiles'
-            chocolatey-options: '' # '--forcex86' for 32-bit build
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
             ableton-link: 'OFF' # might need to be turned off for MinGW
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
@@ -442,7 +439,9 @@ jobs:
           arch: ${{ matrix.qt-arch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: install libsndfile
-        run: choco install libsndfile ${{ matrix.chocolatey-options }}
+        if: matrix.vcpkg-triplet
+        shell: bash
+        run: vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}"
       - name: download fftw
         shell: bash
         run: |
@@ -478,7 +477,7 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
 
       - name: build
         shell: bash
