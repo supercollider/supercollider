@@ -396,6 +396,7 @@ jobs:
             qt-arch: 'win64_mingw81'
             fftw-url: 'ftp://ftp.fftw.org/pub/fftw/fftw-3.3.5-dll64.zip'
             cmake-generator: 'MinGW Makefiles'
+            vcpkg-triplet: x64-mingw-dynamic-release
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
             ableton-link: 'OFF' # might need to be turned off for MinGW
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
@@ -441,7 +442,7 @@ jobs:
       - name: install libsndfile
         if: matrix.vcpkg-triplet
         shell: bash
-        run: vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}"
+        run: vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
       - name: download fftw
         shell: bash
         run: |
@@ -468,7 +469,7 @@ jobs:
         if: matrix.vcpkg-triplet
         shell: bash
         run: |
-          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}"
+          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
       - name: configure
         shell: bash
         run: |
