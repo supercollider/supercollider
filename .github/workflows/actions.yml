@@ -197,7 +197,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
-            vcpkg-triplet: x64-osx-dynamic # required for build-libsndfile
+            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
             verify-app: true
 
@@ -209,7 +209,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
-            vcpkg-triplet: x64-osx-dynamic # required for build-libsndfile
+            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
@@ -287,7 +287,7 @@ jobs:
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
           brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
-          vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}"
+          vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
