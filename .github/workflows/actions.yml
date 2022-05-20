@@ -77,8 +77,8 @@ jobs:
             use-syslibs: false
             shared-libscsynth: true
 
-          - job-name: 'bionic gcc10'
-            os-version: '18.04'
+          - job-name: 'focal gcc10'
+            os-version: '20.04'
             c-compiler: 'gcc-10'
             cxx-compiler: 'g++-10'
             use-syslibs: false
