@@ -78,6 +78,13 @@ Quark {
 		});
 		^isCompatible
 	}
+	runHook { |hook|
+		hook = hook.asSymbol;
+		if(this.data[hook].notNil, {
+			"Run % hook".format(hook).postln;
+			this.data[hook].();
+		});
+	}
 
 	install {
 		var success = Quarks.installQuark(this);
@@ -89,16 +96,20 @@ Quark {
 		if(Git.isGit(localPath), {
 			data = git = refspec = nil;
 			changed = true;
+			this.runHook(\preUpdate);
 			git = Git(localPath);
 			git.pull();
 			git.checkout("master");
+			this.runHook(\postUpdate);
 			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).postln;
 		}, {
 			("Quark" + name + "was not installed using git, cannot update.").warn;
 		});
 	}
 	uninstall {
+		this.runHook(\preUninstall);
 		Quarks.uninstallQuark(this);
+		this.runHook(\postUninstall);
 		changed = true;
 	}
 
