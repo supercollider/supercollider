@@ -83,7 +83,7 @@ jobs:
             cxx-compiler: 'g++-10'
             use-syslibs: false
             shared-libscsynth: false
-            artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
+            artifact-suffix: 'linux-focal-gcc10' # set if needed - will trigger artifact upload
 
           # - job-name: 'focal gcc10 use system libraries' # disabled - boost version incompatible
           #   os-version: '20.04'
@@ -781,9 +781,9 @@ jobs:
             artifact-extension: '.dmg'
 
           - name: Linux
-            runs-on: ubuntu-18.04
+            runs-on: ubuntu-20.04
             sclang: 'build/Install/bin/sclang'
-            artifact-suffix: linux-bionic-gcc10
+            artifact-suffix: linux-focal-gcc10
 
     needs: [lint, Linux, macOS] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
     runs-on: '${{ matrix.runs-on }}'
