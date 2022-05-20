@@ -92,6 +92,13 @@ jobs:
           #   use-syslibs: true
           #   shared-libscsynth: false
 
+          - job-name: 'jammy gcc11 use system libraries'
+            os-version: '22.04'
+            c-compiler: 'gcc-11'
+            cxx-compiler: 'g++-11'
+            use-syslibs: true
+            shared-libscsynth: false
+
           - job-name: 'bionic clang6.0'
             os-version: '18.04'
             c-compiler: 'clang-6.0'
@@ -117,6 +124,34 @@ jobs:
             os-version: '20.04'
             c-compiler: 'clang-10'
             cxx-compiler: 'clang++-10'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'focal clang11'
+            os-version: '20.04'
+            c-compiler: 'clang-11'
+            cxx-compiler: 'clang++-11'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'focal clang12'
+            os-version: '20.04'
+            c-compiler: 'clang-12'
+            cxx-compiler: 'clang++-12'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'jammy clang13'
+            os-version: '22.04'
+            c-compiler: 'clang-13'
+            cxx-compiler: 'clang++-13'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'jammy clang14'
+            os-version: '22.04'
+            c-compiler: 'clang-14'
+            cxx-compiler: 'clang++-14'
             use-syslibs: false
             shared-libscsynth: false
 
