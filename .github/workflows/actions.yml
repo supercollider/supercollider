@@ -191,7 +191,7 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
-        run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+        run: sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
