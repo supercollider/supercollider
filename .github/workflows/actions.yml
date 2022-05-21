@@ -99,10 +99,10 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'jammy gcc11 use system libraries'
+          - job-name: 'jammy gcc12 use system libraries'
             os-version: '22.04'
-            c-compiler: 'gcc-11'
-            cxx-compiler: 'g++-11'
+            c-compiler: 'gcc-12'
+            cxx-compiler: 'g++-12'
             use-syslibs: true
             shared-libscsynth: false
 
