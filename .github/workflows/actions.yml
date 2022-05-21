@@ -92,6 +92,13 @@ jobs:
           #   use-syslibs: true
           #   shared-libscsynth: false
 
+          - job-name: 'focal gcc11'
+            os-version: '20.04'
+            c-compiler: 'gcc-11'
+            cxx-compiler: 'g++-11'
+            use-syslibs: false
+            shared-libscsynth: false
+
           - job-name: 'jammy gcc11 use system libraries'
             os-version: '22.04'
             c-compiler: 'gcc-11'
