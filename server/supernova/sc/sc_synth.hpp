@@ -32,6 +32,12 @@
 
 namespace nova {
 
+struct sc_unit_cmd {
+    sc_unit_cmd* next;
+    int size;
+    char data[1];
+};
+
 class sc_synth : public abstract_synth, public Graph {
     typedef std::vector<struct Unit*, rt_pool_allocator<void*>> unit_vector;
     typedef sc_synthdef::graph_t graph_t;

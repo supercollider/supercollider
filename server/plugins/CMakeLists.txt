@@ -30,6 +30,7 @@ set(plugin_sources
 	ChaosUGens.cpp
 	DelayUGens.cpp
 	DemandUGens.cpp
+	DemoUGens.cpp
 	DynNoiseUGens.cpp
 	FilterUGens.cpp
 	GendynUGens.cpp
@@ -70,7 +71,7 @@ foreach(plugin ${plugin_sources})
 endforeach(plugin)
 
 if(AUDIOAPI STREQUAL bela)
-    # The Bela lib will have its own set of libraries and includes
+    # The Bela lib will have its own set of libraries and includes
     # However, the Bela audio backend for SC has some direct calls to Xenomai
     # Therefore we need to get flags for those as well
     find_package(Xenomai REQUIRED)

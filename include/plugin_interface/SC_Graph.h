@@ -60,5 +60,7 @@ struct Graph {
     SndBuf* mLocalSndBufs;
     int localBufNum;
     int localMaxBufNum;
+
+    void* mPrivate;
 };
 typedef struct Graph Graph;
