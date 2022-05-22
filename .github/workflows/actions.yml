@@ -197,7 +197,9 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
+            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+            verify-app: true
 
           - job-name: 'legacy'
             os-version: '10.15'
@@ -207,6 +209,7 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
+            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
@@ -215,6 +218,7 @@ jobs:
             deployment-target: '10.15'
             use-syslibs: true
             shared-libscsynth: false
+            verify-app: true
 
           - job-name: 'shared libscsynth'
             os-version: '10.15'
@@ -222,6 +226,7 @@ jobs:
             deployment-target: '10.13'
             use-syslibs: false
             shared-libscsynth: true
+            verify-app: true
 
     name: macOS ${{ matrix.job-name }}
     env:
@@ -263,6 +268,13 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: cache vcpkg
+        if: matrix.vcpkg-triplet
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
       - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
         if: '!steps.cache-homebrew.outputs.cache-hit'
         run: rm -rf $(brew --cache)
@@ -271,51 +283,11 @@ jobs:
           brew install portaudio ccache fftw
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
-      - name: build libsndfile # to make it compatible with older OSes (lower deployment target)
-        if: matrix.build-libsndfile == true
+      - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
+        if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
           brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
-          brew install automake
-          cd $GITHUB_WORKSPACE/..
-          curl -L https://gitlab.xiph.org/xiph/ogg/-/archive/v1.3.5/ogg-v1.3.5.tar.bz2 --output ogg.tar.bz2
-          tar xfz ogg.tar.bz2
-          cd ogg*/
-          echo "*** building libogg ***"
-          mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-          cmake --build . --target install
-          cd $GITHUB_WORKSPACE/..
-          curl -L https://github.com/xiph/flac/archive/refs/tags/1.3.3.tar.gz --output flac.tar.xz
-          tar xfz flac.tar.xz
-          cd flac*/
-          echo "*** building flac ***"
-          cd build # build directory already exists
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-          cmake --build . --target install
-          cd $GITHUB_WORKSPACE/..
-          curl -L https://github.com/xiph/opus/archive/refs/tags/v1.3.1.tar.gz --output opus.tar.gz
-          tar xfz opus.tar.gz
-          cd opus*/
-          echo "*** building opus ***"
-          mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-          cmake --build . --target install
-          cd $GITHUB_WORKSPACE/..
-          curl -L https://github.com/xiph/vorbis/releases/download/v1.3.7/libvorbis-1.3.7.tar.gz --output libvorbis.tar.gz
-          tar xfz libvorbis.tar.gz
-          cd libvorbis*/
-          echo "building *** libvorbis ***"
-          mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_FRAMEWORK=OFF -DBUILD_SHARED_LIBS=OFF -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-          cmake --build . --target install
-          cd $GITHUB_WORKSPACE/..
-          curl -L https://github.com/libsndfile/libsndfile/releases/download/1.0.31/libsndfile-1.0.31.tar.bz2 --output libsndfile.tar.bz2
-          tar xfz libsndfile.tar.bz2
-          cd libsndfile*/
-          echo "building libsndfile"
-          mkdir build && cd build
-          cmake -G"Unix Makefiles" -DBUILD_SHARED_LIBS=ON -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_C_FLAGS="-Wall -Wextra" -DCMAKE_INSTALL_PREFIX=/usr/local ..
-          cmake --build . --target install
+          vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
@@ -342,11 +314,18 @@ jobs:
 
           if $SHARED_LIBSCSYNTH; then EXTRA_CMAKE_FLAGS="-DLIBSCSYNTH=ON $EXTRA_CMAKE_FLAGS"; fi
 
-          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
+          if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
+
+          if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
+            export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
+            EXTRA_CMAKE_FLAGS="-DVCPKG_TARGET_TRIPLET=${{ matrix.vcpkg-triplet }} -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_FLAGS"
+          fi
 
           echo "EXTRA_CMAKE_FLAGS:" $EXTRA_CMAKE_FLAGS
 
-          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS .. --debug-output
+          cmake -G"Xcode" -DRULE_LAUNCH_COMPILE=ccache -DSUPERNOVA=ON $EXTRA_CMAKE_FLAGS ..
       - name: build
         run: cmake --build $BUILD_PATH --config Release --target install
       - name: create archive
@@ -386,8 +365,7 @@ jobs:
             cmake-generator: 'Visual Studio 16 2019'
             msvc-year: '2019'
             vcvars-script: 'vcvars32.bat'
-            chocolatey-options: '--forcex86' # '--forcex86' for 32-bit build
-            vcpkg-triplet: x86-windows # for readline
+            vcpkg-triplet: x86-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win32' # set if needed - will trigger artifact upload
@@ -404,8 +382,7 @@ jobs:
             cmake-generator: 'Visual Studio 16 2019'
             msvc-year: '2019'
             vcvars-script: 'vcvars64.bat'
-            chocolatey-options: '' # '--forcex86' for 32-bit build
-            vcpkg-triplet: x64-windows # for readline
+            vcpkg-triplet: x64-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
@@ -442,6 +419,13 @@ jobs:
         run: |
           echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
           echo "::set-output name=week::$(date '+%V')"
+      - name: cache vcpkg
+        if: matrix.vcpkg-triplet
+        uses: actions/cache@v2
+        with:
+          path: ~/AppData/Local/vcpkg/archives
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -456,7 +440,13 @@ jobs:
           arch: ${{ matrix.qt-arch }}
           cached: ${{ steps.cache-qt.outputs.cache-hit }}
       - name: install libsndfile
-        run: choco install libsndfile ${{ matrix.chocolatey-options }}
+        shell: bash
+        run: |
+          if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
+            vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+          else
+            choco install libsndfile --no-progress ${{ matrix.chocolatey-options }}
+          fi
       - name: download fftw
         shell: bash
         run: |
@@ -483,7 +473,7 @@ jobs:
         if: matrix.vcpkg-triplet
         shell: bash
         run: |
-          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}"
+          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
       - name: configure
         shell: bash
         run: |
@@ -492,7 +482,7 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release .. # build type is specified here for MinGW build
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
 
       - name: build
         shell: bash
