@@ -386,8 +386,8 @@ code::
 a = 9;
 b = [1, a, 6, 8];
 c = [1, b, 5];
-c.pointsto(b); // true
-c.pointsto(a); // false
+c.pointsTo(b); // true
+c.pointsTo(a); // false
 ::
 
 method::mutable
