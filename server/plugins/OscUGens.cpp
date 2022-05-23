@@ -1394,7 +1394,6 @@ void SinOscFB_next_kk(SinOscFB* unit, int inNumSamples) {
 }
 
 void SinOscFB_Ctor(SinOscFB* unit) {
-    // Print("next_ik\n");
     SETCALC(SinOscFB_next_kk);
 
     int tableSize2 = ft->mSineSize;
@@ -1407,6 +1406,7 @@ void SinOscFB_Ctor(SinOscFB* unit) {
     unit->m_phase = 0;
 
     SinOscFB_next_kk(unit, 1);
+    unit->m_phase = 0;
 }
 
 
