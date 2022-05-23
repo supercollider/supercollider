@@ -1552,30 +1552,27 @@ void OscN_Ctor(OscN* unit) {
     unit->m_radtoinc = tableSize * (rtwopi * 65536.);
 
     unit->m_phasein = ZIN0(2);
-    // Print("OscN_Ctor\n");
+    int32 initphase;
     if (INRATE(1) == calc_FullRate) {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_naa\n");
             SETCALC(OscN_next_naa);
-            unit->m_phase = 0;
         } else {
-            // Print("next_nak\n");
             SETCALC(OscN_next_nak);
-            unit->m_phase = 0;
         }
+        unit->m_phase = initphase = 0;
+        OscN_next_naa(unit, 1);
     } else {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_nka\n");
             SETCALC(OscN_next_nka);
-            unit->m_phase = 0;
+            unit->m_phase = initphase = 0;
+            OscN_next_naa(unit, 1);
         } else {
-            // Print("next_nkk\n");
             SETCALC(OscN_next_nkk);
-            unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            unit->m_phase = initphase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            OscN_next_nkk(unit, 1);
         }
     }
-
-    OscN_next_nkk(unit, 1);
+    unit->m_phase = initphase;
 }
 
 
