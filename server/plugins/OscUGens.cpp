@@ -1138,10 +1138,12 @@ void PSinGrain_Ctor(PSinGrain* unit) {
     unit->mCounter = (int32)(sdur + .5);
 
     /* calc feedback param and initial conditions */
-    unit->m_b1 = 2. * cos(w);
-    unit->m_y1 = 0.f;
-    unit->m_y2 = -sin(w) * amp;
-    ZOUT0(0) = 0.f;
+    double b1, y1, y2;
+    unit->m_b1 = b1 = 2. * cos(w);
+    unit->m_y1 = y1 = -sin(w) * amp;
+    unit->m_y2 = y2 = -sin(w + w) * amp;
+
+    ZOUT0(0) = b1 * y1 - y2;
 }
 
 
