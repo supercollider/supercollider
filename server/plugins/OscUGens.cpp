@@ -2016,6 +2016,9 @@ void VOsc3_Ctor(VOsc3* unit) {
     unit->m_phase3 = 0;
 
     VOsc3_next_ik(unit, 1);
+    unit->m_phase1 = 0;
+    unit->m_phase2 = 0;
+    unit->m_phase3 = 0;
 }
 
 void VOsc3_next_ik(VOsc3* unit, int inNumSamples) {
