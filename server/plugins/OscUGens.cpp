@@ -2168,7 +2168,11 @@ void Formant_Ctor(Formant* unit) {
     unit->m_phase1 = 0;
     unit->m_phase2 = 0;
     unit->m_phase3 = 0;
+
     Formant_next(unit, 1);
+    unit->m_phase1 = 0;
+    unit->m_phase2 = 0;
+    unit->m_phase3 = 0;
 }
 
 #define tqcyc13 0x18000000
