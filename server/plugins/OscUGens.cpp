@@ -1003,7 +1003,7 @@ void Shaper_Ctor(Shaper* unit) {
     } else {
         SETCALC(Shaper_next_k);
     }
-    unit->mPrevIn = ZIN0(0);
+    unit->mPrevIn = ZIN0(1);
     Shaper_next_1(unit, 1);
 }
 
