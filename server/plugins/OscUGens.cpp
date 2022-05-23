@@ -2235,6 +2235,9 @@ void Blip_Ctor(Blip* unit) {
     unit->m_phase = 0;
 
     Blip_next(unit, 1);
+    unit->m_N = N;
+    unit->m_scale = 0.5 / N;
+    unit->m_phase = 0;
 }
 
 void Blip_next(Blip* unit, int inNumSamples) {
