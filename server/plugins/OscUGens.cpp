@@ -372,7 +372,7 @@ void DegreeToKey_Ctor(DegreeToKey* unit) {
     unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
     if (BUFLENGTH == 1) {
         SETCALC(DegreeToKey_next_1);
-    } else if (INRATE(0) == calc_FullRate) {
+    } else if (INRATE(1) == calc_FullRate) {
         SETCALC(DegreeToKey_next_a);
     } else {
         SETCALC(DegreeToKey_next_k);
