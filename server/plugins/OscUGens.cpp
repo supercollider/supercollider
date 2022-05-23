@@ -1334,6 +1334,7 @@ void SinOsc_Ctor(SinOsc* unit) {
     unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
     unit->m_lomask = (tableSize2 - 1) << 3;
 
+    int32 initPhase;
     if (INRATE(0) == calc_FullRate) {
         if (INRATE(1) == calc_FullRate)
             SETCALC(SinOsc_next_iaa);
@@ -1342,19 +1343,20 @@ void SinOsc_Ctor(SinOsc* unit) {
         else
             SETCALC(SinOsc_next_iai);
 
-        unit->m_phase = 0;
+        unit->m_phase = initPhase = 0;
+        SinOsc_next_iaa(unit, 1);
     } else {
         if (INRATE(1) == calc_FullRate) {
-            // Print("next_ika\n");
             SETCALC(SinOsc_next_ika);
-            unit->m_phase = 0;
+            unit->m_phase = initPhase = 0;
+            SinOsc_next_iaa(unit, 1);
         } else {
             SETCALC(SinOsc_next_ikk);
-            unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            unit->m_phase = initPhase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            SinOsc_next_ikk(unit, 1);
         }
     }
-
-    SinOsc_next_ikk(unit, 1);
+    unit->m_phase = initPhase;
 }
 
 
