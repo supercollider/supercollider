@@ -925,6 +925,8 @@ void DetectIndex_Ctor(DetectIndex* unit) {
         SETCALC(DetectIndex_next_k);
     }
     unit->mPrev = -1.f;
+    // ensure in != unit->mPrevIn on first frame
+    unit->mPrevIn = std::numeric_limits<float>::quiet_NaN();
     DetectIndex_next_1(unit, 1);
 }
 
