@@ -115,9 +115,6 @@ check_c_source_compiles("
   "
   SNDFILE_HAS_VORBIS
 )
-if(SNDFILE_HAS_VORBIS)
-  add_compile_definitions(SNDFILE_HAS_VORBIS)
-endif()
 
 check_c_source_compiles("
     # include <sndfile.h>
@@ -125,9 +122,6 @@ check_c_source_compiles("
   "
   SNDFILE_HAS_OPUS
 )
-if(SNDFILE_HAS_OPUS)
-  add_compile_definitions(SNDFILE_HAS_OPUS)
-endif()
 
 check_c_source_compiles("
     # include <sndfile.h>
@@ -135,9 +129,5 @@ check_c_source_compiles("
   "
   SNDFILE_HAS_MPEG
 )
-if(SNDFILE_HAS_MPEG)
-  add_compile_definitions(SNDFILE_HAS_MPEG)
-endif()
-
 
 cmake_pop_check_state()
