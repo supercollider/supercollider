@@ -219,41 +219,56 @@ This is a link::Classes/String:: indicating the header format which was read by 
 definitionList::
 ## read/write header formats: ||
 table::
-## "AIFF" || Apple/SGI AIFF format
-## "WAV","WAVE", "RIFF" || Microsoft WAV format
-## "Sun", "NeXT" || Sun/NeXT AU format
-## "SD2" || Sound Designer 2
-## "IRCAM" || Berkeley/IRCAM/CARL
-## "raw" || no header = raw data
-## "MAT4" || Matlab (tm) V4.2 / GNU Octave 2.0
-## "MAT5" || Matlab (tm) V5.0 / GNU Octave 2.1
-## "PAF" || Ensoniq PARIS file format
-## "SVX" || Amiga IFF / SVX8 / SV16 format
-## "NIST" || Sphere NIST format
-## "VOC" || VOC files
-## "W64" || Sonic Foundry's 64 bit RIFF/WAV
-## "PVF" || Portable Voice Format
-## "XI" || Fasttracker 2 Extended Instrument
-## "HTK" || HMM Tool Kit format
-## "SDS" || Midi Sample Dump Standard
-## "AVR" || Audio Visual Research
-## "FLAC" || FLAC lossless file format
-## "CAF" || Core Audio File format
+## strong:: header :: || strong:: description:: || strong:: filename extensions:: || strong::notes::
+## "AIFF" || Apple/SGI AIFF format || .aif, .aiff ||
+## "WAV","WAVE", "RIFF" || Microsoft WAV format || .wav, .wave ||
+## "Sun", "NeXT" || Sun/NeXT AU format || .au, .snd ||
+## "SD2" || Sound Designer 2 || .sd2 ||
+## "IRCAM" || Berkeley/IRCAM/CARL || .sf ||
+## "raw" || no header = raw data || ||
+## "MAT4" || Matlab (tm) V4.2 / GNU Octave 2.0 || .mat4 ||
+## "MAT5" || Matlab (tm) V5.0 / GNU Octave 2.1 || .mat5 ||
+## "PAF" || Ensoniq PARIS file format || .paf ||
+## "SVX" || Amiga IFF / SVX8 / SV16 format || .svx ||
+## "NIST" || Sphere NIST format || .nist, .sph ||
+## "VOC" || VOC files || .voc ||
+## "W64" || Sonic Foundry's 64 bit RIFF/WAV || .w64 || supports files larger than 4GB
+## "PVF" || Portable Voice Format || .pvf ||
+## "XI" || Fasttracker 2 Extended Instrument || .xm ||
+## "HTK" || HMM Tool Kit format || .htk ||
+## "SDS" || Midi Sample Dump Standard || .sds ||
+## "AVR" || Audio Visual Research || .avr ||
+## "FLAC" || FLAC lossless file format || .flac ||
+## "CAF" || Core Audio File format || .caf || supports files larger than 4GB
+## "RF64" || RF64 WAV format || .wav || supports files larger than 4GB
+## "OGG" || Xiph OGG container || .ogg || use .ogg extension for the "vorbis" format (see below)
+## "MPEG" || MPEG container || .mp1, .mp2, .mp3 || file extension depends on the format (see below)
 ::
 ::
-Additionally, a huge number of other formats are supported read only. Please note that WAV file support is limited to 4GB. For output of multiple channels or very long recordings we suggest to use W64 (or CAF on macOS).
+Additionally, a huge number of other formats are supported read only. Please note that WAV file support is limited to 4GB. For output of multiple channels or very long recordings we suggest to use RF64, W64, or CAF (on macOS).
+
 
 method::sampleFormat
-A link::Classes/String:: indicating the format of the sample data which was read by link::#-openRead:: and will be written by link::#-openWrite::. libsndfile determines which header formats support which sample formats. This information is detailed at http://www.mega-nerd.com/libsndfile . The possible header formats are:
+A link::Classes/String:: indicating the format of the sample data which was read by link::#-openRead:: and will be written by link::#-openWrite::. libsndfile determines which header formats support which sample formats. This information is detailed at http://www.mega-nerd.com/libsndfile . The possible sample formats are:
 definitionList::
 ## sample formats: ||
 table::
-## "int8", "int16", "int24", "int32"
-## "mulaw", "alaw",
-## "float"
+## strong:: format :: || strong:: notes:: || strong::supported headers:: (partial list) 
+## "int8", "int16", "int24", "int32" || integer formats || "AIFF", "WAV", "RF64", "W64", "CAF", "FLAC" 
+## "float" || floating-point format (won't clip above 0dB) || "AIFF", "WAV", "RF64", "W64", "CAF" 
+## "mulaw", "alaw" || U-law and A-law encoding|| "WAV", "W64" 
+## "vorbis" || "Vorbis" compressed format || "OGG" 
+## "mp1", "mp2", "mp3" ||  MPEG Layer I, II, and III compressed formats || "MPEG" (see strong::NOTE:: below)
 ::
 ::
 Not all header formats support all sample formats.
+
+Note::
+Support for code::MPEG:: formats requires code::libsndfile:: library that supports it. This library is included in SuperCollider's macOS and Windows release builds version teletype::3.13:: and up. However, on platforms where system installation of libsndfile is used (e.g. Linux), or when building SC locally, MPEG support requires code::libsndfile:: version teletype::1.1.0:: or higher and that the library was built with the MPEG functionality enabled.
+::
+
+Currently there's no way to control the quality (bitrate) when writing OGG vorbis and MPEG files - the default bitrate set in libsndfile is used.
+
 
 method::numFrames
 The number of sample frames in the file.
