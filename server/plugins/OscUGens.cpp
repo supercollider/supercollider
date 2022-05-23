@@ -1439,29 +1439,27 @@ void Osc_Ctor(Osc* unit) {
 
     unit->m_phasein = ZIN0(2);
 
+    int32 initphase;
     if (INRATE(1) == calc_FullRate) {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_iaa\n");
             SETCALC(Osc_next_iaa);
-            unit->m_phase = 0;
         } else {
-            // Print("next_iak\n");
             SETCALC(Osc_next_iak);
-            unit->m_phase = 0;
         }
+        unit->m_phase = initphase = 0;
+        Osc_next_iaa(unit, 1);
     } else {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_ika\n");
             SETCALC(Osc_next_ika);
-            unit->m_phase = 0;
+            unit->m_phase = initphase = 0;
+            Osc_next_iaa(unit, 1);
         } else {
-            // Print("next_ikk\n");
             SETCALC(Osc_next_ikk);
-            unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            unit->m_phase = initphase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            Osc_next_ikk(unit, 1);
         }
     }
-
-    Osc_next_ikk(unit, 1);
+    unit->m_phase = initphase;
 }
 
 force_inline bool Osc_get_table(Osc* unit, const float*& table0, const float*& table1, int inNumSamples) {
