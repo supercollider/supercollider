@@ -2378,7 +2378,10 @@ void Saw_Ctor(Saw* unit) {
     unit->m_phase = 0;
     unit->m_y1 = -0.46f;
 
-    ZOUT0(0) = 0.f;
+    Saw_next(unit, 1);
+    unit->m_scale = 0.5 / unit->m_N;
+    unit->m_phase = 0;
+    unit->m_y1 = -0.46f;
 }
 
 void Saw_next(Saw* unit, int inNumSamples) {
