@@ -203,6 +203,9 @@ Index : PureUGen {
 	}
 }
 
+FoldIndex : Index {
+}
+
 WrapIndex : Index {
 }
 
