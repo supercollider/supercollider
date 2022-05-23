@@ -1787,15 +1787,17 @@ void VOsc_Ctor(VOsc* unit) {
     unit->m_phasein = ZIN0(2);
     unit->m_phaseoffset = (int32)(unit->m_phasein * unit->m_radtoinc);
 
+    double initphase;
     if (INRATE(2) == calc_FullRate) {
         SETCALC(VOsc_next_ika);
-        unit->m_phase = 0;
+        unit->m_phase = initphase = 0;
+        VOsc_next_ika(unit, 1);
     } else {
         SETCALC(VOsc_next_ikk);
-        unit->m_phase = unit->m_phaseoffset;
+        unit->m_phase = initphase = unit->m_phaseoffset;
+        VOsc_next_ikk(unit, 1);
     }
-
-    VOsc_next_ikk(unit, 1);
+    unit->m_phase = initphase;
 }
 
 void VOsc_next_ikk(VOsc* unit, int inNumSamples) {
