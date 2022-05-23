@@ -11,10 +11,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-if(APPLE)
-    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
-endif()
-
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
 # scsynth uses vDSP implementation for FFT on macOS
