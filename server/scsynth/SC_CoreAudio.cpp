@@ -300,6 +300,8 @@ void Perform_ToEngine_Msg(FifoMsg* inMsg) {
 
 PacketStatus PerformCompletionMsg(World* inWorld, const OSC_Packet& inPacket) {
     OSC_Packet* packet = (OSC_Packet*)World_Alloc(inWorld, sizeof(OSC_Packet));
+    if (packet == NULL)
+        throw std::runtime_error("PerformCompletionMsg allocation failed: out of memory!\n");
     *packet = inPacket;
     packet->mIsBundle = gIsBundle.checkIsBundle((int32*)packet->mData);
     PacketStatus status = PerformOSCPacket(inWorld, packet, SC_ScheduledEvent::FreeInRT);

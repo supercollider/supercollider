@@ -49,7 +49,9 @@ int Node_New(World* inWorld, NodeDef* def, int32 inID, Node** outNode) {
     }
 
     Node* node = (Node*)World_Alloc(inWorld, def->mAllocSize);
-
+    if (!node) {
+        return kSCErr_OutOfRealTimeMemory;
+    }
     node->mWorld = inWorld;
     node->mDef = def;
     node->mParent = nullptr;

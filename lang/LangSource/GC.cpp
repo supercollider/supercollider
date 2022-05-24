@@ -306,6 +306,7 @@ PyrObject* PyrGC::NewPermanent(size_t inNumBytes, long inFlags, long inFormat) {
 
     // allocate permanent objects
     PyrObject* obj = (PyrObject*)pyr_pool_runtime->Alloc(allocSize);
+    MEMFAIL(obj);
 
     obj->gc_color = obj_permanent;
     obj->next = obj->prev = nullptr;

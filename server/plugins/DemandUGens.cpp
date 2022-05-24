@@ -419,12 +419,7 @@ void Demand_Ctor(Demand* unit) {
         OUT0(i) = 0.f;
 
     char* memoryChunk = (char*)RTAlloc(unit->mWorld, unit->mNumOutputs * (sizeof(float) + sizeof(float*)));
-
-    if (!memoryChunk) {
-        Print("Demand: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(memoryChunk);
 
     unit->m_prevout = (float*)memoryChunk;
     unit->m_out = (float**)(memoryChunk + unit->mNumOutputs * sizeof(float));
@@ -1863,12 +1858,7 @@ void Dshuf_Ctor(Dshuf* unit) {
 
     uint32 size = (unit->mNumInputs) - 1;
     unit->m_indices = (int32*)RTAlloc(unit->mWorld, size * sizeof(int32));
-
-    if (!unit->m_indices) {
-        Print("Dshuf: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_indices);
 
     for (uint32 i = 0; i < size; ++i)
         unit->m_indices[i] = i + 1;
@@ -2094,12 +2084,7 @@ void Dpoll_Ctor(Dpoll* unit) {
     const int idStringSize = (int)IN0(3);
 
     unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idStringSize + 1) * sizeof(char));
-
-    if (!unit->m_id_string) {
-        Print("Dpoll: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_id_string);
 
     for (int i = 0; i < idStringSize; i++)
         unit->m_id_string[i] = (char)IN0(4 + i);

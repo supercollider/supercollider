@@ -3309,6 +3309,7 @@ void Normalizer_Ctor(Normalizer* unit) {
     // allocsize = NEXTPOWEROFTWO(allocsize);
 
     unit->m_table = (float*)RTAlloc(unit->mWorld, allocsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_table);
 
     unit->m_pos = 0;
     unit->m_flips = 0;
@@ -3397,6 +3398,7 @@ void Limiter_Ctor(Limiter* unit) {
     allocsize = NEXTPOWEROFTWO(allocsize);
 
     unit->m_table = (float*)RTAlloc(unit->mWorld, allocsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_table);
 
     unit->m_flips = 0;
     unit->m_pos = 0;

@@ -2715,17 +2715,6 @@ void Pulse_next(Pulse* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static float Klang_SetCoefs(Klang* unit) {
-    unit->m_numpartials = (unit->mNumInputs - 2) / 3;
-
-    int numcoefs = unit->m_numpartials * 3;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
-
-    if (!unit->m_coefs) {
-        Print("Klang: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return 0.f;
-    }
-
     float freqscale = ZIN0(0) * unit->mRate->mRadiansPerSample;
     float freqoffset = ZIN0(1) * unit->mRate->mRadiansPerSample;
 
@@ -2751,6 +2740,10 @@ static float Klang_SetCoefs(Klang* unit) {
 
 void Klang_Ctor(Klang* unit) {
     SETCALC(Klang_next);
+    unit->m_numpartials = (unit->mNumInputs - 2) / 3;
+    int numcoefs = unit->m_numpartials * 3;
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_coefs);
     ZOUT0(0) = Klang_SetCoefs(unit);
 }
 
@@ -2906,11 +2899,7 @@ static void Klank_SetCoefs(Klank* unit) {
 
     int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
     unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
-    if (!unit->m_coefs) {
-        Print("Klang: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_coefs);
 
     unit->m_buf = unit->m_coefs + numcoefs;
 
