@@ -105,6 +105,8 @@ Quark {
 			git = Git(localPath);
 			git.pull();
 			git.checkout("master");
+			// force reload of data by resetting it to nil
+			data = nil;
 			this.runHook(\postUpdate);
 			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).postln;
 		}, {
