@@ -82,7 +82,12 @@ Quark {
 		hook = hook.asSymbol;
 		if(this.data[hook].notNil, {
 			"Run % hook".format(hook).postln;
-			this.data[hook].(this.data);
+			try {
+				this.data[hook].(this.data);
+			} { |e|
+				"Encountered error while running hook '%' for Quark('%'). Installation or update for this Quark may not have completed correctly.".warn;
+				e.throw();
+			}
 		});
 	}
 
