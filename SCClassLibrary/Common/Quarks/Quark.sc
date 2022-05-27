@@ -82,7 +82,7 @@ Quark {
 		hook = hook.asSymbol;
 		if(this.data[hook].notNil, {
 			"Run % hook".format(hook).postln;
-			this.data[hook].();
+			this.data[hook].(this.data);
 		});
 	}
 
