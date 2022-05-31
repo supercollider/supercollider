@@ -101,6 +101,12 @@
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
+            "suite":"TestUGen_RTAlloc",
+            "test":"test_allUGens",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in qpm (FIXME)"
+        },
+        {
             "suite":"TestVolume",
             "test":"test_booting",
             "skip":true,
