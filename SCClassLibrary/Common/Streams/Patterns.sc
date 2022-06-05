@@ -134,6 +134,7 @@ Pattern : AbstractFunction {
 						(
 							type: \on, id: nodeID, instrument: defname,
 							bus: bus, group: group, addAction: \addAfter,
+							bufnum: buffer,
 							delta: 0,
 							callback: { nodeID = ~id }
 						),
