@@ -130,6 +130,9 @@ EZKnob : EZGui {
 
 	centered{ ^knobView.centered }
 
+	align_ { arg aligment; numberView.align_(aligment) }
+	align{ ^numberView.align }
+
 
 	setColors{arg stringBackground,stringColor,numBackground,
 		numStringColor,numNormalColor,numTypingColor,knobColors,background;
