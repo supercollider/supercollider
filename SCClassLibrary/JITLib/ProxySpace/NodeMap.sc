@@ -135,7 +135,7 @@ ProxyNodeMap : NodeMap {
 			var rate = if(value.respondsTo(\rate) and:{
 				value.rate == \audio
 			}) { \audio } { \control };
-			res = res.add(ControlName(key, nil, rate, value))
+			res = res.add(ControlName(key, nil, rate, value.asControlInput))
 		};
 		^res
 	}
