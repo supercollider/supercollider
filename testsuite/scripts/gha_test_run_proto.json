@@ -83,12 +83,6 @@
             "skipReason":"UnitTest fails when run in qpm on Linux (FIXME)"
         },
         {
-            "suite":"TestProxyNodeMap",
-            "test":"test_nodeMap_controlNamesConvertsObjectToControlInput",
-            "skip":true,
-            "skipReason":"UnitTest has bugs (FIXME)"
-        },
-        {
             "suite":"TestSCDoc",
             "test":"test_helpSourceDirs_includedExtensions",
             "skip":true,
