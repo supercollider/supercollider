@@ -21,7 +21,7 @@ if((file = File(path, "r")).isOpen) {
 For backward compatibility, code::.die():: creates the error for you.
 
 code::
-"Nothing is really wrong; just committing suicide for fun. A Harold and Maude moment.".die;
+"Keyboard not found. Press F1 to Resume.".die;
 ::
 
 Throwing an error object gives the caller the opportunity to catch, and possibly recover from, the error. See the Exception help file for more information about this.
