@@ -526,7 +526,7 @@ method::setRates
 set the default rate (\tr, \ir, numerical) for synthDef arg. A rate of nil removes setting.
 
 method::controlNames
-Returns the link::Classes/ControlName:: objects of all slots, strong::except:: the names of this list (default: code::[\out, \i_out, \gate, \fadeTime]:: , which are used internally).
+Returns the link::Classes/ControlName:: objects of all slots, strong::except:: the names of this list (default: code::[\out, \i_out, \gate, \fadeTime]:: , which are used internally). When the node proxy received a code::set:: for a given key, the code::defaultValue:: of the corresponding code::ControlName:: contains the object that was passed, which might be any object whatsoever.
 
 method::controlKeys
 Returns the keys (symbols) of all control names objects of all slots, strong::except:: the names of this list. (default: none).
