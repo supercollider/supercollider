@@ -621,16 +621,9 @@ higher priority than the environment path. So if you bump into a case, please
 report it to the SC community. Or even better: create a pull request on Github
 that enhances the build system.
 
-Of course there could also be bugs in the SC source. A source for the
-current build status of SC is the travis-ci status page:
+You can find the status of the current automated build from the `develop` branch at the GitHub Actions page:
 
-https://travis-ci.org/supercollider/supercollider
-
-Unfortunately though there is no Continuous Integration system in place for
-Windows yet. Therefore you are strongly encouraged to report Windows build
-issues in one of the mailing lists, or the SC issue tracker on Github.
-Reporting Windows build issues is currently the only way to detect errors
-for SCWin resulting from progress in mainstream SC development.
+https://github.com/supercollider/supercollider/actions/workflows/actions.yml?query=branch%3Adevelop
 
 Walkthroughs
 ------------
