@@ -517,7 +517,7 @@ method::unset, unmap
 Remove specified settings and unmap or unset the synths.
 
 method::xset
-set/map with a crossfade into the new setting. The crossfadeT time is the NodeProxy link::#-fadeTime::.
+set/map with a crossfade into the new setting. The crossfade time is the NodeProxy link::#-fadeTime::.
 
 method::lag
 set the lag values of these args (identical to link::#-setRates::). To remove these settings, use: code::lag(\key1, nil, key2, nil, ...)::
