@@ -505,7 +505,7 @@ SynthDef {
 			ugen.initTopoSort;
 		};
 		children.reverseDo { arg ugen;
-			ugen.descendants = ugen.descendants.asArray.sort(
+			ugen.antecedents = ugen.antecedents.asArray.sort(
 								{ arg a, b; a.synthIndex < b.synthIndex }
 							);
 			ugen.makeAvailable; // all ugens with no antecedents are made available
@@ -525,7 +525,7 @@ SynthDef {
 		{
 			outStack = available.pop.schedule(outStack);
 		};
-		children = outStack;
+		children = outStack.reverse;
 		this.cleanupTopoSort;
 	}
 	indexUGens {
