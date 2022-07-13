@@ -504,7 +504,7 @@ SynthDef {
 			// this populates the descendants and antecedents
 			ugen.initTopoSort;
 		};
-		children.reverseDo { arg ugen;
+		children.do { arg ugen;
 			ugen.antecedents = ugen.antecedents.asArray.sort(
 								{ arg a, b; a.synthIndex < b.synthIndex }
 							);
