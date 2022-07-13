@@ -508,7 +508,7 @@ SynthDef {
 			ugen.antecedents = ugen.antecedents.asArray.sort(
 								{ arg a, b; a.synthIndex < b.synthIndex }
 							);
-			ugen.makeAvailable; // all ugens with no antecedents are made available
+			ugen.makeAvailable; // all ugens with no descendants are made available
 		};
 	}
 	cleanupTopoSort {
