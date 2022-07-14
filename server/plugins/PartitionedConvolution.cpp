@@ -71,25 +71,32 @@ void PartConv_Ctor(PartConv* unit) {
     unit->m_fftsize = (int)ZIN0(1);
     unit->m_nover2 = unit->m_fftsize >> 1;
 
+    unit->m_scfft = unit->m_scifft = nullptr;
+    unit->m_irspectra = unit->m_inputbuf2 = unit->m_spectrum2 = unit->m_output = unit->m_fd_accumulate = nullptr;
     unit->m_inputbuf = (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
     unit->m_spectrum = (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_inputbuf && unit->m_spectrum);
 
     SCWorld_Allocator alloc(ft, unit->mWorld);
     unit->m_scfft = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_inputbuf, unit->m_spectrum,
                                  kForward, alloc);
+    ClearUnitIfMemFailed(unit->m_scfft);
 
     // inverse
     unit->m_inputbuf2 = (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
     unit->m_spectrum2 = (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_inputbuf2 && unit->m_spectrum2);
     // in place this time
     unit->m_scifft = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_inputbuf2, unit->m_spectrum2,
                                   kBackward, alloc);
 
+    ClearUnitIfMemFailed(unit->m_scifft);
     // debug test: changing scale factors in case amplitude summation is a problem
     // unit->m_scfft->scalefac=1.0/45.254833995939;
     // unit->m_scifft->scalefac=1.0/45.254833995939;
 
     unit->m_output = (float*)RTAlloc(unit->mWorld, unit->m_fftsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_output);
     unit->m_outputpos = 0;
 
     memset(unit->m_output, 0, unit->m_fftsize * sizeof(float));
@@ -97,7 +104,7 @@ void PartConv_Ctor(PartConv* unit) {
     unit->m_pos = 0;
 
     // get passed in buffer
-    unit->m_fd_accumulate = NULL;
+    unit->m_fd_accumulate = nullptr;
 
     uint32 bufnum = (uint32)ZIN0(2);
     SndBuf* buf;
@@ -180,6 +187,7 @@ void PartConv_Ctor(PartConv* unit) {
         // unit->m_lastamort);
 
         unit->m_fd_accumulate = (float*)RTAlloc(unit->mWorld, unit->m_fullsize * sizeof(float));
+        ClearUnitIfMemFailed(unit->m_fd_accumulate);
         memset(unit->m_fd_accumulate, 0, unit->m_fullsize * sizeof(float));
         unit->m_fd_accum_pos = 0;
 
@@ -396,10 +404,24 @@ void PreparePartConv(World* world, struct SndBuf* buf, struct sc_msg_iter* msg) 
     // numpartitions*fftsize, frames2);
 
     float* inputbuf = (float*)RTAlloc(world, fftsize * sizeof(float));
+    if (inputbuf == nullptr) {
+        printf("PreparePartConv: memory allocation failed.\n");
+        return;
+    }
     float* spectrum = (float*)RTAlloc(world, fftsize * sizeof(float));
-
+    if (spectrum == nullptr) {
+        RTFree(world, inputbuf);
+        printf("PreparePartConv: memory allocation failed.\n");
+        return;
+    }
     SCWorld_Allocator alloc(ft, world);
     scfft* m_scfft = scfft_create(fftsize, fftsize, kRectWindow, inputbuf, spectrum, kForward, alloc);
+    if (m_scfft == nullptr) {
+        RTFree(world, inputbuf);
+        RTFree(world, spectrum);
+        printf("PreparePartConv: memory allocation failed.\n");
+        return;
+    }
 
     memset(inputbuf, 0, sizeof(float) * fftsize); // for zero padding
 

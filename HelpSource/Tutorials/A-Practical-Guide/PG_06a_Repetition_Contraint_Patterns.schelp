@@ -14,19 +14,19 @@ These patterns allow you to repeat single values, or (in the case of Pn) entire 
 definitionList::
 ## code::Pclutch(pattern, connected):: || If the code::connected:: pattern is true, link::Classes/Pclutch:: returns the next value from code::pattern::. If code::connected:: is false, the previous pattern value is repeated. It's like a clutch in a car: when engaged, the pattern moves forward; when disconnected, it stays where it is.
 ## code::Pn(pattern, repeats):: || Embeds the source pattern code::repeats:: times: simple repetition. This also works on single values: code::Pn(1, 5):: outputs the number 1 5 times.
-## code::Pstutter(n, pattern):: || code::n:: and code::pattern:: are both patterns. Each value from code::pattern:: is repeated code::n:: times. If code::n:: is a pattern, each value can be repeated a different number of times.
-## code::PdurStutter(n, pattern):: || Like Pstutter, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).
+## code::Pdup(n, pattern):: || code::n:: and code::pattern:: are both patterns. Each value from code::pattern:: is repeated code::n:: times. If code::n:: is a pattern, each value can be repeated a different number of times.
+## code::Psubdivide(n, pattern):: || Like Pdup, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).
 
-See also link::Classes/Pstep::, described in link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::. Pstep can be used like link::Classes/Pstutter::, but repetition is controlled by time rather than number of repeats per item.
+See also link::Classes/Pstep::, described in link::Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns::. Pstep can be used like link::Classes/Pdup::, but repetition is controlled by time rather than number of repeats per item.
 
 code::
 // play repeated notes with a different rhythmic value per new pitch
-// using Pstutter
+// using Pdup
 p = Pbind(
 		// making 'n' a separate stream so that degree and dur can share it
 	\n, Pwhite(3, 10, inf),
-	\degree, Pstutter(Pkey(\n), Pwhite(-4, 11, inf)),
-	\dur, Pstutter(Pkey(\n), Pwhite(0.1, 0.4, inf)),
+	\degree, Pdup(Pkey(\n), Pwhite(-4, 11, inf)),
+	\dur, Pdup(Pkey(\n), Pwhite(0.1, 0.4, inf)),
 	\legato, 0.3
 ).play;
 
@@ -57,7 +57,7 @@ p.stop;
 // so here, nonzero Pdiff values "connect" the clutch and allow a new dur to be generated
 // otherwise the old one is held
 p = Pbind(
-	\degree, Pstutter(Pwhite(3, 10, inf), Pwhite(-4, 11, inf)),
+	\degree, Pdup(Pwhite(3, 10, inf), Pwhite(-4, 11, inf)),
 	\dur, Pclutch(Pwhite(0.1, 0.4, inf), Pdiff(Pkey(\degree)).abs > 0),
 	\legato, 0.3
 ).play;

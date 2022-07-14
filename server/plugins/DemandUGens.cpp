@@ -149,6 +149,12 @@ struct Dstutter : public Unit {
     float m_value;
 };
 
+struct Ddup : public Unit {
+    double m_repeats;
+    double m_repeatCount;
+    float m_value;
+};
+
 struct Dpoll : public Unit {
     char* m_id_string;
     bool m_mayprint;
@@ -240,6 +246,9 @@ void Dswitch_next(Dswitch* unit, int inNumSamples);
 
 void Dstutter_Ctor(Dstutter* unit);
 void Dstutter_next(Dstutter* unit, int inNumSamples);
+
+void Ddup_Ctor(Ddup* unit);
+void Ddup_next(Ddup* unit, int inNumSamples);
 
 void Dpoll_Ctor(Dpoll* unit);
 void Dpoll_Ctor(Dpoll* unit);
@@ -410,12 +419,7 @@ void Demand_Ctor(Demand* unit) {
         OUT0(i) = 0.f;
 
     char* memoryChunk = (char*)RTAlloc(unit->mWorld, unit->mNumOutputs * (sizeof(float) + sizeof(float*)));
-
-    if (!memoryChunk) {
-        Print("Demand: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(memoryChunk);
 
     unit->m_prevout = (float*)memoryChunk;
     unit->m_out = (float**)(memoryChunk + unit->mNumOutputs * sizeof(float));
@@ -1854,12 +1858,7 @@ void Dshuf_Ctor(Dshuf* unit) {
 
     uint32 size = (unit->mNumInputs) - 1;
     unit->m_indices = (int32*)RTAlloc(unit->mWorld, size * sizeof(int32));
-
-    if (!unit->m_indices) {
-        Print("Dshuf: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_indices);
 
     for (uint32 i = 0; i < size; ++i)
         unit->m_indices[i] = i + 1;
@@ -1971,6 +1970,39 @@ void Dstutter_Ctor(Dstutter* unit) {
     OUT0(0) = 0.f;
 }
 
+void Ddup_next(Ddup* unit, int inNumSamples) {
+    if (inNumSamples) {
+        if (unit->m_repeatCount >= unit->m_repeats) {
+            float val = DEMANDINPUT_A(1, inNumSamples);
+            float repeats = DEMANDINPUT_A(0, inNumSamples);
+
+            if (sc_isnan(repeats) || sc_isnan(val)) {
+                OUT0(0) = NAN;
+                return;
+            } else {
+                unit->m_value = val;
+                unit->m_repeats = floor(repeats + 0.5f);
+                unit->m_repeatCount = 0.f;
+            }
+        }
+
+        OUT0(0) = unit->m_value;
+        unit->m_repeatCount++;
+
+    } else {
+        unit->m_repeats = -1.f;
+        unit->m_repeatCount = 0.f;
+        RESETINPUT(0);
+        RESETINPUT(1);
+    }
+}
+
+void Ddup_Ctor(Ddup* unit) {
+    SETCALC(Ddup_next);
+    Ddup_next(unit, 0);
+    OUT0(0) = 0.f;
+}
+
 //////////////////////////////
 
 void Dconst_next(Dconst* unit, int inNumSamples) {
@@ -2052,12 +2084,7 @@ void Dpoll_Ctor(Dpoll* unit) {
     const int idStringSize = (int)IN0(3);
 
     unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idStringSize + 1) * sizeof(char));
-
-    if (!unit->m_id_string) {
-        Print("Dpoll: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_id_string);
 
     for (int i = 0; i < idStringSize; i++)
         unit->m_id_string[i] = (char)IN0(4 + i);
@@ -2314,6 +2341,7 @@ PluginLoad(Demand) {
     DefineSimpleUnit(Dswitch1);
     DefineSimpleUnit(Dswitch);
     DefineSimpleUnit(Dstutter);
+    DefineSimpleUnit(Ddup);
     DefineSimpleUnit(Dconst);
     DefineSimpleUnit(Dreset);
     DefineDtorUnit(Dpoll);

@@ -79,6 +79,9 @@ SynthDesc {
 			this.populateMetadataFunc.value(desc);
 			if(desc.def.notNil and: { stream.isKindOf(CollStream).not }) {
 				desc.def.metadata ?? { desc.def.metadata = () };
+				if(desc.metadata.notNil) {
+					desc.def.metadata.putAll(desc.metadata);
+				};
 				desc.def.metadata.put(\shouldNotSend, true)
 					.put(\loadPath, path);
 			};
@@ -269,7 +272,7 @@ SynthDesc {
 			ugenInputs = ugenInputs.add(input);
 		};
 
-		rate = #[\scalar,\control,\audio][rateIndex];
+		rate = #[\scalar, \control, \audio, \demand][rateIndex];
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 
@@ -343,7 +346,7 @@ SynthDesc {
 			ugenInputs = ugenInputs.add(input);
 		};
 
-		rate = #[\scalar,\control,\audio][rateIndex];
+		rate = #[\scalar, \control, \audio, \demand][rateIndex];
 		ugen = ugenClass.newFromDesc(rate, numOutputs, ugenInputs, specialIndex).source;
 		ugen.addToSynth(ugen);
 
@@ -627,6 +630,9 @@ SynthDescLib {
 			SynthDesc.populateMetadataFunc.value(desc);
 			if(desc.def.notNil and: { stream.isKindOf(CollStream).not }) {
 				desc.def.metadata ?? { desc.def.metadata = () };
+				if(desc.metadata.notNil) {
+					desc.def.metadata.putAll(desc.metadata);
+				};
 				desc.def.metadata.put(\shouldNotSend, true)
 					.put(\loadPath, path);
 			};

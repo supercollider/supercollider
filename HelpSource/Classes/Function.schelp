@@ -369,6 +369,35 @@ method::protect
 
 Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
 
+subsection:: Scheduling
+
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the function was
+scheduled when its scheduling time is up. It calls link::#-value::, passing
+on the scheduling time in beats as an argument. 
+
+argument:: beats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: seconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: clock
+The clock on which the object was scheduled.
+
+returns::
+The value returned by the function's link::#-value::. A caller clock uses
+this value to reschedule the function.
+
+code::
+// Runs every 2 seconds
+AppClock.play({ "And again".postln; 2 });
+::
+
 subsection::Audio
 
 method::play
@@ -612,6 +641,29 @@ code::
 Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
+subsection:: Bela
+
+method:: belaScope
+Like link::Classes/Function#-scope::, plays and scopes this Function, but using Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+This Function's output bus is monitored right after the generated Synth.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: target
+A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+note:: this Function's play target needs to be on a Server that supports BelaScope::
+
+argument:: numChannels
+Number of channels to scope, from this Function's output channels. Defaults to this Function's output channels.
+
+argument:: outbus
+argument:: fadeTime
+argument:: addAction
+argument:: args
+See link::Classes/Function#-scope::
+
+returns:: Like link::Classes/Function#-play::, a Synth playing this function. When that synth is freed, so will be its monitor.
 
 examples::
 

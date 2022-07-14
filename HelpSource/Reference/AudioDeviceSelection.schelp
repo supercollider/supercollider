@@ -72,23 +72,27 @@ section:: Linux
 By default, SuperCollider on Linux uses JACK, and the audio device selection is managed by the JACK server. teletype::ServerOptions:: cannot override JACK's selection of audio hardware.
 
 subsection:: Setup with JACK server
-note::The SuperCollider server is considered a JACK emphasis::client::. In the following section, the term emphasis::client:: will refer to the SuperCollider server, from the perspective of JACK. ::
+The SuperCollider server is considered a JACK emphasis::client::. In the following section, the term emphasis::client:: will refer to the SuperCollider server, from the perspective of JACK.
 
 When the server is compiled to use JACK as the audio backend, the code::ServerOption::'s teletype::device:: can be used in two ways:
-list::
-## to set the client name to register with JACK:
+to set the client name to register with JACK:
 code::
 Server.default.options.device = "my_synth";
 ::
-## to use a specific JACK server, as well as set the client name:
+to use a specific JACK server, as well as set the client name:
 code::
 Server.default.options.device = "JACKServerName:scsynthName";
 ::
-::
 A code::nil:: device is equivalent to code::Server.default.options.device = "default:SuperCollider";::
 
+subsection:: Jack Environment variables
+
 The JACK connections can be configured via the environment variables teletype::SC_JACK_DEFAULT_INPUTS:: and
-teletype::SC_JACK_DEFAULT_OUTPUTS::. The format is either a string that specifies another jack client or a comma-separated list of jack ports.
+teletype::SC_JACK_DEFAULT_OUTPUTS::. These allow SuperCollider to detect system preferences for Jack inputs and outputs to/from the scsynth server. 
+
+These variables are written as a string that specifies another jack client or a comma-separated list of jack ports formatted as a string.
+
+If these are not set, SuperCollider will default to connecting SuperCollider's inputs and outputs to your system's inputs and outputs. This is the recommended way of changing the Jack environment variables for SuperCollider from within a SuperCollider script:
 
 code::
 // connect first to input channels with system
@@ -96,6 +100,13 @@ code::
 
 // connect all output channels with system
 "SC_JACK_DEFAULT_OUTPUTS".setenv("system");
+::
+
+As an alternative, these may be also be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell:
+
+code::
+export SC_JACK_DEFAULT_INPUTS = "system"
+export SC_JACK_DEFAULT_OUTPUTS = "system"
 ::
 
 section:: Windows
@@ -117,6 +128,8 @@ ServerOptions.outDevices; // output devices
 ::
 Partial device name matching is supported in Windows (though not in macOS).
 
+note:: Leaving the code::sampleRate:: (e.g. code::Server.default.options.sampleRate::) as code::nil:: for an code::ASIO:: device will likely result in setting the hardware to run at 44100 Hz.::
+
 subsection:: Choosing the device and the API
 list::
 ##If you need to specify the device, you will need to do so for both input and output (setting both code::.inDevice::, as well as code::.outDevice::), unless you use ASIO
@@ -130,7 +143,7 @@ definitionlist::
 ## ASIO
 ||
 LIST::
-## strong::Maximum channel count: :: Supports an arbitrary number of input/output channels, if supported by the hardware
+## strong::Maximum channel count: :: Supports an arbitrary number of input/output channels, as provided by the hardware
 ## strong::Typical latency: :: Low
 ## strong::Caveats: :: Dedicated ASIO driver needs to be provided by the audio device's manufacturer; this is common for most (semi-)professional interfaces, but not necessarily for internal soundcards
 ## strong::More info: :: Designed for pro-audio devices; control over sampling rate and hardware buffer size is usually provided by the driver's control panel (i.e. not settable by SuperCollider); ASIO stands for Audio Stream Input/Output and was developed by Steinberg
@@ -138,7 +151,7 @@ LIST::
 ## WASAPI
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Low
 ## strong::Caveats: :: If the requested sample rate is different than the device's sample rate, the server will not boot
 ## strong::More info: :: WASAPI stands for Windows Audio Session API and is the most modern Windows audio API
@@ -146,7 +159,7 @@ LIST::
 ## WDM-KS
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Low
 ## strong::Caveats: :: On some systems SuperCollider will prevent other applications from using the audio device when using this API
 ## strong::More info: :: WDM-KS stands for Windows Driver Model Kernel Streaming. It was the first native Windows API providing reasonably low latency
@@ -154,7 +167,7 @@ LIST::
 ## DirectSound
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: Moderate/high
 ## strong::Caveats: :: It is an older API and typically provides worse performance than the newer ones
 ## strong::More info: :: DirectSound is part of DirectX and was originally created with game audio in mind
@@ -162,7 +175,7 @@ LIST::
 ## MME
 ||
 LIST::
-## strong::Maximum channel count: :: Usually supports mono or stereo only
+## strong::Maximum channel count: :: Typically supports mono or stereo only; devices with more than 2 channels might be represented as multiple stereo pairs
 ## strong::Typical latency: :: High
 ## strong::Caveats: :: It is the oldest API on this list; it is chosen by default if the user does not specify which device to use
 ## strong::More info: :: This API might work out-of-the-box, but choosing a newer one instead will usually provide better performance; MME stands for Multimedia Extension (for Windows 3.0)

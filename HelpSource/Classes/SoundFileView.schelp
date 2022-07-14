@@ -716,7 +716,7 @@ f.close;
 
 (
 var w = Window("test", Rect(700, 200, 600, 300)),
-file, sfv, sfZoom, mouseButton,
+sfv, sfZoom, mouseButton,
 dur = d.size / f.sampleRate / f.numChannels;
 
 w.layout = VLayout(

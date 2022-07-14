@@ -9,9 +9,9 @@ Before getting to the really cool things patterns can do, we need to build up a 
 
 Some of the patterns will be demonstrated with a Pbind construct. This is a taste of things to come -- sequencing sonic events using patterns. Don't worry about how Pbind works just yet... all in good time.
 
-Let's start with a very quick reference of some basic patterns. More complete descriptions follow this list. The list might seem long at first, but concentrate your attention on patterns marked with a star. Those are the most basic, and commonly used. Again, the purpose is to start learning the vocabulary of patterns -- like learning new words when studying a human language.
+Let's start with a very quick reference of some basic patterns. More complete descriptions follow this list. The list might seem long at first, but concentrate your attention on the patterns called "primary patterns". They are the most basic, and commonly used. 
 
-This document describes a lot of patterns, but what I call "primary patterns" are the most important. If you are new to patterns, concentrate on these first. You can always come back and look at the rest later.
+Again, the purpose is to start learning the vocabulary of patterns -- like learning new words when studying a human language. You can always come back and look at the rest later.
 
 For more information on any of these patterns, select the class name and use the help key for your editor to open its help file.
 

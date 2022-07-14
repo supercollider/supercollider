@@ -34,8 +34,8 @@ TestNode_Server : UnitTest {
 
 	// this one currently fails with supernova (3.9.3)
 	test_getn {
-		var setnValues, getnValues, node, timeout = 1;
-		var condition = Condition.new;
+		var setnValues, getnValues, node;
+		var condvar = CondVar();
 
 		SynthDef(\test_getn, { |control1 = 2, control2 = 22.2, control3 = 222| }).add;
 		server.sync;
@@ -50,10 +50,10 @@ TestNode_Server : UnitTest {
 		getnValues = 0;
 		node.getn(0, 3, { |values|
 			getnValues = values;
-			condition.test = true;
+			condvar.signalOne;
 		});
 
-		this.wait({ condition.test }, "getn response timed out after % seconds.".format(timeout), timeout);
+		condvar.waitFor(1);
 
 		this.assertArrayFloatEquals(getnValues, setnValues, "Node:getn works", 0.001);
 		node.free;

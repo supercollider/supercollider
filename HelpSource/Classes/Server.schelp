@@ -11,7 +11,7 @@ The server application represented by a Server object might be running on the sa
 
 Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
-A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
+A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (main output level).
 
 note::
 By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::
@@ -27,6 +27,17 @@ The server application may be in three different states: running, not running, o
 code::
 s.serverRunning // returns true if it is true
 ::
+
+note::
+If you get the message code::"Mismatched sample rates are not supported.":: it may be helpful to follow these steps:
+code::
+1. set your device to the sample rate you want
+2. check the device name in the boot posting of the server
+3. set both sample rate and device (s.options.sampleRate = …; s.options.device = "…")
+4. reboot the server: "s.reboot"
+::
+::
+Some insights about common Server issues can be found on the FAQ link::Guides/UserFAQ#Server Issues#Server Issues::
 
 
 ClassMethods::
@@ -75,7 +86,7 @@ s.boot;
 // on remote machine connecting to server
 (
 o = ServerOptions.new;
-o.options.maxLogins = 2;
+o.maxLogins = 2;
 t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correct address and port
 // info about returned client ID should be posted in the post window
 t.makeWindow; // make a window for monitoring
@@ -249,6 +260,8 @@ You cannot boot a server app on a remote machine, but you can initialize the all
 method:: quit
 quit the server application
 
+note:: If the server is unresponsive at the time of calling this method, it will be forced to quit immediately.::
+
 argument::onComplete
 A function that is called when quit has completed.
 
@@ -381,8 +394,12 @@ The getter returns the client ID of this client on the remote process. code::nil
 The setter attempts to set the client ID of this client for the remote server process. Fails on invalid input or if the server is running. Valid inputs are in the range code::[0..(this.maxNumClients-1)]::.
 
 method:: hasShmInterface
-Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous Control Bus Methods::.
 The shared memory interface is initialized after first server boot.
+
+warning::
+Currently, the shared memory interface treats server port as an unique identifier. In the rare case when there are multiple servers running on the same machine and listening on the same port, this leads to the shared memory interface of one of the servers being overwritten by the other.
+::
 
 method:: serverBooting
 code::true:: if the server is booting, code::false:: otherwise.
@@ -659,7 +676,7 @@ this is optional, and is passed to code::prepareForRecord:: (above).
 argument:: bus
 the bus to record - defaults to 0
 argument:: numChannels
-the number of channels to record - defaults to server numChannels
+the number of channels to record - defaults to 2
 argument:: node
 the node to record - defaults to server rootnode
 argument:: duration
@@ -681,7 +698,7 @@ method:: recChannels
 Get/set the number of channels (int) to record. By default this is set to 2 (stereo) but can be increased to record soundfiles with many more channels. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
-Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
+Get/set the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
 Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
@@ -714,7 +731,7 @@ one or more OSC messages which will be bundled before the sync message (thus ens
 allows for the message to be evaluated at a specific point in the future.
 
 discussion::
-This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
+This may be slightly less safe than sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
 code::
 (
 Routine.run {
@@ -752,4 +769,19 @@ Routine.run {
 )
 ::
 
+subsection:: Bela
 
+method:: belaScope
+Scope a number of channels from a Bus on this Server, to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+It is required that this Server is running on a Bela, and that it is thus capable of using BelaScope.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: index
+This server's bus index to scope. Defaults to 0.
+
+argument:: numChannels
+Number of channels to send to BelaScope, starting from the index supplied. Defaults to 2, or to link::Classes/ServerOptions#-numOutputBusChannels:: if index is 0.
+
+returns:: A link::Classes/Synth::, linking this Server's desired bus channels to BelaScope's bus.

@@ -52,7 +52,7 @@ AllpassC : CombN { }
 BufDelayN : UGen {
 
 	*ar { arg buf = 0, in = 0.0, delaytime = 0.2, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', buf, in.asAudioRateInput, delaytime).madd(mul, add)
+		^this.multiNew('audio', buf, in.asAudioRateInput(this), delaytime).madd(mul, add)
 	}
 	*kr { arg buf = 0, in = 0.0, delaytime = 0.2, mul = 1.0, add = 0.0;
 		^this.multiNew('control', buf, in, delaytime).madd(mul, add)

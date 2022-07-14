@@ -54,10 +54,10 @@ Now let's replace the posting statements with instructions to play a synth. Prep
 
 code::
 (
-SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1|
+SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1, out|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2);	// sig ! 2 is the same as [sig, sig]
+	Out.ar(out, sig ! 2);	// sig ! 2 is the same as [sig, sig]
 }).add;
 
 r = Routine({
@@ -172,10 +172,10 @@ dur = Routine({
 	[2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3].do({ |dur| dur.yield });
 });
 
-SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5, out|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2)
+	Out.ar(out, sig ! 2)
 }).add;
 
 r = Task({

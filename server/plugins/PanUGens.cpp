@@ -1268,20 +1268,17 @@ void PanAz_next_ak_nova(PanAz* unit, int inNumSamples);
 #endif
 
 void PanAz_Ctor(PanAz* unit) {
+    unit->m_chanamp = nullptr;
     if (INRATE(1) == calc_FullRate) {
-        unit->m_chanamp = NULL;
         SETCALC(PanAz_next_aa);
+        PanAz_next_aa(unit, 1);
     } else {
         int numOutputs = unit->mNumOutputs;
         for (int i = 0; i < numOutputs; ++i)
             ZOUT0(i) = 0.f;
 
         unit->m_chanamp = (float*)RTAlloc(unit->mWorld, numOutputs * sizeof(float));
-        if (!unit->m_chanamp) {
-            Print("PanAz: RT memory allocation failed\n");
-            SETCALC(ClearUnitOutputs);
-            return;
-        }
+        ClearUnitIfMemFailed(unit->m_chanamp);
 
         std::fill_n(unit->m_chanamp, numOutputs, 0);
 
@@ -1293,6 +1290,7 @@ void PanAz_Ctor(PanAz* unit) {
 #else
         SETCALC(PanAz_next_ak);
 #endif
+        PanAz_next_ak(unit, 1);
     }
 }
 

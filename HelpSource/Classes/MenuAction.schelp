@@ -14,7 +14,7 @@ METHOD:: new
 	Create a new Action. Note that one action may occupy multiple menus and toolbars.
 
 	ARGUMENT:: string
-		The name of the action. This will be it's display name if added to a menu.
+		The name of the action. This will be its display name if added to a menu.
 
 	ARGUMENT:: function
 		A function to perform when the action is activated.

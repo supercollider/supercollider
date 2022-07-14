@@ -37,6 +37,10 @@
 
 #include "../../common/server_shm.hpp"
 
+#ifndef NO_LIBSNDFILE
+#    include <SC_SndFileHelpers.hpp> // includes sndfile.h with appropriate configuration
+#endif
+
 extern HashTable<struct UnitDef, Malloc>* gUnitDefLib;
 
 
@@ -130,6 +134,21 @@ struct HiddenWorld {
     const char* mInputStreamsEnabled;
     const char* mOutputStreamsEnabled;
 #endif
+
+#ifdef SC_BELA
+    uint32 mBelaAnalogInputChannels;
+    uint32 mBelaAnalogOutputChannels;
+    uint32 mBelaDigitalChannels;
+    float mBelaHeadphoneLevel;
+    float mBelaPgaGainLeft;
+    float mBelaPgaGainRight;
+    bool mBelaSpeakerMuted;
+    float mBelaDacLevel;
+    float mBelaAdcLevel;
+    uint32 mBelaNumMuxChannels;
+    uint32 mBelaPru;
+#endif
+
     const char* mInDeviceName;
     const char* mOutDeviceName;
     class server_shared_memory_creator* mShmem;

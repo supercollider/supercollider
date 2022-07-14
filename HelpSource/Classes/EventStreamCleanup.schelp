@@ -68,6 +68,8 @@ The outevent that is passed on downstreams and which communicates to any stream-
 ARGUMENT:: function
 The function that is called for cleanup. E.g. code::{ group.free }::.
 
+RETURNS:: a link::Classes/CallOnce:: that executes the cleanup code::function:: at most once. Should it be necessary to execute the cleanup outside of the control of code::EventStreamCleanup::, the CallOnce returned should be used instead of the original code::function::, so that other referents are informed of the execution of the cleanup.
+
 METHOD:: update
 For every new event, the cleanup must be updated to receive information from any input stream further up. This method is called from all streams that may stop early (e.g. link::Classes/Pmono:: or link::Classes/Pfindur::).
 

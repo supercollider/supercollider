@@ -178,7 +178,7 @@ argument::quant
 see the link::Classes/Quant:: helpfile
 
 discussion::
-using link::Classes/Object#idle#Object:idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
+using link::Classes/Object#-idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
 code::
 // for 6 seconds, return 200, then continue
 (

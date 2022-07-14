@@ -587,13 +587,7 @@ static void LocalBuf_allocBuffer(LocalBuf* unit, SndBuf* buf, int numChannels, i
     // numFrames, numSamples * sizeof(float));
     const int alignment = 128; // in bytes
     unit->chunk = (float*)RTAlloc(unit->mWorld, numSamples * sizeof(float) + alignment);
-
-    if (!unit->chunk) {
-        if (unit->mWorld->mVerbosity > -2) {
-            Print("failed to allocate memory for LocalBuffer\n");
-        }
-        return;
-    }
+    ClearUnitIfMemFailed(unit->chunk);
 
     buf->data = (float*)((intptr_t)((char*)unit->chunk + (alignment - 1)) & -alignment);
 
@@ -611,7 +605,7 @@ static void LocalBuf_allocBuffer(LocalBuf* unit, SndBuf* buf, int numChannels, i
 
 void LocalBuf_Ctor(LocalBuf* unit) {
     Graph* parent = unit->mParent;
-
+    unit->chunk = nullptr;
     int offset = unit->mWorld->mNumSndBufs;
     int bufnum = parent->localBufNum;
     float fbufnum;
@@ -626,6 +620,8 @@ void LocalBuf_Ctor(LocalBuf* unit) {
         parent->localBufNum = parent->localBufNum + 1;
 
         LocalBuf_allocBuffer(unit, unit->m_buf, (int)IN0(0), (int)IN0(1));
+        if (!unit->chunk)
+            fbufnum = -1.f;
     }
 
     OUT0(0) = fbufnum;
@@ -651,6 +647,7 @@ void MaxLocalBufs_Ctor(MaxLocalBufs* unit) {
     int maxBufNum = (int)(IN0(0) + .5f);
     if (!parent->localMaxBufNum) {
         parent->mLocalSndBufs = (SndBuf*)RTAlloc(unit->mWorld, maxBufNum * sizeof(SndBuf));
+        ClearUnitIfMemFailed(parent->mLocalSndBufs);
 #ifdef SUPERNOVA
         for (int i = 0; i != maxBufNum; ++i)
             new (&parent->mLocalSndBufs[i]) SndBuf();
@@ -768,11 +765,7 @@ handle_failure:
     }                                                                                                                  \
     if (!unit->mIn) {                                                                                                  \
         unit->mIn = (float**)RTAlloc(unit->mWorld, numInputs * sizeof(float*));                                        \
-        if (unit->mIn == NULL) {                                                                                       \
-            unit->mDone = true;                                                                                        \
-            ClearUnitOutputs(unit, inNumSamples);                                                                      \
-            return;                                                                                                    \
-        }                                                                                                              \
+        ClearUnitIfMemFailed(unit->mIn);                                                                               \
     }                                                                                                                  \
     float** in = unit->mIn;                                                                                            \
     for (uint32 i = 0; i < numInputs; ++i) {                                                                           \
@@ -1232,7 +1225,7 @@ void BufWr_next(BufWr* unit, int inNumSamples) {
 void RecordBuf_Ctor(RecordBuf* unit) {
     uint32 numInputs = unit->mNumInputs - 8;
     unit->m_fbufnum = -1e9f;
-    unit->mIn = 0;
+    unit->mIn = nullptr;
     unit->m_writepos = (int32)ZIN0(1) * numInputs;
     unit->m_recLevel = ZIN0(2);
     unit->m_preLevel = ZIN0(3);
@@ -1708,6 +1701,7 @@ void Pitch_Ctor(Pitch* unit) {
     unit->m_size = sc_max(unit->m_maxperiod << 1, unit->m_execPeriod);
 
     unit->m_buffer = (float*)RTAlloc(unit->mWorld, unit->m_size * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_buffer);
 
     unit->m_index = 0;
     unit->m_readp = 0;
@@ -3443,7 +3437,7 @@ void BufAllpassC_next_a_z(BufAllpassC* unit, int inNumSamples) { BufAllpassC_per
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static bool DelayUnit_AllocDelayLine(DelayUnit* unit, const char* className) {
+static bool DelayUnit_AllocDelayLine(DelayUnit* unit) {
     long delaybufsize = (long)ceil(unit->m_maxdelaytime * SAMPLERATE + 1.f);
     delaybufsize = delaybufsize + BUFLENGTH;
     delaybufsize = NEXTPOWEROFTWO(delaybufsize); // round up to next power of two
@@ -3457,16 +3451,8 @@ static bool DelayUnit_AllocDelayLine(DelayUnit* unit, const char* className) {
 	std::fill_n(unit->m_dlybuf, delaybufsize, std::numeric_limits<float>::signaling_NaN());
 #endif
 
-    if (unit->m_dlybuf == NULL) {
-        SETCALC(ft->fClearUnitOutputs);
-        ClearUnitOutputs(unit, 1);
-
-        if (unit->mWorld->mVerbosity > -2)
-            Print("Failed to allocate memory for %s ugen.\n", className);
-    }
-
     unit->m_mask = delaybufsize - 1;
-    return (unit->m_dlybuf != NULL);
+    return (unit->m_dlybuf != nullptr);
 }
 
 template <typename Unit> static float CalcDelay(Unit* unit, float delaytime) {
@@ -3475,12 +3461,12 @@ template <typename Unit> static float CalcDelay(Unit* unit, float delaytime) {
     return sc_clip(next_dsamp, minDelay, unit->m_fdelaylen);
 }
 
-template <typename Unit> static bool DelayUnit_Reset(Unit* unit, const char* className) {
+template <typename Unit> static bool DelayUnit_Reset(Unit* unit) {
     unit->m_maxdelaytime = ZIN0(1);
     unit->m_delaytime = ZIN0(2);
-    unit->m_dlybuf = 0;
+    unit->m_dlybuf = nullptr;
 
-    if (!DelayUnit_AllocDelayLine(unit, className))
+    if (!DelayUnit_AllocDelayLine(unit))
         return false;
 
     unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);
@@ -3495,10 +3481,10 @@ void DelayUnit_Dtor(DelayUnit* unit) { RTFree(unit->mWorld, unit->m_dlybuf); }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename Unit> static bool FeedbackDelay_Reset(Unit* unit, const char* className) {
+template <typename Unit> static bool FeedbackDelay_Reset(Unit* unit) {
     unit->m_decaytime = ZIN0(3);
 
-    bool allocationSucessful = DelayUnit_Reset(unit, className);
+    bool allocationSucessful = DelayUnit_Reset(unit);
     if (!allocationSucessful)
         return false;
 
@@ -3600,12 +3586,12 @@ static bool DelayUnit_init_0(DelayUnit* unit) {
         return false;
 }
 
-enum { initializationComplete, initializationIncomplete };
+enum { allocFailed, initializationComplete, initializationIncomplete };
 
-template <typename Delay> static int Delay_Ctor(Delay* unit, const char* className) {
-    bool allocationSucessful = DelayUnit_Reset(unit, className);
+template <typename Delay> static int Delay_Ctor(Delay* unit) {
+    bool allocationSucessful = DelayUnit_Reset(unit);
     if (!allocationSucessful)
-        return initializationComplete;
+        return allocFailed;
 
     // optimize for a constant delay of zero
     if (DelayUnit_init_0(unit))
@@ -3616,8 +3602,12 @@ template <typename Delay> static int Delay_Ctor(Delay* unit, const char* classNa
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void DelayN_Ctor(DelayN* unit) {
-    if (Delay_Ctor(unit, "DelayN") == initializationComplete)
+    int ctor_status = Delay_Ctor(unit);
+    if (ctor_status == allocFailed) {
+        ClearUnitOnMemFailed;
+    } else if (ctor_status == initializationComplete) {
         return;
+    }
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(DelayN_next_a_z);
@@ -3694,8 +3684,12 @@ void DelayN_next_a_z(DelayN* unit, int inNumSamples) { DelayN_perform_a<true>(un
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void DelayL_Ctor(DelayL* unit) {
-    if (Delay_Ctor(unit, "DelayL") == initializationComplete)
+    int ctor_status = Delay_Ctor(unit);
+    if (ctor_status == allocFailed) {
+        ClearUnitOnMemFailed;
+    } else if (ctor_status == initializationComplete) {
         return;
+    }
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(DelayL_next_a_z);
@@ -3724,8 +3718,12 @@ void DelayL_next_a_z(DelayL* unit, int inNumSamples) { DelayL_perform_a<true>(un
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void DelayC_Ctor(DelayC* unit) {
-    if (Delay_Ctor(unit, "DelayC") == initializationComplete)
+    int ctor_status = Delay_Ctor(unit);
+    if (ctor_status == allocFailed) {
+        ClearUnitOnMemFailed;
+    } else if (ctor_status == initializationComplete) {
         return;
+    }
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(DelayC_next_a_z);
@@ -3825,9 +3823,8 @@ inline void FilterX_perform_a(CombX* unit, int inNumSamples, UnitCalcFunc resetF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CombN_Ctor(CombN* unit) {
-    bool allocationSucessful = FeedbackDelay_Reset(unit, "CombN");
-    if (!allocationSucessful)
-        return;
+    bool allocationSucessful = FeedbackDelay_Reset(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(CombN_next_a_z);
@@ -4006,9 +4003,8 @@ void CombN_next_a_z(CombN* unit, int inNumSamples) { CombN_perform_a<true>(unit,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CombL_Ctor(CombL* unit) {
-    bool allocationSucessful = FeedbackDelay_Reset(unit, "CombL");
-    if (!allocationSucessful)
-        return;
+    bool allocationSucessful = FeedbackDelay_Reset(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(CombL_next_a_z);
@@ -4036,9 +4032,8 @@ void CombL_next_a_z(CombL* unit, int inNumSamples) { CombL_perform_a<true>(unit,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void CombC_Ctor(CombC* unit) {
-    bool allocationSucessful = FeedbackDelay_Reset(unit, "CombC");
-    if (!allocationSucessful)
-        return;
+    bool allocationSucessful = FeedbackDelay_Reset(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(CombC_next_a_z);
@@ -4068,9 +4063,8 @@ void CombC_next_a_z(CombC* unit, int inNumSamples) { CombC_perform_a<true>(unit,
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void AllpassN_Ctor(AllpassN* unit) {
-    bool allocationSucessful = FeedbackDelay_Reset(unit, "AllpassN");
-    if (!allocationSucessful)
-        return;
+    bool allocationSucessful = FeedbackDelay_Reset(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(AllpassN_next_a_z);
@@ -4253,9 +4247,8 @@ void AllpassN_next_a_z(AllpassN* unit, int inNumSamples) { AllpassN_perform_a<tr
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void AllpassL_Ctor(AllpassL* unit) {
-    bool allocationSucessful = FeedbackDelay_Reset(unit, "AllpassL");
-    if (!allocationSucessful)
-        return;
+    bool allocationSucessful = FeedbackDelay_Reset(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(AllpassL_next_a_z);
@@ -4284,9 +4277,8 @@ void AllpassL_next_a_z(AllpassL* unit, int inNumSamples) { AllpassL_perform_a<tr
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void AllpassC_Ctor(AllpassC* unit) {
-    bool allocationSucessful = FeedbackDelay_Reset(unit, "AllpassC");
-    if (!allocationSucessful)
-        return;
+    bool allocationSucessful = FeedbackDelay_Reset(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     if (INRATE(2) == calc_FullRate)
         SETCALC(AllpassC_next_a_z);
@@ -4489,7 +4481,7 @@ void ScopeOut_Ctor(ScopeOut* unit) {
     unit->m_fbufnum = -1e9;
     unit->m_framepos = 0;
     unit->m_framecount = 0;
-    unit->mIn = 0;
+    unit->mIn = nullptr;
     SETCALC(ScopeOut_next);
 }
 
@@ -5000,7 +4992,9 @@ void PitchShift_Ctor(PitchShift* unit) {
 
     delaybufsize = delaybufsize + BUFLENGTH;
     delaybufsize = NEXTPOWEROFTWO(delaybufsize); // round up to next power of two
+    unit->dlybuf = nullptr;
     dlybuf = (float*)RTAlloc(unit->mWorld, delaybufsize * sizeof(float));
+    ClearUnitIfMemFailed(dlybuf);
 
     SETCALC(PitchShift_next_z);
 
@@ -5107,7 +5101,7 @@ void GrainTap_next(GrainTap* unit, int inNumSamples) {
     LOOP1(inNumSamples, ZXP(out) = 0.f;);
 
     // do all current grains
-    prevGrain = NULL;
+    prevGrain = nullptr;
     grain = unit->firstActive;
     while (grain) {
         dsamp = grain->pos;
@@ -5269,9 +5263,9 @@ void GrainTap_Ctor(GrainTap* unit) {
     for (int i = 0; i < MAXDGRAINS - 1; ++i) {
         unit->grains[i].next = unit->grains + (i + 1);
     }
-    unit->grains[MAXDGRAINS - 1].next = NULL;
+    unit->grains[MAXDGRAINS - 1].next = nullptr;
     unit->firstFree = unit->grains;
-    unit->firstActive = NULL;
+    unit->firstActive = nullptr;
 }
 
 
@@ -5586,10 +5580,9 @@ void Pluck_Ctor(Pluck* unit) {
     unit->m_maxdelaytime = IN0(2);
     unit->m_delaytime = IN0(3);
     unit->m_decaytime = IN0(4);
-    unit->m_dlybuf = 0;
-    bool allocationSucessful = DelayUnit_AllocDelayLine(unit, "Pluck");
-    if (!allocationSucessful)
-        return;
+    unit->m_dlybuf = nullptr;
+    bool allocationSucessful = DelayUnit_AllocDelayLine(unit);
+    ClearUnitIfMemFailed(allocationSucessful);
 
     unit->m_dsamp = CalcDelay(unit, unit->m_delaytime);
 

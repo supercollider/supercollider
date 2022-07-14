@@ -149,6 +149,8 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>SuperCollider wants to use your microphone or sound input.</string>
 	<key>NSServices</key>
 	<array>
 		<dict>

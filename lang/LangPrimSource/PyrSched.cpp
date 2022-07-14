@@ -381,12 +381,16 @@ extern bool gTraceInterpreter;
 static void schedRunFunc() {
     using namespace std::chrono;
     unique_lock<timed_mutex> lock(gLangMutex);
+    // The scheduler may have already been stopped by the time we acquire this
+    // lock, so we need to check the condition now.
+    if (!gRunSched) {
+        return;
+    }
 
     VMGlobals* g = gMainVMGlobals;
     PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
     // dumpObject(inQueue);
 
-    gRunSched = true;
     while (true) {
         assert(inQueue->size);
 
@@ -558,6 +562,9 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority) {
 
 
 SCLANG_DLLEXPORT_C void schedRun() {
+    // gLangMutex must be locked
+    gRunSched = true;
+
     SC_Thread thread(schedRunFunc);
     gSchedThread = std::move(thread);
 

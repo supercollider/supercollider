@@ -19,8 +19,8 @@ link::Tutorials/A-Practical-Guide/PG_06a_Repetition_Contraint_Patterns::
 definitionList::
 ## code::Pclutch(pattern, connected):: || If the code::connected:: pattern is true, Pclutch returns the next value from code::pattern::. If code::connected:: is false, the previous pattern value is repeated. It's like a clutch in a car: when engaged, the pattern moves forward; when disconnected, it stays where it is.
 ## code::Pn(pattern, repeats):: || Embeds the source pattern code::repeats:: times: simple repetition. This also works on single values: code::Pn(1, 5):: outputs the number 1 5 times.
-## code::Pstutter(n, pattern):: || code::n:: and code::pattern:: are both patterns. Each value from code::pattern:: is repeated code::n:: times. If code::n:: is a pattern, each value can be repeated a different number of times.
-## code::PdurStutter(n, pattern):: || Like Pstutter, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).
+## code::Pdup(n, pattern):: || code::n:: and code::pattern:: are both patterns. Each value from code::pattern:: is repeated code::n:: times. If code::n:: is a pattern, each value can be repeated a different number of times.
+## code::Psubdivide(n, pattern):: || Like Pdup, except the pattern value is divided by the number of repeats (so that the total time for the repeat cycle is the duration value from the source pattern).
 
 ## code::Pfin(count, pattern):: || Returns exactly code::count:: values from the source pattern, then stops.
 ## code::Pconst(sum, pattern, tolerance):: || Output numbers until the sum reaches a predefined limit. The last output value is adjusted so that the sum matches the limit exactly.

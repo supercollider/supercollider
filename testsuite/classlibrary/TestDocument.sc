@@ -4,15 +4,19 @@ TestDocument : UnitTest {
 	classvar <>success;
 
 	test_new_document_runs_initAction {
-		var success = false, doc, save;
+		var condvar = CondVar();
+		var success = false;
+		var doc, save;
+
 		if(Platform.ideName == "scqt") {
 			save = Document.initAction;
 			protect {
-				Document.initAction = { success = true };
+				Document.initAction = {
+					success = true;
+					condvar.signalOne;
+				};
 				doc = Document.new;
-				// failureMessage is deliberately nil
-				// we will assert below, we don't need `wait` to call `failed` itself
-				this.wait({ success }, failureMessage: nil, maxTime: 0.2);
+				condvar.waitFor(0.2);
 				doc.close;
 			} {
 				Document.initAction = save;
@@ -51,5 +55,34 @@ TestDocument : UnitTest {
 		} {
 			// TODO: skip
 		};
+	}
+
+	test_document_getText_retrievesText {
+		var doc, str;
+		if (Platform.ideName == "scqt") {
+			doc = Document(string: "abc");
+			str = doc.getText;
+			doc.close;
+			this.assertEquals(str, "abc", "getText contents retrieved from document should match input contents");
+		} {
+			// TODO: skip
+		}
+	}
+
+	test_document_getTextAsync_retrievesText {
+		var doc, str,
+		cond = Condition.new;
+		if (Platform.ideName == "scqt") {
+			doc = Document(string: "abc");
+			doc.getTextAsync({ |text|
+				str = text;
+				cond.unhang;
+			}, 0, -1);
+			cond.hang;
+			doc.close;
+			this.assertEquals(str, "abc", "getTextAsync contents retrieved from document should match input contents");
+		} {
+			// TODO: skip
+		}
 	}
 }

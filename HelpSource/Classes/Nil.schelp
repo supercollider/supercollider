@@ -7,6 +7,17 @@ description::
 Nil has a single instance named nil and is used to represent uninitialized data,
 bad values, or terminal values such as end-of-stream.
 
+note::
+Take note that Nil is a class and not the special value code::nil::. Comparing Nil and code::nil:: will return false.
+In normal use you should not need to use this class directly: use code::nil::
+
+code::
+Nil.isNil; // false
+Nil == nil; // false
+Nil === nil; // false
+::
+::
+
 instancemethods::
 
 private::do, reverseDo, pairsDo, collect, select, reject, detect, collectAs, selectAs, rejectAs, pop, source, source_, changed, 	addDependant, removeDependant, release, update, swapThisGroup, performMsg, remove, seconds_, throw, superclassesDo, !?, play, printOn, storeOn, archiveAsCompileString, set, addDependant
@@ -182,5 +193,3 @@ nil.transformEvent((x: 8));
 // for Function: use the function receive the event as argument.
 { |event| event.use { ~x = ~x + 1 }; event }.transformEvent((x: 8));
 ::
-
-

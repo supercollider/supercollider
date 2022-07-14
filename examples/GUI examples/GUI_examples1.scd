@@ -96,7 +96,7 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4,4),Point(4,2));
 
 	n = StaticText(w, Rect(0, 0, 72, height+2));
 	if (i == 0, {
-		n.string = "Master";
+		n.string = "Main";
 		n.stringColor = Color.yellow;
 		n.font = Font("Helvetica", 13).boldVariant;
 	},{
@@ -162,14 +162,13 @@ w.refresh;
 )
 
 // properties you can set in the window above.
-w.view.background = Color.blue;	// fallback on SwingOSC
 w.view.background = HiliteGradient(Color.blue, Color.red, \v, 128, 0.2);
 r.background = Color.gray; r.hi = 0.2;
 
 z.visible = false;
 z.visible = true;
 
-z.enabled = false;	// NO EFFECT WITH SWINGOSC!
+z.enabled = false;
 z.enabled = true;
 
 b.visible = false;

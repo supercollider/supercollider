@@ -92,7 +92,7 @@ note::
 IMPORTANT: If you wish to have the functionality of the default_group (e.g. problem free use of Server's record and scope functionality) you should treat ID 1 (the default_group) as the root of your node tree rather than ID 0 (the RootNode). See default_group for more details.
 ::
 
-Note that link::Classes/Function#play#Function-play:: and link::Classes/SynthDef#play#SynthDef-play:: return a synth object that can be used to send messages to.
+Note that link::Classes/Function#-play#Function-play:: and link::Classes/SynthDef#-play#SynthDef-play:: return a synth object that can be used to send messages to.
 code::
 x = { arg freq=1000; Ringz.ar(Crackle.ar(1.95, 0.1), freq, 0.05) }.play(s);
 x.set(\freq, 1500);

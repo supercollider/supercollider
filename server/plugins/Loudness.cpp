@@ -86,6 +86,7 @@ void Loudness_Ctor(Loudness* unit) {
     unit->m_numbands = 42;
 
     unit->m_ERBbands = (float*)RTAlloc(unit->mWorld, unit->m_numbands * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_ERBbands);
 
     Clear(unit->m_numbands, unit->m_ERBbands);
 

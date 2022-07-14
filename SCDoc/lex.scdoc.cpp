@@ -1,6 +1,6 @@
-#line 2 "lex.scdoc.cpp"
+#line 1 "lex.scdoc.cpp"
 
-#line 4 "lex.scdoc.cpp"
+#line 3 "lex.scdoc.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -8,11 +8,17 @@
 
 #define yy_create_buffer scdoc_create_buffer
 #define yy_delete_buffer scdoc_delete_buffer
-#define yy_flex_debug scdoc_flex_debug
+#define yy_scan_buffer scdoc_scan_buffer
+#define yy_scan_string scdoc_scan_string
+#define yy_scan_bytes scdoc_scan_bytes
 #define yy_init_buffer scdoc_init_buffer
 #define yy_flush_buffer scdoc_flush_buffer
 #define yy_load_buffer_state scdoc_load_buffer_state
 #define yy_switch_to_buffer scdoc_switch_to_buffer
+#define yypush_buffer_state scdocpush_buffer_state
+#define yypop_buffer_state scdocpop_buffer_state
+#define yyensure_buffer_stack scdocensure_buffer_stack
+#define yy_flex_debug scdoc_flex_debug
 #define yyin scdocin
 #define yyleng scdocleng
 #define yylex scdoclex
@@ -27,10 +33,244 @@
 
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_MINOR_VERSION 6
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define scdoc_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer scdoc_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define scdoc_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer scdoc_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define scdoc_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer scdoc_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define scdoc_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string scdoc_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define scdoc_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes scdoc_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define scdoc_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer scdoc_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define scdoc_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer scdoc_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define scdoc_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state scdoc_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define scdoc_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer scdoc_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define scdocpush_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state scdocpush_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define scdocpop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state scdocpop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define scdocensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack scdocensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define scdoclex_ALREADY_DEFINED
+#else
+#define yylex scdoclex
+#endif
+
+#ifdef yyrestart
+#define scdocrestart_ALREADY_DEFINED
+#else
+#define yyrestart scdocrestart
+#endif
+
+#ifdef yylex_init
+#define scdoclex_init_ALREADY_DEFINED
+#else
+#define yylex_init scdoclex_init
+#endif
+
+#ifdef yylex_init_extra
+#define scdoclex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra scdoclex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define scdoclex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy scdoclex_destroy
+#endif
+
+#ifdef yyget_debug
+#define scdocget_debug_ALREADY_DEFINED
+#else
+#define yyget_debug scdocget_debug
+#endif
+
+#ifdef yyset_debug
+#define scdocset_debug_ALREADY_DEFINED
+#else
+#define yyset_debug scdocset_debug
+#endif
+
+#ifdef yyget_extra
+#define scdocget_extra_ALREADY_DEFINED
+#else
+#define yyget_extra scdocget_extra
+#endif
+
+#ifdef yyset_extra
+#define scdocset_extra_ALREADY_DEFINED
+#else
+#define yyset_extra scdocset_extra
+#endif
+
+#ifdef yyget_in
+#define scdocget_in_ALREADY_DEFINED
+#else
+#define yyget_in scdocget_in
+#endif
+
+#ifdef yyset_in
+#define scdocset_in_ALREADY_DEFINED
+#else
+#define yyset_in scdocset_in
+#endif
+
+#ifdef yyget_out
+#define scdocget_out_ALREADY_DEFINED
+#else
+#define yyget_out scdocget_out
+#endif
+
+#ifdef yyset_out
+#define scdocset_out_ALREADY_DEFINED
+#else
+#define yyset_out scdocset_out
+#endif
+
+#ifdef yyget_leng
+#define scdocget_leng_ALREADY_DEFINED
+#else
+#define yyget_leng scdocget_leng
+#endif
+
+#ifdef yyget_text
+#define scdocget_text_ALREADY_DEFINED
+#else
+#define yyget_text scdocget_text
+#endif
+
+#ifdef yyget_lineno
+#define scdocget_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno scdocget_lineno
+#endif
+
+#ifdef yyset_lineno
+#define scdocset_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno scdocset_lineno
+#endif
+
+#ifdef yywrap
+#define scdocwrap_ALREADY_DEFINED
+#else
+#define yywrap scdocwrap
+#endif
+
+#ifdef yyalloc
+#define scdocalloc_ALREADY_DEFINED
+#else
+#define yyalloc scdocalloc
+#endif
+
+#ifdef yyrealloc
+#define scdocrealloc_ALREADY_DEFINED
+#else
+#define yyrealloc scdocrealloc
+#endif
+
+#ifdef yyfree
+#define scdocfree_ALREADY_DEFINED
+#else
+#define yyfree scdocfree
+#endif
+
+#ifdef yytext
+#define scdoctext_ALREADY_DEFINED
+#else
+#define yytext scdoctext
+#endif
+
+#ifdef yyleng
+#define scdocleng_ALREADY_DEFINED
+#else
+#define yyleng scdocleng
+#endif
+
+#ifdef yyin
+#define scdocin_ALREADY_DEFINED
+#else
+#define yyin scdocin
+#endif
+
+#ifdef yyout
+#define scdocout_ALREADY_DEFINED
+#else
+#define yyout scdocout
+#endif
+
+#ifdef yy_flex_debug
+#define scdoc_flex_debug_ALREADY_DEFINED
+#else
+#define yy_flex_debug scdoc_flex_debug
+#endif
+
+#ifdef yylineno
+#define scdoclineno_ALREADY_DEFINED
+#else
+#define yylineno scdoclineno
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -66,7 +306,6 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -74,7 +313,6 @@ typedef int flex_int32_t;
 typedef unsigned char flex_uint8_t; 
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
-#endif /* ! C99 */
 
 /* Limits of integral types. */
 #ifndef INT8_MIN
@@ -105,63 +343,61 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#ifndef SIZE_MAX
+#define SIZE_MAX               (~(size_t)0)
+#endif
+
+#endif /* ! C99 */
+
 #endif /* ! FLEXINT_H */
 
-#ifdef __cplusplus
+/* begin standard C++ headers. */
 
-/* The "const" storage-class-modifier is valid. */
-#define YY_USE_CONST
-
-#else	/* ! __cplusplus */
-
-/* C99 requires __STDC__ to be defined as 1. */
-#if defined (__STDC__)
-
-#define YY_USE_CONST
-
-#endif	/* defined (__STDC__) */
-#endif	/* ! __cplusplus */
-
-#ifdef YY_USE_CONST
+/* TODO: this is always defined, so inline it */
 #define yyconst const
+
+#if defined(__GNUC__) && __GNUC__ >= 3
+#define yynoreturn __attribute__((__noreturn__))
 #else
-#define yyconst
+#define yynoreturn
 #endif
 
 /* Returned upon end-of-file. */
 #define YY_NULL 0
 
-/* Promotes a possibly negative, possibly signed char to an unsigned
- * integer for use as an array index.  If the signed char is negative,
- * we want to instead treat it as an 8-bit unsigned char, hence the
- * double cast.
+/* Promotes a possibly negative, possibly signed char to an
+ *   integer in range [0..255] for use as an array index.
  */
-#define YY_SC_TO_UI(c) ((unsigned int) (unsigned char) c)
+#define YY_SC_TO_UI(c) ((YY_CHAR) (c))
 
 /* Enter a start condition.  This macro really ought to take a parameter,
  * but we do it the disgusting crufty way forced on us by the ()-less
  * definition of BEGIN.
  */
 #define BEGIN (yy_start) = 1 + 2 *
-
 /* Translate the current start state into a value that can be later handed
  * to BEGIN to return to the state.  The YYSTATE alias is for lex
  * compatibility.
  */
 #define YY_START (((yy_start) - 1) / 2)
 #define YYSTATE YY_START
-
 /* Action number for EOF rule of a given start state. */
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
-
 /* Special action meaning "start processing a new file". */
-#define YY_NEW_FILE scdocrestart(scdocin  )
-
+#define YY_NEW_FILE yyrestart( yyin  )
 #define YY_END_OF_BUFFER_CHAR 0
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k.
+ * Moreover, YY_BUF_SIZE is 2*YY_READ_BUF_SIZE in the general case.
+ * Ditto for the __ia64__ case accordingly.
+ */
+#define YY_BUF_SIZE 32768
+#else
 #define YY_BUF_SIZE 16384
+#endif /* __ia64__ */
 #endif
 
 /* The state buf must be large enough to hold one state per character in the main buffer.
@@ -178,43 +414,49 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-extern yy_size_t scdocleng;
+extern int yyleng;
 
-extern FILE *scdocin, *scdocout;
+extern FILE *yyin, *yyout;
 
 #define EOB_ACT_CONTINUE_SCAN 0
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
-
+    
     /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
      *       access to the local variable yy_act. Since yyless() is a macro, it would break
-     *       existing scanners that call yyless() from OUTSIDE scdoclex. 
+     *       existing scanners that call yyless() from OUTSIDE yylex.
      *       One obvious solution it to make yy_act a global. I tried that, and saw
-     *       a 5% performance hit in a non-scdoclineno scanner, because yy_act is
+     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
      *       normally declared as a register variable-- so it is not worth it.
      */
     #define  YY_LESS_LINENO(n) \
             do { \
-                yy_size_t yyl;\
-                for ( yyl = n; yyl < scdocleng; ++yyl )\
-                    if ( scdoctext[yyl] == '\n' )\
-                        --scdoclineno;\
+                int yyl;\
+                for ( yyl = n; yyl < yyleng; ++yyl )\
+                    if ( yytext[yyl] == '\n' )\
+                        --yylineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
+                        --yylineno;\
             }while(0)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
 		{ \
-		/* Undo effects of setting up scdoctext. */ \
+		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
-		YY_DO_BEFORE_ACTION; /* set up scdoctext again */ \
+		YY_DO_BEFORE_ACTION; /* set up yytext again */ \
 		} \
 	while ( 0 )
-
 #define unput(c) yyunput( c, (yytext_ptr)  )
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
@@ -229,12 +471,12 @@ struct yy_buffer_state
 	/* Size of input buffer in bytes, not including room for EOB
 	 * characters.
 	 */
-	yy_size_t yy_buf_size;
+	int yy_buf_size;
 
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -257,7 +499,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -274,8 +516,8 @@ struct yy_buffer_state
 	 * possible backing-up.
 	 *
 	 * When we actually see the EOF, we change the status to "new"
-	 * (via scdocrestart()), so that the user can continue scanning by
-	 * just pointing scdocin at a new input file.
+	 * (via yyrestart()), so that the user can continue scanning by
+	 * just pointing yyin at a new input file.
 	 */
 #define YY_BUFFER_EOF_PENDING 2
 
@@ -285,7 +527,7 @@ struct yy_buffer_state
 /* Stack of input buffers. */
 static size_t yy_buffer_stack_top = 0; /**< index of top of stack. */
 static size_t yy_buffer_stack_max = 0; /**< capacity of stack. */
-static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
+static YY_BUFFER_STATE * yy_buffer_stack = NULL; /**< Stack as an array. */
 
 /* We provide macros for accessing buffer states in case in the
  * future we want to put the buffer states in a more general
@@ -296,106 +538,101 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
 #define YY_CURRENT_BUFFER ( (yy_buffer_stack) \
                           ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
                           : NULL)
-
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
  */
 #define YY_CURRENT_BUFFER_LVALUE (yy_buffer_stack)[(yy_buffer_stack_top)]
 
-/* yy_hold_char holds the character lost when scdoctext is formed. */
+/* yy_hold_char holds the character lost when yytext is formed. */
 static char yy_hold_char;
-static yy_size_t yy_n_chars;		/* number of characters read into yy_ch_buf */
-yy_size_t scdocleng;
+static int yy_n_chars;		/* number of characters read into yy_ch_buf */
+int yyleng;
 
 /* Points to current character in buffer. */
-static char *yy_c_buf_p = (char *) 0;
+static char *yy_c_buf_p = NULL;
 static int yy_init = 0;		/* whether we need to initialize */
 static int yy_start = 0;	/* start state number */
 
-/* Flag which is used to allow scdocwrap()'s to do buffer switches
- * instead of setting up a fresh scdocin.  A bit of a hack ...
+/* Flag which is used to allow yywrap()'s to do buffer switches
+ * instead of setting up a fresh yyin.  A bit of a hack ...
  */
 static int yy_did_buffer_switch_on_eof;
 
-void scdocrestart (FILE *input_file  );
-void scdoc_switch_to_buffer (YY_BUFFER_STATE new_buffer  );
-YY_BUFFER_STATE scdoc_create_buffer (FILE *file,int size  );
-void scdoc_delete_buffer (YY_BUFFER_STATE b  );
-void scdoc_flush_buffer (YY_BUFFER_STATE b  );
-void scdocpush_buffer_state (YY_BUFFER_STATE new_buffer  );
-void scdocpop_buffer_state (void );
+void yyrestart ( FILE *input_file  );
+void yy_switch_to_buffer ( YY_BUFFER_STATE new_buffer  );
+YY_BUFFER_STATE yy_create_buffer ( FILE *file, int size  );
+void yy_delete_buffer ( YY_BUFFER_STATE b  );
+void yy_flush_buffer ( YY_BUFFER_STATE b  );
+void yypush_buffer_state ( YY_BUFFER_STATE new_buffer  );
+void yypop_buffer_state ( void );
 
-static void scdocensure_buffer_stack (void );
-static void scdoc_load_buffer_state (void );
-static void scdoc_init_buffer (YY_BUFFER_STATE b,FILE *file  );
+static void yyensure_buffer_stack ( void );
+static void yy_load_buffer_state ( void );
+static void yy_init_buffer ( YY_BUFFER_STATE b, FILE *file  );
+#define YY_FLUSH_BUFFER yy_flush_buffer( YY_CURRENT_BUFFER )
 
-#define YY_FLUSH_BUFFER scdoc_flush_buffer(YY_CURRENT_BUFFER )
+YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size  );
+YY_BUFFER_STATE yy_scan_string ( const char *yy_str  );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, int len  );
 
-YY_BUFFER_STATE scdoc_scan_buffer (char *base,yy_size_t size  );
-YY_BUFFER_STATE scdoc_scan_string (yyconst char *yy_str  );
-YY_BUFFER_STATE scdoc_scan_bytes (yyconst char *bytes,yy_size_t len  );
+void *yyalloc ( yy_size_t  );
+void *yyrealloc ( void *, yy_size_t  );
+void yyfree ( void *  );
 
-void *scdocalloc (yy_size_t  );
-void *scdocrealloc (void *,yy_size_t  );
-void scdocfree (void *  );
-
-#define yy_new_buffer scdoc_create_buffer
-
+#define yy_new_buffer yy_create_buffer
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
-        scdocensure_buffer_stack (); \
+        yyensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            scdoc_create_buffer(scdocin,YY_BUF_SIZE ); \
+            yy_create_buffer( yyin, YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
-
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
-        scdocensure_buffer_stack (); \
+        yyensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            scdoc_create_buffer(scdocin,YY_BUF_SIZE ); \
+            yy_create_buffer( yyin, YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
-
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
 
-#define scdocwrap(n) 1
+#define scdocwrap() (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
+typedef flex_uint8_t YY_CHAR;
 
-typedef unsigned char YY_CHAR;
-
-FILE *scdocin = (FILE *) 0, *scdocout = (FILE *) 0;
+FILE *yyin = NULL, *yyout = NULL;
 
 typedef int yy_state_type;
 
-extern int scdoclineno;
+extern int yylineno;
+int yylineno = 1;
 
-int scdoclineno = 1;
+extern char *yytext;
+#ifdef yytext_ptr
+#undef yytext_ptr
+#endif
+#define yytext_ptr yytext
 
-extern char *scdoctext;
-#define yytext_ptr scdoctext
-
-static yy_state_type yy_get_previous_state (void );
-static yy_state_type yy_try_NUL_trans (yy_state_type current_state  );
-static int yy_get_next_buffer (void );
-static void yy_fatal_error (yyconst char msg[]  );
+static yy_state_type yy_get_previous_state ( void );
+static yy_state_type yy_try_NUL_trans ( yy_state_type current_state  );
+static int yy_get_next_buffer ( void );
+static void yynoreturn yy_fatal_error ( const char* msg  );
 
 /* Done after the current pattern has been matched and before the
- * corresponding action - sets up scdoctext.
+ * corresponding action - sets up yytext.
  */
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
-	scdocleng = (yy_size_t) (yy_cp - yy_bp); \
+	yyleng = (int) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-
 #define YY_NUM_RULES 103
 #define YY_END_OF_BUFFER 104
 /* This struct is not used in this scanner,
@@ -405,7 +642,7 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static yyconst flex_int16_t yy_accept[1235] =
+static const flex_int16_t yy_accept[1235] =
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,  104,   64,   53,   46,
@@ -545,7 +782,7 @@ static yyconst flex_int16_t yy_accept[1235] =
        81,   17,   81,    0
     } ;
 
-static yyconst flex_int32_t yy_ec[256] =
+static const YY_CHAR yy_ec[256] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    4,    1,    1,    1,    1,    1,    1,    1,
@@ -577,7 +814,7 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[67] =
+static const YY_CHAR yy_meta[67] =
     {   0,
         1,    2,    3,    3,    2,    1,    1,    1,    1,    4,
         4,    5,    1,    6,    7,    8,    8,    8,    8,    8,
@@ -588,7 +825,7 @@ static yyconst flex_int32_t yy_meta[67] =
         8,    8,    8,    8,    8,    1
     } ;
 
-static yyconst flex_int16_t yy_base[1243] =
+static const flex_int16_t yy_base[1243] =
     {   0,
         0,    0,   65,  104,  143,  182,  222,    0,  288,    0,
       353,    0,   79,   83,  413,    0, 3900, 3901,  478,   87,
@@ -729,7 +966,7 @@ static yyconst flex_int16_t yy_base[1243] =
      3854, 3862
     } ;
 
-static yyconst flex_int16_t yy_def[1243] =
+static const flex_int16_t yy_def[1243] =
     {   0,
      1234,    1, 1235, 1235, 1235, 1235, 1234,    7, 1234,    9,
         9,   11,   11,   11, 1234,   15, 1234, 1234, 1234, 1234,
@@ -870,7 +1107,7 @@ static yyconst flex_int16_t yy_def[1243] =
      1234, 1234
     } ;
 
-static yyconst flex_int16_t yy_nxt[3968] =
+static const flex_int16_t yy_nxt[3968] =
     {   0,
        18,   19,   20,   21,   19,   22,   22,   23,   18,   22,
        22,   24,   18,   22,   25,   26,   27,   28,   29,   30,
@@ -1310,7 +1547,7 @@ static yyconst flex_int16_t yy_nxt[3968] =
      1234, 1234, 1234, 1234, 1234, 1234, 1234
     } ;
 
-static yyconst flex_int16_t yy_chk[3968] =
+static const flex_int16_t yy_chk[3968] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -1751,7 +1988,7 @@ static yyconst flex_int16_t yy_chk[3968] =
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[104] =
+static const flex_int32_t yy_rule_can_match_eol[104] =
     {   0,
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 
     1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 
@@ -1763,8 +2000,8 @@ static yyconst flex_int32_t yy_rule_can_match_eol[104] =
 static yy_state_type yy_last_accepting_state;
 static char *yy_last_accepting_cpos;
 
-extern int scdoc_flex_debug;
-int scdoc_flex_debug = 0;
+extern int yy_flex_debug;
+int yy_flex_debug = 0;
 
 /* The intent behind this definition is that it'll catch
  * any uses of REJECT which flex missed.
@@ -1773,7 +2010,7 @@ int scdoc_flex_debug = 0;
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-char *scdoctext;
+char *yytext;
 #line 1 "SCDoc.l"
 #line 2 "SCDoc.l"
 /************************************************************************
@@ -1801,19 +2038,14 @@ char *scdoctext;
 
 int scdoc_start_token = 0;
 //int colnum;
-//#define YY_USER_ACTION { scdoclloc.first_column = colnum; colnum=colnum+scdocleng; scdoclloc.last_column=colnum; if(scdoclloc.first_line!=scdoclineno) colnum=1; scdoclloc.first_line = scdoclloc.last_line = scdoclineno;}
+//#define YY_USER_ACTION { scdoclloc.first_column = colnum; colnum=colnum+yyleng; scdoclloc.last_column=colnum; if(scdoclloc.first_line!=yylineno) colnum=1; scdoclloc.first_line = scdoclloc.last_line = yylineno;}
 
 static int method_caller;
 
+#line 2045 "lex.scdoc.cpp"
 #define YY_NO_UNISTD_H 1
 
-
-
-
-
-
-
-#line 1817 "lex.scdoc.cpp"
+#line 2048 "lex.scdoc.cpp"
 
 #define INITIAL 0
 #define verbatim 1
@@ -1836,36 +2068,36 @@ static int method_caller;
 #define YY_EXTRA_TYPE void *
 #endif
 
-static int yy_init_globals (void );
+static int yy_init_globals ( void );
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int scdoclex_destroy (void );
+int yylex_destroy ( void );
 
-int scdocget_debug (void );
+int yyget_debug ( void );
 
-void scdocset_debug (int debug_flag  );
+void yyset_debug ( int debug_flag  );
 
-YY_EXTRA_TYPE scdocget_extra (void );
+YY_EXTRA_TYPE yyget_extra ( void );
 
-void scdocset_extra (YY_EXTRA_TYPE user_defined  );
+void yyset_extra ( YY_EXTRA_TYPE user_defined  );
 
-FILE *scdocget_in (void );
+FILE *yyget_in ( void );
 
-void scdocset_in  (FILE * in_str  );
+void yyset_in  ( FILE * _in_str  );
 
-FILE *scdocget_out (void );
+FILE *yyget_out ( void );
 
-void scdocset_out  (FILE * out_str  );
+void yyset_out  ( FILE * _out_str  );
 
-yy_size_t scdocget_leng (void );
+			int yyget_leng ( void );
 
-char *scdocget_text (void );
+char *yyget_text ( void );
 
-int scdocget_lineno (void );
+int yyget_lineno ( void );
 
-void scdocset_lineno (int line_number  );
+void yyset_lineno ( int _line_number  );
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -1873,35 +2105,43 @@ void scdocset_lineno (int line_number  );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int scdocwrap (void );
+extern "C" int yywrap ( void );
 #else
-extern int scdocwrap (void );
+extern int yywrap ( void );
 #endif
 #endif
 
-    static void yyunput (int c,char *buf_ptr  );
+#ifndef YY_NO_UNPUT
     
+    static void yyunput ( int c, char *buf_ptr  );
+    
+#endif
+
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char *,yyconst char *,int );
+static void yy_flex_strncpy ( char *, const char *, int );
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * );
+static int yy_flex_strlen ( const char * );
 #endif
 
 #ifndef YY_NO_INPUT
-
 #ifdef __cplusplus
-static int yyinput (void );
+static int yyinput ( void );
 #else
-static int input (void );
+static int input ( void );
 #endif
 
 #endif
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
+#ifdef __ia64__
+/* On IA-64, the buffer size is 16k, not 8k */
+#define YY_READ_BUF_SIZE 16384
+#else
 #define YY_READ_BUF_SIZE 8192
+#endif /* __ia64__ */
 #endif
 
 /* Copy whatever the last rule matched to the standard output. */
@@ -1909,7 +2149,7 @@ static int input (void );
 /* This used to be an fputs(), but since the string might contain NUL's,
  * we now use fwrite().
  */
-#define ECHO fwrite( scdoctext, scdocleng, 1, scdocout )
+#define ECHO do { if (fwrite( yytext, (size_t) yyleng, 1, yyout )) {} } while (0)
 #endif
 
 /* Gets input and stuffs it into "buf".  number of characters read, or YY_NULL,
@@ -1920,20 +2160,20 @@ static int input (void );
 	if ( YY_CURRENT_BUFFER_LVALUE->yy_is_interactive ) \
 		{ \
 		int c = '*'; \
-		yy_size_t n; \
+		int n; \
 		for ( n = 0; n < max_size && \
-			     (c = getc( scdocin )) != EOF && c != '\n'; ++n ) \
+			     (c = getc( yyin )) != EOF && c != '\n'; ++n ) \
 			buf[n] = (char) c; \
 		if ( c == '\n' ) \
 			buf[n++] = (char) c; \
-		if ( c == EOF && ferror( scdocin ) ) \
+		if ( c == EOF && ferror( yyin ) ) \
 			YY_FATAL_ERROR( "input in flex scanner failed" ); \
 		result = n; \
 		} \
 	else \
 		{ \
 		errno=0; \
-		while ( (result = fread(buf, 1, max_size, scdocin))==0 && ferror(scdocin)) \
+		while ( (result = (int) fread(buf, 1, (yy_size_t) max_size, yyin)) == 0 && ferror(yyin)) \
 			{ \
 			if( errno != EINTR) \
 				{ \
@@ -1941,7 +2181,7 @@ static int input (void );
 				break; \
 				} \
 			errno=0; \
-			clearerr(scdocin); \
+			clearerr(yyin); \
 			} \
 		}\
 \
@@ -1974,12 +2214,12 @@ static int input (void );
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int scdoclex (void);
+extern int yylex (void);
 
-#define YY_DECL int scdoclex (void)
+#define YY_DECL int yylex (void)
 #endif /* !YY_DECL */
 
-/* Code executed at the beginning of each rule, after scdoctext and scdocleng
+/* Code executed at the beginning of each rule, after yytext and yyleng
  * have been set up.
  */
 #ifndef YY_USER_ACTION
@@ -1988,7 +2228,7 @@ extern int scdoclex (void);
 
 /* Code executed at the end of each rule. */
 #ifndef YY_BREAK
-#define YY_BREAK break;
+#define YY_BREAK /*LINTED*/break;
 #endif
 
 #define YY_RULE_SETUP \
@@ -1998,27 +2238,10 @@ extern int scdoclex (void);
  */
 YY_DECL
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp, *yy_bp;
-	register int yy_act;
+	yy_state_type yy_current_state;
+	char *yy_cp, *yy_bp;
+	int yy_act;
     
-#line 45 "SCDoc.l"
-
-
-
-
-if (scdoc_start_token) {
-    int t = scdoc_start_token;
-    scdoc_start_token = 0;
-//    colnum = 1;
-    if(t==START_METADATA) BEGIN(eat);
-    return t;
-}
-
-
-
-#line 2021 "lex.scdoc.cpp"
-
 	if ( !(yy_init) )
 		{
 		(yy_init) = 1;
@@ -2030,26 +2253,45 @@ if (scdoc_start_token) {
 		if ( ! (yy_start) )
 			(yy_start) = 1;	/* first start state */
 
-		if ( ! scdocin )
-			scdocin = stdin;
+		if ( ! yyin )
+			yyin = stdin;
 
-		if ( ! scdocout )
-			scdocout = stdout;
+		if ( ! yyout )
+			yyout = stdout;
 
 		if ( ! YY_CURRENT_BUFFER ) {
-			scdocensure_buffer_stack ();
+			yyensure_buffer_stack ();
 			YY_CURRENT_BUFFER_LVALUE =
-				scdoc_create_buffer(scdocin,YY_BUF_SIZE );
+				yy_create_buffer( yyin, YY_BUF_SIZE );
 		}
 
-		scdoc_load_buffer_state( );
+		yy_load_buffer_state(  );
 		}
 
-	while ( 1 )		/* loops until end-of-file is reached */
+	{
+#line 45 "SCDoc.l"
+
+
+
+
+#line 50 "SCDoc.l"
+if (scdoc_start_token) {
+    int t = scdoc_start_token;
+    scdoc_start_token = 0;
+//    colnum = 1;
+    if(t==START_METADATA) BEGIN(eat);
+    return t;
+}
+
+
+
+#line 2288 "lex.scdoc.cpp"
+
+	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = (yy_c_buf_p);
 
-		/* Support of scdoctext. */
+		/* Support of yytext. */
 		*yy_cp = (yy_hold_char);
 
 		/* yy_bp points to the position in yy_ch_buf of the start of
@@ -2061,7 +2303,7 @@ if (scdoc_start_token) {
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				(yy_last_accepting_state) = yy_current_state;
@@ -2071,9 +2313,9 @@ yy_match:
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
 				if ( yy_current_state >= 1235 )
-					yy_c = yy_meta[(unsigned int) yy_c];
+					yy_c = yy_meta[yy_c];
 				}
-			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
 		while ( yy_current_state != 1234 );
@@ -2087,11 +2329,11 @@ yy_find_action:
 
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
-			yy_size_t yyl;
-			for ( yyl = 0; yyl < scdocleng; ++yyl )
-				if ( scdoctext[yyl] == '\n' )
-					   
-    scdoclineno++;
+			int yyl;
+			for ( yyl = 0; yyl < yyleng; ++yyl )
+				if ( yytext[yyl] == '\n' )
+					
+    yylineno++;
 ;
 			}
 
@@ -2108,542 +2350,542 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 59 "SCDoc.l"
+#line 60 "SCDoc.l"
 return CLASS;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 60 "SCDoc.l"
+#line 61 "SCDoc.l"
 return TITLE;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 61 "SCDoc.l"
+#line 62 "SCDoc.l"
 return SUMMARY;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 62 "SCDoc.l"
+#line 63 "SCDoc.l"
 return RELATED;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 63 "SCDoc.l"
+#line 64 "SCDoc.l"
 return CATEGORIES;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 64 "SCDoc.l"
+#line 65 "SCDoc.l"
 return REDIRECT;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 66 "SCDoc.l"
+#line 67 "SCDoc.l"
 return CLASSTREE;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 67 "SCDoc.l"
+#line 68 "SCDoc.l"
 return KEYWORD;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 69 "SCDoc.l"
+#line 70 "SCDoc.l"
 return PRIVATE;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 70 "SCDoc.l"
+#line 71 "SCDoc.l"
 return SECTION;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 71 "SCDoc.l"
+#line 72 "SCDoc.l"
 return SUBSECTION;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 72 "SCDoc.l"
+#line 73 "SCDoc.l"
 return COPYMETHOD;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 73 "SCDoc.l"
+#line 74 "SCDoc.l"
 method_caller = YY_START; BEGIN(method); return METHOD;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 74 "SCDoc.l"
+#line 75 "SCDoc.l"
 return ARGUMENT;
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 76 "SCDoc.l"
+#line 77 "SCDoc.l"
 return DESCRIPTION;
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 77 "SCDoc.l"
+#line 78 "SCDoc.l"
 return CLASSMETHODS;
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 78 "SCDoc.l"
+#line 79 "SCDoc.l"
 return INSTANCEMETHODS;
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 79 "SCDoc.l"
+#line 80 "SCDoc.l"
 return EXAMPLES;
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 81 "SCDoc.l"
+#line 82 "SCDoc.l"
 return RETURNS;
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 82 "SCDoc.l"
+#line 83 "SCDoc.l"
 return DISCUSSION;
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 84 "SCDoc.l"
+#line 85 "SCDoc.l"
 return LIST;
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 85 "SCDoc.l"
+#line 86 "SCDoc.l"
 return TREE;
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 86 "SCDoc.l"
+#line 87 "SCDoc.l"
 return NUMBEREDLIST;
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 87 "SCDoc.l"
+#line 88 "SCDoc.l"
 return DEFINITIONLIST;
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 88 "SCDoc.l"
+#line 89 "SCDoc.l"
 return TABLE;
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 89 "SCDoc.l"
+#line 90 "SCDoc.l"
 return FOOTNOTE;
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 90 "SCDoc.l"
+#line 91 "SCDoc.l"
 return WARNING;
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 91 "SCDoc.l"
+#line 92 "SCDoc.l"
 return NOTE;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 93 "SCDoc.l"
+#line 94 "SCDoc.l"
 BEGIN(verbatim); return LINK;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 94 "SCDoc.l"
+#line 95 "SCDoc.l"
 BEGIN(verbatim); return ANCHOR;
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 95 "SCDoc.l"
+#line 96 "SCDoc.l"
 BEGIN(verbatim); return IMAGE;
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 96 "SCDoc.l"
+#line 97 "SCDoc.l"
 BEGIN(verbatim); return SOFT;
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 97 "SCDoc.l"
+#line 98 "SCDoc.l"
 BEGIN(verbatim); return STRONG;
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 98 "SCDoc.l"
+#line 99 "SCDoc.l"
 BEGIN(verbatim); return EMPHASIS;
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 99 "SCDoc.l"
+#line 100 "SCDoc.l"
 BEGIN(verbatim); return CODE;
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 100 "SCDoc.l"
+#line 101 "SCDoc.l"
 BEGIN(verbatim); return TELETYPE;
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-#line 102 "SCDoc.l"
+#line 103 "SCDoc.l"
 BEGIN(verbatim2); return CODEBLOCK;
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 103 "SCDoc.l"
+#line 104 "SCDoc.l"
 BEGIN(verbatim2); return TELETYPEBLOCK;
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 105 "SCDoc.l"
+#line 106 "SCDoc.l"
 BEGIN(0); return TAGSYM;
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 106 "SCDoc.l"
+#line 107 "SCDoc.l"
 BEGIN(0); return TAGSYM;
 	YY_BREAK
 case 41:
 /* rule 41 can match eol */
 YY_RULE_SETUP
-#line 107 "SCDoc.l"
+#line 108 "SCDoc.l"
 scdoclval.str = strdup("\n::"); return TEXT;
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 108 "SCDoc.l"
+#line 109 "SCDoc.l"
 return BARS;
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */
 YY_RULE_SETUP
-#line 109 "SCDoc.l"
+#line 110 "SCDoc.l"
 return HASHES;
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 111 "SCDoc.l"
+#line 112 "SCDoc.l"
 scdoclval.str = strdup("\n"); return TEXT;
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 112 "SCDoc.l"
+#line 113 "SCDoc.l"
 scdoclval.str = strdup(" "); return TEXT;
 	YY_BREAK
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
-#line 113 "SCDoc.l"
+#line 114 "SCDoc.l"
 return NEWLINE;
 	YY_BREAK
 case 47:
 /* rule 47 can match eol */
 YY_RULE_SETUP
-#line 114 "SCDoc.l"
+#line 115 "SCDoc.l"
 return EMPTYLINES;
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 116 "SCDoc.l"
+#line 117 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return COMMA;
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 118 "SCDoc.l"
+#line 119 "SCDoc.l"
 scdoclval.str = strdup("||"); return TEXT;
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 119 "SCDoc.l"
+#line 120 "SCDoc.l"
 scdoclval.str = strdup("##"); return TEXT;
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 120 "SCDoc.l"
+#line 121 "SCDoc.l"
 scdoclval.str = strdup("::"); return TEXT;
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 121 "SCDoc.l"
+#line 122 "SCDoc.l"
 scdoclval.str = strdup("    "); return TEXT;
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 122 "SCDoc.l"
+#line 123 "SCDoc.l"
 scdoclval.str = strdup(" "); return TEXT;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 124 "SCDoc.l"
+#line 125 "SCDoc.l"
 /* eat this */
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 126 "SCDoc.l"
+#line 127 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return URL;
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 127 "SCDoc.l"
+#line 128 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return METHODNAME;
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-#line 128 "SCDoc.l"
+#line 129 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return METHODARGS;
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 129 "SCDoc.l"
+#line 130 "SCDoc.l"
 /* eat this */
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 130 "SCDoc.l"
+#line 131 "SCDoc.l"
 BEGIN(method_caller); return NEWLINE;
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 131 "SCDoc.l"
+#line 132 "SCDoc.l"
 return BAD_METHODNAME;
 	YY_BREAK
 case 61:
-#line 134 "SCDoc.l"
-case 62:
 #line 135 "SCDoc.l"
-case 63:
+case 62:
 #line 136 "SCDoc.l"
-case 64:
+case 63:
 #line 137 "SCDoc.l"
+case 64:
+#line 138 "SCDoc.l"
 case 65:
 YY_RULE_SETUP
-#line 137 "SCDoc.l"
+#line 138 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return TEXT;
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 139 "SCDoc.l"
+#line 140 "SCDoc.l"
 BEGIN(metadata); return CLASS;
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 140 "SCDoc.l"
+#line 141 "SCDoc.l"
 BEGIN(metadata); return TITLE;
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 141 "SCDoc.l"
+#line 142 "SCDoc.l"
 BEGIN(metadata); return SUMMARY;
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 142 "SCDoc.l"
+#line 143 "SCDoc.l"
 BEGIN(metadata); return RELATED;
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 143 "SCDoc.l"
+#line 144 "SCDoc.l"
 BEGIN(metadata); return CATEGORIES;
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 144 "SCDoc.l"
+#line 145 "SCDoc.l"
 BEGIN(metadata); return REDIRECT;
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 145 "SCDoc.l"
+#line 146 "SCDoc.l"
 BEGIN(metadata); return CLASSTREE;
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 146 "SCDoc.l"
+#line 147 "SCDoc.l"
 BEGIN(metadata); return KEYWORD;
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 147 "SCDoc.l"
+#line 148 "SCDoc.l"
 BEGIN(metadata); return PRIVATE;
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 148 "SCDoc.l"
+#line 149 "SCDoc.l"
 BEGIN(metadata); return SECTION;
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 149 "SCDoc.l"
+#line 150 "SCDoc.l"
 BEGIN(metadata); return SUBSECTION;
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 150 "SCDoc.l"
+#line 151 "SCDoc.l"
 BEGIN(metadata); return COPYMETHOD;
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 151 "SCDoc.l"
+#line 152 "SCDoc.l"
 method_caller = YY_START; BEGIN(method); return METHOD;
 	YY_BREAK
 case 79:
 /* rule 79 can match eol */
 YY_RULE_SETUP
-#line 152 "SCDoc.l"
+#line 153 "SCDoc.l"
 BEGIN(eat); return DESCRIPTION;
 	YY_BREAK
 case 80:
 /* rule 80 can match eol */
 YY_RULE_SETUP
-#line 153 "SCDoc.l"
+#line 154 "SCDoc.l"
 BEGIN(eat); return CLASSMETHODS;
 	YY_BREAK
 case 81:
 /* rule 81 can match eol */
 YY_RULE_SETUP
-#line 154 "SCDoc.l"
+#line 155 "SCDoc.l"
 BEGIN(eat); return INSTANCEMETHODS;
 	YY_BREAK
 case 82:
 /* rule 82 can match eol */
 YY_RULE_SETUP
-#line 155 "SCDoc.l"
+#line 156 "SCDoc.l"
 BEGIN(eat); return EXAMPLES;
 	YY_BREAK
 case 83:
 /* rule 83 can match eol */
 YY_RULE_SETUP
-#line 156 "SCDoc.l"
+#line 157 "SCDoc.l"
 BEGIN(eat); return NEWLINE;
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 157 "SCDoc.l"
+#line 158 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return COMMA;
 	YY_BREAK
 case 85:
-#line 159 "SCDoc.l"
-case 86:
 #line 160 "SCDoc.l"
-case 87:
+case 86:
 #line 161 "SCDoc.l"
+case 87:
+#line 162 "SCDoc.l"
 case 88:
 YY_RULE_SETUP
-#line 161 "SCDoc.l"
+#line 162 "SCDoc.l"
 scdoclval.str = strdup(scdoctext); return TEXT;
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 162 "SCDoc.l"
+#line 163 "SCDoc.l"
 scdoclval.str = strdup("::"); return TEXT;
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 163 "SCDoc.l"
+#line 164 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 164 "SCDoc.l"
+#line 165 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 165 "SCDoc.l"
+#line 166 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
-#line 166 "SCDoc.l"
+#line 167 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 94:
 /* rule 94 can match eol */
 YY_RULE_SETUP
-#line 167 "SCDoc.l"
+#line 168 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 95:
 /* rule 95 can match eol */
 YY_RULE_SETUP
-#line 168 "SCDoc.l"
+#line 169 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 169 "SCDoc.l"
+#line 170 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 170 "SCDoc.l"
+#line 171 "SCDoc.l"
 BEGIN(eat2);
 	YY_BREAK
 case 98:
 /* rule 98 can match eol */
 YY_RULE_SETUP
-#line 171 "SCDoc.l"
+#line 172 "SCDoc.l"
 BEGIN(eat3);
 	YY_BREAK
 case 99:
 /* rule 99 can match eol */
 YY_RULE_SETUP
-#line 172 "SCDoc.l"
+#line 173 "SCDoc.l"
 BEGIN(eat3);
 	YY_BREAK
 case 100:
 /* rule 100 can match eol */
 YY_RULE_SETUP
-#line 173 "SCDoc.l"
+#line 174 "SCDoc.l"
 BEGIN(eat);
 	YY_BREAK
 case 101:
 /* rule 101 can match eol */
 YY_RULE_SETUP
-#line 174 "SCDoc.l"
+#line 175 "SCDoc.l"
 BEGIN(eat);
 	YY_BREAK
 case 102:
 /* rule 102 can match eol */
 YY_RULE_SETUP
-#line 175 "SCDoc.l"
+#line 176 "SCDoc.l"
 /* empty */
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 176 "SCDoc.l"
+#line 177 "SCDoc.l"
 ECHO;
 	YY_BREAK
-#line 2647 "lex.scdoc.cpp"
+#line 2888 "lex.scdoc.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(verbatim):
 case YY_STATE_EOF(verbatim2):
@@ -2667,15 +2909,15 @@ case YY_STATE_EOF(method):
 			{
 			/* We're scanning a new file or input source.  It's
 			 * possible that this happened because the user
-			 * just pointed scdocin at a new source and called
-			 * scdoclex().  If so, then we have to assure
+			 * just pointed yyin at a new source and called
+			 * yylex().  If so, then we have to assure
 			 * consistency between YY_CURRENT_BUFFER and our
 			 * globals.  Here is the right place to do so, because
 			 * this is the first action (other than possibly a
 			 * back-up) that will match for the new input source.
 			 */
 			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
-			YY_CURRENT_BUFFER_LVALUE->yy_input_file = scdocin;
+			YY_CURRENT_BUFFER_LVALUE->yy_input_file = yyin;
 			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
 			}
 
@@ -2729,11 +2971,11 @@ case YY_STATE_EOF(method):
 				{
 				(yy_did_buffer_switch_on_eof) = 0;
 
-				if ( scdocwrap( ) )
+				if ( yywrap(  ) )
 					{
 					/* Note: because we've taken care in
 					 * yy_get_next_buffer() to have set up
-					 * scdoctext, we can now set up
+					 * yytext, we can now set up
 					 * yy_c_buf_p so that if some total
 					 * hoser (like flex itself) wants to
 					 * call the scanner after we return the
@@ -2782,7 +3024,8 @@ case YY_STATE_EOF(method):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
-} /* end of scdoclex */
+	} /* end of user's declarations */
+} /* end of yylex */
 
 /* yy_get_next_buffer - try to read in a new buffer
  *
@@ -2793,9 +3036,9 @@ case YY_STATE_EOF(method):
  */
 static int yy_get_next_buffer (void)
 {
-    	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-	register char *source = (yytext_ptr);
-	register int number_to_move, i;
+    	char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	char *source = (yytext_ptr);
+	int number_to_move, i;
 	int ret_val;
 
 	if ( (yy_c_buf_p) > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[(yy_n_chars) + 1] )
@@ -2824,7 +3067,7 @@ static int yy_get_next_buffer (void)
 	/* Try to read more data. */
 
 	/* First move last chars to start of buffer. */
-	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr)) - 1;
+	number_to_move = (int) ((yy_c_buf_p) - (yytext_ptr) - 1);
 
 	for ( i = 0; i < number_to_move; ++i )
 		*(dest++) = *(source++);
@@ -2837,21 +3080,21 @@ static int yy_get_next_buffer (void)
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
 			int yy_c_buf_p_offset =
 				(int) ((yy_c_buf_p) - b->yy_ch_buf);
 
 			if ( b->yy_is_our_buffer )
 				{
-				yy_size_t new_size = b->yy_buf_size * 2;
+				int new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -2860,11 +3103,12 @@ static int yy_get_next_buffer (void)
 
 				b->yy_ch_buf = (char *)
 					/* Include room in for 2 EOB chars. */
-					scdocrealloc((void *) b->yy_ch_buf,b->yy_buf_size + 2  );
+					yyrealloc( (void *) b->yy_ch_buf,
+							 (yy_size_t) (b->yy_buf_size + 2)  );
 				}
 			else
 				/* Can't grow it, we don't own it. */
-				b->yy_ch_buf = 0;
+				b->yy_ch_buf = NULL;
 
 			if ( ! b->yy_ch_buf )
 				YY_FATAL_ERROR(
@@ -2892,7 +3136,7 @@ static int yy_get_next_buffer (void)
 		if ( number_to_move == YY_MORE_ADJ )
 			{
 			ret_val = EOB_ACT_END_OF_FILE;
-			scdocrestart(scdocin  );
+			yyrestart( yyin  );
 			}
 
 		else
@@ -2906,12 +3150,15 @@ static int yy_get_next_buffer (void)
 	else
 		ret_val = EOB_ACT_CONTINUE_SCAN;
 
-	if ((yy_size_t) ((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+	if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
-		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
-		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) scdocrealloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size  );
+		int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc(
+			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
 			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
+		/* "- 2" to take care of EOB's */
+		YY_CURRENT_BUFFER_LVALUE->yy_buf_size = (int) (new_size - 2);
 	}
 
 	(yy_n_chars) += number_to_move;
@@ -2927,14 +3174,14 @@ static int yy_get_next_buffer (void)
 
     static yy_state_type yy_get_previous_state (void)
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp;
+	yy_state_type yy_current_state;
+	char *yy_cp;
     
 	yy_current_state = (yy_start);
 
 	for ( yy_cp = (yytext_ptr) + YY_MORE_ADJ; yy_cp < (yy_c_buf_p); ++yy_cp )
 		{
-		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+		YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
 		if ( yy_accept[yy_current_state] )
 			{
 			(yy_last_accepting_state) = yy_current_state;
@@ -2944,9 +3191,9 @@ static int yy_get_next_buffer (void)
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
 			if ( yy_current_state >= 1235 )
-				yy_c = yy_meta[(unsigned int) yy_c];
+				yy_c = yy_meta[yy_c];
 			}
-		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 		}
 
 	return yy_current_state;
@@ -2959,10 +3206,10 @@ static int yy_get_next_buffer (void)
  */
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
-	register int yy_is_jam;
-    	register char *yy_cp = (yy_c_buf_p);
+	int yy_is_jam;
+    	char *yy_cp = (yy_c_buf_p);
 
-	register YY_CHAR yy_c = 1;
+	YY_CHAR yy_c = 1;
 	if ( yy_accept[yy_current_state] )
 		{
 		(yy_last_accepting_state) = yy_current_state;
@@ -2972,30 +3219,32 @@ static int yy_get_next_buffer (void)
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
 		if ( yy_current_state >= 1235 )
-			yy_c = yy_meta[(unsigned int) yy_c];
+			yy_c = yy_meta[yy_c];
 		}
-	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
+	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 	yy_is_jam = (yy_current_state == 1234);
 
-	return yy_is_jam ? 0 : yy_current_state;
+		return yy_is_jam ? 0 : yy_current_state;
 }
 
-    static void yyunput (int c, register char * yy_bp )
+#ifndef YY_NO_UNPUT
+
+    static void yyunput (int c, char * yy_bp )
 {
-	register char *yy_cp;
+	char *yy_cp;
     
     yy_cp = (yy_c_buf_p);
 
-	/* undo effects of setting up scdoctext */
+	/* undo effects of setting up yytext */
 	*yy_cp = (yy_hold_char);
 
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		register yy_size_t number_to_move = (yy_n_chars) + 2;
-		register char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
+		int number_to_move = (yy_n_chars) + 2;
+		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		register char *source =
+		char *source =
 				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
 
 		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
@@ -3004,7 +3253,7 @@ static int yy_get_next_buffer (void)
 		yy_cp += (int) (dest - source);
 		yy_bp += (int) (dest - source);
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
+			(yy_n_chars) = (int) YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
 
 		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 			YY_FATAL_ERROR( "flex scanner push-back overflow" );
@@ -3013,13 +3262,15 @@ static int yy_get_next_buffer (void)
 	*--yy_cp = (char) c;
 
     if ( c == '\n' ){
-        --scdoclineno;
+        --yylineno;
     }
 
 	(yytext_ptr) = yy_bp;
 	(yy_hold_char) = *yy_cp;
 	(yy_c_buf_p) = yy_cp;
 }
+
+#endif
 
 #ifndef YY_NO_INPUT
 #ifdef __cplusplus
@@ -3045,7 +3296,7 @@ static int yy_get_next_buffer (void)
 
 		else
 			{ /* need more input */
-			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
+			int offset = (int) ((yy_c_buf_p) - (yytext_ptr));
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -3062,13 +3313,13 @@ static int yy_get_next_buffer (void)
 					 */
 
 					/* Reset buffer status. */
-					scdocrestart(scdocin );
+					yyrestart( yyin );
 
 					/*FALLTHROUGH*/
 
 				case EOB_ACT_END_OF_FILE:
 					{
-					if ( scdocwrap( ) )
+					if ( yywrap(  ) )
 						return 0;
 
 					if ( ! (yy_did_buffer_switch_on_eof) )
@@ -3088,12 +3339,12 @@ static int yy_get_next_buffer (void)
 		}
 
 	c = *(unsigned char *) (yy_c_buf_p);	/* cast for 8-bit char's */
-	*(yy_c_buf_p) = '\0';	/* preserve scdoctext */
+	*(yy_c_buf_p) = '\0';	/* preserve yytext */
 	(yy_hold_char) = *++(yy_c_buf_p);
 
 	if ( c == '\n' )
-		   
-    scdoclineno++;
+		
+    yylineno++;
 ;
 
 	return c;
@@ -3105,32 +3356,32 @@ static int yy_get_next_buffer (void)
  * 
  * @note This function does not reset the start condition to @c INITIAL .
  */
-    void scdocrestart  (FILE * input_file )
+    void yyrestart  (FILE * input_file )
 {
     
 	if ( ! YY_CURRENT_BUFFER ){
-        scdocensure_buffer_stack ();
+        yyensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
-            scdoc_create_buffer(scdocin,YY_BUF_SIZE );
+            yy_create_buffer( yyin, YY_BUF_SIZE );
 	}
 
-	scdoc_init_buffer(YY_CURRENT_BUFFER,input_file );
-	scdoc_load_buffer_state( );
+	yy_init_buffer( YY_CURRENT_BUFFER, input_file );
+	yy_load_buffer_state(  );
 }
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
  * 
  */
-    void scdoc_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
+    void yy_switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
     
 	/* TODO. We should be able to replace this entire function body
 	 * with
-	 *		scdocpop_buffer_state();
-	 *		scdocpush_buffer_state(new_buffer);
+	 *		yypop_buffer_state();
+	 *		yypush_buffer_state(new_buffer);
      */
-	scdocensure_buffer_stack ();
+	yyensure_buffer_stack ();
 	if ( YY_CURRENT_BUFFER == new_buffer )
 		return;
 
@@ -3143,21 +3394,21 @@ static int yy_get_next_buffer (void)
 		}
 
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
-	scdoc_load_buffer_state( );
+	yy_load_buffer_state(  );
 
 	/* We don't actually know whether we did this switch during
-	 * EOF (scdocwrap()) processing, but the only time this flag
-	 * is looked at is after scdocwrap() is called, so it's safe
+	 * EOF (yywrap()) processing, but the only time this flag
+	 * is looked at is after yywrap() is called, so it's safe
 	 * to go ahead and always set it.
 	 */
 	(yy_did_buffer_switch_on_eof) = 1;
 }
 
-static void scdoc_load_buffer_state  (void)
+static void yy_load_buffer_state  (void)
 {
     	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
 	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
-	scdocin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+	yyin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
 	(yy_hold_char) = *(yy_c_buf_p);
 }
 
@@ -3167,35 +3418,35 @@ static void scdoc_load_buffer_state  (void)
  * 
  * @return the allocated buffer state.
  */
-    YY_BUFFER_STATE scdoc_create_buffer  (FILE * file, int  size )
+    YY_BUFFER_STATE yy_create_buffer  (FILE * file, int  size )
 {
 	YY_BUFFER_STATE b;
     
-	b = (YY_BUFFER_STATE) scdocalloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) yyalloc( sizeof( struct yy_buffer_state )  );
 	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in scdoc_create_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_buf_size = size;
 
 	/* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
 	 */
-	b->yy_ch_buf = (char *) scdocalloc(b->yy_buf_size + 2  );
+	b->yy_ch_buf = (char *) yyalloc( (yy_size_t) (b->yy_buf_size + 2)  );
 	if ( ! b->yy_ch_buf )
-		YY_FATAL_ERROR( "out of dynamic memory in scdoc_create_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
 	b->yy_is_our_buffer = 1;
 
-	scdoc_init_buffer(b,file );
+	yy_init_buffer( b, file );
 
 	return b;
 }
 
 /** Destroy the buffer.
- * @param b a buffer created with scdoc_create_buffer()
+ * @param b a buffer created with yy_create_buffer()
  * 
  */
-    void scdoc_delete_buffer (YY_BUFFER_STATE  b )
+    void yy_delete_buffer (YY_BUFFER_STATE  b )
 {
     
 	if ( ! b )
@@ -3205,27 +3456,27 @@ static void scdoc_load_buffer_state  (void)
 		YY_CURRENT_BUFFER_LVALUE = (YY_BUFFER_STATE) 0;
 
 	if ( b->yy_is_our_buffer )
-		scdocfree((void *) b->yy_ch_buf  );
+		yyfree( (void *) b->yy_ch_buf  );
 
-	scdocfree((void *) b  );
+	yyfree( (void *) b  );
 }
 
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
- * such as during a scdocrestart() or at EOF.
+ * such as during a yyrestart() or at EOF.
  */
-    static void scdoc_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
+    static void yy_init_buffer  (YY_BUFFER_STATE  b, FILE * file )
 
 {
 	int oerrno = errno;
     
-	scdoc_flush_buffer(b );
+	yy_flush_buffer( b );
 
 	b->yy_input_file = file;
 	b->yy_fill_buffer = 1;
 
-    /* If b is the current buffer, then scdoc_init_buffer was _probably_
-     * called from scdocrestart() or through yy_get_next_buffer.
+    /* If b is the current buffer, then yy_init_buffer was _probably_
+     * called from yyrestart() or through yy_get_next_buffer.
      * In that case, we don't want to reset the lineno or column.
      */
     if (b != YY_CURRENT_BUFFER){
@@ -3242,7 +3493,7 @@ static void scdoc_load_buffer_state  (void)
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
  * 
  */
-    void scdoc_flush_buffer (YY_BUFFER_STATE  b )
+    void yy_flush_buffer (YY_BUFFER_STATE  b )
 {
     	if ( ! b )
 		return;
@@ -3262,7 +3513,7 @@ static void scdoc_load_buffer_state  (void)
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
 	if ( b == YY_CURRENT_BUFFER )
-		scdoc_load_buffer_state( );
+		yy_load_buffer_state(  );
 }
 
 /** Pushes the new state onto the stack. The new state becomes
@@ -3271,14 +3522,14 @@ static void scdoc_load_buffer_state  (void)
  *  @param new_buffer The new state.
  *  
  */
-void scdocpush_buffer_state (YY_BUFFER_STATE new_buffer )
+void yypush_buffer_state (YY_BUFFER_STATE new_buffer )
 {
     	if (new_buffer == NULL)
 		return;
 
-	scdocensure_buffer_stack();
+	yyensure_buffer_stack();
 
-	/* This block is copied from scdoc_switch_to_buffer. */
+	/* This block is copied from yy_switch_to_buffer. */
 	if ( YY_CURRENT_BUFFER )
 		{
 		/* Flush out information for old buffer. */
@@ -3292,8 +3543,8 @@ void scdocpush_buffer_state (YY_BUFFER_STATE new_buffer )
 		(yy_buffer_stack_top)++;
 	YY_CURRENT_BUFFER_LVALUE = new_buffer;
 
-	/* copied from scdoc_switch_to_buffer. */
-	scdoc_load_buffer_state( );
+	/* copied from yy_switch_to_buffer. */
+	yy_load_buffer_state(  );
 	(yy_did_buffer_switch_on_eof) = 1;
 }
 
@@ -3301,18 +3552,18 @@ void scdocpush_buffer_state (YY_BUFFER_STATE new_buffer )
  *  The next element becomes the new top.
  *  
  */
-void scdocpop_buffer_state (void)
+void yypop_buffer_state (void)
 {
     	if (!YY_CURRENT_BUFFER)
 		return;
 
-	scdoc_delete_buffer(YY_CURRENT_BUFFER );
+	yy_delete_buffer(YY_CURRENT_BUFFER );
 	YY_CURRENT_BUFFER_LVALUE = NULL;
 	if ((yy_buffer_stack_top) > 0)
 		--(yy_buffer_stack_top);
 
 	if (YY_CURRENT_BUFFER) {
-		scdoc_load_buffer_state( );
+		yy_load_buffer_state(  );
 		(yy_did_buffer_switch_on_eof) = 1;
 	}
 }
@@ -3320,7 +3571,7 @@ void scdocpop_buffer_state (void)
 /* Allocates the stack if it does not exist.
  *  Guarantees space for at least one push.
  */
-static void scdocensure_buffer_stack (void)
+static void yyensure_buffer_stack (void)
 {
 	yy_size_t num_to_alloc;
     
@@ -3330,15 +3581,15 @@ static void scdocensure_buffer_stack (void)
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
          */
-		num_to_alloc = 1;
-		(yy_buffer_stack) = (struct yy_buffer_state**)scdocalloc
+      num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
+		(yy_buffer_stack) = (struct yy_buffer_state**)yyalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in scdocensure_buffer_stack()" );
-								  
+			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
+
 		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		(yy_buffer_stack_max) = num_to_alloc;
 		(yy_buffer_stack_top) = 0;
 		return;
@@ -3347,15 +3598,15 @@ static void scdocensure_buffer_stack (void)
 	if ((yy_buffer_stack_top) >= ((yy_buffer_stack_max)) - 1){
 
 		/* Increase the buffer to prepare for a possible push. */
-		int grow_size = 8 /* arbitrary grow size */;
+		yy_size_t grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = (yy_buffer_stack_max) + grow_size;
-		(yy_buffer_stack) = (struct yy_buffer_state**)scdocrealloc
+		(yy_buffer_stack) = (struct yy_buffer_state**)yyrealloc
 								((yy_buffer_stack),
 								num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		if ( ! (yy_buffer_stack) )
-			YY_FATAL_ERROR( "out of dynamic memory in scdocensure_buffer_stack()" );
+			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
 
 		/* zero only the new slots.*/
 		memset((yy_buffer_stack) + (yy_buffer_stack_max), 0, grow_size * sizeof(struct yy_buffer_state*));
@@ -3367,9 +3618,9 @@ static void scdocensure_buffer_stack (void)
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
  * 
- * @return the newly allocated buffer state object. 
+ * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE scdoc_scan_buffer  (char * base, yy_size_t  size )
+YY_BUFFER_STATE yy_scan_buffer  (char * base, yy_size_t  size )
 {
 	YY_BUFFER_STATE b;
     
@@ -3377,68 +3628,69 @@ YY_BUFFER_STATE scdoc_scan_buffer  (char * base, yy_size_t  size )
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
 		/* They forgot to leave room for the EOB's. */
-		return 0;
+		return NULL;
 
-	b = (YY_BUFFER_STATE) scdocalloc(sizeof( struct yy_buffer_state )  );
+	b = (YY_BUFFER_STATE) yyalloc( sizeof( struct yy_buffer_state )  );
 	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in scdoc_scan_buffer()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_buffer()" );
 
-	b->yy_buf_size = size - 2;	/* "- 2" to take care of EOB's */
+	b->yy_buf_size = (int) (size - 2);	/* "- 2" to take care of EOB's */
 	b->yy_buf_pos = b->yy_ch_buf = base;
 	b->yy_is_our_buffer = 0;
-	b->yy_input_file = 0;
+	b->yy_input_file = NULL;
 	b->yy_n_chars = b->yy_buf_size;
 	b->yy_is_interactive = 0;
 	b->yy_at_bol = 1;
 	b->yy_fill_buffer = 0;
 	b->yy_buffer_status = YY_BUFFER_NEW;
 
-	scdoc_switch_to_buffer(b  );
+	yy_switch_to_buffer( b  );
 
 	return b;
 }
 
-/** Setup the input buffer state to scan a string. The next call to scdoclex() will
+/** Setup the input buffer state to scan a string. The next call to yylex() will
  * scan from a @e copy of @a str.
  * @param yystr a NUL-terminated string to scan
  * 
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
- *       scdoc_scan_bytes() instead.
+ *       yy_scan_bytes() instead.
  */
-YY_BUFFER_STATE scdoc_scan_string (yyconst char * yystr )
+YY_BUFFER_STATE yy_scan_string (const char * yystr )
 {
     
-	return scdoc_scan_bytes(yystr,strlen(yystr) );
+	return yy_scan_bytes( yystr, (int) strlen(yystr) );
 }
 
-/** Setup the input buffer state to scan the given bytes. The next call to scdoclex() will
+/** Setup the input buffer state to scan the given bytes. The next call to yylex() will
  * scan from a @e copy of @a bytes.
- * @param bytes the byte buffer to scan
- * @param len the number of bytes in the buffer pointed to by @a bytes.
+ * @param yybytes the byte buffer to scan
+ * @param _yybytes_len the number of bytes in the buffer pointed to by @a bytes.
  * 
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE scdoc_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len )
+YY_BUFFER_STATE yy_scan_bytes  (const char * yybytes, int  _yybytes_len )
 {
 	YY_BUFFER_STATE b;
 	char *buf;
-	yy_size_t n, i;
+	yy_size_t n;
+	int i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
-	n = _yybytes_len + 2;
-	buf = (char *) scdocalloc(n  );
+	n = (yy_size_t) (_yybytes_len + 2);
+	buf = (char *) yyalloc( n  );
 	if ( ! buf )
-		YY_FATAL_ERROR( "out of dynamic memory in scdoc_scan_bytes()" );
+		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_bytes()" );
 
 	for ( i = 0; i < _yybytes_len; ++i )
 		buf[i] = yybytes[i];
 
 	buf[_yybytes_len] = buf[_yybytes_len+1] = YY_END_OF_BUFFER_CHAR;
 
-	b = scdoc_scan_buffer(buf,n );
+	b = yy_scan_buffer( buf, n );
 	if ( ! b )
-		YY_FATAL_ERROR( "bad buffer in scdoc_scan_bytes()" );
+		YY_FATAL_ERROR( "bad buffer in yy_scan_bytes()" );
 
 	/* It's okay to grow etc. this buffer, and we should throw it
 	 * away when we're done.
@@ -3452,9 +3704,9 @@ YY_BUFFER_STATE scdoc_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_l
 #define YY_EXIT_FAILURE 2
 #endif
 
-static void yy_fatal_error (yyconst char* msg )
+static void yynoreturn yy_fatal_error (const char* msg )
 {
-    	(void) fprintf( stderr, "%s\n", msg );
+			fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
 
@@ -3464,14 +3716,14 @@ static void yy_fatal_error (yyconst char* msg )
 #define yyless(n) \
 	do \
 		{ \
-		/* Undo effects of setting up scdoctext. */ \
+		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		scdoctext[scdocleng] = (yy_hold_char); \
-		(yy_c_buf_p) = scdoctext + yyless_macro_arg; \
+		yytext[yyleng] = (yy_hold_char); \
+		(yy_c_buf_p) = yytext + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \
 		*(yy_c_buf_p) = '\0'; \
-		scdocleng = yyless_macro_arg; \
+		yyleng = yyless_macro_arg; \
 		} \
 	while ( 0 )
 
@@ -3480,129 +3732,129 @@ static void yy_fatal_error (yyconst char* msg )
 /** Get the current line number.
  * 
  */
-int scdocget_lineno  (void)
+int yyget_lineno  (void)
 {
-        
-    return scdoclineno;
+    
+    return yylineno;
 }
 
 /** Get the input stream.
  * 
  */
-FILE *scdocget_in  (void)
+FILE *yyget_in  (void)
 {
-        return scdocin;
+        return yyin;
 }
 
 /** Get the output stream.
  * 
  */
-FILE *scdocget_out  (void)
+FILE *yyget_out  (void)
 {
-        return scdocout;
+        return yyout;
 }
 
 /** Get the length of the current token.
  * 
  */
-yy_size_t scdocget_leng  (void)
+int yyget_leng  (void)
 {
-        return scdocleng;
+        return yyleng;
 }
 
 /** Get the current token.
  * 
  */
 
-char *scdocget_text  (void)
+char *yyget_text  (void)
 {
-        return scdoctext;
+        return yytext;
 }
 
 /** Set the current line number.
- * @param line_number
+ * @param _line_number line number
  * 
  */
-void scdocset_lineno (int  line_number )
+void yyset_lineno (int  _line_number )
 {
     
-    scdoclineno = line_number;
+    yylineno = _line_number;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
- * @param in_str A readable stream.
+ * @param _in_str A readable stream.
  * 
- * @see scdoc_switch_to_buffer
+ * @see yy_switch_to_buffer
  */
-void scdocset_in (FILE *  in_str )
+void yyset_in (FILE *  _in_str )
 {
-        scdocin = in_str ;
+        yyin = _in_str ;
 }
 
-void scdocset_out (FILE *  out_str )
+void yyset_out (FILE *  _out_str )
 {
-        scdocout = out_str ;
+        yyout = _out_str ;
 }
 
-int scdocget_debug  (void)
+int yyget_debug  (void)
 {
-        return scdoc_flex_debug;
+        return yy_flex_debug;
 }
 
-void scdocset_debug (int  bdebug )
+void yyset_debug (int  _bdebug )
 {
-        scdoc_flex_debug = bdebug ;
+        yy_flex_debug = _bdebug ;
 }
 
 static int yy_init_globals (void)
 {
         /* Initialization is the same as for the non-reentrant scanner.
-     * This function is called from scdoclex_destroy(), so don't allocate here.
+     * This function is called from yylex_destroy(), so don't allocate here.
      */
 
-    /* We do not touch scdoclineno unless the option is enabled. */
-    scdoclineno =  1;
+    /* We do not touch yylineno unless the option is enabled. */
+    yylineno =  1;
     
-    (yy_buffer_stack) = 0;
+    (yy_buffer_stack) = NULL;
     (yy_buffer_stack_top) = 0;
     (yy_buffer_stack_max) = 0;
-    (yy_c_buf_p) = (char *) 0;
+    (yy_c_buf_p) = NULL;
     (yy_init) = 0;
     (yy_start) = 0;
 
 /* Defined in main.c */
 #ifdef YY_STDINIT
-    scdocin = stdin;
-    scdocout = stdout;
+    yyin = stdin;
+    yyout = stdout;
 #else
-    scdocin = (FILE *) 0;
-    scdocout = (FILE *) 0;
+    yyin = NULL;
+    yyout = NULL;
 #endif
 
     /* For future reference: Set errno on error, since we are called by
-     * scdoclex_init()
+     * yylex_init()
      */
     return 0;
 }
 
-/* scdoclex_destroy is for both reentrant and non-reentrant scanners. */
-int scdoclex_destroy  (void)
+/* yylex_destroy is for both reentrant and non-reentrant scanners. */
+int yylex_destroy  (void)
 {
     
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
-		scdoc_delete_buffer(YY_CURRENT_BUFFER  );
+		yy_delete_buffer( YY_CURRENT_BUFFER  );
 		YY_CURRENT_BUFFER_LVALUE = NULL;
-		scdocpop_buffer_state();
+		yypop_buffer_state();
 	}
 
 	/* Destroy the stack itself. */
-	scdocfree((yy_buffer_stack) );
+	yyfree((yy_buffer_stack) );
 	(yy_buffer_stack) = NULL;
 
     /* Reset the globals. This is important in a non-reentrant scanner so the next time
-     * scdoclex() is called, initialization will occur. */
+     * yylex() is called, initialization will occur. */
     yy_init_globals( );
 
     return 0;
@@ -3613,18 +3865,19 @@ int scdoclex_destroy  (void)
  */
 
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char* s1, yyconst char * s2, int n )
+static void yy_flex_strncpy (char* s1, const char * s2, int n )
 {
-	register int i;
+		
+	int i;
 	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * s )
+static int yy_flex_strlen (const char * s )
 {
-	register int n;
+	int n;
 	for ( n = 0; s[n]; ++n )
 		;
 
@@ -3632,13 +3885,14 @@ static int yy_flex_strlen (yyconst char * s )
 }
 #endif
 
-void *scdocalloc (yy_size_t  size )
+void *yyalloc (yy_size_t  size )
 {
-	return (void *) malloc( size );
+			return malloc(size);
 }
 
-void *scdocrealloc  (void * ptr, yy_size_t  size )
+void *yyrealloc  (void * ptr, yy_size_t  size )
 {
+		
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
 	 * that use void* generic pointers.  It works with the latter
@@ -3646,16 +3900,15 @@ void *scdocrealloc  (void * ptr, yy_size_t  size )
 	 * any pointer type to void*, and deal with argument conversions
 	 * as though doing an assignment.
 	 */
-	return (void *) realloc( (char *) ptr, size );
+	return realloc(ptr, size);
 }
 
-void scdocfree (void * ptr )
+void yyfree (void * ptr )
 {
-	free( (char *) ptr );	/* see scdocrealloc() for (char *) cast */
+			free( (char *) ptr );	/* see yyrealloc() for (char *) cast */
 }
 
 #define YYTABLES_NAME "yytables"
 
-#line 176 "SCDoc.l"
-
+#line 177 "SCDoc.l"
 

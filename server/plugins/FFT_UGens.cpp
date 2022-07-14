@@ -143,11 +143,11 @@ static int FFTBase_Ctor(FFTBase* unit, int frmsizinput) {
 void FFT_Ctor(FFT* unit) {
     int winType = sc_clip((int)ZIN0(3), -1, 1); // wintype may be used by the base ctor
     unit->m_wintype = winType;
+    // These zeroes are to prevent the dtor freeing things that don't exist:
+    unit->m_inbuf = nullptr;
+    unit->m_scfft = nullptr;
     if (!FFTBase_Ctor(unit, 5)) {
         SETCALC(FFT_ClearUnitOutputs);
-        // These zeroes are to prevent the dtor freeing things that don't exist:
-        unit->m_inbuf = 0;
-        unit->m_scfft = 0;
         return;
     }
     int audiosize = unit->m_audiosize * sizeof(float);
@@ -166,15 +166,12 @@ void FFT_Ctor(FFT* unit) {
     unit->m_shuntsize = unit->m_audiosize - hopsize;
 
     unit->m_inbuf = (float*)RTAlloc(unit->mWorld, audiosize);
+    ClearFFTUnitIfMemFailed(unit->m_inbuf);
 
     SCWorld_Allocator alloc(ft, unit->mWorld);
     unit->m_scfft = scfft_create(unit->m_fullbufsize, unit->m_audiosize, (SCFFT_WindowFunction)unit->m_wintype,
                                  unit->m_inbuf, unit->m_fftsndbuf->data, kForward, alloc);
-
-    if (!unit->m_scfft) {
-        SETCALC(*ClearUnitOutputs);
-        return;
-    }
+    ClearFFTUnitIfMemFailed(unit->m_scfft);
 
     memset(unit->m_inbuf, 0, audiosize);
 
@@ -199,9 +196,6 @@ void FFT_Dtor(FFT* unit) {
         RTFree(unit->mWorld, unit->m_inbuf);
 }
 
-// Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's
-// skip that:
-void FFT_ClearUnitOutputs(FFT* unit, int wrongNumSamples) { ZOUT0(0) = -1; }
 
 void FFT_next(FFT* unit, int wrongNumSamples) {
     float* in = IN(1);
@@ -240,27 +234,24 @@ void FFT_next(FFT* unit, int wrongNumSamples) {
 void IFFT_Ctor(IFFT* unit) {
     int winType = sc_clip((int)ZIN0(1), -1, 1); // wintype may be used by the base ctor
     unit->m_wintype = winType;
+    // These zeroes are to prevent the dtor freeing things that don't exist:
+    unit->m_olabuf = nullptr;
+    unit->m_scfft = nullptr;
 
     if (!FFTBase_Ctor(unit, 2)) {
         SETCALC(*ClearUnitOutputs);
-        // These zeroes are to prevent the dtor freeing things that don't exist:
-        unit->m_olabuf = 0;
         return;
     }
 
     // This will hold the transformed and progressively overlap-added data ready for outputting.
     unit->m_olabuf = (float*)RTAlloc(unit->mWorld, unit->m_audiosize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_olabuf);
     memset(unit->m_olabuf, 0, unit->m_audiosize * sizeof(float));
 
     SCWorld_Allocator alloc(ft, unit->mWorld);
     unit->m_scfft = scfft_create(unit->m_fullbufsize, unit->m_audiosize, (SCFFT_WindowFunction)unit->m_wintype,
                                  unit->m_fftsndbuf->data, unit->m_fftsndbuf->data, kBackward, alloc);
-
-    if (!unit->m_scfft) {
-        SETCALC(*ClearUnitOutputs);
-        unit->m_olabuf = 0;
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_scfft);
 
     // "pos" will be reset to zero when each frame comes in. Until then, the following ensures silent output at first:
     unit->m_pos = 0; // unit->m_audiosize;

@@ -77,7 +77,10 @@ Pattern : AbstractFunction {
 	repeat { arg n=inf; ^Pn(this, n) }
 	keep { arg n; ^Pfin(n, this) }
 	drop { arg n; ^Pdrop(n, this) }
-	stutter { arg n; ^Pstutter(n, this) }
+	stutter { |n|
+		^this.dupEach(n);
+	}
+	dupEach { arg n; ^Pdup(n, this) }
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
 	fin { arg n = 1; ^Pfin(n, this) }
 
@@ -93,32 +96,48 @@ Pattern : AbstractFunction {
 	// dur: if nil, record until pattern stops or is stopped externally
 	// fadeTime: allow extra time after last Event for nodes to become silent
 
-	record { |path, headerFormat = "AIFF", sampleFormat = "float", numChannels = 2, dur = nil, fadeTime = 0.2, clock(TempoClock.default), protoEvent(Event.default), server(Server.default), out = 0, outNumChannels|
+	record { |path, headerFormat, sampleFormat, numChannels = 2, dur = nil, fadeTime = 0.2, clock(TempoClock.default), protoEvent(Event.default), server(Server.default), out = 0, outNumChannels|
 
-		var recorder = Recorder(server);
+		var buffer, nodeID, defname;
 		var pattern = if(dur.notNil) { Pfindur(dur, this) } { this };
 
 		server.waitForBoot {
-			var group, bus, startTime, free, monitor;
+			var group, bus, free, monitor;
 
-			recorder.prepareForRecord(path, numChannels);
-			fadeTime = (fadeTime ? 0).roundUp(recorder.numFrames / server.sampleRate);
+			buffer = Buffer.alloc(server, 32768, numChannels);
+			buffer.write(path, headerFormat, sampleFormat, 0, leaveOpen: true);
+			defname = SystemSynthDefs.generateTempName;
+			SynthDef(defname, { |bufnum, bus|
+				var sig = In.ar(bus, numChannels);
+				DiskOut.ar(bufnum, sig);
+			}).add;
+
+			fadeTime = (fadeTime ? 0).roundUp(buffer.duration);
 
 			bus = Bus.audio(server, numChannels);
 			group = Group(server);
 			Monitor.new.play(bus.index, bus.numChannels, out, outNumChannels ? numChannels, group);
 			server.sync;
 
-			free = { recorder.stopRecording; bus.free; group.free };
+			free = {
+				(type: \off, id: nodeID, server: server, hasGate: false).play;
+				{
+					bus.free; group.free;
+					buffer.free;
+					server.sendMsg(\d_free, defname);
+				}.defer(server.latency);
+			};
 
 			Pprotect(
 				Pfset(nil,
 					Pseq([
-						Pfuncn {
-							startTime = thisThread.beats;
-							(type: \rest, delta: 0)
-						},
-						(play: { recorder.record(path, bus, numChannels, group) }, delta: 0),
+						(
+							type: \on, id: nodeID, instrument: defname,
+							bus: bus, group: group, addAction: \addAfter,
+							bufnum: buffer,
+							delta: 0,
+							callback: { nodeID = ~id }
+						),
 						pattern <> (out: bus),
 						(type: \rest, delta: fadeTime)
 					], 1),

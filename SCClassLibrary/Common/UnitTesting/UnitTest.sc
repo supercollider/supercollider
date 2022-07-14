@@ -14,8 +14,8 @@ UnitTest {
 			var classkey = class.asString[4..]; // drop Meta_
 			var methtests = class.findTestMethods.collectAs({ | method |
 				method.name.asString -> {
-					this.prRunWithinSetUpClass {
-						class.new.runTestMethod(method)
+					class.prRunWithinSetUpClass {
+						class.new.runTestMethod(method);
 					}
 				}
 			}, Dictionary);
@@ -37,8 +37,8 @@ UnitTest {
 		if(method.isNil) {
 			Error("Test method not found " + methodName).throw
 		};
-		this.prRunWithinSetUpClass {
-			class.new.runTestMethod(method)
+		class.prRunWithinSetUpClass {
+			class.new.runTestMethod(method);
 		}
 	}
 
@@ -139,7 +139,7 @@ UnitTest {
 	}
 
 	assertFloatEquals { |a, b, message = "", within = 0.0001, report = true, onFailure|
-		var details = ("Is:\n\t % \nShould equal (within range " ++ within ++ "):\n\t %").format(a, b);
+		var details = ("Is:\n\t % \nShould equal (within range %):\n\t %").format(a, within, b);
 		this.assert((a - b).abs <= within, message, report, onFailure, details);
 	}
 
@@ -232,21 +232,22 @@ UnitTest {
 		^boolean
 	}
 
-	// waits for condition with a maxTime limit
-	// if time expires, the test is a failure
-	wait { |condition, failureMessage, maxTime = 10.0|
-		var dt = 0.05;
-		var limit = max(1, maxTime / dt);
+	// this method should be avoided if at all possible
+	// it's better to use CondVar directly in tests instead
+	wait { |predicate, failureMessage = "", maxTime = 10.0|
+		var condvar = CondVar();
+		var waitDur = 0.1;
+		var limit = max(1.0, maxTime / waitDur);
 
 		while {
-			condition.test.not and: { limit >= 0 }
+			(limit >= 0) and: { condvar.waitFor(waitDur, predicate).not }
 		} {
 			limit = limit - 1;
-			dt.wait;
 		};
 
-		if(limit < 0 and: failureMessage.notNil) {
-			this.failed(currentMethod,failureMessage)
+		// consider test failed if limit is surpassed
+		if(limit < 0) {
+			this.failed(currentMethod, failureMessage)
 		}
 	}
 

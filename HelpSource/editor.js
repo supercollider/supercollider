@@ -38,7 +38,10 @@ const init = () => {
             lineWrapping: true,
             viewportMargin: Infinity,
             extraKeys: {
-                'Shift-Enter': evalLine
+                // noop: prevent both codemirror and the browser to handle Shift-Enter
+                'Shift-Enter': ()=>{}, 
+                // prevent only codemirror to handle Ctrl+D
+                'Ctrl-D': false
             }
         })
 
@@ -57,15 +60,6 @@ const init = () => {
         })
     })
 
-}
-
-const evalLine = () => {
-    // If we are not running in the SC IDE, do nothing.
-    if (!window.IDE) {
-        return;
-    }
-    // Ask IDE to eval line. Calls back to `selectLine()`
-    window.IDE.evaluateLine();
 }
 
 /* returns the code selection, line or region */
@@ -101,12 +95,12 @@ const selectRegion = (options = { flash: true }) => {
             return cursorRight
         let ch = editor.getLine(cursorRight.line)
             .slice(cursorRight.ch-1, cursorRight.ch)
-        if (token.match(/^(comment|string|symbol|char)/))
-            return findRightParen(cursorRight)
         if (ch === '(')
             return findRightParen(findRightParen(cursorRight))
         if (ch === ')')
             return cursorRight
+        if (token.match(/^(comment|string|symbol|char)/))
+            return findRightParen(cursorRight)
         return findRightParen(cursorRight)
     }
 

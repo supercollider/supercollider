@@ -1,3 +1,31 @@
+<!-- 
+Changelog entry template:
+
+3.xx.x (202x-xx-xx)
+===================
+
+### General: Added
+### General: Changed
+### General: Fixed
+### sclang: Added
+### sclang: Changed
+### sclang: Fixed
+### Class library: Added
+### Class library: Changed
+### Class library: Deprecated
+### Class library: Fixed
+### scsynth and supernova: Added
+### scsynth and supernova: Changed
+### scsynth and supernova: Fixed
+### UGens: Added
+### UGens: Changed
+### UGens: Deprecated
+### UGens: Fixed
+### IDE: Added
+### IDE: Changed
+### IDE: Fixed
+-->
+
 # Change Log
 
 Release dates of 3.x versions:
@@ -12,8 +40,291 @@ Release dates of 3.x versions:
 - 3.8: 2016-11-04
 - 3.9: 2018-01-13
 - 3.10: 2018-11-24
+- 3.11: 2020-03-08
+- 3.12: 2021-08-02
 
-3.11 (2020-03-08)
+3.12.2 (2022-01-08)
+===================
+
+### sclang: Fixed
+Revert the use of logical time for MIDI messages on macOS, which introduced other issues ([#5631](https://github.com/supercollider/supercollider/pull/5631))
+
+3.12.1 (2021-09-05)
+===================
+
+The 3.12.1 release fixes compatibility with older macOS systems (10.13 and below)
+
+### General: Fixed
+Builds for older macOS systems ([#5537](https://github.com/supercollider/supercollider/pull/5537))
+
+3.12.0 (2021-08-02)
+===================
+
+The 3.12.0 release brings new features, countless bugfixes, as well as project and documentation updates. See the [repository](https://github.com/supercollider/supercollider) for all the changes. A big thank you to all developers for your contributions!
+
+Change log highlights:
+
+### General: Added
+Supernova on Windows ([#4763](https://github.com/supercollider/supercollider/pull/4763))
+
+Bela support ([#5295](https://github.com/supercollider/supercollider/pull/5295))
+
+macOS Big Sur support ([#5298](https://github.com/supercollider/supercollider/pull/5298), [#5356](https://github.com/supercollider/supercollider/pull/5356))
+
+### General: Changed
+Bigger build matrix add CI jobs to implement platform support RFC ([#4906](https://github.com/supercollider/supercollider/pull/4906))
+ 
+Updated portaudio submodule ([#4925](https://github.com/supercollider/supercollider/pull/4925))
+
+Implement [RFC 10](https://github.com/supercollider/rfcs/pull/10): Replace oppressive terminology with more accurate alternatives ([#5251](https://github.com/supercollider/supercollider/issues/5251), [#5424](https://github.com/supercollider/supercollider/pull/5424), [#5470](https://github.com/supercollider/supercollider/pull/5470))
+
+Increase required C++ standard to C++17 ([#5396](https://github.com/supercollider/supercollider/pull/5396))
+
+Move CI from Travis/AppVeyor to GitHub Actions ([#5261](https://github.com/supercollider/supercollider/issues/5261), [#5273](https://github.com/supercollider/supercollider/pull/5273) [#5371](https://github.com/supercollider/supercollider/pull/5371), [#5377](https://github.com/supercollider/supercollider/pull/5377))
+
+Run TestSuite in CI ([#5332](https://github.com/supercollider/supercollider/pull/5332))
+
+### sclang: Changed
+Exclude default paths: change from command line parameter to language file flag ([#3733](https://github.com/supercollider/supercollider/pull/3733))
+
+### sclang: Fixed
+MIDI realtime messages: Push correct number of values onto the stack ([#5200](https://github.com/supercollider/supercollider/pull/5200))
+
+### Class library: Added
+Fuzzy equals add fuzzy array comparisons ([#4468](https://github.com/supercollider/supercollider/pull/4468))
+
+`String -runInTerminal` on Windows ([#4882](https://github.com/supercollider/supercollider/pull/4882))
+
+Provide suggestions on `method not found`: ([#4866](https://github.com/supercollider/supercollider/pull/4929))
+
+Add "lazy equality" |==| operator ([#5183](https://github.com/supercollider/supercollider/pull/5183))
+
+New class: CondVar ([#5436](https://github.com/supercollider/supercollider/pull/5436), [#5448](https://github.com/supercollider/supercollider/pull/5448), [#5456](https://github.com/supercollider/supercollider/pull/5456))
+
+### Class library: Fixed
+Various UnitTest fixes ([#5461](https://github.com/supercollider/supercollider/pull/5461), [#5457](https://github.com/supercollider/supercollider/pull/5457))
+
+### scsynth and supernova: Added
+Clip values on hardware out busses (macOS) ([5110](https://github.com/supercollider/supercollider/pull/5110), [#5454](https://github.com/supercollider/supercollider/pull/5454))
+
+### scsynth and supernova: Changed
+Supernova bind to the specified address ([#5474](https://github.com/supercollider/supercollider/pull/5474))
+
+Supernova on macOS: avoid resampling when talking to audio hardware  ([#4477](https://github.com/supercollider/supercollider/pull/4477))
+
+### scsynth and supernova: Fixed
+Servers not booting on Windows if some system logs are missing ([#5393](https://github.com/supercollider/supercollider/pull/5393))
+
+macOS builds include a custom build of libsndfile to support older macOS versions ([#5518](https://github.com/supercollider/supercollider/pull/5518)) 
+
+### UGens: Fixed
+PanAz: initialize amps in Ctor ([#4973](https://github.com/supercollider/supercollider/pull/4973))
+
+EnvGen fixes ([#5217](https://github.com/supercollider/supercollider/pull/5217), [#4921](https://github.com/supercollider/supercollider/pull/4921), [#4793](https://github.com/supercollider/supercollider/pull/4793))
+
+### IDE: Fixed
+Classname highlighting before introspection is available ([#5438](https://github.com/supercollider/supercollider/pull/5438))
+
+
+3.11.2 (2020-11-15)
+===================
+
+We are now providing a "legacy macOS" binary that supports macOS 10.10 and above. It can be found where you normally
+download SuperCollider ([#5190](https://github.com/supercollider/supercollider/pull/5190), [#5242](https://github.com/supercollider/supercollider/pull/5242)).
+
+### General: Fixed
+
+In the help browser, Shift-Enter now evaluates code again! ([#4883](https://github.com/supercollider/supercollider/pull/4883))
+
+Fixed faulty deployment of macOS app bundle due to bug in Qt utility
+([#5187](https://github.com/supercollider/supercollider/pull/5187), [#5230](https://github.com/supercollider/supercollider/pull/5230)).
+
+Fixed support for Portaudio in build system with CMake 3.18
+([#5206](https://github.com/supercollider/supercollider/pull/5206)).
+
+Fixed support for building shared libscsynth on macOS and Linux
+([#5215](https://github.com/supercollider/supercollider/pull/5215)).
+
+General documentation improvements ([#5131](https://github.com/supercollider/supercollider/pull/5131), [#5136](https://github.com/supercollider/supercollider/pull/5136), [#5137](https://github.com/supercollider/supercollider/pull/5137), [#5141](https://github.com/supercollider/supercollider/pull/5141), [#5142](https://github.com/supercollider/supercollider/pull/5142), [#5173](https://github.com/supercollider/supercollider/pull/5173), [#5203](https://github.com/supercollider/supercollider/pull/5203)).
+
+### General: Removed
+
+Removed some unused code for old Android support ([#4975](https://github.com/supercollider/supercollider/pull/4975)).
+
+### Class library: Fixed
+
+Fixed a bug in Pfindur where the last event of the pattern could become "Rest-less"
+([#5113](https://github.com/supercollider/supercollider/pull/5113)).
+
+SynthDesc and SynthDescLib now restore metadata for SynthDefs
+([#5122](https://github.com/supercollider/supercollider/pull/5122)).
+
+Fixed an issue in output formatting for UnitTest:assertFloatEquals
+([#5135](https://github.com/supercollider/supercollider/pull/5135)).
+
+Pattern:record no longer ignores header and sample formats provided as arguments
+([#5031](https://github.com/supercollider/supercollider/pull/5031)).
+
+Pseg:embedInStream now returns 'inval' to match other patterns
+([#5145](https://github.com/supercollider/supercollider/pull/5145)).
+
+ProxySpace:copy also rebuilds the ProxySpace to copy referenced objects
+([#5192](https://github.com/supercollider/supercollider/pull/5192)).
+
+### Servers: Fixed
+
+Supernova now correctly handles `/s_getn` with a control name instead of index
+([#5182](https://github.com/supercollider/supercollider/pull/5182)).
+
+3.11.1 (2020-08-19)
+===================
+
+This version of SuperCollider now supports Fedora 32 and Ubuntu 20.04. See README.md or
+[the wiki](https://github.com/supercollider/supercollider/wiki/Platform-Support) for more information on the full set of
+platforms and toolchains supported by SuperCollider.
+
+### General: Added
+
+Added support for AArch64 (64-bit ARM) architecture ([#5095](https://github.com/supercollider/supercollider/pull/5095))
+
+Added support for Qt 5.15 ([#4986](https://github.com/supercollider/supercollider/pull/4986))
+
+Added support for Boost 1.72 ([#4990](https://github.com/supercollider/supercollider/pull/4990)) and 1.73 ([#4983](https://github.com/supercollider/supercollider/pull/4983))
+
+Added a new script for maintainers for producing a release tarball ([#4837](https://github.com/supercollider/supercollider/pull/4837))
+
+Added a new script to help automate the release process ([#4987](https://github.com/supercollider/supercollider/pull/4987), [#5114](https://github.com/supercollider/supercollider/pull/5114))
+
+### General: Changed
+
+Building sclang with readline now requires ncurses; this is to fix build errors on some Linux systems where libreadline is not fully linked ([#4900](https://github.com/supercollider/supercollider/pull/4900))
+
+The 'render all help' CMake target no longer includes extensions ([#5089](https://github.com/supercollider/supercollider/pull/5089))
+
+Changed the disableBufferAliasing argument of the plugin interface's registerUnit() from int to bool ([#4710](https://github.com/supercollider/supercollider/pull/4710))
+
+Disabled a harmless warning from Boost that caused lots of noise when building on Windows ([#4804](https://github.com/supercollider/supercollider/pull/4804))
+
+### General: Fixed
+
+The IDE and sclang GUI components now work better on high-resolution displays on Windows ([#4850](https://github.com/supercollider/supercollider/pull/4850))
+
+Removed use of deprecated features in examples ([#4827](https://github.com/supercollider/supercollider/pull/4827))
+
+CI fixes ([#4861](https://github.com/supercollider/supercollider/pull/4861), [#4847](https://github.com/supercollider/supercollider/pull/4847), [#4920](https://github.com/supercollider/supercollider/pull/4920), [#4993](https://github.com/supercollider/supercollider/pull/4993), [#5074](https://github.com/supercollider/supercollider/pull/5074), [#5076](https://github.com/supercollider/supercollider/pull/5076))
+
+Removed unused packaging scripts ([#4840](https://github.com/supercollider/supercollider/pull/4840))
+
+"Guides" help documents are installed on all non-GUI builds now ([#5042](https://github.com/supercollider/supercollider/pull/5042))
+
+The `make_parser.sh` script in the main repository works again ([#5032](https://github.com/supercollider/supercollider/pull/5032))
+
+Fixed an issue in one of the internal `gen_cmake` tools used in cookiecutter-supercollider-plugin ([#5079](https://github.com/supercollider/supercollider/pull/5079))
+
+Documentation improvements ([#4854](https://github.com/supercollider/supercollider/pull/4854), [#4838](https://github.com/supercollider/supercollider/pull/4838), [#4886](https://github.com/supercollider/supercollider/pull/4886), [#4905](https://github.com/supercollider/supercollider/pull/4905), [#4868](https://github.com/supercollider/supercollider/pull/4868), [#4995](https://github.com/supercollider/supercollider/pull/4995), [#5006](https://github.com/supercollider/supercollider/pull/5006), [#4888](https://github.com/supercollider/supercollider/pull/4888), [#4881](https://github.com/supercollider/supercollider/pull/4881), [#5039](https://github.com/supercollider/supercollider/pull/5039), [#5023](https://github.com/supercollider/supercollider/pull/5023), [#5001](https://github.com/supercollider/supercollider/pull/5001), [#5029](https://github.com/supercollider/supercollider/pull/5029), [#5028](https://github.com/supercollider/supercollider/pull/5028), [#5010](https://github.com/supercollider/supercollider/pull/5010), [#4988](https://github.com/supercollider/supercollider/pull/4988), [#4923](https://github.com/supercollider/supercollider/pull/4923), [#5045](https://github.com/supercollider/supercollider/pull/5045), [#5082](https://github.com/supercollider/supercollider/pull/5082), [#5078](https://github.com/supercollider/supercollider/pull/5078), [#5088](https://github.com/supercollider/supercollider/pull/5088), [#5109](https://github.com/supercollider/supercollider/pull/5109), [#5093](https://github.com/supercollider/supercollider/pull/5093), [#5094](https://github.com/supercollider/supercollider/pull/5094), [#4796](https://github.com/supercollider/supercollider/pull/4796), [#4792](https://github.com/supercollider/supercollider/pull/4792), [#4762](https://github.com/supercollider/supercollider/pull/4762))
+
+### scsynth and supernova: Fixed
+
+Both servers now do better at explaining what errors like "Exception in World_OpenUDP: unable to bind udp socket" mean ([#4863](https://github.com/supercollider/supercollider/pull/4863))
+
+supernova now ignores non-scsyndef files when loading synthdefs at startup or with `/d_loadDir` ([#4917](https://github.com/supercollider/supercollider/pull/4917))
+
+Both servers are now built with correct Unicode support under MinGW ([#4926](https://github.com/supercollider/supercollider/pull/4926))
+
+Both servers now warn about an issue where Windows Defender may delay booting by ~1 minute ([#4984](https://github.com/supercollider/supercollider/pull/4984))
+
+supernova now uses FFTW as its FFT library on macOS to solve a thread safety issue ([#4583](https://github.com/supercollider/supercollider/pull/4583))
+
+scsynth now supports non-ASCII device names on the command line on Windows ([#4479](https://github.com/supercollider/supercollider/pull/4479))
+
+### UGens: Changed
+
+TWindex learned to respond to multiple triggers in a single control block ([#5002](https://github.com/supercollider/supercollider/pull/5002))
+
+### sclang: Fixed
+
+MIDIOut now checks the correct bounds when sending messages ([#4652](https://github.com/supercollider/supercollider/pull/4652))
+
+WebView:-findText no longer throws an error when used correctly ([#4937](https://github.com/supercollider/supercollider/pull/4937))
+
+`[].mirror.wrapAt` no longer crashes the interpreter ([#4935](https://github.com/supercollider/supercollider/pull/4935))
+
+Fixed a segfault in the prMatchLangIP primitive ([#4927](https://github.com/supercollider/supercollider/pull/4927))
+
+Buffer:-getToFloatArray correctly handles a count of -1 now ([#4939](https://github.com/supercollider/supercollider/pull/4939))
+
+Some dead code was removed ([#4934](https://github.com/supercollider/supercollider/pull/4934))
+
+Fixed a crash on macOS when calling MIDIIn.connectAll immediately before HID.findAvailable ([#5046](https://github.com/supercollider/supercollider/pull/5046))
+
+### scel: Fixed
+
+Fixed a build issue on Ubuntu caused by incompatibility with Emacs 25 ([#4855](https://github.com/supercollider/supercollider/pull/4855))
+
+### scel: Added
+
+Added support for completion-at-point-functions and company-mode ([#4855](https://github.com/supercollider/supercollider/pull/4855))
+
+### Class library: Added
+
+Plotter learned to allow multiple active plot modes, similar to having multiple active colors ([#4459](https://github.com/supercollider/supercollider/pull/4459))
+
+The class library's HelpBrowser class learned how to respond to the same keyboard shortcuts as the IDE help browser ([#4932](https://github.com/supercollider/supercollider/pull/4932))
+
+### Class library: Changed
+
+Quarks prints more helpful error messages for a common error ([#4404](https://github.com/supercollider/supercollider/pull/4404))
+
+Object:-writeDefFile no longer allows an empty string as an argument ([#4953](https://github.com/supercollider/supercollider/pull/4953))
+
+### Class library: Fixed
+
+Cmd-W now closes GUI windows again on macOS ([#4821](https://github.com/supercollider/supercollider/pull/4821))
+
+Passing a nil spec to NamedControl no longer overwrites a spec in SynthDef metadata ([#4817](https://github.com/supercollider/supercollider/pull/4817))
+
+Fixed a deprecation that broke non-GUI builds ([#4875](https://github.com/supercollider/supercollider/pull/4875))
+
+String:-runInTerminal works again on macOS ([#4880](https://github.com/supercollider/supercollider/pull/4880))
+
+UnitTest:-assertFloatEquals's formatting was fixed ([#4946](https://github.com/supercollider/supercollider/pull/4946))
+
+String:-splitext no longer interprets a period in a path component as the start of a file extension ([#4960](https://github.com/supercollider/supercollider/pull/4960))
+
+When building a UGen graph, SynthDef no longer deletes structures of the form `(a + b) + (a + b)` ([#5048](https://github.com/supercollider/supercollider/pull/5048))
+
+TaskProxy and EventPatternProxy now respect instances' clocks in `-play` ([#4996](https://github.com/supercollider/supercollider/pull/4996))
+
+EventPatternProxy does not prematurely cleanup a faded-in stream in some cases ([#5057](https://github.com/supercollider/supercollider/pull/5057))
+
+UGen:-composeBinaryOp's return value was fixed ([#5000](https://github.com/supercollider/supercollider/pull/5000))
+
+ProxySpace.storeOn became more robust ([#4316](https://github.com/supercollider/supercollider/pull/4316))
+
+View:-font_ now correctly sets the view's Font object ([#5107](https://github.com/supercollider/supercollider/pull/5107))
+
+SimpleNumber:-asTimeString behaves correctly when the receiver is negative ([#4802](https://github.com/supercollider/supercollider/pull/4802))
+
+Pfset now correctly cleans up when a subpattern yields nil immediately ([#4815](https://github.com/supercollider/supercollider/pull/4815))
+
+Silenced some warnings during class library compilation ([#4782](https://github.com/supercollider/supercollider/pull/4782))
+
+Test suite improvements ([#4938](https://github.com/supercollider/supercollider/pull/4938), [#4962](https://github.com/supercollider/supercollider/pull/4962))
+
+### IDE & SCDoc: Fixed
+
+Fixed a communication problem between sclang and scide which could cause confusing failures in the help browser
+([#5015](https://github.com/supercollider/supercollider/pull/5015))
+
+Selecting regions in the help browser by clicking on parens works correctly now ([#5044](https://github.com/supercollider/supercollider/pull/5044))
+
+The IDE no longer contains code that depends on a Quark ([#4948](https://github.com/supercollider/supercollider/pull/4948))
+
+The IDE correctly transmits non-ASCII characters when queried with Document.text ([#4978](https://github.com/supercollider/supercollider/pull/4978))
+
+IDE translation files are now correctly included and found in distributions, although there are no translations available so this has no functional effect ([#4810](https://github.com/supercollider/supercollider/pull/4810), [#4811](https://github.com/supercollider/supercollider/pull/4811))
+
+3.11.0 (2020-03-08)
 ===================
 
 __New feature__ - Ableton Link support. See _sclang: added_

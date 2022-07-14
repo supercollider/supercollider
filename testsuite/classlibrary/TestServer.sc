@@ -5,6 +5,8 @@ TestServer : UnitTest {
 	// helper method, not a test
 	sync { |size|
 		var f, condition, bundleSize;
+		var condvar = CondVar();
+
 		f = big.copyRange(0, (size ? big.size)-1);
 		bundleSize = f.bundleSize;
 
@@ -12,8 +14,8 @@ TestServer : UnitTest {
 		server.sync(condition, f, server.latency);
 
 		// 60 seconds
-		this.wait({condition.test}, "waiting for server to finish sync", 60);
-		this.assert(true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
+		condvar.waitFor(60, condition.test);
+		this.assertEquals(condition.test, true, "server synced bundle with " + f.size + "messages " + "bundleSize: " + bundleSize)
 	}
 
 	test_sync5 {
@@ -34,12 +36,13 @@ TestServer : UnitTest {
 	}
 
 	tearDown {
-		server.quit
+		server.quit;
+		server.remove;
 	}
 
 	setUp {
 
-		server = Server.default;
+		server = Server(this.class.name);
 		this.bootServer(server);
 
 		// mmmmmmm.   fixtures.
@@ -1324,6 +1327,17 @@ TestServer : UnitTest {
 			[ "/b_allocRead", 14, Platform.resourceDir +/+ "sounds/a11wlk01.wav", 0, -1, nil ]
 		];
 
+	}
+
+	// regression: recorder.recHeaderFormat didn't update after first time it's set
+	test_recorder_usesRecHeaderFormatFromServer {
+		var origFormat = server.recHeaderFormat,
+		    newFormat = if(origFormat == "wav"){ "aiff" }{ "wav" };
+		server.prepareForRecord();
+		server.recHeaderFormat = newFormat;
+		server.prepareForRecord();
+		this.assertEquals(server.recorder.recHeaderFormat, newFormat, "server.recorder should always use latest server.recHeaderFormat");
+		server.recHeaderFormat = origFormat;
 	}
 
 }

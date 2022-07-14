@@ -1,10 +1,21 @@
-
 TestFilterUGens : UnitTest {
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+		server.bootSync;
+	}
+
+	tearDown {
+		server.quit;
+		server.remove;
+	}
 
 	// check time invariance of all subClasses of Filter, particularly during the first 64 samples.
 	// Filter followed by delay should be the same as delay followed by filter.
 	// Only uses the filters' default arguments, but this should catch most initialisation errors.
 	test_time_invariance {
+		var condvar = CondVar();
 
 		// a list of filters to test.  Should basically be Filter.allsubclasses, minus a
 		// few odd ones like DetectSilence, plus anything that's supposed to behave like a filter
@@ -74,10 +85,9 @@ TestFilterUGens : UnitTest {
 		].collect(_.asClass).reject(_.isNil);
 
 		var delay_times = [1,64]; // in samples
+		var numTests = delay_times.size * filters.size;
+		var completed = 0;
 
-		var testsIncomplete = delay_times.size * filters.size;
-
-		this.bootServer;
 		filters.do {
 			arg filter;
 			delay_times.do {
@@ -91,17 +101,18 @@ TestFilterUGens : UnitTest {
 					// should be silent - FP rounding errors are ok.
 					DelayN.ar(filter.ar(Impulse.ar(0)), deltime, deltime)
 					- filter.ar(DelayN.ar(Impulse.ar(0), deltime, deltime));
-				}.loadToFloatArray(0.1, Server.default, {
+				}.loadToFloatArray(0.1, server, {
 					arg data;
 					this.assertArrayFloatEquals(data, 0, message, within:1e-10, report:true);
-					testsIncomplete = testsIncomplete - 1;
+					completed = completed + 1;
+					condvar.signalOne;
 				});
 
 				rrand(0.012,0.035).wait;
 			}
 		};
 
-		this.wait(testsIncomplete == 0);
+		condvar.waitFor(1, { completed == numTests });
 
 		"".postln;
 		postln("Please note: the following subclasses of Filter are not included in TestFilterUgens.");
@@ -114,7 +125,6 @@ TestFilterUGens : UnitTest {
 			}
 		};
 		"".postln;
-
 	}
 
 }

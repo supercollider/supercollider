@@ -399,14 +399,6 @@ class ScedWindowActivatable(GObject.Object, Gedit.WindowActivatable):
              _("Find and open class definition"),
              self.on_find_definition),
 
-            ("ScedBrowseClass", None, _("Browse class"), None,
-             _("Browse class (needs running SwingOSC server)"),
-             self.on_browse_class),
-
-            ("ScedInspectObject", None, _("Inspect Object"), None,
-             _("Inspect object state (needs running SwingOSC server)"),
-             self.on_inspect_object),
-
             ("ScedOpenDevFile", None, _("Open development file"), "<control><alt>K",
              _("Open corresponding development file for current document"),
              self.on_open_dev_file),

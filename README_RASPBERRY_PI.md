@@ -41,16 +41,16 @@ Install required libraries:
 
     # For GUI builds:
     sudo apt-get install libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev \
-        libreadline-dev libfftw3-dev libxt-dev libudev-dev cmake qttools5-dev qttools5-dev-tools \
-        qtdeclarative5-dev libqt5svg5-dev qjackctl
+        libreadline-dev libfftw3-dev libxt-dev libudev-dev libncurses5-dev cmake git qttools5-dev qttools5-dev-tools \
+        qtbase5-dev libqt5svg5-dev qjackctl
     # For GUI-less builds:
     sudo apt-get install libsamplerate0-dev libsndfile1-dev libasound2-dev libavahi-client-dev \
-        libreadline-dev libfftw3-dev libudev-dev cmake git
+        libreadline-dev libfftw3-dev libudev-dev libncurses5-dev cmake git
 
 ### Step 3: GUI-less builds only: compile and install jackd (no d-bus)
 
     cd ~ # or cd into the directory where you'd like to build jack2
-    git clone git://github.com/jackaudio/jack2 --depth 1
+    git clone https://github.com/jackaudio/jack2 --depth 1
     cd jack2
     ./waf configure --alsa --libdir=/usr/lib/arm-linux-gnueabihf/
     ./waf build
@@ -127,7 +127,7 @@ To automatically run SuperCollider code at system boot:
     export PATH=/usr/local/bin:$PATH
     export DISPLAY=:0.0
     sleep 10 # can be lower (5) for rpi3
-    sclang mycode.scd
+    sclang ~/mycode.scd
     EOF
 
     chmod +x ~/autostart.sh

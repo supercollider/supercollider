@@ -3320,10 +3320,6 @@ void MFCC_Ctor(MFCC* unit) {
     // fixed for now
     unit->m_numbands = 42;
 
-    unit->m_bands = (float*)RTAlloc(unit->mWorld, unit->m_numbands * sizeof(float));
-
-    Clear(unit->m_numbands, unit->m_bands);
-
     unit->m_numcoefficients = (int)ZIN0(1);
 
     // range checks
@@ -3334,8 +3330,11 @@ void MFCC_Ctor(MFCC* unit) {
         unit->m_numcoefficients = 42;
     }
 
+    unit->m_bands = (float*)RTAlloc(unit->mWorld, unit->m_numbands * sizeof(float));
     unit->m_mfcc = (float*)RTAlloc(unit->mWorld, unit->m_numcoefficients * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_bands && unit->m_mfcc);
 
+    Clear(unit->m_numbands, unit->m_bands);
     Clear(unit->m_numcoefficients, unit->m_mfcc);
     for (int j = 0; j < unit->m_numcoefficients; ++j)
         ZOUT0(j) = 0.f;

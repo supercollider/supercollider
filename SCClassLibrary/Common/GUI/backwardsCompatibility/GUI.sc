@@ -42,17 +42,6 @@ GUI {
 	}
 
 	/**
-	* Makes Swing (Java GUI) the current scheme
-	* and returns it. Subsequent GUI object calls
-	* to GUI are delegated to swing.
-	*
-	* @return	the current (swing) scheme
-	*/
-	*swing {
-		^this.fromID( \swing );
-	}
-
-	/**
 	*  Makes qt (Qt GUI) the current scheme
 	*  and returns it. Subsequent GUI object calls
 	*  to GUI are delegated to qt.

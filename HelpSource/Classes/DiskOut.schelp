@@ -82,7 +82,7 @@ x = Synth("bubbles");
 b= Buffer.alloc(s, 65536, 2);
 
 // create an output file for this buffer, leave it open
-b.write("~/diskouttest.aiff".standardizePath, "aiff", "int16", 0, 0, true);
+b.write("~/diskouttest.wav".standardizePath, "wav", "int16", 0, 0, true);
 // create the diskout node; making sure it comes after the source
 d = Synth.tail(nil, "help-Diskout", ["bufnum", b]);
 // stop recording
@@ -99,7 +99,7 @@ b.free;
 x = Synth.basicNew("help-Diskin-2chan");
 m = { |buf| x.addToHeadMsg(nil, [\bufnum,buf])};
 
-b = Buffer.cueSoundFile(s,"~/diskouttest.aiff".standardizePath, 0, 2, completionMessage: m);
+b = Buffer.cueSoundFile(s,"~/diskouttest.wav".standardizePath, 0, 2, completionMessage: m);
 )
 x.free; b.close; b.free; // cleanup
 ::
@@ -118,7 +118,7 @@ s.sendMsg("/s_new", "bubbles", 2003, 1, 1);
 s.sendMsg("/b_alloc", 0, 65536, 2); // Buffer number is 0
 
 // create an output file for this buffer, leave it open
-s.sendMsg("/b_write", 0, "~/diskouttest.aiff".standardizePath, "aiff", "int16", 0, 0, 1);
+s.sendMsg("/b_write", 0, "~/diskouttest.wav".standardizePath, "wav", "int16", 0, 0, 1);
 
 // create the diskout node
 s.sendMsg("/s_new", "help-Diskout", 2004, 3, 2003, "bufnum", 0);

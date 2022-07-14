@@ -184,6 +184,7 @@ bool startLexer(PyrSymbol* fileSym, const bfs::path& p, int startPos, int endPos
             size_t sz = bfs::file_size(p);
 
             text = (char*)pyr_pool_compile->Alloc((sz + 1) * sizeof(char));
+            MEMFAIL(text);
             file.read(text, sz);
             text[sz] = '\0';
             fileSym->u.source = text;
@@ -228,6 +229,7 @@ bool startLexer(PyrSymbol* fileSym, const bfs::path& p, int startPos, int endPos
     printingCurrfilename = "file '" + SC_Codecvt::path_to_utf8_str(currfilename) + "'";
     maxlinestarts = 1000;
     linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
+    MEMFAIL(linestarts);
     linestarts[0] = 0;
     linestarts[1] = 0;
 
@@ -263,6 +265,7 @@ void startLexerCmdLine(char* textbuf, int textbuflen) {
     printingCurrfilename = currfilename.string();
     maxlinestarts = 1000;
     linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
+    MEMFAIL(linestarts);
     linestarts[0] = 0;
     linestarts[1] = 0;
 
@@ -1587,6 +1590,7 @@ ClassExtFile* newClassExtFile(PyrSymbol* fileSym, int startPos, int endPos);
 ClassExtFile* newClassExtFile(PyrSymbol* fileSym, int startPos, int endPos) {
     ClassExtFile* classext;
     classext = (ClassExtFile*)pyr_pool_compile->Alloc(sizeof(ClassExtFile));
+    MEMFAIL(classext);
     classext->fileSym = fileSym;
     classext->next = nullptr;
     classext->startPos = startPos;
@@ -1616,7 +1620,7 @@ ClassDependancy* newClassDependancy(PyrSymbol* className, PyrSymbol* superClassN
         return className->classdep;
     }
     classdep = (ClassDependancy*)pyr_pool_compile->Alloc(sizeof(ClassDependancy));
-    MEMFAIL(text);
+    MEMFAIL(classdep);
     classdep->className = className;
     classdep->superClassName = superClassName;
     classdep->fileSym = fileSym;
@@ -1907,6 +1911,7 @@ void initPassOne() {
     sClassExtFiles = nullptr;
 
     void* ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
+    MEMFAIL(ptr);
     gMainVMGlobals->symbolTable = new (ptr) SymbolTable(pyr_pool_runtime, 65536);
 
     initSymbols(); // initialize symbol globals
@@ -2206,8 +2211,6 @@ void shutdownLibrary() {
 
     gLangMutex.unlock();
     deinitPrimitives();
-
-    SC_LanguageConfig::freeLibraryConfig();
 }
 
 SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
@@ -2218,7 +2221,9 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone) {
     gNumCompiledFiles = 0;
     compiledOK = false;
 
-    SC_LanguageConfig::readLibraryConfig(standalone);
+    if (!gLanguageConfig) {
+        SC_LanguageConfig::readLibraryConfig(standalone);
+    }
 
     compileStartTime = elapsedTime();
 

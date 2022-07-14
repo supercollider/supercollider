@@ -1,4 +1,11 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.12)
+
+# pick up vcpkg installation, if VCPKG_ROOT is set
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE AND NOT "$ENV{VCPKG_ROOT}" STREQUAL "")
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+    message(STATUS "Using CMAKE_TOOLCHAIN_FILE at ${CMAKE_TOOLCHAIN_FILE}")
+endif()
+
 include(SCVersion.txt)
 # CMake versions can only consist of digits and periods, so don't use _TWEAK
 project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
@@ -12,7 +19,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
 endif()
 
 message(STATUS "SuperCollider Version: ${SC_VERSION}")
-message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
+message(STATUS "Building from ${GIT_REF_TYPE} ${GIT_BRANCH_OR_TAG}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
 
@@ -68,8 +75,7 @@ endif()
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-# identify target architecture, build portaudio before any SC specific
-# definitions break the pa-build
+# identify target architecture
 if(WIN32)
     SET(SC_WIN_BUNDLE_NAME "SuperCollider" CACHE STRING "Folder name of SC install")
 
@@ -84,12 +90,6 @@ if(WIN32)
         SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
     endif()
 
-    # might work with "SHARED" as well.
-    set(PA_LIBRARY_TYPE "STATIC")
-    if(NOT MSYS)
-      set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
-      add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
-    endif(NOT MSYS)
 endif(WIN32)
 
 #############################################
@@ -141,9 +141,11 @@ if(WIN32)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
+    # use session manager to set shared memory location, see issue 2409
+    add_definitions(-DBOOST_INTERPROCESS_BOOTSTAMP_IS_SESSION_MANAGER_BASED)
 endif()
 
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE)
 
 
 #############################################
@@ -163,7 +165,7 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
+if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm|aarch64")
     option(SSE "Compile with support for SSE instructions." ON)
     option(SSE2 "Compile with support for SSE2 instructions." ON)
 else() # ARM platforms do not have SSE
@@ -171,7 +173,7 @@ else() # ARM platforms do not have SSE
     set(SSE2 OFF)
 endif()
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
 
 if (AUDIOAPI STREQUAL jack)
 	# here we check for JACK metadata API
@@ -228,9 +230,17 @@ endif()
 
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
+option(SC_CLANG_USES_LIBSTDCPP "Use libstdc++ with clang instead of libc++" OFF)
+
 option(SYSTEM_ABLETON_LINK "Use link from system" OFF)
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
+option(SYSTEM_PORTAUDIO "Use PortAudio libraries from system" ON)
+if(WIN32)
+    set(SYSTEM_PORTAUDIO OFF)
+else()
+    mark_as_advanced(SYSTEM_PORTAUDIO)
+endif()
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
@@ -241,6 +251,16 @@ else()
 endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
+
+if(APPLE)
+    # codesigning used to break increamental builds in Xcode 11+, but it's now fixed
+    option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" OFF)
+    # codesigning is also being broken by macdeployqt, but it is needed on arm64
+    # to run the app locally at all, hence we sign after deploying the app
+    option(SC_CODESIGN_AFTER_DEPLOY "Run ad hoc codesigning after creating the app bundle" ON)
+    # verify_app fails with official Qt; we'll still use it for Qt from homebrew
+    option(SC_VERIFY_APP "Run verify_app on the app bundle" OFF)
+endif()
 
 #############################################
 # some default libraries
@@ -295,6 +315,8 @@ else()
   set(SYSTEM_YAMLCPP OFF)
 endif()
 
+set(CMAKE_CXX_STANDARD 17)
+
 #############################################
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
@@ -315,22 +337,11 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
 
-    if( CMAKE_VERSION VERSION_LESS 3.1 )
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
-        if(CMAKE_COMPILER_IS_CLANG)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
-        endif()
-    else()
-        set( CMAKE_CXX_STANDARD 11 )
-
-        if(CMAKE_COMPILER_IS_CLANG)
-            # workaround
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
-        endif()
-     endif()
+    if(CMAKE_COMPILER_IS_CLANG AND NOT SC_CLANG_USES_LIBSTDCPP)
+        # the default
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
+    endif()
 
 	if(FORTIFY)
 		add_definitions( -D_FORTIFY_SOURCE=2 )
@@ -361,6 +372,11 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4800") # forcing value to bool 'true' or 'false' (performance warning)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
+
+# this flag causes MSVC to correctly report __cplusplus, which prevents a compiler error 
+# caused by some versions of libsndfile's C++ header redefining nullptr as NULL. 
+# See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
+  add_compile_options("/Zc:__cplusplus")
 
 # _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
 # see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
@@ -398,6 +414,11 @@ endif()
 
 if (NO_GPL3)
 	add_definitions(-DNO_GPL3)
+endif()
+
+if(SC_DISABLE_XCODE_CODESIGNING)
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
+    set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
 endif()
 
 #############################################
@@ -452,7 +473,7 @@ endif()
 set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
 
 if(NOT SC_QT)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|GUI")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|/GUI$")
 endif()
 
 if(WIN32)
@@ -460,7 +481,7 @@ if(WIN32)
 endif()
 
 if(NOT SC_ABLETON_LINK)
-	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|Ableton")
+	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}|/Ableton$")
 endif()
 
 if(APPLE)
@@ -481,10 +502,8 @@ if(APPLE)
 		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
 		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
 		foreach(onedirectory ${classlibraryfolders})
-			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
-				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
-			endif()
+			install( CODE
+				"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 		endforeach(onedirectory)
 	endif()
 else()
@@ -542,7 +561,6 @@ if(INSTALL_HELP)
 	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
 			PATTERN "*~" EXCLUDE
 			PATTERN "*#" EXCLUDE
 		)
@@ -571,7 +589,7 @@ if(SC_DOC_RENDER)
 
 	add_custom_target(doc ALL
 		COMMAND sclang
-			-a -l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+			-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
 			platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 		DEPENDS sclang ${SCDocSources} ${SCDocClasses})

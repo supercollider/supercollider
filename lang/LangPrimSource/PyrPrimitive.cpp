@@ -3676,6 +3676,23 @@ static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals* g, int numAr
     return errNone;
 }
 
+static int prLanguageConfig_getExcludeDefaultPaths(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* result = g->sp;
+    SetBool(result, gLanguageConfig->getExcludeDefaultPaths());
+    return errNone;
+}
+
+static int prLanguageConfig_setExcludeDefaultPaths(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* boolSlot = g->sp;
+    if (IsTrue(boolSlot))
+        gLanguageConfig->setExcludeDefaultPaths(true);
+    else if (IsFalse(boolSlot))
+        gLanguageConfig->setExcludeDefaultPaths(false);
+    else
+        return errWrongType;
+
+    return errNone;
+}
 
 static int prVersionMajor(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* result = g->sp;
@@ -4260,6 +4277,10 @@ void initPrimitives() {
     definePrimitive(base, index++, "_LanguageConfig_getPostInlineWarnings", prLanguageConfig_getPostInlineWarnings, 1,
                     0);
     definePrimitive(base, index++, "_LanguageConfig_setPostInlineWarnings", prLanguageConfig_setPostInlineWarnings, 2,
+                    0);
+    definePrimitive(base, index++, "_LanguageConfig_getExcludeDefaultPaths", prLanguageConfig_getExcludeDefaultPaths, 1,
+                    0);
+    definePrimitive(base, index++, "_LanguageConfig_setExcludeDefaultPaths", prLanguageConfig_setExcludeDefaultPaths, 2,
                     0);
 
     definePrimitive(base, index++, "_SC_VersionMajor", prVersionMajor, 1, 0);

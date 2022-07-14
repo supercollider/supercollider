@@ -2398,6 +2398,8 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     }
 
     float previousEndLevel = unit->m_endLevel;
+    if (unit->m_shape == shape_Hold)
+        level = previousEndLevel;
     float** envPtr = unit->mInBuf + stageOffset;
     double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
     if (dur < 0)
@@ -3108,6 +3110,7 @@ void IEnvGen_Ctor(IEnvGen* unit) {
     float offset = unit->m_offset = IN0(1);
     float point = unit->m_pointin = IN0(0) - offset;
     unit->m_envvals = (float*)RTAlloc(unit->mWorld, (int)(numvals + 1.) * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_envvals);
 
     unit->m_envvals[0] = IN0(2);
     //  Print("offset of and initial  values %3,3f, %3.3f\n", offset, unit->m_envvals[0]);

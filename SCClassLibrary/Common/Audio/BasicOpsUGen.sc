@@ -244,7 +244,12 @@ BinaryOpUGen : BasicOpUGen {
 		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
 			and: { a.descendants.size == 1 }}) {
 			buildSynthDef.removeUGen(a);
-			replacement = Sum3(a.inputs[0], a.inputs[1], b).descendants_(descendants);
+			if(a === b) {
+				replacement = Sum4(a.inputs[0], a.inputs[0], a.inputs[1], a.inputs[1])
+				.descendants_(descendants);
+			} {
+				replacement = Sum3(a.inputs[0], a.inputs[1], b).descendants_(descendants);
+			};
 			this.optimizeUpdateDescendants(replacement, a);
 			^replacement;
 		};
@@ -252,6 +257,8 @@ BinaryOpUGen : BasicOpUGen {
 		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '+'
 			and: { b.descendants.size == 1 }}) {
 			buildSynthDef.removeUGen(b);
+			// we do not need the a === b check here
+			// if a === b, then the 'a' branch above must have handled it
 			replacement = Sum3(b.inputs[0], b.inputs[1], a).descendants_(descendants);
 			this.optimizeUpdateDescendants(replacement, b);
 			^replacement;

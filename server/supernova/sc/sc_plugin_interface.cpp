@@ -430,7 +430,7 @@ int print(const char* fmt, ...) {
     va_start(vargs, fmt);
 
     nova::log_guard.lock();
-    bool status = nova::instance->log_printf(fmt, vargs);
+    bool status = nova::log_printf(fmt, vargs);
     nova::log_guard.unlock();
 
     va_end(vargs);
@@ -1041,7 +1041,7 @@ void sc_plugin_interface::buffer_close(uint32_t index) {
 
     if (buf->sndfile == nullptr)
         return;
-    sf_close(buf->sndfile);
+    sf_close(GETSNDFILE(buf));
     buf->sndfile = nullptr;
 }
 
@@ -1070,7 +1070,7 @@ void sc_plugin_interface::buffer_sync(uint32_t index) noexcept {
 void sc_plugin_interface::free_buffer(uint32_t index) {
     SndBuf* buf = world.mSndBufsNonRealTimeMirror + index;
     if (buf->sndfile)
-        sf_close(buf->sndfile);
+        sf_close(GETSNDFILE(buf));
 
     sndbuf_init(buf);
 }

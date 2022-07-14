@@ -1,6 +1,6 @@
 class:: DynKlank
 summary:: Bank of resonators.
-related:: Classes/Klang, Classes/Klank
+related:: Classes/Klang, Classes/DynKlang, Classes/Klank
 categories::  UGens>Generators>Deterministic, UGens>Filters>Linear
 
 

@@ -7,19 +7,15 @@ option(SC_USE_QTWEBENGINE "Build with Qt WebEngine." ON)
 set(
   QT_COMPONENTS
   Core
-  Widgets
+  Gui
   Network
   PrintSupport
-  OpenGL
-  Quick
-  Qml
-  Sql
   Svg
+  Widgets
 )
 
 set (QT_COLLIDER_LIBS
-  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::PrintSupport
-  Qt5::Quick Qt5::Qml Qt5::Sql Qt5::OpenGL Qt5::Svg
+  Qt5::Core Qt5::Gui Qt5::Network Qt5::PrintSupport Qt5::Svg Qt5::Widgets
   ${MATH_LIBRARY})
 
 if(SC_USE_QTWEBENGINE)

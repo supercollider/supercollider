@@ -219,11 +219,44 @@ method::beatDur
 Returns the duration in seconds of a current whole beat.
 
 method::beatsPerBar
-Gets or sets the number of beats per bar. The default is 4. Setting must be done from within the scheduling thread, e.g.
+Gets or sets the number of beats per bar. The default is 4. Setting the meter must be done from within the same clock's scheduling thread. Scheduled functions and playing Routines (or Tasks) are running on the clock's thread, so both of these are valid.
+
+Setting beatsPerBar also updates the barline reference (baseBarBeat). Be careful to call code::beatsPerBar_:: emphasis::only:: on a barline (link::#-nextBar:: below).
+
+code::thisThread.clock:: is always the current clock -- so, writing code::thisThread.clock.beatsPerBar = /* number */:: as a matter of habit will guarantee that the meter change only ever applies to the current clock.
+
 code::
-t= TempoClock.new;
-t.schedAbs(t.nextBar, {t.beatsPerBar_(3)});
-t.beatsPerBar;
+t = TempoClock.new;
+
+t.beatsPerBar = 3;  // error! wrong thread
+
+t.schedAbs(t.nextBar, { t.beatsPerBar_(3) });  // OK
+
+t.beatsPerBar;  // will be reflected after the barline
+
+t.schedAbs(t.nextBar, { thisThread.clock.beatsPerBar_(4) });  // OK
+
+(
+r = Routine {
+	// by addressing "this" clock,
+	// we are always changing meter in the right place
+	var clock = thisThread.clock;
+	
+	clock.beats.debug("start time");
+	clock.timeToNextBeat(-1).wait;
+	clock.beats.debug("barline");
+
+	// no need to 'sched'
+	// because the Routine is already on this clock
+	// flip 3/4 -> 4/4 or 4/4 -> 3/4
+	clock.beatsPerBar = 7 - clock.beatsPerBar;
+	clock.beatsPerBar.debug("set meter to");
+
+	0.01.wait;  // must be after barline for 'timeToNextBeat'
+	clock.timeToNextBeat(-1).wait;
+	clock.beats.debug("next barline");
+}.play;
+)
 ::
 
 method::bar

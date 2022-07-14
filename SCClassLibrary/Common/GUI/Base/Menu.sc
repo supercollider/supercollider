@@ -106,7 +106,10 @@ MainMenu {
 	classvar systemMenus;
 	classvar <>buildAppMenusAction;
 
-	*initClass {}
+	*initClass {
+		registered = List();
+		systemMenus = [];
+	}
 
 	*initBuiltInMenus {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
@@ -130,13 +133,10 @@ MainMenu {
 			{ this.prUpdateServersMenu() }.defer
 		}));
 
-		registered = List();
-
 		systemMenus = [\SuperCollider, \File, \Edit, \Server, \Quarks, \Help];
 		systemMenus.do({ |systemMenu| this.prGetMenu(systemMenu) });
 
 		this.prUpdateServersMenu();
-		this.clear();
 		this.prUpdate();
 	}
 

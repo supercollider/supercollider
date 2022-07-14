@@ -167,4 +167,22 @@ TestEnvGen_server : UnitTest {
 		this.assert(passed, "gate < 0 should respect env's last node curve");
 	}
 
+	// issue #5104
+	test_shapeHold_setEndValue {
+		var env = Env(curve: [\hold, \lin]);
+		var condvar = CondVar();
+		var result = [];
+
+		server.bootSync;
+
+		{ EnvGen.kr(env, timeScale: 0.01, doneAction:2) }.loadToFloatArray(0.01, server){ |values|
+			result = values;
+			condvar.signalOne;
+		};
+
+		condvar.waitFor(5);
+
+		this.assert(result.any { |v| v > 0 }, "Env(curves: [\hold, \lin]) should not be rendered as silent");
+	}
+
 }

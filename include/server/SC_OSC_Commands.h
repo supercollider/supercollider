@@ -18,6 +18,10 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+// PLEASE NOTE:
+// libscsynth API might change across minor versions.
+// Always make sure, when using libscsynth as a shared library, that binary and headers come from the same minor
+// version.
 
 #pragma once
 

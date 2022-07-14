@@ -139,9 +139,9 @@ protected:
         cmdplugin_set(cmdplugin_set_type::bucket_traits(cmdplugin_set_buckets, cmdplugin_set_bucket_count)) {}
 
     ~sc_plugin_container(void) {
-        ugen_set.clear_and_dispose(boost::checked_delete<sc_ugen_def>);
-        bufgen_set.clear_and_dispose(boost::checked_delete<sc_bufgen_def>);
-        cmdplugin_set.clear_and_dispose(boost::checked_delete<sc_cmdplugin_def>);
+        ugen_set.clear_and_dispose(boost::checked_deleter<sc_ugen_def>());
+        bufgen_set.clear_and_dispose(boost::checked_deleter<sc_bufgen_def>());
+        cmdplugin_set.clear_and_dispose(boost::checked_deleter<sc_cmdplugin_def>());
     }
 
 public:

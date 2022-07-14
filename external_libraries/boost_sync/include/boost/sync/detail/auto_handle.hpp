@@ -21,9 +21,9 @@
 
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/detail/winapi/handles.hpp>
-#include <boost/detail/winapi/get_last_error.hpp>
-#include <boost/detail/winapi/get_current_process.hpp>
+#include <boost/winapi/handles.hpp>
+#include <boost/winapi/get_last_error.hpp>
+#include <boost/winapi/get_current_process.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
@@ -44,10 +44,10 @@ namespace windows {
 class auto_handle
 {
 private:
-    boost::detail::winapi::HANDLE_ m_handle;
+    boost::winapi::HANDLE_ m_handle;
 
 public:
-    BOOST_CONSTEXPR explicit auto_handle(boost::detail::winapi::HANDLE_ h = NULL) BOOST_NOEXCEPT : m_handle(h)
+    BOOST_CONSTEXPR explicit auto_handle(boost::winapi::HANDLE_ h = NULL) BOOST_NOEXCEPT : m_handle(h)
     {
     }
 
@@ -56,21 +56,21 @@ public:
         reset();
     }
 
-    void reset(boost::detail::winapi::HANDLE_ h = NULL) BOOST_NOEXCEPT
+    void reset(boost::winapi::HANDLE_ h = NULL) BOOST_NOEXCEPT
     {
-        if (m_handle && m_handle != boost::detail::winapi::invalid_handle_value)
+        if (m_handle && m_handle != boost::winapi::invalid_handle_value)
         {
-            BOOST_VERIFY(boost::detail::winapi::CloseHandle(m_handle));
+            BOOST_VERIFY(boost::winapi::CloseHandle(m_handle));
         }
         m_handle = h;
     }
 
-    boost::detail::winapi::HANDLE_ get() const BOOST_NOEXCEPT
+    boost::winapi::HANDLE_ get() const BOOST_NOEXCEPT
     {
         return m_handle;
     }
 
-    operator boost::detail::winapi::HANDLE_ () const BOOST_NOEXCEPT
+    operator boost::winapi::HANDLE_ () const BOOST_NOEXCEPT
     {
         return m_handle;
     }
@@ -80,20 +80,20 @@ public:
         return !m_handle;
     }
 
-    boost::detail::winapi::HANDLE_ release() BOOST_NOEXCEPT
+    boost::winapi::HANDLE_ release() BOOST_NOEXCEPT
     {
-        const boost::detail::winapi::HANDLE_ h = m_handle;
+        const boost::winapi::HANDLE_ h = m_handle;
         m_handle = NULL;
         return h;
     }
 
-    boost::detail::winapi::HANDLE_ duplicate() const
+    boost::winapi::HANDLE_ duplicate() const
     {
-        const boost::detail::winapi::HANDLE_ current_process = boost::detail::winapi::GetCurrentProcess();
-        boost::detail::winapi::HANDLE_ new_handle = NULL;
-        if (boost::detail::winapi::DuplicateHandle(current_process, m_handle, current_process, &new_handle, 0, false, boost::detail::winapi::duplicate_same_access) == 0)
+        const boost::winapi::HANDLE_ current_process = boost::winapi::GetCurrentProcess();
+        boost::winapi::HANDLE_ new_handle = NULL;
+        if (boost::winapi::DuplicateHandle(current_process, m_handle, current_process, &new_handle, 0, false, boost::winapi::duplicate_same_access) == 0)
         {
-            const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+            const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
             BOOST_SYNC_DETAIL_THROW(resource_error, (err)("boost::sync: failed to duplicate a handle"));
         }
         return new_handle;
@@ -101,7 +101,7 @@ public:
 
     void swap(auto_handle& that)
     {
-        const boost::detail::winapi::HANDLE_ h = m_handle;
+        const boost::winapi::HANDLE_ h = m_handle;
         m_handle = that.m_handle;
         that.m_handle = h;
     }

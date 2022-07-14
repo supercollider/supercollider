@@ -1,10 +1,12 @@
 class:: Pstutter
 summary:: repeat input stream values
-related:: Classes/Pn, Classes/Pattern#-stutter
+related:: Classes/Pdup, Classes/Pn, Classes/Pattern#-dup
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
-description::
+note::It is recommended to use link::Classes/Pdup:: instead. This class is retained for backwards compatibility.::
+warning::Pstutter will return link::Classes/Pdup::::
 
+description::
 repeat each element n times.
 
 code::
@@ -16,18 +18,18 @@ x = a.asStream;
 )
 ::
 
-This is also a response to link::Classes/Pattern#-stutter::
+This is also a response to link::Classes/Pattern#-dup::
 
 
 ClassMethods::
 
 method::new
-
 argument::n
 The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
 
 argument::pattern
 the pattern to repeat.
+returns:: link::Classes/Pdup::
 
 Examples::
 
@@ -46,7 +48,7 @@ x = a.asStream;
 SynthDef(\help_sinegrain,
 	{ | out=0, freq=440, sustain=0.05 |
 		var env;
-        env = Env.perc(0.01, sustain, 0.2).kr(doneAction: Done.freeSelf);
+        env = Env.perc(0.01, sustain, 0.2).kr(doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0.5pi, env))
 	}).add;
 )

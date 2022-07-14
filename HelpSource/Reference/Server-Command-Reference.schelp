@@ -13,7 +13,7 @@ code::
     ]
 ::
 
-section:: Master Controls
+section:: Top-Level Commands
 
 subsection:: /quit
 
@@ -125,14 +125,14 @@ definitionlist::
 ## int || Major version number. Equivalent to sclang's code::Main.scVersionMajor::.
 ## int || Minor version number. Equivalent to sclang's code::Main.scVersionMinor::.
 ## string || Patch version name. Equivalent to the sclang code code::"." ++ Main.scVersionPatch ++ Main.scVersionTweak::.
-## string || Git branch name.
+## string || Git branch or tag name.
 ## string || First seven hex digits of the commit hash.
 ::
 ::
 
 The standard human-readable version string can be constructed by concatenating code:: major_version ++ "." ++ minor_version ++ patch_version ::. Since version information is easily accessible to sclang users via the methods described above, this command is mostly useful for alternate clients.
 
-The git branch name and commit hash could be anything if the user has forked SC, so they should only be used for display and user interface purposes.
+The git branch/tag name and commit hash could be anything if the user has forked SC, so they should only be used for display and user interface purposes.
 
 section:: Synth Definition Commands
 
@@ -367,8 +367,8 @@ table::
 Create a new synth from a synth definition, give it an ID, and add it to the tree of nodes. There are four ways to add the node to the tree as determined by the add action argument which is defined as follows:
 definitionlist::
 ## add actions: || table::
-    ## 0 || add the new node to the the head of the group specified by the add target ID.
-    ## 1 || add the new node to the the tail of the group specified by the add target ID.
+    ## 0 || add the new node to the head of the group specified by the add target ID.
+    ## 1 || add the new node to the tail of the group specified by the add target ID.
     ## 2 || add the new node just before the node specified by the add target ID.
     ## 3 || add the new node just after the node specified by the add target ID.
     ## 4 || the new node replaces the node specified by the add target ID. The target node is freed.
@@ -426,8 +426,8 @@ Create a new group and add it to the tree of nodes.
 There are four ways to add the group to the tree as determined by the add action argument which is defined as follows (the same as for strong::/s_new::):
 definitionlist::
 ## add actions: || table::
-    ## 0 || add the new group to the the head of the group specified by the add target ID.
-    ## 1 || add the new group to the the tail of the group specified by the add target ID.
+    ## 0 || add the new group to the head of the group specified by the add target ID.
+    ## 1 || add the new group to the tail of the group specified by the add target ID.
     ## 2 || add the new group just before the node specified by the add target ID.
     ## 3 || add the new group just after the node specified by the add target ID.
     ## 4 || the new node replaces the node specified by the add target ID. The target node is freed.
@@ -448,8 +448,8 @@ Create a new parallel group and add it to the tree of nodes. Parallel groups are
 There are four ways to add the group to the tree as determined by the add action argument which is defined as follows (the same as for strong::/s_new::):
 definitionlist::
 ## add actions: || table::
-    ## 0 || add the new group to the the head of the group specified by the add target ID.
-    ## 1 || add the new group to the the tail of the group specified by the add target ID.
+    ## 0 || add the new group to the head of the group specified by the add target ID.
+    ## 1 || add the new group to the tail of the group specified by the add target ID.
     ## 2 || add the new group just before the node specified by the add target ID.
     ## 3 || add the new group just after the node specified by the add target ID.
     ## 4 || the new node replaces the node specified by the add target ID. The target node is freed.

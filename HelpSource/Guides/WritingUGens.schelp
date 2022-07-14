@@ -161,8 +161,6 @@ Unit generator plugins are called from the real-time context, which means that s
 to avoid audio dropouts.
 
 definitionList::
-## Memory Allocation || Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::.
-                        Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
 ## STL Containers || It is generally not recommended to use STL containers, since they internally allocate memory. The only
                      way the STL containers can be used is by providing an Allocator, which maps to the allocating functions of
                      the server.
@@ -171,6 +169,81 @@ definitionList::
                          done in a lock-free manner.
 ::
 
+subsection:: Memory Allocation
+Do not allocate memory from the OS via code::malloc:: / code::free:: or code::new::/ code::delete::. Instead you should use the real-time memory allocator via code::RTAlloc:: / code::RTFree::.
+
+definitionList::
+## Remember to code::RTFree:: the memory you code::RTAlloc:: ||
+
+Like with code::malloc/free::, you are reponsible for freeing all the memory you allocate. Remember to include code::RTFree:: calls in your destructor functions.
+
+## Ensure your pointers are initialized to code::nullptr:: ||
+
+Not initialized pointers can have a garbage address, and when RTFree tries to free such a pointer, it can crash the server.
+To prevent this, ensure your member pointers are initialized to code::nullptr:: as early as possible in your constructor functions.
+
+## Use code::ClearUnitIfMemFailed:: ||
+This macro is used to check your pointers after memory allocation. If any of them is still code::nullptr::, it means that RTAlloc failed to allocate memory for it.
+The macro will then print an error message, set the UGen's calculation function to a no-op, and return from the calling function immediately.
+Since this can cause early exit from your constructor function, it is fundamental that all pointers are initialized to code::nullptr:: as early as possible, as stated above.
+
+code::ClearUnitIfMemFailed:: can be passed a single pointer, or it can check multiple pointers at the same time, by chaining them with the code::&&:: operator (see examples below).
+
+## For PV and FFT UGens ||
+UGens in FFT chains (such as the ones listed in LINK::Guides/FFT-Overview#PV and FFT UGens in the Standard Library::) should use code::ClearFFTUnitIfMemFailed:: instead. This is because, on a failed allocation, code::ClearUnitIfMemFailed:: would make them output code::0::, which would be interpreted by the next UGen in the FFT chain as "FFT data is ready to be processed on buffer number 0", which is not the case. code::ClearFFTUnitIfMemFailed:: will set their output to code::-1:: instead, meaning that FFT data is not ready, and thus blocking further processing for the rest of the FFT chain. For more informations please see LINK::Guides/FFT-Overview#How FFT UGens communicate::.
+
+code::ClearFFTUnitIfMemFailed:: is defined in code::FFT_UGens.h::
+::
+
+Minimal example, C style:
+code::
+struct MyUnit : public Unit {
+  float* m_values;
+  float* m_moreValues;
+}
+void MyUnit_Ctor(MyUnit* unit) {
+  // 1. Ensure pointers are initialized to nullptr
+  unit->m_values = unit->m_moreValues = nullptr;
+  // 2. Allocate memory
+  unit->m_values = (float*) RTAlloc(unit->mWorld, 64 * sizeof(float));
+  unit->m_moreValues = (float*) RTAlloc(unit->mWorld, 128 * sizeof(float));
+  // 3. Clear unit if any allocation failed
+  ClearUnitIfMemFailed(unit->m_values && unit->m_moreValues);
+  // 4. Feel free to access memory now
+  memset(unit->m_values, 0, 64 * sizeof(float));
+}
+
+void MyUnit_Dtor(MyUnit* unit) {
+  // 5. Free your allocated memory
+  RTFree(unit->mWorld, unit->m_values);
+  RTFree(unit->mWorld, unit->m_moreValues);
+}
+::
+Or, in C++ class style:
+code::
+namespace MyUnit {
+  // 1. Use initializer list to ensure pointers are initialized to nullptr
+  MyUnit::MyUnit():
+    mValues(nullptr),
+    mMoreValues(nullptr) {
+    // you'll need to define unit in order to use ClearUnitIfMemFailed
+    Unit* unit = (Unit*) this;
+    // 2. Allocate memory
+    mValues = (float*) RTAlloc(unit->mWorld, 64 * sizeof(float));
+    mMoreValues = (float*) RTAlloc(unit->mWorld, 128 * sizeof(float));
+    // 3. Clear unit if any allocation failed
+    ClearUnitIfMemFailed(mValues && mMoreValues);
+    // 4. Feel free to access memory now
+    memset(mValues, 0, 64 * sizeof(float));
+  }
+
+  MyUnit::~MyUnit() {
+    // 5. Free your allocated memory
+    RTFree(mWorld, mValues);
+    RTFree(mWorld, mMoreValues);
+  }
+}
+::
 
 subsection:: Thread Safety
 

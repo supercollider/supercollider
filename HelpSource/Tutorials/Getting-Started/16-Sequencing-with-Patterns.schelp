@@ -85,7 +85,7 @@ Other patterns modify the output of value patterns. These are called FilterPatte
 
 definitionList::
 ## link::Classes/Pn::(pattern, repeats) || repeat the pattern as many times as repeats indicates
-## link::Classes/Pstutter::(n, pattern) || repeat individual values from a pattern emphasis::n:: times. emphasis::n:: may be a numeric pattern itself.
+## link::Classes/Pdup::(n, pattern) || repeat individual values from a pattern emphasis::n:: times. emphasis::n:: may be a numeric pattern itself.
 ::
 
 You can use patterns inside of other patterns. Here, we generate random numbers over a gradually increasing range. The upper bound on the random number generator is a stream that starts at 0.01, then proceeds to 0.02, 0.03 and so on, as the plot shows clearly.

@@ -56,7 +56,7 @@ LIST::
 ## using the vendor id and product id of the device, and optionally the path, e.g.: code:: HID.open( 1103, 53251 ); ::
 ::
 
-The last one (if the path is not given) is cross platform compatible. The vendor and product id are reported by the device to the operating system, and will thus always be the same. These numbers are unique for the type of device (e.g. the Thrustmaster Run'N'Drive gamepad has the same number).
+The last one (if the path is not given) is cross platform compatible. The vendor and product id are reported by the device to the operating system, and will thus always be the same. These numbers are unique for the type of device (e.g. any Nintendo Switch Pro Controller has the same number).
 If you are using multiple of the same devices, you may want to adjust your setup to use the path as well in order to be able to identify which device you open.
 
 NOTE:: if you have trouble opening a device, e.g. when you get the message code:: ERROR: HID: Could not open device::, please check the LINK::Guides/HID_permissions:: ::

@@ -62,6 +62,17 @@ static inline SCComplexBuf* ToComplexApx(SndBuf* buf) {
 
 struct PV_Unit : Unit {};
 
+// Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's
+// skip that:
+static inline void FFT_ClearUnitOutputs(Unit* unit, int wrongNumSamples) { ZOUT0(0) = -1; }
+
+#define ClearFFTUnitIfMemFailed(condition)                                                                             \
+    if (!(condition)) {                                                                                                \
+        Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                   \
+        SETCALC(FFT_ClearUnitOutputs);                                                                                 \
+        unit->mDone = true;                                                                                            \
+        return;                                                                                                        \
+    }
 
 #define sc_clipbuf(x, hi) ((x) >= (hi) ? 0 : ((x) < 0 ? 0 : (x)))
 

@@ -45,7 +45,10 @@ namespace nova {
 class nova_server* instance = nullptr;
 
 nova_server::nova_server(server_arguments const& args):
+    // FIXME: In case of multiple supernova instances on the same port (e.g. when running on
+    // different interfaces), they can end up using the same shmem location.
     server_shared_memory_creator(args.port(), args.control_busses),
+
     scheduler<thread_init_functor>(args.threads, !args.non_rt),
     buffer_manager(args.buffers),
     sc_osc_handler(args) {
@@ -53,10 +56,13 @@ nova_server::nova_server(server_arguments const& args):
     instance = this;
 
     use_system_clock = (args.use_system_clock == 1);
+    non_rt = args.non_rt;
     smooth_samplerate = args.samplerate;
 
-    if (!args.non_rt)
+    if (!args.non_rt) {
+        audio_backend::initialize();
         io_interpreter.start_thread();
+    }
 
     sc_factory.reset(new sc_ugen_factory);
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());

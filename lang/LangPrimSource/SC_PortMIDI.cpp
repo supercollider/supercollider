@@ -160,6 +160,7 @@ static int midiProcessPartialSystemPacket(uint32_t msg) {
             if (index % 2) {
                 data = data << 4;
             }
+            ++g->sp;
             SetInt(g->sp, index); // chan unneeded
             ++g->sp;
             SetInt(g->sp, data); // special smpte action in the lang
@@ -169,12 +170,16 @@ static int midiProcessPartialSystemPacket(uint32_t msg) {
         /* Song pointer. Can only be received as the first byte */
         case 0xF2:
             ++g->sp;
+            SetInt(g->sp, 2);
+            ++g->sp;
             SetInt(g->sp, (p[i + 2] << 7) | p[i + 1]);
             runInterpreter(g, s_midiSysrtAction, 4);
             return 0;
 
         /* Song select. Can only be received as the first byte */
         case 0xF3:
+            ++g->sp;
+            SetInt(g->sp, 3);
             ++g->sp;
             SetInt(g->sp, p[i + 1]);
             runInterpreter(g, s_midiSysrtAction, 4);

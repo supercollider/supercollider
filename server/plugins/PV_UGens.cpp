@@ -360,7 +360,7 @@ void PV_MagSmear_next(PV_MagSmear* unit, int inNumSamples) {
 void PV_MagSmear_Ctor(PV_MagSmear* unit) {
     SETCALC(PV_MagSmear_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_tempbuf = 0;
+    unit->m_tempbuf = nullptr;
 }
 
 void PV_MagSmear_Dtor(PV_MagSmear* unit) { RTFree(unit->mWorld, unit->m_tempbuf); }
@@ -413,7 +413,7 @@ void PV_BinShift_next(PV_BinShift* unit, int inNumSamples) {
 void PV_BinShift_Ctor(PV_BinShift* unit) {
     SETCALC(PV_BinShift_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_tempbuf = 0;
+    unit->m_tempbuf = nullptr;
 }
 
 void PV_BinShift_Dtor(PV_BinShift* unit) { RTFree(unit->mWorld, unit->m_tempbuf); }
@@ -451,7 +451,7 @@ void PV_MagShift_next(PV_MagShift* unit, int inNumSamples) {
 void PV_MagShift_Ctor(PV_MagShift* unit) {
     SETCALC(PV_MagShift_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_tempbuf = 0;
+    unit->m_tempbuf = nullptr;
 }
 
 void PV_MagShift_Dtor(PV_MagShift* unit) { RTFree(unit->mWorld, unit->m_tempbuf); }
@@ -947,6 +947,7 @@ void PV_RandComb_next(PV_RandComb* unit, int inNumSamples) {
 
     if (!unit->m_ordering) {
         unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
+        ClearFFTUnitIfMemFailed(unit->m_ordering);
         unit->m_numbins = numbins;
         PV_RandComb_choose(unit);
     } else {
@@ -979,7 +980,7 @@ void PV_RandComb_next(PV_RandComb* unit, int inNumSamples) {
 void PV_RandComb_Ctor(PV_RandComb* unit) {
     SETCALC(PV_RandComb_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_ordering = 0;
+    unit->m_ordering = nullptr;
     unit->m_prevtrig = 0.f;
     unit->m_triggered = false;
 }
@@ -1012,6 +1013,7 @@ void PV_RandWipe_next(PV_RandWipe* unit, int inNumSamples) {
 
     if (!unit->m_ordering) {
         unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
+        ClearFFTUnitIfMemFailed(unit->m_ordering);
         unit->m_numbins = numbins;
         PV_RandWipe_choose(unit);
     } else {
@@ -1039,7 +1041,7 @@ void PV_RandWipe_next(PV_RandWipe* unit, int inNumSamples) {
 void PV_RandWipe_Ctor(PV_RandWipe* unit) {
     SETCALC(PV_RandWipe_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_ordering = 0;
+    unit->m_ordering = nullptr;
     unit->m_prevtrig = 0.f;
     unit->m_triggered = false;
 }
@@ -1063,6 +1065,7 @@ void PV_Diffuser_next(PV_Diffuser* unit, int inNumSamples) {
 
     if (!unit->m_shift) {
         unit->m_shift = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
+        ClearFFTUnitIfMemFailed(unit->m_shift);
         unit->m_numbins = numbins;
         PV_Diffuser_choose(unit);
     } else {
@@ -1089,7 +1092,7 @@ void PV_Diffuser_next(PV_Diffuser* unit, int inNumSamples) {
 void PV_Diffuser_Ctor(PV_Diffuser* unit) {
     SETCALC(PV_Diffuser_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_shift = 0;
+    unit->m_shift = nullptr;
     unit->m_prevtrig = 0.f;
     unit->m_triggered = false;
 }
@@ -1105,6 +1108,7 @@ void PV_MagFreeze_next(PV_MagFreeze* unit, int inNumSamples) {
 
     if (!unit->m_mags) {
         unit->m_mags = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
+        ClearFFTUnitIfMemFailed(unit->m_mags);
         unit->m_numbins = numbins;
         // The first fft frame must use the else branch below
         // so that unit->m_mags gets populated with actual mag data
@@ -1135,7 +1139,7 @@ void PV_MagFreeze_next(PV_MagFreeze* unit, int inNumSamples) {
 void PV_MagFreeze_Ctor(PV_MagFreeze* unit) {
     SETCALC(PV_MagFreeze_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_mags = 0;
+    unit->m_mags = nullptr;
 }
 
 void PV_MagFreeze_Dtor(PV_MagFreeze* unit) { RTFree(unit->mWorld, unit->m_mags); }
@@ -1181,6 +1185,7 @@ void PV_BinScramble_next(PV_BinScramble* unit, int inNumSamples) {
         unit->m_from = unit->m_to + numbins;
         unit->m_numbins = numbins;
         unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, buf->samples * sizeof(float));
+        ClearFFTUnitIfMemFailed(unit->m_to && unit->m_tempbuf);
         PV_BinScramble_choose(unit);
     } else {
         if (numbins != unit->m_numbins)
@@ -1215,10 +1220,10 @@ void PV_BinScramble_next(PV_BinScramble* unit, int inNumSamples) {
 void PV_BinScramble_Ctor(PV_BinScramble* unit) {
     SETCALC(PV_BinScramble_next);
     ZOUT0(0) = ZIN0(0);
-    unit->m_to = 0;
+    unit->m_to = nullptr;
     unit->m_prevtrig = 0.f;
     unit->m_triggered = false;
-    unit->m_tempbuf = 0;
+    unit->m_tempbuf = nullptr;
 }
 
 void PV_BinScramble_Dtor(PV_BinScramble* unit) {

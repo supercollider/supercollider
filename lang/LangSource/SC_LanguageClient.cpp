@@ -32,7 +32,6 @@
 #ifdef _WIN32
 #    include <stdio.h>
 #    include <direct.h>
-#    define snprintf _snprintf
 #    ifndef PATH_MAX
 #        define PATH_MAX _MAX_PATH
 #    endif

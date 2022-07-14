@@ -1,6 +1,6 @@
 class:: Pn
 summary:: repeatedly embed a pattern
-related:: Classes/Pstutter
+related:: Classes/Pdup
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
 ClassMethods::

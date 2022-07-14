@@ -33,7 +33,7 @@
 #include "SC_ReplyImpl.hpp"
 
 #include <boost/asio.hpp>
-#include <boost/bind.hpp>
+#include <boost/bind/bind.hpp>
 #include <boost/typeof/typeof.hpp>
 
 #define scprintf printf

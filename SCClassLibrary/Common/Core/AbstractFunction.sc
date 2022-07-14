@@ -108,6 +108,14 @@ AbstractFunction {
 	>  { arg function, adverb; ^this.composeBinaryOp('>',  function, adverb) }
 	>= { arg function, adverb; ^this.composeBinaryOp('>=', function, adverb) }
 
+	|==| { |that|
+		^this.composeBinaryOp('|==|', that)
+	}
+	prReverseLazyEquals { |that|
+		// commutative, so it's OK to flip the operands
+		^this.composeBinaryOp('|==|', that)
+	}
+
 	bitAnd { arg function, adverb; ^this.composeBinaryOp('bitAnd', function, adverb) }
 	bitOr { arg function, adverb; ^this.composeBinaryOp('bitOr', function, adverb) }
 	bitXor { arg function, adverb; ^this.composeBinaryOp('bitXor', function, adverb) }

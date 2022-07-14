@@ -32,6 +32,7 @@
 #include "SC_World.h"
 #include "sc_msg_iter.h"
 
+extern int gMissingNodeID;
 
 bool UnitDef_Create(const char* inName, size_t inAllocSize, UnitCtorFunc inCtor, UnitDtorFunc inDtor, uint32 inFlags) {
     if (strlen(inName) >= kSCNameByteLen)
@@ -103,9 +104,14 @@ bool PlugIn_DefineCmd(const char* inCmdName, PlugInCmdFunc inFunc, void* inUserD
     return true;
 }
 
+void Graph_FirstCalc(Graph* inGraph);
+void Graph_NullFirstCalc(Graph* inGraph);
+void Graph_QueueUnitCmd(Graph* inGraph, int inSize, const char* inData);
+
 int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
     sc_msg_iter msg(inSize, inData);
     int nodeID = msg.geti();
+    gMissingNodeID = nodeID;
     Graph* graph = World_GetGraph(inWorld, nodeID);
     if (!graph)
         return kSCErr_NodeNotFound;
@@ -128,7 +134,13 @@ int Unit_DoCmd(World* inWorld, int inSize, char* inData) {
     if (!cmd)
         return kSCErr_Failed;
 
-    (cmd->mFunc)(unit, &msg);
+    // only run unit command if the ctor has been called!
+    if (graph->mNode.mCalcFunc == (NodeCalcFunc)&Graph_FirstCalc
+        || graph->mNode.mCalcFunc == (NodeCalcFunc)&Graph_NullFirstCalc) {
+        Graph_QueueUnitCmd(graph, inSize, inData);
+    } else {
+        (cmd->mFunc)(unit, &msg);
+    }
 
     return kSCErr_None;
 }

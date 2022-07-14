@@ -12,7 +12,7 @@ ClassMethods::
 method::new
 
 argument::randSeed
-integer number, pattern or stream that return an integer number.
+integer number, pattern or stream that returns an integer number.
 
 note::
 randSeed is always treated as a pattern/stream. If you provide a single, constant seed value, it will behave as an infinite-length stream. This will cause the subpattern to be embedded an infinite number of times. Compare:
@@ -62,4 +62,114 @@ b = a.asStream;
 
 c = a.asStream;
 2.do({ 5.do({ c.next.post });"".postln;  });
+
+
+// Some examples of how Pseed can be used in music.
+(
+SynthDef.new(\varsaw, {
+	arg dur, attack=0.01, release=1.0,
+	t_gate=1, out, freq=442, cutoff=5500,
+	rq=1, pan=0.0, amp=0.5, width=0.1;
+
+	var env = EnvGen.kr(Env.perc(attack, release), t_gate, timeScale: dur, doneAction: 2);
+	var sig = VarSaw.ar(freq: freq, mul: env, width: width);
+	sig = RLPF.ar(sig, cutoff.clip(20.0, 20000.0), rq.clip(0.0,1.0));
+	sig = Pan2.ar(sig, pan);
+	Out.ar(out, sig * amp);
+}).add;
+)
+
+(
+Pdef(\varsawPat,
+	Pseed(490, // This number is the seed.
+		Pbind(*[
+			instrument: \varsaw,
+			attack: Plprand(0.01, 1.0),
+			release: Pwrand([0.5, 8], [8, 1].normalizeSum, inf),
+			dur: 1 / Pstutter(Phprand(5, 11), Plprand(5, 11)),
+			freq: 100 * Plprand(1, 9),
+			width: Phprand(0.0, 0.5),
+			cutoff: Phprand(20, 5500),
+			pan: Pmeanrand(-1.0, 1.0),
+		])
+	)
+).play
+)
+
+// Reevaluate the above pattern to hear the same start. An infinity of variations unfold from a single number.
+// Change the seed for another infinite deterministic stream of choices.
+
+
+(
+SynthDef(\drum, {|out, dur, t_gate =1, pew=1, sustain=1, pan, fed=0, tun, amp = 1 |
+	var env, freq, sig;
+	tun = ((tun>0)*tun) + ((tun<1)*3);
+	freq = (tun*10).midicps;
+	env = EnvGen.ar(Env.linen(0.01, 0, 1, 1, -3), t_gate, timeScale: dur , doneAction: 2);
+	sig = LPF.ar(SinOscFB.ar(XLine.ar(freq.expexp(10, 2000, 1000, 8000), freq, 0.025/pew), fed), 9000);
+	sig = Pan2.ar(sig, pan);
+	Out.ar(out, sig * amp);
+}).add
+)
+
+(
+Pdef(\drumPat,
+	Pseed(9223372036854775807, // This is the highest 64 bit number.
+		Psync(
+			Pbind(*[
+				instrument: \drum,
+				tun: Pstutter(Plprand(4, 8), Plprand(0.0, 8.0).round(1/8)),
+				amp: Plprand(-7.5.dbamp, -1.5.dbamp),
+				dur: 1 / Pstutter(Phprand(5, 11), Pwhite(5, 11)),
+				legato: Plprand(0.75, 4.0),
+				pan: Prand([Phprand(0.0, 0.5, 1), Plprand(0.5, 1.0, 1)], inf),
+				//pew: 0.4,
+				//pew: Phprand(0.4, 10.0),
+			]), 1, 2.0, // Loop length is the second number here.
+		)
+	)
+).play(quant:1);
+)
+
+/*
+When Pseed wraps around a whole pattern like in the above example the values are being generated for the parameters from top to bottom.
+Uncommenting the static pew value does not change the pattern but uncommenting the line below with the stochastic choice does.
+The pew parameter is now receiving the value that would have gone to the tun parameter and so this alternate timeline diverges more and more
+as time passes.
+*/
+
+(
+Pdef(\varsawPat,
+	Pbind(*[
+		instrument: \varsaw,
+		attack: Plprand(0.01, 1.0),
+		release: Pwrand([0.5, 8], [8, 1].normalizeSum, inf),
+		dur: 1 / Pseed(490, Pstutter(Phprand(5, 11), Plprand(5, 11))), // Pseed used on a single parameter.
+		amp: Plprand(-18.dbamp, -12.dbamp),
+		freq: 100 * Plprand(1, 9),
+		width: Plprand(0.0, 0.5),
+		cutoff: Phprand(20, 5500),
+		pan: -1,
+	])
+).play(quant: 1);
+
+Pdef(\drumPat,
+	Pbind(*[
+		instrument: \drum,
+		tun: Pstutter(Plprand(4, 8), Plprand(0.0, 8.0).round(1/8)),
+		fed: Plprand(0.0, 1.0),
+		amp: Plprand(-18.dbamp, -12.dbamp),
+		dur: 1 / Pseed(490, Pstutter(Phprand(5, 11), Plprand(5, 11))), // Same seed, same rhythm.
+		legato: Plprand(0.75, 4.0),
+		pan: 1,
+	])
+).play(quant:1);
+)
+
+/*
+In the above example Pseed is used as a kind of "data sharing" strategy. The two patterns aren't actually sharing data. They are both
+using the same seed to generate all future stochastic choices for the dur parameter.
+All other parameters in the two patterns are unaffected.
+*/
+
 ::

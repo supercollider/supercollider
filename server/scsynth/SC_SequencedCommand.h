@@ -37,6 +37,8 @@
 
 #define CallSequencedCommand(T, inWorld, inSize, inData, inReply)                                                      \
     void* space = World_Alloc(inWorld, sizeof(T));                                                                     \
+    if (!space)                                                                                                        \
+        return kSCErr_OutOfRealTimeMemory;                                                                             \
     T* cmd = new (space) T(inWorld, inReply);                                                                          \
     if (!cmd)                                                                                                          \
         return kSCErr_Failed;                                                                                          \
@@ -388,6 +390,8 @@ protected:
 
 #define CallSendFailureCommand(inWorld, inCmdName, inErrString, inReply)                                               \
     void* space = World_Alloc(inWorld, sizeof(SendFailureCmd));                                                        \
+    if (!space)                                                                                                        \
+        return kSCErr_OutOfRealTimeMemory;                                                                             \
     SendFailureCmd* cmd = new (space) SendFailureCmd(inWorld, inReply);                                                \
     if (!cmd)                                                                                                          \
         return kSCErr_Failed;                                                                                          \

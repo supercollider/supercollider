@@ -28,6 +28,7 @@
 #include "SC_Lib_Cintf.h"
 #include "SC_Lock.h"
 #include "SC_Time.hpp"
+#include "SC_InlineBinaryOp.h"
 #include <stdlib.h>
 #include <algorithm>
 
@@ -75,26 +76,26 @@ static void syncOSCOffsetWithTimeOfDay() {
     // Then if this machine is synced via NTP, we are synced with the world.
     // more accurate way to do this??
 
-    using namespace std::chrono;
     struct timeval tv;
 
-    nanoseconds systemTimeBefore, systemTimeAfter;
+    int64 systemTimeBefore, systemTimeAfter;
     int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
 
     // take best of several tries
     const int numberOfTries = 5;
     int64 newOffset = gOSCoffset;
     for (int i = 0; i < numberOfTries; ++i) {
-        systemTimeBefore = high_resolution_clock::now().time_since_epoch();
+        systemTimeBefore = AudioGetCurrentHostTime();
         gettimeofday(&tv, 0);
-        systemTimeAfter = high_resolution_clock::now().time_since_epoch();
+        systemTimeAfter = AudioGetCurrentHostTime();
 
-        diff = (systemTimeAfter - systemTimeBefore).count();
+        diff = systemTimeAfter - systemTimeBefore;
         if (diff < minDiff) {
             minDiff = diff;
-            // assume that gettimeofday happens halfway between high_resolution_clock::now() calls
-            int64 systemTimeBetween = systemTimeBefore.count() + diff / 2;
-            int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSCunits);
+            // assume that gettimeofday happens halfway between AudioGetCurrentHostTime() calls
+            int64 systemTimeBetween = systemTimeBefore + diff / 2;
+            int64 systemTimeInOSCunits =
+                (int64)((double)AudioConvertHostTimeToNanos(systemTimeBetween) * kNanosToOSCunits);
             int64 timeOfDayInOSCunits =
                 ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32) + (int64)(tv.tv_usec * kMicrosToOSCunits);
             newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
@@ -299,6 +300,8 @@ void Perform_ToEngine_Msg(FifoMsg* inMsg) {
 
 PacketStatus PerformCompletionMsg(World* inWorld, const OSC_Packet& inPacket) {
     OSC_Packet* packet = (OSC_Packet*)World_Alloc(inWorld, sizeof(OSC_Packet));
+    if (packet == NULL)
+        throw std::runtime_error("PerformCompletionMsg allocation failed: out of memory!\n");
     *packet = inPacket;
     packet->mIsBundle = gIsBundle.checkIsBundle((int32*)packet->mData);
     PacketStatus status = PerformOSCPacket(inWorld, packet, SC_ScheduledEvent::FreeInRT);
@@ -332,9 +335,8 @@ void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mDat
 SC_AudioDriver::SC_AudioDriver(struct World* inWorld):
     mWorld(inWorld),
     mSampleTime(0),
-    mNumSamplesPerCallback(0)
-
-{}
+    mNumSamplesPerCallback(0),
+    mSafetyClipThreshold(1.26) {}
 
 SC_AudioDriver::~SC_AudioDriver() {
     mRunThreadFlag = false;
@@ -359,6 +361,9 @@ void SC_AudioDriver::RunThread() {
     while (mRunThreadFlag) {
         // wait for sync
         mAudioSync.WaitNext();
+#ifdef SC_BELA
+        rt_print_flush_buffers();
+#endif // SC_BELA
 
         reinterpret_cast<SC_Lock*>(mWorld->mNRTLock)->lock();
 
@@ -1223,6 +1228,7 @@ OSStatus appIOProcSeparateIn(AudioDeviceID device, const AudioTimeStamp* inNow, 
     return kAudioHardwareNoError;
 }
 
+template <bool IsClipping>
 OSStatus appIOProc(AudioDeviceID device, const AudioTimeStamp* inNow, const AudioBufferList* inInputData,
                    const AudioTimeStamp* inInputTime, AudioBufferList* outOutputData,
                    const AudioTimeStamp* inOutputTime, void* defptr) {
@@ -1255,15 +1261,16 @@ OSStatus appIOProc(AudioDeviceID device, const AudioTimeStamp* inNow, const Audi
     def->mPrevSampleTime = sampleTime;
 
     if (!def->UseSeparateIO()) {
-        def->Run(inInputData, outOutputData, oscTime);
+        def->Run<IsClipping>(inInputData, outOutputData, oscTime);
         return kAudioHardwareNoError;
     }
 
 
-    def->Run(def->mInputBufList, outOutputData, oscTime);
+    def->Run<IsClipping>(def->mInputBufList, outOutputData, oscTime);
     return kAudioHardwareNoError;
 }
 
+template <bool IsClipping>
 void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime) {
     int64 systemTimeBefore = AudioGetCurrentHostTime();
     World* world = mWorld;
@@ -1375,7 +1382,10 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
                     if (nchan == 1) {
                         if (outputTouched[b] == bufCounter) {
                             for (int k = 0; k < bufFrames; ++k) {
-                                bufdata[k] = busdata[k];
+                                if (IsClipping)
+                                    bufdata[k] = sc_clip2(busdata[k], mSafetyClipThreshold);
+                                else
+                                    bufdata[k] = busdata[k];
                             }
                         }
                     } else {
@@ -1383,7 +1393,10 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
                         for (int j = 0; j < minchan; ++j, busdata += bufFrames) {
                             if (outputTouched[b + j] == bufCounter) {
                                 for (int k = 0, m = j; k < bufFrames; ++k, m += nchan) {
-                                    bufdata[m] = busdata[k];
+                                    if (IsClipping)
+                                        bufdata[m] = sc_clip2(busdata[k], mSafetyClipThreshold);
+                                    else
+                                        bufdata[m] = busdata[k];
                                 }
                             }
                         }
@@ -1598,6 +1611,8 @@ bool SC_CoreAudioDriver::DriverStart() {
     if (mWorld->mVerbosity >= 1) {
         scprintf("->SC_CoreAudioDriver::DriverStart\n");
     }
+
+    auto appIOProcFunc = isClippingEnabled() ? appIOProc<true> : appIOProc<false>;
     OSStatus err = kAudioHardwareNoError;
     // AudioTimeStamp	now;
     UInt32 propertySize;
@@ -1617,7 +1632,7 @@ bool SC_CoreAudioDriver::DriverStart() {
             //		err = AudioDeviceAddIOProc(mOutputDevice, appIOProc, (void *) this);	// setup Out device with an
             // IO proc
 
-            err = AudioDeviceCreateIOProcID(mOutputDevice, appIOProc, (void*)this, &mOutputID);
+            err = AudioDeviceCreateIOProcID(mOutputDevice, appIOProcFunc, (void*)this, &mOutputID);
             if (err != kAudioHardwareNoError) {
                 scprintf("AudioDeviceAddIOProc failed %s %d\n", &err, (int)err);
                 return false;
@@ -1663,7 +1678,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
                 AudioHardwareIOProcStreamUsage* su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
-                su->mIOProc = (void*)appIOProc;
+                su->mIOProc = (void*)appIOProcFunc;
 
                 err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
@@ -1682,7 +1697,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 return false;
             }
 
-            err = AudioDeviceStart(mOutputDevice, appIOProc); // start playing sound through the device
+            err = AudioDeviceStart(mOutputDevice, appIOProcFunc); // start playing sound through the device
             if (err != kAudioHardwareNoError) {
                 scprintf("AudioDeviceStart failed %d\n", (int)err);
                 err = AudioDeviceStop(mInputDevice, appIOProcSeparateIn); // stop playing sound through the device
@@ -1690,7 +1705,7 @@ bool SC_CoreAudioDriver::DriverStart() {
             }
         } else {
             // err = AudioDeviceAddIOProc(mOutputDevice, appIOProc, (void *) this);	// setup our device with an IO proc
-            err = AudioDeviceCreateIOProcID(mOutputDevice, appIOProc, (void*)this, &mOutputID);
+            err = AudioDeviceCreateIOProcID(mOutputDevice, appIOProcFunc, (void*)this, &mOutputID);
 
             if (err != kAudioHardwareNoError) {
                 scprintf("AudioDeviceAddIOProc failed %d\n", (int)err);
@@ -1706,7 +1721,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
                 AudioHardwareIOProcStreamUsage* su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
-                su->mIOProc = (void*)appIOProc;
+                su->mIOProc = (void*)appIOProcFunc;
 
                 err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
@@ -1728,7 +1743,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 err = AudioObjectIsPropertySettable(mOutputDevice, &propertyAddress, &writable);
 
                 AudioHardwareIOProcStreamUsage* su = (AudioHardwareIOProcStreamUsage*)malloc(propertySize);
-                su->mIOProc = (void*)appIOProc;
+                su->mIOProc = (void*)appIOProcFunc;
 
                 err = AudioObjectGetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, &propertySize, su);
 
@@ -1741,7 +1756,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, propertySize, su);
             }
 
-            err = AudioDeviceStart(mOutputDevice, appIOProc); // start playing sound through the device
+            err = AudioDeviceStart(mOutputDevice, appIOProcFunc); // start playing sound through the device
             if (err != kAudioHardwareNoError) {
                 scprintf("AudioDeviceStart failed %d\n", (int)err);
                 return false;
@@ -1784,8 +1799,10 @@ bool SC_CoreAudioDriver::DriverStop() {
     }
     OSStatus err = kAudioHardwareNoError;
 
+    auto appIOProcFunc = isClippingEnabled() ? appIOProc<true> : appIOProc<false>;
+
     if (UseSeparateIO()) {
-        err = AudioDeviceStop(mOutputDevice, appIOProc);
+        err = AudioDeviceStop(mOutputDevice, appIOProcFunc);
         if (err != kAudioHardwareNoError) {
             scprintf("Output AudioDeviceStop failed %p\n", err);
             return false;
@@ -1809,7 +1826,7 @@ bool SC_CoreAudioDriver::DriverStop() {
             return false;
         }
     } else {
-        err = AudioDeviceStop(mOutputDevice, appIOProc);
+        err = AudioDeviceStop(mOutputDevice, appIOProcFunc);
         if (err != kAudioHardwareNoError) {
             scprintf("AudioDeviceStop B failed %p\n", err);
             return false;
