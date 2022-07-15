@@ -237,7 +237,9 @@ Function : AbstractFunction {
 
 
 	flop {
-		var code = this.makeFlopFuncString({ |str|
+		var code;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		code = this.makeFlopFuncString({ |str|
 			"%.collect { |item| func.valueArray(item) }".format(str)
 		});
 		^"{ |func| % }".format(code).interpret.value(this)
@@ -249,9 +251,7 @@ Function : AbstractFunction {
 
 	makeFlopFuncString { |modifier|
 		var functionBlock, valueBlock, callBlock, argBlock, singleArgument, i;
-		if(def.argNames.isNil) {
-			^"[func.value]"
-		};
+		if(def.argNames.isNil) { Error("a function without arguments has no flop string").throw };
 
 		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
 		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
