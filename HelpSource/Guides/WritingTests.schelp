@@ -25,8 +25,8 @@ Best practise is to create a separate code::.yaml:: configuration file that resi
 
 code::
 ~sclangConf = "SCLANG_CONF".getenv;
-LanguageConfig.addIncludePath(~travisBuildDir +/+ "testsuite/classlibrary");
-+   LanguageConfig.addExcludePath(~travisBuildDir +/+ "testsuite/classlibrary/server");
+LanguageConfig.addIncludePath(~scSourceDir +/+ "testsuite/classlibrary");
++   LanguageConfig.addExcludePath(~scSourceDir +/+ "testsuite/classlibrary/server");
 +   LanguageConfig.addExcludePath(Quarks.folder +/+ "UnitTesting/tests");
 +   postf("Writing configuration to %\n", ~sclangConf);
 +   LanguageConfig.store(~sclangConf);
@@ -36,8 +36,8 @@ LanguageConfig.addIncludePath(~travisBuildDir +/+ "testsuite/classlibrary");
 section:: Organisation
 
 Core class code::UnitTest::s are located in the directory
-1.  UnitTests go into parrallel directlry
-2.  server-related tests go into `server` subdir (travis)
+1.  UnitTests go into parrallel directory
+2.  server-related tests go into `server` subdir
 3.  UnitTests should use assert and assertFloat
 4.  look at existing UnitTests to understand what are good UnitTests
 5.  UnitTest setup

@@ -156,15 +156,15 @@ Removing the CMakeCache.txt should fix most build problems. After running each o
 
 If you wish to build multiple git branches you should usually create a new build folder for each branch you're building. In practice, though, you can usually switch between similar branches and rebuild by simply deleting your CMakeCache.txt.
 
-### Travis continuous integration
+### GitHub Actions continuous integration
 
-The code on github is tested anytime a contributor pushes new changes, so if a mistake was made in the cutting edge development version and something is broken, then you should be able to see this by visiting the Travis status page:
+The code on github is tested anytime a contributor pushes new changes, so if a mistake was made in the cutting edge development version and something is broken, then you should be able to see this by visiting the GitHub Actions status page for the `develop` branch:
 
-https://travis-ci.org/supercollider/supercollider
+https://github.com/supercollider/supercollider/actions/workflows/actions.yml?query=branch%3Adevelop
 
 If the latest build status is failing, then you can switch your local copy to a previous commit that is still working (until the developers get a chance to fix the problem):
 
-- locate the most recent green build on the travis,
+- locate the most recent passing build in the GitHub Actions,
 - find it's git commit id (e.g. `595b956`), and
 - check out that change in git: `git checkout 595b956`
 - build
