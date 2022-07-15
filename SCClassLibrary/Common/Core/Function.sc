@@ -237,7 +237,11 @@ Function : AbstractFunction {
 
 	flop {
 		if(def.argNames.isNil) { ^this };
-		^{ |... args| args.flop.collect(this.valueArray(_)) }
+		^this.flopInterpret
+	}
+
+	envirFlop {
+		^this.flop
 	}
 
 	flopInterpret {
@@ -245,10 +249,6 @@ Function : AbstractFunction {
 			"%.collect { |item| func.valueArray(item) }".format(str)
 		});
 		^"{ |func| % }".format(code).interpret.value(this)
-	}
-
-	envirFlop {
-		^this.flopInterpret
 	}
 
 	makeFlopFuncString { |modifier|
