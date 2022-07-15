@@ -235,20 +235,18 @@ Function : AbstractFunction {
 
 	// multichannel expand function return values
 
+
 	flop {
+		var code;
 		if(def.argNames.isNil) { ^this };
-		^this.flopInterpret
+		code = this.makeFlopFuncString({ |str|
+			"%.collect { |item| func.valueArray(item) }".format(str)
+		});
+		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
 	envirFlop {
 		^this.flop
-	}
-
-	flopInterpret {
-		var code = this.makeFlopFuncString({ |str|
-			"%.collect { |item| func.valueArray(item) }".format(str)
-		});
-		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
 	makeFlopFuncString { |modifier|
