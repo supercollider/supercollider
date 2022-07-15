@@ -281,14 +281,7 @@ f.value(2, 3);
 
 method::envirFlop
 
-like flop, but implements an environment argument passing (valueEnvir).
-Less efficient in generation than flop, but not a big difference in evaluation.
-
-code::
-f = { |a| if(a > 0) { a + 1 } { -inf } }.envirFlop;
-e = (a: [20, 40]);
-e.use { f.value }
-::
+This method is kept for backward compatibility. Use code::flop:: instead.
 
 
 method::inEnvir
