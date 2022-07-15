@@ -237,7 +237,7 @@ Function : AbstractFunction {
 
 	flop {
 		if(def.argNames.isNil) { ^this };
-		^{ |... args| args.flop.collect(this.valueArray(_)) }
+		^this.makeFlopFunc
 	}
 
 
