@@ -92,15 +92,18 @@ static inline int headerFormatFromString(const char* name) {
         return SF_FORMAT_SD2;
     if (iequals(name, "FLAC"))
         return SF_FORMAT_FLAC;
-// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#    if defined(__APPLE__) || defined(_WIN32) || LIBSNDFILE_1018
-    if (iequals(name, "vorbis"))
-        return SF_FORMAT_VORBIS;
+#    if defined(SNDFILE_HAS_VORBIS) || defined(SNDFILE_HAS_OPUS)
+    if (iequals(name, "OGG"))
+        return SF_FORMAT_OGG;
 #    endif
     if (iequals(name, "CAF"))
         return SF_FORMAT_CAF;
     if (iequals(name, "RF64"))
         return SF_FORMAT_RF64;
+#    ifdef SNDFILE_HAS_MPEG
+    if (iequals(name, "MPEG"))
+        return SF_FORMAT_MPEG;
+#    endif
     return 0;
 }
 
@@ -112,32 +115,44 @@ static inline int sampleFormatFromString(const char* name) {
     if (len < 1)
         return 0;
 
-    if (name[0] == 'u') {
-        if (len < 5)
-            return 0;
-        if (name[4] == '8')
-            return SF_FORMAT_PCM_U8; // uint8
-        return 0;
-    } else if (name[0] == 'i') {
-        if (len < 4)
-            return 0;
-        if (name[3] == '8')
-            return SF_FORMAT_PCM_S8; // int8
-        else if (name[3] == '1')
-            return SF_FORMAT_PCM_16; // int16
-        else if (name[3] == '2')
-            return SF_FORMAT_PCM_24; // int24
-        else if (name[3] == '3')
-            return SF_FORMAT_PCM_32; // int32
-    } else if (name[0] == 'f') {
+    if (iequals(name, "uint8")) {
+        return SF_FORMAT_PCM_U8; // uint8
+    } else if (iequals(name, "int8")) {
+        return SF_FORMAT_PCM_S8; // int8
+    } else if (iequals(name, "int16")) {
+        return SF_FORMAT_PCM_16; // int16
+    } else if (iequals(name, "int24")) {
+        return SF_FORMAT_PCM_24; // int24
+    } else if (iequals(name, "int32")) {
+        return SF_FORMAT_PCM_32; // int32
+    } else if (iequals(name, "float")) {
         return SF_FORMAT_FLOAT; // float
-    } else if (name[0] == 'd') {
+    } else if (iequals(name, "double")) {
         return SF_FORMAT_DOUBLE; // double
-    } else if (name[0] == 'm' || name[0] == 'u') {
+    } else if (iequals(name, "mulaw") || iequals(name, "ulaw")) {
         return SF_FORMAT_ULAW; // mulaw ulaw
-    } else if (name[0] == 'a') {
+    } else if (iequals(name, "alaw")) {
         return SF_FORMAT_ALAW; // alaw
     }
+#    ifdef SNDFILE_HAS_VORBIS
+    if (iequals(name, "vorbis")) {
+        return SF_FORMAT_VORBIS; // vorbis
+    }
+#    endif
+#    ifdef SNDFILE_HAS_OPUS
+    if (iequals(name, "opus")) {
+        return SF_FORMAT_OPUS; // opus
+    }
+#    endif
+#    ifdef SNDFILE_HAS_MPEG
+    if (iequals(name, "mp1")) {
+        return SF_FORMAT_MPEG_LAYER_I; // mpeg 1 layer 1
+    } else if (iequals(name, "mp2")) {
+        return SF_FORMAT_MPEG_LAYER_II; // mpeg 1 layer 2
+    } else if (iequals(name, "mp3")) {
+        return SF_FORMAT_MPEG_LAYER_III; // mpeg 2 layer 3 (mp3)
+    }
+#    endif
     return 0;
 }
 

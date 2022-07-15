@@ -39,12 +39,6 @@ elseif (APPLE)
     set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
   endif()
 
-  # TODO on non-apple platforms, we need to be able to test for >=1018.
-  # (On apple it is known true, because we bundle a later version.)
-  # I think this is not necessary anymore in 2016
-
-  add_definitions("-DLIBSNDFILE_1018")
-
 else()
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
     HINTS
@@ -104,3 +98,36 @@ else()
 
 endif()
 mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+
+# check for format support
+# note: this only check whehter libsndfile's _version_ supports the given format
+# it does not check whether support for that format was actually compiled into the library
+
+include(CMakePushCheckState)
+cmake_push_check_state(RESET)
+
+list(APPEND CMAKE_REQUIRED_INCLUDES ${SNDFILE_INCLUDE_DIR})
+
+include(CheckCSourceCompiles)
+check_c_source_compiles("
+    # include <sndfile.h>
+    int main() {return SF_FORMAT_VORBIS;}
+  "
+  SNDFILE_HAS_VORBIS
+)
+
+check_c_source_compiles("
+    # include <sndfile.h>
+    int main() {return SF_FORMAT_OPUS;}
+  "
+  SNDFILE_HAS_OPUS
+)
+
+check_c_source_compiles("
+    # include <sndfile.h>
+    int main() {return SF_FORMAT_MPEG;}
+  "
+  SNDFILE_HAS_MPEG
+)
+
+cmake_pop_check_state()
