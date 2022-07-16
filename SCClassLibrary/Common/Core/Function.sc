@@ -262,9 +262,11 @@ Function : AbstractFunction {
 			} {
 				i = valueBlock.findBackwards(" ");
 				callBlock =
-				"\nvar res = [%], ell = %;\n"
-				"if(ell.notNil) { res = res.add(ell.flop) };\n"
-				"res.flop\n";
+				"\nvar res = [%], ell = %, ellSize = ell.size;\n"
+				"res = res ++ ell;\n"
+				"res = res.flop\n";
+				// after flop, we have to repack the ellipsis array again
+				"if(ellSize > 0) { res = res.collect { |x| x.drop(ellSize.neg).add(res.keep(ellSize.neg)) } };\n";
 				functionBlock = callBlock.format(valueBlock[..i], valueBlock[i + 1..])
 			}
 		} {
@@ -272,7 +274,7 @@ Function : AbstractFunction {
 		};
 		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
 
-		^"{ arg %; % }".format(argBlock, functionBlock);
+		^"{ arg %; % }".format(argBlock, functionBlock)
 	}
 
 	makeFlopFunc {
