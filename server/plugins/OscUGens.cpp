@@ -2895,21 +2895,13 @@ void Klang_next(Klang* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void Klank_SetCoefs(Klank* unit) {
-    int numpartials = (unit->mNumInputs - 4) / 3;
-    unit->m_numpartials = numpartials;
-
-    int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
-    ClearUnitIfMemFailed(unit->m_coefs);
-
-    unit->m_buf = unit->m_coefs + numcoefs;
-
     float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
     float freqoffset = ZIN0(2) * unit->mRate->mRadiansPerSample;
     float decayscale = ZIN0(3);
 
     float* coefs = unit->m_coefs;
 
+    int numpartials = unit->m_numpartials;
     float sampleRate = SAMPLERATE;
 
     for (int i = 0, j = 4; i < numpartials; ++i, j += 3) {
@@ -2934,9 +2926,28 @@ static void Klank_SetCoefs(Klank* unit) {
 
 void Klank_Ctor(Klank* unit) {
     SETCALC(Klank_next);
+
+    unit->m_x1 = unit->m_x2 = 0.f;
+    int numpartials = (unit->mNumInputs - 4) / 3;
+    unit->m_numpartials = numpartials;
+    int numcoefs = ((numpartials + 3) & ~3) * 5;
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_coefs);
+    unit->m_buf = unit->m_coefs + numcoefs;
+    Klank_SetCoefs(unit);
+
+    // generate initial sample
+    int filtLoops = unit->mRate->mFilterLoops;
+    int filtRemain = unit->mRate->mFilterRemain;
+    unit->mRate->mFilterLoops = 0; // supress filter loop
+    unit->mRate->mFilterRemain = 1; // just go through 1 iteration
+    Klank_next(unit, 1);
+    unit->mRate->mFilterLoops = filtLoops;
+    unit->mRate->mFilterRemain = filtRemain;
+
+    // reset state for first sample
     unit->m_x1 = unit->m_x2 = 0.f;
     Klank_SetCoefs(unit);
-    ZOUT0(0) = 0.f;
 }
 
 void Klank_Dtor(Klank* unit) { RTFree(unit->mWorld, unit->m_coefs); }
