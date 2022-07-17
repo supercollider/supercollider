@@ -2727,11 +2727,12 @@ static float Klang_SetCoefs(Klang* unit) {
         float phase = ZIN0(j + 2);
 
         if (phase != 0.f) {
-            outf += * ++coefs = level * sin(phase); // y1
-            *++coefs = level * sin(phase - w); // y2
+            outf += level * sin(phase);
+            *++coefs = level * sin(phase - w); // y1
+            *++coefs = level * sin(phase - w - w); // y2
         } else {
-            outf += * ++coefs = 0.f; // y1
-            *++coefs = level * -sin(w); // y2
+            *++coefs = level * -sin(w); // y1
+            *++coefs = level * -sin(w + w); // y2
         }
         *++coefs = 2. * cos(w); // b1
     }
