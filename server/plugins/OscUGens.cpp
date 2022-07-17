@@ -47,6 +47,7 @@ struct Select : public Unit {};
 struct TWindex : public Unit {
     int32 m_prevIndex;
     float m_trig;
+    float m_maxSum;
 };
 
 struct Index : public BufUnit {};
@@ -527,26 +528,26 @@ void Select_next_a(Select* unit, int inNumSamples) {
 }
 ////////////////////////////////////////////////////////////////////////////////////
 
-void TWindex_Ctor(TWindex* unit) {
-    if (INRATE(0) == calc_FullRate) {
-        SETCALC(TWindex_next_a);
-    } else {
-        SETCALC(TWindex_next_k);
-    }
-    // Generate a random value here for the initialization & first sample
+static int32 TWindex_chooseNewIndex(TWindex* unit) {
     int maxindex = unit->mNumInputs;
     int32 index = maxindex;
-    float sum = 0.f;
-    float maxSum = 0.f;
     float normalize = ZIN0(1);
-    if (normalize == 1) {
-        for (int32 k = 2; k < maxindex; ++k) {
-            maxSum += ZIN0(k);
-        }
-    } else
-        maxSum = 1.f;
+    float maxSum = unit->m_maxSum;
+
+    if (maxSum < 0.f) {
+        maxSum = 0.f;
+        if (normalize == 1) {
+            for (int32 k = 2; k < maxindex; ++k) {
+                maxSum += ZIN0(k);
+            }
+        } else
+            maxSum = 1.f;
+        unit->m_maxSum = maxSum;
+    }
     RGen& rgen = *unit->mParent->mRGen;
+
     float max = maxSum * rgen.frand();
+    float sum = 0.f;
     for (int32 k = 2; k < maxindex; ++k) {
         sum += ZIN0(k);
         if (sum >= max) {
@@ -554,6 +555,17 @@ void TWindex_Ctor(TWindex* unit) {
             break;
         }
     }
+    return index;
+}
+
+void TWindex_Ctor(TWindex* unit) {
+    if (INRATE(0) == calc_FullRate) {
+        SETCALC(TWindex_next_a);
+    } else {
+        SETCALC(TWindex_next_k);
+    }
+    unit->m_maxSum = -1.f; // trigger update of maxSum
+    int32 index = TWindex_chooseNewIndex(unit);
     OUT0(0) = index;
     unit->m_prevIndex = index;
     // Ensure a first-sample trigger doesn't cause another rand val
@@ -562,73 +574,36 @@ void TWindex_Ctor(TWindex* unit) {
 }
 
 void TWindex_next_k(TWindex* unit, int inNumSamples) {
-    int maxindex = unit->mNumInputs;
-    int32 index = maxindex;
-    float sum = 0.f;
-    float maxSum = 0.f;
-    float normalize = ZIN0(1); // switch normalisation on or off
     float trig = ZIN0(0);
     float* out = ZOUT(0);
-
+    int32 index;
+    unit->m_maxSum = -1.f;
     if (trig > 0.f && unit->m_trig <= 0.f) {
-        if (normalize == 1) {
-            for (int32 k = 2; k < maxindex; ++k) {
-                maxSum += ZIN0(k);
-            }
-        } else
-            maxSum = 1.f;
-        RGen& rgen = *unit->mParent->mRGen;
-        float max = maxSum * rgen.frand();
-        for (int32 k = 2; k < maxindex; ++k) {
-            sum += ZIN0(k);
-            if (sum >= max) {
-                index = k - 2;
-                break;
-            }
-        }
+        index = TWindex_chooseNewIndex(unit);
         unit->m_prevIndex = index;
     } else {
         index = unit->m_prevIndex;
     }
-
     LOOP1(inNumSamples, ZXP(out) = index;)
     unit->m_trig = trig;
 }
 
 void TWindex_next_a(TWindex* unit, int inNumSamples) {
-    int maxindex = unit->mNumInputs;
-    int32 index = maxindex;
-    float maxSum = -1.f;
-    float normalize = ZIN0(1); // switch normalisation on or off
     float* trig = ZIN(0);
     float* out = ZOUT(0);
+    int32 index;
     float curtrig;
-    RGen& rgen = *unit->mParent->mRGen;
+    unit->m_maxSum = -1.f;
 
     LOOP1(
         inNumSamples, curtrig = ZXP(trig); if (curtrig > 0.f && unit->m_trig <= 0.f) {
-            if (maxSum < 0.f) {
-                if (normalize == 1) {
-                    for (int32 k = 2; k < maxindex; ++k) {
-                        maxSum += ZIN0(k);
-                    }
-                } else
-                    maxSum = 1.f;
-            }
-            float max = maxSum * rgen.frand();
-            float sum = 0.f;
-            for (int32 k = 2; k < maxindex; ++k) {
-                sum += ZIN0(k);
-                if (sum >= max) {
-                    index = k - 2;
-                    break;
-                }
-            }
+            index = TWindex_chooseNewIndex(unit);
             unit->m_prevIndex = index;
         } else index = unit->m_prevIndex;
 
         ZXP(out) = index; unit->m_trig = curtrig;)
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 
