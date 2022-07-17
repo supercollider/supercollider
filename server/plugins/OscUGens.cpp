@@ -2898,9 +2898,7 @@ static void Klank_SetCoefs(Klank* unit) {
     float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
     float freqoffset = ZIN0(2) * unit->mRate->mRadiansPerSample;
     float decayscale = ZIN0(3);
-
     float* coefs = unit->m_coefs;
-
     int numpartials = unit->m_numpartials;
     float sampleRate = SAMPLERATE;
 
@@ -2920,7 +2918,6 @@ static void Klank_SetCoefs(Klank* unit) {
         coefs[k + 8] = twoR * cost; // b1
         coefs[k + 12] = -R2; // b2
         coefs[k + 16] = level * 0.25; // a0
-        // Print("coefs %d  %g %g %g\n", i, twoR * cost, -R2, ampf * 0.25);
     }
 }
 
@@ -3079,7 +3076,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
         b2_0 = coefs[12];
         a0_0 = coefs[16];
 
-        // Print("rcoefs %g %g %g %g %g\n", y1_0, y2_0, b1_0, b2_0, a0_0);
         in = in0;
         out = unit->m_buf - 1;
         LooP(unit->mRate->mFilterLoops) {
@@ -3094,7 +3090,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
             inf = *++in;
             y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0;
             *++out = a0_0 * y1_0;
-            // Print("out %g %g %g\n", y0_0, y2_0, y1_0);
         }
         LooP(unit->mRate->mFilterRemain) {
             inf = *++in;
@@ -3102,7 +3097,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
             *++out = a0_0 * y0_0;
             y2_0 = y1_0;
             y1_0 = y0_0;
-            // Print("out %g\n", y0_0);
         }
         /*
         coefs[0] = y1_0;	coefs[4] = y2_0;
