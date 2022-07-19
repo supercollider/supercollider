@@ -205,10 +205,8 @@ void VarSaw_Ctor(VarSaw* unit);
 void Impulse_next_aa(Impulse* unit, int inNumSamples);
 void Impulse_next_ak(Impulse* unit, int inNumSamples);
 void Impulse_next_ai(Impulse* unit, int inNumSamples);
-void Impulse_next_ka(Impulse* unit, int inNumSamples);
 void Impulse_next_kk(Impulse* unit, int inNumSamples);
 void Impulse_next_ki(Impulse* unit, int inNumSamples);
-void Impulse_next_ia(Impulse* unit, int inNumSamples);
 void Impulse_next_ik(Impulse* unit, int inNumSamples);
 void Impulse_next_ii(Impulse* unit, int inNumSamples);
 void Impulse_Ctor(Impulse* unit);
@@ -857,24 +855,6 @@ void Impulse_next_ik(Impulse* unit, int inNumSamples) {
     unit->mPhaseOffset = phaseOff;
 }
 
-void Impulse_next_ia(Impulse* unit, int inNumSamples) {
-    float* out = ZOUT(0);
-    double phase = unit->mPhase;
-    float phaseInc = unit->mPhaseIncrement;
-
-    double prev_phaseOff = unit->mPhaseOffset;
-    float* phaseOffIn = ZIN(1);
-
-    LOOP1(inNumSamples, float z = Impulse_testWrapPhase(phaseInc, phase); float phaseOff = ZXP(phaseOffIn);
-          ZXP(out) = z;
-
-          float pOffsetInc = phaseOff - prev_phaseOff; phase += pOffsetInc; Impulse_testWrapPhase(phaseInc, phase);
-          phase += phaseInc; prev_phaseOff = phaseOff;);
-
-    unit->mPhase = phase;
-    unit->mPhaseOffset = prev_phaseOff;
-}
-
 void Impulse_next_ki(Impulse* unit, int inNumSamples) {
     float* out = ZOUT(0);
     double phase = unit->mPhase;
@@ -915,29 +895,6 @@ void Impulse_next_kk(Impulse* unit, int inNumSamples) {
 
     unit->mPhase = phase;
     unit->mPhaseOffset = phaseOff;
-    unit->mPhaseIncrement = phaseInc;
-}
-
-void Impulse_next_ka(Impulse* unit, int inNumSamples) {
-    float* out = ZOUT(0);
-    double phase = unit->mPhase;
-
-    double prev_phaseInc = unit->mPhaseIncrement;
-    double phaseInc = ZIN0(0) * unit->mFreqMul;
-    double phaseIncSlope = CALCSLOPE(phaseInc, prev_phaseInc);
-
-    double prev_phaseOff = unit->mPhaseOffset;
-    float* phaseOffIn = ZIN(1);
-
-    LOOP1(inNumSamples, float z = Impulse_testWrapPhase(prev_phaseInc, phase); float phaseOff = ZXP(phaseOffIn);
-          ZXP(out) = z;
-
-          double phaseOffInc = phaseOff - prev_phaseOff; phase += phaseOffInc;
-          Impulse_testWrapPhase(prev_phaseInc, phase); prev_phaseInc += phaseIncSlope; phase += prev_phaseInc;
-          prev_phaseOff = phaseOff;);
-
-    unit->mPhase = phase;
-    unit->mPhaseOffset = prev_phaseOff;
     unit->mPhaseIncrement = phaseInc;
 }
 
@@ -1029,45 +986,32 @@ void Impulse_Ctor(Impulse* unit) {
     switch (INRATE(0)) {
     case calc_FullRate:
         switch (INRATE(1)) {
-        case calc_FullRate:
-            func = (UnitCalcFunc)Impulse_next_aa;
-            break;
+            case calc_ScalarRate:
+                func = (UnitCalcFunc)Impulse_next_ai;
+                break;
         case calc_BufRate:
             func = (UnitCalcFunc)Impulse_next_ak;
             break;
-        case calc_ScalarRate:
-            func = (UnitCalcFunc)Impulse_next_ai;
-            break;
+            case calc_FullRate:
+                func = (UnitCalcFunc)Impulse_next_aa;
+                break;
         }
         break;
     case calc_BufRate:
-        switch (INRATE(1)) {
-        case calc_FullRate:
-            func = (UnitCalcFunc)Impulse_next_ka;
-            break;
-        case calc_BufRate:
-            func = (UnitCalcFunc)Impulse_next_kk;
-            break;
-        case calc_ScalarRate:
+        if (INRATE(1) == calc_ScalarRate) {
             func = (UnitCalcFunc)Impulse_next_ki;
-            break;
+        } else {
+            func = (UnitCalcFunc)Impulse_next_kk;
         }
         break;
     case calc_ScalarRate:
-        switch (INRATE(1)) {
-        case calc_FullRate:
-            func = (UnitCalcFunc)Impulse_next_ia;
-            break;
-        case calc_BufRate:
-            func = (UnitCalcFunc)Impulse_next_ik;
-            break;
-        case calc_ScalarRate:
+        if (INRATE(1) == calc_ScalarRate) {
             func = (UnitCalcFunc)Impulse_next_ii;
-            break;
+        } else {
+            func = (UnitCalcFunc)Impulse_next_ik;
         }
         break;
     }
-
     unit->mCalcFunc = func;
     func(unit, 1);
 
