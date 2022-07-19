@@ -960,10 +960,16 @@ void Impulse_next_ai(Impulse* unit, int inNumSamples) {
     unit->mPhaseIncrement = inc;
 }
 
-// Note: In calc functions,
-// phase offset change is added to phase, then phase is wrapped into range,
-// followed by phase increment (freq), then tested for triggering an impulse.
-// So a freq increment will trigger an impulse, but not a phase offset.
+// Impulse is based on a wrapping phasor. When the phase wraps, an impulse is
+// output. Phase _increments_ according to its frequency and an additional phase
+// _offset_ is applied.
+// Order of operations:
+// 1. Phase _offset_ is applied to the current phase (if offset has changed).
+// 2. Phase is wrapped into range.
+// 3. Phase _increment_ is added (according to the frequency).
+// 4. Phase is checked for being out of range, in which case a trigger is fired
+//    and the phase is again wrapped.
+// Therefore, phase increment (freq) triggers an impulse, but not phase offset.
 void Impulse_Ctor(Impulse* unit) {
     unit->mPhaseOffset = ZIN0(1);
     unit->mFreqMul = unit->mRate->mSampleDur;
@@ -984,15 +990,15 @@ void Impulse_Ctor(Impulse* unit) {
     switch (INRATE(0)) {
     case calc_FullRate:
         switch (INRATE(1)) {
-            case calc_ScalarRate:
-                func = (UnitCalcFunc)Impulse_next_ai;
-                break;
+        case calc_ScalarRate:
+            func = (UnitCalcFunc)Impulse_next_ai;
+            break;
         case calc_BufRate:
             func = (UnitCalcFunc)Impulse_next_ak;
             break;
-            case calc_FullRate:
-                func = (UnitCalcFunc)Impulse_next_aa;
-                break;
+        case calc_FullRate:
+            func = (UnitCalcFunc)Impulse_next_aa;
+            break;
         }
         break;
     case calc_BufRate:
