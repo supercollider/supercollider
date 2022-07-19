@@ -329,6 +329,7 @@ CleanupStream : Stream {
 PauseStream : Stream {
 	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
 	var isWaiting = false, era=0;
+	var rescheduledTime;  // normally nil
 
 	*new { arg argStream, clock;
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default)
@@ -373,6 +374,7 @@ PauseStream : Stream {
 	}
 	prStop {
 		stream = nil;
+		rescheduledTime = nil;
 		isWaiting = false;
 	}
 	removedFromScheduler {
@@ -393,6 +395,20 @@ PauseStream : Stream {
 	}
 	resume { arg argClock, quant;
 		^this.play(clock ? argClock, false, quant)
+	}
+	reschedule { arg argClock, quant;
+		deferAwayFrom(this.stream) {
+			if(this.isPlaying.not) {
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+			};
+			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
+			if(argClock.isNil) { argClock = clock };
+			if(argClock !== clock) {
+				// convert to new clock's time
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+			};
+			clock = argClock;
+		};
 	}
 
 	refresh {
@@ -430,8 +446,15 @@ PauseStream : Stream {
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
-		clock = inClock;
-		^this.next(beats)
+		if(rescheduledTime.isNil) {
+			clock = inClock;
+			^this.next(beats)
+		} {
+			// rescheduling, possibly on a new clock
+			clock.schedAbs(rescheduledTime, this);
+			rescheduledTime = nil;
+			^nil
+		}
 	}
 	threadPlayer { ^this }
 }

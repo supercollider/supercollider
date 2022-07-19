@@ -110,6 +110,7 @@ struct PyrThread : public PyrObjectHdr {
     PyrSlot threadPlayer;
     PyrSlot executingPath;
     PyrSlot oldExecutingPath;
+    PyrSlot rescheduledTime;
     PyrSlot stackSize;
 };
 
