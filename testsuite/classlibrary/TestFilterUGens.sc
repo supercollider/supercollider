@@ -87,6 +87,7 @@ TestFilterUGens : UnitTest {
 		var delay_times = [1,64]; // in samples
 		var numTests = delay_times.size * filters.size;
 		var completed = 0;
+		var impFrq = 500;
 
 		filters.do {
 			arg filter;
@@ -99,9 +100,14 @@ TestFilterUGens : UnitTest {
 				{
 					var deltime = delay_samples/SampleRate.ir;
 					// should be silent - FP rounding errors are ok.
-					DelayN.ar(filter.ar(Impulse.ar(0)), deltime, deltime)
-					- filter.ar(DelayN.ar(Impulse.ar(0), deltime, deltime));
-				}.loadToFloatArray(0.1, server, {
+					// Note: impulse phase offset to avoid errors associated with
+					//  	 initialization sample bugs in filter UGens (and others).
+					//       https://github.com/supercollider/rfcs/pull/19
+					DelayN.ar(filter.ar(Impulse.ar(impFrq, 0.25)), deltime, deltime)
+					- filter.ar(DelayN.ar(Impulse.ar(impFrq, 0.25), deltime, deltime));
+					// DelayN.ar(filter.ar(Impulse.ar(0)), deltime, deltime)
+					// - filter.ar(DelayN.ar(Impulse.ar(0), deltime, deltime));
+				}.loadToFloatArray(2*impFrq.reciprocal, server, {
 					arg data;
 					this.assertArrayFloatEquals(data, 0, message, within:1e-10, report:true);
 					completed = completed + 1;
