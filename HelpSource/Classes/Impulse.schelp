@@ -28,15 +28,12 @@ The output will be multiplied by this value.
 argument::add
 This value will be added to the output.
 
-discussion::
+Discussion::
 code::Impulse:: will output an impulse on the first sample (assuming no phase
-offset). code::Impulse:: with strong::freq:: code::0:: outputs a single impulse,
-followed by silence until the frequency changes.
+offset).
 
-Supported rate combinations for code::(freq, phase):: are
-code::(a,a)::, code::(a,k)::, code::(a,i)::,
-code::(k,k)::, code::(k,i)::,
-code::(i,k)::, code::(i,i)::.
+When the initial code::freq = 0::, a single impulse is output on first sample,
+followed by silence until the frequency changes.
 
 Discussion::
 code::Impulse:: will output a code::1.0:: on the first sample (assuming no
