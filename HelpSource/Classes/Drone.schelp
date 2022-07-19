@@ -1,0 +1,746 @@
+TITLE:: Drone
+summary:: Provides creation of the drone tones in ThrenoScope.
+categories:: Live Coding
+related:: Classes/ThrenoScope, Classes/DroneChord, Classes/DroneSatellites
+
+DESCRIPTION::
+
+CLASSMETHODS::
+
+METHOD:: new
+Initializes a new Drone instance.
+
+ARGUMENT:: hub
+
+ARGUMENT:: tuning
+Sets a tuning to use.
+
+ARGUMENT:: scale
+Sets a scale to use.
+
+ARGUMENT:: fundamental
+Fundamental frequency of the drone.
+
+returns:: Name of the current drone and synths for It to use.
+
+
+INSTANCEMETHODS::
+
+METHOD:: oscfreq
+
+ARGUMENT:: oscfreq
+
+METHOD:: postAuto
+
+returns:: Tasks of the drone.
+
+METHOD:: relRatio
+Sets a ratio of the drone in relation to the current ratio.
+
+ARGUMENT:: change
+Ratio to change.
+
+ARGUMENT:: dur
+Time to change the ratio.
+
+returns:: Current ratio.
+
+METHOD:: harmonics
+Sets a number of harmonics of the drone.
+
+ARGUMENT:: argharmonics
+Number of harmonics to set.
+
+ARGUMENT:: dur
+Time to set the harmonics.
+
+returns:: Current harmonics argument.
+
+METHOD:: saveScale
+Saves a scale to the drone.
+
+ARGUMENT:: name
+
+ARGUMENT:: description
+Description about the scale.
+
+METHOD:: exposeMIDI
+
+ARGUMENT:: synthargs
+
+METHOD:: methods
+
+returns:: Array of methods to use for the drone.
+
+METHOD:: relFreq
+Sets the frequency of the drone in relation to its current frequency.
+
+ARGUMENT:: change
+Amount of Hz to change.
+
+ARGUMENT:: dur
+Time to change the frequency.
+
+METHOD:: tonic
+Sets a multiplier for the fundamental frequency of the drone.
+
+ARGUMENT:: argtonic
+The multiplier to set.
+
+ARGUMENT:: dur
+Time to set the tonic.
+
+returns:: Current tonic argument.
+
+METHOD:: relAmp
+Changes the amplitude of the drone in relation to the current amplitude value.
+
+ARGUMENT:: change
+Amount of amplitude to set.
+
+ARGUMENT:: dur
+Time to set the amplitude.
+
+METHOD:: addFunc
+Adds function to the drone.
+
+ARGUMENT:: name
+
+ARGUMENT:: func
+
+ARGUMENT:: time
+
+METHOD:: createSynth
+Creates a synth for the drone.
+
+ARGUMENT:: out
+Which channel to send audio signals to.
+
+METHOD:: speed
+Sets the speed of the movement of the drone.
+
+ARGUMENT:: argspeed
+Speed in number to set.
+
+returns:: Speed of movement of the drone within an environment.
+
+METHOD:: state
+
+returns:: All parameters of the drone directly to ThrenoScope terminal.
+
+METHOD:: clearAuto
+Clears all tasks of the drone.
+
+METHOD:: ratios
+
+returns:: Ratios of the current globally configured tuning.
+
+METHOD:: synthMachine
+
+ARGUMENT:: rotation
+
+METHOD:: tuning
+Sets a tuning for the drone.
+
+ARGUMENT:: argtuning
+Tuning to set.
+
+ARGUMENT:: dur
+Time to set the tuning.
+
+returns:: Current tuning.
+
+METHOD:: rotation
+Sets an angle for the drone. (Better to use than angle_())
+
+ARGUMENT:: argrotation
+The angle to set.
+
+returns:: Current angle.
+
+METHOD:: createDrone
+Creates a drone.
+
+ARGUMENT:: argtype
+Sound type to set (\saw,\sine,\tri,\cub,\pulse,\formant,\eliane,
+\noise,\klank,\gendy,\pad,\atom)
+
+ARGUMENT:: argtonic
+Multiplier of the fundamental frequency of a drone.
+
+ARGUMENT:: argharmonics
+Number of harmonics.
+
+ARGUMENT:: argamp
+Amplitude of a drone.
+
+ARGUMENT:: argspeed
+Speed of rotation of a drone.
+
+ARGUMENT:: arglength
+Length of the drone.
+
+ARGUMENT:: argangle
+Angle of the drone.
+
+ARGUMENT:: argdegree
+Sets frequency according to the n-th degree of a scale which is globally set and ascends from the fundamental frequency set by \key in ThrenoScope.
+For example, if the fundamental note is A, then the fourth degree of the major scale is tone D.
+
+ARGUMENT:: argratio
+The bigger this arg is, the more halftones is the frequency away from the fundamental frequency.
+
+ARGUMENT:: argenv
+Envelope which happens when creating and killing a drone.
+
+ARGUMENT:: argoctave
+Raises frequency of a drone octaves higher.
+
+ARGUMENT:: argnote
+
+returns:: Name of Synth object used for the drone and its tuning.
+
+METHOD:: setDroneLook
+
+METHOD:: amp
+Sets an amplitude of a drone.
+
+ARGUMENT:: argamp
+The amplitude to set.
+
+ARGUMENT:: dur
+Time to set the amplitude.
+
+returns:: Amplitude of a drone.
+
+METHOD:: fillColor
+A particular drone is filled with a color according to \argcolor.
+
+ARGUMENT:: argcolor
+Color to use, can be link::Classes/Color:: constructor.
+
+METHOD:: degree
+Sets the frequency of the drone according to the n-th degree of the globally configured scale.
+
+ARGUMENT:: argdegree
+The degree of the scale to set.
+
+ARGUMENT:: dur
+Time to set the degree.
+
+returns:: Degree of a scale on which frequency of a particular drone is set.
+
+METHOD:: length
+Sets a length for the drone.
+
+ARGUMENT:: arglength
+The length value to set.
+
+returns:: Current length.
+
+METHOD:: scalesize
+
+returns:: Size of the globally configured scale.
+
+METHOD:: autoTaskDict
+
+METHOD:: params
+
+returns:: All parameters of the drone.
+
+METHOD:: ampMult
+
+returns:: Value of the amplitude of the drone.
+
+METHOD:: killSynths
+Kills running synths.
+
+ARGUMENT:: releasetime
+Time to kill the synths.
+
+returns:: Synths of the drone to be freed.
+
+METHOD:: oppositemove
+
+METHOD:: recParam
+
+ARGUMENT:: method
+The method to use.
+
+ARGUMENT:: min
+Minimum value to set.
+
+ARGUMENT:: max
+Maximum value to set.
+
+ARGUMENT:: round
+
+METHOD:: getSynths
+
+returns:: Synths used for creation of a particular drone.
+
+METHOD:: strokeColor
+Sets a color for the stroke of the GUI element which shows a drone.
+
+ARGUMENT:: argcolor
+The color to set to the stroke.
+
+METHOD:: relTonic
+Changes the multiplier for the fundamental frequency in relation to the current multiplier.
+
+ARGUMENT:: change
+Amount to change.
+
+ARGUMENT:: dur
+Time to change the tonic argument.
+
+returns:: Current tonic argument.
+
+METHOD:: auto
+Starts or stops the tasks of the drone.
+
+ARGUMENT:: bool
+If the tasks should start or stop.
+
+METHOD:: freq
+Sets the frequency of a drone.
+
+ARGUMENT:: argfreq
+Frequency of a drone to set.
+
+ARGUMENT:: dur
+Time to set the frequency.
+
+returns:: Current frequency of the drone.
+
+METHOD:: name
+Sets a name for a particular drone.
+
+ARGUMENT:: argname
+The name to set.
+
+METHOD:: synthParams
+
+returns:: All params of the synth used for the drone.
+
+METHOD:: relRotation
+Sets an angle for the drone in relation to its current angle.
+
+ARGUMENT:: change
+The angle to change.
+
+METHOD:: interpret
+
+ARGUMENT:: func
+
+METHOD:: createScale
+Creates a scale.
+
+ARGUMENT:: numRatios
+Number of ratios to use for the scale.
+
+METHOD:: getDroneLook
+
+returns:: Inner and outer size, rotation and length of the GUI element which draws the drone.
+
+METHOD:: note
+Sets a note for the drone.
+
+ARGUMENT:: note
+The note to set.
+
+ARGUMENT:: dur
+Time to set the note.
+
+returns:: Note of a particular drone (if any).
+
+METHOD:: angle
+Sets an angle of the drone.
+
+ARGUMENT:: argangle
+The angle to set.
+
+returns:: Current angle.
+
+METHOD:: selected
+
+ARGUMENT:: argsel
+
+returns:: The selected drone.
+
+METHOD:: oscamp
+
+ARGUMENT:: oscamp
+
+METHOD:: setParam
+Sets a parameter.
+
+ARGUMENT:: method
+The method to set.
+
+ARGUMENT:: min
+Minimum value to set.
+
+ARGUMENT:: max
+Maximum value to set.
+
+ARGUMENT:: round
+
+METHOD:: relLength
+Changes the length of the drone in relation to its current length.
+
+ARGUMENT:: change
+Amount of length to change.
+
+returns:: Current length value.
+
+METHOD:: removeFunc
+Removes a function from the drone.
+
+ARGUMENT:: name
+
+METHOD:: killDrone
+Frees all tasks and synths of the drone. (Not possible to use directly from ThrenoScope.)
+
+ARGUMENT:: releasetime
+Time to free all tasks and synths.
+
+METHOD:: type
+Sets a sound type for a particular drone.
+
+ARGUMENT:: argtype
+The type of sound to set.
+
+ARGUMENT:: dur
+Time to set the sound type.
+
+returns:: Current sound type.
+
+METHOD:: sendAtomChannel
+
+ARGUMENT:: out
+
+ARGUMENT:: bool
+
+METHOD:: ratio
+Changes frequency of a drone by ratio.
+
+ARGUMENT:: argratio
+The ratio to set.
+
+ARGUMENT:: dur
+Time to set the ratio.
+
+returns:: Distance from fundamental frequency by number of halftones.
+
+METHOD:: octave
+Sets how many octaves higher the frequency of the drone will become.
+
+ARGUMENT:: argoctave
+Octave to set.
+
+ARGUMENT:: dur
+Time to set the octave.
+
+returns:: Octave of the drone (the lowest is 1).
+
+METHOD:: startAuto
+Called only from DroneController.
+
+ARGUMENT:: method
+
+ARGUMENT:: movementarray
+
+METHOD:: dying
+
+returns:: True or false.
+
+METHOD:: playRatios
+Plays all frequencies multiplied by ratios of the globally configured tuning.
+
+ARGUMENT:: dur
+Duration for every tone to be played.
+
+ARGUMENT:: slide
+Determines if the tones should slide or not.
+
+METHOD:: relOctave
+Changes the octave argument in relation to the current value.
+
+ARGUMENT:: change
+Amount of octaves to change.
+
+ARGUMENT:: dur
+Time to change the octave.
+
+METHOD:: chord
+Sets a chord for the drone.
+
+ARGUMENT:: argchord
+The chord to set.
+
+returns:: Tones composing the chord in ratios.
+
+METHOD:: playScale
+Plays globally configured scale.
+
+ARGUMENT:: dur
+Duration for every tone to set.
+
+ARGUMENT:: slide
+Determines if the tones should slide or not.
+
+METHOD:: scaledegrees
+
+returns:: All degrees of the globally set scale.
+
+METHOD:: tuningsize
+
+returns:: Ratios of the current tuning.
+
+METHOD:: addMIDI
+Adds a MIDI listener.
+
+ARGUMENT:: transp
+
+ARGUMENT:: dur
+
+METHOD:: kill
+Kills the drone.
+
+ARGUMENT:: releasetime
+Time to kill the drone.
+
+returns:: Current drone.
+
+METHOD:: chordnote
+Plays a note from the globally configured chord.
+
+ARGUMENT:: index
+Which note to play.
+
+ARGUMENT:: dur
+Time to set the note.
+
+METHOD:: addToScale
+
+ARGUMENT:: index
+
+METHOD:: startSynth
+Starts a synth to the particular drone.
+
+METHOD:: scale
+Sets a scale for the drone.
+
+ARGUMENT:: argscale
+The scale to set.
+
+returns:: Current scale.
+
+METHOD:: initSynthParams
+Sets synth params of the drone.
+
+ARGUMENT:: argtonic
+Multiplier of the fundamental frequency.
+
+ARGUMENT:: argfreq
+Frequency of the drone.
+
+ARGUMENT:: argharmonics
+Harmonics for the frequency.
+
+ARGUMENT:: argamp
+Amplitude of the drone.
+
+ARGUMENT:: argdegree
+A scale degree to use.
+
+ARGUMENT:: argoctave
+How many octaves higher should the frequency of the drone become.
+
+ARGUMENT:: argenv
+Envelope attack which runs when creating and envelope release
+when killing drones in an array.
+
+returns:: All synth params of the drone in one line.
+
+METHOD:: synth
+
+returns:: All synth params of a drone line by line.
+
+METHOD:: initDrone
+Constructor method.
+
+ARGUMENT:: arghub
+
+ARGUMENT:: argtuning
+Tuning of the drone.
+
+ARGUMENT:: argscale
+Scale of the drone.
+
+ARGUMENT:: argfundamental
+Fundamental frequency of the drone.
+
+returns:: Current Drone instance and its parameters.
+
+METHOD:: stopParam
+Stops a parameter of the drone synth.
+
+ARGUMENT:: method
+Method to stop.
+
+METHOD:: draw
+
+METHOD:: resonance
+Sets a resonance to the drone.
+
+ARGUMENT:: argres
+The resonance to set.
+
+ARGUMENT:: dur
+Time to set the resonance.
+
+returns:: Current resonance.
+
+METHOD:: set
+Sets arguments for the drone synth.
+
+ARGUMENT::  ... args
+The arguments to set.
+
+returns:: Current arguments of the drone.
+
+METHOD:: env
+Sets an envelope of a drone.
+
+ARGUMENT:: envt
+The envelope to set.
+
+returns:: Array of values for envelope.
+
+METHOD:: update
+
+METHOD:: interval
+Changes frequency of a drone according to ratio.
+
+ARGUMENT:: arginterval
+The number of scale degrees to change the frequency of the drone.
+
+ARGUMENT:: dur
+Time to change the frequency.
+
+METHOD:: playDegrees
+Plays the globally configured scale upside down.
+
+ARGUMENT:: dur
+Duration of every tone.
+
+ARGUMENT:: slide
+Determines if the tones should slide or not.
+
+METHOD:: removeMIDI
+Removes a MIDI listener.
+
+METHOD:: relDegree
+Changes the scale degree of the frequency of the drone in relation to the current degree.
+
+ARGUMENT:: change
+Degree to change.
+
+ARGUMENT:: dur
+Time to change the degree.
+
+METHOD:: freeSynths
+Immediately stops and frees the synths of a drone.
+
+ARGUMENT:: releasetime
+Time to free the synths.
+
+returns:: What synths were freed.
+
+METHOD:: point
+
+returns:: A link::Classes/Point:: constructor.
+
+METHOD:: initAtom
+Experimental method for Atom software from Chris Kiefer.
+
+METHOD:: startMIDI
+Starts MIDI playback.
+
+ARGUMENT:: name
+
+ARGUMENT:: movementarray
+
+METHOD:: transpose
+Transposes the frequency of the drone about a musical interval higher or lower.
+
+ARGUMENT:: argtuninginterval
+The musical interval in number to set.
+
+ARGUMENT:: dur
+Time to set the interval.
+
+METHOD:: relSpeed
+Sets speed of the drone with the relation with the current speed.
+
+ARGUMENT:: change
+How the speed should change.
+
+
+EXAMPLES::
+
+IMPORTANT:
+It is not needed to call this class directly, a global variable ~drones is used instead.
+
+section::Basic creation of a drone
+code::
+~drones.createDrone(\saw, 1)
+~drones.killAll
+
+//although we control everything with the //variable ~drones, we can assign
+//it to another
+~d = ~drones;
+~d.createDrone(\saw, 1)
+~d.killAll
+
+//killing all drones after three seconds
+~drones.killAll(3);
+::
+
+section::Drones with parameters of their synths
+code::
+~drones.createDrone(\saw, harmonics: 3, name: \mydrone)
+
+//changing some parameters
+~mydrone.harmonics_(8)
+~mydrone.octave_(3)
+~mydrone.type_(\tri) //sound types: \sine, \saw, \tri, \pulse etc.
+~mydrone.kill()
+::
+
+section::Chords, tunings and scales
+code::
+//show available chords, tunings and scales
+~drones.chords
+~drones.tunings
+~drones.scales
+
+//set chromatic scale
+~drones.scale_(\chromatic)
+
+//set pythagorean tuning
+~drones.tuning_(\pythagorean)
+::
+
+section::GUI drawing options
+code::
+~drones.drawHarmonics_(/*true or false*/)
+~drones.drawOctaves_(/*true or false*/)
+~drones.drawScales_(/*true or false*/)
+
+//changing color of a drone with rgba
+~drones.createDrone(name: \mydrone)
+~mydrone.fillColor_(Color(0.3,0.1,0.2,0.6))
+::

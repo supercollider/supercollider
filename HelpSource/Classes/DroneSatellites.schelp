@@ -1,0 +1,446 @@
+TITLE:: DroneSatellites
+summary:: Bunch of short drones randomly moving in space.
+categories:: Live Coding
+related:: Classes/Drone, Classes/DroneChord, Classes/ThrenoScope
+
+DESCRIPTION::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: hub
+
+ARGUMENT:: name
+Name of the satellites.
+
+returns:: Current DroneSatellites instance and its parameters.
+
+
+INSTANCEMETHODS::
+
+METHOD:: degree
+Sets the satellites to a n-th degree of the globally configured scale.
+
+ARGUMENT:: degree
+Degree to set.
+
+ARGUMENT:: dur
+Time to set the degree.
+
+returns:: Current degree.
+
+METHOD:: auto
+Starts or stops the tasks of the satellites.
+
+ARGUMENT:: bool
+Tells to start or stop the tasks.
+
+METHOD:: octave
+Sets the frequencies of the satellites a number of octaves higher from their fundamental frequencies.
+
+ARGUMENT:: octave
+The quantity of octaves to set.
+
+ARGUMENT:: dur
+Time to set the octaves.
+
+returns:: Current number of octaves.
+
+METHOD:: amp
+Sets an amplitude to the satellites.
+
+ARGUMENT:: amp
+The amplitude to set.
+
+ARGUMENT:: dur
+Time to set the amplitude.
+
+returns:: The current amplitude.
+
+METHOD:: recParam
+
+ARGUMENT:: method
+The method to use.
+
+ARGUMENT:: min
+Minimal value to set.
+
+ARGUMENT:: max
+Maximal value to set.
+
+ARGUMENT:: round
+
+METHOD:: freeSynths
+Frees the synths used for the satellites.
+
+ARGUMENT:: releasetime
+Time to release the synths.
+
+returns:: Synths of the satellites to be freed.
+
+METHOD:: resonance
+Sets a resonance for the satellites.
+
+ARGUMENT:: res
+The resonance to set.
+
+ARGUMENT:: dur
+Time to set the resonance.
+
+returns:: Current resonance.
+
+METHOD:: relLength
+Sets the length of the satellites in relation to their current length.
+
+ARGUMENT:: change
+The length to set.
+
+METHOD:: spread
+Sets how the satellites should be spread.
+
+ARGUMENT:: argspread
+Amount of spread to set.
+
+METHOD:: tonality
+
+METHOD:: selected
+
+ARGUMENT:: bool
+
+returns:: True or false.
+
+METHOD:: relAmp
+Changes the amplitude of the satellites in relation to their current amplitude.
+
+ARGUMENT:: change
+The amplitude to change.
+
+ARGUMENT:: dur
+Time to change the amplitude.
+
+METHOD:: set
+Sets arguments for the synths of the satellites.
+
+ARGUMENT::  ... args
+The arguments to set.
+
+returns:: Current args.
+
+METHOD:: chord
+Sets a chord for the sateliites.
+
+ARGUMENT:: chord
+The chord to set.
+
+ARGUMENT:: dur
+TIme to set the chord.
+
+ARGUMENT:: transp
+Scale degrees to transpose.
+
+METHOD:: relOctave
+Changes how many octaves higher should the frequencies of the satellites move in relation to their current frequencies.
+
+ARGUMENT:: change
+The amount of octaves to change.
+
+ARGUMENT:: dur
+Time to change the octaves.
+
+METHOD:: relDegree
+Changes the frequencies of the satellites according to the n-th degree of the globally configured scale in relation to their current frequencies.
+
+ARGUMENT:: change
+The degree to set.
+
+ARGUMENT:: dur
+Time to change the degree.
+
+METHOD:: transpose
+Transposes the frequencies of the satellites according to the globally configured scale.
+
+ARGUMENT:: interval
+The interval in number to transpose the frequencies.
+
+ARGUMENT:: dur
+Time to make transposition.
+
+METHOD:: scale
+Sets a scale for the satellites.
+
+ARGUMENT:: scale
+The scale to set.
+
+ARGUMENT:: dur
+Time to set the scale.
+
+ARGUMENT:: transp
+Scale degrees to transpose the satellites.
+
+METHOD:: num
+Sets a number of the satellites.
+
+ARGUMENT:: num
+The number to set.
+
+returns:: Synths to be freed to create new satellites.
+
+METHOD:: perform
+
+ARGUMENT:: command
+
+METHOD:: relRatio
+Changes frequency ratios of the satellites in relation to their current ratios.
+
+ARGUMENT:: change
+The amount of the ratios to change.
+
+ARGUMENT:: dur
+Time to set the ratios.
+
+METHOD:: changeChord
+Sets a chord for the satellites.
+
+ARGUMENT:: argchord
+The chord to set.
+
+ARGUMENT:: dur
+Time to set the chord.
+
+ARGUMENT:: transp
+Scale degrees to trasnpose the satellites.
+
+METHOD:: speed
+Sets a speed for the satellites.
+
+ARGUMENT:: speed
+The speed to set.
+
+METHOD:: tonic
+Sets the multiplier of the fundamental frequencies of the satellites.
+
+ARGUMENT:: tonic
+The multiplier to set.
+
+ARGUMENT:: dur
+Time to set the multiplier.
+
+METHOD:: type
+Sets a sound type for the satellites.
+
+ARGUMENT:: type
+The sound type to set.
+
+METHOD:: ratio
+Sets a distance from the fundamental frequencies by number of ratios in the frame of tuning.
+
+ARGUMENT:: ratio
+The distance to set.
+
+ARGUMENT:: dur
+Time to set the ratio.
+
+METHOD:: relFreq
+Changes the frequency of the satellites in relation to their current frequency.
+
+ARGUMENT:: change
+Amount of frequencies to change.
+
+ARGUMENT:: dur
+Time to set the frequencies.
+
+METHOD:: freq
+Sets frequency for the satellites.
+
+ARGUMENT:: freq
+The frequency to set.
+
+ARGUMENT:: dur
+Time to set the frequency.
+
+METHOD:: interval
+Sets the frequencies of the satellites according to a musical interval.
+
+ARGUMENT:: interval
+The musical interval to set by number.
+
+ARGUMENT:: dur
+Time to set the interval.
+
+METHOD:: angle
+Sets an angle for the drones.
+
+ARGUMENT:: angle
+The angle to set.
+
+METHOD:: length
+Sets a length for the satellites.
+
+ARGUMENT:: length
+The length to set.
+
+METHOD:: initSatellites
+Constructor method.
+
+ARGUMENT:: arghub
+
+ARGUMENT:: argname
+
+returns:: Current DroneSatellites instance.
+
+METHOD:: relTonic
+Changes the multiplier of the frequencies of the satellites in relation to their current frequencies.
+
+ARGUMENT:: change
+The multiplier to change.
+
+ARGUMENT:: dur
+Time to change the multiplier.
+
+METHOD:: stopParam
+
+ARGUMENT:: method
+The method to stop.
+
+METHOD:: tuning
+Sets a tuning to the satellites.
+
+ARGUMENT:: tuning
+The tuning to set.
+
+ARGUMENT:: dur
+Time to set the tuning.
+
+returns:: Ratios of current tuning.
+
+METHOD:: changeScale
+Changes the scale of the satellites.
+
+ARGUMENT:: argscale
+The scale to set.
+
+ARGUMENT:: dur
+Time to set the scale.
+
+ARGUMENT:: transp
+Scale degrees to trasnpose the satellites.
+
+METHOD:: setParam
+
+ARGUMENT:: method
+The method to change.
+
+ARGUMENT:: min
+Minimal value to set.
+
+ARGUMENT:: max
+Maximal value to set.
+
+ARGUMENT:: round
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: createSatellites
+Creates the satellites.
+
+ARGUMENT:: type
+Sound type of the satellites.
+
+ARGUMENT:: ratios
+All tones the satellites should use given as ratios.
+
+ARGUMENT:: tonic
+How many times the fundamental frequency should be multiplied with.
+
+ARGUMENT:: harmonics
+Number of harmonics.
+
+ARGUMENT:: amp
+Amplitude of the satellites.
+
+ARGUMENT:: speed
+Speed of rotation of the satellites.
+
+ARGUMENT:: length
+Length of the satellites.
+
+ARGUMENT:: angle
+Angle of the satellites.
+
+ARGUMENT:: num
+Number of the satellites.
+
+ARGUMENT:: argspread
+How the satellites should be spread.
+
+ARGUMENT:: env
+Envelope for the satellites when creating and killing them.
+
+ARGUMENT:: octave
+How many octaves higher should move the frequencies of the satellites.
+
+returns:: Synths to create for the satellites and the satellites themselves.
+
+METHOD:: kill
+Kills the particular satellites.
+
+ARGUMENT:: releasetime
+Time to kill the satellites.
+
+returns:: Synths of the satellites to be freed.
+
+METHOD:: clearauto
+
+METHOD:: relSpeed
+Changes the speed of the satellites in relation to their current speed.
+
+ARGUMENT:: change
+The speed to change.
+
+METHOD:: dronearray
+
+returns:: Array of drones.
+
+METHOD:: env
+Sets an envelope for the satellites.
+
+ARGUMENT:: envt
+The envelope to set.
+
+returns:: Current envelope.
+
+METHOD:: harmonics
+Sets the number of harmonics die the satellites.
+
+ARGUMENT:: harmonics
+The number of harmonics to set.
+
+ARGUMENT:: dur
+Time to set the harmonics.
+
+returns:: Current harmonics.
+
+
+EXAMPLES::
+
+IMPORTANT:
+It is not needed to call this class directly, a global variable ~drones is used instead.
+
+code::
+//creating satellites within a scale
+~drones.createSatellites(\pulse, \bartok)
+
+//adding a number of satellites we want, in this case 30
+~drones.createSatellites(\pulse, \bartok, num: 30)
+
+//customize their speed, so every satellite moves left and right
+//in whatever speed between -20 and 20 (negative integers for moving left)
+~drones.createSatellites(\pulse, \bartok, num: 30, name: \particles)
+
+~particles.speed_({rrand(-20,20)})
+//or
+~particles.speed = {rrand(-20,20)}
+::

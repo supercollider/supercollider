@@ -1,0 +1,67 @@
+TITLE:: ThrenoScope
+summary:: A live coding system for controlling drones
+categories:: Live Coding
+related:: Classes/Drone, Classes/DroneChord, Classes/DroneSatellites
+
+DESCRIPTION::
+ThrenoScope is an application for making long-lasting tones which move around in the environment.
+These drones have many attributes of sound able to play with in real time.
+It is also possible to create chords from drones or use various scales and tunings with the help of Scala tuning library.
+
+CLASSMETHODS::
+
+METHOD:: new
+Initializes a new instance of ThrenoScope.
+
+ARGUMENT:: channels
+How many audio channels are needed for output from ThrenoScope.
+Must be the same as the number of output channels of your device.
+
+ARGUMENT:: mode
+Display modes.
+
+ARGUMENT:: key
+Fundamental frequency to tune the drones, e.g. "A", "Fs", "Eb"
+
+ARGUMENT:: appPath
+Optional path to Scala tuning library files if executing standalone binary of ThrenoScope.
+
+returns::
+Paths to scala files for tuning, scales and chords which are saved in the quark folder
+and the \appPath argument.
+
+
+INSTANCEMETHODS::
+
+METHOD:: initThrenoScope
+Constructor method.
+
+ARGUMENT:: channels
+
+ARGUMENT:: mode
+
+ARGUMENT:: key
+
+ARGUMENT:: appPath
+
+returns::
+The same as with executing new().
+
+METHOD:: quit
+It is not necessary to use this directly, when you can simply click the "Quit" button in the app window.
+
+returns::
+Current ThrenoScope instance.
+
+EXAMPLES::
+
+code::
+//start the app with two output channels
+ThrenoScope.new(2)
+
+//tune drones to the fundamental frequency of F
+ThrenoScope.new(2, key: "F")
+
+//set development mode
+ThrenoScope.new(2, \dev, "G")
+::

@@ -1,0 +1,465 @@
+TITLE:: DroneChord
+summary:: Groups of drones creating chords.
+categories:: Live Coding
+related:: Classes/Drone, Classes/DroneSatellites, Classes/ThrenoScope
+
+DESCRIPTION::
+DroneChord-s are chords or whatever groups of drones which sound together.
+Their frequencies are set according to ratios which describe a particular
+type of chord (from chromatic scale). For instance, the ratios for a major chord are [1,5,8], so
+such DroneChord will be created from three drones with frequencies set according
+to the already mentioned ratios.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: hub
+
+ARGUMENT:: name
+Name of the drone chord.
+
+ARGUMENT:: scale
+Scale of the drone chord.
+
+returns:: Current DroneChord instance and its parameters.
+
+
+INSTANCEMETHODS::
+
+METHOD:: env
+Sets an envelope for the drones.
+
+ARGUMENT:: envt
+The envelope to set.
+
+METHOD:: freq
+Sets a frequency for the drones.
+
+ARGUMENT:: freq
+The frequency to set.
+
+ARGUMENT:: dur
+TIme to set the frequency.
+
+METHOD:: selected
+
+ARGUMENT:: bool
+
+returns:: True or false.
+
+METHOD:: name
+
+returns:: Name of the drone chord.
+
+METHOD:: amp
+Sets an amplitude for the drones.
+
+ARGUMENT:: amp
+The amplitude to set.
+
+ARGUMENT:: dur
+Time to set the amplitude.
+
+METHOD:: set
+Sets arguments for the synths of the drones.
+
+ARGUMENT::  ... args
+The arguments to set.
+
+returns:: Current arguments of the synths.
+
+METHOD:: clearauto
+
+METHOD:: type
+Sets a sound type for the drones.
+
+ARGUMENT:: type
+The sound type to set.
+
+METHOD:: auto
+
+ARGUMENT:: bool
+
+returns:: True or false.
+
+METHOD:: harmonics
+Sets harmonics for the drones.
+
+ARGUMENT:: harmonics
+The number of harmonics to set.
+
+ARGUMENT:: dur
+Time to set the harmonics.
+
+METHOD:: transpose
+Transposes the drones.
+
+ARGUMENT:: interval
+Amount of scale degrees to transpose.
+
+ARGUMENT:: dur
+Time to transpose.
+
+METHOD:: ratio
+Sets frequencies of the drones according to a tuning ratio.
+
+ARGUMENT:: ratio
+The ratio to change the frequencies.
+
+ARGUMENT:: dur
+Time to set the ratio.
+
+ARGUMENT:: harmonic
+
+METHOD:: setParam
+Sets a parameter.
+
+ARGUMENT:: method
+The method to set.
+
+ARGUMENT:: min
+Minimum value to set.
+
+ARGUMENT:: max
+Maximum value to set.
+
+ARGUMENT:: round
+
+METHOD:: tuning
+Sets a tuning for the drones.
+
+ARGUMENT:: argtuning
+The tuning to set.
+
+ARGUMENT:: dur
+Time to set the tuning.
+
+METHOD:: relOctave
+Changes the octave of the drones in relation to their current frequencies.
+
+ARGUMENT:: change
+Amount of octaves to set.
+
+ARGUMENT:: dur
+Time to set the octaves.
+
+METHOD:: note
+Sets a note to the drones.
+
+ARGUMENT:: note
+The note to set.
+
+ARGUMENT:: dur
+Time to set the note.
+
+ARGUMENT:: harmonic
+
+returns:: The note of the drones (if any).
+
+METHOD:: octave
+Sets an octave for the drones.
+
+ARGUMENT:: octave
+The octave to set.
+
+ARGUMENT:: dur
+Time to set the octave.
+
+METHOD:: resonance
+Sets a resonance to the drones.
+
+ARGUMENT:: res
+THe resonance to set.
+
+ARGUMENT:: dur
+TIme to set the resonance.
+
+METHOD:: stopParam
+Stops a parameter.
+
+ARGUMENT:: method
+The method to stop.
+
+METHOD:: recParam
+
+ARGUMENT:: method
+The method to change.
+
+ARGUMENT:: min
+Minimum value to set.
+
+ARGUMENT:: max
+Maximum value to set.
+
+ARGUMENT:: round
+
+METHOD:: relAmp
+Changes the amplitude of the satellites in relation to their current amplitude.
+
+ARGUMENT:: change
+Amount of amplitude to change.
+
+ARGUMENT:: dur
+Time to change the amplitude.
+
+METHOD:: printDroneArray
+
+METHOD:: freeSynths
+Frees the synths of the drones.
+
+ARGUMENT:: releasetime
+Time to free the synths.
+
+returns:: Synths to be freed.
+
+METHOD:: kill
+Kills the current drone chord.
+
+ARGUMENT:: releasetime
+Time to kill the chord.
+
+returns:: Synths of the drone chord to be freed.
+
+METHOD:: defineChord
+Creates a chord from drones.
+
+ARGUMENT:: array
+The drones to create a chord from.
+
+returns:: What chord was created.
+
+METHOD:: interval
+Transposes the drones according to the amount of scale degrees.
+
+ARGUMENT:: interval
+The number of scale degrees to transpose.
+
+ARGUMENT:: dur
+Time to transpose the drones.
+
+METHOD:: changeChord
+Changes the chord of the drones.
+
+ARGUMENT:: chord
+The chord to set.
+
+ARGUMENT:: dur
+Time to set the chord.
+
+ARGUMENT:: transp
+Amount of scale degrees to transpose.
+
+METHOD:: tonic
+Sets a mulitplier of the frequencies of the drones.
+
+ARGUMENT:: tonic
+The multiplier to set.
+
+ARGUMENT:: dur
+Time to set the ultiplier.
+
+METHOD:: relFreq
+CHanges the frequencies of the drones in relation to their current frequencies.
+
+ARGUMENT:: change
+Amount of frequencies to change.
+
+ARGUMENT:: dur
+TIme to change the frequencies.
+
+METHOD:: relLength
+Changes the length of the drones in relation to their current length.
+
+ARGUMENT:: change
+Amount of length to change.
+
+METHOD:: createChord
+Creates a DroneChord.
+
+ARGUMENT:: type
+Sound type.
+
+ARGUMENT:: chord
+Chord type.
+
+ARGUMENT:: tonic
+The multiplier of the fundamental frequencies.
+
+ARGUMENT:: harmonics
+Number of harmonics for the sound type.
+
+ARGUMENT:: amp
+Amplitude.
+
+ARGUMENT:: speed
+Speed o frotation.
+
+ARGUMENT:: length
+Length of the drones.
+
+ARGUMENT:: angle
+Angle of the drones.
+
+ARGUMENT:: degree
+Scale degree of the drones.
+
+ARGUMENT:: ratio
+Tuning ratio to use.
+
+ARGUMENT:: env
+Envelope of the drones when creating and killing them.
+
+ARGUMENT:: octave
+Distance by octaves from the fundamental frequencies.
+
+ARGUMENT:: note
+
+returns:: Current DroneChord instance and its parameters.
+
+METHOD:: addMIDI
+Adds a MIDI listener.
+
+ARGUMENT:: transp
+
+ARGUMENT:: dur
+
+ARGUMENT:: harmonic
+
+METHOD:: angle
+Sets an angle for the drones.
+
+ARGUMENT:: angle
+The angle in degrees to set.
+
+METHOD:: relRatio
+Sets a tuning ratio in relation to the frequencies of the drones.
+
+ARGUMENT:: change
+Amount of ratios to change.
+
+ARGUMENT:: dur
+Time to set the ratio.
+
+ARGUMENT:: harmonic
+
+METHOD:: relDegree
+Sets a scale degree in relation to the frequencies of the drones.
+
+ARGUMENT:: change
+Amount of degrees to set.
+
+ARGUMENT:: dur
+Time to set the degree.
+
+ARGUMENT:: harmonic
+
+METHOD:: relSpeed
+Changes the speed of the drones in relation to their current speed.
+
+ARGUMENT:: change
+Amount of speed to change.
+
+METHOD:: dronearray
+
+returns:: Array of drones used in this DroneChord.
+
+METHOD:: scale
+Sets a scale for the drones.
+
+ARGUMENT:: scale
+The scale to set.
+
+METHOD:: chord
+Sets a chord to the drones.
+
+ARGUMENT:: chord
+The chord to set.
+
+ARGUMENT:: dur
+Time to set the chord.
+
+ARGUMENT:: transp
+Amount of scale degrees to transpose the drone chord.
+
+METHOD:: removeMIDI
+Removes MIDI listeners.
+
+METHOD:: perform
+
+ARGUMENT:: command
+
+METHOD:: length
+Sets a length to the drones.
+
+ARGUMENT:: length
+The length to set.
+
+METHOD:: degree
+Sets the frequencies of the drones according to the n-th degree of the globally configured scale.
+
+ARGUMENT:: argdegree
+The degree to set.
+
+ARGUMENT:: dur
+Time to set the degree.
+
+ARGUMENT:: harmonic
+
+METHOD:: speed
+Sets the speed of rotation for the drones.
+
+ARGUMENT:: speed
+The speed to set.
+
+METHOD:: initDroneChord
+Constructor method.
+
+ARGUMENT:: arghub
+(describe argument here)
+
+ARGUMENT:: argname
+Name of the DroneChord.
+
+ARGUMENT:: argscale
+Scale of the DroneChord.
+
+returns:: Current DroneChord instance and its parameters.
+
+METHOD:: relTonic
+Changes the multiplier of the frequencies in relation to the current frequencies of the drones.
+
+ARGUMENT:: change
+THe multiplier to set.
+
+ARGUMENT:: dur
+Time to set the multiplier.
+
+EXAMPLES::
+
+section::Basic creation of a chord
+code::
+//major chord
+~drones.createChord(\saw, \major)
+~drones.createChord(\saw, [1,5,8])
+
+//Try something more interesting:
+~drones.createChord(\pad, \major9sus4, octave: 3)
+::
+
+section::More possibilities
+code::
+//manipulating particular drones of the group \mychord
+~drones.createChord(\tri, \major, name: \mychord, tonic: 3)
+~mychord_1.harmonics=8
+~mychord_5.degree=2
+~mychord.changeChord(\sus4)
+
+/*Note: For advanced chords such as "6sus4", which first character is a number,
+wrtiting them directly as \6sus4 will throw an error.
+Recognizing it as a symbol is possible like this: "6sus4".asSymbol.
+For instance:
+*/
+~mychord.changeChord("6sus4".asSymbol)
+::
