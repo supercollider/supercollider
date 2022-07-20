@@ -460,11 +460,11 @@ code::
 ::
 
 argument::numChannels
-The number of channels to display in the scope window, starting from outbus. The default is 2.
+The number of channels to display in the scope window, starting from outbus. It automatically reflects the number of channels.
 argument::outbus
 The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
 argument::fadeTime
-A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.
+A fadein time. The default is 0.05 seconds, which is just enough to avoid a click.
 argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
