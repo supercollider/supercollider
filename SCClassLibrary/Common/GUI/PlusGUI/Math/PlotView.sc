@@ -13,10 +13,6 @@ Plot {
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
 
-		// prevent accumulating in StartUp by multiple calls to *initClass
-		// TODO: review removing this
-		// initGuiSkin !? { StartUp.remove(initGuiSkin) };
-
 		initGuiSkin = {
 			var palette = QtGUI.palette;
 			var hl = palette.highlight;
@@ -26,7 +22,7 @@ Plot {
 			var gridCol = butt.blend(baseText, 0.2);
 			var labelCol = butt.blend(baseText, 0.7);
 
-			GUI.skin.put(\plot, (
+			GUI.skins.put(\plot, (
 				gridColorX: gridCol,
 				gridColorY: gridCol,
 				fontColor: labelCol,
@@ -54,7 +50,7 @@ Plot {
 
 	init {
 		var fontName;
-		var skin = GUI.skin.at(\plot);
+		var skin = GUI.skins.at(\plot);
 
 		drawGrid = DrawGrid(bounds ? Rect(0,0,1,1),nil,nil);
 		drawGrid.x.labelOffset = Point(0,4);
