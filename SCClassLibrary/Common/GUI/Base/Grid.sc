@@ -112,7 +112,7 @@ DrawGridX {
 				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
 				commands = commands.add( ['stroke' ] );
 			};
-			if(bounds.width >= 12	,{
+			if(labelOffset.y > 0, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val;
@@ -125,7 +125,13 @@ DrawGridX {
 						commands = commands.add( ['font_',val[3] ] );
 					});
 					x = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.left, bounds.right);
-					commands = commands.add( ['stringAtPoint', val[1].asString, Point(x, bounds.bottom) + labelOffset ] );
+					commands = commands.add( [
+						'stringCenteredIn', val[1].asString,
+						Rect.aboutPoint(
+							Point(x + labelOffset.x, bounds.bottom + (labelOffset.y/2) + 2),
+							bounds.width/(p['labels'].size-1*2), labelOffset.y
+						);
+					] );
 				}
 			});
 			commands
@@ -158,7 +164,7 @@ DrawGridY : DrawGridX {
 				commands = commands.add( ['line', Point( bounds.left,y), Point(bounds.right,y) ] );
 				commands = commands.add( ['stroke' ] );
 			};
-			if(bounds.height >= 20	,{
+			if(labelOffset.x > 0, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val,i;
@@ -170,14 +176,19 @@ DrawGridY : DrawGridX {
 					if(val[3].notNil,{
 						commands = commands.add( ['font_',val[3] ] );
 					});
-					commands = commands.add( ['stringAtPoint', val[1].asString, Point(bounds.left, y) + labelOffset ] );
+					commands = commands.add( [
+						'stringRightJustIn', val[1].asString,
+						Rect.aboutPoint(
+							Point(labelOffset.x/2 - 2, y + labelOffset.y),
+							labelOffset.x/2, bounds.height/(p['labels'].size-1*2)
+						)
+					] );
 				}
 			});
 			commands
 		}
 	}
 }
-
 
 // DrawGridRadial : DrawGridX {}
 
