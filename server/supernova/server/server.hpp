@@ -248,7 +248,7 @@ inline void run_scheduler_tick(void) {
 
 inline bool log_printf(const char* fmt, ...) 
 {
-    if(instance->get_error_posting()) {
+    if (instance->get_error_posting()) {
         va_list vargs;
         va_start(vargs, fmt);
         auto result = instance->log_printf(fmt, vargs);
@@ -302,13 +302,13 @@ inline void realtime_engine_functor::run_tick(void) {
 
 
 inline bool log(const char* string) {
-    if(instance->get_error_posting())
+    if (instance->get_error_posting())
         return instance->log(string); 
     return true;
 }
 
 inline bool log(const char* string, size_t length) { 
-    if(instance->get_error_posting())
+    if (instance->get_error_posting())
         return instance->log(string, length); 
     return true;
 }
