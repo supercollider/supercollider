@@ -306,7 +306,7 @@ inline bool log(const char* string) {
     return true;
 }
 
-inline bool log(const char* string, size_t length) { 
+inline bool log(const char* string, size_t length) {
     if (instance->get_error_posting())
         return instance->log(string, length);
     return true;
