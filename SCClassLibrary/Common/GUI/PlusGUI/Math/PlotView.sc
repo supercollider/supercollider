@@ -19,8 +19,8 @@ Plot {
 			var base = palette.base;
 			var baseText = palette.baseText;
 			var butt = palette.button;
-			var gridCol = butt.blend(baseText, 0.2);
-			var labelCol = butt.blend(baseText, 0.7);
+			var gridCol = palette.window;
+			var labelCol = butt.blend(baseText, 0.6);
 
 			GUI.skins.put(\plot, (
 				gridColorX: gridCol,
@@ -483,6 +483,7 @@ Plotter {
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
 			bounds = parent.view.bounds.insetBy(8);
+			parent.background_(QtGUI.palette.window);
 			interactionView = UserView.new(parent, bounds);
 
 			interactionView.drawFunc = { this.draw };
