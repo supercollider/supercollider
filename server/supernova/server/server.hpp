@@ -246,8 +246,7 @@ inline void run_scheduler_tick(void) {
     }
 }
 
-inline bool log_printf(const char* fmt, ...) 
-{
+inline bool log_printf(const char* fmt, ...) {
     if (instance->get_error_posting()) {
         va_list vargs;
         va_start(vargs, fmt);
