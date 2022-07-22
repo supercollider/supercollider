@@ -302,13 +302,13 @@ inline void realtime_engine_functor::run_tick(void) {
 
 inline bool log(const char* string) {
     if (instance->get_error_posting())
-        return instance->log(string); 
+        return instance->log(string);
     return true;
 }
 
 inline bool log(const char* string, size_t length) { 
     if (instance->get_error_posting())
-        return instance->log(string, length); 
+        return instance->log(string, length);
     return true;
 }
 
