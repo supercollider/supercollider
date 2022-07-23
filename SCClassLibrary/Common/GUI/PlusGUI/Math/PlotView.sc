@@ -56,7 +56,7 @@ Plot {
 		drawGrid.x.labelOffset = Point(0,4);
 		drawGrid.y.labelOffset = Point(-10,0);
 		skin.use {
-			font = ~gridFont ?? { Font.default };
+			font = ~gridFont ?? { Font( Font.defaultSansFace, 9 ) };
 			this.gridColorX = ~gridColorX;
 			this.gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
@@ -70,43 +70,43 @@ Plot {
 		resolution = plotter.resolution;
 	}
 
-	bounds_ { |rect|
-		var labelSize, charCount, ygrid;
+	bounds_ { |viewRect|
+		var ylabelSize, xlabelSize, xlabels, ylabels;
+		var gridRect, xlabelOffset, ylabelOffset, hinset, vinset;
+		var maxWidthWithLabel, maxHeightWithLabel;
+		var minGridMargin = 4, hshift = 0, vshift = 0;
 
-		bounds = rect;
+		bounds = viewRect;
 		valueCache = nil;
 
-		// find the size of the largest label
-		ygrid = drawGrid.y;
-		charCount = try {
-			ygrid.grid.getParams(
-				ygrid.range[0], ygrid.range[1],
-				ygrid.bounds.left, ygrid.bounds.right
-			).labels.flatten.collect(_.size).maxItem;
-		} { 4 };
-		labelSize = try {
-			("0" ! charCount).join.bounds(font).size
-		} ?? {
-			Size(font.size, font.size*3)
-		};
-		labelSize.height = labelSize.height * 1.5; // breathing room
+		// find the size of the largest labels
+		#ylabelSize, ylabels = this.prGetLabelSize(drawGrid.y);
+		#xlabelSize, xlabels = this.prGetLabelSize(drawGrid.x);
 
-		// plotBounds are the bounds of grid/data excluding label margin
-		// set threshold also in DrawGridX:, DrawGridY:commands
-		if(rect.height >= 20 and: {rect.width >= 40}) {
-			// inset more on sides with labels
-			plotBounds = rect.insetBy( labelSize.width*(2/3), labelSize.height*(2/3) )
-			+ [labelSize.width*(1/3), labelSize.height*(1/3).neg, 0, 0];
-			drawGrid.bounds = plotBounds;
-			drawGrid.x.labelOffset = Point(0, labelSize.height);
-			drawGrid.y.labelOffset = Point(labelSize.width, 0);
-		} {
-			plotBounds = rect;
-			drawGrid.bounds = rect;
-			// disable labels by zeroing out offset
-			drawGrid.x.labelOffset = Point(0, 0);
-			drawGrid.y.labelOffset = Point(0, 0);
+		// zeroing out disables labels, see DrawGridX:,DrawGridY:commands
+		xlabelOffset = ylabelOffset = Point(0, 0);
+		hinset = vinset = minGridMargin;
+		maxWidthWithLabel = ylabelSize.width * 4;
+		maxHeightWithLabel = xlabelSize.height * 4;
+
+		if(viewRect.height >= maxHeightWithLabel and: { xlabels.notNil }) {
+			xlabelOffset = Point(xlabelSize.width, xlabelSize.height);
+			vinset = xlabelSize.height * (2/3);     // inset more on sides with labels
+			vshift = xlabelSize.height * (1/3).neg;
+			hinset = xlabelSize.width / 2; 		    // don't cut off right/leftmost x labels
 		};
+		if(viewRect.width >= maxWidthWithLabel and: { ylabels.notNil }) {
+			ylabelOffset = Point(ylabelSize.width, ylabelSize.height);
+			hinset = ylabelSize.width  * (2/3);
+			hshift = ylabelSize.width  * (1/3);
+		};
+		drawGrid.x.labelOffset = xlabelOffset;
+		drawGrid.y.labelOffset = ylabelOffset;
+		gridRect = viewRect.insetBy(hinset, vinset) + [hshift, vshift, 0, 0];
+		drawGrid.bounds = gridRect;
+
+		// plotBounds are the bounds of grid/data excluding label margin (= drawGrid.bounds)
+		plotBounds = gridRect;
 	}
 
 	value_ { |array|
@@ -486,6 +486,25 @@ Plot {
 				valueCache
 			}
 		}
+	}
+
+	prGetLabelSize { |drawGrid|
+		var params, charCnt, labelSize;
+
+		params = drawGrid.grid.getParams(
+			drawGrid.range[0], drawGrid.range[1], drawGrid.bounds.top, drawGrid.bounds.bottom
+		);
+		charCnt = try {
+			params.labels.flatten.collect(_.size).maxItem;
+		} { 3 };
+		labelSize = try {
+			("0" ! charCnt).join.bounds(font).size
+		} {
+			("0" ! charCnt).join.bounds(Font(Font.defaultSansFace, 9)).size
+		};
+		labelSize.height = labelSize.height * 1.5; // vertical breathing room
+
+		^[labelSize, params.labels]
 	}
 }
 

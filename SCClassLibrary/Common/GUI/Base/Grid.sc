@@ -1,5 +1,3 @@
-
-
 DrawGrid {
 
 	var <bounds,<>x,<>y;
@@ -112,7 +110,7 @@ DrawGridX {
 				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
 				commands = commands.add( ['stroke' ] );
 			};
-			if(labelOffset.y > 0, {
+			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val;
@@ -128,7 +126,7 @@ DrawGridX {
 					commands = commands.add( [
 						'stringCenteredIn', val[1].asString,
 						Rect.aboutPoint(
-							Point(x + labelOffset.x, bounds.bottom + (labelOffset.y/2) + 2),
+							Point(x, bounds.bottom + (labelOffset.y/2) + 2),
 							bounds.width/(p['labels'].size-1*2), labelOffset.y
 						);
 					] );
@@ -164,7 +162,8 @@ DrawGridY : DrawGridX {
 				commands = commands.add( ['line', Point( bounds.left,y), Point(bounds.right,y) ] );
 				commands = commands.add( ['stroke' ] );
 			};
-			if(labelOffset.x > 0, {
+
+			if(p['labels'].notNil and: { labelOffset.y > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val,i;
@@ -179,7 +178,7 @@ DrawGridY : DrawGridX {
 					commands = commands.add( [
 						'stringRightJustIn', val[1].asString,
 						Rect.aboutPoint(
-							Point(labelOffset.x/2 - 2, y + labelOffset.y),
+							Point(labelOffset.x/2 - 2, y),
 							labelOffset.x/2, bounds.height/(p['labels'].size-1*2)
 						)
 					] );
