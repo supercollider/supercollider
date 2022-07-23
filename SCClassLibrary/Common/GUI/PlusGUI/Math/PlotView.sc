@@ -72,9 +72,10 @@ Plot {
 
 	bounds_ { |viewRect|
 		var ylabelSize, xlabelSize, xlabels, ylabels;
-		var gridRect, xlabelOffset, ylabelOffset, hinset, vinset;
+		var gridRect, xlabelOffset, ylabelOffset;
 		var maxWidthWithLabel, maxHeightWithLabel;
-		var minGridMargin = 4, hshift = 0, vshift = 0;
+		var hshift, vshift, hinset, vinset;
+		var minGridMargin = 4;
 
 		bounds = viewRect;
 		valueCache = nil;
@@ -85,21 +86,32 @@ Plot {
 
 		// zeroing out disables labels, see DrawGridX:,DrawGridY:commands
 		xlabelOffset = ylabelOffset = Point(0, 0);
-		hinset = vinset = minGridMargin;
 		maxWidthWithLabel = ylabelSize.width * 4;
 		maxHeightWithLabel = xlabelSize.height * 4;
+		hshift = vshift = hinset = vinset = 0;
 
 		if(viewRect.height >= maxHeightWithLabel and: { xlabels.notNil }) {
-			xlabelOffset = Point(xlabelSize.width, xlabelSize.height);
+			hinset = xlabelSize.width/2;
 			vinset = xlabelSize.height * (2/3);     // inset more on sides with labels
 			vshift = xlabelSize.height * (1/3).neg;
-			hinset = xlabelSize.width / 2; 		    // don't cut off right/leftmost x labels
+			xlabelOffset = Point(xlabelSize.width, xlabelSize.height);
 		};
 		if(viewRect.width >= maxWidthWithLabel and: { ylabels.notNil }) {
+			var lw, rw;
+
+			if (hinset > 0) { // xlabels present
+				rw = xlabelSize.width/2;
+				lw = max(rw, ylabelSize.width);
+				hinset = (rw + lw) / 2;
+				hshift = max(0, lw - hinset);
+			} { // only y labels present
+				hinset = (ylabelSize.width + minGridMargin) / 2;
+				hshift = ylabelSize.width - hinset;
+			};
 			ylabelOffset = Point(ylabelSize.width, ylabelSize.height);
-			hinset = ylabelSize.width  * (2/3);
-			hshift = ylabelSize.width  * (1/3);
 		};
+		hinset = max(hinset, minGridMargin);
+		vinset = max(vinset, minGridMargin);
 		drawGrid.x.labelOffset = xlabelOffset;
 		drawGrid.y.labelOffset = ylabelOffset;
 		gridRect = viewRect.insetBy(hinset, vinset) + [hshift, vshift, 0, 0];

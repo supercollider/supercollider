@@ -101,7 +101,6 @@ DrawGridX {
 			cacheKey = [range,bounds];
 			commands = [];
 			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
-			p['lines'].do { arg val;
 				// value, [color]
 				var x;
 				val = val.asArray;
@@ -111,10 +110,11 @@ DrawGridX {
 				commands = commands.add( ['stroke' ] );
 			};
 			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
+
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val;
-					var x;
+					var x, margin = 2;
 					// value, label, [color, font]
 					if(val[2].notNil,{
 						commands = commands.add( ['color_',val[2] ] );
@@ -122,14 +122,14 @@ DrawGridX {
 					if(val[3].notNil,{
 						commands = commands.add( ['font_',val[3] ] );
 					});
-					x = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.left, bounds.right);
-					commands = commands.add( [
+					x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
+
+					commands = commands.add([
 						'stringCenteredIn', val[1].asString,
 						Rect.aboutPoint(
-							Point(x, bounds.bottom + (labelOffset.y/2) + 2),
-							bounds.width/(p['labels'].size-1*2), labelOffset.y
-						);
-					] );
+							x @ (bounds.bottom + margin + (labelOffset.y/2)),
+							labelOffset.x/2, labelOffset.y )
+					]);
 				}
 			});
 			commands
@@ -166,8 +166,10 @@ DrawGridY : DrawGridX {
 			if(p['labels'].notNil and: { labelOffset.y > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val,i;
-					var y;
+
+				p['labels'].do { arg val;
+					var y, lblRect, margin = 2;
+
 					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 					if(val[2].notNil,{
 						commands = commands.add( ['color_',val[2] ] );
@@ -175,13 +177,19 @@ DrawGridY : DrawGridX {
 					if(val[3].notNil,{
 						commands = commands.add( ['font_',val[3] ] );
 					});
-					commands = commands.add( [
-						'stringRightJustIn', val[1].asString,
-						Rect.aboutPoint(
-							Point(labelOffset.x/2 - 2, y),
-							labelOffset.x/2, bounds.height/(p['labels'].size-1*2)
-						)
-					] );
+
+					lblRect = Rect.aboutPoint(
+						Point(labelOffset.x/2 - margin, y),
+						labelOffset.x/2, labelOffset.y/2
+					);
+
+					switch(y.asInteger,
+						bounds.bottom.asInteger, {
+							lblRect = lblRect.bottom_(bounds.bottom+2) },
+						bounds.top.asInteger, {
+							lblRect = lblRect.top_(bounds.top-2) }
+					);
+					commands = commands.add(['stringRightJustIn', val[1].asString, lblRect]);
 				}
 			});
 			commands
