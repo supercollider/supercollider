@@ -101,13 +101,24 @@ DrawGridX {
 			cacheKey = [range,bounds];
 			commands = [];
 			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
+			p['lines'].do { arg val, i;
 				// value, [color]
-				var x;
+				var x, valNorm;
 				val = val.asArray;
-				x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
+				valNorm = grid.spec.unmap(val[0]);
+				x = valNorm.linlin(0, 1, bounds.left, bounds.right);
+
 				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
 				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
 				commands = commands.add( ['stroke' ] );
+
+				// always draw line on rightmost bound
+				if (i == (p['lines'].size-1) and: { valNorm != 1 }) {
+					commands = commands.add( ['strokeColor_', val[1] ? gridColor] );
+					commands = commands.add( ['line',
+						Point( bounds.right, bounds.top), Point(bounds.right,bounds.bottom) ] );
+					commands = commands.add( ['stroke' ] );
+				}
 			};
 			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 
@@ -115,6 +126,7 @@ DrawGridX {
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val;
 					var x, margin = 2;
+
 					// value, label, [color, font]
 					if(val[2].notNil,{
 						commands = commands.add( ['color_',val[2] ] );
@@ -153,14 +165,31 @@ DrawGridY : DrawGridX {
 			commands = [];
 
 			p = grid.getParams(range[0],range[1],bounds.top,bounds.bottom);
-			p['lines'].do { arg val;
+			p['lines'].do { arg val, i;
 				// value, [color]
-				var y;
+				var y, valNorm, addExtraLine = true, extraY;
 				val = val.asArray;
-				y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
+				valNorm = grid.spec.unmap(val[0]);
+				y = valNorm.linlin(0, 1, bounds.bottom, bounds.top);
+
 				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
-				commands = commands.add( ['line', Point( bounds.left,y), Point(bounds.right,y) ] );
-				commands = commands.add( ['stroke' ] );
+				commands = commands.add( ['line', Point(bounds.left,y), Point(bounds.right,y) ] );
+				commands = commands.add( ['stroke'] );
+
+				// always draw grid line on top and bottom bound
+				case
+				{ i == 0 and: { valNorm != 0 } } { // bottom
+					extraY = bounds.bottom;
+				}
+				{ i == (p['lines'].size-1) and: { valNorm != 1 } } { // top
+					extraY = bounds.top;
+				} { addExtraLine = false };
+
+				if (addExtraLine) {
+					commands = commands.add( ['strokeColor_', val[1] ? gridColor] );
+					commands = commands.add( ['line', Point(bounds.left, extraY), Point(bounds.right, extraY)] );
+					commands = commands.add( ['stroke'] );
+				}
 			};
 
 			if(p['labels'].notNil and: { labelOffset.y > 0 }, {
