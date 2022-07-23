@@ -775,7 +775,8 @@ Plotter {
 			plot.bounds_(
 				Rect(bounds.left, distY * i + bounds.top, bounds.width, height)
 			)
-		}
+		};
+		this.refresh;
 	}
 
 	makePlots {
@@ -786,7 +787,6 @@ Plotter {
 		this.plotColor_(plotColor);
 		this.plotMode_(plotMode);
 		this.updatePlotSpecs;
-		this.updatePlotBounds;
 	}
 
 	updatePlots {
@@ -828,7 +828,9 @@ Plotter {
 					plot.domainSpec = domainSpecs.clipAt(i)
 				}
 			}
-		}
+		};
+
+		this.updatePlotBounds;
 	}
 
 	setProperties { |... pairs|
