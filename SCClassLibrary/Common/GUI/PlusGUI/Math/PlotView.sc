@@ -1150,7 +1150,7 @@ Plotter {
 
 + Env {
 	plot { |size = 400, bounds, minval, maxval, name|
-		var plotLabel = if (name.isNil) { "envelope plot" } { name };
+		var plotLabel = if (name.isNil) { "Envelope plot" } { name };
 		var plotter = [this.asMultichannelSignal(size).flop]
 		.plot(name, bounds, minval: minval, maxval: maxval);
 
@@ -1159,8 +1159,7 @@ Plotter {
 
 		var totalDuration = if (channelCount == 1) { duration } { duration.maxItem ! channelCount };
 
-		plotter.domainSpecs = totalDuration.collect(ControlSpec(0, _, units: "s"));
-		plotter.setProperties(\labelX, "time");
+		plotter.domainSpecs = totalDuration.collect(ControlSpec(0, _));
 		plotter.refresh;
 		^plotter
 	}
