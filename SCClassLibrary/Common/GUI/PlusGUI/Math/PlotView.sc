@@ -1133,6 +1133,7 @@ Plotter {
 					maxval: maxval
 				);
 				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
+				plotter.setProperties(\labelX, "Frames");
 				plotter.refresh;
 			}.defer
 		};
