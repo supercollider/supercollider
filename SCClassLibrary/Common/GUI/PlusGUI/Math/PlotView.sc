@@ -7,6 +7,7 @@ Plot {
 	var <spec, <domainSpec;
 	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
 	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
+	var txtPad = 2;
 
 	var valueCache, resolution;
 
@@ -30,8 +31,8 @@ Plot {
 				background: base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
-				labelX: "",
-				labelY: "",
+				labelX: nil,
+				labelY: nil,
 				expertMode: false,
 				gridFont: Font( Font.defaultSansFace, 9 )
 			));
@@ -71,10 +72,10 @@ Plot {
 	}
 
 	bounds_ { |viewRect|
-		var ytkLabelSize, xtkLabelSize, xtkLabels, ytkLabels;
-		var gridRect, xtkLabelOffset, ytkLabelOffset;
-		var maxWidthWithLabel, maxHeightWithLabel;
-		var hshift, vshift, hinset, vinset;
+		var gridRect;
+		var xtkLabels, ytkLabels, ytkLabelSize, xtkLabelSize, xLabelGridOffset, yLabelGridOffset;
+		var xLabelSize, yLabelSize, maxWidthWithLabel, maxHeightWithLabel;
+		var hshift, vshift, hinset, vinset, lmargin, rmargin, totalVSpace;
 		var minGridMargin = 4;
 
 		bounds = viewRect;
@@ -83,44 +84,49 @@ Plot {
 		// find the size of the largest tick labels
 		#xtkLabelSize, xtkLabels = this.prGetTickLabelSize(drawGrid.x);
 		#ytkLabelSize, ytkLabels = this.prGetTickLabelSize(drawGrid.y);
+		xLabelSize = labelX.notNil.if({ labelX.bounds(font) }, { Rect(0,0,0,0) });
+		yLabelSize = labelY.notNil.if({ labelY.bounds(font) }, { Rect(0,0,0,0) });
 
-		// zeroing out disables labels, see DrawGridX:,DrawGridY:commands
-		xtkLabelOffset = ytkLabelOffset = Point(0, 0);
+		// zeroing out drawGrids' labelOffsets disables labels, see DrawGridX/Y:commands
+		xLabelGridOffset = yLabelGridOffset = Point(0, 0);
 
 		// labels disappear below these size thresholds
 		maxWidthWithLabel = ytkLabelSize.width * 4;
 		maxHeightWithLabel = xtkLabelSize.height * 4;
 
 		hshift = vshift = hinset = vinset = 0;
+
 		if( viewRect.height >= maxHeightWithLabel
 			and: { viewRect.width >= (xtkLabelSize.width*3)
 				and: { xtkLabels.notNil }
 		}) {
+			totalVSpace = txtPad + xtkLabelSize.height + txtPad + xLabelSize.height + txtPad;
 			hinset = xtkLabelSize.width/2;
-			vinset = xtkLabelSize.height * (2/3);     // inset more on sides with labels
-			vshift = xtkLabelSize.height * (1/3).neg;
-			xtkLabelOffset = Point(xtkLabelSize.width, xtkLabelSize.height);
+			vinset = totalVSpace * (2/3);     // inset more on sides with labels
+			vshift = totalVSpace * (1/3).neg;
+			xLabelGridOffset = Point(xtkLabelSize.width, xtkLabelSize.height);
 		};
 
 		if(viewRect.width >= maxWidthWithLabel and: { ytkLabels.notNil }) {
-			var lmargin, rmargin;
-
-			if (hinset > 0) { // xtkLabels present
-				rmargin = xtkLabelSize.width/2;
-				lmargin = max(rmargin, ytkLabelSize.width);
+			lmargin = txtPad + ytkLabelSize.width + txtPad;
+			if (yLabelSize.height > 0) {
+				lmargin = lmargin + yLabelSize.height + txtPad };
+			if (hinset > 0) { // x labels present
+				rmargin = hinset;
+				lmargin = max(rmargin, lmargin);
 				hinset = (rmargin + lmargin) / 2;
 				hshift = max(0, lmargin - hinset);
 			} { // only y labels present
-				hinset = (ytkLabelSize.width + minGridMargin) / 2;
-				hshift = ytkLabelSize.width - hinset;
+				hinset = (lmargin + minGridMargin) / 2;
+				hshift = lmargin - hinset;
 			};
-			ytkLabelOffset = Point(ytkLabelSize.width, ytkLabelSize.height);
+			yLabelGridOffset = Point(lmargin, ytkLabelSize.height);
 		};
 
 		hinset = max(hinset, minGridMargin);
 		vinset = max(vinset, minGridMargin);
-		drawGrid.x.labelOffset = xtkLabelOffset;
-		drawGrid.y.labelOffset = ytkLabelOffset;
+		drawGrid.x.labelOffset = xLabelGridOffset;
+		drawGrid.y.labelOffset = yLabelGridOffset;
 		gridRect = viewRect.insetBy(hinset, vinset) + [hshift, vshift, 0, 0];
 		drawGrid.bounds = gridRect;
 
@@ -200,27 +206,28 @@ Plot {
 	}
 
 	drawLabels {
-		var sbounds, margin = 2;
-		if(gridOnX and: { labelX.notNil }) {
-			sbounds = try { labelX.bounds(font) } ? 0;
-			// Pen.stringAtPoint(labelX,
-			// 	plotBounds.right - sbounds.width @ plotBounds.bottom,
-			// 	font,
-			// 	fontColor
-			// )
-			Pen.stringCenteredIn(labelX,
-				sbounds.center_(Point(
-					plotBounds.center.x, (plotBounds.bottom + (sbounds.height * 1.5) + (2 * margin))
-				)), font, fontColor
-			);
+		var lbounds;
+		if(labelX.notNil and: { gridOnX and: { drawGrid.x.labelOffset.y > 0 }}) {
+			try {
+				lbounds = labelX.bounds(font);
+				Pen.stringCenteredIn(labelX,
+					lbounds.center_(
+						plotBounds.center.x @ (plotBounds.bottom + (lbounds.height * 1.5) + (2 * txtPad))
+					), font, fontColor
+				);
+			}
 		};
-		if(gridOnY and: { labelY.notNil }) {
-			sbounds = try { labelY.bounds(font) } ? 0;
-			Pen.stringAtPoint(labelY,
-				plotBounds.left - sbounds.width - 3 @ plotBounds.top,
-				font,
-				fontColor
-			)
+		if(labelY.notNil and: { gridOnY and: { drawGrid.y.labelOffset.x > 0 }}) {
+			try {
+				lbounds = labelY.bounds(font);
+				Pen.push;
+				Pen.translate(
+					plotBounds.left - drawGrid.y.labelOffset.x + txtPad + lbounds.height,
+					plotBounds.center.y);
+				Pen.rotateDeg(-90);
+				Pen.stringCenteredIn(labelY, lbounds.center_(0@0), font, fontColor);
+				Pen.pop;
+			}
 		};
 	}
 
@@ -531,7 +538,7 @@ Plot {
 		} {
 			("0" ! charCnt).join.bounds(Font(Font.defaultSansFace, 9)).size
 		};
-		labelSize.height = labelSize.height * 1.5; // vertical breathing room
+		labelSize.height = labelSize.height;
 
 		^[labelSize, params.labels]
 	}
@@ -866,7 +873,8 @@ Plotter {
 		pairs.pairsDo { |selector, value|
 			selector = selector.asSetter;
 			plots.do { |x| x.perform(selector, value) }
-		}
+		};
+		this.updatePlotBounds;
 	}
 
 	plotColor_ { |colors|

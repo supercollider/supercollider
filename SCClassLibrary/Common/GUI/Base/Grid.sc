@@ -77,6 +77,7 @@ DrawGridX {
 	var <grid,<>range,<>bounds;
 	var <>font,<>fontColor,<>gridColor,<>labelOffset;
 	var commands,cacheKey;
+	var txtPad = 2; // match with Plot:txtPad
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -126,7 +127,7 @@ DrawGridX {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val;
-					var x, margin = 2;
+					var x;
 
 					// value, label, [color, font]
 					if(val[2].notNil,{
@@ -140,8 +141,8 @@ DrawGridX {
 					commands = commands.add([
 						'stringCenteredIn', val[1].asString,
 						Rect.aboutPoint(
-							x @ (bounds.bottom + margin + (labelOffset.y/2)),
-							labelOffset.x/2, labelOffset.y )
+							x @ bounds.bottom, labelOffset.x/2, labelOffset.y/2
+						).top_(bounds.bottom + txtPad)
 					]);
 				}
 			});
@@ -198,26 +199,26 @@ DrawGridY : DrawGridX {
 				commands = commands.add(['color_',fontColor ] );
 
 				p['labels'].do { arg val;
-					var y, lblRect, margin = 2;
+					var y, lblRect;
 
 					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 					if(val[2].notNil,{
-						commands = commands.add( ['color_',val[2] ] );
+						commands = commands.add( ['color_', val[2]] );
 					});
 					if(val[3].notNil,{
-						commands = commands.add( ['font_',val[3] ] );
+						commands = commands.add( ['font_', val[3]] );
 					});
 
 					lblRect = Rect.aboutPoint(
-						Point(labelOffset.x/2 - margin, y),
+						Point(labelOffset.x/2 - txtPad, y),
 						labelOffset.x/2, labelOffset.y/2
 					);
 
 					switch(y.asInteger,
 						bounds.bottom.asInteger, {
-							lblRect = lblRect.bottom_(bounds.bottom+2) },
+							lblRect = lblRect.bottom_(bounds.bottom + txtPad) },
 						bounds.top.asInteger, {
-							lblRect = lblRect.top_(bounds.top-2) }
+							lblRect = lblRect.top_(bounds.top - txtPad) }
 					);
 					commands = commands.add(['stringRightJustIn', val[1].asString, lblRect]);
 				}
