@@ -230,7 +230,6 @@ DrawGridY : DrawGridX {
 
 // DrawGridRadial : DrawGridX {}
 
-
 GridLines {
 
 	var <>spec;
@@ -302,12 +301,17 @@ GridLines {
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
+			if (sum(lines % 1) == 0) { nfrac = 0 };
 			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val,nfrac) ] });
 		};
 		^p
 	}
 	formatLabel { arg val, numDecimalPlaces;
-		^val.round( (10**numDecimalPlaces).reciprocal).asString + (spec.units?"")
+		if (numDecimalPlaces == 0) {
+			^val.asInteger.asString
+		} {
+			^val.round( (10**numDecimalPlaces).reciprocal).asString
+		}
 	}
 }
 
