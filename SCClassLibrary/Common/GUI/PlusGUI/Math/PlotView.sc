@@ -102,7 +102,7 @@ Plot {
 				and: { xtkLabels.notNil }
 		}) {
 			totalVSpace = txtPad + xtkLabelSize.height + txtPad + xLabelSize.height + txtPad;
-			hinset = xtkLabelSize.width/2;
+			hinset = xtkLabelSize.width/2 + txtPad;
 			vinset = totalVSpace * (2/3);     // inset more on sides with labels
 			vshift = totalVSpace * (1/3).neg;
 			xLabelGridOffset = Point(xtkLabelSize.width, xtkLabelSize.height);
@@ -224,7 +224,7 @@ Plot {
 				lbounds = labelY.bounds(font);
 				Pen.push;
 				Pen.translate(
-					plotBounds.left - drawGrid.y.labelOffset.x + txtPad + lbounds.height,
+					plotBounds.left - drawGrid.y.labelOffset.x + txtPad + (lbounds.height/2),
 					plotBounds.center.y);
 				Pen.rotateDeg(-90);
 				Pen.stringCenteredIn(labelY, lbounds.center_(0@0), font, fontColor);
