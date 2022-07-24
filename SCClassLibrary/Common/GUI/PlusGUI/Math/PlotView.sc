@@ -1031,8 +1031,8 @@ Plotter {
 		plotter.setValue(
 			array,
 			findSpecs: true,
-			separately: separately,
 			refresh: true,
+			separately: separately,
 			minval: minval,
 			maxval: maxval
 		);
@@ -1067,8 +1067,8 @@ Plotter {
 				plotter.setValue(
 					array.unlace(numChan).collect(_.drop(-1)),
 					findSpecs: true,
-					separately: separately,
 					refresh: false,
+					separately: separately,
 					minval: minval,
 					maxval: maxval
 				);
@@ -1127,8 +1127,8 @@ Plotter {
 				plotter.setValue(
 					array.unlace(buf.numChannels),
 					findSpecs: true,
-					separately: separately,
 					refresh: false,
+					separately: separately,
 					minval: minval,
 					maxval: maxval
 				);
