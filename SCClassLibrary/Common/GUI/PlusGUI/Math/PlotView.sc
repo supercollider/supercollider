@@ -81,35 +81,42 @@ Plot {
 		valueCache = nil;
 
 		// find the size of the largest labels
-		#ylabelSize, ylabels = this.prGetLabelSize(drawGrid.y);
 		#xlabelSize, xlabels = this.prGetLabelSize(drawGrid.x);
+		#ylabelSize, ylabels = this.prGetLabelSize(drawGrid.y);
 
 		// zeroing out disables labels, see DrawGridX:,DrawGridY:commands
 		xlabelOffset = ylabelOffset = Point(0, 0);
+
+		// labels disappear below these size thresholds
 		maxWidthWithLabel = ylabelSize.width * 4;
 		maxHeightWithLabel = xlabelSize.height * 4;
-		hshift = vshift = hinset = vinset = 0;
 
-		if(viewRect.height >= maxHeightWithLabel and: { xlabels.notNil }) {
+		hshift = vshift = hinset = vinset = 0;
+		if( viewRect.height >= maxHeightWithLabel
+			and: { viewRect.width >= (xlabelSize.width*3)
+				and: { xlabels.notNil }
+		}) {
 			hinset = xlabelSize.width/2;
 			vinset = xlabelSize.height * (2/3);     // inset more on sides with labels
 			vshift = xlabelSize.height * (1/3).neg;
 			xlabelOffset = Point(xlabelSize.width, xlabelSize.height);
 		};
+
 		if(viewRect.width >= maxWidthWithLabel and: { ylabels.notNil }) {
-			var lw, rw;
+			var lmargin, rmargin;
 
 			if (hinset > 0) { // xlabels present
-				rw = xlabelSize.width/2;
-				lw = max(rw, ylabelSize.width);
-				hinset = (rw + lw) / 2;
-				hshift = max(0, lw - hinset);
+				rmargin = xlabelSize.width/2;
+				lmargin = max(rmargin, ylabelSize.width);
+				hinset = (rmargin + lmargin) / 2;
+				hshift = max(0, lmargin - hinset);
 			} { // only y labels present
 				hinset = (ylabelSize.width + minGridMargin) / 2;
 				hshift = ylabelSize.width - hinset;
 			};
 			ylabelOffset = Point(ylabelSize.width, ylabelSize.height);
 		};
+
 		hinset = max(hinset, minGridMargin);
 		vinset = max(vinset, minGridMargin);
 		drawGrid.x.labelOffset = xlabelOffset;
@@ -502,9 +509,14 @@ Plot {
 
 	prGetLabelSize { |drawGrid|
 		var params, charCnt, labelSize;
+		var gridEdges = if ( drawGrid.isKindOf(DrawGridY) ) {
+			[drawGrid.bounds.top, drawGrid.bounds.bottom]
+		} {
+			[drawGrid.bounds.left, drawGrid.bounds.right]
+		};
 
 		params = drawGrid.grid.getParams(
-			drawGrid.range[0], drawGrid.range[1], drawGrid.bounds.top, drawGrid.bounds.bottom
+			drawGrid.range[0], drawGrid.range[1], gridEdges[0], gridEdges[1]
 		);
 		charCnt = try {
 			params.labels.flatten.collect(_.size).maxItem;

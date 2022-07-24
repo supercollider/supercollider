@@ -101,6 +101,7 @@ DrawGridX {
 			cacheKey = [range,bounds];
 			commands = [];
 			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
+
 			p['lines'].do { arg val, i;
 				// value, [color]
 				var x, valNorm;
@@ -120,8 +121,8 @@ DrawGridX {
 					commands = commands.add( ['stroke' ] );
 				}
 			};
-			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 
+			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 				p['labels'].do { arg val;
@@ -163,8 +164,8 @@ DrawGridY : DrawGridX {
 		if(cacheKey != [range,bounds],{ commands = nil });
 		^commands ?? {
 			commands = [];
-
 			p = grid.getParams(range[0],range[1],bounds.top,bounds.bottom);
+
 			p['lines'].do { arg val, i;
 				// value, [color]
 				var y, valNorm, addExtraLine = true, extraY;
