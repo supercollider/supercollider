@@ -96,6 +96,7 @@ Plot {
 
 		hshift = vshift = hinset = vinset = 0;
 
+		// x axis label spacing
 		if( viewRect.height >= maxHeightWithLabel
 			and: { viewRect.width >= (xtkLabelSize.width*3)
 				and: { xtkLabels.notNil }
@@ -107,6 +108,7 @@ Plot {
 			xLabelGridOffset = Point(xtkLabelSize.width, xtkLabelSize.height);
 		};
 
+		// y axis label spacing
 		if(viewRect.width >= maxWidthWithLabel and: { ytkLabels.notNil }) {
 			lmargin = txtPad + ytkLabelSize.width + txtPad;
 			if (yLabelSize.height > 0) {
@@ -1073,7 +1075,7 @@ Plotter {
 					maxval: maxval
 				);
 				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
-				plotter.refresh;
+				plotter.setProperties(\labelX, "Time (s)"); // will refresh
 			}.defer
 		};
 
@@ -1133,8 +1135,7 @@ Plotter {
 					maxval: maxval
 				);
 				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
-				plotter.setProperties(\labelX, "Frames");
-				plotter.refresh;
+				plotter.setProperties(\labelX, "Frames"); // will refresh
 			}.defer
 		};
 
