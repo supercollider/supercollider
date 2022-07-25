@@ -6,7 +6,7 @@ Plot {
 
 	var <spec, <domainSpec;
 	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
-	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
+	var <gridOnX = true, <gridOnY = true, <labelX, <labelY, labelXisUnits = false, labelYisUnits = false;
 	var txtPad = 2;
 
 	var valueCache, resolution;
@@ -142,8 +142,21 @@ Plot {
 	}
 	spec_ { |sp|
 		spec = sp;
-		if(gridOnY and: spec.notNil,{
+		if(gridOnY and: spec.notNil, {
 			drawGrid.vertGrid = spec.grid;
+
+			if (spec.units.isEmpty, {
+				// remove label if previously set by spec units
+				if (labelYisUnits, {
+					labelY = nil;
+					labelYisUnits = false;
+				});
+			},{ // add new or overwrite previous unit label
+				if(labelY.isNil or: labelYisUnits) {
+					labelY = spec.units;
+					labelYisUnits = true;
+				}
+			})
 		},{
 			drawGrid.vertGrid = nil
 		})
@@ -152,6 +165,18 @@ Plot {
 		domainSpec = sp;
 		if(gridOnX and: domainSpec.notNil,{
 			drawGrid.horzGrid = domainSpec.grid;
+
+			if (domainSpec.units.isEmpty, { // see comments in spec_
+				if (labelXisUnits, {
+					labelX = nil;
+					labelXisUnits = false;
+				});
+			},{
+				if(labelX.isNil or: labelXisUnits) {
+					labelX = domainSpec.units;
+					labelXisUnits = true;
+				}
+			})
 		},{
 			drawGrid.horzGrid = nil
 		})
@@ -177,6 +202,14 @@ Plot {
 	fontColor_ { |c|
 		fontColor = c;
 		drawGrid.fontColor = c;
+	}
+	labelX_ { |string|
+		labelX = string;
+		labelXisUnits = false;
+	}
+	labelY_ { |string|
+		labelY = string;
+		labelYisUnits = false;
 	}
 	gridLineSmoothing_ { |bool|
 		drawGrid.smoothing = bool;
@@ -1059,7 +1092,7 @@ Plotter {
 	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
 
 		var name = this.asCompileString, plotter, action;
-		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
+		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "Function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
 		target = target.asTarget;
@@ -1074,8 +1107,7 @@ Plotter {
 					minval: minval,
 					maxval: maxval
 				);
-				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
-				plotter.setProperties(\labelX, "Time (s)"); // will refresh
+				plotter.domainSpecs = ControlSpec(0, duration, units: "Time (s)");
 			}.defer
 		};
 
@@ -1134,8 +1166,10 @@ Plotter {
 					minval: minval,
 					maxval: maxval
 				);
-				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
-				plotter.setProperties(\labelX, "Frames"); // will refresh
+				plotter.domainSpecs = ControlSpec(
+					0.0, buf.numFrames,
+					units: if (buf.numChannels == 1) { "Samples" } { "Frames" }
+				);
 			}.defer
 		};
 
