@@ -99,37 +99,40 @@ DrawGridX {
 		var p;
 		if(cacheKey != [range,bounds],{ commands = nil });
 		^commands ?? {
+			var valNorm, lineColor;
 			cacheKey = [range,bounds];
 			commands = [];
 			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
 
 			p['lines'].do { arg val, i;
-				// value, [color]
-				var x, valNorm;
-				val = val.asArray;
+				var x;
+				val = val.asArray; // value, [color]
 				valNorm = grid.spec.unmap(val[0]);
 				x = valNorm.linlin(0, 1, bounds.left, bounds.right);
+				lineColor = val[1];
 
-				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
-				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
-				commands = commands.add( ['stroke' ] );
+				commands = this.prAddLineCmds(commands, x, lineColor);
 
-				// always draw line on rightmost bound
-				if (i == (p['lines'].size-1) and: { valNorm != 1 }) {
-					commands = commands.add( ['strokeColor_', val[1] ? gridColor] );
-					commands = commands.add( ['line',
-						Point( bounds.right, bounds.top), Point(bounds.right,bounds.bottom) ] );
-					commands = commands.add( ['stroke' ] );
+				// always draw line on left and right edges
+				case
+				{i == 0 and: { valNorm != 0 }} {
+					commands = this.prAddLineCmds(commands, bounds.left, lineColor);
 				}
+				{i == (p['lines'].size-1) and: { valNorm != 1 }} {
+					commands = this.prAddLineCmds(commands, bounds.right, lineColor);
+				}
+			};
+			// Handle case where there is only one line:
+			// left and middle line has been added, now need a right line
+			if (p['lines'].size == 1 and: { valNorm != 1 }) {
+				commands = this.prAddLineCmds(commands, bounds.right, lineColor);
 			};
 
 			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val;
+				p['labels'].do { arg val; // value, label, [color, font]
 					var x;
-
-					// value, label, [color, font]
 					if(val[2].notNil,{
 						commands = commands.add( ['color_',val[2] ] );
 					});
@@ -149,6 +152,17 @@ DrawGridX {
 			commands
 		}
 	}
+
+	prAddLineCmds { |cmds, val, color|
+		cmds = cmds.add( ['strokeColor_', color ? gridColor] );
+		cmds = if (this.class == DrawGridX) {
+			cmds.add( ['line', Point(val, bounds.top), Point(val, bounds.bottom) ] );
+		} { // DrawGridY
+			cmds.add( ['line', Point(bounds.left, val), Point(bounds.right, val) ] );
+		};
+		^cmds = cmds.add( ['stroke'] ); // return
+	}
+
 	clearCache { cacheKey = nil; }
 	copy { ^super.copy.clearCache }
 }
@@ -163,35 +177,35 @@ DrawGridY : DrawGridX {
 	commands {
 		var p;
 		if(cacheKey != [range,bounds],{ commands = nil });
-		^commands ?? {
-			commands = [];
-			p = grid.getParams(range[0],range[1],bounds.top,bounds.bottom);
 
-			p['lines'].do { arg val, i;
-				// value, [color]
-				var y, valNorm, addExtraLine = true, extraY;
+		^commands ?? {
+			var valNorm, lineColor;
+			commands = [];
+
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom);
+
+			p['lines'].do { arg val, i; // value, [color]
+				var y;
 				val = val.asArray;
 				valNorm = grid.spec.unmap(val[0]);
+				lineColor = val[1];
 				y = valNorm.linlin(0, 1, bounds.bottom, bounds.top);
 
-				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
-				commands = commands.add( ['line', Point(bounds.left,y), Point(bounds.right,y) ] );
-				commands = commands.add( ['stroke'] );
+				commands = this.prAddLineCmds(commands, y, lineColor);
 
-				// always draw grid line on top and bottom bound
+				// draw grid line on top and bottom bound even if there is no 'line' there
 				case
 				{ i == 0 and: { valNorm != 0 } } { // bottom
-					extraY = bounds.bottom;
+					commands = this.prAddLineCmds(commands, bounds.bottom, lineColor);
 				}
 				{ i == (p['lines'].size-1) and: { valNorm != 1 } } { // top
-					extraY = bounds.top;
-				} { addExtraLine = false };
-
-				if (addExtraLine) {
-					commands = commands.add( ['strokeColor_', val[1] ? gridColor] );
-					commands = commands.add( ['line', Point(bounds.left, extraY), Point(bounds.right, extraY)] );
-					commands = commands.add( ['stroke'] );
-				}
+					commands = this.prAddLineCmds(commands, bounds.top, lineColor);
+				};
+			};
+			// Handle case where there is only one line:
+			// bottom and middle line has been added, now need a top line
+			if (p['lines'].size == 1 and: { valNorm != 1 }) {
+				commands = this.prAddLineCmds(commands, bounds.top, lineColor);
 			};
 
 			if(p['labels'].notNil and: { labelOffset.y > 0 }, {
