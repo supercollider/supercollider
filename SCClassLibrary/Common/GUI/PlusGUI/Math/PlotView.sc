@@ -585,7 +585,7 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, plotColor;
+	var <plots, <specs, <domainSpecs, plotColor, labelX, labelY;
 	var <cursorPos, plotMode, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
@@ -799,7 +799,11 @@ Plotter {
 
 		// for individual plots, restore previous domain state
 		this.domain_(dom);
-		if (superpose.not) { this.domainSpecs_(domSpecs) };
+		if (superpose.not) {
+			this.domainSpecs_(domSpecs);
+		};
+		this.labelX !? { this.labelX_(this.labelX) };
+		this.labelY !? { this.labelY_(this.labelY) };
 		this.refresh;
 	}
 
@@ -929,7 +933,7 @@ Plotter {
 	plotMode_ { |modes|
 		plotMode = modes.asArray;
 		plots.do { |plt, i|
-			// rotate modes to ensure proper behavior with superpose
+			// rotate to ensure proper behavior with superpose
 			plt.plotMode_(plotMode.rotate(i.neg))
 		}
 	}
@@ -937,6 +941,40 @@ Plotter {
 	plotMode {
 		var first = plotMode.first;
 		^if (plotMode.every(_ == first)) { first } { plotMode };
+	}
+
+	labelX_ { |labels|
+		labelX = if(labels.isKindOf(Array)) {
+			labels.collect(_ !? (_.asString))
+		} { [ labels !? (_.asString) ] };
+		plots.do { |plt, i|
+			// rotate to ensure proper behavior with superpose
+			plt.labelX_(labelX.rotate(i.neg)[0])
+		};
+		this.updatePlotBounds;
+	}
+
+	labelX {
+		^ labelX !? {
+			if (labelX.every(_ == labelX.first)) { labelX.first } { labelX }
+		};
+	}
+
+	labelY_ { |labels|
+		labelY = if(labels.isKindOf(Array)) {
+			labels.collect(_ !? (_.asString))
+		} { [ labels !? (_.asString) ] };
+		plots.do { |plt, i|
+			// rotate to ensure proper behavior with superpose
+			plt.labelY_(labelY.rotate(i.neg)[0])
+		};
+		this.updatePlotBounds;
+	}
+
+	labelY {
+		^ labelY !? {
+			if (labelY.every(_ == labelY.first)) { labelY.first } { labelY };
+		};
 	}
 
 	// specs

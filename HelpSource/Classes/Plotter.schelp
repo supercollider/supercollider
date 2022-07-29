@@ -87,6 +87,8 @@ subsection:: Embedding in another view
 method:: makeWindow
 Open given plotter in a new window or within a given composite view.
 
+See the link::#Embedding in another View or GUI:: example.
+
 argument:: argParent
 Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
 
@@ -159,7 +161,7 @@ color specified or if all colors of a multi-channel plot are the same, in which
 case a link::Classes/Color:: is returned.
 
 
-method::superpose
+method:: superpose
 If code::true::, plotter displays channels overlaid on a single plot. (keyboard shortcut: s)
 code::
 a = { (0..30).scramble }.dup(2).plot;
@@ -167,9 +169,24 @@ a.superpose = true; a.refresh;
 ::
 
 
+method:: labelX
+Get/set the label for the x-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
+link::Classes/String::s, or code::nil:: to remove the label.
+See link::#Axis labels:: example below.
+
+
+method:: labelY
+Get/set the label for the y-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
+link::Classes/String::s, or code::nil:: to remove the label.
+See link::#Axis labels:: example below.
+
 
 method:: setProperties
 Set properties of all plot views. Defaults are taken from code::GUI.skins.at(\plot);::
+
+warning:: It's preferrable to use Plotter's instance methods when possible
+to set Plot properties to ensure proper behavior when using link::#-superpose::.
+::
 
 argument:: ... pairs
 A list of symbol,value pairs. Supported properties:
@@ -217,26 +234,29 @@ subsection:: Data display properties
 
 method:: specs
 Set or get the link::Classes/ControlSpec##spec:: for the y-axis (codomain).
-note::
-The y-axis label will update with the strong::units:: assigned
-to your spec, if it has not been previously set.
-::
+
 code::
 a = { (40..3000).scramble }.dup(2).plot;
 a.specs = \freq.asSpec; a.refresh;
 ::
-See also link::#examples::.
+See also the link::#Explicit domain and axis specs:: example below.
+note::
+The y-axis label will update with the strong::units:: assigned
+to your spec, if it has not been previously set.
+::
 
 
 method:: domainSpecs
 Set or get the link::Classes/ControlSpec##spec:: for the x-axis (domain).
-note::
-The x-axis label will update with the strong::units:: assigned
-to your spec, if it has not been previously set.
-::
+
 code::
 a = { (40..300).scramble }.dup(2).plot;
 a.domainSpecs = \freq.asSpec; a.refresh;
+::
+See also the link::#Explicit domain and axis specs:: example below.
+note::
+The x-axis label will update with the strong::units:: assigned
+to your spec, if it has not been previously set.
 ::
 
 discussion::
@@ -247,13 +267,24 @@ code::maxval:: of the domainSpecs.
 
 If a new link::#-value:: is set, you will need to update your domainSpecs.
 
-For examples, see link::#-domain:: and link::#examples::.
-
 
 method:: domain
 Set or get the x-axis positions of your data points. The size of the
 code::domainArray:: must equal the size of your value array, i.e. a domain
 value specified for each data point.
+
+code::
+(
+var data, domain, plot;
+domain = 25.collect({rrand(0, 50)}).sort;
+data = domain.linlin(0, 50, 0, 1);
+
+plot = data.plot.plotMode_(\points);
+plot.domainSpecs_([0, 50].asSpec);
+plot.domain_(domain);
+)
+::
+See also the link::#Explicit domain and axis specs:: example below.
 
 discussion::
 Domain values are mapped into the range of the link::#-domainSpecs::, so need
@@ -266,20 +297,6 @@ share a single link::#-domain::. I.e. code::domainArray:: must be an
 link::Classes/Array:: of rank 1.
 
 If a new link::#-value:: is set, you will need to update your link::#-domain::.
-
-Example:
-code::
-(
-var data, domain, plot;
-domain = 25.collect({rrand(0, 50)}).sort;
-data = domain.linlin(0, 50, 0, 1);
-
-plot = data.plot.plotMode_(\points);
-plot.domainSpecs_([0, 50].asSpec);
-plot.domain_(domain);
-)
-::
-A more elaborate example can be found in the link::#examples::.
 
 
 method:: resolution
@@ -350,7 +367,7 @@ If the edit mode is set to true, the data may be edited via cursor.
 code::
 a = (0..20).plot;
 a.editMode = true; // now edit the data by clicking into the plot..
-a.value; // the value
+a.value; // the updated values
 ::
 
 
@@ -406,19 +423,6 @@ private:: plotColors, prReshape, pointIsInWhichPlot
 examples::
 
 code::
-// embedding in another GUI
-(
-w = Window("plot panel", Rect(20, 30, 520, 450));
-Slider.new(w, Rect(10, 10, 490, 20)).resize_(2).action_ { |v|
-    a.value = (0..(v.value.linexp(0, 1, 5, 8000)).asInteger).scramble;
-    w.refresh;
-};
-z = CompositeView(w, Rect(10, 35, 490, 400)).background_(Color.rand(0.7)).resize_(5);
-a = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100);
-w.front;
-)
-
-
 (
 a = Plotter("the plot", Rect(600, 30, 600, 400));
 a.value = (0..100).normalize(0, 8pi).sin;
@@ -445,7 +449,7 @@ a.value = { |i| (0..90).normalize(0, 8pi + (i*2pi)).sin } ! 2 * [400, 560] + 700
 a.value = { |i| (_ + 2.0.rand).dup(100).normalize(0, 8pi + i).sin } ! 2 * 400 + 700;
 
 
-// multi channel expansion of single values
+// Multi channel expansion of single values
 a.value = { |i| (_ + 2.0.rand).dup(100).normalize(0, 8pi + i).sin *.t [1, 2, 3] } ! 2 * 400 + 700;
 a.value = { |i| (0..10) **.t [1, 1.2, 1.3, 1.5] * (3.5 ** i) }.dup(3);
 
@@ -455,19 +459,11 @@ a.parent.bounds = Rect(600, 30, 500, 300);
 a.superpose = true;
 a.value = { |i| (0..20) * (3.5 ** i) }.dup(5);
 a.superpose = false;
+::
 
-// specs
+subsection:: Object .plot methods
 
-a.value = (50..90).midicps.scramble;
-a.specs = \freq; a.refresh;
-a.value = (1..60).scramble.neg;
-a.specs = \db; a.refresh;
-
-a.value = { |i| { exprand(1e3, (10 ** (i + 8))) }.dup(90) }.dup(3);
-a.value = { { exprand(1e3, 1e9) }.dup(90) }.dup(3);
-a.specs = [[1e3, 1e10, \exp], [1e3, 1e20, \exp], [1e3, 1e30, \exp]]; a.refresh;
-a.domainSpecs = [[0, 5], [-8, 100], [-1, 1]]; a.refresh;
-
+code::
 
 // Array:plot
 (
@@ -479,7 +475,6 @@ a.domainSpecs = [0, 10, \lin, 0, 0, " Kg"].asSpec; a.refresh;
 a.domainSpecs = [0.1, 10, \exponential, 0, 0, " Kg"].asSpec; a.refresh;
 a.domainSpecs = [-10, 10, \lin, 0, 0, " Kg"].asSpec; a.refresh;
 
-
 a = [(0..100) * 9, (200..1300) * 2, (200..1000)/ 5].plot;
 a.superpose = true;
 
@@ -487,22 +482,44 @@ a = [[0, 1.2, 1.5], [0, 1.3, 1.5, 1.6], [0, 1.5, 1.8, 2, 6]].midiratio.plot;
 a.plotMode = \levels; a.refresh;
 a.superpose = false;
 
-
 // Function:plot
 a = { SinOsc.ar([700, 357]) * SinOsc.ar([400, 476]) * 0.2 }.plot;
 a = { SinOsc.ar([700, 357] *0.02) * SinOsc.ar([400, 476]) * 0.3 }.plot(0.2, minval: -1);
 a = { SinOsc.ar(440) }.plot(1);
-
 
 // Env:plot
 Env.perc(0.4, 0.6).plot;
 Env.new({ 1.0.rand2 }! 8, { 1.0.rand } ! 7, \sin).plot;
 
 // Buffer:plot
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/SinedPink.aiff");
-		// Platform.resourceDir +/+ "sounds/SinedPink.aiff" contains SinOsc on left, PinkNoise on right
-b.plot;
-b.free;
+(
+s.waitForBoot({
+	var b = Buffer.read(s,
+		Platform.resourceDir +/+ "sounds/SinedPink.aiff"
+	);
+	s.sync;
+	b.plot;
+	b.free;
+});
+)
+::
+
+
+subsection:: Explicit domain and axis specs
+code::
+// data
+a = (50..90).midicps.scramble.plot;
+// specs (y-axis)
+a.specs = ControlSpec(100, 2000, units: "Hz"); a.refresh;
+
+a.value = 50.collect{ exprand(1e4, 1e7) };
+a.specs = [1e4, 1e7, \exp].asSpec; a.refresh;
+
+// domainSpecs (x-axis)
+// If domain is unassigned, values are
+// distributed evenly within the spec range
+a.domainSpecs = [-10, 70].asSpec; a.refresh;
+
 
 // Setting the domain, run the full block:
 (
@@ -551,6 +568,47 @@ p = (1, 2 .. 1000).plot.domainSpecs_([1, 1000, \lin].asSpec).refresh;
 p.specs_([[1, 1000, \exp].asSpec]).refresh;
 // then scale x axis exponentially
 p.domainSpecs_([1, 1000, \exp].asSpec).refresh;
+::
+
+
+subsection:: Axis labels
+
+code::
+(
+p = 4.collect({|cnt| 100.collect({rrand(0,1.0)})}).plot;
+p.plotColor_([Color.red, Color.blue, Color.green, Color.cyan]);
+)
+
+// a single label propagates through all Plots
+p.labelX_("one");
+// set each individually
+p.labelX_(["one", "two", "three", "four"]);
+// superposed plots default to the first label
+p.superpose_(true);
+p.superpose_(false); // labels are restored
+// nil element removes a label
+p.labelX_(["one", "two", nil, "four"]);
+// assigning nil removes all labels
+p.labelX_(nil);
+// ... labelY behaves the same way
+::
+
+subsection:: Embedding in another View or GUI
+
+code::
+(
+w = Window("plot panel", Rect(20, 30, 520, 450));
+Slider.new(w, Rect(10, 10, 490, 20)).resize_(2).action_ { |v|
+    p.value = (0..(v.value.linexp(0, 1, 5, 50)).asInteger).scramble;
+    w.refresh;
+};
+z = CompositeView(
+	w, Rect(10, 35, 490, 400)
+).background_(Color.rand(0.7)).resize_(5);
+
+p = Plotter("plot", parent: z).value_([0, 1, 2, 3, 4].scramble * 100);
+w.front;
+)
 ::
 
 
