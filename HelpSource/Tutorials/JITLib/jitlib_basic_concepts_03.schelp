@@ -49,7 +49,7 @@ code::
 multiple assignment
 
 code::
-// the function is assigned to th slots from 1 to 4
+// the function is assigned to the slots from 1 to 4
 ~z[1..4] = { SinOsc.ar(exprand(300, 600), 0, LFTri.kr({exprand(1, 3)} ! 3).sum.max(0)) * 0.1 };
 
 
