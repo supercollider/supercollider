@@ -56,7 +56,7 @@ code::
 // using default server as subject and a symbol as observer:
 NotificationCenter.register(Server.default, \newAllocators, \yourself, {
 	// Substitute anything more meaningful here:
-	"symbol yourself was notified newAllocators by defaul server".postln;
+	"symbol yourself was notified newAllocators by default server".postln;
 });
 ::
 
