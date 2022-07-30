@@ -1,13 +1,13 @@
 class:: EZRanger
 summary:: A wrapper class for a label, a rangeslider, and numberboxes
 categories:: GUI>EZ-GUI
-related:: Classes/EZGui, Classes/StaticText, Classes/Slider, Classes/NumberBox
+related:: Classes/EZGui, Classes/StaticText, Classes/RangeSlider, Classes/NumberBox
 
 description::
-EZRanger is wrapper class which creates an (optional) link::Classes/StaticText::, and a link::Classes/Slider:: plus a link::Classes/NumberBox::. If the parent is code::nil::, then EZRanger will create its own window. See link::Classes/EZGui:: more options.
+EZRanger is wrapper class which creates an (optional) link::Classes/StaticText::, and a link::Classes/RangeSlider:: plus a link::Classes/NumberBox::. If the parent is code::nil::, then EZRanger will create its own window. See link::Classes/EZGui:: more options.
 
 subsection:: Scrolling and Arrow Keys
-EZRanger's number boxs scroll by default, using the step size of the link::Classes/ControlSpec::. If the controlSpec's step is set to 0, or is not set, then the stepping and scrolling will be guessed according to the code::minval:: and code::maxval:: values of the spec on creation of the view.  Unlike the step variable of a regular link::Classes/NumberBox::, code::controlSpec.step:: is also the smallest possible increment for the link::Classes/NumberBox::s.  By default, the shift-key modifier will allow you to step by 100x code::controlSpec.step::, while the ctrl-key will give you 10x code::controlSpec.step::. Since the alt-key would give you 0.1 of the minimum step, it is disabled by default, but you can change that by setting code::numberView.alt_step:: to any value you like. Accordingly you can customize the other modifiers to fit your needs. See link::Classes/NumberBox:: and link::Classes/Slider::. This also effects the arrow keys for the slider.
+EZRanger's number boxes scroll by default, using the step size of the link::Classes/ControlSpec::. If the ControlSpec's step is set to 0, or is not set, then the stepping and scrolling will be guessed according to the code::minval:: and code::maxval:: values of the spec on creation of the view.  Unlike the step variable of a regular link::Classes/NumberBox::, code::controlSpec.step:: is also the smallest possible increment for the number boxes. By default, the shift-key modifier will allow you to step by 100x code::controlSpec.step::, while the ctrl-key will give you 10x code::controlSpec.step::. Since the alt-key would give you 0.1 of the minimum step, it is disabled by default, but you can change that by setting code::numberView.alt_step:: to any value you like. Accordingly, you can customize the other modifier keys to fit your needs. This also affects the arrow keys for the slider.
 
 classmethods::
 
