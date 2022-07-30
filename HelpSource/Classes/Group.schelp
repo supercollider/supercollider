@@ -142,7 +142,7 @@ method:: dumpTree
 Post a representation of this group's node subtree. (Sends a message of the type g_dumpTree.) If code::postControls:: is true, then the current Control (arg) values for any synths contained in this group will be posted as well. The default is false.
 
 method:: queryTree
-Queries the server for a message describing this group's node subtree. (Sends a message of the type g_queryTree.) This reply is passed to the action function as an argument. See g_queryTree in Server-Command-Reference or the example below for information on how the reply is structured.
+Queries the server for a message describing this group's node subtree. (Sends a message of the type g_queryTree.) This reply is passed to the action function as an argument. See g_queryTree in link::Reference/Server-Command-Reference:: or the example below for information on how the reply is structured.
 
 
 Examples::
