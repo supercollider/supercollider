@@ -444,7 +444,7 @@ fork {
 ::
 
 method:: waitUntil
-like wait, only specify a time (measured in beats of the current thread's clock). Outside a Routine, this trows an error (see also Routine for details).
+like wait, only specify a time (measured in beats of the current thread's clock). Outside a Routine, this throws an error (see also Routine for details).
 
 method:: sleep
 make the current thread sleep, until woken up by re-scheduling. Outside a Routine, this trows an error (see also Routine for details).
