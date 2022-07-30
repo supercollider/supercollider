@@ -73,7 +73,7 @@ s.boot;
 // this sound plays on its own private bus (so it is not audible yet.)
 (
 ~x = {
-	RLPF.ar(Impulse.ar(4) * 20, [850, 950], 0.2)
+	RLPF.ar(Impulse.ar(4) * 5, [850, 950], 0.2)
 }
 )
 
