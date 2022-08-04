@@ -52,12 +52,20 @@ method::sysex
 Sends a sysex command represented as an link::Classes/Int8Array:: to the device.
 
 note::
-On Windows, the function call must contain a full sysex message. In other words,
-it must start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
+The method call should contain a full sysex message. In other words,
+it should start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
 ::
 
 argument:: packet
 An Int8Array of data bytes to be sent.
+
+code::
+m = MIDIOut(0);
+
+m.sysex(Int8Array[0xF0, 1, 2, 3, 0xF7]);  // OK!
+
+m.sysex(Int8Array[1, 2, 3]);  // not OK
+::
 
 private::send, prSysex
 
