@@ -192,6 +192,9 @@ Examples::
 subsection::Pdef as stream reference
 
 code::
+
+s.boot;
+
 (
 SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 	var env, u=1;
@@ -201,7 +204,6 @@ SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 
 }).add;
 )
-s.boot;
 
 Pdef(\metronom, Pbind(\instrument, \Pdefhelp, \dur, 1, \degree, 16, \legato, 0.1)).play;
 
