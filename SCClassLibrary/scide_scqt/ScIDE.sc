@@ -197,47 +197,6 @@ ScIDE {
 		if (res.size > 0) { this.send(id, res) };
 	}
 
-	*findMethod { |id, text|
-		var cname, mname, tokens, res;
-		var class, method;
-
-		tokens = text.split($.);
-		if (tokens.size > 1) {
-			cname = tokens[0];
-			mname = tokens[1];
-		}{
-			mname = tokens[0];
-		};
-		if (mname.size < 1) { ^this };
-
-		if (cname.size > 0) {
-			class = cname.asSymbol.asClass;
-			if (class.isNil) {
-				warn("No class named" + cname.asString);
-				^this;
-			};
-			method = class.class.findRespondingMethodFor(mname.asSymbol);
-			if (method.isNil) {
-				warn("No such method:" + cname.asString ++ "." ++ mname.asString);
-				^this;
-			};
-			this.send(id, [this.serializeMethod(method)]);
-		}{
-			res = [];
-			this.allMethodsDo { |method|
-				if (method.name.asString == mname) {
-					res = res.add( this.serializeMethod(method) );
-				};
-			};
-			if (res.size > 0) {
-				this.send(id, res)
-			}{
-				warn("No such method:" + mname.asString);
-				^this;
-			};
-		}
-	}
-
 	*serializeMethod { arg method;
 		var data = [method.ownerClass.name, method.name];
 		if (method.argNames.size > 1) {
