@@ -4,7 +4,7 @@ CATEGORIES::Streams-Patterns-Events>Patterns>Filter
 RELATED::Classes/PfadeOut
 
 DESCRIPTION::
-Fade an event pattern in by scaling it's amplitude over a period of time.
+Fade an event pattern in by scaling its amplitude over a period of time.
 
 NOTE::This only works on event patterns that are playing synths that have a
 code::\amp:: argument in them.::
