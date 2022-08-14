@@ -188,10 +188,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
-          # clang and gcc compilers < 9.x are no longer on ubuntu images; install them manually
-          if [[ "$CC" =~ clang-[1-8] ]]; then
+          # install appropriate clang/gcc compilers
+          if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y $CC # package names are clang-X
-          elif [[ "$CC" =~ gcc-[1-8] ]]; then
+            if [[ "$CC" != clang-6.0 ]]; then
+              sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
+            fi
+          elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
       - name: install system libraries
