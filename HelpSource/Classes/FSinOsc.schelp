@@ -23,6 +23,8 @@ method::ar, kr
 
 argument::freq
 Frequency in Hertz.
+note:: While an audio-rate frequency input is accepted, frequency is
+is currently only updated internally at only control-rate.::
 
 argument::iphase
 Initial phase offset.
