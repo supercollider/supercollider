@@ -701,7 +701,7 @@ method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
-Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
+Get/set the sample format (string) of the output file. The default is "float" (32-bit). Common options include "int24" for 24-bit audio and "int16" for 16-bit audio. Must be called strong::before:: prepareForRecord.
 
 method::recBufSize
 Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
