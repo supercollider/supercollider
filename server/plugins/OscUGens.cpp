@@ -2740,11 +2740,12 @@ static float Klang_SetCoefs(Klang* unit) {
         float phase = ZIN0(j + 2);
 
         if (phase != 0.f) {
-            outf += * ++coefs = level * sin(phase); // y1
-            *++coefs = level * sin(phase - w); // y2
+            outf += level * sin(phase);
+            *++coefs = level * sin(phase - w); // y1
+            *++coefs = level * sin(phase - w - w); // y2
         } else {
-            outf += * ++coefs = 0.f; // y1
-            *++coefs = level * -sin(w); // y2
+            *++coefs = level * -sin(w); // y1
+            *++coefs = level * -sin(w + w); // y2
         }
         *++coefs = 2. * cos(w); // b1
     }
@@ -2907,21 +2908,11 @@ void Klang_next(Klang* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void Klank_SetCoefs(Klank* unit) {
-    int numpartials = (unit->mNumInputs - 4) / 3;
-    unit->m_numpartials = numpartials;
-
-    int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
-    ClearUnitIfMemFailed(unit->m_coefs);
-
-    unit->m_buf = unit->m_coefs + numcoefs;
-
     float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
     float freqoffset = ZIN0(2) * unit->mRate->mRadiansPerSample;
     float decayscale = ZIN0(3);
-
     float* coefs = unit->m_coefs;
-
+    int numpartials = unit->m_numpartials;
     float sampleRate = SAMPLERATE;
 
     for (int i = 0, j = 4; i < numpartials; ++i, j += 3) {
@@ -2940,15 +2931,33 @@ static void Klank_SetCoefs(Klank* unit) {
         coefs[k + 8] = twoR * cost; // b1
         coefs[k + 12] = -R2; // b2
         coefs[k + 16] = level * 0.25; // a0
-        // Print("coefs %d  %g %g %g\n", i, twoR * cost, -R2, ampf * 0.25);
     }
 }
 
 void Klank_Ctor(Klank* unit) {
     SETCALC(Klank_next);
+
+    unit->m_x1 = unit->m_x2 = 0.f;
+    int numpartials = (unit->mNumInputs - 4) / 3;
+    unit->m_numpartials = numpartials;
+    int numcoefs = ((numpartials + 3) & ~3) * 5;
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_coefs);
+    unit->m_buf = unit->m_coefs + numcoefs;
+    Klank_SetCoefs(unit);
+
+    // generate initial sample
+    int filtLoops = unit->mRate->mFilterLoops;
+    int filtRemain = unit->mRate->mFilterRemain;
+    unit->mRate->mFilterLoops = 0; // supress filter loop
+    unit->mRate->mFilterRemain = 1; // just go through 1 iteration
+    Klank_next(unit, 1);
+    unit->mRate->mFilterLoops = filtLoops;
+    unit->mRate->mFilterRemain = filtRemain;
+
+    // reset state for first sample
     unit->m_x1 = unit->m_x2 = 0.f;
     Klank_SetCoefs(unit);
-    ZOUT0(0) = 0.f;
 }
 
 void Klank_Dtor(Klank* unit) { RTFree(unit->mWorld, unit->m_coefs); }
@@ -3080,7 +3089,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
         b2_0 = coefs[12];
         a0_0 = coefs[16];
 
-        // Print("rcoefs %g %g %g %g %g\n", y1_0, y2_0, b1_0, b2_0, a0_0);
         in = in0;
         out = unit->m_buf - 1;
         LooP(unit->mRate->mFilterLoops) {
@@ -3095,7 +3103,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
             inf = *++in;
             y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0;
             *++out = a0_0 * y1_0;
-            // Print("out %g %g %g\n", y0_0, y2_0, y1_0);
         }
         LooP(unit->mRate->mFilterRemain) {
             inf = *++in;
@@ -3103,7 +3110,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
             *++out = a0_0 * y0_0;
             y2_0 = y1_0;
             y1_0 = y0_0;
-            // Print("out %g\n", y0_0);
         }
         /*
         coefs[0] = y1_0;	coefs[4] = y2_0;
