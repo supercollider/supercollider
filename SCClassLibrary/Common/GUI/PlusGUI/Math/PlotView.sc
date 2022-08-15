@@ -497,7 +497,7 @@ Plotter {
 		};
 		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
 		this.plotMode = \linear;
-		// this.plotColor = Color.black;
+		this.plotColor = GUI.skins.plot.plotColor;
 
 		interactionView
 		.background_(Color.clear)
@@ -732,7 +732,7 @@ Plotter {
 		plots !? { plots = plots.keep(data.size.neg) };
 		plots = plots ++ template.dup(data.size - plots.size);
 		plots.do { |plot, i| plot.value = data.at(i) };
-		// this.plotColor_(plotColor);
+		this.plotColor_(plotColor);
 		this.plotMode_(plotMode);
 		this.updatePlotSpecs;
 		this.updatePlotBounds;
