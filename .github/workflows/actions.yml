@@ -191,9 +191,9 @@ jobs:
         include:
 
           - job-name: ''
-            os-version: '10.15'
-            xcode-version: '11.7'
-            deployment-target: '10.13' # Qt 5.15 runs on macOS 10.13 and newer
+            os-version: '11'
+            xcode-version: '12.4'
+            deployment-target: '10.14' # Qt 5.15 runs on macOS 10.13 and newer; however homebrew build of Qt on macOS 11 only supports 10.14+
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
@@ -202,28 +202,29 @@ jobs:
             verify-app: true
 
           - job-name: 'legacy'
-            os-version: '10.15'
-            xcode-version: '10.3'
+            os-version: '11'
+            xcode-version: '12.4'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
+            system-portaudio: false
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
 
           - job-name: 'use system libraries'
-            os-version: '10.15'
-            xcode-version: '11.7'
-            deployment-target: '10.15'
+            os-version: '12'
+            xcode-version: '13.4.1'
+            deployment-target: '10.14'
             use-syslibs: true
             shared-libscsynth: false
             verify-app: true
 
           - job-name: 'shared libscsynth'
-            os-version: '10.15'
-            xcode-version: '11.7'
-            deployment-target: '10.13'
+            os-version: '12'
+            xcode-version: '13.4.1'
+            deployment-target: '10.14'
             use-syslibs: false
             shared-libscsynth: true
             verify-app: true
@@ -280,9 +281,10 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install portaudio ccache fftw
+          brew install ccache fftw
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+          if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
@@ -317,6 +319,8 @@ jobs:
           if [[ -z "${{ matrix.qt-version }}" ]]; then EXTRA_CMAKE_FLAGS="-DCMAKE_PREFIX_PATH=`brew --prefix qt5` $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ "${{ matrix.verify-app }}" == "true" ]]; then EXTRA_CMAKE_FLAGS="-DSC_VERIFY_APP=ON $EXTRA_CMAKE_FLAGS"; fi
+
+          if [[ "${{ matrix.system-portaudio }}" == "false" ]]; then EXTRA_CMAKE_FLAGS="-DSYSTEM_PORTAUDIO=OFF $EXTRA_CMAKE_FLAGS"; fi
 
           if [[ -n "${{ matrix.vcpkg-triplet }}" ]]; then
             export VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT
@@ -520,7 +524,7 @@ jobs:
         include:
 
           - name: macOS
-            runs-on: macos-10.15
+            runs-on: macos-11
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact-suffix: macOS
             artifact-extension: '.dmg'
