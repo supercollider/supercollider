@@ -278,14 +278,18 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt) {
             break;
         case SND_SEQ_EVENT_SONGPOS: // song ptr
             ++g->sp;
-            SetInt(g->sp, evt->data.control.channel);
+            SetInt(g->sp, 0x2);
             ++g->sp;
-            SetInt(g->sp, (evt->data.control.value << 7) | evt->data.control.param);
+            // note: this differs from the corresponding sections
+            // of SC_CoreMIDI.cpp and SC_PortMIDI.cpp.
+            // Empirically I found that data.control.value has already been
+            // decoded from the two 7-bit values -- the bitwise ops are not necessary here
+            SetInt(g->sp, evt->data.control.value);
             runInterpreter(g, s_midiSysrtAction, 4);
             break;
         case SND_SEQ_EVENT_SONGSEL: // song sel
             ++g->sp;
-            SetInt(g->sp, evt->data.control.channel);
+            SetInt(g->sp, 0x3);
             ++g->sp;
             SetInt(g->sp, evt->data.control.param);
             runInterpreter(g, s_midiSysrtAction, 4);
