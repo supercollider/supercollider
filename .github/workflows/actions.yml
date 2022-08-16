@@ -137,7 +137,7 @@ jobs:
         id: current-date
         run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
       - name: cache ccache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.c-compiler }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ steps.current-date.outputs.stamp }}
@@ -292,13 +292,13 @@ jobs:
           echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
           echo "::set-output name=week::$(date '+%V')"
       - name: cache ccache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/Library/Caches/ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
       - name: cache homebrew downloads
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
@@ -319,7 +319,7 @@ jobs:
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
@@ -641,7 +641,7 @@ jobs:
           echo "::set-output name=week::$(date '+%V')"
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/AppData/Local/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
