@@ -666,6 +666,11 @@ SynthDef {
 		^desc
 	}
 
+	findSpecFor { |controlName|
+		var specs = metadata[\specs];
+		^specs !? { specs[controlName] }
+	}
+
 	specs {
 		if(metadata[\specs].isNil) { metadata[\specs] = () };
 		^metadata[\specs]
