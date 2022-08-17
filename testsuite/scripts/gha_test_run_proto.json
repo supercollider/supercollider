@@ -117,6 +117,12 @@
             "test":"test_findText_notFound",
             "skip":true,
             "skipReason":"UnitTest sometimes fails when run in qpm"
+        },
+        {
+            "suite":"TestMIDI",
+            "test":"test_linuxRealtimeCodesAreCorrect",
+            "skip":true,
+            "skipReason":"Requires ALSA kernel module, not allowed in GHA"
         }
     ]
 }
