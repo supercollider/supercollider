@@ -1,4 +1,5 @@
 Plot {
+	classvar <initGuiSkin;
 
 	var <>plotter, <value;
 	var <bounds, <plotBounds,<>drawGrid;
@@ -12,13 +13,21 @@ Plot {
 	*initClass {
 		if(Platform.hasQt.not) { ^nil; };	// skip init on Qt-less builds
 
-		StartUp.add {
-			GUI.skin.put(\plot, (
-				gridColorX: QtGUI.palette.highlight,
-				gridColorY: QtGUI.palette.highlight,
-				fontColor: QtGUI.palette.windowText,
-				plotColor: [QtGUI.palette.windowText, Color.blue.valueBlend(QtGUI.palette.windowText), Color.red.valueBlend(QtGUI.palette.windowText), Color.green(0.7).valueBlend(QtGUI.palette.windowText)],
-				background: QtGUI.palette.base,
+		initGuiSkin = {
+			var palette = QtGUI.palette;
+			var hl = palette.highlight;
+			var base = palette.base;
+			var baseText = palette.baseText;
+			var butt = palette.button;
+			var gridCol = palette.window;
+			var labelCol = butt.blend(baseText, 0.6);
+
+			GUI.skins.put(\plot, (
+				gridColorX: gridCol,
+				gridColorY: gridCol,
+				fontColor: labelCol,
+				plotColor: [baseText.blend(hl, 0.5)], // should be an array for multichannel support
+				background: base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
 				labelX: "",
@@ -26,7 +35,13 @@ Plot {
 				expertMode: false,
 				gridFont: Font( Font.defaultSansFace, 9 )
 			));
-		}
+		};
+		initGuiSkin.value;
+		StartUp.add(this);
+	}
+
+	*doOnStartUp {
+		initGuiSkin.value;
 	}
 
 	*new { |plotter|
@@ -35,8 +50,7 @@ Plot {
 
 	init {
 		var fontName;
-		var gui = plotter.gui;
-		var skin = GUI.skin.at(\plot);
+		var skin = GUI.skins.at(\plot);
 
 		drawGrid = DrawGrid(bounds ? Rect(0,0,1,1),nil,nil);
 		drawGrid.x.labelOffset = Point(0,4);
@@ -53,8 +67,7 @@ Plot {
 			labelX = ~labelX;
 			labelY = ~labelY;
 		};
-
-		resolution =  plotter.resolution;
+		resolution = plotter.resolution;
 	}
 
 	bounds_ { |rect|
@@ -458,7 +471,6 @@ Plotter {
 	var <editPlotIndex, <editPos;
 
 	var <>drawFunc, <>editFunc;
-	var <gui;
 
 	*new { |name, bounds, parent|
 		^super.newCopyArgs(name).makeWindow(parent, bounds)
@@ -471,6 +483,7 @@ Plotter {
 		if(parent.isNil) {
 			parent = Window.new(name ? "Plot", bounds ? Rect(100, 200, 400, 300));
 			bounds = parent.view.bounds.insetBy(8);
+			parent.background_(QtGUI.palette.window);
 			interactionView = UserView.new(parent, bounds);
 
 			interactionView.drawFunc = { this.draw };
@@ -484,7 +497,7 @@ Plotter {
 		};
 		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
 		this.plotMode = \linear;
-		this.plotColor = Color.black;
+		this.plotColor = GUI.skins.plot.plotColor;
 
 		interactionView
 		.background_(Color.clear)
@@ -778,6 +791,7 @@ Plotter {
 		plotColor = colors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
+			// (so this Plot's color is first in its color array)
 			plt.plotColor_(plotColor.rotate(i.neg))
 		}
 	}
