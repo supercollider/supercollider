@@ -231,7 +231,7 @@ METHOD::free
 deallocate the receiver. this method is useful if you want to manage and reclaim yourself resources. otherwise you do not need to call this method since each object is automatically garbage collected.
 
 METHOD::scalesWhenResized
-flag to tell or set if the receiver should update its bitmap representation to scale when a resize operation if performed
+flag to tell or set if the receiver should update its bitmap representation to scale when a resize operation is performed
 code::
 (
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
