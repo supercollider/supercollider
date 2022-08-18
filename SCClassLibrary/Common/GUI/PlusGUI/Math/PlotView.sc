@@ -86,7 +86,8 @@ Plot {
 		})
 	}
 	plotColor_ { |c|
-		plotColor = c.asArray;
+		if(c.isArray.not) { c = c.bubble };
+		plotColor = c;
 	}
 	gridColorX_ { |c|
 		drawGrid.x.gridColor = c;
