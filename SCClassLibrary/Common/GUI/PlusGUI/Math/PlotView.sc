@@ -6,7 +6,8 @@ Plot {
 
 	var <spec, <domainSpec;
 	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
-	var <gridOnX = true, <gridOnY = true, <>labelX, <>labelY;
+	var <gridOnX = true, <gridOnY = true, <labelX, <labelY, labelXisUnits = false, labelYisUnits = false;
+	var txtPad = 2;
 
 	var valueCache, resolution;
 
@@ -30,8 +31,8 @@ Plot {
 				background: base,
 				gridLinePattern: nil,
 				gridLineSmoothing: false,
-				labelX: "",
-				labelY: "",
+				labelX: nil,
+				labelY: nil,
 				expertMode: false,
 				gridFont: Font( Font.defaultSansFace, 9 )
 			));
@@ -56,7 +57,7 @@ Plot {
 		drawGrid.x.labelOffset = Point(0,4);
 		drawGrid.y.labelOffset = Point(-10,0);
 		skin.use {
-			font = ~gridFont ?? { Font.default };
+			font = ~gridFont ?? { Font( Font.defaultSansFace, 9 ) };
 			this.gridColorX = ~gridColorX;
 			this.gridColorY = ~gridColorY;
 			plotColor = ~plotColor;
@@ -70,12 +71,69 @@ Plot {
 		resolution = plotter.resolution;
 	}
 
-	bounds_ { |rect|
-		var size = (try { "foo".bounds(font).height } ?? { font.size } * 1.5);
-		plotBounds = if(rect.height > 40) { rect.insetBy(size, size) } { rect };
-		bounds = rect;
+	bounds_ { |viewRect|
+		var gridRect;
+		var xtkLabels, ytkLabels, ytkLabelSize, xtkLabelSize, xLabelGridOffset, yLabelGridOffset;
+		var xLabelSize, yLabelSize, maxWidthWithLabel, maxHeightWithLabel;
+		var hshift, vshift, hinset, vinset, lmargin, rmargin, totalVSpace;
+		var minGridMargin = 4;
+
+		bounds = viewRect;
 		valueCache = nil;
-		drawGrid.bounds = plotBounds;
+
+		// find the size of the largest tick labels
+		#xtkLabelSize, xtkLabels = this.prGetTickLabelSize(drawGrid.x);
+		#ytkLabelSize, ytkLabels = this.prGetTickLabelSize(drawGrid.y);
+		xLabelSize = labelX.notNil.if({ labelX.bounds(font) }, { Rect(0,0,0,0) });
+		yLabelSize = labelY.notNil.if({ labelY.bounds(font) }, { Rect(0,0,0,0) });
+
+		// zeroing out drawGrids' labelOffsets disables labels, see DrawGridX/Y:commands
+		xLabelGridOffset = yLabelGridOffset = Point(0, 0);
+
+		// labels disappear below these size thresholds
+		maxWidthWithLabel = ytkLabelSize.width * 4;
+		maxHeightWithLabel = xtkLabelSize.height * 4;
+
+		hshift = vshift = hinset = vinset = 0;
+
+		// x axis label spacing
+		if( viewRect.height >= maxHeightWithLabel
+			and: { viewRect.width >= (xtkLabelSize.width*3)
+				and: { xtkLabels.notNil }
+		}) {
+			totalVSpace = txtPad + xtkLabelSize.height + txtPad + xLabelSize.height + txtPad;
+			hinset = xtkLabelSize.width/2 + txtPad;
+			vinset = totalVSpace * (2/3);     // inset more on sides with labels
+			vshift = totalVSpace * (1/3).neg;
+			xLabelGridOffset = Point(xtkLabelSize.width, xtkLabelSize.height);
+		};
+
+		// y axis label spacing
+		if(viewRect.width >= maxWidthWithLabel and: { ytkLabels.notNil }) {
+			lmargin = txtPad + ytkLabelSize.width + txtPad;
+			if (yLabelSize.height > 0) {
+				lmargin = lmargin + yLabelSize.height + txtPad };
+			if (hinset > 0) { // x labels present
+				rmargin = hinset;
+				lmargin = max(rmargin, lmargin);
+				hinset = (rmargin + lmargin) / 2;
+				hshift = max(0, lmargin - hinset);
+			} { // only y labels present
+				hinset = (lmargin + minGridMargin) / 2;
+				hshift = lmargin - hinset;
+			};
+			yLabelGridOffset = Point(lmargin, ytkLabelSize.height);
+		};
+
+		hinset = max(hinset, minGridMargin);
+		vinset = max(vinset, minGridMargin);
+		drawGrid.x.labelOffset = xLabelGridOffset;
+		drawGrid.y.labelOffset = yLabelGridOffset;
+		gridRect = viewRect.insetBy(hinset, vinset) + [hshift, vshift, 0, 0];
+		drawGrid.bounds = gridRect;
+
+		// plotBounds are the bounds of grid/data excluding label margin (= drawGrid.bounds)
+		plotBounds = gridRect;
 	}
 
 	value_ { |array|
@@ -84,8 +142,21 @@ Plot {
 	}
 	spec_ { |sp|
 		spec = sp;
-		if(gridOnY and: spec.notNil,{
+		if(gridOnY and: spec.notNil, {
 			drawGrid.vertGrid = spec.grid;
+
+			if (spec.units.isEmpty, {
+				// remove label if previously set by spec units
+				if (labelYisUnits, {
+					labelY = nil;
+					labelYisUnits = false;
+				});
+			},{ // add new or overwrite previous unit label
+				if(labelY.isNil or: labelYisUnits) {
+					labelY = spec.units;
+					labelYisUnits = true;
+				}
+			})
 		},{
 			drawGrid.vertGrid = nil
 		})
@@ -94,6 +165,18 @@ Plot {
 		domainSpec = sp;
 		if(gridOnX and: domainSpec.notNil,{
 			drawGrid.horzGrid = domainSpec.grid;
+
+			if (domainSpec.units.isEmpty, { // see comments in spec_
+				if (labelXisUnits, {
+					labelX = nil;
+					labelXisUnits = false;
+				});
+			},{
+				if(labelX.isNil or: labelXisUnits) {
+					labelX = domainSpec.units;
+					labelXisUnits = true;
+				}
+			})
 		},{
 			drawGrid.horzGrid = nil
 		})
@@ -119,6 +202,14 @@ Plot {
 	fontColor_ { |c|
 		fontColor = c;
 		drawGrid.fontColor = c;
+	}
+	labelX_ { |string|
+		labelX = string;
+		labelXisUnits = false;
+	}
+	labelY_ { |string|
+		labelY = string;
+		labelYisUnits = false;
 	}
 	gridLineSmoothing_ { |bool|
 		drawGrid.smoothing = bool;
@@ -150,22 +241,28 @@ Plot {
 	}
 
 	drawLabels {
-		var sbounds;
-		if(gridOnX and: { labelX.notNil }) {
-			sbounds = try { labelX.bounds(font) } ? 0;
-			Pen.stringAtPoint(labelX,
-				plotBounds.right - sbounds.width @ plotBounds.bottom,
-				font,
-				fontColor
-			)
+		var lbounds;
+		if(labelX.notNil and: { gridOnX and: { drawGrid.x.labelOffset.y > 0 }}) {
+			try {
+				lbounds = labelX.bounds(font);
+				Pen.stringCenteredIn(labelX,
+					lbounds.center_(
+						plotBounds.center.x @ (plotBounds.bottom + (lbounds.height * 1.5) + (2 * txtPad))
+					), font, fontColor
+				);
+			}
 		};
-		if(gridOnY and: { labelY.notNil }) {
-			sbounds = try { labelY.bounds(font) } ? 0;
-			Pen.stringAtPoint(labelY,
-				plotBounds.left - sbounds.width - 3 @ plotBounds.top,
-				font,
-				fontColor
-			)
+		if(labelY.notNil and: { gridOnY and: { drawGrid.y.labelOffset.x > 0 }}) {
+			try {
+				lbounds = labelY.bounds(font);
+				Pen.push;
+				Pen.translate(
+					plotBounds.left - drawGrid.y.labelOffset.x + txtPad + (lbounds.height/2),
+					plotBounds.center.y);
+				Pen.rotateDeg(-90);
+				Pen.stringCenteredIn(labelY, lbounds.center_(0@0), font, fontColor);
+				Pen.pop;
+			}
 		};
 	}
 
@@ -456,6 +553,30 @@ Plot {
 			}
 		}
 	}
+
+	prGetTickLabelSize { |drawGrid|
+		var params, charCnt, labelSize;
+		var gridEdges = if ( drawGrid.isKindOf(DrawGridY) ) {
+			[drawGrid.bounds.top, drawGrid.bounds.bottom]
+		} {
+			[drawGrid.bounds.left, drawGrid.bounds.right]
+		};
+
+		params = drawGrid.grid.getParams(
+			drawGrid.range[0], drawGrid.range[1], gridEdges[0], gridEdges[1]
+		);
+		charCnt = try {
+			params.labels.flatten.collect(_.size).maxItem;
+		} { 3 };
+		labelSize = try {
+			("0" ! charCnt).join.bounds(font).size
+		} {
+			("0" ! charCnt).join.bounds(Font(Font.defaultSansFace, 9)).size
+		};
+		labelSize.height = labelSize.height;
+
+		^[labelSize, params.labels]
+	}
 }
 
 
@@ -464,7 +585,7 @@ Plotter {
 
 	var <>name, <>bounds, <>parent;
 	var <value, <data, <domain;
-	var <plots, <specs, <domainSpecs, plotColor;
+	var <plots, <specs, <domainSpecs, plotColor, labelX, labelY;
 	var <cursorPos, plotMode, <>editMode = false, <>normalized = false;
 	var <>resolution = 1, <>findSpecs = true, <superpose = false;
 	var modes, <interactionView;
@@ -628,6 +749,7 @@ Plotter {
 			this.calcSpecs(separately, minval, maxval, defaultRange);
 		};
 		this.updatePlots;
+		this.updatePlotBounds;
 		if(refresh) { this.refresh };
 	}
 
@@ -677,7 +799,11 @@ Plotter {
 
 		// for individual plots, restore previous domain state
 		this.domain_(dom);
-		if (superpose.not) { this.domainSpecs_(domSpecs) };
+		if (superpose.not) {
+			this.domainSpecs_(domSpecs);
+		};
+		this.labelX !? { this.labelX_(this.labelX) };
+		this.labelY !? { this.labelY_(this.labelY) };
 		this.refresh;
 	}
 
@@ -724,7 +850,8 @@ Plotter {
 			plot.bounds_(
 				Rect(bounds.left, distY * i + bounds.top, bounds.width, height)
 			)
-		}
+		};
+		this.refresh;
 	}
 
 	makePlots {
@@ -735,7 +862,6 @@ Plotter {
 		this.plotColor_(plotColor);
 		this.plotMode_(plotMode);
 		this.updatePlotSpecs;
-		this.updatePlotBounds;
 	}
 
 	updatePlots {
@@ -777,14 +903,17 @@ Plotter {
 					plot.domainSpec = domainSpecs.clipAt(i)
 				}
 			}
-		}
+		};
+
+		this.updatePlotBounds;
 	}
 
 	setProperties { |... pairs|
 		pairs.pairsDo { |selector, value|
 			selector = selector.asSetter;
 			plots.do { |x| x.perform(selector, value) }
-		}
+		};
+		this.updatePlotBounds;
 	}
 
 	plotColor_ { |colors|
@@ -804,7 +933,7 @@ Plotter {
 	plotMode_ { |modes|
 		plotMode = modes.asArray;
 		plots.do { |plt, i|
-			// rotate modes to ensure proper behavior with superpose
+			// rotate to ensure proper behavior with superpose
 			plt.plotMode_(plotMode.rotate(i.neg))
 		}
 	}
@@ -812,6 +941,40 @@ Plotter {
 	plotMode {
 		var first = plotMode.first;
 		^if (plotMode.every(_ == first)) { first } { plotMode };
+	}
+
+	labelX_ { |labels|
+		labelX = if(labels.isKindOf(Array)) {
+			labels.collect(_ !? (_.asString))
+		} { [ labels !? (_.asString) ] };
+		plots.do { |plt, i|
+			// rotate to ensure proper behavior with superpose
+			plt.labelX_(labelX.rotate(i.neg)[0])
+		};
+		this.updatePlotBounds;
+	}
+
+	labelX {
+		^ labelX !? {
+			if (labelX.every(_ == labelX.first)) { labelX.first } { labelX }
+		};
+	}
+
+	labelY_ { |labels|
+		labelY = if(labels.isKindOf(Array)) {
+			labels.collect(_ !? (_.asString))
+		} { [ labels !? (_.asString) ] };
+		plots.do { |plt, i|
+			// rotate to ensure proper behavior with superpose
+			plt.labelY_(labelY.rotate(i.neg)[0])
+		};
+		this.updatePlotBounds;
+	}
+
+	labelY {
+		^ labelY !? {
+			if (labelY.every(_ == labelY.first)) { labelY.first } { labelY };
+		};
 	}
 
 	// specs
@@ -941,8 +1104,8 @@ Plotter {
 		plotter.setValue(
 			array,
 			findSpecs: true,
-			separately: separately,
 			refresh: true,
+			separately: separately,
 			minval: minval,
 			maxval: maxval
 		);
@@ -967,7 +1130,7 @@ Plotter {
 	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
 
 		var name = this.asCompileString, plotter, action;
-		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
+		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "Function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
 		target = target.asTarget;
@@ -977,13 +1140,12 @@ Plotter {
 				plotter.setValue(
 					array.unlace(numChan).collect(_.drop(-1)),
 					findSpecs: true,
-					separately: separately,
 					refresh: false,
+					separately: separately,
 					minval: minval,
 					maxval: maxval
 				);
-				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
-				plotter.refresh;
+				plotter.domainSpecs = ControlSpec(0, duration, units: "Time (s)");
 			}.defer
 		};
 
@@ -1037,13 +1199,15 @@ Plotter {
 				plotter.setValue(
 					array.unlace(buf.numChannels),
 					findSpecs: true,
-					separately: separately,
 					refresh: false,
+					separately: separately,
 					minval: minval,
 					maxval: maxval
 				);
-				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units:"frames");
-				plotter.refresh;
+				plotter.domainSpecs = ControlSpec(
+					0.0, buf.numFrames,
+					units: if (buf.numChannels == 1) { "Samples" } { "Frames" }
+				);
 			}.defer
 		};
 
@@ -1060,7 +1224,7 @@ Plotter {
 
 + Env {
 	plot { |size = 400, bounds, minval, maxval, name|
-		var plotLabel = if (name.isNil) { "envelope plot" } { name };
+		var plotLabel = if (name.isNil) { "Envelope plot" } { name };
 		var plotter = [this.asMultichannelSignal(size).flop]
 		.plot(name, bounds, minval: minval, maxval: maxval);
 
@@ -1069,8 +1233,7 @@ Plotter {
 
 		var totalDuration = if (channelCount == 1) { duration } { duration.maxItem ! channelCount };
 
-		plotter.domainSpecs = totalDuration.collect(ControlSpec(0, _, units: "s"));
-		plotter.setProperties(\labelX, "time");
+		plotter.domainSpecs = totalDuration.collect(ControlSpec(0, _));
 		plotter.refresh;
 		^plotter
 	}

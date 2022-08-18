@@ -1,5 +1,3 @@
-
-
 DrawGrid {
 
 	var <bounds,<>x,<>y;
@@ -79,6 +77,7 @@ DrawGridX {
 	var <grid,<>range,<>bounds;
 	var <>font,<>fontColor,<>gridColor,<>labelOffset;
 	var commands,cacheKey;
+	var txtPad = 2; // match with Plot:txtPad
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -100,37 +99,70 @@ DrawGridX {
 		var p;
 		if(cacheKey != [range,bounds],{ commands = nil });
 		^commands ?? {
+			var valNorm, lineColor;
 			cacheKey = [range,bounds];
 			commands = [];
 			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
-			p['lines'].do { arg val;
-				// value, [color]
+
+			p['lines'].do { arg val, i;
 				var x;
-				val = val.asArray;
-				x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
-				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
-				commands = commands.add( ['line', Point( x, bounds.top), Point(x,bounds.bottom) ] );
-				commands = commands.add( ['stroke' ] );
+				val = val.asArray; // value, [color]
+				valNorm = grid.spec.unmap(val[0]);
+				x = valNorm.linlin(0, 1, bounds.left, bounds.right);
+				lineColor = val[1];
+
+				commands = this.prAddLineCmds(commands, x, lineColor);
+
+				// always draw line on left and right edges
+				case
+				{i == 0 and: { valNorm != 0 }} {
+					commands = this.prAddLineCmds(commands, bounds.left, lineColor);
+				}
+				{i == (p['lines'].size-1) and: { valNorm != 1 }} {
+					commands = this.prAddLineCmds(commands, bounds.right, lineColor);
+				}
 			};
-			if(bounds.width >= 12	,{
+			// Handle case where there is only one line:
+			// left and middle line has been added, now need a right line
+			if (p['lines'].size == 1 and: { valNorm != 1 }) {
+				commands = this.prAddLineCmds(commands, bounds.right, lineColor);
+			};
+
+			if(p['labels'].notNil and: { labelOffset.x > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val;
+				p['labels'].do { arg val; // value, label, [color, font]
 					var x;
-					// value, label, [color, font]
 					if(val[2].notNil,{
 						commands = commands.add( ['color_',val[2] ] );
 					});
 					if(val[3].notNil,{
 						commands = commands.add( ['font_',val[3] ] );
 					});
-					x = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.left, bounds.right);
-					commands = commands.add( ['stringAtPoint', val[1].asString, Point(x, bounds.bottom) + labelOffset ] );
+					x = grid.spec.unmap(val[0]).linlin(0, 1, bounds.left, bounds.right);
+
+					commands = commands.add([
+						'stringCenteredIn', val[1].asString,
+						Rect.aboutPoint(
+							x @ bounds.bottom, labelOffset.x/2, labelOffset.y/2
+						).top_(bounds.bottom + txtPad)
+					]);
 				}
 			});
 			commands
 		}
 	}
+
+	prAddLineCmds { |cmds, val, color|
+		cmds = cmds.add( ['strokeColor_', color ? gridColor] );
+		cmds = if (this.class == DrawGridX) {
+			cmds.add( ['line', Point(val, bounds.top), Point(val, bounds.bottom) ] );
+		} { // DrawGridY
+			cmds.add( ['line', Point(bounds.left, val), Point(bounds.right, val) ] );
+		};
+		^cmds = cmds.add( ['stroke'] ); // return
+	}
+
 	clearCache { cacheKey = nil; }
 	copy { ^super.copy.clearCache }
 }
@@ -145,32 +177,64 @@ DrawGridY : DrawGridX {
 	commands {
 		var p;
 		if(cacheKey != [range,bounds],{ commands = nil });
+
 		^commands ?? {
+			var valNorm, lineColor;
 			commands = [];
 
-			p = grid.getParams(range[0],range[1],bounds.top,bounds.bottom);
-			p['lines'].do { arg val;
-				// value, [color]
+			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom);
+
+			p['lines'].do { arg val, i; // value, [color]
 				var y;
 				val = val.asArray;
-				y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
-				commands = commands.add( ['strokeColor_',val[1] ? gridColor] );
-				commands = commands.add( ['line', Point( bounds.left,y), Point(bounds.right,y) ] );
-				commands = commands.add( ['stroke' ] );
+				valNorm = grid.spec.unmap(val[0]);
+				lineColor = val[1];
+				y = valNorm.linlin(0, 1, bounds.bottom, bounds.top);
+
+				commands = this.prAddLineCmds(commands, y, lineColor);
+
+				// draw grid line on top and bottom bound even if there is no 'line' there
+				case
+				{ i == 0 and: { valNorm != 0 } } { // bottom
+					commands = this.prAddLineCmds(commands, bounds.bottom, lineColor);
+				}
+				{ i == (p['lines'].size-1) and: { valNorm != 1 } } { // top
+					commands = this.prAddLineCmds(commands, bounds.top, lineColor);
+				};
 			};
-			if(bounds.height >= 20	,{
+			// Handle case where there is only one line:
+			// bottom and middle line has been added, now need a top line
+			if (p['lines'].size == 1 and: { valNorm != 1 }) {
+				commands = this.prAddLineCmds(commands, bounds.top, lineColor);
+			};
+
+			if(p['labels'].notNil and: { labelOffset.y > 0 }, {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
-				p['labels'].do { arg val,i;
-					var y;
+
+				p['labels'].do { arg val;
+					var y, lblRect;
+
 					y = grid.spec.unmap(val[0]).linlin(0, 1 ,bounds.bottom, bounds.top);
 					if(val[2].notNil,{
-						commands = commands.add( ['color_',val[2] ] );
+						commands = commands.add( ['color_', val[2]] );
 					});
 					if(val[3].notNil,{
-						commands = commands.add( ['font_',val[3] ] );
+						commands = commands.add( ['font_', val[3]] );
 					});
-					commands = commands.add( ['stringAtPoint', val[1].asString, Point(bounds.left, y) + labelOffset ] );
+
+					lblRect = Rect.aboutPoint(
+						Point(labelOffset.x/2 - txtPad, y),
+						labelOffset.x/2, labelOffset.y/2
+					);
+
+					switch(y.asInteger,
+						bounds.bottom.asInteger, {
+							lblRect = lblRect.bottom_(bounds.bottom + txtPad) },
+						bounds.top.asInteger, {
+							lblRect = lblRect.top_(bounds.top - txtPad) }
+					);
+					commands = commands.add(['stringRightJustIn', val[1].asString, lblRect]);
 				}
 			});
 			commands
@@ -178,9 +242,7 @@ DrawGridY : DrawGridX {
 	}
 }
 
-
 // DrawGridRadial : DrawGridX {}
-
 
 GridLines {
 
@@ -253,12 +315,17 @@ GridLines {
 		p = ();
 		p['lines'] = lines;
 		if(pixRange / numTicks > 9) {
+			if (sum(lines % 1) == 0) { nfrac = 0 };
 			p['labels'] = lines.collect({ arg val; [val, this.formatLabel(val,nfrac) ] });
 		};
 		^p
 	}
 	formatLabel { arg val, numDecimalPlaces;
-		^val.round( (10**numDecimalPlaces).reciprocal).asString + (spec.units?"")
+		if (numDecimalPlaces == 0) {
+			^val.asInteger.asString
+		} {
+			^val.round( (10**numDecimalPlaces).reciprocal).asString
+		}
 	}
 }
 
