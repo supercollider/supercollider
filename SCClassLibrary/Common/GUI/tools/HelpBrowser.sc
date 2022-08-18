@@ -2,6 +2,8 @@ HelpBrowser {
 	classvar singleton;
 	classvar <>defaultHomeUrl;
 	classvar <>openNewWindows = false;
+	classvar <>scrollStep = 40;
+	classvar <>scrollPageStep = 350;
 
 	var <>homeUrl;
 	var <window;
@@ -119,9 +121,9 @@ HelpBrowser {
 
 	goForward { webView.forward; }
 
-	goDown { webView.scrollDown(40); }
+	goDown { webView.scrollDown(HelpBrowser.scrollStep); }
 
-	goUp { webView.scrollUp(40); }
+	goUp { webView.scrollUp(HelpBrowser.scrollStep); }
 
 /* ------------------------------ private ------------------------------ */
 
@@ -321,10 +323,10 @@ HelpBrowser {
 					}
 				},
 				{ key == keyD && mods.isCtrl }, {
-					webView.scrollDown(350)
+					webView.scrollDown(HelpBrowser.scrollPageStep)
 				},
 				{ key == keyU && mods.isCtrl }, {
-					webView.scrollUp(350)
+					webView.scrollUp(HelpBrowser.scrollPageStep)
 				},
 				{ key == keyJ }, {
 					if (mods.asBoolean.not) {
