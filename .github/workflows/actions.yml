@@ -303,13 +303,6 @@ jobs:
         with:
           path: ~/Library/Caches/Homebrew/downloads
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
-      - name: cache qt
-        id: cache-qt
-        uses: actions/cache@v1
-        if: matrix.qt-version
-        with:
-          path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
       - name: cache qt universal binary
         id: cache-qt-universal
         uses: actions/cache@v3
@@ -513,14 +506,15 @@ jobs:
               combine_libraries $package
           done
       - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         if: matrix.qt-version
         env:
           DEVELOPER_DIR: '' # remove developer dir which causes installation to fail
         with:
           modules: 'qtwebengine'
           version: ${{ matrix.qt-version }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
 
       - name: configure
         run: |
@@ -587,6 +581,7 @@ jobs:
             vcvars-script: 'vcvars32.bat'
             vcpkg-triplet: x86-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
+            qt-modules: 'qtwebengine'
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win32' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -604,6 +599,7 @@ jobs:
             vcvars-script: 'vcvars64.bat'
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
+            qt-modules: 'qtwebengine'
             ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -618,6 +614,7 @@ jobs:
             cmake-generator: 'MinGW Makefiles'
             chocolatey-options: '' # '--forcex86' for 32-bit build
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
+            qt-modules: ''
             ableton-link: 'OFF' # might need to be turned off for MinGW
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
 
@@ -646,19 +643,14 @@ jobs:
           path: ~/AppData/Local/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
-      - name: cache qt
-        id: cache-qt
-        uses: actions/cache@v1
-        with:
-          path: ../Qt
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}
       - name: install qt using aqtinstall
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
-          modules: 'qtwebengine'
+          modules: ${{ matrix.qt-modules }}
           version: ${{ matrix.qt-version }}
           arch: ${{ matrix.qt-arch }}
-          cached: ${{ steps.cache-qt.outputs.cache-hit }}
+          cache: true
+          cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}
       - name: install libsndfile
         shell: bash
         run: |
