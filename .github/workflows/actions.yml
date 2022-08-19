@@ -684,3 +684,16 @@ jobs:
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  verify-css-themes:
+    # see HelpSource/themes/README.md
+    # keep versions in sync w/ HelpSource/themes/Dockerfile
+    runs-on: ubuntu-latest
+    container: node:lts-alpine3.16
+    steps:
+      - name: "Setup SASS"
+        run: npm instal -g sass@1.54.4
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: "Verify CSS files"
+        run: HelpSource/themes/build_css.sh verify

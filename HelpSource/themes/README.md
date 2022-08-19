@@ -60,7 +60,7 @@ When working e.g. on the *dracula* theme, run
 * Windows CMD
 
   ```cmd
-  docker run -it --init -v %cd%/..:/sc_docs/ --entrypoint sass sc-doc-themes --watch /sc_docs/themes/dracula.scss /sc_docs/scdoc.css  
+  docker run -it --init -v %cd%\..:/sc_docs/ --entrypoint sass sc-doc-themes --watch /sc_docs/themes/dracula.scss /sc_docs/scdoc.css  
   ```
 
 and use e.g. the [vscode](https://code.visualstudio.com/) [live server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) to view the modifications on e.g. `Browse.html` in your browser.
@@ -75,3 +75,33 @@ If this pipeline fails
 * check if you have build the SCSS files on the proper *SASS* version (check the `Dockerfile`)
 * check on [npm](https://www.npmjs.com/package/sass) if the used SASS version was removed/unpublished and bump it if necessary
 * Check the [*dart-sass* git repo](https://github.com/sass/dart-sass) for any news
+
+To run the checks locally on your machine set up the Docker image and run
+
+* on Unix or Powershell
+
+  ```shell
+  docker run -v ${PWD}/..:/sc_docs/ --entrypoint /bin/sh sc-doc-themes /sc_docs/themes/build_css.sh verify
+  ```
+
+* on Windows CMD
+  
+  ```cmd
+  docker run -v %cd%\..:/sc_docs/ --entrypoint /bin/sh sc-doc-themes /sc_docs/themes/build_css.sh verify
+  ```
+
+The result should look like
+
+```shell
+❯ docker run -v ${PWD}/..:/sc_docs/ --entrypoint /bin/sh sc-doc-themes /sc_docs/themes/build_css.sh verify
+Sass version 1.54.4 compiled with dart2js 2.17.6
+Verify built files
+./classic.css is identical
+./dark.css is identical
+./default.css is identical
+./dracula.css is identical
+./solarizedDark.css is identical
+./solarizedLight.css is identical
+scdoc.css matches default.css
+Everything looks fine
+```
