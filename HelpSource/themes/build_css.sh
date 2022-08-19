@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd "$(dirname "$0")"
+
 find . -name "*.scss"|while read fname; do
     echo "Build $fname";
     sass $fname ${fname//scss/css}
