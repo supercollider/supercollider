@@ -54,17 +54,17 @@ When working e.g. on the *dracula* theme, run
 * Unix/Powershell
 
   ```shell
-  docker run -it -v ${PWD}/..:/sc_docs/ --entrypoint sass sc-doc-themes --watch /sc_docs/themes/dracula.scss /sc_docs/scdoc.css
+  docker run -it --init -v ${PWD}/..:/sc_docs/ --entrypoint sass sc-doc-themes --watch /sc_docs/themes/dracula.scss /sc_docs/scdoc.css
   ```
 
 * Windows CMD
 
   ```cmd
-  docker run -it -v %cd%/..:/sc_docs/ --entrypoint sass sc-doc-themes --watch /sc_docs/themes/dracula.scss /sc_docs/scdoc.css  
+  docker run -it --init -v %cd%/..:/sc_docs/ --entrypoint sass sc-doc-themes --watch /sc_docs/themes/dracula.scss /sc_docs/scdoc.css  
   ```
 
 and use e.g. the [vscode](https://code.visualstudio.com/) [live server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) to view the modifications on e.g. `Browse.html` in your browser.
-
+To stop this simply hit `Ctrl-c`.
 
 ### Building in CI/CD
 
