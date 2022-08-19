@@ -776,7 +776,7 @@ Plotter {
 	}
 
 	plotColor_ { |colors|
-		plotColor = colors.as(Array);
+		if(colors.isArray.not) { colors = colors.bubble };
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
 			plt.plotColor_(plotColor.rotate(i.neg))
