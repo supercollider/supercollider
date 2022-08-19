@@ -1,5 +1,4 @@
-/* editor colors */
-/* editor colors */
+/* editor colors */ /* editor colors */
 /*
 
 THE CSS FILE IS GENERATED AUTOMATICALLY.
@@ -31,7 +30,7 @@ body {
 
 .contents {
   margin: 0;
-  padding: calc(33px + .5em) 1em 1em;
+  padding: calc(33px + 0.5em) 1em 1em;
 }
 
 table {
@@ -210,7 +209,6 @@ ul.inheritedmets li {
   #menubar .menuitem:first-child a {
     padding-left: 2.5em;
   }
-
   #menubar .menuitem a.home span,
 #menubar .toc-link span {
     display: initial;
