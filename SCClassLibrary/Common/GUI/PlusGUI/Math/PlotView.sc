@@ -86,8 +86,7 @@ Plot {
 		})
 	}
 	plotColor_ { |c|
-		colors = colors.as(Array);
-		plotColor = c;
+		plotColor = c.as(Array);
 	}
 	gridColorX_ { |c|
 		drawGrid.x.gridColor = c;
