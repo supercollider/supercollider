@@ -775,7 +775,7 @@ Plotter {
 	}
 
 	plotColor_ { |colors|
-		colors = colors.as(Array);
+		plotColor = colors.as(Array);
 		plots.do { |plt, i|
 			// rotate colors to ensure proper behavior with superpose
 			plt.plotColor_(plotColor.rotate(i.neg))
