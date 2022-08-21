@@ -182,7 +182,7 @@ Plot {
 		})
 	}
 	plotColor_ { |c|
-		plotColor = c.asArray;
+		plotColor = c.as(Array);
 	}
 	gridColorX_ { |c|
 		drawGrid.x.gridColor = c;
