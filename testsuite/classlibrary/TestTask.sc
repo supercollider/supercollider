@@ -53,10 +53,14 @@ TestTask : UnitTest {
 
 	test_play_with_LinkClock {
 		var ok = false;
-		var task = Task { 0.001.wait; ok = true; };
+		var task = Task { 0.001.wait; ok = true; cond.signalAll };
+		var clock = LinkClock.new;
+		var cond = CondVar.new;
 		task.play(LinkClock);
-		0.002.wait;
+		cond.waitFor(1, { ok });
 		task.stop;
+		clock.stop;
 		this.assert(ok, "Task plays with LinkClock");
 	}
+
 }
