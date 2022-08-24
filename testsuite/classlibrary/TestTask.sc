@@ -24,22 +24,22 @@ TestTask : UnitTest {
 	}
 
 	test_play_with_SystemClock {
-		this.makeTestWithClock(SystemClock, "SystemClock");
+		this.makePlayTestWithClock(SystemClock, "SystemClock");
 	}
 
 	test_play_with_AppClock {
-		this.makeTestWithClock(AppClock, "AppClock");
+		this.makePlayTestWithClock(AppClock, "AppClock");
 	}
 
 	test_play_with_TempoClock {
-		this.makeTestWithClock(TempoClock.default, "TempoClock.default");
+		this.makePlayTestWithClock(TempoClock.default, "TempoClock.default");
 	}
 
 	test_play_with_LinkClock {
-		this.makeTestWithClock(LinkClock.new, "LinkClock.new");
+		this.makePlayTestWithClock(LinkClock.new, "LinkClock.new");
 	}
 
-	makeTestWithClock { |clock, nameString|
+	makePlayTestWithClock { |clock, nameString|
 		var ok = false;
 		var task = Task { 0.001.wait; ok = true; cond.signalAll };
 		var cond = CondVar.new;
