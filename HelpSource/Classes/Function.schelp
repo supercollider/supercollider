@@ -357,9 +357,9 @@ Pbind(
 
 subsection::Exception Handling
 
-
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.
 
+See also link::#Exception Handling Examples:: and link::Classes/Exception:: for more information on how to handle exceptions.
 
 method::try
 
@@ -667,7 +667,7 @@ returns:: Like link::Classes/Function#-play::, a Synth playing this function. Wh
 
 examples::
 
-subsection::Exception Handling
+subsection::Exception Handling Examples
 
 code::
 // no exception handler
