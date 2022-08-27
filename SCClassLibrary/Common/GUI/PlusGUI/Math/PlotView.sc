@@ -573,7 +573,7 @@ Plot {
 		} {
 			("0" ! charCnt).join.bounds(Font(Font.defaultSansFace, 9)).size
 		};
-		labelSize.height = labelSize.height;
+		labelSize.width = labelSize.width * 1.1;
 
 		^[labelSize, params.labels]
 	}
