@@ -32,7 +32,7 @@ TestTask : UnitTest {
 	}
 
 	test_play_with_TempoClock {
-		this.makePlayTestWithClock(TempoClock.default, "TempoClock.default");
+		this.makePlayTestWithClock(TempoClock.new, "TempoClock.new");
 	}
 
 	test_play_with_LinkClock {
