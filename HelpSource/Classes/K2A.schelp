@@ -7,8 +7,8 @@ categories::  UGens>Conversion
 Description::
 
 To be able to play a control rate UGen into an audio rate UGen,
-sometimes the rate must be converted. K2A converts via linear
-interpolation.
+sometimes the rate must be converted. By default, K2A converts via
+linear interpolation, though the interpolation can be turned off.
 
 
 classmethods::
@@ -17,6 +17,9 @@ method::ar
 
 argument::in
 The input signal.
+
+argument::ramp
+A flag to enable or disable linear interpolation. If nonzero, K2A will interpolate; if zero, there is no interpolation (the output is a zero-order hold, or stairstep). The default is 1.0 (enabled).
 
 Examples::
 
@@ -48,3 +51,22 @@ code::
 )
 ::
 
+subsection:: Ramp behavior
+
+The following plot contrasts a non-interpolated K2A against a normally interpolated K2A.
+
+If some degree of interpolation is desired, but not necessarily occupying a full control block, one option is to apply link::Classes/Slew:: to a non-interpolated K2A. (Note that the ramp time in this case will depend on the difference between the successive control rate values. Here, the difference between LFPulse values is always +1 or -1, so a slope of code::ControlRate.ir * 2:: will ramp over half of a control block. A smaller or larger differential would produce a shorter or longer ramp.)
+
+code::
+(
+{
+	var freq = ControlRate.ir * 0.25;
+	var krpulse = LFPulse.kr(freq);
+	var noRamp = K2A.ar(krpulse, 0);
+	var ramp = K2A.ar(krpulse, 1);
+	var slope = ControlRate.ir * 2;
+	var partialRamp = Slew.ar(noRamp, slope, slope);
+	[noRamp, ramp, partialRamp]
+}.plot;
+)
+::

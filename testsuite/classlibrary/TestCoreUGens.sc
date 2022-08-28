@@ -619,5 +619,43 @@ TestCoreUGens : UnitTest {
 
 	}
 
+	test_K2A_ramp_input {
+		var buf, node, flag = false;
+		var data;
+		var cond = CondVar.new;
 
+		server.bootSync;
+
+		buf = Buffer.alloc(server, server.options.blockSize * 16, 2);
+		server.sync;
+
+		node = {
+			var pulse = LFPulse.kr(ControlRate.ir * 0.25);
+			RecordBuf.ar(K2A.ar(pulse, [0, 1]), buf, loop: 0, doneAction: 2);
+			Silent.ar(1)
+		}.play(server.defaultGroup);
+		node.onFree {
+			flag = true;
+			cond.signalAll
+		};
+		cond.waitFor(0.2) { flag };
+
+		buf.getToFloatArray(action: { |contents|
+			data = contents;
+			cond.signalAll
+		});
+		cond.waitFor(0.2) { data.notNil };
+
+		buf.free;
+
+		this.assert(
+			data[0, 2 ..].differentiate.drop(1).abs.maxItem > 0.99,
+			"Non-interpolated K2A should have a large maximum differential"
+		);
+
+		this.assert(
+			data[1, 3..].differentiate.drop(1).abs.maxItem < 0.05,
+			"Interpolated K2A should have a small maximum differential"
+		)
+	}
 } // end TestCoreUGens class

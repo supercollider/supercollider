@@ -67,8 +67,8 @@ AmpCompA : AmpComp {
 }
 
 K2A : PureUGen { // control rate to audio rate converter
-	*ar { arg in = 0.0;
-		^this.multiNew('audio', in)
+	*ar { arg in = 0.0, ramp = 1.0;
+		^this.multiNew('audio', in, ramp)
 	}
 }
 
