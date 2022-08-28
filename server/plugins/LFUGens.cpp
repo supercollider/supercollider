@@ -1199,7 +1199,7 @@ struct K2A : SIMD_Unit {
 
     K2A(void) {
         mLevel.init(this);
-	mRamp.init(this);
+        mRamp.init(this);
         if (inRate(0) == calc_ScalarRate)
             set_unrolled_calc_function<K2A, &K2A::next_i<unrolled_64>, &K2A::next_i<unrolled>, &K2A::next_i<scalar>>();
         else
@@ -1212,7 +1212,7 @@ struct K2A : SIMD_Unit {
         else {
             mLevel.init(this);
             next_i<type>(inNumSamples);
-	}
+        }
     }
 
     template <int type> void next_i(int inNumSamples) { set_vec<type>(out(0), mLevel, inNumSamples); }
