@@ -159,7 +159,7 @@ void TCPConnection::handleLengthReceived(const boost::system::error_code& error,
     // msglen is in network byte order
     mOSCMsgLength = sc_ntohl(mOSCMsgLength);
 
-    mData.reset(new char[mOSCMsgLength]);
+    mData = std::make_unique<char[]>(mOSCMsgLength);
 
     ba::async_read(mSocket, ba::buffer(mData.get(), mOSCMsgLength),
                    [receiver = shared_from_this()](auto error, auto bytesReceived) {
@@ -346,7 +346,7 @@ void TCP::handleLengthReceived(const boost::system::error_code& error, size_t by
 
     // msglen is in network byte order
     mOSCMsgLength = sc_ntohl(mOSCMsgLength);
-    mData.reset(new char[mOSCMsgLength]);
+    mData = std::make_unique<char[]>(mOSCMsgLength);
 
     namespace ba = boost::asio;
     ba::async_read(mSocket, ba::buffer(mData.get(), mOSCMsgLength),
