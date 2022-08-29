@@ -71,6 +71,8 @@ void Onsets_Ctor(Onsets* unit) {
 
     unit->m_needsinit = true;
     unit->m_ods = (OnsetsDS*)RTAlloc(unit->mWorld, sizeof(OnsetsDS));
+    unit->m_odsdata = nullptr;
+    ClearUnitIfMemFailed(unit->m_ods);
 
     ZOUT0(0) = unit->outval = 0.f;
 }
@@ -91,6 +93,7 @@ void Onsets_next(Onsets* unit, int inNumSamples) {
     if (unit->m_needsinit) {
         // Init happens here because we need to be sure about FFT size.
         unit->m_odsdata = (float*)RTAlloc(unit->mWorld, onsetsds_memneeded(odftype, buf->samples, medspan));
+        ClearUnitIfMemFailed(unit->m_odsdata);
 
         onsetsds_init(ods, unit->m_odsdata, ODS_FFT_SC3_POLAR, odftype, buf->samples, medspan, FULLRATE);
         onsetsds_setrelax(ods, relaxtime, buf->samples >> 1);
@@ -127,6 +130,7 @@ void Onsets_next_rawodf(Onsets* unit, int inNumSamples) {
     if (unit->m_needsinit) {
         // Init happens here because we need to be sure about FFT size.
         unit->m_odsdata = (float*)RTAlloc(unit->mWorld, onsetsds_memneeded(odftype, buf->samples, medspan));
+        ClearUnitIfMemFailed(unit->m_odsdata);
 
         onsetsds_init(ods, unit->m_odsdata, ODS_FFT_SC3_POLAR, odftype, buf->samples, medspan, FULLRATE);
         onsetsds_setrelax(ods, relaxtime, buf->samples >> 1);

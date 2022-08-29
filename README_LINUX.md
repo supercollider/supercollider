@@ -81,7 +81,13 @@ If this displays version 5.7 or later, installing Qt is easy:
 
     sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtwebengine5-dev libqt5svg5-dev libqt5websockets5-dev
 
-If you are on Ubuntu 14.04 (Trusty) or 16.04 (Xenial), check the next section. Otherwise, you will have to use the official Qt installer. Sorry.
+If you are on Ubuntu, check the sections below. If these instructions don't work, you will have to use the official Qt installer.
+
+### Installing Qt on Ubuntu Bionic, Focal, or Jammy
+
+On Ubuntu 18.04 (Bionic), 20.04 (Focal), and 22.04 (Jammy) Qt5 is available in the system's package manager. The following should install the correct packages:
+
+    sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
 
 ### Installing Qt on Ubuntu Trusty or Xenial
 

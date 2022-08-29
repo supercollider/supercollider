@@ -621,16 +621,9 @@ higher priority than the environment path. So if you bump into a case, please
 report it to the SC community. Or even better: create a pull request on Github
 that enhances the build system.
 
-Of course there could also be bugs in the SC source. A source for the
-current build status of SC is the travis-ci status page:
+You can find the status of the current automated build from the `develop` branch at the GitHub Actions page:
 
-https://travis-ci.org/supercollider/supercollider
-
-Unfortunately though there is no Continuous Integration system in place for
-Windows yet. Therefore you are strongly encouraged to report Windows build
-issues in one of the mailing lists, or the SC issue tracker on Github.
-Reporting Windows build issues is currently the only way to detect errors
-for SCWin resulting from progress in mainstream SC development.
+https://github.com/supercollider/supercollider/actions/workflows/actions.yml?query=branch%3Adevelop
 
 Walkthroughs
 ------------
@@ -1207,16 +1200,26 @@ Another way of storing CMake command line arguments is creating a "toolchain"
 file. This is the CMake suggested method. Please look up the CMake documentation
 if you require an advanced configuration, and are interested in this approach.
 
+### Readline support
+
+Previously Windows builds of SuperCollider did not support command line mode for sclang due to unavailability of the `readline` library. Currently it is possible to install `readline` using [vcpkg](https://github.com/microsoft/vcpkg). Follow these steps to build SC with the `readline` library (note that the following commands assume using MSVC):
+- install `vcpkg`, if not installed already
+- install the library using `vcpkg`:  
+`vcpkg install readline --triplet=x64-windows`
+- set `VCPKG_ROOT` environment variable to point to the root `vcpkg` directory:  
+`SET VCPKG_ROOT=c:\path\to\vcpkg`
+- readline should be picked up by CMake during the configuration stage
+
+Note: 
+- For 32-bit builds use `x86-windows` instead of `x64-windows` triplet when installing `readline`
+- At the time of writing this, `readline` would not build using a triplet for MinGW
+
 Known issues
 ============
-
-- READLINE/Command line-mode for sclang is not available.
 
 - using shell commands from SC only works in a quite limited way (and always did).
   .unixCmd expects a unix shell, only for essential requirements workarounds
   are in place on Windows.
-
-- Serial port communication is not available.
 
 Outro
 =====

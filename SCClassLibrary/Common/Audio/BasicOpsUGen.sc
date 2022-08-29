@@ -168,6 +168,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeAddNeg {
 		var a, b, replacement;
 		#a, b = inputs;
+		if(a === b) { ^nil };  // non optimizable edge case.
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
 			// a + b.neg -> a - b
@@ -197,6 +198,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeToMulAdd {
 		var a, b, replacement;
 		#a, b = inputs;
+		if(a === b) { ^nil };
 
 		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '*'
 			and: { a.descendants.size == 1 }})
@@ -269,6 +271,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeToSum4 {
 		var a, b, replacement;
 		#a, b = inputs;
+		if(a === b) { ^nil };
 		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
 		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {

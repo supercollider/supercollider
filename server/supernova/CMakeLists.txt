@@ -11,10 +11,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-if(APPLE)
-    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
-endif()
-
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
 # scsynth uses vDSP implementation for FFT on macOS
@@ -172,6 +168,15 @@ find_package(Sndfile)
 if (NOT SNDFILE_FOUND)
     message(SEND_ERROR "Cannot find libsndfile")
 else()
+    if(SNDFILE_HAS_VORBIS)
+        target_compile_definitions(libsupernova PUBLIC SNDFILE_HAS_VORBIS)
+    endif()
+    if(SNDFILE_HAS_OPUS)
+        target_compile_definitions(libsupernova PUBLIC SNDFILE_HAS_OPUS)
+    endif()
+    if(SNDFILE_HAS_MPEG)
+        target_compile_definitions(libsupernova PUBLIC SNDFILE_HAS_MPEG)
+    endif()
     target_link_libraries(libsupernova ${SNDFILE_LIBRARIES})
     target_include_directories(libsupernova PUBLIC ${SNDFILE_INCLUDE_DIR})
 endif()
@@ -253,9 +258,12 @@ if(WIN32)
     )
 
 elseif(APPLE)
-    add_custom_command(TARGET supernova POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+    if(scappauxresourcesdir)
+        add_custom_command(TARGET supernova POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            )
+    endif()
 else()
   install(TARGETS supernova
           DESTINATION "bin"

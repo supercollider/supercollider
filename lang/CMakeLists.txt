@@ -305,6 +305,15 @@ if (AUDIOAPI STREQUAL portaudio)
 endif()
 
 if(SNDFILE_FOUND)
+	if(SNDFILE_HAS_VORBIS)
+		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_VORBIS)
+	endif()
+	if(SNDFILE_HAS_OPUS)
+		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_OPUS)
+	endif()
+	if(SNDFILE_HAS_MPEG)
+		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_MPEG)
+	endif()
 	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
@@ -350,9 +359,12 @@ if(LTO)
 endif()
 
 if(APPLE)
-    add_custom_command(TARGET sclang POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+    if(scappbindir)
+        add_custom_command(TARGET sclang POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappbindir}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> ${CMAKE_INSTALL_PREFIX}/${scappbindir}
+            )
+    endif()
 elseif(WIN32)
     if(NOT MSVC)
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")

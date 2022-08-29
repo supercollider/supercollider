@@ -115,7 +115,7 @@ method::numChannels
 a number of sound file channels that is used always when using this recorder, unless a different one is specified in the link::#-record:: method. When not set, we use link::Classes/Server#-recChannels::.
 
 method:: recHeaderFormat
-Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
+Get/set the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
 Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.

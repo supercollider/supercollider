@@ -11,7 +11,7 @@ Failure to set any states at all results in an invisible button.
 
 The button performs its action upon releasing the mouse. In musical contexts, you might want to use code::mouseDownAction_():: to set a function to be performed on pressing the mouse (see link::Classes/View::, and examples below).
 
-If the drag contains a number, then code::valueAction_():: is performed using the code::currentDrag::. If the drag contains anything else, code::action:: is set to the current drag. You could, for example, drag a function to an Button, and action would then be set to that function.
+If the drag contains a number, then code::valueAction_():: is performed using the code::currentDrag::. If the drag contains anything else, code::action:: is set to the current drag. You could, for example, drag a function to a Button, and action would then be set to that function.
 
 classmethods::
 
@@ -92,7 +92,7 @@ b.string = "hello button";
 
 method:: font
 Sets the Font of the button. Default value is the default font: Font.default .
-argument:: font
+argument:: aFont
 An instance of link::Classes/Font::.
 
 
@@ -162,7 +162,7 @@ b.valueAction = -1;
 b.valueAction = 3.3;
 ::
 
-In a musical context, a button-down press is more meaningful than a button-up (release) as it's more intuitive to press a button on the beat. For that you can use link::Classes/View::'s link::Classes/View#mouseDownAction:: (a superclass of Button).
+In a musical context, a button-down press is more meaningful than a button-up (release) as it's more intuitive to press a button on the beat. For that you can use link::Classes/View::'s link::Classes/View#-mouseDownAction:: (a superclass of Button).
 code::
 (
 s.waitForBoot({

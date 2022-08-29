@@ -968,9 +968,9 @@ void World_Cleanup(World* world, bool unload_plugins) {
 
 #ifndef NO_LIBSNDFILE
         if (nrtbuf->sndfile)
-            sf_close(nrtbuf->sndfile);
+            sf_close(GETSNDFILE(nrtbuf));
         if (rtbuf->sndfile && rtbuf->sndfile != nrtbuf->sndfile)
-            sf_close(rtbuf->sndfile);
+            sf_close(GETSNDFILE(rtbuf));
 #endif
     }
 

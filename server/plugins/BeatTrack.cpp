@@ -140,6 +140,7 @@ void BeatTrack_Ctor(BeatTrack* unit) {
     unit->m_prevmag = (float*)RTAlloc(unit->mWorld, NOVER2 * sizeof(float));
     unit->m_prevphase = (float*)RTAlloc(unit->mWorld, NOVER2 * sizeof(float));
     unit->m_predict = (float*)RTAlloc(unit->mWorld, NOVER2 * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_prevmag && unit->m_prevphase && unit->m_predict);
 
     ////////time positions//////////
     unit->m_frame = 1; // don't decide immediately, wait for maximum period!

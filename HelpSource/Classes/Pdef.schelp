@@ -101,6 +101,8 @@ Set the default quantisation for new instances (default: 1.0). This can be an ar
 
 InstanceMethods::
 
+private::prAdd
+
 subsection::Changing the definition / setting the source
 
 One pattern may have many streams in different places. A change in the pattern definition Pdef propagates through all streams. The change does not have to be immediate - there is a scheme to schedule when the change becomes effective: a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
@@ -190,6 +192,9 @@ Examples::
 subsection::Pdef as stream reference
 
 code::
+
+s.boot;
+
 (
 SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 	var env, u=1;
@@ -199,7 +204,6 @@ SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 
 }).add;
 )
-s.boot;
 
 Pdef(\metronom, Pbind(\instrument, \Pdefhelp, \dur, 1, \degree, 16, \legato, 0.1)).play;
 

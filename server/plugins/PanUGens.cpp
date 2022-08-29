@@ -1278,11 +1278,7 @@ void PanAz_Ctor(PanAz* unit) {
             ZOUT0(i) = 0.f;
 
         unit->m_chanamp = (float*)RTAlloc(unit->mWorld, numOutputs * sizeof(float));
-        if (!unit->m_chanamp) {
-            Print("PanAz: RT memory allocation failed\n");
-            SETCALC(ClearUnitOutputs);
-            return;
-        }
+        ClearUnitIfMemFailed(unit->m_chanamp);
 
         std::fill_n(unit->m_chanamp, numOutputs, 0);
 

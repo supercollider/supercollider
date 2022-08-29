@@ -157,13 +157,13 @@ argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
 
 note::
-When reshaping is set, e.g. to \elastic, setting the source can change the number of channels of the proxy. This means that its bus changes, and that child proxies, which read signals from it, may also change. See the example in link::#routing::.
+When reshaping is set, e.g. to \elastic, setting the source can change the number of channels of the proxy. This means that its bus changes, and that child proxies, which read signals from it, may also change. See the example in link::#Routing::.
 ::
 
 subsection::Routing
 Signals can be routed between any number of node proxies.
 
-See also: link::Classes/BusPlug#ar::, link::Classes/BusPlug#value::, link::#reshaping::.
+See also: link::Classes/BusPlug#-ar::, link::Classes/BusPlug#-value::, link::#Reshaping::.
 
 Here is a simple example, using Ndef (NodeProxy works similarly):
 
@@ -460,11 +460,64 @@ definitionList::
 ## node proxy || map subsequent control channels to the corresponding proxy output channel
 ::
 
+method:: seti
+Set part of an arrayed control, analog to link::Classes/Synth#-seti::.
+argument:: ... args
+A sequence of strong:: name, index, value :: triplets.
+
+definitionlist::
+## name || The name of the arrayed control
+## index || The index into the array
+## value || The new value to set, can be an array to set a range of elements.
+::
+
+Discussion::
+code::
+// 5 channel NodeProxy, for convenience initialized in an Ndef
+(
+Ndef(\sin).mold(5, \audio, \elastic);
+Ndef(\sin)[0] = {
+	SinOsc.ar(
+		\freq.kr([200, 201, 202, 204, 205]),
+		SinOsc.kr(\phase.kr([0, 0, 0, 0, 0])).range(0, 2pi)
+	)
+}
+)
+
+// out mixer: mix down to 2 channels and spread channels across panorama
+(
+Ndef(\out).mold(2, \audio, \elastic);
+Ndef(\out)[0] = {
+	// 5 channel input
+	Splay.ar(\in.ar(0!5), level: \amp.kr(0.3))
+}
+)
+
+// route Ndef(\sin) through Ndef(\out)
+(
+Ndef(\out) <<> Ndef(\sin);
+Ndef(\out).play;
+)
+
+// change frequency and phase in 4th channel
+Ndef(\sin).seti(\freq, 3, 137, \phase, 1, 11)
+
+// 1st channel 310hz, 3rd 207hz
+Ndef(\sin).seti(\freq, [0, 2], [310, 207])
+
+// exceeding indices, argument arrays of different length
+// 34 % 5 => 4, 12 % 5 => 2, 56 % 5 => 1
+Ndef(\sin).seti(\freq, [34, 12, 56], [376, 199])
+Ndef(\sin).getKeysValues // -> [ [ freq, [ 310, 376, 199, 137, 376 ] ] ]
+
+Ndef.clear(10)
+::
+
 method::unset, unmap
 Remove specified settings and unmap or unset the synths.
 
 method::xset
-set/map with a crossfade into the new setting. The crossfadeT time is the NodeProxy link::#-fadeTime::.
+set/map with a crossfade into the new setting. The crossfade time is the NodeProxy link::#-fadeTime::.
 
 method::lag
 set the lag values of these args (identical to link::#-setRates::). To remove these settings, use: code::lag(\key1, nil, key2, nil, ...)::
@@ -473,7 +526,7 @@ method::setRates
 set the default rate (\tr, \ir, numerical) for synthDef arg. A rate of nil removes setting.
 
 method::controlNames
-Returns the link::Classes/ControlName:: objects of all slots, strong::except:: the names of this list (default: code::[\out, \i_out, \gate, \fadeTime]:: , which are used internally).
+Returns the link::Classes/ControlName:: objects of all slots, strong::except:: the names of this list (default: code::[\out, \i_out, \gate, \fadeTime]:: , which are used internally). When the node proxy received a code::set:: for a given key, the code::defaultValue:: of the corresponding code::ControlName:: contains the object that was passed, which might be any object whatsoever.
 
 method::controlKeys
 Returns the keys (symbols) of all control names objects of all slots, strong::except:: the names of this list. (default: none).

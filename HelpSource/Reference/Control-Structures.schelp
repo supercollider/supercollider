@@ -308,9 +308,40 @@ x.postln;
 )
 ::
 
+method:: try
+
+Function implements a code::try:: method which allows catching exceptions thrown by code and run the exception handler. For more information see link::Classes/Exception::.
+discussion::
+Example
+code::
+try {
+	...code... 
+} { |error|
+	...exception handler...
+};
+::
+
+method:: protect
+
+Function implements a code::protect:: method which allows protecting code from exceptions thrown by code.
+The difference with code::try:: is the exception handler code is always run, even if there is no exception.
+If an exception occurs, it is rethrown after the exception handler block is run.
+For more information see link::Classes/Exception::.
+
+discussion::
+Example
+code::
+file = File(path, "r");
+protect {
+	// work with the file here, which might cause an error
+} {
+	file.close;
+};
+::
+
 section:: Other Control Structures
 
-Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#iteration:: there are many more messages defined for iterating over Collections.
+Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#Iteration:: there are many more messages defined for iterating over Collections.
 
 section:: Inline optimization
 

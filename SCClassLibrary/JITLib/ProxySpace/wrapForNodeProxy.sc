@@ -285,6 +285,7 @@
 			xset: StreamControl,
 			pset: StreamControl,
 			set: StreamControl,
+			seti: StreamControl,
 			stream: PatternControl,
 			setbus: StreamControl,
 			setsrc: StreamControl
@@ -301,7 +302,7 @@
 				};
 
 				{ | out |
-					var env, ctl = Control.names(["wet"++(index ? 0)]).kr(1.0);
+					var env, ctl = NamedControl.kr("wet" ++ (index ? 0), 1.0);
 					if(proxy.rate === 'audio') {
 						env = ctl * EnvGate(i_level: 0, doneAction:2, curve:\sin);
 						XOut.ar(out, env, SynthDef.wrap(func, nil, [In.ar(out, proxy.numChannels)]))
@@ -363,7 +364,7 @@
 
 				{ | out |
 					var in, env;
-					var wetamp = Control.names(["wet"++(index ? 0)]).kr(1.0);
+					var wetamp = NamedControl.kr("wet" ++ (index ? 0), 1.0);
 					var dryamp = 1 - wetamp;
 					var sig = { |in| SynthDef.wrap(func, nil, [in * wetamp]) + (dryamp * in) };
 
@@ -382,7 +383,7 @@
 			mix: #{ | func, proxy, channelOffset = 0, index |
 
 				{
-					var ctl = Control.names(["mix" ++ (index ? 0)]).kr(1.0);
+					var ctl = NamedControl.kr("mix" ++ (index ? 0), 1.0);
 					var sig = SynthDef.wrap(func);
 					var curve = if(sig.rate === \audio) { \sin } { \lin };
 					var env = EnvGate(i_level: 0, doneAction:2, curve:curve);
@@ -390,8 +391,23 @@
 					ctl * sig * env
 
 				}.buildForProxy( proxy, channelOffset, index )
-			};
+			},
 
+			// seti role: set controls for a specific channel in a multi channel NodeProxy
+			seti: #{ |pattern, proxy, channelOffset = 0, index|
+				var args = proxy.controlNames.collect(_.name);
+				Pchain(
+					(type: \set, id: { proxy.group.nodeID }, args: args),
+					Pbindf(
+						pattern,
+						\play, Pfunc { |e| args.do { |n|
+							e[n] !? {
+								proxy.seti(n, e.channelOffset, e[n])
+							}
+						}}
+					)
+				).buildForProxy(proxy, channelOffset, index)
+			}
 		)
 	}
 }

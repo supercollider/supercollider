@@ -277,6 +277,8 @@ public:
 
     void set_error_posting(int val) { error_posting = val; }
 
+    int get_error_posting() { return error_posting; }
+
 private:
     int error_posting = 1;
     /* @} */

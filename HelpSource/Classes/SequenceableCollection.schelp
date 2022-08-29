@@ -622,7 +622,7 @@ code::
 ::
 
 method::convertDigits
-Returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#asDigits:: for the complementary method.
+Returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#-asDigits:: for the complementary method.
 code::
 [1, 0, 0, 0].convertDigits;
 [1, 0, 0, 0].convertDigits(2);
@@ -643,7 +643,7 @@ subsection:: Fuzzy comparisons
 With fuzzy comparisons, the arrays do not need to match exactly. We can check how similar they are, and make decisions based on that. This is the magic behind autocorrection.
 
 method::editDistance
-Returns the mininum number of changes to modify this teletype::SequenceableCollection:: into the other teletype::SequenceableCollection::.
+Returns the minimum number of changes to modify this teletype::SequenceableCollection:: into the other teletype::SequenceableCollection::.
 A change can be: an addition, a deletion, or a substitution.
 This is known as the Levenshtein Distance and is implemented in SuperCollider using the Wagner–Fischer algorithm.
 

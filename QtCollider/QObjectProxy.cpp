@@ -38,7 +38,7 @@
 
 #if defined _WIN32
 #    include "SC_Win32Utils.h"
-#elif defined __FreeBSD__
+#elif defined __FreeBSD__ || defined __OpenBSD__
 #    include <stdlib.h>
 #else
 #    include <alloca.h>

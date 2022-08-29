@@ -374,7 +374,9 @@ void* AllocPool::Alloc(size_t inReqSize) {
 // exit paths:
 found_nothing:
     // ipostbuf("alloc failed. size: %d\n", inReqSize);
-    throw std::runtime_error(std::string("alloc failed, increase server's memory allocation (e.g. via ServerOptions)"));
+    // throw std::runtime_error(std::string("alloc failed, increase server's memory allocation (e.g. via
+    // ServerOptions)"));
+    return 0;
 
 whole_new_area:
     // ipostbuf("whole_new_area\n");

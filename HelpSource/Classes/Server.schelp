@@ -28,6 +28,15 @@ code::
 s.serverRunning // returns true if it is true
 ::
 
+note::
+If you get the message code::"Mismatched sample rates are not supported.":: it may be helpful to follow these steps:
+code::
+1. set your device to the sample rate you want
+2. check the device name in the boot posting of the server
+3. set both sample rate and device (s.options.sampleRate = …; s.options.device = "…")
+4. reboot the server: "s.reboot"
+::
+::
 Some insights about common Server issues can be found on the FAQ link::Guides/UserFAQ#Server Issues#Server Issues::
 
 
@@ -385,7 +394,7 @@ The getter returns the client ID of this client on the remote process. code::nil
 The setter attempts to set the client ID of this client for the remote server process. Fails on invalid input or if the server is running. Valid inputs are in the range code::[0..(this.maxNumClients-1)]::.
 
 method:: hasShmInterface
-Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous Control Bus Methods::.
 The shared memory interface is initialized after first server boot.
 
 warning::
@@ -667,7 +676,7 @@ this is optional, and is passed to code::prepareForRecord:: (above).
 argument:: bus
 the bus to record - defaults to 0
 argument:: numChannels
-the number of channels to record - defaults to server numChannels
+the number of channels to record - defaults to 2
 argument:: node
 the node to record - defaults to server rootnode
 argument:: duration
@@ -689,10 +698,10 @@ method:: recChannels
 Get/set the number of channels (int) to record. By default this is set to 2 (stereo) but can be increased to record soundfiles with many more channels. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
-Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
+Get/set the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
-Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
+Get/set the sample format (string) of the output file. The default is "float" (32-bit). Common options include "int24" for 24-bit audio and "int16" for 16-bit audio. Must be called strong::before:: prepareForRecord.
 
 method::recBufSize
 Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
@@ -722,7 +731,7 @@ one or more OSC messages which will be bundled before the sync message (thus ens
 allows for the message to be evaluated at a specific point in the future.
 
 discussion::
-This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
+This may be slightly less safe than sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
 code::
 (
 Routine.run {

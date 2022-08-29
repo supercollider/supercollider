@@ -107,7 +107,7 @@ method::end
 end all proxies (free and stop the monitors)
 
 method::clear
-clear the node proxy and remove it from the environment. this frees all buses. If a fadeTime is given, first fade out, then clear.
+clear all proxies and remove them from the environment. This frees all buses. If a fadeTime is given, first fade out, then clear.
 
 method::add
 add the ProxySpace to the repository (name required)

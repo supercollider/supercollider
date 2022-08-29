@@ -89,6 +89,7 @@ void Gendy1_Ctor(Gendy1* unit) {
     unit->mIndex = 0;
     unit->mMemoryAmp = (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
     unit->mMemoryDur = (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+    ClearUnitIfMemFailed(unit->mMemoryAmp && unit->mMemoryDur);
 
     RGen& rgen = *unit->mParent->mRGen;
 
@@ -323,6 +324,7 @@ void Gendy2_Ctor(Gendy2* unit) {
     unit->mMemoryDur = (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
     unit->mMemoryAmpStep = (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
     unit->mMemoryDurStep = (float*)RTAlloc(unit->mWorld, unit->mMemorySize * sizeof(float));
+    ClearUnitIfMemFailed(unit->mMemoryAmp && unit->mMemoryDur && unit->mMemoryAmpStep && unit->mMemoryDurStep);
 
     RGen& rgen = *unit->mParent->mRGen;
 
@@ -488,6 +490,7 @@ void Gendy3_Ctor(Gendy3* unit) {
     // one more in amp list for guard (wrap) element
     unit->mAmpList = (float*)RTAlloc(unit->mWorld, (unit->mMemorySize + 1) * sizeof(float));
     unit->mPhaseList = (double*)RTAlloc(unit->mWorld, (unit->mMemorySize + 1) * sizeof(double));
+    ClearUnitIfMemFailed(unit->mMemoryAmp && unit->mMemoryDur && unit->mAmpList && unit->mPhaseList);
 
     RGen& rgen = *unit->mParent->mRGen;
 

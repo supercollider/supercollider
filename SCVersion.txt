@@ -2,9 +2,9 @@
 # Note that you need to "make install" for this information to be copied into all places.
 
 set(SC_VERSION_MAJOR 3)
-set(SC_VERSION_MINOR 12)
-set(SC_VERSION_PATCH 1)
-set(SC_VERSION_TWEAK "")
+set(SC_VERSION_MINOR 13)
+set(SC_VERSION_PATCH 0)
+set(SC_VERSION_TWEAK "-dev")
 set(SC_VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH}${SC_VERSION_TWEAK})
 
 # Note: these are provided for backwards compatibility only. In the main project, PROJECT_VERSION_PATCH
@@ -20,9 +20,27 @@ if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
   execute_process(
     COMMAND git rev-parse --abbrev-ref HEAD
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_VARIABLE GIT_BRANCH_OR_TAG
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
+  
+  set(GIT_REF_TYPE "branch")
+  
+  if(GIT_BRANCH_OR_TAG STREQUAL "HEAD")
+    execute_process(
+      COMMAND git describe --tags
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_BRANCH_OR_TAG
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+    )
+    if(GIT_BRANCH_OR_TAG STREQUAL "")
+      set(GIT_REF_TYPE "detached")
+      set(GIT_BRANCH_OR_TAG "HEAD")
+    else()
+      set(GIT_REF_TYPE "tag")
+    endif()
+  endif()
 
   execute_process(
     COMMAND git log -1 --format=%h

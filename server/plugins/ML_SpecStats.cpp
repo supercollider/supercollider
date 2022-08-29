@@ -197,6 +197,7 @@ void SpecPcile_Ctor(SpecPcile* unit) {
     SETCALC(SpecPcile_next);
 
     unit->m_interpolate = ZIN0(2) > 0.f;
+    unit->m_binout = ZIN0(3) > 0.f;
 
     ZOUT0(0) = unit->outval = 0.;
     unit->m_tempbuf = nullptr;
@@ -208,6 +209,7 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
         // Used to be MAKE_TEMP_BUF but we can handle it more cleanly in this specific case:
         if (!unit->m_tempbuf) {
         unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
+        ClearUnitIfMemFailed(unit->m_tempbuf);
         unit->m_numbins = numbins;
         unit->m_halfnyq_over_numbinsp2 = ((float)unit->mWorld->mSampleRate) * 0.5f / (float)(numbins + 2);
     }
@@ -215,6 +217,7 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
 
     // Percentile value as a fraction. eg: 0.5 == 50-percentile (median).
     float fraction = ZIN0(1);
+    bool binout = unit->m_binout; // if true, output the bin number instead of freq
     bool interpolate = unit->m_interpolate;
 
     // The magnitudes in *p will be converted to cumulative sum values and stored in *q temporarily
@@ -242,12 +245,21 @@ void SpecPcile_next(SpecPcile* unit, int inNumSamples) {
     for (int i = 0; i < numbins; ++i) {
         // Print("Testing %g, at position %i", q->bin[i].real, i);
         if (!(q[i] < target)) { // this is a ">=" comparison, done more efficiently as "!(<)"
-            if (interpolate && i != 0) {
-                binpos = ((float)i) + 1.f - (q[i] - target) / (q[i] - q[i - 1]);
+            // output the bin number instead of freq
+            if (binout) {
+                if (interpolate && i != 0) {
+                    bestposition = ((float)i) + (q[i] - target) / (q[i] - q[i - 1]);
+                } else {
+                    bestposition = i; // output bin directly
+                }
             } else {
-                binpos = ((float)i) + 1.f;
+                if (interpolate && i != 0) {
+                    binpos = ((float)i) + 1.f - (q[i] - target) / (q[i] - q[i - 1]);
+                } else {
+                    binpos = ((float)i) + 1.f;
+                }
+                bestposition = binpos * unit->m_halfnyq_over_numbinsp2;
             }
-            bestposition = binpos * unit->m_halfnyq_over_numbinsp2;
             // Print("Target %g beaten by %g (at position %i), equating to freq %g\n",
             //				target, p->bin[i].real, i, bestposition);
             break;

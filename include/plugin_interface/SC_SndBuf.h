@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-typedef struct SNDFILE_tag SNDFILE;
+#define GETSNDFILE(x) ((SNDFILE*)x->sndfile)
 
 #ifdef SUPERNOVA
 
@@ -145,7 +145,7 @@ struct SndBuf {
     int mask; // for delay lines
     int mask1; // for interpolating oscillators.
     int coord; // used by fft ugens
-    SNDFILE* sndfile; // used by disk i/o
+    void* sndfile; // used by disk i/o
     // SF_INFO fileinfo; // used by disk i/o
 #ifdef SUPERNOVA
     bool isLocal;

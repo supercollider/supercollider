@@ -47,6 +47,7 @@ struct Select : public Unit {};
 struct TWindex : public Unit {
     int32 m_prevIndex;
     float m_trig;
+    float m_maxSum;
 };
 
 struct Index : public BufUnit {};
@@ -372,7 +373,7 @@ void DegreeToKey_Ctor(DegreeToKey* unit) {
     unit->m_fbufnum = std::numeric_limits<float>::quiet_NaN();
     if (BUFLENGTH == 1) {
         SETCALC(DegreeToKey_next_1);
-    } else if (INRATE(0) == calc_FullRate) {
+    } else if (INRATE(1) == calc_FullRate) {
         SETCALC(DegreeToKey_next_a);
     } else {
         SETCALC(DegreeToKey_next_k);
@@ -527,88 +528,82 @@ void Select_next_a(Select* unit, int inNumSamples) {
 }
 ////////////////////////////////////////////////////////////////////////////////////
 
+static int32 TWindex_chooseNewIndex(TWindex* unit) {
+    int maxindex = unit->mNumInputs;
+    int32 index = maxindex;
+    float normalize = ZIN0(1);
+    float maxSum = unit->m_maxSum;
+
+    if (maxSum < 0.f) {
+        maxSum = 0.f;
+        if (normalize == 1) {
+            for (int32 k = 2; k < maxindex; ++k) {
+                maxSum += ZIN0(k);
+            }
+        } else
+            maxSum = 1.f;
+        unit->m_maxSum = maxSum;
+    }
+    RGen& rgen = *unit->mParent->mRGen;
+
+    float max = maxSum * rgen.frand();
+    float sum = 0.f;
+    for (int32 k = 2; k < maxindex; ++k) {
+        sum += ZIN0(k);
+        if (sum >= max) {
+            index = k - 2;
+            break;
+        }
+    }
+    return index;
+}
+
 void TWindex_Ctor(TWindex* unit) {
     if (INRATE(0) == calc_FullRate) {
         SETCALC(TWindex_next_a);
     } else {
         SETCALC(TWindex_next_k);
     }
-    unit->m_prevIndex = 0;
-    unit->m_trig = -1.f; // make it trigger the first time
-    TWindex_next_k(unit, 1);
+    unit->m_maxSum = -1.f; // trigger update of maxSum
+    int32 index = TWindex_chooseNewIndex(unit);
+    OUT0(0) = index;
+    unit->m_prevIndex = index;
+    // Ensure a first-sample trigger doesn't cause another rand val
+    // so initialization sample will equal first output sample
+    unit->m_trig = 1.f;
 }
 
-
 void TWindex_next_k(TWindex* unit, int inNumSamples) {
-    int maxindex = unit->mNumInputs;
-    int32 index = maxindex;
-    float sum = 0.f;
-    float maxSum = 0.f;
-    float normalize = ZIN0(1); // switch normalisation on or off
     float trig = ZIN0(0);
     float* out = ZOUT(0);
+    int32 index;
+    unit->m_maxSum = -1.f;
     if (trig > 0.f && unit->m_trig <= 0.f) {
-        if (normalize == 1) {
-            for (int32 k = 2; k < maxindex; ++k) {
-                maxSum += ZIN0(k);
-            }
-        } else {
-            maxSum = 1.f;
-        }
-        RGen& rgen = *unit->mParent->mRGen;
-        float max = maxSum * rgen.frand();
-
-        for (int32 k = 2; k < maxindex; ++k) {
-            sum += ZIN0(k);
-            if (sum >= max) {
-                index = k - 2;
-                break;
-            }
-        }
-
+        index = TWindex_chooseNewIndex(unit);
         unit->m_prevIndex = index;
     } else {
         index = unit->m_prevIndex;
     }
-
     LOOP1(inNumSamples, ZXP(out) = index;)
     unit->m_trig = trig;
 }
 
 void TWindex_next_a(TWindex* unit, int inNumSamples) {
-    int maxindex = unit->mNumInputs;
-    int32 index = maxindex;
-
-    float maxSum = 0.f;
-    float normalize = ZIN0(1); // switch normalisation on or off
     float* trig = ZIN(0);
     float* out = ZOUT(0);
+    int32 index;
     float curtrig;
-    if (normalize == 1) {
-        for (int32 k = 2; k < maxindex; ++k) {
-            maxSum += ZIN0(k);
-        }
-    } else
-        maxSum = 1.f;
-    RGen& rgen = *unit->mParent->mRGen;
+    unit->m_maxSum = -1.f;
 
     LOOP1(
         inNumSamples, curtrig = ZXP(trig); if (curtrig > 0.f && unit->m_trig <= 0.f) {
-            float max = maxSum * rgen.frand();
-            float sum = 0.f;
-            for (int32 k = 2; k < maxindex; ++k) {
-                sum += ZIN0(k);
-                if (sum >= max) {
-                    index = k - 2;
-                    break;
-                }
-            }
-
+            index = TWindex_chooseNewIndex(unit);
             unit->m_prevIndex = index;
         } else index = unit->m_prevIndex;
 
         ZXP(out) = index; unit->m_trig = curtrig;)
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 
@@ -925,6 +920,8 @@ void DetectIndex_Ctor(DetectIndex* unit) {
         SETCALC(DetectIndex_next_k);
     }
     unit->mPrev = -1.f;
+    // ensure in != unit->mPrevIn on first frame
+    unit->mPrevIn = std::numeric_limits<float>::quiet_NaN();
     DetectIndex_next_1(unit, 1);
 }
 
@@ -1001,7 +998,7 @@ void Shaper_Ctor(Shaper* unit) {
     } else {
         SETCALC(Shaper_next_k);
     }
-    unit->mPrevIn = ZIN0(0);
+    unit->mPrevIn = ZIN0(1);
     Shaper_next_1(unit, 1);
 }
 
@@ -1066,6 +1063,7 @@ void Shaper_next_a(Shaper* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void FSinOsc_Ctor(FSinOsc* unit) {
+    double b1, y1, y2;
     if (INRATE(0) == calc_ScalarRate)
         SETCALC(FSinOsc_next_i);
     else
@@ -1073,11 +1071,11 @@ void FSinOsc_Ctor(FSinOsc* unit) {
     unit->m_freq = ZIN0(0);
     float iphase = ZIN0(1);
     float w = unit->m_freq * unit->mRate->mRadiansPerSample;
-    unit->m_b1 = 2. * cos(w);
-    unit->m_y1 = sin(iphase);
-    unit->m_y2 = sin(iphase - w);
+    unit->m_b1 = b1 = 2. * cos(w);
+    unit->m_y1 = y1 = sin(iphase - w);
+    unit->m_y2 = y2 = sin(iphase - 2 * w);
 
-    ZOUT0(0) = unit->m_y1;
+    ZOUT0(0) = b1 * y1 - y2;
 }
 
 void FSinOsc_next(FSinOsc* unit, int inNumSamples) {
@@ -1094,12 +1092,9 @@ void FSinOsc_next(FSinOsc* unit, int inNumSamples) {
     double y0;
     double y1 = unit->m_y1;
     double y2 = unit->m_y2;
-    // Print("y %g %g  b1 %g\n", y1, y2, b1);
-    // Print("%d %d\n", unit->mRate->mFilterLoops, unit->mRate->mFilterRemain);
     LOOP(unit->mRate->mFilterLoops, ZXP(out) = y0 = b1 * y1 - y2; ZXP(out) = y2 = b1 * y0 - y1;
          ZXP(out) = y1 = b1 * y2 - y0;);
     LOOP(unit->mRate->mFilterRemain, ZXP(out) = y0 = b1 * y1 - y2; y2 = y1; y1 = y0;);
-    // Print("y %g %g  b1 %g\n", y1, y2, b1);
     unit->m_y1 = y1;
     unit->m_y2 = y2;
 }
@@ -1111,12 +1106,9 @@ void FSinOsc_next_i(FSinOsc* unit, int inNumSamples) {
     double y0;
     double y1 = unit->m_y1;
     double y2 = unit->m_y2;
-    // Print("y %g %g  b1 %g\n", y1, y2, b1);
-    // Print("%d %d\n", unit->mRate->mFilterLoops, unit->mRate->mFilterRemain);
     LOOP(unit->mRate->mFilterLoops, y0 = b1 * y1 - y2; y2 = b1 * y0 - y1; y1 = b1 * y2 - y0; ZXP(out) = y0;
          ZXP(out) = y2; ZXP(out) = y1;);
     LOOP(unit->mRate->mFilterRemain, ZXP(out) = y0 = b1 * y1 - y2; y2 = y1; y1 = y0;);
-    // Print("y %g %g  b1 %g\n", y1, y2, b1);
     unit->m_y1 = y1;
     unit->m_y2 = y2;
 }
@@ -1141,10 +1133,12 @@ void PSinGrain_Ctor(PSinGrain* unit) {
     unit->mCounter = (int32)(sdur + .5);
 
     /* calc feedback param and initial conditions */
-    unit->m_b1 = 2. * cos(w);
-    unit->m_y1 = 0.f;
-    unit->m_y2 = -sin(w) * amp;
-    ZOUT0(0) = 0.f;
+    double b1, y1, y2;
+    unit->m_b1 = b1 = 2. * cos(w);
+    unit->m_y1 = y1 = -sin(w) * amp;
+    unit->m_y2 = y2 = -sin(w + w) * amp;
+
+    ZOUT0(0) = b1 * y1 - y2;
 }
 
 
@@ -1335,6 +1329,7 @@ void SinOsc_Ctor(SinOsc* unit) {
     unit->m_cpstoinc = tableSize2 * SAMPLEDUR * 65536.;
     unit->m_lomask = (tableSize2 - 1) << 3;
 
+    int32 initPhase;
     if (INRATE(0) == calc_FullRate) {
         if (INRATE(1) == calc_FullRate)
             SETCALC(SinOsc_next_iaa);
@@ -1343,19 +1338,20 @@ void SinOsc_Ctor(SinOsc* unit) {
         else
             SETCALC(SinOsc_next_iai);
 
-        unit->m_phase = 0;
+        unit->m_phase = initPhase = 0;
+        SinOsc_next_iaa(unit, 1);
     } else {
         if (INRATE(1) == calc_FullRate) {
-            // Print("next_ika\n");
             SETCALC(SinOsc_next_ika);
-            unit->m_phase = 0;
+            unit->m_phase = initPhase = 0;
+            SinOsc_next_iaa(unit, 1);
         } else {
             SETCALC(SinOsc_next_ikk);
-            unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            unit->m_phase = initPhase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            SinOsc_next_ikk(unit, 1);
         }
     }
-
-    SinOsc_next_ikk(unit, 1);
+    unit->m_phase = initPhase;
 }
 
 
@@ -1393,7 +1389,6 @@ void SinOscFB_next_kk(SinOscFB* unit, int inNumSamples) {
 }
 
 void SinOscFB_Ctor(SinOscFB* unit) {
-    // Print("next_ik\n");
     SETCALC(SinOscFB_next_kk);
 
     int tableSize2 = ft->mSineSize;
@@ -1406,6 +1401,7 @@ void SinOscFB_Ctor(SinOscFB* unit) {
     unit->m_phase = 0;
 
     SinOscFB_next_kk(unit, 1);
+    unit->m_phase = 0;
 }
 
 
@@ -1438,29 +1434,27 @@ void Osc_Ctor(Osc* unit) {
 
     unit->m_phasein = ZIN0(2);
 
+    int32 initphase;
     if (INRATE(1) == calc_FullRate) {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_iaa\n");
             SETCALC(Osc_next_iaa);
-            unit->m_phase = 0;
         } else {
-            // Print("next_iak\n");
             SETCALC(Osc_next_iak);
-            unit->m_phase = 0;
         }
+        unit->m_phase = initphase = 0;
+        Osc_next_iaa(unit, 1);
     } else {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_ika\n");
             SETCALC(Osc_next_ika);
-            unit->m_phase = 0;
+            unit->m_phase = initphase = 0;
+            Osc_next_iaa(unit, 1);
         } else {
-            // Print("next_ikk\n");
             SETCALC(Osc_next_ikk);
-            unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            unit->m_phase = initphase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            Osc_next_ikk(unit, 1);
         }
     }
-
-    Osc_next_ikk(unit, 1);
+    unit->m_phase = initphase;
 }
 
 force_inline bool Osc_get_table(Osc* unit, const float*& table0, const float*& table1, int inNumSamples) {
@@ -1553,30 +1547,27 @@ void OscN_Ctor(OscN* unit) {
     unit->m_radtoinc = tableSize * (rtwopi * 65536.);
 
     unit->m_phasein = ZIN0(2);
-    // Print("OscN_Ctor\n");
+    int32 initphase;
     if (INRATE(1) == calc_FullRate) {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_naa\n");
             SETCALC(OscN_next_naa);
-            unit->m_phase = 0;
         } else {
-            // Print("next_nak\n");
             SETCALC(OscN_next_nak);
-            unit->m_phase = 0;
         }
+        unit->m_phase = initphase = 0;
+        OscN_next_naa(unit, 1);
     } else {
         if (INRATE(2) == calc_FullRate) {
-            // Print("next_nka\n");
             SETCALC(OscN_next_nka);
-            unit->m_phase = 0;
+            unit->m_phase = initphase = 0;
+            OscN_next_naa(unit, 1);
         } else {
-            // Print("next_nkk\n");
             SETCALC(OscN_next_nkk);
-            unit->m_phase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            unit->m_phase = initphase = (int32)(unit->m_phasein * unit->m_radtoinc);
+            OscN_next_nkk(unit, 1);
         }
     }
-
-    OscN_next_nkk(unit, 1);
+    unit->m_phase = initphase;
 }
 
 
@@ -1710,6 +1701,8 @@ void COsc_Ctor(COsc* unit) {
     unit->m_phase2 = 0;
     unit->mTableSize = -1;
     COsc_next(unit, 1);
+    unit->m_phase1 = 0;
+    unit->m_phase2 = 0;
 }
 
 
@@ -1789,15 +1782,17 @@ void VOsc_Ctor(VOsc* unit) {
     unit->m_phasein = ZIN0(2);
     unit->m_phaseoffset = (int32)(unit->m_phasein * unit->m_radtoinc);
 
+    double initphase;
     if (INRATE(2) == calc_FullRate) {
         SETCALC(VOsc_next_ika);
-        unit->m_phase = 0;
+        unit->m_phase = initphase = 0;
+        VOsc_next_ika(unit, 1);
     } else {
         SETCALC(VOsc_next_ikk);
-        unit->m_phase = unit->m_phaseoffset;
+        unit->m_phase = initphase = unit->m_phaseoffset;
+        VOsc_next_ikk(unit, 1);
     }
-
-    VOsc_next_ikk(unit, 1);
+    unit->m_phase = initphase;
 }
 
 void VOsc_next_ikk(VOsc* unit, int inNumSamples) {
@@ -2016,6 +2011,9 @@ void VOsc3_Ctor(VOsc3* unit) {
     unit->m_phase3 = 0;
 
     VOsc3_next_ik(unit, 1);
+    unit->m_phase1 = 0;
+    unit->m_phase2 = 0;
+    unit->m_phase3 = 0;
 }
 
 void VOsc3_next_ik(VOsc3* unit, int inNumSamples) {
@@ -2165,7 +2163,11 @@ void Formant_Ctor(Formant* unit) {
     unit->m_phase1 = 0;
     unit->m_phase2 = 0;
     unit->m_phase3 = 0;
+
     Formant_next(unit, 1);
+    unit->m_phase1 = 0;
+    unit->m_phase2 = 0;
+    unit->m_phase3 = 0;
 }
 
 #define tqcyc13 0x18000000
@@ -2228,6 +2230,9 @@ void Blip_Ctor(Blip* unit) {
     unit->m_phase = 0;
 
     Blip_next(unit, 1);
+    unit->m_N = N;
+    unit->m_scale = 0.5 / N;
+    unit->m_phase = 0;
 }
 
 void Blip_next(Blip* unit, int inNumSamples) {
@@ -2368,7 +2373,10 @@ void Saw_Ctor(Saw* unit) {
     unit->m_phase = 0;
     unit->m_y1 = -0.46f;
 
-    ZOUT0(0) = 0.f;
+    Saw_next(unit, 1);
+    unit->m_scale = 0.5 / unit->m_N;
+    unit->m_phase = 0;
+    unit->m_y1 = -0.46f;
 }
 
 void Saw_next(Saw* unit, int inNumSamples) {
@@ -2715,17 +2723,6 @@ void Pulse_next(Pulse* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static float Klang_SetCoefs(Klang* unit) {
-    unit->m_numpartials = (unit->mNumInputs - 2) / 3;
-
-    int numcoefs = unit->m_numpartials * 3;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
-
-    if (!unit->m_coefs) {
-        Print("Klang: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return 0.f;
-    }
-
     float freqscale = ZIN0(0) * unit->mRate->mRadiansPerSample;
     float freqoffset = ZIN0(1) * unit->mRate->mRadiansPerSample;
 
@@ -2738,11 +2735,12 @@ static float Klang_SetCoefs(Klang* unit) {
         float phase = ZIN0(j + 2);
 
         if (phase != 0.f) {
-            outf += * ++coefs = level * sin(phase); // y1
-            *++coefs = level * sin(phase - w); // y2
+            outf += level * sin(phase);
+            *++coefs = level * sin(phase - w); // y1
+            *++coefs = level * sin(phase - w - w); // y2
         } else {
-            outf += * ++coefs = 0.f; // y1
-            *++coefs = level * -sin(w); // y2
+            *++coefs = level * -sin(w); // y1
+            *++coefs = level * -sin(w + w); // y2
         }
         *++coefs = 2. * cos(w); // b1
     }
@@ -2751,6 +2749,10 @@ static float Klang_SetCoefs(Klang* unit) {
 
 void Klang_Ctor(Klang* unit) {
     SETCALC(Klang_next);
+    unit->m_numpartials = (unit->mNumInputs - 2) / 3;
+    int numcoefs = unit->m_numpartials * 3;
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, numcoefs * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_coefs);
     ZOUT0(0) = Klang_SetCoefs(unit);
 }
 
@@ -2901,25 +2903,11 @@ void Klang_next(Klang* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static void Klank_SetCoefs(Klank* unit) {
-    int numpartials = (unit->mNumInputs - 4) / 3;
-    unit->m_numpartials = numpartials;
-
-    int numcoefs = ((unit->m_numpartials + 3) & ~3) * 5;
-    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
-    if (!unit->m_coefs) {
-        Print("Klang: RT memory allocation failed\n");
-        SETCALC(ClearUnitOutputs);
-        return;
-    }
-
-    unit->m_buf = unit->m_coefs + numcoefs;
-
     float freqscale = ZIN0(1) * unit->mRate->mRadiansPerSample;
     float freqoffset = ZIN0(2) * unit->mRate->mRadiansPerSample;
     float decayscale = ZIN0(3);
-
     float* coefs = unit->m_coefs;
-
+    int numpartials = unit->m_numpartials;
     float sampleRate = SAMPLERATE;
 
     for (int i = 0, j = 4; i < numpartials; ++i, j += 3) {
@@ -2938,15 +2926,33 @@ static void Klank_SetCoefs(Klank* unit) {
         coefs[k + 8] = twoR * cost; // b1
         coefs[k + 12] = -R2; // b2
         coefs[k + 16] = level * 0.25; // a0
-        // Print("coefs %d  %g %g %g\n", i, twoR * cost, -R2, ampf * 0.25);
     }
 }
 
 void Klank_Ctor(Klank* unit) {
     SETCALC(Klank_next);
+
+    unit->m_x1 = unit->m_x2 = 0.f;
+    int numpartials = (unit->mNumInputs - 4) / 3;
+    unit->m_numpartials = numpartials;
+    int numcoefs = ((numpartials + 3) & ~3) * 5;
+    unit->m_coefs = (float*)RTAlloc(unit->mWorld, (numcoefs + unit->mWorld->mBufLength) * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_coefs);
+    unit->m_buf = unit->m_coefs + numcoefs;
+    Klank_SetCoefs(unit);
+
+    // generate initial sample
+    int filtLoops = unit->mRate->mFilterLoops;
+    int filtRemain = unit->mRate->mFilterRemain;
+    unit->mRate->mFilterLoops = 0; // supress filter loop
+    unit->mRate->mFilterRemain = 1; // just go through 1 iteration
+    Klank_next(unit, 1);
+    unit->mRate->mFilterLoops = filtLoops;
+    unit->mRate->mFilterRemain = filtRemain;
+
+    // reset state for first sample
     unit->m_x1 = unit->m_x2 = 0.f;
     Klank_SetCoefs(unit);
-    ZOUT0(0) = 0.f;
 }
 
 void Klank_Dtor(Klank* unit) { RTFree(unit->mWorld, unit->m_coefs); }
@@ -3078,7 +3084,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
         b2_0 = coefs[12];
         a0_0 = coefs[16];
 
-        // Print("rcoefs %g %g %g %g %g\n", y1_0, y2_0, b1_0, b2_0, a0_0);
         in = in0;
         out = unit->m_buf - 1;
         LooP(unit->mRate->mFilterLoops) {
@@ -3093,7 +3098,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
             inf = *++in;
             y1_0 = inf + b1_0 * y2_0 + b2_0 * y0_0;
             *++out = a0_0 * y1_0;
-            // Print("out %g %g %g\n", y0_0, y2_0, y1_0);
         }
         LooP(unit->mRate->mFilterRemain) {
             inf = *++in;
@@ -3101,7 +3105,6 @@ void Klank_next(Klank* unit, int inNumSamples) {
             *++out = a0_0 * y0_0;
             y2_0 = y1_0;
             y1_0 = y0_0;
-            // Print("out %g\n", y0_0);
         }
         /*
         coefs[0] = y1_0;	coefs[4] = y2_0;

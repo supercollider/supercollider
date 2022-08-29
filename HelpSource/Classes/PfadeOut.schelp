@@ -1,0 +1,47 @@
+TITLE::PfadeOut
+SUMMARY::Fade an event pattern out
+CATEGORIES::Streams-Patterns-Events>Patterns>Filter
+RELATED::Classes/PfadeIn
+
+CLASSMETHODS::
+METHOD::new
+ARGUMENT::pattern
+The pattern to fade out. Must be an event pattern that plays a synth with the code::\amp:: parameter.
+ARGUMENT::fadeTime
+The time it will take to fade.
+
+ARGUMENT::holdTime
+
+ARGUMENT::tolerance
+The tolerance for the rounding of elapsed time used when setting the amplitude
+of the input pattern.
+
+INSTANCEMETHODS::
+METHOD::fadeTime
+Get or set the fadetime
+
+METHOD::holdTime
+Get or set the hold time
+
+METHOD::tolerance
+Get or set the tolerance used when rounding the internal time.
+
+METHOD::embedInStream
+ARGUMENT::inval
+
+METHOD::storeArgs
+
+EXAMPLES::
+
+CODE::
+(
+// Create a pattern that you want to fade
+var pat = Pbind(\dur, 0.125, \degree, Pwhite(1,10));
+
+// Fade it out over 30 beats
+pat = PfadeOut.new(pattern:pat, fadeTime:30.0, holdTime:1.0, tolerance:0.0001);
+
+// Play it
+pat.play;
+)
+::

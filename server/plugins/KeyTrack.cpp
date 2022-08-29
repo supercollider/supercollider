@@ -1012,6 +1012,7 @@ void KeyTrack_Ctor(KeyTrack* unit) {
 
     // only need space for half!
     unit->m_FFTBuf = (float*)RTAlloc(unit->mWorld, NOVER2 * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_FFTBuf);
 
     // zero chroma
     Clear(12, unit->m_chroma);

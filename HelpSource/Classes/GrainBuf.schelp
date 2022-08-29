@@ -1,7 +1,7 @@
 class:: GrainBuf
 summary:: Granular synthesis with sound stored in a buffer
 categories:: UGens>Buffer, UGens>Generators>Granular
-related:: Classes/GrainIn, Classes/GrainFM, Classes/GrainSin
+related:: Classes/GrainIn, Classes/GrainFM, Classes/GrainSin, Classes/TGrains
 
 classmethods::
 private:: categories

@@ -46,7 +46,7 @@ ssh from your laptop by opening a terminal and typing:
 ### Step 3: Compile, install and configure jackd (no d-bus)
 
     cd ~ # or cd into the directory where you'd like to build jack2
-    git clone git://github.com/jackaudio/jack2 --depth 1
+    git clone https://github.com/jackaudio/jack2 --depth 1
     cd jack2
     ./waf configure --alsa --libdir=/usr/lib/arm-linux-gnueabihf/
     ./waf build

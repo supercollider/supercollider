@@ -947,6 +947,7 @@ void PV_RandComb_next(PV_RandComb* unit, int inNumSamples) {
 
     if (!unit->m_ordering) {
         unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
+        ClearFFTUnitIfMemFailed(unit->m_ordering);
         unit->m_numbins = numbins;
         PV_RandComb_choose(unit);
     } else {
@@ -1012,6 +1013,7 @@ void PV_RandWipe_next(PV_RandWipe* unit, int inNumSamples) {
 
     if (!unit->m_ordering) {
         unit->m_ordering = (int*)RTAlloc(unit->mWorld, numbins * sizeof(int));
+        ClearFFTUnitIfMemFailed(unit->m_ordering);
         unit->m_numbins = numbins;
         PV_RandWipe_choose(unit);
     } else {
@@ -1063,6 +1065,7 @@ void PV_Diffuser_next(PV_Diffuser* unit, int inNumSamples) {
 
     if (!unit->m_shift) {
         unit->m_shift = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
+        ClearFFTUnitIfMemFailed(unit->m_shift);
         unit->m_numbins = numbins;
         PV_Diffuser_choose(unit);
     } else {
@@ -1105,6 +1108,7 @@ void PV_MagFreeze_next(PV_MagFreeze* unit, int inNumSamples) {
 
     if (!unit->m_mags) {
         unit->m_mags = (float*)RTAlloc(unit->mWorld, numbins * sizeof(float));
+        ClearFFTUnitIfMemFailed(unit->m_mags);
         unit->m_numbins = numbins;
         // The first fft frame must use the else branch below
         // so that unit->m_mags gets populated with actual mag data
@@ -1181,6 +1185,7 @@ void PV_BinScramble_next(PV_BinScramble* unit, int inNumSamples) {
         unit->m_from = unit->m_to + numbins;
         unit->m_numbins = numbins;
         unit->m_tempbuf = (float*)RTAlloc(unit->mWorld, buf->samples * sizeof(float));
+        ClearFFTUnitIfMemFailed(unit->m_to && unit->m_tempbuf);
         PV_BinScramble_choose(unit);
     } else {
         if (numbins != unit->m_numbins)

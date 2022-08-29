@@ -357,9 +357,9 @@ Pbind(
 
 subsection::Exception Handling
 
-
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.
 
+See also link::#Exception Handling Examples:: and link::Classes/Exception:: for more information on how to handle exceptions.
 
 method::try
 
@@ -368,6 +368,35 @@ Executes the receiver. If an exception is thrown the catch function handler is e
 method::protect
 
 Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
+
+subsection:: Scheduling
+
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the function was
+scheduled when its scheduling time is up. It calls link::#-value::, passing
+on the scheduling time in beats as an argument. 
+
+argument:: beats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: seconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: clock
+The clock on which the object was scheduled.
+
+returns::
+The value returned by the function's link::#-value::. A caller clock uses
+this value to reschedule the function.
+
+code::
+// Runs every 2 seconds
+AppClock.play({ "And again".postln; 2 });
+::
 
 subsection::Audio
 
@@ -431,11 +460,11 @@ code::
 ::
 
 argument::numChannels
-The number of channels to display in the scope window, starting from outbus. The default is 2.
+The number of channels to display in the scope window, starting from outbus. It automatically reflects the number of channels.
 argument::outbus
 The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
 argument::fadeTime
-A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.
+A fadein time. The default is 0.05 seconds, which is just enough to avoid a click.
 argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
@@ -638,7 +667,7 @@ returns:: Like link::Classes/Function#-play::, a Synth playing this function. Wh
 
 examples::
 
-subsection::Exception Handling
+subsection::Exception Handling Examples
 
 code::
 // no exception handler

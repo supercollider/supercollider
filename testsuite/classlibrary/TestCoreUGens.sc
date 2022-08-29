@@ -381,6 +381,98 @@ TestCoreUGens : UnitTest {
 		condvar.waitFor(1, { completed == tests.size });
 	}
 
+	test_impulse {
+		var funcs, results, frq, phs;
+		var rates = [\kr,\ar];
+		var renderCond = Condition();
+
+		server.bootSync;
+
+		frq = server.sampleRate / server.options.blockSize * 2.123; // 2.123 impulses per block
+		phs = 0;
+
+		rates.do{ |rate|
+
+			funcs = [{DC.ar(frq)}, {DC.kr(frq)}, frq].collect({ |in0|
+				[{DC.ar(phs)}, {DC.kr(phs)}, phs].collect{ |in1|
+					{ Impulse.perform(rate, in0, in1) }
+				}
+			}).flat;
+			results = Array.newClear(funcs.size);
+
+			funcs.do{ |f, i|
+				f.loadToFloatArray(
+					duration: server.options.blockSize / server.sampleRate * 3, // 3 blocks
+					action: { |arr| results[i] = arr; renderCond.test_(true).signal }
+				);
+				renderCond.wait; renderCond.test_(false)
+			};
+
+			this.assert(results.every(_ == results[0]),
+				"Impulse.%: all rate combinations of identical unmodulated input values should have identical output".format(rate),
+				report: true);
+		};
+
+		/* Tests in response to historical bugs */
+
+		// Phase wrapping, initial phase offset
+		// https://github.com/supercollider/supercollider/pull/2864#issuecomment-299860789
+		frq = 50;
+		{ Impulse.kr(frq, 3.8) }.loadToFloatArray(
+			duration: frq.reciprocal, // render one freq period (should contain only 1 impulse)
+			action: { |arr|
+				this.assert(arr.sum == 1.0, "Impulse.kr: phase that is far out-of-range should wrap immediately in-range, and not cause multiple impulses to fire.", report: true);
+				this.assert(arr[0] != 1.0, "Impulse.kr: a phase offset other than 0 or 1 should not produce an impulse on the first output sample.", report: true);
+				renderCond.test_(true).signal;
+			}
+		);
+		renderCond.wait; renderCond.test_(false);
+
+		// Phase offset of 0,1,-1 should be equal on first sample
+		rates.do{ |rate|
+			var phases = [0, 1, -1];
+			phases.do{ |phs|
+				{ Impulse.perform(rate, frq, phs) }.loadToFloatArray(
+					duration: frq.reciprocal, // 1 freq period
+					action: { |arr|
+						this.assert(arr[0] == 1.0,
+							"Impulse.%: initial phase of % should produce and impulse on the first frame.".format(rate, phs), report: true);
+						renderCond.test_(true).signal;
+					}
+				);
+				renderCond.wait; renderCond.test_(false);
+			}
+		};
+
+		// Freq = 0 should produce a single impulse on first frame
+		// https://github.com/supercollider/supercollider/pull/4150#issuecomment-582905976
+		rates.do{ |rate|
+			{ Impulse.perform(rate, 0) }.loadToFloatArray(
+				duration: server.options.blockSize / server.sampleRate * 3, // 3 blocks
+				action: { |arr|
+					this.assert(arr[0] == 1.0 and: { arr.sum == 1.0 },
+						"Impulse.%: freq = 0 should produce a single impulse on the first frame and no more.".format(rate), report: true);
+					renderCond.test_(true).signal;
+				}
+			);
+			renderCond.wait; renderCond.test_(false);
+		};
+
+		// Positive and negative freqs should produce the same output
+		rates.do{ |rate|
+			{ Impulse.perform(rate, 100 * [1,-1]) }.loadToFloatArray(
+				duration: 5 * frq.reciprocal,
+				action: { |arr|
+					arr = arr.clump(2).flop; // de-interleave
+					this.assertArrayFloatEquals(arr[0], arr[1],
+						"Impulse.%: positive and negative frequencies should produce the same output.".format(rate), report: true);
+					renderCond.test_(true).signal;
+				}
+			);
+			renderCond.wait; renderCond.test_(false);
+		};
+	}
+
 	test_demand {
 		var nodesToFree, tests, testNaN;
 

@@ -60,7 +60,10 @@ Number of bus channels to scope
 argument::target
 Bela's SuperCollider server, or any node on that server. The bus is monitored strong::after:: this target, or after this server's link::Classes/RootNode:: if a server is provided as target.
 
-returns:: A link::Class/Synth:: used to monitor the bus.
+argument::rate
+A symbol. The default is code::\audio::. Anything else will use control rate.
+
+returns:: A link::Classes/Synth:: used to monitor the bus.
 
 code::
 // scope 2 channels from audio bus 4 on Bela Oscilloscope's channel 3

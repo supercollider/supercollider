@@ -182,6 +182,15 @@ if(NOVA_SIMD)
 endif()
 
 if(SNDFILE_FOUND)
+	if(SNDFILE_HAS_VORBIS)
+		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_VORBIS)
+	endif()
+	if(SNDFILE_HAS_OPUS)
+		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_OPUS)
+	endif()
+	if(SNDFILE_HAS_MPEG)
+		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_MPEG)
+	endif()
 	target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
 	target_include_directories(libscsynth PUBLIC ${SNDFILE_INCLUDE_DIR})
 elseif(NOT NO_LIBSNDFILE)
@@ -282,9 +291,12 @@ else()
 endif()
 
 if(APPLE)
-	add_custom_command(TARGET scsynth POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+    if(scappauxresourcesdir)
+        add_custom_command(TARGET scsynth POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            )
+    endif()
 elseif(WIN32)
     if(NOT MSVC)
       target_link_libraries(scsynth "-municode")

@@ -36,12 +36,13 @@ TestServer : UnitTest {
 	}
 
 	tearDown {
-		server.quit
+		server.quit;
+		server.remove;
 	}
 
 	setUp {
 
-		server = Server.default;
+		server = Server(this.class.name);
 		this.bootServer(server);
 
 		// mmmmmmm.   fixtures.

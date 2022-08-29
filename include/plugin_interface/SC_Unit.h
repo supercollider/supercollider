@@ -80,6 +80,17 @@ enum { kUnitDef_CantAliasInputsToOutputs = 1 };
 // set the calculation function
 #define SETCALC(func) (unit->mCalcFunc = (UnitCalcFunc)&func)
 
+#define ClearUnitOnMemFailed                                                                                           \
+    Print("%s: alloc failed, increase server's RT memory (e.g. via ServerOptions)\n", __func__);                       \
+    SETCALC(*ClearUnitOutputs);                                                                                        \
+    unit->mDone = true;                                                                                                \
+    return;
+
+#define ClearUnitIfMemFailed(condition)                                                                                \
+    if (!(condition)) {                                                                                                \
+        ClearUnitOnMemFailed                                                                                           \
+    }
+
 // calculate a slope for control rate interpolation to audio rate.
 #define CALCSLOPE(next, prev) ((next - prev) * sc_typeof_cast(next) unit->mRate->mSlopeFactor)
 
