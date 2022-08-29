@@ -365,6 +365,7 @@ void TCP::handleMsgReceived(const boost::system::error_code& error, size_t bytes
         return;
     }
 
+    // The mOSCMsgLength read from the message header should match the actual number of bytes available.
     assert(bytes_transferred == mOSCMsgLength);
 
     mHandleFunc(std::move(mData), mOSCMsgLength);
