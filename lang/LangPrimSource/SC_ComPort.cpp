@@ -281,7 +281,7 @@ TCP::TCP(int inPortNum, int inMaxConnections, int inBacklog, HandlerType handler
 }
 
 void TCP::startAccept() {
-    Detail::TCPConnection::pointer newConnection(new Detail::TCPConnection(ioService, mPortNum, mHandlerType));
+    const auto newConnection = std::make_shared<Detail::TCPConnection>(ioService, mPortNum, mHandlerType);
 
     mAcceptor.async_accept(newConnection->getSocket(),
                            [this, newConnection](auto error) { handleAccept(newConnection, error); });
