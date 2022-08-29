@@ -77,17 +77,14 @@ Main : Process {
 		CmdPeriod.hardRun;
 	}
 
+	// recvOSCmessage, recvRawMessage are invoked from C++ when OSC or raw UDP messages are recieved
 	recvOSCmessage { |time, replyAddr, recvPort, msg|
-
-		// this method is called when an OSC message is received.
 		recvOSCfunc.value(time, replyAddr, msg);
 		prRecvOSCFunc.value(msg, time, replyAddr, recvPort); // same order as OSCFunc
 		OSCresponder.respond(time, replyAddr, msg);
 	}
 
 	recvRawMessage { |time, replyAddr, recvPort, msg|
-		
-		// this method is called when an raw message is received.
 		recvRawFunc.value(time, replyAddr, msg);
 		prRecvRawFunc.value(msg, time, replyAddr, recvPort);
 	}
