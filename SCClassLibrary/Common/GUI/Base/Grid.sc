@@ -97,9 +97,9 @@ DrawGridX {
 	}
 	commands {
 		var p;
+		var valNorm, lineColor;
 		if(cacheKey != [range,bounds],{ commands = nil });
 		^commands ?? {
-			var valNorm, lineColor;
 			cacheKey = [range,bounds];
 			commands = [];
 			p = grid.getParams(range[0],range[1],bounds.left,bounds.right);
@@ -176,10 +176,11 @@ DrawGridY : DrawGridX {
 	}
 	commands {
 		var p;
+		var valNorm, lineColor;
 		if(cacheKey != [range,bounds],{ commands = nil });
 
 		^commands ?? {
-			var valNorm, lineColor;
+
 			commands = [];
 
 			p = grid.getParams(range[0], range[1], bounds.top, bounds.bottom);
