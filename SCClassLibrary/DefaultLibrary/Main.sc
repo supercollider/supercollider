@@ -77,8 +77,7 @@ Main : Process {
 		CmdPeriod.hardRun;
 	}
 
-	recvOSCmessage { 
-		|time, replyAddr, recvPort, msg|
+	recvOSCmessage { |time, replyAddr, recvPort, msg|
 
 		// this method is called when an OSC message is received.
 		recvOSCfunc.value(time, replyAddr, msg);
@@ -86,8 +85,7 @@ Main : Process {
 		OSCresponder.respond(time, replyAddr, msg);
 	}
 
-	recvRawMessage { 
-		|time, replyAddr, recvPort, msg|
+	recvRawMessage { |time, replyAddr, recvPort, msg|
 		
 		// this method is called when an raw message is received.
 		recvRawFunc.value(time, replyAddr, msg);
@@ -108,8 +106,7 @@ Main : Process {
 
 	openPorts { ^openPorts.copy } // don't allow the Set to be modified from the outside
 
-	openUDPPort {
-		|portNum, type=\osc|
+	openUDPPort { |portNum, type=\osc|
 
 		var result;
 		if(openPorts.includes(portNum), {^true});
