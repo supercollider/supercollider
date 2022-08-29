@@ -82,7 +82,7 @@ private:
 
     int mPortNum;
     HandleDataFunc mHandleFunc;
-    boost::array<char, kTextBufSize> mRecvBuffer;
+    std::array<char, kTextBufSize> mRecvBuffer;
     boost::asio::ip::udp::endpoint mRemoteEndpoint;
     boost::asio::ip::udp::socket mUdpSocket;
 };
