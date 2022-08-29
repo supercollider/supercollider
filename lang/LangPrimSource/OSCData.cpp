@@ -817,7 +817,7 @@ int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
 
     try {
         SetTrue(a);
-        newTCPPort.reset(new InPort::UDPCustom(port, HandlerType::Raw));
+        newTCPPort = std::make_unique<InPort::UDPCustom>(port, HandlerType::Raw);
         gCustomTcpPorts.push_back(std::move(newTCPPort));
     } catch (...) {
         SetFalse(a);
