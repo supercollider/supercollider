@@ -125,6 +125,7 @@ DrawGridX {
 
 	init {
 		range = [grid.spec.minval, grid.spec.maxval];
+		// labelOffset is effectively the bounding rect for a single grid label
 		labelOffset = "20000".bounds.size.asPoint;
 	}
 	grid_ { arg g;
