@@ -15,7 +15,7 @@ DrawGrid {
 		var font = Font( Font.defaultSansFace, 9 ); // match this.font
 		var fcolor = Color.grey(0.3); // match this.fontColor
 
-		bounds = bounds ?? { Rect(0, 0, 500, 400).center_(Window.screenBounds.center) };
+		bounds = bounds ?? { Rect(0, 0, 500, 400) };
 		bounds = bounds.asRect;       // in case bounds are a Point
 		insetH = insetH + gridPad;
 		insetV = insetV + gridPad;
@@ -25,7 +25,7 @@ DrawGrid {
 			horzGrid, vertGrid
 		);
 
-		w = Window("Grid test", bounds).front;
+		w = Window("Grid test", bounds.center_(Window.screenBounds.center)).front;
 
 		UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
 		.drawFunc_({ |v|
