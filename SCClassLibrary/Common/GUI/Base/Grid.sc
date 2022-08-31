@@ -266,9 +266,8 @@ DrawGridY : DrawGridX {
 					});
 
 					lblRect = Rect.aboutPoint(
-						Point(labelOffset.x/2 - txtPad, y),
-						labelOffset.x/2, labelOffset.y/2
-					);
+						Point(0, y), labelOffset.x/2, labelOffset.y/2
+					).right_(bounds.left - txtPad);
 
 					switch(y.asInteger,
 						bounds.bottom.asInteger, {
