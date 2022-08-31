@@ -1,23 +1,65 @@
 DrawGrid {
 
-	var <bounds,<>x,<>y;
-	var <>opacity=0.7,<>smoothing=false,<>linePattern;
+	var <bounds, <>x, <>y;
+	var <>opacity=0.7, <>smoothing=false, <>linePattern;
 
-	*new { |bounds,horzGrid,vertGrid|
+	*new { |bounds, horzGrid, vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
 	}
-	*test { arg horzGrid,vertGrid,bounds;
-		var w,grid;
-		bounds = bounds ?? {Rect(0,0,500,400)};
-		grid = DrawGrid(bounds,horzGrid,vertGrid);
-		w = Window("Grid",bounds).front;
-		UserView(w,bounds ?? {w.bounds.moveTo(0,0)})
-			.resize_(5)
-			.drawFunc_({ arg v;
-				grid.bounds = v.bounds;
-				grid.draw
-			})
-			.background_(Color.white)
+
+	*test { arg horzGrid, vertGrid, bounds;
+		var w, grid;
+		var insetH = 45, insetV = 35; // left, bottom margins for labels
+		var gridPad = 15; 			  // right, top margin
+		var txtPad = 2;               // label offset from window's edge
+		var font = Font( Font.defaultSansFace, 9 ); // match this.font
+		var fcolor = Color.grey(0.3); // match this.fontColor
+
+		bounds = bounds ?? { Rect(0, 0, 500, 400).center_(Window.screenBounds.center) };
+		bounds = bounds.asRect;       // in case bounds are a Point
+		insetH = insetH + gridPad;
+		insetV = insetV + gridPad;
+
+		grid = DrawGrid(
+			bounds.insetBy(insetH.half, insetV.half).moveTo(insetH-gridPad, gridPad),
+			horzGrid, vertGrid
+		);
+		grid.x.labelOffset = insetH @ insetV.half;
+		grid.y.labelOffset = insetH @ insetV.half;
+
+		w = Window("Grid test", bounds).front;
+
+		UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
+		.drawFunc_({ |v|
+			var units;
+
+			grid.draw;
+
+			units = grid.x.grid.spec.units; // x label
+			if(units.size > 0) {
+				Pen.push;
+				Pen.translate(grid.bounds.center.x, v.bounds.bottom);
+				Pen.stringCenteredIn(units,
+					units.bounds.center_(0@0).bottom_(txtPad.neg), font, fcolor);
+				Pen.pop;
+			};
+
+			units = grid.y.grid.spec.units; // y label
+			if(units.size > 0) {
+				Pen.push;
+				Pen.translate(0, grid.bounds.center.y);
+				Pen.rotateDeg(-90);
+				Pen.stringCenteredIn(units,
+					units.bounds.center_(0@0).top_(txtPad), font, fcolor);
+				Pen.pop;
+			};
+		})
+		.onResize_({ |v|
+			grid.bounds = v.bounds.insetBy(insetH.half, insetV.half).moveTo(insetH - gridPad, gridPad);
+		})
+		.resize_(5)
+		.background_(Color.white);
+
 		^grid
 	}
 
