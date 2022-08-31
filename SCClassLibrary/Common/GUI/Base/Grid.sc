@@ -38,7 +38,8 @@ DrawGrid {
 				Pen.push;
 				Pen.translate(grid.bounds.center.x, v.bounds.bottom);
 				Pen.stringCenteredIn(units,
-					units.bounds.center_(0@0).bottom_(txtPad.neg), font, fcolor);
+					units.bounds.center_(0@0).bottom_(txtPad.neg),
+					font, fcolor);
 				Pen.pop;
 			};
 
@@ -48,12 +49,15 @@ DrawGrid {
 				Pen.translate(0, grid.bounds.center.y);
 				Pen.rotateDeg(-90);
 				Pen.stringCenteredIn(units,
-					units.bounds.center_(0@0).top_(txtPad), font, fcolor);
+					units.bounds.center_(0@0).top_(txtPad),
+					font, fcolor);
 				Pen.pop;
 			};
 		})
 		.onResize_({ |v|
-			grid.bounds = v.bounds.insetBy(insetH.half, insetV.half).moveTo(insetH - gridPad, gridPad);
+			grid.bounds = v.bounds
+			.insetBy(insetH.half, insetV.half)
+			.moveTo(insetH - gridPad, gridPad);
 		})
 		.resize_(5)
 		.background_(Color.white);
@@ -61,14 +65,14 @@ DrawGrid {
 		^grid
 	}
 
-	init { arg bounds,h,v;
+	init { arg bounds, h, v;
 		var w;
 		x = DrawGridX(h);
 		y = DrawGridY(v);
 		this.bounds = bounds;
-		this.font = Font( Font.defaultSansFace, 9 );
+		this.font = Font(Font.defaultSansFace, 9);
 		this.fontColor = Color.grey(0.3);
-		this.gridColors = [Color.grey(0.7),Color.grey(0.7)];
+		this.gridColors = [Color.grey(0.7), Color.grey(0.7)];
 	}
 	bounds_ { arg b;
 		bounds = b;
