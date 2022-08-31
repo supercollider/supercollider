@@ -24,8 +24,6 @@ DrawGrid {
 			bounds.insetBy(insetH.half, insetV.half).moveTo(insetH-gridPad, gridPad),
 			horzGrid, vertGrid
 		);
-		grid.x.labelOffset = insetH @ insetV.half;
-		grid.y.labelOffset = insetH @ insetV.half;
 
 		w = Window("Grid test", bounds).front;
 
@@ -127,7 +125,7 @@ DrawGridX {
 
 	init {
 		range = [grid.spec.minval, grid.spec.maxval];
-		labelOffset = 4 @ -10;
+		labelOffset = "20000".bounds.size.asPoint;
 	}
 	grid_ { arg g;
 		grid = g.asGrid;
@@ -212,10 +210,6 @@ DrawGridX {
 
 DrawGridY : DrawGridX {
 
-	init {
-		range = [grid.spec.minval, grid.spec.maxval];
-		labelOffset = 4 @ 4;
-	}
 	commands {
 		var p;
 		if(cacheKey != [range,bounds],{ commands = nil });
