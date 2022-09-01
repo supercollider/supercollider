@@ -69,7 +69,7 @@ HistoryGui : JITGui {
 			};
 		})
 		.font_(font)
-		.tabWidth_(font.size * 0.6 * 4) // ca. 4 chars
+		.tabWidth_("1234".bounds(font)) // ca. 4 chars
 		.resize_(2);
 
 		// to do: disable if history is not current!
