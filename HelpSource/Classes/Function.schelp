@@ -113,8 +113,7 @@ Evaluates the FunctionDef referred to by the Function. If the last argument is a
 
 method::valueWithEnvir
 
-Evaluate the function, using arguments from the supplied environment
-This is slightly faster than valueEnvir and does not require replacing the currentEnvironment
+Evaluate the function, using arguments from the supplied environment. This is slightly faster than valueEnvir and does not require replacing the currentEnvironment.
 
 code::
 (
