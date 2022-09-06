@@ -21,7 +21,7 @@ To get the latest stable version, Linux users will need to build SuperCollider t
 
 See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEAGLEBONE_BLACK.md) READMEs for instructions on building on those platforms.
 
-[downloads page]: https://supercollider.github.io/download
+[downloads page]: https://supercollider.github.io/downloads
 
 ### Platform support
 
