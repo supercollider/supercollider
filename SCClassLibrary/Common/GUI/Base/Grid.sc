@@ -1,34 +1,78 @@
 DrawGrid {
 
-	var <bounds,<>x,<>y;
-	var <>opacity=0.7,<>smoothing=false,<>linePattern;
+	var <bounds, <>x, <>y;
+	var <>opacity=0.7, <>smoothing=false, <>linePattern;
 
-	*new { |bounds,horzGrid,vertGrid|
+	*new { |bounds, horzGrid, vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
 	}
-	*test { arg horzGrid,vertGrid,bounds;
-		var w,grid;
-		bounds = bounds ?? {Rect(0,0,500,400)};
-		grid = DrawGrid(bounds,horzGrid,vertGrid);
-		w = Window("Grid",bounds).front;
-		UserView(w,bounds ?? {w.bounds.moveTo(0,0)})
-			.resize_(5)
-			.drawFunc_({ arg v;
-				grid.bounds = v.bounds;
-				grid.draw
-			})
-			.background_(Color.white)
+
+	*test { arg horzGrid, vertGrid, bounds;
+		var w, grid;
+		var insetH = 45, insetV = 35; // left, bottom margins for labels
+		var gridPad = 15; 			  // right, top margin
+		var txtPad = 2;               // label offset from window's edge
+		var font = Font( Font.defaultSansFace, 9 ); // match this.font
+		var fcolor = Color.grey(0.3); // match this.fontColor
+
+		bounds = bounds ?? { Rect(0, 0, 500, 400) };
+		bounds = bounds.asRect;       // in case bounds are a Point
+		insetH = insetH + gridPad;
+		insetV = insetV + gridPad;
+
+		grid = DrawGrid(
+			bounds.insetBy(insetH.half, insetV.half).moveTo(insetH-gridPad, gridPad),
+			horzGrid, vertGrid
+		);
+
+		w = Window("Grid test", bounds.center_(Window.screenBounds.center)).front;
+
+		UserView(w, bounds ?? { w.bounds.moveTo(0,0) })
+		.drawFunc_({ |v|
+			var units;
+
+			grid.draw;
+
+			units = grid.x.grid.spec.units; // x label
+			if(units.size > 0) {
+				Pen.push;
+				Pen.translate(grid.bounds.center.x, v.bounds.bottom);
+				Pen.stringCenteredIn(units,
+					units.bounds.center_(0@0).bottom_(txtPad.neg),
+					font, fcolor);
+				Pen.pop;
+			};
+
+			units = grid.y.grid.spec.units; // y label
+			if(units.size > 0) {
+				Pen.push;
+				Pen.translate(0, grid.bounds.center.y);
+				Pen.rotateDeg(-90);
+				Pen.stringCenteredIn(units,
+					units.bounds.center_(0@0).top_(txtPad),
+					font, fcolor);
+				Pen.pop;
+			};
+		})
+		.onResize_({ |v|
+			grid.bounds = v.bounds
+			.insetBy(insetH.half, insetV.half)
+			.moveTo(insetH - gridPad, gridPad);
+		})
+		.resize_(5)
+		.background_(Color.white);
+
 		^grid
 	}
 
-	init { arg bounds,h,v;
+	init { arg bounds, h, v;
 		var w;
 		x = DrawGridX(h);
 		y = DrawGridY(v);
 		this.bounds = bounds;
-		this.font = Font( Font.defaultSansFace, 9 );
+		this.font = Font(Font.defaultSansFace, 9);
 		this.fontColor = Color.grey(0.3);
-		this.gridColors = [Color.grey(0.7),Color.grey(0.7)];
+		this.gridColors = [Color.grey(0.7), Color.grey(0.7)];
 	}
 	bounds_ { arg b;
 		bounds = b;
@@ -85,7 +129,8 @@ DrawGridX {
 
 	init {
 		range = [grid.spec.minval, grid.spec.maxval];
-		labelOffset = 4 @ -10;
+		// labelOffset is effectively the bounding rect for a single grid label
+		labelOffset = "20000".bounds.size.asPoint;
 	}
 	grid_ { arg g;
 		grid = g.asGrid;
@@ -170,10 +215,6 @@ DrawGridX {
 
 DrawGridY : DrawGridX {
 
-	init {
-		range = [grid.spec.minval, grid.spec.maxval];
-		labelOffset = 4 @ 4;
-	}
 	commands {
 		var p;
 		var valNorm, lineColor;
@@ -225,9 +266,8 @@ DrawGridY : DrawGridX {
 					});
 
 					lblRect = Rect.aboutPoint(
-						Point(labelOffset.x/2 - txtPad, y),
-						labelOffset.x/2, labelOffset.y/2
-					);
+						Point(0, y), labelOffset.x/2, labelOffset.y/2
+					).right_(bounds.left - txtPad);
 
 					switch(y.asInteger,
 						bounds.bottom.asInteger, {
