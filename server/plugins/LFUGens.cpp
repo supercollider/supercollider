@@ -2230,7 +2230,6 @@ void LinExp_next_ak(LinExp* unit, int inNumSamples) {
     float dstratio = dsthi / dstlo;
 
     LOOP1(inNumSamples, float zsrchi = ZXP(srchi); float zsrclo = ZXP(srclo);
-
           float rsrcrange = sc_reciprocal(zsrchi - zsrclo); float rrminuslo = rsrcrange * -zsrclo;
           ZXP(out) = dstlo * pow(dstratio, ZXP(in) * rsrcrange + rrminuslo););
 }
@@ -2475,7 +2474,6 @@ void LinLin_Ctor(LinLin* unit) {
     unit->m_dsthi = dsthi;
     LinLin_next(unit, 1);
 }
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
