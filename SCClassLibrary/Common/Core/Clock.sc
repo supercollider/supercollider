@@ -56,6 +56,10 @@ AppClock : Clock {
 		scheduler.sched(delta, item);
 		this.prSchedNotify;
 	}
+	*schedAbs { arg time, item;
+		scheduler.schedAbs(time, item);
+		this.prSchedNotify;
+	}
 	*tick {
 		var saveClock = thisThread.clock;
 		thisThread.clock = this;
