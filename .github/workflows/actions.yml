@@ -205,6 +205,21 @@ jobs:
             artifact-suffix: 'macOS-x64' # set if needed - will trigger artifact upload
             verify-app: true
 
+          - job-name: 'arm64'
+            os-version: '11'
+            xcode-version: '12.4'
+            deployment-target: '11.0'
+            cmake-architectures: arm64
+            use-syslibs: false
+            shared-libscsynth: false
+            system-portaudio: false
+            build-libsndfile: true
+            build-readline: true
+            build-fftw: true
+            vcpkg-triplet: arm64-osx-release-supercollider # required for build-libsndfile
+            artifact-suffix: 'macOS-arm64' # set if needed - will trigger artifact upload
+            verify-app: true
+
           - job-name: 'x64 legacy'
             os-version: '11'
             xcode-version: '12.4'
@@ -909,6 +924,7 @@ jobs:
         with:
           files: |
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-arm64.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
