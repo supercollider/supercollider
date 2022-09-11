@@ -199,6 +199,8 @@ jobs:
             shared-libscsynth: false
             system-portaudio: true
             build-libsndfile: true
+            build-readline: false
+            build-fftw: false
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS-x64' # set if needed - will trigger artifact upload
             verify-app: true
@@ -287,15 +289,25 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install ccache fftw
+          brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
           if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
+          if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
           brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
           vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+      - name: install readline # to allow cross-compiling
+        if: matrix.build-readline == true && matrix.vcpkg-triplet
+        run: |
+          brew uninstall --ignore-dependencies readline
+          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
+      - name: install fftw # to allow cross-compiling
+        if: matrix.build-fftw == true && matrix.vcpkg-triplet
+        run: |
+          vcpkg install fftw3 --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"          
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
