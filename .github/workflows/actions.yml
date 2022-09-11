@@ -311,8 +311,12 @@ jobs:
       - name: install readline # to allow cross-compiling
         if: matrix.build-readline == true && matrix.vcpkg-triplet
         run: |
-          brew uninstall --ignore-dependencies readline
-          vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
+          # brew uninstall --ignore-dependencies readline
+          # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
+          # vcpkg readline currently fails on arm64 (ncurses dependency)
+          # see https://github.com/microsoft/vcpkg/issues/22654
+          # as a workaround, let's install arm64 readline bottle manually
+          # this is currently done in the "install qt universal binary" step
       - name: install fftw # to allow cross-compiling
         if: matrix.build-fftw == true && matrix.vcpkg-triplet
         run: |
