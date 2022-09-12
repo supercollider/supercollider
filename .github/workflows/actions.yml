@@ -49,29 +49,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'bionic gcc7'
-            os-version: '18.04'
+          - job-name: 'focal gcc7'
+            os-version: '20.04'
             c-compiler: 'gcc-7'
             cxx-compiler: 'g++-7'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic gcc8'
-            os-version: '18.04'
+          - job-name: 'focal gcc8'
+            os-version: '20.04'
             c-compiler: 'gcc-8'
             cxx-compiler: 'g++-8'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic gcc9'
-            os-version: '18.04'
+          - job-name: 'focal gcc9'
+            os-version: '20.04'
             c-compiler: 'gcc-9'
             cxx-compiler: 'g++-9'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic gcc9 shared libscsynth'
-            os-version: '18.04'
+          - job-name: 'focal gcc9 shared libscsynth'
+            os-version: '20.04'
             c-compiler: 'gcc-9'
             cxx-compiler: 'g++-9'
             use-syslibs: false
@@ -92,8 +92,8 @@ jobs:
           #   use-syslibs: true
           #   shared-libscsynth: false
 
-          - job-name: 'focal gcc11'
-            os-version: '20.04'
+          - job-name: 'jammy gcc11'
+            os-version: '22.04'
             c-compiler: 'gcc-11'
             cxx-compiler: 'g++-11'
             use-syslibs: false
@@ -113,15 +113,15 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic clang8'
-            os-version: '18.04'
+          - job-name: 'focal clang8'
+            os-version: '20.04'
             c-compiler: 'clang-8'
             cxx-compiler: 'clang++-8'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic clang9'
-            os-version: '18.04'
+          - job-name: 'focal clang9'
+            os-version: '20.04'
             c-compiler: 'clang-9'
             cxx-compiler: 'clang++-9'
             use-syslibs: false
