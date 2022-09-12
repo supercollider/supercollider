@@ -14,7 +14,7 @@ on:
       - '*.md'
 jobs:
   lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
     steps:
