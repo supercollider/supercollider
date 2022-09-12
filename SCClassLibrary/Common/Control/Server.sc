@@ -47,7 +47,7 @@ ServerOptions {
 	var <>reservedNumBuffers;
 	var <>pingsBeforeConsideredDead;
 
-	var <>maxLogins;
+	var <maxLogins;
 
 	var <>recHeaderFormat;
 	var <>recSampleFormat;
@@ -264,6 +264,13 @@ ServerOptions {
 
 	recalcChannels {
 		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
+	}
+
+	maxLogins_ { |logins|
+		if(logins > 32) {
+			Error("maxLogins should be <= 32, tried to set to " ++ logins).throw;
+		};
+		maxLogins = logins;
 	}
 
 	*prListDevices {
