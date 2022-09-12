@@ -190,41 +190,79 @@ jobs:
       matrix:
         include:
 
-          - job-name: ''
+          - job-name: 'x64'
             os-version: '11'
             xcode-version: '12.4'
             deployment-target: '10.14' # Qt 5.15 runs on macOS 10.13 and newer; however homebrew build of Qt on macOS 11 only supports 10.14+
+            cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: false
+            system-portaudio: true
             build-libsndfile: true
+            build-readline: false
+            build-fftw: false
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: 'macOS' # set if needed - will trigger artifact upload
+            artifact-suffix: 'macOS-x64' # set if needed - will trigger artifact upload
             verify-app: true
 
-          - job-name: 'legacy'
+          - job-name: 'arm64'
+            os-version: '11'
+            xcode-version: '12.4'
+            deployment-target: '11.0'
+            cmake-architectures: arm64
+            use-syslibs: false
+            shared-libscsynth: false
+            system-portaudio: false
+            build-libsndfile: true
+            build-readline: true
+            build-fftw: true
+            vcpkg-triplet: arm64-osx-release-supercollider # required for build-libsndfile
+            artifact-suffix: 'macOS-arm64' # set if needed - will trigger artifact upload
+            verify-app: true
+
+          # universal build is disabled for now, since libsndfile dependencies don't build correctly with vcpkg as universal binaries
+          # - job-name: 'universal'
+          #   os-version: '11'
+          #   xcode-version: '12.4'
+          #   deployment-target: '10.14'
+          #   cmake-architectures: 'x86_64;arm64'
+          #   use-syslibs: false
+          #   shared-libscsynth: false
+          #   system-portaudio: false
+          #   build-libsndfile: true
+          #   build-readline: true
+          #   build-fftw: true
+          #   vcpkg-triplet: x64-arm64-osx-release-supercollider
+          #   artifact-suffix: 'macOS-universal'
+          #   verify-app: true
+
+          - job-name: 'x64 legacy'
             os-version: '11'
             xcode-version: '12.4'
             qt-version: '5.9.9' # will use qt from aqtinstall
             deployment-target: '10.10'
+            cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: false
             build-libsndfile: true
             system-portaudio: false
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: 'macOS-legacy' # set if needed - will trigger artifact upload
+            artifact-suffix: 'macOS-x64-legacy' # set if needed - will trigger artifact upload
 
-          - job-name: 'use system libraries'
+          - job-name: 'x64 use system libraries'
             os-version: '12'
             xcode-version: '13.4.1'
             deployment-target: '10.14'
+            cmake-architectures: x86_64
             use-syslibs: true
             shared-libscsynth: false
             verify-app: true
 
-          - job-name: 'shared libscsynth'
+          - job-name: 'x64 shared libscsynth'
             os-version: '12'
             xcode-version: '13.4.1'
             deployment-target: '10.14'
+            cmake-architectures: x86_64
             use-syslibs: false
             shared-libscsynth: true
             verify-app: true
@@ -241,6 +279,9 @@ jobs:
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer'
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
+      CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
+      QT_UNIVERSAL_PREP_DIR: ${{ github.workspace }}/qt-prepare
+      QT_UNIVERSAL_WORK_DIR: ${{ github.workspace }}/qt-prepare/tmp # needs to be under QT_UNIVERSAL_PREP_DIR for caching
     steps:
       - uses: actions/checkout@v2
         with:
@@ -254,14 +295,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/Library/Caches/ccache
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
-          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
       - name: cache homebrew downloads
         uses: actions/cache@v2
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-homebrew-${{ steps.current-date.outputs.week }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
       - name: cache qt
         id: cache-qt
         uses: actions/cache@v1
@@ -269,6 +310,13 @@ jobs:
         with:
           path: ../Qt
           key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-qt${{ matrix.qt-version }}
+      - name: cache qt universal binary
+        id: cache-qt-universal
+        uses: actions/cache@v3
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        with:
+          path: ${{ env.QT_UNIVERSAL_WORK_DIR }}
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
         uses: actions/cache@v2
@@ -281,21 +329,189 @@ jobs:
         run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
-          brew install ccache fftw
+          brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
           if [[ "${{ matrix.system-portaudio }}" != "false" ]]; then brew install portaudio; fi
+          if [[ "${{ matrix.build-fftw }}" != "true" ]]; then brew install fftw; fi
       - name: install libsndfile # to make it compatible with older OSes (lower deployment target)
         if: matrix.build-libsndfile == true && matrix.vcpkg-triplet
         run: |
           brew uninstall --ignore-dependencies libsndfile libvorbis libogg flac opus
           vcpkg install libsndfile --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"
+      - name: install readline # to allow cross-compiling
+        if: matrix.build-readline == true && matrix.vcpkg-triplet
+        run: |
+          # brew uninstall --ignore-dependencies readline
+          # vcpkg install readline --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets" 
+          # vcpkg readline currently fails on arm64 (ncurses dependency)
+          # see https://github.com/microsoft/vcpkg/issues/22654
+          # as a workaround, let's install arm64 readline bottle manually
+          # this is currently done in the "install qt universal binary" step
+      - name: install fftw # to allow cross-compiling
+        if: matrix.build-fftw == true && matrix.vcpkg-triplet
+        run: |
+          vcpkg install fftw3 --triplet="${{ matrix.vcpkg-triplet }}" --overlay-triplets="$GITHUB_WORKSPACE/vcpkg/triplets"          
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
-        if: '!matrix.qt-version'
+        if: matrix.cmake-architectures == 'x86_64' && '!matrix.qt-version' 
         run: brew install qt5
+      - name: prepare qt universal binary # this can be cached
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version' && steps.cache-qt-universal.outputs.cache-hit != 'true'
+        run: |
+          # this is a workaround to create a universal x64/arm64 binary of qt5
+          # it's not a fully-featured universal binary, since qt's dependencies are still single architecture
+          # once we support Qt6, you should be able to drop this and use official Qt6 binaries instead, which are universal (x64 + arm64)
+          mkdir $QT_UNIVERSAL_PREP_DIR && cd $QT_UNIVERSAL_PREP_DIR
+
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5) # note it needs to be qt@5, not qt5 here
+
+          DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
+          TEMP_PATH="${QT_UNIVERSAL_WORK_DIR}"
+
+          echo "making downloads folder "$DOWNLOAD_PATH
+          mkdir -p "$DOWNLOAD_PATH"
+          mkdir -p "$TEMP_PATH"
+
+          HOMEBREW_PREFIX=`brew --prefix`
+          echo "homebrew prefix: "$HOMEBREW_PREFIX
+
+          HOMEBREW_CELLAR=`brew --cellar`
+          echo "homebrew cellar: "$HOMEBREW_CELLAR
+
+          BOTTLE_ID="arm64_big_sur" # TODO: detect big_sur / monterey based on the host OS 
+
+          get_bottle_sha () { # takes name
+              brew cat --formula ${1} | grep "$BOTTLE_ID" | awk '{print $NF }' | sed 's/\"//g'
+          }
+
+          download_bottle () { #takes name
+              name=$1
+              sha=$(get_bottle_sha $name)
+              os_id=$BOTTLE_ID
+              destination=$DOWNLOAD_PATH
+              url="https://ghcr.io/v2/homebrew/core/${name/@//}/blobs/sha256:${sha}"
+              filename="${name}.${os_id}.bottle.tar.gz"
+              dest_full_path="${destination}/${filename}"
+              if [[ -f "$dest_full_path" ]]; then
+                  # TODO: check if sha matches
+                  echo "$filename already exists, not downloading"
+              else
+                  echo "downloading ${filename} from ${url}"
+                  curl -f -L -H "Authorization: Bearer QQ==" -o "$dest_full_path" "$url"
+              fi
+          }
+
+          decompress_bottle () { # takes name
+              name=$1
+              os_id=$BOTTLE_ID
+              source=$DOWNLOAD_PATH
+              destination=$TEMP_PATH
+              filename="${name}.${os_id}.bottle.tar.gz"
+              echo "decompressing ${filename}"
+              tar xf "${source}/${filename}" --directory "$destination"
+          }
+
+          set_loader_paths () { # takes name
+              name=$1
+              find "${TEMP_PATH}/${1}" -print0 | while IFS= read -r -d '' file
+              do
+                  if [ -f "$file" ]; then
+                      file_type_string=`file -bh "${file}"`
+                      if [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                          loader_paths=`otool -XL "$file" | awk '{print $1 }'`
+                          install_name=`otool -XD "$file"`
+                          echo "--- ${file} ---"
+                          basename=$(basename -- "$file")
+                          if [[ $install_name == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                              echo "${basename}: setting install name to ${corrected_path}"
+                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
+                          fi
+                          if [[ $install_name == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                              corrected_path=`echo "$install_name" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
+                              echo "${basename}: setting install name to ${corrected_path}"
+                              install_name_tool -id "$corrected_path" "$file" 2>/dev/null
+                          fi
+                          for this_path in $loader_paths
+                          do
+                              if [[ $this_path == *"@@HOMEBREW_PREFIX@@"* ]]; then
+                                  # echo $this_path
+                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_PREFIX@@~${HOMEBREW_PREFIX}~`
+                                  # echo $corrected_path
+                                  echo "${this_path}: changing path to ${corrected_path}"
+                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
+                              fi
+                              if [[ $this_path == *"@@HOMEBREW_CELLAR@@"* ]]; then
+                                  # echo $this_path
+                                  corrected_path=`echo "$this_path" | sed s~@@HOMEBREW_CELLAR@@~${HOMEBREW_CELLAR}~`
+                                  # echo $corrected_path
+                                  echo "${this_path}: changing path to ${corrected_path}"
+                                  install_name_tool -change "$this_path" "$corrected_path" "$file" 2>/dev/null
+                              fi
+                          done
+                      fi
+                  fi
+              done
+          }
+
+          for package in "${packages_to_process[@]}"
+          do
+              echo "--- processing ${package} ---"
+              download_bottle $package
+              decompress_bottle $package
+              set_loader_paths $package
+          done
+
+      - name: install qt universal binary
+        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        run: |
+          cd $QT_UNIVERSAL_PREP_DIR
+
+          brew install qt5 # we need to make sure homebrew knows about qt installation; this does nothing when not using cache
+
+          # prepare universal versions of the dependencies
+
+          packages_to_process=( freetype gettext giflib glib jpeg-turbo libpng libtiff pcre pcre2 webp readline qt@5)
+
+          DOWNLOAD_PATH="${QT_UNIVERSAL_PREP_DIR}/downloads"
+          TEMP_PATH="${QT_UNIVERSAL_WORK_DIR}"
+
+          # echo "making downloads folder "$DOWNLOAD_PATH
+          # mkdir -p "$DOWNLOAD_PATH"
+          # mkdir -p "$TEMP_PATH"
+
+          combine_libraries () { # takes name
+              name=$1
+              base_path="${TEMP_PATH}/${1}/"
+              varname=`ls "${base_path}/"` # we assume there's only one subdirectory
+              base_src_path="${base_path}/${varname}"
+              base_dst_path=`brew --prefix ${name}`
+              find  "$base_src_path" -print0 | while IFS= read -r -d '' file
+              do
+                  if [ -f "$file" ] && [ ! -h "$file" ]; then
+                      file_type_string=`file -bh "${file}"`
+                      if [[ $file_type_string == *"current ar archive"* ]] || [[ $file_type_string == *"shared library"* ]] || [[ $file_type_string == "Mach-O"*"executable"* ]]; then
+                          # echo "--- ${file} ---"
+                          basename=$(basename -- "$file")
+                          base_relative_path=${file##$base_src_path}
+                          dst_full_path="${base_dst_path}${base_relative_path}"
+                          if [ -f "$dst_full_path" ]; then
+                              echo "combining ${file} and ${dst_full_path}"
+                              lipo "$file" "$dst_full_path" -create -output "$dst_full_path"
+                          fi
+                      fi
+                  fi
+              done
+          }
+
+          for package in "${packages_to_process[@]}"
+          do
+              echo "--- processing ${package} ---"
+              combine_libraries $package
+          done
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v2
         if: matrix.qt-version
@@ -526,7 +742,7 @@ jobs:
           - name: macOS
             runs-on: macos-11
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
-            artifact-suffix: macOS
+            artifact-suffix: macOS-x64
             artifact-extension: '.dmg'
 
           - name: Linux
@@ -615,7 +831,7 @@ jobs:
       matrix:
         include:
 
-          - artifact-suffix: macOS
+          - artifact-suffix: macOS-x64
             s3-os-name: osx
             s3-artifact-suffx: ''
             s3-artifact-extension: 'dmg'
@@ -723,8 +939,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS.dmg/*
-            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-legacy.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-universal.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-arm64.dmg/*
+            ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-macOS-x64-legacy.dmg/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win64-installer/*
             ${{ env.INSTALL_PATH }}/${{ env.ARTIFACT_FILE_PREFIX }}-win32/*
