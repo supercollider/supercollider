@@ -3,13 +3,11 @@ on:
   push:
     paths-ignore:
       - 'examples/**'
-      - 'HelpSource/**'
       - 'sounds/**'
       - '*.md'
   pull_request:
     paths-ignore:
       - 'examples/**'
-      - 'HelpSource/**'
       - 'sounds/**'
       - '*.md'
 jobs:
