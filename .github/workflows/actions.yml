@@ -993,4 +993,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ RENDERED_HELP }}
+          publish_dir: $RENDERED_HELP
