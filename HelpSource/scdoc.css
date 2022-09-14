@@ -15,6 +15,8 @@ body {
     font-size: 10pt;
     color: black;
     background: white;
+    margin: auto;
+    max-width: 1000px;
 }
 
 div.contents {
@@ -102,7 +104,7 @@ a.subclass_toggle:hover {
 
 
 #menubar {
-    position: fixed;
+    position: absolute;
     text-indent: 0;
     width: 100%;
     height: 33px;
