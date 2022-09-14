@@ -989,6 +989,10 @@ jobs:
       - name: replace URLs to GitHub URLs
         run: |
           cp $RENDERED_HELP/Help.html $RENDERED_HELP/index.html
+          find ./RenderedHelp/ -type f -exec sed -i -e 's_file:///home/runner/work/supercollider/supercollider/build/Install/share/SuperCollider/SCClassLibrary/_https://github.com/supercollider/supercollider/tree/develop/SCClassLibrary/_g' {} \;
+          find ./RenderedHelp/ -type f -exec sed -i -e 's_file:///home/runner/work/supercollider/supercollider/HelpSource/_https://github.com/supercollider/supercollider/tree/develop/HelpSource/_g' {} \; 
+          find ./RenderedHelp/ -type f -exec sed -i -e 's_/home/runner/work/supercollider/supercollider/build/Install/share/SuperCollider/SCClassLibrary/_https://github.com/supercollider/supercollider/tree/develop/SCClassLibrary/_g' {} \; 
+          find ./RenderedHelp/ -type f -exec sed -i -e 's_/home/runner/work/supercollider/supercollider/HelpSource/_https://github.com/supercollider/supercollider/tree/develop/HelpSource_g' {} \; 
       - name: upload HTML documentation as gh-pages branch
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
