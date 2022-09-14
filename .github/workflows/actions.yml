@@ -984,11 +984,11 @@ jobs:
           jackd --no-realtime -d dummy & 
       - name: build HTML documentation
         run: |
-          mkdir ${{ RENDERED_HELP }}
-          xvfb-run --server-args="-screen 0, 1280x720x24" -a ${{ SCLANG }} ${{ github.workspace }}/platform/renderAllHelp.scd ${{ github.workspace }}/HelpSource ${{ RENDERED_HELP }}
+          mkdir $RENDERED_HELP
+          xvfb-run --server-args="-screen 0, 1280x720x24" -a $SCLANG ${{ github.workspace }}/platform/renderAllHelp.scd ${{ github.workspace }}/HelpSource $RENDERED_HELP
       - name: replace URLs to GitHub URLs
         run: |
-          cp ${{ RENDERED_HELP }}/Help.html ${{ RENDERED_HELP }}/index.html
+          cp $RENDERED_HELP/Help.html $RENDERED_HELP/index.html
       - name: upload HTML documentation as gh-pages branch
         uses: peaceiris/actions-gh-pages@v3.6.1
         with:
