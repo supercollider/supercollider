@@ -950,3 +950,47 @@ jobs:
           draft: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # originated from a combination of cmake target "doc" and GHA linux test
+  deploy_docs:
+    needs: [lint, Linux]
+    runs-on: ubuntu-18.04
+    name: 'deploy documentation'
+    env:
+      INSTALL_PATH: ${{ github.workspace }}/build/Install
+      SCLANG: 'build/Install/bin/sclang'
+      ARTIFACT_FILE: SuperCollider-${{ needs.lint.outputs.sc-version }}-linux-bionic-gcc10
+      RENDERED_HELP: ${{ github.workspace }}/RenderedHelp
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: false
+      - name: download linux artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.ARTIFACT_FILE }}
+          path: ${{ env.INSTALL_PATH }}
+      - name: extract artifact
+        run: |
+          cd $INSTALL_PATH
+          unzip $ARTIFACT_FILE.zip
+      - name: setup Linux environment
+        run: |
+          # install dependencies
+          sudo apt-get update
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt5-default qtwebengine5-dev jackd1
+
+          # start jack
+          jackd --no-realtime -d dummy & 
+      - name: build HTML documentation
+        run: |
+          mkdir ${{ RENDERED_HELP }}
+          xvfb-run --server-args="-screen 0, 1280x720x24" -a ${{ SCLANG }} ${{ github.workspace }}/platform/renderAllHelp.scd ${{ github.workspace }}/HelpSource ${{ RENDERED_HELP }}
+      - name: replace URLs to GitHub URLs
+        run: |
+          cp ${{ RENDERED_HELP }}/Help.html ${{ RENDERED_HELP }}/index.html
+      - name: upload HTML documentation as gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3.6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ RENDERED_HELP }}
