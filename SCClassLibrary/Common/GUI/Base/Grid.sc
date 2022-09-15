@@ -1,4 +1,5 @@
 DrawGrid {
+
 	var <bounds, <>x, <>y;
 	var <>opacity=0.7, <>smoothing=false, <>linePattern;
 
@@ -52,9 +53,13 @@ DrawGrid {
 	vertGrid_ { arg g;
 		y.grid = g;
 	}
-	tickSpacing_ { arg val;
-		x.tickSpacing = val;
-		y.tickSpacing = val;
+	tickSpacing_ { arg xpx, ypx;
+		x.tickSpacing = xpx;
+		y.tickSpacing = ypx;
+	}
+	numTicks_ { arg numx, numy;
+		x.numTicks = numx;
+		y.numTicks = numy;
 	}
 	copy {
 		^DrawGrid(bounds,x.grid,y.grid).x_(x.copy).y_(y.copy).opacity_(opacity).smoothing_(smoothing).linePattern_(linePattern)
@@ -69,11 +74,11 @@ DrawGrid {
 DrawGridX {
 
 	var <grid,<>range,<>bounds;
-	var <>font,<>fontColor,<>gridColor,<>labelOffset;
+	var <font,<fontColor,<gridColor,<labelOffset;
 	var commands,cacheKey;
 	var txtPad = 2; // match with Plot:txtPad
-	var <>tickSpacing = 64;
-	var <>numTicks = nil; // nil for dynamic with view size
+	var <tickSpacing = 64;
+	var <numTicks = nil; // nil for dynamic with view size
 
 	*new { arg grid;
 		^super.newCopyArgs(grid.asGrid).init
@@ -81,7 +86,6 @@ DrawGridX {
 
 	init {
 		range = [grid.spec.minval, grid.spec.maxval];
-		// labelOffset is effectively the bounding rect for a single grid label
 		labelOffset = "20000".bounds.size.asPoint;
 	}
 	grid_ { arg g;
@@ -90,7 +94,34 @@ DrawGridX {
 		this.clearCache;
 	}
 	setZoom { arg min,max;
-		range = [min,max];
+		range = [min, max];
+	}
+	tickSpacing_{ |px|
+		px !? {
+			tickSpacing = px;
+			this.clearCache;
+		};
+	}
+	numTicks_{ |num|
+		numTicks = num;
+		this.clearCache;
+	}
+	font_{ |afont|
+		font = afont;
+		this.clearCache;
+	}
+	fontColor_{ |color|
+		fontColor = color;
+		this.clearCache;
+	}
+	gridColor_{ |color|
+		gridColor = color;
+		this.clearCache;
+	}
+	// labelOffset is effectively a point describing the size of a grid label
+	labelOffset_{ |pt|
+		labelOffset = pt;
+		this.clearCache;
 	}
 	commands {
 		var p;
@@ -302,7 +333,7 @@ AbstractGridLines {
 		^[graphmin,graphmax,nfrac,d];
 	}
 	looseRange { arg min,max,ntick=5;
-		^this.ideals(min,max).at( [ 0,1] )
+		^this.ideals(min,max,ntick).at( [ 0,1] )
 	}
 	getParams {
 		^()
@@ -435,16 +466,15 @@ ExponentialGridLines : AbstractGridLines {
 
 BlankGridLines : AbstractGridLines {
 
-	getParams {
-		^()
-	}
-	prCheckWarp {}
+	getParams { ^() }
+
+	prCheckWarp { }
 }
 
 DrawGridTest : DrawGrid {
 	var <testView;
 	var insetH = 45, insetV = 35; // left, bottom margins for labels
-	var gridPad = 15; 			  // right, top margin
+	var gridPad = 15;             // right, top margin
 	var txtPad = 2;               // label offset from window's edge
 	var win, winBounds, font, fcolor;
 
