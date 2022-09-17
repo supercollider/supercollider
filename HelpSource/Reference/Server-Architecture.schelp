@@ -129,7 +129,7 @@ The output file's sample rate is specified by sample-rate. The output file heade
 
 subsection:: Example
 code::
-scscynth -u 57117 >synth_log &
+scsynth -u 57117 >synth_log &
 
 	Accept commands via UDP on port 57117.
 	Send output to file "synth_log"
