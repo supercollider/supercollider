@@ -14,7 +14,7 @@ on:
       - '*.md'
 jobs:
   lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
     steps:
@@ -49,29 +49,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job-name: 'bionic gcc7'
-            os-version: '18.04'
+          - job-name: 'focal gcc7'
+            os-version: '20.04'
             c-compiler: 'gcc-7'
             cxx-compiler: 'g++-7'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic gcc8'
-            os-version: '18.04'
+          - job-name: 'focal gcc8'
+            os-version: '20.04'
             c-compiler: 'gcc-8'
             cxx-compiler: 'g++-8'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic gcc9'
-            os-version: '18.04'
+          - job-name: 'focal gcc9'
+            os-version: '20.04'
             c-compiler: 'gcc-9'
             cxx-compiler: 'g++-9'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic gcc9 shared libscsynth'
-            os-version: '18.04'
+          - job-name: 'focal gcc9 shared libscsynth'
+            os-version: '20.04'
             c-compiler: 'gcc-9'
             cxx-compiler: 'g++-9'
             use-syslibs: false
@@ -92,6 +92,20 @@ jobs:
           #   use-syslibs: true
           #   shared-libscsynth: false
 
+          - job-name: 'jammy gcc11'
+            os-version: '22.04'
+            c-compiler: 'gcc-11'
+            cxx-compiler: 'g++-11'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'jammy gcc12 use system libraries'
+            os-version: '22.04'
+            c-compiler: 'gcc-12'
+            cxx-compiler: 'g++-12'
+            use-syslibs: true
+            shared-libscsynth: false
+
           - job-name: 'bionic clang6.0'
             os-version: '18.04'
             c-compiler: 'clang-6.0'
@@ -99,15 +113,15 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic clang8'
-            os-version: '18.04'
+          - job-name: 'focal clang8'
+            os-version: '20.04'
             c-compiler: 'clang-8'
             cxx-compiler: 'clang++-8'
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'bionic clang9'
-            os-version: '18.04'
+          - job-name: 'focal clang9'
+            os-version: '20.04'
             c-compiler: 'clang-9'
             cxx-compiler: 'clang++-9'
             use-syslibs: false
@@ -117,6 +131,34 @@ jobs:
             os-version: '20.04'
             c-compiler: 'clang-10'
             cxx-compiler: 'clang++-10'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'focal clang11'
+            os-version: '20.04'
+            c-compiler: 'clang-11'
+            cxx-compiler: 'clang++-11'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'focal clang12'
+            os-version: '20.04'
+            c-compiler: 'clang-12'
+            cxx-compiler: 'clang++-12'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'jammy clang13'
+            os-version: '22.04'
+            c-compiler: 'clang-13'
+            cxx-compiler: 'clang++-13'
+            use-syslibs: false
+            shared-libscsynth: false
+
+          - job-name: 'jammy clang14'
+            os-version: '22.04'
+            c-compiler: 'clang-14'
+            cxx-compiler: 'clang++-14'
             use-syslibs: false
             shared-libscsynth: false
 
@@ -146,17 +188,20 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes build-essential cmake pkg-config libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev emacs ccache
-          # clang and gcc compilers < 9.x are no longer on ubuntu images; install them manually
-          if [[ "$CC" =~ clang-[1-8] ]]; then
+          # install appropriate clang/gcc compilers
+          if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y $CC # package names are clang-X
-          elif [[ "$CC" =~ gcc-[1-8] ]]; then
+            if [[ "$CC" != clang-6.0 ]]; then
+              sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
+            fi
+          elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
       - name: install system libraries
         if: env.USE_SYSLIBS == 'true'
         run: sudo apt-get install --yes libboost-thread-dev libboost-system-dev libboost-filesystem-dev libboost-regex-dev libboost-test-dev libboost-program-options-dev libyaml-cpp-dev
       - name: install qt from apt
-        run: sudo apt-get install qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
+        run: sudo apt-get install qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5svg5-dev libqt5websockets5-dev qtwebengine5-dev
       - name: configure
         run: |
           mkdir $BUILD_PATH && cd $BUILD_PATH
