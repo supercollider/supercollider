@@ -30,6 +30,7 @@ Table of contents
     - SuperNova
     - Other targets (install, installer)
     - PortAudio
+    - Ccache
   - Common build problems
     - Dirty build states
     - Wrong libraries found
@@ -466,6 +467,12 @@ like to tweak the PortAudio build you can single it out from the SC build with:
 DSound support out of the box. If you want ASIO or WDM-KS, you need to build
 PortAudio within MSYS2. Users have experienced issues using the WASAPI backend
 to build in MinGW-based environments. Use Visual Studio if you need WASAPI.
+
+### Ccache
+
+Ccache speeds up recompilation by caching previous compilations and detecting when the same compilation is being done again. Ccache added partial support for MSVC in version 4.6.1. When the ccache executable is found in the PATH during the configuration step, it will be used to speed up the build process.
+
+NOTE: there's a caveat when using ccache installed with "chocolatey" package manager. The current implementation of ccache with MSVC and CMake requires copying `ccache.exe` into the build directory. This is done automatically by CMake during the configure step. However, when ccache is installed with chocolatey, what CMake finds is actually a chocolatey "shim" - an executable that redirects to the original file. Copying the "shim" into the build directory does not work, as the "shim" is not able to find the original executable afterwards. The solution to this is to add the path to the actual ccache.exe earlier in the PATH. This can be done in the command prompt with e.g. ```set PATH=C:\ProgramData\chocolatey\lib\ccache\tools\ccache-4.6.3-windows-x86_64\;%PATH%```. Note that the path needs to be adjusted for the currently installed version of ccache.
 
 Common build problems
 ---------------------

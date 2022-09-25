@@ -687,6 +687,12 @@ jobs:
           path: ~/AppData/Local/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.vcpkg-triplet }}-
+      - name: cache ccache
+        uses: actions/cache@v3
+        with:
+          path: ~/ccache # this is likely used when running ccache 4.6.3 in bash, NOTE may change in 4.7+, see https://github.com/ccache/ccache/issues/1023
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-${{ steps.current-date.outputs.stamp }}
+          restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.cmake-arch }}-${{ matrix.qt-arch }}-${{ matrix.qt-version }}-
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
         with:
@@ -695,6 +701,11 @@ jobs:
           arch: ${{ matrix.qt-arch }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}
+      - name: install ccache
+        shell: bash
+        run: |
+          choco install ccache --no-progress
+          echo "`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`" >> $GITHUB_PATH # put the direct path before the path of the choco's "shim" (link subsitute)
       - name: install libsndfile
         shell: bash
         run: |
