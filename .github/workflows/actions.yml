@@ -695,6 +695,11 @@ jobs:
           arch: ${{ matrix.qt-arch }}
           cache: true
           cache-key-prefix: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.qt-version }}-qt${{ matrix.qt-arch }}
+      - name: install ccache
+        shell: bash
+        run: |
+          choco install ccache --no-progress
+          echo "`echo c:/ProgramData/chocolatey/lib/ccache/tools/ccache*`" >> $GITHUB_PATH # put the direct path before the path of the choco's "shim" (link subsitute)
       - name: install libsndfile
         shell: bash
         run: |
