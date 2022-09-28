@@ -69,6 +69,9 @@ Returns code::maxval - minval::.
 method::guessNumberStep
 Used for EZ GUI classes for guessing a sensible strong::step:: if none is specified.
 
+method::gridClass
+Returns the link::Classes/AbstractGridLines:: subclass appropriate for the current spec.
+
 Examples::
 
 code::
