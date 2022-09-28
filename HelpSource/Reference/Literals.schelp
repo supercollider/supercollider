@@ -348,7 +348,7 @@ code::
 
 The outer function includes only the selector code::value::. The other selectors -- code::>::, code::*::, code::-:: -- belong to the inner function definition and don't affect the outer function's number of selectors.
 
-So, one possible easy way to work around the limitation is to break up a large block of code into several functions that are valued successively:
+So, one possible easy way to work around the limitation is to break up a large block of code into several functions that are value'd successively:
 
 code::
 {
