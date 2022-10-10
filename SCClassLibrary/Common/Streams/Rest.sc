@@ -29,6 +29,7 @@ Rest : Operand  {
 		^this.new
 	}
 
+	asEvent { ^Event.silent(this) }
 }
 
 + SimpleNumber {
