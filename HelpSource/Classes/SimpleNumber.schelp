@@ -603,16 +603,16 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 ::
 
 
-
 method::gaussCurve
-map the receiver onto a gauss function.
+Map the receiver onto a gauss function.
 
-discussion::
 Uses the formula:
-code::
-a * (exp(squared(this - b) / (-2.0 * squared(c)))) Default values: a = 1; b = 0; c = 1
+teletype::
+a * -exp((this - b).squared / (2 * c.squared))
 ::
-Example code
+where code::a:: is the distribution amplitude, code::b:: is the mean (typically denoted emphasis::mu::), and the variance is code::c.squared:: (emphasis::sigma::^2).
+
+The method defaults to a "standard normal distribution": a zero mean and both the peak amplitude and variance are code::1.0:: (code::a = 1.0, b = 0.0, c = 1.0::).
 code::
 (0..1000).normalize(-10, 10).collect { |num| num.gaussCurve }.plot;
 ::
