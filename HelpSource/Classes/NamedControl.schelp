@@ -5,7 +5,7 @@ related:: Classes/ControlName, Classes/Control
 
 description::
 
-A NamedControl directly combines a ControlName and a Control UGen conveniently. Also this makes it safe even if several identical controls exist (see example below).
+A NamedControl directly combines a ControlName and a Control UGen conveniently. It can be saved to a var to send the control value to different parts of the function or SynthDef.
 
 There are syntax shortcuts that generate NamedControls from the name:
 code::
@@ -58,8 +58,12 @@ a.setn(\freq, [0, 2, 5].midiratio * 400);
 a = { SinOsc.ar(\freq.kr([300, 330, 370], [1, 0.3, 0.02])).sum * 0.1 }.play;
 
 // multiple usage of the same name:
-a = { SinOsc.ar(\freq.kr(440, 3.5)) + Saw.ar(\freq.kr(440, 0.05) * 0.5) * 0.1 }.play;
-
+(
+a = {
+	var freq = \freq.kr(440, 3.5);
+	SinOsc.ar(freq) + Saw.ar(freq * 0.5) * 0.1;
+}.play;
+)
 
 a.set(\freq, 1220)
 a.set(\freq, 120)
@@ -72,15 +76,16 @@ code::
 // compare:
 (
 a = {
-	var x, y;
-	x = NamedControl.kr(\freq, 440, 3.5);
-	y = NamedControl.kr(\freq, 440, 1);
-	SinOsc.ar([x, y] * [2, 1.2]) * 0.1
+	var freq, x, y;
+	freq = NamedControl.kr(\freq, 440);
+	x = freq.lag(3.5);
+	y = freq.lag(1);
+	SinOsc.ar([x, y] * [2, 1.2]) * 0.1;
 }.play;
 )
 
-a.set(\freq, 1220)
-a.set(\freq, 120)
+a.set(\freq, 1220);
+a.set(\freq, 120);
 
 (
 a = {
