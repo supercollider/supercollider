@@ -40,7 +40,7 @@ jobs:
           else
             SC_VERSION=$GITHUB_SHA
           fi
-          echo "::set-output name=version::$SC_VERSION"
+          echo "version=$SC_VERSION" >> $GITHUB_OUTPUT
 
   Linux:
     needs: lint
@@ -177,7 +177,7 @@ jobs:
           submodules: recursive
       - name: prepare daily timestamp for cache
         id: current-date
-        run: echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: cache ccache
         uses: actions/cache@v3
         with:
@@ -333,8 +333,7 @@ jobs:
           submodules: recursive
       - name: prepare timestamp for cache
         id: current-date
-        run: |
-          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: cache ccache
         uses: actions/cache@v3
         with:
@@ -678,8 +677,8 @@ jobs:
           submodules: recursive
       - name: prepare timestamp for cache
         id: current-date
-        run: |
-          echo "::set-output name=stamp::$(date '+%Y-%m-%d')"
+        shell: bash
+        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
         uses: actions/cache@v3
