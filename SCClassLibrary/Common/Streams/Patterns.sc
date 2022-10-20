@@ -101,13 +101,8 @@ Pattern : AbstractFunction {
 		var buffer, nodeID, defname;
 		var pattern = if(dur.notNil) { Pfindur(dur, this) } { this };
 
-		if(headerFormat.isNil) {
-			headerFormat = server.recHeaderFormat;
-		};
-
-		if(sampleFormat.isNil) {
-			sampleFormat = server.recSampleFormat;
-		};
+        headerFormat = headerFormat ?? { server.recHeaderFormat };
+		sampleFormat = sampleFormat ?? { server.recSampleFormat };
 
 		server.waitForBoot {
 			var group, bus, free, monitor;
