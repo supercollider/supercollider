@@ -235,26 +235,50 @@ Function : AbstractFunction {
 
 	// multichannel expand function return values
 
+
 	flop {
-		if(def.argNames.isNil) { ^this };
-		^{ |... args| args.flop.collect(this.valueArray(_)) }
+		var code;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		code = this.makeFlopFuncString({ |str|
+			"%.collect { |item| func.valueArray(item) }".format(str)
+		});
+		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
-
 	envirFlop {
-		var func = this.makeFlopFunc;
-		^{ |... args|
-			func.valueArrayEnvir(args).collect(this.valueArray(_))
-		}
+		^this.flop
+	}
+
+	makeFlopFuncString { |modifier|
+		var functionBlock, valueBlock, callBlock, argBlock, singleArgument, i;
+		if(def.argNames.isNil) { Error("a function without arguments has no flop string").throw };
+
+		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
+		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
+
+		if(def.varArgs) { // ellipsis arguments
+			if(def.argNames.size == 1) { // single ellipsis like { |...args| }
+				functionBlock = "%.flop".format(valueBlock)
+			} {
+				i = valueBlock.findBackwards(" ");
+				callBlock =
+				"\nvar res = [%], ell = %, ellSize = ell.size;\n"
+				"res = res ++ ell;\n"
+				"res = res.flop\n";
+				// after flop, we have to repack the ellipsis array again
+				"if(ellSize > 0) { res = res.collect { |x| x.drop(ellSize.neg).add(res.keep(ellSize.neg)) } };\n";
+				functionBlock = callBlock.format(valueBlock[..i], valueBlock[i + 1..])
+			}
+		} {
+			functionBlock = "[%].flop".format(valueBlock)
+		};
+		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
+
+		^"{ arg %; % }".format(argBlock, functionBlock)
 	}
 
 	makeFlopFunc {
-		if(def.argNames.isNil) { ^this };
-
-		^interpret(
-			"#{ arg " ++ " " ++ def.argumentString(true) ++ "; "
-			++ "[ " ++ def.argumentString(false) ++ " ].flop };"
-		)
+		^this.makeFlopFuncString.interpret
 	}
 
 	// attach the function to a specific environment
