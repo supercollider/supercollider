@@ -1,8 +1,8 @@
 Spawner : Pattern {
-	var <>genStream;
-	var <>priorityQ;
-	var <>now;
-	var <>event;
+	var genStream;
+	var priorityQ;
+	var now;
+	var event;
 
 	*new { | func, stackSize=64 |
 		^super.new.init( func, stackSize)
@@ -29,8 +29,8 @@ Spawner : Pattern {
 		^stream;
 	}
 
-	seq { | pat |
-		pat.embedInStream(event)
+	seq { | pattern |
+		pattern.embedInStream(event)
 	}
 
 	wait { | dur |
