@@ -3,7 +3,7 @@ summary:: Getting Started With SuperCollider
 categories:: Tutorials>Getting-Started
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
-Warning! If you are using headphones or external speakers, it is recommended to set your volume low before playing the following example and then bring it up to a comfortable level. Raw synthesized tones can sometimes seem louder than music and the other forms of audio we usually listen to.
+WARNING:: If you are using headphones or external speakers, it is recommended to set your volume low before playing the following example and then bring it up to a comfortable level. Raw synthesized tones can sometimes seem louder than music and the other forms of audio we usually listen to.::
 
 The easiest way to get sound from SC is to use the code::play:: Function. After making sure the server is booted, run the simple example below.
 
@@ -23,10 +23,10 @@ code::
 f = { "Function evaluated".postln };
 ::
 
-The stuff within the curly brackets is what will get executed each time you reuse, or "call", or "evaluate" the Function. Note that this is written like an equation, i.e. code::f = {...}::. This is not an equation in the mathematical sense, it's what's called an "assignment". Basically it allows me to name the Function I've created, by storing it in a variable called code::f::. A variable is just a name representing a slot in which we can store things, such as a Function, a number, a list, etc. Execute the following lines one at a time and watch the post window:
+The stuff within the curly brackets is what will get executed each time you reuse, or "call", or "evaluate" the Function. Note that this is written like an equation, i.e. code::f = {...}::. This is not an equation in the mathematical sense, it's what's called an "assignment". Basically it allows me to name the Function I've created, by storing it in a variable called code::f::. A variable is a name representing a slot in which we can store things, such as a Function, a number, a list, etc. Execute the following lines one at a time and watch the post window:
 
 code::
-f = { "Function evaluated".postln; };
+f = { "Function evaluated".postln };
 f;
 ::
 
@@ -38,7 +38,7 @@ code::
 (
 f = {
 	"Starting Function evaluation".postln;
-	"Finishing Function evaluation".postln;
+	"Finishing Function evaluation".postln
 };
 )
 f;
@@ -47,7 +47,7 @@ f;
 So how do we reuse it? Execute the following lines one at a time and watch the post window:
 
 code::
-f = { "Function evaluated".postln; };
+f = { "Function evaluated".postln };
 f.value;
 f.value;
 f.value;
@@ -55,7 +55,7 @@ f.value;
 
 Our Function is an object, (i.e a thing that does something or represents something), which we have defined and stored in the variable code::f::. The bit of code that says code::'.value':: says evaluate this function now. This is an example of sending a message to an object. This follows the syntax someObject.someMessage. The dot must go in between.
 
-Now, this next bit is a little bit tricky. In a given object, each emphasis::message:: calls (calls means executes) a particular emphasis::method::. Different types of objects may have methods with the same name, and thus respond to the same message in different ways. Whoah, get that? Read it again slowly, as this is pretty important:
+Now, this next bit is a little bit tricky. In a given object, each emphasis::message:: calls (calls means executes) a particular emphasis::method::. Different types of objects may have methods with the same name, and thus respond to the same message in different ways. Read it again slowly, as this is pretty important:
 
 emphasis::Different types of objects may have methods with the same name, and thus respond to the same message in different ways.::
 
@@ -67,7 +67,7 @@ code::
 (
 f = {
 	"Evaluating...".postln;
-	2 + 3;
+	2 + 3
 };
 f.value;
 )
@@ -80,7 +80,7 @@ f = 3;              // Create a variable and assign it a number as a value
 f.value;            // Post window says: 3, i.e the number returns itself
 f.value;            // f hasn't changed, so the post window says 3 again
 
-f = { 3.0.rand; };  // Assign the variable a Function as a value
+f = { 3.0.rand };  // Assign the variable a Function as a value
 f.value;            // 3.0.rand returns a random value from 0.0 to 3.0 (exclusive).
 f.value;            // Another random value
 f.value;            // Yet another random value
@@ -92,9 +92,8 @@ Functions can also have what are called arguments. These are values which are pa
 
 code::
 (
-f = {
-	arg a, b;
-	a - b;
+f = { arg a, b;
+	a - b
 };
 f.value(5, 3);
 )
@@ -106,9 +105,8 @@ You can specify different orders by using what are called keyword arguments:
 
 code::
 (
-f = {
-    arg a, b;
-    a / b;              // '/' means divide
+f = { arg a, b;
+    a / b               // '/' means divide
 };
 f.value(10, 2);         // regular style
 f.value(b: 2, a: 10);   // keyword style
@@ -119,9 +117,8 @@ You can mix regular and keyword style if you like, but the regular args must com
 
 code::
 (
-f = {
-	arg a, b, c, d;
-	(a + b) * c - d;
+f = { arg a, b, c, d;
+	(a + b) * c - d
 };
 f.value(2, c:3, b:4, d: 1); // (2 + 4) * 3 - 1
 )
@@ -133,9 +130,8 @@ Sometimes it's useful to set default values for arguments. You can do this like 
 
 code::
 (
-f = {
-	arg a, b = 2;
-	a + b;
+f = { arg a, b = 2;
+	a + b
 };
 f.value(2); 			// 2 + 2
 )
@@ -147,13 +143,11 @@ There is an alternate way to specify args, which is to enclose them within two v
 
 code::
 (
-f = {
-	arg a, b;
-	a + b;
+f = { arg a, b;
+	a + b
 };
-g = {
-	|a, b|
-	a + b;
+g = { |a, b|
+	a + b
 };
 f.value(2, 2);
 g.value(2, 2);
@@ -170,7 +164,7 @@ f = { arg a, b;
 	var firstResult, finalResult;
 	firstResult = a + b;
 	finalResult = firstResult * 2;
-	finalResult;
+	finalResult
 };
 f.value(2, 3);	// this will return (2 + 3) * 2 = 10
 )
@@ -197,7 +191,7 @@ You can also declare variables at the top of any block of code which you execute
 code::
 (
 var myFunc;
-myFunc = { |input| input.postln; };
+myFunc = { |input| input.postln };
 myFunc.value("foo");	// arg is a String
 myFunc.value("bar");
 )
@@ -205,19 +199,18 @@ myFunc.value("bar");
 myFunc;			// throws an error
 ::
 
-You may be wondering why we haven't needed to declare variables like code::f::, and why they don't seem to have any particular scope (i.e. they keep their values even when executing code one line at a time). The letters a to z are what are called interpreter variables. These are pre-declared when you start up SC, and have an unlimited, or "global", scope. This makes them useful for quick tests or examples. You've already encountered one of these, the variable "s", which you'll recall by default refers to the localhost server.
+You may be wondering why we haven't needed to declare variables like code::f::, and why they keep their values even when executing code one line at a time (i.e. have a global scope). The letters a to z are what are called interpreter variables. These are pre-declared when you start up SC, and have an unlimited, or "global", scope. This makes them useful for quick tests or examples. You've already encountered one of these, the variable "s", which you'll recall by default refers to the localhost server.
 
 With arguments, we can see an example of how polymorphism works:
 
 code::
 (
-f = {
-  arg a;
-  a.value + 3;       // call "value" on a; polymorphism awaits!
+f = { arg a;
+  a.value + 3        // call "value" on a; polymorphism awaits!
 };
 )
 f.value(3);          // a.value is 3, so this returns 3 + 3 = 6
-g = { 3.0.rand; };
+g = { 3.0.rand };
 f.value(g);          // here the arg is a Function. a.value evaluates 3.0.rand
 f.value(g);          // try it again, different result
 ::
