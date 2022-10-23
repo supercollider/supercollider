@@ -261,8 +261,15 @@ static bool set_realtime_priority(int thread_index) {
 
 #    if defined(JACK_BACKEND)
         int priority = instance->realtime_priority();
+        /* This line has effectively been bypassed for years because
+         * of a logic error further below. With the logic error fixed,
+         * it would cause lower realtime priorities for DSP helper threads.
+         * Let's keep the old behavior until we figure out what this code
+         * is supposed to do in the first place... */
+#        if 0
         if (priority >= 0)
             success = true;
+#        endif
 
 #    elif defined(_WIN32)
         int priority = thread_priority_interval_rt().second;
