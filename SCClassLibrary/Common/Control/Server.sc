@@ -217,12 +217,12 @@ ServerOptions {
 			o = o ++ " -L";
 		});
 		if (threads.notNil, {
-			if (Server.program.asString.endsWith("supernova")) {
+			if (Server.program.asString.contains("supernova")) {
 				o = o ++ " -T " ++ threads;
 			}
 		});
 		if (threadPinning.notNil, {
-			if (Server.program.asString.endsWith("supernova")) {
+			if (Server.program.asString.contains("supernova")) {
 				o = o ++ " -y " ++ threadPinning.asBoolean.asInteger;
 			}
 		});
