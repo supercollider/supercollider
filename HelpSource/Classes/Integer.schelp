@@ -277,9 +277,6 @@ code::
 
 subsection:: Misc
 
-method::archiveAsCompileString
-returns:: true.
-
 method:: exit
 returns:: exits the sclang program and returns the receiver as an exit code to the parent process (e.g. Unix shell).
 discussion::
@@ -328,3 +325,5 @@ p.pidRunning; // cat will stay alive
 ("kill" + p).unixCmd
 p.pidRunning;
 ::
+
+private::archiveAsCompileString
