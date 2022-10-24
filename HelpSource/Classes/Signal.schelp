@@ -401,6 +401,11 @@ y = Signal.fill(512, { |i| (i * pi / 64).sin });
 	.plot(numChannels: 6);
 )
 ::
+method::thresh
+Thresholding replaces every value < threshold with 0.
+note::
+Before SuperCollider 3.13 this function was implemented incorrectly, evaluating the square of provided threshold. This behavior is now fixed, but note that older code might give different results.
+::
 method::+, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
 method:: %, **
 method:: <!
