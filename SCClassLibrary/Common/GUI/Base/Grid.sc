@@ -336,7 +336,7 @@ AbstractGridLines {
 		^this.ideals(min,max,ntick).at( [ 0,1] )
 	}
 	getParams {
-		^()
+		^this.subclassResponsibility
 	}
 	formatLabel { arg val, numDecimalPlaces;
 		if (numDecimalPlaces == 0) {
