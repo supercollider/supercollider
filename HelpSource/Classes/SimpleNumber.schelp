@@ -73,6 +73,12 @@ Round to multiple of aNumber
 method:: roundUp
 Round up to a multiple of aNumber. For roundDown use Link::Classes/SimpleNumber#-trunc#trunc::.
 
+method:: smallButNotZero
+Check if the value is closer to zero than a threshold, but not zero.
+
+argument::thresh
+The threshold to use for comparison.
+
 method:: trunc
 Truncate to multiple of aNumber (e.g. it rounds numbers down to a multiple of aNumber).
 

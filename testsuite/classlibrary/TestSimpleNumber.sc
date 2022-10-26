@@ -161,6 +161,12 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(actual, expected, "%.asTimeString(decimalPlaces: 100)".format(totalTime));
 	}
 
+	test_smallButNotZero {
+		var testF = {|vals, thresh| vals.collect({|num| num.smallButNotZero(thresh)})};
+		var val = [-1e-9, -1e-12, -0.9e-12, -1e-13, 0, 1e-13, 0.9e-12, 1e-12, 1e-9];
+		this.assertEquals(testF.(val, 1e-12), [ false, false, true, true, false, true, true, false, false ], "Test 1: smallButNotZero(1e-12)");
+	}
+
 	test_softRound {
 		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};
