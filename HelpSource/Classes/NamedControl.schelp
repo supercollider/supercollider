@@ -56,43 +56,65 @@ a.setn(\freq, [0, 2, 5].midiratio * 400);
 
 // synonymous:
 a = { SinOsc.ar(\freq.kr([300, 330, 370], [1, 0.3, 0.02])).sum * 0.1 }.play;
+::
 
+subsection:: Multiple usage of the same name
+
+Identical controls can not make use of different defaults and lag values. They can be saved to a variable to avoid duplicate code.
+code::
 // multiple usage of the same name:
-a = { SinOsc.ar(\freq.kr(440, 3.5)) + Saw.ar(\freq.kr(440, 0.05) * 0.5) * 0.1 }.play;
+a = { SinOsc.ar(\freq.kr(440, 1.0)) + Saw.ar(\freq.kr(440, 1.0) * 0.5) * 0.1 }.play;
 
+a.set(\freq, 1220);
+a.set(\freq, 120);
 
-a.set(\freq, 1220)
-a.set(\freq, 120)
+// with different lag values:
+a = { SinOsc.ar(\freq.kr(440).lag(3.5)) + Saw.ar(\freq.kr(440).lag(0.05) * 0.5) * 0.1 }.play;
+
+a.set(\freq, 1220);
+a.set(\freq, 120);
+
+// control saved to a variable:
+(
+a = {
+	var freq = \freq.kr(440);
+	SinOsc.ar(freq.lag(3.5)) + Saw.ar(freq.lag(0.05) * 0.5) * 0.1;
+}.play;
+)
+
+a.set(\freq, 1220);
+a.set(\freq, 120);
 ::
 
 subsection:: Comparison with direct use of Controls
 
 In the situation when functions are used to combine UGens to more complex SynthDefs, it may not be known which ControlNames are already taken by others. NamedControl allows to reuse existing control names.
 code::
-// compare:
+// compare this:
 (
 a = {
-	var x, y;
-	x = NamedControl.kr(\freq, 440, 3.5);
-	y = NamedControl.kr(\freq, 440, 1);
-	SinOsc.ar([x, y] * [2, 1.2]) * 0.1
+    var x, y;
+    x = NamedControl.kr(\freq, 440).lag(3.5);
+    y = NamedControl.kr(\freq, 440).lag(1);
+    SinOsc.ar([x, y] * [2, 1.2]) * 0.1
 }.play;
 )
 
-a.set(\freq, 1220)
-a.set(\freq, 120)
+a.set(\freq, 1220);
+a.set(\freq, 120);
 
+// to this:
 (
 a = {
-	var x, y;
-	x = Control.names([\freq]).kr(440).lag(3.5);
-	y = Control.names([\freq]).kr(440).lag(1);
-	SinOsc.ar([x, y] * [2, 1.2]) * 0.1
+    var x, y;
+    x = Control.names([\freq]).kr(440).lag(3.5);
+    y = Control.names([\freq]).kr(440).lag(1); // this hangs when set
+    SinOsc.ar([x, y] * [2, 1.2]) * 0.1
 }.play;
 )
 
-a.set(\freq, 1220)
-a.set(\freq, 120)
+a.set(\freq, 1220);
+a.set(\freq, 120);
 ::
 
 subsection:: Using dictionary with functions to build SynthDefs
