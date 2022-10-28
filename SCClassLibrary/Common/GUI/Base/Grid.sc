@@ -297,8 +297,8 @@ AbstractGridLines {
 		// http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61
 		var exp,f,nf,rf;
 		exp = floor(log10(val));
-		f = val / 10.pow(exp);
 		rf = 10.pow(exp);
+		f = val / rf;
 		if(round,{
 			if(f < 1.5,{
 				^rf *  1.0
