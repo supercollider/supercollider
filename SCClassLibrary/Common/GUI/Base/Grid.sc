@@ -268,9 +268,7 @@ DrawGridY : DrawGridX {
 	}
 }
 
-// DrawGridRadial : DrawGridX {}
-
-// "factory" class
+// "Factory" class to return appropriate AbstractGridLines subclass based on the spec
 GridLines {
 
 	*new { arg spec;
@@ -287,8 +285,10 @@ AbstractGridLines {
 	}
 
 	prCheckWarp {
-		if(this.class.name != this.spec.gridClass.name) {
-			"% expects a spec with %, but was passed a spec with % instead.".format(this.class.name, this.spec.warp.class.name, spec.asSpec.warp.class.name).warn;
+		if(this.class != this.spec.gridClass) {
+			"The ControlSpec 'warp' expected by this % does not match 'warp' of the supplied ControlSpec (%).".format(
+				this.class, this.spec.warp.class
+			).warn;
 		};
 	}
 
