@@ -222,6 +222,25 @@ Path SC_Filesystem::defaultResourceDirectory() {
     return ret;
 }
 
+Path SC_Filesystem::defaultStandaloneDirectory() {
+    // Location of the bundle/Standalone/Extensions
+    Path ret;
+    CFStringEncoding encoding = kCFStringEncodingUTF8;
+
+    CFURLRef bundleURL = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    if (bundleURL) {
+        char relDir[PATH_MAX];
+        CFStringRef rawUrlPath = CFURLCopyFileSystemPath(bundleURL, kCFURLPOSIXPathStyle);
+        CFStringRef rawPath = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/../Standalone"), rawUrlPath);
+        CFStringGetCString(rawPath, relDir, PATH_MAX, encoding);
+        CFRelease(rawUrlPath);
+        CFRelease(rawPath);
+        CFRelease(bundleURL);
+        ret = Path(relDir);
+    }
+    return ret;
+}
+
 //============= STATIC FUNCTIONS =============//
 
 const char* getBundleName() {
