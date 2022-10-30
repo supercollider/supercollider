@@ -12,7 +12,7 @@ code::
 \freq.asSpec.grid
 ::
 
-Subclasses of code::AbstractGridLines:: bind more tightly with the data they represent. For example, code::LinearGridLines:: and code::ExponentialGridLines:: represent data on a linear and exponential scale, respectively.
+Subclasses of code::AbstractGridLines:: correspond to the range and warp behavior of their assigned code::ControlSpec::. For example, code::LinearGridLines:: and code::ExponentialGridLines:: represent data on a linear and exponential scale, respectively.
 code::
 (
 // LinearGridLines
@@ -27,7 +27,7 @@ This default implementation does not know anything about the data is displaying:
 code::
 DrawGrid.test(nil, \midinote.asSpec.grid);
 ::
-A theoritical code::MidinoteGridLines:: could be written that labels these correctly, shows octaves and individual notes depending on the current zoom. Or a teletype::DegreeGridLines:: could draw pitch degree grid lines behind a frequency plot.
+A theoretical code::MidinoteGridLines:: could be written that labels these correctly, shows octaves and individual notes depending on the current zoom. Or a teletype::DegreeGridLines:: could draw pitch degree grid lines behind a frequency plot.
 
 Note that the code::AbstractGridLines:: does not know which axis it is to be used on and could also be used in polar plots or in 3D rendering.
 
@@ -38,7 +38,7 @@ METHOD:: new
 argument:: spec
 A link::Classes/ControlSpec:: that defines the numerical range, warp, and step.
 
-returns:: The newly instantiated object.
+returns:: An instance of this class.
 
 note:: code::AbstractGridLines:: shouldn't be instantiated directly. Instead, the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method should be used to return the appropriate code::AbstractGridLines:: subclass.
 ::
@@ -58,17 +58,19 @@ code::nil.asGrid:: returns a code::BlankGridLines:: (a subclass of code::Abstrac
 
 
 METHOD:: niceNum
-Rounds a value to a logical "nice number".  This method is used to support internal calculations for determining grid line values, though it may be useful for other applications.
+Rounds a value to a logical "nice number" that is within the same order of magnitude. See the discussion below for details.
 
 argument:: val
 The value you'd like to make nicer.
 
 argument:: round
-A boolean. Roughly speaking, rounding will allow the returned number to be above or below the input strong::val:: (similar to a code::round:: operation), while when code::false:: the returned number will tend be higher than strong::val:: (similar to code::ceil::).
+A boolean. Roughly speaking, rounding will allow the returned number to be above or below the input strong::val:: (similar to a code::round:: operation), while when code::false:: the returned number will tend to be higher than strong::val:: (similar to code::ceil::).
 
 returns:: The nice number.
 
 discussion::
+This method is used to support internal calculations for determining grid line values, though it may be useful for other applications.
+
 Observe the rounding behavior:
 code::
 (
@@ -79,7 +81,7 @@ var g = GridLines([0, 10000].asSpec);
 })
 )
 ::
-The implementation is based on: http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61.
+The implementation is based on: link::https://www.sciencedirect.com/book/9780080507538/graphics-gems##A. S. Glassner, Ed., Graphics Gems. San Diego: Morgan Kaufmann, 1990::.
 
 
 METHOD:: looseRange

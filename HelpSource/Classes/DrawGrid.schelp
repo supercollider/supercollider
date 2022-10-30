@@ -8,7 +8,7 @@ code::DrawGrid:: is used to draw link::Classes/GridLines:: and its labels on a l
 
 See the example below for its link::#Basic use in a UserView#basic use in a UserView::.
 
-Note that code::DrawGrid:: does not hold any reference to the code::UserView:: but is meant to have its code::-draw:: method called inside of the code::-drawFunc:: of the code::UserView::.  It only needs to know what bounds in which to draw the grid lines and what the horizontal and vertical code::GridLines:: are.
+Note that code::DrawGrid:: does not hold any reference to the code::UserView:: but is meant to have its code::-draw:: method called inside of the code::-drawFunc:: of the code::UserView::.  It only needs to know what bounds to draw the grid lines in and what the horizontal and vertical code::GridLines:: are.
 
 
 CLASSMETHODS::
@@ -155,7 +155,7 @@ METHOD:: numTicks
 Set the emphasis::approximate:: number of grid lines ("ticks") for each axis. If set, the number of ticks is fixed and code::numTicks:: takes precedence over link::#-tickSpacing::. If code::nil::, the number of grid lines change with the view size, constrained by the code::tickSpacing::.
 Default: code::nil::.
 
-See link::#Testing in a UserView#Examples:: below.
+See link::#Testing and modifying#Examples:: below.
 
 argument:: numx
 emphasis::Approximate:: number of grid lines ("ticks") for the x-axis.
@@ -164,7 +164,7 @@ argument:: numy
 emphasis::Approximate:: number of grid lines for the y-axis.
 
 discussion::
-The resulting number of ticks is approximate because of the underlying algorithm in link::Classes/GridLines#-niceNum::, which tries to find suitable values for the grid lines based on the data range and your requested code::numTicks::. You can observe the behavior of code::GridLines:-niceNum:: with this snippet:
+The resulting number of ticks is approximate because of the underlying algorithm in link::Classes/AbstractGridLines#-niceNum::, which tries to find suitable values for the grid lines based on the data range and your requested code::numTicks::. You can observe the behavior of code::GridLines:-niceNum:: with this snippet:
 code::
 (
 g = GridLines([0, 200].asSpec);
@@ -179,7 +179,7 @@ g = GridLines([0, 200].asSpec);
 METHOD:: tickSpacing
 Set the emphasis::minimum:: spacing between grid lines ("ticks") for each axis. The number of grid lines will change with the view size, but won't be spaced less than this code::tickSpacing::, allowing you to control the density of grid lines. However if link::#-numTicks:: is not code::nil::, it takes precedence over code::tickSpacing::.
 
-See link::#Testing in a UserView#Examples:: below.
+See link::#Testing and modifying#Examples:: below.
 
 argument:: xpx
 emphasis::Minimum:: spacing between grid lines ("ticks") on the x-axis (pixels, default: 64).
@@ -198,7 +198,7 @@ d.test;
 ::
 
 
-See link::#*test:: for creating a code::DrawGrid:: and previewing it immediately. See also link::#Testing in a UserView#Examples:: below.
+See link::#*test:: for creating a code::DrawGrid:: and previewing it immediately. See also link::#Testing and modifying#Examples:: below.
 
 
 METHOD:: copy
