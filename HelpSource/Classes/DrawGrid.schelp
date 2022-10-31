@@ -157,10 +157,10 @@ Default: code::nil::.
 
 See link::#Testing and modifying#Examples:: below.
 
-argument:: numx
+argument:: x
 emphasis::Approximate:: number of grid lines ("ticks") for the x-axis.
 
-argument:: numy
+argument:: y
 emphasis::Approximate:: number of grid lines for the y-axis.
 
 discussion::
@@ -181,10 +181,10 @@ Set the emphasis::minimum:: spacing between grid lines ("ticks") for each axis. 
 
 See link::#Testing and modifying#Examples:: below.
 
-argument:: xpx
+argument:: x
 emphasis::Minimum:: spacing between grid lines ("ticks") on the x-axis (pixels, default: 64).
 
-argument:: ypx
+argument:: y
 emphasis::Minimum:: spacing between grid lines on the y-axis (pixels, default: 64).
 
 
