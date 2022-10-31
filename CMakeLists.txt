@@ -275,6 +275,8 @@ endif()
 
 option(SC_ABLETON_LINK "Build with Ableton Link support" ON)
 
+option(STANDALONE "Build SuperCollider Standalone" OFF)
+
 if(APPLE)
     # codesigning used to break increamental builds in Xcode 11+, but it's now fixed
     option(SC_DISABLE_XCODE_CODESIGNING "Disable codesigning in XCode" OFF)

@@ -27,6 +27,10 @@ if(SC_USE_QTWEBENGINE)
     )
 endif()
 
+if(STANDALONE)
+    add_compile_definitions(STANDALONE)
+endif()
+
 find_package(
     Qt5 ${REQUIRED_QT_VERSION}
     COMPONENTS
@@ -482,7 +486,19 @@ if(APPLE OR WIN32)
         set(QT_WEBENGINE_APP
             "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
         set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
-        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+        if(STANDALONE)
+	        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+	                \"${CMAKE_INSTALL_PREFIX}/SuperCollider\ Standalone/SuperCollider\ Standalone.app\"
+	                -verbose=1
+	                -executable=${CONTENTS_DIR}/MacOS/sclang
+	                -executable=${CONTENTS_DIR}/Resources/scsynth
+	                -executable=${CONTENTS_DIR}/Resources/supernova
+	                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
+	                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
+	                -executable=${QT_WEBENGINE_PROCESS}
+	            ")
+	     else()
+	     	set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
                 \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
                 -verbose=1
                 -executable=${CONTENTS_DIR}/MacOS/sclang
@@ -492,6 +508,7 @@ if(APPLE OR WIN32)
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
                 -executable=${QT_WEBENGINE_PROCESS}
             ")
+        endif()
         set(VERIFY_CMD "include(BundleUtilities)")
         if(SUPERNOVA)
             get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
