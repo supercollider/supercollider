@@ -74,6 +74,18 @@ Platform {
 	}
 	*resourceDir { ^thisProcess.platform.resourceDir }
 
+	standaloneDir {
+		_Platform_standaloneDir
+		^this.primitiveFailed
+	}
+	*standaloneDir { ^thisProcess.platform.standaloneDir }
+
+	isStandalone {
+		_Platform_isStandalone
+		^this.primitiveFailed
+	}
+	*isStandalone { ^thisProcess.platform.isStandalone }
+
 	*recordingsDir { ^thisProcess.platform.recordingsDir }
 
 	defaultTempDir { ^this.subclassResponsibility() }

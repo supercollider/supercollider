@@ -384,7 +384,7 @@ SCDocNode {
 SCDoc {
 
 	// Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-	classvar version = 72;
+	classvar version = 73;
 
 	classvar <helpTargetDir;
 	classvar <helpTargetUrl;
@@ -553,11 +553,16 @@ SCDoc {
 					};
 				}
 			};
-			rootPaths = if(LanguageConfig.excludeDefaultPaths) {
-				[]
-			} {
-				[thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir]
-			};
+            rootPaths = if(Platform.isStandalone) {
+                [thisProcess.platform.standaloneDir +/+ "Extensions"]
+            } {
+                if(LanguageConfig.excludeDefaultPaths) {
+                    []
+                } {
+                    [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir]
+                };
+            };
+            
 			rootPaths = rootPaths.addAll(LanguageConfig.includePaths);
 			rootPaths.do {|dir|
 				find.(PathName(dir));
