@@ -8,7 +8,12 @@ endif()
 
 include(SCVersion.txt)
 # CMake versions can only consist of digits and periods, so don't use _TWEAK
-project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
+if(STANDALONE)
+	project("SuperCollider-Standalone" VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
+else()
+	project(SuperCollider VERSION ${SC_VERSION_MAJOR}.${SC_VERSION_MINOR}.${SC_VERSION_PATCH})
+endif()
+
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)

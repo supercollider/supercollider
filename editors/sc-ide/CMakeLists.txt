@@ -482,24 +482,12 @@ if(APPLE OR WIN32)
         # only the IDE executable is scanned normally, so force scanning of sclang as well
         # to get QtWebEngine, libsndfile, and other libs. also force scanning of QtWebEngineProcess
         # because macdeployqt is a fickle beast.
-        set(CONTENTS_DIR ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents)
+        set(CONTENTS_DIR "${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app/Contents")
         set(QT_WEBENGINE_APP
             "${CONTENTS_DIR}/Frameworks/QtWebEngineCore.framework/Versions/5/Helpers/QtWebEngineProcess.app")
         set(QT_WEBENGINE_PROCESS "${QT_WEBENGINE_APP}/Contents/MacOS/QtWebEngineProcess")
-        if(STANDALONE)
-	        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
-	                \"${CMAKE_INSTALL_PREFIX}/SuperCollider\ Standalone/SuperCollider\ Standalone.app\"
-	                -verbose=1
-	                -executable=${CONTENTS_DIR}/MacOS/sclang
-	                -executable=${CONTENTS_DIR}/Resources/scsynth
-	                -executable=${CONTENTS_DIR}/Resources/supernova
-	                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens.scx
-	                -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
-	                -executable=${QT_WEBENGINE_PROCESS}
-	            ")
-	     else()
-	     	set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
-                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+        set(DEPLOY_CMD "\"${DEPLOY_PROG}\"
+                \"${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app\"
                 -verbose=1
                 -executable=${CONTENTS_DIR}/MacOS/sclang
                 -executable=${CONTENTS_DIR}/Resources/scsynth
@@ -508,7 +496,6 @@ if(APPLE OR WIN32)
                 -executable=${CONTENTS_DIR}/Resources/plugins/DiskIO_UGens_supernova.scx
                 -executable=${QT_WEBENGINE_PROCESS}
             ")
-        endif()
         set(VERIFY_CMD "include(BundleUtilities)")
         if(SUPERNOVA)
             get_target_property(LINK_FFTW libsupernova SUPERNOVA_FFTW)
@@ -572,7 +559,7 @@ if(APPLE OR WIN32)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Running ad hoc code signing\")
                 execute_process(COMMAND 
-                    codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/SuperCollider
+                    codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/${scappbundlename}
                 )
                 execute_process(COMMAND 
                     sh -c \
@@ -590,7 +577,7 @@ if(APPLE OR WIN32)
                     -exec codesign --force --sign - {} \\\;\"
                 )
                 execute_process(COMMAND 
-                    codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app
+                    codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app
                 )
             ")
         endif()
@@ -598,7 +585,7 @@ if(APPLE OR WIN32)
         if(SC_VERIFY_APP)
             string(APPEND VERIFY_CMD "
                 message(STATUS \"Verifying app\")
-                verify_app(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")")
+                verify_app(\"${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app\")")
         endif()
     else() # WIN32
         find_program(DEPLOY_PROG windeployqt PATHS ${CMAKE_PREFIX_PATH})
