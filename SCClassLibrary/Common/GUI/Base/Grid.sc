@@ -2,17 +2,11 @@ DrawGrid {
 
 	var <bounds, <>x, <>y;
 	var <>opacity=0.7, <>smoothing=false, <>linePattern;
+	var uview; // private, only persists while -preview window is open
 
 	*new { |bounds, horzGrid, vertGrid|
 		^super.new.init(bounds, horzGrid, vertGrid)
 	}
-
-	*test { arg horzGrid, vertGrid, bounds = (500@400);
-		^DrawGrid(bounds.asRect, horzGrid, vertGrid).test
-	}
-
-	test { ^DrawGridTest(this) }
-
 	init { arg bounds, h, v;
 		x = DrawGridX(h);
 		y = DrawGridY(v);
@@ -68,6 +62,81 @@ DrawGrid {
 	clearCache {
 		x.clearCache;
 		y.clearCache;
+	}
+
+	// make a Window with a UserView that draws this DrawGrid
+	preview {
+		var insetH = 45, insetV = 35; // left, bottom margins for labels
+		var gridPad = 15;             // right, top margin
+		var txtPad = 2;               // label offset from window's edge
+		var win, winBounds, font, fcolor;
+
+		// refresh and return the view if it already exists
+		uview !? {
+			uview.refresh;
+			try { uview.parent.findWindow.front };
+			^uview
+		};
+
+		insetH = insetH + gridPad;
+		insetV = insetV + gridPad;
+		fcolor = Color.grey(0.3);               // match this.fontColor
+		font = Font( Font.defaultSansFace, 9 ); // match this.font
+
+		// bounds of the grid lines, without its labels
+		this.bounds = this.bounds ?? { Rect(0, 0, 500, 400) };
+		// translate the grid to make room for axis & tick labels
+		this.bounds = this.bounds.moveTo(insetH-gridPad, gridPad);
+
+		winBounds = this.bounds + Size(insetH, insetV);
+		win = Window("DrawGrid test",
+			winBounds.center_(Window.screenBounds.center)
+		).front;
+
+		// the view that draws the DrawGrids
+		uview = UserView(
+			win, winBounds.size.asRect
+		)
+		.drawFunc_({ |uv|
+			var unitsStr;
+
+			// draw the drid
+			this.draw;
+
+			// draw x-axis label
+			unitsStr = this.x.grid.spec.units;
+			if(unitsStr.size > 0) {
+				Pen.push;
+				Pen.translate(this.bounds.center.x, uv.bounds.bottom);
+				Pen.stringCenteredIn(unitsStr,
+					unitsStr.bounds.center_(0@0).bottom_(txtPad.neg),
+					font, fcolor);
+				Pen.pop;
+			};
+
+			// draw y-axis label
+			unitsStr = this.y.grid.spec.units;
+			if(unitsStr.size > 0) {
+				Pen.push;
+				Pen.translate(0, this.bounds.center.y);
+				Pen.rotateDeg(-90);
+				Pen.stringCenteredIn(unitsStr,
+					unitsStr.bounds.center_(0@0).top_(txtPad),
+					font, fcolor);
+				Pen.pop;
+			};
+		})
+		.onResize_({ |uv|
+			this.bounds = uv.bounds
+			.insetBy(insetH.half, insetV.half)
+			.moveTo(insetH - gridPad, gridPad);
+		})
+		.resize_(5)
+		.background_(Color.white)
+		.onClose_({ uview = nil })
+		;
+
+		^uview
 	}
 }
 
@@ -470,82 +539,6 @@ BlankGridLines : AbstractGridLines {
 	getParams { ^() }
 
 	prCheckWarp { }
-}
-
-DrawGridTest : DrawGrid {
-	var <testView;
-	var insetH = 45, insetV = 35; // left, bottom margins for labels
-	var gridPad = 15;             // right, top margin
-	var txtPad = 2;               // label offset from window's edge
-	var win, winBounds, font, fcolor;
-
-	*new { arg drawGrid;
-		^super.new(
-			drawGrid.bounds, drawGrid.x.grid, drawGrid.y.grid
-		)
-		.opacity_(drawGrid.opacity)
-		.smoothing_(drawGrid.smoothing)
-		.linePattern_(drawGrid.linePattern)
-		.makeWindow;
-	}
-
-	makeWindow {
-		font = Font( Font.defaultSansFace, 9 ); // match this.font
-		fcolor = Color.grey(0.3); // match this.fontColor
-		insetH = insetH + gridPad;
-		insetV = insetV + gridPad;
-
-		// bounds of the grid lines
-		this.bounds = this.bounds ?? { Rect(0, 0, 500, 400) };
-		// move grid bounds to make room for tick & axis labels
-		this.bounds = this.bounds.moveTo(insetH-gridPad, gridPad);
-
-		winBounds = this.bounds + Size(insetH, insetV);
-		win = Window("Grid test",
-			winBounds.center_(Window.screenBounds.center)
-		).front;
-
-		// the view holding the gridlines
-		testView = UserView(win, winBounds.size.asRect)
-		.drawFunc_({ |uv|
-			var unitsStr;
-
-			// draw the drid
-			this.draw;
-
-			// draw x-axis label
-			unitsStr = this.x.grid.spec.units;
-			if(unitsStr.size > 0) {
-				Pen.push;
-				Pen.translate(this.bounds.center.x, uv.bounds.bottom);
-				Pen.stringCenteredIn(unitsStr,
-					unitsStr.bounds.center_(0@0).bottom_(txtPad.neg),
-					font, fcolor);
-				Pen.pop;
-			};
-
-			// draw y-axis label
-			unitsStr = this.y.grid.spec.units;
-			if(unitsStr.size > 0) {
-				Pen.push;
-				Pen.translate(0, this.bounds.center.y);
-				Pen.rotateDeg(-90);
-				Pen.stringCenteredIn(unitsStr,
-					unitsStr.bounds.center_(0@0).top_(txtPad),
-					font, fcolor);
-				Pen.pop;
-			};
-		})
-		.onResize_({ |uv|
-			this.bounds = uv.bounds
-			.insetBy(insetH.half, insetV.half)
-			.moveTo(insetH - gridPad, gridPad);
-		})
-		.resize_(5)
-		.background_(Color.white);
-	}
-
-	refresh { testView.refresh }
 }
 
 
