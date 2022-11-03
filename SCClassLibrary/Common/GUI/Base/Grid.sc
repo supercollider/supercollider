@@ -44,8 +44,9 @@ DrawGrid {
 		y.fontColor = c;
 	}
 	gridColors_ { arg colors;
-		x.gridColor = colors[0];
-		y.gridColor = colors[1];
+		colors = colors.as(Array);
+		x.gridColor = colors.wrapAt(0);
+		y.gridColor = colors.wrapAt(1);
 	}
 	horzGrid_ { arg g;
 		x.grid = g;
