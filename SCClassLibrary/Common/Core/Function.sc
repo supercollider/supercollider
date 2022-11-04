@@ -235,21 +235,15 @@ Function : AbstractFunction {
 
 	// multichannel expand function return values
 
-
-	flop {
-		var code;
-		if(def.argNames.isNil) { ^{ [this.value] } };
-		code = this.makeFlopFuncString({ |str|
-			"%.collect { |item| func.valueArray(item) }".format(str)
-		});
-		^"{ |func| % }".format(code).interpret.value(this)
+	makeFlopFunc {
+		^this.makeFlopFuncString.interpret
 	}
 
-	envirFlop {
-		^this.flop
-	}
-
+	// to be deprecated
 	makeFlopFuncString { |modifier|
+		// the modifier is a function that takes the string that when interpreted
+		// represents the array of argument values
+		// in the flopped form [[arg1[0], arg2[0], ... argN[0]], [arg1[1],arg2[1] ... argN[1]]]
 		var functionBlock, valueBlock, callBlock, argBlock, singleArgument, i;
 		if(def.argNames.isNil) { Error("a function without arguments has no flop string").throw };
 
@@ -277,15 +271,50 @@ Function : AbstractFunction {
 		^"{ arg %; % }".format(argBlock, functionBlock)
 	}
 
-	makeFlopFunc {
-		^this.makeFlopFuncString.interpret
-	}
-
 	// attach the function to a specific environment
 	inEnvir { |envir|
+		var code, modifierString;
 		envir ?? { envir = currentEnvironment };
-		^{ |... args| envir.use({ this.valueArray(args) }) }
+		if(def.argNames.isNil) { ^{ envir.use({ this.value }) } };
+		modifierString = "envir.use {  func.valueArray(%) }";
+		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
+
+	// flop function
+	flop {
+		var code, modifierString;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		modifierString = "(%).flop.collect { |x| func.valueArray(x) }";
+		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func| % }".format(code).interpret.value(this)
+	}
+
+	makeFuncModifierString { |modifier|
+		// the modifier is a function that takes the string
+		// which represents the array of all arguments
+		var functionBlock, valueBlock, argBlock, callBlock, i;
+		if(def.argNames.isNil) { Error("a function without arguments needs no such make-string").throw };
+		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
+		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
+
+		functionBlock = if(def.varArgs) { // ellipsis arguments
+			i = valueBlock.findBackwards(" ");
+			if(i.isNil) {
+				"%".format(valueBlock)
+			} {
+				"[%] ++ %".format(valueBlock[..i-2], valueBlock[i+1..])
+			};
+		} {
+			"[%]".format(valueBlock)
+		};
+
+		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
+
+		^"{ arg %; % }".format(argBlock, functionBlock)
+	}
+
+
 
 	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
 		var buffer, def, synth, name, numChannels, rate, server;
