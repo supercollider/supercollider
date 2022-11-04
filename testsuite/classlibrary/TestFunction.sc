@@ -120,7 +120,6 @@ TestFunction : UnitTest {
 		}
 	}
 
-
 	test_argumentString_with_ellipsis_andDefaultArguments {
 		var function = { |a = 1, b ... c| };
 		var arguments = [[true, true], [true, false], [false, true], [false, false]];
@@ -137,6 +136,51 @@ TestFunction : UnitTest {
 			this.assertEquals(x, results[i], "argument string should match")
 		}
 	}
+
+
+	test_makeFuncModifierString_without_defaultArguments {
+		var function = { |a, b, c| [a, b, c]};
+		var string = function.makeFuncModifierString;
+		var should = [1, 2, 3];
+		var is = string.interpret.value(1, 2, 3);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+	test_makeFuncModifierString_with_defaultArguments {
+		var function = { |a, b, c=3| [a, b, c]};
+		var string = function.makeFuncModifierString;
+		var should = [1, 2, 3];
+		var is = string.interpret.value(1, 2);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+	test_makeFuncModifierString_with_ellipsisArguments {
+		var function = { |a, b ... c| [a, b] ++ c};
+		var string = function.makeFuncModifierString;
+		var should = [1, 2, 3, 4];
+		var is = string.interpret.value(1, 2, 3, 4);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+	test_makeFuncModifierString_with_ellipsisArguments_empty {
+		var function = { |a, b ... c| [a, b] ++ c};
+		var string = function.makeFuncModifierString;
+		var should = [1, 2];
+		var is = string.interpret.value(1, 2);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+
+	test_makeFuncModifierString_with_single_ellipsisArguments {
+		var function = { |...a| a };
+		var string = function.makeFuncModifierString;
+		var should = [1, 2];
+		var is = string.interpret.value(1, 2);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+
+
 
 	test_flop_inEnvir {
 		var envir = Environment.new;
