@@ -256,6 +256,21 @@ TestFunction : UnitTest {
 	}
 
 
+	test_inEnvir {
+		var envir = Environment.make { ~a = 9 };
+		var func = { ~a }.inEnvir(envir);
+		var result = func.value;
+		this.assertEquals(result, 9, "inEnvir should bind function to environment")
+	}
+
+	test_inEnvirWithArgs {
+		var envir = Environment.make { ~a = 9 };
+		var func = { |b| [~a, b] }.inEnvirWithArgs(envir);
+		var result = func.value(b: 4);
+		this.assertEquals(result, [9, 4], "inEnvirWithArgs should bind function to environment and take keyword args")
+	}
+
+
 }
 
 CommonTestClass {

@@ -273,6 +273,16 @@ Function : AbstractFunction {
 
 	// attach the function to a specific environment
 	inEnvir { |envir|
+		envir ?? { envir = currentEnvironment };
+		^if(def.argNames.isNil) {
+			{ envir.use { this.value } }
+		} {
+			{ |... args| envir.use { this.valueArray(args) } }
+		}
+	}
+
+	// attach the function to a specific environment
+	inEnvirWithArgs { |envir|
 		var code, modifierString;
 		envir ?? { envir = currentEnvironment };
 		if(def.argNames.isNil) { ^{ envir.use({ this.value }) } };
