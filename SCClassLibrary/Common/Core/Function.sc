@@ -298,7 +298,7 @@ Function : AbstractFunction {
 			var	val = SynthDef.wrap(this);
 			if(val.isValidUGenInput.not) {
 				val.dump;
-				Error("reading signal failed: % is no valid UGen input".format(val)).throw
+				Error("Reading signal failed: % is not a valid UGen input.".format(val)).throw
 			};
 			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
