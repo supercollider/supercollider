@@ -309,8 +309,19 @@ This method is kept for backward compatibility. Use code::flop:: instead.
 method::inEnvir
 
 returns an "environment-safe" function. See Environment for more details.
+Note that the function returned takes no keyword arguments.
 
 code::
+e = (a: "get it", b: "didn't");
+f = { ~b + ~a + "..." }.inEnvir(e);
+f.value;
+
+f = { |how = "", end = "..."| how + ~b + ~a + end }.inEnvir(e); // doesn't work with keyword arguments
+f.value(how: "really"); // WARNING: keyword arg 'how' not found in call to function (see inEnvirWithArgs).
+
+
+
+// a use case: defer is usually called in the call environment
 // prints nil because ~a is read from topEnvironment, not e
 e = (a: "got it", f: { { ~a.postln }.defer(0.5) });
 e.use { e.f };
@@ -318,6 +329,18 @@ e.use { e.f };
 // prints "got it" because { ~a.postln } is now bound to the e environment
 e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
 e.use { e.f };
+::
+
+
+method::inEnvirWithArgs
+
+Like link::#inEnvir::, but returns a function which takes keyword arguments.
+Building this function makes a call to the interpreter and is less efficient than inEnvir
+
+code::
+e = (a: "get it", b: "didn't");
+f = { |how = "", end = "..."| how + ~b + ~a + end }.inEnvirWithArgs(e);
+f.value(how: "I really", end: "done!");
 ::
 
 
