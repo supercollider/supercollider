@@ -244,6 +244,20 @@ Function : AbstractFunction {
 		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
+	// flop only when at least one non-string array is passed as argument.
+	flop1 {
+		var code, modifierString;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		modifierString = "\nvar arguments = %;\n"
+		"if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
+		"	arguments.flop.collect { |x| func.valueArray(x) }\n"
+		"} {\n"
+		"	func.valueArray(arguments)\n"
+		"}\n";
+		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func| % }".format(code).interpret.value(this)
+	}
+
 	// backwards compatibility
 	makeFlopFunc { ^this.flop }
 	envirFlop { ^this.flop }

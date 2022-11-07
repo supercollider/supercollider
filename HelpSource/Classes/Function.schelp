@@ -272,10 +272,33 @@ method::flop
 Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp.
 
 code::
-f = { |a, b| if(a > 0) { a + b } { -inf } }.flop;
-f.value([-1, 2, 1, -3.0], [10, 1000]);
-f.value(2, 3);
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value(2, 4); // [ 0.5 ]
+
+// strings don't count
+f = { |a, b| a + b }.flop;
+f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", "world"); // -> [ hello world ]
+
 ::
+
+method::flop1
+
+Same as link::#flop::, return only an array if the arguments contains an array
+code::
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value(2, 4); // -> 0.5
+f.value([2], 4); // -> [0.5]
+
+// strings don't count, like in flop
+f = { |a, b| a + b }.flop1;
+f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", "world"); // -> hello world
+
+::
+
 
 
 method::envirFlop
@@ -368,7 +391,7 @@ method:: awake
 
 This method is called by a link::Classes/Clock:: on which the function was
 scheduled when its scheduling time is up. It calls link::#-value::, passing
-on the scheduling time in beats as an argument. 
+on the scheduling time in beats as an argument.
 
 argument:: beats
 The scheduling time in beats. This is equal to the current logical time
