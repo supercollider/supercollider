@@ -83,24 +83,24 @@ The function takes care of initializing MIDIClient, detects a MIDI device named 
 
 code::
 (
-~connect_midi_devices = { 
+~connect_midi_devices = { arg device, name;
 	// init or refresh MIDIClient end points
-	if(MIDIClient.initialized == false) { 
-		MIDIClient.init; 
+	if(MIDIClient.initialized == false) {
+		MIDIClient.init;
 	} {
-		MIDIClient.list; 
+		MIDIClient.list;
 	};
 
 	MIDIClient.sources.do({ arg endPoint;
-		if(endPoint.device == "SE25" and: { endPoint.name == "SE25 MIDI 1" }) {
+		if(device.notNil and: { name.notNil} and: {endPoint.device == device} and: { endPoint.name == name }) {
 			// catch exception thrown when already connected
 			try {
 				// connect SuperCollider out port 0 to MIDI device
-				MIDIOut.connect(0, endPoint.uid); 
+				MIDIOut.connect(0, endPoint.uid);
 			};
 			try {
 				// connect MIDI device to SuperCollider in port 0
-				MIDIIn.connect(0, endPoint.uid); 
+				MIDIIn.connect(0, endPoint.uid);
 			}
 		}
 	})
@@ -108,7 +108,7 @@ code::
 }
 )
 
-~connect_midi_devices.(); // test it now
+~connect_midi_devices.("SE25", "SE25 MIDI 1"); // test it now
 ::
 
 
