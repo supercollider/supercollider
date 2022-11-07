@@ -235,43 +235,20 @@ Function : AbstractFunction {
 
 	// multichannel expand function return values
 
-	makeFlopFunc {
-		^this.makeFlopFuncString.interpret
+	// flop function
+	flop {
+		var code, modifierString;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		modifierString = "(%).flop.collect { |x| func.valueArray(x) }";
+		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
-	// to be deprecated
-	makeFlopFuncString { |modifier|
-		// the modifier is a function that takes the string that when interpreted
-		// represents the array of argument values
-		// in the flopped form [[arg1[0], arg2[0], ... argN[0]], [arg1[1],arg2[1] ... argN[1]]]
-		var functionBlock, valueBlock, callBlock, argBlock, singleArgument, i;
-		if(def.argNames.isNil) { Error("a function without arguments has no flop string").throw };
+	// backwards compatibility
+	makeFlopFunc { ^this.flop }
+	envirFlop { ^this.flop }
 
-		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
-		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
-
-		if(def.varArgs) { // ellipsis arguments
-			if(def.argNames.size == 1) { // single ellipsis like { |...args| }
-				functionBlock = "%.flop".format(valueBlock)
-			} {
-				i = valueBlock.findBackwards(" ");
-				callBlock =
-				"\nvar res = [%], ell = %, ellSize = ell.size;\n"
-				"res = res ++ ell;\n"
-				"res = res.flop\n";
-				// after flop, we have to repack the ellipsis array again
-				"if(ellSize > 0) { res = res.collect { |x| x.drop(ellSize.neg).add(res.keep(ellSize.neg)) } };\n";
-				functionBlock = callBlock.format(valueBlock[..i], valueBlock[i + 1..])
-			}
-		} {
-			functionBlock = "[%].flop".format(valueBlock)
-		};
-		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
-
-		^"{ arg %; % }".format(argBlock, functionBlock)
-	}
-
-	// attach the function to a specific environment
+	// attach the function to a specific environment, without keyword arguments
 	inEnvir { |envir|
 		envir ?? { envir = currentEnvironment };
 		^if(def.argNames.isNil) {
@@ -289,15 +266,6 @@ Function : AbstractFunction {
 		modifierString = "envir.use {  func.valueArray(%) }";
 		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
 		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
-	}
-
-	// flop function
-	flop {
-		var code, modifierString;
-		if(def.argNames.isNil) { ^{ [this.value] } };
-		modifierString = "(%).flop.collect { |x| func.valueArray(x) }";
-		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
-		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
 	makeFuncModifierString { |modifier|
