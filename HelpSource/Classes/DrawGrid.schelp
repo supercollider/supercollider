@@ -27,36 +27,11 @@ A grid lines object for the y-axis, see strong::horzGrid::.
 returns:: A code::DrawGrid::.
 
 discussion::
-For the strong::horizGrid:: and strong::vertGrid:: arguments, link::Classes/GridLines:: or link::Classes/ControlSpec#-grid:: will instantiate a subclass of link::Classes/AbstractGridLines::, such as link::Classes/LinearGridLines:: or link::Classes/ExponentialGridLines::, based on the code::ControlSpec::'s warp behavior.
+The warp behavior of the strong::horizGrid:: and strong::vertGrid:: is based on the warp behavior of the code::ControlSpec:: used by the grid lines object assigned to each axis.
 
 Multiple code::DrawGrid:: may be used to draw grids on a single link::Classes/UserView::.
 
-
-METHOD:: test
-For testing a new link::Classes/AbstractGridLines:: object.
-code::
-DrawGrid.test(\freq.asSpec.grid, \amp.asSpec.grid);
-::
-code::
-DrawGrid.test(nil, \lofreq.asSpec.grid);
-::
-
-argument:: horzGrid
-A grid lines object for the x-axis, instantiated via link::Classes/GridLines::, or link::Classes/Spec#-grid:: method, or code::nil:: (resulting in a link::Classes/BlankGridLines::).
-
-argument:: vertGrid
-A grid lines object for the y-axis, see strong::horzGrid::.
-
-argument:: bounds
-A link::Classes/Point:: or link::Classes/Rect:: describing the size and position of the grid within the parent view (not including any labels).
-Default: code::500 @ 400::.
-
-returns:: A code::DrawGridTest:: (a subclass of code::DrawGrid::).
-
-discussion::
-See link::#-test:: if you'd like to preview or test modifications of a code::DrawGrid:: that has already been created. Also see link::#Testing and modifying#Examples:: below.
-
-Inspecting the source code of code::DrawGridTest:makeWindow:: can serve as a guide on how to embed a code::DrawGrid:: in a code::UserView::.
+See link::#-preview:: if you'd like to preview modifications of this code::DrawGrid::. See link::#Testing and modifying#Examples:: below.
 
 
 INSTANCEMETHODS::
@@ -188,18 +163,17 @@ argument:: y
 emphasis::Minimum:: spacing between grid lines on the y-axis (pixels, default: 64).
 
 
-METHOD:: test
-Test this code::DrawGrid:: object by creating a window with a view showing the code::DrawGrid:: in its current state.
+METHOD:: preview
+Preview this code::DrawGrid:: object by creating a window with a view showing the code::DrawGrid:: in its current state.
 
 code::
 d = DrawGrid(nil, \freq.asSpec.grid, \amp.asSpec.grid);
 d.linePattern_(FloatArray[10.0, 5.0, 2.0, 5.0]);
-d.test;
+d.preview;
 ::
+If the code::DrawGrid:: is modified, you can code::-refresh:: the returned code::UserView:: to see its updated state, or simply call code::-preview:: again to update the view (or create the preview again if the code::Window:: was closed). See link::#Testing and modifying#Examples:: below.
 
-
-See link::#*test:: for creating a code::DrawGrid:: and previewing it immediately. See also link::#Testing and modifying#Examples:: below.
-
+returns:: A link::Classes/UserView:: which draws this code::DrawGrid::.
 
 METHOD:: copy
 Safely make a copy of this object and its working members.
@@ -235,47 +209,37 @@ u.onResize = { |u|
 
 SUBSECTION:: Testing and modifying
 
-For testing the look and feel of your code::GridLines::, you can create and immediately render your code::DrawGrid:: using the link::#*test:: class method, or call link::#-test:: on your already-instantiated code::DrawGrid:: object.
-
-Create and immediately render your code::DrawGrid:: using the link::#*test:: class method:
+For previewing the look and feel of your code::GridLines::, you can render your code::DrawGrid:: using the link::#-preview:: method:
 code::
 (
-c = ControlSpec.new(20,200, \lin, units: "myUnits");
-g = c.grid;
-~test = DrawGrid.test(g,g)
+x = [0, 10].asSpec.units_("sec");
+y = [0, 1].asSpec.units_("amp");
+d = DrawGrid((500@250).asRect, x.grid, y.grid);
+
+// set its properties before testing
+d.x.tickSpacing_(25);
+d.linePattern_(FloatArray[10.0, 5.0, 2.0, 5.0]);
+
+// generate a preview
+~testView = d.preview;
 )
 ::
-
-Modifying its properties then refresh the view to see the changes:
+Use code::DrawGrid::'s convenience methods to set the grids' properties, then refresh the view:
+code::
+d.tickSpacing_(50, 25).linePattern_(FloatArray[1.0]);
+~testView.refresh;
+::
+Or just call code::.preview:: again and it will refresh the existing view:
+code::
+d.linePattern_(FloatArray[10.0, 5.0, 2.0, 5.0]).preview;
+::
+Proterties of the individual x- and y-grids can also be accessed and changed separately:
 code::
 // Modify the number of grid lines on each axis separately
-~test.x.tickSpacing_(18); // fixed *density* of x ticks
-~test.y.numTicks_(8);     // fixed *number* of y ticks (approximate)
-~test.refresh;            // refresh the test view
+d.x.tickSpacing_(18); // fixed (max) *density* of x ticks
+d.y.numTicks_(8);     // fixed *number* of y ticks (approximate)
+d.preview;            // refresh the test view
 
-~test.y.numTicks_(nil); // numTicks = nil: auto, follows -tickSpacing
-~test.refresh;
-::
-
-The returned code::DrawGridTest:: is a subclass of code::DrawGrid::, so you can call all the methods you would on code::DrawGrid::. Convenience methods like link::#-numTicks:: and link::#-tickSpacing:: adjust both axes together:
-code::
-// Fixed number of grid lines; -numTicks takes precedence over -tickSpacing
-~test.numTicks_(10, 10).tickSpacing_(30, 75).refresh;
-
-// Dynamic number of grid lines; -tickSpacing determines minimum line spacing when resizing
-~test.numTicks_(nil, nil).tickSpacing_(30, 75).refresh;
-~test.linePattern_(FloatArray[10.0, 5.0, 2.0, 5.0]).refresh;
-::
-
-Alternatively, you can instantiate your code::DrawGrid::, modify its properties, then preview it with the link::#-test:: method:
-code::
-(
-// Instantiate a new DrawGrid, modify it
-var xspec = ControlSpec.new(20, 2000, \lin, units: "xUnits");
-var yspec = ControlSpec.new(20, 200, \lin, units: "yUnits");
-d = DrawGrid.new(horzGrid: xspec.grid, vertGrid: yspec.grid);
-d.x.tickSpacing_(25); // set its properties before testing
-)
-// Test it, returning and displaying a "test version" of it for more modification
-~test = d.test;
+d.y.numTicks_(nil);   // numTicks = nil: auto, follows -tickSpacing
+d.preview;
 ::
