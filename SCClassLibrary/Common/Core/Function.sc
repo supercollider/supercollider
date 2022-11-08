@@ -298,7 +298,11 @@ Function : AbstractFunction {
 				"[%] ++ %".format(valueBlock[..i-2], valueBlock[i+1..])
 			};
 		} {
-			"[%]".format(valueBlock)
+			if(def.hasPartialApplication) {
+				"%".format(valueBlock)
+			} {
+				"[%]".format(valueBlock)
+			}
 		};
 
 		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };

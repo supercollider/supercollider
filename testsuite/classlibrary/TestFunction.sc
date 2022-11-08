@@ -255,6 +255,27 @@ TestFunction : UnitTest {
 		this.assertEquals(result, directResult, "flop should work with ellipsis arguments for the non-expanding case")
 	}
 
+	test_flop_partialApplication {
+		var function = [_, _].flop;
+		var result = function.([1, 2, 3], [100, 200]);
+		var directResult = [ [ 1, 100 ], [ 2, 200 ], [ 3, 100 ] ];
+		this.assertEquals(result, directResult, "flop should work with partial application")
+	}
+
+	test_flop1_partialApplication {
+		var function = [_, _].flop1;
+		var result = function.([1, 2, 3], [100, 200]);
+		var directResult = [ [ 1, 100 ], [ 2, 200 ], [ 3, 100 ] ];
+		this.assertEquals(result, directResult, "flop1 should work with partial application")
+	}
+
+	test_flop1_unbubble {
+		var function = { |x| x }.flop1;
+		var result = function.(1);
+		var directResult = 1;
+		this.assertEquals(result, directResult, "flop1 should not expand for non-array arguments")
+	}
+
 
 	test_inEnvir {
 		var envir = Environment.make { ~a = 9 };

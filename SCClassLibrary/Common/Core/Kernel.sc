@@ -473,9 +473,17 @@ FunctionDef {
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
 
+	hasPartialApplication {
+		^this.numArgs > 0 and: { argNames[0] == \_ }
+	}
+
 	argumentString { arg withDefaultValues=true, withEllipsis=false;
-		var res = "", pairs = this.keyValuePairsFromArgs;
+		var res = "", pairs;
 		var lastIndex, noVarArgs, varArgName;
+		if(this.hasPartialApplication) {
+			^if(withEllipsis) { " ... args" } { "args" }
+		};
+		pairs = this.keyValuePairsFromArgs;
 		if(pairs.isEmpty) { ^nil };
 		if(this.varArgs) {
 			varArgName = pairs.keep(-2).first;
