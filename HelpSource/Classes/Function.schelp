@@ -269,14 +269,15 @@ x.value;
 
 method::flop
 
-Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp.
+Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp. The new function always returns an array.
 
 code::
+// multichannel expansion for if, here to protect from division by zero:
 f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
 f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
-f.value(2, 4); // [ 0.5 ]
+f.value(2, 4); // [ 0.5 ] (always returns an array)
 
-// strings don't count
+// strings don't expand
 f = { |a, b| a + b }.flop;
 f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
 f.("hello", "world"); // -> [ hello world ]
@@ -285,14 +286,16 @@ f.("hello", "world"); // -> [ hello world ]
 
 method::flop1
 
-Same as link::#flop::, return only an array if the arguments contains an array
+Same as link::#flop::, return only an array if the arguments also contains an array. This can be used to implement link::Guides/Multichannel-Expansion::.
+
 code::
+// multichannel expansion for if, here to protect from division by zero:
 f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
 f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
-f.value(2, 4); // -> 0.5
 f.value([2], 4); // -> [0.5]
+f.value(2, 4); // -> 0.5
 
-// strings don't count, like in flop
+// strings don't expand, like in flop
 f = { |a, b| a + b }.flop1;
 f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
 f.("hello", "world"); // -> hello world
