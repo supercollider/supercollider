@@ -474,7 +474,7 @@ FunctionDef {
 	archiveAsCompileString { ^true }
 
 	hasPartialApplication {
-		^this.numArgs > 0 and: { argNames[0] == \_ }
+		^argNames.size > 0 and: { argNames[0] == \_ }
 	}
 
 	argumentString { arg withDefaultValues=true, withEllipsis=false;
