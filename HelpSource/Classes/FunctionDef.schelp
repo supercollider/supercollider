@@ -66,10 +66,12 @@ code::
 ::
 method::argumentString
 
-Return a string that contains  arguments and their default values for embedding in a string
+Return a string that contains  arguments and their default values for embedding in a string.
+If there are no arguments, it returns nil.
 
 code::
 { |a = 9, b = 10, c| a + b }.def.argumentString;
+{ "nothing to see here" }.def.argumentString;
 ::
 
 method::makeEnvirFromArgs
