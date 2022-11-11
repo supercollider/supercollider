@@ -480,8 +480,9 @@ FunctionDef {
 	argumentString { arg withDefaultValues=true, withEllipsis=false, asArray=false;
 		var res = "", pairs;
 		var lastIndex, noVarArgs, varArgName;
-		if(asArray && withDefaultValues) { Error("argumentString as array should not have default values").throw };
-		if(asArray && withEllipsis) { Error("argumentString as array should not have ellipsis").throw };
+		if(asArray) {
+			withEllipsis = withDefaultValues = false;
+		};
 		if(this.hasPartialApplication) {
 			^if(withEllipsis) { " ... args" } { "args" }
 		};
