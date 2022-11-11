@@ -120,7 +120,6 @@ TestFunction : UnitTest {
 		}
 	}
 
-
 	test_argumentString_with_ellipsis_andDefaultArguments {
 		var function = { |a = 1, b ... c| };
 		var arguments = [[true, true], [true, false], [false, true], [false, false]];
@@ -137,6 +136,51 @@ TestFunction : UnitTest {
 			this.assertEquals(x, results[i], "argument string should match")
 		}
 	}
+
+
+	test_makeFuncModifierString_without_defaultArguments {
+		var function = { |a, b, c| [a, b, c]};
+		var string = function.def.makeFuncModifierString;
+		var should = [1, 2, 3];
+		var is = string.interpret.value(1, 2, 3);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+	test_makeFuncModifierString_with_defaultArguments {
+		var function = { |a, b, c=3| [a, b, c]};
+		var string = function.def.makeFuncModifierString;
+		var should = [1, 2, 3];
+		var is = string.interpret.value(1, 2);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+	test_makeFuncModifierString_with_ellipsisArguments {
+		var function = { |a, b ... c| [a, b] ++ c};
+		var string = function.def.makeFuncModifierString;
+		var should = [1, 2, 3, 4];
+		var is = string.interpret.value(1, 2, 3, 4);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+	test_makeFuncModifierString_with_ellipsisArguments_empty {
+		var function = { |a, b ... c| [a, b] ++ c};
+		var string = function.def.makeFuncModifierString;
+		var should = [1, 2];
+		var is = string.interpret.value(1, 2);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+
+	test_makeFuncModifierString_with_single_ellipsisArguments {
+		var function = { |...a| a };
+		var string = function.def.makeFuncModifierString;
+		var should = [1, 2];
+		var is = string.interpret.value(1, 2);
+		this.assertEquals(is, should, "arguments should be passed correctly");
+	}
+
+
+
 
 	test_flop_inEnvir {
 		var envir = Environment.new;
@@ -209,6 +253,42 @@ TestFunction : UnitTest {
 		var result = function.(1, 2, 3, 4);
 		var directResult = [ [ 1, 2, [3, 4] ]];
 		this.assertEquals(result, directResult, "flop should work with ellipsis arguments for the non-expanding case")
+	}
+
+	test_flop_partialApplication {
+		var function = [_, _].flop;
+		var result = function.([1, 2, 3], [100, 200]);
+		var directResult = [ [ 1, 100 ], [ 2, 200 ], [ 3, 100 ] ];
+		this.assertEquals(result, directResult, "flop should work with partial application")
+	}
+
+	test_flop1_partialApplication {
+		var function = [_, _].flop1;
+		var result = function.([1, 2, 3], [100, 200]);
+		var directResult = [ [ 1, 100 ], [ 2, 200 ], [ 3, 100 ] ];
+		this.assertEquals(result, directResult, "flop1 should work with partial application")
+	}
+
+	test_flop1_unbubble {
+		var function = { |x| x }.flop1;
+		var result = function.(1);
+		var directResult = 1;
+		this.assertEquals(result, directResult, "flop1 should not expand for non-array arguments")
+	}
+
+
+	test_inEnvir {
+		var envir = Environment.make { ~a = 9 };
+		var func = { ~a }.inEnvir(envir);
+		var result = func.value;
+		this.assertEquals(result, 9, "inEnvir should bind function to environment")
+	}
+
+	test_inEnvirWithArgs {
+		var envir = Environment.make { ~a = 9 };
+		var func = { |b| [~a, b] }.inEnvirWithArgs(envir);
+		var result = func.value(b: 4);
+		this.assertEquals(result, [9, 4], "inEnvirWithArgs should bind function to environment and take keyword args")
 	}
 
 

@@ -235,57 +235,53 @@ Function : AbstractFunction {
 
 	// multichannel expand function return values
 
-
+	// flop function
 	flop {
-		var code;
+		var code, modifierString;
 		if(def.argNames.isNil) { ^{ [this.value] } };
-		code = this.makeFlopFuncString({ |str|
-			"%.collect { |item| func.valueArray(item) }".format(str)
-		});
+		modifierString = "(%).flop.collect { |x| func.valueArray(x) }";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
 		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
-	envirFlop {
-		^this.flop
+	// flop only when at least one non-string array is passed as argument.
+	flop1 {
+		var code, modifierString;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		modifierString = "\n	var arguments = %;\n"
+		"	if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
+		"		arguments.flop.collect { |x| func.valueArray(x) }\n"
+		"	} {\n"
+		"		func.valueArray(arguments)\n"
+		"	}\n";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
-	makeFlopFuncString { |modifier|
-		var functionBlock, valueBlock, callBlock, argBlock, singleArgument, i;
-		if(def.argNames.isNil) { Error("a function without arguments has no flop string").throw };
+	// backwards compatibility
+	makeFlopFunc { ^this.flop }
+	envirFlop { ^this.flop }
 
-		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
-		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
-
-		if(def.varArgs) { // ellipsis arguments
-			if(def.argNames.size == 1) { // single ellipsis like { |...args| }
-				functionBlock = "%.flop".format(valueBlock)
-			} {
-				i = valueBlock.findBackwards(" ");
-				callBlock =
-				"\nvar res = [%], ell = %, ellSize = ell.size;\n"
-				"res = res ++ ell;\n"
-				"res = res.flop\n";
-				// after flop, we have to repack the ellipsis array again
-				"if(ellSize > 0) { res = res.collect { |x| x.drop(ellSize.neg).add(res.keep(ellSize.neg)) } };\n";
-				functionBlock = callBlock.format(valueBlock[..i], valueBlock[i + 1..])
-			}
+	// attach the function to a specific environment, without keyword arguments
+	inEnvir { |envir|
+		envir ?? { envir = currentEnvironment };
+		^if(def.argNames.isNil) {
+			{ envir.use { this.value } }
 		} {
-			functionBlock = "[%].flop".format(valueBlock)
-		};
-		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
-
-		^"{ arg %; % }".format(argBlock, functionBlock)
-	}
-
-	makeFlopFunc {
-		^this.makeFlopFuncString.interpret
+			{ |... args| envir.use { this.valueArray(args) } }
+		}
 	}
 
 	// attach the function to a specific environment
-	inEnvir { |envir|
+	inEnvirWithArgs { |envir|
+		var code, modifierString;
 		envir ?? { envir = currentEnvironment };
-		^{ |... args| envir.use({ this.valueArray(args) }) }
+		if(def.argNames.isNil) { ^{ envir.use({ this.value }) } };
+		modifierString = "envir.use {  func.valueArray(%) }";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
+
 
 	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
 		var buffer, def, synth, name, numChannels, rate, server;
