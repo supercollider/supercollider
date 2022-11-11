@@ -240,7 +240,7 @@ Function : AbstractFunction {
 		var code, modifierString;
 		if(def.argNames.isNil) { ^{ [this.value] } };
 		modifierString = "(%).flop.collect { |x| func.valueArray(x) }";
-		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
 		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
@@ -248,13 +248,13 @@ Function : AbstractFunction {
 	flop1 {
 		var code, modifierString;
 		if(def.argNames.isNil) { ^{ [this.value] } };
-		modifierString = "\nvar arguments = %;\n"
-		"if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
-		"	arguments.flop.collect { |x| func.valueArray(x) }\n"
-		"} {\n"
-		"	func.valueArray(arguments)\n"
-		"}\n";
-		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		modifierString = "\n	var arguments = %;\n"
+		"	if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
+		"		arguments.flop.collect { |x| func.valueArray(x) }\n"
+		"	} {\n"
+		"		func.valueArray(arguments)\n"
+		"	}\n";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
 		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
@@ -278,38 +278,9 @@ Function : AbstractFunction {
 		envir ?? { envir = currentEnvironment };
 		if(def.argNames.isNil) { ^{ envir.use({ this.value }) } };
 		modifierString = "envir.use {  func.valueArray(%) }";
-		code = this.makeFuncModifierString({ |str| modifierString.format(str) });
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
 		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
-
-	makeFuncModifierString { |modifier|
-		// the modifier is a function that takes the string
-		// which represents the array of all arguments
-		var functionBlock, valueBlock, argBlock, callBlock, i;
-		if(def.argNames.isNil) { Error("a function without arguments needs no such make-string").throw };
-		argBlock = def.argumentString(withDefaultValues: true, withEllipsis: true);
-		valueBlock = def.argumentString(withDefaultValues: false, withEllipsis: false);
-
-		functionBlock = if(def.varArgs) { // ellipsis arguments
-			i = valueBlock.findBackwards(" ");
-			if(i.isNil) {
-				"%".format(valueBlock)
-			} {
-				"[%] ++ %".format(valueBlock[..i-2], valueBlock[i+1..])
-			};
-		} {
-			if(def.hasPartialApplication) {
-				"%".format(valueBlock)
-			} {
-				"[%]".format(valueBlock)
-			}
-		};
-
-		if(modifier.notNil) { functionBlock = modifier.value(functionBlock) };
-
-		^"{ arg %; % }".format(argBlock, functionBlock)
-	}
-
 
 
 	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|

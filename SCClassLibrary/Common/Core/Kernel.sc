@@ -477,9 +477,11 @@ FunctionDef {
 		^argNames.size > 0 and: { argNames[0] == \_ }
 	}
 
-	argumentString { arg withDefaultValues=true, withEllipsis=false;
+	argumentString { arg withDefaultValues=true, withEllipsis=false, asArray=false;
 		var res = "", pairs;
 		var lastIndex, noVarArgs, varArgName;
+		if(asArray && withDefaultValues) { Error("argumentString as array should not have default values").throw };
+		if(asArray && withEllipsis) { Error("argumentString as array should not have ellipsis").throw };
 		if(this.hasPartialApplication) {
 			^if(withEllipsis) { " ... args" } { "args" }
 		};
@@ -497,18 +499,42 @@ FunctionDef {
 			};
 			if(i + 1 < lastIndex) { res = res ++ ", " };
 		};
-		if(varArgName.notNil) {
+		^if(varArgName.notNil) {
 			if(withEllipsis) {
-				res = res ++ " ... " ++ varArgName
+				res ++ " ... " ++ varArgName
 			} {
-				if(res == "") {
-					res = res ++ varArgName
+				if(asArray) {
+					if(res == "") {
+						varArgName
+					} {
+						"[%] ++ %".format(res, varArgName)
+					}
 				} {
-					res = res ++ ", " ++ varArgName
+					if(res == "") {
+						res ++ varArgName
+					} {
+						res ++ ", " ++ varArgName
+					}
 				}
 			}
-		};
-		^res
+		} {
+			if(asArray) {
+				"[%]".format(res)
+			} {
+				res
+			}
+		}
+	}
+
+	makeFuncModifierString { |modifier|
+		// the modifier is a function that takes the string
+		// which represents the array of all arguments
+		var valueBlock, argBlock, i;
+		if(this.argNames.isNil) { Error("a function without arguments needs no such string").throw };
+		argBlock = this.argumentString(withDefaultValues: true, withEllipsis: true);
+		valueBlock = this.argumentString(withDefaultValues: false, withEllipsis: false, asArray:true);
+		if(modifier.notNil) { valueBlock = modifier.value(valueBlock) };
+		^"{ arg %; % }".format(argBlock, valueBlock)
 	}
 
 	keyValuePairsFromArgs {
