@@ -1,32 +1,33 @@
 CLASS:: AbstractGridLines
-summary:: given a spec and the actual data's min and max values, calculates the ideal spacing and labelling of grid lines for plotting
+summary:: Calculates the numerical values suitable for grid lines to be used for plotting or other UI elements.
 categories:: GUI>Accessories
-related:: Classes/GridLines, Reference/plot, Classes/Plotter, Classes/DrawGrid
+related:: Classes/GridLines, Classes/LinearGridLines, Classes/ExponentialGridLines, Classes/DrawGrid, Classes/ControlSpec, Classes/Plotter, Reference/plot
 
 DESCRIPTION::
-code::AbstractGridLines:: and its subclasses are strategy objects that implements a general strategy for finding a suitable min max range for graphing and suitable intervals for grid lines and labelling.
+code::AbstractGridLines:: and its subclasses are strategy objects that find suitable intervals for plotting grid lines and labels. The data range and warping behavior (e.g. linear or exponential) are derived from the corresponding link::Classes/ControlSpec::. The instance methods of code::AbstractGridLines:: are used by link::Classes/DrawGrid:: (which is in turn used by link::Classes/Plotter::) for getting logically spaced intervals that span the data for drawing grid lines on a plot.
 
-Neither code::AbstractGridLines:: nor its subclasses are to be instantiated directly. Instead, link::Classes/GridLines:: factory class should be used to return the code::AbstractGridLines:: subclass appropriate for the given link::Classes/ControlSpec::.
-
-The object that does the actual drawing on a view is link::Classes/DrawGrid::.
-
-An code::AbstractGridLines:: object uses a link::Classes/ControlSpec:: to define the minimum and maximum possible values.  Given a data set's actual minimum and maximum values, the code::AbstractGridLines:: object can choose a logical range for graphing that encompasses the data that will be plotted.
-
-Subclasses of code::AbstractGridLines:: bind more tightly with the data they are representing. E.g. code::LinearGridLines:: represents data on linear scale, while code::ExponentialGridLines:: represents data on exponential scale. Future development work could add other subclasses like e.g. DegreeGridLines to be used to draw pitch degree GridLines behind a frequency plot.
-
-link::Classes/Spec:: has a .grid variable that points to its preferred code::AbstractGridLines:: subclass that should be used for graphing.
+code::AbstractGridLines:: shouldn't be instantiated directly. Instead, the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method should be used to return the appropriate code::AbstractGridLines:: subclass for the given spec.
 
 code::
 \freq.asSpec.grid
 ::
 
-This default implementation does not know anything about the data is displaying:
+Subclasses of code::AbstractGridLines:: correspond to the range and warp behavior of their assigned code::ControlSpec::. For example, code::LinearGridLines:: and code::ExponentialGridLines:: represent data on a linear and exponential scale, respectively.
+code::
+(
+// LinearGridLines
+var linGrid = ControlSpec(0, 100, \lin, units: "Time").grid;
+// ExponentialGridLines
+var expGrid = \freq.asSpec.grid;
 
+DrawGrid.test(linGrid, expGrid);
+)
+::
+This default implementation does not know anything about the data is displaying:
 code::
 DrawGrid.test(nil, \midinote.asSpec.grid);
 ::
-
-A MidinoteGridLines could be written that labels these correctly, shows octaves and individual notes depending on the current zoom.
+A theoretical code::MidinoteGridLines:: could be written that labels these correctly, shows octaves and individual notes depending on the current zoom. Or a teletype::DegreeGridLines:: could draw pitch degree grid lines behind a frequency plot.
 
 Note that the code::AbstractGridLines:: does not know which axis it is to be used on and could also be used in polar plots or in 3D rendering.
 
@@ -35,100 +36,107 @@ CLASSMETHODS::
 METHOD:: new
 
 argument:: spec
-The ControlSpec that defines the minimum and maximum values, warp and step.
+A link::Classes/ControlSpec:: that defines the numerical range, warp, and step.
 
-returns:: a AbstractGridLines
+returns:: An instance of this class.
 
+note:: code::AbstractGridLines:: shouldn't be instantiated directly. Instead, the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method should be used to return the appropriate code::AbstractGridLines:: subclass.
+::
 
 INSTANCEMETHODS::
 
 METHOD:: spec
-get/set the spec
+Get/set the code::ControlSpec:: that defines the numerical range, warp, and step.
 
-returns:: a ControlSpec
+returns:: A link::Classes/ControlSpec::.
 
 METHOD:: asGrid
-return self.  nil.asGrid would return a BlankGridLines which is a subclass of AbstractGridLines.  So when plotting if you specify a grid of nil then you will get no lines at all.
+Return this object.
 
-returns:: self
+discussion::
+code::nil.asGrid:: returns a code::BlankGridLines:: (a subclass of code::AbstractGridLines::) which produces no drawn lines. So if code::nil:: is passed to the strong::grid:: argument of code::DrawGrid::, no lines are drawn on the corresponding axis.
+
 
 METHOD:: niceNum
-Based on: http://books.google.de/books?id=fvA7zLEFWZgC&pg=PA61&lpg=PA61
-
-This rounds a value to a logical nice number.  It is mostly used to support internal calculation, though it may be useful for other applications.
+Rounds a value to a logical "nice number" that is within the same order of magnitude. See the discussion below for details.
 
 argument:: val
-The value.
+The value you'd like to make nicer.
 
 argument:: round
-Boolean. Rounding uses a specific algorithm.  This is not simple rounding to an integer value.
+A boolean. Roughly speaking, rounding will allow the returned number to be above or below the input strong::val:: (similar to a code::round:: operation), while when code::false:: the returned number will tend to be higher than strong::val:: (similar to code::ceil::).
 
-returns:: the nice number
+returns:: The nice number.
 
-METHOD:: ideals
-for internal use
+discussion::
+This method is used to support internal calculations for determining grid line values, though it may be useful for other applications.
 
-argument:: min
-(describe argument here)
+Observe the rounding behavior:
+code::
+(
+var g = GridLines([0, 10000].asSpec);
+"in val / rounded / not rounded".postln;
+10.collect{ 10000.rand }.sort.do({ |x|
+    postf("% / % / %\n", x, g.niceNum(x, true), g.niceNum(x, false))
+})
+)
+::
+The implementation is based on: link::https://www.sciencedirect.com/book/9780080507538/graphics-gems##A. S. Glassner, Ed., Graphics Gems. San Diego: Morgan Kaufmann, 1990::.
 
-argument:: max
-(describe argument here)
-
-argument:: ntick
-(describe argument here)
-
-returns:: (returnvalue)
 
 METHOD:: looseRange
-Returns the logical minimum and maximum that will contain the data.
+Returns the logical minimum and maximum that will contain the strong::min:: and strong::max::, determed internally using link::#-niceNum::.
 
 argument:: min
-minimum value
+Minimum value to include in the returned range.
 
 argument:: max
-maximum value.
+Maximum value to include in the returned range.
 
 argument:: ntick
-the number of lines you would like (which usually varies by how much screen space you have and what you consider cluttered)
+The number of lines ("ticks") you would like within the range of code::[min, max]::, default: code::5::.
 
-returns:: [ideal min, ideal max]
+returns:: An link::Classes/Array:: with the lower and upper bounds of the range containing your strong::min:: and strong::max::, i.e. code::[rangeMin, rangeMax]::.
+
 
 METHOD:: getParams
-Specifically for use by DrawGrid. This returns a dictionary filled with:
-'lines': an array of values where lines should be drawn
-'labels': [value, formatted label] for each line
+
+Specifically for use by link::Classes/DrawGrid::.
+This returns a link::Classes/Dictionary:: with keys: code::'lines'::, an array of values where lines should be drawn, and code::'labels'::, an array of 2-element arrays code::[value, "formatted label"]:: for each line.
+
+Note that the highest and lowest values returned don't necessarily contain your strong::valueMin:: and strong::valueMax::, but rather represent the values where grid lines will be drawn by code::DrawGrid:: (endcap lines are subsequently drawn at the data/grid bounds).
 
 argument:: valueMin
-minimum value of the data to be plotted
+Minimum value of the data to be plotted. The lowest grid line value returned may be higher than this value.
 
 argument:: valueMax
-maximum value of the data to be plotted
+Maximum value of the data to be plotted. The highest grid line value returned may be lower than this value.
 
 argument:: pixelMin
-If numTicks is nil: used to guess the ideal numTicks based on the graph size.
+Lower bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if code::numTicks:: is code::nil::).
 
 argument:: pixelMax
-If numTicks is nil: used to guess the ideal numTicks based on the graph size.
+Upper bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if code::numTicks:: is code::nil::).
 
 argument:: numTicks
-Explicit number of ticks you would like to see on the graph.
+Explicit number of ticks you would like to see on the graph (though the result is approximate). Set to code::nil:: if you'd like the number of ticks to be found automatically, based on strong::pixelMin::, strong::pixelMax::, and strong::tickSpacing::.
 
 argument:: tickSpacing
-Approximate distance between ticks (in pixels). This value is only used when code::numTicks:: is code::nil::.
+Minimum distance between ticks (in pixels). This value is only used when code::numTicks:: is code::nil::.
 
-returns:: A dictionary
+returns:: A link::Classes/Dictionary::.
+
 
 METHOD:: formatLabel
-Round the value and append the spec's units
+Format a numerical value for display as text, rounded to a desired precision.
 
 argument:: val
-The value
+The value to round and convert to a text label.
 
 argument:: numDecimalPlaces
-Number of decimal places
+Number of decimal places to represent in the returned code::String::.
 
-returns:: a string
-
-private:: prCheckWarp
+returns:: A link::Classes/String::.
 
 
+private:: prCheckWarp, ideals
