@@ -1,4 +1,8 @@
 TestQuark : UnitTest {
+	classvar <>testResults;
+
+	*initClass { testResults = () }
+
 	*testQuarkPath {
 		^PathName(thisMethod.filenameSymbol.asString).pathOnly +/+ "assets" +/+ "TestQuark";
 	}
@@ -43,11 +47,12 @@ TestQuark : UnitTest {
 		Quarks.install(TestQuark.testQuarkPath);
 		[\preInstall, \postInstall].do({|hookName|
 			this.assert(
-				File.exists(TestQuark.tempDir +/+ hookName),
-				"Check if hook '%' was called".format(hookName);
+				testResults[hookName] == true,
+				"Hook '%' should have been called".format(hookName);
 			);
 		});
 		TestQuark.clearTempDir;
+		testResults = ();
 	}
 
 	test_parseQuarkFileData {
