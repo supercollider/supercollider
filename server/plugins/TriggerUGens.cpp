@@ -2257,6 +2257,7 @@ void PauseSelf_Ctor(PauseSelf* unit) {
     SETCALC(PauseSelf_next);
     unit->m_prevtrig = 0.f;
     PauseSelf_next(unit, 1);
+    unit->m_prevtrig = 0.f;
 }
 
 
