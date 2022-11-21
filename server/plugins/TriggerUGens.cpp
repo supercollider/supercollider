@@ -2240,6 +2240,7 @@ void FreeSelf_Ctor(FreeSelf* unit) {
     SETCALC(FreeSelf_next);
     unit->m_prevtrig = 0.f;
     FreeSelf_next(unit, 1);
+    unit->m_prevtrig = 0.f;
 }
 
 
