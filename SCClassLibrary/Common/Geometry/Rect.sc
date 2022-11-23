@@ -144,6 +144,7 @@ Rect {
 	}
 
 	asRect { ^this }
+	asSize { ^Size(width, height) }
 	bounds { ^Rect.new(left, top, width, height) }
 	== { arg that;
 		^this.compareObject(that, #[\left, \top, \width, \height])
