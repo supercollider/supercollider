@@ -111,9 +111,9 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
 		if ("${_gcc_version_info}" MATCHES "Apple")
-			add_definitions("-fpascal-strings" "-fno-aligned-allocation")
+			add_definitions("-fpascal-strings")
 		endif()
-		add_definitions("-D_REENTRANT" "-fno-aligned-allocation")
+		add_definitions("-D_REENTRANT")
 	elseif(NOT (WIN32 AND NOT CYGWIN))
 		add_definitions("-pthread")
 	endif()
@@ -146,6 +146,9 @@ if(WIN32)
 endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DBOOST_FILESYSTEM_NO_CXX20_ATOMIC_REF)
+if(APPLE)
+	add_definitions("-fno-aligned-allocation")
+endif()
 
 
 #############################################
