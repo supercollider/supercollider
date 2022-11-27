@@ -124,7 +124,7 @@ namespace boost { namespace parameter { namespace aux {
     template <
         typename Keyword
       , typename Arg
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
       , typename = typename ::boost::parameter::aux
         ::is_cv_reference_wrapper<Arg>::type
 #endif
@@ -138,7 +138,7 @@ namespace boost { namespace parameter { namespace aux {
     };
 }}} // namespace boost::parameter::aux_
 
-#if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x564))
+#if BOOST_WORKAROUND(BOOST_BORLANDC, BOOST_TESTED_AT(0x564))
 #include <boost/mpl/bool.hpp>
 #include <boost/type_traits/remove_reference.hpp>
 

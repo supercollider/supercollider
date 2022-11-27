@@ -41,15 +41,15 @@ inline typename tools::promote_args<T>::type
 namespace detail{
 
 template <class T>
-inline T expint_1_rational(const T& z, const boost::integral_constant<int, 0>&)
+inline T expint_1_rational(const T& z, const std::integral_constant<int, 0>&)
 {
    // this function is never actually called
-   BOOST_ASSERT(0);
+   BOOST_MATH_ASSERT(0);
    return z;
 }
 
 template <class T>
-T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
+T expint_1_rational(const T& z, const std::integral_constant<int, 53>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -123,7 +123,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 53>&)
 }
 
 template <class T>
-T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
+T expint_1_rational(const T& z, const std::integral_constant<int, 64>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -204,7 +204,7 @@ T expint_1_rational(const T& z, const boost::integral_constant<int, 64>&)
 }
 
 template <class T>
-T expint_1_rational(const T& z, const boost::integral_constant<int, 113>&)
+T expint_1_rational(const T& z, const std::integral_constant<int, 113>&)
 {
    BOOST_MATH_STD_USING
    T result;
@@ -374,7 +374,7 @@ inline T expint_as_fraction(unsigned n, T z, const Policy& pol)
 {
    BOOST_MATH_STD_USING
    BOOST_MATH_INSTRUMENT_VARIABLE(z)
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
    expint_fraction<T> f(n, z);
    T result = tools::continued_fraction_b(
       f, 
@@ -413,7 +413,7 @@ template <class T, class Policy>
 inline T expint_as_series(unsigned n, T z, const Policy& pol)
 {
    BOOST_MATH_STD_USING
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
 
    BOOST_MATH_INSTRUMENT_VARIABLE(z)
 
@@ -431,7 +431,7 @@ inline T expint_as_series(unsigned n, T z, const Policy& pol)
    }
    BOOST_MATH_INSTRUMENT_VARIABLE(result)
    result += pow(-z, static_cast<T>(n - 1)) 
-      * (boost::math::digamma(static_cast<T>(n)) - log(z)) / fact;
+      * (boost::math::digamma(static_cast<T>(n), pol) - log(z)) / fact;
    BOOST_MATH_INSTRUMENT_VARIABLE(result)
 
    expint_series<T> s(k, z, x_k, denom, fact);
@@ -463,7 +463,7 @@ T expint_imp(unsigned n, T z, const Policy& pol, const Tag& tag)
    {
       f = z < (static_cast<T>(n - 2) / static_cast<T>(n - 1));
    }
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable:4127) // conditional expression is constant
 #endif
@@ -477,7 +477,7 @@ T expint_imp(unsigned n, T z, const Policy& pol, const Tag& tag)
       result = expint_as_series(n, z, pol);
    else
       result = expint_as_fraction(n, z, pol);
-#ifdef BOOST_MSVC
+#ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
 
@@ -507,7 +507,7 @@ T expint_i_as_series(T z, const Policy& pol)
    T result = log(z); // (log(z) - log(1 / z)) / 2;
    result += constants::euler<T>();
    expint_i_series<T> s(z);
-   boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
    result = tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter, result);
    policies::check_series_iterations<T>("boost::math::expint_i_series<%1%>(%1%)", max_iter, pol);
    return result;
@@ -525,7 +525,7 @@ T expint_i_imp(T z, const Policy& pol, const Tag& tag)
 }
 
 template <class T, class Policy>
-T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& tag)
+T expint_i_imp(T z, const Policy& pol, const std::integral_constant<int, 53>& tag)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::expint<%1%>(%1%)";
@@ -739,7 +739,7 @@ T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 53>& 
 }
 
 template <class T, class Policy>
-T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 64>& tag)
+T expint_i_imp(T z, const Policy& pol, const std::integral_constant<int, 64>& tag)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::expint<%1%>(%1%)";
@@ -1383,7 +1383,7 @@ void expint_i_113h(T& result, const T& z)
 }
 
 template <class T, class Policy>
-T expint_i_imp(T z, const Policy& pol, const boost::integral_constant<int, 113>& tag)
+T expint_i_imp(T z, const Policy& pol, const std::integral_constant<int, 113>& tag)
 {
    BOOST_MATH_STD_USING
    static const char* function = "boost::math::expint<%1%>(%1%)";
@@ -1495,34 +1495,34 @@ struct expint_i_initializer
       {
          do_init(tag());
       }
-      static void do_init(const boost::integral_constant<int, 0>&){}
-      static void do_init(const boost::integral_constant<int, 53>&)
+      static void do_init(const std::integral_constant<int, 0>&){}
+      static void do_init(const std::integral_constant<int, 53>&)
       {
-         boost::math::expint(T(5));
-         boost::math::expint(T(7));
-         boost::math::expint(T(18));
-         boost::math::expint(T(38));
-         boost::math::expint(T(45));
+         boost::math::expint(T(5), Policy());
+         boost::math::expint(T(7), Policy());
+         boost::math::expint(T(18), Policy());
+         boost::math::expint(T(38), Policy());
+         boost::math::expint(T(45), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, 64>&)
       {
-         boost::math::expint(T(5));
-         boost::math::expint(T(7));
-         boost::math::expint(T(18));
-         boost::math::expint(T(38));
-         boost::math::expint(T(45));
+         boost::math::expint(T(5), Policy());
+         boost::math::expint(T(7), Policy());
+         boost::math::expint(T(18), Policy());
+         boost::math::expint(T(38), Policy());
+         boost::math::expint(T(45), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
-         boost::math::expint(T(5));
-         boost::math::expint(T(7));
-         boost::math::expint(T(17));
-         boost::math::expint(T(25));
-         boost::math::expint(T(40));
-         boost::math::expint(T(50));
-         boost::math::expint(T(80));
-         boost::math::expint(T(200));
-         boost::math::expint(T(220));
+         boost::math::expint(T(5), Policy());
+         boost::math::expint(T(7), Policy());
+         boost::math::expint(T(17), Policy());
+         boost::math::expint(T(25), Policy());
+         boost::math::expint(T(40), Policy());
+         boost::math::expint(T(50), Policy());
+         boost::math::expint(T(80), Policy());
+         boost::math::expint(T(200), Policy());
+         boost::math::expint(T(220), Policy());
       }
       void force_instantiate()const{}
    };
@@ -1545,22 +1545,22 @@ struct expint_1_initializer
       {
          do_init(tag());
       }
-      static void do_init(const boost::integral_constant<int, 0>&){}
-      static void do_init(const boost::integral_constant<int, 53>&)
+      static void do_init(const std::integral_constant<int, 0>&){}
+      static void do_init(const std::integral_constant<int, 53>&)
       {
-         boost::math::expint(1, T(0.5));
-         boost::math::expint(1, T(2));
+         boost::math::expint(1, T(0.5), Policy());
+         boost::math::expint(1, T(2), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, 64>&)
       {
-         boost::math::expint(1, T(0.5));
-         boost::math::expint(1, T(2));
+         boost::math::expint(1, T(0.5), Policy());
+         boost::math::expint(1, T(2), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
-         boost::math::expint(1, T(0.5));
-         boost::math::expint(1, T(2));
-         boost::math::expint(1, T(6));
+         boost::math::expint(1, T(0.5), Policy());
+         boost::math::expint(1, T(2), Policy());
+         boost::math::expint(1, T(6), Policy());
       }
       void force_instantiate()const{}
    };
@@ -1576,7 +1576,7 @@ const typename expint_1_initializer<T, Policy, tag>::init expint_1_initializer<T
 
 template <class T, class Policy>
 inline typename tools::promote_args<T>::type
-   expint_forwarder(T z, const Policy& /*pol*/, boost::true_type const&)
+   expint_forwarder(T z, const Policy& /*pol*/, std::true_type const&)
 {
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -1587,7 +1587,7 @@ inline typename tools::promote_args<T>::type
       policies::promote_double<false>, 
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :
@@ -1604,7 +1604,7 @@ inline typename tools::promote_args<T>::type
 
 template <class T>
 inline typename tools::promote_args<T>::type
-expint_forwarder(unsigned n, T z, const boost::false_type&)
+expint_forwarder(unsigned n, T z, const std::false_type&)
 {
    return boost::math::expint(n, z, policies::policy<>());
 }
@@ -1624,7 +1624,7 @@ inline typename tools::promote_args<T>::type
       policies::promote_double<false>, 
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :

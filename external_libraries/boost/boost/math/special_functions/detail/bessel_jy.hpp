@@ -20,8 +20,6 @@
 #include <boost/math/special_functions/detail/bessel_jy_series.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/math/policies/error_handling.hpp>
-#include <boost/mpl/if.hpp>
-#include <boost/type_traits/is_floating_point.hpp>
 #include <complex>
 
 // Bessel functions of the first and second kind of fractional order
@@ -82,7 +80,7 @@ namespace boost { namespace math {
             using namespace boost::math::tools;
          using namespace boost::math::constants;
 
-         BOOST_ASSERT(fabs(v) <= 0.5f);  // precondition for using this routine
+         BOOST_MATH_ASSERT(fabs(v) <= 0.5f);  // precondition for using this routine
 
          T gp = boost::math::tgamma1pm1(v, pol);
          T gm = boost::math::tgamma1pm1(-v, pol);
@@ -154,7 +152,7 @@ namespace boost { namespace math {
 
             // modified Lentz's method, see
             // Lentz, Applied Optics, vol 15, 668 (1976)
-            tolerance = 2 * policies::get_epsilon<T, Policy>();;
+            tolerance = 2 * policies::get_epsilon<T, Policy>();
          tiny = sqrt(tools::min_value<T>());
          C = f = tiny;                           // b0 = 0, replace with tiny
          D = 0;
@@ -197,7 +195,7 @@ namespace boost { namespace math {
 
          // |x| >= |v|, CF2_jy converges rapidly
          // |x| -> 0, CF2_jy fails to converge
-         BOOST_ASSERT(fabs(x) > 1);
+         BOOST_MATH_ASSERT(fabs(x) > 1);
 
          // modified Lentz's method, complex numbers involved, see
          // Lentz, Applied Optics, vol 15, 668 (1976)
@@ -264,7 +262,7 @@ namespace boost { namespace math {
       template <typename T, typename Policy>
       int bessel_jy(T v, T x, T* J, T* Y, int kind, const Policy& pol)
       {
-         BOOST_ASSERT(x >= 0);
+         BOOST_MATH_ASSERT(x >= 0);
 
          T u, Jv, Ju, Yv, Yv1, Yu, Yu1(0), fv, fu;
          T W, p, q, gamma, current, prev, next;
@@ -376,13 +374,13 @@ namespace boost { namespace math {
          {
             if(kind&need_y)
             {
-               Yv = asymptotic_bessel_y_large_x_2(v, x);
+               Yv = asymptotic_bessel_y_large_x_2(v, x, pol);
             }
             else
                Yv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
             if(kind&need_j)
             {
-               Jv = asymptotic_bessel_j_large_x_2(v, x);
+               Jv = asymptotic_bessel_j_large_x_2(v, x, pol);
             }
             else
                Jv = std::numeric_limits<T>::quiet_NaN(); // any value will do, we're not using it.
@@ -405,8 +403,8 @@ namespace boost { namespace math {
             T mod_v = fmod(T(v / 2 + 0.25f), T(2));
             T sx = sin(x);
             T cx = cos(x);
-            T sv = sin_pi(mod_v);
-            T cv = cos_pi(mod_v);
+            T sv = boost::math::sin_pi(mod_v, pol);
+            T cv = boost::math::cos_pi(mod_v, pol);
 
             T sc = sx * cv - sv * cx; // == sin(chi);
             T cc = cx * cv + sx * sv; // == cos(chi);
@@ -586,4 +584,3 @@ namespace boost { namespace math {
 }} // namespaces
 
 #endif // BOOST_MATH_BESSEL_JY_HPP
-

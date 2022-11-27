@@ -23,7 +23,7 @@
 #include <boost/typeof/integral_template_param.hpp>
 #include <boost/typeof/template_template_param.hpp>
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 #define BOOST_TYPEOF_QUALIFY(P) self_t::P
 #else
 #define BOOST_TYPEOF_QUALIFY(P) P

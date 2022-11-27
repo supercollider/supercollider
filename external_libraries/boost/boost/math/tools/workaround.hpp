@@ -26,7 +26,7 @@ inline T fmod_workaround(T a, T b) BOOST_MATH_NOEXCEPT(T)
 }
 #if (defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)) && ((LDBL_MANT_DIG == 106) || (__LDBL_MANT_DIG__ == 106))
 template <>
-inline long double fmod_workaround(long double a, long double b) BOOST_NOEXCEPT
+inline long double fmod_workaround(long double a, long double b) noexcept
 {
    return ::fmodl(a, b);
 }

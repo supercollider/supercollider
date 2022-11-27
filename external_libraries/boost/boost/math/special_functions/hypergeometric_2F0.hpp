@@ -48,7 +48,7 @@ namespace boost { namespace math { namespace detail {
    {
       using namespace boost::math;
       hypergeometric_2F0_cf<T> evaluator(a1, a2, z);
-      boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+      std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
       T cf = tools::continued_fraction_b(evaluator, policies::get_epsilon<T, Policy>(), max_iter);
       policies::check_series_iterations<T>(function, max_iter, pol);
       return cf;
@@ -92,17 +92,17 @@ namespace boost { namespace math { namespace detail {
       if ((a1 == a2 - 0.5f) && (z < 0))
       {
          // http://functions.wolfram.com/07.31.03.0083.01
-         int n = static_cast<int>(static_cast<boost::uintmax_t>(boost::math::lltrunc(-2 * a1)));
+         int n = static_cast<int>(static_cast<std::uintmax_t>(boost::math::lltrunc(-2 * a1)));
          T smz = sqrt(-z);
-         return pow(2 / smz, -n) * boost::math::hermite(n, 1 / smz);
+         return pow(2 / smz, -n) * boost::math::hermite(n, 1 / smz, pol);
       }
 
       if (is_a1_integer && is_a2_integer)
       {
          if ((a1 < 1) && (a2 <= a1))
          {
-            const unsigned int n = static_cast<unsigned int>(static_cast<boost::uintmax_t>(boost::math::lltrunc(-a1)));
-            const unsigned int m = static_cast<unsigned int>(static_cast<boost::uintmax_t>(boost::math::lltrunc(-a2 - n)));
+            const unsigned int n = static_cast<unsigned int>(static_cast<std::uintmax_t>(boost::math::lltrunc(-a1)));
+            const unsigned int m = static_cast<unsigned int>(static_cast<std::uintmax_t>(boost::math::lltrunc(-a2 - n)));
 
             return (pow(z, T(n)) * boost::math::factorial<T>(n, pol)) *
                boost::math::laguerre(n, m, -(1 / z), pol);
@@ -110,8 +110,8 @@ namespace boost { namespace math { namespace detail {
          else if ((a2 < 1) && (a1 <= a2))
          {
             // function is symmetric for a1 and a2
-            const unsigned int n = static_cast<unsigned int>(static_cast<boost::uintmax_t>(boost::math::lltrunc(-a2)));
-            const unsigned int m = static_cast<unsigned int>(static_cast<boost::uintmax_t>(boost::math::lltrunc(-a1 - n)));
+            const unsigned int n = static_cast<unsigned int>(static_cast<std::uintmax_t>(boost::math::lltrunc(-a2)));
+            const unsigned int m = static_cast<unsigned int>(static_cast<std::uintmax_t>(boost::math::lltrunc(-a1 - n)));
 
             return (pow(z, T(n)) * boost::math::factorial<T>(n, pol)) *
                boost::math::laguerre(n, m, -(1 / z), pol);

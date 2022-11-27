@@ -51,7 +51,7 @@ inline T cyl_bessel_j_prime_imp(T v, T x, const Policy& pol)
    // Special case for large x: use asymptotic expansion:
    //
    if (boost::math::detail::asymptotic_bessel_derivative_large_x_limit(v, x))
-      return boost::math::detail::asymptotic_bessel_j_derivative_large_x_2(v, x);
+      return boost::math::detail::asymptotic_bessel_j_derivative_large_x_2(v, x, pol);
    //
    // Special case for small x: use Taylor series:
    //
@@ -180,7 +180,7 @@ inline T cyl_neumann_prime_imp(T v, T x, const Policy& pol)
    // Special case for large x: use asymptotic expansion:
    //
    if (boost::math::detail::asymptotic_bessel_derivative_large_x_limit(v, x))
-      return boost::math::detail::asymptotic_bessel_y_derivative_large_x_2(v, x);
+      return boost::math::detail::asymptotic_bessel_y_derivative_large_x_2(v, x, pol);
    //
    // Special case for small x: use Taylor series:
    //

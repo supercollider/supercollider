@@ -39,34 +39,30 @@
 
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
-#include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 #include <boost/interprocess/sync/detail/common_algorithms.hpp>
 #include <boost/assert.hpp>
 
-#if !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && \
-   (defined(BOOST_INTERPROCESS_POSIX_PROCESS_SHARED) && defined (BOOST_INTERPROCESS_POSIX_RECURSIVE_MUTEXES))
+#if   !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && \
+       defined(BOOST_INTERPROCESS_POSIX_PROCESS_SHARED) && \
+       defined (BOOST_INTERPROCESS_POSIX_RECURSIVE_MUTEXES)
    #include <boost/interprocess/sync/posix/recursive_mutex.hpp>
-   #define BOOST_INTERPROCESS_USE_POSIX
-//Experimental...
+   #define BOOST_INTERPROCESS_RECURSIVE_MUTEX_USE_POSIX
 #elif !defined(BOOST_INTERPROCESS_FORCE_GENERIC_EMULATION) && defined (BOOST_INTERPROCESS_WINDOWS)
+   //Experimental...
    #include <boost/interprocess/sync/windows/recursive_mutex.hpp>
-   #define BOOST_INTERPROCESS_USE_WINDOWS
-#elif !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+   #define BOOST_INTERPROCESS_RECURSIVE_MUTEX_USE_WINAPI
+#else
+   //spin_recursive_mutex is used
    #include <boost/interprocess/sync/spin/recursive_mutex.hpp>
-   #define BOOST_INTERPROCESS_USE_GENERIC_EMULATION
-#endif
+   namespace boost {
+   namespace interprocess {
+   namespace ipcdetail{
+   namespace robust_emulation_helpers {
 
-#if defined (BOOST_INTERPROCESS_USE_GENERIC_EMULATION)
-namespace boost {
-namespace interprocess {
-namespace ipcdetail{
-namespace robust_emulation_helpers {
+   template<class T>
+   class mutex_traits;
 
-template<class T>
-class mutex_traits;
-
-}}}}
-
+   }}}}
 #endif
 
 #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
@@ -102,19 +98,39 @@ class interprocess_recursive_mutex
    //!   mutex must be unlocked by the same mutex. The mutex must be unlocked
    //!   the same number of times it is locked.
    //!Throws: interprocess_exception on error.
+   //! 
+   //!Note: A program shall not deadlock if the thread that has ownership calls 
+   //!   this function. 
    void lock();
 
    //!Tries to lock the interprocess_mutex, returns false when interprocess_mutex
    //!is already locked, returns true when success. The mutex must be unlocked
    //!the same number of times it is locked.
    //!Throws: interprocess_exception if a severe error is found
+   //! 
+   //!Note: A program shall not deadlock if the thread that has ownership calls 
+   //!   this function. 
    bool try_lock();
 
    //!Tries to lock the interprocess_mutex, if interprocess_mutex can't be locked before
    //!abs_time time, returns false. The mutex must be unlocked
    //!   the same number of times it is locked.
    //!Throws: interprocess_exception if a severe error is found
-   bool timed_lock(const boost::posix_time::ptime &abs_time);
+   //! 
+   //!Note: A program shall not deadlock if the thread that has ownership calls 
+   //!   this function.
+   template<class TimePoint>
+   bool timed_lock(const TimePoint &abs_time);
+
+   //!Same as `timed_lock`, but this function is modeled after the
+   //!standard library interface.
+   template<class TimePoint> bool try_lock_until(const TimePoint &abs_time)
+   {  return this->timed_lock(abs_time);  }
+
+   //!Same as `timed_lock`, but this function is modeled after the
+   //!standard library interface.
+   template<class Duration>  bool try_lock_for(const Duration &dur)
+   {  return this->timed_lock(ipcdetail::duration_to_ustime(dur)); }
 
    //!Effects: The calling thread releases the exclusive ownership of the mutex.
    //!   If the mutex supports recursive locking, the mutex must be unlocked the
@@ -124,19 +140,14 @@ class interprocess_recursive_mutex
    #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
 
-   #if defined (BOOST_INTERPROCESS_USE_GENERIC_EMULATION)
-      #undef BOOST_INTERPROCESS_USE_GENERIC_EMULATION
+   #if defined(BOOST_INTERPROCESS_RECURSIVE_MUTEX_USE_POSIX)
+      ipcdetail::posix_recursive_mutex mutex;
+   #elif defined(BOOST_INTERPROCESS_RECURSIVE_MUTEX_USE_WINAPI)
+      ipcdetail::winapi_recursive_mutex mutex;
+   #else
       void take_ownership(){ mutex.take_ownership(); }
       friend class ipcdetail::robust_emulation_helpers::mutex_traits<interprocess_recursive_mutex>;
       ipcdetail::spin_recursive_mutex mutex;
-   #elif defined(BOOST_INTERPROCESS_USE_POSIX)
-      #undef BOOST_INTERPROCESS_USE_POSIX
-      ipcdetail::posix_recursive_mutex mutex;
-   #elif defined(BOOST_INTERPROCESS_USE_WINDOWS)
-      #undef BOOST_INTERPROCESS_USE_WINDOWS
-      ipcdetail::windows_recursive_mutex mutex;
-   #else
-      #error "Unknown platform for interprocess_mutex"
    #endif
    #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
@@ -157,7 +168,8 @@ inline void interprocess_recursive_mutex::lock()
 inline bool interprocess_recursive_mutex::try_lock()
 { return mutex.try_lock(); }
 
-inline bool interprocess_recursive_mutex::timed_lock(const boost::posix_time::ptime &abs_time)
+template<class TimePoint>
+inline bool interprocess_recursive_mutex::timed_lock(const TimePoint &abs_time)
 { return mutex.timed_lock(abs_time); }
 
 inline void interprocess_recursive_mutex::unlock()

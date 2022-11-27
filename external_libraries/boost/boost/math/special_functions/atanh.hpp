@@ -15,13 +15,12 @@
 #pragma once
 #endif
 
-
-#include <boost/config/no_tr1/cmath.hpp>
-#include <boost/config.hpp>
+#include <cmath>
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/policies/error_handling.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/log1p.hpp>
+#include <boost/math/special_functions/fpclassify.hpp>
 
 // This is the inverse of the hyperbolic tangent function.
 

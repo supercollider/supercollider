@@ -2,7 +2,7 @@
 // detail/reactive_socket_accept_op.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -129,6 +129,8 @@ public:
         BOOST_ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
           o->work_));
 
+    BOOST_ASIO_ERROR_LOCATION(o->ec_);
+
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a
     // sub-object of the handler may be the true owner of the memory associated
@@ -201,6 +203,8 @@ public:
     handler_work<Handler, IoExecutor> w(
         BOOST_ASIO_MOVE_CAST2(handler_work<Handler, IoExecutor>)(
           o->work_));
+
+    BOOST_ASIO_ERROR_LOCATION(o->ec_);
 
     // Make a copy of the handler so that the memory can be deallocated before
     // the upcall is made. Even if we're not about to make an upcall, a

@@ -489,7 +489,7 @@ struct is_convertible : public integral_constant<bool, ::boost::detail::is_conve
 template <class From, class To>
 struct is_convertible : public integral_constant<bool, BOOST_IS_CONVERTIBLE(From, To)> 
 {
-#if BOOST_WORKAROUND(BOOST_MSVC, <= 1900)
+#if defined(BOOST_MSVC)
    BOOST_STATIC_ASSERT_MSG(boost::is_complete<From>::value || boost::is_void<From>::value || boost::is_array<From>::value || boost::is_reference<From>::value, "From argument type to is_convertible must be a complete type");
 #endif
 #if defined(__clang__)

@@ -62,8 +62,8 @@ T asymptotic_bessel_phase_mx(T v, T x)
    return s;
 }
 
-template <class T>
-inline T asymptotic_bessel_y_large_x_2(T v, T x)
+template <class T, class Policy>
+inline T asymptotic_bessel_y_large_x_2(T v, T x, const Policy& pol)
 {
    // See A&S 9.2.19.
    BOOST_MATH_STD_USING
@@ -80,8 +80,8 @@ inline T asymptotic_bessel_y_large_x_2(T v, T x)
    //
    T cx = cos(x);
    T sx = sin(x);
-   T ci = cos_pi(v / 2 + 0.25f);
-   T si = sin_pi(v / 2 + 0.25f);
+   T ci = boost::math::cos_pi(v / 2 + 0.25f, pol);
+   T si = boost::math::sin_pi(v / 2 + 0.25f, pol);
    T sin_phase = sin(phase) * (cx * ci + sx * si) + cos(phase) * (sx * ci - cx * si);
    BOOST_MATH_INSTRUMENT_CODE(sin(phase));
    BOOST_MATH_INSTRUMENT_CODE(cos(x));
@@ -90,8 +90,8 @@ inline T asymptotic_bessel_y_large_x_2(T v, T x)
    return sin_phase * ampl;
 }
 
-template <class T>
-inline T asymptotic_bessel_j_large_x_2(T v, T x)
+template <class T, class Policy>
+inline T asymptotic_bessel_j_large_x_2(T v, T x, const Policy& pol)
 {
    // See A&S 9.2.19.
    BOOST_MATH_STD_USING
@@ -112,8 +112,8 @@ inline T asymptotic_bessel_j_large_x_2(T v, T x)
    BOOST_MATH_INSTRUMENT_CODE(sin(x));
    T cx = cos(x);
    T sx = sin(x);
-   T ci = cos_pi(v / 2 + 0.25f);
-   T si = sin_pi(v / 2 + 0.25f);
+   T ci = boost::math::cos_pi(v / 2 + 0.25f, pol);
+   T si = boost::math::sin_pi(v / 2 + 0.25f, pol);
    T sin_phase = cos(phase) * (cx * ci + sx * si) - sin(phase) * (sx * ci - cx * si);
    BOOST_MATH_INSTRUMENT_VARIABLE(sin_phase);
    return sin_phase * ampl;
@@ -133,7 +133,7 @@ inline bool asymptotic_bessel_large_x_limit(int v, const T& x)
       // error rates either side of the divide for v < 10000.
       // At double precision eps^1/8 ~= 0.01.
       //
-      BOOST_ASSERT(v >= 0);
+      BOOST_MATH_ASSERT(v >= 0);
       return (v ? v : 1) < x * 0.004f;
 }
 

@@ -52,7 +52,7 @@ T laguerre_imp(unsigned n, T x)
 
 template <class T, class Policy>
 inline typename tools::promote_args<T>::type 
-laguerre(unsigned n, T x, const Policy&, const boost::true_type&)
+laguerre(unsigned n, T x, const Policy&, const std::true_type&)
 {
    typedef typename tools::promote_args<T>::type result_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
@@ -61,7 +61,7 @@ laguerre(unsigned n, T x, const Policy&, const boost::true_type&)
 
 template <class T>
 inline typename tools::promote_args<T>::type 
-   laguerre(unsigned n, unsigned m, T x, const boost::false_type&)
+   laguerre(unsigned n, unsigned m, T x, const std::false_type&)
 {
    return boost::math::laguerre(n, m, x, policies::policy<>());
 }

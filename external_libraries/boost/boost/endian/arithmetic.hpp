@@ -177,12 +177,19 @@ namespace endian
 
 template <BOOST_SCOPED_ENUM(order) Order, class T, std::size_t n_bits,
     BOOST_SCOPED_ENUM(align) Align>
-class endian_arithmetic:
-    public endian_buffer<Order, T, n_bits, Align>
+class endian_arithmetic
 {
 private:
 
-    typedef endian_buffer<Order, T, n_bits, Align> inherited;
+    typedef endian_buffer<Order, T, n_bits, Align> buffer_type;
+
+#ifdef BOOST_ENDIAN_NO_CTORS
+public:
+#else
+private:
+#endif
+
+    buffer_type buf_;
 
 public:
 
@@ -192,7 +199,7 @@ public:
 
     endian_arithmetic() BOOST_ENDIAN_DEFAULT_CONSTRUCT
 
-    BOOST_ENDIAN_EXPLICIT_OPT endian_arithmetic( T val ) BOOST_NOEXCEPT: inherited( val )
+    BOOST_ENDIAN_EXPLICIT_OPT endian_arithmetic( T val ) BOOST_NOEXCEPT: buf_( val )
     {
     }
 
@@ -200,13 +207,38 @@ public:
 
     endian_arithmetic& operator=( T val ) BOOST_NOEXCEPT
     {
-        inherited::operator=( val );
+        buf_ = val;
         return *this;
+    }
+
+    value_type value() const BOOST_NOEXCEPT
+    {
+        return buf_.value();
+    }
+
+    unsigned char const * data() const BOOST_NOEXCEPT
+    {
+        return buf_.data();
+    }
+
+    unsigned char * data() BOOST_NOEXCEPT
+    {
+        return buf_.data();
     }
 
     operator value_type() const BOOST_NOEXCEPT
     {
         return this->value();
+    }
+
+    operator buffer_type& () BOOST_NOEXCEPT
+    {
+        return buf_;
+    }
+
+    operator buffer_type const& () BOOST_NOEXCEPT
+    {
+        return buf_;
     }
 
     // operators
