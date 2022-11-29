@@ -16,9 +16,9 @@ DrawGrid {
 		this.gridColors = [Color.grey(0.7), Color.grey(0.7)];
 	}
 	bounds_ { arg b;
-		bounds = b;
-		x.bounds = b;
-		y.bounds = b;
+		bounds = b.asRect;
+		x.bounds = bounds;
+		y.bounds = bounds;
 	}
 	draw {
 		Pen.push;
