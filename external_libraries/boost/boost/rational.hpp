@@ -21,6 +21,7 @@
 //    Nickolay Mladenov, for the implementation of operator+=
 
 //  Revision History
+//  12 Nov 20  Fix operators to work with C++20 rules (Glen Joseph Fernandes)
 //  02 Sep 13  Remove unneeded forward declarations; tweak private helper
 //             function (Daryle Walker)
 //  30 Aug 13  Improve exception safety of "assign"; start modernizing I/O code
@@ -74,7 +75,6 @@
 #include <cstddef>               // for NULL
 #include <stdexcept>             // for std::domain_error
 #include <string>                // for std::string implicit constructor
-#include <boost/operators.hpp>   // for boost::addable etc
 #include <cstdlib>               // for std::abs
 #include <boost/call_traits.hpp> // for boost::call_traits
 #include <boost/detail/workaround.hpp> // for BOOST_WORKAROUND
@@ -709,7 +709,7 @@ inline typename boost::enable_if_c <
    rational_detail::is_compatible_integer<Arg, IntType>::value || is_same<rational<IntType>, Arg>::value, bool>::type
    operator <= (const rational<IntType>& a, const Arg& b)
 {
-      return !(a > b);
+      return !a.operator>(b);
 }
 template <class Arg, class IntType>
 BOOST_CXX14_CONSTEXPR
@@ -726,7 +726,7 @@ inline typename boost::enable_if_c <
    rational_detail::is_compatible_integer<Arg, IntType>::value || is_same<rational<IntType>, Arg>::value, bool>::type
    operator >= (const rational<IntType>& a, const Arg& b)
 {
-      return !(a < b);
+      return !a.operator<(b);
 }
 template <class Arg, class IntType>
 BOOST_CXX14_CONSTEXPR
@@ -743,7 +743,7 @@ inline typename boost::enable_if_c <
    rational_detail::is_compatible_integer<Arg, IntType>::value || is_same<rational<IntType>, Arg>::value, bool>::type
    operator != (const rational<IntType>& a, const Arg& b)
 {
-      return !(a == b);
+      return !a.operator==(b);
 }
 template <class Arg, class IntType>
 BOOST_CONSTEXPR
@@ -760,7 +760,7 @@ inline typename boost::enable_if_c <
    rational_detail::is_compatible_integer<Arg, IntType>::value, bool>::type
    operator < (const Arg& b, const rational<IntType>& a)
 {
-      return a > b;
+      return a.operator>(b);
 }
 template <class Arg, class IntType>
 BOOST_CXX14_CONSTEXPR
@@ -768,7 +768,7 @@ inline typename boost::enable_if_c <
    rational_detail::is_compatible_integer<Arg, IntType>::value, bool>::type
    operator > (const Arg& b, const rational<IntType>& a)
 {
-      return a < b;
+      return a.operator<(b);
 }
 template <class Arg, class IntType>
 BOOST_CONSTEXPR
@@ -776,7 +776,7 @@ inline typename boost::enable_if_c <
    rational_detail::is_compatible_integer<Arg, IntType>::value, bool>::type
    operator == (const Arg& b, const rational<IntType>& a)
 {
-      return a == b;
+      return a.operator==(b);
 }
 
 // Comparison operators

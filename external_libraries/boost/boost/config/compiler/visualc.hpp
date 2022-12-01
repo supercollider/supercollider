@@ -236,7 +236,9 @@
 // if this is in effect or not, in any case nothing in Boost is currently using this, so we'll just go
 // on defining it for now:
 //
+#if (_MSC_FULL_VER < 193030705)  || (_MSVC_LANG < 202004)
 #  define BOOST_NO_TWO_PHASE_NAME_LOOKUP
+#endif
 
 #if (_MSC_VER < 1912) || (_MSVC_LANG < 201402)
 // Supported from msvc-15.5 onwards:
@@ -281,6 +283,17 @@
 #endif
 #ifndef BOOST_ABI_SUFFIX
 #  define BOOST_ABI_SUFFIX "boost/config/abi/msvc_suffix.hpp"
+#endif
+
+//
+// Approximate compiler conformance version
+//
+#ifdef _MSVC_LANG
+#  define BOOST_CXX_VERSION _MSVC_LANG
+#elif defined(_HAS_CXX17)
+#  define BOOST_CXX_VERSION 201703L
+#elif BOOST_MSVC >= 1916
+#  define BOOST_CXX_VERSION 201402L
 #endif
 
 #ifndef BOOST_COMPILER

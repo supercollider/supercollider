@@ -27,7 +27,7 @@ template <class T, class Policy>
 T inverse_students_t_hill(T ndf, T u, const Policy& pol)
 {
    BOOST_MATH_STD_USING
-   BOOST_ASSERT(u <= 0.5);
+   BOOST_MATH_ASSERT(u <= 0.5);
 
    T a, b, c, d, q, x, y;
 
@@ -284,7 +284,7 @@ T inverse_students_t(T df, T u, T v, const Policy& pol, bool* pexact = 0)
             // supplement:
             //
             T a = 4 * (u - u * u);//1 - 4 * (u - 0.5f) * (u - 0.5f);
-            T b = boost::math::cbrt(a);
+            T b = boost::math::cbrt(a, pol);
             static const T c = static_cast<T>(0.85498797333834849467655443627193);
             T p = 6 * (1 + c * (1 / b - 1));
             T p0;
@@ -427,7 +427,7 @@ inline T find_ibeta_inv_from_t_dist(T a, T p, T /*q*/, T* py, const Policy& pol)
 }
 
 template <class T, class Policy>
-inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost::false_type*)
+inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const std::false_type*)
 {
    BOOST_MATH_STD_USING
    //
@@ -450,12 +450,12 @@ inline T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost:
 }
 
 template <class T, class Policy>
-T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const boost::true_type*)
+T fast_students_t_quantile_imp(T df, T p, const Policy& pol, const std::true_type*)
 {
    BOOST_MATH_STD_USING
    bool invert = false;
    if((df < 2) && (floor(df) != df))
-      return boost::math::detail::fast_students_t_quantile_imp(df, p, pol, static_cast<boost::false_type*>(0));
+      return boost::math::detail::fast_students_t_quantile_imp(df, p, pol, static_cast<std::false_type*>(0));
    if(p > 0.5)
    {
       p = 1 - p;
@@ -531,7 +531,7 @@ inline T fast_students_t_quantile(T df, T p, const Policy& pol)
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
 
-   typedef boost::integral_constant<bool,
+   typedef std::integral_constant<bool,
       (std::numeric_limits<T>::digits <= 53)
        &&
       (std::numeric_limits<T>::is_specialized)

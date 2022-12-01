@@ -70,23 +70,23 @@ inline float erf_asymptotic_limit_N(const T&)
 {
    return (std::numeric_limits<float>::max)();
 }
-inline float erf_asymptotic_limit_N(const boost::integral_constant<int, 24>&)
+inline float erf_asymptotic_limit_N(const std::integral_constant<int, 24>&)
 {
    return 2.8F;
 }
-inline float erf_asymptotic_limit_N(const boost::integral_constant<int, 53>&)
+inline float erf_asymptotic_limit_N(const std::integral_constant<int, 53>&)
 {
    return 4.3F;
 }
-inline float erf_asymptotic_limit_N(const boost::integral_constant<int, 64>&)
+inline float erf_asymptotic_limit_N(const std::integral_constant<int, 64>&)
 {
    return 4.8F;
 }
-inline float erf_asymptotic_limit_N(const boost::integral_constant<int, 106>&)
+inline float erf_asymptotic_limit_N(const std::integral_constant<int, 106>&)
 {
    return 6.5F;
 }
-inline float erf_asymptotic_limit_N(const boost::integral_constant<int, 113>&)
+inline float erf_asymptotic_limit_N(const std::integral_constant<int, 113>&)
 {
    return 6.8F;
 }
@@ -95,7 +95,7 @@ template <class T, class Policy>
 inline T erf_asymptotic_limit()
 {
    typedef typename policies::precision<T, Policy>::type precision_type;
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 24 ? 24 :
       precision_type::value <= 53 ? 53 :
@@ -103,6 +103,37 @@ inline T erf_asymptotic_limit()
       precision_type::value <= 113 ? 113 : 0
    > tag_type;
    return erf_asymptotic_limit_N(tag_type());
+}
+
+template <class T>
+struct erf_series_near_zero
+{
+   typedef T result_type;
+   T         term;
+   T         zz;
+   int       k;
+   erf_series_near_zero(const T& z) : term(z), zz(-z * z), k(0) {}
+
+   T operator()()
+   {
+      T result = term / (2 * k + 1);
+      term *= zz / ++k;
+      return result;
+   }
+};
+
+template <class T, class Policy>
+T erf_series_near_zero_sum(const T& x, const Policy& pol)
+{
+   //
+   // We need Kahan summation here, otherwise the errors grow fairly quickly.
+   // This method is *much* faster than the alternatives even so.
+   //
+   erf_series_near_zero<T> sum(x);
+   std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+   T result = constants::two_div_root_pi<T>() * tools::kahan_sum_series(sum, tools::digits<T>(), max_iter);
+   policies::check_series_iterations<T>("boost::math::erf<%1%>(%1%, %1%)", max_iter, pol);
+   return result;
 }
 
 template <class T, class Policy, class Tag>
@@ -125,27 +156,19 @@ T erf_imp(T z, bool invert, const Policy& pol, const Tag& t)
    if(!invert && (z > detail::erf_asymptotic_limit<T, Policy>()))
    {
       detail::erf_asympt_series_t<T> s(z);
-      boost::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
+      std::uintmax_t max_iter = policies::get_max_series_iterations<Policy>();
       result = boost::math::tools::sum_series(s, policies::get_epsilon<T, Policy>(), max_iter, 1);
       policies::check_series_iterations<T>("boost::math::erf<%1%>(%1%, %1%)", max_iter, pol);
    }
    else
    {
       T x = z * z;
-      if(x < 0.6)
+      if(z < 1.3f)
       {
          // Compute P:
-         result = z * exp(-x);
-         result /= sqrt(boost::math::constants::pi<T>());
-         if(result != 0)
-            result *= 2 * detail::lower_gamma_series(T(0.5f), x, pol);
-      }
-      else if(x < 1.1f)
-      {
-         // Compute Q:
-         invert = !invert;
-         result = tgamma_small_upper_part(T(0.5f), x, pol);
-         result /= sqrt(boost::math::constants::pi<T>());
+         // This is actually good for z p to 2 or so, but the cutoff given seems
+         // to be the best compromise.  Performance wise, this is way quicker than anything else...
+         result = erf_series_near_zero_sum(z, pol);
       }
       else if(x > 1 / tools::epsilon<T>())
       {
@@ -168,7 +191,7 @@ T erf_imp(T z, bool invert, const Policy& pol, const Tag& t)
 }
 
 template <class T, class Policy>
-T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<int, 53>& t)
+T erf_imp(T z, bool invert, const Policy& pol, const std::integral_constant<int, 53>& t)
 {
    BOOST_MATH_STD_USING
 
@@ -237,7 +260,7 @@ T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<in
          result = z * (Y + tools::evaluate_polynomial(P, zz) / tools::evaluate_polynomial(Q, zz));
       }
    }
-   else if(invert ? (z < 28) : (z < 5.8f))
+   else if(invert ? (z < 28) : (z < 5.93f))
    {
       //
       // We'll be calculating erfc:
@@ -393,11 +416,11 @@ T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<in
    }
 
    return result;
-} // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const boost::integral_constant<int, 53>& t)
+} // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const std::integral_constant<int, 53>& t)
 
 
 template <class T, class Policy>
-T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<int, 64>& t)
+T erf_imp(T z, bool invert, const Policy& pol, const std::integral_constant<int, 64>& t)
 {
    BOOST_MATH_STD_USING
 
@@ -460,7 +483,7 @@ T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<in
          result = z * (Y + tools::evaluate_polynomial(P, T(z * z)) / tools::evaluate_polynomial(Q, T(z * z)));
       }
    }
-   else if(invert ? (z < 110) : (z < 6.4f))
+   else if(invert ? (z < 110) : (z < 6.6f))
    {
       //
       // We'll be calculating erfc:
@@ -627,11 +650,11 @@ T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<in
    }
 
    return result;
-} // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const boost::integral_constant<int, 64>& t)
+} // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const std::integral_constant<int, 64>& t)
 
 
 template <class T, class Policy>
-T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<int, 113>& t)
+T erf_imp(T z, bool invert, const Policy& pol, const std::integral_constant<int, 113>& t)
 {
    BOOST_MATH_STD_USING
 
@@ -1095,7 +1118,7 @@ T erf_imp(T z, bool invert, const Policy& pol, const boost::integral_constant<in
    }
 
    return result;
-} // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const boost::integral_constant<int, 113>& t)
+} // template <class T, class Lanczos>T erf_imp(T z, bool invert, const Lanczos& l, const std::integral_constant<int, 113>& t)
 
 template <class T, class Policy, class tag>
 struct erf_initializer
@@ -1106,8 +1129,8 @@ struct erf_initializer
       {
          do_init(tag());
       }
-      static void do_init(const boost::integral_constant<int, 0>&){}
-      static void do_init(const boost::integral_constant<int, 53>&)
+      static void do_init(const std::integral_constant<int, 0>&){}
+      static void do_init(const std::integral_constant<int, 53>&)
       {
          boost::math::erf(static_cast<T>(1e-12), Policy());
          boost::math::erf(static_cast<T>(0.25), Policy());
@@ -1116,7 +1139,7 @@ struct erf_initializer
          boost::math::erf(static_cast<T>(4.25), Policy());
          boost::math::erf(static_cast<T>(5.25), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 64>&)
+      static void do_init(const std::integral_constant<int, 64>&)
       {
          boost::math::erf(static_cast<T>(1e-12), Policy());
          boost::math::erf(static_cast<T>(0.25), Policy());
@@ -1125,7 +1148,7 @@ struct erf_initializer
          boost::math::erf(static_cast<T>(4.25), Policy());
          boost::math::erf(static_cast<T>(5.25), Policy());
       }
-      static void do_init(const boost::integral_constant<int, 113>&)
+      static void do_init(const std::integral_constant<int, 113>&)
       {
          boost::math::erf(static_cast<T>(1e-22), Policy());
          boost::math::erf(static_cast<T>(0.25), Policy());
@@ -1169,7 +1192,7 @@ inline typename tools::promote_args<T>::type erf(T z, const Policy& /* pol */)
    BOOST_MATH_INSTRUMENT_CODE("value_type = " << typeid(value_type).name());
    BOOST_MATH_INSTRUMENT_CODE("precision_type = " << typeid(precision_type).name());
 
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :
@@ -1204,7 +1227,7 @@ inline typename tools::promote_args<T>::type erfc(T z, const Policy& /* pol */)
    BOOST_MATH_INSTRUMENT_CODE("value_type = " << typeid(value_type).name());
    BOOST_MATH_INSTRUMENT_CODE("precision_type = " << typeid(precision_type).name());
 
-   typedef boost::integral_constant<int,
+   typedef std::integral_constant<int,
       precision_type::value <= 0 ? 0 :
       precision_type::value <= 53 ? 53 :
       precision_type::value <= 64 ? 64 :

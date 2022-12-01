@@ -18,6 +18,9 @@
 #  pragma once
 #endif
 
+#include <boost/container/detail/config_begin.hpp>
+#include <boost/container/detail/workaround.hpp>
+
 // container
 #include <boost/container/throw_exception.hpp>
 // container/detail
@@ -45,15 +48,20 @@ struct grow_factor_ratio
       SizeType new_cap = 0;
 
       if(cur_cap <= overflow_limit){
-         new_cap = cur_cap * Numerator / Denominator;
+         new_cap = SizeType(cur_cap * Numerator / Denominator);
       }
       else if(Denominator == 1 || (SizeType(new_cap = cur_cap) / Denominator) > overflow_limit){
          new_cap = (SizeType)-1;
       }
       else{
-         new_cap *= Numerator;
+         new_cap = SizeType(new_cap*Numerator);
       }
-      return max_value(SizeType(Minimum), max_value(cur_cap+add_min_cap, min_value(max_cap, new_cap)));
+      return max_value<SizeType>
+               ( SizeType(Minimum)
+               , max_value<SizeType>
+                  ( SizeType(cur_cap+add_min_cap)
+                  , min_value<SizeType>(max_cap, new_cap))
+               );
    }
 };
 
@@ -71,7 +79,20 @@ struct growth_factor_100
    : dtl::grow_factor_ratio<0, 2, 1>
 {};
 
+template<class SizeType>
+BOOST_CONTAINER_FORCEINLINE void clamp_by_stored_size_type(SizeType &, SizeType)
+{}
+
+template<class SizeType, class SomeStoredSizeType>
+BOOST_CONTAINER_FORCEINLINE void clamp_by_stored_size_type(SizeType &s, SomeStoredSizeType)
+{
+   if (s >= SomeStoredSizeType(-1) ) 
+      s = SomeStoredSizeType(-1);
+}
+
 }  //namespace container {
 }  //namespace boost {
+
+#include <boost/container/detail/config_end.hpp>
 
 #endif   //#ifndef BOOST_CONTAINER_DETAIL_NEXT_CAPACITY_HPP

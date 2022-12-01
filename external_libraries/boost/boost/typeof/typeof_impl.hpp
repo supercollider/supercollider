@@ -107,7 +107,7 @@ namespace boost { namespace type_of {
     typedef _typeof_encode_fraction<self_t::iteration> fraction_type;
 #endif
 
-#ifdef __BORLANDC__
+#ifdef BOOST_BORLANDC
 namespace boost { namespace type_of {
     template<typename Pos,typename Iter>
     struct generic_typeof_fraction_iter {

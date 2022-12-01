@@ -19,9 +19,9 @@
 #define BOOST_REGEX_SOURCE
 
 #include <boost/config.hpp>
-#include <cstdio>
 #include <boost/regex.hpp>
 #include <boost/cregex.hpp>
+#include <cstdio>
 
 #if defined(BOOST_NO_STDC_NAMESPACE)
 namespace std{
@@ -269,8 +269,8 @@ BOOST_REGEX_DECL int BOOST_REGEX_CCALL regexecA(const regex_tA* expression, cons
       std::size_t i;
       for(i = 0; (i < n) && (i < expression->re_nsub + 1); ++i)
       {
-         array[i].rm_so = (m[i].matched == false) ? -1 : (m[i].first - buf);
-         array[i].rm_eo = (m[i].matched == false) ? -1 : (m[i].second - buf);
+         array[i].rm_so = m[i].matched ? (m[i].first - buf) : -1;
+         array[i].rm_eo = m[i].matched ? (m[i].second - buf) : -1;
       }
       // and set anything else to -1:
       for(i = expression->re_nsub + 1; i < n; ++i)
@@ -296,7 +296,3 @@ BOOST_REGEX_DECL void BOOST_REGEX_CCALL regfreeA(regex_tA* expression)
 }
 
 } // namespace boost
-
-
-
-

@@ -352,9 +352,8 @@ public:
         if ( !boost::has_trivial_destructor<T>::value ) {
             // make sure to call all destructors!
 
-            T dummy_element;
-            while (pop(dummy_element))
-            {}
+            detail::consume_noop consume_functor;
+            (void)consume_all( consume_functor );
         } else {
             write_index_.store(0, memory_order_relaxed);
             read_index_.store(0, memory_order_release);
@@ -446,6 +445,13 @@ protected:
     size_type max_number_of_elements() const
     {
         return max_size;
+    }
+
+    ~compile_time_sized_ringbuffer(void)
+    {
+        // destroy all remaining items
+        detail::consume_noop consume_functor;
+        (void)consume_all(consume_functor);
     }
 
 public:
@@ -576,8 +582,8 @@ public:
     ~runtime_sized_ringbuffer(void)
     {
         // destroy all remaining items
-        T out;
-        while (pop(&out, 1)) {}
+        detail::consume_noop consume_functor;
+        (void)consume_all(consume_functor);
 
 #ifdef BOOST_NO_CXX11_ALLOCATOR
         Alloc::deallocate(array_, max_elements_);
@@ -1032,9 +1038,8 @@ public:
         if ( !boost::has_trivial_destructor<T>::value ) {
             // make sure to call all destructors!
 
-            T dummy_element;
-            while (pop(dummy_element))
-            {}
+            detail::consume_noop consume_functor;
+            (void)consume_all(consume_functor);
         } else {
             base_type::write_index_.store(0, memory_order_relaxed);
             base_type::read_index_.store(0, memory_order_release);

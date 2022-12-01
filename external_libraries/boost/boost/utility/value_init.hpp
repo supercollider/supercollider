@@ -23,7 +23,7 @@
 // contains. More details on these issues are at libs/utility/value_init.htm
 
 #include <boost/config.hpp> // For BOOST_NO_COMPLETE_VALUE_INITIALIZATION.
-#include <boost/swap.hpp>
+#include <boost/core/swap.hpp>
 #include <cstring>
 #include <cstddef>
 
@@ -36,6 +36,8 @@
 // a const type: "warning C4512: assignment operator could not be generated".
 #pragma warning(disable: 4512)
 #endif
+
+#ifndef BOOST_UTILITY_DOCS
 
 #ifdef BOOST_NO_COMPLETE_VALUE_INITIALIZATION
   // Implementation detail: The macro BOOST_DETAIL_VALUE_INIT_WORKAROUND_SUGGESTED 
@@ -53,6 +55,8 @@
   #define BOOST_DETAIL_VALUE_INIT_WORKAROUND 0
   #endif
 #endif
+
+#endif // BOOST_UTILITY_DOCS
 
 namespace boost {
 

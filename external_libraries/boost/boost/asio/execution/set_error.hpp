@@ -2,7 +2,7 @@
 // execution/set_error.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2022 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -68,7 +68,7 @@ struct can_set_error :
 
 #else // defined(GENERATING_DOCUMENTATION)
 
-namespace asio_execution_set_error_fn {
+namespace boost_asio_execution_set_error_fn {
 
 using boost::asio::decay;
 using boost::asio::declval;
@@ -85,7 +85,7 @@ enum overload_type
   ill_formed
 };
 
-template <typename R, typename E, typename = void>
+template <typename R, typename E, typename = void, typename = void>
 struct call_traits
 {
   BOOST_ASIO_STATIC_CONSTEXPR(overload_type, overload = ill_formed);
@@ -96,9 +96,7 @@ struct call_traits
 template <typename R, typename E>
 struct call_traits<R, void(E),
   typename enable_if<
-    (
-      set_error_member<R, E>::is_valid
-    )
+    set_error_member<R, E>::is_valid
   >::type> :
   set_error_member<R, E>
 {
@@ -108,11 +106,10 @@ struct call_traits<R, void(E),
 template <typename R, typename E>
 struct call_traits<R, void(E),
   typename enable_if<
-    (
-      !set_error_member<R, E>::is_valid
-      &&
-      set_error_free<R, E>::is_valid
-    )
+    !set_error_member<R, E>::is_valid
+  >::type,
+  typename enable_if<
+    set_error_free<R, E>::is_valid
   >::type> :
   set_error_free<R, E>
 {
@@ -205,22 +202,22 @@ struct static_instance
 template <typename T>
 const T static_instance<T>::instance = {};
 
-} // namespace asio_execution_set_error_fn
+} // namespace boost_asio_execution_set_error_fn
 namespace boost {
 namespace asio {
 namespace execution {
 namespace {
 
-static BOOST_ASIO_CONSTEXPR const asio_execution_set_error_fn::impl&
-  set_error = asio_execution_set_error_fn::static_instance<>::instance;
+static BOOST_ASIO_CONSTEXPR const boost_asio_execution_set_error_fn::impl&
+  set_error = boost_asio_execution_set_error_fn::static_instance<>::instance;
 
 } // namespace
 
 template <typename R, typename E>
 struct can_set_error :
   integral_constant<bool,
-    asio_execution_set_error_fn::call_traits<R, void(E)>::overload !=
-      asio_execution_set_error_fn::ill_formed>
+    boost_asio_execution_set_error_fn::call_traits<R, void(E)>::overload !=
+      boost_asio_execution_set_error_fn::ill_formed>
 {
 };
 
@@ -234,7 +231,7 @@ constexpr bool can_set_error_v = can_set_error<R, E>::value;
 template <typename R, typename E>
 struct is_nothrow_set_error :
   integral_constant<bool,
-    asio_execution_set_error_fn::call_traits<R, void(E)>::is_noexcept>
+    boost_asio_execution_set_error_fn::call_traits<R, void(E)>::is_noexcept>
 {
 };
 
