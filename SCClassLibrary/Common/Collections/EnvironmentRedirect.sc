@@ -45,6 +45,7 @@ EnvironmentRedirect {
 		^envir.removeAt(key)
 	}
 
+
 	// behave like environment
 
 
@@ -236,6 +237,7 @@ LazyEnvir : EnvironmentRedirect {
 		var proxy;
 		proxy = envir.removeAt(key);
 		if(proxy.notNil) { proxy.clear };
+		dispatch.value(key, nil);
 		^proxy
 	}
 
