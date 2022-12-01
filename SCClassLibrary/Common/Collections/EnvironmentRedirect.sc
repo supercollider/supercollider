@@ -31,13 +31,20 @@ EnvironmentRedirect {
 		dispatch.value(key, obj);
 	}
 
+	removeAt { arg key;
+		var result = envir.removeAt(key);
+		dispatch.value(key, nil);
+		^result
+	}
+
 	localPut { arg key, obj;
 		envir.put(key, obj)
 	}
 
-	removeAt { arg key;
+	localRemoveAt { arg key;
 		^envir.removeAt(key)
 	}
+
 
 	// behave like environment
 
@@ -213,13 +220,22 @@ LazyEnvir : EnvironmentRedirect {
 
 	put { arg key, obj;
 		this.at(key).source_(obj);
-		dispatch.value(key, obj); // forward to dispatch for networking
+		dispatch.value(key, obj);
 	}
 
 	removeAt { arg key;
 		var proxy;
 		proxy = envir.removeAt(key);
 		if(proxy.notNil) { proxy.clear };
+		dispatch.value(key, nil);
+		^proxy
+	}
+
+	localRemoveAt { arg key;
+		var proxy;
+		proxy = envir.removeAt(key);
+		if(proxy.notNil) { proxy.clear };
+		^proxy
 	}
 
 	localPut { arg key, obj;
