@@ -1,0 +1,24 @@
+From a5882bfe026ca746fe4516f36a85c57f741d0757 Mon Sep 17 00:00:00 2001
+From: Stefaan Himpe <stefaan.himpe@gmail.com>
+Date: Fri, 2 Dec 2022 21:01:24 +0100
+Subject: partially reapply boost specific patches to avoid Mingw 64bit ICE
+
+
+diff --git a/external_libraries/boost/boost/thread/executors/basic_thread_pool.hpp b/external_libraries/boost/boost/thread/executors/basic_thread_pool.hpp
+index ef40ea096..ae994b1b2 100644
+--- a/external_libraries/boost/boost/thread/executors/basic_thread_pool.hpp
++++ b/external_libraries/boost/boost/thread/executors/basic_thread_pool.hpp
+@@ -146,7 +146,13 @@ namespace executors
+         for (unsigned i = 0; i < thread_count; ++i)
+         {
+ #if 1
++          // fix for gcc 6.2 ICE - see github.com/supercollider/supercollider/pull/2473
++#ifndef __MINGW32__
+           thread th (&basic_thread_pool::worker_thread, this);
++#else
++          auto worker = [=](){ this->worker_thread(); };
++          thread th (worker);
++#endif
+           threads.push_back(thread_t(boost::move(th)));
+ #else
+           threads.push_back(thread_t(&basic_thread_pool::worker_thread, this)); // do not compile
