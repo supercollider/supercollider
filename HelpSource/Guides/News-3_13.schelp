@@ -12,7 +12,7 @@ Below you can find a more complete list of changes in this version. A big thank 
 
 section::  General
 
-Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt)
+Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt, @mlang)
 
 Updates and fixes for the test suite:
 @telephon in https://github.com/supercollider/supercollider/pull/5304, 
@@ -56,6 +56,9 @@ Update urls in git submodules to use https by @dyfer in https://github.com/super
 Fix building on Apple M1 by adding ad hoc code signing by @dyfer in https://github.com/supercollider/supercollider/pull/5650
 
 Build on OpenBSD by @ibz in https://github.com/supercollider/supercollider/pull/5822
+
+Find JACK using cmake's FindPkgConfig by @dvzrv in https://github.com/supercollider/supercollider/pull/5680
+
 section::  sclang: Added
 Ability to set scrollPosition of QWebView by @paum3 in https://github.com/supercollider/supercollider/pull/5483
 
@@ -79,6 +82,7 @@ RF64 and W64 format recognition by @dyfer in https://github.com/supercollider/su
 UdpInPort error reporting by @jamshark70 in https://github.com/supercollider/supercollider/pull/5850
 
 Parsing block arguments by @nilninull in https://github.com/supercollider/supercollider/pull/5522
+
 section::  Class library: Added
 
 Support for code:: kitty :: and code:: alacritty :: Linux terminals by @madskjeldgaard in https://github.com/supercollider/supercollider/pull/5548
@@ -99,6 +103,8 @@ code:: AppClock -schedAbs :: by @telephon in https://github.com/supercollider/su
 
 Vim-like keyshortcuts in HelpBrowser by @paum3 in https://github.com/supercollider/supercollider/pull/5742
 
+Add hooks to the code::Quark:: class by @capital-G and @telephon in https://github.com/supercollider/supercollider/pull/5907
+
 section::  Class library: Changed
 
 Refactor functionality: code:: connectToServerAddr :: by @telephon in https://github.com/supercollider/supercollider/pull/5569
@@ -118,6 +124,8 @@ Guarantee that code:: SetBuf :: gets an array by @telephon in https://github.com
 Delete unused method code:: *findMethod :: from ScIDE class by @jamshark70 in https://github.com/supercollider/supercollider/pull/5840
 
 HistoryGui: improve display readability by @adcxyz in https://github.com/supercollider/supercollider/pull/5861
+
+Create only a single server meter by default by @telephon in https://github.com/supercollider/supercollider/pull/5908
 
 section::  Class library: Deprecated
 
@@ -171,7 +179,7 @@ Sample alignment with grid lines in code:: Function -plot ::  by @mtmccrea in ht
 
 Make code:: subBus :: use the same server as receiver by @telephon in https://github.com/supercollider/supercollider/pull/5887
 
-GridLines improvements: fix exponential grids and add spacing control by @dyfer in https://github.com/supercollider/supercollider/pull/5161 and @mtmccrea in https://github.com/supercollider/supercollider/pull/5895
+GridLines improvements: fix exponential grids and add spacing control by @dyfer in https://github.com/supercollider/supercollider/pull/5161 and @mtmccrea in https://github.com/supercollider/supercollider/pull/5895, https://github.com/supercollider/supercollider/pull/5942
 
 Expand tilde to users home directory on Windows by @miriamvoth in https://github.com/supercollider/supercollider/pull/5431
 
@@ -182,6 +190,8 @@ Time precision issues with Psync and EventStreamPlayer by @totalgee in https://g
 code:: Pattern -record :: by @jamiehodge in https://github.com/supercollider/supercollider/pull/5883
 
 Make code:: Rest :: accepted by Patterns by @olafklingt in https://github.com/supercollider/supercollider/pull/5882
+
+code:: Buffer *cueSoundFile ::: keep code:: path :: value by @telephon in https://github.com/supercollider/supercollider/pull/5937
 
 section::  scsynth and supernova: Added
 
@@ -231,8 +241,10 @@ For more details see https://github.com/supercollider/supercollider/pull/4150 by
 
 Numerous UGens have been updated so that their initialization sample is set correctly by @mtmccrea: 
 code:: OscUGens :: in https://github.com/supercollider/supercollider/pull/5787, 
-code:: Klang ::, code:: Klank :: in https://github.com/supercollider/supercollider/pull/5817, 
-code:: TWindex :: in https://github.com/supercollider/supercollider/pull/5815.
+code:: Klang :: and code:: Klank :: in https://github.com/supercollider/supercollider/pull/5817, 
+code:: TWindex :: in https://github.com/supercollider/supercollider/pull/5815,
+code:: Free :: and code:: PauseSelf :: in https://github.com/supercollider/supercollider/pull/5914
+.
 
 code:: Integrator :: Ctor passes through the first sample only by @jamshark70 in https://github.com/supercollider/supercollider/pull/5352. Prior to v3.13, there was a bug that caused the Integrator to double-count the initial value: the integral of a single 1 followed by endless 0s ends up being 2. Starting with v.3.13, it's 1 as expected.
 
