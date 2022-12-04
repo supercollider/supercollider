@@ -115,6 +115,7 @@ RF64 and W64 format recognition by @dyfer in https://github.com/supercollider/su
 UdpInPort error reporting by @jamshark70 in https://github.com/supercollider/supercollider/pull/5850
 
 Parsing block arguments by @nilninull in https://github.com/supercollider/supercollider/pull/5522
+
 ### Class library: Added
 
 Support for `kitty` and `alacritty` Linux terminals by @madskjeldgaard in https://github.com/supercollider/supercollider/pull/5548
@@ -135,6 +136,8 @@ Handle `langPort` startup error descriptively by @jamshark70 in https://github.c
 
 Vim-like keyshortcuts in HelpBrowser by @paum3 in https://github.com/supercollider/supercollider/pull/5742
 
+Add hooks to the `Quark` class by @capital-G and @telephon in https://github.com/supercollider/supercollider/pull/5907
+
 ### Class library: Changed
 
 Refactor functionality: `connectToServerAddr` by @telephon in https://github.com/supercollider/supercollider/pull/5569
@@ -154,6 +157,8 @@ Guarantee that `SetBuf` gets an array by @telephon in https://github.com/superco
 Delete unused method `*findMethod` from ScIDE class by @jamshark70 in https://github.com/supercollider/supercollider/pull/5840
 
 HistoryGui: improve display readability by @adcxyz in https://github.com/supercollider/supercollider/pull/5861
+
+Create only a single server meter by default by @telephon in https://github.com/supercollider/supercollider/pull/5908
 
 ### Class library: Deprecated
 
@@ -268,6 +273,7 @@ Numerous UGens have been updated so that their initialization sample is set corr
 `OscUGens` in https://github.com/supercollider/supercollider/pull/5787  
 `Klang`, `Klank` in https://github.com/supercollider/supercollider/pull/5817  
 `TWindex` in https://github.com/supercollider/supercollider/pull/5815  
+`Free` and `PauseSelf` in https://github.com/supercollider/supercollider/pull/5914
 
 `Integrator` Ctor passes through the first sample only by @jamshark70 in https://github.com/supercollider/supercollider/pull/5352. Prior to v3.13, there was a bug that caused the Integrator to double-count the initial value: the integral of a single 1 followed by endless 0s ends up being 2. Starting with v.3.13, it's 1 as expected.
 
