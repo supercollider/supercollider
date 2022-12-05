@@ -335,7 +335,7 @@ SynthDef {
 			};
 
 			allControlNamesTemp = allControlNames.reject { |cn|
-				cn.rate == \noncontrol or: cn.name.isNil
+				cn.rate == \noncontrol or: { cn.name.isNil }
 			};
 			file.putInt32(allControlNamesTemp.size);
 			allControlNamesTemp.do { | item |
