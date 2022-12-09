@@ -64,6 +64,10 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 	endif()
 endif()
 
+if((NOT CMAKE_OSX_DEPLOYMENT_TARGET STREQUAL "" OR _CURRENT_OSX_VERSION STRLESS "10.14") AND CMAKE_OSX_DEPLOYMENT_TARGET STRLESS "10.14")
+	add_definitions("-fno-aligned-allocation") # required by boost 1.80.0
+endif()
+
 foreach(plugin ${plugin_sources})
 	string(REPLACE .cpp "" plugin_name ${plugin} )
 		add_library(${plugin_name} MODULE ${plugin})
