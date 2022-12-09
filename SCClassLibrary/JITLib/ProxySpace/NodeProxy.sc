@@ -1094,7 +1094,8 @@ Ndef : NodeProxy {
 		};
 
 		object !? { res.source = object };
-		^res;
+		dict.dispatch.value(key, object);
+		^res
 	}
 
 	*ar { | key, numChannels, offset = 0 |
