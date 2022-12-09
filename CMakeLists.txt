@@ -147,10 +147,6 @@ endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE -DBOOST_FILESYSTEM_NO_CXX20_ATOMIC_REF)
 
-if(APPLE)
-    add_definitions("-fno-aligned-allocation")
-endif()
-
 #############################################
 # Detect CCache
 
