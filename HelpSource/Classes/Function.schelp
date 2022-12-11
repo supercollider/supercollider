@@ -33,8 +33,10 @@ code::
 NOTE:: 
 In case you already know how to define your own classes, you came accross the usage
 of teletype::^:: within methods to return values back to the caller. Please be aware
-that usage of teletype::^:: in functions not part of classes is not implemented yet
+that usage of teletype::^:: in functions not part of classes is not implemented.
 and will most likely behave in a non-intuitive way!
+
+Consider using the teletype::block:: method in case you really need the semantic of teletype::^:: in this context.
 ::
 
 subsection:: Related Keywords
