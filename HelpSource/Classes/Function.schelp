@@ -30,6 +30,13 @@ code::
 ((lambda (x) x) 1) // Lisp
 ::
 
+NOTE:: 
+In case you already know how to define your own classes, you came accross the usage
+of teletype::^:: within methods to return values back to the caller. Please be aware
+that usage of teletype::^:: in functions not part of classes is not implemented yet
+and will most likely behave in a non-intuitive way!
+::
+
 subsection:: Related Keywords
 
 method:: thisFunction

@@ -77,6 +77,13 @@ To return from the method use teletype::^:: (caret). Multiple exit points also p
 specified, the method will return the instance (and in the case of Class methods, will return the class). There is no
 such thing as returning void in SuperCollider.
 
+NOTE::
+Please be aware that usage of teletype::^:: to return values is only allowed 
+within implementation of instance or class methods. 
+Especially in normal functions the usage of teletype::^:: can lead to a 
+non-intuitive behavior.
+::
+
 code::
 MyClass {
 	someMethod {
