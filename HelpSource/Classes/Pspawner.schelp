@@ -34,7 +34,7 @@ Stop all substreams of the Spawner.
 ::
 
 note::
-We should move the documentation of above methods to the link::Classes/Spawner:: helpfile...
+These are also documented in link::Classes/Spawner::.
 ::
 
 Examples::

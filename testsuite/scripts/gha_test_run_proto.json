@@ -89,6 +89,18 @@
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
+            "suite":"TestServer_boot",
+            "test":"test_notifyAndServerBootActions",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in the CI (FIXME)"
+        },
+        {
+            "suite":"TestServer_boot",
+            "test":"test_notifyAndServerTreeActions",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in the CI (FIXME)"
+        },
+        {
             "suite":"TestTempoClock",
             "test":"test_nextTimeOnGrid_okAfterMeterChange",
             "skip":true,

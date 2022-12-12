@@ -656,7 +656,7 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error, 
         return; /* we're done */
 
     if (error) {
-        std::cout << "sc_osc_handler received error code " << error << std::endl;
+        std::cout << "(supernova) sc_osc_handler received error code " << error << std::endl;
         start_receive_udp();
         return;
     }

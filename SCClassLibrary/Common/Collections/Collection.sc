@@ -658,10 +658,13 @@ Collection {
 			};
 		};
 
-		if (outliers > 0) {
-			("histogram :" + outliers + "out of (histogram) range values in collection.").postln;
-		};
-
+        if (outliers > 0) {
+            postf(
+                "Histogram : % of % values in the collection are out of the histogram range [%, %].\n",
+                outliers, this.size, min, max
+            )
+        };
+        
 		^freqs;
 	}
 

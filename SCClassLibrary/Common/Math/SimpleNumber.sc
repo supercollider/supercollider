@@ -84,6 +84,7 @@ SimpleNumber : Number {
 	gcd { |aNumber, adverb| _GCD; ^aNumber.performBinaryOpOnSimpleNumber('gcd', this, adverb) }
 	round { |aNumber=1.0, adverb| _Round; ^aNumber.performBinaryOpOnSimpleNumber('round', this, adverb) }
 	roundUp { |aNumber=1.0, adverb| _RoundUp; ^aNumber.performBinaryOpOnSimpleNumber('roundUp', this, adverb) }
+	smallButNotZero { |thresh=1e-12| ^this != 0 and: {  this.abs < thresh  } }
 	trunc { |aNumber=1.0, adverb| _Trunc; ^aNumber.performBinaryOpOnSimpleNumber('trunc', this, adverb) }
 	atan2 { |aNumber, adverb| _Atan2; ^aNumber.performBinaryOpOnSimpleNumber('atan2', this, adverb) }
 	hypot { |aNumber, adverb| _Hypot; ^aNumber.performBinaryOpOnSimpleNumber('hypot', this, adverb) }

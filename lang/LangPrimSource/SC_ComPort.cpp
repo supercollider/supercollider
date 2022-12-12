@@ -251,7 +251,7 @@ void UDP::handleReceivedUDP(const boost::system::error_code& error, std::size_t 
     }
 
     if (error) {
-        printf("UDP: received error - %s\n", error.message().c_str());
+        printf("(sclang) SC_UdpInPort: received error - %s\n", error.message().c_str());
         startReceiveUDP();
         return;
     }

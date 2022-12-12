@@ -206,8 +206,14 @@ class SC_UdpInPort {
         if (error == boost::asio::error::operation_aborted)
             return; /* we're done */
 
+        if (error == boost::asio::error::connection_refused) {
+            // avoid windows error message
+            startReceiveUDP();
+            return;
+        }
+
         if (error) {
-            printf("SC_UdpInPort: received error - %s", error.message().c_str());
+            printf("(scsynth) SC_UdpInPort: received error - %s\n", error.message().c_str());
             startReceiveUDP();
             return;
         }

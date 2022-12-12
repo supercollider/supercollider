@@ -52,4 +52,38 @@ TestPanAz : UnitTest {
 		};
 	}
 
+	test_PanAz_crosstalk {
+		var passed;
+		var cond = Condition.new;
+		var expected = [0.0, 1.0, 0.0, 0.0];
+
+		server.bootSync;
+
+		{ PanAz.ar(4, DC.ar(1), DC.ar(0.25), orientation: 0.5) }
+		.loadToFloatArray( 1 / server.sampleRate, server, { |output|
+			passed = output.detect{|v,n| expected[n] != v}.isNil;
+			cond.unhang;
+		});
+
+		cond.hang;
+
+		this.assert(passed, "Panning to one channel should not result in crosstalk");
+	}
+
+	test_PanAz_equalPowerBetweenTwoAdjacentChannels {
+		var result;
+		var cond = Condition.new;
+
+		server.bootSync;
+
+		{ PanAz.ar(4, DC.ar(1), DC.ar(0), orientation: 0.5) }
+		.loadToFloatArray( 1 / server.sampleRate, server, { |output|
+			result = output;
+			cond.unhang;
+		});
+
+		cond.hang;
+
+		this.assertEquals(result[1],result[0], "Panning halfways between two channels should produce same power in both channels");
+	}
 }
