@@ -140,7 +140,7 @@ method:: memoryLocking
 A Boolean indicating whether the server should try to lock its memory into physical RAM. Default is code::false::.
 
 method:: maxLogins
-An Integer indicating the maximum number of clients which can simultaneously receive notifications from the server. When using TCP this is also the maximum number of simultaneous connections. This is also used by the language to split ranges of link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In multi-client situations you will need to set this to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. The default is 1.
+An Integer indicating the maximum number of clients which can simultaneously receive notifications from the server. When using TCP this is also the maximum number of simultaneous connections. This is also used by the language to split ranges of link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In multi-client situations you will need to set this to at least the number of clients you wish to allow. This must be the same in the Server instances on every client. The default is 1. The maximum is 32.
 
 method:: safetyClipThreshold
 note:: MacOS only::

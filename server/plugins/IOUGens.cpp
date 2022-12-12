@@ -1327,15 +1327,20 @@ void OffsetOut_Ctor(OffsetOut* unit) {
     unit->m_busTouched = world->mAudioBusTouched;
     int32 offset = unit->mParent->mSampleOffset;
     int numChannels = unit->mNumInputs - 1;
-
-    unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
-    ClearUnitIfMemFailed(unit->m_saved);
+    // NB: if mSampleOffset is 0, RTAlloc() might return a nullptr and
+    // trigger ClearUnitIfMemFailed(), so we have to handle it specially.
+    if (offset > 0) {
+        unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
+        ClearUnitIfMemFailed(unit->m_saved);
+    } else {
+        unit->m_saved = nullptr;
+    }
     unit->m_empty = true;
     // Print("<-Out_Ctor\n");
 }
 
 void OffsetOut_Dtor(OffsetOut* unit) {
-    // Ctor may not have run, if unit was immediately created->paused->freed!
+    // Write remaining samples (if any)
     if (unit->m_saved) {
         World* world = unit->mWorld;
         int bufLength = world->mBufLength;

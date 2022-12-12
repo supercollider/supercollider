@@ -334,13 +334,13 @@ SynthDef {
 				file.putFloat(item);
 			};
 
-			allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
+			allControlNamesTemp = allControlNames.reject { |cn|
+				cn.rate == \noncontrol or: { cn.name.isNil }
+			};
 			file.putInt32(allControlNamesTemp.size);
 			allControlNamesTemp.do { | item |
-				if (item.name.notNil) {
-					file.putPascalString(item.name.asString);
-					file.putInt32(item.index);
-				};
+				file.putPascalString(item.name.asString);
+				file.putInt32(item.index);
 			};
 
 			file.putInt32(children.size);

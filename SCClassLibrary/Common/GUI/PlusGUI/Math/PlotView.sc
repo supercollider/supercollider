@@ -573,7 +573,7 @@ Plot {
 		} {
 			("0" ! charCnt).join.bounds(Font(Font.defaultSansFace, 9)).size
 		};
-		labelSize.height = labelSize.height;
+		labelSize.width = labelSize.width * 1.1;
 
 		^[labelSize, params.labels]
 	}
@@ -1118,41 +1118,69 @@ Plotter {
 	plotHisto { arg steps = 100, min, max;
 		var histo = this.histo(steps, min, max);
 		var plotter = histo.plot;
-		plotter.domainSpecs = [[min ?? { this.minItem }, max ?? { this.maxItem }].asSpec];
-		plotter.specs = [[0, histo.maxItem, \linear, 1].asSpec];
-		plotter.plotMode = \steps;
+		var minmax = [min ?? { this.minItem }, max ?? { this.maxItem }];
+		var binwidth = minmax[1] - minmax[0] / steps;
+
 		^plotter
+		.domainSpecs_([minmax.asSpec])
+		.specs_([[0, histo.maxItem * 1.05, \linear, 1].asSpec])
+		.plotMode_(\steps)
+		.labelY_("Occurrences")
+		.labelX_("Bins")
+		.domain_(binwidth * (0..steps-1) + minmax[0])
+		;
 	}
 }
 
 
 + Function {
 	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
+		var server, plotter, action;
+		var name = this.asCompileString;
 
-		var name = this.asCompileString, plotter, action;
-		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "Function plot" };
+		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
+
 		plotter = Plotter(name, bounds);
+		// init data in case function data is delayed (e.g. server booting)
 		plotter.value = [0.0];
+
 		target = target.asTarget;
+		server = target.server;
 		action = { |array, buf|
 			var numChan = buf.numChannels;
-			{
+			var numFrames = buf.numFrames;
+			var frameDur;
+
+			defer {
 				plotter.setValue(
-					array.unlace(numChan).collect(_.drop(-1)),
+					array.unlace(numChan),
 					findSpecs: true,
 					refresh: false,
 					separately: separately,
 					minval: minval,
 					maxval: maxval
 				);
+
 				plotter.domainSpecs = ControlSpec(0, duration, units: "Time (s)");
-			}.defer
+
+				// If individual values might be separated by at least 2.5 px
+				// (based on a plot at full screen width), set the x values (domain)
+				// explicitly for accurate time alignment with grid lines.
+				if(numFrames < (Window.screenBounds.width / 2.5)) {
+					frameDur = if(this.value.rate == \control) {
+						server.options.blockSize / server.sampleRate
+					} {
+						1 / server.sampleRate
+					};
+					plotter.domain = numFrames.collect(_ * frameDur);
+				};
+			};
 		};
 
-		if(target.server.isLocal) {
-			this.loadToFloatArray(duration, target, action:action)
+		if(server.isLocal) {
+			this.loadToFloatArray(duration, target, action: action)
 		} {
-			this.getToFloatArray(duration, target, action:action)
+			this.getToFloatArray(duration, target, action: action)
 		};
 
 		^plotter

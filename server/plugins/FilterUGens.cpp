@@ -1053,7 +1053,7 @@ void Integrator_Ctor(Integrator* unit) {
         SETCALC(Integrator_next);
     unit->m_b1 = ZIN0(1);
     unit->m_y1 = 0.f;
-    Integrator_next(unit, 1);
+    ZOUT0(0) = ZIN0(0); // out = in + (coef * out[-1]); out[-1] = 0
 }
 
 void Integrator_next_i(Integrator* unit, int inNumSamples) {

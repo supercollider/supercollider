@@ -11,6 +11,9 @@ Spec {
 		^spec
 	}
 	asSpec { ^this }
+	gridClass {
+		^this.subclassResponsibility(thisMethod)
+	}
 	defaultControl {
 		^this.subclassResponsibility(thisMethod)
 	}
@@ -100,7 +103,9 @@ ControlSpec : Spec {
 		^numStep
 	}
 
-	grid { ^grid ?? {GridLines(this)} }
+	gridClass { ^this.warp.gridClass }
+
+	grid { ^grid ?? { GridLines(this) } }
 
 	looseRange { |data, defaultRange, minval, maxval|
 		var newMin, newMax;
@@ -238,6 +243,8 @@ Warp {
 		^this.copy.spec_(inSpec)
 	}
 
+	gridClass { ^LinearGridLines }
+
 	*initClass {
 		// support Symbol-asWarp
 		warps = IdentityDictionary[
@@ -279,6 +286,7 @@ LinearWarp : Warp {
 }
 
 ExponentialWarp : Warp {
+	gridClass { ^ExponentialGridLines }
 	// minval and maxval must both be non zero and have the same sign.
 	map { arg value;
 		// maps a value from [0..1] to spec range

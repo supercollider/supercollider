@@ -455,7 +455,7 @@ Psync : FilterPattern {
 	storeArgs { ^[pattern, quant, maxdur, tolerance, mindur] }
 
 	embedInStream { arg event;
-		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+		var item, stream, delta, elapsed = 0.0, nextElapsed, inevent;
 		var	localquant = quant.value(event), localmaxdur = maxdur.value(event);
 		var cleanup = EventStreamCleanup.new;
 
@@ -475,7 +475,7 @@ Psync : FilterPattern {
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 
-			if (localmaxdur.notNil and: { nextElapsed.round(tolerance) >= localmaxdur }) {
+			if (localmaxdur.notNil and: { nextElapsed.roundUp(tolerance) >= localmaxdur }) {
 				inevent = inevent.copy;
 				inevent.put(\delta, localmaxdur - elapsed);
 				event = inevent.yield;

@@ -69,6 +69,12 @@ Returns code::maxval - minval::.
 method::guessNumberStep
 Used for EZ GUI classes for guessing a sensible strong::step:: if none is specified.
 
+method::gridClass
+Returns the link::Classes/AbstractGridLines:: subclass corresponding to the current spec, in particular its warp behavior.
+
+method::grid
+Get/set an instance of the link::Classes/AbstractGridLines:: subclass that describes the range and warp behavior of the current spec, e.g. for use by link::Classes/DrawGrid:: for drawing grids in link::Classes/Plotter::.
+
 Examples::
 
 code::

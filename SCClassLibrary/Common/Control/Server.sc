@@ -47,7 +47,7 @@ ServerOptions {
 	var <>reservedNumBuffers;
 	var <>pingsBeforeConsideredDead;
 
-	var <>maxLogins;
+	var <maxLogins;
 
 	var <>recHeaderFormat;
 	var <>recSampleFormat;
@@ -266,6 +266,13 @@ ServerOptions {
 		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
 	}
 
+	maxLogins_ { |logins|
+		if(logins > 32) {
+			Error("maxLogins should be <= 32, tried to set to " ++ logins).throw;
+		};
+		maxLogins = logins;
+	}
+
 	*prListDevices {
 		arg in, out;
 		_ListAudioDevices
@@ -350,7 +357,7 @@ Server {
 	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <emacsbuf;
+	var <window, <>scopeWindow, <serverMeter, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 	var pidReleaseCondition;

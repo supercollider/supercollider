@@ -133,4 +133,41 @@ TestFilterUGens : UnitTest {
 		"".postln;
 	}
 
+	test_Integrator_add_presample_once_only {
+		var buffer;  // use a buffer to guarantee exactly 1 input value of 1
+		var synth;
+		var testResp;
+		var result;
+		var cond = Condition.new;
+		var server = Server.default;
+
+		this.bootServer(server);
+		server.sync;
+		buffer = Buffer.alloc(server, 500, 1, { |buf| buf.zeroMsg });
+		server.sync;
+		buffer.set(0, 1);
+		server.sync;
+
+		synth = {
+			var phasor = Phasor.ar(0, 1, 0, buffer.numFrames);
+			// don't allow to loop
+			var stop = Line.kr(0, 1, 0.01, doneAction: 2);
+			var sig = Integrator.ar(BufRd.ar(1, buffer, phasor, loop: 0, interpolation: 1));
+			SendReply.kr(Done.kr(stop), '/testIntegrator', A2K.kr(sig));
+			Silent.ar(1)
+		}.play;
+
+		testResp = OSCFunc({ |msg|
+			result = msg[3];
+			cond.unhang;
+		}, '/testIntegrator', server.addr, argTemplate: [synth.nodeID]);
+
+		synth.onFree { cond.unhang };
+
+		cond.hang;
+		buffer.free;
+
+		this.assertEquals(result, 1, "Integral of a single 1 should be 1");
+	}
+
 }

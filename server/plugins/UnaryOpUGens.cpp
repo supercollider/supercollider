@@ -1015,13 +1015,21 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
         case opCubed:
             return &cubed_nova_64;
         case opSqrt:
+#    ifdef __ARM_NEON // remove this once nova-simd implementation is fixed
+            func = &sqrt_a;
+#    else
             func = &sqrt_nova_64;
+#    endif
             break;
         case opExp:
             func = &exp_nova;
             break;
         case opRecip:
+#    ifdef __ARM_NEON // remove this once nova-simd implementation is fixed
+            return &recip_a;
+#    else
             return &recip_nova_64;
+#    endif
         case opMIDICPS:
             func = &midicps_nova;
             break;
@@ -1171,13 +1179,21 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen* unit) {
         func = &cubed_nova;
         break;
     case opSqrt:
+#    ifdef __ARM_NEON // remove this once nova-simd implementation is fixed
+        func = &sqrt_a;
+#    else
         func = &sqrt_nova;
+#    endif
         break;
     case opExp:
         func = &exp_nova;
         break;
     case opRecip:
+#    ifdef __ARM_NEON // remove this once nova-simd implementation is fixed
+        func = &recip_a;
+#    else
         func = &recip_nova;
+#    endif
         break;
     case opMIDICPS:
         func = &midicps_nova;

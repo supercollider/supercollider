@@ -39,7 +39,7 @@ Bus {
 		if(offset > bus.numChannels or: { numChannels + offset > bus.numChannels }) {
 			Error("Bus:newFrom tried to reach outside the channel range of %".format( bus )).throw
 		};
-		^this.new(bus.rate, bus.index + offset, numChannels)
+		^this.new(bus.rate, bus.index + offset, numChannels, bus.server)
 	}
 
 	isSettable {

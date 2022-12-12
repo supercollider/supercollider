@@ -213,8 +213,7 @@ PyrObject* signal_thresh_xf(VMGlobals* g, PyrObject* ina, float inb) {
     PyrObject* outc = newPyrSignal(g, ina->size);
     float* a = (float*)(ina->slots) - 1;
     float* c = (float*)(outc->slots) - 1;
-    float inb2 = inb * inb;
-    UNROLL_CODE(outc->size, c, ++a; *++c = *a < inb2 ? 0.f : *a;)
+    UNROLL_CODE(outc->size, c, ++a; *++c = *a < inb ? 0.f : *a;)
     return outc;
 }
 

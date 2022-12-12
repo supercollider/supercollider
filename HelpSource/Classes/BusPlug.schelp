@@ -19,16 +19,16 @@ ClassMethods::
 
 
 method::new
-Create a new (neutral) instance on the given server
+Create a new (neutral) instance on the given server.
 
 method::for
 Create an instance with a given link::Classes/Bus::.
 
 method::audio
-Create a new audio rate instance on the given server
+Create a new audio rate instance on the given server.
 
 method::control
-Create a new audio rate instance on the given server
+Create a new control rate instance on the given server.
 
 method::defaultNumAudio
 Default number of channels when initializing in audio rate and no specific number is given (default: 2).
@@ -47,7 +47,7 @@ method::server
 Return the server that the BusPlug runs on.
 
 method::clear
-Free the bus, end the monitor
+Free the bus, end the monitor.
 
 
 subsection::Making copies

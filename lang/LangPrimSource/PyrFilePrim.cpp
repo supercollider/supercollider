@@ -1511,7 +1511,10 @@ int headerFormatToString(struct SF_INFO* info, const char** string) {
         *string = "raw";
         break;
     case SF_FORMAT_W64:
-        *string = "WAV";
+        *string = "W64";
+        break;
+    case SF_FORMAT_RF64:
+        *string = "RF64";
         break;
     case SF_FORMAT_FLAC:
         *string = "FLAC";
