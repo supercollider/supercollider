@@ -275,7 +275,7 @@ table::
 ## strong::int:: || node ID
 ## N * || table::
     ## strong::int:: or strong::string:: || a control index or name
-    ## strong::int:: || control bus index
+    ## strong::int:: || audio bus index
     ::
 ::
 
@@ -287,7 +287,7 @@ table::
 ## strong:: int:: || node ID
 ## N * || table::
     ## strong::int:: or strong::string:: || a control index or name
-    ## strong::int:: || control bus index
+    ## strong::int:: || audio bus index
     ## strong::int:: || number of controls to map
     ::
 ::
