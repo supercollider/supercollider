@@ -154,6 +154,7 @@ Buffer {
 	// preload a buffer for use with DiskIn
 	*cueSoundFile { arg server, path, startFrame = 0, numChannels= 2, bufferSize=32768, completionMessage;
 		^this.alloc(server, bufferSize, numChannels, { arg buffer;
+			buffer.path_(path);
 			buffer.cueSoundFileMsg(path, startFrame, completionMessage);
 		}).cache
 	}
