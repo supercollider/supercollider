@@ -260,18 +260,13 @@ to your spec, if it has not been previously set.
 ::
 
 discussion::
-The default domainSpec when setting your Plotter link::#-value:: is a linear
-spec in the range code::[0, value.size-1]::. Unless you set link::#-domain::,
-your values are displayed as evenly sampled between the code::minval:: and
-code::maxval:: of the domainSpecs.
+When setting your code::Plotter:: link::#-value::, the default strong::domainSpecs:: is a linear spec in the range code::[0, value.size-1]:: (i.e. the indices of the values). Therefore, your values are displayed as evenly sampled between the code::minval:: and code::maxval::, unless you have explicitly set the link::#-domain:: values.
 
 If a new link::#-value:: is set, you will need to update your domainSpecs.
 
 
 method:: domain
-Set or get the x-axis positions of your data points. The size of the
-code::domainArray:: must equal the size of your value array, i.e. a domain
-value specified for each data point.
+Set/get the x-axis positions of your data points. The size of the code::domainArray:: must equal the size of your link::#-value:: array, i.e. a domain value specified for each data point.
 
 code::
 (
