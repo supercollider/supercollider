@@ -204,6 +204,9 @@ if(WIN32)
     target_link_libraries(libsupernova wsock32 ws2_32 winmm)
 endif()
 
+if (LINUX_APPIMAGE)
+	add_compile_definitions(LINUX_APPIMAGE)
+endif()
 
 add_executable(supernova
     server/main.cpp

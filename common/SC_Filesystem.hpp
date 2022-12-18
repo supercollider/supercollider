@@ -215,6 +215,10 @@ public:
     /// Frees a Glob.
     static void freeGlob(Glob* g);
 
+#ifdef LINUX_APPIMAGE
+    static Path appdirDirectory();
+#endif
+
 private:
     //--------------------------------------------------------------------------------------//
     //--------------------------------- PRIVATE MEMBERS ------------------------------------//

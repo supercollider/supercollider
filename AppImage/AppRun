@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export PATH="$APPDIR/usr/bin":$PATH
+
+"$APPDIR/usr/bin/scide" "$@"
