@@ -87,6 +87,7 @@ AbstractFunction {
 	isPositive { ^this.composeUnaryOp('isPositive') }
 	isNegative { ^this.composeUnaryOp('isNegative') }
 	isStrictlyPositive { ^this.composeUnaryOp('isStrictlyPositive') }
+	binaryValue { ^this.composeUnaryOp('binaryValue') }
 
 	rho {  ^this.composeUnaryOp('rho') }
 	theta {  ^this.composeUnaryOp('theta') }

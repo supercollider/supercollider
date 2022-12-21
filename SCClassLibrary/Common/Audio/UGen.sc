@@ -283,6 +283,9 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
+	binaryValue { ^this.sign.max(0) }
+
+
 	// Note that this differs from |==| for other AbstractFunctions
 	// Other AbstractFunctions write '|==|' into the compound function
 	// for the sake of their 'storeOn' (compile string) representation.
