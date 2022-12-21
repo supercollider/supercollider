@@ -619,5 +619,32 @@ TestCoreUGens : UnitTest {
 
 	}
 
+	test_binaryValue_isUniform {
+		var from = [100, -100, 0, { 100 }, { -100 }, { 0 }];
+		var to = [1, 0, 0, 1, 0, 0];
+		var text = ["positive", "negative", "zero", "positive valued function", "negative valued function", "zero valued function"];
+		var condvar = CondVar();
+		var completed = 0;
+
+		server.bootSync;
+
+		from.size.do { |i|
+			this.assert(from[i].binaryValue.value == to[i], "% should correspond to %".format(text[i], to[i]));
+		};
+
+		from.size.do { |i|
+
+			{ DC.ar(from[i]).binaryValue }.loadToFloatArray(0.001, server, { |data|
+				this.assertFloatEquals(data[0], to[i],"% signal should correspond to %".format(text[i], to[i]), within: 0.1);
+				completed = completed + 1;
+				condvar.signalOne;
+			})
+		};
+
+		condvar.waitFor(1, { completed == from.size });
+
+	}
+
+
 
 } // end TestCoreUGens class
