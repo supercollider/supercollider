@@ -139,6 +139,13 @@ After un/installing or checking out, state is set to changed.
 code smell: this is for the gui
 returns:: Boolean
 
+METHOD:: runHook
+Runs the function code::hook:: which is defined in the code::.quark:: file. This can be used for running a function before or after installation, see link::Guides/UsingQuarks#Hooks:: for more information.
+In case the function can not be executed properly a warning will be printed and the update or installation process will be stopped.
+argument:: hook
+Name of function to run.
+returns:: this
+
 METHOD:: printOn
 ARGUMENT:: stream
 returns:: this

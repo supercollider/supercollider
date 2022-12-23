@@ -37,12 +37,14 @@ Quarks {
 		// by quark name or local path
 		this.installed.do { |q|
 			if(q.name == name, {
-				this.unlink(q.localPath)
+				this.uninstallQuark(q);
 			});
 		};
 	}
 	*uninstallQuark { |quark|
+		quark.runHook(\preUninstall);
 		this.unlink(quark.localPath);
+		quark.runHook(\postUninstall);
 		this.clearCache;
 	}
 	*clear {
@@ -151,6 +153,7 @@ Quarks {
 		});
 		localPath = this.quarkNameAsLocalPath(name);
 		if(Git.isGit(localPath), {
+			// Quark.update will run preUpdate and postUpdate hooks
 			Quark.fromLocalPath(localPath).update();
 		}, {
 			("Quark" + name + "was not installed using git, cannot update.").warn;
@@ -212,7 +215,9 @@ Quarks {
 				^false
 			});
 		};
+		quark.runHook(\preInstall);
 		this.link(quark.localPath);
+		quark.runHook(\postInstall);
 		(quark.name + "installed").postln;
 		this.clearCache();
 		^true
