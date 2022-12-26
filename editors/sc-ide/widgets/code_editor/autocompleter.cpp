@@ -704,9 +704,9 @@ void AutoCompleter::updateCompletionMenu(bool forceShow) {
     if (!mCompletion.text.isEmpty()) {
         QString pattern = mCompletion.text;
         pattern.prepend("^");
-        menu->model()->setFilterRegExp(pattern);
+        menu->model()->setFilterRegularExpression(pattern);
     } else
-        menu->model()->setFilterRegExp(QString());
+        menu->model()->setFilterRegularExpression(QString());
 
     if (menu->model()->hasChildren()) {
         menu->view()->setCurrentIndex(menu->model()->index(0, 0));
