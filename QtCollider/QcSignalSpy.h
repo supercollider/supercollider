@@ -93,10 +93,18 @@ public:
             for (int i = 0; i < _argTypes.count(); ++i) {
                 QMetaType::Type type = static_cast<QMetaType::Type>(_argTypes.at(i));
                 if (type == QMetaType::QVariant) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                     // avoid creating a QVariant<QVariant>
                     args << QVariant(type, argData[i + 1]).value<QVariant>();
+#else
+                    args << QVariant::fromValue(argData[i + 1]).value<QVariant>();
+#endif
                 } else {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
                     args << QVariant(type, argData[i + 1]);
+#else
+                    args << QVariant::fromValue(argData[i + 1]);
+#endif
                 }
             }
 
