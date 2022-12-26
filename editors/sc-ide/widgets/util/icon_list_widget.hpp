@@ -79,7 +79,12 @@ public:
     IconListWidget(QWidget* parent = 0): QListWidget(parent) { setItemDelegate(new ItemDelegate(this)); }
 
     virtual QStyleOptionViewItem viewOptions() const {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         QStyleOptionViewItem opt(QListWidget::viewOptions());
+#else
+        QStyleOptionViewItem opt;
+        QListWidget::initViewItemOption(&opt);
+#endif
         opt.displayAlignment = Qt::AlignCenter;
         opt.decorationAlignment = Qt::AlignCenter;
         opt.decorationPosition = QStyleOptionViewItem::Top;
