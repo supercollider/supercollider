@@ -67,7 +67,7 @@ void SCIpcClient::readIDEData() {
             avail -= mReadSize;
 
             QDataStream in(baReceived);
-            in.setVersion(QDataStream::Qt_4_6);
+            in.setVersion(QDataStream::Qt_5_6);
             QString selector;
             QVariantList argList;
             in >> selector;
