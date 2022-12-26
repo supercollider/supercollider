@@ -40,7 +40,8 @@
 #include <QLabel>
 #include <QScrollBar>
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QProxyStyle>
 #include <QFile>
 
@@ -158,7 +159,7 @@ private:
         QWidget* parentWid = parentWidget();
         QWidget* referenceWidget = parentWid ? parentWid : this;
 
-        QRect screen = QApplication::desktop()->availableGeometry(referenceWidget);
+        QRect screen = referenceWidget->screen()->availableGeometry();
         if (!screen.contains(rect)) {
             if (rect.right() > screen.right())
                 rect.moveRight(screen.right());

@@ -26,7 +26,9 @@
 #include <QVBoxLayout>
 #include <QHeaderView>
 #include <QKeyEvent>
-#include <QDesktopWidget>
+#include <QApplication>
+#include <QScreen>
+#include <QWindow>
 #include <QApplication>
 #include <QPainter>
 #include <QFileInfo>
@@ -74,7 +76,7 @@ GenericLookupDialog::GenericLookupDialog(QWidget* parent): QDialog(parent) {
         QRect parentRect = parent->rect();
         bounds.moveCenter(parent->mapToGlobal(parentRect.center()));
     } else {
-        QRect availableBounds = QApplication::desktop()->availableGeometry(this);
+        QRect availableBounds = this->screen()->availableGeometry();
         bounds.moveCenter(availableBounds.center());
     }
 

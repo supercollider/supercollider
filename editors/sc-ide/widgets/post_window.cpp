@@ -27,7 +27,8 @@
 #include "../core/util/overriding_action.hpp"
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
+#include <QWindow>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPointer>
@@ -45,7 +46,7 @@ PostWindow::PostWindow(QWidget* parent): QPlainTextEdit(parent) {
     setFrameShape(QFrame::NoFrame);
     previousChar = QChar('\n');
 
-    QRect availableScreenRect = qApp->desktop()->availableGeometry(this);
+    QRect availableScreenRect = this->screen()->availableGeometry();
     mSizeHint = QSize(availableScreenRect.width() * 0.4, availableScreenRect.height() * 0.3);
 
     createActions(Main::settings());
