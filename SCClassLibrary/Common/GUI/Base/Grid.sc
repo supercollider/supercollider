@@ -66,9 +66,8 @@ DrawGrid {
 
 	// make a Window with a UserView that draws this DrawGrid
 	preview {
-		var insetH = 45, insetV = 35; // left, bottom margins for labels
+		var insetH = 30, insetV = 15; // left, bottom margins for labels
 		var gridPad = 15;             // right, top margin
-		var axLabelPad = 3;           // label offset from window's edge
 		var win, winBounds, font, fcolor;
 
 		// refresh and return the view if it already exists
@@ -85,7 +84,7 @@ DrawGrid {
 
 		// bounds of the grid lines, without its labels
 		this.bounds = this.bounds ?? { Rect(0, 0, 500, 400) };
-		// translate the grid to make room for axis & tick labels
+		// translate the grid to make room for tick labels
 		this.bounds = this.bounds.moveTo(insetH-gridPad, gridPad);
 
 		winBounds = this.bounds + Size(insetH, insetV);
@@ -98,33 +97,7 @@ DrawGrid {
 			win, winBounds.size.asRect
 		)
 		.drawFunc_({ |uv|
-			var unitsStr;
-
-			// draw the drid
-			this.draw;
-
-			// draw x-axis label
-			unitsStr = this.x.grid.spec.units;
-			if(unitsStr.size > 0) {
-				Pen.push;
-				Pen.translate(this.bounds.center.x, uv.bounds.bottom);
-				Pen.stringCenteredIn(unitsStr,
-					unitsStr.bounds.center_(0@0).bottom_(axLabelPad.neg),
-					font, fcolor);
-				Pen.pop;
-			};
-
-			// draw y-axis label
-			unitsStr = this.y.grid.spec.units;
-			if(unitsStr.size > 0) {
-				Pen.push;
-				Pen.translate(0, this.bounds.center.y);
-				Pen.rotateDeg(-90);
-				Pen.stringCenteredIn(unitsStr,
-					unitsStr.bounds.center_(0@0).top_(axLabelPad),
-					font, fcolor);
-				Pen.pop;
-			};
+			this.draw; // draw the drid
 		})
 		.onResize_({ |uv|
 			this.bounds = uv.bounds
