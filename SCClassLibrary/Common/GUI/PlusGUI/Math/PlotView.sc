@@ -675,7 +675,15 @@ Plotter {
 			interactionView = UserView.new(parent, bounds);
 			interactionView.drawFunc = { this.draw };
 		};
+		this.prSetUpInteractionView;
 
+		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
+		this.plotMode = \linear;
+		this.plotColor = GUI.skins.plot.plotColor;
+		// at this point no values are set, so no Plots have been created
+	}
+
+	prSetUpInteractionView {
 		// set up interactionView
 		interactionView
 		.background_(Color.clear)
@@ -750,7 +758,6 @@ Plotter {
 					},*/
 
 					// normalize
-
 					$n, {
 						if(normalized) {
 							this.specs = specs.collect(_.normalize)
@@ -760,7 +767,6 @@ Plotter {
 						};
 						normalized = normalized.not;
 					},
-
 					// toggle grid
 					$g, {
 						plots.do { |x| x.gridOnY = x.gridOnY.not }
@@ -790,12 +796,7 @@ Plotter {
 				parent.refresh;
 			};
 		}) // end keyDownAction_
-		;  // end interactionView setup
-
-		modes = [\points, \levels, \linear, \plines, \steps, \bars].iter.loop;
-		this.plotMode = \linear;
-		this.plotColor = GUI.skins.plot.plotColor;
-		// at this point no values are set, so no Plots have been created
+		;
 	}
 
 	value_ { |arrays|
