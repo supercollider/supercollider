@@ -11,7 +11,7 @@ Plot {
 	var <>showTickLabelsX = true, <>showTickLabelsY = true;
 	var <>labelMargin = 2;  // margin around tick or axis labels
 	var <>borderMargin = 3; // margin separating the edge of the view from its inner elements
-	var <>hideLabelsHeightRatio = 1.4, <>hideLabelsWidthRatio = 3; // plot:labels min spacing threshold
+	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 2.5; // plot:labels min spacing threshold
 	var valueCache, resolution;
 
 	*initClass {

@@ -476,8 +476,8 @@ binwidth = range / steps;
 
 data.histo(steps).plot(minval: 0)
 .plotMode_(\steps)
-.labelY_("Occurrences")
-.labelX_("Bins")
+.axisLabelY_("Occurrences")
+.axisLabelX_("Bins")
 .domainSpecs_(minmax.asSpec)
 .domain_(binwidth * (0..steps-1) + data.minItem)
 ;

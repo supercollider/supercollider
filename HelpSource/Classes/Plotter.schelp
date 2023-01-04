@@ -169,13 +169,13 @@ a.superpose = true; a.refresh;
 ::
 
 
-method:: labelX
+method:: axisLabelX
 Get/set the label for the x-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
 link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
 
 
-method:: labelY
+method:: axisLabelY
 Get/set the label for the y-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
 link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
@@ -570,22 +570,24 @@ subsection:: Axis labels
 
 code::
 (
-p = 4.collect({|cnt| 100.collect({rrand(0,1.0)})}).plot;
+p = 4.collect({
+	100.collect({ rrand(0,1.0) })
+}).plot(bounds: Rect(50,50,500,650));
 p.plotColor_([Color.red, Color.blue, Color.green, Color.cyan]);
 )
 
 // a single label propagates through all Plots
-p.labelX_("one");
+p.axisLabelX_("one");
 // set each individually
-p.labelX_(["one", "two", "three", "four"]);
+p.axisLabelX_(["one", "two", "three", "four"]);
 // superposed plots default to the first label
 p.superpose_(true);
 p.superpose_(false); // labels are restored
 // nil element removes a label
-p.labelX_(["one", "two", nil, "four"]);
+p.axisLabelX_(["one", "two", nil, "four"]);
 // assigning nil removes all labels
-p.labelX_(nil);
-// ... labelY behaves the same way
+p.axisLabelX_(nil);
+// ... axisLabelY behaves the same way
 ::
 
 subsection:: Embedding in another View or GUI
