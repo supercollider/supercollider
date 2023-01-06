@@ -97,7 +97,7 @@ Plot {
 	// instance vars to skip corresponding calculations below when false.
 	prCalcLabelSpace { |viewRect|
 		var gridRect;
-		var xTkWd, yTkHt, tkLHang, tkBHang;
+		var tkLHang, tkBHang;
 		var xTkLHang, xTkTHang, xTkRHang, xTkBHang;
 		var yTkLHang, yTkTHang, yTkRHang, yTkBHang;
 		var tkBMargin, tkTMargin, bottomMargin, totalBottomPad, totalTopPad, totalVertSpace;
@@ -115,15 +115,12 @@ Plot {
 			^[gridRect, false, false]
 		};
 
-		xTkWd = drawGrid.x.labelSize.width; // _tick_ label size
-		yTkHt = drawGrid.y.labelSize.height;
-
 		// Left, Top, Right, Bottom overhang space
 		#xTkLHang, xTkTHang, xTkRHang, xTkBHang = drawGrid.x.labelOverhang.max(0);
 		#yTkLHang, yTkTHang, yTkRHang, yTkBHang = drawGrid.y.labelOverhang.max(0);
 
 		if(labelX.notNil) {
-			xAxHt     = labelX.bounds(labelFont).height;
+			xAxHt = labelX.bounds(labelFont).height;
 			xAxMargin = labelMargin;
 		};
 
@@ -141,19 +138,19 @@ Plot {
 		bottomMargin = maxItem([xAxMargin, borderMargin, tkBMargin]);
 
 		// add up all elements extending below the grid
-		totalBottomPad    = tkBHang + xAxMargin + xAxHt + bottomMargin;
-		totalTopPad       = yTkTHang + tkTMargin.max(borderMargin);
-		totalVertSpace    = totalTopPad + totalBottomPad;
-		htAllowsXLabels   = viewRect.height >= (totalVertSpace * (hideLabelsHeightRatio+1));
+		totalBottomPad = tkBHang + xAxMargin + xAxHt + bottomMargin;
+		totalTopPad = yTkTHang + tkTMargin.max(borderMargin);
+		totalVertSpace = totalTopPad + totalBottomPad;
+		htAllowsXLabels = viewRect.height >= (totalVertSpace * (hideLabelsHeightRatio+1));
 		sizeAllowsXLabels = htAllowsXLabels;
 
 		// If x labels are still shown calculate horizontal space needed
 		// to determine if they will be hidden based on the view width.
 		if(htAllowsXLabels) {
-			xLeftPad          = if(xTkLHang > 0) { xTkLHang + labelMargin } { 0 };
-			xRightPad         = if(xTkRHang > 0) { xTkRHang + labelMargin } { 0 };
-			totalHorizPad     = xLeftPad.max(borderMargin) + xRightPad.max(borderMargin);
-			wdAllowsXLabels   = viewRect.width >= (totalHorizPad * (hideLabelsWidthRatio+1));
+			xLeftPad = if(xTkLHang > 0) { xTkLHang + labelMargin } { 0 };
+			xRightPad = if(xTkRHang > 0) { xTkRHang + labelMargin } { 0 };
+			totalHorizPad = xLeftPad.max(borderMargin) + xRightPad.max(borderMargin);
+			wdAllowsXLabels = viewRect.width >= (totalHorizPad * (hideLabelsWidthRatio+1));
 			sizeAllowsXLabels = wdAllowsXLabels;
 			// if width is too small for x labels, it should be too small for Y labels too
 			sizeAllowsYLabels = wdAllowsXLabels;
@@ -163,19 +160,19 @@ Plot {
 		if(sizeAllowsXLabels) {
 			// show X labels, make space for them
 			gridRect.height = viewRect.height - (borderMargin + totalBottomPad);
-			gridRect.width  = viewRect.width  - totalHorizPad;
 			gridRect.left   = xLeftPad;
+			gridRect.width = viewRect.width  - totalHorizPad;
 		} {
 			// if y tick label extends below bottom, they need to be turned off too.
-			totalBottomPad    = if(yTkBHang > 0) { yTkBHang + labelMargin } { 0 };
-			htAllowsYLabels   = totalBottomPad <= borderMargin;
+			totalBottomPad = if(yTkBHang > 0) { yTkBHang + labelMargin } { 0 };
+			htAllowsYLabels = totalBottomPad <= borderMargin;
 			sizeAllowsYLabels = htAllowsYLabels;
 		};
 
 		// Y-axis label area
 		if (sizeAllowsYLabels) {
 			if(labelY.notNil) {
-				yAxWd     = labelY.bounds(labelFont).height;
+				yAxWd = labelY.bounds(labelFont).height;
 				yAxMargin = labelMargin;
 			};
 			if(sizeAllowsXLabels.not) {
@@ -183,25 +180,25 @@ Plot {
 			};
 
 			// left side
-			tkLHang    = maxItem([xTkLHang, yTkLHang, 0]);
-			tkLMargin  = if(tkLHang > 0) { labelMargin } { 0 };
+			tkLHang = maxItem([xTkLHang, yTkLHang, 0]);
+			tkLMargin = if(tkLHang > 0) { labelMargin } { 0 };
 			// only the largest margin of all elements is needed
 			leftMargin = maxItem([yAxMargin, borderMargin, tkLMargin]);
-			leftPad    = leftMargin + yAxWd + yAxMargin + tkLHang;
+			leftPad = leftMargin + yAxWd + yAxMargin + tkLHang;
 
-			rightPad   = max(
+			rightPad = max(
 				if(xTkRHang > 0) { xTkRHang + labelMargin } { 0 },
 				borderMargin
 			);
 
-			totalHorizPad   = leftPad + rightPad;
+			totalHorizPad = leftPad + rightPad;
 			wdAllowsYLabels = viewRect.width >= (totalHorizPad * (hideLabelsWidthRatio+1));
 
 			sizeAllowsYLabels = wdAllowsYLabels and: { htAllowsYLabels };
 
 			if(sizeAllowsYLabels) {
 				gridRect.width = viewRect.width - (leftPad + rightPad);
-				gridRect.left  = leftPad;
+				gridRect.left = leftPad;
 			};
 		};
 
@@ -214,44 +211,44 @@ Plot {
 	}
 	spec_ { |sp|
 		spec = sp;
-		if(gridOnY and: { spec.notNil }, {
+		if(gridOnY and: { spec.notNil }) {
 			drawGrid.vertGrid = spec.grid;
 
-			if (spec.units.isEmpty, {
+			if (spec.units.isEmpty) {
 				// remove label if previously set by spec units
-				if (labelYisUnits, {
+				if (labelYisUnits) {
 					labelY = nil;
 					labelYisUnits = false;
-				});
-			},{ // add new or overwrite previous unit label
-				if(labelY.isNil or: labelYisUnits) {
+				};
+			} { // add new or overwrite previous unit label
+				if(labelY.isNil or: { labelYisUnits }) {
 					labelY = spec.units;
 					labelYisUnits = true;
 				}
-			})
-		},{
-			drawGrid.vertGrid = nil
-		})
+			};
+		} {
+			drawGrid.vertGrid = nil;
+		};
 	}
 	domainSpec_ { |sp|
 		domainSpec = sp;
-		if(gridOnX and: { domainSpec.notNil }, {
+		if(gridOnX and: { domainSpec.notNil }) {
 			drawGrid.horzGrid = domainSpec.grid;
 
-			if (domainSpec.units.isEmpty, { // see comments in spec_
-				if (labelXisUnits, {
+			if (domainSpec.units.isEmpty) { // see comments in spec_
+				if (labelXisUnits) {
 					labelX = nil;
 					labelXisUnits = false;
-				});
-			},{
-				if(labelX.isNil or: labelXisUnits) {
+				};
+			} {
+				if(labelX.isNil or: { labelXisUnits }) {
 					labelX = domainSpec.units;
 					labelXisUnits = true;
 				}
-			})
-		},{
-			drawGrid.horzGrid = nil
-		})
+			};
+		} {
+			drawGrid.horzGrid = nil;
+		};
 	}
 	plotColor_ { |c|
 		plotColor = c.as(Array);
