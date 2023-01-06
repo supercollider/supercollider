@@ -209,19 +209,6 @@ Plot {
 		spec = sp;
 		if(gridOnY and: { spec.notNil }) {
 			drawGrid.vertGrid = spec.grid;
-
-			if (spec.units.isEmpty) {
-				// remove label if previously set by spec units
-				if (labelYisUnits) {
-					labelY = nil;
-					labelYisUnits = false;
-				};
-			} { // add new or overwrite previous unit label
-				if(labelY.isNil or: { labelYisUnits }) {
-					labelY = spec.units;
-					labelYisUnits = true;
-				}
-			};
 		} {
 			drawGrid.vertGrid = nil;
 		};
@@ -230,18 +217,6 @@ Plot {
 		domainSpec = sp;
 		if(gridOnX and: { domainSpec.notNil }) {
 			drawGrid.horzGrid = domainSpec.grid;
-
-			if (domainSpec.units.isEmpty) { // see comments in spec_
-				if (labelXisUnits) {
-					labelX = nil;
-					labelXisUnits = false;
-				};
-			} {
-				if(labelX.isNil or: { labelXisUnits }) {
-					labelX = domainSpec.units;
-					labelXisUnits = true;
-				}
-			};
 		} {
 			drawGrid.horzGrid = nil;
 		};
@@ -1010,7 +985,7 @@ Plotter {
 
 	axisLabelX {
 		^axisLabelX !? {
-			if (axisLabelX.every(_ == axisLabelX.first)) { axisLabelX.first } { axisLabelX }
+			if (axisLabelX.every(_ == axisLabelX.first)) { axisLabelX.first } { axisLabelX };
 		};
 	}
 
@@ -1273,6 +1248,10 @@ Plotter {
 					};
 					plotter.domain = numFrames.collect(_ * frameDur);
 				};
+
+				if(numChan < 4) {
+					plotter.axisLabelX_("Seconds")
+				};
 			};
 		};
 
@@ -1322,6 +1301,7 @@ Plotter {
 		);
 
 		action = { |array, buf|
+			var unitStr = if (buf.numChannels == 1) { "Samples" } { "Frames" };
 			{
 				plotter.setValue(
 					array.unlace(buf.numChannels),
@@ -1331,10 +1311,10 @@ Plotter {
 					minval: minval,
 					maxval: maxval
 				);
-				plotter.domainSpecs = ControlSpec(
-					0.0, buf.numFrames,
-					units: if (buf.numChannels == 1) { "Samples" } { "Frames" }
-				);
+				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units: unitStr);
+				if(buf.numChannels < 4) {
+					plotter.axisLabelX_(unitStr)
+				};
 			}.defer
 		};
 
