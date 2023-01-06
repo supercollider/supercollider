@@ -97,7 +97,7 @@ DrawGrid {
 			win, winBounds.size.asRect
 		)
 		.drawFunc_({ |uv|
-			this.draw; // draw the drid
+			this.draw;
 		})
 		.onResize_({ |uv|
 			this.bounds = uv.bounds
@@ -124,6 +124,7 @@ DrawGridX {
 	var <tickSpacing = 64;
 	var <numTicks = nil; // nil for dynamic numTicks with view size
 	var <>showLabels = true; // tick labels
+	var <>labelsHiddenBySize = false;
 	var <labelAppendString = nil;
 	var <drawBoundingRect = true, <drawBaseLine = false, <drawBoundingLines = false;
 
@@ -295,7 +296,7 @@ DrawGridX {
 			};
 
 			// Tick labels
-			if(showLabels and: { p['labels'].notNil }, {
+			if(showLabels and: { labelsHiddenBySize.not and: { p['labels'].notNil } }) {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 
@@ -339,7 +340,7 @@ DrawGridX {
 						commands = commands.add([alignSym, val[1], labelRect]);
 					}
 				}
-			});
+			};
 
 			commands // return
 		}
@@ -349,13 +350,18 @@ DrawGridX {
 	// grid, given its size, anchoring, and offset. Userful when laying out
 	// this grid in a UserView to allowing room for labels.
 	labelOverhang { |labelStr|
+		var strRect, rect;
 		var overhang = [0, 0, 0, 0]; // left, top, right, bottom
-		var strRect = if(labelStr.notNil) {
+
+		if (showLabels.not) {
+			^overhang
+		};
+		strRect = if(labelStr.notNil) {
 			labelStr.bounds(font);
 		} {
 			this.labelSize.asRect
 		};
-		var rect = strRect.anchorTo(labelOffset, labelAnchor);
+		rect = strRect.anchorTo(labelOffset, labelAnchor);
 
 		// top side: assumes label doesn't extend past top bound
 		overhang[3] = abs(max(rect.bottom, 0)); // bottom
@@ -493,7 +499,7 @@ DrawGridY : DrawGridX {
 				};
 			};
 
-			if(showLabels and: { p['labels'].notNil }, {
+			if(showLabels and: { labelsHiddenBySize.not and: { p['labels'].notNil } }) {
 				commands = commands.add(['font_',font ] );
 				commands = commands.add(['color_',fontColor ] );
 
@@ -536,7 +542,7 @@ DrawGridY : DrawGridX {
 					);
 					commands = commands.add([alignSym, labelStr, labelRect]);
 				};
-			});
+			};
 
 			commands // return
 		}
@@ -544,9 +550,15 @@ DrawGridY : DrawGridX {
 
 	// See description in DrawGridX:-labelOverhang
 	labelOverhang { |labelStr|
+		var strRect, rect;
 		var overhang = [0, 0, 0, 0]; // left, top, right, bottom
-		var strRect = if(labelStr.notNil) { labelStr.bounds(font) } { this.labelSize.asRect };
-		var rect = strRect.anchorTo(labelOffset, labelAnchor);
+
+		if (showLabels.not) {
+			^overhang
+		};
+
+		strRect = if(labelStr.notNil) { labelStr.bounds(font) } { this.labelSize.asRect };
+		rect = strRect.anchorTo(labelOffset, labelAnchor);
 
 		// right side: assume label doesn't extend past right bound
 		overhang[0] = abs(min(rect.left, 0)); // left

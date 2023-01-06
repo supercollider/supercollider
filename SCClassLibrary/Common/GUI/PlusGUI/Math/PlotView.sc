@@ -8,7 +8,6 @@ Plot {
 	var <labelX, <labelY, <labelFont, <labelFontColor;
 	var <gridOnX = true, <gridOnY = true;
 	var labelXisUnits = false, labelYisUnits = false;
-	var <>showTickLabelsX = true, <>showTickLabelsY = true;
 	var <>labelMargin = 2;  // margin around tick or axis labels
 	var <>borderMargin = 3; // margin separating the edge of the view from its inner elements
 	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 2.5; // plot:labels min spacing threshold
@@ -83,8 +82,8 @@ Plot {
 
 		#gridRect, sizeAllowsXLabels, sizeAllowsYLabels = this.prCalcLabelSpace(viewRect);
 
-		drawGrid.x.showLabels = sizeAllowsXLabels and: { showTickLabelsX };
-		drawGrid.y.showLabels = sizeAllowsYLabels and: { showTickLabelsY };
+		drawGrid.x.labelsHiddenBySize = sizeAllowsXLabels.not;
+		drawGrid.y.labelsHiddenBySize = sizeAllowsYLabels.not;
 		drawGrid.bounds = gridRect;
 		plotBounds = gridRect;
 	}
@@ -93,8 +92,9 @@ Plot {
 	// return modified gridRect and bools allowing X and Y labels.
 	// Currently only supports tick labels that don't extend past
 	// the side opposite their respective axis.
-	// TODO: this method could be refactored to use the showTickLabelsX/Y
-	// instance vars to skip corresponding calculations below when false.
+	// TODO: this method could be refactored to use the
+	// DrawGridX/Y.showLabels instance vars independently to skip
+	// corresponding calculations below when false.
 	prCalcLabelSpace { |viewRect|
 		var gridRect;
 		var tkLHang, tkBHang;
@@ -110,12 +110,8 @@ Plot {
 
 		gridRect = viewRect.insetBy(borderMargin); // default with no labels
 
-		// Quick return if labels on both axes are disabled.
-		if (showTickLabelsX.not and: { showTickLabelsY.not }) {
-			^[gridRect, false, false]
-		};
-
-		// Left, Top, Right, Bottom overhang space
+		// Tick label overhang of Left, Top, Right, Bottom of gridRect
+		// returns 0's if drawGrid.x/y.showLabels is false
 		#xTkLHang, xTkTHang, xTkRHang, xTkBHang = drawGrid.x.labelOverhang.max(0);
 		#yTkLHang, yTkTHang, yTkRHang, yTkBHang = drawGrid.y.labelOverhang.max(0);
 
@@ -160,8 +156,8 @@ Plot {
 		if(sizeAllowsXLabels) {
 			// show X labels, make space for them
 			gridRect.height = viewRect.height - (borderMargin + totalBottomPad);
-			gridRect.left   = xLeftPad;
 			gridRect.width = viewRect.width  - totalHorizPad;
+			gridRect.left = max(xLeftPad, borderMargin);
 		} {
 			// if y tick label extends below bottom, they need to be turned off too.
 			totalBottomPad = if(yTkBHang > 0) { yTkBHang + labelMargin } { 0 };
@@ -316,28 +312,26 @@ Plot {
 	}
 
 	drawLabels {
-		var lbounds, tklabelPad;
+		var lbounds, tklabelHang;
 
-		if(labelX.notNil and: { gridOnX }) {
+		if(labelX.notNil and: { gridOnX and: { drawGrid.x.labelsHiddenBySize.not } }) {
 			try {
 				lbounds = labelX.bounds(labelFont);
-				tklabelPad = max(drawGrid.x.labelOverhang[3], 0);
-				tklabelPad = if (tklabelPad > 0) { tklabelPad + labelMargin } { 0 };
+				tklabelHang = max(drawGrid.x.labelOverhang[3], 0);
 				Pen.stringCenteredIn(labelX,
 					lbounds.center_(
-						plotBounds.center.x @ (plotBounds.bottom + tklabelPad + (lbounds.height/2))
+						plotBounds.center.x @ (plotBounds.bottom + tklabelHang + labelMargin + (lbounds.height/2))
 					), labelFont, labelFontColor
 				);
 			};
 		};
 
-		if(labelY.notNil and: { gridOnY }) {
+		if(labelY.notNil and: { gridOnY and: { drawGrid.y.labelsHiddenBySize.not } }) {
 			try {
 				lbounds = labelY.bounds(labelFont);
-				tklabelPad = max(drawGrid.y.labelOverhang[0], 0);
-				tklabelPad = if (tklabelPad > 0) { tklabelPad + labelMargin } { 0 };
+				tklabelHang = max(drawGrid.y.labelOverhang[0], 0);
 				Pen.push;
-				Pen.translate(plotBounds.left - tklabelPad - (lbounds.height/2), plotBounds.center.y);
+				Pen.translate(plotBounds.left - tklabelHang - labelMargin - (lbounds.height/2), plotBounds.center.y);
 				Pen.rotateDeg(-90);
 				Pen.stringCenteredIn(labelY, lbounds.center_(0@0), labelFont, labelFontColor);
 				Pen.pop;
@@ -1045,10 +1039,13 @@ Plotter {
 	}
 
 	setGridProperties { |axis ... propertyPairs|
-		propertyPairs.pairsDo { |property, value|
-			plots.do { |plot|
-				plot.drawGrid.perform(axis).perform(property.asSetter, value)
-			}
+		var drawGrid;
+		plots.do { |plot|
+			drawGrid = plot.drawGrid.perform(axis);
+			drawGrid.clearCache;
+			propertyPairs.pairsDo { |property, value|
+				drawGrid.perform(property.asSetter, value)
+			};
 		};
 		this.updatePlotBounds;
 	}
