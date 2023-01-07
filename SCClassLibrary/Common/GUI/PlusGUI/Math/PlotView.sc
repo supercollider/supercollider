@@ -100,8 +100,8 @@ Plot {
 		var tkLHang, tkBHang;
 		var xTkLHang, xTkTHang, xTkRHang, xTkBHang;
 		var yTkLHang, yTkTHang, yTkRHang, yTkBHang;
-		var tkBMargin, tkTMargin, bottomMargin, totalBottomPad, totalTopPad, totalVertSpace;
-		var tkLMargin, leftMargin, xLeftPad, xRightPad, leftPad, rightPad, totalHorizPad;
+		var tkBMargin, bottomMargin, totalBottomPad, totalTopPad, totalVertSpace;
+		var tkLMargin, leftMargin, xLeftPad, xRightPad, leftPad, rightPad, totalHorizPad, addTopPad;
 
 		var htAllowsXLabels = true, htAllowsYLabels = true;
 		var wdAllowsXLabels = true, wdAllowsYLabels = true;
@@ -125,17 +125,14 @@ Plot {
 		// (If so, Y labels that overhang vertically may need to also be hidden).
 
 		tkBHang = max(xTkBHang, yTkBHang);
-
 		// if there's label overhang, give it its margin
-		tkBMargin = if(tkBHang  > 0) { labelMargin } { 0 };
-		tkTMargin = if(yTkTHang > 0) { labelMargin } { 0 };
-
+		tkBMargin = if(tkBHang > 0) { labelMargin } { 0 };
 		// only the largest margin of all elements is needed
 		bottomMargin = maxItem([xAxMargin, borderMargin, tkBMargin]);
 
 		// add up all elements extending below the grid
 		totalBottomPad = tkBHang + xAxMargin + xAxHt + bottomMargin;
-		totalTopPad = yTkTHang + tkTMargin.max(borderMargin);
+		totalTopPad = (yTkTHang + labelMargin).max(borderMargin);
 		totalVertSpace = totalTopPad + totalBottomPad;
 		htAllowsXLabels = viewRect.height >= (totalVertSpace * (hideLabelsHeightRatio+1));
 		sizeAllowsXLabels = htAllowsXLabels;
@@ -195,6 +192,12 @@ Plot {
 			if(sizeAllowsYLabels) {
 				gridRect.width = viewRect.width - (leftPad + rightPad);
 				gridRect.left = leftPad;
+				// add additional space to top border margin if y label extends past bound
+				addTopPad = totalTopPad - borderMargin;
+				if (addTopPad > 0) {
+					gridRect.height = gridRect.height - addTopPad;
+					gridRect.top = gridRect.top + addTopPad;
+				};
 			};
 		};
 
