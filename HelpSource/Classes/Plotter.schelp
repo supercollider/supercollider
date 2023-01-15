@@ -180,6 +180,27 @@ link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
 
 
+method:: showUnits
+Get/set whether the corresponding link::Classes/ControlSpec#-units:: are displayed as labels. The state of link::#-unitLocation:: determines whether the units are shown as axis labels or appended to the tick labels.
+
+argument:: bool
+A code::Boolean::.
+
+discussion::
+When enabling code::showUnits::, axis or tick labels will only be updated to show the units when the code::axisLabelX/Y:: or grid code::labelAppendString:: properties are code::nil::, empty, or were previously set to show the spec units — i.e. code::showUnits:: won't overwrite a label that has been explicitly set.
+
+See link::#Unit labels:: example below.
+
+
+method:: unitLocation
+Get/set the label type on which the code::Spec:: link::Classes/ControlSpec#-units:: are shown.
+
+See the Discussion in link::#-showUnits:: about the interraction with pre-existing labels at the strong::location::, and link::#Unit labels:: example below.
+
+argument:: location
+A code::Symbol::, code::\axis:: or code::\ticks::, to show the units as the axis label or appended to each of the tick labels, respectively.
+
+
 method:: setProperties
 Set properties of all plot views. Defaults are taken from code::GUI.skins.at(\plot);::
 
@@ -682,6 +703,39 @@ p.axisLabelX_(["one", "two", nil, "four"]);
 // assigning nil removes all labels
 p.axisLabelX_(nil);
 // ... axisLabelY behaves the same way
+::
+
+subsection:: Unit labels
+The units of the grid specs are shown as labels, either axis labels or appended to tick labels. Unit labels won't overwrite preexisting labels, and can be disabled altogether.
+code::
+( // units displayed in the axis labels by default
+p = (4 ** (-1.5, -1.25 .. 0)).plot;
+p.specs = \delay.asSpec.minval_(0.1);
+p.domainSpecs = [0, 10, \lin, 0, 0, "xUnits"].asSpec;
+p.setGridProperties(\y, \constrainLabelExtents, false);
+p.setGridProperties(\x, \constrainLabelExtents, true);
+)
+
+p.showUnits = false;      // hide units
+p.unitLocation = \ticks;  // move units to tick labels
+p.showUnits = true;       // show units
+p.axisLabelX = "X LABEL"; // set an axis label
+p.unitLocation = \axis;   // move units to axes
+// ... x-axis label isn't overwritten
+p.axisLabelX = nil        // remove x-axis label
+p.unitLocation = \axis;   // set units to axes again
+// ... units now appear on the x-axis
+
+// customize the Y labels
+p.setGridProperties(\y, \labelAppendString, " y");
+// move units to tick labels
+p.unitLocation = \ticks;
+// ... y-axis tick labels aren't overwritten
+// now remove y-tick label string
+p.setGridProperties(\y, \labelAppendString, nil);
+// set units to tick labels again
+p.unitLocation = \ticks;
+// ... units now appear on the y-tick labels
 ::
 
 subsection:: Embedding in another View or GUI

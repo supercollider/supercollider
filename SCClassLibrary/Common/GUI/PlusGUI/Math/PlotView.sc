@@ -7,10 +7,11 @@ Plot {
 	var <font, <fontColor, <gridColorX, <gridColorY, <plotColor, <>backgroundColor, <plotMode;
 	var <labelX, <labelY, <labelFont, <labelFontColor;
 	var <gridOnX = true, <gridOnY = true;
-	var labelXisUnits = false, labelYisUnits = false;
+	var labelXIsUnits = false, labelYIsUnits = false;
+	var <showUnits = true, <unitLocation = \axis; // \ticks or \axis
 	var <>labelMargin = 2;  // margin around tick or axis labels
 	var <>borderMargin = 3; // margin separating the edge of the view from its inner elements
-	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 2.5; // plot:labels min spacing threshold
+	var <>hideLabelsHeightRatio = 1.2, <>hideLabelsWidthRatio = 1.5; // hide labels below plot:labels ratio
 	var valueCache, resolution;
 
 	*initClass {
@@ -212,6 +213,7 @@ Plot {
 		spec = sp;
 		if(gridOnY and: { spec.notNil }) {
 			drawGrid.vertGrid = spec.grid;
+			this.unitLocation_(this.unitLocation); // updates unit labels if enabled
 		} {
 			drawGrid.vertGrid = nil;
 		};
@@ -220,6 +222,7 @@ Plot {
 		domainSpec = sp;
 		if(gridOnX and: { domainSpec.notNil }) {
 			drawGrid.horzGrid = domainSpec.grid;
+			this.unitLocation_(this.unitLocation); // updates unit labels if enabled
 		} {
 			drawGrid.horzGrid = nil;
 		};
@@ -254,11 +257,11 @@ Plot {
 	}
 	labelX_ { |string|
 		labelX = string;
-		labelXisUnits = false;
+		labelXIsUnits = false;
 	}
 	labelY_ { |string|
 		labelY = string;
-		labelYisUnits = false;
+		labelYIsUnits = false;
 	}
 	gridLineSmoothing_ { |bool|
 		drawGrid.smoothing = bool;
@@ -273,6 +276,59 @@ Plot {
 	gridOnY_ { |bool|
 		gridOnY= bool;
 		drawGrid.vertGrid = if(gridOnY,{spec.grid},{nil});
+	}
+	showUnits_ { |bool|
+		showUnits = bool;
+		if(showUnits) {
+			// sets/updates labels when showUnits = true
+			this.unitLocation_(this.unitLocation);
+		} {
+			drawGrid.x.labelsShowUnits = false;
+			drawGrid.y.labelsShowUnits = false;
+			if(labelXIsUnits) { this.labelX_(nil) };
+			if(labelYIsUnits) { this.labelY_(nil) };
+		};
+	}
+	unitLocation_ { |location|
+		var xUnits, yUnits;
+		switch(location,
+			\ticks, {
+				if(showUnits) {
+					drawGrid.x.labelsShowUnits = true;
+					drawGrid.y.labelsShowUnits = true;
+				};
+				if(labelXIsUnits) { this.labelX = nil };
+				if(labelYIsUnits) { this.labelY = nil };
+			},
+			\axis, {
+				drawGrid.x.labelsShowUnits = false;
+				drawGrid.y.labelsShowUnits = false;
+
+				xUnits = drawGrid.x.grid.spec.units;
+				yUnits = drawGrid.y.grid.spec.units;
+
+				if(showUnits) {
+					// don't update with empty units or overwrite and explictly set label
+					if(xUnits.isEmpty.not and: {
+						this.labelX.isNil or: { labelXIsUnits }
+					}) {
+						this.labelX_(xUnits);
+						labelXIsUnits = true;
+					};
+
+					if(yUnits.isEmpty.not and: {
+						this.labelY.isNil or: { labelYIsUnits }
+					}) {
+						this.labelY_(yUnits);
+						labelYIsUnits = true;
+					};
+				};
+			}, {
+				"Plot:-unitLocation should be \ticks or \axis".warn;
+				^this
+			}
+		);
+		unitLocation = location;
 	}
 
 	draw {
@@ -620,6 +676,7 @@ Plotter {
 	var modes, <interactionView;
 	var <editPlotIndex, <editPos;
 	var <>drawFunc, <>editFunc;
+	var <showUnits = true, <unitLocation = \axis; // \ticks or \axis
 	var axisLabelX, axisLabelY;
 
 	*new { |name, bounds, parent|
@@ -976,6 +1033,7 @@ Plotter {
 	}
 
 	axisLabelX_ { |labels|
+		// need to store as Plotter inst var to restore from array after superpose
 		axisLabelX = if(labels.isKindOf(Array)) {
 			labels.collect(_ !? (_.asString))
 		} { [ labels !? (_.asString) ] };
@@ -1006,6 +1064,20 @@ Plotter {
 	axisLabelY {
 		^axisLabelY !? {
 			if (axisLabelY.every(_ == axisLabelY.first)) { axisLabelY.first } { axisLabelY };
+		};
+	}
+
+	showUnits_ { |bool|
+		showUnits = bool;
+		this.setProperties(\showUnits, bool);
+	}
+
+	unitLocation_ { |location|
+		if(location == \ticks or: { location == \axis }) {
+			this.setProperties(\unitLocation, location);
+			unitLocation = location;
+		} {
+			"Plot:-unitLocation should be \ticks or \axis".warn;
 		};
 	}
 
@@ -1238,7 +1310,7 @@ Plotter {
 					maxval: maxval
 				);
 
-				plotter.domainSpecs = ControlSpec(0, duration, units: "Seconds");
+				plotter.domainSpecs = ControlSpec(0, duration, units: "sec");
 
 				// If individual values might be separated by at least 2.5 px
 				// (based on a plot at full screen width), set the x values (domain)
@@ -1251,10 +1323,8 @@ Plotter {
 					};
 					plotter.domain = numFrames.collect(_ * frameDur);
 				};
-
-				if(numChan < 4) {
-					plotter.axisLabelX_("Seconds")
-				};
+				// save vertical space with highly multichannel plots
+				if(numChan > 4) { plotter.axisLabelX_(nil) };
 			};
 		};
 
@@ -1304,7 +1374,7 @@ Plotter {
 		);
 
 		action = { |array, buf|
-			var unitStr = if (buf.numChannels == 1) { "Samples" } { "Frames" };
+			var unitStr = if (buf.numChannels == 1) { "samples" } { "frames" };
 			{
 				plotter.setValue(
 					array.unlace(buf.numChannels),
@@ -1315,9 +1385,8 @@ Plotter {
 					maxval: maxval
 				);
 				plotter.domainSpecs = ControlSpec(0.0, buf.numFrames, units: unitStr);
-				if(buf.numChannels < 4) {
-					plotter.axisLabelX_(unitStr)
-				};
+				// save vertical space with highly multichannel buffer plots
+				if(buf.numChannels > 4) { plotter.axisLabelX_(nil) };
 			}.defer
 		};
 

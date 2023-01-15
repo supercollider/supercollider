@@ -125,7 +125,7 @@ DrawGridX {
 	var <numTicks = nil; // nil for dynamic numTicks with view size
 	var <>showLabels = true; // tick labels
 	var <>labelsHiddenBySize = false;
-	var <labelAppendString = nil;
+	var <labelAppendString = nil, <labelsShowUnits = false;
 	var <drawBoundingRect = true, <drawBaseLine = false, <drawBoundingLines = false;
 
 
@@ -214,7 +214,26 @@ DrawGridX {
 	}
 	labelAppendString_ { |str|
 		this.grid.appendLabel_(str);
+		labelAppendString = str;
+		labelsShowUnits = false;
 		this.clearCache;
+	}
+	labelsShowUnits_ { |bool|
+		var specUnits;
+		if (bool) {
+			specUnits = grid.spec.units;
+			if(specUnits.isEmpty.not and: {
+				labelsShowUnits or: { this.labelAppendString.isNil }
+			}) {
+				this.labelAppendString = " " ++ specUnits;
+				labelsShowUnits = true;
+			};
+		} {
+			if(labelsShowUnits) {
+				this.labelAppendString = nil;
+				labelsShowUnits = false;
+			}
+		};
 	}
 	constrainLabelExtents_ { |bool|
 		constrainLabelExtents = bool;
@@ -322,19 +341,19 @@ DrawGridX {
 									labelRect = labelRect.right_(
 										min(labelRect.right, rightBound - constrainedPad)
 									);
-									alignSym = this.prGetJustString(\right);
+									alignSym = this.prGetJustifySymbol(\right);
 								},
 								leftBound, {
 									labelRect = labelRect.left_(
 										max(labelRect.left, leftBound + constrainedPad)
 									);
-									alignSym = this.prGetJustString(\left);
+									alignSym = this.prGetJustifySymbol(\left);
 								}, {
-									alignSym = this.prGetJustString(labelAlign)
+									alignSym = this.prGetJustifySymbol(labelAlign)
 								}
 							);
 						}, {
-							alignSym = this.prGetJustString(labelAlign);
+							alignSym = this.prGetJustifySymbol(labelAlign);
 						});
 
 						commands = commands.add([alignSym, val[1], labelRect]);
@@ -394,9 +413,6 @@ DrawGridX {
 			protoLabel = "0".dup(
 				try { labels.flatten.collect(_.size).maxItem } { 4 }
 			).join;
-			labelAppendString !? {
-				protoLabel = protoLabel ++ labelAppendString
-			};
 
 			labelSz = try {
 				protoLabel.bounds(font).asSize
@@ -423,7 +439,7 @@ DrawGridX {
 		^cmds
 	}
 
-	prGetJustString { |alignSym|
+	prGetJustifySymbol { |alignSym|
 		^switch(alignSym,
 			\center, { 'stringCenteredIn' },
 			\left,   { 'stringLeftJustIn' },
@@ -452,7 +468,7 @@ DrawGridY : DrawGridX {
 
 	commands {
 		var p;
-		var labelSz, labelRect, labelStr, anchorPoint, alignSym;
+		var labelSz, labelRect, anchorPoint, alignSym;
 		var y, valNorm, lineColor;
 		var bottomBound = bounds.bottom.asInteger;
 		var topBound = bounds.top.asInteger;
@@ -535,12 +551,8 @@ DrawGridY : DrawGridX {
 						);
 					};
 
-					alignSym = this.prGetJustString(labelAlign);
-					labelStr = if(labelAppendString.isNil,
-						{ val[1].asString },
-						{ val[1].asString ++ labelAppendString }
-					);
-					commands = commands.add([alignSym, labelStr, labelRect]);
+					alignSym = this.prGetJustifySymbol(labelAlign);
+					commands = commands.add([alignSym, val[1], labelRect]);
 				};
 			};
 
@@ -654,7 +666,7 @@ AbstractGridLines {
 		};
 		^if(appendLabel.notNil) { str = str ++ appendLabel } { str }
 	}
-	appendLabel_ { |str| appendLabel = str.asString }
+	appendLabel_ { |str| appendLabel = str !? { str.asString } }
 }
 
 LinearGridLines : AbstractGridLines {
