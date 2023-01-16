@@ -113,16 +113,16 @@ argument:: valueMax
 Maximum value of the data to be plotted. The highest grid line value returned may be lower than this value.
 
 argument:: pixelMin
-Lower bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if code::numTicks:: is code::nil::).
+Lower bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if strong::numTicks:: is code::nil::).
 
 argument:: pixelMax
-Upper bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if code::numTicks:: is code::nil::).
+Upper bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if strong::numTicks:: is code::nil::).
 
 argument:: numTicks
 Explicit number of ticks you would like to see on the graph (though the result is approximate). Set to code::nil:: if you'd like the number of ticks to be found automatically, based on strong::pixelMin::, strong::pixelMax::, and strong::tickSpacing::.
 
 argument:: tickSpacing
-Minimum distance between ticks (in pixels). This value is only used when code::numTicks:: is code::nil::.
+Minimum distance between ticks (in pixels). This value is only used when strong::numTicks:: is code::nil::.
 
 returns:: A link::Classes/Dictionary::.
 

@@ -368,8 +368,8 @@ complex = fft(real, imag, cosTable);
 	(complex.magnitude) / size
 ]
 .plot("fft", Window.screenBounds.insetBy(*200!2))
-.labelX_(["Signal (real, samples)", "Signal (imaginary, samples)", "FFT spectrum (bins)"])
-.labelY_(["Amplitude", "Amplitude", "Magnitude"])
+.axisLabelX_(["Signal (real, samples)", "Signal (imaginary, samples)", "FFT spectrum (bins)"])
+.axisLabelY_(["Amplitude", "Amplitude", "Magnitude"])
 .plotMode_([\linear, \linear, \steps]);
 )
 ::
@@ -399,8 +399,8 @@ ifft = complex.real.ifft(complex.imag, cosTable);
 	ifft.real
 ]
 .plot("fft -> ifft", Window.screenBounds.insetBy(*200!2))
-.labelX_(["Real signal (samples)", "Restored signal (samples)"])
-.labelY_("Amplitude");
+.axisLabelX_(["Real signal (samples)", "Restored signal (samples)"])
+.axisLabelY_("Amplitude");
 )
 ::
 

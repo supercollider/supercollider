@@ -599,7 +599,7 @@ code::
 	.domainSpecs_(
 		[vals.minItem, vals.maxItem].asSpec
 	)
-	.labelX_("input").labelY_("output")
+	.axisLabelX_("input").axisLabelY_("output")
 )
 ::
 
