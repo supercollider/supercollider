@@ -235,50 +235,19 @@ jobs:
       matrix:
         include:
 
-          - job-name: 'x64'
+          - job-name: 'universal'
             os-version: '11'
             xcode-version: '12.4'
-            deployment-target: '10.14' # Qt 5.15 runs on macOS 10.13 and newer; however homebrew build of Qt on macOS 11 only supports 10.14+
-            cmake-architectures: x86_64
+            deployment-target: '10.14'
+            cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
             shared-libscsynth: false
             system-portaudio: true
-            build-libsndfile: true
-            build-readline: false
-            build-fftw: false
-            vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
-            artifact-suffix: 'macOS-x64' # set if needed - will trigger artifact upload
-            verify-app: true
-
-          - job-name: 'arm64'
-            os-version: '11'
-            xcode-version: '12.4'
-            deployment-target: '11.0'
-            cmake-architectures: arm64
-            use-syslibs: false
-            shared-libscsynth: false
-            system-portaudio: false
             build-libsndfile: false
             build-readline: false
             build-fftw: false
-            artifact-suffix: 'macOS-arm64' # set if needed - will trigger artifact upload
+            artifact-suffix: 'macOS-universal'
             verify-app: true
-
-          # universal build is disabled for now, since libsndfile dependencies don't build correctly with vcpkg as universal binaries
-          # - job-name: 'universal'
-          #   os-version: '11'
-          #   xcode-version: '12.4'
-          #   deployment-target: '10.14'
-          #   cmake-architectures: 'x86_64;arm64'
-          #   use-syslibs: false
-          #   shared-libscsynth: false
-          #   system-portaudio: false
-          #   build-libsndfile: true
-          #   build-readline: true
-          #   build-fftw: true
-          #   vcpkg-triplet: x64-arm64-osx-release-supercollider
-          #   artifact-suffix: 'macOS-universal'
-          #   verify-app: true
 
           - job-name: 'x64 legacy'
             os-version: '11'
@@ -644,7 +613,7 @@ jobs:
           - name: macOS
             runs-on: macos-11
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
-            artifact-suffix: macOS-x64
+            artifact-suffix: macOS-universal
             artifact-extension: '.dmg'
 
           - name: Linux
