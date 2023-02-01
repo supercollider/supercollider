@@ -42,14 +42,14 @@ Release dates of 3.x versions:
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
 - 3.12: 2021-08-02
-- 3.13: 2022-11-xx
+- 3.13: 2023-01-xx
 
-3.13.0 (2022-11-xx)
+3.13.0 (2023-01-xx)
 ===================
 
 ### General
 
-Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt)
+Countless improvements to help files and documentation (@elifieldsteel, @JaimeClover, @DoHITB, @jamshark70, @heretogo, @capital-G, @alexhughk, @chris75vie, @forrcaho, @paum3, @avdrd, @wolfgangschaltung, @telephon, @redFrik, @madskjeldgaard, @mxw, @dyfer, @tdug, @mtmccrea, @prko, @mjsyts, @grirgz, @chkworks, @balzss, @hectorgonzalezo, @michelestew, @mttvn, @pearcemerritt, @mlang)
 
 Updates and fixes for the test suite:  
 @telephon in https://github.com/supercollider/supercollider/pull/5304  
@@ -92,6 +92,8 @@ Update urls in git submodules to use https by @dyfer in https://github.com/super
 Fix building on Apple M1 by adding ad hoc code signing by @dyfer in https://github.com/supercollider/supercollider/pull/5650
 
 Build on OpenBSD by @ibz in https://github.com/supercollider/supercollider/pull/5822
+
+Find JACK using cmake's FindPkgConfig by @dvzrv in https://github.com/supercollider/supercollider/pull/5680
 ### sclang: Added
 Ability to set scrollPosition of QWebView by @paum3 in https://github.com/supercollider/supercollider/pull/5483
 
@@ -115,6 +117,7 @@ RF64 and W64 format recognition by @dyfer in https://github.com/supercollider/su
 UdpInPort error reporting by @jamshark70 in https://github.com/supercollider/supercollider/pull/5850
 
 Parsing block arguments by @nilninull in https://github.com/supercollider/supercollider/pull/5522
+
 ### Class library: Added
 
 Support for `kitty` and `alacritty` Linux terminals by @madskjeldgaard in https://github.com/supercollider/supercollider/pull/5548
@@ -135,6 +138,8 @@ Handle `langPort` startup error descriptively by @jamshark70 in https://github.c
 
 Vim-like keyshortcuts in HelpBrowser by @paum3 in https://github.com/supercollider/supercollider/pull/5742
 
+Add hooks to the `Quark` class by @capital-G and @telephon in https://github.com/supercollider/supercollider/pull/5907
+
 ### Class library: Changed
 
 Refactor functionality: `connectToServerAddr` by @telephon in https://github.com/supercollider/supercollider/pull/5569
@@ -154,6 +159,8 @@ Guarantee that `SetBuf` gets an array by @telephon in https://github.com/superco
 Delete unused method `*findMethod` from ScIDE class by @jamshark70 in https://github.com/supercollider/supercollider/pull/5840
 
 HistoryGui: improve display readability by @adcxyz in https://github.com/supercollider/supercollider/pull/5861
+
+Create only a single server meter by default by @telephon in https://github.com/supercollider/supercollider/pull/5908
 
 ### Class library: Deprecated
 
@@ -193,7 +200,7 @@ Cast sampleRate to Integer in `SoundFileView -setData` by @redFrik in https://gi
 
 Use embedded specs in Ndef for guis by @adcxyz in https://github.com/supercollider/supercollider/pull/5686
 
-Plotter: update colors, fix grid and axis labels, remove `Plotter -gui` method by @mtmccrea in https://github.com/supercollider/supercollider/pull/4511, https://github.com/supercollider/supercollider/pull/5827, https://github.com/supercollider/supercollider/pull/5858. Grid lines and their labels are improved, along with axis labels, which are now settable by their own methods `labelX_` and `labelY_`. The x-axis label inherits the units of a `domainSpec` if it is explicitly set and labelX hasn't already been set
+Plotter: update colors, fix grid and axis labels, remove `Plotter -gui` method by @mtmccrea in https://github.com/supercollider/supercollider/pull/4511, https://github.com/supercollider/supercollider/pull/5827, https://github.com/supercollider/supercollider/pull/5858, https://github.com/supercollider/supercollider/pull/5942. Grid lines and their labels are improved, along with axis labels, which are now settable by their own methods `labelX_` and `labelY_`. The x-axis label inherits the units of a `domainSpec` if it is explicitly set and labelX hasn't already been set
 
 Make sure `Plot` color is not converted to array by @telephon in https://github.com/supercollider/supercollider/pull/5849
 
@@ -207,7 +214,7 @@ Sample alignment with grid lines in `Function -plot`  by @mtmccrea in https://gi
 
 Make `subBus` use the same server as receiver by @telephon in https://github.com/supercollider/supercollider/pull/5887
 
-GridLines improvements: fix exponential grids and add spacing control by @dyfer in https://github.com/supercollider/supercollider/pull/5161 and @mtmccrea in https://github.com/supercollider/supercollider/pull/5895
+GridLines improvements: fix exponential grids and add spacing control by @dyfer in https://github.com/supercollider/supercollider/pull/5161 and @mtmccrea in https://github.com/supercollider/supercollider/pull/5895, https://github.com/supercollider/supercollider/pull/5942
 
 Expand tilde to users home directory on Windows by @miriamvoth in https://github.com/supercollider/supercollider/pull/5431
 
@@ -218,6 +225,8 @@ Time precision issues with Psync and EventStreamPlayer by @totalgee in https://g
 `Pattern -record` by @jamiehodge in https://github.com/supercollider/supercollider/pull/5883
 
 Make `Rest` accepted by Patterns by @olafklingt in https://github.com/supercollider/supercollider/pull/5882
+
+`Buffer *cueSoundFile`: keep `path` value by @telephon in https://github.com/supercollider/supercollider/pull/5937
 
 ### scsynth and supernova: Added
 
@@ -268,6 +277,7 @@ Numerous UGens have been updated so that their initialization sample is set corr
 `OscUGens` in https://github.com/supercollider/supercollider/pull/5787  
 `Klang`, `Klank` in https://github.com/supercollider/supercollider/pull/5817  
 `TWindex` in https://github.com/supercollider/supercollider/pull/5815  
+`Free` and `PauseSelf` in https://github.com/supercollider/supercollider/pull/5914
 
 `Integrator` Ctor passes through the first sample only by @jamshark70 in https://github.com/supercollider/supercollider/pull/5352. Prior to v3.13, there was a bug that caused the Integrator to double-count the initial value: the integral of a single 1 followed by endless 0s ends up being 2. Starting with v.3.13, it's 1 as expected.
 
