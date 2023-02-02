@@ -74,7 +74,7 @@ Updates and fixes for the automated build system (GitHub Actions):
 @dyfer in https://github.com/supercollider/supercollider/pull/5776  
 ### General: Added
 
-arm64 macOS build for Apple M1 CPUs by @dyfer in https://github.com/supercollider/supercollider/pull/5869
+Universal macOS build for both Intel x86_64 and Apple arm64 CPUs by @dyfer in https://github.com/supercollider/supercollider/pull/5953
 
 Better description in the about dialog for tagged builds by @dyfer in https://github.com/supercollider/supercollider/pull/5697 and https://github.com/supercollider/supercollider/pull/5739
 
