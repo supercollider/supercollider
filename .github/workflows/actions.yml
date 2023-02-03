@@ -586,12 +586,13 @@ jobs:
     env:
       INSTALL_PATH: ${{ github.workspace }}/build/Install
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}${{ matrix.artifact-extension }}'
-      QUARKS_PATH: ${{ github.workspace }}/build/Quarks
       TESTS_PATH: ${{ github.workspace }}/testsuite/classlibrary
       SCLANG: ${{ github.workspace }}/${{ matrix.sclang }}
-      SCRIPT_PROTO: ${{ github.workspace }}/testsuite/scripts/gha_test_run_proto.json
-      SCRIPT_RUN: ${{ github.workspace }}/testsuite/scripts/run/gha_test_run.json
-      QPM_URL: git+https://github.com/supercollider/qpm.git@topic/try-catch-workaround
+      TEST_LIST_PROTO: ${{ github.workspace }}/testsuite/scripts/test_run_proto_gha.scd
+      TEST_LIST_RESULT: ${{ github.workspace }}/testsuite/scripts/run/gha_result.scxtar
+      SCRIPT_RUN_TESTS: ${{ github.workspace }}/testsuite/scripts/sclang_test_runner.scd
+      SCRIPT_ADD_PATH: ${{ github.workspace }}/testsuite/scripts/add_include_path.scd
+      SCRIPT_PRINT_RESULTS: ${{ github.workspace }}/testsuite/scripts/print_results.scd
     steps:
       - uses: actions/checkout@v3
         with:
@@ -602,6 +603,7 @@ jobs:
           name: ${{ env.ARTIFACT_FILE }}
           path: ${{ env.INSTALL_PATH }}
       - name: extract artifact
+        shell: bash
         run: |
           cd $INSTALL_PATH
           echo Contents of `pwd`:
@@ -621,39 +623,32 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt5-default qtwebengine5-dev jackd1
 
-          # add bin to PATH so qpm can find scsynth
+          # add bin to PATH so that scsynth can be found
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
 
           # start jack
-          jackd --no-realtime -d dummy &
-      - name: setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '2.x'
-      - name: prepare tests
-        run: |
-          echo `python --version` # check version
-          sudo pip install -U pip setuptools
-          sudo pip install $QPM_URL
+          jackd --no-realtime --silent -d dummy &
 
-          # install API quark
-          mkdir $QUARKS_PATH && cd $QUARKS_PATH
-          git clone --depth=1 https://github.com/crucialfelix/API
-
-          # make working copy of the script
-          cp $SCRIPT_PROTO $SCRIPT_RUN
-      - name: run tests on Linux
-        if: runner.os == 'Linux'
-        env:
-          PYCHARM_HOSTED: 1 # enable color output
-          QPM_DEBUG: 1
-        run: xvfb-run --server-args="-screen 0, 1280x720x24" -a qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
-      - name: run tests on macOS
+          # start virtual display server
+          export DISPLAY=:99
+          echo "DISPLAY=$DISPLAY" >> $GITHUB_ENV
+          Xvfb $DISPLAY -screen 0 1024x768x16 &
+      - name: setup macOS environment
         if: runner.os == 'macOS'
         env:
-          PYCHARM_HOSTED: 1 # enable color output
-          QPM_DEBUG: 1
-        run: qpm test.run -l $SCRIPT_RUN --path $SCLANG --include $QUARKS_PATH $TESTS_PATH
+          HOMEBREW_NO_ANALYTICS: 1
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        run: brew install coreutils # to get 'timeout' utility
+      - name: run tests
+        shell: bash
+        run: |
+          # add path
+          $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
+          # run tests
+          timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
+          # print results
+          $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
 
   deploy_s3:
     strategy:
