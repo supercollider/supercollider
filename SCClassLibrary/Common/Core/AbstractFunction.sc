@@ -323,7 +323,7 @@ FunctionList : AbstractFunction {
 	var <>array, <flopped=false;
 
 	*new { arg functions;
-		^super.newCopyArgs(functions)
+		^super.newCopyArgs(functions ?? { Array.new })
 	}
 	addFunc { arg ... functions;
 		if(flopped) { Error("cannot add a function to a flopped FunctionList").throw };
@@ -366,6 +366,3 @@ FunctionList : AbstractFunction {
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }
 }
-
-
-

@@ -453,7 +453,6 @@ jobs:
             vcpkg-triplet: x86-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             qt-modules: 'qtwebengine'
-            ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win32' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: 'win32-installer'
@@ -471,7 +470,6 @@ jobs:
             vcpkg-triplet: x64-windows-release
             use-qtwebengine: 'ON' # might need to be turned off for MinGW
             qt-modules: 'qtwebengine'
-            ableton-link: 'ON' # might need to be turned off for MinGW
             artifact-suffix: 'win64' # set if needed - will trigger artifact upload
             create-installer: ${{ startsWith(github.ref, 'refs/tags/') }}
             installer-suffix: 'win64-installer'
@@ -486,7 +484,6 @@ jobs:
             chocolatey-options: '' # '--forcex86' for 32-bit build
             use-qtwebengine: 'OFF' # might need to be turned off for MinGW
             qt-modules: ''
-            ableton-link: 'OFF' # might need to be turned off for MinGW
             artifact-suffix: 'win64-mingw' # set if needed - will trigger artifact upload
 
     name: Windows ${{ matrix.job-name }}
@@ -575,7 +572,7 @@ jobs:
 
           mkdir $BUILD_PATH && cd $BUILD_PATH
 
-          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D SC_ABLETON_LINK=${{ matrix.ableton-link }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
+          cmake -G "${{ matrix.cmake-generator }}" -A "${{ matrix.cmake-arch }}" -D CMAKE_PREFIX_PATH="$Qt5_DIR" -D SUPERNOVA=ON -D SC_USE_QTWEBENGINE=${{ matrix.use-qtwebengine }} -D CMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET="${{ matrix.vcpkg-triplet }}" .. # build type is specified here for MinGW build and for vcpkg
 
       - name: build
         shell: bash
