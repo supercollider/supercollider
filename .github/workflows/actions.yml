@@ -704,7 +704,7 @@ jobs:
       matrix:
         include:
 
-          - artifact-suffix: macOS-x64
+          - artifact-suffix: macOS-universal
             s3-os-name: osx
             s3-artifact-suffx: ''
             s3-artifact-extension: 'dmg'
