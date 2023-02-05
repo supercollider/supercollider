@@ -14,6 +14,7 @@ Show the interface for managing quarks
 returns:: QuarksGui
 
 METHOD:: install
+Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preInstall:: and code::\postInstall:: if defined.
 ARGUMENT:: name
 Name of a quark that is listed in the directory,
 or the url of a git repository
@@ -33,6 +34,7 @@ ARGUMENT:: quark
 returns:: this
 
 METHOD:: uninstall
+Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUninstall:: and code::\postUninstall:: if defined.
 ARGUMENT:: name
 Name (String) of a quark that is listed in the directory,
 or url of a git repository
@@ -85,6 +87,7 @@ returns:: this
 
 METHOD:: update
 Runs 'git pull' on the checked out copy of the quark. The gui provides a more robust way to do updates.
+Will execute the link::Guides/UsingQuarks#Hooks#hooks:: code::\preUpdate:: and code::\postUpdate:: if defined.
 ARGUMENT:: name
 name of quark
 returns:: this

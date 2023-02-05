@@ -135,10 +135,9 @@ a.plotMode = \bars; a.refresh;
 
 /* mixed modes */
 (
-c = [Color.red, Color.cyan, Color.green, Color.blue];
 d = 4.collect({ |i| 100.collect({ |j| sinPi(1+i.squared*j * 50.reciprocal) })});
 p = d.plot;
-p.plotColor_(c);
+p.plotColor_([Color.red, Color.cyan, Color.green, Color.blue]);
 p.plotMode_([\steps, \linear, \plines, \points]);
 // superpose will trigger a refresh to update colors/modes
 p.superpose_(true);
@@ -169,16 +168,37 @@ a.superpose = true; a.refresh;
 ::
 
 
-method:: labelX
+method:: axisLabelX
 Get/set the label for the x-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
 link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
 
 
-method:: labelY
+method:: axisLabelY
 Get/set the label for the y-axes. Can be a link::Classes/String:: or an link::Classes/Array:: of
 link::Classes/String::s, or code::nil:: to remove the label.
 See link::#Axis labels:: example below.
+
+
+method:: showUnits
+Get/set whether the corresponding link::Classes/ControlSpec#-units:: are displayed as labels. The state of link::#-unitLocation:: determines whether the units are shown as axis labels or appended to the tick labels.
+
+argument:: bool
+A code::Boolean::.
+
+discussion::
+When enabling code::showUnits::, axis or tick labels will only be updated to show the units when the code::axisLabelX/Y:: or grid code::labelAppendString:: properties are code::nil::, empty, or were previously set to show the spec units — i.e. code::showUnits:: won't overwrite a label that has been explicitly set.
+
+See link::#Unit labels:: example below.
+
+
+method:: unitLocation
+Get/set the label type on which the code::Spec:: link::Classes/ControlSpec#-units:: are shown.
+
+See the Discussion in link::#-showUnits:: about the interraction with pre-existing labels at the strong::location::, and link::#Unit labels:: example below.
+
+argument:: location
+A code::Symbol::, code::\axis:: or code::\ticks::, to show the units as the axis label or appended to each of the tick labels, respectively.
 
 
 method:: setProperties
@@ -211,11 +231,13 @@ code::
 (
 a = { (0..30).scramble }.dup(2).plot;
 a.setProperties(
-	\fontColor, Color.red,
-	\plotColor, Color.blue,
-	\backgroundColor, Color.black,
-	\gridColorX, Color.white,
-	\labelX, "Humidity"
+  \fontColor, Color.yellow,
+  \plotColor, Color.magenta,
+  \backgroundColor, Color.black,
+  \gridColorX, Color.green,
+  \gridColorY, Color.green,
+  \labelX, "Frames",
+  \labelFontColor, Color.magenta
 );
 a.refresh;
 );
@@ -229,6 +251,119 @@ method:: plots
 returns:: An link::Classes/Array:: of link::Classes/Plot::s.
 
 
+subsection:: Grid properties
+
+method:: setGridProperties
+Set one or more properties of the code::DrawGridX:: or code::DrawGridY:: used by all code::Plots::.
+
+argument:: axis
+A code::Symbol:: denoting the axis whose grid you're modifying: code::\x:: or code::\y::.
+
+argument:: ... propertyPairs
+Key value pairs, listed as successive arguments, of the properties to change and their new values. The property key is a code::Symbol::.
+
+Any of setters of code::DrawGridX:: or code::DrawGridY:: can be used. Here is a subset of useful properties:
+table::
+## code::\labelAnchor:: || A code::Symbol:: denoting the point on the label's bounding link::Classes/Rect:: that anchors to the point where the grid line meets the base of the axis. code::\center, \top, \bottom, \left, \right, \topLeft, \topRight, \bottomLeft, \bottomRight, \leftTop, \rightTop, \leftBottom, \rightBottom::.
+## code::\labelOffset:: || A link::Classes/Point:: describing the offset of the code::\labelAnchor:: from the point where the grid line meets the base of the axis. The positive direction for the teletype::x:: and teletype::y:: dimensions is right and down, respectively.
+## code::\labelAlign:: || Alignment of the text within its bounding code::Rect::: code::\left::, code::\center::, or code::\right::.
+## code::\constrainLabelExtents:: || A code::Boolean:: specifying whether the tick labels at either end of the axis are constrained by, or can extend beyond, the grid bounds.
+## code::\drawBaseLine:: || A code::Boolean:: whether a line is drawn at the minimum extent of this strong::axis::.
+## code::\drawBoundingLines:: || A code::Boolean:: whether a line is drawn at both ends of the extent of this strong::axis::.
+## code::\drawBoundingRect:: || A code::Boolean:: whether a code::Rect:: is drawn around the bounds of the grid area.
+## code::\labelAppendString:: || A string to append to all of the axis's tick labels.
+## code::\tickSpacing:: || Set the emphasis::minimum:: spacing between grid lines ("ticks") for each axis. See link::Classes/DrawGrid#-tickSpacing:: for details.
+## code::\numTicks:: || Set the emphasis::approximate:: number of grid lines ("ticks") for each axis. See link::Classes/DrawGrid#-numTicks:: for details.
+## code::\font:: || A link::Classes/Font:: (including size) to be used for the tick labels.
+## code::\fontColor:: || The link::Classes/Color:: of the tick labels.
+## code::\gridColor:: || The link::Classes/Color:: of the axis grid lines.
+::
+
+The properties code::\drawBaseLine::,  code::\drawBoundingLines::, or code::\drawBoundingRect:: are mutually exlusive — setting any of them to true will set the others two to code::false::. In the context of code::Plotter::, setting code::\drawBoundingRect:: on one axis to code::true:: has the same appearance of setting code::\drawBoundingLines:: on emphasis::both:: axes to code::true::.
+
+discussion::
+This is a convenience method to set the grid properties for emphasis::all:: code::Plot::s to the same values.
+An Example:
+code::
+(
+var plotter = [10, 34, 167].collect({ |freq|
+	101.collect{|i| sin((i/1000) * 2pi * freq)}
+}).plot;
+plotter.setGridProperties(\x,
+	\labelAnchor, \topLeft,
+	\labelAlign, \left,
+	\labelOffset, 1 @ 5,
+	\labelAppendString, " samp"
+).setGridProperties(\y,
+	\labelAnchor, \right,
+	\labelAlign, \right,
+	\labelOffset, -5 @ 0,
+	\constrainLabelExtents, false
+)
+)
+::
+
+To set the properties of grids on each code::Plot:: separately, iterate over the plots:
+code::
+(
+var plotter, labelAnchors;
+plotter = [10, 34, 167].collect({ |freq|
+	101.collect{|i| sin((i/1000) * 2pi * freq)}
+}).plot;
+
+labelAnchors = [\topLeft, \top, \bottomLeft];
+
+plotter.plots.do{ |plot, i|
+	plot.drawGrid.x
+	.labelAnchor_(labelAnchors[i])
+	.constrainLabelExtents_(true);
+};
+plotter.updatePlotBounds;
+)
+::
+
+
+method:: getGridProperty
+Get the value of a grid property. See link::#-setGridProperties:: for a list of available properties.
+
+argument:: axis
+A code::Symbol:: denoting the axis whose grid you're modifying: code::\x:: or code::\y::.
+
+argument:: property
+The property name as a code::Symbol::.
+
+discussion::
+As a convenience method, code::getGridProperty:: assumes that properties across all code::Plot::s are the same (as would be the case if set by link::#-setGridProperties::) so returns a single value. Alternatively, properties from individual plot grids can be collected by iterating over the plots:
+code::
+( // inspect the \labelAnchor of each DrawGridX
+var plotter  = [10, 34, 167].collect({ |freq|
+	101.collect{|i| sin((i/1000) * 2pi * freq)}
+}).plot;
+
+plotter.plots.collect({ |plot|
+	plot.drawGrid.x.labelAnchor
+}).postln;
+)
+::
+
+
+method:: drawGridBoundingRect
+Set whether a link::Classes/Rect:: is drawn around the boundary of the grid. Setting to code::false:: disables any bounding grid lines (including "base" lines).
+
+argument:: bool
+A code::Boolean::.
+
+discussion::
+In some cases, the link::Classes/GridLines:: of the grid will not fall on the minimum or maximum of it's spec's range. Using link::#-drawGridBaseLines:: or link::#-drawGridBoundingRect:: will give the appearance of grid lines at the lower end ("base") of the grid, or at both ends of the grid, respectively.
+
+
+method:: drawGridBaseLines
+Set whether a line is drawn at the lower extent of the grid axes. Setting to code::false:: disables any bounding grid lines (including a bounding code::Rect::). See also the Discussion in link::#-drawGridBoundingRect::.
+
+argument:: bool
+A code::Boolean::.
+
+
 subsection:: Data display properties
 
 
@@ -237,13 +372,9 @@ Set or get the link::Classes/ControlSpec##spec:: for the y-axis (codomain).
 
 code::
 a = { (40..3000).scramble }.dup(2).plot;
-a.specs = \freq.asSpec; a.refresh;
+a.specs = \freq.asSpec;
 ::
 See also the link::#Explicit domain and axis specs:: example below.
-note::
-The y-axis label will update with the strong::units:: assigned
-to your spec, if it has not been previously set.
-::
 
 
 method:: domainSpecs
@@ -251,27 +382,18 @@ Set or get the link::Classes/ControlSpec##spec:: for the x-axis (domain).
 
 code::
 a = { (40..300).scramble }.dup(2).plot;
-a.domainSpecs = \freq.asSpec; a.refresh;
+a.domainSpecs = \freq.asSpec;
 ::
 See also the link::#Explicit domain and axis specs:: example below.
-note::
-The x-axis label will update with the strong::units:: assigned
-to your spec, if it has not been previously set.
-::
 
 discussion::
-The default domainSpec when setting your Plotter link::#-value:: is a linear
-spec in the range code::[0, value.size-1]::. Unless you set link::#-domain::,
-your values are displayed as evenly sampled between the code::minval:: and
-code::maxval:: of the domainSpecs.
+When setting your code::Plotter:: link::#-value::, the default strong::domainSpecs:: is a linear spec in the range code::[0, value.size-1]:: (i.e. the indices of the values). Therefore, your values are displayed as evenly sampled between the code::minval:: and code::maxval::, unless you have explicitly set the link::#-domain:: values.
 
 If a new link::#-value:: is set, you will need to update your domainSpecs.
 
 
 method:: domain
-Set or get the x-axis positions of your data points. The size of the
-code::domainArray:: must equal the size of your value array, i.e. a domain
-value specified for each data point.
+Set/get the x-axis positions of your data points. The size of the code::domainArray:: must equal the size of your link::#-value:: array, i.e. a domain value specified for each data point.
 
 code::
 (
@@ -381,20 +503,9 @@ code::
 a = { (0..10).scramble.normalize }.dup(2).plot;
 a.editMode = true;
 a.editFunc = { |...args| args.postln };
-);
+)
 
 // using plotter as a control interface
-(
-a = (0..10).scramble.normalize(300, 400).plot;
-a.specs = \freq; a.plotMode = \points;
-a.editMode = true;
-x = { SinOsc.ar(\freq.kr(a.value)).mean * 0.1 }.play;
-a.editFunc = { |plotter, plotIndex, i, val|
-	x.setn(\freq, a.value)
-};
-a.parent.onClose = { x.release };
-);
-
 (
 a = { (0..10).scramble.normalize(300, 400) }.dup.plot;
 a.specs = \freq; a.plotMode = \bars;
@@ -408,7 +519,7 @@ a.editFunc = { |plotter, plotIndex, i, val|
 	x.setn(\rate, a.value[1]);
 };
 a.parent.onClose = { x.release };
-);
+)
 ::
 
 
@@ -417,7 +528,7 @@ method:: cursorPos
 returns:: The last cursorPos (a link::Classes/Point::).
 
 
-private:: plotColors, prReshape, pointIsInWhichPlot
+private:: plotColors, prReshape, pointIsInWhichPlot, prSetUpInteractionView
 
 
 examples::
@@ -437,7 +548,7 @@ a.plotMode = \plines; a.refresh;
 a.domainSpecs = [[0, 115, \lin, 1]]; a.refresh;
 
 a.parent.close; // close window
-a.makeWindow;	// open it again
+a.makeWindow; a.updatePlotBounds; // open it again
 
 a.value = { (0..70).scramble }.dup(3);
 a.plotMode = \linear; a.refresh;
@@ -485,7 +596,6 @@ a.superpose = false;
 // Function:plot
 a = { SinOsc.ar([700, 357]) * SinOsc.ar([400, 476]) * 0.2 }.plot;
 a = { SinOsc.ar([700, 357] *0.02) * SinOsc.ar([400, 476]) * 0.3 }.plot(0.2, minval: -1);
-a = { SinOsc.ar(440) }.plot(1);
 
 // Env:plot
 Env.perc(0.4, 0.6).plot;
@@ -575,22 +685,57 @@ subsection:: Axis labels
 
 code::
 (
-p = 4.collect({|cnt| 100.collect({rrand(0,1.0)})}).plot;
+p = 4.collect({
+	100.collect({ rrand(0,1.0) })
+}).plot(bounds: Rect(50,50,500,650));
 p.plotColor_([Color.red, Color.blue, Color.green, Color.cyan]);
 )
 
 // a single label propagates through all Plots
-p.labelX_("one");
+p.axisLabelX_("one");
 // set each individually
-p.labelX_(["one", "two", "three", "four"]);
+p.axisLabelX_(["one", "two", "three", "four"]);
 // superposed plots default to the first label
 p.superpose_(true);
 p.superpose_(false); // labels are restored
 // nil element removes a label
-p.labelX_(["one", "two", nil, "four"]);
+p.axisLabelX_(["one", "two", nil, "four"]);
 // assigning nil removes all labels
-p.labelX_(nil);
-// ... labelY behaves the same way
+p.axisLabelX_(nil);
+// ... axisLabelY behaves the same way
+::
+
+subsection:: Unit labels
+The units of the grid specs are shown as labels, either axis labels or appended to tick labels. Unit labels won't overwrite preexisting labels, and can be disabled altogether.
+code::
+( // units displayed in the axis labels by default
+p = (4 ** (-1.5, -1.25 .. 0)).plot;
+p.specs = \delay.asSpec.minval_(0.1);
+p.domainSpecs = [0, 10, \lin, 0, 0, "xUnits"].asSpec;
+p.setGridProperties(\y, \constrainLabelExtents, false);
+p.setGridProperties(\x, \constrainLabelExtents, true);
+)
+
+p.showUnits = false;      // hide units
+p.unitLocation = \ticks;  // move units to tick labels
+p.showUnits = true;       // show units
+p.axisLabelX = "X LABEL"; // set an axis label
+p.unitLocation = \axis;   // move units to axes
+// ... x-axis label isn't overwritten
+p.axisLabelX = nil        // remove x-axis label
+p.unitLocation = \axis;   // set units to axes again
+// ... units now appear on the x-axis
+
+// customize the Y labels
+p.setGridProperties(\y, \labelAppendString, " y");
+// move units to tick labels
+p.unitLocation = \ticks;
+// ... y-axis tick labels aren't overwritten
+// now remove y-tick label string
+p.setGridProperties(\y, \labelAppendString, nil);
+// set units to tick labels again
+p.unitLocation = \ticks;
+// ... units now appear on the y-tick labels
 ::
 
 subsection:: Embedding in another View or GUI
