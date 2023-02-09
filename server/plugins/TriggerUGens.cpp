@@ -765,7 +765,6 @@ void Poll_Ctor(Poll* unit) {
         SETCALC(Poll_next_kk);
     }
 
-    unit->m_trig = IN0(0);
     const int idSize = (int)IN0(3); // number of chars in the id string
     unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idSize + 1) * sizeof(char));
     ClearUnitIfMemFailed(unit->m_id_string);
@@ -775,8 +774,7 @@ void Poll_Ctor(Poll* unit) {
 
     unit->m_id_string[idSize] = '\0';
     unit->m_mayprint = unit->mWorld->mVerbosity >= -1;
-
-    Poll_next_kk(unit, 1);
+    unit->m_trig = 0.f; // ready for trigger in first sample
 }
 
 void Poll_Dtor(Poll* unit) { RTFree(unit->mWorld, unit->m_id_string); }
