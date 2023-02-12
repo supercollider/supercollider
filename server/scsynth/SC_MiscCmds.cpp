@@ -609,11 +609,6 @@ SCErr meth_n_fill(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
             int32* name = msg.gets4();
             int32 hash = Hash(name);
             int32 n = msg.geti();
-            float32 value = msg.getf();
-
-            for (int i = 0; i < n; ++i) {
-                Node_SetControl(node, hash, name, i, value);
-            }
 
             if (msg.nextTag('f') == 's') {
                 const char* string = msg.gets();
@@ -632,11 +627,6 @@ SCErr meth_n_fill(World* inWorld, int inSize, char* inData, ReplyAddress* /*inRe
         } else {
             int32 index = msg.geti();
             int32 n = msg.geti();
-            float32 value = msg.getf();
-
-            for (int i = 0; i < n; ++i) {
-                Node_SetControl(node, index + i, value);
-            }
             if (msg.nextTag('f') == 's') {
                 const char* string = msg.gets();
                 if (*string == 'c') {
