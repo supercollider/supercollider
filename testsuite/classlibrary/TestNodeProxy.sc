@@ -40,6 +40,15 @@ TestNodeProxy : UnitTest {
 		this.assertEquals(proxy.isPlaying, false, "Setting the proxy's source should not set isPlaying = true");
 	}
 
+	test_source_neutral_proxy_elastic {
+		var otherProxy = NodeProxy.new(server);
+		proxy.reshaping = \elastic;
+		proxy.initBus(\audio, 2);
+		proxy.source = otherProxy;
+		this.assert(proxy.rate == otherProxy.rate, "proxy as source should initialise receiver");
+		otherProxy.clear;
+	}
+
 	test_asCode_basic {
 		var codeString = "a = NodeProxy.new(Server.fromName( 'TestNodeProxy' ));\n";
 
