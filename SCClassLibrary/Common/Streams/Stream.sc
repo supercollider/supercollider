@@ -538,14 +538,13 @@ EventStreamPlayer : PauseStream {
 	prNext { arg inTime;
 		var nextTime;
 		var outEvent = stream.next(event.copy);
+		var roundedBeat, deltaFromRounded;
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
 			this.removedFromScheduler;
 			^nil
-		}{
-			var roundedBeat;
-			var deltaFromRounded;
+		} {
 			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
 			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
