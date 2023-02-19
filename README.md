@@ -28,7 +28,7 @@ See the [Raspberry Pi](README_RASPBERRY_PI.md) and [BeagleBone Black](README_BEA
 SuperCollider is tested with:
 - Windows 10 (32- and 64-bit) and MSVC 2019
 - macOS 11 and Xcode 12.4
-- Ubuntu 18.04 and gcc 10
+- Ubuntu 22.04 and gcc 12
 
 SuperCollider is known to support these platforms:
 - Windows Vista, 7, 8, 10, 11
