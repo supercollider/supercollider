@@ -334,6 +334,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
       - name: install dependencies
         run: |
+          brew install pkg-config # temporary fix due to an issue with GHA macOS runners fixed in https://github.com/actions/runner-images/pull/7125; should be okay to remove after approx 2023-03-10
           brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
