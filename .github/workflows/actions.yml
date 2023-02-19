@@ -371,10 +371,10 @@ jobs:
         if: env.USE_SYSLIBS == 'true'
         run: brew install yaml-cpp boost
       - name: install qt from homebrew
-        if: matrix.cmake-architectures == 'x86_64' && '!matrix.qt-version' 
+        if: matrix.cmake-architectures == 'x86_64' && !matrix.qt-version
         run: brew install qt5
       - name: install qt universal binary from homebrew
-        if: matrix.cmake-architectures != 'x86_64' && '!matrix.qt-version'
+        if: matrix.cmake-architectures != 'x86_64' && !matrix.qt-version
         run: ./brew-install-universal.sh qt5
       - name: install qt using aqtinstall
         uses: jurplel/install-qt-action@v3
