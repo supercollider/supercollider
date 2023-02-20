@@ -133,6 +133,40 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(actual, expected, "-1.asTimeString(dropDaysIfPossible: false) (negative value)");
 	}
 
+	test_asTimeString_precisionLargerThanDecimalPlaces {
+		var expected = "00:00:00.0200";
+		var totalTime = 0.015;
+		var actual = totalTime.asTimeString(precision: 0.01, decimalPlaces: 4);
+		this.assertEquals(actual, expected, "%.asTimeString(precision: 0.01, decimalPlaces: 4)".format(totalTime));
+	}
+
+	test_asTimeString_smallNumberScientificNotation {
+		var expected = "00:00:00.0000001";
+		var totalTime = 1e-7;
+		var actual = totalTime.asTimeString(precision: 1e-7, decimalPlaces: 7);
+		this.assertEquals(actual, expected, "%.asTimeString(precision: 1e-7, decimalPlaces: 7)".format(totalTime));
+	}
+
+	test_asTimeString_smallNumberScientificNotationMultipleDigits {
+		var expected = "00:00:00.000012300000";
+		var totalTime = 1.23e-5;
+		var actual = totalTime.asTimeString(precision: 0, decimalPlaces: 12);
+		this.assertEquals(actual, expected, "%.asTimeString(precision: 0, decimalPlaces: 12)".format(totalTime));
+	}
+
+	test_asTimeString_lotsaZeroes {
+		var expected = "00:00:00.1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+		var totalTime = 0.1;
+		var actual = totalTime.asTimeString(decimalPlaces: 100);
+		this.assertEquals(actual, expected, "%.asTimeString(decimalPlaces: 100)".format(totalTime));
+	}
+
+	test_smallButNotZero {
+		var testF = {|vals, thresh| vals.collect({|num| num.smallButNotZero(thresh)})};
+		var val = [-1e-9, -1e-12, -0.9e-12, -1e-13, 0, 1e-13, 0.9e-12, 1e-12, 1e-9];
+		this.assertEquals(testF.(val, 1e-12), [ false, false, true, true, false, true, true, false, false ], "Test 1: smallButNotZero(1e-12)");
+	}
+
 	test_softRound {
 		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};

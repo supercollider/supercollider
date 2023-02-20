@@ -604,6 +604,7 @@ void GrainIn_next_k(GrainIn* unit, int inNumSamples) {
         float maxGrains = IN0(5);
         unit->mMaxGrains = (int)maxGrains;
         unit->mGrains = (GrainInG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainInG));
+        ClearUnitIfMemFailed(unit->mGrains);
     }
 
     GrainIn_next_play_active(unit, inNumSamples);
@@ -624,6 +625,7 @@ void GrainIn_Ctor(GrainIn* unit) {
     unit->mFirst = true;
     unit->mNumActive = 0;
     unit->curtrig = 0.f;
+    unit->mGrains = nullptr;
     GrainIn_next_k(unit, 1);
 }
 
@@ -753,6 +755,7 @@ void GrainSin_next_k(GrainSin* unit, int inNumSamples) {
         float maxGrains = IN0(5);
         unit->mMaxGrains = (int)maxGrains;
         unit->mGrains = (GrainSinG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainSinG));
+        ClearUnitIfMemFailed(unit->mGrains);
     }
 
     GrainSin_next_play_active(unit, inNumSamples);
@@ -777,6 +780,7 @@ void GrainSin_Ctor(GrainSin* unit) {
     unit->curtrig = 0.f;
     unit->mNumActive = 0;
     unit->mFirst = true;
+    unit->mGrains = nullptr;
     GrainSin_next_k(unit, 1);
 }
 
@@ -921,6 +925,7 @@ void GrainFM_next_k(GrainFM* unit, int inNumSamples) {
         float maxGrains = IN0(7);
         unit->mMaxGrains = (int)maxGrains;
         unit->mGrains = (GrainFMG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainFMG));
+        ClearUnitIfMemFailed(unit->mGrains);
     }
 
     GrainFM_next_play_active(unit, inNumSamples);
@@ -944,6 +949,7 @@ void GrainFM_Ctor(GrainFM* unit) {
     unit->curtrig = 0.f;
     unit->mNumActive = 0;
     unit->mFirst = true;
+    unit->mGrains = nullptr;
     GrainFM_next_k(unit, 1);
 }
 
@@ -1220,6 +1226,7 @@ void GrainBuf_Ctor(GrainBuf* unit) {
     float maxGrains = IN0(8);
     unit->mMaxGrains = (int)maxGrains;
     unit->mGrains = (GrainBufG*)RTAlloc(unit->mWorld, unit->mMaxGrains * sizeof(GrainBufG));
+    ClearUnitIfMemFailed(unit->mGrains);
 
     if (unit->mNumOutputs == 1) {
         if (INRATE(0) == calc_FullRate)

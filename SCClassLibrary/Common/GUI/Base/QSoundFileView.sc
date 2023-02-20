@@ -36,7 +36,7 @@ SoundFileView : View {
 	setData { arg data, block, startFrame=0, channels=1, samplerate=44100;
 		if( data.isKindOf(DoubleArray).not and: {data.isKindOf(FloatArray).not} )
 		{ data = data.as(DoubleArray) };
-		this.invokeMethod( \load, [data, startFrame, channels, samplerate] );
+		this.invokeMethod( \load, [data, startFrame, channels, samplerate.asInteger] );
 	}
 
 	set { arg offset=0, data;

@@ -118,6 +118,9 @@ NamedControl {
 				Error("NamedControl: cannot have more than one set of "
 					"fixed lag values in the same control.").throw;
 			} {
+				if(spec.notNil) {
+					res.spec = spec; // set spec before early exit too
+				};
 				^res.control;
 			}
 		};

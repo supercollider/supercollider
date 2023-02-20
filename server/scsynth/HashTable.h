@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdexcept>
 
 template <class T, class Allocator> class HashTable {
     Allocator* mPool;
@@ -53,6 +54,8 @@ public:
     T** AllocTable(int inTableSize) {
         size_t size = inTableSize * sizeof(T*);
         T** items = static_cast<T**>(mPool->Alloc(size));
+        if (items == NULL)
+            throw std::runtime_error("FAILURE IN SERVER: HashTable allocation failed: out of memory!\n");
         for (int i = 0; i < inTableSize; ++i) {
             items[i] = 0;
         }
@@ -194,6 +197,8 @@ public:
     T** AllocTable(int inTableSize) {
         size_t size = inTableSize * sizeof(T*);
         T** items = static_cast<T**>(mPool->Alloc(size));
+        if (items == NULL)
+            throw std::runtime_error("FAILURE IN SERVER: HashTable allocation failed: out of memory!\n");
         for (int i = 0; i < inTableSize; ++i) {
             items[i] = 0;
         }

@@ -2,6 +2,8 @@ TITLE:: QuartzComposerView
 summary:: view for rendering Quartz Composer Compositions
 categories:: GUI>Views
 
+NOTE:: code::QuartzComposerView:: is deprecated in SC 3.13 and won't be available in subsequent versions that will use Qt 6.x. ::
+
 DESCRIPTION::
 QuartzComposerView allows for the rendering of Quartz Composer Compositions within SC on macOS. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the macOS graphics system, and in general should be more efficient than Pen. For more information on QC see: https://developer.apple.com/library/mac/documentation/GraphicsImaging/Conceptual/QuartzComposerUserGuide/qc_intro/qc_intro.html and http://en.wikipedia.org/wiki/Quartz_Composer
 

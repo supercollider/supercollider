@@ -2,6 +2,8 @@ HelpBrowser {
 	classvar singleton;
 	classvar <>defaultHomeUrl;
 	classvar <>openNewWindows = false;
+	classvar <>scrollStep = 40;
+	classvar <>scrollPageStep = 350;
 
 	var <>homeUrl;
 	var <window;
@@ -118,6 +120,10 @@ HelpBrowser {
 	goBack { webView.back; }
 
 	goForward { webView.forward; }
+
+	goDown { webView.scrollDown(HelpBrowser.scrollStep); }
+
+	goUp { webView.scrollUp(HelpBrowser.scrollStep); }
 
 /* ------------------------------ private ------------------------------ */
 
@@ -273,7 +279,9 @@ HelpBrowser {
 		webView.enterInterpretsSelection = true;
 
 		window.view.keyDownAction = { arg view, char, mods, uni, kcode, key;
-			var keyPlus, keyZero, keyMinus, keyEquals, keyF;
+			var keyPlus, keyZero, keyMinus, keyEquals, keySlash;
+			var keyD, keyU, keyF, keyG, keyH, keyJ, keyK, keyL;
+			var keyF3, keyF5, keyLeftArrow, keyRightArrow;
 			var modifier, zoomIn;
 
 			modifier = Platform.case(\osx, {
@@ -282,34 +290,73 @@ HelpBrowser {
 				mods.isCtrl && mods.isCmd.not && mods.isAlt.not;
 			});
 
-			#keyPlus, keyZero, keyMinus, keyEquals, keyF = [43, 48, 45, 61, 70];
+			#keyPlus, keyZero, keyMinus, keyEquals, keySlash = [43, 48, 45, 61, 47];
+			#keyD, keyF, keyG, keyH, keyJ, keyK, keyL, keyU, keyF3, keyF5 = [68, 70, 71, 72, 74, 75, 76, 85];
+			#keyF3, keyF5 = [65472, 65474];
+			#keyLeftArrow, keyRightArrow = [65361, 65363];
 
 			// +/= has the same value on macOS when pressed with <Cmd>
 			zoomIn = Platform.case(\osx, {
-				(key == keyEquals) && modifier;
+				((key == keyEquals) && modifier) || ((key == keyK) && mods.isShift);
 			}, {
-				(key == keyPlus) && modifier;
+				((key == keyPlus) && modifier) || ((key == keyK) && mods.isShift);
 			});
 
-			if (zoomIn) {
-				webView.zoom = min(webView.zoom + 0.1, 2.0);
-			};
-
-			if ((key == keyMinus) && modifier) {
-				webView.zoom = max(webView.zoom - 0.1, 0.1);
-			};
-
-			if ((key == keyZero) && modifier) {
-				webView.zoom = 1.0;
-			};
-
-			if ((key == keyF) && modifier) {
-				toggleFind.value;
-			};
-
-			if (char.ascii == 27) { // Esc
-				if (findView.visible) { toggleFind.value };
-			};
+			case(
+				{ zoomIn }, {
+					webView.zoom = min(webView.zoom + 0.1, 2.0);
+				},
+				{ (key == keyMinus) && modifier }, {
+					webView.zoom = max(webView.zoom - 0.1, 0.1)
+				},
+				{ (key == keyZero) && modifier }, {
+					webView.zoom = 1.0
+				},
+				{ (key == keyF && modifier) || (key == keySlash) }, {
+					toggleFind.value
+				},
+				{ key == keyG }, {
+					if (mods.isShift) {
+						webView.scrollPosition_(0@(webView.contentsSize.height - webView.bounds.height))
+					} {
+						webView.scrollPosition_(0@0)
+					}
+				},
+				{ key == keyD && mods.isCtrl }, {
+					webView.scrollDown(HelpBrowser.scrollPageStep)
+				},
+				{ key == keyU && mods.isCtrl }, {
+					webView.scrollUp(HelpBrowser.scrollPageStep)
+				},
+				{ key == keyJ }, {
+					if (mods.asBoolean.not) {
+						this.goDown
+					};
+					if (mods.isShift) {
+						webView.zoom = max(webView.zoom - 0.1, 0.1)
+					};
+				},
+				{ key == keyK }, {
+					if (mods.asBoolean.not) {
+						this.goUp
+					};
+				},
+				{ (key == keyH) || ((kcode == keyLeftArrow) && mods.isAlt) }, {
+					this.goBack
+				},
+				{ (key == keyL) || ((kcode == keyRightArrow) && mods.isAlt) }, {
+					this.goForward
+				},
+				{ kcode == keyF5 }, {
+					this.goTo(webView.url)
+				},
+				{ kcode == keyF3 }, {
+					this.goTo(SCDoc.helpTargetUrl++"/Search.html");
+				},
+				{ (char.ascii == 27) && findView.visible }, {
+					toggleFind.value
+				}
+			);
 		};
 
 		toolbar[\Back].action = { this.goBack };

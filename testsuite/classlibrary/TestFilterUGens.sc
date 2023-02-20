@@ -87,6 +87,7 @@ TestFilterUGens : UnitTest {
 		var delay_times = [1,64]; // in samples
 		var numTests = delay_times.size * filters.size;
 		var completed = 0;
+		var impFrq = 500;
 
 		filters.do {
 			arg filter;
@@ -99,9 +100,14 @@ TestFilterUGens : UnitTest {
 				{
 					var deltime = delay_samples/SampleRate.ir;
 					// should be silent - FP rounding errors are ok.
-					DelayN.ar(filter.ar(Impulse.ar(0)), deltime, deltime)
-					- filter.ar(DelayN.ar(Impulse.ar(0), deltime, deltime));
-				}.loadToFloatArray(0.1, server, {
+					// Note: impulse phase offset to avoid errors associated with
+					//  	 initialization sample bugs in filter UGens (and others).
+					//       https://github.com/supercollider/rfcs/pull/19
+					DelayN.ar(filter.ar(Impulse.ar(impFrq, 0.25)), deltime, deltime)
+					- filter.ar(DelayN.ar(Impulse.ar(impFrq, 0.25), deltime, deltime));
+					// DelayN.ar(filter.ar(Impulse.ar(0)), deltime, deltime)
+					// - filter.ar(DelayN.ar(Impulse.ar(0), deltime, deltime));
+				}.loadToFloatArray(2*impFrq.reciprocal, server, {
 					arg data;
 					this.assertArrayFloatEquals(data, 0, message, within:1e-10, report:true);
 					completed = completed + 1;
@@ -125,6 +131,43 @@ TestFilterUGens : UnitTest {
 			}
 		};
 		"".postln;
+	}
+
+	test_Integrator_add_presample_once_only {
+		var buffer;  // use a buffer to guarantee exactly 1 input value of 1
+		var synth;
+		var testResp;
+		var result;
+		var cond = Condition.new;
+		var server = Server.default;
+
+		this.bootServer(server);
+		server.sync;
+		buffer = Buffer.alloc(server, 500, 1, { |buf| buf.zeroMsg });
+		server.sync;
+		buffer.set(0, 1);
+		server.sync;
+
+		synth = {
+			var phasor = Phasor.ar(0, 1, 0, buffer.numFrames);
+			// don't allow to loop
+			var stop = Line.kr(0, 1, 0.01, doneAction: 2);
+			var sig = Integrator.ar(BufRd.ar(1, buffer, phasor, loop: 0, interpolation: 1));
+			SendReply.kr(Done.kr(stop), '/testIntegrator', A2K.kr(sig));
+			Silent.ar(1)
+		}.play;
+
+		testResp = OSCFunc({ |msg|
+			result = msg[3];
+			cond.unhang;
+		}, '/testIntegrator', server.addr, argTemplate: [synth.nodeID]);
+
+		synth.onFree { cond.unhang };
+
+		cond.hang;
+		buffer.free;
+
+		this.assertEquals(result, 1, "Integral of a single 1 should be 1");
 	}
 
 }

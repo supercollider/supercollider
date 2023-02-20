@@ -41,7 +41,7 @@ Detects if the remote URI starts with code::"git@":: or code::"git:":: and remod
 code::
 // git-style remote URI's are transformed to https
 Git().url_("git@github.com:foo/bar.git").remoteAsHttpUrl;
-Git().url_("git://github.com/foo/bar").remoteAsHttpUrl;
+Git().url_("https://github.com/foo/bar").remoteAsHttpUrl;
 Git().url_("git@foo.net:foo/bar.git").remoteAsHttpUrl;
 
 // http and https are left untouched

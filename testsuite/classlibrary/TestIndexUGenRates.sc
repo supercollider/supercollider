@@ -4,7 +4,7 @@ TestIndexUGenRates : UnitTest {
 
 	setUp {
 
-		server = Server.default;
+		server = Server(this.class.name);
 		this.bootServer(server);
 	}
 
@@ -12,6 +12,7 @@ TestIndexUGenRates : UnitTest {
 
 		Buffer.freeAll;
 		server.quit;
+		server.remove;
 	}
 
 	addSynthDefs {
@@ -95,7 +96,7 @@ TestIndexUGenRates : UnitTest {
 		this.addSynthDefs;
 		server.sync;
 
-		synth = Synth(\indexArPhaseAr, [\buf, writeBuf]);
+		synth = Synth(\indexArPhaseAr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
 		writeBuf.get(index, { |i| value = i});
 		server.sync;
@@ -103,7 +104,7 @@ TestIndexUGenRates : UnitTest {
 		writeBuf.zero;
 		server.sync;
 
-		synth = Synth(\indexKrPhaseAr, [\buf, writeBuf]);
+		synth = Synth(\indexKrPhaseAr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
 		writeBuf.get(index, { |i| value = i});
 		server.sync;
@@ -111,7 +112,7 @@ TestIndexUGenRates : UnitTest {
 		writeBuf.zero;
 		server.sync;
 
-		synth = Synth(\indexArPhaseKr, [\buf, writeBuf]);
+		synth = Synth(\indexArPhaseKr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
 		writeBuf.get(index, { |i| value = i});
 		server.sync;
@@ -119,7 +120,7 @@ TestIndexUGenRates : UnitTest {
 		writeBuf.zero;
 		server.sync;
 
-		synth = Synth(\indexKrPhaseKr, [\buf, writeBuf]);
+		synth = Synth(\indexKrPhaseKr, [\buf, writeBuf], target: server);
 		synth.waitForFree;
 		writeBuf.get(index, { |i| value = i});
 		server.sync;

@@ -1464,6 +1464,27 @@ int sampleFormatToString(struct SF_INFO* info, const char** string) {
     case SF_FORMAT_ALAW:
         *string = "alaw";
         break;
+#    ifdef SNDFILE_HAS_VORBIS
+    case SF_FORMAT_VORBIS:
+        *string = "vorbis";
+        break;
+#    endif
+#    ifdef SNDFILE_HAS_OPUS
+    case SF_FORMAT_OPUS:
+        *string = "opus";
+        break;
+#    endif
+#    ifdef SNDFILE_HAS_MPEG
+    case SF_FORMAT_MPEG_LAYER_I:
+        *string = "mp1";
+        break;
+    case SF_FORMAT_MPEG_LAYER_II:
+        *string = "mp2";
+        break;
+    case SF_FORMAT_MPEG_LAYER_III:
+        *string = "mp3";
+        break;
+#    endif
     default:
         *string = "float";
         break;
@@ -1490,15 +1511,22 @@ int headerFormatToString(struct SF_INFO* info, const char** string) {
         *string = "raw";
         break;
     case SF_FORMAT_W64:
-        *string = "WAV";
+        *string = "W64";
+        break;
+    case SF_FORMAT_RF64:
+        *string = "RF64";
         break;
     case SF_FORMAT_FLAC:
         *string = "FLAC";
         break;
-// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#    if __APPLE__ || _WIN32 || LIBSNDFILE_1018
-    case SF_FORMAT_VORBIS:
-        *string = "vorbis";
+#    if defined(SNDFILE_HAS_VORBIS) || defined(SNDFILE_HAS_OPUS)
+    case SF_FORMAT_OGG:
+        *string = "OGG";
+        break;
+#    endif
+#    ifdef SNDFILE_HAS_MPEG
+    case SF_FORMAT_MPEG:
+        *string = "MPEG";
         break;
 #    endif
         /*

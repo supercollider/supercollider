@@ -46,16 +46,7 @@ class portaudio_backend : public detail::audio_backend_base<sample_type, float, 
     typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
 
 public:
-    portaudio_backend(void) {
-        int err = Pa_Initialize();
-        report_error(err, true);
-
-        list_devices();
-
-#ifdef PA_HAVE_JACK
-        PaJack_SetClientName("SuperNova");
-#endif
-    }
+    portaudio_backend(void) = default;
 
     ~portaudio_backend(void) {
         if (audio_is_active())
@@ -65,6 +56,17 @@ public:
 
         int err = Pa_Terminate();
         report_error(err);
+    }
+
+    void initialize(void) {
+        int err = Pa_Initialize();
+        report_error(err, true);
+
+        list_devices();
+
+#ifdef PA_HAVE_JACK
+        PaJack_SetClientName("SuperNova");
+#endif
     }
 
     uint32_t get_audio_blocksize(void) const { return blocksize_; }
@@ -193,7 +195,7 @@ public:
         }
 
 
-        engine_initalised = false;
+        engine_initialized = false;
         blocksize_ = pa_blocksize;
 
         safety_clip_threshold_ = safety_clip_threshold;
@@ -244,6 +246,9 @@ public:
     }
 
     bool audio_is_active(void) {
+        if (stream == nullptr)
+            return false;
+
         int is_active = Pa_IsStreamActive(stream);
         if (is_active == 1)
             return true;
@@ -269,10 +274,10 @@ private:
     template <bool IsClipping>
     int perform(const void* inputBuffer, void* outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags) {
-        if (unlikely(!engine_initalised)) {
+        if (unlikely(!engine_initialized)) {
             engine_functor::init_thread();
             engine_functor::sync_clock();
-            engine_initalised = true;
+            engine_initialized = true;
         }
 
         if (statusFlags & (paInputOverflow | paInputUnderflow | paOutputOverflow | paOutputUnderflow))
@@ -316,7 +321,7 @@ private:
 
     PaStream* stream = nullptr;
     uint32_t blocksize_ = 0;
-    bool engine_initalised = false;
+    bool engine_initialized = false;
     cpu_time_info cpu_time_accumulator;
 
     uint32_t latency_ = 0;

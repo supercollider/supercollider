@@ -19,7 +19,21 @@ Main : Process {
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
 
-		openPorts = Set[NetAddr.langPort];
+		// 'langPort' may fail if no UDP port was available
+		// this wreaks several manners of havoc, so, inform the user
+		// also allow the rest of init to proceed
+		try {
+			openPorts = Set[NetAddr.langPort];
+		} { |error|
+			openPorts = Set.new;  // don't crash elsewhere
+			"\n\nWARNING: An error occurred related to network initialization.".postln;
+			"The error is '%'.\n".postf(error.errorString);
+			"There may be an error message earlier in the sclang startup log.".postln;
+			"Please look backward in the post window and report the error on the mailing list or user forum.".postln;
+			"You may be able to resolve the problem by killing 'sclang%' processes in your system's task manager.\n\n"
+			.postf(if(this.platform.name == \windows) { ".exe" } { "" });
+		};
+
 		this.platform.startup;
 		StartUp.run;
 

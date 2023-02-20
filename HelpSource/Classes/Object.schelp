@@ -241,17 +241,39 @@ method::|!=|
 
 A lazy inequality operator, defined as code::not(this |==| that)::. See link::Classes/Object#-|==|::.
 
-method::fuzzyEqual
+method:: fuzzyEqual
 
-Returns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, substraction, and division.
+Returns the degree of equality between two objects with regard to a given precision. The compared objects must support teletype::.max::, subtraction, and division.
 
 code::
-5.0.fuzzyEqual(5.0, 0.5); // 1 - full equality
-5.25.fuzzyEqual(5.0, 0.5); // 0.5 - 50 % equality
-5.9.fuzzyEqual(5.0, 0.5); // 0 - no equality
+5.0.fuzzyEqual(5.0, 0.5);  // 1.0 - full equality
+5.25.fuzzyEqual(5.0, 0.5); // 0.5 - 50% equality
+4.75.fuzzyEqual(5.0, 0.5); // 0.5 - 50% equality
+5.9.fuzzyEqual(5.0, 0.5);  // 0.0 - no equality
 ::
 
-returns::A number in the range 0 to 1.
+Resolve to a Boolean within your precision threshold by checking whether the returned degree of equality is above code::0.0::.
+
+code::
+(
+// Cartesian to Polar and back, accumulating precision error
+var x = 3.0, y = 5.0;
+var hypot = hypot(y, x);
+var angle = atan2(y, x);
+var polar = Polar(hypot, angle);
+var xFromPolar = polar.asPoint.x;
+var equalWithin = 1e-5;
+postf(
+	"Exactly equal? %\n"
+	"Fuzzily equal? %\n",
+    x == xFromPolar,
+    fuzzyEqual(x, xFromPolar, equalWithin) > 0
+);
+[x, xFromPolar]
+)
+::
+
+returns:: A link::Classes/Float:: in the range code::0.0:: to code::1.0::.
 
 method::compareObject
 
@@ -386,8 +408,8 @@ code::
 a = 9;
 b = [1, a, 6, 8];
 c = [1, b, 5];
-c.pointsto(b); // true
-c.pointsto(a); // false
+c.pointsTo(b); // true
+c.pointsTo(a); // false
 ::
 
 method::mutable
@@ -801,7 +823,7 @@ Yields the receiver
 
 method::idle
 
-within a routine, return values (the receiver) until this time is over. (see also link::Classes/Routine#play::)
+within a routine, return values (the receiver) until this time is over. (see also link::Classes/Routine#-play::)
 Time is measured relative to the thread's clock.
 code::
 a = Routine { 1.yield; 0.idle(3); 400.yield };
@@ -911,4 +933,3 @@ blend(10, 100, 0.3);
 blend([1, 2, 3], [1, 3, 4], 0.5);
 blend((a: 6, b: 7), (a: 0, b: [1, 2], c: 9), 0.5);
 ::
-

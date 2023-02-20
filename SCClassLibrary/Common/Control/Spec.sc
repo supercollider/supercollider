@@ -11,6 +11,9 @@ Spec {
 		^spec
 	}
 	asSpec { ^this }
+	gridClass {
+		^this.subclassResponsibility(thisMethod)
+	}
 	defaultControl {
 		^this.subclassResponsibility(thisMethod)
 	}
@@ -100,7 +103,9 @@ ControlSpec : Spec {
 		^numStep
 	}
 
-	grid { ^grid ?? {GridLines(this)} }
+	gridClass { ^this.warp.gridClass }
+
+	grid { ^grid ?? { GridLines(this) } }
 
 	looseRange { |data, defaultRange, minval, maxval|
 		var newMin, newMax;
@@ -187,10 +192,10 @@ ControlSpec : Spec {
 			\unipolar -> ControlSpec(0, 1),
 			\bipolar -> ControlSpec(-1, 1, default: 0),
 
-			\freq -> ControlSpec(20, 20000, \exp, 0, 440, units: " Hz"),
-			\lofreq -> ControlSpec(0.1, 100, \exp, 0, 6, units: " Hz"),
-			\midfreq -> ControlSpec(25, 4200, \exp, 0, 440, units: " Hz"),
-			\widefreq -> ControlSpec(0.1, 20000, \exp, 0, 440, units: " Hz"),
+			\freq -> ControlSpec(20, 20000, \exp, 0, 440, units: "Hz"),
+			\lofreq -> ControlSpec(0.1, 100, \exp, 0, 6, units: "Hz"),
+			\midfreq -> ControlSpec(25, 4200, \exp, 0, 440, units: "Hz"),
+			\widefreq -> ControlSpec(0.1, 20000, \exp, 0, 440, units: "Hz"),
 			\phase -> ControlSpec(0, 2pi),
 			\rq -> ControlSpec(0.001, 2, \exp, 0, 0.707),
 
@@ -201,16 +206,16 @@ ControlSpec : Spec {
 			\midinote -> ControlSpec(0, 127, default: 60),
 			\midivelocity -> ControlSpec(1, 127, default: 64),
 
-			\db -> ControlSpec(0.ampdb, 1.ampdb, \db, units: " dB"),
+			\db -> ControlSpec(0.ampdb, 1.ampdb, \db, units: "dB"),
 			\amp -> ControlSpec(0, 1, \amp, 0, 0),
-			\boostcut -> ControlSpec(-20, 20, units: " dB",default: 0),
+			\boostcut -> ControlSpec(-20, 20, units: "dB", default: 0),
 
 			\pan -> ControlSpec(-1, 1, default: 0),
-			\detune -> ControlSpec(-20, 20, default: 0, units: " Hz"),
+			\detune -> ControlSpec(-20, 20, default: 0, units: "Hz"),
 			\rate -> ControlSpec(0.125, 8, \exp, 0, 1),
-			\beats -> ControlSpec(0, 20, units: " Hz"),
+			\beats -> ControlSpec(0, 20, units: "Hz"),
 
-			\delay -> ControlSpec(0.0001, 1, \exp, 0, 0.3, units: " secs")
+			\delay -> ControlSpec(0.0001, 1, \exp, 0, 0.3, units: "sec")
 		]);
 	}
 
@@ -237,6 +242,8 @@ Warp {
 	asWarp { arg inSpec;
 		^this.copy.spec_(inSpec)
 	}
+
+	gridClass { ^LinearGridLines }
 
 	*initClass {
 		// support Symbol-asWarp
@@ -279,6 +286,7 @@ LinearWarp : Warp {
 }
 
 ExponentialWarp : Warp {
+	gridClass { ^ExponentialGridLines }
 	// minval and maxval must both be non zero and have the same sign.
 	map { arg value;
 		// maps a value from [0..1] to spec range

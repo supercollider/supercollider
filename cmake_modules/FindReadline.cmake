@@ -37,6 +37,7 @@ if(WIN32)
         HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
           "$ENV{ProgramW6432}/GnuWin32/bin"
           "$ENV{ProgramFiles}/GnuWin32/bin"
+        PATH_SUFFIXES "bin"
     )
 endif()
 

@@ -160,6 +160,22 @@ strong::another:: Thread's clock will have no effect on code running on it.
 
 See also: link::Classes/Clock#Scheduling and Threads::.
 
+method:: deferAwayFrom
+Executes a given function, guaranteeing that it will not execute on the same thread as code::this::. That is:
+
+list::
+## If code::delta > 0:: (the function should evaluate later), defer to link::Classes/AppClock::.
+## If code::delta <= 0:: (execute right now), defer to link::Classes/AppClock:: if code::thisThread:: matches the thread receiving this method call. Otherwise, directly link::Classes/Function#-value:: the function.
+::
+
+This method interface is designed to be used with function-call syntax, e.g. code::deferAwayFrom(aThread) { ... function body ... }::.
+
+argument:: func
+The function to evaluate. It will not be passed any argument values.
+
+argument:: delta
+A time delta in seconds. Normally, the default 0 will be used.
+
 method::isPlaying
 Returns:: true if it is playing.
 

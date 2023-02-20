@@ -178,7 +178,7 @@ argument::quant
 see the link::Classes/Quant:: helpfile
 
 discussion::
-using link::Classes/Object#idle#Object:idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
+using link::Classes/Object#-idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
 code::
 // for 6 seconds, return 200, then continue
 (
@@ -215,6 +215,87 @@ fork {
 	}
 }
 );
+::
+
+method:: reschedule
+
+If a Routine is currently scheduled on a clock, it will be expected to "awake" at a specific time, on a specific clock. code::reschedule:: allows you to change to a different clock or to a later time.
+
+argument:: argClock
+The new clock on which to run the Routine. If code::nil::, the routine's clock will not be changed. (Note: Currently incompatible with link::Classes/AppClock::; rescheduling depends upon the method code::schedAbs::, which AppClock does not implement.)
+
+argument:: quant
+A quantization specifier, identifying a time emphasis::later:: than the next-scheduled time. If code::nil::, the current value of code::nextBeat:: will be used.
+
+discussion::
+
+list::
+## Rescheduling to a different clock will be continuous in terms of seconds, but not necessarily continuous in terms of beats. Time-based patterns such as link::Classes/Pseg::, or the use of link::Classes/Env:: as a stream, may not follow the envelope shape continuously. (Pseg and Env-as-stream measure time in beats on the clock that is playing. In normal use, the clock never changes, so time advances monotonically through the envelope's breakpoints. If a thread is rescheduled to a different clock, the beats values are very unlikely to be the same on the new clock. So the envelope would jump forward or backward in time.)
+
+When switching the clock, code::reschedule:: will first calculate the new "awake" time, in beats, based on the given code::quant::. Then it converts that code::beats:: value into the new clock's code::beats:: for the same instant in time. If the old clock's tempo is 1 and the Routine is waiting for 1 beat, the next "awake" should happen after one second. When rescheduling without a code::quant::, the next "awake" will emphasis::still:: happen after one second -- but the code::beats:: value will adjust for the new clock.
+
+## Currently code::quant:: will resolve to a time emphasis::later:: than the Routine's current code::nextBeat::. If you try to force it earlier, there is likely to be some discontinuity. This is because the Routine cannot reschedule until it wakes up normally. The workaround is to switch the Routine into a different link::Classes/Task:: wrapper.
+
+## Currently the routine must be playing (already scheduled on a clock). This is because the handoff to the new clock or time occurs during the thread's "awake" process. If the routine is not playing, then it will not awake, and nothing will happen.
+::
+
+code::
+// Rescheduling to a different clock, same time
+c = TempoClock.new;
+
+(
+t = Routine {
+	var lastSeconds = thisThread.seconds;
+	loop {
+		1.0.wait;
+		[thisThread.beats, thisThread.seconds - lastSeconds].postln;
+		lastSeconds = thisThread.seconds;
+	}
+}.play;
+)
+
+t.reschedule(c);  // seconds delta = 1.0 throughout
+
+t.stop;
+
+// Rescheduling to a later time, same clock
+(
+t = Routine {
+	var lastSeconds = thisThread.seconds;
+	loop {
+		1.0.wait;
+		[thisThread.beats, thisThread.seconds - lastSeconds].postln;
+		lastSeconds = thisThread.seconds;
+	}
+}.play;
+)
+
+t.reschedule(quant: 1);
+
+t.stop;
+
+// Rescheduling to an earlier time (workaround, only possible way)
+// Requires you to start with a PauseStream!
+// This does not work if 't' is a Routine initially.
+(
+t = PauseStream(Routine {
+	var lastSeconds = thisThread.seconds;
+	loop {
+		1.0.wait;
+		[thisThread.beats, thisThread.seconds - lastSeconds].postln;
+		lastSeconds = thisThread.seconds;
+	}
+}).play;
+)
+
+// shorter than 1 beat later
+(
+u = PauseStream(t.stream);
+TempoClock.schedAbs(t.nextBeat.trunc, u.refresh);
+t.stop;
+)
+
+u.stop;
 ::
 
 method:: awake

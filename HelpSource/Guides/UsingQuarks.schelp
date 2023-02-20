@@ -133,8 +133,8 @@ If you have installed local paths that are not under git source control (your ow
 The file format looks like this:
 
 code::
-git://github.com/author/quarkname@tags/4.1.4
-git://github.com/supercollider-quarks/ddwCommon@8ae156b460dcb08285013265cf3a1c7172bba665
+https://github.com/author/quarkname@tags/4.1.4
+https://github.com/supercollider-quarks/ddwCommon@8ae156b460dcb08285013265cf3a1c7172bba665
 ~/supercollider/quarks/my-thing
 ::
 
@@ -251,6 +251,7 @@ list::
 ## country
 ## since
 ## ext_dependency - text describing external software like "PD" or "processing"
+## preInstall - a function / hook which will be called before installation - see link::Guides/UsingQuarks#Hooks::
 ::
 
 dependencies is a list of Quarks or git urls with optional an @refspec
@@ -258,6 +259,44 @@ dependencies is a list of Quarks or git urls with optional an @refspec
 code::
 Bjorklund
 cruciallib@tags/4.1.4
+::
+
+subsection::Hooks
+
+note::
+Introduced in SuperCollider 3.13 and therefore only available if running at least this version.
+::
+
+It is possible to run a functions which are defined in the code::.quark:: file at specific points of installation or update process, so called "hooks".
+
+This can be used to setup or delete certain directory structures, check for hardware, etc.
+
+Upon execution, the hook function will be handled link::Classes/Quark#-data::, which is the parsed code::.quark:: file as an Link::Classes/Event::, as the first argument.
+
+The following hooks are available and will be executed by link::Classes/Quark#-runHook::
+
+table::
+    ## \preInstall || Will be executed before link::Classes/Quarks#*link:: ||
+    ## \postInstall || Will be executed after link::Classes/Quarks#*link:: ||
+    ## \preUpdate || Will be executed before link::Classes/Git#-pull:: || Upon execution this will have the old state of the code::.quark:: file
+    ## \postUpdate || Will be executed after link::Classes/Git#-pull:: || Upon execution this will have the new, updated state of the code::.quark:: file
+    ## \preUninstall || Will be executed before link::Classes/Quarks#*unlink:: ||
+    ## \postUninstall || Will be executed after link::Classes/Quarks#*unlink:: ||
+::
+
+An example to create a directory with samples for a Quark could look like
+
+code::
+(
+  name: "DemonWidgets",
+  // ...
+  preInstall: {|data|
+	File.mkdir("~/samples/%".format(data[\name]));
+  },
+  postUninstall: {
+	"Samples at '~/samples/DomenWidgets' must be deleted manually".warn;
+  },
+)
 ::
 
 subsection::Deprecated/ignored fields

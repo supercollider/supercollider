@@ -88,8 +88,8 @@ SpecFlatness : UGen {
 	}
 }
 SpecPcile : UGen {
-	*kr { | buffer, fraction = 0.5, interpolate = 0 |
-		^this.multiNew('control', buffer, fraction, interpolate)
+	*kr { | buffer, fraction = 0.5, interpolate = 0 , binout = 0|
+		^this.multiNew('control', buffer, fraction, interpolate, binout)
 	}
 }
 SpecCentroid : UGen {

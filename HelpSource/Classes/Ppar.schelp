@@ -1,6 +1,6 @@
 class:: Ppar
 summary:: embed event streams in parallel
-related:: Classes/Pgpar, Classes/Pbus, Classes/Pgroup
+related:: Classes/Ptpar, Classes/Pgpar, Classes/Pbus, Classes/Pgroup
 categories:: Streams-Patterns-Events>Patterns>Parallel
 
 description::

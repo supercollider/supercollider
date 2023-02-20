@@ -8,34 +8,33 @@ The simplest way is to look at an existing help file or class document, and read
 
 note:: The help files should use UTF-8 encoding! ::
 
-subsection:: News in SC 3.5.2
-SCDoc has been rewritten and the parser is now implemented in C++ for speed and stability.
-The syntax has gotten stricter, and it will throw errors or warnings if there are faults in the documentation.
+All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. See link::Reference/SCDocSyntax#Header tags::
 
-Some important changes to keep in mind:
-list::
-## Linking to sections does no longer use lower_case_and_underscored anchors, but the exact section title as it is. Example: teletype::link\::#Language-side news\:::: renders: link::#Language-side news::
-## Run code::SCDoc.indexAllDocuments:: if you add a new document or other file and want to see the change reflected in the help. If you just changed a document and want to see the changes, just press Reload in the browser and SCDoc will detect and re-index automatically.
-## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
-## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
+In the header, you must specify the title, summary and categories parts of the header.
+
+Example header:
+teletype::
+title:: My help file
+summary:: A short single-line summary of what this is
+categories:: Language>Conditionals, SomeOtherCategory
+related:: Reference/FooBar
+::
+
+Use regular text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
+
+teletype::
+section:: Introduction
+
+This is a nice document...
+blah blah blah..
+
+subsection:: Details
+
+Some details..
 ::
 
 subsection:: Documenting new classes
 When you navigate to an undocumented class, it will contain an schelp template that can be filled in and saved to HelpSource/Classes/ClassName.schelp.
-
-section:: Converting old helpfiles
-There is no automated process for this, but for most help files it's really simple to do it manually:
-
-numberedlist::
-## open the old helpfile in your web browser
-## copy the text and insert it in a new textfile: FileName.schelp
-## add the appropriate tags, like title, sections, etc.. (see below)
-## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#Directory layout:: below)
-## strong:: check that it rendered OK ::.
-You can run code::SCDoc.indexAllDocuments:: (link to method documentation: link::Classes/SCDoc#*indexAllDocuments::) to make SCDoc detect the new file and add it to the document index.
-
-If the file already existed and you want to see the changes, just press Reload in the help browser and SCDoc will re-render it.
-::
 
 A list of all undocumented classes can be seen here: link::Browse#Undocumented classes:: (auto-generated).
 
@@ -56,35 +55,6 @@ definitionlist::
 note:: It's important that the document is put in the right folder. For Classes, it's a must! ::
 
 All .schelp files will be parsed and rendered to an equal directory layout in the help target directory. Any other files, like images or ready-made HTML files, will just be copied.
-
-section:: Document header
-
-All tags that are used for document metadata should be entered at the top of the document source file, before any section or other text. See link::Reference/SCDocSyntax#Header tags::
-
-note:: You should always specify title, summary and categories. ::
-
-section:: Normal documents
-
-Example header:
-teletype::
-title:: My help file
-summary:: A short single-line summary of what this is
-categories:: Language>Conditionals, SomeOtherCategory
-related:: Reference/FooBar
-::
-
-Then use normal text in sections and subsections, and possible other tags for lists, tables, trees, images, links, etc.. See link::Reference/SCDocSyntax:: for tag reference.
-
-teletype::
-section:: Introduction
-
-This is a nice document...
-blah blah blah..
-
-subsection:: Details
-
-Some details..
-::
 
 section:: Class reference
 Class reference has some special tags and a more strict structure. Normal text should be written inside the special top-level sections DESCRIPTION, CLASSMETHODS, INSTANCEMETHODS and EXAMPLES.
@@ -140,7 +110,6 @@ Anchors for these methods get prefixed with a dot (.) instead of * or -.
 
 When multiple methods have the same signature (like ar and kr in ugens), they should all be listed in one single method tag.
 
-
 SCDoc generates docs for all undocumented methods. To ignore private methods, add them to a teletype::private\:::: tag, which works just like the method tag but without a section body.
 
 Extensions can add methods to existing class docs, see the link::#Extensions:: section below.
@@ -149,7 +118,6 @@ subsection:: Copy methods from other class
 You can use teletype:: copymethod\:: ClassName, methodName :: to copy the documentation of a method from another helpfile to this one.
 
 teletype::methodName:: must be prefixed with teletype::*:: (asterix) for class methods and teletype::-:: (dash) for instance methods.
-
 
 subsection:: Redirect classes
 Some classes uses the code::*doesNotUnderstand:: trick to redirect to another implementing class. To document such classes, you need to add this tag in the header:
@@ -196,7 +164,6 @@ code:: { LFPulse.ar(Line.kr(100, 800, 0.1)) }.plot(0.1); ::
 50 Hz wave:
 code:: { LFPulse.ar(50) * 0.1 }.play; ::
 ::
-
 
 section:: Categories
 Try to find good categories for the doc you are writing/converting. If a suitable category already exists, you should use that. See the link::Browse##Document Browser:: (auto-generated) for existing categories.
@@ -272,10 +239,6 @@ returns:: the stripped string
 The contents are inserted into the right spot (section, subsection, etc).
 It works for all kind of sections, for example one can add a subsection to code::DESCRIPTION\:::: with additional information, or add another top-level section, etc.
 
-
-
-
-
 section:: Links
 
 URL's are automagically converted to links.
@@ -321,14 +284,15 @@ For more filters, see link::Browse#UGens>Filters::
 ::
 Renders as: For more filters, see link::Browse#UGens>Filters::
 
-section:: Contributing with the documentation
+section:: Contributing with documentation
 
 The easiest way to contribute to the documentation is:
 
     1. Fork the SuperCollider repository https://github.com/supercollider/supercollider
+
     2. Clone your repository
     code::
-    git clone --recursive git://github.com/{your_username}/supercollider.git
+    git clone --recursive https://github.com/{your_username}/supercollider.git
     ::
     3. Create a branch for doc updates
     code::
@@ -339,3 +303,34 @@ The easiest way to contribute to the documentation is:
     git push origin -u doc_updates
     ::
     5. Submit your pull request through github, from your branch doc_updates to SuperCollider develop
+
+section::Working with legacy documentation
+
+Here is some information for working with documentation that is written in legacy format or syntax.
+
+subsection:: News in SC 3.5.2
+SCDoc was rewritten and the parser implemented in C++ for speed and stability in 3.5.2.
+The syntax got more strict, and the parser now throws errors or warnings if there are faults in the documentation.
+
+Some important changes to keep in mind:
+
+list::
+## Linking to sections does no longer use lower_case_and_underscored anchors, but the exact section title as it is. Example: teletype::link\::#Language-side news\:::: renders: link::#Language-side news::
+## Run code::SCDoc.indexAllDocuments:: if you add a new document or other file and want to see the change reflected in the help. If you just changed a document and want to see the changes, just press Reload in the browser and SCDoc will detect and re-index automatically.
+## The teletype::CLASS\:::: tag is deprecated, just use teletype::TITLE\:::: instead also for class reference docs.
+## The argument name given to the teletype::ARGUMENT\:::: tag is now optional. If not given, SCDoc will auto-fill the real argument name.
+::
+
+subsection:: Converting old helpfiles
+There is no automated process for this, but for most help files it's really simple to do it manually:
+
+numberedlist::
+## open the old helpfile in your web browser
+## copy the text and insert it in a new textfile: FileName.schelp
+## add the appropriate tags, like title, sections, etc.. (see below)
+## save the file to the right subdirectory under HelpSource, depending on the document kind (see link::#Directory layout:: below)
+## strong:: check that it rendered OK ::.
+You can run code::SCDoc.indexAllDocuments:: (link to method documentation: link::Classes/SCDoc#*indexAllDocuments::) to make SCDoc detect the new file and add it to the document index.
+
+If the file already existed and you want to see the changes, just press Reload in the help browser and SCDoc will re-render it.
+::

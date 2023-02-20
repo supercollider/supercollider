@@ -692,12 +692,7 @@ void SendReply_Ctor(SendReply* unit) {
     const int cmdNameAllocSize = (unit->m_cmdNameSize + 1) * sizeof(char);
     const int valuesAllocSize = unit->m_valueSize * sizeof(float);
     char* chunk = (char*)RTAlloc(unit->mWorld, cmdNameAllocSize + valuesAllocSize);
-
-    if (!chunk) {
-        Print("SendReply: RT memory allocation failed\n");
-        SETCALC(Unit_next_nop);
-        return;
-    }
+    ClearUnitIfMemFailed(chunk);
 
     unit->m_cmdName = chunk;
     unit->m_values = (float*)(chunk + cmdNameAllocSize);
@@ -770,23 +765,16 @@ void Poll_Ctor(Poll* unit) {
         SETCALC(Poll_next_kk);
     }
 
-    unit->m_trig = IN0(0);
     const int idSize = (int)IN0(3); // number of chars in the id string
     unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idSize + 1) * sizeof(char));
-
-    if (!unit->m_id_string) {
-        Print("Poll: RT memory allocation failed\n");
-        SETCALC(Unit_next_nop);
-        return;
-    }
+    ClearUnitIfMemFailed(unit->m_id_string);
 
     for (int i = 0; i < idSize; i++)
         unit->m_id_string[i] = (char)IN0(4 + i);
 
     unit->m_id_string[idSize] = '\0';
     unit->m_mayprint = unit->mWorld->mVerbosity >= -1;
-
-    Poll_next_kk(unit, 1);
+    unit->m_trig = 0.f; // ready for trigger in first sample
 }
 
 void Poll_Dtor(Poll* unit) { RTFree(unit->mWorld, unit->m_id_string); }
@@ -2250,6 +2238,7 @@ void FreeSelf_Ctor(FreeSelf* unit) {
     SETCALC(FreeSelf_next);
     unit->m_prevtrig = 0.f;
     FreeSelf_next(unit, 1);
+    unit->m_prevtrig = 0.f;
 }
 
 
@@ -2267,6 +2256,7 @@ void PauseSelf_Ctor(PauseSelf* unit) {
     SETCALC(PauseSelf_next);
     unit->m_prevtrig = 0.f;
     PauseSelf_next(unit, 1);
+    unit->m_prevtrig = 0.f;
 }
 
 
@@ -2400,11 +2390,7 @@ struct SendPeakRMS : public Unit {
         size_t cmdNameAllocSize = (cmdNameSize + 1) * sizeof(char);
 
         void* allocData = RTAlloc(unit->mWorld, channelDataAllocSize + cmdNameAllocSize);
-        if (!allocData) {
-            Print("SendPeakRMS: RT memory allocation failed\n");
-            SETCALC(Unit_next_nop);
-            return;
-        }
+        ClearUnitIfMemFailed(allocData);
 
         memset(allocData, 0, channelDataAllocSize);
         mChannelData = (float*)allocData;

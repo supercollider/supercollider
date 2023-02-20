@@ -277,6 +277,8 @@ public:
 
     void set_error_posting(int val) { error_posting = val; }
 
+    int get_error_posting() { return error_posting; }
+
 private:
     int error_posting = 1;
     /* @} */
@@ -328,6 +330,7 @@ public:
     }
 
     time_tag const& current_time(void) const { return now; }
+    time_tag next_time(void) const { return now + time_per_tick; }
 
     sc_scheduled_bundles scheduled_bundles;
     time_tag now, last;

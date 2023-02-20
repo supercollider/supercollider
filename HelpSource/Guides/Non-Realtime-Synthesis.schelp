@@ -89,7 +89,7 @@ list::
 ## Read a buffer from disk: code::[time, Buffer(server).allocReadMsg(path)]::
 ::
 
-NOTE:: Normal usage of link::Classes/Synth:: or link::Classes/Buffer:: communicates immediately with the server: code::Synth.new(...):: transmits teletype::/s_new::; code::Buffer.alloc(server, ...):: sends teletype::/b_alloc::. To build a NRT score, create the object as a placeholder (no immediate communication) and then ask a placeholder for the message: link::Classes/Synth#*basicNew:: and link::Classes/Synth#-newMsg::, or link::Classes/Buffer#*new:: and link::Classes/Buffer#-allocMsg:: or link::Classes/Buffer#-allocReadMsg::. If you have only used realtime synthesis, this code style is unfamiliar, but it's worth practicing.
+NOTE:: Normal usage of link::Classes/Synth:: or link::Classes/Buffer:: communicates immediately with the server: code::Synth.new(...):: transmits teletype::/s_new::; code::Buffer.alloc(server, ...):: sends teletype::/b_alloc::. To build a NRT score, create the object as a placeholder (no immediate communication) and then ask a placeholder for the message: link::Classes/Synth#*basicNew:: and link::Classes/Synth#-newMsg::, or link::Classes/Buffer#*new:: and link::Classes/Buffer#-allocMsg:: or link::Classes/Buffer#-allocReadMsg::. There is no need for a bus-allocation message simmilar to link::Classes/Buffer#-allocMsg::. If you have only used realtime synthesis, this code style is unfamiliar, but it's worth practicing.
 
 (The result of, e.g., teletype::newMsg:: is already the array representing the message. So it is sufficient for each Score item to be an array containing the time and method call. The subarray should be explicit only when writing the message by hand.) ::
 
@@ -281,9 +281,9 @@ x = Score([
 };
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,
 	duration: x.endTime + 1
@@ -325,10 +325,10 @@ x = Score([
 ]);
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	inputFilePath: inputFile.path,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,
 	duration: inputFile.duration
@@ -356,9 +356,9 @@ x.add([0.0, [\d_recv, SynthDescLib.global[\default].def.asBytes]]);
 x.sort;
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: ServerOptions.new.numOutputBusChannels_(2),
 	duration: 10
@@ -401,9 +401,9 @@ x.add([0.0, buf.allocReadMsg(Platform.resourceDir +/+ "sounds/a11wlk01.wav")]);
 x.sort;
 
 x.recordNRT(
-	outputFilePath: "~/nrt.aiff".standardizePath,
+	outputFilePath: "~/nrt.wav".standardizePath,
 	sampleRate: 44100,
-	headerFormat: "AIFF",
+	headerFormat: "wav",
 	sampleFormat: "int16",
 	options: server.options,
 	duration: 20
@@ -443,7 +443,7 @@ fork {
 	dur = sf.duration;
 	sf.close;
 
-	resultpath = PathName.tmp +/+ UniqueID.next ++ ".aiff";
+	resultpath = PathName.tmp +/+ UniqueID.next ++ ".wav";
 	oscpath = PathName.tmp +/+ UniqueID.next ++ ".osc";
 
 	score = Score([
@@ -461,7 +461,7 @@ fork {
 			BufWr.kr(i, resultbuf, DC.kr(0), 0);  // # of points in index 0
 		}).asBytes]],
 		[0, Synth.basicNew(\onsets, server, 1000).newMsg],
-		[dur, resultbuf.writeMsg(resultpath, headerFormat: "AIFF", sampleFormat: "float")]
+		[dur, resultbuf.writeMsg(resultpath, headerFormat: "wav", sampleFormat: "float")]
 	]);
 
 	cond = Condition.new;
@@ -532,4 +532,52 @@ f.close;
 
 // after rendering, always remember to clean up your mess:
 File.delete(PathName.tmp +/+ "Cmds.osc");
+::
+
+section:: Bus allocation and synth/LFO mapping
+
+In this example, a control bus and LFO map is used to have various affects on the source sound.
+
+code::
+(
+var nrtserver = Server(\nrt,
+    options: ServerOptions.new
+    .numOutputBusChannels_(2)
+    .numInputBusChannels_(2)
+);
+
+//control bus allocation
+var bus = Bus.control(nrtserver, 2);
+var lfo, sine;
+
+//LFO
+SynthDef.new(\lfo, {|out, freq=100|
+	Out.kr(out, LFNoise0.kr(freq).exprange(20.0,1000))
+}).load;
+
+lfo = Synth.basicNew(\lfo, server: nrtserver);
+
+SynthDef.new(\NRTsine, {|out=0, freq=440|
+	Out.ar(out, SinOsc.ar(freq, 0, 0.2).dup)
+}).load;
+
+sine = Synth.basicNew(\NRTsine, server: nrtserver);
+
+a = Score([
+	[0.0, lfo.newMsg(args:[\out, bus])],
+	[0.0, sine.newMsg],
+	[0.0, sine.mapMsg(\freq, bus)],
+]);
+
+a.recordNRT(
+    outputFilePath: "~/nrtbus-help.wav".standardizePath,
+    headerFormat: "wav",
+    sampleFormat: "int16",
+    options: nrtserver.options,
+    duration: 1,
+    action: { "done".postln }
+);
+
+nrtserver.remove;
+)
 ::

@@ -1083,6 +1083,8 @@ static inline int f_round(float f) {
 g_damper* make_damper(GVerb* unit, float damping) {
     g_damper* p;
     p = (g_damper*)RTAlloc(unit->mWorld, sizeof(g_damper));
+    if (p == nullptr)
+        return nullptr;
     p->damping = damping;
     p->delay = 0.f;
     return (p);
@@ -1093,31 +1095,45 @@ void free_damper(GVerb* unit, g_damper* p) { RTFree(unit->mWorld, p); };
 g_diffuser* make_diffuser(GVerb* unit, int size, float coef) {
     g_diffuser* p;
     p = (g_diffuser*)RTAlloc(unit->mWorld, sizeof(g_diffuser));
+    if (p == nullptr)
+        return nullptr;
     p->size = size;
     p->coef = coef;
     p->idx = 0;
     p->buf = (float*)RTAlloc(unit->mWorld, size * sizeof(float));
+    if (p->buf == nullptr) {
+        RTFree(unit->mWorld, p);
+        return nullptr;
+    }
     Clear(size, p->buf);
     return (p);
 }
 
 void free_diffuser(GVerb* unit, g_diffuser* p) {
-    RTFree(unit->mWorld, p->buf);
+    if (p)
+        RTFree(unit->mWorld, p->buf);
     RTFree(unit->mWorld, p);
 }
 
 g_fixeddelay* make_fixeddelay(GVerb* unit, int size, int maxsize) {
     g_fixeddelay* p;
     p = (g_fixeddelay*)RTAlloc(unit->mWorld, sizeof(g_fixeddelay));
+    if (p == nullptr)
+        return nullptr;
     p->size = size;
     p->idx = 0;
     p->buf = (float*)RTAlloc(unit->mWorld, maxsize * sizeof(float));
+    if (p->buf == nullptr) {
+        RTFree(unit->mWorld, p);
+        return nullptr;
+    }
     Clear(maxsize, p->buf);
     return (p);
 }
 
 void free_fixeddelay(GVerb* unit, g_fixeddelay* p) {
-    RTFree(unit->mWorld, p->buf);
+    if (p)
+        RTFree(unit->mWorld, p->buf);
     RTFree(unit->mWorld, p);
 }
 
@@ -1266,8 +1282,16 @@ void GVerb_Ctor(GVerb* unit) {
     float maxdelay = unit->maxdelay = SAMPLERATE * maxroomsize / 340.f;
     float largestdelay = unit->largestdelay = SAMPLERATE * roomsize / 340.f;
 
+    for (int i = 0; i < FDNORDER; ++i) {
+        unit->fdndels[i] = nullptr;
+        unit->fdndamps[i] = nullptr;
+        unit->ldifs[i] = nullptr;
+        unit->rdifs[i] = nullptr;
+    }
+    unit->tapdelay = nullptr;
     // make the inputdamper
     unit->inputdamper = make_damper(unit, 1. - inputbandwidth);
+    ClearUnitIfMemFailed(unit->inputdamper);
 
     // float ga = powf(10.f, -60.f/20.f);
     float ga = 0.001f;
@@ -1287,6 +1311,7 @@ void GVerb_Ctor(GVerb* unit) {
     for (int i = 0; i < FDNORDER; i++) {
         unit->fdndels[i] = make_fixeddelay(unit, (int)unit->fdnlens[i], (int)maxdelay + 1000);
         unit->fdndamps[i] = make_damper(unit, damping); // damping is the same as fdndamping in source
+        ClearUnitIfMemFailed(unit->fdndels[i] && unit->fdndamps[i]);
     }
 
     // diffuser section
@@ -1309,6 +1334,8 @@ void GVerb_Ctor(GVerb* unit) {
     unit->ldifs[1] = make_diffuser(unit, f_round(diffscale * cc), 0.75);
     unit->ldifs[2] = make_diffuser(unit, f_round(diffscale * dd), 0.625);
     unit->ldifs[3] = make_diffuser(unit, f_round(diffscale * e), 0.625);
+    ClearUnitIfMemFailed(unit->ldifs[0] && unit->ldifs[1] && unit->ldifs[2] && unit->ldifs[3]);
+
     b = 210;
     r = -0.568366;
     a = (int)(spread1 * r);
@@ -1324,6 +1351,7 @@ void GVerb_Ctor(GVerb* unit) {
     unit->rdifs[1] = make_diffuser(unit, f_round(diffscale * cc), 0.75);
     unit->rdifs[2] = make_diffuser(unit, f_round(diffscale * dd), 0.625);
     unit->rdifs[3] = make_diffuser(unit, f_round(diffscale * e), 0.625);
+    ClearUnitIfMemFailed(unit->rdifs[0] && unit->rdifs[1] && unit->rdifs[2] && unit->rdifs[3]);
 
     unit->taps[0] = 5 + (int)(0.410 * largestdelay);
     unit->taps[1] = 5 + (int)(0.300 * largestdelay);
@@ -1335,6 +1363,7 @@ void GVerb_Ctor(GVerb* unit) {
     }
 
     unit->tapdelay = make_fixeddelay(unit, 44000, 44000);
+    ClearUnitIfMemFailed(unit->tapdelay);
 
     // init the slope values
     unit->earlylevelslope = unit->drylevelslope = unit->taillevelslope = 0.f;

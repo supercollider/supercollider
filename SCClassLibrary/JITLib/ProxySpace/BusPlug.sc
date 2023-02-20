@@ -101,6 +101,10 @@ BusPlug : AbstractFunction {
 		^this.value(nil)
 	}
 
+	asAudioRateInput {
+		^this.ar
+	}
+
 
 	//  math support
 

@@ -339,20 +339,38 @@ method::fft
 Perform an FFT on a real and imaginary signal in place. See also the class method link::#*fftCosTable::.
 code::
 (
-var size = 512, real, imag, cosTable, complex;
+var size = 512;
+var real, imag, cosTable, frqAmpPhs, complex;
 
+// Create a signal of sine partials:
+// partial freqs, amps, and phases
+frqAmpPhs = [
+	// 0 Hz (DC), amp: 1, phase pi/2 (cosine)
+	[0, 1, 0.5pi],
+	// other partials, various amp and phase
+	[8], [13, 0.25], [21, 0.25], [55, 0.5, 0.5pi],
+	// nyquist, amp: 1, phase pi/2 (cosine)
+	[size/2, 1, 0.5pi]
+];
 real = Signal.newClear(size);
-		// some harmonics
-real.sineFill2([[8], [13, 0.5], [21, 0.25], [55, 0.125, 0.5pi]]);
-		// add a little noise
-real.overDub(Signal.fill(size, { 0.2.bilinrand }));
+real.sineFill2(frqAmpPhs);
 
-imag = Signal.newClear(size);
+imag = Signal.newClear(size); // zeros
 cosTable = Signal.fftCosTable(size);
 
+// Perform fft
 complex = fft(real, imag, cosTable);
-[real, imag, (complex.magnitude) / 100 ].flop.flat
-	.plot("fft", Rect(0, 0, 512 + 8, 500), numChannels: 3);
+
+// Plot signals and spectrum
+[
+	real,
+	imag,
+	(complex.magnitude) / size
+]
+.plot("fft", Window.screenBounds.insetBy(*200!2))
+.axisLabelX_(["Signal (real, samples)", "Signal (imaginary, samples)", "FFT spectrum (bins)"])
+.axisLabelY_(["Amplitude", "Amplitude", "Magnitude"])
+.plotMode_([\linear, \linear, \steps]);
 )
 ::
 
@@ -360,22 +378,29 @@ method::ifft
 Perform an inverse FFT on a real and imaginary signal in place. See also the class method link::#*fftCosTable::.
 code::
 (
-var size = 512, real, imag, cosTable, complex, ifft;
+var real, imag, cosTable, complex, ifft;
+var size = 512;
 
+// Create a signal of sine partials, add noise
 real = Signal.newClear(size);
-		// some harmonics
 real.sineFill2([[8], [13, 0.5], [21, 0.25], [55, 0.125, 0.5pi]]);
-		// add a little noise
 real.overDub(Signal.fill(size, { 0.2.bilinrand }));
 
-imag = Signal.newClear(size);
+imag = Signal.newClear(size); // zeros
 cosTable = Signal.fftCosTable(size);
 
+// Perform fft & ifft
 complex = fft(real, imag, cosTable).postln;
 ifft = complex.real.ifft(complex.imag, cosTable);
 
-[real, ifft.real].flop.flat
-	.plot("fft and back", Rect(0, 0, 512 + 8, 500), numChannels: 2);
+// Plot input and output
+[
+	real,
+	ifft.real
+]
+.plot("fft -> ifft", Window.screenBounds.insetBy(*200!2))
+.axisLabelX_(["Real signal (samples)", "Restored signal (samples)"])
+.axisLabelY_("Amplitude");
 )
 ::
 
@@ -400,6 +425,11 @@ y = Signal.fill(512, { |i| (i * pi / 64).sin });
 [x, y, (x + y) * 0.5, x * y, min(x, y), max(x, y) ].flop.flat
 	.plot(numChannels: 6);
 )
+::
+method::thresh
+Thresholding replaces every value < threshold with 0.
+note::
+Before SuperCollider 3.13 this function was implemented incorrectly, evaluating the square of provided threshold. This behavior is now fixed, but note that older code might give different results.
 ::
 method::+, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
 method:: %, **

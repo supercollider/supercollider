@@ -567,11 +567,14 @@ IdentityDictionary : Dictionary {
 		//	parameter: value, parameter: value, etc.)
 		// If you leave out the nextTimeOnGrid function, fallback to quant/phase/offset.
 
-	nextTimeOnGrid { |clock|
+	nextTimeOnGrid { |clock, referenceBeat|
 		if(this[\nextTimeOnGrid].notNil) {
-			^this[\nextTimeOnGrid].value(this, clock)
+			// 'nextTimeOnGrid' function shouldn't be responsible for
+			// resolving a nil referenceBeat
+			^this[\nextTimeOnGrid].value(this, clock, referenceBeat ?? { thisThread.beats })
 		} {
-			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0))
+			// but anyClock.nextTimeOnGrid is already responsible for that
+			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0), referenceBeat)
 		}
 	}
 	asQuant { ^this.copy }

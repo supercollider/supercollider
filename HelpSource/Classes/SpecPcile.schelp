@@ -8,7 +8,9 @@ Given an link::Classes/FFT:: chain this calculates the cumulative distribution o
 
 For example, to find the frequency at which 90% of the spectral energy lies below that frequency, you want the 90-percentile, which means the value of emphasis::fraction:: should be 0.9. The 90-percentile or 95-percentile is often used as a measure of strong::spectral roll-off::.
 
-The optional third argument strong::interpolate:: specifies whether interpolation should be used to try and make the percentile frequency estimate more accurate, at the cost of a little higher CPU usage. Set it to 1 to enable this.
+The optional third argument strong::interpolate:: (code::ir::) specifies whether interpolation should be used to try and make the percentile frequency estimate more accurate, at the cost of a little higher CPU usage. Set it to 1 to enable this.
+
+Optional fourth argument is strong::binout:: (code::ir::) specifies whether to output the bin number instead of the frequency (default 0, set to 1 to enable). If interpolate is enabled, linear interpolation on the bin number is performed.
 
 classmethods::
 method:: kr
@@ -17,6 +19,7 @@ argument:: buffer
 an link::Classes/FFT:: chain.
 argument:: fraction
 argument:: interpolate
+argument:: binout
 
 examples::
 

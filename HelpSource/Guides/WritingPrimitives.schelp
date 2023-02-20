@@ -7,7 +7,7 @@ Although much of SuperCollider's functionality is implemented in the SuperCollid
 section:: Example
 subsection:: SuperCollider code
 
-Primitive calls are preceded with an underscore, so for example _myPrimitiveName. Here is an example call to a primitive in an SC class:
+Primitive calls are preceded with an underscore, so for example code::_myPrimitiveName::. Here is an example call to a primitive in an SC class:
 
 code::
 Cocoa {
@@ -18,7 +18,7 @@ Cocoa {
 }
 ::
 
-In the example above the primitive is dispatched at _Cocoa_GetPathsDialog. If it is successful, it will return without executing the code below that. Primitive functions (see below) return an integer, which should be one of the values defined in the file PyrErrors.h:
+In the example above the primitive is dispatched at code::_Cocoa_GetPathsDialog::. If it is successful, it will return without executing the code below that. Primitive functions (see below) return an integer, which should be one of the values defined in the file emphasis::PyrErrors.h:::
 
 teletype::
 enum { // primitive errors
@@ -42,9 +42,9 @@ enum { // primitive errors
 };
 ::
 
-If your primitive can return any value besides code::errNone:: then you will need to provide handling code after the primitive call. In most cases this will be code::^this.primitiveFailed::. This will throw an Error giving the user information about what went wrong.
+If your primitive can return any value besides teletype::errNone:: then you will need to provide handling code after the primitive call. In most cases this will be code::^this.primitiveFailed::. This will throw an code::Error:: giving the user information about what went wrong.
 
-In some cases, you may wish to execute fallback SC code instead of throwing an Error. This can be useful in cases where for example a primitive provides an optimised version of a method which is not usable in all instances. Here is an example of how this can be done:
+In some cases, you may wish to execute fallback SC code instead of throwing an code::Error::. This can be useful in cases where for example a primitive provides an optimised version of a method which is not usable in all instances. Here is an example of how this can be done:
 
 code::
 flop {
@@ -53,7 +53,7 @@ flop {
 }
 ::
 
-Note that returning anything besides errNone will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some preparatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
+Note that returning anything besides teletype::errNone:: will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some preparatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
 
 code::
 // do initial work here
@@ -91,13 +91,13 @@ void initCocoaFilePrimitives()
 ::
 
 
-Here is the prototype for definePrimitive:
+Here is the prototype for teletype::definePrimitive:::
 
 teletype::
 int definePrimitive(int base, int index, char *name, PrimitiveHandler handler, int numArgs, int varArgs);
 ::
 
-The numArgs is the number of arguments that were passed into the SuperCollider method that calls the primitive, plus one
+The teletype::numArgs:: is the number of arguments that were passed into the SuperCollider method that calls the primitive, plus one
 to include the receiver which is passed in as the first argument.
 
 (TODO varArgs ...)
@@ -107,7 +107,7 @@ subsection:: Write your primitive
 teletype::g->sp:: is the top of the stack and is the last argument pushed.
 teletype::g->sp - inNumArgsPushed + 1 :: is the receiver and where the result goes.
 
-In this example, the numArgsPushed will be 2 (as specified in definePrimitive)
+In this example, the teletype::numArgsPushed:: will be 2 (as specified in teletype::definePrimitive::)
 
 teletype::
 int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
@@ -123,8 +123,7 @@ int prGetPathsDialog(struct VMGlobals *g, int numArgsPushed)
 }
 ::
 
-This example does not set the receiver, so the primitive returns the original receiver unchanged (still an instance of
-Cocoa). Or set the object at teletype::receiver:: which again is at teletype::(g->sp - numArgsPushed + 1)::.
+This example does not set the receiver, so the primitive returns the original receiver unchanged (still an instance of code::Cocoa::). Or set the object at teletype::receiver:: which again is at teletype::(g->sp - numArgsPushed + 1)::.
 
 
 section:: Guidelines
@@ -178,17 +177,23 @@ PyrObject *array2 = newPyrArray(g->gc, 2, 0, false);
 ::
 One caveat: When making a new object reachable by storing it on the stack, you must ensure that you are not overwriting objects that will be needed later in the primitive. If this is done the receiver may be collected on any future allocations. One solution is to strong::push:: the object onto the stack, and then pop it when finished, e.g.:
 teletype::
-PyrSlot *receiver = g->sp; // get the receiver
-PyrObject *result = newPyrArray(g->gc, 2, 0, true); // create the result
-++g->sp;
-SetObject(g->sp, result); // push the result array on the stack, so both it and rec are reachable
-... // further allocations which make use of the receiver to populate result
---g->sp; // pop the stack back to the receiver slot since we stored result there above
-SetObject(receiver, result); // now set the receiver
-::
-teletype::prArrayMultiChanExpand:: in lang/LangPrimSource/PyrListPrim.cpp gives an example of this approach. Setting teletype::runGC:: to false is another possible solution.
+PyrSlot *receiver = g->sp;    // get the receiver
+PyrObject *result = newPyrArray(g->gc, 2, 0, true); // create the empty array `result`
 
-Similarly, care must be taken when writing utility functions which themselves create new objects, since this may happen somewhat opaquely and the calling context may not be known. Functions which may call themselves recursively also need special attention. In such cases setting teletype::runGC:: to false may be the safest option, or including a teletype::runGC:: arg so that GC behaviour is explicit. teletype::MsgToInt8Array:: is one example of such a function.
+// To ensure both the `result` and receiver are reachable,
+//    push the `result` array on the stack:
+++g->sp;                      // advance the stack pointer
+SetObject(g->sp, result);     // set the `result`
+
+// further allocations which make use of the receiver to populate `result`
+(...)
+
+--g->sp;                      // pop the stack pointer back to the receiver slot
+SetObject(receiver, result);  // set the `result` to the receiver slot
+::
+teletype::prArrayMultiChanExpand:: in emphasis::lang/LangPrimSource/PyrListPrim.cpp:: gives an example of this approach. Setting teletype::runGC:: to teletype::false:: is another possible solution.
+
+Similarly, care must be taken when writing utility functions which themselves create new objects, since this may happen somewhat opaquely and the calling context may not be known. Functions which may call themselves recursively also need special attention. In such cases setting teletype::runGC:: to teletype::false:: may be the safest option, or including a teletype::runGC:: arg so that GC behaviour is explicit. teletype::MsgToInt8Array:: is one example of such a function.
 
 teletype::
 static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool runGC )
@@ -206,12 +211,12 @@ Setting an object into another object's internal slot (e.g. with teletype::SetOb
 list::
 ##It is the last created object, or
 ##Any subsequently created objects were allocated with teletype::runGC = false:: (i.e. the GC cannot have run in the interim), emphasis::and::
-##It has not had GCWrite called upon it
+##It has not had teletype::GCWrite:: called upon it
 ::
 
 The following two examples are both safe:
 definitionlist::
-##Run GCWrite as parent may not be white:
+##Run teletype::GCWrite:: as parent may not be white:
 ||teletype::
 PyrSlot *arg = g->sp;
 PyrObject *array = newPyrArray(g->gc, 2, 0, true); // runGC = true
@@ -232,9 +237,9 @@ SetObject(array->slots, str);
 ::
 ::
 
-If you emphasis::know:: that the child object is still white, then you can use teletype::GCWriteNew:: instead of teletype::GCWrite::. The child object will still be white if the GC has not been triggered since it was created, and you have not previously called GCWrite on it.
+If you emphasis::know:: that the child object is still white, then you can use teletype::GCWriteNew:: instead of teletype::GCWrite::. The child object will still be white if the GC has not been triggered since it was created, and you have not previously called teletype::GCWrite:: on it.
 
-If placing an object inside another has modified its size (e.g. adding an object to an array), you must correctly adjust its size by teletype::parent->size = newSize::. Both this and calling GCWrite (if necessary) should be done before any further object allocations. It is best practice to do them immediately if possible.
+If placing an object inside another has modified its size (e.g. adding an object to an array), you must correctly adjust its size by teletype::parent->size = newSize::. Both this and calling teletype::GCWrite:: (if necessary) should be done before any further object allocations. It is best practice to do them immediately if possible.
 
 definitionlist::
 ##This is safe:
@@ -285,7 +290,7 @@ numberedlist::
     ::
 ## If any object ( teletype::child:: ) was put inside a slot of another object ( teletype::parent:: ), you must have
     list::
-    ## called teletype::g->gc->GCWrite(parent, child):: afterwards unless you strong::know:: that the parent is still white (unexamined), or GCWriteNew if you also strong::know:: that the child is white
+    ## called teletype::g->gc->GCWrite(parent, child):: afterwards unless you strong::know:: that the parent is still white (unexamined), or teletype::GCWriteNew:: if you also strong::know:: that the child is white
     ## and, set teletype::parent->size:: to the correct value
     ::
 ::
@@ -326,9 +331,8 @@ int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
 ::
 If we would have put teletype::SetObject(arg, array);:: at the end of this function, teletype::array:: would strong::not:: have been reachable at the call to teletype::newPyrString::, and thus may have been marked teletype::free::, resulting in a hard to track down bug.
 
-warning::Do not store pointers to PyrObjects in C/C++ variables unless you can absolutely guarantee that they cannot be garbage
-collected. For example the File and SCWindow classes do this by storing the objects in an array in a classvar. The
-object has to stay in that array until no C object refers to it.
+warning::Do not store pointers to teletype::PyrObject::s in C/C++ variables unless you can absolutely guarantee that they cannot be garbage collected.
+For example the code::File:: and code::SCWindow:: classes do this by storing the objects in an array in a code::classvar::. The object has to stay in that array until no C object refers to it.
 strong::Failing to observe the above two points can result in very hard to find bugs.::
 ::
 
@@ -342,6 +346,6 @@ It is safe to assume that the receiver will be of the correct type because this 
 section:: FAQ
 
 definitionList::
-## Now where do i put the thing to return it?
-|| into teletype::g->sp - inNumArgsPushed + 1 :: (In most primitives this is referred to by the variable teletype::a::).
+## Now where do I put the thing to return it?
+|| Store your return value at teletype::g->sp - inNumArgsPushed + 1 ::. (In most primitives this is referred to by the variable teletype::a::.)
 ::

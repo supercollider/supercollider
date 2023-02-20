@@ -32,7 +32,7 @@ When Pproto ends, these eventTypes will respond to the strong::cleanup:: call by
 The function yields each event. That event is then performed with possible modifications by enclosing patterns and the player (either an link::Classes/EventStreamPlayer:: or a link::Classes/ScoreStreamPlayer::). The resultant event is returned to the function where it can be assigned to a key within the protoEvent.
 
 The patternarray is played using Pfpar, a variant of Ppar that ends when any of its subpatterns end. In this way,
-you can use Pproto to create effects that can be controlled by a pattern that runs in parallel with the note generating pattern and ends together with that note generating pattern (see example 0 below).
+you can use Pproto to create effects that can be controlled by a pattern that runs in parallel with the note generating pattern and ends together with that note generating pattern (see example 4 below).
 
 A strong::cleanupFunction:: that deallocates resources when the pattern ends or is stopped is automatically created. It can be replaced with a user defined cleanup if needed. This function receives two arguments: strong::proto::, the prototype event, and strong::flag::, which is set false if all nodes have been freed already by link::Classes/CmdPeriod::.
 
@@ -48,14 +48,14 @@ code::
 (
 SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1, sustain = 1, pan = 0, loop = 1|
 	var audio;
-	rate = rate * BufRateScale.kr(bufnum);
-	startPos = startPos * BufFrames.kr(bufnum);
+	rate = rate * BufRateScale.ir(bufnum);
+	startPos = startPos * BufFrames.ir(bufnum);
 
 	audio = BufRd.ar(1, bufnum, Phasor.ar(0, rate, startPos, BufFrames.ir(bufnum)), 1, 1);
 	audio = EnvGen.ar(Env.sine, 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, audio);
-}).add;
+}).add;  //use .store for rendering example below
 
 a = Pproto({
 	~newgroup = (type: \group).yield;
@@ -89,7 +89,7 @@ SynthDef(\osc,{ arg out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp =
 	audio = EnvGen.ar(Env.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, audio);
-}).add;
+}).add;  //use .store for rendering example below
 
 b = Pproto({
 	~bufnum = (type: \sine1, amps: 1.0/[1,2,3,4,5,6] ).yield;
@@ -131,7 +131,7 @@ SynthDef(\shaper,{ arg out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, am
 	audio = Shaper.ar(bufnum, audio);
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, LeakDC.ar(audio));
-}).add;
+}).add;  //use .store for rendering example below
 
 c = Pproto({
 	~bufnum = (type: \cheby, amps: 1.0/[1,2,3,4,5,6] ).yield;
@@ -156,7 +156,6 @@ c.play
 )
 //c.render("sounds/test.aif", 40)
 //SoundFile("sounds/test.aif").play
-//
 ::
 
 subsection::Example 4, using an effect with parallel control.

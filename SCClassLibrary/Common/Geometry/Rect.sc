@@ -65,6 +65,25 @@ Rect {
 	moveToPoint { arg aPoint;
 		^this.class.new(aPoint.x, aPoint.y, width, height)
 	}
+	anchorTo { arg pt, position;
+		^switch(position,
+			// center_ returns new Rect, side setters modify this
+			\center,      { this.center_(pt) },
+			\top,         { this.center_(pt).top_(pt.y) },
+			\bottom,      { this.center_(pt).bottom_(pt.y) },
+			\left,        { this.center_(pt).left_(pt.x) },
+			\right,       { this.center_(pt).right_(pt.x) },
+			\topLeft,     { this.copy.top_(pt.y).left_(pt.x) },
+			\topRight,    { this.copy.top_(pt.y).right_(pt.x) },
+			\bottomLeft,  { this.copy.bottom_(pt.y).left_(pt.x) },
+			\bottomRight, { this.copy.bottom_(pt.y).right_(pt.x) },
+			// support synonymous keys that match preexisting Rect getters
+			\leftTop,     { this.copy.top_(pt.y).left_(pt.x) },
+			\rightTop,    { this.copy.top_(pt.y).right_(pt.x) },
+			\leftBottom,  { this.copy.bottom_(pt.y).left_(pt.x) },
+			\rightBottom, { this.copy.bottom_(pt.y).right_(pt.x) }
+		)
+	}
 	resizeBy { arg h, v;
 		^this.class.new(left, top, width + h, height + (v ? h))
 	}
@@ -144,6 +163,7 @@ Rect {
 	}
 
 	asRect { ^this }
+	asSize { ^Size(width, height) }
 	bounds { ^Rect.new(left, top, width, height) }
 	== { arg that;
 		^this.compareObject(that, #[\left, \top, \width, \height])

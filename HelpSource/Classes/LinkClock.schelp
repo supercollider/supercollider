@@ -93,10 +93,10 @@ argument:: beats
 The time in beats, corresponding to the reference time. Default to code::0::.
 
 argument:: seconds
-The reference time in seconds. See link::Classes/TempoClock#-new::.
+The reference time in seconds. See link::Classes/TempoClock#*new::.
 
 argument:: queueSize
-The storage size of the scheduling queue. See link::Classes/TempoClock#-new::.
+The storage size of the scheduling queue. See link::Classes/TempoClock#*new::.
 
 discussion::
 If an existing Link session is found on the local network, the object connects

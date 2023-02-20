@@ -123,7 +123,6 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, g
 w = Window("another control panel", Rect(20, 400, 440, 360));
 w.front; // make window visible and front window.
 w.view.decorator = FlowLayout(w.view.bounds);
-w.view.background = Color.rand(0.0,1.0); // fallback for SwingOSC
 w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
 					[\h,\v].choose, 100, rrand(0.1,0.9));
 )

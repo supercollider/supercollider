@@ -73,6 +73,12 @@ Round to multiple of aNumber
 method:: roundUp
 Round up to a multiple of aNumber. For roundDown use Link::Classes/SimpleNumber#-trunc#trunc::.
 
+method:: smallButNotZero
+Check if the value is closer to zero than a threshold, but not zero.
+
+argument::thresh
+The threshold to use for comparison.
+
 method:: trunc
 Truncate to multiple of aNumber (e.g. it rounds numbers down to a multiple of aNumber).
 
@@ -368,16 +374,16 @@ method:: asAudioRateInput
 Converts this into an audiorate input.
 
 method:: asTimeString
-Produces a time string in the format code::ddd:hh:mm:ss.sss::, interpreting the receiver as time in
-seconds. See link::Classes/String#-asSecs:: for the inverse function.
+Produces a time string in the clock format inspired by ISO 8601 time interval display (truncated representation) code::(ddd:)hh:mm:ss(.z)::, interpreting the receiver as time in seconds. See link::Classes/String#-asSecs:: for the inverse function.
 argument:: precision
-accuracy of the millisecond format; the string will always be formatted with 3 decimal places for
-milliseconds. Minimum value: 0.001.
+accuracy of the fraction of seconds; since the number of decimal places is also an argument, code::precision:: is clamped to code::10.pow(decimalPlaces.neg)::, i.e. code::0.001:: for code::decimalPlaces = 3::
 argument::maxDays
 maximum number of days
 argument::dropDaysIfPossible
 a link::Classes/Boolean::. If set to code::true::, and the number of days in the formatted string
-would be 0, that section is instead ommitted and the string is formatted as code::hh:mm:ss.sss::.
+would be 0, that section of the resulting string is omitted
+argument::decimalPlaces
+number of decimal places representing fraction of seconds, clamped to code::0::; if code::0::, the string is formatted as code::(ddd:)hh:mm:ss::
 discussion::
 code::
 (
@@ -444,7 +450,7 @@ fork {
 ::
 
 method:: waitUntil
-like wait, only specify a time (measured in beats of the current thread's clock). Outside a Routine, this trows an error (see also Routine for details).
+like wait, only specify a time (measured in beats of the current thread's clock). Outside a Routine, this throws an error (see also Routine for details).
 
 method:: sleep
 make the current thread sleep, until woken up by re-scheduling. Outside a Routine, this trows an error (see also Routine for details).
@@ -486,34 +492,42 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 ::
 
 method:: series
-return an arithmetic series from this over second to last.
-The last value may not be included in the result if the step size does not divide evenly into the range of the series.
+Generate an arithmetic series from teletype::this:: over strong::second:: to strong::last::.
 
-discussion::
-This is used in the shortcuts:
-code::
-(0..100);
-(1, 3 .. 17)
-::
-If second is nil, it is one magnitude step towards last (1 or -1).
-Examples:
+If strong::second:: is teletype::nil::, it is one magnitude step towards last (1 or -1).
 code::
 series(5, 7, 10);
 series(5, nil, 10);
 (5, 7 .. 10)
 ::
+This is used in the shortcuts:
+code::
+(0..100);
+(1, 3 .. 17)
+::
 
-method:: seriesIter
-returns:: a Routine that iterates over the numbers from this to last.
+returns::
+An link::Classes/Array::.
 
 discussion::
-Since this is a lazy operation, last may be inf, generating an endless series
-(see also link::Guides/ListComprehensions::)
+The last value may not be included in the result if the step size does not divide evenly into the range of the series.
+
+method:: seriesIter
+Create a link::Classes/Routine:: that iterates over an arithmetic series from teletype::this:: over strong::second:: to strong::last::.
+
+Since this is a lazy operation, strong::last:: can be code::inf::, generating an endless series. If unspecified, strong::last:: is code::inf:: or code::-inf:: depending on the step direction.
 code::
-r = seriesIter(0, 5);
+r = seriesIter(0, 5, 52);
 r.nextN(8);
-r.nextN(8);
+r.nextN(8); // reaches 'last', then nils
+
+r = seriesIter(0, 5); // last = inf
+r.nextN(8); // run repeatedly
 ::
+See also link::#-series:: and link::Guides/ListComprehensions::.
+
+returns::
+A link::Classes/Routine::.
 
 
 subsection:: windowing
@@ -533,30 +547,69 @@ returns:: a value for a triangle window function between 0 and 1.
 subsection:: mapping
 
 method:: distort
-a nonlinear distortion function.
+A nonlinear distortion function.
+
+Implements:
+teletype::
+this / (1.0 - abs(this))
+::
+Visualize:
+code::
+(
+{ var saw = LFSaw.ar(2 * 0.01.reciprocal);
+	[saw, saw.distort]
+}.plot.superpose_(true)
+)
+::
 
 method:: softclip
-Distortion with a perfectly linear region from -0.5 to +0.5
+Distortion with a perfectly linear region from -0.5 to +0.5.
+
+Implements:
+teletype::
+if (abs(this) < 0.5) { this } { (abs(this) - 0.25) / this };
+::
+Visualize:
+code::
+(
+{ var saw = LFSaw.ar(2 * 0.01.reciprocal);
+	[saw, saw.softclip]
+}.plot.superpose_(true)
+)
+::
 
 method:: scurve
-Map receiver in the onto an S-curve.
-discussion::
+Map receiver in the onto an S-curve bound to [0,1].
+Implements:
+teletype::
+this * this * (3.0 - (2.0 * this))
+::
+with teletype::this:: clipped to [0,1].
 code::
-((0..100) / 100 ).collect(_.scurve).plot
+((-100..200) / 100 ).collect(_.scurve).plot
 ::
 
 method:: ramp
-Map receiver onto a ramp starting at 0.
+Map the receiver onto a ramp starting at code::0.0::, ending at code::1.0::, effectively clipping the receiver at [0,1].
 discussion::
 code::
-((-100..100) / 100 ).collect(_.ramp).plot
+(
+	var vals = (-100..200) / 100;
+	vals.collect(_.ramp).plot
+	.domainSpecs_(
+		[vals.minItem, vals.maxItem].asSpec
+	)
+	.axisLabelX_("input").axisLabelY_("output")
+)
 ::
 
 method::magnitude
-returns:: absolute value (see link::Classes/Polar::, link::Classes/Complex::)
+returns:: The absolute value.
+
+Alternatively conceived of as the link::Classes/Polar#-magnitude:: or link::Classes/Complex#-magnitude::, wherein the receiver is the real part and the imaginary part is code::0.0::.
 
 method::angle
-returns:: angle of receiver conceived as link::Classes/Polar:: or link::Classes/Complex:: number.
+returns:: Angle of receiver (in radians) conceived as link::Classes/Polar:: or link::Classes/Complex:: number, wherein the receiver is the real part and the imaginary part is code::0.0::. I.e. teletype::if (this.isPositive) { 0.0 } { pi }::.
 
 
 method:: degreeToKey
@@ -597,16 +650,16 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 ::
 
 
-
 method::gaussCurve
-map the receiver onto a gauss function.
+Map the receiver onto a gauss function.
 
-discussion::
 Uses the formula:
-code::
-a * (exp(squared(this - b) / (-2.0 * squared(c)))) Default values: a = 1; b = 0; c = 1
+teletype::
+a * -exp((this - b).squared / (2 * c.squared))
 ::
-Example code
+where code::a:: is the distribution amplitude, code::b:: is the mean (typically denoted emphasis::mu::), and the variance is code::c.squared:: (emphasis::sigma::^2).
+
+The method defaults to a "standard normal distribution": a zero mean and both the peak amplitude and variance are code::1.0:: (code::a = 1.0, b = 0.0, c = 1.0::).
 code::
 (0..1000).normalize(-10, 10).collect { |num| num.gaussCurve }.plot;
 ::

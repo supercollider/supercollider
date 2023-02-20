@@ -1,6 +1,6 @@
 class:: Pspawn
 summary:: Spawns sub-patterns based on parameters in an event pattern
-related:: Classes/Pspawner
+related:: Classes/Pspawner, Classes/Spawner
 categories:: Streams-Patterns-Events>Patterns>Parallel
 
 description::

@@ -17,7 +17,7 @@ code::
 96
 ::
 
-They can also also be expressed in hexidecimal with the prefix code::0x:: and
+They can also also be expressed in hexadecimal with the prefix code::0x:: and
 either uppercase or lowercase letters:
 code::
 0xa    // 10

@@ -125,14 +125,14 @@ definitionlist::
 ## int || Major version number. Equivalent to sclang's code::Main.scVersionMajor::.
 ## int || Minor version number. Equivalent to sclang's code::Main.scVersionMinor::.
 ## string || Patch version name. Equivalent to the sclang code code::"." ++ Main.scVersionPatch ++ Main.scVersionTweak::.
-## string || Git branch name.
+## string || Git branch or tag name.
 ## string || First seven hex digits of the commit hash.
 ::
 ::
 
 The standard human-readable version string can be constructed by concatenating code:: major_version ++ "." ++ minor_version ++ patch_version ::. Since version information is easily accessible to sclang users via the methods described above, this command is mostly useful for alternate clients.
 
-The git branch name and commit hash could be anything if the user has forked SC, so they should only be used for display and user interface purposes.
+The git branch/tag name and commit hash could be anything if the user has forked SC, so they should only be used for display and user interface purposes.
 
 section:: Synth Definition Commands
 
@@ -275,7 +275,7 @@ table::
 ## strong::int:: || node ID
 ## N * || table::
     ## strong::int:: or strong::string:: || a control index or name
-    ## strong::int:: || control bus index
+    ## strong::int:: || audio bus index
     ::
 ::
 
@@ -287,7 +287,7 @@ table::
 ## strong:: int:: || node ID
 ## N * || table::
     ## strong::int:: or strong::string:: || a control index or name
-    ## strong::int:: || control bus index
+    ## strong::int:: || audio bus index
     ## strong::int:: || number of controls to map
     ::
 ::

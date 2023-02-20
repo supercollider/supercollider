@@ -23,7 +23,7 @@ elseif (APPLE)
     HINTS /usr/local/opt/libsndfile/include
   )
 
-  find_library(SNDFILE_LIBRARY NAMES libsndfile.dylib
+  find_library(SNDFILE_LIBRARY NAMES libsndfile.dylib libsndfile.a
     HINTS /usr/local/opt/libsndfile/lib
   )
 
@@ -32,18 +32,12 @@ elseif (APPLE)
     set(SNDFILE_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/../platform/mac/lib/scUBlibsndfile.a)
     set(SNDFILE_FOUND TRUE)
     add_definitions("-isystem ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile")
-    message(STATUS "Could not find homebrew install of libsndfile, using old bundled version instead")
+    message(STATUS "Could not find install of libsndfile, using old bundled version instead")
   else()
     set(SNDFILE_FOUND TRUE)
-    message(STATUS "Found homebrew install of libsndfile")
+    message(STATUS "Found install of libsndfile in ${SNDFILE_LIBRARY}")
     set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
   endif()
-
-  # TODO on non-apple platforms, we need to be able to test for >=1018.
-  # (On apple it is known true, because we bundle a later version.)
-  # I think this is not necessary anymore in 2016
-
-  add_definitions("-DLIBSNDFILE_1018")
 
 else()
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
@@ -87,6 +81,7 @@ else()
       "$ENV{PROGRAMFILES\(X86\)}/libsndfile/bin"
       "$ENV{ProgramFiles}/libsndfile/lib"
       "$ENV{ProgramFiles}/libsndfile/bin"
+    PATH_SUFFIXES "bin"
   )
 
   # Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
@@ -103,3 +98,36 @@ else()
 
 endif()
 mark_as_advanced(SNDFILE_INCLUDE_DIR SNDFILE_LIBRARY)
+
+# check for format support
+# note: this only check whehter libsndfile's _version_ supports the given format
+# it does not check whether support for that format was actually compiled into the library
+
+include(CMakePushCheckState)
+cmake_push_check_state(RESET)
+
+list(APPEND CMAKE_REQUIRED_INCLUDES ${SNDFILE_INCLUDE_DIR})
+
+include(CheckCSourceCompiles)
+check_c_source_compiles("
+    # include <sndfile.h>
+    int main() {return SF_FORMAT_VORBIS;}
+  "
+  SNDFILE_HAS_VORBIS
+)
+
+check_c_source_compiles("
+    # include <sndfile.h>
+    int main() {return SF_FORMAT_OPUS;}
+  "
+  SNDFILE_HAS_OPUS
+)
+
+check_c_source_compiles("
+    # include <sndfile.h>
+    int main() {return SF_FORMAT_MPEG;}
+  "
+  SNDFILE_HAS_MPEG
+)
+
+cmake_pop_check_state()

@@ -1,0 +1,35 @@
+CLASS:: ExponentialGridLines
+summary:: Calculates the numerical values suitable for exponentially-spaced grid lines to be used for plotting or other UI elements.
+categories:: GUI>Accessories
+related:: Classes/GridLines, Classes/AbstractGridLines, Classes/LinearGridLines, Classes/DrawGrid, Classes/ControlSpec, Classes/Plotter, Reference/plot
+
+DESCRIPTION::
+code::ExponentialGridLines:: is a strategy object that finds suitable intervals for plotting grid lines and labels. The values span the range defined by a corresponding link::Classes/ControlSpec::. Most of the functionality of code::ExponentialGridLines:: is inherited from its superclass, link::Classes/AbstractGridLines::. The instance methods are used by link::Classes/DrawGrid:: (which is in turn used by link::Classes/Plotter::) which handles the drawing of the lines and labels.
+
+code::ExponentialGridLines:: isn't usually instantiated directly, but rather by the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method which return the appropriate code::AbstractGridLines:: subclass for the given spec.
+
+code::
+(
+// LinearGridLines
+var linGrid = ControlSpec(0, 100, \lin, units: "Time").grid;
+// ExponentialGridLines
+var expGrid = \freq.asSpec.grid;
+
+DrawGrid.test(linGrid, expGrid);
+)
+::
+
+CLASSMETHODS::
+
+COPYMETHOD:: AbstractGridLines *new
+
+INSTANCEMETHODS::
+
+COPYMETHOD:: AbstractGridLines -spec
+COPYMETHOD:: AbstractGridLines -asGrid
+COPYMETHOD:: AbstractGridLines -niceNum
+COPYMETHOD:: AbstractGridLines -looseRange
+COPYMETHOD:: AbstractGridLines -getParams
+COPYMETHOD:: AbstractGridLines -formatLabel
+
+private:: prCheckWarp, ideals

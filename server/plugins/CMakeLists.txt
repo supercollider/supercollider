@@ -30,6 +30,7 @@ set(plugin_sources
 	ChaosUGens.cpp
 	DelayUGens.cpp
 	DemandUGens.cpp
+	DemoUGens.cpp
 	DynNoiseUGens.cpp
 	FilterUGens.cpp
 	GendynUGens.cpp
@@ -70,7 +71,7 @@ foreach(plugin ${plugin_sources})
 endforeach(plugin)
 
 if(AUDIOAPI STREQUAL bela)
-    # The Bela lib will have its own set of libraries and includes
+    # The Bela lib will have its own set of libraries and includes
     # However, the Bela audio backend for SC has some direct calls to Xenomai
     # Therefore we need to get flags for those as well
     find_package(Xenomai REQUIRED)
@@ -150,6 +151,15 @@ if(NOT NO_LIBSNDFILE)
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
+		if(SNDFILE_HAS_VORBIS)
+			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_VORBIS)
+		endif()
+		if(SNDFILE_HAS_OPUS)
+			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_OPUS)
+		endif()
+		if(SNDFILE_HAS_MPEG)
+			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_MPEG)
+		endif()
 		target_include_directories(DiskIO_UGens PUBLIC ${SNDFILE_INCLUDE_DIR})
 		target_link_libraries(DiskIO_UGens ${PTHREADS_LIBRARY} ${SNDFILE_LIBRARIES})
 		list(APPEND plugins DiskIO_UGens)
@@ -328,11 +338,13 @@ if (WIN32)
 	)
 
 elseif(APPLE)
-	foreach(plugin ${plugins} ${supernova_plugins})
-		add_custom_command(TARGET ${plugin} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-	endforeach()
+	if(scappauxresourcesdir)
+		foreach(plugin ${plugins} ${supernova_plugins})
+			add_custom_command(TARGET ${plugin} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}/plugins
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}/plugins)
+		endforeach()
+	endif()
 
 else()
 	install(TARGETS ${plugins} ${supernova_plugins}

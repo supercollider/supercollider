@@ -5,20 +5,14 @@
             "test":"*"
         },
         {
-            "suite":"TestBus",
-            "test":"test_get",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
-            "suite":"TestBus",
-            "test":"test_getn",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestCondition",
             "test":"*",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in qpm (FIXME)"
+        },
+        {
+            "suite":"TestCondVar",
+            "test":"test_waitFor_withPredicate_signaledButFalseSoTimedOut",
             "skip":true,
             "skipReason":"UnitTest fails when run in qpm (FIXME)"
         },
@@ -47,12 +41,6 @@
             "skipReason":"UnitTest fails when run in qpm (FIXME)"
         },
         {
-            "suite":"TestDoneActions",
-            "test":"test_freeSelfAndResumeNext",
-            "skip":true,
-            "skipReason":"UnitTest fails when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestEnvGen_server",
             "test":"test_zero_gate_n_off_not_sent",
             "skip":true,
@@ -77,28 +65,10 @@
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
-            "suite":"TestNodeProxyBusMapping",
-            "test":"test_audiorate_mapping",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
-            "suite":"TestNodeProxyBusMapping",
-            "test":"test_audiorate_mapping_elasticity",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
             "suite":"TestNodeProxyRoles",
             "test":"test_proxyroles_xfade_smoothly",
             "skip":true,
             "skipReason":"UnitTest fails in qpm (FIXME)"
-        },
-        {
-            "suite":"TestNodeProxy_Server",
-            "test":"test_synthDef_isReleased_afterFree",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
         },
         {
             "suite":"TestNodeProxy_Server",
@@ -113,34 +83,40 @@
             "skipReason":"UnitTest fails when run in qpm on Linux (FIXME)"
         },
         {
-            "suite":"TestPanAz",
-            "test":"*",
-            "skip":true,
-            "skipReason":"UnitTest fails (FIXME)"
-        },
-        {
-            "suite":"TestProxyNodeMap",
-            "test":"test_nodeMap_controlNamesConvertsObjectToControlInput",
-            "skip":true,
-            "skipReason":"UnitTest has bugs (FIXME)"
-        },
-        {
-            "suite":"TestPV_ChainUGen",
-            "test":"*",
-            "skip":true,
-            "skipReason":"Server might hang after these tests when run in qpm (FIXME)"
-        },
-        {
             "suite":"TestSCDoc",
             "test":"test_helpSourceDirs_includedExtensions",
             "skip":true,
             "skipReason":"UnitTest fails (FIXME)"
         },
         {
+            "suite":"TestServer_boot",
+            "test":"test_notifyAndServerBootActions",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in the CI (FIXME)"
+        },
+        {
+            "suite":"TestServer_boot",
+            "test":"test_notifyAndServerTreeActions",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in the CI (FIXME)"
+        },
+        {
             "suite":"TestTempoClock",
             "test":"test_nextTimeOnGrid_okAfterMeterChange",
             "skip":true,
             "skipReason":"UnitTest fails (FIXME)"
+        },
+        {
+            "suite":"TestUGen_RTAlloc",
+            "test":"test_allUGens",
+            "skip":true,
+            "skipReason":"UnitTest fails when run in qpm (FIXME)"
+        },
+        {
+            "suite":"TestVolume",
+            "test":"test_booting",
+            "skip":true,
+            "skipReason":"Multiple Volume synths are created when running test inside the suite"
         },
         {
             "suite":"TestWebView",
@@ -153,6 +129,12 @@
             "test":"test_findText_notFound",
             "skip":true,
             "skipReason":"UnitTest sometimes fails when run in qpm"
+        },
+        {
+            "suite":"TestMIDI",
+            "test":"test_linuxRealtimeCodesAreCorrect",
+            "skip":true,
+            "skipReason":"Requires ALSA kernel module, not allowed in GHA"
         }
     ]
 }

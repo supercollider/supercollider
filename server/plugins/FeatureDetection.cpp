@@ -110,6 +110,7 @@ void RunningSum_Dtor(RunningSum* unit);
 
 void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase* unit) {
     float fbufnum = ZIN0(0);
+    unit->m_prevframe = nullptr;
 
     PV_FEAT_GET_BUF_UNLOCKED
 
@@ -118,6 +119,7 @@ void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase* unit) {
 
     if (bufOK) {
         unit->m_prevframe = (float*)RTAlloc(unit->mWorld, insize);
+        ClearUnitIfMemFailed(unit->m_prevframe);
         memset(unit->m_prevframe, 0, insize);
     }
 
@@ -352,6 +354,7 @@ void RunningSum_Ctor(RunningSum* unit) {
     unit->mcount = 0; // unit->msamp-1;
 
     unit->msquares = (float*)RTAlloc(unit->mWorld, unit->msamp * sizeof(float));
+    ClearUnitIfMemFailed(unit->msquares);
     // initialise to zeroes
     for (int i = 0; i < unit->msamp; ++i)
         unit->msquares[i] = 0.f;

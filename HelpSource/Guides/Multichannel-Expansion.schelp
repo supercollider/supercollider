@@ -82,7 +82,7 @@ code::
 ["foo","bar","zoo"].multiChannelPerform('++', ["l","ba"])
 ::
 
-subsection:: Using flop for multichannel expansion
+subsection:: Using flop and flop1 for multichannel expansion
 The method flop swaps columns and rows, allowing to derive series of argument sets:
 code::
 (
@@ -113,20 +113,40 @@ fork {
 )
 ::
 
-Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
+Similarly, link::Classes/Function#-flop#Function:flop:: and link::Classes/Function#-flop1#Function:flop1:: return an unevaluated function that will expand to its arguments when evaluated.
+
 code::
+// multichannel expansion for if, here to protect from division by zero.
+// flop always returns an array
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value(2, 4); // [ 0.5 ] (always returns an array)
+
+// multichannel expansion for if, here to protect from division by zero
+// flop1 returns an array only if the arguments include an array
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value([2], 4); // -> [0.5]
+f.value(2, 4); // -> 0.5
+::
+
+
+code::
+// multichannel expand a function that forks a task
 (
-SynthDef("blip", { |out, freq|
+SynthDef(\blip, { |out, freq|
 	Out.ar(out,
 		Line.ar(0.1, 0, 0.05, 1, 0, 2) * Pulse.ar(freq * [1, 1.02])
 	)
 }).add;
 
 a = { |dur=1, x=1, n=10, freq=400|
-	fork { n.do {
-			if(x.coin) { Synth("blip", [\freq, freq]) };
+	fork {
+		n.do {
+			if(x.coin) { Synth(\blip, [\freq, freq]) };
 			(dur / n).wait;
-	} }
+		}
+	}
 }.flop;
 )
 

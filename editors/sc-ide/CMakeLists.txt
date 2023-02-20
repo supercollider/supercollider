@@ -2,22 +2,15 @@ set(QT_IDE_COMPONENTS
     Concurrent
     Core
     LinguistTools
-    # OpenGL
-    PrintSupport
-    Qml
-    Quick
-    Sql
+    Network
     Widgets
 )
 
 set(QT_IDE_LIBRARIES
     Qt5::Concurrent
     Qt5::Core
-    # Qt5::OpenGL
-    Qt5::PrintSupport
-    Qt5::Qml
-    Qt5::Quick
-    Qt5::Sql
+    Qt5::Network
+    Qt5::Widgets
 )
 
 if(SC_USE_QTWEBENGINE)
@@ -328,6 +321,10 @@ set_target_properties(libscide PROPERTIES PREFIX "")
 
 if(APPLE)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
+    if(NOT SC_DISABLE_XCODE_CODESIGNING)
+        # codesign --deep seems to be needed for the SuperCollider binary to allow incremental builds
+        set_target_properties(SuperCollider PROPERTIES XCODE_ATTRIBUTE_OTHER_CODE_SIGN_FLAGS "--deep")
+    endif()
 else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
@@ -552,6 +549,33 @@ if(APPLE OR WIN32)
                 execute_process(COMMAND chmod +w ${QT_WEBENGINE_APP}/Contents/Resources/QtWebEngineProcess.entitlements)
                 execute_process(COMMAND ${QT_WEBENGINE_FIXUP_COMMAND})
                 ")
+        endif()
+
+        if(SC_CODESIGN_AFTER_DEPLOY)
+            string(APPEND VERIFY_CMD "
+                message(STATUS \"Running ad hoc code signing\")
+                execute_process(COMMAND 
+                    codesign --force --deep --sign - ${CONTENTS_DIR}/MacOS/SuperCollider
+                )
+                execute_process(COMMAND 
+                    sh -c \
+                    \"find ${CONTENTS_DIR}/MacOS ${CONTENTS_DIR}/Frameworks \
+                    ${CONTENTS_DIR}/Resources ${CONTENTS_DIR}/Resources/plugins \
+                    \\\\( \
+                        -name \\\"*.dylib\\\" \
+                        -o -name \\\"*.framework\\\" \
+                        -o -name \\\"sclang\\\" \
+                        -o -name \\\"scsynth\\\" \
+                        -o -name \\\"supernova\\\" \
+                        -o -name \\\"*.scx\\\" \
+                        -maxdepth 1 \
+                    \\\\) \
+                    -exec codesign --force --sign - {} \\\;\"
+                )
+                execute_process(COMMAND 
+                    codesign --force --sign - ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app
+                )
+            ")
         endif()
 
         if(SC_VERIFY_APP)

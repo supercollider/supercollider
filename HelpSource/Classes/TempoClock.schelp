@@ -295,6 +295,8 @@ t.nextTimeOnGrid(t.beatsPerBar) == t.nextBar // => true
 ::
 Together strong::quant:: and strong::phase:: are useful for finding the next n beat in a bar, e.g. code::nextTimeOnGrid(4, 2):: will return the next 3rd beat of a bar (of 4 beats), whereas code::nextBar-2:: may return an elapsed beat.
 
+code::referenceBeat:: may be used to evaluate the quant and phase relative to an arbitrary beat. Normally, no reference beat will be specified (code::nil::) and the clock's current beats will be used.
+
 method::elapsedBeats
 Returns the current elapsed time in beats. This is equivalent to code::tempoClock.secs2beats(Main.elapsedTime)::. It is often preferable to use link::#-beats:: instead of elapsedBeats because beats uses a thread's logical time.
 

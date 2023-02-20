@@ -329,6 +329,7 @@ CleanupStream : Stream {
 PauseStream : Stream {
 	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
 	var isWaiting = false, era=0;
+	var rescheduledTime;  // normally nil
 
 	*new { arg argStream, clock;
 		^super.newCopyArgs(nil, argStream, clock ? TempoClock.default)
@@ -337,23 +338,28 @@ PauseStream : Stream {
 	isPlaying { ^stream.notNil }
 
 	play { arg argClock, doReset = (false), quant;
+		// check 'quant' first, before changing any state variables
+		// if there is an error, this object should be unaffected
+		var tempClock = argClock ? clock ? TempoClock.default;
+		var time = quant.asQuant.nextTimeOnGrid(tempClock);
+
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
-		clock = argClock ? clock ? TempoClock.default;
+		clock = tempClock;
 		streamHasEnded = false;
 		this.refresh; //stream = originalStream;
 		stream.clock = clock;
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;
-		clock.play({
+		clock.schedAbs(time, {
 			if(isWaiting and: { nextBeat.isNil }) {
 				clock.sched(0, this);
 				isWaiting = false;
 				this.changed(\playing)
 			};
 			nil
-		}, quant.asQuant);
+		});
 		this.changed(\userPlayed);
 		^this
 	}
@@ -368,6 +374,7 @@ PauseStream : Stream {
 	}
 	prStop {
 		stream = nil;
+		rescheduledTime = nil;
 		isWaiting = false;
 	}
 	removedFromScheduler {
@@ -389,9 +396,33 @@ PauseStream : Stream {
 	resume { arg argClock, quant;
 		^this.play(clock ? argClock, false, quant)
 	}
+	reschedule { arg argClock, quant;
+		deferAwayFrom(this.stream) {
+			if(this.isPlaying.not) {
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+			};
+			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
+			if(argClock.isNil) { argClock = clock };
+			if(argClock !== clock) {
+				// convert to new clock's time
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+			};
+			clock = argClock;
+		};
+	}
 
 	refresh {
-		stream = originalStream.threadPlayer_(this)
+		// a PauseStream may wrap *any* type of stream
+		// so the only way to 'protect' it is to embed it
+		// into a Routine under this PauseStream's control
+		stream = Routine { |inval|
+			protect {
+				originalStream.embedInStream(inval)
+			} {
+				this.streamError;
+			}
+		};
+		originalStream.threadPlayer_(this);
 	}
 
 	start { arg argClock, quant;
@@ -415,8 +446,15 @@ PauseStream : Stream {
 		^nextTime
 	}
 	awake { arg beats, seconds, inClock;
-		clock = inClock;
-		^this.next(beats)
+		if(rescheduledTime.isNil) {
+			clock = inClock;
+			^this.next(beats)
+		} {
+			// rescheduling, possibly on a new clock
+			clock.schedAbs(rescheduledTime, this);
+			rescheduledTime = nil;
+			^nil
+		}
 	}
 	threadPlayer { ^this }
 }
@@ -424,8 +462,23 @@ PauseStream : Stream {
 // Task is a PauseStream for wrapping a Routine
 
 Task : PauseStream {
+	// optimization:
+	// Task builds its own Routine, so 'protect' here
 	*new { arg func, clock;
-		^super.new(Routine(func), clock)
+		var new = super.new(
+			Routine({ |inval|
+				protect {
+					func.value(inval)
+				} {
+					new.streamError
+				};
+			}
+		), clock);
+		^new
+	}
+	// then there is no need to let PauseStream wrap it in another Routine
+	refresh {
+		stream = originalStream.threadPlayer_(this);
 	}
 	storeArgs { ^originalStream.storeArgs
 		++ if(clock != TempoClock.default) { clock }
@@ -444,7 +497,15 @@ EventStreamPlayer : PauseStream {
 
 	init {
 		cleanup = EventStreamCleanup.new;
-		routine = Routine{ | inTime | loop { inTime = this.prNext(inTime).yield } };
+		routine = Routine { |inTime|
+			protect {
+				loop { inTime = this.prNext(inTime).yield }
+			} { |result|
+				if(result.isException) {
+					this.streamError
+				}
+			}
+		};
 	}
 
 	// freeNodes is passed as false from
@@ -477,15 +538,22 @@ EventStreamPlayer : PauseStream {
 	prNext { arg inTime;
 		var nextTime;
 		var outEvent = stream.next(event.copy);
+		var roundedBeat, deltaFromRounded;
 		if (outEvent.isNil) {
 			streamHasEnded = stream.notNil;
 			cleanup.clear;
 			this.removedFromScheduler;
 			^nil
-		}{
+		} {
 			nextTime = outEvent.playAndDelta(cleanup, muteCount > 0);
 			if (nextTime.isNil) { this.removedFromScheduler; ^nil };
 			nextBeat = inTime + nextTime;	// inval is current logical beat
+			roundedBeat = nextBeat.round;
+			deltaFromRounded = roundedBeat - nextBeat;
+			if (deltaFromRounded.smallButNotZero) {
+				nextBeat = roundedBeat;
+				nextTime = nextTime + deltaFromRounded;
+			};
 			^nextTime
 		};
 	}
@@ -493,9 +561,14 @@ EventStreamPlayer : PauseStream {
 	asEventStreamPlayer { ^this }
 
 	play { arg argClock, doReset = (false), quant;
+		// check 'quant' first, before changing any state variables
+		// if there is an error, this object should be unaffected
+		var tempClock = argClock ? clock ? TempoClock.default;
+		var time = quant.asQuant.nextTimeOnGrid(tempClock);
+
 		if (stream.notNil, { "already playing".postln; ^this });
 		if (doReset, { this.reset });
-		clock = argClock ? clock ? TempoClock.default;
+		clock = tempClock;
 		streamHasEnded = false;
 		stream = originalStream;
 		stream.clock = clock;
@@ -505,14 +578,14 @@ EventStreamPlayer : PauseStream {
 		quant = quant.asQuant;
 		event = event.synchWithQuant(quant);
 
-		clock.play({
+		clock.schedAbs(time, {
 			if(isWaiting and: { nextBeat.isNil }) {
 				thisThread.clock.sched(0, this );
 				isWaiting = false;
 				this.changed(\playing)
 			};
 			nil
-		}, quant);
+		});
 		this.changed(\userPlayed);
 		^this
 	}

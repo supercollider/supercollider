@@ -1053,7 +1053,7 @@ void Integrator_Ctor(Integrator* unit) {
         SETCALC(Integrator_next);
     unit->m_b1 = ZIN0(1);
     unit->m_y1 = 0.f;
-    Integrator_next(unit, 1);
+    ZOUT0(0) = ZIN0(0); // out = in + (coef * out[-1]); out[-1] = 0
 }
 
 void Integrator_next_i(Integrator* unit, int inNumSamples) {
@@ -3309,6 +3309,7 @@ void Normalizer_Ctor(Normalizer* unit) {
     // allocsize = NEXTPOWEROFTWO(allocsize);
 
     unit->m_table = (float*)RTAlloc(unit->mWorld, allocsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_table);
 
     unit->m_pos = 0;
     unit->m_flips = 0;
@@ -3397,6 +3398,7 @@ void Limiter_Ctor(Limiter* unit) {
     allocsize = NEXTPOWEROFTWO(allocsize);
 
     unit->m_table = (float*)RTAlloc(unit->mWorld, allocsize * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_table);
 
     unit->m_flips = 0;
     unit->m_pos = 0;

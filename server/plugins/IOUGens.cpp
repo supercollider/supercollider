@@ -62,8 +62,13 @@ struct OffsetOut : public IOUnit {
     bool m_empty;
 };
 
-struct AudioControl : public IOUnit {
+struct InFeedback : public IOUnit {
+    bool m_busUsedInPrevCycle;
+};
+
+struct AudioControl : public InFeedback {
     float* prevVal; // this will have to be a pointer later!
+    float* m_prevBus;
 };
 
 const int kMaxLags = 16;
@@ -114,8 +119,8 @@ void LagIn_Ctor(LagIn* unit);
 void LagIn_next_0(LagIn* unit, int inNumSamples);
 void LagIn_next_k(LagIn* unit, int inNumSamples);
 
-void InFeedback_Ctor(IOUnit* unit);
-void InFeedback_next_a(IOUnit* unit, int inNumSamples);
+void InFeedback_Ctor(InFeedback* unit);
+void InFeedback_next_a(InFeedback* unit, int inNumSamples);
 
 void LocalIn_Ctor(LocalIn* unit);
 void LocalIn_Dtor(LocalIn* unit);
@@ -182,6 +187,11 @@ void AudioControl_next_k(AudioControl* unit, int inNumSamples) {
     int32* touched = world->mAudioBusTouched;
     int32* channelOffsets = unit->mParent->mAudioBusOffsets;
 
+    if (*mapin != unit->m_prevBus) {
+        unit->m_busUsedInPrevCycle = false;
+        unit->m_prevBus = *mapin;
+    }
+
     for (uint32 i = 0; i < numChannels; ++i, mapin++) {
         float* out = OUT(i);
         int* mapRatep;
@@ -217,13 +227,20 @@ void AudioControl_next_k(AudioControl* unit, int inNumSamples) {
                 previous control period (to enable an InFeedback type of mapping)...
             */
             int thisChannelOffset = channelOffsets[unit->mSpecialIndex + i];
-            //  ... are we good to write? Copy! or ...
-            if ((thisChannelOffset >= 0)
-                && ((touched[thisChannelOffset] == bufCounter) || (touched[thisChannelOffset] == bufCounter - 1))) {
+            bool validOffset = thisChannelOffset >= 0;
+            int diff = bufCounter - touched[thisChannelOffset];
+            if (validOffset && diff == 0) {
                 Copy(inNumSamples, out, *mapin);
+                unit->m_busUsedInPrevCycle = true;
+            } else if (validOffset && diff == 1) {
+                if (unit->m_busUsedInPrevCycle) {
+                    Fill(inNumSamples, out, 0.f);
+                    unit->m_busUsedInPrevCycle = false;
+                } else
+                    Copy(inNumSamples, out, *mapin);
             } else {
-                //  ... old data, so zero it out.
                 Fill(inNumSamples, out, 0.f);
+                unit->m_busUsedInPrevCycle = false;
             }
         } break;
         }
@@ -246,6 +263,11 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
     int32 bufCounter = world->mBufCounter;
     int32* channelOffsets = unit->mParent->mAudioBusOffsets;
 
+    if (*mapin != unit->m_prevBus) {
+        unit->m_busUsedInPrevCycle = false;
+        unit->m_prevBus = *mapin;
+    }
+
     switch (mapRate) {
     case 0: {
         for (int i = 0; i < inNumSamples; i++) {
@@ -266,11 +288,20 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
          */
     case 2: {
         int thisChannelOffset = channelOffsets[unit->mSpecialIndex];
-        if ((thisChannelOffset >= 0)
-            && ((touched[thisChannelOffset] == bufCounter) || (touched[thisChannelOffset] == bufCounter - 1))) {
+        bool validOffset = thisChannelOffset >= 0;
+        int diff = bufCounter - touched[thisChannelOffset];
+        if (validOffset && diff == 0) {
             Copy(inNumSamples, out, *mapin);
+            unit->m_busUsedInPrevCycle = true;
+        } else if (validOffset && diff == 1) {
+            if (unit->m_busUsedInPrevCycle) {
+                Fill(inNumSamples, out, 0.f);
+                unit->m_busUsedInPrevCycle = false;
+            } else
+                Copy(inNumSamples, out, *mapin);
         } else {
             Fill(inNumSamples, out, 0.f);
+            unit->m_busUsedInPrevCycle = false;
         }
     } break;
     }
@@ -278,6 +309,8 @@ void AudioControl_next_1(AudioControl* unit, int inNumSamples) {
 
 void AudioControl_Ctor(AudioControl* unit) {
     unit->prevVal = (float*)RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
+    unit->m_prevBus = NULL;
+    ClearUnitIfMemFailed(unit->prevVal);
     for (int i = 0; i < unit->mNumOutputs; i++) {
         unit->prevVal[i] = 0.0;
     }
@@ -370,6 +403,7 @@ void LagControl_Ctor(LagControl* unit) {
     float** mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
 
     char* chunk = (char*)RTAlloc(unit->mWorld, numChannels * 2 * sizeof(float));
+    ClearUnitIfMemFailed(chunk);
     unit->m_y1 = (float*)chunk;
     unit->m_b1 = unit->m_y1 + numChannels;
 
@@ -655,12 +689,14 @@ void LagIn_Ctor(LagIn* unit) {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InFeedback_next_a(IOUnit* unit, int inNumSamples) {
+void InFeedback_next_a(InFeedback* unit, int inNumSamples) {
     World* world = unit->mWorld;
     int bufLength = world->mBufLength;
     int numChannels = unit->mNumOutputs;
 
     float fbusChannel = ZIN0(0);
+    if (fbusChannel != unit->m_fbusChannel)
+        unit->m_busUsedInPrevCycle = false;
     IO_a_update_channels(unit, world, fbusChannel, numChannels, bufLength);
 
     float* in = unit->m_bus;
@@ -673,15 +709,25 @@ void InFeedback_next_a(IOUnit* unit, int inNumSamples) {
 
         float* out = OUT(i);
         int diff = bufCounter - touched[i];
-        if (guard.isValid && (diff == 1 || diff == 0))
+
+        if (guard.isValid && diff == 0) {
             Copy(inNumSamples, out, in);
-        else
+            unit->m_busUsedInPrevCycle = true;
+        } else if (guard.isValid && diff == 1) {
+            if (unit->m_busUsedInPrevCycle) {
+                Fill(inNumSamples, out, 0.f);
+                unit->m_busUsedInPrevCycle = false;
+            } else
+                Copy(inNumSamples, out, in);
+        } else {
             Fill(inNumSamples, out, 0.f);
+            unit->m_busUsedInPrevCycle = false;
+        }
     }
 }
 
 
-void InFeedback_Ctor(IOUnit* unit) {
+void InFeedback_Ctor(InFeedback* unit) {
     // Print("->InFeedback_Ctor\n");
     World* world = unit->mWorld;
     unit->m_fbusChannel = -1.;
@@ -1281,14 +1327,20 @@ void OffsetOut_Ctor(OffsetOut* unit) {
     unit->m_busTouched = world->mAudioBusTouched;
     int32 offset = unit->mParent->mSampleOffset;
     int numChannels = unit->mNumInputs - 1;
-
-    unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
+    // NB: if mSampleOffset is 0, RTAlloc() might return a nullptr and
+    // trigger ClearUnitIfMemFailed(), so we have to handle it specially.
+    if (offset > 0) {
+        unit->m_saved = (float*)RTAlloc(unit->mWorld, offset * numChannels * sizeof(float));
+        ClearUnitIfMemFailed(unit->m_saved);
+    } else {
+        unit->m_saved = nullptr;
+    }
     unit->m_empty = true;
     // Print("<-Out_Ctor\n");
 }
 
 void OffsetOut_Dtor(OffsetOut* unit) {
-    // Ctor may not have run, if unit was immediately created->paused->freed!
+    // Write remaining samples (if any)
     if (unit->m_saved) {
         World* world = unit->mWorld;
         int bufLength = world->mBufLength;
@@ -1498,6 +1550,7 @@ void LocalIn_Ctor(LocalIn* unit) {
     // align the buffer to 256 bytes so that we can use avx instructions
     unit->m_realData =
         (float*)RTAlloc(world, busDataSize * sizeof(float) + numChannels * sizeof(int32) + 32 * sizeof(float));
+    ClearUnitIfMemFailed(unit->m_realData);
     size_t alignment = (size_t)unit->m_realData & 31;
 
     unit->m_bus = alignment ? (float*)(size_t(unit->m_realData + 32) & ~31) : unit->m_realData;

@@ -12,10 +12,11 @@ Clock {
 	*beats2bars { ^0 }
 	*bars2beats { ^0 }
 	*timeToNextBeat { ^0 }
-	*nextTimeOnGrid { | quant = 1, phase = 0|
-		if (quant ==0) { ^this.beats + phase };
+	*nextTimeOnGrid { |quant = 1, phase = 0, referenceBeat|
+		if(referenceBeat.isNil) { referenceBeat = this.beats };
+		if (quant == 0) { ^referenceBeat + phase };
 		if (phase < 0) { phase = phase % quant };
-		^roundUp(this.beats - (phase % quant), quant) + phase;
+		^roundUp(referenceBeat - (phase % quant), quant) + phase;
 	}
 }
 
@@ -53,6 +54,10 @@ AppClock : Clock {
 	}
 	*sched { arg delta, item;
 		scheduler.sched(delta, item);
+		this.prSchedNotify;
+	}
+	*schedAbs { arg time, item;
+		scheduler.schedAbs(time, item);
 		this.prSchedNotify;
 	}
 	*tick {
@@ -298,11 +303,12 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.primitiveFailed
 	}
 
-	nextTimeOnGrid { arg quant = 1, phase = 0;
-		if (quant == 0) { ^this.beats + phase };
-		if (quant < 0) { quant = beatsPerBar * quant.neg };
-		if (phase < 0) { phase = phase % quant };
-		^roundUp(this.beats - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
+	nextTimeOnGrid { arg quant = 1, phase = 0, referenceBeat;
+		if(referenceBeat.isNil) { referenceBeat = this.beats };
+		if(quant == 0) { ^referenceBeat + phase };
+		if(quant < 0) { quant = beatsPerBar * quant.neg };
+		if(phase < 0) { phase = phase % quant };
+		^roundUp(referenceBeat - baseBarBeat - (phase % quant), quant) + baseBarBeat + phase
 	}
 
 	timeToNextBeat { arg quant=1.0; // logical time to next beat
@@ -376,7 +382,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	*beats { ^TempoClock.default.beats }
 	*beats2secs { | beats | ^TempoClock.default.beats2secs(beats)  }
 	*secs2beats { | secs | ^TempoClock.default.secs2beats(secs)	}
-	*nextTimeOnGrid { | quant = 1, phase = 0 | ^TempoClock.default.nextTimeOnGrid(quant, phase)	}
+	*nextTimeOnGrid { | quant = 1, phase = 0, referenceBeat | ^TempoClock.default.nextTimeOnGrid(quant, phase, referenceBeat) }
 	*timeToNextBeat { | quant = 1 | ^TempoClock.default.timeToNextBeat(quant)  }
 
 	*setTempoAtBeat { | newTempo, beats | TempoClock.default.setTempoAtBeat(newTempo, beats)	 }

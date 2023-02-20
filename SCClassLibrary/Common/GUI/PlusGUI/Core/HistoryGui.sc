@@ -32,12 +32,14 @@ HistoryGui : JITGui {
 		);
 	}
 
+	winName { ^"History" }
+
 	makeViews { |options|
 		var font, flow;
 		var textViewHeight = numItems * skin.buttonHeight;
 		var listViewHeight = textViewHeight * 1.6;
 
-		font = Font(Font.defaultSansFace, 9);
+		font = Font(*GUI.skins.jit.fontSpecs);
 		flow = zone.addFlowLayout(2@2, 1@1);
 
 		zone.resize_(5);
@@ -66,6 +68,8 @@ HistoryGui : JITGui {
 				};
 			};
 		})
+		.font_(font)
+		.tabWidth_("1234".bounds(font)) // ca. 4 chars
 		.resize_(2);
 
 		// to do: disable if history is not current!

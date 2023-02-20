@@ -1,6 +1,12 @@
 QuartzComposerView : View {
 	var <path, <inputKeys, <outputKeys;
 
+	*new {|...args|
+		// QuartzComposer is not available in Qt6 and thus will be removed
+		this.deprecated(thisMethod);
+		super.new(*args)
+	}
+
 	*qtClass { ^'QcQuartzComposerView' }
 
 	start{

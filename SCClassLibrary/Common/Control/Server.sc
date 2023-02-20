@@ -47,7 +47,7 @@ ServerOptions {
 	var <>reservedNumBuffers;
 	var <>pingsBeforeConsideredDead;
 
-	var <>maxLogins;
+	var <maxLogins;
 
 	var <>recHeaderFormat;
 	var <>recSampleFormat;
@@ -95,7 +95,7 @@ ServerOptions {
 				reservedNumBuffers: 0,
 				pingsBeforeConsideredDead: 5,
 				maxLogins: 1,
-				recHeaderFormat: "aiff",
+				recHeaderFormat: "wav",
 				recSampleFormat: "float",
 				recChannels: 2,
 				recBufSize: nil,
@@ -266,6 +266,13 @@ ServerOptions {
 		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
 	}
 
+	maxLogins_ { |logins|
+		if(logins > 32) {
+			Error("maxLogins should be <= 32, tried to set to " ++ logins).throw;
+		};
+		maxLogins = logins;
+	}
+
 	*prListDevices {
 		arg in, out;
 		_ListAudioDevices
@@ -350,7 +357,7 @@ Server {
 	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <emacsbuf;
+	var <window, <>scopeWindow, <serverMeter, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 	var pidReleaseCondition;
@@ -389,14 +396,8 @@ Server {
 	}
 
 	*remote { |name, addr, options, clientID|
-		var result;
-		result = this.new(name, addr, options, clientID);
-		if(options.protocol == \tcp) {
-			addr.tryConnectTCP({ result.startAliveThread }, nil, 20)
-		} {
-			result.startAliveThread;
-		};
-		^result;
+		var remoteServer = this.new(name, addr, options, clientID);
+		^remoteServer.connectToServerAddr({ remoteServer.startAliveThread })
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
@@ -1045,8 +1046,14 @@ Server {
 			// in case the server takes more time to boot
 			// we increase the number of attempts for tcp connection
 			// in order to minimize the chance of timing out
-			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete, nil, 20) }, onComplete);
+			this.connectToServerAddr(onComplete, maxAttempts: 20);
 		}
+	}
+
+	connectToServerAddr { |onComplete, maxAttempts = 10|
+		if(options.protocol == \tcp, {
+			addr.tryConnectTCP(onComplete, nil, maxAttempts)
+		}, onComplete)
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off

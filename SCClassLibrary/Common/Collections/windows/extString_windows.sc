@@ -3,8 +3,8 @@
 		format("start \"SuperCollider runInTerminal\" cmd.exe /k %", this.quote).unixCmd;
 	}
 
-	openOS {|aPath|
+	openOS {
 		// start "title" "command"
-		("start" + "\"SuperCollider\"" + this.quote).systemCmd
+		["start", "SuperCollider".quote, this.quote].unixCmd;
 	}
 }

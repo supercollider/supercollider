@@ -30,7 +30,7 @@ METHOD:: drawFunc
 
 	Sets the Function to evaluate whenever the view is asked to redraw itself. This may be, for example, due to being hidden and shown again, being resized, another view moving on top of it, or after the link::Classes/View#-refresh:: method has been called.
 
-	Within that Function you are allowed to use the link::Classes/Pen:: class to draw withing the bounds of the view. All the coordinates given to methods of Pen are relative to the top-left corner of the view. Usage of Pen is not allowed outside of that Function.
+	Within that Function you are allowed to use the link::Classes/Pen:: class to draw within the bounds of the view. All the coordinates given to the methods of Pen are relative to the top-left corner of the view. Usage of Pen is not allowed outside of that Function.
 
 	The Function will be passed this view as the argument when evaluated.
 
@@ -71,8 +71,6 @@ SUBSECTION:: Animation
 
 METHOD:: animate
 	Whether the view shall redraw itself internally at a regular time interval (frame rate). See link::#-frameRate:: for the way to adjust that interval.
-
-	note:: This method is strong::not:: available in strong:: SwingOSC GUI ::. ::
 
 	The default value is code::false::.
 

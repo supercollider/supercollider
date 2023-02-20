@@ -135,9 +135,9 @@ ScopeOut2 : UGen {
 
 Tap : UGen {
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
-		var n;
-		n = delaytime * SampleRate.ir.neg; // this depends on the session sample rate, not buffer.
-		^PlayBuf.ar(numChannels, bufnum, 1, 0, n, 1);
+		var scale = BufRateScale.kr(bufnum);
+		var n = delaytime * (SampleRate.ir.neg * scale);
+		^PlayBuf.ar(numChannels, bufnum, scale, 0, n, 1);
 	}
 }
 
@@ -190,6 +190,7 @@ MaxLocalBufs : UGen {
 
 SetBuf : WidthFirstUGen {
 	*new { arg buf, values, offset = 0;
+		values = values.asArray;
 		^this.multiNewList(['scalar', buf, offset, values.size] ++ values)
 	}
 }

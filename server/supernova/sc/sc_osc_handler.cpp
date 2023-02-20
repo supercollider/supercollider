@@ -214,35 +214,43 @@ template <typename T> static inline void consume(T&& object) {
 }
 
 void send_done_message(endpoint_ptr const& endpoint, const char* cmd) {
-    char buffer[1024];
-    osc::OutboundPacketStream p(buffer, 1024);
-    p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
+    if (endpoint) {
+        char buffer[1024];
+        osc::OutboundPacketStream p(buffer, 1024);
+        p << osc::BeginMessage("/done") << cmd << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 void send_done_message(endpoint_ptr const& endpoint, const char* cmd, osc::int32 index) {
-    char buffer[1024];
-    osc::OutboundPacketStream p(buffer, 1024);
-    p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
+    if (endpoint) {
+        char buffer[1024];
+        osc::OutboundPacketStream p(buffer, 1024);
+        p << osc::BeginMessage("/done") << cmd << index << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content) {
-    char buffer[8192];
-    osc::OutboundPacketStream p(buffer, 8192);
-    p << osc::BeginMessage("/fail") << cmd << content << osc::EndMessage;
+    if (endpoint) {
+        char buffer[8192];
+        osc::OutboundPacketStream p(buffer, 8192);
+        p << osc::BeginMessage("/fail") << cmd << content << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char* content, int id) {
-    char buffer[8192];
-    osc::OutboundPacketStream p(buffer, 8192);
-    p << osc::BeginMessage("/fail") << cmd << content << (osc::int32)id << osc::EndMessage;
+    if (endpoint) {
+        char buffer[8192];
+        osc::OutboundPacketStream p(buffer, 8192);
+        p << osc::BeginMessage("/fail") << cmd << content << (osc::int32)id << osc::EndMessage;
 
-    endpoint->send(p.Data(), p.Size());
+        endpoint->send(p.Data(), p.Size());
+    }
 }
 
 
@@ -528,10 +536,16 @@ void sc_scheduled_bundles::bundle_node::run(void) {
 
     if (element.IsBundle()) {
         received_bundle bundle(element);
-        instance->handle_bundle<true>(bundle, endpoint_);
+        if (instance->non_rt)
+            instance->handle_bundle<false>(bundle, endpoint_);
+        else
+            instance->handle_bundle<true>(bundle, endpoint_);
     } else {
         ReceivedMessage message(element);
-        instance->handle_message<true>(message, element.Size(), endpoint_);
+        if (instance->non_rt)
+            instance->handle_message<false>(message, element.Size(), endpoint_);
+        else
+            instance->handle_message<true>(message, element.Size(), endpoint_);
     }
 }
 
@@ -642,7 +656,7 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error, 
         return; /* we're done */
 
     if (error) {
-        std::cout << "sc_osc_handler received error code " << error << std::endl;
+        std::cout << "(supernova) sc_osc_handler received error code " << error << std::endl;
         start_receive_udp();
         return;
     }
@@ -834,7 +848,7 @@ void sc_osc_handler::handle_bundle(ReceivedBundle const& bundle, endpoint_ptr co
     typedef osc::ReceivedBundleElementIterator bundle_iterator;
     typedef osc::ReceivedBundleElement bundle_element;
 
-    if (bundle_time <= now) {
+    if (bundle_time < now) {
         if (!bundle_time.is_immediate()) {
             time_tag late = now - bundle_time;
             log_printf("late: %f\n", late.to_seconds());
@@ -889,7 +903,8 @@ template <bool realtime> void handle_quit(endpoint_ptr endpoint) {
     instance->quit_received = true;
     cmd_dispatcher<realtime>::fire_io_callback([=]() {
         instance->prepare_to_terminate();
-        send_done_message(endpoint, "/quit");
+        if (endpoint)
+            send_done_message(endpoint, "/quit");
         instance->terminate();
     });
 }
@@ -918,6 +933,8 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
     });
 }
 
+template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
+
 template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
     cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
         if (unlikely(instance->quit_received)) // we don't reply once we are about to quit
@@ -945,6 +962,8 @@ template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
     });
 }
 
+template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) {}
+
 void handle_dumpOSC(ReceivedMessage const& message) {
     int val = first_arg_as_int(message);
     val = min(1, val); /* we just support one way of dumping osc messages */
@@ -969,6 +988,8 @@ template <bool realtime> void handle_sync(ReceivedMessage const& message, endpoi
     });
 }
 
+template <> void handle_sync<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
+
 void handle_clearSched(void) { instance->clear_scheduled_bundles(); }
 
 void handle_error(ReceivedMessage const& message) {
@@ -987,10 +1008,12 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
 
         osc::OutboundPacketStream p(buffer, 4096);
         p << osc::BeginMessage("/version.reply") << "supernova" << (i32)SC_VersionMajor << (i32)SC_VersionMinor
-          << SC_VersionPostfix << SC_Branch << SC_CommitHash << osc::EndMessage;
+          << SC_VersionPostfix << SC_BranchOrTag << SC_CommitHash << osc::EndMessage;
         endpoint->send(p.Data(), p.Size());
     });
 }
+
+template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -1056,7 +1079,14 @@ inline void verify_argument(osc::ReceivedMessageArgumentIterator const& it,
 }
 
 template <bool IsAudio, typename slot_type>
-static void apply_control_bus_mapping(server_node& node, slot_type slot, int bus_index);
+void apply_control_bus_mapping(server_node& node, slot_type slot, size_t index, int bus) {
+    if (node.is_synth())
+        static_cast<sc_synth&>(node).map_control_bus<IsAudio>(slot, index, bus);
+    else {
+        static_cast<abstract_group&>(node).apply_on_children(
+            [&](server_node& node) { apply_control_bus_mapping<IsAudio, slot_type>(node, slot, index, bus); });
+    }
+}
 
 template <typename control_id_type>
 void set_control_array(server_node* node, control_id_type control, osc::ReceivedMessageArgumentIterator& it) {
@@ -1078,12 +1108,12 @@ void set_control_array(server_node* node, control_id_type control, osc::Received
                 switch (name[0]) {
                 case 'c':
                     bus_id = atoi(name + 1);
-                    static_cast<sc_synth*>(node)->map_control_bus<false>(control, i, bus_id);
+                    apply_control_bus_mapping<false>(*node, control, i, bus_id);
                     break;
 
                 case 'a':
                     bus_id = atoi(name + 1);
-                    static_cast<sc_synth*>(node)->map_control_bus<true>(control, i, bus_id);
+                    apply_control_bus_mapping<true>(*node, control, i, bus_id);
                     break;
 
                 default:
@@ -1100,6 +1130,8 @@ void set_control_array(server_node* node, control_id_type control, osc::Received
         throw runtime_error("missing array end tag");
     ++it; // skip array end
 }
+
+template <bool IsAudio, typename slot_type> void apply_control_bus_mapping(server_node& node, slot_type slot, int bus);
 
 template <typename ControlSpecifier>
 void set_control(server_node* node, ControlSpecifier const& control, osc::ReceivedMessageArgumentIterator& it) {

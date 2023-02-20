@@ -292,6 +292,6 @@ z.score.postcs;
 z.play;
 
 // rendering a pattern to sound file directly:
-// render the pattern to aiff (4 beats)
-p.render(Platform.defaultTempDir +/+ "asScore-Help.aif", 4.0);
+// render the pattern to wav (4 beats)
+p.render(Platform.defaultTempDir +/+ "asScore-Help.wav", 4.0);
 ::

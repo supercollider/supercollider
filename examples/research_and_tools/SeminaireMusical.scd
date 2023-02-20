@@ -45,7 +45,10 @@ chords = IdentityDictionary[
 	'sus9' -> #[0, 1, 4],
 	'7 sus4' -> #[0, 3, 4, 6b],
 	'7 sus9' -> #[0, 1, 4, 6b],
-	'fifth' -> #[0, 4]
+	'fifth intv' -> #[0, 4],
+	'min9 intv' -> #[0, 13],
+	'aug9 intv' -> #[0, 15]
+
 ];
 chordKeys = chords.keys.asArray;
 
@@ -229,7 +232,8 @@ f_neu = {
 					freq0 = freqs[0];
 					nameList = eurNotes;
 				}
-			)
+			);
+			v_klang.enabled = true;
 		},
 
 		// frequencies
@@ -237,6 +241,7 @@ f_neu = {
 			nameList = { exprand(minFreq, 15000).round(1) } ! 13;
 			freqs = nameList;
 			freq0 = 440;
+			v_klang.enabled = true;
 		},
 		// notes + octaves
 		2, {
@@ -259,6 +264,7 @@ f_neu = {
 				freq0 = freqs[0];
 				freqs = freqs * ({ octaves.choose } ! 12);
 			};
+			v_klang.enabled = true;
 		},
 		// intervals
 		3, {
@@ -285,6 +291,7 @@ f_neu = {
 				#["16/15", "9/8", "6/5", "5/4", "4/3", "17/12", "3/2", "8/5", "5/3", "7/4",
 					"16/9", "15/8", "2/1"];
 			};
+			v_klang.enabled = true;
 		},
 		// times
 		4, {
@@ -294,14 +301,17 @@ f_neu = {
 			rates = { exprand(0.9, 19) } ! 13;
 			nameList = rates.round(0.01);
 
+			v_klang.enabled = false;
+
 		},
 		// beatings
 		5, {
 			referenceToneIsPlaying = false;
-			freq0 = nil; // no base tone
-			freqs = ((0..11).choose + 60).midicps * octaves.choose ! 13;
+			freq0 = ((0..12).choose + 60).midicps * octaves.choose;
 			rates = { exprand(0.9, 40) } ! 13;
 			nameList = rates.round(0.01);
+
+			v_klang.enabled = true;
 
 		},
 		// chords
@@ -310,7 +320,7 @@ f_neu = {
 			freq0 = (note0 + 60).midicps;
 			freqs = freq0 ! 13;
 			nameList = chordKeys[ (0..chordKeys.size-1).scramble.keep(13)].sort;
-
+			v_klang.enabled = true;
 		}
 	);
 	numChoices = freqs.size;
@@ -333,15 +343,11 @@ f_play = { |i|
 				}
 			},
 			4, { // rates
-				Synth("sm_click", [\freq, freq0, \rate, rates[i], \amp, amp])
+				Synth("sm_click", [\freq, freqs[i], \rate, rates[i], \amp, amp])
 			},
 			5, { // beatings
-				if(spiel == "sm_string") {
-					Synth("sm_string", [\freq, freq0,  \amp, amp]);
-					Synth("sm_string", [\freq, freq0 + rates[i], \amp, amp])
-				} {
-					Synth("sm_beatings", [\freq, freq0, \rate, rates[i], \amp, amp])
-				}
+					Synth(spiel, [\freq, freq0,  \amp, amp]);
+					Synth(spiel, [\freq, freq0 + rates[i], \amp, amp])
 			},
 			6, { // akkorde
 				fork {
@@ -462,21 +468,22 @@ SynthDef("sm_bell", { arg freq=440, amp=0.5;
 
 (
 SynthDef("sm_string", { arg freq=440, amp=0.5;
-	var u, exc, sustain;
-	amp = AmpComp.kr(freq) * amp;
-	exc = LFNoise2.ar(3000, Decay2.ar(Impulse.ar(0.0001, 0, 0.5), 0.006, 0.02));
-	sustain = Rand(1, 1.5);
+	var u, exc, sustain, detuneStrings, attackPeriod;
+	amp = AmpComp.kr(freq) * amp * 2;
+	attackPeriod = freq.linlin(440, 15000, 0.006, 0.00001);
+	exc = LFDNoise3.ar(min(freq*6, 20000), Decay2.ar(Impulse.ar(0, 0, 0.5), attackPeriod, attackPeriod * 3));
+	sustain = ExpRand(1.3, 2.1);
+	detuneStrings = [0, Rand(-0.1, 0.1)];
 	u = LPF.ar(
-		CombN.ar(exc, 0.04, (freq * (1+[0, 0.001])).reciprocal, sustain).sum,
-		min(20000, freq * Rand(3, 2.3) ! 2)
-	).sum;
+		CombC.ar(exc, 0.04, (freq + detuneStrings).reciprocal, sustain).sum,
+		min(20000, freq * Rand(1.3, 3))
+	);
 
 	//DetectSilence.ar(u, doneAction:2);
 	amp = amp * EnvGen.kr(Env.linen(0, sustain, 0.1), doneAction:2);
 	Out.ar(0,
 		Pan2.ar(u * amp, freq.cpsmidi % 12 / 6 - 1)
 	);
-
 }).add;
 );
 

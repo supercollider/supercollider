@@ -455,10 +455,35 @@ code::
 ::
 
 method::histo
-Returns a histogram of the collection by counting the number of values that fall into each slot of size (default: 100) subdivisions between min and max. If there are any values outside this range, it posts a note. If min or max is not given, the smallest (or largest value respectively) is used.
+Returns a histogram of the collection by counting the number of values that fall into each of the strong::steps:: subdivisions (default: 100) between strong::min:: and strong::max::.
+If not provided, strong::min:: and strong::max:: default to the smallest and largest value in the collection, respectively.
+If there are any values outside this range, it posts a note.
+
+See also: link::Classes/Collection#-plotHisto::.
+
 code::
-{ 1.0.linrand }.dup(10000).histo(1000).plot;
-{ 8.rand }.dup(10000).histo(8).plot(discrete: true);
+{ 1.0.linrand }.dup(10000).histo(1000).plot(discrete: true);
+::
+code::
+(
+var data, steps = 15;
+var minmax, range, binwidth;
+
+data = { 15.0.rand + 3 }.dup(100);
+minmax = [data.minItem, data.maxItem];
+range = minmax[1] - minmax[0];
+binwidth = range / steps;
+
+data.histo(steps).plot(minval: 0)
+.plotMode_(\steps)
+.axisLabelY_("Occurrences")
+.axisLabelX_("Bins")
+.domainSpecs_(minmax.asSpec)
+.domain_(binwidth * (0..steps-1) + data.minItem)
+;
+)
+// or use Collection:-plotHisto for convenience
+{ 15.0.rand + 3 }.dup(100).plotHisto(15);
 ::
 
 method::invert

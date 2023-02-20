@@ -101,6 +101,9 @@ Pattern : AbstractFunction {
 		var buffer, nodeID, defname;
 		var pattern = if(dur.notNil) { Pfindur(dur, this) } { this };
 
+        headerFormat = headerFormat ?? { server.recHeaderFormat };
+		sampleFormat = sampleFormat ?? { server.recSampleFormat };
+
 		server.waitForBoot {
 			var group, bus, free, monitor;
 
@@ -134,6 +137,7 @@ Pattern : AbstractFunction {
 						(
 							type: \on, id: nodeID, instrument: defname,
 							bus: bus, group: group, addAction: \addAfter,
+							bufnum: buffer,
 							delta: 0,
 							callback: { nodeID = ~id }
 						),

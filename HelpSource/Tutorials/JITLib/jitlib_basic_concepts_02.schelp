@@ -73,7 +73,7 @@ s.boot;
 // this sound plays on its own private bus (so it is not audible yet.)
 (
 ~x = {
-	RLPF.ar(Impulse.ar(4) * 20, [850, 950], 0.2)
+	RLPF.ar(Impulse.ar(4) * 5, [850, 950], 0.2)
 }
 )
 
@@ -232,7 +232,7 @@ p.postln;
 // to end all processes in p, use end:
 p.end(2) // 2 seconds fade out.
 
-// to remove all bus objects and free them from the bus allocato, use clear:
+// to remove all processes and return their bus indices to the bus allocator, use clear:
 p.clear;
 
 currentEnvironment.postln;

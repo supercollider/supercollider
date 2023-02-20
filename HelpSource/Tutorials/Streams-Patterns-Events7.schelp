@@ -5,7 +5,7 @@ categories:: Tutorials>Streams-Patterns-Events
 
 section::Practical Considerations
 
-subsection::Using your own ~instrument
+subsection::Using your own instrument
 
 code::
 (

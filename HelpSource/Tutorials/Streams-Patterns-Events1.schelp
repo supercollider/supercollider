@@ -208,7 +208,7 @@ code::
 	Routine({
 		loop({
 			Synth(\help_SPE1, [ \freq, stream.next.midicps ] );
-			dur.wait; // synonym for yield, used by .play to schedule next occurence
+			dur.wait; // synonym for yield, used by .play to schedule next occurrence
 		})
 	}).play
 )

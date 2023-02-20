@@ -11,10 +11,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-if(APPLE)
-    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/libsndfile)
-endif()
-
 # here we choose who provides us with the FFT lib
 # this is done independently for scsynth and supernova
 # scsynth uses vDSP implementation for FFT on macOS
@@ -148,20 +144,25 @@ if(AUDIOAPI STREQUAL "coreaudio")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
-    find_package(Jack REQUIRED)
+    # NOTE: this is a workaround for Windows if pkgconfig is not available
+    if(WIN32 AND _JACK_LINK_LIBRARIES AND _JACK_INCLUDE_DIRS)
+      set(JACK_LINK_LIBRARIES ${_JACK_LINK_LIBRARIES})
+      set(JACK_INCLUDE_DIRS ${_JACK_INCLUDE_DIRS})
+    else()
+      include(FindPkgConfig)
+      pkg_check_modules(JACK REQUIRED jack)
+    endif()
+    message(STATUS "Using JACK_LINK_LIBRARIES: ${JACK_LINK_LIBRARIES}")
+    message(STATUS "Using JACK_INCLUDE_DIRS: ${JACK_INCLUDE_DIRS}")
+    target_compile_definitions(libsupernova PUBLIC JACK_BACKEND)
+    target_link_libraries(libsupernova ${JACK_LINK_LIBRARIES})
+    target_include_directories(libsupernova PUBLIC ${JACK_INCLUDE_DIRS})
 elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
     find_package(Portaudio REQUIRED)
 endif()
 message(STATUS "Audio API (supernova): ${AUDIOAPI}")
 
-if(AUDIOAPI STREQUAL jack)
-    find_library(JACK NAMES jack)
-    if(JACK)
-        target_compile_definitions(libsupernova PUBLIC JACK_BACKEND)
-        target_link_libraries(libsupernova ${JACK})
-        target_include_directories(libsupernova PUBLIC ${JACK_INCLUDE_DIRS})
-    endif()
-elseif(AUDIOAPI STREQUAL portaudio)
+if(AUDIOAPI STREQUAL portaudio)
     target_sources(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
     target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
     target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
@@ -172,6 +173,15 @@ find_package(Sndfile)
 if (NOT SNDFILE_FOUND)
     message(SEND_ERROR "Cannot find libsndfile")
 else()
+    if(SNDFILE_HAS_VORBIS)
+        target_compile_definitions(libsupernova PUBLIC SNDFILE_HAS_VORBIS)
+    endif()
+    if(SNDFILE_HAS_OPUS)
+        target_compile_definitions(libsupernova PUBLIC SNDFILE_HAS_OPUS)
+    endif()
+    if(SNDFILE_HAS_MPEG)
+        target_compile_definitions(libsupernova PUBLIC SNDFILE_HAS_MPEG)
+    endif()
     target_link_libraries(libsupernova ${SNDFILE_LIBRARIES})
     target_include_directories(libsupernova PUBLIC ${SNDFILE_INCLUDE_DIR})
 endif()
@@ -253,9 +263,12 @@ if(WIN32)
     )
 
 elseif(APPLE)
-    add_custom_command(TARGET supernova POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+    if(scappauxresourcesdir)
+        add_custom_command(TARGET supernova POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            )
+    endif()
 else()
   install(TARGETS supernova
           DESTINATION "bin"

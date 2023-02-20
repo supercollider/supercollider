@@ -113,8 +113,7 @@ Evaluates the FunctionDef referred to by the Function. If the last argument is a
 
 method::valueWithEnvir
 
-Evaluate the function, using arguments from the supplied environment
-This is slightly faster than valueEnvir and does not require replacing the currentEnvironment
+Evaluate the function, using arguments from the supplied environment. This is slightly faster than valueEnvir and does not require replacing the currentEnvironment.
 
 code::
 (
@@ -270,32 +269,62 @@ x.value;
 
 method::flop
 
-Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp.
+Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp. The new function always returns an array.
 
 code::
-f = { |a, b| if(a > 0) { a + b } { -inf } }.flop;
-f.value([-1, 2, 1, -3.0], [10, 1000]);
-f.value(2, 3);
+// multichannel expansion for if, here to protect from division by zero:
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value(2, 4); // [ 0.5 ] (always returns an array)
+
+// strings don't expand
+f = { |a, b| a + b }.flop;
+f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", "world"); // -> [ hello world ]
+
 ::
+
+method::flop1
+
+Same as link::#flop::, return only an array if the arguments also contains an array. This can be used to implement link::Guides/Multichannel-Expansion::.
+
+code::
+// multichannel expansion for if, here to protect from division by zero:
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value([2], 4); // -> [0.5]
+f.value(2, 4); // -> 0.5
+
+// strings don't expand, like in flop
+f = { |a, b| a + b }.flop1;
+f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", "world"); // -> hello world
+
+::
+
 
 
 method::envirFlop
 
-like flop, but implements an environment argument passing (valueEnvir).
-Less efficient in generation than flop, but not a big difference in evaluation.
-
-code::
-f = { |a| if(a > 0) { a + 1 } { -inf } }.envirFlop;
-e = (a: [20, 40]);
-e.use { f.value }
-::
+This method is kept for backward compatibility. Use code::flop:: instead.
 
 
 method::inEnvir
 
 returns an "environment-safe" function. See Environment for more details.
+Note that the function returned takes no keyword arguments.
 
 code::
+e = (a: "get it", b: "didn't");
+f = { ~b + ~a + "..." }.inEnvir(e);
+f.value;
+
+f = { |how = "", end = "..."| how + ~b + ~a + end }.inEnvir(e); // doesn't work with keyword arguments
+f.value(how: "really"); // WARNING: keyword arg 'how' not found in call to function (see inEnvirWithArgs).
+
+
+
+// a use case: defer is usually called in the call environment
 // prints nil because ~a is read from topEnvironment, not e
 e = (a: "got it", f: { { ~a.postln }.defer(0.5) });
 e.use { e.f };
@@ -303,6 +332,18 @@ e.use { e.f };
 // prints "got it" because { ~a.postln } is now bound to the e environment
 e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
 e.use { e.f };
+::
+
+
+method::inEnvirWithArgs
+
+Like link::#inEnvir::, but returns a function which takes keyword arguments.
+Building this function makes a call to the interpreter and is less efficient than inEnvir
+
+code::
+e = (a: "get it", b: "didn't");
+f = { |how = "", end = "..."| how + ~b + ~a + end }.inEnvirWithArgs(e);
+f.value(how: "I really", end: "done!");
 ::
 
 
@@ -357,9 +398,9 @@ Pbind(
 
 subsection::Exception Handling
 
-
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.
 
+See also link::#Exception Handling Examples:: and link::Classes/Exception:: for more information on how to handle exceptions.
 
 method::try
 
@@ -368,6 +409,35 @@ Executes the receiver. If an exception is thrown the catch function handler is e
 method::protect
 
 Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
+
+subsection:: Scheduling
+
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the function was
+scheduled when its scheduling time is up. It calls link::#-value::, passing
+on the scheduling time in beats as an argument.
+
+argument:: beats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: seconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: clock
+The clock on which the object was scheduled.
+
+returns::
+The value returned by the function's link::#-value::. A caller clock uses
+this value to reschedule the function.
+
+code::
+// Runs every 2 seconds
+AppClock.play({ "And again".postln; 2 });
+::
 
 subsection::Audio
 
@@ -431,11 +501,11 @@ code::
 ::
 
 argument::numChannels
-The number of channels to display in the scope window, starting from outbus. The default is 2.
+The number of channels to display in the scope window, starting from outbus. It automatically reflects the number of channels.
 argument::outbus
 The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
 argument::fadeTime
-A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.
+A fadein time. The default is 0.05 seconds, which is just enough to avoid a click.
 argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
@@ -638,7 +708,7 @@ returns:: Like link::Classes/Function#-play::, a Synth playing this function. Wh
 
 examples::
 
-subsection::Exception Handling
+subsection::Exception Handling Examples
 
 code::
 // no exception handler

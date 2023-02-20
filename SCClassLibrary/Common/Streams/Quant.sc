@@ -11,8 +11,8 @@ Quant {
 
 	*new { |quant = 0, phase, timingOffset| ^super.newCopyArgs(quant, phase, timingOffset) }
 
-	nextTimeOnGrid { | clock |
-		^clock.nextTimeOnGrid(quant, (phase ? 0) - (timingOffset ? 0));
+	nextTimeOnGrid { |clock, referenceBeat|
+		^clock.nextTimeOnGrid(quant, (phase ? 0) - (timingOffset ? 0), referenceBeat)
 	}
 
 	asQuant { ^this.copy }

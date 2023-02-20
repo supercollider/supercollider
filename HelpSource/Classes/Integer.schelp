@@ -104,6 +104,16 @@ returns:: a string with the hexadecimal digits (integer 0 to F).
 method:: asIPString
 returns:: a string in IP format.
 
+method:: asStringToBase
+returns:: a string with code::width::-rightmost digits in base code::base::.
+discussion::
+code::
+15.asStringToBase(3,5); // returns 00120
+::
+
+method:: asUnicode
+returns:: the receiver.
+
 method:: degreeToKey
 Interpret this as index into a scale with a given number of steps per ocatve.
 discussion::
@@ -117,6 +127,9 @@ discussion::
 code::
 2.grayCode
 ::
+
+method:: hash
+returns:: a hash value.
 
 subsection:: Binary Representation
 
@@ -204,6 +217,30 @@ code::
 
 subsection:: Integer Math
 
+method:: *
+Multiplication.
+
+method:: +
+Addition.
+
+method:: -
+Subtraction.
+
+method:: clip
+returns::
+LIST::
+## the receiver if it is between code::lo:: and code::hi::
+## code::lo:: if the receiver is less than code::lo::
+## code::hi:: if the receiver is greater than code::hi::
+::
+The result is an Integer only if both code::lo:: and code::hi:: are Integers.
+discussion::
+code::
+4.clip(2,5); // returns 4
+0.clip(2,5); // returns 2
+7.clip(2,5); // returns 5
+::
+
 method:: factorial
 returns:: the factorial of the receiver as an integer. This will overflow for numbers code::> 12:: and throw an error. Floating point factorials can be used in such cases (see: link::Classes/SimpleNumber#-factorial::).
 
@@ -213,8 +250,84 @@ code::
 23.0.factorial // for larger factorials, use floats.
 ::
 
+method:: fold
+Folds in to a value between code::lo:: and code::hi::.
+returns:: an Integer between code::lo:: and code::hi::.
+discussion::
+code::
+(0..12).fold(0,3); // returns [ 0, 1, 2, 3, 2, 1, 0, 1, 2, 3, 2, 1, 0 ]
+::
+
+method:: log2Ceil
+returns:: next larger integer of the base 2 logarithm of the receiver.
+discussion::
+code::
+17.log2; // returns 4.0874628412503
+17.log2Ceil; // returns 5
+17.log2.ceil.asInteger; // equivalent to the previous line
+::
+
+method:: wrap
+Wraps in to a value between code::lo:: and code::hi::.
+returns:: an Integer between code::lo:: and code::hi::.
+discussion::
+code::
+(0..12).wrap(0,3); // returns [ 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0 ]
+::
+
+subsection:: Range Limiting
+
+copymethod:: Float -clip
+copymethod:: Float -fold
+
+method:: wrap
+
+Wrap this around [lo, hi] such that it falls in range. Equivalent to (this % (hi - lo + 1)) + lo. Note that this behavior is different from link::Classes/Float#-wrap::.
+argument:: lo
+The low threshold (inclusive) of wrapping.
+argument:: hi
+The high threshold (inclusive) of wrapping.
 
 subsection:: Misc
+
+method:: exit
+returns:: exits the sclang program and returns the receiver as an exit code to the parent process (e.g. Unix shell).
+discussion::
+code::
+7.exit; // this line stops the interpreter and returns 7 as exit code
+::
+
+method:: generate
+returns:: calls code::function.value(receiver):: but returns the receiver.
+discussion::
+code::
+f = { arg i; "foo".postln; i*2 }
+3.generate(f) // returns 3 but the function f is executed
+f.value(3) // returns 6
+::
+
+method:: isInteger
+returns:: true (the receiver is an integer).
+
+method:: isAlt, isCaps, isCmd, isCtrl, isFun, isHelp, isNumPad, isShift
+returns:: a Boolean for whether or not the given key modifier is in effect. For a list of these, see link::Reference/Modifiers::.
+discussion::
+code::
+v = TextView(nil, Rect(800, 100, 400, 300)).front;
+
+v.keyDownAction = { |view, char, modifiers|
+    case
+    { modifiers.isAlt } { \alt }
+	{ modifiers.isCaps } { \caps }
+	{ modifiers.isCmd } { \cmd }
+	{ modifiers.isCtrl } { \ctrl }
+	{ modifiers.isFun } { \fun }
+	{ modifiers.isHelp } { \help }
+	{ modifiers.isNumPad } { \numpad }
+    { modifiers.isShift } { \shift }
+    .postln
+};
+::
 
 method:: pidRunning
 returns:: a Boolean for whether or not the specified pid is running.
@@ -225,3 +338,5 @@ p.pidRunning; // cat will stay alive
 ("kill" + p).unixCmd
 p.pidRunning;
 ::
+
+private::archiveAsCompileString

@@ -255,4 +255,12 @@ ServerMeter {
 		^super.newCopyArgs(window, meterView)
 
 	}
+
+	close {
+		window.close
+	}
+
+	isClosed {
+		^window.isClosed
+	}
 }

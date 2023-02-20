@@ -19,16 +19,16 @@ ClassMethods::
 
 
 method::new
-Create a new (neutral) instance on the given server
+Create a new (neutral) instance on the given server.
 
 method::for
 Create an instance with a given link::Classes/Bus::.
 
 method::audio
-Create a new audio rate instance on the given server
+Create a new audio rate instance on the given server.
 
 method::control
-Create a new audio rate instance on the given server
+Create a new control rate instance on the given server.
 
 method::defaultNumAudio
 Default number of channels when initializing in audio rate and no specific number is given (default: 2).
@@ -47,7 +47,7 @@ method::server
 Return the server that the BusPlug runs on.
 
 method::clear
-Free the bus, end the monitor
+Free the bus, end the monitor.
 
 
 subsection::Making copies
@@ -77,7 +77,7 @@ subsection::In UGen graphs and Patterns
 method::ar, kr
 Return a link to numChannels of my output. If uninitialized, creates a matching bus. Normally, strong::ar defaults to stereo, kr to mono::. This can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::
 
-For consistency, it always returns an array of signals when no numChannels are given. To make it a single ugen output, use code::cumChannels = 1:: . See also: link::Classes/InBus::.
+For consistency, it always returns an array of signals when no numChannels are given. To make it a single ugen output, use code::numChannels = 1:: . See also: link::Classes/InBus::.
 
 argument::numChannels
 Number of channels returned. If the receiver is neutral or reshaping is elastic, initialize it to this number. If this is more than the available channels, use the clip behaviour (below). If set to code::1::, it will return an instance of link::Classes/InBus::, otherwise an Array of one or more instances of InBus.
