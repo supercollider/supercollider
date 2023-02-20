@@ -309,6 +309,8 @@ jobs:
           path: ~/Library/Caches/ccache
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-
+      - name: cleanup homebrew downloads # always remove existing downloads first, as we bring back relevant downloads from cache
+        run: rm -rf $(brew --cache)
       - name: cache homebrew downloads
         uses: actions/cache@v3
         id: cache-homebrew
@@ -330,11 +332,9 @@ jobs:
           path: ~/.cache/vcpkg/archives
           key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-${{ steps.current-date.outputs.stamp }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
-      - name: cleanup homebrew downloads # make sure we store only relevant downloads in cache
-        if: '!steps.cache-homebrew.outputs.cache-hit'
-        run: rm -rf $(brew --cache)
       - name: install dependencies
         run: |
+          brew install pkg-config # temporary fix due to an issue with GHA macOS runners fixed in https://github.com/actions/runner-images/pull/7125; should be okay to remove after approx 2023-03-10
           brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH

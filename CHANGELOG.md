@@ -42,9 +42,9 @@ Release dates of 3.x versions:
 - 3.10: 2018-11-24
 - 3.11: 2020-03-08
 - 3.12: 2021-08-02
-- 3.13: 2023-01-xx
+- 3.13: 2023-02-19
 
-3.13.0 (2023-01-xx)
+3.13.0 (2023-02-19)
 ===================
 
 ### General
@@ -277,7 +277,8 @@ Numerous UGens have been updated so that their initialization sample is set corr
 `OscUGens` in https://github.com/supercollider/supercollider/pull/5787  
 `Klang`, `Klank` in https://github.com/supercollider/supercollider/pull/5817  
 `TWindex` in https://github.com/supercollider/supercollider/pull/5815  
-`Free` and `PauseSelf` in https://github.com/supercollider/supercollider/pull/5914
+`Free` and `PauseSelf` in https://github.com/supercollider/supercollider/pull/5914  
+`Poll` in https://github.com/supercollider/supercollider/pull/5965  
 
 `Integrator` Ctor passes through the first sample only by @jamshark70 in https://github.com/supercollider/supercollider/pull/5352. Prior to v3.13, there was a bug that caused the Integrator to double-count the initial value: the integral of a single 1 followed by endless 0s ends up being 2. Starting with v.3.13, it's 1 as expected.
 

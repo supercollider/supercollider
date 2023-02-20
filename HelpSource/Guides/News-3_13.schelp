@@ -6,7 +6,7 @@ Welcome to the SuperCollider 3.13 release!
 
 NOTE:: In this version numerous UGens have been fixes so that they calculate their initial value as originally intended. In some cases this may create a different result than previously. See below for details ::
 
-We now also provide a native arm64 build for Apple M1 machines.
+We now also provide a universal build for both x86_64 and arm64 Apple machines.
 
 Below you can find a more complete list of changes in this version. A big thank you to all developers for your contributions!
 
@@ -243,7 +243,8 @@ Numerous UGens have been updated so that their initialization sample is set corr
 code:: OscUGens :: in https://github.com/supercollider/supercollider/pull/5787, 
 code:: Klang :: and code:: Klank :: in https://github.com/supercollider/supercollider/pull/5817, 
 code:: TWindex :: in https://github.com/supercollider/supercollider/pull/5815,
-code:: Free :: and code:: PauseSelf :: in https://github.com/supercollider/supercollider/pull/5914
+code:: Free :: and code:: PauseSelf :: in https://github.com/supercollider/supercollider/pull/5914,
+code::Poll:: in https://github.com/supercollider/supercollider/pull/5965
 .
 
 code:: Integrator :: Ctor passes through the first sample only by @jamshark70 in https://github.com/supercollider/supercollider/pull/5352. Prior to v3.13, there was a bug that caused the Integrator to double-count the initial value: the integral of a single 1 followed by endless 0s ends up being 2. Starting with v.3.13, it's 1 as expected.
