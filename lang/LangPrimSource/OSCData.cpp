@@ -795,7 +795,7 @@ int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
 
     try {
         SetTrue(a);
-        newUDPport.reset(new InPort::UDPCustom(port, HandlerType::OSC));
+        newUDPport = std::make_unique<InPort::UDPCustom>(port, HandlerType::OSC);
         gCustomUdpPorts.push_back(std::move(newUDPport));
     } catch (...) {
         SetFalse(a);
