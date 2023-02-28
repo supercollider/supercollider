@@ -799,7 +799,8 @@ int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
         gCustomUdpPorts.push_back(std::move(newUDPport));
     } catch (...) {
         SetFalse(a);
-        postfl("Could not bind to requested port. This may mean it is in use already by another application.\n");
+        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
+               "application does not have permissions to open a port.\n");
     }
     return errNone;
 }
@@ -821,7 +822,8 @@ int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
         gCustomTcpPorts.push_back(std::move(newTCPPort));
     } catch (...) {
         SetFalse(a);
-        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the application does not have permissions to open a port.\n");
+        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
+               "application does not have permissions to open a port.\n");
     }
     return errNone;
 }
