@@ -288,7 +288,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
     using namespace boost::asio;
 
     if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
-        auto* comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
+        auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
 
         // send TCP
         ip::tcp::socket& socket = comPort->Socket();
@@ -405,7 +405,7 @@ static int prNetAddr_Disconnect(VMGlobals* g, int numArgsPushed) {
     PyrSlot* netAddrSlot = g->sp;
     PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
-    auto* comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
+    auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
     if (comPort) {
         err = comPort->Close();
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, nullptr);
