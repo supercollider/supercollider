@@ -93,7 +93,7 @@ TestNetAddr : UnitTest {
 	test_receiveOSC {
 		this.doReceiveTest(
 			port:				54322,
-			testMsg: 			['/Test message. \n', 123], // floats will not pass, sadly?
+			testMsg: 			['/Test message. \n', 123], // floats will not pass - sclang's internal storage is `double` but is transmitted in OSC as `float`, so the transformation is not lossless.
 			msgType: 			\osc,
 			registerMethod: 	\addOSCRecvFunc,
 			unregisterMethod: 	\removeOSCRecvFunc,
