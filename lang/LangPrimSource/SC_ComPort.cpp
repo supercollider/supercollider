@@ -40,7 +40,7 @@
 #undef scprintf
 
 void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time);
-void ProcessRawMessage(size_t inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
+void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
                        double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ template <> struct MessageHandler<HandlerType::Raw> {
         addrObject.mReplyFunc = nullptr;
         addrObject.mReplyData = nullptr;
 
-        ProcessRawMessage(dataSize, std::move(data), addrObject, localPort, timeReceived);
+        ProcessRawMessage(std::move(data), dataSize, addrObject, localPort, timeReceived);
     }
 };
 

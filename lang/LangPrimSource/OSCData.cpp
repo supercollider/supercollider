@@ -733,7 +733,7 @@ void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, doubl
     gLangMutex.unlock();
 }
 
-void ProcessRawMessage(size_t inSize, std::unique_ptr<char[]> inData, ReplyAddress& replyAddress, int inPortNum,
+void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
                        double time) {
     gLangMutex.lock();
     if (compiledOK) {
