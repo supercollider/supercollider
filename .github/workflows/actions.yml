@@ -106,10 +106,10 @@ jobs:
             use-syslibs: true
             shared-libscsynth: false
 
-          - job-name: 'bionic clang6.0'
-            os-version: '18.04'
-            c-compiler: 'clang-6.0'
-            cxx-compiler: 'clang++-6.0'
+          - job-name: 'focal clang7'
+            os-version: '20.04'
+            c-compiler: 'clang-7'
+            cxx-compiler: 'clang++-7'
             use-syslibs: false
             shared-libscsynth: false
 
@@ -193,9 +193,7 @@ jobs:
           # install appropriate clang/gcc compilers
           if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y $CC # package names are clang-X
-            if [[ "$CC" != clang-6.0 ]]; then
-              sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
-            fi
+            sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
           elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
