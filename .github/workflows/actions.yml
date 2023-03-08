@@ -56,20 +56,6 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'focal gcc8'
-            os-version: '20.04'
-            c-compiler: 'gcc-8'
-            cxx-compiler: 'g++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal gcc9'
-            os-version: '20.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-
           - job-name: 'focal gcc9 shared libscsynth'
             os-version: '20.04'
             c-compiler: 'gcc-9'
@@ -84,13 +70,6 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
-
-          # - job-name: 'focal gcc10 use system libraries' # disabled - boost version incompatible
-          #   os-version: '20.04'
-          #   c-compiler: 'gcc-10'
-          #   cxx-compiler: 'g++-10'
-          #   use-syslibs: true
-          #   shared-libscsynth: false
 
           - job-name: 'jammy gcc11'
             os-version: '22.04'
@@ -110,27 +89,6 @@ jobs:
             os-version: '20.04'
             c-compiler: 'clang-7'
             cxx-compiler: 'clang++-7'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang8'
-            os-version: '20.04'
-            c-compiler: 'clang-8'
-            cxx-compiler: 'clang++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang9'
-            os-version: '20.04'
-            c-compiler: 'clang-9'
-            cxx-compiler: 'clang++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang10'
-            os-version: '20.04'
-            c-compiler: 'clang-10'
-            cxx-compiler: 'clang++-10'
             use-syslibs: false
             shared-libscsynth: false
 
