@@ -664,12 +664,15 @@ jobs:
           /c/Program\ Files/JACK2/jackd.exe --no-realtime -d dummy &
       - name: run tests
         shell: bash
+        continue-on-error: true
         run: |
           # add path
           $SCLANG $SCRIPT_ADD_PATH $TESTS_PATH
           # run tests
           timeout 1200 $SCLANG $SCRIPT_RUN_TESTS $TEST_LIST_PROTO $TEST_LIST_RESULT
-          # print results
+      - name: post test results
+        shell: bash
+        run: |
           $SCLANG $SCRIPT_PRINT_RESULTS $TEST_LIST_RESULT
 
   deploy_s3:
