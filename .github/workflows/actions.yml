@@ -12,6 +12,8 @@ on:
       - 'HelpSource/**'
       - 'sounds/**'
       - '*.md'
+  schedule:
+    - cron:  '0 0 * * 0' # run weekly to refresh cache
 jobs:
   lint:
     runs-on: ubuntu-20.04
@@ -56,20 +58,6 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'focal gcc8'
-            os-version: '20.04'
-            c-compiler: 'gcc-8'
-            cxx-compiler: 'g++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal gcc9'
-            os-version: '20.04'
-            c-compiler: 'gcc-9'
-            cxx-compiler: 'g++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-
           - job-name: 'focal gcc9 shared libscsynth'
             os-version: '20.04'
             c-compiler: 'gcc-9'
@@ -85,13 +73,6 @@ jobs:
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
-          # - job-name: 'focal gcc10 use system libraries' # disabled - boost version incompatible
-          #   os-version: '20.04'
-          #   c-compiler: 'gcc-10'
-          #   cxx-compiler: 'g++-10'
-          #   use-syslibs: true
-          #   shared-libscsynth: false
-
           - job-name: 'jammy gcc11'
             os-version: '22.04'
             c-compiler: 'gcc-11'
@@ -106,31 +87,10 @@ jobs:
             use-syslibs: true
             shared-libscsynth: false
 
-          - job-name: 'bionic clang6.0'
-            os-version: '18.04'
-            c-compiler: 'clang-6.0'
-            cxx-compiler: 'clang++-6.0'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang8'
+          - job-name: 'focal clang7'
             os-version: '20.04'
-            c-compiler: 'clang-8'
-            cxx-compiler: 'clang++-8'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang9'
-            os-version: '20.04'
-            c-compiler: 'clang-9'
-            cxx-compiler: 'clang++-9'
-            use-syslibs: false
-            shared-libscsynth: false
-
-          - job-name: 'focal clang10'
-            os-version: '20.04'
-            c-compiler: 'clang-10'
-            cxx-compiler: 'clang++-10'
+            c-compiler: 'clang-7'
+            cxx-compiler: 'clang++-7'
             use-syslibs: false
             shared-libscsynth: false
 
@@ -193,9 +153,7 @@ jobs:
           # install appropriate clang/gcc compilers
           if [[ "$CC" =~ clang-[1-9] ]]; then
             sudo apt-get install -y $CC # package names are clang-X
-            if [[ "$CC" != clang-6.0 ]]; then
-              sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
-            fi
+            sudo apt-get install -y libc++-${CC##clang-}-dev libc++abi-${CC##clang-}-dev # install additional libraries; package names are libc++-X-dev and libc++abi-X-dev
           elif [[ "$CC" =~ gcc-[1-9] ]]; then
             sudo apt-get install -y $CXX # package names are g++-X
           fi
@@ -296,6 +254,7 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: '${{ matrix.deployment-target }}'
       CMAKE_OSX_ARCHITECTURES: '${{ matrix.cmake-architectures }}'
       BREW_UNIVERSAL_WORKDIR: ${{ github.workspace }}/brew-universal
+      SKIP_SIGNING: 1 # for brew-install-universal
     steps:
       - uses: actions/checkout@v3
         with:
@@ -334,7 +293,6 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-${{ matrix.vcpkg-triplet }}-
       - name: install dependencies
         run: |
-          brew install pkg-config # temporary fix due to an issue with GHA macOS runners fixed in https://github.com/actions/runner-images/pull/7125; should be okay to remove after approx 2023-03-10
           brew install ccache
           # add ccamke to PATH - see https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions
           echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
@@ -344,7 +302,7 @@ jobs:
           # install universal versions of homebrew libraries
           if [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then
               echo "Downloading script for creating universal binaries from homebrew packages"
-              curl -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/6bf8cb1b152e7e61c7199ff7151b0ea303f7307f/brew-install-universal.sh
+              curl -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/cb818038b9d0d2fce7b1697b95b671a110c28afa/brew-install-universal.sh
               chmod +x brew-install-universal.sh
               if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then ./brew-install-universal.sh libsndfile; fi
               if [[ "${{ matrix.build-readline }}" != "true" ]]; then ./brew-install-universal.sh readline; fi

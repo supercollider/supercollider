@@ -31,23 +31,23 @@ SuperCollider is tested with:
 - Ubuntu 18.04 and gcc 10
 
 SuperCollider is known to support these platforms:
-- Windows Vista, 7, 8, and 10
+- Windows Vista, 7, 8, 10, 11
 - macOS 10.14-12.x
-- Ubuntu 14.04-22.04
+- Ubuntu 18.04-22.04
 
 We also provide a legacy macOS binary for macOS 10.10 and above using Qt 5.9.
 
 SuperCollider has guaranteed support for:
-- Windows 10
+- Windows 10, 11
 - MSVC 2017, 2019
-- macOS 10.14-10.15
-- Xcode 10-12
-- Debian >= 9.0
-- Ubuntu 16.04, 18.04, 20.04
-- Fedora 31, 32
+- macOS 11, 12
+- Xcode 11-13
+- Debian >= 11
+- Ubuntu 20.04, 22.04
+- Fedora 36, 37
 - Arch Linux
-- gcc >= 6.3
-- clang >= 3.9
+- gcc >= 9
+- clang >= 11
 - Qt >= 5.11
 
 For more information on platform support guarantees, see the [project
