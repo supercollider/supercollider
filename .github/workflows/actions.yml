@@ -261,7 +261,9 @@ jobs:
           submodules: recursive
       - name: prepare timestamp for cache
         id: current-date
-        run: echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+        run: |
+          echo "stamp=$(date '+%Y-%m-%d')" >> $GITHUB_OUTPUT
+          echo "week=$(date '+%U')" >> $GITHUB_OUTPUT
       - name: cache ccache
         uses: actions/cache@v3
         with:
@@ -275,14 +277,14 @@ jobs:
         id: cache-homebrew
         with:
           path: ~/Library/Caches/Homebrew/downloads
-          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.stamp }}
+          key: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-${{ steps.current-date.outputs.week }}
           restore-keys: ${{ runner.os }}-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.use-syslibs }}-${{ matrix.shared-libscsynth }}-${{ matrix.qt-version }}-${{ matrix.cmake-architectures }}-homebrew-
       - name: cache homebrew universal packages
         uses: actions/cache@v3
         if: matrix.cmake-architectures != 'x86_64' && (matrix.build-libsndfile != true || matrix.build-readline != true || matrix.build-fftw != true)
         with:
           path: ${{ env.BREW_UNIVERSAL_WORKDIR }}
-          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-${{ steps.current-date.outputs.stamp }}
+          key: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-${{ steps.current-date.outputs.week }}
           restore-keys: ${{ runner.os }}-v1-${{ matrix.os-version }}-${{ matrix.xcode-version }}-${{ matrix.deployment-target }}-brew_universal-
       - name: cache vcpkg
         if: matrix.vcpkg-triplet
