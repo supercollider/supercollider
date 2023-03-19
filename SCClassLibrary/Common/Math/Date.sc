@@ -122,6 +122,9 @@ Date {
 	== { arg other;
 		^this.rawSeconds == other.rawSeconds
 	}
+	hash {
+		^this.instVarHash(#[\rawSeconds])
+	}
 	!= { arg other;
 		^this.rawSeconds != other.rawSeconds
 	}
