@@ -250,25 +250,23 @@ int prUnix_Errno(struct VMGlobals* g, int numArgsPushed) {
 
 // Set only Date instance variables related to the tm struct: YMD, HMS
 // and weekday (not rawSeconds)
-static void fillSlotsFromTimeStruct(PyrSlot* result, struct tm* tm)
-{
-    PyrSlot *slots = slotRawObject(result)->slots;
+static void fillSlotsFromTimeStruct(PyrSlot* result, struct tm* tm) {
+    PyrSlot* slots = slotRawObject(result)->slots;
 
-    SetInt(slots+0, tm->tm_year + 1900);
-    SetInt(slots+1, tm->tm_mon + 1); // 0 based month
-    SetInt(slots+2, tm->tm_mday);
-    SetInt(slots+3, tm->tm_hour);
-    SetInt(slots+4, tm->tm_min);
-    SetInt(slots+5, tm->tm_sec);
-    SetInt(slots+6, tm->tm_wday);
+    SetInt(slots + 0, tm->tm_year + 1900);
+    SetInt(slots + 1, tm->tm_mon + 1); // 0 based month
+    SetInt(slots + 2, tm->tm_mday);
+    SetInt(slots + 3, tm->tm_hour);
+    SetInt(slots + 4, tm->tm_min);
+    SetInt(slots + 5, tm->tm_sec);
+    SetInt(slots + 6, tm->tm_wday);
 }
 
 // Set all Date instance variables (including rawSeconds)
-static void fillAllSlotsFromTime(PyrSlot* result, struct tm* tm, std::chrono::system_clock::time_point const& now)
-{
+static void fillAllSlotsFromTime(PyrSlot* result, struct tm* tm, std::chrono::system_clock::time_point const& now) {
     fillSlotsFromTimeStruct(result, tm);
 
-    PyrSlot *slots = slotRawObject(result)->slots;
+    PyrSlot* slots = slotRawObject(result)->slots;
     using namespace std::chrono;
     auto const secondsPerTick = static_cast<double>(system_clock::period::num) / system_clock::period::den;
     SetFloat(slots + 7, duration_cast<system_clock::duration>(now.time_since_epoch()).count() * secondsPerTick);
@@ -294,17 +292,18 @@ int prGMTime(struct VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
-int prDateFromString(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *dateObjectSlot = g->sp - 2;
-    PyrSlot *timeSlot = g->sp - 1;
-    PyrSlot *formatSlot = g->sp;
+int prDateFromString(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* dateObjectSlot = g->sp - 2;
+    PyrSlot* timeSlot = g->sp - 1;
+    PyrSlot* formatSlot = g->sp;
 
     const auto len = 1024;
     char timeString[len];
-    if (slotStrVal(timeSlot, timeString, len)) return errWrongType;
+    if (slotStrVal(timeSlot, timeString, len))
+        return errWrongType;
     char formatString[len];
-    if (slotStrVal(formatSlot, formatString, len)) return errWrongType;
+    if (slotStrVal(formatSlot, formatString, len))
+        return errWrongType;
 
     using namespace boost::posix_time;
     auto facet = new time_input_facet(); // will be owned/deleted by the locale
@@ -313,8 +312,8 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
     ss.imbue(std::locale(ss.getloc(), facet));
     ptime pt;
     if (!(ss >> pt)) {
-       error("time parsing failed\n");
-       return errFailed;
+        error("time parsing failed\n");
+        return errFailed;
     }
     auto tm0 = to_tm(pt);
 
@@ -328,35 +327,33 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
 // or invalid properties, ignoring/overwriting the contents of
 // rawSeconds.  If some of the (MD, HMS) instance variables are
 // nil, give them default values.  If year is nil, throw an error.
-int prDateResolve(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp;
-    PyrSlot *slots = slotRawObject(a)->slots;
+int prDateResolve(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    PyrSlot* slots = slotRawObject(a)->slots;
 
-    struct tm tm0{};
+    struct tm tm0 {};
 
-    if (slotIntVal(slots+0, &tm0.tm_year)) {
+    if (slotIntVal(slots + 0, &tm0.tm_year)) {
         error("year must be a valid Integer\n");
         return errWrongType;
     }
     tm0.tm_year -= 1900; // year in tm is relative to 1900
 
-    if (slotIntVal(slots+1, &tm0.tm_mon)) {
+    if (slotIntVal(slots + 1, &tm0.tm_mon)) {
         tm0.tm_mon = 0; // default to January
-    }
-    else {
+    } else {
         tm0.tm_mon--; // month in tm is 0-based
     }
-    if (slotIntVal(slots+2, &tm0.tm_mday)) {
+    if (slotIntVal(slots + 2, &tm0.tm_mday)) {
         tm0.tm_mday = 1; // default to first of month
     }
-    if (slotIntVal(slots+3, &tm0.tm_hour)) {
+    if (slotIntVal(slots + 3, &tm0.tm_hour)) {
         tm0.tm_hour = 0; // default to 0 hours
     }
-    if (slotIntVal(slots+4, &tm0.tm_min)) {
+    if (slotIntVal(slots + 4, &tm0.tm_min)) {
         tm0.tm_min = 0; // default to 0 minutes
     }
-    if (slotIntVal(slots+5, &tm0.tm_sec)) {
+    if (slotIntVal(slots + 5, &tm0.tm_sec)) {
         tm0.tm_sec = 0; // default to 0 seconds
     }
     tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
@@ -379,13 +376,13 @@ int prDateResolve(struct VMGlobals *g, int numArgsPushed)
 
 // Given only the rawSeconds property in a Date structure, calculate
 // and fill in the rest of its properties (YMD, HMS and dayOfWeek).
-int prDateResolveFromRawSeconds(struct VMGlobals *g, int numArgsPushed)
-{
-    PyrSlot *a = g->sp;
-    PyrSlot *slots = slotRawObject(a)->slots;
+int prDateResolveFromRawSeconds(struct VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+    PyrSlot* slots = slotRawObject(a)->slots;
 
-    double rawSeconds{};
-    if (slotDoubleVal(slots+7, &rawSeconds)) return errWrongType;
+    double rawSeconds {};
+    if (slotDoubleVal(slots + 7, &rawSeconds))
+        return errWrongType;
 
     using namespace std::chrono;
 
