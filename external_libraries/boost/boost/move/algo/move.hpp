@@ -26,7 +26,8 @@
 
 #include <boost/move/utility_core.hpp>
 #include <boost/move/detail/iterator_traits.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/move/detail/iterator_to_raw_pointer.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 
 namespace boost {
 
@@ -126,7 +127,7 @@ F uninitialized_move(I f, I l, F r
    }
    BOOST_CATCH(...){
       for (; back != r; ++back){
-         back->~input_value_type();
+         boost::movelib::iterator_to_raw_pointer(back)->~input_value_type();
       }
       BOOST_RETHROW;
    }

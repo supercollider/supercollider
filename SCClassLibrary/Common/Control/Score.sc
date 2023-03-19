@@ -3,6 +3,8 @@ Score {
 	classvar <>program, <>options;
 
 	*initClass {
+		// ensure default values are available in ServerOptions
+		Class.initClassTree(ServerOptions);
 		options = ServerOptions.new;
 	}
 
@@ -83,7 +85,8 @@ Score {
 					{"Configuration events should have a timestamp of 0.0".warn; ^nil})},
 				{"Configuration events need to be a bundle array: [time, [events]]".warn;
 					^nil})});
-		^this.class.new(sectionlist);
+		// bypass the 'init' method to avoid duplicate default Group
+		^this.class.new.score_(sectionlist).sort;
 	}
 
 	writeOSCFile { arg path, from, to, clock;

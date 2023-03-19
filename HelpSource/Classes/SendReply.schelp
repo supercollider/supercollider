@@ -55,17 +55,17 @@ o.free;
 // Since SendReply can only respond to the host, this shows how
 // to send data to a separate target through sclang.
 (
-SynthDef(\amplitudeAnalysis, {|in=0, rate=60| 
-	var input = SoundIn.ar(in); 
+SynthDef(\amplitudeAnalysis, {|in=0, rate=60|
+	var input = SoundIn.ar(in);
 	var amp = Amplitude.kr(input);
 	var freq = Pitch.kr(input);
-	var trig = Impulse.kr(rate); 
-	SendReply.kr(trig, '/analysis', [amp, freq[0], freq[1]]); 
+	var trig = Impulse.kr(rate);
+	SendReply.kr(trig, '/analysis', [amp, freq[0], freq[1]]);
 }).add;
 )
 
 // example target address - insert your target host & port here
-~testNetAddr = NetAddr("127.0.0.1", 5000); 
+~testNetAddr = NetAddr("127.0.0.1", 5000);
 ~mySynth = Synth(\amplitudeAnalysis);
 
 (
@@ -78,3 +78,28 @@ OSCdef(\listener, {|msg|
 
 ~mySynth.set(\rate, 10); // slow it down...
 ::
+
+subsection::Identitying the time a message was sent
+
+Sometimes, we need to know when a message was sent. Because code::SendReply:: can send only messages (which have no timestamp) and no bundles (which have), we can't use the code::time:: argument of the link::Classes/OSCdef::'s function. Instead, you can send a time stamp with the data, by using the link::Classes/Sweep:: UGen.
+
+code::
+(
+{ SendReply.ar(Impulse.ar(4), "/reply", [Sweep.ar, SinOsc.ar(0.3)]); 0 }.play;
+OSCdef(\x, { |msg|
+	var time, value;
+	time = msg[3];
+	value = msg[4];
+	"value % occurred at time %".format(value, time).postln;
+}, "/reply");
+)
+::
+
+
+
+
+
+
+
+
+

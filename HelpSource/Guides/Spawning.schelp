@@ -1,6 +1,6 @@
 title:: "Spawning" and "TSpawning"
 summary:: The lack of the Spawn and TSpawn UGens and their various convienence classes
-categories:: SC3 vs SC2
+categories:: Language>SC3 vs SC2
 
 In SC2, Spawn and TSpawn were two of the most powerful and commonly used UGens. In SC3 the idea of a top level Synth in which everything is spawned is no longer valid. Synthesis is always running (at least as long as a server is) and new Synths can be created on the fly. This arrangement results in even greater flexibility than in SC2, but requires a slightly different approach.
 

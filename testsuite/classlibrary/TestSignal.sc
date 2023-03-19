@@ -20,6 +20,26 @@ TestSignal : UnitTest {
 
 	}
 
+	test_hanningWindow_max1 {
+		var window = Signal.hanningWindow(1024);
+		this.assertFloatEquals(window.maxItem, 1.0, "Signal.hanningWindow has maximum of 1.0 for even window size");
+	}
+
+	test_hammingWindow_max1 {
+		var window = Signal.hammingWindow(1024);
+		this.assertFloatEquals(window.maxItem, 1.0, "Signal.hammingWindow has maximum of 1.0 for even window size");
+	}
+
+	test_rectWindow_max1 {
+		var window = Signal.rectWindow(1024);
+		this.assertFloatEquals(window.maxItem, 1.0, "Signal.rectWindow has maximum of 1.0");
+	}
+
+	test_welchWindow_max1 {
+		var window = Signal.welchWindow(1024);
+		this.assertFloatEquals(window.maxItem, 1.0, "Signal.welchWindow has maximum of 1.0 for even window size");
+	}
+
 	// This is just a helper method
 	getSignalMidValue { arg sig;
 		var midIndex = sig.size >> 1;
@@ -29,4 +49,13 @@ TestSignal : UnitTest {
 		^( sig[midIndex-1] + sig[midIndex] / 2)
 	}
 
+	test_equality_true {
+		var test = 10.collect { |i| Signal.sineFill(64, [i]) == Signal.sineFill(64, [i]) }.asSet;
+		this.assertEquals(test, Set[true], "Identical signals are equal");
+	}
+
+	test_equality_false {
+		var test = 10.collect { |i| Signal.sineFill(64, [i]) != Signal.sineFill(64, [-1]) }.asSet;
+		this.assertEquals(test, Set[true], "Non-identical signals are not equal");
+	}
 }

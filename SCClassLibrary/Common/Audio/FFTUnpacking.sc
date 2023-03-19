@@ -83,7 +83,7 @@ PV_ChainUGen : WidthFirstUGen {
 		// find UGens that have me as an input
 		directDescendants = buildSynthDef.children.select ({ |child|
 			var inputs;
-			child.isKindOf(PV_Copy).not and: { child.isKindOf(Unpack1FFT).not } and: {
+			child.isKindOf(PV_Copy).not and: { child.isKindOf(WidthFirstUGen) } and: {
 				inputs = child.inputs;
 				inputs.notNil and: { inputs.includes(this) }
 			}

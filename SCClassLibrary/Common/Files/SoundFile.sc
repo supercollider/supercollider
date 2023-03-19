@@ -44,13 +44,13 @@ SoundFile {
 
 	*openRead { arg pathName;
 		var file;
-		file = SoundFile(pathName);
+		file = this.new(pathName);
 		if(file.openRead(pathName)) { ^file } { ^nil }
 	}
 
 	*openWrite { arg pathName, headerFormat, sampleFormat, numChannels, sampleRate;
 		var file;
-		file = SoundFile(pathName);
+		file = this.new(pathName);
 		// if nil, use corresponding default value from instance vars above
 		if(headerFormat.notNil) { file.headerFormat = headerFormat };
 		if(sampleFormat.notNil) { file.sampleFormat = sampleFormat };
@@ -149,7 +149,7 @@ SoundFile {
 				file.close;
 			};
 
-		(file = SoundFile.openRead(path.standardizePath)).notNil.if({
+		(file = this.openRead(path.standardizePath)).notNil.if({
 				// need to clean up in case of error
 			if(threaded, {
 				Routine(action).play(AppClock)
@@ -166,7 +166,7 @@ SoundFile {
 
 		var	peak, outFile;
 
-		outFile = SoundFile.new.headerFormat_(newHeaderFormat ?? { this.headerFormat })
+		outFile = this.class.new.headerFormat_(newHeaderFormat ?? { this.headerFormat })
 			.sampleFormat_(newSampleFormat ?? { this.sampleFormat })
 			.numChannels_(this.numChannels)
 			.sampleRate_(this.sampleRate);
@@ -210,7 +210,7 @@ SoundFile {
 			paths.do({|path|
 				var	file, peak;
 
-				(file = SoundFile.openRead(path.standardizePath)).notNil.if({
+				(file = this.openRead(path.standardizePath)).notNil.if({
 					"Checking levels for file %\n".postf(path.standardizePath);
 					files = files.add(file);
 
@@ -237,7 +237,7 @@ SoundFile {
 
 				outPath = outDir ++ file.path.basename;
 
-				outFile = SoundFile.new.headerFormat_(newHeaderFormat ?? { file.headerFormat })
+				outFile = this.new.headerFormat_(newHeaderFormat ?? { file.headerFormat })
 					.sampleFormat_(newSampleFormat ?? { file.sampleFormat })
 					.numChannels_(file.numChannels)
 					.sampleRate_(file.sampleRate);
@@ -366,7 +366,7 @@ SoundFile {
 	*collect { | path = "sounds/*" |
 		var paths, files;
 		paths = path.pathMatch;
-		files = paths.collect { | p | SoundFile(p).info };
+		files = paths.collect { | p | this.new(p).info };
 		files = files.select(_.notNil);
 		^files;
 	}
@@ -374,7 +374,7 @@ SoundFile {
 	*collectIntoBuffers { | path = "sounds/*", server |
 		server = server ?? { Server.default };
 		if (server.serverRunning) {
-			^SoundFile.collect(path)
+			^this.collect(path)
 				.collect { |  sf |
 					Buffer(server, sf.numFrames, sf.numChannels)
 					.allocRead(sf.path)
@@ -406,38 +406,37 @@ SoundFile {
 	}
 
 	cue { | ev, playNow = false, closeWhenDone = false |
-		var server, packet, defname = "diskIn" ++ numChannels, condition, onClose;
+		var server, packet, defname = "diskIn" ++ numChannels;
 		ev = ev ? ();
 		if (this.numFrames == 0) { this.info };
 		fork {
 			ev.use {
 				server = ~server ?? { Server.default};
 				if(~instrument.isNil) {
-					SynthDef(defname, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
-						Out.ar(out, VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum) )
-						* Linen.kr(gate, ar, 1, dr, 2)
-						* EnvGen.kr(Env.linen(ar, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
+					SynthDef(defname, { |out, amp=1, bufnum, sustainTime, atk=0, rel=0, gate=1|
+						var sig = VDiskIn.ar(numChannels, bufnum, BufRateScale.kr(bufnum));
+						var gateEnv = EnvGen.kr(Env([1, 1, 0], [sustainTime-rel, 0]));
+						var env = EnvGen.kr(Env.asr(atk, 1, rel), gate * gateEnv, doneAction: Done.freeSelf);
+						Out.ar(out, sig * env * amp)
 					}).add;
 					~instrument = defname;
-					condition = Condition.new;
-					server.sync(condition);
+					server.sync;
 				};
 				ev.synth;	// set up as a synth event (see Event)
 				~bufnum =  server.bufferAllocator.alloc(1);
-				~bufferSize = 0x10000;
+				~bufferSize = ~bufferSize ? 0x10000;
 				~firstFrame = ~firstFrame ? 0;
 				~lastFrame = ~lastFrame ? numFrames;
-				~sustain = (~lastFrame - ~firstFrame)/(sampleRate ?? {server.options.sampleRate ? 44100});
+				~sustainTime = (~lastFrame - ~firstFrame) / (sampleRate ?? { server.sampleRate ? 44100 });
 				~close = { | ev |
 						server.bufferAllocator.free(ev[\bufnum]);
 						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
 							["/b_free", ev[\bufnum] ]  )
 				};
-				~setwatchers = { |ev|
+				if (closeWhenDone) {
 					OSCFunc({
-						server.sendBundle(server.latency, ["/b_close", ev[\bufnum]],
-							["/b_read", ev[\bufnum], path, ev[\firstFrame], ev[\bufferSize], 0, 1]);
-					}, "/n_end", server.addr, nil, ev[\id][0]).oneShot;
+						ev[\close].value(ev);
+					}, "/n_end", server.addr, nil, ev[\id]).oneShot;
 				};
 				if (playNow) {
 					packet = server.makeBundle(false, {ev.play})[0];
@@ -450,13 +449,6 @@ SoundFile {
 							["/b_read", ~bufnum, path, ~firstFrame, ~bufferSize, 0, 1, packet]
 						]);
 			};
-		};
-		if (closeWhenDone) {
-			onClose = SimpleController(ev).put(\n_end, {
-				ev.close;
-				onClose.remove;
-			});
-			ev.addDependant(onClose)
 		};
 		^ev;
 	}

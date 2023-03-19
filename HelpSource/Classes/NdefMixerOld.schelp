@@ -1,6 +1,6 @@
 class:: NdefMixerOld
 summary:: mix control for all Ndefs on a given server
-categories:: Libraries>JITLib>GUI
+categories:: JITLib>GUI
 related:: Classes/NdefMixer
 
 description::

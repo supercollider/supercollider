@@ -1,6 +1,6 @@
 class:: Pdefn
 summary:: non event stream reference definition
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdef
 
 description::
@@ -34,12 +34,23 @@ ClassMethods::
 
 private::initClass
 
+method::all
+A global link::Classes/IdentityDictionary:: with all proxies.
+
+
+
 subsection::Creation
 
 method::new
 Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdefn creates a link::Classes/Prout:: with this function, passing in the envir, if given(see below).
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
+
+argument::key
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+argument::item
+An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
 code::
 
@@ -55,8 +66,8 @@ Pdefn(\x, { Pseq({ 10.rand } ! 8) });
 Pn(Pdefn(\x)).asStream.nextN(16);
 
 // the function is called in the incoming event as current environment, so parameters can be passed:
-Pdef(\stut, { Pstutter(~stutter ? 1, ~pattern) }); // we use here a Pdef (not a Pdefn!)
-Pdefn(\y, Pdef(\stut) <> (pattern: Pdefn(\x), stutter: Pseq([2, 2, 4, 3], inf))).asStream.nextN(16);
+Pdef(\stut, { Pdup(~dup ? 1, ~pattern) }); // we use here a Pdef (not a Pdefn!)
+Pdefn(\y, Pdef(\stut) <> (pattern: Pdefn(\x), dup: Pseq([2, 2, 4, 3], inf))).asStream.nextN(16);
 
 ::
 

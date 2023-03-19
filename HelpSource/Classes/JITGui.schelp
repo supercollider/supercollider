@@ -1,6 +1,6 @@
 class:: JITGui
 summary:: a superclass for just in time interfaces
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 
 description::
 Proxies for synths, tasks and patterns as implemented in JITLib are extremely flexible. Having guis that represent their changeable states makes it easier to understand what is going on, especially when using multiple proxies together. JITGuis follow a special strategy described below.

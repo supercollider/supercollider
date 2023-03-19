@@ -36,7 +36,7 @@ SoundFileView : View {
 	setData { arg data, block, startFrame=0, channels=1, samplerate=44100;
 		if( data.isKindOf(DoubleArray).not and: {data.isKindOf(FloatArray).not} )
 		{ data = data.as(DoubleArray) };
-		this.invokeMethod( \load, [data, startFrame, channels, samplerate] );
+		this.invokeMethod( \load, [data, startFrame, channels, samplerate.asInteger] );
 	}
 
 	set { arg offset=0, data;
@@ -64,8 +64,16 @@ SoundFileView : View {
 	}
 
 	drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
-
 	drawsWaveForm_ { arg boolean; this.setProperty( \drawsWaveform, boolean ); }
+
+	drawsRMS { ^this.getProperty( \drawsRMS ); }
+	drawsRMS_ { arg boolean; this.setProperty( \drawsRMS, boolean ); }
+
+	drawsCenterLine { ^this.getProperty( \drawsCenterLine ); }
+	drawsCenterLine_ { arg boolean; this.setProperty( \drawsCenterLine, boolean ); }
+
+	drawsBoundingLines { ^this.getProperty( \drawsBoundingLines ); }
+	drawsBoundingLines_ { arg boolean; this.setProperty( \drawsBoundingLines, boolean ); }
 
 	waveColors { ^this.getProperty( \waveColors ) }
 	waveColors_ { arg colors; this.setProperty( \waveColors, colors ) }
@@ -115,6 +123,14 @@ SoundFileView : View {
 	yZoom { ^this.getProperty( \yZoom ); }
 
 	yZoom_ { arg factor; this.setProperty( \yZoom, factor.asFloat ); }
+
+	yOffset { ^this.getProperty( \yOffset ); }
+
+	yOffset_ { arg offset; this.setProperty( \yOffset, offset.asFloat ); }
+
+	spacing { ^this.getProperty( \spacing ); }
+
+	spacing_ { arg factor; this.setProperty( \spacing, factor.asFloat ); }
 
 	//// Selections
 

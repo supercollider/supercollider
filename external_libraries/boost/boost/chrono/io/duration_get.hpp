@@ -309,8 +309,7 @@ namespace boost
         t /= den;
         if (t > duration_values<common_type_t>::zero())
         {
-          Rep pt = t;
-          if ( (duration_values<Rep>::max)() < pt)
+          if ( (duration_values<Rep>::max)() < Rep(t))
           {
             // Conversion to Period overflowed
             err |= std::ios_base::failbit;
@@ -318,8 +317,7 @@ namespace boost
           }
         }
         // Success!  Store it.
-        r = Rep(t);
-        d = duration<Rep, Period> (r);
+        d = duration<Rep, Period> (Rep(t));
 
         return s;
       }

@@ -199,7 +199,7 @@ PatternControl : StreamControl {
 SynthControl : AbstractPlayControl {
 
 	var <server, <>nodeID;
-	var <canReleaseSynth=false, <canFreeSynth=false;
+	var <canReleaseSynth=false, <canFreeSynth=false, <hasFadeTimeControl=false;
 	var prevBundle;
 
 
@@ -215,6 +215,7 @@ SynthControl : AbstractPlayControl {
 		if(desc.notNil) {
 			canFreeSynth = desc.canFreeSynth;
 			canReleaseSynth = desc.hasGate && canFreeSynth;
+			hasFadeTimeControl = desc.controls.any { |x| x.name === \fadeTime };
 		};
 		if(proxy.isNeutral) { rate = \audio };
 		^proxy.initBus(rate)
@@ -238,20 +239,26 @@ SynthControl : AbstractPlayControl {
 
 	stopToBundle { | bundle, fadeTime |
 		if(nodeID.notNil) {
+
 			if(canReleaseSynth) {
-				bundle.addAll([['/error', -1], [15, nodeID, \gate, -1.0 - fadeTime, \fadeTime, fadeTime], ['/error', -2]]);
+				if(hasFadeTimeControl) {
+					bundle.addAll([['/error', -1], [15, nodeID, \fadeTime, fadeTime, \gate, 0], ['/error', -2]])
+				} {
+					bundle.addAll([['/error', -1], [15, nodeID, \gate, -1.0 - fadeTime.abs], ['/error', -2]])
+				}
 			} {
 				if(canFreeSynth.not) { //"/n_free"
 					bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);
-				};
+				}
 				// otherwise it is self freeing by some inner mechanism.
 			};
 			nodeID = nil;
+			this.prCancelPrevBundle;
 		}
 	}
 
 	freeToBundle {
-		prevBundle !? { prevBundle.cancel };
+		this.prCancelPrevBundle
 	}
 
 	set { | ... args |
@@ -297,6 +304,13 @@ SynthControl : AbstractPlayControl {
 		canFreeSynth = control.canFreeSynth;
 	}
 
+	// private
+
+	prCancelPrevBundle {
+		prevBundle !? { prevBundle.cancel };
+		prevBundle = nil;
+	}
+
 }
 
 
@@ -308,7 +322,7 @@ SynthDefControl : SynthControl {
 	readyForPlay { ^synthDef.notNil }
 
 	build { | proxy, orderIndex = 0 |
-		var ok, rate, numChannels, outerDefControl, outerBuildProxy;
+		var ok, rate, numChannels, outerDefControl, outerBuildProxy, controlNames;
 
 		outerDefControl = NodeProxy.buildProxyControl;
 		outerBuildProxy = NodeProxy.buildProxy;
@@ -326,6 +340,10 @@ SynthDefControl : SynthControl {
 			paused = proxy.paused;
 			canReleaseSynth = synthDef.canReleaseSynth;
 			canFreeSynth = synthDef.canFreeSynth;
+			controlNames = synthDef.allControlNames;
+			hasFadeTimeControl = controlNames.notNil and: {
+				controlNames.any { |x| x.name === \fadeTime }
+			};
 		} {
 			synthDef = nil;
 			"synth def couldn't be built".warn;
@@ -336,7 +354,8 @@ SynthDefControl : SynthControl {
 		var size, path;
 
 		// cache rendered synth def, so it can be copied if necessary (see: copyData)
-		// We need to keep the bytes here, because some other instance may have deleted it from the server (see: freeToBundle)
+		// We need to keep the bytes here, because some other instance may have deleted it from the server
+		// (see: freeToBundle)
 		// the resulting synthDef will have the same name, because the name is encoded in the data (bytes).
 		bytes = bytes ?? { synthDef.asBytes }; // here the work for sclang is done.
 		size = bytes.size;
@@ -358,10 +377,10 @@ SynthDefControl : SynthControl {
 	}
 
 	freeToBundle { | bundle, proxy |
-		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) }; // "/d_free"
+		if(synthDef.notNil) { bundle.add([53, synthDef.name]) }; // "/d_free"
 		parents.do { |x| x.removeChild(proxy) };
 		bytes = parents = nil;
-		prevBundle !? { prevBundle.cancel };
+		this.prCancelPrevBundle;
 	}
 
 	writeSynthDefFile { | path, bytes |
@@ -394,5 +413,11 @@ SynthDefControl : SynthControl {
 		bytes = control.bytes; // copy cached data
 	}
 
+	findSpecFor { |controlName|
+		^synthDef.findSpecFor(controlName)
+	}
+	specs {
+		^synthDef.specs
+	}
 
 }

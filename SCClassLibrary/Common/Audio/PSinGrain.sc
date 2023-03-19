@@ -10,7 +10,7 @@
 */
 
 PSinGrain : UGen {
-	*ar { arg freq = 440.0, dur = 0.2, amp = 1.0;
+	*ar { arg freq = 440.0, dur = 0.2, amp = 0.1;
 		^this.multiNew('audio', freq, dur, amp)
 	}
 }

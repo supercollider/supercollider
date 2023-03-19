@@ -1,6 +1,6 @@
 class:: ProxyMixerOld
 summary:: mix control for a proxyspace
-categories:: Libraries>JITLib>GUI
+categories:: JITLib>GUI
 related:: Classes/ProxySpace, Classes/NodeProxyEditor
 
 description::

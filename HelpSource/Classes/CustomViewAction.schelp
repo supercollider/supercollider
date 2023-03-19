@@ -1,0 +1,47 @@
+TITLE:: CustomViewAction
+summary:: A MenuAction that can contain a View.
+categories:: GUI
+related:: Classes/MenuAction, Classes/Menu, Classes/ToolBar, Classes/MainMenu
+
+DESCRIPTION::
+A CustomViewAction is a link::Classes/MenuAction:: that contains a link::Classes/View:: instead of an icon or text.
+This enables embedding of interactive components to a link::Classes/Menu:: or link::Classes/ToolBar::.
+
+CODE::
+(
+~view = View().layout_(HLayout(
+	ToolBar(
+		MenuAction("Min", { ~slider.value = 0 }),
+		MenuAction("Max", { ~slider.value = 1 }),
+		CustomViewAction(
+			~slider = Slider().orientation_(\horizontal)
+		),
+		Menu(
+			MenuAction("Randomize", { ~multi.value = 4.collect({ 1.0.rand }) }),
+			CustomViewAction(
+				~multi = MultiSliderView().drawLines_(true).elasticMode_(true).value_([0, 1, 0, 1])
+			)
+		).title_("Submenu")
+	).minWidth_(400)
+)).front;
+)
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+    Create a new CustomViewAction
+
+    argument::
+        A View.
+    argument::
+        A Function to execute when this item is selected.
+        Note:: In some cases, the View that the CustomViewAction contains will absorb mouse clicks, making it difficult to select this menu item (and thus trigger the action). ::
+
+INSTANCEMETHODS::
+
+METHOD:: defaultView
+    Set the View that is attached to this CustomViewAction.
+
+    argument::
+        A View.

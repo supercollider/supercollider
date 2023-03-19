@@ -31,13 +31,14 @@ SystemSynthDefs {
 			(1..numChannels).do { arg i;
 				SynthDef("system_link_audio_" ++ i,
 					{ arg out=0, in=16, vol=1, level=1, lag=0.05, doneAction=2;
-						var env = EnvGate(doneAction:doneAction, curve:'sin') * Lag.kr(vol * level, lag);
+						var env = EnvGate(i_level: 0, doneAction:doneAction, curve:'sin')
+						* Lag.kr(vol * level, lag);
 						Out.ar(out, InFeedback.ar(in, i) * env)
 					}, [\kr, \kr, \kr, \kr, \kr, \ir]).add;
 
 				SynthDef("system_link_control_" ++ i,
 					{ arg out=0, in=16, doneAction=2;
-						var env = EnvGate(doneAction:doneAction, curve:'lin');
+						var env = EnvGate(i_level: 0, doneAction:doneAction, curve:'lin');
 						Out.kr(out, In.kr(in, i) * env)
 					}, [\kr, \kr, \ir]).add;
 
@@ -62,8 +63,9 @@ SystemSynthDefs {
 
 				SynthDef("system_setbus_control_" ++ i, { arg out = 0, fadeTime = 0, curve = 0;
 					var values = NamedControl.ir(\values, 0 ! i);
-					var env = Env([In.kr(out, i), values], [1], curve);
-					var sig = EnvGen.kr(env, timeScale: fadeTime, doneAction: 2);
+					var holdTime = ControlDur.ir; // we need this to make sure value isn't overridded accidentally
+					var env = Env([In.kr(out, i), values, values], [fadeTime, holdTime], curve);
+					var sig = EnvGen.kr(env, doneAction: 2);
 					ReplaceOut.kr(out, sig);
 				}, [\ir, \kr, \ir]).add;
 			};

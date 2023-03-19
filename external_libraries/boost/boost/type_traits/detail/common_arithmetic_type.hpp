@@ -46,7 +46,7 @@ template<> struct arithmetic_type<3>
 #endif
 
 // There are five standard signed integer types:
-// “signed char”, “short int”, “int”, “long int”, and “long long int”.
+// "signed char", "short int", "int", "long int", and "long long int".
 
 template<> struct arithmetic_type<4>
 {
@@ -79,8 +79,8 @@ template<> struct arithmetic_type<8>
 };
 
 // For each of the standard signed integer types, there exists a corresponding
-// (but different) standard unsigned integer type: “unsigned char”, “unsigned short int”,
-// “unsigned int”, “unsigned long int”, and “unsigned long long int”
+// (but different) standard unsigned integer type: "unsigned char", "unsigned short int",
+// "unsigned int", "unsigned long int", and "unsigned long long int"
 
 template<> struct arithmetic_type<9>
 {
@@ -206,9 +206,11 @@ private:
 
     static bool cond();
 
+    BOOST_STATIC_CONSTANT(int, selector = sizeof(select(cond() ? T() : U())));
+
 public:
 
-    typedef typename arithmetic_type< sizeof(select( cond()? T(): U() )) >::type type;
+    typedef typename arithmetic_type<selector>::type type;
 };
 
 } // namespace type_traits_detail

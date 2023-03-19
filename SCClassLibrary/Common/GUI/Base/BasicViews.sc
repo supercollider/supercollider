@@ -324,6 +324,14 @@ Button : View {
 		{ this.action = View.currentDrag; };
 	}
 
+	menu {				^this.getProperty(\menu); }
+	menu_{ |menu|		^this.setProperty(\menu, menu); }
+
+	icon_{ |image|		^this.setProperty(\icon, image); }
+
+	iconSize_{	|size|	^this.setProperty(\iconSize, size.asSize); }
+	iconSize { 			^this.getProperty(\iconSize); }
+
 	prDoAction { arg mods;
 		this.doAction(QKeyModifiers.toCocoa(mods));
 	}

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_MAIN_HPP_INCLUDED
-#define SCIDE_MAIN_HPP_INCLUDED
+#pragma once
 
 #include <QAbstractNativeEventFilter>
 #include <QAction>
@@ -32,6 +31,7 @@
 #include "sc_server.hpp"
 #include "doc_manager.hpp"
 #include "settings/manager.hpp"
+#include "../widgets/style/style.hpp"
 
 namespace ScIDE {
 
@@ -39,18 +39,15 @@ class SessionManager;
 
 // scide instances have a LocalServer. when called with an argument, it will try to reconnect
 // to the instance with the lowest number.
-class SingleInstanceGuard:
-        public QObject
-{
+class SingleInstanceGuard : public QObject {
     Q_OBJECT
 
 public:
-    SingleInstanceGuard() : mReadSize(0){};
-    bool tryConnect(QStringList const & arguments);
+    SingleInstanceGuard(): mReadSize(0) {};
+    bool tryConnect(QStringList const& arguments);
 
 public Q_SLOTS:
-    void onNewIpcConnection()
-    {
+    void onNewIpcConnection() {
         mIpcSocket = mIpcServer->nextPendingConnection();
         connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
         connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
@@ -59,46 +56,41 @@ public Q_SLOTS:
     void onIpcData();
 
 private:
-    QLocalServer * mIpcServer;
-    QLocalSocket * mIpcSocket;
+    QLocalServer* mIpcServer;
+    QLocalSocket* mIpcSocket;
     int mReadSize;
     QByteArray mIpcData;
 };
 
-class Main:
-    public QObject, public QAbstractNativeEventFilter
-{
+class Main : public QObject, public QAbstractNativeEventFilter {
     Q_OBJECT
 
 public:
-    static Main * instance(void)
-    {
-        static Main * singleton = new Main;
+    static Main* instance(void) {
+        static Main* singleton = new Main;
         return singleton;
     }
 
-    static ScProcess * scProcess()             { return instance()->mScProcess;      }
-    static ScServer  * scServer()              { return instance()->mScServer;       }
-    static SessionManager * sessionManager()   { return instance()->mSessionManager; }
-    static DocumentManager * documentManager() { return instance()->mDocManager;     }
-    static Settings::Manager *settings()       { return instance()->mSettings;       }
+    static ScProcess* scProcess() { return instance()->mScProcess; }
+    static ScServer* scServer() { return instance()->mScServer; }
+    static SessionManager* sessionManager() { return instance()->mSessionManager; }
+    static DocumentManager* documentManager() { return instance()->mDocManager; }
+    static Settings::Manager* settings() { return instance()->mSettings; }
 
-    static void evaluateCode(QString const & text, bool silent = false)
-    {
+    static void evaluateCode(QString const& text, bool silent = false) {
         instance()->scProcess()->evaluateCode(text, silent);
     }
-    
-    static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
-    {
-        if(instance()->scProcess()->compiled())
+
+    static void evaluateCodeIfCompiled(QString const& text, bool silent = false) {
+        if (instance()->scProcess()->compiled())
             evaluateCode(text, silent);
     }
 
-    static bool openDocumentation(const QString & string);
-    static bool openDocumentationForMethod(const QString & className, const QString & methodName);
-    static void openDefinition(const QString &string, QWidget * parent);
-    static void openCommandLine(const QString &string);
-    static void findReferences(const QString &string, QWidget * parent);
+    static bool openDocumentation(const QString& string);
+    static bool openDocumentationForMethod(const QString& className, const QString& methodName);
+    static void openDefinition(const QString& string, QWidget* parent);
+    static void openCommandLine(const QString& string);
+    static void findReferences(const QString& string, QWidget* parent);
 
 public Q_SLOTS:
     void storeSettings() {
@@ -108,26 +100,27 @@ public Q_SLOTS:
 
     void applySettings() {
         Q_EMIT(applySettingsRequest(mSettings));
+        setAppPaletteFromSettings();
+        qApp->setStyle(qApp->style());
     }
 
     void quit();
+    void setAppPaletteFromSettings();
 
 Q_SIGNALS:
-    void storeSettingsRequest(Settings::Manager *);
-    void applySettingsRequest(Settings::Manager *);
+    void storeSettingsRequest(Settings::Manager*);
+    void applySettingsRequest(Settings::Manager*);
 
 private:
     Main(void);
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject* obj, QEvent* event);
     bool nativeEventFilter(const QByteArray&, void* message, long*);
-    
-    Settings::Manager *mSettings;
-    ScProcess * mScProcess;
-    ScServer * mScServer;
-    DocumentManager *mDocManager;
-    SessionManager *mSessionManager;
+
+    Settings::Manager* mSettings;
+    ScProcess* mScProcess;
+    ScServer* mScServer;
+    DocumentManager* mDocManager;
+    SessionManager* mSessionManager;
 };
 
 }
-
-#endif

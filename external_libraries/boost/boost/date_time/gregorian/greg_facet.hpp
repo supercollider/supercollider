@@ -9,9 +9,11 @@
  * $Date$
  */
 
-#include "boost/date_time/gregorian/gregorian_types.hpp"
-#include "boost/date_time/date_formatting_locales.hpp" // sets BOOST_DATE_TIME_NO_LOCALE
-#include "boost/date_time/gregorian/parsers.hpp"
+#include <boost/date_time/compiler_config.hpp>
+#include <boost/date_time/gregorian/gregorian_types.hpp>
+#include <boost/date_time/date_formatting_locales.hpp> // sets BOOST_DATE_TIME_NO_LOCALE
+#include <boost/date_time/gregorian/parsers.hpp>
+#include <boost/io/ios_state.hpp>
 
 //This file is basically commented out if locales are not supported
 #ifndef BOOST_DATE_TIME_NO_LOCALE
@@ -26,7 +28,7 @@ namespace boost {
 namespace gregorian {
   
   //! Configuration of the output facet template
-  struct greg_facet_config
+  struct BOOST_SYMBOL_VISIBLE greg_facet_config
   {
     typedef boost::gregorian::greg_month month_type;
     typedef boost::date_time::special_values special_value_enum;
@@ -74,9 +76,9 @@ namespace gregorian {
       greg_month_formatter::format_month(m, os, f);
 
     }
-    else { //default to numeric
-      charT fill_char = '0';
-      os  << std::setw(2) << std::setfill(fill_char) << m.as_number();
+    else { // default to numeric
+      boost::io::basic_ios_fill_saver<charT> ifs(os);
+      os  << std::setw(2) << std::setfill(os.widen('0')) << m.as_number();
     }
 
     return os;
@@ -141,7 +143,8 @@ namespace gregorian {
   std::basic_ostream<charT, traits>&
   operator<<(std::basic_ostream<charT, traits>& os, const partial_date& pd)
   {
-    os << std::setw(2) << std::setfill('0') << pd.day() << ' ' 
+    boost::io::basic_ios_fill_saver<charT> ifs(os);
+    os << std::setw(2) << std::setfill(os.widen('0')) << pd.day() << ' ' 
        << pd.month().as_short_string() ; 
     return os;
   }
@@ -365,8 +368,7 @@ namespace gregorian {
 
 } } //namespace gregorian
 
-#endif  
-    
-    
+#endif
+
 #endif
 

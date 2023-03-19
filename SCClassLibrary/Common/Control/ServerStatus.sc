@@ -5,7 +5,7 @@ ServerStatusWatcher {
 	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
-	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
+	var <hasBooted = false, <>serverBooting = false, <unresponsive = false;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
@@ -25,9 +25,16 @@ ServerStatusWatcher {
 			onComplete.value;
 		};
 		this.stopAliveThread;
+		this.serverRunning = false;
+		hasBooted = false;
+		alive = false;
 		notified = false;
 		serverBooting = false;
-		this.serverRunning = false;
+		unresponsive = false;
+
+		// server.changed(\serverRunning) should be deferred in dependants!
+		//  just in case some don't, defer here to avoid gui updates breaking.
+		defer { server.changed(\serverRunning) };
 		bootNotifyFirst = true;
 	}
 
@@ -36,31 +43,9 @@ ServerStatusWatcher {
 		this.sendNotifyRequest(flag);
 	}
 
+	// flag true requests notification, false turns it off
 	sendNotifyRequest { |flag = true|
-		var doneOSCFunc, failOSCFunc;
-		if(serverRunning.not) { ^this };
-		notified = flag;
-		if(server.userSpecifiedClientID.not) {
-			doneOSCFunc = OSCFunc({|msg|
-				if(flag) { server.clientID = msg[2] };
-				failOSCFunc.free;
-			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
-
-			failOSCFunc = OSCFunc({|msg|
-				doneOSCFunc.free;
-				Error(
-					"Failed to register with server '%' for notifications: %\n"
-					"To recover, please reboot the server.".format(server.name, msg)).throw;
-			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
-
-		};
-
-		if(flag){
-			"Receiving notification messages from server '%'\n".postf(server.name)
-		} {
-			"Switched off notification messages from server '%'\n".postf(server.name);
-		};
-		server.sendMsg("/notify", flag.binaryValue);
+		this.prSendNotifyRequest(flag, false);
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
@@ -69,7 +54,7 @@ ServerStatusWatcher {
 
 		^Routine {
 			while {
-				serverRunning.not
+				server.serverRunning.not
 				/*
 				// this is not yet implemented.
 				or: { serverBooting and: mBootNotifyFirst.not }
@@ -80,7 +65,8 @@ ServerStatusWatcher {
 			} {
 				0.2.wait;
 			};
-			if(serverRunning.not, {
+
+			if(server.serverRunning.not, {
 				if(onFailure.notNil) {
 					postError = (onFailure.value(server) == false);
 				};
@@ -89,7 +75,11 @@ ServerStatusWatcher {
 				};
 				serverBooting = false;
 				server.changed(\serverRunning);
-			}, onComplete);
+			}, {
+				// make sure the server process finishes all pending tasks from Server.tree before running onComplete
+				server.sync;
+				onComplete.value;
+			});
 
 		}.play(AppClock)
 	}
@@ -132,10 +122,10 @@ ServerStatusWatcher {
 			statusWatcher =
 			OSCFunc({ arg msg;
 				var cmd, one;
-				if(notify and: { notified.not }) { this.sendNotifyRequest };
+				if(notify and: { notified.not }) { this.prSendNotifyRequest(true,true) };
 				alive = true;
 				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
-						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
+				avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.updateRunningState(true);
 					server.changed(\counts);
@@ -184,15 +174,16 @@ ServerStatusWatcher {
 		}
 	}
 
-	serverRunning_ { | running |
+	serverRunning { ^hasBooted and: notified }
 
-		if(running != serverRunning) {
-			serverRunning = running;
+	serverRunning_ { | running |
+		if(running != server.serverRunning) {
 			this.unresponsive = false;
 
-			if (server.serverRunning) {
-				ServerBoot.run(server);
-			} {
+			hasBooted = running;
+
+			if (running.not) {
+				hasBooted = running;
 				ServerQuit.run(server);
 
 				server.disconnectSharedMemory;
@@ -205,7 +196,6 @@ ServerStatusWatcher {
 					notified = false;
 				};
 			};
-			{ server.changed(\serverRunning) }.defer;
 		}
 
 	}
@@ -231,6 +221,104 @@ ServerStatusWatcher {
 			unresponsive = val;
 			{ server.changed(\serverRunning) }.defer;
 		}
+	}
+
+	// final actions needed to finish booting
+	prFinalizeBoot {
+		// this needs to be forked so that ServerBoot and ServerTree will definitely run before
+		// notified is true.
+		fork({
+			ServerBoot.run(server);
+			server.sync;
+			server.initTree;
+
+			this.notified = true;
+			server.changed(\serverRunning);
+		}, AppClock)
+	}
+
+	// This method attempts to recover from a loss of client-server contact,
+	// which is a serious emergency in live shows. So it posts a lot of info
+	// on the recovered state, and possibly helpful next user actions.
+
+	prHandleLoginWhenAlreadyRegistered { |clientIDFromProcess|
+		"% - handling login request though already registered - \n".postf(server);
+
+		if (clientIDFromProcess.isNil) {
+			"% - notify response did not contain already-registered clientID from server process.\n"
+			"Assuming all is well.\n".postf(server);
+		} {
+
+			// by default, only reset clientID if changed, to leave allocators untouched:
+			if (clientIDFromProcess != server.clientID) {
+				// make sure we can set the clientID, and set it
+				notified = false;
+				server.clientID_(clientIDFromProcess);
+				"*** This seems to be a login after a crash, or from a new server object,\n"
+				"*** so you may want to release currently running synths by hand:".postln;
+				"%.defaultGroup.release;\n".postf(server.cs);
+				"*** and you may want to redo server boot finalization by hand:".postln;
+				"%.statusWatcher.prFinalizeBoot;\n\n".postf(server.cs);
+			} {
+				// same clientID, so leave all server resources in the state they were in!
+				"This seems to be a login after a loss of network contact - \n"
+				"- reconnected with the same clientID as before, so probably all is well.\n".postln;
+			};
+		};
+
+		// ensure that statuswatcher is in the correct state immediately.
+		this.notified = true;
+		unresponsive = false;
+		server.changed(\serverRunning);
+	}
+
+	prSendNotifyRequest { |flag = true, addingStatusWatcher|
+		var doneOSCFunc, failOSCFunc;
+
+		if(hasBooted.not) { ^this };
+
+		// set up oscfuncs for possible server responses, \done or \failed
+		doneOSCFunc = OSCFunc({ |msg|
+			var newClientID = msg[2], newMaxLogins = msg[3];
+			failOSCFunc.free;
+
+			if(newClientID.notNil) {
+				// notify on:
+				// on registering scsynth sends back a free clientID and maxLogins
+				// this method doesn't fork/wait so we're still in the clear
+
+				// turn notified off (if it was on) to allow setting clientID
+				notified = false;
+				server.prHandleClientLoginInfoFromServer(newClientID, newMaxLogins);
+
+				// XXX: this is a workaround because using `serverBooting` is not reliable
+				// when server is rebooted quickly.
+				if(addingStatusWatcher) {
+					this.prFinalizeBoot;
+				} {
+					notified = true;
+				}
+
+			} {
+				notified = false;
+			};
+
+		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
+
+		failOSCFunc = OSCFunc({|msg|
+
+			doneOSCFunc.free;
+			server.prHandleNotifyFailString(msg[2], msg);
+
+		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
+
+		server.sendMsg("/notify", flag.binaryValue, server.clientID);
+
+		if(flag){
+			"Requested notification messages from server '%'\n".postf(server.name)
+		} {
+			"Switched off notification messages from server '%'\n".postf(server.name);
+		};
 	}
 
 }

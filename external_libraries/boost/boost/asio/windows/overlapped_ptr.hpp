@@ -2,7 +2,7 @@
 // windows/overlapped_ptr.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -22,7 +22,7 @@
 
 #include <boost/asio/detail/noncopyable.hpp>
 #include <boost/asio/detail/win_iocp_overlapped_ptr.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -50,10 +50,25 @@ public:
   }
 
   /// Construct an overlapped_ptr to contain the specified handler.
-  template <typename Handler>
-  explicit overlapped_ptr(boost::asio::io_service& io_service,
-      BOOST_ASIO_MOVE_ARG(Handler) handler)
-    : impl_(io_service, BOOST_ASIO_MOVE_CAST(Handler)(handler))
+  template <typename ExecutionContext, typename Handler>
+  explicit overlapped_ptr(ExecutionContext& context,
+      BOOST_ASIO_MOVE_ARG(Handler) handler,
+      typename enable_if<
+        is_convertible<ExecutionContext&, execution_context&>::value
+      >::type* = 0)
+    : impl_(context.get_executor(), BOOST_ASIO_MOVE_CAST(Handler)(handler))
+  {
+  }
+
+  /// Construct an overlapped_ptr to contain the specified handler.
+  template <typename Executor, typename Handler>
+  explicit overlapped_ptr(const Executor& ex,
+      BOOST_ASIO_MOVE_ARG(Handler) handler,
+      typename enable_if<
+        execution::is_executor<Executor>::value
+          || is_executor<Executor>::value
+      >::type* = 0)
+    : impl_(ex, BOOST_ASIO_MOVE_CAST(Handler)(handler))
   {
   }
 
@@ -70,11 +85,25 @@ public:
 
   /// Reset to contain the specified handler, freeing any current OVERLAPPED
   /// object.
-  template <typename Handler>
-  void reset(boost::asio::io_service& io_service,
-      BOOST_ASIO_MOVE_ARG(Handler) handler)
+  template <typename ExecutionContext, typename Handler>
+  void reset(ExecutionContext& context, BOOST_ASIO_MOVE_ARG(Handler) handler,
+      typename enable_if<
+        is_convertible<ExecutionContext&, execution_context&>::value
+      >::type* = 0)
   {
-    impl_.reset(io_service, BOOST_ASIO_MOVE_CAST(Handler)(handler));
+    impl_.reset(context.get_executor(), BOOST_ASIO_MOVE_CAST(Handler)(handler));
+  }
+
+  /// Reset to contain the specified handler, freeing any current OVERLAPPED
+  /// object.
+  template <typename Executor, typename Handler>
+  void reset(const Executor& ex, BOOST_ASIO_MOVE_ARG(Handler) handler,
+      typename enable_if<
+        execution::is_executor<Executor>::value
+          || is_executor<Executor>::value
+      >::type* = 0)
+  {
+    impl_.reset(ex, BOOST_ASIO_MOVE_CAST(Handler)(handler));
   }
 
   /// Get the contained OVERLAPPED object.

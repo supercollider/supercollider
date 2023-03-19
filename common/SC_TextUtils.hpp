@@ -1,8 +1,8 @@
 /*
-	SuperCollider real time audio synthesis system
-	Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
-	Copyright (c) 2012 Tim Blechmann. All rights reserved.
+    SuperCollider real time audio synthesis system
+    Copyright (c) 2002 James McCartney. All rights reserved.
+    http://www.audiosynth.com
+    Copyright (c) 2012 Tim Blechmann. All rights reserved.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,12 +19,8 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SC_TEXTUTILS_HPP
-#define SC_TEXTUTILS_HPP
+#pragma once
 
 // strips out all the RichTextFile crap
 int rtf2txt(char* txt);
 int html2txt(char* txt);
-
-
-#endif // SC_TEXTUTILS_HPP

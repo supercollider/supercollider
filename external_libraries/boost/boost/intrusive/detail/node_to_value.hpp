@@ -59,7 +59,7 @@ struct constptr
    {}
 
    const void *get_ptr() const
-   {  return boost::intrusive::detail::to_raw_pointer(const_void_ptr_);  }
+   {  return boost::movelib::to_raw_pointer(const_void_ptr_);  }
 
    ConstVoidPtr const_void_ptr_;
 };

@@ -91,7 +91,7 @@ The phase of 1.5pi (this just means 1.5 * pi) means 3/4 of the way through its c
 
 image::Functions-and-Sound-04.png::
 
-And what we have in the end is a SinOsc that fades gently in and out. Shifting the phase just means that we start quiet and fade in. We're effectively using ampOsc as what is called an amplitude emphasis::envelope::. There are other ways of doing the same thing, some of them simpler, but this demonstrates the principal.
+And what we have in the end is a SinOsc that fades gently in and out. Shifting the phase just means that we start quiet and fade in. We're effectively using ampOsc as what is called an amplitude emphasis::envelope::. There are other ways of doing the same thing, some of them simpler, but this demonstrates the principle.
 
 Patching together UGens in this way is the basic way that you make sound in SC. For an overview of the various types of UGens available in SC, see link::Browse#UGens:: or link::Guides/Tour_of_UGens::.
 

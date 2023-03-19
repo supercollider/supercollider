@@ -25,14 +25,23 @@ Event : Environment {
 
 	// event types
 
-	*addEventType { arg type, func, parentEvent;
+	*addEventType { |type, func, parentEvent|
 		partialEvents.playerEvent.eventTypes.put(type, func);
-		this.addParentType(parentEvent)
+		this.addParentType(type, parentEvent)
 	}
 
-	*addParentType { arg type, parentEvent;
+	*addParentType { |type, parentEvent|
 		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
 		partialEvents.playerEvent.parentTypes.put(type, parentEvent)
+	}
+
+	*removeEventType { |type|
+		Event.removeParentType(type);
+		partialEvents.playerEvent.eventTypes.removeAt(type);
+	}
+
+	*removeParentType { |type|
+		partialEvents.playerEvent.parentTypes.removeAt(type)
 	}
 
 	*parentTypes {
@@ -257,7 +266,7 @@ Event : Environment {
 
 				synthLib: nil,
 
-				group: 1,
+				group: { ~server.defaultGroup.nodeID },
 				out: 0,
 				addAction: 0,
 
@@ -373,7 +382,7 @@ Event : Environment {
 				delta: 0,
 
 				addAction: 0,
-				group: 1,
+				group: { ~server.defaultGroup.nodeID },
 				latency: 0.2,
 				instrument: \default,
 				hasGate: true,
@@ -435,9 +444,9 @@ Event : Environment {
 					parentType = ~parentTypes[~type];
 					parentType !? { currentEnvironment.parent = parentType };
 
-					~finish.value(currentEnvironment);
+					server = ~server = ~server ? Server.default;
 
-					server = ~server ? Server.default;
+					~finish.value(currentEnvironment);
 
 					tempo = ~tempo;
 					tempo !? { thisThread.clock.tempo = tempo };
@@ -564,8 +573,10 @@ Event : Environment {
 								);
 							}
 						} {
-
-							if (strum < 0) { bndl = bndl.reverse };
+							if (strum < 0) {
+								bndl = bndl.reverse;
+								ids = ids.reverse
+							};
 							strumOffset = offset + Array.series(bndl.size, 0, strum.abs);
 							~schedBundleArray.(
 								lag, strumOffset, server, bndl, ~latency
@@ -619,7 +630,7 @@ Event : Environment {
 						// compute the control values and generate OSC commands
 
 						bndl = msgFunc.valueEnvir;
-						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group] ++ bndl;
+						bndl = [9 /* \s_new */, instrumentName, -1, addAction, ~group.asControlInput] ++ bndl;
 
 						~schedBundleArray.(
 							~lag,
@@ -966,6 +977,14 @@ Event : Environment {
 							server.sendBundle(server.latency, *~bundle);
 						};
 						~bundle = nil;
+					},
+
+					composite: { |server|
+						~resultEvents = ~types.collect { |type|
+							if(type != \composite) {
+								currentEnvironment.copy.put(\type, type).play;
+							};
+						};
 					}
 				)
 			)

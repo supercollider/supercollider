@@ -114,6 +114,7 @@
 #define BOOST_NO_CXX11_RVALUE_REFERENCES
 #define BOOST_NO_CXX11_SCOPED_ENUMS
 #define BOOST_NO_SFINAE_EXPR
+#define BOOST_NO_CXX11_SFINAE_EXPR
 #define BOOST_NO_CXX11_STATIC_ASSERT
 #define BOOST_NO_CXX11_TEMPLATE_ALIASES
 #define BOOST_NO_CXX11_UNICODE_LITERALS
@@ -124,6 +125,7 @@
 #define BOOST_NO_CXX11_INLINE_NAMESPACES
 #define BOOST_NO_CXX11_REF_QUALIFIERS
 #define BOOST_NO_CXX11_THREAD_LOCAL
+#define BOOST_NO_CXX11_UNRESTRICTED_UNION
 
 /*
   See https://forums13.itrc.hp.com/service/forums/questionanswer.do?threadId=1443331 and
@@ -141,6 +143,6 @@
 // last known and checked version for PA-RISC is 38000
 #if ((__HP_aCC > 61300) || ((__HP_aCC > 38000) && defined(__hpxstd98)))
 #  if defined(BOOST_ASSERT_CONFIG)
-#     error "Unknown compiler version - please run the configure tests and report the results"
+#     error "boost: Unknown compiler version - please run the configure tests and report the results"
 #  endif
 #endif

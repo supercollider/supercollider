@@ -1,16 +1,9 @@
-cmake_minimum_required(VERSION 2.8.11)
-
-# This makes sclang/scide work with a Qt installation at a fixed location.
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
                     ${CMAKE_SOURCE_DIR}/include/server
                     ${CMAKE_SOURCE_DIR}/common
-
-                    ${YAMLCPP_INCLUDE_DIR}
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
 
@@ -19,6 +12,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison
+
+                    ${YAMLCPP_INCLUDE_DIR}
 )
 
 
@@ -37,7 +32,8 @@ else ()
 endif ()
 
 set(sclang_sources
-	LangPrimSource/SC_Wii.cpp
+    LangPrimSource/SC_LinkClock.cpp
+    LangPrimSource/SC_AudioDevicePrim.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
 	LangPrimSource/PyrPrimitive.cpp
@@ -54,6 +50,7 @@ set(sclang_sources
 	LangPrimSource/PyrStringPrim.cpp
 	LangPrimSource/PyrSymbolPrim.cpp
 	LangPrimSource/PyrUnixPrim.cpp
+	LangPrimSource/PyrSerialPrim.cpp
 	LangSource/AdvancingAllocPool.cpp
 	LangSource/ByteCodeArray.cpp
 	LangSource/DumpParseNode.cpp
@@ -99,31 +96,48 @@ if(APPLE)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
 
-if (NOT Boost_FOUND)
-	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
-	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/src/*cpp)
-	file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
-	list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
-endif()
-
 file(GLOB_RECURSE headers ../include/*.h* )
 file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
 list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator happy
 
-if(NOT WIN32)
-	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
+set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
+
+# audio API for listing devices, selected the same way as in the server
+if(AUDIOAPI STREQUAL "default")
+    if(APPLE)
+        set(AUDIOAPI coreaudio)
+    elseif(WIN32)
+        set(AUDIOAPI portaudio)
+    else()
+        set(AUDIOAPI jack)
+    endif(APPLE)
 endif()
 
-set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
+    message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
+endif()
+
+if (AUDIOAPI STREQUAL coreaudio)
+    add_definitions("-DSC_AUDIO_API_COREAUDIO")
+elseif (AUDIOAPI STREQUAL portaudio)
+    if (SYSTEM_PORTAUDIO)
+        find_package(Portaudio)
+        if(NOT PORTAUDIO_FOUND)
+            message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
+        endif()
+    endif()
+    add_definitions("-DSC_AUDIO_API_PORTAUDIO")
+    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
+    include_directories(${PORTAUDIO_INCLUDE_DIRS})
+elseif(AUDIOAPI STREQUAL bela)
+    add_definitions("-DSC_AUDIO_API_BELA")
+endif()
 
 if(UNIX)
 	if(APPLE)
 		list(APPEND sclang_sources
 			LangPrimSource/SC_CoreMIDI.cpp
-			LangPrimSource/SC_CoreAudioPrim.cpp
-			LangPrimSource/SC_Speech.mm
 			)
-		add_definitions(-DHAVE_SPEECH)
 	else(APPLE)
 		if(ALSA_FOUND)
 			list(APPEND sclang_sources LangPrimSource/SC_AlsaMIDI.cpp)
@@ -165,25 +179,6 @@ if(SC_HIDAPI)
     add_definitions(-DSC_HIDAPI)
 endif(SC_HIDAPI)
 
-if(SC_WII)
-	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		find_package(CWiid)
-		find_package(Bluetooth)
-
-		if (BLUETOOTH_FOUND AND CWIID_FOUND)
-			add_definitions(-DHAVE_WII)
-			include_directories(${CWIID_INCLUDE_DIRS} ${BLUETOOTH_INCLUDE_DIRS})
-			message(STATUS "Compiling with WiiMote support")
-		else()
-			message(SEND_ERROR "Cannot find libcwiid or libbluetooth.\n (If Wii support is not required, then set SC_WII=no)")
-		endif()
-	elseif(APPLE)
-                add_definitions(-DHAVE_WII)
-                list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
-                include_directories(LangPrimSource/WiiMote_OSX)
-	endif()
-endif()
-
 if(SC_QT OR SC_IDE)
 	set(QT_COLLIDER_LANG_CLIENT ON)
 	include(../QtCollider/CMakeLists.txt)
@@ -211,13 +206,22 @@ endif()
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
-if(SC_IDE OR SC_QT)
-	find_package(Qt5Core)
+if(SC_QT OR SC_IDE)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
 	message(STATUS "Found Qt: " ${QtCore_location} )
-  get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
+    get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
-	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+    if(SC_USE_QTWEBENGINE)
+        message(STATUS "sclang: Building with QtWebEngine")
+        target_compile_definitions(libsclang PUBLIC SC_USE_QTWEBENGINE)
+    endif()
+    target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+
+    # This makes sclang/scide work with a Qt installation at a fixed location.
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set_property(TARGET libsclang PROPERTY INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    endif()
+    set_property(TARGET libsclang PROPERTY INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
 if(FALSE) # libsclang is a shared library
@@ -237,25 +241,8 @@ if(SC_HIDAPI)
   endif()
 endif()
 
-
-
-if (SC_WII OR APPLE)
-	if (BLUETOOTH_FOUND AND CWIID_FOUND)
-		target_link_libraries(libsclang ${BLUETOOTH_LIBRARIES} ${CWIID_LIBRARIES})
-	elseif(APPLE)
-		target_link_libraries(libsclang "-framework IOBluetooth")
-	endif()
-endif()
-
-
-if (Boost_FOUND)
-	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
-	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
-else()
-	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-	target_link_libraries(libsclang boost_thread)
-endif()
-
+target_link_libraries(libsclang boost_thread_lib boost_system_lib boost_regex_lib boost_filesystem_lib)
+target_include_directories(libsclang PUBLIC ${boost_include_dirs})
 
 if (SCLANG_SERVER)
 	target_link_libraries(libsclang libscsynth)
@@ -268,12 +255,33 @@ if (NOT WIN32)
 		PROPERTY OUTPUT_NAME sclang)
 endif()
 
+if (SC_ABLETON_LINK)
+	message(STATUS "Compiling with Ableton Link support")
+	if(SYSTEM_ABLETON_LINK)
+		find_package(AbletonLink NAMES AbletonLink ableton-link link REQUIRED)
+	else()
+		include(../external_libraries/link/AbletonLinkConfig.cmake)
+	endif()
+
+	target_link_libraries(libsclang Ableton::Link)
+
+	add_definitions(-DSC_ABLETON_LINK)
+endif()
+
 ## external libraries
 if(READLINE_FOUND)
-	message(STATUS "Compiling with Readline support")
-	target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
-	target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
-	target_link_libraries(libsclang ${READLINE_LIBRARY})
+    message(STATUS "Compiling with Readline support")
+    # Some Linuxes require linking against ncurses as well as libreadline, because libtermcap provides
+    # the same API and so could be used instead. Since ncurses is widely available and usually installed
+    # already, we simply require it on all Linuxes. See #4899.
+    if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set(CURSES_NEED_NCURSES 1)
+        find_package(Curses REQUIRED)
+        target_link_libraries(libsclang ${CURSES_LIBRARIES})
+    endif()
+    target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
+    target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
+    target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
 mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
@@ -292,7 +300,20 @@ if(ALSA_FOUND)
 	target_link_libraries(libsclang ${ALSA_LIBRARY})
 endif(ALSA_FOUND)
 
+if (AUDIOAPI STREQUAL portaudio)
+    target_link_libraries(libsclang ${PORTAUDIO_LIBRARIES})
+endif()
+
 if(SNDFILE_FOUND)
+	if(SNDFILE_HAS_VORBIS)
+		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_VORBIS)
+	endif()
+	if(SNDFILE_HAS_OPUS)
+		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_OPUS)
+	endif()
+	if(SNDFILE_HAS_MPEG)
+		target_compile_definitions(libsclang PUBLIC SNDFILE_HAS_MPEG)
+	endif()
 	target_include_directories(libsclang PUBLIC ${SNDFILE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${SNDFILE_LIBRARIES})
 elseif(NOT NO_LIBSNDFILE)
@@ -327,16 +348,23 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-  target_compile_definitions(libsclang PUBLIC -flto -flto-report)
-
   set_property(TARGET sclang libsclang
+        APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
+
+  set_property(TARGET sclang
         APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+
+  set_property(TARGET libsclang
+        APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
 if(APPLE)
-    add_custom_command(TARGET sclang POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+    if(scappbindir)
+        add_custom_command(TARGET sclang POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappbindir}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> ${CMAKE_INSTALL_PREFIX}/${scappbindir}
+            )
+    endif()
 elseif(WIN32)
     if(NOT MSVC)
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
@@ -373,9 +401,9 @@ elseif(WIN32)
       else()
         add_custom_command(TARGET sclang
           POST_BUILD
-          COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat remove \"$<TARGET_FILE_DIR:sclang>\"
+          COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" remove \"$<TARGET_FILE_DIR:sclang>\"\""
           COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
-          COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:sclang>\" \"${CMAKE_SOURCE_DIR}\"
+          COMMAND cmd /C "\"\"${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat\" create \"$<TARGET_FILE_DIR:sclang>\" \"${CMAKE_SOURCE_DIR}\"\""
           COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
         )
       endif()
@@ -395,7 +423,7 @@ elseif(WIN32)
             SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../plugins" CACHE PATH "Location of qt plugins for windows")
         endif()
 
-        foreach(plugin ${Qt5Network_PLUGINS} ${Qt5Gui_PLUGINS} ${Qt5Sensors_PLUGINS} ${Qt5Sql_PLUGINS} ${Qt5PrintSupport_PLUGINS})
+        foreach(plugin ${Qt5Network_PLUGINS} ${Qt5Gui_PLUGINS} ${Qt5Sql_PLUGINS} ${Qt5PrintSupport_PLUGINS})
             get_target_property(_loc ${plugin} LOCATION)
             get_filename_component(_parent_dir ${_loc} DIRECTORY)
             get_filename_component(_name_we ${_loc} NAME_WE)

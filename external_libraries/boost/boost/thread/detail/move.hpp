@@ -18,9 +18,7 @@
 #include <boost/type_traits/remove_extent.hpp>
 #include <boost/type_traits/is_array.hpp>
 #include <boost/type_traits/is_function.hpp>
-#include <boost/type_traits/remove_cv.hpp>
 #include <boost/type_traits/add_pointer.hpp>
-#include <boost/type_traits/decay.hpp>
 #endif
 
 #include <boost/thread/detail/delete.hpp>
@@ -352,12 +350,19 @@ namespace boost
 #endif
 
 #ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
-      template <class T>
-      typename decay<T>::type
-      decay_copy(T&& t)
-      {
-          return boost::forward<T>(t);
-      }
+  template <class T>
+  typename decay<T>::type
+  decay_copy(T&& t)
+  {
+      return boost::forward<T>(t);
+  }
+  typedef void (*void_fct_ptr)();
+
+//  inline void_fct_ptr
+//  decay_copy(void (&t)())
+//  {
+//      return &t;
+//  }
 #else
   template <class T>
   typename decay<T>::type

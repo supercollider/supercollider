@@ -171,6 +171,14 @@ Integer : SimpleNumber {
 		*/
 	}
 
+	factorial {
+		if(this > 12) {
+			Error("factorial: insufficient integer precision for this number (%). "
+				"Use Float.factorial instead.".format(this)).throw
+		};
+		^super.factorial.asInteger
+	}
+
 	// exit the program and return the result code to unix shell
 	exit {
 		_Exit
@@ -219,6 +227,7 @@ Integer : SimpleNumber {
 	geom { arg start, grow;
 		^Array.geom(this, start, grow);
 	}
+
 	fib { arg a=0.0, b=1.0;
 		^Array.fib(this, a, b);
 	}
@@ -247,17 +256,6 @@ Integer : SimpleNumber {
 	}
 
 	pidRunning { _PidRunning; ^this.primitiveFailed }
-
-	factorial {
-		^#[1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800, 39916800, 479001600]
-			@ this.max(0)
-			?? { Error("integer resolution too low for this factorial:" + this).throw };
-		/*var	product = 1;
-		if(this <= 1) { ^1 } {
-			this.do { |x| product = product * (x+1) };
-			^product
-		}*/
-	}
 
 		// support for modifiers keys
 	isCaps { ^this.bitAnd(65536) == 65536}

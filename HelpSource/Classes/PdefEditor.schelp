@@ -1,6 +1,6 @@
 class:: PdefEditor
 summary:: will be replaced - please use PdefGui now!
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/PdefGui
 
 description::

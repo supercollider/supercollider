@@ -1,6 +1,6 @@
 class:: PdefGui
 summary:: a line of editing controls for a Pdef, and optionally its envir
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/PdefAllGui, Classes/TdefGui, Classes/TdefAllGui, Classes/EnvirGui
 
 description::

@@ -2,7 +2,7 @@
 // detail/impl/resolver_service_base.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,63 +24,67 @@ namespace boost {
 namespace asio {
 namespace detail {
 
-class resolver_service_base::work_io_service_runner
+class resolver_service_base::work_scheduler_runner
 {
 public:
-  work_io_service_runner(boost::asio::io_service& io_service)
-    : io_service_(io_service) {}
-  void operator()() { io_service_.run(); }
+  work_scheduler_runner(scheduler_impl& work_scheduler)
+    : work_scheduler_(work_scheduler)
+  {
+  }
+
+  void operator()()
+  {
+    boost::system::error_code ec;
+    work_scheduler_.run(ec);
+  }
+
 private:
-  boost::asio::io_service& io_service_;
+  scheduler_impl& work_scheduler_;
 };
 
-resolver_service_base::resolver_service_base(
-    boost::asio::io_service& io_service)
-  : io_service_impl_(boost::asio::use_service<io_service_impl>(io_service)),
-    work_io_service_(new boost::asio::io_service),
-    work_io_service_impl_(boost::asio::use_service<
-        io_service_impl>(*work_io_service_)),
-    work_(new boost::asio::io_service::work(*work_io_service_)),
+resolver_service_base::resolver_service_base(execution_context& context)
+  : scheduler_(boost::asio::use_service<scheduler_impl>(context)),
+    work_scheduler_(new scheduler_impl(context, -1, false)),
     work_thread_(0)
 {
+  work_scheduler_->work_started();
 }
 
 resolver_service_base::~resolver_service_base()
 {
-  shutdown_service();
+  base_shutdown();
 }
 
-void resolver_service_base::shutdown_service()
+void resolver_service_base::base_shutdown()
 {
-  work_.reset();
-  if (work_io_service_.get())
+  if (work_scheduler_.get())
   {
-    work_io_service_->stop();
+    work_scheduler_->work_finished();
+    work_scheduler_->stop();
     if (work_thread_.get())
     {
       work_thread_->join();
       work_thread_.reset();
     }
-    work_io_service_.reset();
+    work_scheduler_.reset();
   }
 }
 
-void resolver_service_base::fork_service(
-    boost::asio::io_service::fork_event fork_ev)
+void resolver_service_base::base_notify_fork(
+    execution_context::fork_event fork_ev)
 {
   if (work_thread_.get())
   {
-    if (fork_ev == boost::asio::io_service::fork_prepare)
+    if (fork_ev == execution_context::fork_prepare)
     {
-      work_io_service_->stop();
+      work_scheduler_->stop();
       work_thread_->join();
+      work_thread_.reset();
     }
-    else
-    {
-      work_io_service_->reset();
-      work_thread_.reset(new boost::asio::detail::thread(
-            work_io_service_runner(*work_io_service_)));
-    }
+  }
+  else if (fork_ev != execution_context::fork_prepare)
+  {
+    work_scheduler_->restart();
   }
 }
 
@@ -93,24 +97,48 @@ void resolver_service_base::construct(
 void resolver_service_base::destroy(
     resolver_service_base::implementation_type& impl)
 {
-  BOOST_ASIO_HANDLER_OPERATION(("resolver", &impl, "cancel"));
+  BOOST_ASIO_HANDLER_OPERATION((scheduler_.context(),
+        "resolver", &impl, 0, "cancel"));
 
   impl.reset();
+}
+
+void resolver_service_base::move_construct(implementation_type& impl,
+    implementation_type& other_impl)
+{
+  impl = BOOST_ASIO_MOVE_CAST(implementation_type)(other_impl);
+}
+
+void resolver_service_base::move_assign(implementation_type& impl,
+    resolver_service_base&, implementation_type& other_impl)
+{
+  destroy(impl);
+  impl = BOOST_ASIO_MOVE_CAST(implementation_type)(other_impl);
 }
 
 void resolver_service_base::cancel(
     resolver_service_base::implementation_type& impl)
 {
-  BOOST_ASIO_HANDLER_OPERATION(("resolver", &impl, "cancel"));
+  BOOST_ASIO_HANDLER_OPERATION((scheduler_.context(),
+        "resolver", &impl, 0, "cancel"));
 
   impl.reset(static_cast<void*>(0), socket_ops::noop_deleter());
 }
 
-void resolver_service_base::start_resolve_op(operation* op)
+void resolver_service_base::start_resolve_op(resolve_op* op)
 {
-  start_work_thread();
-  io_service_impl_.work_started();
-  work_io_service_impl_.post_immediate_completion(op, false);
+  if (BOOST_ASIO_CONCURRENCY_HINT_IS_LOCKING(SCHEDULER,
+        scheduler_.concurrency_hint()))
+  {
+    start_work_thread();
+    scheduler_.work_started();
+    work_scheduler_->post_immediate_completion(op, false);
+  }
+  else
+  {
+    op->ec_ = boost::asio::error::operation_not_supported;
+    scheduler_.post_immediate_completion(op, false);
+  }
 }
 
 void resolver_service_base::start_work_thread()
@@ -119,7 +147,7 @@ void resolver_service_base::start_work_thread()
   if (!work_thread_.get())
   {
     work_thread_.reset(new boost::asio::detail::thread(
-          work_io_service_runner(*work_io_service_)));
+          work_scheduler_runner(*work_scheduler_)));
   }
 }
 

@@ -1,6 +1,6 @@
 class:: LazyEnvir
 summary:: lazy environment
-categories:: Libraries>JITLib>Environments, Live Coding, Collections>Unordered
+categories:: JITLib>Environments, Live Coding, Collections>Unordered
 related:: Classes/Maybe, Classes/Fdef, Classes/Environment, Classes/ProxySpace, Overviews/JITLib
 
 description::

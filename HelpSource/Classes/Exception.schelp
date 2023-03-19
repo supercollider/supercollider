@@ -1,6 +1,7 @@
 class::Exception
 categories::Core
 summary::root error class
+keyword:: try protect catch
 
 description::
 The root of SuperCollider's error handling mechanism.
@@ -8,6 +9,10 @@ The root of SuperCollider's error handling mechanism.
 Exception is an abstract class, defining basic error behavior. This class is not directly used in SuperCollider. Users may create subclasses of Exception to identify specific types of failure conditions.
 
 The built-in exception types are actually subclasses of link::Classes/Error:: -- see its help file for the hierarchy.
+
+Note::
+You should not return ^ from inside of the code::try:: or code::protect:: function itself, it cannot be caught. Returns in methods called by the receiver are OK.
+::
 
 subsection::Background: General exception handling
 

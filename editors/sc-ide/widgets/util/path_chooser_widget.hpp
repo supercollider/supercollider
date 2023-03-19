@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_PATH_CHOOSER_WIDGET_HPP_INCLUDED
-#define SCIDE_WIDGETS_PATH_CHOOSER_WIDGET_HPP_INCLUDED
+#pragma once
 
 #include <QLineEdit>
 #include <QPushButton>
@@ -29,29 +28,26 @@
 
 namespace ScIDE {
 
-class PathChooserWidget : public QWidget
-{
+class PathChooserWidget : public QWidget {
     Q_OBJECT
 
 public:
-    PathChooserWidget
-    (QWidget *parent = 0, QFileDialog::FileMode mode = QFileDialog::ExistingFile ):
+    PathChooserWidget(QWidget* parent = 0, QFileDialog::FileMode mode = QFileDialog::ExistingFile):
         QWidget(parent),
         mMode(mode),
-        dialog(0)
-    {
+        dialog(0) {
         mTextField = new QLineEdit;
 
         mButton = new QPushButton;
-        mButton->setIcon( QIcon::fromTheme("folder") );
-        mButton->setFixedWidth( 30 );
+        mButton->setIcon(QIcon::fromTheme("folder"));
+        mButton->setFixedWidth(30);
         mButton->setFlat(true);
-        //setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        // setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-        QHBoxLayout *box = new QHBoxLayout(this);
+        QHBoxLayout* box = new QHBoxLayout(this);
         box->addWidget(mTextField);
         box->addWidget(mButton);
-        box->setContentsMargins(0,0,0,0);
+        box->setContentsMargins(0, 0, 0, 0);
         box->setSpacing(1);
 
         connect(mButton, SIGNAL(clicked()), this, SLOT(execDialog()), Qt::QueuedConnection);
@@ -59,15 +55,14 @@ public:
 
     QString text() const { return mTextField->text(); }
 
-    void setText( const QString & text ) { mTextField->setText(text); }
+    void setText(const QString& text) { mTextField->setText(text); }
 
-    void setFileMode( QFileDialog::FileMode mode ) { mMode = mode; }
+    void setFileMode(QFileDialog::FileMode mode) { mMode = mode; }
 
 public Q_SLOTS:
-    void execDialog()
-    {
-        if(!dialog) {
-            QWidget *parent = parentWidget();
+    void execDialog() {
+        if (!dialog) {
+            QWidget* parent = parentWidget();
             dialog = new QFileDialog(parent ? parent : this);
         }
         dialog->setFileMode(mMode);
@@ -82,15 +77,13 @@ public Q_SLOTS:
     }
 
 Q_SIGNALS:
-    void textChanged( const QString & );
+    void textChanged(const QString&);
 
 private:
-    QLineEdit *mTextField;
-    QPushButton *mButton;
+    QLineEdit* mTextField;
+    QPushButton* mButton;
     QFileDialog::FileMode mMode;
-    QFileDialog *dialog;
+    QFileDialog* dialog;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_PATH_CHOOSER_WIDGET_HPP_INCLUDED

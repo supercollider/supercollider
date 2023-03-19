@@ -1,11 +1,14 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Document Browser | SuperCollider Help</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
     <link rel='stylesheet' href='./scdoc.css' type='text/css' />
     <link rel='stylesheet' href='./custom.css' type='text/css' />
     <link rel='stylesheet' href='./browse.css' type='text/css' />
-    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <script src="lib/jquery.min.js"></script>
     <script>
         var scdoc_title = "Document Browser";
         var scdoc_sc_version = "";
@@ -14,35 +17,36 @@
     <script src="scdoc.js" type="text/javascript"></script>
     <script src="browse.js"></script>
 </head>
+
 <body>
-<noscript>
-<!--<meta http-equiv="refresh" content="3; URL=Overviews/Categories.html">
+    <noscript>
+        <!--<meta http-equiv="refresh" content="3; URL=Overviews/Categories.html">
 <p>JavaScript is not available, redirecting to <a href="Overviews/Categories.html">static category overview</a>...-->
-<p>The document browser needs JavaScript.
-</noscript>
-<div class='contents'>
-<div id="menubar"></div>
-<div class='header'>
-    <h1>Document Browser</h1>
-    <div id='summary'>Browse categories</div>
-</div>
-<div id="search_checks">
-Filter:
-<select id="menu_filter">
-<option SELECTED value="all">All documents</option>
-<option value="classes">Classes only</option>
-<option value="reference">Reference only</option>
-<option value="guides">Guides only</option>
-<option value="tutorials">Tutorials only</option>
-<option value="overviews">Overviews only</option>
-<option value="other">Other only</option>
-</select>
-<input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
-</div>
+        <p>The document browser needs JavaScript.
+    </noscript>
+    <div id="menubar"></div>
+    <div class='contents'>
+        <div class='header'>
+            <h1>Document Browser</h1>
+            <div id='summary'>Browse categories</div>
+        </div>
+        <div id="search_checks">
+            Filter:
+            <select id="menu_filter">
+                <option SELECTED value="all">All documents</option>
+                <option value="classes">Classes only</option>
+                <option value="reference">Reference only</option>
+                <option value="guides">Guides only</option>
+                <option value="tutorials">Tutorials only</option>
+                <option value="overviews">Overviews only</option>
+                <option value="other">Other only</option>
+            </select>
+            <input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
+        </div>
 
-<div id="total_count"></div>
-<table class="browser" id="browser"></table>
-</div>
+        <div id="total_count"></div>
+        <table class="browser" id="browser"></table>
+    </div>
 </body>
-</html>
 
+</html>

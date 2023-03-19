@@ -18,26 +18,21 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_UTIL_STATUS_BOX_INCLUDED
-#define SCIDE_WIDGETS_UTIL_STATUS_BOX_INCLUDED
+#pragma once
 
 #include <QLabel>
 #include <QMenu>
 
 namespace ScIDE {
 
-class StatusBoxMenu : public QMenu
-{
+class StatusBoxMenu : public QMenu {
 public:
-    StatusBoxMenu(QWidget * parent = 0): QMenu(parent) {}
+    StatusBoxMenu(QWidget* parent = 0): QMenu(parent) {}
 
 protected:
-    virtual void mouseReleaseEvent(QMouseEvent *e)
-    {
-        QAction *action = activeAction();
-        if ( action && action->isEnabled() && !action->menu() &&
-             action->property("keep_menu_open").toBool() )
-        {
+    virtual void mouseReleaseEvent(QMouseEvent* e) {
+        QAction* action = activeAction();
+        if (action && action->isEnabled() && !action->menu() && action->property("keep_menu_open").toBool()) {
             action->setEnabled(false);
             QMenu::mouseReleaseEvent(e);
             action->setEnabled(true);
@@ -49,25 +44,22 @@ protected:
     }
 };
 
-class StatusLabel : public QLabel
-{
+class StatusLabel : public QLabel {
 public:
-    StatusLabel(QWidget *parent = 0);
-    void setBackground(const QBrush &);
-    void setTextColor(const QColor &);
+    StatusLabel(QWidget* parent = 0);
+    void setBackground(const QBrush&);
+    void setTextColor(const QColor&);
 };
 
-class StatusBox : public QWidget
-{
+class StatusBox : public QWidget {
 public:
-    StatusBox(QWidget * parent = 0);
+    StatusBox(QWidget* parent = 0);
+
 protected:
     void addActionSeparator();
     void showContextMenu();
-    virtual void mousePressEvent( QMouseEvent * );
-    StatusBoxMenu * mMenu;
+    virtual void mousePressEvent(QMouseEvent*);
+    StatusBoxMenu* mMenu;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_UTIL_STATUS_BOX_INCLUDED

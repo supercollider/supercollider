@@ -38,11 +38,6 @@ namespace boost { namespace program_options {
             should be present on the command line. */
         virtual unsigned max_tokens() const = 0;
 
-        /** Returns true if the option should only take adjacent token,
-            not one from further command-line arguments.
-        */
-        virtual bool adjacent_tokens_only() const = 0;
-
         /** Returns true if values from different sources should be composed.
             Otherwise, value from the first source is used and values from
             other sources are discarded.
@@ -53,7 +48,7 @@ namespace boost { namespace program_options {
 
         */
         virtual bool is_required() const = 0;
-
+        
         /** Parses a group of tokens that specify a value of option.
             Stores the result in 'value_store', using whatever representation
             is desired. May be be called several times if value of the same
@@ -139,7 +134,6 @@ namespace boost { namespace program_options {
 
         unsigned min_tokens() const;
         unsigned max_tokens() const;
-        bool adjacent_tokens_only() const { return false; }
 
         bool is_composing() const { return false; }
 
@@ -224,10 +218,7 @@ namespace boost { namespace program_options {
 
         /** Specifies an implicit value, which will be used
             if the option is given, but without an adjacent value.
-            Using this implies that an explicit value is optional, but if
-            given, must be strictly adjacent to the option, i.e.: '-ovalue'
-            or '--option=value'.  Giving '-o' or '--option' will cause the
-            implicit value to be applied.
+            Using this implies that an explicit value is optional,
         */
         typed_value* implicit_value(const T &v)
         {
@@ -330,8 +321,6 @@ namespace boost { namespace program_options {
                 return 1;
             }
         }
-
-        bool adjacent_tokens_only() const { return !m_implicit_value.empty(); }
 
         bool is_required() const { return m_required; }
 

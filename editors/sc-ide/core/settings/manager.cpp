@@ -30,11 +30,10 @@
 namespace ScIDE { namespace Settings {
 
 // manages preferences
-Manager::Manager( const QString & filename, QObject * parent ):
+Manager::Manager(const QString& filename, QObject* parent):
     QObject(parent),
-    mSettings( new QSettings(filename, serializationFormat(), this) ),
-    mDefaultCursorFlashTime(QApplication::cursorFlashTime())
-{
+    mSettings(new QSettings(filename, serializationFormat(), this)),
+    mDefaultCursorFlashTime(QApplication::cursorFlashTime()) {
     QString th;
 
     initDefaults();
@@ -47,8 +46,7 @@ Manager::Manager( const QString & filename, QObject * parent ):
     mTheme = new Theme(th, this);
 }
 
-void Manager::initDefaults()
-{
+void Manager::initDefaults() {
     beginGroup("IDE");
 
     setDefault("startWithSession", "last");
@@ -74,7 +72,11 @@ void Manager::initDefaults()
 
     setDefault("blinkDuration", 600);
 
-    setDefault("font/family", "monospace");
+    // Issue #2389 - register a substitute so that macOS default won't be Helvetica.
+    // But, don't add substitutes for monospace, because this is a global registry.
+    setDefault("font/family", "scide_monospace");
+    QFont::insertSubstitutions("scide_monospace", { "monospace", "Monaco" });
+
     setDefault("font/antialias", true);
 
     setDefault("theme", "default");
@@ -84,65 +86,53 @@ void Manager::initDefaults()
     endGroup(); // IDE
 }
 
-bool Manager::contains ( const QString & key ) const
-{
-    if ( mSettings->contains(key) )
+bool Manager::contains(const QString& key) const {
+    if (mSettings->contains(key))
         return true;
     else
-        return mDefaults.contains( resolvedKey(key) );
+        return mDefaults.contains(resolvedKey(key));
 }
 
-QVariant Manager::value ( const QString & key ) const
-{
-    if ( mSettings->contains(key) )
+QVariant Manager::value(const QString& key) const {
+    if (mSettings->contains(key))
         return mSettings->value(key);
     else
         return mDefaults.value(resolvedKey(key));
 }
 
-void Manager::setValue ( const QString & key, const QVariant & value )
-{
-    mSettings->setValue(key, value);
-}
+void Manager::setValue(const QString& key, const QVariant& value) { mSettings->setValue(key, value); }
 
-QKeySequence Manager::shortcut( const QString & key )
-{
-    return QKeySequence( value(key).toString() );
-}
+QKeySequence Manager::shortcut(const QString& key) { return QKeySequence(value(key).toString()); }
 
-void Manager::addAction ( QAction *action, const QString &key, const QString &category )
-{
+void Manager::addAction(QAction* action, const QString& key, const QString& category) {
     ActionData actionData;
     actionData.category = category;
     actionData.key = key;
 
     if (action->data().isValid()) {
-        qWarning( "Settings::Manager: action '%s' of class '%s' has data."
-                  " It will be overridden for settings purposes!",
-                  qPrintable(action->text()),
-                  action->parent()->metaObject()->className() );
+        qWarning("Settings::Manager: action '%s' of class '%s' has data."
+                 " It will be overridden for settings purposes!",
+                 qPrintable(action->text()), action->parent()->metaObject()->className());
     }
 
-    action->setData( QVariant::fromValue(actionData) );
+    action->setData(QVariant::fromValue(actionData));
 
     mActions.append(action);
 
     beginGroup("IDE/shortcuts");
 
-    setDefault( actionData.key, QVariant::fromValue(action->shortcut()) );
-    action->setShortcut( value(actionData.key).value<QKeySequence>() );
+    setDefault(actionData.key, QVariant::fromValue(action->shortcut()));
+    action->setShortcut(value(actionData.key).value<QKeySequence>());
 
     endGroup();
 }
 
-QString Manager::keyForAction ( QAction *action )
-{
+QString Manager::keyForAction(QAction* action) {
     ActionData actionData = action->data().value<ActionData>();
     return actionData.key;
 }
 
-QFont Manager::codeFont()
-{
+QFont Manager::codeFont() {
     QString fontFamily = value("IDE/editor/font/family").toString();
     int fontSize = value("IDE/editor/font/size").toInt();
     bool fontAntialas = value("IDE/editor/font/antialias").toBool();
@@ -159,21 +149,14 @@ QFont Manager::codeFont()
     return font;
 }
 
-void Manager::setThemeVal(QString key, const QTextCharFormat &val)
-{
-    mTheme->setFormat(key, val);
-}
+void Manager::setThemeVal(QString key, const QTextCharFormat& val) { mTheme->setFormat(key, val); }
 
-const QTextCharFormat & Manager::getThemeVal(QString key)
-{
-    return mTheme->format(key);
-}
+const QTextCharFormat& Manager::getThemeVal(QString key) { return mTheme->format(key); }
 
-void Manager::updateTheme()
-{
+void Manager::updateTheme() {
     QString theme = value("IDE/editor/theme").toString();
 
-    delete(mTheme);
+    delete (mTheme);
     mTheme = new Theme(theme);
 }
 

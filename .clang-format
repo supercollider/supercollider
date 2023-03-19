@@ -1,0 +1,15 @@
+BasedOnStyle: WebKit
+AlignAfterOpenBracket: Align
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Attach
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 120
+CompactNamespaces: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+IndentPPDirectives: AfterHash
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: None
+SortIncludes: false
+SpaceBeforeCtorInitializerColon: false
+TabWidth: 4

@@ -1,6 +1,6 @@
 class:: ProxyMixer
 summary:: mix control for a proxyspace or Ndef.all
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/ProxySpace, Classes/Ndef, Classes/JITGui, Classes/NdefGui, Classes/MonitorGui, Classes/NdefParamGui
 
 description::
@@ -16,7 +16,7 @@ code::
 p = ProxySpace.push(s.boot, p);
 "abcde".do { |k| p[k.asSymbol].ar };
 m = ProxyMixer(p, 8);
-n.parent.alwaysOnTop_(true); // show mixer in front of IDE
+m.parent.alwaysOnTop_(true); // show mixer in front of IDE
 )
 
 p.do(_.play(0));

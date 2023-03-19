@@ -1,17 +1,17 @@
 class:: Server
 summary:: Object representing a server application
 categories:: Server>Abstractions
-related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference
+related:: Guides/Server-Guide, Guides/MultiClient_Setups, Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference, Classes/ServerStatusWatcher, Reference/AudioDeviceSelection
 
 description::
 
-A Server object is a representation of a server application. It is used to control scsynth (or supernova) from the SuperCollider language. (See link::Guides/Server-Guide::, as well as link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
+A Server object is a representation of a server application. It is used to control scsynth (or supernova) from the SuperCollider language. (See link::Guides/Server-Guide::, as well as link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses, and buffers.
 
 The server application represented by a Server object might be running on the same machine as the sclang, or it may be running on a remote machine.
 
 Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
-A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
+A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (main output level).
 
 note::
 By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::
@@ -27,6 +27,17 @@ The server application may be in three different states: running, not running, o
 code::
 s.serverRunning // returns true if it is true
 ::
+
+note::
+If you get the message code::"Mismatched sample rates are not supported.":: it may be helpful to follow these steps:
+code::
+1. set your device to the sample rate you want
+2. check the device name in the boot posting of the server
+3. set both sample rate and device (s.options.sampleRate = …; s.options.device = "…")
+4. reboot the server: "s.reboot"
+::
+::
+Some insights about common Server issues can be found on the FAQ link::Guides/UserFAQ#Server Issues#Server Issues::
 
 
 ClassMethods::
@@ -46,22 +57,41 @@ argument:: options
 an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
 
 argument:: clientID
-an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
+an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage, the server will supply an ID automatically when a client registers for the link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations, you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
 
 method:: remote
-Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted, and starts listening immediately. You should not call link::#-boot:: on an instance created using this method.
+Create a new Server instance corresponding to a server app running on a separate machine. This method assumes the remote app has been booted and starts listening immediately. You should not call link::#-boot:: on an instance created using this method. link::Guides/Server-Guide:: and link::Guides/MultiClient_Setups:: contain further information on this and multiclient usage.
 
 argument:: name
 a symbol;  each Server object is stored in one global classvariable under its name.
 
 argument:: addr
-an optional instance of link::Classes/NetAddr::, providing ip address of the remote machine and port the app is listening on.
+an optional instance of link::Classes/NetAddr::, providing IP address of the remote machine and port the app is listening on.
 
 argument:: options
-an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values.
+an optional instance of link::Classes/ServerOptions::. If code::nil::, an instance of ServerOptions will be created, using the default values. note::To enable remote connections you will need to change the option link::Classes/ServerOptions#-bindAddress:: as the default value only allows connections from the local machine. code::s.options.bindAddress = "0.0.0.0":: will allow connections from any address.::
 
 argument:: clientID
-an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage the server will supply an ID automatically when a client registers for link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
+an integer. In multi-client situations, every client can be given separate ranges for link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::. In normal usage, the server will supply an ID automatically when a client registers for the link::#-notify#notifications:: so you should not need to supply one here. N.B. In multi-client situations, you will need to set the link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow. This must be the same in the Server instances on every client.
+
+code::
+// example usage:
+// on machine running the server
+(
+s.options.bindAddress = "0.0.0.0"; // allow connections from any address
+s.options.maxLogins = 2; // set to correct number of clients
+s.boot;
+)
+
+// on remote machine connecting to server
+(
+o = ServerOptions.new;
+o.maxLogins = 2;
+t = Server.remote(\remote, NetAddr("192.168.0.130", 57110), o); // set to correct address and port
+// info about returned client ID should be posted in the post window
+t.makeWindow; // make a window for monitoring
+)
+::
 
 
 method:: local
@@ -84,21 +114,24 @@ s.postln; // internal
 subsection::Accessing all servers
 
 method:: all
-get a link::Classes/Set:: of all servers
+returns:: a link::Classes/Set:: containing all servers.
 
 code::
 Server.all
 ::
 
 method:: allRunningServers
-returns:: the set of all running servers.
+returns:: a Set containing all running servers, according to the definition of link::#-serverRunning::.
 
 code::
 Server.allRunningServers
 ::
 
+method:: allBootedServers
+returns:: a Set containing all booted servers, according to the definition of link::#-hasBooted::.
+
 method:: named
-get an link::Classes/IdentityDictionary:: of all servers listed by their name
+returns:: An link::Classes/IdentityDictionary:: of all servers listed by their name
 
 code::
 Server.named.at(\default)
@@ -109,7 +142,7 @@ method:: quitAll
 quit all registered servers
 
 method:: killAll
-query the system for any sc-server apps and hard quit them
+kill all the processes called "scsynth" and "supernova" in the system
 
 method:: freeAll
 free all nodes in all registered servers
@@ -137,7 +170,7 @@ Switches the server program to scsynth. This is the default server.
 
 InstanceMethods::
 
-private:: doSend
+private:: doSend, prHandleClientLoginInfoFromServer, prHandleNotifyFailString, prPingApp, prOnServerProcessExit, prWaitForPidRelease
 
 method:: sendMsg
 send an OSC-message to the server.
@@ -167,7 +200,7 @@ discussion::
 This allows you to collect messages in an array and then send them.
 code::
 s.listSendBundle(0.2, [["/s_new", "default", x = s.nextNodeID, 0, 1],
-    ["/n_set", x, "freq", 600]]);
+	["/n_set", x, "freq", 600]]);
 ::
 
 method:: sendSynthDef
@@ -222,10 +255,12 @@ argument:: onFailure
 In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use link::#-waitForBoot:: or link::#-doWhenBooted::.
 
 discussion::
-You cannot boot a server app on a remote machine, but you can initialise the allocators by calling this message.
+You cannot boot a server app on a remote machine, but you can initialize the allocators by calling this message.
 
 method:: quit
 quit the server application
+
+note:: If the server is unresponsive at the time of calling this method, it will be forced to quit immediately.::
 
 argument::onComplete
 A function that is called when quit has completed.
@@ -252,7 +287,7 @@ method:: status
 query the server status
 
 method:: notify
-The server sends notifications, for example if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. if code::flag:: is set to false, these messages will not be sent to this client. The default is true. If true the server will respond with a clientID (scsynth only) which can be useful in multi-client situations. If this is different from any previously received ID new allocators will be created. See link::#Local vs. Remote Servers, Multi-client Configurations:: for more information.
+The server sends notifications, for example, if a node was created, a 'tr' message from a link::Classes/SendTrig::, or a strong::/done:: action. If code::flag:: is set to false, these messages will not be sent to this client. The default is true. If true the server will respond with a clientID (scsynth only) which can be useful in multi-client situations. If this is different from any previously received ID new allocators will be created. See link::#Local vs. Remote Servers, Multi-client Configurations:: for more information.
 
 method:: ping
 measure the time between server and client, which may vary. the code::func:: is
@@ -262,7 +297,12 @@ method:: options
 Get or set this Server's link::Classes/ServerOptions:: object. Changes to options only take effect when the server is rebooted.
 
 method:: defaultGroup
-returns:: this Server's default group.
+Return the default group on this Server for this client ID. This will be the
+same object as code::server.defaultGroups[server.clientID]::.
+
+method:: defaultGroups
+Return an array mapping client IDs to their associated default groups as
+link::Classes/Group:: objects.
 
 method:: volume
 Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. Level is in db.
@@ -308,7 +348,7 @@ note:: teletype::/status:: messages won't be posted, when dumping is enabled::
 method:: queryAllNodes
 Post a representation of this Server's current node tree to the post window. See link::#-plotTree:: for a graphical variant.
 discussion::
-Very helpful for debugging. For local servers this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
+Very helpful for debugging. For local servers, this uses g_dumpTree and for remote g_queryTree. See link::Classes/Group:: and link::Reference/Server-Command-Reference:: for more info.
 code::
 s.boot;
 s.queryAllNodes; // note the root node (ID 0) and the default group (ID 1)
@@ -331,29 +371,44 @@ method:: numSynths
 Get number of running link::Classes/Synth::s.
 
 method:: numGroups
-Get number of link::Classes/Group::s.
+Get the number of link::Classes/Group::s.
 
 method:: numUGens
-Get number of running link::Classes/UGen::s.
+Get the number of running link::Classes/UGen::s.
 
 method:: numSynthDefs
 Get number of loaded link::Classes/SynthDef::initions.
 
 method:: pid
-Get process ID of running server (if not internal).
+Get process ID of the running server (if not internal).
 
 method:: addr
 The network address of the server as a link::Classes/NetAddr::.
 
+method:: maxNumClients
+If known, the maximum number of clients allowed on the server. Otherwise, the value of link::Classes/ServerOptions#-maxLogins::, which is what will be requested after the server boots. This number is not guaranteed to be correct until link::#-serverRunning:: is code::true::.
+
+method:: clientID
+The getter returns the client ID of this client on the remote process. code::nil:: until the server is running.
+
+The setter attempts to set the client ID of this client for the remote server process. Fails on invalid input or if the server is running. Valid inputs are in the range code::[0..(this.maxNumClients-1)]::.
+
 method:: hasShmInterface
-Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
+Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous Control Bus Methods::.
 The shared memory interface is initialized after first server boot.
+
+warning::
+Currently, the shared memory interface treats server port as an unique identifier. In the rare case when there are multiple servers running on the same machine and listening on the same port, this leads to the shared memory interface of one of the servers being overwritten by the other.
+::
 
 method:: serverBooting
 code::true:: if the server is booting, code::false:: otherwise.
 
+method:: hasBooted
+code::true:: if the server has booted. The server is not guaranteed to have a correct clientID, nor is it guaranteed that actions in link::Classes/ServerTree:: will have run yet.
+
 method:: serverRunning
-code::true:: if the server is running, code::false:: otherwise.
+code::true:: only if the server is fully ready. A server is fully ready once it has booted, received a reply to a code::/notify:: command, been given a client ID, and after the link::Classes/ServerTree:: has run.
 
 method:: unresponsive
 code::true:: if the server is unresponsive (specifically, if it has failed to respond after link::Classes/ServerOptions#-pingsBeforeConsideredDead:: ping attempts); code::false:: otherwise.
@@ -364,9 +419,12 @@ code::true:: if the server is running on the same machine as sclang, code::false
 method:: remoteControlled
 code::true:: if the server is not being controlled by the machine on which it is running, code::false:: otherwise. This value is the same as code::isLocal:: unless explicitly set.
 
+method:: userSpecifiedClientID
+Deprecated in 3.9. Returns code::false::. Server:clientID can now be set while a server is off, and is locked while the server is running. Thus, userSpecifiedClientID is no longer needed internally, and meaningless.
+
 subsection:: Message Bundling
 
-Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also link::Guides/Bundled-Messages::
+The server provides support for automatically bundling messages. This is quite convenient in object style and ensures synchronous execution. See also link::Guides/Bundled-Messages::
 
 method:: makeBundle
 The Function code::func:: is evaluated, and all OSC messages generated by it are deferred and added to a bundle.
@@ -446,7 +504,7 @@ code::
 (
 s.bind {
 	a = { |freq=100| SinOsc.ar(freq, LFTri.ar(freq)) * 0.2 }.play;
-    s.sync;
+	s.sync;
 	a.set(\freq, 400);
 }
 )
@@ -517,7 +575,7 @@ the first channel to be output. The default is 0.
 argument:: bufsize
 the size of the buffer for the ScopeView. The default is 4096.
 argument:: zoom
-a zoom value for the scope's X axis. Larger values show more. The default is 1.
+a zoom value for the scope's X-axis. Larger values show more. The default is 1.
 argument:: rate
 whether to display audio or control rate buses (either \audio or \control)
 
@@ -549,7 +607,7 @@ returns:: Function to be evaluated in order to clean up all actions performed in
 
 subsection:: Recording Support
 
-The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile.
+The following methods are for convenience use. For recording with sample-accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile.
 
 This functionality is also available through the recording button on the server windows.
 Pressing it once calls record, and pressing it again calls stopRecording (see below). When doing so the file created will be in your recordings folder and be named for the current date and time.
@@ -584,7 +642,7 @@ SynthDef("bubbles", { |out|
 
 x = Synth.new("bubbles");
 
-s.prepareForRecord; // if you want to start recording on a precise moment in time, you have to call this first.
+s.prepareForRecord; // if you want to start recording at a precise moment in time, you have to call this first.
 
 s.record;
 
@@ -599,12 +657,12 @@ x.free; // stop the synths
 // look in your recordings folder and you'll find a file named for this date and time
 ::
 
-Recording is done via an of link::Classes/Recorder:: - a server holds one instance implicitly.
+The recording is done via an of link::Classes/Recorder:: - a server holds one instance implicitly.
 
 method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
 argument:: path
-a link::Classes/String:: representing the path and name of the output file.
+a link::Classes/String:: representing the path and name of the output file. If the directory does not exist, it will be created for you. (Note, however, that if this fails for any reason, the recording will also fail.)
 argument:: numChannels
 a link::Classes/String:: the number of output channels to record.
 
@@ -618,7 +676,7 @@ this is optional, and is passed to code::prepareForRecord:: (above).
 argument:: bus
 the bus to record - defaults to 0
 argument:: numChannels
-the number of channels to record - defaults to server numChannels
+the number of channels to record - defaults to 2
 argument:: node
 the node to record - defaults to server rootnode
 argument:: duration
@@ -637,20 +695,20 @@ You must call this when finished recording or the output file will be unusable. 
 
 
 method:: recChannels
-Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
+Get/set the number of channels (int) to record. By default this is set to 2 (stereo) but can be increased to record soundfiles with many more channels. Must be called strong::before:: prepareForRecord.
 
 method:: recHeaderFormat
-Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
+Get/set the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
-Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
+Get/set the sample format (string) of the output file. The default is "float" (32-bit). Common options include "int24" for 24-bit audio and "int16" for 16-bit audio. Must be called strong::before:: prepareForRecord.
 
 method::recBufSize
 Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
 
 subsection:: Asynchronous Commands
 
-Server provides support for waiting on the completion of asynchronous OSC-commands such as reading or writing soundfiles. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
+The server provides support for waiting on the completion of asynchronous OSC-commands such as reading or writing sound files. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.
 
 method:: bootSync
 Boot the Server and wait until it has completed before resuming the thread.
@@ -673,7 +731,7 @@ one or more OSC messages which will be bundled before the sync message (thus ens
 allows for the message to be evaluated at a specific point in the future.
 
 discussion::
-This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
+This may be slightly less safe than sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
 code::
 (
 Routine.run {
@@ -711,4 +769,19 @@ Routine.run {
 )
 ::
 
+subsection:: Bela
 
+method:: belaScope
+Scope a number of channels from a Bus on this Server, to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+It is required that this Server is running on a Bela, and that it is thus capable of using BelaScope.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: index
+This server's bus index to scope. Defaults to 0.
+
+argument:: numChannels
+Number of channels to send to BelaScope, starting from the index supplied. Defaults to 2, or to link::Classes/ServerOptions#-numOutputBusChannels:: if index is 0.
+
+returns:: A link::Classes/Synth::, linking this Server's desired bus channels to BelaScope's bus.

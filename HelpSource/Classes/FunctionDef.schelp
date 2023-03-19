@@ -66,11 +66,41 @@ code::
 ::
 method::argumentString
 
-Return a string that contains  arguments and their default values for embedding in a string
+Return a string that contains all argument names and their default values for embedding in a string.
+If there are no arguments, it returns nil.
 
 code::
-{ |a = 9, b = 10, c| a + b }.def.argumentString;
+{ |a = 9, b = 10, c| a + b }.def.argumentString; // "a = 9, b = 10, c"
+{ "nothing to see here" }.def.argumentString; // nil
 ::
+
+argument::withDefaultValues
+If set to false, no default values are appended
+
+code::
+ // "a, b, c"
+{ |a = 9, b = 10, c| a + b }.def.argumentString(withDefaultValues: false);
+::
+
+argument::withEllipsis
+If set to true, ellipsis characters (code::" ... "::) are appended
+
+code::
+// "a = 9, b = 10 ... c"
+{ |a = 9, b = 10 ... c| a + b }.def.argumentString(withEllipsis: true);
+// "a = 9, b = 10, c"
+{ |a = 9, b = 10 ... c| a + b }.def.argumentString(withEllipsis: false);
+::
+
+argument::asArray
+If set to true, return the string for an array that represents all arguments. The other arguments are set to false.
+
+code::
+// "[a, b] ++ c"
+{ |a = 9, b = 10 ... c| a + b }.def.argumentString(asArray: true);
+::
+
+
 
 method::makeEnvirFromArgs
 
@@ -79,6 +109,49 @@ Get the Array of Symbols of the local variable names.
 code::
 { |a = 9, b = 10, c| a + b }.def.makeEnvirFromArgs;
 ::
+
+subsection::Generating Strings
+
+method::makeFuncArgModifierString
+
+Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
+
+For an implementation example link::Classes/Function#flop:: (as below).
+
+
+argument::modifier
+A function to which a string is passed that represents the array of all arguments. It should return a string that can be interpreted.
+
+code::
+// basic usage
+f = { |x, y| x.squared + y.squared }; // a function
+a = f.def.makeFuncModifierString({ |argString| "%.scramble".format(argString) });
+a.interpret.value(4, 5)
+
+// use as a macro: multichannel expansion like in flop
+f = { |x, y = 1| if(x > 0) { 1 } { 0 } * y }; // some function
+// generate the body of a function that has a free and yet undefined variable "func"
+// -> "{ arg x, y = 1; ([x, y]).flop.collect { |x| func.valueArray(x) } }"
+a = f.def.makeFuncModifierString({ |str| str ++ ".flop.collect { |x| func.valueArray(x) }" });
+// wrap that body into a function that takes "func" as argument and returns the function above
+// now we have a valid code for a function:
+// -> "{ |func| { arg x, y = 1; [x, y].flop.collect { |x| func.valueArray(x) } } }"
+b = "{ |func| % }".format(a);
+// interpret the code to a function
+g = b.interpret;
+// pass the function f to g, which returns a function from a where "func" is bound to f
+h = g.value(f);
+// we can now use h in place of f, but all arguments are multichannel expanded:
+f.([1, 0], [6, 7]); // does not work
+h.([1, 0], [6, 7]); // [6, 0]
+// and the new function supports the same keywords arguments:
+h.(x:(-2..2), y:(-2..2));
+
+// this functionality is implemented for function in the method "flop"
+h = f.flop;
+h.([1, 0], [6, 7]); // [6, 0]
+::
+
 
 subsection::Utilities
 

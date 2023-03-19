@@ -1,6 +1,6 @@
 class:: TaskProxyGui
 summary:: a superclass for Guis for PatternProxies
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/TdefGui, Classes/PdefGui
 
 description::

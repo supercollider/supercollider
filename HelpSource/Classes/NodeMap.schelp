@@ -1,6 +1,6 @@
 class:: NodeMap
 summary:: store control values and bus mappings
-categories:: Libraries>JITLib>NodeProxy, Server>Nodes, Server>Abstractions
+categories:: JITLib>NodeProxy, Server>Nodes, Server>Abstractions
 related:: Classes/Bus
 
 description::
@@ -48,9 +48,6 @@ method::setMsg
 returns the OSC message for setting a synth
 argument:: target
 a group, synth, or server to use as a nodeID to set.
-
-method::setn, map, mapn
-These are kept for backward compatibility. They redirect to link::#-set::.
 
 method::get
 Kept for backward compatibility.

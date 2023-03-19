@@ -1,6 +1,6 @@
 title:: jitlib_basic_concepts_01
 summary:: some placeholders in SuperCollider
-categories:: Libraries>JITLib>Tutorials, Tutorials>JITLib
+categories:: JITLib>Tutorials, Tutorials>JITLib
 related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_02
 
 This helpfile explains some basic concepts of interactive programming with SuperCollider and proxy space.

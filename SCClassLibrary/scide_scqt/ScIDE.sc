@@ -36,8 +36,11 @@ ScIDE {
 		serverController.remove;
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
-			this.send(\defaultServerRunningChanged, [
-				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
+			// Needs to be deferred so Server GUI can update if running.
+			defer {
+				this.send(\defaultServerRunningChanged, [
+					server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
+			}
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
@@ -192,47 +195,6 @@ ScIDE {
 			};
 		};
 		if (res.size > 0) { this.send(id, res) };
-	}
-
-	*findMethod { |id, text|
-		var cname, mname, tokens, res;
-		var class, method;
-
-		tokens = text.split($.);
-		if (tokens.size > 1) {
-			cname = tokens[0];
-			mname = tokens[1];
-		}{
-			mname = tokens[0];
-		};
-		if (mname.size < 1) { ^this };
-
-		if (cname.size > 0) {
-			class = cname.asSymbol.asClass;
-			if (class.isNil) {
-				warn("No class named" + cname.asString);
-				^this;
-			};
-			method = class.class.findRespondingMethodFor(mname.asSymbol);
-			if (method.isNil) {
-				warn("No such method:" + cname.asString ++ "." ++ mname.asString);
-				^this;
-			};
-			this.send(id, [this.serializeMethod(method)]);
-		}{
-			res = [];
-			this.allMethodsDo { |method|
-				if (method.name.asString == mname) {
-					res = res.add( this.serializeMethod(method) );
-				};
-			};
-			if (res.size > 0) {
-				this.send(id, res)
-			}{
-				warn("No such method:" + mname.asString);
-				^this;
-			};
-		}
 	}
 
 	*serializeMethod { arg method;
@@ -451,7 +413,7 @@ Document {
 	var <keyDownAction, <keyUpAction, <mouseUpAction, <mouseDownAction;
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
 
-	var <envir, savedEnvir;
+	var <envir, <savedEnvir;
 	var <editable = true, <promptToSave = true;
 
 	*initClass{
@@ -493,7 +455,7 @@ Document {
 		};
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
-			allDocuments = allDocuments.add(doc);
+			doc.prAdd;
 		}, {doc.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize)});
 	}
 
@@ -581,7 +543,7 @@ Document {
 
 	closed {
 		onClose.value(this); // call user function
-		this.restoreCurrentEnvironment;
+		this.restorePreviousEnvironment;
 		allDocuments.remove(this);
 	}
 
@@ -627,17 +589,20 @@ Document {
 
 	close { ScIDE.close(quuid); }
 
-	/*	// asynchronous get
+	// asynchronous get
 	// range -1 means to the end of the Document
-	getText {|action, start = 0, range -1|
+	// 'getText' tried to replace this approach,
+	// but text mirroring is unstable in Windows.
+	// so we need to keep a backup approach.
+	getTextAsync { |action, start = 0, range -1|
 		var funcID;
 		funcID = ScIDE.getQUuid; // a unique id for this function
 		asyncActions[funcID] = action; // pass the text
 		ScIDE.getTextByQUuid(quuid, funcID, start, range);
-	}*/
+	}
 
-	getText {|action, start = 0, range -1|
-		^prGetTextFromMirror(quuid, start, range);
+	getText { |start = 0, range -1|
+		^this.prGetTextFromMirror(quuid, start, range);
 	}
 
 	prGetTextFromMirror {|id, start=0, range = -1|
@@ -695,13 +660,13 @@ Document {
 
 	didBecomeKey {
 		this.class.current = this;
-		this.saveCurrentEnvironment;
+		this.pushLinkedEnvironment;
 		toFrontAction.value(this);
 	}
 
 	didResignKey {
 		endFrontAction.value(this);
-		this.restoreCurrentEnvironment;
+		this.restorePreviousEnvironment;
 	}
 
 	keyDown { | modifiers, unicode, keycode, key |
@@ -776,7 +741,7 @@ Document {
 	prReadTextFromFile {|path|
 		var file;
 		file = File.new(path, "r");
-		if (file.isNil, {
+		if (file.isOpen.not, {
 			error("Document open failed\n");
 		});
 		this.prSetTextMirror(quuid, file.readAllString, 0, -1);
@@ -791,7 +756,6 @@ Document {
 				this.text.interpret;
 			}
 		};
-		current = this;
 		initAction.value(this);
 	}
 
@@ -878,27 +842,35 @@ Document {
 
 	// envir stuff
 
-	envir_ { | ev |
-		envir = ev;
-		if (this.class.current == this) {
-			if(envir.isNil) {
-				this.restoreCurrentEnvironment
-			} {
-				if (savedEnvir.isNil) {
-					this.saveCurrentEnvironment
-				}
-			}
-		}
+	hasSavedPreviousEnvironment {
+		^savedEnvir.notNil
 	}
 
-	restoreCurrentEnvironment {
+	envir_ { | newEnvir |
+
+		envir = newEnvir;
+
+		if(this.isFront) {
+			if(newEnvir.isNil) {
+				this.restorePreviousEnvironment
+			} {
+				if(this.hasSavedPreviousEnvironment.not) {
+					savedEnvir = currentEnvironment;
+				};
+				currentEnvironment = envir;
+			}
+		}
+
+	}
+
+	restorePreviousEnvironment { // happens on leaving focus
 		if (savedEnvir.notNil) {
 			currentEnvironment = savedEnvir;
 			savedEnvir = nil;
 		}
 	}
 
-	saveCurrentEnvironment {
+	pushLinkedEnvironment { // happens on focus
 		if (envir.notNil) {
 			savedEnvir = currentEnvironment;
 			currentEnvironment = envir;

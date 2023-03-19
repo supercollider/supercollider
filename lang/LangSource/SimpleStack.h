@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,19 +18,16 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef LANG_SIMPLESTACK_H
-#define LANG_SIMPLESTACK_H
+#pragma once
 
 typedef struct {
-	intptr_t *stak;
-	short num, maxsize;
+    intptr_t* stak;
+    short num, maxsize;
 } LongStack;
 
-void initLongStack(LongStack *self) ;
-void freeLongStack(LongStack *self);
-void growLongStack(LongStack *self);
-void pushls(LongStack *self, intptr_t value);
-intptr_t popls(LongStack *self);
-int emptyls(LongStack *self);
-
-#endif
+void initLongStack(LongStack* self);
+void freeLongStack(LongStack* self);
+void growLongStack(LongStack* self);
+void pushls(LongStack* self, intptr_t value);
+intptr_t popls(LongStack* self);
+int emptyls(LongStack* self);

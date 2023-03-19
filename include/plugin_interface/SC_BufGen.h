@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,23 +18,19 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _BufGen_
-#define _BufGen_
+#pragma once
 
 #include "SC_Types.h"
 
-typedef void (*BufGenFunc)(struct World *world, struct SndBuf *buf, struct sc_msg_iter *msg);
+typedef void (*BufGenFunc)(struct World* world, struct SndBuf* buf, struct sc_msg_iter* msg);
 
-struct BufGen
-{
-	int32 mBufGenName[kSCNameLen];
-	int32 mHash;
+struct BufGen {
+    int32 mBufGenName[kSCNameLen];
+    int32 mHash;
 
-	BufGenFunc mBufGenFunc;
+    BufGenFunc mBufGenFunc;
 };
 
 extern "C" {
-bool BufGen_Create(const char *inName, BufGenFunc inFunc);
+bool BufGen_Create(const char* inName, BufGenFunc inFunc);
 }
-
-#endif

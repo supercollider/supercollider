@@ -40,7 +40,7 @@ namespace boost {
             // Protected construction/destruction
 
                 // Default constructor
-                find_iterator_base() {};
+                find_iterator_base() {}
                 // Copy construction
                 find_iterator_base( const find_iterator_base& Other ) :
                     m_Finder(Other.m_Finder) {}

@@ -376,7 +376,7 @@ MIDIIn {
 }
 
 MIDIOut {
-	var <>port, <>uid, <>latency=0.2;
+	var <>port, <>uid, <>latency = 0.2;
 
 	*new { arg port, uid;
 		if(thisProcess.platform.name != \linux) {
@@ -385,31 +385,42 @@ MIDIOut {
 			^super.newCopyArgs(port, uid ?? 0 );
 		}
 	}
-	*newByName { arg deviceName,portName,dieIfNotFound=true;
-		var endPoint,index;
-		endPoint = MIDIClient.destinations.detect({ |ep,epi|
+	*newByName { arg deviceName, portName, dieIfNotFound = true;
+		var endPoint, index;
+		endPoint = MIDIClient.destinations.detect { |ep,epi|
 			index = epi;
-			ep.device == deviceName and: {ep.name == portName}
-		});
-		if(endPoint.isNil,{
-			if(dieIfNotFound,{
+			ep.device == deviceName and: { ep.name == portName }
+		};
+		if(endPoint.isNil) {
+			if(dieIfNotFound) {
 				Error("Failed to find MIDIOut port " + deviceName + portName).throw;
-			},{
-				("Failed to find MIDIOut port " + deviceName + portName).warn;
-			});
-		});
-		if(thisProcess.platform.name != \linux) {
-			^this.new(index,endPoint.uid)
-		} {
-			if (index < MIDIClient.myoutports){
-				^this.new(index,endPoint.uid)
 			} {
-				^this.new(0,endPoint.uid)
+				("Failed to find MIDIOut port " + deviceName + portName).warn;
+			};
+		};
+		if(thisProcess.platform.name != \linux) {
+			^this.new(index, endPoint.uid)
+		} {
+			if(index < MIDIClient.myoutports) {
+				// 'index' here is for "SuperCollider:out0", ":out1" etc.
+				// Practically speaking, this establishes associations:
+				// out0 --> destinations[0]
+				// out1 --> destinations[1] and so on.
+				// It looks weird but, in fact, it does ensure a 1-to-1 connection.
+				// Explained further in MIDIOut help.
+				^this.new(index, endPoint.uid)
+			} {
+				// If you didn't initialize enough MIDI output ports,
+				// it will connect the new device to 0.
+				// Connections with a UID are always 1-to-1.
+				^this.new(0, endPoint.uid)
 			}
 		}
 	}
-	*findPort { arg deviceName,portName;
-		^MIDIClient.destinations.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
+	*findPort { arg deviceName, portName;
+		^MIDIClient.destinations.detect { |endPoint|
+			endPoint.device == deviceName and: { endPoint.name == portName }
+		};
 	}
 
 	write { arg len, hiStatus, loStatus, a=0, b=0;

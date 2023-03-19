@@ -10,14 +10,12 @@
 # define BOOST_TYPEOF_MSVC_TYPEOF_IMPL_HPP_INCLUDED
 
 # include <boost/config.hpp>
-# include <boost/detail/workaround.hpp>
-# include <boost/mpl/int.hpp>
+# include <boost/config/workaround.hpp>
+# include <boost/typeof/constant.hpp>
+# include <boost/type_traits/enable_if.hpp>
 # include <boost/type_traits/is_function.hpp>
-# include <boost/utility/enable_if.hpp>
 
-# if BOOST_WORKAROUND(BOOST_MSVC,>=1310)
-#  include <typeinfo>
-# endif
+# include <typeinfo>
 
 namespace boost
 {
@@ -25,7 +23,7 @@ namespace boost
     {
 
         //Compile time constant code
-# if BOOST_WORKAROUND(BOOST_MSVC,>=1300) && defined(_MSC_EXTENSIONS)
+# if defined(_MSC_EXTENSIONS)
         template<int N> struct the_counter;
 
         template<typename T,int N = 5/*for similarity*/>
@@ -85,26 +83,7 @@ namespace boost
 
         //Typeof code
 
-# if BOOST_WORKAROUND(BOOST_MSVC,==1300)
-        template<typename ID>
-        struct msvc_extract_type
-        {
-            template<bool>
-            struct id2type_impl;
-
-            typedef id2type_impl<true> id2type;
-        };
-
-        template<typename T, typename ID>
-        struct msvc_register_type : msvc_extract_type<ID>
-        {
-            template<>
-            struct id2type_impl<true>  //VC7.0 specific bugfeature
-            {
-                typedef T type;
-            };
-        };
-#elif BOOST_WORKAROUND(BOOST_MSVC,>=1400)
+# if BOOST_WORKAROUND(BOOST_MSVC,>=1400)
         struct msvc_extract_type_default_param {};
 
         template<typename ID, typename T = msvc_extract_type_default_param>
@@ -153,63 +132,10 @@ namespace boost
             };
         };
 # endif
-// EAN: preprocess this block out on advice of Peder Holt
-// to eliminate errors in type_traits/common_type.hpp
-# if 0 //BOOST_WORKAROUND(BOOST_MSVC,==1310)
-        template<const std::type_info& ref_type_info>
-        struct msvc_typeid_wrapper {
-            typedef typename msvc_extract_type<msvc_typeid_wrapper>::id2type id2type;
-            typedef typename id2type::type wrapped_type;
-            typedef typename wrapped_type::type type;
-        };
-        //This class is used for registering the type T. encode_type<T> is mapped against typeid(encode_type<T>).
-        //msvc_typeid_wrapper<typeid(encode_type<T>)> will now have a type typedef that equals encode_type<T>.
-        template<typename T>
-        struct encode_type
-        {
-            typedef encode_type<T> input_type;
-            //Invoke registration of encode_type<T>. typeid(encode_type<T>) is now mapped to encode_type<T>. Do not use registered_type for anything.
-            //The reason for registering encode_type<T> rather than T, is that VC handles typeid(function reference) poorly. By adding another
-            //level of indirection, we solve this problem.
-            typedef typename msvc_register_type<input_type,msvc_typeid_wrapper<typeid(input_type)> >::id2type registered_type;
-            typedef T type;
-        };
 
-        template<typename T> typename disable_if<
-            typename is_function<T>::type,
-            typename encode_type<T>::input_type>::type encode_start(T const&);
-
-        template<typename T> typename enable_if<
-            typename is_function<T>::type,
-            typename encode_type<T>::input_type>::type encode_start(T&);
-
-        template<typename Organizer, typename T>
-        msvc_register_type<T,Organizer> typeof_register_type(const T&);
-
-
-# define BOOST_TYPEOF(expr) \
-    boost::type_of::msvc_typeid_wrapper<typeid(boost::type_of::encode_start(expr))>::type
-
-# define BOOST_TYPEOF_TPL(expr) typename BOOST_TYPEOF(expr)
-
-# define BOOST_TYPEOF_NESTED_TYPEDEF_TPL(name,expr) \
-struct name {\
-    enum {_typeof_register_value=sizeof(typeid(boost::type_of::typeof_register_type<name>(expr)))};\
-    typedef typename boost::type_of::msvc_extract_type<name>::id2type id2type;\
-    typedef typename id2type::type type;\
-};
-
-# define BOOST_TYPEOF_NESTED_TYPEDEF(name,expr) \
-struct name {\
-    enum {_typeof_register_value=sizeof(typeid(boost::type_of::typeof_register_type<name>(expr)))};\
-    typedef boost::type_of::msvc_extract_type<name>::id2type id2type;\
-    typedef id2type::type type;\
-};
-
-# else
         template<int ID>
         struct msvc_typeid_wrapper {
-            typedef typename msvc_extract_type<mpl::int_<ID> >::id2type id2type;
+            typedef typename msvc_extract_type<constant<int,ID> >::id2type id2type;
             typedef typename id2type::type type;
         };
         //Workaround for ETI-bug for VC6 and VC7
@@ -230,7 +156,7 @@ struct name {\
             //Get the next available compile time constants index
             BOOST_STATIC_CONSTANT(unsigned,value=BOOST_TYPEOF_INDEX(T));
             //Instantiate the template
-            typedef typename msvc_register_type<T,mpl::int_<value> >::id2type type;
+            typedef typename msvc_register_type<T,constant<int,value> >::id2type type;
             //Set the next compile time constants index
             BOOST_STATIC_CONSTANT(unsigned,next=value+1);
             //Increment the compile time constant (only needed when extensions are not active
@@ -242,18 +168,13 @@ struct name {\
         {
             typedef char(*type)[encode_type<T>::value];
         };
-# if BOOST_WORKAROUND(BOOST_MSVC,>=1310)
-        template<typename T> typename disable_if<
-            typename is_function<T>::type,
+        template<typename T> typename enable_if_<
+            !is_function<T>::value,
             typename sizer<T>::type>::type encode_start(T const&);
 
-        template<typename T> typename enable_if<
-            typename is_function<T>::type,
+        template<typename T> typename enable_if_<
+            is_function<T>::value,
             typename sizer<T>::type>::type encode_start(T&);
-# else
-        template<typename T>
-            typename sizer<T>::type encode_start(T const&);
-# endif
         template<typename Organizer, typename T>
         msvc_register_type<T,Organizer> typeof_register_type(const T&,Organizer* =0);
 
@@ -264,19 +185,18 @@ struct name {\
 
 # define BOOST_TYPEOF_NESTED_TYPEDEF_TPL(name,expr) \
     struct name {\
-        BOOST_STATIC_CONSTANT(int,_typeof_register_value=sizeof(boost::type_of::typeof_register_type<name>(expr)));\
+        enum {_typeof_register_value=sizeof(boost::type_of::typeof_register_type<name>(expr))};\
         typedef typename boost::type_of::msvc_extract_type<name>::id2type id2type;\
         typedef typename id2type::type type;\
     };
 
 # define BOOST_TYPEOF_NESTED_TYPEDEF(name,expr) \
     struct name {\
-        BOOST_STATIC_CONSTANT(int,_typeof_register_value=sizeof(boost::type_of::typeof_register_type<name>(expr)));\
+        enum {_typeof_register_value=sizeof(boost::type_of::typeof_register_type<name>(expr))};\
         typedef boost::type_of::msvc_extract_type<name>::id2type id2type;\
         typedef id2type::type type;\
     };
 
-#endif
     }
 }
 

@@ -19,7 +19,7 @@ c.value.postln;	// evaluate c and print the result
 )
 ::
 
-See AbstractFunction for function composition examples.
+See link::Classes/AbstractFunction#Function Composition:: for function composition examples.
 
 Because Functions are such an important concept, here some examples from related programming languages with functions as first class objects:
 
@@ -113,8 +113,7 @@ Evaluates the FunctionDef referred to by the Function. If the last argument is a
 
 method::valueWithEnvir
 
-Evaluate the function, using arguments from the supplied environment
-This is slightly faster than valueEnvir and does not require replacing the currentEnvironment
+Evaluate the function, using arguments from the supplied environment. This is slightly faster than valueEnvir and does not require replacing the currentEnvironment.
 
 code::
 (
@@ -270,32 +269,62 @@ x.value;
 
 method::flop
 
-Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp.
+Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp. The new function always returns an array.
 
 code::
-f = { |a, b| if(a > 0) { a + b } { -inf } }.flop;
-f.value([-1, 2, 1, -3.0], [10, 1000]);
-f.value(2, 3);
+// multichannel expansion for if, here to protect from division by zero:
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value(2, 4); // [ 0.5 ] (always returns an array)
+
+// strings don't expand
+f = { |a, b| a + b }.flop;
+f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", "world"); // -> [ hello world ]
+
 ::
+
+method::flop1
+
+Same as link::#flop::, return only an array if the arguments also contains an array. This can be used to implement link::Guides/Multichannel-Expansion::.
+
+code::
+// multichannel expansion for if, here to protect from division by zero:
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value([2], 4); // -> [0.5]
+f.value(2, 4); // -> 0.5
+
+// strings don't expand, like in flop
+f = { |a, b| a + b }.flop1;
+f.("hello", ["world", "algorithm"]); // -> [ hello world, hello algorithm ]
+f.("hello", "world"); // -> hello world
+
+::
+
 
 
 method::envirFlop
 
-like flop, but implements an environment argument passing (valueEnvir).
-Less efficient in generation than flop, but not a big difference in evaluation.
-
-code::
-f = { |a| if(a > 0) { a + 1 } { -inf } }.envirFlop;
-e = (a: [20, 40]);
-e.use { f.value }
-::
+This method is kept for backward compatibility. Use code::flop:: instead.
 
 
 method::inEnvir
 
 returns an "environment-safe" function. See Environment for more details.
+Note that the function returned takes no keyword arguments.
 
 code::
+e = (a: "get it", b: "didn't");
+f = { ~b + ~a + "..." }.inEnvir(e);
+f.value;
+
+f = { |how = "", end = "..."| how + ~b + ~a + end }.inEnvir(e); // doesn't work with keyword arguments
+f.value(how: "really"); // WARNING: keyword arg 'how' not found in call to function (see inEnvirWithArgs).
+
+
+
+// a use case: defer is usually called in the call environment
 // prints nil because ~a is read from topEnvironment, not e
 e = (a: "got it", f: { { ~a.postln }.defer(0.5) });
 e.use { e.f };
@@ -303,6 +332,18 @@ e.use { e.f };
 // prints "got it" because { ~a.postln } is now bound to the e environment
 e = (a: "got it", f: { { ~a.postln }.inEnvir.defer(0.5) });
 e.use { e.f };
+::
+
+
+method::inEnvirWithArgs
+
+Like link::#inEnvir::, but returns a function which takes keyword arguments.
+Building this function makes a call to the interpreter and is less efficient than inEnvir
+
+code::
+e = (a: "get it", b: "didn't");
+f = { |how = "", end = "..."| how + ~b + ~a + end }.inEnvirWithArgs(e);
+f.value(how: "I really", end: "done!");
 ::
 
 
@@ -357,9 +398,9 @@ Pbind(
 
 subsection::Exception Handling
 
-
 For the following two methods a return ^ inside of the receiver itself cannot be caught. Returns in methods called by the receiver are OK.
 
+See also link::#Exception Handling Examples:: and link::Classes/Exception:: for more information on how to handle exceptions.
 
 method::try
 
@@ -369,16 +410,73 @@ method::protect
 
 Executes the receiver. The cleanup function handler is executed with an error as an argument, or nil if there was no error. The error continues to be in effect.
 
+subsection:: Scheduling
+
+
+method:: awake
+
+This method is called by a link::Classes/Clock:: on which the function was
+scheduled when its scheduling time is up. It calls link::#-value::, passing
+on the scheduling time in beats as an argument.
+
+argument:: beats
+The scheduling time in beats. This is equal to the current logical time
+(link::Classes/Thread#-beats::).
+
+argument:: seconds
+The scheduling time in seconds. This is equal to the current logical time
+(link::Classes/Thread#-seconds::).
+
+argument:: clock
+The clock on which the object was scheduled.
+
+returns::
+The value returned by the function's link::#-value::. A caller clock uses
+this value to reschedule the function.
+
+code::
+// Runs every 2 seconds
+AppClock.play({ "And again".postln; 2 });
+::
+
 subsection::Audio
 
 method::play
 
-This is probably the simplest way to get audio in SC3. It wraps the Function in a SynthDef (adding an Out ugen if needed), creates and starts a new Synth with it, and returns the Synth object. A Linen is also added to avoid clicks, which is configured to allow the resulting Synth to have its \gate argument set, or to respond to a release message. Args in the function become args in the resulting def.
+Play a Synth from UGens returned by the function. The function arguments become controls that can be set afterwards.
+
+This works as follows: play wraps the UGens in a SynthDef and sends it to the target. When this asynchronous command is completed, it creates one synth from this definition.
+
+
+argument::target
+A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+
+argument::outbus
+A bus number that determines the output channel. This is equivalent to code::Out.ar(outbus, signal)::. The default is 0.
+
+argument::fadeTime
+Crossfade time for attack and release of the synth. The default is 0.02 seconds, which is just enough to avoid a click.
+
+argument::addAction
+The add action for the synth.  For a list of valid addActions see link::Classes/Synth::
+
+argument::args
+An array of key value pairs of control names and control values which are used when starting the synth.
+
+note::
+Some UGens are added in this process.
+list::
+## an link::Classes/Out:: UGen for playing the audio to the first audio busses. If the function returns an Out UGen, this is omitted. ##an envelope with a code::\gate:: control for releasing and crossfading. If the function provides its own releasable envelope, this is omitted.
+::
+::
+
+
+
 
 code::
 x = { |freq = 440| SinOsc.ar(freq, 0, 0.3) }.play; // this returns a Synth object;
 x.set(\freq, 880); // note you can set the freq argument
-x.defName; // the name of the resulting SynthDef (generated automatically in a cycle of 512)
+x.defName; // the name of the resulting SynthDef
 x.release(4); // fadeout over 4 seconds
 ::
 
@@ -393,16 +491,6 @@ SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3))}).play;
 
 Function.play is often more convenient than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
 
-argument::target
-a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
-argument::outbus
-the output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
-argument::fadeTime
-a fadein time. The default is 0.02 seconds, which is just enough to avoid a click. This will also be the fadeout time for a release if you do not specify.
-argument::addAction
-see Synth for a list of valid addActions. The default is \addToHead.
-argument::args
-arguments
 
 method::scope
 
@@ -413,17 +501,20 @@ code::
 ::
 
 argument::numChannels
-The number of channels to display in the scope window, starting from outbus. The default is 2.
+The number of channels to display in the scope window, starting from outbus. It automatically reflects the number of channels.
 argument::outbus
 The output bus to play the audio out on. This is equivalent to Out.ar(outbus, theoutput). The default is 0.
 argument::fadeTime
-A fadein time. The default is 0.02 seconds, which is just enough to avoid a click.
+A fadein time. The default is 0.05 seconds, which is just enough to avoid a click.
 argument::bufsize
 The size of the buffer for the ScopeView. The default is 4096.
 argument::zoom
 A zoom value for the scope's X axis. Larger values show more. The default is 1.
 
 method::plot
+
+note::See link::Reference/plot:: for a general reference on plotting::
+
 
 Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
 
@@ -434,19 +525,26 @@ code::
 ::
 
 
+
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
-argument::server
-The Server on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used.
+argument::target
+The server, synth or group where the signal is picked up. See link::Reference/asTarget::.
+code::
+(
+var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play;
+{ In.ar(99, 2) }.plot(0.02, synth);
+)
+::
+
 argument::bounds
 An instance of Rect or Point indicating the bounds of the plot window.
 argument::minval
-the minimum value in the plot. Defaults to -1.0.
+the minimum value in the plot. If not specified, the signal's minimum is used.
 argument::maxval
-the maximum value in the plot. Defaults to 1.0.
+the maximum value in the plot. If not specified, the signal's maximum is used.
 argument:: separately
-For multi channel signals, set whether to use separate value display ranges or not.
-a window to place the plot in. If nil, one will be created for you.
+If set to code::true::, for multichannel signals use separate value display ranges, unless minval or maxval is specified already.
 
 
 method::asBuffer
@@ -455,8 +553,8 @@ Calculates duration in seconds worth of the output of this function asynchronous
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
 
-argument::server
-The server on which the function is calculated. The default is code::Server.default::.
+argument::target
+The synth or group after which the synth runs (see link::Reference/asTarget::). The default is the default group of code::Server.default::.
 
 argument::action
 A function that is called when the buffer is filled. It is passed the buffer as argument.
@@ -471,6 +569,61 @@ b = { Blip.ar(XLine.kr(10000, 4, 3) * [1, 1.2], 20) * 0.1 }.asBuffer(3, fadeTime
 b.plot; // after 3 seconds, you can see it.
 // play the soundfile back
 { PlayBuf.ar(b.numChannels, b, LFNoise2.kr(2 ! 8).exprange(0.15, 1), loop:1).sum }.play;
+::
+
+
+method:: loadToFloatArray
+Write a UGen function to a file and then load it into a FloatArray.
+
+argument:: duration
+Amount of data to record in seconds
+
+argument::target
+A server, synth, or group where to place the synth that plays the function
+
+argument::action
+A function to call when writing is finished.
+
+code::
+// get some data from the synth audio
+{ SinOsc.ar + GrayNoise.ar(0.1) }.loadToFloatArray(0.01, action: { arg array; a = array });
+a.postln;
+a.plot;
+
+// place it after some other node:
+z = { WhiteNoise.ar * 0.1 }.play; // play some noise
+{ BPF.ar(In.ar(0), 7000, 0.01) * 10 }.loadToFloatArray(0.01, z, action: { arg array; a = array });
+a.postln;
+::
+
+method:: getToFloatArray
+Stream the function audio values to the client using a series of getn messages and put the results into a FloatArray.
+
+argument:: duration
+Amount of data to record in seconds
+
+argument::target
+A server, synth, or group where to place the synth that plays the function
+
+argument::action
+A function to call when writing is finished.
+
+argument:: wait
+The amount of time in seconds to wait between sending getn messages. Longer times are safer. The default is 0.01 seconds which seems reliable under normal circumstances. A setting of 0 is not recommended.
+
+argument:: timeout
+The amount of time in seconds after which to post a warning if all replies have not yet been received. the default is 3.
+
+discussion::
+For a discussion of the difference between getToFloatArray and loadToFloatArray, see link::Classes/Buffer#-getToFloatArray:: and link::Classes/Buffer#-loadToFloatArray::.
+
+
+code::
+// get some data from the synth audio
+
+{ SinOsc.ar + GrayNoise.ar(0.1) }.getToFloatArray(0.01, action: { arg array; a = array });
+a.postln;
+a.plot;
 ::
 
 
@@ -529,10 +682,33 @@ code::
 Pbind(\degree, p {:[x, y].postln, x<-(0..10), y<-(0..10), (x + y).isPrime }, \dur, 0.3).play;
 ::
 
+subsection:: Bela
+
+method:: belaScope
+Like link::Classes/Function#-scope::, plays and scopes this Function, but using Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+This Function's output bus is monitored right after the generated Synth.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+argument:: target
+A Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.
+note:: this Function's play target needs to be on a Server that supports BelaScope::
+
+argument:: numChannels
+Number of channels to scope, from this Function's output channels. Defaults to this Function's output channels.
+
+argument:: outbus
+argument:: fadeTime
+argument:: addAction
+argument:: args
+See link::Classes/Function#-scope::
+
+returns:: Like link::Classes/Function#-play::, a Synth playing this function. When that synth is freed, so will be its monitor.
 
 examples::
 
-subsection::Exception Handling
+subsection::Exception Handling Examples
 
 code::
 // no exception handler

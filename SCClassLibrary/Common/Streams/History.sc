@@ -5,6 +5,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	classvar <>saveFolder = "~/Desktop/", <logFolder, <logFile, <logPath, <>keepsLog = true;
 	classvar <>current, <>maxShortLength=65;
+	classvar <>ignoreErrors = true;
 
 	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
 
@@ -40,11 +41,14 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	*start {
 		var interp = thisProcess.interpreter;
+
 		if(started.not) {
 			interp.codeDump = interp.codeDump.addFunc(listenFunc);
 			this.hasMovedOn_(true);
 			started = true;
 			this.startLog;
+			CmdPeriod.add(this);
+
 		} {
 			"History has started already.".postln;
 		}
@@ -55,6 +59,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		this.endLog;
 		this.hasMovedOn_(true);
 		started = false;
+		CmdPeriod.remove(this);
 	}
 
 	*hasMovedOn_ { |flag=true| current.hasMovedOn_(flag) }
@@ -114,6 +119,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 
 	clear {
+		keys.clear;
 		lines = List[];
 		lineShorts = List[];
 		hasMovedOn = true;
@@ -138,7 +144,8 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 					lastTimePlayed = time;
 					waittime.wait;
 					if (e.verbose) { code.postln };
-					code.compile.value;	// so it does not change cmdLine.
+					// use global ignoreErrors flag to set mode here:
+					History.eval(code);
 				};
 			};
 			0.5.wait;
@@ -151,6 +158,13 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	play { |start=0, end, verbose=true|	// line numbers;
 		// starting from past 0 may not work.
+		if (lines.isEmpty) {
+			"% - % is empty, so there is nothing to play.".postf(
+				thisMethod,
+				if (this == History.current) { "History.current" } { "this history" }
+			);
+			^this
+		};
 		start = start.clip(0, lines.lastIndex);
 		end = (end ? lines.lastIndex).clip(0, lines.lastIndex);
 
@@ -232,7 +246,6 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 
 	// network setups support
-	*network { }
 	*localOn { recordLocally = true }
 	*localOff { recordLocally = false }
 
@@ -283,7 +296,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	*unformatTime { |str|
 		var h, m, s;
-		#h, m, s = str.split($:).collect(_.interpret);
+		#h, m, s = str.split($:).asInteger;
 		^h * 60 + m * 60 + s
 	}
 
@@ -325,6 +338,34 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^str.clumps(indices.differentiate)
 	}
 
+	*evalLineAt { |index| current.evalLineAt(index) }
+
+	evalLineAt { |index|
+		var line, codeString, result;
+		if (index.isNil) { ^this };
+		line = lines[index];
+		if (line.isNil) { ^this };
+		codeString = line[2];
+		if (codeString.isNil) { ^this };
+
+		^this.eval(codeString);
+	}
+
+	*eval { |codeString, ignoreError=(ignoreErrors)|
+		if (ignoreError.not) {
+			^codeString.compile.value
+		};
+
+		^try {
+			codeString.compile.value;
+		} {
+			"History.eval failed for line: ".postln;
+			codeString.postcs;
+			nil
+		}
+	}
+
+
 	/*
 	// problem: interpreter cancels backslashes etc.
 	*stream { |str, func|
@@ -361,9 +402,20 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	*/
 
-
 	*cmdPeriod {
-		this.enter("// thisProcess.cmdPeriod")
+		if (History.started) {
+			// record cmdPeriod for replay:
+			this.enter("History.playCmdPeriod");
+		};
+	}
+
+	*playCmdPeriod {
+		var histPlayer =current.player;
+		if (histPlayer.isPlaying) {
+			histPlayer.pause;
+			CmdPeriod.doOnce({ histPlayer.resume });
+			CmdPeriod.run;
+		};
 	}
 
 	// log file support - global only
@@ -476,23 +528,6 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^indicesFound
 	}
 
-	*makeWin { |where, numItems=8| ^current.makeWin(where, numItems) }
-
-	makeWin { |where, numItems=8|
-		var gui = HistoryGui(this, numItems);
-		if (where.notNil) { gui.moveTo(where.x, where.y) };
-		^gui
-	}
-
-	*document { current.document }
-
-	document { |title = ""|
-		var docTitle = title ++ Date.getDate.format("%Y-%m-%d-%Hh%M-History");
-		Document.new(docTitle, this.storyString)
-		// path not working yet
-		//.path_(docTitle); // don't lose title.
-	}
-
 	*readFromDoc { |path|
 		var file, line, count = 0, lineStrings = [], comLineIndices = [], splitPoints;
 		file = File(path.standardizePath, "r");
@@ -531,10 +566,12 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	*checkPath { |path|
 		var ext = path.splitext[1];
-		^if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
+		^if ([\scd, \txt, \nil].includes(ext.asSymbol)) {
 			true
 		} {
-			warn("History: file format" + ext + "for story files likely not supported!				Please use .txt, .scd, or other text format.");
+			warn(
+				"History: cannot use file format '." ++ ext ++ "' for story files!"
+				"\nPlease use .txt or .scd.");
 			false
 		}
 	}

@@ -20,8 +20,7 @@ note::
 If one wants Phasor to output a signal with frequency teletype::freq:: oscillating between teletype::start:: and teletype::end::, then the rate should be teletype::(end - start) * freq / sr:: where teletype::sr:: is the sampling rate.
 ::
 
-Phasor is commonly used as an index control with  link::Classes/BufRd::
-and  link::Classes/BufWr:: .
+Phasor is commonly used as an index control with link::Classes/BufRd:: and link::Classes/BufWr::.
 
 
 classmethods::

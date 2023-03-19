@@ -9,12 +9,11 @@
 #import <UIKit/UIKit.h>
 
 @interface iscsynthAppDelegate : NSObject <UIApplicationDelegate> {
-	UIWindow *window;
-	IBOutlet UITabBarController *tabBarController;
-	IBOutlet UITableViewController *tableViewController;
+    UIWindow* window;
+    IBOutlet UITabBarController* tabBarController;
+    IBOutlet UITableViewController* tableViewController;
 }
 
-@property (nonatomic, retain) IBOutlet UIWindow *window;
+@property (nonatomic, retain) IBOutlet UIWindow* window;
 
 @end
-

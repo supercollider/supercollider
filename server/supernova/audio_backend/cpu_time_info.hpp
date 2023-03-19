@@ -16,8 +16,7 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef AUDIO_BACKEND_CPU_TIME_INFO_HPP
-#define AUDIO_BACKEND_CPU_TIME_INFO_HPP
+#pragma once
 
 #include <vector>
 
@@ -27,24 +26,20 @@
 
 namespace nova {
 
-class cpu_time_info
-{
+class cpu_time_info {
     typedef std::vector<float, boost::alignment::aligned_allocator<float, 64>> ringbuffer;
 
 public:
-    cpu_time_info()
-    {}
+    cpu_time_info() {}
 
-    void resize( int sampleRate, int blockSize, int seconds = 1 )
-    {
+    void resize(int sampleRate, int blockSize, int seconds = 1) {
         const size_t blocks = sampleRate * seconds / blockSize;
-        size = std::max( size_t(1), blocks );
-        buffer.resize( size, 0.f );
+        size = std::max(size_t(1), blocks);
+        buffer.resize(size, 0.f);
         index = size - 1;
     }
 
-    void update(float f)
-    {
+    void update(float f) {
         ++index;
         if (index == size)
             index = 0;
@@ -52,20 +47,17 @@ public:
         buffer[index] = f;
     }
 
-    void get(float & peak, float & average) const
-    {
-        const float average_factor = 1.f/size;
+    void get(float& peak, float& average) const {
+        const float average_factor = 1.f / size;
         float sum;
         horizontal_maxsum_vec_simd(peak, sum, buffer.data(), size);
         average = sum * average_factor;
     }
 
 private:
-    std::size_t size  = 0;
+    std::size_t size = 0;
     std::size_t index = 0;
     ringbuffer buffer;
 };
 
 }
-
-#endif /* AUDIO_BACKEND_CPU_TIME_INFO_HPP */

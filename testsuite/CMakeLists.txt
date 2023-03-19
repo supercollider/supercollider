@@ -1,5 +1,2 @@
-if (SUPERNOVA)
-  add_subdirectory(supernova)
-endif()
-
+add_subdirectory(server)
 add_subdirectory(sclang)

@@ -38,7 +38,7 @@
 
 // Borland-specific bug, visit_each() silently fails to produce code
 
-#if defined(__BORLANDC__)
+#if defined(BOOST_BORLANDC)
 #  define BOOST_BIND_VISIT_EACH boost::visit_each
 #else
 #  define BOOST_BIND_VISIT_EACH visit_each
@@ -1422,7 +1422,7 @@ public:
 
     template<class V> void accept( V & v ) const
     {
-#if !defined( BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP ) && !defined( __BORLANDC__ )
+#if !defined( BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP ) && !defined( BOOST_BORLANDC )
         using boost::visit_each;
 #endif
 
@@ -1559,7 +1559,7 @@ namespace _bi
 
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) || (__SUNPRO_CC >= 0x530)
 
-#if defined( __BORLANDC__ ) && BOOST_WORKAROUND( __BORLANDC__, BOOST_TESTED_AT(0x582) )
+#if defined( BOOST_BORLANDC ) && BOOST_WORKAROUND( BOOST_BORLANDC, BOOST_TESTED_AT(0x582) )
 
 template<class T> struct add_value
 {
@@ -1811,7 +1811,7 @@ BOOST_BIND_OPERATOR( >=, greater_equal )
 
 // visit_each, ADL
 
-#if !defined( BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP ) && !defined( __BORLANDC__ ) \
+#if !defined( BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP ) && !defined( BOOST_BORLANDC ) \
    && !(defined(__GNUC__) && __GNUC__ == 3 && __GNUC_MINOR__ <= 3)
 
 template<class V, class T> void visit_each( V & v, value<T> const & t, int )
@@ -1831,7 +1831,7 @@ template<class V, class R, class F, class L> void visit_each( V & v, bind_t<R, F
 
 // visit_each, no ADL
 
-#if defined( BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP ) || defined( __BORLANDC__ ) \
+#if defined( BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP ) || defined( BOOST_BORLANDC ) \
   || (defined(__GNUC__) && __GNUC__ == 3 && __GNUC_MINOR__ <= 3)
 
 template<class V, class T> void visit_each( V & v, _bi::value<T> const & t, int )
@@ -2122,33 +2122,45 @@ template<class F, class A1, class A2, class A3, class A4, class A5, class A6, cl
 
 #define BOOST_BIND_CC
 #define BOOST_BIND_ST
+#define BOOST_BIND_NOEXCEPT
 
 #include <boost/bind/bind_cc.hpp>
 
+# if defined( __cpp_noexcept_function_type ) || defined( _NOEXCEPT_TYPES_SUPPORTED )
+#   undef BOOST_BIND_NOEXCEPT
+#   define BOOST_BIND_NOEXCEPT noexcept
+#   include <boost/bind/bind_cc.hpp>
+# endif
+
 #undef BOOST_BIND_CC
 #undef BOOST_BIND_ST
+#undef BOOST_BIND_NOEXCEPT
 
-#ifdef BOOST_BIND_ENABLE_STDCALL
+#if defined(BOOST_BIND_ENABLE_STDCALL) && !defined(_M_X64)
 
 #define BOOST_BIND_CC __stdcall
 #define BOOST_BIND_ST
+#define BOOST_BIND_NOEXCEPT
 
 #include <boost/bind/bind_cc.hpp>
 
 #undef BOOST_BIND_CC
 #undef BOOST_BIND_ST
+#undef BOOST_BIND_NOEXCEPT
 
 #endif
 
-#ifdef BOOST_BIND_ENABLE_FASTCALL
+#if defined(BOOST_BIND_ENABLE_FASTCALL) && !defined(_M_X64)
 
 #define BOOST_BIND_CC __fastcall
 #define BOOST_BIND_ST
+#define BOOST_BIND_NOEXCEPT
 
 #include <boost/bind/bind_cc.hpp>
 
 #undef BOOST_BIND_CC
 #undef BOOST_BIND_ST
+#undef BOOST_BIND_NOEXCEPT
 
 #endif
 
@@ -2156,11 +2168,13 @@ template<class F, class A1, class A2, class A3, class A4, class A5, class A6, cl
 
 #define BOOST_BIND_ST pascal
 #define BOOST_BIND_CC
+#define BOOST_BIND_NOEXCEPT
 
 #include <boost/bind/bind_cc.hpp>
 
 #undef BOOST_BIND_ST
 #undef BOOST_BIND_CC
+#undef BOOST_BIND_NOEXCEPT
 
 #endif
 
@@ -2168,56 +2182,70 @@ template<class F, class A1, class A2, class A3, class A4, class A5, class A6, cl
 
 #define BOOST_BIND_MF_NAME(X) X
 #define BOOST_BIND_MF_CC
+#define BOOST_BIND_MF_NOEXCEPT
 
 #include <boost/bind/bind_mf_cc.hpp>
 #include <boost/bind/bind_mf2_cc.hpp>
 
+# if defined( __cpp_noexcept_function_type ) || defined( _NOEXCEPT_TYPES_SUPPORTED )
+#   undef BOOST_BIND_MF_NOEXCEPT
+#   define BOOST_BIND_MF_NOEXCEPT noexcept
+#   include <boost/bind/bind_mf_cc.hpp>
+# endif
+
 #undef BOOST_BIND_MF_NAME
 #undef BOOST_BIND_MF_CC
+#undef BOOST_BIND_MF_NOEXCEPT
 
-#ifdef BOOST_MEM_FN_ENABLE_CDECL
+#if defined(BOOST_MEM_FN_ENABLE_CDECL) && !defined(_M_X64)
 
 #define BOOST_BIND_MF_NAME(X) X##_cdecl
 #define BOOST_BIND_MF_CC __cdecl
+#define BOOST_BIND_MF_NOEXCEPT
 
 #include <boost/bind/bind_mf_cc.hpp>
 #include <boost/bind/bind_mf2_cc.hpp>
 
 #undef BOOST_BIND_MF_NAME
 #undef BOOST_BIND_MF_CC
+#undef BOOST_BIND_MF_NOEXCEPT
 
 #endif
 
-#ifdef BOOST_MEM_FN_ENABLE_STDCALL
+#if defined(BOOST_MEM_FN_ENABLE_STDCALL) && !defined(_M_X64)
 
 #define BOOST_BIND_MF_NAME(X) X##_stdcall
 #define BOOST_BIND_MF_CC __stdcall
+#define BOOST_BIND_MF_NOEXCEPT
 
 #include <boost/bind/bind_mf_cc.hpp>
 #include <boost/bind/bind_mf2_cc.hpp>
 
 #undef BOOST_BIND_MF_NAME
 #undef BOOST_BIND_MF_CC
+#undef BOOST_BIND_MF_NOEXCEPT
 
 #endif
 
-#ifdef BOOST_MEM_FN_ENABLE_FASTCALL
+#if defined(BOOST_MEM_FN_ENABLE_FASTCALL) && !defined(_M_X64)
 
 #define BOOST_BIND_MF_NAME(X) X##_fastcall
 #define BOOST_BIND_MF_CC __fastcall
+#define BOOST_BIND_MF_NOEXCEPT
 
 #include <boost/bind/bind_mf_cc.hpp>
 #include <boost/bind/bind_mf2_cc.hpp>
 
 #undef BOOST_BIND_MF_NAME
 #undef BOOST_BIND_MF_CC
+#undef BOOST_BIND_MF_NOEXCEPT
 
 #endif
 
 // data member pointers
 
 #if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) || defined(BOOST_NO_FUNCTION_TEMPLATE_ORDERING) \
-    || ( defined(__BORLANDC__) && BOOST_WORKAROUND( __BORLANDC__, BOOST_TESTED_AT( 0x620 ) ) )
+    || ( defined(BOOST_BORLANDC) && BOOST_WORKAROUND( BOOST_BORLANDC, BOOST_TESTED_AT( 0x620 ) ) )
 
 template<class R, class T, class A1>
 _bi::bind_t< R, _mfi::dm<R, T>, typename _bi::list_av_1<A1>::type >
@@ -2263,6 +2291,15 @@ template< class R, class T > struct add_cref< R (T::*) () const, 1 >
 {
     typedef void type;
 };
+
+#if defined( __cpp_noexcept_function_type ) || defined( _NOEXCEPT_TYPES_SUPPORTED )
+
+template< class R, class T > struct add_cref< R (T::*) () const noexcept, 1 >
+{
+    typedef void type;
+};
+
+#endif // __cpp_noexcept_function_type
 
 #endif // __IBMCPP__
 

@@ -1,7 +1,7 @@
 class:: ApplicationStart
 summary:: register functions to be evaluated on Application start
 related:: Classes/StartUp, Classes/ServerBoot
-categories:: Control, Platform>macOS (OS X)
+categories:: Control, Platform>macOS
 
 description::
 

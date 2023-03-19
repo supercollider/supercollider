@@ -68,7 +68,11 @@ namespace boost {
 
 
     private: // iterator core operations
-        friend class iterator_core_access;
+#ifdef __DCC__ 
+        friend class boost::iterator_core_access; 
+#else 
+        friend class iterator_core_access; 	 
+#endif
 
         void increment()
         {

@@ -110,7 +110,7 @@ method:: head
 Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the head of that group. If it is a link::Classes/Server::, add it at the head of the link::Reference/default_group:: of that server. If it is nil, add it at the head of the default_group of the default server. If it is an integer, it is created relative to a group with that id.
 
 method:: tail
-Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the tail of that group. If it is a link::Classes/Server::, add it at the tail of the link::Reference/default_group:: of that server. If it is nil, add it at the tail of the default_group of the the default server. If it is an integer, it is created relative to a group with that id.
+Create and return a Synth. If code::aGroup:: is a link::Classes/Group:: add it at the tail of that group. If it is a link::Classes/Server::, add it at the tail of the link::Reference/default_group:: of that server. If it is nil, add it at the tail of the default_group of the default server. If it is an integer, it is created relative to a group with that id.
 
 method:: replace
 Create and return a Synth and use it to replace code::nodeToReplace::, taking its place in its server's node order.

@@ -1,0 +1,142 @@
+CLASS:: AbstractGridLines
+summary:: Calculates the numerical values suitable for grid lines to be used for plotting or other UI elements.
+categories:: GUI>Accessories
+related:: Classes/GridLines, Classes/LinearGridLines, Classes/ExponentialGridLines, Classes/DrawGrid, Classes/ControlSpec, Classes/Plotter, Reference/plot
+
+DESCRIPTION::
+code::AbstractGridLines:: and its subclasses are strategy objects that find suitable intervals for plotting grid lines and labels. The data range and warping behavior (e.g. linear or exponential) are derived from the corresponding link::Classes/ControlSpec::. The instance methods of code::AbstractGridLines:: are used by link::Classes/DrawGrid:: (which is in turn used by link::Classes/Plotter::) for getting logically spaced intervals that span the data for drawing grid lines on a plot.
+
+code::AbstractGridLines:: shouldn't be instantiated directly. Instead, the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method should be used to return the appropriate code::AbstractGridLines:: subclass for the given spec.
+
+code::
+\freq.asSpec.grid
+::
+
+Subclasses of code::AbstractGridLines:: correspond to the range and warp behavior of their assigned code::ControlSpec::. For example, code::LinearGridLines:: and code::ExponentialGridLines:: represent data on a linear and exponential scale, respectively.
+code::
+(
+// LinearGridLines
+var linGrid = ControlSpec(0, 100, \lin, units: "Time").grid;
+// ExponentialGridLines
+var expGrid = \freq.asSpec.grid;
+
+DrawGrid.test(linGrid, expGrid);
+)
+::
+This default implementation does not know anything about the data is displaying:
+code::
+DrawGrid.test(nil, \midinote.asSpec.grid);
+::
+A theoretical code::MidinoteGridLines:: could be written that labels these correctly, shows octaves and individual notes depending on the current zoom. Or a teletype::DegreeGridLines:: could draw pitch degree grid lines behind a frequency plot.
+
+Note that the code::AbstractGridLines:: does not know which axis it is to be used on and could also be used in polar plots or in 3D rendering.
+
+CLASSMETHODS::
+
+METHOD:: new
+
+argument:: spec
+A link::Classes/ControlSpec:: that defines the numerical range, warp, and step.
+
+returns:: An instance of this class.
+
+note:: code::AbstractGridLines:: shouldn't be instantiated directly. Instead, the link::Classes/GridLines:: factory class or the link::Classes/ControlSpec#-grid:: method should be used to return the appropriate code::AbstractGridLines:: subclass.
+::
+
+INSTANCEMETHODS::
+
+METHOD:: spec
+Get/set the code::ControlSpec:: that defines the numerical range, warp, and step.
+
+returns:: A link::Classes/ControlSpec::.
+
+METHOD:: asGrid
+Return this object.
+
+discussion::
+code::nil.asGrid:: returns a code::BlankGridLines:: (a subclass of code::AbstractGridLines::) which produces no drawn lines. So if code::nil:: is passed to the strong::grid:: argument of code::DrawGrid::, no lines are drawn on the corresponding axis.
+
+
+METHOD:: niceNum
+Rounds a value to a logical "nice number" that is within the same order of magnitude. See the discussion below for details.
+
+argument:: val
+The value you'd like to make nicer.
+
+argument:: round
+A boolean. Roughly speaking, rounding will allow the returned number to be above or below the input strong::val:: (similar to a code::round:: operation), while when code::false:: the returned number will tend to be higher than strong::val:: (similar to code::ceil::).
+
+returns:: The nice number.
+
+discussion::
+This method is used to support internal calculations for determining grid line values, though it may be useful for other applications.
+
+Observe the rounding behavior:
+code::
+(
+var g = GridLines([0, 10000].asSpec);
+"in val / rounded / not rounded".postln;
+10.collect{ 10000.rand }.sort.do({ |x|
+    postf("% / % / %\n", x, g.niceNum(x, true), g.niceNum(x, false))
+})
+)
+::
+The implementation is based on: link::https://www.sciencedirect.com/book/9780080507538/graphics-gems##A. S. Glassner, Ed., Graphics Gems. San Diego: Morgan Kaufmann, 1990::.
+
+
+METHOD:: looseRange
+Returns the logical minimum and maximum that will contain the strong::min:: and strong::max::, determed internally using link::#-niceNum::.
+
+argument:: min
+Minimum value to include in the returned range.
+
+argument:: max
+Maximum value to include in the returned range.
+
+argument:: ntick
+The number of lines ("ticks") you would like within the range of code::[min, max]::, default: code::5::.
+
+returns:: An link::Classes/Array:: with the lower and upper bounds of the range containing your strong::min:: and strong::max::, i.e. code::[rangeMin, rangeMax]::.
+
+
+METHOD:: getParams
+
+Specifically for use by link::Classes/DrawGrid::.
+This returns a link::Classes/Dictionary:: with keys: code::'lines'::, an array of values where lines should be drawn, and code::'labels'::, an array of 2-element arrays code::[value, "formatted label"]:: for each line.
+
+Note that the highest and lowest values returned don't necessarily contain your strong::valueMin:: and strong::valueMax::, but rather represent the values where grid lines will be drawn by code::DrawGrid:: (endcap lines are subsequently drawn at the data/grid bounds).
+
+argument:: valueMin
+Minimum value of the data to be plotted. The lowest grid line value returned may be higher than this value.
+
+argument:: valueMax
+Maximum value of the data to be plotted. The highest grid line value returned may be lower than this value.
+
+argument:: pixelMin
+Lower bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if strong::numTicks:: is code::nil::).
+
+argument:: pixelMax
+Upper bound of the grid's range, in pixels. Used to calculate the size of the available grid space when determining grid values based on strong::tickSpacing:: (if strong::numTicks:: is code::nil::).
+
+argument:: numTicks
+Explicit number of ticks you would like to see on the graph (though the result is approximate). Set to code::nil:: if you'd like the number of ticks to be found automatically, based on strong::pixelMin::, strong::pixelMax::, and strong::tickSpacing::.
+
+argument:: tickSpacing
+Minimum distance between ticks (in pixels). This value is only used when strong::numTicks:: is code::nil::.
+
+returns:: A link::Classes/Dictionary::.
+
+
+METHOD:: formatLabel
+Format a numerical value for display as text, rounded to a desired precision.
+
+argument:: val
+The value to round and convert to a text label.
+
+argument:: numDecimalPlaces
+Number of decimal places to represent in the returned code::String::.
+
+returns:: A link::Classes/String::.
+
+
+private:: prCheckWarp, ideals

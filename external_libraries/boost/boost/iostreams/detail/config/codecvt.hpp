@@ -20,7 +20,8 @@
 //------------------Support for codecvt with user-defined state types---------//
 
 #if defined(__MSL_CPP__) || defined(__LIBCOMO__) || \
-    BOOST_WORKAROUND(_STLPORT_VERSION, <= 0x450) \
+    BOOST_WORKAROUND(_STLPORT_VERSION, <= 0x450) || \
+    defined(_LIBCPP_VERSION) \
     /**/
 # define BOOST_IOSTREAMS_NO_PRIMARY_CODECVT_DEFINITION
 #endif
@@ -41,7 +42,7 @@
 
 //------------------Normalize codecvt::length---------------------------------//
 
-#if !defined(__MSL_CPP__) && !defined(__LIBCOMO__) && \
+#if !defined(__MSL_CPP__) && !defined(__LIBCOMO__) && !defined(__clang__) && \
     (!defined(BOOST_RWSTD_VER) || BOOST_RWSTD_VER < 0x04010300) && \
     (!defined(__MACH__) || !defined(__INTEL_COMPILER))
     /**/

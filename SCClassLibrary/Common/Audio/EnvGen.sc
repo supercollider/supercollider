@@ -15,6 +15,7 @@ Done : UGen {
 	const <freeSelfAndDeepFreeNext = 12;
 	const <freeAllInGroup = 13;
 	const <freeGroup = 14;
+	const <freeSelfResumeNext = 15;
 
 	*kr { arg src;
 		^this.multiNew('control', src)

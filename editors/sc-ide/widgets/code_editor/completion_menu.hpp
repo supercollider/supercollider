@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_SC_COMPLETION_MENU_HPP_INCLUDED
-#define SCIDE_SC_COMPLETION_MENU_HPP_INCLUDED
+#pragma once
 
 #include "../util/popup_widget.hpp"
 #include "../../core/sc_introspection.hpp"
@@ -34,49 +33,44 @@
 
 namespace ScIDE {
 
-namespace ScLanguage { struct Method; struct Class; }
-  
-class CompletionTextBrowser : public QTextBrowser
-{
+namespace ScLanguage {
+struct Method;
+struct Class;
+}
+
+class CompletionTextBrowser : public QTextBrowser {
     // FIXME: Workaround for bug #1452 - crash when dragging/copying text from completion help window
     // QT seems to delete the QMimeData before it's finished with it, causing a crash.
     // The only way to avoid is to return no MIME data at all.
-    QMimeData *createMimeDataFromSelection() const
-    {
-        return NULL;
-    };
+    QMimeData* createMimeDataFromSelection() const { return NULL; };
 };
 
-class CompletionMenu : public PopUpWidget
-{
+class CompletionMenu : public PopUpWidget {
     Q_OBJECT
 
 public:
-    enum DataRole {
-        CompletionRole = Qt::UserRole,
-        MethodRole
-    };
+    enum DataRole { CompletionRole = Qt::UserRole, MethodRole };
 
-    CompletionMenu(QWidget * parent = 0);
-    void addItem(QStandardItem * item);
+    CompletionMenu(QWidget* parent = 0);
+    void addItem(QStandardItem* item);
     void addInfo(QString info);
     void adapt();
     void setCompletionRole(int role);
     QString currentText();
-    const ScLanguage::Method * currentMethod();
-    QString exec(const QRect & rect);
-    QSortFilterProxyModel *model();
-    QListView *view();
+    const ScLanguage::Method* currentMethod();
+    QString exec(const QRect& rect);
+    QSortFilterProxyModel* model();
+    QListView* view();
 
 protected:
-    virtual bool eventFilter(QObject * obj, QEvent * ev);
+    virtual bool eventFilter(QObject* obj, QEvent* ev);
 
 private:
-    QListView *mListView;
-    QStandardItemModel *mModel;
-    QSortFilterProxyModel *mFilterModel;
-    CompletionTextBrowser *mTextBrowser;
-    QHBoxLayout *mLayout;
+    QListView* mListView;
+    QStandardItemModel* mModel;
+    QSortFilterProxyModel* mFilterModel;
+    CompletionTextBrowser* mTextBrowser;
+    QHBoxLayout* mLayout;
     int mCompletionRole;
 
 private slots:
@@ -88,5 +82,3 @@ signals:
 };
 
 } // namespace ScIDE
-
-#endif

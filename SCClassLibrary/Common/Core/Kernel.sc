@@ -37,11 +37,12 @@ Class {
 		// start the process: Class.initClassTree(Object)
 		if(classesInited.isNil, { classesInited = IdentitySet.new });
 		if(classesInited.includes(aClass).not, {
+			classesInited.add(aClass);
+
 			if(aClass.isMetaClass.not and: { aClass.class.findMethod(\initClass).notNil }, {
 					aClass.initClass;
 			});
 
-			classesInited.add(aClass);
 			if(aClass.subclasses.notNil,{
 				aClass.subclasses.do({ arg class; this.initClassTree(class); });
 			});
@@ -472,20 +473,69 @@ FunctionDef {
 	checkCanArchive { "cannot archive FunctionDefs".warn }
 	archiveAsCompileString { ^true }
 
-	argumentString { arg withDefaultValues=true;
-		var res = "", pairs = this.keyValuePairsFromArgs;
-		var last;
+	hasPartialApplication {
+		^argNames.size > 0 and: { argNames[0] == \_ }
+	}
+
+	argumentString { arg withDefaultValues=true, withEllipsis=false, asArray=false;
+		var res = "", pairs;
+		var lastIndex, noVarArgs, varArgName;
+		if(asArray) {
+			withEllipsis = withDefaultValues = false;
+		};
+		if(this.hasPartialApplication) {
+			^if(withEllipsis) { " ... args" } { "args" }
+		};
+		pairs = this.keyValuePairsFromArgs;
 		if(pairs.isEmpty) { ^nil };
-		last = pairs.lastIndex;
+		if(this.varArgs) {
+			varArgName = pairs.keep(-2).first;
+			pairs = pairs.drop(-2);
+		};
+		lastIndex = pairs.lastIndex;
 		pairs.pairsDo { |name, defaultValue, i|
-			var value;
 			res = res ++ name;
 			if(withDefaultValues and: { defaultValue.notNil }) {
-				res = res ++ " = " ++ defaultValue.asCompileString
+				res = res ++ " = " ++ defaultValue.asCompileString;
 			};
-			if(i + 1 != last) { res = res ++ ", " };
+			if(i + 1 < lastIndex) { res = res ++ ", " };
+		};
+		^if(varArgName.notNil) {
+			if(withEllipsis) {
+				res ++ " ... " ++ varArgName
+			} {
+				if(asArray) {
+					if(res == "") {
+						varArgName
+					} {
+						"[%] ++ %".format(res, varArgName)
+					}
+				} {
+					if(res == "") {
+						res ++ varArgName
+					} {
+						res ++ ", " ++ varArgName
+					}
+				}
+			}
+		} {
+			if(asArray) {
+				"[%]".format(res)
+			} {
+				res
+			}
 		}
-		^res
+	}
+
+	makeFuncModifierString { |modifier|
+		// the modifier is a function that takes the string
+		// which represents the array of all arguments
+		var valueBlock, argBlock, i;
+		if(this.argNames.isNil) { Error("a function without arguments needs no such string").throw };
+		argBlock = this.argumentString(withDefaultValues: true, withEllipsis: true);
+		valueBlock = this.argumentString(withDefaultValues: false, withEllipsis: false, asArray:true);
+		if(modifier.notNil) { valueBlock = modifier.value(valueBlock) };
+		^"{ arg %; % }".format(argBlock, valueBlock)
 	}
 
 	keyValuePairsFromArgs {
@@ -659,7 +709,7 @@ Interpreter {
 	compileFile { arg pathName;
 		var file, text;
 		file = File.new(pathName, "r");
-		if (file.isNil, {
+		if (file.isOpen.not, {
 			error("file open failed\n");
 			^nil
 		});

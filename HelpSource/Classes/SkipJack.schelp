@@ -1,6 +1,6 @@
 class:: SkipJack
 summary:: A utility for background tasks that survive cmd-period
-categories:: Scheduling, Libraries>JITLib>GUI
+categories:: Scheduling, JITLib>GUI
 related:: Classes/CmdPeriod
 
 Description::

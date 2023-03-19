@@ -12,38 +12,45 @@ Volume {
 	}
 
 	init {
-		if(server.serverRunning) { this.sendSynthDef };
+		// execute immediately if we're already past server tree functions
+		if(server.serverRunning) {
+			this.sendSynthDef;
+			this.updateSynth;
+		};
 
 		initFunc = {
 			ampSynth = nil;
-			this.sendSynthDef
+			this.sendSynthDef;
+
+			// only create synth now if it won't be created by ServerTree
+			if (persist.not) { this.updateSynth };
 		};
 
-		ServerBoot.add(initFunc)
+		ServerBoot.add(initFunc, server)
 	}
 
 	sendSynthDef {
-		server.doWhenBooted({
-			numOutputChannels = this.numChannels;
-			defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
-			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
-				XOut.ar(bus,
-					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-					In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
-				);
-			}).send(server);
+		if (server.hasBooted) {
+			fork {
+				numOutputChannels = this.numChannels;
+				defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
+				SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
+					XOut.ar(bus,
+						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+						In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
+					);
+				}).send(server);
 
-			server.sync;
+				server.sync;
 
-			updateFunc = {
-				ampSynth = nil;
-				if(persist) { this.updateSynth }
-			};
+				updateFunc = {
+					ampSynth = nil;
+					if(persist) { this.updateSynth }
+				};
 
-			ServerTree.add(updateFunc);
-
-			this.updateSynth
-		})
+				ServerTree.add(updateFunc, server);
+			}
+		};
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
@@ -58,7 +65,7 @@ Volume {
 		var amp = if(isMuted.not) { volume.dbamp } { 0.0 };
 		var active = amp != 1.0;
 		if(active) {
-			if(server.serverRunning) {
+			if(server.hasBooted) {
 				if(ampSynth.isNil) {
 					ampSynth = Synth.after(server.defaultGroup, defName,
 						[\volumeAmp, amp, \volumeLag, lag, \bus, startBus])
@@ -88,7 +95,7 @@ Volume {
 	}
 
 	freeSynth {
-		ServerTree.remove(updateFunc);
+		ServerTree.remove(updateFunc, server);
 		updateFunc = nil;
 		ampSynth.release;
 		ampSynth = nil

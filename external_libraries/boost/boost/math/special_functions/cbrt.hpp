@@ -32,8 +32,8 @@ struct big_int_type
 template <class T>
 struct largest_cbrt_int_type
 {
-   typedef typename mpl::if_<
-      boost::is_convertible<big_int_type, T>,
+   typedef typename mpl::if_c<
+      boost::is_convertible<big_int_type, T>::value,
       boost::uintmax_t,
       unsigned int
    >::type type;
@@ -68,7 +68,8 @@ T cbrt_imp(T z, const Policy& pol)
       static_cast<T>(1.2599210498948731647672106072782),   // 2^1/3
       static_cast<T>(1.5874010519681994747517056392723),   // 2^2/3
    };
-
+   if((boost::math::isinf)(z) || (z == 0))
+      return z;
    if(!(boost::math::isfinite)(z))
    {
       return policies::raise_domain_error("boost::math::cbrt<%1%>(%1%)", "Argument to function must be finite but got %1%.", z, pol);
@@ -80,8 +81,6 @@ T cbrt_imp(T z, const Policy& pol)
       z = -z;
       sign = -sign;
    }
-   if(z == 0)
-      return 0;
 
    T guess = frexp(z, &i_exp);
    int original_i_exp = i_exp; // save for later
@@ -113,8 +112,8 @@ T cbrt_imp(T z, const Policy& pol)
    // is well behaved...
    //
    typedef typename policies::precision<T, Policy>::type prec;
-   typedef typename mpl::divides<prec, mpl::int_<3> >::type prec3;
-   typedef typename mpl::plus<prec3, mpl::int_<3> >::type new_prec;
+   typedef typename mpl::divides<prec, boost::integral_constant<int, 3> >::type prec3;
+   typedef typename mpl::plus<prec3, boost::integral_constant<int, 3> >::type new_prec;
    typedef typename policies::normalise<Policy, policies::digits2<new_prec::value> >::type new_policy;
    //
    // Epsilon calculation uses compile time arithmetic when it's available for type T,

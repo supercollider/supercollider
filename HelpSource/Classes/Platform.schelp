@@ -68,11 +68,22 @@ platform specific path separator
 method:: resourceDir
 platform specific resource directory
 
-method:: recordingsDir 
+method:: recordingsDir
 platform recordings directory
 
 method:: defaultTempDir
 default directory for temporary files
+
+method:: hasQt
+true if the Qt library is available, false otherwise
+
+method:: hasQtWebEngine
+true if the QtWebEngine library is available, false otherwise
+
+method:: architecture
+A link::Classes/Symbol:: naming the architecture for which this version of SuperCollider was built.
+Returns one of 'AArch32' (32-bit ARM), 'AArch64' (64-bit ARM, introduced in ARMv8), 'Itanium64', 'i386', 'x86_64',
+'PowerPC', or 'unknown' if the architecture is unidentifiable.
 
 subsection:: Features
 
@@ -91,7 +102,6 @@ returns the platform name
 
 method:: recompile
 recompile class library
-
 
 subsection:: Directories and filesystem stuff
 
@@ -125,6 +135,9 @@ platform specific directory for class files (see link::Guides/UsingExtensions::)
 method:: pathSeparator
 platform specific path separator
 
+method:: pathDelimiter
+platform specific path delimiter
+
 method:: recordingsDir
 platform recordings directory
 
@@ -134,7 +147,14 @@ platform specific resource directory
 method:: defaultTempDir
 default directory for temporary files
 
+method:: formatPathForCmdLine
 
+argument:: path
+A path string.
+
+returns:: The input string formatted as a command-line argument. On Windows this
+method quotes the string. On Unix-based systems this method escapes space
+characters with a backslash.
 
 subsection:: Startup files
 
@@ -143,6 +163,28 @@ files to be loaded on startup
 
 method:: loadStartupFiles
 (re)load startup files
+
+subsection:: System commands
+
+method:: killAll
+kill all processes as defined by cmdLineArgs.
+argument:: cmdLineArgs
+a string containing one or several process names.
+code::
+// e.g. kill all possibly running servers (scsynth or supernova)
+thisProcess.platform.killAll("scsynth supernova");
+::
+
+method:: killProcessByID
+kill a single process as identified by its process ID.
+argument:: pid
+an Integer which is the pid of the process to kill.
+code::
+// start a server program from the cmdLine for testing
+~pid = unixCmd(Server.program + s.options.asOptionsString(57100));
+// kill just that server program by its pid:
+thisProcess.platform.killProcessByID(~pid);
+::
 
 subsection:: Features
 

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,20 +23,19 @@
 #include "SC_Constants.h"
 #include "SC_Prototypes.h"
 
-void Rate_Init(Rate *inRate, double inSampleRate, int inBufLength)
-{
-	inRate->mSampleRate = inSampleRate;
-	inRate->mSampleDur = 1. / inRate->mSampleRate;
-	inRate->mRadiansPerSample = twopi / inRate->mSampleRate;
+void Rate_Init(Rate* inRate, double inSampleRate, int inBufLength) {
+    inRate->mSampleRate = inSampleRate;
+    inRate->mSampleDur = 1. / inRate->mSampleRate;
+    inRate->mRadiansPerSample = twopi / inRate->mSampleRate;
 
-	inRate->mBufLength = inBufLength;
-	inRate->mBufDuration = inRate->mBufLength / inRate->mSampleRate;
-	inRate->mBufRate = 1. / inRate->mBufDuration;
-	inRate->mSlopeFactor = 1. / inRate->mBufLength;
-	inRate->mFilterLoops = inRate->mBufLength / 3;
-	inRate->mFilterRemain = inRate->mBufLength % 3;
-	if( inRate->mFilterLoops == 0. )
-		inRate->mFilterSlope = 0.;
-	else
-		inRate->mFilterSlope = 1. / inRate->mFilterLoops;
+    inRate->mBufLength = inBufLength;
+    inRate->mBufDuration = inRate->mBufLength / inRate->mSampleRate;
+    inRate->mBufRate = 1. / inRate->mBufDuration;
+    inRate->mSlopeFactor = 1. / inRate->mBufLength;
+    inRate->mFilterLoops = inRate->mBufLength / 3;
+    inRate->mFilterRemain = inRate->mBufLength % 3;
+    if (inRate->mFilterLoops == 0.)
+        inRate->mFilterSlope = 0.;
+    else
+        inRate->mFilterSlope = 1. / inRate->mFilterLoops;
 }

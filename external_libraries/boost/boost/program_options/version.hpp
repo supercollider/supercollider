@@ -15,5 +15,8 @@
 #endif
 #define BOOST_PROGRAM_OPTIONS_VERSION 2
 
+// Signal that implicit options will use values from next
+// token, if available.
+#define BOOST_PROGRAM_OPTIONS_IMPLICIT_VALUE_NEXT_TOKEN 1
 
 #endif

@@ -16,6 +16,7 @@ Thread : Stream {
 	var environment;
 	var <>exceptionHandler, >threadPlayer;
 	var <executingPath, <oldExecutingPath;
+	var rescheduledTime;
 
 	*new { arg func, stackSize = (512);
 		^super.new.init(func, stackSize)
@@ -41,6 +42,14 @@ Thread : Stream {
 			parent.threadPlayer
 		} {
 			this
+		}
+	}
+
+	deferAwayFrom { |func, delta = 0|
+		if(this === thisThread or: { delta > 0 }) {
+			func.defer(delta)
+		} {
+			func.value
 		}
 	}
 
@@ -110,6 +119,22 @@ Routine : Thread {
 		_RoutineResume
 		^this.primitiveFailed
 	}
+	reschedule { arg argClock, quant;
+		deferAwayFrom(this) {
+			// Thread:isPlaying only answers if the thread is waiting
+			// It *doesn't* confirm that it is actually scheduled on a clock
+			if(this.nextBeat.isNil) {
+				Error("% can't be rescheduled when idle; use 'play' instead".format(this.class.name)).throw;
+			};
+			rescheduledTime = quant.asQuant.nextTimeOnGrid(clock, this.nextBeat);
+			if(argClock.isNil) { argClock = clock };
+			if(argClock !== clock) {
+				// convert to new clock's time
+				rescheduledTime = argClock.secs2beats(clock.beats2secs(rescheduledTime));
+			};
+			clock = argClock;
+		}
+	}
 	run { arg inval;
 		_RoutineResume
 		^this.primitiveFailed
@@ -145,9 +170,15 @@ Routine : Thread {
 
 	// PRIVATE
 	awake { arg inBeats, inSeconds, inClock;
-		var temp = inBeats; // prevent optimization
-
-		^this.next(inBeats)
+		if(rescheduledTime.isNil) {
+			clock = inClock;
+			^this.next(inBeats)
+		} {
+			// rescheduling, possibly on a new clock
+			clock.schedAbs(rescheduledTime, this);
+			rescheduledTime = nil;
+			^nil
+		}
 	}
 	prStart { arg inval;
 		func.value(inval);

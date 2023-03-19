@@ -1,0 +1,47 @@
+class:: Pgtpar
+summary:: embed event streams in parallel and put each in its own group, with time offset
+related:: Classes/Pgpar, Classes/Ptpar, Classes/Pbus, Classes/Pgroup
+categories:: Streams-Patterns-Events>Patterns>Parallel
+
+description::
+
+Similar to link::Classes/Pgpar:: but with additional timing offsets.
+
+ClassMethods::
+
+method::new
+
+argument::list
+list of pairs of times and patterns or streams: [time, pat, time, pat .. ].
+
+note:: times are in beats and depend on the tempo of the link::Classes/TempoClock:: in use.::
+
+argument::repeats
+repeat the whole pattern n times.
+
+Examples::
+
+code::
+// synthdef
+(
+SynthDef(\help_sinegrain,
+    { arg out=0, freq=440, sustain=0.05;
+        var env;
+        env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
+        Out.ar(out, SinOsc.ar(freq, 0, env))
+}).add;
+)
+
+// pattern with different start times
+(
+x = Pbind(
+    \instrument, \help_sinegrain,
+    \degree, Pseq(#[0, 5, 4, 2, 1, 1, 3], inf),
+    \dur, Pseq(#[0.25, 0.5, 1.0], inf),
+    \scale, #[0, 3, 5, 9, 10]
+);
+a = Pbus(Pgtpar([0.0, x, 1.5, x, 2.25, x])).play;
+)
+s.plotTree;
+a.stop;
+::

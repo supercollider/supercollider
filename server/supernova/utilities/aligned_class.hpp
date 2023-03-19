@@ -16,28 +16,17 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef UTILITIES_ALIGNED_CLASS
-#define UTILITIES_ALIGNED_CLASS
+#pragma once
 
 #include "malloc_aligned.hpp"
 
 namespace nova {
 
-struct aligned_class
-{
-    inline void * operator new(std::size_t size)
-    {
-        return malloc_aligned(size);
-    }
+struct aligned_class {
+    inline void* operator new(std::size_t size) { return malloc_aligned(size); }
 
-    inline void operator delete(void * p)
-    {
-        free_aligned(p);
-    }
+    inline void operator delete(void* p) { free_aligned(p); }
 };
 
 
 } /* namespace nova */
-
-
-#endif /* UTILITIES_ALIGNED_CLASS */

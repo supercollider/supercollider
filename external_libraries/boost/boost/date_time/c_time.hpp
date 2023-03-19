@@ -57,15 +57,15 @@ namespace date_time {
       static std::tm* localtime(const std::time_t* t, std::tm* result)
       {
         // localtime_r() not in namespace std???
- 	#if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
- 	std::tm tmp;
- 	if(!localtime_r(t,&tmp))
+#if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
+        std::tm tmp;
+        if(!localtime_r(t,&tmp))
             result = 0;
-	else
-            *result = tmp;	
- 	#else
+        else
+            *result = tmp;
+#else
         result = localtime_r(t, result);
-	#endif
+#endif
         if (!result)
           boost::throw_exception(std::runtime_error("could not convert calendar time to local time"));
         return result;
@@ -75,25 +75,28 @@ namespace date_time {
       static std::tm* gmtime(const std::time_t* t, std::tm* result)
       {
         // gmtime_r() not in namespace std???
- 	#if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
- 	std::tm tmp;
- 	if(!gmtime_r(t,&tmp))
+#if defined(__VMS) && __INITIAL_POINTER_SIZE == 64
+        std::tm tmp;
+        if(!gmtime_r(t,&tmp))
           result = 0;
         else
-          *result = tmp;	
-	#else
+          *result = tmp;
+#else
         result = gmtime_r(t, result);
-	#endif
+#endif
         if (!result)
           boost::throw_exception(std::runtime_error("could not convert calendar time to UTC time"));
         return result;
       }
 #else // BOOST_DATE_TIME_HAS_REENTRANT_STD_FUNCTIONS
 
-#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+#if defined(__clang__) // Clang has to be checked before MSVC
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif (defined(_MSC_VER) && (_MSC_VER >= 1400))
 #pragma warning(push) // preserve warning settings
 #pragma warning(disable : 4996) // disable depricated localtime/gmtime warning on vc8
-#endif // _MSC_VER >= 1400
+#endif
       //! requires a pointer to a user created std::tm struct
       inline
       static std::tm* localtime(const std::time_t* t, std::tm* result)
@@ -112,9 +115,11 @@ namespace date_time {
           boost::throw_exception(std::runtime_error("could not convert calendar time to UTC time"));
         return result;
       }
-#if (defined(_MSC_VER) && (_MSC_VER >= 1400))
+#if defined(__clang__) // Clang has to be checked before MSVC
+#pragma clang diagnostic pop
+#elif (defined(_MSC_VER) && (_MSC_VER >= 1400))
 #pragma warning(pop) // restore warnings to previous state
-#endif // _MSC_VER >= 1400
+#endif
 
 #endif // BOOST_DATE_TIME_HAS_REENTRANT_STD_FUNCTIONS
   };

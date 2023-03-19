@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,30 +19,25 @@
 */
 
 
-#ifndef _SC_Node_
-#define _SC_Node_
+#pragma once
 
 #include "SC_Types.h"
 
-typedef void (*NodeCalcFunc)(struct Node *inNode);
+typedef void (*NodeCalcFunc)(struct Node* inNode);
 
-struct Node
-{
-	int32 mID;
-	int32 mHash;
+struct Node {
+    int32 mID;
+    int32 mHash;
 
-	struct World *mWorld;
-	struct NodeDef *mDef;
-	NodeCalcFunc mCalcFunc;
+    struct World* mWorld;
+    struct NodeDef* mDef;
+    NodeCalcFunc mCalcFunc;
 
-	struct Node *mPrev, *mNext;
-	struct Group *mParent;
+    struct Node *mPrev, *mNext;
+    struct Group* mParent;
 
-	int32 mIsGroup;
+    int32 mIsGroup;
 };
 typedef struct Node Node;
 
 enum { kNode_Go, kNode_End, kNode_On, kNode_Off, kNode_Move, kNode_Info };
-
-#endif
-

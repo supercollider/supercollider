@@ -1,6 +1,6 @@
 TITLE:: PdefnAllGui
 summary:: show all current Pdefns as code
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/Pdefn, Classes/PdefnGui
 
 DESCRIPTION::

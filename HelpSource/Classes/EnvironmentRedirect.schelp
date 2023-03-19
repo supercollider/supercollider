@@ -1,6 +1,6 @@
 class:: EnvironmentRedirect
 summary:: base class for environment redirects
-categories:: Libraries>JITLib>Environments, Collections>Unordered, Live Coding
+categories:: JITLib>Environments, Collections>Unordered, Live Coding
 related:: Classes/Environment
 
 description::

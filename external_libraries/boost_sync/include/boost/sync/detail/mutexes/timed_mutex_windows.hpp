@@ -20,13 +20,14 @@
 #include <cstddef>
 #include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/detail/winapi/wait.hpp>
-#include <boost/detail/winapi/waitable_timer.hpp>
+#include <boost/memory_order.hpp>
+#include <boost/atomic/atomic.hpp>
+#include <boost/core/enable_if.hpp>
+#include <boost/winapi/wait.hpp>
+#include <boost/winapi/waitable_timer.hpp>
 #include <boost/sync/exceptions/lock_error.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
-#include <boost/sync/detail/interlocked.hpp>
 #include <boost/sync/detail/time_traits.hpp>
 #include <boost/sync/detail/time_units.hpp>
 #include <boost/sync/detail/waitable_timer.hpp>
@@ -109,99 +110,99 @@ public:
 private:
     bool priv_timed_lock(sync::detail::system_time_point const& t)
     {
-        long old_count = m_mutex.m_active_count;
+        boost::uint32_t old_count = m_mutex.m_active_count.load(boost::memory_order_acquire);
         m_mutex.mark_waiting_and_try_lock(old_count);
-        if ((old_count & sync::detail::windows::basic_mutex::lock_flag_value) == 0)
+        if ((old_count & sync::detail::windows::basic_mutex::lock_flag_value) == 0u)
             return true;
 
         try
         {
-            boost::detail::winapi::HANDLE_ handles[2];
+            boost::winapi::HANDLE_ handles[2];
             handles[0] = m_mutex.get_event();
             handles[1] = sync::detail::windows::get_waitable_timer();
 
-            if (!boost::detail::winapi::SetWaitableTimer(handles[1], reinterpret_cast< const boost::detail::winapi::LARGE_INTEGER_* >(&t.get()), 0, NULL, NULL, false))
+            if (BOOST_UNLIKELY(!boost::winapi::SetWaitableTimer(handles[1], reinterpret_cast< const boost::winapi::LARGE_INTEGER_* >(&t.get()), 0, NULL, NULL, false)))
             {
-                const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                 BOOST_SYNC_DETAIL_THROW(lock_error, (err)("timed_mutex::timed_lock failed to set a timeout"));
             }
 
             while (true)
             {
-                const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForMultipleObjects(sizeof(handles) / sizeof(*handles), handles, false, boost::detail::winapi::infinite);
-                if (res == boost::detail::winapi::wait_failed)
+                const boost::winapi::DWORD_ res = boost::winapi::WaitForMultipleObjects(sizeof(handles) / sizeof(*handles), handles, false, boost::winapi::infinite);
+                if (BOOST_UNLIKELY(res == boost::winapi::wait_failed))
                 {
-                    const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                    const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                     BOOST_SYNC_DETAIL_THROW(lock_error, (err)("timed_mutex::timed_lock failed in WaitForMultipleObjects"));
                 }
 
                 switch (res)
                 {
-                case boost::detail::winapi::wait_object_0: // event was notified
+                case boost::winapi::wait_object_0: // event was notified
                     m_mutex.clear_waiting_and_try_lock(old_count);
                     if ((old_count & sync::detail::windows::basic_mutex::lock_flag_value) == 0)
                         return true;
                     break;
 
-                case boost::detail::winapi::wait_object_0 + 1: // timeout has expired
-                    BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD(&m_mutex.m_active_count, -1);
+                case boost::winapi::wait_object_0 + 1: // timeout has expired
+                    m_mutex.m_active_count.opaque_sub(1u, boost::memory_order_relaxed);
                     return false;
 
                 default:
-                    BOOST_ASSERT(false);
+                    BOOST_UNREACHABLE_RETURN(false);
                 }
             }
         }
         catch (...)
         {
-            BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD(&m_mutex.m_active_count, -1);
+            m_mutex.m_active_count.opaque_sub(1u, boost::memory_order_relaxed);
             throw;
         }
     }
 
     bool priv_timed_lock(sync::detail::system_duration t)
     {
-        long old_count = m_mutex.m_active_count;
+        boost::uint32_t old_count = m_mutex.m_active_count.load(boost::memory_order_acquire);
         m_mutex.mark_waiting_and_try_lock(old_count);
-        if ((old_count & sync::detail::windows::basic_mutex::lock_flag_value) == 0)
+        if ((old_count & sync::detail::windows::basic_mutex::lock_flag_value) == 0u)
             return true;
 
         try
         {
-            const boost::detail::winapi::HANDLE_ evt = m_mutex.get_event();
+            const boost::winapi::HANDLE_ evt = m_mutex.get_event();
             sync::detail::system_duration::native_type time_left = t.get();
             while (time_left > 0)
             {
-                const boost::detail::winapi::DWORD_ dur = time_left > boost::detail::winapi::max_non_infinite_wait ?
-                    boost::detail::winapi::max_non_infinite_wait : static_cast< boost::detail::winapi::DWORD_ >(time_left);
-                const boost::detail::winapi::DWORD_ res = boost::detail::winapi::WaitForSingleObject(evt, dur);
+                const boost::winapi::DWORD_ dur = time_left > boost::winapi::max_non_infinite_wait ?
+                    boost::winapi::max_non_infinite_wait : static_cast< boost::winapi::DWORD_ >(time_left);
+                const boost::winapi::DWORD_ res = boost::winapi::WaitForSingleObject(evt, dur);
                 switch (res)
                 {
-                case boost::detail::winapi::wait_object_0:
+                case boost::winapi::wait_object_0:
                     m_mutex.clear_waiting_and_try_lock(old_count);
                     if ((old_count & sync::detail::windows::basic_mutex::lock_flag_value) == 0)
                         return true;
                     break;
 
-                case boost::detail::winapi::wait_timeout:
+                case boost::winapi::wait_timeout:
                     time_left -= dur;
                     break;
 
                 default:
                     {
-                        const boost::detail::winapi::DWORD_ err = boost::detail::winapi::GetLastError();
+                        const boost::winapi::DWORD_ err = boost::winapi::GetLastError();
                         BOOST_SYNC_DETAIL_THROW(lock_error, (err)("timed_mutex::timed_lock failed in WaitForSingleObject"));
                     }
                 }
             }
 
-            BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD(&m_mutex.m_active_count, -1);
+            m_mutex.m_active_count.opaque_sub(1u, boost::memory_order_relaxed);
 
             return false;
         }
         catch (...)
         {
-            BOOST_ATOMIC_INTERLOCKED_EXCHANGE_ADD(&m_mutex.m_active_count, -1);
+            m_mutex.m_active_count.opaque_sub(1u, boost::memory_order_relaxed);
             throw;
         }
     }

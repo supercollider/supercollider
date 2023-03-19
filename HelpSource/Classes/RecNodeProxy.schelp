@@ -1,6 +1,6 @@
 class:: RecNodeProxy
 summary:: a NodeProxy that can record
-categories:: Libraries>JITLib>NodeProxy
+categories:: JITLib>NodeProxy
 related:: Classes/NodeProxy
 
 description::

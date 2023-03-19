@@ -26,12 +26,31 @@ AppClock.sched(0.0,{ arg time;
 ::
 code::
 (
-AppClock.sched(2.0,{
-	"2.0 seconds later".postln;
-	nil;
-});
+t = Main.elapsedTime;
+"It is now % seconds after the computer booted.".format(t).postln;
+AppClock.sched(2.0, { "It is now % sec later".format(Main.elapsedTime - t).postln; nil })
 )
 ::
+
+method::schedAbs
+
+Schedules a task to be performed at a particular time. Because code::AppClock:: is not intended to schedule with high precision, this time is approximate.
+
+When the scheduling time is up, the task's code::awake:: method is called. If the method
+returns a number, the task will be rescheduled for the time equal to the last scheduling
+time plus the returned value.
+
+See also: link::Classes/Clock#Scheduling::, link::Classes/Object#-awake::.
+
+code::
+(
+t = Main.elapsedTime;
+"It is now % seconds after the computer booted.".format(t).postln;
+AppClock.schedAbs(t + 1.0, { "It is now % sec later".format(Main.elapsedTime - t).postln; nil })
+)
+::
+
+
 
 method::clear
 Clear the AppClock's scheduler to stop it.

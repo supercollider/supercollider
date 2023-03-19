@@ -1,6 +1,6 @@
 class:: ProxySynthDef
 summary:: synth def that wraps ugen graph
-categories:: Libraries>JITLib>NodeProxy
+categories:: JITLib>NodeProxy
 related:: Classes/NodeProxy
 
 description::

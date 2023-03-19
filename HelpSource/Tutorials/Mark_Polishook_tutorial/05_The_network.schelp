@@ -90,7 +90,7 @@ section::Localhost and internal servers
 
 The previous examples define server objects. But, for the most part, this isn't necessary as SuperCollider defines two such objects, the localhost and internal servers, at startup. They're represented by windows at the bottom of the screen. Each of the windows has a boot button to start its respective server.
 
-See the link::Guides/ClientVsServer::, link::Classes/Server::, and link::Classes/ServerOptions:: and link::Tutorials/Tutorial:: documents in the SuperCollider help system for further information.
+See the link::Guides/ClientVsServer::, link::Classes/Server::, and link::Classes/ServerOptions:: and link::Tutorials/Server_Tutorial:: documents in the SuperCollider help system for further information.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -19,44 +19,37 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_STYLE_STYLE_HPP_INCLUDED
-#define SCIDE_WIDGETS_STYLE_STYLE_HPP_INCLUDED
+#pragma once
 
 #include <QProxyStyle>
 
 namespace ScIDE {
 
-class Style : public QProxyStyle
-{
+class Style : public QProxyStyle {
 public:
-    Style( QStyle *style = 0 ): QProxyStyle(style) {}
+    Style(QStyle* style = 0): QProxyStyle(style) {}
 
-    virtual void polish ( QWidget * widget );
-    virtual void unpolish ( QWidget * widget );
+    virtual void polish(QWidget* widget);
+    virtual void unpolish(QWidget* widget);
 
-    virtual void drawPrimitive
-    ( PrimitiveElement, const QStyleOption *, QPainter *, const QWidget * = 0 ) const;
+    virtual void drawPrimitive(PrimitiveElement, const QStyleOption*, QPainter*, const QWidget* = 0) const;
 
-    virtual void drawControl
-    ( ControlElement, const QStyleOption *, QPainter *, const QWidget * = 0 ) const;
+    virtual void drawControl(ControlElement, const QStyleOption*, QPainter*, const QWidget* = 0) const;
 
-    virtual void drawComplexControl
-    ( ComplexControl, const QStyleOptionComplex *, QPainter *, const QWidget * = 0 ) const;
+    virtual void drawComplexControl(ComplexControl, const QStyleOptionComplex*, QPainter*, const QWidget* = 0) const;
 
-    virtual QRect subElementRect ( SubElement, const QStyleOption *, const QWidget * = 0 ) const;
+    virtual QRect subElementRect(SubElement, const QStyleOption*, const QWidget* = 0) const;
 
-    virtual QSize sizeFromContents
-    ( ContentsType, const QStyleOption *, const QSize & , const QWidget * = 0 ) const;
+    virtual QSize sizeFromContents(ContentsType, const QStyleOption*, const QSize&, const QWidget* = 0) const;
 
-    virtual int pixelMetric ( PixelMetric, const QStyleOption * = 0, const QWidget * = 0 ) const;
+    virtual int pixelMetric(PixelMetric, const QStyleOption* = 0, const QWidget* = 0) const;
 
-    virtual int styleHint ( StyleHint, const QStyleOption * = 0, const QWidget * = 0,
-                            QStyleHintReturn * = 0 ) const;
+    virtual int styleHint(StyleHint, const QStyleOption* = 0, const QWidget* = 0, QStyleHintReturn* = 0) const;
 
 private:
-    bool shouldNotHandle(const QWidget *widget) const;
+    bool shouldNotHandle(const QWidget* widget) const;
+
+    static constexpr float kDeselectedTabBlend = 0.3f;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_STYLE_STYLE_HPP_INCLUDED

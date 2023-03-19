@@ -6,11 +6,18 @@ Signal[float] : FloatArray {
 	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=false;
 		^Signal.newClear(size).chebyFill(amplitudes, normalize, zeroOffset);
 	}
-	*hammingWindow { arg size, pad=0;
+	*hammingWindow_old { arg size, pad=0;
 		if (pad == 0, {
 			^this.newClear(size).fill(0.5).addSine(1, 0.39, -0.5pi);
 		},{
 			^this.newClear(size-pad).fill(0.5).addSine(1, 0.39, -0.5pi) ++ this.newClear(pad);
+		});
+	}
+	*hammingWindow { arg size, pad=0;
+		if (pad == 0, {
+			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi);
+		},{
+			^this.newClear(size).fill(0.53836).addSine(1, 0.46164, -0.5pi) ++ this.newClear(pad);
 		});
 	}
 	*hanningWindow { arg size, pad=0;
@@ -277,9 +284,9 @@ Signal[float] : FloatArray {
 	amclip { arg aNumber; _AMClip; ^aNumber.performBinaryOpOnSignal('amclip', this) }
 	scaleneg { arg aNumber; _ScaleNeg; ^aNumber.performBinaryOpOnSignal('scaleneg', this) }
 	clip2 { arg aNumber=1; _Clip2; ^aNumber.performBinaryOpOnSignal('clip2', this) }
-	fold2 { arg aNumber; _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
-	wrap2 { arg aNumber; _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
-	excess { arg aNumber; _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
+	fold2 { arg aNumber=1; _Fold2; ^aNumber.performBinaryOpOnSignal('fold2', this) }
+	wrap2 { arg aNumber=1; _Wrap2; ^aNumber.performBinaryOpOnSignal('wrap2', this) }
+	excess { arg aNumber=1; _Excess; ^aNumber.performBinaryOpOnSignal('excess', this) }
 	firstArg { arg aNumber; _FirstArg; ^aNumber.performBinaryOpOnSignal('firstArg', this) }
 
 	== { arg aNumber; _EQ; ^aNumber.performBinaryOpOnSignal('==', this) }
@@ -292,7 +299,7 @@ Signal[float] : FloatArray {
 		^this + (blendFrac * (that - this));
 	}
 
-	asInteger { _AsInt; ^this.primitiveFailed }
+	asInteger { _AsInteger; ^this.primitiveFailed }
 	asFloat { _AsFloat; ^this.primitiveFailed }
 	asComplex { ^Complex.new(this, 0.0) }
 	asSignal { ^this }

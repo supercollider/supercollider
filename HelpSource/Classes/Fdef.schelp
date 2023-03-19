@@ -1,6 +1,6 @@
 class:: Fdef
 summary:: lazy function proxy
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
 
 description::

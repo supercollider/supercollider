@@ -118,7 +118,7 @@ LID.findBy( 2, 10, "/dev/input/event4", 0x0000, 'synaptics-pt/serio0/input0' )
 SUBSECTION:: Opening devices
 
 METHOD:: open
-Open a device with a given vendorID and product ID. For arguments description see link::#findBy::.
+Open a device with a given vendorID and product ID. For arguments description see link::#*findBy::.
 The method will call the method code::findBy:: and use the first available result as the device to open.
 
 returns:: The LID device - an instance of code::LID::.
@@ -243,7 +243,7 @@ LID.register('Logitech WingMan RumblePad', (
 
 
 METHOD:: register
-This will register the spec for the specified device. If the device was opened and did not use the spec before, it will use this spec. See also link::Classes/LID#spec::.
+This will register the spec for the specified device. If the device was opened and did not use the spec before, it will use this spec. See also link::Classes/LID#*specs::.
 
 ARGUMENT:: name
 The name of the device to register it for.

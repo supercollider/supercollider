@@ -58,7 +58,7 @@ method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
 
 argument:: path
-a link::Classes/String:: representing the path and name of the output file.
+a link::Classes/String:: representing the path and name of the output file. If the directory does not exist, it will be created for you. (Note, however, that if this fails for any reason, recording will also fail.)
 
 argument::numChannels
 The number of output channels to record.
@@ -115,7 +115,7 @@ method::numChannels
 a number of sound file channels that is used always when using this recorder, unless a different one is specified in the link::#-record:: method. When not set, we use link::Classes/Server#-recChannels::.
 
 method:: recHeaderFormat
-Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
+Get/set the header format (string) of the output file. The default is "wav". Must be called strong::before:: prepareForRecord.
 
 method:: recSampleFormat
 Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
@@ -155,8 +155,6 @@ section::Examples
 
 
 code::
-s.boot; // start the server
-
 // something to record
 (
 SynthDef("bubbles", { |out|
@@ -187,4 +185,27 @@ s.stopRecording; // this closes the file and deallocates the buffer recording no
 x.free; // stop the synths
 
 // look in your recordings folder and you'll find a file named for this date and time
+::
+
+code::
+// set location to your home folder (change user with your username)
+thisProcess.platform.recordingsDir = "/home/user/";
+
+// instantiate the Recorder
+r = Recorder.new(s);
+
+// record into a flac file
+r.recHeaderFormat = "flac";
+
+// default 'float' is incompatible with flac. set to 24bit:
+r.recSampleFormat = "int24";
+
+// set very obvious prefix for files
+r.filePrefix = "SuperCollider_";
+
+// start recording:
+r.record;
+
+// stop recording
+r.stopRecording;
 ::

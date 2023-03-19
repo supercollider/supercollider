@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,98 +18,102 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+// PLEASE NOTE:
+// libscsynth API might change across minor versions.
+// Always make sure, when using libscsynth as a shared library, that binary and headers come from the same minor
+// version.
 
-#ifndef _SC_WorldOptions_
-#define _SC_WorldOptions_
+#pragma once
 
 #include <stdarg.h>
 #include "SC_Reply.h"
 #include "SC_Types.h"
 #include "SC_Export.h"
 
-typedef int (*PrintFunc)(const char *format, va_list ap);
+typedef int (*PrintFunc)(const char* format, va_list ap);
 
-struct WorldOptions
-{
-	const char* mPassword;
-	uint32 mNumBuffers;
-	uint32 mMaxLogins;
-	uint32 mMaxNodes;
-	uint32 mMaxGraphDefs;
-	uint32 mMaxWireBufs;
-	uint32 mNumAudioBusChannels;
-	uint32 mNumInputBusChannels;
-	uint32 mNumOutputBusChannels;
-	uint32 mNumControlBusChannels;
-	uint32 mBufLength;
-	uint32 mRealTimeMemorySize;
+struct WorldOptions {
+    WorldOptions() {}
 
-	int mNumSharedControls;
-	float *mSharedControls;
+    const char* mPassword = nullptr;
+    uint32 mNumBuffers = 1024;
+    uint32 mMaxLogins = 64;
+    uint32 mMaxNodes = 1024;
+    uint32 mMaxGraphDefs = 1024;
+    uint32 mMaxWireBufs = 64;
+    uint32 mNumAudioBusChannels = 1024;
+    uint32 mNumInputBusChannels = 8;
+    uint32 mNumOutputBusChannels = 8;
+    uint32 mNumControlBusChannels = 16384;
+    uint32 mBufLength = 64;
+    uint32 mRealTimeMemorySize = 8192; // in kilobytes
 
-	bool mRealTime;
-	bool mMemoryLocking;
+    int mNumSharedControls = 0;
+    float* mSharedControls = nullptr;
 
-	const char *mNonRealTimeCmdFilename;
-	const char *mNonRealTimeInputFilename;
-	const char *mNonRealTimeOutputFilename;
-	const char *mNonRealTimeOutputHeaderFormat;
-	const char *mNonRealTimeOutputSampleFormat;
+    bool mRealTime = true;
+    bool mMemoryLocking = false;
+    float mSafetyClipThreshold = 1.26; // ca. 2 dB
 
-	uint32 mPreferredSampleRate;
-	uint32 mNumRGens;
+    const char* mNonRealTimeCmdFilename = nullptr;
+    const char* mNonRealTimeInputFilename = nullptr;
+    const char* mNonRealTimeOutputFilename = nullptr;
+    const char* mNonRealTimeOutputHeaderFormat = nullptr;
+    const char* mNonRealTimeOutputSampleFormat = nullptr;
 
-	uint32 mPreferredHardwareBufferFrameSize;
+    uint32 mPreferredSampleRate = 0;
 
-	uint32 mLoadGraphDefs;
+    uint32 mNumRGens = 64;
 
-	const char *mInputStreamsEnabled;
-	const char *mOutputStreamsEnabled;
-	const char *mInDeviceName;
+    uint32 mPreferredHardwareBufferFrameSize = 0;
 
-	int mVerbosity;
+    uint32 mLoadGraphDefs = 1;
 
-	bool mRendezvous;
+    const char* mInputStreamsEnabled = nullptr;
+    const char* mOutputStreamsEnabled = nullptr;
+    const char* mInDeviceName = nullptr;
 
-	const char *mUGensPluginPath;
+    int mVerbosity = 0;
 
-	const char *mOutDeviceName;
+    bool mRendezvous = true;
 
-	const char *mRestrictedPath;
+    const char* mUGensPluginPath = nullptr;
 
-	int mSharedMemoryID;
-};
+    const char* mOutDeviceName = nullptr;
 
-const struct WorldOptions kDefaultWorldOptions =
-{
-	0,1024,64,1024,1024,64,1024,8,8,16384,64,8192, 0,0, 1, 0, 0,0,0,0,0
-#if defined(_WIN32)
-	,44100
-#else
-	,0
-#endif
-	,64, 0, 1
-	,0, 0, 0
-	,0
-	,1
-	,0
-	,0
-	,0
-	,0
+    const char* mRestrictedPath = nullptr;
+
+    int mSharedMemoryID = 0;
+
+#ifdef SC_BELA
+    uint32 mBelaAnalogInputChannels;
+    uint32 mBelaAnalogOutputChannels;
+    uint32 mBelaDigitalChannels;
+    float mBelaHeadphoneLevel;
+    float mBelaPgaGainLeft;
+    float mBelaPgaGainRight;
+    bool mBelaSpeakerMuted;
+    float mBelaDacLevel;
+    float mBelaAdcLevel;
+    uint32 mBelaNumMuxChannels;
+    uint32 mBelaPru;
+    uint32 mBelaMaxScopeChannels;
+#endif // SC_BELA
 };
 
 struct SndBuf;
 
 SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
-SCSYNTH_DLLEXPORT_C struct World* World_New(struct WorldOptions *inOptions);
-SCSYNTH_DLLEXPORT_C void World_Cleanup(struct World *inWorld, bool unload_plugins = false);
-SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char *bindTo, int inPort);
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, const char *bindTo, int inPort, int inMaxConnections, int inBacklog);
-SCSYNTH_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld, bool unload_plugins = false);
-SCSYNTH_DLLEXPORT_C bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
-SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
-SCSYNTH_DLLEXPORT_C int World_CopySndBuf(struct World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool *didChange);
-SCSYNTH_DLLEXPORT_C int scprintf(const char *fmt, ...);
-
-#endif // _SC_WorldOptions_
+SCSYNTH_DLLEXPORT_C struct World* World_New(struct WorldOptions* inOptions);
+SCSYNTH_DLLEXPORT_C void World_Cleanup(struct World* inWorld, bool unload_plugins = false);
+SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World* inWorld, struct WorldOptions* inOptions);
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World* inWorld, const char* bindTo, int inPort);
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World* inWorld, const char* bindTo, int inPort, int inMaxConnections,
+                                      int inBacklog);
+SCSYNTH_DLLEXPORT_C void World_WaitForQuit(struct World* inWorld, bool unload_plugins = false);
+SCSYNTH_DLLEXPORT_C bool World_SendPacket(struct World* inWorld, int inSize, char* inData, ReplyFunc inFunc);
+SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(struct World* inWorld, int inSize, char* inData, ReplyFunc inFunc,
+                                                     void* inContext);
+SCSYNTH_DLLEXPORT_C int World_CopySndBuf(struct World* world, uint32 index, struct SndBuf* outBuf, bool onlyIfChanged,
+                                         bool* didChange);
+SCSYNTH_DLLEXPORT_C int scprintf(const char* fmt, ...);

@@ -37,6 +37,12 @@ namespace boost
        typedef typename boost::detail::decay_imp<Ty, boost::is_array<Ty>::value, boost::is_function<Ty>::value>::type type;
     };
     
+#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
+
+   template <class T> using decay_t = typename decay<T>::type;
+
+#endif
+
 } // namespace boost
 
 

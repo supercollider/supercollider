@@ -1,6 +1,3 @@
-
-
-
 NodeMap : IdentityDictionary {
 	var <>upToDate = false;
 	var setArgs;
@@ -123,8 +120,6 @@ ProxyNodeMap : NodeMap {
 		this.map(currentEnvironment.getPairs(keys));
 	}
 
-
-
 	// unoptimized
 	parents {
 		var res = Array.new;
@@ -137,7 +132,9 @@ ProxyNodeMap : NodeMap {
 	controlNames {
 		var res = Array.new;
 		this.keysValuesDo { |key, value|
-			var rate = if(value.rate == \audio) { \audio } { \control };
+			var rate = if(value.respondsTo(\rate) and:{
+				value.rate == \audio
+			}) { \audio } { \control };
 			res = res.add(ControlName(key, nil, rate, value))
 		};
 		^res
@@ -146,7 +143,7 @@ ProxyNodeMap : NodeMap {
 	settingKeys {
 		var res;
 		this.keysValuesDo { |key, val|
-			if(val.isNumber or: { val.isSequenceableCollection }) { res = res.add(key) }
+			if(val.nodeMapMapsToControl.not) { res = res.add(key) }
 		}
 		^res
 	}
@@ -154,7 +151,7 @@ ProxyNodeMap : NodeMap {
 	mappingKeys {
 		var res;
 		this.keysValuesDo { |key, val|
-			if(val.isNumber.not and: { val.isSequenceableCollection.not }) { res = res.add(key) }
+			if(val.nodeMapMapsToControl) { res = res.add(key) }
 		}
 		^res
 	}

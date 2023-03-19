@@ -130,7 +130,7 @@ subsection:: Synchronous Control Bus Methods
 
 Synchronous access to control busses only works for servers with a shared memory interface. You can check with link::Classes/Server#-hasShmInterface#hasShmInterface:: if the server provides these methods.
 
-note:: Before 3.5 the the internal server could be controlled via shared control busses and link::Classes/SharedIn:: and
+note:: Before 3.5 the internal server could be controlled via shared control busses and link::Classes/SharedIn:: and
 link::Classes/SharedOut::. These classes have been deprecated and will be removed.  ::
 
 method:: getSynchronous
@@ -211,6 +211,17 @@ b.scope
 a.free;
 b.free;
 ::
+
+subsection:: Bela
+
+method:: belaScope
+Scope all channels from this Bus to Bela's Oscilloscope (see link::Classes/BelaScope:: for required setup).
+It is required that this Bus is on Server running on a Bela, which is thus capable of using BelaScope.
+
+argument:: scopeChannel
+Bela's oscilloscope channel to start scoping on. This has to be a non-negative number, and can't be changed after scoping starts.
+
+returns:: A link::Classes/Synth::, linking this Bus to BelaScope's bus.
 
 Examples::
 code::

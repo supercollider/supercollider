@@ -50,6 +50,12 @@ a.next.postln;
 a.next.postln;
 ::
 
+The Function class provides its own shortcut method code::r:: that calls code::Routine.new::, thus one can also write:
+
+code::
+a = r { 1.yield; 2.yield };
+::
+
 instanceMethods::
 
 method::next
@@ -66,11 +72,12 @@ passing the code::inval:: argument as the return value of code::yield::.
 link::#-stop:: has been called).
 ::
 
-Since Routine inherits from link::Classes/Thread::, it will become the
+code::thisThread:: : Since Routine inherits from link::Classes/Thread::, it will become the
 emphasis::current thread:: when it is started or resumed; i.e.
 link::Classes/Thread#.thisThread#thisThread:: used in the Routine Function will return
-the Routine. It will inherit the parent thread's logical time and clock
-(see link::Classes/Thread#-parent::).
+the Routine.
+
+Time: Just before code::next:: is called, code::thisThread:: points either to another Routine, or the top-level Thread. During the code::next:: call, this becomes the parent thread (see link::Classes/Thread#-parent::). code::next:: then evaluates on the parent's clock, at the parent's logical time.
 
 Synonyms for code::next:: are link::#-value:: and link::#-resume::.
 
@@ -162,9 +169,7 @@ See also: link::Classes/Object#-yield::, link::Classes/Object#-alwaysYield::
 
 method::play
 
-In the SuperCollider application, a Routine can be played using a link::Classes/Clock::, as can any link::Classes/Stream::.
-every time the Routine yields, it should do so with a float, the clock will interpret that, usually
-pausing for that many seconds, and then resume the routine, passing it the clock's current time.
+Schedules the Routine on the given link::Classes/Clock::, at a time specified by code::quant::. At that time, the Routine will wake up (by calling link::Classes/Routine#-awake::), setting the clock and time and evaluating the Routine. If the Routine yields a number, this number of beats will be added to the current time and the Routine will be rescheduled. (This behavior is compatible with scheduling a link::Classes/Stream:: or a link::Classes/Function::.)
 
 argument::clock
 a Clock, TempoClock by default
@@ -173,7 +178,7 @@ argument::quant
 see the link::Classes/Quant:: helpfile
 
 discussion::
-using link::Classes/Object#idle#Object:idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
+using link::Classes/Object#-idle:: within a routine, return values until this time is over. Time is measured relative to the thread's clock.
 code::
 // for 6 seconds, return 200, then continue
 (
@@ -212,6 +217,87 @@ fork {
 );
 ::
 
+method:: reschedule
+
+If a Routine is currently scheduled on a clock, it will be expected to "awake" at a specific time, on a specific clock. code::reschedule:: allows you to change to a different clock or to a later time.
+
+argument:: argClock
+The new clock on which to run the Routine. If code::nil::, the routine's clock will not be changed. (Note: Currently incompatible with link::Classes/AppClock::; rescheduling depends upon the method code::schedAbs::, which AppClock does not implement.)
+
+argument:: quant
+A quantization specifier, identifying a time emphasis::later:: than the next-scheduled time. If code::nil::, the current value of code::nextBeat:: will be used.
+
+discussion::
+
+list::
+## Rescheduling to a different clock will be continuous in terms of seconds, but not necessarily continuous in terms of beats. Time-based patterns such as link::Classes/Pseg::, or the use of link::Classes/Env:: as a stream, may not follow the envelope shape continuously. (Pseg and Env-as-stream measure time in beats on the clock that is playing. In normal use, the clock never changes, so time advances monotonically through the envelope's breakpoints. If a thread is rescheduled to a different clock, the beats values are very unlikely to be the same on the new clock. So the envelope would jump forward or backward in time.)
+
+When switching the clock, code::reschedule:: will first calculate the new "awake" time, in beats, based on the given code::quant::. Then it converts that code::beats:: value into the new clock's code::beats:: for the same instant in time. If the old clock's tempo is 1 and the Routine is waiting for 1 beat, the next "awake" should happen after one second. When rescheduling without a code::quant::, the next "awake" will emphasis::still:: happen after one second -- but the code::beats:: value will adjust for the new clock.
+
+## Currently code::quant:: will resolve to a time emphasis::later:: than the Routine's current code::nextBeat::. If you try to force it earlier, there is likely to be some discontinuity. This is because the Routine cannot reschedule until it wakes up normally. The workaround is to switch the Routine into a different link::Classes/Task:: wrapper.
+
+## Currently the routine must be playing (already scheduled on a clock). This is because the handoff to the new clock or time occurs during the thread's "awake" process. If the routine is not playing, then it will not awake, and nothing will happen.
+::
+
+code::
+// Rescheduling to a different clock, same time
+c = TempoClock.new;
+
+(
+t = Routine {
+	var lastSeconds = thisThread.seconds;
+	loop {
+		1.0.wait;
+		[thisThread.beats, thisThread.seconds - lastSeconds].postln;
+		lastSeconds = thisThread.seconds;
+	}
+}.play;
+)
+
+t.reschedule(c);  // seconds delta = 1.0 throughout
+
+t.stop;
+
+// Rescheduling to a later time, same clock
+(
+t = Routine {
+	var lastSeconds = thisThread.seconds;
+	loop {
+		1.0.wait;
+		[thisThread.beats, thisThread.seconds - lastSeconds].postln;
+		lastSeconds = thisThread.seconds;
+	}
+}.play;
+)
+
+t.reschedule(quant: 1);
+
+t.stop;
+
+// Rescheduling to an earlier time (workaround, only possible way)
+// Requires you to start with a PauseStream!
+// This does not work if 't' is a Routine initially.
+(
+t = PauseStream(Routine {
+	var lastSeconds = thisThread.seconds;
+	loop {
+		1.0.wait;
+		[thisThread.beats, thisThread.seconds - lastSeconds].postln;
+		lastSeconds = thisThread.seconds;
+	}
+}).play;
+)
+
+// shorter than 1 beat later
+(
+u = PauseStream(t.stream);
+TempoClock.schedAbs(t.nextBeat.trunc, u.refresh);
+t.stop;
+)
+
+u.stop;
+::
+
 method:: awake
 
 This method is called by a link::Classes/Clock:: on which the Routine was scheduled
@@ -231,6 +317,71 @@ The scheduling time in seconds. This is equal to the current logical time
 argument:: inClock
 The clock which awoke the Routine.
 
+
+method:: p
+
+Convert the routine to a (subclass of) link::Classes/Pattern::.
+
+returns::
+
+A link::Classes/Prout:: that (in response to code::asStream::) acts as a generator of independent copies of the original routine (the receiver of code::p::).
+
+
+discussion::
+
+Any subclass of Pattern returns a Stream in response to code::asStream::. However, the exact subclass of Stream returned depends on the class of the Pattern. In particular, a Prout returns a Routine in response to code::asStream::. Thus, a way to make an independent copy of a Routine is to make a Prout from it with the method code::p::, and then create a new Routine from this Prout. In the example immediately below, this second step is done explicitly by calling code::asStream::, but in the context of passing arguments to other Patterns, this latter step usually happens automatically, as shown in later examples.
+
+code::
+(
+r = Routine { "hi".yield; "bye".yield };
+r.next.postln;    // "hi" posted
+
+q = r.p.asStream; // or just: r.p.iter
+q.next.postln;    // "hi" again
+
+r.next.postln;    // "bye" because r kept its own state, separate from q
+)
+::
+
+note::
+New routines produced by code::.p.asStream:: run the original routine's function from the beginning. There is no copy of the internal state of the original routine, only its function is copied. On a related note, code::Routine.copy:: (inherited from code::Thread::) does not create a new, separate Routine; it just returns the receiver.
+::
+
+The Routine method code::p:: is mostly useful in the context of using the result of Routine-returning expressions as arguments to Patterns, when the intent is to use the Routine's result as a pattern, i.e. multiple occurrences acting independently of each other.
+
+code::
+(
+r = (:2..5); // a seriesIter Routine
+Ptuple([r, r]).asStream.all.postln; // posts [ [ 2, 3 ], [ 4, 5 ] ]
+r.next.postln; // nil
+
+p = r.p; // make a Pattern from r; it doesn't matter that r has ended
+Ptuple([p, p]).asStream.all.postln;
+// posts [ [ 2, 2 ], [ 3, 3 ], [ 4, 4 ], [ 5, 5 ] ]
+
+// Obviously, explicitly writing the same Routine-valued subexpression twice
+// also creates separate Routines.
+Ptuple([(:2..5), (:2..5)]).asStream.all.postln;
+// posts [ [ 2, 2 ], [ 3, 3 ], [ 4, 4 ], [ 5, 5 ] ]
+)
+::
+
+In the following example, directly reusing the same Routine object twice in a code::Pseq:: fails to duplicate its output, because the first embedding fully consumes the routine's (non-nil) output.
+
+code::
+(
+r = (:2..6);
+Pseq([r, r]).asStream.all.postln;
+// [ 2, 3, 4, 5, 6 ]
+
+p = r.p;
+Pseq([p, p]).asStream.all.postln;
+// [ 2, 3, 4, 5, 6, 2, 3, 4, 5, 6 ]
+
+Pseq([(:2..6), (:2..6)]).asStream.all.postln;
+// [ 2, 3, 4, 5, 6, 2, 3, 4, 5, 6 ]
+)
+::
 
 
 subsection::Accessible instance variables

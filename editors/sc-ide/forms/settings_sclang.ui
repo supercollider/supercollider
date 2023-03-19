@@ -222,7 +222,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="sclang_standalone_mode">
+         <widget class="QCheckBox" name="sclang_exclude_default_paths">
           <property name="text">
            <string>Exclude default search paths</string>
           </property>

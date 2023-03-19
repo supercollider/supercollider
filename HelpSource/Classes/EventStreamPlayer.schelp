@@ -49,3 +49,10 @@ Stop playing now. (Pause and stop have the same implementation.)
 
 method::reset
 Set the stream to restart from the beginning the next time it's played.
+
+method::reschedule
+
+Switch the Task to a different clock, or a different time, without stopping. See link::Classes/Routine#-reschedule:: for complete documentation.
+
+NOTE:: Rescheduling an EventStreamPlayer from within the pattern itself is currently not supported.
+::

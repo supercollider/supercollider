@@ -1,8 +1,18 @@
 if (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/nova-simd/vec.hpp)
-	message(FATAL_ERROR "nova-simd submodule is missing: please run `git submodule init && git submodule update' from the toplevel of your git working tree")
+    message(FATAL_ERROR "It appears you haven't cloned this project's git submodules:"
+			" please run `git submodule update --init --recursive` from the root level of the repository.\n"
+			"For advice on setting up submodules, and also on keeping them updated over time, please see"
+			" this wiki page, and consider saving this link:"
+			" https://github.com/supercollider/supercollider/wiki/git-cheat-sheet#working-with-submodules")
 endif()
 
-if(NOT Boost_FOUND) # we compile boost ourselves
+if(NOT SYSTEM_PORTAUDIO)
+    message(STATUS "PortAudio: building static library")
+    add_subdirectory(portaudio)
+endif()
+
+if(NOT SYSTEM_BOOST) # we compile boost ourselves
+	message(STATUS "Using bundled boost")
 	# boost thread
 	aux_source_directory(boost/libs/thread/src/ boost_thread_src )
 
@@ -14,55 +24,66 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		message(SEND_ERROR "we need to implement boost_thread")
 	endif()
 
-	aux_source_directory(boost/libs/system/src/ boost_system )
-	add_library(boost_system STATIC EXCLUDE_FROM_ALL ${boost_system})
-	target_include_directories(boost_system PUBLIC boost)
+	aux_source_directory(boost/libs/system/src/ boost_system_src )
+	add_library(boost_system_lib STATIC EXCLUDE_FROM_ALL ${boost_system_src})
+	target_include_directories(boost_system_lib PUBLIC boost)
 
-	aux_source_directory(boost/libs/program_options/src/ boost_program_options )
-	add_library(boost_program_options STATIC EXCLUDE_FROM_ALL ${boost_program_options})
-	target_include_directories(boost_program_options PUBLIC boost)
+	aux_source_directory(boost/libs/program_options/src/ boost_program_options_src )
+	add_library(boost_program_options_lib STATIC EXCLUDE_FROM_ALL ${boost_program_options_src})
+	target_include_directories(boost_program_options_lib PUBLIC boost)
 
 	aux_source_directory(boost/libs/filesystem/src boost_filesystem_src)
-	add_library(boost_filesystem STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
-	target_include_directories(boost_filesystem PUBLIC boost)
+	add_library(boost_filesystem_lib STATIC EXCLUDE_FROM_ALL ${boost_filesystem_src})
+	target_include_directories(boost_filesystem_lib PUBLIC boost)
+
+	aux_source_directory(boost/libs/regex/src boost_regex_src)
+	add_library(boost_regex_lib STATIC EXCLUDE_FROM_ALL ${boost_regex_src})
+	target_include_directories(boost_regex_lib PUBLIC boost)
 
 	if(LTO)
-		set_property(TARGET boost_program_options boost_system boost_filesystem
+		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
 					 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET boost_program_options boost_system boost_filesystem
+		set_property(TARGET boost_program_options_lib boost_system_lib boost_filesystem_lib
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	add_library(boost_thread STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
-	target_link_libraries(boost_thread boost_system)
+	add_library(boost_thread_lib STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
+	target_link_libraries(boost_thread_lib boost_system_lib)
 #	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
-	target_include_directories(boost_thread PUBLIC boost)
-	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_USE_LIB) # for win32
+	target_include_directories(boost_thread_lib PUBLIC boost)
+	target_compile_definitions(boost_thread_lib PUBLIC BOOST_THREAD_USE_LIB) # for win32
 
 	if(PTHREADS_FOUND)
-		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
+		target_include_directories(boost_thread_lib PUBLIC ${PTHREADS_INCLUDE_DIR})
 	endif()
 	if(WIN32)
-		target_compile_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
+		target_compile_definitions( boost_thread_lib PRIVATE BOOST_THREAD_BUILD_LIB)
 	endif()
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		target_compile_options(boost_thread PRIVATE -fPIC)
-		target_link_libraries(boost_thread rt)
+		target_compile_options(boost_filesystem_lib PRIVATE -fPIC)
+		target_compile_options(boost_thread_lib PRIVATE -fPIC)
+		target_link_libraries(boost_thread_lib rt)
 	endif()
 
 	if(LTO)
-		set_property(TARGET boost_thread
+    set_property(TARGET boost_thread_lib
 			APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
 
-		set_property(TARGET boost_thread
+		set_property(TARGET boost_thread_lib
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
-
+	set_property( TARGET
+        boost_regex_lib
+        boost_thread_lib
+        boost_program_options_lib
+        boost_system_lib
+        boost_filesystem_lib
+        PROPERTY FOLDER 3rdparty
+    )
 endif()
 
 # tlsf
@@ -73,9 +94,8 @@ set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 
 #oscpack
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack PRIVATE boost)
+target_include_directories(oscpack PRIVATE ${boost_include_dirs})
 target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
-
 
 if(LTO)
 	set_property(TARGET oscpack tlsf
@@ -85,16 +105,18 @@ if(LTO)
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
-if(NOT YAMLCPP_FOUND)
-  message(STATUS "using bundled libyaml-cpp")
+if(NOT SYSTEM_YAMLCPP)
+  message(STATUS "Using bundled yaml-cpp")
 
   # yaml-cpp
   aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
   add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
+  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include ${boost_include_dirs})
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
+  set(YAMLCPP_LIBRARY yaml)
+  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include)
 
   if(CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)

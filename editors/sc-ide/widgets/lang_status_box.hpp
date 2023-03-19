@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_LANG_STATUS_BOX_INCLUDED
-#define SCIDE_WIDGETS_LANG_STATUS_BOX_INCLUDED
+#pragma once
 
 #include "util/status_box.hpp"
 #include <QProcess>
@@ -28,17 +27,15 @@ namespace ScIDE {
 
 class ScProcess;
 
-class LangStatusBox : public StatusBox
-{
+class LangStatusBox : public StatusBox {
     Q_OBJECT
 public:
-    LangStatusBox(ScProcess *, QWidget *parent = 0);
+    LangStatusBox(ScProcess*, QWidget* parent = 0);
 private slots:
-    void onInterpreterStateChanged( QProcess::ProcessState );
+    void onInterpreterStateChanged(QProcess::ProcessState);
+
 private:
-    StatusLabel *mLabel;
+    StatusLabel* mLabel;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_LANG_STATUS_BOX_INCLUDED

@@ -1,6 +1,6 @@
 class:: PatternProxy
 summary:: stream reference
-categories:: Libraries>JITLib>Patterns, Live Coding
+categories:: JITLib>Patterns, Live Coding
 related:: Classes/Pdefn
 
 description::

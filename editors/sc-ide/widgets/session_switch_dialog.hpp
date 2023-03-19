@@ -18,33 +18,26 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_SWITCH_SESSION_DIALOG_HPP_INCLUDED
-#define SCIDE_WIDGETS_SWITCH_SESSION_DIALOG_HPP_INCLUDED
+#pragma once
 
 #include <QDialog>
 #include <QListWidget>
 
 namespace ScIDE {
 
-class SessionSwitchDialog: public QDialog
-{
+class SessionSwitchDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SessionSwitchDialog(QWidget * parent = NULL);
+    explicit SessionSwitchDialog(QWidget* parent = NULL);
 
-    QString activeElement()
-    {
-        return mSessions->currentItem()->text();
-    }
+    QString activeElement() { return mSessions->currentItem()->text(); }
 
 public Q_SLOTS:
     void onItemActivated(QListWidgetItem*);
 
 private:
-    QListWidget * mSessions;
+    QListWidget* mSessions;
 };
 
 }
-
-#endif // SCIDE_WIDGETS_SWITCH_SESSION_DIALOG_HPP_INCLUDED

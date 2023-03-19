@@ -1,6 +1,6 @@
 class:: BusPlug
 summary:: a listener on a bus
-categories:: Libraries>JITLib>NodeProxy, Live Coding
+categories:: JITLib>NodeProxy, Live Coding
 related:: Classes/Bus, Classes/Monitor, Classes/InBus, Classes/NodeProxy, Classes/Ndef
 
 description::
@@ -19,16 +19,16 @@ ClassMethods::
 
 
 method::new
-Create a new (neutral) instance on the given server
+Create a new (neutral) instance on the given server.
 
 method::for
 Create an instance with a given link::Classes/Bus::.
 
 method::audio
-Create a new audio rate instance on the given server
+Create a new audio rate instance on the given server.
 
 method::control
-Create a new audio rate instance on the given server
+Create a new control rate instance on the given server.
 
 method::defaultNumAudio
 Default number of channels when initializing in audio rate and no specific number is given (default: 2).
@@ -37,7 +37,7 @@ method::defaultNumControl
 Default number of channels when initializing in control rate and no specific number is given (default: 1).
 
 method::defaultReshaping
-default reshaping behaviour for BusPlug and its sublass NodeProxy. See: link::#reshaping::
+default reshaping behaviour for BusPlug and its sublass NodeProxy. See: link::#-reshaping::
 
 InstanceMethods::
 
@@ -47,13 +47,13 @@ method::server
 Return the server that the BusPlug runs on.
 
 method::clear
-Free the bus, end the monitor
+Free the bus, end the monitor.
 
 
 subsection::Making copies
 
 method::copy
-copies the hidden internal state to make the new BusPlug independent of the old, running on a new link::Classes/Bus::. By design, the link::Classes/Monitor:: is copied, but is not running (use play to start it in the same configuration). If needed, you can also copy the link::Classes/Monitor:: only (see: link::Classes/NodeProxy#copy::).
+copies the hidden internal state to make the new BusPlug independent of the old, running on a new link::Classes/Bus::. By design, the link::Classes/Monitor:: is copied, but is not running (use play to start it in the same configuration). If needed, you can also copy the link::Classes/Monitor:: only (see: link::Classes/NodeProxy#-copy::).
 
 method::copyState
 Copy the internal settings of one proxy into another. Old state is cleared, the bus is freed.
@@ -63,7 +63,7 @@ The object whose internal state is being copied.
 
 
 method::reshaping
-Determines how to behave when link::#initBus:: is called.
+Determines how to behave when link::#-initBus:: is called.
 Current options:
 list::
 ## teletype::nil:: Once initialized, keep the same bus - this is the default
@@ -77,14 +77,14 @@ subsection::In UGen graphs and Patterns
 method::ar, kr
 Return a link to numChannels of my output. If uninitialized, creates a matching bus. Normally, strong::ar defaults to stereo, kr to mono::. This can be set in the classvars: link::#*defaultNumAudio::, link::#*defaultNumControl::
 
-For consistency, it always returns an array of signals when no numChannels are given. To make it a single ugen output, use code::cumChannels = 1:: . See also: link::Classes/InBus::.
+For consistency, it always returns an array of signals when no numChannels are given. To make it a single ugen output, use code::numChannels = 1:: . See also: link::Classes/InBus::.
 
 argument::numChannels
 Number of channels returned. If the receiver is neutral or reshaping is elastic, initialize it to this number. If this is more than the available channels, use the clip behaviour (below). If set to code::1::, it will return an instance of link::Classes/InBus::, otherwise an Array of one or more instances of InBus.
 
 argument::offset
 Channel offset when reading a bus that has more channels than numChannels, cross fading between adjacent channels.
-"/Users/wanninger/Library/Application Support/SuperCollider/Help/Overviews/Methods.html"
+
 argument::clip
 If set to 'wrap', exceeding channels will wrap around, if set to 'clip', repeat the last one.
 

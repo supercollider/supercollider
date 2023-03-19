@@ -34,30 +34,22 @@
 
 namespace ScIDE {
 
-OverlayAnimator::OverlayAnimator(GenericCodeEditor *editor, QObject *parent):
+OverlayAnimator::OverlayAnimator(GenericCodeEditor* editor, QObject* parent):
     QObject(parent),
     mEditor(editor),
-    mBackgroundAnimation(this, "backgroundColor")
-{}
+    mBackgroundAnimation(this, "backgroundColor") {}
 
-QColor OverlayAnimator::backgroundColor() const
-{
-    return mEditor->mOverlay->backgroundBrush().color();
-}
+QColor OverlayAnimator::backgroundColor() const { return mEditor->mOverlay->backgroundBrush().color(); }
 
-void OverlayAnimator::setBackgroundColor( const QColor & color )
-{
-    mEditor->mOverlay->setBackgroundBrush( color );
-}
+void OverlayAnimator::setBackgroundColor(const QColor& color) { mEditor->mOverlay->setBackgroundBrush(color); }
 
-void OverlayAnimator::setActiveAppearance( bool active )
-{
+void OverlayAnimator::setActiveAppearance(bool active) {
     QColor color = mEditor->palette().color(QPalette::Base);
-    if(color.lightness() >= 128)
+    if (color.lightness() >= 128)
         color = color.darker(60);
     else
         color = color.lighter(50);
-    
+
     if (active)
         color.setAlpha(0);
     else
@@ -65,28 +57,25 @@ void OverlayAnimator::setActiveAppearance( bool active )
 
     mBackgroundAnimation.stop();
 
-    if (mEditor->isVisible())
-    {
+    if (mEditor->isVisible()) {
         mBackgroundAnimation.setDuration(500);
-        mBackgroundAnimation.setEasingCurve( QEasingCurve::OutCubic );
-        mBackgroundAnimation.setStartValue( backgroundColor() );
-        mBackgroundAnimation.setEndValue( color );
+        mBackgroundAnimation.setEasingCurve(QEasingCurve::OutCubic);
+        mBackgroundAnimation.setStartValue(backgroundColor());
+        mBackgroundAnimation.setEndValue(color);
         mBackgroundAnimation.start();
-    }
-    else
-    {
+    } else {
         setBackgroundColor(color);
     }
 }
 
-void ScCodeEditor::blinkCode( const QTextCursor & c )
-{
-    if( !c.document() || !c.hasSelection() ) return;
+void ScCodeEditor::blinkCode(const QTextCursor& c) {
+    if (!c.document() || !c.hasSelection())
+        return;
 
-    Settings::Manager *settings = Main::settings();
+    Settings::Manager* settings = Main::settings();
     QTextCharFormat evalCodeTextFormat = settings->getThemeVal("evaluatedCode");
 
-    QTextDocument *doc = c.document();
+    QTextDocument* doc = c.document();
 
     int startPos = c.selectionStart();
     int endPos = c.selectionEnd();
@@ -107,55 +96,51 @@ void ScCodeEditor::blinkCode( const QTextCursor & c )
     QRectF geom = blockBoundingGeometry(block).translated(contentOffset());
     qreal top = geom.top();
     qreal bottom = top;
-    qreal width=0;
+    qreal width = 0;
 
-    while(block.isValid() && bottom < viewport()->rect().height())
-    {
-        if(block.isVisible())
-        {
-            QTextLayout *l = block.layout();
+    while (block.isValid() && bottom < viewport()->rect().height()) {
+        if (block.isVisible()) {
+            QTextLayout* l = block.layout();
             QRectF r = l->boundingRect();
             bottom += r.height();
-            if(idx < sidx) {
+            if (idx < sidx) {
                 // Block not within the selection. Will skip it.
                 top = bottom;
-            }
-            else {
+            } else {
                 // Block within the selection.
                 width = qMax(width, l->maximumWidth() + r.left());
             }
         }
 
-        if(block == endBlock) break;
+        if (block == endBlock)
+            break;
 
         block = block.next();
         ++idx;
-        if(top == bottom)
+        if (top == bottom)
             firstBlock = block;
     }
 
     lastBlock = block;
 
-    if(bottom == top) {
-        //qDebug("no visible block.");
+    if (bottom == top) {
+        // qDebug("no visible block.");
         return;
     }
 
     // Construct a pixmap to render the code on:
 
-    QPixmap pix( QSize(qCeil(width), qCeil(bottom - top)) );
-    pix.fill(QColor(0,0,0,0));
+    QPixmap pix(QSize(qCeil(width), qCeil(bottom - top)));
+    pix.fill(QColor(0, 0, 0, 0));
 
     // Render the visible blocks:
 
     QPainter painter(&pix);
     QVector<QTextLayout::FormatRange> selections;
     block = firstBlock;
-    int y=0;
-    while( block.isValid() )
-    {
-        if (block.isVisible())
-        {
+    int y = 0;
+    while (block.isValid()) {
+        if (block.isVisible()) {
             QRectF blockRect = block.layout()->boundingRect();
 
             // Use extra char formatting to hide code outside of selection
@@ -165,10 +150,10 @@ void ScCodeEditor::blinkCode( const QTextCursor & c )
             selections.clear();
 
             int start = 0;
-            if(block == startBlock) {
+            if (block == startBlock) {
                 range.start = 0;
                 range.length = startPos;
-                range.format.setForeground(QColor(0,0,0,0));
+                range.format.setForeground(QColor(0, 0, 0, 0));
                 range.format.setBackground(Qt::NoBrush);
                 selections.append(range);
                 start = startPos;
@@ -179,37 +164,38 @@ void ScCodeEditor::blinkCode( const QTextCursor & c )
             range.format = evalCodeTextFormat;
             selections.append(range);
 
-            if(block == endBlock) {
+            if (block == endBlock) {
                 range.start = range.start + range.length;
                 range.length = block.length() - 1 - range.start;
-                range.format.setForeground(QColor(0,0,0,0));
+                range.format.setForeground(QColor(0, 0, 0, 0));
                 range.format.setBackground(Qt::NoBrush);
                 selections.append(range);
             }
 
-            block.layout()->draw(&painter, QPointF(0,y), selections);
+            block.layout()->draw(&painter, QPointF(0, y), selections);
 
             y += blockRect.height();
         }
 
-        if(block == lastBlock) break;
+        if (block == lastBlock)
+            break;
 
         block = block.next();
     }
 
     // Create an overlay item to display the pixmap, and animate it:
 
-    CodeFragmentOverlay *item = new CodeFragmentOverlay();
+    CodeFragmentOverlay* item = new CodeFragmentOverlay();
     item->setPixmap(pix);
     item->setPos(geom.left(), top);
 
     mOverlay->addItem(item);
 
-    QPropertyAnimation *anim = new QPropertyAnimation(item, "opacity", item);
+    QPropertyAnimation* anim = new QPropertyAnimation(item, "opacity", item);
     anim->setDuration(mBlinkDuration);
     anim->setStartValue(1.0);
     anim->setEndValue(0.0);
-    anim->setEasingCurve( QEasingCurve::InCubic );
+    anim->setEasingCurve(QEasingCurve::InCubic);
     anim->start();
 
     connect(anim, SIGNAL(finished()), item, SLOT(deleteLater()));

@@ -9,19 +9,29 @@ platform/mac/build
 # Windows related files
 *Thumbs.db
 CMakeLists.txt.user
-external_libraries/asio*
+external_libraries/portaudio/asio*
 
 # working files made by packager script
 common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
 
+# source tarball
+package/*.bz2
+package/*.asc
+
 # CLion files
 .idea
 cmake-build-*
+
+# Python/PyCharm files
+venv
+__pycache__
 
 #build directories
 /build*
 
 *~
 *.orig
+#vim swap files
+.*.sw?

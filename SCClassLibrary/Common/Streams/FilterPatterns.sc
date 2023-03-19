@@ -125,7 +125,7 @@ Pfset : FuncFilterPattern {
 			inevent.putAll(envir);
 			event = stream.next(inevent);
 			if(once) {
-				cleanup.addFunction(event, { |flag|
+				cleanup.addFunction(event ? inevent, { |flag|
 					envir.use({ cleanupFunc.value(flag) });
 				});
 				once = false;
@@ -271,26 +271,26 @@ Pstretch : FilterPattern {
 		^super.new(pattern).value_(value)
 	}
 	storeArgs { ^[value,pattern] }
-	embedInStream {  arg event;
+	embedInStream {  arg inevent;
 		var cleanup = EventStreamCleanup.new;
-		var inevent;
+		var event;
 		var val, delta;
 		var valStream = value.asStream;
 		var evtStream = pattern.asStream;
 
 		loop {
-			inevent = evtStream.next(event).asEvent;
-			if (inevent.isNil) { ^cleanup.exit(event) };
-			val = valStream.next(inevent);
-			if (val.isNil) { ^cleanup.exit(event) };
+			event = evtStream.next(inevent).asEvent;
+			if (event.isNil) { ^cleanup.exit(inevent) };
+			val = valStream.next(event);
+			if (val.isNil) { ^cleanup.exit(inevent) };
 
 			delta = event[\delta];
 			if (delta.notNil) {
-				inevent[\delta] = delta * val;
+				event[\delta] = delta * val;
 			};
-			inevent[\dur] = inevent[\dur] * val;
-			cleanup.update(inevent);
-			event = yield(inevent);
+			event[\dur] = event[\dur] * val;
+			cleanup.update(event);
+			inevent = yield(event);
 		}
 	}
 }
@@ -299,27 +299,27 @@ Pstretch : FilterPattern {
 
 Pstretchp : Pstretch {
 
-	embedInStream { arg event;
-		var evtStream, val, inevent, delta;
+	embedInStream { arg inevent;
+		var evtStream, val, event, delta;
 		var valStream = value.asStream;
 		while {
-			val = valStream.next(event);
+			val = valStream.next(inevent);
 			val.notNil
 		} {
 			evtStream = pattern.asStream;
 			while {
-				inevent = evtStream.next(event);
-				inevent.notNil
+				event = evtStream.next(inevent);
+				event.notNil
 			} {
-				delta = inevent[\delta];
+				delta = event[\delta];
 				if (delta.notNil) {
-					inevent[\delta] = delta * val;
+					event[\delta] = delta * val;
 				};
-				inevent[\dur] = inevent[\dur] * val;
-				event = inevent.yield;
+				event[\dur] = event[\dur] * val;
+				inevent = event.yield;
 			};
 		};
-		^event;
+		^inevent;
 	}
 }
 
@@ -425,6 +425,7 @@ Pfindur : FilterPattern {
 		var localdur = dur.value(event);
 		var stream = pattern.asStream;
 		var cleanup = EventStreamCleanup.new;
+		var remaining;
 		loop {
 			inevent = stream.next(event).asEvent ?? { ^event };
 			cleanup.update(inevent);
@@ -433,7 +434,9 @@ Pfindur : FilterPattern {
 			if (nextElapsed.roundUp(tolerance) >= localdur) {
 				// must always copy an event before altering it.
 				// fix delta time and yield to play the event.
-				inevent = inevent.copy.put(\delta, localdur - elapsed).yield;
+				remaining = localdur - elapsed;
+				if(inevent[\delta].isRest) { remaining = Rest(remaining) };
+				inevent = inevent.copy.put(\delta, remaining).yield;
 				^cleanup.exit(inevent);
 			};
 
@@ -445,14 +448,14 @@ Pfindur : FilterPattern {
 }
 
 Psync : FilterPattern {
-	var <>quant, <>maxdur, <>tolerance;
-	*new { arg pattern, quant, maxdur, tolerance = 0.001;
-		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance)
+	var <>quant, <>maxdur, <>tolerance, <>mindur;
+	*new { arg pattern, quant, maxdur, tolerance = 0.001, mindur = 0;
+		^super.new(pattern).quant_(quant).maxdur_(maxdur).tolerance_(tolerance).mindur_(mindur)
 	}
-	storeArgs { ^[pattern,quant,maxdur,tolerance] }
+	storeArgs { ^[pattern, quant, maxdur, tolerance, mindur] }
 
 	embedInStream { arg event;
-		var item, stream, delta, elapsed = 0.0, nextElapsed, clock, inevent;
+		var item, stream, delta, elapsed = 0.0, nextElapsed, inevent;
 		var	localquant = quant.value(event), localmaxdur = maxdur.value(event);
 		var cleanup = EventStreamCleanup.new;
 
@@ -462,7 +465,7 @@ Psync : FilterPattern {
 			inevent = stream.next(event).asEvent;
 			if(inevent.isNil) {
 				if(localquant.notNil) {
-					delta = elapsed.roundUp(localquant) - elapsed;
+					delta = elapsed.max(mindur.value(event)).roundUp(localquant) - elapsed;
 					if(delta > 0) { Event.silent(delta, event).yield };
 					^cleanup.exit(event);
 				};
@@ -472,7 +475,7 @@ Psync : FilterPattern {
 			delta = inevent.delta;
 			nextElapsed = elapsed + delta;
 
-			if (localmaxdur.notNil and: { nextElapsed.round(tolerance) >= localmaxdur }) {
+			if (localmaxdur.notNil and: { nextElapsed.roundUp(tolerance) >= localmaxdur }) {
 				inevent = inevent.copy;
 				inevent.put(\delta, localmaxdur - elapsed);
 				event = inevent.yield;
@@ -587,6 +590,23 @@ Pbindf : FilterPattern {
 
 Pstutter : FilterPattern {
 	var <>n;
+	classvar suggestNew;
+
+	*initClass {
+		suggestNew = { |n,pattern|
+			"The use of Pstutter is not recommended. Please use Pdup instead.".warn;
+			suggestNew = {|n,pattern| Pdup(n,pattern)};
+			suggestNew.(n,pattern);
+		};
+	}
+
+	*new { |n, pattern|
+		^suggestNew.(n, pattern);
+	}
+}
+
+Pdup : FilterPattern {
+	var <>n;
 	*new { arg n, pattern;
 		^super.new(pattern).n_(n)
 	}
@@ -610,27 +630,41 @@ Pstutter : FilterPattern {
 	}
 }
 
+PdurStutter : Pdup { // float streams
+	classvar suggestNew;
 
-PdurStutter : Pstutter { // float streams
+	*initClass {
+		suggestNew = { |n,pattern|
+			"The use of PdurStutter is not recommended. Please use Psubdivide instead.".warn;
+			suggestNew = {|n,pattern| Psubdivide(n,pattern)};
+			suggestNew.(n,pattern);
+		};
+	}
 
+	*new { |n, pattern|
+		^suggestNew.(n, pattern);
+	}
+}
+
+Psubdivide : Pdup { // float streams
 	embedInStream { arg event;
-		var dur, stut;
+		var dur, subdivision;
 		var durs = pattern.asStream;
-		var stutts = n.asStream;
+		var subdivisions = n.asStream;
 		while({
 			(dur = durs.next(event)).notNil
-			and: {(stut = stutts.next(event)).notNil}
-			},{
-				if(stut > 0,{ // 0 skips it
-					if(stut > 1,{
-						dur = dur / stut;
-						stut.do({
-							event = dur.yield;
-						})
-						},{
-							event = dur.yield
+			and: {(subdivision = subdivisions.next(event)).notNil}
+		},{
+			if(subdivision > 0,{ // 0 skips it
+				if(subdivision > 1,{
+					dur = dur / subdivision;
+					subdivision.do({
+						event = dur.yield;
 					})
+				},{
+					event = dur.yield
 				})
+			})
 		})
 		^event;
 	}

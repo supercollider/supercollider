@@ -79,9 +79,15 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 	}
 	checkInputs {
-		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
-			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
-		});
+		if (rate == 'audio') {
+			if(inputs.at(1).rate != 'audio') {
+				^"phase input is not audio rate: % %".format(inputs.at(1), inputs.at(1).rate)
+			} {
+				if(inputs[3..].any { |x| x.rate != 'audio' }) {
+					^"inputArray input is not audio rate: % %".format(inputs[3..], inputs[3..].collect(_.rate))
+				}
+			}
+		};
 		^this.checkValidInputs
 	}
 }
@@ -129,9 +135,9 @@ ScopeOut2 : UGen {
 
 Tap : UGen {
 	*ar { arg bufnum = 0, numChannels = 1, delaytime = 0.2;
-		var n;
-		n = delaytime * SampleRate.ir.neg; // this depends on the session sample rate, not buffer.
-		^PlayBuf.ar(numChannels, bufnum, 1, 0, n, 1);
+		var scale = BufRateScale.kr(bufnum);
+		var n = delaytime * (SampleRate.ir.neg * scale);
+		^PlayBuf.ar(numChannels, bufnum, scale, 0, n, 1);
 	}
 }
 
@@ -184,6 +190,7 @@ MaxLocalBufs : UGen {
 
 SetBuf : WidthFirstUGen {
 	*new { arg buf, values, offset = 0;
+		values = values.asArray;
 		^this.multiNewList(['scalar', buf, offset, values.size] ++ values)
 	}
 }

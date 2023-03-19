@@ -1,0 +1,56 @@
+TITLE:: Ptrace
+summary:: Print out the results of a stream
+related:: Classes/Stream, Classes/FilterPattern
+categories:: Streams-Patterns-Events>Patterns
+
+DESCRIPTION::
+Print out the results of a stream while returning the original values.
+
+Tracing a pattern is most commonly done by using the strong::.trace:: method directly on the pattern like this:
+
+code::
+Pbind(\degree, Pwhite(0,10)).trace.play
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: pattern
+printOn this stream (default: link::Classes/Post::).
+
+ARGUMENT:: key
+when streaming events, post only this key.
+
+ARGUMENT:: printStream
+(describe argument here)
+
+ARGUMENT:: prefix
+string added to the printout to separate different streams.
+
+returns:: Original values
+
+
+INSTANCEMETHODS::
+
+METHOD:: storeArgs
+
+METHOD:: embedInStream
+
+
+ARGUMENT:: inval
+
+METHOD:: key
+
+
+EXAMPLES::
+
+code::
+(
+// An event pattern playing random scale degrees
+p = Pbind(\dur, 0.125, \degree, Pwhite(0,10));
+
+// Se what the value of the scale degrees are using trace
+Ptrace(p, \degree, prefix: "Current scale degree: ").play
+)
+::

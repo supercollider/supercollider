@@ -27,18 +27,63 @@ method::version
 returns:: the current version as a human readable string
 
 method::versionAtLeast
-check if we are running at least version maj.min
+
+Returns code::true:: if we are running version maj.min.patch or newer, false otherwise. If code::min:: and/or
+code::patch:: are code::nil::, they will be treated as wildcards. The tweak part of the version is completely ignored.
+
+argument::maj
+Major version number as Integer.
+
+argument::min
+Minor version number as Integer, or code::nil::.
+
+argument::patch
+Patch version number as Integer, or code::nil::.
+
 code::
-Main.versionAtLeast( 3, 1 );
+Main.versionAtLeast(3, 10, 4);
 ::
-returns:: true or false
 
 method::versionAtMost
-check if we are running version maj.min or older
+
+Returns code::true:: if we are running version maj.min.patch or older, false otherwise. If code::min:: and/or
+code::patch:: are code::nil::, they will be treated as wildcards. The tweak part of the version is completely ignored.
+
+argument::maj
+Major version number as Integer.
+
+argument::min
+Minor version number as Integer, or code::nil::.
+
+argument::patch
+Patch version number as Integer, or code::nil::.
+
 code::
-Main.versionAtMost( 3, 1 );
+Main.versionAtMost(3, 13, 9);
 ::
-returns:: true or false
+
+method::scVersionMajor
+
+returns:: major version number as Integer
+
+method::scVersionMinor
+
+returns:: minor version number as Integer
+
+method::scVersionPatch
+
+returns:: patch version number as Integer
+
+method::scVersionTweak
+
+The "tweak" version is typically only used to distinguish pre-release versions of SC from proper releases. It may be
+empty.
+
+returns:: tweak version as a String
+
+method::scVersionPostfix
+
+Deprecated. Use code::scVersionPatch:: and code::scVersionTweak:: instead.
 
 instanceMethods::
 
@@ -145,7 +190,7 @@ Returns:: The operating system's pid (process ID) for the process.
 
 method::recompile
 
-Recompiles the class library. This is equivalent to restarting SC. Currently macOS (SuperCollider.app) only.
+Recompiles the class library.
 
 method::platform
 Get the current link::Classes/Platform::

@@ -40,7 +40,7 @@ returns:: The getter returns a link::Classes/Function:: or similar object.
 METHOD:: srcID
 Get this object's source.
 
-returns:: The return type will depend on subclass. For link::Classes/OSCFunc:: this will be a link::Classes/NetAddr::, for link::Classes/MIDIFunc:: a UID. This can can be nil, which indicates that the object will respond to any source.
+returns:: The return type will depend on subclass. For link::Classes/OSCFunc:: this will be a link::Classes/NetAddr::, for link::Classes/MIDIFunc:: a UID. This can be nil, which indicates that the object will respond to any source.
 
 METHOD:: enabled
 Check if this object is currently responding to incoming messages.
@@ -87,7 +87,7 @@ METHOD:: oneShot
 Indicate that this object should execute only once and then free itself.
 
 METHOD:: fix
-A synonym for link::#permanent::
+A synonym for link::#-permanent::
 
 METHOD:: free
 Disable this object and remove it from the global lists. This should be done when you are finished using this object.

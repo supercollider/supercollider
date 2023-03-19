@@ -1,5 +1,27 @@
 find_package(Sndfile)
 
+# here we choose who provides us with the FFT lib
+# this is done independently for scsynth and supernova
+# on macOS scsynth uses vDSP implementation for FFT
+# which is not thread-safe
+
+if (APPLE)
+    add_definitions("-DSC_FFT_VDSP")
+    message(STATUS "FFT library (scsynth): vDSP")
+else()
+    find_package(FFTW3f 3.3)
+
+    if (NOT FFTW3F_FOUND OR FFT_GREEN)
+        message(STATUS "FFT library (scsynth): Green")
+        set(FFT_GREEN 1)
+        add_definitions("-DSC_FFT_GREEN")
+    else()
+        message(STATUS "Found fftw3f: ${FFTW3F_LIBRARY}")
+        message(STATUS "FFT library (scsynth): FFTW")
+        add_definitions("-DSC_FFT_FFTW")
+    endif()
+endif()
+
 # Here we work out which audio API to use, from system type and/or user option.
 if(AUDIOAPI STREQUAL "default")
 	if(APPLE)
@@ -11,27 +33,40 @@ if(AUDIOAPI STREQUAL "default")
 	endif(APPLE)
 endif()
 
-if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
+if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio|bela)$")
 	message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
-  find_package(Jack)
-  if(NOT JACK_FOUND)
-    message(FATAL_ERROR "Jack selected as audio API, but development files not found")
+  # NOTE: this is a workaround for Windows if pkgconfig is not available
+  if(WIN32 AND _JACK_LINK_LIBRARIES AND _JACK_INCLUDE_DIRS)
+    set(JACK_LINK_LIBRARIES ${_JACK_LINK_LIBRARIES})
+    set(JACK_INCLUDE_DIRS ${_JACK_INCLUDE_DIRS})
+  else()
+    include(FindPkgConfig)
+    pkg_check_modules(JACK REQUIRED jack)
   endif()
-elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
+  message(STATUS "Using JACK_LINK_LIBRARIES: ${JACK_LINK_LIBRARIES}")
+  message(STATUS "Using JACK_INCLUDE_DIRS: ${JACK_INCLUDE_DIRS}")
+elseif(AUDIOAPI STREQUAL portaudio AND SYSTEM_PORTAUDIO)
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
     endif()
+elseif(AUDIOAPI STREQUAL bela)
+    # The Bela lib will have its own set of libraries and includes
+    # However, the Bela audio backend for SC has some direct calls to Xenomai
+    # Therefore we need to get flags for those as well
+    find_package(Xenomai REQUIRED)
+    find_package(Bela REQUIRED)
+    message(STATUS "Found Bela libraries: ${BELA_LIBRARIES}")
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+        # recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BELA_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BELA_CXX_FLAGS}")
+    endif()
 endif()
-message(STATUS "Audio API: ${AUDIOAPI}")
-
-if (NOT Boost_FOUND)
-	file(GLOB boost_system_sources ../../external_libraries/boost/libs/system/src/*cpp)
-	file(GLOB boost_filesystem_sources ../../external_libraries/boost/libs/filesystem/src/*cpp)
-endif()
+message(STATUS "Audio API (scsynth): ${AUDIOAPI}")
 
 set(scsynth_sources
 	SC_BufGen.cpp
@@ -67,9 +102,7 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
-
-	${boost_system_sources}
-	${boost_filesystem_sources}
+	${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
 )
 
 if(APPLE)
@@ -91,6 +124,9 @@ if (FFT_GREEN)
 	list(APPEND scsynth_sources ../../common/fftlib.c)
 endif()
 
+if(AUDIOAPI STREQUAL bela)
+    list(APPEND scsynth_sources ../../common/XenomaiLock.cpp)
+endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/common
@@ -103,12 +139,16 @@ include_directories (${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include)
 
 if (AUDIOAPI STREQUAL jack)
 	list(APPEND scsynth_sources SC_Jack.cpp)
-	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK" ${JACK_DEFINITIONS})
+	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_JACK")
 	include_directories(${JACK_INCLUDE_DIRS})
 elseif (AUDIOAPI STREQUAL portaudio)
-	list(APPEND scsynth_sources SC_PortAudio.cpp)
+	list(APPEND scsynth_sources SC_PortAudio.cpp ${CMAKE_SOURCE_DIR}/common/SC_PaUtils.cpp)
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_PORTAUDIO" ${PORTAUDIO_DEFINITIONS})
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
+elseif (AUDIOAPI STREQUAL bela)
+    list(APPEND scsynth_sources SC_Bela.cpp)
+    add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_BELA" "-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
+    include_directories(${XENOMAI_INCLUDE_DIRS} ${BELA_INCLUDE_DIRS})
 endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
@@ -148,6 +188,15 @@ if(NOVA_SIMD)
 endif()
 
 if(SNDFILE_FOUND)
+	if(SNDFILE_HAS_VORBIS)
+		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_VORBIS)
+	endif()
+	if(SNDFILE_HAS_OPUS)
+		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_OPUS)
+	endif()
+	if(SNDFILE_HAS_MPEG)
+		target_compile_definitions(libscsynth PUBLIC SNDFILE_HAS_MPEG)
+	endif()
 	target_link_libraries(libscsynth ${SNDFILE_LIBRARIES})
 	target_include_directories(libscsynth PUBLIC ${SNDFILE_INCLUDE_DIR})
 elseif(NOT NO_LIBSNDFILE)
@@ -155,9 +204,8 @@ elseif(NOT NO_LIBSNDFILE)
 endif(SNDFILE_FOUND)
 
 if(UNIX AND NOT APPLE)
-	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/SuperCollider/plugins\"")
+	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${LINUX_SC_PLUGIN_DIR}\"")
 endif()
-
 
 if(NOT NO_AVAHI)
 	if(APPLE)
@@ -174,22 +222,17 @@ endif()
 
 
 if (AUDIOAPI STREQUAL jack)
-	target_link_libraries(libscsynth ${JACK_LIBRARIES})
+	target_link_libraries(libscsynth ${JACK_LINK_LIBRARIES})
 elseif(AUDIOAPI STREQUAL portaudio)
-	if(WIN32 AND NOT MSYS)
-		target_link_libraries(libscsynth portaudio)
-	else()
-		target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
-	endif()
+	target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+elseif(AUDIOAPI STREQUAL bela)
+    target_link_libraries(libscsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
 
-if (Boost_FOUND)
-	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
-else()
-	target_link_libraries(libscsynth boost_system boost_filesystem)
-endif()
+target_link_libraries(libscsynth boost_system_lib boost_filesystem_lib)
+target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
@@ -211,15 +254,26 @@ if (FFTW3F_FOUND)
 endif()
 
 if (APPLE)
-	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices -framework Foundation")
+	target_link_libraries(libscsynth "-framework Accelerate -framework CoreServices"
+                                        "-framework Foundation -framework AppKit")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-add_executable(scsynth scsynth_main.cpp)
+add_executable(scsynth
+    scsynth_main.cpp
+
+    # these files contain code only used in main()
+    ${CMAKE_SOURCE_DIR}/common/SC_ServerBootDelayWarning.cpp
+    $<$<BOOL:${APPLE}>: ${CMAKE_SOURCE_DIR}/common/SC_AppleEventLoop.mm >
+    )
 target_link_libraries(scsynth libscsynth)
+
+if(AUDIOAPI STREQUAL bela)
+    target_link_libraries(scsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} belaextra)
+endif()
 
 if (PTHREADS_FOUND)
     target_link_libraries(scsynth ${PTHREADS_LIBRARIES})
@@ -243,11 +297,15 @@ else()
 endif()
 
 if(APPLE)
-	add_custom_command(TARGET scsynth POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
-		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+    if(scappauxresourcesdir)
+        add_custom_command(TARGET scsynth POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}
+            )
+    endif()
 elseif(WIN32)
     if(NOT MSVC)
+      target_link_libraries(scsynth "-municode")
       set_target_properties(scsynth libscsynth PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 

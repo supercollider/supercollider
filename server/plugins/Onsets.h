@@ -1,13 +1,13 @@
 /*
-	Onset detector for SuperCollider
+    Onset detector for SuperCollider
     Copyright (c) 2007 Dan Stowell. All rights reserved.
-	http://onsetsds.sourceforge.net
+    http://onsetsds.sourceforge.net
 
-	Now part of:
+    Now part of:
 
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,19 +26,17 @@
 
 #include "onsetsds.h"
 
-struct Onsets : Unit
-{
-	float outval;
-	float *m_odsdata;
-	OnsetsDS *m_ods;
+struct Onsets : Unit {
+    float outval;
+    float* m_odsdata;
+    OnsetsDS* m_ods;
 
-	bool m_needsinit;
+    bool m_needsinit;
 };
 
-extern "C"
-{
-	void Onsets_Ctor(Onsets *unit);
-	void Onsets_next(Onsets *unit, int inNumSamples);
-	void Onsets_next_rawodf(Onsets *unit, int inNumSamples);
-	void Onsets_Dtor(Onsets *unit);
+extern "C" {
+void Onsets_Ctor(Onsets* unit);
+void Onsets_next(Onsets* unit, int inNumSamples);
+void Onsets_next_rawodf(Onsets* unit, int inNumSamples);
+void Onsets_Dtor(Onsets* unit);
 }

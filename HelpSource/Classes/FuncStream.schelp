@@ -1,6 +1,6 @@
 TITLE:: FuncStream
 summary:: Stream of a function
-categories:: Streams
+categories:: Streams-Patterns-Events
 related:: Classes/Pfunc
 
 DESCRIPTION::

@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_SETTINGS_SHORTCUTS_PAGE_HPP_INCLUDED
-#define SCIDE_WIDGETS_SETTINGS_SHORTCUTS_PAGE_HPP_INCLUDED
+#pragma once
 
 #include <QWidget>
 #include <QStandardItemModel>
@@ -28,33 +27,31 @@
 class QTreeWidgetItem;
 
 namespace Ui {
-    class ShortcutConfigPage;
+class ShortcutConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
 
 class Manager;
 
-class ShortcutsPage : public QWidget
-{
+class ShortcutsPage : public QWidget {
     Q_OBJECT
 
 public:
-    ShortcutsPage(QWidget *parent = 0);
+    ShortcutsPage(QWidget* parent = 0);
     ~ShortcutsPage();
 
 public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
-    void filterBy( const QString & );
+    void load(Manager*);
+    void store(Manager*);
+    void filterBy(const QString&);
 
 private Q_SLOTS:
-    void showItem( QTreeWidgetItem *, QTreeWidgetItem * );
+    void showItem(QTreeWidgetItem*, QTreeWidgetItem*);
     void apply();
 
 private:
-    enum ItemDataRole
-    {
+    enum ItemDataRole {
         ActionRole = Qt::UserRole,
         SettingsKeyRole,
         DefaultSequenceRole,
@@ -62,17 +59,15 @@ private:
         EditedRole
     };
 
-    void addAction( QAction *, Manager * );
-    void applyTo( QTreeWidgetItem * );
-    void updateItem( QTreeWidgetItem * );
-    QKeySequence activeItemSequence( QTreeWidgetItem * );
-    bool confirmOverride( const QKeySequence & duplicateSequence, QTreeWidgetItem *duplicateItem );
+    void addAction(QAction*, Manager*);
+    void applyTo(QTreeWidgetItem*);
+    void updateItem(QTreeWidgetItem*);
+    QKeySequence activeItemSequence(QTreeWidgetItem*);
+    bool confirmOverride(const QKeySequence& duplicateSequence, QTreeWidgetItem* duplicateItem);
 
-    Ui::ShortcutConfigPage *ui;
-    QStandardItemModel *mActionModel;
-    QSortFilterProxyModel *mFilter;
+    Ui::ShortcutConfigPage* ui;
+    QStandardItemModel* mActionModel;
+    QSortFilterProxyModel* mFilter;
 };
 
 }} // namespace ScIDE::Settings
-
-#endif // SCIDE_WIDGETS_SETTINGS_SHORTCUTS_PAGE_HPP_INCLUDED

@@ -38,7 +38,7 @@ METHOD:: globalKeyDownAction
 
 	A settable class variable containing an object (e.g. an instance of Function or FunctionList) which is evaluated (i.e. link::Classes/Object#-value#value:: method is called on it) whenever a key is pressed, independently of keyboard focus. See also link::#-addAction::.
 
-	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode.
+	When the action object is evaluated, it is passed the following arguments: view, char, modifiers, unicode, keycode, key.
 
 METHOD:: globalKeyUpAction
 
@@ -255,7 +255,7 @@ METHOD:: resizeToBounds
 
 METHOD:: resizeToHint
 
-	Resizes view to the bounds returned by link::#sizeHint::.		
+	Resizes view to the bounds returned by link::#-sizeHint::.
 
 METHOD:: resize
 	Determines what happens with the view's position and size when its parent is resized. See link::Guides/GUI-Introduction#view:: for further explanation.
@@ -335,7 +335,6 @@ METHOD:: name
 
 METHOD:: alpha
 
-
 	If the view is a window, this controls its transparency.
 
 	argument:: aFloat
@@ -355,6 +354,105 @@ METHOD:: background
 	argument::
 		A Color.
 
+
+METHOD:: backgroundImage
+Sets an Image as the view background. If you need more functionality, use link::#-setBackgroundImage::.
+
+	argument:: image
+	the Image to use. It will be fixed to the top left corner of the view.
+
+	discussion::
+
+code::
+(
+	~bounds = Rect(10, 10, 150, 18);
+	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	~window = Window.new("Image background");
+	~slider = Slider.new(~window, ~bounds)
+		.backgroundImage_(~image);
+	~window.front;
+	~image.free;
+)
+::
+
+METHOD:: setBackgroundImage
+Sets an Image as a valid view background, with 16 different drawing modes and opacity support.
+
+	argument:: image
+	the Image to use. 
+
+	argument:: tileMode
+	the mode to use. By default 1 (fixed to left, fixed to top).
+
+table::
+## 1 || fixed to left, fixed to top
+## 2 || horizontally tile, fixed to top
+## 3 || fixed to right, fixed to top
+## 4 || fixed to left, vertically tile
+## 5 || horizontally tile, vertically tile
+## 6 || fixed to right, vertically tile
+## 7 || fixed to left, fixed to bottom
+## 8 || horizontally tile, fixed to bottom
+## 9 || fixed to right, fixed to bottom
+## 10 || fit
+## 11 || center, center (scale)
+## 12 || center , fixed to top
+## 13 || center , fixed to bottom
+## 14 || fixed to left, center
+## 15 || fixed to right, center
+## 16 || center, center (no scale)
+::
+
+	argument:: alpha
+	opacity of the image. 0 <= alpha <= 1, and values outside of that range will be clipped
+
+	argument:: fromRect
+	the portion of the image to use. If nil, use the full image.
+
+	discussion::
+
+code::
+(
+	~alpha = 1.0;
+	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	~bounds = Rect(20, 3, 40, 40);
+	~window = Window.new("Image background");
+	~window.view.background_(Color.gray);
+	~window.view.setBackgroundImage(~image, 5, ~alpha, ~bounds);
+	~window.front;
+)
+
+// monte carlo :) exec every line to test
+~window.view.setBackgroundImage(~image, 1, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 2, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 3, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 4, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 5, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 6, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 7, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 8, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 9, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 10, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 11, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 12, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 13, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 14, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 15, ~alpha, ~bounds);
+~window.view.setBackgroundImage(~image, 16, ~alpha, ~bounds);
+
+// this is safe even if window is still open because Background object holds the Image
+~image.free;
+
+~window.close;
+
+(
+	~image = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+	~window = Window.new("Image background");
+	~slider = Slider2D.new(~window, Rect(10, 10, 200, 200))
+		.setBackgroundImage(~image, 5, 1, Rect(0, 0, 100, 100) );
+	~window.front;
+)
+::
 
 METHOD:: focusColor
 	Get or set the color used to display keyboard focus on the view.
@@ -521,7 +619,7 @@ METHOD:: mouseDownAction
 METHOD:: mouseUpAction
     The object to be evaluated when a mouse button is released after it was pressed on the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers, buttonNumber::. See link::#Mouse actions:: for explanation of arguments.
 
     The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
 
@@ -653,6 +751,61 @@ METHOD:: dragLabel
 
 	argument::
 		A String containing the text to be displayed.
+
+SUBSECTION:: Context Menus
+
+These methods are used to add context menu and shortcut key support to a View.
+
+CODE::
+(
+View().layout_(HLayout(
+	~text = StaticText().string_("Right-click me").minWidth_(100)
+)).front;
+
+~text.setContextMenuActions(
+	MenuAction("Red", { ~text.background = Color.red }),
+	MenuAction("Green", { ~text.background = Color.green }),
+	MenuAction("Blue", { ~text.background = Color.blue })
+)
+)
+::
+
+METHOD:: setContextMenuActions
+	Set the link::Classes/MenuAction::s that should appear in the context menu for this view. This implicitly calls link::Classes/View#-enableContextMenu::.
+
+	argument::
+		A list of one or more link::Classes/MenuAction::s. These will be shown when the context menu for this View is invoked by right-clicking.
+		In addition, the shortcut keys for these actions will be active in the context of this View. Calling this method with no actions will remove all context menus.
+
+METHOD:: enableContextMenu
+	Enablement of context menu support for this View. If true and actions are attached, a right click will show the context menu. This property can enable and disable context menu support for a View without removing the attached actions.
+
+	argument::
+		A Boolean
+
+METHOD:: insertMenuAction
+	Insert a link::Classes/MenuAction:: into the list of attached actions.
+
+	argument:: action
+		A link::Classes/MenuAction:: to add.
+
+	argument:: addBefore
+		A link::Classes/MenuAction:: or integer index value. The action will be inserted strong::before:: this item in the list. By default, actions are inserted at the end of the list.
+
+METHOD:: removeMenuAction
+	Remove a link::Classes/MenuAction:: from the list of attached actions.
+
+	argument:: action
+		A link::Classes/MenuAction:: to add.
+
+METHOD:: removeAllMenuActions
+	Remove all link::Classes/MenuAction::s from the view.
+
+METHOD:: enableContextMenu
+	Enablement of context menu support for this View. If true and actions are attached, a right click will show the context menu. This property can enable and disable context menu support for a View without removing the attached actions.
+
+	argument::
+		A Boolean
 
 
 

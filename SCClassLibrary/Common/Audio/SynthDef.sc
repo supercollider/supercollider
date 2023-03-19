@@ -19,6 +19,7 @@ SynthDef {
 	var <>desc, <>metadata;
 
 	classvar <synthDefDir;
+	classvar <>warnAboutLargeSynthDefs = false;
 
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
@@ -33,7 +34,7 @@ SynthDef {
 	}
 
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata).children_(Array.new(64))
+		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata ?? {()}).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
 	}
 
@@ -45,6 +46,7 @@ SynthDef {
 			this.buildUgenGraph(ugenGraphFunc, rates, prependArgs);
 			this.finishBuild;
 			func = ugenGraphFunc;
+			this.class.changed(\synthDefReady, this);
 		} {
 			UGen.buildSynthDef = nil;
 		}
@@ -332,13 +334,13 @@ SynthDef {
 				file.putFloat(item);
 			};
 
-			allControlNamesTemp = allControlNames.reject { |cn| cn.rate == \noncontrol };
+			allControlNamesTemp = allControlNames.reject { |cn|
+				cn.rate == \noncontrol or: { cn.name.isNil }
+			};
 			file.putInt32(allControlNamesTemp.size);
 			allControlNamesTemp.do { | item |
-				if (item.name.notNil) {
-					file.putPascalString(item.name.asString);
-					file.putInt32(item.index);
-				};
+				file.putPascalString(item.name.asString);
+				file.putInt32(item.index);
 			};
 
 			file.putInt32(children.size);
@@ -549,7 +551,7 @@ SynthDef {
 	add { arg libname, completionMsg, keepDef = true;
 		var	servers, desc = this.asSynthDesc(libname ? \global, keepDef);
 		if(libname.isNil) {
-			servers = Server.allRunningServers
+			servers = Server.allBootedServers
 		} {
 			servers = SynthDescLib.getLib(libname).servers
 		};
@@ -571,9 +573,9 @@ SynthDef {
 
 	// only send to servers
 	send { arg server, completionMsg;
-		var servers = (server ?? { Server.allRunningServers }).asArray;
+		var servers = (server ?? { Server.allBootedServers }).asArray;
 		servers.do { |each|
-			if(each.serverRunning.not) {
+			if(each.hasBooted.not) {
 				"Server % not running, could not send SynthDef.".format(server.name).warn
 			};
 			if(metadata.trueAt(\shouldNotSend)) {
@@ -586,13 +588,27 @@ SynthDef {
 
 	doSend { |server, completionMsg|
 		var bytes = this.asBytes;
+		var path;
+		var resp, syncID;
+
 		if (bytes.size < (65535 div: 4)) {
 			server.sendMsg("/d_recv", bytes, completionMsg)
 		} {
 			if (server.isLocal) {
-				"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
+				if(warnAboutLargeSynthDefs) {
+					"SynthDef % too big for sending. Retrying via synthdef file".format(name).warn;
+				};
 				this.writeDefFile(synthDefDir);
-				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
+				path = synthDefDir +/+ name ++ ".scsyndef";
+				syncID = UniqueID.next;
+				resp = OSCFunc({
+					resp.remove;
+					File.delete(path);
+				}, '/synced', srcID: server.addr, argTemplate: [syncID]);
+				server.sendBundle(nil,
+					["/d_load", path, completionMsg],
+					["/sync", syncID]
+				);
 			} {
 				"SynthDef % too big for sending.".format(name).warn;
 			}
@@ -648,6 +664,16 @@ SynthDef {
 		lib = SynthDescLib.getLib(libname);
 		desc = lib.readDescFromDef(stream, keepDef, this, metadata);
 		^desc
+	}
+
+	findSpecFor { |controlName|
+		var specs = metadata[\specs];
+		^specs !? { specs[controlName] }
+	}
+
+	specs {
+		if(metadata[\specs].isNil) { metadata[\specs] = () };
+		^metadata[\specs]
 	}
 
 	// this method warns and does not halt

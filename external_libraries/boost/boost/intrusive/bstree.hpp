@@ -255,7 +255,8 @@ struct get_key_of_value<void, T>
 template<class ValuePtr, class VoidOrKeyOfValue, class VoidOrKeyComp>
 struct bst_key_types
 {
-   typedef typename pointer_element<ValuePtr>::type   value_type;
+   typedef typename
+      boost::movelib::pointer_element<ValuePtr>::type value_type;
    typedef typename get_key_of_value
       < VoidOrKeyOfValue, value_type>::type           key_of_value;
    typedef typename key_of_value::type                key_type;
@@ -724,15 +725,22 @@ class bstree_impl
          this->insert_equal(b, e);
    }
 
-   //! <b>Effects</b>: to-do
+   //! <b>Effects</b>: Constructs a container moving resources from another container.
+   //!   Internal comparison object and value traits are move constructed and
+   //!   nodes belonging to x (except the node representing the "end") are linked to *this.
    //!
+   //! <b>Complexity</b>: Constant.
+   //!
+   //! <b>Throws</b>: If value_traits::node_traits::node's
+   //!   move constructor throws (this does not happen with predefined Boost.Intrusive hooks)
+   //!   or the move constructor of the comparison objet throws.
    bstree_impl(BOOST_RV_REF(bstree_impl) x)
       : data_type(::boost::move(x.comp()), ::boost::move(x.get_value_traits()))
    {
       this->swap(x);
    }
 
-   //! <b>Effects</b>: to-do
+   //! <b>Effects</b>: Equivalent to swap
    //!
    BOOST_INTRUSIVE_FORCEINLINE bstree_impl& operator=(BOOST_RV_REF(bstree_impl) x)
    {  this->swap(x); return *this;  }
@@ -967,7 +975,7 @@ class bstree_impl
    void swap(bstree_impl& other)
    {
       //This can throw
-      ::boost::adl_move_swap(this->comp(), this->comp());
+      ::boost::adl_move_swap(this->comp(), other.comp());
       //These can't throw
       node_algorithms::swap_tree(this->header_ptr(), node_ptr(other.header_ptr()));
       this->sz_traits().swap(other.sz_traits());
@@ -2186,46 +2194,46 @@ class bstree
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   bstree()
+   BOOST_INTRUSIVE_FORCEINLINE bstree()
       :  Base()
    {}
 
-   explicit bstree( const key_compare &cmp, const value_traits &v_traits = value_traits())
+   BOOST_INTRUSIVE_FORCEINLINE explicit bstree( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 
    template<class Iterator>
-   bstree( bool unique, Iterator b, Iterator e
+   BOOST_INTRUSIVE_FORCEINLINE bstree( bool unique, Iterator b, Iterator e
          , const key_compare &cmp = key_compare()
          , const value_traits &v_traits = value_traits())
       :  Base(unique, b, e, cmp, v_traits)
    {}
 
-   bstree(BOOST_RV_REF(bstree) x)
+   BOOST_INTRUSIVE_FORCEINLINE bstree(BOOST_RV_REF(bstree) x)
       :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
-   bstree& operator=(BOOST_RV_REF(bstree) x)
+   BOOST_INTRUSIVE_FORCEINLINE bstree& operator=(BOOST_RV_REF(bstree) x)
    {  return static_cast<bstree &>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 
    template <class Cloner, class Disposer>
-   void clone_from(const bstree &src, Cloner cloner, Disposer disposer)
+   BOOST_INTRUSIVE_FORCEINLINE void clone_from(const bstree &src, Cloner cloner, Disposer disposer)
    {  Base::clone_from(src, cloner, disposer);  }
 
    template <class Cloner, class Disposer>
-   void clone_from(BOOST_RV_REF(bstree) src, Cloner cloner, Disposer disposer)
+   BOOST_INTRUSIVE_FORCEINLINE void clone_from(BOOST_RV_REF(bstree) src, Cloner cloner, Disposer disposer)
    {  Base::clone_from(BOOST_MOVE_BASE(Base, src), cloner, disposer);  }
 
-   static bstree &container_from_end_iterator(iterator end_iterator)
+   BOOST_INTRUSIVE_FORCEINLINE static bstree &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<bstree &>(Base::container_from_end_iterator(end_iterator));   }
 
-   static const bstree &container_from_end_iterator(const_iterator end_iterator)
+   BOOST_INTRUSIVE_FORCEINLINE static const bstree &container_from_end_iterator(const_iterator end_iterator)
    {  return static_cast<const bstree &>(Base::container_from_end_iterator(end_iterator));   }
 
-   static bstree &container_from_iterator(iterator it)
+   BOOST_INTRUSIVE_FORCEINLINE static bstree &container_from_iterator(iterator it)
    {  return static_cast<bstree &>(Base::container_from_iterator(it));   }
 
-   static const bstree &container_from_iterator(const_iterator it)
+   BOOST_INTRUSIVE_FORCEINLINE static const bstree &container_from_iterator(const_iterator it)
    {  return static_cast<const bstree &>(Base::container_from_iterator(it));   }
 };
 

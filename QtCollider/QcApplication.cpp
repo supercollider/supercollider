@@ -1,23 +1,23 @@
 /************************************************************************
-*
-* Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
-*
-* This file is part of SuperCollider Qt GUI.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*
-************************************************************************/
+ *
+ * Copyright 2010 Jakob Leben (jakob.leben@gmail.com)
+ *
+ * This file is part of SuperCollider Qt GUI.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 
 #include "QcApplication.h"
 #include "widgets/QcTreeWidget.h"
@@ -33,32 +33,35 @@
 #include <QFileOpenEvent>
 #include <QKeyEvent>
 #include <QIcon>
+#include <QMenuBar>
+#include <QSharedPointer>
+
+#include "hacks/hacks_mac.hpp"
 
 #ifdef Q_OS_MAC
-#include "../../common/SC_Apple.hpp"
+#    include "../../common/SC_Apple.hpp"
 #endif
 
 extern bool compiledOK;
 
-QcApplication * QcApplication::_instance = 0;
+QcApplication* QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
 
 #ifdef Q_WS_X11
-#include <X11/Xlib.h>
+#    include <X11/Xlib.h>
 #endif
 
 
 /* on x11, we need to check, if we can actually connect to the X server */
-static bool QtColliderUseGui(void)
-{
+static bool QtColliderUseGui(void) {
 #ifdef Q_WS_X11
-  Display *dpy = XOpenDisplay(NULL);
-  if (!dpy)
-    return false;
-  XCloseDisplay(dpy);
-  return true;
+    Display* dpy = XOpenDisplay(NULL);
+    if (!dpy)
+        return false;
+    XCloseDisplay(dpy);
+    return true;
 #else
-  return true;
+    return true;
 #endif
 }
 
@@ -67,65 +70,86 @@ static bool QtColliderUseGui(void)
 
 bool QcApplication::_systemHasMouseWheel = false;
 
-QcApplication::QcApplication( int & argc, char ** argv )
-: QApplication( argc, argv, QtColliderUseGui() )
-{
-  _mutex.lock();
-  _instance = this;
-  _mutex.unlock();
+QcApplication::QcApplication(int& argc, char** argv): QApplication(argc, argv, QtColliderUseGui()) {
+    _mutex.lock();
+    _instance = this;
+    _mutex.unlock();
+    this->setAttribute(Qt::AA_UseHighDpiPixmaps);
 
-  if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
-    QIcon icon;
-    icon.addFile(":/icons/sc-cube-128");
-    icon.addFile(":/icons/sc-cube-48");
-    icon.addFile(":/icons/sc-cube-32");
-    icon.addFile(":/icons/sc-cube-16");
-    setWindowIcon(icon);
-  }
-  
 #ifdef Q_OS_MAC
-  // On Mac, we may need to disable "App Nap", so we aren't put to sleep unexpectedly
-  SC::Apple::disableAppNap();
+    QtCollider::Mac::DisableAutomaticWindowTabbing();
 #endif
-  
-  _handleCmdPeriod = SC_Filesystem::instance().getIdeName() != "scapp";
+
+    if (QtColliderUseGui()) { // avoid a crash on linux, if x is not available
+        QIcon icon;
+        icon.addFile(":/icons/sc-cube-128");
+        icon.addFile(":/icons/sc-cube-48");
+        icon.addFile(":/icons/sc-cube-32");
+        icon.addFile(":/icons/sc-cube-16");
+        setWindowIcon(icon);
+        createMenu();
+    }
+
+#ifdef Q_OS_MAC
+    // On Mac, we may need to disable "App Nap", so we aren't put to sleep unexpectedly
+    SC::Apple::disableAppNap();
+#endif
+
+    _handleCmdPeriod = SC_Filesystem::instance().getIdeName() != "scapp";
 }
 
-QcApplication::~QcApplication()
-{
-  _mutex.lock();
-  _instance = 0;
-  _mutex.unlock();
+QcApplication::~QcApplication() {
+    _mutex.lock();
+    _instance = 0;
+    _mutex.unlock();
 }
 
-bool QcApplication::compareThread()
-{
-  return gMainVMGlobals->canCallOS;
+void QcApplication::createMenu() {
+    _mainMenu = QSharedPointer<QMenuBar>::create();
+
+#ifdef Q_OS_MAC
+    // macOS registers cmd+q on menu bars by default. Here we register a handler for cmd+q that does nothing
+    // and we disable the Quit menu by default
+    auto* action = new QAction("");
+    action->setMenuRole(QAction::QuitRole);
+    action->setEnabled(false);
+    QObject::connect(action, SIGNAL(triggered()), this, SLOT(onQuit()));
+    auto* menu = new QMenu(tr("&File"));
+    menu->addAction(action);
+    _mainMenu->addMenu(menu);
+#endif
 }
 
-void QcApplication::interpret( const QString &str, bool print )
-{
-  QtCollider::lockLang();
-  if( compiledOK ) {
-      VMGlobals *g = gMainVMGlobals;
-
-      PyrString *strObj = newPyrString( g->gc, str.toStdString().c_str(), 0, true );
-
-      SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
-      g->gc->GCWriteNew(slotRawObject(&g->process->interpreter), strObj); // we know strObj is white so we can use GCWriteNew
-
-      runLibrary( print ? SC_SYM(interpretPrintCmdLine) : SC_SYM(interpretCmdLine) );
-  }
-  QtCollider::unlockLang();
+void QcApplication::onQuit() {
+    qWarning("[QcApplication::onQuit] CMD+Q was caught by the interpreter. "
+             "This is weird, it should not happen. "
+             "Please file an issue at https://github.com/supercollider/supercollider/issues");
 }
 
-bool QcApplication::event( QEvent *event )
-{
+bool QcApplication::compareThread() { return gMainVMGlobals->canCallOS; }
+
+void QcApplication::interpret(const QString& str, bool print) {
+    QtCollider::lockLang();
+    if (compiledOK) {
+        VMGlobals* g = gMainVMGlobals;
+
+        PyrString* strObj = newPyrString(g->gc, str.toStdString().c_str(), 0, true);
+
+        SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
+        g->gc->GCWriteNew(slotRawObject(&g->process->interpreter),
+                          strObj); // we know strObj is white so we can use GCWriteNew
+
+        runLibrary(print ? SC_SYM(interpretPrintCmdLine) : SC_SYM(interpretCmdLine));
+    }
+    QtCollider::unlockLang();
+}
+
+bool QcApplication::event(QEvent* event) {
     switch (event->type()) {
     case QEvent::FileOpen: {
         // open the file dragged onto the application icon on Mac
-        QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(event);
-        interpret( QStringLiteral("Document.open(\"%1\")").arg(fe->file()), false );
+        QFileOpenEvent* fe = static_cast<QFileOpenEvent*>(event);
+        interpret(QStringLiteral("Document.open(\"%1\")").arg(fe->file()), false);
         event->accept();
         return true;
     }
@@ -133,30 +157,46 @@ bool QcApplication::event( QEvent *event )
         break;
     }
 
-    return QApplication::event( event );
+    return QApplication::event(event);
 }
 
-bool QcApplication::notify( QObject * object, QEvent * event )
-{
+bool QcApplication::notify(QObject* object, QEvent* event) {
     switch (event->type()) {
     case QEvent::KeyPress: {
-        QKeyEvent *kevent = static_cast<QKeyEvent*>(event);
-        if ( _handleCmdPeriod &&
-             (kevent->key() == Qt::Key_Period) &&
-             (kevent->modifiers() & Qt::ControlModifier) )
-        {
+        QKeyEvent* kevent = static_cast<QKeyEvent*>(event);
+        if (_handleCmdPeriod && (kevent->key() == Qt::Key_Period) && (kevent->modifiers() & Qt::ControlModifier)) {
             static QString cmdPeriodCommand("CmdPeriod.run");
             interpret(cmdPeriodCommand, false);
         }
         break;
     }
     case QEvent::Wheel: {
-      _systemHasMouseWheel = true;
-      break;
+        _systemHasMouseWheel = true;
+        break;
     }
     default:
         break;
     }
 
-    return QApplication::notify( object, event );
+    bool result = QApplication::notify(object, event);
+
+#ifdef Q_OS_MAC
+    // XXX Explicitly accept all handled events so they don't propagate outside the application.
+    // This is a hack; for a not-fully-understood reason Qt past 5.7 sends these events to the
+    // native window if they aren't accepted here. This caused issue #4058. Accepting them here
+    // seems to solve the problem, but might cause other issues since it is a heavy-handed way
+    // of doing this.
+    // In order to still allow closing GUI windows with "cmd-w", we need to let through both
+    // this key combination, as well as modifier keys alone, since the "cmd" needs to be passed
+    // through by itself first for the "cmd-w" to work.
+    // TODO - solve more elegantly
+    if (result && event->type() == QEvent::KeyPress) {
+        auto kevent = static_cast<QKeyEvent*>(event);
+        if (!((kevent->key() == Qt::Key_W) && (kevent->modifiers() == Qt::ControlModifier))
+            && (kevent->key() != Qt::Key_unknown)) {
+            event->accept();
+        }
+    }
+#endif
+    return result;
 }

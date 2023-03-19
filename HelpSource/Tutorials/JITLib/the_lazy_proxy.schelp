@@ -1,6 +1,6 @@
 title:: the_lazy_proxy
 summary:: the lazy proxy
-categories:: Libraries>JITLib>Tutorials
+categories:: JITLib>Tutorials
 related:: Overviews/JITLib, Classes/NodeProxy, Classes/ProxySpace
 
 The class link::Classes/NodeProxy:: (and link::Classes/BusPlug::) uses a lazy evaluation scheme to derive its appropriate rate and numChannels from the first meaningful input that is assigned to it. see link::Classes/NodeProxy:: and link::Classes/ProxySpace:: helpfiles for basic info. So as long as the source is not set, the proxy is strong::neutral:: :

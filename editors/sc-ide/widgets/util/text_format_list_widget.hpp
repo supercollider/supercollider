@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_UTIL_TEXT_FORMAT_LIST_WIDGET_HPP_INCLUDED
-#define SCIDE_WIDGETS_UTIL_TEXT_FORMAT_LIST_WIDGET_HPP_INCLUDED
+#pragma once
 
 #include <QTreeView>
 #include <QStyledItemDelegate>
@@ -28,37 +27,29 @@
 
 namespace ScIDE {
 
-class TextFormatListWidget : public QTreeView
-{
+class TextFormatListWidget : public QTreeView {
     Q_OBJECT
 
 public:
-    class ItemDelegate : public QStyledItemDelegate
-    {
+    class ItemDelegate : public QStyledItemDelegate {
     public:
-        ItemDelegate( QObject *parent );
+        ItemDelegate(QObject* parent);
 
-        virtual QSize sizeHint
-            ( const QStyleOptionViewItem &, const QModelIndex & ) const;
+        virtual QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const;
 
-        virtual void paint
-            ( QPainter *, const QStyleOptionViewItem &, const QModelIndex & ) const;
+        virtual void paint(QPainter*, const QStyleOptionViewItem&, const QModelIndex&) const;
     };
 
 public:
-    TextFormatListWidget( QWidget * parent );
+    TextFormatListWidget(QWidget* parent);
 
-    void addFormat( const QString & name, const QTextCharFormat & format );
+    void addFormat(const QString& name, const QTextCharFormat& format);
 
-    void setFormat( int index, const QTextCharFormat & format );
+    void setFormat(int index, const QTextCharFormat& format);
 
-    inline void removeFormat( int index )
-    {
-        standardModel()->removeRow(index);
-    }
+    inline void removeFormat(int index) { standardModel()->removeRow(index); }
 
-    int currentIndex()
-    {
+    int currentIndex() {
         QModelIndex index(QAbstractItemView::currentIndex());
         if (index.isValid())
             return index.row();
@@ -66,32 +57,24 @@ public:
             return -1;
     }
 
-    QString name( int index );
+    QString name(int index);
 
-    QTextCharFormat format( int index );
+    QTextCharFormat format(int index);
 
-    inline int count()
-    {
-        return standardModel()->rowCount();
-    }
+    inline int count() { return standardModel()->rowCount(); }
 
 Q_SIGNALS:
-    void clicked( int index );
+    void clicked(int index);
 
 private Q_SLOTS:
-    void onDoubleClicked( const QModelIndex & );
+    void onDoubleClicked(const QModelIndex&);
 
 private:
-    QStandardItem *makeBrushItem( const QBrush &brush );
+    QStandardItem* makeBrushItem(const QBrush& brush);
 
-    QStandardItem *makeBoolItem( bool b );
+    QStandardItem* makeBoolItem(bool b);
 
-    inline QStandardItemModel *standardModel()
-    {
-        return qobject_cast<QStandardItemModel*>(model());
-    }
+    inline QStandardItemModel* standardModel() { return qobject_cast<QStandardItemModel*>(model()); }
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_UTIL_TEXT_FORMAT_LIST_WIDGET_HPP_INCLUDED

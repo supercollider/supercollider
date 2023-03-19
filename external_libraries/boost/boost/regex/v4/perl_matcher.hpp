@@ -27,7 +27,16 @@
 
 #ifdef BOOST_MSVC
 #  pragma warning(push)
-#  pragma warning(disable: 4800)
+#pragma warning(disable : 4251)
+#if BOOST_MSVC < 1700
+#     pragma warning(disable : 4231)
+#endif
+#  if BOOST_MSVC < 1600
+#     pragma warning(disable : 4660)
+#  endif
+#if BOOST_MSVC < 1910
+#pragma warning(disable:4800)
+#endif
 #endif
 
 namespace boost{
@@ -122,7 +131,7 @@ inline int string_compare(const Seq& s, const C* p)
    {
       ++i;
    }
-   return (i == s.size()) ? -p[i] : s[i] - p[i];
+   return (i == s.size()) ? -(int)p[i] : (int)s[i] - (int)p[i];
 }
 # define STR_COMP(s,p) string_compare(s,p)
 
@@ -161,9 +170,9 @@ iterator BOOST_REGEX_CALL re_is_set_member(iterator next,
       if(*p == static_cast<charT>(0))
       {
          // treat null string as special case:
-         if(traits_inst.translate(*ptr, icase) != *p)
+         if(traits_inst.translate(*ptr, icase))
          {
-            while(*p == static_cast<charT>(0))++p;
+            ++p;
             continue;
          }
          return set_->isnot ? next : (ptr == next) ? ++next : ptr;
@@ -339,6 +348,12 @@ enum saved_state_type
    saved_state_count = 14
 };
 
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#if BOOST_MSVC >= 1800
+#pragma warning(disable:26495)
+#endif
+#endif
 template <class Results>
 struct recursion_info
 {
@@ -348,14 +363,10 @@ struct recursion_info
    const re_syntax_base* preturn_address;
    Results results;
    repeater_count<iterator>* repeater_stack;
+   iterator location_of_start;
 };
-
 #ifdef BOOST_MSVC
-#pragma warning(push)
-#pragma warning(disable : 4251 4231)
-#  if BOOST_MSVC < 1600
-#     pragma warning(disable : 4660)
-#  endif
+#  pragma warning(pop)
 #endif
 
 template <class BidiIterator, class Allocator, class traits>
@@ -378,6 +389,9 @@ public:
       :  m_result(what), base(first), last(end), 
          position(first), backstop(l_base), re(e), traits_inst(e.get_traits()), 
          m_independent(false), next_count(&rep_obj), rep_obj(&next_count)
+#ifdef BOOST_REGEX_NON_RECURSIVE
+      , m_recursions(0)
+#endif
    {
       construct_init(e, f);
    }
@@ -546,7 +560,7 @@ private:
    void push_repeater_count(int i, repeater_count<BidiIterator>** s);
    void push_single_repeat(std::size_t c, const re_repeat* r, BidiIterator last_position, int state_id);
    void push_non_greedy_repeat(const re_syntax_base* ps);
-   void push_recursion(int idx, const re_syntax_base* p, results_type* presults);
+   void push_recursion(int idx, const re_syntax_base* p, results_type* presults, results_type* presults2);
    void push_recursion_pop();
    void push_case_change(bool);
 
@@ -565,8 +579,16 @@ private:
    bool m_unwound_alt;
    // We are unwinding a commit - used by independent subs to determine whether to stop there or carry on unwinding:
    //bool m_unwind_commit;
+   // Recursion limit:
+   unsigned m_recursions;
 #endif
 
+#ifdef BOOST_MSVC
+#  pragma warning(push)
+#if BOOST_MSVC >= 1800
+#pragma warning(disable:26495)
+#endif
+#endif
    // these operations aren't allowed, so are declared private,
    // bodies are provided to keep explicit-instantiation requests happy:
    perl_matcher& operator=(const perl_matcher&)
@@ -575,13 +597,16 @@ private:
    }
    perl_matcher(const perl_matcher& that)
       : m_result(that.m_result), re(that.re), traits_inst(that.traits_inst), rep_obj(0) {}
+#ifdef BOOST_MSVC
+#  pragma warning(pop)
+#endif
 };
 
-#ifdef BOOST_MSVC
-#pragma warning(pop)
-#endif
-
 } // namespace BOOST_REGEX_DETAIL_NS
+
+#ifdef BOOST_MSVC
+#  pragma warning(pop)
+#endif
 
 #ifdef BOOST_MSVC
 #pragma warning(push)
@@ -595,10 +620,6 @@ private:
 #endif
 
 } // namespace boost
-
-#ifdef BOOST_MSVC
-#  pragma warning(pop)
-#endif
 
 //
 // include the implementation of perl_matcher:

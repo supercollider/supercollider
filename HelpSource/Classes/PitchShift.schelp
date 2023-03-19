@@ -6,7 +6,7 @@ categories::  UGens>Filters>Pitch
 Description::
 
 A time domain granular pitch shifter. Grains have a triangular amplitude
-envelope and an overlap of 4:1.
+envelope and an overlap of 4:1, and use linear interpolation of the buffer.
 
 
 classmethods::
@@ -21,7 +21,8 @@ The input signal.
 argument::windowSize
 
 The size of the grain window in seconds. This value cannot be
-modulated.
+modulated. The minimum value is 3 sample periods. If you supply a smaller
+value, it will be rounded up to the minimum.
 
 
 argument::pitchRatio

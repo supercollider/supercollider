@@ -1,6 +1,6 @@
 title:: softSet
 summary:: set a proxy param value conditionally
-categories:: Libraries>JITLib>GUI
+categories:: JITLib>GUI
 related:: Reference/softVol_, Reference/softPut
 
 description::

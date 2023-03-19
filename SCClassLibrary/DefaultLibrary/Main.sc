@@ -19,7 +19,21 @@ Main : Process {
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
 
-		openPorts = Set[NetAddr.langPort];
+		// 'langPort' may fail if no UDP port was available
+		// this wreaks several manners of havoc, so, inform the user
+		// also allow the rest of init to proceed
+		try {
+			openPorts = Set[NetAddr.langPort];
+		} { |error|
+			openPorts = Set.new;  // don't crash elsewhere
+			"\n\nWARNING: An error occurred related to network initialization.".postln;
+			"The error is '%'.\n".postf(error.errorString);
+			"There may be an error message earlier in the sclang startup log.".postln;
+			"Please look backward in the post window and report the error on the mailing list or user forum.".postln;
+			"You may be able to resolve the problem by killing 'sclang%' processes in your system's task manager.\n\n"
+			.postf(if(this.platform.name == \windows) { ".exe" } { "" });
+		};
+
 		this.platform.startup;
 		StartUp.run;
 
@@ -40,8 +54,13 @@ Main : Process {
 				"scel",  {"For help type C-c C-y."},
 				"sced",  {"For help type ctrl-U."},
 				"scapp", {"For help type cmd-d."},
-				"scqt", {"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))}
-			) ?? {
+				"scqt", {
+					if (Platform.hasQtWebEngine) {
+						"For help press %.".format(if(this.platform.name==\osx,"Cmd-D","Ctrl-D"))
+					} {
+						"For help visit http://doc.sccode.org" // Help browser is not available
+					}
+			}) ?? {
 				(
 					osx: "For help type cmd-d.",
 					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",
@@ -126,34 +145,35 @@ Main : Process {
 		(class ? Object).browse;
 	}
 
-	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
+	*version { ^"%.%.%%".format(this.scVersionMajor, this.scVersionMinor, this.scVersionPatch, this.scVersionTweak) }
 
-	*scVersionMajor   {
-		_SC_VersionMajor
-		^this.primitiveFailed
-	}
-	*scVersionMinor   {
-		_SC_VersionMinor
-		^this.primitiveFailed
-	}
-	*scVersionPostfix {
-		_SC_VersionPatch
-		^this.primitiveFailed
-	}
-	*versionAtLeast { |maj, min|
-		^if((maj==this.scVersionMajor) and:{min.notNil}){
-			this.scVersionMinor >= min
-		}{
+	*scVersionMajor { _SC_VersionMajor ^this.primitiveFailed }
+	*scVersionMinor { _SC_VersionMinor ^this.primitiveFailed }
+	*scVersionPatch { _SC_VersionPatch ^this.primitiveFailed }
+	*scVersionTweak { _SC_VersionTweak ^this.primitiveFailed }
+
+	*versionAtLeast { |maj, min, patch|
+		^if((maj == this.scVersionMajor) and: { min.notNil }) {
+			if((min == this.scVersionMinor) and: { patch.notNil }) {
+				this.scVersionPatch >= patch
+			} {
+				this.scVersionMinor >= min
+			}
+		} {
 			this.scVersionMajor >= maj
-		};
+		}
 	}
 
-	*versionAtMost { |maj, min|
-		^if((maj==this.scVersionMajor) and:{min.notNil}){
-			this.scVersionMinor <= min
-		}{
+	*versionAtMost { |maj, min, patch|
+		^if((maj == this.scVersionMajor) and: { min.notNil }) {
+			if((min == this.scVersionMinor) and: { patch.notNil }) {
+				this.scVersionPatch <= patch
+			} {
+				this.scVersionMinor <= min
+			}
+		} {
 			this.scVersionMajor <= maj
-		};
+		}
 	}
 
 	pid {

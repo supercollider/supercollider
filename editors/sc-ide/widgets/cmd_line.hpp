@@ -19,8 +19,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_CMD_LINE_HPP_INCLUDED
-#define SCIDE_WIDGETS_CMD_LINE_HPP_INCLUDED
+#pragma once
 
 #include <QLineEdit>
 #include <QString>
@@ -28,16 +27,15 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 
-class CmdLineEdit : public QLineEdit
-{
+class CmdLineEdit : public QLineEdit {
     Q_OBJECT
 
 public:
-    explicit CmdLineEdit(QWidget * parent = NULL) :
-        QLineEdit(parent)
-    {}
+    explicit CmdLineEdit(QWidget* parent = NULL): QLineEdit(parent) {}
 
 public Q_SLOTS:
     bool openDocumentation();
@@ -49,27 +47,24 @@ private:
     QString symbolUnderCursor();
 };
 
-class CmdLine : public QWidget
-{
+class CmdLine : public QWidget {
     Q_OBJECT
 
 public:
-    CmdLine( const QString &text, int maxHistory = 30 );
-    void applySettings( Settings::Manager * );
-    void setText( const QString & text);
+    CmdLine(const QString& text, int maxHistory = 30);
+    void applySettings(Settings::Manager*);
+    void setText(const QString& text);
 
 signals:
-    void invoked( const QString &, bool silent );
+    void invoked(const QString&, bool silent);
 
 private:
-    bool eventFilter( QObject *, QEvent * );
+    bool eventFilter(QObject*, QEvent*);
 
-    CmdLineEdit *expr;
+    CmdLineEdit* expr;
     QStringList history;
     int curHistory;
     int maxHistory;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_CMD_LINE_HPP_INCLUDED

@@ -1,5 +1,4 @@
-#ifndef QC_HELPER
-#define QC_HELPER
+#pragma once
 
 #include "Common.h"
 
@@ -8,9 +7,8 @@
 #include <QFont>
 #include <QVariant>
 
-struct QcHelper
-{
-  protected:
+struct QcHelper {
+protected:
     QcHelper() {}
     float dummyFloat() const { return 0; }
     int dummyInt() const { return 0; }
@@ -20,5 +18,3 @@ struct QcHelper
     QFont dummyFont() const { return QFont(); }
     QVariantList dummyVariantList() const { return QVariantList(); }
 };
-
-#endif

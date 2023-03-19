@@ -2,7 +2,7 @@
 // detail/impl/signal_set_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,10 +18,12 @@
 #include <boost/asio/detail/config.hpp>
 
 #include <cstring>
+#include <stdexcept>
 #include <boost/asio/detail/reactor.hpp>
 #include <boost/asio/detail/signal_blocker.hpp>
 #include <boost/asio/detail/signal_set_service.hpp>
 #include <boost/asio/detail/static_mutex.hpp>
+#include <boost/asio/detail/throw_exception.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -88,11 +90,12 @@ class signal_set_service::pipe_read_op : public reactor_op
 {
 public:
   pipe_read_op()
-    : reactor_op(&pipe_read_op::do_perform, pipe_read_op::do_complete)
+    : reactor_op(boost::system::error_code(),
+        &pipe_read_op::do_perform, pipe_read_op::do_complete)
   {
   }
 
-  static bool do_perform(reactor_op*)
+  static status do_perform(reactor_op*)
   {
     signal_state* state = get_signal_state();
 
@@ -102,10 +105,10 @@ public:
       if (signal_number >= 0 && signal_number < max_signal_number)
         signal_set_service::deliver_signal(signal_number);
 
-    return false;
+    return not_done;
   }
 
-  static void do_complete(io_service_impl* /*owner*/, operation* base,
+  static void do_complete(void* /*owner*/, operation* base,
       const boost::system::error_code& /*ec*/,
       std::size_t /*bytes_transferred*/)
   {
@@ -117,13 +120,13 @@ public:
        //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
        //   && !defined(__CYGWIN__)
 
-signal_set_service::signal_set_service(
-    boost::asio::io_service& io_service)
-  : io_service_(boost::asio::use_service<io_service_impl>(io_service)),
+signal_set_service::signal_set_service(execution_context& context)
+  : execution_context_service_base<signal_set_service>(context),
+    scheduler_(boost::asio::use_service<scheduler_impl>(context)),
 #if !defined(BOOST_ASIO_WINDOWS) \
   && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \
   && !defined(__CYGWIN__)
-    reactor_(boost::asio::use_service<reactor>(io_service)),
+    reactor_(boost::asio::use_service<reactor>(context)),
 #endif // !defined(BOOST_ASIO_WINDOWS)
        //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
        //   && !defined(__CYGWIN__)
@@ -151,7 +154,7 @@ signal_set_service::~signal_set_service()
   remove_service(this);
 }
 
-void signal_set_service::shutdown_service()
+void signal_set_service::shutdown()
 {
   remove_service(this);
 
@@ -167,11 +170,10 @@ void signal_set_service::shutdown_service()
     }
   }
 
-  io_service_.abandon_operations(ops);
+  scheduler_.abandon_operations(ops);
 }
 
-void signal_set_service::fork_service(
-    boost::asio::io_service::fork_event fork_ev)
+void signal_set_service::notify_fork(execution_context::fork_event fork_ev)
 {
 #if !defined(BOOST_ASIO_WINDOWS) \
   && !defined(BOOST_ASIO_WINDOWS_RUNTIME) \
@@ -181,15 +183,16 @@ void signal_set_service::fork_service(
 
   switch (fork_ev)
   {
-  case boost::asio::io_service::fork_prepare:
+  case execution_context::fork_prepare:
     {
       int read_descriptor = state->read_descriptor_;
       state->fork_prepared_ = true;
       lock.unlock();
       reactor_.deregister_internal_descriptor(read_descriptor, reactor_data_);
+      reactor_.cleanup_descriptor_data(reactor_data_);
     }
     break;
-  case boost::asio::io_service::fork_parent:
+  case execution_context::fork_parent:
     if (state->fork_prepared_)
     {
       int read_descriptor = state->read_descriptor_;
@@ -199,7 +202,7 @@ void signal_set_service::fork_service(
           read_descriptor, reactor_data_, new pipe_read_op);
     }
     break;
-  case boost::asio::io_service::fork_child:
+  case execution_context::fork_child:
     if (state->fork_prepared_)
     {
       boost::asio::detail::signal_blocker blocker;
@@ -438,7 +441,8 @@ boost::system::error_code signal_set_service::cancel(
     signal_set_service::implementation_type& impl,
     boost::system::error_code& ec)
 {
-  BOOST_ASIO_HANDLER_OPERATION(("signal_set", &impl, "cancel"));
+  BOOST_ASIO_HANDLER_OPERATION((scheduler_.context(),
+        "signal_set", &impl, 0, "cancel"));
 
   op_queue<operation> ops;
   {
@@ -453,7 +457,7 @@ boost::system::error_code signal_set_service::cancel(
     }
   }
 
-  io_service_.post_deferred_completions(ops);
+  scheduler_.post_deferred_completions(ops);
 
   ec = boost::system::error_code();
   return ec;
@@ -489,7 +493,7 @@ void signal_set_service::deliver_signal(int signal_number)
       reg = reg->next_in_table_;
     }
 
-    service->io_service_.post_deferred_completions(ops);
+    service->scheduler_.post_deferred_completions(ops);
 
     service = service->next_;
   }
@@ -505,6 +509,22 @@ void signal_set_service::add_service(signal_set_service* service)
   if (state->service_list_ == 0)
     open_descriptors();
 #endif // !defined(BOOST_ASIO_WINDOWS) && !defined(__CYGWIN__)
+
+  // If a scheduler_ object is thread-unsafe then it must be the only
+  // scheduler used to create signal_set objects.
+  if (state->service_list_ != 0)
+  {
+    if (!BOOST_ASIO_CONCURRENCY_HINT_IS_LOCKING(SCHEDULER,
+          service->scheduler_.concurrency_hint())
+        || !BOOST_ASIO_CONCURRENCY_HINT_IS_LOCKING(SCHEDULER,
+          state->service_list_->scheduler_.concurrency_hint()))
+    {
+      std::logic_error ex(
+          "Thread-unsafe execution context objects require "
+          "exclusive access to signal handling.");
+      boost::asio::detail::throw_exception(ex);
+    }
+  }
 
   // Insert service into linked list of all services.
   service->next_ = state->service_list_;
@@ -539,8 +559,9 @@ void signal_set_service::remove_service(signal_set_service* service)
     // Disable the pipe readiness notifications.
     int read_descriptor = state->read_descriptor_;
     lock.unlock();
-    service->reactor_.deregister_descriptor(
-        read_descriptor, service->reactor_data_, false);
+    service->reactor_.deregister_internal_descriptor(
+        read_descriptor, service->reactor_data_);
+    service->reactor_.cleanup_descriptor_data(service->reactor_data_);
     lock.lock();
 #endif // !defined(BOOST_ASIO_WINDOWS)
        //   && !defined(BOOST_ASIO_WINDOWS_RUNTIME)
@@ -618,7 +639,7 @@ void signal_set_service::close_descriptors()
 void signal_set_service::start_wait_op(
     signal_set_service::implementation_type& impl, signal_op* op)
 {
-  io_service_.work_started();
+  scheduler_.work_started();
 
   signal_state* state = get_signal_state();
   static_mutex::scoped_lock lock(state->mutex_);
@@ -630,7 +651,7 @@ void signal_set_service::start_wait_op(
     {
       --reg->undelivered_;
       op->signal_number_ = reg->signal_number_;
-      io_service_.post_deferred_completion(op);
+      scheduler_.post_deferred_completion(op);
       return;
     }
 

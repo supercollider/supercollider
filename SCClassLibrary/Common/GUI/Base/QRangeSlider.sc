@@ -67,7 +67,13 @@ RangeSlider : QAbstractStepValue {
 
 	setSpan { arg lo, hi;
 		this.lo_(lo);
-		this.hi_(hi);
+
+		// setting lo may have flipped the roles of the endpoints
+		if(this.lo == lo) {
+			this.hi_(hi);
+		} {
+			this.lo_(hi);
+		}
 	}
 
 	setSpanActive { arg lo, hi;
@@ -76,8 +82,7 @@ RangeSlider : QAbstractStepValue {
 	}
 
 	setDeviation { arg deviation, average;
-		this.lo_( average - deviation );
-		this.hi_( average + deviation );
+		this.setSpan(average - deviation, average + deviation);
 	}
 
 	knobColor { ^this.getProperty(\knobColor) }

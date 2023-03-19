@@ -397,7 +397,7 @@ struct pointer_type_imp
 template <class T, class D>
 struct pointer_type_imp<T, D, false>
 {
-    typedef typename remove_extent<T>::type* type;
+    typedef T* type;
 };
 
 template <class T, class D>
@@ -446,7 +446,7 @@ class is_convertible
 #define BOOST_MOVE_TT_DECL
 #endif
 
-#if defined(_MSC_EXTENSIONS) && !defined(__BORLAND__) && !defined(_WIN64) && !defined(_M_ARM) && !defined(UNDER_CE)
+#if defined(_MSC_EXTENSIONS) && !defined(__BORLAND__) && !defined(_WIN64) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(UNDER_CE)
 #define BOOST_MOVE_TT_TEST_MSC_FUNC_SIGS
 #endif
 
@@ -546,7 +546,7 @@ struct is_unary_function
 #  define BOOST_MOVEUP_HAS_VIRTUAL_DESTRUCTOR(T) __has_virtual_destructor(T)
 #elif defined(__ghs__) && (__GHS_VERSION_NUMBER >= 600)
 #  define BOOST_MOVEUP_HAS_VIRTUAL_DESTRUCTOR(T) __has_virtual_destructor(T)
-#elif defined(__CODEGEARC__)
+#elif defined(BOOST_CODEGEARC)
 #  define BOOST_MOVEUP_HAS_VIRTUAL_DESTRUCTOR(T) __has_virtual_destructor(T)
 #endif
 

@@ -18,30 +18,28 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_SETTINGS_SCLANG_PAGE_HPP_INCLUDED
-#define SCIDE_WIDGETS_SETTINGS_SCLANG_PAGE_HPP_INCLUDED
+#pragma once
 
 #include <QWidget>
 
 namespace Ui {
-    class SclangConfigPage;
+class SclangConfigPage;
 }
 
 namespace ScIDE { namespace Settings {
 
 class Manager;
 
-class SclangPage : public QWidget
-{
+class SclangPage : public QWidget {
     Q_OBJECT
 
 public:
-    SclangPage(QWidget *parent = 0);
+    SclangPage(QWidget* parent = 0);
     ~SclangPage();
 
 public Q_SLOTS:
-    void load( Manager * );
-    void store( Manager * );
+    void load(Manager*);
+    void store(Manager*);
 
 private Q_SLOTS:
     void addIncludePath();
@@ -50,7 +48,7 @@ private Q_SLOTS:
     void addExcludePath();
     void removeExcludePath();
     void markSclangConfigDirty() { sclangConfigDirty = true; }
-    void changeSelectedLanguageConfig(const QString & configPath);
+    void changeSelectedLanguageConfig(const QString& configPath);
     void dialogCreateNewConfigFile();
     void dialogDeleteCurrentConfigFile();
 
@@ -60,12 +58,10 @@ private:
     QString languageConfigFile();
     QStringList availableLanguageConfigFiles();
 
-    Ui::SclangConfigPage *ui;
+    Ui::SclangConfigPage* ui;
 
     bool sclangConfigDirty;
     QString selectedLanguageConfigFile;
 };
 
 }} // namespace ScIDE::Settings
-
-#endif // SCIDE_WIDGETS_SETTINGS_SCLANG_PAGE_HPP_INCLUDED

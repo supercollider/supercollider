@@ -1,14 +1,14 @@
 class:: UnpackFFT
 summary:: Unpack an FFT chain into separate demand-rate FFT bin streams
-categories:: UGens>FFT
+categories:: UGens>FFT, UGens>Demand
 related:: Classes/PackFFT, Classes/Unpack1FFT
 
 description::
 Takes an FFT chain and separates the magnitude and phase data into separate demand-rate streams, for arithmetic manipulation etc.
 
-This is technically a demand-rate UGen. The actual "demand" is usually created by PackFFT later on in the graph, which requests the values in order to re-pack the data. This allows for processing to occur in between...
+This is technically a demand-rate UGen. The actual "demand" is usually created by PackFFT later on in the graph, which requests the values in order to re-pack the data. This allows for processing to occur in between.
 
-See also pvcollect, pvcalc and pvcalc2 methods ( in link::Classes/PV_ChainUGen:: ) which provide convenient ways to process audio in the frequency domain. The help for pvcollect includes notes on efficiency considerations.
+See also link::Classes/PV_ChainUGen#-pvcollect::, link::Classes/PV_ChainUGen#-pvcalc::, and link::Classes/PV_ChainUGen#-pvcalc2::, which provide convenient ways to process audio in the frequency domain. The help for pvcollect includes notes on efficiency considerations.
 
 classmethods::
 private:: categories
@@ -33,44 +33,47 @@ code::
 examples::
 code::
 
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-
 // This one just drags out various the values and posts them - a little bit pointless!
 (
-x = {
-	var sig, chain, unp;
-	//sig = SinOsc.ar;
-	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
-	chain = FFT(LocalBuf(1, 1024), sig);
+{
+	var sig, chain, stream, windowStarts, fftSize;
+	fftSize = 1024;
+
+	sig = SinOsc.ar(LFDNoise3.kr(LFNoise0.kr(1) * 40 + 60) * 700 + 800);
+	chain = FFT(LocalBuf(1, fftSize), sig);
+
+	// a window start is indicated by a signal leaving the -1 bottom line
+	windowStarts = chain > -1;
 
 	// Using the frombin & tobin args makes it much more efficient, limiting analysis to the bins of interest
-	unp = UnpackFFT(chain, b.numFrames, frombin: 0, tobin: 4);
+	stream = UnpackFFT(chain, fftSize, frombin: 0, tobin: 4);
 
 	// Demand some data from the unpacker.
 	// NOTE: At present, Demand.kr is unable to handle more than 32 inputs,
 	// so using frombin & tobin to limit the number of bins is compulsory.
-	Demand.kr(chain>=0, 0, unp).collect{|anunp, index|
-		anunp.poll(chain>=0, if(index % 2 == 0,  "Magnitude", "Phase")+(index/2).floor);
+
+	Demand.kr(windowStarts, 0, stream).collect { |anunp, index|
+		var label = if(index.even) { "Magnitude" } { "Phase" };
+		label = label + (index / 2).floor;
+		anunp.poll(windowStarts, label)
 	};
 
-	(sig * 0.1).dup;
+	sig * 0.05
 }.play
 )
-x.free;
 
-// Now a simple frequency-domain manipulation, square-rooting the magnitudes AND phases.
+// simple frequency-domain manipulation, square-rooting the magnitudes AND phases.
 (
 x = {
 	var sig, chain, magsphases, b;
 	b = LocalBuf(1, 1024);
-	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
+	sig = SinOsc.ar(LFDNoise3.kr(LFNoise0.kr(1) * 40 + 60) * 700 + 800);
 	chain = FFT(b, sig);
 	magsphases = UnpackFFT(chain, b.numFrames);
 	magsphases = magsphases.collect(_.sqrt);
-	PackFFT(chain, b.numFrames, magsphases);
-	Out.ar(0, 0.25 * IFFT(chain).dup);
+	chain = PackFFT(chain, b.numFrames, magsphases);
+	IFFT(chain) * 0.1
 }.play
 )
-x.free;
 ::
 

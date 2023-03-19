@@ -18,8 +18,6 @@
 #include <boost/test/detail/fwd_decl.hpp>
 #include <boost/test/detail/throw_exception.hpp>
 
-#include <boost/test/utils/trivial_singleton.hpp>
-
 #include <boost/test/detail/suppress_warnings.hpp>
 
 // STL
@@ -74,7 +72,7 @@ BOOST_TEST_DECL bool                test_in_progress();
 /// This function shuts down the framework and clears up its mono-state.
 ///
 /// It needs to be at the very end of test module execution
-BOOST_TEST_DECL void    shutdown();
+BOOST_TEST_DECL void                shutdown();
 /// @}
 
 /// @name Test unit registration
@@ -132,10 +130,26 @@ BOOST_TEST_DECL void                clear();
 /// @param[in]  to  test observer object to add
 BOOST_TEST_DECL void                register_observer( test_observer& to );
 
-/// Excldes the observer object form the framework's list of test observers
+/// Excludes the observer object form the framework's list of test observers
 /// @param[in]  to  test observer object to exclude
 BOOST_TEST_DECL void                deregister_observer( test_observer& to );
 
+/// @}
+
+/// @name Global fixtures registration
+/// @{
+
+/// Adds a new global fixture to be setup before any other tests starts and tore down after
+/// any other tests finished.
+/// Test unit fixture lifetime should exceed the testing execution timeframe
+/// @param[in]  tuf  fixture to add
+BOOST_TEST_DECL void                register_global_fixture( global_fixture& tuf );
+
+/// Removes a test global fixture from the framework
+///
+/// Test unit fixture lifetime should exceed the testing execution timeframe
+/// @param[in]  tuf  fixture to remove
+BOOST_TEST_DECL void                deregister_global_fixture( global_fixture& tuf );
 /// @}
 
 /// @name Assertion/uncaught exception context support
@@ -177,6 +191,15 @@ BOOST_TEST_DECL context_generator   get_context();
 /// There is only only master test suite per test module.
 /// @returns a reference the master test suite instance
 BOOST_TEST_DECL master_test_suite_t& master_test_suite();
+
+/// This function provides an access to the test unit currently being executed.
+
+/// The difference with current_test_case is about the time between a test-suite
+/// is being set up or torn down (fixtures) and when the test-cases of that suite start.
+
+/// This function is only valid during test execution phase.
+/// @see current_test_case_id, current_test_case
+BOOST_TEST_DECL test_unit const&    current_test_unit();
 
 /// This function provides an access to the test case currently being executed.
 
@@ -231,12 +254,20 @@ BOOST_TEST_DECL void                assertion_result( unit_test::assertion_resul
 BOOST_TEST_DECL void                exception_caught( execution_exception const& );
 /// Reports aborted test unit to all test observers
 BOOST_TEST_DECL void                test_unit_aborted( test_unit const& );
+/// Reports aborted test module to all test observers
+BOOST_TEST_DECL void                test_aborted( );
 /// @}
 
 namespace impl {
 // exclusively for self test
 BOOST_TEST_DECL void                setup_for_execution( test_unit const& );
 BOOST_TEST_DECL void                setup_loggers( );
+
+// Helper for setting the name of the master test suite globally
+struct BOOST_TEST_DECL master_test_suite_name_setter {
+  master_test_suite_name_setter( const_string name );
+};
+
 } // namespace impl
 
 // ************************************************************************** //

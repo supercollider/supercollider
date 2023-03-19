@@ -37,45 +37,55 @@ namespace container {
 #if defined(BOOST_CONTAINER_USER_DEFINED_THROW_CALLBACKS)
    //The user must provide definitions for the following functions
 
-   void throw_bad_alloc();
+   BOOST_NORETURN void throw_bad_alloc();
 
-   void throw_out_of_range(const char* str);
+   BOOST_NORETURN void throw_out_of_range(const char* str);
 
-   void throw_length_error(const char* str);
+   BOOST_NORETURN void throw_length_error(const char* str);
 
-   void throw_logic_error(const char* str);
+   BOOST_NORETURN void throw_logic_error(const char* str);
 
-   void throw_runtime_error(const char* str);
+   BOOST_NORETURN void throw_runtime_error(const char* str);
 
 #elif defined(BOOST_NO_EXCEPTIONS)
 
-   inline void throw_bad_alloc()
+   BOOST_NORETURN inline void throw_bad_alloc()
    {
-      BOOST_ASSERT(!"boost::container bad_alloc thrown");
+      const char msg[] = "boost::container bad_alloc thrown";
+      (void)msg;
+      BOOST_ASSERT(!msg);
       std::abort();
    }
 
-   inline void throw_out_of_range(const char* str)
+   BOOST_NORETURN inline void throw_out_of_range(const char* str)
    {
-      BOOST_ASSERT_MSG(!"boost::container out_of_range thrown", str);
+      const char msg[] = "boost::container out_of_range thrown";
+      (void)msg; (void)str;
+      BOOST_ASSERT_MSG(!msg, str);
       std::abort();
    }
 
-   inline void throw_length_error(const char* str)
+   BOOST_NORETURN inline void throw_length_error(const char* str)
    {
-      BOOST_ASSERT_MSG(!"boost::container length_error thrown", str);
+      const char msg[] = "boost::container length_error thrown";
+      (void)msg; (void)str;
+      BOOST_ASSERT_MSG(!msg, str);
       std::abort();
    }
 
-   inline void throw_logic_error(const char* str)
+   BOOST_NORETURN inline void throw_logic_error(const char* str)
    {
-      BOOST_ASSERT_MSG(!"boost::container logic_error thrown", str);
+      const char msg[] = "boost::container logic_error thrown";
+      (void)msg; (void)str;
+      BOOST_ASSERT_MSG(!msg, str);
       std::abort();
    }
 
-   inline void throw_runtime_error(const char* str)
+   BOOST_NORETURN inline void throw_runtime_error(const char* str)
    {
-      BOOST_ASSERT_MSG(!"boost::container runtime_error thrown", str);
+      const char msg[] = "boost::container runtime_error thrown";
+      (void)msg; (void)str;
+      BOOST_ASSERT_MSG(!msg, str);
       std::abort();
    }
 
@@ -92,7 +102,7 @@ namespace container {
    //! <li>If BOOST_NO_EXCEPTIONS and BOOST_CONTAINER_USER_DEFINED_THROW_CALLBACKS are defined
    //!   the user must provide an implementation and the function should not return.</li>
    //! </ul>
-   inline void throw_bad_alloc()
+   BOOST_NORETURN inline void throw_bad_alloc()
    {
       throw std::bad_alloc();
    }
@@ -108,7 +118,7 @@ namespace container {
    //! <li>If BOOST_NO_EXCEPTIONS and BOOST_CONTAINER_USER_DEFINED_THROW_CALLBACKS are defined
    //!   the user must provide an implementation and the function should not return.</li>
    //! </ul>
-   inline void throw_out_of_range(const char* str)
+   BOOST_NORETURN inline void throw_out_of_range(const char* str)
    {
       throw std::out_of_range(str);
    }
@@ -124,7 +134,7 @@ namespace container {
    //! <li>If BOOST_NO_EXCEPTIONS and BOOST_CONTAINER_USER_DEFINED_THROW_CALLBACKS are defined
    //!   the user must provide an implementation and the function should not return.</li>
    //! </ul>
-   inline void throw_length_error(const char* str)
+   BOOST_NORETURN inline void throw_length_error(const char* str)
    {
       throw std::length_error(str);
    }
@@ -141,7 +151,7 @@ namespace container {
    //! <li>If BOOST_NO_EXCEPTIONS and BOOST_CONTAINER_USER_DEFINED_THROW_CALLBACKS are defined
    //!   the user must provide an implementation and the function should not return.</li>
    //! </ul>
-   inline void throw_logic_error(const char* str)
+   BOOST_NORETURN inline void throw_logic_error(const char* str)
    {
       throw std::logic_error(str);
    }
@@ -157,7 +167,7 @@ namespace container {
    //! <li>If BOOST_NO_EXCEPTIONS and BOOST_CONTAINER_USER_DEFINED_THROW_CALLBACKS are defined
    //!   the user must provide an implementation and the function should not return.</li>
    //! </ul>
-   inline void throw_runtime_error(const char* str)
+   BOOST_NORETURN inline void throw_runtime_error(const char* str)
    {
       throw std::runtime_error(str);
    }

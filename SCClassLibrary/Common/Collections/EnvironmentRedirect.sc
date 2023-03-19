@@ -128,6 +128,14 @@ EnvironmentRedirect {
 
 	clear { envir.clear }
 
+	keys { arg species(Set);
+		^envir.keys(species)
+	}
+
+	values {
+		^envir.values
+	}
+
 	know_ { arg flag; envir.know = flag }
 	know { ^envir.know }
 
@@ -160,16 +168,14 @@ EnvironmentRedirect {
 		stream << " ]" ;
 	}
 
-	linkDoc { arg doc, pushNow=true;
+	linkDoc { arg doc;
 		doc = doc ? Document.current;
 		doc.envir_(this);
-		if(pushNow and: { currentEnvironment !== this }) { this.push };
 	}
 
-	unlinkDoc { arg doc, popNow = false;
+	unlinkDoc { arg doc;
 		doc = doc ? Document.current;
 		if(doc.envir === this) { doc.envir_(nil) };
-		if(popNow and:  { currentEnvironment === this }) { this.pop };
 	}
 
 	// networking

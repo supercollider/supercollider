@@ -1,196 +1,274 @@
 /************************************************************************
-*
-* Copyright 2011-2012 Jakob Leben (jakob.leben@gmail.com)
-*
-* This file is part of SuperCollider Qt GUI.
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*
-************************************************************************/
+ *
+ * Copyright 2011-2012 Jakob Leben (jakob.leben@gmail.com)
+ *
+ * This file is part of SuperCollider Qt GUI.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ************************************************************************/
 
-#include "QcWebView.h"
-#include "web_page.hpp"
-#include "../QcWidgetFactory.h"
-#include <QWebPage>
-#include <QWebFrame>
-#include <QWebElement>
-#include <QAction>
-#include <QMenu>
-#include <QShortcut>
-#include <QKeyEvent>
-#include <QApplication>
-#include <QStyle>
+#ifdef SC_USE_QTWEBENGINE
 
-QC_DECLARE_QWIDGET_FACTORY(WebView);
+#    include "QcWebView.h"
+#    include "../widgets/web_page.hpp"
+#    include <QWebEnginePage>
+#    include <QWebEngineSettings>
+#    include <QWebEngineContextMenuData>
+#    include <QAction>
+#    include <QMenu>
+#    include <QShortcut>
+#    include <QKeyEvent>
+#    include <QApplication>
+#    include <QStyle>
+#    include <QWebEngineCallback>
 
 namespace QtCollider {
 
-WebView::WebView( QWidget *parent ) :
-  QWebView( parent ),
-  _interpretSelection(false),
-  _editable(false)
-{
-  QtCollider::WebPage *page = new WebPage(this);
-  page->setDelegateReload(true);
-  setPage( page );
+WebView::WebView(QWidget* parent): QWebEngineView(parent), _editable(false) {
+    QtCollider::WebPage* page = new WebPage(this);
+    setPage(page);
+    connectPage(page);
 
-  // Set the style's standard palette to avoid system's palette incoherencies
-  // get in the way of rendering web pages
-  setPalette( style()->standardPalette() );
+    // Set the style's standard palette to avoid system's palette incoherencies
+    // get in the way of rendering web pages
+    setPalette(style()->standardPalette());
 
-  setAttribute(Qt::WA_AcceptTouchEvents);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 
-  page->action( QWebPage::Copy )->setShortcut( QKeySequence::Copy );
-  page->action( QWebPage::Paste )->setShortcut( QKeySequence::Paste );
+    page->action(QWebEnginePage::Copy)->setShortcut(QKeySequence::Copy);
+    page->action(QWebEnginePage::Paste)->setShortcut(QKeySequence::Paste);
+    page->action(QWebEnginePage::Reload)->setShortcut(QKeySequence::Refresh);
 
-  connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
-  connect( page->action(QWebPage::Reload), SIGNAL(triggered(bool)),
-           this, SLOT(onPageReload()) );
-
-  connect( this, SIGNAL(interpret(QString)),
-           qApp, SLOT(interpret(QString)),
-           Qt::QueuedConnection );
-
-  connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
-           this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
-    
-  connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
+    connect(this, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
 }
 
-QString WebView::url() const
-{
-  return QWebView::url().toString();
+void WebView::connectPage(QtCollider::WebPage* page) {
+    connect(page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)), this,
+            SIGNAL(jsConsoleMsg(const QString&, int, const QString&)));
+
+    connect(page, SIGNAL(linkHovered(const QString&)), this, SIGNAL(linkHovered(const QString&)));
+
+    connect(page, SIGNAL(geometryChangeRequested(const QRect&)), this, SIGNAL(geometryChangeRequested(const QRect&)));
+
+    connect(page, SIGNAL(windowCloseRequested()), this, SIGNAL(windowCloseRequested()));
+
+    connect(page, SIGNAL(scrollPositionChanged(const QPointF&)), this, SIGNAL(scrollPositionChanged(const QPointF&)));
+
+    connect(page, SIGNAL(contentsSizeChanged(const QSizeF&)), this, SIGNAL(contentsSizeChanged(const QSizeF&)));
+
+    connect(page, SIGNAL(audioMutedChanged(bool)), this, SIGNAL(audioMutedChanged(bool)));
+
+    connect(page, SIGNAL(recentlyAudibleChanged(bool)), this, SIGNAL(recentlyAudibleChanged(bool)));
+
+    connect(page, SIGNAL(navigationRequested(QUrl, QWebEnginePage::NavigationType, bool)), this,
+            SLOT(onLinkClicked(QUrl, QWebEnginePage::NavigationType, bool)));
+
+    connect(page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)), this, SLOT(onPageReload()));
+
+    connect(page, &WebPage::renderProcessTerminated, this, &WebView::onRenderProcessTerminated);
 }
 
-void WebView::setUrl( const QString & str )
-{
-  load( urlFromString(str) );
+void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code) {
+    Q_EMIT(renderProcessTerminated((int)status, code));
 }
 
-QString WebView::html () const
-{
-  return page()->mainFrame()->toHtml();
+void WebView::triggerPageAction(int action, bool checked) {
+    QWebEngineView::triggerPageAction((QWebEnginePage::WebAction)action, checked);
 }
 
-void WebView::setHtml ( const QString &html, const QString &baseUrl )
-{
-  QUrl url( baseUrl.isEmpty() ? QUrl() : urlFromString(baseUrl) );
-  QWebView::setHtml( html, url );
+QString WebView::url() const { return QWebEngineView::url().toString(); }
+
+void WebView::setUrl(const QString& str) { load(urlFromString(str)); }
+
+bool WebView::delegateReload() const {
+    WebPage* p = qobject_cast<QtCollider::WebPage*>(page());
+    Q_ASSERT(p);
+    return p->delegateReload();
 }
 
-QString WebView::plainText () const
-{
-  return page()->mainFrame()->toPlainText();
+void WebView::setDelegateReload(bool flag) {
+    WebPage* p = qobject_cast<QtCollider::WebPage*>(page());
+    Q_ASSERT(p);
+    p->setDelegateReload(flag);
 }
 
-int WebView::linkDelegationPolicy () const
-{
-  return (int)page()->linkDelegationPolicy();
+void WebView::setFontFamily(int generic, const QString& specific) {
+    settings()->setFontFamily((QWebEngineSettings::FontFamily)generic, specific);
 }
 
-void WebView::setLinkDelegationPolicy ( int p )
-{
-  page()->setLinkDelegationPolicy( (QWebPage::LinkDelegationPolicy)p );
+QAction* WebView::pageAction(QWebEnginePage::WebAction action) const { return QWebEngineView::pageAction(action); }
+
+void WebView::setHtml(const QString& html, const QString& baseUrl) {
+    if (page()) {
+        page()->setHtml(html, baseUrl);
+    }
 }
 
-bool WebView::delegateReload() const
-{
-  WebPage *p = qobject_cast<QtCollider::WebPage*>(page());
-  Q_ASSERT(p);
-  return p->delegateReload();
+void WebView::setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl) {
+    if (page()) {
+        QByteArray byteData;
+        for (int val : data) {
+            byteData.push_back((char)val);
+        }
+        page()->setContent(byteData, mimeType, baseUrl);
+    }
 }
 
-void WebView::setDelegateReload( bool flag )
-{
-  WebPage *p = qobject_cast<QtCollider::WebPage*>(page());
-  Q_ASSERT(p);
-  p->setDelegateReload( flag );
+void WebView::toHtml(QcCallback* cb) const {
+    if (page()) {
+        if (cb) {
+            page()->toHtml(cb->asFunctor());
+        } else {
+            page()->toHtml([](const QString&) {});
+        }
+    } else {
+        cb->asFunctor()(QString());
+    }
 }
 
-void WebView::setFontFamily( int generic, const QString & specific )
-{
-  settings()->setFontFamily( (QWebSettings::FontFamily) generic, specific );
+void WebView::toPlainText(QcCallback* cb) const {
+    if (page()) {
+        if (cb) {
+            page()->toPlainText(cb->asFunctor());
+        } else {
+            page()->toPlainText([](const QString&) {});
+        }
+    } else {
+        cb->asFunctor()(QString());
+    }
 }
 
-void WebView::evaluateJavaScript ( const QString &script )
-{
-  if( script.isEmpty() ) return;
-  QWebFrame *frame = page()->currentFrame();
-  if( frame ) frame->evaluateJavaScript( script );
+void WebView::runJavaScript(const QString& script, QcCallback* cb) {
+    if (page()) {
+        if (cb) {
+            page()->runJavaScript(script, cb->asFunctor());
+        } else {
+            page()->runJavaScript(script, [](const QVariant&) {});
+        }
+    } else {
+        cb->asFunctor()(QString());
+    }
 }
 
-void WebView::findText( const QString &searchText, bool reversed )
-{
-  QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
-  if( reversed ) flags |= QWebPage::FindBackward;
-  QWebView::findText( searchText, flags );
+void WebView::setWebAttribute(int attr, bool on) {
+    if (page()) {
+        page()->settings()->setAttribute((QWebEngineSettings::WebAttribute)attr, on);
+    }
 }
 
-void WebView::onLinkClicked( const QUrl &url )
-{
-  Q_EMIT( linkActivated( url.toString() ) );
+bool WebView::testWebAttribute(int attr) {
+    return page() ? page()->settings()->testAttribute((QWebEngineSettings::WebAttribute)attr) : false;
 }
 
-void WebView::onPageReload()
-{
-  Q_EMIT( reloadTriggered( url() ) );
+void WebView::resetWebAttribute(int attr) {
+    if (page()) {
+        page()->settings()->resetAttribute((QWebEngineSettings::WebAttribute)attr);
+    }
 }
 
-void WebView::contextMenuEvent ( QContextMenuEvent * event )
-{
+void WebView::navigate(const QString& urlString) {
+    QUrl url(urlString);
+    this->load(url);
+}
+
+void WebView::findText(const QString& searchText, bool reversed, QcCallback* cb) {
+    QWebEnginePage::FindFlags flags;
+    if (reversed)
+        flags |= QWebEnginePage::FindBackward;
+
+    if (!cb) {
+        QWebEngineView::findText(searchText, flags);
+    } else {
+        QWebEngineView::findText(searchText, flags, cb->asFunctor());
+    }
+}
+
+void WebView::onPageReload() { Q_EMIT(reloadTriggered(url())); }
+
+void WebView::contextMenuEvent(QContextMenuEvent* event) {
     QMenu menu;
 
-    QPoint pos = event->pos();
+    const QWebEngineContextMenuData& contextData = page()->contextMenuData();
 
-    QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent( pos );
-
-    if (!hitTest.linkElement().isNull()) {
-        menu.addAction( pageAction(QWebPage::CopyLinkToClipboard) );
+    if (!contextData.linkUrl().isEmpty()) {
+        menu.addAction(pageAction(QWebEnginePage::CopyLinkToClipboard));
         menu.addSeparator();
     }
 
-    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
-        menu.addAction( pageAction(QWebPage::Copy) );
-        if (hitTest.isContentEditable())
-            menu.addAction( pageAction(QWebPage::Paste) );
+    if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
+        menu.addAction(pageAction(QWebEnginePage::Copy));
+        if (contextData.isContentEditable()) {
+            menu.addAction(pageAction(QWebEnginePage::Paste));
+        }
         menu.addSeparator();
     }
 
-    menu.addAction( pageAction(QWebPage::Back) );
-    menu.addAction( pageAction(QWebPage::Forward) );
-    menu.addAction( pageAction(QWebPage::Reload) );
+    menu.addAction(pageAction(QWebEnginePage::Back));
+    menu.addAction(pageAction(QWebEnginePage::Forward));
+    menu.addAction(pageAction(QWebEnginePage::Reload));
 
-    menu.exec( event->globalPos() );
+    menu.exec(event->globalPos());
 }
 
-void WebView::keyPressEvent( QKeyEvent *e )
-{
-    int key = e->key();
-    int mods = e->modifiers();
-
-    if( _interpretSelection &&
-            ( key == Qt::Key_Enter ||
-              ( key == Qt::Key_Return && mods & (Qt::ControlModifier|Qt::ShiftModifier) ) ) )
-    {
-        QString selection = selectedText();
-        if( !selection.isEmpty() ) {
-            Q_EMIT( interpret( selection ) );
-            return;
-        }
+// webView's renderer keypresses don't arrive to webView
+// duplicate them
+bool WebView::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::KeyPress) {
+        // takes ownership of newEvent
+        QApplication::postEvent(this, new QKeyEvent(*static_cast<QKeyEvent*>(event)));
     }
 
-    QWebView::keyPressEvent( e );
+    event->ignore();
+    return false;
+}
+
+// stop keypresses here to avoid duplicates in parents
+bool WebView::event(QEvent* ev) {
+    if (ev->type() == QEvent::KeyPress)
+        return true;
+
+    return QWebEngineView::event(ev);
+}
+
+void WebView::pageLoaded(bool ok) { this->focusProxy()->installEventFilter(this); }
+
+void WebView::setEditable(bool b) {
+    _editable = b;
+    if (_editable) {
+        page()->runJavaScript("document.documentElement.contentEditable = true");
+    } else {
+        page()->runJavaScript("document.documentElement.contentEditable = false");
+    }
+}
+
+bool WebView::overrideNavigation() const {
+    WebPage* p = qobject_cast<WebPage*>(page());
+    return p ? p->delegateNavigation() : false;
+}
+
+void WebView::setOverrideNavigation(bool b) {
+    WebPage* p = qobject_cast<WebPage*>(page());
+    if (p) {
+        p->setDelegateNavigation(b);
+    }
+}
+
+void WebView::onLinkClicked(const QUrl& url, QWebEnginePage::NavigationType type, bool isMainFrame) {
+    Q_EMIT(navigationRequested(url, (int)type, isMainFrame));
 }
 
 } // namespace QtCollider
+
+#endif // SC_USE_QTWEBENGINE

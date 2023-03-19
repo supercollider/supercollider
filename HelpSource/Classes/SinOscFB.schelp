@@ -9,6 +9,8 @@ Description::
 SinOscFB is a sine oscillator that has phase modulation feedback; its output plugs back into the phase input.
 Basically this allows a modulation between a sine wave and a sawtooth like wave. Overmodulation causes chaotic oscillation. It may be useful if you want to simulate feedback FM synths.
 
+Please note: The frequency of SinOscFB can be modulated at control rate. When trying to modulate the frequency of SinOscFB at audio rate, you will notice audible artefacts at higher frequency modulation frequencies. This is due to SinOscFB updating incoming frequency modulation values only once every control period (which is 64 samples long per default), instead of updating on every sample (like e.g. SinOsc).
+
 
 
 

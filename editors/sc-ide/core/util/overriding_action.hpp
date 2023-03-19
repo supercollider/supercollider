@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_CORE_UTIL_OVERRIDING_ACTION_HPP_INCLUDED
-#define SCIDE_CORE_UTIL_OVERRIDING_ACTION_HPP_INCLUDED
+#pragma once
 
 #include <QAction>
 #include <QWidget>
@@ -28,52 +27,39 @@
 
 namespace ScIDE {
 
-class OverridingAction : public QAction
-{
+class OverridingAction : public QAction {
 public:
-    OverridingAction( QObject * parent ):
-        QAction(parent)
-    {
+    OverridingAction(QObject* parent): QAction(parent) { setShortcutContext(Qt::WidgetWithChildrenShortcut); }
+
+    OverridingAction(const QString& text, QObject* parent): QAction(text, parent) {
         setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
 
-    OverridingAction ( const QString & text, QObject * parent ):
-        QAction(text, parent)
-    {
+    OverridingAction(const QIcon& icon, const QString& text, QObject* parent): QAction(icon, text, parent) {
         setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
 
-    OverridingAction ( const QIcon & icon, const QString & text, QObject * parent ):
-        QAction(icon, text, parent)
-    {
-        setShortcutContext(Qt::WidgetWithChildrenShortcut);
-    }
-
-    void addToWidget( QWidget * widget )
-    {
+    void addToWidget(QWidget* widget) {
         widget->addAction(this);
         widget->installEventFilter(this);
     }
 
-    static QKeySequence keySequence( QKeyEvent *event )
-    {
-        if ( event->key() >= Qt::Key_Shift &&
-             event->key() <= Qt::Key_Alt )
+    static QKeySequence keySequence(QKeyEvent* event) {
+        if (event->key() >= Qt::Key_Shift && event->key() <= Qt::Key_Alt)
             return QKeySequence();
 
-        return QKeySequence( event->modifiers() | event->key() );
+        return QKeySequence(event->modifiers() | event->key());
     }
 
 protected:
-    virtual bool eventFilter ( QObject * object, QEvent * event )
-    {
+    virtual bool eventFilter(QObject* object, QEvent* event) {
         Q_UNUSED(object);
         switch (event->type()) {
         case QEvent::ShortcutOverride: {
-            QKeySequence sequence = keySequence( static_cast<QKeyEvent*>(event) );
+            QKeySequence sequence = keySequence(static_cast<QKeyEvent*>(event));
             if (sequence.isEmpty())
                 break;
-            foreach ( const QKeySequence & shortcut, shortcuts() ) {
+            foreach (const QKeySequence& shortcut, shortcuts()) {
                 if (shortcut == sequence) {
                     event->accept();
                     return true;
@@ -82,13 +68,13 @@ protected:
             break;
         }
         case QEvent::KeyPress: {
-            QKeySequence sequence = keySequence( static_cast<QKeyEvent*>(event) );
+            QKeySequence sequence = keySequence(static_cast<QKeyEvent*>(event));
             if (sequence.isEmpty())
                 break;
-            foreach ( const QKeySequence & shortcut, shortcuts() ) {
+            foreach (const QKeySequence& shortcut, shortcuts()) {
                 if (shortcut == sequence) {
                     event->accept();
-                    activate( QAction::Trigger );
+                    activate(QAction::Trigger);
                     return true;
                 }
             }
@@ -103,5 +89,3 @@ protected:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_CORE_UTIL_OVERRIDING_ACTION_HPP_INCLUDED

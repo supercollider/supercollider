@@ -16,15 +16,32 @@ A link::Classes/String:: representing a valid shell command.
 argument::mode
 A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
 
+method::argv
+
+argument::args
+A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+
+argument::mode
+A link::Classes/String:: representing the mode. Valid modes are "w" (pipe to stdin) and "r" (pipe from stdout).
+
 InstanceMethods::
 
-private::prClose, prOpen
+private::prClose, prOpen, prOpenArgv
 
 method::open
 Open the file.
 
 argument::commandLine
 A command line link::Classes/String:: passed to popen.
+
+argument::mode
+A link::Classes/String:: passed to popen, so should be one of: "r","w"
+
+method::openArgv
+Open the file.
+
+argument::args
+A link::Classes/SequenceableCollection:: containining strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
 
 argument::mode
 A link::Classes/String:: passed to popen, so should be one of: "r","w"
@@ -36,16 +53,24 @@ returns:: The exit status of the command (an Integer).
 
 Examples::
 
-note::
-For anyone still using macOS 10.3, UNIX commands like pipe do not work when the server is booted; quit the server, otherwise SuperCollider crashes. More recent macOS is not affected.
-
-::
-
 code::
 // this pipes in stdout from ls
 (
 var p, l;
 p = Pipe.new("ls -l", "r");			// list directory contents in long format
+l = p.getLine;					// get the first line
+while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
+p.close;					// close the pipe to avoid that nasty buildup
+)
+::
+
+without using a shell:
+
+code::
+// this pipes in stdout from ls
+(
+var p, l;
+p = Pipe.argv(["ls","-l"], "r");			// list directory contents in long format
 l = p.getLine;					// get the first line
 while({l.notNil}, {l.postln; l = p.getLine; });	// post until l = nil
 p.close;					// close the pipe to avoid that nasty buildup

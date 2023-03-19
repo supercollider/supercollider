@@ -1,31 +1,31 @@
 // tuple_comparison.hpp -----------------------------------------------------
-//  
+//
 // Copyright (C) 2001 Jaakko Jarvi (jaakko.jarvi@cs.utu.fi)
 // Copyright (C) 2001 Gary Powell (gary.powell@sierra.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See
 // accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
-// 
+//
 // For more information, see http://www.boost.org
-// 
+//
 // (The idea and first impl. of comparison operators was from Doug Gregor)
 
-// ----------------------------------------------------------------- 
+// -----------------------------------------------------------------
 
 #ifndef BOOST_TUPLE_COMPARISON_HPP
 #define BOOST_TUPLE_COMPARISON_HPP
 
-#include "boost/tuple/tuple.hpp"
+#include <boost/tuple/tuple.hpp>
 
 // -------------------------------------------------------------
-// equality and comparison operators 
+// equality and comparison operators
 //
 // == and != compare tuples elementwise
 // <, >, <= and >= use lexicographical ordering
 //
 // Any operator between tuples of different length fails at compile time
-// No dependencies between operators are assumed 
+// No dependencies between operators are assumed
 // (i.e. !(a<b)  does not imply a>=b, a!=b does not imply a==b etc.
 // so any weirdnesses of elementary operators are respected).
 //
@@ -46,7 +46,7 @@ inline bool operator>(const null_type&, const null_type&) { return false; }
 namespace detail {
   // comparison operators check statically the length of its operands and
   // delegate the comparing task to the following functions. Hence
-  // the static check is only made once (should help the compiler).  
+  // the static check is only made once (should help the compiler).
   // These functions assume tuples to be of the same length.
 
 

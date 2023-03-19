@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_UTIL_ICON_LIST_WIDGET_HPP_INCLUDED
-#define SCIDE_WIDGETS_UTIL_ICON_LIST_WIDGET_HPP_INCLUDED
+#pragma once
 
 #include <QListWidget>
 #include <QStyledItemDelegate>
@@ -27,52 +26,48 @@
 
 namespace ScIDE {
 
-class IconListWidget : public QListWidget
-{
+class IconListWidget : public QListWidget {
 public:
-    class ItemDelegate : public QStyledItemDelegate
-    {
+    class ItemDelegate : public QStyledItemDelegate {
     public:
-        ItemDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
+        ItemDelegate(QObject* parent): QStyledItemDelegate(parent) {}
 
-        virtual QSize sizeHint
-            ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
-        {
+        virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
             QIcon icon(index.data(Qt::DecorationRole).value<QIcon>());
             QSize iconSize = icon.actualSize(option.decorationSize);
 
             QString text = index.data(Qt::DisplayRole).toString();
-            QFontMetrics fm( option.font );
+            QFontMetrics fm(option.font);
 
-            int fontWidth = fm.width( text );
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+            int fontWidth = fm.horizontalAdvance(text);
+#else
+            int fontWidth = fm.width(text);
+#endif
 
-            QSize requiredSize ( qMax( fontWidth, iconSize.width() ),
-                                 fm.height() + iconSize.height() );
+            QSize requiredSize(qMax(fontWidth, iconSize.width()), fm.height() + iconSize.height());
 
             return requiredSize + QSize(5, 5);
         }
 
-        virtual void paint
-            ( QPainter * painter, const QStyleOptionViewItem & option,
-              const QModelIndex & index ) const
-        {
+        virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
             painter->save();
 
-            QStyle *style = QApplication::style();
+            QStyle* style = QApplication::style();
 
-            style->drawPrimitive( QStyle::PE_PanelItemViewItem, &option, painter );
+            style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-            QRect r( option.rect.adjusted(0,5,0,-5) );
+            QRect r(option.rect.adjusted(0, 5, 0, -5));
 
             QIcon icon(index.data(Qt::DecorationRole).value<QIcon>());
-            if( !icon.isNull() )
-                style->drawItemPixmap( painter, r, Qt::AlignTop | Qt::AlignHCenter, icon.pixmap(option.decorationSize) );
+            if (!icon.isNull())
+                style->drawItemPixmap(painter, r, Qt::AlignTop | Qt::AlignHCenter, icon.pixmap(option.decorationSize));
 
             QString text = index.data(Qt::DisplayRole).toString();
-            if( !text.isEmpty() ) {
+            if (!text.isEmpty()) {
                 int alignment = !icon.isNull() ? Qt::AlignBottom | Qt::AlignHCenter : Qt::AlignCenter;
-                painter->setFont( option.font );
-                style->drawItemText( painter, r, alignment, option.palette, true, text );
+                painter->setFont(option.font);
+                style->drawItemText(painter, r, alignment, option.palette, true, text);
             }
 
             painter->restore();
@@ -80,14 +75,10 @@ public:
     };
 
 public:
-    IconListWidget(QWidget *parent = 0) : QListWidget(parent)
-    {
-        setItemDelegate( new ItemDelegate(this) );
-    }
+    IconListWidget(QWidget* parent = 0): QListWidget(parent) { setItemDelegate(new ItemDelegate(this)); }
 
-    virtual QStyleOptionViewItem viewOptions() const
-    {
-        QStyleOptionViewItem opt( QListWidget::viewOptions() );
+    virtual QStyleOptionViewItem viewOptions() const {
+        QStyleOptionViewItem opt(QListWidget::viewOptions());
         opt.displayAlignment = Qt::AlignCenter;
         opt.decorationAlignment = Qt::AlignCenter;
         opt.decorationPosition = QStyleOptionViewItem::Top;
@@ -97,5 +88,3 @@ public:
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_UTIL_ICON_LIST_WIDGET_HPP_INCLUDED

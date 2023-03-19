@@ -1,6 +1,6 @@
 class:: PdefAllGui
 summary:: see all Pdefs and their state
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/TdefAllGui, Classes/PdefGui
 
 description::

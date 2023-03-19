@@ -19,7 +19,7 @@ argument::modfreq
 Modulator frequency in cycles per second.
 
 argument::pmindex
-Modulation index in radians.
+The modulation index, representing the ratio of modulator deviation to modulator frequency. Higher values generally produce denser spectra.
 
 argument::modphase
 A modulation input for the modulator's phase in radians.

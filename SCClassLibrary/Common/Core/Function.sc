@@ -235,44 +235,66 @@ Function : AbstractFunction {
 
 	// multichannel expand function return values
 
+	// flop function
 	flop {
-		if(def.argNames.isNil) { ^this };
-		^{ |... args| args.flop.collect(this.valueArray(_)) }
+		var code, modifierString;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		modifierString = "(%).flop.collect { |x| func.valueArray(x) }";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func| % }".format(code).interpret.value(this)
 	}
 
+	// flop only when at least one non-string array is passed as argument.
+	flop1 {
+		var code, modifierString;
+		if(def.argNames.isNil) { ^{ [this.value] } };
+		modifierString = "\n	var arguments = %;\n"
+		"	if(arguments.any { |x| x.isSequenceableCollection and: { x.isString.not } }) {\n"
+		"		arguments.flop.collect { |x| func.valueArray(x) }\n"
+		"	} {\n"
+		"		func.valueArray(arguments)\n"
+		"	}\n";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func| % }".format(code).interpret.value(this)
+	}
 
-	envirFlop {
-		var func = this.makeFlopFunc;
-		^{ |... args|
-			func.valueArrayEnvir(args).collect(this.valueArray(_))
+	// backwards compatibility
+	makeFlopFunc { ^this.flop }
+	envirFlop { ^this.flop }
+
+	// attach the function to a specific environment, without keyword arguments
+	inEnvir { |envir|
+		envir ?? { envir = currentEnvironment };
+		^if(def.argNames.isNil) {
+			{ envir.use { this.value } }
+		} {
+			{ |... args| envir.use { this.valueArray(args) } }
 		}
 	}
 
-	makeFlopFunc {
-		if(def.argNames.isNil) { ^this };
-
-		^interpret(
-			"#{ arg " ++ " " ++ def.argumentString(true) ++ "; "
-			++ "[ " ++ def.argumentString(false) ++ " ].flop };"
-		)
-	}
-
 	// attach the function to a specific environment
-	inEnvir { |envir|
+	inEnvirWithArgs { |envir|
+		var code, modifierString;
 		envir ?? { envir = currentEnvironment };
-		^{ |... args| envir.use({ this.valueArray(args) }) }
+		if(def.argNames.isNil) { ^{ envir.use({ this.value }) } };
+		modifierString = "envir.use {  func.valueArray(%) }";
+		code = def.makeFuncModifierString({ |str| modifierString.format(str) });
+		^"{ |func, envir| % }".format(code).interpret.value(this, envir)
 	}
 
-	asBuffer { |duration = 0.01, server, action, fadeTime = (0)|
-		var buffer, def, synth, name, numChannels, rate;
-		server = server ? Server.default;
+
+	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
+		var buffer, def, synth, name, numChannels, rate, server;
+		target = target.asTarget;
+		server = target.server;
+
 
 		name = this.hash.asString;
 		def = SynthDef(name, { |bufnum|
-			var	val = this.value;
+			var	val = SynthDef.wrap(this);
 			if(val.isValidUGenInput.not) {
 				val.dump;
-				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
+				Error("Reading signal failed: % is not a valid UGen input.".format(val)).throw
 			};
 			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
@@ -295,13 +317,13 @@ Function : AbstractFunction {
 			if(running.not) { server.bootSync; 1.wait };
 			numFrames = duration * server.sampleRate;
 			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
-			buffer.numFrames = numFrames;
+			buffer.numFrames = numFrames.asInteger;
 			buffer.numChannels = numChannels;
 			buffer = buffer.alloc(numFrames, numChannels);
 			server.sync;
 			def.send(server);
 			server.sync;
-			synth = Synth(name, [\bufnum, buffer], server);
+			synth = Synth(name, [\bufnum, buffer], target, \addAfter);
 			OSCFunc({
 				action.value(buffer);
 				server.sendMsg("/d_free", name);
@@ -311,9 +333,18 @@ Function : AbstractFunction {
 		^buffer
 	}
 
-	loadToFloatArray { |duration = 0.01, server, action|
-		this.asBuffer(duration, server, { |buffer|
+	loadToFloatArray { |duration = 0.01, target, action|
+		this.asBuffer(duration, target, { |buffer|
 			buffer.loadToFloatArray(action: { |array|
+				action.value(array, buffer);
+				buffer.free
+			})
+		})
+	}
+
+	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|
+		this.asBuffer(duration, target, { |buffer|
+			buffer.getToFloatArray(0, wait: wait, action: { |array|
 				action.value(array, buffer);
 				buffer.free
 			})
@@ -338,6 +369,9 @@ Thunk : AbstractFunction {
 	valueArray { ^this.value }
 	valueEnvir { ^this.value }
 	valueArrayEnvir { ^this.value }
+
+	didEvaluate { ^function.isNil }
+	clear { function = nil }
 }
 
 UGenThunk : Thunk {

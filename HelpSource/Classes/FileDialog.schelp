@@ -6,68 +6,103 @@ related:: Classes/Dialog, Classes/File
 DESCRIPTION::
 This is the interface for your standard operating system modal file dialogs to open files, save files and select directories.
 
-See also Dialog which makes it a bit simpler without the need to set fileMode and acceptMode manually.
-
-At the moment selecting a directory is only possible with FileDialog.
+link::Classes/Dialog:: has functions built on top of FileDialog that may be more convenient to use.
+However, selecting a directory is only possible with FileDialog.
 
 CLASSMETHODS::
 
+PRIVATE:: qtClass
+
 METHOD:: new
-Open a modal dialog
+Create and display a dialog.
 
 ARGUMENT:: okFunc
-handler function for: user selected a file and clicked ok.
-Argument to the function is either a single path, an array of paths, or multiple paths passed in as separate arguments.
-This depends on what fileMode and stripResult were specified.
+Handler function evaluated when the user clicks "Open" or "Save".
+This function receives different arguments depending on the value of code::stripResult::. By default
+(code::stripResult: false::), code::okFunc:: is passed an array of selected paths. Otherwise, the
+paths are passed as separate arguments, one for each path.
 
 ARGUMENT:: cancelFunc
-handler function for: user cancelled
+Handler function evaluated when the user clicks "Cancel". Receives no arguments.
 
 ARGUMENT:: fileMode
-Integer
+An integer that determines the type of dialog.
 
-Determines the type of dialog.
+These values correspond directly to values of QFileDialog\::FileMode in the Qt class.
 
 list::
-## 0			QFileDialog AnyFile		     The name of a file, whether it exists or not.
-## 1			QFileDialog ExistingFile	   The name of a single existing file.
-## 2			QFileDialog Directory		   The name of a directory. Both files and directories are displayed.
-## 3			QFileDialog ExistingFiles	 The names of zero or more existing files.
+## 0 The name of a file, whether it exists or not.
+## 1 The name of a single existing file.
+## 2 The name of a directory. Both files and directories are displayed.
+## 3 The names of zero or more existing files.
 ::
 
 0 or 3 implies that the user can type in a new file name.
 
 ARGUMENT:: acceptMode
-Integer
-This determines what the accept button says: "Open" or "Save"
+An integer that determines whether the dialog is for opening or saving files. Note that this doesn't
+actually open or save a file; you'll need to do that in your code::okFunc::. This only affects
+appearance of the dialog.
+
+These values correspond directly to values of QFileDialog\::AcceptMode in the Qt class.
 
 list::
-## 0			QFileDialog AcceptOpen
-## 1			QFileDialog AcceptSave
+## 0 Opening
+## 1 Saving
 ::
 
 ARGUMENT:: stripResult
-If selecting multiple files (using fileMode 3) then you have the choice of having your okFunc called with a list or with each of the paths as separate items.
-
-If you want to select only one item then use stripResult = true so that your okFunc will be passed the item instead of a list.
+A boolean. If code::true::, selected paths are passed individually as arguments to code::okFunc::.
+Otherwise, they are passed as an array in a single argument (the default).
 
 list::
-## true: okFunc(path1, path2, path3)
 ## false: okFunc(paths)
+## true: okFunc(path1, path2, path3)
 ::
 
+ARGUMENT:: path
+A string. The dialog will initially display the contents of this path. The default is the current
+user's home directory.
+
 returns:: a FileDialog
-
-METHOD:: qtClass
-private
-
 
 EXAMPLES::
 
 code::
+// By default, the selected paths are passed to okFunc as an array.
+(
+FileDialog({ |paths|
+	postln("Selected path:" + paths[0]);
+	}, {
+	postln("Dialog was cancelled. Try again.");
+	});
+)
+
+// You can change this by passing `stripResult: true`
+(
 FileDialog({ |path|
+	postln("Selected path:" + path);
+	}, {
+	postln("Dialog was cancelled. Try again.");
+	}, stripResult: true);
+)
 
-}, {
+// Passing `fileMode: 3` makes it possible to select multiple files.
+(
+FileDialog({ |paths|
+	postln("Selected paths:");
+	paths.do(_.postln);
+	}, fileMode: 3);
+)
 
-});
+// Passing `fileMode: 0` allows selecting any kind of file.
+// You can start the dialog in a directory other than home by passing `path: "/some/path/"`
+(
+FileDialog({ |path|
+	postln("Selected file:" + path);
+	postln("File type is:" + File.type(path)); },
+	fileMode: 0,
+	stripResult: true,
+	path: Platform.userAppSupportDir);
+)
 ::

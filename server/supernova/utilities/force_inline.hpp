@@ -16,17 +16,14 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef UTILITIES_FORCE_INLINE_HPP
-#define UTILITIES_FORCE_INLINE_HPP
+#pragma once
 
 #ifndef always_inline
 
-#if defined(__GNUC__) && defined(NDEBUG)
-#define always_inline inline  __attribute__((always_inline))
-#else
-#define always_inline inline
-#endif  /* __GNUC__ */
+#    if defined(__GNUC__) && defined(NDEBUG)
+#        define always_inline inline __attribute__((always_inline))
+#    else
+#        define always_inline inline
+#    endif /* __GNUC__ */
 
 #endif /* always_inline */
-
-#endif /* UTILITIES_FORCE_INLINE_HPP */

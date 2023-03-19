@@ -118,12 +118,12 @@ namespace detail {
 
     template< class Ch, class Tr, class T>
     void call_put_head(BOOST_IO_STD basic_ostream<Ch, Tr> & os, const void* x) {
-        put_head(os, *(typename ::boost::remove_reference<T>::type*)x);
+        put_head(os, *(static_cast<T const *>(x)));
     }
 
     template< class Ch, class Tr, class T>
     void call_put_last(BOOST_IO_STD basic_ostream<Ch, Tr> & os, const void* x) {
-        put_last(os, *(T*)x);
+        put_last(os, *(static_cast<T const *>(x)));
     }
 
     template< class Ch, class Tr>
@@ -173,9 +173,11 @@ namespace detail {
 
         basic_oaltstringstream<Ch, Tr, Alloc>  oss( &buf);
 
+#if !defined(BOOST_NO_STD_LOCALE)
         if(loc_p != NULL)
             oss.imbue(*loc_p);
-        
+#endif
+
         specs.fmtstate_.apply_on(oss, loc_p);
 
         // the stream format state can be modified by manipulators in the argument :
@@ -200,7 +202,7 @@ namespace detail {
                    (res_beg[0] !=oss.widen('+') && res_beg[0] !=oss.widen('-')  ))
                     prefix_space = oss.widen(' ');
             size_type res_size = (std::min)(
-                static_cast<size_type>(specs.truncate_ - !!prefix_space), 
+                (static_cast<size_type>((specs.truncate_ & (std::numeric_limits<size_type>::max)())) - !!prefix_space), 
                 buf.pcount() );
             mk_str(res, res_beg, res_size, w, oss.fill(), fl, 
                    prefix_space, (specs.pad_scheme_ & format_item_t::centered) !=0 );
@@ -244,9 +246,9 @@ namespace detail {
                 }
                 // we now have the minimal-length output
                 const Ch * tmp_beg = buf.pbase();
-                size_type tmp_size = (std::min)(static_cast<size_type>(specs.truncate_),
-                                                buf.pcount() );
-                                                    
+                size_type tmp_size = (std::min)(
+                    (static_cast<size_type>(specs.truncate_ & (std::numeric_limits<size_type>::max)())),
+                    buf.pcount());
                 
                 if(static_cast<size_type>(w) <= tmp_size) { 
                     // minimal length is already >= w, so no padding (cool!)

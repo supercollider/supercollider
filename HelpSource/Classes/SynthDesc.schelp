@@ -162,6 +162,8 @@ returns:: an array of link::Classes/IODesc:: that describes the available output
 method:: inputs
 returns:: an array of link::Classes/IODesc:: that describes the available inputs.
 
+copymethod:: SynthDef -specs
+
 method:: hasGate
 is true if the Synthdef has a gate input
 

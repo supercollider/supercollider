@@ -10,7 +10,7 @@
 #include <new>
 #include <iostream>
 #include <boost/aligned_storage.hpp>
-#include <boost/test/unit_test.hpp>
+#include <boost/core/lightweight_test.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/thread_specific/thread_specific_ptr.hpp>
@@ -59,9 +59,9 @@ void test_tss_thread()
         int& n = tss_value->value;
         if (n != i)
         {
-            // Don't call BOOST_CHECK_EQUAL directly, as it's not thread-safe.
+            // Don't call BOOST_TEST_EQ directly, as it's not thread-safe.
             boost::sync::lock_guard<boost::sync::mutex> lock(check_mutex);
-            BOOST_CHECK_EQUAL(n, i);
+            BOOST_TEST_EQ(n, i);
         }
         ++n;
     }
@@ -88,17 +88,17 @@ native_thread_t create_native_thread(void)
         0, //creation flags (0 = run immediately)
         0  //thread id (0 = thread id not returned)
     );
-    BOOST_CHECK(res!=0);
+    BOOST_TEST(res!=0);
     return res;
 }
 
 void join_native_thread(native_thread_t thread)
 {
     DWORD res = WaitForSingleObject(thread, INFINITE);
-    BOOST_CHECK(res == WAIT_OBJECT_0);
+    BOOST_TEST(res == WAIT_OBJECT_0);
 
     res = CloseHandle(thread);
-    BOOST_CHECK(SUCCEEDED(res));
+    BOOST_TEST(SUCCEEDED(res));
 }
 
 #else // defined(BOOST_SYNC_DETAIL_PLATFORM_WINAPI)
@@ -119,7 +119,7 @@ native_thread_t create_native_thread()
     native_thread_t thread_handle;
 
     int const res = pthread_create(&thread_handle, 0, &test_tss_thread_native, 0);
-    BOOST_CHECK(!res);
+    BOOST_TEST(!res);
     return thread_handle;
 }
 
@@ -127,7 +127,7 @@ void join_native_thread(native_thread_t thread)
 {
     void* result=0;
     int const res = pthread_join(thread, &result);
-    BOOST_CHECK(!res);
+    BOOST_TEST(!res);
 }
 
 #endif // defined(BOOST_SYNC_DETAIL_PLATFORM_WINAPI)
@@ -159,8 +159,8 @@ void do_test_tss()
         << "\n";
     std::cout.flush();
 
-    BOOST_CHECK_EQUAL(tss_instances, 0);
-    BOOST_CHECK_EQUAL(tss_total, 5);
+    BOOST_TEST_EQ(tss_instances, 0);
+    BOOST_TEST_EQ(tss_total, 5);
 
     tss_instances = 0;
     tss_total = 0;
@@ -186,15 +186,24 @@ void do_test_tss()
     // The following is not really an error. TSS cleanup support still is available for boost threads.
     // Also this usually will be triggered only when bound to the static version of thread lib.
     // 2006-10-02 Roland Schwarz
-    //BOOST_CHECK_EQUAL(tss_instances, 0);
-    BOOST_CHECK_MESSAGE(tss_instances == 0, "Support of automatic tss cleanup for native threading API not available");
-    BOOST_CHECK_EQUAL(tss_total, 5);
+    //BOOST_TEST_EQ(tss_instances, 0);
+    if (tss_instances != 0)
+        std::cout << "Support of automatic tss cleanup for native threading API not available" << std::endl;
+    BOOST_TEST_EQ(tss_total, 5);
 }
 
-BOOST_AUTO_TEST_CASE(test_tss)
+void test_tss()
 {
     timed_test(&do_test_tss, 2);
 }
+
+#if !defined(UBSAN)
+
+// thread_specific_ptr does type erasure as it casts the pointer to the cleanup function to a similar but different pointer to function that receives a void* argument.
+// The cleanup function is then called through the casted pointer. UBSan flags this as an error, and in strict C++ it is true. But on all real
+// systems this works as intended since the two pointers have exactly the same calling conventions. This optimization allows us to avoid allocating dynamic
+// memory and proxying the call through a shim, which will only cast the pointer from void* to T*. This saves dynamic memory, code size and compile time, so we really
+// want this optimization. Therefore, disable UBSan for these tests.
 
 bool tss_cleanup_called = false;
 
@@ -229,11 +238,11 @@ void do_test_tss_with_custom_cleanup()
         throw;
     }
 
-    BOOST_CHECK(tss_cleanup_called);
+    BOOST_TEST(tss_cleanup_called);
 }
 
 
-BOOST_AUTO_TEST_CASE(test_tss_with_custom_cleanup)
+void test_tss_with_custom_cleanup()
 {
     timed_test(&do_test_tss_with_custom_cleanup, 2);
 }
@@ -261,12 +270,19 @@ void do_test_tss_does_no_cleanup_after_release()
         throw;
     }
 
-    BOOST_CHECK(!tss_cleanup_called);
+    BOOST_TEST(!tss_cleanup_called);
     if(!tss_cleanup_called)
     {
         delete tss_object;
     }
 }
+
+void test_tss_does_no_cleanup_after_release()
+{
+    timed_test(&do_test_tss_does_no_cleanup_after_release, 2);
+}
+
+#endif // !defined(UBSAN)
 
 struct dummy_class_tracks_deletions
 {
@@ -302,22 +318,21 @@ void do_test_tss_does_no_cleanup_with_null_cleanup_function()
         throw;
     }
 
-    BOOST_CHECK(!dummy_class_tracks_deletions::deletions);
+    BOOST_TEST(!dummy_class_tracks_deletions::deletions);
     if(!dummy_class_tracks_deletions::deletions)
     {
         delete delete_tracker;
     }
 }
 
-BOOST_AUTO_TEST_CASE(test_tss_does_no_cleanup_after_release)
-{
-    timed_test(&do_test_tss_does_no_cleanup_after_release, 2);
-}
-
-BOOST_AUTO_TEST_CASE(test_tss_does_no_cleanup_with_null_cleanup_function)
+void test_tss_does_no_cleanup_with_null_cleanup_function()
 {
     timed_test(&do_test_tss_does_no_cleanup_with_null_cleanup_function, 2);
 }
+
+#if !defined(UBSAN)
+
+// See the comment above about why the tests with custom cleanup functions are disabled for UBSan.
 
 void thread_with_local_tss_ptr()
 {
@@ -326,31 +341,31 @@ void thread_with_local_tss_ptr()
 
         local_tss.reset(new Dummy);
     }
-    BOOST_CHECK(tss_cleanup_called);
+    BOOST_TEST(tss_cleanup_called);
     tss_cleanup_called = false;
 }
 
 
-BOOST_AUTO_TEST_CASE(test_tss_does_not_call_cleanup_after_ptr_destroyed)
+void test_tss_does_not_call_cleanup_after_ptr_destroyed()
 {
     boost::thread t(thread_with_local_tss_ptr);
     t.join();
-    BOOST_CHECK(!tss_cleanup_called);
+    BOOST_TEST(!tss_cleanup_called);
 }
 
-BOOST_AUTO_TEST_CASE(test_tss_cleanup_not_called_for_null_pointer)
+void test_tss_cleanup_not_called_for_null_pointer()
 {
     boost::sync::thread_specific_ptr<Dummy> local_tss(tss_custom_cleanup);
     local_tss.reset(new Dummy);
     tss_cleanup_called = false;
     local_tss.reset(0);
-    BOOST_CHECK(tss_cleanup_called);
+    BOOST_TEST(tss_cleanup_called);
     tss_cleanup_called = false;
     local_tss.reset(new Dummy);
-    BOOST_CHECK(!tss_cleanup_called);
+    BOOST_TEST(!tss_cleanup_called);
 }
 
-BOOST_AUTO_TEST_CASE(test_tss_at_the_same_adress)
+void test_tss_at_the_same_adress()
 {
     typedef boost::sync::thread_specific_ptr<Dummy> ptr_t;
     enum { size = sizeof(ptr_t) };
@@ -361,23 +376,42 @@ BOOST_AUTO_TEST_CASE(test_tss_at_the_same_adress)
     tss_cleanup_called = false;
 
     new (ptr) ptr_t(tss_custom_cleanup);
-    BOOST_CHECK(!tss_cleanup_called);
-    BOOST_CHECK(ptr->get() == NULL);
+    BOOST_TEST(!tss_cleanup_called);
+    BOOST_TEST(ptr->get() == NULL);
 
     ptr->reset(new Dummy);
-    BOOST_CHECK(!tss_cleanup_called);
-    BOOST_CHECK(ptr->get() != NULL);
+    BOOST_TEST(!tss_cleanup_called);
+    BOOST_TEST(ptr->get() != NULL);
 
     ptr->~ptr_t();
-    BOOST_CHECK(tss_cleanup_called);
+    BOOST_TEST(tss_cleanup_called);
 
     // Create the second pointer at the same address
     tss_cleanup_called = false;
 
     new (ptr) ptr_t(tss_custom_cleanup);
-    BOOST_CHECK(!tss_cleanup_called);
-    BOOST_CHECK(ptr->get() == NULL);
+    BOOST_TEST(!tss_cleanup_called);
+    BOOST_TEST(ptr->get() == NULL);
 
     ptr->~ptr_t();
-    BOOST_CHECK(!tss_cleanup_called);
+    BOOST_TEST(!tss_cleanup_called);
+}
+
+#endif // !defined(UBSAN)
+
+int main()
+{
+    test_tss();
+#if !defined(UBSAN)
+    test_tss_with_custom_cleanup();
+    test_tss_does_no_cleanup_after_release();
+#endif
+    test_tss_does_no_cleanup_with_null_cleanup_function();
+#if !defined(UBSAN)
+    test_tss_does_not_call_cleanup_after_ptr_destroyed();
+    test_tss_cleanup_not_called_for_null_pointer();
+    test_tss_at_the_same_adress();
+#endif
+
+    return boost::report_errors();
 }

@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,8 +19,7 @@
 */
 
 
-#ifndef _SC_Msg_
-#define _SC_Msg_
+#pragma once
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,17 +36,14 @@ enum { // Handler IDs
     kEitherTimeAction = 3
 };
 
-int32 Hash(ReplyAddress *inReplyAddress);
+int32 Hash(ReplyAddress* inReplyAddress);
 
-struct OSC_Packet
-{
-	char *mData;
-	int32 mSize;
-	bool mIsBundle;
+struct OSC_Packet {
+    char* mData;
+    int32 mSize;
+    bool mIsBundle;
 
-	ReplyAddress mReplyAddr;
+    ReplyAddress mReplyAddr;
 };
 
-void FreeOSCPacket(OSC_Packet *inPacket);
-
-#endif
+void FreeOSCPacket(OSC_Packet* inPacket);

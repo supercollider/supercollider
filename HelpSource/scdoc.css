@@ -1,24 +1,25 @@
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+html, body {
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
     color: black;
     background: white;
-/*    max-width: 60em;*/
-/*    margin-left: 20em;*/
-    padding: 0;
-    margin: 0;
-}
-
-html {
-    height: 100%;
-    margin: 0 0 1px;
 }
 
 div.contents {
-    margin: 0 1em;
-    padding-left: 0.3em;
-    padding-right: 0.3em;
-    padding-bottom: 0.5em;
+    margin: 0;
+    padding: calc(33px + .5em) 1em 1em;
 }
 
 table {
@@ -44,13 +45,14 @@ p {
 a:link, a:visited, a:link:hover {
     text-decoration: none;
     color: #449;
-    /* add padding to work around "text-decoration: underline" not
-     * having effect when hovered if font size less then 11pt */
-    padding-bottom: 1px;
 }
 
 a:link:hover {
     text-decoration: underline;
+}
+
+input {
+    max-width: 100%;
 }
 
 #inheritedclassmets, #inheritedinstmets {
@@ -100,39 +102,49 @@ a.subclass_toggle:hover {
 
 
 #menubar {
-    font-family: Arial, Helvetica, sans-serif;
+    position: fixed;
     text-indent: 0;
-    padding: 0;
     width: 100%;
+    height: 33px;
     padding: 0.5em 0;
-    border-bottom: 1px solid #ccc;
-    margin-bottom: 1em;
+    background-color: #f9f9f9;
+    box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
+    z-index: 2;
+}
+
+#nav {
+    padding: 0;
+    margin: 0;
 }
 
 #menubar .menuitem {
+    padding: 0;
     margin: 0;
-    padding: 0px;
-    padding-left: 0.75em;
-    padding-right: 0.75em;
     border-right: 1px solid #ddd;
     font-size: 10pt;
     display: inline-block;
+}
 
+#menubar .menuitem:first-child {
+    /* It is better to make the logo a background image instead of an <img> because it is purely
+    decorative. */
+    background-image: url("images/SC_icon.png");
+    background-repeat: no-repeat;
+    background-position: 0.5em center;
+    background-size: 1.5em;
+}
+
+a.menu-link {
+    color: #666;
+    padding: 0 0.75em 0 0.75em;
     /* This ensures that the logo isn't cut off. */
     min-height: 1.5em;
     /* This gets the text to vertically center. Discovered by accident. */
     line-height: 1.5em;
 }
-
-#menubar .menuitem:first-child {
-    padding-left: 0;
-
-    /* It is better to make the logo a background image instead of an <img> because it is purely
-    decorative. */
-    background-image: url("images/SC_icon.png");
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 1.5em;
+a.menu-link:hover {
+    text-decoration: none;
+    color: #999;
 }
 
 #menubar .menuitem:first-child a {
@@ -146,16 +158,30 @@ a.subclass_toggle:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-#menubar .menuitem:last-child {
-    border-right: none;
+#menubar .menuitem a.home span,
+#menubar .toc-link span {
+    display: none;
 }
 
-.menuitem a {
-    color: #666;
+@media (max-width: 320px) {
+    #toc-container {
+        display: none;
+    }
 }
-.menuitem a:hover {
-    text-decoration: none;
-    color: #999;
+
+@media (min-width: 512px) {
+    #menubar .menuitem:first-child a {
+        padding-left: 2.5em;
+    }
+
+    #menubar .menuitem a.home span,
+    #menubar .toc-link span {
+        display: initial;
+    }
+}
+
+#menubar .menuitem:last-child {
+    border-right: none;
 }
 
 #topdoctitle {
@@ -166,28 +192,27 @@ a.subclass_toggle:hover {
     cursor: pointer;
 }
 
-.submenu {
-    margin-top: 2px;
-    padding: 0.5em;
-    background: #eee;
-    display: none;
+.submenu, #toc {
     position: absolute;
-    border: 1px solid #aaa;
-    border-radius: 4px;
+    top: 33px;
+    padding: 0.5em;
+    display: none;
+    background-color: #f9f9f9;
+    border: thin solid #ddd;
 }
 
 .submenu a {
         position: relative;
-		display: block;
-		margin: 0;
-/*		padding: 5px 10px;*/
+        display: block;
+        margin: 0;
+/*      padding: 5px 10px;*/
         padding: 0.2em;
-		width: auto;
-		white-space: nowrap;
-		text-align: left;
-/*		text-decoration: none;*/
-		color: #447;
-		font-weight: bold;
+        width: auto;
+        white-space: nowrap;
+        text-align: left;
+/*      text-decoration: none;*/
+        color: #447;
+        font-weight: bold;
 }
 
 .toc_search {
@@ -196,7 +221,7 @@ a.subclass_toggle:hover {
     font-size: 9pt;
 }
 
-.top_search input {
+.toc_search input {
     border: 1px solid #ddd;
 }
 
@@ -318,6 +343,31 @@ h4 {
     color: #777;
 }
 
+h1,
+h2,
+h3,
+h4 {
+    word-wrap: break-word;
+}
+
+/* https://css-tricks.com/hash-tag-links-padding/ */
+.anchor::before {
+    content: " ";
+    margin-top: -3em;
+    height: 3em;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+a.method-name::before {
+    display: inline-block;
+    content: " ";
+    margin-top: -5em;
+    height: 5em;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 dt {
     font-weight: bold;
 }
@@ -336,13 +386,6 @@ pre {
     padding-left: 1em;
 }
 
-code.code, pre.code {
-}
-
-pre.code {
-
-}
-
 .image {
     text-align: center;
     margin: 2em;
@@ -351,6 +394,7 @@ pre.code {
 
 .image img {
     margin-bottom: 1em;
+    max-width: 100%;
 }
 
 .methprefix {
@@ -456,6 +500,7 @@ td p {
 }
 .doclink a {
     color: #444;
+    word-wrap: break-word;
 }
 
 #sidetoc {
@@ -477,24 +522,24 @@ td p {
     color: black;
 }
 
+#toc-container {
+    float: right;
+}
+
 #toc {
-    margin: 0;
-    padding: 10px 2px 10px 2px;
-    min-width: 20em;
+    width: 20em;
+    max-height: calc(100vh - 2.5em);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overflow-wrap: break-word;
+    right: 0;
     line-height: 130%;
-    display: none;
-    overflow: auto;
-    background: #fff;
-    position: absolute;
-    border: 1px solid #aaa;
-    margin-top: 2px;
-    border-radius: 4px;
 }
 #toctitle {
-    border-bottom: 1px solid #aaa;
-    margin-bottom: 0.5em;
-    font-weight: normal;
-    color: #777;
+    font-weight: bold;
+    font-size: 120%;
+    margin: 0.7em 0.5em;
+    color: #333;
 }
 
 li {
@@ -544,14 +589,6 @@ ul.toc li a:hover {
     color: #555;
 }
 
-a.popoutlink {
-    float: right;
-    font-size: 9pt;
-    color: #558;
-    padding-right: 8px;
-    display: inline-block;
-}
-
 ul.tree, ul.tree ul {
  list-style-type: none;
  background: url(images/vline.png) repeat-y;
@@ -586,54 +623,6 @@ ul.tree li:last-child {
 a.undoc {
     color: #88b;
     text-decoration: line-through;
-}
-
-/* auto class links. note that color can be overridden by prettify rules below */
-a.clslnk {
-}
-
-/* Pretty printing styles. Used with prettify.js. */
-
-.str { color: #070; } /* strings */
-.kwd { color: #880; } /* special values like true, nil.. */
-.com { color: #822; } /* comments */
-.typ { color: #008; } /* class names */
-.lit { color: #066; } /* numbers and character literals */
-.pun { color: #555; } /* punctuation */
-.pln { color: #000; } /* plain text, methods and variable names */
-.tag { color: #059; } /* special variables like super, thisProcess... */
-.dec { color: #508; } /* declarations like var, const... */
-.atn { color: #285; } /* symbols */
-.atv { color: #750; } /* environment vars */
-
-/* Specify class=linenums on a pre to get line numbering */
-ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
-li.L0,
-li.L1,
-li.L2,
-li.L3,
-li.L5,
-li.L6,
-li.L7,
-li.L8 { list-style-type: none }
-/* Alternate shading for lines */
-li.L1,
-li.L3,
-li.L5,
-li.L7,
-li.L9 { background: #eee }
-
-@media print {
-  .str { color: #060; }
-  .kwd { color: #006; font-weight: bold; }
-  .com { color: #600; font-style: italic; }
-  .typ { color: #404; font-weight: bold; }
-  .lit { color: #044; }
-  .pun { color: #440; }
-  .pln { color: #000; }
-  .tag { color: #006; font-weight: bold; }
-  .atn { color: #404; }
-  .atv { color: #060; }
 }
 
 /* from HelpSource/Search.html */

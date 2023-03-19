@@ -22,10 +22,10 @@ the signal changes from non-positive to positive.
 
 
 argument::array
-The list of probabilities.
+The list of probabilities. (Note: These should be control rate only.)
 
 argument::normalize
-Controls whether to normalize the probability values.
+Controls whether to normalize the probability values. (Control rate only.)
 
 Examples::
 

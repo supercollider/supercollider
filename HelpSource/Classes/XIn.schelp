@@ -1,6 +1,6 @@
 TITLE:: XIn
 summary:: Helper class used by InBus.
-categories:: UGens>Input
+categories:: UGens>InOut
 related:: Classes/InBus, Classes/In, Classes/InFeedback, Classes/XInFeedback
 
 DESCRIPTION::

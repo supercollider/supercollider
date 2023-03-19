@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED
-#define SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED
+#pragma once
 
 #include "util/status_box.hpp"
 
@@ -27,17 +26,15 @@ namespace ScIDE {
 
 class ScServer;
 
-class AudioStatusBox : public StatusBox
-{
+class AudioStatusBox : public StatusBox {
     Q_OBJECT
 public:
-    AudioStatusBox(ScServer *, QWidget *parent = 0);
+    AudioStatusBox(ScServer*, QWidget* parent = 0);
 
 private slots:
-    void onServerRunningChanged( bool running, QString const & hostName, int port, bool unresponsive );
+    void onServerRunningChanged(bool running, QString const& hostName, int port, bool unresponsive);
 
-    void updateStatistics( int ugens, int synths, int groups, int synthDefs,
-                           float avgCPU, float peakCPU );
+    void updateStatistics(int ugens, int synths, int groups, int synthDefs, float avgCPU, float peakCPU);
 
     void updateVolumeLabel(float volume);
     void updateMuteLabel(bool muted);
@@ -48,14 +45,12 @@ signals:
     void decreaseVolume();
 
 private:
-    void wheelEvent(QWheelEvent *);
+    void wheelEvent(QWheelEvent*);
 
-    StatusLabel *mStatisticsLabel;
-    StatusLabel *mVolumeLabel;
-    StatusLabel *mMuteLabel;
-    StatusLabel *mRecordLabel;
+    StatusLabel* mStatisticsLabel;
+    StatusLabel* mVolumeLabel;
+    StatusLabel* mMuteLabel;
+    StatusLabel* mRecordLabel;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_AUDIO_STATUS_BOX_INCLUDED

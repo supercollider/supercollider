@@ -2,7 +2,7 @@
 // detail/timer_queue.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -47,7 +47,11 @@ public:
   class per_timer_data
   {
   public:
-    per_timer_data() : next_(0), prev_(0) {}
+    per_timer_data() :
+      heap_index_((std::numeric_limits<std::size_t>::max)()),
+      next_(0), prev_(0)
+    {
+    }
 
   private:
     friend class timer_queue;
@@ -189,6 +193,29 @@ public:
     return num_cancelled;
   }
 
+  // Move operations from one timer to another, empty timer.
+  void move_timer(per_timer_data& target, per_timer_data& source)
+  {
+    target.op_queue_.push(source.op_queue_);
+
+    target.heap_index_ = source.heap_index_;
+    source.heap_index_ = (std::numeric_limits<std::size_t>::max)();
+
+    if (target.heap_index_ < heap_.size())
+      heap_[target.heap_index_].timer_ = &target;
+
+    if (timers_ == &source)
+      timers_ = &target;
+    if (source.prev_)
+      source.prev_->next_ = &target;
+    if (source.next_)
+      source.next_->prev_= &target;
+    target.next_ = source.next_;
+    target.prev_ = source.prev_;
+    source.next_ = 0;
+    source.prev_ = 0;
+  }
+
 private:
   // Move the item at the given index up the heap to its correct position.
   void up_heap(std::size_t index)
@@ -240,11 +267,13 @@ private:
     {
       if (index == heap_.size() - 1)
       {
+        timer.heap_index_ = (std::numeric_limits<std::size_t>::max)();
         heap_.pop_back();
       }
       else
       {
         swap_heap(index, heap_.size() - 1);
+        timer.heap_index_ = (std::numeric_limits<std::size_t>::max)();
         heap_.pop_back();
         if (index > 0 && Time_Traits::less_than(
               heap_[index].time_, heap_[(index - 1) / 2].time_))

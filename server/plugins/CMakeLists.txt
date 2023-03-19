@@ -30,6 +30,7 @@ set(plugin_sources
 	ChaosUGens.cpp
 	DelayUGens.cpp
 	DemandUGens.cpp
+	DemoUGens.cpp
 	DynNoiseUGens.cpp
 	FilterUGens.cpp
 	GendynUGens.cpp
@@ -69,22 +70,42 @@ foreach(plugin ${plugin_sources})
 	list(APPEND plugins ${plugin_name})
 endforeach(plugin)
 
-
-if (APPLE)
-	add_library(UIUGens MODULE UIUGens.mm)
-else()
-	add_library(UIUGens MODULE UIUGens.cpp)
-	target_link_libraries(UIUGens ${PTHREADS_LIBRARY})
+if(AUDIOAPI STREQUAL bela)
+    # The Bela lib will have its own set of libraries and includes
+    # However, the Bela audio backend for SC has some direct calls to Xenomai
+    # Therefore we need to get flags for those as well
+    find_package(Xenomai REQUIRED)
+    find_package(Bela REQUIRED)
+    message(STATUS "Found Bela libraries: ${BELA_LIBRARIES}")
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+        # recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${BELA_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BELA_CXX_FLAGS}")
+    endif()
 endif()
 
-set(uiugens UIUGens)
+if(BELA_FOUND)
+    add_library(BelaUGens MODULE
+        BelaUGens.cpp
+    )
+    add_definitions("-DSC_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
+    include_directories(${XENOMAI_INCLUDE_DIRS} ${BELA_INCLUDE_DIRS})
+    target_link_libraries(BelaUGens ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
 
-list(APPEND plugins UIUGens)
+    list(APPEND plugins BelaUGens)
+endif()
 
-if (WIN32)
-	if(MSVC)
-		include_directories (../../platform/windows/compat_stuff) # for stdbool.h
+if(NOT NO_X11)
+	if (APPLE)
+		add_library(UIUGens MODULE UIUGens.mm)
+	else()
+		add_library(UIUGens MODULE UIUGens.cpp)
+		target_link_libraries(UIUGens ${PTHREADS_LIBRARY})
 	endif()
+
+	set(uiugens UIUGens)
+
+	list(APPEND plugins UIUGens)
 endif()
 
 add_library(FFT_UGens MODULE
@@ -124,9 +145,21 @@ add_library(ML_UGens MODULE
 if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
 
+	if (XENOMAI_FOUND)
+		list(APPEND diskio_sources ../../common/XenomaiLock.cpp)
+	endif()
 	add_library(DiskIO_UGens MODULE ${diskio_sources})
 
 	if(SNDFILE_FOUND)
+		if(SNDFILE_HAS_VORBIS)
+			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_VORBIS)
+		endif()
+		if(SNDFILE_HAS_OPUS)
+			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_OPUS)
+		endif()
+		if(SNDFILE_HAS_MPEG)
+			target_compile_definitions(DiskIO_UGens PUBLIC SNDFILE_HAS_MPEG)
+		endif()
 		target_include_directories(DiskIO_UGens PUBLIC ${SNDFILE_INCLUDE_DIR})
 		target_link_libraries(DiskIO_UGens ${PTHREADS_LIBRARY} ${SNDFILE_LIBRARIES})
 		list(APPEND plugins DiskIO_UGens)
@@ -179,22 +212,26 @@ if (SUPERNOVA)
 	)
 
 	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
-	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova UIUGens_supernova)
+	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
 
-	if (APPLE)
-		add_library(UIUGens_supernova MODULE UIUGens.mm)
-	else()
-		add_library(UIUGens_supernova MODULE UIUGens.cpp)
-		target_link_libraries(UIUGens_supernova ${PTHREADS_LIBRARY})
+	if(NOT NO_X11)
+		list(APPEND supernova_plugins UIUGens_supernova)
+
+		if (APPLE)
+			add_library(UIUGens_supernova MODULE UIUGens.mm)
+		else()
+			add_library(UIUGens_supernova MODULE UIUGens.cpp)
+			target_link_libraries(UIUGens_supernova ${PTHREADS_LIBRARY})
+		endif()
+		list(APPEND uiugens UIUGens_supernova)
 	endif()
-	list(APPEND uiugens UIUGens_supernova)
 
 	if(NOT NO_LIBSNDFILE)
 		add_library(DiskIO_UGens_supernova MODULE DiskIO_UGens.cpp)
 
 		if(SNDFILE_FOUND)
 			target_include_directories(DiskIO_UGens_supernova PUBLIC ${SNDFILE_INCLUDE_DIR})
-			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
+      target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} boost_thread_lib)
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -210,9 +247,11 @@ foreach(ugen ${fft_ugens})
 	endif()
 endforeach()
 
-foreach(ugen ${uiugens})
-	target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
-endforeach()
+if(NOT NO_X11)
+	foreach(ugen ${uiugens})
+    target_link_libraries(${ugen} boost_thread_lib)
+	endforeach()
+endif()
 
 foreach(plugin ${plugins})
 	if(WIN32)
@@ -236,23 +275,27 @@ foreach(plugin ${supernova_plugins})
 	endif()
 endforeach()
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux|FreeBSD|DragonFly|OpenBSD|NetBSD")
-	find_package(X11 REQUIRED)
+if(NOT NO_X11)
+	if (LINUX_OR_BSD)
+		find_package(X11 REQUIRED)
 
-	if (NOT X11_Xt_FOUND)
-		message(FATAL_ERROR "libxt not found")
+		if (NOT X11_Xt_FOUND)
+			message(FATAL_ERROR "libxt not found")
+		endif()
+
+		include_directories(${X11_Xt_INCLUDE_PATH})
+
+		foreach (ugen ${uiugens})
+			target_link_libraries(${ugen} ${X11_X11_LIB})
+		endforeach()
+	elseif (APPLE)
+		foreach (ugen ${uiugens})
+			target_link_libraries(${ugen} "-framework CoreServices -framework AppKit")
+		endforeach()
 	endif()
+endif()
 
-	include_directories(${X11_Xt_INCLUDE_PATH})
-
-	foreach (ugen ${uiugens})
-		target_link_libraries(${ugen} ${X11_X11_LIB})
-	endforeach()
-elseif (APPLE)
-	foreach (ugen ${uiugens})
-		target_link_libraries(${ugen} "-framework CoreServices -framework AppKit")
-	endforeach()
-
+if (APPLE)
 	if(NOT NO_LIBSNDFILE)
 		target_link_libraries(DiskIO_UGens "-framework CoreServices")
 	endif()
@@ -295,11 +338,13 @@ if (WIN32)
 	)
 
 elseif(APPLE)
-	foreach(plugin ${plugins} ${supernova_plugins})
-		add_custom_command(TARGET ${plugin} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-	endforeach()
+	if(scappauxresourcesdir)
+		foreach(plugin ${plugins} ${supernova_plugins})
+			add_custom_command(TARGET ${plugin} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}/plugins
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> ${CMAKE_INSTALL_PREFIX}/${scappauxresourcesdir}/plugins)
+		endforeach()
+	endif()
 
 else()
 	install(TARGETS ${plugins} ${supernova_plugins}

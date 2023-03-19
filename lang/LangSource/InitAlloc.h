@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,15 +18,14 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef _InitAlloc_
-#define _InitAlloc_
+#pragma once
 
 #include "SCBase.h"
 #include "SC_AllocPool.h"
 #include <stdexcept>
 
-#define MEMFAIL(ptr) if (!(ptr)) { throw std::runtime_error("Out of memory!\n"); }
+#define MEMFAIL(ptr)                                                                                                   \
+    if (!(ptr)) {                                                                                                      \
+        throw std::runtime_error("Out of memory!\n");                                                                  \
+    }
 #define MEMFAILED throw std::runtime_error("Out of memory!\n");
-
-#endif
-

@@ -1,10 +1,9 @@
 /*
-(c) 2015 Glen Joseph Fernandes
-<glenjofe -at- gmail.com>
+Copyright 2015 Glen Joseph Fernandes
+(glenjofe@gmail.com)
 
-Distributed under the Boost Software
-License, Version 1.0.
-http://boost.org/LICENSE_1_0.txt
+Distributed under the Boost Software License, Version 1.0.
+(http://www.boost.org/LICENSE_1_0.txt)
 */
 #ifndef BOOST_ALIGN_DETAIL_ELEMENT_TYPE_HPP
 #define BOOST_ALIGN_DETAIL_ELEMENT_TYPE_HPP
@@ -49,45 +48,44 @@ struct remove_all_extents {
 };
 
 template<class T>
-struct remove_all_extents<T[]>
-    : remove_all_extents<T> { };
+struct remove_all_extents<T[]> {
+    typedef typename remove_all_extents<T>::type type;
+};
 
 template<class T, std::size_t N>
-struct remove_all_extents<T[N]>
-    : remove_all_extents<T> { };
+struct remove_all_extents<T[N]> {
+    typedef typename remove_all_extents<T>::type type;
+};
 
 template<class T>
-struct remove_const {
+struct remove_cv {
     typedef T type;
 };
 
 template<class T>
-struct remove_const<const T> {
+struct remove_cv<const T> {
     typedef T type;
 };
 
 template<class T>
-struct remove_volatile {
+struct remove_cv<volatile T> {
     typedef T type;
 };
 
 template<class T>
-struct remove_volatile<volatile T> {
+struct remove_cv<const volatile T> {
     typedef T type;
 };
-
-template<class T>
-struct remove_cv
-    : remove_volatile<typename remove_const<T>::type> { };
 #endif
 
 template<class T>
-struct element_type
-    : remove_cv<typename remove_all_extents<typename
-        remove_reference<T>::type>::type> { };
+struct element_type {
+    typedef typename remove_cv<typename remove_all_extents<typename
+        remove_reference<T>::type>::type>::type type;
+};
 
-} /* .detail */
-} /* .alignment */
-} /* .boost */
+} /* detail */
+} /* alignment */
+} /* boost */
 
 #endif

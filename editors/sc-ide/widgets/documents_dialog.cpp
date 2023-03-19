@@ -32,21 +32,14 @@
 
 namespace ScIDE {
 
-DocumentsDialog::DocumentsDialog( Mode mode, QWidget * parent ):
-    QDialog(parent)
-{
-    init(mode);
-}
+DocumentsDialog::DocumentsDialog(Mode mode, QWidget* parent): QDialog(parent) { init(mode); }
 
-DocumentsDialog::DocumentsDialog(const QList<Document*> & docs, Mode mode, QWidget *parent):
-    QDialog(parent)
-{
+DocumentsDialog::DocumentsDialog(const QList<Document*>& docs, Mode mode, QWidget* parent): QDialog(parent) {
     init(mode, docs);
 }
 
-void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
-{
-    DocumentManager *mng = Main::documentManager();
+void DocumentsDialog::init(Mode mode, const QList<Document*>& docs) {
+    DocumentManager* mng = Main::documentManager();
     connect(mng, SIGNAL(changedExternally(Document*)), this, SLOT(onDocumentChangedExternally(Document*)));
 
     mMode = mode;
@@ -68,156 +61,141 @@ void DocumentsDialog::init( Mode mode, const QList<Document*> &docs )
     if (mode == ExternalChange)
         mDocTree->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
-    switch (mode)
-    {
+    switch (mode) {
     case ExternalChange:
         setWindowTitle(tr("Externally Changed Documents"));
         mLabel->setText(tr("The following documents have changed externally.\n\n"
-            "Apply the desired actions to selected documents, until the list is empty."));
+                           "Apply the desired actions to selected documents, until the list is empty."));
         break;
     case Quit:
         setWindowTitle(tr("Unsaved Documents"));
         mLabel->setText(tr("The following documents have unsaved changes.\n\n"
-            "Apply desired actions to selected documents, until the list is empty."));
+                           "Apply desired actions to selected documents, until the list is empty."));
         break;
     }
 
-    foreach(Document *doc, docs)
+    foreach (Document* doc, docs)
         addDocument(doc);
 
-    QDialogButtonBox *dialogBtnBox = new QDialogButtonBox();
-    QPushButton *btn;
-    QPushButton *defaultBtn;
+    QDialogButtonBox* dialogBtnBox = new QDialogButtonBox();
+    QPushButton* btn;
+    QPushButton* defaultBtn;
     if (mode == ExternalChange) {
         defaultBtn = btn = dialogBtnBox->addButton(tr("&Reload"), QDialogButtonBox::ActionRole);
-        btn->setIcon( QIcon::fromTheme("view-refresh") );
+        btn->setIcon(QIcon::fromTheme("view-refresh"));
         connect(btn, SIGNAL(clicked()), this, SLOT(reloadSelected()));
 
         btn = dialogBtnBox->addButton(tr("Over&write"), QDialogButtonBox::ActionRole);
-        btn->setIcon( QIcon::fromTheme("document-save") );
+        btn->setIcon(QIcon::fromTheme("document-save"));
         connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
 
         btn = dialogBtnBox->addButton(tr("&Ignore"), QDialogButtonBox::AcceptRole);
-        btn->setIcon( QIcon::fromTheme("window-close") );
+        btn->setIcon(QIcon::fromTheme("window-close"));
         connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
 
         btn = dialogBtnBox->addButton(tr("&Close"), QDialogButtonBox::AcceptRole);
-        btn->setIcon( QIcon::fromTheme("window-close") );
+        btn->setIcon(QIcon::fromTheme("window-close"));
         connect(btn, SIGNAL(clicked()), this, SLOT(closeSelected()));
-    }
-    else {
+    } else {
         defaultBtn = btn = dialogBtnBox->addButton(tr("&Save"), QDialogButtonBox::ActionRole);
-        btn->setIcon( QIcon::fromTheme("document-save") );
+        btn->setIcon(QIcon::fromTheme("document-save"));
         connect(btn, SIGNAL(clicked()), this, SLOT(saveSelected()));
 
         btn = dialogBtnBox->addButton(tr("&Discard"), QDialogButtonBox::ActionRole);
-        btn->setIcon( QIcon::fromTheme("window-close") );
+        btn->setIcon(QIcon::fromTheme("window-close"));
         connect(btn, SIGNAL(clicked()), this, SLOT(ignoreSelected()));
 
         btn = dialogBtnBox->addButton(tr("&Cancel"), QDialogButtonBox::RejectRole);
-        btn->setIcon( QIcon::fromTheme("window-close") );
+        btn->setIcon(QIcon::fromTheme("window-close"));
         connect(btn, SIGNAL(clicked()), this, SLOT(reject()));
     }
 
-    QPushButton *selectAllBtn = new QPushButton(tr("Select &All"));
+    QPushButton* selectAllBtn = new QPushButton(tr("Select &All"));
     connect(selectAllBtn, SIGNAL(clicked()), this, SLOT(selectAll()));
 
-    QPushButton *selectNoneBtn = new QPushButton(tr("Select N&one"));
+    QPushButton* selectNoneBtn = new QPushButton(tr("Select N&one"));
     connect(selectNoneBtn, SIGNAL(clicked()), this, SLOT(selectNone()));
 
-    QLabel *iconLabel = new QLabel;
-    iconLabel->setPixmap( QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning).pixmap(48,48) );
-    iconLabel->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
+    QLabel* iconLabel = new QLabel;
+    iconLabel->setPixmap(QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning).pixmap(48, 48));
+    iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    QHBoxLayout *lblBox = new QHBoxLayout();
-    lblBox->addWidget( iconLabel );
-    lblBox->addWidget( mLabel );
+    QHBoxLayout* lblBox = new QHBoxLayout();
+    lblBox->addWidget(iconLabel);
+    lblBox->addWidget(mLabel);
 
-    QHBoxLayout *selectionBox = new QHBoxLayout();
+    QHBoxLayout* selectionBox = new QHBoxLayout();
     selectionBox->addWidget(selectAllBtn);
     selectionBox->addWidget(selectNoneBtn);
 
-    QVBoxLayout *vbox = new QVBoxLayout();
-    vbox->addLayout( lblBox );
-    vbox->addWidget( mDocTree );
-    vbox->addLayout( selectionBox );
-    vbox->addWidget( dialogBtnBox );
+    QVBoxLayout* vbox = new QVBoxLayout();
+    vbox->addLayout(lblBox);
+    vbox->addWidget(mDocTree);
+    vbox->addLayout(selectionBox);
+    vbox->addWidget(dialogBtnBox);
 
     setLayout(vbox);
 
     defaultBtn->setDefault(true);
     defaultBtn->setFocus(Qt::OtherFocusReason);
 
-    resize(500,300);
+    resize(500, 300);
 }
 
-void DocumentsDialog::addDocument( Document *doc )
-{
-    Item *item = new Item( doc );
+void DocumentsDialog::addDocument(Document* doc) {
+    Item* item = new Item(doc);
     mDocTree->addTopLevelItem(item);
 }
 
-void DocumentsDialog::selectAll()
-{
+void DocumentsDialog::selectAll() {
     int c = count();
     for (int i = 0; i < c; ++i)
         item(i)->setChecked(true);
 }
 
-void DocumentsDialog::selectNone()
-{
+void DocumentsDialog::selectNone() {
     int c = count();
     for (int i = 0; i < c; ++i)
         item(i)->setChecked(false);
 }
 
-void DocumentsDialog::saveSelected()
-{
+void DocumentsDialog::saveSelected() {
     int i = 0;
-    while (i < count())
-    {
-        Item *itm = item(i);
-        if ( itm->isChecked() )
-        {
-            if ( !MainWindow::save(itm->document()) )
+    while (i < count()) {
+        Item* itm = item(i);
+        if (itm->isChecked()) {
+            if (!MainWindow::save(itm->document()))
                 return;
             delete itm;
-        }
-        else
+        } else
             ++i;
     }
     if (!count())
         accept();
 }
 
-void DocumentsDialog::reloadSelected()
-{
-    DocumentManager *mng = Main::documentManager();
+void DocumentsDialog::reloadSelected() {
+    DocumentManager* mng = Main::documentManager();
 
     int i = 0;
-    while (i < count())
-    {
-        Item *itm = item(i);
-        if ( itm->isChecked() )
-        {
-            if ( !mng->reload(itm->document()) )
+    while (i < count()) {
+        Item* itm = item(i);
+        if (itm->isChecked()) {
+            if (!mng->reload(itm->document()))
                 return;
             delete itm;
-        }
-        else
+        } else
             ++i;
     }
     if (!count())
         accept();
 }
 
-void DocumentsDialog::ignoreSelected()
-{
+void DocumentsDialog::ignoreSelected() {
     int i = 0;
-    while (i < count())
-    {
-        Item *itm = item(i);
-        if ( itm->isChecked() )
+    while (i < count()) {
+        Item* itm = item(i);
+        if (itm->isChecked())
             delete itm;
         else
             ++i;
@@ -226,32 +204,26 @@ void DocumentsDialog::ignoreSelected()
         accept();
 }
 
-void DocumentsDialog::closeSelected()
-{
-    DocumentManager *mng = Main::documentManager();
+void DocumentsDialog::closeSelected() {
+    DocumentManager* mng = Main::documentManager();
 
     int i = 0;
-    while (i < count())
-    {
-        Item *itm = item(i);
-        if ( itm->isChecked() )
-        {
+    while (i < count()) {
+        Item* itm = item(i);
+        if (itm->isChecked()) {
             mng->close(itm->document());
             delete itm;
-        }
-        else
+        } else
             ++i;
     }
     if (!count())
         accept();
 }
 
-void DocumentsDialog::onDocumentChangedExternally( Document *doc )
-{
+void DocumentsDialog::onDocumentChangedExternally(Document* doc) {
     int c = count();
-    for (int i = 0; i < c; ++i)
-    {
-        Item *itm = item(i);
+    for (int i = 0; i < c; ++i) {
+        Item* itm = item(i);
         if (itm->document() == doc) {
             itm->update();
             return;
@@ -261,21 +233,15 @@ void DocumentsDialog::onDocumentChangedExternally( Document *doc )
     addDocument(doc);
 }
 
-DocumentsDialog::Item::Item(Document *doc):
-    mDoc(doc)
-{
-    update();
-}
+DocumentsDialog::Item::Item(Document* doc): mDoc(doc) { update(); }
 
-void DocumentsDialog::Item::update()
-{
+void DocumentsDialog::Item::update() {
     setTitle(mDoc->title());
     setPath(mDoc->filePath());
     if (!mDoc->filePath().isEmpty() && !QFile::exists(mDoc->filePath())) {
         setStatus(tr("Removed"));
         setChecked(false);
-    }
-    else {
+    } else {
         setStatus(tr("Modified"));
         setChecked(true);
     }

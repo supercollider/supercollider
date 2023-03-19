@@ -21,24 +21,27 @@
 #include <string>
 #include <sstream>
 
-static const int SC_VersionMajor    = @PROJECT_VERSION_MAJOR@;
-static const int SC_VersionMinor    = @PROJECT_VERSION_MINOR@;
-static const char SC_VersionPatch[] = "@PROJECT_VERSION_PATCH@";
-static const char SC_Branch[] = "@GIT_BRANCH@";
+static const int SC_VersionMajor = @SC_VERSION_MAJOR@;
+static const int SC_VersionMinor = @SC_VERSION_MINOR@;
+static const int SC_VersionPatch = @SC_VERSION_PATCH@;
+static const char SC_VersionTweak[] = "@SC_VERSION_TWEAK@";
+static const char SC_RefType[] = "@GIT_REF_TYPE@";
+static const char SC_BranchOrTag[] = "@GIT_BRANCH_OR_TAG@";
 static const char SC_CommitHash[] = "@GIT_COMMIT_HASH@";
+
+// For backward compatibility in scsynth and supernova only.
+static const char SC_VersionPostfix[] = ".@SC_VERSION_PATCH@@SC_VERSION_TWEAK@";
 
 static inline std::string SC_VersionString()
 {
 	std::stringstream out;
-	out << SC_VersionMajor << "."
-		<< SC_VersionMinor
-		<< SC_VersionPatch;
+	out << SC_VersionMajor << "." << SC_VersionMinor << "." << SC_VersionPatch << SC_VersionTweak;
 	return out.str();
 }
 
 static inline std::string SC_BuildString()
 {
     std::stringstream out;
-    out << "Built from branch '" << SC_Branch << "' [" << SC_CommitHash << "]";
+    out << "Built from " << SC_RefType << " '" << SC_BranchOrTag << "' [" << SC_CommitHash << "]";
     return out.str();
 }

@@ -26,7 +26,7 @@
 #include <boost/intrusive/detail/parent_from_member.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
-#include <boost/intrusive/detail/to_raw_pointer.hpp>
+#include <boost/move/detail/to_raw_pointer.hpp>
 #include <boost/intrusive/detail/node_holder.hpp>
 
 namespace boost {
@@ -57,26 +57,34 @@ struct bhtraits_base
 
    BOOST_INTRUSIVE_FORCEINLINE static pointer to_value_ptr(const node_ptr & n)
    {
-      return pointer_traits<pointer>::pointer_to
+      pointer p = pointer_traits<pointer>::pointer_to
          (static_cast<reference>(static_cast<node_holder_reference>(*n)));
+      BOOST_ASSERT(!!p);
+      return p;
    }
 
    BOOST_INTRUSIVE_FORCEINLINE static const_pointer to_value_ptr(const const_node_ptr & n)
    {
-      return pointer_traits<const_pointer>::pointer_to
+      const_pointer p = pointer_traits<const_pointer>::pointer_to
          (static_cast<const_reference>(static_cast<const_node_holder_reference>(*n)));
+      BOOST_ASSERT(!!p);
+      return p;
    }
 
    BOOST_INTRUSIVE_FORCEINLINE static node_ptr to_node_ptr(reference value)
    {
-      return pointer_traits<node_ptr>::pointer_to
+      node_ptr p = pointer_traits<node_ptr>::pointer_to
          (static_cast<node_reference>(static_cast<node_holder_reference>(value)));
+      BOOST_ASSERT(!!p);
+      return p;
    }
 
    BOOST_INTRUSIVE_FORCEINLINE static const_node_ptr to_node_ptr(const_reference value)
    {
-      return pointer_traits<const_node_ptr>::pointer_to
+      const_node_ptr p = pointer_traits<const_node_ptr>::pointer_to
          (static_cast<const_node_reference>(static_cast<const_node_holder_reference>(value)));
+      BOOST_ASSERT(!!p);
+      return p;
    }
 };
 
@@ -128,14 +136,14 @@ struct mhtraits
    {
       return pointer_traits<pointer>::pointer_to
          (*detail::parent_from_member<T, Hook>
-            (static_cast<Hook*>(boost::intrusive::detail::to_raw_pointer(n)), P));
+            (static_cast<Hook*>(boost::movelib::to_raw_pointer(n)), P));
    }
 
    BOOST_INTRUSIVE_FORCEINLINE static const_pointer to_value_ptr(const const_node_ptr & n)
    {
       return pointer_traits<const_pointer>::pointer_to
          (*detail::parent_from_member<T, Hook>
-            (static_cast<const Hook*>(boost::intrusive::detail::to_raw_pointer(n)), P));
+            (static_cast<const Hook*>(boost::movelib::to_raw_pointer(n)), P));
    }
 };
 
@@ -161,10 +169,10 @@ struct fhtraits
    static const link_mode_type link_mode = hook_type::hooktags::link_mode;
 
    static node_ptr to_node_ptr(reference value)
-   {  return static_cast<node*>(boost::intrusive::detail::to_raw_pointer(Functor::to_hook_ptr(value)));  }
+   {  return static_cast<node*>(boost::movelib::to_raw_pointer(Functor::to_hook_ptr(value)));  }
 
    static const_node_ptr to_node_ptr(const_reference value)
-   {  return static_cast<const node*>(boost::intrusive::detail::to_raw_pointer(Functor::to_hook_ptr(value)));  }
+   {  return static_cast<const node*>(boost::movelib::to_raw_pointer(Functor::to_hook_ptr(value)));  }
 
    static pointer to_value_ptr(const node_ptr & n)
    {  return Functor::to_value_ptr(to_hook_ptr(n));  }

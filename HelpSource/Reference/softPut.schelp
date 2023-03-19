@@ -1,6 +1,6 @@
 title:: softPut
 summary:: set a (number) parameter in an environment conditionally
-categories:: Libraries>JITLib>GUI
+categories:: JITLib>GUI
 related:: Reference/softSet, Reference/softVol_
 
 description::

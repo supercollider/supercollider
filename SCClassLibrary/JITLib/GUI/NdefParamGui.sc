@@ -13,23 +13,15 @@ NdefParamGui : EnvirGui {
 		^obj.isNil or: { obj.isKindOf(NodeProxy) };
 	}
 
-		// could be smarter:
-		// accepts strings, numbers, ... what else?
 	dragAction { |i|
-		^{ 	arg drag;
+		^{ |drag|
 			var key = prevState[\editKeys][i];
 			var dragged = drag.object;
 			if (dragged.isKindOf(String)) { dragged = dragged.interpret };
 			if (dragged.notNil) {
-				if(dragged.isKindOf(NodeProxy)) {
-					drag.string = "->" + dragged.key;
-					object.map(key, dragged);
-					this.checkUpdate;
-				} {
-					if (dragged.isKindOf(SimpleNumber)) {
-						object.set(key, dragged);
-					};
-				}
+				if(dragged.nodeMapMapsToControl) { drag.string = "->" + dragged.key };
+				object.xset(key, dragged);
+				this.checkUpdate;
 			}
 		}
 	}

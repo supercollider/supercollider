@@ -1,4 +1,23 @@
 TestAbstractFunction : UnitTest {
+    test_function_list_remove_before_add {
+        var fl = FunctionList.new;
+
+        this.assertEquals( fl.removeFunc(nil),
+            nil,
+            "Remove before add should return nil");
+    }
+
+    test_function_list_add_before_remove {
+        var fl = FunctionList.new;
+
+        var f = {};
+
+        fl.addFunc(f);
+
+        this.assertEquals( fl.removeFunc(f),
+            nil,
+            "Removing function should return nil if only one");
+    }
 
 	test_rest_binop_return {
 		var args = [[1, Rest(1)], [Rest(1), 1], [Rest(1), Rest(1)], [1, Rest()], [Rest(), Rest()]];
@@ -138,7 +157,7 @@ TestAbstractFunction : UnitTest {
 
 		this.assertEquals((dur: Rest(1)).isRest, true, "event with dur = Rest(1) should return true for isRest");
 
-		this.assertEquals((type: \rest).isRest, true, "event with dur = \rest should return true for isRest");
+		this.assertEquals((type: \rest).isRest, true, "event with dur = \\rest should return true for isRest");
 
 		this.assertEquals((degree: \).isRest, true, "event with an empty symbol as dur should return true for isRest");
 
@@ -147,6 +166,10 @@ TestAbstractFunction : UnitTest {
 		this.assertEquals((x: \r).isRest, true, "event with an 'r' symbol in arbitrary key should return true for isRest");
 
 		this.assertEquals((x: \rest).isRest, true, "event with an 'rest' symbol in arbitrary key should return true for isRest");
+
+		this.assertEquals((isRest: true).isRest, true, "event[\\isRest] == true is detected as a rest");
+
+		this.assertEquals((isRest: false, dur: Rest(1)).isRest, true, "event[\\isRest] == false does not cancel other entries' Rest status");
 
 		#[\dur, \degree, \paraplui, \type].do { |key|
 			var a, b, c, f;
@@ -164,5 +187,21 @@ TestAbstractFunction : UnitTest {
 
 	}
 
+	test_lazy_equals_operator_returns_right_class {
+		[
+			Pwhite(1, 10, inf) -> Pbinop,
+			SinOsc.ar -> BinaryOpUGen
+		].do { |assn|
+			this.assertEquals(
+				(assn.key |==| 1).class,
+				assn.value,
+				"'% |==| 1' should return a composed operator".format(assn.key.asCompileString)
+			);
+			this.assertEquals(
+				(1 |==| assn.key).class,
+				assn.value,
+				"'1 |==| %' should return a composed operator".format(assn.key.asCompileString)
+			)
+		};
+	}
 }
-

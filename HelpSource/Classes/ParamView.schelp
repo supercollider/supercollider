@@ -1,6 +1,6 @@
 TITLE:: ParamView
 summary:: show a parameter of a JITLib process
-categories:: Libraries>JITLib
+categories:: JITLib
 related:: Classes/JITGui, Overviews/JITLib
 
 DESCRIPTION::

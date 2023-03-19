@@ -13,7 +13,16 @@
 #   error both typeof emulation and native mode requested
 #endif
 
-#if defined(__COMO__)
+#include <boost/config.hpp>
+#include <boost/config/workaround.hpp>
+
+#if !BOOST_WORKAROUND(BOOST_MSVC, <= 1900) && !defined(BOOST_NO_CXX11_DECLTYPE) && !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES) && !defined(BOOST_TYPEOF_EMULATION)
+#   define BOOST_TYPEOF_DECLTYPE
+#   ifndef BOOST_TYPEOF_NATIVE
+#       define BOOST_TYPEOF_NATIVE
+#   endif
+
+#elif defined(__COMO__)
 #   ifdef __GNUG__
 #       ifndef BOOST_TYPEOF_EMULATION
 #           ifndef BOOST_TYPEOF_NATIVE
@@ -49,7 +58,7 @@
 #       endif
 #   endif
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
 #   ifndef BOOST_TYPEOF_EMULATION
 #       ifndef BOOST_TYPEOF_NATIVE
 #           define BOOST_TYPEOF_NATIVE
@@ -100,17 +109,7 @@
 #       define MSVC_TYPEOF_HACK
 #   endif
 #elif defined(_MSC_VER)
-#   if (_MSC_VER <= 1300)  // 6.5, 7.0
-#       ifndef BOOST_TYPEOF_EMULATION
-#           ifndef BOOST_TYPEOF_NATIVE
-#               define BOOST_TYPEOF_NATIVE
-#           endif
-#           include <boost/typeof/msvc/typeof_impl.hpp>
-#           define MSVC_TYPEOF_HACK
-#       else
-#           error typeof emulation is not supported
-#       endif
-#   elif (_MSC_VER >= 1310)  // 7.1 ->
+#   if (_MSC_VER >= 1310)  // 7.1 ->
 #       ifndef BOOST_TYPEOF_EMULATION
 #           ifndef BOOST_TYPEOF_NATIVE
 #               ifndef _MSC_EXTENSIONS
@@ -171,6 +170,13 @@
 #         define BOOST_TYPEOF_KEYWORD __typeof__
 #     endif
 #   endif
+#elif defined(__IBM__TYPEOF__)
+#   ifndef BOOST_TYPEOF_EMULATION
+#       ifndef BOOST_TYPEOF_NATIVE
+#           define BOOST_TYPEOF_NATIVE
+#       endif
+#       define BOOST_TYPEOF_KEYWORD __typeof__
+#   endif
 #else //unknown compiler
 #   ifndef BOOST_TYPEOF_NATIVE
 #       ifndef BOOST_TYPEOF_EMULATION
@@ -206,7 +212,11 @@
 #elif defined(BOOST_TYPEOF_NATIVE)
 #   define BOOST_TYPEOF_TEXT "using native typeof"
 #   include <boost/typeof/message.hpp>
-#   include <boost/typeof/native.hpp>
+#   ifdef BOOST_TYPEOF_DECLTYPE
+#       include <boost/typeof/decltype.hpp>
+#   else
+#       include <boost/typeof/native.hpp>
+#   endif
 #else
 #   error typeof configuration error
 #endif

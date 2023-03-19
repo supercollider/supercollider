@@ -40,23 +40,23 @@ namespace boost
           typedef system::system_error base_type;
     public:
         thread_exception()
-          : base_type(0,system::system_category())
+          : base_type(0,system::generic_category())
         {}
 
         thread_exception(int sys_error_code)
-          : base_type(sys_error_code, system::system_category())
+          : base_type(sys_error_code, system::generic_category())
         {}
 
         thread_exception( int ev, const char * what_arg )
-        : base_type(system::error_code(ev, system::system_category()), what_arg)
+        : base_type(system::error_code(ev, system::generic_category()), what_arg)
         {
         }
         thread_exception( int ev, const std::string & what_arg )
-        : base_type(system::error_code(ev, system::system_category()), what_arg)
+        : base_type(system::error_code(ev, system::generic_category()), what_arg)
         {
         }
 
-        ~thread_exception() throw()
+        ~thread_exception() BOOST_NOEXCEPT_OR_NOTHROW
         {}
 
 
@@ -74,18 +74,18 @@ namespace boost
           typedef system::system_error base_type;
     public:
           condition_error()
-          : base_type(system::error_code(0, system::system_category()), "Condition error")
+          : base_type(system::error_code(0, system::generic_category()), "Condition error")
           {}
           condition_error( int ev )
-          : base_type(system::error_code(ev, system::system_category()), "Condition error")
+          : base_type(system::error_code(ev, system::generic_category()), "Condition error")
           {
           }
           condition_error( int ev, const char * what_arg )
-          : base_type(system::error_code(ev, system::system_category()), what_arg)
+          : base_type(system::error_code(ev, system::generic_category()), what_arg)
           {
           }
           condition_error( int ev, const std::string & what_arg )
-          : base_type(system::error_code(ev, system::system_category()), what_arg)
+          : base_type(system::error_code(ev, system::generic_category()), what_arg)
           {
           }
     };
@@ -113,7 +113,7 @@ namespace boost
         {
         }
 
-        ~lock_error() throw()
+        ~lock_error() BOOST_NOEXCEPT_OR_NOTHROW
         {}
 
     };
@@ -141,7 +141,7 @@ namespace boost
           }
 
 
-        ~thread_resource_error() throw()
+        ~thread_resource_error() BOOST_NOEXCEPT_OR_NOTHROW
         {}
 
     };

@@ -66,8 +66,9 @@ View : QObject {
 	}
 
 	// ----------------- properties --------------------------
-	font_ { arg font;
-		this.setProperty( \font, font );
+	font_ { arg aFont;
+		font = aFont;
+		this.setProperty( \font, aFont );
 	}
 
 	toolTip { ^this.getProperty(\toolTip) }
@@ -757,6 +758,59 @@ View : QObject {
 		this.setEventHandlerEnabled( 60, enabled );
 		this.setEventHandlerEnabled( 61, enabled );
 		this.setEventHandlerEnabled( 63, enabled );
+	}
+
+	enableContextMenu_{
+		|bool|
+		this.setProperty('contextMenuPolicy', bool.if(2, 0));
+	}
+
+	enableContextMenu {
+		^(this.getProperty('contextMenuPolicy') == 2);
+	}
+
+	setContextMenuActions {
+		|...actions|
+		this.removeAllMenuActions();
+
+		if ((actions.size > 0) && (actions != [nil])) {
+			this.enableContextMenu = true;
+			actions.do({ |a| this.insertMenuAction(a.asMenuAction) });
+		} {
+			this.enableContextMenu = false;
+		}
+	}
+
+	insertMenuAction {
+		|action, addBefore|
+		^this.class.prInsertMenuAction(this, action, addBefore)
+	}
+
+	removeMenuAction {
+		|action|
+		^this.class.prRemoveMenuAction(this, action)
+	}
+
+	removeAllMenuActions {
+		^this.class.prRemoveAllMenuActions(this);
+	}
+
+	*prInsertMenuAction {
+		|view, action, addBefore|
+		_QView_AddActionToView
+		^this.primitiveFailed;
+	}
+
+	*prRemoveMenuAction {
+		|view, action|
+		_QView_RemoveActionFromView
+		^this.primitiveFailed;
+	}
+
+	*prRemoveAllMenuActions {
+		|view|
+		_QView_RemoveAllActionsFromView
+		^this.primitiveFailed;
 	}
 
 	prSetLayout { arg layout;

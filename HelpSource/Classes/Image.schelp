@@ -21,17 +21,17 @@ list::
 ## link::Classes/Number:: to create an strong::empty:: image of size multiple as width and height
 code::
 i = Image.new(400);		// Create a 400x400 pixel Image.
-i.dump;
+i.bounds;
 i.free;
 
 i = Image.new(400, 200);	// Create a 400x200 pixel Image.
-i.dump;
+i.bounds;
 i.free;
 ::
 ## link::Classes/Point:: to create an strong::empty:: image of size multiple.x as width and multiple.y as height
 code::
 i = Image.new(400@200);	// Create a 400x200 pixel Image.
-i.dump;
+i.bounds;
 i.free;
 ::
 ## link::Classes/String:: to create an image from a strong::local file::
@@ -39,6 +39,7 @@ code::
 //	Path string
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png"); // add a path to your image
 [i.width, i.height].postln;
+i.bounds;
 i.plot;
 i.free;
 ::
@@ -68,8 +69,25 @@ i.url.postln;
 )
 ::
 
+METHOD::openSVG
+Creates a new Image instance from the local SVG file at strong::path::.
+code::
+(
+i = Image.openSVG(SCDoc.helpSourceDir +/+ "images/plugin.svg", 200@200);
+i.plot(freeOnClose:true);
+i.url.postln;
+)
+::
+
+ARGUMENT::path
+A String containing the SVG file's path.
+
+ARGUMENT::size
+A link::Classes/Size::. SVG contents will be drawn into an image of this size. If not provided, suggested size provided by SVG will be used.
+
+
 METHOD::openURL
-// NOT IMPLEMENTED YET
+NOTE::Not implemented yet.::
 Creates a new Image instance from a valid image at the specified URL strong::path::.
 code::
 i = Image.openURL(SCDoc.helpSourceDir +/+ "images/Swamp.png");
@@ -145,6 +163,19 @@ the Window object.
 ARGUMENT::rect
 optional. the constrained rect to capture inside the Window. By default, it is the window size.
 
+METHOD::closeAllPlotWindows
+Close all the Image plot windows currently opened.
+
+METHOD::colorToPixel
+Convert a link::Classes/Color:: into a pixel datatype suitable for setting pixel data in the Image class.
+RETURNS:: A 32bit packed Integer in the RGBA format.
+
+METHOD::pixelToColor
+Convert a 32bit packed Integer in the RGBA format into a link::Classes/Color::
+RETURNS:: A link::Classes/Color::
+
+PRIVATE::newEmpty, prFormats
+
 SUBSECTION::Class variables and attributes
 
 METHOD::formats
@@ -165,12 +196,22 @@ code::
 Image.interpolations;
 ::
 
-METHOD::closeAllPlotWindows
-close all the Image plot windows currently opened.
+METHOD::resizeModes
+returns an link::Classes/Array:: of the different resize modes you can specify when changing the size of an Image.
+code::
+Image.resizeModes;
+::
+
+METHOD::allPlotWindows
+Returns an array of all the Image plot windows currently opened.
+code::
+Image.allPlotWindows
+::
+
 
 INSTANCEMETHODS::
 
-PRIVATE::prLockFocus, prDrawAtPoint, prSync, prApplyFilters, prTileInRect, prUpdatePixelsInRect, prGetPixel, prInit, prSetInterpolation, prFree, prSetPixel, prLoadPixels, prSetBackground, prApplyKernel, prUpdatePixels, prWriteToFile, prUnlockFocus, prInitFromURL, prSetColor, prGetColor, prSetName, prGetInterpolation, prDrawInRect
+PRIVATE::prLockFocus, prDrawAtPoint, prSync, prApplyFilters, prTileInRect, prUpdatePixelsInRect, prGetPixel, prInit, prSetInterpolation, prFree, prSetPixel, prLoadPixels, prSetBackground, prApplyKernel, prUpdatePixels, prWriteToFile, prUnlockFocus, prInitFromURL, prSetColor, prGetColor, prSetName, prGetInterpolation, prDrawInRect, prNewEmpty, prNewFromWindow, prNewPath, prNewSVG, prNewURL, prSetPainter, prSetSize, prTransferPixels, prUnsetPainter
 
 SUBSECTION::commons / general attributes
 
@@ -188,28 +229,23 @@ returns the bounds of the receiver.
 
 METHOD::free
 deallocate the receiver. this method is useful if you want to manage and reclaim yourself resources. otherwise you do not need to call this method since each object is automatically garbage collected.
-code::
-i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-Image.all;
-i.free;
-Image.all;
-::
 
 METHOD::scalesWhenResized
-flag to tell or set if the receiver should update its bitmap representation to scale when a resize operation if performed
+flag to tell or set if the receiver should update its bitmap representation to scale when a resize operation is performed
 code::
 (
-	i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	i.bounds.postln; // getting the dimensions
-	w =i.plot;
+i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+i.bounds.postln; // getting the dimensions
+w =i.plot;
 )
 
 // changing the size of an image
 (
-	i.scalesWhenResized_(true);
-	i.setSize(400, 400 / (i.width / i.height));
-	a =i.plot;
+i.scalesWhenResized_(true);
+i.setSize(400, (400 / (i.width / i.height)).asInteger);
+a =i.plot;
 )
+
 (
 a.close; w.close; i.free;
 )
@@ -234,33 +270,12 @@ i.interpolation;			// get the image currrent interpolation mode
 )
 
 (
-i.interpolation = 'none';		// experiment with interpolation modes
+i.interpolation = 'fast';		// experiment with interpolation modes
 w.refresh;
 )
 
 (
-i.interpolation = 'low';
-w.refresh;
-)
-
-(
-i.interpolation = 1;			// same as 'low'
-w.refresh;
-)
-
-(
-i.interpolation = 'high';
-w.refresh;
-)
-
-(
-i.interpolation = 'default';
-w.refresh;
-)
-
-(
-i.accelerated_(true);
-i.interpolation = 'none'; // does not work on coreimage accelerated image
+i.interpolation = 'smooth';
 w.refresh;
 )
 
@@ -279,6 +294,7 @@ i.free;
 
 //	storeOn / asCompileString
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+
 i.url;
 i.asCompileString;
 i.writeArchive("~/Desktop/my_image.scd".standardizePath);
@@ -333,39 +349,6 @@ additional background to apply to the Window. may be useful for artifacts due to
 
 ARGUMENT::showInfo
 shows pixel coordinates while the mouse is over the image's plot window.
-
-METHOD::lockFocus
-sets the receiver as the current graphic context. So you can use Pen to draw inside of it.
-
-METHOD::unlockFocus
-restore the graphic context state. the receiver is not anymore the current graphic context.
-code::
-(
-	j = Image.new(400,300);
-
-	j.lockFocus;
-
-		Pen.translate(100, 100);
-		1000.do{
-			// set the Color
-			Pen.color = Color.green(rrand(0.0, 1), rrand(0.0, 0.5));
-			Pen.addAnnularWedge(
-				(100.rand)@(100.rand),
-				rrand(10, 50),
-				rrand(51, 100),
-				2pi.rand,
-				2pi.rand
-			);
-			Pen.perform([\stroke, \fill].choose);
-		};
-
-	j.unlockFocus;
-)
-
-j.plot;
-j.write("~/Desktop/my_drawing.png"); // write the image
-j.free;
-::
 
 METHOD::draw
 shortcut for drawing inside an image. equivalent to :
@@ -525,16 +508,16 @@ METHOD::tileInRect
 tile the image or a portion of it in a specified rectangle of the current graphic context. This may stretch the image depending on the destination rect.
 code::
 (
-	i = Image.new(
-		// "http://supercollider.sourceforge.net/theme/sc01/icon.supercollider.gif"
-		SCDoc.helpSourceDir +/+ "images/icon.supercollider.png"
-	);
+i = Image.new(
+	// "http://supercollider.sourceforge.net/theme/sc01/icon.supercollider.gif"
+	SCDoc.helpSourceDir +/+ "images/icon.supercollider.png"
+);
 
-	w = Window.new("Image", Rect(120, 400, 360, 180)).front;
-	w.onClose_({ i.free }); // free the image when the window is closed
-	w.drawHook_({
-		i.tileInRect(w.view.bounds, nil, 2, 1.0); // all image contents
-	});
+w = Window.new("Image", Rect(120, 400, 360, 180)).front;
+w.onClose_({ i.free }); // free the image when the window is closed
+w.drawFunc_({
+	i.tileInRect(w.view.bounds, nil, 2, 1.0); // all image contents
+});
 )
 ::
 
@@ -560,9 +543,9 @@ fill a pixel located at x @ y.
 code::
 i = Image.color(60, 60, Color.blue(0.1,0.1));
 w = i.plot;
-i.setPixel([255,0,0,255].asRGBA, 0, 0); // setting red
+i.setPixel(Image.colorToPixel(Color.new(1,0,0,1)), 0, 0); // setting red
 w.refresh;
-("pixel at 0 @ 0:"+i.getPixel(0,0).rgbaArray).postln;
+("pixel at 0 @ 0:"+Image.pixelToColor(i.getPixel(0,0)).asArray).postln;
 i.free;
 ::
 
@@ -577,42 +560,44 @@ METHOD::getPixel
 retrieve the pixel value at x @ y as a RGBA integer
 code::
 // A simple example on how to manipulate pixels with Image
+(
 b = Int32Array[
-	Integer.fromRGBA(255,0,0,255), // red
-	Integer.fromRGBA(0,255,0,255), // green
-	Integer.fromRGBA(0,0,255,255), // blue
-	Integer.fromRGBA(255,0,255,255) // purple
+	Image.colorToPixel(Color.new255(255,0,0,255)), // red
+	Image.colorToPixel(Color.new255(0,255,0,255)), // green
+	Image.colorToPixel(Color.new255(0,0,255,255)), // blue
+	Image.colorToPixel(Color.new255(255,0,255,255)) // purple
 ];
+)
 
-b[0].red; // 255 see Integer.red
-b[0].green; // 0 see Integer.green
-b[0].blue; // 0 see Integer.blue
-b[0].alpha; // 255 see Integer.alpha
+Image.pixelToColor(b[0]).red; // 1.0 see Color -red
+Image.pixelToColor(b[0]).green; // 0.0 see Color -green
+Image.pixelToColor(b[0]).blue; // 0.0 see Color -blue
+Image.pixelToColor(b[0]).alpha; // 1.0 see Color -alpha
 
-a = Image.new(b.size@1).pixels_(b).interpolation_(\none);
+a = Image.new(b.size@1).pixels_(b).interpolation_(\fast);
 a.plot;
 
 
 // Set + Get
-a.setPixel([255, 0, 255, 128].asRGBA /* create an Integer from 0-255 integer rgba value */, 0, 0).plot;
+a.setPixel(Image.colorToPixel(Color.new255(255, 0, 255, 128)) /* create an Integer from 0-255 integer rgba value */, 0, 0).plot;
 p = a.getPixel(0,0);
 
-p.red; // 255
-p.green; // 0
-p.blue; // 255
-p.alpha; // 128
+Image.pixelToColor(p).red;// 1.0
+Image.pixelToColor(p).green; // 0.0
+Image.pixelToColor(p).blue; // 1.0
+Image.pixelToColor(p).alpha; // ~0.5
 
 // now another important example
-a.setPixel([255, 0, 255, 0].asRGBA, 1, 0).plot; // clear color -> alpha is 0
+a.setPixel(Image.colorToPixel(Color.new255(255, 0, 255, 0)), 1, 0).plot; // clear color -> alpha is 0
 p = a.getPixel(1,0);
 
-p.red; // you expect 255 but you get 0 ??? Why = because Image uses premultiplied color component value internally
+Image.pixelToColor(p).red; // you expect 1.0 but you get 0.0 ??? Why = because Image uses premultiplied color component value internally
 // meaning all Red, Green, and Blue component are premultiplied by the alpha
 // if alpha is 0 you get 0 back for all components.
 
-p.green; // 0
-p.blue; // 0
-p.alpha; // 0
+Image.pixelToColor(p).green; // 0
+Image.pixelToColor(p).blue; // 0
+Image.pixelToColor(p).alpha; // 0
 
 p = a.getColor(1,0); // more explicit - but same here
 ::
@@ -626,7 +611,7 @@ retrieve the pixel value at x @ y as a link::Classes/Color::.
 METHOD::pixels
 retrieve or set all the pixels of the receiver.
 NOTE::
-Careful: the returned Array is a link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
+Careful: the returned Array is a link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer. See link::#*colorToPixel:: and link::#*pixelToColor::.
 ::
 
 ARGUMENT::array
@@ -636,16 +621,18 @@ METHOD::loadPixels
 load all the pixels of the receiver in an array. it is better and faster to call this function instead of link::#-pixels:: if you plan to retrieve frequently the pixel data (since it won't allocate a new array everytime !)
 code::
 // exec one line at a time
+(
 i = Image.new(
 	// "http://supercollider.sourceforge.net/theme/sc01/icon.supercollider.gif"
 	SCDoc.helpSourceDir +/+ "images/icon.supercollider.png"
 );
+)
 
 // first grab the pixels
 p = i.pixels;
 
 // do some mods - here invert
-i.invert;
+// i.invert; // not implemented yet
 
 // reload directly in my array - do not need to call i.pixels again
 i.loadPixels(p);
@@ -665,27 +652,28 @@ the start index of the array.
 METHOD::setPixels
 set the pixels in a specific portion of the receiver.
 code::
+
 (
-	i = Image.new(20@20);
-	i.pixels_(
-		Int32Array.fill(i.width * i.height, {
-			Integer.fromRGBA(255.rand,127.rand,255.rand,255)
-		})
-	);
-	//i.interpolation_(\none); // uncomment to see the difference
-	w = i.plot(freeOnClose:true);
-	i.pixels.postln;
+i = Image.new(20@20);
+i.pixels_(
+	Int32Array.fill(i.width * i.height, {
+		Image.colorToPixel(Color.new255(255.rand,127.rand,255.rand,255))
+	})
+);
+//i.interpolation_(\fast); // uncomment to see the difference
+w = i.plot(freeOnClose:true);
+i.pixels.postln;
 )
 
 (
-	i = Image.color(50@50, Color.white);
-	i.setPixels(
-		Int32Array.fill(20*20,{Integer.fromRGBA(255.rand, 127.rand, 255.rand, 255)}),
-		Rect(10,10,20,20)
-	);
-	i.interpolation_(\none); // uncomment to see the difference
-	w = i.plot(freeOnClose:true);
-	i.pixels.postln;
+i = Image.color(50@50, Color.white);
+i.setPixels(
+	Int32Array.fill(20*20,{Image.colorToPixel(Color.new255(255.rand,127.rand,255.rand,255))}),
+	Rect(10,10,20,20)
+);
+i.interpolation_(\fast); // uncomment to see the difference
+w = i.plot(freeOnClose:true);
+i.pixels.postln;
 )
 ::
 
@@ -698,233 +686,13 @@ a rectangle defining the portion to update in the receiver. By default strong::r
 ARGUMENT::start
 the array start index.
 
-SUBSECTION::Instance Methods / Attributes for ImageFilter support
 
-see link::Classes/ImageFilter:: for more info
+METHOD::pixelRatio
+Get/set pixel ratio of the image.
 
-METHOD::applyFilters
-apply an array of link::Classes/ImageFilter:: to the image. this should be considered as an in place operation, meaning the Image is altered after it.
-code::
-// ******** Built In CoreImage Generators ********
-// Generators are not filters, they actually create an image but do not need an input image
-// you just have to create an image of a new size
-// ** The Simple Random Filter **
-(
-f = ImageFilter.new(\CIRandomGenerator);
-a = Image.new(500@500);
-a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.black);
-a.bounds.postln;
-)
+This does NOT affect the content of the image, only how it is interpreted when it is drawn onto a View or another Image.
+For example, in a high DPI context, the pixel ratio of a View might be 2. When drawing an image with a pixelRatio of 1, each pixel of the image will fill a 2x2 area of the View. If both the Image and the View had a pixel ratio of 2, each pixel would be 1:1 with pixels in the View.
 
-// ** The StarShine example **
-(
-var width=500, height=500, centerVector;
+By default, the pixelRatio of all Images is 1 - emphasis::this ensures that an image will look the same when drawn on a normal or a high DPI view::. Setting a custom (!= 1) pixelRatio should generally only be done to draw specially rendered high DPI images to a View that is known to be high DPI.
 
-centerVector = [ width*0.5, height*0.5 ];
-a = Image.new(500@500);
-f = ImageFilter.new(\CIStarShineGenerator);
-
-f.center_(centerVector);
-f.radius_(width*0.05);
-f.color_(Color.blue);
-f.crossWidth_(2.0);
-f.crossAngle_(0.0);
-f.crossOpacity_(-4.0);
-
-a.applyFilters(f);
-w = a.plot(freeOnClose:true, background:Color.gray); // change background to see
-)
-
-
-// ** Starshine + Pixellate + ZoomBlur **
-(
-var width=500, height=500, centerVector;
-
-centerVector = [ width*0.5, height*0.5 ];
-a = Image.new(500@500);
-
-f = ImageFilter.new(\CIStarShineGenerator);
-g = ImageFilter.new(\CIPixellate);
-h = ImageFilter.new(\CIZoomBlur);
-
-f.center_(centerVector);
-f.radius_(width*0.05);
-f.color_(Color.blue);
-f.crossWidth_(2.0);
-f.crossAngle_(0.0);
-f.crossOpacity_(-4.0);
-g.center_(centerVector);
-h.center_(centerVector);
-h.amount_(50);
-
-a.applyFilters([f, g, h]);
-w = a.plot(freeOnClose:true, background:Color.black);
-)
-::
-
-ARGUMENT::filters
-a ImageFilter or an array of link::Classes/ImageFilter:: to be applied
-
-ARGUMENT::crop
-the crop region to finally use. This may be required for extending bounds since some ImageFilter / CoreImageFilters require to set a wider region (to be applied correctly) or may create a huge image. Setting crop to nil sets no crop region. In case the current maximum size of a filtered Image is 4096 / 4096. Any larger size will be clipped. by default crop is constrained to the receiver bounds.
-
-ARGUMENT::region
-NOTE::
-supported only in macOS 10.5 and later.
-::
-option to constrain the filter to a specific region IN the Image.
-
-METHOD::filteredWith
-returns a new Image, copy of the receiver filtered with an array of ImageFilter. arguments are the same as link::#-applyFilters:: (except for strong::region::).
-NOTE::
-Beware: you are responsible for freeing the newly created Image !!!
-::
-
-METHOD::filters
-filters is the instance variable that holds the array of ImageFilter attached to the receiver. This is a convenient for applying filters out place and changing the ImageFilter's attributes. see link::#-addFilter::, link::#-removeFilter::
-
-see link::Classes/ImageFilter:: for an example on how to use the strong::filters:: array.
-
-METHOD::addFilter
-you can also attach filters to the receiver for real-time changing operations. In this case the receiver will create a cache before each rendering to maintain his previous state, and allowing you to use filters without applying them in place. The cache is managed directly by the receiver. you can add several filters to the receiver, the first filter in the array is the first applied in the rendering chain.
-
-see link::Classes/ImageFilter:: for an example on how to use strong::addFilter::.
-
-ARGUMENT::filter
-a ImageFilter to apply before rendering of the image
-
-METHOD::removeFilter
-
-see link::Classes/ImageFilter:: for an example on how to use strong::removeFilter::.
-
-ARGUMENT::filter
-the ImageFilter to remove from the rendering chain.
-
-METHOD::flatten
-if link::#-filters:: is not zero sized, this method will apply all those filters in place. if the image is accelerated this method force a bitmap representation of the receiver.
-
-METHOD::invert
-invert the receiver
-code::
-(
-i = Image.new();
-i.invert;
-i.plot(freeOnClose:true);
-)
-::
-
-METHOD::crop
-crop the receiver
-code::
-(
-i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-i.crop( Rect(10,10,120,100) );
-i.plot(freeOnClose:true);
-)
-::
-
-ARGUMENT::aRect
-the cropping region
-
-SUBSECTION::Instance Methods / Attributes for ImageKernel support
-
-see link::Classes/ImageKernel:: for examples and more info.
-
-METHOD::applyKernel
-apply a Kernel in place. the receiver is modified after this call.
-
-ARGUMENT::kernel
-a link::Classes/ImageKernel::
-
-EXAMPLES::
-
-SUBSECTION::Views addition
-
-you can now use a Image as a valid view background. 16 drawing modes are defined to behave differently.
-
-definitionList::
-## tileMode values: ||
-table::
-## 1 || fixed to left, fixed to top
-## 2 || horizontally tile, fixed to top
-## 3 || fixed to right, fixed to top
-## 4 || fixed to left, vertically tile
-## 5 || horizontally tile, vertically tile
-## 6 || fixed to right, vertically tile
-## 7 || fixed to left, fixed to bottom
-## 8 || horizontally tile, fixed to bottom
-## 9 || fixed to right, fixed to bottom
-## 10 || fit
-## 11 || center, center (scale)
-## 12 || center , fixed to top
-## 13 || center , fixed to bottom
-## 14 || fixed to left, center
-## 15 || fixed to right, center
-## 16 || center, center (no scale)
-::
-
-## View:backgroundImage_ ||
-
-strong::image:: - the Image to use
-
-strong::tileMode:: - the mode to use. by default fixed to left, fixed to top
-
-strong::alpha:: - opacity 0 < x < 1
-
-strong::fromRect:: - the portion of the image to use. by default use the full image.
-::
-code::
-(
-	b = 1.0;
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	r = Rect(20,3,40,40);
-	w = Window.new("Image background" /*, textured:false*/ );
-	w.view.background_(Color.gray);
-	w.view.backgroundImage_(a, 5, b, r);
-	w.front;
-)
-
-// monte carlo :) exec every line to test
-// r = nil; // uncomment for full image
-w.view.backgroundImage_(a, 1, b, r);
-w.view.backgroundImage_(a, 2, b, r);
-w.view.backgroundImage_(a, 3, b, r);
-w.view.backgroundImage_(a, 4, b, r);
-w.view.backgroundImage_(a, 5, b, r);
-w.view.backgroundImage_(a, 6, b, r);
-w.view.backgroundImage_(a, 7, b, r);
-w.view.backgroundImage_(a, 8, b, r);
-w.view.backgroundImage_(a, 9, b, r);
-w.view.backgroundImage_(a, 10, b, r);
-w.view.backgroundImage_(a, 11, b, r); // find best ratio - move to see
-w.view.backgroundImage_(a, 12, b, r);
-w.view.backgroundImage_(a, 13, b, r);
-w.view.backgroundImage_(a, 14, b, r);
-w.view.backgroundImage_(a, 15, b, r);
-w.view.backgroundImage_(a, 16, b, r);
-
-// this is safe even if window is still open because Background object holds the Image
-a.free;
-
-w.close;
-
-(
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	w = Window.new("Image background");
-	l = Slider2D.new(w, Rect(10,10,200,200))
-		.backgroundImage_( a, 5, 1, Rect(0,0,10,10) );
-	w.front;
-	a.free; // safe
-)
-
-(
-	var bounds = Rect(10,10,150,18);
-	a = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
-	w = Window.new("Image background");
-	l = Slider.new(w, bounds)
-		.backgroundImage_(a);
-	w.front;
-	a.free; // safe
-)
-::
+Note that when drawing to an Image using link::Classes/Pen::, pixelRatio is accounted for - so, a line of width 1 will have a true width of 1px for an image where code::image.pixelRatio==1::, and a true width of 2px where code::image.pixelRatio==2::.

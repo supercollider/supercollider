@@ -24,6 +24,10 @@ Quarks {
 				("Quarks-install: path does not exist" + path).error;
 				^nil
 			});
+			if(File.type(path) != \directory, {
+				("Quarks-install: path is not a directory" + path).error;
+				^nil
+			});
 			quark = Quark.fromLocalPath(path);
 			this.installQuark(quark);
 			^quark
@@ -33,12 +37,14 @@ Quarks {
 		// by quark name or local path
 		this.installed.do { |q|
 			if(q.name == name, {
-				this.unlink(q.localPath)
+				this.uninstallQuark(q);
 			});
 		};
 	}
 	*uninstallQuark { |quark|
+		quark.runHook(\preUninstall);
 		this.unlink(quark.localPath);
+		quark.runHook(\postUninstall);
 		this.clearCache;
 	}
 	*clear {
@@ -66,7 +72,7 @@ Quarks {
 			^("Quark set file does not exist:" + path).error;
 		});
 		this.clear();
-		Routine.run({
+		forkIfNeeded({
 			file = File.open(path, "r");
 			while({
 				line = file.getLine();
@@ -147,6 +153,7 @@ Quarks {
 		});
 		localPath = this.quarkNameAsLocalPath(name);
 		if(Git.isGit(localPath), {
+			// Quark.update will run preUpdate and postUpdate hooks
 			Quark.fromLocalPath(localPath).update();
 		}, {
 			("Quark" + name + "was not installed using git, cannot update.").warn;
@@ -208,7 +215,9 @@ Quarks {
 				^false
 			});
 		};
+		quark.runHook(\preInstall);
 		this.link(quark.localPath);
+		quark.runHook(\postInstall);
 		(quark.name + "installed").postln;
 		this.clearCache();
 		^true
@@ -252,7 +261,7 @@ Quarks {
 		}, {
 			regex = (
 				isPath: "\\\\|/",
-				isAbsolutePath: "^[A-Za-z]:\\\\",
+				isAbsolutePath: "^[A-Za-z]:(?:\\\\|/)",
 				isURL: "://"
 			);
 		});
@@ -321,7 +330,12 @@ Quarks {
 			if(fetch, { this.prFetchDirectory });
 			this.prReadDirectoryFile(dirTxtPath);
 		}.try({ arg err;
-			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
+			// 'err' should, by definition, be an Exception
+			// and all Exceptions should respond to 'errorString'
+			// but "throw during error handling" is really really bad,
+			// so, be doubly sure it won't happen
+			var text = err.tryPerform(\errorString) ?? { text = err.asString };
+			("Failed to read quarks directory listing: %\n%".format(if(fetch, directoryUrl, dirTxtPath), text)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
 				if(File.exists(dirTxtPath), {
@@ -334,16 +348,17 @@ Quarks {
 			});
 		});
 	}
-	*checkForUpdates { |done|
-		Routine.run({
+	*checkForUpdates { |done, quarkAction|
+		forkIfNeeded({
 			this.all.do { arg quark;
 				if(quark.isGit, {
+					quarkAction.value(quark);
 					quark.checkForUpdates();
 				});
 				0.05.wait;
 			};
 			done.value();
-		});
+		}, AppClock);
 	}
 	*prReadDirectoryFile { |dirTxtPath|
 		var file;

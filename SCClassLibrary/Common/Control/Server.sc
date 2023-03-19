@@ -1,58 +1,117 @@
 ServerOptions {
+	classvar <defaultValues;
+
 	// order of variables is important here. Only add new instance variables to the end.
-	var <numAudioBusChannels=1024;
-	var <>numControlBusChannels=16384;
-	var <numInputBusChannels=2;
-	var <numOutputBusChannels=2;
-	var <>numBuffers=1026;
+	var <numAudioBusChannels;
+	var <>numControlBusChannels;
+	var <numInputBusChannels;
+	var <numOutputBusChannels;
+	var <>numBuffers;
 
-	var <>maxNodes=1024;
-	var <>maxSynthDefs=1024;
-	var <>protocol = \udp;
-	var <>blockSize = 64;
-	var <>hardwareBufferSize = nil;
+	var <>maxNodes;
+	var <>maxSynthDefs;
+	var <>protocol;
+	var <>blockSize;
+	var <>hardwareBufferSize;
 
-	var <>memSize = 8192;
-	var <>numRGens = 64;
-	var <>numWireBufs = 64;
+	var <>memSize;
+	var <>numRGens;
+	var <>numWireBufs;
 
-	var <>sampleRate = nil;
-	var <>loadDefs = true;
+	var <>sampleRate;
+	var <>loadDefs;
 
 	var <>inputStreamsEnabled;
 	var <>outputStreamsEnabled;
 
-	var <>inDevice = nil;
-	var <>outDevice = nil;
+	var <>inDevice;
+	var <>outDevice;
 
-	var <>verbosity = 0;
-	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
+	var <>verbosity;
+	var <>zeroConf; // Whether server publishes port to Bonjour, etc.
 
-	var <>restrictedPath = nil;
-	var <>ugenPluginsPath = nil;
+	var <>restrictedPath;
+	var <>ugenPluginsPath;
 
-	var <>initialNodeID = 1000;
-	var <>remoteControlVolume = false;
+	var <>initialNodeID;
+	var <>remoteControlVolume;
 
-	var <>memoryLocking = false;
-	var <>threads = nil; // for supernova
-	var <>useSystemClock = false;  // for supernova
+	var <>memoryLocking;
+	var <>threads; // for supernova
+	var <>useSystemClock;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
+	var <numPrivateAudioBusChannels;
 
-	var <>reservedNumAudioBusChannels = 0;
-	var <>reservedNumControlBusChannels = 0;
-	var <>reservedNumBuffers = 0;
-	var <>pingsBeforeConsideredDead = 5;
+	var <>reservedNumAudioBusChannels;
+	var <>reservedNumControlBusChannels;
+	var <>reservedNumBuffers;
+	var <>pingsBeforeConsideredDead;
 
+	var <maxLogins;
 
-	var <>maxLogins = 1;
+	var <>recHeaderFormat;
+	var <>recSampleFormat;
+	var <>recChannels;
+	var <>recBufSize;
 
-	var <>recHeaderFormat="aiff";
-	var <>recSampleFormat="float";
-	var <>recChannels = 2;
-	var <>recBufSize = nil;
+	var <>bindAddress;
 
+	var <>safetyClipThreshold;
+
+	*initClass {
+		defaultValues = IdentityDictionary.newFrom(
+			(
+				numAudioBusChannels: 1024, // see corresponding setter method below
+				numControlBusChannels: 16384,
+				numInputBusChannels: 2, // see corresponding setter method below
+				numOutputBusChannels: 2, // see corresponding setter method below
+				numBuffers: 1024,
+				maxNodes: 1024,
+				maxSynthDefs: 1024,
+				protocol: \udp,
+				blockSize: 64,
+				hardwareBufferSize: nil,
+				memSize: 8192,
+				numRGens: 64,
+				numWireBufs: 64,
+				sampleRate: nil,
+				loadDefs: true,
+				inputStreamsEnabled: nil,
+				outputStreamsEnabled: nil,
+				inDevice: nil,
+				outDevice: nil,
+				verbosity: 0,
+				zeroConf: false,
+				restrictedPath: nil,
+				ugenPluginsPath: nil,
+				initialNodeID: 1000,
+				remoteControlVolume: false,
+				memoryLocking: false,
+				threads: nil,
+				useSystemClock: true,
+				numPrivateAudioBusChannels: 1020, // see corresponding setter method below
+				reservedNumAudioBusChannels: 0,
+				reservedNumControlBusChannels: 0,
+				reservedNumBuffers: 0,
+				pingsBeforeConsideredDead: 5,
+				maxLogins: 1,
+				recHeaderFormat: "wav",
+				recSampleFormat: "float",
+				recChannels: 2,
+				recBufSize: nil,
+				bindAddress: "127.0.0.1",
+				safetyClipThreshold: 1.26 // ca. 2 dB
+			)
+		)
+	}
+
+	*new {
+		^super.new.init
+	}
+
+	init {
+		defaultValues.keysValuesDo { |key, val| this.instVarPut(key, val) }
+	}
 
 	device {
 		^if(inDevice == outDevice) {
@@ -72,38 +131,45 @@ ServerOptions {
 		o = o ++ port;
 
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -i " ++ numInputBusChannels;
+		o = o ++ " -o " ++ numOutputBusChannels;
 
-		if (numControlBusChannels != 16384, {
+		if (bindAddress != defaultValues[\bindAddress], {
+			o = o ++ " -B " ++ bindAddress;
+		});
+		if (numControlBusChannels !== defaultValues[\numControlBusChannels], {
+			numControlBusChannels = numControlBusChannels.asInteger;
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
-		if (numInputBusChannels != 8, {
-			o = o ++ " -i " ++ numInputBusChannels;
-		});
-		if (numOutputBusChannels != 8, {
-			o = o ++ " -o " ++ numOutputBusChannels;
-		});
-		if (numBuffers != 1024, {
+		if (numBuffers !== defaultValues[\numBuffers], {
+			numBuffers = numBuffers.asInteger;
 			o = o ++ " -b " ++ numBuffers;
 		});
-		if (maxNodes != 1024, {
+		if (maxNodes !== defaultValues[\maxNodes], {
+			maxNodes = maxNodes.asInteger;
 			o = o ++ " -n " ++ maxNodes;
 		});
-		if (maxSynthDefs != 1024, {
+		if (maxSynthDefs !== defaultValues[\maxSynthDefs], {
+			maxSynthDefs = maxSynthDefs.asInteger;
 			o = o ++ " -d " ++ maxSynthDefs;
 		});
-		if (blockSize != 64, {
+		if (blockSize !== defaultValues[\blockSize], {
+			blockSize = blockSize.asInteger;
 			o = o ++ " -z " ++ blockSize;
 		});
 		if (hardwareBufferSize.notNil, {
 			o = o ++ " -Z " ++ hardwareBufferSize;
 		});
-		if (memSize != 8192, {
+		if (memSize !== defaultValues[\memSize], {
+			memSize = memSize.asInteger;
 			o = o ++ " -m " ++ memSize;
 		});
-		if (numRGens != 64, {
+		if (numRGens !== defaultValues[\numRGens], {
+			numRGens = numRGens.asInteger;
 			o = o ++ " -r " ++ numRGens;
 		});
-		if (numWireBufs != 64, {
+		if (numWireBufs !== defaultValues[\numWireBufs], {
+			numWireBufs = numWireBufs.asInteger;
 			o = o ++ " -w " ++ numWireBufs;
 		});
 		if (sampleRate.notNil, {
@@ -118,17 +184,17 @@ ServerOptions {
 		if (outputStreamsEnabled.notNil, {
 			o = o ++ " -O " ++ outputStreamsEnabled ;
 		});
-		if ((thisProcess.platform.name!=\osx) or: {inDevice == outDevice})
+		if (inDevice == outDevice)
 		{
 			if (inDevice.notNil,
-			{
-				o = o ++ " -H %".format(inDevice.quote);
+				{
+					o = o ++ " -H %".format(inDevice.quote);
 			});
 		}
 		{
-			o = o ++ " -H % %".format(inDevice.asString.quote, outDevice.asString.quote);
+			o = o ++ " -H % %".format((inDevice ? "").asString.quote, (outDevice ? "").asString.quote);
 		};
-		if (verbosity != 0, {
+		if (verbosity != defaultValues[\verbosity], {
 			o = o ++ " -V " ++ verbosity;
 		});
 		if (zeroConf.not, {
@@ -138,11 +204,12 @@ ServerOptions {
 			o = o ++ " -P " ++ restrictedPath;
 		});
 		if (ugenPluginsPath.notNil, {
-			o = o ++ " -U " ++ if(ugenPluginsPath.isString) {
-				ugenPluginsPath
-			} {
-				ugenPluginsPath.join("; ");
-			};
+			if(ugenPluginsPath.isString, {
+				ugenPluginsPath = ugenPluginsPath.bubble;
+			});
+			o = o ++ " -U " ++ ugenPluginsPath.collect{|p|
+				thisProcess.platform.formatPathForCmdLine(p)
+			}.join(Platform.pathDelimiter);
 		});
 		if (memoryLocking, {
 			o = o ++ " -L";
@@ -152,11 +219,16 @@ ServerOptions {
 				o = o ++ " -T " ++ threads;
 			}
 		});
-		if (useSystemClock.notNil, {
-			o = o ++ " -C " ++ useSystemClock.asInteger
+		if (useSystemClock, {
+			o = o ++ " -C 1"
+		}, {
+			o = o ++ " -C 0"
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
+		});
+		if (thisProcess.platform.name === \osx && safetyClipThreshold.notNil, {
+			o = o ++ " -s " ++ safetyClipThreshold;
 		});
 		^o
 	}
@@ -170,28 +242,35 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 112|
+	numPrivateAudioBusChannels_ { |numChannels = 1020| // arg default value should match defaultValues above
 		numPrivateAudioBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numAudioBusChannels_ { |numChannels=1024|
+	numAudioBusChannels_ { |numChannels = 1024| // arg default value should match defaultValues above
 		numAudioBusChannels = numChannels;
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}
 
-	numInputBusChannels_ { |numChannels=8|
+	numInputBusChannels_ { |numChannels = 2| // arg default value should match defaultValues above
 		numInputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numOutputBusChannels_ { |numChannels=8|
+	numOutputBusChannels_ { |numChannels = 2| // arg default value should match defaultValues above
 		numOutputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
 	recalcChannels {
 		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
+	}
+
+	maxLogins_ { |logins|
+		if(logins > 32) {
+			Error("maxLogins should be <= 32, tried to set to " ++ logins).throw;
+		};
+		maxLogins = logins;
 	}
 
 	*prListDevices {
@@ -263,34 +342,46 @@ Server {
 
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
+	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
+	classvar <>defaultOptionsClass;
 
-	var <name, <addr, <clientID, <userSpecifiedClientID = false;
+	var <name, <addr, <clientID;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
+	var maxNumClients; // maxLogins as sent from booted scsynth
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
 
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
 	var <>tree;
+	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
-	var <window, <>scopeWindow, <emacsbuf;
+	var <window, <>scopeWindow, <serverMeter, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-
+	var pidReleaseCondition;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
 		all = Set.new;
+
+		nodeAllocClass = NodeIDAllocator;
+		// nodeAllocClass = ReadableNodeIDAllocator;
+		bufferAllocClass = ContiguousBlockAllocator;
+		busAllocClass = ContiguousBlockAllocator;
+
+		defaultOptionsClass = if(Platform.hasBelaSupport, BelaServerOptions, ServerOptions);
+
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
 	}
 
 	*fromName { |name|
 		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
+			Server(name, NetAddr.new("127.0.0.1", 57110))
 		}
 	}
 
@@ -305,21 +396,23 @@ Server {
 	}
 
 	*remote { |name, addr, options, clientID|
-		var result;
-		result = this.new(name, addr, options, clientID);
-		result.startAliveThread;
-		^result;
+		var remoteServer = this.new(name, addr, options, clientID);
+		^remoteServer.connectToServerAddr({ remoteServer.startAliveThread })
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
-		options = argOptions ? ServerOptions.new;
-		clientID = argClientID ? 0;
-		if(argClientID.notNil) { userSpecifiedClientID = true };
+		options = argOptions ?? { defaultOptionsClass.new };
 
-		this.newAllocators;
+		// set name to get readable posts from clientID set
+		name = argName.asSymbol;
 
+		// make statusWatcher before clientID, so .serverRunning works
 		statusWatcher = ServerStatusWatcher(server: this);
+
+		// go thru setter to test validity
+		this.clientID = argClientID ? 0;
+
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
 		recorder.notifyServer = true;
@@ -327,15 +420,24 @@ Server {
 		this.name = argName;
 		all.add(this);
 
+		pidReleaseCondition = Condition({ this.pid == nil });
+
 		Server.changed(\serverAdded, this);
 
+	}
+
+	maxNumClients { ^maxNumClients ?? { options.maxLogins } }
+
+	remove {
+		all.remove(this);
+		named.removeAt(this.name);
 	}
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal;
+		remoteControlled = isLocal.not;
 	}
 
 	name_ { |argName|
@@ -348,24 +450,47 @@ Server {
 	}
 
 	initTree {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
-		this.sendMsg("/g_new", 1, 0, 0);
-		tree.value(this);
-		ServerTree.run(this);
+		fork({
+			this.sendDefaultGroups;
+			tree.value(this);
+			this.sync;
+			ServerTree.run(this);
+			this.sync;
+		}, AppClock);
 	}
 
-	/* id allocators */
+	/* clientID */
 
+	// clientID is settable while server is off, and locked while server is running
+	// called from prHandleClientLoginInfoFromServer once after booting.
 	clientID_ { |val|
-		if(val.isInteger.not) {
-			"Server % couldn't set client id to: %".format(name, val.asCompileString).warn;
+		var failstr = "Server % couldn't set clientID to % - %. clientID is still %.";
+		if (this.serverRunning) {
+			failstr.format(name, val.cs, "server is running", clientID).warn;
 			^this
 		};
-		if(clientID != val) {
-			clientID = val;
-			this.newAllocators;
-		}
+
+		if(val.isInteger.not) {
+			failstr.format(name, val.cs, "not an Integer", clientID).warn;
+			^this
+		};
+		if (val < 0 or: { val >= this.maxNumClients }) {
+			failstr.format(name,
+				val.cs,
+				"outside of allowed server.maxNumClients range of 0 - %".format(this.maxNumClients - 1),
+				clientID
+			).warn;
+			^this
+		};
+
+		if (clientID != val) {
+			"% : setting clientID to %.\n".postf(this, val);
+		};
+		clientID = val;
+		this.newAllocators;
 	}
+
+	/* clientID-based id allocators */
 
 	newAllocators {
 		this.newNodeAllocators;
@@ -376,45 +501,54 @@ Server {
 	}
 
 	newNodeAllocators {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
+		nodeAllocator = nodeAllocClass.new(
+			clientID,
+			options.initialNodeID,
+			this.maxNumClients
+		);
+		// defaultGroup and defaultGroups depend on allocator,
+		// so always make them here:
+		this.makeDefaultGroups;
 	}
 
 	newBusAllocators {
-		var numControl, numAudio;
-		var controlBusOffset, audioBusOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
+		var numControlPerClient, numAudioPerClient;
+		var controlReservedOffset, controlBusClientOffset;
+		var audioReservedOffset, audioBusClientOffset;
 
-		numControl = options.numControlBusChannels div: n;
-		numAudio = options.numPrivateAudioBusChannels div: n;
+		var audioBusIOOffset = options.firstPrivateBus;
 
-		controlBusOffset = numControl * offset + options.reservedNumControlBusChannels;
-		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
+		numControlPerClient = options.numControlBusChannels div: this.maxNumClients;
+		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.maxNumClients;
 
-		controlBusAllocator =
-		ContiguousBlockAllocator.new(numControl, controlBusOffset);
+		controlReservedOffset = options.reservedNumControlBusChannels;
+		controlBusClientOffset = numControlPerClient * clientID;
 
-		audioBusAllocator =
-		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
+		audioReservedOffset = options.reservedNumAudioBusChannels;
+		audioBusClientOffset = numAudioPerClient * clientID;
+
+		controlBusAllocator = busAllocClass.new(
+			numControlPerClient,
+			controlReservedOffset,
+			controlBusClientOffset
+		);
+		audioBusAllocator = busAllocClass.new(
+			numAudioPerClient,
+			audioReservedOffset,
+			audioBusClientOffset + audioBusIOOffset
+		);
 	}
-
 
 	newBufferAllocators {
-		var bufferOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
-		var numBuffers = options.numBuffers div: n;
-		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
-		bufferAllocator =
-		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
-	}
+		var numBuffersPerClient = options.numBuffers div: this.maxNumClients;
+		var numReservedBuffers = options.reservedNumBuffers;
+		var bufferClientOffset = numBuffersPerClient * clientID;
 
-	calcOffset {
-		if(options.maxLogins.isNil) { ^0 };
-		if(clientID > (options.maxLogins - 1)) {
-			"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
-		};
-		^clientID % options.maxLogins
+		bufferAllocator = bufferAllocClass.new(
+			numBuffersPerClient,
+			numReservedBuffers,
+			bufferClientOffset
+		);
 	}
 
 	newScopeBufferAllocators {
@@ -458,6 +592,60 @@ Server {
 		^nodeAllocator.freePerm(id)
 	}
 
+	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
+
+		// only set maxLogins if not internal server
+		if (inProcess.not) {
+			if (newMaxLogins.notNil) {
+				if (newMaxLogins != options.maxLogins) {
+					"%: server process has maxLogins % - adjusting my options accordingly.\n"
+					.postf(this, newMaxLogins);
+				} {
+					"%: server process's maxLogins (%) matches with my options.\n"
+					.postf(this, newMaxLogins);
+				};
+				options.maxLogins = maxNumClients = newMaxLogins;
+			} {
+				"%: no maxLogins info from server process.\n"
+				.postf(this, newMaxLogins);
+			};
+		};
+		if (newClientID.notNil) {
+			if (newClientID == clientID) {
+				"%: keeping clientID (%) as confirmed by server process.\n"
+				.postf(this, newClientID);
+			} {
+				"%: setting clientID to %, as obtained from server process.\n"
+				.postf(this, newClientID);
+			};
+			this.clientID = newClientID;
+		};
+	}
+
+	prHandleNotifyFailString {|failString, msg|
+
+		// post info on some known error cases
+		case
+		{ failString.asString.contains("already registered") } {
+			// when already registered, msg[3] is the clientID by which
+			// the requesting client was registered previously
+			"% - already registered with clientID %.\n".postf(this, msg[3]);
+			statusWatcher.prHandleLoginWhenAlreadyRegistered(msg[3]);
+
+		} { failString.asString.contains("not registered") } {
+			// unregister when already not registered:
+			"% - not registered.\n".postf(this);
+			statusWatcher.notified = false;
+		} { failString.asString.contains("too many users") } {
+			"% - could not register, too many users.\n".postf(this);
+			statusWatcher.notified = false;
+		} {
+			// throw error if unknown failure
+			Error(
+				"Failed to register with server '%' for notifications: %\n"
+				"To recover, please reboot the server.".format(this, msg)).throw;
+		};
+	}
 
 	/* network messages */
 
@@ -523,7 +711,7 @@ Server {
 		var file, buffer;
 		dir = dir ? SynthDef.synthDefDir;
 		file = File(dir ++ name ++ ".scsyndef","r");
-		if(file.isNil) { ^nil };
+		if(file.isOpen.not) { ^nil };
 		protect {
 			buffer = Int8Array.newClear(file.length);
 			file.read(buffer);
@@ -589,10 +777,13 @@ Server {
 	/* scheduling */
 
 	wait { |responseName|
-		var routine = thisThread;
+		var condition = Condition.new;
 		OSCFunc({
-			routine.resume(true)
+			condition.test = true;
+			condition.signal
 		}, responseName, addr).oneShot;
+
+		condition.wait
 	}
 
 	waitForBoot { |onComplete, limit = 100, onFailure|
@@ -672,8 +863,26 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	defaultGroup {
-		^Group.basicNew(this, 1)
+	// keep defaultGroups for all clients on this server:
+	makeDefaultGroups {
+		defaultGroups = this.maxNumClients.collect { |clientID|
+			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
+		};
+		defaultGroup = defaultGroups[clientID];
+	}
+
+	defaultGroupID { ^defaultGroup.nodeID }
+
+	sendDefaultGroups {
+		defaultGroups.do { |group|
+			this.sendMsg("/g_new", group.nodeID, 0, 0);
+		};
+	}
+
+	sendDefaultGroupsForClientIDs { |clientIDs|
+		defaultGroups[clientIDs].do { |group|
+			this.sendMsg("/g_new", group.nodeID, 0, 0);
+		}
 	}
 
 	inputBus {
@@ -705,6 +914,7 @@ Server {
 	peakCPU { ^statusWatcher.peakCPU }
 	sampleRate { ^statusWatcher.sampleRate }
 	actualSampleRate { ^statusWatcher.actualSampleRate }
+	hasBooted { ^statusWatcher.hasBooted }
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
@@ -754,41 +964,96 @@ Server {
 			this.bootInit(recover);
 		}, onFailure: onFailure ? false);
 
-		if(remoteControlled.not) {
+		if(remoteControlled) {
 			"You will have to manually boot remote server.".postln;
 		} {
 			this.prPingApp({
 				this.quit;
 				this.boot;
 			}, {
-				this.bootServerApp({
-					if(startAliveThread) { statusWatcher.startAliveThread }
-				})
+				this.prWaitForPidRelease {
+					this.bootServerApp({
+						if(startAliveThread) { statusWatcher.startAliveThread }
+					})
+				};
 			}, 0.25);
 		}
 	}
 
+	prWaitForPidRelease { |onComplete, onFailure, timeout = 1|
+		var waiting = true;
+		if (this.inProcess or: { this.isLocal.not or: { this.pid.isNil } }) {
+			onComplete.value;
+			^this
+		};
+
+		// FIXME: quick and dirty fix for supernova reboot hang on macOS:
+		// if we have just quit before running server.boot,
+		// we wait until server process really ends and sets its pid to nil
+		SystemClock.sched(timeout, {
+			if (waiting) {
+				pidReleaseCondition.unhang
+			}
+		});
+
+		forkIfNeeded {
+			pidReleaseCondition.hang;
+			if (pidReleaseCondition.test.value) {
+				waiting = false;
+				onComplete.value;
+			} {
+				onFailure.value
+			}
+		}
+	}
+
+	// FIXME: recover should happen later, after we have a valid clientID!
+	// would then need check whether maxLogins and clientID have changed or not,
+	// and recover would only be possible if no changes.
 	bootInit { | recover = false |
-		if(recover) { this.newNodeAllocators } { this.newAllocators };
+		// if(recover) { this.newNodeAllocators } {
+		// 	"% calls newAllocators\n".postf(thisMethod);
+		// this.newAllocators };
 		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 		if(sendQuit.isNil) {
 			sendQuit = this.inProcess or: { this.isLocal };
 		};
 		this.connectSharedMemory;
-		this.initTree;
+	}
+
+	prOnServerProcessExit { |exitCode|
+		pid = nil;
+		pidReleaseCondition.signal;
+
+		"Server '%' exited with exit code %."
+			.format(this.name, exitCode)
+			.postln;
+		statusWatcher.quit(watchShutDown: false);
 	}
 
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".postln;
+			"Booting internal server.".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
+			onComplete.value;
 		} {
 			this.disconnectSharedMemory;
-			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
-			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
+			pid = unixCmd(program ++ options.asOptionsString(addr.port), { |exitCode|
+				this.prOnServerProcessExit(exitCode);
+			});
+			("Booting server '%' on address %:%.").format(this.name, addr.hostname, addr.port.asString).postln;
+			// in case the server takes more time to boot
+			// we increase the number of attempts for tcp connection
+			// in order to minimize the chance of timing out
+			this.connectToServerAddr(onComplete, maxAttempts: 20);
 		}
+	}
+
+	connectToServerAddr { |onComplete, maxAttempts = 10|
+		if(options.protocol == \tcp, {
+			addr.tryConnectTCP(onComplete, nil, maxAttempts)
+		}, onComplete)
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
@@ -845,8 +1110,15 @@ Server {
 
 		addr.sendMsg("/quit");
 
-		if(watchShutDown and: { this.unresponsive }) {
-			"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+		if(this.unresponsive) {
+			if(pid.notNil) {
+				"Server '%' is currently unresponsive. Forcing process to stop via system command.".format(name).postln;
+				thisProcess.platform.killProcessByID(pid);
+			} {
+				if(watchShutDown) {
+					"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+				};
+			};
 			watchShutDown = false;
 		};
 
@@ -858,13 +1130,13 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".postln;
+			"Internal server has quit.".postln;
 		} {
-			"'/quit' sent\n".postln;
+			"'/quit' message sent to server '%'.".format(name).postln;
 		};
 
-		pid = nil;
 		sendQuit = nil;
+		maxNumClients = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
@@ -887,7 +1159,15 @@ Server {
 		// you can't cause them to quit via OSC (the boot button)
 
 		// this brutally kills them all off
-		thisProcess.platform.killAll(this.program.basename);
+		thisProcess.platform.name.switch(
+			\windows, {
+				thisProcess.platform.killAll("scsynth.exe");
+				thisProcess.platform.killAll("supernova.exe");
+			}, {
+				thisProcess.platform.killAll("scsynth");
+				thisProcess.platform.killAll("supernova");
+			}
+		);
 		this.quitAll(watchShutDown: false);
 	}
 
@@ -895,6 +1175,16 @@ Server {
 		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
 		this.initTree;
+	}
+
+	freeMyDefaultGroup {
+		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
+	}
+
+	freeDefaultGroups {
+		defaultGroups.do { |group|
+			this.sendMsg("/g_freeAll", group.nodeID);
+		};
 	}
 
 	*freeAll { |evenRemote = false|
@@ -919,6 +1209,10 @@ Server {
 				if(server.isLocal) { server.freeAll }
 			}
 		}
+	}
+
+	*allBootedServers {
+		^this.all.select(_.hasBooted)
 	}
 
 	*allRunningServers {

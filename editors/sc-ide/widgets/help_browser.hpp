@@ -18,12 +18,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_HELP_BROWSER_HPP_INCLUDED
-#define SCIDE_WIDGETS_HELP_BROWSER_HPP_INCLUDED
+#pragma once
 
 #include "util/docklet.hpp"
+#include "QtCollider/widgets/web_page.hpp"
+#include "QtCollider/widgets/QcWebView.h"
 
-#include <QWebView>
+#include <QWebEngineView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QBasicTimer>
@@ -33,29 +34,29 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; }
+namespace Settings {
+class Manager;
+}
 
 class HelpBrowserDocklet;
 class HelpBrowserFindBox;
+class HelpBrowser;
 
-class LoadProgressIndicator : public QLabel
-{
+class LoadProgressIndicator : public QLabel {
     Q_OBJECT
 public slots:
-    void start( const QString & msg = tr("Loading") )
-    {
+    void start(const QString& msg = tr("Loading")) {
         mMsg = msg;
         mDotCount = 0;
         mUpdateTimer.start(200, this);
     }
-    void stop()
-    {
-        mUpdateTimer.stop(); clear();
+    void stop() {
+        mUpdateTimer.stop();
+        clear();
     }
 
 protected:
-    virtual void timerEvent( QTimerEvent *event )
-    {
+    virtual void timerEvent(QTimerEvent* event) {
         if (event->timerId() != mUpdateTimer.timerId())
             return;
 
@@ -75,8 +76,8 @@ private:
     int mDotCount;
 };
 
-class HelpBrowser : public QWidget
-{
+
+class HelpBrowser : public QWidget {
     Q_OBJECT
 
 public:
@@ -87,82 +88,88 @@ public:
         ZoomOut,
         ResetZoom,
         Evaluate,
+        EvaluateRegion,
 
         ActionCount
     };
 
-    HelpBrowser( QWidget * parent = 0 );
+    HelpBrowser(QWidget* parent = 0);
 
     QSize sizeHint() const { return mSizeHint; }
-    QSize minimumSizeHint() const { return QSize(50,50); }
+    QSize minimumSizeHint() const { return QSize(50, 50); }
 
-    void gotoHelpFor( const QString & );
-    void gotoHelpForMethod( const QString & className, const QString & methodName );
-    QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
+    void gotoHelpFor(const QString&);
+    void gotoHelpForMethod(const QString& className, const QString& methodName);
+    QWidget* loadProgressIndicator() { return mLoadProgressIndicator; }
 
     QUrl url() const { return mWebView->url(); }
 
+    bool helpBrowserHasFocus() const;
+
+    void setServerPort(int serverPort) { mServerPort = serverPort; };
+
 public slots:
-    void applySettings( Settings::Manager * );
+    void applySettings(Settings::Manager*);
     void goHome();
     void closeDocument();
     void zoomIn();
     void zoomOut();
     void resetZoom();
-    void evaluateSelection();
-    void findText( const QString & text, bool backwards = false );
+    void evaluateSelection(bool region = false);
+    void findText(const QString& text, bool backwards = false);
     bool openDocumentation();
     void openDefinition();
     void openCommandLine();
     void findReferences();
+    void onLinkClicked(const QUrl&, QWebEnginePage::NavigationType type, bool isMainFrame);
+    void onPageLoad();
 
 signals:
     void urlChanged();
 
 private slots:
-    void onContextMenuRequest( const QPoint & pos );
-    void onLinkClicked( const QUrl & );
+    void onContextMenuRequest(const QPoint& pos);
     void onReload();
-    void onScResponse( const QString & command, const QString & data );
-    void onJsConsoleMsg(const QString &, int, const QString & );
+    void onScResponse(const QString& command, const QString& data);
+    void onJsConsoleMsg(const QString&, int, const QString&);
 
 private:
     friend class HelpBrowserDocklet;
 
     void createActions();
-    bool eventFilter( QObject * object, QEvent * event);
-    void sendRequest( const QString &code );
+    bool eventFilter(QObject* object, QEvent* event);
+    void sendRequest(const QString& code);
     QString symbolUnderCursor();
 
-    QWebView *mWebView;
-    LoadProgressIndicator *mLoadProgressIndicator;
+    QtCollider::WebView* mWebView;
+    LoadProgressIndicator* mLoadProgressIndicator;
 
     QSize mSizeHint;
 
-    QAction *mActions[ActionCount];
+    QAction* mActions[ActionCount];
+
+    int mServerPort = 0; // if 0, server is not running
 };
 
-class HelpBrowserFindBox : public QLineEdit
-{
+class HelpBrowserFindBox : public QLineEdit {
     Q_OBJECT
 
 public:
-    HelpBrowserFindBox( QWidget * parent = 0 );
+    HelpBrowserFindBox(QWidget* parent = 0);
 
 signals:
-    void query( const QString & text,  bool backwards = false );
+    void query(const QString& text, bool backwards = false);
 
 protected:
-    virtual bool event( QEvent * event );
+    virtual bool event(QEvent* event);
 };
 
-class HelpBrowserDocklet : public Docklet
-{
+class HelpBrowserDocklet : public Docklet {
     Q_OBJECT
 
 public:
-    explicit HelpBrowserDocklet( QWidget *parent = 0 );
-    HelpBrowser *browser() { return mHelpBrowser; }
+    explicit HelpBrowserDocklet(QWidget* parent = 0);
+    HelpBrowser* browser() { return mHelpBrowser; }
 
 private slots:
     void onInterpreterStart() {
@@ -171,10 +178,8 @@ private slots:
     }
 
 private:
-    HelpBrowser *mHelpBrowser;
-    HelpBrowserFindBox *mFindBox;
+    HelpBrowser* mHelpBrowser;
+    HelpBrowserFindBox* mFindBox;
 };
 
 } // namespace ScIDE
-
-#endif // SCIDE_WIDGETS_HELP_BROWSER_HPP_INCLUDED

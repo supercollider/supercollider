@@ -44,6 +44,8 @@ table::
 ## freeSelfAndDeepFreeNext || 12 || free this synth and if the following node is a group then do g_deepFree on it, else free it
 ## freeAllInGroup || 13 || free this synth and all other nodes in this group (before and after)
 ## freeGroup || 14 || free the enclosing group and all nodes within it (including this synth)
+## freeSelfResumeNext || 15 ||  free this synth and resume the following node
+
 ::
 
 For information on code::freeAll:: and code::deepFree::, see link::Classes/Group:: and link::Reference/Server-Command-Reference::.

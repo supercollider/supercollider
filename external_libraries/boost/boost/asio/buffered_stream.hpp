@@ -2,7 +2,7 @@
 // buffered_stream.hpp
 // ~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,7 +23,6 @@
 #include <boost/asio/buffered_stream_fwd.hpp>
 #include <boost/asio/detail/noncopyable.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/io_service.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -52,6 +51,9 @@ public:
 
   /// The type of the lowest layer.
   typedef typename next_layer_type::lowest_layer_type lowest_layer_type;
+
+  /// The type of the executor associated with the object.
+  typedef typename lowest_layer_type::executor_type executor_type;
 
   /// Construct, passing the specified argument to initialise the next layer.
   template <typename Arg>
@@ -88,10 +90,10 @@ public:
     return stream_impl_.lowest_layer();
   }
 
-  /// Get the io_service associated with the object.
-  boost::asio::io_service& get_io_service()
+  /// Get the executor associated with the object.
+  executor_type get_executor() BOOST_ASIO_NOEXCEPT
   {
-    return stream_impl_.get_io_service();
+    return stream_impl_.lowest_layer().get_executor();
   }
 
   /// Close the stream.
@@ -101,9 +103,10 @@ public:
   }
 
   /// Close the stream.
-  boost::system::error_code close(boost::system::error_code& ec)
+  BOOST_ASIO_SYNC_OP_VOID close(boost::system::error_code& ec)
   {
-    return stream_impl_.close(ec);
+    stream_impl_.close(ec);
+    BOOST_ASIO_SYNC_OP_VOID_RETURN(ec);
   }
 
   /// Flush all data from the buffer to the next layer. Returns the number of
@@ -123,10 +126,15 @@ public:
   }
 
   /// Start an asynchronous flush.
-  template <typename WriteHandler>
-  BOOST_ASIO_INITFN_RESULT_TYPE(WriteHandler,
+  template <
+      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+        std::size_t)) WriteHandler
+          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
       void (boost::system::error_code, std::size_t))
-  async_flush(BOOST_ASIO_MOVE_ARG(WriteHandler) handler)
+  async_flush(
+      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return stream_impl_.next_layer().async_flush(
         BOOST_ASIO_MOVE_CAST(WriteHandler)(handler));
@@ -151,11 +159,15 @@ public:
 
   /// Start an asynchronous write. The data being written must be valid for the
   /// lifetime of the asynchronous operation.
-  template <typename ConstBufferSequence, typename WriteHandler>
-  BOOST_ASIO_INITFN_RESULT_TYPE(WriteHandler,
+  template <typename ConstBufferSequence,
+      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+        std::size_t)) WriteHandler
+          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(WriteHandler,
       void (boost::system::error_code, std::size_t))
   async_write_some(const ConstBufferSequence& buffers,
-      BOOST_ASIO_MOVE_ARG(WriteHandler) handler)
+      BOOST_ASIO_MOVE_ARG(WriteHandler) handler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return stream_impl_.async_write_some(buffers,
         BOOST_ASIO_MOVE_CAST(WriteHandler)(handler));
@@ -176,10 +188,15 @@ public:
   }
 
   /// Start an asynchronous fill.
-  template <typename ReadHandler>
-  BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
+  template <
+      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+        std::size_t)) ReadHandler
+          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
       void (boost::system::error_code, std::size_t))
-  async_fill(BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
+  async_fill(
+      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return stream_impl_.async_fill(BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));
   }
@@ -203,11 +220,15 @@ public:
 
   /// Start an asynchronous read. The buffer into which the data will be read
   /// must be valid for the lifetime of the asynchronous operation.
-  template <typename MutableBufferSequence, typename ReadHandler>
-  BOOST_ASIO_INITFN_RESULT_TYPE(ReadHandler,
+  template <typename MutableBufferSequence,
+      BOOST_ASIO_COMPLETION_TOKEN_FOR(void (boost::system::error_code,
+        std::size_t)) ReadHandler
+          BOOST_ASIO_DEFAULT_COMPLETION_TOKEN_TYPE(executor_type)>
+  BOOST_ASIO_INITFN_AUTO_RESULT_TYPE(ReadHandler,
       void (boost::system::error_code, std::size_t))
   async_read_some(const MutableBufferSequence& buffers,
-      BOOST_ASIO_MOVE_ARG(ReadHandler) handler)
+      BOOST_ASIO_MOVE_ARG(ReadHandler) handler
+        BOOST_ASIO_DEFAULT_COMPLETION_TOKEN(executor_type))
   {
     return stream_impl_.async_read_some(buffers,
         BOOST_ASIO_MOVE_CAST(ReadHandler)(handler));

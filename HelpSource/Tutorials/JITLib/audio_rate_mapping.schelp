@@ -1,6 +1,6 @@
 title:: audio_rate_mapping
 summary:: audio mapping in ProxySpace
-categories:: Libraries>JITLib>Tutorials
+categories:: JITLib>Tutorials
 
 code::
 // todo. expand(numChannels) message

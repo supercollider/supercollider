@@ -1,27 +1,10 @@
-/*
-
-// tests //
-
-History.start;
-h = HistoryGui(History.current);
-
-1 + 2;
-3 + 4;
-12 + 14;
-
-1 + 2; History.current.lines
-h.postDoc(1);
-h.alignDoc;
-h.docFlag = \newDoc; // not working yet.
-
-*/
 
 HistoryGui : JITGui {
 
 	classvar <>docTitle = "History repeats", <>docHeight=120;
 
 	var <textV;
-	var <startBut, <filtBut, <filTextV, <keyPop, <topBut, listV;
+	var <startBut, <filtBut, <filTextV, <keyPop, <topBut, <listV;
 	var <doc, <oldDocs, <docFlag = \sameDoc, <>stickMode=0;
 
 	var <filters, <filteredIndices, <filteredShorts, <filtering = false;
@@ -47,16 +30,16 @@ HistoryGui : JITGui {
 			+ (skin.buttonHeight + (skin.margin.y * 2)) // buttonline
 			+ (numItems * skin.buttonHeight * 1.62).round(1)
 		);
-		//	"minSize: %\n".postf(minSize);
-		"minSize: %\n".postf(minSize); GUI.skins.jit.margin
 	}
+
+	winName { ^"History" }
 
 	makeViews { |options|
 		var font, flow;
 		var textViewHeight = numItems * skin.buttonHeight;
 		var listViewHeight = textViewHeight * 1.6;
 
-		font = Font("Osaka", 9);
+		font = Font(*GUI.skins.jit.fontSpecs);
 		flow = zone.addFlowLayout(2@2, 1@1);
 
 		zone.resize_(5);
@@ -79,13 +62,14 @@ HistoryGui : JITGui {
 		.string_("")
 		.enterInterpretsSelection_(false)
 		.keyDownAction_({ |txvw, char, mod, uni, keycode|
-			// char.postcs;
 			char !? {
 				if ([3, 13].includes(char.ascii)) {
 					this.rip(textV.string);
 				};
 			};
 		})
+		.font_(font)
+		.tabWidth_("1234".bounds(font)) // ca. 4 chars
 		.resize_(2);
 
 		// to do: disable if history is not current!
@@ -93,7 +77,6 @@ HistoryGui : JITGui {
 		.states_([ ["start"], ["end"]])
 		.canFocus_(false)
 		.action_({ |btn, mod|
-			mod.postln;
 			switch(btn.value,
 				0, {
 					if (object == History.current) {
@@ -120,7 +103,7 @@ HistoryGui : JITGui {
 		.items_([\all]).value_(0)
 		.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
 
-		filTextV = TextView(zone, Rect(0,0, 88 + 12, 20)).string_("")
+		filTextV = TextView(zone, Rect(0,0, 80 + 12, 20)).string_("")
 		.enterInterpretsSelection_(false)
 		.resize_(2)
 		.keyDownAction_({ |txvw, char, mod, uni, keycode|
@@ -144,20 +127,21 @@ HistoryGui : JITGui {
 		.canFocus_(false)
 		.action_({ |btn| this.rip(textV.string) });
 
-		// // not sure that this still works in Qt as intended
-		// Button(zone, Rect(0,0, 16, 20))
-		// .states_([["v"], ["^"]])
-		// .resize_(3)
-		// .action_ { |btn|
-		// 	var views = zone.children;
-		// 	var resizes = [
-		// 		[2, 1, 1, 1, 2, 3, 3, 3, 5],
-		// 		[5, 7, 7, 7, 8, 9, 9, 9, 8]
-		// 	][btn.value.asInteger];
-		//
-		// 	views.postln.do { |v, i| v.resize_(resizes[i]) };
-		//
-		// };
+		// on resize, keep textview or listview at equal height:
+		Button(zone, Rect(0,0, 16, 20))
+		.states_([["v"], ["^"]])
+		.resize_(3)
+		.action_ { |btn|
+			var index = btn.value.asInteger;
+			var constView = ["textV", "listV"][index];
+			var views = zone.children;
+			var resizes = [
+				[2, 1, 1, 1, 2, 3, 3, 3, 5],
+				[5, 7, 7, 7, 8, 9, 9, 9, 8]
+			][index];
+			"% resize: keep % height constant.\n".postf(this, constView);
+			views.do { |v, i| v.resize_(resizes[i]) };
+		};
 
 		listV = ListView(zone, bounds.copy.insetBy(2).height_(listViewHeight))
 		.font_(font)
@@ -166,26 +150,19 @@ HistoryGui : JITGui {
 		.background_(Color.grey(0.62))
 		.action_({ |lview|
 			var index = lview.value;
-			if (lview.items.isEmpty) {
-				"no entries yet.".postln;
-			} {
+			if (lview.items.notEmpty) {
 				lastLineSelected = listV.items[index];
 				if (filtering.not) {
-					this.postInlined(index)
+					this.showLineAt(index)
 				} {
-					this.postInlined(filteredIndices[index])
+					this.showLineAt(filteredIndices[index])
 				}
 			}
 		})
 		.enterKeyAction_({ |lview|
 			var index = lview.value;
 			if (filtering) { index = filteredIndices[index] };
-			try {
-				object.lines[index][2].postln.interpret.postln;
-				//	"did execute.".postln;
-			} {
-				"execute line from history failed.".postln;
-			};
+			object.evaluateLineAt(index);
 		});
 		this.checkUpdate;
 	}
@@ -255,7 +232,7 @@ HistoryGui : JITGui {
 		listV.value_(newIndex ? 0);
 		if(stickMode == 0) { listV.action.value(listV) };
 
-		this.postInlined(newIndex);
+		this.showLineAt(newIndex);
 	}
 
 	checkUpdate {
@@ -327,19 +304,19 @@ HistoryGui : JITGui {
 		if (filtering) { object.hasMovedOn = true; };
 	}
 
-	postInlined { |index|
+	showLineAt { |index|
 		var line;
-		if (object.lines.isNil) { "no history lines yet.".postln; ^this };
+		if (object.lines.isNil) { ^this };
 		line = object.lines[index];
-		if (line.isNil) { "history: no line found!".postln; ^this };
+		if (line.isNil) { ^this };
 		textV.string_(line[2]);
 	}
 
 	postDoc { |index|
 		var line;
-		if (object.lines.isNil) { "no history lines yet.".postln; ^this };
+		if (object.lines.isNil) { ^this };
 		line = object.lines[index];
-		if (line.isNil) { "history: no line found!".postln; ^this };
+		if (line.isNil) { ^this };
 		this.setDocStr(line[2]);
 		doc.front;
 		try { this.alignDoc };

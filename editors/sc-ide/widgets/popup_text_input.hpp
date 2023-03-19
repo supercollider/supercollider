@@ -18,8 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef SCIDE_WIDGETS_POPUP_TEXT_INPUT_HPP_INCLUDED
-#define SCIDE_WIDGETS_POPUP_TEXT_INPUT_HPP_INCLUDED
+#pragma once
 
 #include <QInputDialog>
 #include <QKeyEvent>
@@ -27,18 +26,16 @@
 
 namespace ScIDE {
 
-class PopupTextInput : public QInputDialog
-{
+class PopupTextInput : public QInputDialog {
     Q_OBJECT
 
 public:
-    PopupTextInput(QString const & labelText, QWidget * parent):
-        QInputDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
-    {
+    PopupTextInput(QString const& labelText, QWidget* parent):
+        QInputDialog(parent, Qt::Dialog | Qt::FramelessWindowHint) {
         setOption(QInputDialog::NoButtons);
         setInputMode(QInputDialog::TextInput);
         setLabelText(labelText);
-        
+
         if (parent) {
             QRect position = rect();
             position.moveCenter(parent->rect().center());
@@ -49,16 +46,14 @@ public:
     }
 
 private:
-    void paintEvent( QPaintEvent * )
-    {
+    void paintEvent(QPaintEvent*) {
         QPainter painter(this);
         painter.setBrush(Qt::NoBrush);
         painter.setPen(palette().color(QPalette::Dark));
-        painter.drawRect(rect().adjusted(0,0,-1,-1));
+        painter.drawRect(rect().adjusted(0, 0, -1, -1));
     }
 
-    virtual void keyPressEvent(QKeyEvent * event)
-    {
+    virtual void keyPressEvent(QKeyEvent* event) {
         switch (event->key()) {
         case Qt::Key_Enter:
         case Qt::Key_Return:
@@ -71,9 +66,6 @@ private:
 
         QInputDialog::keyPressEvent(event);
     }
-
 };
 
 }
-
-#endif // SCIDE_WIDGETS_POPUP_TEXT_INPUT_HPP_INCLUDED

@@ -1,6 +1,6 @@
 class:: Pdef
 summary:: stream reference definition
-categories:: Libraries>JITLib>Patterns
+categories:: JITLib>Patterns
 related:: Classes/Pdefn, Classes/PdefGui
 
 description::
@@ -36,6 +36,10 @@ Pdef(\x, Pbind(\freq, Pseq([1000, 1923, 245.2, 1718] / 1.2 + 0.1, inf)));
 
 ClassMethods::
 
+method::all
+A global link::Classes/IdentityDictionary:: with all proxies.
+
+
 private::initClass
 
 subsection::Creation
@@ -44,6 +48,12 @@ method::new
 Store the pattern in a global dictionary under key, replacing its pattern with the new one. If the pattern is a strong::function::, Pdef creates a link::Classes/PlazyEnvir:: internally that dynamically creates the pattern returned from the function, applying the arguments from the inevent.
 
 Using strong::*new(key):: you can access the pattern at that key (if none is given, a default silent event is created)
+
+argument::key
+An identifier for the proxy. Usually, it is a link::Classes/Symbol::. The key transparently accesses the global link::Classes/IdentityDictionary::.
+
+argument::item
+An object for (re)defining the source of the proxy. If code::nil::, the proxy is returned unmodified.
 
 code::
 
@@ -66,9 +76,9 @@ Pdef(\x, { Pbind(\note, Pseries(10.rand, 5.rand, 8.rand + 1), \dur, 1 / (8.rand 
 Pn(Pdef(\x)).play;
 
 // the function is called in the incoming event as current environment, so parameters can be passed:
-Pdef(\stut, { Pstutter(~stutter ? 1, ~pattern) });
+Pdef(\stut, { Pdup(~dup ? 1, ~pattern) });
 Pdef(\x, Pbind(\instrument, \Pdefhelp, \note, Pseq([0, 4, 7, 3, 0, 1, 0], inf)));
-Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), stutter: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
+Pdef(\y, Pdef(\stut) <> (pattern: Pdef(\x), dup: Pseq([2, 2, 4, 3], inf)) <> (dur: 0.1, legato: 0.2)).play;
 
 ::
 
@@ -91,9 +101,14 @@ Set the default quantisation for new instances (default: 1.0). This can be an ar
 
 InstanceMethods::
 
+private::prAdd
+
 subsection::Changing the definition / setting the source
 
 One pattern may have many streams in different places. A change in the pattern definition Pdef propagates through all streams. The change does not have to be immediate - there is a scheme to schedule when the change becomes effective: a strong::quant:: and strong::clock:: (like elsewhere) and a strong::condition::.
+
+method::clock
+get or set the instance's default clock, used by link::#-play:: if no other clock is specified. Defaults to TempoClock.default.
 
 method::quant
 Set the quantisation time for beat accurate scheduling.
@@ -177,6 +192,9 @@ Examples::
 subsection::Pdef as stream reference
 
 code::
+
+s.boot;
+
 (
 SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 	var env, u=1;
@@ -186,7 +204,6 @@ SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 
 }).add;
 )
-s.boot;
 
 Pdef(\metronom, Pbind(\instrument, \Pdefhelp, \dur, 1, \degree, 16, \legato, 0.1)).play;
 
@@ -219,10 +236,10 @@ Pdef(\metronom).stop;
 (
 x = Ppar([
 	Pbindf(Pn(Pdef(\a), inf),
-		\gtranspose, Pstutter(8, Pseq(#[0, 2, 0, 3],inf))
+		\gtranspose, Pdup(8, Pseq(#[0, 2, 0, 3],inf))
 	),
 	Pbindf(Pn(Pdef(\a), inf),
-		\gtranspose, Pstutter(8, Pseq(#[7, 4, 0, 3],inf)),
+		\gtranspose, Pdup(8, Pseq(#[7, 4, 0, 3],inf)),
 		\dur, 0.6
 	),
 	Pbindf(Pn(Pdef(\a), inf),

@@ -1,6 +1,6 @@
 class:: EnvGate
 summary:: singleton fade envelope
-categories:: Libraries>JITLib>NodeProxy
+categories:: JITLib>NodeProxy
 related:: Classes/EnvGen
 
 description::

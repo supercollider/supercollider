@@ -53,12 +53,12 @@ SCDocHTMLRenderer {
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
-		var result;
+		var doc, result;
 
 		if(linkBase.isEmpty) {
 			result = "";
 		} {
-			var doc = SCDoc.documents[linkBase];
+			doc = SCDoc.documents[linkBase];
 			result = baseDir +/+ linkBase;
 
 			// If this is an existing document, just add .html to get the target
@@ -100,6 +100,7 @@ SCDocHTMLRenderer {
 
 	// Find the text label for the given link, which points inside the help system.
 	*prLinkTextForInternalLink { |linkBase, linkAnchor, linkText|
+		var doc, result;
 		// Immediately return link text if available
 		if(linkText.isEmpty.not) {
 			^linkText
@@ -114,8 +115,8 @@ SCDocHTMLRenderer {
 				^linkAnchor
 			}
 		} {
-			var doc = SCDoc.documents[linkBase];
-			var result = doc !? _.title ? linkBase.basename;
+			doc = SCDoc.documents[linkBase];
+			result = doc !? _.title ? linkBase.basename;
 			if(linkAnchor.isEmpty) {
 				^result
 			} {
@@ -195,11 +196,12 @@ SCDocHTMLRenderer {
 		^res;
 	}
 
-	*renderHeader {|stream, doc|
+	*renderHeader {|stream, doc, body|
 		var x, cats, m, z;
 		var thisIsTheMainHelpFile;
 		var folder = doc.path.dirname;
 		var undocumented = false;
+		var displayedTitle;
 		if(folder==".",{folder=""});
 
 		// FIXME: use SCDoc.helpTargetDir relative to baseDir
@@ -224,29 +226,50 @@ SCDocHTMLRenderer {
 			stream << doc.title << " | SuperCollider " << Main.version << " Help";
 		};
 
+		// XXX if you make changes here, make sure to also update the static HTML files
+		// (Search.html, Browse.html, etc.) if necessary.
 		stream
 		<< "</title>\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/codemirror.css' type='text/css' />\n"
+		<< "<link rel='stylesheet' href='" << baseDir << "/editor.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
+		<< "<meta name='viewport' content='width=device-width, initial-scale=1'>\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
+		<< "<script src='" << baseDir << "/lib/jquery.min.js'></script>\n"
+		<< "<script src='" << baseDir << "/lib/codemirror-5.39.2.min.js' type='text/javascript'></script>\n"
+		<< "<script src='" << baseDir << "/lib/codemirror-addon-simple-5.39.2.min.js' type='text/javascript'></script>\n"
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
-		<< "var scdoc_title = '" << doc.title << "';\n"
+		<< "var scdoc_title = '" << doc.title.escapeChar($') << "';\n"
 		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
-		<< "<script src='" << baseDir << "/prettify.js' type='text/javascript'></script>\n"
-		<< "<script src='" << baseDir << "/lang-sc.js' type='text/javascript'></script>\n"
-		<< "</head>\n";
+		// QWebChannel access
+		<< "<script src='qrc:///qtwebchannel/qwebchannel.js' type='text/javascript'></script>\n"
+		<< "</head>\n"
+		<< "<body onload='fixTOC()'>\n";
+
+
+		displayedTitle = if(
+			thisIsTheMainHelpFile,
+			{ "SuperCollider " ++ Main.version },
+			{ doc.title }
+		);
 
 		stream
-		<< "<body onload='fixTOC();prettyPrint()'>\n"
-		<< "<div class='contents'>\n"
-		<< "<div id='menubar'></div>\n"
-		<< "<div class='header'>\n";
+		<< "<div id='toc'>\n"
+		<< "<div id='toctitle'>" << displayedTitle << ":</div>\n"
+		<< "<span class='toc_search'>Filter: <input id='toc_search'></span>";
+		this.renderTOC(stream, body);
+		stream << "</div>";
 
+		stream
+		<< "<div id='menubar'></div>\n"
+		<< "<div class='contents'>\n"
+		<< "<div class='header'>\n";
 
 		if(thisIsTheMainHelpFile.not) {
 			stream
@@ -284,12 +307,9 @@ SCDocHTMLRenderer {
 			stream << "</div>";
 		};
 
-		stream << "<h1>";
+		stream << "<h1>" << displayedTitle;
 		if(thisIsTheMainHelpFile) {
-			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
-		} {
-			stream << doc.title;
 		};
 		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
 			stream << "<span id='superclasses'>"
@@ -416,7 +436,7 @@ SCDocHTMLRenderer {
 					args2 = m2.argNames !? {m2.argNames[1..]};
 				};
 				maxargs.do {|i|
-					var a = args2[i];
+					var a = args2 !? args2[i];
 					var b = lastargs[i];
 					if(a!=b and: {a!=nil} and: {b!=nil}) {
 						methArgsMismatch = true;
@@ -538,12 +558,12 @@ SCDocHTMLRenderer {
 				stream << this.htmlForLink(node.text);
 			},
 			\CODEBLOCK, {
-				stream << "<pre class='code prettyprint lang-sc'>"
+				stream << "<textarea class='editor'>"
 				<< this.escapeSpecialChars(node.text)
-				<< "</pre>\n";
+				<< "</textarea>\n";
 			},
 			\CODE, {
-				stream << "<code class='code prettyprint lang-sc'>"
+				stream << "<code>"
 				<< this.escapeSpecialChars(node.text)
 				<< "</code>";
 			},
@@ -943,7 +963,9 @@ SCDocHTMLRenderer {
 		};
 		stream << "link::" << doc.path << "::<br>"
 		<< "</div>"
-		<< "</div></body></html>";
+		<< "</div>"
+		<< "<script src='" << baseDir << "/editor.js' type='text/javascript'></script>\n"
+		<< "</body></html>";
 	}
 
 	*renderOnStream {|stream, doc, root|
@@ -968,10 +990,7 @@ SCDocHTMLRenderer {
 			currentImplClass = nil;
 		};
 
-		this.renderHeader(stream, doc);
-		stream << "<div id='toc'>\n";
-		this.renderTOC(stream, body);
-		stream << "</div>";
+		this.renderHeader(stream, doc, body);
 		this.renderChildren(stream, body);
 		this.renderFootNotes(stream);
 		this.renderFooter(stream, doc);

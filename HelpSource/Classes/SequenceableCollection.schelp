@@ -109,7 +109,7 @@ code::
 ::
 
 method::indexOf
-Return the index of an strong::item:: in the collection, or nil if not found.
+Return the index of an strong::item:: in the collection, or nil if not found. Elements are checked for identity (not for equality).
 code::
 [3, 4, 100, 5].indexOf(100);
 [3, 4, \foo, \bar].indexOf(\foo);
@@ -175,7 +175,8 @@ copymethod:: Collection -minIndex
 
 
 method::find
-If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index.
+If the strong::sublist:: exists in the receiver (in the specified order), at an offset greater than or equal to the initial strong::offset::, then return the starting index.  The sublist must be of the same kind (class) as the list to search in.
+Elements are checked for equality (not for identity).
 code::
 y = [7, 8, 7, 6, 5, 6, 7, 6, 7, 8, 9];
 y.find([7, 6, 5]);
@@ -229,10 +230,11 @@ Return a new SequenceableCollection which is a copy of the indexed slots of the 
 code::x.copyFromStart(a):: can also be written as code::x[..a]::
 
 method::remove
-Remove strong::item:: from collection.
+Remove strong::item:: from collection. Elements are checked for identity (not for equality).
 
 method::take
-Remove and return strong::item:: from collection. The last item in the collection will move to occupy the vacated slot (and the collection size decreases by one). See also takeAt, defined for link::Classes/ArrayedCollection#-takeAt::.
+Remove and return strong::item:: from collection. The last item in the collection will move to occupy the vacated slot (and the collection size decreases by one). See also takeAt, defined for link::Classes/ArrayedCollection#-takeAt::. Elements are checked for identity (not for equality).
+warning:: code::take(item):: works on Arrays but not on Lists, because the internally called method code::takeAt(item):: is not defined for Lists. ::
 code::
 a = [11, 12, 13, 14, 15];
 a.take(12);
@@ -620,7 +622,7 @@ code::
 ::
 
 method::convertDigits
-Returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#asDigits:: for the complementary method.
+Returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#-asDigits:: for the complementary method.
 code::
 [1, 0, 0, 0].convertDigits;
 [1, 0, 0, 0].convertDigits(2);
@@ -631,16 +633,89 @@ method::hammingDistance
 Returns the count of array elements that are not equal in identical positions. http://en.wikipedia.org/wiki/Hamming_distance
 
 The collections are not wrapped - if one array is shorter than the other, the difference in size should be included in the count.
+
 code::
 [0, 0, 0, 1, 1, 1, 0, 1, 0, 0].hammingDistance([0, 0, 1, 1, 0, 0, 0, 0, 1, 1]);
 "SuperMan".hammingDistance("SuperCollider");
 ::
 
+subsection:: Fuzzy comparisons
+With fuzzy comparisons, the arrays do not need to match exactly. We can check how similar they are, and make decisions based on that. This is the magic behind autocorrection.
+
+method::editDistance
+Returns the minimum number of changes to modify this teletype::SequenceableCollection:: into the other teletype::SequenceableCollection::.
+A change can be: an addition, a deletion, or a substitution.
+This is known as the Levenshtein Distance and is implemented in SuperCollider using the Wagner–Fischer algorithm.
+
+The default comparison uses strong::identity:: - see link::Classes/Object#-==:: and link::Classes/Object#-===::
+
+Where both arrays are raw arrays (String, Int16Array, Int32Array, FloatArray etc., or any derived classes), like comparing two strings, a faster primitive will be used to calculate the distance.
+
+code::
+"hello".editDistance("hallo"); // 1 (substitution)
+"hello".editDistance("hell"); // 1 (deletion)
+"hello".editDistance("helloo"); // 1 (addition)
+"hello".editDistance("hllo"); // 1 (removal)
+"hello".editDistance("haldo"); // 2 (substitutions)
+::
+
+In cases where the arrays are of different types, it will fall back to a slower, non-primitive implementation.
+
+code::
+// String vs Array
+"hello".editDistance([$h, $e, $l, $l, $o]);
+::
+
+For cases that require comparisons other than identity, the optional teletype::compareFunc:: can be given to compare elements. This function will be passed two arguments, representing a single element from each array to compare, and this function must return a boolean as to whether or not the elements are equal.
+
+code::
+// Using compareFunc for case insensitive comparisons
+"HeLLO".editDistance("HELLO", { |a, b|
+	a.toLower == b.toLower;
+});
+::
+
+note::
+Specifying a teletype::compareFunc:: will bypass the primitive and may take significantly longer to execute for larger arrays.
+::
+
+argument::other
+The teletype::SequenceableCollection:: to compare against
+
+argument::compareFunc
+An optional comparison function to use for each element. It will be provided two arguments, and the function must return a boolean as to whether or not they are the same. Default value is teletype::nil::, which will use strong::identity:: (not equality) to compare elements.
+
+code::
+[1,2,3,4].editDistance([2,3,4,5], { | a, b |
+	a == b;
+});
+::
+
+method::similarity
+Returns a value between 0 and 1 representing the percentage similarity between this teletype::SequenceableCollection:: and the other teletype::SequenceableCollection::.
+
+A value of 1 means they are exactly the same, a value of 0 means they are completely different.
+This is calculated based on the link::#-editDistance::
+code::
+"hello".similarity("hello"); // 1
+"hello".similarity("asdf"); // 0
+"word".similarity("wodr"); // 0.5
+::
+
+argument::other
+The code::SequenceableCollection:: to compare against
+
+argument::compareFunc
+An optional compareFunc to be used to calculate the edit distance (see link::#-editDistance::)
+
+private::prEditDistance
+private::prLevenshteinDistance
+
 subsection::Math Support - Unary Messages
 
 All of the following messages send the message link::#-performUnaryOp:: to the receiver with the unary message selector as an argument.
 
-method::neg, reciprocal, bitNot, abs, asFloat, asInt, ceil, floor, frac, sign, squared, cubed, sqrt, exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand, sum3rand, distort, softclip, coin, even, odd, isPositive, isNegative, isStrictlyPositive, real, imag, magnitude, magnitudeApx, phase, angle, rho, theta, asFloat, asInteger
+method::neg, reciprocal, bitNot, abs, asFloat, ceil, floor, frac, sign, squared, cubed, sqrt, exp, midicps, cpsmidi, midiratio, ratiomidi, ampdb, dbamp, octcps, cpsoct, log, log2, log10, sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, rand, rand2, linrand, bilinrand, sum3rand, distort, softclip, coin, even, odd, isPositive, isNegative, isStrictlyPositive, real, imag, magnitude, magnitudeApx, phase, angle, rho, theta, asFloat, asInteger
 
 method::performUnaryOp
 Creates a new collection of the results of applying the selector to all elements in the receiver.
@@ -663,6 +738,156 @@ code::
 ([1, 2, 3, 4] * 10);
 ([1, 2, 3, 4] * [4, 5, 6, 7]);
 ::
+
+subsection::Math Support - Special Functions
+
+A variety of Special Functions are supplied by the Boost C++ library. The library's
+link::http://www.boost.org/doc/libs/1_66_0/libs/math/doc/html/special.html##online documentation::
+ serves as the primary reference for the following functions. The methods
+here match closely with those found in the source library, as do argument names.
+
+Below you'll find descriptions of the functions and their bounds, but for
+visualizing the functions, have a look in link::Guides/Tour-of-Special-Functions::.
+
+note::The following methods are documented slightly clearer in
+link::Classes/SimpleNumber#Special Functions:: using functional notation.
+As of this writing, a bug in the help file formatting misleadingly documents
+the methods in receiver notation (methods preceded by code::.::), but should
+be read to suggests the usage: code::foo([a], [b])::. The equivalent receiver
+notation is: code::[a].foo([b])::. Note that those methods with only one argument erroneously omit that
+argument from the argument list; each element in the collection is implicitly
+passed as the method's argument, e.g. code::foo([a]):: or code::[a].foo::::
+
+warning::Many of the functions are only valid in certain numerical ranges. For the most part, error handling
+happens in the underlying boost functions. While these errors are often obtuse, you'll usually find
+a useful message at the end of the error regarding proper ranges and the erroneous value supplied.
+Refer to the online documentation for more detailed descriptions, and the
+link::Guides/Tour-of-Special-Functions:: for plots showing ranges and asymptotes.::
+
+copymethod:: SimpleNumber -bernouliB2n
+copymethod:: SimpleNumber -tangentT2n
+copymethod:: SimpleNumber -tgamma
+copymethod:: SimpleNumber -tgamma1pm1
+copymethod:: SimpleNumber -lgamma
+copymethod:: SimpleNumber -digamma
+copymethod:: SimpleNumber -trigamma
+copymethod:: SimpleNumber -polygamma
+copymethod:: SimpleNumber -tgammaRatio
+copymethod:: SimpleNumber -tgammaDeltaRatio
+copymethod:: SimpleNumber -gammaP
+copymethod:: SimpleNumber -gammaQ
+copymethod:: SimpleNumber -tgammaLower
+copymethod:: SimpleNumber -tgammaUpper
+copymethod:: SimpleNumber -gammaPInv
+copymethod:: SimpleNumber -gammaQInv
+copymethod:: SimpleNumber -gammaPInvA
+copymethod:: SimpleNumber -gammaQInvA
+copymethod:: SimpleNumber -gammaPDerivative
+copymethod:: SimpleNumber -gammaQDerivative
+copymethod:: SimpleNumber -factorial
+copymethod:: SimpleNumber -doubleFactorial
+copymethod:: SimpleNumber -risingFactorial
+copymethod:: SimpleNumber -fallingFactorial
+copymethod:: SimpleNumber -binomialCoefficient
+copymethod:: SimpleNumber -beta
+copymethod:: SimpleNumber -ibeta
+copymethod:: SimpleNumber -ibetaC
+copymethod:: SimpleNumber -betaFull
+copymethod:: SimpleNumber -betaFullC
+copymethod:: SimpleNumber -ibetaInv
+copymethod:: SimpleNumber -ibetaCInv
+copymethod:: SimpleNumber -ibetaInvA
+copymethod:: SimpleNumber -ibetaCInvA
+copymethod:: SimpleNumber -ibetaInvB
+copymethod:: SimpleNumber -ibetaCInvB
+copymethod:: SimpleNumber -ibetaDerivative
+copymethod:: SimpleNumber -erf
+copymethod:: SimpleNumber -erfC
+copymethod:: SimpleNumber -erfInv
+copymethod:: SimpleNumber -erfCInv
+copymethod:: SimpleNumber -legendreP
+copymethod:: SimpleNumber -legendrePPrime
+copymethod:: SimpleNumber -legendrePZeros
+copymethod:: SimpleNumber -legendrePAssoc
+copymethod:: SimpleNumber -legendreQ
+copymethod:: SimpleNumber -laguerre
+copymethod:: SimpleNumber -laguerreAssoc
+copymethod:: SimpleNumber -hermite
+copymethod:: SimpleNumber -chebyshevT
+copymethod:: SimpleNumber -chebyshevU
+copymethod:: SimpleNumber -chebyshevTPrime
+copymethod:: SimpleNumber -chebyshevTZeros
+copymethod:: SimpleNumber -sphericalHarmonic
+copymethod:: SimpleNumber -sphericalHarmonicR
+copymethod:: SimpleNumber -sphericalHarmonicI
+copymethod:: SimpleNumber -cylBesselJ
+copymethod:: SimpleNumber -cylNeumann
+copymethod:: SimpleNumber -cylBesselJZero
+copymethod:: SimpleNumber -cylNeumannZero
+copymethod:: SimpleNumber -cylBesselI
+copymethod:: SimpleNumber -cylBesselK
+copymethod:: SimpleNumber -sphBessel
+copymethod:: SimpleNumber -sphNeumann
+copymethod:: SimpleNumber -cylBesselJPrime
+copymethod:: SimpleNumber -cylNeumannPrime
+copymethod:: SimpleNumber -cylBesselIPrime
+copymethod:: SimpleNumber -cylBesselKPrime
+copymethod:: SimpleNumber -sphBesselPrime
+copymethod:: SimpleNumber -sphNeumannPrime
+copymethod:: SimpleNumber -cylHankel1
+copymethod:: SimpleNumber -cylHankel2
+copymethod:: SimpleNumber -sphHankel1
+copymethod:: SimpleNumber -sphHankel2
+copymethod:: SimpleNumber -airyAi
+copymethod:: SimpleNumber -airyBi
+copymethod:: SimpleNumber -airyAiPrime
+copymethod:: SimpleNumber -airyBiPrime
+copymethod:: SimpleNumber -airyAiZero
+copymethod:: SimpleNumber -airyBiZero
+copymethod:: SimpleNumber -ellintRf
+copymethod:: SimpleNumber -ellintRd
+copymethod:: SimpleNumber -ellintRj
+copymethod:: SimpleNumber -ellintRc
+copymethod:: SimpleNumber -ellintRg
+copymethod:: SimpleNumber -ellint1
+copymethod:: SimpleNumber -ellint1C
+copymethod:: SimpleNumber -ellint2
+copymethod:: SimpleNumber -ellint2C
+copymethod:: SimpleNumber -ellint3
+copymethod:: SimpleNumber -ellint3C
+copymethod:: SimpleNumber -ellintD
+copymethod:: SimpleNumber -ellintDC
+copymethod:: SimpleNumber -jacobiZeta
+copymethod:: SimpleNumber -heumanLambda
+copymethod:: SimpleNumber -jacobiCd
+copymethod:: SimpleNumber -jacobiCn
+copymethod:: SimpleNumber -jacobiCs
+copymethod:: SimpleNumber -jacobiDc
+copymethod:: SimpleNumber -jacobiDn
+copymethod:: SimpleNumber -jacobiDs
+copymethod:: SimpleNumber -jacobiNc
+copymethod:: SimpleNumber -jacobiNd
+copymethod:: SimpleNumber -jacobiNs
+copymethod:: SimpleNumber -jacobiSc
+copymethod:: SimpleNumber -jacobiSd
+copymethod:: SimpleNumber -jacobiSn
+copymethod:: SimpleNumber -zeta
+copymethod:: SimpleNumber -expintEn
+copymethod:: SimpleNumber -expintEi
+copymethod:: SimpleNumber -sinPi
+copymethod:: SimpleNumber -cosPi
+copymethod:: SimpleNumber -log1p
+copymethod:: SimpleNumber -expm1
+copymethod:: SimpleNumber -cbrt
+copymethod:: SimpleNumber -sqrt1pm1
+copymethod:: SimpleNumber -powm1
+copymethod:: SimpleNumber -sincPi
+copymethod:: SimpleNumber -sinhcPi
+copymethod:: SimpleNumber -asinh
+copymethod:: SimpleNumber -acosh
+copymethod:: SimpleNumber -atanh
+copymethod:: SimpleNumber -owensT
+
 
 subsection::Multichannel wrappers
 All of the following messages are performed on the elements of this collection, using link::Classes/Object#-multiChannelPerform::.
@@ -707,3 +932,29 @@ code::
 Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].convertRhythm)).play;
 ::
 
+subsection:: Starting UNIX processes
+
+private::prUnixCmd
+
+method::unixCmd
+Execute a UNIX command strong::asynchronously::. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+argument:: action
+A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+argument:: postOutput
+A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
+returns::
+An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.
+discussion::
+Example:
+code::
+["ls","/"].unixCmd;
+::
+
+method::unixCmdGetStdOut
+Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window. This object should be an array of strings where the first string is the path to the executable to be run and all other strings are passed as arguments to the executable. This method starts the process directly without using a shell.
+code::
+~listing = ["ls","/"].unixCmdGetStdOut; // Grab
+~listing.reverse.as(Array).dupEach.join.postln; // Mangle
+::
+
+private:: acosh, airyAi, airyAiPrime, airyAiZero, acosh, airyAi, airyAiPrime, airyAiZero, airyBi, airyBiPrime, airyBiZero, asinh, atanh, bernouliB2n, beta, betaFull, betaFullC, binomialCoefficient, cbrt, chebyshevT, chebyshevTPrime, chebyshevTZeros, chebyshevU, cosPi, cylBesselI, cylBesselIPrime, cylBesselJ, cylBesselJPrime, cylBesselJZero, cylBesselK, cylBesselKPrime, cylHankel1, cylHankel2, cylNeumann, cylNeumannPrime, cylNeumannZero, digamma, doubleFactorial, ellint1, ellint1C, ellint2, ellint2C, ellint3, ellint3C, ellintD, ellintDC, ellintRc, ellintRd, ellintRf, ellintRg, ellintRj, erf, erfC, erfCInv, erfInv, expintEi, expintEn, expm1, factorial, fallingFactorial, gammaP, gammaPDerivative, gammaPInv, gammaPInvA, gammaQ, gammaQDerivative, gammaQInv, gammaQInvA, hermite, heumanLambda, ibeta, ibetaC, ibetaCInv, ibetaCInvA, ibetaCInvB, ibetaDerivative, ibetaInv, ibetaInvA, ibetaInvB, jacobiCd, jacobiCn, jacobiCs, jacobiDc, jacobiDn, jacobiDs, jacobiNc, jacobiNd, jacobiNs, jacobiSc, jacobiSd, jacobiSn, jacobiZeta, laguerre, laguerreAssoc, legendreP, legendrePAssoc, legendrePPrime, legendrePZeros, legendreQ, lgamma, log1p, owensT, polygamma, pow, powm1, prHermite, prLaguerreAssoc, prLegendreQ, risingFactorial, sinPi, sincPi, sinhcPi, sphBessel, sphBesselPrime, sphHankel1, sphHankel2, sphNeumann, sphNeumannPrime, sphericalHarmonic, sphericalHarmonicI, sphericalHarmonicR, sqrt1pm1, tangentT2n, tgamma, tgamma1pm1, tgammaDeltaRatio, tgammaLower, tgammaRatio, tgammaUpper, trigamma, zeta

@@ -131,6 +131,7 @@ namespace boost { namespace fusion
             void
             check_delim(Char c) const
             {
+                using namespace std;
                 if (!isspace(c))
                 {
                     if (stream.get() != c)
@@ -143,9 +144,8 @@ namespace boost { namespace fusion
 
             Stream& stream;
 
-        private:
             // silence MSVC warning C4512: assignment operator could not be generated
-            string_ios_manip& operator= (string_ios_manip const&);
+            BOOST_DELETED_FUNCTION(string_ios_manip& operator= (string_ios_manip const&))
         };
 
     } // detail

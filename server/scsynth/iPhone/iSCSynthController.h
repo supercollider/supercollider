@@ -15,34 +15,33 @@
 #include "SC_WorldOptions.h"
 
 @interface iSCSynthController : NSObject <UITabBarControllerDelegate> {
-	WorldOptions options;
-	struct World *world;
-	NSTimer *timer;
+    WorldOptions options;
+    struct World* world;
+    NSTimer* timer;
 
-	int lastNodeID;
+    int lastNodeID;
 
-	IBOutlet UILabel *avgCPULabel;
-	IBOutlet UILabel *peakCPULabel;
-	IBOutlet UILabel *synthsLabel;
-	IBOutlet UILabel *ugensLabel;
-	IBOutlet UISwitch *speakerSwitch;
-	IBOutlet UIButton *freeAllButton;
+    IBOutlet UILabel* avgCPULabel;
+    IBOutlet UILabel* peakCPULabel;
+    IBOutlet UILabel* synthsLabel;
+    IBOutlet UILabel* ugensLabel;
+    IBOutlet UISwitch* speakerSwitch;
+    IBOutlet UIButton* freeAllButton;
 
-	IBOutlet UITextView *logView;
+    IBOutlet UITextView* logView;
 
-	IBOutlet UIViewController *logViewController;
-	IBOutlet FileBrowserViewController *synthdefsViewController;
-
+    IBOutlet UIViewController* logViewController;
+    IBOutlet FileBrowserViewController* synthdefsViewController;
 }
 
-- (IBAction) toggleState:(id)sender;
-- (IBAction) toggleSpeaker:(id)sender;
-- (IBAction) triggerFreeAll:(id)sender;
-- (void) start;
-- (void) stop;
-- (void) freeAllNodes;
-- (void) update:(NSTimer *)timer;
-- (void) log:(NSString *)string;
-- (void) selectSynthdef:(NSString *)string;
+- (IBAction)toggleState:(id)sender;
+- (IBAction)toggleSpeaker:(id)sender;
+- (IBAction)triggerFreeAll:(id)sender;
+- (void)start;
+- (void)stop;
+- (void)freeAllNodes;
+- (void)update:(NSTimer*)timer;
+- (void)log:(NSString*)string;
+- (void)selectSynthdef:(NSString*)string;
 
 @end

@@ -26,7 +26,12 @@ namespace boost { namespace program_options {
     inline std::string strip_prefixes(const std::string& text)
     {
         // "--foo-bar" -> "foo-bar"
-        return text.substr(text.find_first_not_of("-/"));
+        std::string::size_type i = text.find_first_not_of("-/");
+        if (i == std::string::npos) {
+            return text;
+        } else {
+            return text.substr(i);
+        }
     }
 
     /** Base class for all errors in the library. */
@@ -169,7 +174,7 @@ namespace boost { namespace program_options {
         virtual void set_option_name(const std::string& option_name)
         {           set_substitute("option", option_name);}
 
-        std::string get_option_name() const throw()
+        std::string get_option_name() const
         {           return get_canonical_option_name();         }
 
         void set_original_token(const std::string& original_token)
@@ -370,11 +375,14 @@ namespace boost { namespace program_options {
                    const std::string& option_name = "",
                    const std::string& original_token = "",
                    int option_style              = 0):
-        error_with_option_name(get_template(kind), option_name, original_token, option_style)
+        error_with_option_name(get_template(kind), option_name, original_token, option_style),
+        m_kind(kind)
         {
         }
 
         ~validation_error() throw() {}
+
+        kind_t kind() const { return m_kind; }
 
     protected:
         /** Used to convert kind_t to a related error text */

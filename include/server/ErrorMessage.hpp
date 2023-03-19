@@ -39,17 +39,19 @@
  *  02110-1301 USA
  */
 
-#ifndef COMMON_SERVER_ERRORMESSAGE_H_INCLUDED
-#define COMMON_SERVER_ERRORMESSAGE_H_INCLUDED
+// PLEASE NOTE:
+// libscsynth API might change across minor versions.
+// Always make sure, when using libscsynth as a shared library, that binary and headers come from the same minor
+// version.
+
+#pragma once
 
 #include <string>
 #include <cassert>
 #include <sstream>
 #include <map>
 
-namespace scsynth {
-
-namespace ErrorMessage {
+namespace scsynth { namespace ErrorMessage {
 
 /// String used to indent all messages.
 std::string const indent = "    ";
@@ -64,28 +66,21 @@ std::string const indent = "    ";
  * \param actualVersion the API version reported by the plugin
  * \returns A multiline string with info about how to correct the error.
  */
-std::string apiVersionMismatch(std::string const& utf8Filename, int const expectedVersion, int const actualVersion)
-{
+std::string apiVersionMismatch(std::string const& utf8Filename, int const expectedVersion, int const actualVersion) {
     using namespace std;
     assert(expectedVersion != actualVersion);
 
     // both 1 and 2 were introduced in 3.6
-    static map<int, string> const scVersionForAPIVersion = {
-        {1, "3.6.0"},
-        {2, "3.6.0"},
-        {3, "3.9.0"}
-    };
+    static map<int, string> const scVersionForAPIVersion = { { 1, "3.6.0" }, { 2, "3.6.0" }, { 3, "3.9.0" } };
 
     stringstream message;
     message << "ERROR: API version mismatch: " << utf8Filename << "\n";
 
     try {
         // actualVersion+1: the version that broke compatibility
-        string const& scVersion = scVersionForAPIVersion.at(actualVersion+1);
-        message << indent << "This plugin is not compatible with SuperCollider >="
-            << scVersion << "\n";
-        message << indent
-            << "The plugin has not been loaded; please find or compile a newer version.\n";
+        string const& scVersion = scVersionForAPIVersion.at(actualVersion + 1);
+        message << indent << "This plugin is not compatible with SuperCollider >=" << scVersion << "\n";
+        message << indent << "The plugin has not been loaded; please find or compile a newer version.\n";
     } catch (std::out_of_range const& exception) {
         message << indent << "This plugin uses an unknown version of the interface.\n";
         message << indent << "You may need to update SuperCollider in order to use it.\n";
@@ -94,27 +89,23 @@ std::string apiVersionMismatch(std::string const& utf8Filename, int const expect
     // if it looks like sc3-plugins, give specific info to help
     if (utf8Filename.find("SC3plugins") != string::npos) {
         message << indent << "Releases of sc3-plugins can be downloaded from "
-            << "https://github.com/supercollider/sc3-plugins/releases\n";
+                << "https://github.com/supercollider/sc3-plugins/releases\n";
     }
 
-    message << indent << "(Plugin's API version: " << actualVersion << ". Expected: "
-        << expectedVersion << ")\n";
+    message << indent << "(Plugin's API version: " << actualVersion << ". Expected: " << expectedVersion << ")\n";
 
     return message.str();
 }
 
 /** \brief Formats a helpful error string in the case that the API version function wasn't found.
-*
-* \param utf8Filename the filename of the plugin represented as a UTF-8 string.
-*/
-std::string apiVersionNotFound(std::string const& utf8Filename)
-{
-    return "ERROR: API version not found: " + utf8Filename + "\n"
-        + indent + "This file may not be a SuperCollider plugin.\n";
+ *
+ * \param utf8Filename the filename of the plugin represented as a UTF-8 string.
+ */
+std::string apiVersionNotFound(std::string const& utf8Filename) {
+    return "ERROR: API version not found: " + utf8Filename + "\n" + indent
+        + "This file may not be a SuperCollider plugin.\n";
 }
 
 } // namespace ErrorMessage
 
 } // namespace scsynth
-
-#endif // COMMON_SERVER_ERRORMESSAGE_H_INCLUDED

@@ -96,6 +96,22 @@ typedef int bool_conversion::* explicit_bool_arg;
    typedef int (bool_conversion::*nullptr_type)();
 #endif
 
+template<bool B>
+struct is_array_del
+{};
+
+template<class T>
+void call_delete(T *p, is_array_del<true>)
+{
+   delete [] p;
+}
+
+template<class T>
+void call_delete(T *p, is_array_del<false>)
+{
+   delete p;
+}
+
 }  //namespace move_upd {
 // @endcond
 
@@ -184,7 +200,7 @@ struct default_delete
       //and T has no virtual destructor, then you have a problem
       BOOST_STATIC_ASSERT(( !::boost::move_upmu::missing_virtual_destructor<default_delete, U>::value ));
       element_type * const p = static_cast<element_type*>(ptr);
-      bmupmu::is_array<T>::value ? delete [] p : delete p;
+      move_upd::call_delete(p, move_upd::is_array_del<bmupmu::is_array<T>::value>());
    }
 
    //! <b>Effects</b>: Same as <tt>(*this)(static_cast<element_type*>(nullptr))</tt>.

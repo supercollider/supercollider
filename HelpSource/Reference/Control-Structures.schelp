@@ -11,63 +11,69 @@ section:: Basic Control Structures
 method:: if
 
 Conditional execution is implemented via the code::if:: message. The code::if:: message is sent to an expression which must return a link::Classes/Boolean:: value.
+
 In addition it takes two arguments: a function to execute if the expression is true and another optional function to execute if the expression is false. The code::if:: message returns the value of the function which is executed. If the falseFunc is not present and the expression is false then the result of the if message is nil.
 
 discussion::
 Syntax
 code::
-if (expr, trueFunc, falseFunc);
-::
---or--
-code::
+if(expr) { true body } { false body };
+
+// alternate
+if(expr, trueFunc, falseFunc);
+
+// possible but harder to read, so, not preferred
 expr.if (trueFunc, falseFunc);
 ::
 
 Examples
 code::
-if ( [false, true].choose,				// Boolean expression (chooses one at random)
-	{ "expression was true".postln },	// true function
-	{ "expression was false".postln }	// false function
+if([false, true].choose) {
+	"expression was true".postln  // true function
+} {
+	"expression was false".postln  // false function
+};
 )
 
 (
 var a = 1, z;
-z = if (a < 5, { 100 },{ 200 });
+z = if(a < 5) { 100 } { 200 };
 z.postln;
 )
 
 (
 var x;
-if (x.isNil, { x = 99 });
+if(x.isNil) { x = 99 };
 x.postln;
 )
 ::
 
 
-
 method:: while
 
-The while message implements conditional execution of a loop. If the testFunc answers true when evaluated, then the bodyFunc is evaluated and the process is repeated. Once the testFunc returns false, the loop terminates.
+The while message implements conditional execution of a loop. If the testFunc answers true when evaluated, then the loopFunc is evaluated and the process is repeated. Once the testFunc returns false, the loop terminates.
 
 discussion::
 Syntax
 code::
-while ( testFunc, bodyFunc );
-::
---or--
-code::
-testFunc.while( bodyFunc );
+while { testFunc body } { loopFunc body };
+
+// alternate
+while({ testFunc body }, { loopFunc body });
+
+// possible but harder to read, so, not preferred
+{ testFunc body }.while({ loopFunc body });
 ::
 
 Example
 code::
 (
 i = 0;
-while ( { i < 5 }, { i = i + 1; "boing".postln });
+while { i < 5 } { i = i + 1; "boing".postln };
 )
 ::
 
-while expressions are also optimized by the compiler if they do not contain variable declarations in the testFunc and the bodyFunc.
+while expressions are also optimized by the compiler if they do not contain variable declarations in the testFunc and the loopFunc.
 
 
 method:: for
@@ -77,16 +83,18 @@ The for message implements iteration over an integer series from a starting valu
 discussion::
 Syntax
 code::
-for ( startValue, endValue, function )
-::
---or--
-code::
+for(startValue, endValue) { loop body }
+
+// alternate
+for(startValue, endValue, function)
+
+// possible but harder to read, so, not preferred
 startValue.for ( endValue, function )
 ::
 
 Example
 code::
-for (3, 7, { arg i; i.postln }); // prints values 3 through 7
+for(3, 7) { arg i; i.postln };  // prints values 3 through 7
 ::
 
 method:: forBy
@@ -96,16 +104,17 @@ The forBy selector implements iteration over an integer series with a variable s
 discussion::
 Syntax
 code::
-forBy ( startValue, endValue, stepValue, function );
-::
---or--
-code::
-startValue.forBy ( endValue, stepValue, function );
+forBy(startValue, endValue, stepValue) { loop body };
+
+forBy(startValue, endValue, stepValue, function);
+
+// possible but harder to read, so, not preferred
+startValue.forBy(endValue, stepValue, function);
 ::
 
 Example
 code::
-forBy (0, 8, 2, { arg i; i.postln }); // prints values 0 through 8 by 2's
+forBy(0, 8, 2) { arg i; i.postln };  // prints values 0 through 8 by 2's
 ::
 
 
@@ -116,57 +125,109 @@ Do is used to iterate over a link::Classes/Collection::. Positive Integers also 
 discussion::
 Syntax
 code::
-do ( collection, function )
-::
---or--
-code::
+collection.do { loop body };
+
+// alternate
 collection.do(function)
+
+// alternates, rarely seen
+do(collection, function)
+do(collection) { loop body };
 ::
 
 Example
 code::
-[ 1, 2, "abc", (3@4) ].do({ arg item, i; [i, item].postln; });
+[ 1, 2, "abc", (3@4) ].do { arg item, i; [i, item].postln; };
 
-5.do({ arg item; item.postln }); // iterates from zero to four
+5.do { arg item; item.postln }; // iterates from zero to four
 
-"you".do({ arg item; item.postln }); // a String is a collection of characters
+"you".do { arg item; item.postln }; // a String is a collection of characters
 
-'they'.do({ arg item; item.postln }); // a Symbol is a singular item
+'they'.do { arg item; item.postln }; // a Symbol is a singular item
 
-(8..20).do({ arg item; item.postln }); // iterates from eight to twenty
+(8..20).do { arg item; item.postln }; // iterates from eight to twenty
 
-(8,10..20).do({ arg item; item.postln }); // iterates from eight to twenty, with stepsize two
+(8,10..20).do { arg item; item.postln }; // iterates from eight to twenty, with stepsize two
 
-Routine({ var i=10; while { i > 0 } { i.yield; i = i - 5.0.rand } }).do({ arg item; item.postln });
+Routine {
+	var i = 10;
+	while { i > 0 } {
+		i.yield;
+		i = i - 5.0.rand
+	}
+}.do { arg item; item.postln };  // 'do' applies to the Routine
 ::
 
-Note:: The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter). The return value of code:: (8..20).do({ |item| item.postln }) :: is 8, the starting value.
+Note:: The syntax code::(8..20).do:: uses an optimization to avoid generating an array that is used only for iteration (but which would be discarded thereafter). The return value of code:: (8..20).do { |item| item.postln } :: is 8, the starting value.
+
+However, if code::do:: is written as an infix binary operator, as in code::(8..20) do: { |item| item.postln }::, then it will generate the series as an array first, before calling Array:do. One side effect of this is that it is valid to code::do:: over an infinite series within a routine only if code::do:: is written as a method call. If it is written as a binary operator, you will get a "wrong type" error because the array must be finite.
+
 code::
-(8..20) do: { |item| item.postln } // is not optimized, and returns the array.
+// OK: 'do' is a method call
+r = Routine {
+	(8 .. ).do { |i|
+		i.yield;
+	};
+};
+
+r.next;
+-> 8
+-> 9 etc.
+
+// ERROR: 'do' is an operator
+r = Routine {
+	(8 .. ) do: { |i|
+		i.yield;
+	};
+};
+
+r.next;
+
+ERROR: Primitive '_SimpleNumberSeries' failed.
+Wrong type.
 ::
 ::
 
 method:: switch
 
 Object implements a switch method which allows for conditional evaluation with multiple cases. These are implemented as pairs of test objects (tested using if this == test.value) and corresponding functions to be evaluated if true.
+
 The switch statement will be inlined if the test objects are all Floats, Integers, Symbols, Chars, nil, false, true and if the functions have no variable or argument declarations. The inlined switch uses a hash lookup (which is faster than nested if statements), so it should be very fast and scale to any number of clauses.
+
+note::Hash lookup by definition implies testing emphasis::identity:: rather than equality: a code::switch:: construction that is not inlined will test code::==::, while one that is inlined will test code::===::. See the examples. One implication is that strings should be avoided: code::switch(text) { "abc" } { ... }:: may not match, even if code::text == "abc"::. Symbols are preferred.::
+
+note::Floating point numbers may sometimes appear to be equal while differing slightly in their binary representation: code::(2/3) == (1 - (1/3)):: is false. Therefore floats should be avoided in code::switch:: constructions.::
 
 discussion::
 Syntax
 code::
-switch (value,
+switch(value)
+{ testvalue1 } { truebody1 }
+{ testvalue2 } { truebody2 }
+{ testvalue3 } { truebody3 }
+{ testvalue4 } { truebody4 }
+...
+{ defaultbody };
+
+switch(value,
         testvalue1, trueFunction1,
         testvalue2, trueFunction2,
         ...
         testvalueN, trueFunctionN,
-        defaultFunction);
+        defaultFunction
+);
 ::
 
 Examples
 code::
 (
-var x=0; //also try 1
-switch(x,0,{"hello"}, 1, {"goodbye"})
+var x = 0; //also try 1
+switch(x, 0, { "hello" }, 1, { "goodbye" })
+)
+
+(
+var x = 0; //also try 1
+switch(x) { 0 } { "hello" } { 1 } { "goodbye" };
 )
 
 (
@@ -187,7 +248,7 @@ code::
 (
 var x, z;
 z = [0, 1, 1.1, 1.3, 1.5, 2];
-x = switch (z.choose)
+x = switch(z.choose)
 	{1}   { \no }
 	{1.1} { \wrong }
 	{1.3} { \wrong }
@@ -198,9 +259,37 @@ x.postln;
 )
 ::
 
+Inlined vs non-inlined comparison:
+
+code::
+(
+switch(1.0)
+	{ 1 } { "yes" }
+	{ "no" }
+)
+
+-> no
+::
+
+The identity comparison code::1.0 === 1:: is false: while 1.0 and 1 represent the same numeric value, one is floating point and the other is an integer, so they cannot be identical.
+
+code::
+(
+// 'var x' prevents inlining
+switch(1.0)
+	{ 1 } { var x; "yes" }
+	{ "no" }
+)
+
+WARNING: Float:switch is unsafe, rounding via Float:asInteger:switch
+-> yes
+::
+
+
 method:: case
 
 Function implements a case method which allows for conditional evaluation with multiple cases. Since the receiver represents the first case this can be simply written as pairs of test functions and corresponding functions to be evaluated if true. Case is inlined and is therefore just as efficient as nested if statements.
+
 discussion::
 Example
 code::
@@ -219,9 +308,40 @@ x.postln;
 )
 ::
 
+method:: try
+
+Function implements a code::try:: method which allows catching exceptions thrown by code and run the exception handler. For more information see link::Classes/Exception::.
+discussion::
+Example
+code::
+try {
+	...code... 
+} { |error|
+	...exception handler...
+};
+::
+
+method:: protect
+
+Function implements a code::protect:: method which allows protecting code from exceptions thrown by code.
+The difference with code::try:: is the exception handler code is always run, even if there is no exception.
+If an exception occurs, it is rethrown after the exception handler block is run.
+For more information see link::Classes/Exception::.
+
+discussion::
+Example
+code::
+file = File(path, "r");
+protect {
+	// work with the file here, which might cause an error
+} {
+	file.close;
+};
+::
+
 section:: Other Control Structures
 
-Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#iteration:: there are many more messages defined for iterating over Collections.
+Using Functions, many control structures can be defined like the ones above. In the class link::Classes/Collection#Iteration:: there are many more messages defined for iterating over Collections.
 
 section:: Inline optimization
 
@@ -229,11 +349,11 @@ code::if::, code::while::, code::switch:: and code::case:: expressions are optim
 code::
 (
 {
-	if(6 == 9, {
+	if(6 == 9) {
 		"hello".postln;
-	},{
+	} {
 		"world".postln;
-	})
+	}
 }.def.dumpByteCodes
 )
 
@@ -292,5 +412,3 @@ code::
 LanguageConfig.postInlineWarnings_(true) // warn
 LanguageConfig.postInlineWarnings_(false) // ignore it.
 ::
-
-

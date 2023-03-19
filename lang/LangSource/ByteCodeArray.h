@@ -1,7 +1,7 @@
 /*
-	SuperCollider real time audio synthesis system
+    SuperCollider real time audio synthesis system
     Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+    http://www.audiosynth.com
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,18 +18,17 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef LANG_BYTECODEARRAY_H
-#define LANG_BYTECODEARRAY_H
+#pragma once
 
 
 typedef unsigned char Byte;
 
-#define BYTE_CODE_CHUNK_SIZE		64
+#define BYTE_CODE_CHUNK_SIZE 64
 
 typedef struct {
-	Byte *bytes;
-	Byte *ptr;
-	size_t size;
+    Byte* bytes;
+    Byte* ptr;
+    size_t size;
 } ByteCodeArray, *ByteCodes;
 
 extern ByteCodes gCompilingByteCodes;
@@ -38,7 +37,7 @@ extern long totalByteCodes;
 void initByteCodes();
 void compileByte(long byte);
 void compileAndFreeByteCodes(ByteCodes byteCodes);
-void copyByteCodes(Byte *dest, ByteCodes byteCodes);
+void copyByteCodes(Byte* dest, ByteCodes byteCodes);
 ByteCodes getByteCodes();
 ByteCodes saveByteCodeArray();
 void restoreByteCodeArray(ByteCodes byteCodes);
@@ -51,5 +50,3 @@ int compileOpcode(long opcode, long operand1);
 void compileJump(long opcode, long jumplen);
 int compileNumber(unsigned long value);
 int compileNumber24(unsigned long value);
-
-#endif

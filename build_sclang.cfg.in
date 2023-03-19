@@ -1,1 +1,3 @@
+includePaths:
 @BUILD_CLASSLIBRARYPATH@
+excludeDefaultPaths: true

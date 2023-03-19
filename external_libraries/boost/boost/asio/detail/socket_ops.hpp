@@ -2,7 +2,7 @@
 // detail/socket_ops.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -18,9 +18,8 @@
 #include <boost/asio/detail/config.hpp>
 
 #include <boost/system/error_code.hpp>
-#include <boost/asio/detail/shared_ptr.hpp>
+#include <boost/asio/detail/memory.hpp>
 #include <boost/asio/detail/socket_types.hpp>
-#include <boost/asio/detail/weak_ptr.hpp>
 
 #include <boost/asio/detail/push_options.hpp>
 
@@ -141,8 +140,14 @@ BOOST_ASIO_DECL void init_buf(buf& b, const void* data, size_t size);
 BOOST_ASIO_DECL signed_size_type recv(socket_type s, buf* bufs,
     size_t count, int flags, boost::system::error_code& ec);
 
+BOOST_ASIO_DECL signed_size_type recv1(socket_type s,
+    void* data, size_t size, int flags, boost::system::error_code& ec);
+
 BOOST_ASIO_DECL size_t sync_recv(socket_type s, state_type state, buf* bufs,
     size_t count, int flags, bool all_empty, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL size_t sync_recv1(socket_type s, state_type state,
+    void* data, size_t size, int flags, boost::system::error_code& ec);
 
 #if defined(BOOST_ASIO_HAS_IOCP)
 
@@ -156,14 +161,26 @@ BOOST_ASIO_DECL bool non_blocking_recv(socket_type s,
     buf* bufs, size_t count, int flags, bool is_stream,
     boost::system::error_code& ec, size_t& bytes_transferred);
 
+BOOST_ASIO_DECL bool non_blocking_recv1(socket_type s,
+    void* data, size_t size, int flags, bool is_stream,
+    boost::system::error_code& ec, size_t& bytes_transferred);
+
 #endif // defined(BOOST_ASIO_HAS_IOCP)
 
 BOOST_ASIO_DECL signed_size_type recvfrom(socket_type s, buf* bufs,
     size_t count, int flags, socket_addr_type* addr,
     std::size_t* addrlen, boost::system::error_code& ec);
 
+BOOST_ASIO_DECL signed_size_type recvfrom1(socket_type s, void* data,
+    size_t size, int flags, socket_addr_type* addr,
+    std::size_t* addrlen, boost::system::error_code& ec);
+
 BOOST_ASIO_DECL size_t sync_recvfrom(socket_type s, state_type state,
     buf* bufs, size_t count, int flags, socket_addr_type* addr,
+    std::size_t* addrlen, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL size_t sync_recvfrom1(socket_type s, state_type state,
+    void* data, size_t size, int flags, socket_addr_type* addr,
     std::size_t* addrlen, boost::system::error_code& ec);
 
 #if defined(BOOST_ASIO_HAS_IOCP)
@@ -176,6 +193,11 @@ BOOST_ASIO_DECL void complete_iocp_recvfrom(
 
 BOOST_ASIO_DECL bool non_blocking_recvfrom(socket_type s,
     buf* bufs, size_t count, int flags,
+    socket_addr_type* addr, std::size_t* addrlen,
+    boost::system::error_code& ec, size_t& bytes_transferred);
+
+BOOST_ASIO_DECL bool non_blocking_recvfrom1(socket_type s,
+    void* data, size_t size, int flags,
     socket_addr_type* addr, std::size_t* addrlen,
     boost::system::error_code& ec, size_t& bytes_transferred);
 
@@ -206,9 +228,15 @@ BOOST_ASIO_DECL bool non_blocking_recvmsg(socket_type s,
 BOOST_ASIO_DECL signed_size_type send(socket_type s, const buf* bufs,
     size_t count, int flags, boost::system::error_code& ec);
 
+BOOST_ASIO_DECL signed_size_type send1(socket_type s,
+    const void* data, size_t size, int flags, boost::system::error_code& ec);
+
 BOOST_ASIO_DECL size_t sync_send(socket_type s, state_type state,
     const buf* bufs, size_t count, int flags,
     bool all_empty, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL size_t sync_send1(socket_type s, state_type state,
+    const void* data, size_t size, int flags, boost::system::error_code& ec);
 
 #if defined(BOOST_ASIO_HAS_IOCP)
 
@@ -222,20 +250,37 @@ BOOST_ASIO_DECL bool non_blocking_send(socket_type s,
     const buf* bufs, size_t count, int flags,
     boost::system::error_code& ec, size_t& bytes_transferred);
 
+BOOST_ASIO_DECL bool non_blocking_send1(socket_type s,
+    const void* data, size_t size, int flags,
+    boost::system::error_code& ec, size_t& bytes_transferred);
+
 #endif // defined(BOOST_ASIO_HAS_IOCP)
 
 BOOST_ASIO_DECL signed_size_type sendto(socket_type s, const buf* bufs,
     size_t count, int flags, const socket_addr_type* addr,
     std::size_t addrlen, boost::system::error_code& ec);
 
+BOOST_ASIO_DECL signed_size_type sendto1(socket_type s, const void* data,
+    size_t size, int flags, const socket_addr_type* addr,
+    std::size_t addrlen, boost::system::error_code& ec);
+
 BOOST_ASIO_DECL size_t sync_sendto(socket_type s, state_type state,
     const buf* bufs, size_t count, int flags, const socket_addr_type* addr,
+    std::size_t addrlen, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL size_t sync_sendto1(socket_type s, state_type state,
+    const void* data, size_t size, int flags, const socket_addr_type* addr,
     std::size_t addrlen, boost::system::error_code& ec);
 
 #if !defined(BOOST_ASIO_HAS_IOCP)
 
 BOOST_ASIO_DECL bool non_blocking_sendto(socket_type s,
     const buf* bufs, size_t count, int flags,
+    const socket_addr_type* addr, std::size_t addrlen,
+    boost::system::error_code& ec, size_t& bytes_transferred);
+
+BOOST_ASIO_DECL bool non_blocking_sendto1(socket_type s,
+    const void* data, size_t size, int flags,
     const socket_addr_type* addr, std::size_t addrlen,
     boost::system::error_code& ec, size_t& bytes_transferred);
 
@@ -265,12 +310,16 @@ BOOST_ASIO_DECL int select(int nfds, fd_set* readfds, fd_set* writefds,
     fd_set* exceptfds, timeval* timeout, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_read(socket_type s,
-    state_type state, boost::system::error_code& ec);
+    state_type state, int msec, boost::system::error_code& ec);
 
 BOOST_ASIO_DECL int poll_write(socket_type s,
-    state_type state, boost::system::error_code& ec);
+    state_type state, int msec, boost::system::error_code& ec);
 
-BOOST_ASIO_DECL int poll_connect(socket_type s, boost::system::error_code& ec);
+BOOST_ASIO_DECL int poll_error(socket_type s,
+    state_type state, int msec, boost::system::error_code& ec);
+
+BOOST_ASIO_DECL int poll_connect(socket_type s,
+    int msec, boost::system::error_code& ec);
 
 #endif // !defined(BOOST_ASIO_WINDOWS_RUNTIME)
 

@@ -20,6 +20,7 @@
 
 // Boost
 #include <boost/mpl/bool.hpp>
+#include <boost/mpl/if.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/type_traits/decay.hpp>
 
@@ -38,6 +39,15 @@ namespace assertion {
 template<typename T>
 struct specialized_compare : public mpl::false_ {};
 
+template <typename T>
+struct is_c_array : public mpl::false_ {};
+
+template<typename T, std::size_t N>
+struct is_c_array<T [N]> : public mpl::true_ {};
+
+template<typename T, std::size_t N>
+struct is_c_array<T (&)[N]> : public mpl::true_ {};
+
 #define BOOST_TEST_SPECIALIZED_COLLECTION_COMPARE(Col)          \
 namespace boost { namespace test_tools { namespace assertion {  \
 template<>                                                      \
@@ -55,17 +65,21 @@ template <typename OP, bool can_be_equal, bool prefer_shorter,
           typename Lhs, typename Rhs>
 inline
 typename boost::enable_if_c<
-    unit_test::is_forward_iterable<Lhs>::value && unit_test::is_forward_iterable<Rhs>::value,
+       unit_test::is_forward_iterable<Lhs>::value && !unit_test::is_cstring<Lhs>::value
+    && unit_test::is_forward_iterable<Rhs>::value && !unit_test::is_cstring<Rhs>::value,
     assertion_result>::type
 lexicographic_compare( Lhs const& lhs, Rhs const& rhs )
 {
     assertion_result ar( true );
 
-    typename Lhs::const_iterator first1 = lhs.begin();
-    typename Rhs::const_iterator first2 = rhs.begin();
-    typename Lhs::const_iterator last1  = lhs.end();
-    typename Rhs::const_iterator last2  = rhs.end();
-    std::size_t                  pos    = 0;
+    typedef unit_test::bt_iterator_traits<Lhs> t_Lhs_iterator;
+    typedef unit_test::bt_iterator_traits<Rhs> t_Rhs_iterator;
+
+    typename t_Lhs_iterator::const_iterator first1 = t_Lhs_iterator::begin(lhs);
+    typename t_Rhs_iterator::const_iterator first2 = t_Rhs_iterator::begin(rhs);
+    typename t_Lhs_iterator::const_iterator last1  = t_Lhs_iterator::end(lhs);
+    typename t_Rhs_iterator::const_iterator last2  = t_Rhs_iterator::end(rhs);
+    std::size_t                             pos    = 0;
 
     for( ; (first1 != last1) && (first2 != last2); ++first1, ++first2, ++pos ) {
         assertion_result const& element_ar = OP::eval(*first1, *first2);
@@ -76,16 +90,19 @@ lexicographic_compare( Lhs const& lhs, Rhs const& rhs )
         if( element_ar && !reverse_ar )
             return ar; // a<=b and !(b<=a) => a < b => return true
 
-        if( element_ar || !reverse_ar )
+        if( element_ar || !reverse_ar ) {
             continue; // (a<=b and b<=a) or (!(a<b) and !(b<a)) => a == b => keep looking
+        }
 
         // !(a<=b) and b<=a => b < a => return false
         ar = false;
-        ar.message() << "\nFailure at position " << pos << ": "
-                     << tt_detail::print_helper(*first1)
-                     << OP::revert()
-                     << tt_detail::print_helper(*first2)
-                     << ". " << element_ar.message();
+        ar.message() << "\nFailure at position " << pos << ":";
+        ar.message() << "\n  - condition [" << tt_detail::print_helper(*first1) << OP::forward() << tt_detail::print_helper(*first2) << "] is false";
+        if(!element_ar.has_empty_message())
+            ar.message() << ": " << element_ar.message();
+        ar.message() << "\n  - inverse condition [" << tt_detail::print_helper(*first2) << OP::forward() << tt_detail::print_helper(*first1) << "] is true";
+        if(!reverse_ar.has_empty_message())
+            ar.message() << ": " << reverse_ar.message();
         return ar;
     }
 
@@ -113,17 +130,16 @@ template <typename OP, bool can_be_equal, bool prefer_shorter,
           typename Lhs, typename Rhs>
 inline
 typename boost::enable_if_c<
-    (!unit_test::is_forward_iterable<Lhs>::value && unit_test::is_cstring<Lhs>::value) ||
-    (!unit_test::is_forward_iterable<Rhs>::value && unit_test::is_cstring<Rhs>::value),
+    (unit_test::is_cstring<Lhs>::value || unit_test::is_cstring<Rhs>::value),
     assertion_result>::type
 lexicographic_compare( Lhs const& lhs, Rhs const& rhs )
 {
-    typedef typename unit_test::deduce_cstring<Lhs>::type lhs_char_type;
-    typedef typename unit_test::deduce_cstring<Rhs>::type rhs_char_type;
+    typedef typename unit_test::deduce_cstring_transform<Lhs>::type lhs_char_type;
+    typedef typename unit_test::deduce_cstring_transform<Rhs>::type rhs_char_type;
 
     return lexicographic_compare<OP, can_be_equal, prefer_shorter>(
-        boost::unit_test::basic_cstring<lhs_char_type>(lhs),
-        boost::unit_test::basic_cstring<rhs_char_type>(rhs));
+        lhs_char_type(lhs),
+        rhs_char_type(rhs));
 }
 
 //____________________________________________________________________________//
@@ -135,33 +151,39 @@ lexicographic_compare( Lhs const& lhs, Rhs const& rhs )
 template <typename OP, typename Lhs, typename Rhs>
 inline
 typename boost::enable_if_c<
-    unit_test::is_forward_iterable<Lhs>::value && unit_test::is_forward_iterable<Rhs>::value,
+       unit_test::is_forward_iterable<Lhs>::value && !unit_test::is_cstring<Lhs>::value
+    && unit_test::is_forward_iterable<Rhs>::value && !unit_test::is_cstring<Rhs>::value,
     assertion_result>::type
 element_compare( Lhs const& lhs, Rhs const& rhs )
 {
+    typedef unit_test::bt_iterator_traits<Lhs> t_Lhs_iterator;
+    typedef unit_test::bt_iterator_traits<Rhs> t_Rhs_iterator;
+
     assertion_result ar( true );
 
-    if( lhs.size() != rhs.size() ) {
+    if( t_Lhs_iterator::size(lhs) != t_Rhs_iterator::size(rhs) ) {
         ar = false;
-        ar.message() << "\nCollections size mismatch: " << lhs.size() << " != " << rhs.size();
+        ar.message() << "\nCollections size mismatch: " << t_Lhs_iterator::size(lhs) << " != " << t_Rhs_iterator::size(rhs);
         return ar;
     }
 
-    typename Lhs::const_iterator left  = lhs.begin();
-    typename Rhs::const_iterator right = rhs.begin();
-    std::size_t                  pos   = 0;
+    typename t_Lhs_iterator::const_iterator left  = t_Lhs_iterator::begin(lhs);
+    typename t_Rhs_iterator::const_iterator right = t_Rhs_iterator::begin(rhs);
+    std::size_t                             pos   = 0;
 
-    for( ; pos < lhs.size(); ++left, ++right, ++pos ) {
+    for( ; pos < t_Lhs_iterator::size(lhs); ++left, ++right, ++pos ) {
         assertion_result const element_ar = OP::eval( *left, *right );
         if( element_ar )
             continue;
 
         ar = false;
-        ar.message() << "\nMismatch at position " << pos << ": "
+        ar.message() << "\n  - mismatch at position " << pos << ": ["
                      << tt_detail::print_helper(*left)
-                     << OP::revert()
+                     << OP::forward()
                      << tt_detail::print_helper(*right)
-                     << ". " << element_ar.message();
+                     << "] is false";
+        if(!element_ar.has_empty_message())
+            ar.message() << ": " << element_ar.message();
     }
 
     return ar;
@@ -171,16 +193,15 @@ element_compare( Lhs const& lhs, Rhs const& rhs )
 template <typename OP, typename Lhs, typename Rhs>
 inline
 typename boost::enable_if_c<
-    (!unit_test::is_forward_iterable<Lhs>::value && unit_test::is_cstring<Lhs>::value) ||
-    (!unit_test::is_forward_iterable<Rhs>::value && unit_test::is_cstring<Rhs>::value),
+    (unit_test::is_cstring<Lhs>::value || unit_test::is_cstring<Rhs>::value),
     assertion_result>::type
 element_compare( Lhs const& lhs, Rhs const& rhs )
 {
-    typedef typename unit_test::deduce_cstring<Lhs>::type lhs_char_type;
-    typedef typename unit_test::deduce_cstring<Rhs>::type rhs_char_type;
+    typedef typename unit_test::deduce_cstring_transform<Lhs>::type lhs_char_type;
+    typedef typename unit_test::deduce_cstring_transform<Rhs>::type rhs_char_type;
 
-    return element_compare<OP>(boost::unit_test::basic_cstring<lhs_char_type>(lhs),
-                               boost::unit_test::basic_cstring<rhs_char_type>(rhs));
+    return element_compare<OP>(lhs_char_type(lhs),
+                               rhs_char_type(rhs));
 }
 
 //____________________________________________________________________________//
@@ -193,14 +214,17 @@ template <typename OP, typename Lhs, typename Rhs>
 inline assertion_result
 non_equality_compare( Lhs const& lhs, Rhs const& rhs )
 {
+    typedef unit_test::bt_iterator_traits<Lhs> t_Lhs_iterator;
+    typedef unit_test::bt_iterator_traits<Rhs> t_Rhs_iterator;
+
     assertion_result ar( true );
 
-    if( lhs.size() != rhs.size() )
+    if( t_Lhs_iterator::size(lhs) != t_Rhs_iterator::size(rhs) )
         return ar;
 
-    typename Lhs::const_iterator left  = lhs.begin();
-    typename Rhs::const_iterator right = rhs.begin();
-    typename Lhs::const_iterator end   = lhs.end();
+    typename t_Lhs_iterator::const_iterator left = t_Lhs_iterator::begin(lhs);
+    typename t_Rhs_iterator::const_iterator right = t_Rhs_iterator::begin(rhs);
+    typename t_Lhs_iterator::const_iterator end = t_Lhs_iterator::end(lhs);
 
     for( ; left != end; ++left, ++right ) {
         if( OP::eval( *left, *right ) )
@@ -364,25 +388,38 @@ compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::GE<L, R> >*
 // ********* specialization of comparison operators for collections ********* //
 // ************************************************************************** //
 
-#define DEFINE_COLLECTION_COMPARISON( oper, name, rev )             \
+#define DEFINE_COLLECTION_COMPARISON( oper, name, rev, name_inverse ) \
 template<typename Lhs,typename Rhs>                                 \
 struct name<Lhs,Rhs,typename boost::enable_if_c<                    \
-    unit_test::is_forward_iterable<Lhs>::value \
-    &&   !unit_test::is_cstring<Lhs>::value \
-    && unit_test::is_forward_iterable<Rhs>::value \
-    &&   !unit_test::is_cstring<Rhs>::value>::type> {            \
+    unit_test::is_forward_iterable<Lhs>::value                      \
+    &&   !unit_test::is_cstring_comparable<Lhs>::value              \
+    && unit_test::is_forward_iterable<Rhs>::value                   \
+    &&   !unit_test::is_cstring_comparable<Rhs>::value>::type> {    \
 public:                                                             \
     typedef assertion_result result_type;                           \
+    typedef name_inverse<Lhs, Rhs> inverse;                         \
+    typedef unit_test::bt_iterator_traits<Lhs> t_Lhs_iterator_helper; \
+    typedef unit_test::bt_iterator_traits<Rhs> t_Rhs_iterator_helper; \
                                                                     \
     typedef name<Lhs, Rhs> OP;                                      \
-    typedef typename                                                \
-        mpl::if_c<is_same<typename decay<Lhs>::type,                \
-                          typename decay<Rhs>::type>::value,        \
-                  typename cctraits<OP>::is_specialized,            \
-                  mpl::false_>::type is_specialized;                \
                                                                     \
-    typedef name<typename Lhs::value_type,                          \
-                 typename Rhs::value_type> elem_op;                 \
+    typedef typename                                                \
+        mpl::if_c<                                                  \
+          mpl::or_<                                                 \
+              typename is_c_array<Lhs>::type,                       \
+              typename is_c_array<Rhs>::type                        \
+          >::value,                                                 \
+          mpl::true_,                                               \
+          typename                                                  \
+              mpl::if_c<is_same<typename decay<Lhs>::type,          \
+                                typename decay<Rhs>::type>::value,  \
+                        typename cctraits<OP>::is_specialized,      \
+                        mpl::false_>::type                          \
+          >::type is_specialized;                                   \
+                                                                    \
+    typedef name<typename t_Lhs_iterator_helper::value_type,        \
+                 typename t_Rhs_iterator_helper::value_type         \
+                 > elem_op;                                         \
                                                                     \
     static assertion_result                                         \
     eval( Lhs const& lhs, Rhs const& rhs)                           \
@@ -398,6 +435,8 @@ public:                                                             \
             PrevExprType const&,                                    \
             Rhs const& ) {}                                         \
                                                                     \
+    static char const* forward()                                    \
+    { return " " #oper " "; }                                       \
     static char const* revert()                                     \
     { return " " #rev " "; }                                        \
                                                                     \

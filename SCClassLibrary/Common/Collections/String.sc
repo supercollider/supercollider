@@ -63,10 +63,6 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
-	*scDir {
-		^Platform.resourceDir
-	}
-
 	compare { arg aString, ignoreCase=false;
 		_StringCompare
 		this.primitiveFailed;
@@ -88,6 +84,7 @@ String[char] : RawArray {
 		^this.compare(aString, false) >= 0
 	}
 	== { arg aString;
+		if (this === aString) { ^true };
 		if(aString.isString.not) { ^false };
 		^this.compare(aString, false) == 0
 	}
@@ -343,7 +340,7 @@ String[char] : RawArray {
 
 	inspectorClass { ^StringInspector }
 
-	/// unix
+	// -------- path operations --------------------------------------------------
 
 	standardizePath {
 		_String_StandardizePath
@@ -353,21 +350,21 @@ String[char] : RawArray {
 		_String_RealPath
 		^this.primitiveFailed
 	}
+
 	withTrailingSlash {
-		var sep = thisProcess.platform.pathSeparator;
-		if(this.last != sep, {
-			^this ++ sep
-		},{
-			^this
-		})
+		^if(this.isEmpty or: { this.last.isPathSeparator.not }) {
+			this ++ thisProcess.platform.pathSeparator
+		} {
+			this
+		}
 	}
+
 	withoutTrailingSlash {
-		var sep = thisProcess.platform.pathSeparator;
-		if(this.last == sep,{
-			^this.copyRange(0, this.size-2)
-		},{
-			^this
-		})
+		^if(this.isEmpty or: { this.last.isPathSeparator.not }) {
+			this
+		} {
+			this.drop(-1)
+		}
 	}
 
 	absolutePath {
@@ -394,20 +391,20 @@ String[char] : RawArray {
 	}
 	loadRelative { arg warn = true, action;
 		var path = thisProcess.nowExecutingPath;
-		if(path.isNil) { Error("can't load relative to an unsaved file").throw};
+		if(path.isNil) { Error("can't load relative to an unsaved file.\nPath to resolve: \"%\"\n".format(this)).throw };
 		if(path.basename == this) { Error("should not load a file from itself").throw };
 		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this).loadPaths(warn, action)
 	}
 	resolveRelative {
 		var path, caller;
 		caller = thisMethod.getBackTrace.caller.functionDef;
-		if(caller.isKindOf(Method) && (caller != Interpreter.findMethod(\interpretPrintCmdLine)), {
+		if(caller.isKindOf(Method) && (caller != Interpreter.findMethod(\interpretPrintCmdLine))) {
 			path = caller.filenameSymbol.asString;
-		}, {
+		} {
 			path = thisProcess.nowExecutingPath;
-		});
-		if(this[0] == thisProcess.platform.pathSeparator, {^this});
-		if(path.isNil) { Error("can't resolve relative to an unsaved file").throw};
+		};
+		if(this[0] == thisProcess.platform.pathSeparator) { ^this };
+		if(path.isNil) { Error("can't resolve relative to an unsaved file.\nPath to resolve: \"%\"\n".format(this)).throw };
 		^(path.dirname ++ thisProcess.platform.pathSeparator ++ this)
 	}
 	include {
@@ -433,26 +430,40 @@ String[char] : RawArray {
 	}
 	splitext {
 		this.reverseDo({ arg char, i;
+			// Return early after the first path separator
+			if (Platform.isPathSeparator(char), {^[this, nil]});
+
 			if (char == $\., {
 				^[this.copyFromStart(this.size - 2 - i), this.copyToEnd(this.size - i)]
 			});
 		});
+
 		^[this, nil]
 	}
 
 	// path concatenate
 	+/+ { arg path;
-		var pathSeparator = thisProcess.platform.pathSeparator;
+		var sep = thisProcess.platform.pathSeparator;
+		var hasLeftSep, hasRightSep;
 
 		if (path.respondsTo(\fullPath)) {
 			^PathName(this +/+ path.fullPath)
 		};
 
-		if (this.last == pathSeparator or: { path.first == pathSeparator }) {
+		// convert to string before concatenation.
+		path = path.asString;
+		hasLeftSep = this.notEmpty and: { this.last.isPathSeparator };
+		hasRightSep = path.notEmpty and: { path.first.isPathSeparator };
+		if(hasLeftSep && hasRightSep) {
+			// prefer using the LHS separator
+			^this ++ path.drop(1)
+		};
+
+		if(hasLeftSep || hasRightSep) {
 			^this ++ path
 		};
 
-		^this ++ pathSeparator ++ path
+		^this ++ sep ++ path
 	}
 
 	asRelativePath { |relativeTo|
@@ -495,9 +506,9 @@ String[char] : RawArray {
 
 	asSecs { |maxDays = 365| // assume a timeString of ddd:hh:mm:ss.sss. see asTimeString.
 		var time = 0, sign = 1, str = this;
-		var limits = [inf, 60, 60, 24, maxDays];
-		var scaling = [0.001, 1.0, 60.0, 3600.0, 86400.0];
-		var padding = [3, 2, 2, 2, 3];
+		var limits = [60, 60, 24, maxDays];
+		var scaling = [1.0, 60.0, 3600.0, 86400.0];
+		var slotNames = [\seconds, \minutes, \hours, \days];
 
 		if (this.first == $-) {
 			str = this.drop(1);
@@ -505,14 +516,13 @@ String[char] : RawArray {
 		};
 
 		str.split($:).reverseDo { |num, i|
-			num = num.padRight(padding[i], "0").asInteger;
-			if (num > limits[i]) {
-				("asSecs: number greater than allowed:" + this).warn;
-				num = limits[i];
-			};
+			num = num.asFloat;
 			if (num < 0) {
-				("asSecs: negative numbers within slots not supported:" + this).warn;
-				num = 0;
+				format("%.asSecs: negative numbers within slots not supported, using absolute value", this).warn;
+				num = num.abs;
+			};
+			if (num > limits[i]) {
+				format("%.asSecs: number of % greater than %", this, slotNames[i], limits[i]).warn;
 			};
 			time = time + (num * scaling[i]);
 		};
@@ -540,4 +550,11 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
+	parseJSON {
+		^this.parseYAML
+	}
+
+	parseJSONFile {
+		^this.parseYAMLFile
+	}
 }

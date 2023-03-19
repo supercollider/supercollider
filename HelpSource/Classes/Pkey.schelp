@@ -31,4 +31,28 @@ p.next(())	// for Pbind, must pass in a default event even if empty
 ( 'a': 5, 'b': 10 )
 ( 'a': 4, 'b': 8 )
 ( 'a': 2, 'b': 4 )
+
+// note: to check if a Pkey's result /equals/ another value,
+// be sure to use |==|
+p = Pbind(
+	\a, Pseries(1, 1, inf),
+	\b, Pif(
+		Pkey(\a) == 2,
+		"equals 2",
+		"nope"
+	)
+).asStream;
+
+p.next(());  // 'b' is always "nope"
+
+p = Pbind(
+	\a, Pseries(1, 1, inf),
+	\b, Pif(
+		Pkey(\a) |==| 2,
+		"equals 2",
+		"nope"
+	)
+).asStream;
+
+p.next(());  // 'b' is as expected
 ::

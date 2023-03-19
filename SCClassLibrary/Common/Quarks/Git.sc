@@ -1,4 +1,3 @@
-
 Git {
 	var <>localPath, >url, tag, sha, remoteLatest, tags;
 	classvar gitIsInstalled;
@@ -13,7 +12,7 @@ Git {
 		this.git([
 			"clone",
 			url,
-			localPath.escapeChar($ )
+			thisProcess.platform.formatPathForCmdLine(localPath)
 		], false);
 		this.url = url;
 	}
@@ -35,10 +34,14 @@ Git {
 			url = this.remote;
 		}
 	}
+	branch {
+		var out = this.git(["rev-parse --abbrev-ref HEAD"]);
+		^if(out.size > 0) { out } { nil }
+	}
 	remote {
 		// detect origin of repo or nil
-		// origin	git://github.com/supercollider-quarks/MathLib (fetch)
-		// origin	git://github.com/supercollider-quarks/MathLib (push)
+		// origin	https://github.com/supercollider-quarks/MathLib (fetch)
+		// origin	https://github.com/supercollider-quarks/MathLib (push)
 		// problem: if more than one remote then this will just detect the first
 		// should favor 'origin' if more than one
 		var out = this.git(["remote -v"]),
@@ -115,7 +118,7 @@ Git {
 		var cmd, result="";
 
 		if(cd, {
-			cmd = ["cd", localPath.escapeChar($ ), "&&", "git"];
+			cmd = ["cd", thisProcess.platform.formatPathForCmdLine(localPath), "&&", "git"];
 		},{
 			cmd = ["git"];
 		});
@@ -130,18 +133,19 @@ Git {
 	}
 	*checkForGit {
 		var gitFind;
-		if(gitIsInstalled.isNil, {
-			if(thisProcess.platform.name !== 'windows', {
+		if(gitIsInstalled.isNil) {
+			if(thisProcess.platform.name !== 'windows') {
 				gitFind = "which git";
-			}, {
+			} {
 				gitFind = "where git";
-			});
+			};
 			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;
 				gitIsInstalled = false;
 			});
-		})
+		};
+		^gitIsInstalled
 	}
 }

@@ -19,10 +19,11 @@ definitionList::
 CLASSMETHODS::
 
 METHOD:: store
-Store the current configuration to file.
+Store the current configuration to file. Throws an error if the config file cannot be opened or if
+writing fails.
 
 argument:: file
-Path to the configuration file to store. If the value is code::nil:: it defaults to code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+Path to the configuration file to store. If the value is code::nil:: it defaults to currently used configuration file, as specified in the IDE preferences, or by the code::sclang -l "/path/to/sclang_conf.yaml":: argument. By default this is code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
 
 subsection:: Library Path Handling
 
@@ -50,6 +51,13 @@ Remove path from class library exclude paths.
 
 METHOD:: currentPath
 Return the current config file path.
+
+METHOD:: excludeDefaultPaths
+Get or set whether default class library paths are included.
+
+note::
+If sclang is started with -a the class library paths are excluded and this value is ignored. The default class library paths are Platform.classLibraryDir, and the system and user extensions directories.
+::
 
 subsection:: Compiler Warnings
 

@@ -2,7 +2,7 @@
 // detail/push_options.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -24,7 +24,9 @@
 // Intel C++
 
 # if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  pragma GCC visibility push (default)
+#  if !defined(BOOST_ASIO_DISABLE_VISIBILITY)
+#   pragma GCC visibility push (default)
+#  endif // !defined(BOOST_ASIO_DISABLE_VISIBILITY)
 # endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
 
 #elif defined(__clang__)
@@ -44,8 +46,13 @@
 # endif
 
 # if !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
-#  pragma GCC visibility push (default)
+#  if !defined(BOOST_ASIO_DISABLE_VISIBILITY)
+#   pragma GCC visibility push (default)
+#  endif // !defined(BOOST_ASIO_DISABLE_VISIBILITY)
 # endif // !defined(_WIN32) && !defined(__WIN32__) && !defined(WIN32)
+
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
 
 #elif defined(__GNUC__)
 
@@ -68,8 +75,16 @@
 # endif
 
 # if (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
-#  pragma GCC visibility push (default)
+#  if !defined(BOOST_ASIO_DISABLE_VISIBILITY)
+#   pragma GCC visibility push (default)
+#  endif // !defined(BOOST_ASIO_DISABLE_VISIBILITY)
 # endif // (__GNUC__ == 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ > 4)
+
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+# if (__GNUC__ >= 7)
+#  pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+# endif // (__GNUC__ >= 7)
 
 #elif defined(__KCC)
 
@@ -87,7 +102,7 @@
 
 // Greenhills C++
 
-#elif defined(__BORLANDC__)
+#elif defined(__BORLANDC__) && !defined(__clang__)
 
 // Borland C++
 
@@ -135,6 +150,10 @@
 # pragma warning (disable:4512)
 # pragma warning (disable:4610)
 # pragma warning (disable:4675)
+# if (_MSC_VER < 1600)
+// Visual Studio 2008 generates spurious warnings about unused parameters.
+#  pragma warning (disable:4100)
+# endif // (_MSC_VER < 1600)
 # if defined(_M_IX86) && defined(_Wp64)
 // The /Wp64 option is broken. If you want to check 64 bit portability, use a
 // 64 bit compiler!

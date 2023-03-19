@@ -11,7 +11,7 @@ definitionList::
 ## link::Classes/BHiPass4:: || 24dB/oct rolloff - 4th order resonant Hi Pass Filter (pseudo UGen)
 ## link::Classes/BPeakEQ:: || Parametric Equalizer
 ## link::Classes/BLowShelf:: || Low resonant Shelf
-## link::Classes/BHiShelf:: || High resonant Self
+## link::Classes/BHiShelf:: || High resonant Shelf
 ## link::Classes/BBandPass:: || Band Pass Filter
 ## link::Classes/BBandStop:: || Band Reject Filter
 ## link::Classes/BAllPass:: || All Pass Filter

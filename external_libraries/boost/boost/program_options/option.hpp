@@ -31,6 +31,7 @@ namespace boost { namespace program_options {
         basic_option(const std::string& xstring_key, 
                const std::vector< std::string> &xvalue)
         : string_key(xstring_key)
+        , position_key(-1)
         , value(xvalue)
         , unregistered(false)
         , case_insensitive(false)

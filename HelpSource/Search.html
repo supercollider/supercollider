@@ -1,10 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Search | SuperCollider Help</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
     <link rel='stylesheet' href='./scdoc.css' type='text/css' />
     <link rel='stylesheet' href='./custom.css' type='text/css' />
-    <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+    <script src="lib/jquery.min.js"></script>
     <script>
         var scdoc_title = "Search";
         var scdoc_sc_version = "";
@@ -15,59 +18,62 @@
 </head>
 
 <body onload="onLoad()">
-<noscript>
-<p>The search page needs JavaScript.</p>
-</noscript>
+    <noscript>
+        <p>The search page needs JavaScript.</p>
+    </noscript>
 
-<div class='contents'>
-<div id="menubar"></div>
-<div class='header'>
-    <h1>Search</h1>
-    <div id='summary'>Search all documents</div>
-</div>
-<div id="search_checks0">
-Filter:
-<select id="menu_filter">
-<option SELECTED value="all">All documents</option>
-<option value="classes">Classes only</option>
-<option value="reference">Reference only</option>
-<option value="guides">Guides only</option>
-<option value="tutorials">Tutorials only</option>
-<option value="overviews">Overviews only</option>
-<option value="other">Other only</option>
-</select>
-<input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
-</div>
+    <div id="menubar"></div>
+    <div class='contents'>
+        <div class='header'>
+            <h1>Search</h1>
+            <div id='summary'>Search all documents</div>
+        </div>
+        <div id="search_checks0">
+            Filter:
+            <select id="menu_filter">
+                <option SELECTED value="all">All documents</option>
+                <option value="classes">Classes only</option>
+                <option value="reference">Reference only</option>
+                <option value="guides">Guides only</option>
+                <option value="tutorials">Tutorials only</option>
+                <option value="overviews">Overviews only</option>
+                <option value="other">Other only</option>
+            </select>
+            <input type="checkbox" id="check_extensions" checked="true">Include extensions</input>
+        </div>
 
-<div id="search_box">
-Search text:<input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)"/>
-</div>
+        <div id="search_box">
+            Search text:
+            <input type="text" id="search_input" value="" size="40" onkeyup="SearchKeyPressed(this)" />
+        </div>
 
-<table id="search_settings">
-<td>Options:
-<td>
-<div id="search_checks">
-<input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
-<input class="nonregex" type="checkbox" id="check_word">Whole word</input>
-<input class="nonregex" type="checkbox" id="check_prefix">Starts with</input>
-<input class="nonregex" type="checkbox" id="check_suffix">Ends with</input>
-<input type="checkbox" id="check_regexp">Regexp</input>
-</div>
-<tr>
-<td>Match:
-<td>
-<div id="search_checks">
-<input type="checkbox" id="check_title" checked="true">Title/Filename</input>
-<input type="checkbox" id="check_summary" checked="true">Summary</input>
-<input type="checkbox" id="check_categories">Categories</input>
-<input type="checkbox" id="check_methods" checked="true">Methods</input>
-</div>
-</table>
-<div id="random"><a href="javascript:randomDoc()">random page</a></div>
-<div id="search_count">0 results</div>
-<div id="search_results"></div>
-<div id="js_error"></div>
-</div>
+        <table id="search_settings">
+            <td>Options:
+                <td>
+                    <div id="search_checks">
+                        <input type="checkbox" id="ignore_case" checked="true">Ignore case</input>
+                        <input class="nonregex" type="checkbox" id="check_word">Whole word</input>
+                        <input class="nonregex" type="checkbox" id="check_prefix">Starts with</input>
+                        <input class="nonregex" type="checkbox" id="check_suffix">Ends with</input>
+                        <input type="checkbox" id="check_regexp">Regexp</input>
+                    </div>
+                    <tr>
+                        <td>Match:
+                            <td>
+                                <div id="search_checks">
+                                    <input type="checkbox" id="check_title" checked="true">Title/Filename</input>
+                                    <input type="checkbox" id="check_summary" checked="true">Summary</input>
+                                    <input type="checkbox" id="check_categories">Categories</input>
+                                    <input type="checkbox" id="check_methods" checked="true">Methods</input>
+                                </div>
+        </table>
+        <div id="random">
+            <a href="javascript:randomDoc()">random page</a>
+        </div>
+        <div id="search_count">0 results</div>
+        <div id="search_results"></div>
+        <div id="js_error"></div>
+    </div>
 </body>
-</html>
 
+</html>

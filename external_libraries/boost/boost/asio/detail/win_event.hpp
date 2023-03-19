@@ -2,7 +2,7 @@
 // detail/win_event.hpp
 // ~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2016 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2020 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -19,6 +19,7 @@
 
 #if defined(BOOST_ASIO_WINDOWS)
 
+#include <cstddef>
 #include <boost/asio/detail/assert.hpp>
 #include <boost/asio/detail/noncopyable.hpp>
 #include <boost/asio/detail/socket_types.hpp>
@@ -68,6 +69,18 @@ public:
       ::SetEvent(events_[1]);
   }
 
+  // Unlock the mutex and signal one waiter who may destroy us.
+  template <typename Lock>
+  void unlock_and_signal_one_for_destruction(Lock& lock)
+  {
+    BOOST_ASIO_ASSERT(lock.locked());
+    state_ |= 1;
+    bool have_waiters = (state_ > 1);
+    if (have_waiters)
+      ::SetEvent(events_[1]);
+    lock.unlock();
+  }
+
   // If there's a waiter, unlock the mutex and signal it.
   template <typename Lock>
   bool maybe_unlock_and_signal_one(Lock& lock)
@@ -110,6 +123,27 @@ public:
       lock.lock();
       state_ -= 2;
     }
+  }
+
+  // Timed wait for the event to become signalled.
+  template <typename Lock>
+  bool wait_for_usec(Lock& lock, long usec)
+  {
+    BOOST_ASIO_ASSERT(lock.locked());
+    if ((state_ & 1) == 0)
+    {
+      state_ += 2;
+      lock.unlock();
+      DWORD msec = usec > 0 ? (usec < 1000 ? 1 : usec / 1000) : 0;
+#if defined(BOOST_ASIO_WINDOWS_APP)
+      ::WaitForMultipleObjectsEx(2, events_, false, msec, false);
+#else // defined(BOOST_ASIO_WINDOWS_APP)
+      ::WaitForMultipleObjects(2, events_, false, msec);
+#endif // defined(BOOST_ASIO_WINDOWS_APP)
+      lock.lock();
+      state_ -= 2;
+    }
+    return (state_ & 1) != 0;
   }
 
 private:

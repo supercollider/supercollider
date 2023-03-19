@@ -82,7 +82,7 @@ code::
 ["foo","bar","zoo"].multiChannelPerform('++', ["l","ba"])
 ::
 
-subsection:: Using flop for multichannel expansion
+subsection:: Using flop and flop1 for multichannel expansion
 The method flop swaps columns and rows, allowing to derive series of argument sets:
 code::
 (
@@ -92,7 +92,7 @@ SynthDef("help_multichannel", { |out=0, freq=440, mod=0.1, modrange=20|
 			LFPar.kr(mod, 0, modrange) + freq
 		) * EnvGate(0.1)
 	)
-}).send(s);
+}).add;
 )
 ::
 code::
@@ -113,24 +113,92 @@ fork {
 )
 ::
 
-Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
+Similarly, link::Classes/Function#-flop#Function:flop:: and link::Classes/Function#-flop1#Function:flop1:: return an unevaluated function that will expand to its arguments when evaluated.
+
 code::
+// multichannel expansion for if, here to protect from division by zero.
+// flop always returns an array
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value(2, 4); // [ 0.5 ] (always returns an array)
+
+// multichannel expansion for if, here to protect from division by zero
+// flop1 returns an array only if the arguments include an array
+f = { |a, b| if(b != 0) { a / b } { 0 } }.flop1;
+f.value([1, 2, 3, 4], [0, 10, 1000]); //  -> [ 0, 0.2, 0.003, 0 ]
+f.value([2], 4); // -> [0.5]
+f.value(2, 4); // -> 0.5
+::
+
+
+code::
+// multichannel expand a function that forks a task
 (
-SynthDef("blip", { |out, freq|
+SynthDef(\blip, { |out, freq|
 	Out.ar(out,
 		Line.ar(0.1, 0, 0.05, 1, 0, 2) * Pulse.ar(freq * [1, 1.02])
 	)
 }).add;
 
 a = { |dur=1, x=1, n=10, freq=400|
-	fork { n.do {
-			if(x.coin) { Synth("blip", [\freq, freq]) };
+	fork {
+		n.do {
+			if(x.coin) { Synth(\blip, [\freq, freq]) };
 			(dur / n).wait;
-	} }
+		}
+	}
 }.flop;
 )
 
 a.value(5, [0.3, 0.3, 0.2], [12, 32, 64], [1000, 710, 700]);
+::
+
+subsection:: Multichannel expansion in Patterns
+Multichannel expansion does not quite follow the scheme one might expect from the previously described. E.g. the following doesn't multichannel-expand properly:
+code::
+(
+SynthDef(\help_multichannel, { |out=0, freq=#[342, 145]|
+	var env = EnvGate.new;
+	Out.ar(out, [SinOsc.ar(freq[0]), Saw.ar(freq[1])] * env * 0.2)
+}).add
+)
+
+// not working as expected
+// only freq in the left channel gets set correctly
+(
+a = Pbind(
+	\instrument, \help_multichannel,
+	\freq, Pseq([[342, 145], [187, 564], [234, 135]], inf),
+	\dur, 0.5
+).play;
+)
+::
+
+Instead wrap arrayed args in an extra pair of square brackets:
+
+code::
+a.stop;
+
+// freq in both channels set as expected
+(
+a = Pbind(
+	\instrument, \help_multichannel,
+	\freq, Pseq([[[342, 145]], [[187, 564]], [[234, 135]]], inf),
+	\dur, 0.5
+).play;
+)
+::
+
+Under the hood this is a consequence of how .flop prepares the given args to be passed to the Synth:
+
+code::
+// single square brackets
+[\freq, [342, 145]].flop
+// --> [ [ freq, 342 ], [ freq, 145 ] ]
+
+// double square brackets
+[\freq, [[342, 145]]].flop
+// --> [ [ freq, [ 342, 145 ] ] ]
 ::
 
 section:: Pitfalls

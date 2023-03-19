@@ -206,7 +206,7 @@ T cyl_bessel_i_imp(T v, T x, const Policy& pol)
       }
       return sqrt(2 / (x * constants::pi<T>())) * sinh(x);
    }
-   if(policies::digits<T, Policy>() <= 64)
+   if(policies::digits<T, Policy>() <= 113)
    {
       if(v == 0)
       {
@@ -572,7 +572,7 @@ inline typename detail::bessel_traits<T1, T2, Policy>::result_type cyl_bessel_k(
 {
    BOOST_FPU_EXCEPTION_GUARD
    typedef typename detail::bessel_traits<T1, T2, Policy>::result_type result_type;
-   typedef typename detail::bessel_traits<T1, T2, Policy>::optimisation_tag tag_type;
+   typedef typename detail::bessel_traits<T1, T2, Policy>::optimisation_tag128 tag_type;
    typedef typename policies::evaluation<result_type, Policy>::type value_type;
    typedef typename policies::normalise<
       Policy, 

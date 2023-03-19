@@ -6,7 +6,7 @@ related:: Classes/SplayAz, Classes/SplayZ
 description::
 Splay spreads an array of channels across the stereo field.
 Optional arguments are spread and center, and equal power levelCompensation.
-The formula for the stereo position is ((0 .. (n - 1)) * (2 / (n - 1) - 1) * spread + center
+The formula for the stereo position is ((0 .. (n - 1)) * (2 / (n - 1)) - 1) * spread + center
 
 classmethods::
 method:: ar, kr

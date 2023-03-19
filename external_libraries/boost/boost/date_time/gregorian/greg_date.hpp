@@ -1,7 +1,7 @@
 #ifndef GREG_DATE_HPP___
 #define GREG_DATE_HPP___
 
-/* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+/* Copyright (c) 2002,2003, 2020 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the
  * Boost Software License, Version 1.0. (See accompanying
  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
@@ -10,6 +10,7 @@
  */
 
 #include <boost/throw_exception.hpp>
+#include <boost/date_time/compiler_config.hpp>
 #include <boost/date_time/date.hpp>
 #include <boost/date_time/special_defs.hpp>
 #include <boost/date_time/gregorian/greg_calendar.hpp>
@@ -34,7 +35,7 @@ namespace gregorian {
       supported.
       \ingroup date_basics
   */
-  class date : public date_time::date<date, gregorian_calendar, date_duration>
+  class BOOST_SYMBOL_VISIBLE date : public date_time::date<date, gregorian_calendar, date_duration>
   {
    public:
     typedef gregorian_calendar::year_type year_type;
@@ -47,12 +48,12 @@ namespace gregorian {
     typedef date_duration  duration_type;
 #if !defined(DATE_TIME_NO_DEFAULT_CONSTRUCTOR)
     //! Default constructor constructs with not_a_date_time
-    date():
+    BOOST_CXX14_CONSTEXPR date():
       date_time::date<date, gregorian_calendar, date_duration>(date_rep_type::from_special(not_a_date_time))
     {}
 #endif // DATE_TIME_NO_DEFAULT_CONSTRUCTOR
     //! Main constructor with year, month, day
-    date(year_type y, month_type m, day_type d)
+    BOOST_CXX14_CONSTEXPR date(year_type y, month_type m, day_type d)
       : date_time::date<date, gregorian_calendar, date_duration>(y, m, d)
     {
       if (gregorian_calendar::end_of_month_day(y, m) < d) {
@@ -60,19 +61,19 @@ namespace gregorian {
       }
     }
     //! Constructor from a ymd_type structure
-    explicit date(const ymd_type& ymd)
+    BOOST_CXX14_CONSTEXPR explicit date(const ymd_type& ymd)
       : date_time::date<date, gregorian_calendar, date_duration>(ymd)
     {}
     //! Needed copy constructor
-    explicit date(const date_int_type& rhs):
+    BOOST_CXX14_CONSTEXPR explicit date(const date_int_type& rhs):
       date_time::date<date,gregorian_calendar, date_duration>(rhs)
     {}
     //! Needed copy constructor
-    explicit date(date_rep_type rhs):
+    BOOST_CXX14_CONSTEXPR explicit date(date_rep_type rhs):
       date_time::date<date,gregorian_calendar, date_duration>(rhs)
     {}
     //! Constructor for infinities, not a date, max and min date
-    explicit date(special_values sv):
+    BOOST_CXX14_CONSTEXPR explicit date(special_values sv):
       date_time::date<date, gregorian_calendar, date_duration>(date_rep_type::from_special(sv))
     {
       if (sv == min_date_time)
@@ -86,47 +87,55 @@ namespace gregorian {
 
     }
     //!Return the Julian Day number for the date.
-    date_int_type julian_day() const
+    BOOST_CXX14_CONSTEXPR date_int_type julian_day() const
     {
       ymd_type ymd = year_month_day();
       return gregorian_calendar::julian_day_number(ymd);
     }
     //!Return the day of year 1..365 or 1..366 (for leap year)
-    day_of_year_type day_of_year() const
+    BOOST_CXX14_CONSTEXPR day_of_year_type day_of_year() const
     {
       date start_of_year(year(), 1, 1);
       unsigned short doy = static_cast<unsigned short>((*this-start_of_year).days() + 1);
       return day_of_year_type(doy);
     }
     //!Return the Modified Julian Day number for the date.
-    date_int_type modjulian_day() const
+    BOOST_CXX14_CONSTEXPR date_int_type modjulian_day() const
     {
       ymd_type ymd = year_month_day();
       return gregorian_calendar::modjulian_day_number(ymd);
     }
     //!Return the iso 8601 week number 1..53
-    int week_number() const
+    BOOST_CXX14_CONSTEXPR int week_number() const
     {
       ymd_type ymd = year_month_day();
       return gregorian_calendar::week_number(ymd);
     }
     //! Return the day number from the calendar
-    date_int_type day_number() const
+    BOOST_CXX14_CONSTEXPR date_int_type day_number() const
     {
       return days_;
     }
     //! Return the last day of the current month
-    date end_of_month() const
+    BOOST_CXX14_CONSTEXPR date end_of_month() const
     {
       ymd_type ymd = year_month_day();
-      short eom_day =  gregorian_calendar::end_of_month_day(ymd.year, ymd.month);
+      unsigned short eom_day =  gregorian_calendar::end_of_month_day(ymd.year, ymd.month);
       return date(ymd.year, ymd.month, eom_day);
     }
+
+    friend BOOST_CXX14_CONSTEXPR
+    bool operator==(const date& lhs, const date& rhs);
 
    private:
 
   };
 
+  inline BOOST_CXX14_CONSTEXPR
+  bool operator==(const date& lhs, const date& rhs)
+  {
+    return lhs.days_ == rhs.days_;
+  }
 
 
 } } //namespace gregorian

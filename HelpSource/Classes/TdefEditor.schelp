@@ -1,6 +1,6 @@
 class:: TdefEditor
 summary:: will be replaced - please use TdefGui now!
-categories:: Libraries>JITLib>GUI, Live Coding
+categories:: JITLib>GUI, Live Coding
 related:: Classes/TdefGui
 
 description::
