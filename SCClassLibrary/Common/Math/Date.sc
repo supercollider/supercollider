@@ -1,6 +1,6 @@
-Date {
-	var <>year=2000, <>month=1, <>day=1, <>hour=0, <>minute=0, <>second=0, <>dayOfWeek=6,
-		<>rawSeconds=0;
+Date : Magnitude {
+	var <>year, <>month, <>day, <>hour, <>minute, <>second, <>dayOfWeek,
+		<>rawSeconds;
 
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
