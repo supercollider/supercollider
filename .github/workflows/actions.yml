@@ -65,11 +65,11 @@ jobs:
             use-syslibs: false
             shared-libscsynth: true
 
-          - job-name: 'bionic gcc10'
-            os-version: '18.04'
+          - job-name: 'jammy gcc10 use system libraries'
+            os-version: '22.04'
             c-compiler: 'gcc-10'
             cxx-compiler: 'g++-10'
-            use-syslibs: false
+            use-syslibs: true
             shared-libscsynth: false
             artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
@@ -80,11 +80,11 @@ jobs:
             use-syslibs: false
             shared-libscsynth: false
 
-          - job-name: 'jammy gcc12 use system libraries'
+          - job-name: 'jammy gcc12'
             os-version: '22.04'
             c-compiler: 'gcc-12'
             cxx-compiler: 'g++-12'
-            use-syslibs: true
+            use-syslibs: false
             shared-libscsynth: false
 
           - job-name: 'focal clang7'
