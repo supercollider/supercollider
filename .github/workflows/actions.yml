@@ -71,7 +71,6 @@ jobs:
             cxx-compiler: 'g++-10'
             use-syslibs: true
             shared-libscsynth: false
-            artifact-suffix: 'linux-bionic-gcc10' # set if needed - will trigger artifact upload
 
           - job-name: 'jammy gcc11'
             os-version: '22.04'
@@ -86,6 +85,7 @@ jobs:
             cxx-compiler: 'g++-12'
             use-syslibs: false
             shared-libscsynth: false
+            artifact-suffix: 'linux-jammy-gcc12' # set if needed - will trigger artifact upload
 
           - job-name: 'focal clang7'
             os-version: '20.04'
@@ -576,9 +576,9 @@ jobs:
             artifact-extension: '.dmg'
 
           - name: Linux
-            runs-on: ubuntu-18.04
+            runs-on: ubuntu-22.04
             sclang: 'build/Install/bin/sclang'
-            artifact-suffix: linux-bionic-gcc10
+            artifact-suffix: linux-jammy-gcc12
 
           - name: Windows
             runs-on: windows-2022
@@ -626,7 +626,7 @@ jobs:
         run: |
           # install dependencies
           sudo apt-get update
-          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qt5-default qtwebengine5-dev jackd1
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qtbase5-dev qtwebengine5-dev jackd1
 
           # add bin to PATH so that scsynth can be found
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
