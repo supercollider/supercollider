@@ -626,7 +626,7 @@ jobs:
         run: |
           # install dependencies
           sudo apt-get update
-          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qtbase5-dev qtwebengine5-dev jackd1
+          sudo apt-get install --yes libsndfile1 libavahi-client-dev libfftw3-dev libicu-dev libudev-dev qtbase5-dev qtwebengine5-dev jackd1 socat
 
           # add bin to PATH so that scsynth can be found
           echo "$INSTALL_PATH/bin" >> $GITHUB_PATH
