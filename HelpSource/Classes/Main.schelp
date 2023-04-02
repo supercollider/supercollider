@@ -172,6 +172,9 @@ If the port was already opened by SC it will return true directly without trying
 argument::portNum
 An link::Classes/Integer:: indicating the port to attempt to bind.
 
+argument::type
+An link::Classes/Symbol:: \osc or \raw, indicating which type of messages to expect. \osc will receive callbacks at code::Main:recvOSCmessage::, \raw will receive callbacks at code::Main:recvRawMessage::.
+
 returns::A link::Classes/Boolean:: indicating whether the attempt was successful.
 
 code::

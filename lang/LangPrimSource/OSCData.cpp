@@ -67,15 +67,15 @@ bool gUseDoubles = false;
 
 InternalSynthServerGlobals gInternalSynthServer = { nullptr, kNumDefaultSharedControls, gDefaultSharedControls };
 
-SC_UdpInPort* gUDPport = nullptr;
+std::unique_ptr<InPort::UDP> gUDPport {};
 
 PyrString* newPyrString(VMGlobals* g, char* s, int flags, bool runGC);
 
-PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
+PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr, *s_recvrawmsg;
 extern bool compiledOK;
 
-std::vector<SC_UdpCustomInPort*> gCustomUdpPorts;
-
+std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomUdpPorts;
+std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
 
 ///////////
 
@@ -288,7 +288,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
     using namespace boost::asio;
 
     if (IsPtr(netAddrObj->slots + ivxNetAddr_Socket)) {
-        SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
+        auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
 
         // send TCP
         ip::tcp::socket& socket = comPort->Socket();
@@ -341,7 +341,7 @@ static int netAddrSend(PyrObject* netAddrObj, int msglen, char* bufptr, bool sen
         using namespace boost::asio;
         ip::udp::endpoint address(ip::address_v4(ulAddress), port);
 
-        gUDPport->Socket().send_to(buffer(bufptr, msglen), address);
+        gUDPport->getSocket().send_to(buffer(bufptr, msglen), address);
     }
 
     return errNone;
@@ -388,7 +388,8 @@ static int prNetAddr_Connect(VMGlobals* g, int numArgsPushed) {
     unsigned long ulAddress = (unsigned int)addr;
 
     try {
-        SC_TcpClientPort* comPort = new SC_TcpClientPort(ulAddress, port, netAddrTcpClientNotifyFunc, netAddrObj);
+        OutPort::TCP* comPort =
+            new OutPort::TCP(ulAddress, port, HandlerType::OSC, netAddrTcpClientNotifyFunc, netAddrObj);
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
     } catch (std::exception const& e) {
         printf("NetAddr-Connect failed with exception: %s\n", e.what());
@@ -404,7 +405,7 @@ static int prNetAddr_Disconnect(VMGlobals* g, int numArgsPushed) {
     PyrSlot* netAddrSlot = g->sp;
     PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
-    SC_TcpClientPort* comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
+    auto comPort = static_cast<OutPort::TCP*>(slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket));
     if (comPort) {
         err = comPort->Close();
         SetPtr(netAddrObj->slots + ivxNetAddr_Socket, nullptr);
@@ -470,7 +471,7 @@ static int prNetAddr_GetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option;
-    gUDPport->udpSocket.get_option(option, ec);
+    gUDPport->getSocket().get_option(option, ec);
 
     if (ec)
         return errFailed;
@@ -485,7 +486,7 @@ static int prNetAddr_SetBroadcastFlag(VMGlobals* g, int numArgsPushed) {
 
     boost::system::error_code ec;
     boost::asio::socket_base::broadcast option(IsTrue(g->sp));
-    gUDPport->udpSocket.set_option(option, ec);
+    gUDPport->getSocket().set_option(option, ec);
 
     if (ec)
         return errFailed;
@@ -713,34 +714,52 @@ void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPort
     runInterpreter(g, s_recvoscmsg, 5);
 }
 
-void FreeOSCPacket(OSC_Packet* inPacket) {
-    // post("->FreeOSCPacket %p\n", inPacket);
-    if (inPacket) {
-        free(inPacket->mData);
-        free(inPacket);
-    }
-}
-
 // takes ownership of inPacket
-void ProcessOSCPacket(OSC_Packet* inPacket, int inPortNum, double time) {
+void ProcessOSCPacket(std::unique_ptr<OSC_Packet> inPacket, int inPortNum, double time) {
     // post("recv '%s' %d\n", inPacket->mData, inPacket->mSize);
-    inPacket->mIsBundle = IsBundle(inPacket->mData);
+    const auto isBundle = IsBundle(inPacket->mData.get());
 
     gLangMutex.lock();
     if (compiledOK) {
         PyrObject* replyObj = ConvertReplyAddress(&inPacket->mReplyAddr);
         if (compiledOK) {
-            if (inPacket->mIsBundle) {
-                PerformOSCBundle(inPacket->mSize, inPacket->mData, replyObj, inPortNum);
+            if (isBundle) {
+                PerformOSCBundle(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum);
             } else {
-                PerformOSCMessage(inPacket->mSize, inPacket->mData, replyObj, inPortNum, time);
+                PerformOSCMessage(inPacket->mSize, inPacket->mData.get(), replyObj, inPortNum, time);
             }
         }
     }
     gLangMutex.unlock();
-
-    FreeOSCPacket(inPacket);
 }
+
+void ProcessRawMessage(std::unique_ptr<char[]> inData, size_t inSize, ReplyAddress& replyAddress, int inPortNum,
+                       double time) {
+    gLangMutex.lock();
+    if (compiledOK) {
+        VMGlobals* g = gMainVMGlobals;
+
+        PyrString* string = newPyrStringN(g->gc, inSize, 0, true);
+        memcpy(string->s, inData.get(), inSize);
+
+
+        // call virtual machine to handle message
+        ++g->sp;
+        SetObject(g->sp, g->process);
+        ++g->sp;
+        SetFloat(g->sp, time); // time
+        ++g->sp;
+        SetObject(g->sp, ConvertReplyAddress(&replyAddress));
+        ++g->sp;
+        SetInt(g->sp, inPortNum);
+        ++g->sp;
+        SetObject(g->sp, string);
+
+        runInterpreter(g, s_recvrawmsg, 5);
+    }
+    gLangMutex.unlock();
+}
+
 
 void startAsioThread();
 void stopAsioThread();
@@ -757,14 +776,14 @@ void init_OSC(int port) {
     startAsioThread();
 
     try {
-        gUDPport = new SC_UdpInPort(port);
+        gUDPport.reset(new InPort::UDP(port, HandlerType::OSC));
     } catch (std::exception const& e) {
         postfl("No networking: %s", e.what());
     }
 }
 
-int prOpenUDPPort(VMGlobals* g, int numArgsPushed);
-int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
+int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed);
+int prOpenOSCUDPPort(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp - 1;
     PyrSlot* b = g->sp;
     int port;
@@ -772,26 +791,48 @@ int prOpenUDPPort(VMGlobals* g, int numArgsPushed) {
     if (err)
         return err;
 
-    SC_UdpCustomInPort* newUDPport;
+    std::unique_ptr<InPort::UDPCustom> newUDPport;
 
     try {
         SetTrue(a);
-        newUDPport = new SC_UdpCustomInPort(port);
-        gCustomUdpPorts.push_back(newUDPport);
+        newUDPport = std::make_unique<InPort::UDPCustom>(port, HandlerType::OSC);
+        gCustomUdpPorts.push_back(std::move(newUDPport));
     } catch (...) {
         SetFalse(a);
-        postfl("Could not bind to requested port. This may mean it is in use already by another application.\n");
+        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
+               "application does not have permissions to open a port.\n");
     }
     return errNone;
 }
 
+int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed);
+int prOpenRawUDPPort(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp - 1;
+    PyrSlot* b = g->sp;
+    int port;
+    int err = slotIntVal(b, &port);
+    if (err)
+        return err;
+
+    std::unique_ptr<InPort::UDPCustom> newTCPPort;
+
+    try {
+        SetTrue(a);
+        newTCPPort = std::make_unique<InPort::UDPCustom>(port, HandlerType::Raw);
+        gCustomTcpPorts.push_back(std::move(newTCPPort));
+    } catch (...) {
+        SetFalse(a);
+        postfl("Could not bind to requested port. This may mean it is in use already by another application, or the "
+               "application does not have permissions to open a port.\n");
+    }
+    return errNone;
+}
+
+
 void closeAllCustomPorts();
 void closeAllCustomPorts() {
-    // close all custom sockets
-    for (int i = 0; i < gCustomUdpPorts.size(); i++) {
-        delete gCustomUdpPorts[i];
-    }
     gCustomUdpPorts.clear();
+    gCustomTcpPorts.clear();
 }
 
 void cleanup_OSC() {
@@ -1379,7 +1420,8 @@ void init_OSC_primitives() {
     definePrimitive(base, index++, "_AllocSharedControls", prAllocSharedControls, 2, 0);
     definePrimitive(base, index++, "_SetSharedControl", prSetSharedControl, 3, 0);
     definePrimitive(base, index++, "_GetSharedControl", prGetSharedControl, 2, 0);
-    definePrimitive(base, index++, "_OpenUDPPort", prOpenUDPPort, 2, 0);
+    definePrimitive(base, index++, "_OpenOSCUDPPort", prOpenOSCUDPPort, 2, 0);
+    definePrimitive(base, index++, "_OpenRawUDPPort", prOpenRawUDPPort, 2, 0);
 
     // server shared memory interface
     definePrimitive(base, index++, "_ServerShmInterface_connectSharedMem", prConnectSharedMem, 2, 0);
@@ -1394,6 +1436,7 @@ void init_OSC_primitives() {
     s_call = getsym("call");
     s_write = getsym("write");
     s_recvoscmsg = getsym("recvOSCmessage");
+    s_recvrawmsg = getsym("recvRawMessage");
     s_recvoscbndl = getsym("recvOSCbundle");
     s_netaddr = getsym("NetAddr");
 }
