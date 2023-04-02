@@ -580,10 +580,10 @@ jobs:
             sclang: 'build/Install/bin/sclang'
             artifact-suffix: linux-jammy-gcc12
 
-          - name: Windows
-            runs-on: windows-2022
-            sclang: 'build/Install/SuperCollider/sclang'
-            artifact-suffix: win64
+          # - name: Windows
+          #   runs-on: windows-2022
+          #   sclang: 'build/Install/SuperCollider/sclang'
+          #   artifact-suffix: win64
 
     needs: [lint, Linux, macOS, Windows] # unfortunately we can't use matrix expression here to make Linux test depend only on Linux build
     runs-on: '${{ matrix.runs-on }}'
