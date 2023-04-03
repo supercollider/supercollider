@@ -73,11 +73,17 @@ results.do({|dict|
 				};
 				"\t\t % %".format(header, resDict[\test].asString).postln;
 			})
+		};
+		if(dict[\completed] != true) {
+			"\t%\t% did not complete%".format(makeRed.("[!]"), name, if(dict[\duration].notNil) {" (%s)".format(dict[\duration].round(0.01))} {""}).postln;
+			failed = failed + 1;
 		} {
-			// "\t%\t% (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)).postln;
-			// failed = failed + 1;
-			// tests that didn't produce any results didn't necessarily fail (e.g. TestSerialPort on macOS)
-			"\t%\t% did not produce any results (%s)".format(makeYellow.("[?]"), name, (dict[\duration] ? 0).round(0.01)).postln;
+			if(allResults == 0) { // marked as completed, but no results were recorded...
+				// "\t%\t% (%s)".format(makeRed.("[!]"), name, (dict[\duration] ? 0).round(0.01)).postln;
+				// failed = failed + 1;
+				// tests that didn't produce any results didn't necessarily fail (e.g. TestSerialPort on macOS)
+				"\t%\t% did not produce any results%".format(makeYellow.("[?]"), name, if(dict[\duration].notNil) {" (%s)".format(dict[\duration].round(0.01))} {""}).postln;
+			}
 		}
 	};
 });
