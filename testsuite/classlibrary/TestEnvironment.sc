@@ -1,14 +1,16 @@
 TestEnvironment : UnitTest {
 
 	test_envirPutNilRemovesEntry {
-		var envir = Environment.new(parent: (test: \defaultValue));
-		envir.use {
 
-			this.assertEquals(~test, \defaultValue, "parent environment should be in scope if not shadowed");
-			~test = \overriddenEntry;
-			this.assertEquals(~test, \overriddenEntry, "parent environment should be shadowed");
+		var parentEnvir =  (test: 42);
+		var envir = Environment.new(parent: parentEnvir);
+
+		envir.use {
+			this.assertEquals(~test, 42, "parent environment should be in scope");
+			~test = 48;
+			this.assertEquals(~test, 48, "environment should shadow value in parent");
 			~test = nil;
-			this.assertEquals(~test, \defaultValue, "parent environment should be in scope again if not shadowed any more");
+			this.assertEquals(~test, 42, "parent environment should be in scope again if not shadowed any more");
 		};
 	}
 
