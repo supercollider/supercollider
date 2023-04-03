@@ -88,18 +88,6 @@
 		'skip': "true",
 	),
 	(
-		'suite': "TestServer_boot",
-		'test': "test_notifyAndServerBootActions",
-		'skip': "true",
-		'skipReason': "UnitTest fails when run in the CI (FIXME)",
-	),
-	(
-		'suite': "TestServer_boot",
-		'test': "test_notifyAndServerTreeActions",
-		'skip': "true",
-		'skipReason': "UnitTest fails when run in the CI (FIXME)",
-	),
-	(
 		'suite': "TestTempoClock",
 		'test': "test_nextTimeOnGrid_okAfterMeterChange",
 		'skipReason': "UnitTest fails (FIXME)",
@@ -107,9 +95,9 @@
 	),
 	(
 		'suite': "TestUGen_RTAlloc",
-		'test': "test_allUGens",
+		'test': "test_FFT",
 		'skip': "true",
-		'skipReason': "UnitTest fails when run in GHA (FIXME)",
+		'skipReason': "UnitTest fails (FIXME)",
 	),
 	(
 		'suite': "TestVolume",
@@ -121,7 +109,7 @@
 		'suite': "TestWebView",
 		'test': "test_findText_found",
 		'skip': "true",
-		'skipReason': "UnitTest sometimes fails when run in GHA",
+		'skipReason': "UnitTest times out",
 	),
 	(
 		'suite': "TestWebView",
