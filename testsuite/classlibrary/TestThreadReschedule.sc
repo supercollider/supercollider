@@ -40,7 +40,8 @@ TestThreadReschedule : UnitTest {
 			task.reschedule(clock2);
 			// The test requires 4 data points (to measure tempo after rescheduling).
 			// So, all 3 beats are necessary. 3 beats < 3 ms.
-			3.wait;
+			// this was increased to accommodate timing variations for systems unders stress
+			6.wait;
 			cond.unhang;
 		}.play(clock1);
 		cond.hang;
