@@ -152,7 +152,7 @@ TestSerialPort : UnitTest {
 		this.destroyPorts();
 
 		fork { 3.wait; cond.test_(true) };
-		while { in.isOpen and: cond.test.not } { 0.001.wait };
+		while { in.isOpen or: cond.test.not } { 0.001.wait };
 
 		this.assert(in.isOpen.not);
 	}
