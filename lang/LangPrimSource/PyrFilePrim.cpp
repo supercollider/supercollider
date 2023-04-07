@@ -40,7 +40,6 @@ Primitives for File i/o.
 #include "SC_Codecvt.hpp" // utf8_str_to_path, path_to_utf8_str
 
 /* C stdlib headers */
-#include <MacTypes.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
