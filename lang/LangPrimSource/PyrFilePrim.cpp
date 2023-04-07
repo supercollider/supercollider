@@ -1368,7 +1368,7 @@ int prPipeOpenArgvReadWrite(struct VMGlobals* g, int numArgsPushed) {
     // argsColl must be a collection
     if (!(slotRawInt(&argsColl->classptr->classFlags) & classHasIndexableInstances))
         return errNotAnIndexableObject;
-    
+
     // collection must contain at least one string: the path of executable to run
     if (argsColl->size < 1)
         return errFailed;
