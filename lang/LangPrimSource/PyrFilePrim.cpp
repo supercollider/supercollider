@@ -1377,7 +1377,7 @@ int prPipeOpenArgvReadWrite(struct VMGlobals* g, int numArgsPushed) {
     if (error != errNone)
         return error;
 
-    auto [pid, files] = sc_popen_argv_twoway(strings);
+    auto [pid, files] = sc_popen_argv_twoway(std::move(strings));
 
     PyrObject* result = newPyrArray(g->gc, 3, 0, true); // runGC = true
     SetObject(callerSlot, result);
@@ -1443,7 +1443,7 @@ int prPipeOpenArgv(struct VMGlobals* g, int numArgsPushed) {
 
     pid_t pid;
     FILE* file;
-    std::tie(pid, file) = sc_popen_argv(strings, mode);
+    std::tie(pid, file) = sc_popen_argv(std::move(strings), mode);
 
     if (file != nullptr) {
         SetPtr(&pfile->fileptr, file);

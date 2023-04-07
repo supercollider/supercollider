@@ -59,7 +59,6 @@ std::tuple<pid_t, std::array<FILE*, 2>> sc_popen_argv_twoway(std::vector<std::st
 
     const pid_t pid = fork();
     if (pid == 0) { // CHILD PROCESS
-
         // close the ends of the pipes used by parent
         close(readPipe[0]);
         close(writePipe[1]);
