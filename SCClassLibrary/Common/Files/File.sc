@@ -184,6 +184,17 @@ Pipe : UnixFILE {
 		^super.new.openArgv(args, mode);
 	}
 
+	*argvReadWrite { arg args;
+		var pid, readPipe, writePipe;
+
+		#pid, readPipe, writePipe = this.prOpenArgvReadWrite(args);
+
+		^[
+			super.newCopyArgs(readPipe, pid).addOpenFile(), 
+			super.newCopyArgs(writePipe, pid).addOpenFile()
+		]
+	}
+
 	*call { arg command, onSuccess, onError, maxLineLength=4096;
 		var r, cancel, closePipe;
 		r = Routine.run({
@@ -277,12 +288,18 @@ Pipe : UnixFILE {
 		^this.primitiveFailed
 	}
 
-	prOpenArgv { arg  args, mode;
+	prOpenArgv { arg args, mode;
 		/* open the file with explicit list of arguments. mode is a string passed
 			to popen, so should be one of:
 			"r","w"
 		*/
 		_PipeOpenArgv
+		^this.primitiveFailed
+	}
+
+	*prOpenArgvReadWrite {
+		 arg args;
+		_PipeOpenArgvReadWrite
 		^this.primitiveFailed
 	}
 }

@@ -39,4 +39,6 @@ std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[
  */
 std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type);
 std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type);
+std::tuple<pid_t, std::array<FILE*, 2>> sc_popen_argv_twoway(const std::vector<std::string>& args);
 int sc_pclose(FILE* iop, pid_t mPid);
+int sc_fclose(FILE* iop);
