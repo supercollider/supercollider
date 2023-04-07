@@ -34,20 +34,20 @@ std::vector<char*> stringsToArgv(const std::vector<std::string>& strings) {
     return argv;
 }
 
-std::tuple<pid_t, FILE*> sc_popen(std::string&& command, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen(std::string command, const std::string& type) {
     std::vector<std::string> argv;
     argv.emplace_back("/bin/sh");
     argv.emplace_back("-c");
     argv.push_back(std::move(command));
-    return sc_popen_argv(argv, type);
+    return sc_popen_argv(std::move(argv), type);
 }
 
-std::tuple<pid_t, FILE*> sc_popen_argv(const std::vector<std::string>& strings, const std::string& type) {
+std::tuple<pid_t, FILE*> sc_popen_argv(std::vector<std::string> strings, const std::string& type) {
     const auto argv = stringsToArgv(strings);
     return sc_popen_c_argv(argv[0], argv.data(), type.c_str());
 }
 
-std::tuple<pid_t, std::array<FILE*, 2>> sc_popen_argv_twoway(const std::vector<std::string>& args) {
+std::tuple<pid_t, std::array<FILE*, 2>> sc_popen_argv_twoway(std::vector<std::string> args) {
     auto argv = stringsToArgv(args);
     const char* filename = argv[0];
 
@@ -163,7 +163,7 @@ std::tuple<pid_t, FILE*> sc_popen_c_argv(const char* filename, char* const argv[
  */
 int sc_pclose(FILE* iop, pid_t mPid) {
     int pstat = 0;
-    pid_t pid {-1};
+    pid_t pid { -1 };
 
     (void)sc_fclose(iop);
 
@@ -171,14 +171,12 @@ int sc_pclose(FILE* iop, pid_t mPid) {
         do {
             pid = wait4(mPid, &pstat, 0, (struct rusage*)0);
         } while (pid == -1 && errno == EINTR);
-    }    
+    }
 
     return (pid == -1 ? -1 : pstat);
 }
 
-int sc_fclose(FILE* iop) {
-    return fclose(iop);
-}
+int sc_fclose(FILE* iop) { return fclose(iop); }
 
 #else
 #    include <numeric>
