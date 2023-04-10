@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <string>
+#include <array>
+#include <tuple>
 
 #ifndef _WIN32
 #    include <unistd.h>
