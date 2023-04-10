@@ -1295,7 +1295,7 @@ Plotter {
 
 		target = target.asTarget;
 		server = target.server;
-		action = { |array, buf|
+		action = { |array, buf, information|
 			var numChan = buf.numChannels;
 			var numFrames = buf.numFrames;
 			var frameDur;
@@ -1316,7 +1316,7 @@ Plotter {
 				// (based on a plot at full screen width), set the x values (domain)
 				// explicitly for accurate time alignment with grid lines.
 				if(numFrames < (Window.screenBounds.width / 2.5)) {
-					frameDur = if(this.value.rate == \control) {
+					frameDur = if(information[\rate] == \control) {
 						server.options.blockSize / server.sampleRate
 					} {
 						1 / server.sampleRate
