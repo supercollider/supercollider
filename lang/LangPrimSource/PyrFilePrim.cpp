@@ -1477,7 +1477,7 @@ int prPipeClose(struct VMGlobals* g, int numArgsPushed) {
     SetPtr(&pfile->fileptr, nullptr);
     SetInt(a, err);
 
-    return (err == noErr) ? errNone : errFailed;
+    return (err == 0) ? errNone : errFailed;
 }
 
 //----------------------------------------------------------------------------//
