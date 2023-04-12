@@ -637,6 +637,7 @@ Document {
 	save { |docPath|
 		docPath = docPath ? path;
 		if(docPath.isNil) { MethodError("Document saved requires specified path", this).throw; };
+		// NB Ideally the line below should be replaced by a primitive
 		if(docPath.dirname.pathMatch.size ==  0) { error("Document save failed as directory does not exist.") };
 		ScIDE.save(quuid, docPath);
 	}
