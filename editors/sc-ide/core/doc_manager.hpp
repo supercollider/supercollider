@@ -224,6 +224,7 @@ private:
     void handleSetCurrentDocScRequest(const QString& data);
     void handleRemoveDocUndoScRequest(const QString& data);
     void handleCloseDocScRequest(const QString& data);
+    void handleSaveDocScRequest(const QString& data);
     void handleSetDocTitleScRequest(const QString& data);
 
     bool parseActionEnabledRequest(const QString& data, std::string* idString, bool* en);

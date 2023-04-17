@@ -347,6 +347,10 @@ ScIDE {
 	*close {|quuid|
 		this.send(\closeDocument, [quuid]);
 	}
+	
+	*save {|quuid, docPath|
+		this.send(\saveDocument, [quuid, docPath]);
+	}
 
 	*setDocumentTitle {|quuid, newTitle|
 		this.send(\setDocumentTitle, [quuid, newTitle]);
@@ -588,6 +592,14 @@ Document {
 	}
 
 	close { ScIDE.close(quuid); }
+
+	save { |docPath|
+		docPath = docPath ? path;
+		if(docPath.isNil) { MethodError("Document saved requires specified path", this).throw; };
+		// NB Ideally the line below should be replaced by a primitive
+		if(docPath.dirname.pathMatch.size ==  0) { MethodError("Document save failed as directory does not exist.", this).throw };
+		ScIDE.save(quuid, docPath);
+	}
 
 	// asynchronous get
 	// range -1 means to the end of the Document
