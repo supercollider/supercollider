@@ -6,7 +6,7 @@ TestDocument : UnitTest {
 	test_save_method_writes_file {
 		var doc, file, str, path;
 		if(Platform.ideName == "scqt") {
-			path = Platform.defaultTempDir +/+ "test_document_save.txt";
+			path = Platform.defaultTempDir +/+ "test_document_save.scd";
 			if(File.exists(path)) {
 				this.assert(false, "Document save test file path should not exist: '%'".format(path));
 			} {
