@@ -1,15 +1,7 @@
-Welcome to SuperCollider for Windows!
+Hello and welcome to SuperCollider for Windows!
 =====================================
 
-This Readme has two sections: "Installing SuperCollider", and "Building
-SuperCollider for Windows". The first section provides basic information to get
-going, and also introduces some common SuperCollider terminology. The second
-section is subdivided into two sections: direct build instructions, and
-"Walkthroughs". The first part contains the essentials for a successful build,
-while the walkthroughs are more tutorial-like and written for less experienced
-developers. They are not required reading to build the Windows version of SC.
-Furthermore, the individual chapters in "Walkthroughs" are not expected to be
-read consecutively; they might appear quite repetitive if done so.
+This Readme is divided into two main sections: "Installing SuperCollider" and "Building SuperCollider for Windows." The first section provides basic information to help you get started, including common SuperCollider terminology. The second section is further divided into two parts: "Direct Build Instructions" and "Walkthroughs." The "Direct Build Instructions" section contains essential information to ensure a successful build of the Windows version of SuperCollider. The "Walkthroughs" section is more tutorial-like and aimed at less experienced developers. It is not necessary to read each chapter in this section consecutively, as they may appear repetitive. To summarize, the first section covers the basics and introduces SuperCollider terminology, while the second section provides essential build instructions and additional tutorial-like content.
 
 Table of contents
 -----------------
@@ -48,73 +40,29 @@ Table of contents
 Introduction
 ============
 
-This is the Windows version of James McCartney's SuperCollider synthesis engine
-(`scsynth`) and programming language (`sclang`), distributed together with a
-dedicated IDE (`scide`).
+Welcome to the Windows version of SuperCollider, which includes James McCartney's synthesis engine (scsynth) and programming language (sclang), along with a dedicated IDE (scide).
 
-SuperCollider's homepage is:
+For more information on SuperCollider, including release binaries and pre-release snapshots, please visit the project's homepage at http://supercollider.github.io/ or check out the project's GitHub releases at https://github.com/supercollider/supercollider/releases.
 
-    http://supercollider.github.io/
+If you're looking for a bleeding-edge build of the latest development branch, you can find builds available for both 32-bit and 64-bit Windows at https://github.com/supercollider/supercollider/releases.
 
-Binaries of release-versions and pre-release snapshots are available as
-GitHub releases now:
+Please note that automated GitHub services may miss out on submodules, so for actual development work, it's recommended to use SuperCollider's GitHub repository at https://github.com/supercollider/supercollider.
 
-    https://github.com/supercollider/supercollider/releases
+For older releases and snapshots of the source code used for them, you can visit SourceForge at http://sourceforge.net/projects/supercollider/files/?source=navbar.
 
-You can also download a bleeding-edge build of the latest development branch!
-Builds are available for [32-bit][bleeding edge 32 bit] and
-[64-bit][bleeding edge 64 bit] Windows.
+There's also an online version of SuperCollider Help available at http://doc.sccode.org/Help.html, as well as a lively community of SuperCollider users at http://sccode.org/. You can even listen to music composed with SuperCollider on SoundCloud at https://soundcloud.com/groups/supercollider.
 
-This page also provides snapshots of the source version used for the release.
-Note though, that this automated Github service misses out on the submodules.
-For actual development work you should always use SuperCollider's Github repo:
-
-    https://github.com/supercollider/supercollider
-
-Older releases and snapshots of the source code used for them are available
-from Sourceforge:
-
-    http://sourceforge.net/projects/supercollider/files/?source=navbar
-
-There is an online version of SuperCollider Help:
-
-    http://doc.sccode.org/Help.html
-
-SC has a life in social media too. Visit a lively community at sccode.org:
-
-    http://sccode.org/
-
-Listen to music composed with SuperCollider on SoundCloud:
-
-    https://soundcloud.com/groups/supercollider
-
-There are several SuperCollider Facebook groups, some SuperCollider tweets, e.g.
-@sc140tweets. In addition you are strongly encouraged to subscribe to the two SC
-mailing lists 'sc-users' and 'sc-dev'. You will get friendly and qualified
-replies there, as well as interest, and encouragement for your projects:
-
-    http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+To stay up-to-date with the latest SuperCollider news and get support for your projects, consider subscribing to the SC mailing lists 'sc-users' and 'sc-dev' at http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx. You'll receive friendly and qualified replies, as well as interest and encouragement for your work.
 
 
 Installing SuperCollider
 ========================
 
-For SC itself just run the downloaded installer. If necessary select an
-alternative install path when prompted during installation. In order to
-uninstall, use the default procedure on Windows (Control panel -> Uninstall a
-program) or run Uninstall.exe from within the SC installation folder. Note
-that files created in the 'user support directory' are not deleted (see below
-for details and an explanation).
+To install SuperCollider, simply run the downloaded installer and follow the prompts. If needed, you can select an alternative installation path during the installation process. To uninstall SuperCollider, use the default procedure on Windows by going to Control Panel and selecting "Uninstall a program," or by running Uninstall.exe from within the SuperCollider installation folder. Keep in mind that files created in the 'user support directory' will not be deleted with the uninstallation process. (See below for more details and an explanation.)
 
-IMPORTANT: in order to use the Quarks extension system you *need* to install
-Git *and* add it to the PATH. The Git installer will prompt you to the addition.
-For SC it is enough to add Git itself to the path, the additional unix tools
-(curl, find etc.) are not required.
+It's important to note that if you plan to use the Quarks extension system, you must have Git installed and added to the PATH. During the Git installation process, you will be prompted to add it to the PATH. It's only necessary to add Git itself to the path for SuperCollider to function properly; the additional Unix tools (such as curl and find) are not required.
 
-Git for Windows is available from
-
-    http://git-scm.com/downloads
-
+You can download Git for Windows from http://git-scm.com/downloads.
 
 System Requirements
 -------------------
@@ -128,116 +76,38 @@ System Requirements
 
 ### Sound card
 
-Most sound cards running under Windows will work fine - the sound card should
-be one that is supported by [PortAudio][portaudio]. For professional
-use do some research and find a card that allows for low latency. If you have
-issues with latency, consult http://www.portaudio.com/docs/latency.html
-for advice on how to tune your operating system to achieve the best results.
-The portaudio build in SC supports various Windows audio APIs, among which you
-can chose. Usually you get best results and biggest control over latency by
-using the ASIO driver. If your soundcard does not provide an ASIO driver you
-should give *[ASIO4ALL][asio4all]* a try. See SC help for how to select the audio
-interface to be used by SC.
-
+Most sound cards that run on Windows should work well with SuperCollider, as long as they are supported by [PortAudio][portaudio]. If you plan to use SuperCollider for professional purposes, it's a good idea to do some research and choose a sound card that allows for low latency. If you experience issues with latency, you can consult http://www.portaudio.com/docs/latency.html for advice on how to optimize your operating system to achieve the best results. The PortAudio build in SuperCollider supports various Windows audio APIs, which you can choose from. To achieve the best results and the most control over latency, we recommend using the ASIO driver. If your sound card doesn't come with an ASIO driver, you can try using [ASIO4ALL][asio4all]. Refer to the SuperCollider help documentation to learn how to select the audio interface you want to use.
 
 Using the SuperCollider IDE
 ---------------------------
 
-To start up the IDE use the start menu link or run the scide.exe program found
-within the installation folder. On first start-up expect several firewall
-warnings to pop up. The SuperCollider components - the language interpreter
-'sclang', the sound server 'scsynth' and the IDE 'scide' - communicate among
-each other over the network, so you will get a warning for each of the three
-executables. If you are new to SuperCollider, inspect the help system and look
-for the tutorials. You can open the help system using Ctrl+D. This keyboard
-shortcut is context sensitive - if your cursor is on a term from the
-supercollider language ('sclang'), the help system will likely open with the page
-explaining that term. Of course there is also the menu entry 'Help' -> 'Show
-Help Browser'.
+To launch the SuperCollider IDE, either use the start menu link or navigate to the scide.exe program within the installation folder. When you open the IDE for the first time, expect to see several firewall warnings. Since the SuperCollider components (sclang, scsynth, and scide) communicate with each other over the network, you will receive a warning for each of the three executables. If you're new to SuperCollider, take a look at the help system and tutorials. You can access the help system using the keyboard shortcut Ctrl+D, which is context-sensitive. If your cursor is on a term from the SuperCollider language (sclang), the help system will open with the page that explains that term. Additionally, you can access the help system through the 'Help' -> 'Show Help Browser' menu entry.
 
 Configuration- and support files
 --------------------------------
 
-An important folder containing application related user data (for example
-extensions, quarks, Help files, plugins, configuration files, synthdefs) is
-located in the Windows 'local application data' folder. In SC-speak this folder
-is called the `userAppSupportDir`. This location is a bit tricky to find when
-not using SC-IDE because its grandparent `AppData` is hidden by default. You
-can see it in the environment variable LOCALAPPDATA. In a command prompt,
-execute:
-
-    echo %LOCALAPPDATA%
-
-You will likely see (the grandpa referred to earlier):
-
-    C:\Users\<USERNAME>\AppData
-
-The userAppSupportDir is in the subfolder `Local\SuperCollider`:
-
-    C:\Users\<USERNAME>\AppData\Local\SuperCollider
-
-This folder is user writable and *not* deleted by uninstalling. Therefore your
-settings, quarks, and plugins persist through updates. This is usually good,
-but if you have binary "plugins" and update a minor version, e.g. 3.6 to 3.7,
-the plugins may not work any more, and cause errors during SC start-up. There
-are more files in the `userAppSupportDir` that can cause trouble after updates,
-so you want to be aware of the possibility. In the IDE it is very easy to access
-the folder. There is a menu entry -> `Open user support directory`). You can
-also ask `sclang` where this folder is located. Type this in the SC-IDE:
-
-    Platform.userAppSupportDir
-
+SuperCollider has a folder called userAppSupportDir which is important for storing user data such as extensions, quarks, Help files, plugins, configuration files, and synthdefs. This folder can be found in the Windows 'local application data' folder, which can be a bit tricky to locate as its grandparent AppData is hidden by default. However, you can find it by executing echo %LOCALAPPDATA% in a command prompt. The userAppSupportDir is located in the subfolder Local\SuperCollider under the user's folder. This folder is user-writable and not deleted by uninstalling, so settings, quarks, and plugins persist through updates. However, updating to a new minor version may cause issues with binary plugins, so be aware of this possibility. To access the folder in the IDE, there is a menu entry -> Open user support directory. Alternatively, you can ask sclang where this folder is located by typing Platform.userAppSupportDir in the SC-IDE.
 
 Extensions and Quarks
 ---------------------
 
-Extensions and Quarks are bundles of classes, and optionally plugins and
-help files that extend the functionality of core SC. The old school way of
-integrating them into SC is to move them to a folder called `Extensions`  in the
-`userAppSupportDir` (soft linking is not supported any more).
+Extensions and Quarks are bundles of classes, plugins, and help files that expand the core functionality of SuperCollider. In the past, integrating these extensions required moving them to a folder called Extensions within the userAppSupportDir. However, since SuperCollider 3.7, there is a more flexible and recommended way that doesn't restrict extensions to a single parent folder in a hidden system location. You can include any folder among the folders scanned by SuperCollider at start-up by adding them to the list of "include folders" in a file called sclang_config.yaml, located in the userAppSupportDir. While you can edit this file manually, it's easier to modify it via the settings dialog in the IDE or by using the community-driven Quarks system.
 
-The more flexible and recommended way since SC 3.7 does not restrict you to a
-single parent folder in a hidden system location. Any folder may be included
-among the folders scanned by SC at start-up ("compiled by the interpreter
-sclang"). New folders are integrated into SC by adding them to the list of
-"include folders" listed in a file called `sclang_config.yaml` in the
-`userAppSupportDir`. This file can be edited manually, but you might find it
-easier to add or remove folders via the 'settings' dialog in the IDE, or:
+Quarks provide an automated way to add, remove, and distribute extensions by "cloning" them from repositories. By default, Quarks looks in a central repository on Github called "Quarks." It uses Git and speaks sclang under the hood, so it includes some version control. Quarks also offers a management GUI that writes to sclang_config.yaml.
 
-The community driven *Quarks* system provides an automated way to add, remove
-and also distribute extensions. It "clones" extensions from repositories. By
-default it looks in a central repository called "Quarks", located on Github:
+Keep in mind that each time you modify sclang_config.yaml, whether by editing it directly, using the Quarks system, or via a menu, you must restart the interpreter by selecting 'Language -> Restart Interpreter' so that sclang can learn which files are available. For more information on using Quarks, see 'Help -> Using Quarks'.
 
-    https://github.com/supercollider-quarks
-
-Under the hood it speaks `sclang` and uses Git, so there is even some version
-control included. It also provides a management GUI that writes to the
-`sclang_config.yaml` mentioned above.
-
-*Note*: Each time `sclang_config.yaml` is modified (by editing, via a menu or by
-using the Quarks system) the interpreter has to be restarted ("rebooted") so
-that sclang can learn which files are available. This can be done via the menu
-entry 'Language -> Restart Interpreter'. For an overview of the Quarks system
-see 'Help -> Using Quarks'.
-
-Enjoy SuperCollider!
-
+Enjoy exploring the expanded functionality that extensions and Quarks can bring to SuperCollider!
 
 Building SuperCollider for Windows
 ==================================
 
-SuperCollider uses [CMake][cmake] as its build system. The main toolchain
-supported by the development team is Visual Studio - Microsoft's IDE for C++ -
-which also includes Visual C++, the official Microsoft C++ compiler. Use of
-other build environments and toolchains (such as MinGW, gcc, and Cygwin) is not
-currently supported.
+SuperCollider's build system is based on [CMake][cmake]. While the development team primarily supports Visual Studio, Microsoft's C++ IDE, which includes the official Microsoft C++ compiler, other build environments and toolchains like MinGW, gcc, and Cygwin are not currently supported.
 
 Required and Optional Components
 --------------------------------
 
-You will need to install these packages manually if you do not already have
-them. When you are given the option, make sure to choose the 32-bit or 64-bit
-version of each library as appropriate.
+If you don't already have them, you'll need to manually install these packages. Be sure to select the 32-bit or 64-bit version that is appropriate when prompted.
 
 Required components:
 
@@ -271,30 +141,19 @@ Other development tools:
 Preparing to build
 ------------------
 
-First obtain the source code by checking out the repository:
+To build SuperCollider from source code, you first need to clone the repository using the following command:
 
     git clone --recursive https://github.com/supercollider/supercollider.git
 
-If you checkout different stages of the source code history, at some point
-switching to different stages of submodules might be required. In this case use:
+If you switch to different stages of the source code history, you might need to update the submodules using:
 
     git submodule update
 
-Note that a slightly patched version of PortAudio source is provided as
-submodule. PortAudio can support up to five different backends: MME, DSound,
-WDM-KS, ASIO and WASAPI. For ASIO support, you will need to install the ASIO
-SDK; for DSound, install the DirectX SDK (see the preceding section).
+Please note that the source code includes a slightly patched version of PortAudio as a submodule. PortAudio can support up to five different backends: MME, DSound, WDM-KS, ASIO, and WASAPI. To get ASIO support, you will need to install the ASIO SDK. For DSound, you need to install the DirectX SDK (as described in the preceding section).
 
-### Arranging the components
+### Preparing the components
 
-*Note:* creating the folder structure *exactly as given here* could save you
-from headaches if CMake cannot find them for whatever reason.
-
-Create a new folder next to where you cloned SuperCollider. If you're making a
-32-bit build, call it `x86`; use `x64` for 64-bit. Next, move the installed
-files of `libsndfile` (by default, placed in `C:\Program Files\Mega-Nerd\libsndfile`)
-and the library for `fftw` so that they match the
-following folder structure *exactly*:
+To prepare the components for the build process, create a new folder next to the SuperCollider clone. Name it x86 for a 32-bit build, or x64 for a 64-bit build. Then move the installed files of libsndfile (by default, located in C:\Program Files\Mega-Nerd\libsndfile) and the library for fftw so that they match the following folder structure exactly:
 
     supercollider
     x64 (or x86)
@@ -304,7 +163,7 @@ following folder structure *exactly*:
             lib
         fftw
 
-In order to get support for ASIO drivers, follow this directory structure:
+To get support for ASIO drivers, follow this directory structure:
 
     supercollider
         external_libraries
@@ -316,20 +175,17 @@ In order to get support for ASIO drivers, follow this directory structure:
                     ...
             ...
 
-FFTW does not provide build files for Visual Studio. In the **Developer Command
-Prompt for VS2019** (or VS2017; note that this is not `cmd.exe`), `cd` to the
-directory where FFTW is installed and, for a **64-bit** build:
+Note that FFTW does not provide build files for Visual Studio. To build FFTW for a 64-bit build, open the Developer Command Prompt for VS2019 (or VS2017) and cd to the directory where FFTW is installed. Then run:
 
     lib /machine:x64 /def:libfftw3f-3.def
 
-For a **32-bit** build:
+For a 32-bit build, run:
 
     lib /def:libfftw3f-3.def
 
 The SC build only uses the single precision FFTW library (fftw3f).
 
-*Note*: if you compile FFTW yourself, all files must end up in the root fftw
-directory.
+Note: if you compile FFTW yourself, all files must end up in the root fftw directory.
 
 Configuration and Building
 --------------------------
