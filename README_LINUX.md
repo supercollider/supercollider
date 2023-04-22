@@ -79,7 +79,7 @@ sudo dnf install emacs # if building with the sc-el backend (default)
 Installing Qt
 -------------
 
-**Qt 5.7 or later** is required to be able to run the SuperCollider IDE and sclang's Qt GUI system. This may be a little complicated since some versions of some Linux distributions are stuck with old Qt versions.
+To use the SuperCollider IDE and sclang's Qt GUI system, it is necessary to have **Qt 5.7 or a later version** installed. However, this can be challenging as some Linux distributions may have older versions of Qt that cannot be updated.
 
 ### Installing Qt on recent Debian-like operating systems
 
