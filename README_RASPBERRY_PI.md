@@ -1,9 +1,7 @@
 Building SuperCollider on Raspberry Pi
 ======================================
 
-SuperCollider can be built with the IDE and Qt GUI components on Raspbian Desktop, or without them on Raspbian
-Desktop or Raspbian Lite. However, the project cannot be compiled with the QtWebEngine library, which means that the
-help browser in the IDE, and the HelpBrowser and WebView classes in sclang, are unavailable.
+SuperCollider can be built with IDE and Qt GUI components on Raspbian Desktop, or without them on Raspbian Desktop or Raspbian Lite. However, it is not possible to compile the project with the QtWebEngine library. This limitation means that the help browser in the IDE and the HelpBrowser and WebView classes in sclang will not be available.
 
 Build requirements
 ------------------
