@@ -6,7 +6,7 @@ by H. James Harkins
 footnote::
 Documentation licensing
 
-The initial version of these documents was written December-February 2009 by H. James Harkins. As part of the SuperCollider package, they are released under the Creative Commons CC-BY-SA license. As SuperCollider is an open source project, it is expected (and encouraged) that other users will contribute to the series. Dr. Harkins, however, wishes to retain exclusive rights to revise and republish the original body of work independently of the open-source copy. This excludes material contributed into svn by others. The work may be redistributed at no charge with proper attribution:
+The initial version of these documents was authored by H. James Harkins between December 2008 and February 2009. They are part of the SuperCollider package and are released under the Creative Commons CC-BY-SA license. As SuperCollider is an open-source project, it is encouraged that other users contribute to the series. However, Dr. Harkins retains exclusive rights to revise and republish the original body of work independently of the open-source copy. This exclusion does not apply to material contributed by others into SVN. The work may be redistributed at no charge with proper attribution.
 
 Harkins, Henry James. "A Practical Guide to Patterns." SuperCollider 3.3 Documentation, 2009.
 ::
