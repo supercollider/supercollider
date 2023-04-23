@@ -1,9 +1,7 @@
 Building SuperCollider for Bela
 ======================================
 
-This README covers _building_ SuperCollider for Bela.
-By doing so, you will be able to use the Bela audio driver for scsynth, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio, as well as plugins to access the analog and digital channels of the Bela-cape.
-See [here](https://learn.bela.io/using-bela/languages/supercollider/) for general information about _using_ SuperCollider on Bela.
+This README provides instructions on how to build SuperCollider for Bela. By following these instructions, you will be able to utilize the Bela audio driver for scsynth, enabling access to Bela's ultra-low-latency audio thread as an alternative to jack/portaudio. Additionally, you can use plugins to access the analog and digital channels of the Bela-cape. For general information on using SuperCollider on Bela, please refer to this link: https://learn.bela.io/using-bela/languages/supercollider/.
 
 Build requirements
 ------------------
