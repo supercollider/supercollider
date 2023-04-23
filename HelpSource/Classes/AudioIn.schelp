@@ -9,7 +9,7 @@ Description::
 Reads audio from the sound input hardware.
 
 note::
-This is provided for backwards compatibility with SC2 code. For normal use link::Classes/SoundIn::, which has bus numbers beginning at 0, as AudioIn may be deprecated and removed at some point in the future.
+The backward compatibility with SC2 code is the reason for providing this, but for regular use, it is recommended to use link::Classes/SoundIn::, which has bus numbers starting from 0. The AudioIn class may become obsolete and eliminated in the future.
 ::
 
 classmethods::
