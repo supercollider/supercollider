@@ -6,9 +6,7 @@ categories::  UGens>Analysis>Amplitude
 
 Description::
 
-Higher frequencies are normally perceived as louder, which AmpCompA
-compensates. Following the measurements by Fletcher and Munson, the
-ANSI standard describes a function for loudness vs. frequency.
+Higher frequencies tend to be perceived as louder than lower frequencies, which is why the AmpCompA is used to compensate for this difference. This is based on the research conducted by Fletcher and Munson, which led to the development of an ANSI standard that outlines a function for determining loudness in relation to frequency.
 
 Note that this curve is only valid for standardized amplitude.
 footnote::
