@@ -137,6 +137,8 @@ ToggleFF : UGen {
 	*kr { arg trig = 0.0;
 		^this.multiNew('control', trig)
 	}
+
+	signalRange { ^\unipolar }
 }
 
 
