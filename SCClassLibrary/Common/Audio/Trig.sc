@@ -127,6 +127,7 @@ PulseDivider : UGen {
 }
 
 SetResetFF : PulseCount {
+	signalRange { ^\unipolar }
 }
 
 ToggleFF : UGen {
