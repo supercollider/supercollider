@@ -176,7 +176,8 @@ ProxyNodeMap : NodeMap {
 
 
 // represents a subset of the output bus of a proxy
-// that can be mapped to a control
+// that can be mapped to a control.
+// currently only works for single channels
 
 NodeProxyPartMap {
 	var <proxy, <indices;
@@ -188,7 +189,7 @@ NodeProxyPartMap {
 	asControlInput {
 		var b = proxy.asControlInput;
 		var busMaps = if(b.isString) { [b] } { b };
-		^indices.asArray.collect { |i| busMaps.wrapAt(i) }
+		^indices.asArray.collect { |i| busMaps.wrapAt(i) }.unbubble
 	}
 
 	wakeUpToBundle { |bundle, checkedAlready|
