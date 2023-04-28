@@ -93,10 +93,10 @@ ProxyNodeMap : NodeMap {
 
 	put { |key, item|
 		if(proxy.notNil) {
-			if(this.at(key).isKindOf(NodeProxy)) {
+			if(this.at(key).hasProxyRelatives) {
 				this.at(key).removeChild(proxy);
 			};
-			if(item.isKindOf(NodeProxy)) {
+			if(item.hasProxyRelatives) {
 				item.addChild(proxy);
 			}
 		};
@@ -120,11 +120,12 @@ ProxyNodeMap : NodeMap {
 		this.map(currentEnvironment.getPairs(keys));
 	}
 
-	// unoptimized
 	parents {
 		var res = Array.new;
 		this.do { |item|
-			if(item.isKindOf(NodeProxy)) { res = res.add(item) }
+			if(item.hasProxyRelatives) {
+				res = res.add(item.asProxyParent)
+			}
 		};
 		^res
 	}
@@ -173,12 +174,62 @@ ProxyNodeMap : NodeMap {
 	}
 }
 
+
+// represents a subset of the output bus of a proxy
+// that can be mapped to a control
+
+NodeProxyPartMap {
+	var <proxy, <indices;
+
+	*new { |proxy, indices=0|
+		^this.newCopyArgs(proxy, indices)
+	}
+
+	asControlInput {
+		var b = proxy.asControlInput;
+		var busMaps = if(b.isString) { [b] } { b };
+		^indices.asArray.collect { |i| busMaps.wrapAt(i) }
+	}
+
+	wakeUpToBundle { |bundle, checkedAlready|
+		proxy.wakeUpToBundle(bundle, checkedAlready)
+	}
+
+	hasProxyRelatives {
+		^true
+	}
+
+	asProxyParent {
+		^proxy
+	}
+
+	removeChild { |obj|
+		proxy.removeChild(obj)
+	}
+
+	addChild { |obj|
+		proxy.addChild(obj)
+	}
+
+}
+
+
 + BusPlug {
 	asOSCArgEmbeddedArray { |array|
 		^this.asControlInput.asOSCArgEmbeddedArray(array)
+	}
+	asProxyParent {
+		^this
+	}
+}
+
++ NodeProxy {
+	partMap { |indices|
+		^NodeProxyPartMap(this, indices)
 	}
 }
 
 + Object {
 	wakeUpToBundle {}
+	hasProxyRelatives { ^false }
 }
