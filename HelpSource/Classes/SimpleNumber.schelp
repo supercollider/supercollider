@@ -974,51 +974,84 @@ stores this on the given stream
 method:: printOn
 prints this on the given stream
 
+
 subsection:: random
+Unless noted otherwise, when the receiver and arguments to these methods are all link::Classes/Integer::s, the return will be as well.
 
 method:: coin
 Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
+code::
+0.4.coin;
+
+{ SinOsc.ar(110).coin }.plot;
+::
 
 method:: rand
-returns:: Random number from zero up to the receiver, exclusive.
+Random number uniformly distributed in the range [0, this).
+code::
+10.rand;
+
+{ SinOsc.ar(110).rand }.plot;
+::
 
 method:: rand2
-returns:: a random number from -this to +this.
+Random number uniformly distributed in the range [-this, +this].
+code::
+10.rand2;
+
+{ SinOsc.ar(110).rand2 }.plot;
+::
 
 method:: rrand
-argument::aNumber
-the upper limit
+Random number uniformly distributed in the range [this, hi]. Note that unlike link::Classes/SimpleNumber#-rand::, the range is inclusive of the upper bound.
+argument::hi
+The upper limit of the range.
 argument::adverb
-returns:: a random number in the interval ]a, b[.
-discussion::
-If both a and b are link::Classes/Integer:: then the result will be an link::Classes/Integer::.
+discussion:: Equivalent to code::(hi - lo) * 1.0.rand + lo::, except for the inclusive upper bound.
 
 method:: linrand
-returns:: a linearly distributed random number from zero to this.
+Random number linearly distributed in the range [0, this], i.e., sampled from a distribution over [0, 1] with PDF 2(1 - x) and scaled by this.
+code::
+10.linrand;
+
+{ SinOsc.ar(110).linrand }.plot;
+::
 
 method:: bilinrand
-returns:: Bilateral linearly distributed random number from -this to +this.
+Bilateral linearly distributed random number in the range [-this, +this]. Like linrand, but the PDF is also supported in the range [-1, 0] by 2(x + 1).
+code::
+10.bilinrand;
+
+{ SinOsc.ar(110).bilinrand }.plot;
+::
 
 method:: sum3rand
-This was suggested by Larry Polansky as a loose approximation of gaussian.
-returns:: A random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
+Random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
+code::
+10.sum3rand;
+
+{ SinOsc.ar(110).sum3rand }.plot;
+::
+
+discussion::
+This was suggested by Larry Polansky as a loose approximation of Gaussian. It is equivalent to:
+code::
+{ 1.0.rand }.dup(3).sum - 1.5 * (2/3)
+::
 
 method:: exprand
-an exponentially distributed random number in the interval ]a, b[. This is always a link::Classes/Float::.
-(Note that the distribution of numbers is not exactly an EMPHASIS::exponential distribution::, since that would be unbounded: we might call it a EMPHASIS::logarithmic uniform distribution::.)
-argument::aNumber
-the upper limit
+Random number in the range [this, hi] drawn from the log-uniform distribution. Note that the value is emphasis::not:: drawn from an exponential distribution.
+argument::hi
+The upper limit of the range.
 argument::adverb
+returns:: Always a link::Classes/Float::.
+discussion:: Equivalent to code::(hi / lo) ** 1.0.rand * lo::, except for the inclusive upper bound.
 
 method:: gauss
-a gaussian distributed random number.
-argument::standardDeviation
-the upper limit
-discussion::
-Always returns a link::Classes/Float::.
-code::
-(0..1000).collect { |num| gauss(0.0, num) }.plot;
-::
+Random number sampled from a Gaussian distribution with mean and standard deviation (this, stddev).
+argument::stddev
+The standard deviation.
+returns:: Always a link::Classes/Float::.
 
 method:: partition
 randomly partition a number into parts of at least min size.
