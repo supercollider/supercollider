@@ -1527,7 +1527,7 @@ void XLine_Ctor(XLine* unit) {
         ZOUT0(0) = start;
         unit->mCounter = counter;
         unit->mGrowth = pow(end / start, 1.0 / counter);
-        unit->mLevel = start * unit->mGrowth;
+        unit->mLevel = start;
     }
 }
 
