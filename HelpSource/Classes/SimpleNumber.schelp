@@ -976,7 +976,7 @@ prints this on the given stream
 
 
 subsection:: random
-Unless noted otherwise, when the receiver and arguments to these methods are all link::Classes/Integer::s, the return will be as well.
+Unless noted otherwise, the return value of all these methods will be an link::Classes/Integer:: only when the receiver and all arguments are Integers as well.
 
 method:: coin
 Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
@@ -1002,6 +1002,7 @@ Bilateral linearly distributed random number in the range [-this, +this]. Like l
 
 method:: sum3rand
 Random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
+returns:: Always a link::Classes/Float::.
 
 discussion::
 This was suggested by Larry Polansky as a loose approximation of Gaussian. It is equivalent to:
