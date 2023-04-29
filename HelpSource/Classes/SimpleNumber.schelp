@@ -980,27 +980,12 @@ Unless noted otherwise, when the receiver and arguments to these methods are all
 
 method:: coin
 Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
-code::
-0.4.coin;
-
-{ SinOsc.ar(110).coin }.plot;
-::
 
 method:: rand
 Random number uniformly distributed in the range [0, this).
-code::
-10.rand;
-
-{ SinOsc.ar(110).rand }.plot;
-::
 
 method:: rand2
 Random number uniformly distributed in the range [-this, +this].
-code::
-10.rand2;
-
-{ SinOsc.ar(110).rand2 }.plot;
-::
 
 method:: rrand
 Random number uniformly distributed in the range [this, hi]. Note that unlike link::Classes/SimpleNumber#-rand::, the range is inclusive of the upper bound.
@@ -1010,28 +995,13 @@ argument::adverb
 discussion:: Equivalent to code::(hi - lo) * 1.0.rand + lo::, except for the inclusive upper bound.
 
 method:: linrand
-Random number linearly distributed in the range [0, this], i.e., sampled from a distribution over [0, 1] with PDF 2(1 - x) and scaled by this.
-code::
-10.linrand;
-
-{ SinOsc.ar(110).linrand }.plot;
-::
+Random number linearly distributed in the range [0, this], i.e., sampled from a distribution over [0, 1] with a probability density function (PDF) of 2(1 - x) and scaled by this.
 
 method:: bilinrand
 Bilateral linearly distributed random number in the range [-this, +this]. Like linrand, but the PDF is also supported in the range [-1, 0] by 2(x + 1).
-code::
-10.bilinrand;
-
-{ SinOsc.ar(110).bilinrand }.plot;
-::
 
 method:: sum3rand
 Random number from -this to +this that is the result of summing three uniform random generators to yield a bell-like distribution.
-code::
-10.sum3rand;
-
-{ SinOsc.ar(110).sum3rand }.plot;
-::
 
 discussion::
 This was suggested by Larry Polansky as a loose approximation of Gaussian. It is equivalent to:

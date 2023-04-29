@@ -122,7 +122,18 @@ Convert cycles per second to decimal octaves.
 
 subsection:: Random operators
 
-See also link::Guides/Randomness::
+See also link::Guides/Randomness::.
+
+As with other operators, these work on a variety of receivers:
+code::
+42.rand;
+42.0.rand;
+8.do { [0, 1, 2, 3, 4].rrand(5).postln; };
+{ SinOsc.ar(110).bilinrand }.plot;
+
+{ 10.rand2 }.dup(30).plot.plotMode_(\steps)
+{ 10.0.rand2 }.dup(30).plot.plotMode_(\steps)
+::
 
 copymethod:: SimpleNumber -coin
 copymethod:: SimpleNumber -rand
