@@ -1401,7 +1401,7 @@ FLATTEN void Line_next_nova_64(Line* unit, int inNumSamples) {
 void Line_Ctor(Line* unit) {
 #ifdef NOVA_SIMD
     if (BUFLENGTH == 64)
-        SETCALC(Line_next_nova);
+        SETCALC(Line_next_nova_64);
     else if (boost::alignment::is_aligned(BUFLENGTH, 16))
         SETCALC(Line_next_nova);
     else
@@ -1419,7 +1419,6 @@ void Line_Ctor(Line* unit) {
     } else {
         unit->mLevel = start;
         unit->mSlope = (end - start) / unit->mCounter;
-        unit->mLevel += unit->mSlope;
     }
     unit->mEndLevel = end;
     ZOUT0(0) = unit->mLevel;
