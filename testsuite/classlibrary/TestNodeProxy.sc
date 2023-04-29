@@ -444,3 +444,159 @@ TestNodeProxySeti : UnitTest {
 		controlProxy.clear;
 	}
 }
+
+
+TestNodeProxyPartMap : UnitTest {
+	var server;
+
+	setUp {
+		server = Server(this.class.name);
+		server.latency = 0.1;
+		this.bootServer(server);
+		server.sync;
+	}
+
+	tearDown {
+		server.quit.remove;
+	}
+
+	test_single_channel_mapping {
+		var proxy, inputProxy;
+		var synthValue, controlValues, defaultValue;
+
+		defaultValue = -2.0;
+		controlValues = [164.0, -123.0];
+
+		proxy = NodeProxy(server, \control);
+		proxy.reshaping = \elastic;
+		proxy.fadeTime = 0;
+
+		proxy.source = {
+			\ctl.kr(defaultValue);
+		};
+
+		inputProxy = NodeProxy(server, \control);
+		inputProxy.reshaping = \elastic;
+		inputProxy.source = {
+			controlValues
+		};
+
+		0.2.wait;
+
+		synthValue = server.getControlBusValue(proxy.bus.index);
+
+		this.assertEquals(synthValue, defaultValue, "before mapping, synth value should be default value");
+
+		proxy.set(\ctl, NodeProxyPartMap(inputProxy, [1]));
+
+		0.2.wait;
+
+		synthValue = server.getControlBusValue(proxy.bus.index);
+
+		this.assertEquals(synthValue, controlValues[1], "after mapping to index 0, synth should return mapped value");
+
+		proxy.set(\ctl, NodeProxyPartMap(inputProxy, 0));
+
+		0.2.wait;
+
+		synthValue = server.getControlBusValue(proxy.bus.index);
+
+		this.assertEquals(synthValue, controlValues[0], "after mapping to index 0, synth should return mapped value");
+	}
+
+	test_multiple_channels_mapping {
+		var proxy, inputProxy;
+		var synthValues, controlValues, defaultValues;
+
+		defaultValues = [-2.0, 6.0];
+		controlValues = [164.0, -123.0, 256.0];
+
+		proxy = NodeProxy(server, \control);
+		proxy.reshaping = \elastic;
+		proxy.fadeTime = 0;
+
+		proxy.source = {
+			\ctl.kr(defaultValues);
+		};
+
+		inputProxy = NodeProxy(server, \control);
+		inputProxy.reshaping = \elastic;
+		inputProxy.source = {
+			controlValues
+		};
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, defaultValues, "before mapping, synth value should be default value");
+
+		proxy.set(\ctl, NodeProxyPartMap(inputProxy, [0,1]));
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, controlValues[0..1], "after mapping to indexes [0,1], synth should return mapped value");
+
+		proxy.set(\ctl, NodeProxyPartMap(inputProxy, [2,1]));
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, controlValues[1..2].reverse, "after mapping to indexes [2,1], synth should return mapped value");
+
+		proxy.set(\ctl, NodeProxyPartMap(inputProxy, [0]));
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, controlValues[0..1], "after mapping only first value to index 0, synth should return mapped value");
+	}
+
+	test_control_node_elasticity {
+		var proxy, inputProxy;
+		var synthValues, controlValues, newControlValues, defaultValues;
+
+		defaultValues = [-2.0, 6.0];
+		controlValues = [164.0, -123.0, 256.0, -320.0];
+		newControlValues = [-99.0, 22.0, 31.0];
+
+		proxy = NodeProxy(server, \control);
+		proxy.reshaping = \elastic;
+		proxy.fadeTime = 0;
+
+		proxy.source = {
+			\ctl.kr(defaultValues);
+		};
+
+		inputProxy = NodeProxy(server, \control);
+		inputProxy.reshaping = \elastic;
+		inputProxy.source = {
+			controlValues
+		};
+
+		0.2.wait;
+
+		// Using NodeProxy.partMap shortcut
+		proxy.set(\ctl, inputProxy.partMap([1,2]));
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, controlValues[1..2], "after mapping to indexes [2,1], synth should return mapped value");
+
+		inputProxy.source = {
+			newControlValues;
+		};
+
+		0.2.wait;
+
+		synthValues = server.getControlBusValues(proxy.bus.index, proxy.numChannels);
+
+		this.assertEquals(synthValues, newControlValues[1..2], "after reshaping the control synth, synth should return the new control values");
+	}
+}
