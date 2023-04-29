@@ -93,10 +93,10 @@ ProxyNodeMap : NodeMap {
 
 	put { |key, item|
 		if(proxy.notNil) {
-			if(this.at(key).hasProxyRelatives) {
+			if(this.at(key).proxyNeedsWakeUp) {
 				this.at(key).removeChild(proxy);
 			};
-			if(item.hasProxyRelatives) {
+			if(item.proxyNeedsWakeUp) {
 				item.addChild(proxy);
 			}
 		};
@@ -123,8 +123,8 @@ ProxyNodeMap : NodeMap {
 	parents {
 		var res = Array.new;
 		this.do { |item|
-			if(item.hasProxyRelatives) {
-				res = res.add(item.asProxyParent)
+			if(item.proxyNeedsWakeUp) {
+				res = res.add(item.proxyToWakeUp)
 			}
 		};
 		^res
@@ -177,7 +177,6 @@ ProxyNodeMap : NodeMap {
 
 // represents a subset of the output bus of a proxy
 // that can be mapped to a control.
-// currently only works for single channels
 
 NodeProxyPartMap {
 	var <proxy, <indices;
@@ -192,15 +191,19 @@ NodeProxyPartMap {
 		^indices.asArray.collect { |i| busMaps.wrapAt(i) }.unbubble
 	}
 
+	asOSCArgEmbeddedArray { |array|
+		^this.asControlInput.asOSCArgEmbeddedArray(array)
+	}
+
 	wakeUpToBundle { |bundle, checkedAlready|
 		proxy.wakeUpToBundle(bundle, checkedAlready)
 	}
 
-	hasProxyRelatives {
+	proxyNeedsWakeUp {
 		^true
 	}
 
-	asProxyParent {
+	proxyToWakeUp {
 		^proxy
 	}
 
@@ -216,21 +219,25 @@ NodeProxyPartMap {
 
 
 + BusPlug {
+
 	asOSCArgEmbeddedArray { |array|
 		^this.asControlInput.asOSCArgEmbeddedArray(array)
 	}
-	asProxyParent {
-		^this
-	}
+
 }
 
 + NodeProxy {
+
 	partMap { |indices|
 		^NodeProxyPartMap(this, indices)
 	}
+
+	proxyNeedsWakeUp { ^true }
+	proxyToWakeUp { ^this }
 }
 
 + Object {
+
 	wakeUpToBundle {}
-	hasProxyRelatives { ^false }
+	proxyNeedsWakeUp { ^false }
 }
