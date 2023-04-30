@@ -472,7 +472,7 @@ TestNodeProxyPartMap : UnitTest {
 		proxy.fadeTime = 0;
 
 		proxy.source = {
-			\ctl.kr(defaultValue);
+			\ctl.kr(defaultValue)
 		};
 
 		inputProxy = NodeProxy(server, \control);
@@ -516,7 +516,7 @@ TestNodeProxyPartMap : UnitTest {
 		proxy.fadeTime = 0;
 
 		proxy.source = {
-			\ctl.kr(defaultValues);
+			\ctl.kr(defaultValues)
 		};
 
 		inputProxy = NodeProxy(server, \control);
@@ -569,7 +569,7 @@ TestNodeProxyPartMap : UnitTest {
 		proxy.fadeTime = 0;
 
 		proxy.source = {
-			\ctl.kr(defaultValues);
+			\ctl.kr(defaultValues)
 		};
 
 		inputProxy = NodeProxy(server, \control);
@@ -590,7 +590,7 @@ TestNodeProxyPartMap : UnitTest {
 		this.assertEquals(synthValues, controlValues[1..2], "after mapping to indexes [2,1], synth should return mapped value");
 
 		inputProxy.source = {
-			newControlValues;
+			newControlValues
 		};
 
 		0.2.wait;
