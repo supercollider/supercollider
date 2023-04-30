@@ -599,4 +599,26 @@ TestNodeProxyPartMap : UnitTest {
 
 		this.assertEquals(synthValues, newControlValues[1..2], "after reshaping the control synth, synth should return the new control values");
 	}
+
+
+	test_wakeUp_mapped_proxy {
+
+		var proxy = NodeProxy(server, \control);
+		var inputProxy = NodeProxy(server, \control);
+
+		proxy.set(\ctl, NodeProxyPartMap(inputProxy, 0));
+		proxy.wakeUp;
+
+		this.assert(inputProxy.isPlaying, "a mapped proxy should be woken up together with the proxy it is mapped to");
+
+		proxy.unset(\ctl);
+		inputProxy.free;
+		proxy.free;
+
+		0.2.wait;
+
+		proxy.wakeUp;
+
+		this.assert(inputProxy.isPlaying.not, "after having been unmapped again, proxy should not be woken up together with the proxy it was mapped to");
+	}
 }
