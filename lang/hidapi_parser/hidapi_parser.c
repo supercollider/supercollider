@@ -696,8 +696,6 @@ int hid_parse_report_descriptor( unsigned char* descr_buf, int size, struct hid_
   printf("----------- end setting report ids --------------\n " );
 #endif
 
-  hid_free_collection(device_collection);
-
   return 0;
 }
 
