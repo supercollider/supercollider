@@ -125,7 +125,7 @@ a.subclass_toggle:hover {
     display: inline-block;
 }
 
-#menubar .menuitem:first-child {
+#menubar .menuitem .home {
     /* It is better to make the logo a background image instead of an <img> because it is purely
     decorative. */
     background-image: url("images/SC_icon.png");
@@ -147,13 +147,13 @@ a.menu-link:hover {
     color: #999;
 }
 
-#menubar .menuitem:first-child a {
+#menubar .menuitem .home a {
     /* The cube logo is actually *under* the <a>, but it shows through so that it looks like it
     is part of the link. */
     padding-left: 2em;
 }
 
-#menubar .menuitem:first-child a:hover {
+#menubar .menuitem .home a:hover {
     /* Lighten the background image by adding a translucent white layer over it. */
     background-color: rgba(255, 255, 255, 0.2);
 }
@@ -170,7 +170,7 @@ a.menu-link:hover {
 }
 
 @media (min-width: 512px) {
-    #menubar .menuitem:first-child a {
+    #menubar .menuitem .home a {
         padding-left: 2.5em;
     }
 
