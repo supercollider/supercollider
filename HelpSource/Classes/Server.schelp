@@ -716,7 +716,7 @@ argument:: condition
 an optional instance of link::Classes/Condition:: used for evaluating this.
 
 method:: sendMsgSync
-Send the following message to the wait until it has completed before resuming the thread.
+Send the following message to the server and wait until it has completed before resuming the thread.
 argument:: condition
 an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args

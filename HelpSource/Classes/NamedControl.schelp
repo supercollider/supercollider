@@ -24,8 +24,7 @@ code::\symbol.ar(values, lags, spec):: is a synonym.
 
 method:: kr
 add a new instance of link::Classes/Control:: (kr) with given name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
-(lags cannot be modulated then, but fewer UGens are required).
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
 discussion::
 code::\symbol.kr(values, lags, fixedLag, spec):: is a synonym.
 
@@ -43,8 +42,7 @@ code::\symbol.tr(values, lags, spec):: is a synonym.
 
 method:: new
 add a new instance with the given rate, name and default values.
-If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl::
-(lags cannot be modulated then, but fewer UGens are required).
+If lags are given, apply a link::Classes/Lag:: UGen to it. If fixedLag is set to true, create a link::Classes/LagControl:: (lags cannot be modulated then, but fewer UGens are required).
 
 Examples::
 code::

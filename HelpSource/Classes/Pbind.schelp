@@ -13,7 +13,7 @@ The keys used in a Pbind are usually determined by link::Classes/Event::'s defau
 ClassMethods::
 
 method::new
-The arguments to Pbind are an alternating sequence of keys and patterns. A pattern can also be bount to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
+The arguments to Pbind are an alternating sequence of keys and patterns. A pattern can also be bound to an array of keys. In this case, the pattern must specify a sequence whose elements are arrays with at least as many elements as there are keys.
 
 Examples::
 
@@ -128,7 +128,7 @@ When the Event is played, it creates an OSC command to play a synth. It uses the
 
 Playing a synth is the normal action taken by an Event. The default event structure defines several other event types that can perform a wide variety of server actions. See the link::Classes/Event:: help file for a list of event types.
 
-There are a number of coventional names typically used to identify controls in a synth.
+There are a number of conventional names typically used to identify controls in a synth.
 
 definitionList::
 ## out || output bus index
@@ -382,7 +382,7 @@ code::
 Pbind(\degree, [Pseq([0, 2, 3], inf), Pseq([2, 4, 5, 6], inf)]).play;
 
 // but this does:
-Pbind(\degree, Pseq([ [ 0, 2 ], [ 2, 4 ], [ 3, 5 ], [ 0, 6 ] ], inf)]).play;
+Pbind(\degree, Pseq([ [ 0, 2 ], [ 2, 4 ], [ 3, 5 ], [ 0, 6 ] ], inf)).play;
 ::
 
 
@@ -404,7 +404,7 @@ Pdef(\x,
 	Pbind(
 		\instrument, \test,
 		\legato, 0.2,
-		\degree, Ptuple([0, Pwalk(Scale.hijaz.degrees, Prand([1, -1], inf))],
+		\degree, Ptuple([0, Pwalk(Scale.hijaz.degrees, Prand([1, -1], inf))]),
 		\scale, Scale.hijaz,
 		\strum, 0.05
 	)
