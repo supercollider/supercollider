@@ -289,9 +289,6 @@ void Linen_Ctor(Linen* unit);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// in, rate, depth, rateVariation, depthVariation
-// 0   1     2      3              4
-
 void Vibrato_next(Vibrato* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
@@ -402,23 +399,30 @@ void Vibrato_next(Vibrato* unit, int inNumSamples) {
 
 void Vibrato_Ctor(Vibrato* unit) {
     unit->mFreqMul = 4.0 * SAMPLEDUR;
-    unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
+    const double initPhase = unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
 
     RGen& rgen = *unit->mParent->mRGen;
     float rate = ZIN0(1) * unit->mFreqMul;
     float depth = ZIN0(2);
     float rateVariation = ZIN0(5);
     float depthVariation = ZIN0(6);
-    unit->mFreq = rate * (1.f + rateVariation * rgen.frand2());
-    unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
-    unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
+    float initFreq = unit->mFreq = rate * (1.f + rateVariation * rgen.frand2());
+    float initScaleA = unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
+    float initScaleB = unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
     unit->m_delay = (int)(ZIN0(3) * SAMPLERATE);
     unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
     unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
     unit->m_attackLevel = unit->m_attackSlope;
     unit->trig = 0.0f;
     SETCALC(Vibrato_next);
+
     Vibrato_next(unit, 1);
+
+    unit->mPhase = initPhase;
+    unit->mFreq = initFreq;
+    unit->m_scaleA = initScaleA;
+    unit->m_scaleB = initScaleB;
+    unit->trig = 0.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
