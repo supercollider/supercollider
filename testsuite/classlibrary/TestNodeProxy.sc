@@ -298,6 +298,17 @@ TestNodeProxy : UnitTest {
 
 	}
 
+	test_buildProxy_inside {
+		var buildProxyFromInside;
+		proxy.source = { buildProxyFromInside = NodeProxy.buildProxy };
+		this.assertEquals(buildProxyFromInside, proxy, "From inside the source, buildProxy should be the current proxy");
+	}
+	test_buildProxy_outside {
+		var buildProxyFromOutside;
+		proxy.source = { 0.0 };
+		this.assert(buildProxyFromOutside.isNil, "From theoutside, buildProxy should be nil");
+	}
+
 }
 
 
