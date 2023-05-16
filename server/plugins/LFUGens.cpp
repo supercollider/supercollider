@@ -588,11 +588,12 @@ void LFPar_Ctor(LFPar* unit) {
         SETCALC(LFPar_next_k);
 
     unit->mFreqMul = 4.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
+    double initPhase = unit->mPhase = ZIN0(1);
 
     LFPar_next_k(unit, 1);
-}
 
+    unit->mPhase = initPhase;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
