@@ -475,10 +475,13 @@ void LFPulse_Ctor(LFPulse* unit) {
     }
 
     unit->mFreqMul = unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
-    unit->mDuty = ZIN0(2);
+    double initPhase = unit->mPhase = ZIN0(1);
+    float initDuty = unit->mDuty = ZIN0(2);
 
     LFPulse_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
+    unit->mDuty = initDuty;
 }
 
 
