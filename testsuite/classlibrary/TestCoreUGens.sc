@@ -36,9 +36,9 @@ TestCoreUGens : UnitTest {
 			//////////////////////////////////////////
 			// Triggers:
 			"Trig.ar(_,0) is no-op when applied to Impulse.ar, whatever the amplitude of the impulses"
-			-> {n = Impulse.ar(400)*SinOsc.ar(1).range(0,1); Trig.ar(n,0) - n},
+			-> {n = Impulse.ar(400)*SinOsc.ar(0.713,0.001).range(0,1); Trig.ar(n,0) - n},
 			"Trig1.ar(_,0) has same effect as (_>0) on variable-amplitude impulses"
-			-> {n = Impulse.ar(400)*SinOsc.ar(1).range(0,1); Trig1.ar(n,0) - (n>0)},
+			-> {n = Impulse.ar(400)*SinOsc.ar(0.713,0.001).range(0,1); Trig1.ar(n,0) - (n>0)},
 			"Trig1.ar(_,0) is no-op when applied to Impulse.ar" -> {Impulse.ar(300) - Trig1.ar(Impulse.ar(300), 0)},
 			"Latch applied to LFPulse.ar on its own changes is no-op" -> {n=LFPulse.ar(23, 0.5); n - Latch.ar(n, HPZ1.ar(n).abs)},
 			"Latch applied to LFPulse.kr on its own changes is no-op" -> {n=LFPulse.kr(23, 0.5); n - Latch.kr(n, HPZ1.kr(n).abs)},
