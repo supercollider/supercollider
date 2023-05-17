@@ -361,6 +361,9 @@ void Trig1_Ctor(Trig1* unit) {
     unit->m_prevtrig = 0.f;
 
     Trig1_next(unit, 1);
+
+    unit->mCounter = 0;
+    unit->m_prevtrig = 0.f;
 }
 
 void Trig1_next(Trig1* unit, int inNumSamples) {
@@ -511,6 +514,10 @@ void Trig_Ctor(Trig* unit) {
     unit->mLevel = 0.f;
 
     Trig_next(unit, 1);
+
+    unit->mCounter = 0;
+    unit->m_prevtrig = 0.f;
+    unit->mLevel = 0.f;
 }
 
 void Trig_next(Trig* unit, int inNumSamples) {
