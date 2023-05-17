@@ -676,9 +676,11 @@ void LFTri_Ctor(LFTri* unit) {
     }
 
     unit->mFreqMul = 4.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
+    double initPhase = unit->mPhase = ZIN0(1);
 
     LFTri_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
 }
 
 
