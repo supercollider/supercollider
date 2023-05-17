@@ -635,9 +635,11 @@ void LFCub_Ctor(LFCub* unit) {
         SETCALC(LFCub_next_k);
 
     unit->mFreqMul = 2.0 * unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1) + 0.5;
+    double initPhase = unit->mPhase = ZIN0(1) + 0.5;
 
     LFCub_next_k(unit, 1);
+
+    unit->mPhase = initPhase;
 }
 
 
