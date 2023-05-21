@@ -941,6 +941,7 @@ HOT int blockValue(struct VMGlobals* g, int numArgsPushed) {
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + numtemps;
     SetObject(&frame->method, block);
+	SetInt(&frame->lineNumber, 1001);
     slotCopy(&frame->homeContext, &context->homeContext);
     slotCopy(&frame->context, &closure->context);
 
@@ -1083,6 +1084,7 @@ int blockValueWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushed) {
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + numtemps;
     SetObject(&frame->method, block);
+	SetInt(&frame->lineNumber, 1002);
     slotCopy(&frame->homeContext, &context->homeContext);
     slotCopy(&frame->context, &closure->context);
 
@@ -1250,6 +1252,7 @@ int blockValueEnvir(struct VMGlobals* g, int numArgsPushed) {
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + numtemps;
     SetObject(&frame->method, block);
+	SetInt(&frame->lineNumber, 1003);
     slotCopy(&frame->homeContext, &context->homeContext);
     slotCopy(&frame->context, &closure->context);
 
@@ -1406,6 +1409,7 @@ int blockValueEnvirWithKeys(VMGlobals* g, int allArgsPushed, int numKeyArgsPushe
     frame->classptr = class_frame;
     frame->size = FRAMESIZE + numtemps;
     SetObject(&frame->method, block);
+	SetInt(&frame->lineNumber, 1004);
     slotCopy(&frame->homeContext, &context->homeContext);
     slotCopy(&frame->context, &closure->context);
 

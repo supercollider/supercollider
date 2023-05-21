@@ -1,0 +1,18 @@
+includePaths:
+  - ~/supercollider/SCClassLibrary
+  - ~/SpaceTracker
+  - ~/TestSpaceTracker
+  - ~/SpaceTrackerUGens
+  - ~/TestSpaceTrackerUGens
+  - ~/SynthLoader
+  - ~/TestSynthLoader
+  - ~/SpaceTrackerMapped
+  - ~/TestSpaceTrackerMapped
+  - ~/JackMIDIUGens
+  - ~/sc3-plugins/source/MCLDUGens
+  - ~/sc3-plugins/source/DEINDUGens
+excludePaths:
+    []
+postInlineWarnings: false
+excludeDefaultPaths: true
+

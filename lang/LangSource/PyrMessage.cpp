@@ -898,6 +898,7 @@ HOT void executeMethodWithKeys(VMGlobals* g, PyrMethod* meth, long allArgsPushed
     SetObject(&frame->method, meth);
     SetObject(&frame->homeContext, frame);
     SetObject(&frame->context, frame);
+	SetInt(&frame->lineNumber, 67890);
 
     if (caller) {
         SetPtr(&caller->ip, g->ip);
@@ -1059,6 +1060,7 @@ HOT void executeMethod(VMGlobals* g, PyrMethod* meth, long numArgsPushed) {
     SetObject(&frame->method, meth);
     SetObject(&frame->homeContext, frame);
     SetObject(&frame->context, frame);
+	SetInt(&frame->lineNumber, 12345);
 
     if (caller) {
         SetPtr(&caller->ip, g->ip);

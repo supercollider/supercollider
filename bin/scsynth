@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#CMD=$(which -a $(basename $0)  | head -2 | tail -1)
+
+DIR=$(dirname $0)
+
+CMD="$DIR/../build/server/scsynth/scsynth -U $DIR/../build/server/plugins:$DIR/../../JackMIDIUGens:$DIR/../../BufferUtilityUGens:$DIR/../../SpaceTrackerUGens:$DIR/../../sc3-plugins/build/source -u 2444"
+
+exec $CMD $@
+

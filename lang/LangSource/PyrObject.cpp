@@ -2204,6 +2204,7 @@ bool FrameSanity(PyrFrame* frame, const char* tagstr) {
 void DumpFrame(PyrFrame* frame) {
     char str[256];
     int i, numargs;
+	int* lineNumber;
     PyrMethod* meth;
     PyrMethodRaw* methraw;
 
@@ -2231,6 +2232,12 @@ void DumpFrame(PyrFrame* frame) {
     } else {
         post("\t%s  (no arguments or variables)\n", str);
     }
+	int err = slotIntVal(&frame->lineNumber, lineNumber);
+	if (err == errNone) {
+		post("\t\tLine number %i\n", *lineNumber);
+	} else {
+		post("\t\tDEBUG unimplemented line number for this frame\n");
+	}
 }
 
 void dumpByteCodes(PyrBlock* theBlock);

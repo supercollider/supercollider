@@ -82,6 +82,7 @@ struct PyrFrame : public PyrObjectHdr {
     PyrSlot homeContext;
     PyrSlot ip;
     PyrSlot vars[1];
+    PyrSlot lineNumber;
 };
 
 #define FRAMESIZE 5

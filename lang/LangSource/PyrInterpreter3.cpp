@@ -231,6 +231,7 @@ PyrProcess* newPyrProcess(VMGlobals* g, PyrClass* procclassobj) {
         SetNil(&frame->context);
         SetPtr(&frame->ip, nullptr);
         SetObject(&frame->vars[0], interpreter);
+		SetInt(&frame->lineNumber, 12345);
 
         SetObject(&interpreter->context, frame);
     }
