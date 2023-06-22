@@ -19,11 +19,13 @@ Integer : SimpleNumber {
 		if ( res == exclude ) { res = this };
 		^res;
 	}
+
 	xrand2 { arg exclude=0;
 		var res = this.rand2;
 		if ( res == exclude ) { res = [this, this.neg].choose };
 		^res;
 	}
+
 	degreeToKey { arg scale, stepsPerOctave = 12;
 		^scale.performDegreeToKey(this, stepsPerOctave)
 	}
