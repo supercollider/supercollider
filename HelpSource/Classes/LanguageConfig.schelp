@@ -1,35 +1,95 @@
-CLASS:: LanguageConfig
-summary:: Access and modify interpreter configuration
-categories:: Language
+TITLE:: LanguageConfig
+SUMMARY:: Access and modify interpreter configuration
+CATEGORIES:: Language
 
 DESCRIPTION::
 The LanguageConfig class provides access to the interpreter configuration.
 
+SECTION:: Configuration File Format
+Configuration files (YAML format) are passed in a specific order with 1, 3
+and 4 being exclusive:
 
-section:: Configuration File Format
-The configuration file is stored in YAML format, which contains one dictionary. The semantics of the dictionary is listed in
-the following table:
+NUMBEREDLIST::
+## CODE::sclang -l "/path/to/sclang_conf.yaml":: (sclang only)
+## CODE::SCLANG_CONF_PATH="/path/to/sclang_conf_1.yaml:/path/to/sclang_conf_2.yaml":: (left to right)
+## User configuration file (CODE::Platform.userConfigDir +/+ "sclang_conf.yaml"::)
+## Global configuration file (CODE::"/etc/sclang_conf.yaml"::)
+::
 
-definitionList::
-## teletype::includePaths:: || List of class library paths.
-## teletype::excludePaths:: || List of paths to exclude from the class library files (overrides teletype::includePaths::).
-## teletype::postInlineWarnings:: || Boolean flag to post warnings about missing inline opportunities.
+Each configuration file contains one dictionary. Semantics and merging behaviour
+of the dictionary are given in the following table:
+
+DEFINITIONLIST::
+## TELETYPE::includePaths:: || List of paths to include in the class library
+files. Paths are included if they were not excluded in a preceding or the same
+configuration file.
+## TELETYPE::excludePaths:: || List of paths to exclude from the class library
+files. Paths are excluded if they were not included in a preceding configuration
+file.
+## TELETYPE::postInlineWarnings:: || Boolean flag to post warnings about missing
+inline opportunities. The first configuration file including this option
+sets its value. (default: CODE::false::)
+## TELETYPE::excludeDefaultPaths:: || Boolean flag to set standalone mode. The
+first configuration file including this option sets its value. (default:
+CODE::false::)
+NOTE::This option is ignored if the -a command option (sclang only) is specified.::
+::
+
+SUBSECTION:: Example
+
+STRONG::sclang_conf_1.yaml::
+CODE::
+includePaths:
+  - path1
+  - path2  // Not included: path2 is excluded in the same file
+excludePaths:
+  - path2
+excludeDefaultPaths: true
+::
+
+STRONG::sclang_conf_2.yaml::
+CODE::
+includePaths:
+  - path2  // Not inlcuded: path2 was excluded before
+excludePaths:
+  - path1  // Not excluded: path1 was included before
+postInlineWarnings: true
+excludeDefaultPaths: false  // Second occurance therefore irrelavant
+::
+
+Executing CODE::SCLANG_CONF_PATH="/path/to/sclang_conf_2.yaml" sclang -l "/path/to/sclang_conf_1.yaml":: results
+in CODE::sclang_conf_1.yaml:: being passed EMPHASIS::before:: CODE::sclang_conf_2.yaml:: and merged into:
+
+CODE::
+includePath:
+  - path1
+excludePaths:
+  - path2
+postInlineWarnings: true
+excludeDefaultPaths: true
 ::
 
 CLASSMETHODS::
 
 METHOD:: store
-Store the current configuration to file. Throws an error if the config file cannot be opened or if
-writing fails.
+Store the current configuration to file. Throws an error if the config file
+cannot be opened or if writing fails.
 
-argument:: file
-Path to the configuration file to store. If the value is code::nil:: it defaults to currently used configuration file, as specified in the IDE preferences, or by the code::sclang -l "/path/to/sclang_conf.yaml":: argument. By default this is code::Platform.userConfigDir +/+ "sclang_conf.yaml"::
+ARGUMENT::
+Path to the configuration file to store. If the value is CODE::nil:: it defaults
+to currently used configuration file, as specified in the IDE preferences, or by
+the CODE::sclang -l "/path/to/sclang_conf.yaml":: argument. By default this is
+CODE::Platform.userConfigDir +/+ "sclang_conf.yaml"::
 
-subsection:: Library Path Handling
+SUBSECTION:: Library Path Handling
 
-The language configuration mechanism provides a way to add or exclude specific paths for the class library.
+The language configuration mechanism provides a way to add or exclude specific
+paths for the class library.
 
-note::Changes to the class library paths won't have any effect before the configuration file is stored and the class library is recompiled.::
+NOTE::
+Changes to the class library paths won't have any effect before the
+configuration file is stored and the class library is recompiled.
+::
 
 METHOD:: includePaths
 Return the class library include paths.
@@ -55,18 +115,21 @@ Return the current config file path.
 METHOD:: excludeDefaultPaths
 Get or set whether default class library paths are included.
 
-note::
-If sclang is started with -a the class library paths are excluded and this value is ignored. The default class library paths are Platform.classLibraryDir, and the system and user extensions directories.
+NOTE::
+If sclang is started with -a the class library paths are excluded and this value
+is ignored. The default class library paths are Platform.classLibraryDir, and
+the system and user extensions directories.
 ::
 
-subsection:: Compiler Warnings
+SUBSECTION:: Compiler Warnings
 
 METHOD:: postInlineWarnings
-Get or set the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.
+Get or set the compiler flag, whether warnings should be posted if a FunctionDef
+cannot be inlined.
 
-code::
-LanguageConfig.postInlineWarnings_(true) // warn
+CODE::
+LanguageConfig.postInlineWarnings_(true)  // warn
 if(0.5.coin) { var x; x = 10.rand; x + 1 } { 10 };
-LanguageConfig.postInlineWarnings_(false) // ignore it.
+LanguageConfig.postInlineWarnings_(false)  // ignore it.
 if(0.5.coin) { var x; x = 10.rand; x + 1 } { 10 };
 ::

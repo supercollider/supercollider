@@ -24,6 +24,7 @@
 #pragma once
 
 #include <vector>
+#include <deque>
 #include <string>
 #include <boost/filesystem/path.hpp>
 
@@ -44,6 +45,7 @@ class SC_LanguageConfig {
 public:
     typedef boost::filesystem::path Path;
     typedef std::vector<Path> DirVector;
+    typedef std::deque<Path> DirDeque;
 
     const DirVector& includedDirectories() const { return mIncludedDirectories; }
     const DirVector& excludedDirectories() const { return mExcludedDirectories; }
@@ -51,6 +53,7 @@ public:
 
     void postExcludedDirectories(void) const;
 
+    bool pathIsIncluded(const Path&) const; // true iff the path is in mIncludedDirectories
     bool pathIsExcluded(const Path&) const; // true iff the path is in mExcludedDirectories
 
     bool addIncludedDirectory(const Path&); // false iff the path was already in the vector
@@ -64,7 +67,7 @@ public:
     bool getExcludeDefaultPaths() const { return mExcludeDefaultPaths; }
     void setExcludeDefaultPaths(bool value);
 
-    static bool readLibraryConfigYAML(const Path&, bool standalone);
+    static bool readLibraryConfigYAML(const DirDeque&, bool standalone);
     static bool writeLibraryConfigYAML(const Path&);
     static void freeLibraryConfig();
     static bool defaultLibraryConfig(bool standalone);
