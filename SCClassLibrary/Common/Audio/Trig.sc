@@ -131,17 +131,15 @@ SetResetFF : PulseCount {
 }
 
 ToggleFF : UGen {
-
 	*ar { arg trig = 0.0;
 		^this.multiNew('audio', trig)
 	}
 	*kr { arg trig = 0.0;
 		^this.multiNew('control', trig)
 	}
-
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	signalRange { ^\unipolar }
 }
-
 
 ZeroCrossing : UGen {
 	*ar { arg in = 0.0;
