@@ -219,7 +219,11 @@ InRange : UGen {
 		^this.multiNew('scalar', in, lo, hi)
 	}
 	checkInputs {
-		if(rate == \audio) { ^this.checkSameRateAsFirstInput }
+		if(rate == \audio){
+			^this.checkSameRateAsFirstInput
+		}{
+			^nil
+		}
 	}
 
 }
