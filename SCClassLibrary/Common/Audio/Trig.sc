@@ -218,6 +218,10 @@ InRange : UGen {
 	*ir { arg in = 0.0, lo = 0.0, hi = 1.0;
 		^this.multiNew('scalar', in, lo, hi)
 	}
+	checkInputs {
+		if(rate == \audio) { ^this.checkSameRateAsFirstInput }
+	}
+
 }
 
 InRect : UGen {
