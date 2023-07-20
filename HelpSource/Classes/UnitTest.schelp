@@ -418,7 +418,6 @@ TestYourClass : UnitTest {
 
 		// will wait until the condition is true
 		// will be considered a failure after 10 seconds
-		// (fails since register was called after synth was already playing)
 		this.wait({ synth.isPlaying }, "waiting for synth to play", 10);
 	}
 }
