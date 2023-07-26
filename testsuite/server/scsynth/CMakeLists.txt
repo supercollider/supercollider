@@ -11,7 +11,7 @@ target_include_directories(
     PUBLIC ${CMAKE_SOURCE_DIR}/include/plugin_interface
     PUBLIC ${CMAKE_SOURCE_DIR}/server/scsynth
 )
-target_link_libraries(scsynth_test libscsynth boost_test)
+target_link_libraries(scsynth_test libscsynth server_boost_test)
 if (PTHREADS_FOUND)
     target_link_libraries(scsynth_test ${PTHREADS_LIBRARIES})
 endif()

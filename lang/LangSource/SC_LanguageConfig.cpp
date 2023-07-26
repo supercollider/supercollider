@@ -26,25 +26,23 @@
 
 #include "SCBase.h" // postfl
 
-#include <algorithm> // std::find
+#include <algorithm> // std::find, std::sort
 #include <functional> // std::function
 
 #include <boost/algorithm/string.hpp> // split
-#include <boost/filesystem/operations.hpp> // exists (, canonical?)
-#include <boost/filesystem/fstream.hpp> // ofstream
-#include <yaml-cpp/yaml.h> // YAML
 
 SC_LanguageConfig::Path SC_LanguageConfig::gConfigFile;
 bool SC_LanguageConfig::gPostInlineWarnings = false;
 
 SC_LanguageConfig* gLanguageConfig;
 
-static const char* INCLUDE_PATHS = "includePaths";
-static const char* EXCLUDE_PATHS = "excludePaths";
-static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
+const char* INCLUDE_PATHS = "includePaths";
+const char* EXCLUDE_PATHS = "excludePaths";
+const char* POST_INLINE_WARNINGS = "postInlineWarnings";
 static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
 const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
-static const char* EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
+const char* EXCLUDE_DEFAULT_PATHS = "excludeDefaultPaths";
+std::string SCLANG_CONF_PATH;
 
 using DirName = SC_Filesystem::DirName;
 namespace bfs = boost::filesystem;
@@ -105,22 +103,23 @@ bool SC_LanguageConfig::removeIncludedDirectory(const Path& path) { return remov
 
 bool SC_LanguageConfig::removeExcludedDirectory(const Path& path) { return removePath(mExcludedDirectories, path); }
 
-static void processPathList(const char* nodeName, YAML::Node& doc,
-                            const std::function<void(const boost::filesystem::path&)>& func) {
+void SC_LanguageConfig::processPathList(const char* nodeName, YAML::Node& doc,
+                                        const std::function<void(const Path&)>& func) {
     const YAML::Node& items = doc[nodeName];
     if (items && items.IsSequence()) {
         for (auto const& item : items) {
             const std::string& path = item.as<std::string>("");
             if (!path.empty()) {
-                const boost::filesystem::path& native_path = SC_Codecvt::utf8_str_to_path(path);
+                const Path& native_path = SC_Codecvt::utf8_str_to_path(path);
                 func(native_path);
             }
         }
     }
 }
 
-static void processBool(const char* nodeName, std::vector<YAML::Node>& docs,
-                        const std::function<void(bool)>& successFunc, const std::function<void()>& failFunc) {
+void SC_LanguageConfig::processBool(const char* nodeName, std::vector<YAML::Node>& docs,
+                                    const std::function<void(bool)>& successFunc,
+                                    const std::function<void()>& failFunc) {
     for (auto doc : docs) {
         const YAML::Node& item = doc[nodeName];
         if (item) {
@@ -163,7 +162,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const DirDeque& paths, bool standa
         }
 
         processBool(
-            POST_INLINE_WARNINGS, docs, [](bool b) { gPostInlineWarnings = b; }, []() {});
+            POST_INLINE_WARNINGS, docs, [](bool b) { gLanguageConfig->setPostInlineWarnings(b); }, []() {});
         processBool(
             EXCLUDE_DEFAULT_PATHS, docs,
             [standalone](bool b) { gLanguageConfig->setExcludeDefaultPaths(standalone || b); },
@@ -224,7 +223,7 @@ bool SC_LanguageConfig::defaultLibraryConfig(bool standalone) {
 
 bool SC_LanguageConfig::readLibraryConfig(bool standalone) {
     std::string envConf =
-        getenv("SCLANG_CONF_PATH") == NULL ? std::string("") : std::string(getenv("SCLANG_CONF_PATH"));
+        getenv("SCLANG_CONF_PATH") == NULL ? SCLANG_CONF_PATH : std::string(getenv("SCLANG_CONF_PATH"));
     std::vector<std::string> splitConf;
     boost::split(splitConf, envConf, boost::is_any_of(":"));
     DirDeque paths;
@@ -269,6 +268,12 @@ bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path) {
     } else {
         return false;
     }
+}
+
+bool SC_LanguageConfig::compareUnorderedPathLists(DirVector v1, DirVector v2) {
+    std::sort(v1.begin(), v1.end());
+    std::sort(v2.begin(), v2.end());
+    return v1 == v2;
 }
 
 bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path) {

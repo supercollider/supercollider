@@ -23,14 +23,23 @@
 
 #pragma once
 
-#include <vector>
 #include <deque>
 #include <string>
+#include <vector>
+#include <yaml-cpp/yaml.h>
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/operations.hpp>
 
 class SC_LanguageConfig;
 extern SC_LanguageConfig* gLanguageConfig;
+
+extern const char* INCLUDE_PATHS;
+extern const char* EXCLUDE_PATHS;
+extern const char* POST_INLINE_WARNINGS;
 extern const char* SCLANG_YAML_CONFIG_FILENAME;
+extern const char* EXCLUDE_DEFAULT_PATHS;
+extern std::string SCLANG_CONF_PATH;
 
 /**
  * \brief Language configuration settings.
@@ -53,13 +62,13 @@ public:
 
     void postExcludedDirectories(void) const;
 
-    bool pathIsIncluded(const Path&) const; // true iff the path is in mIncludedDirectories
-    bool pathIsExcluded(const Path&) const; // true iff the path is in mExcludedDirectories
+    bool pathIsIncluded(const Path&) const; // true if the path is in mIncludedDirectories
+    bool pathIsExcluded(const Path&) const; // true if the path is in mExcludedDirectories
 
-    bool addIncludedDirectory(const Path&); // false iff the path was already in the vector
+    bool addIncludedDirectory(const Path&); // false if the path was already in the vector
     bool addExcludedDirectory(const Path&);
 
-    bool removeIncludedDirectory(const Path&); // false iff there was nothing to remove
+    bool removeIncludedDirectory(const Path&); // false if there was nothing to remove
     bool removeExcludedDirectory(const Path&);
 
     bool forEachIncludedDirectory(bool (*)(const Path&)) const;
@@ -78,9 +87,14 @@ public:
     static const Path& getConfigPath() { return gConfigFile; }
     static void setConfigPath(const Path& p) { gConfigFile = p; }
 
+    static bool addPath(DirVector&, const Path&);
+    static bool compareUnorderedPathLists(DirVector, DirVector);
+    static void processPathList(const char* nodeName, YAML::Node& doc, const std::function<void(const Path&)>& func);
+    static void processBool(const char* nodeName, std::vector<YAML::Node>& docs,
+                            const std::function<void(bool)>& successFunc, const std::function<void()>& failFunc);
+
 private:
     static bool findPath(const DirVector&, const Path&);
-    static bool addPath(DirVector&, const Path&);
     static bool removePath(DirVector&, const Path&);
 
     DirVector mIncludedDirectories;
