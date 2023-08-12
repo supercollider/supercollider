@@ -4,7 +4,7 @@ categories:: Streams-Patterns-Events>Patterns>Function
 related:: Classes/Pfuncn, Classes/FuncStream
 
 description::
-Returns a link::Classes/Stream:: that returns values from the code::nextFunc::. To return a pattern, see Plazy.
+Returns a link::Classes/Stream:: that returns values from the code::nextFunc::. To return a pattern, see link::Classes/Plazy::.
 
 
 classmethods::
