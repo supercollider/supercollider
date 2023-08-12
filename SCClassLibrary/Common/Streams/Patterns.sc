@@ -344,7 +344,7 @@ Pbind : Pattern {
 	*new { arg ... pairs;
 		if (pairs.size.odd, { Error("Pbind should have even number of args.\n").throw; });
         if (pairs.asEvent[\instrument].rank != 0, 
-            { Error("Pbind does not work on multiple instruments, please see section in Pbind help file for to achieve the same result with Ppar.").throw });
+            { Error("Pbind does not work on multiple instruments, please see section in Pbind help file for how to achieve the same result with Ppar.").throw });
 		^super.newCopyArgs(pairs)
 	}
 
