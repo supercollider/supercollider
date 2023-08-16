@@ -94,6 +94,12 @@
 		'skip': "true",
 	),
 	(
+		'suite': "TestThreadReschedule",
+		'test': "test_Threads_rescheduleToOtherClock",
+		'skipReason': "UnitTest sometime fails when run in GHA on Linux (FIXME)",
+		'skip': "true",
+	),
+	(
 		'suite': "TestUGen_RTAlloc",
 		'test': "test_FFT",
 		'skip': "true",
