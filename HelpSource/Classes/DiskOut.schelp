@@ -1,6 +1,6 @@
 class:: DiskOut
 summary:: Record to a soundfile to disk.
-related:: Classes/RecordBuf, Classes/DiskIn
+related:: Classes/RecordBuf, Classes/DiskIn, Classes/VDiskIn
 categories::  UGens>InOut, UGens>Buffer
 
 Description::

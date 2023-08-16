@@ -1,12 +1,15 @@
 class:: DiskIn
 summary:: Stream in audio from a file.
-related:: Classes/PlayBuf, Classes/DiskOut
+related:: Classes/PlayBuf, Classes/VDiskIn, Classes/DiskOut
 categories::  UGens>InOut, UGens>Buffer
 
 Description::
 
 Continuously play a longer soundfile from disk. This requires a buffer to
 be preloaded with one buffer size of sound.
+
+DiskIn cannot alter playback rate. See link::Classes/VDiskIn:: for a
+disk-streaming UGen with rate control.
 
 
 classmethods::
