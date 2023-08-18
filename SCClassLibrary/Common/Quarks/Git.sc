@@ -1,5 +1,5 @@
 Git {
-	var <>localPath, >url, tag, sha, remoteLatest, tags;
+	var <>localPath, >url, tag, sha, remoteLatest, defaultBranchName, tags;
 	classvar gitIsInstalled;
 
 	*isGit { |localPath|
@@ -17,7 +17,7 @@ Git {
 		this.url = url;
 	}
 	pull {
-		this.git(["pull", "origin", "master"])
+		this.git(["pull", "origin", this.defaultBranchName])
 	}
 	checkout { |refspec|
 		this.git(["checkout", refspec])
@@ -88,10 +88,16 @@ Git {
 			sha = this.git(["rev-parse HEAD"]);
 		}
 	}
+	defaultBranchName {
+		//find out what the remote default branch name is (ie master or main)
+		^defaultBranchName ?? {
+			defaultBranchName = this.git(["symbolic-ref refs/remotes/origin/HEAD --short"]).split($/)[1]
+		}
+	}
 	remoteLatest {
 		// find what the latest commit on the remote is
 		^remoteLatest ?? {
-			remoteLatest = this.git(["rev-parse origin/master"]);
+			remoteLatest = this.git(["rev-parse origin/" ++ this.defaultBranchName]);
 		}
 	}
 	tags {
