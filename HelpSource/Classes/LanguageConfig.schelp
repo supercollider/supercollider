@@ -12,6 +12,10 @@ and 4 being exclusive:
 NUMBEREDLIST::
 ## CODE::sclang -l "/path/to/sclang_conf.yaml":: (sclang only)
 ## CODE::SCLANG_CONF_PATH="/path/to/sclang_conf_1.yaml:/path/to/sclang_conf_2.yaml":: (left to right)
+NOTE::
+Besides the character " : ", which simply appends configuration files, there is a " > " character
+that only appends the first existing file from a chain of those.
+::
 ## User configuration file (CODE::Platform.userConfigDir +/+ "sclang_conf.yaml"::)
 ## Global configuration file (CODE::"/etc/sclang_conf.yaml"::)
 ::
@@ -50,14 +54,14 @@ excludeDefaultPaths: true
 STRONG::sclang_conf_2.yaml::
 CODE::
 includePaths:
-  - path2  // Not inlcuded: path2 was excluded before
+  - path2  // Not included: path2 was excluded before
 excludePaths:
   - path1  // Not excluded: path1 was included before
 postInlineWarnings: true
 excludeDefaultPaths: false  // Second occurance therefore irrelavant
 ::
 
-Executing CODE::SCLANG_CONF_PATH="/path/to/sclang_conf_2.yaml" sclang -l "/path/to/sclang_conf_1.yaml":: results
+Running CODE::SCLANG_CONF_PATH="/path/to/sclang_conf_2.yaml" sclang -l "/path/to/sclang_conf_1.yaml":: results
 in CODE::sclang_conf_1.yaml:: being passed EMPHASIS::before:: CODE::sclang_conf_2.yaml:: and merged into:
 
 CODE::
@@ -68,6 +72,9 @@ excludePaths:
 postInlineWarnings: true
 excludeDefaultPaths: true
 ::
+
+However by running CODE::SCLANG_CONF_PATH="/path/to/sclang_conf_1.yaml>/path/to/sclang_conf_2.yaml" sclang:: 
+only CODE::sclang_conf_1.yaml:: is being passed.
 
 CLASSMETHODS::
 
@@ -116,10 +123,31 @@ METHOD:: excludeDefaultPaths
 Get or set whether default class library paths are included.
 
 NOTE::
-If sclang is started with -a the class library paths are excluded and this value
+If sclang is started with -a the class library paths are excluded and this value 
 is ignored. The default class library paths are Platform.classLibraryDir, and
 the system and user extensions directories.
 ::
+
+SUBSECTION:: Relative Paths
+
+Depending on how you provide relative include/exclude paths, they resolve differently.
+There are three cases to consider:
+
+LIST::
+## Paths provided by class methods resolve to the current runtime directory.
+## Configuration files loaded via CODE::sclang -l:: resolve paths to the
+file's parent directory.
+## Using the CODE::SCLANG_CONF_PATH:: environment variable to load configuration
+files makes relative paths resolve to the parent directory of the executed binary
+(CODE::sclang/scide::).
+::
+
+Further you can use CODE::USERHOME:: and CODE::PROGRAM_LOCATION:: as substitute
+strings for the current user's home directory and the parent directory of the
+running binary respectively. However this only works for the last two options
+(use link::Classes/Platform:: for class methods). Finally CODE::USERNAME:: can
+be utilized as a substitute string for language configuration paths themselves
+passed by CODE::SCLANG_CONF_PATH::.
 
 SUBSECTION:: Compiler Warnings
 

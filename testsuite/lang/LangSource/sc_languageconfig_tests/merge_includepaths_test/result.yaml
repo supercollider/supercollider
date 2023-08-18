@@ -1,3 +1,3 @@
 includePaths:
-  - path1
-  - path2
+  - sclang_conf_1.yaml
+  - sclang_conf_2.yaml

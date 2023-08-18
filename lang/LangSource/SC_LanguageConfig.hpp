@@ -89,7 +89,8 @@ public:
 
     static bool addPath(DirVector&, const Path&);
     static bool compareUnorderedPathLists(DirVector, DirVector);
-    static void processPathList(const char* nodeName, YAML::Node& doc, const std::function<void(const Path&)>& func);
+    static void processPathList(const Path& confPath, const char* nodeName, YAML::Node& doc,
+                                const std::function<void(const Path&)>& func);
     static void processBool(const char* nodeName, std::vector<YAML::Node>& docs,
                             const std::function<void(bool)>& successFunc, const std::function<void()>& failFunc);
 
