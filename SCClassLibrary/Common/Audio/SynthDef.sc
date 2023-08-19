@@ -1,4 +1,6 @@
-SynthDef {
+
+SynthDef : ThreadSingletonInstance {
+    classvar threadSingletonManager;
 	var <>name, <>func;
 
 	var <>controls, <>controlNames; // ugens add to this
@@ -21,6 +23,8 @@ SynthDef {
 	classvar <synthDefDir;
 	classvar <>warnAboutLargeSynthDefs = false;
 
+	*getActiveSingleton { ^threadSingletonManager.getActive }
+
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
 			{ dir = dir ++ thisProcess.platform.pathSeparator };
@@ -28,15 +32,24 @@ SynthDef {
 	}
 
 	*initClass {
+        threadSingletonManager = ThreadSingletonManager(SynthDef);
 		synthDefDir = Platform.userAppSupportDir ++ "/synthdefs/";
 		// Ensure exists:
 		synthDefDir.mkdir;
 	}
 
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata ?? {()}).children_(Array.new(64))
-			.build(ugenGraphFunc, rates, prependArgs)
+		^super.newCopyArgs(threadSingletonManager, name.asSymbol)
+        .variants_(variants)
+        .metadata_(metadata ?? {()})
+        .children_(Array.new(64))
+        .build(ugenGraphFunc, rates, prependArgs)
 	}
+
+    priv_initFromPrNew {
+        threadSingletonManagerRef = threadSingletonManager;
+        ^this
+    }
 
 	storeArgs { ^[name, func] }
 
@@ -48,16 +61,19 @@ SynthDef {
 			func = ugenGraphFunc;
 			this.class.changed(\synthDefReady, this);
 		} {
-			UGen.buildSynthDef = nil;
+            this.removeActiveSingleton 
 		}
 	}
 
 	*wrap { arg func, rates, prependArgs;
-		if (UGen.buildSynthDef.isNil) {
-			"SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error;
-			^0
-		};
-		^UGen.buildSynthDef.buildUgenGraph(func, rates, prependArgs);
+        try {
+            ^threadSingletonManager.getActive.buildUgenGraph(func, rates, prependArgs)
+        } { |ex| 
+            if(ex.isKindOf(ErrorThreadSingletonInstance)) {
+                "SynthDef.wrap should be called inside a SynthDef ugenGraphFunc.\n".error;
+                ^0
+            } { ex.throw }
+        }
 	}
 
 	//only write if no file exists
@@ -69,7 +85,7 @@ SynthDef {
 	}
 
 	initBuild {
-		UGen.buildSynthDef = this;
+        this.setActiveSingleton;
 		constants = Dictionary.new;
 		constantSet = Set.new;
 		controls = nil;
@@ -281,7 +297,6 @@ SynthDef {
 		// re-sort graph. reindex.
 		this.topologicalSort;
 		this.indexUGens;
-		UGen.buildSynthDef = nil;
 	}
 
 	addCopiesIfNeeded {

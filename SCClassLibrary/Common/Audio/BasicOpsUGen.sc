@@ -172,7 +172,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
 			// a + b.neg -> a - b
-			buildSynthDef.removeUGen(b);
+			UGen.buildSynthDef.removeUGen(b);
 			replacement = a - b.inputs[0];
 			// this is the first time the dependants logic appears. It's repeated below.
 			// We will remove 'this' from the synthdef, and replace it with 'replacement'.
@@ -186,7 +186,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (a.isKindOf(UnaryOpUGen) and: { a.operator == 'neg' and: { a.descendants.size == 1 } }) {
 			// a.neg + b -> b - a
-			buildSynthDef.removeUGen(a);
+			UGen.buildSynthDef.removeUGen(a);
 			replacement = b - a.inputs[0];
 			replacement.descendants = descendants;
 			this.optimizeUpdateDescendants(replacement, a);
@@ -204,14 +204,14 @@ BinaryOpUGen : BasicOpUGen {
 			and: { a.descendants.size == 1 }})
 		{
 			if (MulAdd.canBeMulAdd(a.inputs[0], a.inputs[1], b)) {
-				buildSynthDef.removeUGen(a);
+				UGen.buildSynthDef.removeUGen(a);
 				replacement = MulAdd.new(a.inputs[0], a.inputs[1], b).descendants_(descendants);
 				this.optimizeUpdateDescendants(replacement, a);
 				^replacement
 			};
 
 			if (MulAdd.canBeMulAdd(a.inputs[1], a.inputs[0], b)) {
-				buildSynthDef.removeUGen(a);
+				UGen.buildSynthDef.removeUGen(a);
 				replacement = MulAdd.new(a.inputs[1], a.inputs[0], b).descendants_(descendants);
 				this.optimizeUpdateDescendants(replacement, a);
 				^replacement
@@ -222,14 +222,14 @@ BinaryOpUGen : BasicOpUGen {
 			and: { b.descendants.size == 1 }})
 		{
 			if (MulAdd.canBeMulAdd(b.inputs[0], b.inputs[1], a)) {
-				buildSynthDef.removeUGen(b);
+				UGen.buildSynthDef.removeUGen(b);
 				replacement = MulAdd.new(b.inputs[0], b.inputs[1], a).descendants_(descendants);
 				this.optimizeUpdateDescendants(replacement, b);
 				^replacement
 			};
 
 			if (MulAdd.canBeMulAdd(b.inputs[1], b.inputs[0], a)) {
-				buildSynthDef.removeUGen(b);
+				UGen.buildSynthDef.removeUGen(b);
 				replacement = MulAdd.new(b.inputs[1], b.inputs[0], a).descendants_(descendants);
 				this.optimizeUpdateDescendants(replacement, b);
 				^replacement
@@ -245,7 +245,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
 			and: { a.descendants.size == 1 }}) {
-			buildSynthDef.removeUGen(a);
+			UGen.buildSynthDef.removeUGen(a);
 			if(a === b) {
 				replacement = Sum4(a.inputs[0], a.inputs[0], a.inputs[1], a.inputs[1])
 				.descendants_(descendants);
@@ -258,7 +258,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (b.isKindOf(BinaryOpUGen) and: { b.operator == '+'
 			and: { b.descendants.size == 1 }}) {
-			buildSynthDef.removeUGen(b);
+			UGen.buildSynthDef.removeUGen(b);
 			// we do not need the a === b check here
 			// if a === b, then the 'a' branch above must have handled it
 			replacement = Sum3(b.inputs[0], b.inputs[1], a).descendants_(descendants);
@@ -275,14 +275,14 @@ BinaryOpUGen : BasicOpUGen {
 		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
 		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {
-			buildSynthDef.removeUGen(a);
+			UGen.buildSynthDef.removeUGen(a);
 			replacement = Sum4(a.inputs[0], a.inputs[1], a.inputs[2], b).descendants_(descendants);
 			this.optimizeUpdateDescendants(replacement, a);
 			^replacement;
 		};
 
 		if (b.isKindOf(Sum3) and: { b.descendants.size == 1 }) {
-			buildSynthDef.removeUGen(b);
+			UGen.buildSynthDef.removeUGen(b);
 			replacement = Sum4(b.inputs[0], b.inputs[1], b.inputs[2], a).descendants_(descendants);
 			this.optimizeUpdateDescendants(replacement, b);
 			^replacement;
@@ -296,7 +296,7 @@ BinaryOpUGen : BasicOpUGen {
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' and: { b.descendants.size == 1 } }) {
 			// a - b.neg -> a + b
-			buildSynthDef.removeUGen(b);
+			UGen.buildSynthDef.removeUGen(b);
 
 			replacement = BinaryOpUGen('+', a, b.inputs[0]);
 			replacement.descendants = descendants;
@@ -352,13 +352,13 @@ BinaryOpUGen : BasicOpUGen {
 			#aa, bb = a.inputs;
 			if (b.isKindOf(SimpleNumber)) {
 				if (aa.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(a);
+					UGen.buildSynthDef.removeUGen(a);
 					this.inputs[0] = aa.perform(operator, b);
 					this.inputs[1] = bb;
 					^this
 				};
 				if (bb.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(a);
+					UGen.buildSynthDef.removeUGen(a);
 					this.inputs[0] = bb.perform(operator, b);
 					this.inputs[1] = aa;
 					^this
@@ -379,13 +379,13 @@ BinaryOpUGen : BasicOpUGen {
 			#cc, dd = b.inputs;
 			if (a.isKindOf(SimpleNumber)) {
 				if (cc.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(b);
+					UGen.buildSynthDef.removeUGen(b);
 					this.inputs[0] = a.perform(operator, cc);
 					this.inputs[1] = dd;
 					^this
 				};
 				if (dd.isKindOf(SimpleNumber)) {
-					buildSynthDef.removeUGen(b);
+					UGen.buildSynthDef.removeUGen(b);
 					this.inputs[0] = a.perform(operator, dd);
 					this.inputs[1] = cc;
 					^this

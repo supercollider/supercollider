@@ -27,6 +27,7 @@ SynthDesc {
 	}
 
 	*initClass {
+        Class.initClassTree(SynthDef);
 		mdPlugin = TextArchiveMDPlugin;	// override in your startup file
 	}
 
@@ -91,142 +92,138 @@ SynthDesc {
 	readSynthDef { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
 
+        name = stream.getPascalString;
+        // this prNew call is problematic
+        def = SynthDef.prNew(name).priv_initFromPrNew;
 		protect {
 
-		inputs = [];
-		outputs = [];
-		controlDict = IdentityDictionary.new;
+            inputs = [];
+            outputs = [];
+            controlDict = IdentityDictionary.new;
 
-		name = stream.getPascalString;
+            def.setActiveSingleton;
 
-		def = SynthDef.prNew(name);
-		UGen.buildSynthDef = def;
+            numConstants = stream.getInt16;
+            constants = FloatArray.newClear(numConstants);
+            stream.read(constants);
 
-		numConstants = stream.getInt16;
-		constants = FloatArray.newClear(numConstants);
-		stream.read(constants);
+            numControls = stream.getInt16;
+            def.controls = FloatArray.newClear(numControls);
+            stream.read(def.controls);
 
-		numControls = stream.getInt16;
-		def.controls = FloatArray.newClear(numControls);
-		stream.read(def.controls);
+            controls = Array.fill(numControls)
+                { |i|
+                    ControlName('?', i, '?', def.controls[i]);
+                };
 
-		controls = Array.fill(numControls)
-			{ |i|
-				ControlName('?', i, '?', def.controls[i]);
-			};
+            numControlNames = stream.getInt16;
+            numControlNames.do
+                {
+                    var controlName, controlIndex;
+                    controlName = stream.getPascalString.asSymbol;
+                    controlIndex = stream.getInt16;
+                    controls[controlIndex].name = controlName;
+                    controlNames = controlNames.add(controlName);
+                    controlDict[controlName] = controls[controlIndex];
+                };
 
-		numControlNames = stream.getInt16;
-		numControlNames.do
-			{
-				var controlName, controlIndex;
-				controlName = stream.getPascalString.asSymbol;
-				controlIndex = stream.getInt16;
-				controls[controlIndex].name = controlName;
-				controlNames = controlNames.add(controlName);
-				controlDict[controlName] = controls[controlIndex];
-			};
+            numUGens = stream.getInt16;
+            numUGens.do {
+                this.readUGenSpec(stream);
+            };
 
-		numUGens = stream.getInt16;
-		numUGens.do {
-			this.readUGenSpec(stream);
-		};
+            controls.inject(nil) {|z,y|
+                if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
+            };
 
-		controls.inject(nil) {|z,y|
-			if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
-		};
+            def.controlNames = controls.select {|x| x.name.notNil };
+            hasArrayArgs = controls.any { |cn| cn.name == '?' };
 
-		def.controlNames = controls.select {|x| x.name.notNil };
-		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+            numVariants = stream.getInt16;
+            hasVariants = numVariants > 0;
+                // maybe later, read in variant names and values
+                // this is harder than it might seem at first
 
-		numVariants = stream.getInt16;
-		hasVariants = numVariants > 0;
-			// maybe later, read in variant names and values
-			// this is harder than it might seem at first
+            def.constants = Dictionary.new;
+            constants.do {|k,i| def.constants.put(k,i) };
+            if (keepDef.not) {
+                // throw away unneeded stuff
+                def = nil;
+                constants = nil;
+            };
+            this.makeMsgFunc;
 
-		def.constants = Dictionary.new;
-		constants.do {|k,i| def.constants.put(k,i) };
-		if (keepDef.not) {
-			// throw away unneeded stuff
-			def = nil;
-			constants = nil;
-		};
-		this.makeMsgFunc;
-
-		} {
-			UGen.buildSynthDef = nil;
-		}
-
+        } {
+            def.removeActiveSingleton
+        }
 	}
 
 	// synthdef ver 2
 	readSynthDef2 { arg stream, keepDef=false;
 		var	numControls, numConstants, numControlNames, numUGens, numVariants;
 
-		protect {
-
-		inputs = [];
-		outputs = [];
-		controlDict = IdentityDictionary.new;
-
 		name = stream.getPascalString;
+        // this prNew call is problematic
+		def = SynthDef.prNew(name).priv_initFromPrNew();
+		protect {
+            inputs = [];
+            outputs = [];
+            controlDict = IdentityDictionary.new;
 
-		def = SynthDef.prNew(name);
-		UGen.buildSynthDef = def;
+            def.setActiveSingleton;
 
-		numConstants = stream.getInt32;
-		constants = FloatArray.newClear(numConstants);
-		stream.read(constants);
+            numConstants = stream.getInt32;
+            constants = FloatArray.newClear(numConstants);
+            stream.read(constants);
 
-		numControls = stream.getInt32;
-		def.controls = FloatArray.newClear(numControls);
-		stream.read(def.controls);
+            numControls = stream.getInt32;
+            def.controls = FloatArray.newClear(numControls);
+            stream.read(def.controls);
 
-		controls = Array.fill(numControls)
-			{ |i|
-				ControlName('?', i, '?', def.controls[i]);
-			};
+            controls = Array.fill(numControls)
+                { |i|
+                    ControlName('?', i, '?', def.controls[i]);
+                };
 
-		numControlNames = stream.getInt32;
-		numControlNames.do
-			{
-				var controlName, controlIndex;
-				controlName = stream.getPascalString.asSymbol;
-				controlIndex = stream.getInt32;
-				controls[controlIndex].name = controlName;
-				controlNames = controlNames.add(controlName);
-				controlDict[controlName] = controls[controlIndex];
-			};
+            numControlNames = stream.getInt32;
+            numControlNames.do
+                {
+                    var controlName, controlIndex;
+                    controlName = stream.getPascalString.asSymbol;
+                    controlIndex = stream.getInt32;
+                    controls[controlIndex].name = controlName;
+                    controlNames = controlNames.add(controlName);
+                    controlDict[controlName] = controls[controlIndex];
+                };
 
-		numUGens = stream.getInt32;
-		numUGens.do {
-			this.readUGenSpec2(stream);
-		};
+            numUGens = stream.getInt32;
+            numUGens.do {
+                this.readUGenSpec2(stream);
+            };
 
-		controls.inject(nil) {|z,y|
-			if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
-		};
+            controls.inject(nil) {|z,y|
+                if(y.name=='?') { z.defaultValue = z.defaultValue.asArray.add(y.defaultValue); z } { y }
+            };
 
-		def.controlNames = controls.select {|x| x.name.notNil };
-		hasArrayArgs = controls.any { |cn| cn.name == '?' };
+            def.controlNames = controls.select {|x| x.name.notNil };
+            hasArrayArgs = controls.any { |cn| cn.name == '?' };
 
-		numVariants = stream.getInt16;
-		hasVariants = numVariants > 0;
-			// maybe later, read in variant names and values
-			// this is harder than it might seem at first
+            numVariants = stream.getInt16;
+            hasVariants = numVariants > 0;
+                // maybe later, read in variant names and values
+                // this is harder than it might seem at first
 
-		def.constants = Dictionary.new;
-		constants.do {|k,i| def.constants.put(k,i) };
-		if (keepDef.not) {
-			// throw away unneeded stuff
-			def = nil;
-			constants = nil;
-		};
-		this.makeMsgFunc;
-
+            def.constants = Dictionary.new;
+            constants.do {|k,i| def.constants.put(k,i) };
+            if (keepDef.not) {
+                // throw away unneeded stuff
+                def = nil;
+                constants = nil;
+            };
+            this.makeMsgFunc;
 		} {
-			UGen.buildSynthDef = nil;
+            def.removeActiveSingleton
 		}
-
 	}
 
 	readUGenSpec { arg stream;
