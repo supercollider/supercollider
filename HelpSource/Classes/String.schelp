@@ -379,7 +379,7 @@ code::
 "(a|u)nd".matchRegexp("and"); // true
 "[a-c]nd".matchRegexp("ind"); // false
 "[a-c]nd".matchRegexp("bnd"); // true: anything between a and c
-"[a-c]*nd".matchRegexp("accacaccacand"); //  true: any combination of x, t, z, or none.
+"[a-c]*nd".matchRegexp("accacaccacand"); //  true: any combination of a, b, c, or none.
 "[xtz]+nd".matchRegexp("xnd"); // true: any combination of x, t, z
 ::
 
