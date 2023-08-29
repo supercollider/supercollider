@@ -300,8 +300,12 @@ Event : Environment {
 					out
 				},
 				getInstrumentDescs: {
-					~instrDescs = ~instrument.asArray.collect { |instr|
-						~getInstrumentDesc.(instr)
+					// Pmono events reuse some elements of prior events
+					// i.e. cache for Pmono performance
+					~instrDescs ?? {
+						~instrDescs = ~instrument.asArray.collect { |instr|
+							~getInstrumentDesc.(instr)
+						};
 					};
 				},
 				synthDefName: { |instrument, variant, synthDesc|
@@ -920,40 +924,47 @@ Event : Environment {
 						};
 					},
 					monoOff:  #{|server|
-
-						if(~hasGate == false) {
-							~schedBundle.value(~lag, ~timingOffset, server,
-								[\n_free] ++ ~id.asControlInput);
-						} {
-							~schedBundle.value(~lag, ~timingOffset, server,
-								*([15 /* \n_set */, ~id.asControlInput, \gate, 0].flop) );
+						var descs = ~getInstrumentDescs.();
+						var bndl = descs.collect { |desc, i|
+							if(~checkGate.(i)) {
+								[15, ~id.wrapAt(i), \gate, 0]
+							} {
+								[\n_free, ~id.wrapAt(i)]
+							};
 						};
+
+						~schedBundle.value(~lag, ~timingOffset, server, bndl);
 
 					},
 
 					monoSet: #{|server|
-						var freqs, lag, bndl;
+						var freqs, lag, bndl, descs;
 
 						freqs = ~freq = ~detunedFreq.value;
 
 						~amp = ~amp.value;
 						~sustain = ~sustain.value;
 
-						bndl = ([15 /* \n_set */, ~id.asControlInput] ++ ~msgFunc.valueEnvir).flop;
+						descs = ~getInstrumentDescs.();
+						bndl = ([15 /* \n_set */, ~id.asControlInput] ++ ~getBundleArgPairs.(descs)).flop;
 						bndl = bndl.collect(_.asOSCArgArray);
 						~schedBundle.value(~lag, ~timingOffset, server, *bndl);
 					},
 
 					monoNote:	#{ |server|
 						var bndl, id, ids, addAction, f;
+						var descs;
 						addAction = Node.actionNumberFor(~addAction);
 						~freq = ~detunedFreq.value;
 						f = ~freq;
 						~amp = ~amp.value;
 
+						descs = ~getInstrumentDescs.();
+
 						bndl = ( [9 /* \s_new */, ~instrument, ids, addAction, ~group.asControlInput]
-							++ ~msgFunc.valueEnvir).flop;
-						bndl.do { | b |
+							++ ~getBundleArgPairs.(descs)).flop;
+						bndl.do { | b, i |
+							b[1] = descs.wrapAt(i)[\instrument];
 							id = server.nextNodeID;
 							ids = ids.add(id);
 							b[2] = id;
