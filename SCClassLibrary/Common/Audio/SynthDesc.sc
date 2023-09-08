@@ -94,14 +94,14 @@ SynthDesc {
 
         name = stream.getPascalString;
         // this prNew call is problematic
-        def = SynthDef.prNew(name).priv_initFromPrNew;
+        def = SynthDef.prNew(name);
 		protect {
 
             inputs = [];
             outputs = [];
             controlDict = IdentityDictionary.new;
 
-            def.setActiveSingleton;
+            SynthDef.impl_getSingletonManager.setActive(def);
 
             numConstants = stream.getInt16;
             constants = FloatArray.newClear(numConstants);
@@ -154,7 +154,7 @@ SynthDesc {
             this.makeMsgFunc;
 
         } {
-            def.removeActiveSingleton
+            SynthDef.impl_getSingletonManager.removeActive(def);
         }
 	}
 
@@ -164,13 +164,13 @@ SynthDesc {
 
 		name = stream.getPascalString;
         // this prNew call is problematic
-		def = SynthDef.prNew(name).priv_initFromPrNew();
+		def = SynthDef.prNew(name);
 		protect {
             inputs = [];
             outputs = [];
             controlDict = IdentityDictionary.new;
 
-            def.setActiveSingleton;
+            SynthDef.impl_getSingletonManager.setActive(def);
 
             numConstants = stream.getInt32;
             constants = FloatArray.newClear(numConstants);
@@ -222,7 +222,7 @@ SynthDesc {
             };
             this.makeMsgFunc;
 		} {
-            def.removeActiveSingleton
+            SynthDef.impl_getSingletonManager.removeActive(def);
 		}
 	}
 

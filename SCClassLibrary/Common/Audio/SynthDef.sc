@@ -1,5 +1,5 @@
 
-SynthDef : ThreadSingletonInstance {
+SynthDef {
     classvar threadSingletonManager;
 	var <>name, <>func;
 
@@ -24,6 +24,7 @@ SynthDef : ThreadSingletonInstance {
 	classvar <>warnAboutLargeSynthDefs = false;
 
 	*getActiveSingleton { ^threadSingletonManager.getActive }
+    *impl_getSingletonManager {^threadSingletonManager;}
 
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
@@ -39,17 +40,12 @@ SynthDef : ThreadSingletonInstance {
 	}
 
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
-		^super.newCopyArgs(threadSingletonManager, name.asSymbol)
+		^super.newCopyArgs(name.asSymbol)
         .variants_(variants)
         .metadata_(metadata ?? {()})
         .children_(Array.new(64))
         .build(ugenGraphFunc, rates, prependArgs)
 	}
-
-    priv_initFromPrNew {
-        threadSingletonManagerRef = threadSingletonManager;
-        ^this
-    }
 
 	storeArgs { ^[name, func] }
 
@@ -61,7 +57,7 @@ SynthDef : ThreadSingletonInstance {
 			func = ugenGraphFunc;
 			this.class.changed(\synthDefReady, this);
 		} {
-            this.removeActiveSingleton 
+            threadSingletonManager.removeActive(this); 
 		}
 	}
 
@@ -85,7 +81,7 @@ SynthDef : ThreadSingletonInstance {
 	}
 
 	initBuild {
-        this.setActiveSingleton;
+        threadSingletonManager.setActive(this);
 		constants = Dictionary.new;
 		constantSet = Set.new;
 		controls = nil;
