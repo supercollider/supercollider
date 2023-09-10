@@ -23,6 +23,7 @@ METHOD:: new
 
 INSTANCEMETHODS::
 
+PRIVATE:: initSlider
 
 
 SUBSECTION:: Data
@@ -64,6 +65,12 @@ METHOD:: thumbSize
 
 	argument::
 		An Integer amount of pixels.
+
+METHOD:: background
+	The color of the background.
+
+	argument::
+		A Color.
 
 METHOD:: knobColor
 	The color of the handle.

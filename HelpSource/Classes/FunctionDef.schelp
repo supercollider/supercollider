@@ -112,7 +112,7 @@ code::
 
 subsection::Generating Strings
 
-method::makeFuncArgModifierString
+method::makeFuncModifierString
 
 Return a string that can be interpreted as code for a new function which extracts the arguments from the receiver. This can be used to build a hygienic macro which returns a function with valid keyword arguments, instead of just anonymously forwarding the arguments, like in code::{ |...args| func.valueArray(args) }::.
 

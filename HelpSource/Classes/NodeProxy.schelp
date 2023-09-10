@@ -608,6 +608,7 @@ x = NodeProxy.new.source = { DC.ar };
 x.asCode;
 
 x.free;
+::
 
 subsection::GUI
 
