@@ -97,7 +97,7 @@ Git {
 	remoteLatest {
 		// find what the latest commit on the remote is
 		^remoteLatest ?? {
-			remoteLatest = this.git(["rev-parse origin/" ++ this.defaultBranchName]);
+			remoteLatest = this.git(["rev-parse origin" +/+ ( this.defaultBranchName ? "" )]);
 		}
 	}
 	tags {
