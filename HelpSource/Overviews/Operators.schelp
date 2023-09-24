@@ -791,7 +791,7 @@ code::
 	var a;
 	a = Line.ar(-2, 2, 0.01);
 	a.clip2
-}.plot2
+}.plot
 )
 
 { FSinOsc.ar(400).clip2(0.2) }.scope; // clipping distortion
