@@ -104,7 +104,7 @@ Quark {
 			this.runHook(\preUpdate);
 			git = Git(localPath);
 			git.pull();
-			git.checkout("master");
+			git.checkout(git.defaultBranchName ? "");
 			// force reload of data by resetting it to nil
 			data = nil;
 			this.runHook(\postUpdate);
