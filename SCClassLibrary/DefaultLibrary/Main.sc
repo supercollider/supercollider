@@ -1,5 +1,5 @@
 Main : Process {
-	var platform, argv;
+	var <platform, argv;
 	var recvOSCfunc, prRecvOSCFunc;
 	var recvRawFunc, prRecvRawFunc;
 	var openPorts;
