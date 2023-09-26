@@ -13,8 +13,8 @@ html, body {
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
-    color: black;
-    background: white;
+    color: var(--sc-text-color);
+    background: var(--sc-bg-color);
 }
 
 div.contents {
@@ -29,7 +29,7 @@ table {
     margin-left: 2em;
 }
 table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--sc-neutral);
     padding: 0.3em;
 }
 
@@ -44,7 +44,7 @@ p {
 
 a:link, a:visited, a:link:hover {
     text-decoration: none;
-    color: #449;
+    color: var(--sc-link-color);
 }
 
 a:link:hover {
@@ -55,49 +55,14 @@ input {
     max-width: 100%;
 }
 
-#inheritedclassmets, #inheritedinstmets {
-    margin-top: 1em;
-}
-
-.inheritedmets_class {
-    font-weight: bold;
-    color: #555;
-    margin-top: 0.5em;
-    margin-bottom: 0.25em;
-}
-.inheritedmets_class a {
-    color: #333;
-}
-ul.inheritedmets {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    margin-left: 2em;
-    margin-top: 0.25em;
-}
-ul.inheritedmets li {
-    font-family: monospace;
-}
-a.inheritedmets_toggle {
-    font-size: 9pt;
-    color: #558;
-    font-weight: normal;
-/*    margin-left: 2em;*/
-}
-
-a.inheritedmets_toggle:hover {
-    text-decoration: none;
-    color: #000;
-}
-
 a.subclass_toggle {
-    color: #555;
+    color: var(--sc-neutral);
     font-weight: normal;
 }
 
 a.subclass_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: var(--sc-text-color);
 }
 
 
@@ -107,8 +72,8 @@ a.subclass_toggle:hover {
     width: 100%;
     height: 33px;
     padding: 0.5em 0;
-    background-color: #f9f9f9;
-    box-shadow: 0em 0em 0.25em rgba(128, 128, 128, 0.5);
+    background-color: var(--sc-bg-color);
+    box-shadow: 0em 0em 0.25em var(--sc-neutral);
     z-index: 2;
 }
 
@@ -120,7 +85,7 @@ a.subclass_toggle:hover {
 #menubar .menuitem {
     padding: 0;
     margin: 0;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid var(--sc-neutral-lighter);
     font-size: 10pt;
     display: inline-block;
 }
@@ -135,7 +100,7 @@ a.subclass_toggle:hover {
 }
 
 a.menu-link {
-    color: #666;
+    color: var(--sc-neutral-darker);
     padding: 0 0.75em 0 0.75em;
     /* This ensures that the logo isn't cut off. */
     min-height: 1.5em;
@@ -144,7 +109,7 @@ a.menu-link {
 }
 a.menu-link:hover {
     text-decoration: none;
-    color: #999;
+    color: var(--sc-neutral);
 }
 
 #menubar .menuitem .home a {
@@ -185,10 +150,8 @@ a.menu-link:hover {
 }
 
 #topdoctitle {
-/*    font-weight: bold;*/
     font-style: italic;
-/*    color: #fff;*/
-    color: #444;
+    color: var(--sc-neutral-darker);
     cursor: pointer;
 }
 
@@ -197,8 +160,8 @@ a.menu-link:hover {
     top: 33px;
     padding: 0.5em;
     display: none;
-    background-color: #f9f9f9;
-    border: thin solid #ddd;
+    background-color: var(--sc-bg-color);
+    border: thin solid var(--sc-neutral-lighter);
 }
 
 .submenu a {
@@ -211,18 +174,18 @@ a.menu-link:hover {
         white-space: nowrap;
         text-align: left;
 /*      text-decoration: none;*/
-        color: #447;
+        color: var(--sc-text-color-lighter);
         font-weight: bold;
 }
 
 .toc_search {
     margin-left: 10px;
-    color: #999;
+    color: var(--sc-neutral);
     font-size: 9pt;
 }
 
 .toc_search input {
-    border: 1px solid #ddd;
+    border: 1px solid var(--sc-neutral-lighter);
 }
 
 
@@ -231,7 +194,7 @@ a.menu-link:hover {
 }
 
 #label {
-    color: #666;
+    color: var(--sc-neutral-darker);
     font-size: 0.9em;
 }
 
@@ -239,7 +202,7 @@ a.menu-link:hover {
     font-weight: normal;
     font-size: 1.1em;
     font-style: italic;
-    color: #444;
+    color: var(--sc-neutral-darker);
 }
 #related {
     font-weight: bold;
@@ -255,7 +218,7 @@ a.menu-link:hover {
 
 #superclasses {
     font-size: 9pt;
-    color: #444;
+    color: var(--sc-text-color-lighter);
     font-weight: normal;
 }
 
@@ -263,10 +226,10 @@ a.menu-link:hover {
     float: right;
     font-size: 12pt;
     padding: 0.4em 0.4em 0.2em 0.4em;
-    background-color: #601c8b;
+    background-color: var(--sc-tertiary);
     color: white;
     border-radius: 3px;
-    border-bottom: 2px solid #39174F;
+    border-bottom: 2px solid var(--sc-text-color);
 }
 
 .extension-indicator-icon {
@@ -280,14 +243,14 @@ a.menu-link:hover {
 
 .subheader {
     font-size: 9pt;
-    color: #444;
+    color: var(--sc-text-color-lighter);
     margin-top: 1em;
 }
 
 .jump {
     text-align: right;
     font-size: 9pt;
-    color: #555;
+    color: var(--sc-neutral-darker);
 }
 .jump a {
     font-weight: bold;
@@ -300,7 +263,7 @@ a.footnote {
     top: -0.1em;
 }
 div.footnotes {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid var(--sc-neutral);
     margin-left: 2em;
     margin-top: 3em;
     margin-right: 2em;
@@ -312,7 +275,7 @@ div.footnote {
 }
 
 .soft {
-    color: #777;
+    color: var(--sc-neutral-darker);
 }
 
 h1 {
@@ -322,7 +285,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--sc-neutral-lighter);
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -340,7 +303,7 @@ h4 {
     margin-top: 1em;
     margin-bottom: 0em;
     margin-left: 0em;
-    color: #777;
+    color: var(--sc-neutral-darker);
 }
 
 h1,
@@ -382,7 +345,7 @@ code, pre {
 }
 
 pre {
-    border-left: 2px solid #e0e0e0;
+    border-left: 2px solid var(--sc-neutral);
     padding-left: 1em;
 }
 
@@ -399,7 +362,7 @@ pre {
 
 .methprefix {
     font-weight: normal;
-    color: #777;
+    color: var(--sc-neutral-darker);
     padding-right: 0.5em;
     margin-left: -1em;
 }
@@ -417,7 +380,7 @@ pre {
 }
 
 a.method-name {
-    color: black;
+    color: var(--sc-text-color);
     font-weight: bold;
 }
 
@@ -432,13 +395,13 @@ a.method-name {
 
 .extmethod {
     font-size: 9pt;
-    color: #444;
+    color: var(--sc-text-color-lighter);
     padding-left: 0.2em;
 }
 
 .supmethod {
     font-size: 9pt;
-    color: #444;
+    color: var(--sc-text-color-lighter);
     padding-left: 0.2em;
 }
 
@@ -470,7 +433,7 @@ td p {
 
 .note, .warning {
 /*    border-left: 4px solid #eea;*/
-    background: #f7f7d7;
+    background: var(--sc-bg-warning);
     padding: 0.5em;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -479,7 +442,7 @@ td p {
     font-weight: bold;
 }
 .warninglabel {
-    color: red;
+    color: var(--sc-text-warning);
 }
 
 /*.version {
@@ -492,14 +455,14 @@ td p {
 
 .doclink {
     font-size: 9pt;
-    color: #888;
+    color: var(--sc-neutral-darker);
     text-align: right;
     margin-top: 2em;
     margin-bottom: 2em;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid var(--sc-neutral-lighter);
 }
 .doclink a {
-    color: #444;
+    color: var(--sc-neutral-darker);
     word-wrap: break-word;
 }
 
@@ -514,12 +477,12 @@ td p {
     overflow: auto;
 /*    background: #eee;*/
     background: #fff;
-    border-right: 1px solid #bbb;
+    border-right: 1px solid var(--sc-neutral-lighter);
 }
 
 #sidetoc a:hover {
     text-decoration: none;
-    color: black;
+    color: var(--sc-bg-color);
 }
 
 #toc-container {
@@ -539,7 +502,7 @@ td p {
     font-weight: bold;
     font-size: 120%;
     margin: 0.7em 0.5em;
-    color: #333;
+    color: var(--sc-text-color-lighter);
 }
 
 li {
@@ -565,20 +528,20 @@ ul.toc li a {
 }
 
 ul.toc li a:hover {
-    background: #eee;
+    background: var(--sc-neutral-lighter);
 }
 
 .toc1 {
     font-weight: bold;
 }
 .toc1 a {
-    color: #444;
+    color: var(--sc-neutral-darker);
 }
 .toc2 {
     font-weight: normal;
 }
 .toc2 a {
-    color: #444;
+    color: var(--sc-neutral-darker);
 }
 .toc3 {
     font-family: monospace;
@@ -586,7 +549,7 @@ ul.toc li a:hover {
 /*    font-size: 9.5pt;*/
 }
 .toc3 a {
-    color: #555;
+    color: var(--sc-neutral-darker);
 }
 
 ul.tree, ul.tree ul {
@@ -611,17 +574,18 @@ ul.tree li {
 }
 
 ul.tree li:last-child {
- background: #fff url(images/lastnode.png) no-repeat;
+ background: var(--sc-bg-color) url(images/lastnode.png) no-repeat;
 }
 
+/* is this still used? */
 :target {
-    border-bottom: 6px solid rgba(255,255,0,0.4);
+    border-bottom: 6px solid var(--sc-bg-warning);
     padding-top:20px;
     margin-top:-20px;
 }
 
 a.undoc {
-    color: #88b;
+    color: var(--sc-text-color);
     text-decoration: line-through;
 }
 
@@ -633,17 +597,17 @@ div#search_box {
 }
 
 #search_input {
-    border: 1px solid #aaa;
-    background: #eee;
+    border: 1px solid var(--sc-neutral);
+    background: var(--sc-bg-color);
     margin-left: 0.5em;
 }
 div#search_count {
-    border-bottom: 2px solid #aaa;
-    color: #333;
+    border-bottom: 2px solid var(--sc-neutral);
+    color: var(--sc-text-color-lighter);
 }
 
 div.result_category {
-    color: #555;
+    color: var(--sc-neutral-darker);
     margin-top: 1em;
     margin-bottom: 0.5em;
 /*    font-size: 9.5pt;
@@ -657,38 +621,38 @@ div.met_docs {
 }
 div.met_subclasses {
     font-size: 9pt;
-    color: #777;
+    color: var(--sc-neutral-darker);
     margin-left: 3em;
     text-align: left;
 }
 div.met_subclasses a {
-    color: #444;
+    color: var(--sc-text-color-lighter);
 }
 div.met_subclasses a.seemore {
     margin-left: 0.2em;
-    color: #558;
+    color: var(--sc-text-color-lighter);
 }
 #search_checks {
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     font-size: 9pt;
-    color: #555;
-    background: #eee;
+    color: var(--sc-neutral-darker);
+    background: var(--sc-neutral-lighter);
 }
 #search_checks0 {
     font-size: 9pt;
-    color: #555;
-    border-bottom: 1px solid #ddd;
+    color: var(--sc-neutral-darker);
+    border-bottom: 1px solid var(--sc-neutral-lighter);
     margin-top: 1em;
     padding-bottom: 1em;
 }
 table#search_settings {
     font-size: 9pt;
-    color: #555;
+    color: var(--sc-neutral-darker);
     width: 100%;
     margin-left: 0px;
-    margin-right: 0px;*/
+    margin-right: 0px;
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;
@@ -704,7 +668,7 @@ table#search_settings {
 #js_error {
     font-family: Andale Mono, monospace;
     font-size: 9pt;
-    color: red;
+    color: var(--sc-text-warning);
 }
 
 /* from Methods.html in HelpSource/Overview/ */
@@ -719,17 +683,17 @@ table#search_settings {
 }
 div.met_subclasses {
     font-size: 9pt;
-    color: #777;
+    color: var(--sc-neutral-darker);
     margin-left: 3em;
     text-align: left;
 }
 div.met_subclasses a {
-    color: #444;
+    color: var(--sc-text-color-lighter);
 }
 
 div.met_subclasses a.seemore {
     margin-left: 0.2em;
-    color: #558;
+    color: var(--sc-neutral-darker);
 }
 
 .method_name {
@@ -738,17 +702,17 @@ div.met_subclasses a.seemore {
 }
 #method_note {
     font-size: 9pt;
-    color: #777;
+    color: var(--sc-neutral);
     border-top: 1px solid #ddd;
     text-align: center;
     margin-top: 2em;
 }
 #total_count {
     font-size: 9pt;
-    color: #777;
+    color: var(--sc-neutral-darker);
 }
 .searchlink {
-    background: #eed;
+    background: var(--sc-bg-color);
     text-align: center;
     font-size: 9pt;
     padding: 0.25em;
@@ -765,5 +729,9 @@ div.met_subclasses a.seemore {
 }
 #total_count {
     font-size: 9pt;
-    color: #777;
+    color: var(--sc-neutral);
+}
+
+.subheader {
+    color: var(--sc-text-color);
 }

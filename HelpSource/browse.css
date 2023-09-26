@@ -11,11 +11,11 @@
     border: none;
 }
 .result_doc {
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--sc-neutral);
     margin-top: 0.5em;
 }
 .result_summary {
-    color: #444;
+    color: var(--sc-neutral-darker);
     font-size: 9pt;
     max-width: 18em;
     margin-bottom: 0.6em;
@@ -25,48 +25,45 @@
     border-bottom: 1px solid transparent;
 }
 .cat_selected {
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid var(--sc-neutral-lighter);
 }
 .cat_header {
-    border-bottom: 2px solid #999;
-    color: #777;
-/*    background: #aaa;
-    color: white;*/
+    border-bottom: 2px solid var(--sc-text-color);
+    color: var(--sc-neutral);
     margin-bottom: 0.25em;
     padding: 2px;
-/*    font-weight: bold;*/
 }
 .category a {
-    color: #555;
+    color: var(--sc-neutral-darker);
     font-weight: bold;
 }
 .cat_selected a {
-    color: #000;
+    color: var(--sc-text-color);
     font-weight: bold;
 }
 .cat_arrow {
     float: right;
     padding-left: 1ex;
-    color: #555;
+    color: var(--sc-neutral-darker);
 }
 
 #search_checks {
     font-size: 9pt;
-    color: #555;
-    border-bottom: 1px solid #ddd;
+    color: var(--sc-neutral-darker);
+    border-bottom: 1px solid var(--sc-neutral);
     margin-top: 1em;
     padding-bottom: 1em;
 }
 .cat_count {
-    color: #777;
+    color: var(--sc-neutral-lighter);
     font-size: 9pt;
 }
 #total_count {
     font-size: 9pt;
-    color: #777;
+    color: var(--sc-neutral-lighter);;
 }
 .doc_kind {
-    color: #666;
+    color: var(--sc-neutral-lighter);;
     float: right;
     font-size: 8pt;
     padding: 0 2px;
