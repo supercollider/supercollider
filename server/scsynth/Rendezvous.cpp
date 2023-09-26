@@ -119,7 +119,7 @@ struct AvahiSession {
 };
 
 struct AvahiSessionInstance {
-    AvahiSessionInstance(): mSession(nullptr) {}
+    AvahiSessionInstance(): mSession(nullptr) { }
     ~AvahiSessionInstance() {
         if (mSession) {
             delete mSession;
@@ -139,11 +139,7 @@ private:
 static AvahiSessionInstance gAvahiSession;
 
 AvahiSession::AvahiSession():
-    mPoll(nullptr),
-    mClient(nullptr),
-    mGroup(nullptr),
-    mEntries(nullptr),
-    mServiceName(nullptr) {
+    mPoll(nullptr), mClient(nullptr), mGroup(nullptr), mEntries(nullptr), mServiceName(nullptr) {
     int err;
 
     mServiceName = avahi_strdup(kSCRendezvousServiceName);
@@ -319,7 +315,7 @@ struct HowlSession {
 };
 
 struct HowlSessionInstance {
-    HowlSessionInstance(): mSession(0) {}
+    HowlSessionInstance(): mSession(0) { }
     ~HowlSessionInstance() {
         if (mSession) {
             delete mSession;
@@ -338,7 +334,7 @@ private:
 
 static HowlSessionInstance gHowlSession;
 
-HowlSession::HowlSession(): mSession(0) {}
+HowlSession::HowlSession(): mSession(0) { }
 
 HowlSession::~HowlSession() {
     if (mSession)
@@ -384,6 +380,6 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum) {
 
 #else // !__APPLE__ && !HAVE_AVAHI && !HAVE_HOWL
 
-void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum) {}
+void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum) { }
 
 #endif // __APPLE__ || HAVE_AVAHI || HAVE_HOWL

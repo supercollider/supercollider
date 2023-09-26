@@ -331,7 +331,7 @@ int prDateResolve(struct VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     PyrSlot* slots = slotRawObject(a)->slots;
 
-    struct tm tm0 {};
+    struct tm tm0 { };
 
     if (slotIntVal(slots + 0, &tm0.tm_year)) {
         error("year must be a valid Integer\n");

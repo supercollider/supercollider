@@ -69,7 +69,7 @@ private:
     friend class MethodCallWidget;
 
     struct MethodCall {
-        MethodCall(): position(0), method(0), functionalNotation(false), suppressed(false) {}
+        MethodCall(): position(0), method(0), functionalNotation(false), suppressed(false) { }
         int position;
         const ScLanguage::Method* method;
         bool functionalNotation;

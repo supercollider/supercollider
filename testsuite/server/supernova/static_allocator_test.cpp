@@ -15,7 +15,7 @@ namespace {
 template <int size, bool b> void test_pool_instatiation(void) { static_allocator<int, size, b> alloc; }
 
 struct initialized_struct {
-    initialized_struct(int i): i(i), f(0.2) {}
+    initialized_struct(int i): i(i), f(0.2) { }
 
     bool operator<(initialized_struct const& rhs) const { return i < rhs.i; }
 

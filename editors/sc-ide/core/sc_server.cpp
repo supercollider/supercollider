@@ -40,10 +40,7 @@ using namespace boost::chrono;
 namespace ScIDE {
 
 ScServer::ScServer(ScProcess* scLang, Settings::Manager* settings, QObject* parent):
-    QObject(parent),
-    mLang(scLang),
-    mPort(0),
-    mIsRecording(false) {
+    QObject(parent), mLang(scLang), mPort(0), mIsRecording(false) {
     createActions(settings);
 
     mUdpSocket = new QUdpSocket(this);

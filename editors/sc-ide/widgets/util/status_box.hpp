@@ -27,7 +27,7 @@ namespace ScIDE {
 
 class StatusBoxMenu : public QMenu {
 public:
-    StatusBoxMenu(QWidget* parent = 0): QMenu(parent) {}
+    StatusBoxMenu(QWidget* parent = 0): QMenu(parent) { }
 
 protected:
     virtual void mouseReleaseEvent(QMouseEvent* e) {

@@ -112,7 +112,7 @@ protected:
     virtual void paintEvent(QPaintEvent*);
     virtual void updateExtraSelections();
     void updateCurrentLineHighlighting();
-    virtual void indentCurrentRegion() {}
+    virtual void indentCurrentRegion() { }
 
     void zoomFont(int steps);
 

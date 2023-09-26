@@ -57,9 +57,9 @@ template <typename T> T* MALLOC ASSUME_ALIGNED(64) calloc_aligned(std::size_t n)
 /** smart-pointer, freeing the managed pointer via free_aligned */
 template <class T, bool managed = true> class aligned_storage_ptr {
 public:
-    explicit aligned_storage_ptr(T* p = 0): ptr(p) {}
+    explicit aligned_storage_ptr(T* p = 0): ptr(p) { }
 
-    explicit aligned_storage_ptr(size_t count): ptr(malloc_aligned<T>(count)) {}
+    explicit aligned_storage_ptr(size_t count): ptr(malloc_aligned<T>(count)) { }
 
     ~aligned_storage_ptr(void) {
         if (managed && ptr)

@@ -5,7 +5,7 @@
 namespace {
 
 struct dummy_runnable {
-    dummy_runnable(void): i(0) {}
+    dummy_runnable(void): i(0) { }
 
     void operator()(unsigned int dummy) { ++i; }
 

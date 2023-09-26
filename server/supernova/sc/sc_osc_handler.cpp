@@ -255,9 +255,9 @@ void send_fail_message(endpoint_ptr const& endpoint, const char* cmd, const char
 
 
 template <typename Functor> struct fn_system_callback : public system_callback {
-    fn_system_callback(Functor const& fn): fn_(fn) {}
+    fn_system_callback(Functor const& fn): fn_(fn) { }
 
-    fn_system_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) {}
+    fn_system_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) { }
 
     void run(void) override { fn_(); }
 
@@ -265,9 +265,9 @@ template <typename Functor> struct fn_system_callback : public system_callback {
 };
 
 template <typename Functor> struct fn_sync_callback : public audio_sync_callback {
-    fn_sync_callback(Functor const& fn): fn_(fn) {}
+    fn_sync_callback(Functor const& fn): fn_(fn) { }
 
-    fn_sync_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) {}
+    fn_sync_callback(Functor&& fn): fn_(std::forward<Functor>(fn)) { }
 
     void run(void) override { fn_(); }
 
@@ -502,8 +502,7 @@ void sc_notify_observers::send_node_reply(int32_t node_id, int reply_id, const c
             p << osc::EndMessage;
 
             instance->send_notification(p.Data(), p.Size());
-        } catch (...) {
-        }
+        } catch (...) { }
 
         cmd_dispatcher<true>::free_in_rt_thread(std::move(value_array), std::move(cmd));
 
@@ -933,7 +932,7 @@ template <bool realtime> void handle_notify(ReceivedMessage const& message, endp
     });
 }
 
-template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
+template <> void handle_notify<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) { }
 
 template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
     cmd_dispatcher<realtime>::fire_io_callback([=, endpoint = endpoint_ptr(endpoint_ref)]() {
@@ -962,7 +961,7 @@ template <bool realtime> void handle_status(endpoint_ptr const& endpoint_ref) {
     });
 }
 
-template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_status<false>(endpoint_ptr const& endpoint_ref) { }
 
 void handle_dumpOSC(ReceivedMessage const& message) {
     int val = first_arg_as_int(message);
@@ -988,7 +987,7 @@ template <bool realtime> void handle_sync(ReceivedMessage const& message, endpoi
     });
 }
 
-template <> void handle_sync<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) {}
+template <> void handle_sync<false>(ReceivedMessage const& message, endpoint_ptr const& endpoint) { }
 
 void handle_clearSched(void) { instance->clear_scheduled_bundles(); }
 
@@ -1013,7 +1012,7 @@ template <bool realtime> void handle_version(endpoint_ptr const& endpoint_ref) {
     });
 }
 
-template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) {}
+template <> void handle_version<false>(endpoint_ptr const& endpoint_ref) { }
 
 void handle_unhandled_message(ReceivedMessage const& msg) {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
@@ -1908,7 +1907,7 @@ struct completion_message {
     }
 
     /** default constructor creates uninitialized object */
-    completion_message(void): size_(0) {}
+    completion_message(void): size_(0) { }
 
     completion_message(completion_message const& rhs) = delete;
     completion_message operator=(completion_message const& rhs) = delete;
@@ -1957,8 +1956,7 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentStream
     if (!args.Eos()) {
         try {
             args >> blob;
-        } catch (osc::WrongArgumentTypeException& e) {
-        }
+        } catch (osc::WrongArgumentTypeException& e) { }
     }
 
     return completion_message(blob.size, blob.data);

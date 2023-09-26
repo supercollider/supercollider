@@ -99,7 +99,7 @@ public:
         pool.reset(new pool_t());
     }
 
-    tl_allocator(tl_allocator const& rhs) throw() {}
+    tl_allocator(tl_allocator const& rhs) throw() { }
 
     void* allocate(size_type n) {
         void* ret = malloc_ex(n, pool->pool.begin());
@@ -146,9 +146,9 @@ public:
 
     template <class U> struct rebind { typedef tl_allocator<U, bytes> other; };
 
-    tl_allocator(void) throw() {}
+    tl_allocator(void) throw() { }
 
-    template <class U, std::size_t bytes_> tl_allocator(tl_allocator<U, bytes_> const& rhs) throw() {}
+    template <class U, std::size_t bytes_> tl_allocator(tl_allocator<U, bytes_> const& rhs) throw() { }
 
     pointer address(reference x) const { return &x; }
 

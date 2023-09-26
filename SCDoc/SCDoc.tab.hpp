@@ -33,7 +33,7 @@
 #pragma once
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+#    define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int scdocdebug;
@@ -41,9 +41,8 @@ extern int scdocdebug;
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
+#    define YYTOKENTYPE
+enum yytokentype {
     END = 0,
     CLASS = 258,
     TITLE = 259,
@@ -97,44 +96,42 @@ extern int scdocdebug;
     START_FULL = 307,
     START_PARTIAL = 308,
     START_METADATA = 309
-  };
+};
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 
-union YYSTYPE
-{
-#line 55 "SCDoc.y" /* yacc.c:1915  */
+union YYSTYPE {
+#    line 55 "SCDoc.y" /* yacc.c:1915  */
 
     intptr_t i;
-    const char *id;
-    char *str;
-    DocNode *doc_node;
+    const char* id;
+    char* str;
+    DocNode* doc_node;
 
-#line 117 "SCDoc.tab.hpp" /* yacc.c:1915  */
+#    line 117 "SCDoc.tab.hpp" /* yacc.c:1915  */
 };
 
 typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+#    define YYSTYPE_IS_TRIVIAL 1
+#    define YYSTYPE_IS_DECLARED 1
 #endif
 
 /* Location type.  */
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+#if !defined YYLTYPE && !defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE YYLTYPE;
-struct YYLTYPE
-{
-  int first_line;
-  int first_column;
-  int last_line;
-  int last_column;
+struct YYLTYPE {
+    int first_line;
+    int first_column;
+    int last_line;
+    int last_column;
 };
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
+#    define YYLTYPE_IS_DECLARED 1
+#    define YYLTYPE_IS_TRIVIAL 1
 #endif
 
 
 extern YYSTYPE scdoclval;
 extern YYLTYPE scdoclloc;
-int scdocparse (void);
+int scdocparse(void);

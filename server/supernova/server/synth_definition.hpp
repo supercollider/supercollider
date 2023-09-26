@@ -40,9 +40,7 @@ class slot_resolver {
 protected:
     struct map_type : public named_hash_entry {
         map_type(slot_identifier_type const& name, slot_index_t index, int number_of_values):
-            named_hash_entry(name),
-            index(index),
-            number_of_values(number_of_values) {}
+            named_hash_entry(name), index(index), number_of_values(number_of_values) { }
 
         const slot_index_t index;
         const int number_of_values;
@@ -50,7 +48,7 @@ protected:
 
 private:
     struct hash_value {
-        hash_value(std::size_t v): value(v) {}
+        hash_value(std::size_t v): value(v) { }
 
         std::size_t operator()(const char*) const { return value; }
 
@@ -62,7 +60,7 @@ private:
     }
 
 protected:
-    slot_resolver(void): slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, resolver_map_bucket_count)) {}
+    slot_resolver(void): slot_resolver_map(slot_resolver_map_t::bucket_traits(buckets, resolver_map_bucket_count)) { }
 
     ~slot_resolver(void) { slot_resolver_map.clear_and_dispose(boost::checked_deleter<map_type>()); }
 
@@ -145,7 +143,7 @@ class synth_definition : public aligned_class,
                          public intrusive_refcountable<>,
                          public detail::slot_resolver {
 public:
-    explicit synth_definition(symbol const& name): named_hash_entry(name) {}
+    explicit synth_definition(symbol const& name): named_hash_entry(name) { }
 
     virtual ~synth_definition(void) = default;
 

@@ -50,7 +50,7 @@ class QObjectProxy;
 
 namespace QtCollider {
 
-template <typename T, typename EnabledT = void> struct TypeCodec {};
+template <typename T, typename EnabledT = void> struct TypeCodec { };
 
 // Forwarding from QtCollider namespace to TypeCodec
 
@@ -62,7 +62,7 @@ template <typename T> inline void write(PyrSlot* slot, const T& val) { return Ty
 
 struct DecodableSlot {
     PyrSlot* _slot;
-    DecodableSlot(PyrSlot* slot): _slot(slot) {}
+    DecodableSlot(PyrSlot* slot): _slot(slot) { }
     template <typename T> operator T() { return TypeCodec<T>::safeRead(_slot); }
 };
 

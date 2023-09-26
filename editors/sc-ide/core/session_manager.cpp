@@ -31,9 +31,7 @@
 namespace ScIDE {
 
 SessionManager::SessionManager(DocumentManager* docMng, QObject* parent):
-    QObject(parent),
-    mDocMng(docMng),
-    mCurrentSession(0) {}
+    QObject(parent), mDocMng(docMng), mCurrentSession(0) { }
 
 QDir SessionManager::sessionsDir() {
     QDir dir(standardDirectory(ScConfigUserDir));

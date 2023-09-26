@@ -89,7 +89,7 @@ extern HashTable<PlugInCmd, Malloc>* gPlugInCmds;
 extern "C" {
 
 #ifdef NO_LIBSNDFILE
-struct SF_INFO {};
+struct SF_INFO { };
 #endif
 
 bool SendMsgToEngine(World* inWorld, FifoMsg& inMsg);
@@ -477,8 +477,7 @@ World* World_New(WorldOptions* inOptions) {
         scprintf("Exception in World_New: %s\n", exc.what());
         World_Cleanup(world, true);
         return nullptr;
-    } catch (...) {
-    }
+    } catch (...) { }
     return world;
 }
 
@@ -767,8 +766,7 @@ void World_WaitForQuit(struct World* inWorld, bool unload_plugins) {
         World_Cleanup(inWorld, unload_plugins);
     } catch (std::exception& exc) {
         scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
-    } catch (...) {
-    }
+    } catch (...) { }
 }
 
 void World_SetSampleRate(World* inWorld, double inSampleRate) {

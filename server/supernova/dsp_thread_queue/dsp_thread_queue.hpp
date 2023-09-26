@@ -113,10 +113,7 @@ public:
     };
 
     dsp_thread_queue_item(runnable const& job, successor_list const& successors, activation_limit_t activation_limit):
-        activation_count(0),
-        job(job),
-        successors(successors),
-        activation_limit(activation_limit) {}
+        activation_count(0), job(job), successors(successors), activation_limit(activation_limit) { }
 
     dsp_thread_queue_item* run(dsp_queue_interpreter& interpreter, std::uint8_t thread_index) {
         assert(activation_count == 0);
@@ -264,8 +261,7 @@ public:
 
     /** preallocate node_count nodes */
     dsp_thread_queue(std::size_t node_count, bool has_parallelism = true):
-        has_parallelism_(has_parallelism),
-        items(node_count) {
+        has_parallelism_(has_parallelism), items(node_count) {
         initially_runnable_items.reserve(node_count);
     }
 
@@ -391,7 +387,7 @@ private:
     static const int max_backup_loops = 16384;
 
     struct backoff {
-        backoff(int min, int max): min(min), max(max), loops(min) {}
+        backoff(int min, int max): min(min), max(max), loops(min) { }
 
         void run() {
             for (int i = 0; i != loops; ++i)
@@ -407,11 +403,11 @@ private:
     };
 
     struct yield_backoff {
-        yield_backoff(int dummy_min, int dummy_max) {}
+        yield_backoff(int dummy_min, int dummy_max) { }
 
         void run() { std::this_thread::yield(); }
 
-        void reset() {}
+        void reset() { }
     };
 
     template <bool YieldBackoff> struct select_backoff {

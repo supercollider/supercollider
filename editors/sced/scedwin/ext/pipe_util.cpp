@@ -46,7 +46,7 @@ using std::string;
 #define BUFSIZE 256
 
 struct sced_reader {
-    sced_reader(): done(false) {}
+    sced_reader(): done(false) { }
     PyObject* py_file;
     FILE* stream;
     HANDLE thread;

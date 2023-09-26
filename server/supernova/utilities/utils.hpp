@@ -100,7 +100,7 @@ struct checked_deleter {
 
 
 template <typename deleter = checked_deleter> struct intrusive_refcountable : public deleter {
-    intrusive_refcountable(void): use_count_(0) {}
+    intrusive_refcountable(void): use_count_(0) { }
 
     intrusive_refcountable(intrusive_refcountable const& rhs) = delete;
     intrusive_refcountable& operator=(intrusive_refcountable const& rhs) = delete;
@@ -142,7 +142,7 @@ PURE inline std::size_t string_hash(const char* str) {
 }
 
 struct linear_allocator {
-    linear_allocator(char* chunk): chunk(chunk) {}
+    linear_allocator(char* chunk): chunk(chunk) { }
 
     template <typename T> T* alloc(int count = 1) {
         T* ret = reinterpret_cast<T*>(chunk);

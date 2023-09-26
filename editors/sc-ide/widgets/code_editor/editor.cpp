@@ -51,10 +51,7 @@
 namespace ScIDE {
 
 GenericCodeEditor::GenericCodeEditor(Document* doc, QWidget* parent):
-    QPlainTextEdit(parent),
-    mDoc(doc),
-    mEditorBoxIsActive(false),
-    mLastCursorBlock(-1) {
+    QPlainTextEdit(parent), mDoc(doc), mEditorBoxIsActive(false), mLastCursorBlock(-1) {
     Q_ASSERT(mDoc != 0);
 
     setFrameShape(QFrame::NoFrame);

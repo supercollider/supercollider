@@ -36,9 +36,7 @@
 namespace ScIDE { namespace Settings {
 
 EditorPage::EditorPage(QWidget* parent):
-    QWidget(parent),
-    fontDatabase(new QFontDatabase),
-    ui(new Ui::EditorConfigPage) {
+    QWidget(parent), fontDatabase(new QFontDatabase), ui(new Ui::EditorConfigPage) {
     ui->setupUi(this);
 
     connect(ui->tabs, SIGNAL(currentChanged(int)), this, SLOT(onCurrentTabChanged(int)));

@@ -30,7 +30,7 @@ class cpu_time_info {
     typedef std::vector<float, boost::alignment::aligned_allocator<float, 64>> ringbuffer;
 
 public:
-    cpu_time_info() {}
+    cpu_time_info() { }
 
     void resize(int sampleRate, int blockSize, int seconds = 1) {
         const size_t blocks = sampleRate * seconds / blockSize;

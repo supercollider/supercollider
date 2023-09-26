@@ -28,7 +28,7 @@ namespace QtCollider {
 
 class ScopeShm : public QObject {
 public:
-    ScopeShm(QObject* parent): QObject(parent), client(0) {}
+    ScopeShm(QObject* parent): QObject(parent), client(0) { }
 
     server_shared_memory_client* client;
     scope_buffer_reader reader;

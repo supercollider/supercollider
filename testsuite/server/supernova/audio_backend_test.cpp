@@ -10,7 +10,7 @@
 using namespace nova;
 
 namespace {
-void tick(void) {}
+void tick(void) { }
 }
 
 template <typename backend> void test_backend(void) {

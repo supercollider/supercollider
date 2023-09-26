@@ -43,8 +43,8 @@ public:
 
 private:
     struct LexicalRule {
-        LexicalRule(): type(Token::Unknown) {}
-        LexicalRule(Token::Type t, const QString& s): type(t), expr(s) {}
+        LexicalRule(): type(Token::Unknown) { }
+        LexicalRule(Token::Type t, const QString& s): type(t), expr(s) { }
 
         Token::Type type;
         QRegExp expr;
@@ -56,7 +56,7 @@ private:
     static QVector<LexicalRule> mLexicalRules;
 
 public:
-    ScLexer(const QString& text, int offset = 0, int state = InCode): mText(text), mOffset(offset), mState(state) {}
+    ScLexer(const QString& text, int offset = 0, int state = InCode): mText(text), mOffset(offset), mState(state) { }
 
     const QString& text() const { return mText; }
 

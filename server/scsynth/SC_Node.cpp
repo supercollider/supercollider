@@ -252,7 +252,7 @@ void Node_SetControl(Node* inNode, int32 inHash, int32* inName, int inIndex, flo
 
 // this function can be installed using Node_SetRun to cause a node to do nothing
 // during its execution time.
-void Node_NullCalc(struct Node* /*inNode*/) {}
+void Node_NullCalc(struct Node* /*inNode*/) { }
 
 void Graph_FirstCalc(Graph* inGraph);
 void Graph_NullFirstCalc(Graph* inGraph);

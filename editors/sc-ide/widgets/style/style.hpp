@@ -27,7 +27,7 @@ namespace ScIDE {
 
 class Style : public QProxyStyle {
 public:
-    Style(QStyle* style = 0): QProxyStyle(style) {}
+    Style(QStyle* style = 0): QProxyStyle(style) { }
 
     virtual void polish(QWidget* widget);
     virtual void unpolish(QWidget* widget);

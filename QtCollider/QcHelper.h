@@ -9,7 +9,7 @@
 
 struct QcHelper {
 protected:
-    QcHelper() {}
+    QcHelper() { }
     float dummyFloat() const { return 0; }
     int dummyInt() const { return 0; }
     bool dummyBool() const { return false; }

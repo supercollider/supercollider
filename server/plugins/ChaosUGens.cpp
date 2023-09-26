@@ -35,12 +35,12 @@ struct NonLinear : public Unit {
     // bool stable;
 };
 
-struct CuspN : public NonLinear {};
+struct CuspN : public NonLinear { };
 struct CuspL : public CuspN {
     double frac;
 };
 
-struct GbmanN : public NonLinear {};
+struct GbmanN : public NonLinear { };
 struct GbmanL : public GbmanN {
     double frac;
 };
@@ -57,7 +57,7 @@ struct HenonC : public HenonL {
     double xnm3, c0, c1, c2, c3;
 };
 
-struct LatoocarfianN : public NonLinear {};
+struct LatoocarfianN : public NonLinear { };
 struct LatoocarfianL : public LatoocarfianN {
     double frac;
 };
@@ -65,7 +65,7 @@ struct LatoocarfianC : public LatoocarfianL {
     double xnm3, xnm2, c0, c1, c2, c3;
 };
 
-struct LinCongN : public NonLinear {};
+struct LinCongN : public NonLinear { };
 struct LinCongL : public LinCongN {
     double frac;
 };
@@ -80,7 +80,7 @@ struct LorenzL : public LorenzN {
     double frac;
 };
 
-struct QuadN : public NonLinear {};
+struct QuadN : public NonLinear { };
 struct QuadL : public QuadN {
     double frac;
 };
@@ -89,12 +89,12 @@ struct QuadC : public QuadL {
     double c0, c1, c2, c3;
 };
 
-struct StandardN : public NonLinear {};
+struct StandardN : public NonLinear { };
 struct StandardL : public StandardN {
     double frac;
 };
 
-struct FBSineN : public NonLinear {};
+struct FBSineN : public NonLinear { };
 struct FBSineL : public FBSineN {
     double frac;
 };

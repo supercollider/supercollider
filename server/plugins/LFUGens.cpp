@@ -143,9 +143,9 @@ struct InRect : public Unit {
 //  float m_leftScale, m_rightScale, m_a, m_b, m_c, m_d;
 //};
 
-struct A2K : public Unit {};
+struct A2K : public Unit { };
 
-struct T2K : public Unit {};
+struct T2K : public Unit { };
 
 struct T2A : public Unit {
     float mLevel;

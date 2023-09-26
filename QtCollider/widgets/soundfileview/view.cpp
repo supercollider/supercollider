@@ -650,7 +650,7 @@ void QcWaveform::mouseMoveEvent(QMouseEvent* ev) {
     }
 }
 
-void QcWaveform::rebuildCache(int maxFPU, int maxRawFrames) {}
+void QcWaveform::rebuildCache(int maxFPU, int maxRawFrames) { }
 
 void QcWaveform::draw(QPixmap* pix, int x, int width, double f_beg, double f_dur) {
     // FIXME anomaly: when _fpp reaching 1.0 rms can go outside min-max!

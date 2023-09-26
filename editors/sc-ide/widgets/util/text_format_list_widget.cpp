@@ -28,7 +28,7 @@
 
 namespace ScIDE {
 
-TextFormatListWidget::ItemDelegate::ItemDelegate(QObject* parent): QStyledItemDelegate(parent) {}
+TextFormatListWidget::ItemDelegate::ItemDelegate(QObject* parent): QStyledItemDelegate(parent) { }
 
 QSize TextFormatListWidget::ItemDelegate::sizeHint(const QStyleOptionViewItem& opt, const QModelIndex& index) const {
     switch (index.column()) {

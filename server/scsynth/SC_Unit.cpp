@@ -66,7 +66,7 @@ Unit* Unit_New(World* inWorld, UnitSpec* inUnitSpec, char*& memory) {
     return unit;
 }
 
-void Unit_Dtor(Unit* inUnit) {}
+void Unit_Dtor(Unit* inUnit) { }
 
 void Unit_ZeroOutputs(Unit* unit, int inNumSamples) {
     uint32 numOuts = unit->mNumOutputs;

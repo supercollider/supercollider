@@ -457,9 +457,7 @@ static inline void IO_k_update_channels(IOUnit* unit, World* world, float fbusCh
 
 template <bool LockShared> struct AudioBusGuard {
     AudioBusGuard(const Unit* unit, int32 currentChannel, int32 maxChannel):
-        unit(unit),
-        mCurrentChannel(currentChannel),
-        isValid(currentChannel < maxChannel) {
+        unit(unit), mCurrentChannel(currentChannel), isValid(currentChannel < maxChannel) {
         if (isValid)
             lock();
     }

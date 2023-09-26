@@ -47,7 +47,7 @@ protected:
     group_list child_groups;
     const bool group_is_parallel;
 
-    abstract_group(int node_id, bool is_parallel): server_node(node_id, false), group_is_parallel(is_parallel) {}
+    abstract_group(int node_id, bool is_parallel): server_node(node_id, false), group_is_parallel(is_parallel) { }
 
 public:
     virtual ~abstract_group(void);
@@ -296,7 +296,7 @@ inline const server_node* server_node::next_node(void) const { return const_cast
 
 class group : public abstract_group {
 public:
-    group(int node_id): abstract_group(node_id, false) {}
+    group(int node_id): abstract_group(node_id, false) { }
 
     const server_node* head_node(void) const { return &*child_nodes.begin(); }
 
@@ -327,7 +327,7 @@ private:
 
 class parallel_group : public abstract_group {
 public:
-    parallel_group(int node_id): abstract_group(node_id, true) {}
+    parallel_group(int node_id): abstract_group(node_id, true) { }
 
 private:
     void add_child(server_node* node, node_position_constraint const& constraint) override;

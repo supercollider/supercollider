@@ -96,7 +96,7 @@ public:
 
 public:
     struct Selection {
-        Selection(): start(0), size(0), editable(true), color(QColor(128, 128, 128, 192)) {}
+        Selection(): start(0), size(0), editable(true), color(QColor(128, 128, 128, 192)) { }
 
         sf_count_t start;
         sf_count_t size;
@@ -343,12 +343,10 @@ public:
     virtual float* rawFrames(int channel, sf_count_t beginning, sf_count_t duration, bool* interleaved) = 0;
 
 protected:
-    SoundStream(): _ch(0), _beg(0), _dur(0) {}
+    SoundStream(): _ch(0), _beg(0), _dur(0) { }
 
     SoundStream(int channels, sf_count_t beginning, sf_count_t duration):
-        _ch(channels),
-        _beg(beginning),
-        _dur(duration) {}
+        _ch(channels), _beg(beginning), _dur(duration) { }
 
     int _ch;
     sf_count_t _beg;
@@ -418,7 +416,7 @@ private:
 class SoundCacheLoader : public QThread {
     Q_OBJECT
 public:
-    SoundCacheLoader(SoundCacheStream* cache): QThread(cache), _cache(cache), _sf(0) {}
+    SoundCacheLoader(SoundCacheStream* cache): QThread(cache), _cache(cache), _sf(0) { }
     void load(SNDFILE* sf, const SF_INFO& info);
 
 Q_SIGNALS:

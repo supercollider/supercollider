@@ -163,7 +163,7 @@ void ReportLateness(ReplyAddress* inReply, float32 seconds) {
 
 SC_NamedObj::SC_NamedObj() { SetName("?"); }
 
-SC_NamedObj::~SC_NamedObj() {}
+SC_NamedObj::~SC_NamedObj() { }
 
 void SC_NamedObj::SetName(const int32* inName) {
     if (str4len(inName) > (int)kSCNameLen)
@@ -179,7 +179,7 @@ void SC_NamedObj::SetName(const char* inName) {
     mHash = Hash(mName);
 }
 
-SC_LibCmd::SC_LibCmd(SC_CommandFunc inFunc): mFunc(inFunc) {}
+SC_LibCmd::SC_LibCmd(SC_CommandFunc inFunc): mFunc(inFunc) { }
 
 SCErr SC_LibCmd::Perform(struct World* inWorld, int inSize, char* inData, ReplyAddress* inReply) {
     SCErr err;

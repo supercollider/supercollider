@@ -61,7 +61,7 @@ template <class thread_init_functor = nop_thread_init> class scheduler {
 
     struct reset_queue_cb : public audio_sync_callback {
     public:
-        reset_queue_cb(scheduler* sched, dsp_thread_queue_ptr& qptr): sched(sched), qptr(qptr) {}
+        reset_queue_cb(scheduler* sched, dsp_thread_queue_ptr& qptr): sched(sched), qptr(qptr) { }
 
         void run(void) override {
             sched->reset_queue_sync(qptr);
@@ -80,7 +80,7 @@ protected:
 public:
     /* start thread_count - 1 scheduler threads */
     scheduler(thread_count_t thread_count = 1, bool realtime = false):
-        threads(thread_count, !realtime, thread_init_functor(realtime)) {}
+        threads(thread_count, !realtime, thread_init_functor(realtime)) { }
 
     void start_dsp_threads(void) { threads.start_threads(); }
 

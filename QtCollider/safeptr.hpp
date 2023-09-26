@@ -32,11 +32,11 @@ namespace QtCollider {
 
 template <typename T> class SafePtr {
 public:
-    SafePtr(): d(0) {}
+    SafePtr(): d(0) { }
 
     SafePtr(const SafePtr& other): d(other.d) { ref(); }
 
-    SafePtr(T* ptr): d(new Data(ptr)) {}
+    SafePtr(T* ptr): d(new Data(ptr)) { }
 
     SafePtr& operator=(const SafePtr& other) {
         deref();
@@ -65,7 +65,7 @@ public:
 
 private:
     struct Data {
-        Data(T* ptr_): ptr(ptr_), refCount(1) {}
+        Data(T* ptr_): ptr(ptr_), refCount(1) { }
         QAtomicPointer<T> ptr;
         QAtomicInt refCount;
     };

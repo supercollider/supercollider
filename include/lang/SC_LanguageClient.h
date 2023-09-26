@@ -40,7 +40,7 @@ SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient*);
 class SCLANG_DLLEXPORT SC_LanguageClient {
 public:
     struct Options {
-        Options(): mMemSpace(2 * 1024 * 1024), mMemGrow(256 * 1024), mPort(57120), mRuntimeDir(0) {}
+        Options(): mMemSpace(2 * 1024 * 1024), mMemGrow(256 * 1024), mPort(57120), mRuntimeDir(0) { }
 
         int mMemSpace; // memory space in bytes
         int mMemGrow; // memory growth in bytes

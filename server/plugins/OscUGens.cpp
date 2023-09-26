@@ -42,7 +42,7 @@ struct DegreeToKey : public BufUnit {
     int32 mOctave;
 };
 
-struct Select : public Unit {};
+struct Select : public Unit { };
 
 struct TWindex : public Unit {
     int32 m_prevIndex;
@@ -50,15 +50,15 @@ struct TWindex : public Unit {
     float m_maxSum;
 };
 
-struct Index : public BufUnit {};
+struct Index : public BufUnit { };
 
-struct IndexL : public BufUnit {};
+struct IndexL : public BufUnit { };
 
-struct WrapIndex : public BufUnit {};
+struct WrapIndex : public BufUnit { };
 
-struct FoldIndex : public BufUnit {};
+struct FoldIndex : public BufUnit { };
 
-struct IndexInBetween : public BufUnit {};
+struct IndexInBetween : public BufUnit { };
 
 struct DetectIndex : public BufUnit {
     float mPrev;

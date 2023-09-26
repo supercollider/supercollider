@@ -30,7 +30,7 @@ class IconListWidget : public QListWidget {
 public:
     class ItemDelegate : public QStyledItemDelegate {
     public:
-        ItemDelegate(QObject* parent): QStyledItemDelegate(parent) {}
+        ItemDelegate(QObject* parent): QStyledItemDelegate(parent) { }
 
         virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
             QIcon icon(index.data(Qt::DecorationRole).value<QIcon>());

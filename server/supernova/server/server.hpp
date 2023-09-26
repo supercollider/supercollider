@@ -73,7 +73,7 @@ public:
  */
 template <typename T> class delete_callback : public system_callback {
 public:
-    delete_callback(T* ptr): ptr_(ptr) {}
+    delete_callback(T* ptr): ptr_(ptr) { }
 
 private:
     virtual void run(void) override { delete ptr_; }
@@ -88,7 +88,7 @@ private:
  *
  * */
 struct thread_init_functor {
-    thread_init_functor(bool real_time): rt(real_time) {}
+    thread_init_functor(bool real_time): rt(real_time) { }
 
     void operator()(int thread_index);
 

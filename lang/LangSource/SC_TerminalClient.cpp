@@ -85,7 +85,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name):
 {
 }
 
-SC_TerminalClient::~SC_TerminalClient() {}
+SC_TerminalClient::~SC_TerminalClient() { }
 
 void SC_TerminalClient::postText(const char* str, size_t len) { fwrite(str, sizeof(char), len, gPostDest); }
 

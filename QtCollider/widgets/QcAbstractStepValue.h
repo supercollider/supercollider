@@ -23,7 +23,7 @@
 
 class QcAbstractStepValue {
 protected:
-    QcAbstractStepValue(): _shiftScale(100.f), _ctrlScale(10.f), _altScale(0.1f) {}
+    QcAbstractStepValue(): _shiftScale(100.f), _ctrlScale(10.f), _altScale(0.1f) { }
     bool modifyStep(double* step);
     void setShiftScale(double scale) { _shiftScale = scale; }
     void setCtrlScale(double scale) { _ctrlScale = scale; }

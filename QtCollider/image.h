@@ -34,7 +34,7 @@ class Image {
     enum State { Null, ImageState, PixmapState };
 
 public:
-    Image(): transformationMode(Qt::SmoothTransformation), m_state(Null), m_painting(false) {}
+    Image(): transformationMode(Qt::SmoothTransformation), m_state(Null), m_painting(false) { }
 
     void setImage(const QImage& image) {
         assert(!m_painting);

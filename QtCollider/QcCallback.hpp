@@ -28,7 +28,7 @@ class QcCallback;
 
 class QcCallbackWeakFunctor {
 public:
-    QcCallbackWeakFunctor(QPointer<QcCallback> cb): _cb(cb) {}
+    QcCallbackWeakFunctor(QPointer<QcCallback> cb): _cb(cb) { }
 
     template <typename RESULT> void operator()(RESULT r) const;
 
@@ -40,7 +40,7 @@ class QcCallback : public QObject {
     Q_OBJECT
 
 public:
-    QcCallback() {}
+    QcCallback() { }
 
     template <typename CallbackT> void call(const CallbackT& result) { Q_EMIT(onCalled(result)); }
 

@@ -56,12 +56,9 @@ struct Token {
         Operator
     };
 
-    Token(Type t, int pos, int len = 0, char c = 0): type(t), positionInBlock(pos), length(len), character(c) {}
+    Token(Type t, int pos, int len = 0, char c = 0): type(t), positionInBlock(pos), length(len), character(c) { }
     Token(Token const& rhs):
-        type(rhs.type),
-        positionInBlock(rhs.positionInBlock),
-        length(rhs.length),
-        character(rhs.character) {}
+        type(rhs.type), positionInBlock(rhs.positionInBlock), length(rhs.length), character(rhs.character) { }
 
     Type type;
     int positionInBlock;
@@ -93,7 +90,7 @@ private:
     TextBlockData* data;
 
 public:
-    TokenIterator(): idx(-1) {}
+    TokenIterator(): idx(-1) { }
     bool isValid() const { return idx >= 0; }
     const QTextBlock& block() const { return blk; }
 

@@ -36,7 +36,7 @@
 
 #    define MAX_PROPERTY_VALUE_LEN 4096
 
-static inline void p_verbose(...) {}
+static inline void p_verbose(...) { }
 
 #    define gchar char
 #    define gboolean bool

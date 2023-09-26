@@ -124,10 +124,7 @@ char* allocAndRestrictPath(World* mWorld, const char* inPath, const char* restri
 }
 
 SC_SequencedCommand::SC_SequencedCommand(World* inWorld, ReplyAddress* inReplyAddress):
-    mNextStage(1),
-    mWorld(inWorld),
-    mMsgSize(0),
-    mMsgData(nullptr) {
+    mNextStage(1), mWorld(inWorld), mMsgSize(0), mMsgData(nullptr) {
     if (inReplyAddress)
         mReplyAddress = *inReplyAddress;
     else
@@ -234,7 +231,7 @@ bool SC_SequencedCommand::Stage2() { return false; }
 
 bool SC_SequencedCommand::Stage3() { return false; }
 
-void SC_SequencedCommand::Stage4() {}
+void SC_SequencedCommand::Stage4() { }
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -242,7 +239,7 @@ void SC_SequencedCommand::Stage4() {}
 #include "sc_msg_iter.h"
 #include <string.h>
 
-SyncCmd::SyncCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+SyncCmd::SyncCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int SyncCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -270,7 +267,7 @@ void SyncCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufAllocCmd::BufAllocCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufAllocCmd::BufAllocCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int BufAllocCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -316,8 +313,7 @@ void BufAllocCmd::Stage4() {
 #include <string.h>
 
 BufGenCmd::BufGenCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mData(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mData(nullptr) { }
 
 BufGenCmd::~BufGenCmd() { World_Free(mWorld, mData); }
 
@@ -375,7 +371,7 @@ void BufGenCmd::Stage4() {
 ///////////////////////////////////////////////////////////////////////////
 
 
-BufFreeCmd::BufFreeCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufFreeCmd::BufFreeCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int BufFreeCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -416,7 +412,7 @@ void BufFreeCmd::Stage4() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufZeroCmd::BufZeroCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufZeroCmd::BufZeroCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int BufZeroCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -446,9 +442,7 @@ void BufZeroCmd::Stage4() { SendDoneWithIntValue("/b_zero", mBufIndex); }
 ///////////////////////////////////////////////////////////////////////////
 
 BufAllocReadCmd::BufAllocReadCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFreeData(nullptr),
-    mFilename(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mFreeData(nullptr), mFilename(nullptr) { }
 
 int BufAllocReadCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -537,8 +531,7 @@ void BufAllocReadCmd::Stage4() {
 ///////////////////////////////////////////////////////////////////////////
 
 BufReadCmd::BufReadCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mFilename(nullptr) { }
 
 int BufReadCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -651,10 +644,9 @@ void BufReadCmd::Stage4() { SendDoneWithIntValue("/b_read", mBufIndex); }
 ///////////////////////////////////////////////////////////////////////////
 
 SC_BufReadCommand::SC_BufReadCommand(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mNumChannels(0) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mNumChannels(0) { }
 
-SC_BufReadCommand::~SC_BufReadCommand() {}
+SC_BufReadCommand::~SC_BufReadCommand() { }
 
 void SC_BufReadCommand::InitChannels(sc_msg_iter& msg) {
     mNumChannels = 0;
@@ -693,9 +685,7 @@ void SC_BufReadCommand::CopyChannels(float* dst, float* src, size_t srcChannels,
 ///////////////////////////////////////////////////////////////////////////
 
 BufAllocReadChannelCmd::BufAllocReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_BufReadCommand(inWorld, inReplyAddress),
-    mFreeData(nullptr),
-    mFilename(nullptr) {}
+    SC_BufReadCommand(inWorld, inReplyAddress), mFreeData(nullptr), mFilename(nullptr) { }
 
 int BufAllocReadChannelCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -814,8 +804,7 @@ void BufAllocReadChannelCmd::Stage4() {
 ///////////////////////////////////////////////////////////////////////////
 
 BufReadChannelCmd::BufReadChannelCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_BufReadCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+    SC_BufReadCommand(inWorld, inReplyAddress), mFilename(nullptr) { }
 
 int BufReadChannelCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -956,11 +945,10 @@ void BufReadChannelCmd::Stage4() { SendDoneWithIntValue("/b_readChannel", mBufIn
 ///////////////////////////////////////////////////////////////////////////
 
 BufWriteCmd::BufWriteCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mFilename(nullptr) { }
 
 #ifdef NO_LIBSNDFILE
-struct SF_INFO {};
+struct SF_INFO { };
 #endif
 
 int BufWriteCmd::Init(char* inData, int inSize) {
@@ -1059,7 +1047,7 @@ void BufWriteCmd::Stage4() { SendDoneWithIntValue("/b_write", mBufIndex); }
 
 ///////////////////////////////////////////////////////////////////////////
 
-BufCloseCmd::BufCloseCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+BufCloseCmd::BufCloseCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int BufCloseCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -1097,7 +1085,7 @@ void BufCloseCmd::Stage4() { SendDoneWithIntValue("/b_close", mBufIndex); }
 ///////////////////////////////////////////////////////////////////////////
 
 AudioQuitCmd::AudioQuitCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress) {}
+    SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 void AudioQuitCmd::CallDestructor() { this->~AudioQuitCmd(); }
 
@@ -1126,7 +1114,7 @@ void AudioQuitCmd::Stage4() {
 ///////////////////////////////////////////////////////////////////////////
 
 AudioStatusCmd::AudioStatusCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress) {}
+    SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 void AudioStatusCmd::CallDestructor() { this->~AudioStatusCmd(); }
 
@@ -1168,7 +1156,7 @@ bool AudioStatusCmd::Stage2() {
 
 ///////////////////////////////////////////////////////////////////////////
 
-NotifyCmd::NotifyCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) {}
+NotifyCmd::NotifyCmd(World* inWorld, ReplyAddress* inReplyAddress): SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int NotifyCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -1253,9 +1241,7 @@ bool NotifyCmd::Stage2() {
 ///////////////////////////////////////////////////////////////////////////
 
 SendFailureCmd::SendFailureCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mCmdName(nullptr),
-    mErrString(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mCmdName(nullptr), mErrString(nullptr) { }
 
 SendFailureCmd::~SendFailureCmd() {
     World_Free(mWorld, mCmdName);
@@ -1283,8 +1269,7 @@ bool SendFailureCmd::Stage2() {
 ///////////////////////////////////////////////////////////////////////////
 
 RecvSynthDefCmd::RecvSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mBuffer(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mBuffer(nullptr) { }
 
 int RecvSynthDefCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -1324,8 +1309,7 @@ void RecvSynthDefCmd::Stage4() { SendDone("/d_recv"); }
 ///////////////////////////////////////////////////////////////////////////
 
 LoadSynthDefCmd::LoadSynthDefCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mFilename(nullptr) { }
 
 int LoadSynthDefCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -1378,8 +1362,7 @@ void LoadSynthDefCmd::Stage4() { SendDone("/d_load"); }
 ///////////////////////////////////////////////////////////////////////////
 
 LoadSynthDefDirCmd::LoadSynthDefDirCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress),
-    mFilename(nullptr) {}
+    SC_SequencedCommand(inWorld, inReplyAddress), mFilename(nullptr) { }
 
 int LoadSynthDefDirCmd::Init(char* inData, int inSize) {
     sc_msg_iter msg(inSize, inData);
@@ -1438,7 +1421,7 @@ void LoadSynthDefDirCmd::Stage4() { SendDone("/d_loadDir"); }
 ///////////////////////////////////////////////////////////////////////////
 
 SendReplyCmd::SendReplyCmd(World* inWorld, ReplyAddress* inReplyAddress):
-    SC_SequencedCommand(inWorld, inReplyAddress) {}
+    SC_SequencedCommand(inWorld, inReplyAddress) { }
 
 int SendReplyCmd::Init(char* inData, int inSize) {
     mMsgSize = inSize;

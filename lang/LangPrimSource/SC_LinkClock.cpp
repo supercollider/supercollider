@@ -13,8 +13,7 @@ std::chrono::microseconds LinkClock::InitTime;
 
 LinkClock::LinkClock(VMGlobals* vmGlobals, PyrObject* tempoClockObj, double tempo, double baseBeats,
                      double baseSeconds):
-    TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds),
-    mLink(tempo * 60.) {
+    TempoClock(vmGlobals, tempoClockObj, tempo, baseBeats, baseSeconds), mLink(tempo * 60.) {
     // quantum = beatsPerBar
     int err = slotDoubleVal(&tempoClockObj->slots[2], &mQuantum);
     if (err)

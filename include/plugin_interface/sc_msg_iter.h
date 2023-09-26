@@ -78,7 +78,7 @@ struct sc_msg_iter {
     char nextTag(char defaultTag = 'f') { return tags ? tags[count] : defaultTag; }
 };
 
-inline sc_msg_iter::sc_msg_iter() {}
+inline sc_msg_iter::sc_msg_iter() { }
 
 inline sc_msg_iter::sc_msg_iter(int inSize, const char* inData) { init(inSize, inData); }
 

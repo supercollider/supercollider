@@ -34,7 +34,7 @@ class freelist {
     typedef boost::lockfree::detail::tagged_ptr<freelist_node> tagged_ptr;
 
 public:
-    freelist(void): pool_(tagged_ptr(nullptr)) {}
+    freelist(void): pool_(tagged_ptr(nullptr)) { }
 
     freelist(freelist const& rhs) = delete;
     freelist& operator=(freelist const& rhs) = delete;

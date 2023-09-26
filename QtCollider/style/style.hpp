@@ -20,7 +20,7 @@ class StyleImpl : public ProxyStyle {
     Q_OBJECT
 
 public:
-    StyleImpl(QStyle* s = 0): ProxyStyle(s) {}
+    StyleImpl(QStyle* s = 0): ProxyStyle(s) { }
 
     virtual void polish(QPalette&);
 
@@ -34,7 +34,7 @@ private:
 };
 
 struct Client {
-    Client(QWidget* w): _widget(w) {}
+    Client(QWidget* w): _widget(w) { }
 
     QColor focusColor() const { return color(Focus); }
     void setFocusColor(const QColor& c) { setColor(Focus, c); }

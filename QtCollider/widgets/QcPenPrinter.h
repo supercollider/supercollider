@@ -35,7 +35,7 @@ class QcPenPrinter : public QObject {
     Q_PROPERTY(int toPage READ toPage);
 
 public:
-    QcPenPrinter(): dialog(0) {}
+    QcPenPrinter(): dialog(0) { }
 
     ~QcPenPrinter() { delete dialog; }
 

@@ -678,7 +678,7 @@ void SendTrig_next_aka(SendTrig* unit, int inNumSamples) {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-static void Unit_next_nop(SendReply* unit, int inNumSamples) {}
+static void Unit_next_nop(SendReply* unit, int inNumSamples) { }
 
 void SendReply_Ctor(SendReply* unit) {
     const int kVarOffset = 3;

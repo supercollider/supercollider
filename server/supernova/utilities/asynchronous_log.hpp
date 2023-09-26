@@ -110,7 +110,7 @@ private:
 
 struct asynchronous_log_thread : asynchronous_log {
 public:
-    asynchronous_log_thread(void): running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this)) {}
+    asynchronous_log_thread(void): running_flag(true), thread_(std::bind(&asynchronous_log_thread::run, this)) { }
 
     ~asynchronous_log_thread(void) {
         running_flag = false;

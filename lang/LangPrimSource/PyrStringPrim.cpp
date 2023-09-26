@@ -185,7 +185,7 @@ class regex_lru_cache {
 
     struct regex_node : bin::list_base_hook<>, bin::unordered_set_base_hook<> {
     public:
-        regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) {}
+        regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) { }
 
         boost::regex const& get(void) const { return pattern; }
 
@@ -237,8 +237,7 @@ class regex_lru_cache {
 
 public:
     regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
-        re_set(bucket_traits(buckets, 128)),
-        re_list() {}
+        re_set(bucket_traits(buckets, 128)), re_list() { }
 
     ~regex_lru_cache() {
         while (!re_list.empty()) {

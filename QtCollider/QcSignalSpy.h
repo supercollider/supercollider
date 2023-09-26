@@ -39,9 +39,7 @@
 class QcSignalSpy : public QObject {
 public:
     QcSignalSpy(QObjectProxy* proxy, const char* sigName, Qt::ConnectionType conType = Qt::QueuedConnection):
-        QObject(proxy),
-        _proxy(proxy),
-        _sigId(-1) {
+        QObject(proxy), _proxy(proxy), _sigId(-1) {
         Q_ASSERT(sigName);
 
         const QMetaObject* mo = _proxy->object()->metaObject();
@@ -123,8 +121,7 @@ class QcMethodSignalHandler : public QcSignalSpy {
 public:
     QcMethodSignalHandler(QObjectProxy* proxy, const char* sigName, PyrSymbol* handler,
                           Qt::ConnectionType conType = Qt::QueuedConnection):
-        QcSignalSpy(proxy, sigName, conType),
-        _handler(handler) {}
+        QcSignalSpy(proxy, sigName, conType), _handler(handler) { }
 
     inline PyrSymbol* method() { return _handler; }
 
@@ -146,8 +143,7 @@ class QcFunctionSignalHandler : public QcSignalSpy {
 public:
     QcFunctionSignalHandler(QObjectProxy* proxy, const char* sigName, PyrObject* handler,
                             Qt::ConnectionType conType = Qt::QueuedConnection):
-        QcSignalSpy(proxy, sigName, conType),
-        _handler(handler) {}
+        QcSignalSpy(proxy, sigName, conType), _handler(handler) { }
 
     inline PyrObject* function() { return _handler; }
 

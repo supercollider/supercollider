@@ -39,7 +39,7 @@
 
 namespace ScIDE {
 
-DockletToolButton::DockletToolButton(QWidget* parent): QToolButton(parent) {}
+DockletToolButton::DockletToolButton(QWidget* parent): QToolButton(parent) { }
 
 
 void DockletToolButton::mouseDoubleClickEvent(QMouseEvent* event) { event->accept(); }

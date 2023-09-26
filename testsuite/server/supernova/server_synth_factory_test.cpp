@@ -9,7 +9,7 @@ using namespace std;
 
 namespace {
 struct test_synth_definition : public synth_definition {
-    test_synth_definition(): synth_definition(symbol("foo")) {}
+    test_synth_definition(): synth_definition(symbol("foo")) { }
 
     abstract_synth* create_instance(int node_id) { return new test_synth(node_id, this); }
 };

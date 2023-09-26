@@ -193,8 +193,7 @@ void SclangPage::readLanguageConfig() {
                 }
             }
         }
-    } catch (std::exception&) {
-    }
+    } catch (std::exception&) { }
 
     sclangConfigDirty = false;
 }
@@ -256,7 +255,9 @@ QStringList SclangPage::availableLanguageConfigFiles() {
     fileFilters << "sclang_conf*.yaml";
     QFileInfoList configFileList = qdir.entryInfoList(fileFilters);
     QStringList canonicalPaths;
-    foreach (QFileInfo aFile, configFileList) { canonicalPaths.append(aFile.canonicalFilePath()); }
+    foreach (QFileInfo aFile, configFileList) {
+        canonicalPaths.append(aFile.canonicalFilePath());
+    }
     return canonicalPaths;
 }
 

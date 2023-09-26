@@ -25,9 +25,7 @@ namespace nova {
 class set_cmd_index : public audio_sync_callback {
 public:
     set_cmd_index(int node_id, slot_index_t const& slot_id, float value):
-        node_id(node_id),
-        slot_id(slot_id),
-        value(value) {}
+        node_id(node_id), slot_id(slot_id), value(value) { }
 
 private:
     virtual void run(void) override { instance->set_node_slot(node_id, slot_id, value); }

@@ -75,12 +75,12 @@ public:
     const int& id() const { return mId; }
 
 protected:
-    MetaType(int a_id): mId(a_id) {}
+    MetaType(int a_id): mId(a_id) { }
     int mId;
 };
 
 template <typename T> struct MetaTypeImpl : MetaType {
-    MetaTypeImpl(): MetaType(qMetaTypeId<T>()) {}
+    MetaTypeImpl(): MetaType(qMetaTypeId<T>()) { }
 
     size_t size() { return sizeof(T); }
 
@@ -101,7 +101,7 @@ template <typename T> struct MetaTypeImpl : MetaType {
 
 class MetaValue {
 public:
-    MetaValue(): mType(0), mData(0) {}
+    MetaValue(): mType(0), mData(0) { }
 
     ~MetaValue() {
         if (mType)

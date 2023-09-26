@@ -29,11 +29,11 @@
 
 namespace QtCollider {
 
-template <typename T> struct LangPrimitive {};
+template <typename T> struct LangPrimitive { };
 
 class LangPrimitiveDefiner {
 public:
-    LangPrimitiveDefiner(): _base(nextPrimitiveIndex()), _index(0) {}
+    LangPrimitiveDefiner(): _base(nextPrimitiveIndex()), _index(0) { }
 
     template <typename T> void define() { LangPrimitive<T>::define(_base, _index++); }
 
@@ -46,7 +46,7 @@ private:
 } // namespace
 
 #define QC_LANG_PRIMITIVE(NAME, ARGC, RECEIVER, ARGS, GLOBAL)                                                          \
-    struct NAME {};                                                                                                    \
+    struct NAME { };                                                                                                   \
     template <> struct LangPrimitive<NAME> {                                                                           \
         static int implementation(RECEIVER, ARGS, GLOBAL);                                                             \
         static int mediate(VMGlobals* g, int i) {                                                                      \

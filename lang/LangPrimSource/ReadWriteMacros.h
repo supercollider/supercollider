@@ -32,8 +32,8 @@ protected:
     T s;
 
 public:
-    SC_IOStream(): s(0) {}
-    SC_IOStream(T inStream): s(inStream) {}
+    SC_IOStream(): s(0) { }
+    SC_IOStream(T inStream): s(inStream) { }
 
     void SetStream(T inStream) { s = inStream; }
     T GetStream() { return s; }

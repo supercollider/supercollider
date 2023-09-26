@@ -44,7 +44,7 @@
 
 class SC_TimeDLL {
 public:
-    SC_TimeDLL(): m_b(0.), m_c(0.), m_t0(0.), m_t1(0.), m_e2(0.), m_np(0), m_ei(0.), m_ec(0) {}
+    SC_TimeDLL(): m_b(0.), m_c(0.), m_t0(0.), m_t1(0.), m_e2(0.), m_np(0), m_ei(0.), m_ec(0) { }
 
     void Reset(double sampleRate, uint32_t periodFrames, double bandWidth, double t) {
         // compute coefficients

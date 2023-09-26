@@ -33,9 +33,7 @@ class PathChooserWidget : public QWidget {
 
 public:
     PathChooserWidget(QWidget* parent = 0, QFileDialog::FileMode mode = QFileDialog::ExistingFile):
-        QWidget(parent),
-        mMode(mode),
-        dialog(0) {
+        QWidget(parent), mMode(mode), dialog(0) {
         mTextField = new QLineEdit;
 
         mButton = new QPushButton;

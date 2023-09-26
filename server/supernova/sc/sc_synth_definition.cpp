@@ -81,8 +81,7 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const& dir) {
 }
 
 sc_synth_definition::sc_synth_definition(sc_synthdef&& sd):
-    synth_definition(sd.name()),
-    sc_synthdef(std::forward<sc_synthdef>(sd)) {
+    synth_definition(sd.name()), sc_synthdef(std::forward<sc_synthdef>(sd)) {
     std::map<int, symbol> reversed_parameter_map;
     for (auto const& elem : parameter_map)
         reversed_parameter_map.insert(std::make_pair(elem.second, elem.first));

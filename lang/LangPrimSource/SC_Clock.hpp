@@ -37,7 +37,7 @@ class TempoClock {
 public:
     TempoClock(VMGlobals* inVMGlobals, PyrObject* inTempoClockObj, double inTempo, double inBaseBeats,
                double inBaseSeconds);
-    virtual ~TempoClock() {}
+    virtual ~TempoClock() { }
     void StopReq();
     void Stop();
     void StopAndDelete() {

@@ -41,11 +41,11 @@ class time_tag {
 public:
     static const uint64 fraction_steps = uint64(1) << 32;
 
-    time_tag(void): data_(0) {}
+    time_tag(void): data_(0) { }
 
-    time_tag(time_tag const& rhs): data_(rhs.data_) {}
+    time_tag(time_tag const& rhs): data_(rhs.data_) { }
 
-    time_tag(uint64 timetag): data_(timetag) {}
+    time_tag(uint64 timetag): data_(timetag) { }
 
     time_tag(uint32 secs, uint32 fraction) {
         cast_union cu;

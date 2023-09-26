@@ -34,7 +34,7 @@ A doubly linked list template.
 
 template <class T> class Link {
 public:
-    Link(): mNext(this), mPrev(this) {}
+    Link(): mNext(this), mPrev(this) { }
 
     T* Prev() { return static_cast<T*>(mPrev); }
     T* Next() { return static_cast<T*>(mNext); }

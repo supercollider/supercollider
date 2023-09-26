@@ -156,7 +156,7 @@ struct DiskIOThread {
     std::atomic<bool> mRunning;
     SC_Thread mThread;
 
-    DiskIOThread(): mRunning(false) {}
+    DiskIOThread(): mRunning(false) { }
 
     ~DiskIOThread() {
         if (mRunning) {

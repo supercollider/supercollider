@@ -60,7 +60,7 @@ static inline SCComplexBuf* ToComplexApx(SndBuf* buf) {
     return (SCComplexBuf*)buf->data;
 }
 
-struct PV_Unit : Unit {};
+struct PV_Unit : Unit { };
 
 // Ordinary ClearUnitOutputs outputs zero, potentially telling the IFFT (+ PV UGens) to act on buffer zero, so let's
 // skip that:

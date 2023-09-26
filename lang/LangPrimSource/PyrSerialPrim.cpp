@@ -103,10 +103,7 @@ public:
      * the port fails or if setting options fails.
      */
     SerialPort(PyrObject* obj, const char* serialport, const Options& options):
-        m_obj(obj),
-        m_port(ioService, serialport),
-        m_options(options),
-        m_rxErrors(0) {
+        m_obj(obj), m_port(ioService, serialport), m_options(options), m_rxErrors(0) {
         using namespace boost::asio;
 
         m_port.set_option(options.baudrate);

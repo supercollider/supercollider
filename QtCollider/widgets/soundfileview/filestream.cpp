@@ -22,7 +22,7 @@
 #include "view.hpp"
 #include <limits>
 
-SoundFileStream::SoundFileStream(): _data(0), _dataSize(0), _dataOffset(0) {}
+SoundFileStream::SoundFileStream(): _data(0), _dataSize(0), _dataOffset(0) { }
 
 SoundFileStream::SoundFileStream(SNDFILE* sf, const SF_INFO& info, sf_count_t b, sf_count_t d): _data(0) {
     load(sf, info, b, d);

@@ -23,7 +23,7 @@
 typedef void (*FifoMsgFunc)(struct FifoMsg*);
 
 struct FifoMsg {
-    FifoMsg(): mPerformFunc(0), mFreeFunc(0), mData(0), mWorld(0) {}
+    FifoMsg(): mPerformFunc(0), mFreeFunc(0), mData(0), mWorld(0) { }
 
     void Set(struct World* inWorld, FifoMsgFunc inPerform, FifoMsgFunc inFree, void* inData);
     void Perform();

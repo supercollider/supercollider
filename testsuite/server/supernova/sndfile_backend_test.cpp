@@ -13,7 +13,7 @@ aligned_storage_ptr<float> data(nova::calloc_aligned<float>(64));
 struct engine_functor;
 
 struct engine_functor {
-    void init_tick(void) {}
+    void init_tick(void) { }
 
     void run_tick(void);
 };

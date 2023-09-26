@@ -31,7 +31,7 @@
 
 template <class T, int N> class SC_FIFO {
 public:
-    SC_FIFO(): mMask(N - 1), mReadHead(0), mWriteHead(0) {}
+    SC_FIFO(): mMask(N - 1), mReadHead(0), mWriteHead(0) { }
 
     void MakeEmpty() { mReadHead = mWriteHead; }
     bool IsEmpty() { return mReadHead == mWriteHead; }

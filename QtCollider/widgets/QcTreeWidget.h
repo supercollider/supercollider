@@ -39,8 +39,8 @@ public:
     class Item : public QTreeWidgetItem {
     public:
         enum { Type = QTreeWidgetItem::UserType };
-        Item(): QTreeWidgetItem(Item::Type), _safePtr(this) {}
-        Item(const QStringList& strings): QTreeWidgetItem(strings, Item::Type), _safePtr(this) {}
+        Item(): QTreeWidgetItem(Item::Type), _safePtr(this) { }
+        Item(const QStringList& strings): QTreeWidgetItem(strings, Item::Type), _safePtr(this) { }
         ~Item() { _safePtr.invalidate(); }
         SafePtr<Item> safePtr() const { return _safePtr; }
         static SafePtr<Item> safePtr(QTreeWidgetItem*);

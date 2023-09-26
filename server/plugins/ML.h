@@ -121,7 +121,7 @@ struct SpecPcile : FFTAnalyser_OutOfPlace {
     bool m_binout;
 };
 
-struct SpecCentroid : FFTAnalyser_Unit {};
+struct SpecCentroid : FFTAnalyser_Unit { };
 
 
 extern "C" {

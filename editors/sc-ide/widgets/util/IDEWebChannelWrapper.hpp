@@ -30,7 +30,7 @@ class IDEWebChannelWrapper : public QObject {
     Q_OBJECT
 
 public:
-    IDEWebChannelWrapper(HelpBrowser* browser): m_browser { browser } {}
+    IDEWebChannelWrapper(HelpBrowser* browser): m_browser { browser } { }
 
 public slots:
     void evaluateLine() { m_browser->evaluateSelection(false); }

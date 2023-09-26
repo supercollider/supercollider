@@ -177,7 +177,7 @@ enum {
 };
 
 
-struct UnaryOpUGen : public Unit {};
+struct UnaryOpUGen : public Unit { };
 
 typedef void (*UnaryOpFunc)(UnaryOpUGen* unit, int inNumSamples);
 

@@ -210,7 +210,7 @@ void start_audio_backend(server_arguments const& args) {
 
 #else
 
-void start_audio_backend(server_arguments const& args) {}
+void start_audio_backend(server_arguments const& args) { }
 
 #endif
 

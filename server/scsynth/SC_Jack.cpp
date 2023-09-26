@@ -56,7 +56,7 @@ int64 oscTimeNow() { return OSCTime(getTime()); }
 
 static double jackOscTimeSeconds() { return OSCTime(getTime()) * kOSCtoSecs; }
 
-void initializeScheduler() {}
+void initializeScheduler() { }
 
 // =====================================================================
 // Audio driver
@@ -123,9 +123,7 @@ SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_JackDri
 // SC_JackPortList
 
 SC_JackPortList::SC_JackPortList(jack_client_t* client, int orderOffset, int numPorts, int type):
-    mSize(numPorts),
-    mPorts(nullptr),
-    mBuffers(nullptr) {
+    mSize(numPorts), mPorts(nullptr), mBuffers(nullptr) {
     const char* fmt = (type == JackPortIsInput ? "in_%d" : "out_%d");
 #ifdef SC_JACK_USE_METADATA_API
     const char* prettyFmt = (type == JackPortIsInput ? "Input %d" : "Output %d");
@@ -189,11 +187,7 @@ void sc_jack_shutdown_cb(void* arg) {
 // SC_JackDriver (JACK)
 
 SC_JackDriver::SC_JackDriver(struct World* inWorld):
-    SC_AudioDriver(inWorld),
-    mClient(nullptr),
-    mInputList(nullptr),
-    mOutputList(nullptr),
-    mMaxOutputLatency(0.) {}
+    SC_AudioDriver(inWorld), mClient(nullptr), mInputList(nullptr), mOutputList(nullptr), mMaxOutputLatency(0.) { }
 
 SC_JackDriver::~SC_JackDriver() {
     if (mClient) {
