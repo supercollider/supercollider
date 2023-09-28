@@ -44,6 +44,10 @@ method::connections
 
 returns::A copy of the link::Classes/IdentityDictionary:: with all open TCP connections.
 
+method::localIPs
+
+returns::An array of all local IP addresses except "127.0.0.1".
+
 InstanceMethods::
 
 private::prConnect, prDisconnect, prConnectionClosed, recover
