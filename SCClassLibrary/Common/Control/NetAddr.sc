@@ -61,6 +61,43 @@ NetAddr {
 		^connections.copy;
 	}
 
+	*localIPs {
+		var winCMD, macCMD, linCMD, ips;
+
+		winCMD = {
+			"ipconfig | findstr /C:IPv4"
+			.unixCmdGetStdOut
+			.replace("   IPv4 Address. . . . . . . . . . . : ", "")
+		};
+
+		macCMD = {
+			(
+				"ifconfig | grep -Fv" + "inet 10."
+				.quote + "| grep" + "inet "
+				.quote + "| grep -Fv 127.0.0.1 | awk '{print $2}'"
+			).unixCmdGetStdOut
+		};
+
+		linCMD = {
+			(
+				"ip address | grep" + "inet ".quote +
+				"| grep -Fv 127.0.0.1 | awk '{print $2}' | cut -d '/' -f1"
+			)
+			// or: // ("ifconfig | grep" + "inet ".quote + "| grep -Fv 127.0.0.1 | awk '{print $2}'")
+			.unixCmdGetStdOut
+		};
+
+		ips = Platform.case(
+			\osx,       { macCMD.() },
+			\linux,     { linCMD.() },
+			\windows,   { winCMD.() }
+		);
+
+		ips = ips.split(Char.nl);
+		ips.removeAt(ips.size-1);
+		^ips
+	}
+
 	hostname_ { arg inHostname;
 		hostname = inHostname;
 		addr = inHostname.gethostbyname;
