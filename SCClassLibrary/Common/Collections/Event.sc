@@ -811,13 +811,21 @@ Event : Environment {
 						bndl.do {|msgArgs, i|
 							var latency;
 
-							latency = i * strum + lag;
+							latency = i * strum;
 
-							if(latency == 0.0) {
-								midiout.performList(midicmd, msgArgs)
+							if(lag == 0.0) {
+								if(latency == 0.0) {
+									midiout.performList(midicmd, msgArgs)
+								} {
+									thisThread.clock.sched(latency, {
+										midiout.performList(midicmd, msgArgs);
+									})
+								}
 							} {
-								thisThread.clock.sched(latency, {
-									midiout.performList(midicmd, msgArgs);
+								SystemClock.sched(lag, {
+									thisThread.clock.sched(latency, {
+										midiout.performList(midicmd, msgArgs);
+									})
 								})
 							};
 							if(hasGate and: { midicmd === \noteOn }) {
