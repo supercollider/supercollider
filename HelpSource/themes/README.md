@@ -8,7 +8,7 @@ The active theme is set by setting the variable `scDocsTheme` within the [`local
 ## Development
 
 When modifying the layout of the documentation it is important to keep in mind that the styles have to work via the `file://` access of the IDE Browser (see [Qt WebEngine](https://doc.qt.io/qt-5/qtwebengine-overview.html) for more specific details) as well as access via the internet in a web server environment (`https://`).
-Although the *Qt WebEngine* browser is based of Chromium it does not support all latest CSS and JS tricks, so it is advised to code conservatively here in order to not force updates of Qt.
+Although the *Qt WebEngine* browser [is based on Chromium](https://wiki.qt.io/QtWebEngine#Relationship_to_Chromium), it does not support all latest CSS and JS tricks, so it is advised to code conservatively here in order to not force updates of Qt.
 
 A way to tweak the CSS design is to compile SuperCollider and compile the `.schelp` files to static `.html` files via
 
