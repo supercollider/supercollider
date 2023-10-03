@@ -430,9 +430,9 @@ SparseArray : Order {
 
 	storeOn { | stream |
 		if (stream.atLimit) { ^this };
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		this.storeItemsOn(stream);
-		stream << " ]" ;
+		stream << "]" ;
 	}
 
 	// private implementation

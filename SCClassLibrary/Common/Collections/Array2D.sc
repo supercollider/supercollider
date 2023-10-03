@@ -47,11 +47,11 @@ Array2D : Collection {
 	// add { ^thisMethod.shouldNotImplement }
 	printOn { arg stream;
 		// not a compileable string
-		stream << this.class.name << "[ " ;
+		stream << this.class.name << "[" ;
 		this.rowsDo({ arg r;
 			r.printOn(stream);
 		});
-		stream << " ]" ;
+		stream << "]" ;
 	}
 	storeOn { arg stream;
 		var title;
