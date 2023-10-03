@@ -17,6 +17,11 @@ body {
     background: var(--sc-bg-color);
 }
 
+input, select, textarea {
+    color: var(--sc-text-color);
+    background-color: var(--sc-neutral-lighter);
+}
+
 div.contents {
     margin: 0;
     padding: calc(33px + .5em) 1em 1em;
