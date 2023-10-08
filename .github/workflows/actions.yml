@@ -196,8 +196,8 @@ jobs:
         include:
 
           - job-name: 'universal'
-            os-version: '11'
-            xcode-version: '12.4'
+            os-version: '12'
+            xcode-version: '13.4.1'
             deployment-target: '10.14'
             cmake-architectures: 'x86_64;arm64'
             use-syslibs: false
@@ -570,7 +570,7 @@ jobs:
         include:
 
           - name: macOS
-            runs-on: macos-11
+            runs-on: macos-12
             sclang: 'build/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang'
             artifact-suffix: macOS-universal
             artifact-extension: '.dmg'
