@@ -23,6 +23,7 @@
 #include "util/docklet.hpp"
 #include <QAction>
 #include <QPlainTextEdit>
+#include <QStringRef>
 
 namespace ScIDE {
 

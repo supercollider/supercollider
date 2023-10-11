@@ -39,7 +39,6 @@
 #include <QFontDatabase>
 #include <QFontInfo>
 #include <QFontMetrics>
-#include <QDesktopWidget>
 #include <QStyleFactory>
 #include <QCursor>
 #include <QScreen>

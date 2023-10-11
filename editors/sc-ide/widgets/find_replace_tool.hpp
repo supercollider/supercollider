@@ -29,6 +29,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QToolButton>
+#include <QRegExp>
 
 namespace ScIDE {
 

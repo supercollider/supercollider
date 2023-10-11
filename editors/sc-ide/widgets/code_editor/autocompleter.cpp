@@ -42,6 +42,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QProxyStyle>
+#include <QFile>
 
 namespace ScIDE {
 

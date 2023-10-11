@@ -34,6 +34,7 @@
 #include <QObject>
 #include <QMetaObject>
 #include <QMetaMethod>
+#include <QMetaType>
 #include <QVariant>
 
 class QcSignalSpy : public QObject {

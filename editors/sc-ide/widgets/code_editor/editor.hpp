@@ -23,6 +23,7 @@
 #include <QPlainTextEdit>
 #include <QGraphicsScene>
 #include <QList>
+#include <QRegExp>
 
 namespace ScIDE {
 
