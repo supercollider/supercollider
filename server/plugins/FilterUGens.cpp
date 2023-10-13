@@ -1550,16 +1550,14 @@ void Slope_next(Slope* unit, int inNumSamples) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Delay1_Ctor(Delay1* unit) {
-    // printf("Delay1_Reset\n");
     SETCALC(Delay1_next);
-    unit->m_x1 = ZIN0(0);
-    Delay1_next(unit, 1);
+    float x1 = IN0(1);
+    unit->m_x1 = x1;
+    ZOUT0(0) = x1;
 }
 
 
 void Delay1_next(Delay1* unit, int inNumSamples) {
-    // printf("Delay1_next_a\n");
-
     float* out = ZOUT(0);
     float* in = ZIN(0);
 
@@ -1610,8 +1608,11 @@ void Flip_next_odd(Flip* unit, int inNumSamples) {
 
 void Delay2_Ctor(Delay2* unit) {
     SETCALC(Delay2_next);
-    unit->m_x1 = ZIN0(0);
-    ZOUT0(0) = 0.f;
+    float x1 = IN0(1);
+    float x2 = IN0(2);
+    unit->m_x1 = x1;
+    unit->m_x2 = x2;
+    ZOUT0(0) = x2;
 }
 
 
