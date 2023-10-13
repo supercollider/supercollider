@@ -214,6 +214,31 @@ TestCoreUGens : UnitTest {
 		];
 
 		//////////////////////////////////////////
+		// Delay1, Delay2
+		// More test in test_delay1_2_predelayValues
+		[\ar, \kr].do{ |rate|
+			tests.add(
+				("Delay1." ++ rate ++ " first frame is 0") -> {
+					var sig1 = DC.perform(rate, 1);           // all 1's
+					var sig2 = Impulse.perform(rate, 0) * -1; // single inverted impulse on first sample
+					var sig3 = sig1 + sig2;                   // inverted impulse cancels the the first sample of DC(1)
+					Delay1.perform(rate, sig1) - sig3         // equivalent to DC(1) delayed by 1 sample
+				}
+			);
+			tests.add(
+				("Delay2." ++ rate ++ " first 2 frames are 0") -> {
+					// as Delay1, but with two consecutive inverted impulses
+					// to cancel the first two samples of DC(1)
+					var sig1 = DC.perform(rate, 1);
+					var sig2 = Impulse.perform(rate, 0) * -1;
+					var sig3 = Delay1.perform(rate, sig2);
+					var sig4 = sig1 + sig2 + sig3;
+					Delay2.perform(rate, sig1) - sig4
+				}
+			);
+		};
+
+		//////////////////////////////////////////
 		// reversible unary ops:
 
 		[
@@ -619,5 +644,70 @@ TestCoreUGens : UnitTest {
 
 	}
 
+	test_delay1_2_predelayValues {
+		var tolerance = -100.dbamp;
+		var testDur = 0.01;
+
+		var testParams =
+		[ //[ugen, inputVal, x1 (, x2)]
+			[Delay1, 0.42, nil],
+			[Delay1, 0.42, 0.5],
+			[Delay1, 0.42], // default: no x1 arg specified
+			[Delay2, 0.42, nil, nil],
+			[Delay2, 0.42, 0.3, nil],
+			[Delay2, 0.42, nil, 0.6],
+			[Delay2, 0.42, 0.3, 0.6],
+			[Delay2, 0.42],
+		];
+
+		server.bootSync;
+
+		testParams.do{ |params|
+			var ugen, inVal, xArgs, nPredelay;
+			#ugen, inVal = params[0..1];
+			xArgs = params[2..];
+			nPredelay = switch(ugen, Delay1, { 1 }, Delay2, { 2 });
+
+			[\ar, \kr].do{ |rate|
+				var condvar = CondVar();
+				{
+					ugen.perform(rate,
+						DC.perform(rate, inVal), 1, 0, *xArgs // in, mul, add, x1 (, x2)
+					)
+				}.loadToFloatArray(testDur, server, { |data|
+					var errmsg, target;
+
+					if(xArgs.size == 0) { // no args specified, check defaults
+						switch(rate,
+							\ar, {
+								target = 0.0 ! nPredelay;
+								errmsg = "%.ar: predelay sample% should default to 0.0.";
+							},
+							\kr, {
+								target = inVal ! nPredelay;
+								errmsg = "%.kr: predelay sample% should defaults to the input value (%).";
+							}
+						);
+						errmsg = errmsg.format(ugen, if(ugen == Delay2){ "s" }{ "" }, inVal);
+
+					} { // x1/x2 args are specified
+
+						target = xArgs.replace([nil], inVal).reverse; // reverse: output order is [x2, x1]
+						errmsg = xArgs.includes(nil).if(
+							{ "%.%: when x1% (%) is nil, the corresponding predelay sample equals the input value. (%)" },
+							{ "%.%: when x1% (%) is a number, the corresponding predelay sample equals that number."}
+						).format(ugen, rate, if(ugen == Delay2){ " or x2" }{ "" }, xArgs, inVal);
+					};
+
+					this.assertArrayFloatEquals(
+						data.keep(nPredelay), target, errmsg, within: tolerance, report: true
+					);
+					condvar.signalOne;
+				});
+
+				condvar.wait;
+			};
+		}
+	}
 
 } // end TestCoreUGens class
