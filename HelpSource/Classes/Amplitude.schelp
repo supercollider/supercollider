@@ -13,10 +13,10 @@ argument::in
 Input signal
 
 argument::attackTime
-60dB convergence time for following attacks.
+20dB convergence time for following attacks.
 
 argument::releaseTime
-60dB convergence time for following decays.
+20dB convergence time for following decays.
 
 argument::mul
 
