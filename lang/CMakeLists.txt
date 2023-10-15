@@ -161,15 +161,6 @@ if(WIN32)
         list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 endif()
 
-# This sets up the exe icon for windows.
-if(WIN32)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(WIN32)
-
 if(SC_HIDAPI)
     list(APPEND sclang_sources LangPrimSource/SC_HID_api.cpp)
     include_directories(
@@ -341,7 +332,15 @@ endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
-add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
+add_executable(sclang LangSource/cmdLineFuncs.cpp)
+
+if(WIN32)
+    target_sources(sclang
+	PRIVATE
+	    ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc
+	)
+endif()
+
 target_link_libraries(sclang libsclang)
 target_link_libraries(sclang ${ICU_LIBRARIES})
 
