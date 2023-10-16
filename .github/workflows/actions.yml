@@ -247,6 +247,7 @@ jobs:
       HOMEBREW_NO_ANALYTICS: 1
       HOMEBREW_NO_AUTO_UPDATE: 1
       HOMEBREW_NO_INSTALL_CLEANUP: 1
+      HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
       USE_SYSLIBS: ${{ matrix.use-syslibs }}
       SHARED_LIBSCSYNTH: ${{ matrix.shared-libscsynth }}
       ARTIFACT_FILE: 'SuperCollider-${{ needs.lint.outputs.sc-version }}-${{ matrix.artifact-suffix }}.dmg'
@@ -304,7 +305,7 @@ jobs:
           # install universal versions of homebrew libraries
           if [[ "${{ matrix.cmake-architectures }}" != "x86_64" ]]; then
               echo "Downloading script for creating universal binaries from homebrew packages"
-              curl -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/18f34a3def7dff91f34b30c17a4ccd50b4df264d/brew-install-universal.sh
+              curl -O -J -L https://gist.githubusercontent.com/dyfer/6c83905d4593750105897e51e87ec345/raw/1f89f2fe767a2e637387e74f0c8dcc86a0963f60/brew-install-universal.sh
               chmod +x brew-install-universal.sh
               if [[ "${{ matrix.build-libsndfile }}" != "true" ]]; then ./brew-install-universal.sh libsndfile; fi
               if [[ "${{ matrix.build-readline }}" != "true" ]]; then ./brew-install-universal.sh readline; fi
