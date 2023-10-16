@@ -162,6 +162,6 @@ Complex : Number {
 	asPoint { ^Point.new(this.real, this.imag) }
 
 	printOn { arg stream;
-		stream << "Complex( " << real << ", " << imag << " )";
+		stream << "Complex(" << real << ", " << imag << ")";
 	}
 }

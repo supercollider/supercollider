@@ -177,7 +177,7 @@ Order : SequenceableCollection {
 
 	storeOn { arg stream;
 		stream << this.class.name;
-		stream << ".newFromIndices( " <<<* [ array, indices ] << " )";
+		stream << ".newFromIndices(" <<<* [array, indices] << ")";
 	}
 }
 
