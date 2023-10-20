@@ -219,6 +219,7 @@ jobs:
             shared-libscsynth: false
             build-libsndfile: true
             system-portaudio: false
+            build-fftw: true
             vcpkg-triplet: x64-osx-release-supercollider # required for build-libsndfile
             artifact-suffix: 'macOS-x64-legacy' # set if needed - will trigger artifact upload
 
