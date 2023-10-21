@@ -1081,13 +1081,18 @@ void VarSaw_Ctor(VarSaw* unit) {
     }
 
     unit->mFreqMul = unit->mRate->mSampleDur;
-    unit->mPhase = ZIN0(1);
+    double phase = ZIN0(1);
+    phase = unit->mPhase = sc_clip(phase, 0.f, 1.f);
     float duty = ZIN0(2);
     duty = unit->mDuty = sc_clip(duty, 0.001, 0.999);
     unit->mInvDuty = 2.f / duty;
     unit->mInv1Duty = 2.f / (1.f - duty);
 
-    ZOUT0(0) = 0.f;
+    VarSaw_next_k(unit, 1);
+
+    unit->mPhase = phase;
+    // other members need not be reset, duty is unchanged because phase is
+    // guaranteed to be in range
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
