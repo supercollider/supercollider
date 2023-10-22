@@ -1345,7 +1345,7 @@ Server {
 			Server.default, { if(sync_s) { "s" } { "Server.default" } },
 			Server.local,	{ "Server.local" },
 			Server.internal, { "Server.internal" },
-			{ "Server.fromName(" + name.asCompileString + ")" }
+			{ "Server.fromName(" ++ name.asCompileString ++ ")" }
 		);
 		stream << codeStr;
 	}
