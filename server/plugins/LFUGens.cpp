@@ -2422,15 +2422,6 @@ static void LinExp_SetCalc(LinExp* unit) {
 
     if (!allScalar)
         return;
-
-    float srclo = ZIN0(1);
-    float srchi = ZIN0(2);
-    float dstlo = ZIN0(3);
-    float dsthi = ZIN0(4);
-    unit->m_dstlo = dstlo;
-    unit->m_dstratio = dsthi / dstlo;
-    unit->m_rsrcrange = sc_reciprocal(srchi - srclo);
-    unit->m_rrminuslo = unit->m_rsrcrange * -srclo;
 }
 
 void LinExp_Ctor(LinExp* unit) {
