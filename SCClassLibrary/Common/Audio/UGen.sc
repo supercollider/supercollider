@@ -520,19 +520,19 @@ UGen : AbstractFunction {
 	}
 
 	makeAvailable {
-		if (antecedents.size == 0, {
+		if (descendants.size == 0, {
 			synthDef.available = synthDef.available.add(this);
 		});
 	}
 
-	removeAntecedent { arg ugen;
-		antecedents.remove(ugen);
+	removeDescendant { arg ugen;
+		descendants.remove(ugen);
 		this.makeAvailable;
 	}
 
 	schedule { arg outStack;
-		descendants.reverseDo({ arg ugen;
-			ugen.removeAntecedent(this);
+		antecedents.reverseDo({ arg ugen;
+			ugen.removeDescendant(this);
 		});
 		^outStack.add(this);
 	}
