@@ -4,7 +4,9 @@ categories:: Server>Abstractions
 
 description::
 
-A Buffer object is a client-side abstraction for a server-side buffer. (SuperCollider's server-client architecture is a common source of confusion when working with Buffer objects, so please see link::Guides/ClientVsServer::.)
+A Buffer object is a client-side abstraction for a server-side buffer. (SuperCollider's
+	server-client architecture is a common source of confusion when working with Buffer objects, so please see link::Guides/ClientVsServer::
+	.)
 
 A buffer is most often used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. Technically speaking, a buffer on the server is a globally available, multichannel array of 32-bit floating-point numbers. It also has an associated sample rate, represented in Hertz as a 64-bit float.
 
@@ -136,9 +138,9 @@ b = Buffer.read(s, p);
 // now play it
 (
 x = SynthDef(\help_Buffer, { arg out = 0, bufnum;
-    Out.ar( out,
-	    PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum))
-    )
+	Out.ar( out,
+		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum))
+	)
 }).play(s,[\bufnum, b]);
 )
 x.free; b.free;
@@ -147,8 +149,8 @@ x.free; b.free;
 // note that the vars are not immediately up-to-date
 (
 b = Buffer.read(s, p, action: { arg buffer;
-    ("After update:" + buffer.numFrames).postln;
-    x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
+	("After update:" + buffer.numFrames).postln;
+	x = { PlayBuf.ar(1, buffer, BufRateScale.kr(buffer)) }.play;
 });
 ("Before update:" + b.numFrames).postln;
 )
@@ -227,7 +229,7 @@ b = Buffer.readNoUpdate(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav",
 		// synth add its s_new msg to follow
 		// after the buffer read completes
 		y.newMsg(s,[\bufnum, buffer],\addToTail)
-	});
+});
 )
 // note vars not accurate
 b.numFrames; // nil
@@ -249,7 +251,8 @@ The frame of the soundfile that DiskIn will start playing at.
 argument:: numChannels
 The number of channels in the soundfile.
 argument:: bufferSize
-This must be a multiple of  (2 * the server's block size). 32768 is the default and is suitable for most cases.
+This must be a multiple of  (2 * the server's
+	block size). 32768 is the default and is suitable for most cases.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 discussion::
@@ -353,6 +356,31 @@ code::
 s.boot;
 (
 b = Buffer.loadDialog(s, action: { arg buffer;
+	x = { PlayBuf.ar(buffer.numChannels, buffer, BufRateScale.kr(buffer)) }.play;
+});
+)
+x.free; b.free;
+::
+
+method:: loadChannelDialog
+As link::#*readChannel:: above, but gives you a load dialog window to browse for a file. Cocoa compatible.
+argument:: server
+The server on which to allocate the buffer.
+argument:: startFrame
+The first frame of the soundfile to read. The default is 0, which is the beginning of the file.
+argument:: numFrames
+The number of frames to read. The default is -1, which will read the whole file.
+argument:: channels
+An Array of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided. If absent or an empty array all channels will be read from soundfile in order.
+argument:: action
+A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
+argument:: bufnum
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
+discussion::
+code::
+s.boot;
+(
+b = Buffer.loadChannelDialog(s, channels: [0], action: { arg buffer;
 	x = { PlayBuf.ar(buffer.numChannels, buffer, BufRateScale.kr(buffer)) }.play;
 });
 )
@@ -513,14 +541,14 @@ argument:: bufStartFrame
 The index of the frame in the buffer at which to start reading. The default is 0, which is the beginning of the buffer. (A floating-point value is truncated to integer.)
 argument:: leaveOpen
 A boolean indicating whether or not the Buffer should be left 'open'. For use with DiskIn you will want this to be true, as the buffer will be used for streaming the soundfile in from disk. (For this the buffer must have been allocated with a multiple of (2 * synth block size).
-A common number is 32768 frames. cueSoundFile below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.
+	A common number is 32768 frames. cueSoundFile below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 method:: readMsg
-	construct the message for a read command. args are like those for read,
-	except that last arg is completionMessage.
+construct the message for a read command. args are like those for read,
+except that last arg is completionMessage.
 
 discussion::
 Note that if the number of frames in the file is greater than the number of frames in the buffer, it will be truncated. Note that readMsg will not auto-update instance variables. Call updateInfo in order to do this.
@@ -537,7 +565,7 @@ argument:: bufStartFrame
 The index of the frame in the buffer at which to start reading. The default is 0, which is the beginning of the buffer. (A floating-point value is truncated to integer.)
 argument:: leaveOpen
 A boolean indicating whether or not the Buffer should be left 'open'. For use with DiskIn you will want this to be true, as the buffer will be used for streaming the soundfile in from disk. (For this the buffer must have been allocated with a multiple of (2 * synth block size).
-A common number is 32768 frames. cueSoundFile below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.
+	A common number is 32768 frames. cueSoundFile below, provides a simpler way of doing this.) The default is false which is the correct value for all other cases.
 argument:: channels
 An Array of channels to be read from the soundfile. Indices start from zero. These will be read in the order provided. The number of channels requested must match this Buffer's numChannels.
 argument:: action
@@ -546,10 +574,11 @@ argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 
 method:: readChannelMsg
-	as above for single channel, with last arg being completionMessage.
+as above for single channel, with last arg being completionMessage.
 
 method:: cueSoundFile, cueSoundFileMsg
-A convenience method to cue a soundfile into the buffer for use with a link::Classes/DiskIn::. The buffer must have been allocated with a multiple of (2 * the server's block size) frames.  A common size is 32768 frames.
+A convenience method to cue a soundfile into the buffer for use with a link::Classes/DiskIn::. The buffer must have been allocated with a multiple of (2 * the server's
+	block size) frames.  A common size is 32768 frames.
 argument:: path
 A String representing the path of the soundfile to be read.
 argument:: startFrame
@@ -640,29 +669,29 @@ The number of channels and frames will have been determined when the buffer was 
 code::
 s.boot;
 (
-v = Signal.sineFill(128, 1.0/[1,2,3,4,5,6]);
-b = Buffer.alloc(s, 128);
+	v = Signal.sineFill(128, 1.0/[1,2,3,4,5,6]);
+	b = Buffer.alloc(s, 128);
 )
 (
-b.loadCollection(v, action: {|buf|
-	x = { PlayBuf.ar(buf.numChannels, buf, BufRateScale.kr(buf), loop: 1)
-		* 0.2 }.play;
-});
+	b.loadCollection(v, action: {|buf|
+		x = { PlayBuf.ar(buf.numChannels, buf, BufRateScale.kr(buf), loop: 1)
+			* 0.2 }.play;
+	});
 )
 x.free; b.free;
 
 // interleave a multi-dimensional array
 (
-l = Signal.sineFill(16384, Array.fill(200, {0}).add(1));
-r = Array.fill(16384, {1.0.rand2});
-m = [Array.newFrom(l), r]; // a multi-dimensional array
-m = m.lace(32768); // interleave the two collections
-b = Buffer.alloc(s, 16384, 2);
+	l = Signal.sineFill(16384, Array.fill(200, {0}).add(1));
+	r = Array.fill(16384, {1.0.rand2});
+	m = [Array.newFrom(l), r]; // a multi-dimensional array
+	m = m.lace(32768); // interleave the two collections
+	b = Buffer.alloc(s, 16384, 2);
 )
 (
-b.loadCollection(m, 0, {|buf|
-	x = { PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1) * 0.5 }.play;
-});
+	b.loadCollection(m, 0, {|buf|
+		x = { PlayBuf.ar(2, buf, BufRateScale.kr(buf), loop: 1) * 0.5 }.play;
+	});
 )
 b.plot;
 x.free; b.free;
@@ -683,8 +712,8 @@ This allows for larger collections than setn. This is not as safe as loadCollect
 code::
 s.boot;
 (
-a = Array.fill(2000000,{ rrand(0.0,1.0) });
-b = Buffer.alloc(s, 2000000);
+	a = Array.fill(2000000,{ rrand(0.0,1.0) });
+	b = Buffer.alloc(s, 2000000);
 )
 b = b.sendCollection(a, action: {arg buf; "finished".postln;});
 b.get(1999999, {|msg| (msg == a[1999999]).postln});
@@ -761,16 +790,16 @@ Note: This method used to be called copy, but this conflicts with the method for
 code::
 s.boot;
 (
-SynthDef(\help_Buffer_copy, {
-	arg out = 0, buf;
-	Line.ar(0, 0, dur: BufDur.kr(buf), doneAction: Done.freeSelf);
-	Out.ar(out, PlayBuf.ar(1, buf));
-}).add;
+	SynthDef(\help_Buffer_copy, {
+		arg out = 0, buf;
+		Line.ar(0, 0, dur: BufDur.kr(buf), doneAction: Done.freeSelf);
+		Out.ar(out, PlayBuf.ar(1, buf));
+	}).add;
 )
 
 (
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-c = Buffer.alloc(s, 120000);
+	b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+	c = Buffer.alloc(s, 120000);
 )
 
 Synth(\help_Buffer_copy, [\buf, b]);
@@ -881,9 +910,9 @@ discussion::
 code::
 s.boot;
 (
-b = Buffer.alloc(s, 512, 1);
-b.sine1(1.0 / [1, 2, 3, 4], true, true, true);
-x = { Osc.ar(b, 200, 0, 0.5) }.play;
+	b = Buffer.alloc(s, 512, 1);
+	b.sine1(1.0 / [1, 2, 3, 4], true, true, true);
+	x = { Osc.ar(b, 200, 0, 0.5) }.play;
 )
 x.free; b.free;
 ::
@@ -904,9 +933,9 @@ discussion::
 code::
 s.boot;
 (
-b = Buffer.alloc(s, 512, 1);
-b.sine2([1.0, 3], [1, 0.5]);
-x = { Osc.ar(b, 200, 0, 0.5) }.play;
+	b = Buffer.alloc(s, 512, 1);
+	b.sine2([1.0, 3], [1, 0.5]);
+	x = { Osc.ar(b, 200, 0, 0.5) }.play;
 )
 x.free; b.free;
 ::
@@ -946,13 +975,13 @@ code::
 s.boot;
 b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([1,0,1,1,0,1])});
 (
-x = {
-	Shaper.ar(
-		b,
-		SinOsc.ar(300, 0, Line.kr(0,1,6)),
-		0.5
-	)
-}.play;
+	x = {
+		Shaper.ar(
+			b,
+			SinOsc.ar(300, 0, Line.kr(0,1,6)),
+			0.5
+		)
+	}.play;
 )
 x.free; b.free;
 ::

@@ -666,6 +666,20 @@ Buffer {
 		stream << this.class.name << "(" <<* [bufnum, numFrames, numChannels, sampleRate, path] <<")"
 	}
 
+	*loadChannelDialog { arg server, startFrame = 0, numFrames = -1, channels, action, bufnum;
+		var buffer;
+		server = server ? Server.default;
+		bufnum ?? { bufnum = server.nextBufferNumber(1) };
+		buffer = super.newCopyArgs(server, bufnum).cache;
+		Dialog.openPanel({ arg path;
+			buffer.doOnInfo_(action)
+			//.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
+			.allocReadChannel(path, startFrame, numFrames, channels,
+				{|buf|["/b_query", buf.bufnum]})
+		});
+		^buffer
+	}
+
 	*loadDialog { arg server, startFrame = 0, numFrames, action, bufnum;
 		var buffer;
 		server = server ? Server.default;
