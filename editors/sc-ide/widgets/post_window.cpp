@@ -356,6 +356,7 @@ PostDocklet::PostDocklet(QWidget* parent): Docklet(tr("Post window"), parent) {
     setWidget(mPostWindow);
 
     toolBar()->addAction(mPostWindow->mActions[PostWindow::AutoScroll]);
+    toolBar()->addAction(mPostWindow->mActions[PostWindow::Clear]);
 
     // connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onFloatingChanged(bool)));
 }
