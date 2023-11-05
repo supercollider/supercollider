@@ -236,6 +236,7 @@ target_include_directories(libscsynth PUBLIC ${boost_include_dirs})
 
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
+	target_compile_definitions(libscsynth PUBLIC UNICODE _UNICODE)
 endif()
 
 if(NOT WIN32)

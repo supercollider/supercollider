@@ -568,12 +568,18 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
         return err;
 
 #ifdef _WIN32
-    char buf[1024];
-    DWORD size = GetEnvironmentVariable(key, buf, 1024);
-    if (size == 0 || size > 1024)
-        value = 0;
-    else
-        value = buf;
+    auto key_w = win32_CharToWchar(key);
+    DWORD size = GetEnvironmentVariableW(key_w.get(), nullptr, 0);
+    auto value_w = std::make_unique<wchar_t[]>(size);
+    size = GetEnvironmentVariableW(key_w.get(), value_w.get(), size);
+
+    std::unique_ptr<char[]> value_ptr;
+    if (size == 0)
+        value = nullptr;
+    else {
+        value_ptr = win32_WcharToChar(value_w.get());
+        value = value_ptr.get();
+    }
 #else
     value = getenv(key);
 #endif
@@ -601,7 +607,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
     if (IsNil(args + 1)) {
 #ifdef _WIN32
-        SetEnvironmentVariable(key, NULL);
+        SetEnvironmentVariableW(win32_CharToWchar(key).get(), nullptr);
 #else
         unsetenv(key);
 #endif
@@ -611,7 +617,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
         if (err)
             return err;
 #ifdef _WIN32
-        SetEnvironmentVariable(key, value);
+        SetEnvironmentVariableW(win32_CharToWchar(key).get(), win32_CharToWchar(value).get());
 #else
         setenv(key, value, 1);
 #endif

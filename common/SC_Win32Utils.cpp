@@ -52,12 +52,18 @@ void win32_ExtractContainingFolder(char* folder, const char* pattern, int maxCha
         folder[0] = 0;
 }
 
-void win32_GetKnownFolderPath(int folderId, char* dest, int size) {
-    // Use a temporary buffer, as SHGetFolderLocation() requires it
-    // to be at least MAX_PATH size, but destination size may be less
-    char buf[MAX_PATH];
-    SHGetFolderPath(NULL, folderId, NULL, 0, buf);
-    strncpy(dest, buf, size);
+std::unique_ptr<wchar_t[]> win32_CharToWchar(char* string) {
+    DWORD size = MultiByteToWideChar(CP_UTF8, 0, string, -1, nullptr, 0);
+    auto outputString = std::make_unique<wchar_t[]>(size);
+    MultiByteToWideChar(CP_UTF8, 0, string, -1, outputString.get(), size);
+    return outputString;
+}
+
+std::unique_ptr<char[]> win32_WcharToChar(wchar_t* string) {
+    DWORD size = WideCharToMultiByte(CP_UTF8, 0, string, -1, nullptr, 0, nullptr, nullptr);
+    auto outputString = std::make_unique<char[]>(size);
+    WideCharToMultiByte(CP_UTF8, 0, string, -1, outputString.get(), size, nullptr, nullptr);
+    return outputString;
 }
 
 char* win32_basename(char* path) {
