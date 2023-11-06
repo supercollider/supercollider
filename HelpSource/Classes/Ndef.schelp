@@ -41,7 +41,7 @@ private::initClass
 subsection::Creation
 
 method::new
-Return a new node proxy and store it in a global ProxySpace under the key. If there is already an Ndef there, replace its object with the new one. The object can be any supported class, see link::Classes/NodeProxy#Supported sources:: help.
+Return a new node proxy and store it in a global ProxySpace under the key. If there is already an Ndef there, replace its object with the new one. The object can be any supported class, see link::Classes/NodeProxy#Supported sources:: help. Internally, all instances are kept in a link::Classes/ProxySpace::. The link::Classes/EnvironmentRedirect#dispatch:: function is called when the source is set.
 
 argument::key
 the name of the proxy (usually a symbol). If only the key is given and no object, it returns the proxy object:
@@ -83,6 +83,16 @@ Return the proxyspace for a given server.
 code::
 Ndef.dictFor(s);
 ::
+
+InstanceMethods::
+
+method::proxyspace
+Return the proxyspace for this instance
+
+code::
+Ndef(\x).proxyspace
+::
+
 
 subsection::Setting default parameters
 Behind every Ndef there is one single instance of link::Classes/ProxySpace:: per server used (usually just the one for the default server). This ProxySpace keeps default values for the proxies that can be set. This can be done by:
