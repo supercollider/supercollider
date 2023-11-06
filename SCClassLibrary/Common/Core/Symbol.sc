@@ -86,7 +86,11 @@ Symbol {
 	}
 	envirPut { arg aValue;
 		_Symbol_envirPut
-		currentEnvironment.put(this, aValue);
+		if(aValue.isNil) {
+			currentEnvironment.removeAt(this)
+		} {
+			currentEnvironment.put(this, aValue)
+		};
 		^aValue
 	}
 

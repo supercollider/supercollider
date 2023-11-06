@@ -38,34 +38,43 @@ list::
 ::
 
 code::
-// 'b' is not posted
-e = IdentityDictionary(8,
-	parent: IdentityDictionary[\b -> 10]
-).put(\a, 5);
--> IdentityDictionary[ (a -> 5) ]
+// 'b' is not posted, because it is in the parent environment:
+// -> IdentityDictionary[ (a -> 5) ]
+(
+e = IdentityDictionary.new;
+e[\a] = 5; 
+e.parent = IdentityDictionary.new;
+e.parent[\b] = 42;
+);
 
 // But 'b' is still there
-e[\a] + e[\b]
--> 15
+e[\b] // -> 42
+
+
+// Setting 'b' to a different value shadows (overrides) the parent:
+e[\b] = 1000;
+e[\b]; // -> 1000
+
+// Setting 'b' to nil is equivalent to removing the value of 'b',
+// which stops shadowing and gives us the parent value again
+e[\b] = nil;
+e[\b]; // -> 42
 
 // Iteration touches 'a' only
 e.keysValuesDo { |key, value| [key, value].postln };
 -> [ a, 5 ]
 
 // 'collect' is also an iteration, and doesn't touch the parent
-g = e.collect { |x| x * 5 };
--> IdentityDictionary[ (a -> 25) ]
-g[\b]
--> 10
+g = e.collect { |x| x * 5 }; // -> IdentityDictionary[ (a -> 25) ]
+g[\b] // -> 10
 
 // The parent goes into a copy as well
 g = e.copy;
 g[\b]
 
-// But it's by reference: 'e' and 'g' have the same parent
+// But it copies by reference: 'e' and 'g' have the same parent
 g.parent[\b] = 20;
-e[\b]
--> 20
+e[\b] // -> 20
 ::
 
 
