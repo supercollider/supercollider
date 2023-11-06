@@ -41,7 +41,7 @@ code::
 subsection:: Internally used class methods
 
 method:: multiNew
-These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar/*kr:: methods delegate to link::#*multiNewList::.
+These methods are responsible for multichannel expansion. They call code::*new1(rate, ...args):: for each parallel combination. Most code::*ar / *kr:: methods delegate to link::#*multiNewList::.
 argument:: ... args
 The first argument is rate, then the rest of the arguments. code::(rate, ...args)::
 
@@ -342,6 +342,10 @@ code::
 
 { Trig1.ar(Dust.ar(3), 0.2).lag(0.1).if(FSinOsc.ar(440), FSinOsc.ar(880)) * 0.1 }.play;
 ::
+
+method::binaryValue
+Outputs 1, representing true for positive, 0 for negative or zero input values.
+
 
 method:: @
 Dynamic geometry support. Returns code::Point(this, y)::.
