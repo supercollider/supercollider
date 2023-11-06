@@ -27,6 +27,12 @@ Score {
 		score = score.add(bundle)
 	}
 
+	addSystemSynthDefs {
+		SystemSynthDefs.synthDefs.do { |synthDef|
+			this.add([0, [\d_recv, synthDef.asBytes]])
+		}
+	}
+
 	*playFromFile { arg path, server;
 		var list;
 		list = thisProcess.interpreter.executeFile(path);
