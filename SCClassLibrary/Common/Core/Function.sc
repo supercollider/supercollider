@@ -284,9 +284,10 @@ Function : AbstractFunction {
 
 
 	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
-		var buffer, def, synth, name, numChannels, rate, server;
+		var buffer, def, synth, name, numChannels, rate, server, information, convertedMixedRates = false;
 		target = target.asTarget;
 		server = target.server;
+		information = Environment.new;
 
 
 		name = this.hash.asString;
@@ -299,11 +300,22 @@ Function : AbstractFunction {
 			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
 			if(rate == \audio) { // convert mixed rate outputs:
-				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
+				val = val.collect { |x|
+					if(x.rate != \audio) {
+						convertedMixedRates = true;
+						K2A.ar(x)
+					} {
+						x
+					}
+				}
 			};
 			numChannels = val.size.max(1);
 			if(fadeTime > 0) {
 				val = val * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
+			};
+			information.use {
+				~rate = rate;
+				~convertedMixedRates = convertedMixedRates;
 			};
 			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop: 0);
 			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
@@ -325,7 +337,7 @@ Function : AbstractFunction {
 			server.sync;
 			synth = Synth(name, [\bufnum, buffer], target, \addAfter);
 			OSCFunc({
-				action.value(buffer);
+				action.value(buffer, information);
 				server.sendMsg("/d_free", name);
 			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot;
 		};
@@ -334,18 +346,18 @@ Function : AbstractFunction {
 	}
 
 	loadToFloatArray { |duration = 0.01, target, action|
-		this.asBuffer(duration, target, { |buffer|
+		this.asBuffer(duration, target, { |buffer, information|
 			buffer.loadToFloatArray(action: { |array|
-				action.value(array, buffer);
+				action.value(array, buffer, information);
 				buffer.free
 			})
 		})
 	}
 
 	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|
-		this.asBuffer(duration, target, { |buffer|
+		this.asBuffer(duration, target, { |buffer, information|
 			buffer.getToFloatArray(0, wait: wait, action: { |array|
-				action.value(array, buffer);
+				action.value(array, buffer, information);
 				buffer.free
 			})
 		})
