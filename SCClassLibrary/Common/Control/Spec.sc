@@ -82,7 +82,22 @@ ControlSpec : Spec {
 	ratio { ^maxval / minval }
 	map { arg value;
 		// maps a value from [0..1] to spec range
-		^warp.map(value.clip(0.0, 1.0)).round(step);
+		if(this.range < this.step) {
+			// Warning user when step exceeds range,
+			// returning median value
+			"ControlSpec step is exceeding it's range.".warn;
+			^(this.minval + (this.range / 2))
+		} {
+			value = warp.map(value.clip(0.0, 1.0));
+			value = value + (0 - this.minval);
+			value = value.round(this.step);
+			value = value + (this.minval);
+			if(value < this.minval)
+			{ value = value + this.step; };
+			if(value > this.maxval)
+			{ value = value - this.step; };
+			^value
+		};
 	}
 	unmap { arg value;
 		// maps a value from spec range to [0..1]
@@ -90,15 +105,15 @@ ControlSpec : Spec {
 	}
 
 	guessNumberStep {
-			// first pass, good for linear warp
+		// first pass, good for linear warp
 		var temp, numStep = this.range * 0.01;
 
-			// for exponential warps, guess  again (hopefully educated)
+		// for exponential warps, guess  again (hopefully educated)
 		if (warp.asSpecifier == \exp) {
 			temp = [minval, maxval].abs.minItem;
 			^numStep = min(temp, numStep) * 0.1;
 		};
-			// others could go here.
+		// others could go here.
 
 		^numStep
 	}
@@ -363,8 +378,8 @@ FaderWarp : Warp {
 		^if(spec.range.isPositive) {
 			value.squared * spec.range + spec.minval
 		}{
-				// formula can be reduced to (2*v) - v.squared
-				// but the 2 subtractions would be faster
+			// formula can be reduced to (2*v) - v.squared
+			// but the 2 subtractions would be faster
 			(1 - (1-value).squared) * spec.range + spec.minval
 		};
 	}
