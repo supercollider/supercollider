@@ -5,7 +5,7 @@ Spec {
 	*initClass {
 		specs = IdentityDictionary.new;
 	}
-	*add { arg name, args;
+	*add { |name, args|
 		var spec = args.asSpec;
 		specs.put(name, spec);
 		^spec
@@ -17,7 +17,7 @@ Spec {
 	defaultControl {
 		^this.subclassResponsibility(thisMethod)
 	}
-	== { arg that;
+	== { |that|
 		^this.compareObject(that)
 	}
 	hash {
@@ -26,7 +26,7 @@ Spec {
 	findKey {
 		^Spec.specs.findKeyForValue(this)
 	}
-	printOn { arg stream;
+	printOn { |stream|
 		var args;
 		this.printClassNameOn(stream);
 		args = this.storeArgs;
@@ -41,7 +41,7 @@ ControlSpec : Spec {
 	var <minval, <maxval, <warp, <step, <>default, <>units, >grid;
 	var <clipLo, <clipHi;
 
-	*new { arg minval = (0.0), maxval = (1.0), warp = ('lin'), step = (0.0), default, units, grid;
+	*new { |minval = (0.0), maxval = (1.0), warp = ('lin'), step = (0.0), default, units, grid|
 		^super.newCopyArgs(minval, maxval, warp, step, default ? minval, units ? "", grid).init
 	}
 
@@ -57,30 +57,30 @@ ControlSpec : Spec {
 		clipLo = min(minval, maxval);
 		clipHi = max(minval, maxval);
 	}
-	minval_ { arg v;
+	minval_ { |v|
 		minval = v;
 		this.init;	// rechoose the constrainfunc
 		this.changed(\minval);
 	}
-	maxval_ { arg v;
+	maxval_ { |v|
 		maxval = v;
 		this.init;
 		this.changed(\maxval);
 	}
-	warp_ { arg w;
+	warp_ { |w|
 		warp = w.asWarp(this);
 		this.changed(\warp);
 	}
-	step_ { arg s;
+	step_ { |s|
 		step = s;
 		this.changed(\step);
 	}
-	constrain { arg value;
+	constrain { |value|
 		^value.asFloat.clip(clipLo, clipHi).round(step)
 	}
 	range { ^maxval - minval }
 	ratio { ^maxval / minval }
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		if(this.range < this.step) {
 			// Warning user when step exceeds range,
@@ -99,7 +99,7 @@ ControlSpec : Spec {
 			^value
 		};
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^warp.unmap(value.round(step).clip(clipLo, clipHi));
 	}
@@ -246,15 +246,15 @@ ControlSpec : Spec {
 Warp {
 	classvar <>warps;
 	var <>spec;
-	*new { arg spec;
+	*new { |spec|
 		^super.newCopyArgs(spec.asSpec);
 	}
-	map { arg value; ^value }
-	unmap { arg value; ^value }
+	map { |value| ^value }
+	unmap { |value| ^value }
 
-	*asWarp { arg spec; ^this.new(spec) }
+	*asWarp { |spec| ^this.new(spec) }
 
-	asWarp { arg inSpec;
+	asWarp { |inSpec|
 		^this.copy.spec_(inSpec)
 	}
 
@@ -277,7 +277,7 @@ Warp {
 	asSpecifier {
 		^warps.findKeyForValue(this.class)
 	}
-	== { arg that;
+	== { |that|
 		if(this === that,{ ^true; });
 		if(that.class !== this.class,{ ^false });
 		//^spec == that.spec
@@ -290,11 +290,11 @@ Warp {
 }
 
 LinearWarp : Warp {
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		^value * spec.range + spec.minval
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^(value - spec.minval) / spec.range
 	}
@@ -303,11 +303,11 @@ LinearWarp : Warp {
 ExponentialWarp : Warp {
 	gridClass { ^ExponentialGridLines }
 	// minval and maxval must both be non zero and have the same sign.
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		^(spec.ratio ** value) * spec.minval
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^log(value/spec.minval) / log(spec.ratio)
 	}
@@ -315,13 +315,13 @@ ExponentialWarp : Warp {
 
 CurveWarp : Warp {
 	var a, b, grow, <curve;
-	*new { arg spec, curve = -2;
+	*new { |spec, curve = -2|
 		// prevent math blow up
 		if (abs(curve) < 0.001, { ^LinearWarp(spec) });
 
 		^super.new(spec.asSpec).init(curve);
 	}
-	init { arg argCurve;
+	init { |argCurve|
 		curve = argCurve;
 		if(curve.exclusivelyBetween(-0.001,0.001),{
 			curve = 0.001;
@@ -330,17 +330,17 @@ CurveWarp : Warp {
 		a = spec.range / (1.0 - grow);
 		b = spec.minval + a;
 	}
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		^b - (a * pow(grow, value));
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^log((b - value) / a) / curve
 	}
 	asSpecifier { ^curve }
 
-	== { arg that;
+	== { |that|
 		^this.compareObject(that, [\curve])
 	}
 
@@ -350,22 +350,22 @@ CurveWarp : Warp {
 }
 
 CosineWarp : LinearWarp {
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		^super.map(0.5 - (cos(pi * value) * 0.5))
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^acos(1.0 - (super.unmap(value) * 2.0)) / pi
 	}
 }
 
 SineWarp : LinearWarp {
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		^super.map(sin(0.5pi * value))
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^asin(super.unmap(value)) / 0.5pi
 	}
@@ -373,7 +373,7 @@ SineWarp : LinearWarp {
 
 FaderWarp : Warp {
 	//  useful mapping for amplitude faders
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		^if(spec.range.isPositive) {
 			value.squared * spec.range + spec.minval
@@ -383,7 +383,7 @@ FaderWarp : Warp {
 			(1 - (1-value).squared) * spec.range + spec.minval
 		};
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^if(spec.range.isPositive) {
 			((value - spec.minval) / spec.range).sqrt
@@ -395,7 +395,7 @@ FaderWarp : Warp {
 
 DbFaderWarp : Warp {
 	//  useful mapping for amplitude faders
-	map { arg value;
+	map { |value|
 		// maps a value from [0..1] to spec range
 		var	range = spec.maxval.dbamp - spec.minval.dbamp;
 		^if(range.isPositive) {
@@ -404,7 +404,7 @@ DbFaderWarp : Warp {
 			((1 - (1-value).squared) * range + spec.minval.dbamp).ampdb
 		}
 	}
-	unmap { arg value;
+	unmap { |value|
 		// maps a value from spec range to [0..1]
 		^if(spec.range.isPositive) {
 			((value.dbamp - spec.minval.dbamp) / (spec.maxval.dbamp - spec.minval.dbamp)).sqrt
