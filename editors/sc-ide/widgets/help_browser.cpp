@@ -58,19 +58,6 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     // setPage does not take ownership of webPage; it must be deleted manually later (see below)
     mWebView = new QtCollider::WebView(this);
 
-    // inject javascript code to set the proper theme for the docs
-    // this is handled via localStorage which is available in a
-    // file:// context as well as a https:// context
-    // see /HelpSource/theme.js and /HelpSource/themes/README.md
-    QString activeTheme = Main::settings()->value("IDE/editor/theme").toString();
-
-    QString jsCode = "localStorage.setItem('scDocsTheme', '"+activeTheme+"');";
-    QWebEngineScript script;
-    script.setInjectionPoint(QWebEngineScript::DocumentCreation);
-    script.setWorldId(QWebEngineScript::MainWorld);
-    script.setSourceCode(jsCode);
-    mWebView->page()->scripts().insert(script);
-
     mWebView->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
     mWebView->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -124,6 +111,27 @@ HelpBrowser::HelpBrowser(QWidget* parent): QWidget(parent) {
     applySettings(Main::settings());
 
     setFocusProxy(mWebView);
+}
+
+void HelpBrowser::setCssTheme() {
+    QString activeTheme = Main::settings()->value("IDE/editor/theme").toString();
+    setCssTheme(activeTheme);
+}
+
+void HelpBrowser::setCssTheme(const QString& themeName) {
+    // inject javascript code to set the proper theme for the docs
+    // this is handled via localStorage which is available in a
+    // file:// context as well as a https:// context
+    // see /HelpSource/theme.js and /HelpSource/themes/README.md
+
+    QString jsCode = "localStorage.setItem('scDocsTheme', '"+themeName+"');";
+    QWebEngineScript script;
+    script.setInjectionPoint(QWebEngineScript::DocumentCreation);
+    script.setWorldId(QWebEngineScript::MainWorld);
+    script.setSourceCode(jsCode);
+    mWebView->page()->scripts().insert(script);
+
+    mWebView->reload();
 }
 
 void HelpBrowser::onPageLoad() {
@@ -484,6 +492,9 @@ HelpBrowserDocklet::HelpBrowserDocklet(QWidget* parent): Docklet(tr("Help browse
     connect(mFindBox, SIGNAL(query(QString, bool)), mHelpBrowser, SLOT(findText(QString, bool)));
 
     connect(Main::scProcess(), SIGNAL(started()), this, SLOT(onInterpreterStart()));
+    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)), this->mHelpBrowser, SLOT(setCssTheme()));
+    // enforce reload of css theme upon startup - do not trust the cache
+    mHelpBrowser->setCssTheme();
 
     OverridingAction* action;
     action = new OverridingAction(this);
