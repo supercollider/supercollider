@@ -281,7 +281,11 @@ void QcNumberBox::mouseDoubleClickEvent(QMouseEvent* event) {
 }
 
 void QcNumberBox::mousePressEvent(QMouseEvent* event) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     lastPos = event->globalY();
+#else
+    lastPos = event->globalPosition().y();
+#endif
     // If locked, prevent cursor position change. Cursor has to stay at 0
     // so most significant digits are shown if widget size too small.
     if (isReadOnly())
@@ -291,7 +295,11 @@ void QcNumberBox::mousePressEvent(QMouseEvent* event) {
 
 void QcNumberBox::mouseMoveEvent(QMouseEvent* event) {
     if (scroll && isReadOnly() && _valueType == Number && (event->buttons() & Qt::LeftButton)) {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
         int steps = (event->globalY() - lastPos) / dragDist;
+#else
+        int steps = (event->globalPosition().y() - lastPos) / dragDist;
+#endif
         if (steps != 0) {
             lastPos = lastPos + (steps * dragDist);
             stepBy(-steps, scrollStep);
