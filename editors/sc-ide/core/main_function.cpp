@@ -51,13 +51,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     // In order to scale the UI properly on Windows with display scaling like 125% or 150%
     // we need to disable scale factor rounding
-    // This is only available in Qt >= 5.14
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
     QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
-#endif // QT_VERSION
 
     QApplication app(argc, argv);
 
