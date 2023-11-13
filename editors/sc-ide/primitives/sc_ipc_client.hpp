@@ -25,7 +25,6 @@
 #include <QMutex>
 #include <QHash>
 #include <QVariantList>
-#include <QStringRef>
 
 class SCIpcClient : public QObject {
     Q_OBJECT

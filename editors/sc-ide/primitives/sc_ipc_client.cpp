@@ -128,8 +128,7 @@ QString SCIpcClient::getTextMirrorForDocument(QByteArray& id, int pos, int range
             QString existingText = mDocumentTextMirrors[id];
             if (range == -1)
                 range = existingText.size() - pos;
-            QStringRef returnTextRef = QStringRef(&existingText, pos, range);
-            returnText = returnTextRef.toString();
+            returnText = existingText.mid(pos, range);
             mTextMirrorHashMutex.unlock();
         }
     } else {

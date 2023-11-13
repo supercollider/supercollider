@@ -196,10 +196,10 @@ void PostWindow::post(const QString& text) {
     foreach (const QChar chr, text) {
         if (previousChar == linebreak) {
             cursor.movePosition(QTextCursor::End);
-            cursor.insertText(QStringRef(&text, startPos, position - startPos).toString(), currentFormat);
+            cursor.insertText(text.mid(startPos, position - startPos), currentFormat);
             startPos = position;
 
-            QStringRef newLine(&text, position, text.length() - 1);
+            QString newLine = text.mid(position, text.length() - 1);
             currentFormat = formatForPostLine(newLine);
         }
 
@@ -210,14 +210,14 @@ void PostWindow::post(const QString& text) {
     // handle remaining chars if not \n terminated
     if (startPos < text.length()) {
         cursor.movePosition(QTextCursor::End);
-        cursor.insertText(QStringRef(&text, startPos, text.length() - startPos).toString(), currentFormat);
+        cursor.insertText(text.mid(startPos, text.length() - startPos), currentFormat);
     }
 
     if (scroll)
         emit(scrollToBottomRequest());
 }
 
-QTextCharFormat PostWindow::formatForPostLine(QStringRef line) {
+QTextCharFormat PostWindow::formatForPostLine(QString line) {
     Settings::Manager* settings = Main::settings();
     QTextCharFormat postWindowError = settings->getThemeVal("postwindowerror");
     QTextCharFormat postWindowWarning = settings->getThemeVal("postwindowwarning");
