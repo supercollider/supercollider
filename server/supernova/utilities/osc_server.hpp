@@ -49,6 +49,7 @@ class network_thread {
 public:
     void start_receive(void) {
         thread_ = std::thread([this] {
+        /* NB: on macOS we just keep the default thread priority */
 #ifdef NOVA_TT_PRIORITY_RT
             thread_set_priority_rt(thread_priority_interval_rt().first);
 #endif
