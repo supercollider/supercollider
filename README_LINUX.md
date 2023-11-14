@@ -131,12 +131,10 @@ At the "Select Components" step, pop open Qt, select the latest version, and che
 
 Unfortunately, the Qt installer does not allow you to deselect the multi-gigabyte QtCreator download.
 
-Using clang
+Using Clang
 -----------
 
-SuperCollider can be compiled with clang, with the following limitations:
-- for clang 4, pass `-DSC_ABLETON_LINK=OFF` when configuring the project
-- by default clang will use libc++; you can pass `-DSC_CLANG_USES_LIBSTDCPP=ON` to use libstdc++ instead
+SuperCollider can be compiled with Clang. By default on Linux clang will use libstdc++ instead of libc++ (`-DSC_CLANG_USES_LIBSTDCPP=ON`). You can set this option to off to use libc++ instead; this will however likely cause issues when linking with Qt6.
 
 Building
 --------
