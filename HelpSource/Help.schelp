@@ -9,7 +9,7 @@ table::
 
 soft:: ::
 
-SuperCollider is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
+SuperCollider* is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
 
 definitionlist::
 ## soft:: ::• soft:: ::scsynth – A real-time audio server.||
@@ -26,7 +26,11 @@ The server and client communicate via OSC (open sound control) messages, allowin
 
 soft:: ::
 
-emphasis::SuperCollider was originally developed by James McCartney and is now distributed as free software under the GNU General Public License. It is maintained and developed by an active and enthusiastic community.::
+If you wish, you can extend SuperCollider's functionality by installing optional sc3-plugins distributed by the SC development team, and by installing individual extensions from the custom libraries called Quarks developed by individual users.
+
+soft:: ::
+
+* emphasis::SuperCollider was originally developed by James McCartney and is now distributed as free software under the GNU General Public License. It is maintained and developed by an active and enthusiastic community.::
 ::
 
 
