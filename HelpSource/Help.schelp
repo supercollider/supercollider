@@ -13,7 +13,7 @@ definitionlist::
 ## soft:: ::• soft:: ::scsynth – A real-time audio server.||
 To take full advantage of multi-core, an alternative sound engine supernova can be used.
 
-## soft:: ::• soft:: ::sclang soft:: ::– A texe-based programming language, interpreter and client.||
+## soft:: ::• soft:: ::sclang soft:: ::– A text-based programming language, interpreter and client.||
 In addition to managing server-side objects, sclang offers interactive programming environments for on-the-fly coding and extensive libraries for creating diverse patterns in music and sound as well as a wide range of scales and modes from various cultures. It also provides all essential graphical user interface features, which can be used to create animated visual effects.
 
 ## soft:: ::• soft:: ::scide soft::  ::– A dedicated editor for SuperCollider with an integrated help system.||
