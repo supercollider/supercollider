@@ -2,9 +2,31 @@ TITLE::Help
 summary::Documentation home
 categories::Help
 
-SuperCollider is an audio server, programming language, and IDE for sound synthesis and algorithmic composition.
-
 NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
+
+table::
+## strong::An introductory overview::
+
+SuperCollider is a cross-platform, text-based programming environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
+
+definitionlist::
+## soft:: ::• soft:: ::scsynth – A real-time audio server.||
+To take full advantage of multi-core, an alternative sound engine supernova can be used.
+
+## soft:: ::• soft:: ::sclang soft:: ::– A texe-based programming language, interpreter and client.||
+In addition to managing server-side objects, sclang offers interactive programming environments for on-the-fly coding and extensive libraries for creating diverse patterns in music and sound as well as a wide range of scales and modes from various cultures. It also provides all essential graphical user interface features, which can be used to create animated visual effects.
+
+## soft:: ::• soft:: ::scide soft::  ::– A dedicated editor for SuperCollider with an integrated help system.||
+SuperCollider-IDE (Integrated Development Environment) allows you to start writing code out of box. Alternatively, if you are already familiar with a particular code editor, you can use your favourite front-end instead to benefit from the flavour features of your preferred editor: e.g. Visual Studio Code, Jupyter, SCNvim, Vim, NeoVim, Emacs, and so on.
+::
+
+The server and client communicate via OSC (open sound control) messages, allowing SuperCollider to run on a single machine or on multiple machines over a network.
+
+soft:: ::
+
+emphasis::SuperCollider was originally developed by James McCartney and is now distributed as free software under the GNU General Public License. It is maintained and developed by an active and enthusiastic community.::
+::
+
 
 SECTION::Search and browse
 definitionlist::
@@ -28,6 +50,7 @@ definitionlist::
 SECTION::Documentation indexes
 
 definitionlist::
+## link::Overviews/Topics:: || Topics in Algorhythmic Composition and Synthesis with SuperCollider
 ## link::Overviews/Documents:: || Alphabetical index of all documents
 ## link::Overviews/Classes:: || Alphabetical index of all classes
 ## link::Overviews/ClassTree:: || All classes by inheritance tree
