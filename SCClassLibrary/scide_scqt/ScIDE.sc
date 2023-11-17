@@ -347,7 +347,7 @@ ScIDE {
 	*close {|quuid|
 		this.send(\closeDocument, [quuid]);
 	}
-	
+
 	*save {|quuid, docPath|
 		this.send(\saveDocument, [quuid, docPath]);
 	}
@@ -761,11 +761,17 @@ Document {
 	}
 
 	prAdd {
+		var savePath;
 		allDocuments = allDocuments.add(this);
 		if (autoRun) {
-			if (this.rangeText(0,7) == "/*RUN*/")
-			{
-				this.text.interpret;
+			if (this.rangeText(0,7) == "/*RUN*/") {
+				savePath = thisProcess.nowExecutingPath;
+				protect {
+					thisProcess.nowExecutingPath = path;
+					this.text.interpret;
+				} {
+					thisProcess.nowExecutingPath = savePath;
+				}
 			}
 		};
 		initAction.value(this);
