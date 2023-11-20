@@ -27,7 +27,7 @@ table {
     font-size: 10pt;
     margin-top: 1em;
     margin-left: 2em;
-    width: 100%; 
+    width: calc(100% - 2em);
     table-layout: auto;
 }
 table td {
