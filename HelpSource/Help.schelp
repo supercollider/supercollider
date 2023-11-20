@@ -78,6 +78,8 @@ table::
 ## link::Reference/Control-Structures::
 ## link::Reference/Classes::
 ## link::Guides/Polymorphism::
+
+soft::                                             ::
 ::
 ||
 list::
@@ -88,6 +90,8 @@ list::
 ## link::Guides/J-concepts-in-SC::
 ## link::Guides/ListComprehensions::
 ## link::Reference/Literals::
+
+soft::                                             ::
 
 soft:: ::
 
@@ -108,6 +112,8 @@ table::
 ## link::Guides/Multichannel-Expansion::
 ## link::Guides/Order-of-execution::
 ## link::Reference/default_group::
+
+soft::                                             ::
 ::
 ||
 list::
@@ -116,6 +122,8 @@ list::
 ## link::Guides/ServerTiming::
 ## link::Guides/Bundled-Messages::
 ## link::Reference/Synth-Definition-File-Format::
+
+soft::                                             ::
 ::
 ::
 
@@ -129,11 +137,15 @@ table::
 ## link::Guides/Randomness::
 ## link::Guides/GUI-Introduction::
 ## link::Overviews/GUI-Classes::
+
+soft::                                             ::
 ::
 ||
 list::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
+
+soft::                                             ::
 
 soft:: ::
 
@@ -154,6 +166,8 @@ table::
 ## link::Guides/UsingExtensions::
 ## link::Guides/UsingQuarks::
 
+soft::                                             ::
+
 soft:: ::
 
 soft:: ::
@@ -172,6 +186,8 @@ list::
 ## link::Guides/standalones::
 ## link::Guides/WritingHelp::
 ## link::Reference/SCDocSyntax::
+
+soft::                                             ::
 ::
 ::
 
@@ -184,10 +200,14 @@ table::
 ## http://sccode.org/
 ## https://scsynth.org/c/questions/code-review/
 ## https://scsynth.org/c/music/code-tennis
+
+soft::                                             ::
 ::
 ||
 list::
 ## https://scsynth.org/c/music
+
+soft::                                             ::
 
 soft:: ::
 
