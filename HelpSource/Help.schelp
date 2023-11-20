@@ -4,41 +4,36 @@ categories::Help
 
 NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
+
+SECTION:: An introductory overview
+
+soft:: ::
+
+SuperCollider is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
+
+definitionlist::
+## soft:: ::• soft:: ::link::Classes/Server:: – a real-time audio engine.||
+The default server is link::Classes/Server#Switching the server application#scsynth::. To take full advantage of multi-core, an alternative sound engine, link::Classes/Server#Switching the server application#supernova::, can be used.
+
+## soft:: ::• soft:: ::Client soft:: ::– sclang. a text-based programming language and interpreter. ||
+In addition to managing server-side objects, sclang offers link::Overviews/JITLib##interactive programming environments for on-the-fly coding:: and link::Overviews/Streams##extensive libraries for creating diverse patterns in music and sound::, as well as link::Classes/Scale##a wide range of scales and modes from various cultures::. link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##Creating processes that unfold over time is easy in sclang::. link::Guides/GUI-Introduction##It also provides all the essential features of a graphical user interface that can be extended to create animated visual effects::. With support for link::Guides/UsingMIDI##MIDI::, link::Guides/OSC_communication##OSC:: and link::Guides/Working_with_HID##HID::, sclang can be easily interfaced with local and networked hardware and software.
+
+## soft:: ::• soft:: ::link::Classes/ScIDE:: soft:: ::– a dedicated editor for SuperCollider with an integrated help system.||
+link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) allows you to start writing code right out of the box::. Alternatively, if you are already familiar with a particular code editor, you can use your favourite front-end instead to benefit from the flavour features of your preferred editor: e.g. link::https://code.visualstudio.com/##Visual Studio Code::, link::https://vscodium.com/##VSCodium::, link::https://jupyter.org/##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://www.gnu.org/software/emacs/##Emacs::, and so on.
+::
+
+link::Guides/NodeMessaging##The server and client communicate:: via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::https://datatracker.ietf.org/doc/html/rfc8304##UDP::, link::Guides/ClientVsServer#Description#allowing SuperCollider to run on a single machine or on multiple machines over a network::.
+
+soft:: ::
+
+If you wish, you can extend SuperCollider's functionality by installing optional link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: distributed by the SC development team, and by installing individual extensions from the custom libraries called link::Classes/Quarks:: developed by individual users. For more information, see the link::https://github.com/supercollider-quarks/quarks##Directory of community contributed Quarks for SuperCollider:: and the link::https://quarks.supercollider.online/##SuperCollider Quarks Web Index::.
+
+soft:: ::
+
 table::
-## strong::An introductory overview::
-
-soft:: ::
-
-SuperCollider* is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
-
-definitionlist::
-## soft:: ::• soft:: ::scsynth – a real-time audio server.||
-To take full advantage of multi-core, an alternative sound engine, supernova, can be used.
-
-## soft:: ::• soft:: ::sclang soft:: ::– a text-based programming language, interpreter and client.||
-In addition to managing server-side objects, sclang offers interactive programming environments for on-the-fly coding and extensive libraries for creating diverse patterns in music and sound, as well as a wide range of scales and modes from various cultures. Creating processes that unfold over time is easy in sclang. It also provides all the essential features of a graphical user interface that can be extended to create animated visual effects. With support for MIDI, OSC and HID, sclang can be easily interfaced with local and networked hardware and software.
-
-## soft:: ::• soft:: ::scide soft::  ::– a dedicated editor for SuperCollider with an integrated help system.||
-The SuperCollider-IDE (Integrated Development Environment) allows you to start writing code right out of the box. Alternatively, if you are already familiar with a particular code editor, you can use your favourite front-end instead to benefit from the flavour features of your preferred editor: e.g. Visual Studio Code, Jupyter, SCNvim, Vim, NeoVim, Emacs, and so on.
+## SuperCollider link::https://www.audiosynth.com##was originally developed by James McCartney:: and link::https://supercollider.github.io/##is now distributed as Free Software under the GNU General Public License::. link::https://github.com/supercollider/supercollider##It is maintained and developed by an active and enthusiastic community::.
 ::
 
-The server and client communicate via OSC (open sound control) messages, allowing SuperCollider to run on a single machine or on multiple machines over a network.
-
-soft:: ::
-
-If you wish, you can extend SuperCollider's functionality by installing optional sc3-plugins distributed by the SC development team, and by installing individual extensions from the custom libraries called Quarks developed by individual users.
-
-soft:: ::
-
-* emphasis::SuperCollider was originally developed by James McCartney and is now distributed as Free Software under the GNU General Public License. It is maintained and developed by an active and enthusiastic community.::
-::
-
-
-SECTION::Search and browse
-definitionlist::
-## link::Search:: || Search all documents and methods
-## link::Browse:: || Browse all documents by categories
-::
 
 SECTION::Getting started
 
@@ -53,15 +48,166 @@ definitionlist::
 ## link::Guides/UserFAQ:: || Common Errors and FAQ
 ::
 
-SECTION::Documentation indexes
 
-definitionlist::
-## link::Overviews/Topics:: || Topics in Algorhythmic Composition and Synthesis with SuperCollider
-## link::Overviews/Documents:: || Alphabetical index of all documents
-## link::Overviews/Classes:: || Alphabetical index of all classes
-## link::Overviews/ClassTree:: || All classes by inheritance tree
-## link::Overviews/Methods:: || Alphabetical index of all methods
+SECTION::Getting diving in deeper
+
+These are helpful for gaining a better grasp of SuperCollider:
+
+subsection:: Getting Help
+
+table::
+## list::
+## link::Guides/How-to-Use-the-Interpreter::
+## link::Guides/Understanding-Errors::
+## link::Guides/Debugging-tips::
+## link::Guides/Internal-Snooping::
 ::
+::
+subsection:: Language Reference
+
+table::
+## Basic knowledge || Advanced knowledge
+##list::
+## link::Guides/Intro-to-Objects::
+## link::Reference/Messages::
+## link::Reference/Assignment::
+## link::Reference/Comments::
+## link::Reference/Expression-Sequence::
+## link::Reference/Functions::
+## link::Reference/Scope::
+## link::Reference/Control-Structures::
+## link::Reference/Classes::
+## link::Guides/Polymorphism::
+::
+||
+list::
+## link::Reference/Syntax-Shortcuts::
+## link::Overviews/SymbolicNotations::
+## link::Reference/Adverbs::
+## link::Reference/Partial-Application::
+## link::Guides/J-concepts-in-SC::
+## link::Guides/ListComprehensions::
+## link::Reference/Literals::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+::
+::
+
+subsection:: Architecture
+
+table::
+## Basic knowledge || Advanced knowledge
+## list::
+## link::Guides/UGens-and-Synths::
+## link::Guides/NodeMessaging::
+## link::Guides/Multichannel-Expansion::
+## link::Guides/Order-of-execution::
+## link::Reference/default_group::
+::
+||
+list::
+## link::Reference/Server-Architecture::
+## link::Reference/Server-Command-Reference::
+## link::Guides/ServerTiming::
+## link::Guides/Bundled-Messages::
+## link::Reference/Synth-Definition-File-Format::
+::
+::
+
+subsection:: Overview
+
+table::
+## Basic knowledge || Advanced knowledge
+## list::
+## link::Overviews/Operators::
+## link::Overviews/Collections::
+## link::Guides/Randomness::
+## link::Guides/GUI-Introduction::
+## link::Overviews/GUI-Classes::
+::
+||
+list::
+## link::Guides/FFT-Overview::
+## link::Guides/Non-Realtime-Synthesis::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+::
+::
+
+
+subsection:: Extending SC
+
+table::
+## Basic knowledge || Advanced knowledge
+## list::
+## link::Reference/StartupFile::
+## link::Guides/UsingExtensions::
+## link::Guides/UsingQuarks::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+::
+||
+list::
+## link::Guides/WritingClasses::
+## link::Guides/WritingUGens::
+## link::Reference/ServerPluginAPI::
+## link::Guides/WritingPrimitives::
+## link::Guides/standalones::
+## link::Guides/WritingHelp::
+## link::Reference/SCDocSyntax::
+::
+::
+
+
+subsection:: Sharing SC codes / Music made with SC
+
+table::
+## Codes || Music
+## list::
+## http://sccode.org/
+## https://scsynth.org/c/questions/code-review/
+## https://scsynth.org/c/music/code-tennis
+::
+||
+list::
+## https://scsynth.org/c/music
+
+soft:: ::
+
+soft:: ::
+
+::
+::
+
+
+subsection:: Contributing to SC
+
+table::
+## list::
+## https://scsynth.org/c/development
+## https://github.com/supercollider/supercollider
+::
+::
+
+
+
 
 SECTION::Licensing
 
