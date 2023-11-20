@@ -612,8 +612,8 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
         unsetenv(key);
 #endif
     } else {
-        char value[1024];
-        err = slotStrVal(args + 1, value, 1024);
+        char value[32767];
+        err = slotStrVal(args + 1, value, 32767);
         if (err)
             return err;
 #ifdef _WIN32
