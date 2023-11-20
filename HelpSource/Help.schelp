@@ -16,13 +16,13 @@ definitionlist::
 The default server is link::Classes/Server#Switching the server application#scsynth::. To take full advantage of multi-core, an alternative sound engine, link::Classes/Server#Switching the server application#supernova::, can be used.
 
 ## soft:: ::• soft:: ::Client soft:: ::– sclang. a text-based programming language and interpreter. ||
-In addition to managing server-side objects, sclang offers link::Overviews/JITLib##interactive programming environments for on-the-fly coding:: and link::Overviews/Streams##extensive libraries for creating diverse patterns in music and sound::, as well as link::Classes/Scale##a wide range of scales and modes from various cultures::. link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##Creating processes that unfold over time is easy in sclang::. link::Guides/GUI-Introduction##It also provides all the essential features of a graphical user interface that can be extended to create animated visual effects::. With support for link::Guides/UsingMIDI##MIDI::, link::Guides/OSC_communication##OSC:: and link::Guides/Working_with_HID##HID::, sclang can be easily interfaced with local and networked hardware and software.
+In addition to managing server-side objects, sclang offers link::Overviews/JITLib##interactive programming environments for on-the-fly coding:: and extensive libraries for creating diverse link::Tutorials/A-Practical-Guide/PG_01_Introduction##patterns:: in music and sound, as well as a wide range of link::Classes/Scale##scales and modes:: from various cultures. Creating link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##processes:: that unfold over time is easy in sclang. It also provides all the essential features of a link::Guides/GUI-Introduction##graphical user interface:: that can be extended to create animated visual effects. With support for link::Guides/UsingMIDI##MIDI::, link::Guides/OSC_communication##OSC:: and link::Guides/Working_with_HID##HID::, sclang can be easily interfaced with local and networked hardware and software.
 
 ## soft:: ::• soft:: ::link::Classes/ScIDE:: soft:: ::– a dedicated editor for SuperCollider with an integrated help system.||
-link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) allows you to start writing code right out of the box::. Alternatively, if you are already familiar with a particular code editor, you can use your favourite front-end instead to benefit from the flavour features of your preferred editor: e.g. link::https://code.visualstudio.com/##Visual Studio Code::, link::https://vscodium.com/##VSCodium::, link::https://jupyter.org/##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://www.gnu.org/software/emacs/##Emacs::, and so on.
+link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) :: allows you to start writing code right out of the box. Alternatively, if you are already familiar with a particular code editor, you can use your favourite front-end instead to benefit from the flavour features of your preferred editor: e.g. link::https://code.visualstudio.com/##Visual Studio Code::, link::https://vscodium.com/##VSCodium::, link::https://jupyter.org/##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://www.gnu.org/software/emacs/##Emacs::, and so on.
 ::
 
-link::Guides/NodeMessaging##The server and client communicate:: via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::https://datatracker.ietf.org/doc/html/rfc8304##UDP::, link::Guides/ClientVsServer#Description#allowing SuperCollider to run on a single machine or on multiple machines over a network::.
+link::Guides/NodeMessaging##The server and client communicate:: via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::Guides/Glossary#kw_udp#UDP::, allowing SuperCollider to link::Guides/ClientVsServer#Description#run on a single machine or on multiple machines over a network::.
 
 soft:: ::
 
@@ -31,7 +31,7 @@ If you wish, you can extend SuperCollider's functionality by installing optional
 soft:: ::
 
 table::
-## SuperCollider link::https://www.audiosynth.com##was originally developed by James McCartney:: and link::https://supercollider.github.io/##is now distributed as Free Software under the GNU General Public License::. link::https://github.com/supercollider/supercollider##It is maintained and developed by an active and enthusiastic community::.
+## SuperCollider link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed by an active and enthusiastic community::.
 ::
 
 
@@ -56,163 +56,156 @@ These are helpful for gaining a better grasp of SuperCollider:
 subsection:: Getting Help
 
 table::
+## Basic || Intermediate || Advanced
 ## list::
-## link::Guides/How-to-Use-the-Interpreter::
+## link::Guides/How-to-Use-the-Interpreter::soft::       ::
 ## link::Guides/Understanding-Errors::
-## link::Guides/Debugging-tips::
-## link::Guides/Internal-Snooping::
-::
-::
-subsection:: Language Reference
-
-table::
-## Basic knowledge || Advanced knowledge
-##list::
-## link::Guides/Intro-to-Objects::
-## link::Reference/Messages::
-## link::Reference/Assignment::
-## link::Reference/Comments::
-## link::Reference/Expression-Sequence::
-## link::Reference/Functions::
-## link::Reference/Scope::
-## link::Reference/Control-Structures::
-## link::Reference/Classes::
-## link::Guides/Polymorphism::
-
-soft::                                             ::
 ::
 ||
 list::
+## link::Guides/Debugging-tips::soft::                ::
+
+soft:: ::
+::
+||
+list::
+## link::Guides/Internal-Snooping::
+
+soft:: ::
+::
+::
+
+
+subsection:: Language Reference
+
+table::
+## Basic || Intermediate || Advanced
+##list::
+## link::Reference/Comments::
+## link::Reference/Expression-Sequence::
+## link::Guides/Intro-to-Objects::
+## link::Reference/Classes::
+## link::Guides/Polymorphism::
+## link::Reference/Messages::
+## link::Reference/Assignment::soft::     ::
+## link::Reference/Scope::
+## link::Reference/Functions::
+::
+||
+list::
+## link::Reference/Control-Structures::
 ## link::Reference/Syntax-Shortcuts::
 ## link::Overviews/SymbolicNotations::
 ## link::Reference/Adverbs::
+## link::Reference/Literals::
+::
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+||
+list::
+## link::Guides/ListComprehensions::soft::       ::
 ## link::Reference/Partial-Application::
 ## link::Guides/J-concepts-in-SC::
-## link::Guides/ListComprehensions::
-## link::Reference/Literals::
-
-soft::                                             ::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
 ::
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
+soft:: ::
+
 ::
 
 subsection:: Architecture
 
 table::
-## Basic knowledge || Advanced knowledge
+## Basic || Intermediate || Advanced
 ## list::
-## link::Guides/UGens-and-Synths::
+## link::Guides/UGens-and-Synths::soft:: ::
 ## link::Guides/NodeMessaging::
 ## link::Guides/Multichannel-Expansion::
 ## link::Guides/Order-of-execution::
 ## link::Reference/default_group::
-
-soft::                                             ::
 ::
 ||
 list::
 ## link::Reference/Server-Architecture::
 ## link::Reference/Server-Command-Reference::
 ## link::Guides/ServerTiming::
-## link::Guides/Bundled-Messages::
-## link::Reference/Synth-Definition-File-Format::
-
-soft::                                             ::
 ::
+soft:: ::
+
+soft:: ::
+||
+list::
+## link::Guides/Bundled-Messages::
+## link::Reference/Synth-Definition-File-Format::soft:: ::
+::
+soft:: ::
+
+soft:: ::
+
+soft:: ::
 ::
 
 subsection:: Overview
 
 table::
-## Basic knowledge || Advanced knowledge
+## Basic || Intermediate || Advanced
 ## list::
 ## link::Overviews/Operators::
 ## link::Overviews/Collections::
-## link::Guides/Randomness::
-## link::Guides/GUI-Introduction::
-## link::Overviews/GUI-Classes::
-
-soft::                                             ::
+## link::Guides/Randomness::soft::                ::
 ::
+||
+list::
+## link::Guides/GUI-Introduction::soft::           ::
+## link::Overviews/GUI-Classes::
+::
+soft:: ::
 ||
 list::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
-
-soft::                                             ::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
 ::
+soft:: ::
 ::
 
 
 subsection:: Extending SC
 
 table::
-## Basic knowledge || Advanced knowledge
+## Basic || Intermediate || Advanced
 ## list::
-## link::Reference/StartupFile::
+## link::Reference/StartupFile::soft::           ::
 ## link::Guides/UsingExtensions::
 ## link::Guides/UsingQuarks::
 
-soft::                                             ::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
 soft:: ::
 
 ::
 ||
 list::
-## link::Guides/WritingClasses::
-## link::Guides/WritingUGens::
-## link::Reference/ServerPluginAPI::
-## link::Guides/WritingPrimitives::
-## link::Guides/standalones::
 ## link::Guides/WritingHelp::
 ## link::Reference/SCDocSyntax::
-
-soft::                                             ::
-::
-::
-
-
-subsection:: Sharing SC codes or music made with SC
-
-table::
-## Codes || Music
-## list::
-## http://sccode.org/
-## https://scsynth.org/c/questions/code-review/
-## https://scsynth.org/c/music/code-tennis
-
-soft::                                             ::
+## link::Guides/standalones::
+## link::Guides/WritingClasses::
 ::
 ||
 list::
-## https://scsynth.org/c/music
-
-soft::                                             ::
-
-soft:: ::
-
-soft:: ::
-
+## link::Guides/WritingUGens::soft::       ::
+## link::Reference/ServerPluginAPI::
+## link::Guides/WritingPrimitives::
 ::
 ::
 
@@ -220,9 +213,27 @@ soft:: ::
 subsection:: Contributing to SC
 
 table::
+## Codes || Music || Developing
 ## list::
+## http://sccode.org/
+## https://scsynth.org/c/questions/code-review/
+## https://scsynth.org/c/music/code-tennis
+::
+||
+list::
+## https://scsynth.org/c/music soft::                 ::
+
+soft::                     ::
+
+soft::                              ::
+
+::
+||
+list::
 ## https://scsynth.org/c/development
 ## https://github.com/supercollider/supercollider
+
+soft::                    ::
 ::
 ::
 
