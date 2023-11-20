@@ -27,6 +27,8 @@ table {
     font-size: 10pt;
     margin-top: 1em;
     margin-left: 2em;
+    width: 100%; 
+    table-layout: auto;
 }
 table td {
     border: 1px solid #ddd;
