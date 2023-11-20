@@ -59,9 +59,10 @@ instancemethods::
 private:: init, argNamesInputsOffset
 
 examples::
+
+From a link::Classes/Buffer::
 code::
 s.boot;
-
 (
 var winenv;
 
@@ -95,3 +96,57 @@ x.set(\envbuf, -1);
 x.set(\gate, 0);
 ::
 
+From a live signal, using link::Classes/Ndef::s.
+code::
+(
+SynthDef(\help_GrainBuf_mono_synth, {|freq=440, amp=0.2, gate=1, out=0|
+    var env = EnvGen.kr(Env.adsr(releaseTime: 0.5), gate: gate, doneAction: 2);
+    var sig = RLPF.ar(LFSaw.ar(freq, iphase: Rand(0,2)), freq*4, 1.5);
+    Out.ar(out, sig*env*amp);
+}).add;
+
+Ndef(\grain_fx, {
+    var maxDelaySeconds = 2.0;
+    
+    var dryMonoSig = \in.ar(0);
+    var bufFrames = SampleRate.ir * maxDelaySeconds;
+    var buf = LocalBuf(bufFrames, 1);
+    
+    var phasor = Phasor.ar(end: bufFrames);
+    var phasorPos = phasor / bufFrames;
+    var trig = Dust.ar(SinOsc.kr(0.33).linexp(-1,1,10,40));
+    var grainRate = TIRand.ar(4,16,trig);
+    var grainPos = phasorPos - TGaussRand.ar(0, grainRate.reciprocal, trig);
+    
+    var wetStereoSig;
+    buf.clear;
+    BufWr.ar(dryMonoSig, buf, phasor);
+    wetStereoSig = GrainBuf.ar(
+        numChannels: 2,
+        trigger: trig,
+        dur: TGaussRand.ar(0, maxDelaySeconds/grainRate, trig),
+        sndbuf: buf,
+        rate: grainRate,
+        pos: grainPos,
+        pan: TGaussRand.ar(-1, 1, trig),
+        mul: 0.5
+    );
+    
+    wetStereoSig = FreeVerb2.ar(wetStereoSig[0], wetStereoSig[1]);
+    
+    dryMonoSig!2 + wetStereoSig
+}).play;
+
+Ndef(\mono_chords, Pbind(
+    \instrument, \help_GrainBuf_mono_synth,
+    \octave, 4,
+    \degree, Pseq([
+        [0,2,4], // I
+        [3,5,7] - [0,0,7], // IV, 1st inversion
+        [5,7,9] - [0,7,7], // V, 2nd inversion
+    ], inf),
+    \dur, Pseq([4,2,2], 8),
+    \legato, 0.95
+)) <>> Ndef(\grain_fx);
+)
+::
