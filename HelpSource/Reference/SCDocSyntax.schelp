@@ -380,7 +380,7 @@ sectiontag        ::= "CLASSMETHODS::"
 optsections       ::= [ sections ]
 sections          ::= sections section
                     | section
-                    | subsubsections
+                    | subsections
 section           ::= ( "SECTION::" words2 eol | sectiontag ) optsubsections
 optsubsections    ::= [ subsections ]
 subsections       ::= subsections subsection

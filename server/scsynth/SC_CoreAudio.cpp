@@ -107,13 +107,7 @@ static void syncOSCOffsetWithTimeOfDay() {
 }
 
 static void resyncThreadFunc() {
-#    ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
-#    else
-    std::pair<int, int> priorities = nova::thread_priority_interval();
-    nova::thread_set_priority(priorities.second);
-#    endif
+    /* keep the default thread priority */
 
     while (true) {
         sleep(20);
@@ -345,12 +339,10 @@ SC_AudioDriver::~SC_AudioDriver() {
 }
 
 void SC_AudioDriver::RunThread() {
+    /* NB: on macOS we just keep the default thread priority */
 #ifdef NOVA_TT_PRIORITY_RT
-    std::pair<int, int> priorities = nova::thread_priority_interval_rt();
-    nova::thread_set_priority_rt((priorities.first + priorities.second) / 2);
-#else
-    std::pair<int, int> priorities = nova::thread_priority_interval();
-    nova::thread_set_priority(priorities.second);
+    int priority = nova::thread_priority_interval_rt().first;
+    nova::thread_set_priority_rt(priority);
 #endif
 
     TriggersFifo* trigfifo = &mWorld->hw->mTriggers;
