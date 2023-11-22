@@ -7,8 +7,6 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-soft:: ::
-
 SuperCollider is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
 
 definitionlist::
@@ -24,15 +22,9 @@ link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) :
 
 link::Guides/NodeMessaging##The server and client communicate:: via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::Guides/Glossary#kw_udp#UDP::, allowing SuperCollider to link::Guides/ClientVsServer#Description#run on a single machine or on multiple machines over a network::.
 
-soft:: ::
-
 If you wish, you can extend SuperCollider's functionality by installing optional link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: distributed by the SC development team, and by installing individual extensions from the custom libraries called link::Classes/Quarks:: developed by individual users. For more information, see the link::https://github.com/supercollider-quarks/quarks##Directory of community contributed Quarks for SuperCollider:: and the link::https://quarks.supercollider.online/##SuperCollider Quarks Web Index::.
 
-soft:: ::
-
-table::
-## SuperCollider link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed by an active and enthusiastic community::.
-::
+SuperCollider link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
 
 
 SECTION::Getting started
@@ -42,14 +34,13 @@ These are useful starting points for getting help on SuperCollider:
 definitionlist::
 ## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series:: || Get started with SuperCollider
 ## link::Guides/Glossary:: || Glossary
-## link::Guides/ClientVsServer:: || Explaining the client vs server architecture
 ## link::Guides/More-On-Getting-Help:: || How to find more help
 ## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
 ## link::Guides/UserFAQ:: || Common Errors and FAQ
 ::
 
 
-SECTION::Getting diving in deeper
+SECTION:: Diving deeper
 
 These are helpful for gaining a better grasp of SuperCollider:
 
@@ -64,15 +55,13 @@ table::
 ||
 list::
 ## link::Guides/Debugging-tips::soft::                ::
-
-soft:: ::
+## link::Guides/Tracing-Processes::
 ::
 ||
 list::
 ## link::Guides/Internal-Snooping::
-
-soft:: ::
 ::
+soft:: ::
 ::
 
 
@@ -87,7 +76,7 @@ table::
 ## link::Reference/Classes::
 ## link::Guides/Polymorphism::
 ## link::Reference/Messages::
-## link::Reference/Assignment::soft::     ::
+## link::Reference/Assignment:: soft::             ::
 ## link::Reference/Scope::
 ## link::Reference/Functions::
 ::
@@ -96,7 +85,8 @@ list::
 ## link::Reference/Control-Structures::
 ## link::Reference/Syntax-Shortcuts::
 ## link::Overviews/SymbolicNotations::
-## link::Reference/Adverbs::
+## link::Reference/Adverbs:: soft::        ::
+## link::Reference/Key-Value-Pairs::
 ## link::Reference/Literals::
 ::
 soft:: ::
@@ -104,16 +94,15 @@ soft:: ::
 soft:: ::
 
 soft:: ::
-
-soft:: ::
 ||
 list::
-## link::Guides/ListComprehensions::soft::       ::
 ## link::Reference/Partial-Application::
-## link::Guides/J-concepts-in-SC::
-::
-soft:: ::
+## link::Guides/J-concepts-in-SC##Working with Multi-dimensional Arrays::
 
+link::Guides/J-concepts-in-SC##(J concepts in SC)::
+## link::Guides/ListComprehensions::
+## link::Guides/Tour-of-Special-Functions::
+::
 soft:: ::
 
 soft:: ::
@@ -131,7 +120,9 @@ subsection:: Architecture
 table::
 ## Basic || Intermediate || Advanced
 ## list::
-## link::Guides/UGens-and-Synths::soft:: ::
+## link::Guides/ClientVsServer::
+## link::Reference/AudioDeviceSelection::
+## link::Guides/UGens-and-Synths:: soft:: ::
 ## link::Guides/NodeMessaging::
 ## link::Guides/Multichannel-Expansion::
 ## link::Guides/Order-of-execution::
@@ -139,18 +130,23 @@ table::
 ::
 ||
 list::
+## link::Guides/Server-Guide::
 ## link::Reference/Server-Architecture::
+## link::Guides/MultiClient_Setups::
+## link::Tutorials/Server_Tutorial::
 ## link::Reference/Server-Command-Reference::
 ## link::Guides/ServerTiming::
 ::
-soft:: ::
-
 soft:: ::
 ||
 list::
 ## link::Guides/Bundled-Messages::
 ## link::Reference/Synth-Definition-File-Format::soft:: ::
 ::
+soft:: ::
+
+soft:: ::
+
 soft:: ::
 
 soft:: ::
@@ -163,21 +159,29 @@ subsection:: Overview
 table::
 ## Basic || Intermediate || Advanced
 ## list::
+## link::Guides/Tour_of_UGens::
 ## link::Overviews/Operators::
 ## link::Overviews/Collections::
+## link::Overviews/GenericCollectors::
 ## link::Guides/Randomness::soft::                ::
 ::
 ||
 list::
+## link::Overviews/Streams::
+## link::Overviews/Event_types::
 ## link::Guides/GUI-Introduction::soft::           ::
 ## link::Overviews/GUI-Classes::
+## link::Guides/GUI-Layout-Management::
 ::
-soft:: ::
 ||
 list::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
 ::
+soft:: ::
+
+soft:: ::
+
 soft:: ::
 ::
 
@@ -190,19 +194,18 @@ table::
 ## link::Reference/StartupFile::soft::           ::
 ## link::Guides/UsingExtensions::
 ## link::Guides/UsingQuarks::
-
-soft:: ::
-
 ::
+soft:: ::
 ||
 list::
+## link::Guides/WritingClasses::
 ## link::Guides/WritingHelp::
 ## link::Reference/SCDocSyntax::
 ## link::Guides/standalones::
-## link::Guides/WritingClasses::
 ::
 ||
 list::
+## link::Guides/WritingTests::
 ## link::Guides/WritingUGens::soft::       ::
 ## link::Reference/ServerPluginAPI::
 ## link::Guides/WritingPrimitives::
@@ -213,7 +216,7 @@ list::
 subsection:: Contributing to SC
 
 table::
-## Codes || Music || Developing
+## Share Code || Share Music || Developing
 ## list::
 ## http://sccode.org/
 ## https://scsynth.org/c/questions/code-review/
@@ -221,20 +224,17 @@ table::
 ::
 ||
 list::
-## https://scsynth.org/c/music soft::                 ::
-
-soft::                     ::
-
-soft::                              ::
-
+## https://scsynth.org/c/music
 ::
+soft::                                            ::
+
+soft::                                            ::
 ||
 list::
 ## https://scsynth.org/c/development
 ## https://github.com/supercollider/supercollider
-
-soft::                    ::
 ::
+soft::                        ::
 ::
 
 
