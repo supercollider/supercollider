@@ -7,24 +7,47 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-SuperCollider is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
+SuperCollider* is a cross-platform** environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
 
 definitionlist::
 ## soft:: ::• soft:: ::link::Classes/Server:: – a real-time audio engine.||
 The default server is link::Classes/Server#Switching the server application#scsynth::. To take full advantage of multi-core, an alternative sound engine, link::Classes/Server#Switching the server application#supernova::, can be used.
 
 ## soft:: ::• soft:: ::Client soft:: ::– sclang. a text-based programming language and interpreter. ||
-In addition to managing server-side objects, sclang offers link::Overviews/JITLib##interactive programming environments for on-the-fly coding:: and extensive libraries for creating diverse link::Tutorials/A-Practical-Guide/PG_01_Introduction##patterns:: in music and sound, as well as a wide range of link::Classes/Scale##scales and modes:: from various cultures. Creating link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##processes:: that unfold over time is easy in sclang. It also provides all the essential features of a link::Guides/GUI-Introduction##graphical user interface:: that can be extended to create animated visual effects. With support for link::Guides/UsingMIDI##MIDI::, link::Guides/OSC_communication##OSC:: and link::Guides/Working_with_HID##HID::, sclang can be easily interfaced with local and networked hardware and software.
+
+emphasis::sclang:: controls audio synthesis processes on the server and offers an link::Overviews/JITLib##interactive programming environment for on-the-fly coding::, link::Tutorials/A-Practical-Guide/PG_01_Introduction##an extensive library for creating patterns:: and link::Classes/Scale##a library of scales and modes from various cultures::.
+link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##Creating processes that unfold over time:: is straighforward in sclang.
+It also provides link::Guides/GUI-Introduction##all the essential features of a graphical user interface:: that can be used to create custom user interfaces, data visualization, and animations.
+With support for
+link::Guides/UsingMIDI##MIDI::,
+link::Guides/OSC_communication##OSC:: and
+link::Guides/Working_with_HID##HID::,
+sclang can be easily interfaced with local and networked hardware and software.
 
 ## soft:: ::• soft:: ::link::Classes/ScIDE:: soft:: ::– a dedicated editor for SuperCollider with an integrated help system.||
-link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) :: allows you to start writing code right out of the box. Alternatively, if you are already familiar with a particular code editor, you can use your favourite front-end instead to benefit from the flavour features of your preferred editor: e.g. link::https://github.com/scztt/vscode-supercollider##Visual Studio Code, VSCodium::, link::https://github.com/capital-G/sc_kernel##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://github.com/supercollider/scel##Emacs::, and so on.
+link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) :: allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs such as link::https://github.com/scztt/vscode-supercollider##Visual Studio Code, VSCodium::, link::https://github.com/capital-G/sc_kernel##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://github.com/supercollider/scel##Emacs::, and so on.
 ::
 
-link::Guides/NodeMessaging##The server and client communicate:: via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::Guides/Glossary#kw_udp#UDP::, allowing SuperCollider to link::Guides/ClientVsServer#Description#run on a single machine or on multiple machines over a network::.
+link::Guides/ClientVsServer##The server and client:: communicate via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::Guides/Glossary#kw_udp#UDP::, allowing SuperCollider to run on a single machine or link::Guides/MultiClient_Setups##on multiple machines over a network::. Users can also diretly control the sc-server using link::Guides/NodeMessaging::.
 
 If you wish, you can extend SuperCollider's functionality by installing optional link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: distributed by the SC development team, and by installing individual extensions from the custom libraries called link::Classes/Quarks:: developed by individual users. For more information, see the link::https://github.com/supercollider-quarks/quarks##Directory of community contributed Quarks for SuperCollider:: and the link::https://quarks.supercollider.online/##SuperCollider Quarks Web Index::.
 
-SuperCollider link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
+table::
+## * SuperCollider link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
+::
+
+table::
+##** SuperCollider can be installed and run on link::https://supercollider.github.io/downloads.html#linux#Linux::,
+link::https://supercollider.github.io/downloads.html#mac#macOS:: and
+link::https://supercollider.github.io/downloads.html#windows#Windows::,
+as well as microcomputers such as
+link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pie:: and
+link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
+link::https://www.arduino.cc/##Arduino:: or equivalent devices can be
+controlled via link::Classes/SerialPort:: within sclang.
+DMX can also be used by means of user-developed libraries (link::https://quarks.supercollider.online/##type dmx in the search box on the linked web page::
+).
+::
 
 
 SECTION::Getting started
@@ -56,6 +79,8 @@ table::
 list::
 ## link::Guides/Debugging-tips::soft::                ::
 ## link::Guides/Tracing-Processes::
+## link::Guides/HID_permissions::
+## link::Guides/LID_permissions::
 ::
 ||
 list::
@@ -74,8 +99,8 @@ table::
 ## link::Reference/Expression-Sequence::
 ## link::Guides/Intro-to-Objects::
 ## link::Reference/Classes::
-## link::Guides/Polymorphism::
 ## link::Reference/Messages::
+## link::Guides/Polymorphism::
 ## link::Reference/Assignment:: soft::             ::
 ## link::Reference/Scope::
 ## link::Reference/Functions::
@@ -121,7 +146,6 @@ table::
 ## Basic || Intermediate || Advanced
 ## list::
 ## link::Guides/ClientVsServer::
-## link::Reference/AudioDeviceSelection::
 ## link::Guides/UGens-and-Synths:: soft:: ::
 ## link::Guides/NodeMessaging::
 ## link::Guides/Multichannel-Expansion::
@@ -137,14 +161,11 @@ list::
 ## link::Reference/Server-Command-Reference::
 ## link::Guides/ServerTiming::
 ::
-soft:: ::
 ||
 list::
 ## link::Guides/Bundled-Messages::
 ## link::Reference/Synth-Definition-File-Format::soft:: ::
 ::
-soft:: ::
-
 soft:: ::
 
 soft:: ::
@@ -159,6 +180,7 @@ subsection:: Overview
 table::
 ## Basic || Intermediate || Advanced
 ## list::
+## link::Reference/AudioDeviceSelection::
 ## link::Guides/Tour_of_UGens::
 ## link::Overviews/Operators::
 ## link::Overviews/Collections::
@@ -199,9 +221,9 @@ soft:: ::
 ||
 list::
 ## link::Guides/WritingClasses::
+## link::Guides/standalones::
 ## link::Guides/WritingHelp::
 ## link::Reference/SCDocSyntax::
-## link::Guides/standalones::
 ::
 ||
 list::
