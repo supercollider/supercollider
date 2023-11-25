@@ -45,7 +45,7 @@ link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBER
 link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
 link::https://www.arduino.cc/##Arduino:: or equivalent devices can be
 controlled via link::Classes/SerialPort:: within sclang.
-DMX can also be used by means of user-developed libraries (link::https://quarks.supercollider.online/##type dmx in the search box on the linked web page::
+DMX can also be used by means of user-developed libraries.
 ).
 ::
 
