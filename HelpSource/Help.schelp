@@ -16,13 +16,14 @@ The default server is link::Classes/Server#Switching the server application#scsy
 ## soft:: ::• soft:: ::Client soft:: ::– sclang. a text-based programming language and interpreter. ||
 
 emphasis::sclang:: controls audio synthesis processes on the server and offers an interactive programming environment for link::Overviews/JITLib##on-the-fly coding::, an extensive library for creating link::Tutorials/A-Practical-Guide/PG_01_Introduction##patterns:: and a library of link::Classes/Scale##scales and modes:: from various cultures.
-link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##Creating processes that unfold over time:: is straighforward in sclang.
-It also provides link::Guides/GUI-Introduction##all the essential features of a graphical user interface:: that can be used to create custom user interfaces and data visualization.
+Creating link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##processes:: that unfold over time is straightforward in emphasis::sclang::.
+It also provides all the essential features of a graphical user interface (link::Guides/GUI-Introduction##GUI::) that can be used to create custom user interfaces and data visualization.
 With support for
 link::Guides/UsingMIDI##MIDI::,
-link::Guides/OSC_communication##OSC:: and
-link::Guides/Working_with_HID##HID::,
-sclang can be easily interfaced with local and networked hardware and software.
+link::Guides/OSC_communication##OSC::,
+link::Guides/Working_with_HID##HID::, and
+link::Classes/SerialPort##Serial Port::,
+emphasis::sclang:: can be easily interfaced with local and networked hardware and software.
 
 ## soft:: ::• soft:: ::link::Classes/ScIDE:: soft:: ::– a dedicated editor for SuperCollider with an integrated help system.||
 link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) :: allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs such as link::https://github.com/scztt/vscode-supercollider##Visual Studio Code, VSCodium::, link::https://github.com/capital-G/sc_kernel##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://github.com/supercollider/scel##Emacs::, and so on.
