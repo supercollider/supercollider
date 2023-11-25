@@ -7,7 +7,7 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-SuperCollider* is a cross-platform** environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
+*SuperCollider* is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
 
 definitionlist::
 ## soft:: ::• soft:: ::link::Classes/Server:: – a real-time audio engine.||
