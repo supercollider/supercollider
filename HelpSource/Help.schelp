@@ -41,7 +41,7 @@ table::
 link::https://supercollider.github.io/downloads.html#mac#macOS:: and
 link::https://supercollider.github.io/downloads.html#windows#Windows::,
 as well as microcomputers such as
-link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pie:: and
+link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##RaspberryPi:: and
 link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
 link::https://www.arduino.cc/##Arduino:: or equivalent devices can be
 controlled via link::Classes/SerialPort:: within sclang.
