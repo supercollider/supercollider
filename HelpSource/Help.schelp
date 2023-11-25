@@ -26,7 +26,7 @@ link::Classes/SerialPort##Serial Port::,
 emphasis::sclang:: can be easily interfaced with local and networked hardware and software.
 
 ## soft:: ::• soft:: ::link::Classes/ScIDE:: soft:: ::– a dedicated editor for SuperCollider with an integrated help system.||
-link::Guides/SCIde##The SuperCollider-IDE (Integrated Development Environment) :: allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs such as link::https://github.com/scztt/vscode-supercollider##Visual Studio Code, VSCodium::, link::https://github.com/capital-G/sc_kernel##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://github.com/supercollider/scel##Emacs::, and so on.
+The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs such as link::https://github.com/scztt/vscode-supercollider##Visual Studio Code, VSCodium::, link::https://github.com/capital-G/sc_kernel##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://github.com/supercollider/scel##Emacs::, and so on.
 ::
 
 link::Guides/ClientVsServer##The server and client:: communicate via link::http://opensoundcontrol.org/##OSC (open sound control):: messages over link::Guides/Glossary#kw_udp#UDP::, allowing SuperCollider to run on a single machine or link::Guides/MultiClient_Setups##on multiple machines over a network::. Users can also diretly control the sc-server using link::Guides/NodeMessaging::.
