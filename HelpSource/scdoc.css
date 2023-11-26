@@ -35,6 +35,12 @@ table td {
     padding: 0.3em;
 }
 
+td ul  {
+    list-style-type: disc;
+    margin-left: 1.75em;
+    padding: 0;
+}
+
 table table {
     margin: 0em;
 }
