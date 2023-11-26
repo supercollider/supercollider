@@ -65,12 +65,15 @@ subsection:: Getting Help
 table::
 ## Basic || Intermediate || Advanced
 ## list::
-## link::Guides/How-to-Use-the-Interpreter::soft::       ::
+## link::Guides/How-to-Use-the-Interpreter::
 ## link::Guides/Understanding-Errors::
 ::
+soft:: ::
+
+soft:: ::
 ||
 list::
-## link::Guides/Debugging-tips::soft::                ::
+## link::Guides/Debugging-tips::
 ## link::Guides/Tracing-Processes::
 ## link::Guides/HID_permissions::
 ## link::Guides/LID_permissions::
@@ -79,6 +82,10 @@ list::
 list::
 ## link::Guides/Internal-Snooping::
 ::
+soft:: ::
+
+soft:: ::
+
 soft:: ::
 ::
 
@@ -94,7 +101,7 @@ table::
 ## link::Reference/Classes::
 ## link::Reference/Messages::
 ## link::Guides/Polymorphism::
-## link::Reference/Assignment:: soft::             ::
+## link::Reference/Assignment::
 ## link::Reference/Scope::
 ## link::Reference/Functions::
 ::
@@ -103,10 +110,12 @@ list::
 ## link::Reference/Control-Structures::
 ## link::Reference/Syntax-Shortcuts::
 ## link::Overviews/SymbolicNotations::
-## link::Reference/Adverbs:: soft::        ::
+## link::Reference/Adverbs::
 ## link::Reference/Key-Value-Pairs::
 ## link::Reference/Literals::
 ::
+soft:: ::
+
 soft:: ::
 
 soft:: ::
@@ -139,7 +148,7 @@ table::
 ## Basic || Intermediate || Advanced
 ## list::
 ## link::Guides/ClientVsServer::
-## link::Guides/UGens-and-Synths:: soft:: ::
+## link::Guides/UGens-and-Synths::
 ## link::Guides/NodeMessaging::
 ## link::Guides/Multichannel-Expansion::
 ## link::Guides/Order-of-execution::
@@ -157,7 +166,7 @@ list::
 ||
 list::
 ## link::Guides/Bundled-Messages::
-## link::Reference/Synth-Definition-File-Format::soft:: ::
+## link::Reference/Synth-Definition-File-Format::
 ::
 soft:: ::
 
@@ -178,21 +187,24 @@ table::
 ## link::Overviews/Operators::
 ## link::Overviews/Collections::
 ## link::Overviews/GenericCollectors::
-## link::Guides/Randomness::soft::                ::
+## link::Guides/Randomness::
 ::
 ||
 list::
 ## link::Overviews/Streams::
 ## link::Overviews/Event_types::
-## link::Guides/GUI-Introduction::soft::           ::
+## link::Guides/GUI-Introduction::
 ## link::Overviews/GUI-Classes::
 ## link::Guides/GUI-Layout-Management::
 ::
+soft:: ::
 ||
 list::
 ## link::Guides/FFT-Overview::
 ## link::Guides/Non-Realtime-Synthesis::
 ::
+soft:: ::
+
 soft:: ::
 
 soft:: ::
@@ -206,7 +218,7 @@ subsection:: Extending SC
 table::
 ## Basic || Intermediate || Advanced
 ## list::
-## link::Reference/StartupFile::soft::           ::
+## link::Reference/StartupFile::
 ## link::Guides/UsingExtensions::
 ## link::Guides/UsingQuarks::
 ::
@@ -221,17 +233,17 @@ list::
 ||
 list::
 ## link::Guides/WritingTests::
-## link::Guides/WritingUGens::soft::       ::
+## link::Guides/WritingUGens::
 ## link::Reference/ServerPluginAPI::
 ## link::Guides/WritingPrimitives::
 ::
 ::
 
 
-subsection:: Contributing to SC
+subsection:: Sharing your work
 
 table::
-## Share Code || Share Music || Developing
+## Share Code || Share Music
 ## list::
 ## http://sccode.org/
 ## https://scsynth.org/c/questions/code-review/
@@ -241,16 +253,21 @@ table::
 list::
 ## https://scsynth.org/c/music
 ::
-soft::                                            ::
+soft:: ::
 
-soft::                                            ::
-||
-list::
+soft:: ::
+::
+
+subsection:: Contributing to SC
+
+table::
+## Developing
+## list::
 ## https://scsynth.org/c/development
 ## https://github.com/supercollider/supercollider
 ::
-soft::                        ::
 ::
+
 
 
 
