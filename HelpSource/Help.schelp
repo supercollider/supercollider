@@ -15,7 +15,7 @@ link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBER
 link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
 emphasis::SuperCollider:: link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
 
-emphasis::SuperCollider:: consists of with three main components:
+emphasis::SuperCollider:: consists of three main components:
 
 definitionlist::
 ## soft:: ::• soft:: ::link::Classes/Server:: – a real-time audio engine.||
