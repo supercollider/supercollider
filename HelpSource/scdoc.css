@@ -775,3 +775,9 @@ div.met_subclasses a.seemore {
     font-size: 9pt;
     color: #777;
 }
+
+@media only screen and (max-width: 200px) {
+    .table-content {
+        grid-template-columns: 1fr;
+    }
+}
