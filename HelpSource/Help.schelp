@@ -7,7 +7,15 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-*SuperCollider* is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound, with three main components:
+emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can be installed and run on link::https://supercollider.github.io/downloads.html#linux#Linux::,
+link::https://supercollider.github.io/downloads.html#mac#macOS:: and
+link::https://supercollider.github.io/downloads.html#windows#Windows::,
+as well as microcomputers such as
+link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##RaspberryPi:: and
+link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
+emphasis::SuperCollider:: link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
+
+emphasis::SuperCollider:: consistes of with three main components:
 
 definitionlist::
 ## soft:: ::• soft:: ::link::Classes/Server:: – a real-time audio engine.||
@@ -29,26 +37,10 @@ emphasis::sclang:: can be easily interfaced with local and networked hardware an
 The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs such as link::https://github.com/scztt/vscode-supercollider##Visual Studio Code, VSCodium::, link::https://github.com/capital-G/sc_kernel##Jupyter::, link::https://github.com/davidgranstrom/scnvim##SCNvim::, link::https://github.com/supercollider/scvim##scvim::, link::https://github.com/supercollider/scel##Emacs::, and so on.
 ::
 
-The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::), allowing SuperCollider to run on a single machine or on link::Guides/MultiClient_Setups##multiple machines:: over a network. Users can also control the audio server directly with any OSC-enabled program by using the link::Guides/NodeMessaging:: protocol.
+The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::
+), allowing SuperCollider to run on a single machine or on link::Guides/MultiClient_Setups##multiple machines:: over a network. Users can also control the audio server directly with any OSC-enabled program by using the link::Guides/NodeMessaging:: protocol.
 
 An extensive library of Unit Generators—the building blocks of audio synthesis networks—are included with SuperCollider. Users may optionally extend this core library with the link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: suite of UGens. Additionally, there are many of user-developed language extensions, called link::Classes/Quarks::, to further extend the functionality of SuperCollider. Quarks can be browsed in the link::https://baryon.supercollider.online/##Baryon:: index, or in the distribution link::https://github.com/supercollider-quarks/quarks##repository:: where users can submit their own Quarks for distribution.
-
-table::
-## * SuperCollider link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
-::
-
-table::
-##** SuperCollider can be installed and run on link::https://supercollider.github.io/downloads.html#linux#Linux::,
-link::https://supercollider.github.io/downloads.html#mac#macOS:: and
-link::https://supercollider.github.io/downloads.html#windows#Windows::,
-as well as microcomputers such as
-link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##RaspberryPi:: and
-link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
-link::https://www.arduino.cc/##Arduino:: or equivalent devices can be
-controlled via link::Classes/SerialPort:: within sclang.
-DMX can also be used by means of user-developed libraries.
-).
-::
 
 
 SECTION::Getting started
