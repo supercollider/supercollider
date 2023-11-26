@@ -25,7 +25,7 @@ The default server is link::Classes/Server#Switching the server application#scsy
 
 emphasis::sclang:: controls audio synthesis processes on the server and offers an interactive programming environment for link::Overviews/JITLib##live coding::, an extensive library for creating link::Tutorials/A-Practical-Guide/PG_01_Introduction##patterns:: and a library of link::Classes/Scale##scales and modes:: from various cultures.
 Creating link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##processes:: that unfold over time is straightforward in emphasis::sclang::.
-It also provides all the essential features of a graphical user interface (link::Guides/GUI-Introduction##GUI::) that can be used to create custom user interfaces and data visualization.
+It also provides all the essential features of a graphical user interface (link::Guides/GUI-Introduction##GUI::) that can be used to create custom user interfaces, data visualization, and animations.
 With support for
 link::Guides/UsingMIDI##MIDI::,
 link::Guides/OSC_communication##OSC::,
