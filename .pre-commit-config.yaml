@@ -12,3 +12,4 @@ repos:
     rev: "v14.0.1"
     hooks:
     -   id: clang-format
+        exclude: SCDoc\/SCDoc\.tab\.cpp
