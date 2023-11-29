@@ -12,4 +12,4 @@ repos:
     rev: "v14.0.1"
     hooks:
     -   id: clang-format
-        exclude: (SCDoc\/SCDoc\.tab\.cpp|platform\/windows\/compat_stuff\/getopt\/getopt.c)
+        exclude: (SCDoc\/SCDoc\.tab\.cpp|platform\/windows\/compat_stuff\/getopt\/getopt.c|SCDoc\/lex.scdoc.cpp)
