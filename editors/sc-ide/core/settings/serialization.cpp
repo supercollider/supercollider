@@ -34,7 +34,7 @@ namespace ScIDE { namespace Settings {
 typedef QSettings::SettingsMap::const_iterator SettingsIterator;
 
 struct IODeviceSource : boost::iostreams::source {
-    IODeviceSource(QIODevice* dev): mDev(dev) { }
+    IODeviceSource(QIODevice* dev): mDev(dev) {}
     std::streamsize read(char* s, std::streamsize n) {
         // Read up to n characters from the input
         // sequence into the buffer s, returning

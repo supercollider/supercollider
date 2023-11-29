@@ -23,7 +23,7 @@
 
 namespace ScIDE {
 
-SignalMultiplexer::SignalMultiplexer(QObject* parent): QObject(parent) { }
+SignalMultiplexer::SignalMultiplexer(QObject* parent): QObject(parent) {}
 
 void SignalMultiplexer::connect(QObject* sender, const char* signal, const char* slot, ConnectionMode mode) {
     Q_ASSERT(strlen(signal) > 0);

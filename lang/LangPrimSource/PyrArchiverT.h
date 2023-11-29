@@ -48,7 +48,7 @@ public:
         mObjectArray(mInitialObjectArray),
         mNumObjects(0),
         mObjectArrayCapacity(kObjectArrayInitialCapacity),
-        mReadArchiveVersion(0) { }
+        mReadArchiveVersion(0) {}
 
     ~PyrArchiver() {
         if (mObjectArray != mInitialObjectArray) {

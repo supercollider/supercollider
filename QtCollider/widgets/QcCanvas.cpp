@@ -40,7 +40,7 @@ QcCanvas::QcCanvas(QWidget* parent):
     _animating(false),
     _frameCount(0),
     _meterPeriod(1000),
-    _meterFrames(0) { }
+    _meterFrames(0) {}
 
 float QcCanvas::frameRate() const { return _fpsActual; }
 

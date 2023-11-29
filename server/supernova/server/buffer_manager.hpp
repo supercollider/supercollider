@@ -116,7 +116,7 @@ struct buffer_wrapper {
 
 class buffer_manager {
 public:
-    buffer_manager(unsigned int max_buffers): buffers(max_buffers, buffer_wrapper()) { }
+    buffer_manager(unsigned int max_buffers): buffers(max_buffers, buffer_wrapper()) {}
 
     void check_buffer_unused(int index) {
         if (buffers[index].data != nullptr)

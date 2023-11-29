@@ -128,27 +128,27 @@ struct BufDelayUnit : public Unit {
     uint32 m_numoutput;
 };
 
-struct BufDelayN : public BufDelayUnit, InterpolationUnit { };
+struct BufDelayN : public BufDelayUnit, InterpolationUnit {};
 
-struct BufDelayL : public BufDelayUnit, InterpolationUnit { };
+struct BufDelayL : public BufDelayUnit, InterpolationUnit {};
 
-struct BufDelayC : public BufDelayUnit, CubicInterpolationUnit { };
+struct BufDelayC : public BufDelayUnit, CubicInterpolationUnit {};
 
 struct BufFeedbackDelay : public BufDelayUnit {
     float m_feedbk, m_decaytime;
 };
 
-struct BufCombN : public BufFeedbackDelay, InterpolationUnit { };
+struct BufCombN : public BufFeedbackDelay, InterpolationUnit {};
 
-struct BufCombL : public BufFeedbackDelay, InterpolationUnit { };
+struct BufCombL : public BufFeedbackDelay, InterpolationUnit {};
 
-struct BufCombC : public BufFeedbackDelay, CubicInterpolationUnit { };
+struct BufCombC : public BufFeedbackDelay, CubicInterpolationUnit {};
 
-struct BufAllpassN : public BufFeedbackDelay, InterpolationUnit { };
+struct BufAllpassN : public BufFeedbackDelay, InterpolationUnit {};
 
-struct BufAllpassL : public BufFeedbackDelay, InterpolationUnit { };
+struct BufAllpassL : public BufFeedbackDelay, InterpolationUnit {};
 
-struct BufAllpassC : public BufFeedbackDelay, CubicInterpolationUnit { };
+struct BufAllpassC : public BufFeedbackDelay, CubicInterpolationUnit {};
 
 struct DelayUnit : public Unit {
     float* m_dlybuf;
@@ -159,27 +159,27 @@ struct DelayUnit : public Unit {
     long m_numoutput;
 };
 
-struct DelayN : public DelayUnit, InterpolationUnit { };
+struct DelayN : public DelayUnit, InterpolationUnit {};
 
-struct DelayL : public DelayUnit, InterpolationUnit { };
+struct DelayL : public DelayUnit, InterpolationUnit {};
 
-struct DelayC : public DelayUnit, InterpolationUnit { };
+struct DelayC : public DelayUnit, InterpolationUnit {};
 
 struct FeedbackDelay : public DelayUnit {
     float m_feedbk, m_decaytime;
 };
 
-struct CombN : public FeedbackDelay, InterpolationUnit { };
+struct CombN : public FeedbackDelay, InterpolationUnit {};
 
-struct CombL : public FeedbackDelay, InterpolationUnit { };
+struct CombL : public FeedbackDelay, InterpolationUnit {};
 
-struct CombC : public FeedbackDelay, CubicInterpolationUnit { };
+struct CombC : public FeedbackDelay, CubicInterpolationUnit {};
 
-struct AllpassN : public FeedbackDelay, InterpolationUnit { };
+struct AllpassN : public FeedbackDelay, InterpolationUnit {};
 
-struct AllpassL : public FeedbackDelay, InterpolationUnit { };
+struct AllpassL : public FeedbackDelay, InterpolationUnit {};
 
-struct AllpassC : public FeedbackDelay, CubicInterpolationUnit { };
+struct AllpassC : public FeedbackDelay, CubicInterpolationUnit {};
 
 struct BufInfoUnit : public Unit {
     float m_fbufnum;
@@ -196,11 +196,11 @@ struct LocalBuf : public Unit {
     void* chunk;
 };
 
-struct MaxLocalBufs : public Unit { };
+struct MaxLocalBufs : public Unit {};
 
-struct SetBuf : public Unit { };
+struct SetBuf : public Unit {};
 
-struct ClearBuf : public Unit { };
+struct ClearBuf : public Unit {};
 
 struct DelTapWr : public Unit {
     SndBuf* m_buf;
@@ -3563,7 +3563,7 @@ void Delay_next_0(DelayUnit* unit, int inNumSamples) {
     memcpy(out, in, inNumSamples * sizeof(float));
 }
 
-void Delay_next_0_nop(DelayUnit* unit, int inNumSamples) { }
+void Delay_next_0_nop(DelayUnit* unit, int inNumSamples) {}
 
 #ifdef NOVA_SIMD
 void Delay_next_0_nova(DelayUnit* unit, int inNumSamples) { nova::copyvec_simd(OUT(0), IN(0), inNumSamples); }

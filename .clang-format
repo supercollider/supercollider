@@ -13,3 +13,4 @@ NamespaceIndentation: None
 SortIncludes: false
 SpaceBeforeCtorInitializerColon: false
 TabWidth: 4
+SpaceInEmptyBlock: false

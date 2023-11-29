@@ -77,7 +77,7 @@ static bool gSysexFlag = false;
 static Byte gRunningStatus = 0;
 std::vector<Byte> gSysexData;
 
-void midiNotifyProc(const MIDINotification* msg, void* refCon) { }
+void midiNotifyProc(const MIDINotification* msg, void* refCon) {}
 
 extern bool compiledOK;
 
@@ -436,7 +436,7 @@ int midiCleanUp() {
 }
 
 
-void midiListEndpoints() { }
+void midiListEndpoints() {}
 
 
 int prListMIDIEndpoints(struct VMGlobals* g, int numArgsPushed);

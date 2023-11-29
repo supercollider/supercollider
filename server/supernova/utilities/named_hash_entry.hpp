@@ -60,9 +60,9 @@ private:
     }
 
     struct symbol_data {
-        explicit symbol_data(const char* str): str(str), hash(string_hash(str)) { }
+        explicit symbol_data(const char* str): str(str), hash(string_hash(str)) {}
 
-        explicit symbol_data(const char* str, size_t hash): str(str), hash(hash) { }
+        explicit symbol_data(const char* str, size_t hash): str(str), hash(hash) {}
 
         symbol_data(symbol_data const& rhs) = default;
         symbol_data& operator=(symbol_data const& rhs) = default;
@@ -95,7 +95,7 @@ private:
         typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
 
     public:
-        symbol_table(void) { }
+        symbol_table(void) {}
 
         symbol_data const& find(const char* str, size_t strlen) {
             mutex.lock_shared();
@@ -132,13 +132,13 @@ private:
     symbol_data lookup_string(const char* str) { return lookup_string(str, strlen(str)); }
 
 public:
-    symbol() { }
+    symbol() {}
 
-    explicit symbol(const char* str): data(lookup_string(str)) { }
+    explicit symbol(const char* str): data(lookup_string(str)) {}
 
-    explicit symbol(std::string const& str): data(lookup_string(str.c_str(), str.size())) { }
+    explicit symbol(std::string const& str): data(lookup_string(str.c_str(), str.size())) {}
 
-    symbol(const char* str, std::size_t length): data(lookup_string(str, length)) { }
+    symbol(const char* str, std::size_t length): data(lookup_string(str, length)) {}
 
     symbol(symbol const& rhs) = default;
     symbol& operator=(symbol const& rhs) = default;
@@ -158,11 +158,11 @@ class named_hash_entry : public bi::unordered_set_base_hook<> {
     const symbol name_;
 
 public:
-    named_hash_entry(const char* name): name_(name) { }
+    named_hash_entry(const char* name): name_(name) {}
 
-    named_hash_entry(symbol const& name): name_(name) { }
+    named_hash_entry(symbol const& name): name_(name) {}
 
-    named_hash_entry(std::string const& name): name_(name.c_str(), name.size()) { }
+    named_hash_entry(std::string const& name): name_(name.c_str(), name.size()) {}
 
     const char* name(void) const { return name_.c_str(); }
 

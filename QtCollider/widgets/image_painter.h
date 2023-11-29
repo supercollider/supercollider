@@ -46,7 +46,7 @@ struct ImagePainter {
     bool scaleToFit;
     qreal opacity;
 
-    ImagePainter(): horizontalMode(AlignLeft), verticalMode(AlignTop), scaleToFit(false), opacity(1.0) { }
+    ImagePainter(): horizontalMode(AlignLeft), verticalMode(AlignTop), scaleToFit(false), opacity(1.0) {}
 
     bool isValid() const { return !image.isNull(); }
 

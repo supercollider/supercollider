@@ -59,13 +59,13 @@ template<typename ShapeT> struct Shape
 #endif
 
 struct Rect {
-    Rect(QRectF rect): _rect(rect) { }
+    Rect(QRectF rect): _rect(rect) {}
     template <typename RectT> inline void draw(QPainter* p, const RectT& r) const { p->drawRect(r); }
     QRectF _rect;
 };
 
 struct RoundRect {
-    RoundRect(QRectF rect, qreal radius): _rect(rect), _radius(radius) { }
+    RoundRect(QRectF rect, qreal radius): _rect(rect), _radius(radius) {}
     template <typename RectT> inline void draw(QPainter* p, const RectT& r) const {
         p->drawRoundedRect(r, _radius, _radius, Qt::AbsoluteSize);
     }
@@ -74,7 +74,7 @@ struct RoundRect {
 };
 
 struct Ellipse {
-    Ellipse(QRectF rect): _rect(rect) { }
+    Ellipse(QRectF rect): _rect(rect) {}
     template <typename RectT> inline void draw(QPainter* p, const RectT& r) const { p->drawEllipse(r); }
     QRectF _rect;
 };

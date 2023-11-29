@@ -79,9 +79,9 @@ void QcToolBar::removeAction(QAction* action) {
     }
 }
 
-QcAction::QcAction(): QAction(NULL) { }
+QcAction::QcAction(): QAction(NULL) {}
 
-QcWidgetAction::QcWidgetAction(): QWidgetAction(NULL) { }
+QcWidgetAction::QcWidgetAction(): QWidgetAction(NULL) {}
 
 void QcAction::setIcon(const QtCollider::SharedImage& image) {
     if (image) {
@@ -92,4 +92,4 @@ void QcAction::setIcon(const QtCollider::SharedImage& image) {
     }
 }
 
-QcToolBar::QcToolBar(): QToolBar() { }
+QcToolBar::QcToolBar(): QToolBar() {}

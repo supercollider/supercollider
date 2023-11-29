@@ -42,7 +42,7 @@ const int kScanThreshold = 256;
 
 class GCSet {
 public:
-    GCSet() { }
+    GCSet() {}
     void Init(int inSizeClass);
 
     bool HasFree() { return mFree != &mBlack; }
@@ -59,7 +59,7 @@ private:
 };
 
 struct SlotRef {
-    SlotRef(PyrObject* inObj, int32 inIndex): obj(inObj), slotIndex(inIndex) { }
+    SlotRef(PyrObject* inObj, int32 inIndex): obj(inObj), slotIndex(inIndex) {}
 
     PyrObject* obj;
     int32 slotIndex;

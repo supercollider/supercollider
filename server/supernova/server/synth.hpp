@@ -33,7 +33,7 @@ namespace detail {
 /** wrapper class implementing the functionality of synth, that accesses its prototype */
 class synth_definition_instance {
 public:
-    synth_definition_instance(synth_definition_ptr const& ptr): class_ptr(ptr) { }
+    synth_definition_instance(synth_definition_ptr const& ptr): class_ptr(ptr) {}
 
     slot_index_t resolve_slot(const char* str) { return class_ptr->resolve_slot(str); }
 
@@ -70,7 +70,7 @@ public:
 
 protected:
     abstract_synth(int node_id, synth_definition_ptr const& definition):
-        server_node(node_id, true), definition_instance(definition) { }
+        server_node(node_id, true), definition_instance(definition) {}
 
 public:
     virtual void run(void) = 0;

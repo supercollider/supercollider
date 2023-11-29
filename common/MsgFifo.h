@@ -33,7 +33,7 @@ using std::memory_order_release;
 
 template <class MsgType, int N> class MsgFifo {
 public:
-    MsgFifo(): mReadHead(0), mWriteHead(0), mFreeHead(0) { }
+    MsgFifo(): mReadHead(0), mWriteHead(0), mFreeHead(0) {}
 
     void MakeEmpty() {
         int writeHead = mWriteHead.load();
@@ -83,7 +83,7 @@ private:
 
 template <class MsgType, int N> class MsgFifoNoFree {
 public:
-    MsgFifoNoFree(): mReadHead(0), mWriteHead(0) { }
+    MsgFifoNoFree(): mReadHead(0), mWriteHead(0) {}
 
     void MakeEmpty() { mReadHead.store(mWriteHead.load()); }
     bool IsEmpty() { return mReadHead.load(memory_order_relaxed) == mWriteHead.load(memory_order_relaxed); }

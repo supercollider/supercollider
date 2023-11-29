@@ -74,7 +74,7 @@ struct nova_endpoint : public std::enable_shared_from_this<nova_endpoint> {
 
 class udp_endpoint : public nova_endpoint {
 public:
-    udp_endpoint(udp::endpoint const& ep): endpoint_(ep) { }
+    udp_endpoint(udp::endpoint const& ep): endpoint_(ep) {}
 
     bool operator==(udp_endpoint const& rhs) const { return endpoint_ == rhs.endpoint_; }
 
@@ -95,7 +95,7 @@ class sc_notify_observers {
 public:
     typedef enum { no_error = 0, already_registered = -1, not_registered = -2 } error_code;
 
-    sc_notify_observers(boost::asio::io_service& io_service): udp_socket(io_service) { }
+    sc_notify_observers(boost::asio::io_service& io_service): udp_socket(io_service) {}
 
     int add_observer(endpoint_ptr const& ep);
     int remove_observer(endpoint_ptr const& ep);
@@ -142,7 +142,7 @@ class sc_scheduled_bundles {
 public:
     struct bundle_node : public boost::intrusive::bs_set_base_hook<> {
         bundle_node(time_tag const& timeout, const char* data, endpoint_ptr const& endpoint):
-            timeout_(timeout), data_(data), endpoint_(endpoint) { }
+            timeout_(timeout), data_(data), endpoint_(endpoint) {}
 
         void run(void);
 
@@ -203,7 +203,7 @@ public:
 
     class received_packet : public audio_sync_callback {
         received_packet(const char* dat, size_t length, endpoint_ptr const& endpoint):
-            data(dat), length(length), endpoint_(endpoint) { }
+            data(dat), length(length), endpoint_(endpoint) {}
 
         void* operator new(std::size_t size, void* ptr) { return ::operator new(size, ptr); }
 
@@ -241,7 +241,7 @@ public:
         bool operator==(tcp_connection const& rhs) const { return &rhs == this; }
 
     private:
-        tcp_connection(const executor& executor): socket_(executor) { }
+        tcp_connection(const executor& executor): socket_(executor) {}
 
         void send(const char* data, size_t length) override final;
 

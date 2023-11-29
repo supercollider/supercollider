@@ -37,7 +37,7 @@ namespace bi = boost::intrusive;
 struct sc_unitcmd_def : public named_hash_entry {
     const UnitCmdFunc func;
 
-    sc_unitcmd_def(const char* cmd_name, UnitCmdFunc func): named_hash_entry(cmd_name), func(func) { }
+    sc_unitcmd_def(const char* cmd_name, UnitCmdFunc func): named_hash_entry(cmd_name), func(func) {}
 
     void run(Unit* unit, struct sc_msg_iter* args) { (func)(unit, args); }
 };
@@ -65,7 +65,7 @@ public:
         ctor(inCtor),
         dtor(inDtor),
         flags(inFlags),
-        unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count)) { }
+        unitcmd_set(unitcmd_set_type::bucket_traits(unitcmd_set_buckets, unitcmd_set_bucket_count)) {}
 
     Unit* construct(sc_synthdef::unit_spec_t const& unit_spec, sc_synth* parent, int parentIndex, World* world,
                     linear_allocator& allocator);
@@ -90,7 +90,7 @@ public:
 struct sc_bufgen_def : public named_hash_entry {
     const BufGenFunc func;
 
-    sc_bufgen_def(const char* name, BufGenFunc func): named_hash_entry(name), func(func) { }
+    sc_bufgen_def(const char* name, BufGenFunc func): named_hash_entry(name), func(func) {}
 
     sample* run(World* world, uint32_t buffer_index, struct sc_msg_iter* args);
 };
@@ -100,7 +100,7 @@ struct sc_cmdplugin_def : public named_hash_entry {
     void* user_data;
 
     sc_cmdplugin_def(const char* name, PlugInCmdFunc func, void* user_data):
-        named_hash_entry(name), func(func), user_data(user_data) { }
+        named_hash_entry(name), func(func), user_data(user_data) {}
 
     void run(World* world, struct sc_msg_iter* args, void* replyAddr) { (func)(world, user_data, args, replyAddr); }
 };
@@ -134,7 +134,7 @@ protected:
     sc_plugin_container(void):
         ugen_set(ugen_set_type::bucket_traits(ugen_set_buckets, ugen_set_bucket_count)),
         bufgen_set(bufgen_set_type::bucket_traits(bufgen_set_buckets, bufgen_set_bucket_count)),
-        cmdplugin_set(cmdplugin_set_type::bucket_traits(cmdplugin_set_buckets, cmdplugin_set_bucket_count)) { }
+        cmdplugin_set(cmdplugin_set_type::bucket_traits(cmdplugin_set_buckets, cmdplugin_set_bucket_count)) {}
 
     ~sc_plugin_container(void) {
         ugen_set.clear_and_dispose(boost::checked_deleter<sc_ugen_def>());

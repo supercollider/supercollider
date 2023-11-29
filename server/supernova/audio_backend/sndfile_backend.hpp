@@ -54,7 +54,7 @@ class sndfile_backend : public detail::audio_backend_base<sample_type, float, bl
     static const size_t queue_size = 10 * 1024 * 1024; // 30 MB
 
 public:
-    sndfile_backend(void): read_frames(queue_size), write_frames(queue_size) { }
+    sndfile_backend(void): read_frames(queue_size), write_frames(queue_size) {}
 
     size_t get_audio_blocksize(void) const { return block_size_; }
 
@@ -234,7 +234,7 @@ private:
                 break;
         }
 
-        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) { }
+        while (poll_writer_queue(data_to_write.get(), deque_per_tick, pending_samples)) {}
     }
 
     bool poll_writer_queue(sample_type* data_to_write, const size_t buffer_samples, size_t& pending_samples) {

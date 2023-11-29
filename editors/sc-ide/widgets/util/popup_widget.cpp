@@ -27,7 +27,7 @@
 
 namespace ScIDE {
 
-PopUpWidget::PopUpWidget(QWidget* parent): QWidget(parent, Qt::ToolTip), mEventLoop(0), mResult(0) { }
+PopUpWidget::PopUpWidget(QWidget* parent): QWidget(parent, Qt::ToolTip), mEventLoop(0), mResult(0) {}
 
 PopUpWidget::~PopUpWidget() { quit(); }
 

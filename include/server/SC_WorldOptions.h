@@ -33,7 +33,7 @@
 typedef int (*PrintFunc)(const char* format, va_list ap);
 
 struct WorldOptions {
-    WorldOptions() { }
+    WorldOptions() {}
 
     const char* mPassword = nullptr;
     uint32 mNumBuffers = 1024;

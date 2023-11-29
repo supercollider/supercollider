@@ -29,7 +29,7 @@
 
 namespace QtCollider {
 
-StackLayout::StackLayout(): _index(-1), _mode(StackOne), _gotParent(false) { }
+StackLayout::StackLayout(): _index(-1), _mode(StackOne), _gotParent(false) {}
 
 StackLayout::~StackLayout() { qDeleteAll(_list); }
 

@@ -63,7 +63,7 @@ SC_Lock gInstanceMutex;
 
 class HiddenLanguageClient {
 public:
-    HiddenLanguageClient(): mPostFile(nullptr), mScratch(0), mRunning(false) { }
+    HiddenLanguageClient(): mPostFile(nullptr), mScratch(0), mRunning(false) {}
 
     std::string mName;
     FILE* mPostFile;
@@ -280,13 +280,13 @@ bool SC_LanguageClient::tickLocked(double* nextTime) {
     return slotDoubleVal(&gMainVMGlobals->result, nextTime) == errNone;
 }
 
-void SC_LanguageClient::onInitRuntime() { }
+void SC_LanguageClient::onInitRuntime() {}
 
-void SC_LanguageClient::onLibraryStartup() { }
+void SC_LanguageClient::onLibraryStartup() {}
 
-void SC_LanguageClient::onLibraryShutdown() { }
+void SC_LanguageClient::onLibraryShutdown() {}
 
-void SC_LanguageClient::onInterpStartup() { }
+void SC_LanguageClient::onInterpStartup() {}
 
 // runLibrary methods
 void SC_LanguageClient::interpretCmdLine() { runLibrary(s_interpretCmdLine); }

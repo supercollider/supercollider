@@ -33,7 +33,7 @@ struct QcGraphElement {
     enum CurveType { Step = 0, Linear, Sine, Welch, Exponential, Quadratic, Cubic, Curvature, Hold };
 
     QcGraphElement(const QSize& sz):
-        size(sz), curveType(Linear), curvature(0.0), editable(true), selected(false), _prev(0), _next(0) { }
+        size(sz), curveType(Linear), curvature(0.0), editable(true), selected(false), _prev(0), _next(0) {}
 
     void setCurveType(CurveType type, double curve = 0.0) {
         curveType = type;
@@ -61,10 +61,10 @@ class QcGraphModel : public QObject {
     Q_OBJECT
 
 public:
-    QcGraphModel(QObject* parent = 0): QObject(parent) { }
+    QcGraphModel(QObject* parent = 0): QObject(parent) {}
 
     struct Connection {
-        Connection(QcGraphElement* a_ = 0, QcGraphElement* b_ = 0): a(a_), b(b_) { }
+        Connection(QcGraphElement* a_ = 0, QcGraphElement* b_ = 0): a(a_), b(b_) {}
         QcGraphElement* a;
         QcGraphElement* b;
     };
@@ -268,7 +268,7 @@ private Q_SLOTS:
 
 private:
     struct SelectedElement {
-        SelectedElement(QcGraphElement* e): elem(e) { }
+        SelectedElement(QcGraphElement* e): elem(e) {}
         bool operator==(const SelectedElement& other) { return elem == other.elem; }
 
         QcGraphElement* elem;
@@ -334,7 +334,7 @@ private:
     QSize _largestThumbSize;
 
     struct Selection {
-        Selection(): cached(false), shallMove(false) { }
+        Selection(): cached(false), shallMove(false) {}
         int size() const { return elems.size(); }
         int count() const { return elems.count(); }
 

@@ -104,12 +104,12 @@ private:
 namespace QtCollider {
 
 struct SetFocusEvent : public QEvent {
-    SetFocusEvent(bool b): QEvent((QEvent::Type)QtCollider::Event_Proxy_SetFocus), focus(b) { }
+    SetFocusEvent(bool b): QEvent((QEvent::Type)QtCollider::Event_Proxy_SetFocus), focus(b) {}
     bool focus;
 };
 
 struct SetAlwaysOnTopEvent : public QEvent {
-    SetAlwaysOnTopEvent(bool b): QEvent((QEvent::Type)QtCollider::Event_Proxy_SetAlwaysOnTop), alwaysOnTop(b) { }
+    SetAlwaysOnTopEvent(bool b): QEvent((QEvent::Type)QtCollider::Event_Proxy_SetAlwaysOnTop), alwaysOnTop(b) {}
     bool alwaysOnTop;
 };
 

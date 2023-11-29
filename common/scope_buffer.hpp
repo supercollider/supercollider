@@ -88,14 +88,14 @@ class scope_buffer {
     int _out;
 
     struct data_desc {
-        data_desc(): data(0), frames(0), changed(false) { }
+        data_desc(): data(0), frames(0), changed(false) {}
         sh_float_ptr data;
         unsigned int frames;
         atomic<bool> changed;
     } _state[3];
 
 public:
-    scope_buffer(): _status(free), _stage(0), _in(1), _out(2) { }
+    scope_buffer(): _status(free), _stage(0), _in(1), _out(2) {}
 
 private:
     // writer interface
@@ -163,7 +163,7 @@ class scope_buffer_writer {
 public:
     scope_buffer* buffer;
 
-    scope_buffer_writer(scope_buffer* buffer = 0): buffer(buffer) { }
+    scope_buffer_writer(scope_buffer* buffer = 0): buffer(buffer) {}
 
     scope_buffer_writer(scope_buffer* buf, scope_buffer_pool& pool, unsigned int channels, unsigned int size):
         buffer(buf) {
@@ -189,7 +189,7 @@ class scope_buffer_reader {
     scope_buffer* buffer;
 
 public:
-    scope_buffer_reader(scope_buffer* buffer_ = 0): buffer(buffer_) { }
+    scope_buffer_reader(scope_buffer* buffer_ = 0): buffer(buffer_) {}
 
     bool valid() {
         // places an acquire memory ordering fence

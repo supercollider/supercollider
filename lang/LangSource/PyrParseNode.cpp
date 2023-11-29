@@ -121,9 +121,9 @@ void initParser() {
     overwriteMsg.clear();
 }
 
-void finiParser() { }
+void finiParser() {}
 
-void initParseNodes() { }
+void initParseNodes() {}
 
 void initParserPool() {
     // postfl("initPool gParseNodePool pyr_pool_compile\n");
@@ -877,7 +877,7 @@ void PyrClassNode::compile(PyrSlot* result) {
     }
 }
 
-void recompileSubclasses(PyrClass* classobj) { }
+void recompileSubclasses(PyrClass* classobj) {}
 
 #if 0
 void catVarLists(PyrVarListNode *varlist);
@@ -3668,7 +3668,7 @@ int litDictPut(PyrObject* dict, PyrSlot* key, PyrSlot* value) {
 }
 
 
-void PyrLitDictNode::dump(int level) { }
+void PyrLitDictNode::dump(int level) {}
 
 void PyrLitDictNode::compile(PyrSlot* result) {
 #if 0

@@ -48,7 +48,7 @@ static HSizePolicy hSizePolicy(QWidget* w) {
 
 class DefaultLayout {
 public:
-    DefaultLayout(QWidget* w): parent(w), initialized(false) { }
+    DefaultLayout(QWidget* w): parent(w), initialized(false) {}
 
     void resize(QResizeEvent* e) {
         QRect r;
@@ -107,7 +107,7 @@ private:
 
 class HLayout {
 public:
-    HLayout(QWidget* w): parent(w) { }
+    HLayout(QWidget* w): parent(w) {}
 
     void resize(QResizeEvent* e) {
         QRect geom;
@@ -157,7 +157,7 @@ private:
 
 class VLayout {
 public:
-    VLayout(QWidget* w): parent(w) { }
+    VLayout(QWidget* w): parent(w) {}
 
     void resize(QResizeEvent* e) {
         QRect geom;

@@ -43,7 +43,7 @@ public:
         g(inG),
         objectArray(initialObjectArray),
         numObjects(0),
-        objectArrayCapacity(kDeepCopierObjectArrayInitialCapacity) { }
+        objectArrayCapacity(kDeepCopierObjectArrayInitialCapacity) {}
 
     ~PyrDeepCopier() {
         if (objectArrayCapacity > kDeepCopierObjectArrayInitialCapacity) {

@@ -225,7 +225,7 @@ private:
     SC_Filesystem(SC_Filesystem const&) = delete;
     void operator=(SC_Filesystem const&) = delete;
 
-    SC_Filesystem(): mDirectoryMap(), mIdeName(SC_DEFAULT_IDE_NAME) { }
+    SC_Filesystem(): mDirectoryMap(), mIdeName(SC_DEFAULT_IDE_NAME) {}
 
     //----------------------------------- IDE UTILITIES ------------------------------------//
 

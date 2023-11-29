@@ -34,7 +34,7 @@ class queue_node_data {
     typedef std::uint_fast8_t thread_count_type;
 
 public:
-    explicit queue_node_data(abstract_synth* node): node(static_cast<sc_synth*>(node)) { }
+    explicit queue_node_data(abstract_synth* node): node(static_cast<sc_synth*>(node)) {}
 
     explicit queue_node_data(queue_node_data const& rhs) = default;
     explicit queue_node_data(queue_node_data&& rhs) = default;
@@ -58,7 +58,7 @@ template <typename Alloc = std::allocator<queue_node_data>> class dsp_queue_node
     typedef std::uint_fast8_t thread_count_type;
 
 public:
-    explicit dsp_queue_node(queue_node_data&& node): first(std::move(node)) { }
+    explicit dsp_queue_node(queue_node_data&& node): first(std::move(node)) {}
 
     dsp_queue_node(queue_node_data&& node, std::size_t container_size): first(std::move(node)) {
         nodes.reserve(container_size - 1);

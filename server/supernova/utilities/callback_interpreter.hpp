@@ -35,7 +35,7 @@ namespace nova {
 namespace detail {
 
 struct nop_functor {
-    void operator()() const { }
+    void operator()() const {}
 };
 
 } /* namespace detail */
@@ -47,7 +47,7 @@ class callback_interpreter : callback_system<callback_type, mpmc, callback_delet
     typedef boost::sync::semaphore semaphore;
 
 public:
-    callback_interpreter(void): sem(0), running(false) { }
+    callback_interpreter(void): sem(0), running(false) {}
 
     void add_callback(callback_type* cb) {
         super_t::add_callback(cb);
@@ -94,7 +94,7 @@ class threaded_callback_interpreter : public callback_interpreter<callback_type,
     std::thread callback_thread;
 
 public:
-    threaded_callback_interpreter(void) { }
+    threaded_callback_interpreter(void) {}
 
     ~threaded_callback_interpreter(void) {
         if (super::running.load())

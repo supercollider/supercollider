@@ -28,7 +28,7 @@ class QcTextField : public QLineEdit {
     Q_OBJECT
 
 public:
-    QcTextField() { }
+    QcTextField() {}
 
 protected:
     virtual void keyPressEvent(QKeyEvent* e) {

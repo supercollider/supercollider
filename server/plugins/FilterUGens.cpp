@@ -150,7 +150,7 @@ struct LPZ2 : public Unit {
     double m_x1, m_x2;
 };
 
-struct Flip : public Unit { };
+struct Flip : public Unit {};
 
 struct Delay1 : public Unit {
     float m_x1;

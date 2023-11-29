@@ -45,7 +45,7 @@ template <bool blocking = false> class simple_pool {
     typedef typename mutex_type::scoped_lock scoped_lock;
 
     struct data : mutex_type {
-        data(void): pool(nullptr) { }
+        data(void): pool(nullptr) {}
 
         void init(std::size_t size, bool lock) {
             pool = (char*)operator new(size);
@@ -67,7 +67,7 @@ template <bool blocking = false> class simple_pool {
     };
 
 public:
-    simple_pool(void) { }
+    simple_pool(void) {}
 
     simple_pool(simple_pool const& rhs) = delete;
     simple_pool& operator=(simple_pool const& rhs) = delete;
@@ -81,7 +81,7 @@ public:
 #endif
     }
 
-    ~simple_pool() throw() { }
+    ~simple_pool() throw() {}
 
 #ifdef NOVA_MEMORY_DEBUGGING
     void* MALLOC malloc(std::size_t size) { return ::malloc(size); }

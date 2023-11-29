@@ -35,7 +35,7 @@ class CmdLineEdit : public QLineEdit {
     Q_OBJECT
 
 public:
-    explicit CmdLineEdit(QWidget* parent = NULL): QLineEdit(parent) { }
+    explicit CmdLineEdit(QWidget* parent = NULL): QLineEdit(parent) {}
 
 public Q_SLOTS:
     bool openDocumentation();

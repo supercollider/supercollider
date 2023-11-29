@@ -1630,7 +1630,7 @@ static int input(void);
  */
 #    define ECHO                                                                                                       \
         do {                                                                                                           \
-            if (fwrite(yytext, (size_t)yyleng, 1, yyout)) { }                                                          \
+            if (fwrite(yytext, (size_t)yyleng, 1, yyout)) {}                                                           \
         } while (0)
 #endif
 

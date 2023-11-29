@@ -230,7 +230,7 @@ class SCWorld_Allocator : public SCFFT_Allocator {
     World* world;
 
 public:
-    SCWorld_Allocator(InterfaceTable* ft, World* world): ft(ft), world(world) { }
+    SCWorld_Allocator(InterfaceTable* ft, World* world): ft(ft), world(world) {}
 
     virtual void* alloc(size_t size) { return RTAlloc(world, size); }
 

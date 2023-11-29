@@ -33,9 +33,9 @@
 
 QC_DECLARE_QOBJECT_FACTORY(QtDownload);
 
-QtDownload::QtDownload(): QObject(0), started(false) { }
+QtDownload::QtDownload(): QObject(0), started(false) {}
 
-QtDownload::~QtDownload() { }
+QtDownload::~QtDownload() {}
 
 
 void QtDownload::setSource(const QString& t) { m_target = t; }

@@ -44,7 +44,7 @@ public:
         g(inG),
         objectArray(initialObjectArray),
         numObjects(0),
-        objectArrayCapacity(kDeepFreezerObjectArrayInitialCapacity) { }
+        objectArrayCapacity(kDeepFreezerObjectArrayInitialCapacity) {}
 
     ~PyrDeepFreezer() {
         if (objectArrayCapacity > kDeepFreezerObjectArrayInitialCapacity)

@@ -278,7 +278,7 @@ public:
     boost::asio::ip::tcp::socket socket;
 
     SC_TcpConnection(struct World* world, boost::asio::io_service& ioService, class SC_TcpInPort* parent):
-        mWorld(world), socket(ioService), mParent(parent) { }
+        mWorld(world), socket(ioService), mParent(parent) {}
 
     ~SC_TcpConnection();
 

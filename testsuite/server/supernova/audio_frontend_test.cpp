@@ -10,7 +10,7 @@
 using namespace nova;
 
 namespace {
-void tick(void) { }
+void tick(void) {}
 }
 
 BOOST_AUTO_TEST_CASE(frontend_test_1) {

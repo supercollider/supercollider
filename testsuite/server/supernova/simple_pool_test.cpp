@@ -10,7 +10,7 @@ using namespace std;
 namespace {
 
 struct foo {
-    foo(void) { }
+    foo(void) {}
     int data[4];
 };
 

@@ -159,7 +159,7 @@ public:
         mHashMask = mTableSize - 1;
     }
 
-    ~StaticHashTable() { }
+    ~StaticHashTable() {}
 
     int32 TableSize() const { return mTableSize; }
     int32 MaxItems() const { return kMaxItems; }

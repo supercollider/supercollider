@@ -60,7 +60,7 @@ public:
         close_client();
     }
 
-    void initialize(void) { }
+    void initialize(void) {}
 
     uint32_t get_audio_blocksize(void) const { return blocksize_; }
 

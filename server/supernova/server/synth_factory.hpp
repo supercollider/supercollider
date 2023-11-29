@@ -60,7 +60,7 @@ public:
 
     std::size_t definition_count(void) const { return definition_map.size(); }
 
-    synth_factory(void): definition_map(prototype_map_type::bucket_traits(buckets, bucket_count)) { }
+    synth_factory(void): definition_map(prototype_map_type::bucket_traits(buckets, bucket_count)) {}
 
     ~synth_factory(void) {
         while (definition_map.begin() != definition_map.end()) {

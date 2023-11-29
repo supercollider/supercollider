@@ -38,7 +38,7 @@ QcQuartzComposerContainerView::QcQuartzComposerContainerView(QWidget* parent): Q
     [pool release];
 }
 
-QcQuartzComposerContainerView::~QcQuartzComposerContainerView() { }
+QcQuartzComposerContainerView::~QcQuartzComposerContainerView() {}
 
 // QMacCocoaViewContainer *must* be wrapped in a parent view
 // so we make a wrapper here which does most of the work

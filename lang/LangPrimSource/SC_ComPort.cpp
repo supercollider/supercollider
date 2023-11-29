@@ -69,7 +69,7 @@ void stopAsioThread() {
 // One MessageHandler<> class for each HandlerType.
 // The signature of handleMessage can differ between handler types, so templatizing the class
 // allows us to specify a message handler func using e.g. MessageHandler<HandlerType::OSC>::handleMessage
-template <HandlerType H> struct MessageHandler { };
+template <HandlerType H> struct MessageHandler {};
 
 template <> struct MessageHandler<HandlerType::OSC> {
     static void handleMessage(Protocol protocol, int replySocket, const boost::asio::ip::address& replyAddress,
@@ -264,7 +264,7 @@ void UDP::handleReceivedUDP(const boost::system::error_code& error, std::size_t 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-UDPCustom::UDPCustom(int inPortNum, HandlerType handlerType): UDP(inPortNum, handlerType, 1) { }
+UDPCustom::UDPCustom(int inPortNum, HandlerType handlerType): UDP(inPortNum, handlerType, 1) {}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 

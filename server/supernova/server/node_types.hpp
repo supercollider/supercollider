@@ -41,7 +41,7 @@ class server_node : public bi::list_base_hook<bi::link_mode<bi::auto_unlink>>, /
                     public bi::unordered_set_base_hook<bi::link_mode<bi::auto_unlink>> /* for node_id mapping */
 {
 protected:
-    server_node(int32_t node_id, bool type): node_id(node_id), node_is_synth(type), use_count_(0) { }
+    server_node(int32_t node_id, bool type): node_id(node_id), node_is_synth(type), use_count_(0) {}
 
     virtual ~server_node(void) { assert(parent_ == 0); }
 

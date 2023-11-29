@@ -41,7 +41,7 @@ public:
     rt_pool_allocator(const rt_pool_allocator&) throw() = default;
     ~rt_pool_allocator() throw() = default;
 
-    template <class U> rt_pool_allocator(const rt_pool_allocator<U>&) throw() { }
+    template <class U> rt_pool_allocator(const rt_pool_allocator<U>&) throw() {}
 
 
     pointer address(reference x) const { return &x; }

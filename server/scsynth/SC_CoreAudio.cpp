@@ -333,7 +333,7 @@ void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mDat
 // Audio driver (Common)
 
 SC_AudioDriver::SC_AudioDriver(struct World* inWorld):
-    mWorld(inWorld), mSampleTime(0), mNumSamplesPerCallback(0), mSafetyClipThreshold(1.26) { }
+    mWorld(inWorld), mSampleTime(0), mNumSamplesPerCallback(0), mSafetyClipThreshold(1.26) {}
 
 SC_AudioDriver::~SC_AudioDriver() {
     mRunThreadFlag = false;
@@ -478,7 +478,7 @@ SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_CoreAud
 
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIO || SC_AUDIO_API == SC_AUDIO_API_AUDIOUNITS
 
-SC_CoreAudioDriver::SC_CoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld), mInputBufList(0) { }
+SC_CoreAudioDriver::SC_CoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld), mInputBufList(0) {}
 
 SC_CoreAudioDriver::~SC_CoreAudioDriver() {
     if (mInputBufList) {
@@ -1887,7 +1887,7 @@ OSStatus AddDeviceListeners(AudioDeviceID inDevice, void* inClientData) {
 #if SC_AUDIO_API == SC_AUDIO_API_COREAUDIOIPHONE
 SC_iCoreAudioDriver::SC_iCoreAudioDriver(struct World* inWorld): SC_AudioDriver(inWorld) { receivedIn = 0; }
 
-SC_iCoreAudioDriver::~SC_iCoreAudioDriver() { }
+SC_iCoreAudioDriver::~SC_iCoreAudioDriver() {}
 
 /*
 OSStatus appIOProc2 (AudioDeviceID inDevice, const AudioTimeStamp* inNow,
@@ -2200,7 +2200,7 @@ OSStatus appIOProc (AudioDeviceID device, const AudioTimeStamp* inNow,
 */
 
 
-void AudioSessionInterruptionCbk(void* inClientData, UInt32 inInterruptionState) { }
+void AudioSessionInterruptionCbk(void* inClientData, UInt32 inInterruptionState) {}
 
 
 bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate) {

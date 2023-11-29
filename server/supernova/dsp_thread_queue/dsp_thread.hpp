@@ -35,11 +35,11 @@ namespace nova {
 using std::uint16_t;
 
 struct nop_thread_init {
-    nop_thread_init(void) { }
+    nop_thread_init(void) {}
 
-    template <typename Arg> nop_thread_init(Arg const&) { }
+    template <typename Arg> nop_thread_init(Arg const&) {}
 
-    void operator()(int thread_index) { }
+    void operator()(int thread_index) {}
 };
 
 

@@ -30,7 +30,7 @@
 
 class AccessBuffer {
 protected:
-    AccessBuffer(float* buffer, unsigned int count): m_buffer(buffer), m_count(count), m_last(buffer[count - 1]) { }
+    AccessBuffer(float* buffer, unsigned int count): m_buffer(buffer), m_count(count), m_last(buffer[count - 1]) {}
     const float& at(unsigned int n) const {
         if (n < m_count)
             return m_buffer[n];
@@ -104,7 +104,7 @@ static inline void belaUGenDisable(Unit* unit) {
     belaUGenInitOutput(unit);
 }
 
-struct MultiplexAnalogIn : public Unit { };
+struct MultiplexAnalogIn : public Unit {};
 
 
 struct AnalogIn : public Unit {

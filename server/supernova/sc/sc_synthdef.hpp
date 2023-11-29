@@ -40,7 +40,7 @@ class sc_synthdef {
 
 public:
     struct input_spec {
-        input_spec(int32_t source, int32_t index): source(source), index(index) { }
+        input_spec(int32_t source, int32_t index): source(source), index(index) {}
 
         bool operator<(input_spec const& rhs) const {
             if (source < rhs.source)
@@ -61,7 +61,7 @@ public:
 
         unit_spec_t(symbol const& name, int16_t rate, int16_t special_index, input_spec_vector const& in_specs,
                     char_vector const& out_specs):
-            name(name), rate(rate), special_index(special_index), input_specs(in_specs), output_specs(out_specs) { }
+            name(name), rate(rate), special_index(special_index), input_specs(in_specs), output_specs(out_specs) {}
 
         unit_spec_t(unit_spec_t&& rhs) = default;
         unit_spec_t(unit_spec_t const& rhs) = default;

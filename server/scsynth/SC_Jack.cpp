@@ -56,7 +56,7 @@ int64 oscTimeNow() { return OSCTime(getTime()); }
 
 static double jackOscTimeSeconds() { return OSCTime(getTime()) * kOSCtoSecs; }
 
-void initializeScheduler() { }
+void initializeScheduler() {}
 
 // =====================================================================
 // Audio driver
@@ -187,7 +187,7 @@ void sc_jack_shutdown_cb(void* arg) {
 // SC_JackDriver (JACK)
 
 SC_JackDriver::SC_JackDriver(struct World* inWorld):
-    SC_AudioDriver(inWorld), mClient(nullptr), mInputList(nullptr), mOutputList(nullptr), mMaxOutputLatency(0.) { }
+    SC_AudioDriver(inWorld), mClient(nullptr), mInputList(nullptr), mOutputList(nullptr), mMaxOutputLatency(0.) {}
 
 SC_JackDriver::~SC_JackDriver() {
     if (mClient) {

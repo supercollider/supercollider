@@ -47,7 +47,7 @@ void StatusLabel::setTextColor(const QColor& color) {
     setPalette(plt);
 }
 
-StatusBox::StatusBox(QWidget* parent): QWidget(parent), mMenu(0) { }
+StatusBox::StatusBox(QWidget* parent): QWidget(parent), mMenu(0) {}
 
 void StatusBox::showContextMenu() {
     if (!mMenu) {

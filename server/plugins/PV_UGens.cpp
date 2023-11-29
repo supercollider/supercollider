@@ -28,11 +28,11 @@ struct PV_OutOfPlace : Unit {
     float* m_tempbuf;
 };
 
-struct PV_MagSmear : PV_OutOfPlace { };
+struct PV_MagSmear : PV_OutOfPlace {};
 
-struct PV_MagShift : PV_OutOfPlace { };
+struct PV_MagShift : PV_OutOfPlace {};
 
-struct PV_BinShift : PV_OutOfPlace { };
+struct PV_BinShift : PV_OutOfPlace {};
 
 struct PV_PhaseShift : Unit {
     float m_phase_integral;
@@ -68,7 +68,7 @@ struct PV_BinScramble : Unit {
     bool m_triggered;
 };
 
-struct PV_Conj : PV_Unit { };
+struct PV_Conj : PV_Unit {};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

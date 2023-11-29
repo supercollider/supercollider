@@ -24,9 +24,9 @@
 
 class SC_SyncCondition {
 public:
-    SC_SyncCondition(): read(0), write(0) { }
+    SC_SyncCondition(): read(0), write(0) {}
 
-    ~SC_SyncCondition() { }
+    ~SC_SyncCondition() {}
 
     void WaitEach() {
         // waits if it has caught up.

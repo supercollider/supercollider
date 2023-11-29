@@ -34,7 +34,7 @@ extern double elapsedTime();
 
 using namespace QtCollider;
 
-LangClient::LangClient(const char* name): SC_TerminalClient(name) { }
+LangClient::LangClient(const char* name): SC_TerminalClient(name) {}
 
 void LangClient::commandLoop() {
     int exit_code = QcApplication::instance()->exec();

@@ -47,7 +47,7 @@ public:
 
 template <class BOXLAYOUT> class QcBoxLayout : public QcLayout<BOXLAYOUT> {
 public:
-    QcBoxLayout() { }
+    QcBoxLayout() {}
 
     QcBoxLayout(const QVariantList& items) {
         Q_FOREACH (const QVariant& var, items) {
@@ -136,8 +136,8 @@ class QcHBoxLayout : public QcBoxLayout<QHBoxLayout> {
     Q_OBJECT
     Q_PROPERTY(QVariantList margins READ margins WRITE setMargins)
 public:
-    QcHBoxLayout() { }
-    Q_INVOKABLE QcHBoxLayout(const QVariantList& items): QcBoxLayout<QHBoxLayout>(items) { }
+    QcHBoxLayout() {}
+    Q_INVOKABLE QcHBoxLayout(const QVariantList& items): QcBoxLayout<QHBoxLayout>(items) {}
     Q_INVOKABLE void addItem(const QVariantList& data) { QcBoxLayout<QHBoxLayout>::addItem(data); }
     Q_INVOKABLE void insertItem(const QVariantList& data) { QcBoxLayout<QHBoxLayout>::insertItem(data); }
     Q_INVOKABLE void setStretch(int index, int stretch) { QBoxLayout::setStretch(index, stretch); }
@@ -155,8 +155,8 @@ class QcVBoxLayout : public QcBoxLayout<QVBoxLayout> {
     Q_OBJECT
     Q_PROPERTY(QVariantList margins READ margins WRITE setMargins)
 public:
-    QcVBoxLayout() { }
-    Q_INVOKABLE QcVBoxLayout(const QVariantList& items): QcBoxLayout<QVBoxLayout>(items) { }
+    QcVBoxLayout() {}
+    Q_INVOKABLE QcVBoxLayout(const QVariantList& items): QcBoxLayout<QVBoxLayout>(items) {}
     Q_INVOKABLE void addItem(const QVariantList& data) { QcBoxLayout<QVBoxLayout>::addItem(data); }
     Q_INVOKABLE void insertItem(const QVariantList& data) { QcBoxLayout<QVBoxLayout>::insertItem(data); }
     Q_INVOKABLE void setStretch(int index, int stretch) { QBoxLayout::setStretch(index, stretch); }
@@ -201,7 +201,7 @@ class QcStackLayout : public QcLayout<QtCollider::StackLayout> {
     Q_PROPERTY(QVariantList margins READ margins WRITE setMargins)
 
 public:
-    QcStackLayout() { }
+    QcStackLayout() {}
 
     Q_INVOKABLE QcStackLayout(const QVariantList& items) {
         Q_FOREACH (const QVariant& var, items) {

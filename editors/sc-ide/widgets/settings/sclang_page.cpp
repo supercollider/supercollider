@@ -193,7 +193,7 @@ void SclangPage::readLanguageConfig() {
                 }
             }
         }
-    } catch (std::exception&) { }
+    } catch (std::exception&) {}
 
     sclangConfigDirty = false;
 }

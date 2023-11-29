@@ -48,7 +48,7 @@ struct ScMethodCallEvent;
 class ProxyToken : public QObject {
     Q_OBJECT
 public:
-    ProxyToken(QObjectProxy* p, QObject* parent): QObject(parent), proxy(p) { }
+    ProxyToken(QObjectProxy* p, QObject* parent): QObject(parent), proxy(p) {}
     QObjectProxy* proxy;
 };
 }
@@ -67,7 +67,7 @@ public:
     };
 
     struct EventHandlerData {
-        EventHandlerData(): type(QEvent::None) { }
+        EventHandlerData(): type(QEvent::None) {}
         int type;
         PyrSymbol* method;
         QtCollider::Synchronicity sync;
@@ -155,7 +155,7 @@ private:
 namespace QtCollider {
 
 struct SetPropertyEvent : public QEvent {
-    SetPropertyEvent(): QEvent((QEvent::Type)QtCollider::Event_Proxy_SetProperty) { }
+    SetPropertyEvent(): QEvent((QEvent::Type)QtCollider::Event_Proxy_SetProperty) {}
     PyrSymbol* property;
     QVariant value;
 };
@@ -163,7 +163,7 @@ struct SetPropertyEvent : public QEvent {
 class DestroyEvent : public QEvent {
 public:
     DestroyEvent(QObjectProxy::DestroyAction act):
-        QEvent((QEvent::Type)QtCollider::Event_Proxy_Destroy), _action(act) { }
+        QEvent((QEvent::Type)QtCollider::Event_Proxy_Destroy), _action(act) {}
     QObjectProxy::DestroyAction action() { return _action; }
 
 private:
@@ -172,7 +172,7 @@ private:
 
 struct ScMethodCallEvent : public QEvent {
     ScMethodCallEvent(PyrSymbol* m, const QList<QVariant>& l = QList<QVariant>(), bool b_locked = false):
-        QEvent((QEvent::Type)QtCollider::Event_ScMethodCall), method(m), args(l), locked(b_locked) { }
+        QEvent((QEvent::Type)QtCollider::Event_ScMethodCall), method(m), args(l), locked(b_locked) {}
 
     PyrSymbol* method;
     QList<QVariant> args;

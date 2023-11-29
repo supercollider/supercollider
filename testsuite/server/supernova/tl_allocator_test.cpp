@@ -13,7 +13,7 @@ using namespace std;
 namespace {
 
 struct initialized_struct {
-    initialized_struct(int i): i(i), f(0.2) { }
+    initialized_struct(int i): i(i), f(0.2) {}
 
     bool operator<(initialized_struct const& rhs) const { return i < rhs.i; }
 

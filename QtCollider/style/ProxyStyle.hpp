@@ -6,7 +6,7 @@ namespace QtCollider {
 
 class ProxyStyle : public QProxyStyle {
 public:
-    ProxyStyle(QStyle* style = 0): QProxyStyle(style) { }
+    ProxyStyle(QStyle* style = 0): QProxyStyle(style) {}
 
     virtual void drawComplexControl(ComplexControl, const QStyleOptionComplex*, QPainter*, const QWidget* w = 0) const;
 

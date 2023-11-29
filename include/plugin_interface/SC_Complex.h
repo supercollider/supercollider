@@ -77,8 +77,8 @@ struct Polar;
 
 
 struct Complex {
-    Complex() { }
-    Complex(float r, float i): real(r), imag(i) { }
+    Complex() {}
+    Complex(float r, float i): real(r), imag(i) {}
     void Set(float r, float i) {
         real = r;
         imag = i;
@@ -112,8 +112,8 @@ struct Complex {
 };
 
 struct Polar {
-    Polar() { }
-    Polar(float m, float p): mag(m), phase(p) { }
+    Polar() {}
+    Polar(float m, float p): mag(m), phase(p) {}
     void Set(float m, float p) {
         mag = m;
         phase = p;

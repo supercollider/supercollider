@@ -100,7 +100,7 @@ class SymbolReferenceRequest : public ScRequest {
     Q_OBJECT
 
 public:
-    SymbolReferenceRequest(ScProcess* process, QObject* parent = NULL): ScRequest(process, parent) { }
+    SymbolReferenceRequest(ScProcess* process, QObject* parent = NULL): ScRequest(process, parent) {}
 
     void sendRequest(QString const& symbol) { send("findReferencesToSymbol", symbol); }
 };

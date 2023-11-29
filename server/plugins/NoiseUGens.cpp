@@ -23,9 +23,9 @@
 
 static InterfaceTable* ft;
 
-struct WhiteNoise : public Unit { };
+struct WhiteNoise : public Unit {};
 
-struct ClipNoise : public Unit { };
+struct ClipNoise : public Unit {};
 
 struct BrownNoise : public Unit {
     float mLevel;
@@ -57,13 +57,13 @@ struct Logistic : public Unit {
     int mCounter;
 };
 
-struct Hasher : public Unit { };
+struct Hasher : public Unit {};
 
-struct MantissaMask : public Unit { };
+struct MantissaMask : public Unit {};
 
-struct IRand : public Unit { };
+struct IRand : public Unit {};
 
-struct Rand : public Unit { };
+struct Rand : public Unit {};
 
 struct TRand : public Unit {
     float m_trig, m_value;
@@ -77,11 +77,11 @@ struct TExpRand : public Unit {
     float m_trig, m_value;
 };
 
-struct NRand : public Unit { };
+struct NRand : public Unit {};
 
-struct LinRand : public Unit { };
+struct LinRand : public Unit {};
 
-struct ExpRand : public Unit { };
+struct ExpRand : public Unit {};
 
 struct CoinGate : public Unit {
     float m_trig;

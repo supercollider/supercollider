@@ -56,7 +56,7 @@ static inline void trace(const char* fmt, ...) {
     va_end(ap);
 }
 #    else
-static inline void trace(...) { }
+static inline void trace(...) {}
 
 #    endif
 
@@ -1009,7 +1009,7 @@ void initHIDAPIPrimitives() {
     // other platforms?
 }
 
-void deinitHIDAPIPrimitives() { }
+void deinitHIDAPIPrimitives() {}
 
 #endif /// HAVE_API_HID
 

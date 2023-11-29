@@ -43,7 +43,7 @@ static inline double sc_PAOSCTimeSeconds() { return (uint64)sc_PAOSCTime() * kOS
 
 int64 oscTimeNow() { return sc_PAOSCTime(); }
 
-void initializeScheduler() { }
+void initializeScheduler() {}
 
 #else // SC_PA_USE_DLL
 

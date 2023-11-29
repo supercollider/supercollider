@@ -62,7 +62,7 @@ public:
             mCallStop(false),
             mStandalone(false),
             mArgc(0),
-            mArgv(0) { }
+            mArgv(0) {}
 
         const char* mLibraryConfigFile;
         bool mDaemon;

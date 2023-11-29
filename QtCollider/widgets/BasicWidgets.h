@@ -63,7 +63,7 @@ private:
 class QcDefaultWidget : public QcSimpleWidget {
     Q_OBJECT
 public:
-    QcDefaultWidget(): l(this) { }
+    QcDefaultWidget(): l(this) {}
 
 protected:
     virtual void resizeEvent(QResizeEvent* e) {
@@ -76,7 +76,7 @@ protected:
 class QcHLayoutWidget : public QcSimpleWidget {
     Q_OBJECT
 public:
-    QcHLayoutWidget(): l(this) { }
+    QcHLayoutWidget(): l(this) {}
 
 protected:
     virtual void resizeEvent(QResizeEvent* e) {
@@ -89,7 +89,7 @@ protected:
 class QcVLayoutWidget : public QcSimpleWidget {
     Q_OBJECT
 public:
-    QcVLayoutWidget(): l(this) { }
+    QcVLayoutWidget(): l(this) {}
 
 protected:
     virtual void resizeEvent(QResizeEvent* e) {
@@ -102,13 +102,13 @@ protected:
 class QcCustomPainted : public QcCanvas {
     Q_OBJECT
 public:
-    QcCustomPainted(): l(this) { }
+    QcCustomPainted(): l(this) {}
 
 protected:
     // reimplement event handlers just so events don't propagate
-    virtual void mousePressEvent(QMouseEvent*) { }
-    virtual void mouseReleaseEvent(QMouseEvent*) { }
-    virtual void mouseMoveEvent(QMouseEvent*) { }
+    virtual void mousePressEvent(QMouseEvent*) {}
+    virtual void mouseReleaseEvent(QMouseEvent*) {}
+    virtual void mouseMoveEvent(QMouseEvent*) {}
     virtual void resizeEvent(QResizeEvent* e) {
         QcCanvas::resizeEvent(e);
         if (!layout())

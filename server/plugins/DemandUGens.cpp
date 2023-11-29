@@ -127,17 +127,17 @@ struct Dbufwr : public Unit {
     SndBuf* m_buf;
 };
 
-struct Dser : public Dseq { };
+struct Dser : public Dseq {};
 
-struct Drand : public Dseq { };
+struct Drand : public Dseq {};
 
-struct Dxrand : public Dseq { };
+struct Dxrand : public Dseq {};
 
 struct Dwrand : public Dseq {
     int32 m_weights_size;
 };
 
-struct Dswitch1 : public Unit { };
+struct Dswitch1 : public Unit {};
 
 struct Dswitch : public Unit {
     int m_index;

@@ -37,7 +37,7 @@ class callback_system : private callback_deleter {
                                       boost::lockfree::spsc_queue<callback_type*>>::type queue_type;
 
 public:
-    callback_system(size_t element_count = 2048): callbacks(element_count) { }
+    callback_system(size_t element_count = 2048): callbacks(element_count) {}
 
     /** \brief adds a new Callback to the Scheduler, threadsafe */
     inline void add_callback(callback_type* cb) { callbacks.push(cb); }

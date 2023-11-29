@@ -107,7 +107,7 @@ inline static bool isPenValid() {
 }
 
 #define QC_QPEN_PRIMITIVE(NAME, ARGC, RECEIVER, ARGS, GLOBAL)                                                          \
-    struct NAME { };                                                                                                   \
+    struct NAME {};                                                                                                    \
     template <> struct LangPrimitive<NAME> {                                                                           \
         static int implementation(RECEIVER, ARGS, GLOBAL);                                                             \
         static int mediate(VMGlobals* g, int i) {                                                                      \

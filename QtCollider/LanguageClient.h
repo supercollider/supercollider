@@ -31,7 +31,7 @@
 namespace QtCollider {
 
 struct SCRequestEvent : public QEvent {
-    SCRequestEvent(QtCollider::EventType type, const QVariant& d = QVariant()): QEvent((QEvent::Type)type), data(d) { }
+    SCRequestEvent(QtCollider::EventType type, const QVariant& d = QVariant()): QEvent((QEvent::Type)type), data(d) {}
 
     QVariant data;
 };
@@ -40,7 +40,7 @@ class LangClient : public QObject, public SC_TerminalClient {
     Q_OBJECT
 public:
     LangClient(const char* name);
-    virtual ~LangClient() { }
+    virtual ~LangClient() {}
     virtual void sendSignal(Signal);
 
 protected:

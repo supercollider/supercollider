@@ -35,7 +35,7 @@ struct CheckBadValues : public Unit {
     int prevclass;
 };
 
-struct Sanitize : public Unit { };
+struct Sanitize : public Unit {};
 
 // declare unit generator functions
 static void CheckBadValues_Ctor(CheckBadValues* unit);

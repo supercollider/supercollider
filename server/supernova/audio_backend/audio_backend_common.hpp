@@ -131,7 +131,7 @@ protected:
     uint16_t output_channels = 0;
 
 public:
-    audio_settings_basic(void) { }
+    audio_settings_basic(void) {}
 
     float get_samplerate(void) const { return samplerate_; }
 

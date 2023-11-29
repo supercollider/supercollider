@@ -20,7 +20,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-SC_StringParser::SC_StringParser(): mSpec(0), mStart(0), mEnd(0), mSep(0) { }
+SC_StringParser::SC_StringParser(): mSpec(0), mStart(0), mEnd(0), mSep(0) {}
 
 SC_StringParser::SC_StringParser(const char* spec, char sep): mSpec(spec), mStart(0), mEnd(0), mSep(sep) {
     if (mSpec) {

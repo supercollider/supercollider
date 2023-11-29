@@ -33,7 +33,7 @@ public:
     ///@{
     /// generic signal wrappers
     template <typename FloatType> struct ScalarSignal {
-        explicit ScalarSignal(FloatType value): value(value) { }
+        explicit ScalarSignal(FloatType value): value(value) {}
 
         FloatType consume() const { return value; }
 
@@ -41,7 +41,7 @@ public:
     };
 
     template <typename FloatType> struct SlopeSignal {
-        SlopeSignal(FloatType value, FloatType slope): value(value), slope(slope) { }
+        SlopeSignal(FloatType value, FloatType slope): value(value), slope(slope) {}
 
         FloatType consume() {
             FloatType ret = value;
@@ -53,7 +53,7 @@ public:
     };
 
     template <typename FloatType> struct AudioSignal {
-        explicit AudioSignal(const FloatType* pointer): pointer(pointer) { }
+        explicit AudioSignal(const FloatType* pointer): pointer(pointer) {}
 
         FloatType consume() { return *pointer++; }
 
