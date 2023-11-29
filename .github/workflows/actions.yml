@@ -27,12 +27,8 @@ jobs:
         run: |
           sudo npm install -g lintspaces-cli
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
-      - name: lint cpp files
-        run: |
-          sudo apt-get install -y clang-format-8
-          echo "Running tools/clang-format.py lintall"
-          tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
-          echo "Lint successful"
+      - uses: actions/setup-python@v4
+      - uses: pre-commit/action@v3.0.0
       - name: set version string for artifacts
         id: set-version
         run: |
