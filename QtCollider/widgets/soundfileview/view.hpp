@@ -346,7 +346,9 @@ protected:
     SoundStream(): _ch(0), _beg(0), _dur(0) {}
 
     SoundStream(int channels, sf_count_t beginning, sf_count_t duration):
-        _ch(channels), _beg(beginning), _dur(duration) {}
+        _ch(channels),
+        _beg(beginning),
+        _dur(duration) {}
 
     int _ch;
     sf_count_t _beg;

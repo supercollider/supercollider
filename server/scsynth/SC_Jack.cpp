@@ -123,7 +123,9 @@ SC_AudioDriver* SC_NewAudioDriver(struct World* inWorld) { return new SC_JackDri
 // SC_JackPortList
 
 SC_JackPortList::SC_JackPortList(jack_client_t* client, int orderOffset, int numPorts, int type):
-    mSize(numPorts), mPorts(nullptr), mBuffers(nullptr) {
+    mSize(numPorts),
+    mPorts(nullptr),
+    mBuffers(nullptr) {
     const char* fmt = (type == JackPortIsInput ? "in_%d" : "out_%d");
 #ifdef SC_JACK_USE_METADATA_API
     const char* prettyFmt = (type == JackPortIsInput ? "Input %d" : "Output %d");
@@ -187,7 +189,11 @@ void sc_jack_shutdown_cb(void* arg) {
 // SC_JackDriver (JACK)
 
 SC_JackDriver::SC_JackDriver(struct World* inWorld):
-    SC_AudioDriver(inWorld), mClient(nullptr), mInputList(nullptr), mOutputList(nullptr), mMaxOutputLatency(0.) {}
+    SC_AudioDriver(inWorld),
+    mClient(nullptr),
+    mInputList(nullptr),
+    mOutputList(nullptr),
+    mMaxOutputLatency(0.) {}
 
 SC_JackDriver::~SC_JackDriver() {
     if (mClient) {
@@ -480,9 +486,7 @@ void SC_JackDriver::Run() {
         }
     } catch (std::exception& exc) {
         scprintf("%s: exception in real time: %s\n", kJackDriverIdent, exc.what());
-    } catch (...) {
-        scprintf("%s: unknown exception in real time\n", kJackDriverIdent);
-    }
+    } catch (...) { scprintf("%s: unknown exception in real time\n", kJackDriverIdent); }
 
     double cpuUsage = (double)jack_cpu_load(mClient);
     mAvgCPU = mAvgCPU + 0.1 * (cpuUsage - mAvgCPU);

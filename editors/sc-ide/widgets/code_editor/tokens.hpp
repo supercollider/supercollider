@@ -58,7 +58,10 @@ struct Token {
 
     Token(Type t, int pos, int len = 0, char c = 0): type(t), positionInBlock(pos), length(len), character(c) {}
     Token(Token const& rhs):
-        type(rhs.type), positionInBlock(rhs.positionInBlock), length(rhs.length), character(rhs.character) {}
+        type(rhs.type),
+        positionInBlock(rhs.positionInBlock),
+        length(rhs.length),
+        character(rhs.character) {}
 
     Type type;
     int positionInBlock;

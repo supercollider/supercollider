@@ -142,7 +142,9 @@ class sc_scheduled_bundles {
 public:
     struct bundle_node : public boost::intrusive::bs_set_base_hook<> {
         bundle_node(time_tag const& timeout, const char* data, endpoint_ptr const& endpoint):
-            timeout_(timeout), data_(data), endpoint_(endpoint) {}
+            timeout_(timeout),
+            data_(data),
+            endpoint_(endpoint) {}
 
         void run(void);
 
@@ -203,7 +205,9 @@ public:
 
     class received_packet : public audio_sync_callback {
         received_packet(const char* dat, size_t length, endpoint_ptr const& endpoint):
-            data(dat), length(length), endpoint_(endpoint) {}
+            data(dat),
+            length(length),
+            endpoint_(endpoint) {}
 
         void* operator new(std::size_t size, void* ptr) { return ::operator new(size, ptr); }
 

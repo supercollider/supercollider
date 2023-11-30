@@ -249,7 +249,10 @@ public:
     boost::asio::ip::udp::socket udpSocket;
 
     SC_UdpInPort(struct World* world, std::string bindTo, int inPortNum):
-        mWorld(world), mPortNum(inPortNum), mbindTo(bindTo), udpSocket(ioService) {
+        mWorld(world),
+        mPortNum(inPortNum),
+        mbindTo(bindTo),
+        udpSocket(ioService) {
         using namespace boost::asio;
         BOOST_AUTO(protocol, ip::udp::v4());
         udpSocket.open(protocol);
@@ -278,7 +281,9 @@ public:
     boost::asio::ip::tcp::socket socket;
 
     SC_TcpConnection(struct World* world, boost::asio::io_service& ioService, class SC_TcpInPort* parent):
-        mWorld(world), socket(ioService), mParent(parent) {}
+        mWorld(world),
+        socket(ioService),
+        mParent(parent) {}
 
     ~SC_TcpConnection();
 
@@ -511,9 +516,7 @@ template <typename T, typename... Args> static bool protectedOpenPort(const char
         }
     } catch (const std::exception& exc) {
         scprintf("\n*** ERROR: failed to open %s socket: %s\n", socketType, exc.what());
-    } catch (...) {
-        scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType);
-    }
+    } catch (...) { scprintf("\n*** ERROR: failed to open %s socket: Unknown error\n", socketType); }
     return false;
 }
 

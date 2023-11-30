@@ -54,7 +54,10 @@ QMimeData* QWidgetProxy::sDragData = 0;
 QString QWidgetProxy::sDragLabel;
 
 QWidgetProxy::QWidgetProxy(QWidget* w, PyrObject* po):
-    QObjectProxy(w, po), _keyEventWidget(w), _mouseEventWidget(w), _performDrag(false) {}
+    QObjectProxy(w, po),
+    _keyEventWidget(w),
+    _mouseEventWidget(w),
+    _performDrag(false) {}
 
 void QWidgetProxy::setKeyEventWidget(QWidget* w) {
     if (w == 0 || w == _keyEventWidget)

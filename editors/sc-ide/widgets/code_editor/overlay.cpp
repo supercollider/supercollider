@@ -35,7 +35,9 @@
 namespace ScIDE {
 
 OverlayAnimator::OverlayAnimator(GenericCodeEditor* editor, QObject* parent):
-    QObject(parent), mEditor(editor), mBackgroundAnimation(this, "backgroundColor") {}
+    QObject(parent),
+    mEditor(editor),
+    mBackgroundAnimation(this, "backgroundColor") {}
 
 QColor OverlayAnimator::backgroundColor() const { return mEditor->mOverlay->backgroundBrush().color(); }
 

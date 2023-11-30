@@ -113,7 +113,10 @@ public:
     };
 
     dsp_thread_queue_item(runnable const& job, successor_list const& successors, activation_limit_t activation_limit):
-        activation_count(0), job(job), successors(successors), activation_limit(activation_limit) {}
+        activation_count(0),
+        job(job),
+        successors(successors),
+        activation_limit(activation_limit) {}
 
     dsp_thread_queue_item* run(dsp_queue_interpreter& interpreter, std::uint8_t thread_index) {
         assert(activation_count == 0);
@@ -261,7 +264,8 @@ public:
 
     /** preallocate node_count nodes */
     dsp_thread_queue(std::size_t node_count, bool has_parallelism = true):
-        has_parallelism_(has_parallelism), items(node_count) {
+        has_parallelism_(has_parallelism),
+        items(node_count) {
         initially_runnable_items.reserve(node_count);
     }
 

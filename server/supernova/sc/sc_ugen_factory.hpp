@@ -100,7 +100,9 @@ struct sc_cmdplugin_def : public named_hash_entry {
     void* user_data;
 
     sc_cmdplugin_def(const char* name, PlugInCmdFunc func, void* user_data):
-        named_hash_entry(name), func(func), user_data(user_data) {}
+        named_hash_entry(name),
+        func(func),
+        user_data(user_data) {}
 
     void run(World* world, struct sc_msg_iter* args, void* replyAddr) { (func)(world, user_data, args, replyAddr); }
 };

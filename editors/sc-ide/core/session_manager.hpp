@@ -31,7 +31,8 @@ class DocumentManager;
 
 struct Session : public QSettings {
     Session(const QString& file, const QString& name, Format format, QObject* parent = 0):
-        QSettings(file, format, parent), mName(name) {}
+        QSettings(file, format, parent),
+        mName(name) {}
 
     const QString& name() const { return mName; }
 

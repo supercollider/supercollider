@@ -111,7 +111,9 @@ template <> struct MessageHandler<HandlerType::Raw> {
 namespace Detail {
 
 TCPConnection::TCPConnection(boost::asio::io_service& ioService, int portNum, HandlerType handlerType):
-    mSocket(ioService), mOSCMsgLength(0), mPortNum(portNum) {
+    mSocket(ioService),
+    mOSCMsgLength(0),
+    mPortNum(portNum) {
     initHandler(handlerType);
 }
 

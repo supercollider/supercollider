@@ -33,7 +33,13 @@ struct QcGraphElement {
     enum CurveType { Step = 0, Linear, Sine, Welch, Exponential, Quadratic, Cubic, Curvature, Hold };
 
     QcGraphElement(const QSize& sz):
-        size(sz), curveType(Linear), curvature(0.0), editable(true), selected(false), _prev(0), _next(0) {}
+        size(sz),
+        curveType(Linear),
+        curvature(0.0),
+        editable(true),
+        selected(false),
+        _prev(0),
+        _next(0) {}
 
     void setCurveType(CurveType type, double curve = 0.0) {
         curveType = type;

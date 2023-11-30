@@ -5,7 +5,9 @@
 class BelaScope {
 public:
     BelaScope(uint32_t maxChannels_, float sampleRate, uint32_t blockSize):
-        scope(), maxChannels(maxChannels_), bufferSamples(maxChannels_ * blockSize) {
+        scope(),
+        maxChannels(maxChannels_),
+        bufferSamples(maxChannels_ * blockSize) {
         scope.setup(maxChannels, sampleRate);
         buffer = new float[bufferSamples]();
     }

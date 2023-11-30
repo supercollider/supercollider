@@ -70,7 +70,8 @@ public:
 
 protected:
     abstract_synth(int node_id, synth_definition_ptr const& definition):
-        server_node(node_id, true), definition_instance(definition) {}
+        server_node(node_id, true),
+        definition_instance(definition) {}
 
 public:
     virtual void run(void) = 0;

@@ -40,7 +40,9 @@ class slot_resolver {
 protected:
     struct map_type : public named_hash_entry {
         map_type(slot_identifier_type const& name, slot_index_t index, int number_of_values):
-            named_hash_entry(name), index(index), number_of_values(number_of_values) {}
+            named_hash_entry(name),
+            index(index),
+            number_of_values(number_of_values) {}
 
         const slot_index_t index;
         const int number_of_values;

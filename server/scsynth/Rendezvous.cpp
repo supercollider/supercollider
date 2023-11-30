@@ -139,7 +139,11 @@ private:
 static AvahiSessionInstance gAvahiSession;
 
 AvahiSession::AvahiSession():
-    mPoll(nullptr), mClient(nullptr), mGroup(nullptr), mEntries(nullptr), mServiceName(nullptr) {
+    mPoll(nullptr),
+    mClient(nullptr),
+    mGroup(nullptr),
+    mEntries(nullptr),
+    mServiceName(nullptr) {
     int err;
 
     mServiceName = avahi_strdup(kSCRendezvousServiceName);

@@ -74,7 +74,10 @@ struct SC_ScheduledEvent {
 
     SC_ScheduledEvent(): mTime(0), mPacket(0) {}
     SC_ScheduledEvent(struct World* inWorld, int64 inTime, OSC_Packet* inPacket, PacketFreeFunc freeFunc):
-        mTime(inTime), mPacket(inPacket), mPacketFreeFunc(freeFunc), mWorld(inWorld) {}
+        mTime(inTime),
+        mPacket(inPacket),
+        mPacketFreeFunc(freeFunc),
+        mWorld(inWorld) {}
 
     int64 Time() { return mTime; }
     void Perform();

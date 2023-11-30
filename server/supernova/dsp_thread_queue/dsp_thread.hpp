@@ -59,7 +59,9 @@ class dsp_thread : public thread_init_functor {
 public:
     dsp_thread(dsp_queue_interpreter& interpreter, uint16_t index,
                thread_init_functor const& thread_init = thread_init_functor()):
-        thread_init_functor(thread_init), interpreter(interpreter), index(index) {
+        thread_init_functor(thread_init),
+        interpreter(interpreter),
+        index(index) {
 #ifdef SUPERNOVA_USE_PTHREAD
         if (stack_size) {
             stack_ = malloc_aligned<char>(stack_size);

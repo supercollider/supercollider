@@ -147,7 +147,8 @@ protected:
 class server_shared_memory_client {
 public:
     server_shared_memory_client(unsigned int port_number):
-        shmem_name(detail_server_shm::make_shmem_name(port_number)), segment(bi::open_only, shmem_name.c_str()) {
+        shmem_name(detail_server_shm::make_shmem_name(port_number)),
+        segment(bi::open_only, shmem_name.c_str()) {
         pair<server_shared_memory*, size_t> res = segment.find<server_shared_memory>(shmem_name.c_str());
         if (res.second != 1)
             throw std::runtime_error("Cannot connect to shared memory");

@@ -333,7 +333,10 @@ void Free_FromEngine_Msg(FifoMsg* inMsg) { World_Free(inMsg->mWorld, inMsg->mDat
 // Audio driver (Common)
 
 SC_AudioDriver::SC_AudioDriver(struct World* inWorld):
-    mWorld(inWorld), mSampleTime(0), mNumSamplesPerCallback(0), mSafetyClipThreshold(1.26) {}
+    mWorld(inWorld),
+    mSampleTime(0),
+    mNumSamplesPerCallback(0),
+    mSafetyClipThreshold(1.26) {}
 
 SC_AudioDriver::~SC_AudioDriver() {
     mRunThreadFlag = false;
@@ -1403,9 +1406,7 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferList
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) {
-        scprintf("exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
     int64 systemTimeAfter = AudioGetCurrentHostTime();
@@ -1759,9 +1760,7 @@ bool SC_CoreAudioDriver::DriverStart() {
                 return false;
             }
         }
-    } catch (...) {
-        scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
-    }
+    } catch (...) { scprintf("exception in SC_CoreAudioDriver::DriverStart\n"); }
     if (mWorld->mVerbosity >= 1) {
         scprintf("<-SC_CoreAudioDriver::DriverStart\n");
     }
@@ -2130,9 +2129,7 @@ void SC_iCoreAudioDriver::Run(const AudioBufferList* inInputData, AudioBufferLis
             }
             oscTime = mOSCbuftime = nextTime;
         }
-    } catch (std::exception& exc) {
-        scprintf("exception in real time: %s\n", exc.what());
-    } catch (...) {
+    } catch (std::exception& exc) { scprintf("exception in real time: %s\n", exc.what()); } catch (...) {
         scprintf("unknown exception in real time\n");
     }
 
@@ -2383,9 +2380,7 @@ bool SC_iCoreAudioDriver::DriverStart() {
     try {
         OSStatus ret = AUGraphStart(graph);
         AudioOutputUnitStart(inputUnit);
-    } catch (...) {
-        scprintf("exception in SC_CoreAudioDriver::DriverStart\n");
-    }
+    } catch (...) { scprintf("exception in SC_CoreAudioDriver::DriverStart\n"); }
     if (mWorld->mVerbosity >= 0) {
         scprintf("<-SC_CoreAudioDriver::DriverStart\n");
     }

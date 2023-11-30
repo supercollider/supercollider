@@ -237,7 +237,8 @@ class regex_lru_cache {
 
 public:
     regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
-        re_set(bucket_traits(buckets, 128)), re_list() {}
+        re_set(bucket_traits(buckets, 128)),
+        re_list() {}
 
     ~regex_lru_cache() {
         while (!re_list.empty()) {

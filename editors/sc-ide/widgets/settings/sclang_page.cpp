@@ -178,9 +178,7 @@ void SclangPage::readLanguageConfig() {
                 try {
                     bool postInlineWarnings = inlineWarnings.as<bool>();
                     ui->sclang_post_inline_warnings->setChecked(postInlineWarnings);
-                } catch (...) {
-                    qDebug() << "Warning: Cannot parse config file entry \"postInlineWarnings\"";
-                }
+                } catch (...) { qDebug() << "Warning: Cannot parse config file entry \"postInlineWarnings\""; }
             }
 
             const Node& excludeDefaultPaths = doc["excludeDefaultPaths"];
@@ -188,9 +186,7 @@ void SclangPage::readLanguageConfig() {
                 try {
                     bool excludeDefaultPathsBool = excludeDefaultPaths.as<bool>();
                     ui->sclang_exclude_default_paths->setChecked(excludeDefaultPathsBool);
-                } catch (...) {
-                    qDebug() << "Warning: Cannot parse config file entry \"excludeDefaultPaths\"";
-                }
+                } catch (...) { qDebug() << "Warning: Cannot parse config file entry \"excludeDefaultPaths\""; }
             }
         }
     } catch (std::exception&) {}

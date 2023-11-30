@@ -163,7 +163,8 @@ struct SetPropertyEvent : public QEvent {
 class DestroyEvent : public QEvent {
 public:
     DestroyEvent(QObjectProxy::DestroyAction act):
-        QEvent((QEvent::Type)QtCollider::Event_Proxy_Destroy), _action(act) {}
+        QEvent((QEvent::Type)QtCollider::Event_Proxy_Destroy),
+        _action(act) {}
     QObjectProxy::DestroyAction action() { return _action; }
 
 private:
@@ -172,7 +173,10 @@ private:
 
 struct ScMethodCallEvent : public QEvent {
     ScMethodCallEvent(PyrSymbol* m, const QList<QVariant>& l = QList<QVariant>(), bool b_locked = false):
-        QEvent((QEvent::Type)QtCollider::Event_ScMethodCall), method(m), args(l), locked(b_locked) {}
+        QEvent((QEvent::Type)QtCollider::Event_ScMethodCall),
+        method(m),
+        args(l),
+        locked(b_locked) {}
 
     PyrSymbol* method;
     QList<QVariant> args;

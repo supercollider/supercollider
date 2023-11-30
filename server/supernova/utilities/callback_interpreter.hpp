@@ -130,7 +130,9 @@ class callback_interpreter_threadpool : public callback_interpreter<callback_typ
 
 public:
     callback_interpreter_threadpool(uint16_t worker_thread_count, bool rt, uint16_t priority):
-        worker_thread_count_(worker_thread_count), priority(priority), rt(rt) {
+        worker_thread_count_(worker_thread_count),
+        priority(priority),
+        rt(rt) {
         semaphore sync_sem;
         using namespace std;
 
