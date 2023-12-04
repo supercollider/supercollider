@@ -79,7 +79,7 @@ std::vector<std::unique_ptr<InPort::UDPCustom>> gCustomTcpPorts;
 
 ///////////
 
-inline bool IsBundle(char* ptr) { return strcmp(ptr, "#bundle") == 0; }
+inline bool IsBundle(const char* ptr) { return strcmp(ptr, "#bundle") == 0; }
 
 ///////////
 
@@ -235,8 +235,8 @@ static int makeSynthMsgWithTags(big_scpacket* packet, PyrSlot* slots, int size) 
     return errNone;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject* inReply, int inPortNum);
-void PerformOSCMessage(int inSize, char* inData, PyrObject* inReply, int inPortNum, double time);
+void PerformOSCBundle(int inSize, const char* inData, PyrObject* inReply, int inPortNum);
+void PerformOSCMessage(int inSize, const char* inData, PyrObject* inReply, int inPortNum, double time);
 static PyrObject* ConvertReplyAddress(ReplyAddress* inReply);
 
 static void localServerReplyFunc(struct ReplyAddress* inReplyAddr, char* inBuf, int inSize) {
@@ -529,6 +529,7 @@ static int prNetAddr_UseDoubles(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+// Interpret an Array as an OSC message/bundle and convert it to raw bytes (Int8Array).
 static int prArray_OSCBytes(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
     PyrObject* array = slotRawObject(a);
@@ -573,8 +574,9 @@ static PyrInt8Array* MsgToInt8Array(sc_msg_iter& msg, bool runGC) {
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
-static PyrObject* ConvertOSCMessage(int inSize, char* inData) {
-    char* cmdName = inData;
+// Convert raw OSC message to Array.
+static PyrObject* ConvertOSCMessage(int inSize, const char* inData) {
+    const char* cmdName = inData;
     int cmdNameLen = OSCstrlen(cmdName);
     sc_msg_iter msg(inSize - cmdNameLen, inData + cmdNameLen);
 
@@ -661,15 +663,14 @@ static PyrObject* ConvertReplyAddress(ReplyAddress* inReply) {
     return obj;
 }
 
-void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortNum) {
-    // convert all data to arrays
-
+// perform all OSC bundle elements
+void PerformOSCBundle(int inSize, const char* inData, PyrObject* replyObj, int inPortNum) {
     int64 oscTime = OSCtime(inData + 8);
     double seconds = OSCToElapsedTime(oscTime);
 
     VMGlobals* g = gMainVMGlobals;
-    char* data = inData + 16;
-    char* dataEnd = inData + inSize;
+    const char* data = inData + 16;
+    const char* dataEnd = inData + inSize;
     while (data < dataEnd) {
         int32 msgSize = OSCint(data);
         data += sizeof(int32);
@@ -695,7 +696,7 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject* replyObj, int inPortN
     }
 }
 
-void PerformOSCMessage(int inSize, char* inData, PyrObject* replyObj, int inPortNum, double time) {
+void PerformOSCMessage(int inSize, const char* inData, PyrObject* replyObj, int inPortNum, double time) {
     PyrObject* arrayObj = ConvertOSCMessage(inSize, inData);
 
     // call virtual machine to handle message
