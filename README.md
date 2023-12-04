@@ -1,16 +1,16 @@
 [SuperCollider](https://supercollider.github.io/) [![Build Status](https://github.com/supercollider/supercollider/actions/workflows/actions.yml/badge.svg?branch=develop)](https://github.com/supercollider/supercollider/actions/workflows/actions.yml)
 =========================
 
-**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It consists of:
+**SuperCollider** serves as a comprehensive platform for audio synthesis and algorithmic composition, catering to musicians, artists, and researchers engaged in sound-related work. The core components include:
 
-- **scsynth**, a real-time audio server with hundreds of unit generators ("UGens") for audio analysis, synthesis, and processing
-- **supernova**, an alternative server to scsynth with support for parallel DSP on multi-core processors
-- **sclang**, an interpreted programming language that controls the servers
-- **scide**, an editing environment for sclang with an integrated help system
+- **scsynth**: A real-time audio server featuring a diverse array of unit generators ("UGens") for tasks such as audio analysis, synthesis, and processing.
+- **supernova**: An alternative server to scsynth designed to leverage parallel DSP capabilities on multi-core processors.
+- **sclang**: An interpreted programming language responsible for controlling the servers.
+- **scide**: An integrated editing environment for sclang with a built-in help system.
 
-sclang comes with its own package manager, called Quarks. scsynth and supernova both support third-party plugins via C and C++ APIs.
+The `sclang` component introduces its package manager known as Quarks. Both `scsynth` and `supernova` support third-party plugins through C and C++ APIs.
 
-SuperCollider is written in C++17 using several third-party libraries, including Qt and Boost. It can be used on Windows, macOS, a variety of Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
+SuperCollider is implemented in C++17, utilizing various third-party libraries such as Qt and Boost. It offers cross-platform support for Windows, macOS, a variety of Linux and BSD distributions, Raspberry Pi, and BeagleBone Black.
 
 Install
 -------
