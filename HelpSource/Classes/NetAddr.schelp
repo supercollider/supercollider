@@ -23,6 +23,21 @@ create new net address using an integer IP number.
 method::langPort
 Get the port sclang is currently listening on (may change after a recompile).
 
+method::localIP
+Get the local IP address as a String.
+
+argument::network
+An optional IP string to select a particular network. This might be necessary if your machine is connected to multiple networks. Typically, you would use the IP address of the router, but it can really be any address within the network.
+
+method::localEndPoint
+Get a NetAddr with the local IP address and a user provided port number.
+
+argument::port
+The port number. If omitted, the sclang port is used.
+
+argument::network
+An optional IP string to select a particular network. See also link::#*localIP::.
+
 method::localAddr
 Get a NetAddr which corresponds to localhost and the port sclang is listening on.
 

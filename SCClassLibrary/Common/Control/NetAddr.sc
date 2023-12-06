@@ -26,8 +26,13 @@ NetAddr {
 		^this.primitiveFailed;
 	}
 
-	*localEndPoint {
-		^this.new(this.langIP, this.langPort)
+	*localIP { arg network;
+		_LocalIP
+		^this.primitiveFailed;
+	}
+
+	*localEndPoint { arg port, network;
+		^this.new(this.localIP(network), port ?? { this.langPort })
 	}
 
 	*localAddr {
@@ -56,7 +61,7 @@ NetAddr {
 			}
 		}
 	}
-	
+
 	*connections {
 		^connections.copy;
 	}

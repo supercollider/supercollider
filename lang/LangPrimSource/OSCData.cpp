@@ -84,6 +84,25 @@ inline bool IsMessage(const char* ptr) { return ptr[0] == '/'; }
 
 ///////////
 
+static void closeSocket(int socket) {
+#ifdef _WIN32
+    closesocket(socket);
+#else
+    close(socket);
+#endif
+}
+
+static void printLastSocketError(const char* name) {
+#ifdef _WIN32
+    int err = WSAGetLastError();
+#else
+    int err = errno;
+#endif
+    error("%s failed with error code %d.\n", name, err);
+}
+
+//////////
+
 const int ivxNetAddr_Hostaddr = 0;
 const int ivxNetAddr_PortID = 1;
 // const int ivxNetAddr_Hostname = 2; // unused
@@ -1068,6 +1087,55 @@ int prMatchLangIP(VMGlobals* g, int numArgsPushed) {
     return errNone;
 }
 
+static int prLocalIP(VMGlobals* g, int numArgsPushed) {
+    PyrSlot* a = g->sp;
+
+    sockaddr_in remoteAddr;
+    memset(&remoteAddr, 0, sizeof(remoteAddr));
+    remoteAddr.sin_family = AF_INET;
+    remoteAddr.sin_port = sc_htons(80); // can be any port
+
+    if (NotNil(a)) {
+        // get IP address from string or symbol
+        char addr[64];
+        if (slotStrVal(a, addr, 64) != errNone) {
+            return errWrongType;
+        }
+        if (inet_pton(AF_INET, addr, &remoteAddr.sin_addr) != 1) {
+            error("%s is not a valid IP address.\n", addr);
+            return errFailed;
+        }
+    } else {
+        // use arbitrary global IP address (8.8.8.8)
+        remoteAddr.sin_addr.s_addr = sc_htonl(0x08080808);
+    }
+
+    // create temporary socket and connect it to our remote address
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (connect(sock, (struct sockaddr*)&remoteAddr, sizeof(remoteAddr)) < 0) {
+        printLastSocketError("connect");
+        closeSocket(sock);
+        return errFailed;
+    }
+    // now get local IP address
+    sockaddr_in localAddr;
+    socklen_t len = sizeof(localAddr);
+    if (getsockname(sock, (sockaddr*)&localAddr, &len) < 0) {
+        printLastSocketError("getsockname");
+        closeSocket(sock);
+        return errFailed;
+    }
+    closeSocket(sock);
+
+    const char* addrString = inet_ntoa(localAddr.sin_addr);
+    PyrString* result = newPyrString(g->gc, addrString, 0, true);
+    if (!result)
+        return errFailed;
+    SetObject(g->sp - 1, (PyrObjectHdr*)result);
+
+    return errNone;
+}
+
 int prExit(VMGlobals* g, int numArgsPushed);
 int prExit(VMGlobals* g, int numArgsPushed) {
     PyrSlot* a = g->sp;
@@ -1502,6 +1570,7 @@ void init_OSC_primitives() {
     definePrimitive(base, index++, "_GetHostByName", prGetHostByName, 1, 0);
     definePrimitive(base, index++, "_GetLangPort", prGetLangPort, 1, 0);
     definePrimitive(base, index++, "_MatchLangIP", prMatchLangIP, 2, 0);
+    definePrimitive(base, index++, "_LocalIP", prLocalIP, 2, 0);
     definePrimitive(base, index++, "_Exit", prExit, 1, 0);
 #ifndef NO_INTERNAL_SERVER
     definePrimitive(base, index++, "_BootInProcessServer", prBootInProcessServer, 1, 0);
