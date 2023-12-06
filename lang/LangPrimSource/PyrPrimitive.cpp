@@ -108,13 +108,14 @@ int slotStrLen(PyrSlot* slot) {
     return -1;
 }
 
-int slotStrVal(PyrSlot* slot, char* str, int maxlen) {
+int slotStrVal(PyrSlot* slot, char* str, int maxSize) {
     if (IsSym(slot)) {
-        strncpy(str, slotRawSymbol(slot)->name, maxlen);
+        int len = sc_min(maxSize - 1, slotRawSymbol(slot)->length);
+        memcpy(str, slotRawSymbol(slot)->name, len);
+        str[len] = 0;
         return errNone;
     } else if (isKindOfSlot(slot, class_string)) {
-        int len;
-        len = sc_min(maxlen - 1, slotRawObject(slot)->size);
+        int len = sc_min(maxSize - 1, slotRawObject(slot)->size);
         memcpy(str, slotRawString(slot)->s, len);
         str[len] = 0;
         return errNone;
