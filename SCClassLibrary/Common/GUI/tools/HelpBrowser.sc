@@ -291,7 +291,7 @@ HelpBrowser {
 			});
 
 			#keyPlus, keyZero, keyMinus, keyEquals, keySlash = [43, 48, 45, 61, 47];
-			#keyD, keyF, keyG, keyH, keyJ, keyK, keyL, keyU, keyF3, keyF5 = [68, 70, 71, 72, 74, 75, 76, 85];
+			#keyD, keyF, keyG, keyH, keyJ, keyK, keyL, keyU = [68, 70, 71, 72, 74, 75, 76, 85];
 			#keyF3, keyF5 = [65472, 65474];
 			#keyLeftArrow, keyRightArrow = [65361, 65363];
 
