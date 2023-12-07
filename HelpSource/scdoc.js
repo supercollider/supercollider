@@ -143,6 +143,12 @@ function set_up_toc() {
             $("#toc_search").focus();
         }
     });
+
+	$("#toc_search").on('keydown', function(event) {
+        if (event.key === 'Escape') {
+            $("#toc").toggle(); 
+        }
+    });
 }
 
 function fixTOC() {
