@@ -22,12 +22,17 @@ NetAddr {
 	}
 
 	*matchLangIP {|ipstring|
-		_MatchLangIP
-		^this.primitiveFailed;
+		ipstring = ipstring.asString;
+		^this.localIPs.includesEqual(ipstring);
 	}
 
 	*localIP { arg network;
 		_LocalIP
+		^this.primitiveFailed;
+	}
+
+	*localIPs { arg family = \all;
+		_LocalIPs
 		^this.primitiveFailed;
 	}
 

@@ -47,8 +47,21 @@ close all TCP connections.
 method::broadcastFlag
 Get or set the broadcast flag (whether or not broadcast messages can be sent).
 
+method::localIPs
+Get all local IP addresses (NICs) on this computer.
+
+argument::family
+A Symbol that specifies the desired address family.
+table::
+## code::all:: || all addresses
+## code::ipv4:: || only IPv4 addresses
+## code::ipv6:: || only IPv6 addresses
+::
+
+returns::An link::Classes/Array:: containing all local IP addresses of the desired family.
+
 method::matchLangIP
-Test an IP address to see if it matches that of one of the NICs on this computer.
+Test an IP address to see if it matches any local IP address. See also link::#*localIPs::.
 
 argument::ipstring
 A link::Classes/String:: to test containing an IP number in dot decimal notation (e.g. "192.168.34.56").
