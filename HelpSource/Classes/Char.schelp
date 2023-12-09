@@ -108,3 +108,43 @@ code::
 	[i,a = i.asAscii,a.isAlphaNum,a.isPrint,a.isPunct,a.isControl].postln;
 });
 ::
+
+method::isLower
+
+returns:: true if the char is a lowercase letter.
+
+method::isUpper
+
+returns:: true if the char is a uppercase letter.
+
+method::isPathSeparator
+
+returns:: true if the char is a platform specific path separator.
+
+method::isVowel
+
+returns:: true if the char is a vowel.
+
+method::isControl
+
+returns:: true if the char is a control character.
+
+method::asUnicode
+
+returns:: a single Unicode value. Ascii is a subset uf Unicode.
+
+method::hash
+
+returns:: a code used to index into a hash table.
+
+method::++
+
+A concatenation of the two chars. The result is link::Classes/String::
+
+method::<
+
+True if the receiver is alphabetically sooner. It is comparing the Unicode values. Uppercase characters have lower Unicode value than lowercase characters.
+
+method::==
+
+True if the receiver equals the argument.
