@@ -790,9 +790,13 @@ void RandID_Ctor(RandID* unit) {
 
 void RandID_next(RandID* unit, int inNumSamples) {
     float id = ZIN0(0);
+    bool fire = ZIN0(1) > 0;
 
     if (id != unit->m_id) {
         unit->m_id = id;
+        fire = true;
+    }
+    if (fire) {
         uint32 iid = (uint32)id;
         if (iid < unit->mWorld->mNumRGens) {
             unit->mParent->mRGen = unit->mWorld->mRGen + iid;
