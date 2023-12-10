@@ -135,7 +135,7 @@ returns:: the object itself.
 
 method::asUnicode
 
-returns:: a single Unicode value. Ascii is a subset uf Unicode.
+returns:: a single Unicode value. Ascii is a subset of Unicode.
 
 method::hash
 
