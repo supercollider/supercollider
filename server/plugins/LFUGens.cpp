@@ -1262,7 +1262,7 @@ void T2K_Ctor(T2K* unit) {
 
 static inline void T2A_write_trigger(T2A* unit, float level) {
     float* out = OUT(0);
-    int offset = (int)IN0(1);
+    int offset = sc_clip(static_cast<int>(IN0(1)), 0, BUFLENGTH - 1);
     out[offset] = level;
 }
 
@@ -1308,7 +1308,10 @@ void T2A_Ctor(T2A* unit) {
     else
 #endif
         SETCALC(T2A_next);
+
+    unit->mLevel = 0.f;
     T2A_next(unit, 1);
+    unit->mLevel = 0.f;
 }
 
 
