@@ -10,9 +10,9 @@ classmethods::
 method:: ar
 
 argument:: in
-input signal.
+A control rate input signal.
 argument:: offset
-sample offset within control period.
+A sample offset within control period. Internally cast to an teletype::int:: in the range teletype::[0..blockSize-1]::.
 
 examples::
 code::
