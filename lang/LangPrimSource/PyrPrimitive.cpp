@@ -455,7 +455,7 @@ int prFloat_AsStringPrec(struct VMGlobals* g, int numArgsPushed) {
     if (precision >= 200)
         precision = 200; // Nothing is that big anyway. And we know we will be smaller than our 256 char string
 
-    sprintf(fmt, "%%.%dg", precision);
+    sprintf(fmt, "%%.%df", precision);
     sprintf(str, fmt, slotRawFloat(a));
 
     PyrString* string = newPyrString(g->gc, str, 0, true);
