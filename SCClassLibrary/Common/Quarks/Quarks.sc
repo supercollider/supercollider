@@ -210,8 +210,8 @@ Quarks {
 		});
 		quark.dependencies.do { |dep|
 			var ok, alreadyInstalled;
-			alreadyInstalled = this.installed.detect({ |q| q.name == quark.name }).notNil;
-			alreadyInstalled.if{
+			alreadyInstalled = this.installed.detect({ |q| q.name == quark.name}).notNil;
+			alreadyInstalled.not.if{				
 				ok = dep.install();
 				if(ok.not, {
 					("Failed to install" + quark.name).error;
