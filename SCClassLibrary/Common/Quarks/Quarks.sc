@@ -209,11 +209,17 @@ Quarks {
 			^incompatible.value(quark.name);
 		});
 		quark.dependencies.do { |dep|
-			var ok = dep.install();
-			if(ok.not, {
-				("Failed to install" + quark.name).error;
-				^false
-			});
+			var ok, alreadyInstalled;
+			alreadyInstalled = this.installed.detect({ |q| q.name == quark.name }).notNil;
+			alreadyInstalled.if{
+				ok = dep.install();
+				if(ok.not, {
+					("Failed to install" + quark.name).error;
+					^false
+				});
+			}{
+				(dep.name + "already installed").postln
+			}
 		};
 		quark.runHook(\preInstall);
 		this.link(quark.localPath);
