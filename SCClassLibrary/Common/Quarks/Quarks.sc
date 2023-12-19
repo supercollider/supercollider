@@ -9,7 +9,8 @@ Quarks {
 		fetched=false,
 		cache,
 		regex,
-		installedPaths;
+		installedPaths,
+		<>installing;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -203,23 +204,24 @@ Quarks {
 		});
 
 		"Installing %".format(quark.name).postln;
-
+		installing = installing.isNil.if{quark.bubble}{installing ++ quark.bubble};
 		quark.checkout();
-		if(quark.isCompatible().not, {
+		quark.isCompatible().not.if{
 			^incompatible.value(quark.name);
-		});
-		quark.dependencies.do { |dep|
+		};
+		quark.dependencies.do{ |dep|
 			var ok;
-			dep.isInstalled.not.if{				
+			installing.detect({|q| q.name == dep.name}).isNil.if{				
 				ok = dep.install();
-				if(ok.not, {
+				ok.not.if{
 					("Failed to install" + quark.name).error;
 					^false
-				});
+				};
 			}{
-				(dep.name + "already installed").postln
+				(dep.name + "already installing").postln
 			}
 		};
+		installing = installing.reject{|q| q.name == quark.name};
 		quark.runHook(\preInstall);
 		this.link(quark.localPath);
 		quark.runHook(\postInstall);
