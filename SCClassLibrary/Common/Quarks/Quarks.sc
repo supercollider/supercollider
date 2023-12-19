@@ -204,7 +204,7 @@ Quarks {
 		});
 
 		"Installing %".format(quark.name).postln;
-		installing = installing.isNil.if{quark.bubble}{installing ++ quark.bubble};
+		installing = (installing.size == 0).if{quark.bubble}{installing ++ quark.bubble};
 		quark.checkout();
 		quark.isCompatible().not.if{
 			^incompatible.value(quark.name);
