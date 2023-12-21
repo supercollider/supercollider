@@ -204,24 +204,24 @@ Quarks {
 		});
 
 		"Installing %".format(quark.name).postln;
-		installing = (installing.size == 0).if{quark.bubble}{installing ++ quark.bubble};
+		installing = (installing.size == 0).if{ quark.bubble }{ installing ++ quark.bubble };
 		quark.checkout();
 		quark.isCompatible().not.if{
 			^incompatible.value(quark.name);
 		};
 		quark.dependencies.do{ |dep|
 			var ok;
-			installing.detect({|q| q.name == dep.name}).isNil.if{				
+			installing.detect({ |q| q.name == dep.name }).isNil.if{				
 				ok = dep.install();
 				ok.not.if{
 					("Failed to install" + quark.name).error;
 					^false
-				};
+				}
 			}{
 				(dep.name + "already installing").postln
 			}
 		};
-		installing = installing.reject{|q| q.name == quark.name};
+		installing = installing.reject{ |q| q.name == quark.name };
 		quark.runHook(\preInstall);
 		this.link(quark.localPath);
 		quark.runHook(\postInstall);
