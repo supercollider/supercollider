@@ -119,7 +119,7 @@ returns:: true if the char is a uppercase letter.
 
 method::isPathSeparator
 
-returns:: true if the char is a platform specific path separator.
+returns:: true if the char is the platform specific path separator.
 
 method::isVowel
 
@@ -139,7 +139,7 @@ returns:: a single Unicode value. Ascii is a subset of Unicode.
 
 method::hash
 
-returns:: a code used to index into a hash table.
+returns:: the hash value of the receiver.
 
 method::++
 
@@ -147,7 +147,8 @@ A concatenation of the two chars. The result is link::Classes/String::
 
 method::<
 
-True if the receiver is alphabetically sooner. It is comparing the Unicode values. Uppercase characters have lower Unicode value than lowercase characters.
+returns:: true if the Unicode value of the receiver is less that the Unicode value of the argument. While this is equivalent to alphabetical order when comparing for example two lowercase characters, uppercase characters have lower Unicode values that lowercase characters, and digits have lower values than either.
+
 
 method::==
 
