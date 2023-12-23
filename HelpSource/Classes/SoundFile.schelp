@@ -57,7 +57,7 @@ returns:: A new SoundFile instance if successful, or code::nil:: if file open fa
 method::collect
 Returns an link::Classes/Array:: of SoundFile objects whose paths match the pattern. (The associated files are closed. These objects can be used to cue playback buffers)
 code::
-SoundFile.collect("sounds/*").do { |f| f.path.postln };
+SoundFile.collect("sounds" +/+ "*").do { |f| f.path.postln };
 ::
 
 method::use
@@ -110,7 +110,7 @@ The control strong::sustainTime:: determines playback duration based on the firs
 argument::playNow
 This is a link::Classes/Boolean:: that determines whether the file is to be played immediately after cueing.
 code::
-f = SoundFile.collect("sounds/*");
+f = SoundFile.collect("sounds" +/+ "*");
 e = f[1].cue;
 
 e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the default group

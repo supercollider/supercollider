@@ -107,7 +107,7 @@ m = NetAddr("127.0.0.1", NetAddr.langPort); // loopback
 m.sendMsg("/chat", "Hello App 1");
 m.sendMsg("/chat", "Hello App 1"); // oneshot gone
 m.sendMsg("/ch?t", "Hello App 1");
-m.sendMsg("/*", "Hello App 1");
+m.sendMsg("/" ++ "*", "Hello App 1");
 m.sendMsg("/chit", "Hello App 1"); // nothing
 
 // Introspection
