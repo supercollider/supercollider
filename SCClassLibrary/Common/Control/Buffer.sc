@@ -14,20 +14,23 @@ Buffer {
 	*new { arg server, numFrames, numChannels, bufnum;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server,
+		^super.newCopyArgs(
+			server,
 			bufnum,
 			numFrames,
-			numChannels).sampleRate_(server.sampleRate).cache
+			numChannels
+		).sampleRate_(server.sampleRate).cache
 	}
 
 	*alloc { arg server, numFrames, numChannels = 1, completionMessage, bufnum;
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
-		^super.newCopyArgs(server,
+		^super.newCopyArgs(
+			server,
 			bufnum,
 			numFrames,
-			numChannels)
-		.alloc(completionMessage).sampleRate_(server.sampleRate).cache
+			numChannels
+		).alloc(completionMessage).sampleRate_(server.sampleRate).cache
 	}
 
 	*allocConsecutive { arg numBufs = 1, server, numFrames, numChannels = 1, completionMessage, bufnum;
@@ -88,8 +91,8 @@ Buffer {
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
-		.doOnInfo_(action).cache
-		.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] })
+			.doOnInfo_(action).cache
+			.allocRead(path, startFrame, numFrames, {|buf|["/b_query", buf.bufnum] })
 	}
 
 	read { arg argpath, fileStartFrame = 0, numFrames = -1, bufStartFrame = 0, leaveOpen = false, action;
