@@ -108,9 +108,9 @@ Buffer {
 		server = server ? Server.default;
 		bufnum ?? { bufnum = server.nextBufferNumber(1) };
 		^super.newCopyArgs(server, bufnum)
-		.doOnInfo_(action).cache
-		.allocReadChannel(path, startFrame, numFrames, channels,
-			{|buf|["/b_query", buf.bufnum]})
+			.doOnInfo_(action).cache
+			.allocReadChannel(path, startFrame, numFrames, channels,
+				{|buf|["/b_query", buf.bufnum]})
 	}
 
 	readChannel { arg argpath, fileStartFrame = 0, numFrames = -1,
@@ -189,12 +189,11 @@ Buffer {
 					sndfile.writeData(collection);
 					sndfile.close;
 					^super.newCopyArgs(server, bufnum)
-					.cache.doOnInfo_({ |buf|
-						if(File.delete(path), { buf.path = nil},
-							{("Could not delete data file:" + path).warn;});
-						action.value(buf);
-					}).allocRead(path, 0, -1, {|buf| ["/b_query", buf.bufnum] })
-
+						.cache.doOnInfo_({ |buf|
+							if(File.delete(path), { buf.path = nil},
+								{("Could not delete data file:" + path).warn;});
+							action.value(buf);
+						}).allocRead(path, 0, -1, {|buf| ["/b_query", buf.bufnum] })
 				}, { "Failed to write data".warn; ^nil }
 			)
 		}, { "cannot use loadCollection with a non-local Server".warn; ^nil })
