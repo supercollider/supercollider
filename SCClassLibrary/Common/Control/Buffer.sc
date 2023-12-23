@@ -675,7 +675,7 @@ Buffer {
 		buffer = super.newCopyArgs(server, bufnum).cache;
 		Dialog.openPanel({ arg path;
 			buffer.doOnInfo_(action)
-			.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
+				.allocRead(path, startFrame, numFrames, { ["/b_query", buffer.bufnum] })
 		});
 		^buffer
 	}
