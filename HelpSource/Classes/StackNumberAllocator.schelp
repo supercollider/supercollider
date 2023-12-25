@@ -1,0 +1,44 @@
+TITLE:: StackNumberAllocator
+summary:: continuous number allocator
+categories:: Control
+related:: Classes/ContiguousBlockAllocator,Classes/PowerOfTwoAllocator
+DESCRIPTION::
+Number allocator within a specified range.
+
+CLASSMETHODS::
+
+METHOD:: new
+make a new instance, with lo and hi values.
+
+ARGUMENT:: lo
+initial value
+
+ARGUMENT:: hi
+maximum
+
+INSTANCEMETHODS::
+
+METHOD:: init
+Reset allocator to its initial state.
+
+METHOD:: alloc
+Allocate next number. After hi value returns nil.
+
+METHOD:: free
+Set the next value of the allocator to the arbitrary TELETYPE::inIndex:: (could be any object). Then continue with the counter.
+
+EXAMPLES::
+
+code::
+o = StackNumberAllocator(0,100);
+o.alloc // get the next value, press more times
+
+o.init // reset counter
+o.alloc // 0
+
+o.free(2000)// next value (could be any object, eg. String etc.)
+
+o.alloc // 20
+
+o.alloc // .. continue..
+::
