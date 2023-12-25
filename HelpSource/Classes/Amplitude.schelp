@@ -3,7 +3,7 @@ summary:: Amplitude follower
 categories:: UGens>Analysis>Amplitude
 
 description::
-Tracks the peak amplitude of a signal.
+Tracks the relative amplitude of a signal.
 
 classmethods::
 
