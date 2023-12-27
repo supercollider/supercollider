@@ -1,5 +1,5 @@
 TITLE:: StackNumberAllocator
-summary:: continuous number allocator
+summary:: consecutive number allocator
 categories:: Control
 related:: Classes/ContiguousBlockAllocator,Classes/PowerOfTwoAllocator
 DESCRIPTION::
@@ -27,18 +27,20 @@ Allocate next number. After hi value returns nil.
 METHOD:: free
 Set the next value of the allocator to the arbitrary TELETYPE::inIndex:: (could be any object). Then continue with the counter.
 
+ARGUMENT::inIndex
+
 EXAMPLES::
 
 code::
 o = StackNumberAllocator(0,100);
-o.alloc // get the next value, press more times
+o.alloc // return the next value (evaluate multiple times)
 
 o.init // reset counter
 o.alloc // 0
 
-o.free(2000)// next value (could be any object, eg. String etc.)
-
-o.alloc // 20
-
-o.alloc // .. continue..
+o.free(2000) // returns the StackNumberAllocator itself - sets the next value to 2000
+o.alloc // 2000
+o.free("foo") // you can set the next value to any Object, not just integers
+o.alloc // "foo"
+o.alloc // allocator resumes counting where it left off before we called .free
 ::
