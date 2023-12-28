@@ -1553,38 +1553,6 @@ void XLine_Ctor(XLine* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Wrap_next(Wrap* unit, int inNumSamples)
-{
-    float *out = ZOUT(0);
-    float *in   = ZIN(0);
-    float lo = unit->m_lo;
-    float hi = unit->m_hi;
-    float range = unit->m_range;
-
-    LOOP1(inNumSamples,
-        ZXP(out) = sc_wrap(ZXP(in), lo, hi, range);
-    );
-}
-
-void Wrap_Ctor(Wrap* unit)
-{
-
-    SETCALC(Wrap_next);
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
-
-    if (unit->m_lo > unit->m_hi) {
-        float temp = unit->m_lo;
-        unit->m_lo = unit->m_hi;
-        unit->m_hi = temp;
-    }
-    unit->m_range = unit->m_hi - unit->m_lo;
-
-    Wrap_next(unit, 1);
-}
-*/
-
 
 void Wrap_next_kk(Wrap* unit, int inNumSamples) {
     float* out = ZOUT(0);
@@ -1661,39 +1629,7 @@ void Wrap_Ctor(Wrap* unit) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void Fold_next(Fold* unit, int inNumSamples)
-{
-    float *out = ZOUT(0);
-    float *in   = ZIN(0);
-    float lo = unit->m_lo;
-    float hi = unit->m_hi;
-    float range = unit->m_range;
-    float range2 = unit->m_range2;
 
-    LOOP1(inNumSamples,
-        ZXP(out) = sc_fold(ZXP(in), lo, hi, range, range2);
-    );
-}
-
-void Fold_Ctor(Fold* unit)
-{
-
-    SETCALC(Fold_next);
-    unit->m_lo = ZIN0(1);
-    unit->m_hi = ZIN0(2);
-
-    if (unit->m_lo > unit->m_hi) {
-        float temp = unit->m_lo;
-        unit->m_lo = unit->m_hi;
-        unit->m_hi = temp;
-    }
-    unit->m_range = unit->m_hi - unit->m_lo;
-    unit->m_range2 = 2.f * unit->m_range;
-
-    Fold_next(unit, 1);
-}
-*/
 void Fold_next_kk(Fold* unit, int inNumSamples) {
     float* out = ZOUT(0);
     float* in = ZIN(0);
