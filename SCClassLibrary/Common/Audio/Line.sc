@@ -45,7 +45,7 @@ AmpComp : PureUGen {
 	*ir { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('scalar', freq, root, exp)
 	}
-	*ar { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
+	*ar { arg freq, root = 60.midicps, exp = 0.3333;
 		^this.multiNew('audio', freq, root, exp)
 	}
 	*kr { arg freq = 60.midicps, root = 60.midicps, exp = 0.3333;
