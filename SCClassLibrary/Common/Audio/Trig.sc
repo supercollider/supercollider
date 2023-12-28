@@ -209,7 +209,7 @@ Pitch : MultiOutUGen {
 }
 
 InRange : UGen {
-	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
+	*ar { arg in, lo = 0.0, hi = 1.0;
 		^this.multiNew('audio', in, lo, hi)
 	}
 	*kr { arg in = 0.0, lo = 0.0, hi = 1.0;
