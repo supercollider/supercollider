@@ -217,3 +217,71 @@ function setUpWebChannel(port) {
         });
     }
 }
+
+
+var svgPaths = {
+    // https://www.svgviewer.dev/s/488209/copy
+    copyIcon:
+        '<svg xmlns="http://www.w3.org/2000/svg" class="copyIcon" fill="currentColor" viewBox="0 0 24 24"> <path d="M2 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-4H4a2 2 0 0 1-2-2V4zm8 12v4h10V10h-4v4a2 2 0 0 1-2 2h-4zm4-2V4H4v10h10z"/> </svg>',
+
+    // https://www.svgviewer.dev/s/497361/check
+    checkmarkIcon:
+        '<svg xmlns="http://www.w3.org/2000/svg" class="checkmarkIcon" fill="currentColor" viewBox="0 0 24 24"><path d= "M10,18a1,1,0,0,1-.71-.29l-5-5a1,1,0,0,1,1.42-1.42L10,15.59l8.29-8.3a1,1,0,1,1,1.42,1.42l-9,9A1,1,0,0,1,10,18Z" > </path></svg>',
+}; // copy icons
+
+document.addEventListener("DOMContentLoaded", function () {
+    let mouseon = false;
+
+    $(".copyButton").html(svgPaths.copyIcon + svgPaths.checkmarkIcon);
+
+    $(".codeMirrorContainer").each(function () {
+        var container = $(this);
+        var button = container.find(".copyButton");
+        var editor = container.find(".editor");
+
+        button.on("click", function () {
+          container.find(".copyIcon").fadeOut();
+          container
+            .find(".checkmarkIcon")
+            .fadeIn()
+            .delay(1000)
+            .queue(function (next) {
+                $(this).fadeOut();
+                if (mouseon) {
+                  container.find(".copyIcon").fadeIn();
+                }
+                next();
+            });
+
+          navigator.clipboard
+          .writeText(editor.val())
+          .then(function () {
+              console.log("Text copied to clipboard");
+          })
+          .catch(function (err) {
+              console.error("Could not copy text: ", err);
+          });
+      });
+    });
+
+    $(".copyIcon").hover(
+        function () {
+            $(this).css("fill", "black");
+        },
+        function () {
+            $(this).css("fill", "lightgrey");
+        },
+    );
+
+    $(".codeMirrorContainer").hover(
+        function () {
+            $(this).find(".copyButton, .copyIcon").fadeIn(100);
+            mouseon = true;
+        },
+        function () {
+            $(this).find(".copyIcon, .checkmarkIcon").fadeOut(100);
+            mouseon = false;
+        },
+    );
+});
+
