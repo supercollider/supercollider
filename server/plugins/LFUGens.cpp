@@ -114,6 +114,7 @@ struct Fold : public Unit {
     float m_lo, m_hi, m_range;
 };
 
+// Note: no classlib definition for Unwrap!
 struct Unwrap : public Unit {
     float m_range, m_half, m_offset, m_prev;
 };
@@ -1963,6 +1964,7 @@ void Clip_Ctor(Clip* unit) {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+// Note: no classlib definition for Unwrap!
 
 void Unwrap_next(Unwrap* unit, int inNumSamples) {
     float* out = ZOUT(0);
