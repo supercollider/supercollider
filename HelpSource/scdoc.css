@@ -767,3 +767,41 @@ div.met_subclasses a.seemore {
     font-size: 9pt;
     color: #777;
 }
+
+/* copy example code buttons */
+.codeMirrorContainer {
+	position: relative;
+}
+
+.copyButton {
+	position: absolute;
+	top: 4px;
+	right: 10px;
+	display: none;
+	background: none;
+	border: none;
+	cursor: pointer;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	padding: 0;
+	z-index: 1000;
+}
+
+.copyButton svg {
+	fill: lightgrey;
+}
+
+.copyIcon {
+	width: 20px;
+	height: 20px;
+	display: block;
+}
+.checkmarkIcon {
+	width: 20px;
+	height: 20px;
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+}
