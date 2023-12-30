@@ -539,9 +539,7 @@ jobs:
       - name: build
         shell: bash
         run: |
-          BUILD_PARALLELISM=
-          if [[ ${{ startsWith(matrix.cmake-generator, 'MinGW') }} == true ]]; then BUILD_PARALLELISM="-- -j2"; fi
-          cmake --build $BUILD_PATH --config Release --target install $BUILD_PARALLELISM
+          cmake --build $BUILD_PATH --config Release --target install --parallel 2
       - name: create archive
         if: matrix.artifact-suffix
         shell: bash
