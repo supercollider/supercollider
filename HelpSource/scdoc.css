@@ -788,9 +788,14 @@ div.met_subclasses a.seemore {
 	z-index: 1000;
 }
 
+.copyButton:focus {
+	outline: none;
+}
+
 .copyButton svg {
 	fill: lightgrey;
 }
+
 .copyButtonActive {
 	fill: black;
 }
