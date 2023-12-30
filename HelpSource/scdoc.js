@@ -264,14 +264,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
 
-    $(".copyIcon").hover(
-        function () {
-            $(this).css("fill", "black");
-        },
-        function () {
-            $(this).css("fill", "lightgrey");
-        },
-    );
+    $(".copyIcon").hover(function () {
+      $(this).children().toggleClass("copyButtonActive");
+    });
 
     $(".codeMirrorContainer").hover(
         function () {

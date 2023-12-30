@@ -791,6 +791,9 @@ div.met_subclasses a.seemore {
 .copyButton svg {
 	fill: lightgrey;
 }
+.copyButtonActive {
+	fill: black;
+}
 
 .copyIcon {
 	width: 20px;
