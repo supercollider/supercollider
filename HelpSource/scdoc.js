@@ -157,6 +157,16 @@ function set_up_toc() {
             firstMatch.click(); // Simulate a click on the first matched item
             $("#toc").toggle();
         }
+
+        //TOC scroll with ctrl+{j,k}
+        if (event.ctrlKey && event.key === "j") {
+            $("#toc").scrollTop($("#toc").scrollTop() + 10);
+        }
+    
+        if (event.ctrlKey && event.key === "k") {
+            event.preventDefault();
+            $("#toc").scrollTop($("#toc").scrollTop() - 10);
+        }
     });
 }
 
