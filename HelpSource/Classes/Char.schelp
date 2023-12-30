@@ -54,6 +54,10 @@ private:: archiveAsCompileString
 
 subsection::conversion
 
+method::hash
+
+returns:: the hash value of the receiver.
+
 method::ascii
 
 returns:: the integer ASCII value of a Char.
@@ -62,6 +66,14 @@ method::digit
 
 returns:: an integer value from 0 to 9 for chars $0 to $9, and values 10 to 35 for chars $a to $z
 or $A to $Z.
+
+method::asAscii
+
+returns:: the object itself.
+
+method::asUnicode
+
+returns:: the object itself.
 
 method::toUpper
 
@@ -88,6 +100,10 @@ returns:: whether the char is printable.
 method::isPunct
 
 returns:: whether the char is a punctuation character.
+
+method::isControl
+
+returns:: true if the char is a control character.
 
 method::isSpace
 
@@ -119,37 +135,20 @@ returns:: true if the char is a uppercase letter.
 
 method::isPathSeparator
 
-returns:: true if the char is the platform specific path separator.
+returns:: true if the char is one of the platform specific path separators.
 
 method::isVowel
 
 returns:: true if the char is a vowel.
 
-method::isControl
-
-returns:: true if the char is a control character.
-
-method::asAscii
-
-returns:: the object itself.
-
-method::asUnicode
-
-returns:: a single Unicode value. Ascii is a subset of Unicode.
-
-method::hash
-
-returns:: the hash value of the receiver.
-
 method::++
 
-A concatenation of the two chars. The result is link::Classes/String::
+returns:: teletype::this.asString ++ that::
 
 method::<
 
-returns:: true if the Unicode value of the receiver is less that the Unicode value of the argument. While this is equivalent to alphabetical order when comparing for example two lowercase characters, uppercase characters have lower Unicode values that lowercase characters, and digits have lower values than either.
-
+returns:: TELETYPE::this.ascii < aChar.ascii::
 
 method::==
 
-True if the receiver equals the argument.
+returns:: True if the receiver equals the argument.
