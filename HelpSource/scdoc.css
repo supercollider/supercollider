@@ -792,7 +792,7 @@ div.met_subclasses a.seemore {
 	outline: none;
 }
 
-.copyButton svg {
+.copyButtonVisible {
 	fill: lightgrey;
 }
 

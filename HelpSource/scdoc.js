@@ -222,11 +222,11 @@ function setUpWebChannel(port) {
 var svgPaths = {
     // https://www.svgviewer.dev/s/488209/copy
     copyIcon:
-        '<svg xmlns="http://www.w3.org/2000/svg" class="copyIcon" fill="currentColor" viewBox="0 0 24 24"> <path d="M2 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-4H4a2 2 0 0 1-2-2V4zm8 12v4h10V10h-4v4a2 2 0 0 1-2 2h-4zm4-2V4H4v10h10z"/> </svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" class="copyIcon copyButtonVisible" fill="currentColor" viewBox="0 0 24 24"> <path d="M2 4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-4H4a2 2 0 0 1-2-2V4zm8 12v4h10V10h-4v4a2 2 0 0 1-2 2h-4zm4-2V4H4v10h10z"/> </svg>',
 
     // https://www.svgviewer.dev/s/497361/check
     checkmarkIcon:
-        '<svg xmlns="http://www.w3.org/2000/svg" class="checkmarkIcon" fill="currentColor" viewBox="0 0 24 24"><path d= "M10,18a1,1,0,0,1-.71-.29l-5-5a1,1,0,0,1,1.42-1.42L10,15.59l8.29-8.3a1,1,0,1,1,1.42,1.42l-9,9A1,1,0,0,1,10,18Z" > </path></svg>',
+        '<svg xmlns="http://www.w3.org/2000/svg" class="checkmarkIcon copyButtonVisible" fill="currentColor" viewBox="0 0 24 24"><path d= "M10,18a1,1,0,0,1-.71-.29l-5-5a1,1,0,0,1,1.42-1.42L10,15.59l8.29-8.3a1,1,0,1,1,1.42,1.42l-9,9A1,1,0,0,1,10,18Z" > </path></svg>',
 }; // copy icons
 
 document.addEventListener("DOMContentLoaded", function () {
