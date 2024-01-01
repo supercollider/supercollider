@@ -152,7 +152,7 @@ struct T2A : public Unit {
 };
 
 struct EnvGen : public Unit {
-    double m_a1, m_a2, m_b1, m_y1, m_y2, m_grow, m_level, m_endLevel;
+    double m_a1, m_a2, m_b1, m_y1, m_y2, m_grow, m_level, m_endLevel, m_stageResidual;
     int m_counter, m_stage, m_shape, m_releaseNode;
     float m_prevGate;
     bool m_released;
@@ -2503,13 +2503,17 @@ void EnvGen_Ctor(EnvGen* unit) {
     // level0, numstages, releaseNode, loopNode,
     // [level, dur, shape, curve]
 
-    unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
+    double initLevel;
+    int initReleaseNode;
+    unit->m_endLevel = unit->m_level = initLevel =
+        ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
     unit->m_counter = 0;
     unit->m_stage = ENVGEN_NOT_STARTED;
     unit->m_shape = shape_Hold;
     unit->m_prevGate = 0.f;
     unit->m_released = false;
-    unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
+    unit->m_releaseNode = initReleaseNode = (int)ZIN0(kEnvGen_releaseNode);
+    unit->m_stageResidual = 0.0;
 
     float** envPtr = unit->mInBuf + kEnvGen_nodeOffset;
     const int initialShape = (int32)*envPtr[2];
@@ -2517,6 +2521,18 @@ void EnvGen_Ctor(EnvGen* unit) {
         unit->m_level = *envPtr[0]; // we start at the end level;
 
     EnvGen_next_k(unit, 1);
+
+    // restore initial conditions
+    unit->m_endLevel = unit->m_level = initLevel;
+    unit->m_counter = unit->m_counter + 1; // roll back the decrement in next_k
+    unit->m_stage = ENVGEN_NOT_STARTED;
+    unit->m_shape = shape_Hold;
+    unit->m_prevGate = 0.f;
+    unit->m_released = false;
+    unit->m_releaseNode = initReleaseNode;
+    unit->m_stageResidual = 0.0;
+    if (initialShape == shape_Hold)
+        unit->m_level = *envPtr[0]; // we start at the end level;
 }
 
 // called by nextSegment and check_gate:
@@ -2548,10 +2564,12 @@ static bool EnvGen_initSegment(EnvGen* unit, int& counter, double& level, double
     double curve = *envPtr[3];
     unit->m_endLevel = endLevel;
 
-    counter = (int32)(dur * SAMPLERATE);
-    counter = sc_max(1, counter);
-    // Print("counter %d stageOffset %d   level %g   endLevel %g   dur %g   shape %d   curve %g\n", counter,
-    // stageOffset, level, endLevel, dur, unit->m_shape, curve); Print("SAMPLERATE %g\n", SAMPLERATE);
+    // Carry the rounding error forward to be absorbed in the next segments
+    double stageDurInSamples = dur * SAMPLERATE + unit->m_stageResidual;
+    int32 stageDurInSamples_floor = (int32)stageDurInSamples;
+    counter = sc_max(1, stageDurInSamples_floor);
+    unit->m_stageResidual = stageDurInSamples - counter;
+
     if (counter == 1)
         unit->m_shape = 1; // shape_Linear
     // Print("new counter = %d  shape = %d\n", counter, unit->m_shape);
@@ -2625,6 +2643,7 @@ static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, d
         unit->m_released = false;
         unit->mDone = false;
         counter = counterOffset;
+        unit->m_stageResidual = 0.0;
         return false;
     } else if (gate <= -1.f && prevGate > -1.f) {
         // forced release: jump to last segment overriding its duration
@@ -2634,11 +2653,13 @@ static bool check_gate(EnvGen* unit, float prevGate, float gate, int& counter, d
         unit->m_stage = static_cast<int>(ZIN0(kEnvGen_numStages) - 1);
         unit->m_released = true;
         EnvGen_initSegment(unit, counter, level, dur);
+        unit->m_stageResidual = 0.0;
         return false;
     } else if (prevGate > 0.f && gate <= 0.f && unit->m_releaseNode >= 0 && !unit->m_released) {
         counter = counterOffset;
         unit->m_stage = unit->m_releaseNode - 1;
         unit->m_released = true;
+        unit->m_stageResidual = 0.0;
         return false;
     }
     return true;
