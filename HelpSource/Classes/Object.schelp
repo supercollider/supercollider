@@ -189,11 +189,15 @@ A String containing the resulting file's path.
 
 subsection::Equality and Identity
 
+Equality, queried with code::==:: or code::!=::, is whether the values or contents of two objects are the same by comparing the values, contents or emphasis::hash table indecise::. Identity, queried by code::===:: or code::!==::, is whether two objects refer to the same object by comparing the emphasis::identity hash table indecise:: or virtual memory addresses.
+
 method::==
 
 Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
 
-note:: Whenever == is overridden in a class, hash should be overridden as well.::
+note::
+Whenever == is overridden in a class, hash should be overridden as well.
+::
 
 code::
 5.0 == 5; // true
@@ -204,6 +208,313 @@ a === b; // not identical
 "worth trying" == "worth trying"; // equal
 ::
 
+Discussion::
+
+list::
+## link::Classes/SimpleNumber:: and its subclasses link::Classes/Float:: and link::Classes/Integer::: anchor::equality & identity discussion::
+
+code::==:: is overridden by link::Classes/SimpleNumber:: to check for equality.
+For example, 5.0 and 5 are equal in value, but 5.0 is an instance of Float and 5 is an instance of Integer. So the equality and identity being tested are different.
+list::
+
+## Equality:
+
+code::
+5.0 == 5 // equal
+::
+
+teletype::
+-> true
+::
+
+If they are equal, then their emphasis::hash table indices:: are equal and identical, i.e. the same number will always result in the same emphasis::hash index::.
+
+code::
+// Evaluate the following codes more than once and compare the results.
+5.hash
+5.0.hash
+::
+code::
+5.hash ==  5.0.hash
+5.hash === 5.0.hash
+::
+
+note::
+SuperCollider uses emphasis::64-bit double precision floats:: on the client (sclang) and emphasis::32-bit floats:: on the server (scsynth and supernova). The human-readable decimal representation of the float value may not be accurate. To check the exact representation of float in sclang, the code::.dump:: method (see: link::#-dump::) can be used.
+
+table::
+## The imprecise decimal representation of float
+|| The more precise hexadecimal representation of float
+##
+code::
+(
+x = 0.3;
+y = 0.1 + 0.1 + 0.1;
+x == y
+)
+::
+teletype::
+-> false
+::
+||
+table::
+##
+code::
+x.dump
+::
+teletype::
+   Float 0.300000   33333333 3FD33333
+-> 0.3
+::
+::
+table::
+##
+code::
+y.dump
+::
+teletype::
+   Float 0.300000   33333334 3FD33333
+-> 0.3
+::
+::
+::
+::
+
+## Identity:
+table::
+##
+code::
+5.0 === 5 // not identical
+::
+||
+code::
+5 === 5 // identical
+::
+||
+code::
+5.0 === 5.0 // identical
+::
+##
+teletype::
+-> false
+::
+||
+teletype::
+-> true
+::
+||
+teletype::
+-> true
+::
+::
+If they are equal, their emphasis::hash table indices:: are equal and identical, i.e. the same number always results in the same hash index. If two objects are identical, their identity hash table indices are equal and identical, i.e. the same object always results in the same emphasis::identity hash index::.
+
+code::
+5.identityHash
+5.0.identityHash
+5.identityHash ==  5.identityHash
+5.0.identityHash === 5.0.identityHash
+::
+::
+
+## link::Classes/Array::
+
+code::==:: is overridden by link::Classes/SequenceableCollection:: to check for equality:
+
+code::
+a = [1, 2]; b = [1, 2];
+::
+
+list::
+## Equality:
+code::
+a == b // equal
+::
+
+teletype::
+-> true
+::
+It first checks if the two objects are identical, then they're not in the same class, then their sizes aren't the same, then there's an unequal element. If they are equal, then their emphasis::hash table indices:: are equal and identical:
+
+code::
+a.hash
+b.hash
+a.hash ==  b.hash
+a.hash === b.hash
+::
+
+## Identity
+
+code::
+a === b // not identical
+::
+
+teletype::
+-> false
+::
+They are two different objects allocated at different addresses in virtual memory. When two objects are identical, their emphasis::identity hash table indices:: are equal and identical, i.e. the same object always results in the same identity hash index.
+code::
+a.identityHash
+b.identityHash
+a.identityHash ==  b.identityHash
+a.identityHash === b.identityHash
+::
+They are two different objects allocated to different addresses in virtual memory:
+
+table::
+##
+
+table::
+##
+code::
+a.dump
+::
+post window returns:
+teletype::
+Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> [1, 2]
+::
+
+The first two parts of the parenthesis pair above, i.e. teletype::0x1256a70b8:: and teletype::gc=38::, may be different when evaluating the code code::a.dump::, but their values are determined when evaluating the code code::a = [1, 2]::. (see: link::#-dump::)
+::
+
+table::
+##
+
+code::
+b.dump
+::
+
+post window returns:
+teletype::
+Instance of Array {    (0x152d02da8, gc=70, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> [1, 2]
+::
+
+The first two parts of the parenthesis pair above, i.e. teletype::0x152d02da8:: and teletype::gc=70::, may be different when evaluating the code code::b.dump::, but their values are determined when evaluating the code code::b = [1, 2]::. (see: link::#-dump::)
+::
+
+The hexadecimal digits addresses indicate the address on virtual memory.
+
+table::
+##
+The address of the object associated with the variable code::a:::
+||
+The address of the object associated with the variable code::b:::
+##
+teletype::
+0x1256a70b8
+::
+||
+teletype::
+0x152d02da8
+::
+::
+::
+::
+
+## link::Classes/String::
+
+code::==:: is overridden by link::Classes/String:: to check for equality:
+code::
+c = "hi"; d = "hi";
+::
+
+list::
+## Equality:
+code::
+c == d // equal
+::
+
+teletype::
+-> true
+::
+It first checks whether the two objects are identical, then the right part of code::==:: is not an instance of the link::Classes/String:: class, then the two link::Classes/String:: instances are identical including upper and lower case. If they are the same, then their emphasis::hash table indices:: are equal and identical:
+
+code::
+c.hash
+d.hash
+c.hash ==  d.hash
+c.hash === d.hash
+::
+## Identity
+
+code::
+c === d // not identical
+::
+
+teletype::
+-> false
+::
+They are two different objects allocated to different addresses in virtual memory:
+
+table::
+##
+
+table::
+##
+
+code::
+c.dump
+::
+
+post window returns:
+teletype::
+Instance of String {    (0x1533d23b8, gc=50, fmt=07, flg=10, set=02)
+  indexed slots [2]
+      0 : h
+      1 : i
+}
+-> hi
+
+::
+The first two parts of the parenthesis pair above, i.e. teletype::0x1533d23b8:: and teletype::gc=50::, may be different when evaluating the code code::c.dump::, but their values are determined when evaluating the code code::c = "hi"::. (see: link::#-dump::)
+::
+table::
+##
+code::
+d.dump
+::
+post window returns:
+teletype::
+Instance of String {    (0x1525795a8, gc=54, fmt=07, flg=10, set=02)
+  indexed slots [2]
+      0 : h
+      1 : i
+}
+-> hi
+::
+
+The first two parts of the parenthesis pair above, i.e. teletype::0x1525795a8:: and teletype::gc=54::, may be different when evaluating the code code::d.dump::, but their values are determined when evaluating the code code::d = "hi"::. (see: link::#-dump::)
+::
+The hexadecimal digits addresses indicate the address on virtual memory.
+
+table::
+##
+The address of the object associated with the variable code::c:::
+||
+The address of the object associated with the variable code::d:::
+##
+
+teletype::
+0x1533d23b8
+::
+||
+teletype::
+0x1525795a8
+::
+::
+::
+::
+::
 
 method::===
 
@@ -214,6 +525,53 @@ code::
 "worth trying" === "worth trying"; // not identical
 'worth trying' === 'worth trying'; // identical (symbols are unique)
 ::
+
+Discussion::
+
+The uniqueness of the instances of the link::Classes/Symbol:: class: anchor::symbol uniqueness discussion::
+
+
+
+table::
+## The low information of a symbol, returned by the code::.dump:: method (see: link::#-dump::), shows only its class and its value (symbol) because it is unique.
+Also, the link::#-hash:: and link::#-identityHash:: methods return the same emphasis::hash table index:::
+
+table::
+## code ||
+code::
+'worth trying'.dump
+::
+||
+code::
+'worth trying'.hash
+::
+||
+code::
+'worth trying'.identityHash
+::
+## Post window ||
+
+teletype::
+   Symbol 'worth trying'
+-> worth trying
+::
+||
+teletype::
+-> 1726909008
+::
+||
+teletype::
+-> 1726909008
+::
+::
+
+code::
+'worth trying'.hash ==  'worth trying'.identityHash
+'worth trying'.hash === 'worth trying'.identityHash
+::
+::
+
+For details on the identity of link::Classes/Integer::, link::Classes/Float::, link::Classes/Array:: and link::Classes/String::, see the link::#equality & identity discussion#Discussion section in the ==(obj) method::.
 
 method::!=
 
@@ -643,6 +1001,7 @@ code::
 foo {
 	this.deprecated(thisMethod, ThisOrSomeOtherObject.findMethod(\foo);
 	... // execution of this method will continue unless Error.debug == true
+	)
 }
 
 // For a class method:
@@ -691,9 +1050,142 @@ code::
 
 method::dump
 
-Print a detailed low level representation of the receiver to the post window.
+Print a detailed low-level representation of the receiver to the post window.
+Except for the link::Classes/List:: class, this method is not overridden in other classes. Any of the MetaClasses, Classes and Instances can be used by this method.
+
 code::
-List[1, 2, 3].dump;
+Meta_Object.dump // the meta class of the class Object
+::
+code::
+Object.dump      // the class called Object
+::
+code::
+Object.new.dump  // an istance of the class Object
+::
+
+The detailed low-level format and information varies depending on the receiver.
+Some examples of instance objects by information format:
+
+list::
+
+## returning the class name and value (data) of the dumped object:
+
+table::
+## code || information printed on the Post window
+##
+code::
+$1.dump
+::
+||
+teletype::
+   Character 49 '1'
+-> 1
+::
+note::
+The integer between emphasis::Character:: and emphasis::'1':: is the ASCII value of that character.
+::
+##
+code::
+\1.dump
+::
+||
+teletype::
+   Symbol '1'
+-> 1
+::
+##
+code::
+1.dump
+::
+||
+teletype::
+   Integer 1
+-> 1
+::
+##
+code::
+1.0.dump
+::
+||
+teletype::
+   Float 1.000000   00000000 3FF00000
+-> 1.0
+::
+
+note::
+
+The last two groups of an 8-digit integer are the raw hexadecimal representation of the 64-bit double value according to link::https://ieeexplore.ieee.org/document/8766229##IEEE 754 Floating Point::. Each part is represented as follows:
+
+table::
+##
+soft::                    :: raw hexadecimal representation of the 64-bit double value
+
+soft::                    :: ––––––––––––––––––––––––––––––––
+
+teletype::
+Float   -1.000000    00000000                      BFF00000
+::
+soft:: ::|soft::       ::|soft::           ::|soft::                           ::|
+
+class soft::   :: |soft::          ::significant part (mantissa) soft::   ::exponent part with sign bit
+
+soft::       :: decmial representation
+::
+::
+::
+## returning the class name of the instance with
+list::
+## addrress in virtual memory (the hexadecimal number prefixed with 0x),
+## emphasis::garage collector color:: (gc),
+## emphasis::data format type:: (fmt),
+## emphasis::flags for immutablity, finalization and garbage collector debug sanity check:: (flg),
+## emphasis::size class:: (set),
+## and so on (the information on the second and subsequent lines varies depending on the class to which the instance belongs).
+::
+
+table::
+## code || information printed on the Post window
+##
+code::
+[1, 2].dump;
+::
+||
+teletype::
+Instance of Array {    (0x1552c9558, gc=78, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> [1, 2]
+::
+##
+code::
+List[1, 2].dump;
+::
+||
+teletype::
+List's array:
+Instance of Array {    (0x13b3cb5b8, gc=6C, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> List[1, 2]
+::
+##
+code::
+Set[1, 2].dump;
+::
+||
+teletype::
+Instance of Set {    (0x1489e2068, gc=A4, fmt=00, flg=00, set=02)
+  instance variables [2]
+    array : instance of Array (0x13b458838, size=4, set=2)
+    size : Integer 2
+}
+-> Set[2, 1]
+::
+::
 ::
 
 subsection::System Information
