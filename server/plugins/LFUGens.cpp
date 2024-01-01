@@ -27,6 +27,9 @@
 
 #include <boost/align/is_aligned.hpp>
 
+// NaNs are not equal to any floating point number
+static const float uninitializedControl = std::numeric_limits<float>::quiet_NaN();
+
 static InterfaceTable* ft;
 
 struct Vibrato : public Unit {
@@ -3202,8 +3205,6 @@ void IEnvGen_Ctor(IEnvGen* unit) {
     // [dur, shape, curve, level] * numvals
     int numStages = (int)IN0(3);
     int numvals = numStages * 4; // initlevel + (levels, dur, shape, curves) * stages
-    float offset = unit->m_offset = IN0(1);
-    float point = unit->m_pointin = IN0(0) - offset;
     unit->m_envvals = (float*)RTAlloc(unit->mWorld, (int)(numvals + 1.) * sizeof(float));
     ClearUnitIfMemFailed(unit->m_envvals);
 
@@ -3215,38 +3216,13 @@ void IEnvGen_Ctor(IEnvGen* unit) {
         //      Print("val for: %d, %3.3f\n", i, unit->m_envvals[i]);
     }
 
-    //  float out = OUT0(0);
-    float totalDur = IN0(4);
-    float level = 0.f;
-    float newtime = 0.f;
-    int stage = 0;
-    float seglen = 0.f;
-    if (point >= totalDur) {
-        unit->m_level = level = unit->m_envvals[numStages * 4]; // grab the last value
-    } else {
-        if (point <= 0.0) {
-            unit->m_level = level = unit->m_envvals[0];
-        } else {
-            float segpos = point;
-            // determine which segment the current time pointer needs calculated
-            for (int j = 0; point >= newtime; j++) {
-                seglen = unit->m_envvals[(j * 4) + 1];
-                newtime += seglen;
-                segpos -= seglen;
-                stage = j;
-            }
+    unit->m_offset = IN0(1);
+    unit->m_pointin = uninitializedControl; // trigger calculation in next_k
+    unit->m_level = uninitializedControl; // will be set in next_k
 
-            segpos = segpos + seglen;
-            float begLevel = unit->m_envvals[(stage * 4)];
-            int shape = (int)unit->m_envvals[(stage * 4) + 2];
-            int curve = (int)unit->m_envvals[(stage * 4) + 3];
-            float endLevel = unit->m_envvals[(stage * 4) + 4];
-            float pos = (segpos / seglen);
+    IEnvGen_next_k(unit, 1);
 
-            GET_ENV_VAL
-        }
-    }
-    OUT0(0) = level;
+    unit->m_pointin = uninitializedControl; // trigger calculation in next_x
 }
 
 void IEnvGen_Dtor(IEnvGen* unit) { RTFree(unit->mWorld, unit->m_envvals); }
