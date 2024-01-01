@@ -93,11 +93,6 @@ struct XLine : public Unit {
     int mCounter;
 };
 
-struct Cutoff : public Unit {
-    double mLevel, mSlope;
-    int mWaitCounter;
-};
-
 struct LinExp : public Unit {
     float m_dstratio, m_rsrcrange, m_rrminuslo, m_dstlo;
 };
