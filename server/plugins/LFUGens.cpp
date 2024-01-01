@@ -2114,7 +2114,7 @@ void AmpComp_Ctor(AmpComp* unit) {
         unit->m_exponent = -1.f * exp;
         SETCALC(AmpComp_next);
     }
-    AmpComp_next(unit, 1);
+    AmpComp_next_kk(unit, 1);
 }
 
 
