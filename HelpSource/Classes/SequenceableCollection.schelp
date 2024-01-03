@@ -889,6 +889,143 @@ copymethod:: SimpleNumber -atanh
 copymethod:: SimpleNumber -owensT
 
 
+subsection:: Testing
+
+method:: ==
+
+Overridden by the need to check for equality of each element with its integer index as independent of identity. See link::Classes/Object#Equality and Identity::.
+
+Discussion::
+code::
+~array_a = [1, 2]; ~array_b = [1, 2] // Evaluate this code first!
+::
+
+list::
+## Equality:
+code::
+~array_a == ~array_b // checking for equlity
+::
+teletype::
+-> true
+::
+It first checks if the two objects are identical, then they're not in the same class, then their sizes aren't the same, then there's an unequal element. If they are equal, then their emphasis::hash table indices:: are equal and identical:
+
+code::
+~array_a.hash
+~array_b.hash
+::
+code::
+~array_a.hash ==  ~array_b.hash
+::
+teletype::
+-> true
+::
+code::
+~array_a.hash === ~array_b.hash
+::
+teletype::
+-> true
+::
+
+## Identity
+
+code::
+~array_a === ~array_b // checking for identity
+::
+
+teletype::
+-> false
+::
+They are two different objects allocated at different addresses in virtual memory:
+
+table::
+##
+
+table::
+##
+code::
+~array_a.dump
+::
+post window returns:
+teletype::
+Instance of Array {    (0x1256a70b8, gc=38, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> [1, 2]
+::
+
+The first two parts of the parenthesis pair above, i.e. teletype::0x1256a70b8:: and teletype::gc=38::, may be different when evaluating the code code::a.dump::, but their values are determined when evaluating the code code::~array_b = [1, 2]::. (see: link::#-dump::)
+::
+
+table::
+##
+
+code::
+~array_b.dump
+::
+
+post window returns:
+teletype::
+Instance of Array {    (0x152d02da8, gc=70, fmt=01, flg=00, set=02)
+  indexed slots [2]
+      0 : Integer 1
+      1 : Integer 2
+}
+-> [1, 2]
+::
+
+The first two parts of the parenthesis pair above, i.e. teletype::0x152d02da8:: and teletype::gc=70::, may be different when evaluating the code code::b.dump::, but their values are determined when evaluating the code code::~array_b = [1, 2]::. (see: link::#-dump::)
+::
+
+The hexadecimal digits addresses indicate the address on virtual memory.
+
+table::
+##
+The address of the object associated with the variable code::~array_a:::
+||
+The address of the object associated with the variable code::~array_b:::
+##
+teletype::
+0x1256a70b8
+::
+||
+teletype::
+0x152d02da8
+::
+::
+::
+
+When two objects are identical, their emphasis::identity hash table indices:: are equal and identical, i.e. the same object always results in the same emphasis::identity hash index::.
+code::
+~array_c = ~array_a
+::
+code::
+~array_a.identityHash
+~array_c.identityHash
+~array_b.identityHash
+::
+code::
+~array_a.identityHash ==  ~array_a.identityHash
+::
+teletype::
+-> true
+::
+code::
+~array_a.identityHash === ~array_c.identityHash
+::
+teletype::
+-> true
+::
+code::
+~array_a.identityHash === ~array_b.identityHash
+::
+teletype::
+-> false
+::
+::
+
 subsection::Multichannel wrappers
 All of the following messages are performed on the elements of this collection, using link::Classes/Object#-multiChannelPerform::.
 
