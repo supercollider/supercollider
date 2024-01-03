@@ -20,13 +20,99 @@ method::nowExecutingPath
 
 Usage: code::thisProcess.nowExecutingPath::
 
-Returns the full path to the file containing the code that is currently executing emphasis::interactively:: in the interpreter. Usually this is the current document. If the code block executes another file on disk, using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::nowExecutingPath:: will be the location of the executed file.
 
 teletype::nowExecutingPath:: is valid only for interactive code, i.e., code files with a teletype::.scd:: extension. It does not apply to class definitions (teletype::.sc::). For that, use code::thisMethod.filenameSymbol:: or code::this.class.filenameSymbol::.
 
-This method is supported in the SuperCollider IDE, the macOS-only SuperCollider.app, and the scel (SuperCollider-Emacs-Lisp) environment. In other editor environments, it will return code::nil::.
-
 WARNING:: teletype::nowExecutingPath:: has a corresponding setter method, teletype::nowExecutingPath_::, for internal use only by the interpreter. Do not call the setter method!::
+
+Returns:: The full path to the file containing the code that is currently executing emphasis::interactively:: in the interpreter when used in the command-line interface (CLI), and IDE such as SuperCollider IDE and the scel (SuperCollider-Emacs-Lisp) environment. In some environments, it can return code::nil::
+Usually this is the current document. If a code block ("fileMain.scd" in the example code below) executes another file on disk ("fileForLoad.scd" in the example code below), using link::Classes/String#-load:: or link::Classes/String#-loadPaths::, teletype::nowExecutingPath:: will be the location of the executed file ("fileForLoad.scd" in the example code below). However, if the function is called in the executed file ("fileForLoad.scd" in the example code below), teletype::nowExecutingPath:: will be the code block ("fileMain.scd" in the example code below).
+
+code::
+(
+var fileMainPath, fileMain, fileForLoad;
+
+fileMainPath = "~/Downloads/fileMain.scd".standardizePath;
+fileMain = File(fileMainPath, "w");
+fileMain.write("(
+(" ++ "thisProcess.nowExecutingPath in fileMain.scd:".quote + "+ thisProcess.nowExecutingPath).postln;\n
+~test = (thisProcess.nowExecutingPath.dirname +/+" + "fileForLoad.scd".quote ++");\n
+~test.load.function1;\n
+~test.openOS; // because .openDocument only works in SC-IDE\n
+'fileMain.scd tasks finished'.postln;
+)");
+fileMain.close;
+
+fileForLoad = File(fileMainPath.dirname +/+ "fileForLoad.scd", "w");
+fileForLoad << ("(
+" ++ "thisProcess.nowExecutingPath in fileForLoad.scd:".quote + "+ thisProcess.nowExecutingPath).postln;\n(
+function1: {
+(" ++ "thisProcess.nowExecutingPath in the function in fileForFunctions.scd:".quote + "+ thisProcess.nowExecutingPath).postln
+}\n)");
+fileForLoad.close;
+
+fileMainPath.openOS; // because .openDocument only works in SC-IDE\n
+)
+
+/* Usage in command line interfece */
+// Linux:
+sclang '/home/parallels/Downloads/fileMain.scd'
+
+// macOS (/Applications/SuperCollider.app might be changed to properly):
+/Applications/SuperCollider.app/Contents/MacOS/sclang ~/Downloads/fileMain.scd
+
+// Windows (C:\Program Files\SuperCollider_dev\ should be changed to properly):
+"C:\Program Files\SuperCollider_dev\sclang.exe" %userprofile%\Downloads\fileMain.scd
+::
+
+teletype::
+-> /Users/prko/Downloads/fileMain.scd
+thisProcess.nowExecutingPath in fileMain.scd: /Users/prko/Downloads/fileMain.scd
+thisProcess.nowExecutingPath in fileForLoad.scd: /Users/prko/Downloads/fileForLoad.scd
+thisProcess.nowExecutingPath in the function in fileForFunctions.scd: /Users/prko/Downloads/fileMain.scd
+-> thisProcess.nowExecutingPath in the function in fileForFunctions.scd: /Users/prko/Downloads/fileMain.scd
+::
+
+When used in a corouine, such as link::Classes/Routine:: (shortcut: teletype::r::), link::Classes/Function#-fork::,
+link::Classes/Server#-waitForBoot::, link::Classes/Server#-doWhenBooted:: and link::Classes/Task::, link::Classes/CmdPeriod::, link::Classes/ServerBoot:: or link::Classes/ServerTree::, it will return teletype::nil:::
+
+code::
+(
+// CmdPeriod.add {
+// ServerTree.add {
+ServerBoot.add {
+	var path = thisProcess.nowExecutingPath;
+	("\tServerBoot's thisProcess.nowExecutingPath:" + path).postln
+};
+s.reboot
+)
+
+(
+// r {
+Routine {
+	var path = thisProcess.nowExecutingPath;
+	("\tthisProcess.nowExecutingPath in path fork:" + path).postln
+}.()
+)
+
+(
+// s.waitForBoot {
+// s.doWhenBooted {
+fork {
+	var path = thisProcess.nowExecutingPath;
+	("\ts.waitForBoot's thisProcess.nowExecutingPath:" + path).postln
+};
+s.reboot;
+)
+
+(
+Task {
+	var path = thisProcess.nowExecutingPath;
+	("\tTask's thisProcess.nowExecutingPath:" + path).postln
+}.start
+// }.play
+)
+::
 
 method::startup
 
