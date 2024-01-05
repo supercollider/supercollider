@@ -63,25 +63,31 @@ These are helpful for gaining a better grasp of SuperCollider:
 subsection:: Getting Help
 
 table::
-## Basic || Intermediate || Advanced
-## list::
-## link::Guides/How-to-Use-the-Interpreter::
-## link::Guides/Understanding-Errors::
-::
+## strong::Basic::
+
+link::Guides/How-to-Use-the-Interpreter::
+
+link::Guides/Understanding-Errors::
+
 soft:: ::
 
 soft:: ::
+
 ||
-list::
-## link::Guides/Debugging-tips::
-## link::Guides/Tracing-Processes::
-## link::Guides/HID_permissions::
-## link::Guides/LID_permissions::
-::
+strong::Intermediate::
+
+link::Guides/Debugging-tips::
+
+link::Guides/Tracing-Processes::
+
+link::Guides/HID_permissions::
+
+link::Guides/LID_permissions::
 ||
-list::
-## link::Guides/Internal-Snooping::
-::
+strong::Advanced::
+
+link::Guides/Internal-Snooping::
+
 soft:: ::
 
 soft:: ::
@@ -93,28 +99,39 @@ soft:: ::
 subsection:: Language Reference
 
 table::
-## Basic || Intermediate || Advanced
-##list::
-## link::Reference/Comments::
-## link::Reference/Expression-Sequence::
-## link::Guides/Intro-to-Objects::
-## link::Reference/Classes::
-## link::Reference/Messages::
-## link::Guides/Polymorphism::
-## link::Reference/Assignment::
-## link::Reference/Scope::
-## link::Reference/Functions::
-::
+## strong::Basic::
+
+link::Reference/Comments::
+
+link::Reference/Expression-Sequence::
+
+link::Guides/Intro-to-Objects::
+
+link::Reference/Classes::
+
+link::Reference/Messages::
+
+link::Guides/Polymorphism::
+
+link::Reference/Assignment::
+
+link::Reference/Scope::
+
+link::Reference/Functions::
 ||
-list::
-## link::Reference/Control-Structures::
-## link::Reference/Syntax-Shortcuts::
-## link::Overviews/SymbolicNotations::
-## link::Reference/Adverbs::
-## link::Reference/Key-Value-Pairs::
-## link::Reference/Literals::
-::
-soft:: ::
+strong::Intermediate::
+
+link::Reference/Control-Structures::
+
+link::Reference/Syntax-Shortcuts::
+
+link::Overviews/SymbolicNotations::
+
+link::Reference/Adverbs::
+
+link::Reference/Key-Value-Pairs::
+
+link::Reference/Literals::
 
 soft:: ::
 
@@ -122,15 +139,17 @@ soft:: ::
 
 soft:: ::
 ||
-list::
-## link::Reference/Partial-Application::
-## link::Guides/J-concepts-in-SC##Working with Multi-dimensional Arrays::
+strong::Advanced::
 
-link::Guides/J-concepts-in-SC##(J concepts in SC)::
-## link::Guides/ListComprehensions::
-## link::Guides/Tour-of-Special-Functions::
-::
-soft:: ::
+link::Reference/Partial-Application::
+
+link::Guides/J-concepts-in-SC##Working with Multi-dimensional Arrays::
+
+link::Guides/J-concepts-in-SC##  (J concepts in SC)::
+
+link::Guides/ListComprehensions::
+
+link::Guides/Tour-of-Special-Functions::
 
 soft:: ::
 
@@ -145,29 +164,39 @@ soft:: ::
 subsection:: Architecture
 
 table::
-## Basic || Intermediate || Advanced
-## list::
-## link::Guides/ClientVsServer::
-## link::Guides/UGens-and-Synths::
-## link::Guides/NodeMessaging::
-## link::Guides/Multichannel-Expansion::
-## link::Guides/Order-of-execution::
-## link::Reference/default_group::
-::
-||
-list::
-## link::Guides/Server-Guide::
-## link::Reference/Server-Architecture::
-## link::Guides/MultiClient_Setups::
-## link::Tutorials/Server_Tutorial::
-## link::Reference/Server-Command-Reference::
-## link::Guides/ServerTiming::
-::
-||
-list::
-## link::Guides/Bundled-Messages::
-## link::Reference/Synth-Definition-File-Format::
-::
+## strong::Basic::
+
+link::Guides/ClientVsServer::
+
+link::Guides/UGens-and-Synths::
+
+link::Guides/NodeMessaging::
+
+link::Guides/Multichannel-Expansion::
+
+link::Guides/Order-of-execution::
+
+link::Reference/default_group::
+
+|| strong::Intermediate::
+
+link::Guides/Server-Guide::
+
+link::Reference/Server-Architecture::
+
+link::Guides/MultiClient_Setups::
+
+link::Tutorials/Server_Tutorial::
+
+link::Reference/Server-Command-Reference::
+
+link::Guides/ServerTiming::
+|| strong::Advanced::
+
+link::Guides/Bundled-Messages::
+
+link::Reference/Synth-Definition-File-Format::
+
 soft:: ::
 
 soft:: ::
@@ -180,29 +209,38 @@ soft:: ::
 subsection:: Overview
 
 table::
-## Basic || Intermediate || Advanced
-## list::
-## link::Reference/AudioDeviceSelection::
-## link::Guides/Tour_of_UGens::
-## link::Overviews/Operators::
-## link::Overviews/Collections::
-## link::Overviews/GenericCollectors::
-## link::Guides/Randomness::
-::
-||
-list::
-## link::Overviews/Streams::
-## link::Overviews/Event_types::
-## link::Guides/GUI-Introduction::
-## link::Overviews/GUI-Classes::
-## link::Guides/GUI-Layout-Management::
-::
+## strong::Basic::
+
+link::Reference/AudioDeviceSelection::
+
+link::Guides/Tour_of_UGens::
+
+link::Overviews/Operators::
+
+link::Overviews/Collections::
+
+link::Overviews/GenericCollectors::
+
+link::Guides/Randomness::
+|| strong::Intermediate::
+
+link::Overviews/Streams::
+
+link::Overviews/Event_types::
+
+link::Guides/GUI-Introduction::
+
+link::Overviews/GUI-Classes::
+
+link::Guides/GUI-Layout-Management::
+
 soft:: ::
-||
-list::
-## link::Guides/FFT-Overview::
-## link::Guides/Non-Realtime-Synthesis::
-::
+|| strong::Advanced::
+
+link::Guides/FFT-Overview::
+
+link::Guides/Non-Realtime-Synthesis::
+
 soft:: ::
 
 soft:: ::
@@ -216,43 +254,51 @@ soft:: ::
 subsection:: Extending SC
 
 table::
-## Basic || Intermediate || Advanced
-## list::
-## link::Reference/StartupFile::
-## link::Guides/UsingExtensions::
-## link::Guides/UsingQuarks::
-::
+## strong::Basic::
+
+link::Reference/StartupFile::
+
+link::Guides/UsingExtensions::
+
+link::Guides/UsingQuarks::
+
 soft:: ::
-||
-list::
-## link::Guides/WritingClasses::
-## link::Guides/standalones::
-## link::Guides/WritingHelp::
-## link::Reference/SCDocSyntax::
-::
-||
-list::
-## link::Guides/WritingTests::
-## link::Guides/WritingUGens::
-## link::Reference/ServerPluginAPI::
-## link::Guides/WritingPrimitives::
-::
+|| strong::Intermediate::
+
+link::Guides/WritingClasses::
+
+link::Guides/standalones::
+
+link::Guides/WritingHelp::
+
+link::Reference/SCDocSyntax::
+
+|| strong::Advanced::
+
+link::Guides/WritingTests::
+
+link::Guides/WritingUGens::
+
+link::Reference/ServerPluginAPI::
+
+link::Guides/WritingPrimitives::
 ::
 
 
 subsection:: Sharing your work
 
 table::
-## Share Code || Share Music
-## list::
-## http://sccode.org/
-## https://scsynth.org/c/questions/code-review/
-## https://scsynth.org/c/music/code-tennis
-::
-||
-list::
-## https://scsynth.org/c/music
-::
+## strong::Share Code::
+
+http://sccode.org/
+
+https://scsynth.org/c/questions/code-review/
+
+https://scsynth.org/c/music/code-tennis
+|| strong::Share Music::
+
+https://scsynth.org/c/music
+
 soft:: ::
 
 soft:: ::
@@ -261,11 +307,12 @@ soft:: ::
 subsection:: Contributing to SC
 
 table::
-## Developing
-## list::
-## https://scsynth.org/c/development
-## https://github.com/supercollider/supercollider
-::
+## strong::Developing::
+
+https://scsynth.org/c/development
+
+https://github.com/supercollider/supercollider
+
 ::
 
 subsection:: For more information
