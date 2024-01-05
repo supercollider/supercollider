@@ -2,46 +2,15 @@ TITLE::Help
 summary::Documentation home
 categories::Help
 
+SuperCollider is an audio server, programming language, and IDE for sound synthesis and algorithmic composition.
+
 NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
-
-SECTION:: An introductory overview
-
-emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can be installed and run on link::https://supercollider.github.io/downloads.html#linux#Linux::,
-link::https://supercollider.github.io/downloads.html#mac#macOS:: and
-link::https://supercollider.github.io/downloads.html#windows#Windows::,
-as well as microcomputers such as
-link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pi:: and
-link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
-emphasis::SuperCollider:: link::https://www.audiosynth.com##was originally developed:: by James McCartney and link::https://supercollider.github.io/##is now distributed:: as Free Software under the GNU General Public License. It link::https://github.com/supercollider/supercollider##is maintained and developed :: by an active and enthusiastic community.
-
-emphasis::SuperCollider:: consists of three main components:
-
+SECTION::Search and browse
 definitionlist::
-## soft:: ::• soft:: ::link::Classes/Server:: – a real-time audio engine.||
-The default server is link::Classes/Server#Switching the server application#scsynth::. To take full advantage of multi-core, an alternative sound engine, link::Classes/Server#Switching the server application#supernova::, can be used.
-
-## soft:: ::• soft:: ::Client soft:: ::– sclang, a text-based programming language and interpreter. ||
-
-emphasis::sclang:: controls audio synthesis processes on the server and offers an interactive programming environment for link::Overviews/JITLib##live coding::, an extensive library for creating link::Tutorials/A-Practical-Guide/PG_01_Introduction##patterns:: and a library of link::Classes/Scale##scales and modes:: from various cultures.
-Creating link::Tutorials/Getting-Started/15-Sequencing-with-Routines-and-Tasks##processes:: that unfold over time is straightforward in emphasis::sclang::.
-It also provides all the essential features of a graphical user interface (link::Guides/GUI-Introduction##GUI::) that can be used to create custom user interfaces, data visualization, and animations.
-With support for
-link::Guides/UsingMIDI##MIDI::,
-link::Guides/OSC_communication##OSC::,
-link::Guides/Working_with_HID##HID::, and
-link::Classes/SerialPort##Serial Port::,
-emphasis::sclang:: can be easily interfaced with local and networked hardware and software.
-
-## soft:: ::• soft:: ::link::Classes/ScIDE:: soft:: ::– a dedicated editor for SuperCollider with an integrated help system.||
-The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::) allows you to start writing code right out of the box. Community members also maintain sclang integration with other popular IDEs. The full list of support editors is available at  link::https://github.com/supercollider/supercollider/wiki/Systems-interfacing-with-SC#editors::
+## link::Search:: || Search all documents and methods
+## link::Browse:: || Browse all documents by categories
 ::
-
-The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::
-), allowing SuperCollider to run on a single machine or on link::Guides/MultiClient_Setups##multiple machines:: over a network. Users can also control the audio server directly with any OSC-enabled program by using the link::Guides/NodeMessaging:: protocol.
-
-An extensive library of Unit Generators—the building blocks of audio synthesis networks—are included with SuperCollider. Users may optionally extend this core library with the link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: suite of UGens. Additionally, there are many of user-developed language extensions, called link::Classes/Quarks::, to further extend the functionality of SuperCollider. Quarks can be browsed in the link::https://baryon.supercollider.online/##Baryon:: index, or in the distribution link::https://github.com/supercollider-quarks/quarks##repository:: where users can submit their own Quarks for distribution.
-
 
 SECTION::Getting started
 
@@ -50,279 +19,20 @@ These are useful starting points for getting help on SuperCollider:
 definitionlist::
 ## link::Tutorials/Getting-Started/00-Getting-Started-With-SC##Getting Started tutorial series:: || Get started with SuperCollider
 ## link::Guides/Glossary:: || Glossary
+## link::Guides/ClientVsServer:: || Explaining the client vs server architecture
 ## link::Guides/More-On-Getting-Help:: || How to find more help
 ## link::Browse.html#Tutorials#All tutorials:: || Index of all help files categorized under "Tutorials"
 ## link::Guides/UserFAQ:: || Common Errors and FAQ
 ::
 
+SECTION::Documentation indexes
 
-SECTION:: Diving deeper
-
-These are helpful for gaining a better grasp of SuperCollider:
-
-subsection:: Getting Help
-
-table::
-## strong::Basic::
-
-link::Guides/How-to-Use-the-Interpreter::
-
-link::Guides/Understanding-Errors::
-
-soft:: ::
-
-soft:: ::
-
-||
-strong::Intermediate::
-
-link::Guides/Debugging-tips::
-
-link::Guides/Tracing-Processes::
-
-link::Guides/HID_permissions::
-
-link::Guides/LID_permissions::
-||
-strong::Advanced::
-
-link::Guides/Internal-Snooping::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
+definitionlist::
+## link::Overviews/Documents:: || Alphabetical index of all documents
+## link::Overviews/Classes:: || Alphabetical index of all classes
+## link::Overviews/ClassTree:: || All classes by inheritance tree
+## link::Overviews/Methods:: || Alphabetical index of all methods
 ::
-
-
-subsection:: Language Reference
-
-table::
-## strong::Basic::
-
-link::Reference/Comments::
-
-link::Reference/Expression-Sequence::
-
-link::Guides/Intro-to-Objects::
-
-link::Reference/Classes::
-
-link::Reference/Messages::
-
-link::Guides/Polymorphism::
-
-link::Reference/Assignment::
-
-link::Reference/Scope::
-
-link::Reference/Functions::
-||
-strong::Intermediate::
-
-link::Reference/Control-Structures::
-
-link::Reference/Syntax-Shortcuts::
-
-link::Overviews/SymbolicNotations::
-
-link::Reference/Adverbs::
-
-link::Reference/Key-Value-Pairs::
-
-link::Reference/Literals::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-||
-strong::Advanced::
-
-link::Reference/Partial-Application::
-
-link::Guides/J-concepts-in-SC##Working with Multi-dimensional Arrays::
-
-link::Guides/J-concepts-in-SC##  (J concepts in SC)::
-
-link::Guides/ListComprehensions::
-
-link::Guides/Tour-of-Special-Functions::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
-::
-
-subsection:: Architecture
-
-table::
-## strong::Basic::
-
-link::Guides/ClientVsServer::
-
-link::Guides/UGens-and-Synths::
-
-link::Guides/NodeMessaging::
-
-link::Guides/Multichannel-Expansion::
-
-link::Guides/Order-of-execution::
-
-link::Reference/default_group::
-
-|| strong::Intermediate::
-
-link::Guides/Server-Guide::
-
-link::Reference/Server-Architecture::
-
-link::Guides/MultiClient_Setups::
-
-link::Tutorials/Server_Tutorial::
-
-link::Reference/Server-Command-Reference::
-
-link::Guides/ServerTiming::
-|| strong::Advanced::
-
-link::Guides/Bundled-Messages::
-
-link::Reference/Synth-Definition-File-Format::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-::
-
-subsection:: Overview
-
-table::
-## strong::Basic::
-
-link::Reference/AudioDeviceSelection::
-
-link::Guides/Tour_of_UGens::
-
-link::Overviews/Operators::
-
-link::Overviews/Collections::
-
-link::Overviews/GenericCollectors::
-
-link::Guides/Randomness::
-|| strong::Intermediate::
-
-link::Overviews/Streams::
-
-link::Overviews/Event_types::
-
-link::Guides/GUI-Introduction::
-
-link::Overviews/GUI-Classes::
-
-link::Guides/GUI-Layout-Management::
-
-soft:: ::
-|| strong::Advanced::
-
-link::Guides/FFT-Overview::
-
-link::Guides/Non-Realtime-Synthesis::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-
-soft:: ::
-::
-
-
-subsection:: Extending SC
-
-table::
-## strong::Basic::
-
-link::Reference/StartupFile::
-
-link::Guides/UsingExtensions::
-
-link::Guides/UsingQuarks::
-
-soft:: ::
-|| strong::Intermediate::
-
-link::Guides/WritingClasses::
-
-link::Guides/standalones::
-
-link::Guides/WritingHelp::
-
-link::Reference/SCDocSyntax::
-
-|| strong::Advanced::
-
-link::Guides/WritingTests::
-
-link::Guides/WritingUGens::
-
-link::Reference/ServerPluginAPI::
-
-link::Guides/WritingPrimitives::
-::
-
-
-subsection:: Sharing your work
-
-table::
-## strong::Share Code::
-
-http://sccode.org/
-
-https://scsynth.org/c/questions/code-review/
-
-https://scsynth.org/c/music/code-tennis
-|| strong::Share Music::
-
-https://scsynth.org/c/music
-
-soft:: ::
-
-soft:: ::
-::
-
-subsection:: Contributing to SC
-
-table::
-## strong::Developing::
-
-https://scsynth.org/c/development
-
-https://github.com/supercollider/supercollider
-
-::
-
-subsection:: For more information
-
-link:: https://github.com/supercollider/supercollider/wiki::
-
-
-
-
-
 
 SECTION::Licensing
 
