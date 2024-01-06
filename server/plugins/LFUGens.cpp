@@ -3200,20 +3200,15 @@ void IEnvGen_Ctor(IEnvGen* unit) {
         SETCALC(IEnvGen_next_k);
     }
 
-    // pointer, offset
-    // initlevel, numstages, totaldur,
-    // [dur, shape, curve, level] * numvals
     int numStages = (int)IN0(3);
     int numvals = numStages * 4; // initlevel + (levels, dur, shape, curves) * stages
     unit->m_envvals = (float*)RTAlloc(unit->mWorld, (int)(numvals + 1.) * sizeof(float));
     ClearUnitIfMemFailed(unit->m_envvals);
 
+    // fill m_envvals with the values
     unit->m_envvals[0] = IN0(2);
-    //  Print("offset of and initial  values %3,3f, %3.3f\n", offset, unit->m_envvals[0]);
-    // fill m_envvals with the values;
     for (int i = 1; i <= numvals; i++) {
         unit->m_envvals[i] = IN0(4 + i);
-        //      Print("val for: %d, %3.3f\n", i, unit->m_envvals[i]);
     }
 
     unit->m_offset = IN0(1);
@@ -3221,8 +3216,8 @@ void IEnvGen_Ctor(IEnvGen* unit) {
     unit->m_level = uninitializedControl; // will be set in next_k
 
     IEnvGen_next_k(unit, 1);
-
-    unit->m_pointin = uninitializedControl; // trigger calculation in next_x
+    // No need to reset internal state: the output depends only on pointin, which doesn't
+    // change between initialization and the `next_` call. So the cached m_level is valid.
 }
 
 void IEnvGen_Dtor(IEnvGen* unit) { RTFree(unit->mWorld, unit->m_envvals); }
@@ -3234,14 +3229,10 @@ void IEnvGen_next_a(IEnvGen* unit, int inNumSamples) {
     float* pointin = IN(0);
     float offset = unit->m_offset;
     int numStages = (int)IN0(3);
-    float point; // = unit->m_pointin;
-
     float totalDur = IN0(4);
 
+    float point;
     int stagemul;
-    // pointer, offset
-    // level0, numstages, totaldur,
-    // [initval, [dur, shape, curve, level] * N ]
 
     for (int i = 0; i < inNumSamples; i++) {
         if (pointin[i] == unit->m_pointin) {
@@ -3287,14 +3278,10 @@ void IEnvGen_next_k(IEnvGen* unit, int inNumSamples) {
     float pointin = IN0(0);
     float offset = unit->m_offset;
     int numStages = (int)IN0(3);
-    float point; // = unit->m_pointin;
-
     float totalDur = IN0(4);
 
+    float point;
     int stagemul;
-    // pointer, offset
-    // level0, numstages, totaldur,
-    // [initval, [dur, shape, curve, level] * N ]
 
     for (int i = 0; i < inNumSamples; i++) {
         if (pointin == unit->m_pointin) {
