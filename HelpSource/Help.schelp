@@ -7,9 +7,7 @@ NOTE:: link::Guides/News-3_13##News in SuperCollider version 3.13:: ::
 
 SECTION:: An introductory overview
 
-emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can be installed and run on link::https://supercollider.github.io/downloads.html#linux#Linux::,
-link::https://supercollider.github.io/downloads.html#mac#macOS:: and
-link::https://supercollider.github.io/downloads.html#windows#Windows::,
+emphasis::SuperCollider:: is a cross-platform environment for audio synthesis and algorithmic composition used by musicians, artists and researchers working with sound. It can be link::https://supercollider.github.io/downloads.html##installed:: and run on Linux, macOS and Windows,
 as well as microcomputers such as
 link::https://github.com/supercollider/supercollider/blob/develop/README_RASPBERRY_PI.md##Raspberry Pi:: and
 link::https://github.com/supercollider/supercollider/blob/develop/README_BEAGLEBONE_BLACK.md##BeagleBone Black::.
@@ -40,7 +38,7 @@ The SuperCollider Integrated Development Environment (link::Guides/SCIde##IDE::)
 The server and client link::Guides/ClientVsServer##communicate:: via Open Sound Control (link::http://opensoundcontrol.org/##OSC::
 ), allowing SuperCollider to run on a single machine or on link::Guides/MultiClient_Setups##multiple machines:: over a network. Users can also control the audio server directly with any OSC-enabled program by using the link::Guides/NodeMessaging:: protocol.
 
-An extensive library of Unit Generators—the building blocks of audio synthesis networks—are included with SuperCollider. Users may optionally extend this core library with the link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: suite of UGens. Additionally, there are many of user-developed language extensions, called link::Classes/Quarks::, to further extend the functionality of SuperCollider. Quarks can be browsed in the link::https://baryon.supercollider.online/##Baryon:: index, or in the distribution link::https://github.com/supercollider-quarks/quarks##repository:: where users can submit their own Quarks for distribution.
+An extensive library of Unit Generators—the building blocks of audio synthesis networks—are included with SuperCollider. Users may optionally extend this core library with the link::https://github.com/supercollider/sc3-plugins##sc3-plugins:: suite of UGens. Additionally, there are many of user-developed language extensions, called link::Classes/Quarks::, to further extend the functionality of SuperCollider. Quarks can be browsed in the distribution link::https://github.com/supercollider-quarks/quarks##repository:: where users can submit their own Quarks for distribution.
 
 
 SECTION::Getting started
