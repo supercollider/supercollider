@@ -790,7 +790,7 @@ void RandID_Ctor(RandID* unit) {
 
 void RandID_next(RandID* unit, int inNumSamples) {
     float id = ZIN0(0);
-    bool fire = ZIN0(1) > 0;
+    bool fire = unit->mNumInputs >= 2 && (ZIN0(1) > 0.f);
 
     if (id != unit->m_id) {
         unit->m_id = id;
