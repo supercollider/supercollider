@@ -208,9 +208,6 @@ InFeedback : AbstractIn {
 		^this.multiNew('audio', numChannels, bus)
 	}
 	init { arg numChannels ... argBus;
-		numChannels.isNumber.or {
-			Error("InFeedback: numChannels not a number").throw;
-		};
 		inputs = argBus.asArray;
 		^this.initOutputs(numChannels, rate)
 	}
