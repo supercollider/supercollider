@@ -30,8 +30,7 @@ It therefore gives a kind of measure of "purity" of the pitched signal.
 
 Using a code::peakThreshold:: of one half does a pretty good job of eliminating overtones, and finding the first peak above that threshold rather than the absolute maximum peak does a good job of eliminating estimates that are actually multiple periods of the wave.
 
-The autocorrelation is done coarsely at first using a maximum of code::maxBinsPerOctave:: lags until the peak is located. Then a fine resolution search is performed until the peak is found. (Note that maxBinsPerOctave does NOT affect the final pitch resolution; a fine resolution search is always performed.
-	Setting maxBinsPerOctave larger will cause the coarse search to take longer, and setting it smaller will cause the fine search to take longer.)
+The autocorrelation is done coarsely at first using a maximum of code::maxBinsPerOctave:: lags until the peak is located. Then a fine resolution search is performed until the peak is found. (Note that maxBinsPerOctave does NOT affect the final pitch resolution; a fine resolution search is always performed. Setting maxBinsPerOctave larger will cause the coarse search to take longer, and setting it smaller will cause the fine search to take longer.)
 
 The three values around the peak are used to find a fractional lag value for the pitch. If the pitch frequency is higher than code::maxFreq::, or if no peak is found above code::minFreq::, then code::hasFreq:: is set to zero and code::freq:: is held at its previous value.
 
