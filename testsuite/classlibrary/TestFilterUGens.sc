@@ -170,4 +170,38 @@ TestFilterUGens : UnitTest {
 		this.assertEquals(result, 1, "Integral of a single 1 should be 1");
 	}
 
+	test_ugen_generator_equivalences {
+		var condvar = CondVar();
+		var completed = 0;
+
+		// These functions should generate an output of zeros, by subracting "equivalent"
+		// UGen networks. The tolerance var allows for floating point error.
+		var tolerance = -100.dbamp;
+		var testDur = 0.1; // duration rendered for each test
+
+		var tests = Dictionary[
+
+			"Decay2 is the difference of two Decays" -> {
+				var att = 0.001, dec = 0.01;
+				var in = Impulse.ar(30);
+				Decay2.ar(in, att, dec) - (Decay.ar(in, dec) - Decay.ar(in, att));
+			},
+
+			// Add more equivalence tests here. See TestCoreUGens:test_ugen_generator_equivalences
+		];
+
+		server.bootSync;
+
+		tests.keysValuesDo{ |name, func|
+			func.loadToFloatArray(testDur, server, { |data|
+				this.assertArrayFloatEquals(data, 0, name.quote, within: tolerance, report: true);
+				completed = completed + 1;
+				condvar.signalOne;
+			});
+			20.reciprocal.wait;
+		};
+
+		condvar.waitFor(1, { completed == tests.size });
+	}
+
 }
