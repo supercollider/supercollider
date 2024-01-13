@@ -22,3 +22,6 @@ returns:: The constructed ServerStatusWatcher.
 
 INSTANCEMETHODS::
 private:: prSendNotifyRequest, prFinalizeBoot
+
+METHOD:: doWhenBooted
+Evaluate "onComplete" if the server is already running.  The "onComplete" and "onFailure" functions are played in AppClocks.
