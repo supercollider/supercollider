@@ -577,7 +577,8 @@ MultiOutUGen : UGen {
 
 	initOutputs { arg numChannels, rate;
 		if(numChannels.isInteger.not or: { numChannels < 1 }, {
-			Error("%: numChannels must be nonzero positive integer (%)".format(this, numChannels)).throw
+			Error("%: numChannels must be a nonzero positive integer, but received (%)."
+              .format(this, numChannels)).throw
 		});
 		channels = Array.fill(numChannels, { arg i;
 			OutputProxy(rate, this, i);
