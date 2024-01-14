@@ -228,7 +228,7 @@ method:: wait
 this can be used within a link::Classes/Routine:: to wait for a server reply
 
 method:: waitForBoot
-Evaluate "onComplete" as soon as the server has booted. This method will boot the server for you if it is not already running or booting. If the server is already running, "onComplete" is executed immediately. The "onComplete" and "onFailure" functions are played in AppClocks.
+Evaluate "onComplete" as soon as the server has booted. This method will boot the server for you if it is not already running or booting. If the server is already running, "onComplete" is executed immediately. The "onComplete" and "onFailure" functions are played in the link::Classes/AppClock::.
 argument:: onComplete
 A function to evaluate after the server has booted successfully.
 argument:: limit
@@ -237,7 +237,7 @@ argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
 
 method:: doWhenBooted
-Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately. The "onComplete" and "onFailure" functions are played in AppClocks.
+Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately. The "onComplete" and "onFailure" functions are played in the link::Classes/AppClock::.
 argument:: onComplete
 A function to evaluate after the server has booted successfully.
 argument:: limit
