@@ -47,7 +47,9 @@ SplayAz : UGen {
 	*ar { arg numChans = 4, inArray, spread = 1, level = 1, width = 2, center = 0.0, orientation = 0.5, levelComp = true;
 
 		var n = max(1, inArray.size);
-		var pos = if(n == 1) { center } { [ center - spread, center + spread ].resamp1(n) };
+		var normalizedSpread = spread * (n - 1 / n);
+		var pos = if(n == 1) { center } { [ center - normalizedSpread, center + normalizedSpread ].resamp1(n) };
+
 		if (levelComp) { level = level * n.reciprocal.sqrt };
 		^PanAz.ar(numChans, inArray.asArray, pos, level, width, orientation).flop.collect(Mix(_))
 	}
