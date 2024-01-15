@@ -1,5 +1,5 @@
 title:: How to control midi events using patterns
-categories:: Midi, Streams-Events-Patterns
+categories:: External Control>MIDI, Streams-Patterns-Events
 summary:: An overview of midi commands and how to use them with Pbind, etc.
 
 This document is a brief overview of some commonly used midi commands
