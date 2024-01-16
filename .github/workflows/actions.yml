@@ -16,7 +16,7 @@ on:
     - cron:  '0 0 * * 0' # run weekly to refresh cache
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       sc-version: ${{ steps.set-version.outputs.version }}
     steps:
@@ -29,9 +29,9 @@ jobs:
           lintspaces -e .editorconfig SCClassLibrary/**/*.sc || true # ignore failure
       - name: lint cpp files
         run: |
-          sudo apt-get install -y clang-format-8
+          sudo apt-get install -y clang-format-14
           echo "Running tools/clang-format.py lintall"
-          tools/clang-format.py -c clang-format-8 -d clang-format-diff-8 lintall || exit 1
+          tools/clang-format.py -c clang-format-14 -d clang-format-diff-14 lintall || exit 1
           echo "Lint successful"
       - name: set version string for artifacts
         id: set-version
