@@ -129,7 +129,9 @@ int main(int argc, char* argv[]) {
         sessions->newSession();
     }
 
-    foreach (QString argument, arguments) { main->documentManager()->open(argument); }
+    foreach (QString argument, arguments) {
+        main->documentManager()->open(argument);
+    }
 
     win->restoreDocuments();
 
