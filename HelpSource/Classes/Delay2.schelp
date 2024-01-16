@@ -1,12 +1,12 @@
 class:: Delay2
 summary:: Two sample delay.
-related:: Classes/Delay1
+related:: Classes/Delay1, Classes/TDelay
 categories::  UGens>Delays
 
 
 Description::
 
-Delays the input by 2 samples.
+Delays the input by two samples.
 
 
 classmethods::
@@ -22,16 +22,51 @@ Output will be multiplied by this value.
 argument::add
 This value will be added to the output.
 
+argument::x1
+The sample value previous to the first sample of strong::in::. This will be the value of the second output sample.
+
+argument::x2
+The value that is two samples previous to the first sample of strong::in::. This will be the value of the first output sample.
+
+Both strong::x1:: and strong::x2:: are a non-modulatable numeric value (or a code::UGen::), or code::nil::, in which case it will be set to the first sample of strong::in::, i.e. the first sample will be repeated.
+
+note::
+For audio-rate signals strong::x1:: and strong::x2:: default to code::0.0::. For control-rate signals, the default for both is code::nil::.
+::
+
+discussion::
+For audio-rate signals the delay is two audio frames, and for control-rate signals the delay is two control periods.
+
+Why do strong::x1:: and strong::x2:: have different defaults at different rates? At audio-rate, the model followed is one of "analog" delay, i.e. the input signal is preceded by silence. At control-rate, the signal is presumed to be a control signal, so leading with a zero is less appropriate (e.g. when used as a frequency control).
+
 Examples::
 
 code::
 
 (
-plot({
-	var z;
-	z = Dust.ar(1000);
-	[z, z - Delay2.ar(z)] 	// [ original, subtract delayed from original ]
-}))
+{
+	var z = Dust.ar(1000);
+    // [ original, subtract delayed from original ]
+	[z, z - Delay2.ar(z)]
+}.plot(0.01)
+)
+
+// Make a delayed sine wave continuous using the x1 and x2 arguments
+(
+{
+    var freq = 1000;
+    var phaseStep = 2pi * freq / s.sampleRate;
+    var sine = SinOsc.ar(freq);
+    [
+        // default: silence before delay
+        Delay2.ar(sine),
+        // reconstruct predelay samples
+        Delay2.ar(sine,
+            x1: phaseStep.sin.neg,
+            x2: (2 * phaseStep).sin.neg
+        )
+    ]
+}.plot(0.001).plotMode_(\points)
+)
 
 ::
-
