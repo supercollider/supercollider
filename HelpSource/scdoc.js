@@ -190,6 +190,39 @@ function fixTOC() {
         });
     });
 
+    // if served via web, show theme switcher
+    // within IDE use the theme settings of the IDE to control the docs theme
+    if(window.location.protocol.startsWith("http")) {
+        create_menubar_item("Theme \u25bc", "#", function (a, li) {
+            var indexes_menu = $("<div>", {class: "submenu"}).hide()
+                .appendTo(li);
+
+            var nav_items = ["classic", "dark", "default", "dracula", "solarizedDark", "solarizedLight"];
+            nav_items.forEach(function (item) {
+                var themeLink = $("<a>", {
+                    text: item,
+                    href: "#"
+                });
+                themeLink.on("click", (e) => {
+                    setTheme(e.target.text);
+                    location.reload();
+                });
+                themeLink.appendTo(indexes_menu);
+            });
+
+            a.on("click", function (e) {
+                e.preventDefault();
+                indexes_menu.toggle();
+            });
+
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest(li).length) {
+                    indexes_menu.hide();
+                }
+            });
+        });
+    }
+
     if ($("#toc").length) {
         set_up_toc();
     }

@@ -6,7 +6,7 @@ textarea.editor {
     height: auto;
     padding: 0 1em;
     margin-top: 1em;
-    border-left: 2px solid #e1e1e1;
+    border-left: 2px solid var(--sc-neutral-lighter);
     font-size: 1em;
     line-height: normal;
 }
@@ -20,20 +20,21 @@ textarea.editor {
 .CodeMirror-line::selection,
 .CodeMirror-line > span::selection,
 .CodeMirror-line > span > span::selection { 
-    background: rgba(248, 162, 0, 0.5) !important;
+    /* the default IDE uses blue as a selection cover  */
+    background: var(--cm-selection-color) !important;
 }
 
 @keyframes text-flash {
     0% { 
-        background: rgba(248, 162, 0, 0);
+        background: rgba(0, 0, 0, 0);
         color: black;
     }
     40% { 
-        background: rgba(248, 162, 0, 1); 
+        background: var(--cm-selection-color); 
         color: black,
     }
     100% { 
-        background: rgba(248, 162, 0, 0); 
+        background: rgba(0, 0, 0, 0); 
         color: black;
     }
 }
@@ -43,19 +44,22 @@ textarea.editor {
 }
 
 /* syntax hightlighting */
-.cm-s-default .cm-keyword { color: #0000e6; font-weight: bold; }
-.cm-s-default .cm-built-in { color: #3333bf; }
-.cm-s-default .cm-number { color: #980099; }
-.cm-s-default .cm-symbol { color: #007300; }
-.cm-s-default .cm-class { color: #0000d2; }
-.cm-s-default .cm-primitive { color: #0000d2; }
-.cm-s-default .cm-char { color: #007300; }
-.cm-s-default .cm-env-var { color: #8c4614; }
-.cm-s-default .cm-comment { color: #bf0000; }
-.cm-s-default .cm-string { color: #5f5f5f; }
-.cm-s-default .cm-text { color: #000000; }
+/* keyword can be "var" which is like the class color in the IDE */
+.cm-s-default .cm-keyword { color: var(--cm-class-color); font-weight: bold; }
+.cm-s-default .cm-built-in { color: var(--cm-built-in-color); }
+.cm-s-default .cm-number { color: var(--cm-number-color); }
+.cm-s-default .cm-symbol { color: var(--cm-symbol-color); }
+.cm-s-default .cm-class { color: var(--cm-class-color); }
+.cm-s-default .cm-primitive { color: var(--cm-primitive-color); }
+.cm-s-default .cm-char { color: var(--cm-char-color); }
+.cm-s-default .cm-env-var { color: var(--cm-env-var-color); }
+/* used to be red */
+.cm-s-default .cm-comment { color: var(--cm-comment-color); }
+.cm-s-default .cm-string { color: var(--cm-string-color); }
+.cm-s-default .cm-text { color: var(--cm-text-color); }
 
 @media print {
+    /* legacy colors */
     .cm-s-default .cm-keyword { color: #0000e6; font-weight: bold; }
     .cm-s-default .cm-built-in { color: #3333bf; font-weight: bold; }
     .cm-s-default .cm-number { color: #980099; }

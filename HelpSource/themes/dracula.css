@@ -1,0 +1,36 @@
+:root {
+    /* editor colors */
+    --cm-background-color: #282a36;
+    --cm-border-color: #e1e1e1;
+    --cm-selection-color: #e0eeff;
+    --cm-keyword-color: #ff76c7;
+    --cm-built-in-color: #e2e37a;
+    --cm-number-color: #be90fc;
+    --cm-symbol-color: #45fc75;
+    --cm-class-color: #65e5ff;
+    --cm-primitive-color: #aaff7f;
+    --cm-char-color: #ff55ff;
+    --cm-env-var-color: #ffb965;
+    --cm-comment-color: #5df884;
+    --cm-string-color: #5df884;
+    --cm-text-color: #f7fdff;
+
+    /* derived colors
+    in future use `color-mix` to calculate them which allows for fewer variables
+    but currently the qt browser does not support it, see
+    https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-mix
+    */
+    --sc-bg-color: var(--cm-background-color);
+    --sc-bg-warning: #555;
+
+    --sc-text-color: var(--cm-text-color);
+    --sc-text-warning: var(--cm-keyword-color);
+    --sc-text-color-lighter: #ccc;
+
+    --sc-tertiary: var(--cm-built-in-color);
+
+    --sc-neutral: #aaa;
+    --sc-neutral-darker: #ccc;
+    --sc-neutral-lighter: #555;
+    --sc-link-color: var(--cm-string-color);
+}
