@@ -348,6 +348,7 @@ if(APPLE)
     target_link_libraries( libscide PUBLIC "-framework Cocoa" )
 elseif(WIN32)
     target_link_libraries( libscide PUBLIC wsock32 )
+    target_compile_definitions( libscide PUBLIC UNICODE _UNICODE)
     # The following prevents a Windows console from showing up
     # when the executable is started:
     set_target_properties( SuperCollider PROPERTIES WIN32_EXECUTABLE TRUE )

@@ -288,11 +288,11 @@ static bool PlugIn_Load(const bfs::path& filename) {
     // because the native encoding on Windows is utf-16.
     const std::string filename_utf8_str = SC_Codecvt::path_to_utf8_str(filename);
     if (!hinstance) {
-        char* s;
+        wchar_t* s;
         DWORD lastErr = GetLastError();
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
-        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(), s);
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, lastErr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
+        scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(), win32_WcharToChar(s).get());
         LocalFree(s);
         return false;
     }
@@ -311,10 +311,10 @@ static bool PlugIn_Load(const bfs::path& filename) {
 
     void* ptr = (void*)GetProcAddress(hinstance, "load");
     if (!ptr) {
-        char* s;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL,
-                      GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL);
-        scprintf("*** ERROR: GetProcAddress err '%s'\n", s);
+        wchar_t* s;
+        FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (wchar_t*)&s, 0, NULL);
+        scprintf("*** ERROR: GetProcAddress err '%s'\n", win32_WcharToChar(s).get());
         LocalFree(s);
 
         FreeLibrary(hinstance);
