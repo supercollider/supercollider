@@ -10,7 +10,7 @@ classmethods::
 method:: ar
 
 argument:: numChannels
-number of channels. This cannot be assigned to a SynthDef argument and must be a fixed nonzero positive integer value.
+number of channels. Must be a nonzero, positive integer. This is fixed when the SynthDef is compiled so cannot be assigned to a SynthDef argument.
 
 argument:: bufnum
 buffer number
