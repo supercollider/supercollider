@@ -236,76 +236,10 @@ The number of times to check for a successful boot. (5 times/sec)
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.waitForBoot(onFailure: { ... custom action...; false })::.
 argument:: clock
-The default link::Classes/Clock:: is link::Classes/AppClock::. link::Classes/SystemClock:: and link::Classes/TempoClock:: can be used alternatively.
-discussion::
-code::
-/* example 1a: using the default clock (AppClock) */
-(
-s.waitForBoot {
-	Window.closeAll;
-	fork {
-		600.do { |i|
-			{ w = Window().background_(Color.rand).front }.defer;
-			i = if (i % 4 == 0) { 12 } { 0 }.postln;
-			x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-			1.wait;
-			{ w.close }.defer
-		}
-	}
-}
-)
-::
-code::
-/* example 1b: using the default clock (AppClock) */
-(
-s.waitForBoot({
-	Window.closeAll;
-	fork {
-		600.do { |i|
-			{ w = Window().background_(Color.rand).front }.defer;
-			i = if (i % 4 == 0) { 12 } { 0 }.postln;
-			x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-			1.wait;
-			{ w.close }.defer
-		}
-	}
-})
-)
-::
-code::
-/* example 2: using the SystemClock */
-(
-s.waitForBoot({
-	{ Window.closeAll }.defer;
-	600.do { |i|
-		{ w = Window().background_(Color.rand).front }.defer;
-		i = if (i % 4 == 0) { 12 } { 0 }.postln;
-		x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-		1.wait;
-		{ w.close }.defer
-	}
-}, clock: SystemClock)
-)
-::
-code::
-/* example 3: using the TempoClock */
-(
-~tempo = TempoClock;
-~tempo.tempo = 1;
-s.waitForBoot({
-	{ Window.closeAll }.defer;
-	600.do { |i|
-		{ w = Window().background_(Color.rand).front }.defer;
-		i = if (i % 4 == 0) { 12 } { 0 }.postln;
-		x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-		1.wait;
-		{ w.close }.defer
-	}
-}, clock:~tempo)
-)
-~tempo.tempo = 30/60
-::
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
 
+discussion::
+Refer to the discussion of link::#-doWhenBooted::.
 
 method:: doWhenBooted
 Evaluate "onComplete" as soon as the server has booted. This method assumes the server is being booted explicitly through a separate code::boot:: call. If the server is already running, "onComplete" is executed immediately.
@@ -316,74 +250,45 @@ The number of times to check for a successful boot.
 argument:: onFailure
 A function to evaluate after the server fails to boot. If onFailure is not given, an error message is posted. Providing a function suppresses the error message. If you want to supply a function and print the normal error message, make sure that your function returns "false," e.g. code::s.doWhenBooted(onFailure: { ... custom action...; false })::.
 argument:: clock
-The default link::Classes/Clock:: is link::Classes/AppClock::. link::Classes/SystemClock:: and link::Classes/TempoClock:: can be used alternatively.
+The default link::Classes/Clock:: is link::Classes/AppClock::. Use link::Classes/SystemClock:: or link::Classes/TempoClock:: if time accuracy is important.
 
 discussion::
+When using the default clock of code::.waitForBoot:: and code::.doWhenBooted::, the pair of braces surrounding the curly bracket can be omitted:
+
 code::
-/* example 1a: using the default clock (AppClock) */
-(
-s.doWhenBooted {
-	Window.closeAll;
-	fork {
-		600.do { |i|
-			{ w = Window().background_(Color.rand).front }.defer;
-			i = if (i % 4 == 0) { 12 } { 0 }.postln;
-			x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-			1.wait;
-			{ w.close }.defer
-		}
-	}
-}
-)
+s.waitForBoot({ ... })
+s.doWhenBooted { ... }
 ::
+
+To play sound or music with more precise time control, the fourth argument clock should be set, and then link::Overviews/GUI-Classes##GUI classes:: should be used via code::defer:: as in the form of a function by enclosing it with a pair of curly braces.
+
 code::
-/* example 1b: using the default clock (AppClock) */
-(
-s.doWhenBooted({
-	Window.closeAll;
-	fork {
-		600.do { |i|
-			{ w = Window().background_(Color.rand).front }.defer;
-			i = if (i % 4 == 0) { 12 } { 0 }.postln;
-			x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-			1.wait;
-			{ w.close }.defer
-		}
-	}
-})
-)
-::
-code::
-/* example 2: using the SystemClock */
-(
-s.doWhenBooted({
-	{ Window.closeAll }.defer;
-	600.do { |i|
-		{ w = Window().background_(Color.rand).front }.defer;
-		i = if (i % 4 == 0) { 12 } { 0 }.postln;
-		x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-		1.wait;
-		{ w.close }.defer
-	}
-}, clock: SystemClock)
-)
-::
-code::
-/* example 3: using the TempoClock */
 (
 ~tempo = TempoClock;
 ~tempo.tempo = 1;
-s.doWhenBooted({
-	{ Window.closeAll }.defer;
-	600.do { |i|
-		{ w = Window().background_(Color.rand).front }.defer;
-		i = if (i % 4 == 0) { 12 } { 0 }.postln;
-		x = { SinOsc.ar((81 + i).midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1] }.play;
-		1.wait;
-		{ w.close }.defer
+
+// s.doWhenBooted ({
+// s.boot should be evaluated separately when using s.doWhenbooted.
+s.waitForBoot ({
+	var win, routine;
+	defer {
+		win = Window();
+		win.background_(Color.grey(0, 0)).onClose_{ routine.stop }.front;
+	};
+	routine = fork {
+		9.do { |i|
+			1.wait;
+			{ win.background_(Color.rand) }.defer;
+			i = if (i % 4 == 0) { 93 } { 81 };
+			x = {
+				SinOsc.ar(i.midicps) * Env.perc.ar(Done.freeSelf) * [0.1, -0.1]
+			}.play
+		};
+		defer { win.close }
 	}
-}, clock:~tempo)
+}, clock: ~tempo)
 )
+
 ~tempo.tempo = 30/60
 ::
 
