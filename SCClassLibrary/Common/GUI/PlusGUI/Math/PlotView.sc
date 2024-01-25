@@ -1283,13 +1283,13 @@ Plotter {
 
 
 + Function {
-	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false|
+	plot { |duration = 0.01, target, bounds, minval, maxval, separately = false, parent|
 		var server, plotter, action;
 		var name = this.asCompileString;
 
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "Function" };
 
-		plotter = Plotter(name, bounds);
+		plotter = Plotter(name, bounds, parent);
 		// init data in case function data is delayed (e.g. server booting)
 		plotter.value = [0.0];
 
