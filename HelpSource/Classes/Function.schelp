@@ -545,7 +545,14 @@ argument::maxval
 the maximum value in the plot. If not specified, the signal's maximum is used.
 argument:: separately
 If set to code::true::, for multichannel signals use separate value display ranges, unless minval or maxval is specified already.
-
+argument:: parent
+Either a link::Classes/Window:: or link::Classes/View:: may be passed in - then the plot is embedded. Otherwise a new link::Classes/Window:: is created.
+code::
+(
+var w = Window("The parent of a ploter").front;
+{ SinOsc.ar }.plot(0.01, parent: w)
+)
+::
 
 method::asBuffer
 Calculates duration in seconds worth of the output of this function asynchronously, and returns it in a link::Classes/Buffer:: of the number of channels. This method immediately returns a buffer, which takes code::duration:: seconds to become filled with data asynchronously. Then the action function is called.
