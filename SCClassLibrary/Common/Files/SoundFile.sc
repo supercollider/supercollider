@@ -70,6 +70,36 @@ SoundFile {
 		^res
 	}
 
+	*write {|pathName, array, headerFormat, sampleRate, sampleFormat|
+		var file = SoundFile.new;
+
+		if(array.isKindOf(SequenceableCollection).not,
+			{Error("Argument 'array' must be an instance of SequenceableCollection (e.g., Array). Received" + array.class.asString + "with value" + array.asString).throw});
+
+		if(array.shape.size > 2,
+			{Error(
+				"Cannot write an array with nested channels."
+				+ "The array should be formatted as: "
+				+ "[  [channel 1 samples...], [channel 2 samples...], ...]"
+			).throw}
+		);
+
+		headerFormat !? file.headerFormat_(_);
+		sampleFormat !? file.sampleFormat_(_);
+		sampleRate !? file.sampleRate_(_);
+
+		file.numChannels_(if(array.shape.size == 1, 1, {array.shape[0]}));
+
+		if(file.openWrite(pathName).not,
+			{Error("Could not open file at path:" + pathName).throw});
+
+		// interlace the samples and write
+		file.writeData(FloatArray.with(*array.lace(array.shape.reduce('*')).asFloat));
+
+		file.close;
+		^pathName
+	}
+
 	openRead{ arg pathName;
 		path = pathName ? path;
 		^this.prOpenRead(path);
