@@ -34,6 +34,25 @@ Full path to the sound file. Use link::Classes/String#-standardizePath:: to reso
 
 returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
 
+method:: write
+Writes an array (or nested array) to a path as a sound file.
+
+argument:: pathName
+The path as a link::Classes/String::.
+
+argument:: array
+The data to write. Can be an array of number, or if multichannel, an array of arrays of multichannel.
+
+argument:: headerFormat
+See link::Classes/SoundFile#-headerFormat::.
+
+argument:: sampleRate
+A number, defaults to 44100.
+
+argument:: sampleFormat
+See link::Classes/SoundFile#-sampleFormat::.
+
+
 method:: openWrite
 Try to create an audio file at the given path. Note that there is no code::numFrames:: argument: the number of frames is counted after writing data into the file.
 
