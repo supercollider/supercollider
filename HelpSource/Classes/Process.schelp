@@ -73,8 +73,7 @@ thisProcess.nowExecutingPath in the function in fileForFunctions.scd: /Users/prk
 -> thisProcess.nowExecutingPath in the function in fileForFunctions.scd: /Users/prko/Downloads/fileMain.scd
 ::
 
-When used in a corouine, such as link::Classes/Routine:: (shortcut: teletype::r::), link::Classes/Function#-fork::,
-link::Classes/Server#-waitForBoot::, link::Classes/Server#-doWhenBooted:: and link::Classes/Task::, link::Classes/CmdPeriod::, link::Classes/ServerBoot:: or link::Classes/ServerTree::, it will return teletype::nil:::
+When used in link::Classes/CmdPeriod::, link::Classes/ServerBoot:: or link::Classes/ServerTree::, it will return teletype::nil:::
 
 code::
 (
