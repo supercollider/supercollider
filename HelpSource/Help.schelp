@@ -61,7 +61,7 @@ These are helpful for gaining a better grasp of SuperCollider:
 subsection:: Getting Help
 
 table::
-## strong::Basic::
+## strong::Basic::soft::                                 ::
 
 link::Guides/How-to-Use-the-Interpreter::
 
@@ -72,7 +72,8 @@ soft:: ::
 soft:: ::
 
 ||
-strong::Intermediate::
+
+strong::Intermediate::soft::                      ::
 
 link::Guides/Debugging-tips::
 
@@ -82,7 +83,8 @@ link::Guides/HID_permissions::
 
 link::Guides/LID_permissions::
 ||
-strong::Advanced::
+
+strong::Advanced::soft::                              ::
 
 link::Guides/Internal-Snooping::
 
@@ -97,7 +99,7 @@ soft:: ::
 subsection:: Language Reference
 
 table::
-## strong::Basic::
+## strong::Basic::soft::                                 ::
 
 link::Reference/Comments::
 
@@ -116,8 +118,10 @@ link::Reference/Assignment::
 link::Reference/Scope::
 
 link::Reference/Functions::
+
 ||
-strong::Intermediate::
+
+strong::Intermediate::soft::                      ::
 
 link::Reference/Control-Structures::
 
@@ -136,8 +140,10 @@ soft:: ::
 soft:: ::
 
 soft:: ::
+
 ||
-strong::Advanced::
+
+strong::Advanced::soft::                              ::
 
 link::Reference/Partial-Application::
 
@@ -162,7 +168,7 @@ soft:: ::
 subsection:: Architecture
 
 table::
-## strong::Basic::
+## strong::Basic::soft::                                 ::
 
 link::Guides/ClientVsServer::
 
@@ -176,7 +182,9 @@ link::Guides/Order-of-execution::
 
 link::Reference/default_group::
 
-|| strong::Intermediate::
+||
+
+strong::Intermediate::soft::                      ::
 
 link::Guides/Server-Guide::
 
@@ -189,7 +197,10 @@ link::Tutorials/Server_Tutorial::
 link::Reference/Server-Command-Reference::
 
 link::Guides/ServerTiming::
-|| strong::Advanced::
+
+||
+
+strong::Advanced::soft::                              ::
 
 link::Guides/Bundled-Messages::
 
@@ -207,7 +218,7 @@ soft:: ::
 subsection:: Overview
 
 table::
-## strong::Basic::
+## strong::Basic::soft::                                 ::
 
 link::Reference/AudioDeviceSelection::
 
@@ -220,7 +231,9 @@ link::Overviews/Collections::
 link::Overviews/GenericCollectors::
 
 link::Guides/Randomness::
-|| strong::Intermediate::
+||
+
+strong::Intermediate::soft::                      ::
 
 link::Overviews/Streams::
 
@@ -233,7 +246,10 @@ link::Overviews/GUI-Classes::
 link::Guides/GUI-Layout-Management::
 
 soft:: ::
-|| strong::Advanced::
+
+||
+
+strong::Advanced::soft::                              ::
 
 link::Guides/FFT-Overview::
 
@@ -252,7 +268,7 @@ soft:: ::
 subsection:: Extending SC
 
 table::
-## strong::Basic::
+## strong::Basic::soft::                                 ::
 
 link::Reference/StartupFile::
 
@@ -261,7 +277,10 @@ link::Guides/UsingExtensions::
 link::Guides/UsingQuarks::
 
 soft:: ::
-|| strong::Intermediate::
+
+||
+
+strong::Intermediate::soft::                      ::
 
 link::Guides/WritingClasses::
 
@@ -271,7 +290,9 @@ link::Guides/WritingHelp::
 
 link::Reference/SCDocSyntax::
 
-|| strong::Advanced::
+||
+
+strong::Advanced::soft::                              ::
 
 link::Guides/WritingTests::
 
@@ -286,14 +307,19 @@ link::Guides/WritingPrimitives::
 subsection:: Sharing your work
 
 table::
-## strong::Share Code::
+##
+
+strong::Share Code::soft::                            ::
 
 http://sccode.org/
 
 https://scsynth.org/c/questions/code-review/
 
 https://scsynth.org/c/music/code-tennis
-|| strong::Share Music::
+
+||
+
+strong::Share Music::soft::                           ::
 
 https://scsynth.org/c/music
 
@@ -315,8 +341,10 @@ https://github.com/supercollider/supercollider
 
 subsection:: For more information
 
-link:: https://github.com/supercollider/supercollider/wiki::
-
+table::
+##
+link:: https://github.com/supercollider/supercollider/wiki##SuperCollider Wiki::
+::
 
 
 
