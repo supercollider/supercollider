@@ -105,8 +105,8 @@ code::
 As an alternative, these may be also be changed by setting the following environment variables in your STRONG::.bash_profile::, STRONG::.zsh_profile:: or similar startup file for your shell:
 
 code::
-export SC_JACK_DEFAULT_INPUTS = "system"
-export SC_JACK_DEFAULT_OUTPUTS = "system"
+export SC_JACK_DEFAULT_INPUTS="system"
+export SC_JACK_DEFAULT_OUTPUTS="system"
 ::
 
 section:: Windows
