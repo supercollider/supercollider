@@ -61,7 +61,7 @@ These are helpful for gaining a better grasp of SuperCollider:
 subsection:: Getting Help
 
 table::
-## strong::Basic::soft::                                 ::
+## strong::Basic::soft::                            ::
 
 link::Guides/How-to-Use-the-Interpreter::
 
@@ -73,7 +73,7 @@ soft:: ::
 
 ||
 
-strong::Intermediate::soft::                      ::
+strong::Intermediate::soft::                 ::
 
 link::Guides/Debugging-tips::
 
@@ -84,7 +84,7 @@ link::Guides/HID_permissions::
 link::Guides/LID_permissions::
 ||
 
-strong::Advanced::soft::                              ::
+strong::Advanced::soft::                         ::
 
 link::Guides/Internal-Snooping::
 
@@ -99,7 +99,7 @@ soft:: ::
 subsection:: Language Reference
 
 table::
-## strong::Basic::soft::                                 ::
+## strong::Basic::soft::                            ::
 
 link::Reference/Comments::
 
@@ -121,7 +121,7 @@ link::Reference/Functions::
 
 ||
 
-strong::Intermediate::soft::                      ::
+strong::Intermediate::soft::                 ::
 
 link::Reference/Control-Structures::
 
@@ -143,7 +143,7 @@ soft:: ::
 
 ||
 
-strong::Advanced::soft::                              ::
+strong::Advanced::soft::                         ::
 
 link::Reference/Partial-Application::
 
@@ -168,7 +168,7 @@ soft:: ::
 subsection:: Architecture
 
 table::
-## strong::Basic::soft::                                 ::
+## strong::Basic::soft::                            ::
 
 link::Guides/ClientVsServer::
 
@@ -184,7 +184,7 @@ link::Reference/default_group::
 
 ||
 
-strong::Intermediate::soft::                      ::
+strong::Intermediate::soft::                 ::
 
 link::Guides/Server-Guide::
 
@@ -200,7 +200,7 @@ link::Guides/ServerTiming::
 
 ||
 
-strong::Advanced::soft::                              ::
+strong::Advanced::soft::                         ::
 
 link::Guides/Bundled-Messages::
 
@@ -218,7 +218,7 @@ soft:: ::
 subsection:: Overview
 
 table::
-## strong::Basic::soft::                                 ::
+## strong::Basic::soft::                            ::
 
 link::Reference/AudioDeviceSelection::
 
@@ -233,7 +233,7 @@ link::Overviews/GenericCollectors::
 link::Guides/Randomness::
 ||
 
-strong::Intermediate::soft::                      ::
+strong::Intermediate::soft::                 ::
 
 link::Overviews/Streams::
 
@@ -249,7 +249,7 @@ soft:: ::
 
 ||
 
-strong::Advanced::soft::                              ::
+strong::Advanced::soft::                         ::
 
 link::Guides/FFT-Overview::
 
@@ -268,7 +268,7 @@ soft:: ::
 subsection:: Extending SC
 
 table::
-## strong::Basic::soft::                                 ::
+## strong::Basic::soft::                            ::
 
 link::Reference/StartupFile::
 
@@ -280,7 +280,7 @@ soft:: ::
 
 ||
 
-strong::Intermediate::soft::                      ::
+strong::Intermediate::soft::                 ::
 
 link::Guides/WritingClasses::
 
@@ -292,7 +292,7 @@ link::Reference/SCDocSyntax::
 
 ||
 
-strong::Advanced::soft::                              ::
+strong::Advanced::soft::                         ::
 
 link::Guides/WritingTests::
 
