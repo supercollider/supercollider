@@ -86,6 +86,39 @@ escape_regexp = function(str) {
   return str.replace(specials, "\\$&");
 }
 
+var toggleButtonStatus = true;
+
+function toggleCodeLineNumbers() {
+  var text = toggleButtonStatus ? "show code line no.": "hide code line no.";
+  toggleButtonStatus = !toggleButtonStatus;
+  $("#toggleButton").text(text);
+
+  var editorTextareas = $("textarea.editor");
+  if (toggleButtonStatus) {
+    editorTextareas.each(function() {
+      var codeMirrorInstance = this.editor;
+      codeMirrorInstance.setOption("lineNumbers", true);
+      $(".CodeMirror").css("padding", "0 1em 0 0");
+      $(".CodeMirror-gutters").css("margin-left", "-10px");
+      $(".CodeMirror pre").css("padding", "0 4px 0 2px");
+      $(".CodeMirror-scrollbar-filler").css("background-color", "transparent");
+      $(".CodeMirror-gutter-filler").css("background-color", "transparent");
+      $(".CodeMirror-linenumber").css("margin-left", "-10px;").css("padding", "0 3px 0 11px");
+    });
+  } else {
+    editorTextareas.each(function() {
+      var codeMirrorInstance = this.editor;
+      codeMirrorInstance.setOption("lineNumbers", false);
+      $(".CodeMirror").css("padding", "0 1em");
+      $(".CodeMirror-gutters").css("margin-left", "0px");
+      $(".CodeMirror pre").css("padding", "0 4px");
+      $(".CodeMirror-scrollbar-filler").css("background-color", "white");
+      $(".CodeMirror-gutter-filler").css("background-color", "white");
+      $(".CodeMirror-linenumber").css("margin-left", "0").css("padding", "0 3px 0 5px");
+    });
+  }
+}
+
 var toc_items;
 function toc_search(search_string) {
 //TODO: on enter, go to first match
@@ -170,7 +203,7 @@ function fixTOC() {
         var indexes_menu = $("<div>", {class: "submenu"}).hide()
             .appendTo(li);
 
-        var nav_items = ["Documents", "Classes", "Methods"];
+        var nav_items = ["Documents", "Classes", "ClassTree", "Methods"];
         nav_items.forEach(function (item) {
             $("<a>", {
                 text: item,
@@ -190,10 +223,22 @@ function fixTOC() {
         });
     });
 
+    create_menubar_item("", "#", function (a, li) {
+        var toggleButton = $("<button>", {
+          id: "toggleButton",
+          text: "hide code line no."
+        }).appendTo(li);
+    
+        toggleButton.on("click", function () {
+          toggleCodeLineNumbers();
+        });
+      });
+
     if ($("#toc").length) {
         set_up_toc();
     }
 }
+
 
 // Set up a QWebChannel for communicating with C++ IDE objects. The main app publishes a handle
 // to IDE functionality at "IDE" which is made globally available here after the page and
@@ -217,3 +262,4 @@ function setUpWebChannel(port) {
         });
     }
 }
+
