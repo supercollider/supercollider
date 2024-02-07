@@ -1,5 +1,7 @@
 var storage;
 var menubar;
+var yPosBeforeClick;
+var toggleButtonStatus = true;
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
@@ -86,14 +88,10 @@ escape_regexp = function(str) {
   return str.replace(specials, "\\$&");
 }
 
-var toggleButtonStatus = true;
-
 function toggleCodeLineNumbers() {
-  var text = toggleButtonStatus ? "show code line no.": "hide code line no.";
-  toggleButtonStatus = !toggleButtonStatus;
-  $("#toggleButton").text(text);
-
+  var text = toggleButtonStatus ? "show code line num" : "hide code line num";
   var editorTextareas = $("textarea.editor");
+  toggleButtonStatus = !toggleButtonStatus;
   if (toggleButtonStatus) {
     editorTextareas.each(function() {
       var codeMirrorInstance = this.editor;
@@ -116,8 +114,8 @@ function toggleCodeLineNumbers() {
       $(".CodeMirror-gutter-filler").css("background-color", "white");
       $(".CodeMirror-linenumber").css("margin-left", "0").css("padding", "0 3px 0 5px");
     });
-  }
-}
+  };
+};
 
 var toc_items;
 function toc_search(search_string) {
@@ -223,16 +221,26 @@ function fixTOC() {
         });
     });
 
-    create_menubar_item("", "#", function (a, li) {
-        var toggleButton = $("<button>", {
-          id: "toggleButton",
-          text: "hide code line no."
-        }).appendTo(li);
-    
-        toggleButton.on("click", function () {
-          toggleCodeLineNumbers();
+    create_menubar_item("", "#", function(a, li) {
+        a.addClass("hideCodeLineNum");
+        a.click(function() {
+            yPosBeforeClick = window.scrollY;
+            toggleCodeLineNumbers();
+            if (a.hasClass("hideCodeLineNum")) {
+                a.removeClass("hideCodeLineNum");
+                a.addClass("showCodeLineNum");
+            }
+            else if (a.hasClass("showCodeLineNum")) {
+                a.removeClass("showCodeLineNum");
+                a.addClass("hideCodeLineNum");
+            };
+            setTimeout(function() {
+                if (yPosBeforeClick != window.scrollY) {
+                    window.scrollTo(0, yPosBeforeClick);
+                }
+            }, 0);
         });
-      });
+    });
 
     if ($("#toc").length) {
         set_up_toc();
