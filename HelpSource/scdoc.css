@@ -27,18 +27,10 @@ table {
     font-size: 10pt;
     margin-top: 1em;
     margin-left: 2em;
-    width: calc(100% - 2em);
-    table-layout: auto;
 }
 table td {
     border: 1px solid #ddd;
     padding: 0.3em;
-}
-
-td ul  {
-    list-style-type: disc;
-    margin-left: 1.75em;
-    padding: 0;
 }
 
 table table {
@@ -140,20 +132,6 @@ a.subclass_toggle:hover {
     background-repeat: no-repeat;
     background-position: 0.5em center;
     background-size: 1.5em;
-}
-
-#menubar .hideCodeLineNum {
-    background-image: url("images/hide_code_line_num.png");
-    background-repeat: no-repeat;
-    background-position: 0.5em center;
-    background-size: 1em;
-}
-
-#menubar .showCodeLineNum {
-    background-image: url("images/show_code_line_num.png");
-    background-repeat: no-repeat;
-    background-position: 0.5em center;
-    background-size: 1em;
 }
 
 a.menu-link {
@@ -710,7 +688,7 @@ table#search_settings {
     color: #555;
     width: 100%;
     margin-left: 0px;
-    margin-right: 0px;
+    margin-right: 0px;*/
     margin: 0px;
     padding: 0px;
     border-collapse: collapse;
@@ -788,10 +766,4 @@ div.met_subclasses a.seemore {
 #total_count {
     font-size: 9pt;
     color: #777;
-}
-
-@media only screen and (max-width: 200px) {
-    .table-content {
-        grid-template-columns: 1fr;
-    }
 }
