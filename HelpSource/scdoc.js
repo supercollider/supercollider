@@ -221,19 +221,19 @@ function fixTOC() {
         });
     });
 
-    create_menubar_item("", "#", function(a, li) {
-        a.addClass("hideCodeLineNum");
-        a.click(function() {
+    create_menubar_item("123", "#", function(a, li) {
+        var originalText = a.text();
+        var isStrikethrough = true;
+        a.css("text-decoration", "line-through")
+        .click(function() {
             yPosBeforeClick = window.scrollY;
             toggleCodeLineNumbers();
-            if (a.hasClass("hideCodeLineNum")) {
-                a.removeClass("hideCodeLineNum");
-                a.addClass("showCodeLineNum");
+            if (isStrikethrough) {
+                a.css("text-decoration", "none");
+            } else {
+                a.css("text-decoration", "line-through");
             }
-            else if (a.hasClass("showCodeLineNum")) {
-                a.removeClass("showCodeLineNum");
-                a.addClass("hideCodeLineNum");
-            };
+            isStrikethrough = !isStrikethrough;
             setTimeout(function() {
                 if (yPosBeforeClick != window.scrollY) {
                     window.scrollTo(0, yPosBeforeClick);
@@ -270,4 +270,3 @@ function setUpWebChannel(port) {
         });
     }
 }
-
