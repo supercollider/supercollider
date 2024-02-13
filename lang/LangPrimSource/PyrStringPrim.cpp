@@ -271,9 +271,9 @@ public:
 
 
 static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
+    // String::regexReplace { |regex: String, replaceText: String| ... }
     if (numArgsPushed != 3)
-        return errFailed; // assume 'this' is counted
-    // regexReplace { |find, replace| ... }
+        return errFailed; // this is counted
 
     // caches the last 64 boost:regex instances.
     static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
@@ -285,11 +285,8 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
     /*const*/ PyrSlot* slot_regex = g->sp - 1; // find
     /*const*/ PyrSlot* slot_replace = g->sp; // replace with
 
-    if (!isKindOfSlot(slot_this, class_string)) {
-        SetNil(slot_this);
-        postfl("Error: slot 1 is wrong type, should be a String\n");
-        return errWrongType;
-    }
+    // slot one does not need to be checked as this method should only be called from methods in String,
+    //    or children thereof.
     if (!isKindOfSlot(slot_regex, class_string)){
         SetNil(slot_this);
         postfl("Error: slot 2 is wrong type, should be a String\n");
@@ -310,14 +307,15 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
         if (source_size < 0) { // size is signed
             SetNil(slot_this);
             return errFailed;
-        } else if (source_size == 0) {
-            return errNone; // do nothing, input is empty
         }
+
         const char* source_end = source_start + source_size;
 
         // this allocation is necessary as the result needs to be extendable
         std::string out {};
+        // couldn't get the 'replace' argument in regex_replace to work as the char* isn't (necessarily) null terminated.
         std::string replace{slotRawString(slot_replace)->s, static_cast<std::size_t>(slotRawString(slot_replace)->size)};
+
         regex_replace(std::back_inserter(out), source_start, source_end, pattern, replace );
 
         // now 'out' has been filled, it's data must be copied to avoid being free'ed when 'out' goes out of scope
