@@ -383,6 +383,10 @@ code::
 "[xtz]+nd".matchRegexp("xnd"); // true: any combination of x, t, z
 ::
 
+method::replaceRegex
+
+TODO
+
 method::findRegexp
 Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
 
