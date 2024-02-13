@@ -287,17 +287,17 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
 
     if (!isKindOfSlot(slot_this, class_string)) {
         SetNil(slot_this);
-        postfl("Error: slot 1 is wrong");
+        postfl("Error: slot 1 is wrong type, should be a String\n");
         return errWrongType;
     }
     if (!isKindOfSlot(slot_regex, class_string)){
         SetNil(slot_this);
-        postfl("Error: slot 2 is wrong");
+        postfl("Error: slot 2 is wrong type, should be a String\n");
         return errWrongType;
     }
     if (!isKindOfSlot(slot_replace, class_string)){
         SetNil(slot_this);
-        postfl("Error: slot 4 is wrong");
+        postfl("Error: slot 4 is wrong type, should be a String\n");
         return errWrongType;
     }
 
@@ -306,7 +306,6 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
 
         const char* source_start = slotRawString(slot_this)->s;
         const int source_size = slotRawString(slot_this)->size;
-        postfl("size of string %i", source_size);
 
         if (source_size < 0) { // size is signed
             SetNil(slot_this);
@@ -324,8 +323,6 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
         // now 'out' has been filled, it's data must be copied to avoid being free'ed when 'out' goes out of scope
         PyrString* output_string = newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true);
         std::copy(out.begin(), out.end(), output_string->s);
-
-        postfl("%s\n", out.c_str());
 
         // do we need to free the input string from the garbage collector somehow?
         // prString_AsCompileString does not.
