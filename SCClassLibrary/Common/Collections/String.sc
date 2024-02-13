@@ -130,6 +130,7 @@ String[char] : RawArray {
 	format { arg ... items; ^this.prFormat( items.collect(_.asString) ) }
 	prFormat { arg items; _String_Format ^this.primitiveFailed }
 	matchRegexp { arg string, start = 0, end; _String_Regexp ^this.primitiveFailed }
+	replaceRegex { |regex, replaceWith| _String_ReplaceRegex ^this.primitiveFailed }
 
 	fformat { arg ... args;
 		var str, resArgs, val, func;

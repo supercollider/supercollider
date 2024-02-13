@@ -185,7 +185,7 @@ class regex_lru_cache {
 
     struct regex_node : bin::list_base_hook<>, bin::unordered_set_base_hook<> {
     public:
-        regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) {}
+        regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) { }
 
         boost::regex const& get(void) const { return pattern; }
 
@@ -237,8 +237,7 @@ class regex_lru_cache {
 
 public:
     regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
-        re_set(bucket_traits(buckets, 128)),
-        re_list() {}
+        re_set(bucket_traits(buckets, 128)), re_list() { }
 
     ~regex_lru_cache() {
         while (!re_list.empty()) {
@@ -468,6 +467,75 @@ static int prString_FindRegexpAt(struct VMGlobals* g, int numArgsPushed) {
     SetObject(a, array); // now we can set the result in a
 
     return errNone;
+}
+
+static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
+    if (numArgsPushed != 3)
+        return errFailed; // assume 'this' is counted
+    // regexReplace { |find, replace| ... }
+
+    // caches the last 64 boost:regex instances.
+    static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript | boost::regex_constants::nosubs);
+
+    using namespace boost;
+
+    // TODO: fix const-ness of isKindOfSlot
+    PyrSlot* slot_this = g->sp - 2; // source string
+    /*const*/ PyrSlot* slot_regex = g->sp - 1; // find
+    /*const*/ PyrSlot* slot_replace = g->sp; // replace with
+
+    if (!isKindOfSlot(slot_this, class_string)) {
+        SetNil(slot_this);
+        postfl("Error: slot 1 is wrong");
+        return errWrongType;
+    }
+    if (!isKindOfSlot(slot_regex, class_string)){
+        SetNil(slot_this);
+        postfl("Error: slot 2 is wrong");
+        return errWrongType;
+    }
+    if (!isKindOfSlot(slot_replace, class_string)){
+        SetNil(slot_this);
+        postfl("Error: slot 3 is wrong");
+        return errWrongType;
+    }
+
+    try {
+        const auto& pattern = regex_lru_cache.get_regex(slotRawString(slot_regex)->s, slotRawString(slot_regex)->size);
+
+        const char* source_start = slotRawString(slot_this)->s;
+        const int source_size = slotRawString(slot_this)->size;
+        postfl("size of string %i", source_size);
+
+        if (source_size < 0) { // size is signed
+            SetNil(slot_this);
+            return errFailed;
+        } else if (source_size == 0) {
+            return errNone; // do nothing, input is empty
+        }
+        const char* source_end = source_start + source_size;
+
+        // this allocation is necessary as the result needs to be extendable
+        std::string out {};
+        std::string replace{slotRawString(slot_replace)->s, static_cast<std::size_t>(slotRawString(slot_replace)->size)};
+        regex_replace(std::back_inserter(out), source_start, source_end, pattern, replace );
+
+        // now 'out' has been filled, it's data must be copied to avoid being free'ed when 'out' goes out of scope
+        PyrString* output_string = newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true);
+        std::copy(out.begin(), out.end(), output_string->s);
+
+        postfl("%s\n", out.c_str());
+
+        // do we need to free the input string from the garbage collector somehow?
+        // prString_AsCompileString does not.
+        // output slot is the first slot.
+        SetObject(slot_this, output_string);
+        return errNone;
+    } catch (const std::exception& e) {
+        postfl("Warning: Exception in _String_ReplaceRegex -%s\n", e.what());
+        SetNil(slot_this);
+        return errFailed;
+    };
 }
 
 int memcmpi(char* a, char* b, int len) {
@@ -1002,4 +1070,5 @@ void initStringPrimitives() {
     definePrimitive(base, index++, "_String_EscapeChar", prString_EscapeChar, 2, 0);
     definePrimitive(base, index++, "_String_ParseYAML", prString_ParseYAML, 1, 0);
     definePrimitive(base, index++, "_String_ParseYAMLFile", prString_ParseYAMLFile, 1, 0);
+    definePrimitive(base, index++, "_String_ReplaceRegex", prString_ReplaceRegex, 3, 0);
 }
