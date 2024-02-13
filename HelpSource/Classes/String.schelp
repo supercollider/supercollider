@@ -383,6 +383,31 @@ code::
 "[xtz]+nd".matchRegexp("xnd"); // true: any combination of x, t, z
 ::
 
+method::replaceRegexp
+This method is used to replace parts of text.
+
+argument::regex
+A perl regular expression (see link::Classes/String#Regular expressions::) with which to match the caller.
+
+argument::with
+The link::Classes/String:: to replace the found regex with.
+
+returns:: A link::Classes/String::.
+
+code::
+// remove numbers
+"g8et t8ho9se 3num5b89ers ou06t o8f h12er56e!".replaceRegexp("[0-9]", "")
+-> get those numbers out of here!
+
+// remove capital letters
+"HelLO WoRlD".replaceRegexp("(\\\w)", "\\\L$1")
+-> hello world
+
+// remove all capital letter unless at the start of a word
+"HelLO worLD! I weNT tO Paris yeSTErDay.".replaceRegexp("(\\\S)(\\\S*)", "$1\\\L$2")
+-> Hello world! I went to Paris yesterday.
+::
+
 method::findRegexp
 Perl regular expression search (see link::Classes/String#Regular expressions::). This method searches exhaustively for matches and collects them into an array of pairs, in the format code::[character index, matching string]::.
 
