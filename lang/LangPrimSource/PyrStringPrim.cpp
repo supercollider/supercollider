@@ -563,27 +563,13 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     if (this_err != errNone)
         return this_err;
 
-
 #ifdef _WIN32
-    std::string buf;
-    static constexpr DWORD init_sz { 1024 };
-    buf.reserve(static_cast<std::size_t>(init_sz));
-    const int return_size1 = GetEnvironmentVariable(this_str.c_str(), buf.data(), init_sz);
-
-    // c++17 lambdas cannot capture structured bindings (c++20 can)
-    const std::string& this_str_2 = this_str;
-    char* value = [&]() -> char* {
-        if (return_size1 == 0)
-            return nullptr; // not present
-        else if (return_size1 <= init_sz)
-            return buf.data(); // success
-        else { // buffer too small, try again
-            buf.reserve(static_cast<std::size_t>(return_size1));
-            const int return_size2 = GetEnvironmentVariable(this_str_2.c_str(), buf.data(), return_size1);
-            return (return_size2 == 0) ? nullptr : buf.data();
-            // don't try a third time as should have worked.
-        }
-    }();
+    const auto count = GetEnvironmentVariable(this_str.c_str(), nullptr, 0);
+    std::string buf(count, 0);
+    if (count != 0) {
+        GetEnvironmentVariable(this_str.c_str(), buf.data(), buf.size());
+    }
+    char* value = count != 0 ? buf.data() : nullptr;
 #else
     char* value = getenv(this_str.c_str());
 #endif
