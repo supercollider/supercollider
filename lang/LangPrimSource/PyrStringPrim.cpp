@@ -612,25 +612,22 @@ int prString_Setenv(struct VMGlobals* g, int numArgsPushed) {
     if (this_name_err != errNone)
         return this_name_err;
 
+    if (IsNil(slot_value)){
 #ifdef _WIN32
-    if (IsNil(variable_slot))
-        SetEnvironmentVariable(this_string.c_str(), NULL);
-    else {
-        const auto [value_err, value_str] = slotStdStrVal(slot_value);
-        if (value_err != errNone)
-            return value_err;
-        SetEnvironmentVariable(this_string.c_str(), value_str.c_str());
-    }
+        SetEnvironmentVariable(this_name_str.c_str(), NULL);
 #else
-    if (IsNil(slot_value))
         unsetenv(this_name_str.c_str());
-    else {
+#endif
+    } else {
         const auto [value_err, value_str] = slotStdStrVal(slot_value);
         if (value_err != errNone)
             return value_err;
+#ifdef _WIN32
+        SetEnvironmentVariable(this_name_str.c_str(), value_str.c_str());
+#else
         setenv(this_name_str.c_str(), value_str.c_str(), 1);
-    }
 #endif
+    }
 
     return errNone;
 }
