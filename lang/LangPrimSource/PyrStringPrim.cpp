@@ -185,7 +185,7 @@ class regex_lru_cache {
 
     struct regex_node : bin::list_base_hook<>, bin::unordered_set_base_hook<> {
     public:
-        regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) {}
+        regex_node(const char* str, size_t size, int regex_flags): pattern(str, size, regex_flags) { }
 
         boost::regex const& get(void) const { return pattern; }
 
@@ -237,8 +237,7 @@ class regex_lru_cache {
 
 public:
     regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
-        re_set(bucket_traits(buckets, 128)),
-        re_list() {}
+        re_set(bucket_traits(buckets, 128)), re_list() { }
 
     ~regex_lru_cache() {
         while (!re_list.empty()) {
@@ -560,7 +559,8 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     PyrSlot* slot_this = g->sp;
     const auto [this_err, this_str] = slotStdStrVal(slot_this);
-    if(this_err != errNone) return this_err;
+    if (this_err != errNone)
+        return this_err;
 
 #ifdef _WIN32
     // TODO: windows is limited to 1024, is this necessary?
@@ -571,34 +571,37 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     char* value = getenv(this_str.c_str());
 #endif
 
-    if(value == nullptr){
+    if (value == nullptr) {
         SetNil(slot_this);
         return errNone; // returns nil if not present
     }
 
     PyrString* pyrString = newPyrString(g->gc, value, 0, true);
-    if (pyrString == nullptr) return errFailed;
+    if (pyrString == nullptr)
+        return errFailed;
 
     SetObject(slot_this, pyrString);
 
     return errNone;
 }
 
-int prString_Setenv(struct VMGlobals* g, int  numArgsPushed ) {
+int prString_Setenv(struct VMGlobals* g, int numArgsPushed) {
     assert(numArgsPushed == 2);
     // String::setEnv {|value| ... }
     PyrSlot* slot_this_name = g->sp - 1;
     PyrSlot* slot_value = g->sp;
 
     const auto [this_name_err, this_name_str] = slotStdStrVal(slot_this_name);
-    if(this_name_err != errNone) return this_name_err;
+    if (this_name_err != errNone)
+        return this_name_err;
 
 #ifdef _WIN32
     if (IsNil(variable_slot))
         SetEnvironmentVariable(this_string.c_str(), NULL);
     else {
         const auto [value_err, value_str] = slotStdStrVal(slot_value);
-        if (value_err != errNone) return value_err;
+        if (value_err != errNone)
+            return value_err;
         SetEnvironmentVariable(this_string.c_str(), value_str.c_str());
     }
 #else
@@ -606,7 +609,8 @@ int prString_Setenv(struct VMGlobals* g, int  numArgsPushed ) {
         unsetenv(this_name_str.c_str());
     else {
         const auto [value_err, value_str] = slotStdStrVal(slot_value);
-        if (value_err != errNone) return value_err;
+        if (value_err != errNone)
+            return value_err;
         setenv(this_name_str.c_str(), value_str.c_str(), 1);
     }
 #endif

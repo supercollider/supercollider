@@ -776,11 +776,13 @@ public:
     typedef const T& const_reference;
     typedef T value_type;
 
-    template <class U> struct rebind { typedef pyr_pool_compile_allocator<U> other; };
+    template <class U> struct rebind {
+        typedef pyr_pool_compile_allocator<U> other;
+    };
 
-    pyr_pool_compile_allocator(void) {}
+    pyr_pool_compile_allocator(void) { }
 
-    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) {}
+    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) { }
 
     pointer address(reference x) const { return &x; }
 
@@ -2441,10 +2443,10 @@ PyrDoubleArray* newPyrDoubleArray(class PyrGC* gc, int size, int flags, bool run
 
 PyrString* newPyrString(class PyrGC* gc, const char* s, int flags, bool runGC) {
     const std::size_t length = strlen(s);
-    if(length > std::numeric_limits<int>::max()) return nullptr;
-    PyrString* string = (gc == nullptr)
-                        ? reinterpret_cast<PyrString*>(PyrGC::NewPermanent(length, flags, obj_char))
-                        : reinterpret_cast<PyrString*>(gc->New(length, flags, obj_char, runGC));
+    if (length > std::numeric_limits<int>::max())
+        return nullptr;
+    PyrString* string = (gc == nullptr) ? reinterpret_cast<PyrString*>(PyrGC::NewPermanent(length, flags, obj_char))
+                                        : reinterpret_cast<PyrString*>(gc->New(length, flags, obj_char, runGC));
     string->classptr = class_string;
     string->size = static_cast<int>(length);
     memcpy(string->s, s, length);
@@ -2452,10 +2454,10 @@ PyrString* newPyrString(class PyrGC* gc, const char* s, int flags, bool runGC) {
 }
 
 PyrString* newPyrStringN(class PyrGC* gc, int length, int flags, bool runGC) {
-    if(length > std::numeric_limits<int>::max()) return nullptr;
-    PyrString* string = (gc == nullptr)
-                        ? reinterpret_cast<PyrString*>(PyrGC::NewPermanent(length, flags, obj_char))
-                        : reinterpret_cast<PyrString*>(gc->New(length, flags, obj_char, runGC));
+    if (length > std::numeric_limits<int>::max())
+        return nullptr;
+    PyrString* string = (gc == nullptr) ? reinterpret_cast<PyrString*>(PyrGC::NewPermanent(length, flags, obj_char))
+                                        : reinterpret_cast<PyrString*>(gc->New(length, flags, obj_char, runGC));
     string->classptr = class_string;
     string->size = length; // filled with garbage!
     return string;
