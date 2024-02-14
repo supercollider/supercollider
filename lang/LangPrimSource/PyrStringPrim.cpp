@@ -562,11 +562,23 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     if (this_err != errNone)
         return this_err;
 
+
 #ifdef _WIN32
-    // TODO: windows is limited to 1024, is this necessary?
-    char buf[1024];
-    DWORD size = GetEnvironmentVariable(this_str.c_str(), buf, 1024);
-    char* value = (size == 0 || size > 1024) ? nullptr : buf;
+    std::string buf;
+    static constexpr DWORD initial_size{1024};
+    buf.reserve(static_cast<std::size_t>(initial_size));
+    const int return_size1 = GetEnvironmentVariable(this_str.c_str(), buf.data(), inital_size);
+
+    char* value = [&]() -> char* {
+        if (return_size1 == 0) return nullptr; // not present
+        else if (return_size1 <= initial_size) return buf.data(); // success
+        else { // buffer too small, try again
+            buf.reserve(return_size1);
+            const int return_size2 = GetEnvironmentVariable(this_str.c_str(), buf.data(), return_size1);
+            return (return_size2 == 0) ? nullptr : buf.data();
+            // don't try a third time as should have worked.
+        }
+    }();
 #else
     char* value = getenv(this_str.c_str());
 #endif
