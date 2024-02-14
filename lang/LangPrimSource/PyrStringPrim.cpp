@@ -590,32 +590,32 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
     return errNone;
 }
 
-int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */) {
-    PyrSlot* args = g->sp - 1;
-    char key[256];
-    int err;
+int prString_Setenv(struct VMGlobals* g, int  numArgsPushed ) {
+    assert(numArgsPushed == 2);
+    // String::setEnv {|value| ... }
+    PyrSlot* slot_this_name = g->sp - 1;
+    PyrSlot* slot_value = g->sp;
 
-    err = slotStrVal(args + 0, key, 256);
-    if (err)
-        return err;
+    const auto [this_name_err, this_name_str] = slotStdStrVal(slot_this_name);
+    if(this_name_err != errNone) return this_name_err;
 
-    if (IsNil(args + 1)) {
 #ifdef _WIN32
-        SetEnvironmentVariable(key, NULL);
-#else
-        unsetenv(key);
-#endif
-    } else {
-        char value[1024];
-        err = slotStrVal(args + 1, value, 1024);
-        if (err)
-            return err;
-#ifdef _WIN32
-        SetEnvironmentVariable(key, value);
-#else
-        setenv(key, value, 1);
-#endif
+    if (IsNil(variable_slot))
+        SetEnvironmentVariable(this_string.c_str(), NULL);
+    else {
+        const auto [value_err, value_str] = slotStdStrVal(slot_value);
+        if (value_err != errNone) return value_err;
+        SetEnvironmentVariable(this_string.c_str(), value_str.c_str());
     }
+#else
+    if (IsNil(slot_value))
+        unsetenv(this_name_str.c_str());
+    else {
+        const auto [value_err, value_str] = slotStdStrVal(slot_value);
+        if (value_err != errNone) return value_err;
+        setenv(this_name_str.c_str(), value_str.c_str(), 1);
+    }
+#endif
 
     return errNone;
 }
