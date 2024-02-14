@@ -287,12 +287,12 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
 
     // slot one does not need to be checked as this method should only be called from methods in String,
     //    or children thereof.
-    if (!isKindOfSlot(slot_regex, class_string)){
+    if (!isKindOfSlot(slot_regex, class_string)) {
         SetNil(slot_this);
         postfl("Error: slot 2 is wrong type, should be a String\n");
         return errWrongType;
     }
-    if (!isKindOfSlot(slot_replace, class_string)){
+    if (!isKindOfSlot(slot_replace, class_string)) {
         SetNil(slot_this);
         postfl("Error: slot 4 is wrong type, should be a String\n");
         return errWrongType;
@@ -313,10 +313,12 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
 
         // this allocation is necessary as the result needs to be extendable
         std::string out {};
-        // couldn't get the 'replace' argument in regex_replace to work as the char* isn't (necessarily) null terminated.
-        std::string replace{slotRawString(slot_replace)->s, static_cast<std::size_t>(slotRawString(slot_replace)->size)};
+        // couldn't get the 'replace' argument in regex_replace to work as the char* isn't (necessarily) null
+        //    terminated.
+        std::string replace{ slotRawString(slot_replace)->s,
+                              static_cast<std::size_t>(slotRawString(slot_replace)->size) };
 
-        regex_replace(std::back_inserter(out), source_start, source_end, pattern, replace );
+        regex_replace(std::back_inserter(out), source_start, source_end, pattern, replace);
 
         // now 'out' has been filled, it's data must be copied to avoid being free'ed when 'out' goes out of scope
         PyrString* output_string = newPyrStringN(g->gc, static_cast<int>(out.size()), 0, true);
