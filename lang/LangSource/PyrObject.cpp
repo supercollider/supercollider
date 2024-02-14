@@ -776,13 +776,11 @@ public:
     typedef const T& const_reference;
     typedef T value_type;
 
-    template <class U> struct rebind {
-        typedef pyr_pool_compile_allocator<U> other;
-    };
+    template <class U> struct rebind { typedef pyr_pool_compile_allocator<U> other; };
 
-    pyr_pool_compile_allocator(void) { }
+    pyr_pool_compile_allocator(void) {}
 
-    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) { }
+    template <class U> pyr_pool_compile_allocator(pyr_pool_compile_allocator<U> const&) {}
 
     pointer address(reference x) const { return &x; }
 
