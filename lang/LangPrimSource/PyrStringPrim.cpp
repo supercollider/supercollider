@@ -612,7 +612,7 @@ int prString_Setenv(struct VMGlobals* g, int numArgsPushed) {
     if (this_name_err != errNone)
         return this_name_err;
 
-    if (IsNil(slot_value)){
+    if (IsNil(slot_value)) {
 #ifdef _WIN32
         SetEnvironmentVariable(this_name_str.c_str(), NULL);
 #else
