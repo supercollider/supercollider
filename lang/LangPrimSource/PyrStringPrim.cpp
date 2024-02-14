@@ -566,9 +566,9 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
 
 #ifdef _WIN32
     std::string buf;
-    static constexpr DWORD initial_size { 1024 };
-    buf.reserve(static_cast<std::size_t>(initial_size));
-    const int return_size1 = GetEnvironmentVariable(this_str.c_str(), buf.data(), inital_size);
+    static constexpr DWORD init_sz { 1024 };
+    buf.reserve(static_cast<std::size_t>(init_sz));
+    const int return_size1 = GetEnvironmentVariable(this_str.c_str(), buf.data(), init_sz);
 
     char* value = [&]() -> char* {
         if (return_size1 == 0)
@@ -576,7 +576,7 @@ int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
         else if (return_size1 <= initial_size)
             return buf.data(); // success
         else { // buffer too small, try again
-            buf.reserve(return_size1);
+            buf.reserve(static_cast<std::size_t>(return_size1));
             const int return_size2 = GetEnvironmentVariable(this_str.c_str(), buf.data(), return_size1);
             return (return_size2 == 0) ? nullptr : buf.data();
             // don't try a third time as should have worked.
