@@ -315,7 +315,7 @@ static int prString_ReplaceRegex(struct VMGlobals* g, int numArgsPushed) {
         std::string out {};
         // couldn't get the 'replace' argument in regex_replace to work as the char* isn't (necessarily) null
         //    terminated.
-        std::string replace{ slotRawString(slot_replace)->s,
+        std::string replace { slotRawString(slot_replace)->s,
                               static_cast<std::size_t>(slotRawString(slot_replace)->size) };
 
         regex_replace(std::back_inserter(out), source_start, source_end, pattern, replace);
