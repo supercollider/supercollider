@@ -558,34 +558,28 @@ int prString_PathMatch(struct VMGlobals* g, int numArgsPushed) {
 }
 
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */) {
-    PyrSlot* arg = g->sp;
-    char key[256];
-    char* value;
-    int err;
-
-    err = slotStrVal(arg, key, 256);
-    if (err)
-        return err;
+    PyrSlot* slot_this = g->sp;
+    const auto [this_err, this_str] = slotStdStrVal(slot_this);
+    if(this_err != errNone) return this_err;
 
 #ifdef _WIN32
+    // TODO: windows is limited to 1024, is this necessary?
     char buf[1024];
-    DWORD size = GetEnvironmentVariable(key, buf, 1024);
-    if (size == 0 || size > 1024)
-        value = 0;
-    else
-        value = buf;
+    DWORD size = GetEnvironmentVariable(this_str.c_str(), buf, 1024);
+    char* value = (size == 0 || size > 1024) ? nullptr : buf;
 #else
-    value = getenv(key);
+    char* value = getenv(this_str.c_str());
 #endif
 
-    if (value) {
-        PyrString* pyrString = newPyrString(g->gc, value, 0, true);
-        if (!pyrString)
-            return errFailed;
-        SetObject(arg, pyrString);
-    } else {
-        SetNil(arg);
+    if(value == nullptr){
+        SetNil(slot_this);
+        return errNone; // returns nil if not present
     }
+
+    PyrString* pyrString = newPyrString(g->gc, value, 0, true);
+    if (pyrString == nullptr) return errFailed;
+
+    SetObject(slot_this, pyrString);
 
     return errNone;
 }
